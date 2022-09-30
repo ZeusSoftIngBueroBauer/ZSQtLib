@@ -37,7 +37,7 @@ namespace ZS
 namespace System
 {
 //==============================================================================
-/*! Severities zum Festlegen der Gewichtung eines Fehlercodes.
+/*! Enumeration for setting the severity of an error code.
 
     @ingroup _GRP_Namespace_ZS_System_Enumerations_ErrorHandling
 
@@ -238,8 +238,7 @@ enum EResult {
 
 ZSSYSDLL_API QString result2Str( EResult i_result, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName );
 ZSSYSDLL_API EResult str2Result( const QString& i_strResult, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrUndefined );
-
-bool ZSSYSDLL_API isErrorResult( EResult i_result );
+ZSSYSDLL_API bool isErrorResult( EResult i_result );
 
 } // namespace System
 

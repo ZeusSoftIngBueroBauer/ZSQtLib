@@ -127,7 +127,9 @@ CTrcAdminObj::CTrcAdminObj(
     m_enabled(EEnabled::Yes),
     m_eTrcDetailLevelMethodCalls(EMethodTraceDetailLevel::None),
     m_eTrcDetailLevelRuntimeInfo(ELogDetailLevel::None),
-    m_strDataFilter()
+    m_strDataFilter(),
+    m_strlstDataFilterInclude(),
+    m_strlstDataFilterExclude()
 {
     m_pMtx = new QMutex(QMutex::Recursive);
 
@@ -242,6 +244,8 @@ CTrcAdminObj::~CTrcAdminObj()
     m_eTrcDetailLevelMethodCalls = static_cast<EMethodTraceDetailLevel>(0);
     m_eTrcDetailLevelRuntimeInfo = static_cast<ELogDetailLevel>(0);
     //m_strDataFilter;
+    //m_strlstDataFilterInclude;
+    //m_strlstDataFilterExclude;
 
 } // dtor
 
@@ -896,47 +900,56 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Sets the trace data filter as a regular expression.
+/*! @brief Sets a filter for log entries.
 
-    The filter is a regular expression which allows to define a positive
-    pattern where only the data will be traced which mets the expression or a
-    negative pattern which suppresses trace outputs if the filter does not match.
+    Filtering can be done in two ways:
 
-    Please see the description of QRegExp class for more details on how
-    to define regular expressions. Here are just a view (but often used)
-    simple examples.
+    - Strings may be defined which must occur in the log entry.
+    - Strings may be defined which may not occur in the log entry.
 
-    Simple Examples (output trace if string contains sub string):
+    To define a string which must be included encapsulate the string
+    in the delimiter sequence "$I{" and "}I$" (the end delimiter is the
+    start delimiter in reverse order).
 
-    - Check if the string "abc" is contained:
+        $ .. Command
+        I .. Include
+        { .. Start
+        } .. End
 
-          m_pTrcAdminObj->setTraceDataFilter("abc");
-          m_pTrcAdminObj->isTraceDataSuppressedByFilter("1 abc bca cab") // returns false
-          m_pTrcAdminObj->isTraceDataSuppressedByFilter("2 xyz yzx zxy") // returns true
+    To define a string which must NOT be included encapsulate the string
+    in the delimiter sequence "$!I{" and "}I!$"
 
-    - Check if the strings "def" or "uvw" are contained:
+        $ .. Command
+        ! .. Not
+        I .. Include
+        { .. Start
+        } .. End
 
-          m_pTrcAdminObj->setTraceDataFilter("def|uvw");
-          m_pTrcAdminObj->isTraceDataSuppressedByFilter("3 def efd fde") // returns true
-          m_pTrcAdminObj->isTraceDataSuppressedByFilter("4 uvw vwu wuv") // returns true
+    @Examples
 
-    More Complex Examples (output trace if string does not contain sub string):
+    - Log only those strings which include the string "abc":
 
-    - Check if the string "ghi" is NOT contained:
+        m_pLogger->setDataFilter("$I{abc}I$");
 
-      Suppressing a string if a string does not contain a substring is supposed
-      to be seldom used. Its complicated to setup a regular expression for this.
-      The following is an example on how this could be done.
+        m_pLogger->isSuppressedByDataFilter("1 abc bca cab") // returns false
+        m_pLogger->isSuppressedByDataFilter("2 xyz yzx zxy") // returns true
 
-          m_pTrcAdminObj->setTraceDataFilter("^((?!ghi).)*$");
-          m_pTrcAdminObj->isTraceDataSuppressedByFilter("5 ghi hig igh") // returns true
-          m_pTrcAdminObj->isTraceDataSuppressedByFilter("6 rst str trs") // returns false
+    - Don't log strings which include the string "abc":
 
-    @param i_strFilter [in] Filter as regular expression.
+        m_pLogger->setDataFilter("$!I{abc}I!$");
 
-    @note If a string should be suppressed if it does not contain a substring
-          more simple to apply this would be an additional method or provide
-          a flag like match or dontMatch.
+        m_pLogger->isSuppressedByDataFilter("1 abc bca cab") // returns true
+        m_pLogger->isSuppressedByDataFilter("2 xyz yzx zxy") // returns false
+
+    - Log only those strings which include "Hello" but don't log strings including "World":
+
+          m_pLogger->setDataFilter("$I{Hello}I!$$!I{World}I!$");
+          m_pLogger->isSuppressedByDataFilter("Hello World") // returns true
+          m_pLogger->isSuppressedByDataFilter("Hello Welt")  // returns false
+          m_pLogger->isSuppressedByDataFilter("Hallo World") // returns true
+          m_pLogger->isSuppressedByDataFilter("Hallo Welt")  // returns true
+
+    @param i_strFilter [in] Filter containing Include and Not Include expressions.
 */
 void CTrcAdminObj::setTraceDataFilter( const QString& i_strFilter )
 //------------------------------------------------------------------------------
@@ -946,6 +959,67 @@ void CTrcAdminObj::setTraceDataFilter( const QString& i_strFilter )
     if( m_strDataFilter != i_strFilter )
     {
         m_strDataFilter = i_strFilter;
+
+        m_strlstDataFilterInclude.clear();
+        m_strlstDataFilterExclude.clear();
+
+        if( !m_strDataFilter.isEmpty() )
+        {
+            QString strDataFilter = m_strDataFilter;
+
+            while( !strDataFilter.isEmpty() )
+            {
+                int idxStart = strDataFilter.indexOf("$I{");
+                if( idxStart < 0 )
+                {
+                    break;
+                }
+                int idxEnd = strDataFilter.indexOf("}I$", idxStart);
+                if( idxEnd < 0 )
+                {
+                    break;
+                }
+                idxStart += 3;
+                int iLength = idxEnd - idxStart;
+                m_strlstDataFilterInclude.append(strDataFilter.mid(idxStart, iLength));
+                idxStart -= 3;
+                iLength += 6;
+                strDataFilter.remove(idxStart, iLength);
+            }
+
+            while( !strDataFilter.isEmpty() )
+            {
+                int idxStart = strDataFilter.indexOf("$!I{");
+                if( idxStart < 0 )
+                {
+                    break;
+                }
+                int idxEnd = strDataFilter.indexOf("}I!$", idxStart);
+                if( idxEnd < 0 )
+                {
+                    break;
+                }
+                idxStart += 4;
+                int iLength = idxEnd - idxStart;
+                m_strlstDataFilterExclude.append(strDataFilter.mid(idxStart, iLength));
+                idxStart -= 4;
+                iLength += 8;
+                strDataFilter.remove(idxStart, iLength);
+            }
+
+            if( m_strlstDataFilterInclude.isEmpty() && m_strlstDataFilterExclude.isEmpty() )
+            {
+                SErrResultInfo errResultInfo(
+                    /* errSource         */ NameSpace(), ClassName(), keyInTree(), "setDataFilter",
+                    /* result            */ EResultArgOutOfRange,
+                    /* severity          */ EResultSeverityError,
+                    /* strAddErrInfoDscr */ "Invalid data filter expression");
+                if( CErrLog::GetInstance() != nullptr )
+                {
+                    CErrLog::GetInstance()->addEntry(errResultInfo);
+                }
+            }
+        }
 
         if( m_pTree != nullptr )
         {
@@ -969,25 +1043,40 @@ QString CTrcAdminObj::getTraceDataFilter() const
 //------------------------------------------------------------------------------
 /*! @brief Returns whether given trace data should be suppressed by the data filter.
 
-    @param i_strTraceData [in]
+    @param i_strData [in]
         Trace data to be checked against the filter string.
 
     @return true if the passed trace data should be suppressed, false otherwise.
 */
-bool CTrcAdminObj::isTraceDataSuppressedByFilter( const QString& i_strTraceData ) const
+bool CTrcAdminObj::isTraceDataSuppressedByFilter( const QString& i_strData ) const
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
 
     bool bSuppressed = false;
 
-    if( !m_strDataFilter.isEmpty() )
+    if( !m_strlstDataFilterInclude.isEmpty() )
     {
-        QRegExp rx(m_strDataFilter);
+        bSuppressed = true;
 
-        if( rx.indexIn(i_strTraceData) < 0 )
+        for( const QString& strFilter : m_strlstDataFilterInclude )
         {
-            bSuppressed = true;
+            if( i_strData.contains(strFilter) )
+            {
+                bSuppressed = false;
+                break;
+            }
+        }
+    }
+    if( !bSuppressed && !m_strlstDataFilterExclude.isEmpty() )
+    {
+        for( const QString& strFilter : m_strlstDataFilterExclude )
+        {
+            if( i_strData.contains(strFilter) )
+            {
+                bSuppressed = true;
+                break;
+            }
         }
     }
     return bSuppressed;
@@ -1247,6 +1336,25 @@ void CTrcAdminObjRefAnchor::setMethodCallsTraceDetailLevel( EMethodTraceDetailLe
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Returns the trace detail level.
+
+    @return Trace detail level.
+*/
+EMethodTraceDetailLevel CTrcAdminObjRefAnchor::getMethodCallsTraceDetailLevel() const
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&m_mtx);
+
+    EMethodTraceDetailLevel detailLevel = EMethodTraceDetailLevel::None;
+
+    if( m_pTrcAdminObj != nullptr )
+    {
+        detailLevel = m_pTrcAdminObj->getMethodCallsTraceDetailLevel();
+    }
+    return detailLevel;
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Checks whether tracing is active for the given filter detail level.
 
     @param i_eFilterDetailLevel [in]
@@ -1285,6 +1393,25 @@ void CTrcAdminObjRefAnchor::setRuntimeInfoTraceDetailLevel( ELogDetailLevel i_eT
     {
         m_pTrcAdminObj->setRuntimeInfoTraceDetailLevel(i_eTrcDetailLevel);
     }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the trace detail level.
+
+    @return Trace detail level.
+*/
+ELogDetailLevel CTrcAdminObjRefAnchor::getRuntimeInfoTraceDetailLevel() const
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&m_mtx);
+
+    ELogDetailLevel detailLevel = ELogDetailLevel::None;
+
+    if( m_pTrcAdminObj != nullptr )
+    {
+        detailLevel = m_pTrcAdminObj->getRuntimeInfoTraceDetailLevel();
+    }
+    return detailLevel;
 }
 
 //------------------------------------------------------------------------------
@@ -1401,6 +1528,23 @@ void CTrcAdminObjRefGuard::setMethodCallsTraceDetailLevel(EMethodTraceDetailLeve
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Returns the trace detail level.
+
+    @return Trace detail level.
+*/
+EMethodTraceDetailLevel CTrcAdminObjRefGuard::getMethodCallsTraceDetailLevel() const
+//------------------------------------------------------------------------------
+{
+    EMethodTraceDetailLevel detailLevel = EMethodTraceDetailLevel::None;
+
+    if( m_pRefAnchor != nullptr )
+    {
+        detailLevel = m_pRefAnchor->getMethodCallsTraceDetailLevel();
+    }
+    return detailLevel;
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Checks whether tracing is active for the given filter detail level.
 
     @param i_eFilterDetailLevel [in]
@@ -1435,6 +1579,23 @@ void CTrcAdminObjRefGuard::setRuntimeInfoTraceDetailLevel(ELogDetailLevel i_eTrc
     {
         m_pRefAnchor->setRuntimeInfoTraceDetailLevel(i_eTrcDetailLevel);
     }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the trace detail level.
+
+    @return Trace detail level.
+*/
+ELogDetailLevel CTrcAdminObjRefGuard::getRuntimeInfoTraceDetailLevel() const
+//------------------------------------------------------------------------------
+{
+    ELogDetailLevel detailLevel = ELogDetailLevel::None;
+
+    if( m_pRefAnchor != nullptr )
+    {
+        detailLevel = m_pRefAnchor->getRuntimeInfoTraceDetailLevel();
+    }
+    return detailLevel;
 }
 
 //------------------------------------------------------------------------------

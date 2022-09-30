@@ -25,6 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include <QtCore/qcoreapplication.h>
+#include <QtCore/qdir.h>
 #include <QtCore/qfile.h>
 #include <QtCore/qfileinfo.h>
 #include <QtCore/qthread.h>
@@ -519,12 +520,12 @@ CTrcAdminObj* CTrcServer::GetTraceAdminObj(
 
 //------------------------------------------------------------------------------
 CTrcAdminObj* CTrcServer::GetTraceAdminObj(
-    const QString&               i_strNameSpace,
-    const QString&               i_strClassName,
-    const QString&               i_strObjName,
-    ZS::System::EEnabled         i_bEnabledAsDefault,
+    const QString&          i_strNameSpace,
+    const QString&          i_strClassName,
+    const QString&          i_strObjName,
+    ZS::System::EEnabled    i_bEnabledAsDefault,
     EMethodTraceDetailLevel i_eMethodCallsDefaultDetailLevel,
-    ELogDetailLevel i_eRuntimeInfoDefaultDetailLevel )
+    ELogDetailLevel         i_eRuntimeInfoDefaultDetailLevel )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
@@ -603,15 +604,12 @@ public: // class methods to get default file paths
     Class method as setting the path got to be called before creating
     the trace server instance.
 */
-//------------------------------------------------------------------------------
 void CTrcServer::SetAdminObjFileAbsoluteFilePath( const QString& i_strAbsFilePath )
+//------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
-
     s_strAdminObjFileAbsFilePath = i_strAbsFilePath;
-
     CTrcServer* pTrcServer = GetInstance();
-
     if( pTrcServer != nullptr )
     {
         pTrcServer->setAdminObjFileAbsoluteFilePath(s_strAdminObjFileAbsFilePath);
@@ -634,7 +632,8 @@ QString CTrcServer::GetAdminObjFileAbsoluteFilePath()
         QString strAppConfigDir = ZS::System::getAppConfigDir("System");
         QString strTrcAdminObjFileSuffix = "xml";
         QString strTrcAdminObjFileBaseName = "ZSTrcServer-TrcMthAdmObj";
-        s_strAdminObjFileAbsFilePath = strAppConfigDir + "/" + strTrcAdminObjFileBaseName + "." + strTrcAdminObjFileSuffix;
+        SetAdminObjFileAbsoluteFilePath(
+            strAppConfigDir + QDir::separator() + strTrcAdminObjFileBaseName + "." + strTrcAdminObjFileSuffix);
     }
     return s_strAdminObjFileAbsFilePath;
 }
@@ -644,13 +643,8 @@ QString CTrcServer::GetAdminObjFileCompleteBaseName()
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
-    QString strBaseName;
-    CTrcServer* pTrcServer = GetInstance();
-    if( pTrcServer != nullptr )
-    {
-        strBaseName = pTrcServer->getAdminObjFileCompleteBaseName();
-    }
-    return strBaseName;
+    QFileInfo fileInfoFile(s_strAdminObjFileAbsFilePath);
+    return fileInfoFile.completeBaseName();
 }
 
 //------------------------------------------------------------------------------
@@ -658,13 +652,8 @@ QString CTrcServer::GetAdminObjFileAbsolutePath()
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
-    QString strAbsPath;
-    CTrcServer* pTrcServer = GetInstance();
-    if( pTrcServer != nullptr )
-    {
-        strAbsPath = pTrcServer->getAdminObjFileAbsolutePath();
-    }
-    return strAbsPath;
+    QFileInfo fileInfoFile(s_strAdminObjFileAbsFilePath);
+    return fileInfoFile.absolutePath();
 }
 
 //------------------------------------------------------------------------------
@@ -701,7 +690,8 @@ QString CTrcServer::GetLocalTrcFileAbsoluteFilePath()
         QString strAppLogDir = ZS::System::getAppLogDir("System");
         QString strTrcLogFileSuffix = "log";
         QString strTrcLogFileBaseName = "ZSTrcServer-TrcMth";
-        s_strLocalTrcFileAbsFilePath = strAppLogDir + "/" + strTrcLogFileBaseName + "." + strTrcLogFileSuffix;
+        SetLocalTrcFileAbsoluteFilePath(
+            strAppLogDir + QDir::separator() + strTrcLogFileBaseName + "." + strTrcLogFileSuffix);
     }
     return s_strLocalTrcFileAbsFilePath;
 }
@@ -711,13 +701,8 @@ QString CTrcServer::GetLocalTrcFileCompleteBaseName()
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
-    QString strBaseName;
-    CTrcServer* pTrcServer = GetInstance();
-    if( pTrcServer != nullptr )
-    {
-        strBaseName = pTrcServer->getLocalTrcFileCompleteBaseName();
-    }
-    return strBaseName;
+    QFileInfo fileInfoFile(s_strLocalTrcFileAbsFilePath);
+    return fileInfoFile.completeBaseName();
 }
 
 //------------------------------------------------------------------------------
@@ -725,13 +710,8 @@ QString CTrcServer::GetLocalTrcFileAbsolutePath()
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
-    QString strAbsPath;
-    CTrcServer* pTrcServer = GetInstance();
-    if( pTrcServer != nullptr )
-    {
-        strAbsPath = pTrcServer->getLocalTrcFileAbsolutePath();
-    }
-    return strAbsPath;
+    QFileInfo fileInfoFile(s_strLocalTrcFileAbsFilePath);
+    return fileInfoFile.absolutePath();
 }
 
 /*==============================================================================
@@ -1758,8 +1738,17 @@ void CTrcServer::setAdminObjFileAbsoluteFilePath( const QString& i_strAbsFilePat
     if( m_trcSettings.m_strAdminObjFileAbsFilePath != i_strAbsFilePath )
     {
         m_trcSettings.m_strAdminObjFileAbsFilePath = i_strAbsFilePath;
+        s_strAdminObjFileAbsFilePath = i_strAbsFilePath;
         emit traceSettingsChanged(this);
     }
+}
+
+//------------------------------------------------------------------------------
+QString CTrcServer::getAdminObjFileAbsoluteFilePath() const
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&s_mtx);
+    return s_strAdminObjFileAbsFilePath;
 }
 
 //------------------------------------------------------------------------------
@@ -1809,9 +1798,7 @@ SErrResultInfo CTrcServer::recallAdminObjs( const QString& i_strAbsFilePath )
 
     if( !i_strAbsFilePath.isEmpty() && m_trcSettings.m_strAdminObjFileAbsFilePath != i_strAbsFilePath )
     {
-        m_trcSettings.m_strAdminObjFileAbsFilePath = i_strAbsFilePath;
-
-        emit traceSettingsChanged(this);
+        setAdminObjFileAbsoluteFilePath(i_strAbsFilePath);
     }
 
     SErrResultInfo errResultInfo = m_pTrcAdminObjIdxTree->recall(m_trcSettings.m_strAdminObjFileAbsFilePath);
@@ -1848,8 +1835,7 @@ SErrResultInfo CTrcServer::saveAdminObjs( const QString& i_strAbsFilePath )
 
     if( !i_strAbsFilePath.isEmpty() && m_trcSettings.m_strAdminObjFileAbsFilePath != i_strAbsFilePath )
     {
-        m_trcSettings.m_strAdminObjFileAbsFilePath = i_strAbsFilePath;
-        emit traceSettingsChanged(this);
+        setAdminObjFileAbsoluteFilePath(i_strAbsFilePath);
     }
 
     SErrResultInfo errResultInfo = m_pTrcAdminObjIdxTree->save(m_trcSettings.m_strAdminObjFileAbsFilePath);
@@ -1891,7 +1877,7 @@ void CTrcServer::setLocalTrcFileAbsoluteFilePath( const QString& i_strAbsFilePat
     if( m_trcSettings.m_strLocalTrcFileAbsFilePath != i_strAbsFilePath )
     {
         m_trcSettings.m_strLocalTrcFileAbsFilePath = i_strAbsFilePath;
-
+        s_strLocalTrcFileAbsFilePath = i_strAbsFilePath;
         if( m_pTrcMthFile != nullptr )
         {
             m_pTrcMthFile->setAbsoluteFilePath(i_strAbsFilePath);
@@ -1901,18 +1887,20 @@ void CTrcServer::setLocalTrcFileAbsoluteFilePath( const QString& i_strAbsFilePat
 }
 
 //------------------------------------------------------------------------------
+QString CTrcServer::getLocalTrcFileAbsoluteFilePath() const
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&s_mtx);
+    return s_strLocalTrcFileAbsFilePath;
+}
+
+//------------------------------------------------------------------------------
 QString CTrcServer::getLocalTrcFileCompleteBaseName() const
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
-
-    QString strBaseName;
-
-    if( m_pTrcMthFile != nullptr )
-    {
-        strBaseName = m_pTrcMthFile->completeBaseName();
-    }
-    return strBaseName;
+    QFileInfo fileInfoFile(s_strLocalTrcFileAbsFilePath);
+    return fileInfoFile.completeBaseName();
 }
 
 //------------------------------------------------------------------------------
@@ -1920,14 +1908,8 @@ QString CTrcServer::getLocalTrcFileAbsolutePath() const
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
-
-    QString strAbsPath;
-
-    if( m_pTrcMthFile != nullptr )
-    {
-        strAbsPath = m_pTrcMthFile->absolutePath();
-    }
-    return strAbsPath;
+    QFileInfo fileInfoFile(s_strLocalTrcFileAbsFilePath);
+    return fileInfoFile.absolutePath();
 }
 
 /*==============================================================================

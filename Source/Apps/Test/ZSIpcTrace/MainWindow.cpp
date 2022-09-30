@@ -464,6 +464,15 @@ CMainWindow::CMainWindow(
 
     setCentralWidget(m_pWdgtCentral);
 
+    if( !connect(
+        /* pObjSender   */ m_pWdgtCentral,
+        /* szSignal     */ SIGNAL(progressBarConnectDblClicked()),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onWidgetCentralProgressBarConnectDblClicked()) ) )
+    {
+        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+    }
+
     // Restore geometry of widget
     //===========================
 
@@ -998,18 +1007,15 @@ void CMainWindow::onTrcServerStateChanged( QObject* i_pServer, int /*i_iState*/ 
         pxmStatus = QPixmap(":/ZS/CnctState/LedCircleRed.png");
     }
 
-    if( pIpcServer->objectName() == "ZSTrcServer")
+    if( m_pLblZSTrcServerStatusIcon != nullptr )
     {
-        if( m_pLblZSTrcServerStatusIcon != nullptr )
-        {
-            m_pLblZSTrcServerStatusIcon->setPixmap(pxmStatus);
-            m_pLblZSTrcServerStatusIcon->setToolTip(strToolTip);
-        }
-        if( m_pLblZSTrcServerStatusText != nullptr )
-        {
-            m_pLblZSTrcServerStatusText->setText(strStatus);
-            m_pLblZSTrcServerStatusText->setToolTip(strToolTip);
-        }
+        m_pLblZSTrcServerStatusIcon->setPixmap(pxmStatus);
+        m_pLblZSTrcServerStatusIcon->setToolTip(strToolTip);
+    }
+    if( m_pLblZSTrcServerStatusText != nullptr )
+    {
+        m_pLblZSTrcServerStatusText->setText(strStatus);
+        m_pLblZSTrcServerStatusText->setToolTip(strToolTip);
     }
 } // onTrcServerStateChanged
 
@@ -1040,17 +1046,25 @@ void CMainWindow::onTrcClientStateChanged( QObject* i_pClient, int /*i_iState*/ 
         pxmStatus = QPixmap(":/ZS/CnctState/LedCircleRed.png");
     }
 
-    if( pIpcClient->objectName() == "ZSTrcClient")
+    if( m_pLblZSTrcClientStatusIcon != nullptr )
     {
-        if( m_pLblZSTrcClientStatusIcon != nullptr )
-        {
-            m_pLblZSTrcClientStatusIcon->setPixmap(pxmStatus);
-            m_pLblZSTrcClientStatusIcon->setToolTip(strToolTip);
-        }
-        if( m_pLblZSTrcClientStatusText != nullptr )
-        {
-            m_pLblZSTrcClientStatusText->setText(strStatus);
-            m_pLblZSTrcClientStatusText->setToolTip(strToolTip);
-        }
+        m_pLblZSTrcClientStatusIcon->setPixmap(pxmStatus);
+        m_pLblZSTrcClientStatusIcon->setToolTip(strToolTip);
+    }
+    if( m_pLblZSTrcClientStatusText != nullptr )
+    {
+        m_pLblZSTrcClientStatusText->setText(strStatus);
+        m_pLblZSTrcClientStatusText->setToolTip(strToolTip);
     }
 } // onTrcClientStateChanged
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CMainWindow::onWidgetCentralProgressBarConnectDblClicked()
+//------------------------------------------------------------------------------
+{
+    onActDebugZSTrcClientTriggered();
+}

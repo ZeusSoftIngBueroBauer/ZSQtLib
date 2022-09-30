@@ -81,6 +81,7 @@
         <file>TreeViewSortOrderConfig.bmp</file>
         <file>TreeViewSortOrderAscending.bmp</file>
         <file>TreeViewViewModeNavPanelOnly.bmp</file>
+        <file>TreeViewViewModeNavPanelAndLeaveContent.bmp</file>
         <file>TreeViewViewModeNavPanelAndBranchContent.bmp</file>
     </qresource>
     <qresource prefix="/ZS/TreeView/FileExplorer">
@@ -104,6 +105,12 @@
         <file>TreeViewTrcAdminObjsBranchEntrySelectedOff.bmp</file>
         <file>TreeViewTrcAdminObjsLeaveEntryNormalOff.bmp</file>
         <file>TreeViewTrcAdminObjsLeaveEntrySelectedOff.bmp</file>
+    </qresource>
+    <qresource prefix="/ZS/TreeView/Loggers">
+        <file>TreeViewLoggersBranchEntryNormalOff.bmp</file>
+        <file>TreeViewLoggersBranchEntrySelectedOff.bmp</file>
+        <file>TreeViewLoggersLeaveEntryNormalOff.bmp</file>
+        <file>TreeViewLoggersLeaveEntrySelectedOff.bmp</file>
     </qresource>
     <qresource prefix="/ZS/Result">
         <file>ResultSeveritySuccess.bmp</file>

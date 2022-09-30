@@ -112,7 +112,7 @@ target_include_directories(${PROJECT_NAME}
     PRIVATE ${CMAKE_SOURCE_DIR}/../Include/Apps/Test/ZSIpcTraceDllIfQtApp)
 
 target_link_libraries(${PROJECT_NAME}
-    PRIVATE ZSSys ZSSysGUI ZSTest ZSTestGUI ZSIpc ZSIpcGUI ZSIpcTrace ZSIpcTraceGUI)
+    PRIVATE ZSSys ZSSysGUI ZSTest ZSTestGUI ZSIpc ZSIpcGUI)
 
 # The test application needs user interaction and cannot be executed automatically.
 #enable_testing()

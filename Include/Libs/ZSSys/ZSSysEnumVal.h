@@ -47,7 +47,7 @@ public: // ctors and dtor
     CEnumVal();
     CEnumVal( CEnumeration* i_pEnum );
     CEnumVal( CEnumeration* i_pEnum, int i_iEnumEntryIdx );
-    CEnumVal( CEnumeration* i_pEnum, const QString& i_strName, Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive, int i_alias = ZS::System::EEnumEntryAliasStrUndefined );    // if EEnumEntryAliasStrUndefined all string list entries will be compared
+    CEnumVal( CEnumeration* i_pEnum, const QString& i_strName, Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive, int i_alias = EEnumEntryAliasStrUndefined );    // if EEnumEntryAliasStrUndefined all string list entries will be compared
     CEnumVal( CEnumeration* i_pEnum, const QVariant& i_valEnumEntry );
     CEnumVal( const QString& i_strEnumUId );
     CEnumVal( const QString& i_strEnumUId, int i_iEnumEntryIdx );
@@ -68,15 +68,15 @@ public: // instance methods
     void invalidateObjectReferences();
 public: // instance methods (using "EnumEntryIndex" to distinguish enum entry from enumeration as a collection of enum entries)
     EValueValidity setValByEnumEntryIndex( int i_iEnumEntryIdx );
-    EValueValidity setValByEnumEntryName( const QString& i_strName, Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive, int i_alias = ZS::System::EEnumEntryAliasStrUndefined );  // if EEnumEntryAliasStrUndefined all string list entries will be compared
+    EValueValidity setValByEnumEntryName( const QString& i_strName, Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive, int i_alias = EEnumEntryAliasStrUndefined );  // if EEnumEntryAliasStrUndefined all string list entries will be compared
     EValueValidity setValByEnumEntryVal( const QVariant& i_valEnumEntry );
 public: // instance methods
     int getEnumEntryIndex() const { return m_iEnumEntryIdx; }
 public: // instance methods (methods can only convert the index into the name or assigned value if the enumeration is known)
-    QString enumEntryIndex2Name( int i_alias = ZS::System::EEnumEntryAliasStrName, EValueValidity* o_pValidity = nullptr ) const;
+    QString enumEntryIndex2Name( int i_alias = EEnumEntryAliasStrName, EValueValidity* o_pValidity = nullptr ) const;
     QVariant enumEntryIndex2Val( EValueValidity* o_pValidity = nullptr ) const;
 public: // instance methods (if the enumeration is not known the index value is converted into the string)
-    QString toString( int i_alias = ZS::System::EEnumEntryAliasStrName ) const;
+    QString toString( int i_alias = EEnumEntryAliasStrName ) const;
 public: // instance methods
     bool isValid() const { return (m_validity != EValueValidity::Invalid); }
     bool isNull() const { return (m_validity == EValueValidity::Null); }
@@ -84,12 +84,12 @@ public: // instance methods
     EValueValidity getValidity() const { return m_validity; }
 public: // instance methods
     void setEnumEntryValidityByEnumEntryIndex( int i_iEnumEntryIdx, EEnumEntryValidity i_validity );
-    void setEnumEntryValidityByEnumEntryName( const QString& i_strName, EEnumEntryValidity i_validity, Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive, int i_alias = ZS::System::EEnumEntryAliasStrUndefined );
+    void setEnumEntryValidityByEnumEntryName( const QString& i_strName, EEnumEntryValidity i_validity, Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive, int i_alias = EEnumEntryAliasStrUndefined );
     void setEnumEntryValidityByEnumEntryVal( const QVariant& i_valEnumEntry, EEnumEntryValidity i_validity );
     void setEnumEntryValidities( const QVector<quint8> i_arValidities );
 public: // instance methods
     EEnumEntryValidity getEnumEntryValidityByEnumEntryIndex( int i_iEnumEntryIdx ) const;
-    EEnumEntryValidity getEnumEntryValidityByEnumEntryName( const QString& i_strName, Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive, int i_alias = ZS::System::EEnumEntryAliasStrUndefined ) const;
+    EEnumEntryValidity getEnumEntryValidityByEnumEntryName( const QString& i_strName, Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive, int i_alias = EEnumEntryAliasStrUndefined ) const;
     EEnumEntryValidity getEnumEntryValidityByEnumEntryVal( const QVariant& i_valEnumEntry ) const;
     QVector<quint8> getEnumEntryValidities() { return m_arEnumEntryValidities; }
 protected: // instance members

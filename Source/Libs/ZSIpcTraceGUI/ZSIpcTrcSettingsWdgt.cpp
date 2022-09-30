@@ -225,7 +225,7 @@ CWdgtTrcSettings::CWdgtTrcSettings( const QString& i_strObjName, QWidget* i_pWdg
     m_pLblNewTrcAdminObjsRuntimeInfoDefaultDetailLevel->setFixedWidth(iLblWidth);
     m_pCmbNewTrcAdminObjsRuntimeInfoDefaultDetailLevel = new QComboBox();
     CEnumLogDetailLevel eDetailLevelRuntimeInfo;
-    for( eDetailLevelRuntimeInfo = 0; eDetailLevelRuntimeInfo < CEnumMethodTraceDetailLevel::count(); ++eDetailLevelRuntimeInfo )
+    for( eDetailLevelRuntimeInfo = 0; eDetailLevelRuntimeInfo < CEnumLogDetailLevel::count(); ++eDetailLevelRuntimeInfo )
     {
         m_pCmbNewTrcAdminObjsRuntimeInfoDefaultDetailLevel->addItem(eDetailLevelRuntimeInfo.toString());
     }

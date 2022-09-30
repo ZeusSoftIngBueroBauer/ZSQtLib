@@ -24,29 +24,36 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include <QtCore/qglobal.h>
+#include "ZSTestGUI/ZSTestStepIdxTreeWdgt.h"
+#include "ZSTestGUI/ZSTestStepIdxTreeModel.h"
+#include "ZSTestGUI/ZSTestStepIdxTreeView.h"
+#include "ZSTestGUI/ZSTestStepWdgt.h"
+#include "ZSSysGUI/ZSSysIdxTreeModelEntry.h"
+#include "ZSTest/ZSTestStep.h"
+
+#include <QtCore/qsettings.h>
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#include <QtGui/qgroupbox.h>
 #include <QtGui/qlabel.h>
 #include <QtGui/qlayout.h>
 #include <QtGui/qlineedit.h>
 #include <QtGui/qpushbutton.h>
+#include <QtGui/qsplitter.h>
 #else
+#include <QtWidgets/qgroupbox.h>
 #include <QtWidgets/qlabel.h>
 #include <QtWidgets/qlayout.h>
 #include <QtWidgets/qlineedit.h>
 #include <QtWidgets/qpushbutton.h>
+#include <QtWidgets/qsplitter.h>
 #endif
-
-#include "ZSTestGUI/ZSTestStepIdxTreeWdgt.h"
-#include "ZSTestGUI/ZSTestStepIdxTreeModel.h"
-#include "ZSTestGUI/ZSTestStepIdxTreeView.h"
-#include "ZSTest/ZSTestStep.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 
 using namespace ZS::System;
+using namespace ZS::System::GUI;
 using namespace ZS::Test;
 using namespace ZS::Test::GUI;
 
@@ -56,24 +63,56 @@ class CWdgtIdxTreeTestSteps : public QWidget
 *******************************************************************************/
 
 /*==============================================================================
+public: // type definitions and constants
+==============================================================================*/
+
+/* enum class EViewMode
+==============================================================================*/
+
+static const SEnumEntry s_arEnumStrWdgtIdxTreeViewModes[] = {                                      // IdxName,                  Symbol
+    /* 0 */ SEnumEntry( static_cast<int>(CWdgtIdxTreeTestSteps::EViewMode::NavPanelOnly),            "NavPanelOnly",            "NP"   ),
+    /* 1 */ SEnumEntry( static_cast<int>(CWdgtIdxTreeTestSteps::EViewMode::NavPanelAndLeaveContent), "NavPanelAndLeaveContent", "NPLC" )
+};
+
+//------------------------------------------------------------------------------
+QString CWdgtIdxTreeTestSteps::viewMode2Str( EViewMode i_eVal, int i_alias )
+//------------------------------------------------------------------------------
+{
+    return SEnumEntry::enumerator2Str(s_arEnumStrWdgtIdxTreeViewModes, _ZSArrLen(s_arEnumStrWdgtIdxTreeViewModes), static_cast<int>(i_eVal), i_alias);
+}
+
+//------------------------------------------------------------------------------
+QPixmap CWdgtIdxTreeTestSteps::viewMode2Pixmap( EViewMode i_eVal, const QSize& i_sz )
+//------------------------------------------------------------------------------
+{
+    QString str = viewMode2Str(i_eVal);
+    QPixmap pxm = QPixmap( ":/ZS/TreeView/TreeViewViewMode" + str + ".bmp" );
+    pxm = pxm.scaled(i_sz);
+    return pxm;
+}
+
+/*==============================================================================
 public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
 CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
     CTest*          i_pTest,
-    //bool            i_bUseContentWidget,
     QWidget*        i_pWdgtParent,
     Qt::WindowFlags i_wflags ) :
 //------------------------------------------------------------------------------
     QWidget(i_pWdgtParent,i_wflags),
+    m_strSettingsKey("WdgtIdxTreeTestSteps"),
     m_pTest(i_pTest),
+    m_viewMode(EViewMode::NavPanelOnly),
+    m_szBtns(24, 24),
     m_pLytMain(nullptr),
     m_pLytHeadLine(nullptr),
     m_pBtnStart(nullptr),
     m_pBtnStep(nullptr),
     m_pBtnPause(nullptr),
     m_pBtnStop(nullptr),
+    m_pBtnViewMode(nullptr),
     m_pBtnTreeViewResizeRowsAndColumnsToContents(nullptr),
     m_pBtnTreeViewExpandAll(nullptr),
     m_pBtnTreeViewCollapseAll(nullptr),
@@ -82,7 +121,11 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
     m_pLblTestStepCurr(nullptr),
     m_pEdtTestStepCurr(nullptr),
     m_pTestStepsModel(nullptr),
-    m_pTreeViewTestSteps(nullptr)
+    m_pSplitter(nullptr),
+    m_pTreeViewTestSteps(nullptr),
+    m_pGrpWdgtTestStep(nullptr),
+    m_pLytGrpWdgtTestStep(nullptr),
+    m_pWdgtTestStep(nullptr)
 {
     setObjectName( "WdgtTest" + m_pTest->objectName() );
 
@@ -91,8 +134,6 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
 
     // <Headline> with start/stop/pause buttons
     //=========================================
-
-    QSize szBtn(24, 24);
 
     m_pLytHeadLine = new QHBoxLayout();
     m_pLytMain->addLayout(m_pLytHeadLine);
@@ -105,7 +146,7 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
 
     m_pBtnStart = new QPushButton();
     m_pBtnStart->setIcon(pxmStart);
-    m_pBtnStart->setFixedSize(szBtn);
+    m_pBtnStart->setFixedSize(m_szBtns);
     m_pLytHeadLine->addWidget(m_pBtnStart);
 
     if( !QObject::connect(
@@ -127,7 +168,7 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
 
     m_pBtnStep = new QPushButton();
     m_pBtnStep->setIcon(pxmStep);
-    m_pBtnStep->setFixedSize(szBtn);
+    m_pBtnStep->setFixedSize(m_szBtns);
     m_pLytHeadLine->addWidget(m_pBtnStep);
 
     if( !QObject::connect(
@@ -149,7 +190,7 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
 
     m_pBtnPause = new QPushButton();
     m_pBtnPause->setIcon(pxmPause);
-    m_pBtnPause->setFixedSize(szBtn);
+    m_pBtnPause->setFixedSize(m_szBtns);
     m_pBtnPause->setEnabled(false);
     m_pLytHeadLine->addWidget(m_pBtnPause);
 
@@ -172,7 +213,7 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
 
     m_pBtnStop = new QPushButton();
     m_pBtnStop->setIcon(pxmStop);
-    m_pBtnStop->setFixedSize(szBtn);
+    m_pBtnStop->setFixedSize(m_szBtns);
     m_pBtnStop->setEnabled(false);
     m_pLytHeadLine->addWidget(m_pBtnStop);
 
@@ -187,6 +228,28 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
 
     m_pLytHeadLine->addSpacing(30);
 
+    // <Button> View Mode
+    //-------------------
+
+    QPixmap pxmViewMode = viewMode2Pixmap(m_viewMode, m_szBtns);
+    pxmViewMode.setMask(pxmViewMode.createHeuristicMask());
+
+    m_pBtnViewMode = new QPushButton();
+    m_pBtnViewMode->setFixedSize(m_szBtns);
+    m_pBtnViewMode->setIcon(pxmViewMode);
+    m_pBtnViewMode->setToolTip("Press to toggle view mode between NavPanelOnly and NavPanelAndLeaveContent");
+    m_pLytHeadLine->addWidget(m_pBtnViewMode);
+    m_pLytHeadLine->addSpacing(10);
+
+    if( !QObject::connect(
+        /* pObjSender   */ m_pBtnViewMode,
+        /* szSignal     */ SIGNAL(clicked(bool)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onBtnViewModeClicked(bool)) ) )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+    }
+
     // <Button> Resize Columns To Contents
     //------------------------------------
 
@@ -195,7 +258,7 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
 
     m_pBtnTreeViewResizeRowsAndColumnsToContents = new QPushButton();
     m_pBtnTreeViewResizeRowsAndColumnsToContents->setIcon(pxmResizeToContents);
-    m_pBtnTreeViewResizeRowsAndColumnsToContents->setFixedSize(szBtn);
+    m_pBtnTreeViewResizeRowsAndColumnsToContents->setFixedSize(m_szBtns);
     m_pLytHeadLine->addWidget(m_pBtnTreeViewResizeRowsAndColumnsToContents);
 
     if( !QObject::connect(
@@ -217,7 +280,7 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
 
     m_pBtnTreeViewExpandAll = new QPushButton();
     m_pBtnTreeViewExpandAll->setIcon(pxmExpandAll);
-    m_pBtnTreeViewExpandAll->setFixedSize(szBtn);
+    m_pBtnTreeViewExpandAll->setFixedSize(m_szBtns);
     m_pLytHeadLine->addWidget(m_pBtnTreeViewExpandAll);
 
     if( !QObject::connect(
@@ -239,7 +302,7 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
 
     m_pBtnTreeViewCollapseAll = new QPushButton();
     m_pBtnTreeViewCollapseAll->setIcon(pxmCollapseAll);
-    m_pBtnTreeViewCollapseAll->setFixedSize(szBtn);
+    m_pBtnTreeViewCollapseAll->setFixedSize(m_szBtns);
     m_pLytHeadLine->addWidget(m_pBtnTreeViewCollapseAll);
 
     if( !QObject::connect(
@@ -278,7 +341,9 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
     //------------------------------------
 
     m_pLblTestStepCurr = new QLabel("Current Test Step:");
+    m_pLblTestStepCurr->setStyleSheet("font-weight: bold");
     m_pEdtTestStepCurr = new QLineEdit("---",this);
+    m_pEdtTestStepCurr->setStyleSheet("font-weight: bold");
     m_pEdtTestStepCurr->setEnabled(false);
     m_pLytHeadLine->addWidget(m_pLblTestStepCurr);
     m_pLytHeadLine->addWidget(m_pEdtTestStepCurr);
@@ -362,10 +427,32 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
     // <TreeView> Test Steps
     //======================
 
+    m_pLytMain->addSpacing(5);
+
     m_pTestStepsModel = new CModeldxTreeTestSteps( m_pTest->getTestStepIdxTree() );
 
-    m_pTreeViewTestSteps = new CTreeViewIdxTreeTestSteps(m_pTestStepsModel,this);
+    m_pTreeViewTestSteps = new CTreeViewIdxTreeTestSteps(m_pTestStepsModel, this);
     m_pLytMain->addWidget(m_pTreeViewTestSteps);
+
+    if( !QObject::connect(
+        /* pObjSender   */ m_pTreeViewTestSteps->selectionModel(),
+        /* szSignal     */ SIGNAL(currentRowChanged(const QModelIndex&, const QModelIndex&)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onTreeViewTestStepsSelectionModelCurrentRowChanged(const QModelIndex&, const QModelIndex&)) ) )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+    }
+    if( m_pTreeViewTestSteps != nullptr )
+    {
+        if( !QObject::connect(
+            /* pObjSender   */ m_pTreeViewTestSteps,
+            /* szSignal     */ SIGNAL( expanded(const QModelIndex&) ),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT( onTreeViewTestStepsExpanded(const QModelIndex&) ) ) )
+        {
+            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+        }
+    }
 
     // Connect to state changed signal of test
     //----------------------------------------
@@ -403,21 +490,6 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
 
-    // Connect to the signals of the tree view
-    //----------------------------------------
-
-    if( m_pTreeViewTestSteps != nullptr )
-    {
-        if( !QObject::connect(
-            /* pObjSender   */ m_pTreeViewTestSteps,
-            /* szSignal     */ SIGNAL( expanded(const QModelIndex&) ),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT( onTreeViewExpanded(const QModelIndex&) ) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-    }
-
     // <TreeView> Resize
     //------------------
 
@@ -440,13 +512,16 @@ CWdgtIdxTreeTestSteps::~CWdgtIdxTreeTestSteps()
     {
     }
 
+    //m_strSettingsKey;
     m_pTest = nullptr;
+    m_viewMode = static_cast<EViewMode>(0);
     m_pLytMain = nullptr;
     m_pLytHeadLine = nullptr;
     m_pBtnStart = nullptr;
     m_pBtnStep = nullptr;
     m_pBtnPause = nullptr;
     m_pBtnStop = nullptr;
+    m_pBtnViewMode = nullptr;
     m_pBtnTreeViewResizeRowsAndColumnsToContents = nullptr;
     m_pBtnTreeViewExpandAll = nullptr;
     m_pBtnTreeViewCollapseAll = nullptr;
@@ -455,9 +530,104 @@ CWdgtIdxTreeTestSteps::~CWdgtIdxTreeTestSteps()
     m_pLblTestStepCurr = nullptr;
     m_pEdtTestStepCurr = nullptr;
     m_pTestStepsModel = nullptr;
+    m_pSplitter = nullptr;
     m_pTreeViewTestSteps = nullptr;
+    m_pGrpWdgtTestStep = nullptr;
+    m_pLytGrpWdgtTestStep = nullptr;
+    m_pWdgtTestStep = nullptr;
 
 } // dtor
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtIdxTreeTestSteps::setViewMode( EViewMode i_viewMode )
+//------------------------------------------------------------------------------
+{
+    if( i_viewMode != m_viewMode )
+    {
+        m_viewMode = i_viewMode;
+
+        if( m_viewMode == EViewMode::NavPanelOnly )
+        {
+            QSettings settings;
+            settings.setValue( m_strSettingsKey+"/Geometry", saveGeometry() );
+            if( m_pSplitter != nullptr ) {
+                QList<int> listSizes = m_pSplitter->sizes();
+                for( int idx = 0; idx < listSizes.count(); idx++ ) {
+                    settings.setValue(m_strSettingsKey + "/Geometry/Splitter/Wdgt" + QString::number(idx) + "Height", listSizes[idx]);
+                }
+            }
+
+            m_pTreeViewTestSteps->setColumnHidden(
+                CModeldxTreeTestSteps::EColumnExpectedValues, false);
+            m_pTreeViewTestSteps->setColumnHidden(
+                CModeldxTreeTestSteps::EColumnResultValues, false);
+
+            if( m_pSplitter != nullptr )
+            {
+                // Reparent tree view. This will remove the tree view
+                // from the splitter but does not destroy the tree view.
+                m_pLytMain->addWidget(m_pTreeViewTestSteps);
+
+                delete m_pSplitter;
+                m_pSplitter = nullptr;
+                m_pGrpWdgtTestStep = nullptr;
+                m_pLytGrpWdgtTestStep = nullptr;
+                m_pWdgtTestStep = nullptr;
+            }
+        } // if( m_viewMode == EViewMode::NavPanelOnly )
+
+        else if( m_viewMode == EViewMode::NavPanelAndLeaveContent )
+        {
+            m_pTreeViewTestSteps->setColumnHidden(
+                CModeldxTreeTestSteps::EColumnExpectedValues, true);
+            m_pTreeViewTestSteps->setColumnHidden(
+                CModeldxTreeTestSteps::EColumnResultValues, true);
+
+            if( m_pSplitter == nullptr )
+            {
+                m_pSplitter = new QSplitter(Qt::Horizontal);
+                m_pLytMain->addWidget(m_pSplitter, 1);
+
+                m_pSplitter->addWidget(m_pTreeViewTestSteps);
+
+                if( m_pGrpWdgtTestStep == nullptr )
+                {
+                    m_pGrpWdgtTestStep = new QGroupBox("Selected Test Step Details");
+                    m_pLytGrpWdgtTestStep = new QVBoxLayout();
+                    m_pGrpWdgtTestStep->setLayout(m_pLytGrpWdgtTestStep);
+                    m_pWdgtTestStep = new CWdgtTestStep();
+                    m_pLytGrpWdgtTestStep->addWidget(m_pWdgtTestStep);
+
+                    CTestStep* pTestStep = getSelectedTestStep();
+                    m_pWdgtTestStep->setTestStep(pTestStep);
+                }
+                m_pSplitter->addWidget(m_pGrpWdgtTestStep);
+            }
+
+            QSettings settings;
+            restoreGeometry( settings.value(m_strSettingsKey+"/Geometry").toByteArray() );
+            if( m_pSplitter != nullptr ) {
+                QList<int> listSizes = m_pSplitter->sizes();
+                for( int idx = 0; idx < listSizes.count(); idx++ ) {
+                    listSizes[idx] = settings.value(
+                        m_strSettingsKey + "/Geometry/Splitter/Wdgt" + QString::number(idx) + "Height", 50 ).toInt();
+                }
+                m_pSplitter->setSizes(listSizes);
+            }
+        } // if( m_viewMode == EViewMode::NavPanelAndLeaveContent )
+
+        QPixmap pxmViewMode = viewMode2Pixmap(m_viewMode, m_szBtns);
+        pxmViewMode.setMask(pxmViewMode.createHeuristicMask());
+
+        m_pBtnViewMode->setIcon(pxmViewMode);
+
+    } // if( i_viewMode != m_viewMode )
+
+} // setViewMode
 
 /*==============================================================================
 protected slots:
@@ -496,6 +666,23 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+void CWdgtIdxTreeTestSteps::onBtnViewModeClicked( bool i_bChecked )
+//------------------------------------------------------------------------------
+{
+    EViewMode viewModeNew = m_viewMode;
+
+    if( m_viewMode == EViewMode::NavPanelOnly )
+    {
+        viewModeNew = EViewMode::NavPanelAndLeaveContent;
+    }
+    else
+    {
+        viewModeNew = EViewMode::NavPanelOnly;
+    }
+    setViewMode(viewModeNew);
+}
+
+//------------------------------------------------------------------------------
 void CWdgtIdxTreeTestSteps::onBtnTreeViewResizeRowsAndColumnsToContentsClicked( bool /*i_bChecked*/ )
 //------------------------------------------------------------------------------
 {
@@ -508,8 +695,7 @@ void CWdgtIdxTreeTestSteps::onBtnTreeViewResizeRowsAndColumnsToContentsClicked( 
             m_pTreeViewTestSteps->resizeColumnToContents(idxClm);
         }
     }
-
-} // onBtnTreeViewResizeRowsAndColumnsToContentsClicked
+}
 
 //------------------------------------------------------------------------------
 void CWdgtIdxTreeTestSteps::onBtnTreeViewExpandAllClicked( bool /*i_bChecked*/ )
@@ -524,8 +710,7 @@ void CWdgtIdxTreeTestSteps::onBtnTreeViewExpandAllClicked( bool /*i_bChecked*/ )
             m_pTreeViewTestSteps->resizeColumnToContents(idxClm);
         }
     }
-
-} // onBtnTreeViewExpandAllClicked
+}
 
 //------------------------------------------------------------------------------
 void CWdgtIdxTreeTestSteps::onBtnTreeViewCollapseAllClicked( bool /*i_bChecked*/ )
@@ -535,8 +720,7 @@ void CWdgtIdxTreeTestSteps::onBtnTreeViewCollapseAllClicked( bool /*i_bChecked*/
     {
         m_pTreeViewTestSteps->collapseAll();
     }
-
-} // onBtnTreeViewCollapseAllClicked
+}
 
 /*==============================================================================
 protected slots:
@@ -578,14 +762,13 @@ void CWdgtIdxTreeTestSteps::onTestStateChanged( const ZS::Test::CEnumTestState& 
         m_pBtnPause->setEnabled(false);
         m_pBtnStop->setEnabled(true);
     }
-
-} // onTestStateChanged
+}
 
 //------------------------------------------------------------------------------
 void CWdgtIdxTreeTestSteps::onTestRunModeChanged( const ZS::System::CEnumRunMode& /*i_runMode*/ )
 //------------------------------------------------------------------------------
 {
-} // onTestRunModeChanged
+}
 
 //------------------------------------------------------------------------------
 void CWdgtIdxTreeTestSteps::onCurrentTestStepChanged( CTestStep* i_pTestStep )
@@ -599,8 +782,7 @@ void CWdgtIdxTreeTestSteps::onCurrentTestStepChanged( CTestStep* i_pTestStep )
     {
         m_pEdtTestStepCurr->setText( i_pTestStep->path() );
     }
-
-} // onCurrentTestStepChanged
+}
 
 //------------------------------------------------------------------------------
 void CWdgtIdxTreeTestSteps::onTestStepIntervalChanged( int i_iInterval_ms )
@@ -632,7 +814,7 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtIdxTreeTestSteps::onTreeViewExpanded( const QModelIndex& i_iModelIdx )
+void CWdgtIdxTreeTestSteps::onTreeViewTestStepsExpanded( const QModelIndex& i_iModelIdx )
 //------------------------------------------------------------------------------
 {
     if( i_iModelIdx.isValid() )
@@ -643,5 +825,50 @@ void CWdgtIdxTreeTestSteps::onTreeViewExpanded( const QModelIndex& i_iModelIdx )
         // Cannot invoke resizeColumnToContents as this leads to an exception.
         #endif
     }
+}
 
-} // onTreeViewExpanded
+//------------------------------------------------------------------------------
+void CWdgtIdxTreeTestSteps::onTreeViewTestStepsSelectionModelCurrentRowChanged(
+    const QModelIndex& i_modelIdxCurr,
+    const QModelIndex& i_modelIdxPrev )
+//------------------------------------------------------------------------------
+{
+    if( m_pWdgtTestStep != nullptr )
+    {
+        CTestStep* pTestStep = getSelectedTestStep();
+        m_pWdgtTestStep->setTestStep(pTestStep);
+    }
+}
+
+/*==============================================================================
+private: // auxiliary methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CTestStep* CWdgtIdxTreeTestSteps::getSelectedTestStep() const
+//------------------------------------------------------------------------------
+{
+    CTestStep* pTestStep = nullptr;
+
+    QModelIndex modelIdx = m_pTreeViewTestSteps->selectionModel()->currentIndex();
+    if( modelIdx.isValid() )
+    {
+        CModelIdxTreeEntry* pModelTreeEntry =
+            static_cast<CModelIdxTreeEntry*>(modelIdx.internalPointer());
+        if( pModelTreeEntry != nullptr )
+        {
+            CIdxTreeEntry* pIdxTreeEntry =
+                dynamic_cast<CIdxTreeEntry*>(pModelTreeEntry->treeEntry());
+            if( pIdxTreeEntry != nullptr )
+            {
+                CAbstractTestStepIdxTreeEntry* pTestStepEntry =
+                    dynamic_cast<CAbstractTestStepIdxTreeEntry*>(pIdxTreeEntry);
+                if( pTestStepEntry != nullptr && pTestStepEntry->isLeave() )
+                {
+                    pTestStep = dynamic_cast<CTestStep*>(pTestStepEntry);
+                }
+            }
+        }
+    }
+    return pTestStep;
+}

@@ -134,6 +134,15 @@ CWidgetCentral::CWidgetCentral(
     m_pWdgtTrcMthList = new CWdgtTrcMthList(pTrcClient);
     m_pTabWidgetTrcMthLists->addTab(m_pWdgtTrcMthList, strCltName);
 
+    if( !QObject::connect(
+        /* pObjSender   */ m_pWdgtTrcMthList,
+        /* szSignal     */ SIGNAL(progressBarConnectDblClicked()),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onProgressBarConnectDblClicked()) ) )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+    }
+
     // Restore geometry of widget
     //---------------------------
 
@@ -198,4 +207,15 @@ CWdgtTrcMthList* CWidgetCentral::getTrcMthListWdgt()
 //------------------------------------------------------------------------------
 {
     return m_pWdgtTrcMthList;
+}
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWidgetCentral::onProgressBarConnectDblClicked()
+//------------------------------------------------------------------------------
+{
+    emit progressBarConnectDblClicked();
 }

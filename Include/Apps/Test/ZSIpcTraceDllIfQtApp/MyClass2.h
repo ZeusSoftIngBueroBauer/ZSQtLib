@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSApps_TestIpcTraceDllIfQtApp_TestModule2_h
-#define ZSApps_TestIpcTraceDllIfQtApp_TestModule2_h
+#ifndef ZSApps_TestIpcTraceDllIfQtApp_TestClass2_h
+#define ZSApps_TestIpcTraceDllIfQtApp_TestClass2_h
 
 #include <QtCore/qstring.h>
 #include <QtCore/qthread.h>
@@ -132,11 +132,17 @@ public: // instance methods
 public: // instance methods
     CMyClass3* startClass3Thread(const QString& i_strMyClass3ObjName);
     void stopClass3Thread();
+public: // instance methods
+    void sendMuchData();
 protected slots:
     void onClass3ThreadRunning();
     void onTmrMessagesTimeout();
 protected: // overridables of base class QObject
     virtual bool event( QEvent* i_pEv ) override;
+private: // instance methods
+    int sendData1(const QString& i_strData, double i_fStartTime_s, double i_fCurrTime_s, double i_fDuration_s);
+    int sendData2(const QString& i_strData, double i_fStartTime_s, double i_fCurrTime_s, double i_fDuration_s);
+    int sendData3(const QString& i_strData, double i_fStartTime_s, double i_fCurrTime_s, double i_fDuration_s);
 private: // instance members
     CMyClass2Thread*                m_pMyClass2Thread;
     QTimer*                         m_pTmrMessages;
@@ -160,4 +166,4 @@ private: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZSApps_TestIpcTraceDllIfQtApp_TestModule2_h
+#endif // #ifndef ZSApps_TestIpcTraceDllIfQtApp_TestClass2_h

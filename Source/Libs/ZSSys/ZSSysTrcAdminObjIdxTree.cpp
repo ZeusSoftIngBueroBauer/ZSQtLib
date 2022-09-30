@@ -146,14 +146,14 @@ public: // instance methods to get and release admin objects
     @return Pointer to allocated trace admin objecct or nullptr on error.
 */
 CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj(
-    const QString&               i_strNameSpace,
-    const QString&               i_strClassName,
-    const QString&               i_strObjName,
-    ZS::System::EEnabled         i_bEnabledAsDefault,
+    const QString&          i_strNameSpace,
+    const QString&          i_strClassName,
+    const QString&          i_strObjName,
+    ZS::System::EEnabled    i_bEnabledAsDefault,
     EMethodTraceDetailLevel i_eDefaultDetailLevelMethodCalls,
-    ELogDetailLevel i_eDefaultDetailLevelRuntimeInfo,
-    const QString&               i_strDefaultDataFilter,
-    bool                         i_bIncrementRefCount )
+    ELogDetailLevel         i_eDefaultDetailLevelRuntimeInfo,
+    const QString&          i_strDefaultDataFilter,
+    bool                    i_bIncrementRefCount )
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
@@ -1335,6 +1335,7 @@ SErrResultInfo CIdxTreeTrcAdminObjs::recall( const QString& i_strAbsFilePath )
         QString  strThread;
         EEnabled enabled;
         QString  strDataFilter;
+        bool     bConverted;
 
         EMethodTraceDetailLevel eDetailLevelMethodCalls;
         ELogDetailLevel eDetailLevelRuntimeInfo;
@@ -1406,27 +1407,27 @@ SErrResultInfo CIdxTreeTrcAdminObjs::recall( const QString& i_strAbsFilePath )
                                 if( xmlStreamReader.attributes().hasAttribute("Enabled") )
                                 {
                                     strAttr = xmlStreamReader.attributes().value("Enabled").toString();
-                                    enabled = CEnumEnabled::toEnumerator(strAttr);
-                                    if( enabled == EEnabled::Undefined )
-                                    {
+                                    enabled = CEnumEnabled::toEnumerator(strAttr, &bConverted);
+                                    if( !bConverted ) {
+                                        enabled = EEnabled::Yes;
                                         xmlStreamReader.raiseError("Attribute \"Enabled\" (" + strAttr + ") for \"" + strPath + "\" is out of range");
                                     }
                                 }
                                 if( xmlStreamReader.attributes().hasAttribute("MethodCallsDetailLevel") )
                                 {
                                     strAttr = xmlStreamReader.attributes().value("MethodCallsDetailLevel").toString();
-                                    eDetailLevelMethodCalls = CEnumMethodTraceDetailLevel::toEnumerator(strAttr);
-                                    if( eDetailLevelMethodCalls == EMethodTraceDetailLevel::Undefined )
-                                    {
+                                    eDetailLevelMethodCalls = CEnumMethodTraceDetailLevel::toEnumerator(strAttr, &bConverted);
+                                    if( !bConverted ) {
+                                        eDetailLevelMethodCalls = EMethodTraceDetailLevel::None;
                                         xmlStreamReader.raiseError("Attribute \"MethodCallsDetailLevel\" (" + strAttr + ") for \"" + strPath + "\" is out of range");
                                     }
                                 }
                                 if( xmlStreamReader.attributes().hasAttribute("RuntimeInfoDetailLevel") )
                                 {
                                     strAttr = xmlStreamReader.attributes().value("RuntimeInfoDetailLevel").toString();
-                                    eDetailLevelRuntimeInfo = CEnumLogDetailLevel::toEnumerator(strAttr);
-                                    if( eDetailLevelRuntimeInfo == ELogDetailLevel::Undefined )
-                                    {
+                                    eDetailLevelRuntimeInfo = CEnumLogDetailLevel::toEnumerator(strAttr, &bConverted);
+                                    if( !bConverted ) {
+                                        eDetailLevelRuntimeInfo = ELogDetailLevel::None;
                                         xmlStreamReader.raiseError("Attribute \"RuntimeInfoDetailLevel\" (" + strAttr + ") for \"" + strPath + "\" is out of range");
                                     }
                                 }

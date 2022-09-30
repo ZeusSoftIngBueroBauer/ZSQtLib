@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSApps_TestIpcTraceDllIfQtApp_MyClass3_h
-#define ZSApps_TestIpcTraceDllIfQtApp_MyClass3_h
+#ifndef ZSApps_TestIpcTraceDllIfQtApp_TestClass3_h
+#define ZSApps_TestIpcTraceDllIfQtApp_TestClass3_h
 
 #include <QtCore/qthread.h>
 
@@ -69,6 +69,7 @@ public: // ctors and dtor
     virtual ~CMyClass3Thread();
 signals:
     void running();
+    void aboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName);
 public: // overridables
     virtual QString nameSpace() { return NameSpace(); }
     virtual QString className() { return ClassName(); }
@@ -125,8 +126,13 @@ public: // instance methods
      QString veryNoisyInstMethod(const QString& i_strMthInArgs);
 public: // instance methods
     int recursiveTraceMethod();
+    void sendMuchData();
 protected: // overridables of base class QObject
     virtual bool event( QEvent* i_pEv ) override;
+private: // instance methods
+    int sendData1(const QString& i_strData, double i_fStartTime_s, double i_fCurrTime_s, double i_fDuration_s);
+    int sendData2(const QString& i_strData, double i_fStartTime_s, double i_fCurrTime_s, double i_fDuration_s);
+    int sendData3(const QString& i_strData, double i_fStartTime_s, double i_fCurrTime_s, double i_fDuration_s);
 private: // instance members
     CMyClass3Thread*                m_pMyClass3Thread;
     ZS::System::CMutex*             m_pMtxCounters;
@@ -145,4 +151,4 @@ private: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZSApps_TestIpcTraceDllIfQtApp_MyClass3_h
+#endif // #ifndef ZSApps_TestIpcTraceDllIfQtApp_TestClass3_h

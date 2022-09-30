@@ -50,7 +50,9 @@ namespace IpcTraceDllIfQtApp
 {
 class CMyClass1;
 class CMyClass2;
+class CMyClass2Thread;
 class CMyClass3;
+class CMyClass3Thread;
 
 //******************************************************************************
 class CTest : public ZS::Test::CTest
@@ -76,7 +78,9 @@ public slots: // test step methods
     void onTimerTestStepTimeout();
     void onClass1AboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName);
     void onClass2AboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName);
+    void onClass2ThreadAboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName);
     void onClass3AboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName);
+    void onClass3ThreadAboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName);
 private: // instance auxiliary methods
     void splitMethodCallOperation(
         const QString& i_strOperation,
@@ -87,18 +91,21 @@ private: // instance auxiliary methods
         QStringList& o_strlstInArgs,
         QString& o_strMthRet ) const;
 protected: // instance members
-    ZS::Test::GUI::CDlgTestStep*         m_pDlgTestStep;
-    QTimer*                              m_pTmrTestStepTimeout;
-    ZS::Trace::DllIf::STrcServerSettings m_trcSettings;
-    unsigned short                       m_uTrcServerPort;
-    //int                                  m_iTrcDetailLevelTrcServer;
-    ZS::Trace::DllIf::CIpcTrcServer*     m_pTrcServer;
-    QHash<QString, CMyClass1*>           m_hshpMyClass1InstancesByName;
-    QHash<QString, CMyClass2*>           m_hshpMyClass2InstancesByName;
-    QHash<QString, CMyClass3*>           m_hshpMyClass3InstancesByName;
-    QMultiHash<QString, CMyClass1*>      m_multihshpMyClass1InstancesByName;
-    QMultiHash<QString, CMyClass2*>      m_multihshpMyClass2InstancesByName;
-    QMultiHash<QString, CMyClass3*>      m_multihshpMyClass3InstancesByName;
+    ZS::Test::GUI::CDlgTestStep*          m_pDlgTestStep;
+    QTimer*                               m_pTmrTestStepTimeout;
+    ZS::Trace::DllIf::STrcServerSettings  m_trcSettings;
+    unsigned short                        m_uTrcServerPort;
+    ZS::Trace::DllIf::CIpcTrcServer*      m_pTrcServer;
+    QHash<QString, CMyClass1*>            m_hshpMyClass1InstancesByName;
+    QHash<QString, CMyClass2*>            m_hshpMyClass2InstancesByName;
+    QHash<QString, CMyClass2Thread*>      m_hshpMyClass2ThreadInstancesByName;
+    QHash<QString, CMyClass3*>            m_hshpMyClass3InstancesByName;
+    QHash<QString, CMyClass3Thread*>      m_hshpMyClass3ThreadInstancesByName;
+    QMultiHash<QString, CMyClass1*>       m_multihshpMyClass1InstancesByName;
+    QMultiHash<QString, CMyClass2*>       m_multihshpMyClass2InstancesByName;
+    QMultiHash<QString, CMyClass2Thread*> m_multihshpMyClass2ThreadInstancesByName;
+    QMultiHash<QString, CMyClass3*>       m_multihshpMyClass3InstancesByName;
+    QMultiHash<QString, CMyClass3Thread*> m_multihshpMyClass3ThreadInstancesByName;
 
 }; // class CTest
 

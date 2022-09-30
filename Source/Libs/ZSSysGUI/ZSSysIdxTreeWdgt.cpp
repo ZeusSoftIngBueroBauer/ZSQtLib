@@ -165,7 +165,7 @@ CWdgtIdxTree::CWdgtIdxTree(
         /* strMethod          */ "ctor",
         /* strMethodInArgs    */ strMthInArgs );
 
-    m_pLytMain = new QVBoxLayout;
+    m_pLytMain = new QVBoxLayout();
     setLayout(m_pLytMain);
 
     // Line with controls to modify optic of tree view
@@ -297,7 +297,7 @@ CWdgtIdxTree::CWdgtIdxTree(
     // <TreeView>
     //===========
 
-    m_pTreeView = new CTreeViewIdxTree(m_pModel, this);
+    m_pTreeView = new CTreeViewIdxTree(m_pModel);
     m_pTreeView->setAlternatingRowColors(true);
     m_pLytMain->addWidget(m_pTreeView, 1);
 
@@ -309,9 +309,6 @@ CWdgtIdxTree::CWdgtIdxTree(
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
-
-    // Connect to the signals of the tree view
-    //----------------------------------------
 
     if( m_pTreeView != nullptr )
     {
@@ -398,13 +395,14 @@ void CWdgtIdxTree::setViewMode( EViewMode i_viewMode )
         {
             if( m_pSplitter != nullptr )
             {
+                // Reparent tree view. This will remove the tree view
+                // from the splitter but does not destroy the tree view.
                 m_pLytMain->addWidget(m_pTreeView);
 
                 delete m_pSplitter;
                 m_pSplitter = nullptr;
                 m_pTableViewBranchContent = nullptr;
             }
-            m_pLytMain->addWidget(m_pTreeView);
 
             m_pLytHeadLine->removeWidget(m_pEdtBranch);
             delete m_pEdtBranch;
@@ -414,11 +412,10 @@ void CWdgtIdxTree::setViewMode( EViewMode i_viewMode )
             m_pLytHeadLine->addSpacerItem(m_pSpcHeadLine);
 
             m_pModel->setFilter(EIdxTreeEntryType::Undefined);
-
-        } // if( m_viewMode == EViewMode::NavPanelOnly )
-
+        }
         else if( m_viewMode == EViewMode::NavPanelAndBranchContent )
         {
+            // The dtor of the spacer item does not inform the layout of its destruction.
             m_pLytHeadLine->removeItem(m_pSpcHeadLine);
             delete m_pSpcHeadLine;
             m_pSpcHeadLine = nullptr;
@@ -428,21 +425,26 @@ void CWdgtIdxTree::setViewMode( EViewMode i_viewMode )
 
             if( m_pSplitter == nullptr )
             {
+                if( m_pTreeView != nullptr )
+                {
+                    m_pLytMain->removeWidget(m_pTreeView);
+                }
+
                 m_pSplitter = new QSplitter(Qt::Horizontal);
                 m_pLytMain->addWidget(m_pSplitter, 1);
 
-                m_pSplitter->addWidget(m_pTreeView);
-
+                if( m_pTreeView != nullptr )
+                {
+                    m_pSplitter->addWidget(m_pTreeView);
+                }
                 if( m_pTableViewBranchContent == nullptr )
                 {
-                    m_pTableViewBranchContent = new CTableViewIdxTreeBranchContent(m_pModel, this);
+                    m_pTableViewBranchContent = new CTableViewIdxTreeBranchContent(m_pModel);
                 }
                 m_pSplitter->addWidget(m_pTableViewBranchContent);
             }
-
             m_pModel->setFilter(EIdxTreeEntryType::Branch);
-
-        } // if( m_viewMode == EViewMode::NavPanelAndBranchContent )
+        }
 
         QPixmap pxmViewMode = viewMode2Pixmap(m_viewMode, m_szBtns);
         pxmViewMode.setMask(pxmViewMode.createHeuristicMask());

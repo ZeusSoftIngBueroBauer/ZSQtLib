@@ -26,13 +26,11 @@ may result in using the software modules.
 
 #include "App.h"
 
-#include "ZSSys/ZSSysDllMain.h"
 #include "ZSSys/ZSSysVersion.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 
-using namespace ZS::System;
 using namespace ZS::Apps::Test::IpcTraceDllIfQtApp;
 
 

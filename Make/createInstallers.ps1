@@ -1,13 +1,12 @@
 Param (
-    $AppName=$null,
-    $Compiler=$null,
-    $ConfigType=$null
+    $AppName="all",
+    $Compiler="all",
+    $ConfigType="all"
 )
 # @brief Creates an installer for the defined application using the specified compiler and config type.
 #
-# You need to call this script from the visual studio command prompt.
+# You need to call this script from the visual studio command prompt which may be opened via:
 #
-# The command prompt may be opened via:
 #     Apps/Visual Studio 2019/Developer PowerShell for VS 2019
 #
 # Change to the directory containing this power shell script. E.g.
@@ -22,36 +21,42 @@ Param (
 #     .\createInstallers.ps1 -AppName TrcMthClient -Compiler msvc2019 -ConfigType Debug
 #
 # @Param AppName
-#     Range [, TrcMthClient]
+#     Range [TrcMthClient, LogClient]
 #     Name of the product application for which an installer should be created.
 #     If omitted installers for all product applications will be created.
 #
 # @Param Compiler
-#     Range [, msvc2019, mingw81]
+#     Range [msvc2019, mingw81]
 #     Defines the compiler to be used for building the libraries and applications.
 #     If omitted the libraries and applications are built for all supported compilers.
 #
 # @Param ConfigType
-#     Range [, Debug, Release]
+#     Range [Debug, Release]
 #     Config type to be used.
 #     If omitted the libraries and applications are built for both release and debug.
 
+$AppNames = @($AppName)
+if( $AppName -ieq "all" ) {
+    $AppNames = @( "TrcMthClient", "LogClient" )
+}
 
+$Compilers = @($Compiler)
+if( $Compiler -ieq "all" ) {
+    $Compilers = @("msvc2019", "mingw81")
+}
 
-# @brief The function buildAndInstall builds the libraries, the product applications,
-#        the test applications, runs the automated test applications and creates an installer
-#        for the defined product application.
+$ConfigTypes = @($ConfigType)
+if( $ConfigType -ieq "all" ) {
+    $ConfigTypes = @("Debug", "Release")
+}
+
+# Function buildAndInstall
+# ------------------------
 #
-# The test applications requiring user input got to be started separately.
-#
-# If a more than just one application got to be supported the function should be split into
-# separated functions as building the library and executing the test don't need to be called
-# for each application.
-#
-# @Param AppName
-#     Range [, TrcMthClient]
-#     Name of the product application for which an installer should be created.
-#     If omitted installers for all product applications will be created.
+# - builds the libraries, the product applications and the test applications,
+# - runs the automated test applications (the test applications requiring user
+#   input got to be started separately) and
+# - creates an installer for the defined product applications.
 #
 # @Param Generator
 #     Range ["Visual Studio 16 2019", "MinGW Makefiles""]
@@ -59,7 +64,7 @@ Param (
 #     Depends on the compiler to be used.
 #
 # @Param Compiler
-#     Range [, msvc2019, mingw81]
+#     Range [msvc2019, mingw81]
 #     Defines the compiler to be used for building the libraries and applications.
 #     If omitted the libraries and applications are built for all supported compilers.
 #
@@ -69,18 +74,18 @@ Param (
 #     Provided for future use if Win32 should also be supported.
 #
 # @Param ConfigType
-#     Range [, Debug, Release]
+#     Range [Debug, Release]
 #     Config type to be used.
 #     If omitted the libraries and applications are built for both release and debug.
 
 function buildAndInstall {
 
     Param (
-        $AppName,
         $Generator,
         $Compiler,
         $Platform,
-        $ConfigType
+        $ConfigType,
+        $ZSQtLibVersion
     )
 
     #clear error variable
@@ -88,15 +93,12 @@ function buildAndInstall {
 
     $BinDir="..\Bin\$Compiler`_$Platform"
     $BuildDir="..\Build\$Compiler`_$Platform`_$ConfigType"
-    $DeployDir="..\Deploy\$Compiler`_$Platform`_$ConfigType"
-
-    cd ..
-    $ZSQtLibVersion=git describe --always --tags --long
-    cd $PSScriptRoot
 
     echo ""
+    echo "====================================================================="
+    echo "Function buildAndInstall"
+    echo "====================================================================="
     echo "PSScriptRoot:   $PSScriptRoot"
-    echo "AppName:        $AppName"
     echo "Generator:      $Generator"
     echo "Compiler:       $Compiler"
     echo "Platform:       $Platform"
@@ -104,7 +106,6 @@ function buildAndInstall {
     echo "ZSQtLibVersion: $ZSQtLibVersion"
     echo "BinDir:         $BinDir"
     echo "BuildDir:       $BuildDir"
-    echo "DeployDir:      $DeployDir"
     echo ""
 
     if($Generator -eq "Visual Studio 16 2019") {
@@ -164,17 +165,65 @@ function buildAndInstall {
         Exit 1;
     }
     cd $PSScriptRoot
+}
+
+# Function createInstaller
+# ------------------------
+#
+# - builds the libraries, the product applications and the test applications,
+# - runs the automated test applications (the test applications requiring user
+#   input got to be started separately) and
+# - creates an installer for the defined product applications.
+#
+# @Param AppName
+#     Range [TrcMthClient, LogClient]
+#     Name of the product application for which an installer should be created.
+#     If omitted installers for all product applications will be created.
+#
+# @Param Compiler
+#     Range [msvc2019, mingw81]
+#     Defines the compiler to be used for building the libraries and applications.
+#     If omitted the libraries and applications are built for all supported compilers.
+#
+# @Param Platform
+#     Range [x64]
+#     Platform for which the libraries and applications should be built.
+#     Provided for future use if Win32 should also be supported.
+#
+# @Param ConfigType
+#     Range [Debug, Release]
+#     Config type to be used.
+#     If omitted the libraries and applications are built for both release and debug.
+
+function createInstaller {
+
+    Param (
+        $AppName,
+        $Compiler,
+        $Platform,
+        $ConfigType,
+        $ZSQtLibVersion
+    )
+
+    #clear error variable
+    $error.clear()
+
+    $BinDir="..\Bin\$Compiler`_$Platform"
+    $DeployDir="..\Deploy\$Compiler`_$Platform`_$ConfigType\$AppName"
+
+    cd $PSScriptRoot
 
     echo ""
+    echo "====================================================================="
+    echo "Function createInstaller"
+    echo "====================================================================="
     echo "PSScriptRoot:   $PSScriptRoot"
     echo "AppName:        $AppName"
-    echo "Generator:      $Generator"
     echo "Compiler:       $Compiler"
     echo "Platform:       $Platform"
     echo "ConfigType:     $ConfigType"
     echo "ZSQtLibVersion: $ZSQtLibVersion"
     echo "BinDir:         $BinDir"
-    echo "BuildDir:       $BuildDir"
     echo "DeployDir:      $DeployDir"
     echo ""
 
@@ -219,24 +268,44 @@ function buildAndInstall {
     rm -r -Force Apps\Products\ZS$AppName\Installer\packages\de.zeussoft.$AppName\data\*
 }
 
-if($AppName -eq $null -Or $AppName -eq "TrcMthClient") {
-    if($Compiler -eq $null -Or $Compiler -eq "msvc2019") {
-        if($ConfigType -eq $null -Or $ConfigType -eq "Debug") {
-            buildAndInstall -AppName "TrcMthClient" -Generator "Visual Studio 16 2019" -Compiler "msvc2019" -Platform "x64" -ConfigType "Debug"
+
+# Script createInstallers
+# -----------------------
+#
+
+echo ""
+echo "*********************************************************************"
+echo "Script createInstallers"
+echo "*********************************************************************"
+echo ""
+
+cd ..
+$ZSQtLibVersion=git describe --always --tags --long
+cd $PSScriptRoot
+
+for( $idxCompiler=0; $idxCompiler -lt $Compilers.length; $idxCompiler++ ) {
+    $Compiler = $Compilers[$idxCompiler]
+    for( $idxCfgType=0; $idxCfgType -lt $ConfigTypes.length; $idxCfgType++ ) {
+        $ConfigType = $ConfigTypes[$idxCfgType]
+        if($Compiler -eq "msvc2019") {
+            buildAndInstall -Generator "Visual Studio 16 2019" -Compiler $Compiler -Platform "x64" -ConfigType $ConfigType -ZSQtLibVersion $ZSQtLibVersion
         }
-        if($ConfigType -eq $null -Or $ConfigType -eq "Release") {
-            buildAndInstall -AppName "TrcMthClient" -Generator "Visual Studio 16 2019" -Compiler "msvc2019" -Platform "x64" -ConfigType "Release"
+        if($Compiler -eq "mingw81") {
+            # Not yet supported (TODO: libQt.. missing in installer packages)
+            #buildAndInstall -Generator "MinGW Makefiles" -Compiler $Compiler -Platform "x64" -ConfigType $ConfigType -ZSQtLibVersion $ZSQtLibVersion
         }
     }
-    # Not yet supported (TODO: libQt.. missing in installer packages)
-    #if($Compiler -eq $null -Or $Compiler -eq "mingw81") {
-    #    if($ConfigType -eq $null -Or $ConfigType -eq "Debug") {
-    #        buildAndInstall -AppName "TrcMthClient" -Generator "MinGW Makefiles" -Compiler "mingw81" -Platform "x64" -ConfigType "Debug"
-    #    }
-    #    if($ConfigType -eq $null -Or $ConfigType -eq "Release") {
-    #        buildAndInstall -AppName "TrcMthClient" -Generator "MinGW Makefiles" -Compiler "mingw81" -Platform "x64" -ConfigType "Release"
-    #    }
-    #}
+}
+
+for( $idxAppName=0; $idxAppName -lt $AppNames.length; $idxAppName++ ) {
+    $AppName = $AppNames[$idxAppName]
+    for( $idxCompiler=0; $idxCompiler -lt $Compilers.length; $idxCompiler++ ) {
+        $Compiler = $Compilers[$idxCompiler]
+        # Compiler "mingw81" not yet supported (TODO: libQt.. missing in installer packages)
+        if($Compiler -eq "msvc2019") {
+            createInstaller -AppName $AppName -Compiler $Compiler -Platform "x64" -ConfigType "Release" -ZSQtLibVersion $ZSQtLibVersion
+        }
+    }
 }
 
 Exit 0

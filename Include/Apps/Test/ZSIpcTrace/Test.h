@@ -75,6 +75,7 @@ private slots:
     void onZSTraceClientTraceAdminObjInserted( QObject* i_pTrcClient, const QString& i_strKeyInTree );
     void onZSTraceClientTrcMthListWdgtTextItemAdded( const QString& i_strText );
     void onTimerTestStepTimeout();
+    void onTimerTestStepTrcMthListWdgtTimeout();
     void onClass1AboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName);
     void onClass2AboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName);
     void onClass2ThreadAboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName);
@@ -89,8 +90,10 @@ private: // instance auxiliary methods
         QString& o_strMth,
         QStringList& o_strlstInArgs,
         QString& o_strMthRet ) const;
+    QStringList getResultValuesFromTrcMthListWdgt() const;
 private: // instance members
     QTimer*                               m_pTmrTestStepTimeout;
+    QTimer*                               m_pTmrTestStepTrcMthListWdgtTimeout;
     QHash<qint64, ZS::System::CRequest*>  m_hshReqsInProgress;
     QHash<QString, CMyClass1*>            m_hshpMyClass1InstancesByName;
     QHash<QString, CMyClass2*>            m_hshpMyClass2InstancesByName;

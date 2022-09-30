@@ -737,7 +737,7 @@ int SEnumEntry::str2Enumerator(
     }
 
     int iEnumerator = -1;
-    int bOk = false;
+    bool bOk = false;
 
     QString strNameLower;
 

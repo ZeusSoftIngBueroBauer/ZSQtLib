@@ -1,0 +1,1 @@
+<MyThread                > yyyy-MM-dd hh:mm:ss.zzz (SysTime) ZS-Db::CDataTable::Customers Debug Message

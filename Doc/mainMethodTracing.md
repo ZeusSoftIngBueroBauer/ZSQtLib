@@ -1,4 +1,4 @@
-@page _PAGE_Main_MethodTracing Method Tracing / Logging
+@page _PAGE_Main_MethodTracing Method Tracing
 
 Since debugging code is often not sufficient to detect errors in a program or is not possible at all because
 the error only occurs in the release version of the software, for example, log outputs are usually used.
@@ -13,7 +13,7 @@ However, especially in embedded software development, these "printf" outputs are
 for example, the devices do not have a screen or a suitable storage medium. As a rule, the devices
 only have a USB, parallel, serial, TCP/IP or another type of interface.
 
-In addition, there is often a lack of the ability to specify what exactly should be loogged.
+In addition, there is often a lack of the ability to specify what exactly should be logged.
 Debug output consoles often offer the option of using a filter so that the log output is not only filled
 with information that is irrelevant for the current troubleshooting and you can no longer see the forest
 because there ar so many trees.

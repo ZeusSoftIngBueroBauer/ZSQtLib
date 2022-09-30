@@ -127,37 +127,37 @@ typedef char* (*TFctTrcServer_GetLocalTrcFileAbsolutePath)();
 typedef void (*TFctTrcServer_RegisterCurrentThread)( const char* i_szThreadName );
 typedef void (*TFctTrcServer_UnregisterCurrentThread)();
 typedef char* (*TFctTrcServer_GetCurrentThreadName)();
-typedef bool (*TFctTrcServer_isActive)( const DllIf::CTrcServer* i_pTrcServer );
-typedef void (*TFctTrcServer_setEnabled)( DllIf::CTrcServer* i_pTrcServer, bool i_bEnabled );
-typedef bool (*TFctTrcServer_isEnabled)( const DllIf::CTrcServer* i_pTrcServer );
-typedef void (*TFctTrcServer_setNewTrcAdminObjsEnabledAsDefault)( DllIf::CTrcServer* i_pTrcServer, bool i_bEnabled );
-typedef bool (*TFctTrcServer_areNewTrcAdminObjsEnabledAsDefault)( const DllIf::CTrcServer* i_pTrcServer );
-typedef void (*TFctTrcServer_setNewTrcAdminObjsMethodCallsDefaultDetailLevel)( DllIf::CTrcServer* i_pTrcServer, DllIf::EMethodTraceDetailLevel i_eDetailLevel );
-typedef DllIf::EMethodTraceDetailLevel (*TFctTrcServer_getNewTrcAdminObjsMethodCallsDefaultDetailLevel)( const DllIf::CTrcServer* i_pTrcServer );
-typedef void (*TFctTrcServer_setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel)( DllIf::CTrcServer* i_pTrcServer, DllIf::ELogDetailLevel i_eDetailLevel );
-typedef DllIf::ELogDetailLevel (*TFctTrcServer_getNewTrcAdminObjsRuntimeInfoDefaultDetailLevel)( const DllIf::CTrcServer* i_pTrcServer );
-typedef bool (*TFctTrcServer_recallAdminObjs)( DllIf::CTrcServer* i_pTrcServer );
-typedef bool (*TFctTrcServer_saveAdminObjs)( DllIf::CTrcServer* i_pTrcServer );
-typedef void (*TFctTrcServer_setUseLocalTrcFile)( DllIf::CTrcServer* i_pTrcServer, bool i_bUse );
-typedef bool (*TFctTrcServer_isLocalTrcFileUsed)( const DllIf::CTrcServer* i_pTrcServer );
-typedef bool (*TFctTrcServer_isLocalTrcFileActive)( const DllIf::CTrcServer* i_pTrcServer );
-typedef void (*TFctTrcServer_setLocalTrcFileAutoSaveIntervalInMs)( DllIf::CTrcServer* i_pTrcServer, int i_iAutoSaveInterval_ms );
-typedef int (*TFctTrcServer_getLocalTrcFileAutoSaveIntervalInMs)( const DllIf::CTrcServer* i_pTrcServer );
-typedef void (*TFctTrcServer_setLocalTrcFileCloseFileAfterEachWrite)( DllIf::CTrcServer* i_pTrcServer, bool i_bCloseFile );
-typedef bool (*TFctTrcServer_getLocalTrcFileCloseFileAfterEachWrite)( const DllIf::CTrcServer* i_pTrcServer );
-typedef void (*TFctTrcServer_setLocalTrcFileSubFileCountMax)( DllIf::CTrcServer* i_pTrcServer, int i_iCountMax );
-typedef int (*TFctTrcServer_getLocalTrcFileSubFileCountMax)( const DllIf::CTrcServer* i_pTrcServer );
-typedef void (*TFctTrcServer_setLocalTrcFileSubFileLineCountMax)( DllIf::CTrcServer* i_pTrcServer, int i_iCountMax );
-typedef int (*TFctTrcServer_getLocalTrcFileSubFileLineCountMax)( const DllIf::CTrcServer* i_pTrcServer );
-typedef void (*TFctTrcServer_setUseIpcServer)( DllIf::CTrcServer* i_pTrcServer, bool i_bUseIpcServer );
-typedef bool (*TFctTrcServer_isIpcServerUsed)( const DllIf::CTrcServer* i_pTrcServer );
-typedef void (*TFctTrcServer_setCacheTrcDataIfNotConnected)( DllIf::CTrcServer* i_pTrcServer, bool i_bCacheData );
-typedef bool (*TFctTrcServer_getCacheTrcDataIfNotConnected)( const DllIf::CTrcServer* i_pTrcServer );
-typedef void (*TFctTrcServer_setCacheTrcDataMaxArrLen)( DllIf::CTrcServer* i_pTrcServer, int i_iMaxArrLen );
-typedef int (*TFctTrcServer_getCacheTrcDataMaxArrLen)( const DllIf::CTrcServer* i_pTrcServer );
-typedef bool (*TFctTrcServer_setTraceSettings)( DllIf::CTrcServer* i_pTrcServer, const DllIf::STrcServerSettings& i_settings );
-typedef DllIf::STrcServerSettings (*TFctTrcServer_getTraceSettings)( const DllIf::CTrcServer* i_pTrcServer );
-typedef void (*TFctTrcServer_clearLocalTrcFile)( DllIf::CTrcServer* i_pTrcServer );
+typedef bool (*TFctTrcServer_isActive)();
+typedef void (*TFctTrcServer_setEnabled)( bool i_bEnabled );
+typedef bool (*TFctTrcServer_isEnabled)();
+typedef void (*TFctTrcServer_setNewTrcAdminObjsEnabledAsDefault)( bool i_bEnabled );
+typedef bool (*TFctTrcServer_areNewTrcAdminObjsEnabledAsDefault)();
+typedef void (*TFctTrcServer_setNewTrcAdminObjsMethodCallsDefaultDetailLevel)( DllIf::EMethodTraceDetailLevel i_eDetailLevel );
+typedef DllIf::EMethodTraceDetailLevel (*TFctTrcServer_getNewTrcAdminObjsMethodCallsDefaultDetailLevel)();
+typedef void (*TFctTrcServer_setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel)( DllIf::ELogDetailLevel i_eDetailLevel );
+typedef DllIf::ELogDetailLevel (*TFctTrcServer_getNewTrcAdminObjsRuntimeInfoDefaultDetailLevel)();
+typedef bool (*TFctTrcServer_recallAdminObjs)();
+typedef bool (*TFctTrcServer_saveAdminObjs)();
+typedef void (*TFctTrcServer_setUseLocalTrcFile)( bool i_bUse );
+typedef bool (*TFctTrcServer_isLocalTrcFileUsed)();
+typedef bool (*TFctTrcServer_isLocalTrcFileActive)();
+typedef void (*TFctTrcServer_setLocalTrcFileAutoSaveIntervalInMs)( int i_iAutoSaveInterval_ms );
+typedef int (*TFctTrcServer_getLocalTrcFileAutoSaveIntervalInMs)();
+typedef void (*TFctTrcServer_setLocalTrcFileCloseFileAfterEachWrite)( bool i_bCloseFile );
+typedef bool (*TFctTrcServer_getLocalTrcFileCloseFileAfterEachWrite)();
+typedef void (*TFctTrcServer_setLocalTrcFileSubFileCountMax)( int i_iCountMax );
+typedef int (*TFctTrcServer_getLocalTrcFileSubFileCountMax)();
+typedef void (*TFctTrcServer_setLocalTrcFileSubFileLineCountMax)( int i_iCountMax );
+typedef int (*TFctTrcServer_getLocalTrcFileSubFileLineCountMax)();
+typedef void (*TFctTrcServer_setUseIpcServer)( bool i_bUseIpcServer );
+typedef bool (*TFctTrcServer_isIpcServerUsed)();
+typedef void (*TFctTrcServer_setCacheTrcDataIfNotConnected)( bool i_bCacheData );
+typedef bool (*TFctTrcServer_getCacheTrcDataIfNotConnected)();
+typedef void (*TFctTrcServer_setCacheTrcDataMaxArrLen)( int i_iMaxArrLen );
+typedef int (*TFctTrcServer_getCacheTrcDataMaxArrLen)();
+typedef bool (*TFctTrcServer_setTraceSettings)( const DllIf::STrcServerSettings& i_settings );
+typedef DllIf::STrcServerSettings (*TFctTrcServer_getTraceSettings)();
+typedef void (*TFctTrcServer_clearLocalTrcFile)();
 
 typedef DllIf::CIpcTrcServer* (*TFctIpcTrcServer_GetInstance)();
 typedef DllIf::CIpcTrcServer* (*TFctIpcTrcServer_CreateInstance)(
@@ -1678,66 +1678,6 @@ void DllIf::CMethodTracer::trace( const char* i_szAddInfo, ELogDetailLevel i_eFi
 
 
 /*******************************************************************************
-struct STrcServerSettings
-*******************************************************************************/
-
-/*==============================================================================
-public: // struct methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! @brief Initializes the trace settings with default values.
-
-    @param i_trcSettings [in] Struct to be initialized.
-*/
-void DllIf::STrcServerSettings_init( DllIf::STrcServerSettings& i_trcSettings )
-//------------------------------------------------------------------------------
-{
-    i_trcSettings.m_bEnabled = true;
-    i_trcSettings.m_szAdminObjFileAbsFilePath = NULL;
-    i_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault = false;
-    i_trcSettings.m_iNewTrcAdminObjsMethodCallsDefaultDetailLevel = 0;
-    i_trcSettings.m_iNewTrcAdminObjsRuntimeInfoDefaultDetailLevel = 0;
-    i_trcSettings.m_bUseIpcServer = true;
-    i_trcSettings.m_bCacheDataIfNotConnected = false;
-    i_trcSettings.m_iCacheDataMaxArrLen = 1000;
-    i_trcSettings.m_bUseLocalTrcFile = true;
-    i_trcSettings.m_szLocalTrcFileAbsFilePath = NULL;
-    i_trcSettings.m_iLocalTrcFileAutoSaveInterval_ms = 1000;
-    i_trcSettings.m_iLocalTrcFileSubFileCountMax = 5;
-    i_trcSettings.m_iLocalTrcFileSubFileLineCountMax = 2000;
-    i_trcSettings.m_bLocalTrcFileCloseFileAfterEachWrite = false;
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Resets the trace settings. The character buffers containing file names
-           will be freed.
-
-    @param i_trcSettings [in] Struct to be reset.
-*/
-void DllIf::STrcServerSettings_release( DllIf::STrcServerSettings& i_trcSettings )
-//------------------------------------------------------------------------------
-{
-    i_trcSettings.m_bEnabled = false;
-    delete i_trcSettings.m_szAdminObjFileAbsFilePath;
-    i_trcSettings.m_szAdminObjFileAbsFilePath = NULL;
-    i_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault = false;
-    i_trcSettings.m_iNewTrcAdminObjsMethodCallsDefaultDetailLevel = 0;
-    i_trcSettings.m_iNewTrcAdminObjsRuntimeInfoDefaultDetailLevel = 1;
-    i_trcSettings.m_bUseIpcServer = false;
-    i_trcSettings.m_bCacheDataIfNotConnected = false;
-    i_trcSettings.m_iCacheDataMaxArrLen = 0;
-    i_trcSettings.m_bUseLocalTrcFile = false;
-    delete i_trcSettings.m_szLocalTrcFileAbsFilePath;
-    i_trcSettings.m_szLocalTrcFileAbsFilePath = NULL;
-    i_trcSettings.m_iLocalTrcFileAutoSaveInterval_ms = 0;
-    i_trcSettings.m_iLocalTrcFileSubFileCountMax = 0;
-    i_trcSettings.m_iLocalTrcFileSubFileLineCountMax = 0;
-    i_trcSettings.m_bLocalTrcFileCloseFileAfterEachWrite = false;
-}
-
-
-/*******************************************************************************
 class CTrcServer
 *******************************************************************************/
 
@@ -2046,7 +1986,7 @@ bool DllIf::CTrcServer::isActive() const
 
     if( s_hndDllIf != NULL && s_pFctTrcServer_isActive != NULL )
     {
-        bIsActive = s_pFctTrcServer_isActive(this);
+        bIsActive = s_pFctTrcServer_isActive();
     }
     return bIsActive;
 }
@@ -2057,7 +1997,7 @@ void DllIf::CTrcServer::setEnabled( bool i_bEnabled )
 {
     if( s_hndDllIf != NULL && s_pFctTrcServer_setEnabled != NULL )
     {
-        s_pFctTrcServer_setEnabled(this, i_bEnabled);
+        s_pFctTrcServer_setEnabled(i_bEnabled);
     }
 }
 
@@ -2069,7 +2009,7 @@ bool DllIf::CTrcServer::isEnabled() const
 
     if( s_hndDllIf != NULL && s_pFctTrcServer_isEnabled != NULL )
     {
-        bEnabled = s_pFctTrcServer_isEnabled(this);
+        bEnabled = s_pFctTrcServer_isEnabled();
     }
     return bEnabled;
 }
@@ -2084,7 +2024,7 @@ void DllIf::CTrcServer::setNewTrcAdminObjsEnabledAsDefault( bool i_bEnabled )
 {
     if( s_hndDllIf != NULL && s_pFctTrcServer_setNewTrcAdminObjsEnabledAsDefault != NULL )
     {
-        s_pFctTrcServer_setNewTrcAdminObjsEnabledAsDefault(this, i_bEnabled);
+        s_pFctTrcServer_setNewTrcAdminObjsEnabledAsDefault(i_bEnabled);
     }
 }
 
@@ -2096,7 +2036,7 @@ bool DllIf::CTrcServer::areNewTrcAdminObjsEnabledAsDefault() const
 
     if( s_hndDllIf != NULL && s_pFctTrcServer_areNewTrcAdminObjsEnabledAsDefault != NULL )
     {
-        bEnabled = s_pFctTrcServer_areNewTrcAdminObjsEnabledAsDefault(this);
+        bEnabled = s_pFctTrcServer_areNewTrcAdminObjsEnabledAsDefault();
     }
     return bEnabled;
 }
@@ -2107,7 +2047,7 @@ void DllIf::CTrcServer::setNewTrcAdminObjsMethodCallsDefaultDetailLevel( EMethod
 {
     if( s_hndDllIf != NULL && s_pFctTrcServer_setNewTrcAdminObjsMethodCallsDefaultDetailLevel != NULL )
     {
-        s_pFctTrcServer_setNewTrcAdminObjsMethodCallsDefaultDetailLevel(this, i_eDetailLevel);
+        s_pFctTrcServer_setNewTrcAdminObjsMethodCallsDefaultDetailLevel(i_eDetailLevel);
     }
 }
 
@@ -2119,7 +2059,7 @@ DllIf::EMethodTraceDetailLevel DllIf::CTrcServer::getNewTrcAdminObjsMethodCallsD
 
     if( s_hndDllIf != NULL && s_pFctTrcServer_getNewTrcAdminObjsMethodCallsDefaultDetailLevel != NULL )
     {
-        eDetailLevel = s_pFctTrcServer_getNewTrcAdminObjsMethodCallsDefaultDetailLevel(this);
+        eDetailLevel = s_pFctTrcServer_getNewTrcAdminObjsMethodCallsDefaultDetailLevel();
     }
     return eDetailLevel;
 }
@@ -2130,7 +2070,7 @@ void DllIf::CTrcServer::setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel( ELogDet
 {
     if( s_hndDllIf != NULL && s_pFctTrcServer_setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel != NULL )
     {
-        s_pFctTrcServer_setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel(this, i_eDetailLevel);
+        s_pFctTrcServer_setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel(i_eDetailLevel);
     }
 }
 
@@ -2142,7 +2082,7 @@ DllIf::ELogDetailLevel DllIf::CTrcServer::getNewTrcAdminObjsRuntimeInfoDefaultDe
 
     if( s_hndDllIf != NULL && s_pFctTrcServer_getNewTrcAdminObjsRuntimeInfoDefaultDetailLevel != NULL )
     {
-        eDetailLevel = s_pFctTrcServer_getNewTrcAdminObjsRuntimeInfoDefaultDetailLevel(this);
+        eDetailLevel = s_pFctTrcServer_getNewTrcAdminObjsRuntimeInfoDefaultDetailLevel();
     }
     return eDetailLevel;
 }
@@ -2159,7 +2099,7 @@ bool DllIf::CTrcServer::recallAdminObjs()
 
     if( s_hndDllIf != NULL && s_pFctTrcServer_recallAdminObjs != NULL )
     {
-        bOk = s_pFctTrcServer_recallAdminObjs(this);
+        bOk = s_pFctTrcServer_recallAdminObjs();
     }
     return bOk;
 }
@@ -2172,7 +2112,7 @@ bool DllIf::CTrcServer::saveAdminObjs()
 
     if( s_hndDllIf != NULL && s_pFctTrcServer_saveAdminObjs != NULL )
     {
-        bOk = s_pFctTrcServer_saveAdminObjs(this);
+        bOk = s_pFctTrcServer_saveAdminObjs();
     }
     return bOk;
 }
@@ -2187,7 +2127,7 @@ void DllIf::CTrcServer::setUseLocalTrcFile( bool i_bUse )
 {
     if( s_hndDllIf != NULL && s_pFctTrcServer_setUseLocalTrcFile != NULL )
     {
-        s_pFctTrcServer_setUseLocalTrcFile(this, i_bUse);
+        s_pFctTrcServer_setUseLocalTrcFile(i_bUse);
     }
 }
 
@@ -2199,7 +2139,7 @@ bool DllIf::CTrcServer::isLocalTrcFileUsed() const
 
     if( s_hndDllIf != NULL && s_pFctTrcServer_isLocalTrcFileUsed != NULL )
     {
-        bUsed = s_pFctTrcServer_isLocalTrcFileUsed(this);
+        bUsed = s_pFctTrcServer_isLocalTrcFileUsed();
     }
     return bUsed;
 }
@@ -2212,7 +2152,7 @@ bool DllIf::CTrcServer::isLocalTrcFileActive() const
 
     if( s_hndDllIf != NULL && s_pFctTrcServer_isLocalTrcFileActive != NULL )
     {
-        bUsed = s_pFctTrcServer_isLocalTrcFileActive(this);
+        bUsed = s_pFctTrcServer_isLocalTrcFileActive();
     }
     return bUsed;
 }
@@ -2223,7 +2163,7 @@ void DllIf::CTrcServer::setLocalTrcFileAutoSaveIntervalInMs( int i_iAutoSaveInte
 {
     if( s_hndDllIf != NULL && s_pFctTrcServer_setLocalTrcFileAutoSaveIntervalInMs != NULL )
     {
-        s_pFctTrcServer_setLocalTrcFileAutoSaveIntervalInMs(this, i_iAutoSaveInterval_ms);
+        s_pFctTrcServer_setLocalTrcFileAutoSaveIntervalInMs(i_iAutoSaveInterval_ms);
     }
 }
 
@@ -2235,7 +2175,7 @@ int DllIf::CTrcServer::getLocalTrcFileAutoSaveIntervalInMs() const
 
     if( s_hndDllIf != NULL && s_pFctTrcServer_getLocalTrcFileAutoSaveIntervalInMs != NULL )
     {
-        iAutoSaveInterval_ms = s_pFctTrcServer_getLocalTrcFileAutoSaveIntervalInMs(this);
+        iAutoSaveInterval_ms = s_pFctTrcServer_getLocalTrcFileAutoSaveIntervalInMs();
     }
     return iAutoSaveInterval_ms;
 }
@@ -2246,7 +2186,7 @@ void DllIf::CTrcServer::setLocalTrcFileCloseFileAfterEachWrite( bool i_bCloseFil
 {
     if( s_hndDllIf != NULL && s_pFctTrcServer_setLocalTrcFileCloseFileAfterEachWrite != NULL )
     {
-        s_pFctTrcServer_setLocalTrcFileCloseFileAfterEachWrite(this, i_bCloseFile);
+        s_pFctTrcServer_setLocalTrcFileCloseFileAfterEachWrite(i_bCloseFile);
     }
 }
 
@@ -2258,7 +2198,7 @@ bool DllIf::CTrcServer::getLocalTrcFileCloseFileAfterEachWrite() const
 
     if( s_hndDllIf != NULL && s_pFctTrcServer_getLocalTrcFileCloseFileAfterEachWrite != NULL )
     {
-        bClose = s_pFctTrcServer_getLocalTrcFileCloseFileAfterEachWrite(this);
+        bClose = s_pFctTrcServer_getLocalTrcFileCloseFileAfterEachWrite();
     }
     return bClose;
 }
@@ -2273,7 +2213,7 @@ void DllIf::CTrcServer::setLocalTrcFileSubFileCountMax( int i_iCountMax )
 {
     if( s_hndDllIf != NULL && s_pFctTrcServer_setLocalTrcFileSubFileCountMax != NULL )
     {
-        s_pFctTrcServer_setLocalTrcFileSubFileCountMax(this, i_iCountMax);
+        s_pFctTrcServer_setLocalTrcFileSubFileCountMax(i_iCountMax);
     }
 }
 
@@ -2285,7 +2225,7 @@ int DllIf::CTrcServer::getLocalTrcFileSubFileCountMax() const
 
     if( s_hndDllIf != NULL && s_pFctTrcServer_getLocalTrcFileSubFileCountMax != NULL )
     {
-        iCountMax = s_pFctTrcServer_getLocalTrcFileSubFileCountMax(this);
+        iCountMax = s_pFctTrcServer_getLocalTrcFileSubFileCountMax();
     }
     return iCountMax;
 }
@@ -2296,7 +2236,7 @@ void DllIf::CTrcServer::setLocalTrcFileSubFileLineCountMax( int i_iCountMax )
 {
     if( s_hndDllIf != NULL && s_pFctTrcServer_setLocalTrcFileSubFileLineCountMax != NULL )
     {
-        s_pFctTrcServer_setLocalTrcFileSubFileLineCountMax(this, i_iCountMax);
+        s_pFctTrcServer_setLocalTrcFileSubFileLineCountMax(i_iCountMax);
     }
 }
 
@@ -2308,7 +2248,7 @@ int DllIf::CTrcServer::getLocalTrcFileSubFileLineCountMax() const
 
     if( s_hndDllIf != NULL && s_pFctTrcServer_getLocalTrcFileSubFileLineCountMax != NULL )
     {
-        iCountMax = s_pFctTrcServer_getLocalTrcFileSubFileLineCountMax(this);
+        iCountMax = s_pFctTrcServer_getLocalTrcFileSubFileLineCountMax();
     }
     return iCountMax;
 }
@@ -2323,7 +2263,7 @@ void DllIf::CTrcServer::setUseIpcServer( bool i_bUse )
 {
     if( s_hndDllIf != NULL && s_pFctTrcServer_setUseIpcServer != NULL )
     {
-        s_pFctTrcServer_setUseIpcServer(this, i_bUse);
+        s_pFctTrcServer_setUseIpcServer(i_bUse);
     }
 }
 
@@ -2335,7 +2275,7 @@ bool DllIf::CTrcServer::isIpcServerUsed() const
 
     if( s_hndDllIf != NULL && s_pFctTrcServer_isIpcServerUsed != NULL )
     {
-        bUsed = s_pFctTrcServer_isIpcServerUsed(this);
+        bUsed = s_pFctTrcServer_isIpcServerUsed();
     }
     return bUsed;
 }
@@ -2356,7 +2296,7 @@ void DllIf::CTrcServer::setCacheTrcDataIfNotConnected( bool i_bCacheData )
 {
     if( s_hndDllIf != NULL && s_pFctTrcServer_setCacheTrcDataIfNotConnected != NULL )
     {
-        s_pFctTrcServer_setCacheTrcDataIfNotConnected(this, i_bCacheData);
+        s_pFctTrcServer_setCacheTrcDataIfNotConnected(i_bCacheData);
     }
 }
 
@@ -2368,7 +2308,7 @@ bool DllIf::CTrcServer::getCacheTrcDataIfNotConnected() const
 
     if( s_hndDllIf != NULL && s_pFctTrcServer_getCacheTrcDataIfNotConnected != NULL )
     {
-        bCacheData = s_pFctTrcServer_getCacheTrcDataIfNotConnected(this);
+        bCacheData = s_pFctTrcServer_getCacheTrcDataIfNotConnected();
     }
     return bCacheData;
 }
@@ -2385,7 +2325,7 @@ void DllIf::CTrcServer::setCacheTrcDataMaxArrLen( int i_iMaxArrLen )
 {
     if( s_hndDllIf != NULL && s_pFctTrcServer_setCacheTrcDataMaxArrLen != NULL )
     {
-        s_pFctTrcServer_setCacheTrcDataMaxArrLen(this, i_iMaxArrLen);
+        s_pFctTrcServer_setCacheTrcDataMaxArrLen(i_iMaxArrLen);
     }
 }
 
@@ -2397,7 +2337,7 @@ int DllIf::CTrcServer::getCacheTrcDataMaxArrLen() const
 
     if( s_hndDllIf != NULL && s_pFctTrcServer_getCacheTrcDataMaxArrLen != NULL )
     {
-        iMaxArrLen = s_pFctTrcServer_getCacheTrcDataMaxArrLen(this);
+        iMaxArrLen = s_pFctTrcServer_getCacheTrcDataMaxArrLen();
     }
     return iMaxArrLen;
 }
@@ -2414,7 +2354,7 @@ bool DllIf::CTrcServer::setTraceSettings( const DllIf::STrcServerSettings& i_set
 
     if( s_hndDllIf != NULL && s_pFctTrcServer_setTraceSettings != NULL )
     {
-        bOk = s_pFctTrcServer_setTraceSettings(this, i_settings);
+        bOk = s_pFctTrcServer_setTraceSettings(i_settings);
     }
     return bOk;
 }
@@ -2429,7 +2369,7 @@ DllIf::STrcServerSettings DllIf::CTrcServer::getTraceSettings() const
 
     if( s_hndDllIf != NULL && s_pFctTrcServer_getTraceSettings != NULL )
     {
-        settings = s_pFctTrcServer_getTraceSettings(this);
+        settings = s_pFctTrcServer_getTraceSettings();
     }
     return settings;
 }
@@ -2444,7 +2384,7 @@ void DllIf::CTrcServer::clearLocalTrcFile()
 {
     if( s_hndDllIf != NULL && s_pFctTrcServer_clearLocalTrcFile != NULL )
     {
-        s_pFctTrcServer_clearLocalTrcFile(this);
+        s_pFctTrcServer_clearLocalTrcFile();
     }
 }
 

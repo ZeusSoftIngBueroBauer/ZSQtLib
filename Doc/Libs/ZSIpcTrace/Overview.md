@@ -11,7 +11,7 @@ class `CLogFile`. `CTrcMthFile` formats the method trace by indenting the method
 call stack for each thread in which they are processed and adds additional information like thread name
 and time informations before writing adding an entry line to the log file.
 
-On clients site the `CWdgtTrcMthList` class outputs the method trace client to a `QTextEdit` instance.
+On clients site the `CWdgtTrcMthList` class outputs the received method trace entries to a `QTextEdit` instance.
 `CWdgtTrcMthList` formats the method trace by indenting the method calls according to the
 call stack for each thread in which they are processed and adds additional information like thread name
 and time informations before writing adding an entry line to the log file.

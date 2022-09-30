@@ -74,12 +74,12 @@ public: // instance methods
     void setInstruction( const QString& i_strInstruction );
 public: // instance methods
     QStringList getExpectedValues() const { return m_strlstExpectedValues; }
-    void setExpectedValues( const QStringList& i_strlstExpectedValues = QStringList() );
-    void setExpectedValue( const QString& i_strExpectedValue = QString() );
+    void setExpectedValues( const QStringList& i_strlstExpectedValues );
+    void setExpectedValue( const QString& i_strExpectedValue );
 public: // instance methods
     QStringList getResultValues() const { return m_strlstResultValues; }
-    void setResultValues( const QStringList& i_strlstResultValues = QStringList() );
-    void setResultValue( const QString& i_strResultValue = QString() );
+    void setResultValues( const QStringList& i_strlstResultValues );
+    void setResultValue( const QString& i_strResultValue );
 public: // auxiliary instance methods
     CEnumTestResult detectTestResult( const QStringList& i_strlstExpectedValues, const QStringList& i_strlstResultValues );
     CEnumTestResult detectTestResult( const QString& i_strExpectedValue, const QString& i_strResultValue );

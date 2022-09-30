@@ -818,6 +818,7 @@ CTreeViewIdxTreeTrcAdminObjs::CTreeViewIdxTreeTrcAdminObjs(
     //hideColumn(CModelIdxTreeTrcAdminObjs::EColumnEnabled);
     //hideColumn(CModelIdxTreeTrcAdminObjs::EColumnMethodCallsDetailLevel);
     //hideColumn(CModelIdxTreeTrcAdminObjs::EColumnRuntimeInfoDetailLevel);
+    //hideColumn(CModelIdxTreeTrcAdminObjs::EColumnDataFilter);
     //hideColumn(CModelIdxTreeTrcAdminObjs::EColumnNameSpace);
     //hideColumn(CModelIdxTreeTrcAdminObjs::EColumnClassName);
     //hideColumn(CModelIdxTreeTrcAdminObjs::EColumnObjName);

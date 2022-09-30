@@ -17,7 +17,7 @@ stop and destroy the trace server.
 
     CIpcTrcServer* pTrcServer = CIpcTrcServer::GetInstance();
     pTrcServer->saveAdminObjs();
-    ZS::Trace::CTrcServer::ReleaseInstance();
+    CIpcTrcServer::ReleaseInstance();
     pTrcServer = nullptr;
 
 **Create Trace Admin Objects**

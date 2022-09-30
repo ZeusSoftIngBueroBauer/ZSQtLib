@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSApps_TestIpcTraceDllIfQtApp_TestModule1_h
-#define ZSApps_TestIpcTraceDllIfQtApp_TestModule1_h
+#ifndef ZSApps_TestIpcTraceDllIfQtApp_TestClass1_h
+#define ZSApps_TestIpcTraceDllIfQtApp_TestClass1_h
 
 #include <QtCore/qobject.h>
 #include <QtCore/qstring.h>
@@ -74,6 +74,12 @@ public: // instance methods
 public: // instance methods
     CMyClass2* startClass2Thread(const QString& i_strMyClass2ObjName);
     void stopClass2Thread();
+public: // instance methods
+    void sendMuchData();
+private: // instance methods
+    int sendData1(const QString& i_strData, double i_fStartTime_s, double i_fCurrTime_s, double i_fDuration_s);
+    int sendData2(const QString& i_strData, double i_fStartTime_s, double i_fCurrTime_s, double i_fDuration_s);
+    int sendData3(const QString& i_strData, double i_fStartTime_s, double i_fCurrTime_s, double i_fDuration_s);
 private: // class members
     static ZS::Trace::DllIf::CTrcAdminObj* s_pTrcAdminObj;
     static int s_iInstCount;
@@ -93,4 +99,4 @@ private: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZSApps_TestIpcTraceDllIfQtApp_TestModule1_h
+#endif // #ifndef ZSApps_TestIpcTraceDllIfQtApp_TestClass1_h

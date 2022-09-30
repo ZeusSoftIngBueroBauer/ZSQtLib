@@ -198,7 +198,7 @@ runtime you may logically group the instances by their names. E.g. you may name 
 instance 'MainPath::SubPath::ObjectName' (e.g. 'Sound::Level::Max').
 
 If you use a different separator for the object path (e.g. "/") you need to replace
-this separator by the separator used by the trace admin object tree ("::") as the
+this separator by the separator used by the trace admin index tree ("::") as the
 trace admin object tree uses the same node separator for name spaces, class names
 and object names.
 

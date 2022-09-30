@@ -7,12 +7,12 @@ If
 
 you can integrate the method tracing into your application through the Dll interface.
 
-Using the Dll interface the ZSQtLib libraries are loaded during runtime.
-
-The Dll interface is a pure C interface, does not use the STL and also no C++ specific constructs.
-
 If the classes of the ZSQtLib libraries "ZSSys", "ZSIpc" and "ZSIpcTrace" cannot be compiled and
 linked into the application or Dll, ZSIpcTrace can still be used.
+
+Using the Dll interface the ZSQtLib libraries are loaded during runtime.
+
+The Dll interface is Qt free.
 
 The application or dll that integrates the ZSIpcTrace Dlls via the ZSIpcTrace Dll interface
 is referred to as the master application or master dll in the following.
@@ -38,27 +38,13 @@ even crash.
 Of course, debug and release versions as well as processor architecture with regard to 32 and 64 bit
 applications must not be mixed.
 
-In order to avoid possible version conflicts of the compiler, Qt, debug/release, Win32/x64 builds used,
-the ZSQtLib Dlls are named accordingly.
-
-The dlls compiled with Microsoft Visual Studio 2017 (version 15) in the debug version for 64 bits using
-Qt 5.5 are given the following names:
-
-    - ZSSysQt5_msvc2017_x64_d.dll
-    - ZSIpcQt5_msvc2017_x64_d.dll
-    - ZSIpcTraceQt5_msvc2017_x64_d.dll
-
-If the Qt dlls were created with the lib infix "Swp", the dlls are given the following names.
-
-    - ZSSysQt5Swp_msvc2017_x64_d.dll
-    - ZSIpcQt5Swp_msvc2017_x64_d.dll
-    - ZSIpcTraceQt5Swp_msvc2017_x64_d.dll
-
 ### Changes to your CMake files
 
 If you are using the Dll interface there is no need to link to the ZQtLib libraries
 but you need to include the header file `ZSIpcTrcDllIf.h` in all files you want to use
 method tracing.
+
+In addition you need to compile and add the cpp source file ''ZSIpcTrcDllIf.cpp' into the application.
 
 Please again refer to @ref _PAGE_Main_BuildInstructions on how to make the include path to this
 header file available for your application without linking to the libraries.
@@ -83,11 +69,11 @@ of your target (either to `add_executable` as shown below or `add_library` respe
         ${ZSQTLIBS_SOURCE_DIRS}/ZSIpcTrace/ZSIpcTrcDllIf.cpp
     )
 
-In addition you need to set the compiler preprocesser directive USE_ZS_IPTRACE_DLL_IF.
+In addition you need to set the compiler preprocesser directive USE_ZS_IPCTRACE_DLL_IF.
 
-    target_compile_definitions(${MY_PROJECT_NAME} <PUBIC|PRIVATE|..> USE_ZS_IPTRACE_DLL_IF)
+    target_compile_definitions(${MY_PROJECT_NAME} <PUBIC|PRIVATE|..> USE_ZS_IPCTRACE_DLL_IF)
 
-### Integrate ZS IPC method tracing to your application
+### Integrate ZS IPC method tracing into your application
 
 1.  Include Dll interface header file
 
@@ -130,7 +116,7 @@ In addition you need to set the compiler preprocesser directive USE_ZS_IPTRACE_D
         or ..
 
         @code
-        bool bZSQtLibDllsLoaded = ZS::Trace::DllIf::loadDll("msvc2013", "x64", EBuildConfigurationDebug, QT_VERSION_MAJOR);
+        bool bZSQtLibDllsLoaded = ZS::Trace::DllIf::loadDll(EBuildConfigurationDebug, QT_VERSION_MAJOR);
         @endconde
 
         Possible reasons why the dlls could not be loaded are:
@@ -146,10 +132,7 @@ In addition you need to set the compiler preprocesser directive USE_ZS_IPTRACE_D
     2.1 Instantiating the Trace Server, reading the Trace Admin Object XML file and setting some attributes.
 
         If the loading of the ZSQtLib Dlls was successful, the Trace Server can be instantiated. This is done
-        via a CreateInstance call. If CreateInstance is called with the default parameters, it is checked whether
-        a trace server instance with the name "ZSTrcServer" already exists. If so, a reference counter is incremented
-        and a reference to that instance is returned. If no trace server with the name "ZSTrcServer" exists yet,
-        a new instance is created and the reference counter is set to 1.
+        via a CreateInstance call.
 
         > **If you want to use the Dll interface in a Qt Application instantiating the Trace Server MUST NOT BE DONE
           before the Qt Application is created. The interface does not know about whether later on a Qt Application
@@ -191,35 +174,8 @@ In addition you need to set the compiler preprocesser directive USE_ZS_IPTRACE_D
         }
         @endcode
 
-        GetDefaultFilePaths can be used to check whether the Trace Server is using the desired paths.
-
-        @code
-        if( m_pTrcServer != nullptr )
-        {
-            // GetDefaultAdminObjFileAbsoluteFilePath and GetDefaultLocalTrcFileAbsoluteFilePath will
-            // allocate memory for the strings. You must free them if no longer needed to avoid memory leaks.
-            char* szAdminObjFileAbsFilePath = m_pTrcServer->GetDefaultAdminObjFileAbsoluteFilePath();
-            char* szLocalTrcFileAbsFilePath = m_pTrcServer->GetDefaultLocalTrcFileAbsoluteFilePath();
-
-            std::string stdstrAdminObjFileAbsFilePath(szAdminObjFileAbsFilePath);
-            std::string stdstrLocalTrcFileAbsFilePath(szLocalTrcFileAbsFilePath);
-
-            if( stdstrAdminObjFileAbsFilePath.empty() )
-            {
-            }
-            if( stdstrLocalTrcFileAbsFilePath.empty() )
-            {
-            }
-
-            delete szAdminObjFileAbsFilePath;
-            szAdminObjFileAbsFilePath = nullptr;
-            delete szLocalTrcFileAbsFilePath;
-            szLocalTrcFileAbsFilePath = nullptr;
-        }
-        @endcode
-
         If the Trace Server was created successfully, the last saved status of the TraceAdmin object instances
-        must be read into the index tree of the Trace Server (trace detail level, enabled).
+        must be read into the index tree of the Trace Server (trace detail levels, enabled states).
 
         Furthermore, some properties of the trace server can be set. In the following code example, the caching
         of the method trace is activated so that the methods that were traced while the client was not yet
@@ -235,7 +191,7 @@ In addition you need to set the compiler preprocesser directive USE_ZS_IPTRACE_D
         }
         @endcode
 
-    2.3 Trace Server starten
+    2.3 Start Trace Server
 
         The Trace Server's Ipc Server is instantiated in its own gateway thread and waits there for incoming
         connection requests. Starting the Trace Server is an asynchronous process that is started with the
@@ -254,21 +210,21 @@ In addition you need to set the compiler preprocesser directive USE_ZS_IPTRACE_D
 
     3.1 Save Admin Object XML File and destroy Trace Server
 
-        If the Trace Server is no longer needed, it must be released. This is done via a ReleaseInstance call,
-        in which the reference received at ReleaseInstance is to be transferred to the trace server.
-        The ReleaseInstance call will decrement the reference counter. If the reference counter reaches the
-        value 0, the trace server is destroyed. The trace server's destructor also terminates the gateway thread
+        If the Trace Server is no longer needed, it must be released. This is done via a ReleaseInstance call
+        which will destroy the trace server. The trace server's destructor also terminates the gateway thread
         and thus also destroys the ipc server. All active connections will be closed.
 
         Before the Trace Server is released, the current state of the Trace Admin objects should be saved in the
-        XML file so that the states (trace detail level, enabled) can be restored when the application is restarted.
+        XML file so that the states (trace detail levels, enabled states) can be restored when the application
+        is restarted.
 
         @code
         if( m_pTrcServer != nullptr )
         {
             m_pTrcServer->saveAdminObjs();
 
-            CIpcTrcServer::ReleaseInstance(m_pTrcServer);
+            CIpcTrcServer::ReleaseInstance();
+            m_pTrcServer = nullptr;
         }
         @endcode
 

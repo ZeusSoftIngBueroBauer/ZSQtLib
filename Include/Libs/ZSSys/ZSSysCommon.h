@@ -520,7 +520,7 @@ const int EArrayIndexFirstElement     = -2;
 const int EArrayIndexLastElement      = -3;
 const int EArrayIndexCountAllElements = -4;
 
-ZSSYSDLL_API QString arrayIndex2Str( int i_idx, EEnumEntryAliasStr i_alias = ZS::System::EEnumEntryAliasStrName );
+ZSSYSDLL_API QString arrayIndex2Str( int i_idx, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName );
 
 ZSSYSDLL_API bool isValidIndex( int i_idx, int i_iArrLen, bool i_bAllowSpecialArrayIndices = false ); // ok if idxVal >= 0 AND idxVal < ArrLen or idxVal = First|Last|All (if AllowSpecial=true)
 ZSSYSDLL_API bool isValidRange( int i_idxStart, int i_iIdxCount, int i_iArrLen, bool i_bAllowSpecialArrayIndices = false );
@@ -578,7 +578,7 @@ typedef CEnum<EMethodTraceDetailLevel> CEnumMethodTraceDetailLevel;
 enum class ELogDetailLevel
 //==============================================================================
 {
-    None          = 0, /*!< Log output of runtime info is disabled. */
+    None          = 0, /*!< Log outputs are disabled. */
     Fatal         = 1, /*!< Log fatal errors (critical errors, critical exceptions). */
     Error         = 2, /*!< At this level all error conditions should be logged. */
     Warning       = 3, /*!< At the Warning level all events that could potentially

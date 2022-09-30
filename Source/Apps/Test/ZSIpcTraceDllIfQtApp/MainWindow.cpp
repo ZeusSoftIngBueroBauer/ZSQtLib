@@ -47,7 +47,6 @@ may result in using the software modules.
 #include "App.h"
 #include "WidgetCentral.h"
 
-#include "ZSTest/ZSTestStepIdxTree.h"
 #include "ZSSysGUI/ZSSysErrLogDlg.h"
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysErrResult.h"
@@ -59,7 +58,6 @@ may result in using the software modules.
 
 using namespace ZS::System;
 using namespace ZS::System::GUI;
-using namespace ZS::Test;
 using namespace ZS::Apps::Test::IpcTraceDllIfQtApp;
 
 
@@ -304,7 +302,6 @@ CMainWindow::CMainWindow(
     //======================
 
     QSettings settings;
-
     restoreGeometry( settings.value("MainWindow/Geometry").toByteArray() );
 
 } // ctor
@@ -313,16 +310,10 @@ CMainWindow::CMainWindow(
 CMainWindow::~CMainWindow()
 //------------------------------------------------------------------------------
 {
-    // <Geometry>
-    //======================
-
     QSettings settings;
 
     settings.setValue( "MainWindow/Geometry", saveGeometry() );
     settings.setValue( "MainWindow/WindowState", saveState() );
-
-    // <Clear>
-    //======================
 
     try
     {
@@ -373,12 +364,10 @@ void CMainWindow::closeEvent( QCloseEvent* i_pEv )
         m_pDlgFile = nullptr;
 
         CDialog::HideAllInstances();
-
-    } // if( i_pEv->isAccepted() )
+    }
 
     QMainWindow::closeEvent(i_pEv);
-
-} // closeEvent
+}
 
 /*==============================================================================
 protected: // overridables of base class QObject
@@ -404,8 +393,7 @@ bool CMainWindow::eventFilter( QObject* i_pObjWatched, QEvent* i_pEv )
         bHandled = QMainWindow::eventFilter(i_pObjWatched,i_pEv);
     }
     return bHandled;
-
-} // eventFilter
+}
 
 /*==============================================================================
 protected slots:
@@ -694,6 +682,4 @@ void CMainWindow::updateErrorsStatus()
         m_pLblErrors->setPixmap( getErrPixmap(severityMax) );
         m_pLblErrors->setToolTip(strToolTip);
     }
-
 } // updateErrorsStatus
-

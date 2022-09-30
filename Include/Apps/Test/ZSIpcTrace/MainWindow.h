@@ -113,6 +113,8 @@ protected: // instance methods
 protected slots:
     void onTrcServerStateChanged( QObject* i_pServer, int i_iState );
     void onTrcClientStateChanged( QObject* i_pClient, int i_iState );
+protected slots:
+    void onWidgetCentralProgressBarConnectDblClicked();
 private: // class members
     static CMainWindow* s_pThis; // singleton class
 private: // instance members

@@ -36,6 +36,7 @@ may result in using the software modules.
 #include <QtCore/qtextstream.h>
 #include <QtCore/qthread.h>
 #include <QtCore/qtimer.h>
+#include <QtCore/qwaitcondition.h>
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
@@ -52,6 +53,13 @@ may result in using the software modules.
 #include "ZSSys/ZSSysApp.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysTime.h"
+#include "ZSSys/ZSSysVersion.h"
+
+#include <stdexcept>
+
+#ifdef WIN32
+#include <dbghelp.h>
+#endif
 
 // Don't use mem leak dump for this module as this module is used to report those errors.
 // The text stream, the file and the log entries remain allocated while the memory leaks are dumped.
@@ -61,7 +69,7 @@ using namespace ZS::System;
 
 
 /*******************************************************************************
-struct SErrLogEntry : public QEvent
+struct SErrLogEntry
 *******************************************************************************/
 
 /*==============================================================================
@@ -182,9 +190,12 @@ public: // class methods
     The CErrLog::GetInstance method checks whether an instance with the given
     object name is already existing. If not the method returns nullptr.
 
-    @param i_strName [in] Object name of the error log instance. If this parameter
-                          is ommitted "ZSErrLog" is used as default.
-    @return Pointer to error log instance.
+    @param i_strName [in]
+        Object name of the error log instance.
+        If this parameter is ommitted "ZSErrLog" is used as default.
+
+    @return Pointer to error log instance or nullptr, if no errog log instance
+            with the given name is existing.
 */
 CErrLog* CErrLog::GetInstance( const QString& i_strName )
 //------------------------------------------------------------------------------
@@ -212,17 +223,27 @@ CErrLog* CErrLog::GetInstance( const QString& i_strName )
     - EResultSeverityError    = 100;
     - EResultSeverityCritical = 10;
 
-    @param i_bInstallQtMsgHandler [in] If true a Qt message handler will be installed
-                          and the error log instance will receive all Qt errors and
-                          will add them to the error log.
-    @param i_strAbsFilePath [in] Absolute path including the file name and suffix.
-                          If this parameter is ommitted (empty string) a default file
-                          path will be used following a standard depending on the
-                          underlying operating system.
-                          Under Windows the directory "ProgramData/<CompanyName>/<AppName>"
-                          is used and the file name is set to "<AppName>-ErrLog.xml".
-    @param i_strName [in] Object name of the error log instance. If this parameter
-                          is ommitted "ZSErrLog" is used as default.
+    @param i_bInstallQtMsgHandler [in]
+        If true a Qt message handler will be installed and the error log instance will
+        receive all Qt errors and will add them to the error log.
+    @param i_bInstallTerminateHandler [in]
+        If true the terminate handler of the ErrLog class will be installed which will
+        be called if an unhandled exception is thrown. The terminate handler of the
+        ErrLog class will add an entry to the error log file.
+    @param i_bInstallFaultHandler [in]
+        If true the ExceptionHandler method of the ErrLog class will be set as the
+        the top-level exception filter function that will be called whenever the
+        UnhandledExceptionFilter function gets control, and the process is not being debugged.
+    @param i_strAbsFilePath [in]
+        Absolute path including the file name and suffix.
+        If this parameter is ommitted (empty string) a default file path will be used
+        following a standard depending on the underlying operating system.
+        Under Windows the directory "ProgramData/<CompanyName>/<AppName>"
+        is used and the file name is set to "<AppName>-ErrLog.xml".
+    @param i_strName [in]
+        Object name of the error log instance.
+        If this parameter is ommitted "ZSErrLog" is used as default.
+
     @return Pointer to error log instance.
 
     @note Throws an Exception
@@ -231,6 +252,8 @@ CErrLog* CErrLog::GetInstance( const QString& i_strName )
 */
 CErrLog* CErrLog::CreateInstance(
     bool           i_bInstallQtMsgHandler,
+    bool           i_bInstallTerminateHandler,
+    bool           i_bInstallFaultHandler,
     const QString& i_strAbsFilePath,
     const QString& i_strName )
 //------------------------------------------------------------------------------
@@ -274,7 +297,9 @@ CErrLog* CErrLog::CreateInstance(
 
     } // if( strAbsFilePath.isEmpty() )
 
-    CErrLog* pErrLog = new CErrLog(i_strName, strAbsFilePath, i_bInstallQtMsgHandler);
+    CErrLog* pErrLog = new CErrLog(
+        i_strName, strAbsFilePath,
+        i_bInstallQtMsgHandler, i_bInstallTerminateHandler, i_bInstallFaultHandler);
 
     s_hshpInstances[i_strName] = pErrLog;
 
@@ -292,8 +317,9 @@ CErrLog* CErrLog::CreateInstance(
     When the error log file is deleted the current content will be saved in
     the specified xml file.
 
-    @param i_strName [in] Object name of the error log instance. If this parameter
-                          is ommitted "ZSErrLog" is used as default.
+    @param i_strName [in]
+        Object name of the error log instance.
+        If this parameter is ommitted "ZSErrLog" is used as default.
 
     @note Throws an Exception
           - with Result = ObjNotInList if an error log instance with the given
@@ -328,7 +354,8 @@ void CErrLog::ReleaseInstance( const QString& i_strName )
     When the error log file is deleted the current content will be saved in
     the specified xml file.
 
-    @param i_pErrLog [in] Reference to the error log instance to be deleted.
+    @param i_pErrLog [in]
+        Reference to the error log instance to be deleted.
 
     @note Throws an Exception
           - with Result = ObjNotInList if the error log instance was not found
@@ -420,15 +447,17 @@ void CErrLog::RemoveQtMsgHandler()
     Warnings, critical and fatal error messages received from the Qt library
     will be saved in the error log instance.
 
-    @param i_msgType [in] This enum describes the messages that can be sent to this
-                        message handler (QtMessageHandler) identifying and associating
-                        the various message types with the appropriate actions.
-    @param i_context [in] The QMessageLogContext class provides additional information
-                        about a log message. The error log instance does not use it
-                        but just forwards the context to the previously installed
-                        message handler.
-    @param i_strMsg [in] The content of this string will used as the additional error
-                        info for the error result info added to the error log instance.
+    @param i_msgType [in]
+        This enum describes the messages that can be sent to this
+        message handler (QtMessageHandler) identifying and associating
+        the various message types with the appropriate actions.
+    @param i_context [in]
+        The QMessageLogContext class provides additional information
+        about a log message. The error log instance does not use it but
+        just forwards the context to the previously installed message handler.
+    @param i_strMsg [in]
+        The content of this string will used as the additional error
+        info for the error result info added to the error log instance.
 
     @note See qInstallMessageHander for further details.
 */
@@ -511,6 +540,102 @@ void CErrLog::QtMsgHandler( QtMsgType i_msgType, const QMessageLogContext& i_con
 
 } // QtMsgHandler
 
+//------------------------------------------------------------------------------
+/*! @brief Terminate handler adding an entry to the error log file if an
+           unhandling exception is thrown.
+
+    To active this method you need to pass true for the corresponding flag
+    when creating the ErrLog instance.
+*/
+void CErrLog::TerminateHandler()
+//------------------------------------------------------------------------------
+{
+    try
+    {
+        std::exception_ptr pExc = std::current_exception();
+        if (pExc != nullptr)
+        {
+            std::rethrow_exception(pExc);
+        }
+    }
+    catch(const std::exception& e)
+    {
+        CErrLog* pModelErrLog = CErrLog::GetInstance();
+
+        if( pModelErrLog != nullptr )
+        {
+            SErrResultInfo errResultInfo(
+                /* errSource  */ "", "", "", "Caught Unexpected Exception",
+                /* result     */ EResultUndefined,
+                /* severity   */ EResultSeverityCritical,
+                /* strAddInfo */ e.what() );
+            pModelErrLog->addEntry(errResultInfo);
+        }
+    }
+    catch(...)
+    {
+        CErrLog* pModelErrLog = CErrLog::GetInstance();
+
+        if( pModelErrLog != nullptr )
+        {
+            SErrResultInfo errResultInfo(
+                /* errSource  */ "", "", "", "Caught Unknown Exception",
+                /* result     */ EResultUndefined,
+                /* severity   */ EResultSeverityCritical,
+                /* strAddInfo */ "" );
+            pModelErrLog->addEntry(errResultInfo);
+        }
+    }
+}
+
+#ifdef WIN32
+//------------------------------------------------------------------------------
+/*! @brief Top-level exception filter function that will be called whenever
+           the UnhandledExceptionFilter function gets control, and the process
+           is not being debugged.
+
+    To active this method you need to pass true for the corresponding flag
+    when creating the ErrLog instance.
+
+    @param i_pExceptionPointers [in]
+        The filter function has syntax similar to that of UnhandledExceptionFilter:
+        It takes a single parameter of type LPEXCEPTION_POINTERS, has a WINAPI
+        calling convention, and returns a value of type LONG.
+
+    @return EXCEPTION_EXECUTE_HANDLER (0x1)
+        Return from UnhandledExceptionFilter and execute the associated
+        exception handler. This usually results in process termination.
+
+    @Note The filter function could also return one of the following values.
+        EXCEPTION_CONTINUE_EXECUTION (0xffffffff)
+            Return from UnhandledExceptionFilter and continue execution from the
+            point of the exception. Note that the filter function is free to
+            modify the continuation state by modifying the exception information
+            supplied through its LPEXCEPTION_POINTERS parameter.
+        EXCEPTION_CONTINUE_SEARCH (0x0)
+            Proceed with normal execution of UnhandledExceptionFilter. That means
+            obeying the SetErrorMode flags, or invoking the Application Error pop-up message box.
+*/
+long CErrLog::ExceptionHandler(EXCEPTION_POINTERS* i_pExceptionPointers)
+//------------------------------------------------------------------------------
+{
+    System::CErrLog* pModelErrLog = System::CErrLog::GetInstance();
+
+    if( pModelErrLog != nullptr )
+    {
+        QString strDumpFileName = pModelErrLog->generateDump(i_pExceptionPointers);
+
+        System::SErrResultInfo errResultInfo(
+            /* errSource  */ "", "", "", "ExceptionHandler",
+            /* result     */ System::EResultUndefined,
+            /* severity   */ System::EResultSeverityCritical,
+            /* strAddInfo */ "Crash Dump Info available in " + strDumpFileName );
+        pModelErrLog->addEntry(errResultInfo);
+    }
+    return EXCEPTION_EXECUTE_HANDLER;
+}
+#endif
+
 /*==============================================================================
 protected: // ctors and dtor
 ==============================================================================*/
@@ -522,16 +647,28 @@ protected: // ctors and dtor
 
     If existing the ctor reads the current content of the error logs xml file.
 
-    @param i_strName [in] Object name of the error log instance.
-    @param i_strAbsFilePath [in] Absolute path including the file name and suffix.
-    @param i_bInstallQtMsgHandler [in] If true a Qt message handler will be installed
-                          and the error log instance will receive all Qt errors and
-                          will add them to the error log.
+    @param i_strName [in]
+        Object name of the error log instance.
+    @param i_strAbsFilePath [in]
+        Absolute path including the file name and suffix.
+    @param i_bInstallQtMsgHandler [in]
+        If true a Qt message handler will be installed and the error log instance will
+        receive all Qt errors and will add them to the error log.
+    @param i_bInstallTerminateHandler [in]
+        If true the terminate handler of the ErrLog class will be installed which will
+        be called if an unhandled exception is thrown. The terminate handler of the
+        ErrLog class will add an entry to the error log file.
+    @param i_bInstallFaultHandler [in]
+        If true the ExceptionHandler method of the ErrLog class will be set as the
+        the top-level exception filter function that will be called whenever the
+        UnhandledExceptionFilter function gets control, and the process is not being debugged.
 */
 CErrLog::CErrLog(
     const QString& i_strName,
     const QString& i_strAbsFilePath,
-    bool           i_bInstallQtMsgHandler) :
+    bool           i_bInstallQtMsgHandler,
+    bool           i_bInstallTerminateHandler,
+    bool           i_bInstallFaultHandler ) :
 //------------------------------------------------------------------------------
     QObject(),
     m_pMtx(nullptr),
@@ -558,9 +695,19 @@ CErrLog::CErrLog(
         m_bQtMsgHandlerInstalledByCtor = true;
     }
 
-    m_pMtx = new QMutex(QMutex::Recursive);
+    if( i_bInstallTerminateHandler )
+    {
+        std::set_terminate(TerminateHandler);
+    }
 
-    QMutexLocker mtxLockerInst(m_pMtx);
+    if( i_bInstallFaultHandler )
+    {
+        #ifdef WIN32
+        SetUnhandledExceptionFilter((LPTOP_LEVEL_EXCEPTION_FILTER) ExceptionHandler);
+        #endif
+    }
+
+    m_pMtx = new QMutex(QMutex::Recursive);
 
     // Create and/or recall error log file
     //------------------------------------
@@ -1201,6 +1348,26 @@ SErrLogEntry CErrLog::takeLastEntry( EResultSeverity i_severity )
     return entry;
 
 } // takeLastEntry
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Starts a thread in which a timer is created whose timeout function
+           will force an access violation.
+
+    This method may be called to test creating a crash dump file.
+*/
+void CErrLog::testCrashDump()
+//------------------------------------------------------------------------------
+{
+    if( m_pTestCrashDumpThread == nullptr) {
+        m_pTestCrashDumpThread = new CTestCrashDumpThread();
+        m_pTestCrashDumpThread->start();
+        m_pTestCrashDumpThread->waitForThreadRunning();
+    }
+}
 
 /*==============================================================================
 protected: // instance methods
@@ -1923,3 +2090,116 @@ void CErrLog::removeEntry_( int i_iRowIdx, EResultSeverity i_severity )
     } // if( i_severity >= 0 && i_severity < EResultSeverityCount )
 
 } // removeEntry_
+
+#ifdef WIN32
+//------------------------------------------------------------------------------
+QString CErrLog::generateDump(EXCEPTION_POINTERS* i_pExceptionPointers) const
+//------------------------------------------------------------------------------
+{
+    MINIDUMP_EXCEPTION_INFORMATION ExpParam;
+
+    ExpParam.ThreadId = GetCurrentThreadId();
+    ExpParam.ExceptionPointers = i_pExceptionPointers;
+    ExpParam.ClientPointers = TRUE;
+
+    QFileInfo fileInfo(m_strAbsFilePath);
+    QString strDumpFilePath = fileInfo.absolutePath() + QDir::separator() + fileInfo.baseName();
+    strDumpFilePath += "-" + ZSQTLIB_GIT_VERSION_INFO;
+    strDumpFilePath += "-" + QDateTime::currentDateTime().toString("yyyy-MM-dd-hh-mm-ss-zzz");
+    strDumpFilePath += ".dmp";
+
+    HANDLE hDumpFile = CreateFile(
+        strDumpFilePath.toStdWString().c_str(),
+        GENERIC_READ|GENERIC_WRITE,
+        FILE_SHARE_WRITE|FILE_SHARE_READ, 0, CREATE_ALWAYS, 0, 0);
+
+    MINIDUMP_TYPE dumpType = static_cast<MINIDUMP_TYPE>(
+        MiniDumpWithDataSegs |
+        MiniDumpWithFullMemory |
+        MiniDumpWithHandleData |
+        MiniDumpWithThreadInfo |
+        MiniDumpWithProcessThreadData |
+        MiniDumpWithFullMemoryInfo |
+        MiniDumpWithUnloadedModules |
+        MiniDumpWithFullAuxiliaryState |
+        MiniDumpIgnoreInaccessibleMemory |
+        MiniDumpWithTokenInformation);
+    MiniDumpWriteDump(
+        GetCurrentProcess(), GetCurrentProcessId(),
+        hDumpFile, dumpType,
+        &ExpParam, NULL, NULL);
+
+    return strDumpFilePath;
+}
+#endif
+
+
+/*******************************************************************************
+class CTestCrashDumpThread : public QThread
+********************************************************************************/
+
+/*==============================================================================
+public: // ctors and dtor
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CTestCrashDumpThread::CTestCrashDumpThread() :
+//------------------------------------------------------------------------------
+    QThread()
+{
+    m_pMtxWaitThreadRunning = new QMutex();
+    m_pWaitThreadRunning = new QWaitCondition();
+}
+
+//------------------------------------------------------------------------------
+CTestCrashDumpThread::~CTestCrashDumpThread()
+//------------------------------------------------------------------------------
+{
+    if( isRunning() ) {
+        quit();
+        wait(30000);
+    }
+    try {
+        delete m_pWaitThreadRunning;
+    } catch(...) {
+    }
+    try {
+        delete m_pMtxWaitThreadRunning;
+    } catch(...) {
+    }
+    m_pMtxWaitThreadRunning = nullptr;
+    m_pWaitThreadRunning = nullptr;
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+bool CTestCrashDumpThread::waitForThreadRunning() const
+//------------------------------------------------------------------------------
+{
+    if( m_pMtxWaitThreadRunning->tryLock() ) {
+        while (!isRunning()) {
+            m_pWaitThreadRunning->wait(m_pMtxWaitThreadRunning, 100);
+        }
+        m_pMtxWaitThreadRunning->unlock();
+    }
+    return true;
+}
+
+/*==============================================================================
+public: // overridables of base class QThread
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CTestCrashDumpThread::run()
+//------------------------------------------------------------------------------
+{
+    QTimer::singleShot(5000, []() {
+        int* pi = nullptr;
+        *pi = 3;
+    });
+    m_pWaitThreadRunning->notify_all();
+    exec();
+}

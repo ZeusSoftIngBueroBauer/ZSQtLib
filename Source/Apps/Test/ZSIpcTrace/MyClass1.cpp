@@ -292,3 +292,43 @@ void CMyClass1::stopClass2Thread()
     m_pMyClass2 = nullptr;
 
 } // stopClass2Thread
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CMyClass1::sendTooMuchData()
+//------------------------------------------------------------------------------
+{
+    ELogDetailLevel detailLevelPrev = s_trcAdminObjRefAnchor.getRuntimeInfoTraceDetailLevel();
+    s_trcAdminObjRefAnchor.setRuntimeInfoTraceDetailLevel(ELogDetailLevel::DebugVerbose);
+
+    QString strMthInArgs;
+    QString strAddInfo;
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ s_trcAdminObjRefAnchor.trcAdminObj(),
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ objectName(),
+        /* strMethod    */ "sendTooMuchData",
+        /* strMthInArgs */ strMthInArgs );
+
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugVerbose) )
+    {
+        double fStartTime_s = System::Time::getProcTimeInSec();
+        double fCurrTime_s = System::Time::getProcTimeInSec();
+        double fDuration_s = 20.0;
+
+        while ((fCurrTime_s - fStartTime_s) < fDuration_s)
+        {
+            strAddInfo = "Im sending data now for " + QString::number(fCurrTime_s - fStartTime_s, 'f', 3) + " seconds. ";
+            strAddInfo += "I will send for another " + QString::number(fDuration_s - (fCurrTime_s - fStartTime_s)) + " seconds.";
+            mthTracer.trace(strAddInfo);
+            QThread::msleep(5);
+            fCurrTime_s = System::Time::getProcTimeInSec();
+        }
+    }
+
+    s_trcAdminObjRefAnchor.setRuntimeInfoTraceDetailLevel(detailLevelPrev);
+}

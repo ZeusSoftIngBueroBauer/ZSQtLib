@@ -51,7 +51,6 @@ may result in using the software modules.
 
 
 using namespace ZS::System;
-using namespace ZS::System::GUI;
 using namespace ZS::Trace;
 using namespace ZS::Apps::Test::IpcTraceDllIfQtApp;
 

@@ -55,8 +55,8 @@ public: // ctor
     STrcServerSettings(
         bool i_bEnabled = true,
         bool i_bNewTrcAdminObjsEnabledAsDefault = true,
-        ZS::System::EMethodTraceDetailLevel i_eNewTrcAdminObjsDefaultMethodCallsDetailLevel = ZS::System::EMethodTraceDetailLevel::None,
-        ZS::System::ELogDetailLevel i_eNewTrcAdminObjsDefaultRuntimeInfoDetailLevel = ZS::System::ELogDetailLevel::None,
+        EMethodTraceDetailLevel i_eNewTrcAdminObjsDefaultMethodCallsDetailLevel = EMethodTraceDetailLevel::None,
+        ELogDetailLevel i_eNewTrcAdminObjsDefaultRuntimeInfoDetailLevel = ELogDetailLevel::None,
         bool i_bUseIpcServer = true,
         bool i_bCacheDataIfNotConnected = false,
         int  i_iCacheDataMaxArrLen = 1000,
@@ -80,9 +80,9 @@ public: // struct members
     /*!< Defines whether newly created trace admin objects should be enabled as default. */
     bool m_bNewTrcAdminObjsEnabledAsDefault;
     /*!< Defines the trace detail level for method calls of newly created trace admin objects. */
-    ZS::System::EMethodTraceDetailLevel m_eNewTrcAdminObjsMethodCallsDefaultDetailLevel;   
+    EMethodTraceDetailLevel m_eNewTrcAdminObjsMethodCallsDefaultDetailLevel;   
     /*!< Defines the trace detail level for runtime info of newly created trace admin objects. */
-    ZS::System::ELogDetailLevel m_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel;   
+    ELogDetailLevel m_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel;   
     /*!< Defines whether trace output should be send to remote client. */
     bool m_bUseIpcServer;
     /*!< If a trace client is not connected the flag defines whether trace data should be internally cached until a client connects. */
@@ -142,10 +142,10 @@ public: // class methods
 public: // class methods
     static CTrcServer* GetInstance();
     static CTrcServer* CreateInstance(
-        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevel = ZS::System::EMethodTraceDetailLevel::None,
-        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevelMutex = ZS::System::EMethodTraceDetailLevel::None,
-        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevelAdminObjIdxTree = ZS::System::EMethodTraceDetailLevel::None,
-        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevelAdminObjIdxTreeMutex = ZS::System::EMethodTraceDetailLevel::None );
+        EMethodTraceDetailLevel i_eTrcDetailLevel = EMethodTraceDetailLevel::None,
+        EMethodTraceDetailLevel i_eTrcDetailLevelMutex = EMethodTraceDetailLevel::None,
+        EMethodTraceDetailLevel i_eTrcDetailLevelAdminObjIdxTree = EMethodTraceDetailLevel::None,
+        EMethodTraceDetailLevel i_eTrcDetailLevelAdminObjIdxTreeMutex = EMethodTraceDetailLevel::None );
     static void ReleaseInstance();
 public: // class methods to register thread names
     static void RegisterCurrentThread(const QString& i_strThreadName);
@@ -162,9 +162,9 @@ public: // class methods to add, remove and modify admin objects
         const QString& i_strNameSpace,
         const QString& i_strClassName,
         const QString& i_strObjName,
-        ZS::System::EEnabled i_bEnabledAsDefault,
-        ZS::System::EMethodTraceDetailLevel i_eMethodCallsDefaultDetailLevel,
-        ZS::System::ELogDetailLevel i_eRuntimeInfoDefaultDetailLevel );
+        EEnabled i_bEnabledAsDefault,
+        EMethodTraceDetailLevel i_eMethodCallsDefaultDetailLevel,
+        ELogDetailLevel i_eRuntimeInfoDefaultDetailLevel );
     static void RenameTraceAdminObj( CTrcAdminObj** io_ppTrcAdminObj, const QString& i_strNewObjName );
     static void ReleaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj );
 public: // class methods to get default file paths
@@ -178,10 +178,10 @@ public: // class methods to get default file paths
     static QString GetLocalTrcFileAbsolutePath();
 protected: // ctors and dtor
     CTrcServer(
-        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevel = ZS::System::EMethodTraceDetailLevel::None,
-        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevelMutex = ZS::System::EMethodTraceDetailLevel::None,
-        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevelAdminObjIdxTree = ZS::System::EMethodTraceDetailLevel::None,
-        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevelAdminObjIdxTreeMutex = ZS::System::EMethodTraceDetailLevel::None );
+        EMethodTraceDetailLevel i_eTrcDetailLevel = EMethodTraceDetailLevel::None,
+        EMethodTraceDetailLevel i_eTrcDetailLevelMutex = EMethodTraceDetailLevel::None,
+        EMethodTraceDetailLevel i_eTrcDetailLevelAdminObjIdxTree = EMethodTraceDetailLevel::None,
+        EMethodTraceDetailLevel i_eTrcDetailLevelAdminObjIdxTreeMutex = EMethodTraceDetailLevel::None );
     virtual ~CTrcServer();
 signals:
     /*! Signal which is emitted if a trace setting has been changed.
@@ -200,9 +200,9 @@ public: // instance methods to add, remove and modify admin objects
         const QString& i_strNameSpace,
         const QString& i_strClassName,
         const QString& i_strObjName,
-        ZS::System::EEnabled i_bEnabledAsDefault,
-        ZS::System::EMethodTraceDetailLevel i_eMethodCallsDefaultDetailLevel,
-        ZS::System::ELogDetailLevel i_eRuntimeInfoDefaultDetailLevel );
+        EEnabled i_bEnabledAsDefault,
+        EMethodTraceDetailLevel i_eMethodCallsDefaultDetailLevel,
+        ELogDetailLevel i_eRuntimeInfoDefaultDetailLevel );
     virtual void renameTraceAdminObj( CTrcAdminObj** io_ppTrcAdminObj, const QString& i_strNewObjName );
     virtual void releaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj );
 public: // instance methods
@@ -265,19 +265,21 @@ public: // instance methods
 public: // instance methods
     virtual void setNewTrcAdminObjsEnabledAsDefault( bool i_bEnabled );
     virtual bool areNewTrcAdminObjsEnabledAsDefault() const;
-    virtual void setNewTrcAdminObjsMethodCallsDefaultDetailLevel( ZS::System::EMethodTraceDetailLevel i_eDetailLevel );
-    virtual ZS::System::EMethodTraceDetailLevel getNewTrcAdminObjsMethodCallsDefaultDetailLevel() const;
-    virtual void setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel( ZS::System::ELogDetailLevel i_eDetailLevel );
-    virtual ZS::System::ELogDetailLevel getNewTrcAdminObjsRuntimeInfoDefaultDetailLevel() const;
+    virtual void setNewTrcAdminObjsMethodCallsDefaultDetailLevel( EMethodTraceDetailLevel i_eDetailLevel );
+    virtual EMethodTraceDetailLevel getNewTrcAdminObjsMethodCallsDefaultDetailLevel() const;
+    virtual void setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel( ELogDetailLevel i_eDetailLevel );
+    virtual ELogDetailLevel getNewTrcAdminObjsRuntimeInfoDefaultDetailLevel() const;
 protected: // instance methods
     virtual void setAdminObjFileAbsoluteFilePath( const QString& i_strAbsFilePath );
+    virtual QString getAdminObjFileAbsoluteFilePath() const;
     virtual QString getAdminObjFileCompleteBaseName() const;
     virtual QString getAdminObjFileAbsolutePath() const;
 public: // instance methods
-    virtual ZS::System::SErrResultInfo recallAdminObjs( const QString& i_strAbsFilePath = QString() );
-    virtual ZS::System::SErrResultInfo saveAdminObjs( const QString& i_strAbsFilePath = QString() );
+    virtual SErrResultInfo recallAdminObjs( const QString& i_strAbsFilePath = QString() );
+    virtual SErrResultInfo saveAdminObjs( const QString& i_strAbsFilePath = QString() );
 protected: // instance methods
     virtual void setLocalTrcFileAbsoluteFilePath( const QString& i_strAbsFilePath );
+    virtual QString getLocalTrcFileAbsoluteFilePath() const;
     virtual QString getLocalTrcFileCompleteBaseName() const;
     virtual QString getLocalTrcFileAbsolutePath() const;
 public: // instance methods
@@ -308,16 +310,16 @@ public: // instance methods
     virtual void clearLocalTrcFile();
 protected: // instance methods
     virtual void addEntry(
-        const QString&         i_strThreadName,
-        const QDateTime&       i_dt,
-        double                 i_fSysTimeInSec,
-        ZS::System::EMethodDir i_mthDir,
-        const QString&         i_strNameSpace,
-        const QString&         i_strClassName,
-        const QString&         i_strObjName,
-        const QString&         i_strMethod,
-        const QString&         i_strAddInfo = "",
-        const QString&         i_strMethodOutArgs = "" );
+        const QString&   i_strThreadName,
+        const QDateTime& i_dt,
+        double           i_fSysTimeInSec,
+        EMethodDir       i_mthDir,
+        const QString&   i_strNameSpace,
+        const QString&   i_strClassName,
+        const QString&   i_strObjName,
+        const QString&   i_strMethod,
+        const QString&   i_strAddInfo = "",
+        const QString&   i_strMethodOutArgs = "" );
 protected: // auxiliary instance methods
     static QString currentThreadName();
 protected: // reference counter
@@ -339,7 +341,7 @@ protected: // instance members
     /*<! Reference to local trace method file. */
     CTrcMthFile* m_pTrcMthFile;
     /*<! If the trace server itself got to be traced. */
-    ZS::System::EMethodTraceDetailLevel m_eTrcDetailLevel;
+    EMethodTraceDetailLevel m_eTrcDetailLevel;
     /*<! Reference counter for createInstance and releaseInstance. */
     int m_iRefCount;
 

@@ -65,6 +65,8 @@ public: // dtor
 public: // overridables
     virtual QString nameSpace() const { return CAbstractTestStepIdxTreeEntry::NameSpace(); }
     virtual QString className() const { return CAbstractTestStepIdxTreeEntry::ClassName(); }
+signals:
+    void changed( ZS::System::CIdxTreeEntry* i_pTreeEntry );
 public: // overridables
     virtual bool isGroup() const;
     virtual CTestStepGroup* getParentGroup();
@@ -82,6 +84,8 @@ public: // must overridables
     virtual double getTestDurationInSec() const = 0;
 public: // overridables
     virtual QString testDuration2StrInBestUnit() const;
+protected: // overridables
+    virtual void emit_changed();
 private: // default ctor not allowed
     CAbstractTestStepIdxTreeEntry();
 private: // copy ctor not allowed

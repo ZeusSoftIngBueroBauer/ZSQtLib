@@ -1,0 +1,6 @@
+<GUIMain                 > -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3::NoisyMethods> Inst1.noisyInstMethod(Hello Instance)
+<GUIMain                 > <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3::NoisyMethods> Inst1.noisyInstMethod(): You here from me later ...
+<MyClass3ThreadNewName1  > -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> NewName1.event({ZS::Apps::Test::IpcTraceDllIfQtApp::ReqTest, noisyInstMethod})
+<MyClass3ThreadNewName1  >    -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3::NoisyMethods> Inst1.noisyInstMethod(Hello Instance)
+<MyClass3ThreadNewName1  >    <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3::NoisyMethods> Inst1.noisyInstMethod(): Hello World
+<MyClass3ThreadNewName1  > <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> NewName1.event()

@@ -37,7 +37,6 @@ may result in using the software modules.
 #include "Test.h"
 
 #include "ZSTestGUI/ZSTestStepIdxTreeWdgt.h"
-#include "ZSSys/ZSSysErrCode.h"
 #include "ZSSys/ZSSysException.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
@@ -45,7 +44,6 @@ may result in using the software modules.
 
 using namespace ZS::System;
 using namespace ZS::System::GUI;
-using namespace ZS::Test;
 using namespace ZS::Test::GUI;
 using namespace ZS::Apps::Test::IpcTraceDllIfQtApp;
 

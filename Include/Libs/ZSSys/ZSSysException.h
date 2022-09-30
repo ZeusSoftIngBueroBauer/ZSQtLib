@@ -67,7 +67,7 @@ public: // ctors and dtor
         int             i_iLine,
         EResult         i_result,
         const QString&  i_strAddErrInfo = "",
-        EResultSeverity i_severity = ZS::System::EResultSeverityCritical,
+        EResultSeverity i_severity = EResultSeverityCritical,
         bool            i_bAdd2ErrLog = true );
     CException( const SErrResultInfo& i_errResultInfo, bool i_bAdd2ErrLog = true );
     CException(

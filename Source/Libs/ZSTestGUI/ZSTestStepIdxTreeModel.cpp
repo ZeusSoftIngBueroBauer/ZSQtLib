@@ -200,18 +200,6 @@ void CModeldxTreeTestSteps::setShowExpectedAndResultValuesOnlyIfTestStepFailed( 
 }
 
 /*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-////------------------------------------------------------------------------------
-//void CModeldxTreeTestSteps::reset()
-////------------------------------------------------------------------------------
-//{
-//    beginResetModel();
-//    endResetModel();
-//}
-
-/*==============================================================================
 protected slots: // overridables
 ==============================================================================*/
 
@@ -326,72 +314,6 @@ QVariant CModeldxTreeTestSteps::headerData(
     #endif
 
     return varData;
-}
-
-//------------------------------------------------------------------------------
-Qt::ItemFlags CModeldxTreeTestSteps::flags( const QModelIndex& i_modelIdx ) const
-//------------------------------------------------------------------------------
-{
-    #ifdef ZS_TRACE_GUI_MODELS
-    QString strMthInArgs;
-    if(m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsVerbose))
-    {
-        strMthInArgs = "ModelIdx {" + ModelIdx2Str(i_modelIdx) + "}";
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ EMethodTraceDetailLevel::ArgsVerbose,
-        /* strMethod    */ "flags",
-        /* strAddInfo   */ strMthInArgs );
-    #endif
-
-    Qt::ItemFlags uFlags = QAbstractItemModel::flags(i_modelIdx);
-
-    if(i_modelIdx.isValid())
-    {
-        //CIdxTreeEntry* pTreeEntry = static_cast<CIdxTreeEntry*>(i_modelIdx.internalPointer());
-        //CAbstractTestStepIdxTreeEntry* pTSAdmObj = nullptr;
-        //CTestStepGroup*    pTSGrp = nullptr;
-        //CTestStep*         pTestStep = nullptr;
-
-        //if( pTreeEntry != nullptr )
-        //{
-        //    pTSAdmObj = reinterpret_cast<CAbstractTestStepIdxTreeEntry*>(pTreeEntry->getObj());
-
-        //    if( pTSAdmObj != nullptr )
-        //    {
-        //        if( pTSAdmObj->isGroup() )
-        //        {
-        //            pTSGrp = dynamic_cast<CTestStepGroup*>(pTSAdmObj);
-        //        }
-        //        else
-        //        {
-        //            pTestStep = dynamic_cast<CTestStep*>(pTSAdmObj);
-        //        }
-        //    }
-        //}
-
-        //if( i_modelIdx.column() == EColumnResultValues )
-        //{
-        //    if( pTSGrp != nullptr )
-        //    {
-        //        flags |= Qt::ItemIsEditable;
-        //    }
-        //    else if( pTestStep != nullptr )
-        //    {
-        //        flags |= Qt::ItemIsEditable;
-        //    }
-        //}
-    }
-
-    #ifdef ZS_TRACE_GUI_MODELS
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsVerbose) )
-    {
-        mthTracer.setMethodReturn(qItemFlags2Str(uFlags));
-    }
-    #endif
-
-    return uFlags;
 }
 
 //------------------------------------------------------------------------------
@@ -674,7 +596,6 @@ QVariant CModeldxTreeTestSteps::data( const QModelIndex& i_modelIdx, int i_iRole
         } // switch( i_modelIdx.column() )
     } // if( pIdxTreeEntry != nullptr )
 
-
     #ifdef ZS_TRACE_GUI_MODELS
     if(mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsVerbose))
     {
@@ -683,4 +604,5 @@ QVariant CModeldxTreeTestSteps::data( const QModelIndex& i_modelIdx, int i_iRole
     #endif
 
     return varData;
-}
+
+} // data
