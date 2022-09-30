@@ -177,6 +177,11 @@ protected: // instance members
          - Strings may be defined which must occur in the log entry.
          - Strings may be defined which may not occur in the log entry.
     */
+    /*!< Trace data may also be suppressed by applying a filter.
+         This filter is a regular expression which allows to define a positive
+         pattern where only the data will be traced which mets the expression
+         or a negative pattern which supporessed the trace output if the
+         filter does not match. */
     QString m_strDataFilter;
     /*!< When applying the data filter the data filter will be split into
          strings which must be included or excluded. The "Must Include"
