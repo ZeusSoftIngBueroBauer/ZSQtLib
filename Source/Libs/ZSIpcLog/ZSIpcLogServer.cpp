@@ -787,7 +787,7 @@ void CIpcLogServer::log(
 
         if( m_logSettings.m_bUseLocalLogFile && m_pLogFile != nullptr )
         {
-            m_pLogFile->addEntry(pLogData->toXmlString());
+            m_pLogFile->addEntry(pLogData->toPlainString());
         }
 
         bool bAdd2Cache = false;

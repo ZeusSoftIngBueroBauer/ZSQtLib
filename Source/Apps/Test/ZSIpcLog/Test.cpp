@@ -2900,12 +2900,11 @@ void CTest::onLogClientLogWdgtTextItemAdded( const QString& i_strText )
 
                 QFile fileLogFile(strLogFileAbsFilePath);
 
-                // Temporarily disable log output. This will close (flush buffer) the file
-                // so that its content can be evaluated by onLogClientLogWdgtTextItemAdded.
+                // Close (flush buffer) the local log file so that its content
+                // can be evaluated by onLogClientLogWdgtTextItemAdded.
                 if( pLogServer != nullptr )
                 {
-                    pLogServer->setEnabled(false);
-                    pLogServer->setEnabled(true);
+                    pLogServer->closeLocalLogFile();
                 }
 
                 if( !fileLogFile.open(QIODevice::ReadOnly|QIODevice::Text) )

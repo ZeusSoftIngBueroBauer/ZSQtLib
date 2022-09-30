@@ -281,6 +281,7 @@ public: // instance methods
     virtual void setLogSettings( const SLogServerSettings& i_settings );
     virtual SLogServerSettings getLogSettings() const;
 public: // instance methods
+    virtual void closeLocalLogFile();
     virtual void clearLocalLogFile();
 protected: // auxiliary instance methods
     CLogger* getDefaultLogger();
