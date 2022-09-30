@@ -4,14 +4,13 @@ The following code examples are taken from the test application ZSIpcTrace.
 
 In this application both an instance of class CIpcTrcServer and CIpcTrcClient is created.
 
-The CIpcTrcClient is used in the trace method client application together with the
-trace output window. The ZSIpcTrace test application should test both - the server and
-the client site.
+The CIpcTrcClient is used in the test application together with the trace output window.
+The ZSIpcTrace test application should test both - the server and the client site.
 
 But here we consider only the server site as this is what you need to integrate
 
 - online remote tracing and
-- logging into a local log file
+- tracing to a local log file
 
 into your application.
 
@@ -24,7 +23,7 @@ On the one hand the host settings (e.g. the local port the TCP server is listeni
 connections) but also settings affecting method tracing may be modified.
 
 Please refer to ZS::Ipc::SServerHostSettings for futher details about the settings which can be
-applied to the TCP server and refer to ZS::Trace::STrcServerSettings which settings can be applied
+applied to the TCP server and refer to ZS::System::STrcServerSettings which settings can be applied
 for method tracing through the trace server.
 
 The trace server is a singleton class which has to be created by the static method
@@ -54,7 +53,7 @@ the trace server has been created.
     }
 
 On closing the application the trace server got to be destroyed. This has to be done by invoking
-method ZS::Trace::CTrcServer::ReleaseInstance. But before destroying the trace server the states of the
+method ZS::System::CTrcServer::ReleaseInstance. But before destroying the trace server the states of the
 trace admin objects should be saved so that they can be recalled when restarting the application.
 
     CApplication::~CApplication()
@@ -122,7 +121,7 @@ As arguments you may pass
 
 If the server is no longer needed it should be shutdown before it is destroyed.
 
-Shutting down the trace is also an asynchronous request as the gateway thread has to be stopped
+Shutting down the server is also an asynchronous request as the gateway thread has to be stopped
 and destroyed afterwards.
 
     void CTest::doTestStepTraceServerShutdown( ZS::Test::CTestStep* i_pTestStep )

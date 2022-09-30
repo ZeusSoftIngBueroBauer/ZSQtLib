@@ -34,15 +34,20 @@ may result in using the software modules.
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysMsg.h"
 
+#ifdef WIN32
+#include <Windows.h>
+#endif
+
 class QFile;
 class QMutex;
+class QWaitCondition;
 class QXmlStreamWriter;
 
 namespace ZS
 {
 namespace System
 {
-struct SErrResultInfo;
+class CTestCrashDumpThread;
 
 //******************************************************************************
 /*! @brief Each entry in the error log has this data type.
@@ -211,7 +216,12 @@ public: // class methods
     static QString ClassName() { return "CErrLog"; }
 public: // class methods
     static CErrLog* GetInstance( const QString& i_strName = "ZSErrLog" );
-    static CErrLog* CreateInstance( bool i_bInstallQtMsgHandler = true, const QString& i_strAbsFilePath = "", const QString& i_strName = "ZSErrLog" );
+    static CErrLog* CreateInstance(
+        bool           i_bInstallQtMsgHandler = true,
+        bool           i_bInstallTerminateHandler = true,
+        bool           i_bInstallFaultHandler = true,
+        const QString& i_strAbsFilePath = "",
+        const QString& i_strName = "ZSErrLog" );
     static void ReleaseInstance( const QString& i_strName = "ZSErrLog" );
     static void ReleaseInstance( CErrLog* i_pErrLog );
 private: // class methods
@@ -222,8 +232,17 @@ private: // class methods
     #else
     static void QtMsgHandler( QtMsgType i_msgType, const QMessageLogContext& i_context, const QString& i_strMsg );
     #endif
+    static void TerminateHandler();
+    #ifdef WIN32
+    static long ExceptionHandler(EXCEPTION_POINTERS* i_pExceptionPointers);
+    #endif
 protected: // ctors and dtor
-    CErrLog( const QString& i_strName, const QString& i_strAbsFilePath, bool i_bInstallQtMsgHandler );
+    CErrLog(
+        const QString& i_strName,
+        const QString& i_strAbsFilePath,
+        bool           i_bInstallQtMsgHandler,
+        bool           i_bInstallTerminateHandler,
+        bool           i_bInstallFaultHandler );
     virtual ~CErrLog();
 signals:
     /*! Signal which will be emitted if an entry is added to the error log.
@@ -284,6 +303,8 @@ public: // instance methods
     SErrLogEntry takeEntry( int i_iRowIdx, EResultSeverity i_severity = EResultSeverityUndefined );
     SErrLogEntry takeFirstEntry( EResultSeverity i_severity = EResultSeverityUndefined );
     SErrLogEntry takeLastEntry( EResultSeverity i_severity = EResultSeverityUndefined );
+public: // instance methods
+    void testCrashDump();
 protected: // instance methods
     void recall();
     void save();
@@ -303,6 +324,9 @@ protected: // instance methods
         bool              i_bModifyProposal = false,
         const QString&    i_strProposal = "" );
     void removeEntry_( int i_iRowIdx, EResultSeverity i_severity = EResultSeverityUndefined );
+    #ifdef WIN32
+    QString generateDump(EXCEPTION_POINTERS* i_pExceptionPointers) const;
+    #endif
 private: // copy ctor not allowed
     CErrLog( const CErrLog& );
 private: // assignment operator not allowed
@@ -352,8 +376,36 @@ protected: // instance members
     /*!< true, if this instance installed the Qt message hander and
          therefore must be removed again when the dtor is called. */
     bool m_bQtMsgHandlerInstalledByCtor;
+    /*!< Pointer to thread for testing the generation of a crash dump file. */
+    CTestCrashDumpThread* m_pTestCrashDumpThread;
 
 }; // class CErrLog
+
+//******************************************************************************
+/*! @brief Internal thread class used to test creating a crash dump file.
+
+    Added in this header so that the MOC compiler can find it.
+
+    When calling CErrLog::testCrashDump an instance of this thread is created
+    and the thread is started.
+    A single shot timer is started in the run method of the thread invoking
+    a lambda function which forces an access violation (nullptr assignment).
+*/
+class CTestCrashDumpThread : public QThread
+//******************************************************************************
+{
+    Q_OBJECT
+public: // ctors and dtor
+    CTestCrashDumpThread();
+    virtual ~CTestCrashDumpThread();
+public: // instance methods
+    bool waitForThreadRunning() const;
+public: // overridables of base class QThread
+    virtual void run() override;
+private: // instance members
+    QMutex*         m_pMtxWaitThreadRunning = nullptr;
+    QWaitCondition* m_pWaitThreadRunning = nullptr;
+};
 
 } // namespace System
 

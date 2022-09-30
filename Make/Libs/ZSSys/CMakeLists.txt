@@ -158,22 +158,24 @@ target_include_directories(${PROJECT_NAME}
 
 if(QT_VERSION_MAJOR EQUAL 4)
     if(QT_LIB)
-        target_include_directories(${PROJECT_NAME}
-            PUBLIC ${Qt4_INCLUDE_DIRS})
-        target_link_libraries(${PROJECT_NAME}
-            PUBLIC ${QT_LIB})
+        set(_Libs ${QT_LIB})
     else()
-        target_link_libraries(${PROJECT_NAME}
-            PUBLIC Qt4::QtCore
-            PUBLIC Qt4::QtXml
-            PUBLIC Qt4::QtNetwork)
+        set(_Libs Qt4::QtCore Qt4::QtXml Qt4::QtNetwork)
     endif()
 elseif(QT_VERSION_MAJOR EQUAL 5)
-    target_link_libraries(${PROJECT_NAME}
-        PUBLIC Qt5::Core
-        PUBLIC Qt5::Xml
-        PUBLIC Qt5::Network)
+    set(_Libs Qt5::Core Qt5::Xml Qt5::Network)
 endif()
+if(WIN32)
+    set(_Libs ${_Libs} Dbghelp)
+endif()
+
+if(QT_VERSION_MAJOR EQUAL 4)
+    if(QT_LIB)
+        target_include_directories(${PROJECT_NAME}
+            PUBLIC ${Qt4_INCLUDE_DIRS})
+    endif()
+endif()
+target_link_libraries(${PROJECT_NAME} ${_Libs})
 
 # Copy Qt Dlls to bin directory.
 include(${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}CopyQtDlls.cmake)

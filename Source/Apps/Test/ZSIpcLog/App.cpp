@@ -202,7 +202,7 @@ CApplication::CApplication(
     m_pLogServer = ZS::Log::CIpcLogServer::CreateInstance();
     m_pLogServer->setLocalLogFileSubFileLineCountMax(10000);
 
-    //m_pLogServer->recallAdminObjs();
+    //m_pLogServer->recallLoggers();
 
     // Log client
     //-----------
@@ -243,11 +243,9 @@ CApplication::~CApplication()
     // Destroy objects created and controlled by the application
     //----------------------------------------------------------
 
-    CIpcLogServer* pLogServer = ZS::Log::CIpcLogServer::GetInstance();
-
-    if( pLogServer != nullptr )
+    if( m_pLogServer != nullptr )
     {
-        pLogServer->shutdown();
+        m_pLogServer->shutdown();
     }
 
     try
@@ -277,7 +275,7 @@ CApplication::~CApplication()
     // Destroy trace server
     if( m_pLogServer != nullptr )
     {
-        //m_pLogServer->saveAdminObjs();
+        //m_pLogServer->saveLoggers();
 
         try
         {

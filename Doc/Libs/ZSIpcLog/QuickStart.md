@@ -36,7 +36,7 @@ before creating the log server instance using the following methods:
 Either at the beginning of 'main.cpp' or in the constructor in class derived from 'CApplication'
 after setting the organization and application name create and start the log server.
 
-    CIpcLogServer* pTrcServer = CIpcLogServer::CreateInstance();
+    CIpcLogServer* pLogServer = CIpcLogServer::CreateInstance();
     pLogServer->recallLoggers();
     pLogServer->startup();
 
@@ -49,12 +49,23 @@ stop and destroy the log server.
     CIpcLogServer::ReleaseInstance();
     pLogServer = nullptr;
 
-**Create log entries via Log Server**
+**Create log entries via Logger Instances**
 
-Log entries are created by invoking the Log Server's method "log".
+Log entries are created using a logger instance.
+
+To get a logger instance you need to invoke the log server's method 'getLogger'.
+
+    CLogger* pLogger = pLogServer->getLogger("MyLoggerName");
+
+As the log server is a singleton class a logger may also be retrieved using the
+class method 'GetLogger'.
+
+    CLogger* pLogger = CLogServer::GetLogger("MyLoggerName");
+
+Log entries are created by invoking the Logger's method "log".
 As first argument the method expects the log level for which the log
 entry should be created. If the passed log level is less than or equal
-to the current log level of the log server the entry will be added.
+to the current log level of the logger the entry will be added.
 
 The following log levels exist:
 
@@ -86,53 +97,36 @@ Level| Description
 Example:
 
     // The log server should be used to just show normal info messages.
-    pLogServer->setLogLevel(ELogDetailLevel::Info);
+    pLogger->setLogLevel(ELogDetailLevel::Info);
 
     // The following call will not create a log entry:
-    pLogServer->log(ELogDetailLevel::Debug, "Debug Message");
+    pLogger->log(ELogDetailLevel::Debug, "Debug Message");
 
     // The following calls will create log entries:
-    pLogServer->log(ELogDetailLevel::Info, "Info Message");
-    pLogServer->log(ELogDetailLevel::Notice, "Notification Message");
+    pLogger->log(ELogDetailLevel::Info, "Info Message");
+    pLogger->log(ELogDetailLevel::Notice, "Notification Message");
 
     // The log server should be used to output detailed debug messages.
-    pLogServer->setLogLevel(ELogDetailLevel::DebugDetailed);
+    pLogger->setLogLevel(ELogDetailLevel::DebugDetailed);
 
     QString strLogEntry;
-    if( pLogServer->getLogLevel() >= ELogDetailLevel::DebugVerbose ) { // false
+    if( pLogger->getLogLevel() >= ELogDetailLevel::DebugVerbose ) { // false
         strLogEntry = "Verbose debug message containing many details";
     }
-    else if( pLogServer->getLogLevel() >= ELogDetailLevel::DebugDetailed ) { // true
+    else if( pLogger->getLogLevel() >= ELogDetailLevel::DebugDetailed ) { // true
         strLogEntry = "Detailed debug message containing some details";
     }
-    else if( pLogServer->getLogLevel() >= ELogDetailLevel::Debug ) {
+    else if( pLogger->getLogLevel() >= ELogDetailLevel::Debug ) {
         strLogEntry = "Debug message";
     }
-    pLogServer->log(ELogDetailLevel::Debug, strLogEntry); // Output of Detailed debug message
+    pLogger->log(ELogDetailLevel::Debug, strLogEntry); // Output of Detailed debug message
 
-If you don't want to add additional informations to the log entries that's all you have to do.
+The log server itself uses an internally created root logger which will be created
+when instantiating the log server. To get a reference to this root logger call
+'getLogger' and 'GetLogger' without passing a name.
 
-If you wish to add additional informations like the date time the log entry has been created,
-the name of the current thread from which context the log entry was created or the name space,
-class name or object name, you need to create, modify and access loggers.
-
-One logger is always existing which is used inernally as a "root" logger by class
-ZS::System::CLogServer to store the settings used if no explicit logger instance has been created.
-
-CLogServer::setLogLevel for example does not store the current log level as a property of
-class CLogServer but forwards the setting to the root logger.
-
-**Create log entries via Logger Instances**
-
-The log server itself uses an internally created root logger.
-This root logger will store the current log level of the server.
-The root logger already allows to format log entries without the
-need to create your own logger instances.
-
-If you don't want special formatting of log entries depending on modules, classes, instances of classes
-or contexts like "database accesses", "user logins" etc. the root logger is all you need.
-
-Get the root logger by calling "CLogServer::GetLogger" with no arguments.
+If you don't want special formatting of log entries depending on modules, classes, instances
+of classes or contexts like "database accesses", "user logins" etc. the root logger is all you need.
 
 If you want special formatting create your own logger instances by calling
 "CLogServer::GetLogger(MyLoggerName)".
@@ -162,7 +156,6 @@ A logger instance allows you to format the log entries as following.
 
 For bool arguments true activates, false deactivates the feature.
 For string arguments a non empty string activates, an empty string deactivates the feature.
-
 
 **Install Log Client Application**
 
