@@ -97,7 +97,7 @@ install(TARGETS ${PROJECT_NAME} EXPORT ${CMAKE_PROJECT_NAME}Targets RUNTIME DEST
 # Get Current Date Time
 string(TIMESTAMP RELEASE_DATE_YEAR "%Y" UTC)
 string(TIMESTAMP RELEASE_DATE_TIME "%Y-%m-%d %H:%m" UTC)
-message(STATUS "RELEASE_DATE: ${RELEASE_DATE_TIME}")
+message(STATUS "RELEASE_DATE:             ${RELEASE_DATE_TIME}")
 
 if(WIN32)
     set(ApplicationsDir "$ENV{ProgramFiles}")
@@ -105,8 +105,8 @@ if(WIN32)
     # Need to replace \ with /. Otherwise a very strange StartMenu path is created.
     string(REPLACE "\\" "/" ApplicationsDir ${ApplicationsDir})
     string(REPLACE "\\" "/" AppDataDir ${AppDataDir})
-    message(STATUS "ApplicationsDir: ${ApplicationsDir}")
-    message(STATUS "AppDataDir:      ${AppDataDir}")
+    message(STATUS "ApplicationsDir:          ${ApplicationsDir}")
+    message(STATUS "AppDataDir:               ${AppDataDir}")
 
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Installer/config/config.xml.in
                    ${CMAKE_CURRENT_SOURCE_DIR}/Installer/config/config.xml)

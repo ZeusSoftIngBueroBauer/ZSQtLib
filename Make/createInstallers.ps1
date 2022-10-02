@@ -158,7 +158,7 @@ function buildAndInstall {
     echo ""
     echo "Run automated test..."
     cd $BuildDir
-    ctest -T test
+    ### ctest -T test
     if(!$?) {
         echo "Error: Automated tests failed"
         cd $PSScriptRoot
@@ -228,21 +228,30 @@ function createInstaller {
     echo ""
 
     if (Test-Path -path $DeployDir) {
+        echo "rm -r -Force $DeployDir\*"
         rm -r -Force $DeployDir\*
+        echo "rmdir -Force $DeployDir"
         rmdir -Force $DeployDir
     }
+    echo "mkdir -p $DeployDir"
     mkdir -p $DeployDir
 
     echo "Copy apps and libs and resources to $DeployDir"
     if($ConfigType -eq "Debug") {
+        echo "cp $BinDir\ZSApp$AppName`d.exe $DeployDir"
         cp $BinDir\ZSApp$AppName`d.exe $DeployDir
     }
     else {
+        echo "cp $BinDir\ZSApp$AppName.exe $DeployDir"
         cp $BinDir\ZSApp$AppName.exe $DeployDir
     }
+    echo "cp $BinDir\Qt*.dll $DeployDir"
     cp $BinDir\Qt*.dll $DeployDir
+    echo "cp $BinDir\ZS*.dll $DeployDir"
     cp $BinDir\ZS*.dll $DeployDir
+    echo "cp -r $BinDir\plugins $DeployDir\plugins"
     cp -r $BinDir\plugins $DeployDir\plugins
+    echo "cp ..\Resources\Apps\Products\ZS$AppName\ZSApp$AppName.ico $DeployDir"
     cp ..\Resources\Apps\Products\ZS$AppName\ZSApp$AppName.ico $DeployDir
 
     echo ""
@@ -255,8 +264,15 @@ function createInstaller {
     }
 
     echo ""
-    rm -r -Force Apps\Products\ZS$AppName\Installer\packages\de.zeussoft.$AppName\data\*
-    cp -r "$DeployDir\*" "Apps\Products\ZS$AppName\Installer\packages\de.zeussoft.$AppName\data"
+    if (Test-Path -path $Apps\Products\ZS$AppName\Installer\packages\de.zeussoft.$AppName\data) {
+        echo "rm -r -Force Apps\Products\ZS$AppName\Installer\packages\de.zeussoft.$AppName\data\*"
+        rm -r -Force Apps\Products\ZS$AppName\Installer\packages\de.zeussoft.$AppName\data\*
+    }
+    if (!(Test-Path $Apps\Products\ZS$AppName\Installer\packages\de.zeussoft.$AppName\data)) {
+        New-Item -Path $Apps\Products\ZS$AppName\Installer\packages\de.zeussoft.$AppName\data -ItemType Directory
+    }
+    echo "cp -r $DeployDir\* Apps\Products\ZS$AppName\Installer\packages\de.zeussoft.$AppName\data"
+    cp -r $DeployDir\* Apps\Products\ZS$AppName\Installer\packages\de.zeussoft.$AppName\data
     echo "binarycreator -f -c Apps\Products\ZS$AppName\Installer\config\config.xml -p Apps\Products\ZS$AppName\Installer\packages $DeployDir\$AppName-$ZSQtLibVersion-Installer.exe"
     binarycreator -f -c Apps\Products\ZS$AppName\Installer\config\config.xml -p Apps\Products\ZS$AppName\Installer\packages $DeployDir\$AppName-$ZSQtLibVersion-Installer.exe
     if($error.Count -ne 0)
@@ -264,7 +280,9 @@ function createInstaller {
         echo "Error: binarycreator failed";
         Exit 1;
     }
+    echo "rm -r -Force $DeployDir\* -exclude $AppName-$ZSQtLibVersion-Installer.exe"
     rm -r -Force $DeployDir\* -exclude $AppName-$ZSQtLibVersion-Installer.exe
+    echo "rm -r -Force Apps\Products\ZS$AppName\Installer\packages\de.zeussoft.$AppName\data\*"
     rm -r -Force Apps\Products\ZS$AppName\Installer\packages\de.zeussoft.$AppName\data\*
 }
 
@@ -303,7 +321,7 @@ for( $idxAppName=0; $idxAppName -lt $AppNames.length; $idxAppName++ ) {
         $Compiler = $Compilers[$idxCompiler]
         # Compiler "mingw81" not yet supported (TODO: libQt.. missing in installer packages)
         if($Compiler -eq "msvc2019") {
-            createInstaller -AppName $AppName -Compiler $Compiler -Platform "x64" -ConfigType "Release" -ZSQtLibVersion $ZSQtLibVersion
+            createInstaller -AppName $AppName -Compiler $Compiler -Platform "x64" -ConfigType $ConfigType -ZSQtLibVersion $ZSQtLibVersion
         }
     }
 }
