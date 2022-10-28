@@ -130,9 +130,9 @@ if(WIN32)
 endif()
 
 # Got to create the following output name:
-# (ProjectName)Qt$(QT_VERSION_MAJOR)[d]
-# e.g.: "ZSSysQt5d"
-set(TargetOutputName ${PROJECT_NAME}Qt${QT_VERSION_MAJOR})
+# (ProjectName)Qt$(QT_VERSION_MAJOR)$(QT_LIBINFIX)[d]
+# e.g.: "ZSSysQt5d", "ZSSysQt5Swpd"
+set(TargetOutputName ${PROJECT_NAME}Qt${QT_VERSION_MAJOR}${QT_LIBINFIX})
 if(CMAKE_BUILD_TYPE MATCHES Debug)
     set(TargetOutputName ${TargetOutputName}d)
 endif()
@@ -177,8 +177,12 @@ if(QT_VERSION_MAJOR EQUAL 4)
 endif()
 target_link_libraries(${PROJECT_NAME} ${_Libs})
 
-# Copy Qt Dlls to bin directory.
-include(${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}CopyQtDlls.cmake)
+# Don't copy Qt Dlls to bin directory.
+# The Dlls got to loaded from the Qt installation directory.
+# Otherwise the Qml modules will not be loaded.
+# If the Qt installation directory is not in PATH the Dlls and Plugins
+# got to be manually copied to the bin directory.
+#include(${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}CopyQtDlls.cmake)
 
 include(GNUInstallDirs)
 

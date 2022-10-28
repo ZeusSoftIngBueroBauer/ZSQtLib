@@ -2486,7 +2486,11 @@ void CTest::doTestStepMoveEntry( ZS::Test::CTestStep* i_pTestStep )
 
         strOperation = "IdxTree.move";
 
-        QStringList strlstArgs = strArgs.split(",", QtSkipEmptyParts);
+        #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+        QStringList strlstArgs = strArgs.split(",", Qt::SkipEmptyParts);
+        #else
+        QStringList strlstArgs = strArgs.split(",", QString::SkipEmptyParts);
+        #endif
 
         if( strlstArgs.size() == 2 )
         {
@@ -2593,7 +2597,11 @@ void CTest::doTestStepCopyEntry( ZS::Test::CTestStep* i_pTestStep )
 
         strOperation = "IdxTree.copy";
 
-        QStringList strlstArgs = strArgs.split(",", QtSkipEmptyParts);
+        #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+        QStringList strlstArgs = strArgs.split(",", Qt::SkipEmptyParts);
+        #else
+        QStringList strlstArgs = strArgs.split(",", QString::SkipEmptyParts);
+        #endif
 
         if( strlstArgs.size() == 2 )
         {
@@ -2703,7 +2711,11 @@ void CTest::doTestStepRenameEntry( ZS::Test::CTestStep* i_pTestStep )
 
         strOperation = "IdxTree.rename";
 
-        QStringList strlstArgs = strArgs.split(",", QtSkipEmptyParts);
+        #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+        QStringList strlstArgs = strArgs.split(",", Qt::SkipEmptyParts);
+        #else
+        QStringList strlstArgs = strArgs.split(",", QString::SkipEmptyParts);
+        #endif
 
         if( strlstArgs.size() == 2 )
         {
@@ -3807,7 +3819,11 @@ void CTest::doTestStepGrpTrcAdmObjTreeStepTreeViewDragAndDrop( ZS::Test::CTestSt
             strGrpArgs.remove(")");
             strGrpOperation = "Move";
 
-            QStringList strlstGrpArgs = strGrpArgs.split("->", QtSkipEmptyParts);
+            #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+            QStringList strlstGrpArgs = strGrpArgs.split("->", Qt::SkipEmptyParts);
+            #else
+            QStringList strlstGrpArgs = strGrpArgs.split("->", QString::SkipEmptyParts);
+            #endif
 
             if( strlstGrpArgs.size() == 2 )
             {
@@ -4642,7 +4658,11 @@ void CTest::splitKey(
     // Remove Entry Type:
     strKeyPath.remove(0, 2);
 
-    QStringList strlstPathNodes = strKeyPath.split(i_idxTree.nodeSeparator(), QtSkipEmptyParts);
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    QStringList strlstPathNodes = strKeyPath.split(i_idxTree.nodeSeparator(), Qt::SkipEmptyParts);
+    #else
+    QStringList strlstPathNodes = strKeyPath.split(i_idxTree.nodeSeparator(), QString::SkipEmptyParts);
+    #endif
 
     // For each of the path nodes separate NameSpace, ClassName and ObjName to create Admin Object Tree Entries.
     //----------------------------------------------------------------------------------------------------------
@@ -4702,7 +4722,11 @@ void CTest::splitKey(
     // Remove Entry Type:
     strKeyPath.remove(0, 2);
 
-    o_strlstPathNodes = strKeyPath.split(i_idxTree.nodeSeparator(), QtSkipEmptyParts);
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    o_strlstPathNodes = strKeyPath.split(i_idxTree.nodeSeparator(), Qt::SkipEmptyParts);
+    #else
+    o_strlstPathNodes = strKeyPath.split(i_idxTree.nodeSeparator(), QString::SkipEmptyParts);
+    #endif
 
     QString strPathNode;
     QString strPath;

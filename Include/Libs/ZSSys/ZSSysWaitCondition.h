@@ -27,6 +27,7 @@ may result in using the software modules.
 #ifndef ZSSys_WaitCondition_h
 #define ZSSys_WaitCondition_h
 
+#include <QtCore/qdeadlinetimer.h>
 #include <QtCore/qstring.h>
 #include <QtCore/qwaitcondition.h>
 
@@ -60,9 +61,11 @@ public: // instance methods
 public: // instance methods
     void notify_all();
     void notify_one();
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
     bool wait(CMutex* i_pMutexLocked, QDeadlineTimer i_deadline = QDeadlineTimer(QDeadlineTimer::Forever));
-    bool wait(CMutex* i_pMutexLocked, unsigned long i_uTime_ms);
     bool wait(QReadWriteLock* i_pReadWriteLock, QDeadlineTimer i_deadline = QDeadlineTimer(QDeadlineTimer::Forever));
+    #endif
+    bool wait(CMutex* i_pMutexLocked, unsigned long i_uTime_ms);
     bool wait(QReadWriteLock* i_pReadWriteLock, unsigned long i_uTime_ms);
     void wakeAll();
     void wakeOne();
