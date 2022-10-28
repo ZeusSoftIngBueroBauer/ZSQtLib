@@ -57,6 +57,20 @@ if(WIN32)
                 COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/../plugins/platforms/qwindows.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/plugins/platforms/qwindows.dll
                 COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/../plugins/platforms/qwindows.dll.debug ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/plugins/platforms/qwindows.dll.debug)
         endif()
+        add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
+               COMMENT "Copy Qt Graphic Dlls"
+               COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/libEGL.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/libEGL.dll
+               COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/libEGLd.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/libEGLd.dll
+               COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/libGLESv2.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/libGLESv2.dll
+               COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/libGLESv2d.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/libGLESv2d.dll
+               COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/icudt54.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/icudt54.dll
+               COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/icuin54.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/icuin54.dll
+               COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/icule54.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/icule54.dll
+               COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/iculx54.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/iculx54.dll
+               COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/icutu54.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/icutu54.dll
+               COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/icuuc54.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/icuuc54.dll)
+        #       COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/icu*.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/icu*.dll
+        #       COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/lib*.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/lib*.dll)
     endif()
 else()
     message(STATUS "Copying ignored as not WIN32 platform")

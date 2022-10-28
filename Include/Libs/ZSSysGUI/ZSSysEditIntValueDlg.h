@@ -90,8 +90,10 @@ public: // instance methods
     int getMinimum() const;
     void setMaximum( int i_iMaximum );
     int getMaximum() const;
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
     void setStepType( QAbstractSpinBox::StepType i_stepType );
     QAbstractSpinBox::StepType getStepType() const;
+    #endif // #if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
     void setDescription( const QString& i_strDescription );
 protected slots:
     void onBtnApplyClicked( bool i_bChecked );

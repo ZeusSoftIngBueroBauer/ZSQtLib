@@ -230,6 +230,7 @@ void CMyClass3Thread::quit()
     return QThread::quit();
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
 //------------------------------------------------------------------------------
 bool CMyClass3Thread::wait( QDeadlineTimer i_deadline )
 //------------------------------------------------------------------------------
@@ -243,6 +244,7 @@ bool CMyClass3Thread::wait( QDeadlineTimer i_deadline )
     }
     return QThread::wait(i_deadline);
 }
+#endif // #if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
 
 //------------------------------------------------------------------------------
 bool CMyClass3Thread::wait( unsigned long i_time_ms )

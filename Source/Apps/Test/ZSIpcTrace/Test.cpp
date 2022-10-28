@@ -3186,7 +3186,11 @@ void CTest::splitMethodCallOperation(
 
     QStringList strlst;
 
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     strlst = i_strOperation.split("::", Qt::SkipEmptyParts);
+    #else
+    strlst = i_strOperation.split("::", QString::SkipEmptyParts);
+    #endif
 
     if( strlst.size() == 3 )
     {
@@ -3197,7 +3201,11 @@ void CTest::splitMethodCallOperation(
     if( strlst.size() == 2 )
     {
         o_strClassName = strlst[0];
+        #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
         strlst = strlst[1].split(".", Qt::SkipEmptyParts);
+        #else
+        strlst = strlst[1].split(".", QString::SkipEmptyParts);
+        #endif
         if( strlst.size() == 1 )
         {
             o_strMth = strlst[0];
@@ -3216,16 +3224,28 @@ void CTest::splitMethodCallOperation(
             {
                 QString strArgsRet = o_strMth.mid(idx1);
                 o_strMth = o_strMth.mid(0, idx1);
+                #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
                 strlst = strArgsRet.split(": ", Qt::SkipEmptyParts);
+                #else
+                strlst = strArgsRet.split(": ", QString::SkipEmptyParts);
+                #endif
                 if( strlst.size() == 1 )
                 {
                     strlst[0].remove("(").remove(")");
+                    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
                     o_strlstInArgs = strlst[0].split(", ", Qt::SkipEmptyParts);
+                    #else
+                    o_strlstInArgs = strlst[0].split(", ", QString::SkipEmptyParts);
+                    #endif
                 }
                 else if( strlst.size() == 2 )
                 {
                     strlst[0].remove("(").remove(")");
+                    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
                     o_strlstInArgs = strlst[0].split(", ", Qt::SkipEmptyParts);
+                    #else
+                    o_strlstInArgs = strlst[0].split(", ", QString::SkipEmptyParts);
+                    #endif
                     o_strMthRet = strlst[1];
                 }
                 if( o_strMth == "ctor" && o_strlstInArgs.size() >= 1 && o_strObjName.isEmpty() )

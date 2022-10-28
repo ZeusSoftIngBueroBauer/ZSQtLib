@@ -131,7 +131,7 @@ QPixmap CPushButton::pixmap() const
 //------------------------------------------------------------------------------
 {
     #if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-    return m_pLabel->pixmap();
+    return *m_pLabel->pixmap();
     #else
     return m_pLabel->pixmap(Qt::ReturnByValue);
     #endif

@@ -300,6 +300,7 @@ int CDlgEditIntValue::getMaximum() const
     return m_pEdtValue->maximum();
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
 //------------------------------------------------------------------------------
 void CDlgEditIntValue::setStepType( QAbstractSpinBox::StepType i_stepType )
 //------------------------------------------------------------------------------
@@ -313,6 +314,7 @@ QAbstractSpinBox::StepType CDlgEditIntValue::getStepType() const
 {
     return m_pEdtValue->stepType();
 }
+#endif // #if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
 
 //------------------------------------------------------------------------------
 void CDlgEditIntValue::setDescription( const QString& i_strDescription )
