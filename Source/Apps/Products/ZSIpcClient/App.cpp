@@ -88,13 +88,13 @@ CApplication::CApplication(
     // Qml modules from ZSSysGUI are compiled into the applications executable.
     //Q_INIT_RESOURCE(ZSSysGUI);
 
-    QDirIterator qrc(":", QDirIterator::Subdirectories);
-    qDebug("qrcs BEGIN -------------------------------------");
-    while(qrc.hasNext())
-    {
-        qDebug() << qrc.next();
-    }
-    qDebug("qrcs END ---------------------------------------");
+    //QDirIterator qrc(":", QDirIterator::Subdirectories);
+    //qDebug("qrcs BEGIN -------------------------------------");
+    //while(qrc.hasNext())
+    //{
+    //    qDebug() << qrc.next();
+    //}
+    //qDebug("qrcs END ---------------------------------------");
 
     QIcon iconApp(":/Images/ZSAppIpcClient.ico");
 
@@ -110,15 +110,15 @@ CApplication::CApplication(
     m_pQmlAppEngine = new QQmlApplicationEngine();
     // Add import path to the applications resource storage.
     m_pQmlAppEngine->addImportPath("qrc:/");
-    qDebug("QmlAppEngine.importPaths BEGIN ---------------------------------------");
-    QStringList strlstImportPathList = m_pQmlAppEngine->importPathList();
-    QStringList::iterator itPath = strlstImportPathList.begin();
-    while(itPath != strlstImportPathList.end())
-    {
-        qDebug() << *itPath;
-        ++itPath;
-    }
-    qDebug("QmlAppEngine.importPaths END -----------------------------------------");
+    //qDebug("QmlAppEngine.importPaths BEGIN ---------------------------------------");
+    //QStringList strlstImportPathList = m_pQmlAppEngine->importPathList();
+    //QStringList::iterator itPath = strlstImportPathList.begin();
+    //while(itPath != strlstImportPathList.end())
+    //{
+    //    qDebug() << *itPath;
+    //    ++itPath;
+    //}
+    //qDebug("QmlAppEngine.importPaths END -----------------------------------------");
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(
         m_pQmlAppEngine, &QQmlApplicationEngine::objectCreated,
@@ -159,7 +159,6 @@ CApplication::CApplication(
             m_pMainWindow->showNormal();
         }
     }
-
 } // ctor
 
 //------------------------------------------------------------------------------

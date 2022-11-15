@@ -114,6 +114,11 @@ target_include_directories(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
     PRIVATE ZSSys ZSSysGUI ZSTest ZSTestGUI ZSIpc ZSIpcGUI)
 
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    target_link_libraries(${PROJECT_NAME}
+        PRIVATE ${CMAKE_DL_LIBS})
+endif()
+
 # The test application needs user interaction and cannot be executed automatically.
 #enable_testing()
 #include(CTest)

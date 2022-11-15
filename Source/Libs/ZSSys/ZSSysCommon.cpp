@@ -61,13 +61,13 @@ public: // ctor
 static CInitEnumMode s_initEnumMode;
 #else // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> ZS::System::CEnum<EMode>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> ZS::System::CEnum<EMode>::s_arEnumEntries(
 //------------------------------------------------------------------------------
-{                       // Enumerator,                       Name,      Symbol, Text,  SCIPShort, SCPILong, Alias6, Alias7
+{
     /* 0 */ SEnumEntry( static_cast<int>(EMode::Edit),       "Edit",       "E", "Edit",       "", "", "Design",     "Edit"      ),
     /* 1 */ SEnumEntry( static_cast<int>(EMode::Simulation), "Simulation", "S", "Simulation", "", "", "Simulation", "View"      ),
     /* 3 */ SEnumEntry( static_cast<int>(EMode::Undefined),  "Undefined",  "?", "Undefined",  "", "", "Undefined",  "Undefined" )
-};
+});
 #endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 /*! @endcond */
 
@@ -1187,9 +1187,8 @@ public: // ctor
 static CInitEnumTraceDetailLevelMethodCalls s_initEnumTraceDetailLevelMethodCalls;
 #else // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> ZS::System::CEnum<EMethodTraceDetailLevel>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> ZS::System::CEnum<EMethodTraceDetailLevel>::s_arEnumEntries{
 //------------------------------------------------------------------------------
-{
     /* 0 */ SEnumEntry( static_cast<int>(EMethodTraceDetailLevel::None),         "None",         "-",    "None",               "NONE", "NONE"      ),
     /* 1 */ SEnumEntry( static_cast<int>(EMethodTraceDetailLevel::EnterLeave),   "EnterLeave",   "EL",   "Enter Leave",        "ELEA", "ELEAve"    ),
     /* 2 */ SEnumEntry( static_cast<int>(EMethodTraceDetailLevel::ArgsNormal),   "ArgsNormal",   "Args", "Arguments Normal",   "ANOR", "ANORmal"   ),

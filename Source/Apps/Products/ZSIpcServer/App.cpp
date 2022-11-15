@@ -33,6 +33,7 @@ may result in using the software modules.
 #include <QtQuick>
 
 #include "ZSSys/ZSSysErrLog.h"
+#include "ZSSysGUI/ZSSysGUIDllMain.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -80,6 +81,21 @@ CApplication::CApplication(
         thread()->setObjectName("GUIMain");
     }
 
+    // Resources (like images) but not Qml modules are compiled into the ZSSysGUI dll.
+    ZS::System::GUI::qInitResources();
+    ZS::System::GUI::qInitResourcesQml();
+
+    // Qml modules from ZSSysGUI are compiled into the applications executable.
+    //Q_INIT_RESOURCE(ZSSysGUI);
+
+    //QDirIterator qrc(":", QDirIterator::Subdirectories);
+    //qDebug("qrcs BEGIN -------------------------------------");
+    //while(qrc.hasNext())
+    //{
+    //    qDebug() << qrc.next();
+    //}
+    //qDebug("qrcs END ---------------------------------------");
+
     QIcon iconApp(":/Images/ZSAppIpcServer.ico");
 
     QGuiApplication::setWindowIcon(iconApp);
@@ -89,8 +105,21 @@ CApplication::CApplication(
     QGuiApplication::setApplicationVersion(i_strAppVersion);
     QGuiApplication::setApplicationDisplayName(i_strWindowTitle);
 
+    CErrLog::CreateInstance();
+
     m_pQmlAppEngine = new QQmlApplicationEngine();
-    const QUrl url(QStringLiteral("qrc:/Qml/main.qml"));
+    // Add import path to the applications resource storage.
+    m_pQmlAppEngine->addImportPath("qrc:/");
+    //qDebug("QmlAppEngine.importPaths BEGIN ---------------------------------------");
+    //QStringList strlstImportPathList = m_pQmlAppEngine->importPathList();
+    //QStringList::iterator itPath = strlstImportPathList.begin();
+    //while(itPath != strlstImportPathList.end())
+    //{
+    //    qDebug() << *itPath;
+    //    ++itPath;
+    //}
+    //qDebug("QmlAppEngine.importPaths END -----------------------------------------");
+    const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(
         m_pQmlAppEngine, &QQmlApplicationEngine::objectCreated,
         this, [url](QObject *obj, const QUrl &objUrl) {

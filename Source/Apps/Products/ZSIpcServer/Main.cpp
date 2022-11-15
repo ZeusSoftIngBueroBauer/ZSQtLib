@@ -41,10 +41,18 @@ int main(int argc, char *argv[])
 //------------------------------------------------------------------------------
 {
     #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    //QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     #endif
 
     int iAppResult = 0;
+
+    // Set the OpenGL type before instantiating the application.
+    // In this example, we're forcing use of ANGLE.
+    // If started from Qt Creator OpenGLES cannot be used for some graphic cards.
+    // The usage of OpenGLES should therefore be disabled by program argument.
+    // Setting to OpenGL is also a workaround for a deadlock on restarting the
+    // application on a secondary screen.
+    QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
 
     CApplication* pApp = new CApplication(
         /* argc                  */ argc,

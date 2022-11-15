@@ -36,8 +36,8 @@ may result in using the software modules.
 #include "ZSSys/ZSSysTrcMthFile.h"
 #include "ZSSys/ZSSysApp.h"
 #include "ZSSys/ZSSysErrLog.h"
-#include "ZSSys/ZSSysMsg.h"
-#include "ZSSys/ZSSysMutex.h"
+//#include "ZSSys/ZSSysMsg.h"
+//#include "ZSSys/ZSSysMutex.h"
 #include "ZSSys/ZSSysException.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
@@ -743,7 +743,7 @@ protected: // ctors and dtor
 */
 CTrcServer::CTrcServer(
     EMethodTraceDetailLevel i_eTrcDetailLevel,
-    EMethodTraceDetailLevel i_eTrcDetailLevelMutex,
+    EMethodTraceDetailLevel /*i_eTrcDetailLevelMutex*/,
     EMethodTraceDetailLevel i_eTrcDetailLevelAdminObjIdxTree,
     EMethodTraceDetailLevel i_eTrcDetailLevelAdminObjIdxTreeMutex ) :
 //------------------------------------------------------------------------------
