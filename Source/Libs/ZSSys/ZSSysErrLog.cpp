@@ -491,6 +491,11 @@ void CErrLog::QtMsgHandler( QtMsgType i_msgType, const QMessageLogContext& i_con
                     strAddInfo = "Set breakpoint here if desired";
                     strAddInfo = i_strMsg;
                 }
+                else if( strAddInfo.startsWith("Found metadata in lib ",Qt::CaseInsensitive) )
+                {
+                    strAddInfo = "Set breakpoint here if desired";
+                    strAddInfo = i_strMsg;
+                }
                 else
                 {
                     SErrResultInfo errResultInfo(

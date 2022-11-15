@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Images/ZSAppIpcServer.ico</file>
+    </qresource>
+</RCC>

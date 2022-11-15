@@ -50,53 +50,6 @@ using namespace ZS::System;
 using namespace ZS::System::GUI;
 
 
-namespace ZS
-{
-namespace System
-{
-namespace GUI
-{
-//******************************************************************************
-class CTableViewErrLog : public QTableView
-//******************************************************************************
-{
-//==============================================================================
-public: // ctors and dtor
-//==============================================================================
-
-//------------------------------------------------------------------------------
-CTableViewErrLog( QWidget* i_pWdgtParent = nullptr ) :
-//------------------------------------------------------------------------------
-    QTableView(i_pWdgtParent)
-{
-} // ctor
-
-//------------------------------------------------------------------------------
-~CTableViewErrLog()
-//------------------------------------------------------------------------------
-{
-} // dtor
-
-//==============================================================================
-public: // overridables of base class QTableView
-//==============================================================================
-
-//------------------------------------------------------------------------------
-bool viewportEvent( QEvent* i_pEv )
-//------------------------------------------------------------------------------
-{
-    return QTableView::viewportEvent(i_pEv);
-}
-
-}; // class CTableViewErrLog
-
-} // namespace GUI
-
-} // namespace System
-
-} // namespace ZS
-
-
 /*******************************************************************************
 class CWdgtErrLog : public QWidget
 *******************************************************************************/
@@ -143,7 +96,7 @@ CWdgtErrLog::CWdgtErrLog(
         // <TableView> Indicating the error model entries
         //===============================================
 
-        m_pTableView = new CTableViewErrLog();
+        m_pTableView = new QTableView();
         m_pLyt->addWidget(m_pTableView);
 
         QFont fntTableView = m_pTableView->font();

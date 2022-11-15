@@ -1,122 +1,122 @@
 <RCC>
     <qresource prefix="/ZS/App">
-        <file>ModeEdit16x16.bmp</file>
-        <file>ModeEdit24x24.bmp</file>
-        <file>ModeEdit32x32.bmp</file>
-        <file>ModeSimulation16x16.bmp</file>
-        <file>ModeSimulation24x24.bmp</file>
-        <file>ModeSimulation32x32.bmp</file>
-        <file>RSIcon16x16.bmp</file>
-        <file>RSIcon32x32.bmp</file>
-        <file alias="ZeusSoft_16x16.bmp">ZeusSoft_16x16_256clr.bmp</file>
-        <file alias="ZeusSoft_32x32.bmp">ZeusSoft_32x32_256clr.bmp</file>
-        <file alias="ZeusSoft_48x48.bmp">ZeusSoft_48x48_256clr.bmp</file>
-        <file alias="ZeusSoft_64x64.bmp">ZeusSoft_64x64_256clr.bmp</file>
-        <file alias="ZeusSoft_256x256.bmp">ZeusSoft_256x256_256clr.bmp</file>
-        <file alias="ZeusSoft_280x170.png">ZeusSoft_280x170_256clr.png</file>
-        <file>ZeusWithMountain_1100x204_256clr.gif</file>
-        <file>ZeusWithMountain_1100x204_256clr.jpg</file>
-        <file>ZeusWithMountain_1100x204_256clr.png</file>
-        <file>Thermometer.png</file>
-        <file>Thermometer16x16.bmp</file>
-        <file>Thermometer24x24.bmp</file>
-        <file>Thermometer32x32.bmp</file>
+        <file alias="ModeEdit16x16.bmp">Images/ModeEdit16x16.bmp</file>
+        <file alias="ModeEdit24x24.bmp">Images/ModeEdit24x24.bmp</file>
+        <file alias="ModeEdit32x32.bmp">Images/ModeEdit32x32.bmp</file>
+        <file alias="ModeSimulation16x16.bmp">Images/ModeSimulation16x16.bmp</file>
+        <file alias="ModeSimulation24x24.bmp">Images/ModeSimulation24x24.bmp</file>
+        <file alias="ModeSimulation32x32.bmp">Images/ModeSimulation32x32.bmp</file>
+        <file alias="RSIcon16x16.bmp">Images/RSIcon16x16.bmp</file>
+        <file alias="RSIcon32x32.bmp">Images/RSIcon32x32.bmp</file>
+        <file alias="ZeusSoft_16x16.bmp">Images/ZeusSoft_16x16_256clr.bmp</file>
+        <file alias="ZeusSoft_32x32.bmp">Images/ZeusSoft_32x32_256clr.bmp</file>
+        <file alias="ZeusSoft_48x48.bmp">Images/ZeusSoft_48x48_256clr.bmp</file>
+        <file alias="ZeusSoft_64x64.bmp">Images/ZeusSoft_64x64_256clr.bmp</file>
+        <file alias="ZeusSoft_256x256.bmp">Images/ZeusSoft_256x256_256clr.bmp</file>
+        <file alias="ZeusSoft_280x170.png">Images/ZeusSoft_280x170_256clr.png</file>
+        <file alias="ZeusWithMountain_1100x204_256clr.gif">Images/ZeusWithMountain_1100x204_256clr.gif</file>
+        <file alias="ZeusWithMountain_1100x204_256clr.jpg">Images/ZeusWithMountain_1100x204_256clr.jpg</file>
+        <file alias="ZeusWithMountain_1100x204_256clr.png">Images/ZeusWithMountain_1100x204_256clr.png</file>
+        <file alias="Thermometer.png">Images/Thermometer.png</file>
+        <file alias="Thermometer16x16.bmp">Images/Thermometer16x16.bmp</file>
+        <file alias="Thermometer24x24.bmp">Images/Thermometer24x24.bmp</file>
+        <file alias="Thermometer32x32.bmp">Images/Thermometer32x32.bmp</file>
     </qresource>
     <qresource prefix="/ZS/Button">
-        <file>ButtonAdd16x16.bmp</file>
-        <file>ButtonAdd24x24.bmp</file>
-        <file>ButtonClose16x16.bmp</file>
-        <file>ButtonClose24x24.bmp</file>
-        <file>ButtonCmdPause16x16.bmp</file>
-        <file>ButtonCmdStart16x16.bmp</file>
-        <file>ButtonCmdStepForward16x16.bmp</file>
-        <file>ButtonCmdStop16x16.bmp</file>
-        <file>ButtonCmdStepBackward16x16.bmp</file>
-        <file>ButtonDelete16x16.bmp</file>
-        <file>ButtonDelete24x24.bmp</file>
-        <file>ButtonFileNew16x16.bmp</file>
-        <file>ButtonFileOpen16x16.bmp</file>
-        <file>ButtonFileSave16x16.bmp</file>
-        <file>ButtonFileSaveAs16x16.bmp</file>
-        <file>ButtonMoveUp16x16.bmp</file>
-        <file>ButtonMoveUp24x24.bmp</file>
-        <file>ButtonMoveDown16x16.bmp</file>
-        <file>ButtonMoveDown24x24.bmp</file>
-        <file>ButtonMoveRight16x16.bmp</file>
-        <file>ButtonMoveRight24x24.bmp</file>
-        <file>ButtonMoveLeft16x16.bmp</file>
-        <file>ButtonMoveLeft24x24.bmp</file>
-        <file>ButtonRedo16x16.bmp</file>
-        <file>ButtonRedo24x24.bmp</file>
-        <file>ButtonTableView16x16.bmp</file>
-        <file>ButtonUndo16x16.bmp</file>
-        <file>ButtonUndo24x24.bmp</file>
-        <file>ButtonZoomIn16x16.bmp</file>
-        <file>ButtonZoomIn24x24.bmp</file>
-        <file>ButtonZoomOut16x16.bmp</file>
-        <file>ButtonZoomOut24x24.bmp</file>
+        <file alias="ButtonAdd16x16.bmp">Images/ButtonAdd16x16.bmp</file>
+        <file alias="ButtonAdd24x24.bmp">Images/ButtonAdd24x24.bmp</file>
+        <file alias="ButtonClose16x16.bmp">Images/ButtonClose16x16.bmp</file>
+        <file alias="ButtonClose24x24.bmp">Images/ButtonClose24x24.bmp</file>
+        <file alias="ButtonCmdPause16x16.bmp">Images/ButtonCmdPause16x16.bmp</file>
+        <file alias="ButtonCmdStart16x16.bmp">Images/ButtonCmdStart16x16.bmp</file>
+        <file alias="ButtonCmdStepForward16x16.bmp">Images/ButtonCmdStepForward16x16.bmp</file>
+        <file alias="ButtonCmdStop16x16.bmp">Images/ButtonCmdStop16x16.bmp</file>
+        <file alias="ButtonCmdStepBackward16x16.bmp">Images/ButtonCmdStepBackward16x16.bmp</file>
+        <file alias="ButtonDelete16x16.bmp">Images/ButtonDelete16x16.bmp</file>
+        <file alias="ButtonDelete24x24.bmp">Images/ButtonDelete24x24.bmp</file>
+        <file alias="ButtonFileNew16x16.bmp">Images/ButtonFileNew16x16.bmp</file>
+        <file alias="ButtonFileOpen16x16.bmp">Images/ButtonFileOpen16x16.bmp</file>
+        <file alias="ButtonFileSave16x16.bmp">Images/ButtonFileSave16x16.bmp</file>
+        <file alias="ButtonFileSaveAs16x16.bmp">Images/ButtonFileSaveAs16x16.bmp</file>
+        <file alias="ButtonMoveUp16x16.bmp">Images/ButtonMoveUp16x16.bmp</file>
+        <file alias="ButtonMoveUp24x24.bmp">Images/ButtonMoveUp24x24.bmp</file>
+        <file alias="ButtonMoveDown16x16.bmp">Images/ButtonMoveDown16x16.bmp</file>
+        <file alias="ButtonMoveDown24x24.bmp">Images/ButtonMoveDown24x24.bmp</file>
+        <file alias="ButtonMoveRight16x16.bmp">Images/ButtonMoveRight16x16.bmp</file>
+        <file alias="ButtonMoveRight24x24.bmp">Images/ButtonMoveRight24x24.bmp</file>
+        <file alias="ButtonMoveLeft16x16.bmp">Images/ButtonMoveLeft16x16.bmp</file>
+        <file alias="ButtonMoveLeft24x24.bmp">Images/ButtonMoveLeft24x24.bmp</file>
+        <file alias="ButtonRedo16x16.bmp">Images/ButtonRedo16x16.bmp</file>
+        <file alias="ButtonRedo24x24.bmp">Images/ButtonRedo24x24.bmp</file>
+        <file alias="ButtonTableView16x16.bmp">Images/ButtonTableView16x16.bmp</file>
+        <file alias="ButtonUndo16x16.bmp">Images/ButtonUndo16x16.bmp</file>
+        <file alias="ButtonUndo24x24.bmp">Images/ButtonUndo24x24.bmp</file>
+        <file alias="ButtonZoomIn16x16.bmp">Images/ButtonZoomIn16x16.bmp</file>
+        <file alias="ButtonZoomIn24x24.bmp">Images/ButtonZoomIn24x24.bmp</file>
+        <file alias="ButtonZoomOut16x16.bmp">Images/ButtonZoomOut16x16.bmp</file>
+        <file alias="ButtonZoomOut24x24.bmp">Images/ButtonZoomOut24x24.bmp</file>
     </qresource>
     <qresource prefix="/ZS/CnctState">
-        <file>LedCircleBlue.png</file>
-        <file>LedCircleGreen.png</file>
-        <file>LedCircleGrey.png</file>
-        <file>LedCircleRed.png</file>
-        <file>LedCircleYellow.png</file>
+        <file alias="LedCircleBlue.png">Images/LedCircleBlue.png</file>
+        <file alias="LedCircleGreen.png">Images/LedCircleGreen.png</file>
+        <file alias="LedCircleGrey.png">Images/LedCircleGrey.png</file>
+        <file alias="LedCircleRed.png">Images/LedCircleRed.png</file>
+        <file alias="LedCircleYellow.png">Images/LedCircleYellow.png</file>
     </qresource>
     <qresource prefix="/ZS/Menu">
-        <file>MenuFileAdd16x16.bmp</file>
-        <file>MenuFileEdit16x16.bmp</file>
-        <file>MenuFileNew16x16.bmp</file>
-        <file>MenuFileOpen16x16.bmp</file>
-        <file>MenuFileSave16x16.bmp</file>
-        <file>MenuFileSaveAs16x16.bmp</file>
+        <file alias="MenuFileAdd16x16.bmp">Images/MenuFileAdd16x16.bmp</file>
+        <file alias="MenuFileEdit16x16.bmp">Images/MenuFileEdit16x16.bmp</file>
+        <file alias="MenuFileNew16x16.bmp">Images/MenuFileNew16x16.bmp</file>
+        <file alias="MenuFileOpen16x16.bmp">Images/MenuFileOpen16x16.bmp</file>
+        <file alias="MenuFileSave16x16.bmp">Images/MenuFileSave16x16.bmp</file>
+        <file alias="MenuFileSaveAs16x16.bmp">Images/MenuFileSaveAs16x16.bmp</file>
     </qresource>
     <qresource prefix="/ZS/TreeView">
-        <file>TreeViewBranchEntry.bmp</file>
-        <file>TreeViewLeaveEntry.bmp</file>
-        <file>TreeViewRootEntry.bmp</file>
-        <file>TreeViewCollapseAll.bmp</file>
-        <file>TreeViewExpandAll.bmp</file>
-        <file>TreeViewResizeToContents.bmp</file>
-        <file>TreeViewSortOrderConfig.bmp</file>
-        <file>TreeViewSortOrderAscending.bmp</file>
-        <file>TreeViewViewModeNavPanelOnly.bmp</file>
-        <file>TreeViewViewModeNavPanelAndLeaveContent.bmp</file>
-        <file>TreeViewViewModeNavPanelAndBranchContent.bmp</file>
+        <file alias="TreeViewBranchEntry.bmp">Images/TreeViewBranchEntry.bmp</file>
+        <file alias="TreeViewLeaveEntry.bmp">Images/TreeViewLeaveEntry.bmp</file>
+        <file alias="TreeViewRootEntry.bmp">Images/TreeViewRootEntry.bmp</file>
+        <file alias="TreeViewCollapseAll.bmp">Images/TreeViewCollapseAll.bmp</file>
+        <file alias="TreeViewExpandAll.bmp">Images/TreeViewExpandAll.bmp</file>
+        <file alias="TreeViewResizeToContents.bmp">Images/TreeViewResizeToContents.bmp</file>
+        <file alias="TreeViewSortOrderConfig.bmp">Images/TreeViewSortOrderConfig.bmp</file>
+        <file alias="TreeViewSortOrderAscending.bmp">Images/TreeViewSortOrderAscending.bmp</file>
+        <file alias="TreeViewViewModeNavPanelOnly.bmp">Images/TreeViewViewModeNavPanelOnly.bmp</file>
+        <file alias="TreeViewViewModeNavPanelAndLeaveContent.bmp">Images/TreeViewViewModeNavPanelAndLeaveContent.bmp</file>
+        <file alias="TreeViewViewModeNavPanelAndBranchContent.bmp">Images/TreeViewViewModeNavPanelAndBranchContent.bmp</file>
     </qresource>
     <qresource prefix="/ZS/TreeView/FileExplorer">
-        <file>TreeViewFileExplorerBranchEntryNormalOff.bmp</file>
-        <file>TreeViewFileExplorerBranchEntryNormalOn.bmp</file>
-        <file>TreeViewFileExplorerBranchEntryDisabledOff.bmp</file>
-        <file>TreeViewFileExplorerBranchEntryDisabledOn.bmp</file>
-        <file>TreeViewFileExplorerBranchEntryActiveOff.bmp</file>
-        <file>TreeViewFileExplorerBranchEntryActiveOn.bmp</file>
-        <file>TreeViewFileExplorerBranchEntrySelectedOff.bmp</file>
-        <file>TreeViewFileExplorerBranchEntrySelectedOn.bmp</file>
+        <file alias="TreeViewFileExplorerBranchEntryNormalOff.bmp">Images/TreeViewFileExplorerBranchEntryNormalOff.bmp</file>
+        <file alias="TreeViewFileExplorerBranchEntryNormalOn.bmp">Images/TreeViewFileExplorerBranchEntryNormalOn.bmp</file>
+        <file alias="TreeViewFileExplorerBranchEntryDisabledOff.bmp">Images/TreeViewFileExplorerBranchEntryDisabledOff.bmp</file>
+        <file alias="TreeViewFileExplorerBranchEntryDisabledOn.bmp">Images/TreeViewFileExplorerBranchEntryDisabledOn.bmp</file>
+        <file alias="TreeViewFileExplorerBranchEntryActiveOff.bmp">Images/TreeViewFileExplorerBranchEntryActiveOff.bmp</file>
+        <file alias="TreeViewFileExplorerBranchEntryActiveOn.bmp">Images/TreeViewFileExplorerBranchEntryActiveOn.bmp</file>
+        <file alias="TreeViewFileExplorerBranchEntrySelectedOff.bmp">Images/TreeViewFileExplorerBranchEntrySelectedOff.bmp</file>
+        <file alias="TreeViewFileExplorerBranchEntrySelectedOn.bmp">Images/TreeViewFileExplorerBranchEntrySelectedOn.bmp</file>
     </qresource>
     <qresource prefix="/ZS/TreeView/Requests">
-        <file>TreeViewRequestsBranchEntryNormalOff.bmp</file>
-        <file>TreeViewRequestsBranchEntrySelectedOff.bmp</file>
-        <file>TreeViewRequestsLeaveEntryNormalOff.bmp</file>
-        <file>TreeViewRequestsLeaveEntrySelectedOff.bmp</file>
+        <file alias="TreeViewRequestsBranchEntryNormalOff.bmp">Images/TreeViewRequestsBranchEntryNormalOff.bmp</file>
+        <file alias="TreeViewRequestsBranchEntrySelectedOff.bmp">Images/TreeViewRequestsBranchEntrySelectedOff.bmp</file>
+        <file alias="TreeViewRequestsLeaveEntryNormalOff.bmp">Images/TreeViewRequestsLeaveEntryNormalOff.bmp</file>
+        <file alias="TreeViewRequestsLeaveEntrySelectedOff.bmp">Images/TreeViewRequestsLeaveEntrySelectedOff.bmp</file>
     </qresource>
     <qresource prefix="/ZS/TreeView/TrcAdminObjs">
-        <file>TreeViewTrcAdminObjsBranchEntryNormalOff.bmp</file>
-        <file>TreeViewTrcAdminObjsBranchEntrySelectedOff.bmp</file>
-        <file>TreeViewTrcAdminObjsLeaveEntryNormalOff.bmp</file>
-        <file>TreeViewTrcAdminObjsLeaveEntrySelectedOff.bmp</file>
+        <file alias="TreeViewTrcAdminObjsBranchEntryNormalOff.bmp">Images/TreeViewTrcAdminObjsBranchEntryNormalOff.bmp</file>
+        <file alias="TreeViewTrcAdminObjsBranchEntrySelectedOff.bmp">Images/TreeViewTrcAdminObjsBranchEntrySelectedOff.bmp</file>
+        <file alias="TreeViewTrcAdminObjsLeaveEntryNormalOff.bmp">Images/TreeViewTrcAdminObjsLeaveEntryNormalOff.bmp</file>
+        <file alias="TreeViewTrcAdminObjsLeaveEntrySelectedOff.bmp">Images/TreeViewTrcAdminObjsLeaveEntrySelectedOff.bmp</file>
     </qresource>
     <qresource prefix="/ZS/TreeView/Loggers">
-        <file>TreeViewLoggersBranchEntryNormalOff.bmp</file>
-        <file>TreeViewLoggersBranchEntrySelectedOff.bmp</file>
-        <file>TreeViewLoggersLeaveEntryNormalOff.bmp</file>
-        <file>TreeViewLoggersLeaveEntrySelectedOff.bmp</file>
+        <file alias="TreeViewLoggersBranchEntryNormalOff.bmp">Images/TreeViewLoggersBranchEntryNormalOff.bmp</file>
+        <file alias="TreeViewLoggersBranchEntrySelectedOff.bmp">Images/TreeViewLoggersBranchEntrySelectedOff.bmp</file>
+        <file alias="TreeViewLoggersLeaveEntryNormalOff.bmp">Images/TreeViewLoggersLeaveEntryNormalOff.bmp</file>
+        <file alias="TreeViewLoggersLeaveEntrySelectedOff.bmp">Images/TreeViewLoggersLeaveEntrySelectedOff.bmp</file>
     </qresource>
     <qresource prefix="/ZS/Result">
-        <file>ResultSeveritySuccess.bmp</file>
-        <file>ResultSeverityInfo.bmp</file>
-        <file>ResultSeverityWarning.bmp</file>
-        <file>ResultSeverityError.bmp</file>
-        <file>ResultSeverityCritical.bmp</file>
+        <file alias="ResultSeveritySuccess.bmp">Images/ResultSeveritySuccess.bmp</file>
+        <file alias="ResultSeverityInfo.bmp">Images/ResultSeverityInfo.bmp</file>
+        <file alias="ResultSeverityWarning.bmp">Images/ResultSeverityWarning.bmp</file>
+        <file alias="ResultSeverityError.bmp">Images/ResultSeverityError.bmp</file>
+        <file alias="ResultSeverityCritical.bmp">Images/ResultSeverityCritical.bmp</file>
     </qresource>
 </RCC>

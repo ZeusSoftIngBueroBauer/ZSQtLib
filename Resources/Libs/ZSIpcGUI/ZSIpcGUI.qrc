@@ -1,8 +1,8 @@
 <!DOCTYPE RCC>
 <RCC version="1.0">
     <qresource prefix="ZS/Ipc">
-        <file>Client203x248.bmp</file>
-        <file>ServerListen120x120.bmp</file>
-        <file>Socket228x221.bmp</file>
+        <file alias="Client203x248.bmp">Images/Client203x248.bmp</file>
+        <file alias="ServerListen120x120.bmp">Images/ServerListen120x120.bmp</file>
+        <file alias="Socket228x221.bmp">Images/Socket228x221.bmp</file>
     </qresource>
 </RCC>

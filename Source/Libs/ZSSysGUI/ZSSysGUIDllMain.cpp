@@ -328,3 +328,23 @@ QPixmap ZS::System::GUI::mode2Pixmap( int i_iMode, int i_iSize )
 } // mode2Pixmap
 
 
+extern int qInitResources_ZSSysGUI();
+
+//------------------------------------------------------------------------------
+int ZS::System::GUI::qInitResources()
+//------------------------------------------------------------------------------
+{
+    ::qInitResources_ZSSysGUI();
+    return 1;
+}
+
+extern int qInitResources_ZSSysGUIQml();
+
+//------------------------------------------------------------------------------
+int ZS::System::GUI::qInitResourcesQml()
+//------------------------------------------------------------------------------
+{
+    ::qInitResources_ZSSysGUIQml();
+    return 1;
+}
+

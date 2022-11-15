@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/ZSSysGUI">
+        <file>qmldir</file>
+        <file>ZSSysErrLogWdgt.qml</file>
+        <file>ZSSysPushButton.qml</file>
+    </qresource>
+</RCC>

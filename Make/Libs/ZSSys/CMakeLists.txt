@@ -177,8 +177,12 @@ if(QT_VERSION_MAJOR EQUAL 4)
 endif()
 target_link_libraries(${PROJECT_NAME} ${_Libs})
 
-# Copy Qt Dlls to bin directory.
-include(${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}CopyQtDlls.cmake)
+# Don't copy Qt Dlls to bin directory.
+# The Dlls got to loaded from the Qt installation directory.
+# Otherwise the Qml modules will not be loaded.
+# If the Qt installation directory is not in PATH the Dlls and Plugins
+# got to be manually copied to the bin directory.
+#include(${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}CopyQtDlls.cmake)
 
 include(GNUInstallDirs)
 

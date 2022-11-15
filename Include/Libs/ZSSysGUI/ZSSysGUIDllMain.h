@@ -78,10 +78,15 @@ ZSSYSGUIDLL_API QPixmap getErrPixmap( EResultSeverity i_severity, const QSize& i
 ZSSYSGUIDLL_API QIcon getErrIcon( EResultSeverity i_severity );
 ZSSYSGUIDLL_API QPixmap mode2Pixmap( int i_iMode, int i_iSize = 16 ); // Range 16, 24, 32
 
+ZSSYSGUIDLL_API int qInitResources();
+ZSSYSGUIDLL_API int qInitResourcesQml();
+
 } // namespace GUI
 
 } // namespace System
 
 } // namespace ZS
+
+//ZSSYSGUIDLL_API int ZS_System_GUI_q_InitResources_ZSSysGUI();
 
 #endif // #ifndef ZSSysGUI_DllMain_h

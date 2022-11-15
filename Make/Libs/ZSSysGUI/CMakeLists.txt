@@ -30,6 +30,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(_HeadersPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../Include/Libs)
 set(_SourcesPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../Source/Libs)
 set(_ResourcesPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../Resources/Libs)
+set(_QmlPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../Qml/Libs)
 
 list(APPEND _Headers
     ${_HeadersPath}/ZSSys/ZSSysVersion.h
@@ -114,6 +115,156 @@ list(APPEND _Sources
 
 list(APPEND _Resources
     ${_ResourcesPath}/${PROJECT_NAME}/${PROJECT_NAME}.qrc
+    ${_QmlPath}/${PROJECT_NAME}/${PROJECT_NAME}Qml.qrc
+)
+
+list(APPEND _AppImages
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ModeEdit16x16.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ModeEdit24x24.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ModeEdit32x32.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ModeSimulation16x16.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ModeSimulation24x24.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ModeSimulation32x32.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/RSIcon16x16.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/RSIcon32x32.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ZeusSoft_16x16_256clr.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ZeusSoft_32x32_256clr.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ZeusSoft_48x48_256clr.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ZeusSoft_64x64_256clr.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ZeusSoft_256x256_256clr.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ZeusSoft_280x170_256clr.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ZeusWithMountain_1100x204_256clr.gif
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ZeusWithMountain_1100x204_256clr.jpg
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ZeusWithMountain_1100x204_256clr.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/Thermometer.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/Thermometer16x16.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/Thermometer24x24.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/Thermometer32x32.bmp
+)
+
+list(APPEND _ButtonImages
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonAdd16x16.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonAdd24x24.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonClose16x16.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonClose24x24.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonCmdPause16x16.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonCmdStart16x16.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonCmdStepForward16x16.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonCmdStop16x16.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonCmdStepBackward16x16.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonDelete16x16.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonDelete24x24.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonFileNew16x16.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonFileOpen16x16.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonFileSave16x16.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonFileSaveAs16x16.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonMoveUp16x16.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonMoveUp24x24.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonMoveDown16x16.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonMoveDown24x24.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonMoveRight16x16.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonMoveRight24x24.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonMoveLeft16x16.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonMoveLeft24x24.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonRedo16x16.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonRedo24x24.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonTableView16x16.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonUndo16x16.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonUndo24x24.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonZoomIn16x16.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonZoomIn24x24.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonZoomOut16x16.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonZoomOut24x24.bmp
+)
+
+list(APPEND _CnctStateImages
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/LedCircleBlue.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/LedCircleGreen.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/LedCircleGrey.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/LedCircleRed.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/LedCircleYellow.png
+)
+
+list(APPEND _MenuImages
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/MenuFileAdd16x16.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/MenuFileEdit16x16.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/MenuFileNew16x16.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/MenuFileOpen16x16.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/MenuFileSave16x16.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/MenuFileSaveAs16x16.bmp
+)
+
+list(APPEND _TreeViewImages
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewBranchEntry.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewLeaveEntry.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewRootEntry.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewCollapseAll.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewExpandAll.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewResizeToContents.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewSortOrderConfig.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewSortOrderAscending.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewViewModeNavPanelOnly.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewViewModeNavPanelAndLeaveContent.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewViewModeNavPanelAndBranchContent.bmp
+)
+
+list(APPEND _TreeViewFileExplorerImages
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewFileExplorerBranchEntryNormalOff.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewFileExplorerBranchEntryNormalOn.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewFileExplorerBranchEntryDisabledOff.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewFileExplorerBranchEntryDisabledOn.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewFileExplorerBranchEntryActiveOff.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewFileExplorerBranchEntryActiveOn.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewFileExplorerBranchEntrySelectedOff.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewFileExplorerBranchEntrySelectedOn.bmp
+)
+
+list(APPEND _TreeViewRequestsImages
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewRequestsBranchEntryNormalOff.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewRequestsBranchEntrySelectedOff.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewRequestsLeaveEntryNormalOff.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewRequestsLeaveEntrySelectedOff.bmp
+)
+
+list(APPEND _TreeViewTrcAdminObjsImages
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewTrcAdminObjsBranchEntryNormalOff.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewTrcAdminObjsBranchEntrySelectedOff.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewTrcAdminObjsLeaveEntryNormalOff.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewTrcAdminObjsLeaveEntrySelectedOff.bmp
+)
+
+list(APPEND _TreeViewLoggersImages
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewLoggersBranchEntryNormalOff.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewLoggersBranchEntrySelectedOff.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewLoggersLeaveEntryNormalOff.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewLoggersLeaveEntrySelectedOff.bmp
+)
+
+list(APPEND _ResultImages
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ResultSeveritySuccess.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ResultSeverityInfo.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ResultSeverityWarning.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ResultSeverityError.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ResultSeverityCritical.bmp
+)
+
+list(APPEND _ImageFiles
+    ${_AppImages}
+    ${_ButtonImages}
+    ${_CnctStateImages}
+    ${_MenuImages}
+    ${_TreeViewImages}
+    ${_TreeViewFileExplorerImages}
+    ${_TreeViewRequestsImages}
+    ${_TreeViewTrcAdminObjsImages}
+    ${_TreeViewLoggersImages}
+    ${_ResultImages}
+)
+
+list(APPEND _QmlFiles
+    ${_QmlPath}/${PROJECT_NAME}/qmldir
+    ${_QmlPath}/${PROJECT_NAME}/ZSSysErrLogWdgt.qml
+    ${_QmlPath}/${PROJECT_NAME}/ZSSysPushButton.qml
 )
 
 if(WIN32)
@@ -130,7 +281,7 @@ if(CMAKE_BUILD_TYPE MATCHES Debug)
 endif()
 message(STATUS "TargetOutputName:         ${TargetOutputName}")
 
-add_library(${PROJECT_NAME} SHARED ${_Headers} ${_Sources} ${_Resources})
+add_library(${PROJECT_NAME} SHARED ${_Headers} ${_Sources} ${_Resources} ${_QmlFiles} ${_ImageFiles})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${TargetOutputName})
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER Libs)
@@ -138,6 +289,17 @@ set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER Libs)
 source_group("Header Files" FILES ${_Headers})
 source_group("Source Files" FILES ${_Sources})
 source_group("Resource Files" FILES ${_Resources})
+source_group("Image Files/App" FILES ${_AppImages})
+source_group("Image Files/Button" FILES ${_ButtonImages})
+source_group("Image Files/CnctState" FILES ${_CnctStateImages})
+source_group("Image Files/Menu" FILES ${_MenuImages})
+source_group("Image Files/TreeView/Common" FILES ${_TreeViewImages})
+source_group("Image Files/TreeView/FileExplorer" FILES ${_TreeViewFileExplorerImages})
+source_group("Image Files/TreeView/Requests" FILES ${_TreeViewRequestsImages})
+source_group("Image Files/TreeView/TrcAdminObjs" FILES ${_TreeViewTrcAdminObjsImages})
+source_group("Image Files/TreeView/Loggers" FILES ${_TreeViewLoggersImages})
+source_group("Image Files/Result" FILES ${_ResultImages})
+source_group("Qml Files" FILES ${_QmlFiles})
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ZSSYSGUIDLL_EXPORTS)
 
@@ -152,7 +314,7 @@ if(QT_VERSION_MAJOR EQUAL 4)
     endif()
 elseif(QT_VERSION_MAJOR EQUAL 5)
     target_link_libraries(${PROJECT_NAME}
-        PUBLIC Qt5::Gui Qt5::Widgets
+        PUBLIC Qt5::Gui Qt5::Widgets Qt5::Qml Qt5::Quick
         PUBLIC ZSSys)
 endif()
 
