@@ -161,6 +161,21 @@ SErrLogEntry& SErrLogEntry::operator = ( const SErrLogEntry& i_other )
 
 } // operator =
 
+/*==============================================================================
+public: // struct methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QString SErrLogEntry::toString() const
+//------------------------------------------------------------------------------
+{
+    QString str;
+    str = "{" + m_dateTime.toString("yyyy.MM.dd hh:mm:ss");
+    str += " (" + QString::number(m_fSysTime_us, 'f', 6) + " us)";
+    str += ", " + m_errResultInfo.toString();
+    str += ", " + QString::number(m_iOccurrences) + "}";
+    return str;
+}
 
 /*******************************************************************************
 class CErrLog : public QObject

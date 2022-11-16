@@ -27,10 +27,19 @@ may result in using the software modules.
 #include "App.h"
 
 #include "ZSSys/ZSSysVersion.h"
+#include "ZSSys/ZSSysErrLog.h"
+#include "ZSSys/ZSSysTime.h"
+
+#include <QGuiApplication>
+#include <QQuickView>
+#include <QQmlContext>
+#include <QQmlEngine>
+#include <QDateTime>
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 using namespace ZS::Apps::Products::IpcServer;
+using namespace ZS::System;
 
 /*******************************************************************************
 Entry point for the application.
@@ -40,11 +49,29 @@ Entry point for the application.
 int main(int argc, char *argv[])
 //------------------------------------------------------------------------------
 {
+    int iAppResult = 0;
+
+    QGuiApplication app(argc, argv);
+
+    QQuickView view;
+    QQmlContext* pQmlCtx = view.engine()->rootContext();
+    SErrLogEntry errLogEntry(
+        QDateTime::currentDateTime(),
+        Time::getProcTimeInMicroSec(),
+        SErrResultInfo(__FILE__, __LINE__, EResultSuccess, EResultSeveritySuccess, "everything is fine"),
+        "Learn more",
+        1 );
+    pQmlCtx->setContextProperty("_aErrLogEntry", QVariant::fromValue(errLogEntry));
+
+    const QUrl url(QStringLiteral("qrc:/main.qml"));
+    view.setSource(url);
+    view.show();
+    iAppResult = app.exec();
+
+#if 0
     #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     #endif
-
-    int iAppResult = 0;
 
     // Set the OpenGL type before instantiating the application.
     // In this example, we're forcing use of ANGLE.
@@ -73,6 +100,7 @@ int main(int argc, char *argv[])
     {
     }
     pApp = nullptr;
+#endif // #if 0
 
     #ifdef _WINDOWS
     #ifdef _DEBUG

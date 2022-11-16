@@ -60,6 +60,12 @@ class CTestCrashDumpThread;
 struct ZSSYSDLL_API SErrLogEntry
 //******************************************************************************
 {
+    Q_GADGET
+    Q_PROPERTY(int rowIdx MEMBER m_iRowIdx);
+    Q_PROPERTY(QDateTime dateTime MEMBER m_dateTime);
+    //Q_PROPERTY(SErrResultInfo errResultInfo MEMBER m_errResultInfo);
+    Q_PROPERTY(QString proposal MEMBER m_strProposal);
+    Q_PROPERTY(int occurrences MEMBER m_iOccurrences);
 public: // ctors
     SErrLogEntry();
     SErrLogEntry( const SErrLogEntry& i_other );
@@ -71,6 +77,8 @@ public: // ctors
         int                   i_iOccurrences );
 public: // operators
     SErrLogEntry& operator = ( const SErrLogEntry& i_other );
+public: // struct methods
+    Q_INVOKABLE QString toString() const;
 public: // instance members
     int            m_iRowIdx;       /*!< Index in the Error Logs Table. For internal use only. May be changed on removing entries from the error log. */
     QDateTime      m_dateTime;      /*!< Date and time the error occurred or the entry was created. */
