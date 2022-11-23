@@ -1693,7 +1693,7 @@ void CTreeViewIdxTree::startDrag( Qt::DropActions i_supportedActions )
             return;
         }
 
-        for( int i = 0; i<indexes.count(); i++ )
+        for( int i = 0; i < indexes.count(); i++ )
         {
             QModelIndex idx = indexes.at(i);
             //qDebug() << "\tDragged item to delete" << i << " is: \"" << idx.data(NODE_TITLE).toString() << "\"";

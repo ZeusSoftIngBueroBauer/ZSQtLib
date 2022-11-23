@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer, Germany
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -24,13 +24,12 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSApps_IpcServer_App_h
-#define ZSApps_IpcServer_App_h
+#ifndef ZSSysGUI_ErrLogProxyModel_h
+#define ZSSysGUI_ErrLogProxyModel_h
 
-#include <QtGui/QGuiApplication>
+#include <QtCore/qsortfilterproxymodel.h>
 
-class QQmlApplicationEngine;
-class QQuickWindow;
+#include "ZSSysGUI/ZSSysErrLogModel.h"
 
 namespace ZS
 {
@@ -40,55 +39,37 @@ class CTrcAdminObj;
 
 namespace GUI
 {
-class CModelErrLog;
-class CProxyModelErrLog;
-}
-}
-namespace Trace
-{
-class CIpcTrcServer;
-}
-namespace Apps
-{
-namespace Products
-{
-namespace IpcServer
-{
 //******************************************************************************
-class CApplication : public QGuiApplication
+class ZSSYSGUIDLL_API CProxyModelErrLog : public QSortFilterProxyModel
 //******************************************************************************
 {
     Q_OBJECT
+    Q_PROPERTY(CModelErrLog* errLogModel READ errLogModel CONSTANT)
+    Q_CLASSINFO("DefaultProperty", "data")
 public: // class methods
-    static QString NameSpace() { return "ZS::Apps::Products::IpcServer"; }
-    static QString ClassName() { return "CApplication"; }
-    static CApplication* GetInstance();
+    static QString NameSpace() { return "ZS::System::GUI"; }
+    static QString ClassName() { return "CProxyModelErrLog"; }
 public: // ctors and dtor
-    CApplication(
-        int            i_argc,
-        char*          i_argv[],
-        const QString& i_strOrganizationName,
-        const QString& i_strOrganizationDomain,
-        const QString& i_strAppName,
-        const QString& i_strAppVersion,
-        const QString& i_strWindowTitle );
-    ~CApplication();
+    CProxyModelErrLog(CModelErrLog* i_pErrLogModel);
+    virtual ~CProxyModelErrLog();
+public: // instance methods
+    CModelErrLog* errLogModel();
+    Q_INVOKABLE int columnWidth(int i_iClm, const QFont* i_pFont = nullptr) const;
+public: // overridables of base class QSortFilterProxyModel
+    Q_INVOKABLE void sort(int i_iClm, Qt::SortOrder i_sortOrder = Qt::AscendingOrder) override;
+    int columnCount(const QModelIndex& i_modelIdxParent = QModelIndex()) const override;
+    QModelIndex mapFromSource(const QModelIndex& i_modelIdxSource) const override;
+    QModelIndex mapToSource(const QModelIndex& i_modelIdxProxy) const override;
 protected: // instance members
-    QQmlApplicationEngine*              m_pQmlAppEngine;
-    QQuickWindow*                       m_pMainWindow;
-    ZS::System::GUI::CModelErrLog*      m_pErrLogModel;
-    ZS::System::GUI::CProxyModelErrLog* m_pErrLogModelProxy;
-    ZS::Trace::CIpcTrcServer*           m_pTrcServer;
-    ZS::System::CTrcAdminObj*           m_pTrcAdminObj;
+    CModelErrLog*             m_pErrLogModel;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
-}; // class CApplication
+}; // class CProxyModelErrLog
 
-} // namespace IpcServer
+} // namespace GUI
 
-} // namespace Products
-
-} // namespace Apps
+} // namespace System
 
 } // namespace ZS
 
-#endif // #ifndef ZSApps_IpcServer_App_h
+#endif // #ifndef ZSSysGUI_ErrLogProxyModel_h

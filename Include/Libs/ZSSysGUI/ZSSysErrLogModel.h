@@ -41,36 +41,49 @@ namespace System
 {
 class CErrLog;
 struct SErrLogEntry;
+class CTrcAdminObj;
 
 namespace GUI
 {
 //******************************************************************************
-class ZSSYSGUIDLL_API CModelErrLog : public QAbstractItemModel // QAbstractTableModel
+class ZSSYSGUIDLL_API CModelErrLog : public QAbstractItemModel
 //******************************************************************************
 {
     Q_OBJECT
+public: // class methods
+    static QString NameSpace() { return "ZS::System::GUI"; }
+    static QString ClassName() { return "CModelErrLog"; }
 public: // type definitions and constants
     enum EColumn {
-        EColumnRowIdx         =  0,
-        EColumnSeverityIcon   =  1,
-        EColumnDate           =  2,
-        EColumnTime           =  3,
-        EColumnSeverity       =  4,
-        EColumnResult         =  5,
-        EColumnResultStr      =  6,
-        EColumnOccurrences    =  7,
-        EColumnSource         =  8,
-        EColumnAddInfo        =  9,
-        EColumnProposal       = 10,
-        EColumnCount
+        EColumnRowIdx           =  0,
+        EColumnSeverityRowIdx   =  1,
+        EColumnSeverityImageUrl =  2,
+        EColumnSeverityIcon     =  3,
+        EColumnSeverity         =  4,
+        EColumnResultNumber     =  5,
+        EColumnResult           =  6,
+        EColumnDate             =  7,
+        EColumnTime             =  8,
+        EColumnOccurrences      =  9,
+        EColumnSource           = 10,
+        EColumnAddInfo          = 11,
+        EColumnProposal         = 12,
+        EColumnCount,
+        EColumnUndefined
     };
+    static QString column2Str(EColumn i_clm);
 public: // ctors and dtor
-    CModelErrLog( CErrLog* i_pErrLog );
+    CModelErrLog( CErrLog* i_pErrLog, bool i_bUsedByQmlListModels = false );
     virtual ~CModelErrLog();
 public: // instance methods
     SErrLogEntry* findEntry( const ZS::System::SErrResultInfo& i_errResultInfo );
     void removeEntries( const QModelIndexList& i_modelIdxList );
     void clear();
+public: // auxiliary instance methods
+    QString role2Str(int i_iRole) const;
+    int column2Role(EColumn i_clm) const;
+    EColumn role2Column(int i_iRole) const;
+    QString modelIndex2Str( const QModelIndex& modelIdx ) const;
 protected slots:
     void onEntryAdded( const ZS::System::SErrResultInfo& i_errResultInfo );   // called on adding an entry to the main model
     void onEntryChanged( const ZS::System::SErrResultInfo& i_errResultInfo ); // called on changing an entry in the main model
@@ -78,14 +91,22 @@ protected slots:
 protected: // instance methods
     SErrLogEntry* getEntry( int i_iRowIdx, EResultSeverity i_severity = EResultSeverityUndefined );
     void removeEntry( int i_iRowIdx, EResultSeverity i_severity = EResultSeverityUndefined );
-protected: // must overridables of base class QAbstractItemModel
-    virtual int rowCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
-    virtual int columnCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
-    virtual QVariant data( const QModelIndex& i_modelIdx, int i_iRole = Qt::DisplayRole ) const;
-    virtual QModelIndex index( int i_iRow, int i_iCol, const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
-    virtual QModelIndex parent( const QModelIndex& i_modelIdx ) const;
+public: // instance methods
+    Q_INVOKABLE int columnWidth(int i_iClm, const QFont* i_pFont = nullptr) const;
+public: // overridables of base class QAbstractItemModel
+    virtual QHash<int, QByteArray> roleNames() const override;
+public: // must overridables of base class QAbstractItemModel
+    virtual int rowCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const override;
+    virtual int columnCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const override;
+    virtual QVariant data( const QModelIndex& i_modelIdx, int i_iRole = Qt::DisplayRole ) const override;
+    virtual QModelIndex index( int i_iRow, int i_iClm, const QModelIndex& i_modelIdxParent = QModelIndex() ) const override;
+    virtual QModelIndex parent( const QModelIndex& i_modelIdx ) const override;
 protected: // overridables of base class QAbstractItemModel
-    virtual QVariant headerData( int i_iSection, Qt::Orientation i_orientation, int i_iRole = Qt::DisplayRole ) const;
+    virtual QVariant headerData( int i_iSection, Qt::Orientation i_orientation, int i_iRole = Qt::DisplayRole ) const override;
+public: // auxiliary instance methods
+    void fillRoleNames();
+protected: // class members
+    static QHash<int, QByteArray> s_clm2Name;
 protected: // instance members
     // Please note that entries may be added from within different thread contexts
     // to the error log object and that for this the list of entries of the error
@@ -95,8 +116,13 @@ protected: // instance members
     // within the GUI's main thread and the list may only be modified from within
     // the GUI's main thread (the signals of the error log object have to be queued
     // before calling the slots of the model).
-    CErrLog*             m_pErrLog;
-    QList<SErrLogEntry*> m_ararpEntries[EResultSeverityCount];
+    CErrLog*                      m_pErrLog;
+    QVector<QList<SErrLogEntry*>> m_ararpEntries;
+    bool                          m_bUsedByQmlListModels;
+    QHash<int, QByteArray>        m_roleNames;
+    mutable QVector<int>          m_ariClmWidths;
+    ZS::System::CTrcAdminObj*     m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj*     m_pTrcAdminObjNoisyMethods;
 
 }; // class CModelErrLog
 

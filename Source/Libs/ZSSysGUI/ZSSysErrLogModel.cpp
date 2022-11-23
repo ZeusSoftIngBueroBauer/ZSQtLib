@@ -24,23 +24,12 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include <stdlib.h>
-
-#include <QtCore/qcoreapplication.h>
-#include <QtCore/qdatetime.h>
-#include <QtCore/qdir.h>
-#include <QtCore/qfile.h>
-#include <QtCore/qfileinfo.h>
-#include <QtCore/qsettings.h>
-#include <QtCore/qtextstream.h>
-#include <QtCore/qthread.h>
-#include <QtCore/qtimer.h>
-
 #include "ZSSysGUI/ZSSysErrLogModel.h"
-#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrLog.h"
-#include "ZSSys/ZSSysException.h"
-#include "ZSSys/ZSSysTime.h"
+#include "ZSSys/ZSSysTrcServer.h"
+
+#include <QtGui/qguiapplication.h>
+#include <QtGui/qfontmetrics.h>
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -54,17 +43,71 @@ class CModelErrLog : public QAbstractTableModel
 *******************************************************************************/
 
 /*==============================================================================
+public: // type definitions and constants
+==============================================================================*/
+
+ QHash<int, QByteArray> CModelErrLog::s_clm2Name {
+    { CModelErrLog::EColumnRowIdx, "RowIdx"},
+    { CModelErrLog::EColumnSeverityRowIdx, "SeverityRowIdx"},
+    { CModelErrLog::EColumnSeverityImageUrl, "SeverityImageUrl"},
+    { CModelErrLog::EColumnSeverityIcon, "SeverityIcon"},
+    { CModelErrLog::EColumnSeverity, "Severity"},
+    { CModelErrLog::EColumnResultNumber, "ResultNumber"},
+    { CModelErrLog::EColumnResult, "Result"},
+    { CModelErrLog::EColumnDate, "Date"},
+    { CModelErrLog::EColumnTime, "Time"},
+    { CModelErrLog::EColumnOccurrences, "Occurences"},
+    { CModelErrLog::EColumnSource, "Source"},
+    { CModelErrLog::EColumnAddInfo, "AddInfo"},
+    { CModelErrLog::EColumnProposal, "Proposal"}
+};
+
+//------------------------------------------------------------------------------
+QString CModelErrLog::column2Str(EColumn i_clm)
+//------------------------------------------------------------------------------
+{
+    return s_clm2Name.value(i_clm, "? (" + QByteArray::number(i_clm) + ")");
+}
+
+/*==============================================================================
 public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CModelErrLog::CModelErrLog( CErrLog* i_pErrLog ) :
+CModelErrLog::CModelErrLog( CErrLog* i_pErrLog, bool i_bUsedByQmlListModels ) :
 //------------------------------------------------------------------------------
     QAbstractItemModel(),
-    //QAbstractTableModel(),
-    m_pErrLog(i_pErrLog)
-    //m_ararpEntries[EResultSeverityCount]
+    m_pErrLog(i_pErrLog),
+    m_ararpEntries(QVector<QList<SErrLogEntry*>>(EResultSeverityCount)),
+    m_bUsedByQmlListModels(i_bUsedByQmlListModels),
+    m_roleNames(),
+    m_ariClmWidths(QVector<int>(EColumnCount)),
+    m_pTrcAdminObj(nullptr),
+    m_pTrcAdminObjNoisyMethods(nullptr)
 {
+    fillRoleNames();
+
+    setObjectName(i_pErrLog->objectName());
+
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
+        NameSpace(), ClassName(), objectName());
+    m_pTrcAdminObjNoisyMethods = CTrcServer::GetTraceAdminObj(
+        NameSpace(), ClassName() + "::NoisyMethods", objectName());
+
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        strMthInArgs = "ErrLog: " + i_pErrLog->objectName();
+        strMthInArgs += ", UsedByQmlListModels: " + bool2Str(i_bUsedByQmlListModels);
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "ctor",
+        /* strMthInArgs */ strMthInArgs );
+
     m_pErrLog->lock();
 
     SErrLogEntry* pErrLogEntry = nullptr;
@@ -110,10 +153,16 @@ CModelErrLog::CModelErrLog( CErrLog* i_pErrLog ) :
 CModelErrLog::~CModelErrLog()
 //------------------------------------------------------------------------------
 {
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "dtor",
+        /* strMthInArgs */ "" );
+
     int iSeverity;
     int iRowIdx;
 
-    for( iSeverity = EResultSeverityCount-1; iSeverity >= 0; iSeverity-- )
+    for( iSeverity = m_ararpEntries.count()-1; iSeverity >= 0; iSeverity-- )
     {
         if( m_ararpEntries[iSeverity].count() > 0 )
         {
@@ -128,7 +177,13 @@ CModelErrLog::~CModelErrLog()
         }
     }
 
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
+    m_pTrcAdminObj = nullptr;
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjNoisyMethods);
+    m_pTrcAdminObjNoisyMethods = nullptr;
+
     m_pErrLog = nullptr;
+    m_bUsedByQmlListModels = false;
 
 } // dtor
 
@@ -168,6 +223,29 @@ SErrLogEntry* CModelErrLog::findEntry( const ZS::System::SErrResultInfo& i_errRe
 void CModelErrLog::removeEntries( const QModelIndexList& i_modelIdxList )
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        strMthInArgs = "ModelIdxList[" + QString::number(i_modelIdxList.count()) + "]";
+        if( i_modelIdxList.count() > 0 ) {
+            strMthInArgs += "(";
+            for( const QModelIndex& modelIdx : i_modelIdxList ) {
+                if( !strMthInArgs.endsWith("(")) {
+                    strMthInArgs += ", ";
+                }
+                strMthInArgs += "{" + modelIndex2Str(modelIdx) + "}";
+            }
+            strMthInArgs += ")";
+        }
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "removeEntries",
+        /* strMthInArgs */ strMthInArgs );
+
     if( i_modelIdxList.count() > 0 )
     {
         m_pErrLog->lock();
@@ -219,6 +297,12 @@ void CModelErrLog::removeEntries( const QModelIndexList& i_modelIdxList )
 void CModelErrLog::clear()
 //------------------------------------------------------------------------------
 {
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "clear",
+        /* strMthInArgs */ "" );
+
     m_pErrLog->lock();
 
     //QObject::disconnect(
@@ -268,6 +352,69 @@ void CModelErrLog::clear()
 } // clear
 
 /*==============================================================================
+public: // auxiliary instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QString CModelErrLog::role2Str(int i_iRole) const
+//------------------------------------------------------------------------------
+{
+    return m_roleNames.value(i_iRole, "? (" + QByteArray::number(i_iRole) + ")");
+}
+
+//------------------------------------------------------------------------------
+int CModelErrLog::column2Role(EColumn i_clm) const
+//------------------------------------------------------------------------------
+{
+    if( m_bUsedByQmlListModels )
+    {
+        return Qt::UserRole + i_clm;
+    }
+    return -1;
+}
+
+//------------------------------------------------------------------------------
+CModelErrLog::EColumn CModelErrLog::role2Column(int i_iRole) const
+//------------------------------------------------------------------------------
+{
+    if( m_bUsedByQmlListModels )
+    {
+        if( i_iRole >= Qt::UserRole && i_iRole < (Qt::UserRole + EColumnCount))
+        {
+            return static_cast<EColumn>(i_iRole - Qt::UserRole);
+        }
+    }
+    return EColumnUndefined;
+}
+
+//------------------------------------------------------------------------------
+QString CModelErrLog::modelIndex2Str( const QModelIndex& i_modelIdx ) const
+//------------------------------------------------------------------------------
+{
+    QString str;
+
+    if( !i_modelIdx.isValid() )
+    {
+        str = "Invalid";
+    }
+    else
+    {
+        str = "Row: " + QString::number(i_modelIdx.row());
+
+        if( !m_bUsedByQmlListModels )
+        {
+            str += ", Clm: " + column2Str(static_cast<EColumn>(i_modelIdx.column()));
+        }
+        // Endless recursion if called by ::data method.
+        //if( i_modelIdx.data().canConvert(QVariant::String) )
+        //{
+        //    str += ", Data: " + i_modelIdx.data().toString();
+        //}
+    }
+    return str;
+}
+
+/*==============================================================================
 protected slots:
 ==============================================================================*/
 
@@ -275,6 +422,19 @@ protected slots:
 void CModelErrLog::onEntryAdded( const ZS::System::SErrResultInfo& i_errResultInfo )
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        strMthInArgs = i_errResultInfo.toString(2);
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onEntryAdded",
+        /* strMthInArgs */ strMthInArgs );
+
     m_pErrLog->lock();
 
     // Search entry in "main" list.
@@ -314,6 +474,19 @@ void CModelErrLog::onEntryAdded( const ZS::System::SErrResultInfo& i_errResultIn
 void CModelErrLog::onEntryChanged( const ZS::System::SErrResultInfo& i_errResultInfo )
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        strMthInArgs = i_errResultInfo.toString(2);
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onEntryChanged",
+        /* strMthInArgs */ strMthInArgs );
+
     m_pErrLog->lock();
 
     // Search entry in "main" list.
@@ -362,6 +535,19 @@ void CModelErrLog::onEntryChanged( const ZS::System::SErrResultInfo& i_errResult
 void CModelErrLog::onEntryRemoved( const ZS::System::SErrResultInfo& i_errResultInfo )
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        strMthInArgs = i_errResultInfo.toString();
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onEntryRemoved",
+        /* strMthInArgs */ strMthInArgs );
+
     m_pErrLog->lock();
 
     // Search entry in my view list.
@@ -435,6 +621,20 @@ SErrLogEntry* CModelErrLog::getEntry( int i_iRowIdx, EResultSeverity i_severity 
 void CModelErrLog::removeEntry( int i_iRowIdx, EResultSeverity i_severity )
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        strMthInArgs = "RowIdx: " + QString::number(i_iRowIdx);
+        strMthInArgs += ", Severity: " + resultSeverity2Str(i_severity);
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "removeEntry",
+        /* strMthInArgs */ strMthInArgs );
+
     SErrLogEntry* pEntry = nullptr;
 
     if( i_severity == EResultSeverityUndefined || i_severity == EResultSeverityCount )
@@ -516,13 +716,97 @@ void CModelErrLog::removeEntry( int i_iRowIdx, EResultSeverity i_severity )
 } // removeEntry
 
 /*==============================================================================
+public: // overridables of base class QAbstractItemModel
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+int CModelErrLog::columnWidth(int i_iClm, const QFont* i_pFont) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        strMthInArgs = "Clm: " + column2Str(static_cast<EColumn>(i_iClm));
+        strMthInArgs += ", Font: " + QString(i_pFont == nullptr ? "null" : i_pFont->toString());
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "columnWidth",
+        /* strMthInArgs */ strMthInArgs );
+
+    int iClmWidth = 1;
+
+    if( i_iClm >= 0 && i_iClm < m_ariClmWidths.count() )
+    {
+        iClmWidth = m_ariClmWidths[i_iClm];
+
+        if( iClmWidth == 0)
+        {
+            QFontMetrics fntMetrics =
+                i_pFont == nullptr ? QFontMetrics(QGuiApplication::font()) : QFontMetrics(*i_pFont);
+            QString strClmHeader = headerData(i_iClm, Qt::Horizontal).toString();
+            iClmWidth = fntMetrics.horizontalAdvance(strClmHeader + QLatin1String(" ^")) + 8;
+
+            for( int iSeverity = 0; iSeverity < m_ararpEntries.count(); ++iSeverity )
+            {
+                for( int iRow = 0; iRow < m_ararpEntries[iSeverity].count(); ++iRow )
+                {
+                    QVariant varData = data(index(iRow, i_iClm), Qt::DisplayRole);
+                    if( varData.canConvert(QVariant::String) )
+                    {
+                        QString strCellData = varData.toString();
+                        iClmWidth = qMax(iClmWidth, fntMetrics.horizontalAdvance(strCellData));
+                    }
+                }
+            }
+            m_ariClmWidths[i_iClm] = iClmWidth;
+        }
+    }
+
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        mthTracer.setMethodReturn(iClmWidth);
+    }
+
+    return iClmWidth;
+
+} // columnWidth
+
+/*==============================================================================
+public: // overridables of base class QAbstractItemModel
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QHash<int, QByteArray> CModelErrLog::roleNames() const
+//------------------------------------------------------------------------------
+{
+    return m_roleNames;
+}
+
+/*==============================================================================
 protected: // must overridables of base class QAbstractTableModel
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-int CModelErrLog::rowCount( const QModelIndex& /*i_modelIdxParent*/ ) const
+int CModelErrLog::rowCount( const QModelIndex& i_modelIdxParent ) const
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        strMthInArgs = "Parent {" + modelIndex2Str(i_modelIdxParent) + "}";
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjNoisyMethods,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "rowCount",
+        /* strMthInArgs */ strMthInArgs );
+
     int iRowCount = 0;
 
     int iSeverity;
@@ -532,26 +816,85 @@ int CModelErrLog::rowCount( const QModelIndex& /*i_modelIdxParent*/ ) const
         iRowCount += m_ararpEntries[iSeverity].count();
     }
 
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        mthTracer.setMethodReturn(iRowCount);
+    }
     return iRowCount;
 
 } // rowCount
 
 //------------------------------------------------------------------------------
-int CModelErrLog::columnCount( const QModelIndex& /*i_modelIdxParent*/ ) const
+int CModelErrLog::columnCount( const QModelIndex& i_modelIdxParent ) const
 //------------------------------------------------------------------------------
 {
-    return EColumnCount;
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        strMthInArgs = "Parent {" + modelIndex2Str(i_modelIdxParent) + "}";
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjNoisyMethods,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "columnCount",
+        /* strMthInArgs */ strMthInArgs );
+
+    int iClmCount = EColumnCount;
+
+    if( m_bUsedByQmlListModels )
+    {
+        iClmCount = 1;
+    }
+
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        mthTracer.setMethodReturn(iClmCount);
+    }
+    return iClmCount;
 }
 
 //------------------------------------------------------------------------------
 QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        strMthInArgs = "ModelIdx {" + modelIndex2Str(i_modelIdx) + "}";
+        strMthInArgs += ", Role: " + role2Str(i_iRole);
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "data",
+        /* strMthInArgs */ strMthInArgs );
+
+    static QSet<int> s_rolesHandled = {
+        Qt::DisplayRole, Qt::DecorationRole, Qt::ToolTipRole
+    };
+
     QVariant varData;
 
     if( !i_modelIdx.isValid() )
     {
+        if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+        {
+            mthTracer.setMethodReturn(varData.toString());
+        }
         return varData;
+    }
+
+    EColumn clm = static_cast<EColumn>(i_modelIdx.column());
+    int iRole = i_iRole;
+
+    if( i_iRole >= Qt::UserRole )
+    {
+        clm = role2Column(i_iRole);
+        iRole = Qt::DisplayRole;
     }
 
     const SErrLogEntry* pEntryView = nullptr;
@@ -560,6 +903,10 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
 
     if( iRow < 0 || iRow >= rowCount() )
     {
+        if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+        {
+            mthTracer.setMethodReturn(varData.toString());
+        }
         return varData;
     }
 
@@ -569,80 +916,135 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
 
     if( pEntryView == nullptr )
     {
+        if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+        {
+            mthTracer.setMethodReturn(varData.toString());
+        }
         return varData;
     }
 
-    if( i_iRole == Qt::ToolTipRole )
+    if( iRole == Qt::ToolTipRole )
     {
         QString strTmp = pEntryView->m_strProposal;
         strTmp = encodeForHtml(strTmp);
         varData = strTmp;
     }
-    else if( i_iRole == Qt::DecorationRole )
+    else if( s_rolesHandled.contains(iRole) )
     {
-        if( i_modelIdx.column() == EColumnSeverityIcon )
-        {
-            varData = getErrIcon(pEntryView->m_errResultInfo.getSeverity());
-        }
-    }
-    else if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
-    {
-        switch( i_modelIdx.column() )
+        switch( clm )
         {
             case EColumnRowIdx:
             {
-                varData = pEntryView->m_iRowIdx;
+                if( iRole == Qt::DisplayRole )
+                {
+                    varData = iRow;
+                }
                 break;
             }
-            case EColumnDate:
+            case EColumnSeverityRowIdx:
             {
-                varData = pEntryView->m_dateTime.toString("yyyy-MM-dd");
+                if( iRole == Qt::DisplayRole )
+                {
+                    varData = pEntryView->m_iRowIdx;
+                }
                 break;
             }
-            case EColumnTime:
+            case EColumnSeverityImageUrl:
             {
-                varData = pEntryView->m_dateTime.toString("hh:mm:ss");
+                if( iRole == Qt::DisplayRole )
+                {
+                    varData = getErrImageUrl(pEntryView->m_errResultInfo.getSeverity());
+                }
+                break;
+            }
+            case EColumnSeverityIcon:
+            {
+                if( iRole == Qt::DisplayRole )
+                {
+                    varData = "<Icon>";
+                }
+                else if( i_iRole == Qt::DecorationRole )
+                {
+                    varData = getErrIcon(pEntryView->m_errResultInfo.getSeverity());
+                }
                 break;
             }
             case EColumnSeverity:
             {
-                varData = resultSeverity2Str(pEntryView->m_errResultInfo.getSeverity());
+                if( iRole == Qt::DisplayRole )
+                {
+                    varData = resultSeverity2Str(pEntryView->m_errResultInfo.getSeverity());
+                }
+                break;
+            }
+            case EColumnResultNumber:
+            {
+                if( iRole == Qt::DisplayRole )
+                {
+                    varData = QString::number(pEntryView->m_errResultInfo.getResult());
+                }
                 break;
             }
             case EColumnResult:
             {
-                varData = QString::number(pEntryView->m_errResultInfo.getResult());
+                if( iRole == Qt::DisplayRole )
+                {
+                    varData = pEntryView->m_errResultInfo.getResultStr();
+                }
                 break;
             }
-            case EColumnResultStr:
+            case EColumnDate:
             {
-                varData = pEntryView->m_errResultInfo.getResultStr();
+                if( iRole == Qt::DisplayRole )
+                {
+                    varData = pEntryView->m_dateTime.toString("yyyy-MM-dd");
+                }
+                break;
+            }
+            case EColumnTime:
+            {
+                if( iRole == Qt::DisplayRole )
+                {
+                    varData = pEntryView->m_dateTime.toString("hh:mm:ss");
+                }
                 break;
             }
             case EColumnOccurrences:
             {
-                varData = pEntryView->m_iOccurrences;
+                if( iRole == Qt::DisplayRole )
+                {
+                    varData = pEntryView->m_iOccurrences;
+                }
                 break;
             }
             case EColumnSource:
             {
-                QString strTmp = pEntryView->m_errResultInfo.getErrSource().toString();
-                strTmp = decodeFromHtml(strTmp);
-                varData = strTmp;
+                if( iRole == Qt::DisplayRole )
+                {
+                    QString strTmp = pEntryView->m_errResultInfo.getErrSource().toString();
+                    strTmp = decodeFromHtml(strTmp);
+                    varData = strTmp;
+                }
                 break;
             }
             case EColumnAddInfo:
             {
-                QString strTmp = pEntryView->m_errResultInfo.getAddErrInfoDscr();
-                strTmp = decodeFromHtml(strTmp);
-                varData = strTmp;
+                if( iRole == Qt::DisplayRole )
+                {
+                    QString strTmp = pEntryView->m_errResultInfo.getAddErrInfoDscr();
+                    strTmp = decodeFromHtml(strTmp);
+                    varData = strTmp;
+                }
                 break;
             }
             case EColumnProposal:
             {
-                QString strTmp = pEntryView->m_strProposal;
-                strTmp = decodeFromHtml(strTmp);
-                varData = strTmp;
+                if( iRole == Qt::DisplayRole )
+                {
+                    QString strTmp = pEntryView->m_strProposal;
+                    strTmp = decodeFromHtml(strTmp);
+                    varData = strTmp;
+                }
                 break;
             }
             default:
@@ -650,16 +1052,35 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
                 break;
             }
         }
-    } // if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
+    } // if( s_rolesHandled.contains(iRole) )
 
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        mthTracer.setMethodReturn(varData.toString());
+    }
     return varData;
 
 } // data
 
 //------------------------------------------------------------------------------
-QModelIndex CModelErrLog::index( int i_iRow, int i_iCol, const QModelIndex& /*i_modelIdxParent*/ ) const
+QModelIndex CModelErrLog::index( int i_iRow, int i_iClm, const QModelIndex& i_modelIdxParent ) const
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        strMthInArgs  = "Row: " + QString::number(i_iRow);
+        strMthInArgs += ", Clm: " + column2Str(static_cast<EColumn>(i_iClm));
+        strMthInArgs += ", Parent {" + modelIndex2Str(i_modelIdxParent) + "}";
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjNoisyMethods,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "index",
+        /* strMthInArgs */ strMthInArgs );
+
     QModelIndex modelIdx;
 
     const SErrLogEntry* pEntryView = nullptr;
@@ -668,17 +1089,42 @@ QModelIndex CModelErrLog::index( int i_iRow, int i_iCol, const QModelIndex& /*i_
 
     pEntryView = const_cast<const SErrLogEntry*>(pVThis->getEntry(i_iRow));
 
-    modelIdx = createIndex(i_iRow, i_iCol, const_cast<SErrLogEntry*>(pEntryView));
+    modelIdx = createIndex(i_iRow, i_iClm, const_cast<SErrLogEntry*>(pEntryView));
+
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        mthTracer.setMethodReturn(modelIndex2Str(modelIdx));
+    }
 
     return modelIdx;
 
 } // index
 
 //------------------------------------------------------------------------------
-QModelIndex CModelErrLog::parent( const QModelIndex& /*i_modelIdx*/ ) const
+QModelIndex CModelErrLog::parent( const QModelIndex& i_modelIdx ) const
 //------------------------------------------------------------------------------
 {
-    return QModelIndex();
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        strMthInArgs = "{" + modelIndex2Str(i_modelIdx) + "}";
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjNoisyMethods,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "parent",
+        /* strMthInArgs */ strMthInArgs );
+
+    QModelIndex modelIdx;
+
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        mthTracer.setMethodReturn(modelIndex2Str(modelIdx));
+    }
+
+    return modelIdx;
 }
 
 /*==============================================================================
@@ -692,6 +1138,21 @@ QVariant CModelErrLog::headerData(
     int             i_iRole ) const
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        strMthInArgs = "Section: " + column2Str(static_cast<EColumn>(i_iSection));
+        strMthInArgs += ", Orientation: " + qOrientation2Str(i_orientation);
+        strMthInArgs += ", Role: " + role2Str(i_iRole);
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "headerData",
+        /* strMthInArgs */ strMthInArgs );
+
     QVariant varData;
 
     if( i_orientation == Qt::Horizontal )
@@ -706,8 +1167,52 @@ QVariant CModelErrLog::headerData(
                 }
                 break;
             }
+            case EColumnSeverityRowIdx:
+            {
+                if( i_iRole == Qt::DisplayRole )
+                {
+                    varData = "Severity\nRow Idx";
+                }
+                break;
+            }
+            case EColumnSeverityImageUrl:
+            {
+                if( i_iRole == Qt::DisplayRole )
+                {
+                    varData = "Image Url";
+                }
+                break;
+            }
             case EColumnSeverityIcon:
             {
+                if( i_iRole == Qt::DisplayRole )
+                {
+                    varData = "Severity";
+                }
+                break;
+            }
+            case EColumnSeverity:
+            {
+                if( i_iRole == Qt::DisplayRole )
+                {
+                    varData = "Severity";
+                }
+                break;
+            }
+            case EColumnResultNumber:
+            {
+                if( i_iRole == Qt::DisplayRole )
+                {
+                    varData = "Result Nr.";
+                }
+                break;
+            }
+            case EColumnResult:
+            {
+                if( i_iRole == Qt::DisplayRole )
+                {
+                    varData = "Result";
+                }
                 break;
             }
             case EColumnDate:
@@ -723,30 +1228,6 @@ QVariant CModelErrLog::headerData(
                 if( i_iRole == Qt::DisplayRole )
                 {
                     varData = "Time";
-                }
-                break;
-            }
-            case EColumnSeverity:
-            {
-                if( i_iRole == Qt::DisplayRole )
-                {
-                    varData = "Severity";
-                }
-                break;
-            }
-            case EColumnResult:
-            {
-                if( i_iRole == Qt::DisplayRole )
-                {
-                    varData = "Result Nr.";
-                }
-                break;
-            }
-            case EColumnResultStr:
-            {
-                if( i_iRole == Qt::DisplayRole )
-                {
-                    varData = "Result String";
                 }
                 break;
             }
@@ -795,6 +1276,33 @@ QVariant CModelErrLog::headerData(
             varData = i_iSection;
         }
     }
+
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        mthTracer.setMethodReturn(varData.toString());
+    }
     return varData;
 
 } // headerData
+
+/*==============================================================================
+protected: // auxiliary instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CModelErrLog::fillRoleNames()
+//------------------------------------------------------------------------------
+{
+    if( m_bUsedByQmlListModels )
+    {
+        for( int clm = 0; clm < CModelErrLog::EColumnCount; ++clm)
+        {
+            int role = CModelErrLog::column2Role(static_cast<CModelErrLog::EColumn>(clm));
+            m_roleNames[role] = s_clm2Name[clm];
+        }
+    }
+    else
+    {
+        m_roleNames = QAbstractItemModel::roleNames();
+    }
+}

@@ -39,6 +39,25 @@ may result in using the software modules.
 using namespace ZS::System;
 
 
+/******************************************************************************/
+class CInitModuleSysTrcAdminObj
+/* Please note:
+   The class name should be unique for the whole system. Otherwise the compiler
+   may be confused and using a CInitModule class from other modules to create
+   the static InitModule instance.
+*******************************************************************************/
+{
+public: // ctor
+    CInitModuleSysTrcAdminObj()
+    {
+        //qRegisterMetaType<CTrcAdminObj*>("CTrcAdminObj*");
+        qRegisterMetaType<ZS::System::CTrcAdminObj*>("ZS::Ipc::CTrcAdminObj*");
+    }
+};
+
+static CInitModuleSysTrcAdminObj s_initModule;
+
+
 /*******************************************************************************
 class CTrcAdminObj : public QObject, public CIdxTreeEntry
 *******************************************************************************/
@@ -453,6 +472,353 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+QString CTrcAdminObj::toString() const
+//------------------------------------------------------------------------------
+{
+    QString strNodeSeparator = "::";
+    if( m_pTree != nullptr )
+    {
+        strNodeSeparator = m_pTree->nodeSeparator();
+    }
+    return ZS::System::buildPathStr(strNodeSeparator, m_strNameSpace, m_strClassName, m_strObjName);
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Traces entering a method.
+*/
+void CTrcAdminObj::traceMethodEnter(
+    const QString& i_strFilterDetailLevel,
+    const QString& i_strMethod )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+
+    CEnumMethodTraceDetailLevel eFilterDetailLevel(i_strFilterDetailLevel);
+
+    if( eFilterDetailLevel.isValid() && areMethodCallsActive(eFilterDetailLevel.enumerator()) )
+    {
+        CTrcServer* pTrcServer = getTraceServer();
+
+        if( pTrcServer != nullptr )
+        {
+            pTrcServer->traceMethodEnter(this, i_strMethod, "");
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Traces entering a method.
+*/
+void CTrcAdminObj::traceMethodEnterWithInArgs(
+    const QString& i_strFilterDetailLevel,
+    const QString& i_strMethod,
+    const QString& i_strMethodInArgs )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+
+    CEnumMethodTraceDetailLevel eFilterDetailLevel(i_strFilterDetailLevel);
+
+    if( eFilterDetailLevel.isValid() && areMethodCallsActive(eFilterDetailLevel.enumerator()) )
+    {
+        CTrcServer* pTrcServer = getTraceServer();
+
+        if( pTrcServer != nullptr )
+        {
+            pTrcServer->traceMethodEnter(this, i_strMethod, i_strMethodInArgs);
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+void CTrcAdminObj::traceMethodEnter(
+    const QString& i_strFilterDetailLevel,
+    const QString& i_strObjName,
+    const QString& i_strMethod )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+
+    CEnumMethodTraceDetailLevel eFilterDetailLevel(i_strFilterDetailLevel);
+
+    if( eFilterDetailLevel.isValid() && areMethodCallsActive(eFilterDetailLevel.enumerator()) )
+    {
+        CTrcServer* pTrcServer = getTraceServer();
+
+        if( pTrcServer != nullptr )
+        {
+            pTrcServer->traceMethodEnter(this, i_strObjName, i_strMethod, "");
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+void CTrcAdminObj::traceMethodEnterWithInArgs(
+    const QString& i_strFilterDetailLevel,
+    const QString& i_strObjName,
+    const QString& i_strMethod,
+    const QString& i_strMethodInArgs )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+
+    CEnumMethodTraceDetailLevel eFilterDetailLevel(i_strFilterDetailLevel);
+
+    if( eFilterDetailLevel.isValid() && areMethodCallsActive(eFilterDetailLevel.enumerator()) )
+    {
+        CTrcServer* pTrcServer = getTraceServer();
+
+        if( pTrcServer != nullptr )
+        {
+            pTrcServer->traceMethodEnter(this, i_strObjName, i_strMethod, i_strMethodInArgs);
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+void CTrcAdminObj::traceMethod(
+    const QString& i_strFilterDetailLevel,
+    const QString& i_strMethod,
+    const QString& i_strAddInfo )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+
+    CEnumLogDetailLevel eFilterDetailLevel(i_strFilterDetailLevel);
+
+    if( eFilterDetailLevel.isValid() && isRuntimeInfoActive(eFilterDetailLevel.enumerator()) )
+    {
+        CTrcServer* pTrcServer = getTraceServer();
+
+        if( pTrcServer != nullptr )
+        {
+            pTrcServer->traceMethod(this, i_strMethod, i_strAddInfo);
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+void CTrcAdminObj::traceMethod(
+    const QString& i_strFilterDetailLevel,
+    const QString& i_strObjName,
+    const QString& i_strMethod,
+    const QString& i_strAddInfo )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+
+    CEnumLogDetailLevel eFilterDetailLevel(i_strFilterDetailLevel);
+
+    if( eFilterDetailLevel.isValid() && isRuntimeInfoActive(eFilterDetailLevel.enumerator()) )
+    {
+        CTrcServer* pTrcServer = getTraceServer();
+
+        if( pTrcServer != nullptr )
+        {
+            pTrcServer->traceMethod(this, i_strObjName, i_strMethod, i_strAddInfo);
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief
+*/
+void CTrcAdminObj::traceMethodLeave(
+    const QString& i_strFilterDetailLevel,
+    const QString& i_strMethod )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+
+    CEnumMethodTraceDetailLevel eFilterDetailLevel(i_strFilterDetailLevel);
+
+    if( eFilterDetailLevel.isValid() && areMethodCallsActive(eFilterDetailLevel.enumerator()) )
+    {
+        CTrcServer* pTrcServer = getTraceServer();
+
+        if( pTrcServer != nullptr )
+        {
+            pTrcServer->traceMethodLeave(this, i_strMethod, "", "");
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief
+*/
+void CTrcAdminObj::traceMethodLeaveWithReturn(
+    const QString& i_strFilterDetailLevel,
+    const QString& i_strMethod,
+    const QString& i_strMethodReturn )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+
+    CEnumMethodTraceDetailLevel eFilterDetailLevel(i_strFilterDetailLevel);
+
+    if( eFilterDetailLevel.isValid() && areMethodCallsActive(eFilterDetailLevel.enumerator()) )
+    {
+        CTrcServer* pTrcServer = getTraceServer();
+
+        if( pTrcServer != nullptr )
+        {
+            pTrcServer->traceMethodLeave(this, i_strMethod, i_strMethodReturn, "");
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief
+*/
+void CTrcAdminObj::traceMethodLeaveWithOutArgs(
+    const QString& i_strFilterDetailLevel,
+    const QString& i_strMethod,
+    const QString& i_strMethodOutArgs )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+
+    CEnumMethodTraceDetailLevel eFilterDetailLevel(i_strFilterDetailLevel);
+
+    if( eFilterDetailLevel.isValid() && areMethodCallsActive(eFilterDetailLevel.enumerator()) )
+    {
+        CTrcServer* pTrcServer = getTraceServer();
+
+        if( pTrcServer != nullptr )
+        {
+            pTrcServer->traceMethodLeave(this, i_strMethod, "", i_strMethodOutArgs);
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief
+*/
+void CTrcAdminObj::traceMethodLeaveWithReturnAndOutArgs(
+    const QString& i_strFilterDetailLevel,
+    const QString& i_strMethod,
+    const QString& i_strMethodReturn,
+    const QString& i_strMethodOutArgs )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+
+    CEnumMethodTraceDetailLevel eFilterDetailLevel(i_strFilterDetailLevel);
+
+    if( eFilterDetailLevel.isValid() && areMethodCallsActive(eFilterDetailLevel.enumerator()) )
+    {
+        CTrcServer* pTrcServer = getTraceServer();
+
+        if( pTrcServer != nullptr )
+        {
+            pTrcServer->traceMethodLeave(this, i_strMethod, i_strMethodReturn, i_strMethodOutArgs);
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief
+*/
+void CTrcAdminObj::traceMethodLeave(
+    const QString& i_strFilterDetailLevel,
+    const QString& i_strObjName,
+    const QString& i_strMethod )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+
+    CEnumMethodTraceDetailLevel eFilterDetailLevel(i_strFilterDetailLevel);
+
+    if( eFilterDetailLevel.isValid() && areMethodCallsActive(eFilterDetailLevel.enumerator()) )
+    {
+        CTrcServer* pTrcServer = getTraceServer();
+
+        if( pTrcServer != nullptr )
+        {
+            pTrcServer->traceMethodLeave(this, i_strObjName, i_strMethod, "", "");
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+void CTrcAdminObj::traceMethodLeaveWithReturn(
+    const QString& i_strFilterDetailLevel,
+    const QString& i_strObjName,
+    const QString& i_strMethod,
+    const QString& i_strMethodReturn )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+
+    CEnumMethodTraceDetailLevel eFilterDetailLevel(i_strFilterDetailLevel);
+
+    if( eFilterDetailLevel.isValid() && areMethodCallsActive(eFilterDetailLevel.enumerator()) )
+    {
+        CTrcServer* pTrcServer = getTraceServer();
+
+        if( pTrcServer != nullptr )
+        {
+            pTrcServer->traceMethodLeave(this, i_strObjName, i_strMethod, i_strMethodReturn, "");
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+void CTrcAdminObj::traceMethodLeaveWithOutArgs(
+    const QString& i_strFilterDetailLevel,
+    const QString& i_strObjName,
+    const QString& i_strMethod,
+    const QString& i_strMethodOutArgs )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+
+    CEnumMethodTraceDetailLevel eFilterDetailLevel(i_strFilterDetailLevel);
+
+    if( eFilterDetailLevel.isValid() && areMethodCallsActive(eFilterDetailLevel.enumerator()) )
+    {
+        CTrcServer* pTrcServer = getTraceServer();
+
+        if( pTrcServer != nullptr )
+        {
+            pTrcServer->traceMethodLeave(this, i_strObjName, i_strMethod, "", i_strMethodOutArgs);
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+void CTrcAdminObj::traceMethodLeaveWithReturnAndOutArgs(
+    const QString& i_strFilterDetailLevel,
+    const QString& i_strObjName,
+    const QString& i_strMethod,
+    const QString& i_strMethodReturn,
+    const QString& i_strMethodOutArgs )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+
+    CEnumMethodTraceDetailLevel eFilterDetailLevel(i_strFilterDetailLevel);
+
+    if( eFilterDetailLevel.isValid() && areMethodCallsActive(eFilterDetailLevel.enumerator()) )
+    {
+        CTrcServer* pTrcServer = getTraceServer();
+
+        if( pTrcServer != nullptr )
+        {
+            pTrcServer->traceMethodLeave(this, i_strObjName, i_strMethod, i_strMethodReturn, i_strMethodOutArgs);
+        }
+    }
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
 /*! @brief Locks the trace admin object by incrementing the lock count.
 
     The method tracer uses this method so that the trace admin object will not
@@ -692,6 +1058,49 @@ void CTrcAdminObj::setEnabled( EEnabled i_enabled )
     {
         m_enabled = i_enabled;
 
+        emit enabledChanged(m_enabled == EEnabled::Yes ? true : false);
+
+        if( m_pTree != nullptr )
+        {
+            if( !isTreeEntryChangedSignalBlocked() ) m_pTree->onTreeEntryChanged(this);
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Enables trace output for this object.
+
+    Tracing cannot only be controlled via the detail level but tracing can
+    also be enabled or disabled by this flag. This is useful if a group of
+    objects belonging to a namespace should be temporarily disabled and enabled
+    later on restoring the previous detail level.
+
+    @param i_bEnabled [in] Flag to enable or disable method trace output.
+                          - true ... tracing is enabled
+                          - false .. tracing is disabled
+*/
+void CTrcAdminObj::setEnabled( bool i_bEnabled )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+
+    if( i_bEnabled && m_enabled != EEnabled::Yes )
+    {
+        m_enabled = EEnabled::Yes;
+
+        emit enabledChanged(true);
+
+        if( m_pTree != nullptr )
+        {
+            if( !isTreeEntryChangedSignalBlocked() ) m_pTree->onTreeEntryChanged(this);
+        }
+    }
+    else if( !i_bEnabled && m_enabled != EEnabled::No )
+    {
+        m_enabled = EEnabled::No;
+
+        emit enabledChanged(false);
+
         if( m_pTree != nullptr )
         {
             if( !isTreeEntryChangedSignalBlocked() ) m_pTree->onTreeEntryChanged(this);
@@ -744,9 +1153,43 @@ void CTrcAdminObj::setMethodCallsTraceDetailLevel( EMethodTraceDetailLevel i_eDe
     {
         m_eTrcDetailLevelMethodCalls = i_eDetailLevel;
 
+        emit methodCallsTraceDetailLevelChanged(
+            CEnumMethodTraceDetailLevel(m_eTrcDetailLevelMethodCalls).toString());
+
         if( m_pTree != nullptr )
         {
             if( !isTreeEntryChangedSignalBlocked() ) m_pTree->onTreeEntryChanged(this);
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the detail level of trace output for this object.
+
+    If set to None method trace outputs are disabled.
+    Higher detail levels include lower detail levels.
+
+    @param i_strDetailLevel [in] Detail level.
+*/
+void CTrcAdminObj::setMethodCallsTraceDetailLevel( const QString& i_strDetailLevel )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+
+    CEnumMethodTraceDetailLevel eDetailLevel(i_strDetailLevel);
+
+    if( eDetailLevel.isValid() )
+    {
+        if( m_eTrcDetailLevelMethodCalls != eDetailLevel.enumerator() )
+        {
+            m_eTrcDetailLevelMethodCalls = eDetailLevel.enumerator();
+
+            emit methodCallsTraceDetailLevelChanged(i_strDetailLevel);
+
+            if( m_pTree != nullptr )
+            {
+                if( !isTreeEntryChangedSignalBlocked() ) m_pTree->onTreeEntryChanged(this);
+            }
         }
     }
 }
@@ -761,6 +1204,18 @@ EMethodTraceDetailLevel CTrcAdminObj::getMethodCallsTraceDetailLevel() const
 {
     QMutexLocker mtxLocker(m_pMtx);
     return m_eTrcDetailLevelMethodCalls;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the detail level of trace output for this object.
+
+    @return Detail level.
+*/
+QString CTrcAdminObj::getMethodCallsTraceDetailLevelStr() const
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+    return CEnumMethodTraceDetailLevel(m_eTrcDetailLevelMethodCalls).toString();
 }
 
 //------------------------------------------------------------------------------
@@ -828,9 +1283,43 @@ void CTrcAdminObj::setRuntimeInfoTraceDetailLevel( ELogDetailLevel i_eDetailLeve
     {
         m_eTrcDetailLevelRuntimeInfo = i_eDetailLevel;
 
+        emit runtimeInfoTraceDetailLevelChanged(
+            CEnumLogDetailLevel(m_eTrcDetailLevelRuntimeInfo).toString());
+
         if( m_pTree != nullptr )
         {
             if( !isTreeEntryChangedSignalBlocked() ) m_pTree->onTreeEntryChanged(this);
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the detail level of trace output for this object.
+
+    If set to None method trace outputs are disabled.
+    Higher detail levels include lower detail levels.
+
+    @param i_strDetailLevel [in] Detail level.
+*/
+void CTrcAdminObj::setRuntimeInfoTraceDetailLevel( const QString& i_strDetailLevel )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+
+    CEnumLogDetailLevel eDetailLevel(i_strDetailLevel);
+
+    if( eDetailLevel.isValid() )
+    {
+        if( m_eTrcDetailLevelRuntimeInfo != eDetailLevel.enumerator() )
+        {
+            m_eTrcDetailLevelRuntimeInfo = eDetailLevel.enumerator();
+
+            emit runtimeInfoTraceDetailLevelChanged(i_strDetailLevel);
+
+            if( m_pTree != nullptr )
+            {
+                if( !isTreeEntryChangedSignalBlocked() ) m_pTree->onTreeEntryChanged(this);
+            }
         }
     }
 }
@@ -845,6 +1334,18 @@ ELogDetailLevel CTrcAdminObj::getRuntimeInfoTraceDetailLevel() const
 {
     QMutexLocker mtxLocker(m_pMtx);
     return m_eTrcDetailLevelRuntimeInfo;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the detail level of trace output for this object.
+
+    @return Detail level.
+*/
+QString CTrcAdminObj::getRuntimeInfoTraceDetailLevelStr() const
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+    return CEnumLogDetailLevel(m_eTrcDetailLevelRuntimeInfo).toString();
 }
 
 //------------------------------------------------------------------------------
@@ -1020,6 +1521,8 @@ void CTrcAdminObj::setTraceDataFilter( const QString& i_strFilter )
                 }
             }
         }
+
+        emit traceDataFilterChanged(m_strDataFilter);
 
         if( m_pTree != nullptr )
         {

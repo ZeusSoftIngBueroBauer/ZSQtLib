@@ -186,6 +186,14 @@ QPixmap* s_arpErrIconPixmaps[EResultSeverityCount];
 static void createErrIconPixmaps();
 
 //------------------------------------------------------------------------------
+QString ZS::System::GUI::getErrImageUrl( EResultSeverity i_severity )
+//------------------------------------------------------------------------------
+{
+    QString strSeverity = ZS::System::resultSeverity2Str(i_severity);
+    return ":/ZS/Result/ResultSeverity" + strSeverity + ".bmp";
+}
+
+//------------------------------------------------------------------------------
 QPixmap ZS::System::GUI::getErrPixmap( EResultSeverity i_severity, const QSize& i_sz )
 //------------------------------------------------------------------------------
 {
@@ -246,16 +254,9 @@ static void createErrIconPixmaps()
         {
             memset( s_arpErrIconPixmaps, 0x00, sizeof(s_arpErrIconPixmaps) );
 
-            int      iSeverity;
-            QString  strSeverity;
-            QString  strFileName;
-            QPixmap* pPixmap;
-
-            for( iSeverity = 0; iSeverity < EResultSeverityCount; iSeverity++ )
+            for( int iSeverity = 0; iSeverity < EResultSeverityCount; iSeverity++ )
             {
-                strSeverity = ZS::System::resultSeverity2Str(static_cast<EResultSeverity>(iSeverity));
-
-                strFileName = ":/ZS/Result/ResultSeverity" + strSeverity;
+                QString strFileName = getErrImageUrl(static_cast<EResultSeverity>(iSeverity));
 
                 #ifdef _WINDOWS
                 #pragma push_macro("_ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE")
@@ -263,7 +264,7 @@ static void createErrIconPixmaps()
                 #define _ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE 0
                 #endif
 
-                pPixmap = new QPixmap(strFileName+".bmp");
+                QPixmap* pPixmap = new QPixmap(strFileName);
 
                 #ifdef _WINDOWS
                 #pragma warning( default : 4005 )

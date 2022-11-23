@@ -41,6 +41,7 @@ list(APPEND _Headers
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysErrDlg.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysErrLogDlg.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysErrLogModel.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysErrLogProxyModel.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysErrLogWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysFindTextDlg.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysGUIApp.h
@@ -81,6 +82,7 @@ list(APPEND _Sources
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysErrDlg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysErrLogDlg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysErrLogModel.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysErrLogProxyModel.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysErrLogWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysFindTextDlg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysGUIApp.cpp

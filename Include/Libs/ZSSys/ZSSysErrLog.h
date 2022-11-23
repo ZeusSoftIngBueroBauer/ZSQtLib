@@ -61,11 +61,11 @@ struct ZSSYSDLL_API SErrLogEntry
 //******************************************************************************
 {
     Q_GADGET
-    Q_PROPERTY(int rowIdx MEMBER m_iRowIdx);
-    Q_PROPERTY(QDateTime dateTime MEMBER m_dateTime);
-    //Q_PROPERTY(SErrResultInfo errResultInfo MEMBER m_errResultInfo);
-    Q_PROPERTY(QString proposal MEMBER m_strProposal);
-    Q_PROPERTY(int occurrences MEMBER m_iOccurrences);
+    Q_PROPERTY(int rowIdx MEMBER m_iRowIdx)
+    Q_PROPERTY(QDateTime dateTime MEMBER m_dateTime)
+    //Q_PROPERTY(SErrResultInfo errResultInfo MEMBER m_errResultInfo)
+    Q_PROPERTY(QString proposal MEMBER m_strProposal)
+    Q_PROPERTY(int occurrences MEMBER m_iOccurrences)
 public: // ctors
     SErrLogEntry();
     SErrLogEntry( const SErrLogEntry& i_other );
@@ -283,34 +283,34 @@ public: // instance methods
 public: // instance methods
     QString getAbsFilePath() const;
 public: // instance methods
-    SErrLogEntry* findEntry( const SErrResultInfo& i_errResultInfo );
-    void addEntry(
+    Q_INVOKABLE void addEntry(
         SErrResultInfo& i_errResultInfo,  // Not const as will be marked as "AddedToErrLogModel".
         const QString&  i_strProposal = "" );
-    void addEntry(
+    Q_INVOKABLE void addEntry(
         const QDateTime& i_dateTime,
         SErrResultInfo&  i_errResultInfo,  // Not const as will be marked as "AddedToErrLogModel".
         const QString&   i_strProposal = "" );
-    void changeEntry(
+    Q_INVOKABLE void changeEntry(
         const SErrResultInfo& i_errResultInfo,
         bool                  i_bModifyDateTime = false,
         const QDateTime&      i_dateTime = QDateTime(),
         bool                  i_bModifyProposal = false,
         const QString&        i_strProposal = "" );
-    void removeEntry( const SErrResultInfo& i_errResultInfo );
+    Q_INVOKABLE void removeEntry( const SErrResultInfo& i_errResultInfo );
 public: // instance methods
     void clear( EResultSeverity i_severity = EResultSeverityUndefined );            // Use Undefined (or Count) to clear all errors for all severities.
 public: // instance methods
-    void lock();     // !! Before "looping" through the list you need to lock the list !!
-    void unlock();   // !! Don't forget to unlock the list after "looping" through the list !!
+    Q_INVOKABLE void lock();     // !! Before "looping" through the list you need to lock the list !!
+    Q_INVOKABLE void unlock();   // !! Don't forget to unlock the list after "looping" through the list !!
 public: // instance methods
-    int getEntryCount( EResultSeverity i_severity = EResultSeverityUndefined );     // Use Undefined (or Count) to get the sum of all errors for all severities.
+    Q_INVOKABLE int getEntryCount( EResultSeverity i_severity = EResultSeverityUndefined ) const;     // Use Undefined (or Count) to get the sum of all errors for all severities.
     // Use Undefined (or Count) to count through all severities. In this case counting rows starts at highest severity (Critical).
-    SErrLogEntry* getEntry( int i_iRowIdx, EResultSeverity i_severity = EResultSeverityUndefined );
-    void removeEntry( int i_iRowIdx, EResultSeverity i_severity = EResultSeverityUndefined );
-    SErrLogEntry takeEntry( int i_iRowIdx, EResultSeverity i_severity = EResultSeverityUndefined );
-    SErrLogEntry takeFirstEntry( EResultSeverity i_severity = EResultSeverityUndefined );
-    SErrLogEntry takeLastEntry( EResultSeverity i_severity = EResultSeverityUndefined );
+    Q_INVOKABLE SErrLogEntry* findEntry( const SErrResultInfo& i_errResultInfo );
+    Q_INVOKABLE SErrLogEntry* getEntry( int i_iRowIdx, EResultSeverity i_severity = EResultSeverityUndefined ) const;
+    Q_INVOKABLE void removeEntry( int i_iRowIdx, EResultSeverity i_severity = EResultSeverityUndefined );
+    Q_INVOKABLE SErrLogEntry takeEntry( int i_iRowIdx, EResultSeverity i_severity = EResultSeverityUndefined );
+    Q_INVOKABLE SErrLogEntry takeFirstEntry( EResultSeverity i_severity = EResultSeverityUndefined );
+    Q_INVOKABLE SErrLogEntry takeLastEntry( EResultSeverity i_severity = EResultSeverityUndefined );
 public: // instance methods
     void testCrashDump();
 protected: // instance methods

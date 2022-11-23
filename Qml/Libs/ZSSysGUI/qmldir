@@ -2,3 +2,4 @@ module ZSSysGUI
 
 ErrLogWdgt 1.0 ZSSysErrLogWdgt.qml
 PushButton 1.0 ZSSysPushButton.qml
+SortableColumnHeading 1.0 ZSSysSortableColumnHeading.qml

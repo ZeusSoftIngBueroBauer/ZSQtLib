@@ -132,6 +132,9 @@ class ZSSYSDLL_API CTrcServer : public QObject
 //******************************************************************************
 {
     Q_OBJECT
+    Q_PROPERTY(QString nameSpace READ NameSpace CONSTANT)
+    Q_PROPERTY(QString className READ ClassName CONSTANT)
+    Q_PROPERTY(QString objectName READ objectName CONSTANT)
 public: // class methods
     /*! Returns the namespace of the class.
         @note The static class functions name must be different from the instance method "nameSpace". */
@@ -151,22 +154,23 @@ public: // class methods to register thread names
     static void RegisterCurrentThread(const QString& i_strThreadName);
     static void UnregisterCurrentThread();
     static QString GetCurrentThreadName();
-public: // class methods to add, remove and modify admin objects
+public: // class methods
     static CIdxTreeTrcAdminObjs* GetTraceAdminObjIdxTree();
+public: // class methods to add, remove and modify admin objects
     static CTrcAdminObj* GetTraceAdminObj( int i_idxInTree );
-    static CTrcAdminObj* GetTraceAdminObj(
+    static ZS::System::CTrcAdminObj* GetTraceAdminObj(
         const QString& i_strNameSpace,
         const QString& i_strClassName,
         const QString& i_strObjName = "" );
-    static CTrcAdminObj* GetTraceAdminObj(
+    static ZS::System::CTrcAdminObj* GetTraceAdminObj(
         const QString& i_strNameSpace,
         const QString& i_strClassName,
         const QString& i_strObjName,
         EEnabled i_bEnabledAsDefault,
         EMethodTraceDetailLevel i_eMethodCallsDefaultDetailLevel,
         ELogDetailLevel i_eRuntimeInfoDefaultDetailLevel );
-    static void RenameTraceAdminObj( CTrcAdminObj** io_ppTrcAdminObj, const QString& i_strNewObjName );
-    static void ReleaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj );
+    static void RenameTraceAdminObj( ZS::System::CTrcAdminObj** io_ppTrcAdminObj, const QString& i_strNewObjName );
+    static void ReleaseTraceAdminObj( ZS::System::CTrcAdminObj* i_pTrcAdminObj );
 public: // class methods to get default file paths
     static void SetAdminObjFileAbsoluteFilePath( const QString& i_strAbsFilePath );
     static QString GetAdminObjFileAbsoluteFilePath();
@@ -195,16 +199,23 @@ public: // instance methods
 public: // instance methods
     CIdxTreeTrcAdminObjs* getTraceAdminObjIdxTree();
 public: // instance methods to add, remove and modify admin objects
-    virtual CTrcAdminObj* getTraceAdminObj( int i_idxInTree );
-    virtual CTrcAdminObj* getTraceAdminObj(
+    Q_INVOKABLE virtual ZS::System::CTrcAdminObj* getTraceAdminObj(
         const QString& i_strNameSpace,
         const QString& i_strClassName,
         const QString& i_strObjName,
-        EEnabled i_bEnabledAsDefault,
+        const QString& i_strEnabledAsDefault = "Undefined",
+        const QString& i_strMethodCallsDefaultDetailLevel = "Undefined",
+        const QString& i_strRuntimeInfoDefaultDetailLevel = "Undefined" );
+    Q_INVOKABLE void releaseTraceAdminObj( ZS::System::CTrcAdminObj* i_pTrcAdminObj );
+    virtual ZS::System::CTrcAdminObj* getTraceAdminObj(
+        const QString& i_strNameSpace,
+        const QString& i_strClassName,
+        const QString& i_strObjName,
+        EEnabled i_eEnabledAsDefault,
         EMethodTraceDetailLevel i_eMethodCallsDefaultDetailLevel,
-        ELogDetailLevel i_eRuntimeInfoDefaultDetailLevel );
-    virtual void renameTraceAdminObj( CTrcAdminObj** io_ppTrcAdminObj, const QString& i_strNewObjName );
-    virtual void releaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj );
+        ELogDetailLevel i_eRuntimeInfoDefaultDetailLevel);
+    virtual ZS::System::CTrcAdminObj* getTraceAdminObj( int i_idxInTree );
+    void renameTraceAdminObj( ZS::System:: CTrcAdminObj** io_ppTrcAdminObj, const QString& i_strNewObjName );
 public: // instance methods
     virtual void traceMethodEnter(
         const CTrcAdminObj* i_pAdminObj,

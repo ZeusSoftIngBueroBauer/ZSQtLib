@@ -87,7 +87,7 @@ SErrLogEntry::SErrLogEntry() :
     m_iRowIdx(-1),
     m_dateTime(QDateTime::currentDateTime()),
     m_fSysTime_us(ZS::System::Time::getProcTimeInMicroSec()),
-    m_errResultInfo(),
+    m_errResultInfo(EResultUndefined, EResultSeverityUndefined),
     m_strProposal(),
     m_iOccurrences()
 {
@@ -1174,7 +1174,7 @@ public: // instance methods
     @note If you use this method to loop through the error log entries don't forget
           to lock the instance before and unlocking it again afterwards.
 */
-int CErrLog::getEntryCount( EResultSeverity i_severity )
+int CErrLog::getEntryCount( EResultSeverity i_severity ) const
 //------------------------------------------------------------------------------
 {
     int iCount = 0;
@@ -1214,7 +1214,7 @@ int CErrLog::getEntryCount( EResultSeverity i_severity )
     @note If you use this method to loop through the error log entries don't forget
           to lock the instance before and unlocking it again afterwards.
 */
-SErrLogEntry* CErrLog::getEntry( int i_iRowIdx, EResultSeverity i_severity )
+SErrLogEntry* CErrLog::getEntry( int i_iRowIdx, EResultSeverity i_severity ) const
 //------------------------------------------------------------------------------
 {
     SErrLogEntry* pEntry = nullptr;
@@ -1241,10 +1241,8 @@ SErrLogEntry* CErrLog::getEntry( int i_iRowIdx, EResultSeverity i_severity )
             pEntry = m_ararpEntries[i_severity][i_iRowIdx];
         }
     }
-
     return pEntry;
-
-} // getEntry
+}
 
 //------------------------------------------------------------------------------
 /*! Removes the entry at the given index for the given severity.
@@ -1293,13 +1291,10 @@ SErrLogEntry CErrLog::takeEntry( int i_iRowIdx, EResultSeverity i_severity )
             entry = *pEntry;
 
             removeEntry_(i_iRowIdx, i_severity);
-
-        } // if( pEntry != nullptr )
-    } // if( i_iRowIdx >= 0 && i_iRowIdx < getEntryCount(i_severity) )
-
+        }
+    }
     return entry;
-
-} // takeEntry
+}
 
 //------------------------------------------------------------------------------
 /*! Returns the first entry the given severity and removes the entry from the error log.
@@ -1326,13 +1321,10 @@ SErrLogEntry CErrLog::takeFirstEntry( EResultSeverity i_severity )
             entry = *pEntry;
 
             removeEntry_(0, i_severity);
-
-        } // if( pEntry != nullptr )
-    } // if( getEntryCount(i_severity) > 0 )
-
+        }
+    }
     return entry;
-
-} // takeFirstEntry
+}
 
 //------------------------------------------------------------------------------
 /*! Returns the last entry the given severity and removes the entry from the error log.
@@ -1361,13 +1353,10 @@ SErrLogEntry CErrLog::takeLastEntry( EResultSeverity i_severity )
             entry = *pEntry;
 
             removeEntry_(iCount-1, i_severity);
-
-        } // if( pEntry != nullptr )
-    } // if( getEntryCount(i_severity) > 0 )
-
+        }
+    }
     return entry;
-
-} // takeLastEntry
+}
 
 /*==============================================================================
 public: // instance methods

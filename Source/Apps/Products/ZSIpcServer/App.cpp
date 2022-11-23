@@ -26,19 +26,22 @@ may result in using the software modules.
 
 #include "App.h"
 
-#include <QtCore/qthread.h>
-#include <QtGui/qbitmap.h>
-#include <QtGui/qicon.h>
-#include <QtQml/qqmlapplicationengine.h>
-#include <QtQuick>
-
+#include "ZSIpcTrace/ZSIpcTrcServer.h"
 #include "ZSSys/ZSSysErrLog.h"
-#include "ZSSysGUI/ZSSysGUIDllMain.h"
+#include "ZSSysGUI/ZSSysErrLogProxyModel.h"
+#include "ZSSysGUI/ZSSysErrLogModel.h"
+
+#include <QtQml/qqmlapplicationengine.h>
+#include <QtQml/qqmlcontext.h>
+#include <QtQuick/qquickwindow.h>
+#include <QtQuick/qquickview.h>
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 using namespace ZS::Apps::Products::IpcServer;
 using namespace ZS::System;
+using namespace ZS::System::GUI;
+using namespace ZS::Trace;
 
 
 /*******************************************************************************
@@ -72,7 +75,11 @@ CApplication::CApplication(
 //------------------------------------------------------------------------------
     QGuiApplication(i_argc,i_argv),
     m_pQmlAppEngine(nullptr),
-    m_pMainWindow(nullptr)
+    m_pMainWindow(nullptr),
+    m_pErrLogModel(nullptr),
+    m_pErrLogModelProxy(nullptr),
+    m_pTrcServer(nullptr),
+    m_pTrcAdminObj(nullptr)
 {
     setObjectName("theApp");
 
@@ -98,18 +105,36 @@ CApplication::CApplication(
 
     QIcon iconApp(":/Images/ZSAppIpcServer.ico");
 
-    QGuiApplication::setWindowIcon(iconApp);
-    QGuiApplication::setOrganizationName(i_strOrganizationName);
-    QGuiApplication::setOrganizationDomain(i_strOrganizationDomain);
-    QGuiApplication::setApplicationName(i_strAppName);
-    QGuiApplication::setApplicationVersion(i_strAppVersion);
-    QGuiApplication::setApplicationDisplayName(i_strWindowTitle);
+    setWindowIcon(iconApp);
+    setOrganizationName(i_strOrganizationName);
+    setOrganizationDomain(i_strOrganizationDomain);
+    setApplicationName(i_strAppName);
+    setApplicationVersion(i_strAppVersion);
+    setApplicationDisplayName(i_strWindowTitle);
 
     CErrLog::CreateInstance();
+
+    m_pTrcServer = CIpcTrcServer::CreateInstance();
+    m_pTrcServer->setCacheTrcDataIfNotConnected(true);
+    m_pTrcServer->setCacheTrcDataMaxArrLen(5000);
+    m_pTrcServer->recallAdminObjs();
+    m_pTrcServer->startup();
+
+    m_pTrcAdminObj = m_pTrcServer->GetTraceAdminObj(NameSpace(), ClassName(), objectName());
+
+    m_pErrLogModel = new CModelErrLog(CErrLog::GetInstance());
+    m_pErrLogModelProxy = new CProxyModelErrLog(m_pErrLogModel);
 
     m_pQmlAppEngine = new QQmlApplicationEngine();
     // Add import path to the applications resource storage.
     m_pQmlAppEngine->addImportPath("qrc:/");
+
+    QQmlContext* pQmlCtx = m_pQmlAppEngine->rootContext();
+
+    pQmlCtx->setContextProperty("_trcServer", m_pTrcServer);
+    pQmlCtx->setContextProperty("_errLogModel", m_pErrLogModel);
+    pQmlCtx->setContextProperty("_errLogModelProxy", m_pErrLogModelProxy);
+
     //qDebug("QmlAppEngine.importPaths BEGIN ---------------------------------------");
     //QStringList strlstImportPathList = m_pQmlAppEngine->importPathList();
     //QStringList::iterator itPath = strlstImportPathList.begin();
@@ -119,6 +144,7 @@ CApplication::CApplication(
     //    ++itPath;
     //}
     //qDebug("QmlAppEngine.importPaths END -----------------------------------------");
+
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(
         m_pQmlAppEngine, &QQmlApplicationEngine::objectCreated,
@@ -141,7 +167,9 @@ CApplication::CApplication(
     }
     else
     {
-        m_pMainWindow = dynamic_cast<QQuickWindow*>(m_pQmlAppEngine->rootObjects().at(0));
+        QObject* pViewObj = m_pQmlAppEngine->rootObjects().at(0);
+
+        m_pMainWindow = dynamic_cast<QQuickWindow*>(pViewObj);
 
         if( m_pMainWindow == nullptr)
         {
@@ -174,7 +202,41 @@ CApplication::~CApplication()
     {
     }
 
+    try
+    {
+        delete m_pErrLogModelProxy;
+    }
+    catch(...)
+    {
+    }
+    m_pErrLogModelProxy = nullptr;
+
+    try
+    {
+        delete m_pErrLogModel;
+    }
+    catch(...)
+    {
+    }
+    m_pErrLogModel = nullptr;
+
+    CIpcTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
+    m_pTrcAdminObj = nullptr;
+
+    if( m_pTrcServer != nullptr )
+    {
+        m_pTrcServer->saveAdminObjs();
+    }
+
+    CIpcTrcServer::ReleaseInstance();
+    m_pTrcServer = nullptr;
+
+    CErrLog::ReleaseInstance();
+
     m_pQmlAppEngine = nullptr;
     m_pMainWindow = nullptr;
+    m_pErrLogModel = nullptr;
+    m_pTrcServer = nullptr;
+    m_pTrcAdminObj = nullptr;
 
 } // dtor

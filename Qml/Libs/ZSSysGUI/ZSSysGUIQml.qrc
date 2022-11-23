@@ -3,5 +3,6 @@
         <file>qmldir</file>
         <file>ZSSysErrLogWdgt.qml</file>
         <file>ZSSysPushButton.qml</file>
+        <file>ZSSysSortableColumnHeading.qml</file>
     </qresource>
 </RCC>

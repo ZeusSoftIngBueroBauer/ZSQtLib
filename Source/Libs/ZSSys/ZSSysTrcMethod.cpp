@@ -957,7 +957,7 @@ public: // instance methods
         admin object or at the method tracer itself.
 */
 void CMethodTracer::trace(
-    const QString&               i_strAddInfo,
+    const QString&  i_strAddInfo,
     ELogDetailLevel i_eFilterDetailLevel ) const
 //------------------------------------------------------------------------------
 {
@@ -996,7 +996,7 @@ void CMethodTracer::trace(
         admin object or at the method tracer itself.
 */
 void CMethodTracer::trace(
-    const QString&               i_strAddInfo,
+    const QString&  i_strAddInfo,
     ELogDetailLevel i_eTrcDetailLevel,
     ELogDetailLevel i_eFilterDetailLevel ) const
 //------------------------------------------------------------------------------

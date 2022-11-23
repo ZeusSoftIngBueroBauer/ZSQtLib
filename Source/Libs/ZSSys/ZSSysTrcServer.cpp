@@ -24,21 +24,17 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include <QtCore/qcoreapplication.h>
-#include <QtCore/qdir.h>
-#include <QtCore/qfile.h>
-#include <QtCore/qfileinfo.h>
-#include <QtCore/qthread.h>
-
 #include "ZSSys/ZSSysTrcServer.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcAdminObjIdxTree.h"
 #include "ZSSys/ZSSysTrcMthFile.h"
 #include "ZSSys/ZSSysApp.h"
 #include "ZSSys/ZSSysErrLog.h"
-//#include "ZSSys/ZSSysMsg.h"
-//#include "ZSSys/ZSSysMutex.h"
 #include "ZSSys/ZSSysException.h"
+
+#include <QtCore/qdir.h>
+#include <QtCore/qfileinfo.h>
+#include <QtQml/qqmlengine.h>
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -939,17 +935,18 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj( int i_idxInTree )
     @param i_strClassName [in] Class name of the object (e.g. "CWdgtDiagram")
     @param i_strObjName [in] "Real" object name (e.g. "PvT" (Power versus Time))
     @param i_bEnabledAsDefault [in] Undefined means use "trcServerSettings".
-    @param i_eDefaultDetailLevel [in] Undefined means use "trcServerSettings".
+    @param i_eMethodCallsDefaultDetailLevel [in] Undefined means use "trcServerSettings".
+    @param i_eRuntimeInfoDefaultDetailLevel [in] Undefined means use "trcServerSettings".
 
    @return Pointer to trace admin object.
 */
 CTrcAdminObj* CTrcServer::getTraceAdminObj(
-    const QString&               i_strNameSpace,
-    const QString&               i_strClassName,
-    const QString&               i_strObjName,
-    EEnabled                     i_bEnabledAsDefault,
-    EMethodTraceDetailLevel i_eMethodCallsDefaultDetailLevel,
-    ELogDetailLevel i_eRuntimeInfoDefaultDetailLevel )
+    const QString& i_strNameSpace,
+    const QString& i_strClassName,
+    const QString& i_strObjName,
+    const QString& i_strEnabledAsDefault,
+    const QString& i_strMethodCallsDefaultDetailLevel,
+    const QString& i_strRuntimeInfoDefaultDetailLevel )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -960,7 +957,197 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj(
         strMthInArgs  = "NameSpace: " + i_strNameSpace;
         strMthInArgs += ", ClassName: " + i_strClassName;
         strMthInArgs += ", ObjName: " + i_strObjName;
-        strMthInArgs += ", EnabledAsDefault: " + CEnumEnabled::toString(i_bEnabledAsDefault);
+        strMthInArgs += ", EnabledAsDefault: " + i_strEnabledAsDefault;
+        strMthInArgs += ", MethodCallsDefault: " + i_strMethodCallsDefaultDetailLevel;
+        strMthInArgs += ", RuntimeInfoDefault: " + i_strRuntimeInfoDefaultDetailLevel;
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLavel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "getTraceAdminObj",
+        /* strMthInArgs       */ strMthInArgs );
+
+    QMutexLocker mtxLocker(&s_mtx);
+
+    CEnumEnabled eEnabledAsDefault(i_strEnabledAsDefault);
+    CEnumMethodTraceDetailLevel eMethodCallsDefaultDetailLevel(i_strMethodCallsDefaultDetailLevel);
+    CEnumLogDetailLevel eRuntimeInfoDefaultDetailLevel(i_strRuntimeInfoDefaultDetailLevel);
+
+    CTrcAdminObj* pTrcAdminObj = nullptr;
+
+    if( !eEnabledAsDefault.isValid() )
+    {
+        SErrResultInfo errResultInfo(
+            /* errSource     */ nameSpace(), className(), objectName(), "getTraceAdminObj",
+            /* result        */ EResultArgOutOfRange,
+            /* severity      */ EResultSeverityError,
+            /* strAddErrInfo */ "EnabledAsDefault " + i_strEnabledAsDefault + " is out of range");
+        if( CErrLog::GetInstance() != nullptr )
+        {
+            CErrLog::GetInstance()->addEntry(errResultInfo);
+        }
+    }
+    else if( !eMethodCallsDefaultDetailLevel.isValid() )
+    {
+        SErrResultInfo errResultInfo(
+            /* errSource     */ nameSpace(), className(), objectName(), "getTraceAdminObj",
+            /* result        */ EResultArgOutOfRange,
+            /* severity      */ EResultSeverityError,
+            /* strAddErrInfo */ "MethodCallsDefaultDetailLevel " + i_strMethodCallsDefaultDetailLevel + " is out of range");
+        if( CErrLog::GetInstance() != nullptr )
+        {
+            CErrLog::GetInstance()->addEntry(errResultInfo);
+        }
+    }
+    else if( !eRuntimeInfoDefaultDetailLevel.isValid() )
+    {
+        SErrResultInfo errResultInfo(
+            /* errSource     */ nameSpace(), className(), objectName(), "getTraceAdminObj",
+            /* result        */ EResultArgOutOfRange,
+            /* severity      */ EResultSeverityError,
+            /* strAddErrInfo */ "RuntimeInfoDefaultDetailLevel " + i_strRuntimeInfoDefaultDetailLevel + " is out of range");
+        if( CErrLog::GetInstance() != nullptr )
+        {
+            CErrLog::GetInstance()->addEntry(errResultInfo);
+        }
+    }
+    else if( i_strObjName.isEmpty() && i_strClassName.isEmpty() && i_strNameSpace.isEmpty() )
+    {
+        SErrResultInfo errResultInfo(
+            /* errSource     */ nameSpace(), className(), objectName(), "getTraceAdminObj",
+            /* result        */ EResultArgOutOfRange,
+            /* severity      */ EResultSeverityError,
+            /* strAddErrInfo */ "Neither NameSpace nor ClassName nor ObjectName defined");
+        if( CErrLog::GetInstance() != nullptr )
+        {
+            CErrLog::GetInstance()->addEntry(errResultInfo);
+        }
+    }
+    else
+    {
+        EEnabled eEnabled = m_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault ? EEnabled::Yes : EEnabled::No;
+        EMethodTraceDetailLevel eDetailLevelMethodCalls = m_trcSettings.m_eNewTrcAdminObjsMethodCallsDefaultDetailLevel;
+        ELogDetailLevel eDetailLevelRuntimeInfo = m_trcSettings.m_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel;
+
+        if( eEnabledAsDefault != EEnabled::Undefined )
+        {
+            eEnabled = eEnabledAsDefault.enumerator();
+        }
+        if( eMethodCallsDefaultDetailLevel != EMethodTraceDetailLevel::Undefined )
+        {
+            eDetailLevelMethodCalls = eMethodCallsDefaultDetailLevel.enumerator();
+        }
+        if( eRuntimeInfoDefaultDetailLevel != ELogDetailLevel::Undefined )
+        {
+            eDetailLevelRuntimeInfo = eRuntimeInfoDefaultDetailLevel.enumerator();
+        }
+
+        pTrcAdminObj = m_pTrcAdminObjIdxTree->getTraceAdminObj(
+            /* strNameSpace                   */ i_strNameSpace,
+            /* strClassName                   */ i_strClassName,
+            /* strObjName                     */ i_strObjName,
+            /* bEnabledAsDefault              */ eEnabled,
+            /* eDefaultDetailLevelMethodCalls */ eDetailLevelMethodCalls,
+            /* eDefaultDetailLevelRuntimeInfo */ eDetailLevelRuntimeInfo,
+            /* strDefaultDataFilter           */ QString(),
+            /* bIncrementRefCount             */ true );
+        QQmlEngine::setObjectOwnership(pTrcAdminObj, QQmlEngine::CppOwnership);
+
+        if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+        {
+            if( pTrcAdminObj != nullptr )
+            {
+                strMthRet = pTrcAdminObj->getCalculatedKeyInTree();
+            }
+            else
+            {
+                strMthRet = "nullptr";
+            }
+            mthTracer.setMethodReturn(strMthRet);
+        }
+    } // if( !i_strObjName.isEmpty() || !i_strClassName.isEmpty() || !i_strNameSpace.isEmpty() )
+
+    return pTrcAdminObj;
+
+} // getTraceAdminObj
+
+//------------------------------------------------------------------------------
+/*! @brief Releases the trace admin object.
+
+    The trace admin object will not be destroyed. Only the reference counter
+    will be decremented.
+
+    @param i_pTrcAdminObj [in] Pointer to trace admin object to be released.
+*/
+void CTrcServer::releaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    {
+        strMthInArgs = i_pTrcAdminObj == nullptr ? "nullptr" : i_pTrcAdminObj->getCalculatedKeyInTree();
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLavel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "releaseTraceAdminObj",
+        /* strMthInArgs       */ strMthInArgs );
+
+    QMutexLocker mtxLocker(&s_mtx);
+
+    if( i_pTrcAdminObj != nullptr )
+    {
+        m_pTrcAdminObjIdxTree->releaseTraceAdminObj(i_pTrcAdminObj);
+    }
+} // releaseTraceAdminObj
+
+//------------------------------------------------------------------------------
+/*! @brief Returns a trace admin object with the given name space, class and
+           object name.
+
+    If a trace admin object is not yet existing with the given name space, class
+    and object name a new trace admin object is created.
+    If already existing a reference counter is incremented and the pointer to
+    the already existing object is returned.
+
+    @param i_strNameSpace [in] Name space of the objects class (e.g. "ZS::Diagram")
+    @param i_strClassName [in] Class name of the object (e.g. "CWdgtDiagram")
+    @param i_strObjName [in] "Real" object name (e.g. "PvT" (Power versus Time))
+    @param i_eEnabledAsDefault [in] Undefined means use "trcServerSettings".
+    @param i_eMethodCallsDefaultDetailLevel [in] Undefined means use "trcServerSettings".
+    @param i_eRuntimeInfoDefaultDetailLevel [in] Undefined means use "trcServerSettings".
+
+   @return Pointer to trace admin object.
+*/
+CTrcAdminObj* CTrcServer::getTraceAdminObj(
+    const QString&          i_strNameSpace,
+    const QString&          i_strClassName,
+    const QString&          i_strObjName,
+    EEnabled                i_eEnabledAsDefault,
+    EMethodTraceDetailLevel i_eMethodCallsDefaultDetailLevel,
+    ELogDetailLevel         i_eRuntimeInfoDefaultDetailLevel )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    QString strMthRet;
+
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    {
+        strMthInArgs  = "NameSpace: " + i_strNameSpace;
+        strMthInArgs += ", ClassName: " + i_strClassName;
+        strMthInArgs += ", ObjName: " + i_strObjName;
+        strMthInArgs += ", EnabledAsDefault: " + CEnumEnabled::toString(i_eEnabledAsDefault);
         strMthInArgs += ", MethodCallsDefault: " + CEnumMethodTraceDetailLevel(i_eMethodCallsDefaultDetailLevel).toString();
         strMthInArgs += ", RuntimeInfoDefault: " + CEnumLogDetailLevel(i_eRuntimeInfoDefaultDetailLevel).toString();
     }
@@ -994,13 +1181,13 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj(
     }
     else // if( !i_strObjName.isEmpty() || !i_strClassName.isEmpty() || !i_strNameSpace.isEmpty() )
     {
-        EEnabled bEnabled = m_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault ? EEnabled::Yes : EEnabled::No;
+        EEnabled eEnabled = m_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault ? EEnabled::Yes : EEnabled::No;
         EMethodTraceDetailLevel eDetailLevelMethodCalls = m_trcSettings.m_eNewTrcAdminObjsMethodCallsDefaultDetailLevel;
         ELogDetailLevel eDetailLevelRuntimeInfo = m_trcSettings.m_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel;
 
-        if( i_bEnabledAsDefault != EEnabled::Undefined )
+        if( i_eEnabledAsDefault != EEnabled::Undefined )
         {
-            bEnabled = i_bEnabledAsDefault;
+            eEnabled = i_eEnabledAsDefault;
         }
         if( i_eMethodCallsDefaultDetailLevel != EMethodTraceDetailLevel::Undefined )
         {
@@ -1015,11 +1202,12 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj(
             /* strNameSpace                   */ i_strNameSpace,
             /* strClassName                   */ i_strClassName,
             /* strObjName                     */ i_strObjName,
-            /* bEnabledAsDefault              */ bEnabled,
+            /* eEnabledAsDefault              */ eEnabled,
             /* eDefaultDetailLevelMethodCalls */ eDetailLevelMethodCalls,
             /* eDefaultDetailLevelRuntimeInfo */ eDetailLevelRuntimeInfo,
             /* strDefaultDataFilter           */ QString(),
             /* bIncrementRefCount             */ true );
+        QQmlEngine::setObjectOwnership(pTrcAdminObj, QQmlEngine::CppOwnership);
 
         if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
         {
@@ -1083,44 +1271,9 @@ void CTrcServer::renameTraceAdminObj(
     QMutexLocker mtxLocker(&s_mtx);
 
     m_pTrcAdminObjIdxTree->renameTraceAdminObj(io_ppTrcAdminObj, i_strNewObjName);
+    QQmlEngine::setObjectOwnership(*io_ppTrcAdminObj, QQmlEngine::CppOwnership);
 
 } // renameTraceAdminObj
-
-//------------------------------------------------------------------------------
-/*! @brief Releases the trace admin object.
-
-    The trace admin object will not be destroyed. Only the reference counter
-    will be decremented.
-
-    @param i_pTrcAdminObj [in] Pointer to trace admin object to be released.
-*/
-void CTrcServer::releaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
-        strMthInArgs = i_pTrcAdminObj == nullptr ? "nullptr" : i_pTrcAdminObj->getCalculatedKeyInTree();
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcMthFile        */ m_pTrcMthFile,
-        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLavel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "releaseTraceAdminObj",
-        /* strMthInArgs       */ strMthInArgs );
-
-    QMutexLocker mtxLocker(&s_mtx);
-
-    if( i_pTrcAdminObj != nullptr )
-    {
-        m_pTrcAdminObjIdxTree->releaseTraceAdminObj(i_pTrcAdminObj);
-    }
-} // releaseTraceAdminObj
 
 /*==============================================================================
 public: // instance methods

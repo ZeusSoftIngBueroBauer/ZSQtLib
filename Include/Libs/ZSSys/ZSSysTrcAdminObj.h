@@ -75,6 +75,14 @@ class ZSSYSDLL_API CTrcAdminObj : public QObject, public CIdxTreeEntry
 {
 friend class CIdxTreeTrcAdminObjs;
     Q_OBJECT
+    Q_PROPERTY(QString nameSpace READ getNameSpace CONSTANT)
+    Q_PROPERTY(QString className READ getClassName CONSTANT)
+    Q_PROPERTY(QString objectName READ getObjectName CONSTANT)
+    Q_PROPERTY(QString objectThreadName READ getObjectThreadName CONSTANT)
+    Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled NOTIFY enabledChanged)
+    Q_PROPERTY(QString methodCallsTraceDetailLevel READ getMethodCallsTraceDetailLevelStr WRITE setMethodCallsTraceDetailLevel NOTIFY methodCallsTraceDetailLevelChanged)
+    Q_PROPERTY(QString runtimeInfoTraceDetailLevel READ getRuntimeInfoTraceDetailLevelStr WRITE setRuntimeInfoTraceDetailLevel NOTIFY runtimeInfoTraceDetailLevelChanged)
+    Q_PROPERTY(QString traceDataFilter READ getTraceDataFilter WRITE setTraceDataFilter NOTIFY traceDataFilterChanged)
 public: // class methods
     /*! Returns the name space of the class. */
     static QString NameSpace() { return "ZS::System"; }
@@ -88,8 +96,16 @@ protected: // ctors and dtor
         const QString& i_strTreeEntryName );
     virtual ~CTrcAdminObj();
 signals:
-    /*! @brief Emitted if ObjState, Enabled, StateOnOff or DetailLevel has been changed. */
+    /*! @brief Emitted if Enabled, MethodCallsTraceDetailLevel, RuntimeInfoTraceDetailLevel or TraceDataFilter has been changed. */
     void changed( QObject* i_pTrcAdminObj );
+    /*! @brief Emitted if Enabled has been changed. */
+    void enabledChanged( bool i_bEnabled );
+    /*! @brief Emitted if MethodCallsTraceDetailLevel has been changed. */
+    void methodCallsTraceDetailLevelChanged( const QString& i_strDetailLevel );
+    /*! @brief Emitted if RuntimeInfoTraceDetailLevel has been changed. */
+    void runtimeInfoTraceDetailLevelChanged( const QString& i_strDetailLevel );
+    /*! @brief Emitted if RuntimeInfoTraceDetailLevel has been changed. */
+    void traceDataFilterChanged( const QString& i_strFilter );
     /*! @brief Emitted if the object is going to be destroyed. */
     void aboutToBeDestroyed( QObject* i_pTrcAdminObj );
 public: // instance methods
@@ -105,6 +121,70 @@ public: // instance methods
     void setObjectThreadName( const QString& i_strThreadName );
     QString getObjectThreadName() const;
 public: // instance methods
+    QString toString() const;
+public: // instance methods
+    Q_INVOKABLE virtual void traceMethodEnter(
+        const QString& i_strFilterDetailLevel,
+        const QString& i_strMethod );
+    Q_INVOKABLE virtual void traceMethodEnterWithInArgs(
+        const QString& i_strFilterDetailLevel,
+        const QString& i_strMethod,
+        const QString& i_strMethodInArgs );
+    Q_INVOKABLE virtual void traceMethodEnter(
+        const QString& i_strFilterDetailLevel,
+        const QString& i_strObjName,
+        const QString& i_strMethod );
+    Q_INVOKABLE virtual void traceMethodEnterWithInArgs(
+        const QString& i_strFilterDetailLevel,
+        const QString& i_strObjName,
+        const QString& i_strMethod,
+        const QString& i_strMethodInArgs );
+    Q_INVOKABLE virtual void traceMethod(
+        const QString& i_strFilterDetailLevel,
+        const QString& i_strMethod,
+        const QString& i_strAddInfo );
+    Q_INVOKABLE virtual void traceMethod(
+        const QString& i_strFilterDetailLevel,
+        const QString& i_strObjName,
+        const QString& i_strMethod,
+        const QString& i_strAddInfo );
+    Q_INVOKABLE virtual void traceMethodLeave(
+        const QString& i_strFilterDetailLevel,
+        const QString& i_strMethod );
+    Q_INVOKABLE virtual void traceMethodLeaveWithReturn(
+        const QString& i_strFilterDetailLevel,
+        const QString& i_strMethod,
+        const QString& i_strMethodReturn );
+    Q_INVOKABLE virtual void traceMethodLeaveWithOutArgs(
+        const QString& i_strFilterDetailLevel,
+        const QString& i_strMethod,
+        const QString& i_strMethodOutArgs );
+    Q_INVOKABLE virtual void traceMethodLeaveWithReturnAndOutArgs(
+        const QString& i_strFilterDetailLevel,
+        const QString& i_strMethod,
+        const QString& i_strMethodReturn,
+        const QString& i_strMethodOutArgs );
+    Q_INVOKABLE virtual void traceMethodLeave(
+        const QString& i_strFilterDetailLevel,
+        const QString& i_strObjName,
+        const QString& i_strMethod );
+    Q_INVOKABLE virtual void traceMethodLeaveWithReturn(
+        const QString& i_strFilterDetailLevel,
+        const QString& i_strObjName,
+        const QString& i_strMethod,
+        const QString& i_strMethodReturn );
+    Q_INVOKABLE virtual void traceMethodLeaveWithOutArgs(
+        const QString& i_strFilterDetailLevel,
+        const QString& i_strObjName,
+        const QString& i_strMethod,
+        const QString& i_strMethodOutArgs );
+    Q_INVOKABLE virtual void traceMethodLeaveWithReturnAndOutArgs(
+        const QString& i_strFilterDetailLevel,
+        const QString& i_strObjName,
+        const QString& i_strMethod,
+        const QString& i_strMethodReturn,
+        const QString& i_strMethodOutArgs );
+public: // instance methods
     int lock();
     int unlock();
     bool isLocked() const;
@@ -118,14 +198,19 @@ public: // instance methods
     int getRefCount() const;
 public: // instance methods
     void setEnabled( EEnabled i_enabled );
+    void setEnabled( bool i_bEnabled );
     EEnabled getEnabled() const;
     bool isEnabled() const;
 public: // instance methods
     void setMethodCallsTraceDetailLevel( EMethodTraceDetailLevel i_eTrcDetailLevel );
+    void setMethodCallsTraceDetailLevel( const QString& i_strDetailLevel );
     EMethodTraceDetailLevel getMethodCallsTraceDetailLevel() const;
+    QString getMethodCallsTraceDetailLevelStr() const;
     bool areMethodCallsActive( EMethodTraceDetailLevel i_eFilterDetailLevel ) const;
     void setRuntimeInfoTraceDetailLevel( ELogDetailLevel i_eTrcDetailLevel );
+    void setRuntimeInfoTraceDetailLevel( const QString& i_strDetailLevel );
     ELogDetailLevel getRuntimeInfoTraceDetailLevel() const;
+    QString getRuntimeInfoTraceDetailLevelStr() const;
     bool isRuntimeInfoActive( ELogDetailLevel i_eFilterDetailLevel ) const;
 public: // instance methods
     void setTraceDataFilter( const QString& i_strFilter = "" );

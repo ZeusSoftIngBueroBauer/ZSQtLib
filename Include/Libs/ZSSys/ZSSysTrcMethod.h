@@ -178,10 +178,10 @@ public: // instance methods
     QString getMethodOutArgs() const;
 public: // instance methods
     void trace(
-        const QString& i_strAddInfo,
+        const QString&  i_strAddInfo,
         ELogDetailLevel i_eFilterDetailLevel = ELogDetailLevel::Fatal ) const;
     void trace(
-        const QString& i_strAddInfo,
+        const QString&  i_strAddInfo,
         ELogDetailLevel i_eTrcDetailLevel,
         ELogDetailLevel i_eFilterDetailLevel ) const;
 protected slots:

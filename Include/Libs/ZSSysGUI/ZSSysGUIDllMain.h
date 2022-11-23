@@ -74,6 +74,7 @@ global auxiliary methods
 
 ZSSYSGUIDLL_API QMainWindow* getMainWindowOfApp();
 ZSSYSGUIDLL_API QString getMainWindowTitle();
+ZSSYSGUIDLL_API QString getErrImageUrl( EResultSeverity i_severity );
 ZSSYSGUIDLL_API QPixmap getErrPixmap( EResultSeverity i_severity, const QSize& i_sz = QSize(24,24) );
 ZSSYSGUIDLL_API QIcon getErrIcon( EResultSeverity i_severity );
 ZSSYSGUIDLL_API QPixmap mode2Pixmap( int i_iMode, int i_iSize = 16 ); // Range 16, 24, 32

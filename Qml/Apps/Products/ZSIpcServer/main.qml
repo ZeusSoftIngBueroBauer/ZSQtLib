@@ -1,49 +1,18 @@
 import QtQuick 2.15
 import QtGraphicalEffects 1.15
-// QtQuick.Controls version above 2.0 cannot be imported in petalinux
-//import QtQuick.Controls 1.6
-// QtQuick.Controls version above 2.0 cannot be imported in petalinux
-import QtQuick.Controls 2.0
-// This is the latest 1.x version available for ubuntu 20.04
-//import QtQuick.Controls 1.6
-//import Qt.labs.settings 1.0
+import QtQuick.Controls 2.15
+import Qt.labs.settings 1.0
+import ZSSysGUI 1.0
 
-
-Rectangle {
-    width: 400
-    height: 500
-    color: "lightGray"
-
-    Column {
-        anchors.centerIn: parent
-        spacing: 10
-        Text {
-            text: "PressMe: "
-
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    console.debug("global lookup: ", _aErrLogEntry);
-                    var errLogEntry = _aErrLogEntry;
-                    console.debug("Err Log entry: ", errLogEntry);
-                    errLogEntry.m_iRowIdx = 99;
-                    //errLogEntry.m_dateTime
-                    errLogEntry.m_fSysTime_us = 98983;
-                    //errLogEntry.m_errResultInfo
-                    errLogEntry.m_strProposal = "Geht scho";
-                    errLogEntry.m_iOccurrences = 7;
-                    console.debug("Qml Var: ", errLogEntry);
-                }
-            }
-        }
-    }
-}
-
-/*
 ApplicationWindow {
+    property var myTrcAdminObj: _trcServer.getTraceAdminObj(
+            "ZS::Apps::Products::IpcServer", "main.qml", "theInst");
+    Component.onDestruction: {
+        _trcServer.releaseTraceAdminObj(root.myTrcAdminObj);
+    }
+
     id: root
     visible: true
-
     width: 800
     height: 600
 
@@ -52,13 +21,6 @@ ApplicationWindow {
         property alias y: root.y
         property alias width: root.width
         property alias height: root.height
-    }
-
-    background: Rectangle {
-        gradient: Gradient {
-            GradientStop { position: 0; color: "#ffffff" }
-            GradientStop { position: 1; color: "#000000" }
-        }
     }
 
     menuBar: MenuBar {
@@ -84,9 +46,32 @@ ApplicationWindow {
     }
 
     header: ToolBar {
+        height: 32
+        width: parent.width
+
+        Rectangle {
+            anchors.fill: parent
+            color: "blue"
+        }
     }
 
-    footer: TabBar {
+    background: Rectangle {
+        color: "aqua"
+        /*
+        gradient: Gradient {
+            GradientStop { position: 0; color: "#ffffff" }
+            GradientStop { position: 1; color: "#000000" }
+        }
+        */
+    }
+
+    ErrLogWdgt {
+        anchors.fill: parent
+    }
+
+    footer: Rectangle {
+        height: 32
+        width: parent.width
+        color: "darkslateblue"
     }
 }
-*/
