@@ -72,6 +72,14 @@ public: // type definitions and constants
         EColumnUndefined
     };
     static QString column2Str(EColumn i_clm);
+public: // type definitions and constants
+    enum class ERole {
+        Sort = Qt::UserRole,
+        ImageUrl,
+        Type,
+        FirstDataColumnRole
+    };
+    Q_ENUM(ERole);
 public: // ctors and dtor
     CModelErrLog( CErrLog* i_pErrLog, bool i_bUsedByQmlListModels = false );
     virtual ~CModelErrLog();

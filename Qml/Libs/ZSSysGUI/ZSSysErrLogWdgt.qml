@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
+import Qt.labs.qmlmodels 1.0
 import ZSSysGUI 1.0
 
 Rectangle {
@@ -108,18 +109,65 @@ Rectangle {
                 return clmWidth;
             }
 
-            delegate: Rectangle {
-                implicitHeight: tableCellText.implicitHeight
-                border.color: "black"
-                border.width: 1
-                color: Qt.rgba(0.9, 0.9, 0.9)
+            delegate: DelegateChooser {
+                role: "type"
 
-                Text {
-                    id: tableCellText
-                    text: model.display
-                    width: parent.width
-                    elide: Text.ElideRight
-                    font.preferShaping: false
+                DelegateChoice {
+                    roleValue: "imageUrl"
+                    Image {
+                        source: model.decoration
+                        fillMode: Image.PreserveAspectFit
+                    }
+                }
+
+                DelegateChoice {
+                    roleValue: "icon"
+                    Rectangle {
+                        implicitHeight: tableCellStringText.implicitHeight
+                        border.color: "black"
+                        border.width: 1
+                        color: Qt.rgba(0.9, 0.9, 0.9)
+                        Text {
+                            id: tableCellIconText
+                            text: ""
+                            width: parent.width
+                            elide: Text.ElideRight
+                            font.preferShaping: false
+                        }
+                    }
+                }
+
+                DelegateChoice {
+                    roleValue: "string"
+                    Rectangle {
+                        implicitHeight: tableCellStringText.implicitHeight
+                        border.color: "black"
+                        border.width: 1
+                        color: Qt.rgba(0.9, 0.9, 0.9)
+                        Text {
+                            id: tableCellStringText
+                            text: model.display
+                            width: parent.width
+                            elide: Text.ElideRight
+                            font.preferShaping: false
+                        }
+                    }
+                }
+
+                DelegateChoice {
+                    Rectangle {
+                        implicitHeight: tableCellDefaultText.implicitHeight
+                        border.color: "black"
+                        border.width: 1
+                        color: Qt.rgba(0.9, 0.9, 0.9)
+                        Text {
+                            id: tableCellDefaultText
+                            text: model.display
+                            width: parent.width
+                            elide: Text.ElideRight
+                            font.preferShaping: false
+                        }
+                    }
                 }
             }
 

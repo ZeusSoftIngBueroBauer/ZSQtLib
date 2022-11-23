@@ -368,7 +368,7 @@ int CModelErrLog::column2Role(EColumn i_clm) const
 {
     if( m_bUsedByQmlListModels )
     {
-        return Qt::UserRole + i_clm;
+        return static_cast<int>(ERole::FirstDataColumnRole) + i_clm;
     }
     return -1;
 }
@@ -379,7 +379,8 @@ CModelErrLog::EColumn CModelErrLog::role2Column(int i_iRole) const
 {
     if( m_bUsedByQmlListModels )
     {
-        if( i_iRole >= Qt::UserRole && i_iRole < (Qt::UserRole + EColumnCount))
+        if( i_iRole >= static_cast<int>(ERole::FirstDataColumnRole)
+         && i_iRole < (static_cast<int>(ERole::FirstDataColumnRole) + EColumnCount))
         {
             return static_cast<EColumn>(i_iRole - Qt::UserRole);
         }
@@ -754,11 +755,30 @@ int CModelErrLog::columnWidth(int i_iClm, const QFont* i_pFont) const
             {
                 for( int iRow = 0; iRow < m_ararpEntries[iSeverity].count(); ++iRow )
                 {
-                    QVariant varData = data(index(iRow, i_iClm), Qt::DisplayRole);
+                    QString strType = "string";
+                    QVariant varData = data(index(iRow, i_iClm), static_cast<int>(ERole::Type));
                     if( varData.canConvert(QVariant::String) )
                     {
-                        QString strCellData = varData.toString();
-                        iClmWidth = qMax(iClmWidth, fntMetrics.horizontalAdvance(strCellData));
+                        strType = varData.toString();
+                    }
+                    if( strType == "string" || strType == "int" )
+                    {
+                        varData = data(index(iRow, i_iClm), Qt::DisplayRole);
+                        if( varData.canConvert(QVariant::String) )
+                        {
+                            QString strCellData = varData.toString();
+                            iClmWidth = qMax(iClmWidth, fntMetrics.horizontalAdvance(strCellData));
+                        }
+                    }
+                    else if( strType == "imageUrl" || strType == "icon" )
+                    {
+                        varData = data(index(iRow, i_iClm), Qt::DisplayRole);
+                        if( varData.canConvert(QVariant::String) )
+                        {
+                            QString strCellData = varData.toString();
+                            QPixmap pixmap(strCellData);
+                            iClmWidth = qMax(iClmWidth, pixmap.width());
+                        }
                     }
                 }
             }
@@ -874,7 +894,12 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
         /* strMthInArgs */ strMthInArgs );
 
     static QSet<int> s_rolesHandled = {
-        Qt::DisplayRole, Qt::DecorationRole, Qt::ToolTipRole
+        Qt::DisplayRole,
+        Qt::DecorationRole,
+        Qt::ToolTipRole,
+        static_cast<int>(ERole::Sort),
+        static_cast<int>(ERole::ImageUrl),
+        static_cast<int>(ERole::Type)
     };
 
     QVariant varData;
@@ -891,7 +916,7 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
     EColumn clm = static_cast<EColumn>(i_modelIdx.column());
     int iRole = i_iRole;
 
-    if( i_iRole >= Qt::UserRole )
+    if( m_bUsedByQmlListModels && i_iRole >= static_cast<int>(ERole::FirstDataColumnRole) )
     {
         clm = role2Column(i_iRole);
         iRole = Qt::DisplayRole;
@@ -935,7 +960,11 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
         {
             case EColumnRowIdx:
             {
-                if( iRole == Qt::DisplayRole )
+                if( iRole == static_cast<int>(ERole::Type) )
+                {
+                    varData = QLatin1String("int");
+                }
+                else if( iRole == Qt::DisplayRole )
                 {
                     varData = iRow;
                 }
@@ -943,7 +972,11 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
             }
             case EColumnSeverityRowIdx:
             {
-                if( iRole == Qt::DisplayRole )
+                if( iRole == static_cast<int>(ERole::Type) )
+                {
+                    varData = QLatin1String("int");
+                }
+                else if( iRole == Qt::DisplayRole )
                 {
                     varData = pEntryView->m_iRowIdx;
                 }
@@ -951,17 +984,35 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
             }
             case EColumnSeverityImageUrl:
             {
-                if( iRole == Qt::DisplayRole )
+                if( iRole == static_cast<int>(ERole::Type) )
+                {
+                    varData = QLatin1String("imageUrl");
+                }
+                else if( iRole == Qt::DisplayRole )
                 {
                     varData = getErrImageUrl(pEntryView->m_errResultInfo.getSeverity());
+                }
+                else if( iRole == Qt::DecorationRole )
+                {
+                    QString strUrl = getErrImageUrl(pEntryView->m_errResultInfo.getSeverity());
+                    if( strUrl.startsWith(":") ) {
+                        strUrl.insert(0, "qrc");
+                    }
+                    else if( !strUrl.startsWith("qrc:") ) {
+                        strUrl.insert(0, "qrc:");
+                    }
+                    varData = strUrl;
                 }
                 break;
             }
             case EColumnSeverityIcon:
             {
-                if( iRole == Qt::DisplayRole )
+                if( iRole == static_cast<int>(ERole::Type) )
                 {
-                    varData = "<Icon>";
+                    varData = QLatin1String("icon");
+                }
+                else if( iRole == Qt::DisplayRole )
+                {
                 }
                 else if( i_iRole == Qt::DecorationRole )
                 {
@@ -971,7 +1022,11 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
             }
             case EColumnSeverity:
             {
-                if( iRole == Qt::DisplayRole )
+                if( iRole == static_cast<int>(ERole::Type) )
+                {
+                    varData = QLatin1String("string");
+                }
+                else if( iRole == Qt::DisplayRole )
                 {
                     varData = resultSeverity2Str(pEntryView->m_errResultInfo.getSeverity());
                 }
@@ -979,7 +1034,11 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
             }
             case EColumnResultNumber:
             {
-                if( iRole == Qt::DisplayRole )
+                if( iRole == static_cast<int>(ERole::Type) )
+                {
+                    varData = QLatin1String("int");
+                }
+                else if( iRole == Qt::DisplayRole )
                 {
                     varData = QString::number(pEntryView->m_errResultInfo.getResult());
                 }
@@ -987,7 +1046,11 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
             }
             case EColumnResult:
             {
-                if( iRole == Qt::DisplayRole )
+                if( iRole == static_cast<int>(ERole::Type) )
+                {
+                    varData = QLatin1String("string");
+                }
+                else if( iRole == Qt::DisplayRole )
                 {
                     varData = pEntryView->m_errResultInfo.getResultStr();
                 }
@@ -995,7 +1058,11 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
             }
             case EColumnDate:
             {
-                if( iRole == Qt::DisplayRole )
+                if( iRole == static_cast<int>(ERole::Type) )
+                {
+                    varData = QLatin1String("string");
+                }
+                else if( iRole == Qt::DisplayRole )
                 {
                     varData = pEntryView->m_dateTime.toString("yyyy-MM-dd");
                 }
@@ -1003,7 +1070,11 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
             }
             case EColumnTime:
             {
-                if( iRole == Qt::DisplayRole )
+                if( iRole == static_cast<int>(ERole::Type) )
+                {
+                    varData = QLatin1String("string");
+                }
+                else if( iRole == Qt::DisplayRole )
                 {
                     varData = pEntryView->m_dateTime.toString("hh:mm:ss");
                 }
@@ -1011,7 +1082,11 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
             }
             case EColumnOccurrences:
             {
-                if( iRole == Qt::DisplayRole )
+                if( iRole == static_cast<int>(ERole::Type) )
+                {
+                    varData = QLatin1String("int");
+                }
+                else if( iRole == Qt::DisplayRole )
                 {
                     varData = pEntryView->m_iOccurrences;
                 }
@@ -1019,7 +1094,11 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
             }
             case EColumnSource:
             {
-                if( iRole == Qt::DisplayRole )
+                if( iRole == static_cast<int>(ERole::Type) )
+                {
+                    varData = QLatin1String("string");
+                }
+                else if( iRole == Qt::DisplayRole )
                 {
                     QString strTmp = pEntryView->m_errResultInfo.getErrSource().toString();
                     strTmp = decodeFromHtml(strTmp);
@@ -1029,7 +1108,11 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
             }
             case EColumnAddInfo:
             {
-                if( iRole == Qt::DisplayRole )
+                if( iRole == static_cast<int>(ERole::Type) )
+                {
+                    varData = QLatin1String("string");
+                }
+                else if( iRole == Qt::DisplayRole )
                 {
                     QString strTmp = pEntryView->m_errResultInfo.getAddErrInfoDscr();
                     strTmp = decodeFromHtml(strTmp);
@@ -1039,7 +1122,11 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
             }
             case EColumnProposal:
             {
-                if( iRole == Qt::DisplayRole )
+                if( iRole == static_cast<int>(ERole::Type) )
+                {
+                    varData = QLatin1String("string");
+                }
+                else if( iRole == Qt::DisplayRole )
                 {
                     QString strTmp = pEntryView->m_strProposal;
                     strTmp = decodeFromHtml(strTmp);
@@ -1179,7 +1266,7 @@ QVariant CModelErrLog::headerData(
             {
                 if( i_iRole == Qt::DisplayRole )
                 {
-                    varData = "Image Url";
+                    varData = "Severity Image Url";
                 }
                 break;
             }
@@ -1293,6 +1380,12 @@ protected: // auxiliary instance methods
 void CModelErrLog::fillRoleNames()
 //------------------------------------------------------------------------------
 {
+    m_roleNames = QAbstractItemModel::roleNames();
+
+    m_roleNames[static_cast<int>(ERole::Sort)] = "sort";
+    m_roleNames[static_cast<int>(ERole::ImageUrl)] = "imageUrl";
+    m_roleNames[static_cast<int>(ERole::Type)] = "type";
+
     if( m_bUsedByQmlListModels )
     {
         for( int clm = 0; clm < CModelErrLog::EColumnCount; ++clm)
@@ -1300,9 +1393,5 @@ void CModelErrLog::fillRoleNames()
             int role = CModelErrLog::column2Role(static_cast<CModelErrLog::EColumn>(clm));
             m_roleNames[role] = s_clm2Name[clm];
         }
-    }
-    else
-    {
-        m_roleNames = QAbstractItemModel::roleNames();
     }
 }

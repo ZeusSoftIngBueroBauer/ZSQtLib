@@ -109,8 +109,10 @@ CWdgtErrLog::CWdgtErrLog(
         m_pTableView->setShowGrid(false);
         m_pTableView->setAlternatingRowColors(true);
         m_pTableView->hideColumn(CModelErrLog::EColumnRowIdx);
+        m_pTableView->hideColumn(CModelErrLog::EColumnSeverityRowIdx);
+        m_pTableView->hideColumn(CModelErrLog::EColumnSeverityImageUrl);
         m_pTableView->hideColumn(CModelErrLog::EColumnSeverity);
-        m_pTableView->hideColumn(CModelErrLog::EColumnResult);
+        m_pTableView->hideColumn(CModelErrLog::EColumnResultNumber);
         m_pTableView->hideColumn(CModelErrLog::EColumnProposal);
         m_pTableView->resizeColumnsToContents();
         m_pTableView->resizeRowsToContents();
