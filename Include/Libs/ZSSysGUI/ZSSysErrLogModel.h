@@ -55,19 +55,17 @@ public: // class methods
     static QString ClassName() { return "CModelErrLog"; }
 public: // type definitions and constants
     enum EColumn {
-        EColumnRowIdx           =  0,
-        EColumnSeverityRowIdx   =  1,
-        EColumnSeverityImageUrl =  2,
-        EColumnSeverityIcon     =  3,
-        EColumnSeverity         =  4,
-        EColumnResultNumber     =  5,
-        EColumnResult           =  6,
-        EColumnDate             =  7,
-        EColumnTime             =  8,
-        EColumnOccurrences      =  9,
-        EColumnSource           = 10,
-        EColumnAddInfo          = 11,
-        EColumnProposal         = 12,
+        EColumnSeverityImageUrl =  0,
+        EColumnSeverityIcon     =  1,
+        EColumnSeverity         =  2,
+        EColumnResultNumber     =  3,
+        EColumnResult           =  4,
+        EColumnDate             =  5,
+        EColumnTime             =  6,
+        EColumnOccurrences      =  7,
+        EColumnSource           =  8,
+        EColumnAddInfo          =  9,
+        EColumnProposal         = 10,
         EColumnCount,
         EColumnUndefined
     };
@@ -81,26 +79,26 @@ public: // type definitions and constants
     };
     Q_ENUM(ERole);
 public: // ctors and dtor
-    CModelErrLog( CErrLog* i_pErrLog, bool i_bUsedByQmlListModels = false );
+    CModelErrLog( CErrLog* i_pErrLog );
     virtual ~CModelErrLog();
-public: // instance methods
-    SErrLogEntry* findEntry( const ZS::System::SErrResultInfo& i_errResultInfo );
-    void removeEntries( const QModelIndexList& i_modelIdxList );
-    void clear();
 public: // auxiliary instance methods
     QString role2Str(int i_iRole) const;
+    int byteArr2Role(const QByteArray& i_byteArrRole) const;
     int column2Role(EColumn i_clm) const;
     EColumn role2Column(int i_iRole) const;
     QString modelIndex2Str( const QModelIndex& modelIdx ) const;
-protected slots:
-    void onEntryAdded( const ZS::System::SErrResultInfo& i_errResultInfo );   // called on adding an entry to the main model
-    void onEntryChanged( const ZS::System::SErrResultInfo& i_errResultInfo ); // called on changing an entry in the main model
-    void onEntryRemoved( const ZS::System::SErrResultInfo& i_errResultInfo );
-protected: // instance methods
-    SErrLogEntry* getEntry( int i_iRowIdx, EResultSeverity i_severity = EResultSeverityUndefined );
-    void removeEntry( int i_iRowIdx, EResultSeverity i_severity = EResultSeverityUndefined );
 public: // instance methods
-    Q_INVOKABLE int columnWidth(int i_iClm, const QFont* i_pFont = nullptr) const;
+    Q_INVOKABLE void clear();
+    Q_INVOKABLE void removeEntries( const QModelIndexList& i_modelIdxList );
+    Q_INVOKABLE void removeEntries( const QVariantList& i_arRowIdxs );
+    Q_INVOKABLE void removeEntry( int i_iRowIdx );
+protected slots:
+    void onEntryAdded( const ZS::System::SErrResultInfo& i_errResultInfo );
+    void onEntryChanged( const ZS::System::SErrResultInfo& i_errResultInfo );
+    void onEntryRemoved( const ZS::System::SErrResultInfo& i_errResultInfo );
+public: // instance methods
+    Q_INVOKABLE int columnWidthByColumn(int i_iClm, int i_iFontPixelSize = 0) const;
+    Q_INVOKABLE int columnWidthByRole(const QByteArray& i_byteArrRole, int i_iFontPixelSize = 0) const;
 public: // overridables of base class QAbstractItemModel
     virtual QHash<int, QByteArray> roleNames() const override;
 public: // must overridables of base class QAbstractItemModel
@@ -111,7 +109,10 @@ public: // must overridables of base class QAbstractItemModel
     virtual QModelIndex parent( const QModelIndex& i_modelIdx ) const override;
 protected: // overridables of base class QAbstractItemModel
     virtual QVariant headerData( int i_iSection, Qt::Orientation i_orientation, int i_iRole = Qt::DisplayRole ) const override;
-public: // auxiliary instance methods
+protected: // auxiliary instance methods
+    SErrLogEntry* findEntry( const SErrResultInfo& i_errResultInfo, int* o_piRowIdx = nullptr, int* o_piRowIdxSeveritySection = nullptr );
+    SErrLogEntry* getEntry( int i_iRowIdx, EResultSeverity* o_pSeverity = nullptr, int* o_piRowIdxSeveritySection = nullptr ) const;
+protected: // auxiliary instance methods
     void fillRoleNames();
 protected: // class members
     static QHash<int, QByteArray> s_clm2Name;
@@ -125,9 +126,14 @@ protected: // instance members
     // the GUI's main thread (the signals of the error log object have to be queued
     // before calling the slots of the model).
     CErrLog*                      m_pErrLog;
+    /*!< Need a copy of the err log model entries as entries may be added, changed
+         or removed from different threads. When removing an entry the signal
+         entryRemoved is emitted and may be queued. The model cannot access the
+         removed entry as it is already deleted. But the model is able to find the
+         entry in the internal list and can inform the views about the removed entry. */
     QVector<QList<SErrLogEntry*>> m_ararpEntries;
-    bool                          m_bUsedByQmlListModels;
     QHash<int, QByteArray>        m_roleNames;
+    QHash<QByteArray, int>        m_roleValues;
     mutable QVector<int>          m_ariClmWidths;
     ZS::System::CTrcAdminObj*     m_pTrcAdminObj;
     ZS::System::CTrcAdminObj*     m_pTrcAdminObjNoisyMethods;

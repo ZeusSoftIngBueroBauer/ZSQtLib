@@ -1,8 +1,8 @@
 <RCC>
     <qresource prefix="/ZSSysGUI">
         <file>qmldir</file>
+        <file>ZSSysErrLogDlg.qml</file>
         <file>ZSSysErrLogWdgt.qml</file>
         <file>ZSSysPushButton.qml</file>
-        <file>ZSSysSortableColumnHeading.qml</file>
     </qresource>
 </RCC>

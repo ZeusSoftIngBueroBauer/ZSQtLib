@@ -78,6 +78,7 @@
         <file alias="TreeViewCollapseAll.bmp">Images/TreeViewCollapseAll.bmp</file>
         <file alias="TreeViewExpandAll.bmp">Images/TreeViewExpandAll.bmp</file>
         <file alias="TreeViewResizeToContents.bmp">Images/TreeViewResizeToContents.bmp</file>
+        <file alias="TreeViewResizeToContents.png">Images/TreeViewResizeToContents.png</file>
         <file alias="TreeViewSortOrderConfig.bmp">Images/TreeViewSortOrderConfig.bmp</file>
         <file alias="TreeViewSortOrderAscending.bmp">Images/TreeViewSortOrderAscending.bmp</file>
         <file alias="TreeViewViewModeNavPanelOnly.bmp">Images/TreeViewViewModeNavPanelOnly.bmp</file>
@@ -113,10 +114,15 @@
         <file alias="TreeViewLoggersLeaveEntrySelectedOff.bmp">Images/TreeViewLoggersLeaveEntrySelectedOff.bmp</file>
     </qresource>
     <qresource prefix="/ZS/Result">
-        <file alias="ResultSeveritySuccess.bmp">Images/ResultSeveritySuccess.bmp</file>
-        <file alias="ResultSeverityInfo.bmp">Images/ResultSeverityInfo.bmp</file>
-        <file alias="ResultSeverityWarning.bmp">Images/ResultSeverityWarning.bmp</file>
         <file alias="ResultSeverityError.bmp">Images/ResultSeverityError.bmp</file>
+        <file alias="ResultSeverityError.png">Images/ResultSeverityError.png</file>
         <file alias="ResultSeverityCritical.bmp">Images/ResultSeverityCritical.bmp</file>
+        <file alias="ResultSeverityCritical.png">Images/ResultSeverityCritical.png</file>
+        <file alias="ResultSeverityInfo.bmp">Images/ResultSeverityInfo.bmp</file>
+        <file alias="ResultSeverityInfo.png">Images/ResultSeverityInfo.png</file>
+        <file alias="ResultSeveritySuccess.bmp">Images/ResultSeveritySuccess.bmp</file>
+        <file alias="ResultSeveritySuccess.png">Images/ResultSeveritySuccess.png</file>
+        <file alias="ResultSeverityWarning.bmp">Images/ResultSeverityWarning.bmp</file>
+        <file alias="ResultSeverityWarning.png">Images/ResultSeverityWarning.png</file>
     </qresource>
 </RCC>

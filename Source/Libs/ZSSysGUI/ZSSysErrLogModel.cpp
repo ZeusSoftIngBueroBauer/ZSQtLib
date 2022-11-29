@@ -47,8 +47,6 @@ public: // type definitions and constants
 ==============================================================================*/
 
  QHash<int, QByteArray> CModelErrLog::s_clm2Name {
-    { CModelErrLog::EColumnRowIdx, "RowIdx"},
-    { CModelErrLog::EColumnSeverityRowIdx, "SeverityRowIdx"},
     { CModelErrLog::EColumnSeverityImageUrl, "SeverityImageUrl"},
     { CModelErrLog::EColumnSeverityIcon, "SeverityIcon"},
     { CModelErrLog::EColumnSeverity, "Severity"},
@@ -74,13 +72,13 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CModelErrLog::CModelErrLog( CErrLog* i_pErrLog, bool i_bUsedByQmlListModels ) :
+CModelErrLog::CModelErrLog( CErrLog* i_pErrLog ) :
 //------------------------------------------------------------------------------
     QAbstractItemModel(),
     m_pErrLog(i_pErrLog),
     m_ararpEntries(QVector<QList<SErrLogEntry*>>(EResultSeverityCount)),
-    m_bUsedByQmlListModels(i_bUsedByQmlListModels),
     m_roleNames(),
+    m_roleValues(),
     m_ariClmWidths(QVector<int>(EColumnCount)),
     m_pTrcAdminObj(nullptr),
     m_pTrcAdminObjNoisyMethods(nullptr)
@@ -99,7 +97,6 @@ CModelErrLog::CModelErrLog( CErrLog* i_pErrLog, bool i_bUsedByQmlListModels ) :
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "ErrLog: " + i_pErrLog->objectName();
-        strMthInArgs += ", UsedByQmlListModels: " + bool2Str(i_bUsedByQmlListModels);
     }
 
     CMethodTracer mthTracer(
@@ -108,7 +105,7 @@ CModelErrLog::CModelErrLog( CErrLog* i_pErrLog, bool i_bUsedByQmlListModels ) :
         /* strMethod    */ "ctor",
         /* strMthInArgs */ strMthInArgs );
 
-    m_pErrLog->lock();
+    CErrLogLocker errLogLocker(m_pErrLog);
 
     SErrLogEntry* pErrLogEntry = nullptr;
     int           iRowIdx;
@@ -144,8 +141,6 @@ CModelErrLog::CModelErrLog( CErrLog* i_pErrLog, bool i_bUsedByQmlListModels ) :
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
-
-    m_pErrLog->unlock();
 
 } // ctor
 
@@ -183,41 +178,123 @@ CModelErrLog::~CModelErrLog()
     m_pTrcAdminObjNoisyMethods = nullptr;
 
     m_pErrLog = nullptr;
-    m_bUsedByQmlListModels = false;
 
 } // dtor
+
+/*==============================================================================
+public: // auxiliary instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QString CModelErrLog::role2Str(int i_iRole) const
+//------------------------------------------------------------------------------
+{
+    return m_roleNames.value(i_iRole, "? (" + QByteArray::number(i_iRole) + ")");
+}
+
+//------------------------------------------------------------------------------
+int CModelErrLog::byteArr2Role(const QByteArray& i_byteArrRole) const
+//------------------------------------------------------------------------------
+{
+    return m_roleValues.value(i_byteArrRole, Qt::DisplayRole);
+}
+
+//------------------------------------------------------------------------------
+int CModelErrLog::column2Role(EColumn i_clm) const
+//------------------------------------------------------------------------------
+{
+    return static_cast<int>(ERole::FirstDataColumnRole) + i_clm;
+}
+
+//------------------------------------------------------------------------------
+CModelErrLog::EColumn CModelErrLog::role2Column(int i_iRole) const
+//------------------------------------------------------------------------------
+{
+    if( i_iRole >= static_cast<int>(ERole::FirstDataColumnRole)
+        && i_iRole < (static_cast<int>(ERole::FirstDataColumnRole) + EColumnCount))
+    {
+        return static_cast<EColumn>(i_iRole - static_cast<int>(ERole::FirstDataColumnRole));
+    }
+    return EColumnUndefined;
+}
+
+//------------------------------------------------------------------------------
+QString CModelErrLog::modelIndex2Str( const QModelIndex& i_modelIdx ) const
+//------------------------------------------------------------------------------
+{
+    QString str;
+
+    if( !i_modelIdx.isValid() )
+    {
+        str = "Invalid";
+    }
+    else
+    {
+        str = "Row: " + QString::number(i_modelIdx.row());
+        str += ", Clm: " + QString::number(i_modelIdx.column());
+        str += " (" + column2Str(static_cast<EColumn>(i_modelIdx.column())) + ")";
+        // Endless recursion if called by ::data method.
+        //if( i_modelIdx.data().canConvert(QVariant::String) )
+        //{
+        //    str += ", Data: " + i_modelIdx.data().toString();
+        //}
+    }
+    return str;
+}
 
 /*==============================================================================
 public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-SErrLogEntry* CModelErrLog::findEntry( const ZS::System::SErrResultInfo& i_errResultInfo )
+void CModelErrLog::clear()
 //------------------------------------------------------------------------------
 {
-    SErrLogEntry* pEntryView = nullptr;
-    SErrLogEntry* pEntryViewTmp;
-    int           iRowIdx;
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "clear",
+        /* strMthInArgs */ "" );
 
-    EResultSeverity severity = i_errResultInfo.getSeverity();
+    CErrLogLocker errLogLocker(m_pErrLog);
 
-    for( iRowIdx = 0; iRowIdx < m_ararpEntries[severity].count(); iRowIdx++ )
+    beginResetModel();
+
+    int iSeverity;
+    int iRowIdx;
+
+    for( iSeverity = m_ararpEntries.count()-1; iSeverity >= 0; iSeverity-- )
     {
-        pEntryViewTmp = m_ararpEntries[severity][iRowIdx];
-
-        if( pEntryViewTmp != nullptr )
+        if( m_ararpEntries[iSeverity].count() > 0 )
         {
-            if( pEntryViewTmp->m_errResultInfo == i_errResultInfo )
+            for( iRowIdx = m_ararpEntries[iSeverity].count()-1; iRowIdx >= 0; iRowIdx-- )
             {
-                pEntryView = pEntryViewTmp;
-                break;
+                delete m_ararpEntries[iSeverity][iRowIdx];
+                m_ararpEntries[iSeverity][iRowIdx] = nullptr;
             }
+            m_ararpEntries[iSeverity].clear();
         }
     }
 
-    return pEntryView;
+    QObject::disconnect(
+        /* pObjSender   */ m_pErrLog,
+        /* szSignal     */ SIGNAL(entryRemoved(const ZS::System::SErrResultInfo&)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onEntryRemoved(const ZS::System::SErrResultInfo&)) );
 
-} // findEntry
+    m_pErrLog->clear();
+
+    if( !QObject::connect(
+        /* pObjSender   */ m_pErrLog,
+        /* szSignal     */ SIGNAL(entryRemoved(const ZS::System::SErrResultInfo&)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onEntryRemoved(const ZS::System::SErrResultInfo&)) ) )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+    }
+
+    endResetModel();
+}
 
 //------------------------------------------------------------------------------
 void CModelErrLog::removeEntries( const QModelIndexList& i_modelIdxList )
@@ -248,7 +325,103 @@ void CModelErrLog::removeEntries( const QModelIndexList& i_modelIdxList )
 
     if( i_modelIdxList.count() > 0 )
     {
-        m_pErrLog->lock();
+        CErrLogLocker errLogLocker(m_pErrLog);
+
+        // The entries must be removed starting with the highest row index.
+        // Otherwise we would remove entries within the list and the row index
+        // of the list entries changes.
+        QModelIndexList modelIdxListSorted = i_modelIdxList;
+        std::sort( modelIdxListSorted.begin(), modelIdxListSorted.end() );
+        for( int idx = modelIdxListSorted.count()-1; idx >= 0; --idx )
+        {
+            const QModelIndex modelIdx = modelIdxListSorted[idx];
+            removeEntry(modelIdx.row());
+        }
+    }
+
+} // removeEntries
+
+//------------------------------------------------------------------------------
+void CModelErrLog::removeEntries( const QVariantList& i_arRowIdxs )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        strMthInArgs = "RowIdxList[" + QString::number(i_arRowIdxs.count()) + "]";
+        if( i_arRowIdxs.count() > 0 ) {
+            strMthInArgs += "(";
+            for( const QVariant& val : i_arRowIdxs ) {
+                if( !strMthInArgs.endsWith("(")) {
+                    strMthInArgs += ", ";
+                }
+                strMthInArgs += val.toString();
+            }
+            strMthInArgs += ")";
+        }
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "removeEntries",
+        /* strMthInArgs */ strMthInArgs );
+
+    if( i_arRowIdxs.count() > 0 )
+    {
+        CErrLogLocker errLogLocker(m_pErrLog);
+
+        // The entries must be removed starting with the highest row index.
+        // Otherwise we would remove entries within the list and the row index
+        // of the list entries changes.
+        QList<int> arRowIdxsSorted;
+        for( const QVariant& val : i_arRowIdxs )
+        {
+            int iRowIdx = val.toInt();
+            arRowIdxsSorted.insert(0, iRowIdx);
+        }
+        for( int iRowIdx : arRowIdxsSorted )
+        {
+            removeEntry(iRowIdx);
+        }
+    }
+
+} // removeEntries
+
+//------------------------------------------------------------------------------
+void CModelErrLog::removeEntry( int i_iRowIdx )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        strMthInArgs = "RowIdx: " + QString::number(i_iRowIdx);
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "removeEntry",
+        /* strMthInArgs */ strMthInArgs );
+
+    CErrLogLocker errLogLocker(m_pErrLog);
+
+    EResultSeverity severity = EResultSeverityUndefined;
+    int iRowIdxSeveritySection = -1;
+
+    SErrLogEntry* pModelEntry = getEntry(i_iRowIdx, &severity, &iRowIdxSeveritySection);
+
+    if( pModelEntry != nullptr )
+    {
+        SErrResultInfo errResultInfo = pModelEntry->m_errResultInfo;
+
+        beginRemoveRows(QModelIndex(), i_iRowIdx, i_iRowIdx);
+        m_ararpEntries[severity].removeAt(iRowIdxSeveritySection);
+        delete pModelEntry;
+        pModelEntry = nullptr;
+        endRemoveRows();
 
         QObject::disconnect(
             /* pObjSender   */ m_pErrLog,
@@ -256,27 +429,7 @@ void CModelErrLog::removeEntries( const QModelIndexList& i_modelIdxList )
             /* pObjReceiver */ this,
             /* szSlot       */ SLOT(onEntryRemoved(const ZS::System::SErrResultInfo&)) );
 
-        QModelIndexList modelIdxListSorted = i_modelIdxList;
-        QModelIndex     modelIdx;
-        SErrLogEntry*   pEntryView;
-        int             idxRow;
-
-        std::sort( modelIdxListSorted.begin(), modelIdxListSorted.end() );
-
-        //beginRemoveRows( QModelIndex(), modelIdxListSorted[0].row(), modelIdxListSorted[modelIdxListSorted.size()-1].row() );
-
-        for( idxRow = modelIdxListSorted.count()-1; idxRow >= 0; idxRow-- )
-        {
-            modelIdx = modelIdxListSorted[idxRow];
-
-            pEntryView = getEntry(modelIdx.row());
-
-            m_pErrLog->removeEntry(pEntryView->m_errResultInfo);
-
-            removeEntry(modelIdx.row());
-        }
-
-        //endRemoveRows();
+        m_pErrLog->removeEntry(errResultInfo);
 
         if( !QObject::connect(
             /* pObjSender   */ m_pErrLog,
@@ -286,133 +439,7 @@ void CModelErrLog::removeEntries( const QModelIndexList& i_modelIdxList )
         {
             throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
         }
-
-        m_pErrLog->unlock();
-
-    } // if( i_modelIdxList.count() > 0 )
-
-} // removeEntries
-
-//------------------------------------------------------------------------------
-void CModelErrLog::clear()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "clear",
-        /* strMthInArgs */ "" );
-
-    m_pErrLog->lock();
-
-    //QObject::disconnect(
-    //    /* pObjSender   */ m_pErrLog,
-    //    /* szSignal     */ SIGNAL(entryRemoved(const ZS::System::SErrResultInfo&)),
-    //    /* pObjReceiver */ this,
-    //    /* szSlot       */ SLOT(onEntryRemoved(const ZS::System::SErrResultInfo&)) );
-
-    m_pErrLog->clear();
-
-    //SErrLogEntry* pEntryView;
-
-    //int iSeverity;
-    //int idxRow;
-
-    //for( iSeverity = EResultSeverityCount-1; iSeverity >= 0; iSeverity-- )
-    //{
-    //    if( m_ararpEntries[iSeverity].count() > 0 )
-    //    {
-    //        //beginRemoveRows( QModelIndex(), 0, m_ararpEntries[iSeverity].size()-1 );
-
-    //        for( idxRow = m_ararpEntries[iSeverity].size()-1; idxRow >= 0; idxRow-- )
-    //        {
-    //            pEntryView = m_ararpEntries[iSeverity][idxRow];
-
-    //            m_pErrLog->removeEntry(pEntryView->m_errResultInfo);
-
-    //            removeEntry(idxRow, pEntryView->m_errResultInfo.getSeverity());
-    //        }
-
-    //        //endRemoveRows();
-
-    //    } // if( m_ararpEntries[iSeverity].count() > 0 )
-    //} // for( iSeverity = EResultSeverityCount-1; iSeverity >= 0; iSeverity-- )
-
-    //if( !QObject::connect(
-    //    /* pObjSender   */ m_pErrLog,
-    //    /* szSignal     */ SIGNAL(entryRemoved(const ZS::System::SErrResultInfo&)),
-    //    /* pObjReceiver */ this,
-    //    /* szSlot       */ SLOT(onEntryRemoved(const ZS::System::SErrResultInfo&)) ) )
-    //{
-    //    throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    //}
-
-    m_pErrLog->unlock();
-
-} // clear
-
-/*==============================================================================
-public: // auxiliary instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-QString CModelErrLog::role2Str(int i_iRole) const
-//------------------------------------------------------------------------------
-{
-    return m_roleNames.value(i_iRole, "? (" + QByteArray::number(i_iRole) + ")");
-}
-
-//------------------------------------------------------------------------------
-int CModelErrLog::column2Role(EColumn i_clm) const
-//------------------------------------------------------------------------------
-{
-    if( m_bUsedByQmlListModels )
-    {
-        return static_cast<int>(ERole::FirstDataColumnRole) + i_clm;
     }
-    return -1;
-}
-
-//------------------------------------------------------------------------------
-CModelErrLog::EColumn CModelErrLog::role2Column(int i_iRole) const
-//------------------------------------------------------------------------------
-{
-    if( m_bUsedByQmlListModels )
-    {
-        if( i_iRole >= static_cast<int>(ERole::FirstDataColumnRole)
-         && i_iRole < (static_cast<int>(ERole::FirstDataColumnRole) + EColumnCount))
-        {
-            return static_cast<EColumn>(i_iRole - Qt::UserRole);
-        }
-    }
-    return EColumnUndefined;
-}
-
-//------------------------------------------------------------------------------
-QString CModelErrLog::modelIndex2Str( const QModelIndex& i_modelIdx ) const
-//------------------------------------------------------------------------------
-{
-    QString str;
-
-    if( !i_modelIdx.isValid() )
-    {
-        str = "Invalid";
-    }
-    else
-    {
-        str = "Row: " + QString::number(i_modelIdx.row());
-
-        if( !m_bUsedByQmlListModels )
-        {
-            str += ", Clm: " + column2Str(static_cast<EColumn>(i_modelIdx.column()));
-        }
-        // Endless recursion if called by ::data method.
-        //if( i_modelIdx.data().canConvert(QVariant::String) )
-        //{
-        //    str += ", Data: " + i_modelIdx.data().toString();
-        //}
-    }
-    return str;
 }
 
 /*==============================================================================
@@ -436,9 +463,8 @@ void CModelErrLog::onEntryAdded( const ZS::System::SErrResultInfo& i_errResultIn
         /* strMethod    */ "onEntryAdded",
         /* strMthInArgs */ strMthInArgs );
 
-    m_pErrLog->lock();
+    CErrLogLocker errLogLocker(m_pErrLog);
 
-    // Search entry in "main" list.
     SErrLogEntry* pErrLogEntry = m_pErrLog->findEntry(i_errResultInfo);
 
     // The row state of the entries in the main list and in the view list
@@ -453,21 +479,19 @@ void CModelErrLog::onEntryAdded( const ZS::System::SErrResultInfo& i_errResultIn
     if( pErrLogEntry != nullptr )
     {
         EResultSeverity severity = i_errResultInfo.getSeverity();
+        int iRowIdx = 0;
 
-        // Copy the "main" model entry into the "views" model:
-        SErrLogEntry* pEntryView = new SErrLogEntry(*pErrLogEntry);
+        for( int iSeverity = m_ararpEntries.count()-1; iSeverity >= severity; --iSeverity )
+        {
+            iRowIdx += m_ararpEntries[iSeverity].count();
+        }
 
-        // The models row index is different from the err logs row index:
-        pEntryView->m_iRowIdx = m_ararpEntries[severity].count();
-
-        beginInsertRows( QModelIndex(), pEntryView->m_iRowIdx, pEntryView->m_iRowIdx );
-        m_ararpEntries[severity].append(pEntryView);
+        // Copy the "main" model entry into the model:
+        beginInsertRows(QModelIndex(), iRowIdx, iRowIdx);
+        SErrLogEntry* pModelEntry = new SErrLogEntry(*pErrLogEntry);
+        m_ararpEntries[severity].append(pModelEntry);
         endInsertRows();
-
-        //emit entryAdded(pEntryView);
     }
-
-    m_pErrLog->unlock();
 
 } // onEntryAdded
 
@@ -488,47 +512,24 @@ void CModelErrLog::onEntryChanged( const ZS::System::SErrResultInfo& i_errResult
         /* strMethod    */ "onEntryChanged",
         /* strMthInArgs */ strMthInArgs );
 
-    m_pErrLog->lock();
+    CErrLogLocker errLogLocker(m_pErrLog);
 
-    // Search entry in "main" list.
-    SErrLogEntry* pErrLogEntry = m_pErrLog->findEntry(i_errResultInfo);
+    int iRowIdx = -1;
+    SErrLogEntry* pModelEntry = findEntry(i_errResultInfo, &iRowIdx);
+    SErrLogEntry* pErrLogEntry = m_pErrLog->findEntry(i_errResultInfo, &iRowIdx);
 
-    if( pErrLogEntry != nullptr )
+    if( pModelEntry != nullptr )
     {
-        // Search entry in "views" model.
-        int           iRowIdx;
-        SErrLogEntry* pEntryView = nullptr;
-        SErrLogEntry* pEntryViewTmp;
-
-        EResultSeverity severity = i_errResultInfo.getSeverity();
-
-        for( iRowIdx = 0; iRowIdx < m_ararpEntries[severity].count(); iRowIdx++ )
+        if( pErrLogEntry != nullptr )
         {
-            pEntryViewTmp = m_ararpEntries[severity][iRowIdx];
-
-            if( pEntryViewTmp != nullptr )
-            {
-                if( pEntryViewTmp->m_errResultInfo == i_errResultInfo )
-                {
-                    pEntryView = pEntryViewTmp;
-                    break;
-                }
-            }
+            *pModelEntry = *pErrLogEntry;
         }
-
-        if( pEntryView != nullptr )
+        else
         {
-            // Copy the "main" model entry into the "views" model. But keep
-            // the models row index which may be different from the err logs row index.
-            iRowIdx = pEntryView->m_iRowIdx;
-            *pEntryView = *pErrLogEntry;
-            pEntryView->m_iRowIdx = iRowIdx;
-
-            emit dataChanged( index(pEntryView->m_iRowIdx,0), index(pEntryView->m_iRowIdx,EColumnCount-1) );
+            pModelEntry->m_errResultInfo = i_errResultInfo;
         }
+        emit dataChanged(index(iRowIdx,0), index(iRowIdx,EColumnCount-1));
     }
-
-    m_pErrLog->unlock();
 
 } // onEntryChanged
 
@@ -549,179 +550,30 @@ void CModelErrLog::onEntryRemoved( const ZS::System::SErrResultInfo& i_errResult
         /* strMethod    */ "onEntryRemoved",
         /* strMthInArgs */ strMthInArgs );
 
-    m_pErrLog->lock();
+    CErrLogLocker errLogLocker(m_pErrLog);
 
-    // Search entry in my view list.
-    SErrLogEntry* pEntryView = findEntry(i_errResultInfo);
+    int iRowIdx = -1;
+    int iRowIdxSeveritySection = -1;
+    SErrLogEntry* pModelEntry = findEntry(i_errResultInfo, &iRowIdx, &iRowIdxSeveritySection);
 
-    if( pEntryView != nullptr )
+    if( pModelEntry != nullptr )
     {
         EResultSeverity severity = i_errResultInfo.getSeverity();
-
-        int iRowIdx = pEntryView->m_iRowIdx;
-
-        delete pEntryView;
-        pEntryView = nullptr;
-
-        beginRemoveRows( QModelIndex(), iRowIdx, iRowIdx );
-        m_ararpEntries[severity].removeAt(iRowIdx);
+        beginRemoveRows(QModelIndex(), iRowIdx, iRowIdx);
+        m_ararpEntries[severity].removeAt(iRowIdxSeveritySection);
+        delete pModelEntry;
+        pModelEntry = nullptr;
         endRemoveRows();
-
-        for( ; iRowIdx < m_ararpEntries[severity].count(); iRowIdx++ )
-        {
-            pEntryView = m_ararpEntries[severity][iRowIdx];
-
-            pEntryView->m_iRowIdx--;
-
-            emit dataChanged( index(pEntryView->m_iRowIdx,0), index(pEntryView->m_iRowIdx,EColumnCount-1) );
-        }
     }
-
-    m_pErrLog->unlock();
 
 } // onEntryRemoved
-
-/*==============================================================================
-protected: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-SErrLogEntry* CModelErrLog::getEntry( int i_iRowIdx, EResultSeverity i_severity )
-//------------------------------------------------------------------------------
-{
-    SErrLogEntry* pEntry = nullptr;
-
-    if( i_severity == EResultSeverityUndefined || i_severity == EResultSeverityCount )
-    {
-        int iCount = 0;
-
-        // In this case counting rows starts at highest severity (Critical).
-        for( int iSeverity = EResultSeverityCount-1; iSeverity >= 0; iSeverity-- )
-        {
-            if( i_iRowIdx < (iCount + m_ararpEntries[iSeverity].count()) )
-            {
-                pEntry = m_ararpEntries[iSeverity][i_iRowIdx-iCount];
-                break;
-            }
-            iCount += m_ararpEntries[iSeverity].count();
-        }
-    }
-    else // if( i_severity >= 0 && i_severity < EResultSeverityCount )
-    {
-        if( i_iRowIdx >= 0 && i_iRowIdx < m_ararpEntries[i_severity].count() )
-        {
-            pEntry = m_ararpEntries[i_severity][i_iRowIdx];
-        }
-    }
-
-    return pEntry;
-
-} // getEntry
-
-//------------------------------------------------------------------------------
-void CModelErrLog::removeEntry( int i_iRowIdx, EResultSeverity i_severity )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strMthInArgs = "RowIdx: " + QString::number(i_iRowIdx);
-        strMthInArgs += ", Severity: " + resultSeverity2Str(i_severity);
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "removeEntry",
-        /* strMthInArgs */ strMthInArgs );
-
-    SErrLogEntry* pEntry = nullptr;
-
-    if( i_severity == EResultSeverityUndefined || i_severity == EResultSeverityCount )
-    {
-        int iCount = 0;
-
-        // In this case counting rows starts at highest severity (Critical).
-        for( int iSeverity = EResultSeverityCount-1; iSeverity >= 0; iSeverity-- )
-        {
-            if( i_iRowIdx < (iCount + m_ararpEntries[iSeverity].count()) )
-            {
-                pEntry = m_ararpEntries[iSeverity][i_iRowIdx-iCount];
-
-                if( pEntry != nullptr )
-                {
-                    SErrResultInfo errResultInfo = pEntry->m_errResultInfo;
-
-                    int iRowIdx = pEntry->m_iRowIdx;
-
-                    beginRemoveRows( QModelIndex(), iRowIdx, iRowIdx );
-
-                    m_ararpEntries[iSeverity].removeAt(iRowIdx);
-
-                    delete pEntry;
-                    pEntry = nullptr;
-
-                    for( ; iRowIdx < m_ararpEntries[iSeverity].count(); iRowIdx++ )
-                    {
-                        pEntry = m_ararpEntries[iSeverity][iRowIdx];
-
-                        pEntry->m_iRowIdx--;
-                    }
-
-                    endRemoveRows();
-
-                } // if( pEntry != nullptr )
-
-                break;
-
-            } // if( i_iRowIdx < (iCount + m_ararpEntries[iSeverity].count()) )
-
-            iCount += m_ararpEntries[iSeverity].count();
-
-        } // for( int iSeverity = EResultSeverityCount-1; iSeverity >= 0; iSeverity-- )
-    } // if( i_severity == EResultSeverityUndefined || i_severity == EResultSeverityCount )
-
-    else // if( i_severity >= 0 && i_severity < EResultSeverityCount )
-    {
-        if( i_iRowIdx >= 0 && i_iRowIdx < m_ararpEntries[i_severity].count() )
-        {
-            pEntry = m_ararpEntries[i_severity][i_iRowIdx];
-
-            if( pEntry != nullptr )
-            {
-                SErrResultInfo errResultInfo = pEntry->m_errResultInfo;
-
-                int iRowIdx = pEntry->m_iRowIdx;
-
-                beginRemoveRows( QModelIndex(), iRowIdx, iRowIdx );
-
-                m_ararpEntries[i_severity].removeAt(iRowIdx);
-
-                delete pEntry;
-                pEntry = nullptr;
-
-                for( ; iRowIdx < m_ararpEntries[i_severity].count(); iRowIdx++ )
-                {
-                    pEntry = m_ararpEntries[i_severity][iRowIdx];
-
-                    pEntry->m_iRowIdx--;
-                }
-
-                endRemoveRows();
-
-            } // if( pEntry != nullptr )
-        } // if( i_iRowIdx >= 0 && i_iRowIdx < m_ararpEntries[i_severity].count() )
-    } // if( i_severity >= 0 && i_severity < EResultSeverityCount )
-
-} // removeEntry
 
 /*==============================================================================
 public: // overridables of base class QAbstractItemModel
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-int CModelErrLog::columnWidth(int i_iClm, const QFont* i_pFont) const
+int CModelErrLog::columnWidthByColumn(int i_iClm, int i_iFontPixelSize) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -729,60 +581,65 @@ int CModelErrLog::columnWidth(int i_iClm, const QFont* i_pFont) const
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Clm: " + column2Str(static_cast<EColumn>(i_iClm));
-        strMthInArgs += ", Font: " + QString(i_pFont == nullptr ? "null" : i_pFont->toString());
+        strMthInArgs += ", FontPixelSize: " + QString::number(i_iFontPixelSize);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "columnWidth",
+        /* strMethod    */ "columnWidthByColumn",
         /* strMthInArgs */ strMthInArgs );
 
     int iClmWidth = 1;
 
+    const int iClmSpacing = 10;
+
     if( i_iClm >= 0 && i_iClm < m_ariClmWidths.count() )
     {
+        CErrLogLocker errLogLocker(m_pErrLog);
+
         iClmWidth = m_ariClmWidths[i_iClm];
 
         if( iClmWidth == 0)
         {
-            QFontMetrics fntMetrics =
-                i_pFont == nullptr ? QFontMetrics(QGuiApplication::font()) : QFontMetrics(*i_pFont);
+            QFont fnt = QGuiApplication::font();
+            if( i_iFontPixelSize > 0) {
+                fnt.setPixelSize(i_iFontPixelSize);
+            }
+
+            QFontMetrics fntMetrics = QFontMetrics(fnt);
             QString strClmHeader = headerData(i_iClm, Qt::Horizontal).toString();
             iClmWidth = fntMetrics.horizontalAdvance(strClmHeader + QLatin1String(" ^")) + 8;
 
-            for( int iSeverity = 0; iSeverity < m_ararpEntries.count(); ++iSeverity )
+            for( int iRowIdx = 0; iRowIdx < rowCount(); ++iRowIdx )
             {
-                for( int iRow = 0; iRow < m_ararpEntries[iSeverity].count(); ++iRow )
+                QString strType = "string";
+                QVariant varData = data(index(iRowIdx, i_iClm), static_cast<int>(ERole::Type));
+                if( varData.canConvert(QVariant::String) )
                 {
-                    QString strType = "string";
-                    QVariant varData = data(index(iRow, i_iClm), static_cast<int>(ERole::Type));
+                    strType = varData.toString();
+                }
+                if( strType == "string" || strType == "int" )
+                {
+                    varData = data(index(iRowIdx, i_iClm), Qt::DisplayRole);
                     if( varData.canConvert(QVariant::String) )
                     {
-                        strType = varData.toString();
+                        QString strCellData = varData.toString();
+                        iClmWidth = qMax(iClmWidth, fntMetrics.horizontalAdvance(strCellData));
                     }
-                    if( strType == "string" || strType == "int" )
+                }
+                else if( strType == "imageUrl" || strType == "icon" )
+                {
+                    varData = data(index(iRowIdx, i_iClm), Qt::DisplayRole);
+                    if( varData.canConvert(QVariant::String) )
                     {
-                        varData = data(index(iRow, i_iClm), Qt::DisplayRole);
-                        if( varData.canConvert(QVariant::String) )
-                        {
-                            QString strCellData = varData.toString();
-                            iClmWidth = qMax(iClmWidth, fntMetrics.horizontalAdvance(strCellData));
-                        }
-                    }
-                    else if( strType == "imageUrl" || strType == "icon" )
-                    {
-                        varData = data(index(iRow, i_iClm), Qt::DisplayRole);
-                        if( varData.canConvert(QVariant::String) )
-                        {
-                            QString strCellData = varData.toString();
-                            QPixmap pixmap(strCellData);
-                            iClmWidth = qMax(iClmWidth, pixmap.width());
-                        }
+                        QString strCellData = varData.toString();
+                        QPixmap pixmap(strCellData);
+                        iClmWidth = qMax(iClmWidth, pixmap.width());
                     }
                 }
             }
-            m_ariClmWidths[i_iClm] = iClmWidth;
+            m_ariClmWidths[i_iClm] = iClmWidth + 2*iClmSpacing;
         }
     }
 
@@ -793,7 +650,41 @@ int CModelErrLog::columnWidth(int i_iClm, const QFont* i_pFont) const
 
     return iClmWidth;
 
-} // columnWidth
+} // columnWidthByColumn
+
+//------------------------------------------------------------------------------
+int CModelErrLog::columnWidthByRole(const QByteArray& i_byteArrRole, int i_iFontPixelSize) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        strMthInArgs = "Role: " + i_byteArrRole;
+        strMthInArgs += ", FontPixelSize: " + QString::number(i_iFontPixelSize);
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "columnWidthByRole",
+        /* strMthInArgs */ strMthInArgs );
+
+    int iClmWidth = 1;
+
+    int iRole = byteArr2Role(i_byteArrRole);
+    EColumn clm = role2Column(iRole);
+
+    if(clm != EColumnUndefined)
+    {
+        iClmWidth = columnWidthByColumn(static_cast<int>(clm), i_iFontPixelSize);
+    }
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        mthTracer.setMethodReturn(iClmWidth);
+    }
+    return iClmWidth;
+}
 
 /*==============================================================================
 public: // overridables of base class QAbstractItemModel
@@ -827,11 +718,11 @@ int CModelErrLog::rowCount( const QModelIndex& i_modelIdxParent ) const
         /* strMethod    */ "rowCount",
         /* strMthInArgs */ strMthInArgs );
 
+    CErrLogLocker errLogLocker(m_pErrLog);
+
     int iRowCount = 0;
 
-    int iSeverity;
-
-    for( iSeverity = EResultSeverityCount-1; iSeverity >= 0; iSeverity-- )
+    for( int iSeverity = 0; iSeverity < m_ararpEntries.count(); ++iSeverity )
     {
         iRowCount += m_ararpEntries[iSeverity].count();
     }
@@ -863,11 +754,6 @@ int CModelErrLog::columnCount( const QModelIndex& i_modelIdxParent ) const
 
     int iClmCount = EColumnCount;
 
-    if( m_bUsedByQmlListModels )
-    {
-        iClmCount = 1;
-    }
-
     if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         mthTracer.setMethodReturn(iClmCount);
@@ -879,12 +765,27 @@ int CModelErrLog::columnCount( const QModelIndex& i_modelIdxParent ) const
 QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
 //------------------------------------------------------------------------------
 {
+    EColumn clm = static_cast<EColumn>(i_modelIdx.column());
+    int iRole = i_iRole;
+
+    if( i_iRole >= static_cast<int>(ERole::FirstDataColumnRole) )
+    {
+        clm = role2Column(i_iRole);
+        iRole = Qt::DisplayRole;
+    }
+
     QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "ModelIdx {" + modelIndex2Str(i_modelIdx) + "}";
-        strMthInArgs += ", Role: " + role2Str(i_iRole);
+        strMthInArgs += ", Role: " + QString::number(i_iRole) + " (" + role2Str(i_iRole) + ")";
+
+        if( i_iRole >= static_cast<int>(ERole::FirstDataColumnRole) )
+        {
+            strMthInArgs += ", {-> Clm: " + QString::number(static_cast<int>(clm)) + " (" + column2Str(clm) + ")";
+            strMthInArgs += ", Role: " + QString::number(static_cast<int>(iRole)) + " (" + role2Str(iRole) + ")}";
+        }
     }
 
     CMethodTracer mthTracer(
@@ -913,16 +814,7 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
         return varData;
     }
 
-    EColumn clm = static_cast<EColumn>(i_modelIdx.column());
-    int iRole = i_iRole;
-
-    if( m_bUsedByQmlListModels && i_iRole >= static_cast<int>(ERole::FirstDataColumnRole) )
-    {
-        clm = role2Column(i_iRole);
-        iRole = Qt::DisplayRole;
-    }
-
-    const SErrLogEntry* pEntryView = nullptr;
+    CErrLogLocker errLogLocker(m_pErrLog);
 
     int iRow = i_modelIdx.row();
 
@@ -935,11 +827,9 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
         return varData;
     }
 
-    CModelErrLog* pVThis = const_cast<CModelErrLog*>(this);
+    const SErrLogEntry* pErrLogEntry = m_pErrLog->getEntry(iRow);
 
-    pEntryView = const_cast<const SErrLogEntry*>(pVThis->getEntry(iRow));
-
-    if( pEntryView == nullptr )
+    if( pErrLogEntry == nullptr )
     {
         if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
         {
@@ -950,7 +840,7 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
 
     if( iRole == Qt::ToolTipRole )
     {
-        QString strTmp = pEntryView->m_strProposal;
+        QString strTmp = pErrLogEntry->m_strProposal;
         strTmp = encodeForHtml(strTmp);
         varData = strTmp;
     }
@@ -958,43 +848,15 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
     {
         switch( clm )
         {
-            case EColumnRowIdx:
-            {
-                if( iRole == static_cast<int>(ERole::Type) )
-                {
-                    varData = QLatin1String("int");
-                }
-                else if( iRole == Qt::DisplayRole )
-                {
-                    varData = iRow;
-                }
-                break;
-            }
-            case EColumnSeverityRowIdx:
-            {
-                if( iRole == static_cast<int>(ERole::Type) )
-                {
-                    varData = QLatin1String("int");
-                }
-                else if( iRole == Qt::DisplayRole )
-                {
-                    varData = pEntryView->m_iRowIdx;
-                }
-                break;
-            }
             case EColumnSeverityImageUrl:
             {
                 if( iRole == static_cast<int>(ERole::Type) )
                 {
                     varData = QLatin1String("imageUrl");
                 }
-                else if( iRole == Qt::DisplayRole )
+                else if( iRole == Qt::DisplayRole || iRole == Qt::DecorationRole )
                 {
-                    varData = getErrImageUrl(pEntryView->m_errResultInfo.getSeverity());
-                }
-                else if( iRole == Qt::DecorationRole )
-                {
-                    QString strUrl = getErrImageUrl(pEntryView->m_errResultInfo.getSeverity());
+                    QString strUrl = getErrImageUrl(pErrLogEntry->m_errResultInfo.getSeverity());
                     if( strUrl.startsWith(":") ) {
                         strUrl.insert(0, "qrc");
                     }
@@ -1016,7 +878,7 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
                 }
                 else if( i_iRole == Qt::DecorationRole )
                 {
-                    varData = getErrIcon(pEntryView->m_errResultInfo.getSeverity());
+                    varData = getErrIcon(pErrLogEntry->m_errResultInfo.getSeverity());
                 }
                 break;
             }
@@ -1028,7 +890,7 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
                 }
                 else if( iRole == Qt::DisplayRole )
                 {
-                    varData = resultSeverity2Str(pEntryView->m_errResultInfo.getSeverity());
+                    varData = resultSeverity2Str(pErrLogEntry->m_errResultInfo.getSeverity());
                 }
                 break;
             }
@@ -1040,7 +902,7 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
                 }
                 else if( iRole == Qt::DisplayRole )
                 {
-                    varData = QString::number(pEntryView->m_errResultInfo.getResult());
+                    varData = QString::number(pErrLogEntry->m_errResultInfo.getResult());
                 }
                 break;
             }
@@ -1052,7 +914,7 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
                 }
                 else if( iRole == Qt::DisplayRole )
                 {
-                    varData = pEntryView->m_errResultInfo.getResultStr();
+                    varData = pErrLogEntry->m_errResultInfo.getResultStr();
                 }
                 break;
             }
@@ -1064,7 +926,7 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
                 }
                 else if( iRole == Qt::DisplayRole )
                 {
-                    varData = pEntryView->m_dateTime.toString("yyyy-MM-dd");
+                    varData = pErrLogEntry->m_dateTime.toString("yyyy-MM-dd");
                 }
                 break;
             }
@@ -1076,7 +938,7 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
                 }
                 else if( iRole == Qt::DisplayRole )
                 {
-                    varData = pEntryView->m_dateTime.toString("hh:mm:ss");
+                    varData = pErrLogEntry->m_dateTime.toString("hh:mm:ss");
                 }
                 break;
             }
@@ -1088,7 +950,7 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
                 }
                 else if( iRole == Qt::DisplayRole )
                 {
-                    varData = pEntryView->m_iOccurrences;
+                    varData = pErrLogEntry->m_iOccurrences;
                 }
                 break;
             }
@@ -1100,7 +962,7 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
                 }
                 else if( iRole == Qt::DisplayRole )
                 {
-                    QString strTmp = pEntryView->m_errResultInfo.getErrSource().toString();
+                    QString strTmp = pErrLogEntry->m_errResultInfo.getErrSource().toString();
                     strTmp = decodeFromHtml(strTmp);
                     varData = strTmp;
                 }
@@ -1114,7 +976,7 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
                 }
                 else if( iRole == Qt::DisplayRole )
                 {
-                    QString strTmp = pEntryView->m_errResultInfo.getAddErrInfoDscr();
+                    QString strTmp = pErrLogEntry->m_errResultInfo.getAddErrInfoDscr();
                     strTmp = decodeFromHtml(strTmp);
                     varData = strTmp;
                 }
@@ -1128,7 +990,7 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
                 }
                 else if( iRole == Qt::DisplayRole )
                 {
-                    QString strTmp = pEntryView->m_strProposal;
+                    QString strTmp = pErrLogEntry->m_strProposal;
                     strTmp = decodeFromHtml(strTmp);
                     varData = strTmp;
                 }
@@ -1168,15 +1030,11 @@ QModelIndex CModelErrLog::index( int i_iRow, int i_iClm, const QModelIndex& i_mo
         /* strMethod    */ "index",
         /* strMthInArgs */ strMthInArgs );
 
-    QModelIndex modelIdx;
+    CErrLogLocker errLogLocker(m_pErrLog);
 
-    const SErrLogEntry* pEntryView = nullptr;
+    const SErrLogEntry* pErrLogEntry = m_pErrLog->getEntry(i_iRow);
 
-    CModelErrLog* pVThis = const_cast<CModelErrLog*>(this);
-
-    pEntryView = const_cast<const SErrLogEntry*>(pVThis->getEntry(i_iRow));
-
-    modelIdx = createIndex(i_iRow, i_iClm, const_cast<SErrLogEntry*>(pEntryView));
+    QModelIndex modelIdx = createIndex(i_iRow, i_iClm, const_cast<SErrLogEntry*>(pErrLogEntry));
 
     if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -1246,22 +1104,6 @@ QVariant CModelErrLog::headerData(
     {
         switch( i_iSection )
         {
-            case EColumnRowIdx:
-            {
-                if( i_iRole == Qt::DisplayRole )
-                {
-                    varData = "Row";
-                }
-                break;
-            }
-            case EColumnSeverityRowIdx:
-            {
-                if( i_iRole == Qt::DisplayRole )
-                {
-                    varData = "Severity\nRow Idx";
-                }
-                break;
-            }
             case EColumnSeverityImageUrl:
             {
                 if( i_iRole == Qt::DisplayRole )
@@ -1377,6 +1219,129 @@ protected: // auxiliary instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! Searches the error log entry for the given error result info.
+
+    The search pattern includes the result code, the result severity,
+    the error source and the additional error info.
+
+    @param i_errResultInfo [in] Error result info.
+
+    @param o_piRowIdx [out]
+        Overall index of the entry in the list of error log entries.
+
+    @param o_piRowIdxSeveritySection [out]
+        Index of the entry in the list of error log entries of the severity.
+
+    @return Pointer to error log entry or nullptr, if the corresponding entry
+            could not be found.
+*/
+SErrLogEntry* CModelErrLog::findEntry(
+    const SErrResultInfo& i_errResultInfo,
+    int* o_piRowIdx,
+    int* o_piRowIdxSeveritySection )
+//------------------------------------------------------------------------------
+{
+    EResultSeverity severity = i_errResultInfo.getSeverity();
+
+    int iRowIdx = 0;
+    int iRowIdxSeveritySection = 0;
+
+    SErrLogEntry* pModelEntry = nullptr;
+    SErrLogEntry* pModelEntryTmp;
+
+    if( o_piRowIdx != nullptr )
+    {
+        // Counting rows starts at highest severity (Critical).
+        for( int iSeverity = EResultSeverityCount-1; iSeverity > static_cast<int>(severity); --iSeverity )
+        {
+            iRowIdx += m_ararpEntries[iSeverity].count();
+        }
+    }
+    for( iRowIdxSeveritySection = 0; iRowIdxSeveritySection < m_ararpEntries[severity].count(); iRowIdxSeveritySection++ )
+    {
+        pModelEntryTmp = m_ararpEntries[severity][iRowIdxSeveritySection];
+
+        if( pModelEntryTmp != nullptr )
+        {
+            if( pModelEntryTmp->m_errResultInfo == i_errResultInfo )
+            {
+                pModelEntry = pModelEntryTmp;
+                iRowIdx += iRowIdxSeveritySection;
+                break;
+            }
+        }
+    }
+    if( o_piRowIdx != nullptr )
+    {
+        if( pModelEntry == nullptr ) {
+            *o_piRowIdx = -1;
+        } else {
+            *o_piRowIdx = iRowIdx;
+        }
+    }
+    if( o_piRowIdxSeveritySection != nullptr )
+    {
+        if( pModelEntry == nullptr ) {
+            *o_piRowIdxSeveritySection = -1;
+        } else {
+            *o_piRowIdxSeveritySection = iRowIdxSeveritySection;
+        }
+    }
+    return pModelEntry;
+
+} // findEntry
+
+//------------------------------------------------------------------------------
+SErrLogEntry* CModelErrLog::getEntry(
+    int i_iRowIdx,
+    EResultSeverity* o_pSeverity,
+    int* o_piRowIdxSeveritySection ) const
+//------------------------------------------------------------------------------
+{
+    SErrLogEntry* pModelEntry = nullptr;
+
+    EResultSeverity severity = EResultSeverityUndefined;
+    int iRowIdxSeveritySection = 0;
+
+    int iFirstRowIdxSeveritySection = 0;
+
+    // Counting rows starts at highest severity (Critical).
+    for( int iSeverity = EResultSeverityCount-1; iSeverity >= 0; iSeverity-- )
+    {
+        if( i_iRowIdx < (iFirstRowIdxSeveritySection + m_ararpEntries[iSeverity].count()) )
+        {
+            iRowIdxSeveritySection = i_iRowIdx-iFirstRowIdxSeveritySection;
+            pModelEntry = m_ararpEntries[iSeverity][iRowIdxSeveritySection];
+            severity = static_cast<EResultSeverity>(iSeverity);
+            break;
+        }
+        iFirstRowIdxSeveritySection += m_ararpEntries[iSeverity].count();
+    }
+    if( o_pSeverity != nullptr )
+    {
+        if( pModelEntry == nullptr ) {
+            *o_pSeverity = EResultSeverityUndefined;
+        } else {
+            *o_pSeverity = severity;
+        }
+    }
+    if( o_piRowIdxSeveritySection != nullptr )
+    {
+        if( pModelEntry == nullptr ) {
+            *o_piRowIdxSeveritySection = -1;
+        } else {
+            *o_piRowIdxSeveritySection = iRowIdxSeveritySection;
+        }
+    }
+    return pModelEntry;
+
+} // getEntry
+
+/*==============================================================================
+protected: // auxiliary instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
 void CModelErrLog::fillRoleNames()
 //------------------------------------------------------------------------------
 {
@@ -1386,12 +1351,15 @@ void CModelErrLog::fillRoleNames()
     m_roleNames[static_cast<int>(ERole::ImageUrl)] = "imageUrl";
     m_roleNames[static_cast<int>(ERole::Type)] = "type";
 
-    if( m_bUsedByQmlListModels )
+    for( int clm = 0; clm < EColumnCount; ++clm)
     {
-        for( int clm = 0; clm < CModelErrLog::EColumnCount; ++clm)
-        {
-            int role = CModelErrLog::column2Role(static_cast<CModelErrLog::EColumn>(clm));
-            m_roleNames[role] = s_clm2Name[clm];
-        }
+        int role = column2Role(static_cast<CModelErrLog::EColumn>(clm));
+        m_roleNames[role] = s_clm2Name[clm];
+    }
+
+    for( int iRole : m_roleNames.keys() )
+    {
+        const QByteArray& byteArrRole = m_roleNames.value(iRole);
+        m_roleValues[byteArrRole] = iRole;
     }
 }

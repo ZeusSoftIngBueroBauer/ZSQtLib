@@ -1,178 +1,180 @@
-import QtQuick 2.15
+import QtQml 2.15
+import QtQuick 2.15                 // TableView derived from Flickable
+import QtQuick.Controls 1.4 as C1   // TableView derived from BasicTableView
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
-import Qt.labs.qmlmodels 1.0
 import ZSSysGUI 1.0
 
-Rectangle {
-    property string nameSpace: "ZS::System::GUI"
-    property string className: "ZSSysErrLogWdgt.qml"
+ColumnLayout {
+    property string nameSpace: "ZS::System::GUI::Qml"
+    property string className: "ErrLogWdgt"
     property string objectName: _errLogModel.objectName
 
     id: root
-    color: "chartreuse"
-    border.color: "black"
+    spacing: 4
 
-    ColumnLayout {
-        anchors.fill: parent
-        spacing: 0
+    ToolBar {
+        property string className: root.className + "::" + "ToolBar"
+        property var myTrcAdminObj: _trcServer.getTraceAdminObj(
+            root.nameSpace, className, root.objectName)
+        Component.onDestruction: {
+            _trcServer.releaseTraceAdminObj(myTrcAdminObj);
+        }
 
-        ToolBar {
-            property string className: root.className + "::" + "ToolBar"
-            property var myTrcAdminObj: _trcServer.getTraceAdminObj(
-                root.nameSpace, className, root.objectName)
-            Component.onDestruction: {
-                _trcServer.releaseTraceAdminObj(myTrcAdminObj);
+        id: idToolBarHeadline
+        Layout.preferredWidth: parent.width
+
+        RowLayout {
+            anchors.fill: parent
+            spacing: 10
+
+            ToolButton {
+                id: idBtnClearTable
+                text: "Clear"
+                Layout.minimumWidth: 100
+                Layout.maximumHeight: 24
+                onClicked: {
+                    _errLogModel.clear()
+                }
             }
-
-            id: toolBar
-            Layout.preferredWidth: parent.width
-            Layout.preferredHeight: 20
-
-            background: Rectangle {
-                color: "aquamarine"
-                border.color: "black"
+            ToolButton {
+                id: idBtnDeleteRows
+                text: "Delete Row(s)"
+                Layout.minimumWidth: 100
+                Layout.maximumHeight: 24
+                onClicked: {
+                    var idxList = []
+                    tableView.selection.forEach(
+                        function(rowIndex) {
+                            idxList.push(rowIndex)
+                        }
+                    )
+                    _errLogModel.removeEntries(idxList);
+                    tableView.selection.clear();
+                }
             }
+            ToolButton {
+                id: idBtnResizeRowsAndColumnsToContents
+                icon.source: "qrc:/ZS/TreeView/TreeViewResizeToContents.png"
+                Layout.minimumWidth: 16
+                Layout.minimumHeight: 16
+                Layout.maximumHeight: 24
+                onClicked: {
+                    tableView.resizeColumnsToContents();
+                }
+            }
+            Item {
+                width: 20
+            }
+            Text {
+                id: idLblFileName
+                text: "File Name:"
+                Layout.maximumHeight: 24
+            }
+            TextField {
+                id: idEdtFileName
+                Layout.fillWidth: true
+                Layout.maximumHeight: 24
+                text: _errLog.absFilePath
+                readOnly: true
+            }
+        }
+    }
 
-            RowLayout {
-                anchors.fill: parent
-                spacing: 0
+    C1.TableView {
+        property string className: root.className + "::" + "TableView"
+        property var myTrcAdminObj: _trcServer.getTraceAdminObj(
+            root.nameSpace, className, root.objectName)
 
-                TextField {
-                    id: tfFilter
-                    Layout.minimumHeight: font.pixelSize + 4
-                    Layout.fillWidth: true
-                    //onTextEdited: tableView.contentY = 0
+        Transition {
+            id: idTransitionAdd
+            PropertyAction { property: "transformOrigin"; value: Item.TopLeft }
+            NumberAnimation { property: "opacity"; from: 0; to: 1.0; duration: 300 }
+            NumberAnimation { property: "scale"; from: 0; to: 1.0; duration: 300 }
+        }
+
+        Transition {
+            id: idTransitionDisplaced
+            // Ensure row is scaled to 1 and got opacity of 1 if immediately displaced after added.
+            PropertyAction { properties: "opacity, scale"; value: 1 }
+            NumberAnimation { properties: "x, y"; duration: 300 }
+        }
+
+        Component.onCompleted: {
+            if(this.__listView) {
+                this.__listView.add = idTransitionAdd
+                this.__listView.displaced = idTransitionDisplaced
+                this.__listView.spacing = 1
+            }
+        }
+        Component.onDestruction: {
+            _trcServer.releaseTraceAdminObj(myTrcAdminObj);
+        }
+
+        id: tableView
+        model: _errLogModel
+        Layout.fillHeight: true
+        Layout.preferredWidth: parent.width
+        alternatingRowColors: true
+        clip: true
+        selectionMode: C1.SelectionMode.ExtendedSelection
+
+        property var fontPixelSize: 0
+        property var clmMargin: 10
+
+        C1.TableViewColumn {
+            title: ""
+            role: "SeverityImageUrl"
+            width: 24
+            delegate: Item {
+                Image {
+                    id: idSeverityImg
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.leftMargin: tableView.clmMargin
+                    anchors.rightMargin: tableView.clmMargin
+                    width: height
+                    height: parent.height
+                    source: styleData.value
+                    fillMode: Image.PreserveAspectFit
                 }
             }
         }
-
-        Rectangle {
-            color: "darkgreen"
-            border.color: "black"
-            Layout.preferredWidth: parent.width
-            Layout.preferredHeight: header.height
-
-            RowLayout {
-                property string className: root.className + "::" + "Header"
-                property var myTrcAdminObj: _trcServer.getTraceAdminObj(
-                    root.nameSpace, className, root.objectName)
-                Component.onDestruction: {
-                    _trcServer.releaseTraceAdminObj(myTrcAdminObj);
-                }
-
-                id: header
-                width: tableView.contentWidth
-                height: 30
-                spacing: 0
-
-                Repeater {
-                    id: headerRepeater
-                    model: tableView.model.columnCount()
-
-                    SortableColumnHeading {
-                        id: clmHeading
-                        width: Math.min(600, tableView.model.columnWidth(index))
-                        height: 40 //header.height
-                        text: tableView.model.headerData(index, Qt.Horizontal)
-                        onSorting: {
-                            for( var clm = 0; clm < headerRepeater.model; ++clm ) {
-                                if( clm != index ) {
-                                    headerRepeater.itemAt(clm).stopSorting()
-                                }
-                            }
-                            tableView.model.sort(index, state == "up" ? Qt.AscendingOrder : Qt.DescendingOrder)
-                        }
-                    }
-                }
-            }
+        C1.TableViewColumn {
+            id: idClmResult
+            title: "Result"
+            role: "Result"
+            width: Math.min(600, tableView.model.columnWidthByRole(idClmResult.role, tableView.fontPixelSize))
         }
-
-        TableView {
-            property string className: root.className + "::" + "TableView"
-            property var myTrcAdminObj: _trcServer.getTraceAdminObj(
-                root.nameSpace, className, root.objectName)
-            Component.onDestruction: {
-                _trcServer.releaseTraceAdminObj(myTrcAdminObj);
-            }
-
-            id: tableView
-            model: _errLogModelProxy
-            Layout.fillHeight: true
-            Layout.preferredWidth: parent.width
-            columnSpacing: 0
-            rowSpacing: 0
-            columnWidthProvider: function(column) {
-                myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "columnWidthProvider", "Clm: " + column);
-                var clmWidth = Math.min(600, model.columnWidth(column));
-                myTrcAdminObj.traceMethodLeaveWithReturn("EnterLeave", "columnWidthProvider", clmWidth);
-                return clmWidth;
-            }
-
-            delegate: DelegateChooser {
-                role: "type"
-
-                DelegateChoice {
-                    roleValue: "imageUrl"
-                    Image {
-                        source: model.decoration
-                        fillMode: Image.PreserveAspectFit
-                    }
-                }
-
-                DelegateChoice {
-                    roleValue: "icon"
-                    Rectangle {
-                        implicitHeight: tableCellStringText.implicitHeight
-                        border.color: "black"
-                        border.width: 1
-                        color: Qt.rgba(0.9, 0.9, 0.9)
-                        Text {
-                            id: tableCellIconText
-                            text: ""
-                            width: parent.width
-                            elide: Text.ElideRight
-                            font.preferShaping: false
-                        }
-                    }
-                }
-
-                DelegateChoice {
-                    roleValue: "string"
-                    Rectangle {
-                        implicitHeight: tableCellStringText.implicitHeight
-                        border.color: "black"
-                        border.width: 1
-                        color: Qt.rgba(0.9, 0.9, 0.9)
-                        Text {
-                            id: tableCellStringText
-                            text: model.display
-                            width: parent.width
-                            elide: Text.ElideRight
-                            font.preferShaping: false
-                        }
-                    }
-                }
-
-                DelegateChoice {
-                    Rectangle {
-                        implicitHeight: tableCellDefaultText.implicitHeight
-                        border.color: "black"
-                        border.width: 1
-                        color: Qt.rgba(0.9, 0.9, 0.9)
-                        Text {
-                            id: tableCellDefaultText
-                            text: model.display
-                            width: parent.width
-                            elide: Text.ElideRight
-                            font.preferShaping: false
-                        }
-                    }
-                }
-            }
-
-            ScrollBar.horizontal: ScrollBar {}
-            ScrollBar.vertical: ScrollBar {}
+        C1.TableViewColumn {
+            id: idClmDate
+            title: "Date"
+            role: "Date"
+            width: Math.min(600, tableView.model.columnWidthByRole(idClmDate.role, tableView.fontPixelSize))
+        }
+        C1.TableViewColumn {
+            id: idClmTime
+            title: "Time"
+            role: "Time"
+            width: Math.min(600, tableView.model.columnWidthByRole(idClmTime.role, tableView.fontPixelSize))
+        }
+        C1.TableViewColumn {
+            id: idClmOccurences
+            title: "Occurences"
+            role: "Occurences"
+            width: Math.min(600, tableView.model.columnWidthByRole(idClmOccurences.role, tableView.fontPixelSize))
+        }
+        C1.TableViewColumn {
+            id: idClmSource
+            title: "Source"
+            role: "Source"
+            width: Math.min(600, tableView.model.columnWidthByRole(idClmSource.role, tableView.fontPixelSize))
+        }
+        C1.TableViewColumn {
+            id: idClmAddInfo
+            title: "AdditionalInfo"
+            role: "AddInfo"
+            width: tableView.width - x
         }
     }
 }

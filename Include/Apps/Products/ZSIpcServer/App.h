@@ -41,7 +41,6 @@ class CTrcAdminObj;
 namespace GUI
 {
 class CModelErrLog;
-class CProxyModelErrLog;
 }
 }
 namespace Trace
@@ -74,12 +73,11 @@ public: // ctors and dtor
         const QString& i_strWindowTitle );
     ~CApplication();
 protected: // instance members
-    QQmlApplicationEngine*              m_pQmlAppEngine;
-    QQuickWindow*                       m_pMainWindow;
-    ZS::System::GUI::CModelErrLog*      m_pErrLogModel;
-    ZS::System::GUI::CProxyModelErrLog* m_pErrLogModelProxy;
-    ZS::Trace::CIpcTrcServer*           m_pTrcServer;
-    ZS::System::CTrcAdminObj*           m_pTrcAdminObj;
+    QQmlApplicationEngine*         m_pQmlAppEngine;
+    QQuickWindow*                  m_pMainWindow;
+    ZS::System::GUI::CModelErrLog* m_pErrLogModel;
+    ZS::Trace::CIpcTrcServer*      m_pTrcServer;
+    ZS::System::CTrcAdminObj*      m_pTrcAdminObj;
 
 }; // class CApplication
 

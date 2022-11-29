@@ -61,7 +61,6 @@ struct ZSSYSDLL_API SErrLogEntry
 //******************************************************************************
 {
     Q_GADGET
-    Q_PROPERTY(int rowIdx MEMBER m_iRowIdx)
     Q_PROPERTY(QDateTime dateTime MEMBER m_dateTime)
     //Q_PROPERTY(SErrResultInfo errResultInfo MEMBER m_errResultInfo)
     Q_PROPERTY(QString proposal MEMBER m_strProposal)
@@ -80,7 +79,6 @@ public: // operators
 public: // struct methods
     Q_INVOKABLE QString toString() const;
 public: // instance members
-    int            m_iRowIdx;       /*!< Index in the Error Logs Table. For internal use only. May be changed on removing entries from the error log. */
     QDateTime      m_dateTime;      /*!< Date and time the error occurred or the entry was created. */
     double         m_fSysTime_us;   /*!< Time in micro seconds which have been passed since program start the error occured or the entry was created. */
     SErrResultInfo m_errResultInfo; /*!< Resultcode, severity, source and additional info about the error that occurred. */
@@ -217,6 +215,7 @@ class ZSSYSDLL_API CErrLog : public QObject
 //******************************************************************************
 {
     Q_OBJECT
+    Q_PROPERTY(QString absFilePath READ getAbsFilePath CONSTANT)
 public: // class methods
     /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::System"; }
@@ -256,18 +255,22 @@ signals:
     /*! Signal which will be emitted if an entry is added to the error log.
         Please note that the signal may be queued if the receiver is in another thread.
         You can't rely on that the error log entry still exists when receiving the signal.
-        For this not a reference to the entry but to the ErrResultInfo structure is passed with the signal. */
-    void entryAdded( const ZS::System::SErrResultInfo& i_errResultInfo );   // Will only be emitted for new entries.
+        For this not a reference to the entry but to the ErrResultInfo structure is passed with the signal.
+        @note: Will only be emitted for new entries. */
+    void entryAdded( const ZS::System::SErrResultInfo& i_errResultInfo );
     /*! Signal which will be emitted if an error log entry is changed.
         Please note that the signal may be queued if the receiver is in another thread.
         You can't rely on that the error log entry still exists when receiving the signal.
-        For this not a reference to the entry but to the ErrResultInfo structure is passed with the signal. */
-    void entryChanged( const ZS::System::SErrResultInfo& i_errResultInfo ); // Will be emitted for each occurrence.
+        For this not a reference to the entry but to the ErrResultInfo structure is passed with the signal.
+        @note: Will be emitted for each occurrence. */
+    void entryChanged( const ZS::System::SErrResultInfo& i_errResultInfo );
     /*! Signal which will be emitted if an entry is removed from the error log.
         Please note that the signal may be queued if the receiver is in another thread.
         You can't rely on that the error log entry still exists when receiving the signal.
         For this not a reference to the entry but to the ErrResultInfo structure is passed with the signal. */
     void entryRemoved( const ZS::System::SErrResultInfo& i_errResultInfo );
+    /*! Signal which will be emitted if the number of entries has been changed. */
+    void countChanged();
 public: // instance methods
     /*! This virtual method returns the name space of the object's class.
         This method can be reimplemented in derived classes so when invoked for the
@@ -278,17 +281,20 @@ public: // instance methods
         polymorphic base type the method returns the name of the derived class. */
     virtual QString className() const { return ClassName(); }
 public: // instance methods
-    void setEntriesCountMax( int i_iCount, EResultSeverity i_severity = EResultSeverityUndefined ); // Use Undefined (or Count) to set maximum numbers for all severities at once.
-    int getEntriesCountMax( EResultSeverity i_severity = EResultSeverityUndefined ) const;          // Use Undefined (or Count) to get the sum of all maximum numbers for all severities.
+    void setEntriesCountMax( int i_iCount, EResultSeverity i_severity = EResultSeverityUndefined );
+    int getEntriesCountMax( EResultSeverity i_severity = EResultSeverityUndefined ) const;
 public: // instance methods
     QString getAbsFilePath() const;
 public: // instance methods
+    Q_INVOKABLE void lock();
+    Q_INVOKABLE void unlock();
+public: // instance methods
     Q_INVOKABLE void addEntry(
-        SErrResultInfo& i_errResultInfo,  // Not const as will be marked as "AddedToErrLogModel".
+        SErrResultInfo& i_errResultInfo,
         const QString&  i_strProposal = "" );
     Q_INVOKABLE void addEntry(
         const QDateTime& i_dateTime,
-        SErrResultInfo&  i_errResultInfo,  // Not const as will be marked as "AddedToErrLogModel".
+        SErrResultInfo&  i_errResultInfo,
         const QString&   i_strProposal = "" );
     Q_INVOKABLE void changeEntry(
         const SErrResultInfo& i_errResultInfo,
@@ -296,18 +302,14 @@ public: // instance methods
         const QDateTime&      i_dateTime = QDateTime(),
         bool                  i_bModifyProposal = false,
         const QString&        i_strProposal = "" );
+    Q_INVOKABLE void clear( EResultSeverity i_severity = EResultSeverityUndefined );
     Q_INVOKABLE void removeEntry( const SErrResultInfo& i_errResultInfo );
-public: // instance methods
-    void clear( EResultSeverity i_severity = EResultSeverityUndefined );            // Use Undefined (or Count) to clear all errors for all severities.
-public: // instance methods
-    Q_INVOKABLE void lock();     // !! Before "looping" through the list you need to lock the list !!
-    Q_INVOKABLE void unlock();   // !! Don't forget to unlock the list after "looping" through the list !!
-public: // instance methods
-    Q_INVOKABLE int getEntryCount( EResultSeverity i_severity = EResultSeverityUndefined ) const;     // Use Undefined (or Count) to get the sum of all errors for all severities.
-    // Use Undefined (or Count) to count through all severities. In this case counting rows starts at highest severity (Critical).
-    Q_INVOKABLE SErrLogEntry* findEntry( const SErrResultInfo& i_errResultInfo );
-    Q_INVOKABLE SErrLogEntry* getEntry( int i_iRowIdx, EResultSeverity i_severity = EResultSeverityUndefined ) const;
     Q_INVOKABLE void removeEntry( int i_iRowIdx, EResultSeverity i_severity = EResultSeverityUndefined );
+public: // instance methods
+    Q_INVOKABLE int getEntryCount( EResultSeverity i_severity = EResultSeverityUndefined ) const;
+    Q_INVOKABLE int getEntryCount( const QString& i_strSeverity ) const;
+    Q_INVOKABLE SErrLogEntry* findEntry( const SErrResultInfo& i_errResultInfo, int* o_piRowIdx = nullptr, int* o_piRowIdxSeveritySection = nullptr );
+    Q_INVOKABLE SErrLogEntry* getEntry( int i_iRowIdx, EResultSeverity i_severity = EResultSeverityUndefined ) const;
     Q_INVOKABLE SErrLogEntry takeEntry( int i_iRowIdx, EResultSeverity i_severity = EResultSeverityUndefined );
     Q_INVOKABLE SErrLogEntry takeFirstEntry( EResultSeverity i_severity = EResultSeverityUndefined );
     Q_INVOKABLE SErrLogEntry takeLastEntry( EResultSeverity i_severity = EResultSeverityUndefined );
@@ -388,6 +390,25 @@ protected: // instance members
     CTestCrashDumpThread* m_pTestCrashDumpThread;
 
 }; // class CErrLog
+
+
+//******************************************************************************
+/*! @brief Locker class to lock and unlock the error log instance.
+*/
+class CErrLogLocker
+//******************************************************************************
+{
+public:
+    CErrLogLocker(CErrLog* i_pErrLog) : m_pErrLog(i_pErrLog) {
+        m_pErrLog->lock();
+    }
+    ~CErrLogLocker() {
+        m_pErrLog->unlock();
+    }
+private:
+    CErrLog* m_pErrLog;
+};
+
 
 //******************************************************************************
 /*! @brief Internal thread class used to test creating a crash dump file.

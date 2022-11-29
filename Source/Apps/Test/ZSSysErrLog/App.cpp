@@ -185,8 +185,6 @@ CApplication::~CApplication()
     // Default ErrLog instance
     //------------------------
 
-    CErrLog::ReleaseInstance();
-
     try
     {
         delete m_pMainWindow;
@@ -202,6 +200,8 @@ CApplication::~CApplication()
     catch(...)
     {
     }
+
+    CErrLog::ReleaseInstance();
 
     m_pTest = nullptr;
     m_pMainWindow = nullptr;

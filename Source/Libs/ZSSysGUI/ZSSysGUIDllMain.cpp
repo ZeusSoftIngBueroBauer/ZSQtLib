@@ -190,7 +190,7 @@ QString ZS::System::GUI::getErrImageUrl( EResultSeverity i_severity )
 //------------------------------------------------------------------------------
 {
     QString strSeverity = ZS::System::resultSeverity2Str(i_severity);
-    return ":/ZS/Result/ResultSeverity" + strSeverity + ".bmp";
+    return ":/ZS/Result/ResultSeverity" + strSeverity + ".png";
 }
 
 //------------------------------------------------------------------------------

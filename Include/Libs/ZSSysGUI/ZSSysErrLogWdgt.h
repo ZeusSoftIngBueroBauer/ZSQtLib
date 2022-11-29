@@ -76,14 +76,14 @@ protected: // instance members
     QString              m_strHeadline;
     QVBoxLayout*         m_pLyt;
     QLabel*              m_pLblHeadline;
-    QTableView*          m_pTableView;
-    QItemSelectionModel* m_pItemSelectionModel;
     QHBoxLayout*         m_pLytLineBtns;
     QPushButton*         m_pBtnClearTable;
     QPushButton*         m_pBtnDeleteRows;
     QPushButton*         m_pBtnResizeRowsAndColumnsToContents;
     QLabel*              m_pLblFileName;
     QLabel*              m_pEdtFileName;
+    QTableView*          m_pTableView;
+    QItemSelectionModel* m_pItemSelectionModel;
 
 }; // class CWdgtErrLog
 

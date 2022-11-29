@@ -28,13 +28,13 @@ may result in using the software modules.
 
 #include "ZSIpcTrace/ZSIpcTrcServer.h"
 #include "ZSSys/ZSSysErrLog.h"
-#include "ZSSysGUI/ZSSysErrLogProxyModel.h"
 #include "ZSSysGUI/ZSSysErrLogModel.h"
 
 #include <QtQml/qqmlapplicationengine.h>
 #include <QtQml/qqmlcontext.h>
-#include <QtQuick/qquickwindow.h>
+#include <QtQuickControls2/qquickstyle.h>
 #include <QtQuick/qquickview.h>
+#include <QtQuick/qquickwindow.h>
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -77,7 +77,6 @@ CApplication::CApplication(
     m_pQmlAppEngine(nullptr),
     m_pMainWindow(nullptr),
     m_pErrLogModel(nullptr),
-    m_pErrLogModelProxy(nullptr),
     m_pTrcServer(nullptr),
     m_pTrcAdminObj(nullptr)
 {
@@ -123,7 +122,8 @@ CApplication::CApplication(
     m_pTrcAdminObj = m_pTrcServer->GetTraceAdminObj(NameSpace(), ClassName(), objectName());
 
     m_pErrLogModel = new CModelErrLog(CErrLog::GetInstance());
-    m_pErrLogModelProxy = new CProxyModelErrLog(m_pErrLogModel);
+
+    QQuickStyle::setStyle("fusion");
 
     m_pQmlAppEngine = new QQmlApplicationEngine();
     // Add import path to the applications resource storage.
@@ -132,8 +132,8 @@ CApplication::CApplication(
     QQmlContext* pQmlCtx = m_pQmlAppEngine->rootContext();
 
     pQmlCtx->setContextProperty("_trcServer", m_pTrcServer);
+    pQmlCtx->setContextProperty("_errLog", CErrLog::GetInstance());
     pQmlCtx->setContextProperty("_errLogModel", m_pErrLogModel);
-    pQmlCtx->setContextProperty("_errLogModelProxy", m_pErrLogModelProxy);
 
     //qDebug("QmlAppEngine.importPaths BEGIN ---------------------------------------");
     //QStringList strlstImportPathList = m_pQmlAppEngine->importPathList();
@@ -201,15 +201,6 @@ CApplication::~CApplication()
     catch(...)
     {
     }
-
-    try
-    {
-        delete m_pErrLogModelProxy;
-    }
-    catch(...)
-    {
-    }
-    m_pErrLogModelProxy = nullptr;
 
     try
     {

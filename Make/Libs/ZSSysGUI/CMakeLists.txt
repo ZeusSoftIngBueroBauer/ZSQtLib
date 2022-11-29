@@ -41,7 +41,6 @@ list(APPEND _Headers
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysErrDlg.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysErrLogDlg.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysErrLogModel.h
-    ${_HeadersPath}/${PROJECT_NAME}/ZSSysErrLogProxyModel.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysErrLogWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysFindTextDlg.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysGUIApp.h
@@ -82,7 +81,6 @@ list(APPEND _Sources
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysErrDlg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysErrLogDlg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysErrLogModel.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/ZSSysErrLogProxyModel.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysErrLogWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysFindTextDlg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysGUIApp.cpp
@@ -203,6 +201,7 @@ list(APPEND _TreeViewImages
     ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewCollapseAll.bmp
     ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewExpandAll.bmp
     ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewResizeToContents.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewResizeToContents.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewSortOrderConfig.bmp
     ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewSortOrderAscending.bmp
     ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewViewModeNavPanelOnly.bmp
@@ -243,11 +242,16 @@ list(APPEND _TreeViewLoggersImages
 )
 
 list(APPEND _ResultImages
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ResultSeveritySuccess.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ResultSeverityInfo.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ResultSeverityWarning.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ResultSeverityError.bmp
     ${_ResourcesPath}/${PROJECT_NAME}/Images/ResultSeverityCritical.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ResultSeverityCritical.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ResultSeverityError.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ResultSeverityError.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ResultSeverityInfo.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ResultSeverityInfo.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ResultSeveritySuccess.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ResultSeveritySuccess.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ResultSeverityWarning.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ResultSeverityWarning.png
 )
 
 list(APPEND _ImageFiles
@@ -265,6 +269,7 @@ list(APPEND _ImageFiles
 
 list(APPEND _QmlFiles
     ${_QmlPath}/${PROJECT_NAME}/qmldir
+    ${_QmlPath}/${PROJECT_NAME}/ZSSysErrLogDlg.qml
     ${_QmlPath}/${PROJECT_NAME}/ZSSysErrLogWdgt.qml
     ${_QmlPath}/${PROJECT_NAME}/ZSSysPushButton.qml
 )
@@ -316,7 +321,7 @@ if(QT_VERSION_MAJOR EQUAL 4)
     endif()
 elseif(QT_VERSION_MAJOR EQUAL 5)
     target_link_libraries(${PROJECT_NAME}
-        PUBLIC Qt5::Gui Qt5::Widgets Qt5::Qml Qt5::Quick
+        PUBLIC Qt5::Gui Qt5::Widgets Qt5::Qml Qt5::Quick Qt5::QuickControls2
         PUBLIC ZSSys)
 endif()
 
