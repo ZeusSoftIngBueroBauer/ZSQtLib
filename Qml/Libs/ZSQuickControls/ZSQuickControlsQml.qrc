@@ -1,0 +1,9 @@
+<!DOCTYPE RCC><RCC version="1.0">
+    <qresource prefix="/">
+        <file>ZSStyleFlat/qmldir</file>
+        <file>ZSStyleFlat/Theme.qml</file>
+        <file>ZSStyleFlat/Button.qml</file>
+        <file>ZSStyleFlat/CheckBox.qml</file>
+        <file>ZSStyleFlat/Switch.qml</file>
+    </qresource>
+</RCC>

@@ -29,16 +29,22 @@ may result in using the software modules.
 #include "ZSIpcTrace/ZSIpcTrcServer.h"
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSysGUI/ZSSysErrLogModel.h"
+#include "ZSQuickControls/ZSQuickControlsDllMain.h"
+#include "ZSQuickControls/ZSQuickControlsThemeFlatStyle.h"
 
+#include <QtCore/qdiriterator.h>
 #include <QtQml/qqmlapplicationengine.h>
 #include <QtQml/qqmlcontext.h>
+#include <QtQml/qqmlcomponent.h>
+#include <QtQml/qqmlproperty.h>
 #include <QtQuickControls2/qquickstyle.h>
 #include <QtQuick/qquickview.h>
 #include <QtQuick/qquickwindow.h>
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
-using namespace ZS::Apps::Products::IpcServer;
+using namespace ZS::Apps::Test::QuickControls;
+using namespace ZS::QuickControls;
 using namespace ZS::System;
 using namespace ZS::System::GUI;
 using namespace ZS::Trace;
@@ -78,6 +84,7 @@ CApplication::CApplication(
     m_pMainWindow(nullptr),
     m_pErrLogModel(nullptr),
     m_pTrcServer(nullptr),
+    m_pThemeFlatStyle(nullptr),
     m_pTrcAdminObj(nullptr)
 {
     setObjectName("theApp");
@@ -91,17 +98,17 @@ CApplication::CApplication(
     ZS::System::GUI::qInitResources();
     ZS::System::GUI::qInitResourcesQml();
     //ZS::QuickControls::qInitResources();
-    //ZS::QuickControls::qInitResourcesQml();
+    ZS::QuickControls::qInitResourcesQml();
 
-    //QDirIterator qrc(":", QDirIterator::Subdirectories);
-    //qDebug("qrcs BEGIN -------------------------------------");
-    //while(qrc.hasNext())
-    //{
-    //    qDebug() << qrc.next();
-    //}
-    //qDebug("qrcs END ---------------------------------------");
+    QDirIterator qrc(":", QDirIterator::Subdirectories);
+    qDebug("qrcs BEGIN -------------------------------------");
+    while(qrc.hasNext())
+    {
+        qDebug() << qrc.next();
+    }
+    qDebug("qrcs END ---------------------------------------");
 
-    QIcon iconApp(":/Images/ZSAppIpcServer.ico");
+    QIcon iconApp(":/Images/ZSAppTestQuickControls.ico");
 
     setWindowIcon(iconApp);
     setOrganizationName(i_strOrganizationName);
@@ -122,18 +129,23 @@ CApplication::CApplication(
 
     m_pErrLogModel = new CModelErrLog(CErrLog::GetInstance());
 
-    //QQuickStyle::setStyle("fusion");
-    QQuickStyle::setStyle("ZeusSoft");
+    m_pThemeFlatStyle = CThemeFlatStyle::CreateInstance();
+
+    const QString strStyle("ZSStyleFlat");
+
+    QQuickStyle::setStyle(strStyle);
 
     m_pQmlAppEngine = new QQmlApplicationEngine();
     // Add import path to the applications resource storage.
     m_pQmlAppEngine->addImportPath("qrc:/");
+    m_pQmlAppEngine->addImportPath(":/imports");
 
     QQmlContext* pQmlCtx = m_pQmlAppEngine->rootContext();
 
     pQmlCtx->setContextProperty("_ZSSys_trcServer", m_pTrcServer);
     pQmlCtx->setContextProperty("_ZSSys_errLog", CErrLog::GetInstance());
     pQmlCtx->setContextProperty("_ZSSysGUI_errLogModel", m_pErrLogModel);
+    pQmlCtx->setContextProperty("_ZSQuickControls_themeFlatStyle", m_pThemeFlatStyle);
 
     //qDebug("QmlAppEngine.importPaths BEGIN ---------------------------------------");
     //QStringList strlstImportPathList = m_pQmlAppEngine->importPathList();
@@ -145,14 +157,16 @@ CApplication::CApplication(
     //}
     //qDebug("QmlAppEngine.importPaths END -----------------------------------------");
 
-    const QUrl url(QStringLiteral("qrc:/main.qml"));
+    const QUrl urlMain("qrc:/Main.qml");
     QObject::connect(
         m_pQmlAppEngine, &QQmlApplicationEngine::objectCreated,
-        this, [url](QObject *obj, const QUrl &objUrl) {
-            if (!obj && url == objUrl) QCoreApplication::exit(-1);
+        this, [urlMain](QObject *obj, const QUrl &objUrl) {
+            if (!obj && urlMain == objUrl) QCoreApplication::exit(-1);
         },
         Qt::QueuedConnection);
-    m_pQmlAppEngine->load(url);
+    m_pQmlAppEngine->load(urlMain);
+
+    m_pThemeFlatStyle->setMainColor(QColor("red"));
 
     if (m_pQmlAppEngine->rootObjects().isEmpty())
     {
@@ -161,7 +175,7 @@ CApplication::CApplication(
             SErrResultInfo errResultInfo(
                 NameSpace(), ClassName(), objectName(), "ctor",
                 EResultInternalProgramError, EResultSeverityCritical,
-                "Couldn't load " + url.toString());
+                "Couldn't load " + urlMain.toString());
             CErrLog::GetInstance()->addEntry(errResultInfo);
         }
     }
@@ -218,6 +232,9 @@ CApplication::~CApplication()
     {
         m_pTrcServer->saveAdminObjs();
     }
+
+    CThemeFlatStyle::ReleaseInstance();
+    m_pThemeFlatStyle = nullptr;
 
     CIpcTrcServer::ReleaseInstance();
     m_pTrcServer = nullptr;

@@ -24,41 +24,48 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSApps_TestIpcLog_App_h
-#define ZSApps_TestIpcLog_App_h
+#ifndef ZSApps_TestQuickControls_App_h
+#define ZSApps_TestQuickControls_App_h
 
-#include <QtCore/qglobal.h>
+#include <QtGui/QGuiApplication>
 
-#include "ZSTest/ZSTestDllMain.h"
-#include "ZSSysGUI/ZSSysGUIApp.h"
-#include "ZSIpcLog/ZSIpcLogDllMain.h"
-#include "ZSIpcLog/ZSIpcLogClient.h"
-#include "ZSIpcLog/ZSIpcLogServer.h"
+class QQmlApplicationEngine;
+class QQuickWindow;
 
 namespace ZS
 {
-namespace Log
+namespace System
 {
-class CIpcLogServer;
-class CIpcLogClient;
+class CTrcAdminObj;
+
+namespace GUI
+{
+class CModelErrLog;
+}
+}
+namespace QuickControls
+{
+class CThemeFlatStyle;
+}
+namespace Trace
+{
+class CIpcTrcServer;
 }
 
 namespace Apps
 {
 namespace Test
 {
-namespace IpcLog
+namespace QuickControls
 {
-class CMainWindow;
-class CTest;
-
 //******************************************************************************
-class CApplication : public ZS::System::GUI::CGUIApp
+class CApplication : public QGuiApplication
 //******************************************************************************
 {
     Q_OBJECT
 public: // class methods
-    static QString ClassName( bool i_bIncludeNameSpace = false );
+    static QString NameSpace() { return "ZS::Apps::Test::QuickControls"; }
+    static QString ClassName() { return "CApplication"; }
     static CApplication* GetInstance();
 public: // ctors and dtor
     CApplication(
@@ -67,29 +74,20 @@ public: // ctors and dtor
         const QString& i_strOrganizationName,
         const QString& i_strOrganizationDomain,
         const QString& i_strAppName,
+        const QString& i_strAppVersion,
         const QString& i_strWindowTitle );
     ~CApplication();
-public: // instance methods
-    CTest* getTest() { return m_pTest; }
-    ZS::Log::CIpcLogServer* getLogServer() { return m_pLogServer; }
-    ZS::Log::CIpcLogClient* getLogClient() { return m_pLogClient; }
-protected slots:
-    void onTestFinished( const ZS::Test::CEnumTestResult& i_result );
-private: // instance members
-    bool                          m_bReqExecTreeGarbageCollectorEnabled;
-    double                        m_fReqExecTreeGarbageCollectorInterval_s;
-    double                        m_fReqExecTreeGarbageCollectorElapsed_s;
-    ZS::System::CRequestExecTree* m_pReqExecTree;
-    ZS::Log::CIpcLogServer*       m_pLogServer;
-    ZS::Ipc::SClientHostSettings  m_clientHostSettingsLogClient;
-    ZS::Log::CIpcLogClient*       m_pLogClient;
-    CTest*                        m_pTest;
-    CMainWindow*                  m_pMainWindow;
-    bool                          m_bAutoStartTest;
+protected: // instance members
+    QQmlApplicationEngine*              m_pQmlAppEngine;
+    QQuickWindow*                       m_pMainWindow;
+    ZS::System::GUI::CModelErrLog*      m_pErrLogModel;
+    ZS::Trace::CIpcTrcServer*           m_pTrcServer;
+    ZS::QuickControls::CThemeFlatStyle* m_pThemeFlatStyle;
+    ZS::System::CTrcAdminObj*           m_pTrcAdminObj;
 
 }; // class CApplication
 
-} // namespace IpcLog
+} // namespace QuickControls
 
 } // namespace Test
 
@@ -97,4 +95,4 @@ private: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZSApps_TestIpcLog_App_h
+#endif // #ifndef ZSApps_TestQuickControls_App_h

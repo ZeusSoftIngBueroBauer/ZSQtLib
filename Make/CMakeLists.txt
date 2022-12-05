@@ -104,8 +104,8 @@ project(ZSQtLibs LANGUAGES CXX)
 
 message(STATUS "")
 message(STATUS "---------------------------------------------------------------------------------------------")
-message(STATUS "Processing: ${CMAKE_CURRENT_SOURCE_DIR}")
-message(STATUS "---------------------------------------------------------------------------------------------")
+message(STATUS "-> ${CMAKE_CURRENT_SOURCE_DIR}")
+message(STATUS "")
 
 message(STATUS "CMAKE_PREFIX_PATH:        ${CMAKE_PREFIX_PATH}")
 message(STATUS "CMAKE_INSTALL_PREFIX:     ${CMAKE_INSTALL_PREFIX}")
@@ -333,6 +333,7 @@ include(Dart)
 
 add_subdirectory(Libs/ZSSys)
 add_subdirectory(Libs/ZSSysGUI)
+add_subdirectory(Libs/ZSQuickControls)
 add_subdirectory(Libs/ZSTest)
 add_subdirectory(Libs/ZSTestGUI)
 add_subdirectory(Libs/ZSIpc)
@@ -358,6 +359,7 @@ add_subdirectory(Apps/Test/ZSIpcTraceDllIfQtApp)
 if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     add_subdirectory(Apps/Test/ZSIpcTraceDllIfWinApp)
 endif()
+add_subdirectory(Apps/Test/ZSQuickControls)
 add_subdirectory(Apps/Test/ZSSysEnums)
 add_subdirectory(Apps/Test/ZSSysErrLog)
 add_subdirectory(Apps/Test/ZSSysIdxTree)
@@ -395,3 +397,8 @@ install(
         "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
 )
+
+message(STATUS "")
+message(STATUS "<- ${CMAKE_CURRENT_SOURCE_DIR}")
+message(STATUS "---------------------------------------------------------------------------------------------")
+message(STATUS "")

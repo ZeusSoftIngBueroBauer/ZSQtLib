@@ -39,7 +39,6 @@ namespace ZS
 {
 namespace System
 {
-class CErrLog;
 class CRequestExecTree;
 }
 namespace Trace

@@ -96,8 +96,9 @@ source_group("Qml Files" FILES ${_QmlFiles})
 target_include_directories(${PROJECT_NAME}
     PRIVATE ${CMAKE_SOURCE_DIR}/../Include/Apps/Products/ZSIpcClient)
 
-target_link_libraries(${PROJECT_NAME}
-    PRIVATE ZSSys ZSSysGUI ZSIpc ZSIpcGUI ZSIpcTrace ZSIpcTraceGUI)
+set(_Libs ZSSys ZSSysGUI ZSIpc ZSIpcGUI ZSIpcTrace ZSIpcTraceGUI)
+
+target_link_libraries(${PROJECT_NAME} ${_Libs})
 
 include(GNUInstallDirs)
 

@@ -310,20 +310,9 @@ source_group("Qml Files" FILES ${_QmlFiles})
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ZSSYSGUIDLL_EXPORTS)
 
-if(QT_VERSION_MAJOR EQUAL 4)
-    if(QT_LIB)
-        target_link_libraries(${PROJECT_NAME}
-            PUBLIC ZSSys)
-    else()
-        target_link_libraries(${PROJECT_NAME}
-            PUBLIC Qt4::QtGui
-            PUBLIC ZSSys)
-    endif()
-elseif(QT_VERSION_MAJOR EQUAL 5)
-    target_link_libraries(${PROJECT_NAME}
-        PUBLIC Qt5::Gui Qt5::Widgets Qt5::Qml Qt5::Quick Qt5::QuickControls2
-        PUBLIC ZSSys)
-endif()
+target_link_libraries(${PROJECT_NAME}
+    PUBLIC Qt5::Gui Qt5::Widgets Qt5::Qml Qt5::Quick Qt5::QuickControls2
+    PUBLIC ZSSys)
 
 include(GNUInstallDirs)
 

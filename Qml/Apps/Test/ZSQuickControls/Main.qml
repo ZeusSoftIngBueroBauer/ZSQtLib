@@ -29,11 +29,10 @@ import QtGraphicalEffects 1.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import Qt.labs.settings 1.0
-import ZSSysGUI 1.0
 
 ApplicationWindow {
-    property string nameSpace: "ZS::Apps::Products::IpcServer::Qml"
-    property string className: "main::ApplicationWindow"
+    property string nameSpace: "ZS::Apps::Test::QuickControls::Qml"
+    property string className: "Main::ApplicationWindow"
     property string objectName: "theInst"
 
     property var myTrcAdminObj: _ZSSys_trcServer.getTraceAdminObj(
@@ -58,22 +57,6 @@ ApplicationWindow {
     menuBar: MenuBar {
         Menu {
             title: qsTr("&File")
-            Action {
-                text: qsTr("&New...")
-                icon.source: "qrc:/ZS/Menu/MenuFileNew16x16.bmp"
-            }
-            Action {
-                text: qsTr("&Open...")
-                icon.source: "qrc:/ZS/Menu/MenuFileOpen16x16.bmp"
-            }
-            Action {
-                text: qsTr("&Save")
-                icon.source: "qrc:/ZS/Menu/MenuFileSave16x16.bmp"
-            }
-            Action {
-                text: qsTr("Save &As...")
-                icon.source: "qrc:/ZS/Menu/MenuFileSaveAs16x16.bmp"
-            }
             MenuSeparator { }
             Action {
                 id: idActionFileQuit
@@ -82,18 +65,6 @@ ApplicationWindow {
                 onTriggered: {
                     Qt.quit();
                 }
-            }
-        }
-        Menu {
-            title: qsTr("&Edit")
-            Action {
-                text: qsTr("Cu&t")
-            }
-            Action {
-                text: qsTr("&Copy")
-            }
-            Action {
-                text: qsTr("&Paste")
             }
         }
         Menu {
@@ -134,8 +105,8 @@ ApplicationWindow {
         */
     }
 
-    ErrLogWdgt {
-        id: idErrLogWdgt
+    WidgetCentral {
+        id: idWidgetCentral
         anchors.fill: parent
     }
 

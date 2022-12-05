@@ -156,25 +156,11 @@ target_include_directories(${PROJECT_NAME}
     $<BUILD_INTERFACE:${_HeadersPath}>
     $<INSTALL_INTERFACE:include/${PROJECT_NAME}>)
 
-if(QT_VERSION_MAJOR EQUAL 4)
-    if(QT_LIB)
-        set(_Libs ${QT_LIB})
-    else()
-        set(_Libs Qt4::QtCore Qt4::QtXml Qt4::QtNetwork)
-    endif()
-elseif(QT_VERSION_MAJOR EQUAL 5)
-    set(_Libs Qt5::Core Qt5::Xml Qt5::Network Qt5::Qml)
-endif()
+set(_Libs Qt5::Core Qt5::Xml Qt5::Network Qt5::Qml)
 if(WIN32)
     set(_Libs ${_Libs} Dbghelp)
 endif()
 
-if(QT_VERSION_MAJOR EQUAL 4)
-    if(QT_LIB)
-        target_include_directories(${PROJECT_NAME}
-            PUBLIC ${Qt4_INCLUDE_DIRS})
-    endif()
-endif()
 target_link_libraries(${PROJECT_NAME} ${_Libs})
 
 # Don't copy Qt Dlls to bin directory.

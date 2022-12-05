@@ -239,7 +239,7 @@ protected: // class members
 ==============================================================================*/
 
 QMutex CTrcServer::s_mtx(QMutex::Recursive);
-CTrcServer* CTrcServer::s_pTheInst;
+CTrcServer* CTrcServer::s_pTheInst = nullptr;
 QHash<Qt::HANDLE, QString> CTrcServer::s_hshThreadNames;
 QHash<QString, Qt::HANDLE> CTrcServer::s_hshThreadIds;
 QString CTrcServer::s_strAdminObjFileAbsFilePath;

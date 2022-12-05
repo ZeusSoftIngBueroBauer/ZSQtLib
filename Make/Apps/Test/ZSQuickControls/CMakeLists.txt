@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
-project(ZSAppTestIpcTrace)
+project(ZSAppTestQuickControls LANGUAGES CXX)
 
 message(STATUS "")
 message(STATUS "---------------------------------------------------------------------------------------------")
@@ -30,37 +30,29 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(_HeadersPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Include/Apps/Test)
 set(_SourcesPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Source/Apps/Test)
 set(_ResourcesPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Resources/Apps/Test)
+set(_QmlPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Qml/Apps/Test)
 
 list(APPEND _Headers
     ${_HeadersPath}/../../Libs/ZSSys/ZSSysVersion.h
-    ${_HeadersPath}/ZSIpcTrace/App.h
-    ${_HeadersPath}/ZSIpcTrace/MainWindow.h
-    ${_HeadersPath}/ZSIpcTrace/WidgetCentral.h
-    ${_HeadersPath}/ZSIpcTrace/MsgTest.h
-    ${_HeadersPath}/ZSIpcTrace/Test.h
-    ${_HeadersPath}/ZSIpcTrace/MyClass1.h
-    ${_HeadersPath}/ZSIpcTrace/MyClass2.h
-    ${_HeadersPath}/ZSIpcTrace/MyClass3.h
+    ${_HeadersPath}/ZSQuickControls/App.h
 )
 
-configure_file(
-    ${_HeadersPath}/ZSIpcTrace/TestConfig.h.in
-    ${_HeadersPath}/ZSIpcTrace/TestConfig.h)
-set(_Headers ${_Headers} ${_HeadersPath}/ZSIpcTrace/TestConfig.h)
-
 list(APPEND _Sources
-    ${_SourcesPath}/ZSIpcTrace/Main.cpp
-    ${_SourcesPath}/ZSIpcTrace/App.cpp
-    ${_SourcesPath}/ZSIpcTrace/MainWindow.cpp
-    ${_SourcesPath}/ZSIpcTrace/WidgetCentral.cpp
-    ${_SourcesPath}/ZSIpcTrace/MsgTest.cpp
-    ${_SourcesPath}/ZSIpcTrace/Test.cpp
-    ${_SourcesPath}/ZSIpcTrace/MyClass1.cpp
-    ${_SourcesPath}/ZSIpcTrace/MyClass2.cpp
-    ${_SourcesPath}/ZSIpcTrace/MyClass3.cpp
+    ${_SourcesPath}/ZSQuickControls/Main.cpp
+    ${_SourcesPath}/ZSQuickControls/App.cpp
 )
 
 list(APPEND _Resources
+    ${_QmlPath}/ZSQuickControls/ZSAppTestQuickControlsQml.qrc
+)
+
+list(APPEND _ImageFiles
+    ${_ResourcesPath}/ZSQuickControls/Images/ZSAppTestQuickControls.ico
+)
+
+list(APPEND _QmlFiles
+    ${_QmlPath}/ZSQuickControls/Main.qml
+    ${_QmlPath}/ZSQuickControls/WidgetCentral.qml
 )
 
 if(WIN32)
@@ -69,15 +61,15 @@ if(WIN32)
     # Icons.
     if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
         set(_Headers ${_Headers}
-            ${_HeadersPath}/ZSIpcTrace/resource.h
-            ${_HeadersPath}/ZSIpcTrace/targetver.h)
-        set(_Resources ${_Resources} ${_ResourcesPath}/ZSIpcTrace/${PROJECT_NAME}.rc)
+            ${_HeadersPath}/ZSQuickControls/resource.h
+            ${_HeadersPath}/ZSQuickControls/targetver.h)
+        set(_Resources ${_Resources} ${_ResourcesPath}/ZSQuickControls/${PROJECT_NAME}.rc)
     endif()
 endif()
 
 # Got to create the following target name:
 # (ProjectName)[d]
-# e.g.: "ZSAppTestIpcTraced"
+# e.g.: "ZSAppIpcClientd"
 set(TargetOutputName ${PROJECT_NAME})
 if(CMAKE_BUILD_TYPE MATCHES Debug)
     set(TargetOutputName ${TargetOutputName}d)
@@ -85,9 +77,9 @@ endif()
 message(STATUS "TargetOutputName:         ${TargetOutputName}")
 
 if(WIN32)
-    add_executable(${PROJECT_NAME} WIN32 ${_Headers} ${_Sources} ${_Resources})
+    add_executable(${PROJECT_NAME} WIN32 ${_Headers} ${_Sources} ${_Resources} ${_QmlFiles} ${_ImageFiles})
 else()
-    add_executable(${PROJECT_NAME} ${_Headers} ${_Sources} ${_Resources})
+    add_executable(${PROJECT_NAME} ${_Headers} ${_Sources} ${_Resources} ${_QmlFiles} ${_ImageFiles})
 endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${TargetOutputName})
@@ -96,18 +88,20 @@ set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER Tests)
 source_group("Header Files" FILES ${_Headers})
 source_group("Source Files" FILES ${_Sources})
 source_group("Resource Files" FILES ${_Resources})
+source_group("Image Files" FILES ${_ImageFiles})
+source_group("Qml Files" FILES ${_QmlFiles})
 
 target_include_directories(${PROJECT_NAME}
-    PRIVATE ${CMAKE_SOURCE_DIR}/../Include/Apps/Test/ZSIpcTrace)
+    PRIVATE ${CMAKE_SOURCE_DIR}/../Include/Apps/Test/ZSQuickControls)
 
-set(_Libs ZSSys ZSSysGUI ZSTest ZSTestGUI ZSIpc ZSIpcGUI ZSIpcTrace ZSIpcTraceGUI)
+set(_Libs ZSSys ZSSysGUI ZSIpc ZSIpcGUI ZSIpcTrace ZSIpcTraceGUI ZSQuickControls)
 
 target_link_libraries(${PROJECT_NAME} ${_Libs})
 
 enable_testing()
 include(CTest)
 include(Dart)
-add_test(ZSIpcTrace ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${TargetOutputName} "AutoStartTest")
+add_test(ZSQuickControls ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${TargetOutputName} "AutoStartTest")
 
 include(GNUInstallDirs)
 

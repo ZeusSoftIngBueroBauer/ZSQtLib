@@ -114,7 +114,6 @@ source_group("Header Files" FILES ${_Headers})
 source_group("Source Files" FILES ${_Sources})
 source_group("Resource Files" FILES ${_Resources})
 
-
 target_compile_definitions(${PROJECT_NAME}
     PRIVATE ZSIPCDLL_EXPORTS)
 
