@@ -24,25 +24,32 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include "ZSQuickControls/ZSQuickControlsThemeFlatStyle.h"
+#include "ZSQuickControls/ZSQuickControlsThemeWindowsStyle.h"
+#include "ZSSysGUI/ZSSysIdxTreeModel.h"
+#include "ZSSys/ZSSysIdxTree.h"
 #include "ZSSys/ZSSysException.h"
+
+#include <QtQml/qqmlapplicationengine.h>
+#include <QtQml/qqmlcontext.h>
+#include <QtQuickControls2/qquickstyle.h>
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 
 using namespace ZS::System;
+using namespace ZS::System::GUI;
 using namespace ZS::QuickControls;
 
 
 /*******************************************************************************
-class CThemeFlatStyle : public QObject
+class CThemeWindowsStyle : public QObject
 *******************************************************************************/
 
 /*==============================================================================
 protected: // class members
 ==============================================================================*/
 
-CThemeFlatStyle* CThemeFlatStyle::s_pTheInst = nullptr;
+CThemeWindowsStyle* CThemeWindowsStyle::s_pTheInst = nullptr;
 
 /*==============================================================================
 public: // class methods
@@ -64,7 +71,7 @@ public: // class methods
 
     @return Pointer to trace server or nullptr, if the instance has not been created yet.
 */
-CThemeFlatStyle* CThemeFlatStyle::GetInstance()
+CThemeWindowsStyle* CThemeWindowsStyle::GetInstance()
 //------------------------------------------------------------------------------
 {
     return s_pTheInst;
@@ -78,7 +85,7 @@ CThemeFlatStyle* CThemeFlatStyle::GetInstance()
 
     @return Pointer to theme instance.
 */
-CThemeFlatStyle* CThemeFlatStyle::CreateInstance()
+CThemeWindowsStyle* CThemeWindowsStyle::CreateInstance(QQmlApplicationEngine* i_pQmlAppEngine)
 //------------------------------------------------------------------------------
 {
     if( s_pTheInst == nullptr )
@@ -89,7 +96,7 @@ CThemeFlatStyle* CThemeFlatStyle::CreateInstance()
         // pointer to the server instance currently beeing created.
         // But of course this requires special caution as within the ctor it must
         // be assured that recursively accessed instance members are already valid.
-        new CThemeFlatStyle();
+        new CThemeWindowsStyle(i_pQmlAppEngine);
     }
     s_pTheInst->incrementRefCount();
     return s_pTheInst;
@@ -106,12 +113,12 @@ CThemeFlatStyle* CThemeFlatStyle::CreateInstance()
 
     @note A reference returned by getInstance MUST NOT be freed.
 */
-void CThemeFlatStyle::ReleaseInstance()
+void CThemeWindowsStyle::ReleaseInstance()
 //------------------------------------------------------------------------------
 {
     if( s_pTheInst == nullptr )
     {
-        throw CException(__FILE__, __LINE__, EResultSingletonClassNotInstantiated, "ZS::QuickControls::CThemeFlatStyle");
+        throw CException(__FILE__, __LINE__, EResultSingletonClassNotInstantiated, "ZS::QuickControls::CThemeWindowsStyle");
     }
 
     int iRefCount = s_pTheInst->decrementRefCount();
@@ -140,16 +147,31 @@ protected: // ctors and dtor
     static method createInstance.
 
 */
-CThemeFlatStyle::CThemeFlatStyle() :
+CThemeWindowsStyle::CThemeWindowsStyle(QQmlApplicationEngine* i_pQmlAppEngine) :
 //------------------------------------------------------------------------------
     QObject(),
+    m_pQmlAppEngine(i_pQmlAppEngine),
     m_clrMain("#17a81a"),
-    m_iRefCount(0)
+    m_iRefCount(0),
+    m_pIdxTree(nullptr),
+    m_pModelIdxTree(nullptr)
 {
-    setObjectName("FlatStyleTheme");
+    setObjectName("theInst");
 
     // See comment in "CreateInstance" above.
     s_pTheInst = this;
+
+    m_pIdxTree = new CIdxTree(StyleName());
+    m_pModelIdxTree = new CModelIdxTree(m_pIdxTree);
+
+    QQuickStyle::setStyle(StyleName());
+
+    QQmlContext* pQmlCtx = m_pQmlAppEngine->rootContext();
+
+    pQmlCtx->setContextProperty(ContextPropertyName(), this);
+    pQmlCtx->setContextProperty(ContextPropertyNameControlsModel(), m_pModelIdxTree);
+
+    setMainColor(m_clrMain);
 
 } // ctor
 
@@ -159,11 +181,29 @@ CThemeFlatStyle::CThemeFlatStyle() :
     The destructor is protected. The singleton class must be destroyed via the
     static method releaseInstance.
 */
-CThemeFlatStyle::~CThemeFlatStyle()
+CThemeWindowsStyle::~CThemeWindowsStyle()
 //------------------------------------------------------------------------------
 {
+    try
+    {
+        delete m_pModelIdxTree;
+    }
+    catch(...)
+    {
+    }
+
+    try
+    {
+        delete m_pIdxTree;
+    }
+    catch(...)
+    {
+    }
+
+    m_pQmlAppEngine = nullptr;
     //m_clrMain;
     m_iRefCount = 0;
+    m_pIdxTree = nullptr;
 
 } // dtor
 
@@ -172,14 +212,14 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QColor CThemeFlatStyle::mainColor() const
+QColor CThemeWindowsStyle::mainColor() const
 //------------------------------------------------------------------------------
 {
     return m_clrMain;
 }
 
 //------------------------------------------------------------------------------
-void CThemeFlatStyle::setMainColor( const QColor& i_color )
+void CThemeWindowsStyle::setMainColor( const QColor& i_color )
 //------------------------------------------------------------------------------
 {
     if( m_clrMain != i_color )
@@ -200,7 +240,7 @@ protected: // instance methods (reference counter)
     /return Number of active references.
 */
 //------------------------------------------------------------------------------
-int CThemeFlatStyle::getRefCount() const
+int CThemeWindowsStyle::getRefCount() const
 {
     return m_iRefCount;
 }
@@ -211,7 +251,7 @@ int CThemeFlatStyle::getRefCount() const
     /return Number of active references after increment.
 */
 //------------------------------------------------------------------------------
-int CThemeFlatStyle::incrementRefCount()
+int CThemeWindowsStyle::incrementRefCount()
 {
     return ++m_iRefCount;
 }
@@ -223,11 +263,11 @@ int CThemeFlatStyle::incrementRefCount()
     /return Number of active references after decrement.
 */
 //------------------------------------------------------------------------------
-int CThemeFlatStyle::decrementRefCount()
+int CThemeWindowsStyle::decrementRefCount()
 {
     if( m_iRefCount <= 0)
     {
-        throw CException(__FILE__, __LINE__, EResultObjRefCounterIsZero, "CThemeFlatStyle::" + objectName());
+        throw CException(__FILE__, __LINE__, EResultObjRefCounterIsZero, "CThemeWindowsStyle::" + objectName());
     }
     return --m_iRefCount;
 }

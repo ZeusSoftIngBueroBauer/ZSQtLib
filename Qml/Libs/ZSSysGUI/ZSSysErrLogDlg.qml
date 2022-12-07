@@ -35,6 +35,8 @@ Dialog {
     property string className: "ErrLogDlg"
     property string objectName: _ZSSysGUI_errLogModel.objectName
 
+    property alias model: errLogWdgt.model
+
     id: root
     title: "Error Log"
     width: 640
@@ -42,7 +44,7 @@ Dialog {
     modality: Qt.NonModal
 
     Settings {
-        id: idSettings
+        id: settings
         category: root.className + "." + root.objectName
         property alias x: root.x
         property alias y: root.y
@@ -51,7 +53,7 @@ Dialog {
     }
 
     contentItem: ErrLogWdgt {
-        id: idErrLogWdgt
+        id: errLogWdgt
         anchors.fill: parent
     }
 }

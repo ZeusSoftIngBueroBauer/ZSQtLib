@@ -27,6 +27,7 @@ may result in using the software modules.
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
+import ZSSysGUI 1.0
 
 Item {
     property string nameSpace: "ZS::Apps::Test::QuickControls::Qml"
@@ -45,42 +46,72 @@ Item {
 
     GridLayout {
         id: gridLayout
-        anchors.top: parent.top
-        anchors.topMargin: 64
+        anchors.fill: parent
 
-        anchors.horizontalCenter: parent.horizontalCenter
         columnSpacing: 5
         rowSpacing: 5
-        rows: 3
-        columns: 2
+        rows: 4
+        columns: 3
 
-        Label {
-            text: qsTr("Switch")
-        }
-
-        Switch {
-            id: idSwitch
+        IdxTreeWdgt {
+            id: idxTreeWdgtControls
+            model: _ZSQuickControls_themeWindowsStyle_controlsModel
+            Layout.column: 0
+            Layout.row: 0
+            Layout.rowSpan: 4
             Layout.fillWidth: true
         }
 
         Label {
-            text: qsTr("CheckBox")
-        }
-
-        CheckBox {
-            id: idCheckBox
-            text: qsTr("")
-            checked: true
-            Layout.fillWidth: true
-        }
-
-        Label {
-            text: qsTr("Button")
+            text: qsTr("Button:")
+            Layout.column: 1
+            Layout.row: 0
         }
 
         Button {
-            id: button
-            text: qsTr("Button")
+            id: buttonControl
+            text: qsTr("Click Me")
+            Layout.column: 2
+            Layout.row: 0
+        }
+
+        Label {
+            text: qsTr("CheckBox:")
+            Layout.column: 1
+            Layout.row: 1
+        }
+
+        CheckBox {
+            id: checkBoxControl
+            text: qsTr("")
+            checked: true
+            Layout.column: 2
+            Layout.row: 1
+        }
+
+        Label {
+            text: qsTr("Switch:")
+            Layout.column: 1
+            Layout.row: 2
+        }
+
+        Switch {
+            id: switchControl
+            Layout.column: 2
+            Layout.row: 2
+        }
+
+        Label {
+            text: qsTr("ToolButton:")
+            Layout.column: 1
+            Layout.row: 3
+        }
+
+        ToolButton {
+            id: toolButtonControl
+            text: qsTr("Click Me")
+            Layout.column: 2
+            Layout.row: 3
         }
     }
 }

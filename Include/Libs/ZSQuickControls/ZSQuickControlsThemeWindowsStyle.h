@@ -32,15 +32,25 @@ may result in using the software modules.
 #include <QtCore/qobject.h>
 #include <QtGui/qcolor.h>
 
+class QQmlApplicationEngine;
 
 namespace ZS
 {
+namespace System
+{
+class CIdxTree;
+
+namespace GUI
+{
+class CModelIdxTree;
+}
+}
 namespace QuickControls
 {
 //******************************************************************************
 /*! @brief
 */
-class ZSQUICKCONTROLSDLL_API CThemeFlatStyle : public QObject
+class ZSQUICKCONTROLSDLL_API CThemeWindowsStyle : public QObject
 //******************************************************************************
 {
     Q_OBJECT
@@ -54,14 +64,32 @@ public: // class methods
     static QString NameSpace() { return "ZS::QuickControls"; }
     /*! Returns the class name.
         @note The static class functions name must be different from the instance method "className". */
-    static QString ClassName() { return "CThemeFlatStyle"; }
+    static QString ClassName() { return "CThemeWindowsStyle"; }
+    /*! Returns the name of the style.
+        @note The name of the style must correspond to the name of the sub directory where
+              qml files of the controls are located. */
+    static QString StyleName() { return "ZSStyleWindows"; }
+    /*! Returns the context property name by which the singleton instance is accessible by the qml modules.
+        @note The following naming convention is followed:
+              _<NameSpace>_theme<StyleNameAbbreviation>Style
+              NameSpace ... Namespace of class without colons (e.g. ZSQuickControls).
+              StyleNameAbbreviation ... Style name without ZSStyle (e.g. Windows). */
+    static QString ContextPropertyName() { return "_ZSQuickControls_themeWindowsStyle"; }
+    /*! Returns the context property name by which the model containing the controls of this style
+        is accessible by the qml modules.
+        @note The following naming convention is followed:
+              _<NameSpace>_theme<StyleNameAbbreviation>Style_<ModelName>Model
+              NameSpace ... Namespace of class without colons (e.g. ZSQuickControls).
+              StyleNameAbbreviation ... Style name without ZSStyle (e.g. Windows).
+              ModelName ... Name of the model (e.g. "controls"). */
+    static QString ContextPropertyNameControlsModel() { return "_ZSQuickControls_themeWindowsStyle_controlsModel"; }
 public: // class methods
-    static CThemeFlatStyle* GetInstance();
-    static CThemeFlatStyle* CreateInstance();
+    static CThemeWindowsStyle* GetInstance();
+    static CThemeWindowsStyle* CreateInstance(QQmlApplicationEngine* i_pQmlAppEngine);
     static void ReleaseInstance();
 protected: // ctors and dtor
-    CThemeFlatStyle();
-    virtual ~CThemeFlatStyle();
+    CThemeWindowsStyle(QQmlApplicationEngine* i_pQmlAppEngine);
+    virtual ~CThemeWindowsStyle();
 signals:
     /*! Signal which is emitted if the main color has been changed.
         @param i_pTrcServer [in] Pointer to object emitting the signal. */
@@ -74,14 +102,22 @@ protected: // instance methods (reference counter)
     int incrementRefCount();
     int decrementRefCount();
 protected: // class members
-    static CThemeFlatStyle* s_pTheInst;
+    static CThemeWindowsStyle* s_pTheInst;
 protected: // instance members
+    /*<! Reference to Qml Engine. Needed to retrieve context and set the reference
+         to this theme instance as context property. */
+    QQmlApplicationEngine* m_pQmlAppEngine;
     /*<! Currently used main color. */
     QColor m_clrMain;
     /*<! Reference counter for createInstance and releaseInstance. */
     int m_iRefCount;
+    /*<! Index tree containing the names of the controls implemented by this theme.
+         Each control must have a corresponding qml file in sub directory StyleName(). */
+    ZS::System::CIdxTree* m_pIdxTree;
+    /*<! The index tree model provides the data from the index tree to the viewers. */
+    ZS::System::GUI::CModelIdxTree* m_pModelIdxTree;
 
-}; // class CThemeFlatStyle
+}; // class CThemeWindowsStyle
 
 } // namespace QuickControls
 

@@ -25,18 +25,20 @@ may result in using the software modules.
 *******************************************************************************/
 
 import QtQml 2.15
-import QtQuick 2.15                 // TableView derived from Flickable
-import QtQuick.Controls 1.4 as C1   // TableView derived from BasicTableView
+import QtQuick 2.15
+import QtQuick.Controls 1.4 as C1   // TreeView derived from BasicTableView
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import ZSSysGUI 1.0
 
 ColumnLayout {
     readonly property string nameSpace: "ZS::System::GUI::Qml"
-    readonly property string className: "ErrLogWdgt"
-    readonly property string objectName: _ZSSysGUI_errLogModel.objectName
+    readonly property string className: "IdxTreeWdgt"
+    readonly property string objectName: model.objectName
 
-    property alias model: tableView.model
+    property alias model: treeView.model
+    property string viewMode: "NavPanelOnly" // | "NavPanelAndBranchContent"
+    property string sortOrder: "Config" // | "Ascending"
 
     id: root
     spacing: 4
@@ -66,55 +68,63 @@ ColumnLayout {
                 }
             }
             ToolButton {
-                id: btnClearTable
-                text: "Clear"
+                id: btnViewMode
+                icon.source: "qrc:/ZS/TreeView/TreeViewViewMode" + root.viewMode + ".png"
                 onClicked: {
-                    _ZSSysGUI_errLogModel.clear()
+                    root.viewMode = root.viewMode === "NavPanelOnly" ? "NavPanelAndBranchContent" : "NavPanelOnly"
                 }
             }
             ToolButton {
-                id: btnDeleteRows
-                text: "Delete Row(s)"
-                onClicked: {
-                    var idxList = []
-                    tableView.selection.forEach(
-                        function(rowIndex) {
-                            idxList.push(rowIndex)
-                        }
-                    )
-                    _ZSSysGUI_errLogModel.removeEntries(idxList);
-                    tableView.selection.clear();
-                }
-            }
-            ToolButton {
-                id: btnResizeRowsAndColumnsToContents
+                id: btnTreeViewResizeRowsAndColumnsToContents
                 icon.source: "qrc:/ZS/TreeView/TreeViewResizeToContents.png"
                 onClicked: {
-                    tableView.resizeColumnsToContents();
+                    //treeView.resizeColumnsToContents();
                 }
             }
-            Item { // Space before File Name
-                Layout.minimumWidth: 10
+            ToolButton {
+                id: btnTreeViewExpandAll
+                icon.source: "qrc:/ZS/TreeView/TreeViewExpandAll.png"
+                onClicked: {
+                    //treeView.expandAll();
+                    //treeView.resizeColumnsToContents();
+                }
+            }
+            ToolButton {
+                id: btnTreeViewCollapsedAll
+                icon.source: "qrc:/ZS/TreeView/TreeViewCollapseAll.png"
+                onClicked: {
+                    //treeView.collapseAll();
+                }
+            }
+            ToolButton {
+                id: btnSortOrder
+                icon.source: "qrc:/ZS/TreeView/TreeViewSortOrder" + root.sortOrder + ".png"
+                onClicked: {
+                    root.sortOrder = root.sortOrder === "Config" ? "Ascending" : "Config"
+                }
+            }
+            TextField {
+                id: edtBranchPath
+                Layout.fillWidth: true
+                text: "Branch Path"
+                readOnly: true
+                visible: root.viewMode === "NavPanelAndBranchContent"
+            }
+            Item { // Margin at right side of row layout (if Branch Path is visible)
+                Layout.alignment: Qt.AlignLeft
+                Layout.minimumWidth: 4
                 Layout.minimumHeight: 1
+                visible: edtBranchPath.visible
                 Rectangle {
                     anchors.fill: parent
                     color: "red"
                 }
             }
-            Text {
-                id: lblFileName
-                text: "File Name:"
-            }
-            TextField {
-                id: edtFileName
+            Item { // Stretch at right side of row layout (if Branch Path is not visible)
+                Layout.alignment: Qt.AlignRight
                 Layout.fillWidth: true
-                text: _ZSSys_errLog.absFilePath
-                readOnly: true
-            }
-            Item { // Margin at right side of row layout
-                Layout.alignment: Qt.AlignLeft
-                Layout.minimumWidth: 4
                 Layout.minimumHeight: 1
+                visible: !edtBranchPath.visible
                 Rectangle {
                     anchors.fill: parent
                     color: "red"
@@ -123,8 +133,8 @@ ColumnLayout {
         }
     }
 
-    C1.TableView {
-        property string className: root.className + "::" + "TableView"
+    C1.TreeView {
+        property string className: root.className + "::" + "TreeView"
         property var myTrcAdminObj: _ZSSys_trcServer.getTraceAdminObj(
             root.nameSpace, className, root.objectName)
 
@@ -153,7 +163,7 @@ ColumnLayout {
             _ZSSys_trcServer.releaseTraceAdminObj(myTrcAdminObj);
         }
 
-        id: tableView
+        id: treeView
         Layout.fillWidth: true
         Layout.fillHeight: true
         alternatingRowColors: true
@@ -163,58 +173,9 @@ ColumnLayout {
         property var fontPixelSize: 0
 
         C1.TableViewColumn {
-            title: ""
-            role: "SeverityImageUrl"
-            width: 24
-            delegate: Item {
-                Image {
-                    id: idSeverityImg
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.leftMargin: 10
-                    anchors.rightMargin: 10
-                    width: height
-                    height: parent.height
-                    source: styleData.value
-                    fillMode: Image.PreserveAspectFit
-                }
-            }
-        }
-        C1.TableViewColumn {
             id: clmResult
-            title: "Result"
-            role: "Result"
-            width: Math.min(600, tableView.model.columnWidthByRole(clmResult.role, tableView.fontPixelSize))
-        }
-        C1.TableViewColumn {
-            id: clmDate
-            title: "Date"
-            role: "Date"
-            width: Math.min(600, tableView.model.columnWidthByRole(clmDate.role, tableView.fontPixelSize))
-        }
-        C1.TableViewColumn {
-            id: clmTime
-            title: "Time"
-            role: "Time"
-            width: Math.min(600, tableView.model.columnWidthByRole(clmTime.role, tableView.fontPixelSize))
-        }
-        C1.TableViewColumn {
-            id: clmOccurences
-            title: "Occurences"
-            role: "Occurences"
-            width: Math.min(600, tableView.model.columnWidthByRole(clmOccurences.role, tableView.fontPixelSize))
-        }
-        C1.TableViewColumn {
-            id: clmSource
-            title: "Source"
-            role: "Source"
-            width: Math.min(600, tableView.model.columnWidthByRole(clmSource.role, tableView.fontPixelSize))
-        }
-        C1.TableViewColumn {
-            id: clmAddInfo
-            title: "AdditionalInfo"
-            role: "AddInfo"
-            width: tableView.width - x
+            title: "Name"
+            role: "Name"
         }
     }
 }

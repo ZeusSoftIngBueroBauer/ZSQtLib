@@ -86,7 +86,7 @@ QPixmap CWdgtIdxTreeTestSteps::viewMode2Pixmap( EViewMode i_eVal, const QSize& i
 //------------------------------------------------------------------------------
 {
     QString str = viewMode2Str(i_eVal);
-    QPixmap pxm = QPixmap( ":/ZS/TreeView/TreeViewViewMode" + str + ".bmp" );
+    QPixmap pxm = QPixmap( ":/ZS/TreeView/TreeViewViewMode" + str + ".png" );
     pxm = pxm.scaled(i_sz);
     return pxm;
 }
@@ -232,7 +232,7 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
     //-------------------
 
     QPixmap pxmViewMode = viewMode2Pixmap(m_viewMode, m_szBtns);
-    pxmViewMode.setMask(pxmViewMode.createHeuristicMask());
+    //pxmViewMode.setMask(pxmViewMode.createHeuristicMask());
 
     m_pBtnViewMode = new QPushButton();
     m_pBtnViewMode->setFixedSize(m_szBtns);
@@ -253,8 +253,8 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
     // <Button> Resize Columns To Contents
     //------------------------------------
 
-    QPixmap pxmResizeToContents(":/ZS/TreeView/TreeViewResizeToContents.bmp");
-    pxmResizeToContents.setMask(pxmResizeToContents.createHeuristicMask());
+    QPixmap pxmResizeToContents(":/ZS/TreeView/TreeViewResizeToContents.png");
+    //pxmResizeToContents.setMask(pxmResizeToContents.createHeuristicMask());
 
     m_pBtnTreeViewResizeRowsAndColumnsToContents = new QPushButton();
     m_pBtnTreeViewResizeRowsAndColumnsToContents->setIcon(pxmResizeToContents);
@@ -275,8 +275,8 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
     // <Button> Expand All
     //--------------------
 
-    QPixmap pxmExpandAll(":/ZS/TreeView/TreeViewExpandAll.bmp");
-    pxmExpandAll.setMask(pxmExpandAll.createHeuristicMask());
+    QPixmap pxmExpandAll(":/ZS/TreeView/TreeViewExpandAll.png");
+    //pxmExpandAll.setMask(pxmExpandAll.createHeuristicMask());
 
     m_pBtnTreeViewExpandAll = new QPushButton();
     m_pBtnTreeViewExpandAll->setIcon(pxmExpandAll);
@@ -297,8 +297,8 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
     // <Button> Collapse All
     //----------------------
 
-    QPixmap pxmCollapseAll(":/ZS/TreeView/TreeViewCollapseAll.bmp");
-    pxmCollapseAll.setMask(pxmCollapseAll.createHeuristicMask());
+    QPixmap pxmCollapseAll(":/ZS/TreeView/TreeViewCollapseAll.png");
+    //pxmCollapseAll.setMask(pxmCollapseAll.createHeuristicMask());
 
     m_pBtnTreeViewCollapseAll = new QPushButton();
     m_pBtnTreeViewCollapseAll->setIcon(pxmCollapseAll);

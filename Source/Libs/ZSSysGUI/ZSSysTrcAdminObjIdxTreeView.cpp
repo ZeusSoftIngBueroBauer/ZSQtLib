@@ -834,7 +834,7 @@ CTreeViewIdxTreeTrcAdminObjs::CTreeViewIdxTreeTrcAdminObjs(
 
     m_pActionNameSpaceTitle = new QAction("Name Space:",this);
 
-    QPixmap pxmExpandAll(":/ZS/TreeView/TreeViewExpandAll.bmp");
+    QPixmap pxmExpandAll(":/ZS/TreeView/TreeViewExpandAll.png");
     pxmExpandAll.setMask(pxmExpandAll.createHeuristicMask());
     //pxmExpandAll = pxmExpandAll.scaled(16,16);
     m_pActionNameSpaceExpand = new QAction(pxmExpandAll, "Expand", this);
@@ -849,7 +849,7 @@ CTreeViewIdxTreeTrcAdminObjs::CTreeViewIdxTreeTrcAdminObjs(
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
 
-    QPixmap pxmCollapseAll(":/ZS/TreeView/TreeViewCollapseAll.bmp");
+    QPixmap pxmCollapseAll(":/ZS/TreeView/TreeViewCollapseAll.png");
     pxmCollapseAll.setMask(pxmCollapseAll.createHeuristicMask());
 
     m_pActionNameSpaceCollapse = new QAction(pxmCollapseAll, "Collapse", this);

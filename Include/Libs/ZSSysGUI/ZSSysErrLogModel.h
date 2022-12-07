@@ -28,9 +28,6 @@ may result in using the software modules.
 #define ZSSysGUI_ErrLogModel_h
 
 #include <QtCore/qabstractitemmodel.h>
-#include <QtCore/qdatetime.h>
-#include <QtCore/qcoreevent.h>
-#include <QtCore/qmutex.h>
 
 #include "ZSSysGUI/ZSSysGUIDllMain.h"
 #include "ZSSys/ZSSysErrResult.h"

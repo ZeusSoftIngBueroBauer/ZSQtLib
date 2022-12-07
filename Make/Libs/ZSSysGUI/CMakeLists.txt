@@ -198,15 +198,14 @@ list(APPEND _TreeViewImages
     ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewBranchEntry.bmp
     ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewLeaveEntry.bmp
     ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewRootEntry.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewCollapseAll.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewExpandAll.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewResizeToContents.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewCollapseAll.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewExpandAll.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewResizeToContents.png
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewSortOrderConfig.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewSortOrderAscending.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewViewModeNavPanelOnly.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewViewModeNavPanelAndLeaveContent.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewViewModeNavPanelAndBranchContent.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewSortOrderConfig.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewSortOrderAscending.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewViewModeNavPanelOnly.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewViewModeNavPanelAndLeaveContent.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewViewModeNavPanelAndBranchContent.png
 )
 
 list(APPEND _TreeViewFileExplorerImages
@@ -242,15 +241,10 @@ list(APPEND _TreeViewLoggersImages
 )
 
 list(APPEND _ResultImages
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ResultSeverityCritical.bmp
     ${_ResourcesPath}/${PROJECT_NAME}/Images/ResultSeverityCritical.png
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ResultSeverityError.bmp
     ${_ResourcesPath}/${PROJECT_NAME}/Images/ResultSeverityError.png
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ResultSeverityInfo.bmp
     ${_ResourcesPath}/${PROJECT_NAME}/Images/ResultSeverityInfo.png
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ResultSeveritySuccess.bmp
     ${_ResourcesPath}/${PROJECT_NAME}/Images/ResultSeveritySuccess.png
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ResultSeverityWarning.bmp
     ${_ResourcesPath}/${PROJECT_NAME}/Images/ResultSeverityWarning.png
 )
 
@@ -270,7 +264,9 @@ list(APPEND _ImageFiles
 list(APPEND _QmlFiles
     ${_QmlPath}/${PROJECT_NAME}/qmldir
     ${_QmlPath}/${PROJECT_NAME}/ZSSysErrLogDlg.qml
+    ${_QmlPath}/${PROJECT_NAME}/ZSSysErrLogIcon.qml
     ${_QmlPath}/${PROJECT_NAME}/ZSSysErrLogWdgt.qml
+    ${_QmlPath}/${PROJECT_NAME}/ZSSysIdxTreeWdgt.qml
     ${_QmlPath}/${PROJECT_NAME}/ZSSysPushButton.qml
 )
 
@@ -310,9 +306,9 @@ source_group("Qml Files" FILES ${_QmlFiles})
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ZSSYSGUIDLL_EXPORTS)
 
-target_link_libraries(${PROJECT_NAME}
-    PUBLIC Qt5::Gui Qt5::Widgets Qt5::Qml Qt5::Quick Qt5::QuickControls2
-    PUBLIC ZSSys)
+set(_Libs Qt5::Gui Qt5::Widgets Qt5::Quick Qt5::QuickControls2 ZSSys)
+
+target_link_libraries(${PROJECT_NAME} PUBLIC ${_Libs})
 
 include(GNUInstallDirs)
 

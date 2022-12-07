@@ -117,8 +117,18 @@ public: // type definitions and constants
         EColumnIdxInParentBranch = 4,
         EColumnKeyInTree         = 5,
         EColumnKeyInParentBranch = 6,
-        EColumnCount
+        EColumnCount,
+        EColumnUndefined
     };
+    static QString column2Str(EColumn i_clm);
+public: // type definitions and constants
+    enum class ERole {
+        Sort = Qt::UserRole,
+        ImageUrl,
+        Type,
+        FirstDataColumnRole
+    };
+    Q_ENUM(ERole);
 public: // class methods
     static QIcon GetIcon( EIdxTreeEntryType i_entryType );
     static QString ModelIdx2Str( const QModelIndex& i_modelIdx, bool i_bIncludeId = false );
@@ -131,9 +141,18 @@ public: // ctors and dtor
         EMethodTraceDetailLevel i_eTrcDetailLevel = EMethodTraceDetailLevel::None,
         EMethodTraceDetailLevel i_eTrcDetailLevelNoisyMethods = EMethodTraceDetailLevel::None );
     virtual ~CModelIdxTree();
+signals:
+    void sortOrderChanged(const QString& i_strSortOrder);
+    void sortOrderChanged(EIdxTreeSortOrder i_sortOrder);
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
     virtual QString className() const { return ClassName(); }
+public: // auxiliary instance methods
+    QString role2Str(int i_iRole) const;
+    int byteArr2Role(const QByteArray& i_byteArrRole) const;
+    int column2Role(EColumn i_clm) const;
+    EColumn role2Column(int i_iRole) const;
+    QString modelIndex2Str( const QModelIndex& modelIdx, bool i_bIncludeId = false ) const;
 public: // instance methods
     void setIdxTree( CIdxTree* i_pIdxTree );
     CIdxTree* idxTree() { return m_pIdxTree; }
@@ -147,8 +166,11 @@ public: // instance methods
 protected: // instance methods
     void setFilter( CModelIdxTreeEntry* i_pModelBranch, EIdxTreeEntryType i_entryType, bool i_bRecursive );
 public: // instance methods
+    Q_PROPERTY(QString sortOrder READ sortOrderAsString WRITE setSortOrder NOTIFY sortOrderChanged)
     void setSortOrder( EIdxTreeSortOrder i_sortOrder );
-    EIdxTreeSortOrder sortOrder() const { return m_sortOrder; }
+    void setSortOrder( const QString& i_strSortOrder );
+    EIdxTreeSortOrder sortOrder() const;
+    QString sortOrderAsString() const;
 protected: // instance methods
     void setSortOrder( CModelIdxTreeEntry* i_pModelBranch, EIdxTreeSortOrder i_sortOrder, bool i_bRecursive );
 public: // instance methods
@@ -176,6 +198,8 @@ protected: // instance methods
     void clear( CModelIdxTreeEntry* i_pModelBranch, bool i_bDestroyTreeEntries = true );
     void remove( CModelIdxTreeEntry* i_pModelTreeEntry );
     //void updateKeyInTree( CModelIdxTreeEntry* i_pModelTreeEntry );
+public: // overridables of base class QAbstractItemModel
+    virtual QHash<int, QByteArray> roleNames() const override;
 public: // overridables of base class QAbstractItemModel
     virtual int rowCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const override;
     virtual int columnCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const override;
@@ -228,6 +252,10 @@ protected: // reimplemented to trace emitting signals for debugging purposes
 protected slots:
     void onTrcAdminObjChanged( QObject* i_pTrcAdminObj );
     void onTrcAdminObjNoisyMethodsChanged( QObject* i_pTrcAdminObj );
+protected: // auxiliary instance methods
+    void fillRoleNames();
+protected: // class members
+    static QHash<int, QByteArray> s_clm2Name;
 protected: // class members
     static int      s_iInstCount;
     static bool     s_bIconsCreated;
@@ -241,9 +269,17 @@ protected: // instance members
     CIdxTree*                          m_pIdxTree;
     EIdxTreeEntryType                  m_entryTypeFilter;
     EIdxTreeSortOrder                  m_sortOrder;
-    /*!< Key is: <EntryTypeSymbol>:<ParentPath>/<Name> (e.g. "L:ZS::Data::CDataTable::FDAC::RF1In") */
+    /*!< Need a copy of the index tree entries as entries may be added, changed
+         or removed from different threads. When removing an entry the signal
+         entryRemoved is emitted and may be queued. The model cannot access the
+         removed entry as it is already deleted. But the model is able to find the
+         entry in the internal list and can inform the views about the removed entry.
+         @Note Key is: <EntryTypeSymbol>:<ParentPath>/<Name>
+               (e.g. "L:ZS::Data::CDataTable::FDAC::RF1In") */
     QMap<QString, CModelIdxTreeEntry*> m_mappModelTreeEntries;
     CModelIdxTreeEntry*                m_pModelRoot;
+    QHash<int, QByteArray>             m_roleNames;
+    QHash<QByteArray, int>             m_roleValues;
     #ifdef ZS_TRACE_GUI_MODELS
     /*!< Trace detail level for method tracing.
          Trace output may not be controlled by trace admin objects

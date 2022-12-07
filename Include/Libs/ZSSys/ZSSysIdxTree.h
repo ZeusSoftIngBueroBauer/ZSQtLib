@@ -154,7 +154,10 @@ signals:
     void aboutToBeDestroyed( QObject* i_pIdxTree );
     /*! Signal which will be emitted if a tree entry has been added to the index tree.
         @param i_pIdxTree [in] Pointer to index tree.
-        @param i_pTreeEntry [in] Pointer to tree entry which has been added. */
+        @param i_pTreeEntry [in] Pointer to tree entry which has been added.
+        @note TODO: Use key of tree entry instead of pointer to tree entry.
+              If the receiver of the signal resided in a different thread and the
+              signal is queued the tree entry may already have been deleted again. */
     void treeEntryAdded( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry );
     /*! Signal which will be emitted if a tree entry has been changed.
         If a property of a tree entry is changed the method "onTreeEntryChanged" of the index tree got to
@@ -162,7 +165,10 @@ signals:
         This reduces the number of signal/slot connections and avoids that the tree entry base class must
         be derived from QObject.
         @param i_pIdxTree [in] Pointer to index tree.
-        @param i_pTreeEntry [in] Pointer to tree entry which has been changed. */
+        @param i_pTreeEntry [in] Pointer to tree entry which has been changed.
+        @note TODO: Use key of tree entry instead of pointer to tree entry.
+              If the receiver of the signal resided in a different thread and the
+              signal is queued the tree entry may already have been deleted again. */
     void treeEntryChanged( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry );
     /*! Signal which will be emitted if a tree entry is going to be removed from the index tree.
         If this signal is emitted the entry still belongs to the index tree and the keys and indices a returned
@@ -184,7 +190,10 @@ signals:
         to the target parent branch.
         @param i_pIdxTree [in] Pointer to index tree.
         @param i_pTreeEntry [in] Pointer to tree entry which is going to be moved to another parent branch.
-        @param i_pTargetBranch [in] Pointer to target branch to which the entry will be moved. */
+        @param i_pTargetBranch [in] Pointer to target branch to which the entry will be moved.
+        @note TODO: Use key of tree entry instead of pointer to tree entry.
+              If the receiver of the signal resided in a different thread and the
+              signal is queued the tree entry may already have been deleted again. */
     void treeEntryAboutToBeMoved( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry, ZS::System::CIdxTreeEntry* i_pTargetBranch );
     /*! Signal which will be emitted if a tree entry has been moved within the index tree.
         If this signal is emitted the entry already has been moved to the new target branch.
@@ -194,13 +203,19 @@ signals:
         @param i_pTreeEntry [in] Pointer to tree entry which has been removed.
         @param i_strKeyInTreePrev [in] Unique key of the entry valid before the entry was moved to the target branch.
         @param i_pTargetBranch [in] Pointer to target branch to which the entry will be moved.
-        @note The index of the entry in the index tree remains the same. */
+        @note The index of the entry in the index tree remains the same.
+        @note TODO: Use key of tree entry instead of pointer to tree entry.
+              If the receiver of the signal resided in a different thread and the
+              signal is queued the tree entry may already have been deleted again. */
     void treeEntryMoved( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry, const QString& i_strKeyInTreePrev, ZS::System::CIdxTreeEntry* i_pTargetBranch );
     /*! Signal which will be emitted if a tree entry is going to be renamed.
         If this signal is emitted the entry still has its old name and its old unique key in the index tree.
         @param i_pIdxTree [in] Pointer to index tree.
         @param i_pTreeEntry [in] Pointer to tree entry which is going to be renamed.
-        @param i_strNameNew [in] New name of the entry. */
+        @param i_strNameNew [in] New name of the entry.
+        @note TODO: Use key of tree entry instead of pointer to tree entry.
+              If the receiver of the signal resided in a different thread and the
+              signal is queued the tree entry may already have been deleted again. */
     void treeEntryAboutToBeRenamed( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry, const QString& i_strNameNew );
     /*! Signal which will be emitted if a tree entry has been renamed.
         If this signal is emitted the entry already has its new name and a the unique key in the index tree has been changed.
@@ -209,7 +224,10 @@ signals:
         @param i_pTreeEntry [in] Pointer to tree entry which has been removed.
         @param i_strKeyInTreePrev [in] Unique key of the entry valid before the entry was moved to the target branch.
         @param i_strNamePrev [in] Old name of the tree entry.
-        @note The index of the entry in the index tree remains the same. */
+        @note The index of the entry in the index tree remains the same.
+        @note TODO: Use key of tree entry instead of pointer to tree entry.
+              If the receiver of the signal resided in a different thread and the
+              signal is queued the tree entry may already have been deleted again. */
     void treeEntryRenamed( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry, const QString& i_strKeyInTreePrev, const QString& i_strNamePrev );
     /*! Signal which will be emitted if the unique key of a tree entry has been changed.
         If this signal is emitted the entry already has been moved or renamed.
@@ -218,7 +236,10 @@ signals:
         @param i_pIdxTree [in] Pointer to index tree.
         @param i_pTreeEntry [in] Pointer to tree entry which has been removed.
         @param i_strKeyInTreePrev [in] Unique key of the entry valid before the entry was moved to the target branch.
-        @note The index of the entry in the index tree remains the same. */
+        @note The index of the entry in the index tree remains the same.
+        @note TODO: Use key of tree entry instead of pointer to tree entry.
+              If the receiver of the signal resided in a different thread and the
+              signal is queued the tree entry may already have been deleted again. */
     void treeEntryKeyInTreeChanged( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry, const QString& i_strKeyInTreePrev );
 public: // overridables
     /*! This virtual method returns the name space of the object's class.
@@ -356,6 +377,23 @@ protected: // instance members
     CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CIdxTree
+
+//******************************************************************************
+/*! @brief Locker class to lock and unlock the index tree instance.
+*/
+class CIdxTreeLocker
+//******************************************************************************
+{
+public:
+    CIdxTreeLocker(CIdxTree* i_pIdxTree) : m_pIdxTree(i_pIdxTree) {
+        m_pIdxTree->lock();
+    }
+    ~CIdxTreeLocker() {
+        m_pIdxTree->unlock();
+    }
+private:
+    CIdxTree* m_pIdxTree;
+};
 
 } // namespace System
 

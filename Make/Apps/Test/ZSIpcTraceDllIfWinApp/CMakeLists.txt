@@ -92,13 +92,17 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     target_compile_options(${PROJECT_NAME} PRIVATE "-Wno-cast-function-type")
 endif()
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE USE_ZS_IPCTRACE_DLL_IF)
+target_compile_definitions(${PROJECT_NAME}
+    PRIVATE USE_ZS_IPCTRACE_DLL_IF
+    PRIVATE MDd _UNICODE UNICODE)
 
 target_include_directories(${PROJECT_NAME}
+    PRIVATE ${CMAKE_SOURCE_DIR}/../Include/Libs
     PRIVATE ${CMAKE_SOURCE_DIR}/../Include/Apps/Test/ZSIpcTraceDllIfWinApp)
 
-target_link_libraries(${PROJECT_NAME}
-    PRIVATE ZSSys ZSSysGUI ZSTest ZSTestGUI ZSIpc ZSIpcGUI ZSIpcTrace ZSIpcTraceGUI)
+set(_Libs)
+
+target_link_libraries(${PROJECT_NAME} ${_Libs})
 
 # The test application needs user interaction and cannot be executed automatically.
 #enable_testing()

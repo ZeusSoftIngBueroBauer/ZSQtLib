@@ -85,7 +85,7 @@ QPixmap CWdgtIdxTree::viewMode2Pixmap( EViewMode i_eVal, const QSize& i_sz )
 //------------------------------------------------------------------------------
 {
     QString str = viewMode2Str(i_eVal);
-    QPixmap pxm = QPixmap( ":/ZS/TreeView/TreeViewViewMode" + str + ".bmp" );
+    QPixmap pxm = QPixmap( ":/ZS/TreeView/TreeViewViewMode" + str + ".png" );
     pxm = pxm.scaled(i_sz);
     return pxm;
 }
@@ -199,7 +199,7 @@ CWdgtIdxTree::CWdgtIdxTree(
     // <Button> Resize Columns To Contents
     //------------------------------------
 
-    QPixmap pxmResizeToContents(":/ZS/TreeView/TreeViewResizeToContents.bmp");
+    QPixmap pxmResizeToContents(":/ZS/TreeView/TreeViewResizeToContents.png");
     pxmResizeToContents.setMask(pxmResizeToContents.createHeuristicMask());
 
     m_pBtnTreeViewResizeRowsAndColumnsToContents = new QPushButton();
@@ -222,7 +222,7 @@ CWdgtIdxTree::CWdgtIdxTree(
     // <Button> Expand All
     //--------------------
 
-    QPixmap pxmExpandAll(":/ZS/TreeView/TreeViewExpandAll.bmp");
+    QPixmap pxmExpandAll(":/ZS/TreeView/TreeViewExpandAll.png");
     pxmExpandAll.setMask(pxmExpandAll.createHeuristicMask());
 
     m_pBtnTreeViewExpandAll = new QPushButton();
@@ -245,7 +245,7 @@ CWdgtIdxTree::CWdgtIdxTree(
     // <Button> Collapse All
     //----------------------
 
-    QPixmap pxmCollapseAll(":/ZS/TreeView/TreeViewCollapseAll.bmp");
+    QPixmap pxmCollapseAll(":/ZS/TreeView/TreeViewCollapseAll.png");
     pxmCollapseAll.setMask(pxmCollapseAll.createHeuristicMask());
 
     m_pBtnTreeViewCollapseAll = new QPushButton();
@@ -269,7 +269,6 @@ CWdgtIdxTree::CWdgtIdxTree(
     //----------------------
 
     QPixmap pxmSortOrder = idxTreeSortOrder2Pixmap(EIdxTreeSortOrder::Config, m_szBtns);
-    pxmSortOrder.setMask(pxmSortOrder.createHeuristicMask());
 
     m_pBtnSortOrder = new QPushButton();
     m_pBtnSortOrder->setFixedSize(m_szBtns);
@@ -637,7 +636,6 @@ void CWdgtIdxTree::onBtnSortOrderClicked( bool i_bChecked )
     m_pBtnSortOrder->setProperty("SortOrderCurr", static_cast<int>(sortOrderNew));
 
     QPixmap pxmSortOrder = idxTreeSortOrder2Pixmap(sortOrderNew, m_szBtns);
-    pxmSortOrder.setMask(pxmSortOrder.createHeuristicMask());
     m_pBtnSortOrder->setIcon(pxmSortOrder);
 
 } // onBtnSortOrderClicked

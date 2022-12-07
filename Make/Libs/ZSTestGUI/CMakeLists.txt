@@ -82,7 +82,9 @@ source_group("Resource Files" FILES ${_Resources})
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ZSTESTGUIDLL_EXPORTS)
 
-target_link_libraries(${PROJECT_NAME} PUBLIC ZSSys ZSSysGUI ZSTest)
+set(_Libs ZSSysGUI ZSTest)
+
+target_link_libraries(${PROJECT_NAME} PUBLIC ${_Libs})
 
 include(GNUInstallDirs)
 

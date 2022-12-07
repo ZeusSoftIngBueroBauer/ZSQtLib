@@ -80,7 +80,9 @@ endif()
 target_compile_definitions(${PROJECT_NAME} PRIVATE ZSIPCTRACEDLL_EXPORTS)
 target_compile_definitions(${PROJECT_NAME} PRIVATE USE_ZS_IPCTRACE_DLL_IF)
 
-target_link_libraries(${PROJECT_NAME} PUBLIC ZSSys ZSIpc)
+set(_Libs ZSIpc)
+
+target_link_libraries(${PROJECT_NAME} PUBLIC ${_Libs})
 if(UNIX)
     target_link_libraries(${PROJECT_NAME} PUBLIC ${CMAKE_DL_LIBS})
 endif()

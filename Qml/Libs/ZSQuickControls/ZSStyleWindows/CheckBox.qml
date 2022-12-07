@@ -26,27 +26,79 @@ may result in using the software modules.
 
 import QtQuick 2.15
 import QtQuick.Templates 2.15 as T
+//import Theme 1.0
 
-T.Switch {
+T.CheckBox {
     id: control
 
-    property string nameSpace: "ZS::QuickControls::Qml"
-    property string className: "StyleFlat::Switch"
-    property string objectName: "control"
+    font: Theme.font
 
-    property var myTrcAdminObj: _ZSSys_trcServer.getTraceAdminObj(
-        control.nameSpace, control.className, control.objectName);
-    Component.onDestruction: {
-        _ZSSys_trcServer.releaseTraceAdminObj(control.myTrcAdminObj);
+    implicitWidth: Math.max(background ? background.implicitWidth : 0,
+                                         contentItem.implicitWidth + leftPadding + rightPadding)
+    implicitHeight: Math.max(background ? background.implicitHeight : 0,
+                                          Math.max(contentItem.implicitHeight,
+                                                   indicator ? indicator.implicitHeight : 0) + topPadding + bottomPadding)
+    leftPadding: 4
+    indicator: Rectangle {
+        id: checkboxHandle
+        implicitWidth: Theme.baseSize * 2.6
+        implicitHeight: Theme.baseSize * 2.6
+        x: control.leftPadding
+        anchors.verticalCenter: parent.verticalCenter
+        radius: 2
+        border.color: Theme.mainColor
+
+        Rectangle {
+            id: rectangle
+            width: Theme.baseSize * 1.4
+            height: Theme.baseSize * 1.4
+            x: Theme.baseSize * 0.6
+            y: Theme.baseSize * 0.6
+            radius: Theme.baseSize * 0.4
+            visible: false
+            color: Theme.mainColor
+        }
+
+        states: [
+            State {
+                name: "unchecked"
+                when: !control.checked && !control.down
+            },
+            State {
+                name: "checked"
+                when: control.checked && !control.down
+
+                PropertyChanges {
+                    target: rectangle
+                    visible: true
+                }
+            },
+            State {
+                name: "unchecked_down"
+                when: !control.checked && control.down
+
+                PropertyChanges {
+                    target: rectangle
+                    color: Theme.mainColorDarker
+                }
+
+                PropertyChanges {
+                    target: checkboxHandle
+                    border.color: Theme.mainColorDarker
+                }
+            },
+            State {
+                name: "checked_down"
+                extend: "unchecked_down"
+                when: control.checked && control.down
+
+                PropertyChanges {
+                    target: rectangle
+                    visible: true
+                }
+            }
+        ]
     }
-
-    Component.onCompleted: {
-        console.debug("-> " + nameSpace + "::" + className + "::" + objectName + ".Component.onCompleted")
-        console.debug("<- " + nameSpace + "::" + className + "::" + objectName + ".Component.onCompleted")
-    }
-
-    implicitWidth: indicator.implicitWidth
-    implicitHeight: background.implicitHeight
 
     background: Rectangle {
         implicitWidth: 140
@@ -55,76 +107,16 @@ T.Switch {
         border.color: Theme.gray
     }
 
-    leftPadding: 4
+    contentItem: Text {
+        leftPadding: control.indicator.width + 4
 
-    indicator: Rectangle {
-        id: switchHandle
-        implicitWidth: Theme.baseSize * 4.8
-        implicitHeight: Theme.baseSize * 2.6
-        x: control.leftPadding
-        anchors.verticalCenter: parent.verticalCenter
-        radius: Theme.baseSize * 1.3
-        color: Theme.light
-        border.color: Theme.lightGray
-
-        Rectangle {
-            id: rectangle
-
-            width: Theme.baseSize * 2.6
-            height: Theme.baseSize * 2.6
-            radius: Theme.baseSize * 1.3
-            color: Theme.light
-            border.color: Theme.gray
-        }
-
-        states: [
-            State {
-                name: "off"
-                when: !control.checked && !control.down
-            },
-            State {
-                name: "on"
-                when: control.checked && !control.down
-
-                PropertyChanges {
-                    target: switchHandle
-                    color: Theme.mainColor
-                    border.color: Theme.mainColor
-                }
-
-                PropertyChanges {
-                    target: rectangle
-                    x: parent.width - width
-
-                }
-            },
-            State {
-                name: "off_down"
-                when: !control.checked && control.down
-
-                PropertyChanges {
-                    target: rectangle
-                    color: Theme.light
-                }
-
-            },
-            State {
-                name: "on_down"
-                extend: "off_down"
-                when: control.checked && control.down
-
-                PropertyChanges {
-                    target: rectangle
-                    x: parent.width - width
-                    color: Theme.light
-                }
-
-                PropertyChanges {
-                    target: switchHandle
-                    color: Theme.mainColorDarker
-                    border.color: Theme.mainColorDarker
-                }
-            }
-        ]
+        text: control.text
+        font: control.font
+        color: Theme.dark
+        elide: Text.ElideRight
+        visible: control.text
+        horizontalAlignment: Text.AlignLeft
+        verticalAlignment: Text.AlignVCenter
     }
 }
+

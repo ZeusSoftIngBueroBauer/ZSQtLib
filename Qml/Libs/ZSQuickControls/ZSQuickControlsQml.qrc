@@ -1,9 +1,10 @@
 <!DOCTYPE RCC><RCC version="1.0">
     <qresource prefix="/">
-        <file>ZSStyleFlat/qmldir</file>
-        <file>ZSStyleFlat/Theme.qml</file>
-        <file>ZSStyleFlat/Button.qml</file>
-        <file>ZSStyleFlat/CheckBox.qml</file>
-        <file>ZSStyleFlat/Switch.qml</file>
+        <file>ZSStyleWindows/qmldir</file>
+        <file>ZSStyleWindows/Theme.qml</file>
+        <file>ZSStyleWindows/Button.qml</file>
+        <file>ZSStyleWindows/CheckBox.qml</file>
+        <file>ZSStyleWindows/Switch.qml</file>
+        <file>ZSStyleWindows/ToolButton.qml</file>
     </qresource>
 </RCC>

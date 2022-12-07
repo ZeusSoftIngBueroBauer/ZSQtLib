@@ -30,28 +30,7 @@ import QtQuick.Templates 2.15 as T
 T.Button {
     id: control
 
-    property string nameSpace: "ZS::QuickControls::Qml"
-    property string className: "StyleFlat::Button"
-    property string objectName: "control"
-
-    property var myTrcAdminObj: _ZSSys_trcServer.getTraceAdminObj(
-        control.nameSpace, control.className, control.objectName);
-    Component.onDestruction: {
-        _ZSSys_trcServer.releaseTraceAdminObj(control.myTrcAdminObj);
-    }
-
-    Component.onCompleted: {
-        console.debug("-> " + nameSpace + "::" + className + "::" + objectName + ".Component.onCompleted")
-        console.debug("<- " + nameSpace + "::" + className + "::" + objectName + ".Component.onCompleted")
-    }
-
     font: Theme.font
-
-    property alias borderColor: buttonBackground.border.color
-    onBorderColorChanged: {
-        console.debug("-> Flat.Button.qml.Component.onBorderColorChanged")
-        console.debug("<- Flat.Button.qml.Component.onBorderColorChanged")
-    }
 
     implicitWidth: Math.max(background ? background.implicitWidth : 0,
                                          contentItem.implicitWidth + leftPadding + rightPadding)

@@ -31,40 +31,17 @@ import QtQuick 2.15
 QtObject {
     id: root
 
-    property string nameSpace: "ZS::QuickControls::Qml"
-    property string className: "StyleFlat::Theme::QtObject"
-    property string objectName: "theInst"
-
-    property var _theme: typeof(_ZSQuickControls_themeFlatStyle) === "undefined" ? null : _ZSQuickControls_themeFlatStyle
-
-    property var myTrcAdminObj: _ZSSys_trcServer.getTraceAdminObj(
-        root.nameSpace, root.className, root.objectName);
-    Component.onDestruction: {
-        _ZSSys_trcServer.releaseTraceAdminObj(root.myTrcAdminObj);
-    }
-
-    Component.onCompleted: {
-        console.debug("-> " + nameSpace + "::" + className + "::" + objectName + ".Component.onCompleted")
-        console.debug("<- " + nameSpace + "::" + className + "::" + objectName + ".Component.onCompleted")
-    }
+    readonly property var __theme: typeof(_ZSQuickControls_themeWindowsStyle) === "undefined" ? null : _ZSQuickControls_themeWindowsStyle
 
     readonly property color gray: "#b2b1b1"
     readonly property color lightGray: "#dddddd"
     readonly property color light: "#ffffff"
     readonly property color blue: "#2d548b"
-    property color mainColor: _theme ? _theme.mainColor : "#17a81a"
-    onMainColorChanged: {
-        console.debug("-> " + nameSpace + "::" + className + "::" + objectName + ".onMainColorChanged(" + mainColor + ")")
-        console.debug("<- " + nameSpace + "::" + className + "::" + objectName + ".onMainColorChanged")
-    }
+    property color mainColor: __theme ? __theme.mainColor : "#17a81a"
     readonly property color dark: "#222222"
     readonly property color mainColorDarker: Qt.darker(mainColor, 1.5)
 
     property int baseSize: 10
-    onBaseSizeChanged: {
-        console.debug("-> " + nameSpace + "::" + className + "::" + objectName + ".onBaseSizeChanged(" + baseSize + ")")
-        console.debug("<- " + nameSpace + "::" + className + "::" + objectName + ".onBaseSizeChanged()")
-    }
 
     readonly property int smallSize: 10
     readonly property int largeSize: 16
@@ -74,4 +51,12 @@ QtObject {
     font.underline: false
     font.pixelSize: 14
     font.family: "arial"
+
+
+    // ToolButton
+    //------------
+
+    property bool toolButtonBorderAlwaysVisible: true
+    property color toolButtonBorderColor: gray
+    property int toolButtonBorderRadius: 0
 }

@@ -35,12 +35,12 @@ set(_QmlPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../Qml/Libs)
 list(APPEND _Headers
     ${_HeadersPath}/ZSSys/ZSSysVersion.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSQuickControlsDllMain.h
-    ${_HeadersPath}/${PROJECT_NAME}/ZSQuickControlsThemeFlatStyle.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSQuickControlsThemeWindowsStyle.h
 )
 
 list(APPEND _Sources
     ${_SourcesPath}/${PROJECT_NAME}/ZSQuickControlsDllMain.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/ZSQuickControlsThemeFlatStyle.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSQuickControlsThemeWindowsStyle.cpp
 )
 
 list(APPEND _Resources
@@ -50,16 +50,17 @@ list(APPEND _Resources
 list(APPEND _ImageFiles
 )
 
-list(APPEND _ZSStyleFlatQmlFiles
-    ${_QmlPath}/${PROJECT_NAME}/ZSStyleFlat/qmldir
-    ${_QmlPath}/${PROJECT_NAME}/ZSStyleFlat/Theme.qml
-    ${_QmlPath}/${PROJECT_NAME}/ZSStyleFlat/Button.qml
-    ${_QmlPath}/${PROJECT_NAME}/ZSStyleFlat/CheckBox.qml
-    ${_QmlPath}/${PROJECT_NAME}/ZSStyleFlat/Switch.qml
+list(APPEND _ZSStyleWindowsQmlFiles
+    ${_QmlPath}/${PROJECT_NAME}/ZSStyleWindows/qmldir
+    ${_QmlPath}/${PROJECT_NAME}/ZSStyleWindows/Theme.qml
+    ${_QmlPath}/${PROJECT_NAME}/ZSStyleWindows/Button.qml
+    ${_QmlPath}/${PROJECT_NAME}/ZSStyleWindows/CheckBox.qml
+    ${_QmlPath}/${PROJECT_NAME}/ZSStyleWindows/Switch.qml
+    ${_QmlPath}/${PROJECT_NAME}/ZSStyleWindows/ToolButton.qml
 )
 
 list(APPEND _QmlFiles
-    ${_ZSStyleFlatQmlFiles}
+    ${_ZSStyleWindowsQmlFiles}
 )
 
 if(WIN32)
@@ -84,13 +85,13 @@ set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER Libs)
 source_group("Header Files" FILES ${_Headers})
 source_group("Source Files" FILES ${_Sources})
 source_group("Resource Files" FILES ${_Resources})
-source_group("Qml Files/Style Flat" FILES ${_ZSStyleFlatQmlFiles})
+source_group("Qml Files/Style Windows" FILES ${_ZSStyleWindowsQmlFiles})
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ZSQUICKCONTROLSDLL_EXPORTS)
 
-target_link_libraries(${PROJECT_NAME}
-    PUBLIC Qt5::Qml Qt5::Quick Qt5::QuickControls2
-    PUBLIC ZSSys)
+set(_Libs ZSSysGUI)
+
+target_link_libraries(${PROJECT_NAME} PUBLIC ${_Libs})
 
 include(GNUInstallDirs)
 

@@ -45,7 +45,7 @@ class CModelErrLog;
 }
 namespace QuickControls
 {
-class CThemeFlatStyle;
+class CThemeWindowsStyle;
 }
 namespace Trace
 {
@@ -78,12 +78,12 @@ public: // ctors and dtor
         const QString& i_strWindowTitle );
     ~CApplication();
 protected: // instance members
-    QQmlApplicationEngine*              m_pQmlAppEngine;
-    QQuickWindow*                       m_pMainWindow;
-    ZS::System::GUI::CModelErrLog*      m_pErrLogModel;
-    ZS::Trace::CIpcTrcServer*           m_pTrcServer;
-    ZS::QuickControls::CThemeFlatStyle* m_pThemeFlatStyle;
-    ZS::System::CTrcAdminObj*           m_pTrcAdminObj;
+    QQmlApplicationEngine*                 m_pQmlAppEngine;
+    QQuickWindow*                          m_pMainWindow;
+    ZS::System::GUI::CModelErrLog*         m_pErrLogModel;
+    ZS::Trace::CIpcTrcServer*              m_pTrcServer;
+    ZS::QuickControls::CThemeWindowsStyle* m_pThemeWindowsStyle;
+    ZS::System::CTrcAdminObj*              m_pTrcAdminObj;
 
 }; // class CApplication
 

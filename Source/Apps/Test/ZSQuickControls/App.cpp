@@ -30,15 +30,11 @@ may result in using the software modules.
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSysGUI/ZSSysErrLogModel.h"
 #include "ZSQuickControls/ZSQuickControlsDllMain.h"
-#include "ZSQuickControls/ZSQuickControlsThemeFlatStyle.h"
+#include "ZSQuickControls/ZSQuickControlsThemeWindowsStyle.h"
 
 #include <QtCore/qdiriterator.h>
 #include <QtQml/qqmlapplicationengine.h>
 #include <QtQml/qqmlcontext.h>
-#include <QtQml/qqmlcomponent.h>
-#include <QtQml/qqmlproperty.h>
-#include <QtQuickControls2/qquickstyle.h>
-#include <QtQuick/qquickview.h>
 #include <QtQuick/qquickwindow.h>
 
 #include "ZSSys/ZSSysMemLeakDump.h"
@@ -84,7 +80,7 @@ CApplication::CApplication(
     m_pMainWindow(nullptr),
     m_pErrLogModel(nullptr),
     m_pTrcServer(nullptr),
-    m_pThemeFlatStyle(nullptr),
+    m_pThemeWindowsStyle(nullptr),
     m_pTrcAdminObj(nullptr)
 {
     setObjectName("theApp");
@@ -129,23 +125,18 @@ CApplication::CApplication(
 
     m_pErrLogModel = new CModelErrLog(CErrLog::GetInstance());
 
-    m_pThemeFlatStyle = CThemeFlatStyle::CreateInstance();
-
-    const QString strStyle("ZSStyleFlat");
-
-    QQuickStyle::setStyle(strStyle);
-
     m_pQmlAppEngine = new QQmlApplicationEngine();
     // Add import path to the applications resource storage.
     m_pQmlAppEngine->addImportPath("qrc:/");
     m_pQmlAppEngine->addImportPath(":/imports");
+
+    m_pThemeWindowsStyle = CThemeWindowsStyle::CreateInstance(m_pQmlAppEngine);
 
     QQmlContext* pQmlCtx = m_pQmlAppEngine->rootContext();
 
     pQmlCtx->setContextProperty("_ZSSys_trcServer", m_pTrcServer);
     pQmlCtx->setContextProperty("_ZSSys_errLog", CErrLog::GetInstance());
     pQmlCtx->setContextProperty("_ZSSysGUI_errLogModel", m_pErrLogModel);
-    pQmlCtx->setContextProperty("_ZSQuickControls_themeFlatStyle", m_pThemeFlatStyle);
 
     //qDebug("QmlAppEngine.importPaths BEGIN ---------------------------------------");
     //QStringList strlstImportPathList = m_pQmlAppEngine->importPathList();
@@ -165,8 +156,6 @@ CApplication::CApplication(
         },
         Qt::QueuedConnection);
     m_pQmlAppEngine->load(urlMain);
-
-    m_pThemeFlatStyle->setMainColor(QColor("red"));
 
     if (m_pQmlAppEngine->rootObjects().isEmpty())
     {
@@ -233,8 +222,8 @@ CApplication::~CApplication()
         m_pTrcServer->saveAdminObjs();
     }
 
-    CThemeFlatStyle::ReleaseInstance();
-    m_pThemeFlatStyle = nullptr;
+    CThemeWindowsStyle::ReleaseInstance();
+    m_pThemeWindowsStyle = nullptr;
 
     CIpcTrcServer::ReleaseInstance();
     m_pTrcServer = nullptr;

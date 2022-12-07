@@ -76,7 +76,7 @@ ApplicationWindow {
             }
             MenuSeparator { }
             Action {
-                id: idActionFileQuit
+                id: actionFileQuit
                 text: qsTr("&Quit")
                 icon.name: "application-exit"
                 onTriggered: {
@@ -99,10 +99,10 @@ ApplicationWindow {
         Menu {
             title: qsTr("&Debug")
             Action {
-                id: idActionDebugErrLog
+                id: actionDebugErrLog
                 text: qsTr("Error Log")
                 onTriggered: {
-                    idLoaderErrLogDlg.active = true
+                    loaderErrLogDlg.active = true
                 }
             }
         }
@@ -135,23 +135,26 @@ ApplicationWindow {
     }
 
     ErrLogWdgt {
-        id: idErrLogWdgt
+        id: errLogWdgt
         anchors.fill: parent
+        model: _ZSSysGUI_errLogModel
     }
 
     Loader {
-        id: idLoaderErrLogDlg
+        id: loaderErrLogDlg
         active: false
         source: "qrc:/ZSSysGUI/ZSSysErrLogDlg.qml"
         onLoaded: {
             item.visible = true
+            item.model = _ZSSysGUI_errLogModel
         }
     }
+
     Connections {
-        target: idLoaderErrLogDlg.item
+        target: loaderErrLogDlg.item
         function onVisibilityChanged() {
-            if(idLoaderErrLogDlg.item && !idLoaderErrLogDlg.item.visible) {
-                idLoaderErrLogDlg.active = false
+            if(loaderErrLogDlg.item && !loaderErrLogDlg.item.visible) {
+                loaderErrLogDlg.active = false
             }
         }
     }
@@ -168,88 +171,9 @@ ApplicationWindow {
                 anchors.fill: parent
                 spacing: 10
 
-                Image {
-                    id: idImgErrors
-                    property var toolTipText: ""
-                    property var severityMax: ""
-                    property var errorsCount: 0
-                    property var errorsCounts: {"Critical": 0, "Error": 0, "Warning": 0, "Info": 0, "Success": 0}
-                    function getErrorCount(severity) {
-                        console.log("-> idImgErrors.getErrorCount(" + severity + ")");
-                        var count = _ZSSys_errLog.getEntryCount(severity);
-                        console.log("<- idImgErrors.getErrorCount(): " + count);
-                        return count;
-                    }
-                    function getToolTip() {
-                        console.log("-> idImgErrors.getToolTip()");
-                        var toolTip = ""
-                        if( errorsCount === 0 ) {
-                            toolTip = "There is no Info, no Warning, no Error and no Critical Error message pending";
-                        } else  {
-                            var errorsCountTmp = 0;
-                            if( errorsCounts["Critical"] > 0 ) {
-                                toolTip = "There are Critical Errors";
-                            } else if( errorsCounts["Error"] > 0 ) {
-                                toolTip = "There are Errors";
-                            } else if( errorsCounts["Warning"] > 0 ) {
-                                toolTip = "There are Warnings";
-                            } else if( errorsCounts["Info"] > 0 ) {
-                                toolTip = "There are Infos";
-                            } else if( errorsCounts["Success"] > 0 ) {
-                                toolTip = "There are Infos";
-                            }
-                        }
-                        toolTip += ".";
-                        console.log("<- idImgErrors.getToolTip(): " + toolTip);
-                        return toolTip;
-                    }
-                    function updateErrorsStatus() {
-                        console.log("-> idImgErrors.updateErrorsStatus()");
-                        errorsCount = 0;
-                        severityMax = "";
-                        for( var severity in errorsCounts ) {
-                            errorsCounts[severity] = getErrorCount(severity);
-                            if( errorsCounts[severity] > 0 && severityMax === "" ) {
-                                severityMax = severity;
-                            }
-                            errorsCount += errorsCounts[severity];
-                        }
-                        toolTipText = getToolTip();
-                        console.log("   idImgErrors.updateErrorsStatus: errorsCount: " + errorsCount);
-                        console.log("   idImgErrors.updateErrorsStatus: severityMax: " + severityMax);
-                        console.log("   idImgErrors.updateErrorsStatus: toolTipText: " + toolTipText);
-                        console.log("<- idImgErrors.updateErrorsStatus()");
-                    }
-                    Component.onCompleted: {
-                        console.log("-> idImgErrors.onCompleted()");
-                        updateErrorsStatus();
-                        console.log("<- idImgErrors.onCompleted()");
-                    }
-                    Connections {
-                        target: _ZSSys_errLog
-                        function onCountChanged() {
-                            console.log("-> errLog.onCountChanged");
-                            idImgErrors.updateErrorsStatus();
-                            console.log("<- errLog.onCountChanged");
-                        }
-                    }
-                    Layout.maximumHeight: 24
-                    Layout.alignment: Qt.AlignRight
-                    source: severityMax === "" ? "qrc:/ZS/Result/ResultSeveritySuccess.png" : "qrc:/ZS/Result/ResultSeverity" + severityMax + ".png"
-                    ToolTip {
-                        id: idTTImgErrors
-                        text: idImgErrors.toolTipText
-                        visible: idMAImgErrors.containsMouse
-                    }
-                    MouseArea {
-                        id: idMAImgErrors
-                        anchors.fill: parent
-                        acceptedButtons: Qt.LeftButton
-                        hoverEnabled: true
-                        onDoubleClicked: {
-                            idLoaderErrLogDlg.active = true
-                        }
-                    }
+                ErrLogIcon {
+                    id: errLogIcon
+                    model: _ZSSysGUI_errLogModel
                 }
             }
         }

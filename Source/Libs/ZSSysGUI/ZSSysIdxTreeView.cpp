@@ -498,7 +498,7 @@ CTreeViewIdxTree::CTreeViewIdxTree(
 
     m_pMenuBranchContext->addSeparator();
 
-    QPixmap pxmExpandAll(":/ZS/TreeView/TreeViewExpandAll.bmp");
+    QPixmap pxmExpandAll(":/ZS/TreeView/TreeViewExpandAll.png");
     pxmExpandAll.setMask(pxmExpandAll.createHeuristicMask());
     //pxmExpandAll = pxmExpandAll.scaled(16,16);
     m_pActionBranchExpand = new QAction(pxmExpandAll, "Expand", this);
@@ -513,7 +513,7 @@ CTreeViewIdxTree::CTreeViewIdxTree(
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
 
-    QPixmap pxmCollapseAll(":/ZS/TreeView/TreeViewCollapseAll.bmp");
+    QPixmap pxmCollapseAll(":/ZS/TreeView/TreeViewCollapseAll.png");
     pxmCollapseAll.setMask(pxmCollapseAll.createHeuristicMask());
 
     m_pActionBranchCollapse = new QAction(pxmCollapseAll, "Collapse", this);

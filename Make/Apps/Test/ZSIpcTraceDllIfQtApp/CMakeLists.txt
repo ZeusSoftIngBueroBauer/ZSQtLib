@@ -111,12 +111,12 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE USE_ZS_IPCTRACE_DLL_IF)
 target_include_directories(${PROJECT_NAME}
     PRIVATE ${CMAKE_SOURCE_DIR}/../Include/Apps/Test/ZSIpcTraceDllIfQtApp)
 
-target_link_libraries(${PROJECT_NAME}
-    PRIVATE ZSSys ZSSysGUI ZSTest ZSTestGUI ZSIpc ZSIpcGUI)
+set(_Libs ZSIpcGUI ZSTestGUI)
+
+target_link_libraries(${PROJECT_NAME} ${_Libs})
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-    target_link_libraries(${PROJECT_NAME}
-        PRIVATE ${CMAKE_DL_LIBS})
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${CMAKE_DL_LIBS})
 endif()
 
 # The test application needs user interaction and cannot be executed automatically.

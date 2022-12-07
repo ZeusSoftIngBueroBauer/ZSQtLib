@@ -94,7 +94,7 @@ source_group("Qml Files" FILES ${_QmlFiles})
 target_include_directories(${PROJECT_NAME}
     PRIVATE ${CMAKE_SOURCE_DIR}/../Include/Apps/Test/ZSQuickControls)
 
-set(_Libs ZSSys ZSSysGUI ZSIpc ZSIpcGUI ZSIpcTrace ZSIpcTraceGUI ZSQuickControls)
+set(_Libs ZSIpcTraceGUI ZSQuickControls)
 
 target_link_libraries(${PROJECT_NAME} ${_Libs})
 

@@ -161,7 +161,7 @@ if(WIN32)
     set(_Libs ${_Libs} Dbghelp)
 endif()
 
-target_link_libraries(${PROJECT_NAME} ${_Libs})
+target_link_libraries(${PROJECT_NAME} PUBLIC ${_Libs})
 
 # Don't copy Qt Dlls to bin directory.
 # The Dlls got to loaded from the Qt installation directory.

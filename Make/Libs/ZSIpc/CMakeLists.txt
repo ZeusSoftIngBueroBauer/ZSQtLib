@@ -122,7 +122,9 @@ target_include_directories(${PROJECT_NAME}
     $<BUILD_INTERFACE:${_HeadersPath}>
     $<INSTALL_INTERFACE:include/${PROJECT_NAME}>)
 
-target_link_libraries(${PROJECT_NAME} PUBLIC ZSSys)
+set(_Libs ZSSys)
+
+target_link_libraries(${PROJECT_NAME} PUBLIC ${_Libs})
 
 include(GNUInstallDirs)
 

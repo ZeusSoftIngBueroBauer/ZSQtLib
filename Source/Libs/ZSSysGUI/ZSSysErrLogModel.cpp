@@ -596,8 +596,6 @@ int CModelErrLog::columnWidthByColumn(int i_iClm, int i_iFontPixelSize) const
 
     if( i_iClm >= 0 && i_iClm < m_ariClmWidths.count() )
     {
-        CErrLogLocker errLogLocker(m_pErrLog);
-
         iClmWidth = m_ariClmWidths[i_iClm];
 
         if( iClmWidth == 0)
@@ -718,8 +716,6 @@ int CModelErrLog::rowCount( const QModelIndex& i_modelIdxParent ) const
         /* strMethod    */ "rowCount",
         /* strMthInArgs */ strMthInArgs );
 
-    CErrLogLocker errLogLocker(m_pErrLog);
-
     int iRowCount = 0;
 
     for( int iSeverity = 0; iSeverity < m_ararpEntries.count(); ++iSeverity )
@@ -814,8 +810,6 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
         return varData;
     }
 
-    CErrLogLocker errLogLocker(m_pErrLog);
-
     int iRow = i_modelIdx.row();
 
     if( iRow < 0 || iRow >= rowCount() )
@@ -827,9 +821,9 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
         return varData;
     }
 
-    const SErrLogEntry* pErrLogEntry = m_pErrLog->getEntry(iRow);
+    const SErrLogEntry* pModelEntry = getEntry(iRow);
 
-    if( pErrLogEntry == nullptr )
+    if( pModelEntry == nullptr )
     {
         if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
         {
@@ -840,7 +834,7 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
 
     if( iRole == Qt::ToolTipRole )
     {
-        QString strTmp = pErrLogEntry->m_strProposal;
+        QString strTmp = pModelEntry->m_strProposal;
         strTmp = encodeForHtml(strTmp);
         varData = strTmp;
     }
@@ -856,7 +850,7 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
                 }
                 else if( iRole == Qt::DisplayRole || iRole == Qt::DecorationRole )
                 {
-                    QString strUrl = getErrImageUrl(pErrLogEntry->m_errResultInfo.getSeverity());
+                    QString strUrl = getErrImageUrl(pModelEntry->m_errResultInfo.getSeverity());
                     if( strUrl.startsWith(":") ) {
                         strUrl.insert(0, "qrc");
                     }
@@ -878,7 +872,7 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
                 }
                 else if( i_iRole == Qt::DecorationRole )
                 {
-                    varData = getErrIcon(pErrLogEntry->m_errResultInfo.getSeverity());
+                    varData = getErrIcon(pModelEntry->m_errResultInfo.getSeverity());
                 }
                 break;
             }
@@ -890,7 +884,7 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
                 }
                 else if( iRole == Qt::DisplayRole )
                 {
-                    varData = resultSeverity2Str(pErrLogEntry->m_errResultInfo.getSeverity());
+                    varData = resultSeverity2Str(pModelEntry->m_errResultInfo.getSeverity());
                 }
                 break;
             }
@@ -902,7 +896,7 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
                 }
                 else if( iRole == Qt::DisplayRole )
                 {
-                    varData = QString::number(pErrLogEntry->m_errResultInfo.getResult());
+                    varData = QString::number(pModelEntry->m_errResultInfo.getResult());
                 }
                 break;
             }
@@ -914,7 +908,7 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
                 }
                 else if( iRole == Qt::DisplayRole )
                 {
-                    varData = pErrLogEntry->m_errResultInfo.getResultStr();
+                    varData = pModelEntry->m_errResultInfo.getResultStr();
                 }
                 break;
             }
@@ -926,7 +920,7 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
                 }
                 else if( iRole == Qt::DisplayRole )
                 {
-                    varData = pErrLogEntry->m_dateTime.toString("yyyy-MM-dd");
+                    varData = pModelEntry->m_dateTime.toString("yyyy-MM-dd");
                 }
                 break;
             }
@@ -938,7 +932,7 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
                 }
                 else if( iRole == Qt::DisplayRole )
                 {
-                    varData = pErrLogEntry->m_dateTime.toString("hh:mm:ss");
+                    varData = pModelEntry->m_dateTime.toString("hh:mm:ss");
                 }
                 break;
             }
@@ -950,7 +944,7 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
                 }
                 else if( iRole == Qt::DisplayRole )
                 {
-                    varData = pErrLogEntry->m_iOccurrences;
+                    varData = pModelEntry->m_iOccurrences;
                 }
                 break;
             }
@@ -962,7 +956,7 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
                 }
                 else if( iRole == Qt::DisplayRole )
                 {
-                    QString strTmp = pErrLogEntry->m_errResultInfo.getErrSource().toString();
+                    QString strTmp = pModelEntry->m_errResultInfo.getErrSource().toString();
                     strTmp = decodeFromHtml(strTmp);
                     varData = strTmp;
                 }
@@ -976,7 +970,7 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
                 }
                 else if( iRole == Qt::DisplayRole )
                 {
-                    QString strTmp = pErrLogEntry->m_errResultInfo.getAddErrInfoDscr();
+                    QString strTmp = pModelEntry->m_errResultInfo.getAddErrInfoDscr();
                     strTmp = decodeFromHtml(strTmp);
                     varData = strTmp;
                 }
@@ -990,7 +984,7 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
                 }
                 else if( iRole == Qt::DisplayRole )
                 {
-                    QString strTmp = pErrLogEntry->m_strProposal;
+                    QString strTmp = pModelEntry->m_strProposal;
                     strTmp = decodeFromHtml(strTmp);
                     varData = strTmp;
                 }
@@ -1030,11 +1024,9 @@ QModelIndex CModelErrLog::index( int i_iRow, int i_iClm, const QModelIndex& i_mo
         /* strMethod    */ "index",
         /* strMthInArgs */ strMthInArgs );
 
-    CErrLogLocker errLogLocker(m_pErrLog);
+    const SErrLogEntry* pModelEntry = getEntry(i_iRow);
 
-    const SErrLogEntry* pErrLogEntry = m_pErrLog->getEntry(i_iRow);
-
-    QModelIndex modelIdx = createIndex(i_iRow, i_iClm, const_cast<SErrLogEntry*>(pErrLogEntry));
+    QModelIndex modelIdx = createIndex(i_iRow, i_iClm, const_cast<SErrLogEntry*>(pModelEntry));
 
     if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -1353,7 +1345,7 @@ void CModelErrLog::fillRoleNames()
 
     for( int clm = 0; clm < EColumnCount; ++clm)
     {
-        int role = column2Role(static_cast<CModelErrLog::EColumn>(clm));
+        int role = column2Role(static_cast<EColumn>(clm));
         m_roleNames[role] = s_clm2Name[clm];
     }
 

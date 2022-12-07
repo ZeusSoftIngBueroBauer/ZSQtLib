@@ -137,8 +137,7 @@ CWdgtErrLog::CWdgtErrLog(
         // <Button> Resize Columns To Contents
         //------------------------------------
 
-        QPixmap pxmResizeToContents(":/ZS/TreeView/TreeViewResizeToContents.bmp");
-        pxmResizeToContents.setMask(pxmResizeToContents.createHeuristicMask());
+        QPixmap pxmResizeToContents(":/ZS/TreeView/TreeViewResizeToContents.png");
 
         m_pBtnResizeRowsAndColumnsToContents = new QPushButton();
         m_pBtnResizeRowsAndColumnsToContents->setIcon(pxmResizeToContents);

@@ -81,7 +81,9 @@ source_group("Resource Files" FILES ${_Resources})
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ZSIPCGUIDLL_EXPORTS)
 
-target_link_libraries(${PROJECT_NAME} PUBLIC ZSSys ZSIpc ZSSysGUI)
+set(_Libs ZSSysGUI ZSIpc)
+
+target_link_libraries(${PROJECT_NAME} PUBLIC ${_Libs})
 
 include(GNUInstallDirs)
 
