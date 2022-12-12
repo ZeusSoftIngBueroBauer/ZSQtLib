@@ -127,15 +127,12 @@ list(APPEND _AppImages
     ${_ResourcesPath}/${PROJECT_NAME}/Images/ModeSimulation32x32.bmp
     ${_ResourcesPath}/${PROJECT_NAME}/Images/RSIcon16x16.bmp
     ${_ResourcesPath}/${PROJECT_NAME}/Images/RSIcon32x32.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ZeusSoft_16x16_256clr.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ZeusSoft_32x32_256clr.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ZeusSoft_48x48_256clr.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ZeusSoft_64x64_256clr.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ZeusSoft_256x256_256clr.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ZeusSoft_280x170_256clr.png
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ZeusWithMountain_1100x204_256clr.gif
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ZeusWithMountain_1100x204_256clr.jpg
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ZeusWithMountain_1100x204_256clr.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ZeusSoft_32x32.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ZeusSoft_48x48.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ZeusSoft_64x64.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ZeusSoft_256x256.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ZeusSoft_280x170.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ZeusWithMountain_1100x204.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/Thermometer.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/Thermometer16x16.bmp
     ${_ResourcesPath}/${PROJECT_NAME}/Images/Thermometer24x24.bmp
@@ -195,14 +192,15 @@ list(APPEND _MenuImages
 )
 
 list(APPEND _TreeViewImages
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewBranchEntry.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewLeaveEntry.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewRootEntry.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewBranchEntry.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewLeaveEntry.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewRootEntry.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewCollapseAll.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewExpandAll.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewResizeToContents.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewSortOrderConfig.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewSortOrderAscending.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewSortOrderDescending.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewViewModeNavPanelOnly.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewViewModeNavPanelAndLeaveContent.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewViewModeNavPanelAndBranchContent.png

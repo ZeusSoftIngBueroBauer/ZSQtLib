@@ -244,7 +244,7 @@ int CModelIdxTreeTrcAdminObjs::columnCount( const QModelIndex& i_modelIdxParent 
     QString strMthInArgs;
     if( m_eTrcDetailLevelNoisyMethods >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "ModelIdxParent {" + ModelIdx2Str(i_modelIdxParent) + "}";
+        strMthInArgs = "ModelIdxParent {" + modelIdx2Str(i_modelIdxParent) + "}";
     }
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
@@ -428,7 +428,7 @@ Qt::ItemFlags CModelIdxTreeTrcAdminObjs::flags( const QModelIndex& i_modelIdx ) 
     QString strMthInArgs;
     if( m_eTrcDetailLevelNoisyMethods >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "ModelIdx {" + ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + modelIdx2Str(i_modelIdx) + "}";
     }
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
@@ -514,8 +514,8 @@ QVariant CModelIdxTreeTrcAdminObjs::data( const QModelIndex& i_modelIdx, int i_i
     QString strMthInArgs;
     if( m_eTrcDetailLevelNoisyMethods >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs  = "ModelIdx {" + ModelIdx2Str(i_modelIdx) + "}";
-        strMthInArgs += ", Role: " + qItemDataRole2Str(i_iRole);
+        strMthInArgs  = "ModelIdx {" + modelIdx2Str(i_modelIdx, i_iRole) + "}";
+        strMthInArgs += ", Role: " + role2Str(i_iRole);
     }
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
@@ -784,9 +784,9 @@ bool CModelIdxTreeTrcAdminObjs::setData( const QModelIndex& i_modelIdx, const QV
     QString strMthInArgs;
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs  = "ModelIdx {" + ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs  = "ModelIdx {" + modelIdx2Str(i_modelIdx, i_iRole) + "}";
         strMthInArgs += ", Data: " + i_varData.toString();
-        strMthInArgs += ", Role: " + qItemDataRole2Str(i_iRole);
+        strMthInArgs += ", Role: " + role2Str(i_iRole);
     }
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),

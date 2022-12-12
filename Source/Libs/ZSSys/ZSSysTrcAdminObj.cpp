@@ -511,6 +511,28 @@ void CTrcAdminObj::traceMethodEnter(
 }
 
 //------------------------------------------------------------------------------
+void CTrcAdminObj::traceObjMethodEnter(
+    const QString& i_strFilterDetailLevel,
+    const QString& i_strObjName,
+    const QString& i_strMethod )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+
+    CEnumMethodTraceDetailLevel eFilterDetailLevel(i_strFilterDetailLevel);
+
+    if( eFilterDetailLevel.isValid() && areMethodCallsActive(eFilterDetailLevel.enumerator()) )
+    {
+        CTrcServer* pTrcServer = getTraceServer();
+
+        if( pTrcServer != nullptr )
+        {
+            pTrcServer->traceMethodEnter(this, i_strObjName, i_strMethod, "");
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Traces entering a method.
 */
 void CTrcAdminObj::traceMethodEnterWithInArgs(
@@ -535,29 +557,7 @@ void CTrcAdminObj::traceMethodEnterWithInArgs(
 }
 
 //------------------------------------------------------------------------------
-void CTrcAdminObj::traceMethodEnter(
-    const QString& i_strFilterDetailLevel,
-    const QString& i_strObjName,
-    const QString& i_strMethod )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(m_pMtx);
-
-    CEnumMethodTraceDetailLevel eFilterDetailLevel(i_strFilterDetailLevel);
-
-    if( eFilterDetailLevel.isValid() && areMethodCallsActive(eFilterDetailLevel.enumerator()) )
-    {
-        CTrcServer* pTrcServer = getTraceServer();
-
-        if( pTrcServer != nullptr )
-        {
-            pTrcServer->traceMethodEnter(this, i_strObjName, i_strMethod, "");
-        }
-    }
-}
-
-//------------------------------------------------------------------------------
-void CTrcAdminObj::traceMethodEnterWithInArgs(
+void CTrcAdminObj::traceObjMethodEnterWithInArgs(
     const QString& i_strFilterDetailLevel,
     const QString& i_strObjName,
     const QString& i_strMethod,
@@ -602,7 +602,7 @@ void CTrcAdminObj::traceMethod(
 }
 
 //------------------------------------------------------------------------------
-void CTrcAdminObj::traceMethod(
+void CTrcAdminObj::traceObjMethod(
     const QString& i_strFilterDetailLevel,
     const QString& i_strObjName,
     const QString& i_strMethod,
@@ -650,6 +650,30 @@ void CTrcAdminObj::traceMethodLeave(
 //------------------------------------------------------------------------------
 /*! @brief
 */
+void CTrcAdminObj::traceObjMethodLeave(
+    const QString& i_strFilterDetailLevel,
+    const QString& i_strObjName,
+    const QString& i_strMethod )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+
+    CEnumMethodTraceDetailLevel eFilterDetailLevel(i_strFilterDetailLevel);
+
+    if( eFilterDetailLevel.isValid() && areMethodCallsActive(eFilterDetailLevel.enumerator()) )
+    {
+        CTrcServer* pTrcServer = getTraceServer();
+
+        if( pTrcServer != nullptr )
+        {
+            pTrcServer->traceMethodLeave(this, i_strObjName, i_strMethod, "", "");
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief
+*/
 void CTrcAdminObj::traceMethodLeaveWithReturn(
     const QString& i_strFilterDetailLevel,
     const QString& i_strMethod,
@@ -667,6 +691,29 @@ void CTrcAdminObj::traceMethodLeaveWithReturn(
         if( pTrcServer != nullptr )
         {
             pTrcServer->traceMethodLeave(this, i_strMethod, i_strMethodReturn, "");
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+void CTrcAdminObj::traceObjMethodLeaveWithReturn(
+    const QString& i_strFilterDetailLevel,
+    const QString& i_strObjName,
+    const QString& i_strMethod,
+    const QString& i_strMethodReturn )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+
+    CEnumMethodTraceDetailLevel eFilterDetailLevel(i_strFilterDetailLevel);
+
+    if( eFilterDetailLevel.isValid() && areMethodCallsActive(eFilterDetailLevel.enumerator()) )
+    {
+        CTrcServer* pTrcServer = getTraceServer();
+
+        if( pTrcServer != nullptr )
+        {
+            pTrcServer->traceMethodLeave(this, i_strObjName, i_strMethod, i_strMethodReturn, "");
         }
     }
 }
@@ -691,6 +738,29 @@ void CTrcAdminObj::traceMethodLeaveWithOutArgs(
         if( pTrcServer != nullptr )
         {
             pTrcServer->traceMethodLeave(this, i_strMethod, "", i_strMethodOutArgs);
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+void CTrcAdminObj::traceObjMethodLeaveWithOutArgs(
+    const QString& i_strFilterDetailLevel,
+    const QString& i_strObjName,
+    const QString& i_strMethod,
+    const QString& i_strMethodOutArgs )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+
+    CEnumMethodTraceDetailLevel eFilterDetailLevel(i_strFilterDetailLevel);
+
+    if( eFilterDetailLevel.isValid() && areMethodCallsActive(eFilterDetailLevel.enumerator()) )
+    {
+        CTrcServer* pTrcServer = getTraceServer();
+
+        if( pTrcServer != nullptr )
+        {
+            pTrcServer->traceMethodLeave(this, i_strObjName, i_strMethod, "", i_strMethodOutArgs);
         }
     }
 }
@@ -721,77 +791,7 @@ void CTrcAdminObj::traceMethodLeaveWithReturnAndOutArgs(
 }
 
 //------------------------------------------------------------------------------
-/*! @brief
-*/
-void CTrcAdminObj::traceMethodLeave(
-    const QString& i_strFilterDetailLevel,
-    const QString& i_strObjName,
-    const QString& i_strMethod )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(m_pMtx);
-
-    CEnumMethodTraceDetailLevel eFilterDetailLevel(i_strFilterDetailLevel);
-
-    if( eFilterDetailLevel.isValid() && areMethodCallsActive(eFilterDetailLevel.enumerator()) )
-    {
-        CTrcServer* pTrcServer = getTraceServer();
-
-        if( pTrcServer != nullptr )
-        {
-            pTrcServer->traceMethodLeave(this, i_strObjName, i_strMethod, "", "");
-        }
-    }
-}
-
-//------------------------------------------------------------------------------
-void CTrcAdminObj::traceMethodLeaveWithReturn(
-    const QString& i_strFilterDetailLevel,
-    const QString& i_strObjName,
-    const QString& i_strMethod,
-    const QString& i_strMethodReturn )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(m_pMtx);
-
-    CEnumMethodTraceDetailLevel eFilterDetailLevel(i_strFilterDetailLevel);
-
-    if( eFilterDetailLevel.isValid() && areMethodCallsActive(eFilterDetailLevel.enumerator()) )
-    {
-        CTrcServer* pTrcServer = getTraceServer();
-
-        if( pTrcServer != nullptr )
-        {
-            pTrcServer->traceMethodLeave(this, i_strObjName, i_strMethod, i_strMethodReturn, "");
-        }
-    }
-}
-
-//------------------------------------------------------------------------------
-void CTrcAdminObj::traceMethodLeaveWithOutArgs(
-    const QString& i_strFilterDetailLevel,
-    const QString& i_strObjName,
-    const QString& i_strMethod,
-    const QString& i_strMethodOutArgs )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(m_pMtx);
-
-    CEnumMethodTraceDetailLevel eFilterDetailLevel(i_strFilterDetailLevel);
-
-    if( eFilterDetailLevel.isValid() && areMethodCallsActive(eFilterDetailLevel.enumerator()) )
-    {
-        CTrcServer* pTrcServer = getTraceServer();
-
-        if( pTrcServer != nullptr )
-        {
-            pTrcServer->traceMethodLeave(this, i_strObjName, i_strMethod, "", i_strMethodOutArgs);
-        }
-    }
-}
-
-//------------------------------------------------------------------------------
-void CTrcAdminObj::traceMethodLeaveWithReturnAndOutArgs(
+void CTrcAdminObj::traceObjMethodLeaveWithReturnAndOutArgs(
     const QString& i_strFilterDetailLevel,
     const QString& i_strObjName,
     const QString& i_strMethod,

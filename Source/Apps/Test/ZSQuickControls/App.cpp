@@ -28,7 +28,9 @@ may result in using the software modules.
 
 #include "ZSIpcTrace/ZSIpcTrcServer.h"
 #include "ZSSys/ZSSysErrLog.h"
+#include "ZSSys/ZSSysIdxTree.h"
 #include "ZSSysGUI/ZSSysErrLogModel.h"
+#include "ZSSysGUI/ZSSysIdxTreeModel.h"
 #include "ZSQuickControls/ZSQuickControlsDllMain.h"
 #include "ZSQuickControls/ZSQuickControlsThemeWindowsStyle.h"
 
@@ -80,6 +82,8 @@ CApplication::CApplication(
     m_pMainWindow(nullptr),
     m_pErrLogModel(nullptr),
     m_pTrcServer(nullptr),
+    m_pIdxTreeStyles(nullptr),
+    m_pModelIdxTreeStyles(nullptr),
     m_pThemeWindowsStyle(nullptr),
     m_pTrcAdminObj(nullptr)
 {
@@ -130,13 +134,18 @@ CApplication::CApplication(
     m_pQmlAppEngine->addImportPath("qrc:/");
     m_pQmlAppEngine->addImportPath(":/imports");
 
-    m_pThemeWindowsStyle = CThemeWindowsStyle::CreateInstance(m_pQmlAppEngine);
+    m_pIdxTreeStyles = new CIdxTree("ZSStyles");
+
+    m_pThemeWindowsStyle = CThemeWindowsStyle::CreateInstance(m_pQmlAppEngine, m_pIdxTreeStyles);
+
+    m_pModelIdxTreeStyles = new CModelIdxTree(m_pIdxTreeStyles);
 
     QQmlContext* pQmlCtx = m_pQmlAppEngine->rootContext();
 
     pQmlCtx->setContextProperty("_ZSSys_trcServer", m_pTrcServer);
     pQmlCtx->setContextProperty("_ZSSys_errLog", CErrLog::GetInstance());
     pQmlCtx->setContextProperty("_ZSSysGUI_errLogModel", m_pErrLogModel);
+    pQmlCtx->setContextProperty("_ZSQuickControls_stylesModel", m_pModelIdxTreeStyles);
 
     //qDebug("QmlAppEngine.importPaths BEGIN ---------------------------------------");
     //QStringList strlstImportPathList = m_pQmlAppEngine->importPathList();
@@ -200,6 +209,22 @@ CApplication::~CApplication()
     try
     {
         delete m_pQmlAppEngine;
+    }
+    catch(...)
+    {
+    }
+
+    try
+    {
+        delete m_pModelIdxTreeStyles;
+    }
+    catch(...)
+    {
+    }
+
+    try
+    {
+        delete m_pIdxTreeStyles;
     }
     catch(...)
     {

@@ -55,7 +55,7 @@ Item {
 
         IdxTreeWdgt {
             id: idxTreeWdgtControls
-            model: _ZSQuickControls_themeWindowsStyle_controlsModel
+            model: _ZSQuickControls_stylesModel
             Layout.column: 0
             Layout.row: 0
             Layout.rowSpan: 4

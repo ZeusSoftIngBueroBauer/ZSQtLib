@@ -448,7 +448,7 @@ void CTableViewIdxTreeBranchContent::mousePressEvent( QMouseEvent* i_pEv )
 
         if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
         {
-            strMthInArgs = "ModelIdxPressed {" + CModelIdxTree::ModelIdx2Str(m_modelIdxSelectedOnMousePressEvent) + "}";
+            strMthInArgs = "ModelIdxPressed {" + CModelIdxTree::modelIdx2Str(m_modelIdxSelectedOnMousePressEvent) + "}";
             mthTracer.trace(strMthInArgs);
         }
 
@@ -520,7 +520,7 @@ void CTableViewIdxTreeBranchContent::mouseReleaseEvent( QMouseEvent* i_pEv )
 
         if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
         {
-            strMthInArgs = "ModelIdxReleased {" + CModelIdxTree::ModelIdx2Str(m_modelIdxSelectedOnMouseReleaseEvent) + "}";
+            strMthInArgs = "ModelIdxReleased {" + CModelIdxTree::modelIdx2Str(m_modelIdxSelectedOnMouseReleaseEvent) + "}";
             mthTracer.trace(strMthInArgs);
         }
 

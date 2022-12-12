@@ -202,15 +202,11 @@ CMainWindow::CMainWindow(
     // <MenuItem> Debug::Error Log
     //----------------------------
 
-    QIcon iconDebugErrorLog;
+    QIcon iconErrorLog;
+    QPixmap pxmErrorLog(":/ZS/App/Zeus32x32.png");
+    iconErrorLog.addPixmap(pxmErrorLog);
 
-    QPixmap pxmDebugErrorLog16x16(":/ZS/App/Zeus16x16.bmp");
-
-    pxmDebugErrorLog16x16.setMask(pxmDebugErrorLog16x16.createHeuristicMask());
-
-    iconDebugErrorLog.addPixmap(pxmDebugErrorLog16x16);
-
-    m_pActDebugErrLog = new QAction( iconDebugErrorLog, "Error Log", this );
+    m_pActDebugErrLog = new QAction( iconErrorLog, "Error Log", this );
     m_pActDebugErrLog->setToolTip("Open error log dialog");
     m_pActDebugErrLog->setEnabled(true);
 

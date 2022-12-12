@@ -126,15 +126,15 @@ public: // instance methods
     Q_INVOKABLE virtual void traceMethodEnter(
         const QString& i_strFilterDetailLevel,
         const QString& i_strMethod );
-    Q_INVOKABLE virtual void traceMethodEnterWithInArgs(
-        const QString& i_strFilterDetailLevel,
-        const QString& i_strMethod,
-        const QString& i_strMethodInArgs );
-    Q_INVOKABLE virtual void traceMethodEnter(
+    Q_INVOKABLE virtual void traceObjMethodEnter(
         const QString& i_strFilterDetailLevel,
         const QString& i_strObjName,
         const QString& i_strMethod );
     Q_INVOKABLE virtual void traceMethodEnterWithInArgs(
+        const QString& i_strFilterDetailLevel,
+        const QString& i_strMethod,
+        const QString& i_strMethodInArgs );
+    Q_INVOKABLE virtual void traceObjMethodEnterWithInArgs(
         const QString& i_strFilterDetailLevel,
         const QString& i_strObjName,
         const QString& i_strMethod,
@@ -143,7 +143,7 @@ public: // instance methods
         const QString& i_strFilterDetailLevel,
         const QString& i_strMethod,
         const QString& i_strAddInfo );
-    Q_INVOKABLE virtual void traceMethod(
+    Q_INVOKABLE virtual void traceObjMethod(
         const QString& i_strFilterDetailLevel,
         const QString& i_strObjName,
         const QString& i_strMethod,
@@ -151,12 +151,26 @@ public: // instance methods
     Q_INVOKABLE virtual void traceMethodLeave(
         const QString& i_strFilterDetailLevel,
         const QString& i_strMethod );
+    Q_INVOKABLE virtual void traceObjMethodLeave(
+        const QString& i_strFilterDetailLevel,
+        const QString& i_strObjName,
+        const QString& i_strMethod );
     Q_INVOKABLE virtual void traceMethodLeaveWithReturn(
         const QString& i_strFilterDetailLevel,
         const QString& i_strMethod,
         const QString& i_strMethodReturn );
+    Q_INVOKABLE virtual void traceObjMethodLeaveWithReturn(
+        const QString& i_strFilterDetailLevel,
+        const QString& i_strObjName,
+        const QString& i_strMethod,
+        const QString& i_strMethodReturn );
     Q_INVOKABLE virtual void traceMethodLeaveWithOutArgs(
         const QString& i_strFilterDetailLevel,
+        const QString& i_strMethod,
+        const QString& i_strMethodOutArgs );
+    Q_INVOKABLE virtual void traceObjMethodLeaveWithOutArgs(
+        const QString& i_strFilterDetailLevel,
+        const QString& i_strObjName,
         const QString& i_strMethod,
         const QString& i_strMethodOutArgs );
     Q_INVOKABLE virtual void traceMethodLeaveWithReturnAndOutArgs(
@@ -164,21 +178,7 @@ public: // instance methods
         const QString& i_strMethod,
         const QString& i_strMethodReturn,
         const QString& i_strMethodOutArgs );
-    Q_INVOKABLE virtual void traceMethodLeave(
-        const QString& i_strFilterDetailLevel,
-        const QString& i_strObjName,
-        const QString& i_strMethod );
-    Q_INVOKABLE virtual void traceMethodLeaveWithReturn(
-        const QString& i_strFilterDetailLevel,
-        const QString& i_strObjName,
-        const QString& i_strMethod,
-        const QString& i_strMethodReturn );
-    Q_INVOKABLE virtual void traceMethodLeaveWithOutArgs(
-        const QString& i_strFilterDetailLevel,
-        const QString& i_strObjName,
-        const QString& i_strMethod,
-        const QString& i_strMethodOutArgs );
-    Q_INVOKABLE virtual void traceMethodLeaveWithReturnAndOutArgs(
+    Q_INVOKABLE virtual void traceObjMethodLeaveWithReturnAndOutArgs(
         const QString& i_strFilterDetailLevel,
         const QString& i_strObjName,
         const QString& i_strMethod,

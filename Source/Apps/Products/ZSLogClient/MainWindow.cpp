@@ -331,11 +331,9 @@ CMainWindow::CMainWindow(
 
     QIcon iconErrorLog;
 
-    QPixmap pxmErrorLog16x16(":/ZS/App/Zeus16x16.bmp");
+    QPixmap pxmErrorLog(":/ZS/App/Zeus32x32.png");
 
-    pxmErrorLog16x16.setMask(pxmErrorLog16x16.createHeuristicMask());
-
-    iconErrorLog.addPixmap(pxmErrorLog16x16);
+    iconErrorLog.addPixmap(pxmErrorLog);
 
     m_pActDebugErrLog = new QAction( iconErrorLog, "Error Log", this );
     m_pActDebugErrLog->setToolTip("Open error log dialog");
@@ -357,11 +355,9 @@ CMainWindow::CMainWindow(
 
     QIcon iconReqExecTree;
 
-    QPixmap pxmReqExecTree16x16(":/ZS/App/Zeus16x16.bmp");
+    QPixmap pxmReqExecTree(":/ZS/App/Zeus32x32.png");
 
-    pxmReqExecTree16x16.setMask(pxmReqExecTree16x16.createHeuristicMask());
-
-    iconReqExecTree.addPixmap(pxmReqExecTree16x16);
+    iconReqExecTree.addPixmap(pxmReqExecTree);
 
     m_pActDebugRequestExecTree = new QAction( iconReqExecTree, "Request Tree", this );
     m_pActDebugRequestExecTree->setToolTip("Open request execution tree dialog");

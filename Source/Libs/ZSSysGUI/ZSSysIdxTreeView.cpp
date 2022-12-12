@@ -173,7 +173,7 @@ QWidget* CDelegateIdxTree::createEditor(
 
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "ModelIdx {" + CModelIdxTree::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelIdxTree::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
@@ -233,7 +233,7 @@ void CDelegateIdxTree::setEditorData(
 
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "ModelIdx {" + CModelIdxTree::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelIdxTree::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
@@ -263,7 +263,7 @@ void CDelegateIdxTree::setModelData(
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs  = "Model: " + QString(i_pModel == nullptr ? "nullptr" : i_pModel->objectName());
-        strMthInArgs += ", ModelIdx {" + CModelIdxTree::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs += ", ModelIdx {" + CModelIdxTree::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
@@ -322,7 +322,7 @@ void CDelegateIdxTree::updateEditorGeometry(
 
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "ModelIdx {" + CModelIdxTree::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelIdxTree::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
@@ -499,8 +499,6 @@ CTreeViewIdxTree::CTreeViewIdxTree(
     m_pMenuBranchContext->addSeparator();
 
     QPixmap pxmExpandAll(":/ZS/TreeView/TreeViewExpandAll.png");
-    pxmExpandAll.setMask(pxmExpandAll.createHeuristicMask());
-    //pxmExpandAll = pxmExpandAll.scaled(16,16);
     m_pActionBranchExpand = new QAction(pxmExpandAll, "Expand", this);
     m_pMenuBranchContext->addAction(m_pActionBranchExpand);
 
@@ -514,8 +512,6 @@ CTreeViewIdxTree::CTreeViewIdxTree(
     }
 
     QPixmap pxmCollapseAll(":/ZS/TreeView/TreeViewCollapseAll.png");
-    pxmCollapseAll.setMask(pxmCollapseAll.createHeuristicMask());
-
     m_pActionBranchCollapse = new QAction(pxmCollapseAll, "Collapse", this);
     m_pMenuBranchContext->addAction(m_pActionBranchCollapse);
 
@@ -911,8 +907,6 @@ void CTreeViewIdxTree::expandAll()
 
     QModelIndex modelIdxRoot = model()->index(0, 0, QModelIndex());
 
-    //expand(modelIdxRoot);
-
     expandRecursive(modelIdxRoot);
 
 } // expandAll
@@ -954,7 +948,7 @@ void CTreeViewIdxTree::expandRecursive( const QModelIndex& i_modelIdx )
 
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "ModelIdx {" + CModelIdxTree::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelIdxTree::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
@@ -1004,7 +998,7 @@ void CTreeViewIdxTree::collapseRecursive( const QModelIndex& i_modelIdx )
 
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "ModelIdx {" + CModelIdxTree::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelIdxTree::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
@@ -1057,7 +1051,7 @@ void CTreeViewIdxTree::expand( const QModelIndex& i_modelIdx )
 
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "ModelIdx {" + CModelIdxTree::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelIdxTree::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
@@ -1093,7 +1087,7 @@ void CTreeViewIdxTree::collapse( const QModelIndex& i_modelIdx )
 
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "ModelIdx {" + CModelIdxTree::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelIdxTree::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
@@ -1133,7 +1127,7 @@ void CTreeViewIdxTree::onCollapsed( const QModelIndex& i_modelIdx )
 
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "ModelIdx {" + CModelIdxTree::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelIdxTree::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
@@ -1170,7 +1164,7 @@ void CTreeViewIdxTree::onExpanded( const QModelIndex& i_modelIdx )
 
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "ModelIdx {" + CModelIdxTree::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelIdxTree::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
@@ -1278,7 +1272,7 @@ void CTreeViewIdxTree::keyPressEvent( QKeyEvent* i_pEv )
 
         if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsDetailed )
         {
-            strMthInArgs = "ModelIdxSelected {" + CModelIdxTree::ModelIdx2Str(modelIdxSelected) + "}";
+            strMthInArgs = "ModelIdxSelected {" + CModelIdxTree::modelIdx2Str(modelIdxSelected) + "}";
             mthTracer.trace(strMthInArgs);
         }
 
@@ -1475,7 +1469,7 @@ void CTreeViewIdxTree::mousePressEvent( QMouseEvent* i_pEv )
 
         if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
         {
-            strMthInArgs = "ModelIdxPressed {" + CModelIdxTree::ModelIdx2Str(m_modelIdxSelectedOnMousePressEvent) + "}";
+            strMthInArgs = "ModelIdxPressed {" + CModelIdxTree::modelIdx2Str(m_modelIdxSelectedOnMousePressEvent) + "}";
             mthTracer.trace(strMthInArgs);
         }
 
@@ -1566,7 +1560,7 @@ void CTreeViewIdxTree::mouseReleaseEvent( QMouseEvent* i_pEv )
 
         if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
         {
-            strMthInArgs = "ModelIdxReleased {" + CModelIdxTree::ModelIdx2Str(m_modelIdxSelectedOnMouseReleaseEvent) + "}";
+            strMthInArgs = "ModelIdxReleased {" + CModelIdxTree::modelIdx2Str(m_modelIdxSelectedOnMouseReleaseEvent) + "}";
             mthTracer.trace(strMthInArgs);
         }
 
@@ -1957,7 +1951,7 @@ void CTreeViewIdxTree::onActionBranchCreateNewBranchTriggered( bool i_bChecked )
 
         if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsDetailed )
         {
-            strMthInArgs = "ModelIdxSelected {" + CModelIdxTree::ModelIdx2Str(m_modelIdxSelectedOnMousePressEvent) + "}";
+            strMthInArgs = "ModelIdxSelected {" + CModelIdxTree::modelIdx2Str(m_modelIdxSelectedOnMousePressEvent) + "}";
             mthTracer.trace(strMthInArgs);
         }
 
@@ -2017,7 +2011,7 @@ void CTreeViewIdxTree::onActionBranchCreateNewLeaveTriggered( bool i_bChecked )
 
         if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsDetailed )
         {
-            strMthInArgs = "ModelIdxSelected {" + CModelIdxTree::ModelIdx2Str(m_modelIdxSelectedOnMousePressEvent) + "}";
+            strMthInArgs = "ModelIdxSelected {" + CModelIdxTree::modelIdx2Str(m_modelIdxSelectedOnMousePressEvent) + "}";
             mthTracer.trace(strMthInArgs);
         }
 
@@ -2077,7 +2071,7 @@ void CTreeViewIdxTree::onActionBranchDeleteTriggered( bool i_bChecked )
 
         if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsDetailed )
         {
-            strMthInArgs = "ModelIdxSelected {" + CModelIdxTree::ModelIdx2Str(m_modelIdxSelectedOnMousePressEvent) + "}";
+            strMthInArgs = "ModelIdxSelected {" + CModelIdxTree::modelIdx2Str(m_modelIdxSelectedOnMousePressEvent) + "}";
             mthTracer.trace(strMthInArgs);
         }
 
@@ -2124,7 +2118,7 @@ void CTreeViewIdxTree::onActionBranchCutTriggered( bool i_bChecked )
 
         if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsDetailed )
         {
-            strMthInArgs = "ModelIdxSelected {" + CModelIdxTree::ModelIdx2Str(m_modelIdxSelectedForPaste) + "}";
+            strMthInArgs = "ModelIdxSelected {" + CModelIdxTree::modelIdx2Str(m_modelIdxSelectedForPaste) + "}";
             mthTracer.trace(strMthInArgs);
         }
     } // if( m_modelIdxSelectedOnMousePressEvent.isValid() )
@@ -2160,7 +2154,7 @@ void CTreeViewIdxTree::onActionBranchCopyTriggered( bool i_bChecked )
 
         if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsDetailed )
         {
-            strMthInArgs = "ModelIdxSelected {" + CModelIdxTree::ModelIdx2Str(m_modelIdxSelectedForPaste) + "}";
+            strMthInArgs = "ModelIdxSelected {" + CModelIdxTree::modelIdx2Str(m_modelIdxSelectedForPaste) + "}";
             mthTracer.trace(strMthInArgs);
         }
     } // if( m_modelIdxSelectedOnMousePressEvent.isValid() )
@@ -2193,8 +2187,8 @@ void CTreeViewIdxTree::onActionBranchPasteTriggered( bool i_bChecked )
     {
         if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsDetailed )
         {
-            strMthInArgs  = "ModelIdxSrc {" + CModelIdxTree::ModelIdx2Str(m_modelIdxSelectedForPaste) + "}";
-            strMthInArgs += ", ModelIdxTrg {" + CModelIdxTree::ModelIdx2Str(m_modelIdxSelectedOnMousePressEvent) + "}";
+            strMthInArgs  = "ModelIdxSrc {" + CModelIdxTree::modelIdx2Str(m_modelIdxSelectedForPaste) + "}";
+            strMthInArgs += ", ModelIdxTrg {" + CModelIdxTree::modelIdx2Str(m_modelIdxSelectedOnMousePressEvent) + "}";
             mthTracer.trace(strMthInArgs);
         }
 
@@ -2269,7 +2263,7 @@ void CTreeViewIdxTree::onActionLeaveDeleteTriggered( bool i_bChecked )
 
         if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsDetailed )
         {
-            strMthInArgs = "ModelIdxSelected {" + CModelIdxTree::ModelIdx2Str(m_modelIdxSelectedOnMousePressEvent) + "}";
+            strMthInArgs = "ModelIdxSelected {" + CModelIdxTree::modelIdx2Str(m_modelIdxSelectedOnMousePressEvent) + "}";
             mthTracer.trace(strMthInArgs);
         }
 
@@ -2316,7 +2310,7 @@ void CTreeViewIdxTree::onActionLeaveCutTriggered( bool i_bChecked )
 
         if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsDetailed )
         {
-            strMthInArgs = "ModelIdxSelected {" + CModelIdxTree::ModelIdx2Str(m_modelIdxSelectedForPaste) + "}";
+            strMthInArgs = "ModelIdxSelected {" + CModelIdxTree::modelIdx2Str(m_modelIdxSelectedForPaste) + "}";
             mthTracer.trace(strMthInArgs);
         }
     } // if( m_modelIdxSelectedOnMousePressEvent.isValid() )
@@ -2352,7 +2346,7 @@ void CTreeViewIdxTree::onActionLeaveCopyTriggered( bool i_bChecked )
 
         if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsDetailed )
         {
-            strMthInArgs = "ModelIdxSelected {" + CModelIdxTree::ModelIdx2Str(m_modelIdxSelectedForPaste) + "}";
+            strMthInArgs = "ModelIdxSelected {" + CModelIdxTree::modelIdx2Str(m_modelIdxSelectedForPaste) + "}";
             mthTracer.trace(strMthInArgs);
         }
     } // if( m_modelIdxSelectedOnMousePressEvent.isValid() )
@@ -2385,8 +2379,8 @@ void CTreeViewIdxTree::onActionLeavePasteTriggered( bool i_bChecked )
     {
         if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsDetailed )
         {
-            strMthInArgs  = "ModelIdxSrc {" + CModelIdxTree::ModelIdx2Str(m_modelIdxSelectedForPaste) + "}";
-            strMthInArgs += ", ModelIdxTrg {" + CModelIdxTree::ModelIdx2Str(m_modelIdxSelectedOnMousePressEvent) + "}";
+            strMthInArgs  = "ModelIdxSrc {" + CModelIdxTree::modelIdx2Str(m_modelIdxSelectedForPaste) + "}";
+            strMthInArgs += ", ModelIdxTrg {" + CModelIdxTree::modelIdx2Str(m_modelIdxSelectedOnMousePressEvent) + "}";
             mthTracer.trace(strMthInArgs);
         }
 

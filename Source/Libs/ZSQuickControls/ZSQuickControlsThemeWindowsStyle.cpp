@@ -25,10 +25,11 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSQuickControls/ZSQuickControlsThemeWindowsStyle.h"
-#include "ZSSysGUI/ZSSysIdxTreeModel.h"
 #include "ZSSys/ZSSysIdxTree.h"
 #include "ZSSys/ZSSysException.h"
 
+#include <QtCore/qdatetime.h>
+#include <QtCore/qdiriterator.h>
 #include <QtQml/qqmlapplicationengine.h>
 #include <QtQml/qqmlcontext.h>
 #include <QtQuickControls2/qquickstyle.h>
@@ -37,7 +38,6 @@ may result in using the software modules.
 
 
 using namespace ZS::System;
-using namespace ZS::System::GUI;
 using namespace ZS::QuickControls;
 
 
@@ -85,7 +85,9 @@ CThemeWindowsStyle* CThemeWindowsStyle::GetInstance()
 
     @return Pointer to theme instance.
 */
-CThemeWindowsStyle* CThemeWindowsStyle::CreateInstance(QQmlApplicationEngine* i_pQmlAppEngine)
+CThemeWindowsStyle* CThemeWindowsStyle::CreateInstance(
+    QQmlApplicationEngine* i_pQmlAppEngine,
+    CIdxTree*              i_pIdxTreeStyles )
 //------------------------------------------------------------------------------
 {
     if( s_pTheInst == nullptr )
@@ -96,7 +98,7 @@ CThemeWindowsStyle* CThemeWindowsStyle::CreateInstance(QQmlApplicationEngine* i_
         // pointer to the server instance currently beeing created.
         // But of course this requires special caution as within the ctor it must
         // be assured that recursively accessed instance members are already valid.
-        new CThemeWindowsStyle(i_pQmlAppEngine);
+        new CThemeWindowsStyle(i_pQmlAppEngine, i_pIdxTreeStyles);
     }
     s_pTheInst->incrementRefCount();
     return s_pTheInst;
@@ -147,29 +149,77 @@ protected: // ctors and dtor
     static method createInstance.
 
 */
-CThemeWindowsStyle::CThemeWindowsStyle(QQmlApplicationEngine* i_pQmlAppEngine) :
+CThemeWindowsStyle::CThemeWindowsStyle(
+    QQmlApplicationEngine* i_pQmlAppEngine,
+    CIdxTree*              i_pIdxTreeStyles ) :
 //------------------------------------------------------------------------------
     QObject(),
     m_pQmlAppEngine(i_pQmlAppEngine),
     m_clrMain("#17a81a"),
-    m_iRefCount(0),
-    m_pIdxTree(nullptr),
-    m_pModelIdxTree(nullptr)
+    m_iRefCount(0)
 {
     setObjectName("theInst");
 
     // See comment in "CreateInstance" above.
     s_pTheInst = this;
 
-    m_pIdxTree = new CIdxTree(StyleName());
-    m_pModelIdxTree = new CModelIdxTree(m_pIdxTree);
+    CIdxTreeEntry* pBranch = new CIdxTreeEntry(EIdxTreeEntryType::Branch, "Windows");
+    i_pIdxTreeStyles->add(pBranch);
+
+    QMap<QString, QString> entriesSorted;
+
+    QDirIterator qrc(":/" + StyleName(), QDirIterator::Subdirectories);
+    while(qrc.hasNext())
+    {
+        QString strDir = qrc.next();
+        QFileInfo fi = qrc.fileInfo();
+        QString strAbsoluteFilePath = fi.absoluteFilePath();
+        QString strAbsolutePath = fi.absolutePath();
+        QString strBaseName = fi.baseName();
+        QString strBirthTime = fi.birthTime().toString("dd.MM.yyyy hh:mm:ss.zzz");
+        QString strBundleName = fi.bundleName();
+        QString strCanonicalFilePath = fi.canonicalFilePath();
+        QString strCanonicalPath = fi.canonicalPath();
+        QString strCompleteBaseName = fi.completeBaseName();
+        QString strCompleteSuffix = fi.completeSuffix();
+        QString strFileName = fi.fileName();
+        QString strFilePath = fi.filePath();
+        QString strGroup = fi.group();
+        QString strIsRoot = QString(fi.isRoot() ? "Root" : "");
+        QString strIsDir = QString(fi.isDir() ? "Dir" : "");
+        QString strIsFile = QString(fi.isFile() ? "File" : "");
+        QString strIsExecutable = QString(fi.isExecutable() ? "Executable" : "");
+        QString strIsHidden = QString(fi.isHidden() ? "Hidden" : "");
+        QString strIsReadable = QString(fi.isReadable() ? "Readable" : "");
+        QString strIsWritable = QString(fi.isWritable() ? "Writable" : "");
+        QString strLastModified = fi.lastModified().toString("dd.MM.yyyy hh:mm:ss.zzz");
+        QString strLastRead = fi.lastRead().toString("dd.MM.yyyy hh:mm:ss.zzz");
+        QString strMetadataChangeTime = fi.metadataChangeTime().toString("dd.MM.yyyy hh:mm:ss.zzz");
+        QString strPath = fi.path();
+        QString strSize_bytes = QString::number(fi.size()) + " Bytes";
+        QString strSuffix = fi.suffix();
+
+        if( fi.isFile() )
+        {
+            if( strCompleteBaseName.compare("qmldir", Qt::CaseInsensitive) != 0
+             && strCompleteBaseName.compare("Theme", Qt::CaseInsensitive) != 0 )
+            {
+                entriesSorted.insert(strCompleteBaseName, strAbsoluteFilePath);
+            }
+        }
+    }
+
+    for( const QString& strCompleteBaseName : entriesSorted.keys() )
+    {
+        CIdxTreeEntry* pLeave = new CIdxTreeEntry(EIdxTreeEntryType::Leave, strCompleteBaseName);
+        i_pIdxTreeStyles->add(pLeave, pBranch);
+    }
 
     QQuickStyle::setStyle(StyleName());
 
     QQmlContext* pQmlCtx = m_pQmlAppEngine->rootContext();
 
     pQmlCtx->setContextProperty(ContextPropertyName(), this);
-    pQmlCtx->setContextProperty(ContextPropertyNameControlsModel(), m_pModelIdxTree);
 
     setMainColor(m_clrMain);
 
@@ -184,26 +234,9 @@ CThemeWindowsStyle::CThemeWindowsStyle(QQmlApplicationEngine* i_pQmlAppEngine) :
 CThemeWindowsStyle::~CThemeWindowsStyle()
 //------------------------------------------------------------------------------
 {
-    try
-    {
-        delete m_pModelIdxTree;
-    }
-    catch(...)
-    {
-    }
-
-    try
-    {
-        delete m_pIdxTree;
-    }
-    catch(...)
-    {
-    }
-
     m_pQmlAppEngine = nullptr;
     //m_clrMain;
     m_iRefCount = 0;
-    m_pIdxTree = nullptr;
 
 } // dtor
 

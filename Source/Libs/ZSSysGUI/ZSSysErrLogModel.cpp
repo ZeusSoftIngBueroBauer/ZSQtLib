@@ -569,7 +569,7 @@ void CModelErrLog::onEntryRemoved( const ZS::System::SErrResultInfo& i_errResult
 } // onEntryRemoved
 
 /*==============================================================================
-public: // overridables of base class QAbstractItemModel
+public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------

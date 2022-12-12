@@ -36,11 +36,13 @@ namespace ZS
 {
 namespace System
 {
+class CIdxTree;
 class CTrcAdminObj;
 
 namespace GUI
 {
 class CModelErrLog;
+class CModelIdxTree;
 }
 }
 namespace QuickControls
@@ -82,7 +84,13 @@ protected: // instance members
     QQuickWindow*                          m_pMainWindow;
     ZS::System::GUI::CModelErrLog*         m_pErrLogModel;
     ZS::Trace::CIpcTrcServer*              m_pTrcServer;
+    /*!< Index tree containing the styles and the controls implemented by the styles.
+         Each control must have a corresponding qml file in sub directory StyleName(). */
+    ZS::System::CIdxTree*                  m_pIdxTreeStyles;
+    /*!< Windows Style Controls. */
     ZS::QuickControls::CThemeWindowsStyle* m_pThemeWindowsStyle;
+    /*!< The index tree model provides the data from the index tree to the viewers. */
+    ZS::System::GUI::CModelIdxTree*        m_pModelIdxTreeStyles;
     ZS::System::CTrcAdminObj*              m_pTrcAdminObj;
 
 }; // class CApplication

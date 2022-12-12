@@ -251,7 +251,7 @@ int CModeldxTreeTestSteps::columnCount( const QModelIndex& i_modelIdxParent ) co
     QString strMthInArgs;
     if(m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsVerbose))
     {
-        strMthInArgs = "ModelIdxParent {" + ModelIdx2Str(i_modelIdxParent) + "}";
+        strMthInArgs = "ModelIdxParent {" + modelIdx2Str(i_modelIdxParent) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -324,7 +324,7 @@ QVariant CModeldxTreeTestSteps::data( const QModelIndex& i_modelIdx, int i_iRole
     QString strMthInArgs;
     if(m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsVerbose))
     {
-        strMthInArgs = "ModelIdx {" + ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + modelIdx2Str(i_modelIdx) + "}";
         strMthInArgs += ", Role: " + qItemDataRole2Str(i_iRole);
     }
     CMethodTracer mthTracer(
@@ -378,7 +378,7 @@ QVariant CModeldxTreeTestSteps::data( const QModelIndex& i_modelIdx, int i_iRole
                 }
                 else if(i_iRole == Qt::DecorationRole)
                 {
-                    varData = CModeldxTreeTestSteps::GetIcon(pModelTreeEntry->entryType());
+                    varData = CModeldxTreeTestSteps::getIcon(pModelTreeEntry->entryType());
                 }
                 else if(i_iRole == Qt::FontRole)
                 {

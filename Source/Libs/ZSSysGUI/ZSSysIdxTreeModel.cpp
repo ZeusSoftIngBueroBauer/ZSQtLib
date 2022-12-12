@@ -34,6 +34,8 @@ may result in using the software modules.
 
 #include <QtCore/qmimedata.h>
 #include <QtCore/qset.h>
+#include <QtGui/qguiapplication.h>
+#include <QtGui/qfontmetrics.h>
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -50,8 +52,8 @@ Type definitions and constants
 
 static const SEnumEntry s_arEnumStrIdxTreeSortOrders[] = {                    // IdxName,             Symbol, Text
     /*  0 */ SEnumEntry( static_cast<int>(EIdxTreeSortOrder::Config),            "Config",            "-",    "As Configured"        ),
-    /*  1 */ SEnumEntry( static_cast<int>(EIdxTreeSortOrder::Ascending),         "Ascending",         "A"     "Ascending"            )
-    //  2 ** SEnumEntry( static_cast<int>(EIdxTreeSortOrder::LogicalDescending), "LogicalDescending", "LD",   "Descending Logically" ),
+    /*  1 */ SEnumEntry( static_cast<int>(EIdxTreeSortOrder::Ascending),         "Ascending",         "A"     "Ascending"            ),
+    /*  2 */ SEnumEntry( static_cast<int>(EIdxTreeSortOrder::Descending),        "Descending",        "D",    "Descending"           )
     //  3 ** SEnumEntry( static_cast<int>(EIdxTreeSortOrder::ByNameAscending),   "ByNameAscending",   "NA",   "Ascending By Name"    ),
     //  4 ** SEnumEntry( static_cast<int>(EIdxTreeSortOrder::ByNameDescending),  "ByNameDescending",  "ND",   "Descending By Name"   )
 };
@@ -106,27 +108,6 @@ EIdxTreeSortOrder ZS::System::GUI::str2IdxTreeSortOrder( const QString& i_strVal
 /*******************************************************************************
 class CModelIdxTree : public QAbstractItemModel
 *******************************************************************************/
-
-/*==============================================================================
-public: // type definitions and constants
-==============================================================================*/
-
-QHash<int, QByteArray> CModelIdxTree::s_clm2Name {
-    { CModelIdxTree::EColumnTreeEntryName, "TreeEntryName"},
-    { CModelIdxTree::EColumnInternalId, "InternalId"},
-    { CModelIdxTree::EColumnTreeEntryType, "TreeEntryType"},
-    { CModelIdxTree::EColumnIdxInTree, "IdxInTree"},
-    { CModelIdxTree::EColumnIdxInParentBranch, "IdxInParentBranch"},
-    { CModelIdxTree::EColumnKeyInTree, "KeyInTree"},
-    { CModelIdxTree::EColumnKeyInParentBranch, "KeyInParentBranch"}
-};
-
-//------------------------------------------------------------------------------
-QString CModelIdxTree::column2Str(EColumn i_clm)
-//------------------------------------------------------------------------------
-{
-    return s_clm2Name.value(i_clm, "? (" + QByteArray::number(i_clm) + ")");
-}
 
 /* class iterator
 ==============================================================================*/
@@ -310,26 +291,118 @@ QIcon*   CModelIdxTree::s_pIconRoot   = nullptr;
 QIcon*   CModelIdxTree::s_pIconBranch = nullptr;
 QIcon*   CModelIdxTree::s_pIconLeave  = nullptr;
 
+QHash<int, QByteArray> CModelIdxTree::s_roleNames;
+QHash<QByteArray, int> CModelIdxTree::s_roleValues;
+
+/*==============================================================================
+public: // type definitions and constants
+==============================================================================*/
+
+QHash<int, QByteArray> CModelIdxTree::s_clm2Name {
+    { CModelIdxTree::EColumnTreeEntryTypeImageUrl, "TreeEntryTypeImageUrl"},
+    { CModelIdxTree::EColumnTreeEntryTypeIcon, "TreeEntryTypeIcon"},
+    { CModelIdxTree::EColumnTreeEntryType, "TreeEntryType"},
+    { CModelIdxTree::EColumnTreeEntryNameDecorated, "TreeEntryNameDecorated"},
+    { CModelIdxTree::EColumnTreeEntryName, "TreeEntryName"},
+    { CModelIdxTree::EColumnInternalId, "InternalId"},
+    { CModelIdxTree::EColumnIdxInTree, "IdxInTree"},
+    { CModelIdxTree::EColumnIdxInParentBranch, "IdxInParentBranch"},
+    { CModelIdxTree::EColumnKeyInTree, "KeyInTree"},
+    { CModelIdxTree::EColumnKeyInParentBranch, "KeyInParentBranch"}
+};
+
+//------------------------------------------------------------------------------
+QString CModelIdxTree::column2Str(EColumn i_clm)
+//------------------------------------------------------------------------------
+{
+    return s_clm2Name.value(i_clm, "? (" + QByteArray::number(i_clm) + ")");
+}
+
 /*==============================================================================
 public: // class methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QIcon CModelIdxTree::GetIcon( EIdxTreeEntryType i_entryType )
+CModelIdxTree::EColumn CModelIdxTree::role2Column(int i_iRole)
+//------------------------------------------------------------------------------
+{
+    if( i_iRole >= static_cast<int>(ERole::FirstDataColumnRole)
+        && i_iRole < (static_cast<int>(ERole::FirstDataColumnRole) + EColumnCount))
+    {
+        return static_cast<EColumn>(i_iRole - static_cast<int>(ERole::FirstDataColumnRole));
+    }
+    return EColumnUndefined;
+}
+
+//------------------------------------------------------------------------------
+QString CModelIdxTree::role2Str(int i_iRole)
+//------------------------------------------------------------------------------
+{
+    return s_roleNames.value(i_iRole, "? (" + QByteArray::number(i_iRole) + ")");
+}
+
+//------------------------------------------------------------------------------
+int CModelIdxTree::byteArr2Role(const QByteArray& i_byteArrRole)
+//------------------------------------------------------------------------------
+{
+    return s_roleValues.value(i_byteArrRole, Qt::DisplayRole);
+}
+
+//------------------------------------------------------------------------------
+int CModelIdxTree::column2Role(EColumn i_clm)
+//------------------------------------------------------------------------------
+{
+    return static_cast<int>(ERole::FirstDataColumnRole) + i_clm;
+}
+
+//------------------------------------------------------------------------------
+QString CModelIdxTree::modelIdx2Str( const QModelIndex& i_modelIdx, int i_iRole, bool i_bIncludeId )
+//------------------------------------------------------------------------------
+{
+    QString str;
+    if( !i_modelIdx.isValid() ) {
+        str = "Invalid";
+    } else {
+        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
+        str  = "Row: " + QString::number(i_modelIdx.row());
+        if( i_iRole >= static_cast<int>(CModelIdxTree::ERole::FirstDataColumnRole) ) {
+            str += ", Clm: " + QString::number(i_modelIdx.column());
+        } else if ((i_modelIdx.column() >= 0) && (i_modelIdx.column() < EColumnCount)) {
+            str += ", Clm: " + column2Str(static_cast<EColumn>(i_modelIdx.column()));
+        } else {
+            str += ", Clm: " + QString::number(i_modelIdx.column());
+        }
+        str += ", Entry: " + QString(pModelTreeEntry == nullptr ? "nullptr" : pModelTreeEntry->keyInTree());
+        if( i_bIncludeId ) {
+            str += ", Id: " + QString::number(i_modelIdx.internalId()) + " (" + pointer2Str(i_modelIdx.internalPointer()) + ")";
+        }
+    }
+    return str;
+}
+
+/*==============================================================================
+public: // class methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QString CModelIdxTree::getImageUrl( EIdxTreeEntryType i_entryType )
+//------------------------------------------------------------------------------
+{
+    QString strType = ZS::System::idxTreeEntryType2Str(i_entryType);
+    return ":/ZS/TreeView/TreeView" + strType + "Entry.png";
+}
+
+//------------------------------------------------------------------------------
+QIcon CModelIdxTree::getIcon( EIdxTreeEntryType i_entryType )
 //------------------------------------------------------------------------------
 {
     QIcon icon;
 
     if( !s_bIconsCreated )
     {
-        s_pPxmRoot = new QPixmap(":/ZS/TreeView/TreeViewRootEntry.bmp");
-        s_pPxmRoot->setMask(s_pPxmRoot->createHeuristicMask());
-
-        s_pPxmBranch = new QPixmap(":/ZS/TreeView/TreeViewBranchEntry.bmp");
-        s_pPxmBranch->setMask(s_pPxmBranch->createHeuristicMask());
-
-        s_pPxmLeave = new QPixmap(":/ZS/TreeView/TreeViewLeaveEntry.bmp");
-        s_pPxmLeave->setMask(s_pPxmLeave->createHeuristicMask());
+        s_pPxmRoot = new QPixmap(":/ZS/TreeView/TreeViewRootEntry.png");
+        s_pPxmBranch = new QPixmap(":/ZS/TreeView/TreeViewBranchEntry.png");
+        s_pPxmLeave = new QPixmap(":/ZS/TreeView/TreeViewLeaveEntry.png");
 
         s_pIconRoot = new QIcon();
         s_pIconBranch = new QIcon();
@@ -376,34 +449,14 @@ QIcon CModelIdxTree::GetIcon( EIdxTreeEntryType i_entryType )
 
     return icon;
 
-} // GetIcon
-
-//------------------------------------------------------------------------------
-QString CModelIdxTree::ModelIdx2Str( const QModelIndex& i_modelIdx, bool i_bIncludeId )
-//------------------------------------------------------------------------------
-{
-    QString str;
-    CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
-    str  = "Row: " + QString::number(i_modelIdx.row());
-    if( i_modelIdx.model() != nullptr && i_modelIdx.model()->headerData(i_modelIdx.column(), Qt::Horizontal, Qt::DisplayRole).canConvert(QVariant::String)) {
-        str += ", Clm: " + i_modelIdx.model()->headerData(i_modelIdx.column(), Qt::Horizontal, Qt::DisplayRole).toString();
-    } else {
-        str += ", Clm: " + QString::number(i_modelIdx.column());
-    }
-    str += ", Entry: " + QString(pModelTreeEntry == nullptr ? "nullptr" : pModelTreeEntry->keyInTree());
-    if( i_bIncludeId ) {
-        str += ", Id: " + QString::number(i_modelIdx.internalId()) + " (" + pointer2Str(i_modelIdx.internalPointer()) + ")";
-    }
-    return str;
-
-} // ModelIdx2Str
+} // getIcon
 
 /*==============================================================================
 protected: // class methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool CModelIdxTree::AreIconsCreated()
+bool CModelIdxTree::areIconsCreated()
 //------------------------------------------------------------------------------
 {
     return s_bIconsCreated;
@@ -426,8 +479,7 @@ CModelIdxTree::CModelIdxTree(
     m_sortOrder(EIdxTreeSortOrder::Config),
     m_mappModelTreeEntries(),
     m_pModelRoot(nullptr),
-    m_roleNames(),
-    m_roleValues()
+    m_ariClmWidths(QVector<int>(EColumnCount))
     #ifdef ZS_TRACE_GUI_MODELS
     ,m_eTrcDetailLevel(i_eTrcDetailLevel),
     m_eTrcDetailLevelNoisyMethods(i_eTrcDetailLevelNoisyMethods),
@@ -560,66 +612,6 @@ CModelIdxTree::~CModelIdxTree()
     m_pModelRoot = nullptr;
 
 } // dtor
-
-/*==============================================================================
-public: // auxiliary instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-QString CModelIdxTree::role2Str(int i_iRole) const
-//------------------------------------------------------------------------------
-{
-    return m_roleNames.value(i_iRole, "? (" + QByteArray::number(i_iRole) + ")");
-}
-
-//------------------------------------------------------------------------------
-int CModelIdxTree::byteArr2Role(const QByteArray& i_byteArrRole) const
-//------------------------------------------------------------------------------
-{
-    return m_roleValues.value(i_byteArrRole, Qt::DisplayRole);
-}
-
-//------------------------------------------------------------------------------
-int CModelIdxTree::column2Role(EColumn i_clm) const
-//------------------------------------------------------------------------------
-{
-    return static_cast<int>(ERole::FirstDataColumnRole) + i_clm;
-}
-
-//------------------------------------------------------------------------------
-CModelIdxTree::EColumn CModelIdxTree::role2Column(int i_iRole) const
-//------------------------------------------------------------------------------
-{
-    if( i_iRole >= static_cast<int>(ERole::FirstDataColumnRole)
-        && i_iRole < (static_cast<int>(ERole::FirstDataColumnRole) + EColumnCount))
-    {
-        return static_cast<EColumn>(i_iRole - static_cast<int>(ERole::FirstDataColumnRole));
-    }
-    return EColumnUndefined;
-}
-
-//------------------------------------------------------------------------------
-QString CModelIdxTree::modelIndex2Str( const QModelIndex& i_modelIdx, bool i_bIncludeId ) const
-//------------------------------------------------------------------------------
-{
-    QString str;
-    if( !i_modelIdx.isValid() ) {
-        str = "Invalid";
-    } else {
-        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
-        str  = "Row: " + QString::number(i_modelIdx.row());
-        if( i_modelIdx.model() != nullptr && i_modelIdx.model()->headerData(i_modelIdx.column(), Qt::Horizontal, Qt::DisplayRole).canConvert(QVariant::String)) {
-            str += ", Clm: " + i_modelIdx.model()->headerData(i_modelIdx.column(), Qt::Horizontal, Qt::DisplayRole).toString();
-        } else {
-            str += ", Clm: " + QString::number(i_modelIdx.column());
-        }
-        str += ", Entry: " + QString(pModelTreeEntry == nullptr ? "nullptr" : pModelTreeEntry->keyInTree());
-        if( i_bIncludeId ) {
-            str += ", Id: " + QString::number(i_modelIdx.internalId()) + " (" + pointer2Str(i_modelIdx.internalPointer()) + ")";
-        }
-    }
-    return str;
-}
 
 /*==============================================================================
 public: // instance methods
@@ -1188,7 +1180,18 @@ void CModelIdxTree::setSortOrder(
             {
                 for( auto strKeyInParentBranch : mappTreeEntries.keys() )
                 {
-                    pModelTreeEntryChild = mappTreeEntries.value(strKeyInParentBranch, nullptr);
+                    pModelTreeEntryChild = mappTreeEntries.value(strKeyInParentBranch);
+                    i_pModelBranch->add(pModelTreeEntryChild);
+                }
+            }
+            else if( i_sortOrder == EIdxTreeSortOrder::Descending )
+            {
+                QMapIterator<QString, CModelIdxTreeEntry*> it(mappTreeEntries);
+                it.toBack();
+                while(it.hasPrevious())
+                {
+                    it.previous();
+                    pModelTreeEntryChild = mappTreeEntries.value(it.key());
                     i_pModelBranch->add(pModelTreeEntryChild);
                 }
             }
@@ -2044,63 +2047,135 @@ void CModelIdxTree::remove( CModelIdxTreeEntry* i_pModelTreeEntry )
 
 } // remove
 
-////------------------------------------------------------------------------------
-//void CModelIdxTree::updateKeyInTree( CModelIdxTreeEntry* i_pModelTreeEntry )
-////------------------------------------------------------------------------------
-//{
-//    #ifdef ZS_TRACE_GUI_MODELS
-//    QString strMthInArgs;
-//    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-//    {
-//        strMthInArgs = "TreeEntry: " + QString(i_pModelTreeEntry == nullptr ? "nullptr" : i_pModelTreeEntry->keyInTree());
-//    }
-//    CMethodTracer mthTracer(
-//        /* pTrcAdminObj       */ m_pTrcAdminObj,
-//        /* pTrcServer         */ CTrcServer::GetInstance(),
-//        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-//        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strNameSpace       */ NameSpace(),
-//        /* strClassName       */ ClassName(),
-//        /* strObjName         */ objectName(),
-//        /* strMethod          */ "updateKeyInTree",
-//        /* strMethodInArgs    */ strMthInArgs );
-//    #endif
-//
-//    if( i_pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
-//    {
-//        for( int idxEntry = 0; idxEntry < i_pModelTreeEntry->count(); ++idxEntry )
-//        {
-//            CModelIdxTreeEntry* pModelTreeEntry = i_pModelTreeEntry->at(idxEntry);
-//
-//            QString strKeyInTreePrev = i_pModelTreeEntry->keyInTree();
-//            QString strEntryType = pModelTreeEntry->entryType2Str(EEnumEntryAliasStrSymbol);
-//            QString strParentPath;
-//            QString strParentName;
-//
-//            m_pIdxTree->splitPathStr(strKeyInTreePrev, &strParentPath, &strParentName);
-//
-//            QString strKeyInTree = strEntryType + ":";
-//
-//            if( !strParentPath.isEmpty() )
-//            {
-//                strKeyInTree += strParentPath;
-//                if( !strKeyInTree.endsWith(m_pIdxTree->nodeSeparator()) )
-//                {
-//                    strKeyInTree += m_pIdxTree->nodeSeparator();
-//                }
-//            }
-//
-//            // If only the name of the entry has been changed the slot "onIdxTreeEntryKeyInTreeChanged"
-//            // has been called before updating the key in the model entry which ends with the new name.
-//            strKeyInTree += strParentName + m_pIdxTree->nodeSeparator() + pModelTreeEntry->name();
-//            pModelTreeEntry->setKeyInTree(strKeyInTree);
-//            if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
-//            {
-//                updateKeyInTree(pModelTreeEntry);
-//            }
-//        }
-//    }
-//}
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+int CModelIdxTree::columnWidthByColumn(int i_iClm, int i_iFontPixelSize, const QModelIndex& i_modelIdxParent)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        strMthInArgs = "Clm: " + column2Str(static_cast<EColumn>(i_iClm));
+        strMthInArgs += ", FontPixelSize: " + QString::number(i_iFontPixelSize);
+        strMthInArgs += ", ModelIdxParent: " + modelIdx2Str(i_modelIdxParent);
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "columnWidthByColumn",
+        /* strMthInArgs */ strMthInArgs );
+
+    int iClmWidth = 1;
+
+    if( i_iClm >= 0 && i_iClm < m_ariClmWidths.count() )
+    {
+        //iClmWidth = m_ariClmWidths[i_iClm];
+
+        //if( iClmWidth == 0)
+        {
+            QFont fnt = QGuiApplication::font();
+            if( i_iFontPixelSize > 0) {
+                fnt.setPixelSize(i_iFontPixelSize);
+            }
+
+            QFontMetrics fntMetrics = QFontMetrics(fnt);
+
+            if( !i_modelIdxParent.isValid() )
+            {
+                QString strClmHeader = headerData(i_iClm, Qt::Horizontal).toString();
+                iClmWidth = fntMetrics.horizontalAdvance(strClmHeader);
+            }
+
+            for( int iRowIdx = 0; iRowIdx < rowCount(i_modelIdxParent); ++iRowIdx )
+            {
+                QModelIndex modelIdxParent = index(iRowIdx, i_iClm, i_modelIdxParent);
+                if( rowCount(modelIdxParent) > 0 )
+                {
+                    iClmWidth = qMax(iClmWidth, columnWidthByColumn(i_iClm, i_iFontPixelSize, modelIdxParent));
+                }
+
+                QString strType = "string";
+                QVariant varData = data(index(iRowIdx, i_iClm, i_modelIdxParent), static_cast<int>(ERole::Type));
+                if( varData.canConvert(QVariant::String) )
+                {
+                    strType = varData.toString();
+                }
+                if( strType == "string" || strType == "int" )
+                {
+                    varData = data(index(iRowIdx, i_iClm, i_modelIdxParent), Qt::DisplayRole);
+                    if( varData.canConvert(QVariant::String) )
+                    {
+                        QString strCellData = varData.toString();
+                        iClmWidth = qMax(iClmWidth, fntMetrics.horizontalAdvance(strCellData));
+                    }
+                }
+                else if( strType == "imageUrl" || strType == "icon" )
+                {
+                    varData = data(index(iRowIdx, i_iClm, i_modelIdxParent), Qt::DisplayRole);
+                    if( varData.canConvert(QVariant::String) )
+                    {
+                        QString strCellData = varData.toString();
+                        QPixmap pixmap(strCellData);
+                        iClmWidth = qMax(iClmWidth, pixmap.width());
+                    }
+                }
+            }
+
+            if( !i_modelIdxParent.isValid() )
+            {
+                //m_ariClmWidths[i_iClm] = iClmWidth + 2*iClmSpacing;
+            }
+        }
+    }
+
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        mthTracer.setMethodReturn(iClmWidth);
+    }
+
+    return iClmWidth;
+
+} // columnWidthByColumn
+
+//------------------------------------------------------------------------------
+int CModelIdxTree::columnWidthByRole(const QByteArray& i_byteArrRole, int i_iFontPixelSize, const QModelIndex& i_modelIdxParent)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        strMthInArgs = "Role: " + i_byteArrRole;
+        strMthInArgs += ", FontPixelSize: " + QString::number(i_iFontPixelSize);
+        strMthInArgs += ", ModelIdxParent: " + modelIdx2Str(i_modelIdxParent, byteArr2Role(i_byteArrRole));
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "columnWidthByRole",
+        /* strMthInArgs */ strMthInArgs );
+
+    int iClmWidth = 1;
+
+    int iRole = byteArr2Role(i_byteArrRole);
+    EColumn clm = role2Column(iRole);
+
+    if(clm != EColumnUndefined)
+    {
+        iClmWidth = columnWidthByColumn(static_cast<int>(clm), i_iFontPixelSize, i_modelIdxParent);
+    }
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        mthTracer.setMethodReturn(iClmWidth);
+    }
+    return iClmWidth;
+}
 
 /*==============================================================================
 public: // overridables of base class QAbstractItemModel
@@ -2110,7 +2185,7 @@ public: // overridables of base class QAbstractItemModel
 QHash<int, QByteArray> CModelIdxTree::roleNames() const
 //------------------------------------------------------------------------------
 {
-    return m_roleNames;
+    return s_roleNames;
 }
 
 /*==============================================================================
@@ -2125,7 +2200,7 @@ int CModelIdxTree::rowCount( const QModelIndex& i_modelIdxParent ) const
     QString strMthInArgs;
     if( m_eTrcDetailLevelNoisyMethods >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "ModelIdxParent {" + modelIndex2Str(i_modelIdxParent) + "}";
+        strMthInArgs = "ModelIdxParent {" + modelIdx2Str(i_modelIdxParent, 0) + "}";
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
@@ -2175,7 +2250,7 @@ int CModelIdxTree::columnCount( const QModelIndex& i_modelIdxParent ) const
     QString strMthInArgs;
     if( m_eTrcDetailLevelNoisyMethods >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "ModelIdxParent {" + modelIndex2Str(i_modelIdxParent) + "}";
+        strMthInArgs = "ModelIdxParent {" + modelIdx2Str(i_modelIdxParent) + "}";
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
@@ -2206,7 +2281,7 @@ QModelIndex CModelIdxTree::index( int i_iRow, int i_iCol, const QModelIndex& i_m
     {
         strMthInArgs  = "Row: " + QString::number(i_iRow);
         strMthInArgs += ", Clm: " + QString::number(i_iCol);
-        strMthInArgs += ", ModelIdxParent {" + modelIndex2Str(i_modelIdxParent) + "}";
+        strMthInArgs += ", ModelIdxParent {" + modelIdx2Str(i_modelIdxParent) + "}";
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
@@ -2262,7 +2337,7 @@ QModelIndex CModelIdxTree::index( int i_iRow, int i_iCol, const QModelIndex& i_m
     #ifdef ZS_TRACE_GUI_MODELS
     if( m_eTrcDetailLevelNoisyMethods >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        mthTracer.setMethodReturn(modelIndex2Str(modelIdx));
+        mthTracer.setMethodReturn(modelIdx2Str(modelIdx));
     }
     #endif
 
@@ -2278,7 +2353,7 @@ QModelIndex CModelIdxTree::parent( const QModelIndex& i_modelIdx ) const
     QString strMthInArgs;
     if( m_eTrcDetailLevelNoisyMethods >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "ModelIdx {" + modelIndex2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + modelIdx2Str(i_modelIdx) + "}";
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
@@ -2314,7 +2389,7 @@ QModelIndex CModelIdxTree::parent( const QModelIndex& i_modelIdx ) const
     #ifdef ZS_TRACE_GUI_MODELS
     if( m_eTrcDetailLevelNoisyMethods >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        mthTracer.setMethodReturn(modelIndex2Str(modelIdxParent));
+        mthTracer.setMethodReturn(modelIdx2Str(modelIdxParent));
     }
     #endif
 
@@ -2358,6 +2433,54 @@ QVariant CModelIdxTree::headerData(
     {
         switch( i_iSection )
         {
+            case EColumnTreeEntryTypeImageUrl:
+            {
+                if( i_iRole == Qt::DisplayRole )
+                {
+                    varData = "Type Image Url";
+                }
+                else if( i_iRole == Qt::SizeHintRole )
+                {
+                    //varData = QSize(10,16);
+                }
+                break;
+            }
+            case EColumnTreeEntryTypeIcon:
+            {
+                if( i_iRole == Qt::DisplayRole )
+                {
+                    varData = "Type";
+                }
+                else if( i_iRole == Qt::SizeHintRole )
+                {
+                    //varData = QSize(10,16);
+                }
+                break;
+            }
+            case EColumnTreeEntryType:
+            {
+                if( i_iRole == Qt::DisplayRole )
+                {
+                    varData = "Type";
+                }
+                else if( i_iRole == Qt::SizeHintRole )
+                {
+                    //varData = QSize(10,16);
+                }
+                break;
+            }
+            case EColumnTreeEntryNameDecorated:
+            {
+                if( i_iRole == Qt::DisplayRole )
+                {
+                    varData = "Decorated Name";
+                }
+                else if( i_iRole == Qt::SizeHintRole )
+                {
+                    //varData = QSize(10,16);
+                }
+                break;
+            }
             case EColumnTreeEntryName:
             {
                 if( i_iRole == Qt::DisplayRole )
@@ -2375,18 +2498,6 @@ QVariant CModelIdxTree::headerData(
                 if( i_iRole == Qt::DisplayRole )
                 {
                     varData = "Internal-Id";
-                }
-                break;
-            }
-            case EColumnTreeEntryType:
-            {
-                if( i_iRole == Qt::DisplayRole )
-                {
-                    varData = "Type";
-                }
-                else if( i_iRole == Qt::SizeHintRole )
-                {
-                    //varData = QSize(10,16);
                 }
                 break;
             }
@@ -2475,7 +2586,7 @@ Qt::ItemFlags CModelIdxTree::flags( const QModelIndex& i_modelIdx ) const
     QString strMthInArgs;
     if( m_eTrcDetailLevelNoisyMethods >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "ModelIdx {" + modelIndex2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + modelIdx2Str(i_modelIdx) + "}";
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
@@ -2515,6 +2626,22 @@ Qt::ItemFlags CModelIdxTree::flags( const QModelIndex& i_modelIdx ) const
 
         switch( i_modelIdx.column() )
         {
+            case EColumnTreeEntryTypeImageUrl:
+            {
+                break;
+            }
+            case EColumnTreeEntryTypeIcon:
+            {
+                break;
+            }
+            case EColumnTreeEntryType:
+            {
+                break;
+            }
+            case EColumnTreeEntryNameDecorated:
+            {
+                break;
+            }
             case EColumnTreeEntryName:
             {
                 if( pModelTreeEntry != m_pModelRoot )
@@ -2525,10 +2652,6 @@ Qt::ItemFlags CModelIdxTree::flags( const QModelIndex& i_modelIdx ) const
                 break;
             }
             case EColumnInternalId:
-            {
-                break;
-            }
-            case EColumnTreeEntryType:
             {
                 break;
             }
@@ -2615,14 +2738,8 @@ QVariant CModelIdxTree::data( const QModelIndex& i_modelIdx, int i_iRole ) const
     QString strMthInArgs;
     if( m_eTrcDetailLevelNoisyMethods >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs  = "ModelIdx {" + modelIndex2Str(i_modelIdx) + "}";
+        strMthInArgs  = "ModelIdx {" + modelIdx2Str(i_modelIdx, i_iRole) + "}";
         strMthInArgs += ", Role: " + QString::number(i_iRole) + " (" + role2Str(i_iRole) + ")";
-
-        if( i_iRole >= static_cast<int>(ERole::FirstDataColumnRole) )
-        {
-            strMthInArgs += ", {-> Clm: " + QString::number(static_cast<int>(clm)) + " (" + column2Str(clm) + ")";
-            strMthInArgs += ", Role: " + QString::number(static_cast<int>(iRole)) + " (" + role2Str(iRole) + ")}";
-        }
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
@@ -2663,19 +2780,88 @@ QVariant CModelIdxTree::data( const QModelIndex& i_modelIdx, int i_iRole ) const
             pModelBranch = pModelTreeEntry;
         }
 
-        switch( i_modelIdx.column() )
+        switch( clm )
         {
+            case EColumnTreeEntryTypeImageUrl:
+            {
+                if( iRole == static_cast<int>(ERole::Type) )
+                {
+                    varData = QLatin1String("imageUrl");
+                }
+                else if( iRole == Qt::DisplayRole || iRole == Qt::DecorationRole )
+                {
+                    QString strUrl = getImageUrl(pModelTreeEntry->entryType());
+                    if( strUrl.startsWith(":") ) {
+                        strUrl.insert(0, "qrc");
+                    }
+                    else if( !strUrl.startsWith("qrc:") ) {
+                        strUrl.insert(0, "qrc:");
+                    }
+                    varData = strUrl;
+                }
+                break;
+            }
+            case EColumnTreeEntryTypeIcon:
+            {
+                if( iRole == static_cast<int>(ERole::Type) )
+                {
+                    varData = QLatin1String("icon");
+                }
+                else if( iRole == Qt::DisplayRole )
+                {
+                }
+                else if( i_iRole == Qt::DecorationRole )
+                {
+                    varData = getIcon(pModelTreeEntry->entryType());
+                }
+                break;
+            }
+            case EColumnTreeEntryType:
+            {
+                if( iRole == static_cast<int>(ERole::Type) )
+                {
+                    varData = QLatin1String("string");
+                }
+                else if( iRole == Qt::DisplayRole || iRole == Qt::EditRole )
+                {
+                    varData = pModelTreeEntry->entryType2Str();
+                }
+                break;
+            }
+            case EColumnTreeEntryNameDecorated:
+            {
+                if( iRole == static_cast<int>(ERole::Type) )
+                {
+                    varData = QLatin1String("imageUrl");
+                }
+                else if( iRole == Qt::DisplayRole || iRole == Qt::DecorationRole )
+                {
+                    QString strUrl = getImageUrl(pModelTreeEntry->entryType());
+                    if( strUrl.startsWith(":") ) {
+                        strUrl.insert(0, "qrc");
+                    }
+                    else if( !strUrl.startsWith("qrc:") ) {
+                        strUrl.insert(0, "qrc:");
+                    }
+                    varData = strUrl;
+                }
+                break;
+            }
             case EColumnTreeEntryName:
             {
-                if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole || i_iRole == Qt::ToolTipRole || i_iRole == Qt::ForegroundRole)
+                if( iRole == static_cast<int>(ERole::Type) )
+                {
+                    varData = QLatin1String("string");
+                }
+                else if( iRole == Qt::DisplayRole || iRole == Qt::EditRole || iRole == Qt::ToolTipRole || iRole == Qt::ForegroundRole)
                 {
                     QString strKeyInTree = pModelTreeEntry->keyInTree();
 
-                    if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
+                    if( iRole == Qt::DisplayRole || iRole == Qt::EditRole )
                     {
                         varData = pModelTreeEntry->name();
                     }
-                    else if( i_iRole == Qt::ToolTipRole )
+                    else if( iRole == Qt::ToolTipRole )
                     {
                         QString strData;
                         strData  = "KeyInTree: " + strKeyInTree;
@@ -2690,31 +2876,31 @@ QVariant CModelIdxTree::data( const QModelIndex& i_modelIdx, int i_iRole ) const
                         varData = strData;
                     }
                 }
-                else if( i_iRole == Qt::DecorationRole )
+                else if( iRole == Qt::DecorationRole )
                 {
-                    varData = GetIcon(pModelTreeEntry->entryType());
+                    varData = getIcon(pModelTreeEntry->entryType());
                 }
                 break;
             }
             case EColumnInternalId:
             {
-                if( i_iRole == Qt::DisplayRole )
+                if( iRole == static_cast<int>(ERole::Type) )
+                {
+                    varData = QLatin1String("string");
+                }
+                else if( iRole == Qt::DisplayRole )
                 {
                     varData = QString::number(i_modelIdx.internalId()) + " (" + pointer2Str(i_modelIdx.internalPointer()) + ")";
                 }
                 break;
             }
-            case EColumnTreeEntryType:
-            {
-                if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
-                {
-                    varData = pModelTreeEntry->entryType2Str();
-                }
-                break;
-            }
             case EColumnIdxInTree:
             {
-                if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
+                if( iRole == static_cast<int>(ERole::Type) )
+                {
+                    varData = QLatin1String("int");
+                }
+                else if( iRole == Qt::DisplayRole || iRole == Qt::EditRole )
                 {
                     varData = pModelTreeEntry->indexInTree();
                 }
@@ -2722,7 +2908,11 @@ QVariant CModelIdxTree::data( const QModelIndex& i_modelIdx, int i_iRole ) const
             }
             case EColumnIdxInParentBranch:
             {
-                if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
+                if( iRole == static_cast<int>(ERole::Type) )
+                {
+                    varData = QLatin1String("int");
+                }
+                else if( iRole == Qt::DisplayRole || iRole == Qt::EditRole )
                 {
                     varData = pModelTreeEntry->indexInParentBranch();
                 }
@@ -2730,7 +2920,11 @@ QVariant CModelIdxTree::data( const QModelIndex& i_modelIdx, int i_iRole ) const
             }
             case EColumnKeyInTree:
             {
-                if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
+                if( iRole == static_cast<int>(ERole::Type) )
+                {
+                    varData = QLatin1String("string");
+                }
+                else if( iRole == Qt::DisplayRole || iRole == Qt::EditRole )
                 {
                     varData = pModelTreeEntry->keyInTree();
                 }
@@ -2738,7 +2932,11 @@ QVariant CModelIdxTree::data( const QModelIndex& i_modelIdx, int i_iRole ) const
             }
             case EColumnKeyInParentBranch:
             {
-                if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
+                if( iRole == static_cast<int>(ERole::Type) )
+                {
+                    varData = QLatin1String("string");
+                }
+                else if( iRole == Qt::DisplayRole || iRole == Qt::EditRole )
                 {
                     varData = pModelTreeEntry->keyInParentBranch();
                 }
@@ -2748,8 +2946,8 @@ QVariant CModelIdxTree::data( const QModelIndex& i_modelIdx, int i_iRole ) const
             {
                 break;
             }
-        } // switch( i_modelIdx.column() )
-    } // if( pModelTreeEntry != nullptr )
+        } // switch( clm )
+    } // if( pModelTreeEntry != nullptr && s_rolesHandled.contains(iRole) )
 
     #ifdef ZS_TRACE_GUI_MODELS
     if( m_eTrcDetailLevelNoisyMethods >= EMethodTraceDetailLevel::ArgsNormal )
@@ -2782,9 +2980,9 @@ bool CModelIdxTree::setData(
     QString strMthInArgs;
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs  = "ModelIdx {" + modelIndex2Str(i_modelIdx) + "}";
+        strMthInArgs  = "ModelIdx {" + modelIdx2Str(i_modelIdx, i_iRole) + "}";
         strMthInArgs += ", Data: " + i_varData.toString();
-        strMthInArgs += ", Role: " + qItemDataRole2Str(i_iRole);
+        strMthInArgs += ", Role: " + QString::number(i_iRole) + " (" + role2Str(i_iRole) + ")";
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
@@ -2809,11 +3007,27 @@ bool CModelIdxTree::setData(
 
     if( pModelTreeEntry != nullptr )
     {
-        switch( i_modelIdx.column() )
+        switch( clm )
         {
+            case EColumnTreeEntryTypeImageUrl:
+            {
+                break;
+            }
+            case EColumnTreeEntryTypeIcon:
+            {
+                break;
+            }
+            case EColumnTreeEntryType:
+            {
+                break;
+            }
+            case EColumnTreeEntryNameDecorated:
+            {
+                break;
+            }
             case EColumnTreeEntryName:
             {
-                if( i_iRole == Qt::EditRole )
+                if( iRole == Qt::EditRole )
                 {
                     if( pModelTreeEntry != m_pModelRoot )
                     {
@@ -2833,8 +3047,8 @@ bool CModelIdxTree::setData(
                             }
                         } // if( pModelTreeEntry->name().compare(strNameNew, Qt::CaseInsensitive) != 0 )
                     } // if( pModelTreeEntry != m_pModelRoot )
-                } // if( i_iRole == Qt::EditRole )
-                else if( i_iRole == Qt::CheckStateRole )
+                }
+                else if( iRole == Qt::CheckStateRole )
                 {
                     //Qt::CheckState checkState = static_cast<Qt::CheckState>(i_varData.toInt());
                     //bool bIsSelected = (checkState == Qt::Checked);
@@ -2844,10 +3058,6 @@ bool CModelIdxTree::setData(
                 break;
             }
             case EColumnInternalId:
-            {
-                break;
-            }
-            case EColumnTreeEntryType:
             {
                 break;
             }
@@ -2871,7 +3081,7 @@ bool CModelIdxTree::setData(
             {
                 break;
             }
-        } // switch( i_modelIdx.column() )
+        } // switch( clm )
     } // if( pModelTreeEntry != nullptr )
 
     if( bOk )
@@ -2933,7 +3143,7 @@ QMimeData* CModelIdxTree::mimeData( const QModelIndexList& i_arModelIdxs ) const
             {
                 if( idx > 0 ) strMthInArgs += ", ";
                 strMthInArgs += "[" + QString::number(idx) + ": ";
-                strMthInArgs += "{" + modelIndex2Str(i_arModelIdxs[idx]) + "}]";
+                strMthInArgs += "{" + modelIdx2Str(i_arModelIdxs[idx]) + "}]";
             }
             strMthInArgs += ")";
         }
@@ -2996,7 +3206,7 @@ bool CModelIdxTree::canDropMimeData(
         strMthInArgs += ", DropAction: " + qDropActions2Str(i_dropAction);
         strMthInArgs += ", Row: " + QString::number(i_iRow);
         strMthInArgs += ", Clm: " + QString::number(i_iClm);
-        strMthInArgs += ", ModelIdxParent {" + modelIndex2Str(i_modelIdxParent) + "}";
+        strMthInArgs += ", ModelIdxParent {" + modelIdx2Str(i_modelIdxParent) + "}";
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
@@ -3117,7 +3327,7 @@ bool CModelIdxTree::dropMimeData(
         strMthInArgs += ", DropAction: " + qDropActions2Str(i_dropAction);
         strMthInArgs += ", Row: " + QString::number(i_iRow);
         strMthInArgs += ", Clm: " + QString::number(i_iClm);
-        strMthInArgs += ", ModelIdxParent {" + modelIndex2Str(i_modelIdxParent) + "}";
+        strMthInArgs += ", ModelIdxParent {" + modelIdx2Str(i_modelIdxParent) + "}";
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
@@ -3219,13 +3429,22 @@ SErrResultInfo CModelIdxTree::canSetData(
     int                i_iRole ) const
 //------------------------------------------------------------------------------
 {
+    EColumn clm = static_cast<EColumn>(i_modelIdx.column());
+    int iRole = i_iRole;
+
+    if( i_iRole >= static_cast<int>(ERole::FirstDataColumnRole) )
+    {
+        clm = role2Column(i_iRole);
+        iRole = Qt::DisplayRole;
+    }
+
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs  = "ModelIdx {" + modelIndex2Str(i_modelIdx) + "}";
+        strMthInArgs  = "ModelIdx {" + modelIdx2Str(i_modelIdx, i_iRole) + "}";
         strMthInArgs += ", Data: " + i_varData.toString();
-        strMthInArgs += ", Role: " + qItemDataRole2Str(i_iRole);
+        strMthInArgs += ", Role: " + QString::number(i_iRole) + " (" + role2Str(i_iRole) + ")";
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
@@ -3252,11 +3471,27 @@ SErrResultInfo CModelIdxTree::canSetData(
 
     if( pModelTreeEntry != nullptr )
     {
-        switch( i_modelIdx.column() )
+        switch( clm )
         {
+            case EColumnTreeEntryTypeImageUrl:
+            {
+                break;
+            }
+            case EColumnTreeEntryTypeIcon:
+            {
+                break;
+            }
+            case EColumnTreeEntryType:
+            {
+                break;
+            }
+            case EColumnTreeEntryNameDecorated:
+            {
+                break;
+            }
             case EColumnTreeEntryName:
             {
-                if( i_iRole == Qt::EditRole )
+                if( iRole == Qt::EditRole )
                 {
                     if( pModelTreeEntry != m_pModelRoot )
                     {
@@ -3276,10 +3511,6 @@ SErrResultInfo CModelIdxTree::canSetData(
                 break;
             }
             case EColumnInternalId:
-            {
-                break;
-            }
-            case EColumnTreeEntryType:
             {
                 break;
             }
@@ -3303,7 +3534,7 @@ SErrResultInfo CModelIdxTree::canSetData(
             {
                 break;
             }
-        } // switch( i_modelIdx.column() )
+        } // switch( clm )
     } // if( pModelTreeEntry != nullptr )
 
     #ifdef ZS_TRACE_GUI_MODELS
@@ -3332,7 +3563,7 @@ QModelIndex CModelIdxTree::sibling( int i_iRow, int i_iCol, const QModelIndex& i
     {
         strMthInArgs  = "Row: " + QString::number(i_iRow);
         strMthInArgs += ", Col: " + QString::number(i_iCol);
-        strMthInArgs += ", ModelIdx {" + modelIndex2Str(i_modelIdx) + "}";
+        strMthInArgs += ", ModelIdx {" + modelIdx2Str(i_modelIdx) + "}";
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
@@ -3351,7 +3582,7 @@ QModelIndex CModelIdxTree::sibling( int i_iRow, int i_iCol, const QModelIndex& i
     #ifdef ZS_TRACE_GUI_MODELS
     if( m_eTrcDetailLevelNoisyMethods >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthRet = modelIndex2Str(modelIdxSibling);
+        strMthRet = modelIdx2Str(modelIdxSibling);
         mthTracer.setMethodReturn(strMthRet);
     }
     #endif
@@ -3367,7 +3598,7 @@ bool CModelIdxTree::hasChildren( const QModelIndex& i_modelIdxParent ) const
     QString strMthInArgs;
     if( m_eTrcDetailLevelNoisyMethods >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "Parent {" + modelIndex2Str(i_modelIdxParent) + "}";
+        strMthInArgs = "Parent {" + modelIdx2Str(i_modelIdxParent) + "}";
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
@@ -3403,7 +3634,7 @@ bool CModelIdxTree::insertRows( int i_iRow, int i_iRowCount, const QModelIndex& 
     {
         strMthInArgs  = "Row: " + QString::number(i_iRow);
         strMthInArgs += ", Count: " + QString::number(i_iRowCount);
-        strMthInArgs += ", Parent {" + modelIndex2Str(i_modelIdxParent) + "}";
+        strMthInArgs += ", Parent {" + modelIdx2Str(i_modelIdxParent) + "}";
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
@@ -3439,7 +3670,7 @@ bool CModelIdxTree::insertColumns( int i_iCol, int i_iColCount, const QModelInde
     {
         strMthInArgs  = "Col: " + QString::number(i_iCol);
         strMthInArgs += ", Count: " + QString::number(i_iColCount);
-        strMthInArgs += ", Parent {" + modelIndex2Str(i_modelIdxParent) + "}";
+        strMthInArgs += ", Parent {" + modelIdx2Str(i_modelIdxParent) + "}";
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
@@ -3475,7 +3706,7 @@ bool CModelIdxTree::removeRows( int i_iRow, int i_iRowCount, const QModelIndex& 
     {
         strMthInArgs  = "Row: " + QString::number(i_iRow);
         strMthInArgs += ", Count: " + QString::number(i_iRowCount);
-        strMthInArgs += ", Parent {" + modelIndex2Str(i_modelIdxParent) + "}";
+        strMthInArgs += ", Parent {" + modelIdx2Str(i_modelIdxParent) + "}";
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
@@ -3511,7 +3742,7 @@ bool CModelIdxTree::removeColumns( int i_iCol, int i_iColCount, const QModelInde
     {
         strMthInArgs  = "Col: " + QString::number(i_iCol);
         strMthInArgs += ", Count: " + QString::number(i_iColCount);
-        strMthInArgs += ", Parent {" + modelIndex2Str(i_modelIdxParent) + "}";
+        strMthInArgs += ", Parent {" + modelIdx2Str(i_modelIdxParent) + "}";
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
@@ -3550,10 +3781,10 @@ bool CModelIdxTree::moveRows(
     QString strMthInArgs;
     if( m_eTrcDetailLevelNoisyMethods >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs  = "SourceParent {" + modelIndex2Str(i_modelIdxSourceParent) + "}";
+        strMthInArgs  = "SourceParent {" + modelIdx2Str(i_modelIdxSourceParent) + "}";
         strMthInArgs += ", RowSource: " + QString::number(i_iRowSource);
         strMthInArgs += ", Count: " + QString::number(i_iRowCount);
-        strMthInArgs += ", DestParent {" + modelIndex2Str(i_modelIdxDestParent) + "}";
+        strMthInArgs += ", DestParent {" + modelIdx2Str(i_modelIdxDestParent) + "}";
         strMthInArgs += ", DestChild: " + QString::number(i_iRowDestChild);
     }
     CMethodTracer mthTracer(
@@ -3593,10 +3824,10 @@ bool CModelIdxTree::moveColumns(
     QString strMthInArgs;
     if( m_eTrcDetailLevelNoisyMethods >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs  = "SourceParent {" + modelIndex2Str(i_modelIdxSourceParent) + "}";
+        strMthInArgs  = "SourceParent {" + modelIdx2Str(i_modelIdxSourceParent) + "}";
         strMthInArgs += ", ColSource: " + QString::number(i_iColSource);
         strMthInArgs += ", Count: " + QString::number(i_iColCount);
-        strMthInArgs += ", DestParent {" + modelIndex2Str(i_modelIdxDestParent) + "}";
+        strMthInArgs += ", DestParent {" + modelIdx2Str(i_modelIdxDestParent) + "}";
         strMthInArgs += ", DestChild: " + QString::number(i_iColDestChild);
     }
     CMethodTracer mthTracer(
@@ -3635,8 +3866,8 @@ void CModelIdxTree::emit_dataChanged( const QModelIndex& i_modelIdxTL, const QMo
     QString strMthInArgs;
     if( m_eTrcDetailLevelNoisyMethods >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs  = "TL {" + modelIndex2Str(i_modelIdxTL) + "}";
-        strMthInArgs += ", BR {" + modelIndex2Str(i_modelIdxBR) + "}";
+        strMthInArgs  = "TL {" + modelIdx2Str(i_modelIdxTL) + "}";
+        strMthInArgs += ", BR {" + modelIdx2Str(i_modelIdxBR) + "}";
         strMthInArgs += ", Roles [" + QString::number(i_ariRoles.size()) + "]";
     }
     CMethodTracer mthTracer(
@@ -3767,7 +3998,7 @@ inline QModelIndex CModelIdxTree::_createIndex( int i_iRow, int i_iCol, void* i_
     #ifdef ZS_TRACE_GUI_MODELS
     if( m_eTrcDetailLevelNoisyMethods >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthRet = modelIndex2Str(modelIdx);
+        strMthRet = modelIdx2Str(modelIdx);
         mthTracer.setMethodReturn(strMthRet);
     }
     #endif
@@ -3805,7 +4036,7 @@ inline QModelIndex CModelIdxTree::_createIndex( int i_iRow, int i_iCol, quintptr
     #ifdef ZS_TRACE_GUI_MODELS
     if( m_eTrcDetailLevelNoisyMethods >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthRet = modelIndex2Str(modelIdx);
+        strMthRet = modelIdx2Str(modelIdx);
         mthTracer.setMethodReturn(strMthRet);
     }
     #endif
@@ -3821,7 +4052,7 @@ void CModelIdxTree::_beginInsertRows( const QModelIndex& i_modelIdxParent, int i
     QString strMthInArgs;
     if( m_eTrcDetailLevelNoisyMethods >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs  = "Parent {" + modelIndex2Str(i_modelIdxParent) + "}";
+        strMthInArgs  = "Parent {" + modelIdx2Str(i_modelIdxParent) + "}";
         strMthInArgs += ", First: " + QString::number(i_iFirstRow);
         strMthInArgs += ", Last: " + QString::number(i_iLastRow);
     }
@@ -3869,7 +4100,7 @@ void CModelIdxTree::_beginRemoveRows( const QModelIndex &i_modelIdxParent, int i
     QString strMthInArgs;
     if( m_eTrcDetailLevelNoisyMethods >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs  = "Parent {" + modelIndex2Str(i_modelIdxParent) + "}";
+        strMthInArgs  = "Parent {" + modelIdx2Str(i_modelIdxParent) + "}";
         strMthInArgs += ", First: " + QString::number(i_iFirstRow);
         strMthInArgs += ", Last: " + QString::number(i_iLastRow);
     }
@@ -3917,10 +4148,10 @@ bool CModelIdxTree::_beginMoveRows( const QModelIndex& i_modelIdxSourceParent, i
     QString strMthInArgs;
     if( m_eTrcDetailLevelNoisyMethods >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs  = "SourceParent {" + modelIndex2Str(i_modelIdxSourceParent) + "}";
+        strMthInArgs  = "SourceParent {" + modelIdx2Str(i_modelIdxSourceParent) + "}";
         strMthInArgs += ", SourceStart: " + QString::number(i_iRowSourceStart);
         strMthInArgs += ", SourceEnd: " + QString::number(i_iRowSourceEnd);
-        strMthInArgs += ", DestParent {" + modelIndex2Str(i_modelIdxDestParent) + "}";
+        strMthInArgs += ", DestParent {" + modelIdx2Str(i_modelIdxDestParent) + "}";
         strMthInArgs += ", DestChild: " + QString::number(i_iRowDest);
     }
     CMethodTracer mthTracer(
@@ -3976,7 +4207,7 @@ void CModelIdxTree::_beginInsertColumns( const QModelIndex& i_modelIdxParent, in
     QString strMthInArgs;
     if( m_eTrcDetailLevelNoisyMethods >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs  = "Parent {" + modelIndex2Str(i_modelIdxParent) + "}";
+        strMthInArgs  = "Parent {" + modelIdx2Str(i_modelIdxParent) + "}";
         strMthInArgs += ", First: " + QString::number(i_iFirstCol);
         strMthInArgs += ", Last: " + QString::number(i_iLastCol);
     }
@@ -4024,7 +4255,7 @@ void CModelIdxTree::_beginRemoveColumns( const QModelIndex& i_modelIdxParent, in
     QString strMthInArgs;
     if( m_eTrcDetailLevelNoisyMethods >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs  = "Parent {" + modelIndex2Str(i_modelIdxParent) + "}";
+        strMthInArgs  = "Parent {" + modelIdx2Str(i_modelIdxParent) + "}";
         strMthInArgs += ", First: " + QString::number(i_iFirstCol);
         strMthInArgs += ", Last: " + QString::number(i_iLastCol);
     }
@@ -4072,10 +4303,10 @@ bool CModelIdxTree::_beginMoveColumns( const QModelIndex& i_modelIdxSourceParent
     QString strMthInArgs;
     if( m_eTrcDetailLevelNoisyMethods >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs  = "SourceParent {" + modelIndex2Str(i_modelIdxSourceParent) + "}";
+        strMthInArgs  = "SourceParent {" + modelIdx2Str(i_modelIdxSourceParent) + "}";
         strMthInArgs += ", SourceStart: " + QString::number(i_iColSourceStart);
         strMthInArgs += ", SourceEnd: " + QString::number(i_iColSourceEnd);
-        strMthInArgs += ", DestParent {" + modelIndex2Str(i_modelIdxDestParent) + "}";
+        strMthInArgs += ", DestParent {" + modelIdx2Str(i_modelIdxDestParent) + "}";
         strMthInArgs += ", DestChild: " + QString::number(i_iColDest);
     }
     CMethodTracer mthTracer(
@@ -4205,21 +4436,24 @@ protected: // auxiliary instance methods
 void CModelIdxTree::fillRoleNames()
 //------------------------------------------------------------------------------
 {
-    m_roleNames = QAbstractItemModel::roleNames();
-
-    m_roleNames[static_cast<int>(ERole::Sort)] = "sort";
-    m_roleNames[static_cast<int>(ERole::ImageUrl)] = "imageUrl";
-    m_roleNames[static_cast<int>(ERole::Type)] = "type";
-
-    for( int clm = 0; clm < EColumnCount; ++clm)
+    if( s_roleNames.isEmpty() )
     {
-        int role = column2Role(static_cast<EColumn>(clm));
-        m_roleNames[role] = s_clm2Name[clm];
-    }
+        s_roleNames = QAbstractItemModel::roleNames();
 
-    for( int iRole : m_roleNames.keys() )
-    {
-        const QByteArray& byteArrRole = m_roleNames.value(iRole);
-        m_roleValues[byteArrRole] = iRole;
+        s_roleNames[static_cast<int>(ERole::Sort)] = "sort";
+        s_roleNames[static_cast<int>(ERole::ImageUrl)] = "imageUrl";
+        s_roleNames[static_cast<int>(ERole::Type)] = "type";
+
+        for( int clm = 0; clm < EColumnCount; ++clm)
+        {
+            int role = column2Role(static_cast<EColumn>(clm));
+            s_roleNames[role] = s_clm2Name[clm];
+        }
+
+        for( int iRole : s_roleNames.keys() )
+        {
+            const QByteArray& byteArrRole = s_roleNames.value(iRole);
+            s_roleValues[byteArrRole] = iRole;
+        }
     }
 }

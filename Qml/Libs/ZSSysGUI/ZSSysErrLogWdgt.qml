@@ -168,7 +168,7 @@ ColumnLayout {
             width: 24
             delegate: Item {
                 Image {
-                    id: idSeverityImg
+                    id: imgSeverity
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.leftMargin: 10

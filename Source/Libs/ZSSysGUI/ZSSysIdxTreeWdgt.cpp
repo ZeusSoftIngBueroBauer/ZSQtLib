@@ -200,7 +200,6 @@ CWdgtIdxTree::CWdgtIdxTree(
     //------------------------------------
 
     QPixmap pxmResizeToContents(":/ZS/TreeView/TreeViewResizeToContents.png");
-    pxmResizeToContents.setMask(pxmResizeToContents.createHeuristicMask());
 
     m_pBtnTreeViewResizeRowsAndColumnsToContents = new QPushButton();
     m_pBtnTreeViewResizeRowsAndColumnsToContents->setIcon(pxmResizeToContents);
@@ -223,7 +222,6 @@ CWdgtIdxTree::CWdgtIdxTree(
     //--------------------
 
     QPixmap pxmExpandAll(":/ZS/TreeView/TreeViewExpandAll.png");
-    pxmExpandAll.setMask(pxmExpandAll.createHeuristicMask());
 
     m_pBtnTreeViewExpandAll = new QPushButton();
     m_pBtnTreeViewExpandAll->setIcon(pxmExpandAll);
@@ -246,7 +244,6 @@ CWdgtIdxTree::CWdgtIdxTree(
     //----------------------
 
     QPixmap pxmCollapseAll(":/ZS/TreeView/TreeViewCollapseAll.png");
-    pxmCollapseAll.setMask(pxmCollapseAll.createHeuristicMask());
 
     m_pBtnTreeViewCollapseAll = new QPushButton();
     m_pBtnTreeViewCollapseAll->setIcon(pxmCollapseAll);
@@ -654,8 +651,8 @@ void CWdgtIdxTree::onTreeViewSelectionModelCurrentRowChanged(
 
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs  = "Curr {" + CModelIdxTree::ModelIdx2Str(i_modelIdxCurr) + "}";
-        strMthInArgs += ", Prev {" + CModelIdxTree::ModelIdx2Str(i_modelIdxPrev) + "}";
+        strMthInArgs  = "Curr {" + CModelIdxTree::modelIdx2Str(i_modelIdxCurr) + "}";
+        strMthInArgs += ", Prev {" + CModelIdxTree::modelIdx2Str(i_modelIdxPrev) + "}";
     }
 
     CMethodTracer mthTracer(

@@ -110,7 +110,6 @@ CWdgtIdxTreeTrcAdminObjs::CWdgtIdxTreeTrcAdminObjs(
     //------------------------------------
 
     QPixmap pxmResizeToContents(":/ZS/TreeView/TreeViewResizeToContents.png");
-    pxmResizeToContents.setMask(pxmResizeToContents.createHeuristicMask());
 
     m_pBtnTreeViewResizeRowsAndColumnsToContents = new QPushButton();
     m_pBtnTreeViewResizeRowsAndColumnsToContents->setIcon(pxmResizeToContents);
@@ -133,7 +132,6 @@ CWdgtIdxTreeTrcAdminObjs::CWdgtIdxTreeTrcAdminObjs(
     //--------------------
 
     QPixmap pxmExpandAll(":/ZS/TreeView/TreeViewExpandAll.png");
-    pxmExpandAll.setMask(pxmExpandAll.createHeuristicMask());
 
     m_pBtnTreeViewExpandAll = new QPushButton();
     m_pBtnTreeViewExpandAll->setIcon(pxmExpandAll);
@@ -156,7 +154,6 @@ CWdgtIdxTreeTrcAdminObjs::CWdgtIdxTreeTrcAdminObjs(
     //----------------------
 
     QPixmap pxmCollapseAll(":/ZS/TreeView/TreeViewCollapseAll.png");
-    pxmCollapseAll.setMask(pxmCollapseAll.createHeuristicMask());
 
     m_pBtnTreeViewCollapseAll = new QPushButton();
     m_pBtnTreeViewCollapseAll->setIcon(pxmCollapseAll);
@@ -262,7 +259,7 @@ void CWdgtIdxTreeTrcAdminObjs::onTreeViewExpanded( const QModelIndex& i_modelIdx
 
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "ModelIdx {" + CModelIdxTree::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelIdxTree::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(

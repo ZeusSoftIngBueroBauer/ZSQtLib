@@ -39,11 +39,6 @@ namespace ZS
 namespace System
 {
 class CIdxTree;
-
-namespace GUI
-{
-class CModelIdxTree;
-}
 }
 namespace QuickControls
 {
@@ -75,20 +70,12 @@ public: // class methods
               NameSpace ... Namespace of class without colons (e.g. ZSQuickControls).
               StyleNameAbbreviation ... Style name without ZSStyle (e.g. Windows). */
     static QString ContextPropertyName() { return "_ZSQuickControls_themeWindowsStyle"; }
-    /*! Returns the context property name by which the model containing the controls of this style
-        is accessible by the qml modules.
-        @note The following naming convention is followed:
-              _<NameSpace>_theme<StyleNameAbbreviation>Style_<ModelName>Model
-              NameSpace ... Namespace of class without colons (e.g. ZSQuickControls).
-              StyleNameAbbreviation ... Style name without ZSStyle (e.g. Windows).
-              ModelName ... Name of the model (e.g. "controls"). */
-    static QString ContextPropertyNameControlsModel() { return "_ZSQuickControls_themeWindowsStyle_controlsModel"; }
 public: // class methods
     static CThemeWindowsStyle* GetInstance();
-    static CThemeWindowsStyle* CreateInstance(QQmlApplicationEngine* i_pQmlAppEngine);
+    static CThemeWindowsStyle* CreateInstance(QQmlApplicationEngine* i_pQmlAppEngine, ZS::System::CIdxTree* i_pIdxTreeStyles);
     static void ReleaseInstance();
 protected: // ctors and dtor
-    CThemeWindowsStyle(QQmlApplicationEngine* i_pQmlAppEngine);
+    CThemeWindowsStyle(QQmlApplicationEngine* i_pQmlAppEngine, ZS::System::CIdxTree* i_pIdxTreeStyles);
     virtual ~CThemeWindowsStyle();
 signals:
     /*! Signal which is emitted if the main color has been changed.
@@ -111,11 +98,6 @@ protected: // instance members
     QColor m_clrMain;
     /*<! Reference counter for createInstance and releaseInstance. */
     int m_iRefCount;
-    /*<! Index tree containing the names of the controls implemented by this theme.
-         Each control must have a corresponding qml file in sub directory StyleName(). */
-    ZS::System::CIdxTree* m_pIdxTree;
-    /*<! The index tree model provides the data from the index tree to the viewers. */
-    ZS::System::GUI::CModelIdxTree* m_pModelIdxTree;
 
 }; // class CThemeWindowsStyle
 

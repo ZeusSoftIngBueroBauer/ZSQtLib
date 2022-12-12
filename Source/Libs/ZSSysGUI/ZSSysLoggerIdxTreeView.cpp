@@ -694,8 +694,6 @@ CTreeViewIdxTreeLoggers::CTreeViewIdxTreeLoggers(
     m_pActionNameSpaceTitle = new QAction("Name Space:", this);
 
     QPixmap pxmExpandAll(":/ZS/TreeView/TreeViewExpandAll.png");
-    pxmExpandAll.setMask(pxmExpandAll.createHeuristicMask());
-    //pxmExpandAll = pxmExpandAll.scaled(16,16);
     m_pActionNameSpaceExpand = new QAction(pxmExpandAll, "Expand", this);
     m_pMenuNameSpaceContext->addAction(m_pActionNameSpaceExpand);
 
@@ -709,8 +707,6 @@ CTreeViewIdxTreeLoggers::CTreeViewIdxTreeLoggers(
     }
 
     QPixmap pxmCollapseAll(":/ZS/TreeView/TreeViewCollapseAll.png");
-    pxmCollapseAll.setMask(pxmCollapseAll.createHeuristicMask());
-
     m_pActionNameSpaceCollapse = new QAction(pxmCollapseAll, "Collapse", this);
     m_pMenuNameSpaceContext->addAction(m_pActionNameSpaceCollapse);
 

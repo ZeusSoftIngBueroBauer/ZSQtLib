@@ -844,7 +844,7 @@ int CModelIdxTreeBranchContent::rowCount( const QModelIndex& i_modelIdxParent ) 
 
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "ModelIdxParent {" + CModelIdxTree::ModelIdx2Str(i_modelIdxParent) + "}";
+        strMthInArgs = "ModelIdxParent {" + CModelIdxTree::modelIdx2Str(i_modelIdxParent) + "}";
     }
 
     CMethodTracer mthTracer(
@@ -881,7 +881,7 @@ int CModelIdxTreeBranchContent::columnCount( const QModelIndex& i_modelIdxParent
 
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "ModelIdxParent {" + CModelIdxTree::ModelIdx2Str(i_modelIdxParent) + "}";
+        strMthInArgs = "ModelIdxParent {" + CModelIdxTree::modelIdx2Str(i_modelIdxParent) + "}";
     }
 
     CMethodTracer mthTracer(
@@ -1054,7 +1054,7 @@ Qt::ItemFlags CModelIdxTreeBranchContent::flags( const QModelIndex& i_modelIdx )
 
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "ModelIdx {" + CModelIdxTree::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelIdxTree::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
@@ -1184,8 +1184,8 @@ QVariant CModelIdxTreeBranchContent::data( const QModelIndex& i_modelIdx, int i_
 
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs  = "ModelIdx {" + CModelIdxTree::ModelIdx2Str(i_modelIdx) + "}";
-        strMthInArgs += ", Role: " + qItemDataRole2Str(i_iRole);
+        strMthInArgs  = "ModelIdx {" + CModelIdxTree::modelIdx2Str(i_modelIdx, i_iRole) + "}";
+        strMthInArgs += ", Role: " + CModelIdxTree::role2Str(i_iRole);
     }
 
     CMethodTracer mthTracer(
@@ -1253,7 +1253,7 @@ QVariant CModelIdxTreeBranchContent::data( const QModelIndex& i_modelIdx, int i_
                 }
                 else if( i_iRole == Qt::DecorationRole )
                 {
-                    varData = CModelIdxTree::GetIcon(pModelTreeEntry->entryType());
+                    varData = CModelIdxTree::getIcon(pModelTreeEntry->entryType());
                 }
                 else if( i_iRole == Qt::CheckStateRole )
                 {
@@ -1338,9 +1338,9 @@ bool CModelIdxTreeBranchContent::setData(
 
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs  = "ModelIdx {" + CModelIdxTree::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs  = "ModelIdx {" + CModelIdxTree::modelIdx2Str(i_modelIdx) + "}";
         strMthInArgs += ", Data: " + i_varData.toString();
-        strMthInArgs += ", Role: " + qItemDataRole2Str(i_iRole);
+        strMthInArgs += ", Role: " + CModelIdxTree::role2Str(i_iRole);
     }
 
     CMethodTracer mthTracer(
@@ -1472,9 +1472,9 @@ SErrResultInfo CModelIdxTreeBranchContent::canSetData(
 
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs  = "ModelIdx {" + CModelIdxTree::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs  = "ModelIdx {" + CModelIdxTree::modelIdx2Str(i_modelIdx) + "}";
         strMthInArgs += ", Data: " + i_varData.toString();
-        strMthInArgs += ", Role: " + qItemDataRole2Str(i_iRole);
+        strMthInArgs += ", Role: " + CModelIdxTree::role2Str(i_iRole);
     }
 
     CMethodTracer mthTracer(

@@ -135,7 +135,7 @@ bool CDelegateIdxTreeTrcAdminObjs::isCheckBoxEnabledHit(
     {
         strMthInArgs = "RectVisual: " + qRect2Str(i_rectVisual);
         strMthInArgs += ", Pos: " + qPoint2Str(i_ptPos);
-        strMthInArgs += ", ModelIdx {" + CModelIdxTreeTrcAdminObjs::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs += ", ModelIdx {" + CModelIdxTreeTrcAdminObjs::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
@@ -201,7 +201,7 @@ void CDelegateIdxTreeTrcAdminObjs::paint(
 
     if( m_eTrcDetailLevelNoisyMethods >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
@@ -291,7 +291,7 @@ QWidget* CDelegateIdxTreeTrcAdminObjs::createEditor(
 
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
@@ -423,7 +423,7 @@ void CDelegateIdxTreeTrcAdminObjs::setEditorData(
 
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
@@ -521,7 +521,7 @@ void CDelegateIdxTreeTrcAdminObjs::setModelData(
 
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
@@ -613,7 +613,7 @@ void CDelegateIdxTreeTrcAdminObjs::updateEditorGeometry(
 
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
@@ -835,8 +835,6 @@ CTreeViewIdxTreeTrcAdminObjs::CTreeViewIdxTreeTrcAdminObjs(
     m_pActionNameSpaceTitle = new QAction("Name Space:",this);
 
     QPixmap pxmExpandAll(":/ZS/TreeView/TreeViewExpandAll.png");
-    pxmExpandAll.setMask(pxmExpandAll.createHeuristicMask());
-    //pxmExpandAll = pxmExpandAll.scaled(16,16);
     m_pActionNameSpaceExpand = new QAction(pxmExpandAll, "Expand", this);
     m_pMenuNameSpaceContext->addAction(m_pActionNameSpaceExpand);
 
@@ -850,8 +848,6 @@ CTreeViewIdxTreeTrcAdminObjs::CTreeViewIdxTreeTrcAdminObjs(
     }
 
     QPixmap pxmCollapseAll(":/ZS/TreeView/TreeViewCollapseAll.png");
-    pxmCollapseAll.setMask(pxmCollapseAll.createHeuristicMask());
-
     m_pActionNameSpaceCollapse = new QAction(pxmCollapseAll, "Collapse", this);
     m_pMenuNameSpaceContext->addAction(m_pActionNameSpaceCollapse);
 
@@ -1032,7 +1028,7 @@ void CTreeViewIdxTreeTrcAdminObjs::expandRecursive( const QModelIndex& i_modelId
 
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
@@ -1081,7 +1077,7 @@ void CTreeViewIdxTreeTrcAdminObjs::collapseRecursive( const QModelIndex& i_model
 
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
@@ -1133,7 +1129,7 @@ void CTreeViewIdxTreeTrcAdminObjs::expand( const QModelIndex& i_modelIdx )
 
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
@@ -1168,7 +1164,7 @@ void CTreeViewIdxTreeTrcAdminObjs::collapse( const QModelIndex& i_modelIdx )
 
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
@@ -1207,7 +1203,7 @@ void CTreeViewIdxTreeTrcAdminObjs::onCollapsed( const QModelIndex& i_modelIdx )
 
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
@@ -1243,7 +1239,7 @@ void CTreeViewIdxTreeTrcAdminObjs::onExpanded( const QModelIndex& i_modelIdx )
 
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(

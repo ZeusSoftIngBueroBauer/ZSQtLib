@@ -452,10 +452,6 @@ int CModelIdxTreeEntry::add( CModelIdxTreeEntry* i_pModelTreeEntry )
         throw CException(__FILE__, __LINE__, EResultObjAlreadyInList, strKeyInParentBranch);
     }
 
-    QMap<QString, CModelIdxTreeEntry*>::iterator itModelEntry;
-    CModelIdxTreeEntry* pModelTreeEntry;
-    int idxEntry;
-
     switch( m_sortOrder )
     {
         case EIdxTreeSortOrder::Config:
@@ -495,20 +491,21 @@ int CModelIdxTreeEntry::add( CModelIdxTreeEntry* i_pModelTreeEntry )
                 m_arpTreeEntries.append(nullptr);
 
                 // Move all following entries one index backwards.
-                for( idxEntry = m_arpTreeEntries.size()-2; idxEntry >= idxInParentBranch; --idxEntry )
+                for( int idxEntry = m_arpTreeEntries.size()-2; idxEntry >= idxInParentBranch; --idxEntry )
                 {
-                    pModelTreeEntry = m_arpTreeEntries[idxEntry];
+                    CModelIdxTreeEntry* pModelTreeEntry = m_arpTreeEntries[idxEntry];
                     m_arpTreeEntries[idxEntry+1] = pModelTreeEntry;
                     pModelTreeEntry->setModelIndexInParentBranch(idxEntry+1);
                 }
                 m_arpTreeEntries[idxInParentBranch] = i_pModelTreeEntry;
             }
             break;
-        } // case EIdxTreeSortOrder::Config:
+        } // case EIdxTreeSortOrder::Config
 
         case EIdxTreeSortOrder::Ascending:
         {
-            itModelEntry = m_mappModelTreeEntries.insert(strKeyInParentBranch, i_pModelTreeEntry);
+            QMap<QString, CModelIdxTreeEntry*>::iterator itModelEntry =
+                m_mappModelTreeEntries.insert(strKeyInParentBranch, i_pModelTreeEntry);
 
             // Inserted before this entry (or appended at the end).
             ++itModelEntry;
@@ -520,22 +517,60 @@ int CModelIdxTreeEntry::add( CModelIdxTreeEntry* i_pModelTreeEntry )
                 m_arpTreeEntries.append(i_pModelTreeEntry);
             }
             // If inserted before an existing entry ..
-            else // if( itModelEntry != m_mappModelTreeEntries.end() )
+            else
             {
                 idxInParentBranch = itModelEntry.value()->modelIndexInParentBranch();
                 m_arpTreeEntries.append(nullptr);
 
                 // Move all following entries one index backwards.
-                for( idxEntry = m_arpTreeEntries.size()-2; idxEntry >= idxInParentBranch; --idxEntry )
+                for( int idxEntry = m_arpTreeEntries.size()-2; idxEntry >= idxInParentBranch; --idxEntry )
                 {
-                    pModelTreeEntry = m_arpTreeEntries[idxEntry];
+                    CModelIdxTreeEntry* pModelTreeEntry = m_arpTreeEntries[idxEntry];
                     m_arpTreeEntries[idxEntry+1] = pModelTreeEntry;
                     pModelTreeEntry->setModelIndexInParentBranch(idxEntry+1);
                 }
                 m_arpTreeEntries[idxInParentBranch] = i_pModelTreeEntry;
             }
             break;
-        } // case EIdxTreeSortOrder::Ascending:
+        } // case EIdxTreeSortOrder::Ascending
+
+        case EIdxTreeSortOrder::Descending:
+        {
+            m_mappModelTreeEntries.insert(strKeyInParentBranch, i_pModelTreeEntry);
+
+            QMapIterator<QString, CModelIdxTreeEntry*> itModelEntry(m_mappModelTreeEntries);
+            itModelEntry.toBack();
+            while(itModelEntry.hasPrevious())
+            {
+                itModelEntry.previous();
+                ++idxInParentBranch;
+                if( m_mappModelTreeEntries.value(itModelEntry.key()) == i_pModelTreeEntry)
+                {
+                    break;
+                }
+            }
+
+            // If appended at the end ..
+            if( idxInParentBranch == m_arpTreeEntries.size() )
+            {
+                m_arpTreeEntries.append(i_pModelTreeEntry);
+            }
+            // If inserted before an existing entry ..
+            else
+            {
+                m_arpTreeEntries.append(nullptr);
+
+                // Move all following entries one index backwards.
+                for( int idxEntry = idxInParentBranch; idxEntry < m_arpTreeEntries.size()-1; ++idxEntry )
+                {
+                    CModelIdxTreeEntry* pModelTreeEntry = m_arpTreeEntries[idxEntry];
+                    m_arpTreeEntries[idxEntry+1] = pModelTreeEntry;
+                    pModelTreeEntry->setModelIndexInParentBranch(idxEntry+1);
+                }
+                m_arpTreeEntries[idxInParentBranch] = i_pModelTreeEntry;
+            }
+            break;
+        } // case EIdxTreeSortOrder::Descending
 
         default:
         {
@@ -642,19 +677,21 @@ void CModelIdxTreeEntry::onChildRenamed(
         }
 
         m_mappModelTreeEntries.remove(strKeyInParentBranchPrev);
-        QMap<QString, CModelIdxTreeEntry*>::iterator itModelEntry =
-            m_mappModelTreeEntries.insert(strKeyInParentBranchNew, i_pModelTreeEntry);
 
-        if( m_sortOrder != EIdxTreeSortOrder::Config )
+        if( m_sortOrder == EIdxTreeSortOrder::Ascending )
         {
+            QMap<QString, CModelIdxTreeEntry*>::iterator itModelEntry =
+                m_mappModelTreeEntries.insert(strKeyInParentBranchNew, i_pModelTreeEntry);
+
             // Inserted before this entry (or appended at the end).
             ++itModelEntry;
 
-            int idxInParentBranch = m_arpTreeEntries.size();
+            int idxInParentBranch = -1;
 
             // If appended at the end ..
             if( itModelEntry == m_mappModelTreeEntries.end() )
             {
+                idxInParentBranch = m_arpTreeEntries.size();
                 m_arpTreeEntries.append(i_pModelTreeEntry);
             }
             // If inserted before an existing entry ..
@@ -665,6 +702,45 @@ void CModelIdxTreeEntry::onChildRenamed(
 
                 // Move all following entries one index backwards.
                 for( int idxEntry = m_arpTreeEntries.size()-2; idxEntry >= idxInParentBranch; --idxEntry )
+                {
+                    CModelIdxTreeEntry* pModelTreeEntry = m_arpTreeEntries[idxEntry];
+                    m_arpTreeEntries[idxEntry+1] = pModelTreeEntry;
+                    pModelTreeEntry->setModelIndexInParentBranch(idxEntry+1);
+                }
+                m_arpTreeEntries[idxInParentBranch] = i_pModelTreeEntry;
+            }
+            i_pModelTreeEntry->setModelIndexInParentBranch(idxInParentBranch);
+        }
+        else if( m_sortOrder == EIdxTreeSortOrder::Descending )
+        {
+            m_mappModelTreeEntries.insert(strKeyInParentBranchNew, i_pModelTreeEntry);
+
+            int idxInParentBranch = -1;
+
+            QMapIterator<QString, CModelIdxTreeEntry*> itModelEntry(m_mappModelTreeEntries);
+            itModelEntry.toBack();
+            while(itModelEntry.hasPrevious())
+            {
+                itModelEntry.previous();
+                ++idxInParentBranch;
+                if( m_mappModelTreeEntries.value(itModelEntry.key()) == i_pModelTreeEntry)
+                {
+                    break;
+                }
+            }
+
+            // If appended at the end ..
+            if( idxInParentBranch == m_arpTreeEntries.size() )
+            {
+                m_arpTreeEntries.append(i_pModelTreeEntry);
+            }
+            // If inserted before an existing entry ..
+            else
+            {
+                m_arpTreeEntries.append(nullptr);
+
+                // Move all following entries one index backwards.
+                for( int idxEntry = idxInParentBranch; idxEntry < m_arpTreeEntries.size()-1; ++idxEntry )
                 {
                     CModelIdxTreeEntry* pModelTreeEntry = m_arpTreeEntries[idxEntry];
                     m_arpTreeEntries[idxEntry+1] = pModelTreeEntry;

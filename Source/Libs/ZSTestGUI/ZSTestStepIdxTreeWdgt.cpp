@@ -232,7 +232,6 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
     //-------------------
 
     QPixmap pxmViewMode = viewMode2Pixmap(m_viewMode, m_szBtns);
-    //pxmViewMode.setMask(pxmViewMode.createHeuristicMask());
 
     m_pBtnViewMode = new QPushButton();
     m_pBtnViewMode->setFixedSize(m_szBtns);
@@ -254,7 +253,6 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
     //------------------------------------
 
     QPixmap pxmResizeToContents(":/ZS/TreeView/TreeViewResizeToContents.png");
-    //pxmResizeToContents.setMask(pxmResizeToContents.createHeuristicMask());
 
     m_pBtnTreeViewResizeRowsAndColumnsToContents = new QPushButton();
     m_pBtnTreeViewResizeRowsAndColumnsToContents->setIcon(pxmResizeToContents);
@@ -276,7 +274,6 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
     //--------------------
 
     QPixmap pxmExpandAll(":/ZS/TreeView/TreeViewExpandAll.png");
-    //pxmExpandAll.setMask(pxmExpandAll.createHeuristicMask());
 
     m_pBtnTreeViewExpandAll = new QPushButton();
     m_pBtnTreeViewExpandAll->setIcon(pxmExpandAll);
@@ -298,7 +295,6 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
     //----------------------
 
     QPixmap pxmCollapseAll(":/ZS/TreeView/TreeViewCollapseAll.png");
-    //pxmCollapseAll.setMask(pxmCollapseAll.createHeuristicMask());
 
     m_pBtnTreeViewCollapseAll = new QPushButton();
     m_pBtnTreeViewCollapseAll->setIcon(pxmCollapseAll);
@@ -621,7 +617,6 @@ void CWdgtIdxTreeTestSteps::setViewMode( EViewMode i_viewMode )
         } // if( m_viewMode == EViewMode::NavPanelAndLeaveContent )
 
         QPixmap pxmViewMode = viewMode2Pixmap(m_viewMode, m_szBtns);
-        pxmViewMode.setMask(pxmViewMode.createHeuristicMask());
 
         m_pBtnViewMode->setIcon(pxmViewMode);
 

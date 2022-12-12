@@ -54,7 +54,7 @@ enum class EIdxTreeSortOrder
 {
     Config              = 0,    // As provided (configured) by the referenced index tree branches.
     Ascending           = 1,    // Child branches alphabetically sorted in ascending order followed by the leaves.
-    //LogicalDescending = 2,    // Child branches alphabetically sorted in descending order followed by the leaves.
+    Descending          = 2,    // Child branches alphabetically sorted in descending order followed by the leaves.
     //ByNameAscending   = 3,    // Child branches and leaves mixed alphabetically sorted in ascending order.
     //ByNameDescending  = 4,    // Child branches and leaves mixed alphabetically sorted in descending order.
     Count,
@@ -110,13 +110,16 @@ public: // type definitions and constants
     };
 public: // type definitions and constants
     enum EColumn {
-        EColumnTreeEntryName     = 0,
-        EColumnInternalId        = 1,
-        EColumnTreeEntryType     = 2,
-        EColumnIdxInTree         = 3,
-        EColumnIdxInParentBranch = 4,
-        EColumnKeyInTree         = 5,
-        EColumnKeyInParentBranch = 6,
+        EColumnTreeEntryTypeImageUrl  = 0,
+        EColumnTreeEntryTypeIcon      = 1,
+        EColumnTreeEntryType          = 2,
+        EColumnTreeEntryNameDecorated = 3,
+        EColumnTreeEntryName          = 4,
+        EColumnInternalId             = 5,
+        EColumnIdxInTree              = 6,
+        EColumnIdxInParentBranch      = 7,
+        EColumnKeyInTree              = 8,
+        EColumnKeyInParentBranch      = 9,
         EColumnCount,
         EColumnUndefined
     };
@@ -130,10 +133,16 @@ public: // type definitions and constants
     };
     Q_ENUM(ERole);
 public: // class methods
-    static QIcon GetIcon( EIdxTreeEntryType i_entryType );
-    static QString ModelIdx2Str( const QModelIndex& i_modelIdx, bool i_bIncludeId = false );
+    static EColumn role2Column(int i_iRole);
+    static QString role2Str(int i_iRole);
+    static int byteArr2Role(const QByteArray& i_byteArrRole);
+    static int column2Role(EColumn i_clm);
+    Q_INVOKABLE static QString modelIdx2Str( const QModelIndex& i_modelIdx, int i_iRole = -1, bool i_bIncludeId = false );
+public: // class methods
+    static QString getImageUrl( EIdxTreeEntryType i_entryType );
+    static QIcon getIcon( EIdxTreeEntryType i_entryType );
 protected: // class methods
-    static bool AreIconsCreated();
+    static bool areIconsCreated();
 public: // ctors and dtor
     CModelIdxTree(
         CIdxTree* i_pIdxTree = nullptr,
@@ -147,12 +156,6 @@ signals:
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
     virtual QString className() const { return ClassName(); }
-public: // auxiliary instance methods
-    QString role2Str(int i_iRole) const;
-    int byteArr2Role(const QByteArray& i_byteArrRole) const;
-    int column2Role(EColumn i_clm) const;
-    EColumn role2Column(int i_iRole) const;
-    QString modelIndex2Str( const QModelIndex& modelIdx, bool i_bIncludeId = false ) const;
 public: // instance methods
     void setIdxTree( CIdxTree* i_pIdxTree );
     CIdxTree* idxTree() { return m_pIdxTree; }
@@ -198,6 +201,9 @@ protected: // instance methods
     void clear( CModelIdxTreeEntry* i_pModelBranch, bool i_bDestroyTreeEntries = true );
     void remove( CModelIdxTreeEntry* i_pModelTreeEntry );
     //void updateKeyInTree( CModelIdxTreeEntry* i_pModelTreeEntry );
+public: // instance methods
+    Q_INVOKABLE int columnWidthByColumn(int i_iClm, int i_iFontPixelSize = 0, const QModelIndex& i_modelIdxParent = QModelIndex());
+    Q_INVOKABLE int columnWidthByRole(const QByteArray& i_byteArrRole, int i_iFontPixelSize = 0, const QModelIndex& i_modelIdxParent = QModelIndex());
 public: // overridables of base class QAbstractItemModel
     virtual QHash<int, QByteArray> roleNames() const override;
 public: // overridables of base class QAbstractItemModel
@@ -265,6 +271,8 @@ protected: // class members
     static QIcon*   s_pIconRoot;
     static QIcon*   s_pIconBranch;
     static QIcon*   s_pIconLeave;
+    static QHash<int, QByteArray> s_roleNames;
+    static QHash<QByteArray, int> s_roleValues;
 protected: // instance members
     CIdxTree*                          m_pIdxTree;
     EIdxTreeEntryType                  m_entryTypeFilter;
@@ -278,8 +286,7 @@ protected: // instance members
                (e.g. "L:ZS::Data::CDataTable::FDAC::RF1In") */
     QMap<QString, CModelIdxTreeEntry*> m_mappModelTreeEntries;
     CModelIdxTreeEntry*                m_pModelRoot;
-    QHash<int, QByteArray>             m_roleNames;
-    QHash<QByteArray, int>             m_roleValues;
+    QVector<int>                       m_ariClmWidths;
     #ifdef ZS_TRACE_GUI_MODELS
     /*!< Trace detail level for method tracing.
          Trace output may not be controlled by trace admin objects

@@ -36,9 +36,22 @@ ColumnLayout {
     readonly property string className: "IdxTreeWdgt"
     readonly property string objectName: model.objectName
 
+    property var myTrcAdminObj: _ZSSys_trcServer.getTraceAdminObj(
+        nameSpace, className, objectName)
+    Component.onDestruction: {
+        _ZSSys_trcServer.releaseTraceAdminObj(myTrcAdminObj);
+    }
+
     property alias model: treeView.model
     property string viewMode: "NavPanelOnly" // | "NavPanelAndBranchContent"
-    property string sortOrder: "Config" // | "Ascending"
+    //property string sortOrder: treeView.model.sortOrder // "Config" | "Ascending" | "Descending"
+
+    /*
+    onSortOrderChanged: {
+        myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "onSortOrderChanged", root.sortOrder)
+        myTrcAdminObj.traceMethodLeave("EnterLeave", "onSortOrderChanged")
+    }
+    */
 
     id: root
     spacing: 4
@@ -75,32 +88,43 @@ ColumnLayout {
                 }
             }
             ToolButton {
-                id: btnTreeViewResizeRowsAndColumnsToContents
+                id: btnTreeViewResizeColumnsToContents
                 icon.source: "qrc:/ZS/TreeView/TreeViewResizeToContents.png"
                 onClicked: {
-                    //treeView.resizeColumnsToContents();
+                    treeView._resizeColumnsToContents();
                 }
             }
             ToolButton {
                 id: btnTreeViewExpandAll
                 icon.source: "qrc:/ZS/TreeView/TreeViewExpandAll.png"
                 onClicked: {
-                    //treeView.expandAll();
-                    //treeView.resizeColumnsToContents();
+                    treeView.expandAll();
+                    treeView.resizeColumnsToContents();
                 }
             }
             ToolButton {
                 id: btnTreeViewCollapsedAll
                 icon.source: "qrc:/ZS/TreeView/TreeViewCollapseAll.png"
                 onClicked: {
-                    //treeView.collapseAll();
+                    treeView.collapseAll();
+                    treeView.resizeColumnsToContents();
                 }
             }
             ToolButton {
                 id: btnSortOrder
-                icon.source: "qrc:/ZS/TreeView/TreeViewSortOrder" + root.sortOrder + ".png"
+                icon.source: "qrc:/ZS/TreeView/TreeViewSortOrder" + treeView.model.sortOrder + ".png"
                 onClicked: {
-                    root.sortOrder = root.sortOrder === "Config" ? "Ascending" : "Config"
+                    myTrcAdminObj.traceObjMethodEnterWithInArgs("EnterLeave", "btnSortOrder", "onClicked", treeView.model.sortOrder)
+                    if(treeView.model.sortOrder === "Config") {
+                        treeView.model.sortOrder = "Ascending";
+                    }
+                    else if(treeView.model.sortOrder === "Ascending") {
+                        treeView.model.sortOrder = "Descending";
+                    }
+                    else if(treeView.model.sortOrder === "Descending") {
+                        treeView.model.sortOrder = "Config";
+                    }
+                    myTrcAdminObj.traceObjMethodLeaveWithReturn("EnterLeave", "btnSortOrder", "onClicked", treeView.model.sortOrder)
                 }
             }
             TextField {
@@ -153,14 +177,22 @@ ColumnLayout {
         }
 
         Component.onCompleted: {
+            myTrcAdminObj.traceMethodEnter("EnterLeave", "Component.onCompleted")
             if(this.__listView) {
                 this.__listView.add = transitionAdd
                 this.__listView.displaced = transitionDisplaced
                 this.__listView.spacing = 1
             }
+            myTrcAdminObj.traceMethodLeave("EnterLeave", "Component.onCompleted")
         }
         Component.onDestruction: {
             _ZSSys_trcServer.releaseTraceAdminObj(myTrcAdminObj);
+        }
+
+        onModelChanged: {
+            myTrcAdminObj.traceMethodEnter("EnterLeave", "onModelChanged");
+            myTrcAdminObj.traceMethod("Debug", "onModelChanged", "Model: " + model.objectName);
+            myTrcAdminObj.traceMethodLeave("EnterLeave", "onModelChanged");
         }
 
         id: treeView
@@ -168,14 +200,117 @@ ColumnLayout {
         Layout.fillHeight: true
         alternatingRowColors: true
         clip: true
-        selectionMode: C1.SelectionMode.ExtendedSelection
+        //selectionMode: C1.SelectionMode.ExtendedSelection
 
         property var fontPixelSize: 0
+        property var columnSpacing: 10
 
+        // Need a different name as QML does not allow to override functions.
+        function _resizeColumnsToContents() {
+            myTrcAdminObj.traceMethodEnter("EnterLeave", "_resizeColumnsToContents");
+            /* The column width of the first column depends not only by the maximum
+                width of the column but also on the expanded depth because of indentations
+                and decoration icons. Not easy to calculate .....
+            clmName.width = treeView.model.columnWidthByRole(clmName.role, treeView.fontPixelSize) */
+            resizeColumnsToContents(); // This resizes the Name column to a good size
+            // The width of the headers is not taken into account.
+            clmInternalId.width = treeView.model.columnWidthByRole(clmInternalId.role, treeView.fontPixelSize) + 2*treeView.columnSpacing
+            clmIdxInTree.width = treeView.model.columnWidthByRole(clmIdxInTree.role, treeView.fontPixelSize) + 2*treeView.columnSpacing
+            clmIdxInParentBranch.width = treeView.model.columnWidthByRole(clmIdxInParentBranch.role, treeView.fontPixelSize) + 2*treeView.columnSpacing
+            clmKeyInTree.width = treeView.model.columnWidthByRole(clmKeyInTree.role, treeView.fontPixelSize) + 2*treeView.columnSpacing
+            clmKeyInParentBranch.width = treeView.model.columnWidthByRole(clmKeyInParentBranch.role, treeView.fontPixelSize) + 2*treeView.columnSpacing
+            myTrcAdminObj.traceMethodLeave("EnterLeave", "_resizeColumnsToContents");
+        }
+
+        function expandAll() {
+            myTrcAdminObj.traceMethodEnter("EnterLeave", "expandAll");
+            expandRecursive(model.index(0,0));
+            myTrcAdminObj.traceMethodLeave("EnterLeave", "expandAll");
+        }
+
+        function expandRecursive(i_modelIdx) {
+            myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "expandRecursive", model.modelIdx2Str(i_modelIdx));
+            if(!isExpanded(i_modelIdx)) {
+                expand(i_modelIdx)
+            }
+            for(var iRow = 0; iRow < model.rowCount(i_modelIdx); iRow++) {
+                var modelIdx = model.index(iRow, 0, i_modelIdx);
+                expandRecursive(modelIdx);
+            }
+            myTrcAdminObj.traceMethodLeave("EnterLeave", "expandRecursive");
+        }
+
+        function collapseAll() {
+            myTrcAdminObj.traceMethodEnter("EnterLeave", "collapseAll");
+            collapseRecursive(model.index(0,0));
+            myTrcAdminObj.traceMethodLeave("EnterLeave", "collapseAll");
+        }
+
+        function collapseRecursive(i_modelIdx) {
+            myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "collapseRecursive", model.modelIdx2Str(i_modelIdx));
+            for(var iRow = 0; iRow < model.rowCount(i_modelIdx); iRow++) {
+                var modelIdx = model.index(iRow, 0, i_modelIdx);
+                collapseRecursive(modelIdx);
+            }
+            if(isExpanded(i_modelIdx)) {
+                collapse(i_modelIdx)
+            }
+            myTrcAdminObj.traceMethodLeave("EnterLeave", "collapseRecursive");
+        }
+
+        /* When using a delegate "resizeColumnsToContents" does not work anymore.
         C1.TableViewColumn {
-            id: clmResult
+            id: clmType
             title: "Name"
-            role: "Name"
+            role: "TreeEntryNameDecorated"
+            delegate: Item {
+                RowLayout {
+                    Image {
+                        id: imgType
+                        Layout.maximumWidth: 16
+                        Layout.maximumHeight: 16
+                        Layout.minimumWidth: 16
+                        source: styleData.value
+                        fillMode: Image.PreserveAspectFit
+                    }
+                    Label {
+                        text: "Hello World"
+                        Layout.fillWidth: true
+                        Layout.minimumWidth: 64
+                    }
+                }
+            }
+        }
+        */
+        C1.TableViewColumn {
+            id: clmName
+            title: "Name"
+            role: "TreeEntryName"
+        }
+        C1.TableViewColumn {
+            id: clmInternalId
+            title: "InternalId"
+            role: "InternalId"
+        }
+        C1.TableViewColumn {
+            id: clmIdxInTree
+            title: "IdxInTree"
+            role: "IdxInTree"
+        }
+        C1.TableViewColumn {
+            id: clmIdxInParentBranch
+            title: "IdxInParentBranch"
+            role: "IdxInParentBranch"
+        }
+        C1.TableViewColumn {
+            id: clmKeyInTree
+            title: "KeyInTree"
+            role: "KeyInTree"
+        }
+        C1.TableViewColumn {
+            id: clmKeyInParentBranch
+            title: "KeyInParentBranch"
+            role: "KeyInParentBranch"
         }
     }
 }

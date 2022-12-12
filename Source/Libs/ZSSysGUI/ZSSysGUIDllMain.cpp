@@ -207,13 +207,9 @@ QPixmap ZS::System::GUI::getErrPixmap( EResultSeverity i_severity, const QSize& 
     {
         pxm = *s_arpErrIconPixmaps[i_severity];
     }
-
     pxm = pxm.scaled(i_sz.width(), i_sz.height(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    pxm.setMask(pxm.createHeuristicMask());
-
     return pxm;
-
-} // getErrPixmap
+}
 
 //------------------------------------------------------------------------------
 QIcon ZS::System::GUI::getErrIcon( EResultSeverity i_severity )
@@ -240,8 +236,7 @@ QIcon ZS::System::GUI::getErrIcon( EResultSeverity i_severity )
         }
     }
     return icon;
-
-} // getErrIcon
+}
 
 //------------------------------------------------------------------------------
 static void createErrIconPixmaps()
@@ -270,10 +265,6 @@ static void createErrIconPixmaps()
                 #pragma warning( default : 4005 )
                 #pragma pop_macro("_ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE")
                 #endif
-
-                //QSize sizePxm = pPixmap->size();
-
-                pPixmap->setMask(pPixmap->createHeuristicMask());
 
                 s_arpErrIconPixmaps[iSeverity] = pPixmap;
             }
