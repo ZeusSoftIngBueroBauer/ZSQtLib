@@ -135,10 +135,10 @@ CApplication::CApplication(
     m_pQmlAppEngine->addImportPath(":/imports");
 
     m_pIdxTreeStyles = new CIdxTree("ZSStyles");
+    m_pModelIdxTreeStyles = new CModelIdxTree(m_pIdxTreeStyles);
+    m_pModelIdxTreeStyles->setSortOrder(EIdxTreeSortOrder::Ascending);
 
     m_pThemeWindowsStyle = CThemeWindowsStyle::CreateInstance(m_pQmlAppEngine, m_pIdxTreeStyles);
-
-    m_pModelIdxTreeStyles = new CModelIdxTree(m_pIdxTreeStyles);
 
     QQmlContext* pQmlCtx = m_pQmlAppEngine->rootContext();
 

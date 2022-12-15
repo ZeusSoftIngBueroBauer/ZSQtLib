@@ -3,5 +3,7 @@ module ZSSysGUI
 ErrLogDlg 1.0 ZSSysErrLogDlg.qml
 ErrLogIcon 1.0 ZSSysErrLogIcon.qml
 ErrLogWdgt 1.0 ZSSysErrLogWdgt.qml
+IdxTreeTableViewBranchContent 1.0 ZSSysIdxTreeTableViewBranchContent.qml
+IdxTreeView 1.0 ZSSysIdxTreeView.qml
 IdxTreeWdgt 1.0 ZSSysIdxTreeWdgt.qml
 PushButton 1.0 ZSSysPushButton.qml

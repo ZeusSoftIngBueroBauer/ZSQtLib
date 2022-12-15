@@ -1257,9 +1257,9 @@ QVariant CModelIdxTreeBranchContent::data( const QModelIndex& i_modelIdx, int i_
                 }
                 else if( i_iRole == Qt::CheckStateRole )
                 {
-                    //bool bIsSelected = pModelTreeEntry->isSelected();
-                    //Qt::CheckState checkState = bIsSelected ? Qt::Checked : Qt::Unchecked;
-                    //varData = checkState;
+                    bool bIsSelected = pModelTreeEntry->isSelected();
+                    Qt::CheckState checkState = bIsSelected ? Qt::Checked : Qt::Unchecked;
+                    varData = checkState;
                 }
                 break;
             }

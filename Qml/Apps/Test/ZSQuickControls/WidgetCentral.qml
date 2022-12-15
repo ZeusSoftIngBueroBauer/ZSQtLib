@@ -60,6 +60,7 @@ Item {
             Layout.row: 0
             Layout.rowSpan: 4
             Layout.fillWidth: true
+            Layout.fillHeight: true
         }
 
         Label {

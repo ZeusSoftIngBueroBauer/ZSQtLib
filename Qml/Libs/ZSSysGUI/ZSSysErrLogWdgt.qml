@@ -35,6 +35,11 @@ ColumnLayout {
     readonly property string nameSpace: "ZS::System::GUI::Qml"
     readonly property string className: "ErrLogWdgt"
     readonly property string objectName: _ZSSysGUI_errLogModel.objectName
+    property var myTrcAdminObj: _ZSSys_trcServer.getTraceAdminObj(
+        root.nameSpace, className, root.objectName)
+    Component.onDestruction: {
+        _ZSSys_trcServer.releaseTraceAdminObj(myTrcAdminObj);
+    }
 
     property alias model: tableView.model
 
@@ -42,13 +47,6 @@ ColumnLayout {
     spacing: 4
 
     ToolBar {
-        property string className: root.className + "::" + "ToolBar"
-        property var myTrcAdminObj: _ZSSys_trcServer.getTraceAdminObj(
-            root.nameSpace, className, root.objectName)
-        Component.onDestruction: {
-            _ZSSys_trcServer.releaseTraceAdminObj(myTrcAdminObj);
-        }
-
         id: toolBarHeadline
         Layout.fillWidth: true
 
@@ -124,10 +122,6 @@ ColumnLayout {
     }
 
     C1.TableView {
-        property string className: root.className + "::" + "TableView"
-        property var myTrcAdminObj: _ZSSys_trcServer.getTraceAdminObj(
-            root.nameSpace, className, root.objectName)
-
         Transition {
             id: transitionAdd
             PropertyAction { property: "transformOrigin"; value: Item.TopLeft }
@@ -148,9 +142,6 @@ ColumnLayout {
                 this.__listView.displaced = transitionDisplaced
                 this.__listView.spacing = 1
             }
-        }
-        Component.onDestruction: {
-            _ZSSys_trcServer.releaseTraceAdminObj(myTrcAdminObj);
         }
 
         id: tableView

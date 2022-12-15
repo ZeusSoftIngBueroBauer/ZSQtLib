@@ -52,11 +52,9 @@ Type definitions and constants
 enum class EIdxTreeSortOrder
 //------------------------------------------------------------------------------
 {
-    Config              = 0,    // As provided (configured) by the referenced index tree branches.
-    Ascending           = 1,    // Child branches alphabetically sorted in ascending order followed by the leaves.
-    Descending          = 2,    // Child branches alphabetically sorted in descending order followed by the leaves.
-    //ByNameAscending   = 3,    // Child branches and leaves mixed alphabetically sorted in ascending order.
-    //ByNameDescending  = 4,    // Child branches and leaves mixed alphabetically sorted in descending order.
+    Config     = 0,    // As provided (configured) by the referenced index tree branches.
+    Ascending  = 1,    // Childs alphabetically sorted in ascending order.
+    Descending = 2,    // Childs alphabetically sorted in descending order.
     Count,
     Undefined
 };
@@ -110,11 +108,11 @@ public: // type definitions and constants
     };
 public: // type definitions and constants
     enum EColumn {
-        EColumnTreeEntryTypeImageUrl  = 0,
-        EColumnTreeEntryTypeIcon      = 1,
-        EColumnTreeEntryType          = 2,
-        EColumnTreeEntryNameDecorated = 3,
-        EColumnTreeEntryName          = 4,
+        EColumnTreeEntryName          = 0,
+        EColumnTreeEntryNameDecorated = 1,
+        EColumnTreeEntryTypeImageUrl  = 2,
+        EColumnTreeEntryTypeIcon      = 3,
+        EColumnTreeEntryType          = 4,
         EColumnInternalId             = 5,
         EColumnIdxInTree              = 6,
         EColumnIdxInParentBranch      = 7,
@@ -153,6 +151,7 @@ public: // ctors and dtor
 signals:
     void sortOrderChanged(const QString& i_strSortOrder);
     void sortOrderChanged(EIdxTreeSortOrder i_sortOrder);
+    void excludeLeavesChanged(bool i_bExcludeLeaves);
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
     virtual QString className() const { return ClassName(); }
@@ -160,14 +159,16 @@ public: // instance methods
     void setIdxTree( CIdxTree* i_pIdxTree );
     CIdxTree* idxTree() { return m_pIdxTree; }
 public: // instance methods
+    Q_PROPERTY(QString nodeSeparator READ nodeSeparator CONSTANT)
     QString nodeSeparator() const;
     CModelIdxTreeEntry* modelRoot() const { return m_pModelRoot; }
     QMap<QString, CModelIdxTreeEntry*> treeEntriesMap() const { return m_mappModelTreeEntries; }
 public: // instance methods
-    void setFilter( EIdxTreeEntryType i_entryType );
-    EIdxTreeEntryType getFilter() const { return m_entryTypeFilter; }
+    Q_PROPERTY(bool excludeLeaves READ areLeavesExcluded WRITE setExcludeLeaves NOTIFY excludeLeavesChanged)
+    void setExcludeLeaves(bool i_bExcludeLeaves);
+    bool areLeavesExcluded() const;
 protected: // instance methods
-    void setFilter( CModelIdxTreeEntry* i_pModelBranch, EIdxTreeEntryType i_entryType, bool i_bRecursive );
+    void setExcludeLeaves( CModelIdxTreeEntry* i_pModelBranch, bool i_bExcludeLeaves, bool i_bRecursive );
 public: // instance methods
     Q_PROPERTY(QString sortOrder READ sortOrderAsString WRITE setSortOrder NOTIFY sortOrderChanged)
     void setSortOrder( EIdxTreeSortOrder i_sortOrder );
@@ -176,6 +177,15 @@ public: // instance methods
     QString sortOrderAsString() const;
 protected: // instance methods
     void setSortOrder( CModelIdxTreeEntry* i_pModelBranch, EIdxTreeSortOrder i_sortOrder, bool i_bRecursive );
+public: // instance methods
+    Q_INVOKABLE QString getTreeEntryTypeAsString( const QModelIndex& i_modelIdx ) const;
+    Q_INVOKABLE QString getTreeEntryName( const QModelIndex& i_modelIdx ) const;
+    Q_INVOKABLE QString getTreeEntryPath( const QModelIndex& i_modelIdx ) const;
+    Q_INVOKABLE QString getTreeEntryAbsoluteNodePath( const QModelIndex& i_modelIdx ) const;
+    Q_INVOKABLE QString getTreeEntryKeyInTree( const QModelIndex& i_modelIdx ) const;
+    Q_INVOKABLE int getTreeEntryIndexInTree( const QModelIndex& i_modelIdx ) const;
+    Q_INVOKABLE QString getTreeEntryKeyInParentPath( const QModelIndex& i_modelIdx ) const;
+    Q_INVOKABLE int getTreeEntryKeyIndexInParentPath( const QModelIndex& i_modelIdx ) const;
 public: // instance methods
     void setIsExpanded( CModelIdxTreeEntry* i_pModelBranch, bool i_bIsExpanded );
     bool areAllParentBranchesExpanded( CModelIdxTreeEntry* i_pModelBranch ) const;
@@ -238,6 +248,9 @@ protected: // to trace emitting signals for debugging purposes
     void emit_headerDataChanged( Qt::Orientation i_orientation, int i_iFirstSection, int i_iLastSection );
     void emit_layoutChanged( const QList<QPersistentModelIndex>& i_arModelIdxsParents = QList<QPersistentModelIndex>(), QAbstractItemModel::LayoutChangeHint i_hint = QAbstractItemModel::NoLayoutChangeHint );
     void emit_layoutAboutToBeChanged( const QList<QPersistentModelIndex>& i_arModelIdxsParents = QList<QPersistentModelIndex>(), QAbstractItemModel::LayoutChangeHint i_hint = QAbstractItemModel::NoLayoutChangeHint );
+    void emit_sortOrderChanged(const QString& i_strSortOrder);
+    void emit_sortOrderChanged(EIdxTreeSortOrder i_sortOrder);
+    void emit_excludeLeavesChanged(bool i_bExcludeLeaves);
 protected: // reimplemented to trace emitting signals for debugging purposes
     inline QModelIndex _createIndex( int i_iRow, int i_iCol, void* i_pvData = Q_NULLPTR ) const;
     inline QModelIndex _createIndex( int i_iRow, int i_iCol, quintptr i_uId ) const;
@@ -275,7 +288,7 @@ protected: // class members
     static QHash<QByteArray, int> s_roleValues;
 protected: // instance members
     CIdxTree*                          m_pIdxTree;
-    EIdxTreeEntryType                  m_entryTypeFilter;
+    bool                               m_bExcludeLeaves;
     EIdxTreeSortOrder                  m_sortOrder;
     /*!< Need a copy of the index tree entries as entries may be added, changed
          or removed from different threads. When removing an entry the signal

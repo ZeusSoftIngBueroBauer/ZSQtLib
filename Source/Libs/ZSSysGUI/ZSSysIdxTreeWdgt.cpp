@@ -407,7 +407,7 @@ void CWdgtIdxTree::setViewMode( EViewMode i_viewMode )
             m_pSpcHeadLine = new QSpacerItem(0, 24, QSizePolicy::Expanding);
             m_pLytHeadLine->addSpacerItem(m_pSpcHeadLine);
 
-            m_pModel->setFilter(EIdxTreeEntryType::Undefined);
+            m_pModel->setExcludeLeaves(false);
         }
         else if( m_viewMode == EViewMode::NavPanelAndBranchContent )
         {
@@ -439,7 +439,7 @@ void CWdgtIdxTree::setViewMode( EViewMode i_viewMode )
                 }
                 m_pSplitter->addWidget(m_pTableViewBranchContent);
             }
-            m_pModel->setFilter(EIdxTreeEntryType::Branch);
+            m_pModel->setExcludeLeaves(true);
         }
 
         QPixmap pxmViewMode = viewMode2Pixmap(m_viewMode, m_szBtns);

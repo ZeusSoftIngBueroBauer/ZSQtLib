@@ -66,7 +66,6 @@ public: // instance methods
     QString name() const;
     QString path() const;
 public: // instance methods
-    //CIdxTreeEntry* parentBranch() const { return m_pTreeEntry->parentBranch(); }
     QString keyInParentBranch() const;
     int indexInParentBranch() const;
     int indexInParentBranchsChildListWithSameEntryTypes() const;
@@ -82,8 +81,8 @@ public: // instance methods
     void setModelParentBranch( CModelIdxTreeEntry* i_pParent ) { m_pParentBranch = i_pParent; }
     void setModelIndexInParentBranch( int i_idx ) { m_idxInParentBranch = i_idx; }
 public: // instance methods
-    void setFilter( EIdxTreeEntryType i_entryType );
-    EIdxTreeEntryType getFilter() const { return m_entryTypeFilter; }
+    void setExcludeLeaves( bool i_bExcludeLeaves );
+    bool areLeavesExluded() const { return m_bExcludeLeaves; }
 public: // instance methods
     void setSortOrder( EIdxTreeSortOrder i_sortOrder );
     EIdxTreeSortOrder sortOrder() const { return m_sortOrder; }
@@ -122,7 +121,7 @@ protected: // instance methods (model entry properties)
     int                 m_idxInParentBranch;      // Index of this entry in this parent branch's vector of child entries ("local branch index").
     bool                m_bIsSelected;
 protected: // instance members
-    EIdxTreeEntryType                  m_entryTypeFilter;
+    bool                               m_bExcludeLeaves;
     EIdxTreeSortOrder                  m_sortOrder;
     QMap<QString, CModelIdxTreeEntry*> m_mappModelTreeEntries;   // Key is KeyInParentBranch: <EntryTypeSymbol>:<Name> (e.g. "B:A0::B2::C3", "L:A0::B2::o1")
     QVector<CModelIdxTreeEntry*>       m_arpTreeEntries;

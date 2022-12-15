@@ -808,8 +808,11 @@ CTreeViewIdxTreeTrcAdminObjs::CTreeViewIdxTreeTrcAdminObjs(
     setEditTriggers(QAbstractItemView::AllEditTriggers);
 
     //hideColumn(CModelIdxTree::EColumnTreeEntryName);
-    hideColumn(CModelIdxTree::EColumnInternalId);
+    hideColumn(CModelIdxTree::EColumnTreeEntryNameDecorated);
+    hideColumn(CModelIdxTree::EColumnTreeEntryTypeImageUrl);
+    hideColumn(CModelIdxTree::EColumnTreeEntryTypeIcon);
     hideColumn(CModelIdxTree::EColumnTreeEntryType);
+    hideColumn(CModelIdxTree::EColumnInternalId);
     //hideColumn(CModelIdxTree::EColumnIdxInTree);
     hideColumn(CModelIdxTree::EColumnIdxInParentBranch);
     hideColumn(CModelIdxTree::EColumnKeyInTree);
