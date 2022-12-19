@@ -305,6 +305,10 @@ CWdgtTrcMthList::CWdgtTrcMthList(
 
     settings.beginGroup(objectName());
     m_iTimeSpanTooMuchData_s = settings.value("TimeSpanDetectTooMuchData_s", m_iTimeSpanTooMuchData_s).toInt();
+    m_dataRateCalculatorBytes.setRecordTimeSpanInSec(m_iTimeSpanTooMuchData_s);
+    m_dataRateCalculatorBytes.setMeasurePointsTimeSpanInSec(m_iTimeSpanTooMuchData_s);
+    m_dataRateCalculatorLines.setRecordTimeSpanInSec(m_iTimeSpanTooMuchData_s);
+    m_dataRateCalculatorLines.setMeasurePointsTimeSpanInSec(m_iTimeSpanTooMuchData_s);
     settings.endGroup();
 
     m_pTmrDataRateRefresh = new QTimer(this);
@@ -1181,6 +1185,10 @@ void CWdgtTrcMthList::onDlgEditTimeSpanTooMuchDataApplied()
 //------------------------------------------------------------------------------
 {
     m_iTimeSpanTooMuchData_s = m_pDlgEditTimeSpanTooMuchData->getValue();
+    m_dataRateCalculatorBytes.setRecordTimeSpanInSec(m_iTimeSpanTooMuchData_s);
+    m_dataRateCalculatorBytes.setMeasurePointsTimeSpanInSec(m_iTimeSpanTooMuchData_s);
+    m_dataRateCalculatorLines.setRecordTimeSpanInSec(m_iTimeSpanTooMuchData_s);
+    m_dataRateCalculatorLines.setMeasurePointsTimeSpanInSec(m_iTimeSpanTooMuchData_s);
     m_pEdtTimeSpanTooMuchData->setText(QString::number(m_iTimeSpanTooMuchData_s) + " s");
 }
 
@@ -1189,6 +1197,10 @@ void CWdgtTrcMthList::onDlgEditTimeSpanTooMuchDataAccepted()
 //------------------------------------------------------------------------------
 {
     m_iTimeSpanTooMuchData_s = m_pDlgEditTimeSpanTooMuchData->getValue();
+    m_dataRateCalculatorBytes.setRecordTimeSpanInSec(m_iTimeSpanTooMuchData_s);
+    m_dataRateCalculatorBytes.setMeasurePointsTimeSpanInSec(m_iTimeSpanTooMuchData_s);
+    m_dataRateCalculatorLines.setRecordTimeSpanInSec(m_iTimeSpanTooMuchData_s);
+    m_dataRateCalculatorLines.setMeasurePointsTimeSpanInSec(m_iTimeSpanTooMuchData_s);
     m_pEdtTimeSpanTooMuchData->setText(QString::number(m_iTimeSpanTooMuchData_s) + " s");
     m_pDlgEditTimeSpanTooMuchData->hide();
 }
@@ -1653,10 +1665,13 @@ void CWdgtTrcMthList::onTraceDataReceived( QObject* /*i_pObjSender*/, const QStr
                                 fVal = strAttr.toDouble(&bOk);
                                 if( bOk && fVal >= 0.0 ) fSysTime_s = fVal;
 
-                                m_dataRateCalculatorBytes.addMeasurement(fSysTime_s, 2 * static_cast<qint64>(i_str.size()));
-                                m_dataRateCalculatorLines.addMeasurement(fSysTime_s, 1);
+                                if( m_iTimeSpanTooMuchData_s > 0 )
+                                {
+                                    m_dataRateCalculatorBytes.addMeasurement(fSysTime_s, 2 * static_cast<qint64>(i_str.size()));
+                                    m_dataRateCalculatorLines.addMeasurement(fSysTime_s, 1);
 
-                                showAndCheckDataRates();
+                                    showAndCheckDataRates();
+                                }
                             }
                             if( xmlStreamReader.attributes().hasAttribute("InArgs") )
                             {
@@ -1763,90 +1778,93 @@ void CWdgtTrcMthList::normalize( QString& i_str ) const
 void CWdgtTrcMthList::showAndCheckDataRates()
 //------------------------------------------------------------------------------
 {
-    double fTimeSpanServer_LinesPerSec = 0.0;
-    double fTimeSpanServer_KBs = 0.0;
-    double fTimeSpanClient_LinesPerSec = 0.0;
-    double fTimeSpanClient_KBs = 0.0;
-
-    int iDataRateServer_LinesPerSec =
-        m_dataRateCalculatorLines.getMeasurePointsDataRatePerSec(-1, &fTimeSpanServer_LinesPerSec);
-    double fDataRateServer_KBs =
-        static_cast<double>(m_dataRateCalculatorBytes.getMeasurePointsDataRatePerSec(-1, &fTimeSpanServer_KBs)) / 1000.0;
-
-    int iDataRateClient_LinesPerSec =
-        m_dataRateCalculatorLines.getRecordingDataRatePerSec(-1, &fTimeSpanClient_LinesPerSec);
-    double fDataRateClient_KBs =
-        static_cast<double>(m_dataRateCalculatorBytes.getRecordingDataRatePerSec(-1, &fTimeSpanClient_KBs)) / 1000.0;
-
-    QString strDataRatesServer =
-        QString::number(iDataRateServer_LinesPerSec) + " Lines/s - " +
-        QString::number(fDataRateServer_KBs, 'f', 3) + " KB/s";
-
-    QString strDataRatesClient =
-        QString::number(iDataRateClient_LinesPerSec) + " Lines/s - " +
-        QString::number(fDataRateClient_KBs, 'f', 3) + " KB/s";
-
-    m_pEdtCurrentDataRatesServer->setText(strDataRatesServer);
-    m_pEdtCurrentDataRatesClient->setText(strDataRatesClient);
-
-    double fProcTime_s = Time::getProcTimeInSec();
-    int iDataRateDiff_LinesPerSec = iDataRateServer_LinesPerSec - iDataRateClient_LinesPerSec;
-
-    if( m_arfDataRateDiffsProcTime_s.isEmpty() )
+    if( m_iTimeSpanTooMuchData_s > 0 )
     {
-        m_arfDataRateDiffsProcTime_s << fProcTime_s;
-        m_ariDataRateDiffs_linesPerSec << fProcTime_s;
-    }
+        double fTimeSpanServer_LinesPerSec = 0.0;
+        double fTimeSpanServer_KBs = 0.0;
+        double fTimeSpanClient_LinesPerSec = 0.0;
+        double fTimeSpanClient_KBs = 0.0;
 
-    if( fProcTime_s - m_arfDataRateDiffsProcTime_s.last() >= 1.0 )
-    {
-        m_arfDataRateDiffsProcTime_s << fProcTime_s;
-        m_ariDataRateDiffs_linesPerSec << iDataRateDiff_LinesPerSec;
+        int iDataRateServer_LinesPerSec =
+            m_dataRateCalculatorLines.getMeasurePointsDataRatePerSec(-1, &fTimeSpanServer_LinesPerSec);
+        double fDataRateServer_KBs =
+            static_cast<double>(m_dataRateCalculatorBytes.getMeasurePointsDataRatePerSec(-1, &fTimeSpanServer_KBs)) / 1000.0;
 
-        if( m_arfDataRateDiffsProcTime_s.size() > 10 )
+        int iDataRateClient_LinesPerSec =
+            m_dataRateCalculatorLines.getRecordingDataRatePerSec(-1, &fTimeSpanClient_LinesPerSec);
+        double fDataRateClient_KBs =
+            static_cast<double>(m_dataRateCalculatorBytes.getRecordingDataRatePerSec(-1, &fTimeSpanClient_KBs)) / 1000.0;
+
+        QString strDataRatesServer =
+            QString::number(iDataRateServer_LinesPerSec) + " Lines/s - " +
+            QString::number(fDataRateServer_KBs, 'f', 3) + " KB/s";
+
+        QString strDataRatesClient =
+            QString::number(iDataRateClient_LinesPerSec) + " Lines/s - " +
+            QString::number(fDataRateClient_KBs, 'f', 3) + " KB/s";
+
+        m_pEdtCurrentDataRatesServer->setText(strDataRatesServer);
+        m_pEdtCurrentDataRatesClient->setText(strDataRatesClient);
+
+        double fProcTime_s = Time::getProcTimeInSec();
+        int iDataRateDiff_LinesPerSec = iDataRateServer_LinesPerSec - iDataRateClient_LinesPerSec;
+
+        if( m_arfDataRateDiffsProcTime_s.isEmpty() )
         {
-            m_arfDataRateDiffsProcTime_s.removeFirst();
-            m_ariDataRateDiffs_linesPerSec.removeFirst();
+            m_arfDataRateDiffsProcTime_s << fProcTime_s;
+            m_ariDataRateDiffs_linesPerSec << fProcTime_s;
         }
-    }
 
-    if( fTimeSpanClient_LinesPerSec > 5.0 || m_dataRateCalculatorLines.getMeasurePointsCount() >= m_dataRateCalculatorLines.getMaxMeasurePoints() )
-    {
-        bool bClientCanProcessData = false;
-
-        for( int iDataRateDiff : m_ariDataRateDiffs_linesPerSec )
+        if( fProcTime_s - m_arfDataRateDiffsProcTime_s.last() >= 1.0 )
         {
-            // If for at least one second the client was able to process the data ..
-            if( iDataRateDiff <= 0 )
+            m_arfDataRateDiffsProcTime_s << fProcTime_s;
+            m_ariDataRateDiffs_linesPerSec << iDataRateDiff_LinesPerSec;
+
+            if( m_arfDataRateDiffsProcTime_s.size() > 10 )
             {
-                bClientCanProcessData = true;
-                break;
+                m_arfDataRateDiffsProcTime_s.removeFirst();
+                m_ariDataRateDiffs_linesPerSec.removeFirst();
             }
         }
 
-        if( !bClientCanProcessData )
+        if( fTimeSpanClient_LinesPerSec > m_iTimeSpanTooMuchData_s || m_dataRateCalculatorLines.getMeasurePointsCount() >= m_dataRateCalculatorLines.getMaxMeasurePoints() )
         {
-            STrcServerSettings trcServerSettings = m_pTrcClient->getTraceSettings();
+            bool bClientCanProcessData = false;
 
-            if( trcServerSettings.m_bUseIpcServer )
+            for( int iDataRateDiff : m_ariDataRateDiffs_linesPerSec )
             {
-                trcServerSettings.m_bUseIpcServer = false;
-                m_pTrcClient->setTraceSettings(trcServerSettings);
+                // If for at least one second the client was able to process the data ..
+                if( iDataRateDiff <= 0 )
+                {
+                    bClientCanProcessData = true;
+                    break;
+                }
+            }
 
-                QString strText = "The lines received per second have exceeded the configured maximum value.\n\n";
-                strText += "To avoid that the GUI gets unresponsive remote tracing has been disabled.\n";
-                strText += "Reduce the amount of trace data by disabling some trace admin objects.\n";
+            if( !bClientCanProcessData )
+            {
+                STrcServerSettings trcServerSettings = m_pTrcClient->getTraceSettings();
 
-                QMessageBox* msgBox = new QMessageBox();
-                msgBox->setIcon(QMessageBox::Critical);
-                msgBox->setWindowTitle(getMainWindowTitle() + ": Too much data");
-                msgBox->setText(strText);
-                msgBox->setAttribute(Qt::WA_DeleteOnClose);
-                msgBox->setModal(false);
-                msgBox->show();
+                if( trcServerSettings.m_bUseIpcServer )
+                {
+                    trcServerSettings.m_bUseIpcServer = false;
+                    m_pTrcClient->setTraceSettings(trcServerSettings);
+
+                    QString strText = "The lines received per second have exceeded the configured maximum value.\n\n";
+                    strText += "To avoid that the GUI gets unresponsive remote tracing has been disabled.\n";
+                    strText += "Reduce the amount of trace data by disabling some trace admin objects.\n";
+
+                    QMessageBox* msgBox = new QMessageBox();
+                    msgBox->setIcon(QMessageBox::Critical);
+                    msgBox->setWindowTitle(getMainWindowTitle() + ": Too much data");
+                    msgBox->setText(strText);
+                    msgBox->setAttribute(Qt::WA_DeleteOnClose);
+                    msgBox->setModal(false);
+                    msgBox->show();
+                }
             }
         }
-    }
+    } // if( m_iTimeSpanTooMuchData_s > 0 )
 } // showAndCheckDataRates
 
 //------------------------------------------------------------------------------
@@ -1901,7 +1919,7 @@ void CWdgtTrcMthList::showEditMaxDataRateDialog()
         m_pDlgEditTimeSpanTooMuchData->activateWindow();
     }
 
-    m_pDlgEditTimeSpanTooMuchData->setMinimum(1);
+    m_pDlgEditTimeSpanTooMuchData->setMinimum(0);
     m_pDlgEditTimeSpanTooMuchData->setMaximum(60);
     m_pDlgEditTimeSpanTooMuchData->setValueName("Time Span");
     m_pDlgEditTimeSpanTooMuchData->setUnit("s");

@@ -442,7 +442,11 @@ public: // instance methods
 void CDataRateCalculator::updateMeasurements()
 //------------------------------------------------------------------------------
 {
-    if( !m_arMeasurements.isEmpty() )
+    if( m_fRecordingTimeSpan_s <= 0 )
+    {
+        m_arMeasurements.clear();
+    }
+    else if( !m_arMeasurements.isEmpty() )
     {
         double fProcTime_s = Time::getProcTimeInSec();
         double fTimeDiff_s = fProcTime_s - m_arMeasurements.first().m_fRecordTime_s;

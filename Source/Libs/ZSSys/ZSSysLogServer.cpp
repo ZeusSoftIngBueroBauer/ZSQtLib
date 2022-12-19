@@ -432,7 +432,7 @@ QString SLogData::toXmlString() const
     int iStrLen = 11; // '<LogData />'
 
     if( !m_strThreadName.isEmpty() ) {
-        strThreadName = encodeForHtml(m_strThreadName);
+        strThreadName = encodeForXml(m_strThreadName);
         iStrLen += strThreadName.length() + 10; // + 'Thread="" '
     }
     if( !m_strDateTime.isEmpty() ) {
@@ -444,18 +444,18 @@ QString SLogData::toXmlString() const
         iStrLen += strSysTime.length() + 11; // + 'SysTime="" '
     }
     if( !m_strNameSpace.isEmpty() ) {
-        strNameSpace = encodeForHtml(m_strNameSpace);
+        strNameSpace = encodeForXml(m_strNameSpace);
         iStrLen += strNameSpace.length() + 13; // + 'NameSpace="" '
     }
     if( !m_strClassName.isEmpty() ) {
-        strClassName = encodeForHtml(m_strClassName);
+        strClassName = encodeForXml(m_strClassName);
         iStrLen += strClassName.length() + 13; // + 'ClassName="" '
     }
     if( !m_strObjName.isEmpty() ) {
-        strObjName = encodeForHtml(m_strObjName);
+        strObjName = encodeForXml(m_strObjName);
         iStrLen += strObjName.length() + 11; // + 'ObjName="" '
     }
-    strEntry = encodeForHtml(m_strEntry);
+    strEntry = encodeForXml(m_strEntry);
     iStrLen += strEntry.length() + 9; // + 'Entry="" '
 
     str.reserve(iStrLen);
@@ -479,7 +479,7 @@ QString SLogData::toXmlString() const
     if( !strObjName.isEmpty() ) {
         str += "ObjName=\"" + strObjName + "\" ";
     }
-    strEntry = encodeForHtml(m_strEntry);
+    strEntry = encodeForXml(m_strEntry);
     str += "Entry=\"" + strEntry + "\"";
     str += "/>";
 

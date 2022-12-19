@@ -3546,6 +3546,19 @@ QString ZS::System::truncateStringWithEllipsisInTheMiddle(
 
 
 //------------------------------------------------------------------------------
+QString ZS::System::encodeForXml( const QString& i_str )
+//------------------------------------------------------------------------------
+{
+    QString str = i_str;
+    if( str.contains("&") ) str.replace("&", "&amp;"); // this must be the first replacement
+    if( str.contains("<") ) str.replace("<","&lt;");
+    if( str.contains(">") ) str.replace(">","&gt;");
+    if( str.contains("\"") ) str.replace("\"", "&quot;");
+    if( str.contains("'") ) str.replace("'", "&apos;");
+    return str;
+}
+
+//------------------------------------------------------------------------------
 QString ZS::System::encodeForHtml( const QString& i_str )
 //------------------------------------------------------------------------------
 {

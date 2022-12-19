@@ -58,10 +58,10 @@ public: // ctors and dtor
         String describing the input arguments passed to the method to be traced.
 */
 CMethodTracer::CMethodTracer(
-    CTrcAdminObj*                i_pTrcAdminObj,
+    CTrcAdminObj*           i_pTrcAdminObj,
     EMethodTraceDetailLevel i_eFilterDetailLevel,
-    const QString&               i_strMethod,
-    const QString&               i_strMethodInArgs ) :
+    const QString&          i_strMethod,
+    const QString&          i_strMethodInArgs ) :
 //------------------------------------------------------------------------------
     QObject(),
     m_pTrcAdminObj(i_pTrcAdminObj),
@@ -122,11 +122,11 @@ CMethodTracer::CMethodTracer(
         String describing the input arguments passed to the method to be traced.
 */
 CMethodTracer::CMethodTracer(
-    CTrcAdminObj*                i_pTrcAdminObj,
+    CTrcAdminObj*           i_pTrcAdminObj,
     EMethodTraceDetailLevel i_eFilterDetailLevel,
-    const QString&               i_strObjName,
-    const QString&               i_strMethod,
-    const QString&               i_strMethodInArgs ) :
+    const QString&          i_strObjName,
+    const QString&          i_strMethod,
+    const QString&          i_strMethodInArgs ) :
 //------------------------------------------------------------------------------
     QObject(),
     m_pTrcAdminObj(i_pTrcAdminObj),
@@ -205,15 +205,15 @@ CMethodTracer::CMethodTracer(
         String describing the input arguments passed to the method to be traced.
 */
 CMethodTracer::CMethodTracer(
-    CTrcAdminObj*                i_pTrcAdminObj,
-    CTrcServer*                  i_pTrcServer,
+    CTrcAdminObj*           i_pTrcAdminObj,
+    CTrcServer*             i_pTrcServer,
     EMethodTraceDetailLevel i_eTrcDetailLevel,
     EMethodTraceDetailLevel i_eFilterDetailLevel,
-    const QString&               i_strNameSpace,
-    const QString&               i_strClassName,
-    const QString&               i_strObjName,
-    const QString&               i_strMethod,
-    const QString&               i_strMethodInArgs ) :
+    const QString&          i_strNameSpace,
+    const QString&          i_strClassName,
+    const QString&          i_strObjName,
+    const QString&          i_strMethod,
+    const QString&          i_strMethodInArgs ) :
 //------------------------------------------------------------------------------
     QObject(),
     m_pTrcAdminObj(i_pTrcAdminObj),
@@ -298,14 +298,14 @@ CMethodTracer::CMethodTracer(
         String describing the input arguments passed to the method to be traced.
 */
 CMethodTracer::CMethodTracer(
-    CTrcServer*                  i_pTrcServer,
+    CTrcServer*             i_pTrcServer,
     EMethodTraceDetailLevel i_eTrcDetailLevel,
     EMethodTraceDetailLevel i_eFilterDetailLevel,
-    const QString&               i_strNameSpace,
-    const QString&               i_strClassName,
-    const QString&               i_strObjName,
-    const QString&               i_strMethod,
-    const QString&               i_strMethodInArgs ) :
+    const QString&          i_strNameSpace,
+    const QString&          i_strClassName,
+    const QString&          i_strObjName,
+    const QString&          i_strMethod,
+    const QString&          i_strMethodInArgs ) :
 //------------------------------------------------------------------------------
     QObject(),
     m_pTrcAdminObj(nullptr),
@@ -362,14 +362,14 @@ CMethodTracer::CMethodTracer(
         String describing the input arguments passed to the method to be traced.
 */
 CMethodTracer::CMethodTracer(
-    CTrcMthFile*                 i_pTrcMthFile,
+    CTrcMthFile*            i_pTrcMthFile,
     EMethodTraceDetailLevel i_eTrcDetailLevel,
     EMethodTraceDetailLevel i_eFilterDetailLevel,
-    const QString&               i_strNameSpace,
-    const QString&               i_strClassName,
-    const QString&               i_strObjName,
-    const QString&               i_strMethod,
-    const QString&               i_strMethodInArgs ) :
+    const QString&          i_strNameSpace,
+    const QString&          i_strClassName,
+    const QString&          i_strObjName,
+    const QString&          i_strMethod,
+    const QString&          i_strMethodInArgs ) :
 //------------------------------------------------------------------------------
     QObject(),
     m_pTrcAdminObj(nullptr),
@@ -431,15 +431,15 @@ CMethodTracer::CMethodTracer(
         String describing the input arguments passed to the method to be traced.
 */
 CMethodTracer::CMethodTracer(
-    CTrcAdminObj*                i_pTrcAdminObj,
-    CTrcMthFile*                 i_pTrcMthFile,
+    CTrcAdminObj*           i_pTrcAdminObj,
+    CTrcMthFile*            i_pTrcMthFile,
     EMethodTraceDetailLevel i_eTrcDetailLevel,
     EMethodTraceDetailLevel i_eFilterDetailLevel,
-    const QString&               i_strNameSpace,
-    const QString&               i_strClassName,
-    const QString&               i_strObjName,
-    const QString&               i_strMethod,
-    const QString&               i_strMethodInArgs ) :
+    const QString&          i_strNameSpace,
+    const QString&          i_strClassName,
+    const QString&          i_strObjName,
+    const QString&          i_strMethod,
+    const QString&          i_strMethodInArgs ) :
 //------------------------------------------------------------------------------
     QObject(),
     m_pTrcAdminObj(i_pTrcAdminObj),
