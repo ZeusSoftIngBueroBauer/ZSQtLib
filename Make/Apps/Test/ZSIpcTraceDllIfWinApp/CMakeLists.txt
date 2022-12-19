@@ -95,7 +95,8 @@ endif()
 target_compile_definitions(${PROJECT_NAME} PRIVATE USE_ZS_IPCTRACE_DLL_IF)
 
 target_include_directories(${PROJECT_NAME}
-    PRIVATE ${CMAKE_SOURCE_DIR}/../Include/Apps/Test/ZSIpcTraceDllIfWinApp)
+    PRIVATE ${CMAKE_SOURCE_DIR}/../Include/Apps/Test/ZSIpcTraceDllIfWinApp
+    PRIVATE ../../../../Include/Libs/ZSIpcTrace)
 
 target_link_libraries(${PROJECT_NAME}
     PRIVATE ZSSys ZSSysGUI ZSTest ZSTestGUI ZSIpc ZSIpcGUI ZSIpcTrace ZSIpcTraceGUI)
