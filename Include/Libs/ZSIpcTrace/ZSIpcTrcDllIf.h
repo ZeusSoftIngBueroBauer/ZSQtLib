@@ -29,6 +29,9 @@ may result in using the software modules.
 #ifndef ZSIpcTrace_DllIf_h
 #define ZSIpcTrace_DllIf_h
 
+#pragma warning( push )
+#pragma warning( disable : 4505 )
+
 /*! This header file represents the DLL interface for the remote method tracing
     of the ZSQtLib. In order to be able to use it, the cpp file must also be
     compiled into the application or the dll in which the interface is to be used.
@@ -500,7 +503,8 @@ enum EBuildConfiguration
 
 bool loadDll(
     EBuildConfiguration i_configuration = EBuildConfigurationAutoDetect,
-    int i_iQtVersionMajor = QT_VERSION_MAJOR );
+    int i_iQtVersionMajor = QT_VERSION_MAJOR,
+    const char* i_szQtLibInfix = nullptr);
 const char* getDllFileName();
 bool releaseDll();
 
@@ -512,6 +516,8 @@ bool releaseDll();
 } // namespace ZS
 
 } // extern "C"
+
+#pragma warning( pop )
 
 #endif // #ifndef ZSIpcTrace_DllIf_h
 

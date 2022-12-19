@@ -26,7 +26,7 @@ may result in using the software modules.
 
 #ifdef USE_ZS_IPCTRACE_DLL_IF
 
-#include "ZSIpcTrace/ZSIpcTrcDllIf.h"
+#include "ZSIpcTrcDllIf.h"
 
 #include <string>
 
@@ -283,25 +283,31 @@ Exported methods
 
     @ingroup _GRP_Namespace_ZS_Trace_DllIf
 
-    @param i_configuration [in] Spezifies the build configuration.
+    @param i_configuration [in] Defines the config type of the build.
            Default: EBuildConfigurationAutoDetect
-           The parameter defines the lib infix for the ZSQtLib Dlls used by
-           the build configuration which may be either a Debug or Release Build.
-           Usually the lib infix for the build configuration can be automatically
-           detected by evaluationg the compiler directive _DEBUG and the
-           the macro CONFIGLIBINFIX is set via "ZSIpcTrcDllIf.h" to e.g.
+           The parameter defines the config type lib infix for naming the Qt and
+           ZSQtLib Dlls. This may be either an empty string or "d" for debug builds.
+           Usually the config type lib infix for the build configuration can be
+           automatically detected by evaluationg the compiler directive _DEBUG.
+           The macro CONFIGLIBINFIX is set via "ZSIpcTrcDllIf.h" to e.g.
            an empty string for Release and to "d" for Debug builds.
-           If nullptr is passed  the automatically detected CONFIGLIBINFIX is used.
-           The parameter must correspond to the config lib-infix
-           as used when compiling and linking the ZSQtLib-Dlls.
 
-    @param i_iQtVersionMajor [in] Spezifies the major version of the Qt Dlls.
+    @param i_iQtVersionMajor [in] Defines the major version of the Qt Dlls.
            Default: 5
-           The parameter defines the lib infix for the Qt Dlls.
-           This parameter cannot be automatically detected as no Qt header files
-           are included when using the Dll inteface files.
-           The parameter must correspond to the lib-infix for the Qt major version
-           as used when compiling and linking the ZSQtLib-Dlls.
+           The parameter defines the Qt version major lib infix for naming the Qt and
+           ZSQtLib Dlls. This parameter cannot be automatically detected as no Qt header
+           files are included when using the Dll inteface files.
+
+    @param i_szQtLibInfix [in] Defines the lib infix used when compiling the Qt Dlls.
+           Default: null
+           Qt may be compiled spcifying a QT_LIBINFIX. This QT_LIBINFIX is used to
+           name the Qt dlls. Also the ZSQtLib Dlls are using this QT_LIBINFIX for
+           naming the dlls.
+
+    @Example
+        ConfigType: Debug, QT_VERSION_MAJOR: 5, QT_LIBINFIX: "Urgh":
+        - Qt5CoreUrghd.dll, ...
+        - ZSSysQt5Urghd.dll, ...
 
     @return true, if loading the Dlls was successfull and the method address of each
             needed expertod method could be resolved.
@@ -316,7 +322,7 @@ Exported methods
             - Were the Qt Dlls possibly compiled with a LibInfix?
             - Can the operating system find the Qt dlls?
 */
-bool ZS::Trace::DllIf::loadDll( EBuildConfiguration i_configuration, int i_iQtVersionMajor )
+bool ZS::Trace::DllIf::loadDll( EBuildConfiguration i_configuration, int i_iQtVersionMajor, const char* i_szQtLibInfix )
 //------------------------------------------------------------------------------
 {
     const char* szConfig = CONFIGLIBINFIX;
@@ -362,7 +368,7 @@ bool ZS::Trace::DllIf::loadDll( EBuildConfiguration i_configuration, int i_iQtVe
         delete s_szDllFileName;
         s_szDllFileName = nullptr;
 
-        size_t iStrLenDllFileName = strlen(szZSDllName) + strlen(szQtVersionMajor) + strlen(szConfig) + 4;
+        size_t iStrLenDllFileName = strlen(szZSDllName) + strlen(szQtVersionMajor) + strlen(szConfig) + strlen(i_szQtLibInfix) + 4;
         s_szDllFileName = new char[iStrLenDllFileName+1];
         memset(s_szDllFileName, 0x00, iStrLenDllFileName+1);
 
@@ -371,6 +377,11 @@ bool ZS::Trace::DllIf::loadDll( EBuildConfiguration i_configuration, int i_iQtVe
         iStrPos += strlen(szZSDllName);
         memcpy(&s_szDllFileName[iStrPos], szQtVersionMajor, strlen(szQtVersionMajor)); // "ZSIpcTraceQt5"
         iStrPos += strlen(szQtVersionMajor);
+        if( strlen(i_szQtLibInfix) > 0 )
+        {
+            memcpy(&s_szDllFileName[iStrPos], i_szQtLibInfix, strlen(i_szQtLibInfix)); // "ZSIpcTraceQt5Urgh"
+            iStrPos += strlen(i_szQtLibInfix);
+        }
         if( strlen(szConfig) > 0 )
         {
             memcpy(&s_szDllFileName[iStrPos], szConfig, strlen(szConfig));             // "ZSIpcTraceQt5d"

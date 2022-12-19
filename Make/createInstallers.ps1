@@ -312,13 +312,13 @@ $ZSQtLibVersion=git describe --always --tags --long
 echo "ZSQtLibVersion: $ZSQtLibVersion"
 cd $PSScriptRoot
 
-#for( $idxCfgType=0; $idxCfgType -lt $ConfigTypes.length; $idxCfgType++ ) {
-#    $ConfigType = $ConfigTypes[$idxCfgType]
-#    # "mingw81" not yet supported (TODO: libQt.. missing in installer packages)
-#    if($Compiler -ne "mingw81") {
-#        buildAndInstall -Compiler $Compiler -Platform "x64" -ConfigType $ConfigType -ZSQtLibVersion $ZSQtLibVersion -QT_DIR $QT_DIR
-#    }
-#}
+for( $idxCfgType=0; $idxCfgType -lt $ConfigTypes.length; $idxCfgType++ ) {
+    $ConfigType = $ConfigTypes[$idxCfgType]
+    # "mingw81" not yet supported (TODO: libQt.. missing in installer packages)
+    if($Compiler -ne "mingw81") {
+        buildAndInstall -Compiler $Compiler -Platform "x64" -ConfigType $ConfigType -ZSQtLibVersion $ZSQtLibVersion -QT_DIR $QT_DIR
+    }
+}
 
 for( $idxAppName=0; $idxAppName -lt $AppNames.length; $idxAppName++ ) {
     $AppName = $AppNames[$idxAppName]
