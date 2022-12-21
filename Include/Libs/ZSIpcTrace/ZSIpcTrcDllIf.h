@@ -375,9 +375,10 @@ public: // class method to save/recall admin objects file
     static char* GetLocalTrcFileCompleteBaseName();
     static char* GetLocalTrcFileAbsolutePath();
 public: // class methods
-    static void RegisterCurrentThread( const char* i_szThreadName );
-    static void UnregisterCurrentThread();
-    static char* GetCurrentThreadName();    // returned string must be freed by caller
+    static void RegisterThread( const char* i_szThreadName, void* i_pvThreadHandle );
+    static void UnregisterThread( void* i_pvThreadHandle );
+    static char* GetThreadName( void* i_pvThreadHandle );    // returned string must be freed by caller
+    static char* GetCurrentThreadName();                    // returned string must be freed by caller
 public: // instance methods
     const char* name() const { return "ZSTrcServer"; }
 public: // instance methods

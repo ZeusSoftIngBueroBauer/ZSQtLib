@@ -124,8 +124,9 @@ typedef void (*TFctTrcServer_SetLocalTrcFileAbsoluteFilePath)( const char* i_szA
 typedef char* (*TFctTrcServer_GetLocalTrcFileAbsoluteFilePath)();
 typedef char* (*TFctTrcServer_GetLocalTrcFileCompleteBaseName)();
 typedef char* (*TFctTrcServer_GetLocalTrcFileAbsolutePath)();
-typedef void (*TFctTrcServer_RegisterCurrentThread)( const char* i_szThreadName );
-typedef void (*TFctTrcServer_UnregisterCurrentThread)();
+typedef void (*TFctTrcServer_RegisterThread)( const char* i_szThreadName, void* i_pvThreadHandle );
+typedef void (*TFctTrcServer_UnregisterThread)( void* i_pvThreadHandle );
+typedef char* (*TFctTrcServer_GetThreadName)( void* i_pvThreadHandle );
 typedef char* (*TFctTrcServer_GetCurrentThreadName)();
 typedef bool (*TFctTrcServer_isActive)();
 typedef void (*TFctTrcServer_setEnabled)( bool i_bEnabled );
@@ -228,8 +229,9 @@ TFctTrcServer_SetLocalTrcFileAbsoluteFilePath                 s_pFctTrcServer_Se
 TFctTrcServer_GetLocalTrcFileAbsoluteFilePath                 s_pFctTrcServer_GetLocalTrcFileAbsoluteFilePath                 = NULL;
 TFctTrcServer_GetLocalTrcFileCompleteBaseName                 s_pFctTrcServer_GetLocalTrcFileCompleteBaseName                 = NULL;
 TFctTrcServer_GetLocalTrcFileAbsolutePath                     s_pFctTrcServer_GetLocalTrcFileAbsolutePath                     = NULL;
-TFctTrcServer_RegisterCurrentThread                           s_pFctTrcServer_RegisterCurrentThread                           = NULL;
-TFctTrcServer_UnregisterCurrentThread                         s_pFctTrcServer_UnregisterCurrentThread                         = NULL;
+TFctTrcServer_RegisterThread                                  s_pFctTrcServer_RegisterThread                                  = NULL;
+TFctTrcServer_UnregisterThread                                s_pFctTrcServer_UnregisterThread                                = NULL;
+TFctTrcServer_GetThreadName                                   s_pFctTrcServer_GetThreadName                                   = NULL;
 TFctTrcServer_GetCurrentThreadName                            s_pFctTrcServer_GetCurrentThreadName                            = NULL;
 TFctTrcServer_isActive                                        s_pFctTrcServer_isActive                                        = NULL;
 TFctTrcServer_setEnabled                                      s_pFctTrcServer_setEnabled                                      = NULL;
@@ -551,11 +553,14 @@ bool ZS::Trace::DllIf::loadDll( EBuildConfiguration i_configuration, int i_iQtVe
         s_pFctTrcServer_GetLocalTrcFileAbsolutePath = (TFctTrcServer_GetLocalTrcFileAbsolutePath)GetProcAddress(s_hndDllIf, "TrcServer_GetLocalTrcFileAbsolutePath");
         if( s_pFctTrcServer_GetLocalTrcFileAbsolutePath == NULL ) bOk = false;
 
-        s_pFctTrcServer_RegisterCurrentThread = (TFctTrcServer_RegisterCurrentThread)GetProcAddress(s_hndDllIf, "TrcServer_RegisterCurrentThread");
-        if( s_pFctTrcServer_RegisterCurrentThread == NULL ) bOk = false;
+        s_pFctTrcServer_RegisterThread = (TFctTrcServer_RegisterThread)GetProcAddress(s_hndDllIf, "TrcServer_RegisterThread");
+        if( s_pFctTrcServer_RegisterThread == NULL ) bOk = false;
 
-        s_pFctTrcServer_UnregisterCurrentThread = (TFctTrcServer_UnregisterCurrentThread)GetProcAddress(s_hndDllIf, "TrcServer_UnregisterCurrentThread");
-        if( s_pFctTrcServer_UnregisterCurrentThread == NULL ) bOk = false;
+        s_pFctTrcServer_UnregisterThread = (TFctTrcServer_UnregisterThread)GetProcAddress(s_hndDllIf, "TrcServer_UnregisterThread");
+        if( s_pFctTrcServer_UnregisterThread == NULL ) bOk = false;
+
+        s_pFctTrcServer_GetThreadName = (TFctTrcServer_GetThreadName)GetProcAddress(s_hndDllIf, "TrcServer_GetThreadName");
+        if( s_pFctTrcServer_GetThreadName == NULL ) bOk = false;
 
         s_pFctTrcServer_GetCurrentThreadName = (TFctTrcServer_GetCurrentThreadName)GetProcAddress(s_hndDllIf, "TrcServer_GetCurrentThreadName");
         if( s_pFctTrcServer_GetCurrentThreadName == NULL ) bOk = false;
@@ -768,8 +773,9 @@ bool ZS::Trace::DllIf::releaseDll()
         s_pFctTrcServer_GetLocalTrcFileAbsoluteFilePath                 = NULL;
         s_pFctTrcServer_GetLocalTrcFileCompleteBaseName                 = NULL;
         s_pFctTrcServer_GetLocalTrcFileAbsolutePath                     = NULL;
-        s_pFctTrcServer_RegisterCurrentThread                           = NULL;
-        s_pFctTrcServer_UnregisterCurrentThread                         = NULL;
+        s_pFctTrcServer_RegisterThread                                  = NULL;
+        s_pFctTrcServer_UnregisterThread                                = NULL;
+        s_pFctTrcServer_GetThreadName                                   = NULL;
         s_pFctTrcServer_GetCurrentThreadName                            = NULL;
         s_pFctTrcServer_isActive                                        = NULL;
         s_pFctTrcServer_setEnabled                                      = NULL;
@@ -1955,23 +1961,34 @@ char* DllIf::CTrcServer::GetLocalTrcFileAbsolutePath()
 }
 
 //------------------------------------------------------------------------------
-void DllIf::CTrcServer::RegisterCurrentThread( const char* i_szThreadName )
+void DllIf::CTrcServer::RegisterThread( const char* i_szThreadName, void* i_pvThreadHandle )
 //------------------------------------------------------------------------------
 {
-    if( s_hndDllIf != NULL && s_pFctTrcServer_RegisterCurrentThread != NULL )
+    if( s_hndDllIf != NULL && s_pFctTrcServer_RegisterThread != NULL )
     {
-        s_pFctTrcServer_RegisterCurrentThread(i_szThreadName);
+        s_pFctTrcServer_RegisterThread(i_szThreadName, i_pvThreadHandle);
     }
 }
 
 //------------------------------------------------------------------------------
-void DllIf::CTrcServer::UnregisterCurrentThread()
+void DllIf::CTrcServer::UnregisterThread( void* i_pvThreadHandle )
 //------------------------------------------------------------------------------
 {
-    if( s_hndDllIf != NULL && s_pFctTrcServer_UnregisterCurrentThread != NULL )
+    if( s_hndDllIf != NULL && s_pFctTrcServer_UnregisterThread != NULL )
     {
-        s_pFctTrcServer_UnregisterCurrentThread();
+        s_pFctTrcServer_UnregisterThread(i_pvThreadHandle);
     }
+}
+
+//------------------------------------------------------------------------------
+char* DllIf::CTrcServer::GetThreadName( void* i_pvThreadHandle )
+//------------------------------------------------------------------------------
+{
+    if( s_hndDllIf != NULL && s_pFctTrcServer_GetThreadName != NULL )
+    {
+        return s_pFctTrcServer_GetThreadName(i_pvThreadHandle);
+    }
+    return NULL;
 }
 
 //------------------------------------------------------------------------------
