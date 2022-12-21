@@ -176,7 +176,7 @@ void CDelegateIdxTreeTestSteps::paint(
 
     if( pModelTreeEntry != nullptr )
     {
-        pIdxTreeEntry = dynamic_cast<CIdxTreeEntry*>(pModelTreeEntry->treeEntry());
+        pIdxTreeEntry = dynamic_cast<CIdxTreeEntry*>(pModelTreeEntry->getIdxTreeEntry());
     }
 
     if( pIdxTreeEntry != nullptr )
@@ -230,7 +230,7 @@ void CDelegateIdxTreeTestSteps::paint(
             {
                 if( pTestStep != nullptr )
                 {
-                    QRect          rectCheckBox = m_rectChkBoxBreakpoint;
+                    QRect rectCheckBox = m_rectChkBoxBreakpoint;
                     Qt::CheckState checkState = Qt::Unchecked;
 
                     rectCheckBox.moveLeft(styleOption.rect.left());

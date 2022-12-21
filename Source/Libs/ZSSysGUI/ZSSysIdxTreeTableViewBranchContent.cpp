@@ -60,14 +60,14 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CTableViewIdxTreeBranchContent::CTableViewIdxTreeBranchContent(
-    CModelIdxTree* i_pModelIdxTree,
+    CModelIdxTreeBranchContent* i_pModel,
     QWidget* i_pWdgtParent,
     EMethodTraceDetailLevel i_eTrcDetailLevel ) :
 //------------------------------------------------------------------------------
     QTableView(i_pWdgtParent),
-    m_pModel(nullptr),
-    m_pBranch(nullptr),
-    m_sortOrder(EIdxTreeSortOrder::Config),
+    m_pModel(i_pModel),
+    //m_pBranch(nullptr),
+    //m_sortOrder(EIdxTreeSortOrder::Config),
     m_pMenuBranchContext(nullptr),
     m_pActionBranchTitle(nullptr),
     m_pActionBranchCreateNewBranch(nullptr),
@@ -86,13 +86,13 @@ CTableViewIdxTreeBranchContent::CTableViewIdxTreeBranchContent(
     m_modelIdxSelectedOnMouseReleaseEvent(),
     m_eTrcDetailLevel(i_eTrcDetailLevel)
 {
-    setObjectName( QString(i_pModelIdxTree == nullptr ? "IdxTree" : i_pModelIdxTree->objectName()) );
+    setObjectName( QString(i_pModel == nullptr ? "IdxTreeBranchContent" : i_pModel->objectName()) );
 
     QString strMthInArgs;
 
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "ModelIdxTree: " + QString(i_pModelIdxTree == nullptr ? "nullptr" : i_pModelIdxTree->objectName());
+        strMthInArgs = "ModelIdxTree: " + QString(i_pModel == nullptr ? "nullptr" : i_pModel->objectName());
     }
 
     CMethodTracer mthTracer(
@@ -104,8 +104,6 @@ CTableViewIdxTreeBranchContent::CTableViewIdxTreeBranchContent(
         /* strObjName         */ objectName(),
         /* strMethod          */ "ctor",
         /* strMethodInArgs    */ strMthInArgs );
-
-    m_pModel = new CModelIdxTreeBranchContent(i_pModelIdxTree->idxTree(), nullptr);
 
     setModel(m_pModel);
 
@@ -280,17 +278,9 @@ CTableViewIdxTreeBranchContent::~CTableViewIdxTreeBranchContent()
         /* strMethod          */ "dtor",
         /* strMethodInArgs    */ strMthInArgs );
 
-    try
-    {
-        delete m_pModel;
-    }
-    catch(...)
-    {
-    }
-
     m_pModel = nullptr;
-    m_pBranch = nullptr;
-    m_sortOrder = static_cast<EIdxTreeSortOrder>(0);
+    //m_pBranch = nullptr;
+    //m_sortOrder = static_cast<EIdxTreeSortOrder>(0);
     m_pMenuBranchContext = nullptr;
     m_pActionBranchTitle = nullptr;
     m_pActionBranchCreateNewBranch = nullptr;
@@ -316,14 +306,14 @@ public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTableViewIdxTreeBranchContent::setBranch( CIdxTreeEntry* i_pBranch )
+void CTableViewIdxTreeBranchContent::setKeyInTreeOfRootEntry( const QString& i_strKeyInTree )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
 
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "Branch: " + QString(i_pBranch == nullptr ? "nullptr" : i_pBranch->keyInTree());
+        strMthInArgs = i_strKeyInTree;
     }
 
     CMethodTracer mthTracer(
@@ -333,18 +323,18 @@ void CTableViewIdxTreeBranchContent::setBranch( CIdxTreeEntry* i_pBranch )
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
-        /* strMethod          */ "setBranch",
+        /* strMethod          */ "setKeyInTreeOfRootEntry",
         /* strMethodInArgs    */ strMthInArgs );
 
-    if( m_pBranch != i_pBranch )
-    {
-        m_pBranch = i_pBranch;
+    m_pModel->setKeyInTreeOfRootEntry(i_strKeyInTree);
+}
 
-        m_pModel->setBranch(m_pBranch);
-
-    } // if( m_pBranch != i_pBranch )
-
-} // setBranch
+//------------------------------------------------------------------------------
+QString CTableViewIdxTreeBranchContent::getKeyInTreeOfRootEntry() const
+//------------------------------------------------------------------------------
+{
+    return m_pModel->getKeyInTreeOfRootEntry();
+}
 
 /*==============================================================================
 public: // instance methods
@@ -371,15 +361,15 @@ void CTableViewIdxTreeBranchContent::setSortOrder( EIdxTreeSortOrder i_sortOrder
         /* strMethod          */ "setSortOrder",
         /* strMethodInArgs    */ strMthInArgs );
 
-    if( m_sortOrder != i_sortOrder )
-    {
-        m_sortOrder = i_sortOrder;
+    m_pModel->setSortOrder(i_sortOrder);
+}
 
-        m_pModel->setSortOrder(m_sortOrder);
-
-    } // if( m_pBranch != i_sortOrder )
-
-} // setSortOrder
+//------------------------------------------------------------------------------
+EIdxTreeSortOrder CTableViewIdxTreeBranchContent::sortOrder() const
+//------------------------------------------------------------------------------
+{
+    return m_pModel->sortOrder();
+}
 
 /*==============================================================================
 protected: // overridables of base class QTreeView

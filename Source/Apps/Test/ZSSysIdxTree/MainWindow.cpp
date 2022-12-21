@@ -56,6 +56,7 @@ may result in using the software modules.
 #include "ZSSysGUI/ZSSysErrLogDlg.h"
 #include "ZSSysGUI/ZSSysIdxTreeWdgt.h"
 #include "ZSSysGUI/ZSSysIdxTreeModel.h"
+#include "ZSSysGUI/ZSSysIdxTreeModelBranchContent.h"
 #include "ZSSysGUI/ZSSysTrcAdminObjIdxTreeDlg.h"
 #include "ZSSys/ZSSysIdxTree.h"
 #include "ZSSys/ZSSysErrLog.h"
@@ -117,6 +118,7 @@ CMainWindow::CMainWindow(
     m_pWdgtCentral(nullptr),
     m_pDockWdgtIdxTree(nullptr),
     m_pModelIdxTree(nullptr),
+    m_pModelIdxTreeBranchContent(nullptr),
     m_pWdgtIdxTree(nullptr),
     m_pDlgFile(nullptr)
 {
@@ -233,8 +235,9 @@ CMainWindow::CMainWindow(
 
     // The index tree will be assigned to the model during runtime.
     m_pModelIdxTree = new CModelIdxTree(nullptr, nullptr);
+    m_pModelIdxTreeBranchContent = new CModelIdxTreeBranchContent(nullptr);
 
-    m_pWdgtIdxTree = new CWdgtIdxTree(m_pModelIdxTree);
+    m_pWdgtIdxTree = new CWdgtIdxTree(m_pModelIdxTree, m_pModelIdxTreeBranchContent);
     m_pDockWdgtIdxTree->setWidget(m_pWdgtIdxTree);
 
     addDockWidget(Qt::RightDockWidgetArea, m_pDockWdgtIdxTree);
@@ -406,6 +409,14 @@ CMainWindow::~CMainWindow()
 
     settings.setValue( "MainWindow/Geometry", saveGeometry() );
     settings.setValue( "MainWindow/WindowState", saveState() );
+
+    try
+    {
+        delete m_pModelIdxTreeBranchContent;
+    }
+    catch(...)
+    {
+    }
 
     try
     {

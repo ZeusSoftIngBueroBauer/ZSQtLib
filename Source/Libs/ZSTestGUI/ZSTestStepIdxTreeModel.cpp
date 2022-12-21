@@ -347,7 +347,7 @@ QVariant CModeldxTreeTestSteps::data( const QModelIndex& i_modelIdx, int i_iRole
 
     if( pModelTreeEntry != nullptr )
     {
-        pIdxTreeEntry = dynamic_cast<CIdxTreeEntry*>(pModelTreeEntry->treeEntry());
+        pIdxTreeEntry = dynamic_cast<CIdxTreeEntry*>(pModelTreeEntry->getIdxTreeEntry());
     }
 
     if( pIdxTreeEntry != nullptr )

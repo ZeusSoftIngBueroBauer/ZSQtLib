@@ -37,14 +37,17 @@ ColumnLayout {
     readonly property string objectName: model.objectName
     property var myTrcAdminObj: _ZSSys_trcServer.getTraceAdminObj(
         nameSpace, className, objectName)
-    Component.onDestruction: {
-        _ZSSys_trcServer.releaseTraceAdminObj(myTrcAdminObj);
-    }
+
     Component.onCompleted: {
         myTrcAdminObj.traceMethodEnter("EnterLeave", "Component.onCompleted");
         model.sortOrder = "Ascending";
         model.excludeLeaves = false;
         myTrcAdminObj.traceMethodLeave("EnterLeave", "Component.onCompleted");
+    }
+    Component.onDestruction: {
+        myTrcAdminObj.traceMethodEnter("EnterLeave", "Component.onDestruction")
+        myTrcAdminObj.traceMethodLeave("EnterLeave", "Component.onDestruction")
+        _ZSSys_trcServer.releaseTraceAdminObj(myTrcAdminObj);
     }
 
     property alias model: treeView.model
@@ -145,7 +148,7 @@ ColumnLayout {
             model: treeView.model
             Layout.fillWidth: true
             visible: root.viewMode === "NavPanelAndBranchContent"
-            currentIndex: treeView.currentIndex
+            //currentIndex: treeView.currentIndex
         }
     }
 }

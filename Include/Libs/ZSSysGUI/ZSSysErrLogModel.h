@@ -78,12 +78,17 @@ public: // type definitions and constants
 public: // ctors and dtor
     CModelErrLog( CErrLog* i_pErrLog );
     virtual ~CModelErrLog();
+signals:
+    /*! Signal which will be emitted if the number of entries has been changed. */
+    void countChanged();
 public: // auxiliary instance methods
     QString role2Str(int i_iRole) const;
     int byteArr2Role(const QByteArray& i_byteArrRole) const;
     int column2Role(EColumn i_clm) const;
     EColumn role2Column(int i_iRole) const;
     QString modelIndex2Str( const QModelIndex& modelIdx ) const;
+public: // instance methods
+    Q_INVOKABLE int getEntryCount( const QString& i_strSeverity ) const;
 public: // instance methods
     Q_INVOKABLE void clear();
     Q_INVOKABLE void removeEntries( const QModelIndexList& i_modelIdxList );

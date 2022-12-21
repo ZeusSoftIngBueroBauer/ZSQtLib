@@ -35,9 +35,6 @@ C1.TreeView {
     readonly property string objectName: model.objectName
     property var myTrcAdminObj: _ZSSys_trcServer.getTraceAdminObj(
         nameSpace, className, objectName)
-    Component.onDestruction: {
-        _ZSSys_trcServer.releaseTraceAdminObj(myTrcAdminObj);
-    }
 
     Component.onCompleted: {
         myTrcAdminObj.traceMethodEnter("EnterLeave", "Component.onCompleted")
@@ -48,11 +45,15 @@ C1.TreeView {
         }
         myTrcAdminObj.traceMethodLeave("EnterLeave", "Component.onCompleted")
     }
+    Component.onDestruction: {
+        myTrcAdminObj.traceMethodEnter("EnterLeave", "Component.onDestruction")
+        myTrcAdminObj.traceMethodLeave("EnterLeave", "Component.onDestruction")
+        _ZSSys_trcServer.releaseTraceAdminObj(myTrcAdminObj);
+    }
 
     id: root
     alternatingRowColors: true
     clip: true
-    //selectionMode: C1.SelectionMode.ExtendedSelection
 
     property var fontPixelSize: 0
     property var columnSpacing: 10

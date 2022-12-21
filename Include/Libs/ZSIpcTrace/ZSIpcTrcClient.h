@@ -93,7 +93,7 @@ protected slots: // connected to the signals of the IPC client
     void onIpcClientConnected( QObject* i_pClient );
     void onIpcClientDisconnected( QObject* i_pClient );
 protected slots: // connected to the slots of the trace admin object pool model
-    void onTrcAdminObjIdxTreeEntryChanged( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry );
+    void onTrcAdminObjIdxTreeEntryChanged( const QString& i_strKeyInTree );
 protected: // instance methods
     void resetTrcAdminRefCounters( ZS::System::CIdxTreeEntry* i_pBranch );
 protected: // instance members

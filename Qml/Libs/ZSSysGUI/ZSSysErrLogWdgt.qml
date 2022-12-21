@@ -34,17 +34,38 @@ import ZSSysGUI 1.0
 ColumnLayout {
     readonly property string nameSpace: "ZS::System::GUI::Qml"
     readonly property string className: "ErrLogWdgt"
-    readonly property string objectName: _ZSSysGUI_errLogModel.objectName
-    property var myTrcAdminObj: _ZSSys_trcServer.getTraceAdminObj(
-        root.nameSpace, className, root.objectName)
+    readonly property string objectName: model.objectName
+    property var myTrcAdminObj: _ZSSys_trcServer.getTraceAdminObj(nameSpace, className, objectName)
+
+    Component.onCompleted: {
+        myTrcAdminObj.traceMethodEnter("EnterLeave", "Component.onCompleted")
+        myTrcAdminObj.traceMethodLeave("EnterLeave", "Component.onCompleted")
+    }
     Component.onDestruction: {
+        myTrcAdminObj.traceMethodEnter("EnterLeave", "Component.onDestruction")
+        myTrcAdminObj.traceMethodLeave("EnterLeave", "Component.onDestruction")
         _ZSSys_trcServer.releaseTraceAdminObj(myTrcAdminObj);
     }
-
-    property alias model: tableView.model
+    onObjectNameChanged: {
+        _ZSSys_trcServer.releaseTraceAdminObj(myTrcAdminObj);
+        myTrcAdminObj = _ZSSys_trcServer.getTraceAdminObj(nameSpace, className, objectName)
+        myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "onObjectNameChanged", objectName);
+        myTrcAdminObj.traceMethodLeave("EnterLeave", "onObjectNameChanged");
+    }
+    //onMyTrcAdminObjChanged: {
+    //    myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "onMyTrcAdminObjChanged", myTrcAdminObj.keyInTree);
+    //    myTrcAdminObj.traceMethodLeave("EnterLeave", "onMyTrcAdminObjChanged");
+    //}
 
     id: root
     spacing: 4
+
+    property alias model: tableView.model
+
+    //onModelChanged: {
+    //    myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "onModelChanged", model.objectName);
+    //    myTrcAdminObj.traceMethodLeave("EnterLeave", "onModelChanged");
+    //}
 
     ToolBar {
         id: toolBarHeadline
@@ -121,91 +142,9 @@ ColumnLayout {
         }
     }
 
-    C1.TableView {
-        Transition {
-            id: transitionAdd
-            PropertyAction { property: "transformOrigin"; value: Item.TopLeft }
-            NumberAnimation { property: "opacity"; from: 0; to: 1.0; duration: 300 }
-            NumberAnimation { property: "scale"; from: 0; to: 1.0; duration: 300 }
-        }
-
-        Transition {
-            id: transitionDisplaced
-            // Ensure row is scaled to 1 and got opacity of 1 if immediately displaced after added.
-            PropertyAction { properties: "opacity, scale"; value: 1 }
-            NumberAnimation { properties: "x, y"; duration: 300 }
-        }
-
-        Component.onCompleted: {
-            if(this.__listView) {
-                this.__listView.add = transitionAdd
-                this.__listView.displaced = transitionDisplaced
-                this.__listView.spacing = 1
-            }
-        }
-
+    ErrLogTableView {
         id: tableView
         Layout.fillWidth: true
         Layout.fillHeight: true
-        alternatingRowColors: true
-        clip: true
-        selectionMode: C1.SelectionMode.ExtendedSelection
-
-        property var fontPixelSize: 0
-
-        C1.TableViewColumn {
-            title: ""
-            role: "SeverityImageUrl"
-            width: 24
-            delegate: Item {
-                Image {
-                    id: imgSeverity
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.leftMargin: 10
-                    anchors.rightMargin: 10
-                    width: height
-                    height: parent.height
-                    source: styleData.value
-                    fillMode: Image.PreserveAspectFit
-                }
-            }
-        }
-        C1.TableViewColumn {
-            id: clmResult
-            title: "Result"
-            role: "Result"
-            width: Math.min(600, tableView.model.columnWidthByRole(clmResult.role, tableView.fontPixelSize))
-        }
-        C1.TableViewColumn {
-            id: clmDate
-            title: "Date"
-            role: "Date"
-            width: Math.min(600, tableView.model.columnWidthByRole(clmDate.role, tableView.fontPixelSize))
-        }
-        C1.TableViewColumn {
-            id: clmTime
-            title: "Time"
-            role: "Time"
-            width: Math.min(600, tableView.model.columnWidthByRole(clmTime.role, tableView.fontPixelSize))
-        }
-        C1.TableViewColumn {
-            id: clmOccurences
-            title: "Occurences"
-            role: "Occurences"
-            width: Math.min(600, tableView.model.columnWidthByRole(clmOccurences.role, tableView.fontPixelSize))
-        }
-        C1.TableViewColumn {
-            id: clmSource
-            title: "Source"
-            role: "Source"
-            width: Math.min(600, tableView.model.columnWidthByRole(clmSource.role, tableView.fontPixelSize))
-        }
-        C1.TableViewColumn {
-            id: clmAddInfo
-            title: "AdditionalInfo"
-            role: "AddInfo"
-            width: tableView.width - x
-        }
     }
 }

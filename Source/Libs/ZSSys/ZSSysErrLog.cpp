@@ -1203,26 +1203,6 @@ int CErrLog::getEntryCount( EResultSeverity i_severity ) const
 } // getEntryCount
 
 //------------------------------------------------------------------------------
-/*! Returns the number of error log entries for the given severity.
-
-    @param i_strSeverity [in]
-        Severity for which the number of log entries should be returned.
-        By passing Undefined or Count for the severity the overall number of
-        entries will be returned.
-
-    @return Number of error log entries for the desired severity.
-
-    @note If you use this method to loop through the error log entries don't forget
-          to lock the instance before and unlocking it again afterwards.
-*/
-int CErrLog::getEntryCount( const QString& i_strSeverity ) const
-//------------------------------------------------------------------------------
-{
-    int iSeverity = str2ResultSeverity(i_strSeverity);
-    return getEntryCount(static_cast<EResultSeverity>(iSeverity));
-}
-
-//------------------------------------------------------------------------------
 /*! Searches the error log entry for the given error result info.
 
     The search pattern includes the result code, the result severity,
@@ -2014,7 +1994,6 @@ SErrLogEntry* CErrLog::addEntry_(
         } // if( m_iAddEntryRecursionCounter == 0 )
 
         emit entryAdded(pEntry->m_errResultInfo);
-        emit countChanged();
 
     } // if( pEntry == nullptr )
 
@@ -2119,7 +2098,6 @@ void CErrLog::removeEntry_( int i_iRowIdx, EResultSeverity i_severity )
                     pEntry = nullptr;
 
                     emit entryRemoved(errResultInfo);
-                    emit countChanged();
 
                     if( !m_bRecallingModel && !m_bClearingModel )
                     {
@@ -2147,7 +2125,6 @@ void CErrLog::removeEntry_( int i_iRowIdx, EResultSeverity i_severity )
                 pEntry = nullptr;
 
                 emit entryRemoved(errResultInfo);
-                emit countChanged();
 
                 if( !m_bRecallingModel && !m_bClearingModel )
                 {

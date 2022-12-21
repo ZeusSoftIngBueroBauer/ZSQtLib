@@ -183,33 +183,15 @@ CIpcLogServer::CIpcLogServer() :
 
     m_pMtxListLogDataCached = new QMutex(QMutex::Recursive);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pLoggersIdxTree,
-        /* szSignal     */ SIGNAL( treeEntryAdded(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onLoggersIdxTreeEntryAdded(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*) ),
-        /* cnctType     */ Qt::DirectConnection ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pLoggersIdxTree,
-        /* szSignal     */ SIGNAL( treeEntryAboutToBeRemoved(ZS::System::CIdxTree*, ZS::System::EIdxTreeEntryType, const QString&, int) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onLoggersIdxTreeEntryAboutToBeRemoved(ZS::System::CIdxTree*, ZS::System::EIdxTreeEntryType, const QString&, int) ),
-        /* cnctType     */ Qt::DirectConnection ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pLoggersIdxTree,
-        /* szSignal     */ SIGNAL( treeEntryChanged(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onLoggersIdxTreeEntryChanged(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*) ),
-        /* cnctType     */ Qt::DirectConnection ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pLoggersIdxTree, &CIdxTree::treeEntryAdded,
+        this, &CIpcLogServer::onLoggersIdxTreeEntryAdded);
+    QObject::connect(
+        m_pLoggersIdxTree, &CIdxTree::treeEntryAboutToBeRemoved,
+        this, &CIpcLogServer::onLoggersIdxTreeEntryAboutToBeRemoved);
+    QObject::connect(
+        m_pLoggersIdxTree, &CIdxTreeLoggers::treeEntryChanged,
+        this, &CIpcLogServer::onLoggersIdxTreeEntryChanged);
 
     if( !QObject::connect(
         /* pObjSender   */ m_pIpcServer,
@@ -1866,9 +1848,7 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CIpcLogServer::onLoggersIdxTreeEntryAdded(
-    CIdxTree*      /*i_pIdxTree*/,
-    CIdxTreeEntry* i_pTreeEntry )
+void CIpcLogServer::onLoggersIdxTreeEntryAdded( const QString& i_strKeyInTree )
 //------------------------------------------------------------------------------
 {
     // The index tree will be locked so it will not be changed when accessing it here.
@@ -1881,34 +1861,35 @@ void CIpcLogServer::onLoggersIdxTreeEntryAdded(
         return;
     }
 
-    if( i_pTreeEntry != nullptr && isConnected() )
+    CIdxTreeLocker idxTreeLocker(m_pLoggersIdxTree);
+
+    CIdxTreeEntry* pTreeEntry = m_pLoggersIdxTree->findEntry(i_strKeyInTree);
+
+    if( pTreeEntry != nullptr && isConnected() )
     {
-        if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        if( pTreeEntry->isBranch() )
         {
             sendBranch(
                 /* iSocketId     */ ESocketIdAllSockets,
                 /* systemMsgType */ MsgProtocol::ESystemMsgTypeInd,
                 /* cmd           */ MsgProtocol::ECommandInsert,
-                /* pBranch       */ i_pTreeEntry );
+                /* pBranch       */ pTreeEntry );
         }
-        else if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+        else if( pTreeEntry->isLeave() )
         {
             sendLeave(
                 /* iSocketId     */ ESocketIdAllSockets,
                 /* systemMsgType */ MsgProtocol::ESystemMsgTypeInd,
                 /* cmd           */ MsgProtocol::ECommandInsert,
-                /* strKeyInTree  */ i_pTreeEntry->keyInTree(),
-                /* idxInTree     */ i_pTreeEntry->indexInTree() );
+                /* strKeyInTree  */ pTreeEntry->keyInTree(),
+                /* idxInTree     */ pTreeEntry->indexInTree() );
         }
     }
 }
 
 //------------------------------------------------------------------------------
 void CIpcLogServer::onLoggersIdxTreeEntryAboutToBeRemoved(
-    CIdxTree*         /*i_pIdxTree*/,
-    EIdxTreeEntryType i_entryType,
-    const QString&    i_strKeyInTree,
-    int               i_idxInTree )
+    EIdxTreeEntryType i_entryType, const QString& i_strKeyInTree, int i_idxInTree )
 //------------------------------------------------------------------------------
 {
     // The index tree will be locked so it will not be changed when accessing it here.
@@ -1950,9 +1931,7 @@ void CIpcLogServer::onLoggersIdxTreeEntryAboutToBeRemoved(
 }
 
 //------------------------------------------------------------------------------
-void CIpcLogServer::onLoggersIdxTreeEntryChanged(
-    CIdxTree*      /*i_pIdxTree*/,
-    CIdxTreeEntry* i_pTreeEntry )
+void CIpcLogServer::onLoggersIdxTreeEntryChanged( const QString& i_strKeyInTree )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
@@ -1965,24 +1944,28 @@ void CIpcLogServer::onLoggersIdxTreeEntryChanged(
         return;
     }
 
-    if( i_pTreeEntry != nullptr && isConnected() )
+    CIdxTreeLocker idxTreeLocker(m_pLoggersIdxTree);
+
+    CIdxTreeEntry* pTreeEntry = m_pLoggersIdxTree->findEntry(i_strKeyInTree);
+
+    if( pTreeEntry != nullptr && isConnected() )
     {
-        if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Root || i_pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        if( pTreeEntry->isRoot() || pTreeEntry->isBranch() )
         {
             sendBranch(
                 /* iSocketId     */ ESocketIdAllSockets,
                 /* systemMsgType */ MsgProtocol::ESystemMsgTypeInd,
                 /* cmd           */ MsgProtocol::ECommandInsert,
-                /* pBranch       */ i_pTreeEntry );
+                /* pBranch       */ pTreeEntry );
         }
-        else if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+        else if( pTreeEntry->isLeave() )
         {
             sendLeave(
                 /* iSocketId     */ ESocketIdAllSockets,
                 /* systemMsgType */ MsgProtocol::ESystemMsgTypeInd,
                 /* cmd           */ MsgProtocol::ECommandUpdate,
-                /* strKeyInTree  */ i_pTreeEntry->keyInTree(),
-                /* idxInTree     */ i_pTreeEntry->indexInTree() );
+                /* strKeyInTree  */ pTreeEntry->keyInTree(),
+                /* idxInTree     */ pTreeEntry->indexInTree() );
         }
     }
 }

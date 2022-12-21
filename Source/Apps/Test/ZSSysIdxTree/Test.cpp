@@ -2934,7 +2934,7 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
         while( itIdxTree != pIdxTree->end() )
         {
             pTreeEntry = *itIdxTree;
-            pModelTreeEntry = pModelIdxTree->findModelEntry(pTreeEntry);
+            pModelTreeEntry = pModelIdxTree->findEntry(pTreeEntry->keyInTree());
             if( pModelTreeEntry == nullptr )
             {
                 strResultValue  = "ViewMode: " + CWdgtIdxTree::viewMode2Str(viewMode);
@@ -3021,8 +3021,7 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
             pTreeEntry = *itIdxTree;
             if( pTreeEntry->entryType() == EIdxTreeEntryType::Root || pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
             {
-                pModelTreeEntry = pModelIdxTree->findModelEntry(pTreeEntry);
-
+                pModelTreeEntry = pModelIdxTree->findEntry(pTreeEntry->keyInTree());
                 if( pModelTreeEntry == nullptr )
                 {
                     strResultValue  = "ViewMode: " + CWdgtIdxTree::viewMode2Str(viewMode);
@@ -3064,7 +3063,7 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
             // Please note that the model branch entry as the root of the branch content model is a clone
             // of the model branch of idx tree model. The branch node of the index tree model may not contain
             // leaves whereas the root branch (the clone) of the content model may.
-            CModelIdxTreeEntry* pModelBranchSelected = pModelIdxTreeBranchContent->modelBranch();
+            CModelIdxTreeEntry* pModelBranchSelected = pModelIdxTreeBranchContent->modelRootEntry();
 
             if( pModelBranchSelected == nullptr )
             {
@@ -3074,7 +3073,7 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
                 strResultValue += "  pModelIdxTree->currentIndex() != " + strKeyInTreeToBeSelected;
                 strlstResultValues << strResultValue;
             }
-            else if( pModelBranchSelected->treeEntry() != pModelIdxTreeBranchContent->branch() )
+            else if( pModelBranchSelected != pModelIdxTreeBranchContent->modelRootEntry() )
             {
                 strResultValue  = "ViewMode: " + CWdgtIdxTree::viewMode2Str(viewMode);
                 strResultValue += ", SortOrder: " + idxTreeSortOrder2Str(sortOrder) + ":\n";
@@ -3093,7 +3092,7 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
                 }
                 else // if( pModelBranchSelected->keyInTree() == strKeyInTreeToBeSelected )
                 {
-                    CIdxTreeEntry* pBranchSelected = dynamic_cast<CIdxTreeEntry*>(pModelBranchSelected->treeEntry());
+                    CIdxTreeEntry* pBranchSelected = pModelBranchSelected->getIdxTreeEntry();
 
                     if( pBranchSelected->count() != pModelBranchSelected->count() )
                     {
@@ -3109,7 +3108,7 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
                         for( int idxTreeEntry = 0; idxTreeEntry < pBranchSelected->count(); ++idxTreeEntry )
                         {
                             pTreeEntry = pBranchSelected->at(idxTreeEntry);
-                            pModelTreeEntry = pModelIdxTreeBranchContent->findModelEntry(pTreeEntry);
+                            pModelTreeEntry = pModelIdxTreeBranchContent->findEntry(pTreeEntry->keyInParentBranch());
                             if( pModelTreeEntry == nullptr )
                             {
                                 strResultValue  = "ViewMode: " + CWdgtIdxTree::viewMode2Str(viewMode);
@@ -3137,8 +3136,8 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
         while( itModelIdxTree != pModelIdxTree->end() )
         {
             pModelTreeEntry     = *itModelIdxTree;
-            idxInParentBranch   = pModelTreeEntry->modelIndexInParentBranch();
-            pModelBranchParent  = pModelTreeEntry->modelParentBranch();
+            idxInParentBranch   = pModelTreeEntry->indexInParentBranch();
+            pModelBranchParent  = pModelTreeEntry->parentBranch();
             pModelTreeEntryPrev = nullptr;
             pModelTreeEntryNext = nullptr;
             if( pModelBranchParent != nullptr )
@@ -3187,7 +3186,7 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
             // Please note that the model branch entry as the root of the branch content model is a clone
             // of the model branch of idx tree model. The branch node of the index tree model may not contain
             // leaves whereas the root branch (the clone) of the content model may.
-            CModelIdxTreeEntry* pModelBranchSelected = pModelIdxTreeBranchContent->modelBranch();
+            CModelIdxTreeEntry* pModelBranchSelected = pModelIdxTreeBranchContent->modelRootEntry();
 
             // If a branch has been assigned to the table view ...
             if( pModelBranchSelected != nullptr )
@@ -3195,7 +3194,7 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
                 for( int idxTreeEntry = 0; idxTreeEntry < pModelBranchSelected->count(); ++idxTreeEntry )
                 {
                     pModelTreeEntry     = pModelBranchSelected->at(idxTreeEntry);
-                    idxInParentBranch   = pModelTreeEntry->modelIndexInParentBranch();
+                    idxInParentBranch   = pModelTreeEntry->indexInParentBranch();
                     pModelTreeEntryPrev = nullptr;
                     pModelTreeEntryNext = nullptr;
 

@@ -247,6 +247,46 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! Returns the number of error log entries for the given severity.
+
+    @param i_strSeverity [in]
+        Severity for which the number of log entries should be returned.
+        By passing Undefined or Count for the severity the overall number of
+        entries will be returned.
+
+    @return Number of error log entries for the desired severity.
+
+    @note If you use this method to loop through the error log entries don't forget
+          to lock the instance before and unlocking it again afterwards.
+*/
+int CModelErrLog::getEntryCount( const QString& i_strSeverity ) const
+//------------------------------------------------------------------------------
+{
+    int iSeverity = str2ResultSeverity(i_strSeverity);
+    int iCount = 0;
+
+    int iSeverityMin = iSeverity;
+    int iSeverityMax = iSeverity;
+
+    if( iSeverity == EResultSeverityUndefined || iSeverity == EResultSeverityCount )
+    {
+        iSeverityMin = 0;
+        iSeverityMax = EResultSeverityCount-1;
+    }
+
+    for( iSeverity = iSeverityMin; iSeverity <= iSeverityMax; iSeverity++ )
+    {
+        iCount += m_ararpEntries[iSeverity].count();
+    }
+
+    return iCount;
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
 void CModelErrLog::clear()
 //------------------------------------------------------------------------------
 {
@@ -256,45 +296,52 @@ void CModelErrLog::clear()
         /* strMethod    */ "clear",
         /* strMthInArgs */ "" );
 
-    CErrLogLocker errLogLocker(m_pErrLog);
-
-    beginResetModel();
-
-    int iSeverity;
-    int iRowIdx;
-
-    for( iSeverity = m_ararpEntries.count()-1; iSeverity >= 0; iSeverity-- )
+    if( rowCount() > 0 )
     {
-        if( m_ararpEntries[iSeverity].count() > 0 )
+        CErrLogLocker errLogLocker(m_pErrLog);
+
+        beginResetModel();
+
+        int iSeverity;
+        int iRowIdx;
+
+        for( iSeverity = m_ararpEntries.count()-1; iSeverity >= 0; iSeverity-- )
         {
-            for( iRowIdx = m_ararpEntries[iSeverity].count()-1; iRowIdx >= 0; iRowIdx-- )
+            if( m_ararpEntries[iSeverity].count() > 0 )
             {
-                delete m_ararpEntries[iSeverity][iRowIdx];
-                m_ararpEntries[iSeverity][iRowIdx] = nullptr;
+                for( iRowIdx = m_ararpEntries[iSeverity].count()-1; iRowIdx >= 0; iRowIdx-- )
+                {
+                    delete m_ararpEntries[iSeverity][iRowIdx];
+                    m_ararpEntries[iSeverity][iRowIdx] = nullptr;
+                }
+                m_ararpEntries[iSeverity].clear();
             }
-            m_ararpEntries[iSeverity].clear();
         }
-    }
 
-    QObject::disconnect(
-        /* pObjSender   */ m_pErrLog,
-        /* szSignal     */ SIGNAL(entryRemoved(const ZS::System::SErrResultInfo&)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onEntryRemoved(const ZS::System::SErrResultInfo&)) );
+        QObject::disconnect(
+            /* pObjSender   */ m_pErrLog,
+            /* szSignal     */ SIGNAL(entryRemoved(const ZS::System::SErrResultInfo&)),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT(onEntryRemoved(const ZS::System::SErrResultInfo&)) );
 
-    m_pErrLog->clear();
+        m_pErrLog->clear();
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pErrLog,
-        /* szSignal     */ SIGNAL(entryRemoved(const ZS::System::SErrResultInfo&)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onEntryRemoved(const ZS::System::SErrResultInfo&)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+        if( !QObject::connect(
+            /* pObjSender   */ m_pErrLog,
+            /* szSignal     */ SIGNAL(entryRemoved(const ZS::System::SErrResultInfo&)),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT(onEntryRemoved(const ZS::System::SErrResultInfo&)) ) )
+        {
+            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+        }
 
-    endResetModel();
-}
+        endResetModel();
+
+        emit countChanged();
+
+    } // if( rowCount() > 0 )
+
+} // clear
 
 //------------------------------------------------------------------------------
 void CModelErrLog::removeEntries( const QModelIndexList& i_modelIdxList )
@@ -439,6 +486,7 @@ void CModelErrLog::removeEntry( int i_iRowIdx )
         {
             throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
         }
+        emit countChanged();
     }
 }
 
@@ -491,6 +539,8 @@ void CModelErrLog::onEntryAdded( const ZS::System::SErrResultInfo& i_errResultIn
         SErrLogEntry* pModelEntry = new SErrLogEntry(*pErrLogEntry);
         m_ararpEntries[severity].append(pModelEntry);
         endInsertRows();
+
+        emit countChanged();
     }
 
 } // onEntryAdded
@@ -564,6 +614,8 @@ void CModelErrLog::onEntryRemoved( const ZS::System::SErrResultInfo& i_errResult
         delete pModelEntry;
         pModelEntry = nullptr;
         endRemoveRows();
+
+        emit countChanged();
     }
 
 } // onEntryRemoved

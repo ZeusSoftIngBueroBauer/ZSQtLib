@@ -853,7 +853,7 @@ CTestStep* CWdgtIdxTreeTestSteps::getSelectedTestStep() const
         if( pModelTreeEntry != nullptr )
         {
             CIdxTreeEntry* pIdxTreeEntry =
-                dynamic_cast<CIdxTreeEntry*>(pModelTreeEntry->treeEntry());
+                dynamic_cast<CIdxTreeEntry*>(pModelTreeEntry->getIdxTreeEntry());
             if( pIdxTreeEntry != nullptr )
             {
                 CAbstractTestStepIdxTreeEntry* pTestStepEntry =

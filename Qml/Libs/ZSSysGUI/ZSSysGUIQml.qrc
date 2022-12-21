@@ -3,6 +3,7 @@
         <file>qmldir</file>
         <file>ZSSysErrLogDlg.qml</file>
         <file>ZSSysErrLogIcon.qml</file>
+        <file>ZSSysErrLogTableView.qml</file>
         <file>ZSSysErrLogWdgt.qml</file>
         <file>ZSSysIdxTreeTableViewBranchContent.qml</file>
         <file>ZSSysIdxTreeView.qml</file>

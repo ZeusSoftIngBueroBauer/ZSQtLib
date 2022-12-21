@@ -380,7 +380,7 @@ CIdxTree::~CIdxTree()
         m_pMtx->lock();
     }
 
-    emit aboutToBeDestroyed(this);
+    emit aboutToBeDestroyed();
 
     clear(m_pRoot);
 
@@ -1615,7 +1615,7 @@ int CIdxTree::add( CIdxTreeEntry* i_pTreeEntry, CIdxTreeEntry* i_pTargetBranch )
         i_pTreeEntry->setKeyInTree(strKeyInTree);
         i_pTreeEntry->setIndexInTree(idxInTree);
 
-        emit_treeEntryAdded(this, i_pTreeEntry);
+        emit_treeEntryAdded(strKeyInTree);
 
     } // if( idxInTargetBranch >= 0 )
 
@@ -2168,7 +2168,7 @@ int CIdxTree::insert(
         i_pTreeEntry->setKeyInTree(strKeyInTree);
         i_pTreeEntry->setIndexInTree(idxInTree);
 
-        emit_treeEntryAdded(this, i_pTreeEntry);
+        emit_treeEntryAdded(strKeyInTree);
 
     } // if( idxInTargetBranch >= 0 )
 
@@ -2391,7 +2391,7 @@ void CIdxTree::remove( CIdxTreeEntry* i_pTreeEntry )
 
     CMutexLocker mtxLocker(m_pMtx);
 
-    emit_treeEntryAboutToBeRemoved(this, i_pTreeEntry);
+    emit_treeEntryAboutToBeRemoved(i_pTreeEntry->entryType(), i_pTreeEntry->keyInTree(), i_pTreeEntry->indexInTree());
 
     QString strKeyInTree = i_pTreeEntry->keyInTree();
     int     idxInTree    = i_pTreeEntry->indexInTree();
@@ -2467,7 +2467,7 @@ void CIdxTree::remove( CIdxTreeEntry* i_pTreeEntry )
 
     } // if( i_pTreeEntry != m_pRoot )
 
-    emit_treeEntryRemoved(this, i_pTreeEntry);
+    emit_treeEntryRemoved(i_pTreeEntry->entryType(), i_pTreeEntry->keyInTree(), i_pTreeEntry->indexInTree());
 
 } // remove
 
@@ -3083,7 +3083,7 @@ void CIdxTree::move(
 
     QString strKeyInTreePrev = i_pTreeEntry->keyInTree();
 
-    emit_treeEntryAboutToBeMoved(this, i_pTreeEntry, pTargetBranch);
+    emit_treeEntryAboutToBeMoved(strKeyInTreePrev, pTargetBranch->keyInTree());
 
     CIdxTreeEntry* pParentBranch = i_pTreeEntry->parentBranch();
 
@@ -3105,7 +3105,7 @@ void CIdxTree::move(
         updateKeyInTree(i_pTreeEntry);
     }
 
-    emit_treeEntryMoved(this, i_pTreeEntry, strKeyInTreePrev, pTargetBranch);
+    emit_treeEntryMoved(i_pTreeEntry->keyInTree(), strKeyInTreePrev, pTargetBranch->keyInTree());
 
 } // move
 
@@ -4042,7 +4042,7 @@ void CIdxTree::rename( CIdxTreeEntry* i_pTreeEntry, const QString& i_strNameNew 
     QString strKeyInTreePrev = i_pTreeEntry->keyInTree();
     QString strNamePrev = i_pTreeEntry->name();
 
-    emit_treeEntryAboutToBeRenamed(this, i_pTreeEntry, i_strNameNew);
+    emit_treeEntryAboutToBeRenamed(strKeyInTreePrev, i_strNameNew);
 
     CIdxTreeEntry* pParentBranch = i_pTreeEntry->parentBranch();
 
@@ -4050,7 +4050,7 @@ void CIdxTree::rename( CIdxTreeEntry* i_pTreeEntry, const QString& i_strNameNew 
 
     updateKeyInTree(i_pTreeEntry);
 
-    emit_treeEntryRenamed(this, i_pTreeEntry, strKeyInTreePrev, strNamePrev);
+    emit_treeEntryRenamed(i_pTreeEntry->keyInTree(), strKeyInTreePrev, strNamePrev);
 
 } // rename
 
@@ -4126,7 +4126,7 @@ void CIdxTree::updateKeyInTree( CIdxTreeEntry* i_pTreeEntry )
 
     i_pTreeEntry->setKeyInTree(strKeyInTree);
 
-    emit_treeEntryKeyInTreeChanged(this, i_pTreeEntry, strKeyInTreePrev);
+    emit_treeEntryKeyInTreeChanged(strKeyInTree, strKeyInTreePrev);
 
     if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
     {
@@ -4314,9 +4314,8 @@ void CIdxTree::onTreeEntryChanged( CIdxTreeEntry* i_pTreeEntry )
         /* strMethod          */ "onTreeEntryChanged",
         /* strMethodInArgs    */ strMthInArgs );
 
-    emit_treeEntryChanged(this, i_pTreeEntry);
-
-} // onTreeEntryChanged
+    emit_treeEntryChanged(i_pTreeEntry->keyInTree());
+}
 
 /*==============================================================================
 protected: // instance methods (tracing of signals)
@@ -4326,18 +4325,16 @@ protected: // instance methods (tracing of signals)
 /*! Auxiliary method which has been invented to created method trace outputs
     whenever the index tree emits the "treeEntryAdded" signal.
 
-    @param i_pIdxTree [in] Pointer to index tree.
-    @param i_pTreeEntry [in] Pointer to tree entry which has been added.
+    @param i_strKeyInTree [in] Key in index tree of tree entry which has been added.
 */
-void CIdxTree::emit_treeEntryAdded( CIdxTree* i_pIdxTree, CIdxTreeEntry* i_pTreeEntry )
+void CIdxTree::emit_treeEntryAdded( const QString& i_strKeyInTree )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
 
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "IdxTree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName());
-        strMthInArgs += ", TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
+        strMthInArgs = i_strKeyInTree;
     }
 
     CMethodTracer mthTracer(
@@ -4351,26 +4348,23 @@ void CIdxTree::emit_treeEntryAdded( CIdxTree* i_pIdxTree, CIdxTreeEntry* i_pTree
         /* strMethod          */ "emit_treeEntryAdded",
         /* strMethodInArgs    */ strMthInArgs );
 
-    emit treeEntryAdded(i_pIdxTree, i_pTreeEntry);
-
-} // emit_treeEntryAdded
+    emit treeEntryAdded(i_strKeyInTree);
+}
 
 //------------------------------------------------------------------------------
 /*! Auxiliary method which has been invented to create method trace outputs
     whenever the index tree emits the "treeEntryChanged" signal.
 
-    @param i_pIdxTree [in] Pointer to index tree.
-    @param i_pTreeEntry [in] Pointer to tree entry which has been changed.
+    @param i_strKeyInTree [in] Unique key of the entry which has been changed.
 */
-void CIdxTree::emit_treeEntryChanged( CIdxTree* i_pIdxTree, CIdxTreeEntry* i_pTreeEntry )
+void CIdxTree::emit_treeEntryChanged( const QString& i_strKeyInTree )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
 
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "IdxTree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName());
-        strMthInArgs += ", TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
+        strMthInArgs = i_strKeyInTree;
     }
 
     CMethodTracer mthTracer(
@@ -4384,26 +4378,30 @@ void CIdxTree::emit_treeEntryChanged( CIdxTree* i_pIdxTree, CIdxTreeEntry* i_pTr
         /* strMethod          */ "emit_treeEntryChanged",
         /* strMethodInArgs    */ strMthInArgs );
 
-    emit treeEntryChanged(i_pIdxTree, i_pTreeEntry);
-
-} // emit_treeEntryChanged
+    emit treeEntryChanged(i_strKeyInTree);
+}
 
 //------------------------------------------------------------------------------
 /*! Auxiliary method which has been invented to create method trace outputs
     whenever the index tree emits the "treeEntryAboutToBeRemoved" signal.
 
-    @param i_pIdxTree [in] Pointer to index tree.
-    @param i_pTreeEntry [in] Pointer to tree entry which is goint to be removed.
+    @param i_entryType [in] Entry type.
+    @param i_strKeyInTree [in] Unique key of the entry which will be removed from the tree.
+    @param i_idxInTree [in] Index of the entry which will be removed from the tree.
 */
-void CIdxTree::emit_treeEntryAboutToBeRemoved( CIdxTree* i_pIdxTree, CIdxTreeEntry* i_pTreeEntry )
+void CIdxTree::emit_treeEntryAboutToBeRemoved(
+    ZS::System::EIdxTreeEntryType i_entryType,
+    const QString& i_strKeyInTree,
+    int i_idxInTree )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
 
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "IdxTree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName());
-        strMthInArgs += ", TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
+        strMthInArgs = "Type: " + idxTreeEntryType2Str(i_entryType);
+        strMthInArgs += ", Key: " + i_strKeyInTree;
+        strMthInArgs += ", Idx: " + QString::number(i_idxInTree);
     }
 
     CMethodTracer mthTracer(
@@ -4417,9 +4415,8 @@ void CIdxTree::emit_treeEntryAboutToBeRemoved( CIdxTree* i_pIdxTree, CIdxTreeEnt
         /* strMethod          */ "emit_treeEntryAboutToBeRemoved",
         /* strMethodInArgs    */ strMthInArgs );
 
-    emit treeEntryAboutToBeRemoved(i_pIdxTree, i_pTreeEntry->entryType(), i_pTreeEntry->keyInTree(), i_pTreeEntry->indexInTree());
-
-} // emit_treeEntryAboutToBeRemoved
+    emit treeEntryAboutToBeRemoved(i_entryType, i_strKeyInTree, i_idxInTree);
+}
 
 //------------------------------------------------------------------------------
 /*! Auxiliary method which has been invented to create method trace outputs
@@ -4431,16 +4428,18 @@ void CIdxTree::emit_treeEntryAboutToBeRemoved( CIdxTree* i_pIdxTree, CIdxTreeEnt
     @param i_idxInTree [in] Index of the entry valid before the entry was removed from the tree.
 */
 void CIdxTree::emit_treeEntryRemoved(
-    CIdxTree*      i_pIdxTree,
-    CIdxTreeEntry* i_pTreeEntry )
+    ZS::System::EIdxTreeEntryType i_entryType,
+    const QString& i_strKeyInTree,
+    int i_idxInTree )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
 
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "IdxTree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName());
-        strMthInArgs += ", TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->name());
+        strMthInArgs = "Type: " + idxTreeEntryType2Str(i_entryType);
+        strMthInArgs += ", Key: " + i_strKeyInTree;
+        strMthInArgs += ", Idx: " + QString::number(i_idxInTree);
     }
 
     CMethodTracer mthTracer(
@@ -4454,31 +4453,27 @@ void CIdxTree::emit_treeEntryRemoved(
         /* strMethod          */ "emit_treeEntryRemoved",
         /* strMethodInArgs    */ strMthInArgs );
 
-    emit treeEntryRemoved(i_pIdxTree, i_pTreeEntry->entryType(), i_pTreeEntry->keyInTree(), i_pTreeEntry->indexInTree());
-
-} // emit_treeEntryRemoved
+    emit treeEntryRemoved(i_entryType, i_strKeyInTree, i_idxInTree);
+}
 
 //------------------------------------------------------------------------------
 /*! Auxiliary method which has been invented to create method trace outputs
     whenever the index tree emits the "treeEntryAboutToBeMoved" signal.
 
-    @param i_pIdxTree [in] Pointer to index tree.
-    @param i_pTreeEntry [in] Pointer to tree entry which is going to be moved to another parent branch.
-    @param i_pTargetBranch [in] Pointer to target branch to which the entry will be moved.
+    @param i_strOrigKeyInTree [in] Unique key of the entry which is going to be moved to another parent branch.
+    @param i_strKeyInTreeOfTargetBranch [in] Unique Key of the target branch to which the entry will be moved.
 */
 void CIdxTree::emit_treeEntryAboutToBeMoved(
-    CIdxTree*      i_pIdxTree,
-    CIdxTreeEntry* i_pTreeEntry,
-    CIdxTreeEntry* i_pTargetBranch )
+    const QString& i_strOrigKeyInTree,
+    const QString& i_strKeyInTreeOfTargetBranch )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
 
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "IdxTree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName());
-        strMthInArgs += ", TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
-        strMthInArgs += ", TargetBranch: " + QString(i_pTargetBranch == nullptr ? "nullptr" : i_pTargetBranch->keyInTree());
+        strMthInArgs = "OrigKey: " + i_strOrigKeyInTree;
+        strMthInArgs += ", TargetBranch: " + i_strKeyInTreeOfTargetBranch;
     }
 
     CMethodTracer mthTracer(
@@ -4492,35 +4487,31 @@ void CIdxTree::emit_treeEntryAboutToBeMoved(
         /* strMethod          */ "emit_treeEntryAboutToBeMoved",
         /* strMethodInArgs    */ strMthInArgs );
 
-    emit treeEntryAboutToBeMoved(i_pIdxTree, i_pTreeEntry, i_pTargetBranch);
-
-} // emit_treeEntryAboutToBeMoved
+    emit treeEntryAboutToBeMoved(i_strOrigKeyInTree, i_strKeyInTreeOfTargetBranch);
+}
 
 //------------------------------------------------------------------------------
 /*! Auxiliary method which has been invented to create method trace outputs
     whenever the index tree emits the "treeEntryeMoved" signal.
 
-    @param i_pIdxTree [in] Pointer to index tree.
-    @param i_pTreeEntry [in] Pointer to tree entry which has been removed.
-    @param i_strKeyInTreePrev [in] Unique key of the entry valid before the entry was moved to the target branch.
-    @param i_pTargetBranch [in] Pointer to target branch to which the entry will be moved.
+    @param i_strNewKeyInTree [in] The new unique key of the entry after moving the entry to the new branch.
+    @param i_strOrigKeyInTree [in] The original unique key of the entry before moving the entry to the new branch.
+    @param i_strKeyInTreeOfTargetBranch [in] Unique Key of the target branch to which the entry has been moved.
     @note The index of the entry in the index tree remains the same.
 */
 void CIdxTree::emit_treeEntryMoved(
-    CIdxTree*      i_pIdxTree,
-    CIdxTreeEntry* i_pTreeEntry,
-    const QString& i_strKeyInTreePrev,
-    CIdxTreeEntry* i_pTargetBranch )
+    const QString& i_strNewKeyInTree,
+    const QString& i_strOrigKeyInTree,
+    const QString& i_strKeyInTreeOfTargetBranch )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
 
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "IdxTree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName());
-        strMthInArgs += ", TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
-        strMthInArgs += ", KeyInTreePrev: " + i_strKeyInTreePrev;
-        strMthInArgs += ", TargetBranch: " + QString(i_pTargetBranch == nullptr ? "nullptr" : i_pTargetBranch->keyInTree());
+        strMthInArgs = "NewKey: " + i_strNewKeyInTree;
+        strMthInArgs += ", OrigKey: " + i_strOrigKeyInTree;
+        strMthInArgs += ", TargetBranch: " + i_strKeyInTreeOfTargetBranch;
     }
 
     CMethodTracer mthTracer(
@@ -4534,30 +4525,26 @@ void CIdxTree::emit_treeEntryMoved(
         /* strMethod          */ "emit_treeEntryMoved",
         /* strMethodInArgs    */ strMthInArgs );
 
-    emit treeEntryMoved(i_pIdxTree, i_pTreeEntry, i_strKeyInTreePrev, i_pTargetBranch);
-
-} // emit_treeEntryMoved
+    emit treeEntryMoved(i_strNewKeyInTree, i_strOrigKeyInTree, i_strKeyInTreeOfTargetBranch);
+}
 
 //------------------------------------------------------------------------------
 /*! Auxiliary method which has been invented to create method trace outputs
     whenever the index tree emits the "treeEntryAboutToBeRenamed" signal.
 
-    @param i_pIdxTree [in] Pointer to index tree.
-    @param i_pTreeEntry [in] Pointer to tree entry which is going to be renamed.
-    @param i_strNameNew [in] New name of the entry.
+    @param i_strOrigKeyInTree [in] Unique key of the entry which is going to be renamed.
+    @param i_strNewName [in] New name of the entry.
 */
 void CIdxTree::emit_treeEntryAboutToBeRenamed(
-    CIdxTree*              i_pIdxTree,
-    CIdxTreeEntry* i_pTreeEntry,
-    const QString&         i_strNameNew )
+    const QString& i_strOrigKeyInTree,
+    const QString& i_strNameNew )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
 
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "IdxTree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName());
-        strMthInArgs += ", TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
+        strMthInArgs = "OrigKey: " + i_strOrigKeyInTree;
         strMthInArgs += ", NameNew: " + i_strNameNew;
     }
 
@@ -4572,34 +4559,30 @@ void CIdxTree::emit_treeEntryAboutToBeRenamed(
         /* strMethod          */ "emit_treeEntryAboutToBeRenamed",
         /* strMethodInArgs    */ strMthInArgs );
 
-    emit treeEntryAboutToBeRenamed(i_pIdxTree, i_pTreeEntry, i_strNameNew);
-
-} // emit_treeEntryAboutToBeRenamed
+    emit treeEntryAboutToBeRenamed(i_strOrigKeyInTree, i_strNameNew);
+}
 
 //------------------------------------------------------------------------------
 /*! Auxiliary method which has been invented to create method trace outputs
     whenever the index tree emits the "treeEntryRenamed" signal.
 
-    @param i_pIdxTree [in] Pointer to index tree.
-    @param i_pTreeEntry [in] Pointer to tree entry which has been removed.
-    @param i_strKeyInTreePrev [in] Unique key of the entry valid before the entry was moved to the target branch.
-    @param i_strNamePrev [in] Old name of the tree entry.
+    @param i_strNewKeyInTree [in] The new unique key of the entry after renaming it.
+    @param i_strOrigKeyInTree [in] The original unique key of the entry before renaming it.
+    @param i_strOrigName [in] Old name of the tree entry.
 */
 void CIdxTree::emit_treeEntryRenamed(
-    CIdxTree*              i_pIdxTree,
-    CIdxTreeEntry* i_pTreeEntry,
-    const QString&         i_strKeyInTreePrev,
-    const QString&         i_strNamePrev )
+    const QString& i_strNewKeyInTree,
+    const QString& i_strOrigKeyInTree,
+    const QString& i_strOrigName )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
 
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "IdxTree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName());
-        strMthInArgs += ", TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
-        strMthInArgs += ", KeyInTreePrev: " + i_strKeyInTreePrev;
-        strMthInArgs += ", NamePrev: " + i_strNamePrev;
+        strMthInArgs = "NewKey: " + i_strNewKeyInTree;
+        strMthInArgs += ", OrigKeyInTree: " + i_strOrigKeyInTree;
+        strMthInArgs += ", OrigName: " + i_strOrigName;
     }
 
     CMethodTracer mthTracer(
@@ -4613,32 +4596,28 @@ void CIdxTree::emit_treeEntryRenamed(
         /* strMethod          */ "emit_treeEntryRenamed",
         /* strMethodInArgs    */ strMthInArgs );
 
-    emit treeEntryRenamed(i_pIdxTree, i_pTreeEntry, i_strKeyInTreePrev, i_strNamePrev);
-
-} // emit_treeEntryRenamed
+    emit treeEntryRenamed(i_strNewKeyInTree, i_strOrigKeyInTree, i_strOrigName);
+}
 
 //------------------------------------------------------------------------------
 /*! Auxiliary method which has been invented to create method trace outputs
     whenever the index tree emits the "treeEntryKeyInTreeChanged" signal.
 
-    @param i_pIdxTree [in] Pointer to index tree.
-    @param i_pTreeEntry [in] Pointer to tree entry which has been removed.
-    @param i_strKeyInTreePrev [in] Unique key of the entry valid before the entry was moved to the target branch.
+    @param i_strNewKeyInTree [in] The new unique key of the entry.
+    @param i_strOrigKeyInTree [in] The original unique key of the entry valid before the entry was moved to the target branch.
     @note The index of the entry in the index tree remains the same.
 */
 void CIdxTree::emit_treeEntryKeyInTreeChanged(
-    CIdxTree*              i_pIdxTree,
-    CIdxTreeEntry* i_pTreeEntry,
-    const QString&         i_strKeyInTreePrev )
+    const QString& i_strNewKeyInTree,
+    const QString& i_strOrigKeyInTree )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
 
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "IdxTree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName());
-        strMthInArgs += ", TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
-        strMthInArgs += ", KeyInTreePrev: " + i_strKeyInTreePrev;
+        strMthInArgs = "NewKey: " + i_strNewKeyInTree;
+        strMthInArgs += ", OrigKeyInTree: " + i_strOrigKeyInTree;
     }
 
     CMethodTracer mthTracer(
@@ -4652,9 +4631,8 @@ void CIdxTree::emit_treeEntryKeyInTreeChanged(
         /* strMethod          */ "emit_treeEntryKeyInTreeChanged",
         /* strMethodInArgs    */ strMthInArgs );
 
-    emit treeEntryKeyInTreeChanged(i_pIdxTree, i_pTreeEntry, i_strKeyInTreePrev);
-
-} // emit_treeEntryKeyInTreeChanged
+    emit treeEntryKeyInTreeChanged(i_strNewKeyInTree, i_strOrigKeyInTree);
+}
 
 /*==============================================================================
 protected slots:

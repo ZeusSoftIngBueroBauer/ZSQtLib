@@ -261,15 +261,8 @@ void CDelegateIdxTreeLoggers::paint(
     if( i_modelIdx.isValid() )
     {
         const CModelIdxTreeEntry* pCModelTreeEntry = static_cast<const CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
-        CModelIdxTreeEntry*       pVModelTreeEntry = const_cast<CModelIdxTreeEntry*>(pCModelTreeEntry);
 
-        CLogger*        pLogger = nullptr;
         QStyleOptionViewItem styleOption  = i_styleOption;
-
-        if( pVModelTreeEntry != nullptr )
-        {
-            pLogger = dynamic_cast<CLogger*>(pVModelTreeEntry->treeEntry());
-        }
 
         switch( i_modelIdx.column() )
         {
@@ -278,7 +271,7 @@ void CDelegateIdxTreeLoggers::paint(
             case CModelIdxTreeLoggers::EColumnAddDateTime:
             case CModelIdxTreeLoggers::EColumnAddSystemTime:
             {
-                if( pLogger != nullptr )
+                if( pCModelTreeEntry->isLeave() )
                 {
                     bool bVal = i_modelIdx.model()->data(i_modelIdx, Qt::DisplayRole).toBool();
                     QStyleOptionButton styleOption;
@@ -307,7 +300,6 @@ void CDelegateIdxTreeLoggers::paint(
     {
         QStyledItemDelegate::paint(i_pPainter, i_styleOption, i_modelIdx);
     }
-
 } // paint
 
 //------------------------------------------------------------------------------
@@ -322,14 +314,6 @@ QWidget* CDelegateIdxTreeLoggers::createEditor(
     if( i_modelIdx.isValid() )
     {
         const CModelIdxTreeEntry* pCModelTreeEntry = static_cast<const CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
-        CModelIdxTreeEntry*       pVModelTreeEntry = const_cast<CModelIdxTreeEntry*>(pCModelTreeEntry);
-
-        CLogger* pLogger = nullptr;
-
-        if( pVModelTreeEntry != nullptr )
-        {
-            pLogger = dynamic_cast<CLogger*>(pVModelTreeEntry->treeEntry());
-        }
 
         switch( i_modelIdx.column() )
         {
@@ -338,7 +322,7 @@ QWidget* CDelegateIdxTreeLoggers::createEditor(
             case CModelIdxTreeLoggers::EColumnAddDateTime:
             case CModelIdxTreeLoggers::EColumnAddSystemTime:
             {
-                if( pLogger != nullptr )
+                if( pCModelTreeEntry->isLeave() )
                 {
                     // Dont't create an editor for the enabled check box. Otherwise the user
                     // would need to click twice on the cell in order to toggle the value.
@@ -350,12 +334,11 @@ QWidget* CDelegateIdxTreeLoggers::createEditor(
             }
             case CModelIdxTreeLoggers::EColumnLogLevel:
             {
-                if( pLogger != nullptr )
+                if( pCModelTreeEntry->isLeave() )
                 {
                     QComboBox* pCmb = new QComboBox(i_pWdgtParent);
-                    pCmb->setObjectName(pLogger->keyInTree() + ".LogLevel");
+                    pCmb->setObjectName(pCModelTreeEntry->keyInTree() + ".LogLevel");
                     pWdgtEditor = pCmb;
-
                     CEnumLogDetailLevel eDetailLevel;
                     for( eDetailLevel = 0; eDetailLevel < CEnumLogDetailLevel::count(); ++eDetailLevel )
                     {
@@ -374,10 +357,10 @@ QWidget* CDelegateIdxTreeLoggers::createEditor(
             }
             case CModelIdxTreeLoggers::EColumnDataFilter:
             {
-                if( pLogger != nullptr )
+                if( pCModelTreeEntry->isLeave() )
                 {
                     QLineEdit* pEdt = new QLineEdit(i_pWdgtParent);
-                    pEdt->setObjectName(pLogger->keyInTree() + ".DataFilter");
+                    pEdt->setObjectName(pCModelTreeEntry->keyInTree() + ".DataFilter");
                     pWdgtEditor = pEdt;
                     if( !QObject::connect(
                         /* pObjSender   */ pEdt,
@@ -410,14 +393,6 @@ void CDelegateIdxTreeLoggers::setEditorData(
     if( i_modelIdx.isValid() )
     {
         const CModelIdxTreeEntry* pCModelTreeEntry = static_cast<const CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
-        CModelIdxTreeEntry*       pVModelTreeEntry = const_cast<CModelIdxTreeEntry*>(pCModelTreeEntry);
-
-        CLogger* pLogger = nullptr;
-
-        if( pVModelTreeEntry != nullptr )
-        {
-            pLogger = dynamic_cast<CLogger*>(pVModelTreeEntry->treeEntry());
-        }
 
         switch( i_modelIdx.column() )
         {
@@ -426,7 +401,7 @@ void CDelegateIdxTreeLoggers::setEditorData(
             case CModelIdxTreeLoggers::EColumnAddDateTime:
             case CModelIdxTreeLoggers::EColumnAddSystemTime:
             {
-                if( pLogger != nullptr )
+                if( pCModelTreeEntry->isLeave() )
                 {
                     // No editor is used for the enabled check box. Otherwise the user
                     // would need to click twice on the cell in order to toggle the value.
@@ -437,7 +412,7 @@ void CDelegateIdxTreeLoggers::setEditorData(
             }
             case CModelIdxTreeLoggers::EColumnLogLevel:
             {
-                if( pLogger != nullptr )
+                if( pCModelTreeEntry->isLeave() )
                 {
                     QComboBox* pWdgtEditor = dynamic_cast<QComboBox*>(i_pWdgtEditor);
                     if( pWdgtEditor != nullptr )
@@ -455,7 +430,7 @@ void CDelegateIdxTreeLoggers::setEditorData(
             }
             case CModelIdxTreeLoggers::EColumnDataFilter:
             {
-                if( pLogger != nullptr )
+                if( pCModelTreeEntry->isLeave() )
                 {
                     QLineEdit* pWdgtEditor = dynamic_cast<QLineEdit*>(i_pWdgtEditor);
                     if( pWdgtEditor != nullptr )
@@ -493,14 +468,6 @@ void CDelegateIdxTreeLoggers::setModelData(
     if( i_modelIdx.isValid() )
     {
         const CModelIdxTreeEntry* pCModelTreeEntry = static_cast<const CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
-        CModelIdxTreeEntry*       pVModelTreeEntry = const_cast<CModelIdxTreeEntry*>(pCModelTreeEntry);
-
-        CLogger* pLogger = nullptr;
-
-        if( pVModelTreeEntry != nullptr )
-        {
-            pLogger = dynamic_cast<CLogger*>(pVModelTreeEntry->treeEntry());
-        }
 
         switch( i_modelIdx.column() )
         {
@@ -509,7 +476,7 @@ void CDelegateIdxTreeLoggers::setModelData(
             case CModelIdxTreeLoggers::EColumnAddDateTime:
             case CModelIdxTreeLoggers::EColumnAddSystemTime:
             {
-                if( pLogger != nullptr )
+                if( pCModelTreeEntry->isLeave() )
                 {
                     // No editor is used for the enabled check box. Otherwise the user
                     // would need to click twice on the cell in order to toggle the value.
@@ -520,7 +487,7 @@ void CDelegateIdxTreeLoggers::setModelData(
             }
             case CModelIdxTreeLoggers::EColumnLogLevel:
             {
-                if( pLogger != nullptr )
+                if( pCModelTreeEntry->isLeave() )
                 {
                     QComboBox* pWdgtEditor = dynamic_cast<QComboBox*>(i_pWdgtEditor);
                     if( pWdgtEditor != nullptr )
@@ -533,7 +500,7 @@ void CDelegateIdxTreeLoggers::setModelData(
             }
             case CModelIdxTreeLoggers::EColumnDataFilter:
             {
-                if( pLogger != nullptr )
+                if( pCModelTreeEntry->isLeave() )
                 {
                     QLineEdit* pWdgtEditor = dynamic_cast<QLineEdit*>(i_pWdgtEditor);
                     if( pWdgtEditor != nullptr )
@@ -570,14 +537,6 @@ void CDelegateIdxTreeLoggers::updateEditorGeometry(
     if( i_modelIdx.isValid() )
     {
         const CModelIdxTreeEntry* pCModelTreeEntry = static_cast<const CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
-        CModelIdxTreeEntry*       pVModelTreeEntry = const_cast<CModelIdxTreeEntry*>(pCModelTreeEntry);
-
-        CLogger* pLogger = nullptr;
-
-        if( pVModelTreeEntry != nullptr )
-        {
-            pLogger = dynamic_cast<CLogger*>(pVModelTreeEntry->treeEntry());
-        }
 
         switch( i_modelIdx.column() )
         {
@@ -586,7 +545,7 @@ void CDelegateIdxTreeLoggers::updateEditorGeometry(
             case CModelIdxTreeLoggers::EColumnAddDateTime:
             case CModelIdxTreeLoggers::EColumnAddSystemTime:
             {
-                if( pLogger != nullptr )
+                if( pCModelTreeEntry->isLeave() )
                 {
                     // No editor is used for the enabled check box. Otherwise the user
                     // would need to click twice on the cell in order to toggle the value.
@@ -830,7 +789,7 @@ void CTreeViewIdxTreeLoggers::expandRecursive( const QModelIndex& i_modelIdx )
 
     if( pModelTreeEntry != nullptr )
     {
-        if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        if( pModelTreeEntry->isRoot() || pModelTreeEntry->isBranch() )
         {
             CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
             CModelIdxTreeEntry* pModelTreeEntryChild;
@@ -846,11 +805,9 @@ void CTreeViewIdxTreeLoggers::expandRecursive( const QModelIndex& i_modelIdx )
                     expandRecursive(modelIdxChild);
                 }
             }
-
             expand(i_modelIdx);
-
-        } // if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
-    } // if( pModelTreeEntry != nullptr )
+        }
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -861,7 +818,7 @@ void CTreeViewIdxTreeLoggers::collapseRecursive( const QModelIndex& i_modelIdx )
 
     if( pModelTreeEntry != nullptr )
     {
-        if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        if( pModelTreeEntry->isRoot() || pModelTreeEntry->isBranch() )
         {
             CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
             QModelIndex         modelIdx;
@@ -936,7 +893,7 @@ void CTreeViewIdxTreeLoggers::onCollapsed( const QModelIndex& i_modelIdx )
             CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
             pModelIdxTree->setIsExpanded(pModelBranch, false);
         }
-    } // if( i_modelIdx.isValid() )
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -960,7 +917,7 @@ void CTreeViewIdxTreeLoggers::onExpanded( const QModelIndex& i_modelIdx )
             CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
             pModelIdxTree->setIsExpanded(pModelBranch, true);
         }
-    } // if( i_modelIdx.isValid() )
+    }
 }
 
 /*==============================================================================
@@ -978,66 +935,37 @@ void CTreeViewIdxTreeLoggers::keyPressEvent( QKeyEvent* i_pEv )
      || i_pEv->key() == Qt::Key_Space
      || i_pEv->key() == Qt::Key_F5 )
     {
-        QModelIndex                modelIdxSelected = selectionModel()->currentIndex();
-        CModelIdxTreeEntry*        pModelTreeEntry = nullptr;
-        CLogger*              pLogger = nullptr;
-        QAbstractItemModel*        pModelAbstract = nullptr;
-        CModelIdxTreeLoggers* pTrcAdmObjIdxTreeModel = nullptr;
+        QModelIndex modelIdxSelected = selectionModel()->currentIndex();
 
-        pModelAbstract = const_cast<QAbstractItemModel*>(modelIdxSelected.model());
-
-        if( pModelAbstract != nullptr )
+        if( modelIdxSelected.isValid() )
         {
-            pTrcAdmObjIdxTreeModel = dynamic_cast<CModelIdxTreeLoggers*>(pModelAbstract);
-        }
+            QAbstractItemModel* pModelAbstract = const_cast<QAbstractItemModel*>(modelIdxSelected.model());
 
-        if( i_pEv->key() == Qt::Key_F5 )
-        {
-            if( pTrcAdmObjIdxTreeModel != nullptr )
+            if( pModelAbstract != nullptr )
             {
-                //pTrcAdmObjIdxTreeModel->beginReset();
-                //pTrcAdmObjIdxTreeModel->endReset();
-            }
-        }
-        else // if( i_pEv->key() != Qt::Key_F5 )
-        {
-            if( modelIdxSelected.isValid() )
-            {
-                pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(modelIdxSelected.internalPointer());
-
-                if( pModelTreeEntry != nullptr )
+                if( i_pEv->key() == Qt::Key_F5 )
                 {
-                    pLogger = dynamic_cast<CLogger*>(pModelTreeEntry->treeEntry());
+                    //pModelAbstract->beginReset();
+                    //pModelAbstract->endReset();
                 }
-            }
-
-            if( pLogger != nullptr )
-            {
-                if( modelIdxSelected.column() >= CModelIdxTree::EColumnCount )
+                else // if( i_pEv->key() != Qt::Key_F5 )
                 {
-                    switch( modelIdxSelected.column() )
+                    CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
+                    if( pModelTreeEntry->isLeave() )
                     {
-                        case CModelIdxTreeLoggers::EColumnEnabled:
+                        if( modelIdxSelected.column() == CModelIdxTreeLoggers::EColumnEnabled )
                         {
-                            if( pLogger->getEnabled() == EEnabled::Yes )
+                            QVariant val = pModelAbstract->data(modelIdxSelected, Qt::DisplayRole);
+                            if( val.canConvert(QVariant::Bool) )
                             {
-                                pLogger->setEnabled(EEnabled::No);
-                            }
-                            else
-                            {
-                                pLogger->setEnabled(EEnabled::Yes);
+                                pModelAbstract->setData(modelIdxSelected, !val.toBool(), Qt::EditRole);
                             }
                             bEventHandled = true;
-                            break;
                         }
-                        default:
-                        {
-                            break;
-                        }
-                    } // switch( modelIdxSelected.column() )
-                } // if( modelIdxSelected.column() >= CModelIdxTree::EColumnCount )
-            } // if( pLogger != nullptr )
-        } // if( i_pEv->key() != Qt::Key_F5 )
+                    }
+                }
+            } // if( pModelAbstract != nullptr )
+        } // if( modelIdxSelected.isValid() )
     } // if( i_pEv->key() == Qt::Key_Return ...
 
     if( !bEventHandled )
@@ -1053,8 +981,6 @@ void CTreeViewIdxTreeLoggers::mousePressEvent( QMouseEvent* i_pEv )
 {
     bool bEventHandled = false;
 
-    //QModelIndex modelIdxSelected = selectionModel()->currentIndex();
-
     m_modelIdxSelectedOnMousePressEvent = indexAt(i_pEv->pos());
 
     if( m_modelIdxSelectedOnMousePressEvent.isValid() )
@@ -1065,34 +991,17 @@ void CTreeViewIdxTreeLoggers::mousePressEvent( QMouseEvent* i_pEv )
         {
             if( i_pEv->buttons() & Qt::RightButton )
             {
-                if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+                if( pModelTreeEntry->isRoot() || pModelTreeEntry->isBranch() )
                 {
-                    CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
-
-                    if( pModelBranch != nullptr )
+                    if( m_modelIdxSelectedOnMousePressEvent.column() == CModelIdxTreeLoggers::EColumnTreeEntryName )
                     {
-                        switch( m_modelIdxSelectedOnMousePressEvent.column() )
+                        if( m_pMenuNameSpaceContext != nullptr )
                         {
-                            case CModelIdxTreeLoggers::EColumnTreeEntryName:
-                            {
-                                if( m_pMenuNameSpaceContext != nullptr )
-                                {
-                                    m_pActionNameSpaceTitle->setText( "Name Space: " + pModelBranch->name() );
-                                    m_pMenuNameSpaceContext->popup(QWidget::mapToGlobal(i_pEv->pos()));
-                                }
-                                bEventHandled = true;
-                                break;
-                            }
-                            case CModelIdxTreeLoggers::EColumnNameSpace:
-                            case CModelIdxTreeLoggers::EColumnClassName:
-                            case CModelIdxTreeLoggers::EColumnObjName:
-                            case CModelIdxTreeLoggers::EColumnEnabled:
-                            default:
-                            {
-                                break;
-                            }
+                            m_pActionNameSpaceTitle->setText( "Name Space: " + pModelTreeEntry->name() );
+                            m_pMenuNameSpaceContext->popup(QWidget::mapToGlobal(i_pEv->pos()));
                         }
-                    } // if( pLogger != nullptr )
+                        bEventHandled = true;
+                    }
                 }
             } // if( i_pEv->buttons() & Qt::RightButton )
         } // if( pModelTreeEntry != nullptr )
@@ -1111,108 +1020,78 @@ void CTreeViewIdxTreeLoggers::mouseReleaseEvent( QMouseEvent* i_pEv )
 {
     bool bEventHandled = false;
 
-    //QModelIndex modelIdxSelected = selectionModel()->currentIndex();
-
     m_modelIdxSelectedOnMouseReleaseEvent = indexAt(i_pEv->pos());
 
     if( m_modelIdxSelectedOnMouseReleaseEvent.isValid() )
     {
-        CDelegateIdxTreeLoggers* pDelegate = dynamic_cast<CDelegateIdxTreeLoggers*>(itemDelegate());
-        CModelIdxTreeEntry*           pModelTreeEntry = nullptr;
-        CLogger*                 pLogger = nullptr;
+        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMouseReleaseEvent.internalPointer());
 
-        pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMouseReleaseEvent.internalPointer());
-
-        if( pModelTreeEntry != nullptr )
+        if( pModelTreeEntry != nullptr && pModelTreeEntry->isLeave() )
         {
-            pLogger = dynamic_cast<CLogger*>(pModelTreeEntry->treeEntry());
-        }
+            QAbstractItemModel* pModelAbstract = const_cast<QAbstractItemModel*>(m_modelIdxSelectedOnMouseReleaseEvent.model());
+            CDelegateIdxTreeLoggers* pDelegate = dynamic_cast<CDelegateIdxTreeLoggers*>(itemDelegate());
+            QRect rectVisual = visualRect(m_modelIdxSelectedOnMouseReleaseEvent);
 
-        if( pLogger != nullptr )
-        {
-            if( m_modelIdxSelectedOnMouseReleaseEvent.column() >= CModelIdxTree::EColumnCount )
+            switch( m_modelIdxSelectedOnMouseReleaseEvent.column() )
             {
-                switch( m_modelIdxSelectedOnMouseReleaseEvent.column() )
+                case CModelIdxTreeLoggers::EColumnEnabled:
                 {
-                    case CModelIdxTreeLoggers::EColumnEnabled:
+                    if( pDelegate != nullptr && pDelegate->isCheckBoxEnabledHit(rectVisual,i_pEv->pos(),m_modelIdxSelectedOnMouseReleaseEvent) )
                     {
-                        QRect rectVisual = visualRect(m_modelIdxSelectedOnMouseReleaseEvent);
-
-                        if( pDelegate != nullptr && pDelegate->isCheckBoxEnabledHit(rectVisual,i_pEv->pos(),m_modelIdxSelectedOnMouseReleaseEvent) )
+                        QVariant val = pModelAbstract->data(m_modelIdxSelectedOnMouseReleaseEvent, Qt::DisplayRole);
+                        if( val.canConvert(QVariant::Bool) )
                         {
-                            if( pLogger->getEnabled() == EEnabled::Yes )
-                            {
-                                pLogger->setEnabled(EEnabled::No);
-                            }
-                            else
-                            {
-                                pLogger->setEnabled(EEnabled::Yes);
-                            }
-                            bEventHandled = true;
+                            pModelAbstract->setData(m_modelIdxSelectedOnMouseReleaseEvent, !val.toBool(), Qt::EditRole);
                         }
-                        break;
+                        bEventHandled = true;
                     }
-                    case CModelIdxTreeLoggers::EColumnAddThreadName:
+                    break;
+                }
+                case CModelIdxTreeLoggers::EColumnAddThreadName:
+                {
+                    if( pDelegate != nullptr && pDelegate->isCheckBoxAddThreadNameHit(rectVisual,i_pEv->pos(),m_modelIdxSelectedOnMouseReleaseEvent) )
                     {
-                        QRect rectVisual = visualRect(m_modelIdxSelectedOnMouseReleaseEvent);
-
-                        if( pDelegate != nullptr && pDelegate->isCheckBoxAddThreadNameHit(rectVisual,i_pEv->pos(),m_modelIdxSelectedOnMouseReleaseEvent) )
+                        QVariant val = pModelAbstract->data(m_modelIdxSelectedOnMouseReleaseEvent, Qt::DisplayRole);
+                        if( val.canConvert(QVariant::Bool) )
                         {
-                            if( pLogger->addThreadName() )
-                            {
-                                pLogger->setAddThreadName(false);
-                            }
-                            else
-                            {
-                                pLogger->setAddThreadName(true);
-                            }
-                            bEventHandled = true;
+                            pModelAbstract->setData(m_modelIdxSelectedOnMouseReleaseEvent, !val.toBool(), Qt::EditRole);
                         }
-                        break;
+                        bEventHandled = true;
                     }
-                    case CModelIdxTreeLoggers::EColumnAddDateTime:
+                    break;
+                }
+                case CModelIdxTreeLoggers::EColumnAddDateTime:
+                {
+                    if( pDelegate != nullptr && pDelegate->isCheckBoxAddDateTimeHit(rectVisual,i_pEv->pos(),m_modelIdxSelectedOnMouseReleaseEvent) )
                     {
-                        QRect rectVisual = visualRect(m_modelIdxSelectedOnMouseReleaseEvent);
-
-                        if( pDelegate != nullptr && pDelegate->isCheckBoxAddDateTimeHit(rectVisual,i_pEv->pos(),m_modelIdxSelectedOnMouseReleaseEvent) )
+                        QVariant val = pModelAbstract->data(m_modelIdxSelectedOnMouseReleaseEvent, Qt::DisplayRole);
+                        if( val.canConvert(QVariant::Bool) )
                         {
-                            if( pLogger->addDateTime() )
-                            {
-                                pLogger->setAddDateTime(false);
-                            }
-                            else
-                            {
-                                pLogger->setAddDateTime(true);
-                            }
-                            bEventHandled = true;
+                            pModelAbstract->setData(m_modelIdxSelectedOnMouseReleaseEvent, !val.toBool(), Qt::EditRole);
                         }
-                        break;
+                        bEventHandled = true;
                     }
-                    case CModelIdxTreeLoggers::EColumnAddSystemTime:
+                    break;
+                }
+                case CModelIdxTreeLoggers::EColumnAddSystemTime:
+                {
+                    if( pDelegate != nullptr && pDelegate->isCheckBoxAddSystemTimeHit(rectVisual,i_pEv->pos(),m_modelIdxSelectedOnMouseReleaseEvent) )
                     {
-                        QRect rectVisual = visualRect(m_modelIdxSelectedOnMouseReleaseEvent);
-
-                        if( pDelegate != nullptr && pDelegate->isCheckBoxAddSystemTimeHit(rectVisual,i_pEv->pos(),m_modelIdxSelectedOnMouseReleaseEvent) )
+                        QVariant val = pModelAbstract->data(m_modelIdxSelectedOnMouseReleaseEvent, Qt::DisplayRole);
+                        if( val.canConvert(QVariant::Bool) )
                         {
-                            if( pLogger->addSystemTime() )
-                            {
-                                pLogger->setAddSystemTime(false);
-                            }
-                            else
-                            {
-                                pLogger->setAddSystemTime(true);
-                            }
-                            bEventHandled = true;
+                            pModelAbstract->setData(m_modelIdxSelectedOnMouseReleaseEvent, !val.toBool(), Qt::EditRole);
                         }
-                        break;
+                        bEventHandled = true;
                     }
-                    default:
-                    {
-                        break;
-                    }
-                } // switch( modelIdxSelected.column() )
-            } // if( m_modelIdxSelectedOnMouseReleaseEvent.column() >= CModelIdxTree::EColumnCount )
-        } // if( pLogger != nullptr )
+                    break;
+                }
+                default:
+                {
+                    break;
+                }
+            } // switch( m_modelIdxSelectedOnMouseReleaseEvent.column() )
+        } // if( pModelTreeEntry != nullptr && pModelTreeEntry->isLeave() )
     } // if( m_modelIdxSelectedOnMouseReleaseEvent.isValid() )
 
     if( !bEventHandled )
@@ -1233,7 +1112,6 @@ void CTreeViewIdxTreeLoggers::onActionNameSpaceExpandTriggered( bool i_bChecked 
     if( m_modelIdxSelectedOnMousePressEvent.isValid() )
     {
         expandRecursive(m_modelIdxSelectedOnMousePressEvent);
-
         for( int idxClm = 0; idxClm < CModelIdxTree::EColumnCount; idxClm++ )
         {
             resizeColumnToContents(idxClm);
@@ -1258,20 +1136,18 @@ void CTreeViewIdxTreeLoggers::onActionNameSpaceEnableLoggersTriggered( bool i_bC
     if( m_modelIdxSelectedOnMousePressEvent.isValid() )
     {
         CModelIdxTreeLoggers* pModelIdxTree = dynamic_cast<CModelIdxTreeLoggers*>(model());
-
         if( pModelIdxTree != nullptr )
         {
             CIdxTreeLoggers* pIdxTree = pModelIdxTree->idxTree();
-
             CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMouseReleaseEvent.internalPointer());
-
-            CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
-
-            if( pIdxTree != nullptr && pModelBranch != nullptr )
+            if( pIdxTree != nullptr && pModelTreeEntry != nullptr )
             {
-                CIdxTreeEntry* pBranch = pModelBranch->treeEntry();
-
-                pIdxTree->setEnabled(pBranch, EEnabled::Yes);
+                CIdxTreeLocker idxTreeLocker(pIdxTree);
+                CIdxTreeEntry* pBranch = pModelTreeEntry->getIdxTreeEntry();
+                if( pBranch != nullptr )
+                {
+                    pIdxTree->setEnabled(pBranch, EEnabled::Yes);
+                }
             }
         }
     }
@@ -1284,20 +1160,18 @@ void CTreeViewIdxTreeLoggers::onActionNameSpaceDisableLoggersTriggered( bool i_b
     if( m_modelIdxSelectedOnMousePressEvent.isValid() )
     {
         CModelIdxTreeLoggers* pModelIdxTree = dynamic_cast<CModelIdxTreeLoggers*>(model());
-
         if( pModelIdxTree != nullptr )
         {
             CIdxTreeLoggers* pIdxTree = pModelIdxTree->idxTree();
-
             CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMouseReleaseEvent.internalPointer());
-
-            CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
-
-            if( pIdxTree != nullptr && pModelBranch != nullptr )
+            if( pIdxTree != nullptr && pModelTreeEntry != nullptr )
             {
-                CIdxTreeEntry* pBranch = pModelBranch->treeEntry();
-
-                pIdxTree->setEnabled(pBranch, EEnabled::No);
+                CIdxTreeLocker idxTreeLocker(pIdxTree);
+                CIdxTreeEntry* pBranch = pModelTreeEntry->getIdxTreeEntry();
+                if( pBranch != nullptr )
+                {
+                    pIdxTree->setEnabled(pBranch, EEnabled::No);
+                }
             }
         }
     }
@@ -1310,41 +1184,38 @@ void CTreeViewIdxTreeLoggers::onActionNameSpaceSetLoggersDetailLevelTriggered( b
     if( m_modelIdxSelectedOnMousePressEvent.isValid() )
     {
         CModelIdxTreeLoggers* pModelIdxTree = dynamic_cast<CModelIdxTreeLoggers*>(model());
-
         if( pModelIdxTree != nullptr )
         {
             CIdxTreeLoggers* pIdxTree = pModelIdxTree->idxTree();
-
             CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMouseReleaseEvent.internalPointer());
-
-            CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
-
-            if( pIdxTree != nullptr && pModelBranch != nullptr )
+            if( pIdxTree != nullptr && pModelTreeEntry != nullptr )
             {
-                CIdxTreeEntry* pBranch = pModelBranch->treeEntry();
-
-                CDlgEditEnumValue* pDlg = CDlgEditEnumValue::CreateInstance(
-                    /* strTitle    */ QCoreApplication::applicationName(),
-                    /* strObjName  */ "LogLevel",
-                    /* pWdgtParent */ this );
-                pDlg->setValueName("LogLevel");
-                pDlg->setComboItems(CEnumLogDetailLevel::s_arEnumEntries);
-                pDlg->setEnumerator(0);
-
-                if( pDlg->exec() == QDialog::Accepted )
+                CIdxTreeLocker idxTreeLocker(pIdxTree);
+                CIdxTreeEntry* pBranch = pModelTreeEntry->getIdxTreeEntry();
+                if( pBranch != nullptr )
                 {
-                    try
+                    CDlgEditEnumValue* pDlg = CDlgEditEnumValue::CreateInstance(
+                        /* strTitle    */ QCoreApplication::applicationName(),
+                        /* strObjName  */ "LogLevel",
+                        /* pWdgtParent */ this );
+                    pDlg->setValueName("LogLevel");
+                    pDlg->setComboItems(CEnumLogDetailLevel::s_arEnumEntries);
+                    pDlg->setEnumerator(0);
+                    if( pDlg->exec() == QDialog::Accepted )
                     {
-                        int iDetailLevel = pDlg->getEnumerator();
-                        CEnumLogDetailLevel eDetailLevel(iDetailLevel);
-                        pIdxTree->setDetailLevel(pBranch, eDetailLevel.enumerator());
+                        try
+                        {
+                            int iDetailLevel = pDlg->getEnumerator();
+                            CEnumLogDetailLevel eDetailLevel(iDetailLevel);
+                            pIdxTree->setDetailLevel(pBranch, eDetailLevel.enumerator());
+                        }
+                        catch(CException&)
+                        {
+                        }
                     }
-                    catch(CException&)
-                    {
-                    }
+                    CDlgEditEnumValue::DestroyInstance(pDlg);
+                    pDlg = nullptr;
                 }
-                CDlgEditEnumValue::DestroyInstance(pDlg);
-                pDlg = nullptr;
             }
         }
     }
@@ -1357,39 +1228,35 @@ void CTreeViewIdxTreeLoggers::onActionNameSpaceSetLoggersDataFilterTriggered( bo
     if( m_modelIdxSelectedOnMousePressEvent.isValid() )
     {
         CModelIdxTreeLoggers* pModelIdxTree = dynamic_cast<CModelIdxTreeLoggers*>(model());
-
         if( pModelIdxTree != nullptr )
         {
             CIdxTreeLoggers* pIdxTree = pModelIdxTree->idxTree();
-
             CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMouseReleaseEvent.internalPointer());
-
-            CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
-
-            if( pIdxTree != nullptr && pModelBranch != nullptr )
+            if( pIdxTree != nullptr && pModelTreeEntry != nullptr )
             {
-                CIdxTreeEntry* pBranch = pModelBranch->treeEntry();
-
-                CDlgEditStringValue* pDlg = CDlgEditStringValue::CreateInstance(
-                    /* strTitle    */ QCoreApplication::applicationName(),
-                    /* strObjName  */ "DataFilter",
-                    /* pWdgtParent */ this );
-                pDlg->setValueName("DataFilter");
-                pDlg->setValue("");
-
-                if( pDlg->exec() == QDialog::Accepted )
+                CIdxTreeEntry* pBranch = pModelTreeEntry->getIdxTreeEntry();
+                if( pBranch != nullptr )
                 {
-                    try
+                    CDlgEditStringValue* pDlg = CDlgEditStringValue::CreateInstance(
+                        /* strTitle    */ QCoreApplication::applicationName(),
+                        /* strObjName  */ "DataFilter",
+                        /* pWdgtParent */ this );
+                    pDlg->setValueName("DataFilter");
+                    pDlg->setValue("");
+                    if( pDlg->exec() == QDialog::Accepted )
                     {
-                        QString strDataFilter = pDlg->getValue();
-                        pIdxTree->setDataFilter(pBranch, strDataFilter);
+                        try
+                        {
+                            QString strDataFilter = pDlg->getValue();
+                            pIdxTree->setDataFilter(pBranch, strDataFilter);
+                        }
+                        catch(CException&)
+                        {
+                        }
                     }
-                    catch(CException&)
-                    {
-                    }
+                    CDlgEditEnumValue::DestroyInstance(pDlg);
+                    pDlg = nullptr;
                 }
-                CDlgEditEnumValue::DestroyInstance(pDlg);
-                pDlg = nullptr;
             }
         }
     }

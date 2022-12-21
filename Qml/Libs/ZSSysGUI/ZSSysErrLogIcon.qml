@@ -36,14 +36,14 @@ Image {
     property var errorsCount: 0
     property var errorsCounts: {"Critical": 0, "Error": 0, "Warning": 0, "Info": 0, "Success": 0}
 
-    property var model
+    property var errLogModel: null
 
     Layout.maximumHeight: 24
     Layout.alignment: Qt.AlignRight
     source: severityMax === "" ? "qrc:/ZS/Result/ResultSeveritySuccess.png" : "qrc:/ZS/Result/ResultSeverity" + severityMax + ".png"
 
     function getErrorCount(severity) {
-        return _ZSSys_errLog.getEntryCount(severity);
+        return errLogModel.getEntryCount(severity);
     }
 
     function getToolTip() {
@@ -86,7 +86,7 @@ Image {
     }
 
     Connections {
-        target: _ZSSys_errLog
+        target: errLogModel
         function onCountChanged() {
             root.updateErrorsStatus();
         }
@@ -98,7 +98,7 @@ Image {
         source: "qrc:/ZSSysGUI/ZSSysErrLogDlg.qml"
         onLoaded: {
             item.visible = true
-            item.model = root.model
+            item.model = root.errLogModel
         }
     }
 

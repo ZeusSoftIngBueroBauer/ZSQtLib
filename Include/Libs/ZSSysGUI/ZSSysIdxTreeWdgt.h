@@ -55,6 +55,7 @@ class CTrcAdminObj;
 namespace GUI
 {
 class CModelIdxTree;
+class CModelIdxTreeBranchContent;
 class CTreeViewIdxTree;
 class CTableViewIdxTreeBranchContent;
 
@@ -78,6 +79,7 @@ public: // class methods
 public: // ctors and dtor
     CWdgtIdxTree(
         CModelIdxTree* i_pModel,
+        CModelIdxTreeBranchContent* i_pModelBranchContent,
         QWidget* i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wflags = Qt::WindowFlags(),
         EMethodTraceDetailLevel i_eTrcDetailLevel = EMethodTraceDetailLevel::None );
@@ -103,20 +105,21 @@ protected slots:
 protected slots:
     void onTrcAdminObjChanged( QObject* i_pTrcAdminObj );
 protected: // instance members
-    EViewMode                       m_viewMode;
-    QSize                           m_szBtns;
-    QVBoxLayout*                    m_pLytMain;
-    QHBoxLayout*                    m_pLytHeadLine;
-    QPushButton*                    m_pBtnViewMode;
-    QPushButton*                    m_pBtnTreeViewResizeRowsAndColumnsToContents;
-    QPushButton*                    m_pBtnTreeViewExpandAll;
-    QPushButton*                    m_pBtnTreeViewCollapseAll;
-    QPushButton*                    m_pBtnSortOrder;
-    QLineEdit*                      m_pEdtBranch;
-    QSpacerItem*                    m_pSpcHeadLine;
-    CModelIdxTree*                  m_pModel;
-    QSplitter*                      m_pSplitter;
-    CTreeViewIdxTree*               m_pTreeView;
+    EViewMode m_viewMode;
+    QSize m_szBtns;
+    QVBoxLayout* m_pLytMain;
+    QHBoxLayout* m_pLytHeadLine;
+    QPushButton* m_pBtnViewMode;
+    QPushButton* m_pBtnTreeViewResizeRowsAndColumnsToContents;
+    QPushButton* m_pBtnTreeViewExpandAll;
+    QPushButton* m_pBtnTreeViewCollapseAll;
+    QPushButton* m_pBtnSortOrder;
+    QLineEdit* m_pEdtBranch;
+    QSpacerItem* m_pSpcHeadLine;
+    CModelIdxTree* m_pModel;
+    CModelIdxTreeBranchContent* m_pModelBranchContent;
+    QSplitter* m_pSplitter;
+    CTreeViewIdxTree* m_pTreeView;
     CTableViewIdxTreeBranchContent* m_pTableViewBranchContent;
     /*!< Trace detail level for method tracing.
          Trace output may not be controlled by trace admin objects

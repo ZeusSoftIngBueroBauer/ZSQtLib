@@ -56,7 +56,7 @@ public: // class methods
     static QString ClassName() { return "CTableViewIdxTreeBranchContent"; }
 public: // ctors and dtor
     CTableViewIdxTreeBranchContent(
-        CModelIdxTree* i_pModelIdxTree,
+        CModelIdxTreeBranchContent* i_pModel,
         QWidget* i_pWdgtParent = nullptr,
         EMethodTraceDetailLevel i_eTrcDetailLevel = EMethodTraceDetailLevel::None );
     virtual ~CTableViewIdxTreeBranchContent();
@@ -64,11 +64,11 @@ public: // overridables
     virtual QString nameSpace() const { return CTableViewIdxTreeBranchContent::NameSpace(); }
     virtual QString className() const { return CTableViewIdxTreeBranchContent::ClassName(); }
 public: // overridables
-    virtual void setBranch( CIdxTreeEntry* i_pBranch );
-    CIdxTreeEntry* branch() const { return m_pBranch; }
+    virtual void setKeyInTreeOfRootEntry( const QString& i_strKeyInTree );
+    QString getKeyInTreeOfRootEntry() const;
 public: // instance methods
     void setSortOrder( EIdxTreeSortOrder i_sortOrder );
-    EIdxTreeSortOrder sortOrder() const { return m_sortOrder; }
+    EIdxTreeSortOrder sortOrder() const;
 protected: // overridables of base class QTreeView
     virtual void keyPressEvent( QKeyEvent* i_pEv );
     virtual void mousePressEvent( QMouseEvent* i_pEv );
@@ -86,9 +86,9 @@ protected slots:
     void onActionLeaveCopyTriggered( bool i_bChecked );
     void onActionLeavePasteTriggered( bool i_bChecked );
 protected: // instance members
-    CModelIdxTreeBranchContent*  m_pModel;
-    CIdxTreeEntry*    m_pBranch;
-    EIdxTreeSortOrder m_sortOrder;
+    CModelIdxTreeBranchContent* m_pModel;
+    //CIdxTreeEntry* m_pBranch;
+    //EIdxTreeSortOrder m_sortOrder;
     QMenu*   m_pMenuBranchContext;
     QAction* m_pActionBranchTitle;
     QAction* m_pActionBranchCreateNewBranch;

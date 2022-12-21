@@ -384,23 +384,17 @@ QString CIdxTreeEntry::keyInTree() const
 //-----------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
-
     QString strKeyInTree;
-
-    if( m_entryType == EIdxTreeEntryType::Root )
-    {
+    if( m_entryType == EIdxTreeEntryType::Root ) {
         // Just to have something to write into the log file.
         // The root does not really have a key in the tree.
         strKeyInTree = idxTreeEntryType2Str(m_entryType,EEnumEntryAliasStrSymbol) + ":" + m_strName;
     }
-    else
-    {
+    else {
         strKeyInTree = m_strKeyInTree;
     }
-
     return strKeyInTree;
-
-} // keyInTree
+}
 
 /*=============================================================================
 public: // instance methods
@@ -417,17 +411,12 @@ QString CIdxTreeEntry::parentBranchName() const
 //-----------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
-
     QString strName;
-
-    if( m_pParentBranch != nullptr && m_pParentBranch->entryType() != EIdxTreeEntryType::Root )
-    {
+    if( m_pParentBranch != nullptr && m_pParentBranch->entryType() != EIdxTreeEntryType::Root ) {
         strName = m_pParentBranch->name();
     }
-
     return strName;
-
-} // parentBranchName
+}
 
 //-----------------------------------------------------------------------------
 /*! Returns the path of the parent branch of the tree entry.
@@ -440,17 +429,28 @@ QString CIdxTreeEntry::parentBranchPath() const
 //-----------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
-
     QString strPath;
-
-    if( m_pParentBranch != nullptr && m_pParentBranch->entryType() != EIdxTreeEntryType::Root )
-    {
+    if( m_pParentBranch != nullptr && m_pParentBranch->entryType() != EIdxTreeEntryType::Root ) {
         strPath = m_pParentBranch->path();
     }
-
     return strPath;
+}
 
-} // parentBranchPath
+//-----------------------------------------------------------------------------
+/*! Returns the parent branch's key in the tree.
+
+    @return Key of the parent branch (e.g. "B:ZS::Data::CDataTable").
+*/
+QString CIdxTreeEntry::parentBranchKeyInTree() const
+//-----------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+    QString strKeyInTree;
+    if( m_pParentBranch != nullptr ) {
+        strKeyInTree = m_pParentBranch->keyInTree();
+    }
+    return strKeyInTree;
+}
 
 /*=============================================================================
 public: // instance methods

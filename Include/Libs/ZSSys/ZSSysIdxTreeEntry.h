@@ -126,6 +126,7 @@ public: // instance methods
     CIdxTreeEntry* parentBranch() const { return m_pParentBranch; }
     QString parentBranchName() const;
     QString parentBranchPath() const; // excluding root and excluding name (e.g. "ZS::Data::CDataTable")
+    QString parentBranchKeyInTree() const;
     /*! Returns the unique key of the entry within the parent branch (e.g. "L:Customers"). */
     QString keyInParentBranch() const { return m_strKeyInParentBranch; }
     /*! Returns the index of the entry within it's parent branches vector of child entries. */

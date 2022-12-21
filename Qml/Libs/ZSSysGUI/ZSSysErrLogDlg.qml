@@ -33,15 +33,42 @@ import ZSSysGUI 1.0
 Dialog {
     property string nameSpace: "ZS::System::GUI::Qml"
     property string className: "ErrLogDlg"
-    property string objectName: _ZSSysGUI_errLogModel.objectName
+    property string objectName: model.objectName
+    property var myTrcAdminObj: _ZSSys_trcServer.getTraceAdminObj(nameSpace, className, objectName)
 
-    property alias model: errLogWdgt.model
+    Component.onCompleted: {
+        myTrcAdminObj.traceMethodEnter("EnterLeave", "Component.onCompleted")
+        myTrcAdminObj.traceMethodLeave("EnterLeave", "Component.onCompleted")
+    }
+    Component.onDestruction: {
+        myTrcAdminObj.traceMethodEnter("EnterLeave", "Component.onDestruction")
+        myTrcAdminObj.traceMethodLeave("EnterLeave", "Component.onDestruction")
+        _ZSSys_trcServer.releaseTraceAdminObj(myTrcAdminObj);
+    }
+    onObjectNameChanged: {
+        _ZSSys_trcServer.releaseTraceAdminObj(myTrcAdminObj);
+        myTrcAdminObj = _ZSSys_trcServer.getTraceAdminObj(nameSpace, className, objectName)
+        myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "onObjectNameChanged", objectName);
+        myTrcAdminObj.traceMethodLeave("EnterLeave", "onObjectNameChanged");
+    }
+    //onMyTrcAdminObjChanged: {
+    //    myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "onMyTrcAdminObjChanged", myTrcAdminObj.keyInTree);
+    //    myTrcAdminObj.traceMethodLeave("EnterLeave", "onMyTrcAdminObjChanged");
+    //}
 
     id: root
+
     title: "Error Log"
     width: 640
     height: 280
     modality: Qt.NonModal
+
+    property alias model: errLogWdgt.model
+
+    //onModelChanged: {
+    //    myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "onModelChanged", model.objectName);
+    //    myTrcAdminObj.traceMethodLeave("EnterLeave", "onModelChanged");
+    //}
 
     Settings {
         id: settings

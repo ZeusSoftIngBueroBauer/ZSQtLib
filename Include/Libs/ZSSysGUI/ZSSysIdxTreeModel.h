@@ -75,6 +75,11 @@ public: // class methods
     static QString NameSpace() { return "ZS::System::GUI"; }
     static QString ClassName() { return "CModelIdxTree"; }
 public: // type definitions and constants
+    /*! @brief Iterator for iterating through the tree entries.
+        The iterator may be used either to iterate through the trees vector of entries by index or
+        through the tree in preorder.
+        @note If the index tree is modified by different threads you need to lock the
+              index tree when iterating through the entries. */
     class ZSSYSGUIDLL_API iterator
     {
     friend class CModelIdxTree;
@@ -161,7 +166,7 @@ public: // instance methods
 public: // instance methods
     Q_PROPERTY(QString nodeSeparator READ nodeSeparator CONSTANT)
     QString nodeSeparator() const;
-    CModelIdxTreeEntry* modelRoot() const { return m_pModelRoot; }
+    CModelIdxTreeEntry* modelRootEntry() const { return m_pModelRootEntry; }
     QMap<QString, CModelIdxTreeEntry*> treeEntriesMap() const { return m_mappModelTreeEntries; }
 public: // instance methods
     Q_PROPERTY(bool excludeLeaves READ areLeavesExcluded WRITE setExcludeLeaves NOTIFY excludeLeavesChanged)
@@ -192,21 +197,27 @@ public: // instance methods
 public: // instance methods
     void setIsSelected( CModelIdxTreeEntry* i_pModelTreeEntry, bool i_bIsSelected, bool i_bRecursive = false );
 public: // instance methods
-    CModelIdxTreeEntry* findModelEntry( CIdxTreeEntry* i_pTreeEntry );
-    CModelIdxTreeEntry* findModelEntry( const QString& i_strKeyInTree );
+    CModelIdxTreeEntry* findEntry( const QString& i_strKeyInTree );
 public: // instance methods
     QModelIndex index( const QString& i_strKeyInTree, int i_iClm ) const;
 public: // iterator methods
     iterator begin( iterator::ETraversalOrder i_traversalOrder = iterator::ETraversalOrder::Index );
     iterator end();
+public: // instance methods
+    Q_INVOKABLE void removeEntries( const QModelIndexList& i_modelIdxList );
+    Q_INVOKABLE void removeEntry( const QModelIndex& i_modelIdx );
+    Q_INVOKABLE SErrResultInfo canCopy( const QModelIndex& i_modelIdxSource, const QModelIndex& i_modelIdxTarget );
+    Q_INVOKABLE int copy( const QModelIndex& i_modelIdxSource, const QModelIndex& i_modelIdxTarget );
+    Q_INVOKABLE SErrResultInfo canMove( const QModelIndex& i_modelIdxSource, const QModelIndex& i_modelIdxTarget );
+    Q_INVOKABLE void move( const QModelIndex& i_modelIdxSource, const QModelIndex& i_modelIdxTarget );
 protected slots:
-    void onIdxTreeAboutToBeDestroyed( QObject* i_pIdxTree );
+    void onIdxTreeAboutToBeDestroyed();
 protected slots: // overridables
-    virtual void onIdxTreeEntryAdded( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry );
-    virtual void onIdxTreeEntryChanged( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry );
-    virtual void onIdxTreeEntryAboutToBeRemoved( ZS::System::CIdxTree* i_pIdxTree, ZS::System::EIdxTreeEntryType i_entryType, const QString& i_strKeyInTree, int i_idxInTree );
-    virtual void onIdxTreeEntryMoved( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry, const QString& i_strKeyInTreePrev, ZS::System::CIdxTreeEntry* i_pTargetBranch );
-    virtual void onIdxTreeEntryKeyInTreeChanged( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry, const QString& i_strKeyInTreePrev );
+    virtual void onIdxTreeEntryAdded( const QString& i_strKeyInTree );
+    virtual void onIdxTreeEntryChanged( const QString& i_strKeyInTree );
+    virtual void onIdxTreeEntryAboutToBeRemoved( ZS::System::EIdxTreeEntryType i_entryType, const QString& i_strKeyInTree, int i_idxInTree );
+    virtual void onIdxTreeEntryMoved( const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree, const QString& i_strKeyInTreeOfTargetBranch );
+    virtual void onIdxTreeEntryKeyInTreeChanged( const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree );
 protected: // instance methods
     void clear( CModelIdxTreeEntry* i_pModelBranch, bool i_bDestroyTreeEntries = true );
     void remove( CModelIdxTreeEntry* i_pModelTreeEntry );
@@ -226,23 +237,23 @@ public: // overridables of base class QAbstractItemModel
     virtual Qt::ItemFlags flags( const QModelIndex& i_modelIdx ) const override;
     virtual Qt::DropActions supportedDropActions() const override;
     virtual QVariant data( const QModelIndex& i_modelIdx, int i_iRole = Qt::DisplayRole ) const override;
-    virtual bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
+    virtual bool setData(const QModelIndex& i_modelIdx, const QVariant& i_value, int i_iRole = Qt::EditRole) override;
 public: // overridables of base class QAbstractItemModel
     virtual QStringList mimeTypes() const override;
     virtual QMimeData* mimeData( const QModelIndexList& i_arModelIdxs ) const override;
     virtual bool canDropMimeData( const QMimeData* i_pMimeData, Qt::DropAction i_dropAction, int i_iRow, int i_iClm, const QModelIndex& i_modelIdxParent ) const; // override; virtual method of base class since Qt version ?
     virtual bool dropMimeData( const QMimeData* i_pMimeData, Qt::DropAction i_dropAction, int i_iRow, int i_iClm, const QModelIndex& i_modelIdxParent ) override;
 public: // instance methods for editing data
-    SErrResultInfo canSetData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) const;
-public: // overridables of base class QAbstractItemModel (just overwritten to trace the method calls for debugging purposes)
-    virtual QModelIndex sibling( int i_iRow, int i_iCol, const QModelIndex& i_modelIdx ) const override;
-    virtual bool hasChildren( const QModelIndex& i_modelIdxParent = QModelIndex() ) const override;
-    virtual bool insertRows( int i_iRow, int i_iRowCount, const QModelIndex& i_modelIdxParent = QModelIndex() ) override;
-    virtual bool insertColumns( int i_iCol, int i_iColCount, const QModelIndex& i_modelIdxParent = QModelIndex() ) override;
-    virtual bool removeRows( int i_iRow, int i_iRowCount, const QModelIndex& i_modelIdxParent = QModelIndex() ) override;
-    virtual bool removeColumns( int i_iCol, int i_iColCount, const QModelIndex& i_modelIdxParent = QModelIndex() ) override;
-    virtual bool moveRows( const QModelIndex& i_modelIdxSourceParent, int i_iRowSource, int i_iRowCount, const QModelIndex& i_modelIdxDestParent, int i_iRowDestChild ) override;
-    virtual bool moveColumns( const QModelIndex& i_modelIdxSourceParent, int i_iColSource, int i_iColCount, const QModelIndex& i_modelIdxDestParent, int i_iColDestChild ) override;
+    SErrResultInfo canSetData(const QModelIndex& i_modelIdx, const QVariant& i_value, int i_iRole = Qt::EditRole) const;
+//public: // overridables of base class QAbstractItemModel (just overwritten to trace the method calls for debugging purposes)
+//    virtual QModelIndex sibling( int i_iRow, int i_iCol, const QModelIndex& i_modelIdx ) const override;
+//    virtual bool hasChildren( const QModelIndex& i_modelIdxParent = QModelIndex() ) const override;
+//    virtual bool insertRows( int i_iRow, int i_iRowCount, const QModelIndex& i_modelIdxParent = QModelIndex() ) override;
+//    virtual bool insertColumns( int i_iCol, int i_iColCount, const QModelIndex& i_modelIdxParent = QModelIndex() ) override;
+//    virtual bool removeRows( int i_iRow, int i_iRowCount, const QModelIndex& i_modelIdxParent = QModelIndex() ) override;
+//    virtual bool removeColumns( int i_iCol, int i_iColCount, const QModelIndex& i_modelIdxParent = QModelIndex() ) override;
+//    virtual bool moveRows( const QModelIndex& i_modelIdxSourceParent, int i_iRowSource, int i_iRowCount, const QModelIndex& i_modelIdxDestParent, int i_iRowDestChild ) override;
+//    virtual bool moveColumns( const QModelIndex& i_modelIdxSourceParent, int i_iColSource, int i_iColCount, const QModelIndex& i_modelIdxDestParent, int i_iColDestChild ) override;
 protected: // to trace emitting signals for debugging purposes
     void emit_dataChanged( const QModelIndex& i_modelIdxTL, const QModelIndex& i_modelIdxBR, const QVector<int>& i_ariRoles = QVector<int>() );
     void emit_headerDataChanged( Qt::Orientation i_orientation, int i_iFirstSection, int i_iLastSection );
@@ -287,9 +298,9 @@ protected: // class members
     static QHash<int, QByteArray> s_roleNames;
     static QHash<QByteArray, int> s_roleValues;
 protected: // instance members
-    CIdxTree*                          m_pIdxTree;
-    bool                               m_bExcludeLeaves;
-    EIdxTreeSortOrder                  m_sortOrder;
+    CIdxTree* m_pIdxTree;
+    bool m_bExcludeLeaves;
+    EIdxTreeSortOrder m_sortOrder;
     /*!< Need a copy of the index tree entries as entries may be added, changed
          or removed from different threads. When removing an entry the signal
          entryRemoved is emitted and may be queued. The model cannot access the
@@ -298,8 +309,8 @@ protected: // instance members
          @Note Key is: <EntryTypeSymbol>:<ParentPath>/<Name>
                (e.g. "L:ZS::Data::CDataTable::FDAC::RF1In") */
     QMap<QString, CModelIdxTreeEntry*> m_mappModelTreeEntries;
-    CModelIdxTreeEntry*                m_pModelRoot;
-    QVector<int>                       m_ariClmWidths;
+    CModelIdxTreeEntry* m_pModelRootEntry;
+    QVector<int> m_ariClmWidths;
     #ifdef ZS_TRACE_GUI_MODELS
     /*!< Trace detail level for method tracing.
          Trace output may not be controlled by trace admin objects

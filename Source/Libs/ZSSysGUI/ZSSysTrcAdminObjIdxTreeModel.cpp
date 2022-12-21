@@ -449,9 +449,9 @@ Qt::ItemFlags CModelIdxTreeTrcAdminObjs::flags( const QModelIndex& i_modelIdx ) 
 
         CTrcAdminObj* pTrcAdminObj = nullptr;
 
-        if( pModelTreeEntry != nullptr )
+        if( pModelTreeEntry != nullptr && pModelTreeEntry->isLeave() )
         {
-            pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pModelTreeEntry->treeEntry());
+            pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pModelTreeEntry->getIdxTreeEntry());
         }
 
         switch( i_modelIdx.column() )
@@ -539,19 +539,13 @@ QVariant CModelIdxTreeTrcAdminObjs::data( const QModelIndex& i_modelIdx, int i_i
 
     if( pModelTreeEntry != nullptr )
     {
-        CModelIdxTreeEntry* pModelBranch = nullptr;
-        CModelIdxTreeEntry* pModelLeave  = nullptr;
+        CIdxTreeLocker idxTreeLocker(m_pIdxTree);
 
         CTrcAdminObj* pTrcAdminObj = nullptr;
 
-        if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        if( pModelTreeEntry->isLeave() )
         {
-            pModelBranch = pModelTreeEntry;
-        }
-        else if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Leave )
-        {
-            pModelLeave = pModelTreeEntry;
-            pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pModelLeave->treeEntry());
+            pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pModelTreeEntry->getIdxTreeEntry());
         }
 
         switch( i_modelIdx.column() )
@@ -574,9 +568,9 @@ QVariant CModelIdxTreeTrcAdminObjs::data( const QModelIndex& i_modelIdx, int i_i
                         strData += "\nIdxInTree: " + QString::number(pModelTreeEntry->indexInTree());
                         strData += "\nIdxInParentBranch: " + QString::number(pModelTreeEntry->indexInParentBranch());
                         strData += "\nSelected: " + bool2Str(pModelTreeEntry->isSelected()) ;
-                        if( pModelBranch != nullptr )
+                        if( pModelTreeEntry->isLeave() )
                         {
-                            strData += "\nExpanded: " + bool2Str(pModelBranch->isExpanded());
+                            strData += "\nExpanded: " + bool2Str(pModelTreeEntry->isExpanded());
                         }
                         varData = strData;
                     }
@@ -812,19 +806,13 @@ bool CModelIdxTreeTrcAdminObjs::setData( const QModelIndex& i_modelIdx, const QV
 
         if( pModelTreeEntry != nullptr )
         {
-            //CModelIdxTreeEntry* pModelBranch = nullptr;
-            CModelIdxTreeEntry*   pModelLeave  = nullptr;
+            CIdxTreeLocker idxTreeLocker(m_pIdxTree);
 
             CTrcAdminObj* pTrcAdminObj = nullptr;
 
-            if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+            if( pModelTreeEntry->isLeave() )
             {
-                //pModelBranch = pModelTreeEntry;
-            }
-            else if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Leave )
-            {
-                pModelLeave = pModelTreeEntry;
-                pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pModelLeave->treeEntry());
+                pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pModelTreeEntry->getIdxTreeEntry());
             }
 
             switch( i_modelIdx.column() )

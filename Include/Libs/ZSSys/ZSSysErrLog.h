@@ -87,6 +87,7 @@ public: // instance members
 
 }; // struct SErrLogEntry
 
+
 //******************************************************************************
 /*! @brief The class CErrLog offers multithreaded applications the ability to store
     error result infos in a xml file for later examination.
@@ -269,8 +270,6 @@ signals:
         You can't rely on that the error log entry still exists when receiving the signal.
         For this not a reference to the entry but to the ErrResultInfo structure is passed with the signal. */
     void entryRemoved( const ZS::System::SErrResultInfo& i_errResultInfo );
-    /*! Signal which will be emitted if the number of entries has been changed. */
-    void countChanged();
 public: // instance methods
     /*! This virtual method returns the name space of the object's class.
         This method can be reimplemented in derived classes so when invoked for the
@@ -286,33 +285,32 @@ public: // instance methods
 public: // instance methods
     QString getAbsFilePath() const;
 public: // instance methods
-    Q_INVOKABLE void lock();
-    Q_INVOKABLE void unlock();
+    void lock();
+    void unlock();
 public: // instance methods
-    Q_INVOKABLE void addEntry(
+    void addEntry(
         SErrResultInfo& i_errResultInfo,
         const QString&  i_strProposal = "" );
-    Q_INVOKABLE void addEntry(
+    void addEntry(
         const QDateTime& i_dateTime,
         SErrResultInfo&  i_errResultInfo,
         const QString&   i_strProposal = "" );
-    Q_INVOKABLE void changeEntry(
+    void changeEntry(
         const SErrResultInfo& i_errResultInfo,
         bool                  i_bModifyDateTime = false,
         const QDateTime&      i_dateTime = QDateTime(),
         bool                  i_bModifyProposal = false,
         const QString&        i_strProposal = "" );
-    Q_INVOKABLE void clear( EResultSeverity i_severity = EResultSeverityUndefined );
-    Q_INVOKABLE void removeEntry( const SErrResultInfo& i_errResultInfo );
-    Q_INVOKABLE void removeEntry( int i_iRowIdx, EResultSeverity i_severity = EResultSeverityUndefined );
+    void clear( EResultSeverity i_severity = EResultSeverityUndefined );
+    void removeEntry( const SErrResultInfo& i_errResultInfo );
+    void removeEntry( int i_iRowIdx, EResultSeverity i_severity = EResultSeverityUndefined );
 public: // instance methods
-    Q_INVOKABLE int getEntryCount( EResultSeverity i_severity = EResultSeverityUndefined ) const;
-    Q_INVOKABLE int getEntryCount( const QString& i_strSeverity ) const;
-    Q_INVOKABLE SErrLogEntry* findEntry( const SErrResultInfo& i_errResultInfo, int* o_piRowIdx = nullptr, int* o_piRowIdxSeveritySection = nullptr );
-    Q_INVOKABLE SErrLogEntry* getEntry( int i_iRowIdx, EResultSeverity i_severity = EResultSeverityUndefined ) const;
-    Q_INVOKABLE SErrLogEntry takeEntry( int i_iRowIdx, EResultSeverity i_severity = EResultSeverityUndefined );
-    Q_INVOKABLE SErrLogEntry takeFirstEntry( EResultSeverity i_severity = EResultSeverityUndefined );
-    Q_INVOKABLE SErrLogEntry takeLastEntry( EResultSeverity i_severity = EResultSeverityUndefined );
+    int getEntryCount( EResultSeverity i_severity = EResultSeverityUndefined ) const;
+    SErrLogEntry* findEntry( const SErrResultInfo& i_errResultInfo, int* o_piRowIdx = nullptr, int* o_piRowIdxSeveritySection = nullptr );
+    SErrLogEntry* getEntry( int i_iRowIdx, EResultSeverity i_severity = EResultSeverityUndefined ) const;
+    SErrLogEntry takeEntry( int i_iRowIdx, EResultSeverity i_severity = EResultSeverityUndefined );
+    SErrLogEntry takeFirstEntry( EResultSeverity i_severity = EResultSeverityUndefined );
+    SErrLogEntry takeLastEntry( EResultSeverity i_severity = EResultSeverityUndefined );
 public: // instance methods
     void testCrashDump();
 protected: // instance methods

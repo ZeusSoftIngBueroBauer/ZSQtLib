@@ -97,6 +97,7 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CWdgtIdxTree::CWdgtIdxTree(
     CModelIdxTree* i_pModel,
+    CModelIdxTreeBranchContent* i_pModelBranchContent,
     QWidget* i_pWdgtParent,
     Qt::WindowFlags i_wflags,
     EMethodTraceDetailLevel i_eTrcDetailLevel ) :
@@ -114,6 +115,7 @@ CWdgtIdxTree::CWdgtIdxTree(
     m_pEdtBranch(nullptr),
     m_pSpcHeadLine(nullptr),
     m_pModel(i_pModel),
+    m_pModelBranchContent(i_pModelBranchContent),
     m_pSplitter(nullptr),
     m_pTreeView(nullptr),
     m_pTableViewBranchContent(nullptr),
@@ -349,6 +351,7 @@ CWdgtIdxTree::~CWdgtIdxTree()
     m_pEdtBranch = nullptr;
     m_pSpcHeadLine = nullptr;
     m_pModel = nullptr;
+    m_pModelBranchContent = nullptr;
     m_pSplitter = nullptr;
     m_pTreeView = nullptr;
     m_pTableViewBranchContent = nullptr;
@@ -435,7 +438,7 @@ void CWdgtIdxTree::setViewMode( EViewMode i_viewMode )
                 }
                 if( m_pTableViewBranchContent == nullptr )
                 {
-                    m_pTableViewBranchContent = new CTableViewIdxTreeBranchContent(m_pModel);
+                    m_pTableViewBranchContent = new CTableViewIdxTreeBranchContent(m_pModelBranchContent);
                 }
                 m_pSplitter->addWidget(m_pTableViewBranchContent);
             }
@@ -669,32 +672,37 @@ void CWdgtIdxTree::onTreeViewSelectionModelCurrentRowChanged(
     if( i_modelIdxCurr.isValid() )
     {
         CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdxCurr.internalPointer());
+        CModelIdxTreeEntry* pModelTreeEntryBranch = nullptr;
 
         if( pModelTreeEntry != nullptr )
         {
-            CIdxTreeEntry* pBranch = nullptr;
-
-            if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+            if( pModelTreeEntry->isRoot() || pModelTreeEntry->isBranch() )
             {
-                pBranch = pModelTreeEntry->treeEntry();
+                pModelTreeEntryBranch = pModelTreeEntry;
             }
-
+        }
+        if( pModelTreeEntryBranch != nullptr )
+        {
             if( m_pEdtBranch != nullptr )
             {
-                if( pBranch != nullptr )
-                {
-                    m_pEdtBranch->setText(pBranch->keyInTree());
-                }
-                else
-                {
-                    m_pEdtBranch->setText("");
-                }
+                m_pEdtBranch->setText(pModelTreeEntryBranch->keyInTree());
             }
             if( m_pTableViewBranchContent != nullptr )
             {
-                m_pTableViewBranchContent->setBranch(pBranch);
+                m_pTableViewBranchContent->setKeyInTreeOfRootEntry(pModelTreeEntryBranch->keyInTree());
             }
-        } // if( pModelTreeEntry != nullptr )
+        }
+        else
+        {
+            if( m_pEdtBranch != nullptr )
+            {
+                m_pEdtBranch->setText("");
+            }
+            if( m_pTableViewBranchContent != nullptr )
+            {
+                m_pTableViewBranchContent->setKeyInTreeOfRootEntry("");
+            }
+        }
     } // if( i_modelIdxCurr.isValid() )
 
 } // onTreeViewSelectionModelCurrentRowChanged

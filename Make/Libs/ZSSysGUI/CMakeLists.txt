@@ -263,6 +263,7 @@ list(APPEND _QmlFiles
     ${_QmlPath}/${PROJECT_NAME}/qmldir
     ${_QmlPath}/${PROJECT_NAME}/ZSSysErrLogDlg.qml
     ${_QmlPath}/${PROJECT_NAME}/ZSSysErrLogIcon.qml
+    ${_QmlPath}/${PROJECT_NAME}/ZSSysErrLogTableView.qml
     ${_QmlPath}/${PROJECT_NAME}/ZSSysErrLogWdgt.qml
     ${_QmlPath}/${PROJECT_NAME}/ZSSysIdxTreeTableViewBranchContent.qml
     ${_QmlPath}/${PROJECT_NAME}/ZSSysIdxTreeView.qml

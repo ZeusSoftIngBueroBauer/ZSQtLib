@@ -1266,9 +1266,6 @@ void CTreeViewIdxTree::keyPressEvent( QKeyEvent* i_pEv )
     if( modelIdxSelected.isValid() )
     {
         CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(model());
-        CIdxTree*      pIdxTree = pModelIdxTree->idxTree();
-
-        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(modelIdxSelected.internalPointer());
 
         if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsDetailed )
         {
@@ -1276,7 +1273,9 @@ void CTreeViewIdxTree::keyPressEvent( QKeyEvent* i_pEv )
             mthTracer.trace(strMthInArgs);
         }
 
-        if( pIdxTree != nullptr && pModelTreeEntry != nullptr )
+        CModelIdxTreeEntry* pModelTreeEntrySelected = static_cast<CModelIdxTreeEntry*>(modelIdxSelected.internalPointer());
+
+        if( pModelTreeEntrySelected != nullptr )
         {
             switch( i_pEv->key() )
             {
@@ -1296,7 +1295,7 @@ void CTreeViewIdxTree::keyPressEvent( QKeyEvent* i_pEv )
 
                     if( !m_bSilentlyExecuteDeleteRequests )
                     {
-                        QString strMsg = "Do you really want to delete \"" + pModelTreeEntry->keyInTree() + "\"?";
+                        QString strMsg = "Do you really want to delete \"" + pModelTreeEntrySelected->keyInTree() + "\"?";
                         iRet = QMessageBox::question(
                             /* pWdgtParent     */ this,
                             /* strTitle        */ getMainWindowTitle(),
@@ -1306,11 +1305,7 @@ void CTreeViewIdxTree::keyPressEvent( QKeyEvent* i_pEv )
                     }
                     if( iRet == QMessageBox::Yes )
                     {
-                        CIdxTreeEntry* pTreeEntry = pModelTreeEntry->treeEntry();
-                        delete pTreeEntry;
-                        pTreeEntry = nullptr;
-                        pModelTreeEntry = nullptr;
-                        //pIdxTree->remove(pModelTreeEntry->keyInTree());
+                        pModelIdxTree->removeEntry(modelIdxSelected);
                     }
                     bEventHandled = true;
                     break;
@@ -1341,74 +1336,46 @@ void CTreeViewIdxTree::keyPressEvent( QKeyEvent* i_pEv )
                     {
                         if( m_modelIdxSelectedForPaste.isValid() )
                         {
-                            CModelIdxTreeEntry* pModelBranchTrg = nullptr;
-
-                            if( pModelTreeEntry->entryType() != EIdxTreeEntryType::Root && pModelTreeEntry->entryType() != EIdxTreeEntryType::Branch )
+                            if( m_pasteMode == EPasteMode::Copy )
                             {
-                                pModelBranchTrg = pModelTreeEntry->modelParentBranch();
-                            }
-                            else
-                            {
-                                pModelBranchTrg = pModelTreeEntry;
-                            }
-                            if( pModelBranchTrg != nullptr )
-                            {
-                                CModelIdxTreeEntry* pModelTreeEntrySrc = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedForPaste.internalPointer());
-                                CIdxTreeEntry*      pTreeEntrySrc = pModelTreeEntrySrc->treeEntry();
-                                CIdxTreeEntry*      pBranchTrg    = pModelBranchTrg->treeEntry();
+                                SErrResultInfo errResultInfo = pModelIdxTree->canCopy(m_modelIdxSelectedForPaste, modelIdxSelected);
 
-                                int idxInTargetBranch = -1;
-
-                                if( pModelIdxTree->sortOrder() == EIdxTreeSortOrder::Config )
+                                if( errResultInfo.isErrorResult() )
                                 {
-                                    idxInTargetBranch = m_modelIdxSelectedForPaste.row();
-                                }
-                                else // if( pModelIdxTree->sortOrder() != EIdxTreeSortOrder::Config )
-                                {
-                                    idxInTargetBranch = pTreeEntrySrc->indexInParentBranch();
-                                }
-
-                                if( m_pasteMode == EPasteMode::Copy )
-                                {
-                                    SErrResultInfo errResultInfo = pIdxTree->canCopy(pTreeEntrySrc, pBranchTrg, idxInTargetBranch);
-
-                                    if( errResultInfo.isErrorResult() )
+                                    if( !m_bSilentlyIgnoreInvalidCopyRequests )
                                     {
-                                        if( !m_bSilentlyIgnoreInvalidCopyRequests )
-                                        {
-                                            CDlgErr* pDlgErr = new CDlgErr("Error");
-                                            pDlgErr->setErrResultInfo(errResultInfo);
-                                            pDlgErr->show();
+                                        CDlgErr* pDlgErr = new CDlgErr("Error");
+                                        pDlgErr->setErrResultInfo(errResultInfo);
+                                        pDlgErr->show();
+                                    }
+                                }
+                                else // if( !errResultInfo.isErrorResult() )
+                                {
+                                    pModelIdxTree->copy(m_modelIdxSelectedForPaste, modelIdxSelected);
+                                }
+                            }
+                            else if( m_pasteMode == EPasteMode::Cut )
+                            {
+                                SErrResultInfo errResultInfo = pModelIdxTree->canMove(m_modelIdxSelectedForPaste, modelIdxSelected);
+
+                                if( errResultInfo.isErrorResult() )
+                                {
+                                    if( !m_bSilentlyIgnoreInvalidCopyRequests )
+                                    {
+                                        CDlgErr* pDlgErr = new CDlgErr("Error");
+                                        pDlgErr->setErrResultInfo(errResultInfo);
+                                        pDlgErr->show();
                                         }
-                                    }
-                                    else // if( !errResultInfo.isErrorResult() )
-                                    {
-                                        pIdxTree->copy(pTreeEntrySrc, pBranchTrg, idxInTargetBranch);
-                                    }
                                 }
-                                else if( m_pasteMode == EPasteMode::Cut )
+                                else // if( !errResultInfo.isErrorResult() )
                                 {
-                                    SErrResultInfo errResultInfo = pIdxTree->canMove(pTreeEntrySrc, pBranchTrg, idxInTargetBranch);
-
-                                    if( errResultInfo.isErrorResult() )
-                                    {
-                                        if( !m_bSilentlyIgnoreInvalidCopyRequests )
-                                        {
-                                            CDlgErr* pDlgErr = new CDlgErr("Error");
-                                            pDlgErr->setErrResultInfo(errResultInfo);
-                                            pDlgErr->show();
-                                         }
-                                    }
-                                    else // if( !errResultInfo.isErrorResult() )
-                                    {
-                                        pIdxTree->move(pTreeEntrySrc, pBranchTrg);
-                                    }
+                                    pModelIdxTree->move(m_modelIdxSelectedForPaste, modelIdxSelected);
                                 }
+                            }
 
-                                m_modelIdxSelectedForPaste = QModelIndex();
-                                m_pasteMode = EPasteMode::Undefined;
+                            m_modelIdxSelectedForPaste = QModelIndex();
+                            m_pasteMode = EPasteMode::Undefined;
 
-                            } // if( pModelBranchTrg != nullptr )
                         } // if( m_modelIdxSelectedForPaste.isValid() )
                         bEventHandled = true;
                     } // if( i_pEv->modifiers() & Qt::ControlModifier )
@@ -1419,7 +1386,7 @@ void CTreeViewIdxTree::keyPressEvent( QKeyEvent* i_pEv )
                     break;
                 }
             } // switch( i_pEv->key() )
-        } // if( pIdxTree != nullptr && pModelTreeEntry != nullptr )
+        } // if( pModelTreeEntrySelected != nullptr )
     } // if( modelIdxSelected.isValid() )
 
     if( !bEventHandled )
@@ -1944,38 +1911,37 @@ void CTreeViewIdxTree::onActionBranchCreateNewBranchTriggered( bool i_bChecked )
 
     if( m_modelIdxSelectedOnMousePressEvent.isValid() )
     {
-        CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(model());
-        CIdxTree*      pIdxTree = pModelIdxTree->idxTree();
-
-        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
-
         if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsDetailed )
         {
             strMthInArgs = "ModelIdxSelected {" + CModelIdxTree::modelIdx2Str(m_modelIdxSelectedOnMousePressEvent) + "}";
             mthTracer.trace(strMthInArgs);
         }
 
-        CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
+        //CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(model());
 
-        if( pIdxTree != nullptr && pModelBranch != nullptr )
-        {
-            CIdxTreeEntry* pBranch = pModelBranch->treeEntry();
+        //CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
 
-            QString strName = "New Branch";
-            QString strUniqueName = strName;
-            int iCopies = 1;
+        //CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
 
-            while( pBranch->indexOf(EIdxTreeEntryType::Branch, strUniqueName) >= 0 )
-            {
-                strUniqueName = strName + QString::number(++iCopies);
-            }
-            strName = strUniqueName;
+        //if( pIdxTree != nullptr && pModelBranch != nullptr )
+        //{
+        //    CIdxTreeEntry* pBranch = pModelBranch->treeEntry();
 
-            CIdxTreeEntry* pBranchNew = pIdxTree->createBranch(strName);
+        //    QString strName = "New Branch";
+        //    QString strUniqueName = strName;
+        //    int iCopies = 1;
 
-            pIdxTree->add(pBranchNew, pBranch);
+        //    while( pBranch->indexOf(EIdxTreeEntryType::Branch, strUniqueName) >= 0 )
+        //    {
+        //        strUniqueName = strName + QString::number(++iCopies);
+        //    }
+        //    strName = strUniqueName;
 
-        } // if( pIdxTree != nullptr && pModelBranch != nullptr )
+        //    CIdxTreeEntry* pBranchNew = pIdxTree->createBranch(strName);
+
+        //    pIdxTree->add(pBranchNew, pBranch);
+
+        //} // if( pIdxTree != nullptr && pModelBranch != nullptr )
     } // if( m_modelIdxSelectedOnMousePressEvent.isValid() )
 
 } // onActionBranchCreateNewBranchTriggered
@@ -2004,38 +1970,37 @@ void CTreeViewIdxTree::onActionBranchCreateNewLeaveTriggered( bool i_bChecked )
 
     if( m_modelIdxSelectedOnMousePressEvent.isValid() )
     {
-        CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(model());
-        CIdxTree*      pIdxTree = pModelIdxTree->idxTree();
-
-        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
-
         if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsDetailed )
         {
             strMthInArgs = "ModelIdxSelected {" + CModelIdxTree::modelIdx2Str(m_modelIdxSelectedOnMousePressEvent) + "}";
             mthTracer.trace(strMthInArgs);
         }
 
-        CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
+        //CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(model());
 
-        if( pIdxTree != nullptr && pModelBranch != nullptr )
-        {
-            CIdxTreeEntry* pBranch = pModelBranch->treeEntry();
+        //CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
 
-            QString strName = "New Leave";
-            QString strUniqueName = strName;
-            int iCopies = 1;
+        //CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
 
-            while( pBranch->indexOf(EIdxTreeEntryType::Leave, strUniqueName) >= 0 )
-            {
-                strUniqueName = strName + QString::number(++iCopies);
-            }
-            strName = strUniqueName;
+        //if( pIdxTree != nullptr && pModelBranch != nullptr )
+        //{
+        //    CIdxTreeEntry* pBranch = pModelBranch->treeEntry();
 
-            CIdxTreeEntry* pLeaveNew = pIdxTree->createLeave(strName);
+        //    QString strName = "New Leave";
+        //    QString strUniqueName = strName;
+        //    int iCopies = 1;
 
-            pIdxTree->add(pLeaveNew, pBranch);
+        //    while( pBranch->indexOf(EIdxTreeEntryType::Leave, strUniqueName) >= 0 )
+        //    {
+        //        strUniqueName = strName + QString::number(++iCopies);
+        //    }
+        //    strName = strUniqueName;
 
-        } // if( pIdxTree != nullptr && pModelBranch != nullptr )
+        //    CIdxTreeEntry* pLeaveNew = pIdxTree->createLeave(strName);
+
+        //    pIdxTree->add(pLeaveNew, pBranch);
+
+        //} // if( pIdxTree != nullptr && pModelBranch != nullptr )
     } // if( m_modelIdxSelectedOnMousePressEvent.isValid() )
 
 } // onActionBranchCreateNewLeaveTriggered
@@ -2064,27 +2029,26 @@ void CTreeViewIdxTree::onActionBranchDeleteTriggered( bool i_bChecked )
 
     if( m_modelIdxSelectedOnMousePressEvent.isValid() )
     {
-        CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(model());
-        CIdxTree*      pIdxTree = pModelIdxTree->idxTree();
-
-        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
-
         if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsDetailed )
         {
             strMthInArgs = "ModelIdxSelected {" + CModelIdxTree::modelIdx2Str(m_modelIdxSelectedOnMousePressEvent) + "}";
             mthTracer.trace(strMthInArgs);
         }
 
-        CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
+        //CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(model());
 
-        if( pIdxTree != nullptr && pModelBranch != nullptr )
-        {
-            CIdxTreeEntry* pBranch = pModelBranch->treeEntry();
+        //CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
 
-            delete pBranch;
-            pBranch = nullptr;
+        //CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
 
-        } // if( pIdxTree != nullptr && pModelBranch != nullptr )
+        //if( pIdxTree != nullptr && pModelBranch != nullptr )
+        //{
+        //    CIdxTreeEntry* pBranch = pModelBranch->treeEntry();
+
+        //    delete pBranch;
+        //    pBranch = nullptr;
+
+        //} // if( pIdxTree != nullptr && pModelBranch != nullptr )
     } // if( m_modelIdxSelectedOnMousePressEvent.isValid() )
 
 } // onActionBranchDeleteTriggered
@@ -2192,38 +2156,37 @@ void CTreeViewIdxTree::onActionBranchPasteTriggered( bool i_bChecked )
             mthTracer.trace(strMthInArgs);
         }
 
-        CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(model());
-        CIdxTree*      pIdxTree = pModelIdxTree->idxTree();
+        //CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(model());
 
-        CModelIdxTreeEntry* pModelTreeEntrySrc = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedForPaste.internalPointer());
-        CModelIdxTreeEntry* pModelTreeEntryTrg = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
-        CModelIdxTreeEntry* pModelBranchTrg    = nullptr;
+        //CModelIdxTreeEntry* pModelTreeEntrySrc = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedForPaste.internalPointer());
+        //CModelIdxTreeEntry* pModelTreeEntryTrg = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
+        //CModelIdxTreeEntry* pModelBranchTrg    = nullptr;
 
-        if( pModelTreeEntryTrg->entryType() != EIdxTreeEntryType::Root && pModelTreeEntryTrg->entryType() != EIdxTreeEntryType::Branch )
-        {
-            pModelBranchTrg = pModelTreeEntryTrg->modelParentBranch();
-        }
-        else
-        {
-            pModelBranchTrg = pModelTreeEntryTrg;
-        }
+        //if( pModelTreeEntryTrg->entryType() != EIdxTreeEntryType::Root && pModelTreeEntryTrg->entryType() != EIdxTreeEntryType::Branch )
+        //{
+        //    pModelBranchTrg = pModelTreeEntryTrg->modelParentBranch();
+        //}
+        //else
+        //{
+        //    pModelBranchTrg = pModelTreeEntryTrg;
+        //}
 
-        if( pModelBranchTrg != nullptr )
-        {
-            CIdxTreeEntry* pTreeEntrySrc = pModelTreeEntrySrc->treeEntry();
-            CIdxTreeEntry* pBranchTrg    = pModelBranchTrg->treeEntry();
+        //if( pModelBranchTrg != nullptr )
+        //{
+        //    CIdxTreeEntry* pTreeEntrySrc = pModelTreeEntrySrc->treeEntry();
+        //    CIdxTreeEntry* pBranchTrg    = pModelBranchTrg->treeEntry();
 
-            if( m_pasteMode == EPasteMode::Copy )
-            {
-                pIdxTree->copy(pTreeEntrySrc, pBranchTrg);
-            }
-            else if( m_pasteMode == EPasteMode::Cut )
-            {
-                pIdxTree->move(pTreeEntrySrc, pBranchTrg);
-                m_modelIdxSelectedForPaste = QModelIndex();
-                m_pasteMode = EPasteMode::Undefined;
-            }
-        } // if( pModelBranchTrg != nullptr )
+        //    if( m_pasteMode == EPasteMode::Copy )
+        //    {
+        //        pIdxTree->copy(pTreeEntrySrc, pBranchTrg);
+        //    }
+        //    else if( m_pasteMode == EPasteMode::Cut )
+        //    {
+        //        pIdxTree->move(pTreeEntrySrc, pBranchTrg);
+        //        m_modelIdxSelectedForPaste = QModelIndex();
+        //        m_pasteMode = EPasteMode::Undefined;
+        //    }
+        //} // if( pModelBranchTrg != nullptr )
     } // if( m_modelIdxSelectedForPaste.isValid() )
 
 } // onActionBranchPasteTriggered
@@ -2256,27 +2219,26 @@ void CTreeViewIdxTree::onActionLeaveDeleteTriggered( bool i_bChecked )
 
     if( m_modelIdxSelectedOnMousePressEvent.isValid() )
     {
-        CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(model());
-        CIdxTree*      pIdxTree = pModelIdxTree->idxTree();
-
-        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
-
         if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsDetailed )
         {
             strMthInArgs = "ModelIdxSelected {" + CModelIdxTree::modelIdx2Str(m_modelIdxSelectedOnMousePressEvent) + "}";
             mthTracer.trace(strMthInArgs);
         }
 
-        CModelIdxTreeEntry* pModelLeave = pModelTreeEntry;
+        //CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(model());
 
-        if( pIdxTree != nullptr && pModelLeave != nullptr )
-        {
-            CIdxTreeEntry* pLeave = pModelLeave->treeEntry();
+        //CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
 
-            delete pLeave;
-            pLeave = nullptr;
+        //CModelIdxTreeEntry* pModelLeave = pModelTreeEntry;
 
-        } // if( pIdxTree != nullptr && pModelLeave != nullptr )
+        //if( pIdxTree != nullptr && pModelLeave != nullptr )
+        //{
+        //    CIdxTreeEntry* pLeave = pModelLeave->treeEntry();
+
+        //    delete pLeave;
+        //    pLeave = nullptr;
+
+        //} // if( pIdxTree != nullptr && pModelLeave != nullptr )
     } // if( m_modelIdxSelectedOnMousePressEvent.isValid() )
 
 } // onActionLeaveDeleteTriggered
@@ -2384,38 +2346,37 @@ void CTreeViewIdxTree::onActionLeavePasteTriggered( bool i_bChecked )
             mthTracer.trace(strMthInArgs);
         }
 
-        CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(model());
-        CIdxTree*      pIdxTree = pModelIdxTree->idxTree();
+        //CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(model());
 
-        CModelIdxTreeEntry* pModelTreeEntrySrc = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedForPaste.internalPointer());
-        CModelIdxTreeEntry* pModelTreeEntryTrg = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
-        CModelIdxTreeEntry* pModelBranchTrg    = nullptr;
+        //CModelIdxTreeEntry* pModelTreeEntrySrc = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedForPaste.internalPointer());
+        //CModelIdxTreeEntry* pModelTreeEntryTrg = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
+        //CModelIdxTreeEntry* pModelBranchTrg    = nullptr;
 
-        if( pModelTreeEntryTrg->entryType() != EIdxTreeEntryType::Root && pModelTreeEntryTrg->entryType() != EIdxTreeEntryType::Branch )
-        {
-            pModelBranchTrg = pModelTreeEntryTrg->modelParentBranch();
-        }
-        else
-        {
-            pModelBranchTrg = pModelTreeEntryTrg;
-        }
+        //if( pModelTreeEntryTrg->entryType() != EIdxTreeEntryType::Root && pModelTreeEntryTrg->entryType() != EIdxTreeEntryType::Branch )
+        //{
+        //    pModelBranchTrg = pModelTreeEntryTrg->modelParentBranch();
+        //}
+        //else
+        //{
+        //    pModelBranchTrg = pModelTreeEntryTrg;
+        //}
 
-        if( pModelBranchTrg != nullptr )
-        {
-            CIdxTreeEntry* pTreeEntrySrc = pModelTreeEntrySrc->treeEntry();
-            CIdxTreeEntry* pBranchTrg    = pModelBranchTrg->treeEntry();
+        //if( pModelBranchTrg != nullptr )
+        //{
+        //    CIdxTreeEntry* pTreeEntrySrc = pModelTreeEntrySrc->treeEntry();
+        //    CIdxTreeEntry* pBranchTrg    = pModelBranchTrg->treeEntry();
 
-            if( m_pasteMode == EPasteMode::Copy )
-            {
-                pIdxTree->copy(pTreeEntrySrc, pBranchTrg);
-            }
-            else if( m_pasteMode == EPasteMode::Cut )
-            {
-                pIdxTree->move(pTreeEntrySrc, pBranchTrg);
-                m_modelIdxSelectedForPaste = QModelIndex();
-                m_pasteMode = EPasteMode::Undefined;
-            }
-        } // if( pModelBranchTrg != nullptr )
+        //    if( m_pasteMode == EPasteMode::Copy )
+        //    {
+        //        pIdxTree->copy(pTreeEntrySrc, pBranchTrg);
+        //    }
+        //    else if( m_pasteMode == EPasteMode::Cut )
+        //    {
+        //        pIdxTree->move(pTreeEntrySrc, pBranchTrg);
+        //        m_modelIdxSelectedForPaste = QModelIndex();
+        //        m_pasteMode = EPasteMode::Undefined;
+        //    }
+        //} // if( pModelBranchTrg != nullptr )
     } // if( m_modelIdxSelectedOnMousePressEvent.isValid() )
 
 } // onActionLeavePasteTriggered

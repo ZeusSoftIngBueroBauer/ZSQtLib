@@ -119,7 +119,7 @@ public: // type definitions and constants
         Cut  = 1,
         Count,
         Undefined
-        };
+    };
 public: // class methods
     static QString NameSpace() { return "ZS::System::GUI"; }
     static QString ClassName() { return "CTreeViewIdxTree"; }

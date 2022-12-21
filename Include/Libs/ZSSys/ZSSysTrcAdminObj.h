@@ -78,6 +78,7 @@ friend class CIdxTreeTrcAdminObjs;
     Q_PROPERTY(QString nameSpace READ getNameSpace CONSTANT)
     Q_PROPERTY(QString className READ getClassName CONSTANT)
     Q_PROPERTY(QString objectName READ getObjectName CONSTANT)
+    Q_PROPERTY(QString keyInTree READ keyInTree CONSTANT)
     Q_PROPERTY(QString objectThreadName READ getObjectThreadName CONSTANT)
     Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled NOTIFY enabledChanged)
     Q_PROPERTY(QString methodCallsTraceDetailLevel READ getMethodCallsTraceDetailLevelStr WRITE setMethodCallsTraceDetailLevel NOTIFY methodCallsTraceDetailLevelChanged)

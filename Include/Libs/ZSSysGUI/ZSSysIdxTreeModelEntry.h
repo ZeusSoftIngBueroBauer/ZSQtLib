@@ -48,38 +48,38 @@ class ZSSYSGUIDLL_API CModelIdxTreeEntry
 public: // class methods
     static QString NameSpace() { return "ZS::System::GUI"; }
     static QString ClassName() { return "CModelIdxTreeEntry"; }
-public: // ctors
+public: // ctors and dtor
     CModelIdxTreeEntry( CIdxTreeEntry* i_pTreeEntry );
-public: // dtor
     virtual ~CModelIdxTreeEntry();
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
     virtual QString className() const { return ClassName(); }
 public: // instance methods
-    CIdxTreeEntry* treeEntry();
+    CIdxTreeEntry* getIdxTreeEntry();
 public: // instance methods
     EIdxTreeEntryType entryType() const;
     QString entryType2Str( int i_alias = ZS::System::EEnumEntryAliasStrName ) const;
+    bool isRoot() const;
+    bool isBranch() const;
+    bool isLeave() const;
+public: // instance methods
     void setKeyInTree( const QString& i_strNewKeyInTree );
     QString keyInTree() const;
     int indexInTree() const;
     QString name() const;
     QString path() const;
 public: // instance methods
+    CModelIdxTreeEntry* parentBranch() const { return m_pParentBranch; }
     QString keyInParentBranch() const;
-    int indexInParentBranch() const;
-    int indexInParentBranchsChildListWithSameEntryTypes() const;
-public: // instance methods
-    CModelIdxTreeEntry* modelParentBranch() const { return m_pParentBranch; }
-    int modelIndexInParentBranch() const { return m_idxInParentBranch; }
+    int indexInParentBranch() const { return m_idxInParentBranch; }
 public: // instance methods (applying filter)
-    int modelIndexInParentBranchsChildListWithSameEntryTypes() const;
+    int indexInParentBranchsChildListWithSameEntryTypes() const;
 public: // instance methods
     void setIsSelected( bool i_bIsSelected );
     bool isSelected() const { return m_bIsSelected; }
 public: // instance methods
-    void setModelParentBranch( CModelIdxTreeEntry* i_pParent ) { m_pParentBranch = i_pParent; }
-    void setModelIndexInParentBranch( int i_idx ) { m_idxInParentBranch = i_idx; }
+    void setParentBranch( CModelIdxTreeEntry* i_pParent ) { m_pParentBranch = i_pParent; }
+    void setIndexInParentBranch( int i_idx ) { m_idxInParentBranch = i_idx; }
 public: // instance methods
     void setExcludeLeaves( bool i_bExcludeLeaves );
     bool areLeavesExluded() const { return m_bExcludeLeaves; }
@@ -95,13 +95,16 @@ public: // instance methods
     int size() const { return m_arpTreeEntries.size(); }
     CModelIdxTreeEntry* at( int i_idx ) const { return m_arpTreeEntries.at(i_idx); }
 public: // instance methods
-    int modelIndexOf( CModelIdxTreeEntry* i_pModelTreeEntry ) const { return m_arpTreeEntries.indexOf(i_pModelTreeEntry); }
+    int indexOf( CModelIdxTreeEntry* i_pModelTreeEntry ) const;
+    int indexOf( const QString& i_strKeyInParentBranch ) const;
+    int indexOf( EIdxTreeEntryType i_entryType, const QString& i_strName ) const;
 public: // instance methods (applying filter)
-    int modelIndexOfChildInListWithSameEntryTypes( const CModelIdxTreeEntry* i_pModelTreeEntry ) const;
+    int indexOfChildInListWithSameEntryTypes( const CModelIdxTreeEntry* i_pModelTreeEntry ) const;
 public: // instance methods
-    CModelIdxTreeEntry* findModelBranch( const QString& i_strName );
-    CModelIdxTreeEntry* findModelLeave( const QString& i_strName );
-    CModelIdxTreeEntry* findModelEntry( EIdxTreeEntryType i_entryType, const QString& i_strName );
+    CModelIdxTreeEntry* findBranch( const QString& i_strName ) const;
+    CModelIdxTreeEntry* findLeave( const QString& i_strName ) const;
+    CModelIdxTreeEntry* findEntry( const QString& i_strKeyInParentBranch ) const;
+    CModelIdxTreeEntry* findEntry( EIdxTreeEntryType i_entryType, const QString& i_strName ) const;
 public: // instance methods
     int add( CModelIdxTreeEntry* i_pModelTreeEntry );
     void remove( CModelIdxTreeEntry* i_pModelTreeEntry );

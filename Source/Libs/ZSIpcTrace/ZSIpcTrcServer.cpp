@@ -423,33 +423,15 @@ CIpcTrcServer::CIpcTrcServer(
 
     m_pMtxListTrcDataCached = new QMutex(QMutex::Recursive);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTrcAdminObjIdxTree,
-        /* szSignal     */ SIGNAL( treeEntryAdded(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onTrcAdminObjIdxTreeEntryAdded(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*) ),
-        /* cnctType     */ Qt::DirectConnection ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTrcAdminObjIdxTree,
-        /* szSignal     */ SIGNAL( treeEntryAboutToBeRemoved(ZS::System::CIdxTree*, ZS::System::EIdxTreeEntryType, const QString&, int) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onTrcAdminObjIdxTreeEntryAboutToBeRemoved(ZS::System::CIdxTree*, ZS::System::EIdxTreeEntryType, const QString&, int) ),
-        /* cnctType     */ Qt::DirectConnection ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTrcAdminObjIdxTree,
-        /* szSignal     */ SIGNAL( treeEntryChanged(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onTrcAdminObjIdxTreeEntryChanged(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*) ),
-        /* cnctType     */ Qt::DirectConnection ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pTrcAdminObjIdxTree, &CIdxTree::treeEntryAdded,
+        this, &CIpcTrcServer::onTrcAdminObjIdxTreeEntryAdded);
+    QObject::connect(
+        m_pTrcAdminObjIdxTree, &CIdxTree::treeEntryAboutToBeRemoved,
+        this, &CIpcTrcServer::onTrcAdminObjIdxTreeEntryAboutToBeRemoved);
+    QObject::connect(
+        m_pTrcAdminObjIdxTree, &CIdxTreeTrcAdminObjs::treeEntryChanged,
+        this, &CIpcTrcServer::onTrcAdminObjIdxTreeEntryChanged );
 
     if( !QObject::connect(
         /* pObjSender   */ m_pIpcServer,
@@ -2914,9 +2896,7 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CIpcTrcServer::onTrcAdminObjIdxTreeEntryAdded(
-    CIdxTree*      /*i_pIdxTree*/,
-    CIdxTreeEntry* i_pTreeEntry )
+void CIpcTrcServer::onTrcAdminObjIdxTreeEntryAdded( const QString& i_strKeyInTree )
 //------------------------------------------------------------------------------
 {
     // The trace admin object index tree will be locked so it will not be changed
@@ -2927,7 +2907,7 @@ void CIpcTrcServer::onTrcAdminObjIdxTreeEntryAdded(
 
     if( m_pTrcMthFile != nullptr && m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = QString(i_pTreeEntry == nullptr ? "null" : i_pTreeEntry->keyInTree());
+        strMthInArgs = i_strKeyInTree;
     }
 
     CMethodTracer mthTracer(
@@ -2947,31 +2927,34 @@ void CIpcTrcServer::onTrcAdminObjIdxTreeEntryAdded(
         return;
     }
 
-    if( i_pTreeEntry != nullptr && isConnected() )
+    CIdxTreeLocker idxTreeLocker(m_pTrcAdminObjIdxTree);
+
+    CIdxTreeEntry* pTreeEntry = m_pTrcAdminObjIdxTree->findEntry(i_strKeyInTree);
+
+    if( pTreeEntry != nullptr && isConnected() )
     {
-        if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        if( pTreeEntry->isBranch() )
         {
             sendBranch(
                 /* iSocketId     */ ESocketIdAllSockets,
                 /* systemMsgType */ MsgProtocol::ESystemMsgTypeInd,
                 /* cmd           */ MsgProtocol::ECommandInsert,
-                /* pBranch       */ i_pTreeEntry );
+                /* pBranch       */ pTreeEntry );
         }
-        else if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+        else if( pTreeEntry->isLeave() )
         {
             sendAdminObj(
                 /* iSocketId     */ ESocketIdAllSockets,
                 /* systemMsgType */ MsgProtocol::ESystemMsgTypeInd,
                 /* cmd           */ MsgProtocol::ECommandInsert,
-                /* strKeyInTree  */ i_pTreeEntry->keyInTree(),
-                /* idxInTree     */ i_pTreeEntry->indexInTree() );
+                /* strKeyInTree  */ pTreeEntry->keyInTree(),
+                /* idxInTree     */ pTreeEntry->indexInTree() );
         }
     }
 } // onTrcAdminObjIdxTreeEntryAdded
 
 //------------------------------------------------------------------------------
 void CIpcTrcServer::onTrcAdminObjIdxTreeEntryAboutToBeRemoved(
-    CIdxTree*         /*i_pIdxTree*/,
     EIdxTreeEntryType i_entryType,
     const QString&    i_strKeyInTree,
     int               i_idxInTree )
@@ -3036,16 +3019,14 @@ void CIpcTrcServer::onTrcAdminObjIdxTreeEntryAboutToBeRemoved(
 } // onTrcAdminObjIdxTreeEntryAboutToBeRemoved
 
 //------------------------------------------------------------------------------
-void CIpcTrcServer::onTrcAdminObjIdxTreeEntryChanged(
-    CIdxTree*      /*i_pIdxTree*/,
-    CIdxTreeEntry* i_pTreeEntry )
+void CIpcTrcServer::onTrcAdminObjIdxTreeEntryChanged( const QString& i_strKeyInTree )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
 
     if( m_pTrcMthFile != nullptr && m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = QString(i_pTreeEntry == nullptr ? "null" : i_pTreeEntry->keyInTree());
+        strMthInArgs = i_strKeyInTree;
     }
 
     CMethodTracer mthTracer(
@@ -3069,27 +3050,30 @@ void CIpcTrcServer::onTrcAdminObjIdxTreeEntryChanged(
         return;
     }
 
-    if( i_pTreeEntry != nullptr && isConnected() )
+    CIdxTreeLocker idxTreeLocker(m_pTrcAdminObjIdxTree);
+
+    CIdxTreeEntry* pTreeEntry = m_pTrcAdminObjIdxTree->findEntry(i_strKeyInTree);
+
+    if( pTreeEntry != nullptr && isConnected() )
     {
-        if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Root || i_pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        if( pTreeEntry->isRoot() || pTreeEntry->isBranch() )
         {
             sendBranch(
                 /* iSocketId     */ ESocketIdAllSockets,
                 /* systemMsgType */ MsgProtocol::ESystemMsgTypeInd,
                 /* cmd           */ MsgProtocol::ECommandInsert,
-                /* pBranch       */ i_pTreeEntry );
+                /* pBranch       */ pTreeEntry );
         }
-        else if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+        else if( pTreeEntry->isLeave() )
         {
             sendAdminObj(
                 /* iSocketId     */ ESocketIdAllSockets,
                 /* systemMsgType */ MsgProtocol::ESystemMsgTypeInd,
                 /* cmd           */ MsgProtocol::ECommandUpdate,
-                /* strKeyInTree  */ i_pTreeEntry->keyInTree(),
-                /* idxInTree     */ i_pTreeEntry->indexInTree() );
+                /* strKeyInTree  */ pTreeEntry->keyInTree(),
+                /* idxInTree     */ pTreeEntry->indexInTree() );
         }
-    } // if( i_pTreeEntry != nullptr )
-
+    }
 } // onTrcAdminObjIdxTreeEntryChanged
 
 /*==============================================================================
