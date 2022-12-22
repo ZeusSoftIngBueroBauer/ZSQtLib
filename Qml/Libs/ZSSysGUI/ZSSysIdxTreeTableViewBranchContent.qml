@@ -26,7 +26,6 @@ may result in using the software modules.
 
 import QtQuick 2.15
 import QtQuick.Controls 1.4 as C1   // TableView derived from BasicTableView
-//import QtQuick.Layouts 1.15
 
 C1.TableView {
     readonly property string nameSpace: "ZS::System::GUI::Qml"
@@ -55,11 +54,18 @@ C1.TableView {
     alternatingRowColors: true
     clip: true
     selectionMode: C1.SelectionMode.ExtendedSelection
-    //color: "lightgray"
 
-    property string sortOrder: "Ascending"
-    //property var currentIndex: null
-    //property var model: null
+    property string keyInTreeOfRootEntry: ""
+
+    property alias columnNameVisible: clmName.visible
+    property alias columnInternalIdVisible: clmInternalId.visible
+    property alias columnIdxInTreeVisible: clmIdxInTree.visible
+    property alias columnIdxInParentBranchVisible: clmIdxInParentBranch.visible
+    property alias columnKeyInTreeVisible: clmKeyInTree.visible
+    property alias columnKeyInParentBranchVisible: clmKeyInParentBranch.visible
+
+    property var fontPixelSize: 0
+    property var columnSpacing: 10
 
     Transition {
         id: transitionAdd
@@ -77,18 +83,57 @@ C1.TableView {
 
     onModelChanged: {
         myTrcAdminObj.traceMethodEnter("EnterLeave", "onModelChanged");
-        myTrcAdminObj.traceMethod("Debug", "onModelChanged", "Model: " + objectName);
+        myTrcAdminObj.traceMethod("Debug", "onModelChanged", "Model: " + model.objectName);
         myTrcAdminObj.traceMethodLeave("EnterLeave", "onModelChanged");
     }
 
-    /* onCurrentIndexChanged: {
-        myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "treeView.onCurrentIndexChanged", model.modelIdx2Str(currentIndex));
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "treeView.onCurrentIndexChanged");
-    } */
+    onKeyInTreeOfRootEntryChanged: {
+        myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "onKeyInTreeOfRootEntryChanged", keyInTreeOfRootEntry);
+        model.keyInTreeOfRootEntry = keyInTreeOfRootEntry
+        myTrcAdminObj.traceMethodLeave("EnterLeave", "onKeyInTreeOfRootEntryChanged");
+    }
+
+    // Need a different name as QML does not allow to override functions.
+    function _resizeColumnsToContents() {
+        myTrcAdminObj.traceMethodEnter("EnterLeave", "_resizeColumnsToContents");
+        // The width of the headers is not taken into account.
+        clmName.width = model.columnWidthByRole(clmName.role, fontPixelSize) + 2*columnSpacing
+        clmInternalId.width = model.columnWidthByRole(clmInternalId.role, fontPixelSize) + 2*columnSpacing
+        clmIdxInTree.width = model.columnWidthByRole(clmIdxInTree.role, fontPixelSize) + 2*columnSpacing
+        clmIdxInParentBranch.width = model.columnWidthByRole(clmIdxInParentBranch.role, fontPixelSize) + 2*columnSpacing
+        clmKeyInTree.width = model.columnWidthByRole(clmKeyInTree.role, fontPixelSize) + 2*columnSpacing
+        clmKeyInParentBranch.width = model.columnWidthByRole(clmKeyInParentBranch.role, fontPixelSize) + 2*columnSpacing
+        myTrcAdminObj.traceMethodLeave("EnterLeave", "_resizeColumnsToContents");
+    }
 
     C1.TableViewColumn {
         id: clmName
         title: "Name"
         role: "TreeEntryName"
+    }
+    C1.TableViewColumn {
+        id: clmInternalId
+        title: "InternalId"
+        role: "InternalId"
+    }
+    C1.TableViewColumn {
+        id: clmIdxInTree
+        title: "IdxInTree"
+        role: "IdxInTree"
+    }
+    C1.TableViewColumn {
+        id: clmIdxInParentBranch
+        title: "IdxInParentBranch"
+        role: "IdxInParentBranch"
+    }
+    C1.TableViewColumn {
+        id: clmKeyInTree
+        title: "KeyInTree"
+        role: "KeyInTree"
+    }
+    C1.TableViewColumn {
+        id: clmKeyInParentBranch
+        title: "KeyInParentBranch"
+        role: "KeyInParentBranch"
     }
 }

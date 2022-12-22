@@ -227,7 +227,6 @@ public: // instance methods
     Q_INVOKABLE int columnWidthByRole(const QByteArray& i_byteArrRole, int i_iFontPixelSize = 0, const QModelIndex& i_modelIdxParent = QModelIndex());
 public: // overridables of base class QAbstractItemModel
     virtual QHash<int, QByteArray> roleNames() const override;
-public: // overridables of base class QAbstractItemModel
     virtual int rowCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const override;
     virtual int columnCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const override;
     virtual QModelIndex index( int i_iRow, int i_iCol, const QModelIndex& i_modelIdxParent = QModelIndex() ) const override;
@@ -285,8 +284,6 @@ protected slots:
 protected: // auxiliary instance methods
     void fillRoleNames();
 protected: // class members
-    static QHash<int, QByteArray> s_clm2Name;
-protected: // class members
     static int      s_iInstCount;
     static bool     s_bIconsCreated;
     static QPixmap* s_pPxmRoot;
@@ -295,8 +292,10 @@ protected: // class members
     static QIcon*   s_pIconRoot;
     static QIcon*   s_pIconBranch;
     static QIcon*   s_pIconLeave;
+protected: // class members
     static QHash<int, QByteArray> s_roleNames;
     static QHash<QByteArray, int> s_roleValues;
+    static QHash<int, QByteArray> s_clm2Name;
 protected: // instance members
     CIdxTree* m_pIdxTree;
     bool m_bExcludeLeaves;

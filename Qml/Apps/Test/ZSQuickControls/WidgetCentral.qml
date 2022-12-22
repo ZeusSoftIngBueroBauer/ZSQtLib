@@ -55,7 +55,8 @@ Item {
 
         IdxTreeWdgt {
             id: idxTreeWdgtControls
-            model: _ZSQuickControls_stylesModel
+            treeViewModel: _ZSQuickControls_modelIdxTreeStyles
+            tableViewBranchContentModel: _ZSQuickControls_modelIdxTreeStylesBranchContent
             Layout.column: 0
             Layout.row: 0
             Layout.rowSpan: 4

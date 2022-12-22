@@ -580,6 +580,10 @@ void CTrcAdminObj::traceObjMethodEnterWithInArgs(
 }
 
 //------------------------------------------------------------------------------
+/* 
+    @param i_strFilterDetailLevel
+        Range see enum class ELogDetailLevel.
+*/
 void CTrcAdminObj::traceMethod(
     const QString& i_strFilterDetailLevel,
     const QString& i_strMethod,

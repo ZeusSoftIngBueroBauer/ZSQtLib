@@ -24,7 +24,6 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-import QtQml 2.15
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
@@ -32,7 +31,7 @@ import ZSSysGUI 1.0
 
 ColumnLayout {
     readonly property string nameSpace: "ZS::System::GUI::Qml"
-    readonly property string className: "IdxTreeWdgt"
+    readonly property string className: "IdxTreeViewWdgt"
     readonly property string objectName: treeViewModel.objectName
     property var myTrcAdminObj: _ZSSys_trcServer.getTraceAdminObj(
         nameSpace, className, objectName)
@@ -41,7 +40,6 @@ ColumnLayout {
         myTrcAdminObj.traceMethodEnter("EnterLeave", "Component.onCompleted");
         treeViewModel.sortOrder = "Ascending";
         treeViewModel.excludeLeaves = false;
-        tableViewBranchContentModel.sortOrder = "Ascending";
         myTrcAdminObj.traceMethodLeave("EnterLeave", "Component.onCompleted");
     }
     Component.onDestruction: {
@@ -50,9 +48,14 @@ ColumnLayout {
         _ZSSys_trcServer.releaseTraceAdminObj(myTrcAdminObj);
     }
 
-    property alias treeViewModel: treeViewWdgt.treeViewModel
-    property alias tableViewBranchContentModel: tableViewBranchContentWdgt.tableViewModel
-    property string viewMode: "NavPanelOnly" // | "NavPanelAndBranchContent"
+    property alias treeViewModel: treeView.model
+    property alias currentIndex: treeView.currentIndex
+
+    property alias columnInternalIdVisible: treeView.columnInternalIdVisible
+    property alias columnIdxInTreeVisible: treeView.columnIdxInTreeVisible
+    property alias columnIdxInParentBranchVisible: treeView.columnIdxInParentBranchVisible
+    property alias columnKeyInTreeVisible: treeView.columnKeyInTreeVisible
+    property alias columnKeyInParentBranchVisible: treeView.columnKeyInParentBranchVisible
 
     id: root
     spacing: 4
@@ -75,24 +78,40 @@ ColumnLayout {
                 }
             }
             ToolButton {
-                id: btnViewMode
-                icon.source: "qrc:/ZS/TreeView/TreeViewViewMode" + root.viewMode + ".png"
+                id: btnTreeViewResizeColumnsToContents
+                icon.source: "qrc:/ZS/TreeView/TreeViewResizeToContents.png"
                 onClicked: {
-                    treeViewWdgt.treeViewModel.excludeLeaves = !treeViewWdgt.treeViewModel.excludeLeaves
-                    root.viewMode = treeViewWdgt.treeViewModel.excludeLeaves ? "NavPanelAndBranchContent" : "NavPanelOnly"
+                    treeView._resizeColumnsToContents();
                 }
             }
-            TextField {
-                id: edtBranchPath
-                Layout.fillWidth: true
-                Layout.maximumHeight: btnViewMode.height
-                text: treeViewWdgt.treeViewModel.getTreeEntryAbsoluteNodePath(treeViewWdgt.currentIndex)
-                readOnly: true
+            ToolButton {
+                id: btnTreeViewExpandAll
+                icon.source: "qrc:/ZS/TreeView/TreeViewExpandAll.png"
+                onClicked: {
+                    treeView.expandAll();
+                    treeView.resizeColumnsToContents();
+                }
+            }
+            ToolButton {
+                id: btnTreeViewCollapsedAll
+                icon.source: "qrc:/ZS/TreeView/TreeViewCollapseAll.png"
+                onClicked: {
+                    treeView.collapseAll();
+                    treeView.resizeColumnsToContents();
+                }
+            }
+            ToolButton {
+                id: btnSortOrder
+                icon.source: "qrc:/ZS/TreeView/TreeViewSortOrder" + treeView.model.sortOrder + ".png"
+                onClicked: {
+                    treeView.model.sortOrder = treeView.model.sortOrder === "Descending" ? "Ascending" : "Descending"
+                }
             }
             Item { // Margin at right side of row layout
                 Layout.alignment: Qt.AlignLeft
                 Layout.minimumWidth: 4
                 Layout.minimumHeight: 1
+                Layout.fillWidth: true
                 Rectangle {
                     anchors.fill: parent
                     color: "red"
@@ -101,30 +120,13 @@ ColumnLayout {
         }
     }
 
-    SplitView {
-        orientation: Qt.Horizontal
+    IdxTreeView {
+        id: treeView
         Layout.fillWidth: true
         Layout.fillHeight: true
-
-        IdxTreeViewWdgt {
-            id: treeViewWdgt
-            Layout.minimumWidth: 50
-            Layout.fillWidth: root.viewMode ===  "NavPanelOnly"
-            columnInternalIdVisible: root.viewMode ===  "NavPanelOnly"
-            columnIdxInTreeVisible: root.viewMode ===  "NavPanelOnly"
-            columnIdxInParentBranchVisible: root.viewMode ===  "NavPanelOnly"
-            columnKeyInTreeVisible: root.viewMode ===  "NavPanelOnly"
-            columnKeyInParentBranchVisible: root.viewMode ===  "NavPanelOnly"
-            onCurrentIndexChanged: {
-                root.myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "treeViewWdgt.onCurrentIndexChanged", treeViewModel.modelIdx2Str(currentIndex));
-                root.myTrcAdminObj.traceMethodLeave("EnterLeave", "treeViewWdgt.onCurrentIndexChanged");
-            }
-        }
-        IdxTreeTableViewBranchContentWdgt {
-            id: tableViewBranchContentWdgt
-            Layout.fillWidth: true
-            visible: root.viewMode === "NavPanelAndBranchContent"
-            keyInTreeOfRootEntry: treeViewWdgt.currentIndex ? treeViewWdgt.treeViewModel.getTreeEntryKeyInTree(treeViewWdgt.currentIndex) : ""
+        onCurrentIndexChanged: {
+            root.myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "treeView.onCurrentIndexChanged", model.modelIdx2Str(currentIndex));
+            root.myTrcAdminObj.traceMethodLeave("EnterLeave", "treeView.onCurrentIndexChanged");
         }
     }
 }

@@ -545,7 +545,7 @@ int CModelIdxTreeEntry::add( CModelIdxTreeEntry* i_pModelTreeEntry )
             m_arpTreeEntries.append(nullptr);
 
             // Move all following entries one index backwards.
-            for( int idxEntry = idxInParentBranch; idxEntry < m_arpTreeEntries.size()-1; ++idxEntry )
+            for( int idxEntry = m_arpTreeEntries.size()-2; idxEntry >= idxInParentBranch; --idxEntry )
             {
                 CModelIdxTreeEntry* pModelTreeEntry = m_arpTreeEntries[idxEntry];
                 m_arpTreeEntries[idxEntry+1] = pModelTreeEntry;

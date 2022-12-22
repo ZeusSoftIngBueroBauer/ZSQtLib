@@ -55,6 +55,13 @@ C1.TreeView {
     alternatingRowColors: true
     clip: true
 
+    property alias columnNameVisible: clmName.visible
+    property alias columnInternalIdVisible: clmInternalId.visible
+    property alias columnIdxInTreeVisible: clmIdxInTree.visible
+    property alias columnIdxInParentBranchVisible: clmIdxInParentBranch.visible
+    property alias columnKeyInTreeVisible: clmKeyInTree.visible
+    property alias columnKeyInParentBranchVisible: clmKeyInParentBranch.visible
+
     property var fontPixelSize: 0
     property var columnSpacing: 10
 
@@ -74,7 +81,7 @@ C1.TreeView {
 
     onModelChanged: {
         myTrcAdminObj.traceMethodEnter("EnterLeave", "onModelChanged");
-        myTrcAdminObj.traceMethod("Debug", "onModelChanged", "Model: " + objectName);
+        myTrcAdminObj.traceMethod("Debug", "onModelChanged", "Model: " + model.objectName);
         myTrcAdminObj.traceMethodLeave("EnterLeave", "onModelChanged");
     }
 

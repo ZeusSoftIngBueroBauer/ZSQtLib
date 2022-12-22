@@ -36,6 +36,10 @@ namespace ZS
 {
 namespace System
 {
+#ifdef ZS_TRACE_GUI_MODELS
+class CTrcAdminObj;
+#endif
+
 namespace GUI
 {
 //******************************************************************************
@@ -49,19 +53,36 @@ public: // class methods
 public: // type definitions and constants
     enum EColumn {
         EColumnTreeEntryName     = 0,
-        EColumnInternalId        = 1,
-        EColumnTreeEntryType     = 2,
+        EColumnTreeEntryType     = 1,
+        EColumnInternalId        = 2,
         EColumnIdxInTree         = 3,
         EColumnIdxInParentBranch = 4,
         EColumnKeyInTree         = 5,
         EColumnKeyInParentBranch = 6,
-        EColumnCount
+        EColumnCount,
+        EColumnUndefined
     };
+    static QString column2Str(EColumn i_clm);
+public: // type definitions and constants
+    enum class ERole {
+        Sort = Qt::UserRole,
+        ImageUrl,
+        Type,
+        FirstDataColumnRole
+    };
+    Q_ENUM(ERole);
+public: // class methods
+    static EColumn role2Column(int i_iRole);
+    static QString role2Str(int i_iRole);
+    static int byteArr2Role(const QByteArray& i_byteArrRole);
+    static int column2Role(EColumn i_clm);
+    Q_INVOKABLE static QString modelIdx2Str( const QModelIndex& i_modelIdx, int i_iRole = -1, bool i_bIncludeId = false );
 public: // ctors and dtor
     CModelIdxTreeBranchContent(
         CIdxTree* i_pIdxTree,
         QObject*  i_pObjParent = nullptr,
-        EMethodTraceDetailLevel i_eTrcDetailLevel = EMethodTraceDetailLevel::None );
+        EMethodTraceDetailLevel i_eTrcDetailLevel = EMethodTraceDetailLevel::None,
+        EMethodTraceDetailLevel i_eTrcDetailLevelNoisyMethods = EMethodTraceDetailLevel::None );
     virtual ~CModelIdxTreeBranchContent();
 signals:
     void keyInTreeOfRootEntryChanged(const QString& i_strKeyInTree);
@@ -98,9 +119,14 @@ protected slots:
 protected: // instance methods
     void clear();
     void remove( CModelIdxTreeEntry* i_pModelTreeEntry );
+public: // instance methods
+    Q_INVOKABLE int columnWidthByColumn(int i_iClm, int i_iFontPixelSize = 0);
+    Q_INVOKABLE int columnWidthByRole(const QByteArray& i_byteArrRole, int i_iFontPixelSize = 0);
 public: // overridables of base class QAbstractItemModel
+    virtual QHash<int, QByteArray> roleNames() const override;
     virtual int rowCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const override;
     virtual int columnCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const override;
+    virtual QModelIndex index( int i_iRow, int i_iCol, const QModelIndex& i_modelIdxParent = QModelIndex() ) const override;
 public: // overridables of base class QAbstractItemModel
     virtual QVariant headerData( int i_iSection, Qt::Orientation i_orientation, int i_iRole = Qt::DisplayRole) const override;
     virtual Qt::ItemFlags flags( const QModelIndex& i_modelIdx ) const override;
@@ -109,6 +135,15 @@ public: // overridables of base class QAbstractItemModel
     virtual bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
 public: // instance methods for editing data
     SErrResultInfo canSetData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) const;
+protected slots:
+    void onTrcAdminObjChanged( QObject* i_pTrcAdminObj );
+    void onTrcAdminObjNoisyMethodsChanged( QObject* i_pTrcAdminObj );
+protected: // auxiliary instance methods
+    void fillRoleNames();
+protected: // class members
+    static QHash<int, QByteArray> s_roleNames;
+    static QHash<QByteArray, int> s_roleValues;
+    static QHash<int, QByteArray> s_clm2Name;
 protected: // instance members
     CIdxTree* m_pIdxTree;
     EIdxTreeSortOrder m_sortOrder;
@@ -131,7 +166,25 @@ protected: // instance members
          about the removed entry. */
     QString m_strKeyInTreeOfRootEntry;
     CModelIdxTreeEntry* m_pModelRootEntry;
+    QVector<int> m_ariClmWidths;
+    #ifdef ZS_TRACE_GUI_MODELS
+    /*!< Trace detail level for method tracing.
+         Trace output may not be controlled by trace admin objects
+         if the index tree belongs the trace server. */
     EMethodTraceDetailLevel m_eTrcDetailLevel;
+    /*!< Trace detail level for method tracing.
+         This detail level is used by very often called methods like "data".
+         Trace output may not be controlled by trace admin objects
+         if the index tree belongs the trace server. */
+    EMethodTraceDetailLevel m_eTrcDetailLevelNoisyMethods;
+    /*!< Trace admin object to control trace outputs of the class.
+         The object will not be created if the index tree's belongs to the trace server. */
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
+    /*!< Trace admin object to control trace outputs of the class.
+         This trace admin object is used by very often called methods like "data".
+         The object will not be created if the index tree's belongs to the trace server. */
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjNoisyMethods;
+    #endif
 
 }; // class CModelIdxTreeBranchContent
 

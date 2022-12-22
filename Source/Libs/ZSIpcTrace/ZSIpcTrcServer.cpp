@@ -476,6 +476,20 @@ CIpcTrcServer::~CIpcTrcServer()
 
     m_bIsBeingDestroyed = true;
 
+    // The index tree will be destroyed by the base class after this dtor has been processed.
+    // The IpcServer will be destroyed before. The slots are called to send data to the
+    // client with the deleted object status. But there is not IpcServer anymore.
+    // So we disconnect the slots before destroying the IpcServer.
+    QObject::disconnect(
+        m_pTrcAdminObjIdxTree, &CIdxTree::treeEntryAdded,
+        this, &CIpcTrcServer::onTrcAdminObjIdxTreeEntryAdded);
+    QObject::disconnect(
+        m_pTrcAdminObjIdxTree, &CIdxTree::treeEntryAboutToBeRemoved,
+        this, &CIpcTrcServer::onTrcAdminObjIdxTreeEntryAboutToBeRemoved);
+    QObject::disconnect(
+        m_pTrcAdminObjIdxTree, &CIdxTreeTrcAdminObjs::treeEntryChanged,
+        this, &CIpcTrcServer::onTrcAdminObjIdxTreeEntryChanged );
+
     for( int idx = 0; idx < m_iTrcDataCachedCount; idx++ )
     {
         try

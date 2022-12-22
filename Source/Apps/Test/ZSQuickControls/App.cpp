@@ -31,6 +31,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysIdxTree.h"
 #include "ZSSysGUI/ZSSysErrLogModel.h"
 #include "ZSSysGUI/ZSSysIdxTreeModel.h"
+#include "ZSSysGUI/ZSSysIdxTreeModelBranchContent.h"
 #include "ZSQuickControls/ZSQuickControlsDllMain.h"
 #include "ZSQuickControls/ZSQuickControlsThemeWindowsStyle.h"
 
@@ -84,6 +85,7 @@ CApplication::CApplication(
     m_pTrcServer(nullptr),
     m_pIdxTreeStyles(nullptr),
     m_pModelIdxTreeStyles(nullptr),
+    m_pModelIdxTreeStylesBranchContent(nullptr),
     m_pThemeWindowsStyle(nullptr),
     m_pTrcAdminObj(nullptr)
 {
@@ -137,6 +139,8 @@ CApplication::CApplication(
     m_pIdxTreeStyles = new CIdxTree("ZSStyles");
     m_pModelIdxTreeStyles = new CModelIdxTree(m_pIdxTreeStyles);
     m_pModelIdxTreeStyles->setSortOrder(EIdxTreeSortOrder::Ascending);
+    m_pModelIdxTreeStylesBranchContent = new CModelIdxTreeBranchContent(m_pIdxTreeStyles);
+    m_pModelIdxTreeStylesBranchContent->setSortOrder(EIdxTreeSortOrder::Ascending);
 
     m_pThemeWindowsStyle = CThemeWindowsStyle::CreateInstance(m_pQmlAppEngine, m_pIdxTreeStyles);
 
@@ -145,7 +149,9 @@ CApplication::CApplication(
     pQmlCtx->setContextProperty("_ZSSys_trcServer", m_pTrcServer);
     pQmlCtx->setContextProperty("_ZSSys_errLog", CErrLog::GetInstance());
     pQmlCtx->setContextProperty("_ZSSysGUI_errLogModel", m_pErrLogModel);
-    pQmlCtx->setContextProperty("_ZSQuickControls_stylesModel", m_pModelIdxTreeStyles);
+    pQmlCtx->setContextProperty("_ZSQuickControls_idxTreeStyles", m_pIdxTreeStyles);
+    pQmlCtx->setContextProperty("_ZSQuickControls_modelIdxTreeStyles", m_pModelIdxTreeStyles);
+    pQmlCtx->setContextProperty("_ZSQuickControls_modelIdxTreeStylesBranchContent", m_pModelIdxTreeStylesBranchContent);
 
     //qDebug("QmlAppEngine.importPaths BEGIN ---------------------------------------");
     //QStringList strlstImportPathList = m_pQmlAppEngine->importPathList();
@@ -213,6 +219,16 @@ CApplication::~CApplication()
     catch(...)
     {
     }
+    m_pQmlAppEngine = nullptr;
+
+    try
+    {
+        delete m_pModelIdxTreeStylesBranchContent;
+    }
+    catch(...)
+    {
+    }
+    m_pModelIdxTreeStylesBranchContent = nullptr;
 
     try
     {
@@ -221,6 +237,7 @@ CApplication::~CApplication()
     catch(...)
     {
     }
+    m_pModelIdxTreeStyles = nullptr;
 
     try
     {
@@ -229,6 +246,7 @@ CApplication::~CApplication()
     catch(...)
     {
     }
+    m_pIdxTreeStyles = nullptr;
 
     try
     {
@@ -255,10 +273,6 @@ CApplication::~CApplication()
 
     CErrLog::ReleaseInstance();
 
-    m_pQmlAppEngine = nullptr;
     m_pMainWindow = nullptr;
-    m_pErrLogModel = nullptr;
-    m_pTrcServer = nullptr;
-    m_pTrcAdminObj = nullptr;
 
 } // dtor
