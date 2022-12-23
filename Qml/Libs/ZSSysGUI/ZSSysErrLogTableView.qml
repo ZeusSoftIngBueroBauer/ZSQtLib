@@ -26,6 +26,7 @@ may result in using the software modules.
 
 import QtQuick 2.15                 // TableView derived from Flickable
 import QtQuick.Controls 1.4 as C1   // TableView derived from BasicTableView
+import ZSSysGUI 1.0
 
 C1.TableView {
     readonly property string nameSpace: "ZS::System::GUI::Qml"
@@ -47,29 +48,25 @@ C1.TableView {
         myTrcAdminObj.traceMethodLeave("EnterLeave", "Component.onDestruction")
         _ZSSys_trcServer.releaseTraceAdminObj(myTrcAdminObj);
     }
-    onObjectNameChanged: {
-        _ZSSys_trcServer.releaseTraceAdminObj(myTrcAdminObj);
-        myTrcAdminObj = _ZSSys_trcServer.getTraceAdminObj(nameSpace, className, objectName)
-        myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "onObjectNameChanged", objectName);
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "onObjectNameChanged");
-    }
-    //onMyTrcAdminObjChanged: {
-    //    myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "onMyTrcAdminObjChanged", myTrcAdminObj.keyInTree);
-    //    myTrcAdminObj.traceMethodLeave("EnterLeave", "onMyTrcAdminObjChanged");
-    //}
+
+    property alias errLog: errLogModel.errLog
+
+    property var fontPixelSize: 0
+    property var columnSpacing: 10
 
     id: root
-
     alternatingRowColors: true
     clip: true
     selectionMode: C1.SelectionMode.ExtendedSelection
 
-    property var fontPixelSize: 0
+    model: ModelErrLog {
+        id: errLogModel
+    }
 
-    //onModelChanged: {
-    //    myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "onModelChanged", model.objectName);
-    //    myTrcAdminObj.traceMethodLeave("EnterLeave", "onModelChanged");
-    //}
+    onErrLogChanged: {
+        myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "onErrLogChanged", errLog ? errLog.objectName : "null");
+        myTrcAdminObj.traceMethodLeave("EnterLeave", "onErrLogChanged");
+    }
 
     Transition {
         id: transitionAdd
@@ -85,12 +82,22 @@ C1.TableView {
         NumberAnimation { properties: "x, y"; duration: 300 }
     }
 
-    /* onCurrentIndexChanged: {
-        myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "onCurrentIndexChanged", model.modelIdx2Str(currentIndex));
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "onCurrentIndexChanged");
-    } */
+    // Need a different name as QML does not allow to override functions.
+    function _resizeColumnsToContents() {
+        myTrcAdminObj.traceMethodEnter("EnterLeave", "_resizeColumnsToContents");
+        // The width of the headers is not taken into account.
+        clmSeverityImage.width = 24 // model.columnWidthByRole(clmSeverityImage.role, fontPixelSize) + 2*columnSpacing
+        clmResult.width = model.columnWidthByRole(clmResult.role, fontPixelSize) + 2*columnSpacing
+        clmDate.width = model.columnWidthByRole(clmDate.role, fontPixelSize) + 2*columnSpacing
+        clmTime.width = model.columnWidthByRole(clmTime.role, fontPixelSize) + 2*columnSpacing
+        clmOccurences.width = model.columnWidthByRole(clmOccurences.role, fontPixelSize) + 2*columnSpacing
+        clmSource.width = model.columnWidthByRole(clmSource.role, fontPixelSize) + 2*columnSpacing
+        clmAddInfo.width = model.columnWidthByRole(clmAddInfo.role, fontPixelSize) + 2*columnSpacing
+        myTrcAdminObj.traceMethodLeave("EnterLeave", "_resizeColumnsToContents");
+    }
 
     C1.TableViewColumn {
+        id: clmSeverityImage
         title: ""
         role: "SeverityImageUrl"
         width: 24

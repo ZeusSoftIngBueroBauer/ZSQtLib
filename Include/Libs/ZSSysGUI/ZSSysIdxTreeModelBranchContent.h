@@ -86,9 +86,18 @@ public: // ctors and dtor
         EMethodTraceDetailLevel i_eTrcDetailLevelNoisyMethods = EMethodTraceDetailLevel::None );
     virtual ~CModelIdxTreeBranchContent();
 signals:
+    /*! Signal which will be emitted if the index tree instance has been changed.
+        @param i_pIdxTree Newly referenced index tree. */
     void idxTreeChanged( QObject* i_pIdxTree );
+    /*! Signal which will be emitted if the root entries key in the index tree has been changed
+        and therefore the content of the model will be complete exchanged.
+        @param i_strKeyInTree Key of the root entry in the index tree. */
     void keyInTreeOfRootEntryChanged(const QString& i_strKeyInTree);
+    /*! Signal which will be emitted if the sort order has been changed.
+        @param i_strSortOrder New applied sort order as string. */
     void sortOrderChanged(const QString& i_strSortOrder);
+    /*! Signal which will be emitted if the sort order has been changed.
+        @param i_sortOrder New applied sort order as enum value. */
     void sortOrderChanged(EIdxTreeSortOrder i_sortOrder);
 public: // overridables
     virtual QString nameSpace() const { return CModelIdxTreeBranchContent::NameSpace(); }
@@ -149,7 +158,12 @@ protected: // class members
     static QHash<QByteArray, int> s_roleValues;
     static QHash<int, QByteArray> s_clm2Name;
 protected: // instance members
+    /*!< Pointer to index tree instance.
+         Please note that entries may be added from within different thread contexts
+         to the index tree. If so before accessing the entries the index tree
+         instance the index tree instance must be locked - and unlocked afterwards. */
     CIdxTree* m_pIdxTree;
+    /*!< Current sort order of the entries. */
     EIdxTreeSortOrder m_sortOrder;
     /*!< Need a copy of the index tree entries as entries may be added, changed
          or removed from different threads. When removing an entry the signal
@@ -169,7 +183,14 @@ protected: // instance members
          But the model is able to find the entry in the internal list and can inform the views
          about the removed entry. */
     QString m_strKeyInTreeOfRootEntry;
+    /*!< The model entry of the branch whose childs should be exposed by the model to views. */
     CModelIdxTreeEntry* m_pModelRootEntry;
+    /*!< The QMLs table view don't take the header labels into account when resizing the
+         columns to fit their contents. The model provides methods to calculate the maximum
+         width of a column depending on the used font. To speed up the calculation the
+         recently calculated widths are stored in this member. Only if an indicated
+         entry is added/removed/modified the widths need to be recalculated.
+         2022-12-23: TODO: The optimization is not yet implemented. */
     QVector<int> m_ariClmWidths;
     #ifdef ZS_TRACE_GUI_MODELS
     /*!< Trace detail level for method tracing.

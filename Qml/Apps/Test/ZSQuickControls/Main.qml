@@ -117,7 +117,7 @@ ApplicationWindow {
         source: "qrc:/ZSSysGUI/ZSSysErrLogDlg.qml"
         onLoaded: {
             item.visible = true
-            item.model = _ZSSysGUI_errLogModel
+            item.errLog = _ZSSys_errLog
         }
     }
 
@@ -144,7 +144,7 @@ ApplicationWindow {
 
                 ErrLogIcon {
                     id: errLogIcon
-                    errLogModel: _ZSSysGUI_errLogModel
+                    errLog: _ZSSys_errLog
                 }
             }
         }

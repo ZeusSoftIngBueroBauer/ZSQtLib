@@ -36,11 +36,30 @@ may result in using the software modules.
 #include <QtCore/qset.h>
 #include <QtGui/qguiapplication.h>
 #include <QtGui/qfontmetrics.h>
+#include <QtQml/qqmlapplicationengine.h>
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 using namespace ZS::System;
 using namespace ZS::System::GUI;
+
+
+/******************************************************************************/
+class CInitModuleSysIdxTreeModel
+/* Please note:
+   The class name should be unique for the whole system. Otherwise the compiler
+   may be confused and using a CInitModule class from other modules to create
+   the static InitModule instance.
+*******************************************************************************/
+{
+public: // ctor
+    CInitModuleSysIdxTreeModel()
+    {
+        qmlRegisterType<CModelIdxTree>("ZSSysGUI", 1, 0, "ModelIdxTree");
+    }
+};
+
+static CInitModuleSysIdxTreeModel s_initModule;
 
 
 /*******************************************************************************

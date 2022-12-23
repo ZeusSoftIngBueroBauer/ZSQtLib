@@ -270,6 +270,8 @@ signals:
         You can't rely on that the error log entry still exists when receiving the signal.
         For this not a reference to the entry but to the ErrResultInfo structure is passed with the signal. */
     void entryRemoved( const ZS::System::SErrResultInfo& i_errResultInfo );
+    /*! Signal which will be emitted if the number of entries has been changed. */
+    void countChanged();
 public: // instance methods
     /*! This virtual method returns the name space of the object's class.
         This method can be reimplemented in derived classes so when invoked for the
@@ -285,8 +287,8 @@ public: // instance methods
 public: // instance methods
     QString getAbsFilePath() const;
 public: // instance methods
-    void lock();
-    void unlock();
+    Q_INVOKABLE void lock();
+    Q_INVOKABLE void unlock();
 public: // instance methods
     void addEntry(
         SErrResultInfo& i_errResultInfo,
@@ -305,6 +307,7 @@ public: // instance methods
     void removeEntry( const SErrResultInfo& i_errResultInfo );
     void removeEntry( int i_iRowIdx, EResultSeverity i_severity = EResultSeverityUndefined );
 public: // instance methods
+    Q_INVOKABLE int getEntryCount( const QString& i_strSeverity ) const;
     int getEntryCount( EResultSeverity i_severity = EResultSeverityUndefined ) const;
     SErrLogEntry* findEntry( const SErrResultInfo& i_errResultInfo, int* o_piRowIdx = nullptr, int* o_piRowIdxSeveritySection = nullptr );
     SErrLogEntry* getEntry( int i_iRowIdx, EResultSeverity i_severity = EResultSeverityUndefined ) const;

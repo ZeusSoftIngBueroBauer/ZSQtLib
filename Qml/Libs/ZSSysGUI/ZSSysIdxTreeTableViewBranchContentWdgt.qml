@@ -33,8 +33,7 @@ ColumnLayout {
     readonly property string nameSpace: "ZS::System::GUI::Qml"
     readonly property string className: "IdxTreeTableViewBranchContentWdgt"
     readonly property string objectName: idxTree ? idxTree.objectName : "IdxTree"
-    property var myTrcAdminObj: _ZSSys_trcServer.getTraceAdminObj(
-        nameSpace, className, objectName)
+    property var myTrcAdminObj: _ZSSys_trcServer.getTraceAdminObj(nameSpace, className, objectName)
 
     Component.onCompleted: {
         myTrcAdminObj.traceMethodEnter("EnterLeave", "Component.onCompleted");
@@ -60,8 +59,7 @@ ColumnLayout {
     spacing: 4
 
     onIdxTreeChanged: {
-        myTrcAdminObj.traceMethodEnter("EnterLeave", "onIdxTreeChanged");
-        myTrcAdminObj.traceMethod("Debug", "onIdxTreeChanged", "IdxTree: " + idxTree ? idxTree.objectName : "null");
+        myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "onIdxTreeChanged", idxTree ? idxTree.objectName : "null");
         myTrcAdminObj.traceMethodLeave("EnterLeave", "onIdxTreeChanged");
     }
 

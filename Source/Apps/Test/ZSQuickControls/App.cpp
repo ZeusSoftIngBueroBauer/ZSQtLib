@@ -81,7 +81,6 @@ CApplication::CApplication(
     QGuiApplication(i_argc,i_argv),
     m_pQmlAppEngine(nullptr),
     m_pMainWindow(nullptr),
-    m_pErrLogModel(nullptr),
     m_pTrcServer(nullptr),
     m_pIdxTreeStyles(nullptr),
     m_pThemeWindowsStyle(nullptr),
@@ -127,26 +126,19 @@ CApplication::CApplication(
 
     m_pTrcAdminObj = m_pTrcServer->GetTraceAdminObj(NameSpace(), ClassName(), objectName());
 
-    m_pErrLogModel = new CModelErrLog(CErrLog::GetInstance());
-
     m_pQmlAppEngine = new QQmlApplicationEngine();
     // Add import path to the applications resource storage.
     m_pQmlAppEngine->addImportPath("qrc:/");
     m_pQmlAppEngine->addImportPath(":/imports");
 
     m_pIdxTreeStyles = new CIdxTree("ZSStyles");
-
     m_pThemeWindowsStyle = CThemeWindowsStyle::CreateInstance(m_pQmlAppEngine, m_pIdxTreeStyles);
 
     QQmlContext* pQmlCtx = m_pQmlAppEngine->rootContext();
 
     pQmlCtx->setContextProperty("_ZSSys_trcServer", m_pTrcServer);
     pQmlCtx->setContextProperty("_ZSSys_errLog", CErrLog::GetInstance());
-    pQmlCtx->setContextProperty("_ZSSysGUI_errLogModel", m_pErrLogModel);
     pQmlCtx->setContextProperty("_ZSQuickControls_idxTreeStyles", m_pIdxTreeStyles);
-
-    qmlRegisterType<CModelIdxTree>("ZSSysGUI", 1, 0, "ModelIdxTree");
-    qmlRegisterType<CModelIdxTreeBranchContent>("ZSSysGUI", 1, 0, "ModelIdxTreeBranchContent");
 
     //qDebug("QmlAppEngine.importPaths BEGIN ---------------------------------------");
     //QStringList strlstImportPathList = m_pQmlAppEngine->importPathList();
@@ -224,15 +216,6 @@ CApplication::~CApplication()
     {
     }
     m_pIdxTreeStyles = nullptr;
-
-    try
-    {
-        delete m_pErrLogModel;
-    }
-    catch(...)
-    {
-    }
-    m_pErrLogModel = nullptr;
 
     CIpcTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
     m_pTrcAdminObj = nullptr;

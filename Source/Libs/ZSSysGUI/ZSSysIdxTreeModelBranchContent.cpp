@@ -37,11 +37,31 @@ may result in using the software modules.
 #include <QtCore/qset.h>
 #include <QtGui/qguiapplication.h>
 #include <QtGui/qfontmetrics.h>
+#include <QtQml/qqmlapplicationengine.h>
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 using namespace ZS::System;
 using namespace ZS::System::GUI;
+
+
+/******************************************************************************/
+class CInitModuleSysIdxTreeModelBranchContent
+/* Please note:
+   The class name should be unique for the whole system. Otherwise the compiler
+   may be confused and using a CInitModule class from other modules to create
+   the static InitModule instance.
+*******************************************************************************/
+{
+public: // ctor
+    CInitModuleSysIdxTreeModelBranchContent()
+    {
+        qmlRegisterType<CModelIdxTreeBranchContent>("ZSSysGUI", 1, 0, "ModelIdxTreeBranchContent");
+    }
+};
+
+static CInitModuleSysIdxTreeModelBranchContent s_initModule;
+
 
 /*******************************************************************************
 class CModelIdxTreeBranchContent : public QAbstractTableModel
@@ -109,7 +129,10 @@ int CModelIdxTreeBranchContent::column2Role(EColumn i_clm)
 }
 
 //------------------------------------------------------------------------------
-QString CModelIdxTreeBranchContent::modelIdx2Str( const QModelIndex& i_modelIdx, int i_iRole, bool i_bIncludeId )
+QString CModelIdxTreeBranchContent::modelIdx2Str(
+    const QModelIndex& i_modelIdx,
+    int i_iRole,
+    bool i_bIncludeId )
 //------------------------------------------------------------------------------
 {
     QString str;
@@ -273,7 +296,8 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! 
+/*! Sets the index tree whose content should be exposed by the model to views.
+
     @param i_pIdxTree
         Pointer to index tree to be used by model.
         The argument is of type QObject so that it can also be invoked by QML.

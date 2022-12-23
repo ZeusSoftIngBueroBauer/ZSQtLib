@@ -226,8 +226,8 @@ public: // overridables
 public: // instance methods
     /*! Returns a pointer to the mutex used to protect the index tree if access by different threads. */
     CMutex* mutex() { return m_pMtx; }
-    void lock();
-    void unlock();
+    Q_INVOKABLE void lock();
+    Q_INVOKABLE void unlock();
 public: // instance methods
     /*! Returns the string used to separate the nodes within the entries path. */
     QString nodeSeparator() const { return m_strNodeSeparator; }

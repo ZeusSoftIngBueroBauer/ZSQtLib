@@ -43,6 +43,19 @@ class CTrcAdminObj;
 namespace GUI
 {
 //******************************************************************************
+/*! Model to provide the err log entries to a table view.
+
+    @note Entries may be added from within different thread contexts to the error
+          log instance. For this the list of entries in the error log instance
+          is protected by a mutex and entries will be "immediately" entered to the
+          err log instance. On adding/removing/changing error log entries the
+          corresponding signals are queued and the slots of the model are called
+          in the context of the GUI main thread.
+          When accessing the error log entries in the error log instance the
+          error log instance must be locked. The model will not keep a pointer
+          to error log entries and access them after the error log instance
+          has been unlocked.
+*/
 class ZSSYSGUIDLL_API CModelErrLog : public QAbstractItemModel
 //******************************************************************************
 {
@@ -75,18 +88,26 @@ public: // type definitions and constants
         FirstDataColumnRole
     };
     Q_ENUM(ERole);
+public: // class methods
+    static EColumn role2Column(int i_iRole);
+    static QString role2Str(int i_iRole);
+    static int byteArr2Role(const QByteArray& i_byteArrRole);
+    static int column2Role(EColumn i_clm);
+    Q_INVOKABLE static QString modelIdx2Str( const QModelIndex& modelIdx, int i_iRole = -1, bool i_bIncludeId = false );
 public: // ctors and dtor
-    CModelErrLog( CErrLog* i_pErrLog );
+    CModelErrLog( QObject* i_pObjParent = nullptr );
+    CModelErrLog( CErrLog* i_pErrLog, QObject* i_pObjParent = nullptr );
     virtual ~CModelErrLog();
 signals:
+    /*! Signal which will be emitted if the referenced err log instance has been changed.
+        @param i_pIdxTree Newly referenced err log instance. */
+    void errLogChanged( QObject* i_pErrLog );
     /*! Signal which will be emitted if the number of entries has been changed. */
     void countChanged();
-public: // auxiliary instance methods
-    QString role2Str(int i_iRole) const;
-    int byteArr2Role(const QByteArray& i_byteArrRole) const;
-    int column2Role(EColumn i_clm) const;
-    EColumn role2Column(int i_iRole) const;
-    QString modelIndex2Str( const QModelIndex& modelIdx ) const;
+public: // instance methods
+    Q_PROPERTY(QObject* errLog READ errLog WRITE setErrLog NOTIFY errLogChanged)
+    void setErrLog( QObject* i_pErrLog );
+    QObject* errLog();
 public: // instance methods
     Q_INVOKABLE int getEntryCount( const QString& i_strSeverity ) const;
 public: // instance methods
@@ -117,28 +138,33 @@ protected: // auxiliary instance methods
 protected: // auxiliary instance methods
     void fillRoleNames();
 protected: // class members
+    static QHash<int, QByteArray> s_roleNames;
+    static QHash<QByteArray, int> s_roleValues;
     static QHash<int, QByteArray> s_clm2Name;
 protected: // instance members
-    // Please note that entries may be added from within different thread contexts
-    // to the error log object and that for this the list of entries of the error
-    // log object is protected by a mutex and entries will be "immediately" entered.
-    // The models entry list is used by the views allocated to the model and will be
-    // accessed by the abstract item model methods. Those methods must be called from
-    // within the GUI's main thread and the list may only be modified from within
-    // the GUI's main thread (the signals of the error log object have to be queued
-    // before calling the slots of the model).
-    CErrLog*                      m_pErrLog;
+    /*!< Pointer to error log instance.
+         Please note that entries may be added from within different thread contexts
+         to the error log instance and before accessing the entries of the error log
+         instance the error log instance must be locked - and unlocked afterwards. */
+    CErrLog* m_pErrLog;
     /*!< Need a copy of the err log model entries as entries may be added, changed
          or removed from different threads. When removing an entry the signal
          entryRemoved is emitted and may be queued. The model cannot access the
          removed entry as it is already deleted. But the model is able to find the
          entry in the internal list and can inform the views about the removed entry. */
     QVector<QList<SErrLogEntry*>> m_ararpEntries;
-    QHash<int, QByteArray>        m_roleNames;
-    QHash<QByteArray, int>        m_roleValues;
-    mutable QVector<int>          m_ariClmWidths;
-    ZS::System::CTrcAdminObj*     m_pTrcAdminObj;
-    ZS::System::CTrcAdminObj*     m_pTrcAdminObjNoisyMethods;
+    /*!< The QMLs table view don't take the header labels into account when resizing the
+         columns to fit their contents. The model provides methods to calculate the maximum
+         width of a column depending on the used font. To speed up the calculation the
+         recently calculated widths are stored in this member. Only if an indicated
+         entry is added/removed/modified the widths need to be recalculated.
+         2022-12-23: TODO: The optimization is not yet implemented. */
+    mutable QVector<int> m_ariClmWidths;
+    /*!< Trace admin object to control trace outputs of the class. */
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
+    /*!< Trace admin object to control trace outputs of the class for very noisy
+         (very often called) methods like "rowCount", "data", "index" etc.. */
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjNoisyMethods;
 
 }; // class CModelErrLog
 

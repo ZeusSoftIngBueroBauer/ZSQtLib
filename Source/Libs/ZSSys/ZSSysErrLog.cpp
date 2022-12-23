@@ -1167,6 +1167,48 @@ public: // instance methods
 //------------------------------------------------------------------------------
 /*! Returns the number of error log entries for the given severity.
 
+    @param i_strSeverity [in]
+        Severity for which the number of log entries should be returned.
+        By passing Undefined or Count for the severity the overall number of
+        entries will be returned.
+
+    @return Number of error log entries for the desired severity.
+
+    @note If you use this method to loop through the error log entries don't forget
+          to lock the instance before and unlocking it again afterwards.
+*/
+int CErrLog::getEntryCount( const QString& i_strSeverity ) const
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLockerInst(m_pMtx);
+
+    int iCount = 0;
+
+    int iSeverity = str2ResultSeverity(i_strSeverity);
+
+    int iSeverityMin = iSeverity;
+    int iSeverityMax = iSeverity;
+
+    if( iSeverity == EResultSeverityUndefined || iSeverity == EResultSeverityCount )
+    {
+        iSeverityMin = 0;
+        iSeverityMax = EResultSeverityCount-1;
+    }
+
+    for( iSeverity = iSeverityMin; iSeverity <= iSeverityMax; iSeverity++ )
+    {
+        if( iSeverity >= 0 && iSeverity < m_ararpEntries.size() )
+        {
+            iCount += m_ararpEntries[iSeverity].count();
+        }
+    }
+
+    return iCount;
+}
+
+//------------------------------------------------------------------------------
+/*! Returns the number of error log entries for the given severity.
+
     @param i_severity [in]
         Severity for which the number of log entries should be returned.
         By passing Undefined or Count for the severity the overall number of
@@ -1180,6 +1222,8 @@ public: // instance methods
 int CErrLog::getEntryCount( EResultSeverity i_severity ) const
 //------------------------------------------------------------------------------
 {
+    QMutexLocker mtxLockerInst(m_pMtx);
+
     int iCount = 0;
 
     int iSeverityMin = i_severity;
@@ -1195,7 +1239,10 @@ int CErrLog::getEntryCount( EResultSeverity i_severity ) const
 
     for( iSeverity = iSeverityMin; iSeverity <= iSeverityMax; iSeverity++ )
     {
-        iCount += m_ararpEntries[iSeverity].count();
+        if( iSeverity >= 0 && iSeverity < m_ararpEntries.size() )
+        {
+            iCount += m_ararpEntries[iSeverity].count();
+        }
     }
 
     return iCount;
@@ -1994,6 +2041,7 @@ SErrLogEntry* CErrLog::addEntry_(
         } // if( m_iAddEntryRecursionCounter == 0 )
 
         emit entryAdded(pEntry->m_errResultInfo);
+        emit countChanged();
 
     } // if( pEntry == nullptr )
 
@@ -2079,6 +2127,8 @@ void CErrLog::removeEntry_( int i_iRowIdx, EResultSeverity i_severity )
 
     if( i_severity == EResultSeverityUndefined || i_severity == EResultSeverityCount )
     {
+        bool bCountChanged = false;
+
         int iFirstRowIdxSeveritySection = 0;
 
         // In this case counting rows starts at highest severity (Critical).
@@ -2093,6 +2143,7 @@ void CErrLog::removeEntry_( int i_iRowIdx, EResultSeverity i_severity )
                 {
                     SErrResultInfo errResultInfo = pEntry->m_errResultInfo;
                     m_ararpEntries[iSeverity].removeAt(iRowIdxSeveritySection);
+                    bCountChanged = true;
 
                     delete pEntry;
                     pEntry = nullptr;
@@ -2108,9 +2159,13 @@ void CErrLog::removeEntry_( int i_iRowIdx, EResultSeverity i_severity )
             }
             iFirstRowIdxSeveritySection += m_ararpEntries[iSeverity].count();
         }
-    } // if( i_severity == EResultSeverityUndefined || i_severity == EResultSeverityCount )
 
-    else // if( i_severity >= 0 && i_severity < EResultSeverityCount )
+        if( bCountChanged )
+        {
+            emit countChanged();
+        }
+    }
+    else
     {
         if( i_iRowIdx >= 0 && i_iRowIdx < m_ararpEntries[i_severity].count() )
         {
@@ -2125,6 +2180,7 @@ void CErrLog::removeEntry_( int i_iRowIdx, EResultSeverity i_severity )
                 pEntry = nullptr;
 
                 emit entryRemoved(errResultInfo);
+                emit countChanged();
 
                 if( !m_bRecallingModel && !m_bClearingModel )
                 {
@@ -2132,8 +2188,7 @@ void CErrLog::removeEntry_( int i_iRowIdx, EResultSeverity i_severity )
                 }
             }
         }
-    } // if( i_severity >= 0 && i_severity < EResultSeverityCount )
-
+    }
 } // removeEntry_
 
 #ifdef WIN32

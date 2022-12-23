@@ -34,7 +34,7 @@ import ZSSysGUI 1.0
 ColumnLayout {
     readonly property string nameSpace: "ZS::System::GUI::Qml"
     readonly property string className: "ErrLogWdgt"
-    readonly property string objectName: model.objectName
+    readonly property string objectName: errLog ? errLog.objectName : "ZSErrLog"
     property var myTrcAdminObj: _ZSSys_trcServer.getTraceAdminObj(nameSpace, className, objectName)
 
     Component.onCompleted: {
@@ -46,26 +46,16 @@ ColumnLayout {
         myTrcAdminObj.traceMethodLeave("EnterLeave", "Component.onDestruction")
         _ZSSys_trcServer.releaseTraceAdminObj(myTrcAdminObj);
     }
-    onObjectNameChanged: {
-        _ZSSys_trcServer.releaseTraceAdminObj(myTrcAdminObj);
-        myTrcAdminObj = _ZSSys_trcServer.getTraceAdminObj(nameSpace, className, objectName)
-        myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "onObjectNameChanged", objectName);
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "onObjectNameChanged");
-    }
-    //onMyTrcAdminObjChanged: {
-    //    myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "onMyTrcAdminObjChanged", myTrcAdminObj.keyInTree);
-    //    myTrcAdminObj.traceMethodLeave("EnterLeave", "onMyTrcAdminObjChanged");
-    //}
+
+    property alias errLog: tableView.errLog
 
     id: root
     spacing: 4
 
-    property alias model: tableView.model
-
-    //onModelChanged: {
-    //    myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "onModelChanged", model.objectName);
-    //    myTrcAdminObj.traceMethodLeave("EnterLeave", "onModelChanged");
-    //}
+    onErrLogChanged: {
+        myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "onErrLogChanged", errLog ? errLog.objectName : "null");
+        myTrcAdminObj.traceMethodLeave("EnterLeave", "onErrLogChanged");
+    }
 
     ToolBar {
         id: toolBarHeadline
@@ -88,7 +78,7 @@ ColumnLayout {
                 id: btnClearTable
                 text: "Clear"
                 onClicked: {
-                    _ZSSysGUI_errLogModel.clear()
+                    tableView.model.clear()
                 }
             }
             ToolButton {
@@ -101,7 +91,7 @@ ColumnLayout {
                             idxList.push(rowIndex)
                         }
                     )
-                    _ZSSysGUI_errLogModel.removeEntries(idxList);
+                    tableView.model.removeEntries(idxList);
                     tableView.selection.clear();
                 }
             }
@@ -109,7 +99,7 @@ ColumnLayout {
                 id: btnResizeRowsAndColumnsToContents
                 icon.source: "qrc:/ZS/TreeView/TreeViewResizeToContents.png"
                 onClicked: {
-                    tableView.resizeColumnsToContents();
+                    tableView._resizeColumnsToContents();
                 }
             }
             Item { // Space before File Name
@@ -127,7 +117,7 @@ ColumnLayout {
             TextField {
                 id: edtFileName
                 Layout.fillWidth: true
-                text: _ZSSys_errLog.absFilePath
+                text: errLog.absFilePath
                 readOnly: true
             }
             Item { // Margin at right side of row layout

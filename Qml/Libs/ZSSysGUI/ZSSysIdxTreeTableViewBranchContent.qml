@@ -32,8 +32,7 @@ C1.TableView {
     readonly property string nameSpace: "ZS::System::GUI::Qml"
     readonly property string className: "IdxTreeTableViewBranchContent"
     readonly property string objectName: model.objectName
-    property var myTrcAdminObj: _ZSSys_trcServer.getTraceAdminObj(
-        nameSpace, className, objectName)
+    property var myTrcAdminObj: _ZSSys_trcServer.getTraceAdminObj(nameSpace, className, objectName)
 
     Component.onCompleted: {
         myTrcAdminObj.traceMethodEnter("EnterLeave", "Component.onCompleted")
@@ -81,15 +80,8 @@ C1.TableView {
     }
 
     onIdxTreeChanged: {
-        myTrcAdminObj.traceMethodEnter("EnterLeave", "onIdxTreeChanged");
-        myTrcAdminObj.traceMethod("Debug", "onIdxTreeChanged", "IdxTree: " + idxTree ? idxTree.objectName : "null");
+        myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "onIdxTreeChanged", idxTree ? idxTree.objectName : "null");
         myTrcAdminObj.traceMethodLeave("EnterLeave", "onIdxTreeChanged");
-    }
-
-    onModelChanged: {
-        myTrcAdminObj.traceMethodEnter("EnterLeave", "onModelChanged");
-        myTrcAdminObj.traceMethod("Debug", "onModelChanged", "Model: " + model.objectName);
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "onModelChanged");
     }
 
     onKeyInTreeOfRootEntryChanged: {

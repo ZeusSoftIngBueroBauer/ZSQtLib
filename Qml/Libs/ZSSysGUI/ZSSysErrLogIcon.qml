@@ -29,21 +29,21 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
 Image {
-    id: root
-
     property var toolTipText: ""
     property var severityMax: ""
     property var errorsCount: 0
     property var errorsCounts: {"Critical": 0, "Error": 0, "Warning": 0, "Info": 0, "Success": 0}
 
-    property var errLogModel: null
+    property var errLog: null
+
+    id: root
 
     Layout.maximumHeight: 24
     Layout.alignment: Qt.AlignRight
     source: severityMax === "" ? "qrc:/ZS/Result/ResultSeveritySuccess.png" : "qrc:/ZS/Result/ResultSeverity" + severityMax + ".png"
 
     function getErrorCount(severity) {
-        return errLogModel.getEntryCount(severity);
+        return errLog.getEntryCount(severity);
     }
 
     function getToolTip() {
@@ -71,6 +71,7 @@ Image {
     function updateErrorsStatus() {
         errorsCount = 0;
         severityMax = "";
+        errLog.lock();
         for( var severity in errorsCounts ) {
             errorsCounts[severity] = getErrorCount(severity);
             if( errorsCounts[severity] > 0 && severityMax === "" ) {
@@ -78,6 +79,7 @@ Image {
             }
             errorsCount += errorsCounts[severity];
         }
+        errLog.unlock();
         toolTipText = getToolTip();
     }
 
@@ -86,8 +88,11 @@ Image {
     }
 
     Connections {
-        target: errLogModel
+        target: errLog
         function onCountChanged() {
+            root.updateErrorsStatus();
+        }
+        function onEntryChanged() {
             root.updateErrorsStatus();
         }
     }
@@ -98,7 +103,7 @@ Image {
         source: "qrc:/ZSSysGUI/ZSSysErrLogDlg.qml"
         onLoaded: {
             item.visible = true
-            item.model = root.errLogModel
+            item.errLog = root.errLog
         }
     }
 
