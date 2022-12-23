@@ -138,6 +138,13 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+CModelIdxTreeBranchContent::CModelIdxTreeBranchContent( QObject* i_pObjParent ) :
+//------------------------------------------------------------------------------
+    CModelIdxTreeBranchContent(nullptr, i_pObjParent)
+{
+} // ctor
+
+//------------------------------------------------------------------------------
 CModelIdxTreeBranchContent::CModelIdxTreeBranchContent(
     CIdxTree* i_pIdxTree,
     QObject*  i_pObjParent,
@@ -145,7 +152,7 @@ CModelIdxTreeBranchContent::CModelIdxTreeBranchContent(
     EMethodTraceDetailLevel i_eTrcDetailLevelNoisyMethods ) :
 //------------------------------------------------------------------------------
     QAbstractTableModel(i_pObjParent),
-    m_pIdxTree(i_pIdxTree),
+    m_pIdxTree(nullptr),
     m_sortOrder(EIdxTreeSortOrder::Config),
     m_mappModelTreeEntries(),
     m_strKeyInTreeOfRootEntry(),
@@ -201,24 +208,10 @@ CModelIdxTreeBranchContent::CModelIdxTreeBranchContent(
         /* strMethodInArgs    */ strMthInArgs );
     #endif
 
-    QObject::connect(
-        m_pIdxTree, &CIdxTree::aboutToBeDestroyed,
-        this, &CModelIdxTreeBranchContent::onIdxTreeAboutToBeDestroyed);
-    QObject::connect(
-        m_pIdxTree, &CIdxTree::treeEntryAdded,
-        this, &CModelIdxTreeBranchContent::onIdxTreeEntryAdded);
-    QObject::connect(
-        m_pIdxTree, &CIdxTree::treeEntryChanged,
-        this, &CModelIdxTreeBranchContent::onIdxTreeEntryChanged);
-    QObject::connect(
-        m_pIdxTree, &CIdxTree::treeEntryAboutToBeRemoved,
-        this, &CModelIdxTreeBranchContent::onIdxTreeEntryAboutToBeRemoved);
-    QObject::connect(
-        m_pIdxTree, &CIdxTree::treeEntryMoved,
-        this, &CModelIdxTreeBranchContent::onIdxTreeEntryMoved);
-    QObject::connect(
-        m_pIdxTree, &CIdxTree::treeEntryKeyInTreeChanged,
-        this, &CModelIdxTreeBranchContent::onIdxTreeEntryKeyInTreeChanged);
+    if( i_pIdxTree != nullptr )
+    {
+        setIdxTree(i_pIdxTree);
+    }
 
 } // ctor
 
@@ -278,6 +271,113 @@ CModelIdxTreeBranchContent::~CModelIdxTreeBranchContent()
 /*==============================================================================
 public: // instance methods
 ==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! 
+    @param i_pIdxTree
+        Pointer to index tree to be used by model.
+        The argument is of type QObject so that it can also be invoked by QML.
+*/
+void CModelIdxTreeBranchContent::setIdxTree( QObject* i_pIdxTree )
+//------------------------------------------------------------------------------
+{
+    #ifdef ZS_TRACE_GUI_MODELS
+    QString strMthInArgs;
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal ) {
+        if( m_pIdxTree == nullptr ) {
+            strMthInArgs = "IdxTree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName());
+        } else {
+            strMthInArgs  = "IdxTreeOrig: " + QString(m_pIdxTree == nullptr ? "nullptr" : m_pIdxTree->objectName());
+            strMthInArgs += ", IdxTreeNew: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName());
+        }
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* pTrcServer         */ CTrcServer::GetInstance(),
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "setIdxTree",
+        /* strMethodInArgs    */ strMthInArgs );
+    #endif
+
+    if( m_pIdxTree != i_pIdxTree )
+    {
+        if( m_pIdxTree != nullptr )
+        {
+            QObject::disconnect(
+                m_pIdxTree, &CIdxTree::aboutToBeDestroyed,
+                this, &CModelIdxTreeBranchContent::onIdxTreeAboutToBeDestroyed);
+            QObject::disconnect(
+                m_pIdxTree, &CIdxTree::treeEntryAdded,
+                this, &CModelIdxTreeBranchContent::onIdxTreeEntryAdded);
+            QObject::disconnect(
+                m_pIdxTree, &CIdxTree::treeEntryChanged,
+                this, &CModelIdxTreeBranchContent::onIdxTreeEntryChanged);
+            QObject::disconnect(
+                m_pIdxTree, &CIdxTree::treeEntryAboutToBeRemoved,
+                this, &CModelIdxTreeBranchContent::onIdxTreeEntryAboutToBeRemoved);
+            QObject::disconnect(
+                m_pIdxTree, &CIdxTree::treeEntryMoved,
+                this, &CModelIdxTreeBranchContent::onIdxTreeEntryMoved);
+            QObject::disconnect(
+                m_pIdxTree, &CIdxTree::treeEntryKeyInTreeChanged,
+                this, &CModelIdxTreeBranchContent::onIdxTreeEntryKeyInTreeChanged);
+        }
+
+        m_pIdxTree = dynamic_cast<CIdxTree*>(i_pIdxTree);
+
+        if( m_pIdxTree == nullptr )
+        {
+            setObjectName("IdxTree");
+        }
+        else
+        {
+            setObjectName(m_pIdxTree->objectName());
+
+            QObject::connect(
+                m_pIdxTree, &CIdxTree::aboutToBeDestroyed,
+                this, &CModelIdxTreeBranchContent::onIdxTreeAboutToBeDestroyed);
+            QObject::connect(
+                m_pIdxTree, &CIdxTree::treeEntryAdded,
+                this, &CModelIdxTreeBranchContent::onIdxTreeEntryAdded);
+            QObject::connect(
+                m_pIdxTree, &CIdxTree::treeEntryChanged,
+                this, &CModelIdxTreeBranchContent::onIdxTreeEntryChanged);
+            QObject::connect(
+                m_pIdxTree, &CIdxTree::treeEntryAboutToBeRemoved,
+                this, &CModelIdxTreeBranchContent::onIdxTreeEntryAboutToBeRemoved);
+            QObject::connect(
+                m_pIdxTree, &CIdxTree::treeEntryMoved,
+                this, &CModelIdxTreeBranchContent::onIdxTreeEntryMoved);
+            QObject::connect(
+                m_pIdxTree, &CIdxTree::treeEntryKeyInTreeChanged,
+                this, &CModelIdxTreeBranchContent::onIdxTreeEntryKeyInTreeChanged);
+        }
+
+        setKeyInTreeOfRootEntry("");
+
+        emit idxTreeChanged(m_pIdxTree);
+
+    } // if( m_pIdxTree != i_pIdxTree )
+} // setIdxTree
+
+//------------------------------------------------------------------------------
+/*! Returns the pointer to the index tree (which might be null).
+
+    @param Pointer to index tree. The type is of QObject so that it can also
+           be accessed by QML.
+
+    @note If you access the index tree and its entries and the index tree is
+          modified by different threads you must lock and unlock the index tree.
+*/
+QObject* CModelIdxTreeBranchContent::idxTree()
+//------------------------------------------------------------------------------
+{
+    return m_pIdxTree;
+}
 
 //------------------------------------------------------------------------------
 void CModelIdxTreeBranchContent::setKeyInTreeOfRootEntry( const QString& i_strKeyInTree )
@@ -383,8 +483,6 @@ void CModelIdxTreeBranchContent::setSortOrder( EIdxTreeSortOrder i_sortOrder )
 
     if( m_sortOrder != i_sortOrder )
     {
-        CIdxTreeLocker idxTreeLocker(m_pIdxTree);
-
         m_sortOrder = i_sortOrder;
 
         if( m_pModelRootEntry != nullptr && m_pModelRootEntry->count() > 1 )
@@ -1084,7 +1182,7 @@ int CModelIdxTreeBranchContent::rowCount( const QModelIndex& i_modelIdxParent ) 
 
     int iRowCount = 0;
 
-    if( m_pModelRootEntry != nullptr )
+    if( m_pIdxTree != nullptr && m_pModelRootEntry != nullptr )
     {
         iRowCount = m_pModelRootEntry->count();
     }

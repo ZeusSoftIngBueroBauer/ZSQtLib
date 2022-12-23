@@ -147,13 +147,15 @@ public: // class methods
 protected: // class methods
     static bool areIconsCreated();
 public: // ctors and dtor
+    CModelIdxTree( QObject* i_pObjParent = nullptr );
     CModelIdxTree(
-        CIdxTree* i_pIdxTree = nullptr,
+        CIdxTree* i_pIdxTree,
         QObject*  i_pObjParent = nullptr,
         EMethodTraceDetailLevel i_eTrcDetailLevel = EMethodTraceDetailLevel::None,
         EMethodTraceDetailLevel i_eTrcDetailLevelNoisyMethods = EMethodTraceDetailLevel::None );
     virtual ~CModelIdxTree();
 signals:
+    void idxTreeChanged( QObject* i_pIdxTree );
     void sortOrderChanged(const QString& i_strSortOrder);
     void sortOrderChanged(EIdxTreeSortOrder i_sortOrder);
     void excludeLeavesChanged(bool i_bExcludeLeaves);
@@ -161,8 +163,9 @@ public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
     virtual QString className() const { return ClassName(); }
 public: // instance methods
-    void setIdxTree( CIdxTree* i_pIdxTree );
-    CIdxTree* idxTree() { return m_pIdxTree; }
+    Q_PROPERTY(QObject* idxTree READ idxTree WRITE setIdxTree NOTIFY idxTreeChanged)
+    void setIdxTree( QObject* i_pIdxTree );
+    QObject* idxTree();
 public: // instance methods
     Q_PROPERTY(QString nodeSeparator READ nodeSeparator CONSTANT)
     QString nodeSeparator() const;

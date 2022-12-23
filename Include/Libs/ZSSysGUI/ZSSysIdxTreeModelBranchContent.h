@@ -78,6 +78,7 @@ public: // class methods
     static int column2Role(EColumn i_clm);
     Q_INVOKABLE static QString modelIdx2Str( const QModelIndex& i_modelIdx, int i_iRole = -1, bool i_bIncludeId = false );
 public: // ctors and dtor
+    CModelIdxTreeBranchContent( QObject* i_pObjParent = nullptr );
     CModelIdxTreeBranchContent(
         CIdxTree* i_pIdxTree,
         QObject*  i_pObjParent = nullptr,
@@ -85,6 +86,7 @@ public: // ctors and dtor
         EMethodTraceDetailLevel i_eTrcDetailLevelNoisyMethods = EMethodTraceDetailLevel::None );
     virtual ~CModelIdxTreeBranchContent();
 signals:
+    void idxTreeChanged( QObject* i_pIdxTree );
     void keyInTreeOfRootEntryChanged(const QString& i_strKeyInTree);
     void sortOrderChanged(const QString& i_strSortOrder);
     void sortOrderChanged(EIdxTreeSortOrder i_sortOrder);
@@ -92,7 +94,9 @@ public: // overridables
     virtual QString nameSpace() const { return CModelIdxTreeBranchContent::NameSpace(); }
     virtual QString className() const { return CModelIdxTreeBranchContent::ClassName(); }
 public: // instance methods
-    //CIdxTree* getIdxTree() { return m_pIdxTree; }
+    Q_PROPERTY(QObject* idxTree READ idxTree WRITE setIdxTree NOTIFY idxTreeChanged)
+    void setIdxTree( QObject* i_pIdxTree );
+    QObject* idxTree();
 public: // instance methods
     Q_PROPERTY(QString keyInTreeOfRootEntry READ getKeyInTreeOfRootEntry WRITE setKeyInTreeOfRootEntry NOTIFY keyInTreeOfRootEntryChanged)
     void setKeyInTreeOfRootEntry( const QString& i_strKeyInTree );

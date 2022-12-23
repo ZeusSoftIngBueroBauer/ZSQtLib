@@ -84,8 +84,6 @@ CApplication::CApplication(
     m_pErrLogModel(nullptr),
     m_pTrcServer(nullptr),
     m_pIdxTreeStyles(nullptr),
-    m_pModelIdxTreeStyles(nullptr),
-    m_pModelIdxTreeStylesBranchContent(nullptr),
     m_pThemeWindowsStyle(nullptr),
     m_pTrcAdminObj(nullptr)
 {
@@ -137,10 +135,6 @@ CApplication::CApplication(
     m_pQmlAppEngine->addImportPath(":/imports");
 
     m_pIdxTreeStyles = new CIdxTree("ZSStyles");
-    m_pModelIdxTreeStyles = new CModelIdxTree(m_pIdxTreeStyles);
-    m_pModelIdxTreeStyles->setSortOrder(EIdxTreeSortOrder::Ascending);
-    m_pModelIdxTreeStylesBranchContent = new CModelIdxTreeBranchContent(m_pIdxTreeStyles);
-    m_pModelIdxTreeStylesBranchContent->setSortOrder(EIdxTreeSortOrder::Ascending);
 
     m_pThemeWindowsStyle = CThemeWindowsStyle::CreateInstance(m_pQmlAppEngine, m_pIdxTreeStyles);
 
@@ -150,8 +144,9 @@ CApplication::CApplication(
     pQmlCtx->setContextProperty("_ZSSys_errLog", CErrLog::GetInstance());
     pQmlCtx->setContextProperty("_ZSSysGUI_errLogModel", m_pErrLogModel);
     pQmlCtx->setContextProperty("_ZSQuickControls_idxTreeStyles", m_pIdxTreeStyles);
-    pQmlCtx->setContextProperty("_ZSQuickControls_modelIdxTreeStyles", m_pModelIdxTreeStyles);
-    pQmlCtx->setContextProperty("_ZSQuickControls_modelIdxTreeStylesBranchContent", m_pModelIdxTreeStylesBranchContent);
+
+    qmlRegisterType<CModelIdxTree>("ZSSysGUI", 1, 0, "ModelIdxTree");
+    qmlRegisterType<CModelIdxTreeBranchContent>("ZSSysGUI", 1, 0, "ModelIdxTreeBranchContent");
 
     //qDebug("QmlAppEngine.importPaths BEGIN ---------------------------------------");
     //QStringList strlstImportPathList = m_pQmlAppEngine->importPathList();
@@ -220,24 +215,6 @@ CApplication::~CApplication()
     {
     }
     m_pQmlAppEngine = nullptr;
-
-    try
-    {
-        delete m_pModelIdxTreeStylesBranchContent;
-    }
-    catch(...)
-    {
-    }
-    m_pModelIdxTreeStylesBranchContent = nullptr;
-
-    try
-    {
-        delete m_pModelIdxTreeStyles;
-    }
-    catch(...)
-    {
-    }
-    m_pModelIdxTreeStyles = nullptr;
 
     try
     {

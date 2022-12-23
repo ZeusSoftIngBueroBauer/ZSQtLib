@@ -26,6 +26,7 @@ may result in using the software modules.
 
 import QtQuick 2.15
 import QtQuick.Controls 1.4 as C1   // TableView derived from BasicTableView
+import ZSSysGUI 1.0
 
 C1.TableView {
     readonly property string nameSpace: "ZS::System::GUI::Qml"
@@ -49,12 +50,7 @@ C1.TableView {
         _ZSSys_trcServer.releaseTraceAdminObj(myTrcAdminObj);
     }
 
-    id: root
-
-    alternatingRowColors: true
-    clip: true
-    selectionMode: C1.SelectionMode.ExtendedSelection
-
+    property alias idxTree: idxTreeBranchContentModel.idxTree
     property string keyInTreeOfRootEntry: ""
 
     property alias columnNameVisible: clmName.visible
@@ -66,6 +62,41 @@ C1.TableView {
 
     property var fontPixelSize: 0
     property var columnSpacing: 10
+
+    id: root
+    alternatingRowColors: true
+    clip: true
+    selectionMode: C1.SelectionMode.ExtendedSelection
+
+    model: ModelIdxTreeBranchContent {
+        id: idxTreeBranchContentModel
+        onSortOrderChanged: {
+            root.myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "idxTreeModel.onSortOrderChanged", sortOrder);
+            root.myTrcAdminObj.traceMethodLeave("EnterLeave", "idxTreeModel.onSortOrderChanged");
+        }
+        onKeyInTreeOfRootEntryChanged: {
+            root.myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "idxTreeModel.onKeyInTreeOfRootEntryChanged", keyInTreeOfRootEntry);
+            root.myTrcAdminObj.traceMethodLeave("EnterLeave", "idxTreeModel.onKeyInTreeOfRootEntryChanged");
+        }
+    }
+
+    onIdxTreeChanged: {
+        myTrcAdminObj.traceMethodEnter("EnterLeave", "onIdxTreeChanged");
+        myTrcAdminObj.traceMethod("Debug", "onIdxTreeChanged", "IdxTree: " + idxTree ? idxTree.objectName : "null");
+        myTrcAdminObj.traceMethodLeave("EnterLeave", "onIdxTreeChanged");
+    }
+
+    onModelChanged: {
+        myTrcAdminObj.traceMethodEnter("EnterLeave", "onModelChanged");
+        myTrcAdminObj.traceMethod("Debug", "onModelChanged", "Model: " + model.objectName);
+        myTrcAdminObj.traceMethodLeave("EnterLeave", "onModelChanged");
+    }
+
+    onKeyInTreeOfRootEntryChanged: {
+        myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "onKeyInTreeOfRootEntryChanged", keyInTreeOfRootEntry);
+        model.keyInTreeOfRootEntry = keyInTreeOfRootEntry
+        myTrcAdminObj.traceMethodLeave("EnterLeave", "onKeyInTreeOfRootEntryChanged");
+    }
 
     Transition {
         id: transitionAdd
@@ -79,18 +110,6 @@ C1.TableView {
         // Ensure row is scaled to 1 and got opacity of 1 if immediately displaced after added.
         PropertyAction { properties: "opacity, scale"; value: 1 }
         NumberAnimation { properties: "x, y"; duration: 300 }
-    }
-
-    onModelChanged: {
-        myTrcAdminObj.traceMethodEnter("EnterLeave", "onModelChanged");
-        myTrcAdminObj.traceMethod("Debug", "onModelChanged", "Model: " + model.objectName);
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "onModelChanged");
-    }
-
-    onKeyInTreeOfRootEntryChanged: {
-        myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "onKeyInTreeOfRootEntryChanged", keyInTreeOfRootEntry);
-        model.keyInTreeOfRootEntry = keyInTreeOfRootEntry
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "onKeyInTreeOfRootEntryChanged");
     }
 
     // Need a different name as QML does not allow to override functions.

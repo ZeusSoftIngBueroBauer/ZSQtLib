@@ -33,15 +33,13 @@ import ZSSysGUI 1.0
 ColumnLayout {
     readonly property string nameSpace: "ZS::System::GUI::Qml"
     readonly property string className: "IdxTreeWdgt"
-    readonly property string objectName: treeViewModel.objectName
+    readonly property string objectName: idxTree ? idxTree.objectName : "IdxTree"
     property var myTrcAdminObj: _ZSSys_trcServer.getTraceAdminObj(
         nameSpace, className, objectName)
 
     Component.onCompleted: {
         myTrcAdminObj.traceMethodEnter("EnterLeave", "Component.onCompleted");
-        treeViewModel.sortOrder = "Ascending";
-        treeViewModel.excludeLeaves = false;
-        tableViewBranchContentModel.sortOrder = "Ascending";
+        treeViewWdgt.treeView.model.excludeLeaves = false;
         myTrcAdminObj.traceMethodLeave("EnterLeave", "Component.onCompleted");
     }
     Component.onDestruction: {
@@ -50,12 +48,17 @@ ColumnLayout {
         _ZSSys_trcServer.releaseTraceAdminObj(myTrcAdminObj);
     }
 
-    property alias treeViewModel: treeViewWdgt.treeViewModel
-    property alias tableViewBranchContentModel: tableViewBranchContentWdgt.tableViewModel
+    property var idxTree: null
     property string viewMode: "NavPanelOnly" // | "NavPanelAndBranchContent"
 
     id: root
     spacing: 4
+
+    onIdxTreeChanged: {
+        myTrcAdminObj.traceMethodEnter("EnterLeave", "onIdxTreeChanged");
+        myTrcAdminObj.traceMethod("Debug", "onIdxTreeChanged", "IdxTree: " + idxTree ? idxTree.objectName : "null");
+        myTrcAdminObj.traceMethodLeave("EnterLeave", "onIdxTreeChanged");
+    }
 
     ToolBar {
         id: toolBarHeadline
@@ -78,15 +81,15 @@ ColumnLayout {
                 id: btnViewMode
                 icon.source: "qrc:/ZS/TreeView/TreeViewViewMode" + root.viewMode + ".png"
                 onClicked: {
-                    treeViewWdgt.treeViewModel.excludeLeaves = !treeViewWdgt.treeViewModel.excludeLeaves
-                    root.viewMode = treeViewWdgt.treeViewModel.excludeLeaves ? "NavPanelAndBranchContent" : "NavPanelOnly"
+                    treeViewWdgt.treeView.model.excludeLeaves = !treeViewWdgt.treeView.model.excludeLeaves
+                    root.viewMode = treeViewWdgt.treeView.model.excludeLeaves ? "NavPanelAndBranchContent" : "NavPanelOnly"
                 }
             }
             TextField {
                 id: edtBranchPath
                 Layout.fillWidth: true
                 Layout.maximumHeight: btnViewMode.height
-                text: treeViewWdgt.treeViewModel.getTreeEntryAbsoluteNodePath(treeViewWdgt.currentIndex)
+                text: treeViewWdgt.treeView.model.getTreeEntryAbsoluteNodePath(treeViewWdgt.treeView.currentIndex)
                 readOnly: true
             }
             Item { // Margin at right side of row layout
@@ -108,6 +111,7 @@ ColumnLayout {
 
         IdxTreeViewWdgt {
             id: treeViewWdgt
+            idxTree: root.idxTree
             Layout.minimumWidth: 50
             Layout.fillWidth: root.viewMode ===  "NavPanelOnly"
             columnInternalIdVisible: root.viewMode ===  "NavPanelOnly"
@@ -116,15 +120,16 @@ ColumnLayout {
             columnKeyInTreeVisible: root.viewMode ===  "NavPanelOnly"
             columnKeyInParentBranchVisible: root.viewMode ===  "NavPanelOnly"
             onCurrentIndexChanged: {
-                root.myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "treeViewWdgt.onCurrentIndexChanged", treeViewModel.modelIdx2Str(currentIndex));
+                root.myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "treeViewWdgt.onCurrentIndexChanged", treeView.model.modelIdx2Str(currentIndex));
                 root.myTrcAdminObj.traceMethodLeave("EnterLeave", "treeViewWdgt.onCurrentIndexChanged");
             }
         }
         IdxTreeTableViewBranchContentWdgt {
             id: tableViewBranchContentWdgt
+            idxTree: root.idxTree
             Layout.fillWidth: true
             visible: root.viewMode === "NavPanelAndBranchContent"
-            keyInTreeOfRootEntry: treeViewWdgt.currentIndex ? treeViewWdgt.treeViewModel.getTreeEntryKeyInTree(treeViewWdgt.currentIndex) : ""
+            keyInTreeOfRootEntry: treeViewWdgt.currentIndex ? treeViewWdgt.treeView.model.getTreeEntryKeyInTree(treeViewWdgt.currentIndex) : ""
         }
     }
 }

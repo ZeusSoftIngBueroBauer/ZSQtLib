@@ -556,13 +556,17 @@ int CModelIdxTreeEntry::add( CModelIdxTreeEntry* i_pModelTreeEntry )
     }
     else
     {
+        CIdxTreeLocker idxTreeLocker(m_pIdxTree);
+
+        CIdxTreeEntry* pTreeEntry = i_pModelTreeEntry->getIdxTreeEntry();
+
         if( !m_bExcludeLeaves )
         {
-            idxInParentBranch = i_pModelTreeEntry->indexInParentBranch();
+            idxInParentBranch = pTreeEntry->indexInParentBranch();
         }
         else if( i_pModelTreeEntry->entryType() != EIdxTreeEntryType::Leave )
         {
-            idxInParentBranch = i_pModelTreeEntry->indexInParentBranchsChildListWithSameEntryTypes();
+            idxInParentBranch = pTreeEntry->indexInParentBranchsChildListWithSameEntryTypes();
         }
 
         if( idxInParentBranch < 0 || idxInParentBranch > m_arpTreeEntries.size() )

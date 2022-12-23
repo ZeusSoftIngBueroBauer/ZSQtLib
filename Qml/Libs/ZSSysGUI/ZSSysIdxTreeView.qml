@@ -28,6 +28,7 @@ import QtQml.Models 2.15
 import QtQuick 2.15
 import QtQuick.Controls 1.4 as C1   // TreeView derived from BasicTableView
 import QtQuick.Layouts 1.15
+import ZSSysGUI 1.0
 
 C1.TreeView {
     readonly property string nameSpace: "ZS::System::GUI::Qml"
@@ -51,9 +52,7 @@ C1.TreeView {
         _ZSSys_trcServer.releaseTraceAdminObj(myTrcAdminObj);
     }
 
-    id: root
-    alternatingRowColors: true
-    clip: true
+    property alias idxTree: idxTreeModel.idxTree
 
     property alias columnNameVisible: clmName.visible
     property alias columnInternalIdVisible: clmInternalId.visible
@@ -64,6 +63,35 @@ C1.TreeView {
 
     property var fontPixelSize: 0
     property var columnSpacing: 10
+
+    id: root
+    alternatingRowColors: true
+    clip: true
+
+    model: ModelIdxTree {
+        id: idxTreeModel
+        onSortOrderChanged: {
+            root.myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "idxTreeModel.onSortOrderChanged", sortOrder);
+            root.myTrcAdminObj.traceMethodLeave("EnterLeave", "idxTreeModel.onSortOrderChanged");
+        }
+    }
+
+    onIdxTreeChanged: {
+        myTrcAdminObj.traceMethodEnter("EnterLeave", "onIdxTreeChanged");
+        myTrcAdminObj.traceMethod("Debug", "onIdxTreeChanged", "IdxTree: " + idxTree ? idxTree.objectName : "null");
+        myTrcAdminObj.traceMethodLeave("EnterLeave", "onIdxTreeChanged");
+    }
+
+    onModelChanged: {
+        myTrcAdminObj.traceMethodEnter("EnterLeave", "onModelChanged");
+        myTrcAdminObj.traceMethod("Debug", "onModelChanged", "Model: " + model.objectName);
+        myTrcAdminObj.traceMethodLeave("EnterLeave", "onModelChanged");
+    }
+
+    onCurrentIndexChanged: {
+        myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "onCurrentIndexChanged", model.modelIdx2Str(currentIndex));
+        myTrcAdminObj.traceMethodLeave("EnterLeave", "onCurrentIndexChanged");
+    }
 
     Transition {
         id: transitionAdd
@@ -77,17 +105,6 @@ C1.TreeView {
         // Ensure row is scaled to 1 and got opacity of 1 if immediately displaced after added.
         PropertyAction { properties: "opacity, scale"; value: 1 }
         NumberAnimation { properties: "x, y"; duration: 300 }
-    }
-
-    onModelChanged: {
-        myTrcAdminObj.traceMethodEnter("EnterLeave", "onModelChanged");
-        myTrcAdminObj.traceMethod("Debug", "onModelChanged", "Model: " + model.objectName);
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "onModelChanged");
-    }
-
-    onCurrentIndexChanged: {
-        myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "onCurrentIndexChanged", model.modelIdx2Str(currentIndex));
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "onCurrentIndexChanged");
     }
 
     // Need a different name as QML does not allow to override functions.

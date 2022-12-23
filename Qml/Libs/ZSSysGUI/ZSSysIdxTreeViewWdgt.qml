@@ -32,14 +32,14 @@ import ZSSysGUI 1.0
 ColumnLayout {
     readonly property string nameSpace: "ZS::System::GUI::Qml"
     readonly property string className: "IdxTreeViewWdgt"
-    readonly property string objectName: treeViewModel.objectName
+    readonly property string objectName: idxTree ? idxTree.objectName : "IdxTree"
     property var myTrcAdminObj: _ZSSys_trcServer.getTraceAdminObj(
         nameSpace, className, objectName)
 
     Component.onCompleted: {
         myTrcAdminObj.traceMethodEnter("EnterLeave", "Component.onCompleted");
-        treeViewModel.sortOrder = "Ascending";
-        treeViewModel.excludeLeaves = false;
+        //treeView.model.sortOrder = "Ascending";
+        treeView.model.excludeLeaves = false;
         myTrcAdminObj.traceMethodLeave("EnterLeave", "Component.onCompleted");
     }
     Component.onDestruction: {
@@ -48,7 +48,8 @@ ColumnLayout {
         _ZSSys_trcServer.releaseTraceAdminObj(myTrcAdminObj);
     }
 
-    property alias treeViewModel: treeView.model
+    property alias idxTree: treeView.idxTree
+    property alias treeView: treeView
     property alias currentIndex: treeView.currentIndex
 
     property alias columnInternalIdVisible: treeView.columnInternalIdVisible
@@ -59,6 +60,12 @@ ColumnLayout {
 
     id: root
     spacing: 4
+
+    onIdxTreeChanged: {
+        myTrcAdminObj.traceMethodEnter("EnterLeave", "onIdxTreeChanged");
+        myTrcAdminObj.traceMethod("Debug", "onIdxTreeChanged", "IdxTree: " + idxTree ? idxTree.objectName : "null");
+        myTrcAdminObj.traceMethodLeave("EnterLeave", "onIdxTreeChanged");
+    }
 
     ToolBar {
         id: toolBarHeadline
@@ -104,7 +111,15 @@ ColumnLayout {
                 id: btnSortOrder
                 icon.source: "qrc:/ZS/TreeView/TreeViewSortOrder" + treeView.model.sortOrder + ".png"
                 onClicked: {
-                    treeView.model.sortOrder = treeView.model.sortOrder === "Descending" ? "Ascending" : "Descending"
+                    if(treeView.model.sortOrder === "Config") {
+                        treeView.model.sortOrder = "Ascending";
+                    }
+                    else if(treeView.model.sortOrder === "Ascending") {
+                        treeView.model.sortOrder = "Descending";
+                    }
+                    else {
+                        treeView.model.sortOrder = "Config";
+                    }
                 }
             }
             Item { // Margin at right side of row layout

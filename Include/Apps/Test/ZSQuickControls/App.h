@@ -42,8 +42,6 @@ class CTrcAdminObj;
 namespace GUI
 {
 class CModelErrLog;
-class CModelIdxTree;
-class CModelIdxTreeBranchContent;
 }
 }
 namespace QuickControls
@@ -90,9 +88,6 @@ protected: // instance members
     ZS::System::CIdxTree* m_pIdxTreeStyles;
     /*!< Windows Style Controls. */
     ZS::QuickControls::CThemeWindowsStyle* m_pThemeWindowsStyle;
-    /*!< The index tree model provides the data from the index tree to the viewers. */
-    ZS::System::GUI::CModelIdxTree* m_pModelIdxTreeStyles;
-    ZS::System::GUI::CModelIdxTreeBranchContent* m_pModelIdxTreeStylesBranchContent;
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CApplication

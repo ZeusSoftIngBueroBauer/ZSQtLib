@@ -32,7 +32,7 @@ import ZSSysGUI 1.0
 ColumnLayout {
     readonly property string nameSpace: "ZS::System::GUI::Qml"
     readonly property string className: "IdxTreeTableViewBranchContentWdgt"
-    readonly property string objectName: treeViewModel.objectName
+    readonly property string objectName: idxTree ? idxTree.objectName : "IdxTree"
     property var myTrcAdminObj: _ZSSys_trcServer.getTraceAdminObj(
         nameSpace, className, objectName)
 
@@ -46,7 +46,8 @@ ColumnLayout {
         _ZSSys_trcServer.releaseTraceAdminObj(myTrcAdminObj);
     }
 
-    property alias tableViewModel: tableView.model
+    property alias idxTree: tableView.idxTree
+    property alias tableView: tableView
     property alias keyInTreeOfRootEntry: tableView.keyInTreeOfRootEntry
 
     property alias columnInternalIdVisible: tableView.columnInternalIdVisible
@@ -57,6 +58,17 @@ ColumnLayout {
 
     id: root
     spacing: 4
+
+    onIdxTreeChanged: {
+        myTrcAdminObj.traceMethodEnter("EnterLeave", "onIdxTreeChanged");
+        myTrcAdminObj.traceMethod("Debug", "onIdxTreeChanged", "IdxTree: " + idxTree ? idxTree.objectName : "null");
+        myTrcAdminObj.traceMethodLeave("EnterLeave", "onIdxTreeChanged");
+    }
+
+    onKeyInTreeOfRootEntryChanged: {
+        myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "onKeyInTreeOfRootEntryChanged", keyInTreeOfRootEntry);
+        myTrcAdminObj.traceMethodLeave("EnterLeave", "onKeyInTreeOfRootEntryChanged");
+    }
 
     ToolBar {
         id: toolBarHeadline
@@ -86,7 +98,15 @@ ColumnLayout {
                 id: btnSortOrder
                 icon.source: "qrc:/ZS/TreeView/TreeViewSortOrder" + tableView.model.sortOrder + ".png"
                 onClicked: {
-                    tableView.model.sortOrder = tableView.model.sortOrder === "Descending" ? "Ascending" : "Descending"
+                    if(tableView.model.sortOrder === "Config") {
+                        tableView.model.sortOrder = "Ascending";
+                    }
+                    else if(tableView.model.sortOrder === "Ascending") {
+                        tableView.model.sortOrder = "Descending";
+                    }
+                    else {
+                        tableView.model.sortOrder = "Config";
+                    }
                 }
             }
             Item { // Margin at right side of row layout

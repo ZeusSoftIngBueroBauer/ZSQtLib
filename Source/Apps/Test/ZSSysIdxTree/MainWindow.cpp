@@ -234,8 +234,8 @@ CMainWindow::CMainWindow(
     m_pDockWdgtIdxTree->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
 
     // The index tree will be assigned to the model during runtime.
-    m_pModelIdxTree = new CModelIdxTree(nullptr, nullptr);
-    m_pModelIdxTreeBranchContent = new CModelIdxTreeBranchContent(nullptr);
+    m_pModelIdxTree = new CModelIdxTree();
+    m_pModelIdxTreeBranchContent = new CModelIdxTreeBranchContent();
 
     m_pWdgtIdxTree = new CWdgtIdxTree(m_pModelIdxTree, m_pModelIdxTreeBranchContent);
     m_pDockWdgtIdxTree->setWidget(m_pWdgtIdxTree);
