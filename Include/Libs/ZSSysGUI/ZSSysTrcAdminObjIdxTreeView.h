@@ -44,6 +44,9 @@ namespace ZS
 {
 namespace System
 {
+class CIdxTreeTrcAdminObjs;
+class CTrcAdminObj;
+
 namespace GUI
 {
 class CModelIdxTreeTrcAdminObjs;
@@ -57,10 +60,7 @@ public: // class methods
     static QString NameSpace() { return "ZS::System::GUI"; }
     static QString ClassName() { return "CDelegateIdxTreeTrcAdminObjs"; }
 public: // ctors and dtor
-    CDelegateIdxTreeTrcAdminObjs(
-        QObject* i_pObjParent = nullptr,
-        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevel = ZS::System::EMethodTraceDetailLevel::None,
-        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevelNoisyMethods = ZS::System::EMethodTraceDetailLevel::None );
+    CDelegateIdxTreeTrcAdminObjs(QObject* i_pObjParent = nullptr);
     virtual ~CDelegateIdxTreeTrcAdminObjs();
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
@@ -88,8 +88,8 @@ private: // assignment operator not implemented
     CDelegateIdxTreeTrcAdminObjs& operator = ( const CDelegateIdxTreeTrcAdminObjs& );
 protected: // instance members
     mutable QRect m_rectChkBoxTraceEnabled;
-    ZS::System::EMethodTraceDetailLevel m_eTrcDetailLevel;
-    ZS::System::EMethodTraceDetailLevel m_eTrcDetailLevelNoisyMethods;
+    /*!< Trace admin object to control trace outputs of the class. */
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CDelegateIdxTreeTrcAdminObjs
 
@@ -103,10 +103,8 @@ public: // class methods
     static QString ClassName() { return "CTreeViewIdxTreeTrcAdminObjs"; }
 public: // ctors and dtor
     CTreeViewIdxTreeTrcAdminObjs(
-        CModelIdxTreeTrcAdminObjs* i_pModel,
-        QWidget* i_pWdgtParent = nullptr,
-        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevel = ZS::System::EMethodTraceDetailLevel::None,
-        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevelNoisyMethods = ZS::System::EMethodTraceDetailLevel::None );
+        CIdxTreeTrcAdminObjs* i_pIdxTree,
+        QWidget* i_pWdgtParent = nullptr );
     virtual ~CTreeViewIdxTreeTrcAdminObjs();
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
@@ -136,7 +134,9 @@ protected slots:
     void onActionNameSpaceSetAdminObjsRuntimeInfoDetailLevelTriggered( bool i_bChecked );
     void onActionNameSpaceSetAdminObjsTraceDataFilterTriggered( bool i_bChecked );
 protected: // instance members
+    CIdxTreeTrcAdminObjs*         m_pIdxTree;
     CDelegateIdxTreeTrcAdminObjs* m_pDelegate;
+    CModelIdxTreeTrcAdminObjs*    m_pModel;
     QMenu*      m_pMenuNameSpaceContext;
     QAction*    m_pActionNameSpaceTitle;
     QAction*    m_pActionNameSpaceExpand;
@@ -148,8 +148,8 @@ protected: // instance members
     QAction*    m_pActionNameSpaceSetAdminObjsTraceDataFilter;
     QModelIndex m_modelIdxSelectedOnMousePressEvent;
     QModelIndex m_modelIdxSelectedOnMouseReleaseEvent;
-    ZS::System::EMethodTraceDetailLevel m_eTrcDetailLevel;
-    ZS::System::EMethodTraceDetailLevel m_eTrcDetailLevelNoisyMethods;
+    /*!< Trace admin object to control trace outputs of the class. */
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CTreeViewIdxTreeTrcAdminObjs
 

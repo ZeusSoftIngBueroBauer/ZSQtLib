@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSSysGUI_TrcAdminObjIdxTreeWdgt_h
-#define ZSSysGUI_TrcAdminObjIdxTreeWdgt_h
+#ifndef ZSSysGUI_IdxTreeViewWdgt_h
+#define ZSSysGUI_IdxTreeViewWdgt_h
 
 #include <QtCore/qglobal.h>
 
@@ -36,7 +36,7 @@ may result in using the software modules.
 #endif
 
 #include "ZSSysGUI/ZSSysGUIDllMain.h"
-#include "ZSSys/ZSSysAux.h"
+#include "ZSSys/ZSSysCommon.h"
 
 class QModelIndex;
 class QPushButton;
@@ -47,49 +47,60 @@ namespace ZS
 {
 namespace System
 {
-class CIdxTreeTrcAdminObjs;
+class CIdxTree;
 class CTrcAdminObj;
 
 namespace GUI
 {
-class CModelIdxTreeTrcAdminObjs;
-class CTreeViewIdxTreeTrcAdminObjs;
+class CTreeViewIdxTree;
 
 //******************************************************************************
-class ZSSYSGUIDLL_API CWdgtIdxTreeTrcAdminObjs : public QWidget
+class ZSSYSGUIDLL_API CWdgtIdxTreeView : public QWidget
 //******************************************************************************
 {
     Q_OBJECT
 public: // class methods
     static QString NameSpace() { return "ZS::System::GUI"; }
-    static QString ClassName() { return "CWdgtIdxTreeTrcAdminObjs"; }
+    static QString ClassName() { return "CWdgtIdxTreeView"; }
 public: // ctors and dtor
-    CWdgtIdxTreeTrcAdminObjs(
-        CIdxTreeTrcAdminObjs* i_pIdxTree,
-        QWidget* i_pWdgtParent = nullptr );
-    virtual ~CWdgtIdxTreeTrcAdminObjs();
-public: // overridables
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
-protected slots:
-    void onTreeViewExpanded( const QModelIndex& i_modelIdx );
+    CWdgtIdxTreeView(
+        CIdxTree* i_pIdxTree,
+        QWidget* i_pWdgtParent = nullptr,
+        Qt::WindowFlags i_wflags = Qt::WindowFlags() );
+    virtual ~CWdgtIdxTreeView();
+signals:
+    void currentRowChanged( const QModelIndex& i_modelIdxCurr, const QModelIndex& i_modelIdxPrev );
+public: // instance methods
+    CTreeViewIdxTree* treeView() { return m_pTreeView; }
+public: // instance methods
+    void setIdxTree(CIdxTree* i_pIdxTree);
+    CIdxTree* idxTree() { return m_pIdxTree; }
+public: // instance methods
+    void setExcludeLeaves(bool i_bExcludeLeaves);
+    bool areLeavesExcluded() const;
 protected slots:
     void onBtnTreeViewResizeRowsAndColumnsToContentsClicked( bool i_bChecked );
     void onBtnTreeViewExpandAllClicked( bool i_bChecked );
     void onBtnTreeViewCollapseAllClicked( bool i_bChecked );
+    void onBtnSortOrderClicked( bool i_bChecked );
+protected slots:
+    void onTreeViewCurrentRowChanged( const QModelIndex& i_modelIdxCurr, const QModelIndex& i_modelIdxPrev );
+private: // auxiliary methods (tracing)
+    void emit_currentRowChanged( const QModelIndex& i_modelIdxCurr, const QModelIndex& i_modelIdxPrev );
 protected: // instance members
-    CIdxTreeTrcAdminObjs* m_pIdxTree;
+    CIdxTree* m_pIdxTree;
     QSize m_szBtns;
     QVBoxLayout* m_pLytMain;
     QHBoxLayout* m_pLytHeadLine;
     QPushButton* m_pBtnTreeViewResizeRowsAndColumnsToContents;
     QPushButton* m_pBtnTreeViewExpandAll;
     QPushButton* m_pBtnTreeViewCollapseAll;
-    CTreeViewIdxTreeTrcAdminObjs* m_pTreeView;
+    QPushButton* m_pBtnSortOrder;
+    CTreeViewIdxTree* m_pTreeView;
     /*!< Trace admin object to control trace outputs of the class. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
-}; // class CWdgtIdxTreeTrcAdminObjs
+}; // class CWdgtIdxTreeView
 
 } // namespace GUI
 
@@ -97,4 +108,4 @@ protected: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZSSysGUI_TrcAdminObjIdxTreeWdgt_h
+#endif // #ifndef ZSSysGUI_IdxTreeViewWdgt_h

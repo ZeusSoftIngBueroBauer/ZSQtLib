@@ -108,12 +108,8 @@ CModeldxTreeTestSteps::CModeldxTreeTestSteps(
     m_pTest(i_pTestStepIdxTree->getTest()),
     m_pTestStepCurr(nullptr),
     m_bShowExpectedAndResultValuesOnlyIfTestStepFailed(true)
-    #ifdef ZS_TRACE_GUI_MODELS
-    ,m_pTrcAdminObj(nullptr)
-    #endif
 {
     #ifdef ZS_TRACE_GUI_MODELS
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
     QString strMthInArgs;
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -148,8 +144,6 @@ CModeldxTreeTestSteps::~CModeldxTreeTestSteps()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
     mthTracer.onAdminObjAboutToBeReleased();
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
-    m_pTrcAdminObj = nullptr;
     #endif
 
     m_pTest = nullptr;

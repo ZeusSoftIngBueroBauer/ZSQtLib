@@ -57,7 +57,7 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CTest::CTest() :
 //------------------------------------------------------------------------------
-    ZS::Test::CTest("ZS::System::LogFile"),
+    ZS::Test::CTest("ZSSysLogFile"),
     m_iInitialLogFilesCount(0)
 {
     ZS::Test::CTestStep* pTestStep;

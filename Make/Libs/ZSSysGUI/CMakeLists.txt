@@ -50,7 +50,9 @@ list(APPEND _Headers
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysIdxTreeModelBranchContent.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysIdxTreeModelEntry.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysIdxTreeTableViewBranchContent.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysIdxTreeTableViewBranchContentWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysIdxTreeView.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysIdxTreeViewWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysIdxTreeWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysLoggerIdxTreeDlg.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysLoggerIdxTreeModel.h
@@ -90,7 +92,9 @@ list(APPEND _Sources
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysIdxTreeModelBranchContent.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysIdxTreeModelEntry.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysIdxTreeTableViewBranchContent.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysIdxTreeTableViewBranchContentWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysIdxTreeView.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysIdxTreeViewWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysIdxTreeWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysLoggerIdxTreeDlg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysLoggerIdxTreeModel.cpp

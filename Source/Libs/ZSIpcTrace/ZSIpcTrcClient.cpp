@@ -113,7 +113,7 @@ CIpcTrcClient::CIpcTrcClient(
 
     m_watchDogTimerSettings.m_bEnabled = false;
 
-    m_pTrcAdminObjIdxTree = new CIdxTreeTrcAdminObjs(i_strName, this);
+    m_pTrcAdminObjIdxTree = new CIdxTreeTrcAdminObjs("TrcAdminObjs-" + i_strName, this);
 
     // Set default ports depending on trace types
     //-------------------------------------------

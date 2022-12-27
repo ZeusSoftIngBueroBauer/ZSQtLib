@@ -69,25 +69,20 @@ public: // ctors and dtor
 CTestStepIdxTree::CTestStepIdxTree( CTest* i_pTest ) :
 //------------------------------------------------------------------------------
     CIdxTree(
-        /* strIdxTreeName   */ i_pTest->objectName() + "-TestSteps",
+        /* strIdxTreeName   */ "TestSteps-" + i_pTest->objectName(),
         /* pRootTreeEntry   */ new CTestStepRoot(i_pTest, i_pTest->objectName()),
         /* strNodeSeparator */ "\\",
         /* bCreateMutex     */ true,
         /* pObjParent       */ nullptr),
-    m_pTest(i_pTest),
-    m_pTrcAdminObj(nullptr)
+    m_pTest(i_pTest)
 {
-    setObjectName(i_pTest->objectName() + "-TestSteps");
-
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Test", "CTestStepIdxTree", objectName());
-
-    QString strAddTrcInfo;
+    setObjectName("TestSteps-" + i_pTest->objectName());
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ctor",
-        /* strMthArgs   */ strAddTrcInfo);
+        /* strMthArgs   */ "");
 
 } // ctor
 
@@ -95,20 +90,13 @@ CTestStepIdxTree::CTestStepIdxTree( CTest* i_pTest ) :
 CTestStepIdxTree::~CTestStepIdxTree()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "dtor",
-        /* strMthArgs   */ strAddTrcInfo);
-
-    mthTracer.onAdminObjAboutToBeReleased();
-
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
+        /* strMthArgs   */ "");
 
     m_pTest = nullptr;
-    m_pTrcAdminObj = nullptr;
 
 } // dtor
 

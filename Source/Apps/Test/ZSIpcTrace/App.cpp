@@ -196,11 +196,6 @@ CApplication::CApplication(
     m_pReqExecTree->setGarbageCollectorIntervalInSec(m_fReqExecTreeGarbageCollectorInterval_s);
     m_pReqExecTree->setGarbageCollectorElapsedInSec(m_fReqExecTreeGarbageCollectorElapsed_s);
 
-    // Test
-    //----------------
-
-    m_pTest = new CTest();
-
     // Trace Server
     //-------------
 
@@ -229,6 +224,11 @@ CApplication::CApplication(
         /* iTrcMthFileDetailLevelGateway */ EMethodTraceDetailLevel::None );
     m_pZSTrcClient->setHostSettings(m_clientHostSettingsZSTrcClient);
     m_pZSTrcClient->changeSettings();
+
+    // Test
+    //----------------
+
+    m_pTest = new CTest();
 
     // Main Window
     //------------

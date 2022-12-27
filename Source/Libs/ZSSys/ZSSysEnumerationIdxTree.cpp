@@ -69,12 +69,11 @@ CEnumerationIdxTree* CEnumerationIdxTree::GetInstance( const QString& i_strName 
         If true each access to member variables will be protected by a mutex.
 */
 CEnumerationIdxTree* CEnumerationIdxTree::CreateInstance(
-    const QString&               i_strName,
-    CIdxTreeEntry*               i_pRootTreeEntry,
-    const QString&               i_strNodeSeparator,
-    bool                         i_bCreateMutex,
-    QObject*                     i_pObjParent,
-    EMethodTraceDetailLevel i_eTrcDetailLevel )
+    const QString& i_strName,
+    CIdxTreeEntry* i_pRootTreeEntry,
+    const QString& i_strNodeSeparator,
+    bool           i_bCreateMutex,
+    QObject*       i_pObjParent )
 //------------------------------------------------------------------------------
 {
     // The class may be accessed from within different thread contexts and
@@ -91,8 +90,7 @@ CEnumerationIdxTree* CEnumerationIdxTree::CreateInstance(
         /* pRootEntry       */ i_pRootTreeEntry,
         /* strNodeSeparator */ i_strNodeSeparator,
         /* bCreateMutex     */ i_bCreateMutex,
-        /* pObjParent       */ i_pObjParent,
-        /* eTrcDetailLevel  */ i_eTrcDetailLevel );
+        /* pObjParent       */ i_pObjParent );
 
     s_hshpInstances[i_strName] = pIdxTree;
 
@@ -150,30 +148,24 @@ protected: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CEnumerationIdxTree::CEnumerationIdxTree(
-    const QString&               i_strName,
-    CIdxTreeEntry*               i_pRootTreeEntry,
-    const QString&               i_strNodeSeparator,
-    bool                         i_bCreateMutex,
-    QObject*                     i_pObjParent,
-    EMethodTraceDetailLevel i_eTrcDetailLevel ) :
+    const QString& i_strName,
+    CIdxTreeEntry* i_pRootTreeEntry,
+    const QString& i_strNodeSeparator,
+    bool           i_bCreateMutex,
+    QObject*       i_pObjParent ) :
 //------------------------------------------------------------------------------
     CIdxTree(
         /* strIdxTreeName   */ i_strName,
         /* pRootTreeEntry   */ i_pRootTreeEntry,
         /* strNodeSeparator */ i_strNodeSeparator,
         /* bCreateMutex     */ i_bCreateMutex,
-        /* pObjParent       */ i_pObjParent,
-        /* eTrcDetailLevel  */ i_eTrcDetailLevel )
+        /* pObjParent       */ i_pObjParent )
 {
     QString strAddTrcInfo;
 
     CMethodTracer mthTracer(
-        /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
-        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
         /* strMethod          */ "ctor",
         /* strMethodInArgs    */ strAddTrcInfo );
 
@@ -186,12 +178,8 @@ CEnumerationIdxTree::~CEnumerationIdxTree()
     QString strAddTrcInfo;
 
     CMethodTracer mthTracer(
-        /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
-        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
         /* strMethod          */ "dtor",
         /* strMethodInArgs    */ strAddTrcInfo );
 

@@ -148,11 +148,7 @@ protected: // class methods
     static bool areIconsCreated();
 public: // ctors and dtor
     CModelIdxTree( QObject* i_pObjParent = nullptr );
-    CModelIdxTree(
-        CIdxTree* i_pIdxTree,
-        QObject*  i_pObjParent = nullptr,
-        EMethodTraceDetailLevel i_eTrcDetailLevel = EMethodTraceDetailLevel::None,
-        EMethodTraceDetailLevel i_eTrcDetailLevelNoisyMethods = EMethodTraceDetailLevel::None );
+    CModelIdxTree( CIdxTree* i_pIdxTree, QObject* i_pObjParent = nullptr );
     virtual ~CModelIdxTree();
 signals:
     void idxTreeChanged( QObject* i_pIdxTree );
@@ -200,19 +196,19 @@ public: // instance methods
 public: // instance methods
     void setIsSelected( CModelIdxTreeEntry* i_pModelTreeEntry, bool i_bIsSelected, bool i_bRecursive = false );
 public: // instance methods
-    CModelIdxTreeEntry* findEntry( const QString& i_strKeyInTree );
+    CModelIdxTreeEntry* findEntry( const QString& i_strKeyInTree ) const;
 public: // instance methods
     QModelIndex index( const QString& i_strKeyInTree, int i_iClm ) const;
 public: // iterator methods
     iterator begin( iterator::ETraversalOrder i_traversalOrder = iterator::ETraversalOrder::Index );
     iterator end();
 public: // instance methods
-    Q_INVOKABLE void removeEntries( const QModelIndexList& i_modelIdxList );
-    Q_INVOKABLE void removeEntry( const QModelIndex& i_modelIdx );
-    Q_INVOKABLE SErrResultInfo canCopy( const QModelIndex& i_modelIdxSource, const QModelIndex& i_modelIdxTarget );
-    Q_INVOKABLE int copy( const QModelIndex& i_modelIdxSource, const QModelIndex& i_modelIdxTarget );
-    Q_INVOKABLE SErrResultInfo canMove( const QModelIndex& i_modelIdxSource, const QModelIndex& i_modelIdxTarget );
-    Q_INVOKABLE void move( const QModelIndex& i_modelIdxSource, const QModelIndex& i_modelIdxTarget );
+    //Q_INVOKABLE void removeEntries( const QModelIndexList& i_modelIdxList );
+    //Q_INVOKABLE void removeEntry( const QModelIndex& i_modelIdx );
+    //Q_INVOKABLE SErrResultInfo canCopy( const QModelIndex& i_modelIdxSource, const QModelIndex& i_modelIdxTarget );
+    //Q_INVOKABLE int copy( const QModelIndex& i_modelIdxSource, const QModelIndex& i_modelIdxTarget );
+    //Q_INVOKABLE SErrResultInfo canMove( const QModelIndex& i_modelIdxSource, const QModelIndex& i_modelIdxTarget );
+    //Q_INVOKABLE void move( const QModelIndex& i_modelIdxSource, const QModelIndex& i_modelIdxTarget );
 protected slots:
     void onIdxTreeAboutToBeDestroyed();
 protected slots: // overridables
@@ -281,9 +277,6 @@ protected: // reimplemented to trace emitting signals for debugging purposes
     void _endMoveColumns();
     void _beginResetModel();
     void _endResetModel();
-protected slots:
-    void onTrcAdminObjChanged( QObject* i_pTrcAdminObj );
-    void onTrcAdminObjNoisyMethodsChanged( QObject* i_pTrcAdminObj );
 protected: // auxiliary instance methods
     void fillRoleNames();
 protected: // class members
@@ -314,15 +307,6 @@ protected: // instance members
     CModelIdxTreeEntry* m_pModelRootEntry;
     QVector<int> m_ariClmWidths;
     #ifdef ZS_TRACE_GUI_MODELS
-    /*!< Trace detail level for method tracing.
-         Trace output may not be controlled by trace admin objects
-         if the index tree belongs the trace server. */
-    EMethodTraceDetailLevel m_eTrcDetailLevel;
-    /*!< Trace detail level for method tracing.
-         This detail level is used by very often called methods like "data".
-         Trace output may not be controlled by trace admin objects
-         if the index tree belongs the trace server. */
-    EMethodTraceDetailLevel m_eTrcDetailLevelNoisyMethods;
     /*!< Trace admin object to control trace outputs of the class.
          The object will not be created if the index tree's belongs to the trace server. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;

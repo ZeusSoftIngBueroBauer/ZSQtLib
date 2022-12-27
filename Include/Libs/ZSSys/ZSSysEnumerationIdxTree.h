@@ -49,8 +49,7 @@ public: // class methods
         CIdxTreeEntry* i_pRootTreeEntry = nullptr,
         const QString& i_strNodeSeparator = "::",
         bool           i_bCreateMutex = true,
-        QObject*       i_pObjParent = nullptr,
-        EMethodTraceDetailLevel i_eTrcDetailLevel = EMethodTraceDetailLevel::None );
+        QObject*       i_pObjParent = nullptr );
     static void DestroyInstance( const QString& i_strName = "ZS::System::EnumerationIdxTree" );
     static void DestroyInstance( CEnumerationIdxTree* i_pIdxTree );
 protected: // ctors and dtor
@@ -59,8 +58,7 @@ protected: // ctors and dtor
         CIdxTreeEntry* i_pRootTreeEntry,
         const QString& i_strNodeSeparator,
         bool           i_bCreateMutex,
-        QObject*       i_pObjParent,
-        EMethodTraceDetailLevel i_eTrcDetailLevel );
+        QObject*       i_pObjParent );
     virtual ~CEnumerationIdxTree();
 public: // instance methods
     virtual QString nameSpace() const { return NameSpace(); }

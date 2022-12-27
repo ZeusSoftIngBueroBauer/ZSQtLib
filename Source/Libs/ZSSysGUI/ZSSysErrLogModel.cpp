@@ -168,7 +168,7 @@ CModelErrLog::CModelErrLog( QObject* i_pObjParent ) :
 CModelErrLog::CModelErrLog( CErrLog* i_pErrLog, QObject* i_pObjParent ) :
 //------------------------------------------------------------------------------
     QAbstractItemModel(),
-    m_pErrLog(i_pErrLog),
+    m_pErrLog(nullptr),
     m_ararpEntries(QVector<QList<SErrLogEntry*>>(EResultSeverityCount)),
     m_ariClmWidths(QVector<int>(EColumnCount)),
     m_pTrcAdminObj(nullptr),

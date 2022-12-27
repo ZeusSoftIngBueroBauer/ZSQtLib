@@ -63,7 +63,7 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CTest::CTest() :
 //------------------------------------------------------------------------------
-    ZS::Test::CTest("ZS::IpcTrace::DllIfQtApp"),
+    ZS::Test::CTest("ZSIpcTraceDllIfQtApp"),
     m_pDlgTestStep(nullptr),
     m_pTmrTestStepTimeout(nullptr),
     m_trcSettings(),
@@ -3081,7 +3081,7 @@ void CTest::splitMethodCallOperation(
         }
         else if( strlst.size() == 2 )
         {
-            strlst[0].replace("-", "::");
+            //strlst[0].replace("-", "::");
             o_strObjName = strlst[0];
             o_strMth = strlst[1];
         }
@@ -3107,12 +3107,12 @@ void CTest::splitMethodCallOperation(
                 }
                 if( o_strMth == "ctor" && o_strlstInArgs.size() >= 1 && o_strObjName.isEmpty() )
                 {
-                    o_strlstInArgs[0].replace("-", "::");
+                    //o_strlstInArgs[0].replace("-", "::");
                     o_strObjName = o_strlstInArgs[0];
                 }
                 else if( o_strMth == "dtor" && o_strlstInArgs.size() == 1 && o_strObjName.isEmpty() )
                 {
-                    o_strlstInArgs[0].replace("-", "::");
+                    //o_strlstInArgs[0].replace("-", "::");
                     o_strObjName = o_strlstInArgs[0];
                     o_strlstInArgs.clear();
                 }

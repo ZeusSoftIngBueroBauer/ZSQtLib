@@ -35,13 +35,14 @@ may result in using the software modules.
 #include <QtWidgets/qtableview.h>
 #endif
 
-#include "ZSSysGUI/ZSSysGUIDllMain.h"
 #include "ZSSysGUI/ZSSysIdxTreeModel.h"
 
 namespace ZS
 {
 namespace System
 {
+class CTrcAdminObj;
+
 namespace GUI
 {
 class CModelIdxTreeBranchContent;
@@ -55,14 +56,14 @@ public: // class methods
     static QString NameSpace() { return "ZS::System::GUI"; }
     static QString ClassName() { return "CTableViewIdxTreeBranchContent"; }
 public: // ctors and dtor
-    CTableViewIdxTreeBranchContent(
-        CModelIdxTreeBranchContent* i_pModel,
-        QWidget* i_pWdgtParent = nullptr,
-        EMethodTraceDetailLevel i_eTrcDetailLevel = EMethodTraceDetailLevel::None );
+    CTableViewIdxTreeBranchContent( CIdxTree* i_pIdxTree, QWidget* i_pWdgtParent = nullptr );
     virtual ~CTableViewIdxTreeBranchContent();
 public: // overridables
     virtual QString nameSpace() const { return CTableViewIdxTreeBranchContent::NameSpace(); }
     virtual QString className() const { return CTableViewIdxTreeBranchContent::ClassName(); }
+public: // instance methods
+    void setIdxTree(CIdxTree* i_pIdxTree);
+    CIdxTree* idxTree() { return m_pIdxTree; }
 public: // overridables
     virtual void setKeyInTreeOfRootEntry( const QString& i_strKeyInTree );
     QString getKeyInTreeOfRootEntry() const;
@@ -86,9 +87,9 @@ protected slots:
     void onActionLeaveCopyTriggered( bool i_bChecked );
     void onActionLeavePasteTriggered( bool i_bChecked );
 protected: // instance members
+    CIdxTree* m_pIdxTree;
     CModelIdxTreeBranchContent* m_pModel;
-    //CIdxTreeEntry* m_pBranch;
-    //EIdxTreeSortOrder m_sortOrder;
+    //QString m_strKeyInTreeOfRootEntry;
     QMenu*   m_pMenuBranchContext;
     QAction* m_pActionBranchTitle;
     QAction* m_pActionBranchCreateNewBranch;
@@ -105,7 +106,8 @@ protected: // instance members
     QAction* m_pActionLeavePaste;
     QModelIndex m_modelIdxSelectedOnMousePressEvent;
     QModelIndex m_modelIdxSelectedOnMouseReleaseEvent;
-    EMethodTraceDetailLevel m_eTrcDetailLevel;
+    /*!< Trace admin object to control trace outputs of the class. */
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CTableViewIdxTreeBranchContent
 

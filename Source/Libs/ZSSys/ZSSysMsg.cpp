@@ -485,7 +485,7 @@ CMsg::CMsg(
 
     if( s_bTracingEnabled && s_pTrcAdminObj == nullptr )
     {
-        s_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::System", "CMsg", "");
+        s_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), "");
     }
 
     // If a method trace client is connected tracing will create an instance of CMsgReqSendData.
@@ -580,7 +580,7 @@ CMsg::CMsg( const MsgProtocol::SMsgHeader* i_pMsgHdr ) :
 
     if( s_bTracingEnabled && s_pTrcAdminObj == nullptr )
     {
-        s_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::System", "CMsg", "");
+        s_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), "");
     }
 
     // If a method trace client is connected tracing will create an instance of CMsgReqSendData.

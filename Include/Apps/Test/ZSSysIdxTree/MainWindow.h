@@ -57,8 +57,6 @@ struct SErrResultInfo;
 
 namespace GUI
 {
-class CModelIdxTree;
-class CModelIdxTreeBranchContent;
 class CWdgtIdxTree;
 }
 }
@@ -85,8 +83,7 @@ public: // ctors and dtor
         Qt::WindowFlags i_wflags = Qt::WindowFlags());
     ~CMainWindow();
 public: // instance methods
-    ZS::System::GUI::CModelIdxTree* idxTreeModel() { return m_pModelIdxTree; }
-    ZS::System::GUI::CWdgtIdxTree*  idxTreeWidget() { return m_pWdgtIdxTree; }
+    ZS::System::GUI::CWdgtIdxTree* idxTreeWidget() { return m_pWdgtIdxTree; }
 protected: // overridables of base class QWidget
     virtual void closeEvent( QCloseEvent* i_pEv );
 protected: // overridables of base class QObject
@@ -128,8 +125,6 @@ protected: // instance members
     QLabel*  m_pLblErrors;
     CWidgetCentral* m_pWdgtCentral;
     QDockWidget*  m_pDockWdgtIdxTree;
-    ZS::System::GUI::CModelIdxTree* m_pModelIdxTree;
-    ZS::System::GUI::CModelIdxTreeBranchContent* m_pModelIdxTreeBranchContent;
     ZS::System::GUI::CWdgtIdxTree* m_pWdgtIdxTree;
     QFileDialog* m_pDlgFile;
 
