@@ -202,13 +202,6 @@ public: // instance methods
 public: // iterator methods
     iterator begin( iterator::ETraversalOrder i_traversalOrder = iterator::ETraversalOrder::Index );
     iterator end();
-public: // instance methods
-    //Q_INVOKABLE void removeEntries( const QModelIndexList& i_modelIdxList );
-    //Q_INVOKABLE void removeEntry( const QModelIndex& i_modelIdx );
-    //Q_INVOKABLE SErrResultInfo canCopy( const QModelIndex& i_modelIdxSource, const QModelIndex& i_modelIdxTarget );
-    //Q_INVOKABLE int copy( const QModelIndex& i_modelIdxSource, const QModelIndex& i_modelIdxTarget );
-    //Q_INVOKABLE SErrResultInfo canMove( const QModelIndex& i_modelIdxSource, const QModelIndex& i_modelIdxTarget );
-    //Q_INVOKABLE void move( const QModelIndex& i_modelIdxSource, const QModelIndex& i_modelIdxTarget );
 protected slots:
     void onIdxTreeAboutToBeDestroyed();
 protected slots: // overridables

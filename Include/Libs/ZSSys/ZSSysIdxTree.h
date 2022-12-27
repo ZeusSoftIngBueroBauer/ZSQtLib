@@ -39,6 +39,7 @@ namespace System
 {
 class CMutex;
 class CTrcAdminObj;
+class CTrcMthFile;
 
 //******************************************************************************
 /*! @brief Entries in the index tree are structured both in a tree structure
@@ -344,7 +345,10 @@ protected: // instance members
     /*!< Trace detail level for method tracing.
          Trace output may not be controlled by trace admin objects
          if the index tree belongs the trace server. */
-    EMethodTraceDetailLevel m_eTrcDetailLevel;
+    EMethodTraceDetailLevel m_eTrcMthFileDetailLevel;
+    /*<! Reference to local trace method file. Used if the Ipc Server belongs to
+         the trace server itself and tracing through trace server cannot be used. */
+    ZS::System::CTrcMthFile* m_pTrcMthFile;
     /*!< Trace admin object to control trace outputs of the class.
          The object will not be created if the index tree's belongs to the trace server. */
     CTrcAdminObj* m_pTrcAdminObj;

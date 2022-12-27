@@ -177,24 +177,24 @@ virtual ZS::System::CIdxTreeEntry* createBranch( const QString& i_strName ) cons
 {
     QString strAddTrcInfo;
 
-    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strAddTrcInfo = "Name: " + i_strName;
     }
 
     CMethodTracer mthTracer(
-        /* pTrcAdmObj   */ CTrcServer::GetInstance(),
-        /* iTraceLevel  */ m_eTrcDetailLevel,
-        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace */ "ZS::Apps::Test::IdxTree",
-        /* strClassName */ "CTrcAdmObjIdxTree",
-        /* strObjName   */ objectName(),
-        /* strMethod    */ "createBranch",
-        /* strMthInArgs */ strAddTrcInfo );
+        /* pTrcMthFile     */ m_pTrcMthFile,
+        /* eTrcDetailLevel */ m_eTrcMthFileDetailLevel,
+        /* iFilterLevel    */ EMethodTraceDetailLevel::EnterLeave,
+        /* strNameSpace    */ "ZS::Apps::Test::IdxTree",
+        /* strClassName    */ "CTrcAdmObjIdxTree",
+        /* strObjName      */ objectName(),
+        /* strMethod       */ "createBranch",
+        /* strMthInArgs    */ strAddTrcInfo );
 
     CIdxTreeEntry* pBranch = new CTrcAdmObjBranch(i_strName);
 
-    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         mthTracer.setMethodReturn(pBranch == nullptr ? "null" : pBranch->name());
     }
@@ -209,24 +209,24 @@ virtual ZS::System::CIdxTreeEntry* createLeave( const QString& i_strName ) const
 {
     QString strAddTrcInfo;
 
-    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strAddTrcInfo = "Name: " + i_strName;
     }
 
     CMethodTracer mthTracer(
-        /* pTrcAdmObj   */ CTrcServer::GetInstance(),
-        /* iTraceLevel  */ m_eTrcDetailLevel,
-        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace */ "ZS::Apps::Test::IdxTree",
-        /* strClassName */ "CTrcAdmObjIdxTree",
-        /* strObjName   */ objectName(),
-        /* strMethod    */ "createLeave",
-        /* strMthInArgs */ strAddTrcInfo );
+        /* pTrcMthFile     */ m_pTrcMthFile,
+        /* eTrcDetailLevel */ m_eTrcMthFileDetailLevel,
+        /* iFilterLevel    */ EMethodTraceDetailLevel::EnterLeave,
+        /* strNameSpace    */ "ZS::Apps::Test::IdxTree",
+        /* strClassName    */ "CTrcAdmObjIdxTree",
+        /* strObjName      */ objectName(),
+        /* strMethod       */ "createLeave",
+        /* strMthInArgs    */ strAddTrcInfo );
 
     CIdxTreeEntry* pLeave = new ZS::Apps::Test::IdxTree::CTrcAdmObj(i_strName);
 
-    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         mthTracer.setMethodReturn(pLeave == nullptr ? "null" : pLeave->name());
     }

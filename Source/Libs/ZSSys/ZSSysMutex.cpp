@@ -136,8 +136,8 @@ CMutex::CMutex(const QString& i_strObjName) :
         be to a value greater than None.
 */
 CMutex::CMutex(
-    QMutex::RecursionMode        i_mode,
-    const QString&               i_strObjName,
+    QMutex::RecursionMode   i_mode,
+    const QString&          i_strObjName,
     EMethodTraceDetailLevel i_eTrcMthFileDetailLevel ) :
 //------------------------------------------------------------------------------
     QMutex(i_mode),

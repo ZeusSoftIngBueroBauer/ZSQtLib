@@ -636,12 +636,10 @@ void CMainWindow::onActDebugZSTrcServerAdminObjIdxTreeTriggered()
         if( pDlg == nullptr )
         {
             pDlg = CDlgIdxTreeTrcAdminObjs::CreateInstance(
-                /* strDlgTitle                 */ strDlgTitle,
-                /* pTrcAdmIdxTree              */ pServer->getTraceAdminObjIdxTree(),
-                /* pWdgtParent                 */ nullptr,
-                /* wFlags                      */ Qt::WindowFlags(),
-                /* eTrcDetailLevel             */ CApplication::GetInstance()->getTraceServerTraceDetailLevel(),
-                /* eTrcDetailLevelNoisyMethods */ CApplication::GetInstance()->getTraceServerTraceDetailLevelNoisyMethods() );
+                /* strDlgTitle */ strDlgTitle,
+                /* pIdxTree    */ pServer->getTraceAdminObjIdxTree(),
+                /* pWdgtParent */ nullptr,
+                /* wFlags      */ Qt::WindowFlags() );
             pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
             pDlg->adjustSize();
             pDlg->show();
@@ -705,11 +703,10 @@ void CMainWindow::onActDebugZSTrcClientAdminObjIdxTreeTriggered()
         if( pDlg == nullptr )
         {
             pDlg = CDlgIdxTreeTrcAdminObjs::CreateInstance(
-                /* strDlgTitle     */ strDlgTitle,
-                /* pTrcAdmObjPool  */ pTrcClient->getTraceAdminObjIdxTree(),
-                /* pWdgtParent     */ nullptr,
-                /* wflags          */ Qt::WindowFlags(),
-                /* iTrcDetailLevel */ CApplication::GetInstance()->getTraceClientTraceDetailLevel() );
+                /* strDlgTitle */ strDlgTitle,
+                /* pIdxTree    */ pTrcClient->getTraceAdminObjIdxTree(),
+                /* pWdgtParent */ nullptr,
+                /* wflags      */ Qt::WindowFlags() );
             pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
             pDlg->adjustSize();
             pDlg->show();

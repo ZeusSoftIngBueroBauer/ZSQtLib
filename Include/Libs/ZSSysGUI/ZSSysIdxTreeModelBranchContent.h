@@ -148,9 +148,6 @@ public: // overridables of base class QAbstractItemModel
     virtual bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
 public: // instance methods for editing data
     SErrResultInfo canSetData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) const;
-protected slots:
-    void onTrcAdminObjChanged( QObject* i_pTrcAdminObj );
-    void onTrcAdminObjNoisyMethodsChanged( QObject* i_pTrcAdminObj );
 protected: // auxiliary instance methods
     void fillRoleNames();
 protected: // class members
@@ -193,15 +190,6 @@ protected: // instance members
          2022-12-23: TODO: The optimization is not yet implemented. */
     QVector<int> m_ariClmWidths;
     #ifdef ZS_TRACE_GUI_MODELS
-    /*!< Trace detail level for method tracing.
-         Trace output may not be controlled by trace admin objects
-         if the index tree belongs the trace server. */
-    EMethodTraceDetailLevel m_eTrcDetailLevel;
-    /*!< Trace detail level for method tracing.
-         This detail level is used by very often called methods like "data".
-         Trace output may not be controlled by trace admin objects
-         if the index tree belongs the trace server. */
-    EMethodTraceDetailLevel m_eTrcDetailLevelNoisyMethods;
     /*!< Trace admin object to control trace outputs of the class.
          The object will not be created if the index tree's belongs to the trace server. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
