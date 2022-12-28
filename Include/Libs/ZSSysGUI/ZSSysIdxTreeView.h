@@ -116,6 +116,9 @@ public: // class methods
 public: // ctors and dtor
     CTreeViewIdxTree( CIdxTree* i_pIdxTree, QWidget* i_pWdgtParent = nullptr );
     virtual ~CTreeViewIdxTree();
+signals:
+    void sortOrderChanged(const QString& i_strSortOrder);
+    void sortOrderChanged(EIdxTreeSortOrder i_sortOrder);
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
     virtual QString className() const { return ClassName(); }
@@ -164,8 +167,11 @@ protected: // overridables of base class QTreeView
     virtual void dragMoveEvent( QDragMoveEvent* i_pEv ) override;
     virtual void dropEvent( QDropEvent* i_pEv ) override;
 protected slots:
+    void onModelSortOrderChanged(EIdxTreeSortOrder i_sortOrder);
+protected slots:
     void onActionBranchExpandTriggered( bool i_bChecked );
     void onActionBranchCollapseTriggered( bool i_bChecked );
+protected slots:
     void onActionBranchCreateNewBranchTriggered( bool i_bChecked );
     void onActionBranchCreateNewLeaveTriggered( bool i_bChecked );
     void onActionBranchDeleteTriggered( bool i_bChecked );
@@ -177,6 +183,8 @@ protected slots:
     void onActionLeaveCutTriggered( bool i_bChecked );
     void onActionLeaveCopyTriggered( bool i_bChecked );
     void onActionLeavePasteTriggered( bool i_bChecked );
+protected slots:
+    void onIdxTreeAboutToBeDestroyed();
 protected: // instance members
     CIdxTree*         m_pIdxTree;
     CDelegateIdxTree* m_pDelegate;

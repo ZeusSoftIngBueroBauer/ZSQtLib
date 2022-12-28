@@ -35,7 +35,7 @@ may result in using the software modules.
 #include <QtWidgets/qwidget.h>
 #endif
 
-#include "ZSSysGUI/ZSSysGUIDllMain.h"
+#include "ZSSysGUI/ZSSysIdxTreeModel.h"
 #include "ZSSys/ZSSysCommon.h"
 
 class QModelIndex;
@@ -84,7 +84,10 @@ protected slots:
     void onBtnTreeViewCollapseAllClicked( bool i_bChecked );
     void onBtnSortOrderClicked( bool i_bChecked );
 protected slots:
+    void onTreeViewSortOrderChanged(EIdxTreeSortOrder i_sortOrder);
     void onTreeViewCurrentRowChanged( const QModelIndex& i_modelIdxCurr, const QModelIndex& i_modelIdxPrev );
+protected slots:
+    void onIdxTreeAboutToBeDestroyed();
 private: // auxiliary methods (tracing)
     void emit_currentRowChanged( const QModelIndex& i_modelIdxCurr, const QModelIndex& i_modelIdxPrev );
 protected: // instance members

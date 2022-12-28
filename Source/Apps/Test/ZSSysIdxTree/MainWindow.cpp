@@ -55,6 +55,7 @@ may result in using the software modules.
 #include "ZSTest/ZSTestStepIdxTree.h"
 #include "ZSSysGUI/ZSSysErrLogDlg.h"
 #include "ZSSysGUI/ZSSysIdxTreeWdgt.h"
+#include "ZSSysGUI/ZSSysIdxTreeView.h"
 #include "ZSSysGUI/ZSSysIdxTreeModel.h"
 #include "ZSSysGUI/ZSSysIdxTreeModelBranchContent.h"
 #include "ZSSysGUI/ZSSysTrcAdminObjIdxTreeDlg.h"
@@ -233,6 +234,10 @@ CMainWindow::CMainWindow(
 
     // The index tree will be assigned to the model during runtime.
     m_pWdgtIdxTree = new CWdgtIdxTree(nullptr);
+    m_pWdgtIdxTree->treeView()->hideColumn(CModelIdxTree::EColumnTreeEntryNameDecorated);
+    m_pWdgtIdxTree->treeView()->hideColumn(CModelIdxTree::EColumnTreeEntryTypeImageUrl);
+    m_pWdgtIdxTree->treeView()->hideColumn(CModelIdxTree::EColumnTreeEntryTypeIcon);
+    m_pWdgtIdxTree->treeView()->hideColumn(CModelIdxTree::EColumnTreeEntryType);
     m_pDockWdgtIdxTree->setWidget(m_pWdgtIdxTree);
 
     addDockWidget(Qt::RightDockWidgetArea, m_pDockWdgtIdxTree);

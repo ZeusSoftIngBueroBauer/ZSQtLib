@@ -95,6 +95,8 @@ protected slots:
     void onBtnViewModeClicked( bool i_bChecked );
 protected slots:
     void onTreeViewCurrentRowChanged( const QModelIndex& i_modelIdxCurr, const QModelIndex& i_modelIdxPrev );
+protected slots:
+    void onIdxTreeAboutToBeDestroyed();
 protected: // instance members
     CIdxTree* m_pIdxTree;
     QSize m_szBtns;

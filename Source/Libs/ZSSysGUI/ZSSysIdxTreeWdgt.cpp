@@ -173,7 +173,7 @@ CWdgtIdxTree::CWdgtIdxTree(
 
     m_pWdgtTreeView = new CWdgtIdxTreeView(nullptr, nullptr);
     m_pWdgtTreeView->setExcludeLeaves(m_viewMode != EViewMode::NavPanelOnly);
-    m_pWdgtTreeView->setMaximumWidth(50);
+    m_pWdgtTreeView->setMinimumWidth(50);
     m_pSplitter->addWidget(m_pWdgtTreeView);
 
     QObject::connect(
@@ -183,9 +183,11 @@ CWdgtIdxTree::CWdgtIdxTree(
     // <TableView>
     //------------
 
-    m_pWdgtTableViewBranchContent = new CWdgtIdxTreeTableViewBranchContent(nullptr, nullptr);
-    m_pSplitter->addWidget(m_pWdgtTableViewBranchContent);
-    m_pWdgtTableViewBranchContent->setVisible(m_viewMode != EViewMode::NavPanelOnly);
+    if( m_viewMode == EViewMode::NavPanelAndBranchContent )
+    {
+        m_pWdgtTableViewBranchContent = new CWdgtIdxTreeTableViewBranchContent(nullptr, nullptr);
+        m_pSplitter->addWidget(m_pWdgtTableViewBranchContent);
+    }
 
     if( i_pIdxTree != nullptr )
     {
@@ -238,7 +240,13 @@ CTreeViewIdxTree* CWdgtIdxTree::treeView()
 CTableViewIdxTreeBranchContent* CWdgtIdxTree::tableView()
 //------------------------------------------------------------------------------
 {
-    return m_pWdgtTableViewBranchContent->tableView();
+    CTableViewIdxTreeBranchContent* pTableView = nullptr;
+
+    if( m_pWdgtTableViewBranchContent != nullptr )
+    {
+        pTableView = m_pWdgtTableViewBranchContent->tableView();
+    }
+    return pTableView;
 }
 
 /*==============================================================================
@@ -264,10 +272,28 @@ void CWdgtIdxTree::setIdxTree( CIdxTree* i_pIdxTree )
 
     if( m_pIdxTree != i_pIdxTree )
     {
+        if( m_pIdxTree != nullptr )
+        {
+            QObject::disconnect(
+                m_pIdxTree, &CIdxTree::aboutToBeDestroyed,
+                this, &CWdgtIdxTree::onIdxTreeAboutToBeDestroyed);
+        }
+
         m_pIdxTree = i_pIdxTree;
 
+        if( m_pIdxTree != nullptr )
+        {
+            QObject::connect(
+                m_pIdxTree, &CIdxTree::aboutToBeDestroyed,
+                this, &CWdgtIdxTree::onIdxTreeAboutToBeDestroyed);
+        }
+
         m_pWdgtTreeView->setIdxTree(i_pIdxTree);
-        m_pWdgtTableViewBranchContent->setIdxTree(i_pIdxTree);
+
+        if( m_pWdgtTableViewBranchContent != nullptr )
+        {
+            m_pWdgtTableViewBranchContent->setIdxTree(i_pIdxTree);
+        }
     }
 }
 
@@ -297,7 +323,17 @@ void CWdgtIdxTree::setViewMode( EViewMode i_viewMode )
         m_viewMode = i_viewMode;
 
         m_pWdgtTreeView->setExcludeLeaves(m_viewMode != EViewMode::NavPanelOnly);
-        m_pWdgtTableViewBranchContent->setVisible(m_viewMode != EViewMode::NavPanelOnly);
+
+        if( m_viewMode == EViewMode::NavPanelAndBranchContent )
+        {
+            m_pWdgtTableViewBranchContent = new CWdgtIdxTreeTableViewBranchContent(m_pIdxTree);
+            m_pSplitter->addWidget(m_pWdgtTableViewBranchContent);
+        }
+        else
+        {
+            delete m_pWdgtTableViewBranchContent;
+            m_pWdgtTableViewBranchContent = nullptr;
+        }
 
         QPixmap pxmViewMode = viewMode2Pixmap(m_viewMode, m_szBtns);
         m_pBtnViewMode->setIcon(pxmViewMode);
@@ -389,6 +425,24 @@ void CWdgtIdxTree::onTreeViewCurrentRowChanged(
                 m_pWdgtTableViewBranchContent->setKeyInTreeOfRootEntry("");
             }
         }
-    } // if( i_modelIdxCurr.isValid() )
-
+    }
 } // onTreeViewCurrentRowChanged
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtIdxTree::onIdxTreeAboutToBeDestroyed()
+//------------------------------------------------------------------------------
+{
+    #ifdef ZS_TRACE_GUI_MODELS
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "onIdxTreeAboutToBeDestroyed",
+        /* strMethodInArgs    */ "" );
+    #endif
+
+    m_pIdxTree = nullptr;
+}

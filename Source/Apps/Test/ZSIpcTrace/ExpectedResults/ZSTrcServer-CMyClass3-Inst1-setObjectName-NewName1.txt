@@ -1,4 +1,4 @@
 <GUIMain                 > -> <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.setObjectName(NewName1)
-<GUIMain                 >    -> <ZS::System::CMutex> CMyClass3-Inst1-Counters.setObjectName(CMyClass3::NewName1-Counters)
+<GUIMain                 >    -> <ZS::System::CMutex> CMyClass3-Inst1-Counters.setObjectName(CMyClass3-NewName1-Counters)
 <GUIMain                 >    <- <ZS::System::CMutex> CMyClass3-Inst1-Counters.setObjectName()
 <GUIMain                 > <- <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.setObjectName()

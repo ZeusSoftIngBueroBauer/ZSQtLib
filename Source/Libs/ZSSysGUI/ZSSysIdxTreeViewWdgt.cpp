@@ -174,6 +174,8 @@ CWdgtIdxTreeView::CWdgtIdxTreeView(
         m_pBtnSortOrder, &QPushButton::clicked,
         this, &CWdgtIdxTreeView::onBtnSortOrderClicked );
 
+    m_pLytHeadLine->addStretch();
+
     // <TreeView>
     //===========
 
@@ -181,6 +183,9 @@ CWdgtIdxTreeView::CWdgtIdxTreeView(
     m_pTreeView->setAlternatingRowColors(true);
     m_pLytMain->addWidget(m_pTreeView, 1);
 
+    QObject::connect(
+        m_pTreeView, static_cast<void (CTreeViewIdxTree::*)(EIdxTreeSortOrder)>(&CTreeViewIdxTree::sortOrderChanged),
+        this, &CWdgtIdxTreeView::onTreeViewSortOrderChanged );
     QObject::connect(
         m_pTreeView->selectionModel(), &QItemSelectionModel::currentRowChanged,
         this, &CWdgtIdxTreeView::onTreeViewCurrentRowChanged );
@@ -202,6 +207,21 @@ CWdgtIdxTreeView::~CWdgtIdxTreeView()
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "dtor",
         /* strMethodInArgs    */ "" );
+
+    QObject::disconnect(
+        m_pTreeView, static_cast<void (CTreeViewIdxTree::*)(EIdxTreeSortOrder)>(&CTreeViewIdxTree::sortOrderChanged),
+        this, &CWdgtIdxTreeView::onTreeViewSortOrderChanged );
+
+    // When destroying the model the selected, current row may be changed.
+    // If we don't disconnect from the currentRowChanged signal of the tree views
+    // selection model the application will crash when destroying the index tree model.
+    // The tree view is a child of this widget and will be destroyed after this dtor
+    // has been called. The signal/slot connection is still alive as also the QObject
+    // destructor has not been called yet. But Qt recognizes that the signal endpoint
+    // has been destroyed and will throw an exception. Not what we want ...
+    QObject::disconnect(
+        m_pTreeView->selectionModel(), &QItemSelectionModel::currentRowChanged,
+        this, &CWdgtIdxTreeView::onTreeViewCurrentRowChanged );
 
     if( m_pTrcAdminObj != nullptr )
     {
@@ -245,7 +265,21 @@ void CWdgtIdxTreeView::setIdxTree( CIdxTree* i_pIdxTree )
 
     if( m_pIdxTree != i_pIdxTree )
     {
+        if( m_pIdxTree != nullptr )
+        {
+            QObject::disconnect(
+                m_pIdxTree, &CIdxTree::aboutToBeDestroyed,
+                this, &CWdgtIdxTreeView::onIdxTreeAboutToBeDestroyed);
+        }
+
         m_pIdxTree = i_pIdxTree;
+
+        if( m_pIdxTree != nullptr )
+        {
+            QObject::connect(
+                m_pIdxTree, &CIdxTree::aboutToBeDestroyed,
+                this, &CWdgtIdxTreeView::onIdxTreeAboutToBeDestroyed);
+        }
 
         m_pTreeView->setIdxTree(i_pIdxTree);
     }
@@ -407,6 +441,29 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+void CWdgtIdxTreeView::onTreeViewSortOrderChanged( EIdxTreeSortOrder i_sortOrder )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        strMthInArgs = idxTreeSortOrder2Str(i_sortOrder);
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "onTableViewSortOrderChanged",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    m_pBtnSortOrder->setProperty("SortOrderCurr", static_cast<int>(i_sortOrder));
+
+    QPixmap pxmSortOrder = idxTreeSortOrder2Pixmap(i_sortOrder, m_szBtns);
+    m_pBtnSortOrder->setIcon(pxmSortOrder);
+}
+
+//------------------------------------------------------------------------------
 void CWdgtIdxTreeView::onTreeViewCurrentRowChanged(
     const QModelIndex& i_modelIdxCurr,
     const QModelIndex& i_modelIdxPrev )
@@ -427,6 +484,25 @@ void CWdgtIdxTreeView::onTreeViewCurrentRowChanged(
         /* strMethodInArgs    */ strMthInArgs );
 
     emit_currentRowChanged(i_modelIdxCurr, i_modelIdxPrev);
+}
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtIdxTreeView::onIdxTreeAboutToBeDestroyed()
+//------------------------------------------------------------------------------
+{
+    #ifdef ZS_TRACE_GUI_MODELS
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "onIdxTreeAboutToBeDestroyed",
+        /* strMethodInArgs    */ "" );
+    #endif
+
+    m_pIdxTree = nullptr;
 }
 
 /*==============================================================================

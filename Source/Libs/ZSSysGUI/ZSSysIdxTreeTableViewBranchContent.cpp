@@ -106,6 +106,10 @@ CTableViewIdxTreeBranchContent::CTableViewIdxTreeBranchContent(
 
     setModel(m_pModel);
 
+    QObject::connect(
+        m_pModel, static_cast<void (CModelIdxTreeBranchContent::*)(EIdxTreeSortOrder)>(&CModelIdxTreeBranchContent::sortOrderChanged),
+        this, &CTableViewIdxTreeBranchContent::onModelSortOrderChanged );
+
     setSelectionBehavior(QAbstractItemView::SelectItems);
     setSelectionMode(QAbstractItemView::SingleSelection);
 
@@ -285,7 +289,22 @@ void CTableViewIdxTreeBranchContent::setIdxTree( CIdxTree* i_pIdxTree )
 
     if( m_pIdxTree != i_pIdxTree )
     {
+        if( m_pIdxTree != nullptr )
+        {
+            QObject::disconnect(
+                m_pIdxTree, &CIdxTree::aboutToBeDestroyed,
+                this, &CTableViewIdxTreeBranchContent::onIdxTreeAboutToBeDestroyed);
+        }
+
         m_pIdxTree = i_pIdxTree;
+
+        if( m_pIdxTree != nullptr )
+        {
+            QObject::connect(
+                m_pIdxTree, &CIdxTree::aboutToBeDestroyed,
+                this, &CTableViewIdxTreeBranchContent::onIdxTreeAboutToBeDestroyed);
+        }
+
         m_pModel->setIdxTree(i_pIdxTree);
     }
 }
@@ -333,7 +352,7 @@ void CTableViewIdxTreeBranchContent::setSortOrder( EIdxTreeSortOrder i_sortOrder
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strMthInArgs = "SortOrder: " + idxTreeSortOrder2Str(i_sortOrder);
+        strMthInArgs = idxTreeSortOrder2Str(i_sortOrder);
     }
 
     CMethodTracer mthTracer(
@@ -350,6 +369,31 @@ EIdxTreeSortOrder CTableViewIdxTreeBranchContent::sortOrder() const
 //------------------------------------------------------------------------------
 {
     return m_pModel->sortOrder();
+}
+
+/*==============================================================================
+protected: // slots
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CTableViewIdxTreeBranchContent::onModelSortOrderChanged(EIdxTreeSortOrder i_sortOrder)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        strMthInArgs = idxTreeSortOrder2Str(i_sortOrder);
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "onModelSortOrderChanged",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    emit sortOrderChanged(i_sortOrder);
+    emit sortOrderChanged(idxTreeSortOrder2Str(i_sortOrder));
 }
 
 /*==============================================================================
@@ -732,3 +776,22 @@ void CTableViewIdxTreeBranchContent::onActionLeavePasteTriggered( bool i_bChecke
     } // if( m_modelIdxSelectedOnMousePressEvent.isValid() )
 
 } // onActionLeavePasteTriggered
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CTableViewIdxTreeBranchContent::onIdxTreeAboutToBeDestroyed()
+//------------------------------------------------------------------------------
+{
+    #ifdef ZS_TRACE_GUI_MODELS
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "onIdxTreeAboutToBeDestroyed",
+        /* strMethodInArgs    */ "" );
+    #endif
+
+    m_pIdxTree = nullptr;
+}

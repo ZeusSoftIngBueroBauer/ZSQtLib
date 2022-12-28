@@ -188,7 +188,7 @@ CIdxTree::iterator& CIdxTree::iterator::operator ++ ()
         }
         else // if( m_pTreeEntryCurr != m_pIdxTree->root() )
         {
-            if( m_pTreeEntryCurr->entryType() == EIdxTreeEntryType::Leave )
+            if( m_pTreeEntryCurr->isLeave() )
             {
                 int idxInParentBranch = m_pTreeEntryCurr->indexInParentBranch();
                 CIdxTreeEntry* pBranchParent = m_pTreeEntryCurr->parentBranch();
@@ -203,14 +203,13 @@ CIdxTree::iterator& CIdxTree::iterator::operator ++ ()
                         idxInParentBranch = pBranchParent->indexInParentBranch();
                         pBranchParent = pBranchParent->parentBranch();
                     }
-                } // if( idxInParentBranch >= (pBranchParent->count()-1) )
-
+                }
                 if( pBranchParent != nullptr && idxInParentBranch < (pBranchParent->count()-1) )
                 {
                     pTreeEntryNew = pBranchParent->at(idxInParentBranch+1);
                 }
             }
-            else // if( m_pTreeEntryCurr->entryType() == EIdxTreeEntryType::Branch )
+            else
             {
                 CIdxTreeEntry* pBranchCurr = m_pTreeEntryCurr;
 
@@ -229,7 +228,6 @@ CIdxTree::iterator& CIdxTree::iterator::operator ++ ()
                         idxInParentBranch = pBranchCurr->indexInParentBranch();
                         pBranchParent = pBranchParent->parentBranch();
                     }
-
                     if( pBranchParent != nullptr && idxInParentBranch < (pBranchParent->count()-1) )
                     {
                         pTreeEntryNew = pBranchParent->at(idxInParentBranch+1);
@@ -4254,8 +4252,7 @@ CIdxTree::iterator CIdxTree::begin( iterator::ETraversalOrder i_traversalOrder )
         itIdxTree.m_pTreeEntryCurr = m_pRoot;
     }
     return itIdxTree;
-
-} // iterator::begin()
+}
 
 //------------------------------------------------------------------------------
 /*! Returns an iterator pointing to the imaginary last item of the tree.
@@ -4279,12 +4276,10 @@ CIdxTree::iterator CIdxTree::end()
         /* strMethodInArgs    */ "" );
 
     CMutexLocker mtxLocker(m_pMtx);
-
     CIdxTree::iterator itIdxTree(this, iterator::ETraversalOrder::Undefined);
     itIdxTree.m_pTreeEntryCurr = nullptr;
     return itIdxTree;
-
-} // iterator::end()
+}
 
 /*==============================================================================
 public: // overridable instance methods (used by friend class CIdxTreeEntry and its derivates to avoid that the tree entry base classes must inherit QObject to emit signals)

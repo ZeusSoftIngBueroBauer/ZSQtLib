@@ -705,6 +705,8 @@ void CModelIdxTreeEntry::onChildRenamed(
 
         if( m_sortOrder == EIdxTreeSortOrder::Ascending )
         {
+            m_arpTreeEntries.removeOne(i_pModelTreeEntry);
+
             QMap<QString, CModelIdxTreeEntry*>::iterator itModelEntry =
                 m_mappModelTreeEntries.insert(strKeyInParentBranchNew, i_pModelTreeEntry);
 
@@ -738,6 +740,8 @@ void CModelIdxTreeEntry::onChildRenamed(
         }
         else if( m_sortOrder == EIdxTreeSortOrder::Descending )
         {
+            m_arpTreeEntries.removeOne(i_pModelTreeEntry);
+
             m_mappModelTreeEntries.insert(strKeyInParentBranchNew, i_pModelTreeEntry);
 
             int idxInParentBranch = -1;
@@ -775,8 +779,11 @@ void CModelIdxTreeEntry::onChildRenamed(
             }
             i_pModelTreeEntry->setIndexInParentBranch(idxInParentBranch);
         }
+        else // if( m_sortOrder == EIdxTreeSortOrder::Config )
+        {
+            m_mappModelTreeEntries.insert(strKeyInParentBranchNew, i_pModelTreeEntry);
+        }
     } // if( strKeyInParentBranchNew != strKeyInParentBranchPrev )
-
 } // onChildRenamed
 
 /*=============================================================================

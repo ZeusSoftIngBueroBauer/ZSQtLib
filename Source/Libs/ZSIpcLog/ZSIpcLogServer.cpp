@@ -183,40 +183,33 @@ CIpcLogServer::CIpcLogServer() :
 
     m_pMtxListLogDataCached = new QMutex(QMutex::Recursive);
 
+    // Need direct connections to signals of index tree.
+    // If in another thread a trace admin object is created, removed or modified
+    // the corresponding message must be send by the server to the connected clients
+    // before sending log data. If the signals would be queued the client may receive
+    // log data for logger objects which may not yet exist.
     QObject::connect(
         m_pLoggersIdxTree, &CIdxTree::treeEntryAdded,
-        this, &CIpcLogServer::onLoggersIdxTreeEntryAdded);
+        this, &CIpcLogServer::onLoggersIdxTreeEntryAdded,
+        Qt::DirectConnection);
     QObject::connect(
         m_pLoggersIdxTree, &CIdxTree::treeEntryAboutToBeRemoved,
-        this, &CIpcLogServer::onLoggersIdxTreeEntryAboutToBeRemoved);
+        this, &CIpcLogServer::onLoggersIdxTreeEntryAboutToBeRemoved,
+        Qt::DirectConnection);
     QObject::connect(
         m_pLoggersIdxTree, &CIdxTreeLoggers::treeEntryChanged,
-        this, &CIpcLogServer::onLoggersIdxTreeEntryChanged);
+        this, &CIpcLogServer::onLoggersIdxTreeEntryChanged,
+        Qt::DirectConnection);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pIpcServer,
-        /* szSignal     */ SIGNAL( connected(QObject*,const ZS::Ipc::SSocketDscr&) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onIpcServerConnected(QObject*,const ZS::Ipc::SSocketDscr&) ) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pIpcServer,
-        /* szSignal     */ SIGNAL( disconnected(QObject*,const ZS::Ipc::SSocketDscr&) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onIpcServerDisconnected(QObject*,const ZS::Ipc::SSocketDscr&) ) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pIpcServer,
-        /* szSignal     */ SIGNAL( receivedData(QObject*,int,const QByteArray&) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onIpcServerReceivedData(QObject*,int,const QByteArray&) ) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pIpcServer, &CServer::connected,
+        this, &CIpcLogServer::onIpcServerConnected);
+    QObject::connect(
+        m_pIpcServer, &CServer::disconnected,
+        this, &CIpcLogServer::onIpcServerDisconnected);
+    QObject::connect(
+        m_pIpcServer, &CServer::receivedData,
+        this, &CIpcLogServer::onIpcServerReceivedData);
 
 } // ctor
 

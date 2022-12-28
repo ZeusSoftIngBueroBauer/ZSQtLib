@@ -35,7 +35,7 @@ may result in using the software modules.
 #include <QtWidgets/qwidget.h>
 #endif
 
-#include "ZSSysGUI/ZSSysGUIDllMain.h"
+#include "ZSSysGUI/ZSSysIdxTreeModel.h"
 #include "ZSSys/ZSSysCommon.h"
 
 class QModelIndex;
@@ -79,6 +79,10 @@ public: // overridables
 protected slots:
     void onBtnTreeViewResizeRowsAndColumnsToContentsClicked( bool i_bChecked );
     void onBtnSortOrderClicked( bool i_bChecked );
+protected slots:
+    void onTableViewSortOrderChanged(EIdxTreeSortOrder i_sortOrder);
+protected slots:
+    void onIdxTreeAboutToBeDestroyed();
 protected: // instance members
     CIdxTree* m_pIdxTree;
     QSize m_szBtns;

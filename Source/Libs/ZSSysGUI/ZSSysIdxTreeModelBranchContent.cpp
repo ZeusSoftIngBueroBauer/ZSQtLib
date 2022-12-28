@@ -1115,7 +1115,7 @@ int CModelIdxTreeBranchContent::rowCount( const QModelIndex& i_modelIdxParent ) 
 
     int iRowCount = 0;
 
-    if( m_pIdxTree != nullptr && m_pModelRootEntry != nullptr )
+    if( m_pModelRootEntry != nullptr )
     {
         iRowCount = m_pModelRootEntry->count();
     }

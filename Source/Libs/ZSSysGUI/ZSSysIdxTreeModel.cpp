@@ -237,7 +237,7 @@ CModelIdxTree::iterator& CModelIdxTree::iterator::operator ++ ()
         }
         else // if( m_pModelTreeEntryCurr != m_pModel->m_pModelRootEntry )
         {
-            if( m_pModelTreeEntryCurr->entryType() == EIdxTreeEntryType::Leave )
+            if( m_pModelTreeEntryCurr->isLeave() )
             {
                 int idxInParentBranch = m_pModelTreeEntryCurr->indexInParentBranch();
                 CModelIdxTreeEntry* pModelBranchParent = m_pModelTreeEntryCurr->parentBranch();
@@ -252,14 +252,13 @@ CModelIdxTree::iterator& CModelIdxTree::iterator::operator ++ ()
                         idxInParentBranch = pModelBranchParent->indexInParentBranch();
                         pModelBranchParent = pModelBranchParent->parentBranch();
                     }
-                } // if( idxInParentBranch >= (pModelBranchParent->count()-1) )
-
+                }
                 if( pModelBranchParent != nullptr && idxInParentBranch < (pModelBranchParent->count()-1) )
                 {
                     pModelTreeEntryNew = pModelBranchParent->at(idxInParentBranch+1);
                 }
             }
-            else // if( m_pModelTreeEntryCurr->entryType() == EIdxTreeEntryType::Branch )
+            else
             {
                 CModelIdxTreeEntry* pModelBranchCurr = m_pModelTreeEntryCurr;
 
@@ -278,7 +277,6 @@ CModelIdxTree::iterator& CModelIdxTree::iterator::operator ++ ()
                         idxInParentBranch = pModelBranchCurr->indexInParentBranch();
                         pModelBranchParent = pModelBranchParent->parentBranch();
                     }
-
                     if( pModelBranchParent != nullptr && idxInParentBranch < (pModelBranchParent->count()-1) )
                     {
                         pModelTreeEntryNew = pModelBranchParent->at(idxInParentBranch+1);
@@ -1602,10 +1600,8 @@ public: // iterator methods
     {
         itModelIdxTree.m_pModelTreeEntryCurr = m_pModelRootEntry;
     }
-
     return itModelIdxTree;
-
-} // iterator::begin()
+}
 
 //------------------------------------------------------------------------------
 /*typename*/ CModelIdxTree::iterator CModelIdxTree::end()
@@ -1614,8 +1610,7 @@ public: // iterator methods
     CModelIdxTree::iterator itModelIdxTree(this, iterator::ETraversalOrder::Undefined);
     itModelIdxTree.m_pModelTreeEntryCurr = nullptr;
     return itModelIdxTree;
-
-} // iterator::end()
+}
 
 /*==============================================================================
 protected slots:
@@ -1839,7 +1834,7 @@ void CModelIdxTree::onIdxTreeEntryMoved(
     // the new key in tree.
     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    CModelIdxTreeEntry* pModelTreeEntry = findEntry(i_strOrigKeyInTree);
+    CModelIdxTreeEntry* pModelTreeEntry = findEntry(i_strNewKeyInTree);
     CModelIdxTreeEntry* pModelTargetBranch = findEntry(i_strKeyInTreeOfTargetBranch);
 
     // Please note that the model may not contain each index tree entry as a filter
@@ -2218,7 +2213,7 @@ int CModelIdxTree::rowCount( const QModelIndex& i_modelIdxParent ) const
 
     int iRowCount = 1;
 
-    if( m_pIdxTree != nullptr && m_pModelRootEntry != nullptr )
+    if( m_pModelRootEntry != nullptr )
     {
         if( !i_modelIdxParent.isValid() )
         {

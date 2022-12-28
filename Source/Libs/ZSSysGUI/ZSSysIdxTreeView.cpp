@@ -163,14 +163,8 @@ QWidget* CDelegateIdxTree::createEditor(
             //pVThis->m_pEdtName->installEventFilter(pVThis);
 
             pVThis->m_bEdtNameDestroyedSignalConnected = QObject::connect(
-                /* pObjSender   */ m_pEdtName,
-                /* szSignal     */ SIGNAL( destroyed(QObject*) ),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT( onEdtNameDestroyed(QObject*) ) );
-            if( !m_bEdtNameDestroyedSignalConnected )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-            }
+                m_pEdtName, &QLineEdit::destroyed,
+                this, &CDelegateIdxTree::onEdtNameDestroyed);
         }
     } // if( i_modelIdx.column() == CModelIdxTree::EColumnTreeEntryName )
 
@@ -364,6 +358,10 @@ CTreeViewIdxTree::CTreeViewIdxTree( CIdxTree* i_pIdxTree, QWidget* i_pWdgtParent
     m_pModel = new CModelIdxTree(nullptr, nullptr);
 
     setModel(m_pModel);
+
+    QObject::connect(
+        m_pModel, static_cast<void (CModelIdxTree::*)(EIdxTreeSortOrder)>(&CModelIdxTree::sortOrderChanged),
+        this, &CTreeViewIdxTree::onModelSortOrderChanged );
 
     m_pDelegate = new CDelegateIdxTree(this);
 
@@ -588,7 +586,22 @@ void CTreeViewIdxTree::setIdxTree( CIdxTree* i_pIdxTree )
 
     if( m_pIdxTree != i_pIdxTree )
     {
+        if( m_pIdxTree != nullptr )
+        {
+            QObject::disconnect(
+                m_pIdxTree, &CIdxTree::aboutToBeDestroyed,
+                this, &CTreeViewIdxTree::onIdxTreeAboutToBeDestroyed);
+        }
+
         m_pIdxTree = i_pIdxTree;
+
+        if( m_pIdxTree != nullptr )
+        {
+            QObject::connect(
+                m_pIdxTree, &CIdxTree::aboutToBeDestroyed,
+                this, &CTreeViewIdxTree::onIdxTreeAboutToBeDestroyed);
+        }
+
         m_pModel->setIdxTree(i_pIdxTree);
     }
 }
@@ -1071,6 +1084,10 @@ void CTreeViewIdxTree::keyPressEvent( QKeyEvent* i_pEv )
         {
             switch( i_pEv->key() )
             {
+                case Qt::Key_Enter:
+                {
+                    break;
+                }
                 case Qt::Key_F2: // Rename
                 {
                     // Handled by delegate.
@@ -1220,14 +1237,7 @@ void CTreeViewIdxTree::keyPressEvent( QKeyEvent* i_pEv )
 
     if( !bEventHandled )
     {
-        if( i_pEv->key() != Qt::Key_F2 )
-        {
-            QTreeView::keyPressEvent(i_pEv);
-        }
-        else
-        {
-            QTreeView::keyPressEvent(i_pEv);
-        }
+        QTreeView::keyPressEvent(i_pEv);
     }
 
 } // keyPressEvent
@@ -1593,6 +1603,31 @@ void CTreeViewIdxTree::dropEvent( QDropEvent* i_pEv )
 } // dropEvent
 
 /*==============================================================================
+protected: // slots
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CTreeViewIdxTree::onModelSortOrderChanged(EIdxTreeSortOrder i_sortOrder)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        strMthInArgs = idxTreeSortOrder2Str(i_sortOrder);
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "onModelSortOrderChanged",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    emit sortOrderChanged(i_sortOrder);
+    emit sortOrderChanged(idxTreeSortOrder2Str(i_sortOrder));
+}
+
+/*==============================================================================
 protected slots:
 ==============================================================================*/
 
@@ -1647,6 +1682,10 @@ void CTreeViewIdxTree::onActionBranchCollapseTriggered( bool i_bChecked )
     }
 }
 
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
 //------------------------------------------------------------------------------
 void CTreeViewIdxTree::onActionBranchCreateNewBranchTriggered( bool i_bChecked )
 //------------------------------------------------------------------------------
@@ -1672,31 +1711,31 @@ void CTreeViewIdxTree::onActionBranchCreateNewBranchTriggered( bool i_bChecked )
             mthTracer.trace(strMthInArgs, ELogDetailLevel::Debug);
         }
 
-        //CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
+        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
 
-        //CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
+        CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
 
-        //if( pIdxTree != nullptr && pModelBranch != nullptr )
-        //{
-        //    CIdxTreeEntry* pBranch = pModelBranch->treeEntry();
+        if( m_pIdxTree != nullptr && pModelBranch != nullptr )
+        {
+            CIdxTreeLocker idxTreeLocker(m_pIdxTree);
 
-        //    QString strName = "New Branch";
-        //    QString strUniqueName = strName;
-        //    int iCopies = 1;
+            CIdxTreeEntry* pBranch = pModelBranch->getIdxTreeEntry();
 
-        //    while( pBranch->indexOf(EIdxTreeEntryType::Branch, strUniqueName) >= 0 )
-        //    {
-        //        strUniqueName = strName + QString::number(++iCopies);
-        //    }
-        //    strName = strUniqueName;
+            QString strName = "New Branch";
+            QString strUniqueName = strName;
+            int iCopies = 1;
 
-        //    CIdxTreeEntry* pBranchNew = pIdxTree->createBranch(strName);
+            while( pBranch->indexOf(EIdxTreeEntryType::Branch, strUniqueName) >= 0 )
+            {
+                strUniqueName = strName + QString::number(++iCopies);
+            }
+            strName = strUniqueName;
 
-        //    pIdxTree->add(pBranchNew, pBranch);
+            CIdxTreeEntry* pBranchNew = m_pIdxTree->createBranch(strName);
 
-        //} // if( pIdxTree != nullptr && pModelBranch != nullptr )
-    } // if( m_modelIdxSelectedOnMousePressEvent.isValid() )
-
+            m_pIdxTree->add(pBranchNew, pBranch);
+        }
+    }
 } // onActionBranchCreateNewBranchTriggered
 
 //------------------------------------------------------------------------------
@@ -1724,31 +1763,31 @@ void CTreeViewIdxTree::onActionBranchCreateNewLeaveTriggered( bool i_bChecked )
             mthTracer.trace(strMthInArgs, ELogDetailLevel::Debug);
         }
 
-        //CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
+        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
 
-        //CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
+        CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
 
-        //if( pIdxTree != nullptr && pModelBranch != nullptr )
-        //{
-        //    CIdxTreeEntry* pBranch = pModelBranch->treeEntry();
+        if( m_pIdxTree != nullptr && pModelBranch != nullptr )
+        {
+            CIdxTreeLocker idxTreeLocker(m_pIdxTree);
 
-        //    QString strName = "New Leave";
-        //    QString strUniqueName = strName;
-        //    int iCopies = 1;
+            CIdxTreeEntry* pBranch = pModelBranch->getIdxTreeEntry();
 
-        //    while( pBranch->indexOf(EIdxTreeEntryType::Leave, strUniqueName) >= 0 )
-        //    {
-        //        strUniqueName = strName + QString::number(++iCopies);
-        //    }
-        //    strName = strUniqueName;
+            QString strName = "New Leave";
+            QString strUniqueName = strName;
+            int iCopies = 1;
 
-        //    CIdxTreeEntry* pLeaveNew = pIdxTree->createLeave(strName);
+            while( pBranch->indexOf(EIdxTreeEntryType::Leave, strUniqueName) >= 0 )
+            {
+                strUniqueName = strName + QString::number(++iCopies);
+            }
+            strName = strUniqueName;
 
-        //    pIdxTree->add(pLeaveNew, pBranch);
+            CIdxTreeEntry* pLeaveNew = m_pIdxTree->createLeave(strName);
 
-        //} // if( pIdxTree != nullptr && pModelBranch != nullptr )
-    } // if( m_modelIdxSelectedOnMousePressEvent.isValid() )
-
+            m_pIdxTree->add(pLeaveNew, pBranch);
+        }
+    }
 } // onActionBranchCreateNewLeaveTriggered
 
 //------------------------------------------------------------------------------
@@ -1776,20 +1815,20 @@ void CTreeViewIdxTree::onActionBranchDeleteTriggered( bool i_bChecked )
             mthTracer.trace(strMthInArgs, ELogDetailLevel::Debug);
         }
 
-        //CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
+        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
 
-        //CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
+        CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
 
-        //if( pIdxTree != nullptr && pModelBranch != nullptr )
-        //{
-        //    CIdxTreeEntry* pBranch = pModelBranch->treeEntry();
+        if( m_pIdxTree != nullptr && pModelBranch != nullptr )
+        {
+            CIdxTreeLocker idxTreeLocker(m_pIdxTree);
 
-        //    delete pBranch;
-        //    pBranch = nullptr;
+            CIdxTreeEntry* pBranch = pModelBranch->getIdxTreeEntry();
 
-        //} // if( pIdxTree != nullptr && pModelBranch != nullptr )
-    } // if( m_modelIdxSelectedOnMousePressEvent.isValid() )
-
+            delete pBranch;
+            pBranch = nullptr;
+        }
+    }
 } // onActionBranchDeleteTriggered
 
 //------------------------------------------------------------------------------
@@ -1849,8 +1888,7 @@ void CTreeViewIdxTree::onActionBranchCopyTriggered( bool i_bChecked )
             strMthInArgs = "ModelIdxSelected {" + CModelIdxTree::modelIdx2Str(m_modelIdxSelectedForPaste) + "}";
             mthTracer.trace(strMthInArgs, ELogDetailLevel::Debug);
         }
-    } // if( m_modelIdxSelectedOnMousePressEvent.isValid() )
-
+    }
 } // onActionBranchCopyTriggered
 
 //------------------------------------------------------------------------------
@@ -1879,37 +1917,38 @@ void CTreeViewIdxTree::onActionBranchPasteTriggered( bool i_bChecked )
             mthTracer.trace(strMthInArgs, ELogDetailLevel::Debug);
         }
 
-        //CModelIdxTreeEntry* pModelTreeEntrySrc = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedForPaste.internalPointer());
-        //CModelIdxTreeEntry* pModelTreeEntryTrg = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
-        //CModelIdxTreeEntry* pModelBranchTrg    = nullptr;
+        CModelIdxTreeEntry* pModelTreeEntrySrc = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedForPaste.internalPointer());
+        CModelIdxTreeEntry* pModelTreeEntryTrg = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
+        CModelIdxTreeEntry* pModelBranchTrg    = nullptr;
 
-        //if( pModelTreeEntryTrg->entryType() != EIdxTreeEntryType::Root && pModelTreeEntryTrg->entryType() != EIdxTreeEntryType::Branch )
-        //{
-        //    pModelBranchTrg = pModelTreeEntryTrg->modelParentBranch();
-        //}
-        //else
-        //{
-        //    pModelBranchTrg = pModelTreeEntryTrg;
-        //}
+        if( pModelTreeEntryTrg->entryType() != EIdxTreeEntryType::Root && pModelTreeEntryTrg->entryType() != EIdxTreeEntryType::Branch )
+        {
+            pModelBranchTrg = pModelTreeEntryTrg->parentBranch();
+        }
+        else
+        {
+            pModelBranchTrg = pModelTreeEntryTrg;
+        }
 
-        //if( pModelBranchTrg != nullptr )
-        //{
-        //    CIdxTreeEntry* pTreeEntrySrc = pModelTreeEntrySrc->treeEntry();
-        //    CIdxTreeEntry* pBranchTrg    = pModelBranchTrg->treeEntry();
+        if( pModelBranchTrg != nullptr )
+        {
+            CIdxTreeLocker idxTreeLocker(m_pIdxTree);
 
-        //    if( m_pasteMode == EPasteMode::Copy )
-        //    {
-        //        pIdxTree->copy(pTreeEntrySrc, pBranchTrg);
-        //    }
-        //    else if( m_pasteMode == EPasteMode::Cut )
-        //    {
-        //        pIdxTree->move(pTreeEntrySrc, pBranchTrg);
-        //        m_modelIdxSelectedForPaste = QModelIndex();
-        //        m_pasteMode = EPasteMode::Undefined;
-        //    }
-        //} // if( pModelBranchTrg != nullptr )
-    } // if( m_modelIdxSelectedForPaste.isValid() )
+            CIdxTreeEntry* pTreeEntrySrc = pModelTreeEntrySrc->getIdxTreeEntry();
+            CIdxTreeEntry* pBranchTrg    = pModelBranchTrg->getIdxTreeEntry();
 
+            if( m_pasteMode == EPasteMode::Copy )
+            {
+                m_pIdxTree->copy(pTreeEntrySrc, pBranchTrg);
+            }
+            else if( m_pasteMode == EPasteMode::Cut )
+            {
+                m_pIdxTree->move(pTreeEntrySrc, pBranchTrg);
+                m_modelIdxSelectedForPaste = QModelIndex();
+                m_pasteMode = EPasteMode::Undefined;
+            }
+        }
+    }
 } // onActionBranchPasteTriggered
 
 /*==============================================================================
@@ -1941,20 +1980,20 @@ void CTreeViewIdxTree::onActionLeaveDeleteTriggered( bool i_bChecked )
             mthTracer.trace(strMthInArgs, ELogDetailLevel::Debug);
         }
 
-        //CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
+        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
 
-        //CModelIdxTreeEntry* pModelLeave = pModelTreeEntry;
+        CModelIdxTreeEntry* pModelLeave = pModelTreeEntry;
 
-        //if( pIdxTree != nullptr && pModelLeave != nullptr )
-        //{
-        //    CIdxTreeEntry* pLeave = pModelLeave->treeEntry();
+        if( m_pIdxTree != nullptr && pModelLeave != nullptr )
+        {
+            CIdxTreeLocker idxTreeLocker(m_pIdxTree);
 
-        //    delete pLeave;
-        //    pLeave = nullptr;
+            CIdxTreeEntry* pLeave = pModelLeave->getIdxTreeEntry();
 
-        //} // if( pIdxTree != nullptr && pModelLeave != nullptr )
-    } // if( m_modelIdxSelectedOnMousePressEvent.isValid() )
-
+            delete pLeave;
+            pLeave = nullptr;
+        }
+    }
 } // onActionLeaveDeleteTriggered
 
 //------------------------------------------------------------------------------
@@ -2043,35 +2082,55 @@ void CTreeViewIdxTree::onActionLeavePasteTriggered( bool i_bChecked )
             mthTracer.trace(strMthInArgs, ELogDetailLevel::Debug);
         }
 
-        //CModelIdxTreeEntry* pModelTreeEntrySrc = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedForPaste.internalPointer());
-        //CModelIdxTreeEntry* pModelTreeEntryTrg = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
-        //CModelIdxTreeEntry* pModelBranchTrg    = nullptr;
+        CModelIdxTreeEntry* pModelTreeEntrySrc = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedForPaste.internalPointer());
+        CModelIdxTreeEntry* pModelTreeEntryTrg = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
+        CModelIdxTreeEntry* pModelBranchTrg    = nullptr;
 
-        //if( pModelTreeEntryTrg->entryType() != EIdxTreeEntryType::Root && pModelTreeEntryTrg->entryType() != EIdxTreeEntryType::Branch )
-        //{
-        //    pModelBranchTrg = pModelTreeEntryTrg->modelParentBranch();
-        //}
-        //else
-        //{
-        //    pModelBranchTrg = pModelTreeEntryTrg;
-        //}
+        if( pModelTreeEntryTrg->entryType() != EIdxTreeEntryType::Root && pModelTreeEntryTrg->entryType() != EIdxTreeEntryType::Branch )
+        {
+            pModelBranchTrg = pModelTreeEntryTrg->parentBranch();
+        }
+        else
+        {
+            pModelBranchTrg = pModelTreeEntryTrg;
+        }
 
-        //if( pModelBranchTrg != nullptr )
-        //{
-        //    CIdxTreeEntry* pTreeEntrySrc = pModelTreeEntrySrc->treeEntry();
-        //    CIdxTreeEntry* pBranchTrg    = pModelBranchTrg->treeEntry();
+        if( pModelBranchTrg != nullptr )
+        {
+            CIdxTreeLocker idxTreeLocker(m_pIdxTree);
 
-        //    if( m_pasteMode == EPasteMode::Copy )
-        //    {
-        //        pIdxTree->copy(pTreeEntrySrc, pBranchTrg);
-        //    }
-        //    else if( m_pasteMode == EPasteMode::Cut )
-        //    {
-        //        pIdxTree->move(pTreeEntrySrc, pBranchTrg);
-        //        m_modelIdxSelectedForPaste = QModelIndex();
-        //        m_pasteMode = EPasteMode::Undefined;
-        //    }
-        //} // if( pModelBranchTrg != nullptr )
-    } // if( m_modelIdxSelectedOnMousePressEvent.isValid() )
+            CIdxTreeEntry* pTreeEntrySrc = pModelTreeEntrySrc->getIdxTreeEntry();
+            CIdxTreeEntry* pBranchTrg    = pModelBranchTrg->getIdxTreeEntry();
 
+            if( m_pasteMode == EPasteMode::Copy )
+            {
+                m_pIdxTree->copy(pTreeEntrySrc, pBranchTrg);
+            }
+            else if( m_pasteMode == EPasteMode::Cut )
+            {
+                m_pIdxTree->move(pTreeEntrySrc, pBranchTrg);
+                m_modelIdxSelectedForPaste = QModelIndex();
+                m_pasteMode = EPasteMode::Undefined;
+            }
+        }
+    }
 } // onActionLeavePasteTriggered
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CTreeViewIdxTree::onIdxTreeAboutToBeDestroyed()
+//------------------------------------------------------------------------------
+{
+    #ifdef ZS_TRACE_GUI_MODELS
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "onIdxTreeAboutToBeDestroyed",
+        /* strMethodInArgs    */ "" );
+    #endif
+
+    m_pIdxTree = nullptr;
+}

@@ -138,11 +138,17 @@ CWdgtIdxTreeTableViewBranchContent::CWdgtIdxTreeTableViewBranchContent(
         m_pBtnSortOrder, &QPushButton::clicked,
         this, &CWdgtIdxTreeTableViewBranchContent::onBtnSortOrderClicked );
 
+    m_pLytHeadLine->addStretch();
+
     // <TableView>
     //============
 
     m_pTableViewBranchContent = new CTableViewIdxTreeBranchContent(nullptr, nullptr);
     m_pLytMain->addWidget(m_pTableViewBranchContent, 1);
+
+    QObject::connect(
+        m_pTableViewBranchContent, static_cast<void (CTableViewIdxTreeBranchContent::*)(EIdxTreeSortOrder)>(&CTableViewIdxTreeBranchContent::sortOrderChanged),
+        this, &CWdgtIdxTreeTableViewBranchContent::onTableViewSortOrderChanged );
 
     if( i_pIdxTree != nullptr )
     {
@@ -200,7 +206,22 @@ void CWdgtIdxTreeTableViewBranchContent::setIdxTree( CIdxTree* i_pIdxTree )
 
     if( m_pIdxTree != i_pIdxTree )
     {
+        if( m_pIdxTree != nullptr )
+        {
+            QObject::disconnect(
+                m_pIdxTree, &CIdxTree::aboutToBeDestroyed,
+                this, &CWdgtIdxTreeTableViewBranchContent::onIdxTreeAboutToBeDestroyed);
+        }
+
         m_pIdxTree = i_pIdxTree;
+
+        if( m_pIdxTree != nullptr )
+        {
+            QObject::connect(
+                m_pIdxTree, &CIdxTree::aboutToBeDestroyed,
+                this, &CWdgtIdxTreeTableViewBranchContent::onIdxTreeAboutToBeDestroyed);
+        }
+
         m_pTableViewBranchContent->setIdxTree(i_pIdxTree);
     }
 }
@@ -303,4 +324,50 @@ void CWdgtIdxTreeTableViewBranchContent::onBtnSortOrderClicked( bool i_bChecked 
 
     QPixmap pxmSortOrder = idxTreeSortOrder2Pixmap(sortOrderNew, m_szBtns);
     m_pBtnSortOrder->setIcon(pxmSortOrder);
+}
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtIdxTreeTableViewBranchContent::onTableViewSortOrderChanged( EIdxTreeSortOrder i_sortOrder )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        strMthInArgs = idxTreeSortOrder2Str(i_sortOrder);
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "onTableViewSortOrderChanged",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    m_pBtnSortOrder->setProperty("SortOrderCurr", static_cast<int>(i_sortOrder));
+
+    QPixmap pxmSortOrder = idxTreeSortOrder2Pixmap(i_sortOrder, m_szBtns);
+    m_pBtnSortOrder->setIcon(pxmSortOrder);
+}
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtIdxTreeTableViewBranchContent::onIdxTreeAboutToBeDestroyed()
+//------------------------------------------------------------------------------
+{
+    #ifdef ZS_TRACE_GUI_MODELS
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "onIdxTreeAboutToBeDestroyed",
+        /* strMethodInArgs    */ "" );
+    #endif
+
+    m_pIdxTree = nullptr;
 }

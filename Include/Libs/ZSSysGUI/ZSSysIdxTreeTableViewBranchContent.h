@@ -58,6 +58,9 @@ public: // class methods
 public: // ctors and dtor
     CTableViewIdxTreeBranchContent( CIdxTree* i_pIdxTree, QWidget* i_pWdgtParent = nullptr );
     virtual ~CTableViewIdxTreeBranchContent();
+signals:
+    void sortOrderChanged(const QString& i_strSortOrder);
+    void sortOrderChanged(EIdxTreeSortOrder i_sortOrder);
 public: // overridables
     virtual QString nameSpace() const { return CTableViewIdxTreeBranchContent::NameSpace(); }
     virtual QString className() const { return CTableViewIdxTreeBranchContent::ClassName(); }
@@ -70,6 +73,8 @@ public: // overridables
 public: // instance methods
     void setSortOrder( EIdxTreeSortOrder i_sortOrder );
     EIdxTreeSortOrder sortOrder() const;
+protected slots:
+    void onModelSortOrderChanged(EIdxTreeSortOrder i_sortOrder);
 protected: // overridables of base class QTreeView
     virtual void keyPressEvent( QKeyEvent* i_pEv );
     virtual void mousePressEvent( QMouseEvent* i_pEv );
@@ -86,6 +91,8 @@ protected slots:
     void onActionLeaveCutTriggered( bool i_bChecked );
     void onActionLeaveCopyTriggered( bool i_bChecked );
     void onActionLeavePasteTriggered( bool i_bChecked );
+protected slots:
+    void onIdxTreeAboutToBeDestroyed();
 protected: // instance members
     CIdxTree* m_pIdxTree;
     CModelIdxTreeBranchContent* m_pModel;

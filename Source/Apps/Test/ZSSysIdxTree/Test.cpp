@@ -706,6 +706,13 @@ CTest::CTest() :
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " SortOrder Descending",
+        /* strOperation    */ "WidgetIdxTree.setSortOrder(Descending)",
+        /* pTSGrpParent    */ pGrpChangeViews,
+        /* szDoTestStepFct */ SLOT(doTestStepChangeViews(ZS::Test::CTestStep*)) );
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " SortOrder Config",
         /* strOperation    */ "WidgetIdxTree.setSortOrder(Config)",
         /* pTSGrpParent    */ pGrpChangeViews,
@@ -729,6 +736,13 @@ CTest::CTest() :
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " SortOrder Ascending",
         /* strOperation    */ "WidgetIdxTree.setSortOrder(Ascending)",
+        /* pTSGrpParent    */ pGrpChangeViews,
+        /* szDoTestStepFct */ SLOT(doTestStepChangeViews(ZS::Test::CTestStep*)) );
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " SortOrder Descending",
+        /* strOperation    */ "WidgetIdxTree.setSortOrder(Descending)",
         /* pTSGrpParent    */ pGrpChangeViews,
         /* szDoTestStepFct */ SLOT(doTestStepChangeViews(ZS::Test::CTestStep*)) );
 
@@ -2331,6 +2345,11 @@ void CTest::doTestStepAddEntry( ZS::Test::CTestStep* i_pTestStep )
         // Get new list of tree entries and map of free indices and compare with desired list and map
         //--------------------------------------------------------------------------------------------
 
+        CMainWindow* pMainWindow = CMainWindow::GetInstance();
+        CWdgtIdxTree* pWdgtIdxTree = pMainWindow->idxTreeWidget();
+        CTreeViewIdxTree* pTreeViewIdxTree = pWdgtIdxTree->treeView();
+        CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(pTreeViewIdxTree->model());
+
         QVector<CIdxTreeEntry*> arpTreeEntriesResult = m_pIdxTree->treeEntriesVec();
 
         QVector<STreeEntryDscr> arTreeEntryDscrsResult = toTreeEntryDscrs(arpTreeEntriesResult);
@@ -2341,6 +2360,11 @@ void CTest::doTestStepAddEntry( ZS::Test::CTestStep* i_pTestStep )
 
         compare(mapFreeIdxsExpected, mapFreeIdxsResult, strlstExpectedValues, strlstResultValues);
 
+        strResultValue = checkPreOrderIterators(m_pIdxTree, pModelIdxTree);
+        if ( !strResultValue.isEmpty() )
+        {
+            strlstResultValues << strResultValue;
+        }
     } // if( strOperation.startsWith("IdxTree.add",Qt::CaseInsensitive) )
 
     else // if( strOperation.startsWith("?") )
@@ -2431,6 +2455,11 @@ void CTest::doTestStepRemoveEntry( ZS::Test::CTestStep* i_pTestStep )
         // Get new list of tree entries and map of free indices and compare with desired list and map
         //--------------------------------------------------------------------------------------------
 
+        CMainWindow* pMainWindow = CMainWindow::GetInstance();
+        CWdgtIdxTree* pWdgtIdxTree = pMainWindow->idxTreeWidget();
+        CTreeViewIdxTree* pTreeViewIdxTree = pWdgtIdxTree->treeView();
+        CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(pTreeViewIdxTree->model());
+
         QVector<CIdxTreeEntry*> arpTreeEntriesResult = m_pIdxTree->treeEntriesVec();
 
         QVector<STreeEntryDscr> arTreeEntryDscrsResult = toTreeEntryDscrs(arpTreeEntriesResult);
@@ -2441,6 +2470,11 @@ void CTest::doTestStepRemoveEntry( ZS::Test::CTestStep* i_pTestStep )
 
         compare(mapFreeIdxsExpected, mapFreeIdxsResult, strlstExpectedValues, strlstResultValues);
 
+        strResultValue = checkPreOrderIterators(m_pIdxTree, pModelIdxTree);
+        if ( !strResultValue.isEmpty() )
+        {
+            strlstResultValues << strResultValue;
+        }
     } // if( strOperation.startsWith("delete",Qt::CaseInsensitive) )
 
     else // if( strOperation.startsWith("?") )
@@ -2531,6 +2565,11 @@ void CTest::doTestStepMoveEntry( ZS::Test::CTestStep* i_pTestStep )
             // Get new list of tree entries and map of free indices and compare with desired list and map
             //--------------------------------------------------------------------------------------------
 
+            CMainWindow* pMainWindow = CMainWindow::GetInstance();
+            CWdgtIdxTree* pWdgtIdxTree = pMainWindow->idxTreeWidget();
+            CTreeViewIdxTree* pTreeViewIdxTree = pWdgtIdxTree->treeView();
+            CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(pTreeViewIdxTree->model());
+
             QVector<CIdxTreeEntry*> arpTreeEntriesResult = m_pIdxTree->treeEntriesVec();
 
             QVector<STreeEntryDscr> arTreeEntryDscrsResult = toTreeEntryDscrs(arpTreeEntriesResult);
@@ -2541,6 +2580,11 @@ void CTest::doTestStepMoveEntry( ZS::Test::CTestStep* i_pTestStep )
 
             compare(mapFreeIdxsExpected, mapFreeIdxsResult, strlstExpectedValues, strlstResultValues);
 
+            strResultValue = checkPreOrderIterators(m_pIdxTree, pModelIdxTree);
+            if ( !strResultValue.isEmpty() )
+            {
+                strlstResultValues << strResultValue;
+            }
         } // if( strlstArgs.size() == 2 )
 
         else // if( strlstArgs.size() != 2 )
@@ -2641,6 +2685,11 @@ void CTest::doTestStepCopyEntry( ZS::Test::CTestStep* i_pTestStep )
             // Get new list of tree entries and map of free indices and compare with desired list and map
             //--------------------------------------------------------------------------------------------
 
+            CMainWindow* pMainWindow = CMainWindow::GetInstance();
+            CWdgtIdxTree* pWdgtIdxTree = pMainWindow->idxTreeWidget();
+            CTreeViewIdxTree* pTreeViewIdxTree = pWdgtIdxTree->treeView();
+            CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(pTreeViewIdxTree->model());
+
             QVector<CIdxTreeEntry*> arpTreeEntriesResult = m_pIdxTree->treeEntriesVec();
 
             QVector<STreeEntryDscr> arTreeEntryDscrsResult = toTreeEntryDscrs(arpTreeEntriesResult);
@@ -2651,6 +2700,11 @@ void CTest::doTestStepCopyEntry( ZS::Test::CTestStep* i_pTestStep )
 
             compare(mapFreeIdxsExpected, mapFreeIdxsResult, strlstExpectedValues, strlstResultValues);
 
+            strResultValue = checkPreOrderIterators(m_pIdxTree, pModelIdxTree);
+            if ( !strResultValue.isEmpty() )
+            {
+                strlstResultValues << strResultValue;
+            }
         } // if( strlstArgs.size() == 2 )
 
         else // if( strlstArgs.size() != 2 )
@@ -2740,6 +2794,11 @@ void CTest::doTestStepRenameEntry( ZS::Test::CTestStep* i_pTestStep )
             // Get new list of tree entries and map of free indices and compare with desired list and map
             //--------------------------------------------------------------------------------------------
 
+            CMainWindow* pMainWindow = CMainWindow::GetInstance();
+            CWdgtIdxTree* pWdgtIdxTree = pMainWindow->idxTreeWidget();
+            CTreeViewIdxTree* pTreeViewIdxTree = pWdgtIdxTree->treeView();
+            CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(pTreeViewIdxTree->model());
+
             QVector<CIdxTreeEntry*> arpTreeEntriesResult = m_pIdxTree->treeEntriesVec();
 
             QVector<STreeEntryDscr> arTreeEntryDscrsResult = toTreeEntryDscrs(arpTreeEntriesResult);
@@ -2750,6 +2809,11 @@ void CTest::doTestStepRenameEntry( ZS::Test::CTestStep* i_pTestStep )
 
             compare(mapFreeIdxsExpected, mapFreeIdxsResult, strlstExpectedValues, strlstResultValues);
 
+            strResultValue = checkPreOrderIterators(m_pIdxTree, pModelIdxTree);
+            if ( !strResultValue.isEmpty() )
+            {
+                strlstResultValues << strResultValue;
+            }
         } // if( strlstArgs.size() == 2 )
 
         else // if( strlstArgs.size() != 2 )
@@ -2812,6 +2876,10 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
         {
             sortOrder = EIdxTreeSortOrder::Ascending;
         }
+        else if( strOperation.contains("Descending",Qt::CaseInsensitive) )
+        {
+            sortOrder = EIdxTreeSortOrder::Descending;
+        }
         strOperation = "WidgetIdxTree.setSortOrder";
     }
     else if( strOperation.contains("WidgetIdxTree.setViewMode") )
@@ -2842,13 +2910,12 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
     // Test Step
     //----------
 
-    CIdxTree*                       pIdxTree                       = m_pIdxTree;
-    CMainWindow*                    pMainWindow                    = CMainWindow::GetInstance();
-    CWdgtIdxTree*                   pWdgtIdxTree                   = pMainWindow->idxTreeWidget();
-    CTreeViewIdxTree*               pTreeViewIdxTree               = pWdgtIdxTree->treeView();
-    CModelIdxTree*                  pModelIdxTree                  = dynamic_cast<CModelIdxTree*>(pTreeViewIdxTree->model());
+    CMainWindow* pMainWindow = CMainWindow::GetInstance();
+    CWdgtIdxTree* pWdgtIdxTree = pMainWindow->idxTreeWidget();
+    CTreeViewIdxTree* pTreeViewIdxTree = pWdgtIdxTree->treeView();
+    CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(pTreeViewIdxTree->model());
     CTableViewIdxTreeBranchContent* pTableViewIdxTreeBranchContent = pWdgtIdxTree->tableView();
-    CModelIdxTreeBranchContent*     pModelIdxTreeBranchContent     = nullptr;
+    CModelIdxTreeBranchContent* pModelIdxTreeBranchContent = nullptr;
 
     if( strOperation == "WidgetIdxTree.expandAll" )
     {
@@ -2930,8 +2997,8 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
         //---------------------------
 
         // The tree view must contain each entry of the index tree.
-        itIdxTree = pIdxTree->begin();
-        while( itIdxTree != pIdxTree->end() )
+        itIdxTree = m_pIdxTree->begin();
+        while( itIdxTree != m_pIdxTree->end() )
         {
             pTreeEntry = *itIdxTree;
             pModelTreeEntry = pModelIdxTree->findEntry(pTreeEntry->keyInTree());
@@ -2945,7 +3012,7 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
                 break;
             }
             ++itIdxTree;
-        } // while( itIdxTree != pIdxTree->end() )
+        }
 
         // Check Index iterator
         //---------------------
@@ -2953,10 +3020,10 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
         // When iterating through the tree model using the Index Iterator
         // the index tree iterator and the model tree iterator must point to the
         // same index tree entry. No matter which sort order is used.
-        itIdxTree      = pIdxTree->begin();
+        itIdxTree      = m_pIdxTree->begin();
         itModelIdxTree = pModelIdxTree->begin();
         idxItStep      = 0;
-        while( itIdxTree != pIdxTree->end() && itModelIdxTree != pModelIdxTree->end() )
+        while( itIdxTree != m_pIdxTree->end() && itModelIdxTree != pModelIdxTree->end() )
         {
             pTreeEntry = *itIdxTree;
             pModelTreeEntry = *itModelIdxTree;
@@ -2973,36 +3040,20 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
             ++itIdxTree;
             ++itModelIdxTree;
             ++idxItStep;
-        } // while( itIdxTree != pIdxTree->end() && itModelIdxTree != pModelIdxTree->end() )
+        }
 
         // Check PreOrder iterator
         //------------------------
 
         if( sortOrder == EIdxTreeSortOrder::Config )
         {
-            // If sort order is Config the model iterator and the index tree iterator must point
-            // to the same index tree entry.
-            itIdxTree      = pIdxTree->begin(CIdxTree::iterator::ETraversalOrder::PreOrder);
-            itModelIdxTree = pModelIdxTree->begin(CModelIdxTree::iterator::ETraversalOrder::PreOrder);
-            idxItStep      = 0;
-            while( itIdxTree != pIdxTree->end() && itModelIdxTree != pModelIdxTree->end() )
+            strResultValue = checkPreOrderIterators(m_pIdxTree, pModelIdxTree);
+            if ( !strResultValue.isEmpty() )
             {
-                pTreeEntry = *itIdxTree;
-                pModelTreeEntry = *itModelIdxTree;
-                if( pTreeEntry->keyInTree() != pModelTreeEntry->keyInTree() )
-                {
-                    strResultValue  = "ViewMode: " + CWdgtIdxTree::viewMode2Str(viewMode);
-                    strResultValue += ", SortOrder: " + idxTreeSortOrder2Str(sortOrder);
-                    strResultValue += ", Iterator.TraversalOrder: PreOrder";
-                    strResultValue += ", IteratorStep: " + QString::number(idxItStep) + ":\n";
-                    strResultValue += "  ItIdxTree (" + pTreeEntry->keyInTree() + ") != ItModelIdxTree (" + pModelTreeEntry->keyInTree() + ")";
-                    strlstResultValues << strResultValue;
-                    break;
-                }
-                ++itIdxTree;
-                ++itModelIdxTree;
-                ++idxItStep;
-            } // while( itIdxTree != pIdxTree->end() && itModelIdxTree != pModelIdxTree->end() )
+                strResultValue.insert(0, ", SortOrder: " + idxTreeSortOrder2Str(sortOrder));
+                strResultValue.insert(0, "ViewMode: " + CWdgtIdxTree::viewMode2Str(viewMode));
+                strlstResultValues << strResultValue;
+            }
         } // if( sortOrder == EIdxTreeSortOrder::Config )
     } // if( viewMode == CWdgtIdxTree::EViewMode::NavPanelOnly )
 
@@ -3015,8 +3066,8 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
         //-----------------------
 
         // The tree view must contain each branch of the index tree.
-        itIdxTree = pIdxTree->begin();
-        while( itIdxTree != pIdxTree->end() )
+        itIdxTree = m_pIdxTree->begin();
+        while( itIdxTree != m_pIdxTree->end() )
         {
             pTreeEntry = *itIdxTree;
             if( pTreeEntry->entryType() == EIdxTreeEntryType::Root || pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
@@ -3032,7 +3083,7 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
                 }
             }
             ++itIdxTree;
-        } // while( itIdxTree != pIdxTree->end() )
+        }
 
         // The tree view (navigation panel) may only contain branch nodes.
         itModelIdxTree = pModelIdxTree->begin();
@@ -3108,7 +3159,7 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
                         for( int idxTreeEntry = 0; idxTreeEntry < pBranchSelected->count(); ++idxTreeEntry )
                         {
                             pTreeEntry = pBranchSelected->at(idxTreeEntry);
-                            pModelTreeEntry = pModelIdxTreeBranchContent->findEntry(pTreeEntry->keyInParentBranch());
+                            pModelTreeEntry = pModelIdxTreeBranchContent->findEntry(pTreeEntry->keyInTree());
                             if( pModelTreeEntry == nullptr )
                             {
                                 strResultValue  = "ViewMode: " + CWdgtIdxTree::viewMode2Str(viewMode);
@@ -3577,14 +3628,14 @@ void CTest::doTestStepTreeViewContextMenus( ZS::Test::CTestStep* i_pTestStep )
     // Test Step
     //----------
 
-    CIdxTree*           pIdxTree         = m_pIdxTree;
-    CMainWindow*        pMainWindow      = CMainWindow::GetInstance();
-    CWdgtIdxTree*       pWdgtIdxTree     = pMainWindow->idxTreeWidget();
-    CTreeViewIdxTree*   pTreeViewIdxTree = pWdgtIdxTree->treeView();
-    CModelIdxTree*      pModelIdxTree    = dynamic_cast<CModelIdxTree*>(pTreeViewIdxTree->model());
+    CMainWindow* pMainWindow = CMainWindow::GetInstance();
+    CWdgtIdxTree* pWdgtIdxTree = pMainWindow->idxTreeWidget();
+    CTreeViewIdxTree* pTreeViewIdxTree = pWdgtIdxTree->treeView();
+    CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(pTreeViewIdxTree->model());
+
     CModelIdxTreeEntry* pModelTreeEntry  = nullptr;
-    CIdxTreeEntry*      pBranch          = nullptr;
-    CIdxTreeEntry*      pLeave           = nullptr;
+    CIdxTreeEntry* pBranch = nullptr;
+    CIdxTreeEntry*pLeave = nullptr;
 
     if( strOperation == "TreeViewIdxTree.select" )
     {
@@ -3690,7 +3741,7 @@ void CTest::doTestStepTreeViewContextMenus( ZS::Test::CTestStep* i_pTestStep )
 
         else if( strOperation == "TreeViewIdxTree.findLeave" )
         {
-            pLeave = pIdxTree->findLeave(strKeyInTreeToBeSelected);
+            pLeave = m_pIdxTree->findLeave(strKeyInTreeToBeSelected);
 
             if( strParentGroupName.contains("Delete",Qt::CaseInsensitive) )
             {
@@ -3712,7 +3763,7 @@ void CTest::doTestStepTreeViewContextMenus( ZS::Test::CTestStep* i_pTestStep )
 
         else if( strOperation == "TreeViewIdxTree.findBranch" )
         {
-            pBranch = pIdxTree->findBranch(strKeyInTreeToBeSelected);
+            pBranch = m_pIdxTree->findBranch(strKeyInTreeToBeSelected);
 
             if( strParentGroupName.contains("Delete",Qt::CaseInsensitive) )
             {
@@ -3821,11 +3872,10 @@ void CTest::doTestStepGrpTrcAdmObjTreeStepTreeViewDragAndDrop( ZS::Test::CTestSt
 
         static QMimeData* s_pMimeData = nullptr;
 
-        CIdxTree*         pIdxTree         = m_pIdxTree;
-        CMainWindow*      pMainWindow      = CMainWindow::GetInstance();
-        CWdgtIdxTree*     pWdgtIdxTree     = pMainWindow->idxTreeWidget();
+        CMainWindow* pMainWindow = CMainWindow::GetInstance();
+        CWdgtIdxTree* pWdgtIdxTree = pMainWindow->idxTreeWidget();
         CTreeViewIdxTree* pTreeViewIdxTree = pWdgtIdxTree->treeView();
-        CModelIdxTree*    pModelIdxTree    = dynamic_cast<CModelIdxTree*>(pTreeViewIdxTree->model());
+        CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(pTreeViewIdxTree->model());
 
         if( strStepOperation.startsWith("WidgetIdxTree.expandAll") )
         {
@@ -4052,15 +4102,15 @@ void CTest::doTestStepGrpTrcAdmObjTreeStepTreeViewDragAndDrop( ZS::Test::CTestSt
             QString strBranchPathTrg;
             QString strObjNameTrg;
 
-            EIdxTreeEntryType entryTypeSrc = pIdxTree->splitPathStr(strKeyInTreeSrc, &strBranchPathSrc, &strObjNameSrc);
-            pIdxTree->splitPathStr(strKeyInTreeTrg, &strBranchPathTrg, &strObjNameTrg);
+            EIdxTreeEntryType entryTypeSrc = m_pIdxTree->splitPathStr(strKeyInTreeSrc, &strBranchPathSrc, &strObjNameSrc);
+            m_pIdxTree->splitPathStr(strKeyInTreeTrg, &strBranchPathTrg, &strObjNameTrg);
 
-            strKeyInTreeTrg = pIdxTree->buildKeyInTreeStr(entryTypeSrc, strBranchPathTrg, strObjNameTrg, strObjNameSrc);
+            strKeyInTreeTrg = m_pIdxTree->buildKeyInTreeStr(entryTypeSrc, strBranchPathTrg, strObjNameTrg, strObjNameSrc);
 
             strExpectedValue = strKeyInTreeTrg;
             strlstExpectedValues << strExpectedValue;
 
-            CIdxTreeEntry* pTreeEntry = pIdxTree->findLeave(strKeyInTreeTrg);
+            CIdxTreeEntry* pTreeEntry = m_pIdxTree->findLeave(strKeyInTreeTrg);
 
             if( pTreeEntry != nullptr )
             {
@@ -4083,11 +4133,11 @@ void CTest::doTestStepGrpTrcAdmObjTreeStepTreeViewDragAndDrop( ZS::Test::CTestSt
             QString strBranchPathSrc;
             QString strObjName;
 
-            EIdxTreeEntryType entryTypeSrc = pIdxTree->splitPathStr(strKeyInTreeSrc, &strBranchPathSrc, &strObjName);
+            EIdxTreeEntryType entryTypeSrc = m_pIdxTree->splitPathStr(strKeyInTreeSrc, &strBranchPathSrc, &strObjName);
 
-            strKeyInTreeTrg = pIdxTree->buildKeyInTreeStr(entryTypeSrc, strKeyInTreeTrg, strObjName);
+            strKeyInTreeTrg = m_pIdxTree->buildKeyInTreeStr(entryTypeSrc, strKeyInTreeTrg, strObjName);
 
-            CIdxTreeEntry* pTreeEntry = pIdxTree->findLeave(strKeyInTreeTrg);
+            CIdxTreeEntry* pTreeEntry = m_pIdxTree->findLeave(strKeyInTreeTrg);
 
             if( pTreeEntry != nullptr )
             {
@@ -4990,3 +5040,37 @@ void CTest::compare(
     } // if( !bEqual )
 
 } // compare
+
+/*==============================================================================
+public: // auxiliary methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QString CTest::checkPreOrderIterators(CIdxTree* i_pIdxTree, CModelIdxTree* i_pModelIdxTree) const
+//------------------------------------------------------------------------------
+{
+    QString strResultValue;
+
+    // If sort order is Config the model iterator and the index tree iterator must point
+    // to the same index tree entry.
+    CIdxTree::iterator itIdxTree = i_pIdxTree->begin(CIdxTree::iterator::ETraversalOrder::PreOrder);
+    CModelIdxTree::iterator itModelIdxTree = i_pModelIdxTree->begin(CModelIdxTree::iterator::ETraversalOrder::PreOrder);
+    int idxItStep = 0;
+    while( itIdxTree != i_pIdxTree->end() && itModelIdxTree != i_pModelIdxTree->end() )
+    {
+        CIdxTreeEntry* pTreeEntry = *itIdxTree;
+        CModelIdxTreeEntry* pModelTreeEntry = *itModelIdxTree;
+        if( pTreeEntry->keyInTree() != pModelTreeEntry->keyInTree() )
+        {
+            strResultValue = "Iterator.TraversalOrder: PreOrder";
+            strResultValue += ", IteratorStep: " + QString::number(idxItStep) + ":\n";
+            strResultValue += "  ItIdxTree (" + pTreeEntry->keyInTree() + ") != ItModelIdxTree (" + pModelTreeEntry->keyInTree() + ")";
+            break;
+        }
+        ++itIdxTree;
+        ++itModelIdxTree;
+        ++idxItStep;
+    }
+
+    return strResultValue;
+}
