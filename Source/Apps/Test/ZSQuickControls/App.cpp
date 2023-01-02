@@ -33,12 +33,13 @@ may result in using the software modules.
 #include "ZSSysGUI/ZSSysIdxTreeModel.h"
 #include "ZSSysGUI/ZSSysIdxTreeModelBranchContent.h"
 #include "ZSQuickControls/ZSQuickControlsDllMain.h"
-#include "ZSQuickControls/ZSQuickControlsThemeWindowsStyle.h"
+#include "ZSQuickControls/ZSQuickControlsWindowsStyle.h"
 
 #include <QtCore/qdiriterator.h>
 #include <QtQml/qqmlapplicationengine.h>
 #include <QtQml/qqmlcontext.h>
 #include <QtQuick/qquickwindow.h>
+#include <QtQuickControls2/qquickstyle.h>
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -83,7 +84,7 @@ CApplication::CApplication(
     m_pMainWindow(nullptr),
     m_pTrcServer(nullptr),
     m_pIdxTreeStyles(nullptr),
-    m_pThemeWindowsStyle(nullptr),
+    m_pWindowsStyle(nullptr),
     m_pTrcAdminObj(nullptr)
 {
     setObjectName("theApp");
@@ -107,7 +108,15 @@ CApplication::CApplication(
     }
     qDebug("qrcs END ---------------------------------------");
 
-    QIcon iconApp(":/Images/ZSAppTestQuickControls.ico");
+    QIcon iconApp;
+
+    QPixmap pxmApp32x32(":/ZS/App/ZeusSoft_32x32.png");
+    QPixmap pxmApp48x48(":/ZS/App/ZeusSoft_48x48.png");
+    QPixmap pxmApp64x64(":/ZS/App/ZeusSoft_64x64.png");
+
+    iconApp.addPixmap(pxmApp32x32);
+    iconApp.addPixmap(pxmApp48x48);
+    iconApp.addPixmap(pxmApp64x64);
 
     setWindowIcon(iconApp);
     setOrganizationName(i_strOrganizationName);
@@ -132,7 +141,14 @@ CApplication::CApplication(
     m_pQmlAppEngine->addImportPath(":/imports");
 
     m_pIdxTreeStyles = new CIdxTree("ZSStyles");
-    m_pThemeWindowsStyle = CThemeWindowsStyle::CreateInstance(m_pQmlAppEngine, m_pIdxTreeStyles);
+    m_pWindowsStyle = CWindowsStyle::CreateInstance(m_pQmlAppEngine, m_pIdxTreeStyles);
+    SErrResultInfo errResultInfo = m_pWindowsStyle->recall();
+    if( errResultInfo.isErrorResult() ) {
+        CErrLog::GetInstance()->addEntry(errResultInfo);
+    }
+
+    QQuickStyle::setStyle(CWindowsStyle::StyleName());
+    QQuickStyle::setFallbackStyle(CWindowsStyle::FallbackStyleName());
 
     QQmlContext* pQmlCtx = m_pQmlAppEngine->rootContext();
 
@@ -199,34 +215,33 @@ CApplication::CApplication(
 CApplication::~CApplication()
 //------------------------------------------------------------------------------
 {
-    try
-    {
+    try {
         delete m_pQmlAppEngine;
     }
-    catch(...)
-    {
+    catch(...) {
     }
     m_pQmlAppEngine = nullptr;
 
-    try
-    {
+    SErrResultInfo errResultInfo = m_pWindowsStyle->save();
+    if( errResultInfo.isErrorResult() ) {
+        CErrLog::GetInstance()->addEntry(errResultInfo);
+    }
+    CWindowsStyle::ReleaseInstance();
+    m_pWindowsStyle = nullptr;
+
+    try {
         delete m_pIdxTreeStyles;
     }
-    catch(...)
-    {
+    catch(...) {
     }
     m_pIdxTreeStyles = nullptr;
 
     CIpcTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
     m_pTrcAdminObj = nullptr;
 
-    if( m_pTrcServer != nullptr )
-    {
+    if( m_pTrcServer != nullptr ) {
         m_pTrcServer->saveAdminObjs();
     }
-
-    CThemeWindowsStyle::ReleaseInstance();
-    m_pThemeWindowsStyle = nullptr;
 
     CIpcTrcServer::ReleaseInstance();
     m_pTrcServer = nullptr;

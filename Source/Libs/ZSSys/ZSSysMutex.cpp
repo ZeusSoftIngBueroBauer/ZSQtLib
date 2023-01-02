@@ -273,7 +273,7 @@ void CMutex::setObjectName(const QString& i_strObjName)
     #ifdef ZS_TRACE_MUTEXES
     if( m_pTrcAdminObj != nullptr )
     {
-        CTrcServer::RenameTraceAdminObj(&m_pTrcAdminObj, objectName());
+        m_pTrcAdminObj = CTrcServer::RenameTraceAdminObj(m_pTrcAdminObj, objectName());
     }
     #endif
 }
@@ -729,7 +729,7 @@ void CRecursiveMutex::setObjectName(const QString& i_strObjName)
     #ifdef ZS_TRACE_MUTEXES
     if( m_pTrcAdminObj != nullptr )
     {
-        CTrcServer::RenameTraceAdminObj(&m_pTrcAdminObj, objectName());
+        m_pTrcAdminObj = CTrcServer::RenameTraceAdminObj(m_pTrcAdminObj, objectName());
     }
     #endif
 }

@@ -26,27 +26,44 @@ may result in using the software modules.
 
 import QtQuick 2.15                 // TableView derived from Flickable
 import QtQuick.Controls 1.4 as C1   // TableView derived from BasicTableView
+import ZSSys 1.0
 import ZSSysGUI 1.0
 
 C1.TableView {
     readonly property string nameSpace: "ZS::System::GUI::Qml"
     readonly property string className: "ErrLogTableView"
     readonly property string objectName: model.objectName
-    property var myTrcAdminObj: _ZSSys_trcServer.getTraceAdminObj(nameSpace, className, objectName)
+    property var trcAdminObj: TrcAdminObj {
+        nameSpace: root.nameSpace
+        className: root.className
+        objectName: root.objectName
+    }
 
     Component.onCompleted: {
-        myTrcAdminObj.traceMethodEnter("EnterLeave", "Component.onCompleted")
+        if( typeof(_ZSSys_trcServer) !== "undefined" ) {
+            trcAdminObj = _ZSSys_trcServer.getTraceAdminObj(nameSpace, className, objectName)
+        }
+        trcAdminObj.traceMethodEnter("EnterLeave", "Component.onCompleted")
         if(this.__listView) {
             this.__listView.add = transitionAdd
             this.__listView.displaced = transitionDisplaced
             this.__listView.spacing = 1
         }
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "Component.onCompleted")
+        trcAdminObj.traceMethodLeave("EnterLeave", "Component.onCompleted")
     }
     Component.onDestruction: {
-        myTrcAdminObj.traceMethodEnter("EnterLeave", "Component.onDestruction")
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "Component.onDestruction")
-        _ZSSys_trcServer.releaseTraceAdminObj(myTrcAdminObj);
+        trcAdminObj.traceMethodEnter("EnterLeave", "Component.onDestruction")
+        trcAdminObj.traceMethodLeave("EnterLeave", "Component.onDestruction")
+        if( typeof(_ZSSys_trcServer) !== "undefined" ) {
+            _ZSSys_trcServer.releaseTraceAdminObj(trcAdminObj);
+        }
+    }
+    onObjectNameChanged: {
+        if( typeof(_ZSSys_trcServer) !== "undefined" ) {
+            if( trcAdminObj.status === Component.Ready ) {
+                trcAdminObj = _ZSSys_trcServer.renameTraceAdminObj(trcAdminObj, objectName)
+            }
+        }
     }
 
     property alias errLog: errLogModel.errLog
@@ -64,8 +81,8 @@ C1.TableView {
     }
 
     onErrLogChanged: {
-        myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "onErrLogChanged", errLog ? errLog.objectName : "null");
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "onErrLogChanged");
+        trcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "onErrLogChanged", errLog ? errLog.objectName : "null");
+        trcAdminObj.traceMethodLeave("EnterLeave", "onErrLogChanged");
     }
 
     Transition {
@@ -84,7 +101,7 @@ C1.TableView {
 
     // Need a different name as QML does not allow to override functions.
     function _resizeColumnsToContents() {
-        myTrcAdminObj.traceMethodEnter("EnterLeave", "_resizeColumnsToContents");
+        trcAdminObj.traceMethodEnter("EnterLeave", "_resizeColumnsToContents");
         // The width of the headers is not taken into account.
         clmSeverityImage.width = 24 // model.columnWidthByRole(clmSeverityImage.role, fontPixelSize) + 2*columnSpacing
         clmResult.width = model.columnWidthByRole(clmResult.role, fontPixelSize) + 2*columnSpacing
@@ -93,7 +110,7 @@ C1.TableView {
         clmOccurences.width = model.columnWidthByRole(clmOccurences.role, fontPixelSize) + 2*columnSpacing
         clmSource.width = model.columnWidthByRole(clmSource.role, fontPixelSize) + 2*columnSpacing
         clmAddInfo.width = model.columnWidthByRole(clmAddInfo.role, fontPixelSize) + 2*columnSpacing
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "_resizeColumnsToContents");
+        trcAdminObj.traceMethodLeave("EnterLeave", "_resizeColumnsToContents");
     }
 
     C1.TableViewColumn {

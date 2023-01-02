@@ -24,95 +24,93 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-import QtQuick 2.12
-import QtQuick.Controls 2.12
-import QtQuick.Layouts 1.12
+import QtQuick 2.15
+import QtQuick.Controls 2.15
+import QtQuick.Layouts 1.15
+import ZSSys 1.0
 import ZSSysGUI 1.0
+import ZSQuickControls 1.0
 
-Item {
+Pane {
     property string nameSpace: "ZS::Apps::Test::QuickControls::Qml"
-    property string className: "WidgetCentral::Item"
+    property string className: "WidgetCentral"
     property string objectName: "theInst"
+    property var trcAdminObj: TrcAdminObj {
+        nameSpace: root.nameSpace
+        className: root.className
+        objectName: root.objectName
+    }
 
-    property var myTrcAdminObj: _ZSSys_trcServer.getTraceAdminObj(
-        root.nameSpace, root.className, root.objectName);
+    Component.onCompleted: {
+        if( typeof(_ZSSys_trcServer) !== "undefined" ) {
+            trcAdminObj = _ZSSys_trcServer.getTraceAdminObj(nameSpace, className, objectName)
+        }
+        trcAdminObj.traceMethodEnter("EnterLeave", "Component.onCompleted")
+        trcAdminObj.traceMethodLeave("EnterLeave", "Component.onCompleted")
+    }
     Component.onDestruction: {
-        _ZSSys_trcServer.releaseTraceAdminObj(root.myTrcAdminObj);
+        trcAdminObj.traceMethodEnter("EnterLeave", "Component.onDestruction")
+        trcAdminObj.traceMethodLeave("EnterLeave", "Component.onDestruction")
+        if( typeof(_ZSSys_trcServer) !== "undefined" ) {
+            _ZSSys_trcServer.releaseTraceAdminObj(trcAdminObj);
+        }
+    }
+    onObjectNameChanged: {
+        if( typeof(_ZSSys_trcServer) !== "undefined" ) {
+            if( trcAdminObj.status === Component.Ready ) {
+                trcAdminObj = _ZSSys_trcServer.renameTraceAdminObj(trcAdminObj, objectName)
+            }
+        }
     }
 
     id: root
     width: 320
     height: 480
 
-    GridLayout {
-        id: gridLayout
+    ColumnLayout {
+        spacing: 4
         anchors.fill: parent
 
-        columnSpacing: 5
-        rowSpacing: 5
-        rows: 4
-        columns: 3
+        ToolBar {
+            id: toolBarHeadline
+            Layout.fillWidth: true
 
-        IdxTreeWdgt {
-            id: idxTreeWdgtControls
-            idxTree: _ZSQuickControls_idxTreeStyles
-            Layout.column: 0
-            Layout.row: 0
-            Layout.rowSpan: 4
+            RowLayout {
+                anchors.fill: parent
+                spacing: 10
+
+                TextField {
+                    id: edtBranchPath
+                    Layout.fillWidth: true
+                    text: treeViewWdgt.treeView.model.getTreeEntryAbsoluteNodePath(treeViewWdgt.treeView.currentIndex)
+                    readOnly: true
+                }
+            }
+        }
+
+        SplitView {
+            orientation: Qt.Horizontal
             Layout.fillWidth: true
             Layout.fillHeight: true
-        }
 
-        Label {
-            text: qsTr("Button:")
-            Layout.column: 1
-            Layout.row: 0
-        }
+            IdxTreeViewWdgt {
+                id: treeViewWdgt
+                idxTree: _ZSQuickControls_idxTreeStyles
+                Layout.minimumWidth: 50
+                columnInternalIdVisible: false
+                columnIdxInTreeVisible: false
+                columnIdxInParentBranchVisible: false
+                columnKeyInTreeVisible: false
+                columnKeyInParentBranchVisible: false
+                //onCurrentIndexChanged: {
+                //    root.trcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "treeViewWdgt.onCurrentIndexChanged", treeView.model.modelIdx2Str(currentIndex));
+                //    root.trcAdminObj.traceMethodLeave("EnterLeave", "treeViewWdgt.onCurrentIndexChanged");
+                //}
+            }
 
-        Button {
-            id: buttonControl
-            text: qsTr("Click Me")
-            Layout.column: 2
-            Layout.row: 0
-        }
-
-        Label {
-            text: qsTr("CheckBox:")
-            Layout.column: 1
-            Layout.row: 1
-        }
-
-        CheckBox {
-            id: checkBoxControl
-            text: qsTr("")
-            checked: true
-            Layout.column: 2
-            Layout.row: 1
-        }
-
-        Label {
-            text: qsTr("Switch:")
-            Layout.column: 1
-            Layout.row: 2
-        }
-
-        Switch {
-            id: switchControl
-            Layout.column: 2
-            Layout.row: 2
-        }
-
-        Label {
-            text: qsTr("ToolButton:")
-            Layout.column: 1
-            Layout.row: 3
-        }
-
-        ToolButton {
-            id: toolButtonControl
-            text: qsTr("Click Me")
-            Layout.column: 2
-            Layout.row: 3
+            QuickControlsStyleWdgt {
+                id: quickControlsStyleWdgt
+            }
         }
     }
 }

@@ -27,25 +27,40 @@ may result in using the software modules.
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
+import ZSSys 1.0
 import ZSSysGUI 1.0
 
 ColumnLayout {
     readonly property string nameSpace: "ZS::System::GUI::Qml"
     readonly property string className: "IdxTreeViewWdgt"
     readonly property string objectName: idxTree ? idxTree.objectName : "IdxTree"
-    property var myTrcAdminObj: _ZSSys_trcServer.getTraceAdminObj(
-        nameSpace, className, objectName)
+    property var trcAdminObj: TrcAdminObj {
+        nameSpace: root.nameSpace
+        className: root.className
+        objectName: root.objectName
+    }
 
     Component.onCompleted: {
-        myTrcAdminObj.traceMethodEnter("EnterLeave", "Component.onCompleted");
-        //treeView.model.sortOrder = "Ascending";
+        if( typeof(_ZSSys_trcServer) !== "undefined" ) {
+            trcAdminObj = _ZSSys_trcServer.getTraceAdminObj(nameSpace, className, objectName)
+        }
+        trcAdminObj.traceMethodEnter("EnterLeave", "Component.onCompleted")
         treeView.model.excludeLeaves = false;
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "Component.onCompleted");
+        trcAdminObj.traceMethodLeave("EnterLeave", "Component.onCompleted")
     }
     Component.onDestruction: {
-        myTrcAdminObj.traceMethodEnter("EnterLeave", "Component.onDestruction")
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "Component.onDestruction")
-        _ZSSys_trcServer.releaseTraceAdminObj(myTrcAdminObj);
+        trcAdminObj.traceMethodEnter("EnterLeave", "Component.onDestruction")
+        trcAdminObj.traceMethodLeave("EnterLeave", "Component.onDestruction")
+        if( typeof(_ZSSys_trcServer) !== "undefined" ) {
+            _ZSSys_trcServer.releaseTraceAdminObj(trcAdminObj);
+        }
+    }
+    onObjectNameChanged: {
+        if( typeof(_ZSSys_trcServer) !== "undefined" ) {
+            if( trcAdminObj.status === Component.Ready ) {
+                trcAdminObj = _ZSSys_trcServer.renameTraceAdminObj(trcAdminObj, objectName)
+            }
+        }
     }
 
     property alias idxTree: treeView.idxTree
@@ -62,9 +77,9 @@ ColumnLayout {
     spacing: 4
 
     onIdxTreeChanged: {
-        myTrcAdminObj.traceMethodEnter("EnterLeave", "onIdxTreeChanged");
-        myTrcAdminObj.traceMethod("Debug", "onIdxTreeChanged", "IdxTree: " + idxTree ? idxTree.objectName : "null");
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "onIdxTreeChanged");
+        trcAdminObj.traceMethodEnter("EnterLeave", "onIdxTreeChanged");
+        trcAdminObj.traceMethod("Debug", "onIdxTreeChanged", "IdxTree: " + idxTree ? idxTree.objectName : "null");
+        trcAdminObj.traceMethodLeave("EnterLeave", "onIdxTreeChanged");
     }
 
     ToolBar {
@@ -75,15 +90,6 @@ ColumnLayout {
             anchors.fill: parent
             spacing: 10
 
-            Item { // Margin at left side of row layout
-                Layout.alignment: Qt.AlignLeft
-                Layout.minimumWidth: 4
-                Layout.minimumHeight: 1
-                Rectangle {
-                    anchors.fill: parent
-                    color: "red"
-                }
-            }
             ToolButton {
                 id: btnTreeViewResizeColumnsToContents
                 icon.source: "qrc:/ZS/TreeView/TreeViewResizeToContents.png"
@@ -113,24 +119,16 @@ ColumnLayout {
                 onClicked: {
                     if(treeView.model.sortOrder === "Config") {
                         treeView.model.sortOrder = "Ascending";
-                    }
-                    else if(treeView.model.sortOrder === "Ascending") {
+                    } else if(treeView.model.sortOrder === "Ascending") {
                         treeView.model.sortOrder = "Descending";
-                    }
-                    else {
+                    } else {
                         treeView.model.sortOrder = "Config";
                     }
                 }
             }
-            Item { // Margin at right side of row layout
+            Item { // Stretch at right side of row layout
                 Layout.alignment: Qt.AlignLeft
-                Layout.minimumWidth: 4
-                Layout.minimumHeight: 1
                 Layout.fillWidth: true
-                Rectangle {
-                    anchors.fill: parent
-                    color: "red"
-                }
             }
         }
     }
@@ -140,8 +138,8 @@ ColumnLayout {
         Layout.fillWidth: true
         Layout.fillHeight: true
         onCurrentIndexChanged: {
-            root.myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "treeView.onCurrentIndexChanged", model.modelIdx2Str(currentIndex));
-            root.myTrcAdminObj.traceMethodLeave("EnterLeave", "treeView.onCurrentIndexChanged");
+            root.trcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "treeView.onCurrentIndexChanged", model.modelIdx2Str(currentIndex));
+            root.trcAdminObj.traceMethodLeave("EnterLeave", "treeView.onCurrentIndexChanged");
         }
     }
 }

@@ -311,10 +311,7 @@ public: // ctor
     CInitEnumRowVersion() {
         QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnum<ERowVersion>::s_arEnumEntries);
         pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(ERowVersion::Original),  "Original",  "O",    "Original",  "ORIG",    "ORIGinal",  "Ori" ) );
-        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(ERowVersion::Current),   "Current",   "C",    "Current",   "CURR",    "CURRent",   "Cur" ) );
-        pVEnumEntries->append( /* 2 */ SEnumEntry( static_cast<int>(ERowVersion::Proposed),  "Proposed",  "P",    "Proposed",  "PROP",    "PROPosed",  "Prp" ) );
-        pVEnumEntries->append( /* 3 */ SEnumEntry( static_cast<int>(ERowVersion::Default),   "Default",   "D",    "Default",   "DEF",     "DEFault",   "Def" ) );
-        pVEnumEntries->append( /* 4 */ SEnumEntry( static_cast<int>(ERowVersion::Undefined), "Undefined", "?",    "Undefined", "UND",     "UNDefined", "Und" ) );
+        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(ERowVersion::Current),   "Current",   "C",    "Current",   "CURR",    "CURRent",   "Cur" ) )
     }
 };
 static CInitEnumRowVersion s_initEnumRowVersion;
@@ -324,10 +321,7 @@ template<> const QVector<SEnumEntry> CEnum<ERowVersion>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                       // Enumerator,                            Name,        Symbol, Text,        SCPIShort, SCPILong,    Alias6
     /* 0 */ SEnumEntry( static_cast<int>(ERowVersion::Original),  "Original",  "O",    "Original",  "ORIG",    "ORIGinal",  "Ori" ),
-    /* 1 */ SEnumEntry( static_cast<int>(ERowVersion::Current),   "Current",   "C",    "Current",   "CURR",    "CURRent",   "Cur" ),
-    /* 2 */ SEnumEntry( static_cast<int>(ERowVersion::Proposed),  "Proposed",  "P",    "Proposed",  "PROP",    "PROPosed",  "Prp" ),
-    /* 3 */ SEnumEntry( static_cast<int>(ERowVersion::Default),   "Default",   "D",    "Default",   "DEF",     "DEFault",   "Def" ),
-    /* 4 */ SEnumEntry( static_cast<int>(ERowVersion::Undefined), "Undefined", "?",    "Undefined", "UND",     "UNDefined", "Und" )
+    /* 1 */ SEnumEntry( static_cast<int>(ERowVersion::Current),   "Current",   "C",    "Current",   "CURR",    "CURRent",   "Cur" )
 };
 #endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 /*! @endcond */

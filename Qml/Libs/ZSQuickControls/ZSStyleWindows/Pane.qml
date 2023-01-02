@@ -24,39 +24,30 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-pragma Singleton
+import QtQuick 2.12
+import QtQuick.Templates 2.12 as T
+import QtQuick.Controls 2.12
+import QtQuick.Controls.impl 2.12
+import QtQuick.Controls.Fusion 2.12
+import QtQuick.Controls.Fusion.impl 2.12
 
-import QtQuick 2.15
+T.Pane {
+    id: control
 
-QtObject {
-    id: root
+    readonly property var style: _ZSQuickControls_windowsStyle
 
-    readonly property var __theme: typeof(_ZSQuickControls_themeWindowsStyle) === "undefined" ? null : _ZSQuickControls_themeWindowsStyle
+    implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset,
+                            contentWidth + leftPadding + rightPadding)
+    implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset,
+                             contentHeight + topPadding + bottomPadding)
 
-    readonly property color gray: "#b2b1b1"
-    readonly property color lightGray: "#dddddd"
-    readonly property color light: "#ffffff"
-    readonly property color blue: "#2d548b"
-    property color mainColor: __theme ? __theme.mainColor : "#17a81a"
-    readonly property color dark: "#222222"
-    readonly property color mainColorDarker: Qt.darker(mainColor, 1.5)
+    padding: 9
 
-    property int baseSize: 10
-
-    readonly property int smallSize: 10
-    readonly property int largeSize: 16
-
-    property font font
-    font.bold: true
-    font.underline: false
-    font.pixelSize: 14
-    font.family: "arial"
-
-
-    // ToolButton
-    //------------
-
-    property bool toolButtonBorderAlwaysVisible: true
-    property color toolButtonBorderColor: gray
-    property int toolButtonBorderRadius: 0
+    background: Rectangle {
+        //color: control.palette.window
+        gradient: Gradient {
+            GradientStop { position: 0.0; color: style.backgroundStartColor }
+            GradientStop { position: 1.0; color: style.backgroundStopColor }
+        }
+    }
 }

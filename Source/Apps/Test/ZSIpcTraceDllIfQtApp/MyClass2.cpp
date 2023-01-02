@@ -201,7 +201,8 @@ void CMyClass2Thread::setObjectName(const QString& i_strObjName)
     // not before the child objects have been renamed.
     if( m_pTrcAdminObj != nullptr )
     {
-        Trace::DllIf::CIpcTrcServer::RenameTraceAdminObj(&m_pTrcAdminObj, objectName().toLatin1().data());
+        m_pTrcAdminObj = Trace::DllIf::CIpcTrcServer::RenameTraceAdminObj(
+            m_pTrcAdminObj, objectName().toLatin1().data());
     }
 
 } // setObjectName
@@ -594,7 +595,8 @@ void CMyClass2::setObjectName(const QString& i_strObjName)
     // not before the child objects have been renamed.
     if( m_pTrcAdminObj != nullptr )
     {
-        Trace::DllIf::CIpcTrcServer::RenameTraceAdminObj(&m_pTrcAdminObj, objectName().toLatin1().data());
+        m_pTrcAdminObj = Trace::DllIf::CIpcTrcServer::RenameTraceAdminObj(
+            m_pTrcAdminObj, objectName().toLatin1().data());
     }
 
 } // setObjectName

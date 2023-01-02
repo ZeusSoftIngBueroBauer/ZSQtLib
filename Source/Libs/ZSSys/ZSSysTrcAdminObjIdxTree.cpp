@@ -349,17 +349,18 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj( int i_idxInTree, bool i_bI
     If at the new position no trace admin object is existing a new object is
     created and the address of the newly created object is returned.
 
-    @param io_ppTrcAdminObj [in, out]
-        In:  Pointer to admin object which should be renamed. The reference counter
-             of this object is decremented. If 0 and the object is not locked the
-             object will be destroyed.
-        Out: Pointer to trace admin object at the new position. This might either
-             be an already existing trace admin object whose reference counter is
-             increased or a newly created object.
+    @param i_pTrcAdminObj [in]
+        Pointer to admin object which should be renamed. The reference counter
+        of this object is decremented. If 0 and the object is not locked the
+        object will be destroyed.
     @param i_strNewObjName [in] New object name.
+
+    @return Pointer to trace admin object at the new position.
+        This might either be an already existing trace admin object whose
+        reference counter is increased or a newly created object.
 */
-void CIdxTreeTrcAdminObjs::renameTraceAdminObj(
-    CTrcAdminObj** io_ppTrcAdminObj,
+CTrcAdminObj* CIdxTreeTrcAdminObjs::renameTraceAdminObj(
+    CTrcAdminObj*  i_pTrcAdminObj,
     const QString& i_strNewObjName )
 //------------------------------------------------------------------------------
 {
@@ -367,7 +368,7 @@ void CIdxTreeTrcAdminObjs::renameTraceAdminObj(
 
     if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strAddTrcInfo = QString(*io_ppTrcAdminObj == nullptr ? "nullptr" : (*io_ppTrcAdminObj)->keyInTree());
+        strAddTrcInfo = QString(i_pTrcAdminObj == nullptr ? "nullptr" : (i_pTrcAdminObj)->keyInTree());
         strAddTrcInfo = ", NewObjName: " + i_strNewObjName;
     }
 
@@ -383,7 +384,7 @@ void CIdxTreeTrcAdminObjs::renameTraceAdminObj(
 
     CMutexLocker mtxLocker(m_pMtx);
 
-    CTrcAdminObj* pTrcAdminObj = *io_ppTrcAdminObj;
+    CTrcAdminObj* pTrcAdminObj = i_pTrcAdminObj;
 
     if( pTrcAdminObj == nullptr)
     {
@@ -505,10 +506,10 @@ void CIdxTreeTrcAdminObjs::renameTraceAdminObj(
 
     if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
-        mthTracer.setMethodOutArgs(QString(pTrcAdminObj == nullptr ? "nullptr" : pTrcAdminObj->keyInTree()));
+        mthTracer.setMethodReturn(QString(pTrcAdminObj == nullptr ? "nullptr" : pTrcAdminObj->keyInTree()));
     }
 
-    *io_ppTrcAdminObj = pTrcAdminObj;
+    return pTrcAdminObj;
 
 } // renameTraceAdminObj
 

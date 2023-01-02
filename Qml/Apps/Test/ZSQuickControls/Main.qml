@@ -29,17 +29,39 @@ import QtGraphicalEffects 1.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import Qt.labs.settings 1.0
+import ZSSys 1.0
 import ZSSysGUI 1.0
 
 ApplicationWindow {
     property string nameSpace: "ZS::Apps::Test::QuickControls::Qml"
     property string className: "Main::ApplicationWindow"
     property string objectName: "theInst"
+    property var trcAdminObj: TrcAdminObj {
+        nameSpace: root.nameSpace
+        className: root.className
+        objectName: root.objectName
+    }
 
-    property var myTrcAdminObj: _ZSSys_trcServer.getTraceAdminObj(
-        root.nameSpace, root.className, root.objectName);
+    Component.onCompleted: {
+        if( typeof(_ZSSys_trcServer) !== "undefined" ) {
+            trcAdminObj = _ZSSys_trcServer.getTraceAdminObj(nameSpace, className, objectName)
+        }
+        trcAdminObj.traceMethodEnter("EnterLeave", "Component.onCompleted")
+        trcAdminObj.traceMethodLeave("EnterLeave", "Component.onCompleted")
+    }
     Component.onDestruction: {
-        _ZSSys_trcServer.releaseTraceAdminObj(root.myTrcAdminObj);
+        trcAdminObj.traceMethodEnter("EnterLeave", "Component.onDestruction")
+        trcAdminObj.traceMethodLeave("EnterLeave", "Component.onDestruction")
+        if( typeof(_ZSSys_trcServer) !== "undefined" ) {
+            _ZSSys_trcServer.releaseTraceAdminObj(trcAdminObj);
+        }
+    }
+    onObjectNameChanged: {
+        if( typeof(_ZSSys_trcServer) !== "undefined" ) {
+            if( trcAdminObj.status === Component.Ready ) {
+                trcAdminObj = _ZSSys_trcServer.renameTraceAdminObj(trcAdminObj, objectName)
+            }
+        }
     }
 
     id: root
@@ -86,25 +108,20 @@ ApplicationWindow {
         }
     }
 
+    /*
     header: ToolBar {
         height: 32
         width: parent.width
+    } */
 
-        Rectangle {
-            anchors.fill: parent
-            color: "blue"
-        }
-    }
-
+    /*
     background: Rectangle {
         color: "aqua"
-        /*
         gradient: Gradient {
             GradientStop { position: 0; color: "#ffffff" }
             GradientStop { position: 1; color: "#000000" }
         }
-        */
-    }
+    } */
 
     WidgetCentral {
         id: widgetCentral
@@ -134,18 +151,13 @@ ApplicationWindow {
         height: 32
         width: parent.width
 
-        Rectangle {
+        RowLayout {
             anchors.fill: parent
-            color: "darkslateblue"
+            spacing: 10
 
-            RowLayout {
-                anchors.fill: parent
-                spacing: 10
-
-                ErrLogIcon {
-                    id: errLogIcon
-                    errLog: _ZSSys_errLog
-                }
+            ErrLogIcon {
+                id: errLogIcon
+                errLog: _ZSSys_errLog
             }
         }
     }

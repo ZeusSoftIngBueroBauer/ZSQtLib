@@ -28,22 +28,39 @@ import QtQuick 2.15
 import QtQuick.Dialogs 1.3
 import QtQuick.Layouts 1.15
 import Qt.labs.settings 1.0
+import ZSSys 1.0
 import ZSSysGUI 1.0
 
 Dialog {
     property string nameSpace: "ZS::System::GUI::Qml"
     property string className: "ErrLogDlg"
     property string objectName: errLog ? errLog.objectName : "ZSErrLog"
-    property var myTrcAdminObj: _ZSSys_trcServer.getTraceAdminObj(nameSpace, className, objectName)
+    property var trcAdminObj: TrcAdminObj {
+        nameSpace: root.nameSpace
+        className: root.className
+        objectName: root.objectName
+    }
 
     Component.onCompleted: {
-        myTrcAdminObj.traceMethodEnter("EnterLeave", "Component.onCompleted")
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "Component.onCompleted")
+        if( typeof(_ZSSys_trcServer) !== "undefined" ) {
+            trcAdminObj = _ZSSys_trcServer.getTraceAdminObj(nameSpace, className, objectName)
+        }
+        trcAdminObj.traceMethodEnter("EnterLeave", "Component.onCompleted")
+        trcAdminObj.traceMethodLeave("EnterLeave", "Component.onCompleted")
     }
     Component.onDestruction: {
-        myTrcAdminObj.traceMethodEnter("EnterLeave", "Component.onDestruction")
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "Component.onDestruction")
-        _ZSSys_trcServer.releaseTraceAdminObj(myTrcAdminObj);
+        trcAdminObj.traceMethodEnter("EnterLeave", "Component.onDestruction")
+        trcAdminObj.traceMethodLeave("EnterLeave", "Component.onDestruction")
+        if( typeof(_ZSSys_trcServer) !== "undefined" ) {
+            _ZSSys_trcServer.releaseTraceAdminObj(trcAdminObj);
+        }
+    }
+    onObjectNameChanged: {
+        if( typeof(_ZSSys_trcServer) !== "undefined" ) {
+            if( trcAdminObj.status === Component.Ready ) {
+                trcAdminObj = _ZSSys_trcServer.renameTraceAdminObj(trcAdminObj, objectName)
+            }
+        }
     }
 
     property alias errLog: errLogWdgt.errLog

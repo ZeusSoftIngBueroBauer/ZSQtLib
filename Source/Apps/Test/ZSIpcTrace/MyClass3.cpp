@@ -165,7 +165,7 @@ void CMyClass3Thread::setObjectName(const QString& i_strObjName)
 
     if( m_pTrcAdminObj != nullptr )
     {
-        CTrcServer::RenameTraceAdminObj(&m_pTrcAdminObj, objectName());
+        m_pTrcAdminObj = CTrcServer::RenameTraceAdminObj(m_pTrcAdminObj, objectName());
     }
 
 } // setObjectName
@@ -592,7 +592,7 @@ void CMyClass3::setObjectName(const QString& i_strObjName)
     // not before the child objects have been renamed.
     if( m_pTrcAdminObj != nullptr )
     {
-        CTrcServer::RenameTraceAdminObj(&m_pTrcAdminObj, objectName());
+        m_pTrcAdminObj = CTrcServer::RenameTraceAdminObj(m_pTrcAdminObj, objectName());
     }
 
 } // setObjectName

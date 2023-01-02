@@ -158,19 +158,19 @@ public: // class methods
     static CIdxTreeTrcAdminObjs* GetTraceAdminObjIdxTree();
 public: // class methods to add, remove and modify admin objects
     static CTrcAdminObj* GetTraceAdminObj( int i_idxInTree );
-    static ZS::System::CTrcAdminObj* GetTraceAdminObj(
+    static CTrcAdminObj* GetTraceAdminObj(
         const QString& i_strNameSpace,
         const QString& i_strClassName,
         const QString& i_strObjName = "" );
-    static ZS::System::CTrcAdminObj* GetTraceAdminObj(
+    static CTrcAdminObj* GetTraceAdminObj(
         const QString& i_strNameSpace,
         const QString& i_strClassName,
         const QString& i_strObjName,
         EEnabled i_bEnabledAsDefault,
         EMethodTraceDetailLevel i_eMethodCallsDefaultDetailLevel,
         ELogDetailLevel i_eRuntimeInfoDefaultDetailLevel );
-    static void RenameTraceAdminObj( ZS::System::CTrcAdminObj** io_ppTrcAdminObj, const QString& i_strNewObjName );
-    static void ReleaseTraceAdminObj( ZS::System::CTrcAdminObj* i_pTrcAdminObj );
+    static CTrcAdminObj* RenameTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj, const QString& i_strNewObjName );
+    static void ReleaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj );
 public: // class methods to get default file paths
     static void SetAdminObjFileAbsoluteFilePath( const QString& i_strAbsFilePath );
     static QString GetAdminObjFileAbsoluteFilePath();
@@ -199,23 +199,24 @@ public: // instance methods
 public: // instance methods
     CIdxTreeTrcAdminObjs* getTraceAdminObjIdxTree();
 public: // instance methods to add, remove and modify admin objects
-    Q_INVOKABLE virtual ZS::System::CTrcAdminObj* getTraceAdminObj(
+    Q_INVOKABLE virtual CTrcAdminObj* getTraceAdminObj(
         const QString& i_strNameSpace,
         const QString& i_strClassName,
         const QString& i_strObjName,
         const QString& i_strEnabledAsDefault = "Undefined",
         const QString& i_strMethodCallsDefaultDetailLevel = "Undefined",
         const QString& i_strRuntimeInfoDefaultDetailLevel = "Undefined" );
-    Q_INVOKABLE void releaseTraceAdminObj( ZS::System::CTrcAdminObj* i_pTrcAdminObj );
-    virtual ZS::System::CTrcAdminObj* getTraceAdminObj(
+    Q_INVOKABLE void releaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj );
+    virtual CTrcAdminObj* getTraceAdminObj(
         const QString& i_strNameSpace,
         const QString& i_strClassName,
         const QString& i_strObjName,
         EEnabled i_eEnabledAsDefault,
         EMethodTraceDetailLevel i_eMethodCallsDefaultDetailLevel,
         ELogDetailLevel i_eRuntimeInfoDefaultDetailLevel);
-    virtual ZS::System::CTrcAdminObj* getTraceAdminObj( int i_idxInTree );
-    void renameTraceAdminObj( ZS::System:: CTrcAdminObj** io_ppTrcAdminObj, const QString& i_strNewObjName );
+    virtual CTrcAdminObj* getTraceAdminObj( int i_idxInTree );
+    Q_INVOKABLE CTrcAdminObj* renameTraceAdminObj(
+        CTrcAdminObj* i_pTrcAdminObj, const QString& i_strNewObjName );
 public: // instance methods
     virtual void traceMethodEnter(
         const CTrcAdminObj* i_pAdminObj,
@@ -338,12 +339,18 @@ protected: // reference counter
     int incrementRefCount();
     int decrementRefCount();
 protected: // class members
-    static QMutex      s_mtx;       /*!< Mutex to protect the class and instance members of the class for multithreaded access. */
-    static CTrcServer* s_pTheInst;  /*!< Pointer to singleton instance. */
-    static QHash<Qt::HANDLE, QString>  s_hshThreadNames; /*!< Hash with registered threads (key is thread id, value is name of thread). */
-    static QHash<QString, Qt::HANDLE>  s_hshThreadIds;   /*!< Hash with registered threads (key name of thread, value is thread id). */
-    static QString s_strAdminObjFileAbsFilePath;         /*!< Absolute file path the tree of trace admin objects and their settings will be saved and recalled. */
-    static QString s_strLocalTrcFileAbsFilePath;         /*!< If a local log file is used defines the absolute file path for the log file. */
+    /*!< Mutex to protect the class and instance members of the class for multithreaded access. */
+    static QMutex s_mtx;
+    /*!< Pointer to singleton instance. */
+    static CTrcServer* s_pTheInst;
+    /*!< Hash with registered threads (key is thread id, value is name of thread). */
+    static QHash<Qt::HANDLE, QString> s_hshThreadNames;
+    /*!< Hash with registered threads (key name of thread, value is thread id). */
+    static QHash<QString, Qt::HANDLE> s_hshThreadIds;
+    /*!< Absolute file path the tree of trace admin objects and their settings will be saved and recalled. */
+    static QString s_strAdminObjFileAbsFilePath;
+    /*!< If a local log file is used defines the absolute file path for the log file. */
+    static QString s_strLocalTrcFileAbsFilePath;
 protected: // instance members
     /*<! Index tree containg a hierarchically ordered tree of the trace admin objects. */
     CIdxTreeTrcAdminObjs* m_pTrcAdminObjIdxTree;

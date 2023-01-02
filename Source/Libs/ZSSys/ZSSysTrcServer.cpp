@@ -561,19 +561,22 @@ CTrcAdminObj* CTrcServer::GetTraceAdminObj(
              increased or a newly created object.
     @param i_strNewObjName [in] New object name.
 */
-void CTrcServer::RenameTraceAdminObj(
-    CTrcAdminObj** io_ppTrcAdminObj,
+CTrcAdminObj* CTrcServer::RenameTraceAdminObj(
+    CTrcAdminObj*  i_pTrcAdminObj,
     const QString& i_strNewObjName )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
 
+    CTrcAdminObj* pTrcAdminObj = i_pTrcAdminObj;
+
     CTrcServer* pTrcServer = GetInstance();
 
     if( pTrcServer != nullptr )
     {
-        pTrcServer->renameTraceAdminObj(io_ppTrcAdminObj, i_strNewObjName);
+        pTrcAdminObj = pTrcServer->renameTraceAdminObj(i_pTrcAdminObj, i_strNewObjName);
     }
+    return pTrcAdminObj;
 }
 
 //------------------------------------------------------------------------------
@@ -938,7 +941,7 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj( int i_idxInTree )
     @param i_eMethodCallsDefaultDetailLevel [in] Undefined means use "trcServerSettings".
     @param i_eRuntimeInfoDefaultDetailLevel [in] Undefined means use "trcServerSettings".
 
-   @return Pointer to trace admin object.
+    @return Pointer to trace admin object.
 */
 CTrcAdminObj* CTrcServer::getTraceAdminObj(
     const QString& i_strNameSpace,
@@ -1110,7 +1113,7 @@ void CTrcServer::releaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj )
     {
         m_pTrcAdminObjIdxTree->releaseTraceAdminObj(i_pTrcAdminObj);
     }
-} // releaseTraceAdminObj
+}
 
 //------------------------------------------------------------------------------
 /*! @brief Returns a trace admin object with the given name space, class and
@@ -1237,16 +1240,17 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj(
     If at the new position no trace admin object is existing a new object is
     created and the address of the newly created object is returned.
 
-    @param io_ppTrcAdminObj [in, out]
-        In:  Pointer to admin object which should be renamed. The reference counter
-             of this object is decremented. If 0 the object will be destroyed.
-        Out: Pointer to trace admin object at the new position. This might either
-             be an already existing trace admin object whose reference counter is
-             increased or a newly created object.
+    @param i_pTrcAdminObj [in]
+        Pointer to admin object which should be renamed. The reference counter
+        of this object is decremented. If 0 the object will be destroyed.
     @param i_strNewObjName [in] New object name.
+
+    @return Pointer to trace admin object at the new position.
+        This might either be an already existing trace admin object whose
+        reference counter is increased or a newly created object.
 */
-void CTrcServer::renameTraceAdminObj(
-    CTrcAdminObj** io_ppTrcAdminObj,
+CTrcAdminObj* CTrcServer::renameTraceAdminObj(
+    CTrcAdminObj*  i_pTrcAdminObj,
     const QString& i_strNewObjName )
 //------------------------------------------------------------------------------
 {
@@ -1254,7 +1258,7 @@ void CTrcServer::renameTraceAdminObj(
 
     if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = QString(*io_ppTrcAdminObj == nullptr ? "nullptr" : (*io_ppTrcAdminObj)->getCalculatedKeyInTree());
+        strMthInArgs = QString(i_pTrcAdminObj == nullptr ? "nullptr" : (i_pTrcAdminObj)->getCalculatedKeyInTree());
         strMthInArgs += ", NewObjName: " + i_strNewObjName;
     }
 
@@ -1269,11 +1273,11 @@ void CTrcServer::renameTraceAdminObj(
         /* strMthInArgs       */ strMthInArgs );
 
     QMutexLocker mtxLocker(&s_mtx);
-
-    m_pTrcAdminObjIdxTree->renameTraceAdminObj(io_ppTrcAdminObj, i_strNewObjName);
-    QQmlEngine::setObjectOwnership(*io_ppTrcAdminObj, QQmlEngine::CppOwnership);
-
-} // renameTraceAdminObj
+    CTrcAdminObj* pTrcAdminObj =
+        m_pTrcAdminObjIdxTree->renameTraceAdminObj(i_pTrcAdminObj, i_strNewObjName);
+    QQmlEngine::setObjectOwnership(i_pTrcAdminObj, QQmlEngine::CppOwnership);
+    return pTrcAdminObj;
+}
 
 /*==============================================================================
 public: // instance methods

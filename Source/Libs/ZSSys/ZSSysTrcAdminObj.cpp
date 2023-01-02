@@ -24,14 +24,15 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include <QtCore/qmutex.h>
-#include <QtCore/qthread.h>
-
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcAdminObjIdxTree.h"
 #include "ZSSys/ZSSysTrcServer.h"
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysException.h"
+
+#include <QtCore/qmutex.h>
+#include <QtCore/qthread.h>
+#include <QtQml/qqmlapplicationengine.h>
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -50,8 +51,9 @@ class CInitModuleSysTrcAdminObj
 public: // ctor
     CInitModuleSysTrcAdminObj()
     {
-        //qRegisterMetaType<CTrcAdminObj*>("CTrcAdminObj*");
-        qRegisterMetaType<ZS::System::CTrcAdminObj*>("ZS::Ipc::CTrcAdminObj*");
+        qRegisterMetaType<CTrcAdminObj*>("CTrcAdminObj*");
+        qRegisterMetaType<ZS::System::CTrcAdminObj*>("ZS::System::CTrcAdminObj*");
+        qmlRegisterType<CTrcAdminObj>("ZSSys", 1, 0, "TrcAdminObj");
     }
 };
 
@@ -65,6 +67,40 @@ class CTrcAdminObj : public QObject, public CIdxTreeEntry
 /*==============================================================================
 protected: // ctors and dtor (trace admin objects may only be created by the trace server)
 ==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Default ctor which constructs a dummy trace admin object instance.
+
+    A dummy trace admin object can be used if no trace server instance is created
+    by the application to avoid checks for nullptr which can make the code more readable.
+    When using the dummy trace admin object no trace output will be generated.
+
+    The dummy object will never be added to the index tree and cannot be renamed.
+*/
+CTrcAdminObj::CTrcAdminObj() :
+//------------------------------------------------------------------------------
+    QObject(),
+    CIdxTreeEntry(EIdxTreeEntryType::Leave, ""),
+    m_iBlockTreeEntryChangedSignalCounter(0),
+    m_strNameSpace(),
+    m_strClassName(),
+    m_strObjName(),
+    m_strObjThreadName(),
+    m_iLockCount(0),
+    m_bDeleteOnUnlock(false),
+    m_iRefCount(0),
+    m_enabled(EEnabled::Yes),
+    m_eTrcDetailLevelMethodCalls(EMethodTraceDetailLevel::None),
+    m_eTrcDetailLevelRuntimeInfo(ELogDetailLevel::None),
+    m_strDataFilter(),
+    m_strlstDataFilterInclude(),
+    m_strlstDataFilterExclude()
+{
+    // The dummy object will not be added to the index tree.
+    // But the dummy object is referenced by the creator.
+    //m_iRefCount++;
+
+} // ctor
 
 //------------------------------------------------------------------------------
 /*! @brief Constructs a trace admin object instance.
@@ -366,6 +402,72 @@ QString CTrcAdminObj::getClassName() const
     return m_strClassName;
 }
 
+/*==============================================================================
+protected: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the name space of the trace admin object.
+
+    This method is protected and has been introduced to be used in QML modules
+    to create dummy trace admin objects.
+
+    The name space, the class name and the object name for those objects are set
+    by asssigning values to the properties "nameSpace", "className" and "objectName".
+
+    @param i_strNameSpace [in] Name space (e.g. "ZS::System::GUI::Qml")
+        Name space of the trace admin object.
+*/
+void CTrcAdminObj::setNameSpace( const QString& i_strNameSpace )
+//------------------------------------------------------------------------------
+{
+    // For trace admin objects added to the index tree the name space cannot be changed.
+    if( m_pTree != nullptr )
+    {
+        throw CException(
+            __FILE__, __LINE__, EResultInvalidMethodCall,
+            ClassName() + "::setNameSpace(" + i_strNameSpace + ")");
+    }
+    if( m_strNameSpace != i_strNameSpace )
+    {
+        m_strNameSpace = i_strNameSpace;
+        emit nameSpaceChanged(m_strNameSpace);
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the class name of the trace admin object.
+
+    This method is protected and has been introduced to be used in QML modules
+    to create dummy trace admin objects.
+
+    The name space, the class name and the object name for those objects are set
+    by asssigning values to the properties "nameSpace", "className" and "objectName".
+
+    @param i_strClassName [in] Class name (e.g. "ErrLogWdgt")
+        Class name of the trace admin object.
+*/
+void CTrcAdminObj::setClassName( const QString& i_strClassName )
+//------------------------------------------------------------------------------
+{
+    // For trace admin objects added to the index tree the name space cannot be changed.
+    if( m_pTree != nullptr )
+    {
+        throw CException(
+            __FILE__, __LINE__, EResultInvalidMethodCall,
+            ClassName() + "::setClassName(" + i_strClassName + ")");
+    }
+    if( m_strClassName != i_strClassName )
+    {
+        m_strClassName = i_strClassName;
+        emit classNameChanged(m_strClassName);
+    }
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
 //------------------------------------------------------------------------------
 /*! @brief If the instance using the trace admin object is renamed and the
            trace admin object is used to control trace outputs of this instance
@@ -391,6 +493,7 @@ void CTrcAdminObj::setObjectName( const QString& i_strObjName )
         {
             if( !isTreeEntryChangedSignalBlocked() ) m_pTree->onTreeEntryChanged(this);
         }
+        emit objectNameChanged(m_strObjName);
     }
 }
 
@@ -961,10 +1064,11 @@ int CTrcAdminObj::incrementRefCount()
 {
     QMutexLocker mtxLocker(m_pMtx);
 
-    ++m_iRefCount;
-
+    // Dummy objects will not be added to the index tree.
+    // For dummy object no reference counter is used.
     if( m_pTree != nullptr )
     {
+        ++m_iRefCount;
         if( !isTreeEntryChangedSignalBlocked() ) m_pTree->onTreeEntryChanged(this);
     }
     return m_iRefCount;
@@ -990,10 +1094,11 @@ int CTrcAdminObj::decrementRefCount()
 {
     QMutexLocker mtxLocker(m_pMtx);
 
-    --m_iRefCount;
-
+    // Dummy objects will not be added to the index tree.
+    // For dummy object no reference counter is used.
     if( m_pTree != nullptr )
     {
+        --m_iRefCount;
         if( !isTreeEntryChangedSignalBlocked() ) m_pTree->onTreeEntryChanged(this);
     }
     return m_iRefCount;
@@ -1014,7 +1119,15 @@ void CTrcAdminObj::setRefCount( int i_iRefCount )
 {
     QMutexLocker mtxLocker(m_pMtx);
 
-    if( m_iRefCount != i_iRefCount )
+    // Dummy objects will not be added to the index tree.
+    // For dummy object no reference counter is used.
+    if( m_pTree == nullptr )
+    {
+        throw CException(
+            __FILE__, __LINE__, EResultInvalidMethodCall,
+            ClassName() + "::" + m_strObjName + ".setRefCount(" + QString::number(i_iRefCount) + ")");
+    }
+    else if( m_iRefCount != i_iRefCount )
     {
         m_iRefCount = i_iRefCount;
 
@@ -1747,15 +1860,10 @@ void CTrcAdminObjRefAnchor::allocTrcAdminObj()
         {
             // The pointer to the trace admin object is kept until the program is exited
             // and the reference anchor is destroyed or if the trace admin object is destroyed.
-            if( !QObject::connect(
-                /* pObjSender   */ m_pTrcAdminObj,
-                /* szSignal     */ SIGNAL(destroyed(QObject*)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onTrcAdminObjDestroyed(QObject*)),
-                /* cnctType     */ Qt::DirectConnection ) )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-            }
+            QObject::connect(
+                m_pTrcAdminObj, &CTrcAdminObj::destroyed,
+                this, &CTrcAdminObjRefAnchor::onTrcAdminObjDestroyed,
+                Qt::DirectConnection);
         }
     }
     else // if( m_pTrcAdminObj != nullptr )

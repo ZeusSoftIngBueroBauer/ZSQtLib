@@ -28,6 +28,7 @@ may result in using the software modules.
 #define ZSSysGUI_Aux_h
 
 #include <QtCore/qglobal.h>
+#include <QtGui/qevent.h>
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qabstractitemview.h>
@@ -56,6 +57,8 @@ namespace GUI
 /*******************************************************************************
 public auxiliary methods
 *******************************************************************************/
+
+ZSSYSGUIDLL_API QString qColor2Str( const QColor& i_clr );
 
 ZSSYSGUIDLL_API QString qItemViewDragDropMode2Str( int i_iVal, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName );
 ZSSYSGUIDLL_API QAbstractItemView::DragDropMode str2QItemViewDragDropMode( const QString& i_str, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName, bool* o_pbConverted = nullptr );

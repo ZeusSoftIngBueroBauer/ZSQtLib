@@ -110,7 +110,7 @@ typedef void (*TFctTrcAdminObj_traceMethod)( const DllIf::CTrcAdminObj* i_pTrcAd
 typedef DllIf::CTrcAdminObj* (*TFctTrcServer_GetTraceAdminObj)(
     const char* i_szNameSpace, const char* i_szClassName, const char* i_szObjName, DllIf::EEnabled i_bEnabledAsDefault,
     DllIf::EMethodTraceDetailLevel i_eMethodCallsDefaultDetailLevel, DllIf::ELogDetailLevel i_eRuntimeInfoDefaultDetailLevel );
-typedef void (*TFctTrcServer_RenameTraceAdminObj)( DllIf::CTrcAdminObj** io_ppTrcAdminObj, const char* i_szNewObjName );
+typedef DllIf::CTrcAdminObj* (*TFctTrcServer_RenameTraceAdminObj)( DllIf::CTrcAdminObj* i_pTrcAdminObj, const char* i_szNewObjName );
 typedef void (*TFctTrcServer_ReleaseTraceAdminObj)( DllIf::CTrcAdminObj* i_pTrcAdminObj );
 typedef void (*TFctTrcServer_SetOrganizationName)( const char* i_szName );
 typedef char* (*TFctTrcServer_GetOrganizationName)();
@@ -1722,15 +1722,18 @@ DllIf::CTrcAdminObj* DllIf::CTrcServer::GetTraceAdminObj(
 }
 
 //------------------------------------------------------------------------------
-void DllIf::CTrcServer::RenameTraceAdminObj(
-    CTrcAdminObj** io_ppTrcAdminObj,
-    const char*    i_szNewObjName )
+DllIf::CTrcAdminObj* DllIf::CTrcServer::RenameTraceAdminObj(
+    CTrcAdminObj* i_pTrcAdminObj,
+    const char*   i_szNewObjName )
 //------------------------------------------------------------------------------
 {
+    DllIf::CTrcAdminObj* pTrcAdminObj = i_pTrcAdminObj;
+
     if( s_hndDllIf != NULL && s_pFctTrcServer_RenameTraceAdminObj != NULL )
     {
-        s_pFctTrcServer_RenameTraceAdminObj(io_ppTrcAdminObj, i_szNewObjName);
+        pTrcAdminObj = s_pFctTrcServer_RenameTraceAdminObj(i_pTrcAdminObj, i_szNewObjName);
     }
+    return pTrcAdminObj;
 }
 
 //------------------------------------------------------------------------------

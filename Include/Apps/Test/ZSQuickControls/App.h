@@ -41,7 +41,7 @@ class CTrcAdminObj;
 }
 namespace QuickControls
 {
-class CThemeWindowsStyle;
+class CWindowsStyle;
 }
 namespace Trace
 {
@@ -81,7 +81,7 @@ protected: // instance members
          Each control must have a corresponding qml file in sub directory StyleName(). */
     ZS::System::CIdxTree* m_pIdxTreeStyles;
     /*!< Windows Style Controls. */
-    ZS::QuickControls::CThemeWindowsStyle* m_pThemeWindowsStyle;
+    ZS::QuickControls::CWindowsStyle* m_pWindowsStyle;
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CApplication

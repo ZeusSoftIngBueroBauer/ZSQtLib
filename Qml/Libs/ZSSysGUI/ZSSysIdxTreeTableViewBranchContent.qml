@@ -32,21 +32,37 @@ C1.TableView {
     readonly property string nameSpace: "ZS::System::GUI::Qml"
     readonly property string className: "IdxTreeTableViewBranchContent"
     readonly property string objectName: model.objectName
-    property var myTrcAdminObj: _ZSSys_trcServer.getTraceAdminObj(nameSpace, className, objectName)
+    property var trcAdminObj: TrcAdminObj {
+        nameSpace: root.nameSpace
+        className: root.className
+        objectName: root.objectName
+    }
 
     Component.onCompleted: {
-        myTrcAdminObj.traceMethodEnter("EnterLeave", "Component.onCompleted")
+        if( typeof(_ZSSys_trcServer) !== "undefined" ) {
+            trcAdminObj = _ZSSys_trcServer.getTraceAdminObj(nameSpace, className, objectName)
+        }
+        trcAdminObj.traceMethodEnter("EnterLeave", "Component.onCompleted")
         if(this.__listView) {
             this.__listView.add = transitionAdd
             this.__listView.displaced = transitionDisplaced
             this.__listView.spacing = 1
         }
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "Component.onCompleted")
+        trcAdminObj.traceMethodLeave("EnterLeave", "Component.onCompleted")
     }
     Component.onDestruction: {
-        myTrcAdminObj.traceMethodEnter("EnterLeave", "Component.onDestruction")
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "Component.onDestruction")
-        _ZSSys_trcServer.releaseTraceAdminObj(myTrcAdminObj);
+        trcAdminObj.traceMethodEnter("EnterLeave", "Component.onDestruction")
+        trcAdminObj.traceMethodLeave("EnterLeave", "Component.onDestruction")
+        if( typeof(_ZSSys_trcServer) !== "undefined" ) {
+            _ZSSys_trcServer.releaseTraceAdminObj(trcAdminObj);
+        }
+    }
+    onObjectNameChanged: {
+        if( typeof(_ZSSys_trcServer) !== "undefined" ) {
+            if( trcAdminObj.status === Component.Ready ) {
+                trcAdminObj = _ZSSys_trcServer.renameTraceAdminObj(trcAdminObj, objectName)
+            }
+        }
     }
 
     property alias idxTree: idxTreeBranchContentModel.idxTree
@@ -70,24 +86,24 @@ C1.TableView {
     model: ModelIdxTreeBranchContent {
         id: idxTreeBranchContentModel
         onSortOrderChanged: {
-            root.myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "idxTreeModel.onSortOrderChanged", sortOrder);
-            root.myTrcAdminObj.traceMethodLeave("EnterLeave", "idxTreeModel.onSortOrderChanged");
+            root.trcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "idxTreeModel.onSortOrderChanged", sortOrder);
+            root.trcAdminObj.traceMethodLeave("EnterLeave", "idxTreeModel.onSortOrderChanged");
         }
         onKeyInTreeOfRootEntryChanged: {
-            root.myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "idxTreeModel.onKeyInTreeOfRootEntryChanged", keyInTreeOfRootEntry);
-            root.myTrcAdminObj.traceMethodLeave("EnterLeave", "idxTreeModel.onKeyInTreeOfRootEntryChanged");
+            root.trcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "idxTreeModel.onKeyInTreeOfRootEntryChanged", keyInTreeOfRootEntry);
+            root.trcAdminObj.traceMethodLeave("EnterLeave", "idxTreeModel.onKeyInTreeOfRootEntryChanged");
         }
     }
 
     onIdxTreeChanged: {
-        myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "onIdxTreeChanged", idxTree ? idxTree.objectName : "null");
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "onIdxTreeChanged");
+        trcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "onIdxTreeChanged", idxTree ? idxTree.objectName : "null");
+        trcAdminObj.traceMethodLeave("EnterLeave", "onIdxTreeChanged");
     }
 
     onKeyInTreeOfRootEntryChanged: {
-        myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "onKeyInTreeOfRootEntryChanged", keyInTreeOfRootEntry);
+        trcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "onKeyInTreeOfRootEntryChanged", keyInTreeOfRootEntry);
         model.keyInTreeOfRootEntry = keyInTreeOfRootEntry
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "onKeyInTreeOfRootEntryChanged");
+        trcAdminObj.traceMethodLeave("EnterLeave", "onKeyInTreeOfRootEntryChanged");
     }
 
     Transition {
@@ -106,7 +122,7 @@ C1.TableView {
 
     // Need a different name as QML does not allow to override functions.
     function _resizeColumnsToContents() {
-        myTrcAdminObj.traceMethodEnter("EnterLeave", "_resizeColumnsToContents");
+        trcAdminObj.traceMethodEnter("EnterLeave", "_resizeColumnsToContents");
         // The width of the headers is not taken into account.
         clmName.width = model.columnWidthByRole(clmName.role, fontPixelSize) + 2*columnSpacing
         clmInternalId.width = model.columnWidthByRole(clmInternalId.role, fontPixelSize) + 2*columnSpacing
@@ -114,7 +130,7 @@ C1.TableView {
         clmIdxInParentBranch.width = model.columnWidthByRole(clmIdxInParentBranch.role, fontPixelSize) + 2*columnSpacing
         clmKeyInTree.width = model.columnWidthByRole(clmKeyInTree.role, fontPixelSize) + 2*columnSpacing
         clmKeyInParentBranch.width = model.columnWidthByRole(clmKeyInParentBranch.role, fontPixelSize) + 2*columnSpacing
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "_resizeColumnsToContents");
+        trcAdminObj.traceMethodLeave("EnterLeave", "_resizeColumnsToContents");
     }
 
     C1.TableViewColumn {

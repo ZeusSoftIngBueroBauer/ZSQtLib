@@ -29,33 +29,45 @@ import QtQuick 2.15                 // TableView derived from Flickable
 import QtQuick.Controls 1.4 as C1   // TableView derived from BasicTableView
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
+import ZSSys 1.0
 import ZSSysGUI 1.0
 
 ColumnLayout {
     readonly property string nameSpace: "ZS::System::GUI::Qml"
     readonly property string className: "ErrLogWdgt"
     readonly property string objectName: errLog ? errLog.objectName : "ZSErrLog"
-    property var myTrcAdminObj: _ZSSys_trcServer.getTraceAdminObj(nameSpace, className, objectName)
+    property var trcAdminObj: TrcAdminObj {
+        nameSpace: root.nameSpace
+        className: root.className
+        objectName: root.objectName
+    }
 
     Component.onCompleted: {
-        myTrcAdminObj.traceMethodEnter("EnterLeave", "Component.onCompleted")
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "Component.onCompleted")
+        if( typeof(_ZSSys_trcServer) !== "undefined" ) {
+            trcAdminObj = _ZSSys_trcServer.getTraceAdminObj(nameSpace, className, objectName)
+        }
+        trcAdminObj.traceMethodEnter("EnterLeave", "Component.onCompleted")
+        trcAdminObj.traceMethodLeave("EnterLeave", "Component.onCompleted")
     }
     Component.onDestruction: {
-        myTrcAdminObj.traceMethodEnter("EnterLeave", "Component.onDestruction")
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "Component.onDestruction")
-        _ZSSys_trcServer.releaseTraceAdminObj(myTrcAdminObj);
+        trcAdminObj.traceMethodEnter("EnterLeave", "Component.onDestruction")
+        trcAdminObj.traceMethodLeave("EnterLeave", "Component.onDestruction")
+        if( typeof(_ZSSys_trcServer) !== "undefined" ) {
+            _ZSSys_trcServer.releaseTraceAdminObj(trcAdminObj);
+        }
+    }
+    onObjectNameChanged: {
+        if( typeof(_ZSSys_trcServer) !== "undefined" ) {
+            if( trcAdminObj.status === Component.Ready ) {
+                trcAdminObj = _ZSSys_trcServer.renameTraceAdminObj(trcAdminObj, objectName)
+            }
+        }
     }
 
     property alias errLog: tableView.errLog
 
     id: root
     spacing: 4
-
-    onErrLogChanged: {
-        myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "onErrLogChanged", errLog ? errLog.objectName : "null");
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "onErrLogChanged");
-    }
 
     ToolBar {
         id: toolBarHeadline
@@ -65,15 +77,6 @@ ColumnLayout {
             anchors.fill: parent
             spacing: 10
 
-            Item { // Margin at left side of row layout
-                Layout.alignment: Qt.AlignLeft
-                Layout.minimumWidth: 4
-                Layout.minimumHeight: 1
-                Rectangle {
-                    anchors.fill: parent
-                    color: "red"
-                }
-            }
             ToolButton {
                 id: btnClearTable
                 text: "Clear"
@@ -105,10 +108,6 @@ ColumnLayout {
             Item { // Space before File Name
                 Layout.minimumWidth: 10
                 Layout.minimumHeight: 1
-                Rectangle {
-                    anchors.fill: parent
-                    color: "red"
-                }
             }
             Text {
                 id: lblFileName
@@ -119,15 +118,6 @@ ColumnLayout {
                 Layout.fillWidth: true
                 text: errLog.absFilePath
                 readOnly: true
-            }
-            Item { // Margin at right side of row layout
-                Layout.alignment: Qt.AlignLeft
-                Layout.minimumWidth: 4
-                Layout.minimumHeight: 1
-                Rectangle {
-                    anchors.fill: parent
-                    color: "red"
-                }
             }
         }
     }

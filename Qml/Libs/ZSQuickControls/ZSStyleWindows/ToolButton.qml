@@ -34,6 +34,8 @@ import QtQuick.Controls.Fusion.impl 2.12
 T.ToolButton {
     id: control
 
+    readonly property var style: _ZSQuickControls_windowsStyle
+
     implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset,
                             implicitContentWidth + leftPadding + rightPadding)
     implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset,
@@ -45,20 +47,7 @@ T.ToolButton {
     icon.width: 16
     icon.height: 16
 
-    Rectangle {
-        width: Math.max(background.width + leftInset + rightInset,
-                        contentItem.width + leftPadding + rightPadding)
-        height: Math.max(background.height + topInset + bottomInset,
-                         contentItem.height + topPadding + bottomPadding)
-        border.color: Theme.toolButtonBorderColor
-        radius: Theme.toolButtonBorderRadius
-        visible: Theme.toolButtonBorderAlwaysVisible
-        color: "transparent"
-        clip: true
-    }
-
     contentItem: IconLabel {
-        id: contentItem
         spacing: control.spacing
         mirrored: control.mirrored
         display: control.display
@@ -70,7 +59,6 @@ T.ToolButton {
     }
 
     background: ButtonPanel {
-        id: background
         implicitWidth: 20
         implicitHeight: 20
 

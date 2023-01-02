@@ -1,9 +1,15 @@
-<!DOCTYPE RCC><RCC version="1.0">
+<RCC>
+    <qresource prefix="/ZSQuickControls">
+        <file>qmldir</file>
+        <file>ZSQuickControlsStyleWdgt.qml</file>
+    </qresource>
     <qresource prefix="/">
-        <file>ZSStyleWindows/qmldir</file>
-        <file>ZSStyleWindows/Theme.qml</file>
         <file>ZSStyleWindows/Button.qml</file>
+        <file>ZSStyleWindows/ButtonPanel.qml</file>
         <file>ZSStyleWindows/CheckBox.qml</file>
+        <file>ZSStyleWindows/ComboBox.qml</file>
+        <file>ZSStyleWindows/Label.qml</file>
+        <file>ZSStyleWindows/Pane.qml</file>
         <file>ZSStyleWindows/Switch.qml</file>
         <file>ZSStyleWindows/ToolButton.qml</file>
     </qresource>

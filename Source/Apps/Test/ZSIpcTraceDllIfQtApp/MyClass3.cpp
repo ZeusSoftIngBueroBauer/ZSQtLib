@@ -177,7 +177,8 @@ void CMyClass3Thread::setObjectName(const QString& i_strObjName)
         // object (as this may delete the admin object of the Dll Interface).
         mthTracer.onAdminObjAboutToBeReleased();
 
-        Trace::DllIf::CTrcServer::RenameTraceAdminObj(&m_pTrcAdminObj, objectName().toLatin1().data());
+        m_pTrcAdminObj = Trace::DllIf::CTrcServer::RenameTraceAdminObj(
+            m_pTrcAdminObj, objectName().toLatin1().data());
     }
 
 } // setObjectName
@@ -626,7 +627,8 @@ void CMyClass3::setObjectName(const QString& i_strObjName)
         // object (as this may delete the admin object of the Dll Interface).
         mthTracer.onAdminObjAboutToBeReleased();
 
-        Trace::DllIf::CTrcServer::RenameTraceAdminObj(&m_pTrcAdminObj, objectName().toLatin1().data());
+        m_pTrcAdminObj = Trace::DllIf::CTrcServer::RenameTraceAdminObj(
+            m_pTrcAdminObj, objectName().toLatin1().data());
     }
 
 } // setObjectName

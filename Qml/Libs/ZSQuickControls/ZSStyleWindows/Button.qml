@@ -27,71 +27,46 @@ may result in using the software modules.
 import QtQuick 2.15
 import QtQuick.Templates 2.15 as T
 
+import QtQuick 2.12
+import QtQuick.Templates 2.12 as T
+import QtQuick.Controls 2.12
+import QtQuick.Controls.impl 2.12
+import QtQuick.Controls.Fusion 2.12
+import QtQuick.Controls.Fusion.impl 2.12
+
 T.Button {
     id: control
 
-    font: Theme.font
+    readonly property var style: _ZSQuickControls_windowsStyle
 
-    implicitWidth: Math.max(background ? background.implicitWidth : 0,
-                                         contentItem.implicitWidth + leftPadding + rightPadding)
-    implicitHeight: Math.max(background ? background.implicitHeight : 0,
-                                          contentItem.implicitHeight + topPadding + bottomPadding)
-    leftPadding: 4
-    rightPadding: 4
+    implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset,
+                            implicitContentWidth + leftPadding + rightPadding)
+    implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset,
+                             implicitContentHeight + topPadding + bottomPadding)
 
-    background: Rectangle {
-        id: buttonBackground
-        implicitWidth: 100
-        implicitHeight: 40
-        opacity: enabled ? 1 : 0.3
-        border.color: Theme.mainColor
-        border.width: 1
-        radius: 10
+    padding: 4
+    spacing: 6
 
-        states: [
-            State {
-                name: "normal"
-                when: !control.down
-                PropertyChanges {
-                    target: buttonBackground
-                }
-            },
-            State {
-                name: "down"
-                when: control.down
-                PropertyChanges {
-                    target: buttonBackground
-                    border.color: Theme.mainColorDarker
-                }
-            }
-        ]
+    icon.width: 16
+    icon.height: 16
+
+    contentItem: IconLabel {
+        spacing: control.spacing
+        mirrored: control.mirrored
+        display: control.display
+
+        icon: control.icon
+        text: control.text
+        font: control.font
+        //color: control.palette.buttonText
+        color: style.buttonTextColor
     }
 
-    contentItem: Text {
-        id: textItem
-        text: control.text
+    background: ButtonPanel {
+        implicitWidth: 80
+        implicitHeight: 24
 
-        font: control.font
-        opacity: enabled ? 1.0 : 0.3
-        color: Theme.mainColor
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
-        elide: Text.ElideRight
-
-        states: [
-            State {
-                name: "normal"
-                when: !control.down
-            },
-            State {
-                name: "down"
-                when: control.down
-                PropertyChanges {
-                    target: textItem
-                    color: Theme.mainColorDarker
-                }
-            }
-        ]
+        control: control
+        visible: !control.flat || control.down || control.checked || control.highlighted || control.visualFocus || control.hovered
     }
 }
-

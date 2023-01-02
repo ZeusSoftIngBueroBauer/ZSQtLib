@@ -74,10 +74,11 @@ class ZSSYSDLL_API CTrcAdminObj : public QObject, public CIdxTreeEntry
 //******************************************************************************
 {
 friend class CIdxTreeTrcAdminObjs;
+friend class CTrcServer;
     Q_OBJECT
-    Q_PROPERTY(QString nameSpace READ getNameSpace CONSTANT)
-    Q_PROPERTY(QString className READ getClassName CONSTANT)
-    Q_PROPERTY(QString objectName READ getObjectName CONSTANT)
+    Q_PROPERTY(QString nameSpace READ getNameSpace WRITE setNameSpace NOTIFY nameSpaceChanged)
+    Q_PROPERTY(QString className READ getClassName WRITE setClassName NOTIFY classNameChanged)
+    Q_PROPERTY(QString objectName READ getObjectName WRITE setObjectName NOTIFY objectNameChanged)
     Q_PROPERTY(QString keyInTree READ keyInTree CONSTANT)
     Q_PROPERTY(QString objectThreadName READ getObjectThreadName CONSTANT)
     Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled NOTIFY enabledChanged)
@@ -90,6 +91,7 @@ public: // class methods
     /*! Returns the class name of the class. */
     static QString ClassName() { return "CTrcAdminObj"; }
 protected: // ctors and dtor
+    CTrcAdminObj();
     CTrcAdminObj(
         const QString& i_strNameSpace,
         const QString& i_strClassName,
@@ -97,6 +99,12 @@ protected: // ctors and dtor
         const QString& i_strTreeEntryName );
     virtual ~CTrcAdminObj();
 signals:
+    /*! @brief Emitted if the name space has been changed. */
+    void nameSpaceChanged( const QString& i_strNameSpace );
+    /*! @brief Emitted if the class name has been changed. */
+    void classNameChanged( const QString& i_strClassName );
+    /*! @brief Emitted if the object name has been changed. */
+    void objectNameChanged( const QString& i_strObjName );
     /*! @brief Emitted if Enabled, MethodCallsTraceDetailLevel, RuntimeInfoTraceDetailLevel or TraceDataFilter has been changed. */
     void changed( QObject* i_pTrcAdminObj );
     /*! @brief Emitted if Enabled has been changed. */
@@ -115,6 +123,9 @@ public: // instance methods
 public: // instance methods
     QString getNameSpace() const;
     QString getClassName() const;
+protected: // instance methods
+    void setNameSpace( const QString& i_strNameSpace );
+    void setClassName( const QString& i_strClassName );
 public: // instance methods (reimplementing methods from base class QObject)
     void setObjectName( const QString& i_strObjName );
     QString getObjectName() const;
@@ -223,11 +234,16 @@ public: // instance methods
 private: // Don't use QObject::objectName
     QString objectName() const;
 protected: // instance members
-    int     m_iBlockTreeEntryChangedSignalCounter; /*!< Counts the number of times the tree entry changed signal has been blocked. */
-    QString m_strNameSpace;     /*!< Namespace of the class. May be empty. */
-    QString m_strClassName;     /*!< Class or module name. */
-    QString m_strObjName;       /*!< Object name. May be empty if this is a class tracer. */
-    QString m_strObjThreadName; /*!< Name of the thread in which the object was created. */
+    /*!< Counts the number of times the tree entry changed signal has been blocked. */
+    int m_iBlockTreeEntryChangedSignalCounter;
+    /*!< Namespace of the class. May be empty. */
+    QString m_strNameSpace;
+    /*!< Class or module name. */
+    QString m_strClassName;
+    /*!< Object name. May be empty if this is a class tracer. */
+    QString m_strObjName;
+    /*!< Name of the thread in which the object was created. */
+    QString m_strObjThreadName;
     /*!< The trace admin object may be locked so that it will not be deleted
          after e.g. renaming the object. The method tracer will do so so that
          the object is not deleted as long as the method tracer is living.

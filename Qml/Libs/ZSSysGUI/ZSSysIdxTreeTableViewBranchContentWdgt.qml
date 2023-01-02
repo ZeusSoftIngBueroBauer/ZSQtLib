@@ -33,16 +33,32 @@ ColumnLayout {
     readonly property string nameSpace: "ZS::System::GUI::Qml"
     readonly property string className: "IdxTreeTableViewBranchContentWdgt"
     readonly property string objectName: idxTree ? idxTree.objectName : "IdxTree"
-    property var myTrcAdminObj: _ZSSys_trcServer.getTraceAdminObj(nameSpace, className, objectName)
+    property var trcAdminObj: TrcAdminObj {
+        nameSpace: root.nameSpace
+        className: root.className
+        objectName: root.objectName
+    }
 
     Component.onCompleted: {
-        myTrcAdminObj.traceMethodEnter("EnterLeave", "Component.onCompleted");
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "Component.onCompleted");
+        if( typeof(_ZSSys_trcServer) !== "undefined" ) {
+            trcAdminObj = _ZSSys_trcServer.getTraceAdminObj(nameSpace, className, objectName)
+        }
+        trcAdminObj.traceMethodEnter("EnterLeave", "Component.onCompleted")
+        trcAdminObj.traceMethodLeave("EnterLeave", "Component.onCompleted")
     }
     Component.onDestruction: {
-        myTrcAdminObj.traceMethodEnter("EnterLeave", "Component.onDestruction")
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "Component.onDestruction")
-        _ZSSys_trcServer.releaseTraceAdminObj(myTrcAdminObj);
+        trcAdminObj.traceMethodEnter("EnterLeave", "Component.onDestruction")
+        trcAdminObj.traceMethodLeave("EnterLeave", "Component.onDestruction")
+        if( typeof(_ZSSys_trcServer) !== "undefined" ) {
+            _ZSSys_trcServer.releaseTraceAdminObj(trcAdminObj);
+        }
+    }
+    onObjectNameChanged: {
+        if( typeof(_ZSSys_trcServer) !== "undefined" ) {
+            if( trcAdminObj.status === Component.Ready ) {
+                trcAdminObj = _ZSSys_trcServer.renameTraceAdminObj(trcAdminObj, objectName)
+            }
+        }
     }
 
     property alias idxTree: tableView.idxTree
@@ -59,13 +75,13 @@ ColumnLayout {
     spacing: 4
 
     onIdxTreeChanged: {
-        myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "onIdxTreeChanged", idxTree ? idxTree.objectName : "null");
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "onIdxTreeChanged");
+        trcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "onIdxTreeChanged", idxTree ? idxTree.objectName : "null");
+        trcAdminObj.traceMethodLeave("EnterLeave", "onIdxTreeChanged");
     }
 
     onKeyInTreeOfRootEntryChanged: {
-        myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "onKeyInTreeOfRootEntryChanged", keyInTreeOfRootEntry);
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "onKeyInTreeOfRootEntryChanged");
+        trcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "onKeyInTreeOfRootEntryChanged", keyInTreeOfRootEntry);
+        trcAdminObj.traceMethodLeave("EnterLeave", "onKeyInTreeOfRootEntryChanged");
     }
 
     ToolBar {
@@ -76,15 +92,6 @@ ColumnLayout {
             anchors.fill: parent
             spacing: 10
 
-            Item { // Margin at left side of row layout
-                Layout.alignment: Qt.AlignLeft
-                Layout.minimumWidth: 4
-                Layout.minimumHeight: 1
-                Rectangle {
-                    anchors.fill: parent
-                    color: "red"
-                }
-            }
             ToolButton {
                 id: btnTreeViewResizeColumnsToContents
                 icon.source: "qrc:/ZS/TreeView/TreeViewResizeToContents.png"
@@ -98,24 +105,16 @@ ColumnLayout {
                 onClicked: {
                     if(tableView.model.sortOrder === "Config") {
                         tableView.model.sortOrder = "Ascending";
-                    }
-                    else if(tableView.model.sortOrder === "Ascending") {
+                    } else if(tableView.model.sortOrder === "Ascending") {
                         tableView.model.sortOrder = "Descending";
-                    }
-                    else {
+                    } else {
                         tableView.model.sortOrder = "Config";
                     }
                 }
             }
-            Item { // Margin at right side of row layout
+            Item { // Stretch at right side of row layout
                 Layout.alignment: Qt.AlignLeft
-                Layout.minimumWidth: 4
-                Layout.minimumHeight: 1
                 Layout.fillWidth: true
-                Rectangle {
-                    anchors.fill: parent
-                    color: "red"
-                }
             }
         }
     }

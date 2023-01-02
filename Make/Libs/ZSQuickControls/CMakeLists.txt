@@ -35,31 +35,46 @@ set(_QmlPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../Qml/Libs)
 list(APPEND _Headers
     ${_HeadersPath}/ZSSys/ZSSysVersion.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSQuickControlsDllMain.h
-    ${_HeadersPath}/${PROJECT_NAME}/ZSQuickControlsThemeWindowsStyle.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSQuickControlsWindowsStyle.h
 )
 
 list(APPEND _Sources
     ${_SourcesPath}/${PROJECT_NAME}/ZSQuickControlsDllMain.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/ZSQuickControlsThemeWindowsStyle.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSQuickControlsWindowsStyle.cpp
 )
 
 list(APPEND _Resources
+    ${_ResourcesPath}/${PROJECT_NAME}/${PROJECT_NAME}.qrc
     ${_QmlPath}/${PROJECT_NAME}/${PROJECT_NAME}Qml.qrc
 )
 
+list(APPEND _ThemeImages
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ThemeDay.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ThemeNight.png
+)
+
 list(APPEND _ImageFiles
+    ${_ThemeImages}
+)
+
+list(APPEND _ZSQuickControlsQmlFiles
+    ${_QmlPath}/${PROJECT_NAME}/qmldir
+    ${_QmlPath}/${PROJECT_NAME}/ZSQuickControlsStyleWdgt.qml
 )
 
 list(APPEND _ZSStyleWindowsQmlFiles
-    ${_QmlPath}/${PROJECT_NAME}/ZSStyleWindows/qmldir
-    ${_QmlPath}/${PROJECT_NAME}/ZSStyleWindows/Theme.qml
     ${_QmlPath}/${PROJECT_NAME}/ZSStyleWindows/Button.qml
+    ${_QmlPath}/${PROJECT_NAME}/ZSStyleWindows/ButtonPanel.qml
     ${_QmlPath}/${PROJECT_NAME}/ZSStyleWindows/CheckBox.qml
+    ${_QmlPath}/${PROJECT_NAME}/ZSStyleWindows/ComboBox.qml
+    ${_QmlPath}/${PROJECT_NAME}/ZSStyleWindows/Label.qml
+    ${_QmlPath}/${PROJECT_NAME}/ZSStyleWindows/Pane.qml
     ${_QmlPath}/${PROJECT_NAME}/ZSStyleWindows/Switch.qml
     ${_QmlPath}/${PROJECT_NAME}/ZSStyleWindows/ToolButton.qml
 )
 
 list(APPEND _QmlFiles
+    ${_ZSQuickControlsQmlFiles}
     ${_ZSStyleWindowsQmlFiles}
 )
 
@@ -85,6 +100,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER Libs)
 source_group("Header Files" FILES ${_Headers})
 source_group("Source Files" FILES ${_Sources})
 source_group("Resource Files" FILES ${_Resources})
+source_group("Image Files/Themes" FILES ${_ThemeImages})
+source_group("Qml Files" FILES ${_ZSQuickControlsQmlFiles})
 source_group("Qml Files/Style Windows" FILES ${_ZSStyleWindowsQmlFiles})
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ZSQUICKCONTROLSDLL_EXPORTS)

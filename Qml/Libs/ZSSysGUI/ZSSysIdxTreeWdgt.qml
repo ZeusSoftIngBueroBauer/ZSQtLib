@@ -28,24 +28,40 @@ import QtQml 2.15
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
+import ZSSys 1.0
 import ZSSysGUI 1.0
 
 ColumnLayout {
     readonly property string nameSpace: "ZS::System::GUI::Qml"
     readonly property string className: "IdxTreeWdgt"
     readonly property string objectName: idxTree ? idxTree.objectName : "IdxTree"
-    property var myTrcAdminObj: _ZSSys_trcServer.getTraceAdminObj(
-        nameSpace, className, objectName)
+    property var trcAdminObj: TrcAdminObj {
+        nameSpace: root.nameSpace
+        className: root.className
+        objectName: root.objectName
+    }
 
     Component.onCompleted: {
-        myTrcAdminObj.traceMethodEnter("EnterLeave", "Component.onCompleted");
+        if( typeof(_ZSSys_trcServer) !== "undefined" ) {
+            trcAdminObj = _ZSSys_trcServer.getTraceAdminObj(nameSpace, className, objectName)
+        }
+        trcAdminObj.traceMethodEnter("EnterLeave", "Component.onCompleted")
         treeViewWdgt.treeView.model.excludeLeaves = false;
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "Component.onCompleted");
+        trcAdminObj.traceMethodLeave("EnterLeave", "Component.onCompleted")
     }
     Component.onDestruction: {
-        myTrcAdminObj.traceMethodEnter("EnterLeave", "Component.onDestruction")
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "Component.onDestruction")
-        _ZSSys_trcServer.releaseTraceAdminObj(myTrcAdminObj);
+        trcAdminObj.traceMethodEnter("EnterLeave", "Component.onDestruction")
+        trcAdminObj.traceMethodLeave("EnterLeave", "Component.onDestruction")
+        if( typeof(_ZSSys_trcServer) !== "undefined" ) {
+            _ZSSys_trcServer.releaseTraceAdminObj(trcAdminObj);
+        }
+    }
+    onObjectNameChanged: {
+        if( typeof(_ZSSys_trcServer) !== "undefined" ) {
+            if( trcAdminObj.status === Component.Ready ) {
+                trcAdminObj = _ZSSys_trcServer.renameTraceAdminObj(trcAdminObj, objectName)
+            }
+        }
     }
 
     property var idxTree: null
@@ -55,9 +71,9 @@ ColumnLayout {
     spacing: 4
 
     onIdxTreeChanged: {
-        myTrcAdminObj.traceMethodEnter("EnterLeave", "onIdxTreeChanged");
-        myTrcAdminObj.traceMethod("Debug", "onIdxTreeChanged", "IdxTree: " + idxTree ? idxTree.objectName : "null");
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "onIdxTreeChanged");
+        trcAdminObj.traceMethodEnter("EnterLeave", "onIdxTreeChanged");
+        trcAdminObj.traceMethod("Debug", "onIdxTreeChanged", "IdxTree: " + idxTree ? idxTree.objectName : "null");
+        trcAdminObj.traceMethodLeave("EnterLeave", "onIdxTreeChanged");
     }
 
     ToolBar {
@@ -68,15 +84,6 @@ ColumnLayout {
             anchors.fill: parent
             spacing: 10
 
-            Item { // Margin at left side of row layout
-                Layout.alignment: Qt.AlignLeft
-                Layout.minimumWidth: 4
-                Layout.minimumHeight: 1
-                Rectangle {
-                    anchors.fill: parent
-                    color: "red"
-                }
-            }
             ToolButton {
                 id: btnViewMode
                 icon.source: "qrc:/ZS/TreeView/TreeViewViewMode" + root.viewMode + ".png"
@@ -91,15 +98,6 @@ ColumnLayout {
                 Layout.maximumHeight: btnViewMode.height
                 text: treeViewWdgt.treeView.model.getTreeEntryAbsoluteNodePath(treeViewWdgt.treeView.currentIndex)
                 readOnly: true
-            }
-            Item { // Margin at right side of row layout
-                Layout.alignment: Qt.AlignLeft
-                Layout.minimumWidth: 4
-                Layout.minimumHeight: 1
-                Rectangle {
-                    anchors.fill: parent
-                    color: "red"
-                }
             }
         }
     }
@@ -120,8 +118,8 @@ ColumnLayout {
             columnKeyInTreeVisible: root.viewMode ===  "NavPanelOnly"
             columnKeyInParentBranchVisible: root.viewMode ===  "NavPanelOnly"
             onCurrentIndexChanged: {
-                root.myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "treeViewWdgt.onCurrentIndexChanged", treeView.model.modelIdx2Str(currentIndex));
-                root.myTrcAdminObj.traceMethodLeave("EnterLeave", "treeViewWdgt.onCurrentIndexChanged");
+                root.trcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "treeViewWdgt.onCurrentIndexChanged", treeView.model.modelIdx2Str(currentIndex));
+                root.trcAdminObj.traceMethodLeave("EnterLeave", "treeViewWdgt.onCurrentIndexChanged");
             }
         }
         IdxTreeTableViewBranchContentWdgt {

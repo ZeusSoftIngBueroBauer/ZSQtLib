@@ -28,28 +28,44 @@ import QtQml.Models 2.15
 import QtQuick 2.15
 import QtQuick.Controls 1.4 as C1   // TreeView derived from BasicTableView
 import QtQuick.Layouts 1.15
+import ZSSys 1.0
 import ZSSysGUI 1.0
 
 C1.TreeView {
     readonly property string nameSpace: "ZS::System::GUI::Qml"
     readonly property string className: "IdxTreeView"
     readonly property string objectName: model.objectName
-    property var myTrcAdminObj: _ZSSys_trcServer.getTraceAdminObj(
-        nameSpace, className, objectName)
+    property var trcAdminObj: TrcAdminObj {
+        nameSpace: root.nameSpace
+        className: root.className
+        objectName: root.objectName
+    }
 
     Component.onCompleted: {
-        myTrcAdminObj.traceMethodEnter("EnterLeave", "Component.onCompleted")
+        if( typeof(_ZSSys_trcServer) !== "undefined" ) {
+            trcAdminObj = _ZSSys_trcServer.getTraceAdminObj(nameSpace, className, objectName)
+        }
+        trcAdminObj.traceMethodEnter("EnterLeave", "Component.onCompleted")
         if(this.__listView) {
             this.__listView.add = transitionAdd
             this.__listView.displaced = transitionDisplaced
             this.__listView.spacing = 1
         }
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "Component.onCompleted")
+        trcAdminObj.traceMethodLeave("EnterLeave", "Component.onCompleted")
     }
     Component.onDestruction: {
-        myTrcAdminObj.traceMethodEnter("EnterLeave", "Component.onDestruction")
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "Component.onDestruction")
-        _ZSSys_trcServer.releaseTraceAdminObj(myTrcAdminObj);
+        trcAdminObj.traceMethodEnter("EnterLeave", "Component.onDestruction")
+        trcAdminObj.traceMethodLeave("EnterLeave", "Component.onDestruction")
+        if( typeof(_ZSSys_trcServer) !== "undefined" ) {
+            _ZSSys_trcServer.releaseTraceAdminObj(trcAdminObj);
+        }
+    }
+    onObjectNameChanged: {
+        if( typeof(_ZSSys_trcServer) !== "undefined" ) {
+            if( trcAdminObj.status === Component.Ready ) {
+                trcAdminObj = _ZSSys_trcServer.renameTraceAdminObj(trcAdminObj, objectName)
+            }
+        }
     }
 
     property alias idxTree: idxTreeModel.idxTree
@@ -71,26 +87,26 @@ C1.TreeView {
     model: ModelIdxTree {
         id: idxTreeModel
         onSortOrderChanged: {
-            root.myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "idxTreeModel.onSortOrderChanged", sortOrder);
-            root.myTrcAdminObj.traceMethodLeave("EnterLeave", "idxTreeModel.onSortOrderChanged");
+            root.trcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "idxTreeModel.onSortOrderChanged", sortOrder);
+            root.trcAdminObj.traceMethodLeave("EnterLeave", "idxTreeModel.onSortOrderChanged");
         }
     }
 
     onIdxTreeChanged: {
-        myTrcAdminObj.traceMethodEnter("EnterLeave", "onIdxTreeChanged");
-        myTrcAdminObj.traceMethod("Debug", "onIdxTreeChanged", "IdxTree: " + idxTree ? idxTree.objectName : "null");
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "onIdxTreeChanged");
+        trcAdminObj.traceMethodEnter("EnterLeave", "onIdxTreeChanged");
+        trcAdminObj.traceMethod("Debug", "onIdxTreeChanged", "IdxTree: " + idxTree ? idxTree.objectName : "null");
+        trcAdminObj.traceMethodLeave("EnterLeave", "onIdxTreeChanged");
     }
 
     onModelChanged: {
-        myTrcAdminObj.traceMethodEnter("EnterLeave", "onModelChanged");
-        myTrcAdminObj.traceMethod("Debug", "onModelChanged", "Model: " + model.objectName);
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "onModelChanged");
+        trcAdminObj.traceMethodEnter("EnterLeave", "onModelChanged");
+        trcAdminObj.traceMethod("Debug", "onModelChanged", "Model: " + model.objectName);
+        trcAdminObj.traceMethodLeave("EnterLeave", "onModelChanged");
     }
 
     onCurrentIndexChanged: {
-        myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "onCurrentIndexChanged", model.modelIdx2Str(currentIndex));
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "onCurrentIndexChanged");
+        trcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "onCurrentIndexChanged", model.modelIdx2Str(currentIndex));
+        trcAdminObj.traceMethodLeave("EnterLeave", "onCurrentIndexChanged");
     }
 
     Transition {
@@ -109,7 +125,7 @@ C1.TreeView {
 
     // Need a different name as QML does not allow to override functions.
     function _resizeColumnsToContents() {
-        myTrcAdminObj.traceMethodEnter("EnterLeave", "_resizeColumnsToContents");
+        trcAdminObj.traceMethodEnter("EnterLeave", "_resizeColumnsToContents");
         /* The column width of the first column depends not only by the maximum
             width of the column but also on the expanded depth because of indentations
             and decoration icons. Not easy to calculate .....
@@ -121,17 +137,17 @@ C1.TreeView {
         clmIdxInParentBranch.width = model.columnWidthByRole(clmIdxInParentBranch.role, fontPixelSize) + 2*columnSpacing
         clmKeyInTree.width = model.columnWidthByRole(clmKeyInTree.role, fontPixelSize) + 2*columnSpacing
         clmKeyInParentBranch.width = model.columnWidthByRole(clmKeyInParentBranch.role, fontPixelSize) + 2*columnSpacing
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "_resizeColumnsToContents");
+        trcAdminObj.traceMethodLeave("EnterLeave", "_resizeColumnsToContents");
     }
 
     function expandAll() {
-        myTrcAdminObj.traceMethodEnter("EnterLeave", "expandAll");
+        trcAdminObj.traceMethodEnter("EnterLeave", "expandAll");
         expandRecursive(model.index(0,0));
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "expandAll");
+        trcAdminObj.traceMethodLeave("EnterLeave", "expandAll");
     }
 
     function expandRecursive(i_modelIdx) {
-        myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "expandRecursive", model.modelIdx2Str(i_modelIdx));
+        trcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "expandRecursive", model.modelIdx2Str(i_modelIdx));
         if(!isExpanded(i_modelIdx)) {
             expand(i_modelIdx)
         }
@@ -139,17 +155,17 @@ C1.TreeView {
             var modelIdx = model.index(iRow, 0, i_modelIdx);
             expandRecursive(modelIdx);
         }
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "expandRecursive");
+        trcAdminObj.traceMethodLeave("EnterLeave", "expandRecursive");
     }
 
     function collapseAll() {
-        myTrcAdminObj.traceMethodEnter("EnterLeave", "collapseAll");
+        trcAdminObj.traceMethodEnter("EnterLeave", "collapseAll");
         collapseRecursive(model.index(0,0));
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "collapseAll");
+        trcAdminObj.traceMethodLeave("EnterLeave", "collapseAll");
     }
 
     function collapseRecursive(i_modelIdx) {
-        myTrcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "collapseRecursive", model.modelIdx2Str(i_modelIdx));
+        trcAdminObj.traceMethodEnterWithInArgs("EnterLeave", "collapseRecursive", model.modelIdx2Str(i_modelIdx));
         for(var iRow = 0; iRow < model.rowCount(i_modelIdx); iRow++) {
             var modelIdx = model.index(iRow, 0, i_modelIdx);
             collapseRecursive(modelIdx);
@@ -157,7 +173,7 @@ C1.TreeView {
         if(isExpanded(i_modelIdx)) {
             collapse(i_modelIdx)
         }
-        myTrcAdminObj.traceMethodLeave("EnterLeave", "collapseRecursive");
+        trcAdminObj.traceMethodLeave("EnterLeave", "collapseRecursive");
     }
 
     /* When using a delegate "resizeColumnsToContents" does not work anymore.
