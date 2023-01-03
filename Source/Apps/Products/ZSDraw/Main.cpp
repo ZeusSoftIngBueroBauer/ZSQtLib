@@ -115,42 +115,6 @@ int main( int argc, char* argv[] )
 
     iAppResult = pApp->exec();
 
-    // Delete application
-    //-------------------
-
-    //try
-    //{
-    //    delete pApp;
-    //}
-    //catch(...)
-    //{
-    //}
-    //pApp = nullptr;
-
-    // Delete trace server
-    //--------------------
-
-    // Please note that the trace server must be deleted after the application has been
-    // destroyed and the main event loop has been quit. There might still be events (messages)
-    // pending while the application is quit whose dtor will be called. If the message dtor
-    // wants to output traces the server must still be alive. Otherwise the trace admin
-    // objects referenced by the message dtor would have already been destroyed before the dtor
-    // of the event (message) is called.
-
-    //ZS::Trace::CTrcServer* pTrcServer = ZS::Trace::CTrcServer::GetInstance();
-
-    //if( pTrcServer != nullptr )
-    //{
-    //    try
-    //    {
-    //        ZS::Trace::CTrcServer::DestroyInstance(pTrcServer);
-    //    }
-    //    catch(...)
-    //    {
-    //    }
-    //    pTrcServer = nullptr;
-    //}
-
     delete pApp;
     pApp = nullptr;
 
