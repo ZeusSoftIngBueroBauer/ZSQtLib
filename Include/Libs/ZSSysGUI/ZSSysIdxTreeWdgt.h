@@ -41,7 +41,6 @@ may result in using the software modules.
 class QLineEdit;
 class QModelIndex;
 class QPushButton;
-class QSpacerItem;
 class QSplitter;
 class QHBoxLayout;
 class QVBoxLayout;
@@ -50,13 +49,15 @@ namespace ZS
 {
 namespace System
 {
+class CIdxTree;
 class CTrcAdminObj;
 
 namespace GUI
 {
-class CModelIdxTree;
 class CTreeViewIdxTree;
 class CTableViewIdxTreeBranchContent;
+class CWdgtIdxTreeView;
+class CWdgtIdxTreeTableViewBranchContent;
 
 //******************************************************************************
 class ZSSYSGUIDLL_API CWdgtIdxTree : public QWidget
@@ -77,53 +78,37 @@ public: // class methods
     static QString ClassName() { return "CWdgtIdxTree"; }
 public: // ctors and dtor
     CWdgtIdxTree(
-        CModelIdxTree* i_pModel,
+        CIdxTree* i_pIdxTree,
         QWidget* i_pWdgtParent = nullptr,
-        Qt::WindowFlags i_wflags = Qt::WindowFlags(),
-        EMethodTraceDetailLevel i_eTrcDetailLevel = EMethodTraceDetailLevel::None );
+        Qt::WindowFlags i_wflags = Qt::WindowFlags() );
     virtual ~CWdgtIdxTree();
-public: // overridables
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 public: // instance methods
-    CModelIdxTree* model() { return m_pModel; }
-    CTreeViewIdxTree* treeView() { return m_pTreeView; }
-    CTableViewIdxTreeBranchContent* tableView() { return m_pTableViewBranchContent; }
+    CTreeViewIdxTree* treeView();
+    CTableViewIdxTreeBranchContent* tableView();
+public: // instance methods
+    void setIdxTree(CIdxTree* i_pIdxTree);
+    CIdxTree* idxTree() { return m_pIdxTree; }
 public: // instance methods
     void setViewMode( EViewMode i_viewMode );
     EViewMode viewMode() const { return m_viewMode; }
 protected slots:
     void onBtnViewModeClicked( bool i_bChecked );
-    void onBtnTreeViewResizeRowsAndColumnsToContentsClicked( bool i_bChecked );
-    void onBtnTreeViewExpandAllClicked( bool i_bChecked );
-    void onBtnTreeViewCollapseAllClicked( bool i_bChecked );
-    void onBtnSortOrderClicked( bool i_bChecked );
 protected slots:
-    void onTreeViewSelectionModelCurrentRowChanged( const QModelIndex& i_modelIdxCurr, const QModelIndex& i_modelIdxPrev );
+    void onTreeViewCurrentRowChanged( const QModelIndex& i_modelIdxCurr, const QModelIndex& i_modelIdxPrev );
 protected slots:
-    void onTrcAdminObjChanged( QObject* i_pTrcAdminObj );
+    void onIdxTreeAboutToBeDestroyed();
 protected: // instance members
-    EViewMode                       m_viewMode;
-    QSize                           m_szBtns;
-    QVBoxLayout*                    m_pLytMain;
-    QHBoxLayout*                    m_pLytHeadLine;
-    QPushButton*                    m_pBtnViewMode;
-    QPushButton*                    m_pBtnTreeViewResizeRowsAndColumnsToContents;
-    QPushButton*                    m_pBtnTreeViewExpandAll;
-    QPushButton*                    m_pBtnTreeViewCollapseAll;
-    QPushButton*                    m_pBtnSortOrder;
-    QLineEdit*                      m_pEdtBranch;
-    QSpacerItem*                    m_pSpcHeadLine;
-    CModelIdxTree*                  m_pModel;
-    QSplitter*                      m_pSplitter;
-    CTreeViewIdxTree*               m_pTreeView;
-    CTableViewIdxTreeBranchContent* m_pTableViewBranchContent;
-    /*!< Trace detail level for method tracing.
-         Trace output may not be controlled by trace admin objects
-         if the index tree belongs the trace server. */
-    EMethodTraceDetailLevel m_eTrcDetailLevel;
-    /*!< Trace admin object to control trace outputs of the class.
-         The object will not be created if the index tree's belongs to the trace server. */
+    CIdxTree* m_pIdxTree;
+    QSize m_szBtns;
+    EViewMode m_viewMode;
+    QVBoxLayout* m_pLytMain;
+    QHBoxLayout* m_pLytHeadLine;
+    QPushButton* m_pBtnViewMode;
+    QLineEdit* m_pEdtBranch;
+    QSplitter* m_pSplitter;
+    CWdgtIdxTreeView* m_pWdgtTreeView;
+    CWdgtIdxTreeTableViewBranchContent* m_pWdgtTableViewBranchContent;
+    /*!< Trace admin object to control trace outputs of the class. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CWdgtIdxTree

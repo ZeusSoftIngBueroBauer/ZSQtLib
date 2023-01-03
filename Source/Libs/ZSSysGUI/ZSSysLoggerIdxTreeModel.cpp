@@ -340,13 +340,15 @@ Qt::ItemFlags CModelIdxTreeLoggers::flags( const QModelIndex& i_modelIdx ) const
 
     if( i_modelIdx.isValid() )
     {
+        CIdxTreeLocker idxTreeLocker(m_pIdxTree);
+
         CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
 
         CLogger* pLogger = nullptr;
 
-        if( pModelTreeEntry != nullptr )
+        if( pModelTreeEntry != nullptr && pModelTreeEntry->isLeave() )
         {
-            pLogger = dynamic_cast<CLogger*>(pModelTreeEntry->treeEntry());
+            pLogger = dynamic_cast<CLogger*>(pModelTreeEntry->getIdxTreeEntry());
         }
 
         switch( i_modelIdx.column() )
@@ -368,12 +370,10 @@ Qt::ItemFlags CModelIdxTreeLoggers::flags( const QModelIndex& i_modelIdx ) const
             {
                 break;
             }
-        } // switch( i_modelIdx.column() )
-    } // if( i_modelIdx.isValid() )
-
+        }
+    }
     return uFlags;
-
-} // flags
+}
 
 //------------------------------------------------------------------------------
 QVariant CModelIdxTreeLoggers::data( const QModelIndex& i_modelIdx, int i_iRole ) const
@@ -390,19 +390,13 @@ QVariant CModelIdxTreeLoggers::data( const QModelIndex& i_modelIdx, int i_iRole 
 
     if( pModelTreeEntry != nullptr )
     {
-        CModelIdxTreeEntry* pModelBranch = nullptr;
-        CModelIdxTreeEntry* pModelLeave  = nullptr;
+        CIdxTreeLocker idxTreeLocker(m_pIdxTree);
 
         CLogger* pLogger = nullptr;
 
-        if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        if( pModelTreeEntry->isLeave() )
         {
-            pModelBranch = pModelTreeEntry;
-        }
-        else if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Leave )
-        {
-            pModelLeave = pModelTreeEntry;
-            pLogger = dynamic_cast<CLogger*>(pModelLeave->treeEntry());
+            pLogger = dynamic_cast<CLogger*>(pModelTreeEntry->getIdxTreeEntry());
         }
 
         switch( i_modelIdx.column() )
@@ -425,9 +419,9 @@ QVariant CModelIdxTreeLoggers::data( const QModelIndex& i_modelIdx, int i_iRole 
                         strData += "\nIdxInTree: " + QString::number(pModelTreeEntry->indexInTree());
                         strData += "\nIdxInParentBranch: " + QString::number(pModelTreeEntry->indexInParentBranch());
                         strData += "\nSelected: " + bool2Str(pModelTreeEntry->isSelected()) ;
-                        if( pModelBranch != nullptr )
+                        if( pModelTreeEntry->isLeave() )
                         {
-                            strData += "\nExpanded: " + bool2Str(pModelBranch->isExpanded());
+                            strData += "\nExpanded: " + bool2Str(pModelTreeEntry->isExpanded());
                         }
                         varData = strData;
                     }
@@ -637,19 +631,13 @@ bool CModelIdxTreeLoggers::setData( const QModelIndex& i_modelIdx, const QVarian
 
         if( pModelTreeEntry != nullptr )
         {
-            //CModelIdxTreeEntry* pModelBranch = nullptr;
-            CModelIdxTreeEntry*   pModelLeave  = nullptr;
+            CIdxTreeLocker idxTreeLocker(m_pIdxTree);
 
             CLogger* pLogger = nullptr;
 
-            if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+            if( pModelTreeEntry->isLeave() )
             {
-                //pModelBranch = pModelTreeEntry;
-            }
-            else if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Leave )
-            {
-                pModelLeave = pModelTreeEntry;
-                pLogger = dynamic_cast<CLogger*>(pModelLeave->treeEntry());
+                pLogger = dynamic_cast<CLogger*>(pModelTreeEntry->getIdxTreeEntry());
             }
 
             switch( i_modelIdx.column() )

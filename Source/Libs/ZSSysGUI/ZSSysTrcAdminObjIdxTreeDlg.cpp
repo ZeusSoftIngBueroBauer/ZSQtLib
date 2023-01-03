@@ -61,9 +61,7 @@ CDlgIdxTreeTrcAdminObjs* CDlgIdxTreeTrcAdminObjs::CreateInstance(
     const QString& i_strDlgTitle,
     CIdxTreeTrcAdminObjs* i_pIdxTree,
     QWidget* i_pWdgtParent,
-    Qt::WindowFlags i_wFlags,
-    EMethodTraceDetailLevel i_eTrcDetailLevel,
-    EMethodTraceDetailLevel i_eTrcDetailLevelNoisyMethods )
+    Qt::WindowFlags i_wFlags )
 //------------------------------------------------------------------------------
 {
     if( CDialog::GetInstance(NameSpace(), ClassName(), i_pIdxTree->objectName()) != nullptr )
@@ -77,9 +75,7 @@ CDlgIdxTreeTrcAdminObjs* CDlgIdxTreeTrcAdminObjs::CreateInstance(
         /* strDlgTitle                 */ i_strDlgTitle,
         /* pIdxTree                    */ i_pIdxTree,
         /* pWdgtParent                 */ i_pWdgtParent,
-        /* wFlags                      */ i_wFlags,
-        /* eTrcDetailLevel             */ i_eTrcDetailLevel,
-        /* eTrcDetailLevelNoisyMethods */ i_eTrcDetailLevelNoisyMethods );
+        /* wFlags                      */ i_wFlags );
 
 } // CreateInstance
 
@@ -99,9 +95,7 @@ CDlgIdxTreeTrcAdminObjs::CDlgIdxTreeTrcAdminObjs(
     const QString& i_strDlgTitle,
     CIdxTreeTrcAdminObjs* i_pIdxTree,
     QWidget* i_pWdgtParent,
-    Qt::WindowFlags i_wFlags,
-    EMethodTraceDetailLevel i_eTrcDetailLevel,
-    EMethodTraceDetailLevel i_eTrcDetailLevelNoisyMethods ) :
+    Qt::WindowFlags i_wFlags ) :
 //------------------------------------------------------------------------------
     CDialog(
         /* strDlgTitle  */ i_strDlgTitle,
@@ -113,31 +107,27 @@ CDlgIdxTreeTrcAdminObjs::CDlgIdxTreeTrcAdminObjs(
     m_pIdxTree(i_pIdxTree),
     m_pLyt(nullptr),
     m_pWdgtIdxTree(nullptr),
-    m_eTrcDetailLevel(i_eTrcDetailLevel),
-    m_eTrcDetailLevelNoisyMethods(i_eTrcDetailLevelNoisyMethods)
+    m_pTrcAdminObj(nullptr)
 {
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
+
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "IdxTree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName());
     }
 
     CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
         /* strMethod          */ "ctor",
         /* strMethodInArgs    */ strMthInArgs );
 
     m_pLyt = new QVBoxLayout();
     setLayout(m_pLyt);
 
-    m_pWdgtIdxTree = new CWdgtIdxTreeTrcAdminObjs(
-        m_pIdxTree, nullptr, i_eTrcDetailLevel, i_eTrcDetailLevelNoisyMethods);
+    m_pWdgtIdxTree = new CWdgtIdxTreeTrcAdminObjs(m_pIdxTree, nullptr);
 
     m_pLyt->addWidget(m_pWdgtIdxTree);
 
@@ -150,19 +140,19 @@ CDlgIdxTreeTrcAdminObjs::~CDlgIdxTreeTrcAdminObjs()
     QString strMthInArgs;
 
     CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
         /* strMethod          */ "dtor",
         /* strMethodInArgs    */ strMthInArgs );
+
+    if( m_pTrcAdminObj != nullptr ) {
+        mthTracer.onAdminObjAboutToBeReleased();
+        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
+    }
 
     m_pIdxTree = nullptr;
     m_pLyt = nullptr;
     m_pWdgtIdxTree = nullptr;
-    m_eTrcDetailLevel = static_cast<EMethodTraceDetailLevel>(0);
-    m_eTrcDetailLevelNoisyMethods = static_cast<EMethodTraceDetailLevel>(0);
+    m_pTrcAdminObj = nullptr;
 
 } // dtor

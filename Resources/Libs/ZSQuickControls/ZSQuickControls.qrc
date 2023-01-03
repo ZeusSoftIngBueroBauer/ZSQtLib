@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/ZS/QuickControls">
+        <file alias="ThemeDay.png">Images/ThemeDay.png</file>
+        <file alias="ThemeNight.png">Images/ThemeNight.png</file>
+    </qresource>
+</RCC>

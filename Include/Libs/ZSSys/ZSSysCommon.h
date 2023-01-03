@@ -290,10 +290,7 @@ enum class ERowVersion
 //==============================================================================
 {
     Original  = 0,  /*!< Original version before changing the value. */
-    Current   = 1,  /*!< After editing a value the current version might be differet from the original value. */
-    Proposed  = 2,  /*!< When editing a value the proposed value may be differnt from the current version. */
-    Default   = 3,  /*!< Use either Original, Current or Proposed version depending on current state. */
-    Undefined = 4   /*!< The row version is not defined. */
+    Current   = 1   /*!< After editing a value the current version might be differet from the original value. */
 };
 
 template class ZSSYSDLL_API CEnum<ERowVersion>;

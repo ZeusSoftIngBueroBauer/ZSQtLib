@@ -68,7 +68,8 @@ public: // instance methods to get and release admin objects
         const QString& i_strDefaultDataFilter, // Use QString() (null) to ignore
         bool i_bIncrementRefCount = true );
     CTrcAdminObj* getTraceAdminObj( int i_idxInTree, bool i_bIncrementRefCount = true );
-    void renameTraceAdminObj( CTrcAdminObj** io_ppTrcAdminObj, const QString& i_strNewObjName );
+    CTrcAdminObj* renameTraceAdminObj(
+        CTrcAdminObj* i_pTrcAdminObj, const QString& i_strNewObjName );
     void releaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj );
 public: // instance methods to insert branch nodes and admin objects
     CIdxTreeEntry* insertBranch(

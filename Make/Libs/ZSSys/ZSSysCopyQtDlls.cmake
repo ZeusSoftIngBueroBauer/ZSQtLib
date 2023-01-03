@@ -8,6 +8,12 @@
 # So it may only be included by CMakeList files defining a target via
 # add_executable or add_library.
 
+# Don't copy Qt Dlls to bin directory.
+# The Dlls got to loaded from the Qt installation directory.
+# Otherwise the Qml modules will not be loaded.
+# If the Qt installation directory is not in PATH the Dlls and Plugins
+# got to be manually copied to the bin directory.
+
 #message(STATUS "")
 #message(STATUS "---------------------------------------------------------------------------------------------")
 #message(STATUS "-> ZSQtLib/Make/Libs/ZSSys/ZSSysCopyQtDlls.cmake")
@@ -25,7 +31,8 @@
 #                COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/QtCored4.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}/QtCored4.dll
 #                COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/QtXmld4.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}/QtXmld4.dll
 #                COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/QtNetworkd4.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}/QtNetworkd4.dll
-#                COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/QtGuid4.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}/QtGuid4.dll)
+#                COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/QtGuid4.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}/QtGuid4.dll
+#                COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/QtGuid4.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}/QtQml4.dll)
 #        else()
 #            message(STATUS "Copying Qt4 Release Dlls")
 #            # Please note: Executed during build but not during configure process.
@@ -34,7 +41,8 @@
 #                COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/QtCore4.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}/QtCore4.dll
 #                COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/QtXml4.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}/QtXml4.dll
 #                COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/QtNetwork4.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}/QtNetwork4.dll
-#                COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/QtGui4.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}/QtGui4.dll)
+#                COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/QtGui4.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}/QtGui4.dll
+#                COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/QtGui4.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}/QtQml4.dll)
 #        endif()
 #    elseif(QT_VERSION_MAJOR EQUAL 5)
 #        message(STATUS "Copying Qt5 Dlls")
@@ -45,7 +53,8 @@
 #            COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Xml> $<TARGET_FILE_DIR:${PROJECT_NAME}>
 #            COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Network> $<TARGET_FILE_DIR:${PROJECT_NAME}>
 #            COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Gui> $<TARGET_FILE_DIR:${PROJECT_NAME}>
-#            COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Widgets> $<TARGET_FILE_DIR:${PROJECT_NAME}>)
+#            COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Widgets> $<TARGET_FILE_DIR:${PROJECT_NAME}>
+#            COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Qml> $<TARGET_FILE_DIR:${PROJECT_NAME}>)
 #        if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 #            add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
 #                COMMENT "Copy Qt Platform Dlls"
@@ -57,18 +66,6 @@
 #                COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/../plugins/platforms/qwindows.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/plugins/platforms/qwindows.dll
 #                COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/../plugins/platforms/qwindows.dll.debug ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/plugins/platforms/qwindows.dll.debug)
 #        endif()
-#        add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
-#               COMMENT "Copy Qt Graphic Dlls"
-#               COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/libEGL.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/libEGL.dll
-#               COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/libEGLd.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/libEGLd.dll
-#               COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/libGLESv2.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/libGLESv2.dll
-#               COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/libGLESv2d.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/libGLESv2d.dll
-#               COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/icudt54.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/icudt54.dll
-#               COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/icuin54.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/icuin54.dll
-#               COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/icule54.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/icule54.dll
-#               COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/iculx54.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/iculx54.dll
-#               COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/icutu54.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/icutu54.dll
-#               COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/icuuc54.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/icuuc54.dll)
 #    endif()
 #else()
 #    message(STATUS "Copying ignored as not WIN32 platform")

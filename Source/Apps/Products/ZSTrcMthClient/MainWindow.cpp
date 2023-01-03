@@ -347,12 +347,8 @@ CMainWindow::CMainWindow(
     //----------------------------
 
     QIcon iconErrorLog;
-
-    QPixmap pxmErrorLog16x16(":/ZS/App/Zeus16x16.bmp");
-
-    pxmErrorLog16x16.setMask(pxmErrorLog16x16.createHeuristicMask());
-
-    iconErrorLog.addPixmap(pxmErrorLog16x16);
+    QPixmap pxmErrorLog(":/ZS/App/Zeus32x32.png");
+    iconErrorLog.addPixmap(pxmErrorLog);
 
     m_pActDebugErrLog = new QAction( iconErrorLog, "Error Log", this );
     m_pActDebugErrLog->setToolTip("Open error log dialog");
@@ -373,12 +369,8 @@ CMainWindow::CMainWindow(
     //-----------------------------------------
 
     QIcon iconReqExecTree;
-
-    QPixmap pxmReqExecTree16x16(":/ZS/App/Zeus16x16.bmp");
-
-    pxmReqExecTree16x16.setMask(pxmReqExecTree16x16.createHeuristicMask());
-
-    iconReqExecTree.addPixmap(pxmReqExecTree16x16);
+    QPixmap pxmReqExecTree(":/ZS/App/Zeus32x32.png");
+    iconReqExecTree.addPixmap(pxmReqExecTree);
 
     m_pActDebugRequestExecTree = new QAction( iconReqExecTree, "Request Tree", this );
     m_pActDebugRequestExecTree->setToolTip("Open request execution tree dialog");
@@ -950,47 +942,35 @@ void CMainWindow::updateErrorsStatus()
 
     EResultSeverity severityMax = EResultSeveritySuccess;
     QString         strToolTip;
-    SErrLogEntry*   pErrLogEntry = nullptr;
-    EResultSeverity severity;
-    int             iRowIdx;
-
-    int ariErrorsCount[EResultSeverityCount];
-    int iErrorsCount = 0;
-
-    memset( ariErrorsCount, 0x00, sizeof(ariErrorsCount) );
+    int             iErrorsCount = 0;
 
     if( pErrLog != nullptr )
     {
-        pErrLog->lock();
+        CErrLogLocker errLogLocker(pErrLog);
 
-        for( iRowIdx = 0; iRowIdx < pErrLog->getEntryCount(); iRowIdx++ )
+        QVector<int> ariErrorsCount(EResultSeverityCount);
+
+        for( int iSeverity = 0; iSeverity < ariErrorsCount.count(); ++iSeverity )
         {
-            pErrLogEntry = pErrLog->getEntry(iRowIdx);
+            EResultSeverity severity = static_cast<EResultSeverity>(iSeverity);
 
-            if( pErrLogEntry != nullptr )
+            ariErrorsCount[iSeverity] = pErrLog->getEntryCount(severity);
+            iErrorsCount += ariErrorsCount[iSeverity];
+
+            if( severity > severityMax )
             {
-                if( pErrLogEntry->m_errResultInfo.getSeverity() > severityMax )
-                {
-                    severityMax = pErrLogEntry->m_errResultInfo.getSeverity();
-                }
-                if( pErrLogEntry->m_errResultInfo.getSeverity() >= EResultSeverityInfo && pErrLogEntry->m_errResultInfo.getSeverity() < EResultSeverityCount )
-                {
-                    ariErrorsCount[pErrLogEntry->m_errResultInfo.getSeverity()]++;
-                    iErrorsCount++;
-                }
+                severityMax = severity;
             }
         }
-        pErrLog->unlock();
 
         if( iErrorsCount == 0 )
         {
             strToolTip = "There is no Info, no Warning, no Error and no Critical Error message pending";
-            m_pLblErrors->hide();
         }
         else if( iErrorsCount > 0 )
         {
             int iErrorsCountTmp = 0;
-            int iRowIdxTmp;
+            int iSeverityTmp;
 
             if( iErrorsCount == 1 )
             {
@@ -1001,42 +981,42 @@ void CMainWindow::updateErrorsStatus()
                 strToolTip = "There are ";
             }
 
-            for( iRowIdx = EResultSeverityInfo; iRowIdx < EResultSeverityCount; iRowIdx++ )
+            for( int iSeverity = 0; iSeverity < ariErrorsCount.count(); ++iSeverity )
             {
-                severity = static_cast<EResultSeverity>(iRowIdx);
+                EResultSeverity severity = static_cast<EResultSeverity>(iSeverity);
 
-                if( ariErrorsCount[iRowIdx] > 0 )
+                if( ariErrorsCount[iSeverity] > 0 )
                 {
-                    strToolTip += QString::number(ariErrorsCount[iRowIdx]) + " " + resultSeverity2Str(severity);
+                    strToolTip += QString::number(ariErrorsCount[iSeverity]) + " " + resultSeverity2Str(severity);
 
                     if( severity == EResultSeverityInfo || severity == EResultSeverityWarning || severity == EResultSeverityError )
                     {
-                        if( ariErrorsCount[iRowIdx] > 1 )
+                        if( ariErrorsCount[iSeverity] > 1 )
                         {
                             strToolTip += "s";
                         }
                     }
                     else if( severity == EResultSeverityCritical )
                     {
-                        if( ariErrorsCount[iRowIdx] == 1 )
+                        if( ariErrorsCount[iSeverity] == 1 )
                         {
-                            strToolTip += " Error";
+                            strToolTip += " Critical Error";
                         }
                         else
                         {
-                            strToolTip += " Errors";
+                            strToolTip += " Critical Errors";
                         }
                     }
 
-                    iErrorsCountTmp += ariErrorsCount[iRowIdx];
+                    iErrorsCountTmp += ariErrorsCount[iSeverity];
 
                     if( iErrorsCountTmp < iErrorsCount )
                     {
                         int iSeveritiesWithErrorsFollow = 0;
 
-                        for( iRowIdxTmp = iRowIdx+1; iRowIdxTmp < EResultSeverityCount; iRowIdxTmp++ )
+                        for( iSeverityTmp = iSeverity+1; iSeverityTmp < EResultSeverityCount; iSeverityTmp++ )
                         {
-                            if( ariErrorsCount[iRowIdxTmp] > 0 )
+                            if( ariErrorsCount[iSeverityTmp] > 0 )
                             {
                                 iSeveritiesWithErrorsFollow++;
                             }
@@ -1052,8 +1032,6 @@ void CMainWindow::updateErrorsStatus()
                     }
                 }
             }
-            m_pLblErrors->show();
-
         } // if( iErrorsCount > 0 )
 
         strToolTip += ".";
@@ -1064,6 +1042,12 @@ void CMainWindow::updateErrorsStatus()
     {
         m_pLblErrors->setPixmap( getErrPixmap(severityMax) );
         m_pLblErrors->setToolTip(strToolTip);
+
+        if( iErrorsCount > 0 ) {
+            m_pLblErrors->show();
+        } else {
+            m_pLblErrors->hide();
+        }
     }
 
 } // updateErrorsStatus

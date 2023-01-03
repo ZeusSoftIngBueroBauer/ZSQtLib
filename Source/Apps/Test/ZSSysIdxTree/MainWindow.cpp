@@ -55,7 +55,9 @@ may result in using the software modules.
 #include "ZSTest/ZSTestStepIdxTree.h"
 #include "ZSSysGUI/ZSSysErrLogDlg.h"
 #include "ZSSysGUI/ZSSysIdxTreeWdgt.h"
+#include "ZSSysGUI/ZSSysIdxTreeView.h"
 #include "ZSSysGUI/ZSSysIdxTreeModel.h"
+#include "ZSSysGUI/ZSSysIdxTreeModelBranchContent.h"
 #include "ZSSysGUI/ZSSysTrcAdminObjIdxTreeDlg.h"
 #include "ZSSys/ZSSysIdxTree.h"
 #include "ZSSys/ZSSysErrLog.h"
@@ -116,7 +118,6 @@ CMainWindow::CMainWindow(
     m_pLblErrors(nullptr),
     m_pWdgtCentral(nullptr),
     m_pDockWdgtIdxTree(nullptr),
-    m_pModelIdxTree(nullptr),
     m_pWdgtIdxTree(nullptr),
     m_pDlgFile(nullptr)
 {
@@ -232,9 +233,11 @@ CMainWindow::CMainWindow(
     m_pDockWdgtIdxTree->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
 
     // The index tree will be assigned to the model during runtime.
-    m_pModelIdxTree = new CModelIdxTree(nullptr, nullptr);
-
-    m_pWdgtIdxTree = new CWdgtIdxTree(m_pModelIdxTree);
+    m_pWdgtIdxTree = new CWdgtIdxTree(nullptr);
+    m_pWdgtIdxTree->treeView()->hideColumn(CModelIdxTree::EColumnTreeEntryNameDecorated);
+    m_pWdgtIdxTree->treeView()->hideColumn(CModelIdxTree::EColumnTreeEntryTypeImageUrl);
+    m_pWdgtIdxTree->treeView()->hideColumn(CModelIdxTree::EColumnTreeEntryTypeIcon);
+    m_pWdgtIdxTree->treeView()->hideColumn(CModelIdxTree::EColumnTreeEntryType);
     m_pDockWdgtIdxTree->setWidget(m_pWdgtIdxTree);
 
     addDockWidget(Qt::RightDockWidgetArea, m_pDockWdgtIdxTree);
@@ -409,14 +412,6 @@ CMainWindow::~CMainWindow()
 
     try
     {
-        delete m_pModelIdxTree;
-    }
-    catch(...)
-    {
-    }
-
-    try
-    {
         delete m_pDlgFile;
     }
     catch(...)
@@ -443,7 +438,6 @@ CMainWindow::~CMainWindow()
     m_pLblErrors = nullptr;
     m_pWdgtCentral = nullptr;
     m_pDockWdgtIdxTree = nullptr;
-    m_pModelIdxTree = nullptr;
     m_pWdgtIdxTree = nullptr;
     m_pDlgFile = nullptr;
 
@@ -703,11 +697,11 @@ protected slots:
 void CMainWindow::onTestIdxTreeAdded( ZS::System::CIdxTree* i_pIdxTree )
 //------------------------------------------------------------------------------
 {
-    if( m_pModelIdxTree != nullptr )
+    if( m_pWdgtIdxTree != nullptr )
     {
         // Test both variants:
-        // 1. Aassigning idx tree during runtime to the model.
-        m_pModelIdxTree->setIdxTree(i_pIdxTree);
+        // 1. Assigning idx tree during runtime to the model.
+        m_pWdgtIdxTree->setIdxTree(i_pIdxTree);
     }
 
     if( !QObject::connect(

@@ -165,7 +165,7 @@ void CMyClass3Thread::setObjectName(const QString& i_strObjName)
 
     if( m_pTrcAdminObj != nullptr )
     {
-        CTrcServer::RenameTraceAdminObj(&m_pTrcAdminObj, objectName());
+        m_pTrcAdminObj = CTrcServer::RenameTraceAdminObj(m_pTrcAdminObj, objectName());
     }
 
 } // setObjectName
@@ -518,7 +518,7 @@ CMyClass3::CMyClass3( const QString& i_strObjName, CMyClass3Thread* i_pMyClass3T
         /* strMethod    */ "ctor",
         /* strMthInArgs */ strMthInArgs );
 
-    m_pMtxCounters = new CMutex(QMutex::Recursive, ClassName() + "::" + objectName() + "::Counters");
+    m_pMtxCounters = new CMutex(QMutex::Recursive, ClassName() + "-" + objectName() + "-Counters");
 
 } // ctor
 
@@ -587,14 +587,14 @@ void CMyClass3::setObjectName(const QString& i_strObjName)
 
     if( m_pMtxCounters != nullptr )
     {
-        m_pMtxCounters->setObjectName(ClassName() + "::" + objectName() + "::Counters");
+        m_pMtxCounters->setObjectName(ClassName() + "-" + objectName() + "-Counters");
     }
 
     // Should be the last so that the method tracer traces leave method
     // not before the child objects have been renamed.
     if( m_pTrcAdminObj != nullptr )
     {
-        CTrcServer::RenameTraceAdminObj(&m_pTrcAdminObj, objectName());
+        m_pTrcAdminObj = CTrcServer::RenameTraceAdminObj(m_pTrcAdminObj, objectName());
     }
 
 } // setObjectName

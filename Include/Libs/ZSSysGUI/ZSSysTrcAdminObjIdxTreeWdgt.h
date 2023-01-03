@@ -38,10 +38,8 @@ may result in using the software modules.
 #include "ZSSysGUI/ZSSysGUIDllMain.h"
 #include "ZSSys/ZSSysAux.h"
 
-class QAbstractItemModel;
 class QModelIndex;
 class QPushButton;
-class QTreeView;
 class QHBoxLayout;
 class QVBoxLayout;
 
@@ -50,9 +48,13 @@ namespace ZS
 namespace System
 {
 class CIdxTreeTrcAdminObjs;
+class CTrcAdminObj;
 
 namespace GUI
 {
+class CModelIdxTreeTrcAdminObjs;
+class CTreeViewIdxTreeTrcAdminObjs;
+
 //******************************************************************************
 class ZSSYSGUIDLL_API CWdgtIdxTreeTrcAdminObjs : public QWidget
 //******************************************************************************
@@ -64,9 +66,7 @@ public: // class methods
 public: // ctors and dtor
     CWdgtIdxTreeTrcAdminObjs(
         CIdxTreeTrcAdminObjs* i_pIdxTree,
-        QWidget* i_pWdgtParent = nullptr,
-        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevel = ZS::System::EMethodTraceDetailLevel::None,
-        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevelNoisyMethods = ZS::System::EMethodTraceDetailLevel::None );
+        QWidget* i_pWdgtParent = nullptr );
     virtual ~CWdgtIdxTreeTrcAdminObjs();
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
@@ -78,17 +78,16 @@ protected slots:
     void onBtnTreeViewExpandAllClicked( bool i_bChecked );
     void onBtnTreeViewCollapseAllClicked( bool i_bChecked );
 protected: // instance members
-    QSize                 m_szBtns;
-    QVBoxLayout*          m_pLytMain;
-    QHBoxLayout*          m_pLytHeadLine;
-    QPushButton*          m_pBtnTreeViewResizeRowsAndColumnsToContents;
-    QPushButton*          m_pBtnTreeViewExpandAll;
-    QPushButton*          m_pBtnTreeViewCollapseAll;
     CIdxTreeTrcAdminObjs* m_pIdxTree;
-    QAbstractItemModel*   m_pModel;
-    QTreeView*            m_pTreeView;
-    ZS::System::EMethodTraceDetailLevel m_eTrcDetailLevel;
-    ZS::System::EMethodTraceDetailLevel m_eTrcDetailLevelNoisyMethods;
+    QSize m_szBtns;
+    QVBoxLayout* m_pLytMain;
+    QHBoxLayout* m_pLytHeadLine;
+    QPushButton* m_pBtnTreeViewResizeRowsAndColumnsToContents;
+    QPushButton* m_pBtnTreeViewExpandAll;
+    QPushButton* m_pBtnTreeViewCollapseAll;
+    CTreeViewIdxTreeTrcAdminObjs* m_pTreeView;
+    /*!< Trace admin object to control trace outputs of the class. */
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CWdgtIdxTreeTrcAdminObjs
 

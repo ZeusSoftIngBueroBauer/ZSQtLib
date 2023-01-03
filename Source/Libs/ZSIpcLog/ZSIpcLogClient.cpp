@@ -104,15 +104,9 @@ CIpcLogClient::CIpcLogClient(const QString& i_strName) :
     // Connect to the signals of the index tree
     //-----------------------------------------
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pLoggersIdxTree,
-        /* szSignal     */ SIGNAL( treeEntryChanged(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onLoggersIdxTreeEntryChanged(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*) ),
-        /* cnctType     */ Qt::DirectConnection ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pLoggersIdxTree, &CIdxTreeLoggers::treeEntryChanged,
+        this, &CIpcLogClient::onLoggersIdxTreeEntryChanged );
 
 } // ctor
 
@@ -121,10 +115,8 @@ CIpcLogClient::~CIpcLogClient()
 //------------------------------------------------------------------------------
 {
     QObject::disconnect(
-        /* pObjSender   */ m_pLoggersIdxTree,
-        /* szSignal     */ SIGNAL( treeEntryChanged(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onLoggersIdxTreeEntryChanged(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*) ) );
+        m_pLoggersIdxTree, &CIdxTreeLoggers::treeEntryChanged,
+        this, &CIpcLogClient::onLoggersIdxTreeEntryChanged );
 
     abortAllRequests(); // Deletes or at least invalidates the current request in progress.
 
@@ -1008,9 +1000,7 @@ protected slots: // connected to the slots of the index tree
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CIpcLogClient::onLoggersIdxTreeEntryChanged(
-    CIdxTree*      /*i_pIdxTree*/,
-    CIdxTreeEntry* i_pTreeEntry )
+void CIpcLogClient::onLoggersIdxTreeEntryChanged( const QString& i_strKeyInTree )
 //------------------------------------------------------------------------------
 {
     if( m_bOnReceivedDataUpdateInProcess )
@@ -1018,14 +1008,18 @@ void CIpcLogClient::onLoggersIdxTreeEntryChanged(
         return;
     }
 
-    if( i_pTreeEntry != nullptr )
+    CIdxTreeLocker idxTreeLocker(m_pLoggersIdxTree);
+
+    CIdxTreeEntry* pTreeEntry = m_pLoggersIdxTree->findEntry(i_strKeyInTree);
+
+    if( pTreeEntry != nullptr )
     {
-        if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+        if( pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
         {
             sendLeave(
                 /* systemMsgType */ MsgProtocol::ESystemMsgTypeReq,
                 /* cmd           */ MsgProtocol::ECommandUpdate,
-                /* pLogger       */ dynamic_cast<CLogger*>(i_pTreeEntry) );
+                /* pLogger       */ dynamic_cast<CLogger*>(pTreeEntry) );
         }
     }
 }

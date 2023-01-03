@@ -65,7 +65,6 @@ CMethodTracer::CMethodTracer(
 //------------------------------------------------------------------------------
     QObject(),
     m_pTrcAdminObj(i_pTrcAdminObj),
-    m_pTrcServer(nullptr),
     m_pTrcMthFile(nullptr),
     m_eMethodCallsTrcDetailLevel(EMethodTraceDetailLevel::Undefined),
     m_eEnterLeaveFilterDetailLevel(i_eFilterDetailLevel),
@@ -130,7 +129,6 @@ CMethodTracer::CMethodTracer(
 //------------------------------------------------------------------------------
     QObject(),
     m_pTrcAdminObj(i_pTrcAdminObj),
-    m_pTrcServer(nullptr),
     m_pTrcMthFile(nullptr),
     m_eMethodCallsTrcDetailLevel(EMethodTraceDetailLevel::Undefined),
     m_eEnterLeaveFilterDetailLevel(i_eFilterDetailLevel),
@@ -173,172 +171,10 @@ CMethodTracer::CMethodTracer(
 } // ctor
 
 //------------------------------------------------------------------------------
-/*! Method tracer either with or without trace admin object.
+/*! Method trace without trace admin object but with reference to trace method file.
 
-    This constructor may be used in classes when trace admin objects cannot be
-    used in any cirmumstances. E.g. tracing the index tree is not possible if
-    the index tree is used to hold trace admin objects.
-
-    @param i_pTrcAdminObj [in]
-        Trace admin object used to control the output detail level of the method trace.
-        If != nullptr arguments i_pTrcServer and TrcDetailLevel are i_eTrcDetailLevel.
-    @param i_pTrcServer [in]
-        If i_pTrcAdminObj == nullptr i_pTrcServer must not be nullptr and i_eTrcDetailLevel
-        is used to control the detail level of the trace output.
-    @param i_eTrcDetailLevel [in]
-        Entering and leaving the method is traced if the method trace detail level is
-        greater or equal than the filter setting than the detail level.
-    @param i_eFilterDetailLevel [in]
-        Entering and leaving the method is traced if the admin objects detail level
-        is greater or equal than the filter setting than the detail level.
-    @param i_strNameSpace [in]
-        Name space of the class to be traced.
-        Will be ignored if i_pTrcAdminObj != nullptr is passed.
-    @param i_strClassName [in]
-        Class name of the class to be traced.
-        Will be ignored if i_pTrcAdminObj != nullptr is passed.
-    @param i_strObjName [in]
-        Name of the object (instance) the method to be traced is applied to.
-    @param i_strMethod [in]
-        Name of the method to be traced.
-    @param i_strMethodInArgs [in]
-        String describing the input arguments passed to the method to be traced.
-*/
-CMethodTracer::CMethodTracer(
-    CTrcAdminObj*           i_pTrcAdminObj,
-    CTrcServer*             i_pTrcServer,
-    EMethodTraceDetailLevel i_eTrcDetailLevel,
-    EMethodTraceDetailLevel i_eFilterDetailLevel,
-    const QString&          i_strNameSpace,
-    const QString&          i_strClassName,
-    const QString&          i_strObjName,
-    const QString&          i_strMethod,
-    const QString&          i_strMethodInArgs ) :
-//------------------------------------------------------------------------------
-    QObject(),
-    m_pTrcAdminObj(i_pTrcAdminObj),
-    m_pTrcServer(i_pTrcServer),
-    m_pTrcMthFile(nullptr),
-    m_eMethodCallsTrcDetailLevel(i_eTrcDetailLevel),
-    m_eEnterLeaveFilterDetailLevel(i_eFilterDetailLevel),
-    m_bEnterTraced(false),
-    m_strNameSpace(i_strNameSpace),
-    m_strClassName(i_strClassName),
-    m_strObjName(i_strObjName),
-    m_strMethod(i_strMethod),
-    m_strMethodReturn(),
-    m_strMethodOutArgs()
-{
-    if( m_pTrcAdminObj != nullptr )
-    {
-        if( !QObject::connect(
-            /* pObjSender   */ m_pTrcAdminObj,
-            /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onAdminObjAboutToBeDestroyed(QObject*)),
-            /* cnctType     */ Qt::DirectConnection ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-
-        if( m_pTrcAdminObj->areMethodCallsActive(m_eEnterLeaveFilterDetailLevel)
-         && !m_pTrcAdminObj->isTraceDataSuppressedByFilter(i_strMethodInArgs) )
-        {
-            CTrcServer* pTrcServer = m_pTrcAdminObj->getTraceServer();
-
-            if( pTrcServer != nullptr )
-            {
-                pTrcServer->traceMethodEnter(
-                    /* pAdminObj    */ m_pTrcAdminObj,
-                    /* strObjName   */ m_strObjName,
-                    /* strMethod    */ m_strMethod,
-                    /* strMthInArgs */ i_strMethodInArgs );
-                m_bEnterTraced = true;
-            }
-        }
-        m_pTrcAdminObj->lock();
-    }
-    else if( m_pTrcServer != nullptr && m_eMethodCallsTrcDetailLevel >= m_eEnterLeaveFilterDetailLevel )
-    {
-        m_pTrcServer->traceMethodEnter(
-            /* strNameSpace */ m_strNameSpace,
-            /* strClassName */ m_strClassName,
-            /* strObjName   */ m_strObjName,
-            /* strMethod    */ m_strMethod,
-            /* strMthInArgs */ i_strMethodInArgs );
-        m_bEnterTraced = true;
-    }
-} // ctor
-
-//------------------------------------------------------------------------------
-/*! Method trace without trace admin object but with trace server.
-
-    This constructor may be used in classes when trace admin objects cannot be
-    used at all but there is a trace server hosting a trace method file.
-
-    @param i_pTrcServer [in]
-        Pointer to trace server hosting the trace method file.
-    @param i_eTrcDetailLevel [in]
-        Entering and leaving the method is traced if the method trace detail level is
-        greater or equal than the filter setting than the detail level.
-    @param i_eFilterDetailLevel [in]
-        Entering and leaving the method is traced if the admin objects detail level
-        is greater or equal than the filter setting than the detail level.
-    @param i_strNameSpace [in]
-        Name space of the class to be traced.
-        Will be ignored if i_pTrcAdminObj != nullptr is passed.
-    @param i_strClassName [in]
-        Class name of the class to be traced.
-        Will be ignored if i_pTrcAdminObj != nullptr is passed.
-    @param i_strObjName [in]
-        Name of the object (instance) the method to be traced is applied to.
-    @param i_strMethod [in]
-        Name of the method to be traced.
-    @param i_strMethodInArgs [in]
-        String describing the input arguments passed to the method to be traced.
-*/
-CMethodTracer::CMethodTracer(
-    CTrcServer*             i_pTrcServer,
-    EMethodTraceDetailLevel i_eTrcDetailLevel,
-    EMethodTraceDetailLevel i_eFilterDetailLevel,
-    const QString&          i_strNameSpace,
-    const QString&          i_strClassName,
-    const QString&          i_strObjName,
-    const QString&          i_strMethod,
-    const QString&          i_strMethodInArgs ) :
-//------------------------------------------------------------------------------
-    QObject(),
-    m_pTrcAdminObj(nullptr),
-    m_pTrcServer(i_pTrcServer),
-    m_pTrcMthFile(nullptr),
-    m_eMethodCallsTrcDetailLevel(i_eTrcDetailLevel),
-    m_eEnterLeaveFilterDetailLevel(i_eFilterDetailLevel),
-    m_bEnterTraced(false),
-    m_strNameSpace(i_strNameSpace),
-    m_strClassName(i_strClassName),
-    m_strObjName(i_strObjName),
-    m_strMethod(i_strMethod),
-    m_strMethodReturn(),
-    m_strMethodOutArgs()
-{
-    if( m_pTrcServer != nullptr && m_eMethodCallsTrcDetailLevel >= m_eEnterLeaveFilterDetailLevel )
-    {
-        m_pTrcServer->traceMethodEnter(
-            /* strNameSpace */ m_strNameSpace,
-            /* strClassName */ m_strClassName,
-            /* strObjName   */ m_strObjName,
-            /* strMethod    */ m_strMethod,
-            /* strMthInArgs */ i_strMethodInArgs );
-        m_bEnterTraced = true;
-    }
-} // ctor
-
-//------------------------------------------------------------------------------
-/*! Method trace without trace admin object and without trace server but with
-    reference to trace method file.
-
-    This constructor may be used in classes when neither trace admin objects nor
-    a trace server can be used (e.g. when tracing the trace server itself).
+    This constructor may be used in classes when trace admin objects cannot be used
+    (e.g. when tracing the trace server itself).
 
     @param i_pTrcMthFile [in]
         Pointer to trace method file used to write the trace outputs.
@@ -373,7 +209,6 @@ CMethodTracer::CMethodTracer(
 //------------------------------------------------------------------------------
     QObject(),
     m_pTrcAdminObj(nullptr),
-    m_pTrcServer(nullptr),
     m_pTrcMthFile(i_pTrcMthFile),
     m_eMethodCallsTrcDetailLevel(i_eTrcDetailLevel),
     m_eEnterLeaveFilterDetailLevel(i_eFilterDetailLevel),
@@ -402,7 +237,7 @@ CMethodTracer::CMethodTracer(
 /*! Method trace either with trace admin object or with trace method file.
 
     This constructor may be used in classes when trace admin objects cannot be
-    used in any cirmumstances. E.g. tracing Ipc Server is not possible if the
+    used in some cirmumstances. E.g. tracing Ipc Server is not possible if the
     server is used by the trace server.
 
     @param i_pTrcAdminObj [in]
@@ -443,7 +278,6 @@ CMethodTracer::CMethodTracer(
 //------------------------------------------------------------------------------
     QObject(),
     m_pTrcAdminObj(i_pTrcAdminObj),
-    m_pTrcServer(nullptr),
     m_pTrcMthFile(i_pTrcMthFile),
     m_eMethodCallsTrcDetailLevel(i_eTrcDetailLevel),
     m_eEnterLeaveFilterDetailLevel(i_eFilterDetailLevel),
@@ -519,19 +353,6 @@ CMethodTracer::~CMethodTracer()
     {
         onAdminObjAboutToBeReleased(); // Sets m_pTrcAdminObj to nullptr
     }
-    else if( m_pTrcServer != nullptr )
-    {
-        if( m_bEnterTraced )
-        {
-            m_pTrcServer->traceMethodLeave(
-                /* strNameSpace  */ m_strNameSpace,
-                /* strClassName  */ m_strClassName,
-                /* strObjName    */ m_strObjName,
-                /* strMethod     */ m_strMethod,
-                /* strMthReturn  */ m_strMethodReturn,
-                /* strMthOutArgs */ m_strMethodOutArgs );
-        }
-    }
     else if( m_pTrcMthFile != nullptr )
     {
         if( m_bEnterTraced )
@@ -547,7 +368,6 @@ CMethodTracer::~CMethodTracer()
     }
 
     m_pTrcAdminObj = nullptr;
-    m_pTrcServer = nullptr;
     m_pTrcMthFile = nullptr;
     m_eMethodCallsTrcDetailLevel = static_cast<EMethodTraceDetailLevel>(0);
     m_eEnterLeaveFilterDetailLevel = static_cast<EMethodTraceDetailLevel>(0);
@@ -957,7 +777,7 @@ public: // instance methods
         admin object or at the method tracer itself.
 */
 void CMethodTracer::trace(
-    const QString&               i_strAddInfo,
+    const QString&  i_strAddInfo,
     ELogDetailLevel i_eFilterDetailLevel ) const
 //------------------------------------------------------------------------------
 {
@@ -996,7 +816,7 @@ void CMethodTracer::trace(
         admin object or at the method tracer itself.
 */
 void CMethodTracer::trace(
-    const QString&               i_strAddInfo,
+    const QString&  i_strAddInfo,
     ELogDetailLevel i_eTrcDetailLevel,
     ELogDetailLevel i_eFilterDetailLevel ) const
 //------------------------------------------------------------------------------
@@ -1061,7 +881,7 @@ protected slots:
 
     @param i_pTrcAdminObj [in] Trace admin object which is going to be destroyed.
 */
-void CMethodTracer::onAdminObjAboutToBeDestroyed( QObject* i_pTrcAdminObj )
+void CMethodTracer::onAdminObjAboutToBeDestroyed( QObject* /*i_pTrcAdminObj*/ )
 //------------------------------------------------------------------------------
 {
     onAdminObjAboutToBeReleased();

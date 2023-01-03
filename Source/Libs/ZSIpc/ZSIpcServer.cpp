@@ -42,8 +42,8 @@ may result in using the software modules.
 #include "ZSSys/ZSSysRequestQueue.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
-#include "ZSSys/ZSSysTrcServer.h"
 #include "ZSSys/ZSSysTrcMthFile.h"
+#include "ZSSys/ZSSysTrcServer.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -200,11 +200,11 @@ CServer::CServer(
     {
         if( m_pTrcMthFile != nullptr )
         {
-            m_pMtx = new CMutex(QMutex::Recursive, "ZS::Ipc::CServer::" + i_strObjName, i_eTrcMthFileDetailLevelMutex);
+            m_pMtx = new CMutex(QMutex::Recursive, ClassName() + "-" + i_strObjName, i_eTrcMthFileDetailLevelMutex);
         }
         else
         {
-            m_pMtx = new CMutex(QMutex::Recursive, "ZS::Ipc::CServer::" + i_strObjName);
+            m_pMtx = new CMutex(QMutex::Recursive, ClassName() + "-" + i_strObjName);
         }
     }
 

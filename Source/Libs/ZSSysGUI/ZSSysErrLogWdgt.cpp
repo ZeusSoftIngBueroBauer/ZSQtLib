@@ -50,53 +50,6 @@ using namespace ZS::System;
 using namespace ZS::System::GUI;
 
 
-namespace ZS
-{
-namespace System
-{
-namespace GUI
-{
-//******************************************************************************
-class CTableViewErrLog : public QTableView
-//******************************************************************************
-{
-//==============================================================================
-public: // ctors and dtor
-//==============================================================================
-
-//------------------------------------------------------------------------------
-CTableViewErrLog( QWidget* i_pWdgtParent = nullptr ) :
-//------------------------------------------------------------------------------
-    QTableView(i_pWdgtParent)
-{
-} // ctor
-
-//------------------------------------------------------------------------------
-~CTableViewErrLog()
-//------------------------------------------------------------------------------
-{
-} // dtor
-
-//==============================================================================
-public: // overridables of base class QTableView
-//==============================================================================
-
-//------------------------------------------------------------------------------
-bool viewportEvent( QEvent* i_pEv )
-//------------------------------------------------------------------------------
-{
-    return QTableView::viewportEvent(i_pEv);
-}
-
-}; // class CTableViewErrLog
-
-} // namespace GUI
-
-} // namespace System
-
-} // namespace ZS
-
-
 /*******************************************************************************
 class CWdgtErrLog : public QWidget
 *******************************************************************************/
@@ -116,14 +69,14 @@ CWdgtErrLog::CWdgtErrLog(
     m_strHeadline(i_strHeadline),
     m_pLyt(nullptr),
     m_pLblHeadline(nullptr),
-    m_pTableView(nullptr),
-    m_pItemSelectionModel(nullptr),
     m_pLytLineBtns(nullptr),
     m_pBtnClearTable(nullptr),
     m_pBtnDeleteRows(nullptr),
     m_pBtnResizeRowsAndColumnsToContents(nullptr),
     m_pLblFileName(nullptr),
-    m_pEdtFileName(nullptr)
+    m_pEdtFileName(nullptr),
+    m_pTableView(nullptr),
+    m_pItemSelectionModel(nullptr)
 {
     m_pLyt = new QVBoxLayout;
     m_pLyt->setContentsMargins(0,0,0,0);
@@ -140,42 +93,10 @@ CWdgtErrLog::CWdgtErrLog(
     {
         m_pModelErrLog = new CModelErrLog( CErrLog::GetInstance(i_strErrLogName) );
 
-        // <TableView> Indicating the error model entries
-        //===============================================
-
-        m_pTableView = new CTableViewErrLog();
-        m_pLyt->addWidget(m_pTableView);
-
-        QFont fntTableView = m_pTableView->font();
-        fntTableView.setPointSize(8);
-        m_pTableView->setFont(fntTableView);
-
-        m_pTableView->setModel(m_pModelErrLog);
-        m_pTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
-        m_pTableView->setSelectionMode(QAbstractItemView::ExtendedSelection);
-        m_pTableView->setShowGrid(false);
-        m_pTableView->setAlternatingRowColors(true);
-        m_pTableView->hideColumn(CModelErrLog::EColumnRowIdx);
-        m_pTableView->hideColumn(CModelErrLog::EColumnSeverity);
-        m_pTableView->hideColumn(CModelErrLog::EColumnResult);
-        m_pTableView->hideColumn(CModelErrLog::EColumnProposal);
-        m_pTableView->resizeColumnsToContents();
-        m_pTableView->resizeRowsToContents();
-
-        m_pItemSelectionModel = m_pTableView->selectionModel();
-
-        //if( !QObject::connect(
-        //    /* pObjSender   */ m_pModelErrLog,
-        //    /* szSignal     */ SIGNAL(entryAddedInView(SErrLogEntry*)),
-        //    /* pObjReceiver */ this,
-        //    /* szSlot       */ SLOT(onEntryAddedInView(SErrLogEntry*)) ) )
-        //{
-        //    throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        //}
-
         // <Line> Push buttons to edit (delete) error model entries
         //=========================================================
 
+        int cxPxmBtnWidth = 24;
         int cxBtnWidth = 100;
 
         m_pLytLineBtns = new QHBoxLayout;
@@ -216,8 +137,11 @@ CWdgtErrLog::CWdgtErrLog(
         // <Button> Resize Columns To Contents
         //------------------------------------
 
-        m_pBtnResizeRowsAndColumnsToContents = new QPushButton("Resize Columns");
-        m_pBtnResizeRowsAndColumnsToContents->setFixedWidth(cxBtnWidth);
+        QPixmap pxmResizeToContents(":/ZS/TreeView/TreeViewResizeToContents.png");
+
+        m_pBtnResizeRowsAndColumnsToContents = new QPushButton();
+        m_pBtnResizeRowsAndColumnsToContents->setIcon(pxmResizeToContents);
+        m_pBtnResizeRowsAndColumnsToContents->setFixedWidth(cxPxmBtnWidth);
         m_pLytLineBtns->addWidget(m_pBtnResizeRowsAndColumnsToContents);
 
         if( !QObject::connect(
@@ -237,12 +161,36 @@ CWdgtErrLog::CWdgtErrLog(
         m_pLblFileName = new QLabel("File Name:");
         m_pLytLineBtns->addWidget(m_pLblFileName);
         m_pEdtFileName = new QLabel( CErrLog::GetInstance()->getAbsFilePath() );
-        m_pLytLineBtns->addWidget(m_pEdtFileName);
+        m_pLytLineBtns->addWidget(m_pEdtFileName, 1);
 
         // <Stretch> at end of line
         //-------------------------
 
-        m_pLytLineBtns->addStretch();
+        //m_pLytLineBtns->addStretch();
+
+        // <TableView> Indicating the error model entries
+        //===============================================
+
+        m_pTableView = new QTableView();
+        m_pLyt->addWidget(m_pTableView);
+
+        QFont fntTableView = m_pTableView->font();
+        fntTableView.setPointSize(8);
+        m_pTableView->setFont(fntTableView);
+
+        m_pTableView->setModel(m_pModelErrLog);
+        m_pTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+        m_pTableView->setSelectionMode(QAbstractItemView::ExtendedSelection);
+        m_pTableView->setShowGrid(false);
+        m_pTableView->setAlternatingRowColors(true);
+        m_pTableView->hideColumn(CModelErrLog::EColumnSeverityImageUrl);
+        m_pTableView->hideColumn(CModelErrLog::EColumnSeverity);
+        m_pTableView->hideColumn(CModelErrLog::EColumnResultNumber);
+        m_pTableView->hideColumn(CModelErrLog::EColumnProposal);
+        m_pTableView->resizeColumnsToContents();
+        m_pTableView->resizeRowsToContents();
+
+        m_pItemSelectionModel = m_pTableView->selectionModel();
 
     } // if( CErrLog::GetInstance(i_strErrLogName) != nullptr )
 
@@ -263,14 +211,14 @@ CWdgtErrLog::~CWdgtErrLog()
     m_pModelErrLog = nullptr;
     m_pLyt = nullptr;
     m_pLblHeadline = nullptr;
-    m_pTableView = nullptr;
-    m_pItemSelectionModel = nullptr;
     m_pLytLineBtns = nullptr;
     m_pBtnClearTable = nullptr;
     m_pBtnDeleteRows = nullptr;
     m_pBtnResizeRowsAndColumnsToContents = nullptr;
     m_pLblFileName = nullptr;
     m_pEdtFileName = nullptr;
+    m_pTableView = nullptr;
+    m_pItemSelectionModel = nullptr;
 
 } // dtor
 

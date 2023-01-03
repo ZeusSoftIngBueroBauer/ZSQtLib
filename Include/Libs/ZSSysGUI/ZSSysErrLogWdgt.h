@@ -54,7 +54,6 @@ struct SErrLogEntry;
 namespace GUI
 {
 class CModelErrLog;
-class CTableViewErrLog;
 
 //******************************************************************************
 class ZSSYSGUIDLL_API CWdgtErrLog : public QWidget
@@ -77,14 +76,14 @@ protected: // instance members
     QString              m_strHeadline;
     QVBoxLayout*         m_pLyt;
     QLabel*              m_pLblHeadline;
-    CTableViewErrLog*    m_pTableView;
-    QItemSelectionModel* m_pItemSelectionModel;
     QHBoxLayout*         m_pLytLineBtns;
     QPushButton*         m_pBtnClearTable;
     QPushButton*         m_pBtnDeleteRows;
     QPushButton*         m_pBtnResizeRowsAndColumnsToContents;
     QLabel*              m_pLblFileName;
     QLabel*              m_pEdtFileName;
+    QTableView*          m_pTableView;
+    QItemSelectionModel* m_pItemSelectionModel;
 
 }; // class CWdgtErrLog
 

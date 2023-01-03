@@ -1854,7 +1854,7 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CLogServer::onDefaultLoggerAboutToBeDestroyed(QObject* i_pLogger)
+void CLogServer::onDefaultLoggerAboutToBeDestroyed(QObject* /*i_pLogger*/)
 //------------------------------------------------------------------------------
 {
     m_pLogger = nullptr;

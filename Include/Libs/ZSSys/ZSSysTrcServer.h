@@ -132,6 +132,9 @@ class ZSSYSDLL_API CTrcServer : public QObject
 //******************************************************************************
 {
     Q_OBJECT
+    Q_PROPERTY(QString nameSpace READ NameSpace CONSTANT)
+    Q_PROPERTY(QString className READ ClassName CONSTANT)
+    Q_PROPERTY(QString objectName READ objectName CONSTANT)
 public: // class methods
     /*! Returns the namespace of the class.
         @note The static class functions name must be different from the instance method "nameSpace". */
@@ -152,8 +155,9 @@ public: // class methods to register thread names
     static void UnregisterThread( void* i_pvThreadHandle );
     static QString GetThreadName( void* i_pvThreadHandle );
     static QString GetCurrentThreadName();
-public: // class methods to add, remove and modify admin objects
+public: // class methods
     static CIdxTreeTrcAdminObjs* GetTraceAdminObjIdxTree();
+public: // class methods to add, remove and modify admin objects
     static CTrcAdminObj* GetTraceAdminObj( int i_idxInTree );
     static CTrcAdminObj* GetTraceAdminObj(
         const QString& i_strNameSpace,
@@ -166,7 +170,7 @@ public: // class methods to add, remove and modify admin objects
         EEnabled i_bEnabledAsDefault,
         EMethodTraceDetailLevel i_eMethodCallsDefaultDetailLevel,
         ELogDetailLevel i_eRuntimeInfoDefaultDetailLevel );
-    static void RenameTraceAdminObj( CTrcAdminObj** io_ppTrcAdminObj, const QString& i_strNewObjName );
+    static CTrcAdminObj* RenameTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj, const QString& i_strNewObjName );
     static void ReleaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj );
 public: // class methods to get default file paths
     static void SetAdminObjFileAbsoluteFilePath( const QString& i_strAbsFilePath );
@@ -196,16 +200,24 @@ public: // instance methods
 public: // instance methods
     CIdxTreeTrcAdminObjs* getTraceAdminObjIdxTree();
 public: // instance methods to add, remove and modify admin objects
-    virtual CTrcAdminObj* getTraceAdminObj( int i_idxInTree );
+    Q_INVOKABLE virtual CTrcAdminObj* getTraceAdminObj(
+        const QString& i_strNameSpace,
+        const QString& i_strClassName,
+        const QString& i_strObjName,
+        const QString& i_strEnabledAsDefault = "Undefined",
+        const QString& i_strMethodCallsDefaultDetailLevel = "Undefined",
+        const QString& i_strRuntimeInfoDefaultDetailLevel = "Undefined" );
+    Q_INVOKABLE void releaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj );
     virtual CTrcAdminObj* getTraceAdminObj(
         const QString& i_strNameSpace,
         const QString& i_strClassName,
         const QString& i_strObjName,
-        EEnabled i_bEnabledAsDefault,
+        EEnabled i_eEnabledAsDefault,
         EMethodTraceDetailLevel i_eMethodCallsDefaultDetailLevel,
-        ELogDetailLevel i_eRuntimeInfoDefaultDetailLevel );
-    virtual void renameTraceAdminObj( CTrcAdminObj** io_ppTrcAdminObj, const QString& i_strNewObjName );
-    virtual void releaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj );
+        ELogDetailLevel i_eRuntimeInfoDefaultDetailLevel);
+    virtual CTrcAdminObj* getTraceAdminObj( int i_idxInTree );
+    Q_INVOKABLE CTrcAdminObj* renameTraceAdminObj(
+        CTrcAdminObj* i_pTrcAdminObj, const QString& i_strNewObjName );
 public: // instance methods
     virtual void traceMethodEnter(
         const CTrcAdminObj* i_pAdminObj,
@@ -328,12 +340,18 @@ protected: // reference counter
     int incrementRefCount();
     int decrementRefCount();
 protected: // class members
-    static QMutex      s_mtx;       /*!< Mutex to protect the class and instance members of the class for multithreaded access. */
-    static CTrcServer* s_pTheInst;  /*!< Pointer to singleton instance. */
-    static QHash<Qt::HANDLE, QString>  s_hshThreadNames; /*!< Hash with registered threads (key is thread id, value is name of thread). */
-    static QHash<QString, Qt::HANDLE>  s_hshThreadIds;   /*!< Hash with registered threads (key name of thread, value is thread id). */
-    static QString s_strAdminObjFileAbsFilePath;         /*!< Absolute file path the tree of trace admin objects and their settings will be saved and recalled. */
-    static QString s_strLocalTrcFileAbsFilePath;         /*!< If a local log file is used defines the absolute file path for the log file. */
+    /*!< Mutex to protect the class and instance members of the class for multithreaded access. */
+    static QMutex s_mtx;
+    /*!< Pointer to singleton instance. */
+    static CTrcServer* s_pTheInst;
+    /*!< Hash with registered threads (key is thread id, value is name of thread). */
+    static QHash<Qt::HANDLE, QString> s_hshThreadNames;
+    /*!< Hash with registered threads (key name of thread, value is thread id). */
+    static QHash<QString, Qt::HANDLE> s_hshThreadIds;
+    /*!< Absolute file path the tree of trace admin objects and their settings will be saved and recalled. */
+    static QString s_strAdminObjFileAbsFilePath;
+    /*!< If a local log file is used defines the absolute file path for the log file. */
+    static QString s_strLocalTrcFileAbsFilePath;
 protected: // instance members
     /*<! Index tree containg a hierarchically ordered tree of the trace admin objects. */
     CIdxTreeTrcAdminObjs* m_pTrcAdminObjIdxTree;

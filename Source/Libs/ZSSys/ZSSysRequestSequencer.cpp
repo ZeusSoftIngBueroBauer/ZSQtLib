@@ -155,7 +155,7 @@ CRequestSequencer::CRequestSequencer(
 
     if( m_bTracingEnabled )
     {
-        m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::System", "CRequestSequencer", objectName());
+        m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
     }
 
     CMethodTracer mthTracer(

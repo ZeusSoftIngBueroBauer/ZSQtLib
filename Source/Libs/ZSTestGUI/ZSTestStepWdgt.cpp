@@ -165,6 +165,8 @@ CWdgtTestStep::CWdgtTestStep(
     m_pGrpExpectedValues->setLayout(m_pLytGrpExpectedValues);
     m_pEdtExpectedValues = new CTextEdit();
     m_pEdtExpectedValues->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    m_pEdtExpectedValues->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    m_pEdtExpectedValues->setWordWrapMode(QTextOption::NoWrap);
     m_pEdtExpectedValues->setSizeAdjustPolicy(QAbstractScrollArea::AdjustIgnored);
     QFont fnt = m_pEdtExpectedValues->currentFont();
     fnt.setFamily("Courier New");
@@ -180,6 +182,8 @@ CWdgtTestStep::CWdgtTestStep(
     m_pGrpResultValues->setLayout(m_pLytGrpResultValues);
     m_pEdtResultValues = new CTextEdit();
     m_pEdtResultValues->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    m_pEdtResultValues->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    m_pEdtResultValues->setWordWrapMode(QTextOption::NoWrap);
     m_pEdtResultValues->setSizeAdjustPolicy(QAbstractScrollArea::AdjustIgnored);
     m_pEdtResultValues->setFont(fnt);
     // Without setMaximumHeight the text edit widget are resized to a very high value
@@ -258,10 +262,8 @@ void CWdgtTestStep::setTestStep( CTestStep* i_pTestStep )
         if( m_pTestStep != nullptr )
         {
             QObject::disconnect(
-                /* pObjSender   */ m_pTestStep,
-                /* szSignal     */ SIGNAL(changed(ZS::System::CIdxTreeEntry*)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onTestStepChanged(ZS::System::CIdxTreeEntry*)));
+                m_pTestStep, &CTestStep::changed,
+                this, &CWdgtTestStep::onTestStepChanged);
         }
 
         m_pTestStep = i_pTestStep;
@@ -285,14 +287,9 @@ void CWdgtTestStep::setTestStep( CTestStep* i_pTestStep )
 
             onTestStepChanged(m_pTestStep);
 
-            if( !QObject::connect(
-                /* pObjSender   */ m_pTestStep,
-                /* szSignal     */ SIGNAL(changed(ZS::System::CIdxTreeEntry*)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onTestStepChanged(ZS::System::CIdxTreeEntry*)) ) )
-            {
-                throw ZS::System::CException(__FILE__, __LINE__, EResultSignalSlotConnectionFailed);
-            }
+            QObject::connect(
+                m_pTestStep, &CTestStep::changed,
+                this, &CWdgtTestStep::onTestStepChanged);
         }
     }
 } // setTestStep
@@ -359,6 +356,10 @@ void CWdgtTestStep::onTestStepChanged( CIdxTreeEntry* i_pTestStep )
         if( m_pTestStep->isFinished() )
         {
             setResultValues(m_pTestStep->getResultValues());
+        }
+        else
+        {
+            setResultValues(QStringList());
         }
     }
 }

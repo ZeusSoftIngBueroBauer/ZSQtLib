@@ -91,8 +91,8 @@ CMyClass2Thread::CMyClass2Thread( const QString& i_strMyClass2ObjName, CMyClass1
         /* szMethod     */ "ctor",
         /* szMthInArgs  */ strMthInArgs.toLatin1().data() );
 
-    m_pMtxWaitForClass2Created = new CMutex(ClassName() + "::" + objectName() + "::WaitClass2Created");
-    m_pWaitConditionClass2Created = new CWaitCondition(ClassName() + "::" + objectName() + "::WaitClass2Created");
+    m_pMtxWaitForClass2Created = new CMutex(ClassName() + "-" + objectName() + "-WaitClass2Created");
+    m_pWaitConditionClass2Created = new CWaitCondition(ClassName() + "-" + objectName() + "-WaitClass2Created");
 
 } // ctor
 
@@ -190,18 +190,19 @@ void CMyClass2Thread::setObjectName(const QString& i_strObjName)
 
     if( m_pMtxWaitForClass2Created != nullptr )
     {
-        m_pMtxWaitForClass2Created->setObjectName(ClassName() + "::" + objectName() + "::WaitClass2Created");
+        m_pMtxWaitForClass2Created->setObjectName(ClassName() + "-" + objectName() + "-WaitClass2Created");
     }
     if( m_pWaitConditionClass2Created != nullptr )
     {
-        m_pWaitConditionClass2Created->setObjectName(ClassName() + "::" + objectName() + "::WaitClass2Created");
+        m_pWaitConditionClass2Created->setObjectName(ClassName() + "-" + objectName() + "-WaitClass2Created");
     }
 
     // Should be the last so that the method tracer traces leave method
     // not before the child objects have been renamed.
     if( m_pTrcAdminObj != nullptr )
     {
-        Trace::DllIf::CIpcTrcServer::RenameTraceAdminObj(&m_pTrcAdminObj, objectName().toLatin1().data());
+        m_pTrcAdminObj = Trace::DllIf::CIpcTrcServer::RenameTraceAdminObj(
+            m_pTrcAdminObj, objectName().toLatin1().data());
     }
 
 } // setObjectName
@@ -486,9 +487,9 @@ CMyClass2::CMyClass2( const QString& i_strObjName, CMyClass2Thread* i_pMyClass2T
         throw ZS::System::CException(__FILE__, __LINE__, EResultSignalSlotConnectionFailed);
     }
 
-    m_pMtxCounters = new CMutex(QMutex::Recursive, ClassName() + "::" + objectName() + "::Counters");
-    m_pMtxWaitClass3ThreadRunning = new CMutex(ClassName() + "::" + objectName() + "::WaitClass3ThreadRunning");
-    m_pWaitClass3ThreadRunning = new CWaitCondition(ClassName() + "::" + objectName() + "::Class3ThreadRunning");
+    m_pMtxCounters = new CMutex(QMutex::Recursive, ClassName() + "-" + objectName() + "-Counters");
+    m_pMtxWaitClass3ThreadRunning = new CMutex(ClassName() + "-" + objectName() + "-WaitClass3ThreadRunning");
+    m_pWaitClass3ThreadRunning = new CWaitCondition(ClassName() + "-" + objectName() + "-Class3ThreadRunning");
 
 } // ctor
 
@@ -581,22 +582,23 @@ void CMyClass2::setObjectName(const QString& i_strObjName)
 
     if( m_pMtxCounters != nullptr )
     {
-        m_pMtxCounters->setObjectName(ClassName() + "::" + objectName() + "::Counters");
+        m_pMtxCounters->setObjectName(ClassName() + "-" + objectName() + "-Counters");
     }
     if( m_pMtxWaitClass3ThreadRunning != nullptr )
     {
-        m_pMtxWaitClass3ThreadRunning->setObjectName(ClassName() + "::" + objectName() + "::WaitClass3ThreadRunning");
+        m_pMtxWaitClass3ThreadRunning->setObjectName(ClassName() + "-" + objectName() + "-WaitClass3ThreadRunning");
     }
     if( m_pWaitClass3ThreadRunning != nullptr )
     {
-        m_pWaitClass3ThreadRunning->setObjectName(ClassName() + "::" + objectName() + "::Class3ThreadRunning");
+        m_pWaitClass3ThreadRunning->setObjectName(ClassName() + "-" + objectName() + "-Class3ThreadRunning");
     }
 
     // Should be the last so that the method tracer traces leave method
     // not before the child objects have been renamed.
     if( m_pTrcAdminObj != nullptr )
     {
-        Trace::DllIf::CIpcTrcServer::RenameTraceAdminObj(&m_pTrcAdminObj, objectName().toLatin1().data());
+        m_pTrcAdminObj = Trace::DllIf::CIpcTrcServer::RenameTraceAdminObj(
+            m_pTrcAdminObj, objectName().toLatin1().data());
     }
 
 } // setObjectName

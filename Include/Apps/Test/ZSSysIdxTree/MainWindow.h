@@ -57,7 +57,6 @@ struct SErrResultInfo;
 
 namespace GUI
 {
-class CModelIdxTree;
 class CWdgtIdxTree;
 }
 }
@@ -84,8 +83,7 @@ public: // ctors and dtor
         Qt::WindowFlags i_wflags = Qt::WindowFlags());
     ~CMainWindow();
 public: // instance methods
-    ZS::System::GUI::CModelIdxTree* idxTreeModel() { return m_pModelIdxTree; }
-    ZS::System::GUI::CWdgtIdxTree*  idxTreeWidget() { return m_pWdgtIdxTree; }
+    ZS::System::GUI::CWdgtIdxTree* idxTreeWidget() { return m_pWdgtIdxTree; }
 protected: // overridables of base class QWidget
     virtual void closeEvent( QCloseEvent* i_pEv );
 protected: // overridables of base class QObject
@@ -109,27 +107,26 @@ protected: // instance methods
 protected: // class members
     static CMainWindow* s_pThis; // singleton class
 protected: // instance members
-    QSettings*                      m_pSettingsFile;
-    QMenu*                          m_pMnuFile;
-    QToolBar*                       m_pToolBarFile;
-    QAction*                        m_pActFileOpen;
-    QAction*                        m_pActFileSave;
-    QAction*                        m_pActFileQuit;
-    QMenu*                          m_pMnuView;
-    QAction*                        m_pActViewDockWdgtTrcAdmObjTree;
-    QMenu*                          m_pMnuDebug;
-    QAction*                        m_pActDebugErrLog;
-    QAction*                        m_pActDebugTrcServer;
-    QAction*                        m_pActDebugTrcAdminObjIdxTree;
-    QMenu*                          m_pMnuInfo;
-    QAction*                        m_pActInfoVersion;
-    QStatusBar*                     m_pStatusBar;
-    QLabel*                         m_pLblErrors;
-    CWidgetCentral*                 m_pWdgtCentral;
-    QDockWidget*                    m_pDockWdgtIdxTree;
-    ZS::System::GUI::CModelIdxTree* m_pModelIdxTree;
-    ZS::System::GUI::CWdgtIdxTree*  m_pWdgtIdxTree;
-    QFileDialog*                    m_pDlgFile;
+    QSettings* m_pSettingsFile;
+    QMenu* m_pMnuFile;
+    QToolBar* m_pToolBarFile;
+    QAction* m_pActFileOpen;
+    QAction* m_pActFileSave;
+    QAction* m_pActFileQuit;
+    QMenu* m_pMnuView;
+    QAction* m_pActViewDockWdgtTrcAdmObjTree;
+    QMenu* m_pMnuDebug;
+    QAction* m_pActDebugErrLog;
+    QAction* m_pActDebugTrcServer;
+    QAction* m_pActDebugTrcAdminObjIdxTree;
+    QMenu* m_pMnuInfo;
+    QAction* m_pActInfoVersion;
+    QStatusBar* m_pStatusBar;
+    QLabel*  m_pLblErrors;
+    CWidgetCentral* m_pWdgtCentral;
+    QDockWidget*  m_pDockWdgtIdxTree;
+    ZS::System::GUI::CWdgtIdxTree* m_pWdgtIdxTree;
+    QFileDialog* m_pDlgFile;
 
 }; // class CMainWindow
 

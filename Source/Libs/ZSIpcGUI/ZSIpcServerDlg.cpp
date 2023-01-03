@@ -206,7 +206,7 @@ void CDlgIpcServer::setServer( CServer* i_pServer )
     {
         if( !bIsTrcServer )
         {
-            m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Ipc::GUI", "CDlgIpcServer", objectName());
+            m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
         }
     }
 

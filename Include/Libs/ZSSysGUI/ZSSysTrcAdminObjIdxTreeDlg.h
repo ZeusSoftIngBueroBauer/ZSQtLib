@@ -40,6 +40,7 @@ namespace ZS
 namespace System
 {
 class CIdxTreeTrcAdminObjs;
+class CTrcAdminObj;
 
 namespace GUI
 {
@@ -57,18 +58,14 @@ public: // class CDlgTrcServer
         const QString& i_strDlgTitle,
         CIdxTreeTrcAdminObjs* i_pIdxTree,
         QWidget* i_pWdgtParent = nullptr,
-        Qt::WindowFlags i_wFlags = Qt::WindowFlags(),
-        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevel = ZS::System::EMethodTraceDetailLevel::None,
-        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevelNoisyMethods = ZS::System::EMethodTraceDetailLevel::None );
+        Qt::WindowFlags i_wFlags = Qt::WindowFlags() );
     static CDlgIdxTreeTrcAdminObjs* GetInstance( const QString& i_strObjName );
 protected: // ctor
     CDlgIdxTreeTrcAdminObjs(
         const QString& i_strDlgTitle,
         CIdxTreeTrcAdminObjs* i_pIdxTree,
         QWidget* i_pWdgtParent = nullptr,
-        Qt::WindowFlags i_wFlags = Qt::WindowFlags(),
-        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevel = ZS::System::EMethodTraceDetailLevel::None,
-        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevelNoisyMethods = ZS::System::EMethodTraceDetailLevel::None );
+        Qt::WindowFlags i_wFlags = Qt::WindowFlags() );
 public: // dtor
     virtual ~CDlgIdxTreeTrcAdminObjs();
 public: // overridables of base class ZS::System::GUI::CDialog
@@ -78,8 +75,9 @@ protected: // instance members
     CIdxTreeTrcAdminObjs* m_pIdxTree;
     QVBoxLayout* m_pLyt;
     CWdgtIdxTreeTrcAdminObjs* m_pWdgtIdxTree;
-    ZS::System::EMethodTraceDetailLevel m_eTrcDetailLevel;
-    ZS::System::EMethodTraceDetailLevel m_eTrcDetailLevelNoisyMethods;
+    /*!< Trace admin object to control trace outputs of the class.
+         The object will not be created if the index tree's belongs to the trace server. */
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CDlgIdxTreeTrcAdminObjs
 

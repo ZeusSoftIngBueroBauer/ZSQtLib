@@ -113,25 +113,6 @@ public: // ctors and dtor
         const QString& i_strMethod,
         const QString& i_strMethodInArgs );
     CMethodTracer(
-        CTrcAdminObj* i_pTrcAdminObj,
-        CTrcServer*   i_pTrcServer,
-        EMethodTraceDetailLevel i_eTrcDetailLevel,
-        EMethodTraceDetailLevel i_eFilterDetailLevel,
-        const QString& i_strNameSpace,
-        const QString& i_strClassName,
-        const QString& i_strObjName,
-        const QString& i_strMethod,
-        const QString& i_strMethodInArgs = "" );
-    CMethodTracer(
-        CTrcServer* i_pTrcServer,
-        EMethodTraceDetailLevel i_eTrcDetailLevel,
-        EMethodTraceDetailLevel i_eFilterDetailLevel,
-        const QString& i_strNameSpace,
-        const QString& i_strClassName,
-        const QString& i_strObjName,
-        const QString& i_strMethod,
-        const QString& i_strMethodInArgs = "" );
-    CMethodTracer(
         CTrcMthFile* i_pTrcMthFile,
         EMethodTraceDetailLevel i_eTrcDetailLevel,
         EMethodTraceDetailLevel i_eFilterDetailLevel,
@@ -178,19 +159,21 @@ public: // instance methods
     QString getMethodOutArgs() const;
 public: // instance methods
     void trace(
-        const QString& i_strAddInfo,
+        const QString&  i_strAddInfo,
         ELogDetailLevel i_eFilterDetailLevel = ELogDetailLevel::Fatal ) const;
     void trace(
-        const QString& i_strAddInfo,
+        const QString&  i_strAddInfo,
         ELogDetailLevel i_eTrcDetailLevel,
         ELogDetailLevel i_eFilterDetailLevel ) const;
 protected slots:
     void onAdminObjAboutToBeDestroyed( QObject* i_pTrcAdminObj );
 protected: // instance members
-    CTrcAdminObj*m_pTrcAdminObj;    /*!< = nullptr, if pTrcMthFile != nullptr or pTrcServer != nullptr. */
-    CTrcServer*  m_pTrcServer;      /*!< = nullptr, if pTrcAdminObj != nullptr or pTrcMthFile != nullptr. */
-    CTrcMthFile* m_pTrcMthFile;     /*!< = nullptr, if pTrcAdminObj != nullptr or pTrcServer != nullptr. */
-    EMethodTraceDetailLevel m_eMethodCallsTrcDetailLevel; /*!< = Undefined, if pTrcAdminObj != nullptr. */
+    /*!< = nullptr, if pTrcMthFile != nullptr */
+    CTrcAdminObj* m_pTrcAdminObj;
+    /*!< = nullptr, if pTrcAdminObj != nullptr */
+    CTrcMthFile* m_pTrcMthFile;
+    /*!< = Undefined, if pTrcAdminObj != nullptr. */
+    EMethodTraceDetailLevel m_eMethodCallsTrcDetailLevel;
     /*!< Filter setting for the detail level of the module or class creating the method tracer.
          Entering and leaving the method is traced if this trace level is greater or equal
          the admin objects detail level. */
@@ -199,12 +182,18 @@ protected: // instance members
          (multi threaded access). If entering the method has been traced leaving must also be traced
          even if the detail level has been set to None after entering the method.*/
     bool m_bEnterTraced;
-    QString m_strNameSpace;     /*!< Without a trace admin object the name space (if there is any) should be set at the method tracer. */
-    QString m_strClassName;     /*!< Without a trace admin object the class name (if there is any) should be set at the method tracer. */
-    QString m_strObjName;       /*!< If the object name is not set at the trace admin object. */
-    QString m_strMethod;        /*!< Name of method to be traced. */
-    QString m_strMethodReturn;  /*!< The dtor will trace the method return value which has to be set therefore before the method tracer is destroyed. */
-    QString m_strMethodOutArgs; /*!< The dtor will trace the method output arguments which have to be set therefore before the method tracer is destroyed. */
+    /*!< Without a trace admin object the name space (if there is any) should be set at the method tracer. */
+    QString m_strNameSpace;
+    /*!< Without a trace admin object the class name (if there is any) should be set at the method tracer. */
+    QString m_strClassName;
+    /*!< If the object name is not set at the trace admin object. */
+    QString m_strObjName;
+    /*!< Name of method to be traced. */
+    QString m_strMethod;
+    /*!< The dtor will trace the method return value which has to be set therefore before the method tracer is destroyed. */
+    QString m_strMethodReturn;
+    /*!< The dtor will trace the method output arguments which have to be set therefore before the method tracer is destroyed. */
+    QString m_strMethodOutArgs;
 
 }; // class CMethodTracer
 

@@ -60,7 +60,8 @@ CTestModule2Thread::CTestModule2Thread(
     m_pTestModule2(nullptr),
     m_pTrcAdminObj(nullptr)
 {
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace().c_str(), ClassName().c_str(), objectName().c_str());
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
+        NameSpace().c_str(), ClassName().c_str(), objectName().c_str());
 
     m_pTrcAdminObj->setMethodCallsTraceDetailLevel(EMethodTraceDetailLevelArgsNormal);
 
@@ -409,7 +410,8 @@ CTestModule2::CTestModule2(
     m_pTestModule2Thread(i_pTestModule2Thread),
     m_pTrcAdminObj(nullptr)
 {
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace().c_str(), ClassName().c_str(), objectName().c_str());
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
+        NameSpace().c_str(), ClassName().c_str(), objectName().c_str());
 
     m_pTrcAdminObj->setMethodCallsTraceDetailLevel(EMethodTraceDetailLevelArgsNormal);
 

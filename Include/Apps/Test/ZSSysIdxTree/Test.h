@@ -40,6 +40,11 @@ namespace System
 {
 class CIdxTree;
 class CIdxTreeEntry;
+
+namespace GUI
+{
+class CModelIdxTree;
+}
 }
 namespace Apps
 {
@@ -170,6 +175,8 @@ public: // auxiliary methods
         const QMap<int, int>& i_mapFreeIdxsActual,
         QStringList&          io_strlstDesiredValues,           // Compare results will be added
         QStringList&          io_strlstActualValues ) const;    // Compare results will be added
+public: // auxiliary methods
+    QString checkPreOrderIterators(ZS::System::CIdxTree* i_pIdxTree, ZS::System::GUI::CModelIdxTree* i_pModelIdxTree) const;
 protected: // instance members
     ZS::System::CIdxTree* m_pIdxTree;
 

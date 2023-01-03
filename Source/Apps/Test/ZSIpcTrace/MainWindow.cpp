@@ -272,12 +272,8 @@ CMainWindow::CMainWindow(
     //-----------------------------
 
     QIcon iconErrorLog;
-
-    QPixmap pxmErrorLog16x16(":/ZS/App/Zeus16x16.bmp");
-
-    pxmErrorLog16x16.setMask(pxmErrorLog16x16.createHeuristicMask());
-
-    iconErrorLog.addPixmap(pxmErrorLog16x16);
+    QPixmap pxmErrorLog(":/ZS/App/Zeus32x32.png");
+    iconErrorLog.addPixmap(pxmErrorLog);
 
     m_pActDebugErrLog = new QAction( iconErrorLog, "Error Log", this );
     m_pActDebugErrLog->setToolTip("Open error log dialog");
@@ -298,12 +294,8 @@ CMainWindow::CMainWindow(
     //-----------------------------------------
 
     QIcon iconReqExecTree;
-
-    QPixmap pxmReqExecTree16x16(":/ZS/App/Zeus16x16.bmp");
-
-    pxmReqExecTree16x16.setMask(pxmReqExecTree16x16.createHeuristicMask());
-
-    iconReqExecTree.addPixmap(pxmReqExecTree16x16);
+    QPixmap pxmReqExecTree(":/ZS/App/Zeus32x32.png");
+    iconReqExecTree.addPixmap(pxmReqExecTree);
 
     m_pActDebugRequestExecTree = new QAction( iconReqExecTree, "Request Tree", this );
     m_pActDebugRequestExecTree->setToolTip("Open request execution tree dialog");
@@ -644,12 +636,10 @@ void CMainWindow::onActDebugZSTrcServerAdminObjIdxTreeTriggered()
         if( pDlg == nullptr )
         {
             pDlg = CDlgIdxTreeTrcAdminObjs::CreateInstance(
-                /* strDlgTitle                 */ strDlgTitle,
-                /* pTrcAdmIdxTree              */ pServer->getTraceAdminObjIdxTree(),
-                /* pWdgtParent                 */ nullptr,
-                /* wFlags                      */ Qt::WindowFlags(),
-                /* eTrcDetailLevel             */ CApplication::GetInstance()->getTraceServerTraceDetailLevel(),
-                /* eTrcDetailLevelNoisyMethods */ CApplication::GetInstance()->getTraceServerTraceDetailLevelNoisyMethods() );
+                /* strDlgTitle */ strDlgTitle,
+                /* pIdxTree    */ pServer->getTraceAdminObjIdxTree(),
+                /* pWdgtParent */ nullptr,
+                /* wFlags      */ Qt::WindowFlags() );
             pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
             pDlg->adjustSize();
             pDlg->show();
@@ -713,11 +703,10 @@ void CMainWindow::onActDebugZSTrcClientAdminObjIdxTreeTriggered()
         if( pDlg == nullptr )
         {
             pDlg = CDlgIdxTreeTrcAdminObjs::CreateInstance(
-                /* strDlgTitle     */ strDlgTitle,
-                /* pTrcAdmObjPool  */ pTrcClient->getTraceAdminObjIdxTree(),
-                /* pWdgtParent     */ nullptr,
-                /* wflags          */ Qt::WindowFlags(),
-                /* iTrcDetailLevel */ CApplication::GetInstance()->getTraceClientTraceDetailLevel() );
+                /* strDlgTitle */ strDlgTitle,
+                /* pIdxTree    */ pTrcClient->getTraceAdminObjIdxTree(),
+                /* pWdgtParent */ nullptr,
+                /* wflags      */ Qt::WindowFlags() );
             pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
             pDlg->adjustSize();
             pDlg->show();

@@ -114,8 +114,13 @@ target_include_directories(${PROJECT_NAME}
     PRIVATE ${CMAKE_SOURCE_DIR}/../Include/Apps/Test/ZSIpcLogDllIfQtApp
     PRIVATE ../../../../Include/Libs/ZSIpcLog)
 
-target_link_libraries(${PROJECT_NAME}
-    PRIVATE ZSSys ZSSysGUI ZSTest ZSTestGUI ZSIpc ZSIpcGUI)
+set(_Libs ZSIpcGUI ZSTestGUI)
+
+target_link_libraries(${PROJECT_NAME} ${_Libs})
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${CMAKE_DL_LIBS})
+endif()
 
 # The test application needs user interaction and cannot be executed automatically.
 #enable_testing()

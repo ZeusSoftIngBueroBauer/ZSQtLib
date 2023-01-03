@@ -88,8 +88,9 @@ source_group("Resource Files" FILES ${_Resources})
 target_include_directories(${PROJECT_NAME}
     PRIVATE ${CMAKE_SOURCE_DIR}/../Include/Apps/Test/ZSSysEnums)
 
-target_link_libraries(${PROJECT_NAME}
-    PRIVATE ZSSys ZSSysGUI ZSTest ZSTestGUI ZSIpc ZSIpcGUI ZSIpcTrace ZSIpcTraceGUI)
+set(_Libs ZSSysGUI ZSTestGUI)
+
+target_link_libraries(${PROJECT_NAME} ${_Libs})
 
 enable_testing()
 include(CTest)

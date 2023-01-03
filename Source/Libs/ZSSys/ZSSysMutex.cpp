@@ -136,8 +136,8 @@ CMutex::CMutex(const QString& i_strObjName) :
         be to a value greater than None.
 */
 CMutex::CMutex(
-    QMutex::RecursionMode        i_mode,
-    const QString&               i_strObjName,
+    QMutex::RecursionMode   i_mode,
+    const QString&          i_strObjName,
     EMethodTraceDetailLevel i_eTrcMthFileDetailLevel ) :
 //------------------------------------------------------------------------------
     QMutex(i_mode),
@@ -273,7 +273,7 @@ void CMutex::setObjectName(const QString& i_strObjName)
     #ifdef ZS_TRACE_MUTEXES
     if( m_pTrcAdminObj != nullptr )
     {
-        CTrcServer::RenameTraceAdminObj(&m_pTrcAdminObj, objectName());
+        m_pTrcAdminObj = CTrcServer::RenameTraceAdminObj(m_pTrcAdminObj, objectName());
     }
     #endif
 }
@@ -731,7 +731,7 @@ void CRecursiveMutex::setObjectName(const QString& i_strObjName)
     #ifdef ZS_TRACE_MUTEXES
     if( m_pTrcAdminObj != nullptr )
     {
-        CTrcServer::RenameTraceAdminObj(&m_pTrcAdminObj, objectName());
+        m_pTrcAdminObj = CTrcServer::RenameTraceAdminObj(m_pTrcAdminObj, objectName());
     }
     #endif
 }

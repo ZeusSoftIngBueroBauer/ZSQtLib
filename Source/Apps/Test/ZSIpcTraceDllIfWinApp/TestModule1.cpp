@@ -52,7 +52,8 @@ CTestModule1::CTestModule1( const std::string& i_strObjName, const std::string& 
     m_pTestModule2(nullptr),
     m_pTrcAdminObj(nullptr)
 {
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace().c_str(), ClassName().c_str(), objectName().c_str());
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
+        NameSpace().c_str(), ClassName().c_str(), objectName().c_str());
 
     m_pTrcAdminObj->setMethodCallsTraceDetailLevel(EMethodTraceDetailLevelArgsNormal);
 

@@ -34,13 +34,6 @@ class QDomNode;
 
 namespace ZS
 {
-#ifdef ZS_TRACE_GUI_MODELS
-namespace System
-{
-class CTrcAdminObj;
-}
-#endif
-
 namespace Test
 {
 class CTest;
@@ -96,9 +89,6 @@ protected: // instance members
     CTest*     m_pTest;
     CTestStep* m_pTestStepCurr;
     bool       m_bShowExpectedAndResultValuesOnlyIfTestStepFailed;
-    #ifdef ZS_TRACE_GUI_MODELS
-    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
-    #endif
 
 }; // class CModeldxTreeTestSteps
 

@@ -1143,7 +1143,6 @@ bool ZS::System::isNumeric( const QVariant& i_var )
 
 } // isNumeric
 
-
 /*==============================================================================
 Enum Qt::CaseSensitivity
 ==============================================================================*/
@@ -1197,10 +1196,10 @@ static const SEnumEntry s_arEnumStrQtQrientation[] = {
 };
 
 //------------------------------------------------------------------------------
-QString ZS::System::qOrientation2Str( int i_orientation, EEnumEntryAliasStr i_alias )
+QString ZS::System::qOrientation2Str( int i_iVal, EEnumEntryAliasStr i_alias )
 //------------------------------------------------------------------------------
 {
-    return SEnumEntry::enumerator2Str( s_arEnumStrQtQrientation, _ZSArrLen(s_arEnumStrQtQrientation), i_orientation, i_alias );
+    return SEnumEntry::enumerator2Str(s_arEnumStrQtQrientation, _ZSArrLen(s_arEnumStrQtQrientation), i_iVal, i_alias);
 }
 
 //------------------------------------------------------------------------------
@@ -1211,7 +1210,7 @@ Qt::Orientation ZS::System::str2QOrientation( const QString& i_str, EEnumEntryAl
 
     bool bConverted = false;
 
-    int iVal = SEnumEntry::str2Enumerator( s_arEnumStrQtQrientation, _ZSArrLen(s_arEnumStrQtQrientation), i_str, i_alias, Qt::CaseInsensitive );
+    int iVal = SEnumEntry::str2Enumerator(s_arEnumStrQtQrientation, _ZSArrLen(s_arEnumStrQtQrientation), i_str, i_alias, Qt::CaseInsensitive);
 
     if( iVal >= 0 && iVal < _ZSArrLen(s_arEnumStrQtQrientation) )
     {
@@ -1227,6 +1226,45 @@ Qt::Orientation ZS::System::str2QOrientation( const QString& i_str, EEnumEntryAl
     return orientation;
 
 } // str2QOrientation
+
+
+/*==============================================================================
+Enum Qt::SortOrder
+==============================================================================*/
+
+static const SEnumEntry s_arEnumStrQtSortOrder[] = {
+    /* 0 */ SEnumEntry( Qt::AscendingOrder,  "Ascending",  "A" ),
+    /* 1 */ SEnumEntry( Qt::DescendingOrder, "Descending", "D" )
+};
+
+//------------------------------------------------------------------------------
+QString ZS::System::qSortOrder2Str( int i_iVal, EEnumEntryAliasStr i_alias )
+//------------------------------------------------------------------------------
+{
+    return SEnumEntry::enumerator2Str(s_arEnumStrQtSortOrder, _ZSArrLen(s_arEnumStrQtSortOrder), i_iVal, i_alias);
+}
+
+//------------------------------------------------------------------------------
+Qt::SortOrder ZS::System::str2QSortOrder( const QString& i_str, EEnumEntryAliasStr i_alias, bool* o_pbConverted )
+//------------------------------------------------------------------------------
+{
+    Qt::SortOrder sortOrder = Qt::AscendingOrder;
+
+    bool bConverted = false;
+
+    int iVal = SEnumEntry::str2Enumerator(s_arEnumStrQtSortOrder, _ZSArrLen(s_arEnumStrQtSortOrder), i_str, i_alias, Qt::CaseInsensitive);
+
+    if( iVal >= 0 && iVal < _ZSArrLen(s_arEnumStrQtSortOrder) )
+    {
+        sortOrder = static_cast<Qt::SortOrder>(iVal);
+        bConverted = true;
+    }
+    if( o_pbConverted != nullptr )
+    {
+        *o_pbConverted = bConverted;
+    }
+    return sortOrder;
+}
 
 
 /*==============================================================================
@@ -2024,11 +2062,13 @@ QString ZS::System::qModelIndex2Str( const QModelIndex& i_modelIdx )
     else
     {
         str = "Row: " + QString::number(i_modelIdx.row());
-        str += "Clm: " + QString::number(i_modelIdx.column());
-        if( i_modelIdx.data().canConvert(QVariant::String) )
-        {
-            str += "Data: " + i_modelIdx.data().toString();
-        }
+        str += ", Clm: " + QString::number(i_modelIdx.column());
+
+        // Endless recursion if called by ::data method.
+        //if( i_modelIdx.data().canConvert(QVariant::String) )
+        //{
+        //    str += ", Data: " + i_modelIdx.data().toString();
+        //}
     }
     return str;
 

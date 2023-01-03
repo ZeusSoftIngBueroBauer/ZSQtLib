@@ -74,13 +74,24 @@ class ZSSYSDLL_API CTrcAdminObj : public QObject, public CIdxTreeEntry
 //******************************************************************************
 {
 friend class CIdxTreeTrcAdminObjs;
+friend class CTrcServer;
     Q_OBJECT
+    Q_PROPERTY(QString nameSpace READ getNameSpace WRITE setNameSpace NOTIFY nameSpaceChanged)
+    Q_PROPERTY(QString className READ getClassName WRITE setClassName NOTIFY classNameChanged)
+    Q_PROPERTY(QString objectName READ getObjectName WRITE setObjectName NOTIFY objectNameChanged)
+    Q_PROPERTY(QString keyInTree READ keyInTree CONSTANT)
+    Q_PROPERTY(QString objectThreadName READ getObjectThreadName CONSTANT)
+    Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled NOTIFY enabledChanged)
+    Q_PROPERTY(QString methodCallsTraceDetailLevel READ getMethodCallsTraceDetailLevelStr WRITE setMethodCallsTraceDetailLevel NOTIFY methodCallsTraceDetailLevelChanged)
+    Q_PROPERTY(QString runtimeInfoTraceDetailLevel READ getRuntimeInfoTraceDetailLevelStr WRITE setRuntimeInfoTraceDetailLevel NOTIFY runtimeInfoTraceDetailLevelChanged)
+    Q_PROPERTY(QString traceDataFilter READ getTraceDataFilter WRITE setTraceDataFilter NOTIFY traceDataFilterChanged)
 public: // class methods
     /*! Returns the name space of the class. */
     static QString NameSpace() { return "ZS::System"; }
     /*! Returns the class name of the class. */
     static QString ClassName() { return "CTrcAdminObj"; }
 protected: // ctors and dtor
+    CTrcAdminObj();
     CTrcAdminObj(
         const QString& i_strNameSpace,
         const QString& i_strClassName,
@@ -88,8 +99,22 @@ protected: // ctors and dtor
         const QString& i_strTreeEntryName );
     virtual ~CTrcAdminObj();
 signals:
-    /*! @brief Emitted if ObjState, Enabled, StateOnOff or DetailLevel has been changed. */
+    /*! @brief Emitted if the name space has been changed. */
+    void nameSpaceChanged( const QString& i_strNameSpace );
+    /*! @brief Emitted if the class name has been changed. */
+    void classNameChanged( const QString& i_strClassName );
+    /*! @brief Emitted if the object name has been changed. */
+    void objectNameChanged( const QString& i_strObjName );
+    /*! @brief Emitted if Enabled, MethodCallsTraceDetailLevel, RuntimeInfoTraceDetailLevel or TraceDataFilter has been changed. */
     void changed( QObject* i_pTrcAdminObj );
+    /*! @brief Emitted if Enabled has been changed. */
+    void enabledChanged( bool i_bEnabled );
+    /*! @brief Emitted if MethodCallsTraceDetailLevel has been changed. */
+    void methodCallsTraceDetailLevelChanged( const QString& i_strDetailLevel );
+    /*! @brief Emitted if RuntimeInfoTraceDetailLevel has been changed. */
+    void runtimeInfoTraceDetailLevelChanged( const QString& i_strDetailLevel );
+    /*! @brief Emitted if RuntimeInfoTraceDetailLevel has been changed. */
+    void traceDataFilterChanged( const QString& i_strFilter );
     /*! @brief Emitted if the object is going to be destroyed. */
     void aboutToBeDestroyed( QObject* i_pTrcAdminObj );
 public: // instance methods
@@ -98,12 +123,79 @@ public: // instance methods
 public: // instance methods
     QString getNameSpace() const;
     QString getClassName() const;
+protected: // instance methods
+    void setNameSpace( const QString& i_strNameSpace );
+    void setClassName( const QString& i_strClassName );
 public: // instance methods (reimplementing methods from base class QObject)
     void setObjectName( const QString& i_strObjName );
     QString getObjectName() const;
 public: // instance methods
     void setObjectThreadName( const QString& i_strThreadName );
     QString getObjectThreadName() const;
+public: // instance methods
+    QString toString() const;
+public: // instance methods
+    Q_INVOKABLE virtual void traceMethodEnter(
+        const QString& i_strFilterDetailLevel,
+        const QString& i_strMethod );
+    Q_INVOKABLE virtual void traceObjMethodEnter(
+        const QString& i_strFilterDetailLevel,
+        const QString& i_strObjName,
+        const QString& i_strMethod );
+    Q_INVOKABLE virtual void traceMethodEnterWithInArgs(
+        const QString& i_strFilterDetailLevel,
+        const QString& i_strMethod,
+        const QString& i_strMethodInArgs );
+    Q_INVOKABLE virtual void traceObjMethodEnterWithInArgs(
+        const QString& i_strFilterDetailLevel,
+        const QString& i_strObjName,
+        const QString& i_strMethod,
+        const QString& i_strMethodInArgs );
+    Q_INVOKABLE virtual void traceMethod(
+        const QString& i_strFilterDetailLevel,
+        const QString& i_strMethod,
+        const QString& i_strAddInfo );
+    Q_INVOKABLE virtual void traceObjMethod(
+        const QString& i_strFilterDetailLevel,
+        const QString& i_strObjName,
+        const QString& i_strMethod,
+        const QString& i_strAddInfo );
+    Q_INVOKABLE virtual void traceMethodLeave(
+        const QString& i_strFilterDetailLevel,
+        const QString& i_strMethod );
+    Q_INVOKABLE virtual void traceObjMethodLeave(
+        const QString& i_strFilterDetailLevel,
+        const QString& i_strObjName,
+        const QString& i_strMethod );
+    Q_INVOKABLE virtual void traceMethodLeaveWithReturn(
+        const QString& i_strFilterDetailLevel,
+        const QString& i_strMethod,
+        const QString& i_strMethodReturn );
+    Q_INVOKABLE virtual void traceObjMethodLeaveWithReturn(
+        const QString& i_strFilterDetailLevel,
+        const QString& i_strObjName,
+        const QString& i_strMethod,
+        const QString& i_strMethodReturn );
+    Q_INVOKABLE virtual void traceMethodLeaveWithOutArgs(
+        const QString& i_strFilterDetailLevel,
+        const QString& i_strMethod,
+        const QString& i_strMethodOutArgs );
+    Q_INVOKABLE virtual void traceObjMethodLeaveWithOutArgs(
+        const QString& i_strFilterDetailLevel,
+        const QString& i_strObjName,
+        const QString& i_strMethod,
+        const QString& i_strMethodOutArgs );
+    Q_INVOKABLE virtual void traceMethodLeaveWithReturnAndOutArgs(
+        const QString& i_strFilterDetailLevel,
+        const QString& i_strMethod,
+        const QString& i_strMethodReturn,
+        const QString& i_strMethodOutArgs );
+    Q_INVOKABLE virtual void traceObjMethodLeaveWithReturnAndOutArgs(
+        const QString& i_strFilterDetailLevel,
+        const QString& i_strObjName,
+        const QString& i_strMethod,
+        const QString& i_strMethodReturn,
+        const QString& i_strMethodOutArgs );
 public: // instance methods
     int lock();
     int unlock();
@@ -118,14 +210,19 @@ public: // instance methods
     int getRefCount() const;
 public: // instance methods
     void setEnabled( EEnabled i_enabled );
+    void setEnabled( bool i_bEnabled );
     EEnabled getEnabled() const;
     bool isEnabled() const;
 public: // instance methods
     void setMethodCallsTraceDetailLevel( EMethodTraceDetailLevel i_eTrcDetailLevel );
+    void setMethodCallsTraceDetailLevel( const QString& i_strDetailLevel );
     EMethodTraceDetailLevel getMethodCallsTraceDetailLevel() const;
+    QString getMethodCallsTraceDetailLevelStr() const;
     bool areMethodCallsActive( EMethodTraceDetailLevel i_eFilterDetailLevel ) const;
     void setRuntimeInfoTraceDetailLevel( ELogDetailLevel i_eTrcDetailLevel );
+    void setRuntimeInfoTraceDetailLevel( const QString& i_strDetailLevel );
     ELogDetailLevel getRuntimeInfoTraceDetailLevel() const;
+    QString getRuntimeInfoTraceDetailLevelStr() const;
     bool isRuntimeInfoActive( ELogDetailLevel i_eFilterDetailLevel ) const;
 public: // instance methods
     void setTraceDataFilter( const QString& i_strFilter = "" );
@@ -137,11 +234,16 @@ public: // instance methods
 private: // Don't use QObject::objectName
     QString objectName() const;
 protected: // instance members
-    int     m_iBlockTreeEntryChangedSignalCounter; /*!< Counts the number of times the tree entry changed signal has been blocked. */
-    QString m_strNameSpace;     /*!< Namespace of the class. May be empty. */
-    QString m_strClassName;     /*!< Class or module name. */
-    QString m_strObjName;       /*!< Object name. May be empty if this is a class tracer. */
-    QString m_strObjThreadName; /*!< Name of the thread in which the object was created. */
+    /*!< Counts the number of times the tree entry changed signal has been blocked. */
+    int m_iBlockTreeEntryChangedSignalCounter;
+    /*!< Namespace of the class. May be empty. */
+    QString m_strNameSpace;
+    /*!< Class or module name. */
+    QString m_strClassName;
+    /*!< Object name. May be empty if this is a class tracer. */
+    QString m_strObjName;
+    /*!< Name of the thread in which the object was created. */
+    QString m_strObjThreadName;
     /*!< The trace admin object may be locked so that it will not be deleted
          after e.g. renaming the object. The method tracer will do so so that
          the object is not deleted as long as the method tracer is living.

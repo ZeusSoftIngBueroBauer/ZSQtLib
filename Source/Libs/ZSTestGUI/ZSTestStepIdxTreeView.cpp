@@ -221,7 +221,7 @@ void CTreeViewIdxTreeTestSteps::keyPressEvent(QKeyEvent* i_pEv)
 
         if( pModelTreeEntry != nullptr )
         {
-            pIdxTreeEntry = dynamic_cast<CIdxTreeEntry*>(pModelTreeEntry->treeEntry());
+            pIdxTreeEntry = dynamic_cast<CIdxTreeEntry*>(pModelTreeEntry->getIdxTreeEntry());
         }
 
         if( pIdxTreeEntry != nullptr )
@@ -318,7 +318,7 @@ void CTreeViewIdxTreeTestSteps::mousePressEvent( QMouseEvent* i_pEv )
 
         if( pModelTreeEntry != nullptr )
         {
-            pIdxTreeEntry = dynamic_cast<CIdxTreeEntry*>(pModelTreeEntry->treeEntry());
+            pIdxTreeEntry = dynamic_cast<CIdxTreeEntry*>(pModelTreeEntry->getIdxTreeEntry());
         }
 
         if( pIdxTreeEntry != nullptr )
@@ -396,7 +396,7 @@ void CTreeViewIdxTreeTestSteps::mouseReleaseEvent( QMouseEvent* i_pEv )
 
     if( pModelTreeEntry != nullptr )
     {
-        pIdxTreeEntry = dynamic_cast<CIdxTreeEntry*>(pModelTreeEntry->treeEntry());
+        pIdxTreeEntry = dynamic_cast<CIdxTreeEntry*>(pModelTreeEntry->getIdxTreeEntry());
     }
 
     if( pIdxTreeEntry != nullptr )

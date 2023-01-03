@@ -209,11 +209,11 @@ CClient::CClient(
     {
         if( m_pTrcMthFile != nullptr )
         {
-            m_pMtx = new CMutex(QMutex::Recursive, "ZS::Ipc::CClient::" + i_strObjName, i_eTrcMthFileDetailLevelMutex);
+            m_pMtx = new CMutex(QMutex::Recursive, ClassName() + "-" + i_strObjName, i_eTrcMthFileDetailLevelMutex);
         }
         else
         {
-            m_pMtx = new CMutex(QMutex::Recursive, "ZS::Ipc::CClient::" + i_strObjName);
+            m_pMtx = new CMutex(QMutex::Recursive, ClassName() + "-" + i_strObjName);
         }
     }
 

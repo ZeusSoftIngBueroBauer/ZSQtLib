@@ -356,7 +356,7 @@ public: // class methods to add, remove and modify admin objects
         EEnabled    i_bEnabledAsDefault = EEnabledUndefined,
         EMethodTraceDetailLevel i_eMethodCallsDefaultDetailLevel = EMethodTraceDetailLevelUndefined,
         ELogDetailLevel i_eRuntimeInfoDefaultDetailLevel = ELogDetailLevelUndefined );
-    static void RenameTraceAdminObj( CTrcAdminObj** io_ppTrcAdminObj, const char* i_szNewObjName );
+    static CTrcAdminObj* RenameTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj, const char* i_szNewObjName );
     static void ReleaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj );
 public: // class method to save/recall admin objects file
     // Set organization and application if the trace server is used in a none Qt Application.

@@ -143,6 +143,9 @@ ZSSYSDLL_API Qt::CaseSensitivity str2QCaseSensitivity( const QString& i_str, EEn
 ZSSYSDLL_API QString qOrientation2Str( int i_iVal, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName );
 ZSSYSDLL_API Qt::Orientation str2QOrientation( const QString& i_str, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName, bool* o_pbConverted = nullptr );
 
+ZSSYSDLL_API QString qSortOrder2Str( int i_iVal, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName );
+ZSSYSDLL_API Qt::SortOrder str2QSortOrder( const QString& i_str, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName, bool* o_pbConverted = nullptr );
+
 ZSSYSDLL_API QString qMutexRecursionMode2Str( int i_iVal, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName );
 ZSSYSDLL_API QMutex::RecursionMode str2QMutexRecursionMode( const QString& i_str, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName, bool* o_pbConverted = nullptr );
 

@@ -177,7 +177,8 @@ void CMyClass3Thread::setObjectName(const QString& i_strObjName)
         // object (as this may delete the admin object of the Dll Interface).
         mthTracer.onAdminObjAboutToBeReleased();
 
-        Trace::DllIf::CTrcServer::RenameTraceAdminObj(&m_pTrcAdminObj, objectName().toLatin1().data());
+        m_pTrcAdminObj = Trace::DllIf::CTrcServer::RenameTraceAdminObj(
+            m_pTrcAdminObj, objectName().toLatin1().data());
     }
 
 } // setObjectName
@@ -388,9 +389,10 @@ QString CMyClass3::classMethod(const QString& i_strMthInArgs)
     QString strMthInArgs;
     QString strMthRet;
 
-    Trace::DllIf::CTrcAdminObj* pTrcAdminObj = Trace::DllIf::CTrcServer::GetTraceAdminObj(
-        NameSpace().toLatin1().data(),
-        ClassName().toLatin1().data());
+    Trace::DllIf::CTrcAdminObj* pTrcAdminObj =
+        Trace::DllIf::CTrcServer::GetTraceAdminObj(
+            NameSpace().toLatin1().data(),
+            ClassName().toLatin1().data());
 
     if( pTrcAdminObj != nullptr && pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevelArgsNormal) )
     {
@@ -426,9 +428,10 @@ QString CMyClass3::noisyClassMethod(const QString& i_strMthInArgs)
     QString strMthInArgs;
     QString strMthRet;
 
-    Trace::DllIf::CTrcAdminObj* pTrcAdminObj = Trace::DllIf::CTrcServer::GetTraceAdminObj(
-        NameSpace().toLatin1().data(),
-        QString(ClassName() + + "::NoisyMethods").toLatin1().data());
+    Trace::DllIf::CTrcAdminObj* pTrcAdminObj =
+        Trace::DllIf::CTrcServer::GetTraceAdminObj(
+            NameSpace().toLatin1().data(),
+            QString(ClassName() + + "::NoisyMethods").toLatin1().data());
 
     if( pTrcAdminObj != nullptr && pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevelArgsNormal) )
     {
@@ -464,9 +467,10 @@ QString CMyClass3::veryNoisyClassMethod(const QString& i_strMthInArgs)
     QString strMthInArgs;
     QString strMthRet;
 
-    Trace::DllIf::CTrcAdminObj* pTrcAdminObj = Trace::DllIf::CTrcServer::GetTraceAdminObj(
-        NameSpace().toLatin1().data(),
-        QString(ClassName() + + "::VeryNoisyMethods").toLatin1().data());
+    Trace::DllIf::CTrcAdminObj* pTrcAdminObj =
+        Trace::DllIf::CTrcServer::GetTraceAdminObj(
+            NameSpace().toLatin1().data(),
+            QString(ClassName() + + "::VeryNoisyMethods").toLatin1().data());
 
     if( pTrcAdminObj != nullptr && pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevelArgsNormal) )
     {
@@ -542,7 +546,7 @@ CMyClass3::CMyClass3( const QString& i_strObjName, CMyClass3Thread* i_pMyClass3T
         /* szMethod     */ "ctor",
         /* szMthInArgs  */ strMthInArgs.toLatin1().data() );
 
-    m_pMtxCounters = new CMutex(QMutex::Recursive, ClassName() + "::" + objectName() + "::Counters");
+    m_pMtxCounters = new CMutex(QMutex::Recursive, ClassName() + "-" + objectName() + "-Counters");
 
 } // ctor
 
@@ -611,7 +615,7 @@ void CMyClass3::setObjectName(const QString& i_strObjName)
 
     if( m_pMtxCounters != nullptr )
     {
-        m_pMtxCounters->setObjectName(ClassName() + "::" + objectName() + "::Counters");
+        m_pMtxCounters->setObjectName(ClassName() + "-" + objectName() + "-Counters");
     }
 
     // Should be the last so that the method tracer traces leave method
@@ -625,7 +629,8 @@ void CMyClass3::setObjectName(const QString& i_strObjName)
         // object (as this may delete the admin object of the Dll Interface).
         mthTracer.onAdminObjAboutToBeReleased();
 
-        Trace::DllIf::CTrcServer::RenameTraceAdminObj(&m_pTrcAdminObj, objectName().toLatin1().data());
+        m_pTrcAdminObj = Trace::DllIf::CTrcServer::RenameTraceAdminObj(
+            m_pTrcAdminObj, objectName().toLatin1().data());
     }
 
 } // setObjectName

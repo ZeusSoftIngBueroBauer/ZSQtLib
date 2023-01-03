@@ -76,8 +76,8 @@ CIdxTreeTrcAdminObjs::CIdxTreeTrcAdminObjs(
     QString strAddTrcInfo;
 
     CMethodTracer mthTracer(
-        /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
-        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
@@ -91,17 +91,15 @@ CIdxTreeTrcAdminObjs::CIdxTreeTrcAdminObjs(
 CIdxTreeTrcAdminObjs::~CIdxTreeTrcAdminObjs()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
-
     CMethodTracer mthTracer(
-        /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
-        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "dtor",
-        /* strMethodInArgs    */ strAddTrcInfo );
+        /* strMethodInArgs    */ "" );
 
 } // dtor
 
@@ -158,7 +156,7 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj(
 {
     QString strAddTrcInfo;
 
-    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strAddTrcInfo  = "NameSpace: " + i_strNameSpace;
         strAddTrcInfo += ", ClassName: " + i_strClassName;
@@ -171,8 +169,8 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj(
     }
 
     CMethodTracer mthTracer(
-        /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
-        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
@@ -305,14 +303,14 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj( int i_idxInTree, bool i_bI
 {
     QString strAddTrcInfo;
 
-    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strAddTrcInfo = "IdxInTree: " + QString::number(i_idxInTree);
     }
 
     CMethodTracer mthTracer(
-        /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
-        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
@@ -351,31 +349,32 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj( int i_idxInTree, bool i_bI
     If at the new position no trace admin object is existing a new object is
     created and the address of the newly created object is returned.
 
-    @param io_ppTrcAdminObj [in, out]
-        In:  Pointer to admin object which should be renamed. The reference counter
-             of this object is decremented. If 0 and the object is not locked the
-             object will be destroyed.
-        Out: Pointer to trace admin object at the new position. This might either
-             be an already existing trace admin object whose reference counter is
-             increased or a newly created object.
+    @param i_pTrcAdminObj [in]
+        Pointer to admin object which should be renamed. The reference counter
+        of this object is decremented. If 0 and the object is not locked the
+        object will be destroyed.
     @param i_strNewObjName [in] New object name.
+
+    @return Pointer to trace admin object at the new position.
+        This might either be an already existing trace admin object whose
+        reference counter is increased or a newly created object.
 */
-void CIdxTreeTrcAdminObjs::renameTraceAdminObj(
-    CTrcAdminObj** io_ppTrcAdminObj,
+CTrcAdminObj* CIdxTreeTrcAdminObjs::renameTraceAdminObj(
+    CTrcAdminObj*  i_pTrcAdminObj,
     const QString& i_strNewObjName )
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
 
-    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strAddTrcInfo = QString(*io_ppTrcAdminObj == nullptr ? "nullptr" : (*io_ppTrcAdminObj)->keyInTree());
+        strAddTrcInfo = QString(i_pTrcAdminObj == nullptr ? "nullptr" : (i_pTrcAdminObj)->keyInTree());
         strAddTrcInfo = ", NewObjName: " + i_strNewObjName;
     }
 
     CMethodTracer mthTracer(
-        /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
-        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
@@ -385,7 +384,7 @@ void CIdxTreeTrcAdminObjs::renameTraceAdminObj(
 
     CMutexLocker mtxLocker(m_pMtx);
 
-    CTrcAdminObj* pTrcAdminObj = *io_ppTrcAdminObj;
+    CTrcAdminObj* pTrcAdminObj = i_pTrcAdminObj;
 
     if( pTrcAdminObj == nullptr)
     {
@@ -507,10 +506,10 @@ void CIdxTreeTrcAdminObjs::renameTraceAdminObj(
 
     if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
-        mthTracer.setMethodOutArgs(QString(pTrcAdminObj == nullptr ? "nullptr" : pTrcAdminObj->keyInTree()));
+        mthTracer.setMethodReturn(QString(pTrcAdminObj == nullptr ? "nullptr" : pTrcAdminObj->keyInTree()));
     }
 
-    *io_ppTrcAdminObj = pTrcAdminObj;
+    return pTrcAdminObj;
 
 } // renameTraceAdminObj
 
@@ -528,14 +527,14 @@ void CIdxTreeTrcAdminObjs::releaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj )
 {
     QString strAddTrcInfo;
 
-    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strAddTrcInfo = "TrcAdminObj: " + QString(i_pTrcAdminObj == nullptr ? "nullptr" : i_pTrcAdminObj->path());
     }
 
     CMethodTracer mthTracer(
-        /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
-        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
@@ -584,7 +583,7 @@ CIdxTreeEntry* CIdxTreeTrcAdminObjs::insertBranch(
 {
     QString strAddTrcInfo;
 
-    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strAddTrcInfo  = "ParentBranchIdxInTree: " + QString::number(i_iParentBranchIdxInTree);
         strAddTrcInfo += ", Name: " + i_strBranchName;
@@ -592,8 +591,8 @@ CIdxTreeEntry* CIdxTreeTrcAdminObjs::insertBranch(
     }
 
     CMethodTracer mthTracer(
-        /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
-        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
@@ -692,7 +691,7 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::insertTraceAdminObj(
 {
     QString strAddTrcInfo;
 
-    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strAddTrcInfo  = "ParentBranchIdxInTree: " + QString::number(i_iParentBranchIdxInTree);
         strAddTrcInfo += ", NameSpace: " + i_strNameSpace;
@@ -702,8 +701,8 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::insertTraceAdminObj(
     }
 
     CMethodTracer mthTracer(
-        /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
-        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
@@ -780,15 +779,15 @@ void CIdxTreeTrcAdminObjs::setEnabled( int i_iIdxInTree, EEnabled i_enabled )
 {
     QString strAddTrcInfo;
 
-    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strAddTrcInfo  = "IdxInTree: " + QString::number(i_iIdxInTree);
         strAddTrcInfo += ", Enabled: " + CEnumEnabled::toString(i_enabled);
     }
 
     CMethodTracer mthTracer(
-        /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
-        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
@@ -825,15 +824,15 @@ void CIdxTreeTrcAdminObjs::setMethodCallsTraceDetailLevel(
 {
     QString strAddTrcInfo;
 
-    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strAddTrcInfo  = "IdxInTree: " + QString::number(i_iIdxInTree);
         strAddTrcInfo += ", DetailLevel: " + CEnumMethodTraceDetailLevel(i_eDetailLevel).toString();
     }
 
     CMethodTracer mthTracer(
-        /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
-        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
@@ -870,15 +869,15 @@ void CIdxTreeTrcAdminObjs::setRuntimeInfoTraceDetailLevel(
 {
     QString strAddTrcInfo;
 
-    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strAddTrcInfo  = "IdxInTree: " + QString::number(i_iIdxInTree);
         strAddTrcInfo += ", DetailLevel: " + CEnumLogDetailLevel(i_eDetailLevel).toString();
     }
 
     CMethodTracer mthTracer(
-        /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
-        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
@@ -915,15 +914,15 @@ void CIdxTreeTrcAdminObjs::setTraceDataFilter(
 {
     QString strAddTrcInfo;
 
-    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strAddTrcInfo  = "IdxInTree: " + QString::number(i_iIdxInTree);
         strAddTrcInfo += ", Filter: " + i_strDataFilter;
     }
 
     CMethodTracer mthTracer(
-        /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
-        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
@@ -963,15 +962,15 @@ void CIdxTreeTrcAdminObjs::setEnabled( CIdxTreeEntry* i_pBranch, EEnabled i_enab
 {
     QString strAddTrcInfo;
 
-    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strAddTrcInfo  = "Branch: " + QString(i_pBranch == nullptr ? "nullptr" : i_pBranch->path());
         strAddTrcInfo += ", Enabled: " + CEnumEnabled::toString(i_enabled);
     }
 
     CMethodTracer mthTracer(
-        /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
-        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
@@ -1021,15 +1020,15 @@ void CIdxTreeTrcAdminObjs::setMethodCallsTraceDetailLevel(
 {
     QString strAddTrcInfo;
 
-    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strAddTrcInfo  = "Branch: " + QString(i_pBranch == nullptr ? "nullptr" : i_pBranch->path());
         strAddTrcInfo += ", DetailLevel: " + CEnumMethodTraceDetailLevel(i_eDetailLevel).toString();
     }
 
     CMethodTracer mthTracer(
-        /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
-        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
@@ -1079,15 +1078,15 @@ void CIdxTreeTrcAdminObjs::setRuntimeInfoTraceDetailLevel(
 {
     QString strAddTrcInfo;
 
-    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strAddTrcInfo  = "Branch: " + QString(i_pBranch == nullptr ? "nullptr" : i_pBranch->path());
         strAddTrcInfo += ", DetailLevel: " + CEnumLogDetailLevel(i_eDetailLevel).toString();
     }
 
     CMethodTracer mthTracer(
-        /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
-        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
@@ -1137,15 +1136,15 @@ void CIdxTreeTrcAdminObjs::setTraceDataFilter(
 {
     QString strAddTrcInfo;
 
-    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strAddTrcInfo  = "Branch: " + QString(i_pBranch == nullptr ? "nullptr" : i_pBranch->path());
         strAddTrcInfo += ", Filter: " + i_strDataFilter;
     }
 
     CMethodTracer mthTracer(
-        /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
-        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
@@ -1198,14 +1197,14 @@ SErrResultInfo CIdxTreeTrcAdminObjs::save( const QString& i_strAbsFilePath ) con
 {
     QString strAddTrcInfo;
 
-    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strAddTrcInfo = i_strAbsFilePath;
     }
 
     CMethodTracer mthTracer(
-        /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
-        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
@@ -1278,14 +1277,14 @@ SErrResultInfo CIdxTreeTrcAdminObjs::recall( const QString& i_strAbsFilePath )
 {
     QString strAddTrcInfo;
 
-    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strAddTrcInfo = i_strAbsFilePath;
     }
 
     CMethodTracer mthTracer(
-        /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
-        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),

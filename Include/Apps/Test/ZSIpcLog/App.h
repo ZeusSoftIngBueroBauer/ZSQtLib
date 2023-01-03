@@ -37,11 +37,6 @@ may result in using the software modules.
 
 namespace ZS
 {
-namespace System
-{
-class CErrLog;
-class CRequestExecTree;
-}
 namespace Log
 {
 class CIpcLogServer;

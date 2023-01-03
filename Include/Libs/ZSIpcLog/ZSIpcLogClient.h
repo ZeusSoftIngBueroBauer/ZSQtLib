@@ -88,7 +88,7 @@ protected slots: // connected to the signals of the IPC client
     void onIpcClientConnected( QObject* i_pClient );
     void onIpcClientDisconnected( QObject* i_pClient );
 protected slots: // connected to the slots of the loggers idx tree
-    void onLoggersIdxTreeEntryChanged( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry );
+    void onLoggersIdxTreeEntryChanged( const QString& i_strKeyInTree );
 protected: // instance members
     /*!< When connecting to the log server the name of the application is
          sent together with other settings by the log server to the client. */

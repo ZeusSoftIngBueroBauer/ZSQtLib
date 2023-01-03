@@ -86,8 +86,7 @@ CWdgtIdxTreeLoggers::CWdgtIdxTreeLoggers(
     // <Button> Resize Columns To Contents
     //------------------------------------
 
-    QPixmap pxmResizeToContents(":/ZS/TreeView/TreeViewResizeToContents.bmp");
-    pxmResizeToContents.setMask(pxmResizeToContents.createHeuristicMask());
+    QPixmap pxmResizeToContents(":/ZS/TreeView/TreeViewResizeToContents.png");
 
     m_pBtnTreeViewResizeRowsAndColumnsToContents = new QPushButton();
     m_pBtnTreeViewResizeRowsAndColumnsToContents->setIcon(pxmResizeToContents);
@@ -109,8 +108,7 @@ CWdgtIdxTreeLoggers::CWdgtIdxTreeLoggers(
     // <Button> Expand All
     //--------------------
 
-    QPixmap pxmExpandAll(":/ZS/TreeView/TreeViewExpandAll.bmp");
-    pxmExpandAll.setMask(pxmExpandAll.createHeuristicMask());
+    QPixmap pxmExpandAll(":/ZS/TreeView/TreeViewExpandAll.png");
 
     m_pBtnTreeViewExpandAll = new QPushButton();
     m_pBtnTreeViewExpandAll->setIcon(pxmExpandAll);
@@ -132,8 +130,7 @@ CWdgtIdxTreeLoggers::CWdgtIdxTreeLoggers(
     // <Button> Collapse All
     //----------------------
 
-    QPixmap pxmCollapseAll(":/ZS/TreeView/TreeViewCollapseAll.bmp");
-    pxmCollapseAll.setMask(pxmCollapseAll.createHeuristicMask());
+    QPixmap pxmCollapseAll(":/ZS/TreeView/TreeViewCollapseAll.png");
 
     m_pBtnTreeViewCollapseAll = new QPushButton();
     m_pBtnTreeViewCollapseAll->setIcon(pxmCollapseAll);

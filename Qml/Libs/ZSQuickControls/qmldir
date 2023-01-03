@@ -1,0 +1,5 @@
+module ZSQuickControls
+
+QuickControlsStyled 1.0 ZSQuickControlsStyled.qml
+QuickControlsStyleSettings 1.0 ZSQuickControlsStyleSettings.qml
+QuickControlsStyleWdgt 1.0 ZSQuickControlsStyleWdgt.qml

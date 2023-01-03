@@ -26,7 +26,7 @@ may result in using the software modules.
 
 #ifdef USE_ZS_IPCTRACE_DLL_IF
 
-#include "ZSIpcTrcDllIf.h"
+#include "ZSIpcTrace/ZSIpcTrcDllIf.h"
 
 #include <string>
 
@@ -110,7 +110,7 @@ typedef void (*TFctTrcAdminObj_traceMethod)( const DllIf::CTrcAdminObj* i_pTrcAd
 typedef DllIf::CTrcAdminObj* (*TFctTrcServer_GetTraceAdminObj)(
     const char* i_szNameSpace, const char* i_szClassName, const char* i_szObjName, DllIf::EEnabled i_bEnabledAsDefault,
     DllIf::EMethodTraceDetailLevel i_eMethodCallsDefaultDetailLevel, DllIf::ELogDetailLevel i_eRuntimeInfoDefaultDetailLevel );
-typedef void (*TFctTrcServer_RenameTraceAdminObj)( DllIf::CTrcAdminObj** io_ppTrcAdminObj, const char* i_szNewObjName );
+typedef DllIf::CTrcAdminObj* (*TFctTrcServer_RenameTraceAdminObj)( DllIf::CTrcAdminObj* i_pTrcAdminObj, const char* i_szNewObjName );
 typedef void (*TFctTrcServer_ReleaseTraceAdminObj)( DllIf::CTrcAdminObj* i_pTrcAdminObj );
 typedef void (*TFctTrcServer_SetOrganizationName)( const char* i_szName );
 typedef char* (*TFctTrcServer_GetOrganizationName)();
@@ -370,7 +370,11 @@ bool ZS::Trace::DllIf::loadDll( EBuildConfiguration i_configuration, int i_iQtVe
         delete s_szDllFileName;
         s_szDllFileName = nullptr;
 
-        size_t iStrLenDllFileName = strlen(szZSDllName) + strlen(szQtVersionMajor) + strlen(szConfig) + strlen(i_szQtLibInfix) + 4;
+        size_t iStrLenDllFileName = strlen(szZSDllName) + strlen(szQtVersionMajor) + strlen(szConfig) + 4;
+        if( i_szQtLibInfix != NULL )
+        {
+            iStrLenDllFileName += strlen(i_szQtLibInfix);
+        }
         s_szDllFileName = new char[iStrLenDllFileName+1];
         memset(s_szDllFileName, 0x00, iStrLenDllFileName+1);
 
@@ -379,7 +383,7 @@ bool ZS::Trace::DllIf::loadDll( EBuildConfiguration i_configuration, int i_iQtVe
         iStrPos += strlen(szZSDllName);
         memcpy(&s_szDllFileName[iStrPos], szQtVersionMajor, strlen(szQtVersionMajor)); // "ZSIpcTraceQt5"
         iStrPos += strlen(szQtVersionMajor);
-        if( strlen(i_szQtLibInfix) > 0 )
+        if( i_szQtLibInfix != NULL && strlen(i_szQtLibInfix) > 0 )
         {
             memcpy(&s_szDllFileName[iStrPos], i_szQtLibInfix, strlen(i_szQtLibInfix)); // "ZSIpcTraceQt5Urgh"
             iStrPos += strlen(i_szQtLibInfix);
@@ -1739,15 +1743,18 @@ DllIf::CTrcAdminObj* DllIf::CTrcServer::GetTraceAdminObj(
 }
 
 //------------------------------------------------------------------------------
-void DllIf::CTrcServer::RenameTraceAdminObj(
-    CTrcAdminObj** io_ppTrcAdminObj,
-    const char*    i_szNewObjName )
+DllIf::CTrcAdminObj* DllIf::CTrcServer::RenameTraceAdminObj(
+    CTrcAdminObj* i_pTrcAdminObj,
+    const char*   i_szNewObjName )
 //------------------------------------------------------------------------------
 {
+    DllIf::CTrcAdminObj* pTrcAdminObj = i_pTrcAdminObj;
+
     if( s_hndDllIf != NULL && s_pFctTrcServer_RenameTraceAdminObj != NULL )
     {
-        s_pFctTrcServer_RenameTraceAdminObj(io_ppTrcAdminObj, i_szNewObjName);
+        pTrcAdminObj = s_pFctTrcServer_RenameTraceAdminObj(i_pTrcAdminObj, i_szNewObjName);
     }
+    return pTrcAdminObj;
 }
 
 //------------------------------------------------------------------------------

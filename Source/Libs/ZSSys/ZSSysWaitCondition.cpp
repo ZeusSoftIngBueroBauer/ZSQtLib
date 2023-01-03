@@ -181,7 +181,7 @@ void CWaitCondition::setObjectName(const QString& i_strObjName)
 
     if( m_pTrcAdminObj != nullptr )
     {
-        CTrcServer::RenameTraceAdminObj(&m_pTrcAdminObj, objectName());
+        m_pTrcAdminObj = CTrcServer::RenameTraceAdminObj(m_pTrcAdminObj, objectName());
     }
 }
 

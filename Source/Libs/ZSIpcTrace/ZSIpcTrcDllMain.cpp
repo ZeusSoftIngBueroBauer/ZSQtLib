@@ -1467,22 +1467,22 @@ ZSIPCTRACEDLL_EXTERN_API DllIf::CTrcAdminObj* TrcServer_GetTraceAdminObj(
 }
 
 //------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API void TrcServer_RenameTraceAdminObj(
-    DllIf::CTrcAdminObj** io_ppTrcAdminObj,
-    const char*           i_szNewObjName )
+ZSIPCTRACEDLL_EXTERN_API DllIf::CTrcAdminObj* TrcServer_RenameTraceAdminObj(
+    DllIf::CTrcAdminObj* i_pTrcAdminObj,
+    const char*          i_szNewObjName )
 //------------------------------------------------------------------------------
 {
     #ifdef _WINDOWS
     if( s_iDLL_PROCESS_ATTACH <= 0 ) // Dll already unloaded
     {
-        return;
+        return nullptr;
     }
     #endif
 
     QMutexLocker mtxLocker(&DllIf_s_mtx);
 
     DllIf::DllMain::CTrcAdminObj* pDllIfTrcAdminObj =
-        dynamic_cast<DllIf::DllMain::CTrcAdminObj*>(*io_ppTrcAdminObj);
+        dynamic_cast<DllIf::DllMain::CTrcAdminObj*>(i_pTrcAdminObj);
 
     QString strNewObjName = i_szNewObjName;
 
@@ -1509,7 +1509,7 @@ ZSIPCTRACEDLL_EXTERN_API void TrcServer_RenameTraceAdminObj(
 
     if( pDllIfTrcAdminObj != nullptr )
     {
-        QString strOldKeyInTree = (*io_ppTrcAdminObj)->keyInTree();
+        QString strOldKeyInTree = i_pTrcAdminObj->keyInTree();
         QString strNewKeyInTree = strOldKeyInTree;
 
         int iRefCount = pDllIfTrcAdminObj->getRefCount();
@@ -1526,7 +1526,7 @@ ZSIPCTRACEDLL_EXTERN_API void TrcServer_RenameTraceAdminObj(
 
             if( pTrcAdminObj != nullptr )
             {
-                CTrcServer::RenameTraceAdminObj(&pTrcAdminObj, strNewObjName);
+                pTrcAdminObj = CTrcServer::RenameTraceAdminObj(pTrcAdminObj, strNewObjName);
                 strNewKeyInTree = pTrcAdminObj->keyInTree();
             }
         } // if( pTrcServer != nullptr )
@@ -1558,10 +1558,10 @@ ZSIPCTRACEDLL_EXTERN_API void TrcServer_RenameTraceAdminObj(
             }
 
             pDllIfTrcAdminObj->incrementRefCount();
-
-            *io_ppTrcAdminObj = pDllIfTrcAdminObj;
         }
     } // if( pDllIfTrcAdminObj != nullptr )
+
+    return pDllIfTrcAdminObj;
 
 } // TrcServer_RenameTraceAdminObj
 

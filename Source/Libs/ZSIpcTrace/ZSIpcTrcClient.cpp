@@ -113,7 +113,7 @@ CIpcTrcClient::CIpcTrcClient(
 
     m_watchDogTimerSettings.m_bEnabled = false;
 
-    m_pTrcAdminObjIdxTree = new CIdxTreeTrcAdminObjs(i_strName, this);
+    m_pTrcAdminObjIdxTree = new CIdxTreeTrcAdminObjs("TrcAdminObjs-" + i_strName, this);
 
     // Set default ports depending on trace types
     //-------------------------------------------
@@ -148,15 +148,9 @@ CIpcTrcClient::CIpcTrcClient(
     // Connect to the admin object signals of the object pool
     //-------------------------------------------------------
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTrcAdminObjIdxTree,
-        /* szSignal     */ SIGNAL( treeEntryChanged(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onTrcAdminObjIdxTreeEntryChanged(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*) ),
-        /* cnctType     */ Qt::DirectConnection ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pTrcAdminObjIdxTree, &CIdxTreeTrcAdminObjs::treeEntryChanged,
+        this, &CIpcTrcClient::onTrcAdminObjIdxTreeEntryChanged );
 
 } // ctor
 
@@ -180,10 +174,8 @@ CIpcTrcClient::~CIpcTrcClient()
         /* strMthInArgs       */ "" );
 
         QObject::disconnect(
-            /* pObjSender   */ m_pTrcAdminObjIdxTree,
-            /* szSignal     */ SIGNAL( treeEntryChanged(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*) ),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT( onTrcAdminObjIdxTreeEntryChanged(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*) ) );
+            m_pTrcAdminObjIdxTree, &CIdxTreeTrcAdminObjs::treeEntryChanged,
+            this, &CIpcTrcClient::onTrcAdminObjIdxTreeEntryChanged );
 
         abortAllRequests(); // Deletes or at least invalidates the current request in progress.
 
@@ -1214,9 +1206,7 @@ protected slots: // connected to the slots of the trace admin object pool model
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CIpcTrcClient::onTrcAdminObjIdxTreeEntryChanged(
-    CIdxTree*      /*i_pIdxTree*/,
-    CIdxTreeEntry* i_pTreeEntry )
+void CIpcTrcClient::onTrcAdminObjIdxTreeEntryChanged( const QString& i_strKeyInTree )
 //------------------------------------------------------------------------------
 {
     if( m_bOnReceivedDataUpdateInProcess )
@@ -1228,7 +1218,7 @@ void CIpcTrcClient::onTrcAdminObjIdxTreeEntryChanged(
 
     if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree();
+        strMthInArgs = i_strKeyInTree;
     }
 
     CMethodTracer mthTracer(
@@ -1241,24 +1231,28 @@ void CIpcTrcClient::onTrcAdminObjIdxTreeEntryChanged(
         /* strMethod          */ "onTrcAdminObjIdxTreeEntryChanged",
         /* strMthInArgs       */ strMthInArgs );
 
-    if( i_pTreeEntry != nullptr )
+    CIdxTreeLocker idxTreeLocker(m_pTrcAdminObjIdxTree);
+
+    CIdxTreeEntry* pTreeEntry = m_pTrcAdminObjIdxTree->findEntry(i_strKeyInTree);
+
+    if( pTreeEntry != nullptr )
     {
-        if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+        if( pTreeEntry->isLeave() )
         {
             //if( m_pTrcAdminObjIdxTree->getUpdateNameSpaceCallDepth() == 0 )
             {
                 sendAdminObj(
                     /* systemMsgType */ MsgProtocol::ESystemMsgTypeReq,
                     /* cmd           */ MsgProtocol::ECommandUpdate,
-                    /* pTrcAdminObj  */ dynamic_cast<CTrcAdminObj*>(i_pTreeEntry) );
+                    /* pTrcAdminObj  */ dynamic_cast<CTrcAdminObj*>(pTreeEntry) );
             }
         }
-        else // if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Root || Branch )
+        else // if( i_pTreeEntry->isRoot() || i_pTreeEntry->isBranch() )
         {
             //sendNameSpace(
             //    /* systemMsgType */ MsgProtocol::ESystemMsgTypeReq,
             //    /* cmd           */ ECommandUpdate,
-            //    /* pTreeEntry    */ i_pTreeEntry,
+            //    /* pTreeEntry    */ pTreeEntry,
             //    /* enabled       */ enabled,
             //    /* iDetailLevel  */ i_iDetailLevel );
         }
