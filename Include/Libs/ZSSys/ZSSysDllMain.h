@@ -66,12 +66,4 @@ global type definitions and constants
 #define __ERROR__ __FILELINE__ "Error: "
 #define __TODO__ __FILELINE__ "TODO: "
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
-#define QtKeepEmptyParts Qt::KeepEmptyParts
-#define QtSkipEmptyParts Qt::SkipEmptyParts
-#else
-#define QtKeepEmptyParts QString::KeepEmptyParts
-#define QtSkipEmptyParts QString::KeepEmptyParts
-#endif
-
 #endif // #ifndef ZSSys_DllMain_h

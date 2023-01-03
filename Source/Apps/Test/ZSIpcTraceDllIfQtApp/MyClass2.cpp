@@ -344,6 +344,7 @@ void CMyClass2Thread::quit()
     return QThread::quit();
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
 //------------------------------------------------------------------------------
 bool CMyClass2Thread::wait( QDeadlineTimer i_deadline )
 //------------------------------------------------------------------------------
@@ -369,6 +370,7 @@ bool CMyClass2Thread::wait( QDeadlineTimer i_deadline )
     }
     return bResult;
 }
+#endif
 
 //------------------------------------------------------------------------------
 bool CMyClass2Thread::wait( unsigned long i_time_ms )

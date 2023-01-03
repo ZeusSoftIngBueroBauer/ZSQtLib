@@ -61,9 +61,9 @@ if(WIN32)
 endif()
 
 # Got to create the following target name:
-# (ProjectName)Qt$(QT_VERSION_MAJOR)[d]
-# e.g.: "ZSTestQt5d"
-set(TargetOutputName ${PROJECT_NAME}Qt${QT_VERSION_MAJOR})
+# (ProjectName)Qt$(QT_VERSION_MAJOR)$(QT_LIBINFIX)[d]
+# e.g.: "ZSTestQt5d", "ZTestQt5Swpd"
+set(TargetOutputName ${PROJECT_NAME}Qt${QT_VERSION_MAJOR}${QT_LIBINFIX})
 if(CMAKE_BUILD_TYPE MATCHES Debug)
     set(TargetOutputName ${TargetOutputName}d)
 endif()

@@ -1062,7 +1062,7 @@ void CIpcLogServer::sendBranch(
             QString strMsg;
             QString strBranchName = i_pBranch->name();
 
-            strBranchName = encodeForHtml(strBranchName);
+            strBranchName = encodeForXml(strBranchName);
 
             strMsg += systemMsgType2Str(i_systemMsgType) + " ";
             strMsg += command2Str(i_cmd) + " ";
@@ -1135,10 +1135,10 @@ void CIpcLogServer::sendLeave(
         // If removed the command is deleted. It is sufficient to send the IdxInTree which was deleted.
         if( pLogger != nullptr && !pLogger->isAboutToBeDestroyed() )
         {
-            QString strName = encodeForHtml(pLogger->name());
-            QString strNameSpace = encodeForHtml(pLogger->getNameSpace());
-            QString strClassName = encodeForHtml(pLogger->getClassName());
-            QString strObjName = encodeForHtml(pLogger->getObjectName());
+            QString strName = encodeForXml(pLogger->name());
+            QString strNameSpace = encodeForXml(pLogger->getNameSpace());
+            QString strClassName = encodeForXml(pLogger->getClassName());
+            QString strObjName = encodeForXml(pLogger->getObjectName());
 
             strMsg += " Name=\"" + strName + "\"";
 

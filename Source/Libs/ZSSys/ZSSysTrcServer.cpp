@@ -378,7 +378,7 @@ public: // class methods to register thread names
 
     @param i_strThreadName [in] Name of the thread
 */
-void CTrcServer::RegisterCurrentThread( const QString& i_strThreadName )
+void CTrcServer::RegisterThread( const QString& i_strThreadName, void* i_pvThreadHandle )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
@@ -404,7 +404,7 @@ void CTrcServer::RegisterCurrentThread( const QString& i_strThreadName )
     s_hshThreadNames[threadIdCurr] = i_strThreadName;
     s_hshThreadIds[i_strThreadName] = threadIdCurr;
 
-} // RegisterCurrentThread
+} // RegisterThread
 
 //------------------------------------------------------------------------------
 /*! @brief Removes the current thread from the hash of known threads.
@@ -412,7 +412,7 @@ void CTrcServer::RegisterCurrentThread( const QString& i_strThreadName )
     This method may be used in none Qt applications if it is not possible to
     assign a human readable descriptive object name to the thread instance.
 */
-void CTrcServer::UnregisterCurrentThread()
+void CTrcServer::UnregisterThread( void* i_pvThreadHandle )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
@@ -431,7 +431,20 @@ void CTrcServer::UnregisterCurrentThread()
     {
         s_hshThreadIds.remove(strThreadName);
     }
-} // UnregisterCurrentThread
+} // UnregisterThread
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the name assigned to the current thread. If no name is assigned
+           the thread id will be used.
+
+    @return Name of the thread which may be the thread id starting with "Thread".
+*/
+QString CTrcServer::GetThreadName( void* i_pvThreadHandle )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&s_mtx);
+    return currentThreadName();
+}
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the name assigned to the current thread. If no name is assigned

@@ -277,9 +277,10 @@ public: // class method to save/recall loggers file
     static char* GetLocalLogFileCompleteBaseName();
     static char* GetLocalLogFileAbsolutePath();
 public: // class methods
-    static void RegisterCurrentThread( const char* i_szThreadName );
-    static void UnregisterCurrentThread();
-    static char* GetCurrentThreadName();    // returned string must be freed by caller
+    static void RegisterThread( const char* i_szThreadName, void* i_pvThreadHandle );
+    static void UnregisterThread( void* i_pvThreadHandle );
+    static char* GetThreadName( void* i_pvThreadHandle );    // returned string must be freed by caller
+    static char* GetCurrentThreadName();                    // returned string must be freed by caller
 public: // class methods to add, remove and modify logger
     static CLogger* GetLogger();
     static CLogger* GetLogger(

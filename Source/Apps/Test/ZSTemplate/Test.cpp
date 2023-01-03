@@ -25,7 +25,9 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include <QtCore/qfileinfo.h>
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
 #include <QtCore/qrandom.h>
+#endif
 #include <QtCore/qthread.h>
 
 #include "Test.h"
@@ -170,8 +172,12 @@ void CTest::doTestStepGrp1Step1( ZS::Test::CTestStep* i_pTestStep )
     // Do Test Step
     //-------------
 
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
     QRandomGenerator randGen;
     unsigned long uTestStepDuration_ms = 100 + randGen.generate() % 900;
+    #else
+    unsigned long uTestStepDuration_ms = 500;
+    #endif
     QThread::msleep(uTestStepDuration_ms);
 
     // Result Values
@@ -217,8 +223,12 @@ void CTest::doTestStepGrp1Step2( ZS::Test::CTestStep* i_pTestStep )
     // Do Test Step
     //-------------
 
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
     QRandomGenerator randGen;
     unsigned long uTestStepDuration_ms = 100 + randGen.generate() % 900;
+    #else
+    unsigned long uTestStepDuration_ms = 500;
+    #endif
     QThread::msleep(uTestStepDuration_ms);
 
     // Result Values
@@ -264,8 +274,12 @@ void CTest::doTestStepGrp1Step3( ZS::Test::CTestStep* i_pTestStep )
     // Do Test Step
     //-------------
 
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
     QRandomGenerator randGen;
     unsigned long uTestStepDuration_ms = 100 + randGen.generate() % 900;
+    #else
+    unsigned long uTestStepDuration_ms = 500;
+    #endif
     QThread::msleep(uTestStepDuration_ms);
 
     // Result Values
@@ -311,8 +325,12 @@ void CTest::doTestStepGrp2Step1( ZS::Test::CTestStep* i_pTestStep )
     // Do Test Step
     //-------------
 
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
     QRandomGenerator randGen;
     unsigned long uTestStepDuration_ms = 100 + randGen.generate() % 900;
+    #else
+    unsigned long uTestStepDuration_ms = 500;
+    #endif
     QThread::msleep(uTestStepDuration_ms);
 
     // Result Values
@@ -358,8 +376,12 @@ void CTest::doTestStepGrp2Step2( ZS::Test::CTestStep* i_pTestStep )
     // Do Test Step
     //-------------
 
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
     QRandomGenerator randGen;
     unsigned long uTestStepDuration_ms = 100 + randGen.generate() % 900;
+    #else
+    unsigned long uTestStepDuration_ms = 500;
+    #endif
     QThread::msleep(uTestStepDuration_ms);
 
     // Result Values
@@ -405,8 +427,12 @@ void CTest::doTestStepGrp2Step3( ZS::Test::CTestStep* i_pTestStep )
     // Do Test Step
     //-------------
 
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
     QRandomGenerator randGen;
     unsigned long uTestStepDuration_ms = 100 + randGen.generate() % 900;
+    #else
+    unsigned long uTestStepDuration_ms = 500;
+    #endif
     QThread::msleep(uTestStepDuration_ms);
 
     // Result Values

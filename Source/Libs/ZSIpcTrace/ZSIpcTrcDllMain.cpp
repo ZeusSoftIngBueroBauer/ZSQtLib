@@ -1769,19 +1769,32 @@ ZSIPCTRACEDLL_EXTERN_API char* TrcServer_GetLocalTrcFileAbsolutePath()
 }
 
 //------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API void TrcServer_RegisterCurrentThread( const char* i_szThreadName )
+ZSIPCTRACEDLL_EXTERN_API void TrcServer_RegisterThread( const char* i_szThreadName, void* i_pvThreadHandle )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
-    CTrcServer::RegisterCurrentThread(i_szThreadName);
+    CTrcServer::RegisterThread(i_szThreadName, i_pvThreadHandle);
 }
 
 //------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API void TrcServer_UnregisterCurrentThread()
+ZSIPCTRACEDLL_EXTERN_API void TrcServer_UnregisterThread( void* i_pvThreadHandle )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
-    CTrcServer::UnregisterCurrentThread();
+    CTrcServer::UnregisterThread(i_pvThreadHandle);
+}
+
+//------------------------------------------------------------------------------
+ZSIPCTRACEDLL_EXTERN_API char* TrcServer_GetThreadName( void* i_pvThreadHandle )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+
+    std::string stdstrName = CTrcServer::GetThreadName(i_pvThreadHandle).toStdString();
+    char* szName = new char[stdstrName.size() + 1];
+    memcpy(szName, stdstrName.c_str(), stdstrName.size());
+    szName[stdstrName.size()] = 0x00;
+    return szName;
 }
 
 //------------------------------------------------------------------------------

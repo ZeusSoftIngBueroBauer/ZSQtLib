@@ -432,7 +432,7 @@ QString SLogData::toXmlString() const
     int iStrLen = 11; // '<LogData />'
 
     if( !m_strThreadName.isEmpty() ) {
-        strThreadName = encodeForHtml(m_strThreadName);
+        strThreadName = encodeForXml(m_strThreadName);
         iStrLen += strThreadName.length() + 10; // + 'Thread="" '
     }
     if( !m_strDateTime.isEmpty() ) {
@@ -444,18 +444,18 @@ QString SLogData::toXmlString() const
         iStrLen += strSysTime.length() + 11; // + 'SysTime="" '
     }
     if( !m_strNameSpace.isEmpty() ) {
-        strNameSpace = encodeForHtml(m_strNameSpace);
+        strNameSpace = encodeForXml(m_strNameSpace);
         iStrLen += strNameSpace.length() + 13; // + 'NameSpace="" '
     }
     if( !m_strClassName.isEmpty() ) {
-        strClassName = encodeForHtml(m_strClassName);
+        strClassName = encodeForXml(m_strClassName);
         iStrLen += strClassName.length() + 13; // + 'ClassName="" '
     }
     if( !m_strObjName.isEmpty() ) {
-        strObjName = encodeForHtml(m_strObjName);
+        strObjName = encodeForXml(m_strObjName);
         iStrLen += strObjName.length() + 11; // + 'ObjName="" '
     }
-    strEntry = encodeForHtml(m_strEntry);
+    strEntry = encodeForXml(m_strEntry);
     iStrLen += strEntry.length() + 9; // + 'Entry="" '
 
     str.reserve(iStrLen);
@@ -479,7 +479,7 @@ QString SLogData::toXmlString() const
     if( !strObjName.isEmpty() ) {
         str += "ObjName=\"" + strObjName + "\" ";
     }
-    strEntry = encodeForHtml(m_strEntry);
+    strEntry = encodeForXml(m_strEntry);
     str += "Entry=\"" + strEntry + "\"";
     str += "/>";
 
@@ -609,7 +609,7 @@ public: // class methods to register thread names
 
     @param i_strThreadName [in] Name of the thread
 */
-void CLogServer::RegisterCurrentThread( const QString& i_strThreadName )
+void CLogServer::RegisterThread( const QString& i_strThreadName, void* i_pvThreadHandle )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
@@ -635,7 +635,7 @@ void CLogServer::RegisterCurrentThread( const QString& i_strThreadName )
     s_hshThreadNames[threadIdCurr] = i_strThreadName;
     s_hshThreadIds[i_strThreadName] = threadIdCurr;
 
-} // RegisterCurrentThread
+} // RegisterThread
 
 //------------------------------------------------------------------------------
 /*! @brief Removes the current thread from the hash of known threads.
@@ -643,7 +643,7 @@ void CLogServer::RegisterCurrentThread( const QString& i_strThreadName )
     This method may be used in none Qt applications if it is not possible to
     assign a human readable descriptive object name to the thread instance.
 */
-void CLogServer::UnregisterCurrentThread()
+void CLogServer::UnregisterThread( void* i_pvThreadHandle )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
@@ -662,7 +662,51 @@ void CLogServer::UnregisterCurrentThread()
     {
         s_hshThreadIds.remove(strThreadName);
     }
-} // UnregisterCurrentThread
+} // UnregisterThread
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the name assigned to the current thread. If no name is assigned
+           the thread id will be used.
+
+    @return Name of the thread which may be the thread id starting with "Thread".
+*/
+QString CLogServer::GetThreadName( void* i_pvThreadHandle )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&s_mtx);
+
+    QString strThreadName = "Undefined";
+
+    try
+    {
+        QThread* pThread = QThread::currentThread();
+
+        if( pThread != nullptr )
+        {
+            strThreadName = pThread->objectName();
+
+            if( strThreadName.length() == 0 )
+            {
+                Qt::HANDLE threadId = QThread::currentThreadId();
+
+                if( s_hshThreadNames.contains(threadId) )
+                {
+                    strThreadName = s_hshThreadNames[threadId];
+                }
+                else
+                {
+                    strThreadName = QString("Thread") + threadId2Str(threadId);
+                }
+            }
+        }
+    }
+    catch(...)
+    {
+    }
+
+    return strThreadName;
+
+} // GetThreadName
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the name assigned to the current thread. If no name is assigned
@@ -705,7 +749,8 @@ QString CLogServer::GetCurrentThreadName()
     }
 
     return strThreadName;
-}
+
+} // GetCurrentThreadName
 
 /*==============================================================================
 public: // class methods

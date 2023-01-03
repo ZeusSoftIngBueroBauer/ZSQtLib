@@ -190,8 +190,9 @@ public: // class methods
     static CLogServer* CreateInstance();
     static void ReleaseInstance();
 public: // class methods to register thread names
-    static void RegisterCurrentThread(const QString& i_strThreadName);
-    static void UnregisterCurrentThread();
+    static void RegisterThread( const QString& i_strThreadName, void* i_pvThreadHandle );
+    static void UnregisterThread( void* i_pvThreadHandle );
+    static QString GetThreadName( void* i_pvThreadHandle );
     static QString GetCurrentThreadName();
 public: // class methods to add, remove and modify loggers
     static CIdxTreeLoggers* GetLoggersIdxTree();

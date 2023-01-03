@@ -1214,6 +1214,7 @@ QString STimerSettings::toString() const
 converting common data types into strings and vice versa
 *******************************************************************************/
 
+#if QT_VERSION > QT_VERSION_CHECK(5, 11, 0)
 //------------------------------------------------------------------------------
 QString ZS::Ipc::qNetworkInterfaceType2Str( QNetworkInterface::InterfaceType i_type )
 //------------------------------------------------------------------------------
@@ -1237,6 +1238,7 @@ QString ZS::Ipc::qNetworkInterfaceType2Str( QNetworkInterface::InterfaceType i_t
     return s_hshType2Str.value(i_type, "? (" + QString::number(i_type)+ ")");
 
 } // qNetworkInterfaceType2Str
+#endif // #if QT_VERSION > QT_VERSION_CHECK(5, 11, 0)
 
 //------------------------------------------------------------------------------
 QString ZS::Ipc::qNetworkInterfaceFlags2Str( QNetworkInterface::InterfaceFlags i_flags )

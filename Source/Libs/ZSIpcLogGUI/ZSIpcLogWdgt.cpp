@@ -766,7 +766,7 @@ SErrResultInfo CWdgtLog::readLogFile( const QString& i_strAbsFilePath )
             idxEnd = strLine.size();
             if( idxBeg >= 0 && idxEnd >= 0 && idxEnd > idxBeg) {
                 strMthCall = strLine.mid(idxBeg, idxEnd-idxBeg);
-                strMthCall = encodeForHtml(strMthCall);
+                strMthCall = encodeForXml(strMthCall);
             }
             strLog += strMthCall;
 

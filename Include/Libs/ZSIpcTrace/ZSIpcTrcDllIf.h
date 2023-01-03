@@ -29,6 +29,9 @@ may result in using the software modules.
 #ifndef ZSIpcTrace_DllIf_h
 #define ZSIpcTrace_DllIf_h
 
+#pragma warning( push )
+#pragma warning( disable : 4505 )
+
 /*! This header file represents the DLL interface for the remote method tracing
     of the ZSQtLib. In order to be able to use it, the cpp file must also be
     compiled into the application or the dll in which the interface is to be used.
@@ -372,9 +375,10 @@ public: // class method to save/recall admin objects file
     static char* GetLocalTrcFileCompleteBaseName();
     static char* GetLocalTrcFileAbsolutePath();
 public: // class methods
-    static void RegisterCurrentThread( const char* i_szThreadName );
-    static void UnregisterCurrentThread();
-    static char* GetCurrentThreadName();    // returned string must be freed by caller
+    static void RegisterThread( const char* i_szThreadName, void* i_pvThreadHandle );
+    static void UnregisterThread( void* i_pvThreadHandle );
+    static char* GetThreadName( void* i_pvThreadHandle );    // returned string must be freed by caller
+    static char* GetCurrentThreadName();                    // returned string must be freed by caller
 public: // instance methods
     const char* name() const { return "ZSTrcServer"; }
 public: // instance methods
@@ -500,7 +504,8 @@ enum EBuildConfiguration
 
 bool loadDll(
     EBuildConfiguration i_configuration = EBuildConfigurationAutoDetect,
-    int i_iQtVersionMajor = QT_VERSION_MAJOR );
+    int i_iQtVersionMajor = QT_VERSION_MAJOR,
+    const char* i_szQtLibInfix = nullptr);
 const char* getDllFileName();
 bool releaseDll();
 
@@ -512,6 +517,8 @@ bool releaseDll();
 } // namespace ZS
 
 } // extern "C"
+
+#pragma warning( pop )
 
 #endif // #ifndef ZSIpcTrace_DllIf_h
 

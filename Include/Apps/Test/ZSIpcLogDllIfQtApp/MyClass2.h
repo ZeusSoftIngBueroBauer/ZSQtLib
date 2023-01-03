@@ -84,7 +84,9 @@ public: // overridables of base class QThread
 public: // replacing methods of base class QThread
     void start( QThread::Priority i_priority = InheritPriority );
     void quit();
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
     bool wait( QDeadlineTimer i_deadline = QDeadlineTimer(QDeadlineTimer::Forever) );
+    #endif
     bool wait( unsigned long i_time_ms );
 protected: // replacing methods of base class QThread
     int exec();

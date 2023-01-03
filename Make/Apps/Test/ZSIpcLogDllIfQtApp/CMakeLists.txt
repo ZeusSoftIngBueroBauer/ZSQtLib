@@ -111,7 +111,8 @@ endif()
 target_compile_definitions(${PROJECT_NAME} PRIVATE USE_ZS_IPCLOG_DLL_IF)
 
 target_include_directories(${PROJECT_NAME}
-    PRIVATE ${CMAKE_SOURCE_DIR}/../Include/Apps/Test/ZSIpcLogDllIfQtApp)
+    PRIVATE ${CMAKE_SOURCE_DIR}/../Include/Apps/Test/ZSIpcLogDllIfQtApp
+    PRIVATE ../../../../Include/Libs/ZSIpcLog)
 
 set(_Libs ZSIpcGUI ZSTestGUI)
 

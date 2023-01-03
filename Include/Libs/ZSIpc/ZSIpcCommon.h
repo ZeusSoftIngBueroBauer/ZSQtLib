@@ -264,7 +264,9 @@ public: // struct members
 converting common data types into strings and vice versa
 *******************************************************************************/
 
+#if QT_VERSION > QT_VERSION_CHECK(5, 11, 0)
 ZSIPCDLL_API QString qNetworkInterfaceType2Str( QNetworkInterface::InterfaceType i_type );
+#endif
 ZSIPCDLL_API QString qNetworkInterfaceFlags2Str( QNetworkInterface::InterfaceFlags i_flags );
 
 } // namespace Ipc

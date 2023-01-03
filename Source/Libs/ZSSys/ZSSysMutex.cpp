@@ -586,6 +586,8 @@ EMethodTraceDetailLevel CMutex::getMethodTraceDetailLevel() const
 class CRecursiveMutex : public QRecursiveMutex
 *******************************************************************************/
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+
 /*==============================================================================
 public: // ctors and dtor
 ==============================================================================*/
@@ -1037,6 +1039,8 @@ EMethodTraceDetailLevel CRecursiveMutex::getMethodTraceDetailLevel() const
     return eDetailLevel;
 }
 
+#endif // #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+
 
 /*******************************************************************************
 class CMutexLocker
@@ -1061,8 +1065,10 @@ public: // ctors and dtor
 */
 CMutexLocker::CMutexLocker(CMutex* i_pMutex) :
 //------------------------------------------------------------------------------
-    m_pMtx(i_pMutex),
-    m_pRecursiveMtx(nullptr)
+    m_pMtx(i_pMutex)
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    ,m_pRecursiveMtx(nullptr)
+    #endif
     #ifdef ZS_TRACE_MUTEXES
     ,m_eTrcMthFileDetailLevel(EMethodTraceDetailLevel::None),
     m_pTrcMthFile(nullptr),
@@ -1107,6 +1113,7 @@ CMutexLocker::CMutexLocker(CMutex* i_pMutex) :
         Mutex to be locked and unlocked if the dtor of the locker is called.
         nullptr may be passed. In that case the locker does nothing.
 */
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
 CMutexLocker::CMutexLocker(CRecursiveMutex* i_pMutex) :
 //------------------------------------------------------------------------------
     m_pMtx(nullptr),
@@ -1141,6 +1148,7 @@ CMutexLocker::CMutexLocker(CRecursiveMutex* i_pMutex) :
         m_pRecursiveMtx->lock();
     }
 }
+#endif // #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
 
 //------------------------------------------------------------------------------
 /*! @brief Destroys the mutex.
@@ -1150,7 +1158,11 @@ CMutexLocker::CMutexLocker(CRecursiveMutex* i_pMutex) :
 CMutexLocker::~CMutexLocker()
 //------------------------------------------------------------------------------
 {
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     if( m_pMtx != nullptr || m_pRecursiveMtx != nullptr )
+    #else
+    if (m_pMtx != nullptr)
+    #endif
     {
         #ifdef ZS_TRACE_MUTEXES
         CMethodTracer mthTracer(
@@ -1169,10 +1181,12 @@ CMutexLocker::~CMutexLocker()
         {
             m_pMtx->unlock();
         }
+        #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
         else if( m_pRecursiveMtx != nullptr )
         {
             m_pRecursiveMtx->unlock();
         }
+        #endif
 
         #ifdef ZS_TRACE_MUTEXES
         if( m_pTrcAdminObj != nullptr )
@@ -1187,7 +1201,9 @@ CMutexLocker::~CMutexLocker()
     }
 
     m_pMtx = nullptr;
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     m_pRecursiveMtx = nullptr;
+    #endif
 }
 
 /*==============================================================================
@@ -1208,10 +1224,12 @@ QString CMutexLocker::objectName() const
     {
         strObjName = m_pMtx->objectName();
     }
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     else if( m_pRecursiveMtx != nullptr )
     {
         strObjName = m_pRecursiveMtx->objectName();
     }
+    #endif
     return strObjName;
 }
 
@@ -1244,10 +1262,12 @@ void CMutexLocker::relock()
     {
         m_pMtx->lock();
     }
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     else if( m_pRecursiveMtx != nullptr )
     {
         m_pRecursiveMtx->lock();
     }
+    #endif
 }
 
 //------------------------------------------------------------------------------
@@ -1275,10 +1295,12 @@ void CMutexLocker::unlock()
     {
         m_pMtx->unlock();
     }
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     else if( m_pRecursiveMtx != nullptr )
     {
         m_pRecursiveMtx->unlock();
     }
+    #endif
 }
 
 /*==============================================================================

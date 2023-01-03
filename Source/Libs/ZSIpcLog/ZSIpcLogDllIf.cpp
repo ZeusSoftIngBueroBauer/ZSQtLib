@@ -117,8 +117,9 @@ typedef void (*TFctLogServer_SetLocalLogFileAbsoluteFilePath)( const char* i_szA
 typedef char* (*TFctLogServer_GetLocalLogFileAbsoluteFilePath)();
 typedef char* (*TFctLogServer_GetLocalLogFileCompleteBaseName)();
 typedef char* (*TFctLogServer_GetLocalLogFileAbsolutePath)();
-typedef void (*TFctLogServer_RegisterCurrentThread)( const char* i_szThreadName );
-typedef void (*TFctLogServer_UnregisterCurrentThread)();
+typedef void (*TFctLogServer_RegisterThread)( const char* i_szThreadName, void* i_pvThreadHandle );
+typedef void (*TFctLogServer_UnregisterThread)( void* i_pvThreadHandle );
+typedef char* (*TFctLogServer_GetThreadName)( void* i_pvThreadHandle );
 typedef char* (*TFctLogServer_GetCurrentThreadName)();
 typedef DllIf::CLogger* (*TFctLogServer_GetLogger)( const char* i_szName, DllIf::EEnabled i_bEnabledAsDefault, DllIf::ELogDetailLevel i_eDefaultDetailLevel );
 typedef void (*TFctLogServer_setEnabled)( bool i_bEnabled );
@@ -209,8 +210,9 @@ TFctLogServer_SetLocalLogFileAbsoluteFilePath        s_pFctLogServer_SetLocalLog
 TFctLogServer_GetLocalLogFileAbsoluteFilePath        s_pFctLogServer_GetLocalLogFileAbsoluteFilePath        = NULL;
 TFctLogServer_GetLocalLogFileCompleteBaseName        s_pFctLogServer_GetLocalLogFileCompleteBaseName        = NULL;
 TFctLogServer_GetLocalLogFileAbsolutePath            s_pFctLogServer_GetLocalLogFileAbsolutePath            = NULL;
-TFctLogServer_RegisterCurrentThread                  s_pFctLogServer_RegisterCurrentThread                  = NULL;
-TFctLogServer_UnregisterCurrentThread                s_pFctLogServer_UnregisterCurrentThread                = NULL;
+TFctLogServer_RegisterThread                         s_pFctLogServer_RegisterThread                         = NULL;
+TFctLogServer_UnregisterThread                       s_pFctLogServer_UnregisterThread                       = NULL;
+TFctLogServer_GetThreadName                          s_pFctLogServer_GetThreadName                          = NULL;
 TFctLogServer_GetCurrentThreadName                   s_pFctLogServer_GetCurrentThreadName                   = NULL;
 TFctLogServer_GetLogger                              s_pFctLogServer_GetLogger                              = NULL;
 TFctLogServer_setEnabled                             s_pFctLogServer_setEnabled                             = NULL;
@@ -503,11 +505,14 @@ bool ZS::Log::DllIf::loadDll( EBuildConfiguration i_configuration, int i_iQtVers
         s_pFctLogServer_GetLocalLogFileAbsolutePath = (TFctLogServer_GetLocalLogFileAbsolutePath)GetProcAddress(s_hndDllIf, "LogServer_GetLocalLogFileAbsolutePath");
         if( s_pFctLogServer_GetLocalLogFileAbsolutePath == NULL ) bOk = false;
 
-        s_pFctLogServer_RegisterCurrentThread = (TFctLogServer_RegisterCurrentThread)GetProcAddress(s_hndDllIf, "LogServer_RegisterCurrentThread");
-        if( s_pFctLogServer_RegisterCurrentThread == NULL ) bOk = false;
+        s_pFctLogServer_RegisterThread = (TFctLogServer_RegisterThread)GetProcAddress(s_hndDllIf, "LogServer_RegisterThread");
+        if( s_pFctLogServer_RegisterThread == NULL ) bOk = false;
 
-        s_pFctLogServer_UnregisterCurrentThread = (TFctLogServer_UnregisterCurrentThread)GetProcAddress(s_hndDllIf, "LogServer_UnregisterCurrentThread");
-        if( s_pFctLogServer_UnregisterCurrentThread == NULL ) bOk = false;
+        s_pFctLogServer_UnregisterThread = (TFctLogServer_UnregisterThread)GetProcAddress(s_hndDllIf, "LogServer_UnregisterThread");
+        if( s_pFctLogServer_UnregisterThread == NULL ) bOk = false;
+
+        s_pFctLogServer_GetThreadName = (TFctLogServer_GetThreadName)GetProcAddress(s_hndDllIf, "LogServer_GetThreadName");
+        if( s_pFctLogServer_GetThreadName == NULL ) bOk = false;
 
         s_pFctLogServer_GetCurrentThreadName = (TFctLogServer_GetCurrentThreadName)GetProcAddress(s_hndDllIf, "LogServer_GetCurrentThreadName");
         if( s_pFctLogServer_GetCurrentThreadName == NULL ) bOk = false;
@@ -714,8 +719,9 @@ bool ZS::Log::DllIf::releaseDll()
         s_pFctLogServer_GetLocalLogFileAbsoluteFilePath        = NULL;
         s_pFctLogServer_GetLocalLogFileCompleteBaseName        = NULL;
         s_pFctLogServer_GetLocalLogFileAbsolutePath            = NULL;
-        s_pFctLogServer_RegisterCurrentThread                  = NULL;
-        s_pFctLogServer_UnregisterCurrentThread                = NULL;
+        s_pFctLogServer_RegisterThread                         = NULL;
+        s_pFctLogServer_UnregisterThread                       = NULL;
+        s_pFctLogServer_GetThreadName                          = NULL;
         s_pFctLogServer_GetCurrentThreadName                   = NULL;
         s_pFctLogServer_GetLogger                              = NULL;
         s_pFctLogServer_setEnabled                             = NULL;
@@ -1387,23 +1393,34 @@ char* DllIf::CLogServer::GetLocalLogFileAbsolutePath()
 }
 
 //------------------------------------------------------------------------------
-void DllIf::CLogServer::RegisterCurrentThread( const char* i_szThreadName )
+void DllIf::CLogServer::RegisterThread( const char* i_szThreadName, void* i_pvThreadHandle )
 //------------------------------------------------------------------------------
 {
-    if( s_hndDllIf != NULL && s_pFctLogServer_RegisterCurrentThread != NULL )
+    if( s_hndDllIf != NULL && s_pFctLogServer_RegisterThread != NULL )
     {
-        s_pFctLogServer_RegisterCurrentThread(i_szThreadName);
+        s_pFctLogServer_RegisterThread(i_szThreadName, i_pvThreadHandle);
     }
 }
 
 //------------------------------------------------------------------------------
-void DllIf::CLogServer::UnregisterCurrentThread()
+void DllIf::CLogServer::UnregisterThread( void* i_pvThreadHandle )
 //------------------------------------------------------------------------------
 {
-    if( s_hndDllIf != NULL && s_pFctLogServer_UnregisterCurrentThread != NULL )
+    if( s_hndDllIf != NULL && s_pFctLogServer_UnregisterThread != NULL )
     {
-        s_pFctLogServer_UnregisterCurrentThread();
+        s_pFctLogServer_UnregisterThread(i_pvThreadHandle);
     }
+}
+
+//------------------------------------------------------------------------------
+char* DllIf::CLogServer::GetThreadName( void* i_pvThreadHandle )
+//------------------------------------------------------------------------------
+{
+    if( s_hndDllIf != NULL && s_pFctLogServer_GetThreadName != NULL )
+    {
+        return s_pFctLogServer_GetThreadName(i_pvThreadHandle);
+    }
+    return NULL;
 }
 
 //------------------------------------------------------------------------------

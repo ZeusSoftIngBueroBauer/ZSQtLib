@@ -194,19 +194,19 @@ QString toXmlString() const
     /*    23 */ str += "SysTime=\"" + QString::number(m_fSysTime_s,'f',6) + "\" ";
     if( m_mthDir == EMethodDir::Enter )
     {
-        QString strMthInArgs = encodeForHtml(m_strMthInArgs);
+        QString strMthInArgs = encodeForXml(m_strMthInArgs);
     /*    10 */ str += "InArgs=\"" + strMthInArgs + "\" ";
     }
     else if( m_mthDir == EMethodDir::Leave )
     {
-        QString strMthRet = encodeForHtml(m_strMthRet);
-        QString strMthOutArgs = encodeForHtml(m_strMthOutArgs);
+        QString strMthRet = encodeForXml(m_strMthRet);
+        QString strMthOutArgs = encodeForXml(m_strMthOutArgs);
     /*    10 */ str += "Return=\"" + strMthRet + "\" ";
     /*    10 */ str += "OutArgs=\"" + strMthOutArgs + "\" ";
     }
     else // if( i_dir == EMethodDir::None )
     {
-        QString strMthAddInfo = encodeForHtml(m_strMthAddInfo);
+        QString strMthAddInfo = encodeForXml(m_strMthAddInfo);
     /*    10 */ str += "AddInfo=\"" + strMthAddInfo + "\" ";
     }
     /*     3 */ str += "/>";
@@ -1967,7 +1967,7 @@ void CIpcTrcServer::sendBranch(
             QString strMsg;
             QString strBranchName = i_pBranch->name();
 
-            strBranchName = encodeForHtml(strBranchName);
+            strBranchName = encodeForXml(strBranchName);
 
             strMsg += systemMsgType2Str(i_systemMsgType) + " ";
             strMsg += command2Str(i_cmd) + " ";
@@ -2068,10 +2068,10 @@ void CIpcTrcServer::sendAdminObj(
         // If removed the command is deleted. It is sufficient to send the IdxInTree which was deleted.
         if( pTrcAdminObj != nullptr && !pTrcAdminObj->isAboutToBeDestroyed() )
         {
-            QString strNameSpace = encodeForHtml(pTrcAdminObj->getNameSpace());
-            QString strClassName = encodeForHtml(pTrcAdminObj->getClassName());
-            QString strObjName = encodeForHtml(pTrcAdminObj->getObjectName());
-            QString strThreadName = encodeForHtml(pTrcAdminObj->getObjectThreadName());
+            QString strNameSpace = encodeForXml(pTrcAdminObj->getNameSpace());
+            QString strClassName = encodeForXml(pTrcAdminObj->getClassName());
+            QString strObjName = encodeForXml(pTrcAdminObj->getObjectName());
+            QString strThreadName = encodeForXml(pTrcAdminObj->getObjectThreadName());
 
             strMsg += " NameSpace=\"" + strNameSpace + "\"";
             strMsg += " ClassName=\"" + strClassName + "\"";

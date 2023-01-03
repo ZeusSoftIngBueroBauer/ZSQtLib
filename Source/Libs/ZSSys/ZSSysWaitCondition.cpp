@@ -249,6 +249,7 @@ void CWaitCondition::notify_one()
 
     For further information please refer to documentation of class QMutex.
 */
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
 bool CWaitCondition::wait(CMutex* i_pMutexLocked, QDeadlineTimer i_deadline)
 //------------------------------------------------------------------------------
 {
@@ -278,6 +279,44 @@ bool CWaitCondition::wait(CMutex* i_pMutexLocked, QDeadlineTimer i_deadline)
     }
     return bOk;
 }
+#endif // #if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+
+//------------------------------------------------------------------------------
+/*! @brief Locks the mutex.
+
+    For further information please refer to documentation of class QMutex.
+*/
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+bool CWaitCondition::wait(QReadWriteLock* i_pReadWriteLock, QDeadlineTimer i_deadline)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( isMethodTraceActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        strMthInArgs = QString(i_deadline.isForever() ? "Forever" : QString::number(i_deadline.deadline()));
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj          */ m_pTrcAdminObj,
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
+        /* strObjName         */ m_strObjName,
+        /* strMethod          */ "wait",
+        /* strMthInArgs       */ strMthInArgs );
+
+    bool bOk = QWaitCondition::wait(i_pReadWriteLock, i_deadline);
+
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        mthTracer.setMethodReturn(bOk);
+    }
+    return bOk;
+}
+#endif // #if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
 
 //------------------------------------------------------------------------------
 /*! @brief Locks the mutex.
@@ -306,41 +345,6 @@ bool CWaitCondition::wait(CMutex* i_pMutexLocked, unsigned long i_uTime_ms)
         /* strMthInArgs       */ strMthInArgs );
 
     bool bOk = QWaitCondition::wait(i_pMutexLocked, i_uTime_ms);
-
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        mthTracer.setMethodReturn(bOk);
-    }
-    return bOk;
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Locks the mutex.
-
-    For further information please refer to documentation of class QMutex.
-*/
-bool CWaitCondition::wait(QReadWriteLock* i_pReadWriteLock, QDeadlineTimer i_deadline)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if( isMethodTraceActive(EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strMthInArgs = QString(i_deadline.isForever() ? "Forever" : QString::number(i_deadline.deadline()));
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj          */ m_pTrcAdminObj,
-        /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ m_strObjName,
-        /* strMethod          */ "wait",
-        /* strMthInArgs       */ strMthInArgs );
-
-    bool bOk = QWaitCondition::wait(i_pReadWriteLock, i_deadline);
 
     if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {

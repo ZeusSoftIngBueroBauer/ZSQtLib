@@ -96,6 +96,7 @@ private: // instance members
            the method class using the ZSTrcServer.
 */
 //******************************************************************************
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
 class ZSSYSDLL_API CRecursiveMutex : public QRecursiveMutex
 {
     static QString NameSpace() { return "ZS::System"; }
@@ -137,6 +138,7 @@ private: // instance members
     CTrcAdminObj* m_pTrcAdminObj;
     #endif
 };
+#endif // #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
 
 //******************************************************************************
 /*! @brief Wrapper around the QMutexLocker class with the possibility to trace
@@ -149,7 +151,9 @@ class ZSSYSDLL_API CMutexLocker
     static QString ClassName() { return "CMutexLocker"; }
 public: // ctors and dtor
     CMutexLocker(CMutex* i_pMutex);
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     CMutexLocker(CRecursiveMutex* i_pMutex);
+    #endif
     virtual ~CMutexLocker();
 public: // instance methods
     QString objectName() const;
@@ -163,7 +167,9 @@ private: // instance members
     /*!< Mutex to be locked and unlocked. */
     CMutex* m_pMtx;
     /*!< Recursive mutex to be locked and unlocked. */
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     CRecursiveMutex* m_pRecursiveMtx;
+    #endif
     #ifdef ZS_TRACE_MUTEXES
     /*<! Trace detail level used if the method trace of the client got to be output
          directly to a trace method file and not through the trace server. */

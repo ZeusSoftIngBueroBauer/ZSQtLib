@@ -820,19 +820,32 @@ ZSIPCLOGDLL_EXTERN_API char* LogServer_GetLocalLogFileAbsolutePath()
 }
 
 //------------------------------------------------------------------------------
-ZSIPCLOGDLL_EXTERN_API void LogServer_RegisterCurrentThread( const char* i_szThreadName )
+ZSIPCLOGDLL_EXTERN_API void LogServer_RegisterThread( const char* i_szThreadName, void* i_pvThreadHandle )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
-    CLogServer::RegisterCurrentThread(i_szThreadName);
+    CLogServer::RegisterThread(i_szThreadName, i_pvThreadHandle);
 }
 
 //------------------------------------------------------------------------------
-ZSIPCLOGDLL_EXTERN_API void LogServer_UnregisterCurrentThread()
+ZSIPCLOGDLL_EXTERN_API void LogServer_UnregisterThread( void* i_pvThreadHandle )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
-    CLogServer::UnregisterCurrentThread();
+    CLogServer::UnregisterThread(i_pvThreadHandle);
+}
+
+//------------------------------------------------------------------------------
+ZSIPCLOGDLL_EXTERN_API char* LogServer_GetThreadName( void* i_pvThreadHandle )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+
+    std::string stdstrName = CLogServer::GetThreadName(i_pvThreadHandle).toStdString();
+    char* szName = new char[stdstrName.size() + 1];
+    memcpy(szName, stdstrName.c_str(), stdstrName.size());
+    szName[stdstrName.size()] = 0x00;
+    return szName;
 }
 
 //------------------------------------------------------------------------------
