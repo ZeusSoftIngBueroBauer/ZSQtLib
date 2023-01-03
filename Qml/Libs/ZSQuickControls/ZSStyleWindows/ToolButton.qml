@@ -55,7 +55,8 @@ T.ToolButton {
         icon: control.icon
         text: control.text
         font: control.font
-        color: control.palette.buttonText
+        //color: control.palette.buttonText
+        color: control.style.buttonTextColor
     }
 
     background: ButtonPanel {

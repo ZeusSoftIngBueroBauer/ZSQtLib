@@ -57,7 +57,8 @@ T.ComboBox {
     indicator: ColorImage {
         x: control.mirrored ? control.padding : control.width - width - control.padding
         y: control.topPadding + (control.availableHeight - height) / 2
-        color: control.editable ? control.palette.text : control.palette.buttonText
+        //color: control.editable ? control.palette.text : control.palette.buttonText
+        color: control.editable ? style.textColor : style.buttonTextColor
         source: "qrc:/qt-project.org/imports/QtQuick/Controls.2/Fusion/images/arrow.png"
         width: 20
         fillMode: Image.Pad
@@ -79,34 +80,43 @@ T.ComboBox {
         selectByMouse: control.selectTextByMouse
 
         font: control.font
-        color: control.editable ? control.palette.text : control.palette.buttonText
-        selectionColor: control.palette.highlight
-        selectedTextColor: control.palette.highlightedText
+        //color: control.editable ? control.palette.text : control.palette.buttonText
+        //selectionColor: control.palette.highlight
+        //selectedTextColor: control.palette.highlightedText
+        color: control.editable ? style.textColor : style.buttonTextColor
+        selectionColor: style.highlightColor
+        selectedTextColor: style.highlightedTextColor
         verticalAlignment: Text.AlignVCenter
 
         background: PaddedRectangle {
+            id: rectTextFieldBackground
             clip: true
             radius: 2
             padding: 1
             leftPadding: control.mirrored ? -2 : padding
             rightPadding: !control.mirrored ? -2 : padding
-            color: control.palette.base
+            //color: control.palette.base
+            color: style.baseColor
             visible: control.editable && !control.flat
 
             Rectangle {
+                id: rectTextFieldBackgroundOutline
                 x: parent.width - width
                 y: 1
                 width: 1
                 height: parent.height - 2
-                color: Fusion.buttonOutline(control.palette, control.activeFocus, control.enabled)
+                //color: Fusion.buttonOutline(control.palette, control.activeFocus, control.enabled)
+                color: control.style.buttonOutlineColor(control.activeFocus, control.enabled)
             }
 
             Rectangle {
+                id: rectTextFieldBackgroundTop
                 x: 1
                 y: 1
                 width: parent.width - 3
                 height: 1
-                color: Fusion.topShadow
+                //color: Fusion.topShadow
+                color: control.style.topShadowColor
             }
         }
 
@@ -116,7 +126,8 @@ T.ComboBox {
             width: control.width - 2
             height: control.height - 2
             color: "transparent"
-            border.color: Color.transparent(Fusion.highlightedOutline(control.palette), 40 / 255)
+            //border.color: Color.transparent(Fusion.highlightedOutline(control.palette), 40 / 255)
+            border.color: Color.transparent(control.style.highlightedOutlineColor, 40 / 255)
             visible: control.activeFocus
             radius: 1.7
         }
@@ -152,17 +163,32 @@ T.ComboBox {
         }
 
         background: Rectangle {
-            color: control.popup.palette.window
-            border.color: Fusion.outline(control.palette)
+            //color: control.popup.palette.window
+            color: control.style.popupWindowColor
+            //border.color: Fusion.outline(control.palette)
+            border.color: control.style.outlineColor
 
             Rectangle {
                 z: -1
                 x: 1; y: 1
                 width: parent.width
                 height: parent.height
-                color: control.palette.shadow
+                //color: control.palette.shadow
+                color: control.style.shadowColor
                 opacity: 0.2
             }
+        }
+    }
+
+    Connections {
+        target: style
+        function onHighlightedOutlineColorChanged() {
+            rectTextFieldBackgroundOutline.color = control.style.buttonOutlineColor(
+                control.activeFocus, control.enabled, style.currentTheme)
+        }
+        function onOutlineColorChanged() {
+            rectTextFieldBackgroundOutline.color = control.style.buttonOutlineColor(
+                control.activeFocus, control.enabled, style.currentTheme)
         }
     }
 }

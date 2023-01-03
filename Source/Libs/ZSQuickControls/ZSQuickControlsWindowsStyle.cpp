@@ -218,26 +218,32 @@ CWindowsStyle::CWindowsStyle(
     m_iRefCount(0),
     m_pQmlAppEngine(i_pQmlAppEngine),
     m_strCurrentTheme(c_strDefaultTheme),
+    m_arhshBaseColors(CEnumRowVersion::count()),
+    m_arhshPopupWindowColors(CEnumRowVersion::count()),
     m_arhshBackgroundStartColors(CEnumRowVersion::count()),
     m_arhshBackgroundStopColors(CEnumRowVersion::count()),
     m_arhshButtonColors(CEnumRowVersion::count()),
     //m_arhshLightShadeColors(CEnumRowVersion::count()),
     //m_arhshDarkShadeColors(CEnumRowVersion::count()),
-    //m_arhshTopShadowColors(CEnumRowVersion::count()),
+    m_arhshShadowColors(CEnumRowVersion::count()),
+    m_arhshTopShadowColors(CEnumRowVersion::count()),
     m_arhshInnerContrastLineColors(CEnumRowVersion::count()),
-    //m_arhshHighlightColors(CEnumRowVersion::count()),
-    //m_arhshHighlightedTextColors(CEnumRowVersion::count()),
+    m_arhshHighlightColors(CEnumRowVersion::count()),
+    m_arhshHighlightedTextColors(CEnumRowVersion::count()),
     m_arhshOutlineColors(CEnumRowVersion::count()),
     m_arhshHighlightedOutlineColors(CEnumRowVersion::count()),
     //m_arhshTabFrameColors(CEnumRowVersion::count()),
+    m_arhshTextColors(CEnumRowVersion::count()),
     m_arhshWindowTextColors(CEnumRowVersion::count()),
     m_arhshLinkColors(CEnumRowVersion::count()),
     m_arhshButtonTextColors(CEnumRowVersion::count()),
-    m_pTrcAdminObj(nullptr)
+    m_pTrcAdminObj(nullptr),
+    m_pTrcAdminObjNoisyMethods(nullptr)
 {
     setObjectName("theInst");
 
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
+    m_pTrcAdminObjNoisyMethods = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName() + "::NoisyMethods", objectName());
 
     QString strMthInArgs;
 
@@ -257,82 +263,93 @@ CWindowsStyle::CWindowsStyle(
 
     QPalette palette = QGuiApplication::palette();
 
-    int iRowVersion = static_cast<int>(ERowVersion::Original);
+    int iRowVersionOrig = static_cast<int>(ERowVersion::Original);
 
-    m_arhshBackgroundStartColors[iRowVersion][c_strDayTheme] =
-        palette.color(QPalette::Normal, QPalette::Window);
-    m_arhshBackgroundStartColors[iRowVersion][c_strNightTheme] =
-        palette.color(QPalette::Normal, QPalette::Window).darker();
+    QColor clr;
 
-    m_arhshBackgroundStopColors[iRowVersion][c_strDayTheme] =
-        palette.color(QPalette::Normal, QPalette::Window);
-    m_arhshBackgroundStopColors[iRowVersion][c_strNightTheme] =
-        palette.color(QPalette::Normal, QPalette::Window).darker();
+    clr = palette.color(QPalette::Normal, QPalette::Base);
+    m_arhshBaseColors[iRowVersionOrig][c_strDayTheme] = clr; //.lighter(124);
+    m_arhshBaseColors[iRowVersionOrig][c_strNightTheme] = clr.darker();
 
-    m_arhshButtonColors[iRowVersion][c_strDayTheme] =
-        palette.color(QPalette::Normal, QPalette::Button);
-    m_arhshButtonColors[iRowVersion][c_strNightTheme] =
-        palette.color(QPalette::Normal, QPalette::Button).lighter();
+    clr = palette.color(QPalette::Normal, QPalette::Window);
+    m_arhshPopupWindowColors[iRowVersionOrig][c_strDayTheme] = clr; //.lighter(124);
+    m_arhshPopupWindowColors[iRowVersionOrig][c_strNightTheme] = clr.darker();
 
-    //m_arhshLightShadeColors[iRowVersion][c_strDayTheme] =
+    clr = palette.color(QPalette::Normal, QPalette::Window);
+    m_arhshBackgroundStartColors[iRowVersionOrig][c_strDayTheme] = clr; //.lighter(124);
+    m_arhshBackgroundStartColors[iRowVersionOrig][c_strNightTheme] = clr.darker();
+
+    clr = palette.color(QPalette::Normal, QPalette::Window);
+    m_arhshBackgroundStopColors[iRowVersionOrig][c_strDayTheme] = clr; //.lighter(102);
+    m_arhshBackgroundStopColors[iRowVersionOrig][c_strNightTheme] = clr.darker();
+
+    clr = palette.color(QPalette::Normal, QPalette::Button);
+    m_arhshButtonColors[iRowVersionOrig][c_strDayTheme] = clr;
+    m_arhshButtonColors[iRowVersionOrig][c_strNightTheme] = clr.lighter();
+
+    //m_arhshLightShadeColors[iRowVersionOrig][c_strDayTheme] = clr;
     //    QColor(255, 255, 255, 90);
-    //m_arhshLightShadeColors[iRowVersion][c_strNightTheme] =
+    //m_arhshLightShadeColors[iRowVersionOrig][c_strNightTheme] = clr.lighter();
     //    QColor(255, 255, 255, 90).lighter();
 
-    //m_arhshLightShadeColors[iRowVersion][c_strDayTheme] =
+    //m_arhshLightShadeColors[iRowVersionOrig][c_strDayTheme] = clr;
     //    QColor(0, 0, 0, 60);
-    //m_arhshLightShadeColors[iRowVersion][c_strNightTheme] =
+    //m_arhshLightShadeColors[iRowVersionOrig][c_strNightTheme] = clr.darker();
     //    QColor(0, 0, 0, 60).darker();
 
-    //m_arhshTopShadowColors[iRowVersion][c_strDayTheme] =
-    //    QColor(0, 0, 0, 18);
-    //m_arhshTopShadowColors[iRowVersion][c_strNightTheme] =
-    //    QColor(0, 0, 0, 18).lighter();
+    clr = palette.color(QPalette::Normal, QPalette::Shadow);
+    m_arhshShadowColors[iRowVersionOrig][c_strDayTheme] = clr;
+    m_arhshShadowColors[iRowVersionOrig][c_strNightTheme] = clr.lighter();
 
-    m_arhshInnerContrastLineColors[iRowVersion][c_strDayTheme] =
-        QColor(255, 255, 255, 30);
-    m_arhshInnerContrastLineColors[iRowVersion][c_strNightTheme] =
-        QColor(255, 255, 255, 30).lighter();
+    clr = QColor(0, 0, 0, 18);
+    m_arhshTopShadowColors[iRowVersionOrig][c_strDayTheme] = clr;
+    m_arhshTopShadowColors[iRowVersionOrig][c_strNightTheme] = clr.lighter();
 
-    //m_arhshHighlightColors[iRowVersion][c_strDayTheme] =
-    //    palette.color(QPalette::Normal, QPalette::Highlight);
-    //m_arhshHighlightColors[iRowVersion][c_strNightTheme] =
-    //    palette.color(QPalette::Normal, QPalette::Highlight).lighter();
+    clr = QColor(255, 255, 255, 30);
+    m_arhshInnerContrastLineColors[iRowVersionOrig][c_strDayTheme] = clr;
+    m_arhshInnerContrastLineColors[iRowVersionOrig][c_strNightTheme] = clr.lighter();
 
-    //m_arhshHighlightedTextColors[iRowVersion][c_strDayTheme] =
-    //    palette.color(QPalette::Normal, QPalette::HighlightedText);
-    //m_arhshHighlightedTextColors[iRowVersion][c_strNightTheme] =
-    //    palette.color(QPalette::Normal, QPalette::HighlightedText).lighter();
-
-    m_arhshOutlineColors[iRowVersion][c_strDayTheme] =
-        palette.color(QPalette::Normal, QPalette::Window).darker(140);
-    m_arhshOutlineColors[iRowVersion][c_strNightTheme] =
+    m_arhshHighlightColors[iRowVersionOrig][c_strDayTheme] =
+        palette.color(QPalette::Normal, QPalette::Highlight);
+    m_arhshHighlightColors[iRowVersionOrig][c_strNightTheme] =
         palette.color(QPalette::Normal, QPalette::Highlight).lighter();
 
-    m_arhshHighlightedOutlineColors[iRowVersion][c_strDayTheme] =
-        palette.color(QPalette::Normal, QPalette::Highlight).darker(125);
-    m_arhshHighlightedOutlineColors[iRowVersion][c_strNightTheme] =
-        palette.color(QPalette::Normal, QPalette::Highlight).lighter();
+    m_arhshHighlightedTextColors[iRowVersionOrig][c_strDayTheme] =
+        palette.color(QPalette::Normal, QPalette::HighlightedText);
+    m_arhshHighlightedTextColors[iRowVersionOrig][c_strNightTheme] =
+        palette.color(QPalette::Normal, QPalette::HighlightedText).lighter();
 
-    //m_arhshTabFrameColors[iRowVersion][c_strDayTheme] =
+    clr = palette.color(QPalette::Normal, QPalette::Window).darker(140);
+    m_arhshOutlineColors[iRowVersionOrig][c_strDayTheme] = clr;
+    m_arhshOutlineColors[iRowVersionOrig][c_strNightTheme] = clr.lighter();
+
+    clr = palette.color(QPalette::Normal, QPalette::Highlight).darker(125);
+    if (clr.value() > 160) {
+        clr.setHsl(clr.hue(), clr.saturation(), 160);
+    }
+    m_arhshHighlightedOutlineColors[iRowVersionOrig][c_strDayTheme] = clr;
+    m_arhshHighlightedOutlineColors[iRowVersionOrig][c_strNightTheme] = clr.lighter();
+
+    //m_arhshTabFrameColors[iRowVersionOrig][c_strDayTheme] =
     //    palette.color(QPalette::Normal, QPalette::Button).lighter(104);
-    //m_arhshTabFrameColors[iRowVersion][c_strNightTheme] =
+    //m_arhshTabFrameColors[iRowVersionOrig][c_strNightTheme] =
     //    palette.color(QPalette::Normal, QPalette::Button).lighter();
 
-    m_arhshWindowTextColors[iRowVersion][c_strDayTheme] =
-        palette.color(QPalette::Normal, QPalette::WindowText);
-    m_arhshWindowTextColors[iRowVersion][c_strNightTheme] =
-        "white"; //palette.color(QPalette::Normal, QPalette::ButtonText).lighter();
+    clr = palette.color(QPalette::Normal, QPalette::Text);
+    m_arhshTextColors[iRowVersionOrig][c_strDayTheme] = clr;
+    m_arhshTextColors[iRowVersionOrig][c_strNightTheme] = "white";
 
-    m_arhshLinkColors[iRowVersion][c_strDayTheme] =
-        palette.color(QPalette::Normal, QPalette::Link);
-    m_arhshLinkColors[iRowVersion][c_strNightTheme] =
-        "white"; //palette.color(QPalette::Normal, QPalette::ButtonText).lighter();
+    clr = palette.color(QPalette::Normal, QPalette::WindowText);
+    m_arhshWindowTextColors[iRowVersionOrig][c_strDayTheme] = clr;
+    m_arhshWindowTextColors[iRowVersionOrig][c_strNightTheme] = "white";
 
-    m_arhshButtonTextColors[iRowVersion][c_strDayTheme] =
-        palette.color(QPalette::Normal, QPalette::ButtonText);
-    m_arhshButtonTextColors[iRowVersion][c_strNightTheme] =
-        "white"; //palette.color(QPalette::Normal, QPalette::ButtonText).lighter();
+    clr = palette.color(QPalette::Normal, QPalette::Link);
+    m_arhshLinkColors[iRowVersionOrig][c_strDayTheme] = clr;
+    m_arhshLinkColors[iRowVersionOrig][c_strNightTheme] = clr.lighter();
+
+    clr = palette.color(QPalette::Normal, QPalette::ButtonText);
+    m_arhshButtonTextColors[iRowVersionOrig][c_strDayTheme] = clr;
+    m_arhshButtonTextColors[iRowVersionOrig][c_strNightTheme] = "white";
 
     setToDefault();
 
@@ -418,10 +435,15 @@ CWindowsStyle::~CWindowsStyle()
         mthTracer.onAdminObjAboutToBeReleased();
         CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
     }
+    if( m_pTrcAdminObjNoisyMethods != nullptr )
+    {
+        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjNoisyMethods);
+    }
 
     m_iRefCount = 0;
     m_pQmlAppEngine = nullptr;
     m_pTrcAdminObj = nullptr;
+    m_pTrcAdminObjNoisyMethods = nullptr;
 
 } // dtor
 
@@ -434,7 +456,7 @@ QString CWindowsStyle::getSaveRecallAbsoluteFilePath() const
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
-        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "getSaveRecallAbsoluteFilePath",
         /* strMethodInArgs    */ "" );
@@ -487,67 +509,84 @@ SErrResultInfo CWindowsStyle::save() const
             const int iRowVersionCurr = static_cast<int>(ERowVersion::Current);
             xmlStreamWriter.writeStartElement("Theme");
             xmlStreamWriter.writeAttribute("Name", strTheme);
-            if( m_arhshBackgroundStartColors[iRowVersionCurr][strTheme] !=
-                m_arhshBackgroundStartColors[iRowVersionOrig][strTheme] ) {
+            if( !isBaseColorSetToDefault(strTheme) ) {
+                xmlStreamWriter.writeStartElement("BaseColor");
+                xmlStreamWriter.writeAttribute("Value", baseColor(strTheme).name());
+                xmlStreamWriter.writeEndElement();
+            }
+            if( !isPopupWindowColorSetToDefault(strTheme) ) {
+                xmlStreamWriter.writeStartElement("PopupWindowColor");
+                xmlStreamWriter.writeAttribute("Value", popupWindowColor(strTheme).name());
+                xmlStreamWriter.writeEndElement();
+            }
+            if( !isBackgroundStartColorSetToDefault(strTheme) ) {
                 xmlStreamWriter.writeStartElement("BackgroundStartColor");
-                xmlStreamWriter.writeAttribute(
-                    "Value", m_arhshBackgroundStartColors[iRowVersionCurr][strTheme].name());
+                xmlStreamWriter.writeAttribute("Value", backgroundStartColor(strTheme).name());
                 xmlStreamWriter.writeEndElement();
             }
-            if( m_arhshBackgroundStopColors[iRowVersionCurr][strTheme] !=
-                m_arhshBackgroundStopColors[iRowVersionOrig][strTheme] ) {
+            if( !isBackgroundStopColorSetToDefault(strTheme) ) {
                 xmlStreamWriter.writeStartElement("BackgroundStopColor");
-                xmlStreamWriter.writeAttribute(
-                    "Value", m_arhshBackgroundStopColors[iRowVersionCurr][strTheme].name());
+                xmlStreamWriter.writeAttribute("Value", backgroundStopColor(strTheme).name());
                 xmlStreamWriter.writeEndElement();
             }
-            if( m_arhshButtonColors[iRowVersionCurr][strTheme] !=
-                m_arhshButtonColors[iRowVersionOrig][strTheme] ) {
+            if( !isButtonColorSetToDefault(strTheme) ) {
                 xmlStreamWriter.writeStartElement("ButtonColor");
-                xmlStreamWriter.writeAttribute(
-                    "Value", m_arhshButtonColors[iRowVersionCurr][strTheme].name());
+                xmlStreamWriter.writeAttribute("Value", buttonBaseColor(strTheme).name());
                 xmlStreamWriter.writeEndElement();
             }
-            if( m_arhshInnerContrastLineColors[iRowVersionCurr][strTheme] !=
-                m_arhshInnerContrastLineColors[iRowVersionOrig][strTheme] ) {
+            if( !isShadowColorSetToDefault(strTheme) ) {
+                xmlStreamWriter.writeStartElement("ShadowColor");
+                xmlStreamWriter.writeAttribute("Value", shadowColor(strTheme).name());
+                xmlStreamWriter.writeEndElement();
+            }
+            if( !isTopShadowColorSetToDefault(strTheme) ) {
+                xmlStreamWriter.writeStartElement("TopShadowColor");
+                xmlStreamWriter.writeAttribute("Value", topShadowColor(strTheme).name());
+                xmlStreamWriter.writeEndElement();
+            }
+            if( !isInnerContrastLineColorSetToDefault(strTheme) ) {
                 xmlStreamWriter.writeStartElement("InnerContrastLineColor");
-                xmlStreamWriter.writeAttribute(
-                    "Value", m_arhshInnerContrastLineColors[iRowVersionCurr][strTheme].name());
+                xmlStreamWriter.writeAttribute("Value", innerContrastLineColor(strTheme).name());
                 xmlStreamWriter.writeEndElement();
             }
-            if( m_arhshOutlineColors[iRowVersionCurr][strTheme] !=
-                m_arhshOutlineColors[iRowVersionOrig][strTheme] ) {
+            if( !isHighlightColorSetToDefault(strTheme) ) {
+                xmlStreamWriter.writeStartElement("HighlightColor");
+                xmlStreamWriter.writeAttribute("Value", outlineColor(strTheme).name());
+                xmlStreamWriter.writeEndElement();
+            }
+            if( !isHighlightedTextColorSetToDefault(strTheme) ) {
+                xmlStreamWriter.writeStartElement("HighlightedTextColor");
+                xmlStreamWriter.writeAttribute("Value", highlightedTextColor(strTheme).name());
+                xmlStreamWriter.writeEndElement();
+            }
+            if( !isOutlineColorSetToDefault(strTheme) ) {
                 xmlStreamWriter.writeStartElement("OutlineColor");
-                xmlStreamWriter.writeAttribute(
-                    "Value", m_arhshOutlineColors[iRowVersionCurr][strTheme].name());
+                xmlStreamWriter.writeAttribute("Value", outlineColor(strTheme).name());
                 xmlStreamWriter.writeEndElement();
             }
-            if( m_arhshHighlightedOutlineColors[iRowVersionCurr][strTheme] !=
-                m_arhshHighlightedOutlineColors[iRowVersionOrig][strTheme] ) {
+            if( !isHighlightedOutlineColorSetToDefault(strTheme) ) {
                 xmlStreamWriter.writeStartElement("HighlightedOutlineColor");
-                xmlStreamWriter.writeAttribute(
-                    "Value", m_arhshHighlightedOutlineColors[iRowVersionCurr][strTheme].name());
+                xmlStreamWriter.writeAttribute("Value", highlightedOutlineColor(strTheme).name());
                 xmlStreamWriter.writeEndElement();
             }
-            if( m_arhshWindowTextColors[iRowVersionCurr][strTheme] !=
-                m_arhshWindowTextColors[iRowVersionOrig][strTheme] ) {
+            if( isTextColorSetToDefault(strTheme) ) {
+                xmlStreamWriter.writeStartElement("TextColor");
+                xmlStreamWriter.writeAttribute("Value", textColor(strTheme).name());
+                xmlStreamWriter.writeEndElement();
+            }
+            if( !isWindowTextColorSetToDefault(strTheme) ) {
                 xmlStreamWriter.writeStartElement("WindowTextColor");
-                xmlStreamWriter.writeAttribute(
-                    "Value", m_arhshWindowTextColors[iRowVersionCurr][strTheme].name());
+                xmlStreamWriter.writeAttribute("Value", windowTextColor(strTheme).name());
                 xmlStreamWriter.writeEndElement();
             }
-            if( m_arhshLinkColors[iRowVersionCurr][strTheme] !=
-                m_arhshLinkColors[iRowVersionOrig][strTheme] ) {
+            if( !isLinkColorSetToDefault(strTheme) ) {
                 xmlStreamWriter.writeStartElement("LinkColor");
-                xmlStreamWriter.writeAttribute(
-                    "Value", m_arhshLinkColors[iRowVersionCurr][strTheme].name());
+                xmlStreamWriter.writeAttribute("Value", linkColor(strTheme).name());
                 xmlStreamWriter.writeEndElement();
             }
-            if( m_arhshButtonTextColors[iRowVersionCurr][strTheme] !=
-                m_arhshButtonTextColors[iRowVersionOrig][strTheme] ) {
+            if( !isButtonTextColorSetToDefault(strTheme) ) {
                 xmlStreamWriter.writeStartElement("ButtonTextColor");
-                xmlStreamWriter.writeAttribute(
-                    "Value", m_arhshButtonTextColors[iRowVersionCurr][strTheme].name());
+                xmlStreamWriter.writeAttribute("Value", buttonTextColor(strTheme).name());
                 xmlStreamWriter.writeEndElement();
             }
             xmlStreamWriter.writeEndElement(); // Theme
@@ -634,7 +673,25 @@ SErrResultInfo CWindowsStyle::recall(const QString& i_strTheme)
                             xmlStreamReader.raiseError("\"" + strElemName + "\" not expected without valid Theme.");
                         }
                         else if( strlstThemes.contains(strTheme) ) {
-                            if( strElemName == "BackgroundStartColor" ) {
+                            if( strElemName == "BaseColor" ) {
+                                if( !xmlStreamReader.attributes().hasAttribute("Value") ) {
+                                    xmlStreamReader.raiseError("Attribute \"Value\" for Element \"" + strElemName + "\" is missing.");
+                                }
+                                else {
+                                    QString strAttr = xmlStreamReader.attributes().value("Value").toString();
+                                    setBaseColor(strAttr, strTheme);
+                                }
+                            }
+                            else if( strElemName == "PopupWindowColor" ) {
+                                if( !xmlStreamReader.attributes().hasAttribute("Value") ) {
+                                    xmlStreamReader.raiseError("Attribute \"Value\" for Element \"" + strElemName + "\" is missing.");
+                                }
+                                else {
+                                    QString strAttr = xmlStreamReader.attributes().value("Value").toString();
+                                    setPopupWindowColor(strAttr, strTheme);
+                                }
+                            }
+                            else if( strElemName == "BackgroundStartColor" ) {
                                 if( !xmlStreamReader.attributes().hasAttribute("Value") ) {
                                     xmlStreamReader.raiseError("Attribute \"Value\" for Element \"" + strElemName + "\" is missing.");
                                 }
@@ -661,6 +718,24 @@ SErrResultInfo CWindowsStyle::recall(const QString& i_strTheme)
                                     setButtonColor(strAttr, strTheme);
                                 }
                             }
+                            else if( strElemName == "ShadowColor" ) {
+                                if( !xmlStreamReader.attributes().hasAttribute("Value") ) {
+                                    xmlStreamReader.raiseError("Attribute \"Value\" for Element \"" + strElemName + "\" is missing.");
+                                }
+                                else {
+                                    QString strAttr = xmlStreamReader.attributes().value("Value").toString();
+                                    setShadowColor(strAttr, strTheme);
+                                }
+                            }
+                            else if( strElemName == "TopShadowColor" ) {
+                                if( !xmlStreamReader.attributes().hasAttribute("Value") ) {
+                                    xmlStreamReader.raiseError("Attribute \"Value\" for Element \"" + strElemName + "\" is missing.");
+                                }
+                                else {
+                                    QString strAttr = xmlStreamReader.attributes().value("Value").toString();
+                                    setTopShadowColor(strAttr, strTheme);
+                                }
+                            }
                             else if( strElemName == "InnerContrastLineColor" ) {
                                 if( !xmlStreamReader.attributes().hasAttribute("Value") ) {
                                     xmlStreamReader.raiseError("Attribute \"Value\" for Element \"" + strElemName + "\" is missing.");
@@ -668,6 +743,24 @@ SErrResultInfo CWindowsStyle::recall(const QString& i_strTheme)
                                 else {
                                     QString strAttr = xmlStreamReader.attributes().value("Value").toString();
                                     setInnerContrastLineColor(strAttr, strTheme);
+                                }
+                            }
+                            else if( strElemName == "HighlightColor" ) {
+                                if( !xmlStreamReader.attributes().hasAttribute("Value") ) {
+                                    xmlStreamReader.raiseError("Attribute \"Value\" for Element \"" + strElemName + "\" is missing.");
+                                }
+                                else {
+                                    QString strAttr = xmlStreamReader.attributes().value("Value").toString();
+                                    setHighlightColor(strAttr, strTheme);
+                                }
+                            }
+                            else if( strElemName == "HighlightedTextColor" ) {
+                                if( !xmlStreamReader.attributes().hasAttribute("Value") ) {
+                                    xmlStreamReader.raiseError("Attribute \"Value\" for Element \"" + strElemName + "\" is missing.");
+                                }
+                                else {
+                                    QString strAttr = xmlStreamReader.attributes().value("Value").toString();
+                                    setHighlightedTextColor(strAttr, strTheme);
                                 }
                             }
                             else if( strElemName == "OutlineColor" ) {
@@ -686,6 +779,15 @@ SErrResultInfo CWindowsStyle::recall(const QString& i_strTheme)
                                 else {
                                     QString strAttr = xmlStreamReader.attributes().value("Value").toString();
                                     setHighlightedOutlineColor(strAttr, strTheme);
+                                }
+                            }
+                            else if( strElemName == "TextColor" ) {
+                                if( !xmlStreamReader.attributes().hasAttribute("Value") ) {
+                                    xmlStreamReader.raiseError("Attribute \"Value\" for Element \"" + strElemName + "\" is missing.");
+                                }
+                                else {
+                                    QString strAttr = xmlStreamReader.attributes().value("Value").toString();
+                                    setTextColor(strAttr, strTheme);
                                 }
                             }
                             else if( strElemName == "WindowTextColor" ) {
@@ -776,9 +878,19 @@ void CWindowsStyle::setToDefault(const QString& i_strTheme)
         strlstThemes << i_strTheme;
     }
     for( const QString& strTheme : strlstThemes ) {
+        setBaseColorToDefault(strTheme);
+        setPopupWindowColorToDefault(strTheme);
         setBackgroundStartColorToDefault(strTheme);
         setBackgroundStopColorToDefault(strTheme);
         setButtonColorToDefault(strTheme);
+        setShadowColorToDefault(strTheme);
+        setTopShadowColorToDefault(strTheme);
+        setInnerContrastLineColorToDefault(strTheme);
+        setHighlightColorToDefault(strTheme);
+        setHighlightedTextColorToDefault(strTheme);
+        setOutlineColorToDefault(strTheme);
+        setHighlightedOutlineColorToDefault(strTheme);
+        setTextColorToDefault(strTheme);
         setWindowTextColorToDefault(strTheme);
         setLinkColorToDefault(strTheme);
         setButtonTextColorToDefault(strTheme);
@@ -794,7 +906,7 @@ QString CWindowsStyle::currentTheme() const
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
-        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "currentTheme",
         /* strMethodInArgs    */ "" );
@@ -841,7 +953,7 @@ bool CWindowsStyle::isLightTheme() const
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
-        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "isLightTheme",
         /* strMethodInArgs    */ "" );
@@ -857,7 +969,7 @@ bool CWindowsStyle::isDarkTheme() const
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
-        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "isDarkTheme",
         /* strMethodInArgs    */ "" );
@@ -873,17 +985,265 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QColor CWindowsStyle::backgroundStartColor(
+QColor CWindowsStyle::baseColor(
     const QString& i_strTheme, ERowVersion i_rowVersion) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
+        strMthInArgs += ", Version: " + CEnumRowVersion(i_rowVersion).toString();
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "baseColor",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    QColor clr;
+    QString strTheme = i_strTheme;
+    if( i_strTheme.isEmpty() ) {
+        strTheme = m_strCurrentTheme;
+    }
+    if( isValidThemeName(strTheme) ) {
+        int iRowVersion = CEnumRowVersion(i_rowVersion).enumeratorAsInt();
+        clr = m_arhshBaseColors[iRowVersion][strTheme];
+    }
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        mthTracer.setMethodReturn(clr.name());
+    }
+    return clr;
+}
+
+//------------------------------------------------------------------------------
+void CWindowsStyle::setBaseColor(
+    const QColor& i_color, const QString& i_strTheme)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = GUI::qColor2Str(i_color);
+        strMthInArgs += ", " + QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "setBaseColor",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    QString strTheme = i_strTheme;
+    if( i_strTheme.isEmpty() ) {
+        strTheme = m_strCurrentTheme;
+    }
+    if( isValidThemeName(strTheme) ) {
+        const int iRowVersionCurr = static_cast<int>(ERowVersion::Current);
+        if( m_arhshBaseColors[iRowVersionCurr][strTheme] != i_color ) {
+            m_arhshBaseColors[iRowVersionCurr][strTheme] = i_color;
+            emit_baseColorChanged(i_color, strTheme);
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+bool CWindowsStyle::isBaseColorSetToDefault(const QString& i_strTheme) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "isBaseColorSetToDefault",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    bool bIs = false;
+    QString strTheme = i_strTheme;
+    if( i_strTheme.isEmpty() ) {
+        strTheme = m_strCurrentTheme;
+    }
+    if( isValidThemeName(strTheme) ) {
+        const int iRowVersionOrig = static_cast<int>(ERowVersion::Original);
+        const int iRowVersionCurr = static_cast<int>(ERowVersion::Current);
+        QColor clrOrig = m_arhshBaseColors[iRowVersionOrig][strTheme];
+        QColor clrCurr = m_arhshBaseColors[iRowVersionCurr][strTheme];
+        bIs = (clrOrig == clrCurr);
+    }
+
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        mthTracer.setMethodReturn(bIs);
+    }
+    return bIs;
+}
+
+//------------------------------------------------------------------------------
+void CWindowsStyle::setBaseColorToDefault(const QString& i_strTheme)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
         strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
-        strMthInArgs += ", Version: " + CEnumRowVersion(i_rowVersion).toString();
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "setBaseColorToDefault",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    QString strTheme = i_strTheme;
+    if( i_strTheme.isEmpty() ) {
+        strTheme = m_strCurrentTheme;
+    }
+    if( isValidThemeName(strTheme) ) {
+        if( !isBaseColorSetToDefault(i_strTheme) ) {
+            const int iRowVersionOrig = static_cast<int>(ERowVersion::Original);
+            QColor clrOrig = m_arhshBaseColors[iRowVersionOrig][strTheme];
+            setBaseColor(clrOrig, i_strTheme);
+        }
+    }
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QColor CWindowsStyle::popupWindowColor(
+    const QString& i_strTheme, ERowVersion i_rowVersion) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
+        strMthInArgs += ", Version: " + CEnumRowVersion(i_rowVersion).toString();
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "popupWindowColor",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    QColor clr;
+    QString strTheme = i_strTheme;
+    if( i_strTheme.isEmpty() ) {
+        strTheme = m_strCurrentTheme;
+    }
+    if( isValidThemeName(strTheme) ) {
+        int iRowVersion = CEnumRowVersion(i_rowVersion).enumeratorAsInt();
+        clr = m_arhshPopupWindowColors[iRowVersion][strTheme];
+    }
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        mthTracer.setMethodReturn(clr.name());
+    }
+    return clr;
+}
+
+//------------------------------------------------------------------------------
+void CWindowsStyle::setPopupWindowColor(
+    const QColor& i_color, const QString& i_strTheme)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = GUI::qColor2Str(i_color);
+        strMthInArgs += ", " + QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "setPopupWindowColor",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    QString strTheme = i_strTheme;
+    if( i_strTheme.isEmpty() ) {
+        strTheme = m_strCurrentTheme;
+    }
+    if( isValidThemeName(strTheme) ) {
+        const int iRowVersionCurr = static_cast<int>(ERowVersion::Current);
+        if( m_arhshPopupWindowColors[iRowVersionCurr][strTheme] != i_color ) {
+            m_arhshPopupWindowColors[iRowVersionCurr][strTheme] = i_color;
+            emit_popupWindowColorChanged(i_color, strTheme);
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+bool CWindowsStyle::isPopupWindowColorSetToDefault(const QString& i_strTheme) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "isPopupWindowColorSetToDefault",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    bool bIs = false;
+    QString strTheme = i_strTheme;
+    if( i_strTheme.isEmpty() ) {
+        strTheme = m_strCurrentTheme;
+    }
+    if( isValidThemeName(strTheme) ) {
+        const int iRowVersionOrig = static_cast<int>(ERowVersion::Original);
+        const int iRowVersionCurr = static_cast<int>(ERowVersion::Current);
+        QColor clrOrig = m_arhshPopupWindowColors[iRowVersionOrig][strTheme];
+        QColor clrCurr = m_arhshPopupWindowColors[iRowVersionCurr][strTheme];
+        bIs = (clrOrig == clrCurr);
+    }
+
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        mthTracer.setMethodReturn(bIs);
+    }
+    return bIs;
+}
+
+//------------------------------------------------------------------------------
+void CWindowsStyle::setPopupWindowColorToDefault(const QString& i_strTheme)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "setPopupWindowColorToDefault",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    QString strTheme = i_strTheme;
+    if( i_strTheme.isEmpty() ) {
+        strTheme = m_strCurrentTheme;
+    }
+    if( isValidThemeName(strTheme) ) {
+        if( !isPopupWindowColorSetToDefault(i_strTheme) ) {
+            const int iRowVersionOrig = static_cast<int>(ERowVersion::Original);
+            QColor clrOrig = m_arhshPopupWindowColors[iRowVersionOrig][strTheme];
+            setPopupWindowColor(clrOrig, i_strTheme);
+        }
+    }
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QColor CWindowsStyle::backgroundStartColor(
+    const QString& i_strTheme, ERowVersion i_rowVersion) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
+        strMthInArgs += ", Version: " + CEnumRowVersion(i_rowVersion).toString();
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "backgroundStartColor",
         /* strMethodInArgs    */ strMthInArgs );
@@ -937,11 +1297,11 @@ bool CWindowsStyle::isBackgroundStartColorSetToDefault(const QString& i_strTheme
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
         strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
     }
     CMethodTracer mthTracer(
-        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "isBackgroundStartColorSetToDefault",
         /* strMethodInArgs    */ strMthInArgs );
@@ -1002,12 +1362,12 @@ QColor CWindowsStyle::backgroundStopColor(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
         strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
         strMthInArgs += ", Version: " + CEnumRowVersion(i_rowVersion).toString();
     }
     CMethodTracer mthTracer(
-        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "backgroundStopColor",
         /* strMethodInArgs    */ strMthInArgs );
@@ -1062,11 +1422,11 @@ bool CWindowsStyle::isBackgroundStopColorSetToDefault(const QString& i_strTheme)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
         strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
     }
     CMethodTracer mthTracer(
-        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "isBackgroundStopColorSetToDefault",
         /* strMethodInArgs    */ strMthInArgs );
@@ -1128,7 +1488,7 @@ QColor CWindowsStyle::panelStartColor(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
         strMthInArgs = "Highlighted: " + bool2Str(i_bHighlighted);
         strMthInArgs += ", Down: " + bool2Str(i_bDown);
         strMthInArgs += ", Hovered: " + bool2Str(i_bHovered);
@@ -1136,7 +1496,7 @@ QColor CWindowsStyle::panelStartColor(
         strMthInArgs += ", Version: " + CEnumRowVersion(i_rowVersion).toString();
     }
     CMethodTracer mthTracer(
-        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "panelStartColor",
         /* strMethodInArgs    */ strMthInArgs );
@@ -1163,7 +1523,7 @@ QColor CWindowsStyle::panelStopColor(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
         strMthInArgs = "Highlighted: " + bool2Str(i_bHighlighted);
         strMthInArgs += ", Down: " + bool2Str(i_bDown);
         strMthInArgs += ", Hovered: " + bool2Str(i_bHovered);
@@ -1171,7 +1531,7 @@ QColor CWindowsStyle::panelStopColor(
         strMthInArgs += ", Version: " + CEnumRowVersion(i_rowVersion).toString();
     }
     CMethodTracer mthTracer(
-        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "panelStopColor",
         /* strMethodInArgs    */ strMthInArgs );
@@ -1197,13 +1557,43 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QColor CWindowsStyle::buttonColor(
-    bool i_bHighlighted, bool i_bDown, bool i_bHovered,
-    const QString& i_strTheme, ERowVersion i_rowVersion)
+QColor CWindowsStyle::buttonBaseColor(const QString& i_strTheme, ERowVersion i_rowVersion) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
+        strMthInArgs += ", Version: " + CEnumRowVersion(i_rowVersion).toString();
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "buttonBaseColor",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    QColor clr;
+    QString strTheme = i_strTheme;
+    if( i_strTheme.isEmpty() ) {
+        strTheme = m_strCurrentTheme;
+    }
+    if( isValidThemeName(strTheme) ) {
+        int iRowVersion = CEnumRowVersion(i_rowVersion).enumeratorAsInt();
+        clr = m_arhshButtonColors[iRowVersion][strTheme];
+    }
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        mthTracer.setMethodReturn(clr.name());
+    }
+    return clr;
+}
+
+//------------------------------------------------------------------------------
+QColor CWindowsStyle::buttonColor(
+    bool i_bHighlighted, bool i_bDown, bool i_bHovered,
+    const QString& i_strTheme, ERowVersion i_rowVersion) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
         strMthInArgs = "Highlighted: " + bool2Str(i_bHighlighted);
         strMthInArgs += ", Down: " + bool2Str(i_bDown);
         strMthInArgs += ", Hovered: " + bool2Str(i_bHovered);
@@ -1211,7 +1601,7 @@ QColor CWindowsStyle::buttonColor(
         strMthInArgs += ", Version: " + CEnumRowVersion(i_rowVersion).toString();
     }
     CMethodTracer mthTracer(
-        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "buttonColor",
         /* strMethodInArgs    */ strMthInArgs );
@@ -1278,11 +1668,11 @@ bool CWindowsStyle::isButtonColorSetToDefault(const QString& i_strTheme) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
         strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
     }
     CMethodTracer mthTracer(
-        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "isButtonColorSetToDefault",
         /* strMethodInArgs    */ strMthInArgs );
@@ -1340,18 +1730,18 @@ public: // instance methods
 //------------------------------------------------------------------------------
 QColor CWindowsStyle::buttonOutlineColor(
     bool i_bHighlighted, bool i_bEnabled,
-    const QString& i_strTheme, ERowVersion i_rowVersion)
+    const QString& i_strTheme, ERowVersion i_rowVersion) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
         strMthInArgs = "Highlighted: " + bool2Str(i_bHighlighted);
         strMthInArgs += ", Enabled: " + bool2Str(i_bEnabled);
         strMthInArgs += ", " + QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
         strMthInArgs += ", Version: " + CEnumRowVersion(i_rowVersion).toString();
     }
     CMethodTracer mthTracer(
-        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "buttonOutlineColor",
         /* strMethodInArgs    */ strMthInArgs );
@@ -1381,12 +1771,12 @@ public: // instance methods
 ////------------------------------------------------------------------------------
 //{
 //    QString strMthInArgs;
-//    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+//    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
 //        strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
 //        strMthInArgs += ", Version: " + CEnumRowVersion(i_rowVersion).toString();
 //    }
 //    CMethodTracer mthTracer(
-//        /* pTrcAdminObj       */ m_pTrcAdminObj,
+//        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
 //        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
 //        /* strMethod          */ "lightShadeColor",
 //        /* strMethodInArgs    */ strMthInArgs );
@@ -1406,17 +1796,21 @@ public: // instance methods
 //    return clr;
 //}
 
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
 ////------------------------------------------------------------------------------
 //QColor CWindowsStyle::darkShadeColor(const QString& i_strTheme, ERowVersion i_rowVersion)
 ////------------------------------------------------------------------------------
 //{
 //    QString strMthInArgs;
-//    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+//    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
 //        strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
 //        strMthInArgs += ", Version: " + CEnumRowVersion(i_rowVersion).toString();
 //    }
 //    CMethodTracer mthTracer(
-//        /* pTrcAdminObj       */ m_pTrcAdminObj,
+//        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
 //        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
 //        /* strMethod          */ "darkShadeColor",
 //        /* strMethodInArgs    */ strMthInArgs );
@@ -1436,47 +1830,270 @@ public: // instance methods
 //    return clr;
 //}
 
-////------------------------------------------------------------------------------
-//QColor CWindowsStyle::topShadowColor(const QString& i_strTheme, ERowVersion i_rowVersion)
-////------------------------------------------------------------------------------
-//{
-//    QString strMthInArgs;
-//    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
-//        strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
-//        strMthInArgs += ", Version: " + CEnumRowVersion(i_rowVersion).toString();
-//    }
-//    CMethodTracer mthTracer(
-//        /* pTrcAdminObj       */ m_pTrcAdminObj,
-//        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strMethod          */ "topShadowColor",
-//        /* strMethodInArgs    */ strMthInArgs );
-//
-//    QColor clr;
-//    QString strTheme = i_strTheme;
-//    if( i_strTheme.isEmpty() ) {
-//        strTheme = m_strCurrentTheme;
-//    }
-//    if( isValidThemeName(strTheme) ) {
-//        int iRowVersion = CEnumRowVersion(i_rowVersion).enumeratorAsInt();
-//        clr = m_arhshTopShadowColors[iRowVersion][strTheme];
-//    }
-//    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
-//        mthTracer.setMethodReturn(clr.name());
-//    }
-//    return clr;
-//}
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
 
 //------------------------------------------------------------------------------
-QColor CWindowsStyle::innerContrastLineColor(const QString& i_strTheme, ERowVersion i_rowVersion)
+QColor CWindowsStyle::shadowColor(
+    const QString& i_strTheme, ERowVersion i_rowVersion) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
+        strMthInArgs += ", Version: " + CEnumRowVersion(i_rowVersion).toString();
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "shadowColor",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    QColor clr;
+    QString strTheme = i_strTheme;
+    if( i_strTheme.isEmpty() ) {
+        strTheme = m_strCurrentTheme;
+    }
+    if( isValidThemeName(strTheme) ) {
+        int iRowVersion = CEnumRowVersion(i_rowVersion).enumeratorAsInt();
+        clr = m_arhshShadowColors[iRowVersion][strTheme];
+    }
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        mthTracer.setMethodReturn(clr.name());
+    }
+    return clr;
+}
+
+//------------------------------------------------------------------------------
+void CWindowsStyle::setShadowColor(
+    const QColor& i_color, const QString& i_strTheme )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = GUI::qColor2Str(i_color);
+        strMthInArgs += ", " + QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "setShadowColor",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    QString strTheme = i_strTheme;
+    if( i_strTheme.isEmpty() ) {
+        strTheme = m_strCurrentTheme;
+    }
+    if( isValidThemeName(strTheme) ) {
+        const int iRowVersionCurr = static_cast<int>(ERowVersion::Current);
+        if( m_arhshShadowColors[iRowVersionCurr][strTheme] != i_color ) {
+            m_arhshShadowColors[iRowVersionCurr][strTheme] = i_color;
+            emit_shadowColorChanged(i_color, strTheme);
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+bool CWindowsStyle::isShadowColorSetToDefault(const QString& i_strTheme) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "isShadowColorSetToDefault",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    bool bIs = false;
+    QString strTheme = i_strTheme;
+    if( i_strTheme.isEmpty() ) {
+        strTheme = m_strCurrentTheme;
+    }
+    if( isValidThemeName(strTheme) ) {
+        const int iRowVersionOrig = static_cast<int>(ERowVersion::Original);
+        const int iRowVersionCurr = static_cast<int>(ERowVersion::Current);
+        QColor clrOrig = m_arhshShadowColors[iRowVersionOrig][strTheme];
+        QColor clrCurr = m_arhshShadowColors[iRowVersionCurr][strTheme];
+        bIs = (clrOrig == clrCurr);
+    }
+
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        mthTracer.setMethodReturn(bIs);
+    }
+    return bIs;
+}
+
+//------------------------------------------------------------------------------
+void CWindowsStyle::setShadowColorToDefault(const QString& i_strTheme)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
         strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
-        strMthInArgs += ", Version: " + CEnumRowVersion(i_rowVersion).toString();
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "setShadowColorToDefault",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    QString strTheme = i_strTheme;
+    if( i_strTheme.isEmpty() ) {
+        strTheme = m_strCurrentTheme;
+    }
+    if( isValidThemeName(strTheme) ) {
+        if( !isShadowColorSetToDefault(i_strTheme) ) {
+            const int iRowVersionOrig = static_cast<int>(ERowVersion::Original);
+            QColor clrOrig = m_arhshShadowColors[iRowVersionOrig][strTheme];
+            setShadowColor(clrOrig, i_strTheme);
+        }
+    }
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QColor CWindowsStyle::topShadowColor(
+    const QString& i_strTheme, ERowVersion i_rowVersion) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
+        strMthInArgs += ", Version: " + CEnumRowVersion(i_rowVersion).toString();
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "topShadowColor",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    QColor clr;
+    QString strTheme = i_strTheme;
+    if( i_strTheme.isEmpty() ) {
+        strTheme = m_strCurrentTheme;
+    }
+    if( isValidThemeName(strTheme) ) {
+        int iRowVersion = CEnumRowVersion(i_rowVersion).enumeratorAsInt();
+        clr = m_arhshTopShadowColors[iRowVersion][strTheme];
+    }
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        mthTracer.setMethodReturn(clr.name());
+    }
+    return clr;
+}
+
+//------------------------------------------------------------------------------
+void CWindowsStyle::setTopShadowColor(
+    const QColor& i_color, const QString& i_strTheme )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = GUI::qColor2Str(i_color);
+        strMthInArgs += ", " + QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "setTopShadowColor",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    QString strTheme = i_strTheme;
+    if( i_strTheme.isEmpty() ) {
+        strTheme = m_strCurrentTheme;
+    }
+    if( isValidThemeName(strTheme) ) {
+        const int iRowVersionCurr = static_cast<int>(ERowVersion::Current);
+        if( m_arhshTopShadowColors[iRowVersionCurr][strTheme] != i_color ) {
+            m_arhshTopShadowColors[iRowVersionCurr][strTheme] = i_color;
+            emit_topShadowColorChanged(i_color, strTheme);
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+bool CWindowsStyle::isTopShadowColorSetToDefault(const QString& i_strTheme) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "isTopShadowColorSetToDefault",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    bool bIs = false;
+    QString strTheme = i_strTheme;
+    if( i_strTheme.isEmpty() ) {
+        strTheme = m_strCurrentTheme;
+    }
+    if( isValidThemeName(strTheme) ) {
+        const int iRowVersionOrig = static_cast<int>(ERowVersion::Original);
+        const int iRowVersionCurr = static_cast<int>(ERowVersion::Current);
+        QColor clrOrig = m_arhshTopShadowColors[iRowVersionOrig][strTheme];
+        QColor clrCurr = m_arhshTopShadowColors[iRowVersionCurr][strTheme];
+        bIs = (clrOrig == clrCurr);
+    }
+
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        mthTracer.setMethodReturn(bIs);
+    }
+    return bIs;
+}
+
+//------------------------------------------------------------------------------
+void CWindowsStyle::setTopShadowColorToDefault(const QString& i_strTheme)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "setTopShadowColorToDefault",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    QString strTheme = i_strTheme;
+    if( i_strTheme.isEmpty() ) {
+        strTheme = m_strCurrentTheme;
+    }
+    if( isValidThemeName(strTheme) ) {
+        if( !isTopShadowColorSetToDefault(i_strTheme) ) {
+            const int iRowVersionOrig = static_cast<int>(ERowVersion::Original);
+            QColor clrOrig = m_arhshTopShadowColors[iRowVersionOrig][strTheme];
+            setTopShadowColor(clrOrig, i_strTheme);
+        }
+    }
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QColor CWindowsStyle::innerContrastLineColor(
+    const QString& i_strTheme, ERowVersion i_rowVersion) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
+        strMthInArgs += ", Version: " + CEnumRowVersion(i_rowVersion).toString();
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "innerContrastLineColor",
         /* strMethodInArgs    */ strMthInArgs );
@@ -1525,82 +2142,330 @@ void CWindowsStyle::setInnerContrastLineColor(
     }
 }
 
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
+//------------------------------------------------------------------------------
+bool CWindowsStyle::isInnerContrastLineColorSetToDefault(const QString& i_strTheme) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "isInnerContrastLineColorSetToDefault",
+        /* strMethodInArgs    */ strMthInArgs );
 
-////------------------------------------------------------------------------------
-//QColor CWindowsStyle::highlightColor(const QString& i_strTheme, ERowVersion i_rowVersion)
-////------------------------------------------------------------------------------
-//{
-//    QString strMthInArgs;
-//    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
-//        strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
-//        strMthInArgs += ", Version: " + CEnumRowVersion(i_rowVersion).toString();
-//    }
-//    CMethodTracer mthTracer(
-//        /* pTrcAdminObj       */ m_pTrcAdminObj,
-//        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strMethod          */ "highlightColor",
-//        /* strMethodInArgs    */ strMthInArgs );
-//
-//    QColor clr;
-//    QString strTheme = i_strTheme;
-//    if( i_strTheme.isEmpty() ) {
-//        strTheme = m_strCurrentTheme;
-//    }
-//    if( isValidThemeName(strTheme) ) {
-//        int iRowVersion = CEnumRowVersion(i_rowVersion).enumeratorAsInt();
-//        clr = m_arhshHighlightColors[iRowVersion][strTheme];
-//    }
-//    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
-//        mthTracer.setMethodReturn(clr.name());
-//    }
-//    return clr;
-//}
+    bool bIs = false;
+    QString strTheme = i_strTheme;
+    if( i_strTheme.isEmpty() ) {
+        strTheme = m_strCurrentTheme;
+    }
+    if( isValidThemeName(strTheme) ) {
+        const int iRowVersionOrig = static_cast<int>(ERowVersion::Original);
+        const int iRowVersionCurr = static_cast<int>(ERowVersion::Current);
+        QColor clrOrig = m_arhshInnerContrastLineColors[iRowVersionOrig][strTheme];
+        QColor clrCurr = m_arhshInnerContrastLineColors[iRowVersionCurr][strTheme];
+        bIs = (clrOrig == clrCurr);
+    }
 
-////------------------------------------------------------------------------------
-//QColor CWindowsStyle::highlightedTextColor(
-//    const QPalette& i_palette, const QString& i_strTheme, ERowVersion i_rowVersion)
-////------------------------------------------------------------------------------
-//{
-//    QString strMthInArgs;
-//    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
-//        strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
-//        strMthInArgs += ", Version: " + CEnumRowVersion(i_rowVersion).toString();
-//    }
-//    CMethodTracer mthTracer(
-//        /* pTrcAdminObj       */ m_pTrcAdminObj,
-//        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strMethod          */ "highlightedTextColor",
-//        /* strMethodInArgs    */ strMthInArgs );
-//
-//    QColor clr;
-//    QString strTheme = i_strTheme;
-//    if( i_strTheme.isEmpty() ) {
-//        strTheme = m_strCurrentTheme;
-//    }
-//    if( isValidThemeName(strTheme) ) {
-//        int iRowVersion = CEnumRowVersion(i_rowVersion).enumeratorAsInt();
-//        clr = m_arhshHighlightedTextColors[iRowVersion][strTheme];
-//    }
-//    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
-//        mthTracer.setMethodReturn(clr.name());
-//    }
-//    return clr;
-//}
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        mthTracer.setMethodReturn(bIs);
+    }
+    return bIs;
+}
 
 //------------------------------------------------------------------------------
-QColor CWindowsStyle::outlineColor(const QString& i_strTheme, ERowVersion i_rowVersion)
+void CWindowsStyle::setInnerContrastLineColorToDefault(const QString& i_strTheme)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
         strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
-        strMthInArgs += ", Version: " + CEnumRowVersion(i_rowVersion).toString();
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "setInnerContrastLineColorToDefault",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    QString strTheme = i_strTheme;
+    if( i_strTheme.isEmpty() ) {
+        strTheme = m_strCurrentTheme;
+    }
+    if( isValidThemeName(strTheme) ) {
+        if( !isInnerContrastLineColorSetToDefault(i_strTheme) ) {
+            const int iRowVersionOrig = static_cast<int>(ERowVersion::Original);
+            QColor clrOrig = m_arhshInnerContrastLineColors[iRowVersionOrig][strTheme];
+            setInnerContrastLineColor(clrOrig, i_strTheme);
+        }
+    }
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QColor CWindowsStyle::highlightColor(
+    const QString& i_strTheme, ERowVersion i_rowVersion) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
+        strMthInArgs += ", Version: " + CEnumRowVersion(i_rowVersion).toString();
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "highlightColor",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    QColor clr;
+    QString strTheme = i_strTheme;
+    if( i_strTheme.isEmpty() ) {
+        strTheme = m_strCurrentTheme;
+    }
+    if( isValidThemeName(strTheme) ) {
+        int iRowVersion = CEnumRowVersion(i_rowVersion).enumeratorAsInt();
+        clr = m_arhshHighlightColors[iRowVersion][strTheme];
+    }
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        mthTracer.setMethodReturn(clr.name());
+    }
+    return clr;
+}
+
+//------------------------------------------------------------------------------
+void CWindowsStyle::setHighlightColor(
+    const QColor& i_color, const QString& i_strTheme )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = GUI::qColor2Str(i_color);
+        strMthInArgs += ", " + QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "setHighlightColor",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    QString strTheme = i_strTheme;
+    if( i_strTheme.isEmpty() ) {
+        strTheme = m_strCurrentTheme;
+    }
+    if( isValidThemeName(strTheme) ) {
+        const int iRowVersionCurr = static_cast<int>(ERowVersion::Current);
+        if( m_arhshHighlightColors[iRowVersionCurr][strTheme] != i_color ) {
+            m_arhshHighlightColors[iRowVersionCurr][strTheme] = i_color;
+            emit_highlightColorChanged(i_color, strTheme);
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+bool CWindowsStyle::isHighlightColorSetToDefault(const QString& i_strTheme) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "isHighlightColorSetToDefault",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    bool bIs = false;
+    QString strTheme = i_strTheme;
+    if( i_strTheme.isEmpty() ) {
+        strTheme = m_strCurrentTheme;
+    }
+    if( isValidThemeName(strTheme) ) {
+        const int iRowVersionOrig = static_cast<int>(ERowVersion::Original);
+        const int iRowVersionCurr = static_cast<int>(ERowVersion::Current);
+        QColor clrOrig = m_arhshHighlightColors[iRowVersionOrig][strTheme];
+        QColor clrCurr = m_arhshHighlightColors[iRowVersionCurr][strTheme];
+        bIs = (clrOrig == clrCurr);
+    }
+
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        mthTracer.setMethodReturn(bIs);
+    }
+    return bIs;
+}
+
+//------------------------------------------------------------------------------
+void CWindowsStyle::setHighlightColorToDefault(const QString& i_strTheme)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "setHighlightColorToDefault",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    QString strTheme = i_strTheme;
+    if( i_strTheme.isEmpty() ) {
+        strTheme = m_strCurrentTheme;
+    }
+    if( isValidThemeName(strTheme) ) {
+        if( !isHighlightColorSetToDefault(i_strTheme) ) {
+            const int iRowVersionOrig = static_cast<int>(ERowVersion::Original);
+            QColor clrOrig = m_arhshHighlightColors[iRowVersionOrig][strTheme];
+            setHighlightColor(clrOrig, i_strTheme);
+        }
+    }
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QColor CWindowsStyle::highlightedTextColor(
+    const QString& i_strTheme, ERowVersion i_rowVersion) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
+        strMthInArgs += ", Version: " + CEnumRowVersion(i_rowVersion).toString();
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "highlightedTextColor",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    QColor clr;
+    QString strTheme = i_strTheme;
+    if( i_strTheme.isEmpty() ) {
+        strTheme = m_strCurrentTheme;
+    }
+    if( isValidThemeName(strTheme) ) {
+        int iRowVersion = CEnumRowVersion(i_rowVersion).enumeratorAsInt();
+        clr = m_arhshHighlightedTextColors[iRowVersion][strTheme];
+    }
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        mthTracer.setMethodReturn(clr.name());
+    }
+    return clr;
+}
+
+//------------------------------------------------------------------------------
+void CWindowsStyle::setHighlightedTextColor(
+    const QColor& i_color, const QString& i_strTheme )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = GUI::qColor2Str(i_color);
+        strMthInArgs += ", " + QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "setHighlightedTextColor",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    QString strTheme = i_strTheme;
+    if( i_strTheme.isEmpty() ) {
+        strTheme = m_strCurrentTheme;
+    }
+    if( isValidThemeName(strTheme) ) {
+        const int iRowVersionCurr = static_cast<int>(ERowVersion::Current);
+        if( m_arhshHighlightedTextColors[iRowVersionCurr][strTheme] != i_color ) {
+            m_arhshHighlightedTextColors[iRowVersionCurr][strTheme] = i_color;
+            emit_highlightedTextColorChanged(i_color, strTheme);
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+bool CWindowsStyle::isHighlightedTextColorSetToDefault(const QString& i_strTheme) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "isHighlightedTextColorSetToDefault",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    bool bIs = false;
+    QString strTheme = i_strTheme;
+    if( i_strTheme.isEmpty() ) {
+        strTheme = m_strCurrentTheme;
+    }
+    if( isValidThemeName(strTheme) ) {
+        const int iRowVersionOrig = static_cast<int>(ERowVersion::Original);
+        const int iRowVersionCurr = static_cast<int>(ERowVersion::Current);
+        QColor clrOrig = m_arhshHighlightedTextColors[iRowVersionOrig][strTheme];
+        QColor clrCurr = m_arhshHighlightedTextColors[iRowVersionCurr][strTheme];
+        bIs = (clrOrig == clrCurr);
+    }
+
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        mthTracer.setMethodReturn(bIs);
+    }
+    return bIs;
+}
+
+//------------------------------------------------------------------------------
+void CWindowsStyle::setHighlightedTextColorToDefault(const QString& i_strTheme)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "setHighlightedTextColorToDefault",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    QString strTheme = i_strTheme;
+    if( i_strTheme.isEmpty() ) {
+        strTheme = m_strCurrentTheme;
+    }
+    if( isValidThemeName(strTheme) ) {
+        if( !isHighlightedTextColorSetToDefault(i_strTheme) ) {
+            const int iRowVersionOrig = static_cast<int>(ERowVersion::Original);
+            QColor clrOrig = m_arhshHighlightedTextColors[iRowVersionOrig][strTheme];
+            setHighlightedTextColor(clrOrig, i_strTheme);
+        }
+    }
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QColor CWindowsStyle::outlineColor(
+    const QString& i_strTheme, ERowVersion i_rowVersion) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
+        strMthInArgs += ", Version: " + CEnumRowVersion(i_rowVersion).toString();
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "outlineColor",
         /* strMethodInArgs    */ strMthInArgs );
@@ -1650,16 +2515,81 @@ void CWindowsStyle::setOutlineColor(
 }
 
 //------------------------------------------------------------------------------
-QColor CWindowsStyle::highlightedOutlineColor(const QString& i_strTheme, ERowVersion i_rowVersion)
+bool CWindowsStyle::isOutlineColorSetToDefault(const QString& i_strTheme) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "isOutlineColorSetToDefault",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    bool bIs = false;
+    QString strTheme = i_strTheme;
+    if( i_strTheme.isEmpty() ) {
+        strTheme = m_strCurrentTheme;
+    }
+    if( isValidThemeName(strTheme) ) {
+        const int iRowVersionOrig = static_cast<int>(ERowVersion::Original);
+        const int iRowVersionCurr = static_cast<int>(ERowVersion::Current);
+        QColor clrOrig = m_arhshOutlineColors[iRowVersionOrig][strTheme];
+        QColor clrCurr = m_arhshOutlineColors[iRowVersionCurr][strTheme];
+        bIs = (clrOrig == clrCurr);
+    }
+
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        mthTracer.setMethodReturn(bIs);
+    }
+    return bIs;
+}
+
+//------------------------------------------------------------------------------
+void CWindowsStyle::setOutlineColorToDefault(const QString& i_strTheme)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
         strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
-        strMthInArgs += ", Version: " + CEnumRowVersion(i_rowVersion).toString();
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "setOutlineColorToDefault",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    QString strTheme = i_strTheme;
+    if( i_strTheme.isEmpty() ) {
+        strTheme = m_strCurrentTheme;
+    }
+    if( isValidThemeName(strTheme) ) {
+        if( !isOutlineColorSetToDefault(i_strTheme) ) {
+            const int iRowVersionOrig = static_cast<int>(ERowVersion::Original);
+            QColor clrOrig = m_arhshOutlineColors[iRowVersionOrig][strTheme];
+            setOutlineColor(clrOrig, i_strTheme);
+        }
+    }
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QColor CWindowsStyle::highlightedOutlineColor(
+    const QString& i_strTheme, ERowVersion i_rowVersion) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
+        strMthInArgs += ", Version: " + CEnumRowVersion(i_rowVersion).toString();
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "highlightedOutlineColor",
         /* strMethodInArgs    */ strMthInArgs );
@@ -1708,18 +2638,82 @@ void CWindowsStyle::setHighlightedOutlineColor(
     }
 }
 
+//------------------------------------------------------------------------------
+bool CWindowsStyle::isHighlightedOutlineColorSetToDefault(const QString& i_strTheme) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "isHighlightedOutlineColorSetToDefault",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    bool bIs = false;
+    QString strTheme = i_strTheme;
+    if( i_strTheme.isEmpty() ) {
+        strTheme = m_strCurrentTheme;
+    }
+    if( isValidThemeName(strTheme) ) {
+        const int iRowVersionOrig = static_cast<int>(ERowVersion::Original);
+        const int iRowVersionCurr = static_cast<int>(ERowVersion::Current);
+        QColor clrOrig = m_arhshHighlightedOutlineColors[iRowVersionOrig][strTheme];
+        QColor clrCurr = m_arhshHighlightedOutlineColors[iRowVersionCurr][strTheme];
+        bIs = (clrOrig == clrCurr);
+    }
+
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        mthTracer.setMethodReturn(bIs);
+    }
+    return bIs;
+}
+
+//------------------------------------------------------------------------------
+void CWindowsStyle::setHighlightedOutlineColorToDefault(const QString& i_strTheme)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "setHighlightedOutlineColorToDefault",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    QString strTheme = i_strTheme;
+    if( i_strTheme.isEmpty() ) {
+        strTheme = m_strCurrentTheme;
+    }
+    if( isValidThemeName(strTheme) ) {
+        if( !isHighlightedOutlineColorSetToDefault(i_strTheme) ) {
+            const int iRowVersionOrig = static_cast<int>(ERowVersion::Original);
+            QColor clrOrig = m_arhshHighlightedOutlineColors[iRowVersionOrig][strTheme];
+            setHighlightedOutlineColor(clrOrig, i_strTheme);
+        }
+    }
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
 ////------------------------------------------------------------------------------
 //QColor CWindowsStyle::tabFrameColor(
 //    const QString& i_strTheme, ERowVersion i_rowVersion)
 ////------------------------------------------------------------------------------
 //{
 //    QString strMthInArgs;
-//    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+//    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
 //        strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
 //        strMthInArgs += ", Version: " + CEnumRowVersion(i_rowVersion).toString();
 //    }
 //    CMethodTracer mthTracer(
-//        /* pTrcAdminObj       */ m_pTrcAdminObj,
+//        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
 //        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
 //        /* strMethod          */ "tabFrameColor",
 //        /* strMethodInArgs    */ strMthInArgs );
@@ -1744,16 +2738,138 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QColor CWindowsStyle::windowTextColor(const QString& i_strTheme, ERowVersion i_rowVersion) const
+QColor CWindowsStyle::textColor(const QString& i_strTheme, ERowVersion i_rowVersion) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
+        strMthInArgs += ", Version: " + CEnumRowVersion(i_rowVersion).toString();
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "textColor",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    QColor clr;
+    QString strTheme = i_strTheme;
+    if( i_strTheme.isEmpty() ) {
+        strTheme = m_strCurrentTheme;
+    }
+    if( isValidThemeName(strTheme) ) {
+        int iRowVersion = CEnumRowVersion(i_rowVersion).enumeratorAsInt();
+        clr = m_arhshTextColors[iRowVersion][strTheme];
+    }
+
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        mthTracer.setMethodReturn(clr.name());
+    }
+    return clr;
+}
+
+//------------------------------------------------------------------------------
+void CWindowsStyle::setTextColor( const QColor& i_color, const QString& i_strTheme )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = GUI::qColor2Str(i_color);
+        strMthInArgs += ", " + QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "setTextColor",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    QString strTheme = i_strTheme;
+    if( i_strTheme.isEmpty() ) {
+        strTheme = m_strCurrentTheme;
+    }
+    if( isValidThemeName(strTheme) ) {
+        const int iRowVersionCurr = static_cast<int>(ERowVersion::Current);
+        if( m_arhshTextColors[iRowVersionCurr][strTheme] != i_color ) {
+            m_arhshTextColors[iRowVersionCurr][strTheme] = i_color;
+            emit_textColorChanged(i_color, strTheme);
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+bool CWindowsStyle::isTextColorSetToDefault(const QString& i_strTheme) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "isTextColorSetToDefault",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    bool bIs = false;
+    QString strTheme = i_strTheme;
+    if( i_strTheme.isEmpty() ) {
+        strTheme = m_strCurrentTheme;
+    }
+    if( isValidThemeName(strTheme) ) {
+        const int iRowVersionOrig = static_cast<int>(ERowVersion::Original);
+        const int iRowVersionCurr = static_cast<int>(ERowVersion::Current);
+        QColor clrOrig = m_arhshTextColors[iRowVersionOrig][strTheme];
+        QColor clrCurr = m_arhshTextColors[iRowVersionCurr][strTheme];
+        bIs = (clrOrig == clrCurr);
+    }
+
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        mthTracer.setMethodReturn(bIs);
+    }
+    return bIs;
+}
+
+//------------------------------------------------------------------------------
+void CWindowsStyle::setTextColorToDefault(const QString& i_strTheme)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
         strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
-        strMthInArgs += ", Version: " + CEnumRowVersion(i_rowVersion).toString();
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "setTextColorToDefault",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    QString strTheme = i_strTheme;
+    if( i_strTheme.isEmpty() ) {
+        strTheme = m_strCurrentTheme;
+    }
+    if( isValidThemeName(strTheme) ) {
+        if( !isTextColorSetToDefault(i_strTheme) ) {
+            QColor clrDefault = textColor(i_strTheme, ERowVersion::Original);
+            setTextColor(clrDefault, i_strTheme);
+        }
+    }
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QColor CWindowsStyle::windowTextColor(const QString& i_strTheme, ERowVersion i_rowVersion) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
+        strMthInArgs += ", Version: " + CEnumRowVersion(i_rowVersion).toString();
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "windowTextColor",
         /* strMethodInArgs    */ strMthInArgs );
@@ -1807,11 +2923,11 @@ bool CWindowsStyle::isWindowTextColorSetToDefault(const QString& i_strTheme) con
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
         strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
     }
     CMethodTracer mthTracer(
-        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "isWindowTextColorSetToDefault",
         /* strMethodInArgs    */ strMthInArgs );
@@ -1870,12 +2986,12 @@ QColor CWindowsStyle::linkColor(const QString& i_strTheme, ERowVersion i_rowVers
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
         strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
         strMthInArgs += ", Version: " + CEnumRowVersion(i_rowVersion).toString();
     }
     CMethodTracer mthTracer(
-        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "linkColor",
         /* strMethodInArgs    */ strMthInArgs );
@@ -1929,11 +3045,11 @@ bool CWindowsStyle::isLinkColorSetToDefault(const QString& i_strTheme) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
         strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
     }
     CMethodTracer mthTracer(
-        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "isLinkColorSetToDefault",
         /* strMethodInArgs    */ strMthInArgs );
@@ -1992,12 +3108,12 @@ QColor CWindowsStyle::buttonTextColor(const QString& i_strTheme, ERowVersion i_r
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
         strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
         strMthInArgs += ", Version: " + CEnumRowVersion(i_rowVersion).toString();
     }
     CMethodTracer mthTracer(
-        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "buttonTextColor",
         /* strMethodInArgs    */ strMthInArgs );
@@ -2051,11 +3167,11 @@ bool CWindowsStyle::isButtonTextColorSetToDefault(const QString& i_strTheme) con
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
         strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
     }
     CMethodTracer mthTracer(
-        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "isButtonTextColorSetToDefault",
         /* strMethodInArgs    */ strMthInArgs );
@@ -2168,12 +3284,32 @@ void CWindowsStyle::onCurrentThemeChanged(const QString& i_strTheme)
 
     const int iRowVersionCurr = static_cast<int>(ERowVersion::Current);
 
+    emit_baseColorChanged(
+        m_arhshBaseColors[iRowVersionCurr][m_strCurrentTheme], m_strCurrentTheme);
+    emit_popupWindowColorChanged(
+        m_arhshPopupWindowColors[iRowVersionCurr][m_strCurrentTheme], m_strCurrentTheme);
     emit_backgroundStartColorChanged(
         m_arhshBackgroundStartColors[iRowVersionCurr][m_strCurrentTheme], m_strCurrentTheme);
     emit_backgroundStopColorChanged(
         m_arhshBackgroundStopColors[iRowVersionCurr][m_strCurrentTheme], m_strCurrentTheme);
     emit_buttonColorChanged(
         m_arhshButtonColors[iRowVersionCurr][m_strCurrentTheme], m_strCurrentTheme);
+    emit_shadowColorChanged(
+        m_arhshShadowColors[iRowVersionCurr][m_strCurrentTheme], m_strCurrentTheme);
+    emit_topShadowColorChanged(
+        m_arhshTopShadowColors[iRowVersionCurr][m_strCurrentTheme], m_strCurrentTheme);
+    emit_innerContrastLineColorChanged(
+        m_arhshInnerContrastLineColors[iRowVersionCurr][m_strCurrentTheme], m_strCurrentTheme);
+    emit_highlightColorChanged(
+        m_arhshHighlightColors[iRowVersionCurr][m_strCurrentTheme], m_strCurrentTheme);
+    emit_highlightedTextColorChanged(
+        m_arhshHighlightedTextColors[iRowVersionCurr][m_strCurrentTheme], m_strCurrentTheme);
+    emit_outlineColorChanged(
+        m_arhshOutlineColors[iRowVersionCurr][m_strCurrentTheme], m_strCurrentTheme);
+    emit_highlightedOutlineColorChanged(
+        m_arhshHighlightedOutlineColors[iRowVersionCurr][m_strCurrentTheme], m_strCurrentTheme);
+    emit_textColorChanged(
+        m_arhshTextColors[iRowVersionCurr][m_strCurrentTheme], m_strCurrentTheme);
     emit_windowTextColorChanged(
         m_arhshWindowTextColors[iRowVersionCurr][m_strCurrentTheme], m_strCurrentTheme);
     emit_linkColorChanged(
@@ -2201,6 +3337,40 @@ void CWindowsStyle::emit_currentThemeChanged(const QString& i_strTheme)
         /* strMethodInArgs    */ strMthInArgs );
 
     emit currentThemeChanged(i_strTheme);
+}
+
+//------------------------------------------------------------------------------
+void CWindowsStyle::emit_baseColorChanged(const QColor& i_color, const QString& i_strTheme)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = GUI::qColor2Str(i_color) + ", " + i_strTheme;
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "emit_baseColorChanged",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    emit baseColorChanged(i_color, i_strTheme);
+}
+
+//------------------------------------------------------------------------------
+void CWindowsStyle::emit_popupWindowColorChanged(const QColor& i_color, const QString& i_strTheme)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = GUI::qColor2Str(i_color) + ", " + i_strTheme;
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "emit_popupWindowColorChanged",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    emit popupWindowColorChanged(i_color, i_strTheme);
 }
 
 //------------------------------------------------------------------------------
@@ -2255,6 +3425,40 @@ void CWindowsStyle::emit_buttonColorChanged(const QColor& i_color, const QString
 }
 
 //------------------------------------------------------------------------------
+void CWindowsStyle::emit_shadowColorChanged(const QColor& i_color, const QString& i_strTheme)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = GUI::qColor2Str(i_color) + ", " + i_strTheme;
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "emit_shadowColorChanged",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    emit shadowColorChanged(i_color, i_strTheme);
+}
+
+//------------------------------------------------------------------------------
+void CWindowsStyle::emit_topShadowColorChanged(const QColor& i_color, const QString& i_strTheme)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = GUI::qColor2Str(i_color) + ", " + i_strTheme;
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "emit_topShadowColorChanged",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    emit topShadowColorChanged(i_color, i_strTheme);
+}
+
+//------------------------------------------------------------------------------
 void CWindowsStyle::emit_innerContrastLineColorChanged(const QColor& i_color, const QString& i_strTheme)
 //------------------------------------------------------------------------------
 {
@@ -2269,6 +3473,40 @@ void CWindowsStyle::emit_innerContrastLineColorChanged(const QColor& i_color, co
         /* strMethodInArgs    */ strMthInArgs );
 
     emit innerContrastLineColorChanged(i_color, i_strTheme);
+}
+
+//------------------------------------------------------------------------------
+void CWindowsStyle::emit_highlightColorChanged(const QColor& i_color, const QString& i_strTheme)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = GUI::qColor2Str(i_color) + ", " + i_strTheme;
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "emit_highlightColorChanged",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    emit highlightColorChanged(i_color, i_strTheme);
+}
+
+//------------------------------------------------------------------------------
+void CWindowsStyle::emit_highlightedTextColorChanged(const QColor& i_color, const QString& i_strTheme)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = GUI::qColor2Str(i_color) + ", " + i_strTheme;
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "emit_highlightedTextColorChanged",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    emit highlightedTextColorChanged(i_color, i_strTheme);
 }
 
 //------------------------------------------------------------------------------
@@ -2303,6 +3541,23 @@ void CWindowsStyle::emit_highlightedOutlineColorChanged(const QColor& i_color, c
         /* strMethodInArgs    */ strMthInArgs );
 
     emit highlightedOutlineColorChanged(i_color, i_strTheme);
+}
+
+//------------------------------------------------------------------------------
+void CWindowsStyle::emit_textColorChanged(const QColor& i_color, const QString& i_strTheme)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = GUI::qColor2Str(i_color) + ", " + i_strTheme;
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "emit_textColorChanged",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    emit textColorChanged(i_color, i_strTheme);
 }
 
 //------------------------------------------------------------------------------

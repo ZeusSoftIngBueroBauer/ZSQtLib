@@ -57,7 +57,8 @@ T.Switch {
 
         text: control.text
         font: control.font
-        color: control.palette.text
+        //color: control.palette.text
+        color: control.style.textColor
         elide: Text.ElideRight
         verticalAlignment: Text.AlignVCenter
     }

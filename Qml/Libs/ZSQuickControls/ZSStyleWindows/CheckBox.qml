@@ -57,7 +57,8 @@ T.CheckBox {
 
         text: control.text
         font: control.font
-        color: control.palette.windowText
+        //color: control.palette.windowText
+        color: control.style.windowTextColor
         elide: Text.ElideRight
         verticalAlignment: Text.AlignVCenter
     }

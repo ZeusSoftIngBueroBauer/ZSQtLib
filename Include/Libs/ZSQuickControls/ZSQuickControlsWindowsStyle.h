@@ -79,6 +79,7 @@ namespace QuickControls
             setButtonTextColorToDefault(strTheme);
             ...
         }
+    - Add property to save and recall methods.
     - Emit property changed signal if curren theme changes to method "onCurrentThemeChanged"
       in cpp file:
         ...
@@ -140,6 +141,14 @@ signals:
     /*! Signal which is emitted if the theme has been changed from
         a dark theme to a light theme or vice versa. */
     void isDarkThemeChanged();
+    /*! Signal which is emitted if the base color has been changed.
+        @param i_color [in]
+        @param i_strTheme [in] Theme for which the color has been changed. */
+    void baseColorChanged(const QColor& i_color, const QString& i_strTheme);
+    /*! Signal which is emitted if the popup window color has been changed.
+        @param i_color [in]
+        @param i_strTheme [in] Theme for which the color has been changed. */
+    void popupWindowColorChanged(const QColor& i_color, const QString& i_strTheme);
     /*! Signal which is emitted if the backgrounds gradient start color has been changed.
         @param i_color [in]
         @param i_strTheme [in] Theme for which the color has been changed. */
@@ -152,10 +161,26 @@ signals:
         @param i_color [in]
         @param i_strTheme [in] Theme for which the color has been changed. */
     void buttonColorChanged(const QColor& i_color, const QString& i_strTheme);
+    /*! Signal which is emitted if the shadow color has been changed.
+        @param i_color [in]
+        @param i_strTheme [in] Theme for which the color has been changed. */
+    void shadowColorChanged(const QColor& i_color, const QString& i_strTheme);
+    /*! Signal which is emitted if the top shadow color has been changed.
+        @param i_color [in]
+        @param i_strTheme [in] Theme for which the color has been changed. */
+    void topShadowColorChanged(const QColor& i_color, const QString& i_strTheme);
     /*! Signal which is emitted if the inner contrast line color has been changed.
         @param i_color [in]
         @param i_strTheme [in] Theme for which the color has been changed. */
     void innerContrastLineColorChanged(const QColor& i_color, const QString& i_strTheme);
+    /*! Signal which is emitted if the highlight color has been changed.
+        @param i_color [in]
+        @param i_strTheme [in] Theme for which the color has been changed. */
+    void highlightColorChanged(const QColor& i_color, const QString& i_strTheme);
+    /*! Signal which is emitted if the highlighted text color has been changed.
+        @param i_color [in]
+        @param i_strTheme [in] Theme for which the color has been changed. */
+    void highlightedTextColorChanged(const QColor& i_color, const QString& i_strTheme);
     /*! Signal which is emitted if the outline color has been changed.
         @param i_color [in]
         @param i_strTheme [in] Theme for which the color has been changed. */
@@ -164,6 +189,10 @@ signals:
         @param i_color [in]
         @param i_strTheme [in] Theme for which the color has been changed. */
     void highlightedOutlineColorChanged(const QColor& i_color, const QString& i_strTheme);
+    /*! Signal which is emitted if the text color has been changed.
+        @param i_color [in]
+        @param i_strTheme [in] Theme for which the color has been changed. */
+    void textColorChanged(const QColor& i_color, const QString& i_strTheme);
     /*! Signal which is emitted if the window text color has been changed.
         @param i_color [in]
         @param i_strTheme [in] Theme for which the color has been changed. */
@@ -191,6 +220,18 @@ public: // instance methods (current theme)
     bool isLightTheme() const;
     bool isDarkTheme() const;
 public: // instance methods
+    Q_PROPERTY(QColor baseColor READ baseColor WRITE setBaseColor NOTIFY baseColorChanged)
+    Q_INVOKABLE QColor baseColor(const QString& i_strTheme = "", ZS::System::ERowVersion i_rowVersion = ZS::System::ERowVersion::Current) const;
+    Q_INVOKABLE void setBaseColor(const QColor& i_color, const QString& i_strTheme = "");
+    Q_INVOKABLE bool isBaseColorSetToDefault(const QString& i_strTheme = "") const;
+    Q_INVOKABLE void setBaseColorToDefault(const QString& i_strTheme = "");
+public: // instance methods
+    Q_PROPERTY(QColor popupWindowColor READ popupWindowColor WRITE setPopupWindowColor NOTIFY popupWindowColorChanged)
+    Q_INVOKABLE QColor popupWindowColor(const QString& i_strTheme = "", ZS::System::ERowVersion i_rowVersion = ZS::System::ERowVersion::Current) const;
+    Q_INVOKABLE void setPopupWindowColor(const QColor& i_color, const QString& i_strTheme = "");
+    Q_INVOKABLE bool isPopupWindowColorSetToDefault(const QString& i_strTheme = "") const;
+    Q_INVOKABLE void setPopupWindowColorToDefault(const QString& i_strTheme = "");
+public: // instance methods
     Q_PROPERTY(QColor backgroundStartColor READ backgroundStartColor WRITE setBackgroundStartColor NOTIFY backgroundStartColorChanged)
     Q_INVOKABLE QColor backgroundStartColor(const QString& i_strTheme = "", ZS::System::ERowVersion i_rowVersion = ZS::System::ERowVersion::Current) const;
     Q_INVOKABLE void setBackgroundStartColor(const QColor& i_color, const QString& i_strTheme = "");
@@ -206,31 +247,70 @@ public: // instance methods
     Q_INVOKABLE QColor panelStartColor(bool i_bHighlighted = false, bool i_bDown = false, bool i_bHovered = false, const QString& i_strTheme = "", ZS::System::ERowVersion i_rowVersion = ZS::System::ERowVersion::Current) const;
     Q_INVOKABLE QColor panelStopColor(bool i_bHighlighted = false, bool i_bDown = false, bool i_bHovered = false, const QString& i_strTheme = "", ZS::System::ERowVersion i_rowVersion = ZS::System::ERowVersion::Current) const;
 public: // instance methods
-    Q_PROPERTY(QColor buttonBaseColor READ buttonColor WRITE setButtonColor NOTIFY buttonColorChanged);
-    Q_INVOKABLE QColor buttonColor(bool i_bHighlighted = false, bool i_bDown = false, bool i_bHovered = false, const QString& i_strTheme = "", ZS::System::ERowVersion i_rowVersion = ZS::System::ERowVersion::Current);
+    Q_PROPERTY(QColor buttonBaseColor READ buttonBaseColor WRITE setButtonColor NOTIFY buttonColorChanged);
+    Q_INVOKABLE QColor buttonBaseColor(const QString& i_strTheme = "", ZS::System::ERowVersion i_rowVersion = ZS::System::ERowVersion::Current) const;
+    Q_INVOKABLE QColor buttonColor(bool i_bHighlighted = false, bool i_bDown = false, bool i_bHovered = false, const QString& i_strTheme = "", ZS::System::ERowVersion i_rowVersion = ZS::System::ERowVersion::Current) const;
     Q_INVOKABLE void setButtonColor(const QColor& i_color, const QString& i_strTheme = "");
     Q_INVOKABLE bool isButtonColorSetToDefault(const QString& i_strTheme = "") const;
     Q_INVOKABLE void setButtonColorToDefault(const QString& i_strTheme = "");
 public: // instance methods
-    Q_INVOKABLE QColor buttonOutlineColor(bool i_bHighlighted, bool i_bEnabled, const QString& i_strTheme = "", ZS::System::ERowVersion i_rowVersion = ZS::System::ERowVersion::Current);
+    Q_INVOKABLE QColor buttonOutlineColor(bool i_bHighlighted, bool i_bEnabled, const QString& i_strTheme = "", ZS::System::ERowVersion i_rowVersion = ZS::System::ERowVersion::Current) const;
 public: // instance method
-    //Q_PROPERTY(QColor lightShadeColor READ lightShadeColor CONSTANT)
-    //Q_INVOKABLE QColor lightShadeColor(const QString& i_strTheme = "", ZS::System::ERowVersion i_rowVersion = ZS::System::ERowVersion::Current);
-    //Q_PROPERTY(QColor darkShadeColor READ darkShadeColor CONSTANT)
-    //Q_INVOKABLE QColor darkShadeColor(const QString& i_strTheme = "", ZS::System::ERowVersion i_rowVersion = ZS::System::ERowVersion::Current);
-    //Q_PROPERTY(QColor topShadowColor READ topShadowColor CONSTANT)
-    //Q_INVOKABLE QColor topShadowColor(const QString& i_strTheme = "", ZS::System::ERowVersion i_rowVersion = ZS::System::ERowVersion::Current);
-    Q_PROPERTY(QColor innerContrastLineColor READ innerContrastLineColor CONSTANT)
-    Q_INVOKABLE QColor innerContrastLineColor(const QString& i_strTheme = "", ZS::System::ERowVersion i_rowVersion = ZS::System::ERowVersion::Current);
+    //Q_PROPERTY(QColor lightShadeColor READ lightShadeColor WRITE setLightShadeColor NOTIFY lightShadeColorChanged)
+    //Q_INVOKABLE QColor lightShadeColor(const QString& i_strTheme = "", ZS::System::ERowVersion i_rowVersion = ZS::System::ERowVersion::Current) const;
+public: // instance method
+    //Q_PROPERTY(QColor darkShadeColor READ darkShadeColor WRITE setDarkShadeColor NOTIFY darkShadeColorChanged)
+    //Q_INVOKABLE QColor darkShadeColor(const QString& i_strTheme = "", ZS::System::ERowVersion i_rowVersion = ZS::System::ERowVersion::Current) const;
+public: // instance method
+    Q_PROPERTY(QColor shadowColor READ shadowColor WRITE setShadowColor NOTIFY shadowColorChanged)
+    Q_INVOKABLE QColor shadowColor(const QString& i_strTheme = "", ZS::System::ERowVersion i_rowVersion = ZS::System::ERowVersion::Current) const;
+    Q_INVOKABLE void setShadowColor(const QColor& i_color, const QString& i_strTheme = "");
+    Q_INVOKABLE bool isShadowColorSetToDefault(const QString& i_strTheme = "") const;
+    Q_INVOKABLE void setShadowColorToDefault(const QString& i_strTheme = "");
+public: // instance method
+    Q_PROPERTY(QColor topShadowColor READ topShadowColor WRITE setTopShadowColor NOTIFY topShadowColorChanged)
+    Q_INVOKABLE QColor topShadowColor(const QString& i_strTheme = "", ZS::System::ERowVersion i_rowVersion = ZS::System::ERowVersion::Current) const;
+    Q_INVOKABLE void setTopShadowColor(const QColor& i_color, const QString& i_strTheme = "");
+    Q_INVOKABLE bool isTopShadowColorSetToDefault(const QString& i_strTheme = "") const;
+    Q_INVOKABLE void setTopShadowColorToDefault(const QString& i_strTheme = "");
+public: // instance method
+    Q_PROPERTY(QColor innerContrastLineColor READ innerContrastLineColor WRITE setInnerContrastLineColor NOTIFY innerContrastLineColorChanged)
+    Q_INVOKABLE QColor innerContrastLineColor(const QString& i_strTheme = "", ZS::System::ERowVersion i_rowVersion = ZS::System::ERowVersion::Current) const;
     Q_INVOKABLE void setInnerContrastLineColor(const QColor& i_color, const QString& i_strTheme = "");
+    Q_INVOKABLE bool isInnerContrastLineColorSetToDefault(const QString& i_strTheme = "") const;
+    Q_INVOKABLE void setInnerContrastLineColorToDefault(const QString& i_strTheme = "");
 public: // instance method
-    //Q_INVOKABLE QColor highlightColor(const QString& i_strTheme = "", ZS::System::ERowVersion i_rowVersion = ZS::System::ERowVersion::Current);
-    //Q_INVOKABLE QColor highlightedTextColor(const QString& i_strTheme = "", ZS::System::ERowVersion i_rowVersion = ZS::System::ERowVersion::Current);
-    Q_INVOKABLE QColor outlineColor(const QString& i_strTheme = "", ZS::System::ERowVersion i_rowVersion = ZS::System::ERowVersion::Current);
+    Q_PROPERTY(QColor highlightColor READ highlightColor WRITE setHighlightColor NOTIFY highlightColorChanged)
+    Q_INVOKABLE QColor highlightColor(const QString& i_strTheme = "", ZS::System::ERowVersion i_rowVersion = ZS::System::ERowVersion::Current) const;
+    Q_INVOKABLE void setHighlightColor(const QColor& i_color, const QString& i_strTheme = "");
+    Q_INVOKABLE bool isHighlightColorSetToDefault(const QString& i_strTheme = "") const;
+    Q_INVOKABLE void setHighlightColorToDefault(const QString& i_strTheme = "");
+public: // instance method
+    Q_PROPERTY(QColor highlightedTextColor READ highlightedTextColor WRITE setHighlightedTextColor NOTIFY highlightedTextColorChanged)
+    Q_INVOKABLE QColor highlightedTextColor(const QString& i_strTheme = "", ZS::System::ERowVersion i_rowVersion = ZS::System::ERowVersion::Current) const;
+    Q_INVOKABLE void setHighlightedTextColor(const QColor& i_color, const QString& i_strTheme = "");
+    Q_INVOKABLE bool isHighlightedTextColorSetToDefault(const QString& i_strTheme = "") const;
+    Q_INVOKABLE void setHighlightedTextColorToDefault(const QString& i_strTheme = "");
+public: // instance method
+    Q_PROPERTY(QColor outlineColor READ outlineColor WRITE setOutlineColor NOTIFY outlineColorChanged)
+    Q_INVOKABLE QColor outlineColor(const QString& i_strTheme = "", ZS::System::ERowVersion i_rowVersion = ZS::System::ERowVersion::Current) const;
     Q_INVOKABLE void setOutlineColor(const QColor& i_color, const QString& i_strTheme = "");
-    Q_INVOKABLE QColor highlightedOutlineColor(const QString& i_strTheme = "", ZS::System::ERowVersion i_rowVersion = ZS::System::ERowVersion::Current);
+    Q_INVOKABLE bool isOutlineColorSetToDefault(const QString& i_strTheme = "") const;
+    Q_INVOKABLE void setOutlineColorToDefault(const QString& i_strTheme = "");
+public: // instance method
+    Q_PROPERTY(QColor highlightedOutlineColor READ highlightedOutlineColor WRITE setHighlightedOutlineColor NOTIFY highlightedOutlineColorChanged)
+    Q_INVOKABLE QColor highlightedOutlineColor(const QString& i_strTheme = "", ZS::System::ERowVersion i_rowVersion = ZS::System::ERowVersion::Current) const;
     Q_INVOKABLE void setHighlightedOutlineColor(const QColor& i_color, const QString& i_strTheme = "");
+    Q_INVOKABLE bool isHighlightedOutlineColorSetToDefault(const QString& i_strTheme = "") const;
+    Q_INVOKABLE void setHighlightedOutlineColorToDefault(const QString& i_strTheme = "");
+public: // instance method
     //Q_INVOKABLE QColor tabFrameColor(const QString& i_strTheme = "", ZS::System::ERowVersion i_rowVersion = ZS::System::ERowVersion::Current);
+public: // instance methods
+    Q_PROPERTY(QColor textColor READ textColor WRITE setTextColor NOTIFY textColorChanged)
+    Q_INVOKABLE QColor textColor(const QString& i_strTheme = "", ZS::System::ERowVersion i_rowVersion = ZS::System::ERowVersion::Current) const;
+    Q_INVOKABLE void setTextColor(const QColor& i_color, const QString& i_strTheme = "");
+    Q_INVOKABLE bool isTextColorSetToDefault(const QString& i_strTheme = "") const;
+    Q_INVOKABLE void setTextColorToDefault(const QString& i_strTheme = "");
 public: // instance methods
     Q_PROPERTY(QColor windowTextColor READ windowTextColor WRITE setWindowTextColor NOTIFY windowTextColorChanged)
     Q_INVOKABLE QColor windowTextColor(const QString& i_strTheme = "", ZS::System::ERowVersion i_rowVersion = ZS::System::ERowVersion::Current) const;
@@ -257,12 +337,19 @@ protected slots:
     void onCurrentThemeChanged(const QString& i_strTheme);
 protected: // auxiliary instance methods (method tracing)
     void emit_currentThemeChanged(const QString& i_strTheme);
+    void emit_baseColorChanged(const QColor& i_color, const QString& i_strTheme);
+    void emit_popupWindowColorChanged(const QColor& i_color, const QString& i_strTheme);
     void emit_backgroundStartColorChanged(const QColor& i_color, const QString& i_strTheme);
     void emit_backgroundStopColorChanged(const QColor& i_color, const QString& i_strTheme);
     void emit_buttonColorChanged(const QColor& i_color, const QString& i_strTheme);
+    void emit_shadowColorChanged(const QColor& i_color, const QString& i_strTheme);
+    void emit_topShadowColorChanged(const QColor& i_color, const QString& i_strTheme);
     void emit_innerContrastLineColorChanged(const QColor& i_color, const QString& i_strTheme);
+    void emit_highlightColorChanged(const QColor& i_color, const QString& i_strTheme);
+    void emit_highlightedTextColorChanged(const QColor& i_color, const QString& i_strTheme);
     void emit_outlineColorChanged(const QColor& i_color, const QString& i_strTheme);
     void emit_highlightedOutlineColorChanged(const QColor& i_color, const QString& i_strTheme);
+    void emit_textColorChanged(const QColor& i_color, const QString& i_strTheme);
     void emit_windowTextColorChanged(const QColor& i_color, const QString& i_strTheme);
     void emit_linkColorChanged(const QColor& i_color, const QString& i_strTheme);
     void emit_buttonTextColorChanged(const QColor& i_color, const QString& i_strTheme);
@@ -277,6 +364,10 @@ protected: // instance members
     QQmlApplicationEngine* m_pQmlAppEngine;
     /*<! Currently used theme. */
     QString m_strCurrentTheme;
+    /*<! Base colors of the themes. */
+    QVector<QHash<QString, QColor>> m_arhshBaseColors;
+    /*<! Shadow colors of the themes. */
+    QVector<QHash<QString, QColor>> m_arhshPopupWindowColors;
     /*<! Gradient background start colors of the themes. */
     QVector<QHash<QString, QColor>> m_arhshBackgroundStartColors;
     /*<! Gradient background stop colors of the themes. */
@@ -287,20 +378,24 @@ protected: // instance members
     //QVector<QHash<QString, QColor>> m_arhshLightShadeColors;
     ///*<! Dark shade colors of the themes. */
     //QVector<QHash<QString, QColor>> m_arhshDarkShadeColors;
-    ///*<! Top shadow colors of the themes. */
-    //QVector<QHash<QString, QColor>> m_arhshTopShadowColors;
+    /*<! Shadow colors of the themes. */
+    QVector<QHash<QString, QColor>> m_arhshShadowColors;
+    /*<! Top shadow colors of the themes. */
+    QVector<QHash<QString, QColor>> m_arhshTopShadowColors;
     /*<! Inner contrast line colors of the themes. */
     QVector<QHash<QString, QColor>> m_arhshInnerContrastLineColors;
-    ///*<! Highlight colors of the themes. */
-    //QVector<QHash<QString, QColor>> m_arhshHighlightColors;
-    ///*<! Highlighted text colors of the themes. */
-    //QVector<QHash<QString, QColor>> m_arhshHighlightedTextColors;
+    /*<! Highlight colors of the themes. */
+    QVector<QHash<QString, QColor>> m_arhshHighlightColors;
+    /*<! Highlighted text colors of the themes. */
+    QVector<QHash<QString, QColor>> m_arhshHighlightedTextColors;
     /*<! Outline colors of the themes. */
     QVector<QHash<QString, QColor>> m_arhshOutlineColors;
     /*<! Highlighted outline colors of the themes. */
     QVector<QHash<QString, QColor>> m_arhshHighlightedOutlineColors;
     ///*<! Tab frame colors of the themes. */
     //QVector<QHash<QString, QColor>> m_arhshTabFrameColors;
+    /*<! Text colors (text fields) of the themes. */
+    QVector<QHash<QString, QColor>> m_arhshTextColors;
     /*<! Window (label) text colors of the themes. */
     QVector<QHash<QString, QColor>> m_arhshWindowTextColors;
     /*<! Link colors of the themes. */
@@ -309,6 +404,8 @@ protected: // instance members
     QVector<QHash<QString, QColor>> m_arhshButtonTextColors;
     /*!< Trace admin object to control trace outputs of the class. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
+    /*!< Trace admin object to control trace outputs for noisy methods (getters) of the class. */
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjNoisyMethods;
 
 }; // class CWindowsStyle
 

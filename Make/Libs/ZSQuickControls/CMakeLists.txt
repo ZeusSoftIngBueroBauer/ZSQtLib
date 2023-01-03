@@ -59,6 +59,8 @@ list(APPEND _ImageFiles
 
 list(APPEND _ZSQuickControlsQmlFiles
     ${_QmlPath}/${PROJECT_NAME}/qmldir
+    ${_QmlPath}/${PROJECT_NAME}/ZSQuickControlsStyled.qml
+    ${_QmlPath}/${PROJECT_NAME}/ZSQuickControlsStyleSettings.qml
     ${_QmlPath}/${PROJECT_NAME}/ZSQuickControlsStyleWdgt.qml
 )
 

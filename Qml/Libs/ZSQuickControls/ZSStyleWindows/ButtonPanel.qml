@@ -47,13 +47,13 @@ Rectangle {
     Gradient {
         id: buttonGradient
         GradientStop {
-            id: buttonGradientStop
+            id: buttonGradientStart
             position: 0
             //color: Fusion.gradientStart(Fusion.buttonColor(panel.control.palette, panel.highlighted, panel.control.down, panel.control.hovered))
             color: style.panelStartColor(panel.highlighted, panel.control.down, panel.control.hovered, style.currentTheme)
         }
         GradientStop {
-            id: buttonGradientStart
+            id: buttonGradientStop
             position: 1
             //color: Fusion.gradientStop(Fusion.buttonColor(panel.control.palette, panel.highlighted, panel.control.down, panel.control.hovered))
             color: style.panelStopColor(panel.highlighted, panel.control.down, panel.control.hovered, style.currentTheme)
@@ -87,6 +87,14 @@ Rectangle {
         function onButtonColorChanged() {
             panel.color = style.buttonColor(
                 panel.highlighted, control.down || control.checked, control.hovered, style.currentTheme)
+        }
+        function onOutlineColorChanged() {
+            panel.border.color = style.buttonOutlineColor(
+                panel.highlighted || control.visualFocus, control.enabled, style.currentTheme)
+        }
+        function onHighlightedOutlineColorChanged() {
+            panel.border.color = style.buttonOutlineColor(
+                panel.highlighted || control.visualFocus, control.enabled, style.currentTheme)
         }
     }
 }
