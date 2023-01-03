@@ -78,10 +78,6 @@ global type definitions and constants
 #endif
 
 
-namespace ZS
-{
-namespace System
-{
 // The static arrays "CEnum<>::s_arEnumEntries" are defined in the cpp file.
 #ifdef _WINDOWS
 #pragma warning( push )
@@ -92,6 +88,10 @@ namespace System
 #pragma GCC diagnostic pop
 #endif
 
+namespace ZS
+{
+namespace System
+{
 //==============================================================================
 /*! A mode is often used to distinguish between different settings.
 
@@ -290,10 +290,7 @@ enum class ERowVersion
 //==============================================================================
 {
     Original  = 0,  /*!< Original version before changing the value. */
-    Current   = 1,  /*!< After editing a value the current version might be differet from the original value. */
-    Proposed  = 2,  /*!< When editing a value the proposed value may be differnt from the current version. */
-    Default   = 3,  /*!< Use either Original, Current or Proposed version depending on current state. */
-    Undefined = 4   /*!< The row version is not defined. */
+    Current   = 1   /*!< After editing a value the current version might be differet from the original value. */
 };
 
 template class ZSSYSDLL_API CEnum<ERowVersion>;
@@ -501,15 +498,14 @@ enum class EDimensionType
     Undefined       = 3     /*!< The dimension type is undefined. */
 };
 
-#ifdef _WINDOWS
-#pragma warning( push )
-#pragma warning( disable : 4661 )
-#elif defined __linux__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-result"
-#pragma GCC diagnostic pop
-#endif
-// The static array "CEnum<ERunMode>::s_arEnumEntries" is defined in the cpp file.
+//#ifdef _WINDOWS
+//#pragma warning( push )
+//#pragma warning( disable : 4661 )
+//#elif defined __linux__
+//#pragma GCC diagnostic push
+//#pragma GCC diagnostic ignored "-Wunused-result"
+//#pragma GCC diagnostic pop
+//#endif
 template class ZSSYSDLL_API CEnum<EDimensionType>;
 typedef CEnum<EDimensionType> CEnumDimensionType;
 
@@ -521,7 +517,7 @@ const int EArrayIndexFirstElement     = -2;
 const int EArrayIndexLastElement      = -3;
 const int EArrayIndexCountAllElements = -4;
 
-ZSSYSDLL_API QString arrayIndex2Str( int i_idx, EEnumEntryAliasStr i_alias = ZS::System::EEnumEntryAliasStrName );
+ZSSYSDLL_API QString arrayIndex2Str( int i_idx, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName );
 
 ZSSYSDLL_API bool isValidIndex( int i_idx, int i_iArrLen, bool i_bAllowSpecialArrayIndices = false ); // ok if idxVal >= 0 AND idxVal < ArrLen or idxVal = First|Last|All (if AllowSpecial=true)
 ZSSYSDLL_API bool isValidRange( int i_idxStart, int i_iIdxCount, int i_iArrLen, bool i_bAllowSpecialArrayIndices = false );
@@ -532,50 +528,79 @@ ZSSYSDLL_API void getMinMaxArrayRange( int i_idxStart, int i_iIdxCount, int i_iA
 ZSSYSDLL_API void getMinCountArrayRange( int i_idxStart, int i_iArrLen, int* o_pIdxMin, int* o_piIdxCount );
 ZSSYSDLL_API void getMinCountArrayRange( int i_idxStart, int i_iIdxCount, int i_iArrLen, int* o_pIdxMin, int* o_pIdxCount );
 
-} // namespace System
-
-namespace Trace
-{
-#ifndef ETraceDetailLevelDefined
-#define ETraceDetailLevelDefined
 //==============================================================================
-/*! Predefined trace detail levels.
+/*! Predefined trace detail levels for method calls.
 
     @ingroup _GRP_Libs_ZSSys_MethodTracing
 
     Higher detail levels include lower detail levels.
-    Please note that this enum is only a suggestion for trace detail levels
-    which can be used. The detail level of the trace admin object is an integer
-    type and user defined values can be used if necessary.
-    To avoid type casts requested by the compiler this enum is not a class enum definition.
 
     @see ZS::System::SEnumEntry
     @see ZS::System::CEnum
     @see _GRP_BasicConcepts_Enumerations
 */
-enum ETraceDetailLevel
+enum class EMethodTraceDetailLevel
 //==============================================================================
 {
-    ETraceDetailLevelUndefined      = -1,    /*!< Used e.g. to indicate that the trace level should not be used but the predefined detail level should be used. */
-    ETraceDetailLevelNone           =  0,    /*!< Trace output is disabled. */
-    ETraceDetailLevelMethodCalls    =  1,    /*!< Tracing method entries and leaves without tracing input and output arguments and without method return value. */
-    ETraceDetailLevelMethodArgs     =  2,    /*!< Tracing method entries and leaves together with input and output arguemnts and method return value. */
-    ETraceDetailLevelInternalStates =  3,    /*!< Tracing everything above and internal states (e.g. current state, current request in progress etc.. */
-    ETraceDetailLevelRuntimeInfo    =  4,    /*!< Tracing everything above and additional runtime info (e.g. what is going to be done, what has been executed and how). */
-    ETraceDetailLevelVerbose        =  5,    /*!< Tracing everything above and even more. */
-    ETraceDetailLevelCount
+    None         = 0, /*!< Method trace output is disabled. */
+    EnterLeave   = 1, /*!< Tracing entering and leaving methods only
+                           (without tracing input and output arguments and
+                           without method return value). */
+    ArgsNormal   = 2, /*!< Tracing entering and leaving methods together with
+                           input and output arguemnts and method return value. */
+    ArgsDetailed = 3, /*!< Tracing entering and leaving methods together with
+                           input and output arguements and method return value
+                           with more details than normal (content of arrays). */
+    ArgsVerbose  = 4, /*!< Tracing entering and leaving methods together with
+                           input and output arguemnts and method return value
+                           in a very detailed level (content of arrays). */
+    Undefined    = 5  /*!< Used e.g. to indicate that the trace level should not be used
+                           but the predefined detail level should be used. */
 };
-#endif // #ifndef ETraceDetailLevelDefined
 
-ZSSYSDLL_API QString traceDetailLevel2Str( int i_iDetailLevel, ZS::System::EEnumEntryAliasStr i_alias = ZS::System::EEnumEntryAliasStrName );
-ZSSYSDLL_API int str2TraceDetailLevel( const QString& i_str, ZS::System::EEnumEntryAliasStr i_alias = ZS::System::EEnumEntryAliasStrName );
+template class ZSSYSDLL_API CEnum<EMethodTraceDetailLevel>;
+typedef CEnum<EMethodTraceDetailLevel> CEnumMethodTraceDetailLevel;
+
+//==============================================================================
+/*! Predefined detail levels to trace runtime info.
+
+    @ingroup _GRP_Libs_ZSSys_MethodTracing
+
+    Higher detail levels include lower detail levels.
+
+    @see ZS::System::SEnumEntry
+    @see ZS::System::CEnum
+    @see _GRP_BasicConcepts_Enumerations
+*/
+enum class ELogDetailLevel
+//==============================================================================
+{
+    None          = 0, /*!< Log outputs are disabled. */
+    Fatal         = 1, /*!< Log fatal errors (critical errors, critical exceptions). */
+    Error         = 2, /*!< At this level all error conditions should be logged. */
+    Warning       = 3, /*!< At the Warning level all events that could potentially
+                            become an error should be logged. */
+    Notice        = 4, /*!< At this level all events should be logged which are
+                            considered to be notable but are not an error. */
+    Info          = 5, /*!< The Info level is usually used to log all actions that
+                            are user-driven or system specific. */
+    Debug         = 6, /*!< The Debug level is usually used to log anything that
+                            happens in the program for debugging purposes. */
+    DebugDetailed = 7, /*!< Output detailed debug info. */
+    DebugVerbose  = 8, /*!< Output very detailed debug info. */
+    Undefined     = 9  /*!< Used e.g. to indicate that the log level should not be used
+                            but the predefined detail level should be used. */
+};
+
+template class ZSSYSDLL_API CEnum<ELogDetailLevel>;
+typedef CEnum<ELogDetailLevel> CEnumLogDetailLevel;
+
+} // namespace System
+
+} // namespace ZS
 
 #ifdef _WINDOWS
 #pragma warning( pop )
 #endif
-
-} // namespace Trace
-
-} // namespace ZS
 
 #endif // #ifndef ZSSys_Common_h

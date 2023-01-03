@@ -58,7 +58,7 @@ public: // instance methods
     void setText( const QString& i_strText );
     QString text() const;
     void setPixmap( const QPixmap& i_pxm );
-    const QPixmap* pixmap() const;
+    QPixmap pixmap() const;
     void setScaledContents ( bool i_bScaled );
     bool hasScaledContents () const;
 public: // overridables of base class QWidget

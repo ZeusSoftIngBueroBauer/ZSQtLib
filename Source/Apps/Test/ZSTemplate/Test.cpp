@@ -25,7 +25,9 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include <QtCore/qfileinfo.h>
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
 #include <QtCore/qrandom.h>
+#endif
 #include <QtCore/qthread.h>
 
 #include "Test.h"
@@ -40,7 +42,6 @@ may result in using the software modules.
 
 
 using namespace ZS::System;
-using namespace ZS::Trace;
 using namespace ZS::Apps::Test::Template;
 
 
@@ -53,12 +54,9 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CTest::CTest( const QString& i_strTestStepsFileName ) :
+CTest::CTest() :
 //------------------------------------------------------------------------------
-    ZS::Test::CTest(
-        /* strName              */ "ZS::Apps::Test::Template",
-        /* strTestStepsFileName */ i_strTestStepsFileName,
-        /* iTestStepInterval_ms */ 0 )
+    ZS::Test::CTest("ZSSysTemplate")
 {
     int idxGroup = 0;
 
@@ -121,20 +119,7 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
     // Recall test step settings
     //--------------------------
 
-    QFileInfo fileInfo(i_strTestStepsFileName);
-
-    if( fileInfo.exists() )
-    {
-        SErrResultInfo errResultInfo = recall(i_strTestStepsFileName);
-
-        if(errResultInfo.isErrorResult())
-        {
-            if(CErrLog::GetInstance() != nullptr)
-            {
-                CErrLog::GetInstance()->addEntry(errResultInfo);
-            }
-        }
-    }
+    recallTestSteps();
 
 } // default ctor
 
@@ -142,7 +127,7 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
 CTest::~CTest()
 //------------------------------------------------------------------------------
 {
-    SErrResultInfo errResultInfo = save();
+    SErrResultInfo errResultInfo = saveTestSteps();
 
     if(errResultInfo.isErrorResult())
     {
@@ -160,14 +145,14 @@ void CTest::doTestStepGrp1Step1( ZS::Test::CTestStep* i_pTestStep )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = "TestStep: " + QString(i_pTestStep == nullptr ? "nullptr" : i_pTestStep->path());
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "doTestStepGrp1Step1",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -187,8 +172,12 @@ void CTest::doTestStepGrp1Step1( ZS::Test::CTestStep* i_pTestStep )
     // Do Test Step
     //-------------
 
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
     QRandomGenerator randGen;
     unsigned long uTestStepDuration_ms = 100 + randGen.generate() % 900;
+    #else
+    unsigned long uTestStepDuration_ms = 500;
+    #endif
     QThread::msleep(uTestStepDuration_ms);
 
     // Result Values
@@ -207,14 +196,14 @@ void CTest::doTestStepGrp1Step2( ZS::Test::CTestStep* i_pTestStep )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = "TestStep: " + QString(i_pTestStep == nullptr ? "nullptr" : i_pTestStep->path());
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "doTestStepGrp1Step2",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -234,8 +223,12 @@ void CTest::doTestStepGrp1Step2( ZS::Test::CTestStep* i_pTestStep )
     // Do Test Step
     //-------------
 
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
     QRandomGenerator randGen;
     unsigned long uTestStepDuration_ms = 100 + randGen.generate() % 900;
+    #else
+    unsigned long uTestStepDuration_ms = 500;
+    #endif
     QThread::msleep(uTestStepDuration_ms);
 
     // Result Values
@@ -254,14 +247,14 @@ void CTest::doTestStepGrp1Step3( ZS::Test::CTestStep* i_pTestStep )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = "TestStep: " + QString(i_pTestStep == nullptr ? "nullptr" : i_pTestStep->path());
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "doTestStepGrp1Step3",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -281,8 +274,12 @@ void CTest::doTestStepGrp1Step3( ZS::Test::CTestStep* i_pTestStep )
     // Do Test Step
     //-------------
 
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
     QRandomGenerator randGen;
     unsigned long uTestStepDuration_ms = 100 + randGen.generate() % 900;
+    #else
+    unsigned long uTestStepDuration_ms = 500;
+    #endif
     QThread::msleep(uTestStepDuration_ms);
 
     // Result Values
@@ -301,14 +298,14 @@ void CTest::doTestStepGrp2Step1( ZS::Test::CTestStep* i_pTestStep )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = "TestStep: " + QString(i_pTestStep == nullptr ? "nullptr" : i_pTestStep->path());
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "doTestStepGrp2Step1",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -328,8 +325,12 @@ void CTest::doTestStepGrp2Step1( ZS::Test::CTestStep* i_pTestStep )
     // Do Test Step
     //-------------
 
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
     QRandomGenerator randGen;
     unsigned long uTestStepDuration_ms = 100 + randGen.generate() % 900;
+    #else
+    unsigned long uTestStepDuration_ms = 500;
+    #endif
     QThread::msleep(uTestStepDuration_ms);
 
     // Result Values
@@ -348,14 +349,14 @@ void CTest::doTestStepGrp2Step2( ZS::Test::CTestStep* i_pTestStep )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = "TestStep: " + QString(i_pTestStep == nullptr ? "nullptr" : i_pTestStep->path());
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "doTestStepGrp2Step2",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -375,8 +376,12 @@ void CTest::doTestStepGrp2Step2( ZS::Test::CTestStep* i_pTestStep )
     // Do Test Step
     //-------------
 
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
     QRandomGenerator randGen;
     unsigned long uTestStepDuration_ms = 100 + randGen.generate() % 900;
+    #else
+    unsigned long uTestStepDuration_ms = 500;
+    #endif
     QThread::msleep(uTestStepDuration_ms);
 
     // Result Values
@@ -395,14 +400,14 @@ void CTest::doTestStepGrp2Step3( ZS::Test::CTestStep* i_pTestStep )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = "TestStep: " + QString(i_pTestStep == nullptr ? "nullptr" : i_pTestStep->path());
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "doTestStepGrp2Step3",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -422,8 +427,12 @@ void CTest::doTestStepGrp2Step3( ZS::Test::CTestStep* i_pTestStep )
     // Do Test Step
     //-------------
 
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
     QRandomGenerator randGen;
     unsigned long uTestStepDuration_ms = 100 + randGen.generate() % 900;
+    #else
+    unsigned long uTestStepDuration_ms = 500;
+    #endif
     QThread::msleep(uTestStepDuration_ms);
 
     // Result Values

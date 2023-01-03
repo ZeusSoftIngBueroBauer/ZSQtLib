@@ -39,7 +39,6 @@ may result in using the software modules.
 
 using namespace ZS::System;
 using namespace ZS::Ipc;
-using namespace ZS::Trace;
 
 
 /*******************************************************************************
@@ -170,7 +169,7 @@ CTcpSocketWrapper::CTcpSocketWrapper(
     int            i_iSocketId,
     QTcpSocket*    i_pTcpSocket,
     CTrcMthFile*   i_pTrcMthFile,
-    int            i_iTrcMthFileDetailLevel ) :
+    EMethodTraceDetailLevel i_eTrcMthFileDetailLevel ) :
 //------------------------------------------------------------------------------
     CIpcSocketWrapper(
         /* strObjName             */ i_strObjName,
@@ -179,11 +178,11 @@ CTcpSocketWrapper::CTcpSocketWrapper(
         /* iSocketId              */ i_iSocketId,
         /* pSocket                */ i_pTcpSocket,
         /* pTrcMthFile            */ i_pTrcMthFile,
-        /* iTrcMthFileDetailLevel */ i_iTrcMthFileDetailLevel ),
+        /* iTrcMthFileDetailLevel */ i_eTrcMthFileDetailLevel ),
     m_pTcpSocket(i_pTcpSocket)
 {
     // The derived classes must instantiate the trace admin object and trace the ctor.
-    if( m_pTrcMthFile == nullptr )
+    if( m_pTrcMthFile == nullptr && !i_strObjName.contains("TrcServer") && !i_strObjName.contains("TrcClient") )
     {
         m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
     }
@@ -191,8 +190,8 @@ CTcpSocketWrapper::CTcpSocketWrapper(
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -277,18 +276,18 @@ CTcpSocketWrapper::CTcpSocketWrapper(
     const SSocketDscr& i_socketDscr,
     QTcpSocket*        i_pTcpSocket,
     CTrcMthFile*       i_pTrcMthFile,
-    int                i_iTrcMthFileDetailLevel ) :
+    EMethodTraceDetailLevel i_eTrcMthFileDetailLevel ) :
 //------------------------------------------------------------------------------
     CIpcSocketWrapper(
         /* strObjName             */ i_strObjName,
         /* socketDscr             */ i_socketDscr,
         /* pSocket                */ i_pTcpSocket,
         /* pTrcMthFile            */ i_pTrcMthFile,
-        /* iTrcMthFileDetailLevel */ i_iTrcMthFileDetailLevel ),
+        /* iTrcMthFileDetailLevel */ i_eTrcMthFileDetailLevel ),
     m_pTcpSocket(i_pTcpSocket)
 {
     // The derived classes must instantiate the trace admin object and trace the ctor.
-    if( m_pTrcMthFile == nullptr )
+    if( m_pTrcMthFile == nullptr && !i_strObjName.contains("TrcServer") && !i_strObjName.contains("TrcClient") )
     {
         m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
     }
@@ -296,8 +295,8 @@ CTcpSocketWrapper::CTcpSocketWrapper(
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -384,8 +383,8 @@ CTcpSocketWrapper::~CTcpSocketWrapper()
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -464,7 +463,7 @@ void CTcpSocketWrapper::connectToHost(
 {
     QString strAddTrcInfo;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = i_strRemoteHostName + ":" + QString::number(i_uRemotePort);
     }
@@ -472,8 +471,8 @@ void CTcpSocketWrapper::connectToHost(
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -493,7 +492,7 @@ bool CTcpSocketWrapper::waitForConnected( int i_iTimeout_ms )
 {
     QString strAddTrcInfo;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = "Timeout: " + QString::number(i_iTimeout_ms);
     }
@@ -501,8 +500,8 @@ bool CTcpSocketWrapper::waitForConnected( int i_iTimeout_ms )
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -519,7 +518,7 @@ void CTcpSocketWrapper::disconnectFromHost()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "disconnectFromHost",
         /* strAddInfo   */ "" );
 
@@ -533,7 +532,7 @@ bool CTcpSocketWrapper::waitForDisconnected( int i_iTimeout_ms )
 {
     QString strAddTrcInfo;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = "Timeout: " + QString::number(i_iTimeout_ms);
     }
@@ -541,8 +540,8 @@ bool CTcpSocketWrapper::waitForDisconnected( int i_iTimeout_ms )
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -563,8 +562,8 @@ void CTcpSocketWrapper::abort()
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -582,8 +581,8 @@ void CTcpSocketWrapper::abort()
 //    CMethodTracer mthTracer(
 //        /* pAdminObj          */ m_pTrcAdminObj,
 //        /* pTrcMthFile        */ m_pTrcMthFile,
-//        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-//        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+//        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+//        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
 //        /* strNameSpace       */ nameSpace(),
 //        /* strClassName       */ className(),
 //        /* strObjName         */ objectName(),
@@ -601,8 +600,8 @@ qint64 CTcpSocketWrapper::write( const QByteArray& i_byteArray )
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -619,7 +618,7 @@ bool CTcpSocketWrapper::waitForReadyRead( int i_iTimeout_ms )
 {
     QString strAddTrcInfo;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = "Timeout: " + QString::number(i_iTimeout_ms);
     }
@@ -627,8 +626,8 @@ bool CTcpSocketWrapper::waitForReadyRead( int i_iTimeout_ms )
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -653,8 +652,8 @@ qint64 CTcpSocketWrapper::bytesAvailable() const
 //    CMethodTracer mthTracer(
 //        /* pAdminObj          */ m_pTrcAdminObj,
 //        /* pTrcMthFile        */ m_pTrcMthFile,
-//        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-//        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+//        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+//        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
 //        /* strNameSpace       */ nameSpace(),
 //        /* strClassName       */ className(),
 //        /* strObjName         */ objectName(),
@@ -672,8 +671,8 @@ QByteArray CTcpSocketWrapper::read( qint64 i_iMaxSize )
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -691,8 +690,8 @@ QByteArray CTcpSocketWrapper::readAll()
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -782,8 +781,8 @@ void CTcpSocketWrapper::onConnected()
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -808,8 +807,8 @@ void CTcpSocketWrapper::onDisconnected()
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -828,7 +827,7 @@ void CTcpSocketWrapper::onError( QAbstractSocket::SocketError i_socketError )
 {
     QString strAddTrcInfo;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = result2Str( TcpSocketError2Result(i_socketError) );
     }
@@ -836,8 +835,8 @@ void CTcpSocketWrapper::onError( QAbstractSocket::SocketError i_socketError )
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -859,7 +858,7 @@ void CTcpSocketWrapper::onStateChanged( QAbstractSocket::SocketState i_socketSta
 {
     QString strAddTrcInfo;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = socketState2Str( TcpSocketState2SocketState(i_socketState) );
     }
@@ -867,8 +866,8 @@ void CTcpSocketWrapper::onStateChanged( QAbstractSocket::SocketState i_socketSta
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -888,8 +887,8 @@ void CTcpSocketWrapper::onAboutToClose()
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -907,8 +906,8 @@ void CTcpSocketWrapper::onBytesWritten( qint64 i_iBytes )
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -926,8 +925,8 @@ void CTcpSocketWrapper::onReadyRead()
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),

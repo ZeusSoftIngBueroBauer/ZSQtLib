@@ -38,9 +38,11 @@ may result in using the software modules.
 #include "ZSTestGUI/ZSTestGUIDllMain.h"
 #include "ZSTest/ZSTest.h"
 
+class QGroupBox;
 class QLabel;
 class QLineEdit;
 class QPushButton;
+class QSplitter;
 class QTreeView;
 class QHBoxLayout;
 class QVBoxLayout;
@@ -58,12 +60,22 @@ class CTestStep;
 namespace GUI
 {
 class CModeldxTreeTestSteps;
+class CWdgtTestStep;
 
 //******************************************************************************
 class ZSTESTGUIDLL_API CWdgtIdxTreeTestSteps : public QWidget
 //******************************************************************************
 {
     Q_OBJECT
+public: // type definitions and constants
+    enum class EViewMode {
+        NavPanelOnly            = 0,
+        NavPanelAndLeaveContent = 1,
+        Count,
+        Undefined
+    };
+    static QString viewMode2Str( EViewMode i_eVal, int i_alias = ZS::System::EEnumEntryAliasStrName );
+    static QPixmap viewMode2Pixmap( EViewMode i_eVal, const QSize& i_sz = QSize(24,24));
 public: // ctors and dtor
     CWdgtIdxTreeTestSteps(
         CTest*          i_pTest,
@@ -72,12 +84,16 @@ public: // ctors and dtor
     virtual ~CWdgtIdxTreeTestSteps();
 public: // instance methods
     QTreeView* treeView() { return m_pTreeViewTestSteps; }
+public: // instance methods
+    void setViewMode( EViewMode i_viewMode );
+    EViewMode viewMode() const { return m_viewMode; }
 protected slots:
     void onBtnStartClicked( bool i_bChecked = true );
     void onBtnStepClicked( bool i_bChecked = true );
     void onBtnPauseClicked( bool i_bChecked = true );
     void onBtnStopClicked( bool i_bChecked = true );
 protected slots:
+    void onBtnViewModeClicked( bool i_bChecked );
     void onBtnTreeViewResizeRowsAndColumnsToContentsClicked( bool i_bChecked );
     void onBtnTreeViewExpandAllClicked( bool i_bChecked );
     void onBtnTreeViewCollapseAllClicked( bool i_bChecked );
@@ -89,15 +105,22 @@ protected slots:
     void onCurrentTestStepChanged( ZS::Test::CTestStep* i_pTestStep );
     void onTestStepIntervalChanged( int i_iInterval_ms );
 protected slots:
-    void onTreeViewExpanded( const QModelIndex& i_iModelIdx );
+    void onTreeViewTestStepsExpanded( const QModelIndex& i_iModelIdx );
+    void onTreeViewTestStepsSelectionModelCurrentRowChanged( const QModelIndex& i_modelIdxCurr, const QModelIndex& i_modelIdxPrev );
+private: // auxiliary methods
+    CTestStep* getSelectedTestStep() const;
 protected: // instance members
+    QString                m_strSettingsKey;
     CTest*                 m_pTest;
+    EViewMode              m_viewMode;
+    QSize                  m_szBtns;
     QVBoxLayout*           m_pLytMain;
     QHBoxLayout*           m_pLytHeadLine;
     QPushButton*           m_pBtnStart;
     QPushButton*           m_pBtnStep;
     QPushButton*           m_pBtnPause;
     QPushButton*           m_pBtnStop;
+    QPushButton*           m_pBtnViewMode;
     QPushButton*           m_pBtnTreeViewResizeRowsAndColumnsToContents;
     QPushButton*           m_pBtnTreeViewExpandAll;
     QPushButton*           m_pBtnTreeViewCollapseAll;
@@ -106,7 +129,11 @@ protected: // instance members
     QLabel*                m_pLblTestStepCurr;
     QLineEdit*             m_pEdtTestStepCurr;
     CModeldxTreeTestSteps* m_pTestStepsModel;
+    QSplitter*             m_pSplitter;
     QTreeView*             m_pTreeViewTestSteps;
+    QGroupBox*             m_pGrpWdgtTestStep;
+    QVBoxLayout*           m_pLytGrpWdgtTestStep;
+    CWdgtTestStep*         m_pWdgtTestStep;
 
 }; // class CWgdtTest
 

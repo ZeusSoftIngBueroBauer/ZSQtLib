@@ -50,6 +50,9 @@ namespace System
 struct ZSSYSDLL_API SErrResult
 //******************************************************************************
 {
+    Q_GADGET
+    Q_PROPERTY(QString severity READ getSeverityStr WRITE setSeverity)
+    Q_PROPERTY(QString result READ getResultStr WRITE setResult)
 public: // ctors and dtor
     SErrResult();
     SErrResult( EResultSeverity i_severity, EResult i_result );
@@ -64,14 +67,18 @@ public: // instance methods
     bool isErrorResult() const { return m_severity >= EResultSeverityError; }
 public: // instance methods
     void setSeverity( EResultSeverity i_severity );
+    void setSeverity( const QString& i_strSeverity );
     /*! Returns the severity of the error. */
     EResultSeverity getSeverity() const { return m_severity; }
     QString getSeverityStr() const;
 public: // instance methods
     void setResult( EResult i_result );
+    void setResult( const QString& i_strResult );
     /*! Returns the error result code. */
     EResult getResult() const { return m_result; }
     QString getResultStr() const;
+public: // instance methods
+    QString toString() const;
 protected: // instance members
     EResultSeverity m_severity; /*!< Severity of the error. */
     EResult         m_result;   /*!< Result code. */
@@ -111,6 +118,14 @@ protected: // instance members
 struct ZSSYSDLL_API SErrSource
 //******************************************************************************
 {
+    Q_GADGET
+    Q_PROPERTY(QString nameSpace READ getNameSpace WRITE setNameSpace)
+    Q_PROPERTY(QString className READ getClassName WRITE setClassName)
+    Q_PROPERTY(QString objectName READ getObjectName WRITE setObjectName)
+    Q_PROPERTY(QString methodName READ getMethodName WRITE setMethodName)
+    Q_PROPERTY(QString filePath READ getFilePath WRITE setFilePath)
+    Q_PROPERTY(int lineNr READ getLineNr WRITE setLineNr)
+    Q_PROPERTY(QString threadName READ getThreadName WRITE setThreadName)
 public: // ctors and dtor
     SErrSource();
     SErrSource(
@@ -196,6 +211,12 @@ protected: // instance members
 struct ZSSYSDLL_API SErrResultInfo
 //******************************************************************************
 {
+    Q_GADGET
+    Q_PROPERTY(SErrResult errResult READ getErrResult WRITE setErrResult)
+    Q_PROPERTY(QString severity READ getSeverityStr WRITE setSeverity)
+    Q_PROPERTY(QString result READ getResultStr WRITE setResult)
+    Q_PROPERTY(SErrSource errSource READ getErrSource WRITE setErrSource)
+    Q_PROPERTY(QString addErrInfoDscr READ getAddErrInfoDscr WRITE setAddErrInfoDscr)
 public: // ctors and dtor
     SErrResultInfo();
     SErrResultInfo(
@@ -203,8 +224,8 @@ public: // ctors and dtor
         const QString&  i_strClassName,
         const QString&  i_strObjName,
         const QString&  i_strMthName,
-        EResult         i_result = ZS::System::EResultSuccess,
-        EResultSeverity i_severity = ZS::System::EResultSeveritySuccess,
+        EResult         i_result = EResultSuccess,
+        EResultSeverity i_severity = EResultSeveritySuccess,
         const QString&  i_strAddErrInfoDscr = "" );
     SErrResultInfo(
         const QString&    i_strNameSpace,
@@ -216,8 +237,8 @@ public: // ctors and dtor
     SErrResultInfo(
         const QString&  i_strFilePath,
         int             i_iLineNr,
-        EResult         i_result = ZS::System::EResultSuccess,
-        EResultSeverity i_severity = ZS::System::EResultSeveritySuccess,
+        EResult         i_result = EResultSuccess,
+        EResultSeverity i_severity = EResultSeveritySuccess,
         const QString&  i_strAddErrInfoDscr = "" );
     SErrResultInfo(
         const QString&    i_strFilePath,
@@ -231,8 +252,8 @@ public: // ctors and dtor
         const QString&  i_strMthName,
         const QString&  i_strFilePath,
         int             i_iLineNr,
-        EResult         i_result = ZS::System::EResultSuccess,
-        EResultSeverity i_severity = ZS::System::EResultSeveritySuccess,
+        EResult         i_result = EResultSuccess,
+        EResultSeverity i_severity = EResultSeveritySuccess,
         const QString&  i_strAddErrInfoDscr = "" );
     SErrResultInfo(
         const QString&    i_strNameSpace,
@@ -245,8 +266,8 @@ public: // ctors and dtor
         const QString&    i_strAddErrInfoDscr = "" );
     SErrResultInfo(
         const SErrSource& i_errSource,
-        EResult           i_result = ZS::System::EResultSuccess,
-        EResultSeverity   i_severity = ZS::System::EResultSeveritySuccess,
+        EResult           i_result = EResultSuccess,
+        EResultSeverity   i_severity = EResultSeveritySuccess,
         const QString&    i_strAddErrInfoDscr = "" );
     SErrResultInfo(
         const SErrSource& i_errSource,
@@ -274,12 +295,14 @@ public: // instance methods
     SErrResult getErrResult() const { return m_errResult; }
 public: // instance methods
     void setSeverity( EResultSeverity i_severity );
+    void setSeverity( const QString& i_strSeverity );
     /*! Returns the severity of the error. */
     EResultSeverity getSeverity() const { return m_errResult.getSeverity(); }
     /*! Returns the string representation of the errors severity. */
     QString getSeverityStr() const { return m_errResult.getSeverityStr(); }
 public: // instance methods
     void setResult( EResult i_result );
+    void setResult( const QString& i_strResult );
     /*! Returns the error result code. */
     EResult getResult() const { return m_errResult.getResult(); }
     /*! Returns the string representation of the errors result code. */
@@ -439,4 +462,4 @@ protected: // instance members
 
 } // namespace ZS
 
-#endif // SMSysErrResult_h
+#endif // ZSSys_ErrResult_h

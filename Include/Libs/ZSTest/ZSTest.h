@@ -37,9 +37,6 @@ namespace ZS
 namespace System
 {
 class CIdxTreeEntry;
-}
-namespace Trace
-{
 class CTrcAdminObj;
 }
 
@@ -57,15 +54,20 @@ class ZSTESTDLL_API CTest : public QObject
 public: // class methods
     static QString NameSpace() { return "ZS::Test"; }
     static QString ClassName() { return "CTest"; }
-public: // type definitions and constants
-    //typedef void (*TFctDoTestStepGroup)( CTest* i_pThis, ZS::Test::CTestStepGroup* i_pTestStepGrpParent );
+public: // class methods to get default file paths
+    static QString GetDefaultTestStepsAbsFilePath( const QString& i_strIniFileScope = "System" );
+    static QString GetDefaultTestResultsAbsFilePath( const QString& i_strIniFileScope = "System" );
 public: // ctors and dtor
     CTest(
         const QString& i_strName,
-        const QString& m_strTestStepsAbsFilePath,
-        int            i_iTestStepInterval_ms = 0 );
+        const QString& i_strTestStepsAbsFilePath = "",
+        const QString& i_strNodeSeparator = "\\",
+        int            i_iTestStepInterval_ms = 0,
+        const QString& i_strTestResultsAbsFilePath = "" );
     ~CTest();
 signals:
+    void testStarted();
+    void testFinished( const ZS::Test::CEnumTestResult& i_result );
     void stateChanged( const ZS::Test::CEnumTestState& i_state );
     void runModeChanged( const ZS::System::CEnumRunMode& i_runMode );
     void currentTestStepChanged( ZS::Test::CTestStep* i_pTestStep );
@@ -77,8 +79,8 @@ public: // instance methods
     CTestStepIdxTree* getTestStepIdxTree() { return m_pIdxTree; }
 public: // instance methods
     QString getTestStepsAbsFilePath() const { return m_strTestStepsAbsFilePath; }
-    virtual ZS::System::SErrResultInfo save( const QString& i_strAbsFilePath = QString() );
-    virtual ZS::System::SErrResultInfo recall( const QString& i_strAbsFilePath = QString() );
+    virtual ZS::System::SErrResultInfo saveTestSteps( const QString& i_strAbsFilePath = "" );
+    virtual ZS::System::SErrResultInfo recallTestSteps( const QString& i_strAbsFilePath = "" );
 public: // instance methods
     void setTestStepInterval( int i_iTestStepInterval_ms );
     int getTestStepIntervalInMs() const { return m_iTestStepInterval_ms; }
@@ -86,19 +88,38 @@ public: // overridables
     CEnumTestState getState() const { return m_state; }
     bool isRunning() const { return (m_state == ETestState::Running); }
 public: // overridables
-    //virtual void init();
     virtual void start();
     virtual void step();
     virtual void stop();
     virtual void abort();
     virtual void pause();
     virtual void resume();
+public: // overridables
+    virtual ZS::System::SErrResultInfo readExpectedTestResults(
+        const QString& i_strAbsFilePath,
+        QStringList&   o_strlstExpectedResults ) const;
+public: // instance methods
+    CEnumTestResult getTestResult() const;
+    double getTestDurationInSecs() const;
+    int getTotalNumberOfTestSteps() const;
+    int getNumberOfFailedTestSteps() const;
+    int getNumberOfPassedTestSteps() const;
+    int getNumberOfDisabledTestSteps() const;
+    int getNumberOfTestRuns() const;
+public: // instance methods
+    QString getTestResultsAbsFilePath() const { return m_strTestResultsAbsFilePath; }
+    virtual ZS::System::SErrResultInfo saveTestResults(
+        const QString& i_strAbsFilePath = "",
+        bool i_bReportAllExpectedResults = false);
 protected slots: // overridables
     virtual void doTestStep();
     virtual void onCurrentTestStepFinished( ZS::Test::CTestStep* i_pTestStep );
 protected: // instance methods
     void setState( const CEnumTestState& i_state );
     void setRunMode( const ZS::System::CEnumRunMode& i_runMode );
+protected: // overridables
+    virtual void onTestStarted();
+    virtual void onTestFinished();
 protected: // instance methods
     void setCurrentTestStep( CTestStep* i_pTestStep );
     CTestStep* getCurrentTestStep() { return m_pTestStepCurr; }
@@ -111,14 +132,16 @@ protected: // overridables
 protected: // overridables of inherited class QObject (state machine)
     virtual bool event( QEvent* i_pMsg );
 protected: // instance members
-    CTestStepIdxTree*        m_pIdxTree;
-    QString                  m_strTestStepsAbsFilePath;
-    CTestStep*               m_pTestStepCurr;
-    int                      m_iTestStepInterval_ms;
-    CEnumTestState           m_state;
-    ZS::System::CEnumRunMode m_runMode;
-    bool                     m_bDoTestStepPending;
-    ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
+    CTestStepIdxTree*         m_pIdxTree; /*!< Index tree containing the test steps. */
+    QString                   m_strTestStepsAbsFilePath; /*!< Absolute path of the file from which the settings of the test steps are saved and recalled. */
+    QString                   m_strTestResultsAbsFilePath; /*!< Absolute path of the file in which the test step results are saved.*/
+    CTestStep*                m_pTestStepCurr;   /*!< Pointer to current test step to be executed. */
+    int                       m_iTestStepInterval_ms;    /*!< Time interval between two test steps. */
+    int                       m_iNumberOfTestRuns; /*!< Number of times the test is executed. */
+    CEnumTestState            m_state;   /*!< Current state of the test. */
+    ZS::System::CEnumRunMode  m_runMode; /*!< Run mode the test is executed with. */
+    bool                      m_bDoTestStepPending;  /*!< true if a test step is started. */
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;    /*!< Pointer to trace admin object. */
 
 }; // class CTest
 

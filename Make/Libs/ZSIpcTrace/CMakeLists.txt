@@ -1,15 +1,11 @@
-# Call CMake from build directory (e.g. ./bin/msvc2019_x64) with:
-# - for VS-2017: cmake -G "Visual Studio 15 2017" -A x64 -DCMAKE_BUILD_TYPE=Debug ../Make/Libs/ZSSys
-# - for VS-2019: cmake -G "Visual Studio 16 2019" -A x64 -DCMAKE_BUILD_TYPE=Debug ../Make/Libs/ZSSys
-
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
 project(ZSIpcTrace)
 
 message(STATUS "")
 message(STATUS "---------------------------------------------------------------------------------------------")
-message(STATUS "Processing: ${CMAKE_CURRENT_SOURCE_DIR}")
-message(STATUS "---------------------------------------------------------------------------------------------")
+message(STATUS "-> ${CMAKE_CURRENT_SOURCE_DIR}")
+message(STATUS "")
 
 message(STATUS "CMAKE_PROJECT_NAME:       ${CMAKE_PROJECT_NAME}")
 message(STATUS "PROJECT_NAME:             ${PROJECT_NAME}")
@@ -22,30 +18,92 @@ message(STATUS "CMAKE_BINARY_DIR:         ${CMAKE_BINARY_DIR}")
 message(STATUS "CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
 message(STATUS "PROJECT_BINARY_DIR:       ${PROJECT_BINARY_DIR}")
 
-list(APPEND _Sources
-    ../../../Include/Libs/ZSIpcTrace/ZSIpcTrcClient.h             ../../../Source/Libs/ZSIpcTrace/ZSIpcTrcClient.cpp
-    ../../../Include/Libs/ZSIpcTrace/ZSIpcTrcDllIf.h              ../../../Source/Libs/ZSIpcTrace/ZSIpcTrcDllIf.cpp
-    ../../../Include/Libs/ZSIpcTrace/ZSIpcTrcDllIfServerThread.h  ../../../Source/Libs/ZSIpcTrace/ZSIpcTrcDllIfServerThread.cpp
-    ../../../Include/Libs/ZSIpcTrace/ZSIpcTrcDllMain.h            ../../../Source/Libs/ZSIpcTrace/ZSIpcTrcDllMain.cpp
-    ../../../Include/Libs/ZSIpcTrace/ZSIpcTrcServer.h             ../../../Source/Libs/ZSIpcTrace/ZSIpcTrcServer.cpp
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+# In source code the headers are included together with the ${PROJECT_NAME} as follows:
+# include "${PROJECT_NAME}/HeaderFileName.h"
+# e.g. #include "ZSSys/ZSSysIdxTree.h"
+# For "target_include_directories" the header path without ${PROJECT_NAME} must be
+# passed and therefore _HeadersPath will be defined without ${PROJECT_NAME} so that
+# this define can be used further one in this CMake list file.
+# _SourcePaths will be defined in the same way.
+set(_HeadersPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../Include/Libs)
+set(_SourcesPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../Source/Libs)
+set(_ResourcesPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../Resources/Libs)
+
+list(APPEND _Headers
+    ${_HeadersPath}/ZSSys/ZSSysVersion.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSIpcTrcClient.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSIpcTrcDllIf.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSIpcTrcDllIfServerThread.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSIpcTrcDllMain.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSIpcTrcServer.h
 )
 
-# Got to create the following target name:
-# (ProjectName)Qt$(QT_VERSION_MAJOR)_$(Compiler)_$(Platform)[_d]
-# e.g.: "ZSIpcTraceQt5_msvc2019_x64_d"
+list(APPEND _Sources
+    ${_SourcesPath}/${PROJECT_NAME}/ZSIpcTrcClient.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSIpcTrcDllIfServerThread.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSIpcTrcDllMain.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSIpcTrcServer.cpp
+)
 
-set(TargetOutputName ${PROJECT_NAME}Qt${QT_VERSION_MAJOR}_${Compiler}_${Platform})
+list(APPEND _Resources
+)
 
-if(CMAKE_BUILD_TYPE MATCHES Debug)
-    set(TargetOutputName ${TargetOutputName}_d)
+if(WIN32)
+    # Add version info as meta information to Dll.
+    set(_Resources ${_Resources} ${_ResourcesPath}/ZSSys/ZSSysVersion.rc)
 endif()
 
-message(STATUS "TargetOutputName: ${TargetOutputName}")
+# Got to create the following target name:
+# (ProjectName)Qt$(QT_VERSION_MAJOR)$(QT_LIBINFIX)[d]
+# e.g.: "ZSIpcTraceQt5d", "ZSIpcTraceQt5Swpd"
+set(TargetOutputName ${PROJECT_NAME}Qt${QT_VERSION_MAJOR}${QT_LIBINFIX})
+if(CMAKE_BUILD_TYPE MATCHES Debug)
+    set(TargetOutputName ${TargetOutputName}d)
+endif()
+message(STATUS "TargetOutputName:         ${TargetOutputName}")
 
-add_library(${PROJECT_NAME} SHARED ${_Sources})
+add_library(${PROJECT_NAME} SHARED ${_Headers} ${_Sources} ${_Resources})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${TargetOutputName})
+set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER Libs)
+
+source_group("Header Files" FILES ${_Headers})
+source_group("Source Files" FILES ${_Sources})
+source_group("Resource Files" FILES ${_Resources})
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    target_compile_options(${PROJECT_NAME} PRIVATE "-Wno-cast-function-type")
+endif()
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ZSIPCTRACEDLL_EXPORTS)
+target_compile_definitions(${PROJECT_NAME} PRIVATE USE_ZS_IPCTRACE_DLL_IF)
 
-target_link_libraries(${PROJECT_NAME} PUBLIC ZSSys ZSIpc)
+set(_Libs ZSIpc)
+
+target_link_libraries(${PROJECT_NAME} PUBLIC ${_Libs})
+if(UNIX)
+    target_link_libraries(${PROJECT_NAME} PUBLIC ${CMAKE_DL_LIBS})
+endif()
+
+include(GNUInstallDirs)
+
+install(TARGETS ${PROJECT_NAME} EXPORT ${CMAKE_PROJECT_NAME}Targets
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    RUNTIME DESTINATION .
+    INCLUDES DESTINATION include)
+
+install(FILES ${_Headers}
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}"
+    COMPONENT Devel)
+
+install(FILES ${_SourcesPath}/${PROJECT_NAME}/ZSIpcTrcDllIf.cpp
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/../Source/${PROJECT_NAME}"
+    COMPONENT Devel)
+
+message(STATUS "")
+message(STATUS "<- ${CMAKE_CURRENT_SOURCE_DIR}")
+message(STATUS "---------------------------------------------------------------------------------------------")
+message(STATUS "")

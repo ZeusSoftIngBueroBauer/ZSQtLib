@@ -34,24 +34,25 @@ class QXmlStreamWriter;
 
 namespace ZS
 {
-namespace Trace
+namespace System
 {
 class CTrcAdminObj;
 class CTrcServer;
 
 //******************************************************************************
-class ZSSYSDLL_API CIdxTreeTrcAdminObjs : public ZS::System::CIdxTree
+class ZSSYSDLL_API CIdxTreeTrcAdminObjs : public CIdxTree
 //******************************************************************************
 {
     Q_OBJECT
 public: // class methods
-    static QString NameSpace() { return "ZS::Trace"; }
+    static QString NameSpace() { return "ZS::System"; }
     static QString ClassName() { return "CIdxTreeTrcAdminObjs"; }
 public: // ctors and dtor
     CIdxTreeTrcAdminObjs(
         const QString& i_strObjName,
-        QObject*       i_pObjParent,
-        int            i_iTrcDetailLevel = ETraceDetailLevelNone );
+        QObject* i_pObjParent,
+        EMethodTraceDetailLevel i_eTrcDetailLevel = EMethodTraceDetailLevel::None,
+        EMethodTraceDetailLevel i_eTrcDetailLevelMutex = EMethodTraceDetailLevel::None );
     virtual ~CIdxTreeTrcAdminObjs();
 public: // instance methods
     virtual QString nameSpace() const { return NameSpace(); }
@@ -61,33 +62,46 @@ public: // instance methods to get and release admin objects
         const QString& i_strNameSpace,
         const QString& i_strClassName,
         const QString& i_strObjName,
-        bool           i_bIncrementRefCount = true );
-    CTrcAdminObj* getTraceAdminObj( int i_idxInTree ) const;
+        EEnabled i_bEnabledAsDefault,
+        EMethodTraceDetailLevel i_eDefaultDetailLevelMethodCalls,
+        ELogDetailLevel i_eDefaultDetailLevelRuntimeInfo,
+        const QString& i_strDefaultDataFilter, // Use QString() (null) to ignore
+        bool i_bIncrementRefCount = true );
+    CTrcAdminObj* getTraceAdminObj( int i_idxInTree, bool i_bIncrementRefCount = true );
+    CTrcAdminObj* renameTraceAdminObj(
+        CTrcAdminObj* i_pTrcAdminObj, const QString& i_strNewObjName );
     void releaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj );
 public: // instance methods to insert branch nodes and admin objects
-    ZS::System::CIdxTreeEntry* insertBranch(
+    CIdxTreeEntry* insertBranch(
         int            i_iParentBranchIdxInTree,
         const QString& i_strBranchName,
         int            i_idxInTree );
     CTrcAdminObj* insertTraceAdminObj(
         int            i_iParentBranchIdxInTree,
+        const QString& i_strNameSpace,
+        const QString& i_strClassName,
         const QString& i_strObjName,
         int            i_idxInTree );
 public: // instance methods to recursively modify admin objects via object index of node entries
-    void setEnabled( int i_idxInTree, ZS::System::EEnabled i_enabled );
-    void setTraceDetailLevel( int i_idxInTree, int i_iDetailLevel = -1 );
+    void setEnabled( int i_idxInTree, EEnabled i_enabled );
+    void setMethodCallsTraceDetailLevel( int i_idxInTree, EMethodTraceDetailLevel i_eDetailLevel = EMethodTraceDetailLevel::None );
+    void setRuntimeInfoTraceDetailLevel( int i_idxInTree, ELogDetailLevel i_eDetailLevel = ELogDetailLevel::None );
+    void setTraceDataFilter( int i_idxInTree, const QString& i_strDataFilter );
 public: // instance methods to recursively modify admin objects via namespace node entries
-    void setEnabled( ZS::System::CIdxTreeEntry* i_pBranch, ZS::System::EEnabled i_enabled );
-    void setTraceDetailLevel( ZS::System::CIdxTreeEntry* i_pBranch, int i_iDetailLevel = -1 );
+    void setEnabled( CIdxTreeEntry* i_pBranch, EEnabled i_enabled );
+    void setMethodCallsTraceDetailLevel( CIdxTreeEntry* i_pBranch, EMethodTraceDetailLevel i_eDetailLevel = EMethodTraceDetailLevel::None );
+    void setRuntimeInfoTraceDetailLevel( CIdxTreeEntry* i_pBranch, ELogDetailLevel i_eDetailLevel = ELogDetailLevel::None );
+    void setTraceDataFilter( CIdxTreeEntry* i_pBranch, const QString& i_strDataFilter );
 public: // overridables
-    virtual ZS::System::SErrResultInfo save( const QString& i_strAbsFilePath ) const;
-    virtual ZS::System::SErrResultInfo recall( const QString& i_strAbsFilePath );
+    virtual SErrResultInfo save( const QString& i_strAbsFilePath ) const;
+    virtual SErrResultInfo recall( const QString& i_strAbsFilePath );
 protected: // auxiliary instance methods
-    virtual void save( QXmlStreamWriter& xmlStreamWriter, ZS::System::CIdxTreeEntry* i_pTreeEntry ) const;
+    virtual void save( QXmlStreamWriter& xmlStreamWriter, CIdxTreeEntry* i_pTreeEntry ) const;
+    virtual void removeEmptyBranches( const QString& i_strBranchPath );
 
 }; // class CIdxTreeTrcAdminObjs
 
-} // namespace Trace
+} // namespace System
 
 } // namespace ZS
 

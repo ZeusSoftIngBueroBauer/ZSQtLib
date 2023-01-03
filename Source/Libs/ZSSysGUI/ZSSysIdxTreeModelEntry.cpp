@@ -39,28 +39,26 @@ class CModelIdxTreeEntry
 ******************************************************************************/
 
 /*=============================================================================
-protected: // ctors
+public: // ctors and dtor
 =============================================================================*/
 
 //-----------------------------------------------------------------------------
 CModelIdxTreeEntry::CModelIdxTreeEntry( CIdxTreeEntry* i_pTreeEntry ) :
 //-----------------------------------------------------------------------------
-    m_pTreeEntry(i_pTreeEntry),
-    m_pModel(nullptr),
+    m_pIdxTree(i_pTreeEntry->tree()),
+    m_entryType(i_pTreeEntry->entryType()),
+    m_strKeyInTree(i_pTreeEntry->keyInTree()),
+    m_idxInTree(i_pTreeEntry->indexInTree()),
     m_pParentBranch(nullptr),
     m_idxInParentBranch(-1),
     m_bIsSelected(false),
-    m_entryTypeFilter(EIdxTreeEntryType::Undefined),
+    m_bExcludeLeaves(false),
     m_sortOrder(EIdxTreeSortOrder::Config),
     m_mappModelTreeEntries(),
     m_arpTreeEntries(),
     m_bIsExpanded(false)
 {
 } // ctor
-
-/*=============================================================================
-public: // dtor
-=============================================================================*/
 
 //-----------------------------------------------------------------------------
 CModelIdxTreeEntry::~CModelIdxTreeEntry()
@@ -105,12 +103,13 @@ CModelIdxTreeEntry::~CModelIdxTreeEntry()
         m_pParentBranch->remove(this);
     }
 
-    m_pTreeEntry = nullptr;
-    m_pModel = nullptr;
+    m_entryType = static_cast<EIdxTreeEntryType>(0);
+    //m_strKeyInTree;
+    m_idxInTree = 0;
     m_pParentBranch = nullptr;
     m_idxInParentBranch = 0;
     m_bIsSelected = false;
-    m_entryTypeFilter = static_cast<EIdxTreeEntryType>(0);
+    m_bExcludeLeaves = false;
     m_sortOrder = static_cast<EIdxTreeSortOrder>(0);
     m_mappModelTreeEntries.clear();
     m_arpTreeEntries.clear();
@@ -123,18 +122,150 @@ public: // instance methods
 =============================================================================*/
 
 //-----------------------------------------------------------------------------
-bool CModelIdxTreeEntry::isAboutToBeDestroyed() const
+/*! @brief Returns the pointer to the real index tree entry.
+
+    The real index tree entry is accessed through the key in the tree.
+    As the index tree might be modified from different threads the
+    real index tree entry may already have been deleted before the
+    model gets informed by queued signal/slot connections about the
+    deletion of tree entries.
+
+    @note Lock the tree as long as you access the index tree entry and don't
+          access the tree entry after removing the lock.
+*/
+CIdxTreeEntry* CModelIdxTreeEntry::getIdxTreeEntry()
 //-----------------------------------------------------------------------------
 {
-    return m_pTreeEntry->isAboutToBeDestroyed();
+    CIdxTreeLocker idxTreeLocker(m_pIdxTree);
+    return m_pIdxTree->findEntry(m_strKeyInTree);
 }
+
+/*=============================================================================
+public: // instance methods
+=============================================================================*/
+
+//-----------------------------------------------------------------------------
+EIdxTreeEntryType CModelIdxTreeEntry::entryType() const
+//-----------------------------------------------------------------------------
+{
+    return m_entryType;
+}
+
+//-----------------------------------------------------------------------------
+QString CModelIdxTreeEntry::entryType2Str( int i_alias ) const
+//-----------------------------------------------------------------------------
+{
+    return idxTreeEntryType2Str(m_entryType, i_alias);
+}
+
+//-----------------------------------------------------------------------------
+bool CModelIdxTreeEntry::isRoot() const
+//-----------------------------------------------------------------------------
+{
+    return (m_entryType == EIdxTreeEntryType::Root);
+}
+
+//-----------------------------------------------------------------------------
+bool CModelIdxTreeEntry::isBranch() const
+//-----------------------------------------------------------------------------
+{
+    return (m_entryType == EIdxTreeEntryType::Branch);
+}
+
+//-----------------------------------------------------------------------------
+bool CModelIdxTreeEntry::isLeave() const
+//-----------------------------------------------------------------------------
+{
+    return (m_entryType == EIdxTreeEntryType::Leave);
+}
+
+
+/*=============================================================================
+public: // instance methods
+=============================================================================*/
+
+//-----------------------------------------------------------------------------
+void CModelIdxTreeEntry::setKeyInTree( const QString& i_strNewKeyInTree )
+//-----------------------------------------------------------------------------
+{
+    QString strNamePrev = name();
+    m_strKeyInTree = i_strNewKeyInTree;
+    m_pParentBranch->onChildRenamed(this, strNamePrev);
+}
+
+//-----------------------------------------------------------------------------
+QString CModelIdxTreeEntry::keyInTree() const
+//-----------------------------------------------------------------------------
+{
+    return m_strKeyInTree;
+}
+
+//-----------------------------------------------------------------------------
+int CModelIdxTreeEntry::indexInTree() const
+//-----------------------------------------------------------------------------
+{
+    return m_idxInTree;
+}
+
+//-----------------------------------------------------------------------------
+QString CModelIdxTreeEntry::name() const
+//-----------------------------------------------------------------------------
+{
+    QString strName;
+    m_pIdxTree->splitPathStr(m_strKeyInTree, nullptr, &strName);
+    return strName;
+}
+
+//-----------------------------------------------------------------------------
+QString CModelIdxTreeEntry::path() const
+//-----------------------------------------------------------------------------
+{
+    QString strPath;
+    m_pIdxTree->splitPathStr(m_strKeyInTree, &strPath, nullptr);
+    return strPath;
+}
+
+//-----------------------------------------------------------------------------
+QString CModelIdxTreeEntry::keyInParentBranch() const
+//-----------------------------------------------------------------------------
+{
+    return entryType2Str(EEnumEntryAliasStrSymbol) + ":" + name();
+}
+
+////-----------------------------------------------------------------------------
+//int CModelIdxTreeEntry::indexInParentBranch() const
+////-----------------------------------------------------------------------------
+//{
+//    CIdxTreeLocker idxTreeLocker(m_pIdxTree);
+//    int idx = -1;
+//    CIdxTreeEntry* pTreeEntry = m_pIdxTree->findEntry(m_strKeyInTree);
+//    if( pTreeEntry != nullptr )
+//    {
+//        idx = pTreeEntry->indexInParentBranch();
+//    }
+//    return idx;
+//}
+
+////-----------------------------------------------------------------------------
+//int CModelIdxTreeEntry::indexInParentBranchsChildListWithSameEntryTypes() const
+////-----------------------------------------------------------------------------
+//{
+//    CIdxTreeLocker idxTreeLocker(m_pIdxTree);
+//    int idx = -1;
+//    CIdxTreeEntry* pTreeEntry = m_pIdxTree->findEntry(m_strKeyInTree);
+//    if( pTreeEntry != nullptr )
+//    {
+//        idx = pTreeEntry->indexInParentBranchsChildListWithSameEntryTypes();
+//    }
+//    return idx;
+//}
 
 /*=============================================================================
 public: // instance methods (applying filter)
 =============================================================================*/
 
 //-----------------------------------------------------------------------------
-int CModelIdxTreeEntry::modelIndexInParentBranchsChildListWithSameEntryTypes() const
+int CModelIdxTreeEntry::indexInParentBranchsChildListWithSameEntryTypes() const
 //-----------------------------------------------------------------------------
 {
     int idx = -1;
@@ -142,63 +273,62 @@ int CModelIdxTreeEntry::modelIndexInParentBranchsChildListWithSameEntryTypes() c
     // To be filtered by entry type
     if( m_pParentBranch != nullptr )
     {
-        idx = m_pParentBranch->modelIndexOfChildInListWithSameEntryTypes(this);
+        idx = m_pParentBranch->indexOfChildInListWithSameEntryTypes(this);
     }
     return idx;
-
-} // modelIndexInParentBranchsChildListWithSameEntryTypes
+}
 
 /*=============================================================================
 public: // instance methods
 =============================================================================*/
 
-//-----------------------------------------------------------------------------
-QString CModelIdxTreeEntry::getCalculatedKeyInModel() const
-//-----------------------------------------------------------------------------
-{
-    CIdxTree* pIdxTree = m_pTreeEntry->tree();
+////-----------------------------------------------------------------------------
+//QString CModelIdxTreeEntry::getCalculatedKeyInModel() const
+////-----------------------------------------------------------------------------
+//{
+//    CIdxTree* pIdxTree = m_pModel->idxTree();
+//
+//    QString strEntryType     = entryType2Str(EEnumEntryAliasStrSymbol);
+//    QString strNodeSeparator = pIdxTree != nullptr ? pIdxTree->nodeSeparator() : "/";
+//    QString strKeyInModel    = strEntryType + ":";
+//    QString strParentPath;
+//
+//    CModelIdxTreeEntry* pParentBranch = modelParentBranch();
+//
+//    CModelIdxTreeEntry* pRoot = m_pModel != nullptr ? m_pModel->modelRoot() : nullptr;
+//
+//    if( pParentBranch != nullptr && pParentBranch != pRoot )
+//    {
+//        strParentPath = pParentBranch->path();
+//    }
+//    if( !strParentPath.isEmpty() )
+//    {
+//        strKeyInModel += strParentPath;
+//
+//        if( !strKeyInModel.endsWith(strNodeSeparator) )
+//        {
+//            strKeyInModel += strNodeSeparator;
+//        }
+//    }
+//
+//    strKeyInModel += name();
+//
+//    return strKeyInModel;
+//
+//} // getCalculatedKeyInModel
 
-    QString strEntryType     = entryType2Str(EEnumEntryAliasStrSymbol);
-    QString strNodeSeparator = pIdxTree != nullptr ? pIdxTree->nodeSeparator() : "/";
-    QString strKeyInModel    = strEntryType + ":";
-    QString strParentPath;
-
-    CModelIdxTreeEntry* pParentBranch = modelParentBranch();
-
-    CModelIdxTreeEntry* pRoot = m_pModel != nullptr ? m_pModel->modelRoot() : nullptr;
-
-    if( pParentBranch != nullptr && pParentBranch != pRoot )
-    {
-        strParentPath = pParentBranch->path();
-    }
-    if( !strParentPath.isEmpty() )
-    {
-        strKeyInModel += strParentPath;
-
-        if( !strKeyInModel.endsWith(strNodeSeparator) )
-        {
-            strKeyInModel += strNodeSeparator;
-        }
-    }
-
-    strKeyInModel += name();
-
-    return strKeyInModel;
-
-} // getCalculatedKeyInModel
-
-//-----------------------------------------------------------------------------
-QString CModelIdxTreeEntry::getCalculatedKeyInTree() const
-//-----------------------------------------------------------------------------
-{
-    QString strKeyInTree;
-
-    if( m_pTreeEntry != nullptr )
-    {
-        strKeyInTree = m_pTreeEntry->getCalculatedKeyInTree();
-    }
-    return strKeyInTree;
-}
+////-----------------------------------------------------------------------------
+//QString CModelIdxTreeEntry::getCalculatedKeyInTree() const
+////-----------------------------------------------------------------------------
+//{
+//    QString strKeyInTree;
+//
+//    if( m_pTreeEntry != nullptr )
+//    {
+//        strKeyInTree = m_pTreeEntry->getCalculatedKeyInTree();
+//    }
+//    return strKeyInTree;
+//}
 
 /*=============================================================================
 public: // instance methods
@@ -216,10 +346,10 @@ public: // instance methods
 =============================================================================*/
 
 //-----------------------------------------------------------------------------
-void CModelIdxTreeEntry::setFilter( EIdxTreeEntryType i_entryType )
+void CModelIdxTreeEntry::setExcludeLeaves( bool i_bExcludeLeaves )
 //-----------------------------------------------------------------------------
 {
-    m_entryTypeFilter = i_entryType;
+    m_bExcludeLeaves = i_bExcludeLeaves;
 }
 
 /*=============================================================================
@@ -234,11 +364,39 @@ void CModelIdxTreeEntry::setSortOrder( EIdxTreeSortOrder i_sortOrder )
 }
 
 /*=============================================================================
+public: // instance methods
+=============================================================================*/
+
+//-----------------------------------------------------------------------------
+int CModelIdxTreeEntry::indexOf( CModelIdxTreeEntry* i_pModelTreeEntry ) const
+//-----------------------------------------------------------------------------
+{
+    return m_arpTreeEntries.indexOf(i_pModelTreeEntry);
+}
+
+//-----------------------------------------------------------------------------
+int CModelIdxTreeEntry::indexOf( const QString& i_strKeyInParentBranch ) const
+//-----------------------------------------------------------------------------
+{
+    CModelIdxTreeEntry* pModelTreeEntry = findEntry(i_strKeyInParentBranch);
+    return m_arpTreeEntries.indexOf(pModelTreeEntry);
+}
+
+//-----------------------------------------------------------------------------
+int CModelIdxTreeEntry::indexOf( EIdxTreeEntryType i_entryType, const QString& i_strName ) const
+//-----------------------------------------------------------------------------
+{
+    CModelIdxTreeEntry* pModelTreeEntry = findEntry(i_entryType, i_strName);
+    return m_arpTreeEntries.indexOf(pModelTreeEntry);
+}
+
+/*=============================================================================
 public: // instance methods (applying filter)
 =============================================================================*/
 
 //-----------------------------------------------------------------------------
-int CModelIdxTreeEntry::modelIndexOfChildInListWithSameEntryTypes( const CModelIdxTreeEntry* i_pModelTreeEntry ) const
+int CModelIdxTreeEntry::indexOfChildInListWithSameEntryTypes(
+    const CModelIdxTreeEntry* i_pModelTreeEntry ) const
 //-----------------------------------------------------------------------------
 {
     int idxInParentBranch = -1;
@@ -264,59 +422,54 @@ int CModelIdxTreeEntry::modelIndexOfChildInListWithSameEntryTypes( const CModelI
 
     return idxInParentBranch;
 
-} // modelIndexOfChildInListWithSameEntryTypes
+} // indexOfChildInListWithSameEntryTypes
 
 /*=============================================================================
 public: // instance methods
 =============================================================================*/
 
 //-----------------------------------------------------------------------------
-CModelIdxTreeEntry* CModelIdxTreeEntry::findModelBranch( const QString& i_strName )
+CModelIdxTreeEntry* CModelIdxTreeEntry::findBranch( const QString& i_strName ) const
 //-----------------------------------------------------------------------------
 {
     QString strEntryType = idxTreeEntryType2Str(EIdxTreeEntryType::Branch, EEnumEntryAliasStrSymbol);
     QString strKeyInParentBranch = i_strName;
-
-    if( !strKeyInParentBranch.startsWith(strEntryType + ":") )
-    {
+    if( !strKeyInParentBranch.startsWith(strEntryType + ":") ) {
         strKeyInParentBranch.insert(0, strEntryType + ":");
     }
-
     return m_mappModelTreeEntries.value(strKeyInParentBranch, nullptr);
-
-} // findModelBranch
+}
 
 //-----------------------------------------------------------------------------
-CModelIdxTreeEntry* CModelIdxTreeEntry::findModelLeave( const QString& i_strName )
+CModelIdxTreeEntry* CModelIdxTreeEntry::findLeave( const QString& i_strName ) const
 //-----------------------------------------------------------------------------
 {
     QString strEntryType = idxTreeEntryType2Str(EIdxTreeEntryType::Leave, EEnumEntryAliasStrSymbol);
     QString strKeyInParentBranch = i_strName;
-
-    if( !strKeyInParentBranch.startsWith(strEntryType + ":") )
-    {
+    if( !strKeyInParentBranch.startsWith(strEntryType + ":") ) {
         strKeyInParentBranch.insert(0, strEntryType + ":");
     }
-
     return m_mappModelTreeEntries.value(strKeyInParentBranch, nullptr);
-
-} // findModelLeave
+}
 
 //-----------------------------------------------------------------------------
-CModelIdxTreeEntry* CModelIdxTreeEntry::findModelEntry( EIdxTreeEntryType i_entryType, const QString& i_strName )
+CModelIdxTreeEntry* CModelIdxTreeEntry::findEntry( const QString& i_strKeyInParentBranch ) const
+//-----------------------------------------------------------------------------
+{
+    return m_mappModelTreeEntries.value(i_strKeyInParentBranch, nullptr);
+}
+
+//-----------------------------------------------------------------------------
+CModelIdxTreeEntry* CModelIdxTreeEntry::findEntry( EIdxTreeEntryType i_entryType, const QString& i_strName ) const
 //-----------------------------------------------------------------------------
 {
     QString strEntryType = idxTreeEntryType2Str(i_entryType, EEnumEntryAliasStrSymbol);
     QString strKeyInParentBranch = i_strName;
-
-    if( !strKeyInParentBranch.startsWith(strEntryType + ":") )
-    {
+    if( !strKeyInParentBranch.startsWith(strEntryType + ":") ) {
         strKeyInParentBranch.insert(0, strEntryType + ":");
     }
-
     return m_mappModelTreeEntries.value(strKeyInParentBranch, nullptr);
-
-} // findModelEntry
+}
 
 /*=============================================================================
 public: // instance methods
@@ -335,99 +488,125 @@ int CModelIdxTreeEntry::add( CModelIdxTreeEntry* i_pModelTreeEntry )
         throw CException(__FILE__, __LINE__, EResultObjAlreadyInList, strKeyInParentBranch);
     }
 
-    QMap<QString, CModelIdxTreeEntry*>::iterator itModelEntry;
-    CModelIdxTreeEntry* pModelTreeEntry;
-    int idxEntry;
-
-    switch( m_sortOrder )
+    if( m_sortOrder == EIdxTreeSortOrder::Ascending )
     {
-        case EIdxTreeSortOrder::Config:
-        {
-            if( m_entryTypeFilter == EIdxTreeEntryType::Undefined )
-            {
-                idxInParentBranch = i_pModelTreeEntry->indexInParentBranch();
-            }
-            else if( i_pModelTreeEntry->entryType() == m_entryTypeFilter )
-            {
-                idxInParentBranch = i_pModelTreeEntry->indexInParentBranchsChildListWithSameEntryTypes();
-            }
-
-            if( idxInParentBranch < 0 || idxInParentBranch > m_arpTreeEntries.size() )
-            {
-                QString strAddErrInfo;
-                strAddErrInfo  = "IdxInParentBranch (=" + QString::number(idxInParentBranch) + ") is out of range";
-                strAddErrInfo += " [0 .. " + QString::number(m_arpTreeEntries.size()) + "]";
-                SErrResultInfo errResultInfo(
-                    /* errSource  */ NameSpace(), ClassName(), keyInTree(), "add(" + i_pModelTreeEntry->keyInTree() + ")",
-                    /* result     */ EResultInternalProgramError,
-                    /* severity   */ EResultSeverityCritical,
-                    /* strAddInfo */ strAddErrInfo );
-                throw CException(__FILE__, __LINE__, errResultInfo);
-            }
-
+        QMap<QString, CModelIdxTreeEntry*>::iterator itModelEntry =
             m_mappModelTreeEntries.insert(strKeyInParentBranch, i_pModelTreeEntry);
 
-            // If appended at the end ..
-            if( idxInParentBranch == m_arpTreeEntries.size() )
-            {
-                m_arpTreeEntries.append(i_pModelTreeEntry);
-            }
-            // If inserted before an existing entry ..
-            else // if( idxInParentBranch < m_arpTreeEntries.size() )
-            {
-                m_arpTreeEntries.append(nullptr);
+        // Inserted before this entry (or appended at the end).
+        ++itModelEntry;
 
-                // Move all following entries one index backwards.
-                for( idxEntry = m_arpTreeEntries.size()-2; idxEntry >= idxInParentBranch; --idxEntry )
-                {
-                    pModelTreeEntry = m_arpTreeEntries[idxEntry];
-                    m_arpTreeEntries[idxEntry+1] = pModelTreeEntry;
-                    pModelTreeEntry->setModelIndexInParentBranch(idxEntry+1);
-                }
-                m_arpTreeEntries[idxInParentBranch] = i_pModelTreeEntry;
-            }
-            break;
-        } // case EIdxTreeSortOrder::Config:
-
-        case EIdxTreeSortOrder::Ascending:
+        // If appended at the end ..
+        if( itModelEntry == m_mappModelTreeEntries.end() )
         {
-            itModelEntry = m_mappModelTreeEntries.insert(strKeyInParentBranch, i_pModelTreeEntry);
-
-            // Inserted before this entry (or appended at the end).
-            ++itModelEntry;
-
-            // If appended at the end ..
-            if( itModelEntry == m_mappModelTreeEntries.end() )
-            {
-                idxInParentBranch = m_arpTreeEntries.size();
-                m_arpTreeEntries.append(i_pModelTreeEntry);
-            }
-            // If inserted before an existing entry ..
-            else // if( itModelEntry != m_mappModelTreeEntries.end() )
-            {
-                idxInParentBranch = itModelEntry.value()->modelIndexInParentBranch();
-                m_arpTreeEntries.append(nullptr);
-
-                // Move all following entries one index backwards.
-                for( idxEntry = m_arpTreeEntries.size()-2; idxEntry >= idxInParentBranch; --idxEntry )
-                {
-                    pModelTreeEntry = m_arpTreeEntries[idxEntry];
-                    m_arpTreeEntries[idxEntry+1] = pModelTreeEntry;
-                    pModelTreeEntry->setModelIndexInParentBranch(idxEntry+1);
-                }
-                m_arpTreeEntries[idxInParentBranch] = i_pModelTreeEntry;
-            }
-            break;
-        } // case EIdxTreeSortOrder::Ascending:
-
-        default:
-        {
-            break;
+            idxInParentBranch = m_arpTreeEntries.size();
+            m_arpTreeEntries.append(i_pModelTreeEntry);
         }
-    } // switch( m_sortOrder )
+        // If inserted before an existing entry ..
+        else
+        {
+            idxInParentBranch = itModelEntry.value()->indexInParentBranch();
+            m_arpTreeEntries.append(nullptr);
 
-    i_pModelTreeEntry->setModelParentBranch(this);
-    i_pModelTreeEntry->setModelIndexInParentBranch(idxInParentBranch);
+            // Move all following entries one index backwards.
+            for( int idxEntry = m_arpTreeEntries.size()-2; idxEntry >= idxInParentBranch; --idxEntry )
+            {
+                CModelIdxTreeEntry* pModelTreeEntry = m_arpTreeEntries[idxEntry];
+                m_arpTreeEntries[idxEntry+1] = pModelTreeEntry;
+                pModelTreeEntry->setIndexInParentBranch(idxEntry+1);
+            }
+            m_arpTreeEntries[idxInParentBranch] = i_pModelTreeEntry;
+        }
+    }
+    else if( m_sortOrder == EIdxTreeSortOrder::Descending )
+    {
+        m_mappModelTreeEntries.insert(strKeyInParentBranch, i_pModelTreeEntry);
+
+        QMapIterator<QString, CModelIdxTreeEntry*> itModelEntry(m_mappModelTreeEntries);
+        itModelEntry.toBack();
+        while(itModelEntry.hasPrevious())
+        {
+            itModelEntry.previous();
+            ++idxInParentBranch;
+            if( m_mappModelTreeEntries.value(itModelEntry.key()) == i_pModelTreeEntry)
+            {
+                break;
+            }
+        }
+
+        // If appended at the end ..
+        if( idxInParentBranch == m_arpTreeEntries.size() )
+        {
+            m_arpTreeEntries.append(i_pModelTreeEntry);
+        }
+        // If inserted before an existing entry ..
+        else
+        {
+            m_arpTreeEntries.append(nullptr);
+
+            // Move all following entries one index backwards.
+            for( int idxEntry = m_arpTreeEntries.size()-2; idxEntry >= idxInParentBranch; --idxEntry )
+            {
+                CModelIdxTreeEntry* pModelTreeEntry = m_arpTreeEntries[idxEntry];
+                m_arpTreeEntries[idxEntry+1] = pModelTreeEntry;
+                pModelTreeEntry->setIndexInParentBranch(idxEntry+1);
+            }
+            m_arpTreeEntries[idxInParentBranch] = i_pModelTreeEntry;
+        }
+    }
+    else
+    {
+        CIdxTreeLocker idxTreeLocker(m_pIdxTree);
+
+        CIdxTreeEntry* pTreeEntry = i_pModelTreeEntry->getIdxTreeEntry();
+
+        if( !m_bExcludeLeaves )
+        {
+            idxInParentBranch = pTreeEntry->indexInParentBranch();
+        }
+        else if( i_pModelTreeEntry->entryType() != EIdxTreeEntryType::Leave )
+        {
+            idxInParentBranch = pTreeEntry->indexInParentBranchsChildListWithSameEntryTypes();
+        }
+
+        if( idxInParentBranch < 0 || idxInParentBranch > m_arpTreeEntries.size() )
+        {
+            QString strAddErrInfo;
+            strAddErrInfo  = "IdxInParentBranch (=" + QString::number(idxInParentBranch) + ") is out of range";
+            strAddErrInfo += " [0 .. " + QString::number(m_arpTreeEntries.size()) + "]";
+            SErrResultInfo errResultInfo(
+                /* errSource  */ NameSpace(), ClassName(), keyInTree(), "add(" + i_pModelTreeEntry->keyInTree() + ")",
+                /* result     */ EResultInternalProgramError,
+                /* severity   */ EResultSeverityCritical,
+                /* strAddInfo */ strAddErrInfo );
+            throw CException(__FILE__, __LINE__, errResultInfo);
+        }
+
+        m_mappModelTreeEntries.insert(strKeyInParentBranch, i_pModelTreeEntry);
+
+        // If appended at the end ..
+        if( idxInParentBranch == m_arpTreeEntries.size() )
+        {
+            m_arpTreeEntries.append(i_pModelTreeEntry);
+        }
+        // If inserted before an existing entry ..
+        else // if( idxInParentBranch < m_arpTreeEntries.size() )
+        {
+            m_arpTreeEntries.append(nullptr);
+
+            // Move all following entries one index backwards.
+            for( int idxEntry = m_arpTreeEntries.size()-2; idxEntry >= idxInParentBranch; --idxEntry )
+            {
+                CModelIdxTreeEntry* pModelTreeEntry = m_arpTreeEntries[idxEntry];
+                m_arpTreeEntries[idxEntry+1] = pModelTreeEntry;
+                pModelTreeEntry->setIndexInParentBranch(idxEntry+1);
+            }
+            m_arpTreeEntries[idxInParentBranch] = i_pModelTreeEntry;
+        }
+    }
+
+    i_pModelTreeEntry->setParentBranch(this);
+    i_pModelTreeEntry->setIndexInParentBranch(idxInParentBranch);
 
     return idxInParentBranch;
 
@@ -437,7 +616,7 @@ int CModelIdxTreeEntry::add( CModelIdxTreeEntry* i_pModelTreeEntry )
 void CModelIdxTreeEntry::remove( CModelIdxTreeEntry* i_pModelTreeEntry )
 //-----------------------------------------------------------------------------
 {
-    int idxInParentBranch = i_pModelTreeEntry->modelIndexInParentBranch();
+    int idxInParentBranch = i_pModelTreeEntry->indexInParentBranch();
 
     if( idxInParentBranch < 0 || idxInParentBranch >= m_arpTreeEntries.size() )
     {
@@ -454,18 +633,14 @@ void CModelIdxTreeEntry::remove( CModelIdxTreeEntry* i_pModelTreeEntry )
     m_arpTreeEntries.remove(idxInParentBranch);
     m_mappModelTreeEntries.remove(strKeyInParentBranch);
 
-    i_pModelTreeEntry->setModelParentBranch(nullptr);
-    i_pModelTreeEntry->setModelIndexInParentBranch(-1);
+    i_pModelTreeEntry->setParentBranch(nullptr);
+    i_pModelTreeEntry->setIndexInParentBranch(-1);
 
-    CModelIdxTreeEntry* pModelTreeEntry;
-    int                      idxEntry;
-
-    for( idxEntry = idxInParentBranch; idxEntry < m_arpTreeEntries.size(); ++idxEntry )
+    for( int idxEntry = idxInParentBranch; idxEntry < m_arpTreeEntries.size(); ++idxEntry )
     {
-        pModelTreeEntry = m_arpTreeEntries[idxEntry];
-        pModelTreeEntry->setModelIndexInParentBranch(idxEntry);
+        CModelIdxTreeEntry* pModelTreeEntry = m_arpTreeEntries[idxEntry];
+        pModelTreeEntry->setIndexInParentBranch(idxEntry);
     }
-
 } // remove
 
 //-----------------------------------------------------------------------------
@@ -489,51 +664,127 @@ void CModelIdxTreeEntry::remove( const QString& i_strKeyInParentBranch )
     m_arpTreeEntries.remove(idxInParentBranch);
     m_mappModelTreeEntries.remove(i_strKeyInParentBranch);
 
-    pModelTreeEntry->setModelParentBranch(nullptr);
-    pModelTreeEntry->setModelIndexInParentBranch(-1);
+    pModelTreeEntry->setParentBranch(nullptr);
+    pModelTreeEntry->setIndexInParentBranch(-1);
 
     for( int idxEntry = idxInParentBranch; idxEntry < m_arpTreeEntries.size(); ++idxEntry )
     {
         pModelTreeEntry = m_arpTreeEntries[idxEntry];
-        pModelTreeEntry->setModelIndexInParentBranch(idxEntry);
+        pModelTreeEntry->setIndexInParentBranch(idxEntry);
     }
-
 } // remove
 
 //-----------------------------------------------------------------------------
-void CModelIdxTreeEntry::rename(
-    const QString& i_strKeyInParentBranchOrig,
-    const QString& i_strNameNew )
+void CModelIdxTreeEntry::onChildRenamed(
+    CModelIdxTreeEntry* i_pModelTreeEntry,
+    const QString&      i_strNamePrev )
 //-----------------------------------------------------------------------------
 {
-    CModelIdxTreeEntry* pModelTreeEntry = m_mappModelTreeEntries.value(i_strKeyInParentBranchOrig, nullptr);
+    int idxInParentBranchPrev = i_pModelTreeEntry->indexInParentBranch();
 
-    if( pModelTreeEntry == nullptr )
+    if( idxInParentBranchPrev < 0 || idxInParentBranchPrev >= m_arpTreeEntries.size() )
     {
-        throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strKeyInParentBranchOrig);
+        throw CException(__FILE__, __LINE__, EResultIdxOutOfRange, QString::number(idxInParentBranchPrev));
     }
 
-    int idxInParentBranch = pModelTreeEntry->modelIndexInParentBranch();
+    QString strKeyInParentBranchPrev = i_pModelTreeEntry->entryType2Str(EEnumEntryAliasStrSymbol) + ":" + i_strNamePrev;;
+    QString strKeyInParentBranchNew = i_pModelTreeEntry->keyInParentBranch();
 
-    if( idxInParentBranch < 0 || idxInParentBranch >= m_arpTreeEntries.size() )
+    if( strKeyInParentBranchNew != strKeyInParentBranchPrev )
     {
-        throw CException(__FILE__, __LINE__, EResultIdxOutOfRange, QString::number(idxInParentBranch));
-    }
-
-    QString strKeyInParentBranchNew = pModelTreeEntry->entryType2Str(EEnumEntryAliasStrSymbol) + ":" + i_strNameNew;
-
-    if( strKeyInParentBranchNew != i_strKeyInParentBranchOrig )
-    {
+        if( !m_mappModelTreeEntries.contains(strKeyInParentBranchPrev) )
+        {
+            throw CException(__FILE__, __LINE__, EResultObjAlreadyInList, strKeyInParentBranchNew);
+        }
         if( m_mappModelTreeEntries.contains(strKeyInParentBranchNew) )
         {
             throw CException(__FILE__, __LINE__, EResultObjAlreadyInList, strKeyInParentBranchNew);
         }
 
-        m_mappModelTreeEntries.remove(i_strKeyInParentBranchOrig);
-        m_mappModelTreeEntries.insert(strKeyInParentBranchNew, pModelTreeEntry);
-    }
+        m_mappModelTreeEntries.remove(strKeyInParentBranchPrev);
 
-} // rename
+        if( m_sortOrder == EIdxTreeSortOrder::Ascending )
+        {
+            m_arpTreeEntries.removeOne(i_pModelTreeEntry);
+
+            QMap<QString, CModelIdxTreeEntry*>::iterator itModelEntry =
+                m_mappModelTreeEntries.insert(strKeyInParentBranchNew, i_pModelTreeEntry);
+
+            // Inserted before this entry (or appended at the end).
+            ++itModelEntry;
+
+            int idxInParentBranch = -1;
+
+            // If appended at the end ..
+            if( itModelEntry == m_mappModelTreeEntries.end() )
+            {
+                idxInParentBranch = m_arpTreeEntries.size();
+                m_arpTreeEntries.append(i_pModelTreeEntry);
+            }
+            // If inserted before an existing entry ..
+            else // if( itModelEntry != m_mappModelTreeEntries.end() )
+            {
+                idxInParentBranch = itModelEntry.value()->indexInParentBranch();
+                m_arpTreeEntries.append(nullptr);
+
+                // Move all following entries one index backwards.
+                for( int idxEntry = m_arpTreeEntries.size()-2; idxEntry >= idxInParentBranch; --idxEntry )
+                {
+                    CModelIdxTreeEntry* pModelTreeEntry = m_arpTreeEntries[idxEntry];
+                    m_arpTreeEntries[idxEntry+1] = pModelTreeEntry;
+                    pModelTreeEntry->setIndexInParentBranch(idxEntry+1);
+                }
+                m_arpTreeEntries[idxInParentBranch] = i_pModelTreeEntry;
+            }
+            i_pModelTreeEntry->setIndexInParentBranch(idxInParentBranch);
+        }
+        else if( m_sortOrder == EIdxTreeSortOrder::Descending )
+        {
+            m_arpTreeEntries.removeOne(i_pModelTreeEntry);
+
+            m_mappModelTreeEntries.insert(strKeyInParentBranchNew, i_pModelTreeEntry);
+
+            int idxInParentBranch = -1;
+
+            QMapIterator<QString, CModelIdxTreeEntry*> itModelEntry(m_mappModelTreeEntries);
+            itModelEntry.toBack();
+            while(itModelEntry.hasPrevious())
+            {
+                itModelEntry.previous();
+                ++idxInParentBranch;
+                if( m_mappModelTreeEntries.value(itModelEntry.key()) == i_pModelTreeEntry)
+                {
+                    break;
+                }
+            }
+
+            // If appended at the end ..
+            if( idxInParentBranch == m_arpTreeEntries.size() )
+            {
+                m_arpTreeEntries.append(i_pModelTreeEntry);
+            }
+            // If inserted before an existing entry ..
+            else
+            {
+                m_arpTreeEntries.append(nullptr);
+
+                // Move all following entries one index backwards.
+                for( int idxEntry = idxInParentBranch; idxEntry < m_arpTreeEntries.size()-1; ++idxEntry )
+                {
+                    CModelIdxTreeEntry* pModelTreeEntry = m_arpTreeEntries[idxEntry];
+                    m_arpTreeEntries[idxEntry+1] = pModelTreeEntry;
+                    pModelTreeEntry->setIndexInParentBranch(idxEntry+1);
+                }
+                m_arpTreeEntries[idxInParentBranch] = i_pModelTreeEntry;
+            }
+            i_pModelTreeEntry->setIndexInParentBranch(idxInParentBranch);
+        }
+        else // if( m_sortOrder == EIdxTreeSortOrder::Config )
+        {
+            m_mappModelTreeEntries.insert(strKeyInParentBranchNew, i_pModelTreeEntry);
+        }
+    } // if( strKeyInParentBranchNew != strKeyInParentBranchPrev )
+} // onChildRenamed
 
 /*=============================================================================
 public: // instance methods

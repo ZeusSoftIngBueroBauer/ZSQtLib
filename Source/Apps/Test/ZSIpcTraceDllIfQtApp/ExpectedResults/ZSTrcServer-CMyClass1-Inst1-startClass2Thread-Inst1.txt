@@ -1,0 +1,28 @@
+<GUIMain                 > -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass1> Inst1.startClass2Thread(Inst1)
+<GUIMain                 >    -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass2Thread> MyClass2ThreadInst1.ctor(Inst1, Inst1)
+<GUIMain                 >       -> <ZS::System::CMutex> CMyClass2Thread::MyClass2ThreadInst1::WaitClass2Created.ctor()
+<GUIMain                 >       <- <ZS::System::CMutex> CMyClass2Thread::MyClass2ThreadInst1::WaitClass2Created.ctor()
+<GUIMain                 >       -> <ZS::System::CWaitCondition> CMyClass2Thread::MyClass2ThreadInst1::WaitClass2Created.ctor()
+<GUIMain                 >       <- <ZS::System::CWaitCondition> CMyClass2Thread::MyClass2ThreadInst1::WaitClass2Created.ctor()
+<GUIMain                 >    <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass2Thread> MyClass2ThreadInst1.ctor()
+<GUIMain                 >    -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass2Thread> MyClass2ThreadInst1.start(InheritPriority)
+<GUIMain                 >    <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass2Thread> MyClass2ThreadInst1.start()
+<GUIMain                 >    -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass2Thread> MyClass2ThreadInst1.waitForMyClass2Created()
+<GUIMain                 >       -> <ZS::System::CMutex> CMyClass2Thread::MyClass2ThreadInst1::WaitClass2Created.tryLock(0 ms)
+<GUIMain                 >       <- <ZS::System::CMutex> CMyClass2Thread::MyClass2ThreadInst1::WaitClass2Created.tryLock(): true
+<GUIMain                 >       -> <ZS::System::CWaitCondition> CMyClass2Thread::MyClass2ThreadInst1::WaitClass2Created.wait(100 ms)
+<MyClass2ThreadInst1     > -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass2Thread> MyClass2ThreadInst1.run()
+<MyClass2ThreadInst1     >    -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass2> Inst1.ctor(Inst1, MyClass2ThreadInst1)
+<MyClass2ThreadInst1     >       -> <ZS::System::CMutex> CMyClass2::Inst1::Counters.ctor(Recursive)
+<MyClass2ThreadInst1     >       <- <ZS::System::CMutex> CMyClass2::Inst1::Counters.ctor()
+<MyClass2ThreadInst1     >       -> <ZS::System::CMutex> CMyClass2::Inst1::WaitClass3ThreadRunning.ctor()
+<MyClass2ThreadInst1     >       <- <ZS::System::CMutex> CMyClass2::Inst1::WaitClass3ThreadRunning.ctor()
+<MyClass2ThreadInst1     >       -> <ZS::System::CWaitCondition> CMyClass2::Inst1::Class3ThreadRunning.ctor()
+<MyClass2ThreadInst1     >       <- <ZS::System::CWaitCondition> CMyClass2::Inst1::Class3ThreadRunning.ctor()
+<MyClass2ThreadInst1     >    <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass2> Inst1.ctor()
+<MyClass2ThreadInst1     >    -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass2Thread> MyClass2ThreadInst1.exec()
+<GUIMain                 >       <- <ZS::System::CWaitCondition> CMyClass2Thread::MyClass2ThreadInst1::WaitClass2Created.wait(): false
+<GUIMain                 >       -> <ZS::System::CMutex> CMyClass2Thread::MyClass2ThreadInst1::WaitClass2Created.unlock()
+<GUIMain                 >       <- <ZS::System::CMutex> CMyClass2Thread::MyClass2ThreadInst1::WaitClass2Created.unlock()
+<GUIMain                 >    <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass2Thread> MyClass2ThreadInst1.waitForMyClass2Created(): Inst1
+<GUIMain                 > <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass1> Inst1.startClass2Thread(): Inst1

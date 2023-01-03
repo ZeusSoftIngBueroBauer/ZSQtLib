@@ -40,7 +40,7 @@ global type definitions and constants
 
 namespace ZS
 {
-namespace Trace
+namespace System
 {
 class CMethodTracer;
 }
@@ -146,22 +146,22 @@ public: // must overridables
     virtual QByteArray* createWatchDogBlock() const = 0;
 public: // must overridables
     virtual QList<QByteArray> receiveDataBlocks(
-        ESrvCltType            i_srvCltType,
-        QObject*               i_pObjGtw,
-        QObject*               i_pObjSrvClt,
-        CIpcSocketWrapper*     i_pSocketWrapper,
-        QByteArray*            i_pByteArrWatchDog = nullptr,
-        Trace::CMethodTracer*  i_pMethodTracer = nullptr,
-        const QList<QObject*>& i_arpTrcMsgLogObjects = QList<QObject*>() ) const = 0;
+        ESrvCltType                i_srvCltType,
+        QObject*                   i_pObjGtw,
+        QObject*                   i_pObjSrvClt,
+        CIpcSocketWrapper*         i_pSocketWrapper,
+        QByteArray*                i_pByteArrWatchDog = nullptr,
+        ZS::System::CMethodTracer* i_pMethodTracer = nullptr,
+        const QList<QObject*>&     i_arpTrcMsgLogObjects = QList<QObject*>() ) const = 0;
     virtual bool writeDataBlock(
-        ESrvCltType            i_srvCltType,
-        QObject*               i_pObjGtw,
-        QObject*               i_pObjSrvClt,
-        CIpcSocketWrapper*     i_pSocketWrapper,
-        const QByteArray&      i_byteArr,
-        bool                   i_bIsWatchDogBlock = false,
-        Trace::CMethodTracer*  i_pMethodTracer = nullptr,
-        const QList<QObject*>& i_arpTrcMsgLogObjects = QList<QObject*>() ) const = 0;
+        ESrvCltType                i_srvCltType,
+        QObject*                   i_pObjGtw,
+        QObject*                   i_pObjSrvClt,
+        CIpcSocketWrapper*         i_pSocketWrapper,
+        const QByteArray&          i_byteArr,
+        bool                       i_bIsWatchDogBlock = false,
+        ZS::System::CMethodTracer* i_pMethodTracer = nullptr,
+        const QList<QObject*>&     i_arpTrcMsgLogObjects = QList<QObject*>() ) const = 0;
 protected: // instance members
     EBlkType m_blkType;
 

@@ -111,32 +111,16 @@ CApplication::CApplication(
     m_fReqExecTreeGarbageCollectorInterval_s(5.0),
     m_fReqExecTreeGarbageCollectorElapsed_s(60.0),
     m_pReqExecTree(nullptr),
-    m_trcServerHostSettings(
-        /* strLocalHostName */ "127.0.0.1",
-        /* uLocalPort       */ 24763,
-        /* uMaxConnections  */ 30 ),
-    m_trcServerSettings(),
-    m_pTrcServer(nullptr),
-    m_iTrcDetailLevelTrcServer(ETraceDetailLevelNone),
-    m_trcClientHostSettings(
-        /* strRemoteHost      */ "127.0.0.1",
-        /* uRemotePort        */ 24763,
-        /* iConnectTimeout_ms */ 5000 ),
-    m_pTrcClient(nullptr),
-    m_strThreadClrFileAbsFilePath(),
-    m_strTestStepsFileAbsFilePath(),
+    m_eZSTrcServerTrcDetailLevel(EMethodTraceDetailLevel::None),
+    m_eZSTrcServerTrcDetailLevelNoisyMethods(EMethodTraceDetailLevel::None),
+    m_eZSTrcClientTrcDetailLevel(EMethodTraceDetailLevel::None),
+    m_pZSTrcServer(nullptr),
+    m_clientHostSettingsZSTrcClient("127.0.0.1", 24763, 5000),
+    m_pZSTrcClient(nullptr),
     m_pTest(nullptr),
-    m_pMainWindow(nullptr)
+    m_pMainWindow(nullptr),
+    m_bAutoStartTest(false)
 {
-    m_trcServerHostSettings = SServerHostSettings(ZS::Ipc::ESocketTypeTcp);
-
-    m_trcServerHostSettings.m_uLocalPort = 24763;
-    m_trcServerHostSettings.m_uMaxPendingConnections = 5000;
-
-    m_trcServerSettings = STrcServerSettings();
-
-    m_trcServerSettings.m_bLocalTrcFileCloseFileAfterEachWrite = true;
-
     setObjectName("theApp");
 
     if( thread()->objectName().length() == 0 )
@@ -150,14 +134,13 @@ CApplication::CApplication(
 
     QIcon iconApp;
 
-    QPixmap pxmApp16x16(":/ZS/App/Zeus16x16.bmp");
-    QPixmap pxmApp32x32(":/ZS/App/Zeus32x32.bmp");
+    QPixmap pxmApp32x32(":/ZS/App/ZeusSoft_32x32.png");
+    QPixmap pxmApp48x48(":/ZS/App/ZeusSoft_48x48.png");
+    QPixmap pxmApp64x64(":/ZS/App/ZeusSoft_64x64.png");
 
-    pxmApp16x16.setMask(pxmApp16x16.createHeuristicMask());
-    pxmApp32x32.setMask(pxmApp32x32.createHeuristicMask());
-
-    iconApp.addPixmap(pxmApp16x16);
     iconApp.addPixmap(pxmApp32x32);
+    iconApp.addPixmap(pxmApp48x48);
+    iconApp.addPixmap(pxmApp64x64);
 
     QApplication::setWindowIcon(iconApp);
 
@@ -167,19 +150,8 @@ CApplication::CApplication(
     int         idxArg;
     QString     strArg;
     QString     strVal;
-    int         iVal;
-    bool        bConverted;
     QStringList strListArgsPar;
     QStringList strListArgsVal;
-
-    // Range of IniFileScope: ["AppDir", "User", "System"]
-    #ifdef __linux__
-    // Using "System" on linux Mint ends up in directory "etc/xdg/<CompanyName>"
-    // where the application has not write access rights. Stupid ...
-    QString strIniFileScope = "User";
-    #else
-    QString strIniFileScope = "System"; // Default
-    #endif
 
     parseAppArgs( i_argc, i_argv, strListArgsPar, strListArgsVal );
 
@@ -192,67 +164,28 @@ CApplication::CApplication(
         strArg = strListArgsPar[idxArg];
         strVal = strListArgsVal[idxArg];
 
-        // Here only the command arguments concerning the location of the ini file are parsed.
-        // Other arguments (e.g. mode) are parsed further below.
-        if( strArg.compare("IniFileScope",Qt::CaseInsensitive) == 0 )
+        if( strArg == "AutoStartTest" )
         {
-            strIniFileScope = strVal;
+            m_bAutoStartTest = true;
         }
-        else if( strArg == "TrcServerTraceDetailLevel" )
+        else if( strArg == "ZSTrcServerTraceDetailLevel" )
         {
-            m_iTrcDetailLevelTrcServer = str2TraceDetailLevel(strVal);
+            m_eZSTrcServerTrcDetailLevel = CEnumMethodTraceDetailLevel::fromString(strVal).enumerator();
         }
-        else if( strArg == "TrcServerSettingsTrcFileLineCountMax" )
+        else if( strArg == "ZSTrcServerTraceDetailLevelNoisyMethods" )
         {
-            iVal = strVal.toInt(&bConverted);
-            if( bConverted ) m_trcServerSettings.m_iLocalTrcFileSubFileLineCountMax = iVal;
+            m_eZSTrcServerTrcDetailLevelNoisyMethods = CEnumMethodTraceDetailLevel::fromString(strVal).enumerator();
+        }
+        else if( strArg == "ZSTrcClientTraceDetailLevel" )
+        {
+            m_eZSTrcClientTrcDetailLevel = CEnumMethodTraceDetailLevel::fromString(strVal).enumerator();
         }
     }
-
-    // Calculate default file paths
-    //-----------------------------
-
-    QString strAppNameNormalized = QCoreApplication::applicationName();
-
-    // The application name may contain characters which are invalid in file names:
-    strAppNameNormalized.remove(":");
-    strAppNameNormalized.remove(" ");
-    strAppNameNormalized.remove("\\");
-    strAppNameNormalized.remove("/");
-    strAppNameNormalized.remove("<");
-    strAppNameNormalized.remove(">");
-
-    QString strAppConfigDir = ZS::System::getAppConfigDir(strIniFileScope);
-    QString strAppLogDir = ZS::System::getAppLogDir(strIniFileScope);
-
-    QString strErrLogFileBaseName = strAppNameNormalized + "-Error";
-    QString strErrLogFileSuffix = "xml";
-
-    m_strErrLogFileAbsFilePath = strAppLogDir + "/" + strErrLogFileBaseName + "." + strErrLogFileSuffix;
-
-    QString strTrcAdminObjFileSuffix = "xml";
-    QString strTrcAdminObjFileBaseName = strAppNameNormalized + "-TrcMthAdmObj";
-
-    QString strTrcLogFileSuffix = "log";
-    QString strTrcLogFileBaseName = strAppNameNormalized + "-TrcMth";
-
-    m_trcServerSettings.m_strAdminObjFileAbsFilePath = strAppConfigDir + "/" + strTrcAdminObjFileBaseName + "." + strTrcAdminObjFileSuffix;
-    m_trcServerSettings.m_strLocalTrcFileAbsFilePath = strAppLogDir + "/" + strTrcLogFileBaseName + "." + strTrcLogFileSuffix;
-
-    QString strTestStepsFileBaseName = strAppNameNormalized + "-TestSteps";
-    QString strTestStepsFileSuffix = "xml";
-
-    m_strTestStepsFileAbsFilePath = strAppConfigDir + "/" + strTestStepsFileBaseName + "." + strTestStepsFileSuffix;
-
-    QString strThreadClrFileBaseName = strAppNameNormalized + "-ThreadColors";
-    QString strThreadClrFileSuffix = "xml";
-
-    m_strThreadClrFileAbsFilePath = strAppConfigDir + "/" + strThreadClrFileBaseName + "." + strThreadClrFileSuffix;
 
     // Create error manager
     //---------------------
 
-    CErrLog::CreateInstance(true, m_strErrLogFileAbsFilePath);
+    CErrLog::CreateInstance();
 
     // Request Execution Tree
     //------------------------
@@ -263,11 +196,6 @@ CApplication::CApplication(
     m_pReqExecTree->setGarbageCollectorIntervalInSec(m_fReqExecTreeGarbageCollectorInterval_s);
     m_pReqExecTree->setGarbageCollectorElapsedInSec(m_fReqExecTreeGarbageCollectorElapsed_s);
 
-    // Test
-    //----------------
-
-    m_pTest = new CTest(m_strTestStepsFileAbsFilePath);
-
     // Trace Server
     //-------------
 
@@ -276,23 +204,31 @@ CApplication::CApplication(
     // But create trace server before the main window so that the main window can connect
     // to the stateChanged signal of the trace server.
 
-    m_pTrcServer = CIpcTrcServer::CreateInstance("ZSTrcServer", m_iTrcDetailLevelTrcServer);
+    m_pZSTrcServer = ZS::Trace::CIpcTrcServer::CreateInstance(
+        /* iTrcDetailLevel                 */ m_eZSTrcServerTrcDetailLevel,
+        /* iTrcDetailLevelMutex            */ EMethodTraceDetailLevel::None,
+        /* iTrcDetailLevelIpcServer        */ EMethodTraceDetailLevel::None,
+        /* iTrcDetailLevelIpcServerMutex   */ EMethodTraceDetailLevel::None,
+        /* iTrcDetailLevelIpcServerGateway */ EMethodTraceDetailLevel::None );
+    m_pZSTrcServer->setLocalTrcFileSubFileLineCountMax(10000);
 
-    m_pTrcServer->setHostSettings(m_trcServerHostSettings);
-    m_pTrcServer->setTraceSettings(m_trcServerSettings);
-    m_pTrcServer->changeSettings();
-
-    m_pTrcServer->recallAdminObjs();
-    m_pTrcServer->saveAdminObjs();
+    //m_pZSTrcServer->recallAdminObjs();
 
     // Trace client
     //-------------
 
-    m_pTrcClient = new CIpcTrcClient("TrcMthClient");
+    m_pZSTrcClient = new CIpcTrcClient(
+        /* strName                       */ "ZSTrcClient",
+        /* iTrcMthFileDetailLevel        */ m_eZSTrcClientTrcDetailLevel,
+        /* iTrcMthFileDetailLevelMutex   */ EMethodTraceDetailLevel::None,
+        /* iTrcMthFileDetailLevelGateway */ EMethodTraceDetailLevel::None );
+    m_pZSTrcClient->setHostSettings(m_clientHostSettingsZSTrcClient);
+    m_pZSTrcClient->changeSettings();
 
-    m_pTrcClient->setWatchDogTimerUsed(false);
-    m_pTrcClient->setHostSettings(m_trcClientHostSettings);
-    m_pTrcClient->changeSettings();
+    // Test
+    //----------------
+
+    m_pTest = new CTest();
 
     // Main Window
     //------------
@@ -300,16 +236,38 @@ CApplication::CApplication(
     m_pMainWindow = new CMainWindow(i_strWindowTitle, m_pTest);
     m_pMainWindow->show();
 
+    // Start test automatically if desired
+    //------------------------------------
+
+    if( m_bAutoStartTest )
+    {
+        m_pTest->start();
+
+        if( !QObject::connect(
+            /* pObjSender   */ m_pTest,
+            /* szSignal     */ SIGNAL(testFinished(const ZS::Test::CEnumTestResult&)),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT(onTestFinished(const ZS::Test::CEnumTestResult&)) ) )
+        {
+            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+        }
+    }
+
 } // ctor
 
 //------------------------------------------------------------------------------
 CApplication::~CApplication()
 //------------------------------------------------------------------------------
 {
-    //saveSettings();
-
     // Destroy objects created and controlled by the application
     //----------------------------------------------------------
+
+    CIpcTrcServer* pTrcServer = ZS::Trace::CIpcTrcServer::GetInstance();
+
+    if( pTrcServer != nullptr )
+    {
+        pTrcServer->shutdown();
+    }
 
     try
     {
@@ -321,22 +279,10 @@ CApplication::~CApplication()
 
     try
     {
-        delete m_pTrcClient;
+        delete m_pZSTrcClient;
     }
     catch(...)
     {
-    }
-
-    // Destroy trace server
-    if( m_pTrcServer != nullptr )
-    {
-        try
-        {
-            ZS::Trace::CTrcServer::ReleaseInstance(m_pTrcServer);
-        }
-        catch(...)
-        {
-        }
     }
 
     try
@@ -347,38 +293,59 @@ CApplication::~CApplication()
     {
     }
 
-    //try
-    //{
-    //    delete m_pSettingsFile;
-    //}
-    //catch(...)
-    //{
-    //}
+    // Destroy trace server
+    if( m_pZSTrcServer != nullptr )
+    {
+        //m_pZSTrcServer->saveAdminObjs();
+
+        try
+        {
+            ZS::Trace::CIpcTrcServer::ReleaseInstance();
+        }
+        catch(...)
+        {
+        }
+    }
 
     CRequestExecTree::DestroyInstance();
 
     CErrLog::ReleaseInstance();
 
-    //m_bTrcDetailLevelTrcServerSetViaProgArgs = false;
-    //m_bTrcServerSettingsTrcFileLineCountMaxSetViaProgArgs = false;
-    //m_pSettingsFile = nullptr;
     //m_strErrLogFileAbsFilePath;
     m_bReqExecTreeGarbageCollectorEnabled = false;
     m_fReqExecTreeGarbageCollectorInterval_s = 0.0;
     m_fReqExecTreeGarbageCollectorElapsed_s = 0.0;
     m_pReqExecTree = nullptr;
-    //m_trcServerHostSettings;
-    //m_trcServerSettings;
-    m_pTrcServer = nullptr;
-    m_iTrcDetailLevelTrcServer = 0;
-    //m_strThreadClrFileAbsFilePath;
-    //m_trcClientHostSettings;
-    m_pTrcClient = nullptr;
-    //m_state = static_cast<EState>(0);
-    //m_pReqInProgress = nullptr;
+    m_eZSTrcServerTrcDetailLevel = static_cast<EMethodTraceDetailLevel>(0);
+    m_eZSTrcServerTrcDetailLevelNoisyMethods = static_cast<EMethodTraceDetailLevel>(0);
+    m_eZSTrcClientTrcDetailLevel = static_cast<EMethodTraceDetailLevel>(0);
+    m_pZSTrcServer = nullptr;
+    //m_clientHostSettingsZSTrcClient;
+    m_pZSTrcClient = nullptr;
     //m_strTestStepsFileAbsFilePath;
     m_pTest = nullptr;
     m_pMainWindow = nullptr;
+    m_bAutoStartTest = false;
 
 } // dtor
 
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CApplication::onTestFinished( const ZS::Test::CEnumTestResult& i_result )
+//------------------------------------------------------------------------------
+{
+    // This test is fragile concering the timing. Which thread is waken up at first
+    // if a wait condition is signalled etc.. We try the test several times before
+    // the test is reported as failed.
+    if( i_result == ZS::Test::ETestResult::TestFailed && m_pTest->getNumberOfTestRuns() < 3 )
+    {
+        m_pTest->start();
+    }
+    else
+    {
+        exit(i_result == ZS::Test::ETestResult::TestPassed ? 0 : 1);
+    }
+}

@@ -55,12 +55,10 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CTest::CTest( const QString& i_strTestStepsFileName ) :
+CTest::CTest() :
 //------------------------------------------------------------------------------
-    ZS::Test::CTest(
-        /* strName              */ "ZS::System::LogFile",
-        /* strTestStepsFileName */ i_strTestStepsFileName,
-        /* iTestStepInterval_ms */ 0 )
+    ZS::Test::CTest("ZSSysLogFile"),
+    m_iInitialLogFilesCount(0)
 {
     ZS::Test::CTestStep* pTestStep;
 
@@ -134,20 +132,9 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
     // Recall test step settings
     //--------------------------
 
-    QFileInfo fileInfo(i_strTestStepsFileName);
+    m_iInitialLogFilesCount = CLogFile::GetFilesCount();
 
-    if( fileInfo.exists() )
-    {
-        SErrResultInfo errResultInfo = recall(i_strTestStepsFileName);
-
-        if(errResultInfo.isErrorResult())
-        {
-            if(CErrLog::GetInstance() != nullptr)
-            {
-                CErrLog::GetInstance()->addEntry(errResultInfo);
-            }
-        }
-    }
+    recallTestSteps();
 
 } // default ctor
 
@@ -155,7 +142,7 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
 CTest::~CTest()
 //------------------------------------------------------------------------------
 {
-    SErrResultInfo errResultInfo = save();
+    SErrResultInfo errResultInfo = saveTestSteps();
 
     if(errResultInfo.isErrorResult())
     {
@@ -741,7 +728,7 @@ void CTest::doTestStepFree( ZS::Test::CTestStep* i_pTestStep )
     // Expected Values
     //---------------
 
-    strExpectedValue = "LogFilesCount == 0";
+    strExpectedValue = "LogFilesCount == " + QString::number(m_iInitialLogFilesCount);
     strlstExpectedValues.append(strExpectedValue);
 
     i_pTestStep->setExpectedValues(strlstExpectedValues);
@@ -751,16 +738,8 @@ void CTest::doTestStepFree( ZS::Test::CTestStep* i_pTestStep )
 
     int iLogFilesCount = CLogFile::GetFilesCount();
 
-    if( iLogFilesCount == 0 )
-    {
-        strResultValue = "LogFilesCount == 0";
-        strlstResultValues.append(strResultValue);
-    }
-    else
-    {
-        strResultValue = "LogFilesCount != 0 (=" + QString::number(iLogFilesCount) + ")";
-        strlstResultValues.append(strResultValue);
-    }
+    strResultValue = "LogFilesCount == " + QString::number(iLogFilesCount);
+    strlstResultValues.append(strResultValue);
 
     // Please note that to finish a test step the list of result values may not be empty.
     if( strlstResultValues.size() == 0 )

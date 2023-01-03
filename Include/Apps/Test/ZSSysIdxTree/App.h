@@ -68,29 +68,25 @@ public: // ctors and dtor
         const QString& i_strWindowTitle );
     ~CApplication();
 public: // instance methods
-    QSettings* getSettingsFile() const { return m_pSettingsFile; }
     CTest* getTest() { return m_pTest; }
-    ZS::Trace::CTrcServer* getTraceServer() { return m_pTrcServer; }
+    ZS::Trace::CIpcTrcServer* getTraceServer() { return m_pTrcServer; }
     CMainWindow* getMainWindow() { return m_pMainWindow; }
-public: // instance methods
-    void readSettings();
-    void saveSettings();
 protected slots:
     void onLastWindowClosed();
+protected slots:
+    void onTestFinished( const ZS::Test::CEnumTestResult& i_result );
 private: // instance members
-    QSettings*                    m_pSettingsFile;
-    QString                       m_strErrLogFileAbsFilePath;
-    ZS::System::CErrLog*          m_pErrLog;
-    bool                          m_bReqExecTreeGarbageCollectorEnabled;
-    double                        m_fReqExecTreeGarbageCollectorInterval_s;
-    double                        m_fReqExecTreeGarbageCollectorElapsed_s;
-    ZS::System::CRequestExecTree* m_pReqExecTree;
-    ZS::Ipc::SServerHostSettings  m_trcServerHostSettings;
-    ZS::Trace::STrcServerSettings m_trcServerSettings;
-    ZS::Trace::CIpcTrcServer*     m_pTrcServer;
-    QString                       m_strTestStepsFileAbsFilePath;
-    CTest*                        m_pTest;
-    CMainWindow*                  m_pMainWindow;
+    ZS::System::CErrLog*           m_pErrLog;
+    bool                           m_bReqExecTreeGarbageCollectorEnabled;
+    double                         m_fReqExecTreeGarbageCollectorInterval_s;
+    double                         m_fReqExecTreeGarbageCollectorElapsed_s;
+    ZS::System::CRequestExecTree*  m_pReqExecTree;
+    ZS::Ipc::SServerHostSettings   m_trcServerHostSettings;
+    ZS::System::STrcServerSettings m_trcServerSettings;
+    ZS::Trace::CIpcTrcServer*      m_pTrcServer;
+    CTest*                         m_pTest;
+    CMainWindow*                   m_pMainWindow;
+    bool                           m_bAutoStartTest;
 
 }; // class CApplication
 

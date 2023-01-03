@@ -44,15 +44,12 @@ Application
 ZSSYSDLL_API void parseAppArgs(
     int&         i_argc,
     char*        i_argv[],
-    QStringList& i_strListPar,
-    QStringList& i_strListVal );
+    QStringList& io_strlstPars,
+    QStringList& io_strlstVals );
 
-// TODO: Define template class CZSApp with inline method "qcoreapplication_notify"
-
-// Range of IniFileScope: ["AppDir", "User", "System"]
-ZSSYSDLL_API QString getAppConfigDir( const QString& i_strIniFileScope );
-ZSSYSDLL_API QString getAppLogDir( const QString& i_strIniFileScope );
-ZSSYSDLL_API QString getAppDataDir( const QString& i_strIniFileScope );
+ZSSYSDLL_API QString getAppConfigDir( const QString& i_strIniFileScope, bool i_bCreateDirIfNotExisting = true );
+ZSSYSDLL_API QString getAppLogDir( const QString& i_strIniFileScope, bool i_bCreateDirIfNotExisting = true );
+ZSSYSDLL_API QString getAppDataDir( const QString& i_strIniFileScope, bool i_bCreateDirIfNotExisting = true );
 
 
 //******************************************************************************

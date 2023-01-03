@@ -37,9 +37,10 @@ class QVBoxLayout;
 
 namespace ZS
 {
-namespace Trace
+namespace System
 {
 class CIdxTreeTrcAdminObjs;
+class CTrcAdminObj;
 
 namespace GUI
 {
@@ -50,39 +51,39 @@ class ZSSYSGUIDLL_API CDlgIdxTreeTrcAdminObjs : public ZS::System::GUI::CDialog
 //******************************************************************************
 {
 public: // class methods
-    static QString NameSpace() { return "ZS::Trace::GUI"; }
+    static QString NameSpace() { return "ZS::System::GUI"; }
     static QString ClassName() { return "CDlgIdxTreeTrcAdminObjs"; }
 public: // class CDlgTrcServer
     static CDlgIdxTreeTrcAdminObjs* CreateInstance(
+        const QString& i_strDlgTitle,
         CIdxTreeTrcAdminObjs* i_pIdxTree,
-        const QString&        i_strDlgTitle,
-        QWidget*              i_pWdgtParent = nullptr,
-        Qt::WindowFlags       i_wFlags = Qt::WindowFlags(),
-        int                   i_iTrcDetailLevel = ZS::Trace::ETraceDetailLevelNone );
+        QWidget* i_pWdgtParent = nullptr,
+        Qt::WindowFlags i_wFlags = Qt::WindowFlags() );
     static CDlgIdxTreeTrcAdminObjs* GetInstance( const QString& i_strObjName );
 protected: // ctor
     CDlgIdxTreeTrcAdminObjs(
+        const QString& i_strDlgTitle,
         CIdxTreeTrcAdminObjs* i_pIdxTree,
-        const QString&        i_strDlgTitle,
-        QWidget*              i_pWdgtParent = nullptr,
-        Qt::WindowFlags       i_wFlags = Qt::WindowFlags(),
-        int                   i_iTrcDetailLevel = ZS::Trace::ETraceDetailLevelNone );
+        QWidget* i_pWdgtParent = nullptr,
+        Qt::WindowFlags i_wFlags = Qt::WindowFlags() );
 public: // dtor
     virtual ~CDlgIdxTreeTrcAdminObjs();
 public: // overridables of base class ZS::System::GUI::CDialog
     virtual QString nameSpace() override { return NameSpace(); }
     virtual QString className() override { return ClassName(); }
 protected: // instance members
-    CIdxTreeTrcAdminObjs*     m_pIdxTree;
-    QVBoxLayout*              m_pLyt;
+    CIdxTreeTrcAdminObjs* m_pIdxTree;
+    QVBoxLayout* m_pLyt;
     CWdgtIdxTreeTrcAdminObjs* m_pWdgtIdxTree;
-    int                       m_iTrcDetailLevel;
+    /*!< Trace admin object to control trace outputs of the class.
+         The object will not be created if the index tree's belongs to the trace server. */
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CDlgIdxTreeTrcAdminObjs
 
 } // namespace GUI
 
-} // namespace Trace
+} // namespace System
 
 } // namespace ZS
 

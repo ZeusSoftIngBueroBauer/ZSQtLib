@@ -48,50 +48,41 @@ class ZSSYSGUIDLL_API CModelIdxTreeEntry
 public: // class methods
     static QString NameSpace() { return "ZS::System::GUI"; }
     static QString ClassName() { return "CModelIdxTreeEntry"; }
-public: // ctors
+public: // ctors and dtor
     CModelIdxTreeEntry( CIdxTreeEntry* i_pTreeEntry );
-public: // dtor
     virtual ~CModelIdxTreeEntry();
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
     virtual QString className() const { return ClassName(); }
 public: // instance methods
-    bool isAboutToBeDestroyed() const;
+    CIdxTreeEntry* getIdxTreeEntry();
 public: // instance methods
-    CIdxTreeEntry* treeEntry() { return m_pTreeEntry; }
+    EIdxTreeEntryType entryType() const;
+    QString entryType2Str( int i_alias = ZS::System::EEnumEntryAliasStrName ) const;
+    bool isRoot() const;
+    bool isBranch() const;
+    bool isLeave() const;
 public: // instance methods
-    EIdxTreeEntryType entryType() const { return m_pTreeEntry->entryType(); }
-    QString entryType2Str( int i_alias = ZS::System::EEnumEntryAliasStrName ) const { return m_pTreeEntry->entryType2Str(i_alias); }
-    QString name() const { return m_pTreeEntry->name(); }
-    QString path() const { return m_pTreeEntry->path(); }
+    void setKeyInTree( const QString& i_strNewKeyInTree );
+    QString keyInTree() const;
+    int indexInTree() const;
+    QString name() const;
+    QString path() const;
 public: // instance methods
-    CIdxTree* tree() const { return m_pTreeEntry->tree(); }
-    QString keyInTree() const { return m_pTreeEntry->keyInTree(); }
-    int indexInTree() const { return m_pTreeEntry->indexInTree(); }
-public: // instance methods
-    CIdxTreeEntry* parentBranch() const { return m_pTreeEntry->parentBranch(); }
-    QString keyInParentBranch() const { return m_pTreeEntry->keyInParentBranch(); }
-    int indexInParentBranch() const { return m_pTreeEntry->indexInParentBranch(); }
-public: // instance methods
-    CModelIdxTree* model() const { return m_pModel; }
-    CModelIdxTreeEntry* modelParentBranch() const { return m_pParentBranch; }
-    int modelIndexInParentBranch() const { return m_idxInParentBranch; }
+    CModelIdxTreeEntry* parentBranch() const { return m_pParentBranch; }
+    QString keyInParentBranch() const;
+    int indexInParentBranch() const { return m_idxInParentBranch; }
 public: // instance methods (applying filter)
-    int indexInParentBranchsChildListWithSameEntryTypes() const { return m_pTreeEntry->indexInParentBranchsChildListWithSameEntryTypes(); }
-    int modelIndexInParentBranchsChildListWithSameEntryTypes() const;
-public: // instance methods
-    QString getCalculatedKeyInModel() const;
-    QString getCalculatedKeyInTree() const;
+    int indexInParentBranchsChildListWithSameEntryTypes() const;
 public: // instance methods
     void setIsSelected( bool i_bIsSelected );
     bool isSelected() const { return m_bIsSelected; }
 public: // instance methods
-    void setModel( CModelIdxTree* i_pModel ) { m_pModel = i_pModel; }
-    void setModelParentBranch( CModelIdxTreeEntry* i_pParent ) { m_pParentBranch = i_pParent; }
-    void setModelIndexInParentBranch( int i_idx ) { m_idxInParentBranch = i_idx; }
+    void setParentBranch( CModelIdxTreeEntry* i_pParent ) { m_pParentBranch = i_pParent; }
+    void setIndexInParentBranch( int i_idx ) { m_idxInParentBranch = i_idx; }
 public: // instance methods
-    void setFilter( EIdxTreeEntryType i_entryType );
-    EIdxTreeEntryType getFilter() const { return m_entryTypeFilter; }
+    void setExcludeLeaves( bool i_bExcludeLeaves );
+    bool areLeavesExluded() const { return m_bExcludeLeaves; }
 public: // instance methods
     void setSortOrder( EIdxTreeSortOrder i_sortOrder );
     EIdxTreeSortOrder sortOrder() const { return m_sortOrder; }
@@ -104,29 +95,36 @@ public: // instance methods
     int size() const { return m_arpTreeEntries.size(); }
     CModelIdxTreeEntry* at( int i_idx ) const { return m_arpTreeEntries.at(i_idx); }
 public: // instance methods
-    int modelIndexOf( CModelIdxTreeEntry* i_pTreeEntry ) const { return m_arpTreeEntries.indexOf(i_pTreeEntry); }
+    int indexOf( CModelIdxTreeEntry* i_pModelTreeEntry ) const;
+    int indexOf( const QString& i_strKeyInParentBranch ) const;
+    int indexOf( EIdxTreeEntryType i_entryType, const QString& i_strName ) const;
 public: // instance methods (applying filter)
-    int modelIndexOfChildInListWithSameEntryTypes( const CModelIdxTreeEntry* i_pTreeEntry ) const;
+    int indexOfChildInListWithSameEntryTypes( const CModelIdxTreeEntry* i_pModelTreeEntry ) const;
 public: // instance methods
-    CModelIdxTreeEntry* findModelBranch( const QString& i_strName );
-    CModelIdxTreeEntry* findModelLeave( const QString& i_strName );
-    CModelIdxTreeEntry* findModelEntry( EIdxTreeEntryType i_entryType, const QString& i_strName );
+    CModelIdxTreeEntry* findBranch( const QString& i_strName ) const;
+    CModelIdxTreeEntry* findLeave( const QString& i_strName ) const;
+    CModelIdxTreeEntry* findEntry( const QString& i_strKeyInParentBranch ) const;
+    CModelIdxTreeEntry* findEntry( EIdxTreeEntryType i_entryType, const QString& i_strName ) const;
 public: // instance methods
-    int add( CModelIdxTreeEntry* i_pTreeEntry );
-    void remove( CModelIdxTreeEntry* i_pTreeEntry );
+    int add( CModelIdxTreeEntry* i_pModelTreeEntry );
+    void remove( CModelIdxTreeEntry* i_pModelTreeEntry );
     void remove( const QString& i_strKeyInParentBranch );
-    void rename( const QString& i_strKeyInParentBranchOrig, const QString& i_strNameNew );
+protected:
+    void onChildRenamed( CModelIdxTreeEntry* i_pModelTreeEntry, const QString& i_strNamePrev );
 public: // instance methods
     void setIsExpanded( bool i_bIsExpanded );
     bool isExpanded() const { return m_bIsExpanded; }
-protected: // instance members
-    CIdxTreeEntry*      m_pTreeEntry;
-    CModelIdxTree*      m_pModel;
+protected: // instance methods (index tree entry properties)
+    CIdxTree*           m_pIdxTree;
+    EIdxTreeEntryType   m_entryType;
+    QString             m_strKeyInTree;
+    int                 m_idxInTree;
+protected: // instance methods (model entry properties)
     CModelIdxTreeEntry* m_pParentBranch;
     int                 m_idxInParentBranch;      // Index of this entry in this parent branch's vector of child entries ("local branch index").
     bool                m_bIsSelected;
 protected: // instance members
-    EIdxTreeEntryType                  m_entryTypeFilter;
+    bool                               m_bExcludeLeaves;
     EIdxTreeSortOrder                  m_sortOrder;
     QMap<QString, CModelIdxTreeEntry*> m_mappModelTreeEntries;   // Key is KeyInParentBranch: <EntryTypeSymbol>:<Name> (e.g. "B:A0::B2::C3", "L:A0::B2::o1")
     QVector<CModelIdxTreeEntry*>       m_arpTreeEntries;

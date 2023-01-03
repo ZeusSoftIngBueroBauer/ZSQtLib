@@ -29,6 +29,7 @@ may result in using the software modules.
 
 #include <QtCore/qstring.h>
 #include <QtNetwork/qhostaddress.h>
+#include <QtNetwork/qnetworkinterface.h>
 
 #include "ZSIpc/ZSIpcDllMain.h"
 #include "ZSSys/ZSSysCommon.h"
@@ -82,19 +83,23 @@ const int ESocketIdMax = 65535;
 ZSIPCDLL_API QString socketId2Str( int i_iSocketId );
 
 //******************************************************************************
+/*! @brief Structure defining the parameters of a socket connection between a server and a client.
+
+    - If the socket descriptor is used on the client's side
+      - the local host name, local port and local object pointer (if used) are
+        defining the connection parameters of the client
+      - the remote host name, remote port and remote object pointer (if used) are
+        defining the connection parameters of the server.
+
+    - If the socket descriptor is used on the server's side
+      - the local host name, local port and local object pointer (if used) are
+        defining the connection parameters of the server
+      - the remote host name, remote port and remote object pointer (if used) are
+        defining the connection parameters of the client.
+*/
 struct ZSIPCDLL_API SSocketDscr
 //******************************************************************************
 {
-// If the socket descriptor is used on the client's side
-// - the local host name, local port and local object pointer (if used) are
-//   defining the connection parameters of the client
-// - the remote host name, remote port and remote object pointer (if used) are
-//   defining the connection parameters of the server.
-// If the socket descriptor is used on the server's side
-// - the local host name, local port and local object pointer (if used) are
-//   defining the connection parameters of the server
-// - the remote host name, remote port and remote object pointer (if used) are
-//   defining the connection parameters of the client.
 public: // ctors
     SSocketDscr();
     SSocketDscr(
@@ -122,43 +127,46 @@ public: // operators
     bool operator == ( const SSocketDscr& i_socketDscrOther ) const;
     bool operator != ( const SSocketDscr& i_socketDscrOther ) const;
 public: // struct members
-    ESrvCltType  m_srvCltType;
-    ESocketType  m_socketType;
-    int          m_iSocketId;
-    ESocketState m_socketState;
-    unsigned int m_uBufferSize;
-    int          m_iConnectTimeout_ms;
-    unsigned int m_uServerListenPort;   // Port the server is listening for incoming connect requests.
+    ESrvCltType  m_srvCltType;          /*!< Defines whether the socket descriptor is used on server or client site. */
+    ESocketType  m_socketType;          /*!< Socket type of the connection. */
+    int          m_iSocketId;           /*!< Unique id of the socket connection. */
+    ESocketState m_socketState;         /*!< Current state of the connection. */
+    unsigned int m_uBufferSize;         /*!< Used for Shm connections (see buffer size of SServerHostSettings and SClientHostSettings). */
+    int          m_iConnectTimeout_ms;  /*!< Timeout in milli seconds for a connect request. */
+    unsigned int m_uServerListenPort;   /*!< Port the server is listening for incoming connect requests. */
     // Socket connection parameters (valid after connection is established)
-    QObject*     m_pObjLocal;
-    QString      m_strLocalHostName;
-    QHostAddress m_hostAddrLocal;
-    unsigned int m_uLocalPort;
-    QObject*     m_pObjRemote;
-    QString      m_strRemoteHostName;   // Must be valid on client's side before creating the socket.
-    QHostAddress m_hostAddrRemote;
-    unsigned int m_uRemotePort;
-    QString      m_strSocketName;       // Optional. Descriptive name of the socket connection (e.g. logical name of the remote server).
+    QObject*     m_pObjLocal;           /*!< Reference to local object (only used for InProcMsg sockets). */
+    QString      m_strLocalHostName;    /*!< Local host name. */
+    QHostAddress m_hostAddrLocal;       /*!< Local host address. */
+    unsigned int m_uLocalPort;          /*!< Local port number. This is not the same as the servers local port number.
+                                             If a connection is established on client's site a socket is created using
+                                             this port number. On server site also a socket is created whose port number
+                                             is different from the servers listening port. */
+    QObject*     m_pObjRemote;          /*!< Reference to remote object (only used for InProcMsg sockets). */
+    QString      m_strRemoteHostName;   /*!< Host name of the remote peer. */
+    QHostAddress m_hostAddrRemote;      /*!< Host address of the remote peer. */
+    unsigned int m_uRemotePort;         /*!< Remote port number of the peers socket. */
+    QString      m_strSocketName;       /*!< Optional. Descriptive name of the socket connection (e.g. logical name of the remote server). */
 
 }; // struct SSocketDscr
 
 
 //******************************************************************************
+/*! @brief Structure summarizing the settings which can be applied to the Ipc server.
+*/
 struct ZSIPCDLL_API SServerHostSettings
 //******************************************************************************
 {
 public: // ctors and dtor
     SServerHostSettings();
     SServerHostSettings( ESocketType i_socketType );
-    SServerHostSettings( // ctor for sockets with socketType = Tcp
-        const QString& i_strLocalHostName,
+    SServerHostSettings(
         quint16        i_uLocalPort,
         unsigned int   i_uMaxPendingConnections = 30 );
-    SServerHostSettings( // ctor for sockets with socketType = InProcMsg
+    SServerHostSettings(
         QObject*     i_pObjLocal,
         unsigned int i_uMaxPendingConnections = 30 );
     SServerHostSettings( const SSocketDscr& i_socketDscr );
-    //SServerHostSettings( const QString& i_strCnct );
 public: // struct methods
     void toSocketDscr( SSocketDscr& i_socketDscr ) const;
     SSocketDscr getSocketDscr() const;
@@ -172,17 +180,20 @@ public: // operators
     bool operator == ( const SSocketDscr& i_socketDscr ) const;
     bool operator != ( const SSocketDscr& i_socketDscr ) const;
 public: // struct members
-    ESocketType  m_socketType;
-    QObject*     m_pObjLocal;
-    QString      m_strLocalHostName; // So far only used for shm servers and shm clients. Tcp servers and tcp clients determine the local host name by themselves.
-    QHostAddress m_hostAddrLocal;
-    quint16      m_uLocalPort;      // Port the server is listening for incoming connection requests.
-    unsigned int m_uMaxPendingConnections;
-    unsigned int m_uBufferSize;     // Only used by shared memory socket clients
+    ESocketType  m_socketType;          /*!< Socket type used by the Ipc Server. */
+    QObject*     m_pObjLocal;           /*!< Used for socketType == Shm. */
+    QString      m_strLocalHostName;    /*!< Used for socketType Shm and Tcp. For Tcp servers the local host name is usually "127.0.0.1". */
+    QHostAddress m_hostAddrLocal;       /*!< Host address of the local host. If needed got to be retrieved during runtime from Qt's QTcpServer class. */
+    quint16      m_uLocalPort;          /*!< Port the server is listening for incoming connection requests. */
+    unsigned int m_uMaxPendingConnections; /*!< Maximum number of pending accepted connections. */
+    unsigned int m_uBufferSize;         /*!< If communication uses shared memory the block size determines the maximum size of one memory block.
+                                             If the data to be sent exceeds the buffer size the data will be divided into several memory blocks. */
 
 }; // struct SServerHostSettings
 
 //******************************************************************************
+/*! @brief Structure summarizing the settings which can be applied to the Ipc client.
+*/
 struct ZSIPCDLL_API SClientHostSettings
 //******************************************************************************
 {
@@ -196,7 +207,6 @@ public: // ctors and dtor
     SClientHostSettings( // ctor for sockets with socketType = InProcMsg
         QObject*     i_pObjRemote,
         int          i_iConnectTimeout_ms = 5000 );
-    //SClientHostSettings( const QString& i_strCnct );
     SClientHostSettings( const SSocketDscr& i_socketDscr );
 public: // struct methods
     void toSocketDscr( SSocketDscr& i_socketDscr ) const;
@@ -211,17 +221,20 @@ public: // operators
     bool operator == ( const SSocketDscr& i_socketDscr ) const;
     bool operator != ( const SSocketDscr& i_socketDscr ) const;
 public: // struct members
-    ESocketType  m_socketType;
-    QObject*     m_pObjRemote;
-    QString      m_strRemoteHostName;
-    quint16      m_uRemotePort; // Port the server is listening for incoming connection requests.
-    int          m_iConnectTimeout_ms;
-    unsigned int m_uBufferSize; // only used by shared memory socket clients
+    ESocketType  m_socketType;          /*!< Socket type used by the Ipc Client. Must correspond to the socket type of the server the clients wants to connect with. */
+    QObject*     m_pObjRemote;          /*!< Used for socketType == Shm. Reference to IpcServer the client want's to connect to. */
+    QString      m_strRemoteHostName;   /*!< Used for socketType Shm and Tcp. Must correspond to the LocalHostName of the Tcp servers the clients wants to connect with. */
+    quint16      m_uRemotePort;         /*!< Port the server is listening for incoming connection requests. */
+    int          m_iConnectTimeout_ms;  /*!< After the connect timeout the connect request is considered to be failed. */
+    unsigned int m_uBufferSize;         /*!< If communication uses shared memory the block size determines the maximum size of one memory block.
+                                             If the data to be sent exceeds the buffer size the data will be divided into several memory blocks. */
 
 }; // struct SClientHostSettings
 
 
 //******************************************************************************
+/*! @brief Structure summarizing the settings which can be applied to a watch dog timer.
+*/
 struct ZSIPCDLL_API STimerSettings
 //******************************************************************************
 {
@@ -239,12 +252,22 @@ public: // operators
 public: // struct methods
     QString toString() const;
 public: // struct members
-    bool m_bEnabled;
-    int  m_iInterval_ms;
-    int  m_iTimeout_ms; // May be set to -1 to indicate that a global timeout may be used (e.g. from server host settings etc.).
+    bool m_bEnabled;        /*!< Timers may be enabled and disabled. */
+    int  m_iInterval_ms;    /*!< The timer will be called periodically with this interval in milli seconds. */
+    int  m_iTimeout_ms;     /*!< If the counterpart did not reply within the specifed timeout an error may be reported
+                                 and the connection may be considered as broken. */
 
 }; // struct STimerSettings
 
+
+/*******************************************************************************
+converting common data types into strings and vice versa
+*******************************************************************************/
+
+#if QT_VERSION > QT_VERSION_CHECK(5, 11, 0)
+ZSIPCDLL_API QString qNetworkInterfaceType2Str( QNetworkInterface::InterfaceType i_type );
+#endif
+ZSIPCDLL_API QString qNetworkInterfaceFlags2Str( QNetworkInterface::InterfaceFlags i_flags );
 
 } // namespace Ipc
 

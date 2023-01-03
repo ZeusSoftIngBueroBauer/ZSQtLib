@@ -24,13 +24,17 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include <QtCore/qcoreapplication.h>
+#include <QtWidgets/qapplication.h>
 #include <QtGui/qevent.h>
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#include <QtGui/qcheckbox.h>
+#include <QtGui/qcombobox.h>
 #include <QtGui/qmenu.h>
 #include <QtGui/qinputdialog.h>
 #else
+#include <QtWidgets/qcheckbox.h>
+#include <QtWidgets/qcombobox.h>
 #include <QtWidgets/qmenu.h>
 #include <QtWidgets/qinputdialog.h>
 #endif
@@ -38,6 +42,8 @@ may result in using the software modules.
 #include "ZSSysGUI/ZSSysTrcAdminObjIdxTreeView.h"
 #include "ZSSysGUI/ZSSysTrcAdminObjIdxTreeModel.h"
 #include "ZSSysGUI/ZSSysIdxTreeModelEntry.h"
+#include "ZSSysGUI/ZSSysEditEnumValueDlg.h"
+#include "ZSSysGUI/ZSSysEditStringValueDlg.h"
 #include "ZSSysGUI/ZSSysGUIAux.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysException.h"
@@ -50,12 +56,10 @@ may result in using the software modules.
 
 using namespace ZS::System;
 using namespace ZS::System::GUI;
-using namespace ZS::Trace;
-using namespace ZS::Trace::GUI;
 
 
 /*******************************************************************************
-class CDelegateIdxTreeTrcAdminObjs : public QAbstractItemDelegate
+class CDelegateIdxTreeTrcAdminObjs : public QStyledItemDelegate
 *******************************************************************************/
 
 /*==============================================================================
@@ -63,26 +67,26 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CDelegateIdxTreeTrcAdminObjs::CDelegateIdxTreeTrcAdminObjs( QObject* i_pObjParent, int i_iTrcDetailLevel ) :
+CDelegateIdxTreeTrcAdminObjs::CDelegateIdxTreeTrcAdminObjs( QObject* i_pObjParent ) :
 //------------------------------------------------------------------------------
-    QItemDelegate(i_pObjParent),
-    m_rectChkBoxTraceEnabled(0,0,10,10),
-    m_iTrcDetailLevel(i_iTrcDetailLevel)
+    QStyledItemDelegate(i_pObjParent),
+    m_rectChkBoxTraceEnabled(0, 0, 10, 10),
+    m_pTrcAdminObj(nullptr)
 {
+    setObjectName( QString(i_pObjParent == nullptr ? "IdxTree" : i_pObjParent->objectName()) );
+
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
+
     QString strMthInArgs;
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Parent: " + QString(i_pObjParent == nullptr ? "nullptr" : i_pObjParent->objectName());
     }
 
     CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "ctor",
         /* strMethodInArgs    */ strMthInArgs );
 
@@ -92,20 +96,20 @@ CDelegateIdxTreeTrcAdminObjs::CDelegateIdxTreeTrcAdminObjs( QObject* i_pObjParen
 CDelegateIdxTreeTrcAdminObjs::~CDelegateIdxTreeTrcAdminObjs()
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-
     CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "dtor",
-        /* strMethodInArgs    */ strMthInArgs );
+        /* strMethodInArgs    */ "" );
+
+    if( m_pTrcAdminObj != nullptr )
+    {
+        mthTracer.onAdminObjAboutToBeReleased();
+        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
+    }
 
     m_rectChkBoxTraceEnabled = QRect(0, 0, 0, 0);
-    m_iTrcDetailLevel = 0;
+    m_pTrcAdminObj = nullptr;
 
 } // dtor
 
@@ -117,23 +121,21 @@ public: // instance methods
 bool CDelegateIdxTreeTrcAdminObjs::isCheckBoxEnabledHit(
     const QRect&       i_rectVisual,
     const QPoint&      i_ptPos,
-    const QModelIndex& /*i_modelIdx*/ )
+    const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelVerbose )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "RectVisual: " + qRect2Str(i_rectVisual);
+        strMthInArgs += ", Pos: " + qPoint2Str(i_ptPos);
+        strMthInArgs += ", ModelIdx {" + CModelIdxTreeTrcAdminObjs::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelVerbose,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "isCheckBoxEnabledHit",
         /* strMethodInArgs    */ strMthInArgs );
 
@@ -167,7 +169,7 @@ bool CDelegateIdxTreeTrcAdminObjs::isCheckBoxEnabledHit(
         }
     }
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelVerbose )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         mthTracer.setMethodReturn(bIsHit);
     }
@@ -189,161 +191,485 @@ void CDelegateIdxTreeTrcAdminObjs::paint(
 {
     QString strMthInArgs;
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelVerbose )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelVerbose,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "paint",
         /* strMethodInArgs    */ strMthInArgs );
 
-    bool bPainted = false;
+    bool bHandled = false;
 
-    const CModelIdxTreeEntry* pCModelTreeEntry = static_cast<const CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
-    CModelIdxTreeEntry*       pVModelTreeEntry = const_cast<CModelIdxTreeEntry*>(pCModelTreeEntry);
-
-    CTrcAdminObj*        pTrcAdminObj = nullptr;
-    QStyleOptionViewItem styleOption  = i_styleOption;
-
-    if( pVModelTreeEntry != nullptr )
+    if( i_modelIdx.isValid() )
     {
-        pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pVModelTreeEntry->treeEntry());
-    }
+        const CModelIdxTreeEntry* pCModelTreeEntry = static_cast<const CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
 
-    switch( i_modelIdx.column() )
-    {
-        case CModelIdxTreeTrcAdminObjs::EColumnTreeEntryName:
+        QStyleOptionViewItem styleOption  = i_styleOption;
+
+        switch( i_modelIdx.column() )
         {
-            if( pTrcAdminObj != nullptr )
+            case CModelIdxTreeTrcAdminObjs::EColumnEnabled:
             {
-                QRect   rctDecoration(styleOption.rect.left(),styleOption.rect.top(),22,styleOption.rect.height());
-                QRect   rctText(rctDecoration.right()+1,styleOption.rect.top(),styleOption.rect.width()-rctDecoration.width(),styleOption.rect.height());
-                QPixmap pxm;
-                QString strNodeName;
-
-                if( pVModelTreeEntry->isSelected() )
+                if( pCModelTreeEntry->isLeave() )
                 {
-                    pxm = CModelIdxTreeTrcAdminObjs::GetIcon(pVModelTreeEntry->entryType()).pixmap(rctDecoration.size());
+                    bool bVal = i_modelIdx.model()->data(i_modelIdx, Qt::DisplayRole).toBool();
+                    QStyleOptionButton styleOption;
+                    QRect rctEditor = QApplication::style()->subElementRect(QStyle::SE_CheckBoxIndicator, &styleOption);
+                    styleOption.rect = i_styleOption.rect;
+                    styleOption.rect.setLeft(i_styleOption.rect.x() + i_styleOption.rect.width()/2 - rctEditor.width()/2);
+                    if( bVal ) {
+                        styleOption.state = QStyle::State_On|QStyle::State_Enabled;
+                    }
+                    else {
+                        styleOption.state = QStyle::State_Off|QStyle::State_Enabled;
+                    }
+                    QApplication::style()->drawControl(QStyle::CE_CheckBox, &styleOption, i_pPainter);
+                    bHandled = true;
                 }
-                else
-                {
-                    pxm = CModelIdxTreeTrcAdminObjs::GetIcon(pVModelTreeEntry->entryType()).pixmap(rctDecoration.size());
-                }
-                strNodeName = pTrcAdminObj->name();
-
-                QItemDelegate::drawDecoration(i_pPainter,styleOption,rctDecoration,pxm);
-                QItemDelegate::drawDisplay(i_pPainter,styleOption,rctText,strNodeName);
-
-                if( styleOption.state & QStyle::State_HasFocus )
-                {
-                    QItemDelegate::drawFocus(i_pPainter,styleOption,rctText);
-                }
-                bPainted = true;
+                break;
             }
-            break;
-        } // case CModelIdxTreeTrcAdminObjs::EColumnNodeName
-
-        case CModelIdxTreeTrcAdminObjs::EColumnEnabled:
-        {
-            if( pTrcAdminObj != nullptr )
+            case CModelIdxTreeTrcAdminObjs::EColumnMethodCallsDetailLevel:
             {
-                QRect          rectCheckBox = m_rectChkBoxTraceEnabled;
-                Qt::CheckState checkState   = Qt::Unchecked;
-
-                rectCheckBox.moveLeft(styleOption.rect.left());
-                rectCheckBox.moveTop(styleOption.rect.top());
-
-                //if( pVModelTreeEntry->getStyleState() & QStyle::State_Selected )
-                //{
-                //    styleOption.state |= QStyle::State_Selected;
-                //}
-                if( styleOption.rect.width() > m_rectChkBoxTraceEnabled.width() )
+                if( pCModelTreeEntry->isLeave() )
                 {
-                    rectCheckBox.moveLeft(styleOption.rect.left()+(styleOption.rect.width()-m_rectChkBoxTraceEnabled.width())/2);
                 }
-                if( styleOption.rect.height() > m_rectChkBoxTraceEnabled.height() )
-                {
-                    rectCheckBox.moveTop(styleOption.rect.top()+(styleOption.rect.height()-m_rectChkBoxTraceEnabled.height())/2);
-                }
-                if( pTrcAdminObj->getEnabled() == EEnabled::Yes )
-                {
-                    checkState = Qt::Checked;
-                }
-                else
-                {
-                    checkState = Qt::Unchecked;
-                }
-
-                QItemDelegate::drawBackground(i_pPainter,styleOption,i_modelIdx);
-                QItemDelegate::drawCheck(i_pPainter,styleOption,rectCheckBox,checkState);
-
-                if( styleOption.state & QStyle::State_HasFocus )
-                {
-                    QItemDelegate::drawFocus(i_pPainter,styleOption,styleOption.rect);
-                }
-
-                //QBrush             brush;
-                //QPaintDevice*      pPaintDevice = nullptr;
-                //QWidget*           pWdgt = nullptr;
-                //QStyleOptionButton styleOptionFocusRect;
-                //QStyleOptionButton styleOptionChkBox;
-
-                //if( styleOption.state & QStyle::State_Selected )
-                //{
-                //    i_pPainter->save();
-                //    brush = styleOption.palette.brush(QPalette::Normal,QPalette::Highlight);
-                //    brush.setStyle(Qt::SolidPattern);
-                //    i_pPainter->setBrush(brush);
-                //    i_pPainter->setPen(Qt::NoPen);
-                //    i_pPainter->drawRect(styleOption.rect);
-                //    i_pPainter->restore();
-                //}
-
-                //pPaintDevice = i_pPainter->device();
-                //if( pPaintDevice != nullptr )
-                //{
-                //    pWdgt = dynamic_cast<QWidget*>(pPaintDevice);
-                //}
-                //if( pWdgt != nullptr )
-                //{
-                //    styleOptionChkBox.initFrom(pWdgt);
-                //    styleOptionChkBox.rect = rectCheckBox;
-                //    styleOptionChkBox.state = QStyle::State_Enabled;
-                //    if( checkState == Qt::Checked )
-                //    {
-                //        styleOptionChkBox.state |= QStyle::State_On;
-                //    }
-                //    else
-                //    {
-                //        styleOptionChkBox.state |= QStyle::State_Off;
-                //    }
-                //    pWdgt->style()->drawControl( QStyle::CE_CheckBox, &styleOptionChkBox, i_pPainter, pWdgt );
-                //}
-
-                bPainted = true;
+                break;
             }
-            break;
-        } // case CModelIdxTreeTrcAdminObjs::EColumnEnabled
+            case CModelIdxTreeTrcAdminObjs::EColumnRuntimeInfoDetailLevel:
+            {
+                if( pCModelTreeEntry->isLeave() )
+                {
+                }
+                break;
+            }
+            default:
+            {
+                break;
+            }
+        } // switch( i_modelIdx.column() )
+    } // if( i_modelIdx.isValid() )
 
-        default:
-        {
-            break;
-        }
-    } // switch( i_modelIdx.column() )
-
-    if( !bPainted )
+    if( !bHandled )
     {
-        QItemDelegate::paint(i_pPainter,styleOption,i_modelIdx);
+        QStyledItemDelegate::paint(i_pPainter, i_styleOption, i_modelIdx);
     }
 
 } // paint
+
+//------------------------------------------------------------------------------
+QWidget* CDelegateIdxTreeTrcAdminObjs::createEditor(
+    QWidget* i_pWdgtParent,
+    const QStyleOptionViewItem& i_styleOption,
+    const QModelIndex& i_modelIdx ) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    QString strMthReturn;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::modelIdx2Str(i_modelIdx) + "}";
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "createEditor",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    QWidget* pWdgtEditor = nullptr;
+
+    if( i_modelIdx.isValid() )
+    {
+        const CModelIdxTreeEntry* pCModelTreeEntry = static_cast<const CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
+
+        switch( i_modelIdx.column() )
+        {
+            case CModelIdxTreeTrcAdminObjs::EColumnEnabled:
+            {
+                if( pCModelTreeEntry->isLeave() )
+                {
+                    // Dont't create an editor for the enabled check box. Otherwise the user
+                    // would need to click twice on the cell in order to toggle the value.
+                    // Changing the enabled value is realized by the TreeViewWidget's method
+                    // "mouseReleaseEvent" if the enabled check box has been hit.
+                    // pWdgtEditor = new QCheckBox(i_pWdgtParent);
+                }
+                break;
+            }
+            case CModelIdxTreeTrcAdminObjs::EColumnMethodCallsDetailLevel:
+            {
+                if( pCModelTreeEntry->isLeave() )
+                {
+                    QComboBox* pCmb = new QComboBox(i_pWdgtParent);
+                    pCmb->setObjectName(pCModelTreeEntry->keyInTree() + ".MethodCalls");
+                    pWdgtEditor = pCmb;
+                    CEnumMethodTraceDetailLevel eDetailLevel;
+                    for( eDetailLevel = 0; eDetailLevel < CEnumMethodTraceDetailLevel::count(); ++eDetailLevel )
+                    {
+                        pCmb->addItem(eDetailLevel.toString());
+                    }
+                    if( !QObject::connect(
+                        /* pObjSender   */ pCmb,
+                        /* szSignal     */ SIGNAL( activated(int) ),
+                        /* pObjReceiver */ this,
+                        /* szSlot       */ SLOT( onComboDetailLevelActivated(int) ) ) )
+                    {
+                        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+                    }
+                }
+                break;
+            }
+            case CModelIdxTreeTrcAdminObjs::EColumnRuntimeInfoDetailLevel:
+            {
+                if( pCModelTreeEntry->isLeave() )
+                {
+                    QComboBox* pCmb = new QComboBox(i_pWdgtParent);
+                    pCmb->setObjectName(pCModelTreeEntry->keyInTree() + ".RuntimeInfo");
+                    pWdgtEditor = pCmb;
+                    CEnumLogDetailLevel eDetailLevel;
+                    for( eDetailLevel = 0; eDetailLevel < CEnumLogDetailLevel::count(); ++eDetailLevel )
+                    {
+                        pCmb->addItem(eDetailLevel.toString());
+                    }
+                    if( !QObject::connect(
+                        /* pObjSender   */ pCmb,
+                        /* szSignal     */ SIGNAL( activated(int) ),
+                        /* pObjReceiver */ this,
+                        /* szSlot       */ SLOT( onComboDetailLevelActivated(int) ) ) )
+                    {
+                        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+                    }
+                }
+                break;
+            }
+            case CModelIdxTreeTrcAdminObjs::EColumnDataFilter:
+            {
+                if( pCModelTreeEntry->isLeave() )
+                {
+                    QLineEdit* pEdt = new QLineEdit(i_pWdgtParent);
+                    pEdt->setObjectName(pCModelTreeEntry->keyInTree() + ".DataFilter");
+                    pWdgtEditor = pEdt;
+                    if( !QObject::connect(
+                        /* pObjSender   */ pEdt,
+                        /* szSignal     */ SIGNAL( editingFinished() ),
+                        /* pObjReceiver */ this,
+                        /* szSlot       */ SLOT( onEdtDataFilterEditingFinished() ) ) )
+                    {
+                        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+                    }
+                }
+                break;
+            }
+            default:
+            {
+                break;
+            }
+        } // switch( i_modelIdx.column() )
+    } // if( i_modelIdx.isValid() )
+
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        strMthReturn = pWdgtEditor == nullptr ? "nullptr" : pWdgtEditor->objectName();
+        mthTracer.setMethodReturn(strMthReturn);
+    }
+    return pWdgtEditor;
+
+} // createEditor
+
+//------------------------------------------------------------------------------
+void CDelegateIdxTreeTrcAdminObjs::setEditorData(
+    QWidget* i_pWdgtEditor, const QModelIndex& i_modelIdx ) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::modelIdx2Str(i_modelIdx) + "}";
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "createEditor",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    bool bHandled = false;
+
+    if( i_modelIdx.isValid() )
+    {
+        const CModelIdxTreeEntry* pCModelTreeEntry = static_cast<const CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
+
+        switch( i_modelIdx.column() )
+        {
+            case CModelIdxTreeTrcAdminObjs::EColumnEnabled:
+            {
+                if( pCModelTreeEntry->isLeave() )
+                {
+                    // No editor is used for the enabled check box. Otherwise the user
+                    // would need to click twice on the cell in order to toggle the value.
+                    // Changing the enabled value is realized by the TreeViewWidget's method
+                    // "mouseReleaseEvent" if the enabled check box has been hit.
+                }
+                break;
+            }
+            case CModelIdxTreeTrcAdminObjs::EColumnMethodCallsDetailLevel:
+            case CModelIdxTreeTrcAdminObjs::EColumnRuntimeInfoDetailLevel:
+            {
+                if( pCModelTreeEntry->isLeave() )
+                {
+                    QComboBox* pWdgtEditor = dynamic_cast<QComboBox*>(i_pWdgtEditor);
+                    if( pWdgtEditor != nullptr )
+                    {
+                        QString strVal = i_modelIdx.data(Qt::EditRole).toString();
+                        int idx = pWdgtEditor->findText(strVal);
+                        if (idx >= 0) {
+                            pWdgtEditor->setCurrentIndex(idx);
+                        }
+                        pWdgtEditor->showPopup();
+                        bHandled = true;
+                    }
+                }
+                break;
+            }
+            case CModelIdxTreeTrcAdminObjs::EColumnDataFilter:
+            {
+                if( pCModelTreeEntry->isLeave() )
+                {
+                    QLineEdit* pWdgtEditor = dynamic_cast<QLineEdit*>(i_pWdgtEditor);
+                    if( pWdgtEditor != nullptr )
+                    {
+                        QString strVal = i_modelIdx.data(Qt::EditRole).toString();
+                        pWdgtEditor->setText(strVal);
+                        bHandled = true;
+                    }
+                }
+                break;
+            }
+            default:
+            {
+                break;
+            }
+        } // switch( i_modelIdx.column() )
+    } // if( i_modelIdx.isValid() )
+
+    if( !bHandled )
+    {
+        QStyledItemDelegate::setEditorData(i_pWdgtEditor, i_modelIdx);
+    }
+
+} // setEditorData
+
+//------------------------------------------------------------------------------
+void CDelegateIdxTreeTrcAdminObjs::setModelData(
+    QWidget* i_pWdgtEditor,
+    QAbstractItemModel* i_pModel,
+    const QModelIndex& i_modelIdx ) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::modelIdx2Str(i_modelIdx) + "}";
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "setModelData",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    bool bHandled = false;
+
+    if( i_modelIdx.isValid() )
+    {
+        const CModelIdxTreeEntry* pCModelTreeEntry = static_cast<const CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
+
+        switch( i_modelIdx.column() )
+        {
+            case CModelIdxTreeTrcAdminObjs::EColumnEnabled:
+            {
+                if( pCModelTreeEntry->isLeave() )
+                {
+                    // No editor is used for the enabled check box. Otherwise the user
+                    // would need to click twice on the cell in order to toggle the value.
+                    // Changing the enabled value is realized by the TreeViewWidget's method
+                    // "mouseReleaseEvent" if the enabled check box has been hit.
+                }
+                break;
+            }
+            case CModelIdxTreeTrcAdminObjs::EColumnMethodCallsDetailLevel:
+            case CModelIdxTreeTrcAdminObjs::EColumnRuntimeInfoDetailLevel:
+            {
+                if( pCModelTreeEntry->isLeave() )
+                {
+                    QComboBox* pWdgtEditor = dynamic_cast<QComboBox*>(i_pWdgtEditor);
+                    if( pWdgtEditor != nullptr )
+                    {
+                        i_pModel->setData(i_modelIdx, pWdgtEditor->currentText(), Qt::EditRole);
+                        bHandled = true;
+                    }
+                }
+                break;
+            }
+            case CModelIdxTreeTrcAdminObjs::EColumnDataFilter:
+            {
+                if( pCModelTreeEntry->isLeave() )
+                {
+                    QLineEdit* pWdgtEditor = dynamic_cast<QLineEdit*>(i_pWdgtEditor);
+                    if( pWdgtEditor != nullptr )
+                    {
+                        i_pModel->setData(i_modelIdx, pWdgtEditor->text(), Qt::EditRole);
+                        bHandled = true;
+                    }
+                }
+                break;
+            }
+            default:
+            {
+                break;
+            }
+        } // switch( i_modelIdx.column() )
+    } // if( i_modelIdx.isValid() )
+
+    if( !bHandled )
+    {
+        QStyledItemDelegate::setModelData(i_pWdgtEditor, i_pModel, i_modelIdx);
+    }
+
+} // setModelData
+
+//------------------------------------------------------------------------------
+void CDelegateIdxTreeTrcAdminObjs::updateEditorGeometry(
+    QWidget* i_pWdgtEditor,
+    const QStyleOptionViewItem& i_styleOption,
+    const QModelIndex& i_modelIdx ) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::modelIdx2Str(i_modelIdx) + "}";
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "updateEditorGeometry",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    bool bHandled = false;
+
+    if( i_modelIdx.isValid() )
+    {
+        const CModelIdxTreeEntry* pCModelTreeEntry = static_cast<const CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
+
+        switch( i_modelIdx.column() )
+        {
+            case CModelIdxTreeTrcAdminObjs::EColumnEnabled:
+            {
+                if( pCModelTreeEntry->isLeave() )
+                {
+                    // No editor is used for the enabled check box. Otherwise the user
+                    // would need to click twice on the cell in order to toggle the value.
+                    // Changing the enabled value is realized by the TreeViewWidget's method
+                    // "mouseReleaseEvent" if the enabled check box has been hit.
+                }
+                break;
+            }
+            case CModelIdxTreeTrcAdminObjs::EColumnMethodCallsDetailLevel:
+            {
+                if( pCModelTreeEntry->isLeave() )
+                {
+                }
+                break;
+            }
+            case CModelIdxTreeTrcAdminObjs::EColumnRuntimeInfoDetailLevel:
+            {
+                if( pCModelTreeEntry->isLeave() )
+                {
+                }
+                break;
+            }
+            case CModelIdxTreeTrcAdminObjs::EColumnDataFilter:
+            {
+                if( pCModelTreeEntry->isLeave() )
+                {
+                }
+                break;
+            }
+            default:
+            {
+                break;
+            }
+        } // switch( i_modelIdx.column() )
+    } // if( i_modelIdx.isValid() )
+
+    if( !bHandled )
+    {
+        QStyledItemDelegate::updateEditorGeometry(i_pWdgtEditor, i_styleOption, i_modelIdx);
+    }
+
+} // updateEditorGeometry
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CDelegateIdxTreeTrcAdminObjs::onComboDetailLevelActivated( int i_idx )
+//------------------------------------------------------------------------------
+{
+    QComboBox* pCmb = dynamic_cast<QComboBox*>(sender());
+
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        strMthInArgs = pCmb == nullptr ? "null" : pCmb->objectName();
+        strMthInArgs += ", " + QString(pCmb == nullptr ? QString::number(i_idx) : pCmb->currentText());
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "onComboDetailLevelActivated",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    if( pCmb != nullptr )
+    {
+        emit commitData(pCmb);
+        emit closeEditor(pCmb);
+    }
+}
+
+//------------------------------------------------------------------------------
+void CDelegateIdxTreeTrcAdminObjs::onEdtDataFilterEditingFinished()
+//------------------------------------------------------------------------------
+{
+    QLineEdit* pEdt = dynamic_cast<QLineEdit*>(sender());
+
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        strMthInArgs = pEdt == nullptr ? "null" : pEdt->objectName();
+        strMthInArgs += ", " + QString(pEdt == nullptr ? "" : pEdt->text());
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "onEdtDataFilterEditingFinished",
+        /* strMethodInArgs    */ strMthInArgs );
+}
 
 
 /*******************************************************************************
@@ -356,41 +682,46 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CTreeViewIdxTreeTrcAdminObjs::CTreeViewIdxTreeTrcAdminObjs(
-    CModelIdxTreeTrcAdminObjs* i_pModel,
-    QWidget*                   i_pWdgtParent,
-    int                        i_iTrcDetailLevel ) :
+    CIdxTreeTrcAdminObjs* i_pIdxTree,
+    QWidget* i_pWdgtParent ) :
 //------------------------------------------------------------------------------
     QTreeView(i_pWdgtParent),
+    m_pIdxTree(i_pIdxTree),
     m_pDelegate(nullptr),
+    m_pModel(nullptr),
     m_pMenuNameSpaceContext(nullptr),
     m_pActionNameSpaceTitle(nullptr),
     m_pActionNameSpaceExpand(nullptr),
     m_pActionNameSpaceCollapse(nullptr),
-    m_pActionNameSpaceEnableAdmObjects(nullptr),
-    m_pActionNameSpaceDisableAdmObjects(nullptr),
-    m_pActionNameSpaceSetDetailLevelAdmObjects(nullptr),
+    m_pActionNameSpaceEnableAdminObjs(nullptr),
+    m_pActionNameSpaceDisableAdminObjs(nullptr),
+    m_pActionNameSpaceSetAdminObjsMethodCallsDetailLevel(nullptr),
+    m_pActionNameSpaceSetAdminObjsRuntimeInfoDetailLevel(nullptr),
+    m_pActionNameSpaceSetAdminObjsTraceDataFilter(nullptr),
     m_modelIdxSelectedOnMousePressEvent(),
     m_modelIdxSelectedOnMouseReleaseEvent(),
-    m_iTrcDetailLevel(i_iTrcDetailLevel)
+    m_pTrcAdminObj(nullptr)
 {
+    setObjectName( QString(i_pIdxTree == nullptr ? "IdxTree" : i_pIdxTree->objectName()) );
+
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
+
     QString strMthInArgs;
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strMthInArgs = "Model: " + QString(i_pModel == nullptr ? "nullptr" : i_pModel->objectName());
+        strMthInArgs = "IdxTree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName());
     }
 
     CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "ctor",
         /* strMethodInArgs    */ strMthInArgs );
 
-    setModel(i_pModel);
+    m_pModel = new CModelIdxTreeTrcAdminObjs(m_pIdxTree, nullptr);
+
+    setModel(m_pModel);
 
     m_pDelegate = new CDelegateIdxTreeTrcAdminObjs(this);
 
@@ -398,22 +729,28 @@ CTreeViewIdxTreeTrcAdminObjs::CTreeViewIdxTreeTrcAdminObjs(
     setSelectionMode(QAbstractItemView::SingleSelection);
     setAlternatingRowColors(true);
     setAllColumnsShowFocus(true);
+    setEditTriggers(QAbstractItemView::AllEditTriggers);
 
     //hideColumn(CModelIdxTree::EColumnTreeEntryName);
-    hideColumn(CModelIdxTree::EColumnInternalId);
+    hideColumn(CModelIdxTree::EColumnTreeEntryNameDecorated);
+    hideColumn(CModelIdxTree::EColumnTreeEntryTypeImageUrl);
+    hideColumn(CModelIdxTree::EColumnTreeEntryTypeIcon);
     hideColumn(CModelIdxTree::EColumnTreeEntryType);
-    hideColumn(CModelIdxTree::EColumnIdxInTree);
+    //hideColumn(CModelIdxTree::EColumnInternalId);
+    //hideColumn(CModelIdxTree::EColumnIdxInTree);
     hideColumn(CModelIdxTree::EColumnIdxInParentBranch);
     hideColumn(CModelIdxTree::EColumnKeyInTree);
     hideColumn(CModelIdxTree::EColumnKeyInParentBranch);
-    hideColumn(CModelIdxTreeTrcAdminObjs::EColumnObjAddress);
     //hideColumn(CModelIdxTreeTrcAdminObjs::EColumnRefCount);
-    hideColumn(CModelIdxTreeTrcAdminObjs::EColumnNameSpace);
-    hideColumn(CModelIdxTreeTrcAdminObjs::EColumnClassName);
-    hideColumn(CModelIdxTreeTrcAdminObjs::EColumnObjName);
-    //hideColumn(CModelIdxTreeTrcAdminObjs::EColumnObjThreadName);
     //hideColumn(CModelIdxTreeTrcAdminObjs::EColumnEnabled);
-    //hideColumn(CModelIdxTreeTrcAdminObjs::EColumnDetailLevel);
+    //hideColumn(CModelIdxTreeTrcAdminObjs::EColumnMethodCallsDetailLevel);
+    //hideColumn(CModelIdxTreeTrcAdminObjs::EColumnRuntimeInfoDetailLevel);
+    //hideColumn(CModelIdxTreeTrcAdminObjs::EColumnDataFilter);
+    //hideColumn(CModelIdxTreeTrcAdminObjs::EColumnNameSpace);
+    //hideColumn(CModelIdxTreeTrcAdminObjs::EColumnClassName);
+    //hideColumn(CModelIdxTreeTrcAdminObjs::EColumnObjName);
+    //hideColumn(CModelIdxTreeTrcAdminObjs::EColumnObjThreadName);
+    hideColumn(CModelIdxTreeTrcAdminObjs::EColumnObjAddress);
 
     setItemDelegate(m_pDelegate);
 
@@ -424,9 +761,7 @@ CTreeViewIdxTreeTrcAdminObjs::CTreeViewIdxTreeTrcAdminObjs(
 
     m_pActionNameSpaceTitle = new QAction("Name Space:",this);
 
-    QPixmap pxmExpandAll(":/ZS/TreeView/TreeViewExpandAll.bmp");
-    pxmExpandAll.setMask(pxmExpandAll.createHeuristicMask());
-    //pxmExpandAll = pxmExpandAll.scaled(16,16);
+    QPixmap pxmExpandAll(":/ZS/TreeView/TreeViewExpandAll.png");
     m_pActionNameSpaceExpand = new QAction(pxmExpandAll, "Expand", this);
     m_pMenuNameSpaceContext->addAction(m_pActionNameSpaceExpand);
 
@@ -439,9 +774,7 @@ CTreeViewIdxTreeTrcAdminObjs::CTreeViewIdxTreeTrcAdminObjs(
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
 
-    QPixmap pxmCollapseAll(":/ZS/TreeView/TreeViewCollapseAll.bmp");
-    pxmCollapseAll.setMask(pxmCollapseAll.createHeuristicMask());
-
+    QPixmap pxmCollapseAll(":/ZS/TreeView/TreeViewCollapseAll.png");
     m_pActionNameSpaceCollapse = new QAction(pxmCollapseAll, "Collapse", this);
     m_pMenuNameSpaceContext->addAction(m_pActionNameSpaceCollapse);
 
@@ -461,40 +794,64 @@ CTreeViewIdxTreeTrcAdminObjs::CTreeViewIdxTreeTrcAdminObjs(
     m_pActionNameSpaceTitle->setFont(fntActionTitle);
     m_pMenuNameSpaceContext->addAction(m_pActionNameSpaceTitle);
 
-    m_pActionNameSpaceEnableAdmObjects = new QAction("Recursively Enable Admin Objects",this);
-    m_pMenuNameSpaceContext->addAction(m_pActionNameSpaceEnableAdmObjects);
+    m_pActionNameSpaceEnableAdminObjs = new QAction("Recursively Enable Admin Objects",this);
+    m_pMenuNameSpaceContext->addAction(m_pActionNameSpaceEnableAdminObjs);
 
     if( !QObject::connect(
-        /* pObjSender   */ m_pActionNameSpaceEnableAdmObjects,
+        /* pObjSender   */ m_pActionNameSpaceEnableAdminObjs,
         /* szSignal     */ SIGNAL( triggered(bool) ),
         /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onActionNameSpaceEnableAdmObjectsTriggered(bool) ) ) )
+        /* szSlot       */ SLOT( onActionNameSpaceEnableAdminObjsTriggered(bool) ) ) )
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
 
-    m_pActionNameSpaceDisableAdmObjects = new QAction("Recursively Disable Admin Objects",this);
-    m_pMenuNameSpaceContext->addAction(m_pActionNameSpaceDisableAdmObjects);
+    m_pActionNameSpaceDisableAdminObjs = new QAction("Recursively Disable Admin Objects",this);
+    m_pMenuNameSpaceContext->addAction(m_pActionNameSpaceDisableAdminObjs);
 
     if( !QObject::connect(
-        /* pObjSender   */ m_pActionNameSpaceDisableAdmObjects,
+        /* pObjSender   */ m_pActionNameSpaceDisableAdminObjs,
         /* szSignal     */ SIGNAL( triggered(bool) ),
         /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onActionNameSpaceDisableAdmObjectsTriggered(bool) ) ) )
+        /* szSlot       */ SLOT( onActionNameSpaceDisableAdminObjsTriggered(bool) ) ) )
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
 
     m_pMenuNameSpaceContext->addSeparator();
 
-    m_pActionNameSpaceSetDetailLevelAdmObjects = new QAction("Recursively Set Detail Level of Admin Objects",this);
-    m_pMenuNameSpaceContext->addAction(m_pActionNameSpaceSetDetailLevelAdmObjects);
+    m_pActionNameSpaceSetAdminObjsMethodCallsDetailLevel = new QAction("Recursively Set Method Calls Detail Level of Admin Objects",this);
+    m_pMenuNameSpaceContext->addAction(m_pActionNameSpaceSetAdminObjsMethodCallsDetailLevel);
 
     if( !QObject::connect(
-        /* pObjSender   */ m_pActionNameSpaceSetDetailLevelAdmObjects,
+        /* pObjSender   */ m_pActionNameSpaceSetAdminObjsMethodCallsDetailLevel,
         /* szSignal     */ SIGNAL( triggered(bool) ),
         /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onActionNameSpaceSetDetailLevelAdmObjectsTriggered(bool) ) ) )
+        /* szSlot       */ SLOT( onActionNameSpaceSetAdminObjsMethodCallsDetailLevelTriggered(bool) ) ) )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+    }
+
+    m_pActionNameSpaceSetAdminObjsRuntimeInfoDetailLevel = new QAction("Recursively Set Runtime Info Detail Level of Admin Objects",this);
+    m_pMenuNameSpaceContext->addAction(m_pActionNameSpaceSetAdminObjsRuntimeInfoDetailLevel);
+
+    if( !QObject::connect(
+        /* pObjSender   */ m_pActionNameSpaceSetAdminObjsRuntimeInfoDetailLevel,
+        /* szSignal     */ SIGNAL( triggered(bool) ),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT( onActionNameSpaceSetAdminObjsRuntimeInfoDetailLevelTriggered(bool) ) ) )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+    }
+
+    m_pActionNameSpaceSetAdminObjsTraceDataFilter = new QAction("Recursively Set Data Filter of Admin Objects",this);
+    m_pMenuNameSpaceContext->addAction(m_pActionNameSpaceSetAdminObjsTraceDataFilter);
+
+    if( !QObject::connect(
+        /* pObjSender   */ m_pActionNameSpaceSetAdminObjsTraceDataFilter,
+        /* szSignal     */ SIGNAL( triggered(bool) ),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT( onActionNameSpaceSetAdminObjsTraceDataFilterTriggered(bool) ) ) )
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
@@ -505,29 +862,41 @@ CTreeViewIdxTreeTrcAdminObjs::CTreeViewIdxTreeTrcAdminObjs(
 CTreeViewIdxTreeTrcAdminObjs::~CTreeViewIdxTreeTrcAdminObjs()
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-
     CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "dtor",
-        /* strMethodInArgs    */ strMthInArgs );
+        /* strMethodInArgs    */ "" );
 
+    try
+    {
+        delete m_pModel;
+    }
+    catch(...)
+    {
+    }
+
+    if( m_pTrcAdminObj != nullptr )
+    {
+        mthTracer.onAdminObjAboutToBeReleased();
+        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
+    }
+
+    m_pIdxTree = nullptr;
     m_pDelegate = nullptr;
+    m_pModel = nullptr;
     m_pMenuNameSpaceContext = nullptr;
     m_pActionNameSpaceTitle = nullptr;
     m_pActionNameSpaceExpand = nullptr;
     m_pActionNameSpaceCollapse = nullptr;
-    m_pActionNameSpaceEnableAdmObjects = nullptr;
-    m_pActionNameSpaceDisableAdmObjects = nullptr;
-    m_pActionNameSpaceSetDetailLevelAdmObjects = nullptr;
+    m_pActionNameSpaceEnableAdminObjs = nullptr;
+    m_pActionNameSpaceDisableAdminObjs = nullptr;
+    m_pActionNameSpaceSetAdminObjsMethodCallsDetailLevel = nullptr;
+    m_pActionNameSpaceSetAdminObjsRuntimeInfoDetailLevel = nullptr;
+    m_pActionNameSpaceSetAdminObjsTraceDataFilter = nullptr;
     //m_modelIdxSelectedOnMousePressEvent;
     //m_modelIdxSelectedOnMouseReleaseEvent;
-    m_iTrcDetailLevel = 0;
+    m_pTrcAdminObj = nullptr;
 
 } // dtor
 
@@ -539,49 +908,31 @@ public: // overridable slots of base class QTreeView
 void CTreeViewIdxTreeTrcAdminObjs::expandAll()
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-
     CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "expandAll",
-        /* strMethodInArgs    */ strMthInArgs );
+        /* strMethodInArgs    */ "" );
 
     QTreeView::expandAll();
-
     QModelIndex modelIdxRoot = model()->index(0, 0, QModelIndex());
-
     expandRecursive(modelIdxRoot);
-
-} // expandAll
+}
 
 //------------------------------------------------------------------------------
 void CTreeViewIdxTreeTrcAdminObjs::collapseAll()
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-
     CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "collapseAll",
-        /* strMethodInArgs    */ strMthInArgs );
+        /* strMethodInArgs    */ "" );
 
     QTreeView::collapseAll();
-
     QModelIndex modelIdxRoot = model()->index(0, 0, QModelIndex());
-
     collapseRecursive(modelIdxRoot);
-
-} // collapseAll
+}
 
 /*==============================================================================
 public: // overridables
@@ -593,18 +944,14 @@ void CTreeViewIdxTreeTrcAdminObjs::expandRecursive( const QModelIndex& i_modelId
 {
     QString strMthInArgs;
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "expandRecursive",
         /* strMethodInArgs    */ strMthInArgs );
 
@@ -612,7 +959,7 @@ void CTreeViewIdxTreeTrcAdminObjs::expandRecursive( const QModelIndex& i_modelId
 
     if( pModelTreeEntry != nullptr )
     {
-        if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        if( pModelTreeEntry->isRoot() || pModelTreeEntry->isBranch() )
         {
             CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
             CModelIdxTreeEntry* pModelTreeEntryChild;
@@ -628,13 +975,10 @@ void CTreeViewIdxTreeTrcAdminObjs::expandRecursive( const QModelIndex& i_modelId
                     expandRecursive(modelIdxChild);
                 }
             }
-
             expand(i_modelIdx);
-
-        } // if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
-    } // if( pModelTreeEntry != nullptr )
-
-} // expandRecursive
+        }
+    }
+}
 
 //------------------------------------------------------------------------------
 void CTreeViewIdxTreeTrcAdminObjs::collapseRecursive( const QModelIndex& i_modelIdx )
@@ -642,18 +986,14 @@ void CTreeViewIdxTreeTrcAdminObjs::collapseRecursive( const QModelIndex& i_model
 {
     QString strMthInArgs;
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "collapsRecursive",
         /* strMethodInArgs    */ strMthInArgs );
 
@@ -661,7 +1001,7 @@ void CTreeViewIdxTreeTrcAdminObjs::collapseRecursive( const QModelIndex& i_model
 
     if( pModelTreeEntry != nullptr )
     {
-        if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        if( pModelTreeEntry->isRoot() || pModelTreeEntry->isBranch() )
         {
             CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
             QModelIndex         modelIdx;
@@ -676,13 +1016,10 @@ void CTreeViewIdxTreeTrcAdminObjs::collapseRecursive( const QModelIndex& i_model
                     collapseRecursive(modelIdx);
                 }
             }
-
             collapse(i_modelIdx);
-
-        } // if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
-    } // if( pModelTreeEntry != nullptr )
-
-} // collapseRecursive
+        }
+    }
+}
 
 /*==============================================================================
 public: // slots (hiding not overridable slots with same name in QTreeView)
@@ -694,18 +1031,14 @@ void CTreeViewIdxTreeTrcAdminObjs::expand( const QModelIndex& i_modelIdx )
 {
     QString strMthInArgs;
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "expand",
         /* strMethodInArgs    */ strMthInArgs );
 
@@ -713,15 +1046,12 @@ void CTreeViewIdxTreeTrcAdminObjs::expand( const QModelIndex& i_modelIdx )
     // nodes of the tree view. This is a workaround to store the "expanded"
     // state of the model tree node in order to restore this state on changing
     // the sort order of the model.
-
     QTreeView::expand(i_modelIdx);
-
     if( i_modelIdx.isValid() )
     {
         onExpanded(i_modelIdx);
     }
-
-} // expand
+}
 
 //------------------------------------------------------------------------------
 void CTreeViewIdxTreeTrcAdminObjs::collapse( const QModelIndex& i_modelIdx )
@@ -729,18 +1059,14 @@ void CTreeViewIdxTreeTrcAdminObjs::collapse( const QModelIndex& i_modelIdx )
 {
     QString strMthInArgs;
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "collapse",
         /* strMethodInArgs    */ strMthInArgs );
 
@@ -748,15 +1074,12 @@ void CTreeViewIdxTreeTrcAdminObjs::collapse( const QModelIndex& i_modelIdx )
     // nodes of the tree view. This is a workaround to store the "expanded"
     // state of the model tree node in order to restore this state on changing
     // the sort order of the model.
-
     QTreeView::collapse(i_modelIdx);
-
     if( i_modelIdx.isValid() )
     {
         onCollapsed(i_modelIdx);
     }
-
-} // collapse
+}
 
 /*==============================================================================
 protected slots:
@@ -768,18 +1091,14 @@ void CTreeViewIdxTreeTrcAdminObjs::onCollapsed( const QModelIndex& i_modelIdx )
 {
     QString strMthInArgs;
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "onCollapsed",
         /* strMethodInArgs    */ strMthInArgs );
 
@@ -794,9 +1113,8 @@ void CTreeViewIdxTreeTrcAdminObjs::onCollapsed( const QModelIndex& i_modelIdx )
             CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
             pModelIdxTree->setIsExpanded(pModelBranch, false);
         }
-    } // if( i_modelIdx.isValid() )
-
-} // onCollapsed
+    }
+}
 
 //------------------------------------------------------------------------------
 void CTreeViewIdxTreeTrcAdminObjs::onExpanded( const QModelIndex& i_modelIdx )
@@ -804,18 +1122,14 @@ void CTreeViewIdxTreeTrcAdminObjs::onExpanded( const QModelIndex& i_modelIdx )
 {
     QString strMthInArgs;
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "onExpanded",
         /* strMethodInArgs    */ strMthInArgs );
 
@@ -836,9 +1150,8 @@ void CTreeViewIdxTreeTrcAdminObjs::onExpanded( const QModelIndex& i_modelIdx )
             CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
             pModelIdxTree->setIsExpanded(pModelBranch, true);
         }
-    } // if( i_modelIdx.isValid() )
-
-} // onExpanded
+    }
+}
 
 /*==============================================================================
 protected: // overridables of base class QTreeView
@@ -850,18 +1163,14 @@ void CTreeViewIdxTreeTrcAdminObjs::keyPressEvent( QKeyEvent* i_pEv )
 {
     QString strMthInArgs;
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = qKeyEvent2Str(i_pEv);
     }
 
     CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "keyPressEvent",
         /* strMethodInArgs    */ strMthInArgs );
 
@@ -872,66 +1181,36 @@ void CTreeViewIdxTreeTrcAdminObjs::keyPressEvent( QKeyEvent* i_pEv )
      || i_pEv->key() == Qt::Key_Space
      || i_pEv->key() == Qt::Key_F5 )
     {
-        QModelIndex                modelIdxSelected = selectionModel()->currentIndex();
-        CModelIdxTreeEntry*        pModelTreeEntry = nullptr;
-        CTrcAdminObj*              pTrcAdminObj = nullptr;
-        QAbstractItemModel*        pModelAbstract = nullptr;
-        CModelIdxTreeTrcAdminObjs* pTrcAdmObjIdxTreeModel = nullptr;
+        QModelIndex modelIdxSelected = selectionModel()->currentIndex();
 
-        pModelAbstract = const_cast<QAbstractItemModel*>(modelIdxSelected.model());
-
-        if( pModelAbstract != nullptr )
+        if( modelIdxSelected.isValid() )
         {
-            pTrcAdmObjIdxTreeModel = dynamic_cast<CModelIdxTreeTrcAdminObjs*>(pModelAbstract);
-        }
+            QAbstractItemModel* pModelAbstract = const_cast<QAbstractItemModel*>(modelIdxSelected.model());
 
-        if( i_pEv->key() == Qt::Key_F5 )
-        {
-            if( pTrcAdmObjIdxTreeModel != nullptr )
+            if( pModelAbstract != nullptr )
             {
-                //pTrcAdmObjIdxTreeModel->beginReset();
-                //pTrcAdmObjIdxTreeModel->endReset();
-            }
-        }
-        else // if( i_pEv->key() != Qt::Key_F5 )
-        {
-            if( modelIdxSelected.isValid() )
-            {
-                pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(modelIdxSelected.internalPointer());
-
-                if( pModelTreeEntry != nullptr )
+                if( i_pEv->key() == Qt::Key_F5 )
                 {
-                    pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pModelTreeEntry->treeEntry());
+                    //pModelAbstract->beginReset();
+                    //pModelAbstract->endReset();
                 }
-            }
-
-            if( pTrcAdminObj != nullptr )
-            {
-                if( modelIdxSelected.column() >= CModelIdxTree::EColumnCount )
+                else // if( i_pEv->key() != Qt::Key_F5 )
                 {
-                    switch( modelIdxSelected.column() )
+                    CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
+                    if( pModelTreeEntry->isLeave() )
                     {
-                        case CModelIdxTreeTrcAdminObjs::EColumnEnabled:
+                        if( modelIdxSelected.column() == CModelIdxTreeTrcAdminObjs::EColumnEnabled )
                         {
-                            if( pTrcAdminObj->getEnabled() == EEnabled::Yes )
+                            QVariant val = pModelAbstract->data(modelIdxSelected, Qt::DisplayRole);
+                            if( val.canConvert(QVariant::Bool) )
                             {
-                                pTrcAdminObj->setEnabled(EEnabled::No);
+                                pModelAbstract->setData(modelIdxSelected, !val.toBool(), Qt::EditRole);
                             }
-                            else
-                            {
-                                pTrcAdminObj->setEnabled(EEnabled::Yes);
-                            }
-                            bEventHandled = true;
-                            break;
                         }
-                        default:
-                        {
-                            break;
-                        }
-                    } // switch( modelIdxSelected.column() )
-                } // if( modelIdxSelected.column() >= CModelIdxTree::EColumnCount )
-            } // if( pTrcAdminObj != nullptr )
-        } // if( i_pEv->key() != Qt::Key_F5 )
+                    }
+                }
+            } // if( pModelAbstract != nullptr )
+        } // if( modelIdxSelected.isValid() )
     } // if( i_pEv->key() == Qt::Key_Return ...
 
     if( !bEventHandled )
@@ -947,24 +1226,18 @@ void CTreeViewIdxTreeTrcAdminObjs::mousePressEvent( QMouseEvent* i_pEv )
 {
     QString strMthInArgs;
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = qMouseEvent2Str(i_pEv);
     }
 
     CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "mousePressEvent",
         /* strMethodInArgs    */ strMthInArgs );
 
     bool bEventHandled = false;
-
-    //QModelIndex modelIdxSelected = selectionModel()->currentIndex();
 
     m_modelIdxSelectedOnMousePressEvent = indexAt(i_pEv->pos());
 
@@ -976,35 +1249,17 @@ void CTreeViewIdxTreeTrcAdminObjs::mousePressEvent( QMouseEvent* i_pEv )
         {
             if( i_pEv->buttons() & Qt::RightButton )
             {
-                if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+                if( pModelTreeEntry->isRoot() || pModelTreeEntry->isBranch() )
                 {
-                    CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
-
-                    if( pModelBranch != nullptr )
+                    if( m_modelIdxSelectedOnMousePressEvent.column() == CModelIdxTreeTrcAdminObjs::EColumnTreeEntryName )
                     {
-                        switch( m_modelIdxSelectedOnMousePressEvent.column() )
+                        if( m_pMenuNameSpaceContext != nullptr )
                         {
-                            case CModelIdxTreeTrcAdminObjs::EColumnTreeEntryName:
-                            {
-                                if( m_pMenuNameSpaceContext != nullptr )
-                                {
-                                    m_pActionNameSpaceTitle->setText( "Name Space: " + pModelBranch->name() );
-                                    m_pMenuNameSpaceContext->popup(QWidget::mapToGlobal(i_pEv->pos()));
-                                }
-                                bEventHandled = true;
-                                break;
-                            }
-                            case CModelIdxTreeTrcAdminObjs::EColumnRefCount:
-                            case CModelIdxTreeTrcAdminObjs::EColumnNameSpace:
-                            case CModelIdxTreeTrcAdminObjs::EColumnClassName:
-                            case CModelIdxTreeTrcAdminObjs::EColumnObjName:
-                            case CModelIdxTreeTrcAdminObjs::EColumnEnabled:
-                            default:
-                            {
-                                break;
-                            }
+                            m_pActionNameSpaceTitle->setText( "Name Space: " + pModelTreeEntry->name() );
+                            m_pMenuNameSpaceContext->popup(QWidget::mapToGlobal(i_pEv->pos()));
                         }
-                    } // if( pTrcAdminObj != nullptr )
+                        bEventHandled = true;
+                    }
                 }
             } // if( i_pEv->buttons() & Qt::RightButton )
         } // if( pModelTreeEntry != nullptr )
@@ -1023,71 +1278,52 @@ void CTreeViewIdxTreeTrcAdminObjs::mouseReleaseEvent( QMouseEvent* i_pEv )
 {
     QString strMthInArgs;
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = qMouseEvent2Str(i_pEv);
     }
 
     CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "mouseReleaseEvent",
         /* strMethodInArgs    */ strMthInArgs );
 
     bool bEventHandled = false;
 
-    //QModelIndex modelIdxSelected = selectionModel()->currentIndex();
-
     m_modelIdxSelectedOnMouseReleaseEvent = indexAt(i_pEv->pos());
 
     if( m_modelIdxSelectedOnMouseReleaseEvent.isValid() )
     {
-        CDelegateIdxTreeTrcAdminObjs* pDelegate = dynamic_cast<CDelegateIdxTreeTrcAdminObjs*>(itemDelegate());
-        CModelIdxTreeEntry*           pModelTreeEntry = nullptr;
-        CTrcAdminObj*                 pTrcAdminObj = nullptr;
+        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMouseReleaseEvent.internalPointer());
 
-        pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMouseReleaseEvent.internalPointer());
-
-        if( pModelTreeEntry != nullptr )
+        if( pModelTreeEntry != nullptr && pModelTreeEntry->isLeave() )
         {
-            pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pModelTreeEntry->treeEntry());
-        }
+            QAbstractItemModel* pModelAbstract = const_cast<QAbstractItemModel*>(m_modelIdxSelectedOnMouseReleaseEvent.model());
+            CDelegateIdxTreeTrcAdminObjs* pDelegate = dynamic_cast<CDelegateIdxTreeTrcAdminObjs*>(itemDelegate());
+            QRect rectVisual = visualRect(m_modelIdxSelectedOnMouseReleaseEvent);
 
-        if( pTrcAdminObj != nullptr )
-        {
-            if( m_modelIdxSelectedOnMouseReleaseEvent.column() >= CModelIdxTree::EColumnCount )
+            switch( m_modelIdxSelectedOnMouseReleaseEvent.column() )
             {
-                switch( m_modelIdxSelectedOnMouseReleaseEvent.column() )
+                case CModelIdxTreeTrcAdminObjs::EColumnEnabled:
                 {
-                    case CModelIdxTreeTrcAdminObjs::EColumnEnabled:
+                    if( pDelegate != nullptr && pDelegate->isCheckBoxEnabledHit(rectVisual,i_pEv->pos(),m_modelIdxSelectedOnMouseReleaseEvent) )
                     {
-                        QRect rectVisual = visualRect(m_modelIdxSelectedOnMouseReleaseEvent);
-
-                        if( pDelegate != nullptr && pDelegate->isCheckBoxEnabledHit(rectVisual,i_pEv->pos(),m_modelIdxSelectedOnMouseReleaseEvent) )
+                        QVariant val = pModelAbstract->data(m_modelIdxSelectedOnMouseReleaseEvent, Qt::DisplayRole);
+                        if( val.canConvert(QVariant::Bool) )
                         {
-                            if( pTrcAdminObj->getEnabled() == EEnabled::Yes )
-                            {
-                                pTrcAdminObj->setEnabled(EEnabled::No);
-                            }
-                            else
-                            {
-                                pTrcAdminObj->setEnabled(EEnabled::Yes);
-                            }
-                            bEventHandled = true;
+                            pModelAbstract->setData(m_modelIdxSelectedOnMouseReleaseEvent, !val.toBool(), Qt::EditRole);
                         }
-                        break;
+                        bEventHandled = true;
                     }
-                    default:
-                    {
-                        break;
-                    }
-                } // switch( modelIdxSelected.column() )
-            } // if( m_modelIdxSelectedOnMouseReleaseEvent.column() >= CModelIdxTree::EColumnCount )
-        } // if( pTrcAdminObj != nullptr )
+                    break;
+                }
+                default:
+                {
+                    break;
+                }
+            } // switch( modelIdxSelected.column() )
+        } // if( pModelTreeEntry != nullptr && pModelTreeEntry->isLeave() )
     } // if( m_modelIdxSelectedOnMouseReleaseEvent.isValid() )
 
     if( !bEventHandled )
@@ -1107,31 +1343,26 @@ void CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceExpandTriggered( bool i_bChe
 {
     QString strMthInArgs;
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
 
     CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "onActionNameSpaceExpandTriggered",
         /* strMethodInArgs    */ strMthInArgs );
 
     if( m_modelIdxSelectedOnMousePressEvent.isValid() )
     {
         expandRecursive(m_modelIdxSelectedOnMousePressEvent);
-
         for( int idxClm = 0; idxClm < CModelIdxTree::EColumnCount; idxClm++ )
         {
             resizeColumnToContents(idxClm);
         }
     }
-} // onActionNameSpaceExpandTriggered
+}
 
 //------------------------------------------------------------------------------
 void CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceCollapseTriggered( bool i_bChecked )
@@ -1139,18 +1370,14 @@ void CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceCollapseTriggered( bool i_bC
 {
     QString strMthInArgs;
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
 
     CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "onActionNameSpaceCollapseTriggered",
         /* strMethodInArgs    */ strMthInArgs );
 
@@ -1158,151 +1385,248 @@ void CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceCollapseTriggered( bool i_bC
     {
         collapseRecursive(m_modelIdxSelectedOnMousePressEvent);
     }
-} // onActionNameSpaceCollapseTriggered
+}
 
 //------------------------------------------------------------------------------
-void CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceEnableAdmObjectsTriggered( bool i_bChecked )
+void CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceEnableAdminObjsTriggered( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
 
     CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "onActionNameSpaceEnableAdmObjectsTriggered",
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "onActionNameSpaceEnableAdminObjsTriggered",
         /* strMethodInArgs    */ strMthInArgs );
 
     if( m_modelIdxSelectedOnMousePressEvent.isValid() )
     {
         CModelIdxTreeTrcAdminObjs* pModelIdxTree = dynamic_cast<CModelIdxTreeTrcAdminObjs*>(model());
-
         if( pModelIdxTree != nullptr )
         {
             CIdxTreeTrcAdminObjs* pIdxTree = pModelIdxTree->idxTree();
-
             CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMouseReleaseEvent.internalPointer());
-
-            CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
-
-            if( pIdxTree != nullptr && pModelBranch != nullptr )
+            if( pIdxTree != nullptr && pModelTreeEntry != nullptr )
             {
-                CIdxTreeEntry* pBranch = pModelBranch->treeEntry();
-
-                pIdxTree->setEnabled(pBranch, EEnabled::Yes);
-            }
-        }
-    }
-
-} // onActionNameSpaceEnableAdmObjectsTriggered
-
-//------------------------------------------------------------------------------
-void CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceDisableAdmObjectsTriggered( bool i_bChecked )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "onActionNameSpaceDisableAdmObjectsTriggered",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    if( m_modelIdxSelectedOnMousePressEvent.isValid() )
-    {
-        CModelIdxTreeTrcAdminObjs* pModelIdxTree = dynamic_cast<CModelIdxTreeTrcAdminObjs*>(model());
-
-        if( pModelIdxTree != nullptr )
-        {
-            CIdxTreeTrcAdminObjs* pIdxTree = pModelIdxTree->idxTree();
-
-            CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMouseReleaseEvent.internalPointer());
-
-            CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
-
-            if( pIdxTree != nullptr && pModelBranch != nullptr )
-            {
-                CIdxTreeEntry* pBranch = pModelBranch->treeEntry();
-
-                pIdxTree->setEnabled(pBranch, EEnabled::No);
-            }
-        }
-    }
-
-} // onActionNameSpaceDisableAdmObjectsTriggered
-
-//------------------------------------------------------------------------------
-void CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceSetDetailLevelAdmObjectsTriggered( bool i_bChecked )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "onActionNameSpaceSetDetailLevelAdmObjectsTriggered",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    if( m_modelIdxSelectedOnMousePressEvent.isValid() )
-    {
-        CModelIdxTreeTrcAdminObjs* pModelIdxTree = dynamic_cast<CModelIdxTreeTrcAdminObjs*>(model());
-
-        if( pModelIdxTree != nullptr )
-        {
-            CIdxTreeTrcAdminObjs* pIdxTree = pModelIdxTree->idxTree();
-
-            CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMouseReleaseEvent.internalPointer());
-
-            CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
-
-            if( pIdxTree != nullptr && pModelBranch != nullptr )
-            {
-                CIdxTreeEntry* pBranch = pModelBranch->treeEntry();
-
-                bool bOk;
-
-                int iDetailLevel = QInputDialog::getInt(
-                    /* pWdgtParent */ this,
-                    /* strTitle    */ QCoreApplication::applicationName(),
-                    /* strLabel    */ 0,
-                    /* iValue      */ 0,
-                    /* iMinValue   */ 0,
-                    /* iMaxValue   */ 10,
-                    /* iStep       */ 1,
-                    /* pbOk        */ &bOk );
-
-                if( bOk )
+                CIdxTreeLocker idxTreeLocker(pIdxTree);
+                CIdxTreeEntry* pBranch = pModelTreeEntry->getIdxTreeEntry();
+                if( pBranch != nullptr )
                 {
-                    pIdxTree->setTraceDetailLevel(pBranch, iDetailLevel);
+                    pIdxTree->setEnabled(pBranch, EEnabled::Yes);
                 }
             }
         }
     }
+}
 
-} // onActionNameSpaceSetDetailLevelAdmObjectsTriggered
+//------------------------------------------------------------------------------
+void CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceDisableAdminObjsTriggered( bool i_bChecked )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "onActionNameSpaceDisableAdminObjsTriggered",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    if( m_modelIdxSelectedOnMousePressEvent.isValid() )
+    {
+        CModelIdxTreeTrcAdminObjs* pModelIdxTree = dynamic_cast<CModelIdxTreeTrcAdminObjs*>(model());
+        if( pModelIdxTree != nullptr )
+        {
+            CIdxTreeTrcAdminObjs* pIdxTree = pModelIdxTree->idxTree();
+            CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMouseReleaseEvent.internalPointer());
+            if( pIdxTree != nullptr && pModelTreeEntry != nullptr )
+            {
+                CIdxTreeLocker idxTreeLocker(pIdxTree);
+                CIdxTreeEntry* pBranch = pModelTreeEntry->getIdxTreeEntry();
+                if( pBranch != nullptr )
+                {
+                    pIdxTree->setEnabled(pBranch, EEnabled::No);
+                }
+            }
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+void CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceSetAdminObjsMethodCallsDetailLevelTriggered( bool i_bChecked )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "onActionNameSpaceSetAdminObjsMethodCallsDetailLevelTriggered",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    if( m_modelIdxSelectedOnMousePressEvent.isValid() )
+    {
+        CModelIdxTreeTrcAdminObjs* pModelIdxTree = dynamic_cast<CModelIdxTreeTrcAdminObjs*>(model());
+        if( pModelIdxTree != nullptr )
+        {
+            CIdxTreeTrcAdminObjs* pIdxTree = pModelIdxTree->idxTree();
+            CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMouseReleaseEvent.internalPointer());
+            if( pIdxTree != nullptr && pModelTreeEntry != nullptr )
+            {
+                CIdxTreeLocker idxTreeLocker(pIdxTree);
+                CIdxTreeEntry* pBranch = pModelTreeEntry->getIdxTreeEntry();
+                if( pBranch != nullptr )
+                {
+                    CDlgEditEnumValue* pDlg = CDlgEditEnumValue::CreateInstance(
+                        /* strTitle    */ QCoreApplication::applicationName(),
+                        /* strObjName  */ "MethodCallsDetailLevel",
+                        /* pWdgtParent */ this );
+                    pDlg->setValueName("MethodCalls");
+                    pDlg->setComboItems(CEnumMethodTraceDetailLevel::s_arEnumEntries);
+                    pDlg->setEnumerator(0);
+
+                    if( pDlg->exec() == QDialog::Accepted )
+                    {
+                        try
+                        {
+                            int iDetailLevel = pDlg->getEnumerator();
+                            CEnumMethodTraceDetailLevel eDetailLevel(iDetailLevel);
+                            pIdxTree->setMethodCallsTraceDetailLevel(pBranch, eDetailLevel.enumerator());
+                        }
+                        catch(CException&)
+                        {
+                        }
+                    }
+                    CDlgEditEnumValue::DestroyInstance(pDlg);
+                    pDlg = nullptr;
+                }
+            }
+        }
+    }
+} // onActionNameSpaceSetAdminObjsMethodCallsDetailLevelTriggered
+
+//------------------------------------------------------------------------------
+void CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceSetAdminObjsRuntimeInfoDetailLevelTriggered( bool i_bChecked )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "onActionNameSpaceSetAdminObjsRuntimeInfoDetailLevelTriggered",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    if( m_modelIdxSelectedOnMousePressEvent.isValid() )
+    {
+        CModelIdxTreeTrcAdminObjs* pModelIdxTree = dynamic_cast<CModelIdxTreeTrcAdminObjs*>(model());
+        if( pModelIdxTree != nullptr )
+        {
+            CIdxTreeTrcAdminObjs* pIdxTree = pModelIdxTree->idxTree();
+            CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMouseReleaseEvent.internalPointer());
+            if( pIdxTree != nullptr && pModelTreeEntry != nullptr )
+            {
+                CIdxTreeLocker idxTreeLocker(pIdxTree);
+                CIdxTreeEntry* pBranch = pModelTreeEntry->getIdxTreeEntry();
+                if( pBranch != nullptr )
+                {
+                    CDlgEditEnumValue* pDlg = CDlgEditEnumValue::CreateInstance(
+                        /* strTitle    */ QCoreApplication::applicationName(),
+                        /* strObjName  */ "RuntimeInfoDetailLevel",
+                        /* pWdgtParent */ this );
+                    pDlg->setValueName("RuntimeInfo");
+                    pDlg->setComboItems(CEnumLogDetailLevel::s_arEnumEntries);
+                    pDlg->setEnumerator(0);
+                    if( pDlg->exec() == QDialog::Accepted )
+                    {
+                        try
+                        {
+                            int iDetailLevel = pDlg->getEnumerator();
+                            CEnumLogDetailLevel eDetailLevel(iDetailLevel);
+                            pIdxTree->setRuntimeInfoTraceDetailLevel(pBranch, eDetailLevel.enumerator());
+                        }
+                        catch(CException&)
+                        {
+                        }
+                    }
+                    CDlgEditEnumValue::DestroyInstance(pDlg);
+                    pDlg = nullptr;
+                }
+            }
+        }
+    }
+} // onActionNameSpaceSetAdminObjsRuntimeInfoDetailLevelTriggered
+
+//------------------------------------------------------------------------------
+void CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceSetAdminObjsTraceDataFilterTriggered( bool i_bChecked )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "onActionNameSpaceSetAdminObjsTraceDataFilterTriggered",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    if( m_modelIdxSelectedOnMousePressEvent.isValid() )
+    {
+        CModelIdxTreeTrcAdminObjs* pModelIdxTree = dynamic_cast<CModelIdxTreeTrcAdminObjs*>(model());
+        if( pModelIdxTree != nullptr )
+        {
+            CIdxTreeTrcAdminObjs* pIdxTree = pModelIdxTree->idxTree();
+            CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMouseReleaseEvent.internalPointer());
+            if( pIdxTree != nullptr && pModelTreeEntry != nullptr )
+            {
+                CIdxTreeLocker idxTreeLocker(pIdxTree);
+                CIdxTreeEntry* pBranch = pModelTreeEntry->getIdxTreeEntry();
+                if( pBranch != nullptr )
+                {
+                    CDlgEditStringValue* pDlg = CDlgEditStringValue::CreateInstance(
+                        /* strTitle    */ QCoreApplication::applicationName(),
+                        /* strObjName  */ "TraceDataFilter",
+                        /* pWdgtParent */ this );
+                    pDlg->setValueName("DataFilter");
+                    pDlg->setValue("");
+                    if( pDlg->exec() == QDialog::Accepted )
+                    {
+                        try
+                        {
+                            QString strDataFilter = pDlg->getValue();
+                            pIdxTree->setTraceDataFilter(pBranch, strDataFilter);
+                        }
+                        catch(CException&)
+                        {
+                        }
+                    }
+                    CDlgEditEnumValue::DestroyInstance(pDlg);
+                    pDlg = nullptr;
+                }
+            }
+        }
+    }
+} // onActionNameSpaceSetAdminObjsTraceDataFilterTriggered

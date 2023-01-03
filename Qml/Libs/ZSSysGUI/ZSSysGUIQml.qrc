@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/ZSSysGUI">
+        <file>qmldir</file>
+        <file>ZSSysErrLogDlg.qml</file>
+        <file>ZSSysErrLogIcon.qml</file>
+        <file>ZSSysErrLogTableView.qml</file>
+        <file>ZSSysErrLogWdgt.qml</file>
+        <file>ZSSysIdxTreeTableViewBranchContent.qml</file>
+        <file>ZSSysIdxTreeTableViewBranchContentWdgt.qml</file>
+        <file>ZSSysIdxTreeView.qml</file>
+        <file>ZSSysIdxTreeViewWdgt.qml</file>
+        <file>ZSSysIdxTreeWdgt.qml</file>
+        <file>ZSSysPushButton.qml</file>
+    </qresource>
+</RCC>

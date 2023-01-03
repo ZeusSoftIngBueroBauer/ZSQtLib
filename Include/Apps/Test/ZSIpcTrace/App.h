@@ -29,6 +29,7 @@ may result in using the software modules.
 
 #include <QtCore/qglobal.h>
 
+#include "ZSTest/ZSTestDllMain.h"
 #include "ZSSysGUI/ZSSysGUIApp.h"
 #include "ZSIpcTrace/ZSIpcTrcDllMain.h"
 #include "ZSIpcTrace/ZSIpcTrcClient.h"
@@ -38,7 +39,6 @@ namespace ZS
 {
 namespace System
 {
-class CErrLog;
 class CRequestExecTree;
 }
 namespace Trace
@@ -75,26 +75,27 @@ public: // ctors and dtor
     ~CApplication();
 public: // instance methods
     CTest* getTest() { return m_pTest; }
-    ZS::Trace::CIpcTrcServer* getTrcServer() { return m_pTrcServer; }
-    int getTraceDetailLevelTrcServer() const { return m_iTrcDetailLevelTrcServer; }
-    ZS::Trace::CIpcTrcClient* getTrcClient() { return m_pTrcClient; }
-    QString getThreadColorFileAbsFilePath() const { return m_strThreadClrFileAbsFilePath; }
+    ZS::Trace::CIpcTrcServer* getTrcServer() { return m_pZSTrcServer; }
+    ZS::Trace::CIpcTrcClient* getTrcClient() { return m_pZSTrcClient; }
+    ZS::System::EMethodTraceDetailLevel getTraceServerTraceDetailLevel() const { return m_eZSTrcServerTrcDetailLevel; }
+    ZS::System::EMethodTraceDetailLevel getTraceServerTraceDetailLevelNoisyMethods() const { return m_eZSTrcServerTrcDetailLevelNoisyMethods; }
+    ZS::System::EMethodTraceDetailLevel getTraceClientTraceDetailLevel() const { return m_eZSTrcClientTrcDetailLevel; }
+protected slots:
+    void onTestFinished( const ZS::Test::CEnumTestResult& i_result );
 private: // instance members
-    QString                       m_strErrLogFileAbsFilePath;
-    bool                          m_bReqExecTreeGarbageCollectorEnabled;
-    double                        m_fReqExecTreeGarbageCollectorInterval_s;
-    double                        m_fReqExecTreeGarbageCollectorElapsed_s;
-    ZS::System::CRequestExecTree* m_pReqExecTree;
-    ZS::Ipc::SServerHostSettings  m_trcServerHostSettings;
-    ZS::Trace::STrcServerSettings m_trcServerSettings;
-    ZS::Trace::CIpcTrcServer*     m_pTrcServer;
-    int                           m_iTrcDetailLevelTrcServer;
-    ZS::Ipc::SClientHostSettings  m_trcClientHostSettings;
-    ZS::Trace::CIpcTrcClient*     m_pTrcClient;
-    QString                       m_strThreadClrFileAbsFilePath;
-    QString                       m_strTestStepsFileAbsFilePath;
-    CTest*                        m_pTest;
-    CMainWindow*                  m_pMainWindow;
+    bool                                m_bReqExecTreeGarbageCollectorEnabled;
+    double                              m_fReqExecTreeGarbageCollectorInterval_s;
+    double                              m_fReqExecTreeGarbageCollectorElapsed_s;
+    ZS::System::CRequestExecTree*       m_pReqExecTree;
+    ZS::System::EMethodTraceDetailLevel m_eZSTrcServerTrcDetailLevel;
+    ZS::System::EMethodTraceDetailLevel m_eZSTrcServerTrcDetailLevelNoisyMethods;
+    ZS::System::EMethodTraceDetailLevel m_eZSTrcClientTrcDetailLevel;
+    ZS::Trace::CIpcTrcServer*           m_pZSTrcServer;
+    ZS::Ipc::SClientHostSettings        m_clientHostSettingsZSTrcClient;
+    ZS::Trace::CIpcTrcClient*           m_pZSTrcClient;
+    CTest*                              m_pTest;
+    CMainWindow*                        m_pMainWindow;
+    bool                                m_bAutoStartTest;
 
 }; // class CApplication
 

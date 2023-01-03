@@ -44,6 +44,16 @@ may result in using the software modules.
 interface description of exported methods
 *******************************************************************************/
 
+// The static arrays "CEnum<>::s_arEnumEntries" are defined in the cpp file.
+#ifdef _WINDOWS
+#pragma warning( push )
+#pragma warning( disable : 4661 )
+#elif defined __linux__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-result"
+#pragma GCC diagnostic pop
+#endif
+
 namespace ZS
 {
 namespace Test
@@ -53,16 +63,29 @@ namespace Test
 */
 enum class ETestResult {
 //==============================================================================
-    Undefined  = 0,
-    TestFailed = 1,
-    TestPassed = 2,
-    Ignore     = 3
+    Undefined   = 0,
+    TestFailed  = 1,
+    TestPassed  = 2,
+    TestSkipped = 3
 };
+} // namespace Test
+} // namespace ZS
 
-template class ZSTESTDLL_API ZS::System::CEnum<ETestResult>;
-typedef ZS::System::CEnum<ETestResult> CEnumTestResult;
+// MinGW compile error: explicit instantiation of '<namespace>::<templated class>' must occur in namespace '<namespace>'
+// Workaround: close namespaces before defining template class and define it outside namespaces.
+template class ZSTESTDLL_API ZS::System::CEnum<ZS::Test::ETestResult>;
+namespace ZS
+{
+namespace Test
+{
+typedef ZS::System::CEnum<ZS::Test::ETestResult> CEnumTestResult;
+} // namespace Test
+} // namespace ZS
 
-
+namespace ZS
+{
+namespace Test
+{
 //==============================================================================
 /*! Possible states of a test.
 */
@@ -73,13 +96,22 @@ enum class ETestState
     Running = 1,  /*! Test is running. */
     Paused  = 2   /*! Test has been paused. */
 };
-
-template class ZSTESTDLL_API ZS::System::CEnum<ETestState>;
-typedef ZS::System::CEnum<ETestState> CEnumTestState;
-
-
 } // namespace Test
-
 } // namespace ZS
+
+// MinGW compile error: explicit instantiation of '<namespace>::<templated class>' must occur in namespace '<namespace>'
+// Workaround: close namespaces before defining template class and define it outside namespaces.
+template class ZSTESTDLL_API ZS::System::CEnum<ZS::Test::ETestState>;
+namespace ZS
+{
+namespace Test
+{
+typedef ZS::System::CEnum<ZS::Test::ETestState> CEnumTestState;
+} // namespace Test
+} // namespace ZS
+
+#ifdef _WINDOWS
+#pragma warning( pop )
+#endif
 
 #endif // #ifndef ZSTest_DllMain_h

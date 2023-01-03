@@ -99,6 +99,17 @@ QString ZS::System::createGUID()
 } // createGUID
 
 //------------------------------------------------------------------------------
+/*! @brief Converts the given string with unicode characters into a byte array.
+
+    Unicode characters have two bytes. Please note that for UTF8 characters
+    the second byte will be encoded as '\0' and the resulting byte array is no
+    longer a human readable character string. To convert the byte array back to
+    a unicode character string use 'byteArr2Str'.
+
+    @param i_str [in] String to be converted.
+
+    @return Byte array containing two bytes for each character of the input string.
+*/
 QByteArray ZS::System::str2ByteArr( const QString& i_str )
 //------------------------------------------------------------------------------
 {
@@ -110,6 +121,17 @@ QByteArray ZS::System::str2ByteArr( const QString& i_str )
 } // str2ByteArr
 
 //------------------------------------------------------------------------------
+/*! @brief Converts the given byte array containg unicode characters into a
+           unicode string.
+
+    Unicode characters have two bytes. Please note that for UTF8 characters
+    the second byte will be encoded as '\0'. This method reverts the conversion
+    done with 'str2ByteArr'.
+
+    @param i_byteArr [in] Byte array to be converted.
+
+    @return String with unicode characters.
+*/
 QString ZS::System::byteArr2Str( const QByteArray& i_byteArr )
 //------------------------------------------------------------------------------
 {
@@ -1121,7 +1143,6 @@ bool ZS::System::isNumeric( const QVariant& i_var )
 
 } // isNumeric
 
-
 /*==============================================================================
 Enum Qt::CaseSensitivity
 ==============================================================================*/
@@ -1175,10 +1196,10 @@ static const SEnumEntry s_arEnumStrQtQrientation[] = {
 };
 
 //------------------------------------------------------------------------------
-QString ZS::System::qOrientation2Str( int i_orientation, EEnumEntryAliasStr i_alias )
+QString ZS::System::qOrientation2Str( int i_iVal, EEnumEntryAliasStr i_alias )
 //------------------------------------------------------------------------------
 {
-    return SEnumEntry::enumerator2Str( s_arEnumStrQtQrientation, _ZSArrLen(s_arEnumStrQtQrientation), i_orientation, i_alias );
+    return SEnumEntry::enumerator2Str(s_arEnumStrQtQrientation, _ZSArrLen(s_arEnumStrQtQrientation), i_iVal, i_alias);
 }
 
 //------------------------------------------------------------------------------
@@ -1189,7 +1210,7 @@ Qt::Orientation ZS::System::str2QOrientation( const QString& i_str, EEnumEntryAl
 
     bool bConverted = false;
 
-    int iVal = SEnumEntry::str2Enumerator( s_arEnumStrQtQrientation, _ZSArrLen(s_arEnumStrQtQrientation), i_str, i_alias, Qt::CaseInsensitive );
+    int iVal = SEnumEntry::str2Enumerator(s_arEnumStrQtQrientation, _ZSArrLen(s_arEnumStrQtQrientation), i_str, i_alias, Qt::CaseInsensitive);
 
     if( iVal >= 0 && iVal < _ZSArrLen(s_arEnumStrQtQrientation) )
     {
@@ -1205,6 +1226,45 @@ Qt::Orientation ZS::System::str2QOrientation( const QString& i_str, EEnumEntryAl
     return orientation;
 
 } // str2QOrientation
+
+
+/*==============================================================================
+Enum Qt::SortOrder
+==============================================================================*/
+
+static const SEnumEntry s_arEnumStrQtSortOrder[] = {
+    /* 0 */ SEnumEntry( Qt::AscendingOrder,  "Ascending",  "A" ),
+    /* 1 */ SEnumEntry( Qt::DescendingOrder, "Descending", "D" )
+};
+
+//------------------------------------------------------------------------------
+QString ZS::System::qSortOrder2Str( int i_iVal, EEnumEntryAliasStr i_alias )
+//------------------------------------------------------------------------------
+{
+    return SEnumEntry::enumerator2Str(s_arEnumStrQtSortOrder, _ZSArrLen(s_arEnumStrQtSortOrder), i_iVal, i_alias);
+}
+
+//------------------------------------------------------------------------------
+Qt::SortOrder ZS::System::str2QSortOrder( const QString& i_str, EEnumEntryAliasStr i_alias, bool* o_pbConverted )
+//------------------------------------------------------------------------------
+{
+    Qt::SortOrder sortOrder = Qt::AscendingOrder;
+
+    bool bConverted = false;
+
+    int iVal = SEnumEntry::str2Enumerator(s_arEnumStrQtSortOrder, _ZSArrLen(s_arEnumStrQtSortOrder), i_str, i_alias, Qt::CaseInsensitive);
+
+    if( iVal >= 0 && iVal < _ZSArrLen(s_arEnumStrQtSortOrder) )
+    {
+        sortOrder = static_cast<Qt::SortOrder>(iVal);
+        bConverted = true;
+    }
+    if( o_pbConverted != nullptr )
+    {
+        *o_pbConverted = bConverted;
+    }
+    return sortOrder;
+}
 
 
 /*==============================================================================
@@ -1338,7 +1398,29 @@ QProcess::ProcessError ZS::System::str2QProcessError( const QString& i_str, EEnu
 
 
 /*==============================================================================
-Enum QProcess::Error
+Enum QThread::Priority
+==============================================================================*/
+
+static const SEnumEntry s_arEnumStrQThreadPriorities[] = {
+    /*  0 */ SEnumEntry( QThread::IdlePriority,         "IdlePriority"         ),
+    /*  0 */ SEnumEntry( QThread::LowestPriority,       "LowestPriority"       ),
+    /*  0 */ SEnumEntry( QThread::LowPriority,          "LowPriority"          ),
+    /*  0 */ SEnumEntry( QThread::NormalPriority,       "NormalPriority"       ),
+    /*  0 */ SEnumEntry( QThread::HighPriority,         "HighPriority"         ),
+    /*  0 */ SEnumEntry( QThread::HighestPriority,      "HighestPriority"      ),
+    /*  0 */ SEnumEntry( QThread::TimeCriticalPriority, "TimeCriticalPriority" ),
+    /*  0 */ SEnumEntry( QThread::InheritPriority,      "InheritPriority"      )
+};
+
+//------------------------------------------------------------------------------
+QString ZS::System::qThreadPriority2Str( QThread::Priority i_priority, EEnumEntryAliasStr i_alias )
+//------------------------------------------------------------------------------
+{
+    return SEnumEntry::enumerator2Str(s_arEnumStrQThreadPriorities, _ZSArrLen(s_arEnumStrQThreadPriorities), i_priority, i_alias);
+}
+
+/*==============================================================================
+Enum QXmlStreamReader::TokenType
 ==============================================================================*/
 
 static const SEnumEntry s_arEnumStrQXmlStreamTokenTypes[] = {
@@ -1980,11 +2062,13 @@ QString ZS::System::qModelIndex2Str( const QModelIndex& i_modelIdx )
     else
     {
         str = "Row: " + QString::number(i_modelIdx.row());
-        str += "Clm: " + QString::number(i_modelIdx.column());
-        if( i_modelIdx.data().canConvert(QVariant::String) )
-        {
-            str += "Data: " + i_modelIdx.data().toString();
-        }
+        str += ", Clm: " + QString::number(i_modelIdx.column());
+
+        // Endless recursion if called by ::data method.
+        //if( i_modelIdx.data().canConvert(QVariant::String) )
+        //{
+        //    str += ", Data: " + i_modelIdx.data().toString();
+        //}
     }
     return str;
 
@@ -3499,6 +3583,49 @@ QString ZS::System::truncateStringWithEllipsisInTheMiddle(
     return str;
 
 } // truncateStringWithEllipsisInTheMiddle
+
+
+//------------------------------------------------------------------------------
+QString ZS::System::encodeForXml( const QString& i_str )
+//------------------------------------------------------------------------------
+{
+    QString str = i_str;
+    if( str.contains("&") ) str.replace("&", "&amp;"); // this must be the first replacement
+    if( str.contains("<") ) str.replace("<","&lt;");
+    if( str.contains(">") ) str.replace(">","&gt;");
+    if( str.contains("\"") ) str.replace("\"", "&quot;");
+    if( str.contains("'") ) str.replace("'", "&apos;");
+    return str;
+}
+
+//------------------------------------------------------------------------------
+QString ZS::System::encodeForHtml( const QString& i_str )
+//------------------------------------------------------------------------------
+{
+    QString str = i_str;
+    if( str.contains("&") ) str.replace("&", "&amp;"); // this must be the first replacement
+    if( str.contains("<") ) str.replace("<","&lt;");
+    if( str.contains(">") ) str.replace(">","&gt;");
+    if( str.contains("\"") ) str.replace("\"", "&quot;");
+    if( str.contains("'") ) str.replace("'", "&apos;");
+    if( str.contains("  ") ) str.replace("  ", "&nbsp;");
+    return str;
+}
+
+//------------------------------------------------------------------------------
+QString ZS::System::decodeFromHtml( const QString& i_str )
+//------------------------------------------------------------------------------
+{
+    QString str = i_str;
+
+    if( str.contains("&lt;") ) str.replace("&lt;", "<");
+    if( str.contains("&gt;") ) str.replace("&gt;", ">");
+    if( str.contains("&quot;") ) str.replace("&quot;", "\"");
+    if( str.contains("&apos;") ) str.replace("&apos;", "'");
+    if( str.contains("&amp;") ) str.replace("&amp;", "&");
+    if( str.contains("&nbsp;") ) str.replace("&nbsp;", " ");
+    return str;
+}
 
 /*******************************************************************************
 Parsing strings

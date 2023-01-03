@@ -57,7 +57,9 @@ CMsgReqTest::CMsgReqTest(
         /* pObjReceiver     */ i_pObjReceiver,
         /* bMustBeConfirmed */ i_bMustBeConfirmed,
         /* iReqId           */ i_iParentReqId,
-        /* iMsgIdReq        */ i_iMsgId )
+        /* iMsgIdReq        */ i_iMsgId ),
+    m_strCommand(),
+    m_strlstCommandArgs()
 {
 } // ctor
 
@@ -66,6 +68,53 @@ CMsgReqTest::~CMsgReqTest()
 //------------------------------------------------------------------------------
 {
 } // dtor
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CMsgReqTest::setCommand( const QString& i_strCommand )
+//------------------------------------------------------------------------------
+{
+    m_strCommand = i_strCommand;
+}
+
+//------------------------------------------------------------------------------
+QString CMsgReqTest::getCommand() const
+//------------------------------------------------------------------------------
+{
+    return m_strCommand;
+}
+
+//------------------------------------------------------------------------------
+void CMsgReqTest::setCommandArg( const QString& i_strArg )
+//------------------------------------------------------------------------------
+{
+    m_strlstCommandArgs.clear();
+    m_strlstCommandArgs.append(i_strArg);
+}
+
+//------------------------------------------------------------------------------
+void CMsgReqTest::setCommandArgs( const QStringList& i_strlstArgs )
+//------------------------------------------------------------------------------
+{
+    m_strlstCommandArgs = i_strlstArgs;
+}
+
+//------------------------------------------------------------------------------
+QString CMsgReqTest::getCommandArg() const
+//------------------------------------------------------------------------------
+{
+    return m_strlstCommandArgs.size() == 0 ? "" : m_strlstCommandArgs[0];
+}
+
+//------------------------------------------------------------------------------
+QStringList CMsgReqTest::getCommandArgs() const
+//------------------------------------------------------------------------------
+{
+    return m_strlstCommandArgs;
+}
 
 /*==============================================================================
 public: // must overridables of base class CMsg
@@ -81,13 +130,12 @@ CMsg* CMsgReqTest::clone( ECopyDepth /*i_copyDepth*/ )
         /* bMustBeConfirmed */ m_bMustBeConfirmed,
         /* iReqId           */ m_iReqId,
         /* iMsgId           */ m_iMsgId );
-
     pMsgCloned->setSenderId(m_iSenderId);
     pMsgCloned->setReceiverId(m_iReceiverId);
-
+    pMsgCloned->setCommand(m_strCommand);
+    pMsgCloned->setCommandArgs(m_strlstCommandArgs);
     return pMsgCloned;
-
-} // clone
+}
 
 //------------------------------------------------------------------------------
 CMsgCon* CMsgReqTest::createConfirmationMessage( ECopyDepth /*i_copyDepth*/ )
@@ -111,7 +159,7 @@ QString CMsgReqTest::msgTypeToStr() const
 QString CMsgReqTest::getAddTrcInfoStr( int i_iDetailLevel, ZS::System::EContentToStrFormat i_format )
 //------------------------------------------------------------------------------
 {
-    return CMsgReq::getAddTrcInfoStr(i_iDetailLevel, i_format);
+    return msgTypeToStr() + ", " + m_strCommand;
 }
 
 
@@ -139,7 +187,8 @@ CMsgConTest::CMsgConTest(
         /* iReqId             */ i_iParentReqId,
         /* iMsgIdReq          */ i_iMsgIdReq,
         /* errResultInfo      */ i_errResultInfo,
-        /* iProgressInPerCent */ i_iProgressInPerCent )
+        /* iProgressInPerCent */ i_iProgressInPerCent ),
+    m_strCommand()
 {
 } // ctor
 
@@ -148,6 +197,24 @@ CMsgConTest::~CMsgConTest()
 //------------------------------------------------------------------------------
 {
 } // dtor
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CMsgConTest::setCommand( const QString& i_strCommand )
+//------------------------------------------------------------------------------
+{
+    m_strCommand = i_strCommand;
+}
+
+//------------------------------------------------------------------------------
+QString CMsgConTest::getCommand() const
+//------------------------------------------------------------------------------
+{
+    return m_strCommand;
+}
 
 /*==============================================================================
 public: // overridables of base class CMsg
@@ -164,13 +231,11 @@ CMsg* CMsgConTest::clone( ECopyDepth /*i_copyDepth*/ )
         /* iMsgIdReq          */ m_iMsgId,
         /* errResultInfo      */ m_errResultInfo,
         /* iProgressInPerCent */ m_iProgressInPerCent );
-
     pMsgCloned->setSenderId(m_iSenderId);
     pMsgCloned->setReceiverId(m_iReceiverId);
-
+    pMsgCloned->setCommand(m_strCommand);
     return pMsgCloned;
-
-} // clone
+}
 
 //------------------------------------------------------------------------------
 QString CMsgConTest::msgTypeToStr() const
@@ -183,5 +248,5 @@ QString CMsgConTest::msgTypeToStr() const
 QString CMsgConTest::getAddTrcInfoStr( int i_iDetailLevel, ZS::System::EContentToStrFormat i_format )
 //------------------------------------------------------------------------------
 {
-    return CMsgCon::getAddTrcInfoStr(i_iDetailLevel, i_format);
+    return msgTypeToStr() + ", " + m_strCommand;
 }

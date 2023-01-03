@@ -48,9 +48,9 @@ public: // class methods
     static QString ClassName() { return "CInProcMsgServerWrapper"; }
 public: // ctors and dtor
     CInProcMsgServerWrapper(
-        const QString&      i_strObjName,
-        Trace::CTrcMthFile* i_pTrcMthFile = nullptr,         // If != nullptr trace method file with detail level is used instead of trace admin object with Trace server.
-        int                 i_iTrcMthFileDetailLevel = Trace::ETraceDetailLevelMethodArgs );
+        const QString& i_strObjName,
+        ZS::System::CTrcMthFile* i_pTrcMthFile = nullptr,         // If != nullptr trace method file with detail level is used instead of trace admin object with Trace server.
+        ZS::System::EMethodTraceDetailLevel i_eTrcMthFileDetailLevel = ZS::System::EMethodTraceDetailLevel::None );
     virtual ~CInProcMsgServerWrapper();
 public: // overridables of base class CIpcServerWrapper
     virtual QString nameSpace() const override { return NameSpace(); }

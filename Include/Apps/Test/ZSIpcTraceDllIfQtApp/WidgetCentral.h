@@ -68,7 +68,7 @@ public: // ctors and dtor
 protected: // class members
     static CWidgetCentral* s_pThis; // singleton class
 protected: // instance members
-    QVBoxLayout*              m_pLyt;
+    QVBoxLayout*                          m_pLyt;
     ZS::Test::GUI::CWdgtIdxTreeTestSteps* m_pWdgtTest;
 
 }; // class CWidgetCentral

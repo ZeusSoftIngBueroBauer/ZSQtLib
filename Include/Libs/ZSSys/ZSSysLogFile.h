@@ -193,7 +193,9 @@ public: // instance methods
     virtual QString className() const { return ClassName(); }
 public: // instance methods
     void close();
+    void clear();
 public: // instance methods
+    void setAbsoluteFilePath( const QString& i_strAbsFilePath );
     QString absoluteFilePath() const;
     QString completeBaseName() const;
     QString absolutePath() const;
@@ -209,8 +211,8 @@ public: // instance methods
     int getSubFileLineCountMax() const;
 public: // instance methods
     void addEntry( const QString& i_strEntry );
-protected: // instance methods
-    void setAbsoluteFilePath( const QString& i_strAbsFilePath );
+public: // overridables of base class QObject
+    virtual bool event( QEvent* i_pMsg );
 protected: // instance methods
     void backup();
 protected: // instance methods

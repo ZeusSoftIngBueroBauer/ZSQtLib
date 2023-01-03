@@ -43,7 +43,6 @@ may result in using the software modules.
 #include "WidgetCentral.h"
 #include "App.h"
 #include "Test.h"
-#include "WdgtTestOutput.h"
 
 #include "ZSIpcTrace/ZSIpcTrcServer.h"
 #include "ZSTestGUI/ZSTestStepIdxTreeWdgt.h"
@@ -96,10 +95,9 @@ CWidgetCentral::CWidgetCentral(
     m_pTest(i_pTest),
     m_pLyt(nullptr),
     m_pSplitter(nullptr),
-    m_pGrpTestOutput(nullptr),
-    m_pLytGrpTestOutput(nullptr),
-    m_pWdgtTestOutput(nullptr),
-    m_pWdgtMthList(nullptr)
+    m_pWdgtTest(nullptr),
+    m_pTabWidgetTrcMthLists(nullptr),
+    m_pWdgtTrcMthList(nullptr)
 {
     if( s_pThis != nullptr )
     {
@@ -125,26 +123,25 @@ CWidgetCentral::CWidgetCentral(
     m_pWdgtTest = new CWdgtIdxTreeTestSteps( CApplication::GetInstance()->getTest() );
     m_pSplitter->addWidget(m_pWdgtTest);
 
-    // <GroupBox> Test
-    //---------------------------
-
-    m_pGrpTestOutput = new QGroupBox("Test");
-    m_pLytGrpTestOutput = new QVBoxLayout();
-    m_pGrpTestOutput->setLayout(m_pLytGrpTestOutput);
-    m_pSplitter->addWidget(m_pGrpTestOutput);
-
-    m_pWdgtTestOutput = new CWdgtIdxTreeTestStepsOutput(m_pTest);
-    m_pLytGrpTestOutput->addWidget(m_pWdgtTestOutput);
-
     // <MethodTrace>
     //----------------
 
-    m_pWdgtMthList = new CWdgtTrcMthList(
-        /* pTrcClient                  */ CApplication::GetInstance()->getTrcClient(),
-        /* strThreadClrFileAbsFilePath */ CApplication::GetInstance()->getThreadColorFileAbsFilePath(),
-        /* iItemsCountMax              */ 0,
-        /* pWdgtParent                 */ nullptr );
-    m_pSplitter->addWidget(m_pWdgtMthList);
+    m_pTabWidgetTrcMthLists = new QTabWidget();
+    m_pSplitter->addWidget(m_pTabWidgetTrcMthLists);
+
+    CIpcTrcClient* pTrcClient = CApplication::GetInstance()->getTrcClient();
+    QString strCltName = pTrcClient->objectName();
+    m_pWdgtTrcMthList = new CWdgtTrcMthList(pTrcClient);
+    m_pTabWidgetTrcMthLists->addTab(m_pWdgtTrcMthList, strCltName);
+
+    if( !QObject::connect(
+        /* pObjSender   */ m_pWdgtTrcMthList,
+        /* szSignal     */ SIGNAL(progressBarConnectDblClicked()),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onProgressBarConnectDblClicked()) ) )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+    }
 
     // Restore geometry of widget
     //---------------------------
@@ -194,11 +191,31 @@ CWidgetCentral::~CWidgetCentral()
     m_pLyt = nullptr;
     m_pSplitter = nullptr;
     m_pWdgtTest = nullptr;
-    m_pGrpTestOutput = nullptr;
-    m_pLytGrpTestOutput = nullptr;
-    m_pWdgtTestOutput = nullptr;
-    m_pWdgtMthList = nullptr;
+    m_pTabWidgetTrcMthLists = nullptr;
+    m_pWdgtTrcMthList = nullptr;
 
     s_pThis = nullptr;
 
 } // dtor
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CWdgtTrcMthList* CWidgetCentral::getTrcMthListWdgt()
+//------------------------------------------------------------------------------
+{
+    return m_pWdgtTrcMthList;
+}
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWidgetCentral::onProgressBarConnectDblClicked()
+//------------------------------------------------------------------------------
+{
+    emit progressBarConnectDblClicked();
+}

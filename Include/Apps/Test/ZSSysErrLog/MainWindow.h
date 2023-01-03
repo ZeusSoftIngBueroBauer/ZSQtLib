@@ -98,7 +98,6 @@ private: // instance members
     QHash<QString, QAction*> m_hshpActDebugErrLogs;
     QMenu*                   m_pMnuInfo;
     QAction*                 m_pActInfoVersion;
-    QAction*                 m_pActInfoSettingsFile;
     QStatusBar*              m_pStatusBar;
     QHash<QString, QLabel*>  m_hshpLblsErrors;
     CWidgetCentral*          m_pWdgtCentral;

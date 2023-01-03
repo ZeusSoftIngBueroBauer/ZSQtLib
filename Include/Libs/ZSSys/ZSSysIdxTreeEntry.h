@@ -50,9 +50,9 @@ enum class EIdxTreeEntryType
     Count,
     Undefined
 };
-ZSSYSDLL_API QString idxTreeEntryType2Str( EIdxTreeEntryType i_eVal, int i_alias = ZS::System::EEnumEntryAliasStrName );
-ZSSYSDLL_API QString idxTreeEntryType2Str( int i_iVal, int i_alias = ZS::System::EEnumEntryAliasStrName );
-ZSSYSDLL_API EIdxTreeEntryType str2IdxTreeEntryType( const QString& i_str, int i_alias = ZS::System::EEnumEntryAliasStrName );
+ZSSYSDLL_API QString idxTreeEntryType2Str( EIdxTreeEntryType i_eVal, int i_alias = EEnumEntryAliasStrName );
+ZSSYSDLL_API QString idxTreeEntryType2Str( int i_iVal, int i_alias = EEnumEntryAliasStrName );
+ZSSYSDLL_API EIdxTreeEntryType str2IdxTreeEntryType( const QString& i_str, int i_alias = EEnumEntryAliasStrName );
 
 
 //******************************************************************************
@@ -102,28 +102,31 @@ public: // overridable instance methods
 public: // instance methods
     /*! Returns the entry type of the index tree entry. */
     EIdxTreeEntryType entryType() const { return m_entryType; }
+    /*! Returns true if entry is the root entry, false otherwise. */
     bool isRoot() const { return (m_entryType == EIdxTreeEntryType::Root); }
+    /*! Returns true if entry is a branch entry, false otherwise. */
     bool isBranch() const { return (m_entryType == EIdxTreeEntryType::Branch); }
+    /*! Returns true if entry is a leave entry, false otherwise. */
     bool isLeave() const { return (m_entryType == EIdxTreeEntryType::Leave); }
     QString entryTypeSymbol() const;
     /*! Returns the entry type's string representation. */
-    QString entryType2Str( int i_alias = ZS::System::EEnumEntryAliasStrName ) const;
+    QString entryType2Str( int i_alias = EEnumEntryAliasStrName ) const;
     /*! Returns the name of the index tree entry (e.g. "Volt". */
     QString name() const { return m_strName; }
     QString path() const;
 public: // instance methods
     /*! Returns the index tree of the entry. */
     CIdxTree* tree() const { return m_pTree; }
+    /*! Returns the unique key of the entry within the index tree (e.g. "L:ZS::Data::CDataTable::Customers". */
     QString keyInTree() const;
     /*! Returns the index of the entry within the index trees vector of entries. */
     int indexInTree() const { return m_idxInTree; }
-    /*! Returns the unique key of the entry within the index tree (e.g. "L:ZS::Data::CDataTable::Customers". */
-    QString objectName() const { return keyInTree(); }
 public: // instance methods
     /*! Returns the parent branch of the entry. */
     CIdxTreeEntry* parentBranch() const { return m_pParentBranch; }
     QString parentBranchName() const;
     QString parentBranchPath() const; // excluding root and excluding name (e.g. "ZS::Data::CDataTable")
+    QString parentBranchKeyInTree() const;
     /*! Returns the unique key of the entry within the parent branch (e.g. "L:Customers"). */
     QString keyInParentBranch() const { return m_strKeyInParentBranch; }
     /*! Returns the index of the entry within it's parent branches vector of child entries. */

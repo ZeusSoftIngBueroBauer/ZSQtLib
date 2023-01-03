@@ -48,12 +48,12 @@ may result in using the software modules.
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysException.h"
+#include "ZSSys/ZSSysMutex.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 
 using namespace ZS::System;
-using namespace ZS::Trace;
 using namespace ZS::Test;
 
 
@@ -69,25 +69,20 @@ public: // ctors and dtor
 CTestStepIdxTree::CTestStepIdxTree( CTest* i_pTest ) :
 //------------------------------------------------------------------------------
     CIdxTree(
-        /* strIdxTreeName   */ i_pTest->objectName() + "-TestSteps",
+        /* strIdxTreeName   */ "TestSteps-" + i_pTest->objectName(),
         /* pRootTreeEntry   */ new CTestStepRoot(i_pTest, i_pTest->objectName()),
         /* strNodeSeparator */ "\\",
         /* bCreateMutex     */ true,
         /* pObjParent       */ nullptr),
-    m_pTest(i_pTest),
-    m_pTrcAdminObj(nullptr)
+    m_pTest(i_pTest)
 {
-    setObjectName(i_pTest->objectName() + "-TestSteps");
-
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Test", "CTestStepIdxTree", objectName());
-
-    QString strAddTrcInfo;
+    setObjectName("TestSteps-" + i_pTest->objectName());
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ctor",
-        /* strMthArgs   */ strAddTrcInfo);
+        /* strMthArgs   */ "");
 
 } // ctor
 
@@ -95,20 +90,13 @@ CTestStepIdxTree::CTestStepIdxTree( CTest* i_pTest ) :
 CTestStepIdxTree::~CTestStepIdxTree()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "dtor",
-        /* strMthArgs   */ strAddTrcInfo);
-
-    mthTracer.onAdminObjAboutToBeReleased();
-
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
+        /* strMthArgs   */ "");
 
     m_pTest = nullptr;
-    m_pTrcAdminObj = nullptr;
 
 } // dtor
 
@@ -246,14 +234,14 @@ SErrResultInfo CTestStepIdxTree::save( const QString& i_strAbsFilePath ) const
 
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "AbsFilePath: " + i_strAbsFilePath;
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "save",
         /* strMthInArgs */ strMthInArgs );
 
@@ -311,7 +299,7 @@ SErrResultInfo CTestStepIdxTree::save( const QString& i_strAbsFilePath ) const
         }
     } // if( !errResultInfo.isErrorResult() )
 
-    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         mthTracer.setMethodReturn(errResultInfo);
     }
@@ -339,14 +327,14 @@ SErrResultInfo CTestStepIdxTree::recall( const QString& i_strAbsFilePath )
 
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "AbsFilePath: " + i_strAbsFilePath;
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod       */ "recall",
         /* strMthInArgs    */ strMthInArgs );
 
@@ -600,7 +588,7 @@ SErrResultInfo CTestStepIdxTree::recall( const QString& i_strAbsFilePath )
         }
     } // if( !errResultInfo.isErrorResult() )
 
-    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         mthTracer.setMethodReturn(errResultInfo);
     }

@@ -53,32 +53,6 @@ using namespace ZS::System::GUI;
 
 
 /*******************************************************************************
-Libraries depending on build configuration and used Qt version
-*******************************************************************************/
-
-#ifdef _WINDOWS
-
-#ifdef USE_PRAGMA_COMMENT_LIB_INCLUDE_IN_MAIN_MODULES
-
-#pragma message(__FILE__ ": Linking against = " QTCORELIB)
-#pragma comment(lib, QTCORELIB)
-#pragma message(__FILE__ ": Linking against = " QTXMLLIB)
-#pragma comment(lib, QTXMLLIB)
-#pragma message(__FILE__ ": Linking against = " QTGUILIB)
-#pragma comment( lib, QTGUILIB )
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-#pragma message(__FILE__ ": Linking against = " QTWIDGETSLIB)
-#pragma comment( lib, QTWIDGETSLIB )
-#endif
-#pragma message(__FILE__ ": Linking against = " ZSSYSLIB)
-#pragma comment(lib, ZSSYSLIB)
-
-#endif // #ifdef USE_PRAGMA_COMMENT_LIB_INCLUDE_IN_MAIN_MODULES
-
-#endif // #ifdef _WINDOWS
-
-
-/*******************************************************************************
 Entry point for the DLL application.
 *******************************************************************************/
 
@@ -212,6 +186,14 @@ QPixmap* s_arpErrIconPixmaps[EResultSeverityCount];
 static void createErrIconPixmaps();
 
 //------------------------------------------------------------------------------
+QString ZS::System::GUI::getErrImageUrl( EResultSeverity i_severity )
+//------------------------------------------------------------------------------
+{
+    QString strSeverity = ZS::System::resultSeverity2Str(i_severity);
+    return ":/ZS/Result/ResultSeverity" + strSeverity + ".png";
+}
+
+//------------------------------------------------------------------------------
 QPixmap ZS::System::GUI::getErrPixmap( EResultSeverity i_severity, const QSize& i_sz )
 //------------------------------------------------------------------------------
 {
@@ -225,13 +207,9 @@ QPixmap ZS::System::GUI::getErrPixmap( EResultSeverity i_severity, const QSize& 
     {
         pxm = *s_arpErrIconPixmaps[i_severity];
     }
-
     pxm = pxm.scaled(i_sz.width(), i_sz.height(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    pxm.setMask(pxm.createHeuristicMask());
-
     return pxm;
-
-} // getErrPixmap
+}
 
 //------------------------------------------------------------------------------
 QIcon ZS::System::GUI::getErrIcon( EResultSeverity i_severity )
@@ -258,8 +236,7 @@ QIcon ZS::System::GUI::getErrIcon( EResultSeverity i_severity )
         }
     }
     return icon;
-
-} // getErrIcon
+}
 
 //------------------------------------------------------------------------------
 static void createErrIconPixmaps()
@@ -272,33 +249,22 @@ static void createErrIconPixmaps()
         {
             memset( s_arpErrIconPixmaps, 0x00, sizeof(s_arpErrIconPixmaps) );
 
-            int      iSeverity;
-            QString  strSeverity;
-            QString  strFileName;
-            QPixmap* pPixmap;
-
-            for( iSeverity = 0; iSeverity < EResultSeverityCount; iSeverity++ )
+            for( int iSeverity = 0; iSeverity < EResultSeverityCount; iSeverity++ )
             {
-                strSeverity = ZS::System::resultSeverity2Str(static_cast<EResultSeverity>(iSeverity));
-
-                strFileName = ":/ZS/Result/ResultSeverity" + strSeverity;
+                QString strFileName = getErrImageUrl(static_cast<EResultSeverity>(iSeverity));
 
                 #ifdef _WINDOWS
-                #pragma push_macro("_SMSYSDBGNEW_CLIENT_BLOCK_SUBTYPE")
+                #pragma push_macro("_ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE")
                 #pragma warning( disable : 4005 )
-                #define _SMSYSDBGNEW_CLIENT_BLOCK_SUBTYPE 0
+                #define _ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE 0
                 #endif
 
-                pPixmap = new QPixmap(strFileName+".bmp");
+                QPixmap* pPixmap = new QPixmap(strFileName);
 
                 #ifdef _WINDOWS
                 #pragma warning( default : 4005 )
-                #pragma pop_macro("_SMSYSDBGNEW_CLIENT_BLOCK_SUBTYPE")
+                #pragma pop_macro("_ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE")
                 #endif
-
-                //QSize sizePxm = pPixmap->size();
-
-                pPixmap->setMask(pPixmap->createHeuristicMask());
 
                 s_arpErrIconPixmaps[iSeverity] = pPixmap;
             }
@@ -353,4 +319,24 @@ QPixmap ZS::System::GUI::mode2Pixmap( int i_iMode, int i_iSize )
 
 } // mode2Pixmap
 
+
+extern int qInitResources_ZSSysGUI();
+
+//------------------------------------------------------------------------------
+int ZS::System::GUI::qInitResources()
+//------------------------------------------------------------------------------
+{
+    ::qInitResources_ZSSysGUI();
+    return 1;
+}
+
+extern int qInitResources_ZSSysGUIQml();
+
+//------------------------------------------------------------------------------
+int ZS::System::GUI::qInitResourcesQml()
+//------------------------------------------------------------------------------
+{
+    ::qInitResources_ZSSysGUIQml();
+    return 1;
+}
 

@@ -36,7 +36,7 @@ namespace ZS
 namespace System
 {
 //******************************************************************************
-class ZSSYSDLL_API CEnumerationIdxTree : public ZS::System::CIdxTree
+class ZSSYSDLL_API CEnumerationIdxTree : public CIdxTree
 //******************************************************************************
 {
 public: // class methods
@@ -46,22 +46,19 @@ public: // class methods
     static CEnumerationIdxTree* GetInstance( const QString& i_strName = "ZS::System::EnumerationIdxTree" );
     static CEnumerationIdxTree* CreateInstance(
         const QString& i_strName = "ZS::System::EnumerationIdxTree",
-        CIdxTreeEntry* i_pRootTreeEntry = nullptr,      // if null a root entry is implicitely created
+        CIdxTreeEntry* i_pRootTreeEntry = nullptr,
         const QString& i_strNodeSeparator = "::",
-        bool           i_bCreateMutex = true,           // if true each access to member variables will be protected by a mutex
-        QObject*       i_pObjParent = nullptr,
-        int            i_iTrcDetailLevel = ZS::Trace::ETraceDetailLevelNone );
+        bool           i_bCreateMutex = true,
+        QObject*       i_pObjParent = nullptr );
     static void DestroyInstance( const QString& i_strName = "ZS::System::EnumerationIdxTree" );
     static void DestroyInstance( CEnumerationIdxTree* i_pIdxTree );
-    static void DestroyAllInstances();
 protected: // ctors and dtor
     CEnumerationIdxTree(
         const QString& i_strName,
         CIdxTreeEntry* i_pRootTreeEntry,
         const QString& i_strNodeSeparator,
         bool           i_bCreateMutex,
-        QObject*       i_pObjParent,
-        int            i_iTrcDetailLevel );
+        QObject*       i_pObjParent );
     virtual ~CEnumerationIdxTree();
 public: // instance methods
     virtual QString nameSpace() const { return NameSpace(); }

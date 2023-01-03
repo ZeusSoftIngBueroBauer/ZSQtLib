@@ -61,16 +61,13 @@ namespace ZS
 {
 namespace System
 {
+class CTrcAdminObj;
+
 namespace GUI
 {
 class CProgressBar;
 }
 }
-namespace Trace
-{
-class CTrcAdminObj;
-}
-
 namespace Ipc
 {
 class CServer;
@@ -99,12 +96,11 @@ signals:
 public: // instance methods
     void setServer( CServer* i_pServer );
 public: // instance methods
-    void setServerObjectNameVisible( bool i_bVisible );
-    bool isServerObjectNameVisible() const { return m_bServerObjNameVisible; }
-public: // instance methods
     void setProtocolTypeImage( const QPixmap& i_pxm );
     void setProtocolTypeImageVisible( bool i_bVisible );
     bool isProtocolTypeImageVisible() const{ return m_bProtocolTypeImageVisible; }
+public: // instance methods
+    void applySettings();
 protected: // instance methods
     void readSettings();
     void saveSettings();
@@ -141,11 +137,8 @@ protected: // instance methods
     void fillCnctControls( const SServerHostSettings& i_cnctSettings );
     void fillDetailControls();
     void resetDetailControls();
-protected: // instance methods
-    void applySettings();
 protected:
     CServer*                        m_pServer;
-    bool                            m_bServerObjNameVisible;
     bool                            m_bProtocolTypeImageVisible;
     int                             m_iLblWidth;
     QVBoxLayout*                    m_pLyt;
@@ -159,7 +152,6 @@ protected:
     // Connection Settings
     SServerHostSettings             m_hostSettingsServer;
     SServerHostSettings             m_hostSettingsWidget;
-    QHBoxLayout*                    m_pLytLineDefault;
     QFormLayout*                    m_pLytCnct;
     QLabel*                         m_pLblSocketType;
     QComboBox*                      m_pCmbSocketType;
@@ -213,7 +205,7 @@ protected:
     QLabel*                         m_pLblMsgLog;
     STrcMsgLogSettings              m_trcMsgLogSettings;
     CWdgtTrcMsgLog*                 m_pWdgtTrcMsgLog;
-    Trace::CTrcAdminObj*            m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj*       m_pTrcAdminObj;
 
 }; // class CWdgtIpcServer
 

@@ -39,13 +39,10 @@ may result in using the software modules.
 
 namespace ZS
 {
-namespace Trace
-{
-class CTrcAdminObj;
-}
-
 namespace System
 {
+class CTrcAdminObj;
+
 namespace GUI
 {
 //******************************************************************************
@@ -57,10 +54,10 @@ public: // class methods
     static QString ClassName() { return "CDialog"; }
 public: // class methods (CreateInstance must be implemented by the derived class)
     //static CDialog* CreateInstance(
+    //    const QString&  i_strDlgTitle,
     //    const QString&  i_strNameSpace,
     //    const QString&  i_strClassName,
     //    const QString&  i_strObjName,
-    //    const QString&  i_strDlgTitle,
     //    QWidget*        i_pWdgtParent = nullptr,
     //    Qt::WindowFlags i_wFlags = Qt::WindowFlags() );
 public: // class methods
@@ -71,10 +68,10 @@ public: // class methods
     static void HideAllInstances();
 protected: // ctors
     CDialog(
+        const QString&  i_strDlgTitle,
         const QString&  i_strNameSpace,
         const QString&  i_strClassName,
         const QString&  i_strObjName,
-        const QString&  i_strDlgTitle,
         QWidget*        i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wFlags = Qt::WindowFlags());
 public: // dtor
@@ -88,11 +85,11 @@ public: // instance methods
 protected: // overridables of base class QWidget
     virtual void closeEvent( QCloseEvent* i_pEv ) override;
 protected: // class members
-    static QHash<QString,CDialog*> s_hshpDlgs; // Key is string concatenated by NameSpace::ClassName::ObjName
+    static QHash<QString, CDialog*> s_hshpDlgs; // Key is string concatenated by NameSpace::ClassName::ObjName
 protected: // instance members
-    QString              m_strNameSpace;
-    QString              m_strClassName;
-    Trace::CTrcAdminObj* m_pTrcAdminObj;
+    QString m_strNameSpace;
+    QString m_strClassName;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CDialog
 

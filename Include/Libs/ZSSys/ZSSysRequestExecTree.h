@@ -70,9 +70,9 @@ public: // instance methods
     virtual QString nameSpace() const { return NameSpace(); }
     virtual QString className() const { return ClassName(); }
 public: // instance methods
-    void addRequest( ZS::System::CRequest* i_pReq );
-    void addRequest( const ZS::System::SRequestDscr& i_reqDscr );
-    void updateRequest( const ZS::System::SRequestDscr& i_reqDscr );
+    void addRequest( CRequest* i_pReq );
+    void addRequest( const SRequestDscr& i_reqDscr );
+    void updateRequest( const SRequestDscr& i_reqDscr );
     void removeRequest( qint64 i_iId );
 public: // instance methods
     void clear();

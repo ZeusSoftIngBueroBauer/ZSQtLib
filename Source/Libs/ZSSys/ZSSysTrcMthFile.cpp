@@ -42,7 +42,6 @@ may result in using the software modules.
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 using namespace ZS::System;
-using namespace ZS::Trace;
 
 
 /*******************************************************************************
@@ -90,7 +89,7 @@ CTrcMthFile* CTrcMthFile::Alloc( const QString& i_strAbsFilePath )
     // If the file name is already used ..
     if( pTrcMthFile != nullptr )
     {
-        pTrcMthFile->incrementRefCount();;
+        pTrcMthFile->incrementRefCount();
     }
     // If the file name is not yet used ..
     else
@@ -211,6 +210,7 @@ CTrcMthFile* CTrcMthFile::FindFile( const QString& i_strAbsFilePath )
 int CTrcMthFile::GetFilesCount()
 //------------------------------------------------------------------------------
 {
+    QMutexLocker mtxLocker(&s_mtx);
     return s_mapTrcMthFiles.size();
 }
 
@@ -232,6 +232,8 @@ CTrcMthFile::CTrcMthFile( const QString& i_strAbsFilePath ) :
     m_iRefCount(0),
     m_hashThreadCallDepths()
 {
+    QMutexLocker mtxLocker(&s_mtx);
+
     m_pLogFile = CLogFile::Alloc(i_strAbsFilePath);
 
 } // ctor
@@ -244,6 +246,8 @@ CTrcMthFile::CTrcMthFile( const QString& i_strAbsFilePath ) :
 CTrcMthFile::~CTrcMthFile()
 //------------------------------------------------------------------------------
 {
+    QMutexLocker mtxLocker(&s_mtx);
+
     CLogFile::Free(m_pLogFile);
 
     m_bEnabled = false;
@@ -265,9 +269,27 @@ public: // instance methods
 void CTrcMthFile::close()
 //------------------------------------------------------------------------------
 {
+    QMutexLocker mtxLocker(&s_mtx);
+
     if( m_pLogFile != nullptr )
     {
         m_pLogFile->close();
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! Clears the log file.
+
+    All log files will be removed. The log files will not be moved to the backup directory.
+*/
+void CTrcMthFile::clear()
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&s_mtx);
+
+    if( m_pLogFile != nullptr )
+    {
+        m_pLogFile->clear();
     }
 }
 
@@ -283,7 +305,18 @@ public: // instance methods
 void CTrcMthFile::setEnabled( bool i_bEnabled )
 //------------------------------------------------------------------------------
 {
+    QMutexLocker mtxLocker(&s_mtx);
+
     m_bEnabled = i_bEnabled;
+
+    if( !m_bEnabled )
+    {
+        // Close (flush buffer) of trace file so it can be read by editors.
+        if( m_pLogFile != nullptr )
+        {
+            m_pLogFile->close();
+        }
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -294,12 +327,46 @@ void CTrcMthFile::setEnabled( bool i_bEnabled )
 bool CTrcMthFile::isEnabled() const
 //------------------------------------------------------------------------------
 {
+    QMutexLocker mtxLocker(&s_mtx);
     return m_bEnabled;
 }
 
 /*==============================================================================
 public: // instance methods
 ==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! Sets the absolute file path.
+
+    The absolute file path includes the path, the file name and the suffix.
+    The absoulte file path is parsed and the absolute path, the complete base
+    name and file suffix is extracted. If a log file with the same file path
+    is already existing all sub log files will be moved to the log backup directory.
+
+    @param i_strAbsFilePath [in] Absolute path including the file name and suffix.
+*/
+void CTrcMthFile::setAbsoluteFilePath(const QString& i_strAbsFilePath)
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&s_mtx);
+
+    if( m_pLogFile != nullptr && !i_strAbsFilePath.isEmpty() )
+    {
+        QString strAbsFilePath = m_pLogFile->absoluteFilePath();
+
+        if( s_mapTrcMthFiles.contains(strAbsFilePath) )
+        {
+            s_mapTrcMthFiles.remove(strAbsFilePath);
+        }
+
+        m_pLogFile->setAbsoluteFilePath(i_strAbsFilePath);
+
+        if( !i_strAbsFilePath.isEmpty() )
+        {
+            s_mapTrcMthFiles[i_strAbsFilePath] = this;
+        }
+    }
+}
 
 //------------------------------------------------------------------------------
 /*! Returns the absolute path of the log file including the file name and suffix.
@@ -315,6 +382,8 @@ public: // instance methods
 QString CTrcMthFile::absoluteFilePath() const
 //------------------------------------------------------------------------------
 {
+    QMutexLocker mtxLocker(&s_mtx);
+
     if( m_pLogFile != nullptr )
     {
         return m_pLogFile->absoluteFilePath();
@@ -339,6 +408,8 @@ QString CTrcMthFile::absoluteFilePath() const
 QString CTrcMthFile::completeBaseName() const
 //------------------------------------------------------------------------------
 {
+    QMutexLocker mtxLocker(&s_mtx);
+
     if( m_pLogFile != nullptr )
     {
         return m_pLogFile->completeBaseName();
@@ -362,6 +433,8 @@ QString CTrcMthFile::completeBaseName() const
 QString CTrcMthFile::absolutePath() const
 //------------------------------------------------------------------------------
 {
+    QMutexLocker mtxLocker(&s_mtx);
+
     if( m_pLogFile != nullptr )
     {
         return m_pLogFile->absolutePath();
@@ -385,6 +458,8 @@ public: // instance methods
 void CTrcMthFile::setAutoSaveInterval( int i_iInterval_ms )
 //------------------------------------------------------------------------------
 {
+    QMutexLocker mtxLocker(&s_mtx);
+
     if( m_pLogFile != nullptr )
     {
         m_pLogFile->setAutoSaveInterval(i_iInterval_ms);
@@ -399,6 +474,8 @@ void CTrcMthFile::setAutoSaveInterval( int i_iInterval_ms )
 int CTrcMthFile::getAutoSaveInterval() const
 //------------------------------------------------------------------------------
 {
+    QMutexLocker mtxLocker(&s_mtx);
+
     int iInterval = 0;
 
     if( m_pLogFile != nullptr )
@@ -422,6 +499,8 @@ int CTrcMthFile::getAutoSaveInterval() const
 void CTrcMthFile::setCloseFileAfterEachWrite( bool i_bCloseFile )
 //------------------------------------------------------------------------------
 {
+    QMutexLocker mtxLocker(&s_mtx);
+
     if( m_pLogFile != nullptr )
     {
         m_pLogFile->setCloseFileAfterEachWrite(i_bCloseFile);
@@ -438,6 +517,8 @@ void CTrcMthFile::setCloseFileAfterEachWrite( bool i_bCloseFile )
 bool CTrcMthFile::getCloseFileAfterEachWrite() const
 //------------------------------------------------------------------------------
 {
+    QMutexLocker mtxLocker(&s_mtx);
+
     bool bClose = false;
 
     if( m_pLogFile != nullptr )
@@ -476,6 +557,8 @@ public: // instance methods
 void CTrcMthFile::setSubFileCountMax( int i_iCountMax )
 //------------------------------------------------------------------------------
 {
+    QMutexLocker mtxLocker(&s_mtx);
+
     if( m_pLogFile != nullptr )
     {
         m_pLogFile->setSubFileCountMax(i_iCountMax);
@@ -490,6 +573,8 @@ void CTrcMthFile::setSubFileCountMax( int i_iCountMax )
 int CTrcMthFile::getSubFileCountMax() const
 //------------------------------------------------------------------------------
 {
+    QMutexLocker mtxLocker(&s_mtx);
+
     int iFileCount = 0;
 
     if( m_pLogFile != nullptr )
@@ -521,6 +606,8 @@ int CTrcMthFile::getSubFileCountMax() const
 void CTrcMthFile::setSubFileLineCountMax( int i_iCountMax )
 //------------------------------------------------------------------------------
 {
+    QMutexLocker mtxLocker(&s_mtx);
+
     if( m_pLogFile != nullptr )
     {
         m_pLogFile->setSubFileLineCountMax(i_iCountMax);
@@ -535,6 +622,8 @@ void CTrcMthFile::setSubFileLineCountMax( int i_iCountMax )
 int CTrcMthFile::getSubFileLineCountMax() const
 //------------------------------------------------------------------------------
 {
+    QMutexLocker mtxLocker(&s_mtx);
+
     int iLineCount = 0;
 
     if( m_pLogFile != nullptr )
@@ -794,17 +883,22 @@ void CTrcMthFile::addEntry(
 
     if( i_mthDir == EMethodDir::Enter )
     {
-        //        '<MthThreadName> '     + 'yyyy-mm-dd hh:mm:ss:zzz' + ' (12345.123456): '     + '-> '            + '()' + 'bla bla bla'
-        iStrLen = (c_iStrLenThreadMax+3) + 23                        + (c_iStrLenSysTimeMax+5) + 3*(iCallDepth+1) + 2 + i_strMethod.length() + i_strAddInfo.length();
+        //        '<MthThreadName> '     + 'yyyy-mm-dd hh:mm:ss:zzz' + ' (12345.123456): '     + '-> '                + 'method(' + 'bla bla bla' + ')'
+        iStrLen = (c_iStrLenThreadMax+3) + 23                        + (c_iStrLenSysTimeMax+5) + 3 + 3*(iCallDepth+1) + i_strMethod.length() + i_strAddInfo.length() + 2;
+    }
+    else if( i_mthDir == EMethodDir::Leave )
+    {
+        //        '<MthThreadName> '     + 'yyyy-mm-dd hh:mm:ss:zzz' + ' (12345.123456): '     + '<- '              + 'method(' + 'bla bla bla' + '): ' + 'bla'
+        iStrLen = (c_iStrLenThreadMax+3) + 23                        + (c_iStrLenSysTimeMax+5) + 3 + 3*(iCallDepth) + i_strMethod.length() + i_strMethodOutArgs.length() + 4 + i_strAddInfo.length();
     }
     else
     {
-        //        '<MthThreadName> '     + 'yyyy-mm-dd hh:mm:ss:zzz' + ' (12345.123456): '     + '<- '          + '()' + 'bla bla bla'
-        iStrLen = (c_iStrLenThreadMax+3) + 23                        + (c_iStrLenSysTimeMax+5) + 3*(iCallDepth) + 2 + i_strMethod.length() + i_strAddInfo.length();
+        //        '<MthThreadName> '     + 'yyyy-mm-dd hh:mm:ss:zzz' + ' (12345.123456): '     + '<- '                + 'method: ' + 'bla bla bla'
+        iStrLen = (c_iStrLenThreadMax+3) + 23                        + (c_iStrLenSysTimeMax+5) + 3 + 3*(iCallDepth+1) + i_strMethod.length() + 2 + i_strAddInfo.length();
     }
     str.reserve(iStrLen);
 
-    //str.fill(0x00);
+    str.fill(0x00);
 
     QString strPrintThreadName;
     strPrintThreadName.resize(c_iStrLenThreadMax+3);
@@ -882,35 +976,47 @@ void CTrcMthFile::addEntry(
 
     str.replace(iPos, i_strMethod.length() ,i_strMethod);
     iPos += i_strMethod.length();
-    str.replace(iPos, 1, "(");
-    iPos += 1;
 
-    if( i_mthDir != EMethodDir::Leave )
+    if( i_mthDir == EMethodDir::Enter )
     {
+        str.replace(iPos, 1, "(");
+        iPos += 1;
         if( i_strAddInfo.length() > 0 )
         {
             str.replace(iPos, i_strAddInfo.length(), i_strAddInfo);
             iPos += i_strAddInfo.length();
         }
+        str.replace(iPos, 1, ")");
+        iPos += 1;
     }
-    else // if( i_mthDir == EMethodDir::Leave )
+    else if( i_mthDir == EMethodDir::Leave )
     {
+        str.replace(iPos, 1, "(");
+        iPos += 1;
         if( i_strMethodOutArgs.length() > 0 )
         {
             str.replace(iPos, i_strMethodOutArgs.length(), i_strMethodOutArgs);
             iPos += i_strMethodOutArgs.length();
         }
+        str.replace(iPos, 1, ")");
+        iPos += 1;
+
+        if( i_strAddInfo.length() > 0 )
+        {
+            str.replace(iPos, 2, ": ");
+            iPos += 2;
+            str.replace(iPos, i_strAddInfo.length(), i_strAddInfo);
+            iPos += i_strAddInfo.length();
+        }
     }
-
-    str.replace(iPos, 1, ")");
-    iPos += 1;
-
-    if( i_mthDir == EMethodDir::Leave )
+    else
     {
         if( i_strAddInfo.length() > 0 )
         {
-            str += ": " + i_strAddInfo;
-            iPos += (2 + i_strAddInfo.length());
+            str.replace(iPos, 2, ": ");
+            iPos += 2;
+            str.replace(iPos, i_strAddInfo.length(), i_strAddInfo);
+            iPos += i_strAddInfo.length();
         }
     }
 
@@ -930,6 +1036,7 @@ protected: // instance methods
 int CTrcMthFile::refCount() const
 //------------------------------------------------------------------------------
 {
+    QMutexLocker mtxLocker(&s_mtx);
     return m_iRefCount;
 }
 
@@ -941,6 +1048,7 @@ int CTrcMthFile::refCount() const
 int CTrcMthFile::incrementRefCount()
 //------------------------------------------------------------------------------
 {
+    QMutexLocker mtxLocker(&s_mtx);
     return ++m_iRefCount;
 }
 
@@ -952,6 +1060,7 @@ int CTrcMthFile::incrementRefCount()
 int CTrcMthFile::decrementRefCount()
 //------------------------------------------------------------------------------
 {
+    QMutexLocker mtxLocker(&s_mtx);
     return --m_iRefCount;
 }
 

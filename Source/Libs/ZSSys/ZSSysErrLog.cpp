@@ -36,6 +36,7 @@ may result in using the software modules.
 #include <QtCore/qtextstream.h>
 #include <QtCore/qthread.h>
 #include <QtCore/qtimer.h>
+#include <QtCore/qwaitcondition.h>
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
@@ -52,6 +53,13 @@ may result in using the software modules.
 #include "ZSSys/ZSSysApp.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysTime.h"
+#include "ZSSys/ZSSysVersion.h"
+
+#include <stdexcept>
+
+#ifdef WIN32
+#include <dbghelp.h>
+#endif
 
 // Don't use mem leak dump for this module as this module is used to report those errors.
 // The text stream, the file and the log entries remain allocated while the memory leaks are dumped.
@@ -61,7 +69,7 @@ using namespace ZS::System;
 
 
 /*******************************************************************************
-struct SErrLogEntry : public QEvent
+struct SErrLogEntry
 *******************************************************************************/
 
 /*==============================================================================
@@ -76,10 +84,9 @@ public: // ctors
 */
 SErrLogEntry::SErrLogEntry() :
 //------------------------------------------------------------------------------
-    m_iRowIdx(-1),
     m_dateTime(QDateTime::currentDateTime()),
     m_fSysTime_us(ZS::System::Time::getProcTimeInMicroSec()),
-    m_errResultInfo(),
+    m_errResultInfo(EResultUndefined, EResultSeverityUndefined),
     m_strProposal(),
     m_iOccurrences()
 {
@@ -92,7 +99,6 @@ SErrLogEntry::SErrLogEntry() :
 */
 SErrLogEntry::SErrLogEntry( const SErrLogEntry& i_other ) :
 //------------------------------------------------------------------------------
-    m_iRowIdx(i_other.m_iRowIdx),
     m_dateTime(i_other.m_dateTime),
     m_fSysTime_us(i_other.m_fSysTime_us),
     m_errResultInfo(i_other.m_errResultInfo),
@@ -121,7 +127,6 @@ SErrLogEntry::SErrLogEntry(
     const QString&        i_strProposal,
     int                   i_iOccurrences ) :
 //------------------------------------------------------------------------------
-    m_iRowIdx(-1),
     m_dateTime(i_dateTime),
     m_fSysTime_us(i_fSysTime_us),
     m_errResultInfo(i_errResultInfo),
@@ -142,7 +147,6 @@ public: // operators
 SErrLogEntry& SErrLogEntry::operator = ( const SErrLogEntry& i_other )
 //------------------------------------------------------------------------------
 {
-    m_iRowIdx       = i_other.m_iRowIdx;
     m_dateTime      = i_other.m_dateTime;
     m_fSysTime_us   = i_other.m_fSysTime_us;
     m_errResultInfo = i_other.m_errResultInfo;
@@ -153,6 +157,21 @@ SErrLogEntry& SErrLogEntry::operator = ( const SErrLogEntry& i_other )
 
 } // operator =
 
+/*==============================================================================
+public: // struct methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QString SErrLogEntry::toString() const
+//------------------------------------------------------------------------------
+{
+    QString str;
+    str = "{" + m_dateTime.toString("yyyy.MM.dd hh:mm:ss");
+    str += " (" + QString::number(m_fSysTime_us, 'f', 6) + " us)";
+    str += ", " + m_errResultInfo.toString();
+    str += ", " + QString::number(m_iOccurrences) + "}";
+    return str;
+}
 
 /*******************************************************************************
 class CErrLog : public QObject
@@ -182,9 +201,12 @@ public: // class methods
     The CErrLog::GetInstance method checks whether an instance with the given
     object name is already existing. If not the method returns nullptr.
 
-    @param i_strName [in] Object name of the error log instance. If this parameter
-                          is ommitted "ZSErrLog" is used as default.
-    @return Pointer to error log instance.
+    @param i_strName [in]
+        Object name of the error log instance.
+        If this parameter is ommitted "ZSErrLog" is used as default.
+
+    @return Pointer to error log instance or nullptr, if no errog log instance
+            with the given name is existing.
 */
 CErrLog* CErrLog::GetInstance( const QString& i_strName )
 //------------------------------------------------------------------------------
@@ -212,17 +234,27 @@ CErrLog* CErrLog::GetInstance( const QString& i_strName )
     - EResultSeverityError    = 100;
     - EResultSeverityCritical = 10;
 
-    @param i_bInstallQtMsgHandler [in] If true a Qt message handler will be installed
-                          and the error log instance will receive all Qt errors and
-                          will add them to the error log.
-    @param i_strAbsFilePath [in] Absolute path including the file name and suffix.
-                          If this parameter is ommitted (empty string) a default file
-                          path will be used following a standard depending on the
-                          underlying operating system.
-                          Under Windows the directory "ProgramData/<CompanyName>/<AppName>"
-                          is used and the file name is set to "<AppName>-ErrLog.xml".
-    @param i_strName [in] Object name of the error log instance. If this parameter
-                          is ommitted "ZSErrLog" is used as default.
+    @param i_bInstallQtMsgHandler [in]
+        If true a Qt message handler will be installed and the error log instance will
+        receive all Qt errors and will add them to the error log.
+    @param i_bInstallTerminateHandler [in]
+        If true the terminate handler of the ErrLog class will be installed which will
+        be called if an unhandled exception is thrown. The terminate handler of the
+        ErrLog class will add an entry to the error log file.
+    @param i_bInstallFaultHandler [in]
+        If true the ExceptionHandler method of the ErrLog class will be set as the
+        the top-level exception filter function that will be called whenever the
+        UnhandledExceptionFilter function gets control, and the process is not being debugged.
+    @param i_strAbsFilePath [in]
+        Absolute path including the file name and suffix.
+        If this parameter is ommitted (empty string) a default file path will be used
+        following a standard depending on the underlying operating system.
+        Under Windows the directory "ProgramData/<CompanyName>/<AppName>"
+        is used and the file name is set to "<AppName>-ErrLog.xml".
+    @param i_strName [in]
+        Object name of the error log instance.
+        If this parameter is ommitted "ZSErrLog" is used as default.
+
     @return Pointer to error log instance.
 
     @note Throws an Exception
@@ -231,6 +263,8 @@ CErrLog* CErrLog::GetInstance( const QString& i_strName )
 */
 CErrLog* CErrLog::CreateInstance(
     bool           i_bInstallQtMsgHandler,
+    bool           i_bInstallTerminateHandler,
+    bool           i_bInstallFaultHandler,
     const QString& i_strAbsFilePath,
     const QString& i_strName )
 //------------------------------------------------------------------------------
@@ -274,7 +308,9 @@ CErrLog* CErrLog::CreateInstance(
 
     } // if( strAbsFilePath.isEmpty() )
 
-    CErrLog* pErrLog = new CErrLog(i_strName, strAbsFilePath, i_bInstallQtMsgHandler);
+    CErrLog* pErrLog = new CErrLog(
+        i_strName, strAbsFilePath,
+        i_bInstallQtMsgHandler, i_bInstallTerminateHandler, i_bInstallFaultHandler);
 
     s_hshpInstances[i_strName] = pErrLog;
 
@@ -292,8 +328,9 @@ CErrLog* CErrLog::CreateInstance(
     When the error log file is deleted the current content will be saved in
     the specified xml file.
 
-    @param i_strName [in] Object name of the error log instance. If this parameter
-                          is ommitted "ZSErrLog" is used as default.
+    @param i_strName [in]
+        Object name of the error log instance.
+        If this parameter is ommitted "ZSErrLog" is used as default.
 
     @note Throws an Exception
           - with Result = ObjNotInList if an error log instance with the given
@@ -328,7 +365,8 @@ void CErrLog::ReleaseInstance( const QString& i_strName )
     When the error log file is deleted the current content will be saved in
     the specified xml file.
 
-    @param i_pErrLog [in] Reference to the error log instance to be deleted.
+    @param i_pErrLog [in]
+        Reference to the error log instance to be deleted.
 
     @note Throws an Exception
           - with Result = ObjNotInList if the error log instance was not found
@@ -352,38 +390,6 @@ void CErrLog::ReleaseInstance( CErrLog* i_pErrLog )
     i_pErrLog = nullptr;
 
 } // ReleaseInstance
-
-//------------------------------------------------------------------------------
-/*! Destroys all error log instances.
-
-    This method is only provided for convenience but should never been used.
-    Usually the one who created an error log instance with CErrLog::GetInstance
-    should also delete the error log instance if no longer needed.
-*/
-void CErrLog::DestroyAllInstances()
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&s_mtx);
-
-    CErrLog* pErrLog;
-    QString  strName;
-
-    QHash<QString, CErrLog*>::iterator itErrLog;
-
-    for( itErrLog = s_hshpInstances.begin(); itErrLog != s_hshpInstances.end(); itErrLog++ )
-    {
-        strName = itErrLog.key();
-        pErrLog = itErrLog.value();
-
-        s_hshpInstances[strName] = nullptr;
-
-        delete pErrLog;
-        pErrLog = nullptr;
-    }
-
-    s_hshpInstances.clear();
-
-} // DestroyAllInstances
 
 /*==============================================================================
 private: // class methods
@@ -452,15 +458,17 @@ void CErrLog::RemoveQtMsgHandler()
     Warnings, critical and fatal error messages received from the Qt library
     will be saved in the error log instance.
 
-    @param i_msgType [in] This enum describes the messages that can be sent to this
-                        message handler (QtMessageHandler) identifying and associating
-                        the various message types with the appropriate actions.
-    @param i_context [in] The QMessageLogContext class provides additional information
-                        about a log message. The error log instance does not use it
-                        but just forwards the context to the previously installed
-                        message handler.
-    @param i_strMsg [in] The content of this string will used as the additional error
-                        info for the error result info added to the error log instance.
+    @param i_msgType [in]
+        This enum describes the messages that can be sent to this
+        message handler (QtMessageHandler) identifying and associating
+        the various message types with the appropriate actions.
+    @param i_context [in]
+        The QMessageLogContext class provides additional information
+        about a log message. The error log instance does not use it but
+        just forwards the context to the previously installed message handler.
+    @param i_strMsg [in]
+        The content of this string will used as the additional error
+        info for the error result info added to the error log instance.
 
     @note See qInstallMessageHander for further details.
 */
@@ -483,16 +491,35 @@ void CErrLog::QtMsgHandler( QtMsgType i_msgType, const QMessageLogContext& i_con
             }
             case QtWarningMsg:
             {
-                QString strAddInfo = i_strMsg;
-                if( strAddInfo.contains("QFileSystemWatcher",Qt::CaseInsensitive) )
+                QString strDummy;
+                if( i_strMsg.contains("QFileSystemWatcher",Qt::CaseInsensitive) )
                 {
-                    strAddInfo = "Set breakpoint here if desired";
-                    strAddInfo = i_strMsg;
+                    strDummy = "Set breakpoint here if desired";
                 }
-                else if( strAddInfo.startsWith("QObject::disconnect",Qt::CaseInsensitive) )
+                else if( i_strMsg.startsWith("QObject::disconnect",Qt::CaseInsensitive) )
                 {
-                    strAddInfo = "Set breakpoint here if desired";
-                    strAddInfo = i_strMsg;
+                    strDummy = "Set breakpoint here if desired";
+                }
+                else if( i_strMsg.startsWith("Found metadata in lib ",Qt::CaseInsensitive) )
+                {
+                    strDummy = "Set breakpoint here if desired";
+                }
+                else if( i_strMsg.startsWith("Retrying to obtain clipboard",Qt::CaseInsensitive) )
+                {
+                    strDummy = "Set breakpoint here if desired";
+                }
+                else if( i_strMsg.contains("qrc:",Qt::CaseInsensitive) && i_strMsg.contains("qml",Qt::CaseInsensitive) )
+                {
+                    if( i_strMsg.contains("binding loop detected",Qt::CaseInsensitive) )
+                    {
+                        strDummy = "Set breakpoint here if desired: ";
+                    }
+                    SErrResultInfo errResultInfo(
+                        /* errSource  */ "Qt", "QML", "", "",
+                        /* result     */ EResultUndefined,
+                        /* severity   */ EResultSeverityWarning,
+                        /* strAddInfo */ i_strMsg );
+                    pModelErrLog->addEntry(errResultInfo);
                 }
                 else
                 {
@@ -543,6 +570,102 @@ void CErrLog::QtMsgHandler( QtMsgType i_msgType, const QMessageLogContext& i_con
 
 } // QtMsgHandler
 
+//------------------------------------------------------------------------------
+/*! @brief Terminate handler adding an entry to the error log file if an
+           unhandling exception is thrown.
+
+    To active this method you need to pass true for the corresponding flag
+    when creating the ErrLog instance.
+*/
+void CErrLog::TerminateHandler()
+//------------------------------------------------------------------------------
+{
+    try
+    {
+        std::exception_ptr pExc = std::current_exception();
+        if (pExc != nullptr)
+        {
+            std::rethrow_exception(pExc);
+        }
+    }
+    catch(const std::exception& e)
+    {
+        CErrLog* pModelErrLog = CErrLog::GetInstance();
+
+        if( pModelErrLog != nullptr )
+        {
+            SErrResultInfo errResultInfo(
+                /* errSource  */ "", "", "", "Caught Unexpected Exception",
+                /* result     */ EResultUndefined,
+                /* severity   */ EResultSeverityCritical,
+                /* strAddInfo */ e.what() );
+            pModelErrLog->addEntry(errResultInfo);
+        }
+    }
+    catch(...)
+    {
+        CErrLog* pModelErrLog = CErrLog::GetInstance();
+
+        if( pModelErrLog != nullptr )
+        {
+            SErrResultInfo errResultInfo(
+                /* errSource  */ "", "", "", "Caught Unknown Exception",
+                /* result     */ EResultUndefined,
+                /* severity   */ EResultSeverityCritical,
+                /* strAddInfo */ "" );
+            pModelErrLog->addEntry(errResultInfo);
+        }
+    }
+}
+
+#ifdef WIN32
+//------------------------------------------------------------------------------
+/*! @brief Top-level exception filter function that will be called whenever
+           the UnhandledExceptionFilter function gets control, and the process
+           is not being debugged.
+
+    To active this method you need to pass true for the corresponding flag
+    when creating the ErrLog instance.
+
+    @param i_pExceptionPointers [in]
+        The filter function has syntax similar to that of UnhandledExceptionFilter:
+        It takes a single parameter of type LPEXCEPTION_POINTERS, has a WINAPI
+        calling convention, and returns a value of type LONG.
+
+    @return EXCEPTION_EXECUTE_HANDLER (0x1)
+        Return from UnhandledExceptionFilter and execute the associated
+        exception handler. This usually results in process termination.
+
+    @Note The filter function could also return one of the following values.
+        EXCEPTION_CONTINUE_EXECUTION (0xffffffff)
+            Return from UnhandledExceptionFilter and continue execution from the
+            point of the exception. Note that the filter function is free to
+            modify the continuation state by modifying the exception information
+            supplied through its LPEXCEPTION_POINTERS parameter.
+        EXCEPTION_CONTINUE_SEARCH (0x0)
+            Proceed with normal execution of UnhandledExceptionFilter. That means
+            obeying the SetErrorMode flags, or invoking the Application Error pop-up message box.
+*/
+long CErrLog::ExceptionHandler(EXCEPTION_POINTERS* i_pExceptionPointers)
+//------------------------------------------------------------------------------
+{
+    System::CErrLog* pModelErrLog = System::CErrLog::GetInstance();
+
+    if( pModelErrLog != nullptr )
+    {
+        QString strDumpFileName = pModelErrLog->generateDump(i_pExceptionPointers);
+
+        System::SErrResultInfo errResultInfo(
+            /* errSource  */ "", "", "", "ExceptionHandler",
+            /* result     */ System::EResultUndefined,
+            /* severity   */ System::EResultSeverityCritical,
+            /* strAddInfo */ "Crash Dump Info available in " + strDumpFileName );
+        pModelErrLog->addEntry(errResultInfo);
+    }
+    return EXCEPTION_EXECUTE_HANDLER;
+}
+#endif
+
 /*==============================================================================
 protected: // ctors and dtor
 ==============================================================================*/
@@ -554,16 +677,28 @@ protected: // ctors and dtor
 
     If existing the ctor reads the current content of the error logs xml file.
 
-    @param i_strName [in] Object name of the error log instance.
-    @param i_strAbsFilePath [in] Absolute path including the file name and suffix.
-    @param i_bInstallQtMsgHandler [in] If true a Qt message handler will be installed
-                          and the error log instance will receive all Qt errors and
-                          will add them to the error log.
+    @param i_strName [in]
+        Object name of the error log instance.
+    @param i_strAbsFilePath [in]
+        Absolute path including the file name and suffix.
+    @param i_bInstallQtMsgHandler [in]
+        If true a Qt message handler will be installed and the error log instance will
+        receive all Qt errors and will add them to the error log.
+    @param i_bInstallTerminateHandler [in]
+        If true the terminate handler of the ErrLog class will be installed which will
+        be called if an unhandled exception is thrown. The terminate handler of the
+        ErrLog class will add an entry to the error log file.
+    @param i_bInstallFaultHandler [in]
+        If true the ExceptionHandler method of the ErrLog class will be set as the
+        the top-level exception filter function that will be called whenever the
+        UnhandledExceptionFilter function gets control, and the process is not being debugged.
 */
 CErrLog::CErrLog(
     const QString& i_strName,
     const QString& i_strAbsFilePath,
-    bool           i_bInstallQtMsgHandler) :
+    bool           i_bInstallQtMsgHandler,
+    bool           i_bInstallTerminateHandler,
+    bool           i_bInstallFaultHandler ) :
 //------------------------------------------------------------------------------
     QObject(),
     m_pMtx(nullptr),
@@ -590,9 +725,19 @@ CErrLog::CErrLog(
         m_bQtMsgHandlerInstalledByCtor = true;
     }
 
-    m_pMtx = new QMutex(QMutex::Recursive);
+    if( i_bInstallTerminateHandler )
+    {
+        std::set_terminate(TerminateHandler);
+    }
 
-    QMutexLocker mtxLockerInst(m_pMtx);
+    if( i_bInstallFaultHandler )
+    {
+        #ifdef WIN32
+        SetUnhandledExceptionFilter((LPTOP_LEVEL_EXCEPTION_FILTER) ExceptionHandler);
+        #endif
+    }
+
+    m_pMtx = new QMutex(QMutex::Recursive);
 
     // Create and/or recall error log file
     //------------------------------------
@@ -696,8 +841,11 @@ public: // instance methods
     If the maximum number is reached the latest entry will be removed and replaced
     with a ListIsFull error and the error source of the error log instance itself.
 
-    @param i_iCount [in] Maximum number of error log entries.
-    @param i_severity [in] Error severity for which the maximum number should be set.
+    @param i_iCount [in]
+        Maximum number of error log entries.
+    @param i_severity [in]
+        Error severity for which the maximum number should be set.
+        Use Undefined (or Count) to set maximum numbers for all severities at once.
 */
 void CErrLog::setEntriesCountMax( int i_iCount, EResultSeverity i_severity )
 //------------------------------------------------------------------------------
@@ -721,7 +869,9 @@ void CErrLog::setEntriesCountMax( int i_iCount, EResultSeverity i_severity )
 //------------------------------------------------------------------------------
 /*! Returns the maximum number of error log entries for the given severity.
 
-    @param i_severity [in] Error severity for which the maximum number should be set.
+    @param i_severity [in]
+        Error severity for which the maximum number should be set.
+        Use Undefined (or Count) to get the sum of all maximum numbers for all severities.
 
     @return Maximum number of error log entries for the given severity.
 */
@@ -770,13 +920,52 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! Locks the error log instance for the current thread.
+
+    The CErrLog class offers methods to loop through the entries. To avoid that
+    error log entries are added, removed or changed while looping through the list
+    of entries and accessing entries which are no longer valid the error log instance
+    may be temporarily locked. But don't forget to unlock the error log instance
+    if no longer needed. Otherwise the appliation may be deadlocked.
+*/
+void CErrLog::lock()
+//------------------------------------------------------------------------------
+{
+    if( m_pMtx != nullptr )
+    {
+        m_pMtx->lock();
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! Unlocks the error log instance for the current thread.
+
+    @see CErrLog::lock
+*/
+void CErrLog::unlock()
+//------------------------------------------------------------------------------
+{
+    if( m_pMtx != nullptr )
+    {
+        m_pMtx->unlock();
+    }
+} // unlock
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
 /*! Adds an entry to the error log.
 
     The error logs date time and system time will be automatically set to
     the current date time and system time.
 
-    @param i_errResultInfo [in] Error to be added to the error log.
-    @param i_strProposal [in] Suggestion on how to remove the error cause.
+    @param i_errResultInfo [in]
+        Error to be added to the error log.
+        Not const as will be marked as "AddedToErrLogModel".
+    @param i_strProposal [in]
+        Suggestion on how to remove the error cause.
 
     @note If the maximum number of error log entries has already been reached when
           invoking this method the entry will not be added. Instead the last error
@@ -792,9 +981,13 @@ void CErrLog::addEntry( SErrResultInfo& i_errResultInfo, const QString& i_strPro
 //------------------------------------------------------------------------------
 /*! Adds an entry to the error log.
 
-    @param i_dateTime [in] Date time when the error occurred.
-    @param i_errResultInfo [in] Error to be added to the error log.
-    @param i_strProposal [in] Suggestion on how to remove the error cause.
+    @param i_dateTime [in]
+        Date time when the error occurred.
+    @param i_errResultInfo [in]
+        Error to be added to the error log.
+        Not const as will be marked as "AddedToErrLogModel".
+    @param i_strProposal [in]
+        Suggestion on how to remove the error cause.
 
     @note If the maximum number of error log entries has already been reached when
           invoking this method the entry will not be added. Instead the last error
@@ -833,59 +1026,22 @@ void CErrLog::addEntry(
 } // addEntry
 
 //------------------------------------------------------------------------------
-/*! Searches the error log entry for the given error result info.
-
-    The search pattern includes the result code, the result severity,
-    the error source and the additional error info.
-
-    @param i_errResultInfo [in] Error result info.
-
-    @return Pointer to error log entry or nullptr, if the corresponding entry
-            could not be found.
-
-    @note If you use this method to loop through the error log entries don't forget
-          to lock the instance before and unlocking it again afterwards.
-*/
-SErrLogEntry* CErrLog::findEntry( const SErrResultInfo& i_errResultInfo )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLockerInst(m_pMtx);
-
-    EResultSeverity severity = i_errResultInfo.getSeverity();
-
-    SErrLogEntry* pEntry = nullptr;
-    SErrLogEntry* pEntryTmp;
-    int           iRowIdx;
-
-    for( iRowIdx = 0; iRowIdx < m_ararpEntries[severity].count(); iRowIdx++ )
-    {
-        pEntryTmp = m_ararpEntries[severity][iRowIdx];
-
-        if( pEntryTmp != nullptr )
-        {
-            if( pEntryTmp->m_errResultInfo == i_errResultInfo )
-            {
-                pEntry = pEntryTmp;
-                break;
-            }
-        }
-    }
-    return pEntry;
-
-} // findEntry
-
-//------------------------------------------------------------------------------
 /*! Searches the error log entry for the given error result info and modifies
     the date time or the proposal on how to fix the error.
 
     The search pattern includes the result code, the result severity,
     the error source and the additional error info.
 
-    @param i_errResultInfo [in] Error result info.
-    @param i_bModifyDateTime [in] Flag to indicate whether the date time should be modified.
-    @param i_dateTime [in] Date time to be set for the error log entry - if the modify flag is set.
-    @param i_bModifyProposal [in] Flag to indicate whether the proposol to fix the error should be modified.
-    @param i_strProposal [in] Proposal to be set for the error log entry - if the modify flag is set.
+    @param i_errResultInfo [in]
+        Error result info.
+    @param i_bModifyDateTime [in]
+        Flag to indicate whether the date time should be modified.
+    @param i_dateTime [in]
+        Date time to be set for the error log entry - if the modify flag is set.
+    @param i_bModifyProposal [in]
+        Flag to indicate whether the proposol to fix the error should be modified.
+    @param i_strProposal [in]
+        Proposal to be set for the error log entry - if the modify flag is set.
 */
 void CErrLog::changeEntry(
     const SErrResultInfo& i_errResultInfo,
@@ -914,37 +1070,11 @@ void CErrLog::changeEntry(
 } // changeEntry
 
 //------------------------------------------------------------------------------
-/*! Searches the error log entry for the given error result and removes it.
-
-    The search pattern includes the result code, the result severity,
-    the error source and the additional error info.
-
-    @param i_errResultInfo [in] Error result info to be removed.
-*/
-void CErrLog::removeEntry( const SErrResultInfo& i_errResultInfo )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLockerInst(m_pMtx);
-
-    SErrLogEntry* pEntry = findEntry(i_errResultInfo);
-
-    if( pEntry != nullptr )
-    {
-        removeEntry_(pEntry->m_iRowIdx, i_errResultInfo.getSeverity());
-    }
-
-} // removeEntry
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
 /*! Removes all error log entries for the given severity.
 
-    @param i_severity [in] Severity for which the error log entries should be removed.
-                           By passing Undefined or Count for the severity all entries
-                           will be removed.
+    @param i_severity [in]
+        Severity for which the error log entries should be removed.
+        By passing Undefined or Count for the severity all entries will be removed.
 */
 void CErrLog::clear( EResultSeverity i_severity )
 //------------------------------------------------------------------------------
@@ -986,130 +1116,28 @@ void CErrLog::clear( EResultSeverity i_severity )
 
 } // clear
 
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
 //------------------------------------------------------------------------------
-/*! Locks the error log instance for the current thread.
+/*! Searches the error log entry for the given error result and removes it.
 
-    The CErrLog class offers methods to loop through the entries. To avoid that
-    error log entries are added, removed or changed while looping through the list
-    of entries and accessing entries which are no longer valid the error log instance
-    may be temporarily locked. But don't forget to unlock the error log instance
-    if no longer needed. Otherwise the appliation may be deadlocked.
+    The search pattern includes the result code, the result severity,
+    the error source and the additional error info.
+
+    @param i_errResultInfo [in] Error result info to be removed.
 */
-void CErrLog::lock()
+void CErrLog::removeEntry( const SErrResultInfo& i_errResultInfo )
 //------------------------------------------------------------------------------
 {
-    if( m_pMtx != nullptr )
+    QMutexLocker mtxLockerInst(m_pMtx);
+
+    int iRowIdx = -1;
+    int iRowIdxSeveritySection = -1;
+    SErrLogEntry* pEntry = findEntry(i_errResultInfo, &iRowIdx, &iRowIdxSeveritySection);
+
+    if( pEntry != nullptr )
     {
-        m_pMtx->lock();
+        removeEntry_(iRowIdxSeveritySection, i_errResultInfo.getSeverity());
     }
-
-} // lock
-
-//------------------------------------------------------------------------------
-/*! Unlocks the error log instance for the current thread.
-
-    @see CErrLog::lock
-*/
-void CErrLog::unlock()
-//------------------------------------------------------------------------------
-{
-    if( m_pMtx != nullptr )
-    {
-        m_pMtx->unlock();
-    }
-} // unlock
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! Returns the number of error log entries for the given severity.
-
-    @param i_severity [in] Severity for which the number of log entries should be returned.
-                           By passing Undefined or Count for the severity the overall
-                           number of entries will be returned.
-
-    @return Number of error log entries for the desired severtiy.
-
-    @note If you use this method to loop through the error log entries don't forget
-          to lock the instance before and unlocking it again afterwards.
-*/
-int CErrLog::getEntryCount( EResultSeverity i_severity )
-//------------------------------------------------------------------------------
-{
-    int iCount = 0;
-
-    int iSeverityMin = i_severity;
-    int iSeverityMax = i_severity;
-
-    if( i_severity == EResultSeverityUndefined || i_severity == EResultSeverityCount )
-    {
-        iSeverityMin = 0;
-        iSeverityMax = EResultSeverityCount-1;
-    }
-
-    int iSeverity;
-
-    for( iSeverity = iSeverityMin; iSeverity <= iSeverityMax; iSeverity++ )
-    {
-        iCount += m_ararpEntries[iSeverity].count();
-    }
-
-    return iCount;
-
-} // getEntryCount
-
-//------------------------------------------------------------------------------
-/*! Returns the entry at the given index for the given severity.
-
-    @param i_iRowIdx [in] Row index of the error log entry. The row indices are
-                          counted for each severity separately.
-    @param i_severity [in] Severity for which the error log entry should be returned.
-                           By passing Undefined or Count the row numbers are counted
-                           for all severities.
-
-    @return Error log entry for the given row index and severity.
-
-    @note If the row index was out of range this method returns nullptr.
-    @note If you use this method to loop through the error log entries don't forget
-          to lock the instance before and unlocking it again afterwards.
-*/
-SErrLogEntry* CErrLog::getEntry( int i_iRowIdx, EResultSeverity i_severity )
-//------------------------------------------------------------------------------
-{
-    SErrLogEntry* pEntry = nullptr;
-
-    if( i_severity == EResultSeverityUndefined || i_severity == EResultSeverityCount )
-    {
-        int iCount = 0;
-
-        // In this case counting rows starts at highest severity (Critical).
-        for( int iSeverity = EResultSeverityCount-1; iSeverity >= 0; iSeverity-- )
-        {
-            if( i_iRowIdx < (iCount + m_ararpEntries[iSeverity].count()) )
-            {
-                pEntry = m_ararpEntries[iSeverity][i_iRowIdx-iCount];
-                break;
-            }
-            iCount += m_ararpEntries[iSeverity].count();
-        }
-    }
-    else // if( i_severity >= 0 && i_severity < EResultSeverityCount )
-    {
-        if( i_iRowIdx >= 0 && i_iRowIdx < m_ararpEntries[i_severity].count() )
-        {
-            pEntry = m_ararpEntries[i_severity][i_iRowIdx];
-        }
-    }
-
-    return pEntry;
-
-} // getEntry
+}
 
 //------------------------------------------------------------------------------
 /*! Removes the entry at the given index for the given severity.
@@ -1127,18 +1155,235 @@ SErrLogEntry* CErrLog::getEntry( int i_iRowIdx, EResultSeverity i_severity )
 void CErrLog::removeEntry( int i_iRowIdx, EResultSeverity i_severity )
 //------------------------------------------------------------------------------
 {
+    QMutexLocker mtxLockerInst(m_pMtx);
+
     removeEntry_(i_iRowIdx, i_severity);
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! Returns the number of error log entries for the given severity.
+
+    @param i_strSeverity [in]
+        Severity for which the number of log entries should be returned.
+        By passing Undefined or Count for the severity the overall number of
+        entries will be returned.
+
+    @return Number of error log entries for the desired severity.
+
+    @note If you use this method to loop through the error log entries don't forget
+          to lock the instance before and unlocking it again afterwards.
+*/
+int CErrLog::getEntryCount( const QString& i_strSeverity ) const
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLockerInst(m_pMtx);
+
+    int iCount = 0;
+
+    int iSeverity = str2ResultSeverity(i_strSeverity);
+
+    int iSeverityMin = iSeverity;
+    int iSeverityMax = iSeverity;
+
+    if( iSeverity == EResultSeverityUndefined || iSeverity == EResultSeverityCount )
+    {
+        iSeverityMin = 0;
+        iSeverityMax = EResultSeverityCount-1;
+    }
+
+    for( iSeverity = iSeverityMin; iSeverity <= iSeverityMax; iSeverity++ )
+    {
+        if( iSeverity >= 0 && iSeverity < m_ararpEntries.size() )
+        {
+            iCount += m_ararpEntries[iSeverity].count();
+        }
+    }
+
+    return iCount;
+}
+
+//------------------------------------------------------------------------------
+/*! Returns the number of error log entries for the given severity.
+
+    @param i_severity [in]
+        Severity for which the number of log entries should be returned.
+        By passing Undefined or Count for the severity the overall number of
+        entries will be returned.
+
+    @return Number of error log entries for the desired severity.
+
+    @note If you use this method to loop through the error log entries don't forget
+          to lock the instance before and unlocking it again afterwards.
+*/
+int CErrLog::getEntryCount( EResultSeverity i_severity ) const
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLockerInst(m_pMtx);
+
+    int iCount = 0;
+
+    int iSeverityMin = i_severity;
+    int iSeverityMax = i_severity;
+
+    if( i_severity == EResultSeverityUndefined || i_severity == EResultSeverityCount )
+    {
+        iSeverityMin = 0;
+        iSeverityMax = EResultSeverityCount-1;
+    }
+
+    int iSeverity;
+
+    for( iSeverity = iSeverityMin; iSeverity <= iSeverityMax; iSeverity++ )
+    {
+        if( iSeverity >= 0 && iSeverity < m_ararpEntries.size() )
+        {
+            iCount += m_ararpEntries[iSeverity].count();
+        }
+    }
+
+    return iCount;
+
+} // getEntryCount
+
+//------------------------------------------------------------------------------
+/*! Searches the error log entry for the given error result info.
+
+    The search pattern includes the result code, the result severity,
+    the error source and the additional error info.
+
+    @param i_errResultInfo [in]
+        Error result info.
+    @param o_piRowIdx [out]
+        Overall index of the entry in the list of error log entries.
+    @param o_piRowIdx [out]
+        Section index of the error result info.
+
+    @return Pointer to error log entry or nullptr, if the corresponding entry
+            could not be found.
+
+    @note If you use this method to loop through the error log entries don't forget
+          to lock the instance before and unlocking it again afterwards.
+*/
+SErrLogEntry* CErrLog::findEntry(
+    const SErrResultInfo& i_errResultInfo,
+    int* o_piRowIdx,
+    int* o_piRowIdxSeveritySection )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLockerInst(m_pMtx);
+
+    EResultSeverity severity = i_errResultInfo.getSeverity();
+
+    int iRowIdx = 0;
+    int iRowIdxSeveritySection = 0;
+
+    SErrLogEntry* pEntry = nullptr;
+    SErrLogEntry* pEntryTmp;
+
+    if( o_piRowIdx != nullptr )
+    {
+        // In this case counting rows starts at highest severity (Critical).
+        for( int iSeverity = EResultSeverityCount-1; iSeverity > static_cast<int>(severity); --iSeverity )
+        {
+            iRowIdx += m_ararpEntries[iSeverity].count();
+        }
+    }
+    for(iRowIdxSeveritySection = 0; iRowIdxSeveritySection < m_ararpEntries[severity].count(); iRowIdxSeveritySection++ )
+    {
+        pEntryTmp = m_ararpEntries[severity][iRowIdxSeveritySection];
+
+        if( pEntryTmp != nullptr )
+        {
+            if( pEntryTmp->m_errResultInfo == i_errResultInfo )
+            {
+                pEntry = pEntryTmp;
+                iRowIdx += iRowIdxSeveritySection;
+                break;
+            }
+        }
+    }
+    if( o_piRowIdx != nullptr )
+    {
+        if( pEntry == nullptr ) {
+            *o_piRowIdx = -1;
+        } else {
+            *o_piRowIdx = iRowIdx;
+        }
+    }
+    if( o_piRowIdxSeveritySection != nullptr )
+    {
+        if( pEntry == nullptr ) {
+            *o_piRowIdxSeveritySection = -1;
+        } else {
+            *o_piRowIdxSeveritySection = iRowIdxSeveritySection;
+        }
+    }
+    return pEntry;
+
+} // findEntry
+
+//------------------------------------------------------------------------------
+/*! Returns the entry at the given index for the given severity.
+
+    @param i_iRowIdx [in]
+        Row index of the error log entry. The row indices are counted for each
+        severity separately.
+    @param i_severity [in]
+        Severity for which the error log entry should be returned.
+        By passing Undefined (or Count) the row number are counted through all
+        severities. In this case counting rows starts at highest severity (Critical).
+
+    @return Error log entry for the given row index and severity.
+
+    @note If the row index was out of range this method returns nullptr.
+    @note If you use this method to loop through the error log entries don't forget
+          to lock the instance before and unlocking it again afterwards.
+*/
+SErrLogEntry* CErrLog::getEntry( int i_iRowIdx, EResultSeverity i_severity ) const
+//------------------------------------------------------------------------------
+{
+    SErrLogEntry* pEntry = nullptr;
+
+    int iSeverityMin = i_severity;
+    int iSeverityMax = i_severity;
+
+    if( i_severity == EResultSeverityUndefined || i_severity == EResultSeverityCount )
+    {
+        iSeverityMin = 0;
+        iSeverityMax = EResultSeverityCount-1;
+    }
+
+    int iRowIdxSeveritySection = 0;
+    int iFirstRowIdxSeveritySection = 0;
+
+    // In this case counting rows starts at highest severity (Critical).
+    for( int iSeverity = iSeverityMax; iSeverity >= iSeverityMin; --iSeverity )
+    {
+        if( i_iRowIdx < (iFirstRowIdxSeveritySection + m_ararpEntries[iSeverity].count()) )
+        {
+            iRowIdxSeveritySection = i_iRowIdx-iFirstRowIdxSeveritySection;
+            pEntry = m_ararpEntries[iSeverity][iRowIdxSeveritySection];
+            break;
+        }
+        iFirstRowIdxSeveritySection += m_ararpEntries[iSeverity].count();
+    }
+    return pEntry;
 }
 
 //------------------------------------------------------------------------------
 /*! Returns the the entry at the given index for the given severity and removes
     the entry from the error log.
 
-    @param i_iRowIdx [in] Row index of the error log entry. The row indices are
-                          counted for each severity separately.
-    @param i_severity [in] Severity for which the error log entry should be returned
-                           and removed. By passing Undefined or Count the row numbers
-                           are counted for all severities.
+    @param i_iRowIdx [in]
+        Row index of the error log entry. The row indices are counted for each
+        severity separately.
+    @param i_severity [in]
+        Severity for which the error log entry should be returned and removed.
+        By passing Undefined or Count the row numbers are counted for all severities.
 
     @note If the row index is out of range this method does nothing.
     @note If you use this method to loop through the error log entries don't forget
@@ -1158,20 +1403,17 @@ SErrLogEntry CErrLog::takeEntry( int i_iRowIdx, EResultSeverity i_severity )
             entry = *pEntry;
 
             removeEntry_(i_iRowIdx, i_severity);
-
-        } // if( pEntry != nullptr )
-    } // if( i_iRowIdx >= 0 && i_iRowIdx < getEntryCount(i_severity) )
-
+        }
+    }
     return entry;
-
-} // takeEntry
+}
 
 //------------------------------------------------------------------------------
 /*! Returns the first entry the given severity and removes the entry from the error log.
 
-    @param i_severity [in] Severity for which the error log entry should be returned
-                           and removed. By passing Undefined or Count the row numbers
-                           are counted for all severities.
+    @param i_severity [in]
+        Severity for which the error log entry should be returned and removed.
+        By passing Undefined or Count the row numbers are counted for all severities.
 
     @note If there is no entry in the error log this method does nothing.
     @note If you use this method to loop through the error log entries don't forget
@@ -1191,20 +1433,17 @@ SErrLogEntry CErrLog::takeFirstEntry( EResultSeverity i_severity )
             entry = *pEntry;
 
             removeEntry_(0, i_severity);
-
-        } // if( pEntry != nullptr )
-    } // if( getEntryCount(i_severity) > 0 )
-
+        }
+    }
     return entry;
-
-} // takeFirstEntry
+}
 
 //------------------------------------------------------------------------------
 /*! Returns the last entry the given severity and removes the entry from the error log.
 
-    @param i_severity [in] Severity for which the error log entry should be returned
-                           and removed. By passing Undefined or Count the row numbers
-                           are counted for all severities.
+    @param i_severity [in]
+        Severity for which the error log entry should be returned and removed.
+        By passing Undefined or Count the row numbers are counted for all severities.
 
     @note If there is no entry in the error log this method does nothing.
     @note If you use this method to loop through the error log entries don't forget
@@ -1226,13 +1465,30 @@ SErrLogEntry CErrLog::takeLastEntry( EResultSeverity i_severity )
             entry = *pEntry;
 
             removeEntry_(iCount-1, i_severity);
-
-        } // if( pEntry != nullptr )
-    } // if( getEntryCount(i_severity) > 0 )
-
+        }
+    }
     return entry;
+}
 
-} // takeLastEntry
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Starts a thread in which a timer is created whose timeout function
+           will force an access violation.
+
+    This method may be called to test creating a crash dump file.
+*/
+void CErrLog::testCrashDump()
+//------------------------------------------------------------------------------
+{
+    if( m_pTestCrashDumpThread == nullptr) {
+        m_pTestCrashDumpThread = new CTestCrashDumpThread();
+        m_pTestCrashDumpThread->start();
+        m_pTestCrashDumpThread->waitForThreadRunning();
+    }
+}
 
 /*==============================================================================
 protected: // instance methods
@@ -1765,8 +2021,6 @@ SErrLogEntry* CErrLog::addEntry_(
 
         EResultSeverity severity = i_errResultInfo.getSeverity();
 
-        pEntry->m_iRowIdx = m_ararpEntries[severity].count();
-
         m_ararpEntries[severity].append(pEntry);
 
         if( m_iAddEntryRecursionCounter == 0 )
@@ -1787,6 +2041,7 @@ SErrLogEntry* CErrLog::addEntry_(
         } // if( m_iAddEntryRecursionCounter == 0 )
 
         emit entryAdded(pEntry->m_errResultInfo);
+        emit countChanged();
 
     } // if( pEntry == nullptr )
 
@@ -1872,53 +2127,45 @@ void CErrLog::removeEntry_( int i_iRowIdx, EResultSeverity i_severity )
 
     if( i_severity == EResultSeverityUndefined || i_severity == EResultSeverityCount )
     {
-        int iCount = 0;
+        bool bCountChanged = false;
+
+        int iFirstRowIdxSeveritySection = 0;
 
         // In this case counting rows starts at highest severity (Critical).
         for( int iSeverity = EResultSeverityCount-1; iSeverity >= 0; iSeverity-- )
         {
-            if( i_iRowIdx < (iCount + m_ararpEntries[iSeverity].count()) )
+            if( i_iRowIdx < (iFirstRowIdxSeveritySection + m_ararpEntries[iSeverity].count()) )
             {
-                pEntry = m_ararpEntries[iSeverity][i_iRowIdx-iCount];
+                int iRowIdxSeveritySection = i_iRowIdx-iFirstRowIdxSeveritySection;
+                pEntry = m_ararpEntries[iSeverity][iRowIdxSeveritySection];
 
                 if( pEntry != nullptr )
                 {
                     SErrResultInfo errResultInfo = pEntry->m_errResultInfo;
-
-                    int iRowIdx = pEntry->m_iRowIdx;
-
-                    m_ararpEntries[iSeverity].removeAt(iRowIdx);
+                    m_ararpEntries[iSeverity].removeAt(iRowIdxSeveritySection);
+                    bCountChanged = true;
 
                     delete pEntry;
                     pEntry = nullptr;
 
                     emit entryRemoved(errResultInfo);
 
-                    for( ; iRowIdx < m_ararpEntries[iSeverity].count(); iRowIdx++ )
-                    {
-                        pEntry = m_ararpEntries[iSeverity][iRowIdx];
-
-                        pEntry->m_iRowIdx--;
-
-                        emit entryChanged(pEntry->m_errResultInfo);
-                    }
-
                     if( !m_bRecallingModel && !m_bClearingModel )
                     {
                         save();
                     }
-                } // if( pEntry != nullptr )
-
+                }
                 break;
+            }
+            iFirstRowIdxSeveritySection += m_ararpEntries[iSeverity].count();
+        }
 
-            } // if( i_iRowIdx < (iCount + m_ararpEntries[iSeverity].count()) )
-
-            iCount += m_ararpEntries[iSeverity].count();
-
-        } // for( int iSeverity = EResultSeverityCount-1; iSeverity >= 0; iSeverity-- )
-    } // if( i_severity == EResultSeverityUndefined || i_severity == EResultSeverityCount )
-
-    else // if( i_severity >= 0 && i_severity < EResultSeverityCount )
+        if( bCountChanged )
+        {
+            emit countChanged();
+        }
+    }
+    else
     {
         if( i_iRowIdx >= 0 && i_iRowIdx < m_ararpEntries[i_severity].count() )
         {
@@ -1927,31 +2174,132 @@ void CErrLog::removeEntry_( int i_iRowIdx, EResultSeverity i_severity )
             if( pEntry != nullptr )
             {
                 SErrResultInfo errResultInfo = pEntry->m_errResultInfo;
-
-                int iRowIdx = pEntry->m_iRowIdx;
-
-                m_ararpEntries[i_severity].removeAt(iRowIdx);
+                m_ararpEntries[i_severity].removeAt(i_iRowIdx);
 
                 delete pEntry;
                 pEntry = nullptr;
 
                 emit entryRemoved(errResultInfo);
-
-                for( ; iRowIdx < m_ararpEntries[i_severity].count(); iRowIdx++ )
-                {
-                    pEntry = m_ararpEntries[i_severity][iRowIdx];
-
-                    pEntry->m_iRowIdx--;
-
-                    emit entryChanged(pEntry->m_errResultInfo);
-                }
+                emit countChanged();
 
                 if( !m_bRecallingModel && !m_bClearingModel )
                 {
                     save();
                 }
-            } // if( pEntry != nullptr )
-        } // if( i_iRowIdx >= 0 && i_iRowIdx < m_ararpEntries[i_severity].count() )
-    } // if( i_severity >= 0 && i_severity < EResultSeverityCount )
-
+            }
+        }
+    }
 } // removeEntry_
+
+#ifdef WIN32
+//------------------------------------------------------------------------------
+QString CErrLog::generateDump(EXCEPTION_POINTERS* i_pExceptionPointers) const
+//------------------------------------------------------------------------------
+{
+    MINIDUMP_EXCEPTION_INFORMATION ExpParam;
+
+    ExpParam.ThreadId = GetCurrentThreadId();
+    ExpParam.ExceptionPointers = i_pExceptionPointers;
+    ExpParam.ClientPointers = TRUE;
+
+    QFileInfo fileInfo(m_strAbsFilePath);
+    QString strDumpFilePath = fileInfo.absolutePath() + QDir::separator() + fileInfo.baseName();
+    strDumpFilePath += "-" + ZSQTLIB_GIT_VERSION_INFO;
+    strDumpFilePath += "-" + QDateTime::currentDateTime().toString("yyyy-MM-dd-hh-mm-ss-zzz");
+    strDumpFilePath += ".dmp";
+
+    HANDLE hDumpFile = CreateFile(
+        strDumpFilePath.toStdWString().c_str(),
+        GENERIC_READ|GENERIC_WRITE,
+        FILE_SHARE_WRITE|FILE_SHARE_READ, 0, CREATE_ALWAYS, 0, 0);
+
+    MINIDUMP_TYPE dumpType = static_cast<MINIDUMP_TYPE>(
+        MiniDumpWithDataSegs |
+        MiniDumpWithFullMemory |
+        MiniDumpWithHandleData |
+        MiniDumpWithThreadInfo |
+        MiniDumpWithProcessThreadData |
+        MiniDumpWithFullMemoryInfo |
+        MiniDumpWithUnloadedModules |
+        MiniDumpWithFullAuxiliaryState |
+        MiniDumpIgnoreInaccessibleMemory |
+        MiniDumpWithTokenInformation);
+    MiniDumpWriteDump(
+        GetCurrentProcess(), GetCurrentProcessId(),
+        hDumpFile, dumpType,
+        &ExpParam, NULL, NULL);
+
+    return strDumpFilePath;
+}
+#endif
+
+
+/*******************************************************************************
+class CTestCrashDumpThread : public QThread
+********************************************************************************/
+
+/*==============================================================================
+public: // ctors and dtor
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CTestCrashDumpThread::CTestCrashDumpThread() :
+//------------------------------------------------------------------------------
+    QThread()
+{
+    m_pMtxWaitThreadRunning = new QMutex();
+    m_pWaitThreadRunning = new QWaitCondition();
+}
+
+//------------------------------------------------------------------------------
+CTestCrashDumpThread::~CTestCrashDumpThread()
+//------------------------------------------------------------------------------
+{
+    if( isRunning() ) {
+        quit();
+        wait(30000);
+    }
+    try {
+        delete m_pWaitThreadRunning;
+    } catch(...) {
+    }
+    try {
+        delete m_pMtxWaitThreadRunning;
+    } catch(...) {
+    }
+    m_pMtxWaitThreadRunning = nullptr;
+    m_pWaitThreadRunning = nullptr;
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+bool CTestCrashDumpThread::waitForThreadRunning() const
+//------------------------------------------------------------------------------
+{
+    if( m_pMtxWaitThreadRunning->tryLock() ) {
+        while (!isRunning()) {
+            m_pWaitThreadRunning->wait(m_pMtxWaitThreadRunning, 100);
+        }
+        m_pMtxWaitThreadRunning->unlock();
+    }
+    return true;
+}
+
+/*==============================================================================
+public: // overridables of base class QThread
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CTestCrashDumpThread::run()
+//------------------------------------------------------------------------------
+{
+    QTimer::singleShot(5000, []() {
+        int* pi = nullptr;
+        *pi = 3;
+    });
+    m_pWaitThreadRunning->notify_all();
+    exec();
+}

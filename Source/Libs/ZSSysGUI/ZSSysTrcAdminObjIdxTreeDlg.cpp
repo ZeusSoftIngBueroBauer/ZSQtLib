@@ -45,8 +45,7 @@ may result in using the software modules.
 
 
 using namespace ZS::System;
-using namespace ZS::Trace;
-using namespace ZS::Trace::GUI;
+using namespace ZS::System::GUI;
 
 
 /*******************************************************************************
@@ -59,11 +58,10 @@ public: // class methods
 
 //------------------------------------------------------------------------------
 CDlgIdxTreeTrcAdminObjs* CDlgIdxTreeTrcAdminObjs::CreateInstance(
+    const QString& i_strDlgTitle,
     CIdxTreeTrcAdminObjs* i_pIdxTree,
-    const QString&        i_strDlgTitle,
-    QWidget*              i_pWdgtParent,
-    Qt::WindowFlags       i_wFlags,
-    int                   i_iTrcDetailLevel )
+    QWidget* i_pWdgtParent,
+    Qt::WindowFlags i_wFlags )
 //------------------------------------------------------------------------------
 {
     if( CDialog::GetInstance(NameSpace(), ClassName(), i_pIdxTree->objectName()) != nullptr )
@@ -74,11 +72,10 @@ CDlgIdxTreeTrcAdminObjs* CDlgIdxTreeTrcAdminObjs::CreateInstance(
 
     // The ctor of base class CDialog adds the instance to the hash of dialogs.
     return new CDlgIdxTreeTrcAdminObjs(
-        /* pIdxTree        */ i_pIdxTree,
-        /* strDlgTitle     */ i_strDlgTitle,
-        /* pWdgtParent     */ i_pWdgtParent,
-        /* wFlags          */ i_wFlags,
-        /* iTrcDetailLevel */ i_iTrcDetailLevel );
+        /* strDlgTitle                 */ i_strDlgTitle,
+        /* pIdxTree                    */ i_pIdxTree,
+        /* pWdgtParent                 */ i_pWdgtParent,
+        /* wFlags                      */ i_wFlags );
 
 } // CreateInstance
 
@@ -95,45 +92,42 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CDlgIdxTreeTrcAdminObjs::CDlgIdxTreeTrcAdminObjs(
+    const QString& i_strDlgTitle,
     CIdxTreeTrcAdminObjs* i_pIdxTree,
-    const QString&        i_strDlgTitle,
-    QWidget*              i_pWdgtParent,
-    Qt::WindowFlags       i_wFlags,
-    int                   i_iTrcDetailLevel ) :
+    QWidget* i_pWdgtParent,
+    Qt::WindowFlags i_wFlags ) :
 //------------------------------------------------------------------------------
     CDialog(
+        /* strDlgTitle  */ i_strDlgTitle,
         /* strNameSpace */ NameSpace(),
         /* strClassName */ ClassName(),
         /* strObjName   */ i_pIdxTree->objectName(),
-        /* strDlgTitle  */ i_strDlgTitle,
         /* pWdgtParent  */ i_pWdgtParent,
         /* wFlags       */ i_wFlags ),
     m_pIdxTree(i_pIdxTree),
     m_pLyt(nullptr),
     m_pWdgtIdxTree(nullptr),
-    m_iTrcDetailLevel(i_iTrcDetailLevel)
+    m_pTrcAdminObj(nullptr)
 {
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
+
     QString strMthInArgs;
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "IdxTree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName());
     }
 
     CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "ctor",
         /* strMethodInArgs    */ strMthInArgs );
 
     m_pLyt = new QVBoxLayout();
     setLayout(m_pLyt);
 
-    m_pWdgtIdxTree = new CWdgtIdxTreeTrcAdminObjs(m_pIdxTree, nullptr, i_iTrcDetailLevel);
+    m_pWdgtIdxTree = new CWdgtIdxTreeTrcAdminObjs(m_pIdxTree, nullptr);
 
     m_pLyt->addWidget(m_pWdgtIdxTree);
 
@@ -146,18 +140,19 @@ CDlgIdxTreeTrcAdminObjs::~CDlgIdxTreeTrcAdminObjs()
     QString strMthInArgs;
 
     CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "dtor",
         /* strMethodInArgs    */ strMthInArgs );
+
+    if( m_pTrcAdminObj != nullptr ) {
+        mthTracer.onAdminObjAboutToBeReleased();
+        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
+    }
 
     m_pIdxTree = nullptr;
     m_pLyt = nullptr;
     m_pWdgtIdxTree = nullptr;
-    m_iTrcDetailLevel = 0;
+    m_pTrcAdminObj = nullptr;
 
 } // dtor

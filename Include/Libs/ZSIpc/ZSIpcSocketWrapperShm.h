@@ -198,14 +198,14 @@ public: // ctors and dtor
         const QString&      i_strObjName,
         ESrvCltType         i_srvCltType,
         int                 i_iSocketId = ZS::Ipc::ESocketIdUndefined,
-        Trace::CTrcMthFile* i_pTrcMthFile = nullptr,         // If != nullptr trace method file with detail level is used instead of trace admin object with Trace server.
-        int                 i_iTrcMthFileDetailLevel = Trace::ETraceDetailLevelMethodArgs );
+        ZS::System::CTrcMthFile* i_pTrcMthFile = nullptr,         // If != nullptr trace method file with detail level is used instead of trace admin object with Trace server.
+        ZS::System::EMethodTraceDetailLevel i_eTrcMthFileDetailLevel = System::EMethodTraceDetailLevel::None );
     CShmSocketWrapper(
         const QString&      i_strObjName,
         const SSocketDscr&  i_socketDscr,
         QSharedMemory*      i_pSharedMemory,
-        Trace::CTrcMthFile* i_pTrcMthFile = nullptr,         // If != nullptr trace method file with detail level is used instead of trace admin object with Trace server.
-        int                 i_iTrcMthFileDetailLevel = Trace::ETraceDetailLevelMethodArgs );
+        ZS::System::CTrcMthFile* i_pTrcMthFile = nullptr,         // If != nullptr trace method file with detail level is used instead of trace admin object with Trace server.
+        ZS::System::EMethodTraceDetailLevel i_eTrcMthFileDetailLevel = System::EMethodTraceDetailLevel::None );
     virtual ~CShmSocketWrapper();
 public: // overridables of base class CIpcSocketWrapper
     virtual QString nameSpace() const override { return NameSpace(); }

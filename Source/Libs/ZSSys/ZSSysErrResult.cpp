@@ -190,6 +190,17 @@ void SErrResult::setSeverity( EResultSeverity i_severity )
 }
 
 //------------------------------------------------------------------------------
+/*! Sets the given severity.
+
+    @param i_strSeverity [in] Severity to be set.
+*/
+void SErrResult::setSeverity( const QString& i_strSeverity )
+//------------------------------------------------------------------------------
+{
+    m_severity = str2ResultSeverity(i_strSeverity);
+}
+
+//------------------------------------------------------------------------------
 /*! Returns the string representation of the severity.
 
     @return String representation of severity.
@@ -216,6 +227,17 @@ void SErrResult::setResult( EResult i_result )
 }
 
 //------------------------------------------------------------------------------
+/*! Sets the given severity.
+
+    @param i_strResult [in] Severity to be set.
+*/
+void SErrResult::setResult( const QString& i_strResult )
+//------------------------------------------------------------------------------
+{
+    m_result = str2Result(i_strResult);
+}
+
+//------------------------------------------------------------------------------
 /*! Returns the string representation of the result code.
 
     @return String representation of result code.
@@ -224,6 +246,21 @@ QString SErrResult::getResultStr() const
 //------------------------------------------------------------------------------
 {
     return ZS::System::result2Str(m_result);
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! Returns the string representation of the error result.
+
+    @return String representation of error result.
+*/
+//------------------------------------------------------------------------------
+QString SErrResult::toString() const
+{
+    return resultSeverity2Str(m_severity) + ":" + result2Str(m_result);
 }
 
 
@@ -1002,7 +1039,7 @@ void SErrResultInfo::setErrResult( const SErrResult& i_errResult )
         // created which has not yet been added to err log model.
         m_bAddedToErrLogModel = false;
     }
-} // setErrResult
+}
 
 //------------------------------------------------------------------------------
 /*! Sets the severity.
@@ -1021,7 +1058,26 @@ void SErrResultInfo::setSeverity( EResultSeverity i_severity )
         // created which has not yet been added to err log model.
         m_bAddedToErrLogModel = false;
     }
-} // setSeverity
+}
+
+//------------------------------------------------------------------------------
+/*! Sets the severity.
+
+    @param i_strSeverity [in] Severity of the error.
+*/
+void SErrResultInfo::setSeverity( const QString& i_strSeverity )
+//------------------------------------------------------------------------------
+{
+    if( m_errResult.getSeverityStr() != i_strSeverity )
+    {
+        m_errResult.setSeverity(i_strSeverity);
+
+        // On changing the result code, severity, error source or additional
+        // description (see operator ==) a new error result info object is
+        // created which has not yet been added to err log model.
+        m_bAddedToErrLogModel = false;
+    }
+}
 
 //------------------------------------------------------------------------------
 /*! Sets the result code.
@@ -1040,7 +1096,26 @@ void SErrResultInfo::setResult( EResult i_result )
         // created which has not yet been added to err log model.
         m_bAddedToErrLogModel = false;
     }
-} // setResult
+}
+
+//------------------------------------------------------------------------------
+/*! Sets the result code.
+
+    @param i_strResult [in] Error result code.
+*/
+void SErrResultInfo::setResult( const QString& i_strResult )
+//------------------------------------------------------------------------------
+{
+    if( m_errResult.getResultStr() != i_strResult )
+    {
+        m_errResult.setResult(i_strResult);
+
+        // On changing the result code, severity, error source or additional
+        // description (see operator ==) a new error result info object is
+        // created which has not yet been added to err log model.
+        m_bAddedToErrLogModel = false;
+    }
+}
 
 //------------------------------------------------------------------------------
 /*! Sets the error source.

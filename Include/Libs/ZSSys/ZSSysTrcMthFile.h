@@ -40,7 +40,7 @@ class QTextStream;
 
 namespace ZS
 {
-namespace Trace
+namespace System
 {
 //******************************************************************************
 /*! @brief The class CTrcMthFile offers multithreaded applications the ability to write
@@ -134,8 +134,9 @@ class ZSSYSDLL_API CTrcMthFile
 //******************************************************************************
 {
 public: // type definitions and constants
-    static const int c_iStrLenThreadMax  = 24;
-    static const int c_iStrLenSysTimeMax = 15; // max = 99999999.999999 sec ca. 75 years
+    static const int c_iStrLenThreadMax  = 24; /*!< Maximum number of characters used for thread names. */
+    static const int c_iStrLenSysTimeMax = 15; /*!< Maximum number of characters used for the system time.
+                                                    The maximum value is 99999999.999999 seconds (ca. 75 years). */
 public: // class methods
     /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::System"; }
@@ -161,10 +162,12 @@ public: // instance methods
     virtual QString className() const { return ClassName(); }
 public: // instance methods
     void close();
+    void clear();
 public: // instance methods
     void setEnabled( bool i_bEnabled );
     bool isEnabled() const;
 public: // instance methods (log file wrapper)
+    void setAbsoluteFilePath( const QString& i_strAbsFilePath );
     QString absoluteFilePath() const;
     QString completeBaseName() const;
     QString absolutePath() const;
@@ -241,7 +244,7 @@ protected: // instance methods
 
 }; // class CTrcMthFile
 
-} // namespace Trace
+} // namespace System
 
 } // namespace ZS
 

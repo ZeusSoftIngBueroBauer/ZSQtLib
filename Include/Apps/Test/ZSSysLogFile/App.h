@@ -67,19 +67,15 @@ public: // ctors and dtor
         const QString& i_strWindowTitle );
     ~CApplication();
 public: // instance methods
-    QSettings* getSettingsFile() const { return m_pSettingsFile; }
     CTest* getTest() { return m_pTest; }
-public: // instance methods
-    void readSettings();
-    void saveSettings();
 protected slots:
     void onLastWindowClosed();
+protected slots:
+    void onTestFinished( const ZS::Test::CEnumTestResult& i_result );
 private: // instance members
-    QSettings*   m_pSettingsFile;
-    QString      m_strErrLogFileAbsFilePath;
-    QString      m_strTestStepsFileAbsFilePath;
     CTest*       m_pTest;
     CMainWindow* m_pMainWindow;
+    bool         m_bAutoStartTest;
 
 }; // class CApplication
 

@@ -57,30 +57,30 @@ public: // class methods
 //------------------------------------------------------------------------------
 CDlgErrLog* CDlgErrLog::CreateInstance(
     const QString&  i_strDlgTitle,
-    const QString&  i_strErrLogName,
+    const QString&  i_strObjName,
     QWidget*        i_pWdgtParent,
     Qt::WindowFlags i_wFlags )
 //------------------------------------------------------------------------------
 {
-    if( CDialog::GetInstance(NameSpace(), ClassName(), i_strErrLogName) != nullptr )
+    if( CDialog::GetInstance(NameSpace(), ClassName(), i_strObjName) != nullptr )
     {
-        QString strKey = buildPathStr("::", NameSpace(), ClassName(), i_strErrLogName);
+        QString strKey = buildPathStr("::", NameSpace(), ClassName(), i_strObjName);
         throw CException(__FILE__, __LINE__, EResultObjAlreadyInList, strKey);
     }
 
     return new CDlgErrLog(
         /* strDlgTitle  */ i_strDlgTitle,
-        /* strObjName   */ i_strErrLogName,
+        /* strObjName   */ i_strObjName,
         /* pWdgtParent  */ i_pWdgtParent,
         /* wFlags       */ i_wFlags );
 
 } // CreateInstance
 
 //------------------------------------------------------------------------------
-CDlgErrLog* CDlgErrLog::GetInstance( const QString& i_strDlgTitle )
+CDlgErrLog* CDlgErrLog::GetInstance( const QString& i_strObjName )
 //------------------------------------------------------------------------------
 {
-    return dynamic_cast<CDlgErrLog*>(CDialog::GetInstance(NameSpace(), ClassName(), i_strDlgTitle));
+    return dynamic_cast<CDlgErrLog*>(CDialog::GetInstance(NameSpace(), ClassName(), i_strObjName));
 }
 
 /*==============================================================================
@@ -90,15 +90,15 @@ protected: // ctor
 //------------------------------------------------------------------------------
 CDlgErrLog::CDlgErrLog(
     const QString&  i_strDlgTitle,
-    const QString&  i_strErrLogName,
+    const QString&  i_strObjName,
     QWidget*        i_pWdgtParent,
     Qt::WindowFlags i_wFlags ) :
 //------------------------------------------------------------------------------
     CDialog(
+        /* strDlgTitle  */ i_strDlgTitle,
         /* strNameSpace */ NameSpace(),
         /* strClassName */ ClassName(),
-        /* strObjName   */ i_strErrLogName,
-        /* strDlgTitle  */ i_strDlgTitle,
+        /* strObjName   */ i_strObjName,
         /* pWdgtParent  */ i_pWdgtParent,
         /* wFlags       */ i_wFlags ),
     m_pLyt(nullptr),
@@ -107,7 +107,7 @@ CDlgErrLog::CDlgErrLog(
     m_pLyt = new QVBoxLayout();
     setLayout(m_pLyt);
 
-    m_pWdgtErrLog = new CWdgtErrLog(i_strErrLogName);
+    m_pWdgtErrLog = new CWdgtErrLog(i_strObjName);
     m_pLyt->addWidget(m_pWdgtErrLog);
 
 } // ctor

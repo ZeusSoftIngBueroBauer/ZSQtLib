@@ -55,7 +55,9 @@ may result in using the software modules.
 #include "ZSTest/ZSTestStepIdxTree.h"
 #include "ZSSysGUI/ZSSysErrLogDlg.h"
 #include "ZSSysGUI/ZSSysIdxTreeWdgt.h"
+#include "ZSSysGUI/ZSSysIdxTreeView.h"
 #include "ZSSysGUI/ZSSysIdxTreeModel.h"
+#include "ZSSysGUI/ZSSysIdxTreeModelBranchContent.h"
 #include "ZSSysGUI/ZSSysTrcAdminObjIdxTreeDlg.h"
 #include "ZSSys/ZSSysIdxTree.h"
 #include "ZSSys/ZSSysErrLog.h"
@@ -112,12 +114,10 @@ CMainWindow::CMainWindow(
     m_pActDebugTrcAdminObjIdxTree(nullptr),
     m_pMnuInfo(nullptr),
     m_pActInfoVersion(nullptr),
-    m_pActInfoSettingsFile(nullptr),
     m_pStatusBar(nullptr),
     m_pLblErrors(nullptr),
     m_pWdgtCentral(nullptr),
     m_pDockWdgtIdxTree(nullptr),
-    m_pModelIdxTree(nullptr),
     m_pWdgtIdxTree(nullptr),
     m_pDlgFile(nullptr)
 {
@@ -130,6 +130,7 @@ CMainWindow::CMainWindow(
     setObjectName("MainWindow");
 
     setWindowTitle(i_strWindowTitle);
+    setMinimumHeight(800);
 
     // <Menu> File
     //======================
@@ -232,9 +233,11 @@ CMainWindow::CMainWindow(
     m_pDockWdgtIdxTree->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
 
     // The index tree will be assigned to the model during runtime.
-    m_pModelIdxTree = new CModelIdxTree(nullptr, nullptr);
-
-    m_pWdgtIdxTree = new CWdgtIdxTree(m_pModelIdxTree);
+    m_pWdgtIdxTree = new CWdgtIdxTree(nullptr);
+    m_pWdgtIdxTree->treeView()->hideColumn(CModelIdxTree::EColumnTreeEntryNameDecorated);
+    m_pWdgtIdxTree->treeView()->hideColumn(CModelIdxTree::EColumnTreeEntryTypeImageUrl);
+    m_pWdgtIdxTree->treeView()->hideColumn(CModelIdxTree::EColumnTreeEntryTypeIcon);
+    m_pWdgtIdxTree->treeView()->hideColumn(CModelIdxTree::EColumnTreeEntryType);
     m_pDockWdgtIdxTree->setWidget(m_pWdgtIdxTree);
 
     addDockWidget(Qt::RightDockWidgetArea, m_pDockWdgtIdxTree);
@@ -333,24 +336,6 @@ CMainWindow::CMainWindow(
     m_pActInfoVersion = new QAction(strActionInfoVersion,this);
     m_pMnuInfo->addAction(m_pActInfoVersion);
 
-    // <MenuItem> Info::Settings File
-    //-------------------------------
-
-    m_pSettingsFile = CApplication::GetInstance()->getSettingsFile();
-
-    if( m_pSettingsFile != nullptr )
-    {
-        QString strActionInfoSettingsFile = "Settings File: " + m_pSettingsFile->fileName();
-
-        QIcon iconModeEdit;
-
-        iconModeEdit.addPixmap( mode2Pixmap(static_cast<int>(EMode::Edit),24) );
-
-        m_pActInfoSettingsFile = new QAction( iconModeEdit, strActionInfoSettingsFile, this );
-
-        m_pMnuInfo->addAction(m_pActInfoSettingsFile);
-    }
-
     // <StatusBar>
     //======================
 
@@ -427,14 +412,6 @@ CMainWindow::~CMainWindow()
 
     try
     {
-        delete m_pModelIdxTree;
-    }
-    catch(...)
-    {
-    }
-
-    try
-    {
         delete m_pDlgFile;
     }
     catch(...)
@@ -457,12 +434,10 @@ CMainWindow::~CMainWindow()
     m_pActDebugTrcAdminObjIdxTree = nullptr;
     m_pMnuInfo = nullptr;
     m_pActInfoVersion = nullptr;
-    m_pActInfoSettingsFile = nullptr;
     m_pStatusBar = nullptr;
     m_pLblErrors = nullptr;
     m_pWdgtCentral = nullptr;
     m_pDockWdgtIdxTree = nullptr;
-    m_pModelIdxTree = nullptr;
     m_pWdgtIdxTree = nullptr;
     m_pDlgFile = nullptr;
 
@@ -554,7 +529,7 @@ void CMainWindow::onActFileOpenTriggered()
 
         if( !strFile.isEmpty() )
         {
-            SErrResultInfo errResultInfo = pTest->recall(strFile);
+            SErrResultInfo errResultInfo = pTest->recallTestSteps(strFile);
 
             if( errResultInfo.isErrorResult() )
             {
@@ -604,7 +579,7 @@ void CMainWindow::onActFileSaveTriggered()
 
         if( !strFile.isEmpty() )
         {
-            SErrResultInfo errResultInfo = pTest->save(strFile);
+            SErrResultInfo errResultInfo = pTest->saveTestSteps(strFile);
 
             if( errResultInfo.isErrorResult() )
             {
@@ -637,7 +612,7 @@ void CMainWindow::onActDebugErrLogTriggered()
 {
     QString strDlgTitle = QCoreApplication::applicationName() + ": Error Log";
 
-    CDlgErrLog* pDlg = dynamic_cast<CDlgErrLog*>(CDlgErrLog::GetInstance(strDlgTitle));
+    CDlgErrLog* pDlg = dynamic_cast<CDlgErrLog*>(CDlgErrLog::GetInstance());
 
     if( pDlg == nullptr )
     {
@@ -669,10 +644,7 @@ void CMainWindow::onActDebugTrcServerTriggered()
 
     if( pDlg == nullptr )
     {
-        pDlg = CDlgTrcServer::CreateInstance(
-            /* strObjName  */ "MethodTraceServer",
-            /* strDlgTitle */ strDlgTitle,
-            /* pWdgtParent */ nullptr );
+        pDlg = CDlgTrcServer::CreateInstance(strDlgTitle, "MethodTraceServer");
         pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
         pDlg->adjustSize();
         pDlg->show();
@@ -699,9 +671,7 @@ void CMainWindow::onActDebugTrcAdminObjIdxTreeTriggered()
 
     if( pDlg == nullptr )
     {
-        pDlg = CDlgIdxTreeTrcAdminObjs::CreateInstance(
-            /* pTrcAdmIdxTree */ CTrcServer::GetTraceAdminObjIdxTree(),
-            /* strDlgTitle    */ strDlgTitle );
+        pDlg = CDlgIdxTreeTrcAdminObjs::CreateInstance(strDlgTitle, CTrcServer::GetTraceAdminObjIdxTree());
         pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
         pDlg->adjustSize();
         pDlg->show();
@@ -727,11 +697,11 @@ protected slots:
 void CMainWindow::onTestIdxTreeAdded( ZS::System::CIdxTree* i_pIdxTree )
 //------------------------------------------------------------------------------
 {
-    if( m_pModelIdxTree != nullptr )
+    if( m_pWdgtIdxTree != nullptr )
     {
         // Test both variants:
-        // 1. Aassigning idx tree during runtime to the model.
-        m_pModelIdxTree->setIdxTree(i_pIdxTree);
+        // 1. Assigning idx tree during runtime to the model.
+        m_pWdgtIdxTree->setIdxTree(i_pIdxTree);
     }
 
     if( !QObject::connect(

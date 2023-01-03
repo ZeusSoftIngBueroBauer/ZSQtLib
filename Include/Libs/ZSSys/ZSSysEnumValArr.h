@@ -46,10 +46,10 @@ public: // ctors and dtor
     CEnumValArr( CEnumeration* i_pEnum );
     CEnumValArr( CEnumeration* i_pEnum, int i_iValCount );
     CEnumValArr( CEnumeration* i_pEnum, int i_iValCount, int i_iEnumEntryIdx );
-    CEnumValArr( CEnumeration* i_pEnum, int i_iValCount, const QString& i_strName, Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive, int i_alias = ZS::System::EEnumEntryAliasStrUndefined );  // if EEnumEntryAliasStrUndefined all string list entries will be compared
+    CEnumValArr( CEnumeration* i_pEnum, int i_iValCount, const QString& i_strName, Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive, int i_alias = EEnumEntryAliasStrUndefined );  // if EEnumEntryAliasStrUndefined all string list entries will be compared
     CEnumValArr( CEnumeration* i_pEnum, int i_iValCount, const QVariant& i_valEnumEntry );
     CEnumValArr( CEnumeration* i_pEnum, const QVector<int>& i_ariEnumEntryIdx );
-    CEnumValArr( CEnumeration* i_pEnum, const QStringList& i_strlstIdxNames, Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive, int i_alias = ZS::System::EEnumEntryAliasStrUndefined );  // if EEnumEntryAliasStrUndefined all string list entries will be compared
+    CEnumValArr( CEnumeration* i_pEnum, const QStringList& i_strlstIdxNames, Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive, int i_alias = EEnumEntryAliasStrUndefined );  // if EEnumEntryAliasStrUndefined all string list entries will be compared
     CEnumValArr( CEnumeration* i_pEnum, const QVector<QVariant>& i_arValsEnumEntries );
     CEnumValArr( int i_iValCount, const CEnumVal& i_enumVal );
     CEnumValArr( const QVector<CEnumVal>& i_arEnumVals );
@@ -91,39 +91,39 @@ public: // instance methods
     QVector<quint8> getValidities() const { return m_arValidities; }
 public: // instance methods
     void setEnumEntryValidityByEnumEntryIndex( int i_idxVal, int i_iEnumEntryIdx, EEnumEntryValidity i_validity );
-    void setEnumEntryValidityByEnumEntryName( int i_idxVal, const QString& i_strName, EEnumEntryValidity i_validity, Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive, int i_alias = ZS::System::EEnumEntryAliasStrUndefined );
+    void setEnumEntryValidityByEnumEntryName( int i_idxVal, const QString& i_strName, EEnumEntryValidity i_validity, Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive, int i_alias = EEnumEntryAliasStrUndefined );
     void setEnumEntryValidityByEnumEntryVal( int i_idxVal, const QVariant& i_valEnumEntry, EEnumEntryValidity i_validity );
     void setEnumEntryValidities( int i_idxVal, const QVector<quint8> i_arValidities );
 public: // instance methods
     EEnumEntryValidity getEnumEntryValidityByEnumEntryIndex( int i_idxVal, int i_iEnumEntryIdx ) const;
-    EEnumEntryValidity getEnumEntryValidityByEnumEntryName( int i_idxVal, const QString& i_strName, Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive, int i_alias = ZS::System::EEnumEntryAliasStrUndefined ) const;
+    EEnumEntryValidity getEnumEntryValidityByEnumEntryName( int i_idxVal, const QString& i_strName, Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive, int i_alias = EEnumEntryAliasStrUndefined ) const;
     EEnumEntryValidity getEnumEntryValidityByEnumEntryVal( int i_idxVal, const QVariant& i_valEnumEntry ) const;
     QVector<quint8> getEnumEntryValidities( int i_idxVal ) const;
 public: // instance methods (to set values)
     void setValByEnumEntryIndex( int i_idxVal, int i_iEnumEntryIdx );
-    void setValByEnumEntryName( int i_idxVal, const QString& i_strName, Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive, int i_alias = ZS::System::EEnumEntryAliasStrUndefined );
+    void setValByEnumEntryName( int i_idxVal, const QString& i_strName, Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive, int i_alias = EEnumEntryAliasStrUndefined );
     void setValByEnumEntryVal( int i_idxVal, const QVariant& i_valEnumEntry );
     void setVal( int i_idxVal, const CEnumVal& i_enumVal );
 public: // instance methods (to set values)
     void insertValByEnumEntryIndex( int i_idxVal, int i_iEnumEntryIdx );
-    void insertValByEnumEntryName( int i_idxVal, const QString& i_strName, Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive, int i_alias = ZS::System::EEnumEntryAliasStrUndefined );
+    void insertValByEnumEntryName( int i_idxVal, const QString& i_strName, Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive, int i_alias = EEnumEntryAliasStrUndefined );
     void insertValByEnumEntryVal( int i_idxVal, const QVariant& i_valEnumEntry );
     void insertVal( int i_idxVal, const CEnumVal& i_enumVal );
 public: // instance methods (to set values)
     void appendValByEnumEntryIndex( int i_iEnumEntryIdx );
-    void appendValByEnumEntryName( const QString& i_strName, Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive, int i_alias = ZS::System::EEnumEntryAliasStrUndefined );
+    void appendValByEnumEntryName( const QString& i_strName, Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive, int i_alias = EEnumEntryAliasStrUndefined );
     void appendValByEnumEntryVal( const QVariant& i_valEnumEntry );
     void appendVal( const CEnumVal& i_enumVal );
 public: // instance methods (to remove values)
     void removeVal( int i_idxVal );
 public: // instance methods
     void setValuesByEnumEntryIndex( int i_idxStart, int i_iValCount, int i_iEnumEntryIdx );
-    void setValuesByEnumEntryName( int i_idxStart, int i_iValCount, const QString& i_strName, Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive, int i_alias = ZS::System::EEnumEntryAliasStrUndefined );
+    void setValuesByEnumEntryName( int i_idxStart, int i_iValCount, const QString& i_strName, Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive, int i_alias = EEnumEntryAliasStrUndefined );
     void setValuesByEnumEntryVal( int i_idxStart, int i_iValCount, const QVariant& i_valEnumEntry );
     void setValues( int i_idxStart, int i_iValCount, const CEnumVal& i_enumVal );
 public: // instance methods
     void setValuesByEnumEntryIndices( int i_idxStart, const QVector<int>& i_ariEnumEntryIdx );
-    void setValuesByEnumEntryNames( int i_idxStart, const QStringList& i_strlstIdxNames, Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive, int i_alias = ZS::System::EEnumEntryAliasStrUndefined );
+    void setValuesByEnumEntryNames( int i_idxStart, const QStringList& i_strlstIdxNames, Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive, int i_alias = EEnumEntryAliasStrUndefined );
     void setValuesByEnumEntryVals( int i_idxStart, const QVector<QVariant>& i_arValsEnumEntries );
     void setValues( int i_idxStart, const QVector<CEnumVal>& i_arEnumVals );
     void setValues( int i_idxStart, const CEnumValArr& i_enumValArr );
@@ -134,17 +134,17 @@ public: // instance methods
 public: // instance methods
     int getEnumEntryIndex( int i_idxVal ) const;
 public: // instance methods (methods can only convert the index into the name or assigned value if the enumeration is known)
-    QString enumEntryIndex2Name( int i_idxVal, int i_alias = ZS::System::EEnumEntryAliasStrName, EValueValidity* o_pValidity = nullptr ) const;
+    QString enumEntryIndex2Name( int i_idxVal, int i_alias = EEnumEntryAliasStrName, EValueValidity* o_pValidity = nullptr ) const;
     QVariant enumEntryIndex2Val( int i_idxVal, EValueValidity* o_pValidity = nullptr ) const;
 public: // instance methods (if the enumeration is not known the index value is converted into the string)
-    QString toString( int i_idxVal, int i_alias = ZS::System::EEnumEntryAliasStrName ) const;
+    QString toString( int i_idxVal, int i_alias = EEnumEntryAliasStrName ) const;
 public: // instance methods (to get values)
     CEnumValArr mid( int i_idxStart, int i_iValCount ) const;
 public: // instance methods (to get values)
-    QVector<int> getEnumEntryIndices( int i_idxStart = 0, int i_iValCount = ZS::System::EArrayIndexCountAllElements ) const;
-    QStringList enumEntryIndices2Names( int i_idxStart = 0, int i_iValCount = ZS::System::EArrayIndexCountAllElements, int i_alias = ZS::System::EEnumEntryAliasStrName ) const;
-    QVector<QVariant> enumEntryIndices2ValsVec( int i_idxStart = 0, int i_iValCount = ZS::System::EArrayIndexCountAllElements ) const;
-    QVector<CEnumVal> toEnumValsVec( int i_idxStart = 0, int i_iValCount = ZS::System::EArrayIndexCountAllElements ) const;
+    QVector<int> getEnumEntryIndices( int i_idxStart = 0, int i_iValCount = EArrayIndexCountAllElements ) const;
+    QStringList enumEntryIndices2Names( int i_idxStart = 0, int i_iValCount = EArrayIndexCountAllElements, int i_alias = EEnumEntryAliasStrName ) const;
+    QVector<QVariant> enumEntryIndices2ValsVec( int i_idxStart = 0, int i_iValCount = EArrayIndexCountAllElements ) const;
+    QVector<CEnumVal> toEnumValsVec( int i_idxStart = 0, int i_iValCount = EArrayIndexCountAllElements ) const;
 private: // operators (to avoid that anyone use the statement "arEnumVals[4] = 5;" as this does not assign a value to the enum array at index 4)
     CEnumValArr& operator [] ( int i_idxVal );
     const CEnumValArr& operator [] ( int i_idxVal ) const;

@@ -37,15 +37,11 @@ class QTimer;
 
 namespace ZS
 {
-namespace Trace
-{
-class CTrcAdminObj;
-}
-
 namespace System
 {
 class CMsgReq;
 class CRequest;
+class CTrcAdminObj;
 
 // Please note that not all request classes may support blocking method calls and just ignore the passed WaitTimeout.
 // Other request classes may just support blocking method calls and will use their own wait timeout.
@@ -53,8 +49,8 @@ class CRequest;
 // returned request instance must be checked. The initial start method of the request sequencer itself is a blocking
 // call if an initial wait timeout != 0 has been set. If the parent request is a blocking method call all child requests
 // must return synchronously and must therefore also be blocking calls.
-typedef ZS::System::CRequest* (*TFctExecuteType1)( QObject* i_pObjFctExecute, int i_iTimeout_ms, bool i_bWait, qint64 i_iReqIdParent, QVariant& i_valExec );
-typedef ZS::System::CRequest* (*TFctExecuteType2)( QObject* i_pObjFctExecute, int i_iTimeout_ms, bool i_bWait, qint64 i_iReqIdParent, void* i_pvExec );
+typedef CRequest* (*TFctExecuteType1)( QObject* i_pObjFctExecute, int i_iTimeout_ms, bool i_bWait, qint64 i_iReqIdParent, QVariant& i_valExec );
+typedef CRequest* (*TFctExecuteType2)( QObject* i_pObjFctExecute, int i_iTimeout_ms, bool i_bWait, qint64 i_iReqIdParent, void* i_pvExec );
 
 //******************************************************************************
 enum ERequestEntryType
@@ -204,7 +200,7 @@ protected: // instance members
     QHash<qint64,SRequestSeqEntry*> m_hshReqSeqs;
     QHash<qint64,CRequest*>         m_hshpReqs;
     bool                            m_bTracingEnabled;
-    Trace::CTrcAdminObj*            m_pTrcAdminObj;
+    CTrcAdminObj*                   m_pTrcAdminObj;
 
 }; // class CRequestSequencer
 

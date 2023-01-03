@@ -98,14 +98,12 @@ double Math::round2nearest( double i_fVal, int i_iTrailingDigits )
         {
             iTrailingDigits = c_iCalculationAccuracyTrailingDigits;
         }
-        #ifdef _WINDOWS
+        #ifdef _MSC_VER
         #pragma warning(disable:4996)
         szFcvt = _fcvt(i_fVal, iTrailingDigits, &iDecimalPos, &iSign);
         #pragma warning(default:4996)
-        #elif defined __linux__
-        szFcvt = fcvt(i_fVal, iTrailingDigits, &iDecimalPos, &iSign);
         #else
-        #error Neither _WINDOWS nor __linux__ defined.
+        szFcvt = fcvt(i_fVal, iTrailingDigits, &iDecimalPos, &iSign);
         #endif
 
         if( iDecimalPos > 0 )

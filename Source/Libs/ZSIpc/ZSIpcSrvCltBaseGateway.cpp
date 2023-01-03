@@ -47,7 +47,6 @@ may result in using the software modules.
 
 using namespace ZS::System;
 using namespace ZS::Ipc;
-using namespace ZS::Trace;
 
 
 /*******************************************************************************
@@ -62,8 +61,7 @@ public: // ctors and dtor
 CSrvCltBaseGatewayThread::CSrvCltBaseGatewayThread(
     const QString& i_strObjNameGateway,
     CErrLog*       i_pErrLog,
-    CTrcMthFile*   i_pTrcMthFile,
-    int            i_iTrcMthFileDetailLevel ) :
+    EMethodTraceDetailLevel i_eTrcMthFileDetailLevel ) :
 //------------------------------------------------------------------------------
     QThread(),
     m_strObjNameGateway(i_strObjNameGateway),
@@ -71,8 +69,8 @@ CSrvCltBaseGatewayThread::CSrvCltBaseGatewayThread(
     m_pErrLog(i_pErrLog),
     m_iReqIdStartThread(-1),
     m_pWaitCondition(nullptr),
-    m_iTrcMthFileDetailLevel(i_iTrcMthFileDetailLevel),
-    m_pTrcMthFile(i_pTrcMthFile),
+    m_eTrcMthFileDetailLevel(i_eTrcMthFileDetailLevel),
+    m_pTrcMthFile(nullptr),
     m_pTrcAdminObj(nullptr)
 {
     // Please note that thread names must be unique within the application.
@@ -87,7 +85,7 @@ CSrvCltBaseGatewayThread::CSrvCltBaseGatewayThread(
     }
 
     // The derived classes must instantiate the trace admin object and trace the ctor.
-    //if( m_pTrcMthFile == nullptr )
+    //if( m_pTrcMthFile == nullptr && !i_strObjName.contains("TrcServer") && !i_strObjName.contains("TrcClient") )
     //{
     //    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
     //}
@@ -95,8 +93,8 @@ CSrvCltBaseGatewayThread::CSrvCltBaseGatewayThread(
     //CMethodTracer mthTracer(
     //    /* pAdminObj          */ m_pTrcAdminObj,
     //    /* pTrcMthFile        */ m_pTrcMthFile,
-    //    /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-    //    /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+    //    /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+    //    /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
     //    /* strNameSpace       */ nameSpace(),
     //    /* strClassName       */ className(),
     //    /* strObjName         */ objectName(),
@@ -112,8 +110,8 @@ CSrvCltBaseGatewayThread::~CSrvCltBaseGatewayThread()
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -156,7 +154,7 @@ CSrvCltBaseGatewayThread::~CSrvCltBaseGatewayThread()
     m_pErrLog = nullptr;
     m_iReqIdStartThread = 0;
     m_pWaitCondition = nullptr;
-    m_iTrcMthFileDetailLevel = 0;
+    m_eTrcMthFileDetailLevel = static_cast<EMethodTraceDetailLevel>(0);
     m_pTrcMthFile = nullptr;
     m_pTrcAdminObj = nullptr;
 
@@ -172,7 +170,7 @@ void CSrvCltBaseGatewayThread::msleep( unsigned long i_uTime_ms )
 {
     QString strAddTrcInfo;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = QString::number(i_uTime_ms);
     }
@@ -180,8 +178,8 @@ void CSrvCltBaseGatewayThread::msleep( unsigned long i_uTime_ms )
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -202,7 +200,7 @@ void CSrvCltBaseGatewayThread::start( qint64 i_iReqIdStartThread )
 {
     QString strAddTrcInfo;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = "ReqId: " + QString::number(i_iReqIdStartThread);
     }
@@ -210,8 +208,8 @@ void CSrvCltBaseGatewayThread::start( qint64 i_iReqIdStartThread )
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -230,7 +228,7 @@ void CSrvCltBaseGatewayThread::start( QWaitCondition* i_pWaitCondition )
 {
     QString strAddTrcInfo;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = "WaitCondition: " + pointer2Str(i_pWaitCondition);
     }
@@ -238,8 +236,8 @@ void CSrvCltBaseGatewayThread::start( QWaitCondition* i_pWaitCondition )
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -262,15 +260,15 @@ void CSrvCltBaseGatewayThread::start()
 {
     QString strAddTrcInfo;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -299,8 +297,8 @@ void CSrvCltBaseGatewayThread::run()
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -315,7 +313,7 @@ void CSrvCltBaseGatewayThread::run()
         /* pThread                */ this,
         /* pModelErrLog           */ m_pErrLog,
         /* pTrcMthFile            */ m_pTrcMthFile,
-        /* iTrcMthFileDetailLevel */ m_iTrcMthFileDetailLevel );
+        /* iTrcMthFileDetailLevel */ m_eTrcMthFileDetailLevel );
 
     /*-------------------------------------------------------------------------
     !! Important note on using WaitCondition to synchronize starting threads !!
@@ -364,14 +362,14 @@ void CSrvCltBaseGatewayThread::run()
         // this we force this thread to sleep for a moment ...
         msleep(10);
 
-        if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+        if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) )
         {
             mthTracer.trace( "-+ WaitCondition.wakeAll()" );
         }
 
         m_pWaitCondition->wakeAll();
 
-        if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+        if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) )
         {
             mthTracer.trace( "+- WaitCondition.wakeAll()" );
         }
@@ -399,7 +397,7 @@ void CSrvCltBaseGatewayThread::run()
                 }
             }
 
-            if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+            if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) )
             {
                 mthTracer.trace( "-+ ReqStartThread.WaitCondition.wakeAll()" );
             }
@@ -416,7 +414,7 @@ void CSrvCltBaseGatewayThread::run()
                 }
             }
 
-            if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+            if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) )
             {
                 mthTracer.trace( "+- ReqStartThread.WaitCondition.wakeAll(): " + errResultInfo.getResultStr() );
             }
@@ -431,20 +429,20 @@ void CSrvCltBaseGatewayThread::run()
                 /* iMsgIdReq         */ -1,
                 /* errResultInfo     */ errResultInfo,
                 /* iProgress_perCent */ 100 );
-            POST_OR_DELETE_MESSAGE(pMsgConStartup, &mthTracer, ETraceDetailLevelRuntimeInfo);
+            POST_OR_DELETE_MESSAGE(pMsgConStartup, &mthTracer, ELogDetailLevel::Debug);
         }
     } // if( m_iReqIdStartThread >= 0 )
 
     try
     {
-        if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+        if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) )
         {
             mthTracer.trace( "-+ QThread::exec()" );
         }
 
         exec();
 
-        if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+        if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) )
         {
             mthTracer.trace( "+- QThread::exec()" );
         }
@@ -496,40 +494,64 @@ protected: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool CSrvCltBaseGatewayThread::isMethodTraceActive( int i_iFilterDetailLevel ) const
+bool CSrvCltBaseGatewayThread::areTraceMethodCallsActive( EMethodTraceDetailLevel i_eFilterDetailLevel ) const
 //------------------------------------------------------------------------------
 {
     bool bIsActive = false;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(i_iFilterDetailLevel) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(i_eFilterDetailLevel) )
     {
         bIsActive = true;
     }
-    else if( m_pTrcMthFile != nullptr && m_iTrcMthFileDetailLevel >= i_iFilterDetailLevel )
+    else if( m_pTrcMthFile != nullptr && m_eTrcMthFileDetailLevel >= i_eFilterDetailLevel )
     {
         bIsActive = true;
     }
     return bIsActive;
-
-} // isMethodTraceActive
+}
 
 //------------------------------------------------------------------------------
-int CSrvCltBaseGatewayThread::getMethodTraceDetailLevel() const
+EMethodTraceDetailLevel CSrvCltBaseGatewayThread::getMethodCallsTraceDetailLevel() const
 //------------------------------------------------------------------------------
 {
-    int iDetailLevel = ETraceDetailLevelNone;
+    EMethodTraceDetailLevel eDetailLevel = EMethodTraceDetailLevel::None;
 
     if( m_pTrcAdminObj != nullptr )
     {
-        iDetailLevel = getMethodTraceDetailLevel();
+        eDetailLevel = m_pTrcAdminObj->getMethodCallsTraceDetailLevel();
     }
     else if( m_pTrcMthFile != nullptr )
     {
-        iDetailLevel = m_iTrcMthFileDetailLevel;
+        eDetailLevel = m_eTrcMthFileDetailLevel;
     }
-    return iDetailLevel;
+    return eDetailLevel;
+}
 
-} // getMethodTraceDetailLevel
+//------------------------------------------------------------------------------
+bool CSrvCltBaseGatewayThread::isTraceRuntimeInfoActive( ELogDetailLevel i_eFilterDetailLevel ) const
+//------------------------------------------------------------------------------
+{
+    bool bIsActive = false;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isRuntimeInfoActive(i_eFilterDetailLevel) )
+    {
+        bIsActive = true;
+    }
+    return bIsActive;
+}
+
+//------------------------------------------------------------------------------
+ELogDetailLevel CSrvCltBaseGatewayThread::getRuntimeInfoTraceDetailLevel() const
+//------------------------------------------------------------------------------
+{
+    ELogDetailLevel eDetailLevel = ELogDetailLevel::None;
+
+    if( m_pTrcAdminObj != nullptr )
+    {
+        eDetailLevel = m_pTrcAdminObj->getRuntimeInfoTraceDetailLevel();
+    }
+    return eDetailLevel;
+}
 
 
 /*******************************************************************************
@@ -572,8 +594,7 @@ CSrvCltBaseGateway::CSrvCltBaseGateway(
     QObject*                  i_pCltSrv,
     CSrvCltBaseGatewayThread* i_pThreadGateway,
     CErrLog*                  i_pErrLog,
-    CTrcMthFile*              i_pTrcMthFile,
-    int                       i_iTrcMthFileDetailLevel ) :
+    EMethodTraceDetailLevel i_eTrcMthFileDetailLevel ) :
 //------------------------------------------------------------------------------
     QObject(),
     m_pErrLog(i_pErrLog),
@@ -587,8 +608,8 @@ CSrvCltBaseGateway::CSrvCltBaseGateway(
     m_iMsgIdReqInProgress(-1),
     m_pMsgCon(nullptr),
     m_arpTrcMsgLogObjects(),
-    m_iTrcMthFileDetailLevel(i_iTrcMthFileDetailLevel),
-    m_pTrcMthFile(i_pTrcMthFile),
+    m_eTrcMthFileDetailLevel(i_eTrcMthFileDetailLevel),
+    m_pTrcMthFile(nullptr),
     m_pTrcAdminObj(nullptr)
 {
     if( i_strObjName.isEmpty() )
@@ -601,7 +622,7 @@ CSrvCltBaseGateway::CSrvCltBaseGateway(
     }
 
     // The derived classes must instantiate the trace admin object and trace the ctor.
-    //if( m_pTrcMthFile == nullptr )
+    //if( m_pTrcMthFile == nullptr && !i_strObjName.contains("TrcServer") && !i_strObjName.contains("TrcClient") )
     //{
     //    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
     //}
@@ -609,8 +630,8 @@ CSrvCltBaseGateway::CSrvCltBaseGateway(
     //CMethodTracer mthTracer(
     //    /* pAdminObj          */ m_pTrcAdminObj,
     //    /* pTrcMthFile        */ m_pTrcMthFile,
-    //    /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-    //    /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+    //    /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+    //    /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
     //    /* strNameSpace       */ nameSpace(),
     //    /* strClassName       */ className(),
     //    /* strObjName         */ objectName(),
@@ -630,8 +651,8 @@ CSrvCltBaseGateway::~CSrvCltBaseGateway()
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -681,7 +702,7 @@ CSrvCltBaseGateway::~CSrvCltBaseGateway()
     m_iMsgIdReqInProgress = 0;
     m_pMsgCon = nullptr;
     //m_arpTrcMsgLogObjects;
-    m_iTrcMthFileDetailLevel = 0;
+    m_eTrcMthFileDetailLevel = static_cast<EMethodTraceDetailLevel>(0);
     m_pTrcMthFile = nullptr;
     m_pTrcAdminObj = nullptr;
 
@@ -725,8 +746,6 @@ void CSrvCltBaseGateway::removeTrcMsgLogObject( QObject* i_pObj )
         m_arpTrcMsgLogObjects.removeAt(idxObj);
     }
 
-    m_arpTrcMsgLogObjects.removeAt(idxObj);
-
 } // removeTrcMsgLogObject
 
 /*==============================================================================
@@ -734,37 +753,61 @@ protected: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool CSrvCltBaseGateway::isMethodTraceActive( int i_iFilterDetailLevel ) const
+bool CSrvCltBaseGateway::areTraceMethodCallsActive( EMethodTraceDetailLevel i_eFilterDetailLevel ) const
 //------------------------------------------------------------------------------
 {
     bool bIsActive = false;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(i_iFilterDetailLevel) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(i_eFilterDetailLevel) )
     {
         bIsActive = true;
     }
-    else if( m_pTrcMthFile != nullptr && m_iTrcMthFileDetailLevel >= i_iFilterDetailLevel )
+    else if( m_pTrcMthFile != nullptr && m_eTrcMthFileDetailLevel >= i_eFilterDetailLevel )
     {
         bIsActive = true;
     }
     return bIsActive;
-
-} // isMethodTraceActive
+}
 
 //------------------------------------------------------------------------------
-int CSrvCltBaseGateway::getMethodTraceDetailLevel() const
+EMethodTraceDetailLevel CSrvCltBaseGateway::getMethodCallsTraceDetailLevel() const
 //------------------------------------------------------------------------------
 {
-    int iDetailLevel = ETraceDetailLevelNone;
+    EMethodTraceDetailLevel eDetailLevel = EMethodTraceDetailLevel::None;
 
     if( m_pTrcAdminObj != nullptr )
     {
-        iDetailLevel = getMethodTraceDetailLevel();
+        eDetailLevel = m_pTrcAdminObj->getMethodCallsTraceDetailLevel();
     }
     else if( m_pTrcMthFile != nullptr )
     {
-        iDetailLevel = m_iTrcMthFileDetailLevel;
+        eDetailLevel = m_eTrcMthFileDetailLevel;
     }
-    return iDetailLevel;
+    return eDetailLevel;
+}
 
-} // getMethodTraceDetailLevel
+//------------------------------------------------------------------------------
+bool CSrvCltBaseGateway::isTraceRuntimeInfoActive( ELogDetailLevel i_eFilterDetailLevel ) const
+//------------------------------------------------------------------------------
+{
+    bool bIsActive = false;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isRuntimeInfoActive(i_eFilterDetailLevel) )
+    {
+        bIsActive = true;
+    }
+    return bIsActive;
+}
+
+//------------------------------------------------------------------------------
+ELogDetailLevel CSrvCltBaseGateway::getRuntimeInfoTraceDetailLevel() const
+//------------------------------------------------------------------------------
+{
+    ELogDetailLevel eDetailLevel = ELogDetailLevel::None;
+
+    if( m_pTrcAdminObj != nullptr )
+    {
+        eDetailLevel = m_pTrcAdminObj->getRuntimeInfoTraceDetailLevel();
+    }
+    return eDetailLevel;
+}

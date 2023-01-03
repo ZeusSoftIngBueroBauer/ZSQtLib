@@ -35,7 +35,6 @@ may result in using the software modules.
 
 using namespace ZS::System;
 using namespace ZS::Ipc;
-using namespace ZS::Trace;
 
 
 /*******************************************************************************
@@ -49,9 +48,9 @@ protected: // ctor
 //------------------------------------------------------------------------------
 CIpcServerWrapper::CIpcServerWrapper(
     const QString& i_strObjName,
-    ESocketType    i_socketType,
-    CTrcMthFile*   i_pTrcMthFile,
-    int            i_iTrcMthFileDetailLevel ) :
+    ESocketType i_socketType,
+    CTrcMthFile* i_pTrcMthFile,
+    EMethodTraceDetailLevel i_eTrcMthFileDetailLevel ) :
 //------------------------------------------------------------------------------
     QObject(),
     m_socketType(i_socketType),
@@ -59,14 +58,14 @@ CIpcServerWrapper::CIpcServerWrapper(
     m_hostAddrLocal(),
     m_uLocalPort(0),
     m_pServer(nullptr),
-    m_iTrcMthFileDetailLevel(i_iTrcMthFileDetailLevel),
+    m_eTrcMthFileDetailLevel(i_eTrcMthFileDetailLevel),
     m_pTrcMthFile(i_pTrcMthFile),
     m_pTrcAdminObj(nullptr)
 {
     setObjectName(i_strObjName);
 
     // The derived classes must instantiate the trace admin object and trace the ctor.
-    //if( m_pTrcMthFile == nullptr )
+    //if( m_pTrcMthFile == nullptr && !i_strObjName.contains("TrcServer") )
     //{
     //    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
     //}
@@ -74,8 +73,8 @@ CIpcServerWrapper::CIpcServerWrapper(
     //CMethodTracer mthTracer(
     //    /* pAdminObj          */ m_pTrcAdminObj,
     //    /* pTrcMthFile        */ m_pTrcMthFile,
-    //    /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-    //    /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+    //    /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+    //    /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
     //    /* strNameSpace       */ NameSpace(),
     //    /* strClassName       */ ClassName(),
     //    /* strObjName         */ objectName(),
@@ -95,8 +94,8 @@ CIpcServerWrapper::~CIpcServerWrapper()
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -116,7 +115,7 @@ CIpcServerWrapper::~CIpcServerWrapper()
     //m_hostAddrLocal;
     m_uLocalPort = 0;
     m_pServer = nullptr;
-    m_iTrcMthFileDetailLevel = 0;
+    m_eTrcMthFileDetailLevel = static_cast<EMethodTraceDetailLevel>(0);
     m_pTrcMthFile = nullptr;
     m_pTrcAdminObj = nullptr;
 
@@ -143,7 +142,7 @@ void CIpcServerWrapper::setLocalHostName( const QString& i_strName )
 {
     QString strAddTrcInfo;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = i_strName;
     }
@@ -151,8 +150,8 @@ void CIpcServerWrapper::setLocalHostName( const QString& i_strName )
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -169,7 +168,7 @@ void CIpcServerWrapper::setLocalPort( unsigned int i_uPort )
 {
     QString strAddTrcInfo;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = QString::number(i_uPort);
     }
@@ -177,8 +176,8 @@ void CIpcServerWrapper::setLocalPort( unsigned int i_uPort )
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -194,38 +193,61 @@ protected: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool CIpcServerWrapper::isMethodTraceActive( int i_iFilterDetailLevel ) const
+bool CIpcServerWrapper::areTraceMethodCallsActive( EMethodTraceDetailLevel i_eFilterDetailLevel ) const
 //------------------------------------------------------------------------------
 {
     bool bIsActive = false;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(i_iFilterDetailLevel) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(i_eFilterDetailLevel) )
     {
         bIsActive = true;
     }
-    else if( m_pTrcMthFile != nullptr && m_iTrcMthFileDetailLevel >= i_iFilterDetailLevel )
+    else if( m_pTrcMthFile != nullptr && m_eTrcMthFileDetailLevel >= i_eFilterDetailLevel )
     {
         bIsActive = true;
     }
     return bIsActive;
-
-} // isMethodTraceActive
+}
 
 //------------------------------------------------------------------------------
-int CIpcServerWrapper::getMethodTraceDetailLevel() const
+EMethodTraceDetailLevel CIpcServerWrapper::getMethodCallsTraceDetailLevel() const
 //------------------------------------------------------------------------------
 {
-    int iDetailLevel = ETraceDetailLevelNone;
+    EMethodTraceDetailLevel eDetailLevel = EMethodTraceDetailLevel::None;
 
     if( m_pTrcAdminObj != nullptr )
     {
-        iDetailLevel = getMethodTraceDetailLevel();
+        eDetailLevel = m_pTrcAdminObj->getMethodCallsTraceDetailLevel();
     }
     else if( m_pTrcMthFile != nullptr )
     {
-        iDetailLevel = m_iTrcMthFileDetailLevel;
+        eDetailLevel = m_eTrcMthFileDetailLevel;
     }
-    return iDetailLevel;
+    return eDetailLevel;
+}
 
-} // getMethodTraceDetailLevel
+//------------------------------------------------------------------------------
+bool CIpcServerWrapper::isTraceRuntimeInfoActive( ELogDetailLevel i_eFilterDetailLevel ) const
+//------------------------------------------------------------------------------
+{
+    bool bIsActive = false;
 
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isRuntimeInfoActive(i_eFilterDetailLevel) )
+    {
+        bIsActive = true;
+    }
+    return bIsActive;
+}
+
+//------------------------------------------------------------------------------
+ELogDetailLevel CIpcServerWrapper::getRuntimeInfoTraceDetailLevel() const
+//------------------------------------------------------------------------------
+{
+    ELogDetailLevel eDetailLevel = ELogDetailLevel::None;
+
+    if( m_pTrcAdminObj != nullptr )
+    {
+        eDetailLevel = m_pTrcAdminObj->getRuntimeInfoTraceDetailLevel();
+    }
+    return eDetailLevel;
+}

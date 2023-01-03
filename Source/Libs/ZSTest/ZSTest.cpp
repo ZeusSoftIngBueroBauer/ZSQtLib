@@ -24,13 +24,18 @@ may result in using the software modules.
 
 *******************************************************************************/
 
+#include <QtCore/qdir.h>
+#include <QtCore/qfile.h>
+#include <QtCore/qfileinfo.h>
 #include <QtCore/qtimer.h>
 
 #include "ZSTest/ZSTest.h"
 #include "ZSTest/ZSTestStepIdxTree.h"
 #include "ZSTest/ZSTestStep.h"
 #include "ZSTest/ZSTestStepGroup.h"
+#include "ZSTest/ZSTestStepRoot.h"
 
+#include "ZSSys/ZSSysApp.h"
 #include "ZSSys/ZSSysEnumEntry.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysMsg.h"
@@ -43,16 +48,35 @@ may result in using the software modules.
 
 using namespace ZS::System;
 using namespace ZS::Test;
-using namespace ZS::Trace;
 
 
 /*******************************************************************************
-Type definitions and constants
+class CTest : public QObject
 *******************************************************************************/
 
-/*******************************************************************************
-class CTest
-*******************************************************************************/
+/*==============================================================================
+public: // class methods to get default file paths
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QString CTest::GetDefaultTestStepsAbsFilePath( const QString& i_strIniFileScope )
+//------------------------------------------------------------------------------
+{
+    QString strAppConfigDir = ZS::System::getAppConfigDir(i_strIniFileScope);
+    QString strFileSuffix = "xml";
+    QString strFileBaseName = "TestSteps";
+    return strAppConfigDir + "/" + strFileBaseName + "." + strFileSuffix;
+}
+
+//------------------------------------------------------------------------------
+QString CTest::GetDefaultTestResultsAbsFilePath( const QString& i_strIniFileScope )
+//------------------------------------------------------------------------------
+{
+    QString strAppConfigDir = ZS::System::getAppLogDir(i_strIniFileScope);
+    QString strFileSuffix = "log";
+    QString strFileBaseName = "TestResults";
+    return strAppConfigDir + "/" + strFileBaseName + "." + strFileSuffix;
+}
 
 /*==============================================================================
 public: // ctors and dtor
@@ -61,14 +85,18 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CTest::CTest(
     const QString& i_strName,
-    const QString& m_strTestStepsAbsFilePath,
-    int            i_iTestStepInterval_ms ) :
+    const QString& i_strTestStepsAbsFilePath,
+    const QString& i_strNodeSeparator,
+    int            i_iTestStepInterval_ms,
+    const QString& i_strTestResultsAbsFilePath ) :
 //------------------------------------------------------------------------------
     QObject(),
     m_pIdxTree(nullptr),
-    m_strTestStepsAbsFilePath(m_strTestStepsAbsFilePath),
+    m_strTestStepsAbsFilePath(i_strTestStepsAbsFilePath),
+    m_strTestResultsAbsFilePath(i_strTestResultsAbsFilePath),
     m_pTestStepCurr(nullptr),
     m_iTestStepInterval_ms(i_iTestStepInterval_ms),
+    m_iNumberOfTestRuns(0),
     m_state(ETestState::Idle),
     m_runMode(ERunMode::Continuous),
     m_bDoTestStepPending(false),
@@ -76,24 +104,35 @@ CTest::CTest(
 {
     setObjectName(i_strName);
 
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Test", "CTest", objectName());
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
 
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Name: " + i_strName;
-        strMthInArgs += ", FileName: " + m_strTestStepsAbsFilePath;
+        strMthInArgs += ", TestStepsFile: " + i_strTestStepsAbsFilePath;
+        strMthInArgs += ", NodeSep: " + i_strNodeSeparator;
         strMthInArgs += ", Interval: " + QString::number(i_iTestStepInterval_ms) + " ms";
+        strMthInArgs += ", ResultsFile: " + i_strTestResultsAbsFilePath;
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
 
     m_pIdxTree = new CTestStepIdxTree(this);
+
+    if( m_strTestStepsAbsFilePath.isEmpty() )
+    {
+        m_strTestStepsAbsFilePath = GetDefaultTestStepsAbsFilePath();
+    }
+    if( m_strTestResultsAbsFilePath.isEmpty() )
+    {
+        m_strTestResultsAbsFilePath = GetDefaultTestResultsAbsFilePath();
+    }
 
     // Should be called by derived class if desired.
     //m_pIdxTree->recall();
@@ -106,7 +145,7 @@ CTest::~CTest()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
@@ -129,6 +168,7 @@ CTest::~CTest()
     //m_strTestStepsAbsFilePath;
     m_pTestStepCurr = nullptr;
     m_iTestStepInterval_ms = 0;
+    m_iNumberOfTestRuns = 0;
     m_state = static_cast<ETestState>(0);
     m_runMode = static_cast<ERunMode>(0);
     m_bDoTestStepPending = false;
@@ -149,44 +189,45 @@ public: // instance methods
     Please note that only the settings for those index tree entries may be recalled
     which again will be found on recalling the test tree.
 
-    @param i_strAbsFilePath [in] Absolute path name of the test steps file.
-                                 If an empty string is passed the default file name as
-                                 passed with the ctor is used.
-                                 If a non empty string is passed and no default file name
-                                 was set the passed file name will used as the default file
-                                 name for subsequent save/recall calls.
+    @param i_strAbsFilePath [in]
+        Absolute path name of the test steps file.
+        If an empty string is passed the default file path is used.
+        The default file path has either been provided as argument to the ctor
+        or has been automatically detected when creating the test instance.
 */
-SErrResultInfo CTest::save( const QString& i_strAbsFilePath )
+SErrResultInfo CTest::saveTestSteps( const QString& i_strAbsFilePath )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "AbsFilePath: " + i_strAbsFilePath;
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "save",
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "saveTestSteps",
         /* strMthInArgs */ strMthInArgs );
 
-    if( !i_strAbsFilePath.isEmpty() && m_strTestStepsAbsFilePath.isEmpty() )
+    QString strAbsFilePath = i_strAbsFilePath;
+
+    if( strAbsFilePath.isEmpty() )
     {
-        m_strTestStepsAbsFilePath = i_strAbsFilePath;
+        strAbsFilePath = m_strTestStepsAbsFilePath;
     }
 
-    SErrResultInfo errResultInfo = m_pIdxTree->save(m_strTestStepsAbsFilePath);
+    SErrResultInfo errResultInfo = m_pIdxTree->save(strAbsFilePath);
 
-    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         mthTracer.setMethodReturn(errResultInfo);
     }
 
     return errResultInfo;
 
-} // save
+} // saveTestSteps
 
 //------------------------------------------------------------------------------
 /*! Recalls the settings of the test steps and test step groups from an XML file.
@@ -198,44 +239,45 @@ SErrResultInfo CTest::save( const QString& i_strAbsFilePath )
     which will still be found in the test tree. Test steps and groups which will
     not be found will be ignored.
 
-    @param i_strAbsFilePath [in] Absolute path name of the test steps file.
-                                 If an empty string is passed the default file name as
-                                 passed with the ctor is used.
-                                 If a non empty string is passed and no default file name
-                                 was set the passed file name will used as the default file
-                                 name for subsequent save/recall calls.
+    @param i_strAbsFilePath [in]
+        Absolute path name of the test steps file.
+        If an empty string is passed the default file path is used.
+        The default file path has either been provided as argument to the ctor
+        or has been automatically detected when creating the test instance.
 */
-SErrResultInfo CTest::recall( const QString& i_strAbsFilePath )
+SErrResultInfo CTest::recallTestSteps( const QString& i_strAbsFilePath )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "AbsFilePath: " + i_strAbsFilePath;
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "recall",
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "recallTestSteps",
         /* strMthInArgs */ strMthInArgs );
 
-    if( !i_strAbsFilePath.isEmpty() && m_strTestStepsAbsFilePath.isEmpty() )
+    QString strAbsFilePath = i_strAbsFilePath;
+
+    if( strAbsFilePath.isEmpty() )
     {
-        m_strTestStepsAbsFilePath = i_strAbsFilePath;
+        strAbsFilePath = m_strTestStepsAbsFilePath;
     }
 
-    SErrResultInfo errResultInfo = m_pIdxTree->recall(m_strTestStepsAbsFilePath);
+    SErrResultInfo errResultInfo = m_pIdxTree->recall(strAbsFilePath);
 
-    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         mthTracer.setMethodReturn(errResultInfo);
     }
 
     return errResultInfo;
 
-} // recall
+} // recallTestSteps
 
 /*==============================================================================
 public: // instance methods
@@ -247,14 +289,14 @@ void CTest::setTestStepInterval( int i_iTestStepInterval_ms )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = "Interval: " + QString::number(i_iTestStepInterval_ms);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setTestStepInterval",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -282,11 +324,11 @@ void CTest::start()
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "start",
         /* strAddInfo   */ strAddTrcInfo );
 
-    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) )
     {
         strAddTrcInfo  = "State: " + m_state.toString();
         strAddTrcInfo += ", TestStepCurr: " + QString(m_pTestStepCurr == nullptr ? "nullptr" : m_pTestStepCurr->path());
@@ -295,9 +337,15 @@ void CTest::start()
 
     if( m_state == ETestState::Idle )
     {
+        m_iNumberOfTestRuns++;
+
         m_pIdxTree->reset();
 
         setCurrentTestStep(nullptr);
+
+        emit testStarted();
+
+        onTestStarted();
     }
 
     if( m_state == ETestState::Idle || m_state == ETestState::Paused )
@@ -318,11 +366,11 @@ void CTest::step()
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "step",
         /* strAddInfo   */ strAddTrcInfo );
 
-    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) )
     {
         strAddTrcInfo  = "State: " + m_state.toString();
         strAddTrcInfo += ", TestStepCurr: " + QString(m_pTestStepCurr == nullptr ? "nullptr" : m_pTestStepCurr->path());
@@ -354,11 +402,11 @@ void CTest::stop()
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "stop",
         /* strAddInfo   */ strAddTrcInfo );
 
-    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) )
     {
         strAddTrcInfo  = "State: " + m_state.toString();
         strAddTrcInfo += ", TestStepCurr: " + QString(m_pTestStepCurr == nullptr ? "nullptr" : m_pTestStepCurr->path());
@@ -380,11 +428,11 @@ void CTest::abort()
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "abort",
         /* strAddInfo   */ strAddTrcInfo );
 
-    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) )
     {
         strAddTrcInfo  = "State: " + m_state.toString();
         strAddTrcInfo += ", TestStepCurr: " + QString(m_pTestStepCurr == nullptr ? "nullptr" : m_pTestStepCurr->path());
@@ -406,11 +454,11 @@ void CTest::pause()
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "pause",
         /* strAddInfo   */ strAddTrcInfo );
 
-    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) )
     {
         strAddTrcInfo  = "State: " + m_state.toString();
         strAddTrcInfo += ", TestStepCurr: " + QString(m_pTestStepCurr == nullptr ? "nullptr" : m_pTestStepCurr->path());
@@ -432,7 +480,7 @@ void CTest::resume()
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "resume",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -445,6 +493,550 @@ void CTest::resume()
     }
 
 } // resume
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! Saves the results of the test in a log file.
+
+    @param i_strAbsFilePath [in]
+        Absolute path name of the file containing the expected results.
+        Each line within this file will be added to o_strlstExpectedResults.
+    @param o_strlstExpectedResults [out]
+        The string list will be filled with the content of the file.
+
+    @return ErrResultInfo structure.
+*/
+SErrResultInfo CTest::readExpectedTestResults(
+    const QString& i_strAbsFilePath,
+    QStringList&   o_strlstExpectedResults ) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        strMthInArgs = i_strAbsFilePath;
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "readExpectedTestResults",
+        /* strMthInArgs */ strMthInArgs );
+
+    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), "saveTestResults");
+
+    QFile file;
+
+    if( i_strAbsFilePath.isEmpty() )
+    {
+        errResultInfo.setSeverity(EResultSeverityError);
+        errResultInfo.setResult(EResultInvalidFileName);
+    }
+    else
+    {
+        QFileInfo fileInfo(i_strAbsFilePath);
+
+        file.setFileName(i_strAbsFilePath);
+
+        if( !file.open(QIODevice::ReadOnly) )
+        {
+            errResultInfo.setSeverity(EResultSeverityError);
+            errResultInfo.setResult(EResultFileOpenForRead);
+            errResultInfo.setAddErrInfoDscr(i_strAbsFilePath);
+        }
+    }
+
+    if( !errResultInfo.isErrorResult() )
+    {
+        QTextStream in(&file);
+        QString line;
+
+        while( in.readLineInto(&line) )
+        {
+            o_strlstExpectedResults << line;
+        }
+    }
+
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        mthTracer.setMethodReturn(errResultInfo);
+    }
+
+    return errResultInfo;
+
+} // readExpectedTestResults
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the test result.
+
+    @return Test result with one of the following CEnumTestResult enumerator value:
+        Undefined  .. if none of the tests has been exucuted
+        TestFailed .. if at least one test step failed
+        TestPassed .. if all test steps were successfull
+        TestSkipped . if all test steps were skipped
+
+    @note The method may be time consuming as the whole test step tree will
+          be walked trough. This is something which could be improved by storing
+          the current results.
+*/
+CEnumTestResult CTest::getTestResult() const
+//------------------------------------------------------------------------------
+{
+    CEnumTestResult result = ETestResult::Undefined;
+
+    QVector<CIdxTreeEntry*> arTreeEntries = m_pIdxTree->treeEntriesVec();
+
+    for( const auto& pIdxTreeEntry : arTreeEntries )
+    {
+        if( pIdxTreeEntry->isLeave())
+        {
+            CTestStep* pTestStep = dynamic_cast<CTestStep*>(pIdxTreeEntry);
+
+            if( pTestStep->isEnabled() )
+            {
+                if( pTestStep->getTestResult() == ETestResult::TestFailed )
+                {
+                    result = ETestResult::TestFailed;
+                    break;
+                }
+                else if( pTestStep->getTestResult() == ETestResult::TestPassed )
+                {
+                    result = ETestResult::TestPassed;
+                }
+            }
+        }
+    }
+    return result;
+
+} // getTestResult
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the total test duration in seconds.
+
+    @return Test duration in seconds.
+
+    @note The method may be time consuming as the whole test step tree will
+          be walked trough. This is something which could be improved by storing
+          the current results.
+*/
+double CTest::getTestDurationInSecs() const
+//------------------------------------------------------------------------------
+{
+    CTestStepRoot* pRootEntry = dynamic_cast<CTestStepRoot*>(m_pIdxTree->root());
+    return pRootEntry->getTestDurationInSec();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the total number of test steps.
+
+    This includes all configured test steps no matter if they have been executed,
+    disabled or not yet executed.
+
+    @return Total number of test steps.
+
+    @note The method may be time consuming as the whole test step tree will
+          be walked trough. This is something which could be improved by storing
+          the current results.
+*/
+int CTest::getTotalNumberOfTestSteps() const
+//------------------------------------------------------------------------------
+{
+    int iTotalNumberOfTestSteps = 0;
+
+    QVector<CIdxTreeEntry*> arTreeEntries = m_pIdxTree->treeEntriesVec();
+
+    for( const auto& pIdxTreeEntry : arTreeEntries )
+    {
+        if( pIdxTreeEntry->isLeave())
+        {
+            iTotalNumberOfTestSteps++;
+        }
+    }
+    return iTotalNumberOfTestSteps;
+
+} // getTotalNumberOfTestSteps
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the total number of failed test steps at the time the method
+           is called.
+
+    The test may have been paused and the overall test may still fail.
+
+    @return Total number of failed test steps.
+
+    @note The method may be time consuming as the whole test step tree will
+          be walked trough. This is something which could be improved by storing
+          the current results.
+*/
+int CTest::getNumberOfFailedTestSteps() const
+//------------------------------------------------------------------------------
+{
+    int iNumberOfFailedTestSteps = 0;
+
+    QVector<CIdxTreeEntry*> arTreeEntries = m_pIdxTree->treeEntriesVec();
+
+    for( const auto& pIdxTreeEntry : arTreeEntries )
+    {
+        if( pIdxTreeEntry->isLeave())
+        {
+            CTestStep* pTestStep = dynamic_cast<CTestStep*>(pIdxTreeEntry);
+
+            if( pTestStep->isEnabled() )
+            {
+                if( pTestStep->getTestResult() == ETestResult::TestFailed )
+                {
+                    iNumberOfFailedTestSteps++;
+                }
+            }
+        }
+    }
+    return iNumberOfFailedTestSteps;
+
+} // getNumberOfFailedTestSteps
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the total number of passed test steps at the time the method
+           is called.
+
+    The test may have been paused and the overall test may still fail.
+
+    @return Total number of passed test steps.
+
+    @note The method may be time consuming as the whole test step tree will
+          be walked trough. This is something which could be improved by storing
+          the current results.
+*/
+int CTest::getNumberOfPassedTestSteps() const
+//------------------------------------------------------------------------------
+{
+    int iNumberOfPassedTestSteps = 0;
+
+    QVector<CIdxTreeEntry*> arTreeEntries = m_pIdxTree->treeEntriesVec();
+
+    for( const auto& pIdxTreeEntry : arTreeEntries )
+    {
+        if( pIdxTreeEntry->isLeave())
+        {
+            CTestStep* pTestStep = dynamic_cast<CTestStep*>(pIdxTreeEntry);
+
+            if( pTestStep->isEnabled() )
+            {
+                if( pTestStep->getTestResult() == ETestResult::TestPassed )
+                {
+                    iNumberOfPassedTestSteps++;
+                }
+            }
+        }
+    }
+    return iNumberOfPassedTestSteps;
+
+} // getNumberOfPassedTestSteps
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the total number of disabled test steps at the time the method
+           is called.
+
+    @return Total number of disabled test steps.
+
+    @note The method may be time consuming as the whole test step tree will
+          be walked trough. This is something which could be improved by storing
+          the current results.
+*/
+int CTest::getNumberOfDisabledTestSteps() const
+//------------------------------------------------------------------------------
+{
+    int iNumberOfDisabledTestSteps = 0;
+
+    QVector<CIdxTreeEntry*> arTreeEntries = m_pIdxTree->treeEntriesVec();
+
+    for( const auto& pIdxTreeEntry : arTreeEntries )
+    {
+        if( pIdxTreeEntry->isLeave())
+        {
+            CTestStep* pTestStep = dynamic_cast<CTestStep*>(pIdxTreeEntry);
+
+            if( !pTestStep->isEnabled() )
+            {
+                iNumberOfDisabledTestSteps++;
+            }
+        }
+    }
+    return iNumberOfDisabledTestSteps;
+
+} // getNumberOfDisabledTestSteps
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the number of test runs (how many times the test has been started).
+
+    @return Number of test runs.
+*/
+int CTest::getNumberOfTestRuns() const
+//------------------------------------------------------------------------------
+{
+    return m_iNumberOfTestRuns;
+}
+
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! Saves the results of the test in a log file.
+
+    @param i_strAbsFilePath [in]
+        Absolute path name of the test results file.
+        If an empty string is passed the default file path is used.
+        The default file path has either been provided as argument to the ctor
+        or has been automatically detected when creating the test instance.
+    @param i_bReportAllExpectedResults [in] Default: false
+        If true the expected and actual results of all test steps are output.
+        If false (default) only the expected and actual results of the failed test steps are output.
+
+    @return ErrResultInfo structure.
+*/
+SErrResultInfo CTest::saveTestResults( const QString& i_strAbsFilePath, bool i_bReportAllExpectedResults )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        strMthInArgs = "AbsFilePath: " + i_strAbsFilePath;
+        strMthInArgs += ", ReportAllResults: " + bool2Str(i_bReportAllExpectedResults);
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "saveTestResults",
+        /* strMthInArgs */ strMthInArgs );
+
+    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), "saveTestResults");
+
+    QString strAbsFilePath = i_strAbsFilePath;
+
+    if( strAbsFilePath.isEmpty() )
+    {
+        strAbsFilePath = m_strTestResultsAbsFilePath;
+    }
+
+    QFile file;
+
+    if( strAbsFilePath.isEmpty() )
+    {
+        errResultInfo.setSeverity(EResultSeverityError);
+        errResultInfo.setResult(EResultInvalidFileName);
+    }
+    else
+    {
+        QFileInfo fileInfo(strAbsFilePath);
+        QDir      dir = fileInfo.absoluteDir();
+
+        if( !dir.exists() )
+        {
+            dir.mkpath(dir.absolutePath());
+        }
+
+        file.setFileName(strAbsFilePath);
+
+        if( !file.open(QIODevice::WriteOnly) )
+        {
+            errResultInfo.setSeverity(EResultSeverityError);
+            errResultInfo.setResult(EResultFileOpenForWrite);
+            errResultInfo.setAddErrInfoDscr(strAbsFilePath);
+        }
+    }
+
+    if( !errResultInfo.isErrorResult() )
+    {
+        double fTestDuration_s = 0.0;
+        int iTotalNumberOfTestSteps = 0;
+        int iNumberOfFailedTestSteps = 0;
+        int iNumberOfPassedTestSteps = 0;
+        int iNumberOfSkippedTestSteps = 0;
+        int iNumberOfDisabledTestSteps = 0;
+
+        CTestStepRoot* pRootEntry = dynamic_cast<CTestStepRoot*>(m_pIdxTree->root());
+        fTestDuration_s = pRootEntry->getTestDurationInSec();
+
+        QVector<CIdxTreeEntry*> arTreeEntries = m_pIdxTree->treeEntriesVec();
+        for( const auto& pIdxTreeEntry : arTreeEntries )
+        {
+            if( pIdxTreeEntry->isLeave())
+            {
+                CTestStep* pTestStep = dynamic_cast<CTestStep*>(pIdxTreeEntry);
+
+                iTotalNumberOfTestSteps++;
+
+                if( pTestStep->isEnabled() )
+                {
+                    if( pTestStep->getTestResult() == ETestResult::Undefined )
+                    {
+                    }
+                    else if( pTestStep->getTestResult() == ETestResult::TestFailed )
+                    {
+                        iNumberOfFailedTestSteps++;
+                    }
+                    else if( pTestStep->getTestResult() == ETestResult::TestPassed )
+                    {
+                        iNumberOfPassedTestSteps++;
+                    }
+                    else if( pTestStep->getTestResult() == ETestResult::TestSkipped )
+                    {
+                        iNumberOfSkippedTestSteps++;
+                    }
+                }
+                else
+                {
+                    iNumberOfDisabledTestSteps++;
+                }
+            }
+        }
+
+        QTextStream out(&file);
+
+        QString strHeadLine = "Test: " + objectName();
+
+        out << strHeadLine << "\n";
+        for( int idxChar = 0; idxChar < strHeadLine.length(); ++idxChar ) {
+            out << "=";
+        }
+        out << "\n\n";
+
+        out << "TestRun: " << QString::number(m_iNumberOfTestRuns) << "\n";
+        out << "Duration: " << QString::number(fTestDuration_s, 'f', 1) << " s\n";
+        out << "Total number of test steps: " << QString::number(iTotalNumberOfTestSteps) << "\n";
+        out << "Number of failed test steps: " << QString::number(iNumberOfFailedTestSteps) << "\n";
+        out << "Number of passed test steps: " << QString::number(iNumberOfPassedTestSteps) << "\n";
+        out << "Number of skipped test steps: " << QString::number(iNumberOfSkippedTestSteps) << "\n";
+        out << "Number of disabled test steps: " << QString::number(iNumberOfDisabledTestSteps) << "\n";
+        out << "\n\n";
+
+        QString strIndent;
+
+        for( auto itIdxTree = m_pIdxTree->begin(); itIdxTree != m_pIdxTree->end(); ++itIdxTree )
+        {
+            CIdxTreeEntry* pTreeEntry = *itIdxTree;
+
+            if( pTreeEntry->isBranch() )
+            {
+                CTestStepGroup* pTestStepGroup = dynamic_cast<CTestStepGroup*>(pTreeEntry);
+                strIndent = "";
+                while( !pTestStepGroup->parentBranch()->isRoot() )
+                {
+                    strIndent += "  ";
+                    pTestStepGroup =  dynamic_cast<CTestStepGroup*>(pTestStepGroup->parentBranch());
+                }
+                strHeadLine = "Group: " + pTestStepGroup->name();
+                out << strIndent << strHeadLine << "\n";
+                out << strIndent;
+                for( int idxChar = 0; idxChar < strHeadLine.length(); ++idxChar ) {
+                    out << "-";
+                }
+                out << "\n\n";
+                out << "Duration: " << QString::number(pTestStepGroup->getTestDurationInSec(), 'f', 1) << " s\n\n";
+                strIndent += "  ";
+            }
+            else if( pTreeEntry->isLeave() )
+            {
+                CTestStep* pTestStep = dynamic_cast<CTestStep*>(pTreeEntry);
+                strHeadLine = "TestStep: " + pTestStep->name();
+                out << strIndent << strHeadLine << "\n";
+                out << strIndent;
+                for( int idxChar = 0; idxChar < strHeadLine.length(); ++idxChar ) {
+                    out << "-";
+                }
+                out << "\n\n";
+                if( pTestStep->isEnabled() )
+                {
+                    if( pTestStep->getOperation().length() > 0 ) {
+                        out << strIndent << "Operation: " << pTestStep->getOperation() << "\n";
+                    }
+                    if( pTestStep->getDescription().length() > 0 ) {
+                        out << strIndent << "Description: " << pTestStep->getDescription() << "\n";
+                    }
+                    QStringList strlstConfigValueKeys = pTestStep->getConfigValueKeys();
+                    if( strlstConfigValueKeys.size() > 0 ) {
+                        strHeadLine = strIndent + "Config Values:";
+                        out << strIndent << "Config Values:" << "\n";
+                        for( const auto& strKey : strlstConfigValueKeys ) {
+                            out << strIndent << "  " << strKey << ": " << pTestStep->getConfigValue(strKey).toString() << "\n";
+                        }
+                    }
+                    out << strIndent << "Duration: " << QString::number(pTestStep->getTestDurationInSec(), 'f', 1) << " s\n\n";
+                    out << strIndent << "Result: " << pTestStep->getTestResult().toString() << "\n\n";
+                    bool bShowResults = i_bReportAllExpectedResults || (pTestStep->getTestResult() == ETestResult::TestFailed);
+                    if( bShowResults ) {
+                        QStringList strlstExpectedValues = pTestStep->getExpectedValues();
+                        QStringList strlstResultValues = pTestStep->getResultValues();
+                        if( strlstExpectedValues.size() > 0 || strlstResultValues.size() > 0 ) {
+                            out << strIndent << "Expected Result Values" << "\n";
+                            out << strIndent << "Actual Result Values" << "\n\n";
+                            int idxResult = 0;
+                            for( ; idxResult < strlstExpectedValues.size(); ++idxResult ) {
+                                bool bEqual = false;
+                                if( idxResult < strlstResultValues.size() ) {
+                                    if( strlstExpectedValues[idxResult] == strlstResultValues[idxResult] ) {
+                                        bEqual = true;
+                                    }
+                                }
+                                if( bEqual ) {
+                                    out << "  " + strIndent;
+                                } else {
+                                    out << "! " << strIndent;
+                                }
+                                out << QString::number(idxResult) << ": " << strlstExpectedValues[idxResult] << "\n";
+                                if( bEqual ) {
+                                    out << "  " + strIndent;
+                                } else {
+                                    out << "! " << strIndent;
+                                }
+                                out << QString::number(idxResult) << ": ";
+                                if( idxResult < strlstResultValues.size() ) {
+                                    out << strlstResultValues[idxResult];
+                                }
+                                out << "\n";
+                            }
+                            for( ; idxResult < strlstResultValues.size(); ++idxResult ) {
+                                bool bEqual = false;
+                                if( bEqual ) {
+                                    out << "  " + strIndent;
+                                } else {
+                                    out << "! " << strIndent;
+                                }
+                                out << QString::number(idxResult) << ":\n";
+                                if( bEqual ) {
+                                    out << "  " + strIndent;
+                                } else {
+                                    out << "! " << strIndent;
+                                }
+                                out << QString::number(idxResult) << ": " << strlstResultValues[idxResult] << "\n";
+                            }
+                        }
+                        out << "\n";
+                    }
+                }
+            }
+        }
+    }
+
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        mthTracer.setMethodReturn(errResultInfo);
+    }
+
+    return errResultInfo;
+
+} // saveTestResults
 
 /*==============================================================================
 protected slots:
@@ -463,17 +1055,17 @@ void CTest::doTestStep()
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "doTestStep",
         /* strAddInfo   */ "" );
 
-    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) )
     {
         strAddTrcInfo  = "State: " + m_state.toString();
         strAddTrcInfo += ", TestStepCurr: " + QString(m_pTestStepCurr == nullptr ? "nullptr" : m_pTestStepCurr->path());
@@ -484,15 +1076,16 @@ void CTest::doTestStep()
 
     if( m_pTestStepCurr != nullptr )
     {
-        //m_pTestStepCurr->testStarted();
-
         m_pTestStepCurr->doTestStep();
+    }
 
+    if( m_pTestStepCurr != nullptr )
+    {
         if( m_pTestStepCurr->isFinished() )
         {
             onCurrentTestStepFinished(m_pTestStepCurr);
         }
-        else if( !m_pTestStepCurr->isFinished() )
+        else // if( !m_pTestStepCurr->isFinished() )
         {
             if( !QObject::connect(
                 /* pObjSender   */ m_pTestStepCurr,
@@ -527,18 +1120,18 @@ void CTest::onCurrentTestStepFinished( CTestStep* i_pTestStep )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = QString(i_pTestStep == nullptr ? "nullptr" : i_pTestStep->path());
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onCurrentTestStepFinished",
         /* strAddInfo   */ strAddTrcInfo );
 
-    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) )
     {
         strAddTrcInfo  = "State: " + m_state.toString();
         strAddTrcInfo += ", TestStepCurr: " + QString(m_pTestStepCurr == nullptr ? "nullptr" : m_pTestStepCurr->path());
@@ -598,18 +1191,18 @@ void CTest::setState( const CEnumTestState& i_state )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = "State: " + i_state.toString();
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setState",
         /* strAddInfo   */ strAddTrcInfo );
 
-    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) )
     {
         strAddTrcInfo  = "State: " + m_state.toString();
         strAddTrcInfo += ", TestStepCurr: " + QString(m_pTestStepCurr == nullptr ? "nullptr" : m_pTestStepCurr->path());
@@ -618,7 +1211,6 @@ void CTest::setState( const CEnumTestState& i_state )
 
     if( m_state != i_state )
     {
-        CEnumTestState statePrev = m_state;
         m_state = i_state;
         emit stateChanged(m_state);
     }
@@ -631,18 +1223,18 @@ void CTest::setRunMode( const CEnumRunMode& i_runMode )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = "RunMode: " + i_runMode.toString();
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setRunMode",
         /* strAddInfo   */ strAddTrcInfo );
 
-    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) )
     {
         strAddTrcInfo  = "State: " + m_state.toString();
         strAddTrcInfo += ", TestStepCurr: " + QString(m_pTestStepCurr == nullptr ? "nullptr" : m_pTestStepCurr->path());
@@ -651,7 +1243,6 @@ void CTest::setRunMode( const CEnumRunMode& i_runMode )
 
     if( m_runMode != i_runMode )
     {
-        CEnumRunMode runModePrev = m_runMode;
         m_runMode = i_runMode;
         emit runModeChanged(m_runMode);
     }
@@ -663,23 +1254,46 @@ protected: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Virtual method called if test has been started.
+*/
+void CTest::onTestStarted()
+//------------------------------------------------------------------------------
+{
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Virtual method called if test has been finished.
+
+    The default implementation saves the test results.
+*/
+void CTest::onTestFinished()
+//------------------------------------------------------------------------------
+{
+    saveTestResults();
+}
+
+/*==============================================================================
+protected: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
 void CTest::setCurrentTestStep( CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = "Step: " + QString(i_pTestStep == nullptr ? "nullptr" : i_pTestStep->path());
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setCurrentTestStep",
         /* strAddInfo   */ strAddTrcInfo );
 
-    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) )
     {
         strAddTrcInfo  = "State: " + m_state.toString();
         strAddTrcInfo += ", TestStepCurr: " + QString(m_pTestStepCurr == nullptr ? "nullptr" : m_pTestStepCurr->path());
@@ -711,18 +1325,18 @@ CTestStep* CTest::getNextTestStep( CTestStep* i_pTestStepCurr )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = "TestStepCurr: " + QString(i_pTestStepCurr == nullptr ? "nullptr" : i_pTestStepCurr->path());
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "getNextTestStep",
         /* strAddInfo   */ strAddTrcInfo );
 
-    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) )
     {
         strAddTrcInfo  = "State: " + m_state.toString();
         strAddTrcInfo += ", TestStepCurr: " + QString(m_pTestStepCurr == nullptr ? "nullptr" : m_pTestStepCurr->path());
@@ -767,7 +1381,7 @@ CTestStep* CTest::getNextTestStep(
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo  = "TreeEntryParent: " + QString(i_pTreeEntryParent == nullptr ? "nullptr" : i_pTreeEntryParent->path());
         strAddTrcInfo += ", TreeEntryFinished: " + QString(i_pTreeEntryFinished == nullptr ? "nullptr" : i_pTreeEntryFinished->name());
@@ -775,11 +1389,11 @@ CTestStep* CTest::getNextTestStep(
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "getNextTestStep",
         /* strAddInfo   */ strAddTrcInfo );
 
-    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) )
     {
         strAddTrcInfo  = "State: " + m_state.toString();
         strAddTrcInfo += ", TestStepCurr: " + QString(m_pTestStepCurr == nullptr ? "nullptr" : m_pTestStepCurr->path());
@@ -868,18 +1482,18 @@ void CTest::triggerDoTestStep( int i_iInterval_ms )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = "Interval: " + QString::number(i_iInterval_ms);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "triggerDoTestStep",
         /* strAddInfo   */ strAddTrcInfo );
 
-    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) )
     {
         strAddTrcInfo  = "State: " + m_state.toString();
         strAddTrcInfo += ", TestStepCurr: " + QString(m_pTestStepCurr == nullptr ? "nullptr" : m_pTestStepCurr->path());
@@ -922,18 +1536,18 @@ void CTest::triggerNextTestStep( int i_iInterval_ms )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = "Interval: " + QString::number(i_iInterval_ms);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "triggerNextTestStep",
         /* strAddInfo   */ strAddTrcInfo );
 
-    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) )
     {
         strAddTrcInfo  = "State: " + m_state.toString();
         strAddTrcInfo += ", TestStepCurr: " + QString(m_pTestStepCurr == nullptr ? "nullptr" : m_pTestStepCurr->path());
@@ -953,6 +1567,11 @@ void CTest::triggerNextTestStep( int i_iInterval_ms )
         if( m_state == ETestState::Running ) // not Paused or already Stopped
         {
             stop();
+
+            onTestFinished();
+
+            CEnumTestResult testResult = getTestResult();
+            emit testFinished(testResult);
         }
     }
 } // triggerNextTestStep
@@ -980,19 +1599,19 @@ bool CTest::event( QEvent* i_pMsg )
 
         QString strAddTrcInfo;
 
-        if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+        if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
         {
-            int iAddTrcInfoDetails = m_pTrcAdminObj->getTraceDetailLevel() >= ETraceDetailLevelInternalStates ? 1 : 0;
+            int iAddTrcInfoDetails = m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ? 1 : 0;
             strAddTrcInfo = "Msg { " + pMsg->getAddTrcInfoStr(iAddTrcInfoDetails) + " }";
         }
 
         CMethodTracer mthTracer(
             /* pAdminObj    */ m_pTrcAdminObj,
-            /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+            /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
             /* strMethod    */ "event",
             /* strAddInfo   */ strAddTrcInfo );
 
-        if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+        if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) )
         {
             strAddTrcInfo  = "State: " + m_state.toString();
             strAddTrcInfo += ", TestStepCurr: " + QString(m_pTestStepCurr == nullptr ? "nullptr" : m_pTestStepCurr->path());

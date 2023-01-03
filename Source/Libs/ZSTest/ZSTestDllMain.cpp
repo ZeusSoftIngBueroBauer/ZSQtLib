@@ -41,29 +41,6 @@ using namespace ZS::Test;
 
 
 /*******************************************************************************
-Libraries depending on build configuration and used Qt version
-*******************************************************************************/
-
-#ifdef _WINDOWS
-
-#ifdef USE_PRAGMA_COMMENT_LIB_INCLUDE_IN_MAIN_MODULES
-
-#pragma message(__FILE__ ": Linking against = " QTCORELIB)
-#pragma comment(lib, QTCORELIB)
-#pragma message(__FILE__ ": Linking against = " QTNETWORKLIB)
-#pragma comment(lib, QTNETWORKLIB)
-#pragma message(__FILE__ ": Linking against = " QTXMLLIB)
-#pragma comment(lib, QTXMLLIB)
-
-#pragma message(__FILE__ ": Linking against = " ZSSYSLIB)
-#pragma comment(lib, ZSSYSLIB)
-
-#endif // #ifdef USE_PRAGMA_COMMENT_LIB_INCLUDE_IN_MAIN_MODULES
-
-#endif // #ifdef _WINDOWS
-
-
-/*******************************************************************************
 exported methods
 *******************************************************************************/
 
@@ -83,11 +60,11 @@ class CInitEnumTestResult
 public: // ctor
     CInitEnumTestResult() {
         QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnum<ETestResult>::s_arEnumEntries);
-                                                   // Enumerator,                             Name,        Symbol,  Text,        SCIPShort, SCPILong
-        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(ETestResult::Undefined),  "Undefined", "?",     "Undefined", "UND",     "UNDefined" ),
-        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(ETestResult::TestFailed), "Failed",    "ERR",   "Failed",    "FAIL",    "FAILed"    ),
-        pVEnumEntries->append( /* 2 */ SEnumEntry( static_cast<int>(ETestResult::TestPassed), "Passed",    "OK",    "Passed",    "PASS",    "PASSed"    ),
-        pVEnumEntries->append( /* 3 */ SEnumEntry( static_cast<int>(ETestResult::Ignore),     "Ignore",    "-",     "Ignore",    "IGN",     "IGNore"    )
+                                                   // Enumerator,                              Name,        Symbol,  Text,        SCIPShort, SCPILong
+        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(ETestResult::Undefined),   "Undefined", "?",     "Undefined", "UND",     "UNDefined" ),
+        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(ETestResult::TestFailed),  "Failed",    "ERR",   "Failed",    "FAIL",    "FAILed"    ),
+        pVEnumEntries->append( /* 2 */ SEnumEntry( static_cast<int>(ETestResult::TestPassed),  "Passed",    "OK",    "Passed",    "PASS",    "PASSed"    ),
+        pVEnumEntries->append( /* 3 */ SEnumEntry( static_cast<int>(ETestResult::TestSkipped), "Skipped",    "-",    "Skipped",   "SKIP",    "SKIPped"   )
     }
 };
 static CInitEnumTestResult s_initEnumTestResult;
@@ -95,11 +72,11 @@ static CInitEnumTestResult s_initEnumTestResult;
 //------------------------------------------------------------------------------
 template<> const QVector<SEnumEntry> ZS::System::CEnum<ETestResult>::s_arEnumEntries =
 //------------------------------------------------------------------------------
-{                       // Enumerator,                             Name,        Symbol,  Text,        SCIPShort, SCPILong
-    /* 0 */ SEnumEntry( static_cast<int>(ETestResult::Undefined),  "Undefined", "?",     "Undefined", "UND",     "UNDefined" ),
-    /* 1 */ SEnumEntry( static_cast<int>(ETestResult::TestFailed), "Failed",    "ERR",   "Failed",    "FAIL",    "FAILed"    ),
-    /* 2 */ SEnumEntry( static_cast<int>(ETestResult::TestPassed), "Passed",    "OK",    "Passed",    "PASS",    "PASSed"    ),
-    /* 3 */ SEnumEntry( static_cast<int>(ETestResult::Ignore),     "Ignore",    "-",     "Ignore",    "IGN",     "IGNore"    )
+{                       // Enumerator,                              Name,        Symbol,  Text,        SCIPShort, SCPILong
+    /* 0 */ SEnumEntry( static_cast<int>(ETestResult::Undefined),   "Undefined", "?",     "Undefined", "UND",     "UNDefined" ),
+    /* 1 */ SEnumEntry( static_cast<int>(ETestResult::TestFailed),  "Failed",    "ERR",   "Failed",    "FAIL",    "FAILed"    ),
+    /* 2 */ SEnumEntry( static_cast<int>(ETestResult::TestPassed),  "Passed",    "OK",    "Passed",    "PASS",    "PASSed"    ),
+    /* 3 */ SEnumEntry( static_cast<int>(ETestResult::TestSkipped), "Skipped",   "-",     "Skipped",   "SKIP",    "SKIPped"   )
 };
 #endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 

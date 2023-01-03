@@ -25,7 +25,6 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include <QtCore/qcoreapplication.h>
-#include <QtCore/qmutex.h>
 #include <QtCore/qsettings.h>
 #include <QtCore/qtimer.h>
 #include <QtCore/qwaitcondition.h>
@@ -38,10 +37,12 @@ may result in using the software modules.
 #include "ZSSys/ZSSysEnumEntry.h"
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysException.h"
+#include "ZSSys/ZSSysMutex.h"
 #include "ZSSys/ZSSysRequestExecTree.h"
 #include "ZSSys/ZSSysRequestQueue.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
+#include "ZSSys/ZSSysTrcMthFile.h"
 #include "ZSSys/ZSSysTrcServer.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
@@ -49,7 +50,6 @@ may result in using the software modules.
 
 using namespace ZS::System;
 using namespace ZS::Ipc;
-using namespace ZS::Trace;
 
 
 /*******************************************************************************
@@ -113,11 +113,32 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Creates the client.
+
+    @param i_strObjName [in] Name of the client.
+    @param i_bMultiThreadedAccess [in] Default: false
+        If true each access to member variables will be protected by a mutex
+        (and the class becomes thread safe).
+    @param i_eTrcMthFileDetailLevel [in]
+        If trace outputs should not be forwarded to the trace server but directly
+        to a trace method file allocated by the client, this detail level has to
+        be to a value greater than None.
+    @param i_eTrcMthFileDetailLevelMutex [in]
+        If the locking and unlocking of the mutex of client
+        should be logged a value greater than 0 (EMethodTraceDetailLevel::None)
+        could be passed here. But the value will be ignored if the detail
+        level for the client tracer is None.
+    @param i_eTrcMthFileDetailLevelGateway [in]
+        This is the trace method detail level forwarded to the gateway thread
+        and to the gateway. This allows to enable/disable trace output for the
+        gateway separately from the anchor class.
+*/
 CClient::CClient(
     const QString& i_strObjName,
-    bool           i_bMultiThreadedAccess,
-    CTrcMthFile*   i_pTrcMthFile,
-    int            i_iTrcMthFileDetailLevel ) :
+    bool i_bMultiThreadedAccess,
+    EMethodTraceDetailLevel i_eTrcMthFileDetailLevel,
+    EMethodTraceDetailLevel i_eTrcMthFileDetailLevelMutex,
+    EMethodTraceDetailLevel i_eTrcMthFileDetailLevelGateway ) :
 //------------------------------------------------------------------------------
     QObject(),
     m_pMtx(nullptr),
@@ -147,8 +168,9 @@ CClient::CClient(
     m_bIsBeingDestroyed(false),
     // Tracing
     m_arpTrcMsgLogObjects(),
-    m_iTrcMthFileDetailLevel(i_iTrcMthFileDetailLevel),
-    m_pTrcMthFile(i_pTrcMthFile),
+    m_eTrcMthFileDetailLevel(i_eTrcMthFileDetailLevel),
+    m_eTrcMthFileDetailLevelGateway(i_eTrcMthFileDetailLevelGateway),
+    m_pTrcMthFile(nullptr),
     m_pTrcAdminObj(nullptr)
 {
     if( m_strObjName.isEmpty() )
@@ -157,16 +179,26 @@ CClient::CClient(
     }
     setObjectName(m_strObjName);
 
-    if( m_pTrcMthFile == nullptr )
+    // If this is the trace client (maybe used in a test) tracing through the trace server
+    // is not possible as that would lead to deadlocks and endless recursions. The Client
+    // may want to trace a method call and sends it through the trace server to itself
+    // whereupon a method should be trace (receiving data) which again should be traced
+    // through the trace server and so on ....
+    if( m_strObjName.endsWith("TrcClient") )
     {
-        m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(nameSpace(), className(), m_strObjName);
+        QString strLocalTrcFileAbsFilePath = CTrcServer::GetLocalTrcFileAbsoluteFilePath();
+        m_pTrcMthFile = CTrcMthFile::Alloc(strLocalTrcFileAbsFilePath);
+    }
+    else
+    {
+        m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(nameSpace(), className(), objectName());
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -175,7 +207,14 @@ CClient::CClient(
 
     if( i_bMultiThreadedAccess )
     {
-        m_pMtx = new QMutex(QMutex::Recursive);
+        if( m_pTrcMthFile != nullptr )
+        {
+            m_pMtx = new CMutex(QMutex::Recursive, ClassName() + "-" + i_strObjName, i_eTrcMthFileDetailLevelMutex);
+        }
+        else
+        {
+            m_pMtx = new CMutex(QMutex::Recursive, ClassName() + "-" + i_strObjName);
+        }
     }
 
     m_pErrLog = CErrLog::GetInstance();
@@ -203,10 +242,10 @@ CClient::CClient(
     }
 
     m_pRequestQueue = new CRequestQueue(
-        /* strCreatorNameSpace */ "ZS::Ipc",
-        /* strCreatorClassName      */ "CClient",
-        /* pObjParent               */ this,
-        /* bKeepReqDscrInExecTree   */ false );
+        /* strCreatorNameSpace    */ "ZS::Ipc",
+        /* strCreatorClassName    */ "CClient",
+        /* pObjParent             */ this,
+        /* bKeepReqDscrInExecTree */ false );
 
     m_pTmrReqTimeout = new QTimer(this);
 
@@ -233,11 +272,11 @@ CClient::~CClient()
 {
     QString strAddTrcInfo;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo  = "State: " + State2Str(m_state);
         strAddTrcInfo += ", ReqQueue {" + m_pRequestQueue->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
@@ -246,8 +285,8 @@ CClient::~CClient()
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -285,6 +324,12 @@ CClient::~CClient()
     }
     catch(...)
     {
+    }
+
+    if( m_pTrcMthFile != nullptr )
+    {
+        m_pTrcMthFile->close();
+        CTrcMthFile::Free(m_pTrcMthFile);
     }
 
     // Don't emit any other signals than destroyed. The receiver of the
@@ -331,7 +376,8 @@ CClient::~CClient()
     m_bIsBeingDestroyed = false;
     // Tracing
     //m_arpTrcMsgLogObjects;
-    m_iTrcMthFileDetailLevel = 0;
+    m_eTrcMthFileDetailLevel = static_cast<EMethodTraceDetailLevel>(0);
+    m_eTrcMthFileDetailLevelGateway = static_cast<EMethodTraceDetailLevel>(0);
     m_pTrcMthFile = nullptr;
     m_pTrcAdminObj = nullptr;
 
@@ -347,7 +393,7 @@ void CClient::setKeepReqDscrInExecTree( bool i_bKeep )
 {
     QString strAddTrcInfo;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = "Keep: " + bool2Str(i_bKeep);
     }
@@ -355,8 +401,8 @@ void CClient::setKeepReqDscrInExecTree( bool i_bKeep )
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -392,11 +438,9 @@ public: // overridables of the remote connection
 CRequest* CClient::connect_( int i_iTimeout_ms, bool i_bWait, qint64 i_iReqIdParent )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo  = "Timeout: " + QString::number(i_iTimeout_ms) + " ms";
         strAddTrcInfo += ", Wait: " + bool2Str(i_bWait);
@@ -406,19 +450,21 @@ CRequest* CClient::connect_( int i_iTimeout_ms, bool i_bWait, qint64 i_iReqIdPar
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "connect_",
         /* strAddInfo         */ strAddTrcInfo );
 
-    if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+    CMutexLocker mtxLocker(m_pMtx);
+
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo  = "State: " + State2Str(m_state);
         strAddTrcInfo += ", ReqQueue {" + m_pRequestQueue->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
@@ -527,18 +573,18 @@ CRequest* CClient::connect_( int i_iTimeout_ms, bool i_bWait, qint64 i_iReqIdPar
     // "execute<>Request" method above has been called and the "onRequestChanged"
     // slot method has already been disconnected from the request's changed signal.
 
-    if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo  = "State: " + State2Str(m_state);
         strAddTrcInfo += ", ReqQueue {" + m_pRequestQueue->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
         mthTracer.trace(strAddTrcInfo);
     }
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = QString( pReq == nullptr ? "SUCCESS" : pReq->getResultStr() );
         mthTracer.setMethodReturn(strAddTrcInfo);
@@ -552,11 +598,9 @@ CRequest* CClient::connect_( int i_iTimeout_ms, bool i_bWait, qint64 i_iReqIdPar
 CRequest* CClient::disconnect_( int i_iTimeout_ms, bool i_bWait, qint64 i_iReqIdParent )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo  = "Timeout: " + QString::number(i_iTimeout_ms) + " ms";
         strAddTrcInfo += ", Wait: " + bool2Str(i_bWait);
@@ -566,19 +610,21 @@ CRequest* CClient::disconnect_( int i_iTimeout_ms, bool i_bWait, qint64 i_iReqId
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "disconnect_",
         /* strAddInfo         */ strAddTrcInfo );
 
-    if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+    CMutexLocker mtxLocker(m_pMtx);
+
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo  = "State: " + State2Str(m_state);
         strAddTrcInfo += ", ReqQueue {" + m_pRequestQueue->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
@@ -685,18 +731,18 @@ CRequest* CClient::disconnect_( int i_iTimeout_ms, bool i_bWait, qint64 i_iReqId
     // "execute<>Request" method above has been called and the "onRequestChanged"
     // slot method has already been disconnected from the request's changed signal.
 
-    if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo  = "State: " + State2Str(m_state);
         strAddTrcInfo += ", ReqQueue {" + m_pRequestQueue->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
         mthTracer.trace(strAddTrcInfo);
     }
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = QString( pReq == nullptr ? "SUCCESS" : pReq->getResultStr() );
         mthTracer.setMethodReturn(strAddTrcInfo);
@@ -714,11 +760,9 @@ public: // overridables of the remote connection
 CRequest* CClient::changeSettings( int i_iTimeout_ms, bool i_bWait, qint64 i_iReqIdParent )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo  = "Timeout: " + QString::number(i_iTimeout_ms) + " ms";
         strAddTrcInfo += ", Wait: " + bool2Str(i_bWait);
@@ -728,19 +772,21 @@ CRequest* CClient::changeSettings( int i_iTimeout_ms, bool i_bWait, qint64 i_iRe
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "changeSettings",
         /* strAddInfo         */ strAddTrcInfo );
 
-    if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+    CMutexLocker mtxLocker(m_pMtx);
+
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo  = "State: " + State2Str(m_state);
         strAddTrcInfo += ", ReqQueue {" + m_pRequestQueue->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
@@ -838,18 +884,18 @@ CRequest* CClient::changeSettings( int i_iTimeout_ms, bool i_bWait, qint64 i_iRe
     // "execute<>Request" method above has been called and the "onRequestChanged"
     // slot method has already been disconnected from the request's changed signal.
 
-    if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo  = "State: " + State2Str(m_state);
         strAddTrcInfo += ", ReqQueue {" + m_pRequestQueue->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
         mthTracer.trace(strAddTrcInfo);
     }
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = QString( pReq == nullptr ? "SUCCESS" : pReq->getResultStr() );
         mthTracer.setMethodReturn(strAddTrcInfo);
@@ -867,20 +913,15 @@ public: // overridables of the remote connection
 CRequest* CClient::sendData( const QByteArray& i_byteArr, int i_iTimeout_ms, bool i_bWait, qint64 i_iReqIdParent )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strAddTrcInfo  = "ByteArr[" + QString::number(i_byteArr.size()) + "]";
-        if( getMethodTraceDetailLevel() < ETraceDetailLevelVerbose )
-        {
-            strAddTrcInfo += "(" + truncateStringWithEllipsisInTheMiddle(QString(i_byteArr), 20) + ")";
-        }
-        else // if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose )
-        {
-            strAddTrcInfo += "(" + truncateStringWithEllipsisInTheMiddle(QString(i_byteArr), 50) + ")";
+        strAddTrcInfo = "ByteArr[" + QString::number(i_byteArr.size()) + "]";
+        if( getMethodCallsTraceDetailLevel() < EMethodTraceDetailLevel::ArgsVerbose ) {
+            strAddTrcInfo += "(" + truncateStringWithEllipsisInTheMiddle(byteArr2Str(i_byteArr), 30) + ")";
+        } else {
+            strAddTrcInfo += "(" + truncateStringWithEllipsisInTheMiddle(byteArr2Str(i_byteArr), 100) + ")";
         }
         strAddTrcInfo += ", Timeout: " + QString::number(i_iTimeout_ms) + " ms";
         strAddTrcInfo += ", Wait: " + bool2Str(i_bWait);
@@ -890,19 +931,21 @@ CRequest* CClient::sendData( const QByteArray& i_byteArr, int i_iTimeout_ms, boo
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "sendData",
         /* strAddInfo         */ strAddTrcInfo );
 
-    if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+    CMutexLocker mtxLocker(m_pMtx);
+
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo  = "State: " + State2Str(m_state);
         strAddTrcInfo += ", ReqQueue {" + m_pRequestQueue->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
@@ -1027,21 +1070,20 @@ CRequest* CClient::sendData( const QByteArray& i_byteArr, int i_iTimeout_ms, boo
     // "execute<>Request" method above has been called and the "onRequestChanged"
     // slot method has already been disconnected from the request's changed signal.
 
-    if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo  = "State: " + State2Str(m_state);
         strAddTrcInfo += ", ReqQueue {" + m_pRequestQueue->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
         mthTracer.trace(strAddTrcInfo);
     }
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strAddTrcInfo = QString( pReq == nullptr ? "SUCCESS" : pReq->getResultStr() );
-        mthTracer.setMethodReturn(strAddTrcInfo);
+        mthTracer.setMethodReturn(pReq);
     }
 
     return pReq;
@@ -1056,11 +1098,9 @@ public: // instance methods
 void CClient::setOnlyLocalHostConnectionsAreAllowed( bool i_bAllowOnlyLocalHostConnections )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = "Allowed: " + bool2Str(i_bAllowOnlyLocalHostConnections);
     }
@@ -1068,19 +1108,21 @@ void CClient::setOnlyLocalHostConnectionsAreAllowed( bool i_bAllowOnlyLocalHostC
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setOnlyLocalHostConnectionsAreAllowed",
         /* strAddInfo         */ strAddTrcInfo );
 
-    if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+    CMutexLocker mtxLocker(m_pMtx);
+
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo  = "State: " + State2Str(m_state);
         strAddTrcInfo += ", ReqQueue {" + m_pRequestQueue->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
@@ -1118,7 +1160,7 @@ public: // instance methods
 QList<ESocketType> CClient::getSocketTypes() const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return m_arSocketTypes;
 }
 
@@ -1126,7 +1168,7 @@ QList<ESocketType> CClient::getSocketTypes() const
 int CClient::getSocketTypesCount() const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return m_arSocketTypes.size();
 }
 
@@ -1134,7 +1176,7 @@ int CClient::getSocketTypesCount() const
 ESocketType CClient::getSocketType( int i_idx ) const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     ESocketType socketType = ESocketTypeUndefined;
 
@@ -1150,7 +1192,7 @@ ESocketType CClient::getSocketType( int i_idx ) const
 bool CClient::isSocketTypeChangeable() const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return (m_arSocketTypes.size() > 1);
 }
 
@@ -1158,7 +1200,7 @@ bool CClient::isSocketTypeChangeable() const
 bool CClient::isSocketTypeSupported( ESocketType i_socketType ) const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     bool bIsSupported = false;
     int  idxSocketType;
@@ -1183,7 +1225,7 @@ public: // instance methods changing and reading the host settings
 QString CClient::getConnectionString() const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
     SClientHostSettings hostSettings = getHostSettings();
     return hostSettings.getConnectionString();
 }
@@ -1192,7 +1234,7 @@ QString CClient::getConnectionString() const
 SClientHostSettings CClient::getHostSettings() const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return m_hostSettings;
 }
 
@@ -1200,13 +1242,11 @@ SClientHostSettings CClient::getHostSettings() const
 void CClient::setHostSettings( const SClientHostSettings& i_hostSettings )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
-        int iAddTrcInfoDetailLevel = getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ? 1 : 0;
+        int iAddTrcInfoDetailLevel = getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ? 1 : 0;
 
         strAddTrcInfo = "HostSettings: " + i_hostSettings.getConnectionString(iAddTrcInfoDetailLevel);
     }
@@ -1214,19 +1254,21 @@ void CClient::setHostSettings( const SClientHostSettings& i_hostSettings )
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setHostSettings",
         /* strAddInfo         */ strAddTrcInfo );
 
-    if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+    CMutexLocker mtxLocker(m_pMtx);;
+
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo  = "State: " + State2Str(m_state);
         strAddTrcInfo += ", ReqQueue {" + m_pRequestQueue->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
@@ -1295,6 +1337,26 @@ public: // instance methods changing and reading the watch dog settings
 void CClient::setWatchDogTimerUsed( bool i_bUsed )
 //------------------------------------------------------------------------------
 {
+    QString strAddTrcInfo;
+
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        strAddTrcInfo = bool2Str(i_bUsed);
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj          */ m_pTrcAdminObj,
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "setWatchDogTimerUsed",
+        /* strAddInfo         */ strAddTrcInfo );
+
+    CMutexLocker mtxLocker(m_pMtx);
+
     // This method should only be called once right after creating the client.
     if( m_bWatchDogTimerUsed != i_bUsed )
     {
@@ -1320,7 +1382,7 @@ void CClient::setWatchDogTimerUsed( bool i_bUsed )
 bool CClient::isWatchDogTimerEnabled() const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
     STimerSettings watchDogSettings = getWatchDogSettings();
     return watchDogSettings.m_bEnabled;
 }
@@ -1329,7 +1391,7 @@ bool CClient::isWatchDogTimerEnabled() const
 int CClient::getWatchDogTimerIntervalInMs() const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
     STimerSettings watchDogSettings = getWatchDogSettings();
     return watchDogSettings.m_iInterval_ms;
 }
@@ -1338,7 +1400,7 @@ int CClient::getWatchDogTimerIntervalInMs() const
 int CClient::getWatchDogTimeoutInMs() const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
     STimerSettings watchDogSettings = getWatchDogSettings();
     return watchDogSettings.m_iTimeout_ms;
 }
@@ -1347,7 +1409,7 @@ int CClient::getWatchDogTimeoutInMs() const
 STimerSettings CClient::getWatchDogSettings() const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return m_watchDogTimerSettings;
 }
 
@@ -1355,33 +1417,33 @@ STimerSettings CClient::getWatchDogSettings() const
 void CClient::setWatchDogSettings( const STimerSettings& i_settings )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strAddTrcInfo  = "Enabled: " + QString::number(i_settings.m_bEnabled);
+        strAddTrcInfo  = "Enabled: " + bool2Str(i_settings.m_bEnabled);
         strAddTrcInfo += ", Interval: " + QString::number(i_settings.m_iInterval_ms);
-        strAddTrcInfo += ", Timeout: " + QString::number(i_settings.m_iTimeout_ms);
+        strAddTrcInfo += ", Timeout: " + QString::number(i_settings.m_iTimeout_ms) + " ms";
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setWatchDogSettings",
         /* strAddInfo         */ strAddTrcInfo );
 
-    if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+    CMutexLocker mtxLocker(m_pMtx);
+
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo  = "State: " + State2Str(m_state);
         strAddTrcInfo += ", ReqQueue {" + m_pRequestQueue->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
@@ -1409,11 +1471,9 @@ public: // instance methods of the remote connection
 void CClient::setBlkType( CBlkType* i_pBlkType ) // The class takes ownership of the data block.
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = "BlkType: " + QString( i_pBlkType == nullptr ? "nullptr" : blkType2Str(i_pBlkType->type()) );
     }
@@ -1421,19 +1481,21 @@ void CClient::setBlkType( CBlkType* i_pBlkType ) // The class takes ownership of
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setBlkType",
         /* strAddInfo         */ strAddTrcInfo );
 
-    if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+    CMutexLocker mtxLocker(m_pMtx);
+
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo  = "State: " + State2Str(m_state);
         strAddTrcInfo += ", ReqQueue {" + m_pRequestQueue->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
@@ -1454,7 +1516,7 @@ void CClient::setBlkType( CBlkType* i_pBlkType ) // The class takes ownership of
 CBlkType* CClient::getBlkType()
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return m_pBlkType;
 }
 
@@ -1466,7 +1528,7 @@ public: // instance methods of the remote connection
 int CClient::getSocketId() const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return m_socketDscr.m_iSocketId;
 }
 
@@ -1474,7 +1536,7 @@ int CClient::getSocketId() const
 SSocketDscr CClient::getSocketDscr() const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return m_socketDscr;
 }
 
@@ -1482,7 +1544,7 @@ SSocketDscr CClient::getSocketDscr() const
 int CClient::getConnectTimeoutInMs() const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return m_hostSettings.m_iConnectTimeout_ms;
 }
 
@@ -1494,7 +1556,7 @@ public: // instance methods (state machine)
 CClient::EState CClient::getState() const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return m_state;
 }
 
@@ -1502,7 +1564,7 @@ CClient::EState CClient::getState() const
 QString CClient::state2Str() const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return State2Str(m_state);
 }
 
@@ -1510,7 +1572,7 @@ QString CClient::state2Str() const
 bool CClient::isConnected() const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     bool bIsConnected = false;
 
@@ -1543,7 +1605,7 @@ public: // instance methods (state machine)
 bool CClient::isBusy() const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return !m_pRequestQueue->isIdle();
 }
 
@@ -1551,7 +1613,7 @@ bool CClient::isBusy() const
 CClient::ERequest CClient::requestInProgress() const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     ERequest  request = ERequestNone;
     CRequest* pReq    = m_pRequestQueue->getRequestInProgress();
@@ -1568,7 +1630,7 @@ CClient::ERequest CClient::requestInProgress() const
 QString CClient::requestInProgress2Str( bool /*i_bShort*/ ) const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return Request2Str( requestInProgress() );
 }
 
@@ -1576,7 +1638,7 @@ QString CClient::requestInProgress2Str( bool /*i_bShort*/ ) const
 CRequest* CClient::getRequestInProgress() const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return m_pRequestQueue->getRequestInProgress();
 }
 
@@ -1588,11 +1650,9 @@ public: // instance methods (aborting requests)
 void CClient::abortRequest( qint64 i_iRequestId )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = "Request: " + CRequestExecTree::GetAddTrcInfoStr(i_iRequestId);
     }
@@ -1600,19 +1660,21 @@ void CClient::abortRequest( qint64 i_iRequestId )
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "abortRequest",
         /* strAddInfo         */ strAddTrcInfo );
 
-    if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+    CMutexLocker mtxLocker(m_pMtx);
+
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo  = "State: " + State2Str(m_state);
         strAddTrcInfo += ", ReqQueue {" + m_pRequestQueue->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
@@ -1635,11 +1697,11 @@ void CClient::abortRequest( qint64 i_iRequestId )
 
     } // if( pReq != nullptr }
 
-    if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo  = "State: " + State2Str(m_state);
         strAddTrcInfo += ", ReqQueue {" + m_pRequestQueue->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
@@ -1652,30 +1714,30 @@ void CClient::abortRequest( qint64 i_iRequestId )
 void CClient::abortRequestInProgress()
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "abortRequestInProgress",
         /* strAddInfo         */ strAddTrcInfo );
 
-    if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+    CMutexLocker mtxLocker(m_pMtx);
+
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo  = "State: " + State2Str(m_state);
         strAddTrcInfo += ", ReqQueue {" + m_pRequestQueue->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
@@ -1689,11 +1751,11 @@ void CClient::abortRequestInProgress()
         abortRequest( pReq->getId() );
     }
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo  = "State: " + State2Str(m_state);
         strAddTrcInfo += ", ReqQueue {" + m_pRequestQueue->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
@@ -1706,30 +1768,30 @@ void CClient::abortRequestInProgress()
 void CClient::abortAllRequests()
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "abortAllRequests",
         /* strAddInfo         */ strAddTrcInfo );
 
-    if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+    CMutexLocker mtxLocker(m_pMtx);
+
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo  = "State: " + State2Str(m_state);
         strAddTrcInfo += ", ReqQueue {" + m_pRequestQueue->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
@@ -1750,11 +1812,11 @@ void CClient::abortAllRequests()
         abortRequestInProgress();
     }
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo  = "State: " + State2Str(m_state);
         strAddTrcInfo += ", ReqQueue {" + m_pRequestQueue->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
@@ -1771,7 +1833,7 @@ public: // instance methods
 void CClient::addTrcMsgLogObject( QObject* i_pObj )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( i_pObj == nullptr )
     {
@@ -1804,7 +1866,7 @@ void CClient::addTrcMsgLogObject( QObject* i_pObj )
 void CClient::removeTrcMsgLogObject( QObject* i_pObj )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( i_pObj == nullptr )
     {
@@ -1834,6 +1896,33 @@ void CClient::removeTrcMsgLogObject( QObject* i_pObj )
 } // removeTrcMsgLogObject
 
 /*==============================================================================
+public: // instance methods to trace methods calls
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CClient::setMethodTraceDetailLevel( EMethodTraceDetailLevel i_eTrcDetailLevel )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_eTrcMthFileDetailLevel != i_eTrcDetailLevel )
+    {
+        m_eTrcMthFileDetailLevel = i_eTrcDetailLevel;
+
+        if( m_eTrcMthFileDetailLevel > EMethodTraceDetailLevel::None && m_pTrcMthFile == nullptr )
+        {
+            QString strLocalTrcFileAbsFilePath = CTrcServer::GetLocalTrcFileAbsoluteFilePath();
+            m_pTrcMthFile = CTrcMthFile::Alloc(strLocalTrcFileAbsFilePath);
+        }
+        else if( m_pTrcMthFile != nullptr )
+        {
+            CTrcMthFile::Free(m_pTrcMthFile);
+            m_pTrcMthFile = nullptr;
+        }
+    }
+}
+
+/*==============================================================================
 protected: // overridables of the remote connection
 ==============================================================================*/
 
@@ -1841,34 +1930,38 @@ protected: // overridables of the remote connection
 void CClient::onReceivedData( const QByteArray& i_byteArr )
 //------------------------------------------------------------------------------
 {
-    // Not necessary as method only called internally if mutex is already locked:
-    //QMutexLocker mtxLocker(m_pMtx);
+    QString strMthInArgs;
 
-    QString strAddTrcInfo;
-
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strAddTrcInfo = "ByteArr [" + QString::number(i_byteArr.size()) + "]";
+        strMthInArgs = "ByteArr [" + QString::number(i_byteArr.size()) + "]";
+        if( getMethodCallsTraceDetailLevel() < EMethodTraceDetailLevel::ArgsVerbose ) {
+            strMthInArgs += "(" + truncateStringWithEllipsisInTheMiddle(byteArr2Str(i_byteArr), 30) + ")";
+        } else {
+            strMthInArgs += "(" + truncateStringWithEllipsisInTheMiddle(byteArr2Str(i_byteArr), 100) + ")";
+        }
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "onReceivedData",
-        /* strAddInfo         */ strAddTrcInfo );
+        /* strAddInfo         */ strMthInArgs );
 
-    if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+    // Not necessary as method only called internally if mutex is already locked:
+    //CMutexLocker mtxLocker(m_pMtx);
+
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
-
-        strAddTrcInfo  = "State: " + State2Str(m_state);
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
+        QString strAddTrcInfo  = "State: " + State2Str(m_state);
         strAddTrcInfo += ", ReqQueue {" + m_pRequestQueue->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
         mthTracer.trace(strAddTrcInfo);
     }
@@ -1883,31 +1976,31 @@ protected: // instance methods of internal state machine
 void CClient::executeNextPostponedRequest()
 //------------------------------------------------------------------------------
 {
-    // Not necessary as method only called internally if mutex is already locked:
-    //QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "executeNextPostponedRequest",
         /* strAddInfo         */ strAddTrcInfo );
 
-    if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+    // Not necessary as method only called internally if mutex is already locked:
+    //CMutexLocker mtxLocker(m_pMtx);
+
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo  = "State: " + State2Str(m_state);
         strAddTrcInfo += ", ReqQueue {" + m_pRequestQueue->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
@@ -1926,7 +2019,7 @@ void CClient::executeNextPostponedRequest()
                 /* bMustBeConfirmed */ false,
                 /* iReqId           */ -1,
                 /* iMsgId           */ -1 );
-            POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ETraceDetailLevelRuntimeInfo);
+            POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::Debug);
         }
     } // if( !m_pRequestQueue->isRequestInProgress() && m_pRequestQueue->hasPostponedRequest() )
 
@@ -1940,16 +2033,13 @@ protected: // overridables
 void CClient::executeConnectRequest( CRequest* i_pReq )
 //------------------------------------------------------------------------------
 {
-    // Not necessary as method only called internally if mutex is already locked:
-    //QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo = "Req {" + i_pReq->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
     }
@@ -1957,19 +2047,22 @@ void CClient::executeConnectRequest( CRequest* i_pReq )
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "executeConnectRequest",
         /* strAddInfo         */ strAddTrcInfo );
 
-    if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+    // Not necessary as method only called internally if mutex is already locked:
+    //CMutexLocker mtxLocker(m_pMtx);
+
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo  = "State: " + State2Str(m_state);
         strAddTrcInfo += ", ReqQueue {" + m_pRequestQueue->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
@@ -2107,22 +2200,22 @@ void CClient::executeConnectRequest( CRequest* i_pReq )
 
     i_pReq->unlock();
 
-    if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo  = "State: " + State2Str(m_state);
         strAddTrcInfo += ", ReqQueue {" + m_pRequestQueue->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
         mthTracer.trace(strAddTrcInfo);
     }
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo = "Req {" + i_pReq->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
         mthTracer.trace(strAddTrcInfo);
@@ -2139,16 +2232,13 @@ void CClient::executeConnectRequest( CRequest* i_pReq )
 void CClient::executeDisconnectRequest( CRequest* i_pReq )
 //------------------------------------------------------------------------------
 {
-    // Not necessary as method only called internally if mutex is already locked:
-    //QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo = "Req {" + i_pReq->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
     }
@@ -2156,19 +2246,22 @@ void CClient::executeDisconnectRequest( CRequest* i_pReq )
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "executeDisconnectRequest",
         /* strAddInfo         */ strAddTrcInfo );
 
-    if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+    // Not necessary as method only called internally if mutex is already locked:
+    //CMutexLocker mtxLocker(m_pMtx);
+
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo  = "State: " + State2Str(m_state);
         strAddTrcInfo += ", ReqQueue {" + m_pRequestQueue->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
@@ -2309,22 +2402,22 @@ void CClient::executeDisconnectRequest( CRequest* i_pReq )
 
     i_pReq->unlock();
 
-    if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo  = "State: " + State2Str(m_state);
         strAddTrcInfo += ", ReqQueue {" + m_pRequestQueue->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
         mthTracer.trace(strAddTrcInfo);
     }
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo = "Req {" + i_pReq->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
         mthTracer.trace(strAddTrcInfo);
@@ -2341,16 +2434,13 @@ void CClient::executeDisconnectRequest( CRequest* i_pReq )
 void CClient::executeChangeSettingsRequest( CRequest* i_pReq )
 //------------------------------------------------------------------------------
 {
-    // Not necessary as method only called internally if mutex is already locked:
-    //QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo = "Req {" + i_pReq->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
     }
@@ -2358,19 +2448,22 @@ void CClient::executeChangeSettingsRequest( CRequest* i_pReq )
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "executeChangeSettingsRequest",
         /* strAddInfo         */ strAddTrcInfo );
 
-    if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+    // Not necessary as method only called internally if mutex is already locked:
+    //CMutexLocker mtxLocker(m_pMtx);
+
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo  = "State: " + State2Str(m_state);
         strAddTrcInfo += ", ReqQueue {" + m_pRequestQueue->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
@@ -2455,12 +2548,24 @@ void CClient::executeChangeSettingsRequest( CRequest* i_pReq )
                 /* iReqId           */ i_pReq->getId() );
             pMsgReq->setBlkType(m_pBlkType); // The block will be cloned.
 
-            POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ETraceDetailLevelRuntimeInfo);
+            POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::Debug);
             pMsgReq = nullptr;
 
             if( i_pReq->isBlockingRequest() )
             {
-                if( !i_pReq->wait() )
+                if( i_pReq->wait() )
+                {
+                    CMsgCon* pMsgCon = i_pReq->getExecutionConfirmationMessage();
+                    if( pMsgCon != nullptr )
+                    {
+                        errResultInfo = pMsgCon->getErrResultInfo();
+                    }
+                    else
+                    {
+                        errResultInfo = i_pReq->getErrResultInfo();
+                    }
+                }
+                else // if( !i_pReq->wait() )
                 {
                     errResultInfo.setSeverity(EResultSeverityError);
                     errResultInfo.setResult(EResultTimeout);
@@ -2549,22 +2654,22 @@ void CClient::executeChangeSettingsRequest( CRequest* i_pReq )
 
     i_pReq->unlock();
 
-    if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo  = "State: " + State2Str(m_state);
         strAddTrcInfo += ", ReqQueue {" + m_pRequestQueue->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
         mthTracer.trace(strAddTrcInfo);
     }
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo = "Req {" + i_pReq->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
         mthTracer.trace(strAddTrcInfo);
@@ -2581,16 +2686,13 @@ void CClient::executeChangeSettingsRequest( CRequest* i_pReq )
 void CClient::executeSendDataRequest( CRequest* i_pReq )
 //------------------------------------------------------------------------------
 {
-    // Not necessary as method only called internally if mutex is already locked:
-    //QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo = "Req {" + i_pReq->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
     }
@@ -2598,19 +2700,22 @@ void CClient::executeSendDataRequest( CRequest* i_pReq )
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "executeSendDataRequest",
         /* strAddInfo         */ strAddTrcInfo );
 
-    if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+    // Not necessary as method only called internally if mutex is already locked:
+    //CMutexLocker mtxLocker(m_pMtx);
+
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo  = "State: " + State2Str(m_state);
         strAddTrcInfo += ", ReqQueue {" + m_pRequestQueue->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
@@ -2668,7 +2773,7 @@ void CClient::executeSendDataRequest( CRequest* i_pReq )
                 pMsgReq->setReceiver(m_pGateway);
                 pMsgReq->setRequestId(i_pReq->getId());
 
-                POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ETraceDetailLevelRuntimeInfo);
+                POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::Debug);
                 pMsgReq = nullptr;
             }
 
@@ -2762,22 +2867,22 @@ void CClient::executeSendDataRequest( CRequest* i_pReq )
 
     i_pReq->unlock();
 
-    if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo  = "State: " + State2Str(m_state);
         strAddTrcInfo += ", ReqQueue {" + m_pRequestQueue->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
         mthTracer.trace(strAddTrcInfo);
     }
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo = "Req {" + i_pReq->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
         mthTracer.trace(strAddTrcInfo);
@@ -2798,32 +2903,31 @@ protected: // overridables (auxiliary methods)
 CSrvCltBaseGatewayThread* CClient::createGatewayThread()
 //------------------------------------------------------------------------------
 {
-    // Not necessary as method only called internally if mutex is already locked:
-    //QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "createGatewayThread",
         /* strAddInfo         */ strAddTrcInfo );
 
+    // Not necessary as method only called internally if mutex is already locked:
+    //CMutexLocker mtxLocker(m_pMtx);
+
     return new CClientGatewayThread(
         /* szObjNameGateway       */ m_strObjName,
         /* pServer                */ this,
         /* pModelErrLog           */ m_pErrLog,
-        /* pTrcMthFile            */ m_pTrcMthFile,
-        /* iTrcMthFileDEtailLevel */ m_iTrcMthFileDetailLevel );
+        /* iTrcMthFileDetailLevel */ m_eTrcMthFileDetailLevelGateway );
 
 } // createGatewayThread
 
@@ -2833,12 +2937,9 @@ SErrResultInfo CClient::startGatewayThread(
     qint64 i_iReqIdParent )
 //------------------------------------------------------------------------------
 {
-    // Not necessary as method only called internally if mutex is already locked:
-    //QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo  = "Timeout: " + QString::number(i_iTimeout_ms);
         strAddTrcInfo += ", ParentRequest {" + CRequestExecTree::GetAddTrcInfoStr(i_iReqIdParent) + "}";
@@ -2847,13 +2948,16 @@ SErrResultInfo CClient::startGatewayThread(
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "startGatewayThread",
         /* strAddInfo         */ strAddTrcInfo );
+
+    // Not necessary as method only called internally if mutex is already locked:
+    //CMutexLocker mtxLocker(m_pMtx);
 
     SErrResultInfo errResultInfo = ErrResultInfoSuccess("startGatewayThread");
 
@@ -2871,7 +2975,7 @@ SErrResultInfo CClient::startGatewayThread(
     // on synchronizing with the thread using startup confirmation messages.
     m_pGatewayThread->start( pReqStartThread->getId() );
 
-    if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         mthTracer.trace( "-+ ReqStartThread.wait()" );
     }
@@ -2912,7 +3016,7 @@ SErrResultInfo CClient::startGatewayThread(
         errResultInfo.setErrResult(ErrResultSuccess);
     }
 
-    if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         mthTracer.trace( "+- ReqStartThread.wait(): " + errResultInfo.getAddErrInfoDscr() );
     }
@@ -2924,7 +3028,7 @@ SErrResultInfo CClient::startGatewayThread(
     deleteRequest(pReqStartThread);
     pReqStartThread = nullptr;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = errResultInfo.getAddErrInfoDscr();
         mthTracer.setMethodReturn(strAddTrcInfo);
@@ -2940,12 +3044,9 @@ SErrResultInfo CClient::stopGatewayThread(
     qint64 i_iReqIdParent )
 //------------------------------------------------------------------------------
 {
-    // Not necessary as method only called internally if mutex is already locked:
-    //QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo  = "Timeout: " + QString::number(i_iTimeout_ms);
         strAddTrcInfo += ", ParentRequest {" + CRequestExecTree::GetAddTrcInfoStr(i_iReqIdParent) + "}";
@@ -2954,13 +3055,16 @@ SErrResultInfo CClient::stopGatewayThread(
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "stopGatewayThread",
         /* strAddInfo         */ strAddTrcInfo );
+
+    // Not necessary as method only called internally if mutex is already locked:
+    //CMutexLocker mtxLocker(m_pMtx);
 
     SErrResultInfo errResultInfo = ErrResultInfoSuccess("stopGatewayThread");
 
@@ -3012,7 +3116,7 @@ SErrResultInfo CClient::stopGatewayThread(
 
     m_pGateway = nullptr;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = errResultInfo.getAddErrInfoDscr();
         mthTracer.setMethodReturn(strAddTrcInfo);
@@ -3030,12 +3134,9 @@ protected: // auxiliary methods
 CRequest* CClient::connectGateway( int i_iTimeout_ms, bool i_bWait, qint64 i_iReqIdParent )
 //------------------------------------------------------------------------------
 {
-    // Not necessary as method only called internally if mutex is already locked:
-    //QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo  = "Timeout: " + QString::number(i_iTimeout_ms) + " ms";
         strAddTrcInfo += ", Wait: " + bool2Str(i_bWait);
@@ -3045,19 +3146,22 @@ CRequest* CClient::connectGateway( int i_iTimeout_ms, bool i_bWait, qint64 i_iRe
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "connectGateway",
         /* strAddInfo         */ strAddTrcInfo );
 
-    if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+    // Not necessary as method only called internally if mutex is already locked:
+    //CMutexLocker mtxLocker(m_pMtx);
+
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo  = "State: " + State2Str(m_state);
         strAddTrcInfo += ", ReqQueue {" + m_pRequestQueue->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
@@ -3139,19 +3243,28 @@ CRequest* CClient::connectGateway( int i_iTimeout_ms, bool i_bWait, qint64 i_iRe
 
         m_pRequestQueue->addRequestInProgress(pReqConnectGateway);
 
-        POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ETraceDetailLevelRuntimeInfo);
+        POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::Debug);
 
     } // if( m_pGateway != nullptr )
 
     if( pReqConnectGateway->isBlockingRequest() )
     {
-        if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+        if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
         {
             mthTracer.trace( "-+ ReqConnectGateway.wait()" );
         }
 
         if( pReqConnectGateway->wait() )
         {
+            CMsgCon* pMsgCon = pReqConnectGateway->getExecutionConfirmationMessage();
+            if( pMsgCon != nullptr )
+            {
+                errResultInfo = pMsgCon->getErrResultInfo();
+            }
+            else
+            {
+                errResultInfo = pReqConnectGateway->getErrResultInfo();
+            }
             if( errResultInfo.getResult() == EResultUndefined )
             {
                 errResultInfo.setErrResult(ErrResultSuccess);
@@ -3169,7 +3282,7 @@ CRequest* CClient::connectGateway( int i_iTimeout_ms, bool i_bWait, qint64 i_iRe
             }
         }
 
-        if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+        if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
         {
             mthTracer.trace( "+- ReqConnectGateway.wait(): " + errResultInfo.getAddErrInfoDscr() );
         }
@@ -3210,18 +3323,18 @@ CRequest* CClient::connectGateway( int i_iTimeout_ms, bool i_bWait, qint64 i_iRe
         m_pRequestQueue->setSyncRequestToBeDeletedLater(pReqConnectGateway);
     }
 
-    if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo  = "State: " + State2Str(m_state);
         strAddTrcInfo += ", ReqQueue {" + m_pRequestQueue->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
         mthTracer.trace(strAddTrcInfo);
     }
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = QString( pReqConnectGateway == nullptr ? "SUCCESS" : pReqConnectGateway->getResultStr() );
         mthTracer.setMethodReturn(strAddTrcInfo);
@@ -3235,12 +3348,9 @@ CRequest* CClient::connectGateway( int i_iTimeout_ms, bool i_bWait, qint64 i_iRe
 CRequest* CClient::disconnectGateway( int i_iTimeout_ms, bool i_bWait, qint64 i_iReqIdParent )
 //------------------------------------------------------------------------------
 {
-    // Not necessary as method only called internally if mutex is already locked:
-    //QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo  = "Timeout: " + QString::number(i_iTimeout_ms) + " ms";
         strAddTrcInfo += ", Wait: " + bool2Str(i_bWait);
@@ -3250,19 +3360,22 @@ CRequest* CClient::disconnectGateway( int i_iTimeout_ms, bool i_bWait, qint64 i_
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "disconnectGateway",
         /* strAddInfo         */ strAddTrcInfo );
 
-    if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+    // Not necessary as method only called internally if mutex is already locked:
+    //CMutexLocker mtxLocker(m_pMtx);
+
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo  = "State: " + State2Str(m_state);
         strAddTrcInfo += ", ReqQueue {" + m_pRequestQueue->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
@@ -3338,19 +3451,28 @@ CRequest* CClient::disconnectGateway( int i_iTimeout_ms, bool i_bWait, qint64 i_
 
         m_pRequestQueue->addRequestInProgress(pReqDisconnectGateway);
 
-        POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ETraceDetailLevelRuntimeInfo);
+        POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::Debug);
 
     } // if( m_pGateway != nullptr )
 
     if( pReqDisconnectGateway->isBlockingRequest() )
     {
-        if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+        if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
         {
             mthTracer.trace( "-+ ReqDisconnectGateway.wait()" );
         }
 
         if( pReqDisconnectGateway->wait() )
         {
+            CMsgCon* pMsgCon = pReqDisconnectGateway->getExecutionConfirmationMessage();
+            if( pMsgCon != nullptr )
+            {
+                errResultInfo = pMsgCon->getErrResultInfo();
+            }
+            else
+            {
+                errResultInfo = pReqDisconnectGateway->getErrResultInfo();
+            }
             if( errResultInfo.getResult() == EResultUndefined )
             {
                 errResultInfo.setErrResult(ErrResultSuccess);
@@ -3368,7 +3490,7 @@ CRequest* CClient::disconnectGateway( int i_iTimeout_ms, bool i_bWait, qint64 i_
             }
         }
 
-        if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+        if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
         {
             mthTracer.trace( "+- ReqDisconnectGateway.wait(): " + errResultInfo.getAddErrInfoDscr() );
         }
@@ -3409,18 +3531,18 @@ CRequest* CClient::disconnectGateway( int i_iTimeout_ms, bool i_bWait, qint64 i_
         m_pRequestQueue->setSyncRequestToBeDeletedLater(pReqDisconnectGateway);
     }
 
-    if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo  = "State: " + State2Str(m_state);
         strAddTrcInfo += ", ReqQueue {" + m_pRequestQueue->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
         mthTracer.trace(strAddTrcInfo);
     }
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = QString( pReqDisconnectGateway == nullptr ? "SUCCESS" : pReqDisconnectGateway->getResultStr() );
         mthTracer.setMethodReturn(strAddTrcInfo);
@@ -3438,30 +3560,30 @@ protected slots:
 void CClient::onRequestTimeout()
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "onRequestTimeout",
         /* strAddInfo         */ strAddTrcInfo );
 
-    if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+    CMutexLocker mtxLocker(m_pMtx);
+
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo  = "State: " + State2Str(m_state);
         strAddTrcInfo += ", ReqQueue {" + m_pRequestQueue->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
@@ -3496,11 +3618,11 @@ void CClient::onRequestTimeout()
         }
     } // if( pReq != nullptr )
 
-    if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo  = "State: " + State2Str(m_state);
         strAddTrcInfo += ", ReqQueue {" + m_pRequestQueue->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
@@ -3517,16 +3639,13 @@ protected slots:
 void CClient::onRequestChanged( ZS::System::SRequestDscr i_reqDscr )
 //------------------------------------------------------------------------------
 {
-    // Not necessary as method only called internally if mutex is already locked:
-    //QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo = "Req {" + i_reqDscr.getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
     }
@@ -3534,19 +3653,22 @@ void CClient::onRequestChanged( ZS::System::SRequestDscr i_reqDscr )
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "onRequestChanged",
         /* strAddInfo         */ strAddTrcInfo );
 
-    if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+    // Not necessary as method only called internally if mutex is already locked:
+    //CMutexLocker mtxLocker(m_pMtx);
+
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+        if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo  = "State: " + State2Str(m_state);
         strAddTrcInfo += ", ReqQueue {" + m_pRequestQueue->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
@@ -3898,7 +4020,7 @@ void CClient::onRequestChanged( ZS::System::SRequestDscr i_reqDscr )
 
         //if( pMsgCon != nullptr )
         //{
-        //    POST_OR_DELETE_MESSAGE(pMsgCon, &mthTracer, ETraceDetailLevelRuntimeInfo);
+        //    POST_OR_DELETE_MESSAGE(pMsgCon, &mthTracer, ELogDetailLevel::Debug);
         //    pMsgCon = nullptr;
         //}
 
@@ -3909,11 +4031,11 @@ void CClient::onRequestChanged( ZS::System::SRequestDscr i_reqDscr )
             executeNextPostponedRequest();
         }
 
-        if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+        if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
         {
             int iAddTrcInfoDetailLevel = 0;
-            if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-            else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+            if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+            else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
             strAddTrcInfo  = "State: " + State2Str(m_state);
             strAddTrcInfo += ", ReqQueue {" + m_pRequestQueue->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
@@ -3928,40 +4050,64 @@ protected: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool CClient::isMethodTraceActive( int i_iFilterDetailLevel ) const
+bool CClient::areTraceMethodCallsActive( EMethodTraceDetailLevel i_eFilterDetailLevel ) const
 //------------------------------------------------------------------------------
 {
     bool bIsActive = false;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(i_iFilterDetailLevel) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(i_eFilterDetailLevel) )
     {
         bIsActive = true;
     }
-    else if( m_pTrcMthFile != nullptr && m_iTrcMthFileDetailLevel >= i_iFilterDetailLevel )
+    else if( m_pTrcMthFile != nullptr && m_eTrcMthFileDetailLevel >= i_eFilterDetailLevel )
     {
         bIsActive = true;
     }
     return bIsActive;
-
-} // isMethodTraceActive
+}
 
 //------------------------------------------------------------------------------
-int CClient::getMethodTraceDetailLevel() const
+EMethodTraceDetailLevel CClient::getMethodCallsTraceDetailLevel() const
 //------------------------------------------------------------------------------
 {
-    int iDetailLevel = ETraceDetailLevelNone;
+    EMethodTraceDetailLevel eDetailLevel = EMethodTraceDetailLevel::None;
 
     if( m_pTrcAdminObj != nullptr )
     {
-        iDetailLevel = getMethodTraceDetailLevel();
+        eDetailLevel = m_pTrcAdminObj->getMethodCallsTraceDetailLevel();
     }
     else if( m_pTrcMthFile != nullptr )
     {
-        iDetailLevel = m_iTrcMthFileDetailLevel;
+        eDetailLevel = m_eTrcMthFileDetailLevel;
     }
-    return iDetailLevel;
+    return eDetailLevel;
+}
 
-} // getMethodTraceDetailLevel
+//------------------------------------------------------------------------------
+bool CClient::isTraceRuntimeInfoActive( ELogDetailLevel i_eFilterDetailLevel ) const
+//------------------------------------------------------------------------------
+{
+    bool bIsActive = false;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isRuntimeInfoActive(i_eFilterDetailLevel) )
+    {
+        bIsActive = true;
+    }
+    return bIsActive;
+}
+
+//------------------------------------------------------------------------------
+ELogDetailLevel CClient::getRuntimeInfoTraceDetailLevel() const
+//------------------------------------------------------------------------------
+{
+    ELogDetailLevel eDetailLevel = ELogDetailLevel::None;
+
+    if( m_pTrcAdminObj != nullptr )
+    {
+        eDetailLevel = m_pTrcAdminObj->getRuntimeInfoTraceDetailLevel();
+    }
+    return eDetailLevel;
+}
 
 /*==============================================================================
 protected: // overridables of inherited class QObject (state machine)
@@ -3989,11 +4135,11 @@ bool CClient::event( QEvent* i_pMsg )
             pMsg = nullptr;
         }
 
-        if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+        if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
         {
             int iAddTrcInfoDetailLevel = 0;
-            if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-            else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+            if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+            else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
             strAddTrcInfo = "Msg {" + QString( pMsg == nullptr ? "nullptr" : pMsg->getAddTrcInfoStr(iAddTrcInfoDetailLevel) ) + "}";
         }
@@ -4001,8 +4147,8 @@ bool CClient::event( QEvent* i_pMsg )
         CMethodTracer mthTracer(
             /* pAdminObj          */ m_pTrcAdminObj,
             /* pTrcMthFile        */ m_pTrcMthFile,
-            /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-            /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+            /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+            /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
             /* strNameSpace       */ nameSpace(),
             /* strClassName       */ className(),
             /* strObjName         */ objectName(),
@@ -4011,7 +4157,7 @@ bool CClient::event( QEvent* i_pMsg )
 
         if( pMsg != nullptr )
         {
-            QMutexLocker mtxLocker(m_pMtx);
+            CMutexLocker mtxLocker(m_pMtx);
 
             bEventHandled = true;
 
@@ -4087,11 +4233,11 @@ bool CClient::event( QEvent* i_pMsg )
 
             else // if( !pMsg->isBaseMsgType() )
             {
-                if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+                if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
                 {
                     int iAddTrcInfoDetailLevel = 0;
-                    if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-                    else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+                    if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+                    else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
                     strAddTrcInfo  = "State: " + State2Str(m_state);
                     strAddTrcInfo += ", ReqQueue {" + m_pRequestQueue->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
@@ -4149,7 +4295,7 @@ bool CClient::event( QEvent* i_pMsg )
                     //        pMsgCon->setErrResultInfo(errResultInfo);
                     //        pMsgCon->setProgress(100);
 
-                    //        POST_OR_DELETE_MESSAGE(pMsgCon, &mthTracer, ETraceDetailLevelRuntimeInfo);
+                    //        POST_OR_DELETE_MESSAGE(pMsgCon, &mthTracer, ELogDetailLevel::Debug);
                     //        pMsgCon = nullptr;
                     //    }
                     //} // if( !isAsynchronousRequest(pReq) )
@@ -4271,7 +4417,7 @@ bool CClient::event( QEvent* i_pMsg )
                                 //if( pMsgConReq != nullptr )
                                 //{
                                 //    pMsgConReq->setErrResultInfo(errResultInfo);
-                                //    POST_OR_DELETE_MESSAGE(pMsgConReq, &mthTracer, ETraceDetailLevelRuntimeInfo);
+                                //    POST_OR_DELETE_MESSAGE(pMsgConReq, &mthTracer, ELogDetailLevel);
                                 //    pMsgConReq = nullptr;
                                 //}
                             }
@@ -4398,11 +4544,11 @@ bool CClient::event( QEvent* i_pMsg )
                     } // if( pReq != nullptr )
                 } // if( pMsg->getSystemMsgType() == MsgProtocol::ESystemMsgTypeCon )
 
-                if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+                if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
                 {
                     int iAddTrcInfoDetailLevel = 0;
-                    if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-                    else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+                    if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+                    else if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
                     strAddTrcInfo  = "State: " + State2Str(m_state);
                     strAddTrcInfo += ", ReqQueue {" + m_pRequestQueue->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";

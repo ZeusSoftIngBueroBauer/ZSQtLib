@@ -35,16 +35,14 @@ may result in using the software modules.
 #include <QtWidgets/qtableview.h>
 #endif
 
-#include "ZSSysGUI/ZSSysGUIDllMain.h"
 #include "ZSSysGUI/ZSSysIdxTreeModel.h"
 
 namespace ZS
 {
-namespace Trace
-{
-}
 namespace System
 {
+class CTrcAdminObj;
+
 namespace GUI
 {
 class CModelIdxTreeBranchContent;
@@ -58,20 +56,25 @@ public: // class methods
     static QString NameSpace() { return "ZS::System::GUI"; }
     static QString ClassName() { return "CTableViewIdxTreeBranchContent"; }
 public: // ctors and dtor
-    CTableViewIdxTreeBranchContent(
-        CModelIdxTree* i_pModelIdxTree,
-        QWidget*       i_pWdgtParent = nullptr,
-        int            i_iTrcDetailLevel = ZS::Trace::ETraceDetailLevelNone );
+    CTableViewIdxTreeBranchContent( CIdxTree* i_pIdxTree, QWidget* i_pWdgtParent = nullptr );
     virtual ~CTableViewIdxTreeBranchContent();
+signals:
+    void sortOrderChanged(const QString& i_strSortOrder);
+    void sortOrderChanged(EIdxTreeSortOrder i_sortOrder);
 public: // overridables
     virtual QString nameSpace() const { return CTableViewIdxTreeBranchContent::NameSpace(); }
     virtual QString className() const { return CTableViewIdxTreeBranchContent::ClassName(); }
+public: // instance methods
+    void setIdxTree(CIdxTree* i_pIdxTree);
+    CIdxTree* idxTree() { return m_pIdxTree; }
 public: // overridables
-    virtual void setBranch( CIdxTreeEntry* i_pBranch );
-    CIdxTreeEntry* branch() const { return m_pBranch; }
+    virtual void setKeyInTreeOfRootEntry( const QString& i_strKeyInTree );
+    QString getKeyInTreeOfRootEntry() const;
 public: // instance methods
     void setSortOrder( EIdxTreeSortOrder i_sortOrder );
-    EIdxTreeSortOrder sortOrder() const { return m_sortOrder; }
+    EIdxTreeSortOrder sortOrder() const;
+protected slots:
+    void onModelSortOrderChanged(EIdxTreeSortOrder i_sortOrder);
 protected: // overridables of base class QTreeView
     virtual void keyPressEvent( QKeyEvent* i_pEv );
     virtual void mousePressEvent( QMouseEvent* i_pEv );
@@ -88,27 +91,30 @@ protected slots:
     void onActionLeaveCutTriggered( bool i_bChecked );
     void onActionLeaveCopyTriggered( bool i_bChecked );
     void onActionLeavePasteTriggered( bool i_bChecked );
+protected slots:
+    void onIdxTreeAboutToBeDestroyed();
 protected: // instance members
+    CIdxTree* m_pIdxTree;
     CModelIdxTreeBranchContent* m_pModel;
-    CIdxTreeEntry*              m_pBranch;
-    EIdxTreeSortOrder           m_sortOrder;
-    QMenu*                      m_pMenuBranchContext;
-    QAction*                    m_pActionBranchTitle;
-    QAction*                    m_pActionBranchCreateNewBranch;
-    QAction*                    m_pActionBranchCreateNewLeave;
-    QAction*                    m_pActionBranchDelete;
-    QAction*                    m_pActionBranchCut;
-    QAction*                    m_pActionBranchCopy;
-    QAction*                    m_pActionBranchPaste;
-    QMenu*                      m_pMenuLeaveContext;
-    QAction*                    m_pActionLeaveTitle;
-    QAction*                    m_pActionLeaveDelete;
-    QAction*                    m_pActionLeaveCut;
-    QAction*                    m_pActionLeaveCopy;
-    QAction*                    m_pActionLeavePaste;
-    QModelIndex                 m_modelIdxSelectedOnMousePressEvent;
-    QModelIndex                 m_modelIdxSelectedOnMouseReleaseEvent;
-    int                         m_iTrcDetailLevel;
+    //QString m_strKeyInTreeOfRootEntry;
+    QMenu*   m_pMenuBranchContext;
+    QAction* m_pActionBranchTitle;
+    QAction* m_pActionBranchCreateNewBranch;
+    QAction* m_pActionBranchCreateNewLeave;
+    QAction* m_pActionBranchDelete;
+    QAction* m_pActionBranchCut;
+    QAction* m_pActionBranchCopy;
+    QAction* m_pActionBranchPaste;
+    QMenu*   m_pMenuLeaveContext;
+    QAction* m_pActionLeaveTitle;
+    QAction* m_pActionLeaveDelete;
+    QAction* m_pActionLeaveCut;
+    QAction* m_pActionLeaveCopy;
+    QAction* m_pActionLeavePaste;
+    QModelIndex m_modelIdxSelectedOnMousePressEvent;
+    QModelIndex m_modelIdxSelectedOnMouseReleaseEvent;
+    /*!< Trace admin object to control trace outputs of the class. */
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CTableViewIdxTreeBranchContent
 

@@ -136,10 +136,10 @@ Global functions implementations
 double ZS::System::Time::getProcTimeInSec()
 //------------------------------------------------------------------------------
 {
-    #ifdef _WINDOWS
+    #ifdef _MSC_VER
     double fClock = getProcessorClock();
     double fTimeSec = fClock/s_fClockRate - s_fTimeFirstCallSec;
-    #elif defined __linux__
+    #else
     double fTimeSec = 0.0;
     timespec timespecClock;
     if( clock_gettime(CLOCK_REALTIME,&timespecClock) == 0 )
@@ -147,8 +147,6 @@ double ZS::System::Time::getProcTimeInSec()
         fTimeSec = timespecClock.tv_sec + (1.0e-9)*timespecClock.tv_nsec;
         fTimeSec -= s_fTimeFirstCallSec;
     }
-    #else
-    #error Neither _WINDOWS nor __linux__ defined.
     #endif
     return fTimeSec;
 

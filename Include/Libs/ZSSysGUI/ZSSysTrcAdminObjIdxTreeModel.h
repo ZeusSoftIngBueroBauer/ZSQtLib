@@ -32,7 +32,7 @@ may result in using the software modules.
 
 namespace ZS
 {
-namespace Trace
+namespace System
 {
 class CTrcAdminObj;
 class CIdxTreeTrcAdminObjs;
@@ -45,18 +45,20 @@ class ZSSYSGUIDLL_API CModelIdxTreeTrcAdminObjs : public ZS::System::GUI::CModel
 {
     Q_OBJECT
 public: // class methods
-    static QString NameSpace() { return "ZS::Trace::GUI"; }
+    static QString NameSpace() { return "ZS::System::GUI"; }
     static QString ClassName() { return "CModelIdxTreeTrcAdminObjs"; }
 public: // type definitions and constants
     enum EColumn {
-        EColumnObjAddress    = CModelIdxTree::EColumnCount,
-        EColumnRefCount      = CModelIdxTree::EColumnCount + 1,
-        EColumnNameSpace     = CModelIdxTree::EColumnCount + 2,
-        EColumnClassName     = CModelIdxTree::EColumnCount + 3,
-        EColumnObjName       = CModelIdxTree::EColumnCount + 4,
-        EColumnObjThreadName = CModelIdxTree::EColumnCount + 5,
-        EColumnEnabled       = CModelIdxTree::EColumnCount + 6,
-        EColumnDetailLevel   = CModelIdxTree::EColumnCount + 7,
+        EColumnRefCount               = CModelIdxTree::EColumnCount + 0,
+        EColumnEnabled                = CModelIdxTree::EColumnCount + 1,
+        EColumnMethodCallsDetailLevel = CModelIdxTree::EColumnCount + 2,
+        EColumnRuntimeInfoDetailLevel = CModelIdxTree::EColumnCount + 3,
+        EColumnDataFilter             = CModelIdxTree::EColumnCount + 4,
+        EColumnNameSpace              = CModelIdxTree::EColumnCount + 5,
+        EColumnClassName              = CModelIdxTree::EColumnCount + 6,
+        EColumnObjName                = CModelIdxTree::EColumnCount + 7,
+        EColumnObjThreadName          = CModelIdxTree::EColumnCount + 8,
+        EColumnObjAddress             = CModelIdxTree::EColumnCount + 9,
         EColumnCount
     };
 public: // class methods
@@ -64,8 +66,7 @@ public: // class methods
 public: // ctors and dtor
     CModelIdxTreeTrcAdminObjs(
         CIdxTreeTrcAdminObjs* i_pIdxTree = nullptr,
-        QObject*              i_pObjParent = nullptr,
-        int                   i_iTrcDetailLevel = ZS::Trace::ETraceDetailLevelNone );
+        QObject* i_pObjParent = nullptr );
     virtual ~CModelIdxTreeTrcAdminObjs();
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
@@ -93,7 +94,7 @@ protected: // class members (hiding class members of base class CModelIdxTree)
 
 } // namespace GUI
 
-} // namespace Trace
+} // namespace System
 
 } // namespace ZS
 

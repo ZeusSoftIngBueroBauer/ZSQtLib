@@ -54,9 +54,9 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CTest::CTest( const QString& i_strTestStepsFileName ) :
+CTest::CTest() :
 //------------------------------------------------------------------------------
-    ZS::Test::CTest( "ZSErrLog", i_strTestStepsFileName )
+    ZS::Test::CTest("ZSSysErrLog")
 {
     int idxStep = 0;
 
@@ -77,20 +77,7 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
     // Recall test step settings
     //--------------------------
 
-    QFileInfo fileInfo(i_strTestStepsFileName);
-
-    if( fileInfo.exists() )
-    {
-        SErrResultInfo errResultInfo = recall(i_strTestStepsFileName);
-
-        if(errResultInfo.isErrorResult())
-        {
-            if(CErrLog::GetInstance() != nullptr)
-            {
-                CErrLog::GetInstance()->addEntry(errResultInfo);
-            }
-        }
-    }
+    recallTestSteps();
 
 } // default ctor
 
@@ -98,7 +85,7 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
 CTest::~CTest()
 //------------------------------------------------------------------------------
 {
-    SErrResultInfo errResultInfo = save();
+    SErrResultInfo errResultInfo = saveTestSteps();
 
     if(errResultInfo.isErrorResult())
     {

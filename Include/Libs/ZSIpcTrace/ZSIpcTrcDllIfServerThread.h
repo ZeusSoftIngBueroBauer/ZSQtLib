@@ -35,10 +35,12 @@ class QCoreApplication;
 
 namespace ZS
 {
-namespace Trace
+namespace System
 {
 class CTrcMthFile;
-
+}
+namespace Trace
+{
 namespace DllIf
 {
 /******************************************************************************/
@@ -57,8 +59,12 @@ public: // class methods
     static QString ClassName() { return "CIpcTrcServerThread"; }
 public: // ctors and dtor
     CIpcTrcServerThread(
-        const QString& i_strServerName,
-        int i_iTrcDetailLevel = ZS::Trace::ETraceDetailLevelNone );
+        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevelDllIf = ZS::System::EMethodTraceDetailLevel::None,
+        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevelTrcServer = ZS::System::EMethodTraceDetailLevel::None,
+        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevelTrcServerMutex = ZS::System::EMethodTraceDetailLevel::None,
+        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevelTrcServerIpcServer = ZS::System::EMethodTraceDetailLevel::None,
+        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevelTrcServerIpcServerMutex = ZS::System::EMethodTraceDetailLevel::None,
+        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevelTrcServerIpcServerGateway = ZS::System::EMethodTraceDetailLevel::None );
     virtual ~CIpcTrcServerThread();
 public: // instance methods
     bool isServerCreated();
@@ -67,9 +73,13 @@ public: // instance methods
 public: // overridables of base class QThread
     virtual void run() override;
 protected: // instance members
-    QString      m_strServerName;
-    int          m_iTrcDetailLevel;
-    CTrcMthFile* m_pTrcMthFile;
+    ZS::System::EMethodTraceDetailLevel m_eTrcDetailLevelDllIf;
+    ZS::System::EMethodTraceDetailLevel m_eTrcDetailLevelTrcServer;
+    ZS::System::EMethodTraceDetailLevel m_eTrcDetailLevelTrcServerMutex;
+    ZS::System::EMethodTraceDetailLevel m_eTrcDetailLevelTrcServerIpcServer;
+    ZS::System::EMethodTraceDetailLevel m_eTrcDetailLevelTrcServerIpcServerMutex;
+    ZS::System::EMethodTraceDetailLevel m_eTrcDetailLevelTrcServerIpcServerGateway;
+    ZS::System::CTrcMthFile* m_pTrcMthFile;
 
 }; // class CIpcTrcServerThread
 

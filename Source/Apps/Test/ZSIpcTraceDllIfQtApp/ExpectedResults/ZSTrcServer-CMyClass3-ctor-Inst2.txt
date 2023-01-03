@@ -1,0 +1,4 @@
+<GUIMain                 > -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> Inst2.ctor(Inst2, nullptr)
+<GUIMain                 >    -> <ZS::System::CMutex> CMyClass3::Inst2::Counters.ctor(Recursive)
+<GUIMain                 >    <- <ZS::System::CMutex> CMyClass3::Inst2::Counters.ctor()
+<GUIMain                 > <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> Inst2.ctor()

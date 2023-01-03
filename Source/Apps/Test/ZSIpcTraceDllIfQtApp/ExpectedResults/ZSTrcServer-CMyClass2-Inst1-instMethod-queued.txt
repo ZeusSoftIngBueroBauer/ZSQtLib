@@ -1,0 +1,6 @@
+<GUIMain                 > -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass2> Inst1.instMethod(Hello Instance)
+<GUIMain                 > <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass2> Inst1.instMethod(): You here from me later ...
+<MyClass2ThreadInst1     >       -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass2> Inst1.event({ZS::Apps::Test::IpcTraceDllIfQtApp::ReqTest, instMethod})
+<MyClass2ThreadInst1     >          -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass2> Inst1.instMethod(Hello Instance)
+<MyClass2ThreadInst1     >          <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass2> Inst1.instMethod(): Hello World
+<MyClass2ThreadInst1     >       <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass2> Inst1.event()

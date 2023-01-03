@@ -39,6 +39,7 @@ global type definitions and constants
 Enum EMode
 ==============================================================================*/
 
+/*! @cond */
 template<> QMutex ZS::System::CEnum<EMode>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
 template<> QVector<QHash<QString, int>> ZS::System::CEnum<EMode>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
@@ -60,20 +61,22 @@ public: // ctor
 static CInitEnumMode s_initEnumMode;
 #else // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> ZS::System::CEnum<EMode>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> ZS::System::CEnum<EMode>::s_arEnumEntries(
 //------------------------------------------------------------------------------
-{                       // Enumerator,                       Name,      Symbol, Text,  SCIPShort, SCPILong, Alias6, Alias7
+{
     /* 0 */ SEnumEntry( static_cast<int>(EMode::Edit),       "Edit",       "E", "Edit",       "", "", "Design",     "Edit"      ),
     /* 1 */ SEnumEntry( static_cast<int>(EMode::Simulation), "Simulation", "S", "Simulation", "", "", "Simulation", "View"      ),
     /* 3 */ SEnumEntry( static_cast<int>(EMode::Undefined),  "Undefined",  "?", "Undefined",  "", "", "Undefined",  "Undefined" )
-};
+});
 #endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+/*! @endcond */
 
 
 /*==============================================================================
 Enum ERunMode
 ==============================================================================*/
 
+/*! @cond */
 template<> QMutex ZS::System::CEnum<ERunMode>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
 template<> QVector<QHash<QString, int>> ZS::System::CEnum<ERunMode>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
@@ -102,12 +105,14 @@ template<> const QVector<SEnumEntry> CEnum<ERunMode>::s_arEnumEntries =
     /*  2 */ SEnumEntry( static_cast<int>(ERunMode::Undefined),  "Undefined",  "?",    "Undefined",  "UND",  "UNDefined"  )
 };
 #endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+/*! @endcond */
 
 
 /*==============================================================================
 Enum EYesNo
 ==============================================================================*/
 
+/*! @cond */
 template<> QMutex ZS::System::CEnum<EYesNo>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
 template<> QVector<QHash<QString, int>> ZS::System::CEnum<EYesNo>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
@@ -136,12 +141,14 @@ template<> const QVector<SEnumEntry> CEnum<EYesNo>::s_arEnumEntries =
     /*  2 */ SEnumEntry( static_cast<int>(EYesNo::Undefined), "Undefined", "?",   "Undefined", "UND", "UNDefined", "Undefined", "Undefined" )
 };
 #endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+/*! @endcond */
 
 
 /*==============================================================================
 Enum EStateOnOff
 ==============================================================================*/
 
+/*! @cond */
 template<> QMutex ZS::System::CEnum<EStateOnOff>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
 template<> QVector<QHash<QString, int>> ZS::System::CEnum<EStateOnOff>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
@@ -170,12 +177,14 @@ template<> const QVector<SEnumEntry> CEnum<EStateOnOff>::s_arEnumEntries =
     /*  2 */ SEnumEntry( static_cast<int>(EStateOnOff::Undefined),  "Undefined" )
 };
 #endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+/*! @endcond */
 
 
 /*==============================================================================
 Enum EEnabled
 ==============================================================================*/
 
+/*! @cond */
 template<> QMutex ZS::System::CEnum<EEnabled>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
 template<> QVector<QHash<QString, int>> ZS::System::CEnum<EEnabled>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
@@ -204,11 +213,13 @@ template<> const QVector<SEnumEntry> ZS::System::CEnum<EEnabled>::s_arEnumEntrie
     /*  2 */ SEnumEntry( static_cast<int>(EEnabled::Undefined), "Undefined" )
 };
 #endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+/*! @endcond */
 
 /*==============================================================================
 Enum ECopyDepth
 ==============================================================================*/
 
+/*! @cond */
 template<> QMutex ZS::System::CEnum<ECopyDepth>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
 template<> QVector<QHash<QString, int>> ZS::System::CEnum<ECopyDepth>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
@@ -237,12 +248,14 @@ template<> const QVector<SEnumEntry> CEnum<ECopyDepth>::s_arEnumEntries =
     /*  2 */ SEnumEntry( static_cast<int>(ECopyDepth::Deep),                  "Deep",                  "DEE" )
 };
 #endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+/*! @endcond */
 
 
 /*==============================================================================
 Enum EObjState
 ==============================================================================*/
 
+/*! @cond */
 template<> QMutex ZS::System::CEnum<EObjState>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
 template<> QVector<QHash<QString, int>> ZS::System::CEnum<EObjState>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
@@ -277,12 +290,14 @@ template<> const QVector<SEnumEntry> CEnum<EObjState>::s_arEnumEntries =
     /*  5 */ SEnumEntry( static_cast<int>(EObjState::Undefined),  "Undefined"  )
 };
 #endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+/*! @endcond */
 
 
 /*==============================================================================
 enum ERowVersion
 ==============================================================================*/
 
+/*! @cond */
 template<> QMutex ZS::System::CEnum<ERowVersion>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
 template<> QVector<QHash<QString, int>> ZS::System::CEnum<ERowVersion>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
@@ -296,10 +311,7 @@ public: // ctor
     CInitEnumRowVersion() {
         QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnum<ERowVersion>::s_arEnumEntries);
         pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(ERowVersion::Original),  "Original",  "O",    "Original",  "ORIG",    "ORIGinal",  "Ori" ) );
-        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(ERowVersion::Current),   "Current",   "C",    "Current",   "CURR",    "CURRent",   "Cur" ) );
-        pVEnumEntries->append( /* 2 */ SEnumEntry( static_cast<int>(ERowVersion::Proposed),  "Proposed",  "P",    "Proposed",  "PROP",    "PROPosed",  "Prp" ) );
-        pVEnumEntries->append( /* 3 */ SEnumEntry( static_cast<int>(ERowVersion::Default),   "Default",   "D",    "Default",   "DEF",     "DEFault",   "Def" ) );
-        pVEnumEntries->append( /* 4 */ SEnumEntry( static_cast<int>(ERowVersion::Undefined), "Undefined", "?",    "Undefined", "UND",     "UNDefined", "Und" ) );
+        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(ERowVersion::Current),   "Current",   "C",    "Current",   "CURR",    "CURRent",   "Cur" ) )
     }
 };
 static CInitEnumRowVersion s_initEnumRowVersion;
@@ -309,18 +321,17 @@ template<> const QVector<SEnumEntry> CEnum<ERowVersion>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                       // Enumerator,                            Name,        Symbol, Text,        SCPIShort, SCPILong,    Alias6
     /* 0 */ SEnumEntry( static_cast<int>(ERowVersion::Original),  "Original",  "O",    "Original",  "ORIG",    "ORIGinal",  "Ori" ),
-    /* 1 */ SEnumEntry( static_cast<int>(ERowVersion::Current),   "Current",   "C",    "Current",   "CURR",    "CURRent",   "Cur" ),
-    /* 2 */ SEnumEntry( static_cast<int>(ERowVersion::Proposed),  "Proposed",  "P",    "Proposed",  "PROP",    "PROPosed",  "Prp" ),
-    /* 3 */ SEnumEntry( static_cast<int>(ERowVersion::Default),   "Default",   "D",    "Default",   "DEF",     "DEFault",   "Def" ),
-    /* 4 */ SEnumEntry( static_cast<int>(ERowVersion::Undefined), "Undefined", "?",    "Undefined", "UND",     "UNDefined", "Und" )
+    /* 1 */ SEnumEntry( static_cast<int>(ERowVersion::Current),   "Current",   "C",    "Current",   "CURR",    "CURRent",   "Cur" )
 };
 #endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+/*! @endcond */
 
 
 /*==============================================================================
 enum ERowState
 ==============================================================================*/
 
+/*! @cond */
 template<> QMutex ZS::System::CEnum<ERowState>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
 template<> QVector<QHash<QString, int>> ZS::System::CEnum<ERowState>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
@@ -355,12 +366,14 @@ template<> const QVector<SEnumEntry> CEnum<ERowState>::s_arEnumEntries =
     /* 5 */ SEnumEntry( static_cast<int>(ERowState::Undefined), "Undefined", "?",   "Undefined", "UND",     "UNDefined", "Und" )
 };
 #endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+/*! @endcond */
 
 
 /*==============================================================================
 Enum EContentToStrFormat
 ==============================================================================*/
 
+/*! @cond */
 template<> QMutex ZS::System::CEnum<EContentToStrFormat>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
 template<> QVector<QHash<QString, int>> ZS::System::CEnum<EContentToStrFormat>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
@@ -389,12 +402,14 @@ template<> const QVector<SEnumEntry> CEnum<EContentToStrFormat>::s_arEnumEntries
     /* 2 */ SEnumEntry( static_cast<int>(EContentToStrFormat::Undefined), "Undefined" )
 };
 #endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+/*! @endcond */
 
 
 /*==============================================================================
 Enum EMethodDir
 ==============================================================================*/
 
+/*! @cond */
 template<> QMutex ZS::System::CEnum<EMethodDir>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
 template<> QVector<QHash<QString, int>> ZS::System::CEnum<EMethodDir>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
@@ -425,12 +440,14 @@ template<> const QVector<SEnumEntry> CEnum<EMethodDir>::s_arEnumEntries =
     /* 3 */ SEnumEntry( static_cast<int>(EMethodDir::Undefined), "Undefined", "?" )
 };
 #endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+/*! @endcond */
 
 
 /*==============================================================================
 Enum ETransmitDir
 ==============================================================================*/
 
+/*! @cond */
 template<> QMutex ZS::System::CEnum<ETransmitDir>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
 template<> QVector<QHash<QString, int>> ZS::System::CEnum<ETransmitDir>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
@@ -459,12 +476,14 @@ template<> const QVector<SEnumEntry> CEnum<ETransmitDir>::s_arEnumEntries =
     /* 2 */ SEnumEntry( static_cast<int>(ETransmitDir::Undefined), "Undefined", "?",    "",    "",  "",      ""  )
 };
 #endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+/*! @endcond */
 
 
 /*==============================================================================
 Enum EIODir
 ==============================================================================*/
 
+/*! @cond */
 template<> QMutex ZS::System::CEnum<EIODir>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
 template<> QVector<QHash<QString, int>> ZS::System::CEnum<EIODir>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
@@ -493,12 +512,14 @@ template<> const QVector<SEnumEntry> CEnum<EIODir>::s_arEnumEntries =
     /* 2 */ SEnumEntry( static_cast<int>(EIODir::Undefined), "Undefined", "?",    "Undefined", "UND",     "UNDefined" )
 };
 #endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+/*! @endcond */
 
 
 /*==============================================================================
 Enum EDirection
 ==============================================================================*/
 
+/*! @cond */
 template<> QMutex ZS::System::CEnum<EDirection>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
 template<> QVector<QHash<QString, int>> ZS::System::CEnum<EDirection>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
@@ -527,12 +548,14 @@ template<> const QVector<SEnumEntry> CEnum<EDirection>::s_arEnumEntries =
     /* 3 */ SEnumEntry( static_cast<int>(EDirection::Undefined),  "Undefined",  "?"    )
 };
 #endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+/*! @endcond */
 
 
 /*==============================================================================
 Enum EComparisonOperator
 ==============================================================================*/
 
+/*! @cond */
 template<> QMutex ZS::System::CEnum<EComparisonOperator>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
 template<> QVector<QHash<QString, int>> ZS::System::CEnum<EComparisonOperator>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
@@ -561,12 +584,14 @@ template<> const QVector<SEnumEntry> CEnum<EComparisonOperator>::s_arEnumEntries
     /* 2 */ SEnumEntry( static_cast<int>(EComparisonOperator::Undefined), "Undefined", "?"  )
 };
 #endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+/*! @endcond */
 
 
 /*==============================================================================
 Enum EValueValidity
 ==============================================================================*/
 
+/*! @cond */
 template<> QMutex ZS::System::CEnum<EValueValidity>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
 template<> QVector<QHash<QString, int>> ZS::System::CEnum<EValueValidity>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
@@ -597,12 +622,14 @@ template<> const QVector<SEnumEntry> CEnum<EValueValidity>::s_arEnumEntries =
     /* 3 */ SEnumEntry( static_cast<int>(EValueValidity::Undefined), "Undefined", "?",      "Undefined", "UND",     "UNDefined", "Undefined", "" )
 };
 #endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+/*! @endcond */
 
 
 /*==============================================================================
 enum EDimensionType
 ==============================================================================*/
 
+/*! @cond */
 template<> QMutex ZS::System::CEnum<EDimensionType>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
 template<> QVector<QHash<QString, int>> ZS::System::CEnum<EDimensionType>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
@@ -633,6 +660,7 @@ template<> const QVector<SEnumEntry> CEnum<EDimensionType>::s_arEnumEntries =
     /* 3 */ SEnumEntry( static_cast<int>(EDimensionType::Undefined),       "Undefined",       "?", "Undefined",        "UND",  "UNDefined"    )
 };
 #endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+/*! @endcond */
 
 
 /*==============================================================================
@@ -1125,132 +1153,92 @@ void ZS::System::getMinCountArrayRange(
 
 
 /*==============================================================================
-Enum ETraceDetailLevel
+Enum EMethodTraceDetailLevel
 ==============================================================================*/
 
+/*! @cond */
+template<> QMutex ZS::System::CEnum<EMethodTraceDetailLevel>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> ZS::System::CEnum<EMethodTraceDetailLevel>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
-static const SEnumEntry s_arEnumStrTrcDetailLevel[] =
+const QVector<SEnumEntry> ZS::System::CEnum<EMethodTraceDetailLevel>::s_arEnumEntries;
 //------------------------------------------------------------------------------
+class CInitEnumTraceDetailLevelMethodCalls
 {
-                         // Enumerator,                              Name,            Symbol, Text,           SCPIShort, SCPILong
-    /*  0 */ SEnumEntry( ZS::Trace::ETraceDetailLevelNone,           "None",           "-",    "None",            "NONE", "NONE"        ),
-    /*  1 */ SEnumEntry( ZS::Trace::ETraceDetailLevelMethodCalls,    "MethodCalls",    "Mth",  "Method Calls",    "METH", "METHodcalls" ),
-    /*  2 */ SEnumEntry( ZS::Trace::ETraceDetailLevelMethodArgs,     "MethodArgs",     "Args", "Method Args",     "ARG",  "ARGuments"   ),
-    /*  3 */ SEnumEntry( ZS::Trace::ETraceDetailLevelInternalStates, "InternalStates", "Int",  "Internal States", "STAT", "STATes"      ),
-    /*  4 */ SEnumEntry( ZS::Trace::ETraceDetailLevelRuntimeInfo,    "RuntimeInfo",    "Inf",  "Runtime Info",    "INFO", "INFO"        ),
-    /*  5 */ SEnumEntry( ZS::Trace::ETraceDetailLevelVerbose,        "Verbose",        "Vbs",  "Verbose",         "VERB", "VERBose"     ),
-    /*  6 */ SEnumEntry( ZS::Trace::ETraceDetailLevelCount,          "Count",          "Cnt",  "Count",           "COUN", "COUNt"       )
+public: // ctor
+    CInitEnumDimensionType() {
+    //------------------------------------------------------------------------------() {
+        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&ZS::System::<EMethodTraceDetailLevel>::s_arEnumEntries);
+        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(EMethodTraceDetailLevel::None),         "None",         "-",    "None",               "NONE", "NONE"      ),
+        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(EMethodTraceDetailLevel::EnterLeave),   "EnterLeave",   "EL",   "Enter Leave",        "ELEA", "ELEAve"    ),
+        pVEnumEntries->append( /* 2 */ SEnumEntry( static_cast<int>(EMethodTraceDetailLevel::ArgsNormal),   "ArgsNormal",   "Args", "Arguments Normal",   "ANOR", "ANORmal"   ),
+        pVEnumEntries->append( /* 3 */ SEnumEntry( static_cast<int>(EMethodTraceDetailLevel::ArgsDetailed), "ArgsDetailed", "Int",  "Arguments Detailed", "ADET", "ADETailed" ),
+        pVEnumEntries->append( /* 4 */ SEnumEntry( static_cast<int>(EMethodTraceDetailLevel::ArgsVerbose),  "ArgsVerbose",  "Inf",  "Arguments Verbose",  "AVER", "AVERbose"  ),
+        pVEnumEntries->append( /* 5 */ SEnumEntry( static_cast<int>(EMethodTraceDetailLevel::Undefined),    "Undefined",    "?",    "Undefined",          "UND",  "UNDefined" )
+    }
 };
-
+static CInitEnumTraceDetailLevelMethodCalls s_initEnumTraceDetailLevelMethodCalls;
+#else // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
-/*! Converts the given enumerator into a string.
+template<> const QVector<SEnumEntry> ZS::System::CEnum<EMethodTraceDetailLevel>::s_arEnumEntries{
+//------------------------------------------------------------------------------
+    /* 0 */ SEnumEntry( static_cast<int>(EMethodTraceDetailLevel::None),         "None",         "-",    "None",               "NONE", "NONE"      ),
+    /* 1 */ SEnumEntry( static_cast<int>(EMethodTraceDetailLevel::EnterLeave),   "EnterLeave",   "EL",   "Enter Leave",        "ELEA", "ELEAve"    ),
+    /* 2 */ SEnumEntry( static_cast<int>(EMethodTraceDetailLevel::ArgsNormal),   "ArgsNormal",   "Args", "Arguments Normal",   "ANOR", "ANORmal"   ),
+    /* 3 */ SEnumEntry( static_cast<int>(EMethodTraceDetailLevel::ArgsDetailed), "ArgsDetailed", "Int",  "Arguments Detailed", "ADET", "ADETailed" ),
+    /* 4 */ SEnumEntry( static_cast<int>(EMethodTraceDetailLevel::ArgsVerbose),  "ArgsVerbose",  "Inf",  "Arguments Verbose",  "AVER", "AVERbose"  ),
+    /* 5 */ SEnumEntry( static_cast<int>(EMethodTraceDetailLevel::Undefined),    "Undefined",    "?",    "Undefined",          "UND",  "UNDefined" )
+};
+#endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+/*! @endcond */
 
-    @ingroup _GRP_Namespace_ZS_System_Enumerations_Enumerations
+/*==============================================================================
+Enum ELogDetailLevel
+==============================================================================*/
 
-    @param i_iDetailLevel [in] Detail level to be converted.
-    @param i_alias [in] Range [IdxName, Symbol, Text, SCPIShort, SCPILong].
-                        Selects one of the available strings.
+/*! @cond */
+template<> QMutex ZS::System::CEnum<ELogDetailLevel>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> ZS::System::CEnum<ELogDetailLevel>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
-    @return String representation of the given enumerator.
-*/
-QString ZS::Trace::traceDetailLevel2Str( int i_iDetailLevel, EEnumEntryAliasStr i_alias )
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+//------------------------------------------------------------------------------
+const QVector<SEnumEntry> ZS::System::CEnum<ELogDetailLevel>::s_arEnumEntries;
+//------------------------------------------------------------------------------
+class CInitEnumTraceDetailLevelMethodCalls
+{
+public: // ctor
+    CInitEnumDimensionType() {
+    //------------------------------------------------------------------------------() {
+        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&ZS::System::<ELogDetailLevel>::s_arEnumEntries);
+        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(ELogDetailLevel::None),           "None",           "-",   "None",            "NONE", "NONE"      ),
+        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(ELogDetailLevel::Fatal),          "Fatal",          "F",   "Fatal",           "FAT",  "FATal"     ),
+        pVEnumEntries->append( /* 2 */ SEnumEntry( static_cast<int>(ELogDetailLevel::Error),          "Error",          "E",   "Error",           "ERR",  "ERRor"     ),
+        pVEnumEntries->append( /* 3 */ SEnumEntry( static_cast<int>(ELogDetailLevel::Warning),        "Warning",        "W",   "Warning",         "WARN", "WARNing"   ),
+        pVEnumEntries->append( /* 4 */ SEnumEntry( static_cast<int>(ELogDetailLevel::Notice),         "Notice",         "N",   "Notice",          "NOT",  "NOTice"    ),
+        pVEnumEntries->append( /* 5 */ SEnumEntry( static_cast<int>(ELogDetailLevel::Info),           "Info",           "I",   "Info",            "INFO", "INFO"      ),
+        pVEnumEntries->append( /* 6 */ SEnumEntry( static_cast<int>(ELogDetailLevel::Debug),          "Debug",          "D",   "Debug",           "DEB",  "DEBug"     ),
+        pVEnumEntries->append( /* 7 */ SEnumEntry( static_cast<int>(ELogDetailLevel::DebugDetailed),  "DebugDetailed",  "DD",  "Debug Detailed",  "DDET", "DDETailed" ),
+        pVEnumEntries->append( /* 8 */ SEnumEntry( static_cast<int>(ELogDetailLevel::DebugVerbose),   "DebugVerbose",   "DV",  "Debug Verbose",   "DVER", "DVERbose"  ),
+        pVEnumEntries->append( /* 9 */ SEnumEntry( static_cast<int>(ELogDetailLevel::Undefined),      "Undefined",      "?",   "Undefined",       "UND",  "UNDefined" )
+    }
+};
+static CInitEnumTraceDetailLevelMethodCalls s_initEnumTraceDetailLevelMethodCalls;
+#else // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+//------------------------------------------------------------------------------
+template<> const QVector<SEnumEntry> ZS::System::CEnum<ELogDetailLevel>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {
-    QString str;
-
-    if( i_iDetailLevel == ETraceDetailLevelUndefined )
-    {
-        if( i_alias == EEnumEntryAliasStrSymbol )
-        {
-            str = "?";
-        }
-        else if( i_alias == EEnumEntryAliasStrText )
-        {
-            str = "Undefined";
-        }
-        else if( i_alias == EEnumEntryAliasStrSCPIShort )
-        {
-            str = "UND";
-        }
-        else if( i_alias == EEnumEntryAliasStrSCPILong )
-        {
-            str = "UNDefined";
-        }
-        else // if( i_alias == EEnumEntryAliasStrName )
-        {
-            str = "Undefined";
-        }
-    }
-    else if( i_iDetailLevel >= 0 && i_iDetailLevel < _ZSArrLen(s_arEnumStrTrcDetailLevel) )
-    {
-        str = SEnumEntry::enumerator2Str(s_arEnumStrTrcDetailLevel, _ZSArrLen(s_arEnumStrTrcDetailLevel), i_iDetailLevel, i_alias);
-    }
-    else
-    {
-        str = QString::number(i_iDetailLevel);
-    }
-    return str;
-
-} // traceDetailLevel2Str
-
-//------------------------------------------------------------------------------
-/*! Converts the string into the corresponding enumerator.
-
-    @ingroup _GRP_Namespace_ZS_System_Enumerations_Enumerations
-
-    @param i_str [in] String to be converted into the enumerator.
-    @param i_alias [in] Range [IdxName, Symbol, Text, SCPIShort, SCPILong, Undefined].
-                        Selects one of the available strings.
-                        If Undefined is used the string will be compared with all possible strings.
-                        If a valid index is used the passed string will only be compared with this alias string only.
-
-    @return Enumerator corresponding to the given string. Undefined if the conversion failed.
-*/
-int ZS::Trace::str2TraceDetailLevel( const QString& i_str, EEnumEntryAliasStr i_alias )
-//------------------------------------------------------------------------------
-{
-    bool bConverted = false;
-
-    int iDetailLevel = i_str.toInt(&bConverted);
-
-    if( !bConverted )
-    {
-        iDetailLevel = ETraceDetailLevelUndefined;
-
-        if( i_str.isEmpty() )
-        {
-            iDetailLevel = ETraceDetailLevelNone;
-        }
-        else if( i_str.compare("-", Qt::CaseInsensitive) == 0 )
-        {
-            iDetailLevel = ETraceDetailLevelNone;
-        }
-
-        if( iDetailLevel == ETraceDetailLevelUndefined )
-        {
-            if( i_str.compare("?", Qt::CaseInsensitive) == 0 )
-            {
-                iDetailLevel = ETraceDetailLevelUndefined;
-            }
-            else if( i_str.compare("Und", Qt::CaseInsensitive) == 0 )
-            {
-                iDetailLevel = ETraceDetailLevelUndefined;
-            }
-            else if( i_str.compare("Undefined", Qt::CaseInsensitive) == 0 )
-            {
-                iDetailLevel = ETraceDetailLevelUndefined;
-            }
-            else
-            {
-                iDetailLevel = SEnumEntry::str2Enumerator(s_arEnumStrTrcDetailLevel, _ZSArrLen(s_arEnumStrTrcDetailLevel), i_str, i_alias, Qt::CaseInsensitive);
-                if( iDetailLevel < 0 || iDetailLevel >= ETraceDetailLevelCount )
-                {
-                    iDetailLevel = ETraceDetailLevelUndefined;
-                }
-            }
-        }
-    } // if( !bConverted )
-
-    return iDetailLevel;
-
-} // str2TraceDetailLevel
+    /* 0 */ SEnumEntry( static_cast<int>(ELogDetailLevel::None),           "None",           "-",   "None",            "NONE", "NONE"      ),
+    /* 1 */ SEnumEntry( static_cast<int>(ELogDetailLevel::Fatal),          "Fatal",          "F",   "Fatal",           "FAT",  "FATal"     ),
+    /* 2 */ SEnumEntry( static_cast<int>(ELogDetailLevel::Error),          "Error",          "E",   "Error",           "ERR",  "ERRor"     ),
+    /* 3 */ SEnumEntry( static_cast<int>(ELogDetailLevel::Warning),        "Warning",        "W",   "Warning",         "WARN", "WARNing"   ),
+    /* 4 */ SEnumEntry( static_cast<int>(ELogDetailLevel::Notice),         "Notice",         "N",   "Notice",          "NOT",  "NOTice"    ),
+    /* 5 */ SEnumEntry( static_cast<int>(ELogDetailLevel::Info),           "Info",           "I",   "Info",            "INFO", "INFO"      ),
+    /* 6 */ SEnumEntry( static_cast<int>(ELogDetailLevel::Debug),          "Debug",          "D",   "Debug",           "DEB",  "DEBug"     ),
+    /* 7 */ SEnumEntry( static_cast<int>(ELogDetailLevel::DebugDetailed),  "DebugDetailed",  "DD",  "Debug Detailed",  "DDET", "DDETailed" ),
+    /* 8 */ SEnumEntry( static_cast<int>(ELogDetailLevel::DebugVerbose),   "DebugVerbose",   "DV",  "Debug Verbose",   "DVER", "DVERbose"  ),
+    /* 9 */ SEnumEntry( static_cast<int>(ELogDetailLevel::Undefined),      "Undefined",      "?",   "Undefined",       "UND",  "UNDefined" )
+};
+#endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+/*! @endcond */

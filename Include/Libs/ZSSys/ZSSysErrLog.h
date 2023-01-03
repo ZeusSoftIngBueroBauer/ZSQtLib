@@ -34,15 +34,20 @@ may result in using the software modules.
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysMsg.h"
 
+#ifdef WIN32
+#include <Windows.h>
+#endif
+
 class QFile;
 class QMutex;
+class QWaitCondition;
 class QXmlStreamWriter;
 
 namespace ZS
 {
 namespace System
 {
-struct SErrResultInfo;
+class CTestCrashDumpThread;
 
 //******************************************************************************
 /*! @brief Each entry in the error log has this data type.
@@ -55,6 +60,11 @@ struct SErrResultInfo;
 struct ZSSYSDLL_API SErrLogEntry
 //******************************************************************************
 {
+    Q_GADGET
+    Q_PROPERTY(QDateTime dateTime MEMBER m_dateTime)
+    //Q_PROPERTY(SErrResultInfo errResultInfo MEMBER m_errResultInfo)
+    Q_PROPERTY(QString proposal MEMBER m_strProposal)
+    Q_PROPERTY(int occurrences MEMBER m_iOccurrences)
 public: // ctors
     SErrLogEntry();
     SErrLogEntry( const SErrLogEntry& i_other );
@@ -66,8 +76,9 @@ public: // ctors
         int                   i_iOccurrences );
 public: // operators
     SErrLogEntry& operator = ( const SErrLogEntry& i_other );
+public: // struct methods
+    Q_INVOKABLE QString toString() const;
 public: // instance members
-    int            m_iRowIdx;       /*!< Index in the Error Logs Table. For internal use only. May be changed on removing entries from the error log. */
     QDateTime      m_dateTime;      /*!< Date and time the error occurred or the entry was created. */
     double         m_fSysTime_us;   /*!< Time in micro seconds which have been passed since program start the error occured or the entry was created. */
     SErrResultInfo m_errResultInfo; /*!< Resultcode, severity, source and additional info about the error that occurred. */
@@ -75,6 +86,7 @@ public: // instance members
     int            m_iOccurrences;  /*!< Number of occurrences the same error has occurred. */
 
 }; // struct SErrLogEntry
+
 
 //******************************************************************************
 /*! @brief The class CErrLog offers multithreaded applications the ability to store
@@ -204,6 +216,7 @@ class ZSSYSDLL_API CErrLog : public QObject
 //******************************************************************************
 {
     Q_OBJECT
+    Q_PROPERTY(QString absFilePath READ getAbsFilePath CONSTANT)
 public: // class methods
     /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::System"; }
@@ -211,10 +224,14 @@ public: // class methods
     static QString ClassName() { return "CErrLog"; }
 public: // class methods
     static CErrLog* GetInstance( const QString& i_strName = "ZSErrLog" );
-    static CErrLog* CreateInstance( bool i_bInstallQtMsgHandler = true, const QString& i_strAbsFilePath = "", const QString& i_strName = "ZSErrLog" );
+    static CErrLog* CreateInstance(
+        bool           i_bInstallQtMsgHandler = true,
+        bool           i_bInstallTerminateHandler = true,
+        bool           i_bInstallFaultHandler = true,
+        const QString& i_strAbsFilePath = "",
+        const QString& i_strName = "ZSErrLog" );
     static void ReleaseInstance( const QString& i_strName = "ZSErrLog" );
     static void ReleaseInstance( CErrLog* i_pErrLog );
-    static void DestroyAllInstances();
 private: // class methods
     static void InstallQtMsgHandler();
     static void RemoveQtMsgHandler();
@@ -223,25 +240,38 @@ private: // class methods
     #else
     static void QtMsgHandler( QtMsgType i_msgType, const QMessageLogContext& i_context, const QString& i_strMsg );
     #endif
+    static void TerminateHandler();
+    #ifdef WIN32
+    static long ExceptionHandler(EXCEPTION_POINTERS* i_pExceptionPointers);
+    #endif
 protected: // ctors and dtor
-    CErrLog( const QString& i_strName, const QString& i_strAbsFilePath, bool i_bInstallQtMsgHandler );
+    CErrLog(
+        const QString& i_strName,
+        const QString& i_strAbsFilePath,
+        bool           i_bInstallQtMsgHandler,
+        bool           i_bInstallTerminateHandler,
+        bool           i_bInstallFaultHandler );
     virtual ~CErrLog();
 signals:
     /*! Signal which will be emitted if an entry is added to the error log.
         Please note that the signal may be queued if the receiver is in another thread.
         You can't rely on that the error log entry still exists when receiving the signal.
-        For this not a reference to the entry but to the ErrResultInfo structure is passed with the signal. */
-    void entryAdded( const ZS::System::SErrResultInfo& i_errResultInfo );   // Will only be emitted for new entries.
+        For this not a reference to the entry but to the ErrResultInfo structure is passed with the signal.
+        @note: Will only be emitted for new entries. */
+    void entryAdded( const ZS::System::SErrResultInfo& i_errResultInfo );
     /*! Signal which will be emitted if an error log entry is changed.
         Please note that the signal may be queued if the receiver is in another thread.
         You can't rely on that the error log entry still exists when receiving the signal.
-        For this not a reference to the entry but to the ErrResultInfo structure is passed with the signal. */
-    void entryChanged( const ZS::System::SErrResultInfo& i_errResultInfo ); // Will be emitted for each occurrence.
+        For this not a reference to the entry but to the ErrResultInfo structure is passed with the signal.
+        @note: Will be emitted for each occurrence. */
+    void entryChanged( const ZS::System::SErrResultInfo& i_errResultInfo );
     /*! Signal which will be emitted if an entry is removed from the error log.
         Please note that the signal may be queued if the receiver is in another thread.
         You can't rely on that the error log entry still exists when receiving the signal.
         For this not a reference to the entry but to the ErrResultInfo structure is passed with the signal. */
     void entryRemoved( const ZS::System::SErrResultInfo& i_errResultInfo );
+    /*! Signal which will be emitted if the number of entries has been changed. */
+    void countChanged();
 public: // instance methods
     /*! This virtual method returns the name space of the object's class.
         This method can be reimplemented in derived classes so when invoked for the
@@ -252,18 +282,20 @@ public: // instance methods
         polymorphic base type the method returns the name of the derived class. */
     virtual QString className() const { return ClassName(); }
 public: // instance methods
-    void setEntriesCountMax( int i_iCount, EResultSeverity i_severity = ZS::System::EResultSeverityUndefined ); // Use Undefined (or Count) to set maximum numbers for all severities at once.
-    int getEntriesCountMax( EResultSeverity i_severity = ZS::System::EResultSeverityUndefined ) const;          // Use Undefined (or Count) to get the sum of all maximum numbers for all severities.
+    void setEntriesCountMax( int i_iCount, EResultSeverity i_severity = EResultSeverityUndefined );
+    int getEntriesCountMax( EResultSeverity i_severity = EResultSeverityUndefined ) const;
 public: // instance methods
     QString getAbsFilePath() const;
 public: // instance methods
-    SErrLogEntry* findEntry( const SErrResultInfo& i_errResultInfo );
+    Q_INVOKABLE void lock();
+    Q_INVOKABLE void unlock();
+public: // instance methods
     void addEntry(
-        SErrResultInfo& i_errResultInfo,  // Not const as will be marked as "AddedToErrLogModel".
+        SErrResultInfo& i_errResultInfo,
         const QString&  i_strProposal = "" );
     void addEntry(
         const QDateTime& i_dateTime,
-        SErrResultInfo&  i_errResultInfo,  // Not const as will be marked as "AddedToErrLogModel".
+        SErrResultInfo&  i_errResultInfo,
         const QString&   i_strProposal = "" );
     void changeEntry(
         const SErrResultInfo& i_errResultInfo,
@@ -271,20 +303,19 @@ public: // instance methods
         const QDateTime&      i_dateTime = QDateTime(),
         bool                  i_bModifyProposal = false,
         const QString&        i_strProposal = "" );
+    void clear( EResultSeverity i_severity = EResultSeverityUndefined );
     void removeEntry( const SErrResultInfo& i_errResultInfo );
+    void removeEntry( int i_iRowIdx, EResultSeverity i_severity = EResultSeverityUndefined );
 public: // instance methods
-    void clear( EResultSeverity i_severity = ZS::System::EResultSeverityUndefined );            // Use Undefined (or Count) to clear all errors for all severities.
+    Q_INVOKABLE int getEntryCount( const QString& i_strSeverity ) const;
+    int getEntryCount( EResultSeverity i_severity = EResultSeverityUndefined ) const;
+    SErrLogEntry* findEntry( const SErrResultInfo& i_errResultInfo, int* o_piRowIdx = nullptr, int* o_piRowIdxSeveritySection = nullptr );
+    SErrLogEntry* getEntry( int i_iRowIdx, EResultSeverity i_severity = EResultSeverityUndefined ) const;
+    SErrLogEntry takeEntry( int i_iRowIdx, EResultSeverity i_severity = EResultSeverityUndefined );
+    SErrLogEntry takeFirstEntry( EResultSeverity i_severity = EResultSeverityUndefined );
+    SErrLogEntry takeLastEntry( EResultSeverity i_severity = EResultSeverityUndefined );
 public: // instance methods
-    void lock();     // !! Before "looping" through the list you need to lock the list !!
-    void unlock();   // !! Don't forget to unlock the list after "looping" through the list !!
-public: // instance methods
-    int getEntryCount( EResultSeverity i_severity = ZS::System::EResultSeverityUndefined );     // Use Undefined (or Count) to get the sum of all errors for all severities.
-    // Use Undefined (or Count) to count through all severities. In this case counting rows starts at highest severity (Critical).
-    SErrLogEntry* getEntry( int i_iRowIdx, EResultSeverity i_severity = ZS::System::EResultSeverityUndefined );
-    void removeEntry( int i_iRowIdx, EResultSeverity i_severity = ZS::System::EResultSeverityUndefined );
-    SErrLogEntry takeEntry( int i_iRowIdx, EResultSeverity i_severity = ZS::System::EResultSeverityUndefined );
-    SErrLogEntry takeFirstEntry( EResultSeverity i_severity = ZS::System::EResultSeverityUndefined );
-    SErrLogEntry takeLastEntry( EResultSeverity i_severity = ZS::System::EResultSeverityUndefined );
+    void testCrashDump();
 protected: // instance methods
     void recall();
     void save();
@@ -303,33 +334,44 @@ protected: // instance methods
         const QDateTime&  i_dateTime = QDateTime(),
         bool              i_bModifyProposal = false,
         const QString&    i_strProposal = "" );
-    void removeEntry_( int i_iRowIdx, EResultSeverity i_severity = ZS::System::EResultSeverityUndefined );
+    void removeEntry_( int i_iRowIdx, EResultSeverity i_severity = EResultSeverityUndefined );
+    #ifdef WIN32
+    QString generateDump(EXCEPTION_POINTERS* i_pExceptionPointers) const;
+    #endif
 private: // copy ctor not allowed
     CErrLog( const CErrLog& );
 private: // assignment operator not allowed
     CErrLog& operator = ( const CErrLog& );
 protected: // class members
-    static QMutex                   s_mtx;           /*!< Mutex to protect the class and instance methods of the class for multithreaded access. */
-    static QHash<QString, CErrLog*> s_hshpInstances; /*!< Hash with all created err log instances (key is name of instance). */
-    static int                      s_iMsgHandlerInstallCount;  /*!< Counts the number the class method InstallQtMsgHandler is called
-                                                                     to ensure that the Qt message handler is installed and removed just once. */
+    /*!< Mutex to protect the class variables for multithreaded access. */
+    static QMutex s_mtx;
+    /*!< Hash with all created err log instances (key is name of instance). */
+    static QHash<QString, CErrLog*> s_hshpInstances;
+    /*!< Counts the number the class method InstallQtMsgHandler is called
+         to ensure that the Qt message handler is installed and removed just once. */
+    static int s_iMsgHandlerInstallCount;
 protected: // instance members
-    // Please note that entries may be added from within different thread contexts
-    // to the error log object and that for this the list of entries of the error
-    // log object is protected by a mutex and entries will be "immediately" entered.
-    QMutex*                         m_pMtx;             /*!< Mutex to protect the static and instance methods of the class for multithreaded access. */
-    QString                         m_strAbsFilePath;   /*!< Absolute path including the file name and suffix of the error logs xml file. */
-    QFile*                          m_pFile;            /*!< Xml file of the error log instance. */
-    bool                            m_bRecallingModel;  /*!< Flag for internal state machine to indicate that currently error log entries are
-                                                             added because the content of the error log file is read to avoid that the new
-                                                             entries are saved in the xml file again causing an endless recursion. */
-    bool                            m_bClearingModel;   /*!< Flag for internal state machine to indicate that currently the content of the
-                                                             error log instance is cleared to avoid that for each removed entry a signal
-                                                             is emitted. */
-    int                             m_iAddEntryRecursionCounter; /*!< The recursion counter avoids endless recursion if there is a problem
-                                                                      when trying to write to the xml file (e.g. saving file not possible)
-                                                                      whereupon the qt message handler is called invoking addEntry_ again
-                                                                      whereupon again the save method would be called and so on. */
+    /*!< Mutex to protect the instance variables of the class for multithreaded access.
+         Please note that entries may be added from within different thread contexts
+         to the error log object and for this the list of entries of the error
+         log object is protected by a mutex and entries will be "immediately" entered. */
+    QMutex* m_pMtx;
+    /*!< Absolute path including the file name and suffix of the error logs xml file. */
+    QString m_strAbsFilePath;
+    /*!< Xml file of the error log instance. */
+    QFile* m_pFile;
+    /*!< Flag for internal state machine to indicate that currently error log entries are
+         added because the content of the error log file is read to avoid that the new
+         entries are saved in the xml file again causing an endless recursion. */
+    bool m_bRecallingModel;
+    /*!< Flag for internal state machine to indicate that currently the content of the
+         error log instance is cleared to avoid that for each removed entry a signal is emitted. */
+    bool m_bClearingModel;
+    /*!< The recursion counter avoids endless recursion if there is a problem
+         when trying to write to the xml file (e.g. saving file not possible)
+         whereupon the qt message handler is called invoking addEntry_ again
+         whereupon again the save method would be called and so on. */
+    int m_iAddEntryRecursionCounter;
     // Please note that shiboken crashes with error -1073741819 (access violation)
     // if array member variables are used defined by [] operators with fixed size.
     // Using vector initialized with fixed size in the ctor as a workaround.
@@ -338,12 +380,62 @@ protected: // instance members
     // As a workaround on linux to let shiboken generate the bindings the definition will be
     // temporarily changed to ">>". After shiboken has generated the bindings the definition
     // will be changed back to "> >" to compile the module with gcc on linux.
-    QVector<int>                    m_ariEntriesCountMax;   /*!< Defines for each result severity the maximum number of log entries. */
-    QVector< QList<SErrLogEntry*> > m_ararpEntries;         /*!< For each severity list of error log entries. */
-    bool                            m_bQtMsgHandlerInstalledByCtor; /*!< true, if this instance installed the Qt message hander and
-                                                                         therefore must be removed again when the dtor is called. */
+    /*!< Defines for each result severity the maximum number of log entries. */
+    QVector<int> m_ariEntriesCountMax;
+    /*!< For each severity list of error log entries. */
+    QVector< QList<SErrLogEntry*> > m_ararpEntries;
+    /*!< true, if this instance installed the Qt message hander and
+         therefore must be removed again when the dtor is called. */
+    bool m_bQtMsgHandlerInstalledByCtor;
+    /*!< Pointer to thread for testing the generation of a crash dump file. */
+    CTestCrashDumpThread* m_pTestCrashDumpThread;
 
 }; // class CErrLog
+
+
+//******************************************************************************
+/*! @brief Locker class to lock and unlock the error log instance.
+*/
+class CErrLogLocker
+//******************************************************************************
+{
+public:
+    CErrLogLocker(CErrLog* i_pErrLog) : m_pErrLog(i_pErrLog) {
+        m_pErrLog->lock();
+    }
+    ~CErrLogLocker() {
+        m_pErrLog->unlock();
+    }
+private:
+    CErrLog* m_pErrLog;
+};
+
+
+//******************************************************************************
+/*! @brief Internal thread class used to test creating a crash dump file.
+
+    Added in this header so that the MOC compiler can find it.
+
+    When calling CErrLog::testCrashDump an instance of this thread is created
+    and the thread is started.
+    A single shot timer is started in the run method of the thread invoking
+    a lambda function which forces an access violation (nullptr assignment).
+*/
+class CTestCrashDumpThread : public QThread
+//******************************************************************************
+{
+    Q_OBJECT
+public: // ctors and dtor
+    CTestCrashDumpThread();
+    virtual ~CTestCrashDumpThread();
+public: // instance methods
+    bool waitForThreadRunning() const;
+public: // overridables of base class QThread
+    virtual void run() override;
+private: // instance members
+    QMutex*         m_pMtxWaitThreadRunning = nullptr;
+    QWaitCondition* m_pWaitThreadRunning = nullptr;
+};
 
 } // namespace System
 

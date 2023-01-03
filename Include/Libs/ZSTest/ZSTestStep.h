@@ -34,6 +34,8 @@ namespace ZS
 namespace Test
 {
 //******************************************************************************
+/*! @brief Single test step. Test steps are organized as leaves of the index tree.
+*/
 class ZSTESTDLL_API CTestStep : public CAbstractTestStepIdxTreeEntry
 //******************************************************************************
 {
@@ -50,8 +52,10 @@ public: // ctors and dtor
         const char*     i_szDoTestStepSlotFct );
     virtual ~CTestStep();
 signals:
+    /*! @brief This signal is emitted to trigger the next step. */
     void doTestStep( ZS::Test::CTestStep* i_pTestStep );
-    void testStepFinished( ZS::Test::CTestStep* i_pTestStep ); // emitted if result values are set
+    /*! @brief This signal is emitted if result values are set. */
+    void testStepFinished( ZS::Test::CTestStep* i_pTestStep );
 public: // overridables
     virtual QString nameSpace() const { return CTestStep::NameSpace(); }
     virtual QString className() const { return CTestStep::ClassName(); }
@@ -62,13 +66,23 @@ public: // instance methods
     QString getDescription() const { return m_strDescription; }
     void setDescription( const QString& i_strDescription );
 public: // instance methods
+    QStringList getConfigValueKeys() const;
+    QVariant getConfigValue( const QString& i_strKey ) const;
+    void setConfigValue( const QString& i_strKey, const QVariant& i_val );
+public: // instance methods
+    QString getInstruction() const { return m_strInstruction; }
+    void setInstruction( const QString& i_strInstruction );
+public: // instance methods
     QStringList getExpectedValues() const { return m_strlstExpectedValues; }
-    void setExpectedValues( const QStringList& i_strlstExpectedValues = QStringList() );
-    void setExpectedValue( const QString& i_strExpectedValue = QString() ); // Provided for convenience. Converted to String List.
+    void setExpectedValues( const QStringList& i_strlstExpectedValues );
+    void setExpectedValue( const QString& i_strExpectedValue );
 public: // instance methods
     QStringList getResultValues() const { return m_strlstResultValues; }
-    void setResultValues( const QStringList& i_strlstResultValues = QStringList() ); // finishes the test step
-    void setResultValue( const QString& i_strResultValue = QString() ); // Provided for convenience. Converted to String List.
+    void setResultValues( const QStringList& i_strlstResultValues );
+    void setResultValue( const QString& i_strResultValue );
+public: // auxiliary instance methods
+    CEnumTestResult detectTestResult( const QStringList& i_strlstExpectedValues, const QStringList& i_strlstResultValues );
+    CEnumTestResult detectTestResult( const QString& i_strExpectedValue, const QString& i_strResultValue );
 public: // instance methods
     bool isFinished() const;
 public: // instance methods
@@ -80,28 +94,38 @@ public: // instance methods
     bool isBreakpointEnabled() const { return m_breakpointEnabled == ZS::System::EEnabled::Yes; }
 public: // instance methods
     void reset();
+public: // instance methods
+    void setTestResult( const CEnumTestResult& i_result );
 public: // must overridables of base class CAbstractTestStepIdxTreeEntry
     virtual CEnumTestResult getTestResult() const override { return m_testResult; }
     virtual double getTestDurationInSec() const override;
 public: // instance methods
     virtual void doTestStep();
-protected: // instance methods
-    void onTestStepStarted();
-    void onTestStepFinished();
 private: // default ctor not allowed
     CTestStep();
 private: // copy ctor not allowed
     CTestStep( const CTestStep& );
 protected: // instance members
-    //TFctDoTestStep m_fctDoTestStep;
-    QString              m_strOperation;
-    QString              m_strDescription;
-    QStringList          m_strlstExpectedValues;
-    QStringList          m_strlstResultValues;
-    double               m_fTimeTestStart_s;
-    double               m_fTimeTestEnd_s;
-    bool                 m_bBreakpoint;
-    ZS::System::EEnabled m_breakpointEnabled;
+    /*!< Operation which will be executed (e.g. NameSpace::Class::Inst.method(args)). */
+    QString                  m_strOperation;
+    /*!< Description of the test step. */
+    QString                  m_strDescription;
+    /*!< Hash with config values assigned to the test step. */
+    QHash<QString, QVariant> m_hshConfigValues;
+    /*!< List with the expected result values. */
+    QString                  m_strInstruction;
+    /*!< List with the expected result values. */
+    QStringList              m_strlstExpectedValues;
+    /*!< List with the result values. */
+    QStringList              m_strlstResultValues;
+    /*!< Start time of the test step in seconds since start of the whole test. */
+    double                   m_fTimeTestStart_s;
+    /*!< End time of the test step in seconds since start of the whole test. */
+    double                   m_fTimeTestEnd_s;
+    /*!< True if the test execution should stop before executing the step. */
+    bool                     m_bBreakpoint;
+    /*!< True if the breakpoint is enabled. */
+    ZS::System::EEnabled     m_breakpointEnabled;
 
 }; // class CTestStep
 

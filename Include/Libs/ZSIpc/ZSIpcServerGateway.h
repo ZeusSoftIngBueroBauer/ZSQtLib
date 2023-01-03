@@ -52,8 +52,7 @@ public: // ctors and dtor
         const QString&       i_strObjNameGateway,
         CServer*             i_pServer,
         ZS::System::CErrLog* i_pErrLog,
-        Trace::CTrcMthFile*  i_pTrcMthFile = nullptr,         // If != nullptr trace method file with detail level is used instead of trace admin object with Trace server.
-        int                  i_iTrcMthFileDetailLevel = Trace::ETraceDetailLevelMethodArgs );
+        ZS::System::EMethodTraceDetailLevel i_eTrcMthFileDetailLevel = ZS::System::EMethodTraceDetailLevel::None );
     virtual ~CServerGatewayThread();
 public: // instance methods
     virtual QString nameSpace() const override { return NameSpace(); }
@@ -79,8 +78,7 @@ public: // ctors and dtor
         CServer*              i_pServer,
         CServerGatewayThread* i_pThreadGateway,
         ZS::System::CErrLog*  i_pErrLog,
-        Trace::CTrcMthFile*   i_pTrcMthFile = nullptr,         // If != nullptr trace method file with detail level is used instead of trace admin object with Trace server.
-        int                   i_iTrcMthFileDetailLevel = Trace::ETraceDetailLevelMethodArgs );
+        ZS::System::EMethodTraceDetailLevel i_eTrcMthFileDetailLevel = ZS::System::EMethodTraceDetailLevel::None );
     virtual ~CServerGateway();
 public: // instance methods
     virtual QString nameSpace() const override { return NameSpace(); }

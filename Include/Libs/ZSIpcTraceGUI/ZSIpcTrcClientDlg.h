@@ -61,15 +61,15 @@ public: // class methods
     static QString ClassName() { return "CDlgTrcClient"; }
 public: // class methods
     static CDlgTrcClient* CreateInstance(
-        const QString&  i_strObjName,
         const QString&  i_strDlgTitle,
+        const QString&  i_strObjName,
         QWidget*        i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wFlags = Qt::WindowFlags() );
     static CDlgTrcClient* GetInstance( const QString& i_strObjName );
 protected: // ctor
     CDlgTrcClient(
-        const QString&  i_strObjName,
         const QString&  i_strDlgTitle,
+        const QString&  i_strObjName,
         QWidget*        i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wFlags = Qt::WindowFlags());
 public: // dtor
@@ -80,8 +80,10 @@ public: // overridables of base class ZS::System::GUI::CDialog
 public: // instance methods
     void setClient( CIpcTrcClient* i_pTrcClient );
 protected slots:
-    void onSettingsAccepted();
-    void onSettingsRejected();
+    void onIpcClientSettingsAccepted();
+    void onIpcClientSettingsRejected();
+    void onTrcSettingsAccepted();
+    void onTrcSettingsRejected();
 protected slots:
     void onWdgtIpcClientDetailsVisibilityChanged( bool i_bDetailsVisible );
 protected: // instance members

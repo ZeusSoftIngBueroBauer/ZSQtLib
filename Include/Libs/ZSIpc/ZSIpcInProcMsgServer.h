@@ -38,7 +38,7 @@ class QMutex;
 
 namespace ZS
 {
-namespace Trace
+namespace System
 {
 class CTrcAdminObj;
 }
@@ -70,7 +70,7 @@ protected: // instance members
     QMap<unsigned int,CInProcMsgServer*> m_mapServers; // Map with listening servers (the key corresponds to the port)
     bool                                 m_bDestroying;
     bool                                 m_bTracingEnabled;
-    Trace::CTrcAdminObj*                 m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj*            m_pTrcAdminObj;
 
 }; // class CInProcMsgServersAdminObj
 
@@ -119,12 +119,12 @@ protected: // instance methods
     ESocketState               m_socketState;
     QString                    m_strHostName;
     unsigned int               m_uPort;
-    ZS::System::SErrResultInfo             m_errResultInfo;
+    ZS::System::SErrResultInfo m_errResultInfo;
     int                        m_iMaxPendingConnections;
     QVector<CInProcMsgSocket*> m_arpPendingConnections;
-    ZS::System::ECopyDepth                 m_copyDepthMsgReadBuff;
+    ZS::System::ECopyDepth     m_copyDepthMsgReadBuff;
     bool                       m_bTracingEnabled;
-    Trace::CTrcAdminObj*       m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj*  m_pTrcAdminObj;
 
 }; // class CInProcMsgServer
 

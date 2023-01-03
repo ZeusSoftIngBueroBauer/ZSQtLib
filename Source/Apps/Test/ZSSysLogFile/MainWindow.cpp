@@ -94,7 +94,6 @@ CMainWindow::CMainWindow(
     m_pActDebugErrLog(nullptr),
     m_pMnuInfo(nullptr),
     m_pActInfoVersion(nullptr),
-    m_pActInfoSettingsFile(nullptr),
     m_pStatusBar(nullptr),
     m_pLblErrors(nullptr),
     m_pWdgtCentral(nullptr),
@@ -205,15 +204,11 @@ CMainWindow::CMainWindow(
     // <MenuItem> Debug::Error Log
     //----------------------------
 
-    QIcon iconDebugErrorLog;
+    QIcon iconErrorLog;
+    QPixmap pxmErrorLog(":/ZS/App/Zeus32x32.png");
+    iconErrorLog.addPixmap(pxmErrorLog);
 
-    QPixmap pxmDebugErrorLog16x16(":/ZS/App/Zeus16x16.bmp");
-
-    pxmDebugErrorLog16x16.setMask(pxmDebugErrorLog16x16.createHeuristicMask());
-
-    iconDebugErrorLog.addPixmap(pxmDebugErrorLog16x16);
-
-    m_pActDebugErrLog = new QAction( iconDebugErrorLog, "Error Log", this );
+    m_pActDebugErrLog = new QAction( iconErrorLog, "Error Log", this );
     m_pActDebugErrLog->setToolTip("Open error log dialog");
     m_pActDebugErrLog->setEnabled(true);
 
@@ -244,24 +239,6 @@ CMainWindow::CMainWindow(
 
     m_pActInfoVersion = new QAction(strActionInfoVersion,this);
     m_pMnuInfo->addAction(m_pActInfoVersion);
-
-    // <MenuItem> Settings::Settings File Info
-    //----------------------------------------
-
-    m_pSettingsFile = CApplication::GetInstance()->getSettingsFile();
-
-    if( m_pSettingsFile != nullptr )
-    {
-        QString strActionSettingsFileInfo = "Settings File: " + m_pSettingsFile->fileName();
-
-        QIcon iconModeEdit;
-
-        iconModeEdit.addPixmap( mode2Pixmap(static_cast<int>(EMode::Edit),24) );
-
-        m_pActInfoSettingsFile = new QAction( iconModeEdit, strActionSettingsFileInfo, this );
-
-        m_pMnuInfo->addAction(m_pActInfoSettingsFile);
-    }
 
     // <StatusBar>
     //======================
@@ -363,7 +340,6 @@ CMainWindow::~CMainWindow()
     m_pActDebugErrLog = nullptr;
     m_pMnuInfo = nullptr;
     m_pActInfoVersion = nullptr;
-    m_pActInfoSettingsFile = nullptr;
     m_pStatusBar = nullptr;
     m_pLblErrors = nullptr;
     m_pWdgtCentral = nullptr;
@@ -457,7 +433,7 @@ void CMainWindow::onActFileOpenTriggered()
 
         if( !strFile.isEmpty() )
         {
-            SErrResultInfo errResultInfo = pTest->recall(strFile);
+            SErrResultInfo errResultInfo = pTest->recallTestSteps(strFile);
 
             if( errResultInfo.isErrorResult() )
             {
@@ -507,7 +483,7 @@ void CMainWindow::onActFileSaveTriggered()
 
         if( !strFile.isEmpty() )
         {
-            SErrResultInfo errResultInfo = pTest->save(strFile);
+            SErrResultInfo errResultInfo = pTest->saveTestSteps(strFile);
 
             if( errResultInfo.isErrorResult() )
             {
@@ -540,7 +516,7 @@ void CMainWindow::onActDebugErrLogTriggered()
 {
     QString strDlgTitle = QCoreApplication::applicationName() + ": Error Log";
 
-    CDlgErrLog* pDlg = dynamic_cast<CDlgErrLog*>(CDlgErrLog::GetInstance(strDlgTitle));
+    CDlgErrLog* pDlg = dynamic_cast<CDlgErrLog*>(CDlgErrLog::GetInstance());
 
     if( pDlg == nullptr )
     {

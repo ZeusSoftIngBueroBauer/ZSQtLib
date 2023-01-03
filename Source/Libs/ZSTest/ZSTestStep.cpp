@@ -27,6 +27,7 @@ may result in using the software modules.
 #include "ZSTest/ZSTestStep.h"
 #include "ZSTest/ZSTest.h"
 #include "ZSTest/ZSTestStepGroup.h"
+#include "ZSTest/ZSTestStepRoot.h"
 #include "ZSTest/ZSTestStepIdxTree.h"
 
 #include "ZSSys/ZSSysErrResult.h"
@@ -50,7 +51,7 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! Constructs a test step.
+/*! @brief Creates a test step.
 
     The entry will be added to the index tree of the passed test instance.
 
@@ -88,6 +89,8 @@ CTestStep::CTestStep(
     CAbstractTestStepIdxTreeEntry(i_pTest, EIdxTreeEntryType::Leave, i_strName, i_pTSGrpParent),
     m_strOperation(i_strOperation),
     m_strDescription(),
+    m_hshConfigValues(),
+    m_strInstruction(),
     m_strlstExpectedValues(),
     m_strlstResultValues(),
     m_fTimeTestStart_s(0.0),
@@ -107,11 +110,15 @@ CTestStep::CTestStep(
 } // ctor
 
 //------------------------------------------------------------------------------
+/*! @brief Destroys the test step instance.
+*/
 CTestStep::~CTestStep()
 //------------------------------------------------------------------------------
 {
     //m_strOperation;
     //m_strDescription;
+    //m_hshConfigValues;
+    //m_strInstruction;
     //m_strlstExpectedValues.clear();
     //m_strlstResultValues.clear();
     m_fTimeTestStart_s = 0.0;
@@ -126,61 +133,145 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Sets the operation of the test step.
+
+    The operation should describe the method which will be tested.
+
+    The string applied may be used by a test step slot method to retrieve further
+    information like class name, instance name, method to be called and so on.
+
+    By evaluating the content of the operation string a slot method might be reused
+    by several test steps.
+
+    A possible operation string could be:
+
+    @code
+    NameSpace::ClassName::InstName.method(args)
+    @endcode
+
+    @param i_strOperation [in] Operation of the test step.
+*/
 void CTestStep::setOperation( const QString& i_strOperation )
 //------------------------------------------------------------------------------
 {
     if( m_strOperation != i_strOperation )
     {
         m_strOperation = i_strOperation;
-
-        if( m_pTree != nullptr )
-        {
-            m_pTree->onTreeEntryChanged(this);
-        }
+        emit_changed();
     }
-
-} // setOperation
+}
 
 //------------------------------------------------------------------------------
+/*! @brief Sets the description of the test step.
+
+    The description should describe what will be tested.
+
+    E.g. "Returns after timeout".
+
+    By evaluating the content of the description string a slot method might
+    be reused by several test steps.
+
+    @param i_strDescription [in] Description of the test step.
+*/
 void CTestStep::setDescription( const QString& i_strDescription )
 //------------------------------------------------------------------------------
 {
     if( m_strDescription != i_strDescription )
     {
         m_strDescription = i_strDescription;
-
-        if( m_pTree != nullptr )
-        {
-            m_pTree->onTreeEntryChanged(this);
-        }
+        emit_changed();
     }
+}
 
-} // setDescription
+//------------------------------------------------------------------------------
+/*! @brief Return the config value for the given key.
+
+    @param i_strKey [in] Key for which the config value should be returned.
+
+    @return Config value of the given key. If no value was set for the key an
+            invalid QVariant value is returned.
+*/
+QStringList CTestStep::getConfigValueKeys() const
+//------------------------------------------------------------------------------
+{
+    return m_hshConfigValues.keys();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Return the config value for the given key.
+
+    @param i_strKey [in] Key for which the config value should be returned.
+
+    @return Config value of the given key. If no value was set for the key an
+            invalid QVariant value is returned.
+*/
+QVariant CTestStep::getConfigValue( const QString& i_strKey ) const
+//------------------------------------------------------------------------------
+{
+    return m_hshConfigValues.value(i_strKey, QVariant());
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets a config value of the test step.
+
+    Config values may be used to configure a slot method of the test step so
+    that the slot method might be reused by several slot methods.
+
+    @param i_strKey [in] Key for which the config value should be set.
+    @param i_val [in] Config value.
+*/
+void CTestStep::setConfigValue( const QString& i_strKey, const QVariant& i_val )
+//------------------------------------------------------------------------------
+{
+    m_hshConfigValues[i_strKey] = i_val;
+    emit_changed();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the instruction of the test step.
+
+    The instruction should describe what has to be done to execute the test step.
+
+    E.g. "Start the trace client.\n"
+         "Is the client connected?"
+
+    @param i_strInstruction [in] Instruction of the test step.
+*/
+void CTestStep::setInstruction( const QString& i_strInstruction )
+//------------------------------------------------------------------------------
+{
+    if( m_strInstruction != i_strInstruction )
+    {
+        m_strInstruction = i_strInstruction;
+        emit_changed();
+    }
+}
 
 //------------------------------------------------------------------------------
 /*! Sets the expected result values of the test step.
 
-    @param i_strlstExpectedValues [in] List with strings defining the expected result
-                                     values of the test step. The list will be compared
-                                     with the result values.
+    @param i_strlstExpectedValues [in]
+        List with strings defining the expected result values of the test step.
+        The list will be compared with the result values.
 */
 void CTestStep::setExpectedValues( const QStringList& i_strlstExpectedValues )
 //------------------------------------------------------------------------------
 {
-    m_strlstExpectedValues = i_strlstExpectedValues;
-
-    if( m_pTree != nullptr )
+    if( m_strlstExpectedValues != i_strlstExpectedValues )
     {
-        m_pTree->onTreeEntryChanged(this);
+        m_strlstExpectedValues = i_strlstExpectedValues;
+        emit_changed();
     }
 }
 
 //------------------------------------------------------------------------------
 /*! Sets the expected result value of the test step.
 
-    @param i_strlstExpectedValue [in] String defining the expected result value
-                                      of the test step. The string will be compared
-                                      with the result value.
+    Provided for convenience. Converted to String List invoking "setExpectedValues".
+
+    @param i_strlstExpectedValue [in]
+        String defining the expected result value of the test step.
+        The string will be compared with the result value.
 */
 void CTestStep::setExpectedValue( const QString& i_strExpectedValue )
 //------------------------------------------------------------------------------
@@ -195,35 +286,38 @@ void CTestStep::setExpectedValue( const QString& i_strExpectedValue )
 }
 
 //------------------------------------------------------------------------------
-/*! Sets the actual result values of the test step which finishes test step.
-    The signal "testStepFinished" is emitted.
+/*! Sets the actual result values of the test step and finishes the test step.
 
-    @param i_strlstResultValues [in] List with strings defining the actual result
-                                     values of the test step. The list will be compared
-                                     with the expected values. If equal the test result is
-                                     Passed, otherwise Failed.
+    The test result is evaluated and the signal "testStepFinished" is emitted.
+
+    @param i_strlstResultValues [in]
+        List with strings defining the actual result values of the test step.
+        The list will be compared with the expected values.
+        If equal the test result is Passed, otherwise Failed.
 */
 void CTestStep::setResultValues( const QStringList& i_strlstResultValues )
 //------------------------------------------------------------------------------
 {
     m_strlstResultValues = i_strlstResultValues;
 
+    CEnumTestResult result = detectTestResult(m_strlstExpectedValues, m_strlstResultValues);
+
     // Not necessary here to inform the index tree that the content of the entry
-    // has been changed. Thats been done by "onTestStepFinished".
-
-    onTestStepFinished();
-
-    emit testStepFinished(this);
-
-} // setResultValues
+    // has been changed. Thats been done by "setTestResult".
+    setTestResult(result);
+}
 
 //------------------------------------------------------------------------------
-/*! Sets the actual result value of the test step which finishes test step.
-    The signal "testStepFinished" is emitted.
+/*! Sets the actual result value of the test step and finished the test step.
 
-    @param i_strResultValue [in] String defining the actual result value of the test step.
-                                     The value will be compared with the expected value.
-                                     If equal the test result is Passed, otherwise Failed.
+    The test result is evaluated and the signal "testStepFinished" is emitted.
+
+    Provided for convenience. Converted to String List invoking "setResultValues".
+
+    @param i_strResultValue [in]
+        String defining the actual result value of the test step.
+        The value will be compared with the expected value.
+        If equal the test result is Passed, otherwise Failed.
 */
 void CTestStep::setResultValue( const QString& i_strResultValue )
 //------------------------------------------------------------------------------
@@ -235,6 +329,81 @@ void CTestStep::setResultValue( const QString& i_strResultValue )
         strlstResultValues << i_strResultValue;
     }
     setResultValues(strlstResultValues);
+}
+
+/*==============================================================================
+public: // auxiliary instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! Compares the given result values with the expected values returning the
+    result of the comparison.
+
+    @param i_strlstExpectedValues [in]
+        List with strings defining the expected result values of the test step.
+        The list will be compared with the result values.
+    @param i_strlstResultValues [in]
+        List with strings defining the actual result values of the test step.
+        The list will be compared with the expected values.
+        If equal the test result is Passed, otherwise Failed.
+    @return Passed if the result values are equal to the expected values, otherwise false.
+*/
+CEnumTestResult CTestStep::detectTestResult(
+    const QStringList& i_strlstExpectedValues,
+    const QStringList& i_strlstResultValues )
+//------------------------------------------------------------------------------
+{
+    CEnumTestResult result = ETestResult::TestPassed;
+
+    if( i_strlstExpectedValues.size() != i_strlstResultValues.size() )
+    {
+        result = ETestResult::TestFailed;
+    }
+    else
+    {
+        for( int idxVal = 0; idxVal < i_strlstExpectedValues.size(); idxVal++ )
+        {
+            if( i_strlstExpectedValues[idxVal] != i_strlstResultValues[idxVal] )
+            {
+                result = ETestResult::TestFailed;
+                break;
+            }
+        }
+    }
+    return result;
+}
+
+//------------------------------------------------------------------------------
+/*! Compares the given result value with the expected value returning the
+    result of the comparison.
+
+    Provided for convenience. Converted to String List invoking "detectTestResult"
+    with string list as argument.
+
+    @param i_strResultValue [in]
+        String defining the actual result value of the test step.
+        The value will be compared with the expected value.
+        If equal the test result is Passed, otherwise Failed.
+    @return Passed if the result values are equal to the expected values, otherwise false.
+*/
+CEnumTestResult CTestStep::detectTestResult(
+    const QString& i_strExpectedValue,
+    const QString& i_strResultValue )
+//------------------------------------------------------------------------------
+{
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
+
+    if( !i_strExpectedValue.isEmpty() )
+    {
+        strlstExpectedValues << i_strExpectedValue;
+    }
+    if( !i_strResultValue.isEmpty() )
+    {
+        strlstResultValues << i_strResultValue;
+    }
+
+    return detectTestResult(strlstExpectedValues, strlstResultValues);
 }
 
 /*==============================================================================
@@ -266,14 +435,9 @@ void CTestStep::setBreakpoint()
     if( !m_bBreakpoint )
     {
         m_bBreakpoint = true;
-
-        if( m_pTree != nullptr )
-        {
-            m_pTree->onTreeEntryChanged(this);
-        }
+        emit_changed();
     }
-
-} // setBreakpoint
+}
 
 //------------------------------------------------------------------------------
 /*! Removes the breakpoint for the test step and informs the tree that the content of the
@@ -285,14 +449,9 @@ void CTestStep::removeBreakpoint()
     if( m_bBreakpoint )
     {
         m_bBreakpoint = false;
-
-        if( m_pTree != nullptr )
-        {
-            m_pTree->onTreeEntryChanged(this);
-        }
+        emit_changed();
     }
-
-} // removeBreakpoint
+}
 
 //------------------------------------------------------------------------------
 /*! Enables or disables the breakpoint and informs the tree that the content of the
@@ -306,14 +465,9 @@ void CTestStep::setBreakpointEnabled( EEnabled i_enabled )
     if( m_breakpointEnabled != i_enabled )
     {
         m_breakpointEnabled = i_enabled;
-
-        if( m_pTree != nullptr )
-        {
-            m_pTree->onTreeEntryChanged(this);
-        }
+        emit_changed();
     }
-
-} // setBreakpointEnabled
+}
 
 /*==============================================================================
 public: // instance methods
@@ -334,12 +488,54 @@ void CTestStep::reset()
     m_fTimeTestStart_s = 0.0;
     m_fTimeTestEnd_s = 0.0;
 
-    if( m_pTree != nullptr )
-    {
-        m_pTree->onTreeEntryChanged(this);
-    }
+    emit_changed();
+}
 
-} // reset
+//------------------------------------------------------------------------------
+/*! Sets the test result of the test step and informs the tree that the content
+    of the entry has been changed and got to be updated.
+
+    If the test result has been changed and the entry has a parent group the parent
+    group will also be informed that the test result has been changed.
+
+    @param i_testResult [in]
+*/
+void CTestStep::setTestResult( const CEnumTestResult& i_testResult )
+//------------------------------------------------------------------------------
+{
+    m_fTimeTestEnd_s = ZS::System::Time::getProcTimeInSec();
+
+    CEnumTestResult testResultPrev = m_testResult;
+
+    m_testResult = i_testResult;
+
+    // The end time has been changed even if the result is the same.
+    emit_changed();
+
+    // Inform parent groups only if the test result of the
+    // test step has really been changed.
+    if( testResultPrev != i_testResult )
+    {
+        CTestStepGroup* pParentGroup = getParentGroup();
+
+        if( pParentGroup != nullptr )
+        {
+            pParentGroup->onTestStepResultChanged(this, m_testResult);
+        }
+        else
+        {
+            CTestStepRoot* pRootEntry = dynamic_cast<CTestStepRoot*>(m_pTest->getTestStepIdxTree()->root());
+
+            if( pRootEntry != nullptr )
+            {
+                pRootEntry->onTestStepResultChanged(this, m_testResult);
+            }
+        }
+    } // if( testResultPrev != i_testResult )
+
+    emit testStepFinished(this);
+
+} // setTestResult
 
 /*==============================================================================
 public: // must overridables of base class CAbstractTestStepIdxTreeEntry
@@ -368,60 +564,10 @@ public: // overridables
 void CTestStep::doTestStep()
 //------------------------------------------------------------------------------
 {
-    onTestStepStarted();
-
-    emit doTestStep(this);
-}
-
-/*==============================================================================
-protected: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! Internally called by "doTestStep".
-*/
-void CTestStep::onTestStepStarted()
-//------------------------------------------------------------------------------
-{
     m_fTimeTestStart_s = ZS::System::Time::getProcTimeInSec();
     m_fTimeTestEnd_s = -1.0;
 
-    if( m_pTree != nullptr )
-    {
-        m_pTree->onTreeEntryChanged(this);
-    }
+    emit_changed();
 
-} // onTestStepStarted
-
-//------------------------------------------------------------------------------
-/*! Internally called by "setResultValues".
-*/
-void CTestStep::onTestStepFinished()
-//------------------------------------------------------------------------------
-{
-    m_fTimeTestEnd_s = ZS::System::Time::getProcTimeInSec();
-
-    CEnumTestResult result = ETestResult::TestPassed;
-
-    if( m_strlstExpectedValues.size() != m_strlstResultValues.size() )
-    {
-        result = ETestResult::TestFailed;
-    }
-    else
-    {
-        for( int idxVal = 0; idxVal < m_strlstExpectedValues.size(); idxVal++ )
-        {
-            if( m_strlstExpectedValues[idxVal] != m_strlstResultValues[idxVal] )
-            {
-                result = ETestResult::TestFailed;
-                break;
-            }
-        }
-    }
-
-    // Not necessary here to inform the index tree that the content of the entry
-    // has been changed. Thats been done by "setTestResult".
-
-    setTestResult(result);
-
-} // onTestStepFinished
+    emit doTestStep(this);
+}

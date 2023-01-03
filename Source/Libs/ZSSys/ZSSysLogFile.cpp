@@ -31,9 +31,11 @@ may result in using the software modules.
 #include <QtCore/qmutex.h>
 #include <QtCore/qtextstream.h>
 #include <QtCore/qtimer.h>
+
 #include "ZSSys/ZSSysLogFile.h"
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysException.h"
+#include "ZSSys/ZSSysMsg.h"
 #include "ZSSys/ZSSysTime.h"
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -229,14 +231,24 @@ CLogFile::CLogFile() :
     m_pFile(nullptr),
     m_iRefCount(0),
     m_bCloseFileAfterEachWrite(false),
-    m_iSubFileCountMax(2),
-    m_iSubFileLineCountMax(1000),
+    m_iSubFileCountMax(5),
+    m_iSubFileLineCountMax(2000),
     m_iSubFileLineCountCurr(0),
-    m_iAutoSaveInterval_ms(0),
+    m_iAutoSaveInterval_ms(1000),
     m_pTimerAutoSave(nullptr)
 {
     m_pFile = new QFile;
 
+    m_pTimerAutoSave = new QTimer(this);
+
+    if( !QObject::connect(
+        /* pObjSender   */ m_pTimerAutoSave,
+        /* szSignal     */ SIGNAL(timeout()),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onTimeoutAutoSaveFile()) ) )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+    }
 } // ctor
 
 //------------------------------------------------------------------------------
@@ -299,9 +311,160 @@ void CLogFile::close()
 
 } // close
 
+//------------------------------------------------------------------------------
+/*! Clears the log file.
+
+    All log files will be removed. The log files will not be moved to the backup directory.
+*/
+void CLogFile::clear()
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&s_mtx);
+
+    if( m_pFile != nullptr && m_pFile->isOpen() )
+    {
+        m_pFile->close();
+    }
+
+    // Remove all log files.
+    //----------------------
+
+    QDir dirLog;
+    QFile logFile;
+
+    QFileInfoList fileInfoList;
+
+    QStringList strLstFilters;
+    strLstFilters << m_strCompleteBaseName + "*.log";
+
+    dirLog.setPath(m_strAbsPath);
+    fileInfoList = dirLog.entryInfoList(strLstFilters, QDir::Files);
+
+    for( int idxFile = 0; idxFile < fileInfoList.size(); ++idxFile )
+    {
+        QFileInfo fileInfo = fileInfoList.at(idxFile);
+
+        QString strLogFileName = fileInfo.fileName();
+
+        if( strLogFileName.startsWith(m_strCompleteBaseName,Qt::CaseInsensitive) )
+        {
+            logFile.setFileName(fileInfo.filePath());
+
+            if( logFile.exists() )
+            {
+                logFile.remove();
+            }
+        }
+    }
+
+    // Reset line counter and file name.
+    //----------------------------------
+
+    m_iSubFileLineCountCurr = 0;
+
+    m_strAbsFilePathSubFile00 = m_strAbsPath;
+    if( !m_strAbsFilePathSubFile00.isEmpty() )
+    {
+        m_strAbsFilePathSubFile00 += "/";
+    }
+    m_strAbsFilePathSubFile00 += m_strCompleteBaseName + "00";
+
+    if( !m_strSuffix.isEmpty() )
+    {
+        m_strAbsFilePathSubFile00 += "." + m_strSuffix;
+    }
+    if( !m_strAbsFilePathSubFile00.isEmpty() )
+    {
+        if( m_pFile != nullptr )
+        {
+            m_pFile->setFileName(m_strAbsFilePathSubFile00);
+        }
+    }
+}
+
 /*==============================================================================
 public: // instance methods
 ==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! Sets the absolute file path include path, file name and suffix.
+
+    The absolute file path is parsed and the absolute path, the complete base
+    name and file suffix is extracted. If a log file with the same file path
+    is already existing all sub log files will be moved to the log backup directory.
+
+    @param i_strAbsFilePath [in] Absolute path including the file name and suffix.
+*/
+void CLogFile::setAbsoluteFilePath( const QString& i_strAbsFilePath )
+//------------------------------------------------------------------------------
+{
+    // Log files may be accessed from within different thread contexts and
+    // therefore accessing the files must be serialized using a mutex ..
+    QMutexLocker mtxLocker(&s_mtx);
+
+    if( m_pFile != nullptr && m_pFile->isOpen() )
+    {
+        m_pFile->close();
+    }
+
+    if( !i_strAbsFilePath.isEmpty() && !m_strAbsFilePath.isEmpty() )
+    {
+        backup();
+    }
+
+    if( s_mapLogFiles.contains(m_strAbsFilePath) )
+    {
+        s_mapLogFiles.remove(m_strAbsFilePath);
+    }
+
+    m_iSubFileLineCountCurr = 0;
+    m_strAbsPath = "";
+    m_strCompleteBaseName = "";
+    m_strSuffix = "";
+    m_strAbsFilePathSubFile00 = "";
+
+    m_strAbsFilePath = i_strAbsFilePath;
+
+    if( !m_strAbsFilePath.isEmpty() )
+    {
+        s_mapLogFiles[m_strAbsFilePath] = this;
+
+        QFileInfo fileInfoFile(m_strAbsFilePath);
+        QString   strFileUdx;
+
+        m_strAbsPath = fileInfoFile.absolutePath();
+        m_strCompleteBaseName = fileInfoFile.completeBaseName();
+        m_strSuffix = fileInfoFile.suffix();
+
+        QDir dirLogFile;
+        if( !dirLogFile.exists(m_strAbsPath) )
+        {
+            dirLogFile.mkpath(m_strAbsPath);
+        }
+
+        backup();
+
+        m_strAbsFilePathSubFile00 = m_strAbsPath;
+        if( !m_strAbsFilePathSubFile00.isEmpty() )
+        {
+            m_strAbsFilePathSubFile00 += "/";
+        }
+        m_strAbsFilePathSubFile00 += m_strCompleteBaseName + "00";
+
+        if( !m_strSuffix.isEmpty() )
+        {
+            m_strAbsFilePathSubFile00 += "." + m_strSuffix;
+        }
+        if( !m_strAbsFilePathSubFile00.isEmpty() )
+        {
+            if( m_pFile != nullptr )
+            {
+                m_pFile->setFileName(m_strAbsFilePathSubFile00);
+            }
+        }
+    } // if( !m_strAbsFilePath.isEmpty() )
+
+} // setAbsoluteFilePath
 
 //------------------------------------------------------------------------------
 /*! Returns the absolute path of the log file including the file name and suffix.
@@ -379,40 +542,39 @@ void CLogFile::setAutoSaveInterval( int i_iInterval_ms )
     // therefore accessing the files must be serialized using a mutex ..
     QMutexLocker mtxLocker(&s_mtx);
 
-    m_iAutoSaveInterval_ms = i_iInterval_ms;
-
-    if( m_iAutoSaveInterval_ms <= 0 )
+    if( m_iAutoSaveInterval_ms != i_iInterval_ms )
     {
-        if( m_pTimerAutoSave != nullptr && m_pTimerAutoSave->isActive() )
-        {
-            m_pTimerAutoSave->stop();
-        }
-        delete m_pTimerAutoSave;
-        m_pTimerAutoSave = nullptr;
-    }
-    else // if( m_iAutoSaveInterval_ms > 0 )
-    {
-        if( m_pTimerAutoSave == nullptr )
-        {
-            m_pTimerAutoSave = new QTimer(this);
+        m_iAutoSaveInterval_ms = i_iInterval_ms;
 
-            if( !QObject::connect(
-                /* pObjSender   */ m_pTimerAutoSave,
-                /* szSignal     */ SIGNAL(timeout()),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onTimeoutAutoSaveFile()) ) )
+        if( m_pTimerAutoSave->thread() == QThread::currentThread() )
+        {
+            if( m_pTimerAutoSave->isActive() )
             {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+                m_pTimerAutoSave->stop();
+            }
+            if( m_iAutoSaveInterval_ms > 0 )
+            {
+                m_pTimerAutoSave->start(m_iAutoSaveInterval_ms);
             }
         }
-        if( m_pTimerAutoSave->isActive() )
+        else
         {
-            m_pTimerAutoSave->stop();
+            CMsgReqStopTimer* pMsgReqStopTimer = new CMsgReqStopTimer(
+                /* pObjSender   */ this,
+                /* pObjReceiver */ this,
+                /* iTimerId     */ -1 );
+            QCoreApplication::postEvent(this, pMsgReqStopTimer);
+            pMsgReqStopTimer = NULL;
+            CMsgReqStartTimer* pMsgReqStartTimer = new CMsgReqStartTimer(
+                /* pObjSender   */ this,
+                /* pObjReceiver */ this,
+                /* iTimerId     */ -1,
+                /* bSingleShot  */ false,
+                /* iInterval_ms */ m_iAutoSaveInterval_ms );
+            QCoreApplication::postEvent(this, pMsgReqStartTimer);
+            pMsgReqStartTimer = NULL;
         }
-        m_pTimerAutoSave->start(m_iAutoSaveInterval_ms);
-
-    } // if( m_iAutoSaveInterval_ms > 0 )
-
+    }
 } // setAutoSaveInterval
 
 //------------------------------------------------------------------------------
@@ -444,28 +606,55 @@ void CLogFile::setCloseFileAfterEachWrite( bool i_bCloseFile )
     // therefore accessing the files must be serialized using a mutex ..
     QMutexLocker mtxLocker(&s_mtx);
 
-    m_bCloseFileAfterEachWrite = i_bCloseFile;
-
-    if( m_bCloseFileAfterEachWrite )
+    if( m_bCloseFileAfterEachWrite != i_bCloseFile )
     {
-        if( m_pTimerAutoSave != nullptr && m_pTimerAutoSave->isActive() )
-        {
-            m_pTimerAutoSave->stop();
-        }
+        m_bCloseFileAfterEachWrite = i_bCloseFile;
 
-        if( m_pFile != nullptr && m_pFile->isOpen() )
+        if( m_bCloseFileAfterEachWrite )
         {
-            m_pFile->close();
+            if( m_pFile != nullptr && m_pFile->isOpen() )
+            {
+                m_pFile->close();
+            }
+            if( m_pTimerAutoSave->thread() == QThread::currentThread() )
+            {
+                if( m_pTimerAutoSave->isActive() )
+                {
+                    m_pTimerAutoSave->stop();
+                }
+            }
+            else
+            {
+                CMsgReqStopTimer* pMsgReqStopTimer = new CMsgReqStopTimer(
+                    /* pObjSender   */ this,
+                    /* pObjReceiver */ this,
+                    /* iTimerId     */ -1 );
+                QCoreApplication::postEvent(this, pMsgReqStopTimer);
+                pMsgReqStopTimer = NULL;
+            }
+        }
+        else
+        {
+            if( m_iAutoSaveInterval_ms > 0 && !m_pTimerAutoSave->isActive() )
+            {
+                if( m_pTimerAutoSave->thread() == QThread::currentThread() )
+                {
+                    m_pTimerAutoSave->start(m_iAutoSaveInterval_ms);
+                }
+                else
+                {
+                    CMsgReqStartTimer* pMsgReqStartTimer = new CMsgReqStartTimer(
+                        /* pObjSender   */ this,
+                        /* pObjReceiver */ this,
+                        /* iTimerId     */ -1,
+                        /* bSingleShot  */ false,
+                        /* iInterval_ms */ m_iAutoSaveInterval_ms );
+                    QCoreApplication::postEvent(this, pMsgReqStartTimer);
+                    pMsgReqStartTimer = NULL;
+                }
+            }
         }
     }
-    else
-    {
-        if( m_pTimerAutoSave != nullptr && !m_pTimerAutoSave->isActive() )
-        {
-            m_pTimerAutoSave->start(m_iAutoSaveInterval_ms);
-        }
-    }
-
 } // setCloseFileAfterEachWrite
 
 //------------------------------------------------------------------------------
@@ -514,17 +703,19 @@ void CLogFile::setSubFileCountMax( int i_iCountMax )
     // therefore accessing the files must be serialized using a mutex ..
     QMutexLocker mtxLocker(&s_mtx);
 
-    m_iSubFileCountMax = i_iCountMax;
-
-    if( m_iSubFileCountMax == 100 )
+    if( m_iSubFileCountMax != i_iCountMax )
     {
-        m_iSubFileCountMax = 2;
-    }
-    else if( m_iSubFileCountMax > 100 )
-    {
-        m_iSubFileCountMax = 100;
-    }
+        m_iSubFileCountMax = i_iCountMax;
 
+        if( m_iSubFileCountMax == 100 )
+        {
+            m_iSubFileCountMax = 2;
+        }
+        else if( m_iSubFileCountMax > 100 )
+        {
+            m_iSubFileCountMax = 100;
+        }
+    }
 } // setSubFileCountMax
 
 //------------------------------------------------------------------------------
@@ -718,86 +909,60 @@ void CLogFile::addEntry( const QString& i_strEntry )
 } // addEntry
 
 /*==============================================================================
-protected: // instance methods
+public: // overridables of base class QObject
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! Sets the absolute file path include path, file name and suffix.
-
-    The absolute file path is parsed and the absolute path, the complete base
-    name and file suffix is extracted. If a log file with the same file path
-    is already existing all sub log files will be moved to the log backup directory.
-
-    @param i_strAbsFilePath [in] Absolute path including the file name and suffix.
-*/
-void CLogFile::setAbsoluteFilePath( const QString& i_strAbsFilePath )
+bool CLogFile::event( QEvent* i_pMsg )
 //------------------------------------------------------------------------------
 {
-    // Log files may be accessed from within different thread contexts and
-    // therefore accessing the files must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    bool bEventHandled = false;
 
-    if( m_pFile != nullptr && m_pFile->isOpen() )
+    // Timers cannot be started and stopped from another thread.
+    if( i_pMsg->type() >= QEvent::User )
     {
-        m_pFile->close();
-    }
+        QString strAddTrcInfo;
+        QString strAddErrInfo;
 
-    if( m_pTimerAutoSave != nullptr && m_pTimerAutoSave->isActive() )
-    {
-        m_pTimerAutoSave->stop();
-    }
+        CMsg* pMsg = nullptr;
 
-    if( !i_strAbsFilePath.isEmpty() && !m_strAbsFilePath.isEmpty() )
-    {
-        backup();
-    }
-
-    m_iSubFileLineCountCurr = 0;
-    m_strAbsPath = "";
-    m_strCompleteBaseName = "";
-    m_strSuffix = "";
-    m_strAbsFilePathSubFile00 = "";
-
-    m_strAbsFilePath = i_strAbsFilePath;
-
-    if( !m_strAbsFilePath.isEmpty() )
-    {
-        QFileInfo fileInfoFile(m_strAbsFilePath);
-        QString   strFileUdx;
-
-        m_strAbsPath = fileInfoFile.absolutePath();
-        m_strCompleteBaseName = fileInfoFile.completeBaseName();
-        m_strSuffix = fileInfoFile.suffix();
-
-        QDir dirLogFile;
-        if( !dirLogFile.exists(m_strAbsPath) )
+        try
         {
-            dirLogFile.mkpath(m_strAbsPath);
+            pMsg = dynamic_cast<CMsg*>(i_pMsg);
+        }
+        catch(...)
+        {
+            pMsg = nullptr;
         }
 
-        backup();
+        if( pMsg != nullptr )
+        {
+            bEventHandled = true;
 
-        m_strAbsFilePathSubFile00 = m_strAbsPath;
-        if( !m_strAbsFilePathSubFile00.isEmpty() )
-        {
-            m_strAbsFilePathSubFile00 += "/";
-        }
-        m_strAbsFilePathSubFile00 += m_strCompleteBaseName + "00";
+            QMutexLocker mtxLocker(&s_mtx);
 
-        if( !m_strSuffix.isEmpty() )
-        {
-            m_strAbsFilePathSubFile00 += "." + m_strSuffix;
-        }
-        if( !m_strAbsFilePathSubFile00.isEmpty() )
-        {
-            if( m_pFile != nullptr )
+            if( pMsg->getMsgType() == EBaseMsgTypeReqStartTimer )
             {
-                m_pFile->setFileName(m_strAbsFilePathSubFile00);
+                if( m_iAutoSaveInterval_ms > 0 )
+                {
+                    m_pTimerAutoSave->start(m_iAutoSaveInterval_ms);
+                }
+            }
+            else if( pMsg->getMsgType() == EBaseMsgTypeReqStopTimer )
+            {
+                if( m_pTimerAutoSave->isActive() )
+                {
+                    m_pTimerAutoSave->stop();
+                }
             }
         }
-    } // if( !m_strAbsFilePath.isEmpty() )
-
-} // setAbsoluteFilePath
+    }
+    if( !bEventHandled )
+    {
+        bEventHandled = QObject::event(i_pMsg);
+    }
+    return bEventHandled;
+}
 
 /*==============================================================================
 protected: // instance methods
@@ -947,5 +1112,4 @@ void CLogFile::onTimeoutAutoSaveFile()
     {
         m_pFile->close();
     }
-
-} // onTimeoutAutoSaveFile
+}

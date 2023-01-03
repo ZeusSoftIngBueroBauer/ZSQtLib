@@ -43,7 +43,7 @@ public: // class methods
 void CSleeperThread::msleep( unsigned long i_iTime_ms )
 //------------------------------------------------------------------------------
 {
-    if( QThread::currentThread() != qApp->thread() )
+    //if( QThread::currentThread() != qApp->thread() )
     {
         QThread::msleep(i_iTime_ms);
     }

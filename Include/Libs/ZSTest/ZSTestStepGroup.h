@@ -55,29 +55,11 @@ protected: // ctor for class CTestGroupRoot
 public: // overridables
     virtual QString nameSpace() const { return CTestStepGroup::NameSpace(); }
     virtual QString className() const { return CTestStepGroup::ClassName(); }
+public: // instance methods
+    void onTestStepResultChanged( CAbstractTestStepIdxTreeEntry* i_pTreeEntry, const CEnumTestResult& i_testResult );
 public: // must overridables of base class CAbstractTestStepIdxTreeEntry
     virtual CEnumTestResult getTestResult() const override;
     virtual double getTestDurationInSec() const override;
-public: // instance methods
-    void onTestStepResultChanged( CAbstractTestStepIdxTreeEntry* i_pTreeEntry, const CEnumTestResult& i_testResult );
-//public: // must overridables of base class CAbstractTestStepIdxTreeEntry
-//    virtual void testStarted();
-//    virtual void testEnded( bool i_bIgnoreTestResult = false ); // Implicitly updates test end time if not already updated.
-//public: // instance methods
-//    int getTestStepGroupCount();
-//    CTestStepGroup* getTestStepGroup( int i_iTestStepGroupIdx );
-//public: // instance methods
-//    int getTestStepCount( bool i_bIncludeChildGroups = false);
-//    CTestStep* getTestStep( int i_iTestStepIdx/*, bool i_bIncludeChildGroups = false*/);
-//    //CTestStep* getTestStep( int& io_iTestStepCount, int i_iTestStepIdx, bool i_bIncludeChildGroups = false );
-//public: // instance methods
-//    bool isParentOf( CTestStep* i_pTestStep ) const;
-//    bool isFirstTestStep( CTestStep* i_pTestStep ) const;
-//    bool isLastTestStep( CTestStep* i_pTestStep ) const;
-//    bool isFirstTestGroup( CTestStepGroup* i_pTSGrp ) const;
-//    bool isLastTestGroup( CTestStepGroup* i_pTSGrp ) const;
-//public: // must overridables of base class CAbstractTestStepIdxTreeEntry
-//    virtual void update(); // triggers the "nodeChanged" and "dataChanged" signals of the model
 private: // default ctor not allowed
     CTestStepGroup();
 private: // copy ctor not allowed

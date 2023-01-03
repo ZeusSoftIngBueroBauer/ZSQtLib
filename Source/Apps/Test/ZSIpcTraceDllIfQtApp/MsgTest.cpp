@@ -38,70 +38,6 @@ using namespace ZS::Apps::Test::IpcTraceDllIfQtApp;
 
 
 /*******************************************************************************
-Global Methods
-*******************************************************************************/
-
-//------------------------------------------------------------------------------
-void ZS::Apps::Test::IpcTraceDllIfQtApp::POST_OR_DELETE_MESSAGE(
-    QEvent*                          i_pMsg,
-    ZS::Trace::DllIf::CMethodTracer* i_pMethodTracer,
-    int                              i_iFilterDetailLevel )
-//------------------------------------------------------------------------------
-{
-    if( i_pMsg != nullptr )
-    {
-        QString strAddTrcInfo;
-        QString strMsgTrcInfo;
-
-        CMsg* pMsg = dynamic_cast<CMsg*>(i_pMsg);
-
-        QObject* pObjReceiver = nullptr;
-        QObject* pObjSender   = nullptr;
-
-        int iTrcDetailLevel = ETraceDetailLevelNone;
-
-        if( i_pMethodTracer != nullptr )
-        {
-            iTrcDetailLevel = i_pMethodTracer->getTraceDetailLevel();
-
-            if( i_pMethodTracer->isActive(i_iFilterDetailLevel) )
-            {
-                strMsgTrcInfo = "Addr: " + pointer2Str(i_pMsg);
-            }
-        }
-
-        if( pMsg != nullptr )
-        {
-            pObjReceiver = pMsg->getReceiver();
-            pObjSender   = pMsg->getSender();
-
-            strMsgTrcInfo += ", Content { " + pMsg->getAddTrcInfoStr(iTrcDetailLevel >= ETraceDetailLevelRuntimeInfo ? 1 : 0) + " } )";
-
-            if( pObjReceiver != nullptr && pObjSender != nullptr )
-            {
-                if( i_pMethodTracer != nullptr && i_pMethodTracer->isActive(i_iFilterDetailLevel) )
-                {
-                    strAddTrcInfo = "postEvent( " + strMsgTrcInfo + " )";
-                    i_pMethodTracer->trace(strAddTrcInfo.toLatin1(), i_iFilterDetailLevel);
-                }
-                QCoreApplication::postEvent(pObjReceiver,i_pMsg);
-            }
-            else
-            {
-                if( i_pMethodTracer != nullptr && i_pMethodTracer->isActive(i_iFilterDetailLevel) )
-                {
-                    strAddTrcInfo = "deleteEvent( " + strMsgTrcInfo + " )";
-                    i_pMethodTracer->trace(strAddTrcInfo.toLatin1(), i_iFilterDetailLevel);
-                }
-                delete i_pMsg;
-                i_pMsg = nullptr;
-            }
-        } // if( pMsg != nullptr )
-    } // if( i_pMsg != nullptr )
-} // POST_OR_DELETE_MESSAGE
-
-
-/*******************************************************************************
 class CMsgReqTest : public CMsgReq
 *******************************************************************************/
 
@@ -123,7 +59,9 @@ CMsgReqTest::CMsgReqTest(
         /* pObjReceiver     */ i_pObjReceiver,
         /* bMustBeConfirmed */ i_bMustBeConfirmed,
         /* iReqId           */ i_iParentReqId,
-        /* iMsgIdReq        */ i_iMsgId )
+        /* iMsgIdReq        */ i_iMsgId ),
+    m_strCommand(),
+    m_strlstCommandArgs()
 {
 } // ctor
 
@@ -132,6 +70,53 @@ CMsgReqTest::~CMsgReqTest()
 //------------------------------------------------------------------------------
 {
 } // dtor
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CMsgReqTest::setCommand( const QString& i_strCommand )
+//------------------------------------------------------------------------------
+{
+    m_strCommand = i_strCommand;
+}
+
+//------------------------------------------------------------------------------
+QString CMsgReqTest::getCommand() const
+//------------------------------------------------------------------------------
+{
+    return m_strCommand;
+}
+
+//------------------------------------------------------------------------------
+void CMsgReqTest::setCommandArg( const QString& i_strArg )
+//------------------------------------------------------------------------------
+{
+    m_strlstCommandArgs.clear();
+    m_strlstCommandArgs.append(i_strArg);
+}
+
+//------------------------------------------------------------------------------
+void CMsgReqTest::setCommandArgs( const QStringList& i_strlstArgs )
+//------------------------------------------------------------------------------
+{
+    m_strlstCommandArgs = i_strlstArgs;
+}
+
+//------------------------------------------------------------------------------
+QString CMsgReqTest::getCommandArg() const
+//------------------------------------------------------------------------------
+{
+    return m_strlstCommandArgs.size() == 0 ? "" : m_strlstCommandArgs[0];
+}
+
+//------------------------------------------------------------------------------
+QStringList CMsgReqTest::getCommandArgs() const
+//------------------------------------------------------------------------------
+{
+    return m_strlstCommandArgs;
+}
 
 /*==============================================================================
 public: // must overridables of base class CMsg
@@ -147,13 +132,12 @@ CMsg* CMsgReqTest::clone( ECopyDepth /*i_copyDepth*/ )
         /* bMustBeConfirmed */ m_bMustBeConfirmed,
         /* iReqId           */ m_iReqId,
         /* iMsgId           */ m_iMsgId );
-
     pMsgCloned->setSenderId(m_iSenderId);
     pMsgCloned->setReceiverId(m_iReceiverId);
-
+    pMsgCloned->setCommand(m_strCommand);
+    pMsgCloned->setCommandArgs(m_strlstCommandArgs);
     return pMsgCloned;
-
-} // clone
+}
 
 //------------------------------------------------------------------------------
 CMsgCon* CMsgReqTest::createConfirmationMessage( ECopyDepth /*i_copyDepth*/ )
@@ -170,50 +154,15 @@ public: // overridables of base class CMsg
 QString CMsgReqTest::msgTypeToStr() const
 //------------------------------------------------------------------------------
 {
-    return "ZS::Apps::Test::IpcTrace::ReqTest";
+    return "ZS::Apps::Test::IpcTraceDllIfQtApp::ReqTest";
 }
 
 //------------------------------------------------------------------------------
 QString CMsgReqTest::getAddTrcInfoStr( int /*i_iDetailLevel*/, ZS::System::EContentToStrFormat i_format )
 //------------------------------------------------------------------------------
 {
-    QString szContent;
-    QString szTblBeg;
-    QString szTblEnd;
-    QString szRowBeg;
-    QString szRowEnd;
-    QString szClmBeg;
-    QString szClmEnd;
-
-    if( i_format == EContentToStrFormat::HtmlText )
-    {
-        szTblBeg = "<table>";
-        szTblEnd = "</table>";
-        szRowBeg = "<tr>";
-        szRowEnd = "</tr>";
-        szClmBeg = "<td>";
-        szClmEnd = "</td>";
-    }
-    else
-    {
-        szRowEnd = "\n";
-        szClmEnd = " ";
-    }
-    szContent += szTblBeg;
-    szContent += szRowBeg;
-    szContent += szRowEnd;
-    szContent += szRowBeg;
-    szContent += szClmBeg;
-    szContent += "Must be confirmed: ";
-    szContent += szClmEnd;
-    szContent += szClmBeg;
-    szContent += bool2Str(m_bMustBeConfirmed);
-    szContent += szClmEnd;
-    szContent += szRowEnd;
-    szContent += szTblEnd;
-    return szContent;
-
-} // contentToByteArray
+    return msgTypeToStr() + ", " + m_strCommand;
+}
 
 
 /*******************************************************************************
@@ -240,7 +189,8 @@ CMsgConTest::CMsgConTest(
         /* iReqId             */ i_iParentReqId,
         /* iMsgIdReq          */ i_iMsgIdReq,
         /* errResultInfo      */ i_errResultInfo,
-        /* iProgressInPerCent */ i_iProgressInPerCent )
+        /* iProgressInPerCent */ i_iProgressInPerCent ),
+    m_strCommand()
 {
 } // ctor
 
@@ -249,6 +199,24 @@ CMsgConTest::~CMsgConTest()
 //------------------------------------------------------------------------------
 {
 } // dtor
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CMsgConTest::setCommand( const QString& i_strCommand )
+//------------------------------------------------------------------------------
+{
+    m_strCommand = i_strCommand;
+}
+
+//------------------------------------------------------------------------------
+QString CMsgConTest::getCommand() const
+//------------------------------------------------------------------------------
+{
+    return m_strCommand;
+}
 
 /*==============================================================================
 public: // overridables of base class CMsg
@@ -265,65 +233,22 @@ CMsg* CMsgConTest::clone( ECopyDepth /*i_copyDepth*/ )
         /* iMsgIdReq          */ m_iMsgId,
         /* errResultInfo      */ m_errResultInfo,
         /* iProgressInPerCent */ m_iProgressInPerCent );
-
     pMsgCloned->setSenderId(m_iSenderId);
     pMsgCloned->setReceiverId(m_iReceiverId);
-
+    pMsgCloned->setCommand(m_strCommand);
     return pMsgCloned;
-
-} // clone
+}
 
 //------------------------------------------------------------------------------
 QString CMsgConTest::msgTypeToStr() const
 //------------------------------------------------------------------------------
 {
-    return "ZS::Apps::Test::IpcTrace::ConTest";
+    return "ZS::Apps::Test::IpcTraceDllIfQtApp::ConTest";
 }
 
 //------------------------------------------------------------------------------
 QString CMsgConTest::getAddTrcInfoStr( int /*i_iDetailLevel*/, ZS::System::EContentToStrFormat i_format )
 //------------------------------------------------------------------------------
 {
-    QString szContent;
-    QString szTblBeg;
-    QString szTblEnd;
-    QString szRowBeg;
-    QString szRowEnd;
-    QString szClmBeg;
-    QString szClmEnd;
-
-    if( i_format == EContentToStrFormat::HtmlText )
-    {
-        szTblBeg = "<table>";
-        szTblEnd = "</table>";
-        szRowBeg = "<tr>";
-        szRowEnd = "</tr>";
-        szClmBeg = "<td>";
-        szClmEnd = "</td>";
-    }
-    else
-    {
-        szRowEnd = "\n";
-        szClmEnd = " ";
-    }
-    szContent += szTblBeg;
-    szContent += szRowBeg;
-    szContent += szClmBeg;
-    szContent += "Result:";
-    szContent += szClmEnd;
-    szContent += szClmBeg;
-    szContent += getErrResultInfo().getResultStr();
-    szContent += szClmEnd;
-    szContent += szRowEnd;
-    szContent += szRowBeg;
-    szContent += szClmBeg;
-    szContent += "Progress:";
-    szContent += szClmEnd;
-    szContent += szClmBeg;
-    szContent += QString::number(m_iProgressInPerCent) + "[%]";
-    szContent += szClmEnd;
-    szContent += szRowEnd;
-    szContent += szTblEnd;
-    return szContent;
-
-} // contentToByteArray
+    return msgTypeToStr() + ", " + m_strCommand;
+}

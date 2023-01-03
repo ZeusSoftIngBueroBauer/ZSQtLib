@@ -51,14 +51,14 @@ public: // class methods
 public: // class methods
     static CDlgErrLog* CreateInstance(
         const QString&  i_strDlgTitle,
-        const QString&  i_strErrLogName = "ZSErrLog",
+        const QString&  i_strObjName = "ZSErrLog",
         QWidget*        i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wFlags = Qt::WindowFlags() );
-    static CDlgErrLog* GetInstance( const QString& i_strDlgTitle );
+    static CDlgErrLog* GetInstance( const QString& i_strObjName = "ZSErrLog" );
 protected: // ctor
     CDlgErrLog(
         const QString&  i_strDlgTitle,
-        const QString&  i_strErrLogName = "ZSErrLog",
+        const QString&  i_strObjName = "ZSErrLog",
         QWidget*        i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wFlags = Qt::WindowFlags());
 public: // dtor

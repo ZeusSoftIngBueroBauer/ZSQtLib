@@ -52,17 +52,18 @@ struct SErrResultInfo;
 namespace GUI
 {
 class CDlgErrLog;
+class CDlgIdxTreeTrcAdminObjs;
 class CDlgRequestExecTree;
 }
 }
 namespace Trace
 {
+class CIpcTrcClient;
 class CIpcTrcServer;
 
 namespace GUI
 {
 class CDlgTrcServer;
-class CDlgIdxTreeTrcAdminObjs;
 }
 }
 
@@ -94,10 +95,11 @@ protected: // overridables of base class QWidget
 protected: // overridables of base class QObject
     virtual bool eventFilter( QObject* i_pObjWatched, QEvent* i_pEv );
 protected slots:
-    void onActDebugTrcServerTriggered();
-    void onActDebugTrcServerAdminObjIdxTreeTriggered();
-    void onActDebugTrcClientTriggered();
-    void onActDebugTrcClientAdminObjIdxTreeTriggered();
+    void onActFileSaveTestResultsTriggered();
+    void onActDebugZSTrcServerTriggered();
+    void onActDebugZSTrcServerAdminObjIdxTreeTriggered();
+    void onActDebugZSTrcClientTriggered();
+    void onActDebugZSTrcClientAdminObjIdxTreeTriggered();
     void onActDebugErrLogTriggered();
     void onActDebugRequestExecTreeTriggered();
 protected slots:
@@ -111,31 +113,34 @@ protected: // instance methods
 protected slots:
     void onTrcServerStateChanged( QObject* i_pServer, int i_iState );
     void onTrcClientStateChanged( QObject* i_pClient, int i_iState );
+protected slots:
+    void onWidgetCentralProgressBarConnectDblClicked();
 private: // class members
     static CMainWindow* s_pThis; // singleton class
 private: // instance members
     CTest*          m_pTest;
     QMenu*          m_pMnuFile;
+    QAction*        m_pActFileSaveTestResults;
     QAction*        m_pActFileQuit;
     QMenu*          m_pMnuDebug;
-    QAction*        m_pActDebugTrcServer;
-    QAction*        m_pActDebugTrcServerAdminObjIdxTree;
-    QAction*        m_pActDebugTrcClient;
-    QAction*        m_pActDebugTrcClientAdminObjIdxTree;
+    QAction*        m_pActDebugZSTrcServer;
+    QAction*        m_pActDebugZSTrcServerAdminObjIdxTree;
+    QAction*        m_pActDebugZSTrcClient;
+    QAction*        m_pActDebugZSTrcClientAdminObjIdxTree;
     QAction*        m_pActDebugErrLog;
     QAction*        m_pActDebugRequestExecTree;
     QMenu*          m_pMnuInfo;
     QAction*        m_pActInfoVersion;
     QStatusBar*     m_pStatusBar;
+    QWidget*        m_pWdgtZSTrcServerStatus;
+    QLabel*         m_pLblZSTrcServerStatusIcon;
+    QLabel*         m_pLblZSTrcServerStatusText;
+    QWidget*        m_pWdgtZSTrcClientStatus;
+    QLabel*         m_pLblZSTrcClientStatusIcon;
+    QLabel*         m_pLblZSTrcClientStatusText;
     QLabel*         m_pLblReqInProgress;
     QProgressBar*   m_pBarReqInProgress;
     QLabel*         m_pLblErrors;
-    QWidget*        m_pWdgtTrcServerStatus;
-    QLabel*         m_pLblTrcServerStatusIcon;
-    QLabel*         m_pLblTrcServerStatusText;
-    QWidget*        m_pWdgtTrcClientStatus;
-    QLabel*         m_pLblTrcClientStatusIcon;
-    QLabel*         m_pLblTrcClientStatusText;
     CWidgetCentral* m_pWdgtCentral;
 
 }; // class CMainWindow

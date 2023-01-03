@@ -35,7 +35,6 @@ may result in using the software modules.
 #include <QtWidgets/qwidget.h>
 #endif
 
-class QGroupBox;
 class QSplitter;
 class QTabWidget;
 class QHBoxLayout;
@@ -52,6 +51,8 @@ class CWdgtIdxTreeTestSteps;
 }
 namespace Trace
 {
+class CIpcTrcClient;
+
 namespace GUI
 {
 class CWdgtTrcMthList;
@@ -65,7 +66,6 @@ namespace Test
 namespace IpcTrace
 {
 class CTest;
-class CWdgtIdxTreeTestStepsOutput;
 
 //******************************************************************************
 class CWidgetCentral : public QWidget
@@ -77,19 +77,21 @@ public: // class methods
 public: // ctors and dtor
     CWidgetCentral( CTest* i_pTest, QWidget* i_pWdgtParent = nullptr, Qt::WindowFlags i_wflags = Qt::WindowFlags() );
     ~CWidgetCentral();
+protected slots:
+    void onProgressBarConnectDblClicked();
+signals:
+    void progressBarConnectDblClicked();
 public: // instance methods
-    ZS::Trace::GUI::CWdgtTrcMthList* getTrcMthListWdgt() { return m_pWdgtMthList; }
+    ZS::Trace::GUI::CWdgtTrcMthList* getTrcMthListWdgt();
 private: // class members
-    static CWidgetCentral*   s_pThis; // singleton class
+    static CWidgetCentral* s_pThis; // singleton class
 protected: // instance members
-    CTest*                           m_pTest;
-    QVBoxLayout*                     m_pLyt;
-    QSplitter*                       m_pSplitter;
-    ZS::Test::GUI::CWdgtIdxTreeTestSteps*        m_pWdgtTest;
-    QGroupBox*                       m_pGrpTestOutput;
-    QVBoxLayout*                     m_pLytGrpTestOutput;
-    CWdgtIdxTreeTestStepsOutput*                 m_pWdgtTestOutput;
-    ZS::Trace::GUI::CWdgtTrcMthList* m_pWdgtMthList;
+    CTest*                                m_pTest;
+    QVBoxLayout*                          m_pLyt;
+    QSplitter*                            m_pSplitter;
+    ZS::Test::GUI::CWdgtIdxTreeTestSteps* m_pWdgtTest;
+    QTabWidget*                           m_pTabWidgetTrcMthLists;
+    ZS::Trace::GUI::CWdgtTrcMthList*      m_pWdgtTrcMthList;
 
 }; // class CWidgetCentral
 

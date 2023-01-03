@@ -34,11 +34,6 @@ class QDomNode;
 
 namespace ZS
 {
-namespace Trace
-{
-class CTrcAdminObj;
-}
-
 namespace Test
 {
 class CTest;
@@ -80,24 +75,20 @@ public: // overridables
 public: // instance methods
     bool isSetShowExpectedAndResultValuesOnlyIfTestStepFailed() const { return m_bShowExpectedAndResultValuesOnlyIfTestStepFailed; }
     void setShowExpectedAndResultValuesOnlyIfTestStepFailed( bool i_bSet );
-//public: // instance methods
-//    void reset(); // to call protected reset method
 protected slots: // overridables
     virtual void onTestCurrentTestStepChanged( ZS::Test::CTestStep* i_pTestStep );
 public: // overridables of base class QAbstractItemModel
     virtual int columnCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const override;
     virtual QVariant headerData( int i_iSection, Qt::Orientation i_orientation, int i_iRole = Qt::DisplayRole) const override;
-    virtual Qt::ItemFlags flags( const QModelIndex& i_modelIdx ) const override;
     virtual QVariant data( const QModelIndex& i_modelIdx, int i_iRole = Qt::DisplayRole ) const override;
 private: // copy ctor not allowed
     CModeldxTreeTestSteps( const CModeldxTreeTestSteps& );
 private: // assignment operator not allowed
     CModeldxTreeTestSteps& operator = ( const CModeldxTreeTestSteps& );
 protected: // instance members
-    CTest*                   m_pTest;
-    CTestStep*               m_pTestStepCurr;
-    bool                     m_bShowExpectedAndResultValuesOnlyIfTestStepFailed;
-    ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
+    CTest*     m_pTest;
+    CTestStep* m_pTestStepCurr;
+    bool       m_bShowExpectedAndResultValuesOnlyIfTestStepFailed;
 
 }; // class CModeldxTreeTestSteps
 

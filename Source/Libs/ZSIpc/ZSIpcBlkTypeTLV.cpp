@@ -36,7 +36,6 @@ may result in using the software modules.
 
 
 using namespace ZS::System;
-using namespace ZS::Trace;
 using namespace ZS::Ipc;
 
 
@@ -258,9 +257,9 @@ QList<QByteArray> CBlkTypeTLV::receiveDataBlocks(
     QString strMthRet;
     QString strMthAddInfo;
 
-    if( i_pMthTracer != nullptr )
+    if( i_pMthTracer != nullptr && i_pMthTracer->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
     {
-        if( i_pMthTracer->isActive(ETraceDetailLevelMethodArgs) )
+        if( i_pMthTracer->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
         {
             SSocketDscr socketDscr = i_pSocketWrapper->getSocketDscr();
             strMthInArgs  = socketDscr.getConnectionString();
@@ -327,7 +326,7 @@ QList<QByteArray> CBlkTypeTLV::receiveDataBlocks(
                     /* pObjSender    */ i_pObjGtw,
                     /* pObjReceiver  */ i_pObjSrvClt,
                     /* errResultInfo */ errResultInfo );
-                POST_OR_DELETE_MESSAGE(pMsgErr, i_pMthTracer, ETraceDetailLevelRuntimeInfo);
+                POST_OR_DELETE_MESSAGE(pMsgErr, i_pMthTracer, ELogDetailLevel::Debug);
                 break;
             }
         }
@@ -362,7 +361,7 @@ QList<QByteArray> CBlkTypeTLV::receiveDataBlocks(
                     /* pObjSender    */ i_pObjGtw,
                     /* pObjReceiver  */ i_pObjSrvClt,
                     /* errResultInfo */ errResultInfo );
-                POST_OR_DELETE_MESSAGE(pMsgErr, i_pMthTracer, ETraceDetailLevelRuntimeInfo);
+                POST_OR_DELETE_MESSAGE(pMsgErr, i_pMthTracer, ELogDetailLevel::Debug);
                 break;
             }
         }
@@ -401,7 +400,7 @@ QList<QByteArray> CBlkTypeTLV::receiveDataBlocks(
                     /* pObjSender    */ i_pObjGtw,
                     /* pObjReceiver  */ i_pObjSrvClt,
                     /* errResultInfo */ errResultInfo );
-                POST_OR_DELETE_MESSAGE(pMsgErr, i_pMthTracer, ETraceDetailLevelRuntimeInfo);
+                POST_OR_DELETE_MESSAGE(pMsgErr, i_pMthTracer, ELogDetailLevel::Debug);
                 break;
             }
 
@@ -434,7 +433,7 @@ QList<QByteArray> CBlkTypeTLV::receiveDataBlocks(
                         /* pObjSender    */ i_pObjGtw,
                         /* pObjReceiver  */ i_pObjSrvClt,
                         /* errResultInfo */ errResultInfo );
-                    POST_OR_DELETE_MESSAGE(pMsgErr, i_pMthTracer, ETraceDetailLevelRuntimeInfo);
+                    POST_OR_DELETE_MESSAGE(pMsgErr, i_pMthTracer, ELogDetailLevel::Debug);
                     break;
                 }
             }
@@ -463,7 +462,7 @@ QList<QByteArray> CBlkTypeTLV::receiveDataBlocks(
 
             if( bIsWatchDogBlock )
             {
-                if( i_pMthTracer != nullptr && i_pMthTracer->isActive(ETraceDetailLevelRuntimeInfo) )
+                if( i_pMthTracer != nullptr && i_pMthTracer->isRuntimeInfoActive(ELogDetailLevel::Debug) )
                 {
                     strMthAddInfo = "Received WatchDogBlock";
                     i_pMthTracer->trace(strMthAddInfo);
@@ -481,7 +480,7 @@ QList<QByteArray> CBlkTypeTLV::receiveDataBlocks(
                         /* byteArr          */ *i_pByteArrWatchDog,
                         /* bMustBeConfirmed */ false,
                         /* iReqId           */ -1 );
-                    POST_OR_DELETE_MESSAGE(pMsgReq, i_pMthTracer, ETraceDetailLevelRuntimeInfo);
+                    POST_OR_DELETE_MESSAGE(pMsgReq, i_pMthTracer, ELogDetailLevel::Debug);
                     pMsgReq = nullptr;
                 }
 
@@ -492,7 +491,7 @@ QList<QByteArray> CBlkTypeTLV::receiveDataBlocks(
 
             else // if( !bIsWatchDogBlock )
             {
-                if( i_pMthTracer != nullptr && i_pMthTracer->isActive(ETraceDetailLevelRuntimeInfo) )
+                if( i_pMthTracer != nullptr && i_pMthTracer->isRuntimeInfoActive(ELogDetailLevel::Debug) )
                 {
                     strMthAddInfo = "Received block data: TagSize=" + QString::number(uTagSize) + ", ValueLen=" + QString::number(uBlockSize);
                     i_pMthTracer->trace(strMthAddInfo);
@@ -510,7 +509,7 @@ QList<QByteArray> CBlkTypeTLV::receiveDataBlocks(
                             /* transmitDir  */ ETransmitDir::Receive,
                             /* bBold        */ false,
                             /* strMsg       */ strMthAddInfo );
-                        POST_OR_DELETE_MESSAGE(pMsgLogItem, i_pMthTracer, ETraceDetailLevelRuntimeInfo);
+                        POST_OR_DELETE_MESSAGE(pMsgLogItem, i_pMthTracer, ELogDetailLevel::Debug);
                         pMsgLogItem = nullptr;
                     }
                 }
@@ -530,9 +529,9 @@ QList<QByteArray> CBlkTypeTLV::receiveDataBlocks(
     // to the event method of the gateway. This way also data send requests may be executed even
     // if a lot of data is sent to the socket.
 
-    if( i_pMthTracer != nullptr )
+    if( i_pMthTracer != nullptr && i_pMthTracer->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
     {
-        if( i_pMthTracer->isActive(ETraceDetailLevelMethodArgs) )
+        if( i_pMthTracer->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
         {
             strMthRet = "Blocks [" + QString::number(arByteArrs.size()) + "]";
             if( arByteArrs.size() > 0 )
@@ -542,7 +541,7 @@ QList<QByteArray> CBlkTypeTLV::receiveDataBlocks(
                 {
                     strMthRet += "Block [Size=" + QString::number(arByteArrs[idxBlk].size()) + "]";
 
-                    if( i_pMthTracer->isActive(ETraceDetailLevelInternalStates) )
+                    if( i_pMthTracer->isRuntimeInfoActive(ELogDetailLevel::Debug) )
                     {
                         strMthRet += "(";
                         if( arByteArrs[idxBlk].size() > 0 )
@@ -555,7 +554,7 @@ QList<QByteArray> CBlkTypeTLV::receiveDataBlocks(
                 strMthRet += ")";
             }
         }
-        i_pMthTracer->trace("<- receiveDataBlocks(): " + strMthRet, ETraceDetailLevelMethodCalls);
+        i_pMthTracer->trace("<- receiveDataBlocks(): " + strMthRet);
     }
 
     return arByteArrs;
@@ -584,7 +583,7 @@ bool CBlkTypeTLV::writeDataBlock(
 
     if( i_pMthTracer != nullptr )
     {
-        if( i_pMthTracer->isActive(ETraceDetailLevelMethodArgs) )
+        if( i_pMthTracer->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
         {
             SSocketDscr socketDscr = i_pSocketWrapper->getSocketDscr();
             strMthInArgs  = socketDscr.getConnectionString();
@@ -595,7 +594,7 @@ bool CBlkTypeTLV::writeDataBlock(
 
     if( !i_bIsWatchDogBlock )
     {
-        if( i_pMthTracer != nullptr && i_pMthTracer->isActive(ETraceDetailLevelRuntimeInfo) )
+        if( i_pMthTracer != nullptr && i_pMthTracer->isRuntimeInfoActive(ELogDetailLevel::Debug) )
         {
             strMthAddInfo = "Sending " + QString::number(i_byteArr.size()) + " bytes of data";
             i_pMthTracer->trace(strMthAddInfo);
@@ -614,7 +613,7 @@ bool CBlkTypeTLV::writeDataBlock(
                 /* transmitDir  */ ETransmitDir::Send,
                 /* bBold        */ false,
                 /* strMsg       */ strMthAddInfo );
-            POST_OR_DELETE_MESSAGE(pMsgLogItem, i_pMthTracer, ETraceDetailLevelRuntimeInfo);
+            POST_OR_DELETE_MESSAGE(pMsgLogItem, i_pMthTracer, ELogDetailLevel::Debug);
             pMsgLogItem = nullptr;
         }
     }
@@ -623,7 +622,7 @@ bool CBlkTypeTLV::writeDataBlock(
 
     if( i_pMthTracer != nullptr )
     {
-        if( i_pMthTracer->isActive(ETraceDetailLevelMethodArgs) )
+        if( i_pMthTracer->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
         {
             strMthRet = bool2Str(bOk);
         }

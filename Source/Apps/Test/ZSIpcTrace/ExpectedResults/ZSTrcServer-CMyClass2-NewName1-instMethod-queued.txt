@@ -1,0 +1,7 @@
+<GUIMain                 > -> <ZS::Apps::Test::IpcTrace::CMyClass2> NewName1.instMethod(Hello Instance)
+<GUIMain                 >    <ZS::Apps::Test::IpcTrace::CMyClass2> NewName1.instMethod: postEvent( {ZS::Apps::Test::IpcTrace::ReqTest, instMethod} )
+<GUIMain                 > <- <ZS::Apps::Test::IpcTrace::CMyClass2> NewName1.instMethod(): You here from me later ...
+<MyClass2ThreadNewName1  > -> <ZS::Apps::Test::IpcTrace::CMyClass2> NewName1.event({ZS::Apps::Test::IpcTrace::ReqTest, instMethod})
+<MyClass2ThreadNewName1  >    -> <ZS::Apps::Test::IpcTrace::CMyClass2> NewName1.instMethod(Hello Instance)
+<MyClass2ThreadNewName1  >    <- <ZS::Apps::Test::IpcTrace::CMyClass2> NewName1.instMethod(): Hello World
+<MyClass2ThreadNewName1  > <- <ZS::Apps::Test::IpcTrace::CMyClass2> NewName1.event()

@@ -49,11 +49,10 @@ public: // class methods
     static QString ClassName() { return "CClientGatewayThread"; }
 public: // ctors and dtor
     CClientGatewayThread(
-        const QString&       i_strObjNameGateway,
-        CClient*             i_pClient,
+        const QString& i_strObjNameGateway,
+        CClient* i_pClient,
         ZS::System::CErrLog* i_pErrLog,
-        Trace::CTrcMthFile*  i_pTrcMthFile = nullptr,         // If != nullptr trace method file with detail level is used instead of trace admin object with Trace server.
-        int                  i_iTrcMthFileDetailLevel = Trace::ETraceDetailLevelMethodArgs );
+        ZS::System::EMethodTraceDetailLevel i_eTrcMthFileDetailLevel = ZS::System::EMethodTraceDetailLevel::None );
     virtual ~CClientGatewayThread();
 public: // overridables of base class CSrvCltBaseGatewayThread
     virtual QString nameSpace() const override { return NameSpace(); }
@@ -76,12 +75,11 @@ public: // class methods
     static QString ClassName() { return "CClientGateway"; }
 public: // ctors and dtor
     CClientGateway(
-        const QString&        i_strObjName,
-        CClient*              i_pClient,
+        const QString& i_strObjName,
+        CClient* i_pClient,
         CClientGatewayThread* i_pThreadGateway,
-        ZS::System::CErrLog*  i_pErrLog,
-        Trace::CTrcMthFile*   i_pTrcMthFile = nullptr,         // If != nullptr trace method file with detail level is used instead of trace admin object with Trace server.
-        int                   i_iTrcMthFileDetailLevel = Trace::ETraceDetailLevelMethodArgs );
+        ZS::System::CErrLog* i_pErrLog,
+        ZS::System::EMethodTraceDetailLevel i_eTrcMthFileDetailLevel = ZS::System::EMethodTraceDetailLevel::None );
     virtual ~CClientGateway();
 public: // overridables of base class CSrvCltBaseGateway
     virtual QString nameSpace() const override { return NameSpace(); }

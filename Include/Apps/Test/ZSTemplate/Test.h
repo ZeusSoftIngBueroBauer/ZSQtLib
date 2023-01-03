@@ -46,7 +46,7 @@ class CTest : public ZS::Test::CTest
 {
     Q_OBJECT
 public: // ctors and dtor
-    CTest( const QString& i_strTestStepsFileName );
+    CTest();
     ~CTest();
 public slots:
     void doTestStepGrp1Step1( ZS::Test::CTestStep* i_pTestStep );

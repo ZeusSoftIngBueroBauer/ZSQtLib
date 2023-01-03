@@ -45,7 +45,6 @@ may result in using the software modules.
 
 
 using namespace ZS::System;
-using namespace ZS::Trace;
 using namespace ZS::Ipc;
 using namespace ZS::Ipc::GUI;
 
@@ -60,8 +59,8 @@ public: // class methods
 
 //------------------------------------------------------------------------------
 CDlgIpcServer* CDlgIpcServer::CreateInstance(
-    const QString&  i_strObjName,
     const QString&  i_strDlgTitle,
+    const QString&  i_strObjName,
     QWidget*        i_pWdgtParent,
     Qt::WindowFlags i_wFlags )
 //------------------------------------------------------------------------------
@@ -73,8 +72,8 @@ CDlgIpcServer* CDlgIpcServer::CreateInstance(
     }
 
     return new CDlgIpcServer(
-        /* strObjName   */ i_strObjName,
         /* strDlgTitle  */ i_strDlgTitle,
+        /* strObjName   */ i_strObjName,
         /* pWdgtParent  */ i_pWdgtParent,
         /* wFlags       */ i_wFlags );
 
@@ -93,16 +92,16 @@ protected: // ctor
 
 //------------------------------------------------------------------------------
 CDlgIpcServer::CDlgIpcServer(
-    const QString&  i_strObjName,
     const QString&  i_strDlgTitle,
+    const QString&  i_strObjName,
     QWidget*        i_pWdgtParent,
     Qt::WindowFlags i_wFlags ) :
 //------------------------------------------------------------------------------
     CDialog(
+        /* strDlgTitle  */ i_strDlgTitle,
         /* strNameSpace */ NameSpace(),
         /* strClassName */ ClassName(),
         /* strObjName   */ i_strObjName,
-        /* strDlgTitle  */ i_strDlgTitle,
         /* pWdgtParent  */ i_pWdgtParent,
         /* wFlags       */ i_wFlags ),
     m_pLyt(nullptr),
@@ -110,7 +109,7 @@ CDlgIpcServer::CDlgIpcServer(
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ "" );
 
@@ -157,7 +156,7 @@ CDlgIpcServer::~CDlgIpcServer()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
@@ -207,20 +206,20 @@ void CDlgIpcServer::setServer( CServer* i_pServer )
     {
         if( !bIsTrcServer )
         {
-            m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Ipc::GUI", "CDlgIpcServer", objectName());
+            m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
         }
     }
 
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Server: " + QString( i_pServer == nullptr ? "nullptr" : i_pServer->objectName() );
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setServer",
         /* strAddInfo   */ strMthInArgs );
 
@@ -233,50 +232,18 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDlgIpcServer::setServerObjectNameVisible( bool i_bVisible )
-//------------------------------------------------------------------------------
-{
-    QString strAddTrcInfo;
-
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
-    {
-        strAddTrcInfo = bool2Str(i_bVisible);
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "setServerObjectNameVisible",
-        /* strAddInfo   */ strAddTrcInfo );
-
-    m_pWdgtIpcServer->setServerObjectNameVisible(i_bVisible);
-
-} // setServerObjectNameVisible
-
-//------------------------------------------------------------------------------
-bool CDlgIpcServer::isServerObjectNameVisible() const
-//------------------------------------------------------------------------------
-{
-    return m_pWdgtIpcServer->isServerObjectNameVisible();
-}
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
 void CDlgIpcServer::setProtocolTypeImage( const QPixmap& i_pxm )
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setProtocolTypeImage",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -290,14 +257,14 @@ void CDlgIpcServer::setProtocolTypeImageVisible( bool i_bVisible )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = bool2Str(i_bVisible);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setProtocolTypeImageVisible",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -322,7 +289,7 @@ void CDlgIpcServer::onSettingsAccepted()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onSettingsAccepted",
         /* strAddInfo   */ "" );
 
@@ -336,7 +303,7 @@ void CDlgIpcServer::onSettingsRejected()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onSettingsRejected",
         /* strAddInfo   */ "" );
 
@@ -354,14 +321,14 @@ void CDlgIpcServer::onWdgtIpcServerDetailsVisibilityChanged( bool i_bDetailsVisi
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = bool2Str(i_bDetailsVisible);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onWdgtIpcClientDetailsVisibilityChanged",
         /* strAddInfo   */ strMthInArgs );
 

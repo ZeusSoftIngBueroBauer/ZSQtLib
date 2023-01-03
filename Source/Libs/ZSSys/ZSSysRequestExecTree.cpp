@@ -168,11 +168,11 @@ CRequestExecTree::CRequestExecTree( QObject* i_pObjParent ) :
     //}
     //s_pInstance = this;
 
-    #pragma push_macro("_SMSYSDBGNEW_CLIENT_BLOCK_SUBTYPE")
+    #pragma push_macro("_ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE")
     #ifdef _WINDOWS
     #pragma warning( disable : 4005 )
     #endif
-    #define _SMSYSDBGNEW_CLIENT_BLOCK_SUBTYPE 0
+    #define _ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE 0
 
     setObjectName("theRequestExecutionTree");
 
@@ -203,7 +203,7 @@ CRequestExecTree::CRequestExecTree( QObject* i_pObjParent ) :
     #ifdef _WINDOWS
     #pragma warning( default : 4005 )
     #endif
-    #pragma pop_macro("_SMSYSDBGNEW_CLIENT_BLOCK_SUBTYPE")
+    #pragma pop_macro("_ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE")
 
 } // ctor
 

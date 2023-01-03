@@ -36,36 +36,33 @@ namespace ZS
 namespace System
 {
 //******************************************************************************
-/*! The class is a wrapper around a C++ enumeration, verwaltet eine Liste
-    mit den definierten enum index entries und bietet nuetzliche Funktionen
-    fuer Enumerationen an, die eine normale Defintion von C enums nicht bietet.
+/*! The class is a wrapper around a C++ enumeration.
 
-    @ingroup _GRP_Libs_ZSSys_Enumerations
+The class manages a list with the defined enum index entries and offers useful
+functions for enums that a normal definition of C enums does not offer.
 
-    Enumerationen werden nicht nur dazu benoetigt, um symbolische Konstanten
-    fuer eine 1 aus M Auswahl zu definieren und so den Source Code lesbarer
-    zu machen. Haeufig ist es auch noetig, die enum value als lesbare strings
-    innnerhalb einer GUI anzuzeigen oder in Streams zu uebertragen.
+Enumerations are not only required to define symbolic constants for a 1 out of M
+selection and thus to make the source code more readable. It is also often necessary
+to display the enum value as a readable string within a GUI or to transmit it in streams.
 
-    Des weiteren dient ein enum Wert zur Auwahl aus einer Liste anderer Werte
-    mit einem anderen als einem Ganzzahl Datentypen. Moeglicherweise zur Auswahl
-    einer Frequenz aus einer Frequenzliste:
+Furthermore, an enum value is used to select from a list of other values with a
+non-integer data type. Possibly to select a frequency from a frequency list:
 
-        enum EUKWRadioFreqs {
-            EUKWRadioFreq_Bayern1,  // 92.4 MHz
-            EUKWRadioFreq_Bayern3,  // 99.2 MHz
-            ....
-        };
+    enum EUKWRadioFreqs {
+        EUKWRadioFreq_Bayern1,  // 92.4 MHz
+        EUKWRadioFreq_Bayern3,  // 99.2 MHz
+        ....
+    };
 
-    Damit auf eine Enumeration von beliebiger Stelle zugeriffen werden kann
-    werde alle Enumerationen in der Klasse ZS::System::CEnumerationIdxTree verwaltet.
-    Dafuer muss die Kombination aus NameSpace und Name der Enumeration innerhalb
-    einer Applikation eindeutig sein.
+Furthermore, an enum value is used to select from a list of other values with
+a non-integer data type. Possibly for selection So that an enumeration can be
+accessed from any position, all enumerations are managed in the
+ZS::System::CEnumerationIdxTree class. For this, the combination of NameSpace
+and name of the enumeration must be unique within an application.
 
-    Damit die Klasse auch innerhalb eines grafischen Tabellen Editors verwendet
-    werden kann werden Methoden angeboten, um enum entries dynamisch hinzufuegen
-    und auch wieder entfernt werden koennen. Allerdings koennen solche dynamisch
-    erzeugten enum Werte nicht in C Konstrukten wie switch cases verwendet werden.
+So that the class can also be used within a graphical table editor, methods are
+provided to dynamically add and remove enum entries. However, such dynamically
+generated enum values cannot be used in C constructs such as switch cases.
 */
 class ZSSYSDLL_API CEnumeration : public CIdxTreeEntry
 //******************************************************************************
@@ -100,32 +97,32 @@ public: // instance methods
     void removeEntry( int i_idxRow );
 public: // instance methods
     QVector<SEnumEntry*> getEntries() const { return m_arpEntries; }
-    void setEntries( const ZS::System::SEnumEntry* i_pEnumArr, int i_iArrLen );
+    void setEntries( const SEnumEntry* i_pEnumArr, int i_iArrLen );
 public: // instance methods
     int getMaxEnumEntryIndex() const;  // Not sizeof "m_pEnum->m_arpEntries" but the highest enumerator value.
     int getMaxEnumEntryStrAliasCount() const;
 public: // instance methods
     SEnumEntry* index2EnumEntry( int i_idx ) const;
-    QString index2Name( int i_idx, int i_alias = ZS::System::EEnumEntryAliasStrName ) const;
+    QString index2Name( int i_idx, int i_alias = EEnumEntryAliasStrName ) const;
     QVariant index2Val( int i_idx ) const;
 public: // instance methods
     SEnumEntry* name2EnumEntry(
         const QString&      i_strName,
         Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive,
-        int                 i_alias = ZS::System::EEnumEntryAliasStrUndefined ) const; // if EEnumEntryAliasStrUndefined all string list entries will be compared
+        int                 i_alias = EEnumEntryAliasStrUndefined ) const; // if EEnumEntryAliasStrUndefined all string list entries will be compared
     int name2Index(
         const QString&      i_strName,
         Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive,
-        int                 i_alias = ZS::System::EEnumEntryAliasStrUndefined ) const;
+        int                 i_alias = EEnumEntryAliasStrUndefined ) const;
 public: // instance methods
     SEnumEntry* val2EnumEntry( const QVariant& i_val ) const;
     int val2Index( const QVariant& i_val ) const;
 public: // instance methods
-    QString val2Name( const QVariant& i_val, int i_alias = ZS::System::EEnumEntryAliasStrName ) const;
+    QString val2Name( const QVariant& i_val, int i_alias = EEnumEntryAliasStrName ) const;
     QVariant name2Val(
         const QString&      i_strName,
         Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive,
-        int                 i_alias = ZS::System::EEnumEntryAliasStrUndefined ) const;
+        int                 i_alias = EEnumEntryAliasStrUndefined ) const;
 public: // instance methods (automatically resizing the enumeration if necessary)
     // The enum entry is inserted at "m_arpEntries[i_idx]" and entry index becomes equal to its row index.
     void setEntry( SEnumEntry* i_pEntry ); // The entry will not be copied but the ownership will be taken over.
@@ -133,25 +130,25 @@ public: // instance methods (automatically resizing the enumeration if necessary
     void setEntry(
         int                i_idx,  // IdxName becomes QString::number(i_idx)
         const QVariant&    i_val = QVariant(),
-        EEnumEntryValidity i_validity = ZS::System::EEnumEntryValidityNormal );
+        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
     void setEntry(
         int                i_idx,
         const QString&     i_strName,
         const QVariant&    i_val = QVariant(),
-        EEnumEntryValidity i_validity = ZS::System::EEnumEntryValidityNormal );
+        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
     void setEntry(
         int                i_idx,
         const QString&     i_strName,
         const QString&     i_strAliasSymbol,
         const QVariant&    i_val = QVariant(),
-        EEnumEntryValidity i_validity = ZS::System::EEnumEntryValidityNormal );
+        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
     void setEntry(
         int                i_idx,
         const QString&     i_strName,
         const QString&     i_strAliasSymbol,
         const QString&     i_strAliasText,
         const QVariant&    i_val = QVariant(),
-        EEnumEntryValidity i_validity = ZS::System::EEnumEntryValidityNormal );
+        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
     void setEntry(
         int                i_idx,
         const QString&     i_strName,
@@ -160,7 +157,7 @@ public: // instance methods (automatically resizing the enumeration if necessary
         const QString&     i_strAliasSCPIShort,
         const QString&     i_strAliasSCIPLong,
         const QVariant&    i_val = QVariant(),
-        EEnumEntryValidity i_validity = ZS::System::EEnumEntryValidityNormal );
+        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
     void setEntry(
         int                i_idx,
         const QString&     i_strName,
@@ -170,7 +167,7 @@ public: // instance methods (automatically resizing the enumeration if necessary
         const QString&     i_strAliasSCIPLong,
         const QString&     i_strAlias6,
         const QVariant&    i_val = QVariant(),
-        EEnumEntryValidity i_validity = ZS::System::EEnumEntryValidityNormal );
+        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
     void setEntry(
         int                i_idx,
         const QString&     i_strName,
@@ -181,7 +178,7 @@ public: // instance methods (automatically resizing the enumeration if necessary
         const QString&     i_strAlias6,
         const QString&     i_strAlias7,
         const QVariant&    i_val = QVariant(),
-        EEnumEntryValidity i_validity = ZS::System::EEnumEntryValidityNormal );
+        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
     void setEntry(
         int                i_idx,
         const QString&     i_strName,
@@ -193,7 +190,7 @@ public: // instance methods (automatically resizing the enumeration if necessary
         const QString&     i_strAlias7,
         const QString&     i_strAlias8,
         const QVariant&    i_val = QVariant(),
-        EEnumEntryValidity i_validity = ZS::System::EEnumEntryValidityNormal );
+        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
     void setEntry(
         int                i_idx,
         const QString&     i_strName,
@@ -206,7 +203,7 @@ public: // instance methods (automatically resizing the enumeration if necessary
         const QString&     i_strAlias8,
         const QString&     i_strAlias9,
         const QVariant&    i_val = QVariant(),
-        EEnumEntryValidity i_validity = ZS::System::EEnumEntryValidityNormal );
+        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
     void setEntry(
         int                i_idx,
         const QString&     i_strName,
@@ -220,12 +217,12 @@ public: // instance methods (automatically resizing the enumeration if necessary
         const QString&     i_strAlias9,
         const QString&     i_strAlias10,
         const QVariant&    i_val = QVariant(),
-        EEnumEntryValidity i_validity = ZS::System::EEnumEntryValidityNormal );
+        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
     void setEntry(
         int                i_idx,
         const QStringList& i_strlstNames, // [0: IdxName, 1: Text, 2: Symbol, 3: SCPI, 4: IdxName5, .., IdxName10]
         const QVariant&    i_val = QVariant(),
-        EEnumEntryValidity i_validity = ZS::System::EEnumEntryValidityNormal );
+        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
 public: // instance methods (appending the enum entry at the end of "m_arpEntries")
     // If entry idx == -1 the entry idx will be set to the row index.
     // If entry idx >= 0 the entry idx remains unchanged and entry index might be different from row index.
@@ -234,25 +231,25 @@ public: // instance methods (appending the enum entry at the end of "m_arpEntrie
     void appendEntry(
         int                i_idx,  // Name becomes QString::number(i_idx)
         const QVariant&    i_val = QVariant(),
-        EEnumEntryValidity i_validity = ZS::System::EEnumEntryValidityNormal );
+        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
     void appendEntry(
         int                i_idx,
         const QString&     i_strName,
         const QVariant&    i_val = QVariant(),
-        EEnumEntryValidity i_validity = ZS::System::EEnumEntryValidityNormal );
+        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
     void appendEntry(
         int                i_idx,
         const QString&     i_strName,
         const QString&     i_strAliasSymbol,
         const QVariant&    i_val = QVariant(),
-        EEnumEntryValidity i_validity = ZS::System::EEnumEntryValidityNormal );
+        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
     void appendEntry(
         int                i_idx,
         const QString&     i_strName,
         const QString&     i_strAliasSymbol,
         const QString&     i_strAliasText,
         const QVariant&    i_val = QVariant(),
-        EEnumEntryValidity i_validity = ZS::System::EEnumEntryValidityNormal );
+        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
     void appendEntry(
         int                i_idx,
         const QString&     i_strName,
@@ -261,7 +258,7 @@ public: // instance methods (appending the enum entry at the end of "m_arpEntrie
         const QString&     i_strAliasSCPIShort,
         const QString&     i_strAliasSCPILong,
         const QVariant&    i_val = QVariant(),
-        EEnumEntryValidity i_validity = ZS::System::EEnumEntryValidityNormal );
+        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
     void appendEntry(
         int                i_idx,
         const QString&     i_strName,
@@ -271,7 +268,7 @@ public: // instance methods (appending the enum entry at the end of "m_arpEntrie
         const QString&     i_strAliasSCPILong,
         const QString&     i_strAlias6,
         const QVariant&    i_val = QVariant(),
-        EEnumEntryValidity i_validity = ZS::System::EEnumEntryValidityNormal );
+        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
     void appendEntry(
         int                i_idx,
         const QString&     i_strName,
@@ -282,7 +279,7 @@ public: // instance methods (appending the enum entry at the end of "m_arpEntrie
         const QString&     i_strAlias6,
         const QString&     i_strAlias7,
         const QVariant&    i_val = QVariant(),
-        EEnumEntryValidity i_validity = ZS::System::EEnumEntryValidityNormal );
+        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
     void appendEntry(
         int                i_idx,
         const QString&     i_strName,
@@ -294,7 +291,7 @@ public: // instance methods (appending the enum entry at the end of "m_arpEntrie
         const QString&     i_strAlias7,
         const QString&     i_strAlias8,
         const QVariant&    i_val = QVariant(),
-        EEnumEntryValidity i_validity = ZS::System::EEnumEntryValidityNormal );
+        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
     void appendEntry(
         int                i_idx,
         const QString&     i_strName,
@@ -307,7 +304,7 @@ public: // instance methods (appending the enum entry at the end of "m_arpEntrie
         const QString&     i_strAlias8,
         const QString&     i_strAlias9,
         const QVariant&    i_val = QVariant(),
-        EEnumEntryValidity i_validity = ZS::System::EEnumEntryValidityNormal );
+        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
     void appendEntry(
         int                i_idx,
         const QString&     i_strName,
@@ -321,12 +318,12 @@ public: // instance methods (appending the enum entry at the end of "m_arpEntrie
         const QString&     i_strAlias9,
         const QString&     i_strAlias10,
         const QVariant&    i_val = QVariant(),
-        EEnumEntryValidity i_validity = ZS::System::EEnumEntryValidityNormal );
+        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
     void appendEntry(
         int                i_idx,
         const QStringList& i_strlstNames, // [0: IdxName, 1: Text, 2: Symbol, 3: SCPI, 4: IdxName5, .., IdxName10]
         const QVariant&    i_val = QVariant(),
-        EEnumEntryValidity i_validity = ZS::System::EEnumEntryValidityNormal );
+        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
 public: // instance methods (inserting the enum entry at the specified row index into "m_arpEntries[idxRow]")
     // If entry idx == -1 the entry idx will be set to the row index.
     // If entry idx >= 0 the entry idx remains unchanged and entry index might be different from row index.
@@ -336,20 +333,20 @@ public: // instance methods (inserting the enum entry at the specified row index
         int                i_idxRow,
         int                i_idx,  // IdxName becomes QString::number(i_idx)
         const QVariant&    i_val = QVariant(),
-        EEnumEntryValidity i_validity = ZS::System::EEnumEntryValidityNormal );
+        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
     void insertEntry(
         int                i_idxRow,
         int                i_idx,
         const QString&     i_strName,
         const QVariant&    i_val = QVariant(),
-        EEnumEntryValidity i_validity = ZS::System::EEnumEntryValidityNormal );
+        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
     void insertEntry(
         int                i_idxRow,
         int                i_idx,
         const QString&     i_strName,
         const QString&     i_strAliasSymbol,
         const QVariant&    i_val = QVariant(),
-        EEnumEntryValidity i_validity = ZS::System::EEnumEntryValidityNormal );
+        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
     void insertEntry(
         int                i_idxRow,
         int                i_idx,
@@ -357,7 +354,7 @@ public: // instance methods (inserting the enum entry at the specified row index
         const QString&     i_strAliasSymbol,
         const QString&     i_strAliasText,
         const QVariant&    i_val = QVariant(),
-        EEnumEntryValidity i_validity = ZS::System::EEnumEntryValidityNormal );
+        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
     void insertEntry(
         int                i_idxRow,
         int                i_idx,
@@ -367,7 +364,7 @@ public: // instance methods (inserting the enum entry at the specified row index
         const QString&     i_strAliasSCPIShort,
         const QString&     i_strAliasSCPILong,
         const QVariant&    i_val = QVariant(),
-        EEnumEntryValidity i_validity = ZS::System::EEnumEntryValidityNormal );
+        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
     void insertEntry(
         int                i_idxRow,
         int                i_idx,
@@ -378,7 +375,7 @@ public: // instance methods (inserting the enum entry at the specified row index
         const QString&     i_strAliasSCPILong,
         const QString&     i_strAlias6,
         const QVariant&    i_val = QVariant(),
-        EEnumEntryValidity i_validity = ZS::System::EEnumEntryValidityNormal );
+        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
     void insertEntry(
         int                i_idxRow,
         int                i_idx,
@@ -390,7 +387,7 @@ public: // instance methods (inserting the enum entry at the specified row index
         const QString&     i_strAlias6,
         const QString&     i_strAlias7,
         const QVariant&    i_val = QVariant(),
-        EEnumEntryValidity i_validity = ZS::System::EEnumEntryValidityNormal );
+        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
     void insertEntry(
         int                i_idxRow,
         int                i_idx,
@@ -403,7 +400,7 @@ public: // instance methods (inserting the enum entry at the specified row index
         const QString&     i_strAlias7,
         const QString&     i_strAlias8,
         const QVariant&    i_val = QVariant(),
-        EEnumEntryValidity i_validity = ZS::System::EEnumEntryValidityNormal );
+        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
     void insertEntry(
         int                i_idxRow,
         int                i_idx,
@@ -417,7 +414,7 @@ public: // instance methods (inserting the enum entry at the specified row index
         const QString&     i_strAlias8,
         const QString&     i_strAlias9,
         const QVariant&    i_val = QVariant(),
-        EEnumEntryValidity i_validity = ZS::System::EEnumEntryValidityNormal );
+        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
     void insertEntry(
         int                i_idxRow,
         int                i_idx,
@@ -432,19 +429,19 @@ public: // instance methods (inserting the enum entry at the specified row index
         const QString&     i_strAlias9,
         const QString&     i_strAlias10,
         const QVariant&    i_val = QVariant(),
-        EEnumEntryValidity i_validity = ZS::System::EEnumEntryValidityNormal );
+        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
     void insertEntry(
         int                i_idxRow,
         int                i_idx,
         const QStringList& i_strlstNames, // [0: IdxName, 1: Text, 2: Symbol, 3: SCPI, 4: IdxName5, .., IdxName10]
         const QVariant&    i_val = QVariant(),
-        EEnumEntryValidity i_validity = ZS::System::EEnumEntryValidityNormal );
+        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
 public: // instance methods
     void removeEntryByIdx( int i_idx );
     void removeEntryByName(
         const QString&      i_strName,
         Qt::CaseSensitivity i_caseSensitivity = Qt::CaseSensitive,
-        int                 i_alias = ZS::System::EEnumEntryAliasStrUndefined ); // if Undefined all string list entries will be compared
+        int                 i_alias = EEnumEntryAliasStrUndefined ); // if Undefined all string list entries will be compared
     void removeEntryByVal( const QVariant& i_val );
 public: // instance methods
     void clear(); // keeps Name and UId

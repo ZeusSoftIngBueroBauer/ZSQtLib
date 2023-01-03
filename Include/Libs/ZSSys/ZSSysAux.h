@@ -32,6 +32,7 @@ may result in using the software modules.
 #include <QtCore/qmutex.h>
 #include <QtCore/qprocess.h>
 #include <QtCore/qstring.h>
+#include <QtCore/qthread.h>
 
 #include "ZSSys/ZSSysDllMain.h"
 #include "ZSSys/ZSSysCommon.h"
@@ -142,6 +143,9 @@ ZSSYSDLL_API Qt::CaseSensitivity str2QCaseSensitivity( const QString& i_str, EEn
 ZSSYSDLL_API QString qOrientation2Str( int i_iVal, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName );
 ZSSYSDLL_API Qt::Orientation str2QOrientation( const QString& i_str, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName, bool* o_pbConverted = nullptr );
 
+ZSSYSDLL_API QString qSortOrder2Str( int i_iVal, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName );
+ZSSYSDLL_API Qt::SortOrder str2QSortOrder( const QString& i_str, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName, bool* o_pbConverted = nullptr );
+
 ZSSYSDLL_API QString qMutexRecursionMode2Str( int i_iVal, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName );
 ZSSYSDLL_API QMutex::RecursionMode str2QMutexRecursionMode( const QString& i_str, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName, bool* o_pbConverted = nullptr );
 
@@ -150,6 +154,8 @@ ZSSYSDLL_API QProcess::ExitStatus str2QProcessExitStatus( const QString& i_str, 
 
 ZSSYSDLL_API QString qProcessError2Str( int i_iVal, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName );
 ZSSYSDLL_API QProcess::ProcessError str2QProcessError( const QString& i_str, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName, bool* o_pbConverted = nullptr );
+
+ZSSYSDLL_API QString qThreadPriority2Str( QThread::Priority i_priority, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName );
 
 ZSSYSDLL_API QString qXmlStreamTokenType2Str( int i_iVal, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName );
 
@@ -213,6 +219,10 @@ ZSSYSDLL_API QString truncateStringWithEllipsisInTheMiddle(
     const QString& i_str,
     int            i_iMaxLength,
     const QString& i_strEllipsis = ".." );
+
+ZSSYSDLL_API QString encodeForXml( const QString& i_str );
+ZSSYSDLL_API QString encodeForHtml( const QString& i_str );
+ZSSYSDLL_API QString decodeFromHtml( const QString& i_str );
 
 /*******************************************************************************
 Parsing strings

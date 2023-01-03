@@ -41,14 +41,16 @@ global type definitions and constants
 enum ResultSeverity
 ==============================================================================*/
 
-const SEnumEntry s_arEnumStrErrResultSeverity[EResultSeverityCount] =
+const SEnumEntry s_arEnumStrErrResultSeverity[] =
 {
-                                        // IdxName, Symbol,  Text, SCPIShort, SCPILong
-    SEnumEntry( EResultSeveritySuccess,  "Success",  "S", "Success",  "SUCC", "SUCCess"  ),
-    SEnumEntry( EResultSeverityInfo,     "Info",     "I", "Info",     "INFO", "INFO"     ),
-    SEnumEntry( EResultSeverityWarning,  "Warning",  "W", "Warning",  "WARN", "WARNing"  ),
-    SEnumEntry( EResultSeverityError,    "Error",    "E", "Error",    "ERR",  "ERRor"    ),
-    SEnumEntry( EResultSeverityCritical, "Critical", "C", "Critical", "CRIT", "CRITical" )
+                                       // IdxName,  Symbol,   Text,     SCPIShort, SCPILong
+    SEnumEntry( EResultSeveritySuccess,   "Success",   "S",   "Success",   "SUCC", "SUCCess"   ),
+    SEnumEntry( EResultSeverityInfo,      "Info",      "I",   "Info",      "INFO", "INFO"      ),
+    SEnumEntry( EResultSeverityWarning,   "Warning",   "W",   "Warning",   "WARN", "WARNing"   ),
+    SEnumEntry( EResultSeverityError,     "Error",     "E",   "Error",     "ERR",  "ERRor"     ),
+    SEnumEntry( EResultSeverityCritical,  "Critical",  "C",   "Critical",  "CRIT", "CRITical"  ),
+    SEnumEntry( EResultSeverityCount,     "Count",     "All", "Count",     "COUN", "COUNt"     ),
+    SEnumEntry( EResultSeverityUndefined, "Undefined", "?",   "Undefined", "UND",  "UNDefined" )
 };
 
 //------------------------------------------------------------------------------

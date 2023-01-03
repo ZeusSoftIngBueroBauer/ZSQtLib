@@ -58,14 +58,12 @@ namespace ZS
 {
 namespace System
 {
+class CTrcAdminObj;
+
 namespace GUI
 {
 class CProgressBar;
 }
-}
-namespace Trace
-{
-class CTrcAdminObj;
 }
 
 namespace Ipc
@@ -95,12 +93,11 @@ signals:
 public: // instance methods
     void setClient( CClient* i_pClient );
 public: // instance methods
-    void setClientObjectNameVisible( bool i_bVisible );
-    bool isClientObjectNameVisible() const { return m_bClientObjNameVisible; }
-public: // instance methods
     void setProtocolTypeImage( const QPixmap& i_pxm );
     void setProtocolTypeImageVisible( bool i_bVisible );
     bool isProtocolTypeImageVisible() const{ return m_bProtocolTypeImageVisible; }
+public: // instance methods
+    void applySettings();
 protected: // instance methods
     void readSettings();
     void saveSettings();
@@ -138,11 +135,8 @@ protected: // instance methods
     void fillCnctControls( const SClientHostSettings& i_hostSettings, const STimerSettings& i_watchDogSettings );
     void resetDetailControls();
     void fillDetailControls();
-protected: // instance methods
-    void applySettings();
 protected: // instance members
     CClient*                        m_pClient;
-    bool                            m_bClientObjNameVisible;
     bool                            m_bProtocolTypeImageVisible;
     int                             m_iLblWidth;
     QVBoxLayout*                    m_pLyt;
@@ -156,7 +150,6 @@ protected: // instance members
     // Connection Settings
     SClientHostSettings             m_hostSettingsClient;
     SClientHostSettings             m_hostSettingsWidget;
-    QHBoxLayout*                    m_pLytLineDefault;
     QFormLayout*                    m_pLytCnct;
     QLabel*                         m_pLblSocketType;
     QComboBox*                      m_pCmbSocketType;
@@ -217,7 +210,7 @@ protected: // instance members
     QLabel*                         m_pLblMsgLog;
     STrcMsgLogSettings              m_trcMsgLogSettings;
     CWdgtTrcMsgLog*                 m_pWdgtTrcMsgLog;
-    Trace::CTrcAdminObj*            m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj*       m_pTrcAdminObj;
 
 }; // class CWdgtIpcClient
 

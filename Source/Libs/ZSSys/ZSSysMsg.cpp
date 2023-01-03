@@ -38,7 +38,6 @@ may result in using the software modules.
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 using namespace ZS::System;
-using namespace ZS::Trace;
 
 
 /*******************************************************************************
@@ -167,53 +166,40 @@ Global Methods
 
 //------------------------------------------------------------------------------
 void ZS::System::POST_OR_DELETE_MESSAGE(
-    QEvent*                   i_pMsg,
-    ZS::Trace::CMethodTracer* i_pMethodTracer,
-    int                       i_iFilterDetailLevel )
+    QEvent*                      i_pMsg,
+    CMethodTracer*               i_pMethodTracer,
+    ELogDetailLevel i_eFilterDetailLevel )
 //------------------------------------------------------------------------------
 {
     if( i_pMsg != nullptr )
     {
-        QString strAddTrcInfo;
-        QString strMsgTrcInfo;
-
         CMsg* pMsg = dynamic_cast<CMsg*>(i_pMsg);
 
         QObject* pObjReceiver = nullptr;
 
-        int iTrcDetailLevel = ETraceDetailLevelNone;
-
-        if( i_pMethodTracer != nullptr )
-        {
-            iTrcDetailLevel = i_pMethodTracer->getTraceDetailLevel();
-
-            if( i_pMethodTracer->isActive(i_iFilterDetailLevel) )
-            {
-                strMsgTrcInfo = "Addr: " + pointer2Str(i_pMsg);
-            }
-        }
+        ELogDetailLevel eTrcDetailLevel = ELogDetailLevel::None;
 
         if( pMsg != nullptr )
         {
             pObjReceiver = pMsg->getReceiver();
 
-            strMsgTrcInfo += ", Content { " + pMsg->getAddTrcInfoStr(iTrcDetailLevel >= ETraceDetailLevelRuntimeInfo ? 1 : 0) + " } )";
+            QString strMsgTrcInfo = "{" + pMsg->getAddTrcInfoStr(eTrcDetailLevel >= ELogDetailLevel::DebugDetailed ? 1 : 0) + "}";
 
             if( pObjReceiver != nullptr )
             {
-                if( i_pMethodTracer != nullptr && i_pMethodTracer->isActive(i_iFilterDetailLevel) )
+                if( i_pMethodTracer != nullptr && i_pMethodTracer->isRuntimeInfoActive(i_eFilterDetailLevel) )
                 {
-                    strAddTrcInfo = "postEvent( " + strMsgTrcInfo + " )";
-                    i_pMethodTracer->trace(strAddTrcInfo, i_iFilterDetailLevel);
+                    QString strAddTrcInfo = "postEvent( " + strMsgTrcInfo + " )";
+                    i_pMethodTracer->trace(strAddTrcInfo, i_eFilterDetailLevel);
                 }
                 QCoreApplication::postEvent(pObjReceiver, i_pMsg);
             }
             else // if( pObjReceiver == nullptr )
             {
-                if( i_pMethodTracer != nullptr && i_pMethodTracer->isActive(i_iFilterDetailLevel) )
+                if( i_pMethodTracer != nullptr && i_pMethodTracer->isRuntimeInfoActive(i_eFilterDetailLevel) )
                 {
-                    strAddTrcInfo = "deleteEvent( " + strMsgTrcInfo + " )";
-                    i_pMethodTracer->trace(strAddTrcInfo, i_iFilterDetailLevel);
+                    QString strAddTrcInfo = "deleteEvent( " + strMsgTrcInfo + " )";
+                    i_pMethodTracer->trace(strAddTrcInfo, i_eFilterDetailLevel);
                 }
                 delete i_pMsg;
                 i_pMsg = nullptr;
@@ -383,7 +369,7 @@ static QMutex                s_mtxMsgIdsLiveCounter(QMutex::Recursive);
 static bool s_bTracing = false;
 static bool s_bTracingEnabled = false;
 
-static ZS::Trace::CTrcAdminObj* s_pTrcAdminObj = nullptr;
+static CTrcAdminObj* s_pTrcAdminObj = nullptr;
 
 
 /*==============================================================================
@@ -398,7 +384,7 @@ void ZS::System::SYS_MESSAGES_SET_TRACING_ENABLED( bool i_bEnabled )
 }
 
 //------------------------------------------------------------------------------
-void ZS::System::TRACE_LIVING_MESSAGE_OBJECTS( ZS::Trace::CMethodTracer* i_pMethodTracer )
+void ZS::System::TRACE_LIVING_MESSAGE_OBJECTS( CMethodTracer* i_pMethodTracer )
 //------------------------------------------------------------------------------
 {
     if( i_pMethodTracer != nullptr )
@@ -422,7 +408,7 @@ void ZS::System::TRACE_LIVING_MESSAGE_OBJECTS( ZS::Trace::CMethodTracer* i_pMeth
                 strAddTrcInfo += "{" + QString::number(it.key()) + ":" + it.value() + "}";
             }
             strAddTrcInfo += "]";
-            i_pMethodTracer->trace(strAddTrcInfo, ZS::Trace::ETraceDetailLevelMethodCalls);
+            i_pMethodTracer->trace(strAddTrcInfo, ELogDetailLevel::Debug);
 
         } // if( !s_hshMsgIdsLiveTrcInfo.isEmpty() )
 
@@ -499,7 +485,7 @@ CMsg::CMsg(
 
     if( s_bTracingEnabled && s_pTrcAdminObj == nullptr )
     {
-        s_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::System", "CMsg", "");
+        s_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), "");
     }
 
     // If a method trace client is connected tracing will create an instance of CMsgReqSendData.
@@ -507,8 +493,7 @@ CMsg::CMsg(
     // is created which again produces trace outputs whereupon again an instance of CMsgReqSendDAta
     // is created which again ....
     // To break this endless message creation recursion the static flag "inMsgCtor" is used.
-
-    if( !s_bTracing && s_pTrcAdminObj != nullptr && s_pTrcAdminObj->isActive(ETraceDetailLevelMethodCalls) )
+    if( !s_bTracing && s_pTrcAdminObj != nullptr && s_pTrcAdminObj->isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         s_bTracing = true;
 
@@ -522,8 +507,7 @@ CMsg::CMsg(
             /* strMethodArgs */ strAddTrcInfo );
 
         s_bTracing = false;
-
-    } // if( !s_bTracing && s_pTrcAdminObj != nullptr && s_pTrcAdminObj->isActive(ETraceDetailLevelMethodCalls) )
+    }
 
     if( s_hshMsgIdsLiveCounter.contains(m_iMsgId) )
     {
@@ -545,7 +529,7 @@ CMsg::CMsg(
     // the sender and/or receiver may have already been destroyed.
     m_pSndRcvDestroyedHandler = new CMsgSndRcvDestroyedHandler(this);
 
-    if( !s_bTracing && s_pTrcAdminObj != nullptr && s_pTrcAdminObj->isActive(ETraceDetailLevelMethodCalls) )
+    if( !s_bTracing && s_pTrcAdminObj != nullptr && s_pTrcAdminObj->isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         s_bTracing = true;
 
@@ -557,8 +541,7 @@ CMsg::CMsg(
             /* strMethodOutArgs */ "" );
 
         s_bTracing = false;
-
-    } // if( !s_bTracing && s_pTrcAdminObj != nullptr && s_pTrcAdminObj->isActive(ETraceDetailLevelMethodCalls) )
+    }
 
     if( bMtxLocked )
     {
@@ -597,7 +580,7 @@ CMsg::CMsg( const MsgProtocol::SMsgHeader* i_pMsgHdr ) :
 
     if( s_bTracingEnabled && s_pTrcAdminObj == nullptr )
     {
-        s_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::System", "CMsg", "");
+        s_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), "");
     }
 
     // If a method trace client is connected tracing will create an instance of CMsgReqSendData.
@@ -607,8 +590,7 @@ CMsg::CMsg( const MsgProtocol::SMsgHeader* i_pMsgHdr ) :
     // To break this endless message creation recursion the static flag "tracing" is used.
     // But messages may be created by different threads and therefore this flag would have to be
     // protected by a mutex slowing down the application.
-
-    if( !s_bTracing && s_pTrcAdminObj != nullptr && s_pTrcAdminObj->isActive(ETraceDetailLevelMethodCalls) )
+    if( !s_bTracing && s_pTrcAdminObj != nullptr && s_pTrcAdminObj->isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         s_bTracing = true;
 
@@ -622,8 +604,7 @@ CMsg::CMsg( const MsgProtocol::SMsgHeader* i_pMsgHdr ) :
             /* strMethodArgs */ strAddTrcInfo );
 
         s_bTracing = false;
-
-    } // if( !s_bTracing && s_pTrcAdminObj != nullptr && s_pTrcAdminObj->isActive(ETraceDetailLevelMethodCalls) )
+    }
 
     if( s_hshMsgIdsLiveCounter.contains(m_iMsgId) )
     {
@@ -645,7 +626,7 @@ CMsg::CMsg( const MsgProtocol::SMsgHeader* i_pMsgHdr ) :
     // the sender and/or receiver may have already been destroyed.
     m_pSndRcvDestroyedHandler = new CMsgSndRcvDestroyedHandler(this);
 
-    if( !s_bTracing && s_pTrcAdminObj != nullptr && s_pTrcAdminObj->isActive(ETraceDetailLevelMethodCalls) )
+    if( !s_bTracing && s_pTrcAdminObj != nullptr && s_pTrcAdminObj->isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         s_bTracing = true;
 
@@ -657,8 +638,7 @@ CMsg::CMsg( const MsgProtocol::SMsgHeader* i_pMsgHdr ) :
             /* strMethodOutArgs */ "" );
 
         s_bTracing = false;
-
-    } // if( !s_bTracing && s_pTrcAdminObj != nullptr && s_pTrcAdminObj->isActive(ETraceDetailLevelMethodCalls) )
+    }
 
     if( bMtxLocked )
     {
@@ -679,7 +659,7 @@ CMsg::~CMsg()
     // a system shutdown if a thread with an event loop cannot be terminated.
     bool bMtxLocked = s_mtxMsgIdsLiveCounter.tryLock(1000); // milliseconds
 
-    if( !s_bTracing && s_pTrcAdminObj != nullptr && s_pTrcAdminObj->isActive(ETraceDetailLevelMethodCalls) )
+    if( !s_bTracing && s_pTrcAdminObj != nullptr && s_pTrcAdminObj->isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         s_bTracing = true;
 
@@ -730,7 +710,7 @@ CMsg::~CMsg()
         s_iMsgObjLiveCounter--;
     }
 
-    if( !s_bTracing && s_pTrcAdminObj != nullptr && s_pTrcAdminObj->isActive(ETraceDetailLevelMethodCalls) )
+    if( !s_bTracing && s_pTrcAdminObj != nullptr && s_pTrcAdminObj->isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         s_bTracing = true;
 

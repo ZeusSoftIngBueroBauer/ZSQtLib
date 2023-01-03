@@ -84,11 +84,7 @@ CWidgetCentral::CWidgetCentral(
     // Trace Method List Widget
     //-------------------------
 
-    m_pWdgtMthList = new CWdgtTrcMthList(
-        /* pTrcClient                  */ i_pTrcClient,
-        /* strThreadClrFileAbsFilePath */ CApplication::GetInstance()->getThreadColorFileAbsFilePath(),
-        /* iItemsCountMax              */ 0,
-        /* pWdgtParent                 */ nullptr );
+    m_pWdgtMthList = new CWdgtTrcMthList(i_pTrcClient);
     m_pLyt->addWidget(m_pWdgtMthList);
 
     if( !QObject::connect(

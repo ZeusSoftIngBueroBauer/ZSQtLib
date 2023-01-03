@@ -1,0 +1,114 @@
+/*******************************************************************************
+
+Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+                         Gewerbepark 28
+                         D-83670 Bad Heilbrunn
+                         Tel: 0049 8046 9488
+                         www.zeussoft.de
+                         E-Mail: mailbox@zeussoft.de
+
+--------------------------------------------------------------------------------
+
+Content: This file is part of the ZSQtLib.
+
+This file may be used with no license restrictions for your needs. But it is not
+allowed to resell any modules of the ZSQtLib veiling the original developer of
+the modules. Therefore the copyright link to ZeusSoft, Ing. Buero Bauer must not
+be removed from the header of the source code modules.
+
+ZeusSoft, Ing. Buero Bauer provides the source code as is without any guarantee
+that the code is written without faults.
+
+ZeusSoft, Ing. Buero Bauer does not assume any liability for any damages which
+may result in using the software modules.
+
+*******************************************************************************/
+
+#ifndef ZSSys_Version_h
+#define ZSSys_Version_h
+
+#include <QtCore/qstring.h>
+
+#include "ZSSys/ZSSysDllMain.h"
+
+namespace ZS
+{
+namespace System
+{
+//==============================================================================
+/*! This file contains all the necessary version information to be able to determine
+    the associated git commit from which the installed package was created.
+
+    The CMakeList file of the ZSSys sub module is responsible to configure this
+    header file according to the retrieved version info.
+    For further information see "ZSQtLibsGetGitVersionInfo.cmake".
+
+Version Number Format:
+----------------------
+
+<VersionMajor>.<VersionMinor>.<VersionPatch>
+
+<VersionMajor> .. Major version number of the ZSQtLib. This version number will only
+                  be changed on radical changes concerning the whole library.
+
+<VersionMinor> .. Minor version number of the ZSQtLib. This version number
+                  will be changed if significant changes have been made within
+                  already existing and released sub systems of the ZSQtLib
+                  concerning the architecture, class design or interfaces.
+                  Will be reset to 1 if the VersionMajor will be changed.
+
+<VersionPatch> .. Will be incremented each time a new version of the library
+                  will be released after bugfixes or improvements.
+                  Will be reset to 1 if the VersionMinor will be changed.
+*/
+//==============================================================================
+
+/*! GIT_VERSION_INFO contains the string which were returned by the 'git describe' command.
+*/
+const QString ZSQTLIB_GIT_VERSION_INFO = "${ZSQTLIB_GIT_VERSION_INFO}";
+
+/*! GIT_COMMITS_SINCE_TAG contains the number of commits on top of the most recent tag.
+
+    If 0 the commit matches a tag and the commit is an official release.
+    If greater than 0 the commit is a temporary development version.
+*/
+const int ZSQTLIB_GIT_COMMITS_SINCE_TAG = ${ZSQTLIB_GIT_COMMITS_SINCE_TAG};
+
+/*! GIT_COMMIT_HASH_HEX contains the abbreviated git commit hash (hexadecimal value as used by git).
+*/
+const QString ZSQTLIB_GIT_COMMIT_HASH_HEX = "${ZSQTLIB_GIT_COMMIT_HASH_HEX}";
+
+/*! GIT_COMMIT_HASH_INT contains the abbreviated git commit hash converted into integer value.
+*/
+const QString ZSQTLIB_GIT_COMMIT_HASH_INT = "${ZSQTLIB_GIT_COMMIT_HASH_INT}";
+
+/*! Major version number of the installed ZSQtLib.
+
+    The version number is retrieved from the most recent git tag of the git repository
+    at the time the build tree is generated via CMake.
+*/
+const int ZSQTLIB_VERSION_MAJOR = ${ZSQTLIB_VERSION_MAJOR};
+
+/*! Minor version number of the installed ZSQtLib.
+
+    The version number is retrieved from the most recent git tag of the git repository
+    at the time the build tree is generated via CMake.
+*/
+const int ZSQTLIB_VERSION_MINOR = ${ZSQTLIB_VERSION_MINOR};
+
+/*! Patch version number of the installed ZSQtLib.
+
+    The version number is retrieved from the abbreviated git commit hash of the git repository
+    at the time the build tree is generated via CMake.
+*/
+const long int ZSQTLIB_VERSION_PATCH = ${ZSQTLIB_VERSION_PATCH};
+
+const QString c_strSysVersionNr("${ZSQTLIB_VERSION_MAJOR}.${ZSQTLIB_VERSION_MINOR}.${ZSQTLIB_VERSION_PATCH}");
+
+const QString c_strSysVersionNrDateTime = c_strSysVersionNr + ": " + __DATE__ + " " + __TIME__;
+
+} // namespace System
+
+} // namespace ZS
+
+#endif // #ifndef ZSSys_Version_h

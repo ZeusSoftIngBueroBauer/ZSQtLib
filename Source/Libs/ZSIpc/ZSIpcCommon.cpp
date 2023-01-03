@@ -491,6 +491,8 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Default constructor creating settings with undefined socket type.
+*/
 SServerHostSettings::SServerHostSettings() :
 //------------------------------------------------------------------------------
     m_socketType(ESocketTypeUndefined),
@@ -504,6 +506,24 @@ SServerHostSettings::SServerHostSettings() :
 } // ctor
 
 //------------------------------------------------------------------------------
+/*! @brief Constructor creating host settings with the given socket type.
+
+    Depending on the socket type the following default values will be applied:
+
+    | SocketType | LocalHostName | LocalPort | BufferSize |
+    | ---------- | ------------- | --------- | ---------- |
+    | Tcp        | 127.0.0.1     | 24763     | not used   |
+    | Shm        | not used      | 24763     | 4096       |
+    | InProcMsg  | this          | not used  | not used   |
+
+    @param i_socketType [in]
+        Tcp .. The server will listen for incoming TCP/IP connections at the
+               given local port.
+        Shm .. The server will list for incoming Shared Memory client connection
+               requests at the given local port.
+        InProcMsg ... The server will wait for in process messages sent by a
+                      client through Qt's event loop.
+*/
 SServerHostSettings::SServerHostSettings( ESocketType i_socketType ) :
 //------------------------------------------------------------------------------
     m_socketType(i_socketType),
@@ -533,14 +553,26 @@ SServerHostSettings::SServerHostSettings( ESocketType i_socketType ) :
 } // ctor
 
 //------------------------------------------------------------------------------
+/*! @brief Constructor for creating host settings with TCP/IP socket type.
+
+    The following default values will be applied:
+
+    | LocalHostName | LocalPort | BufferSize |
+    | ------------- | --------- | ---------- |
+    | 127.0.0.1     | 24763     | not used   |
+
+    @param i_uLocalPort [in]
+        The server will listen for incoming TCP/IP connections at the given local port.
+    @param i_uMaxPendingConnections [in]
+        Maximum number of pending accepted connections.
+*/
 SServerHostSettings::SServerHostSettings(
-    const QString& i_strLocalHostName,
-    quint16        i_uLocalPort,
-    unsigned int   i_uMaxPendingConnections ) :
+    quint16      i_uLocalPort,
+    unsigned int i_uMaxPendingConnections ) :
 //------------------------------------------------------------------------------
     m_socketType(ESocketTypeTcp),
     m_pObjLocal(nullptr),
-    m_strLocalHostName(i_strLocalHostName),
+    m_strLocalHostName("127.0.0.1"),
     m_hostAddrLocal(),
     m_uLocalPort(i_uLocalPort),
     m_uMaxPendingConnections(i_uMaxPendingConnections),
@@ -549,6 +581,17 @@ SServerHostSettings::SServerHostSettings(
 } // ctor
 
 //------------------------------------------------------------------------------
+/*! @brief Constructor for creating host settings with InProcMsg socket type.
+
+    The following default values will be applied:
+
+    @param i_pObjLocal [in]
+        Reference to the Ipc server. Clients will use Qt's event loop for
+        sending messages to the Ipc server and the server will also respond
+        by sending messages (messages are objects derived from QEvent).
+    @param i_uMaxPendingConnections [in]
+        Maximum number of pending accepted connections.
+*/
 SServerHostSettings::SServerHostSettings(
     QObject*     i_pObjLocal,
     unsigned int i_uMaxPendingConnections ) :
@@ -575,19 +618,6 @@ SServerHostSettings::SServerHostSettings( const SSocketDscr& i_socketDscr ) :
     m_uBufferSize(i_socketDscr.m_uBufferSize)
 {
 } // copy ctor
-
-////------------------------------------------------------------------------------
-//SServerHostSettings::SServerHostSettings( const QString& i_strCnct ) :
-////------------------------------------------------------------------------------
-//    m_socketType(ESocketTypeTcp),
-//    m_pObjLocal(nullptr),
-//    m_strLocalHostName("127.0.0.1"),
-//    m_hostAddrLocal(),
-//    m_uLocalPort(24763),
-//    m_uMaxPendingConnections(30),
-//    m_uBufferSize(4096)
-//{
-//} // ctor
 
 /*==============================================================================
 public: // struct methods
@@ -1178,3 +1208,74 @@ QString STimerSettings::toString() const
     return str;
 
 } // toString;
+
+
+/*******************************************************************************
+converting common data types into strings and vice versa
+*******************************************************************************/
+
+#if QT_VERSION > QT_VERSION_CHECK(5, 11, 0)
+//------------------------------------------------------------------------------
+QString ZS::Ipc::qNetworkInterfaceType2Str( QNetworkInterface::InterfaceType i_type )
+//------------------------------------------------------------------------------
+{
+    static QHash<QNetworkInterface::InterfaceType, QString> s_hshType2Str = {
+        { QNetworkInterface::Unknown, "Unknown" },
+        { QNetworkInterface::Loopback, "Loopback" },
+        { QNetworkInterface::Virtual, "Virtual" },
+        { QNetworkInterface::Ethernet, "Ethernet" },
+        { QNetworkInterface::Wifi, "Wifi" },
+        { QNetworkInterface::CanBus, "CanBus" },
+        { QNetworkInterface::Fddi, "Fddi" },
+        { QNetworkInterface::Ppp, "Ppp" },
+        { QNetworkInterface::Slip, "Slip" },
+        { QNetworkInterface::Phonet, "Phonet" },
+        { QNetworkInterface::Ieee802154, "Ieee802154" },
+        { QNetworkInterface::SixLoWPAN, "SixLoWPAN" },
+        { QNetworkInterface::Ieee80216, "Ieee80216" },
+        { QNetworkInterface::Ieee1394, "Ieee1394" }
+    };
+    return s_hshType2Str.value(i_type, "? (" + QString::number(i_type)+ ")");
+
+} // qNetworkInterfaceType2Str
+#endif // #if QT_VERSION > QT_VERSION_CHECK(5, 11, 0)
+
+//------------------------------------------------------------------------------
+QString ZS::Ipc::qNetworkInterfaceFlags2Str( QNetworkInterface::InterfaceFlags i_flags )
+//------------------------------------------------------------------------------
+{
+    QString str;
+
+    if( i_flags & QNetworkInterface::IsUp )
+    {
+        if( !str.isEmpty() ) str += "&";
+        str += "IsUp";
+    }
+    if( i_flags & QNetworkInterface::IsRunning )
+    {
+        if( !str.isEmpty() ) str += "&";
+        str += "IsRunning";
+    }
+    if( i_flags & QNetworkInterface::CanBroadcast )
+    {
+        if( !str.isEmpty() ) str += "&";
+        str += "CanBroadcast";
+    }
+    if( i_flags & QNetworkInterface::IsLoopBack )
+    {
+        if( !str.isEmpty() ) str += "&";
+        str += "IsLoopBack";
+    }
+    if( i_flags & QNetworkInterface::IsPointToPoint )
+    {
+        if( !str.isEmpty() ) str += "&";
+        str += "IsPointToPoint";
+    }
+    if( i_flags & QNetworkInterface::CanMulticast )
+    {
+        if( !str.isEmpty() ) str += "&";
+        str += "CanMulticast";
+    }
+    return str;
+
+} // qNetworkInterfaceFlags2Str

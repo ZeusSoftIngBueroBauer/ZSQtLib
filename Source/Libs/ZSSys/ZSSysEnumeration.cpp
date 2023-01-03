@@ -418,7 +418,9 @@ SEnumEntry* CEnumeration::index2EnumEntry( int i_idx ) const
                 strAddErrInfo  = "Enum entry index " + QString::number(pEntry->m_iEnumerator);
                 strAddErrInfo += " of " + pEntryTmp->getName();
                 strAddErrInfo += " does not correspond to array index " + QString::number(i_idx);
-                SErrResultInfo errResultInfo = ErrResultInfoCritical(strMth, EResultListCorrupted, strAddErrInfo);
+                SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
+                    nameSpace(), className(), keyInTree(), strMth,
+                    EResultListCorrupted, ZS::System::EResultSeverityCritical, strAddErrInfo);
                 CErrLog::GetInstance()->addEntry(errResultInfo);
             }
             bErrLogEntryAdded = true;
@@ -446,7 +448,9 @@ SEnumEntry* CEnumeration::index2EnumEntry( int i_idx ) const
                     strAddErrInfo  = "Enum entry index " + QString::number(pEntryTmp->m_iEnumerator);
                     strAddErrInfo += " of " + pEntryTmp->getName();
                     strAddErrInfo += " does not correspond to array index " + QString::number(idxVal);
-                    SErrResultInfo errResultInfo = ErrResultInfoCritical(strMth, EResultListCorrupted, strAddErrInfo);
+                    SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
+                        nameSpace(), className(), keyInTree(), strMth,
+                        EResultListCorrupted, ZS::System::EResultSeverityCritical, strAddErrInfo);
                     CErrLog::GetInstance()->addEntry(errResultInfo);
                 }
             }
@@ -558,7 +562,9 @@ SEnumEntry* CEnumeration::name2EnumEntry(
                     {
                         strAddErrInfo  = "Enum entry " + pEntryTmp->getName();
                         strAddErrInfo += " does not have an alias string at index " + QString::number(idxStrLst);
-                        SErrResultInfo errResultInfo = ErrResultInfoCritical(strMth, EResultListCorrupted, strAddErrInfo);
+                        SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
+                            nameSpace(), className(), keyInTree(), strMth,
+                            EResultListCorrupted, ZS::System::EResultSeverityCritical, strAddErrInfo);
                         CErrLog::GetInstance()->addEntry(errResultInfo);
                     }
                 }
@@ -687,7 +693,9 @@ QString CEnumeration::val2Name( const QVariant& i_val, int i_alias ) const
                 {
                     strAddErrInfo  = "Enum entry " + pEntry->getName();
                     strAddErrInfo += " does not have an alias string at index " + QString::number(idxStrLst);
-                    SErrResultInfo errResultInfo = ErrResultInfoCritical(strMth, EResultListCorrupted, strAddErrInfo);
+                    SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
+                        nameSpace(), className(), keyInTree(), strMth,
+                        EResultListCorrupted, ZS::System::EResultSeverityCritical, strAddErrInfo);
                     CErrLog::GetInstance()->addEntry(errResultInfo);
                 }
             }

@@ -42,7 +42,6 @@ may result in using the software modules.
 
 using namespace ZS::System;
 using namespace ZS::Ipc;
-using namespace ZS::Trace;
 
 
 /*******************************************************************************
@@ -83,11 +82,11 @@ CInProcMsgServersAdminObj::CInProcMsgServersAdminObj( bool i_bTracingEnabled ) :
     m_bTracingEnabled(i_bTracingEnabled),
     m_pTrcAdminObj(nullptr)
 {
-    #pragma push_macro("_SMSYSDBGNEW_CLIENT_BLOCK_SUBTYPE")
+    #pragma push_macro("_ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE")
     #ifdef _WINDOWS
     #pragma warning( disable : 4005 )
     #endif
-    #define _SMSYSDBGNEW_CLIENT_BLOCK_SUBTYPE 0
+    #define _ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE 0
 
     if( m_bTracingEnabled )
     {
@@ -96,7 +95,7 @@ CInProcMsgServersAdminObj::CInProcMsgServersAdminObj( bool i_bTracingEnabled ) :
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ "" );
 
@@ -105,7 +104,7 @@ CInProcMsgServersAdminObj::CInProcMsgServersAdminObj( bool i_bTracingEnabled ) :
     #ifdef _WINDOWS
     #pragma warning( default : 4005 )
     #endif
-    #pragma pop_macro("_SMSYSDBGNEW_CLIENT_BLOCK_SUBTYPE")
+    #pragma pop_macro("_ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE")
 
 } // ctor
 
@@ -115,7 +114,7 @@ CInProcMsgServersAdminObj::~CInProcMsgServersAdminObj()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
@@ -216,7 +215,7 @@ void CInProcMsgServersAdminObj::onServerListen( CInProcMsgServer* i_pServer )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         if( i_pServer == nullptr )
         {
@@ -230,7 +229,7 @@ void CInProcMsgServersAdminObj::onServerListen( CInProcMsgServer* i_pServer )
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onServerListen",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -255,7 +254,7 @@ void CInProcMsgServersAdminObj::onServerClose( CInProcMsgServer* i_pServer )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         if( i_pServer == nullptr )
         {
@@ -269,7 +268,7 @@ void CInProcMsgServersAdminObj::onServerClose( CInProcMsgServer* i_pServer )
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onServerClose",
         /* strAddInfo   */ "" );
 
@@ -371,22 +370,22 @@ CInProcMsgServer::CInProcMsgServer( const QString& i_strObjName, bool i_bTracing
 {
     setObjectName(i_strObjName);
 
-    if( m_bTracingEnabled )
+    if( m_bTracingEnabled && !i_strObjName.contains("TrcServer") )
     {
         m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Ipc", "CInProcMsgServer", i_strObjName);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ "" );
 
-    #pragma push_macro("_SMSYSDBGNEW_CLIENT_BLOCK_SUBTYPE")
+    #pragma push_macro("_ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE")
     #ifdef _WINDOWS
     #pragma warning( disable : 4005 )
     #endif
-    #define _SMSYSDBGNEW_CLIENT_BLOCK_SUBTYPE 0
+    #define _ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE 0
 
     if( s_pInProcMsgServersAdminObj == nullptr )
     {
@@ -396,7 +395,7 @@ CInProcMsgServer::CInProcMsgServer( const QString& i_strObjName, bool i_bTracing
     #ifdef _WINDOWS
     #pragma warning( default : 4005 )
     #endif
-    #pragma pop_macro("_SMSYSDBGNEW_CLIENT_BLOCK_SUBTYPE")
+    #pragma pop_macro("_ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE")
 
     m_pMutex = new QMutex(QMutex::Recursive);
 
@@ -410,7 +409,7 @@ CInProcMsgServer::~CInProcMsgServer()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
@@ -451,14 +450,14 @@ void CInProcMsgServer::setMsgReadBuffCopyDepth( ECopyDepth i_copyDepth )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = CEnumCopyDepth::toString(i_copyDepth);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setMsgReadBuffCopyDepth",
         /* strAddInfo   */ "" );
 
@@ -489,14 +488,14 @@ void CInProcMsgServer::setMaxPendingConnections( int i_iMaxConnections )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = QString::number(i_iMaxConnections);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setMaxPendingConnections",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -519,14 +518,14 @@ bool CInProcMsgServer::listen( unsigned int i_uPort )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = "Port: " + QString::number(i_uPort);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "listen",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -556,7 +555,7 @@ void CInProcMsgServer::close()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "close",
         /* strAddInfo   */ "" );
 
@@ -607,7 +606,7 @@ CInProcMsgSocket* CInProcMsgServer::nextPendingConnection()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "nextPendingConnection",
         /* strAddInfo   */ "" );
 
@@ -674,13 +673,13 @@ bool CInProcMsgServer::event( QEvent* i_pMsg )
 
         QString strAddTrcInfo;
 
-        if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+        if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
         {
             if( pMsg == nullptr )
             {
                 strAddTrcInfo = "nullptr";
             }
-            else if( m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+            else if( m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsDetailed) )
             {
                 strAddTrcInfo = pMsg->getAddTrcInfoStr();
             }
@@ -692,7 +691,7 @@ bool CInProcMsgServer::event( QEvent* i_pMsg )
 
         CMethodTracer mthTracer(
             /* pAdminObj    */ m_pTrcAdminObj,
-            /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+            /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
             /* strMethod    */ "event",
             /* strAddInfo   */ strAddTrcInfo );
 
@@ -797,7 +796,7 @@ bool CInProcMsgServer::event( QEvent* i_pMsg )
                             /* iMsgIdReq          */ pMsgReq->getMsgId(),
                             /* errResultInfo      */ errResultInfo,
                             /* iProgressInPerCent */ 100 );
-                        POST_OR_DELETE_MESSAGE(pMsgCon, &mthTracer, ETraceDetailLevelRuntimeInfo);
+                        POST_OR_DELETE_MESSAGE(pMsgCon, &mthTracer, ELogDetailLevel::Debug);
                         pMsgCon = nullptr;
 
                     } // if( pInProcMsgSocketClient != nullptr )
@@ -869,7 +868,7 @@ bool CInProcMsgServer::event( QEvent* i_pMsg )
                             /* iMsgIdReq          */ pMsgReq->getMsgId(),
                             /* errResultInfo      */ errResultInfo,
                             /* iProgressInPerCent */ 100 );
-                        POST_OR_DELETE_MESSAGE(pMsgCon, &mthTracer, ETraceDetailLevelRuntimeInfo);
+                        POST_OR_DELETE_MESSAGE(pMsgCon, &mthTracer, ELogDetailLevel::Debug);
                         pMsgCon = nullptr;
 
                     } // if( pInProcMsgSocketClient != nullptr )

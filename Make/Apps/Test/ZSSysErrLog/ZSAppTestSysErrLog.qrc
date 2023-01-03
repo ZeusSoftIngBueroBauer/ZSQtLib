@@ -1,8 +1,0 @@
-<!DOCTYPE RCC><RCC version="1.0">
-<qresource prefix="ZSApp">
-  <file>./Images/ZSAppObjPoolModelIcon32x32.bmp</file>
-  <file>./Images/ZSAppObjPoolModelIcon32x32Mask.bmp</file>
-  <file>./Images/ZSAppObjPoolModelIcon16x16.bmp</file>
-  <file>./Images/ZSAppObjPoolModelIcon16x16Mask.bmp</file>
-</qresource>
-</RCC>
