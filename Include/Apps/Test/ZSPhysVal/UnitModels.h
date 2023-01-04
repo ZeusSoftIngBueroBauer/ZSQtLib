@@ -118,7 +118,7 @@ protected: // instance members
 //    QString getObjName() const;
 //    unsigned int getUnitCount() const;
 //    void setUnitGroup( ZS::PhysVal::CUnitGrp* i_pUnitGrp );
-//    ZS::PhysVal::CUnitGrp* getUnitGroup();
+//    ZS::PhysVal::CUnitGrp* unitGroup();
 //public: // must overridables of base class QAbstractItemModel
 //    virtual int rowCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
 //    virtual int columnCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
@@ -157,7 +157,7 @@ public: // instance methods
     QString getObjName() const;
     unsigned int getUnitCount() const;
     void setUnitGroup( ZS::PhysVal::CUnitGrp* i_pUnitGrp );
-    ZS::PhysVal::CUnitGrp* getUnitGroup();
+    ZS::PhysVal::CUnitGrp* unitGroup();
 public: // must overridables of base class QAbstractItemModel
     virtual int rowCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
     virtual int columnCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
@@ -196,7 +196,7 @@ public: // instance methods
     QString getObjName() const;
     unsigned int getUnitCount() const;
     void setUnitGroup( ZS::PhysVal::CUnitGrp* i_pUnitGrp );
-    ZS::PhysVal::CUnitGrp* getUnitGroup();
+    ZS::PhysVal::CUnitGrp* unitGroup();
 public: // must overridables of base class QAbstractItemModel
     virtual int rowCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
     virtual int columnCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
@@ -249,7 +249,7 @@ public: // instance methods
     EViewMode getViewMode() const;
     unsigned int getUnitCount() const;
     void setUnitGroup( ZS::PhysVal::CUnitGrp* i_pUnitGrp );
-    ZS::PhysVal::CUnitGrp* getUnitGroup();
+    ZS::PhysVal::CUnitGrp* unitGroup();
 public: // must overridables of base class QAbstractItemModel
     virtual int rowCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
     virtual int columnCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;

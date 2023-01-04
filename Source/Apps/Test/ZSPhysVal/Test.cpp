@@ -27,17 +27,15 @@ may result in using the software modules.
 #include <QtCore/qfileinfo.h>
 
 #include "Test.h"
+#include "TestConfig.h"
+//#include "PhysSizes/Electricity/Electricity.h"
+//#include "PhysSizes/Electricity/Electricity.h"
+#include "PhysSizes/Kinematics/Kinematics.h"
 
-#include "ZSPhysSizes/Electricity/ZSPhysSizes.h"
-#include "ZSPhysSizes/Geometry/ZSPhysSizes.h"
-#include "ZSPhysSizes/Kinematics/ZSPhysSizes.h"
 #include "ZSPhysVal/ZSPhysVal.h"
 #include "ZSTest/ZSTestStep.h"
 #include "ZSTest/ZSTestStepGroup.h"
 #include "ZSSys/ZSSysErrLog.h"
-#include "ZSSys/ZSSysErrResult.h"
-#include "ZSSys/ZSSysException.h"
-#include "ZSSys/ZSSysAux.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -56,9 +54,9 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CTest::CTest( const QString& i_strTestStepsFileName ) :
+CTest::CTest() :
 //------------------------------------------------------------------------------
-    ZS::Test::CTest( "ZS::PhysVal", i_strTestStepsFileName )
+    ZS::Test::CTest("ZSPhysVal")
 {
     ZS::Test::CTestStep* pTestStep;
     QString              strResultValue;
@@ -71,8 +69,17 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
     // formatValue methods
     //==========================================================================
 
-    ZS::Test::CTestStepGroup* pTSGrpFormatValue = new ZS::Test::CTestStepGroup( this, "formatValue", pTSGrp );
+    ZS::Test::CTestStepGroup* pTSGrpFormatValue = new ZS::Test::CTestStepGroup(this, "formatValue", pTSGrp);
 
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep),
+        /* strOperation    */ "formatValue(123.45 ms, Res=0.02 ms, Round2Res)",
+        /* pGrpParent      */ pTSGrpFormatValue,
+        /* szDoTestStepFct */ SLOT(doTestStepFormatValue_1(ZS::Test::CTestStep*)) );
+    pTestStep->setDescription( "Rounding to resolution" );
+
+#if 0
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep),
@@ -884,24 +891,12 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
         /* pGrpParent      */ pTSGrpAccuracyDigits,
         /* szDoTestStepFct */ SLOT(doTestStepAccuracyDigits_4(ZS::Test::CTestStep*)) );
     pTestStep->setDescription( "Accuracy digits and best unit" );
+#endif
 
     // Recall test step settings
     //--------------------------
 
-    QFileInfo fileInfo(i_strTestStepsFileName);
-
-    if( fileInfo.exists() )
-    {
-        SErrResultInfo errResultInfo = recall(i_strTestStepsFileName);
-
-        if(errResultInfo.isErrorResult())
-        {
-            if(CErrLog::GetInstance() != nullptr)
-            {
-                CErrLog::GetInstance()->addEntry(errResultInfo);
-            }
-        }
-    }
+    recallTestSteps();
 
 } // ctor
 
@@ -909,7 +904,7 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
 CTest::~CTest()
 //------------------------------------------------------------------------------
 {
-    SErrResultInfo errResultInfo = save();
+    SErrResultInfo errResultInfo = saveTestSteps();
 
     if(errResultInfo.isErrorResult())
     {
@@ -918,7 +913,6 @@ CTest::~CTest()
             CErrLog::GetInstance()->addEntry(errResultInfo);
         }
     }
-
 } // dtor
 
 /*==============================================================================
@@ -946,7 +940,7 @@ void CTest::doTestStepFormatValue_1( ZS::Test::CTestStep* i_pTestStep )
 
         EFormatResult formatResult = formatValue(
             /* fVal                */ 123.45,
-            /* pUnitVal            */ Electricity::Power()->MilliWatt(),
+            /* pUnitVal            */ Kinematics->Time->ms,
             /* fRes                */ 0.02,
             /* pUnitRes            */ nullptr,
             /* resType             */ EResTypeResolution,
@@ -961,7 +955,7 @@ void CTest::doTestStepFormatValue_1( ZS::Test::CTestStep* i_pTestStep )
             /* piDigitsExponent    */ &iDigitsExponentResult );
 
         QString strResultValue = formatResult2Str(formatResult) + ": "
-            + strValResult + " " + pUnitValResult->getSymbol()
+            + strValResult + " " + pUnitValResult->symbol()
             + " (" + QString::number(fValResult) + "," + QString::number(iDigitsLeadingResult)
             + "," + QString::number(iDigitsTrailingResult) + "," + QString::number(iDigitsExponentResult) + ")";
         i_pTestStep->setResultValue(strResultValue);
@@ -975,6 +969,8 @@ void CTest::doTestStepFormatValue_1( ZS::Test::CTestStep* i_pTestStep )
         i_pTestStep->setResultValue( "Unknown Exception thrown" );
     }
 } // doTestStepFormatValue_1
+
+#if 0
 
 //------------------------------------------------------------------------------
 void CTest::doTestStepFormatValue_2( ZS::Test::CTestStep* i_pTestStep )
@@ -1008,7 +1004,7 @@ void CTest::doTestStepFormatValue_2( ZS::Test::CTestStep* i_pTestStep )
             /* piDigitsExponent    */ &iDigitsExponentResult );
 
         QString strResultValue = formatResult2Str(formatResult) + ": "
-            + strValResult + " " + pUnitValResult->getSymbol()
+            + strValResult + " " + pUnitValResult->symbol()
             + " (" + QString::number(fValResult) + "," + QString::number(iDigitsLeadingResult)
             + "," + QString::number(iDigitsTrailingResult) + "," + QString::number(iDigitsExponentResult) + ")";
         i_pTestStep->setResultValue(strResultValue);
@@ -1055,7 +1051,7 @@ void CTest::doTestStepFormatValue_3( ZS::Test::CTestStep* i_pTestStep )
             /* piDigitsExponent    */ &iDigitsExponentResult );
 
         QString strResultValue = formatResult2Str(formatResult) + ": "
-            + strValResult + " " + pUnitValResult->getSymbol()
+            + strValResult + " " + pUnitValResult->symbol()
             + " (" + QString::number(fValResult) + "," + QString::number(iDigitsLeadingResult)
             + "," + QString::number(iDigitsTrailingResult) + "," + QString::number(iDigitsExponentResult) + ")";
         i_pTestStep->setResultValue(strResultValue);
@@ -1102,7 +1098,7 @@ void CTest::doTestStepFormatValue_4( ZS::Test::CTestStep* i_pTestStep )
             /* piDigitsExponent    */ &iDigitsExponentResult );
 
         QString strResultValue = formatResult2Str(formatResult) + ": "
-            + strValResult + " " + pUnitValResult->getSymbol()
+            + strValResult + " " + pUnitValResult->symbol()
             + " (" + QString::number(fValResult) + "," + QString::number(iDigitsLeadingResult)
             + "," + QString::number(iDigitsTrailingResult) + "," + QString::number(iDigitsExponentResult) + ")";
         i_pTestStep->setResultValue(strResultValue);
@@ -3250,3 +3246,5 @@ void CTest::doTestStepAccuracyDigits_4( ZS::Test::CTestStep* i_pTestStep )
         i_pTestStep->setResultValue( "Unknown Exception thrown" );
     }
 } // doTestStepAccuracyDigits_4
+
+#endif

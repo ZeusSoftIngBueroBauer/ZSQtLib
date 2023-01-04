@@ -336,12 +336,18 @@ protected: // instance methods (tracing of signals)
 protected slots:
     void onTrcAdminObjChanged( QObject* i_pTrcAdminObj );
 protected: // instance members
-    QString                       m_strNodeSeparator;   /*!< String used to seperate the node names with an entries path. */
-    mutable CMutex*               m_pMtx;               /*!< Mutex to protect the instance if accessed by different threads. */
-    QMap<QString, CIdxTreeEntry*> m_mappTreeEntries;    /*!< Map with pointers to all tree entries. */
-    QVector<CIdxTreeEntry*>       m_arpTreeEntries;     /*!< Vector with pointers to all tree entries. */
-    QMap<int, int>                m_mapFreeIdxs;        /*!< Map with free indices in the vector of entries. */
-    CIdxTreeEntry*                m_pRoot;              /*!< Pointer to root entry. */
+    /*!< String used to seperate the node names with an entries path. */
+    QString m_strNodeSeparator;
+    /*!< Mutex to protect the instance if accessed by different threads. */
+    mutable CMutex* m_pMtx;
+    /*!< Map with pointers to all tree entries. */
+    QMap<QString, CIdxTreeEntry*> m_mappTreeEntries;
+    /*!< Vector with pointers to all tree entries. */
+    QVector<CIdxTreeEntry*> m_arpTreeEntries;
+    /*!< Map with free indices in the vector of entries. */
+    QMap<int, int> m_mapFreeIdxs;
+    /*!< Pointer to root entry. */
+    CIdxTreeEntry* m_pRoot;
     /*!< Trace detail level for method tracing.
          Trace output may not be controlled by trace admin objects
          if the index tree belongs the trace server. */

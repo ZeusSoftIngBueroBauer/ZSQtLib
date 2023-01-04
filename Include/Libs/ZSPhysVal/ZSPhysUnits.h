@@ -33,6 +33,7 @@ may result in using the software modules.
 
 #include "ZSPhysVal/ZSPhysValDllMain.h"
 #include "ZSPhysVal/ZSPhysUnitsFctConvert.h"
+#include "ZSSys/ZSSysIdxTreeEntry.h"
 
 namespace ZS
 {
@@ -47,41 +48,34 @@ class CPhysUnit;
 Exported methods
 *******************************************************************************/
 
-ZSPHYSVALDLL_API bool    areOfSameUnitGroup( const CUnitGrp* i_pUnitGrp1, const CUnit* i_pUnit2 );
-ZSPHYSVALDLL_API bool    areOfSameUnitGroup( const CUnit* i_pUnit1, const CUnit* i_pUnit2 );
-ZSPHYSVALDLL_API QString getSymbol( CUnit* i_pUnit );
-ZSPHYSVALDLL_API QString getName( CUnit* i_pUnit, bool i_bInsertParentNames = false );
+ZSPHYSVALDLL_API bool areOfSameUnitGroup( const CUnitGrp* i_pUnitGrp1, const CUnit* i_pUnit2 );
+ZSPHYSVALDLL_API bool areOfSameUnitGroup( const CUnit* i_pUnit1, const CUnit* i_pUnit2 );
 
 
 //******************************************************************************
-class ZSPHYSVALDLL_API CUnit
+class ZSPHYSVALDLL_API CUnit : public ZS::System::CIdxTreeEntry
 //******************************************************************************
 {
-friend class CUnitGrp;
 public: // ctors and dtor
     CUnit(
         CUnitGrp*      i_pUnitGrp,
         bool           i_bIsLogarithmic,
         double         i_fLogFactor,
         const QString& i_strName,
-        const QString& i_strSymbol,
-        const QString& i_strKey ); // e.g. "Kinematics::Time::ms", ...
+        const QString& i_strSymbol );
     virtual ~CUnit();
 public: // instance methods (configuration)
     EUnitClassType classType() const { return m_classType; }
     QString classType2Str() const;
-    CUnitGrp* getUnitGroup() const { return m_pUnitGrp; };
-    QString getGroupName( bool i_bInsertParentNames = false ) const;
-    QString getName( bool i_bInsertParentNames = false ) const;
-    QString getSymbol() const { return m_strSymbol; }
-    QString getKey() const { return m_strKey; }
-    QChar getNameSeparator() const;
+    CUnitGrp* unitGroup() const { return m_pUnitGrp; };
+    //QString groupName( bool i_bInsertParentNames = false ) const;
+    QString symbol() const { return m_strSymbol; }
 public: // operators
-    bool operator == ( const CUnit& i_unitOther ) const;
-    bool operator != ( const CUnit& i_unitOther ) const;
+    bool operator == ( const CUnit& i_other ) const;
+    bool operator != ( const CUnit& i_other ) const;
 public: // overridables (converting values)
     virtual bool isLogarithmic() const { return m_bIsLogarithmic; }
-    virtual double getLogarithmicFactor() const { return m_fLogFactor; }
+    virtual double logarithmicFactor() const { return m_fLogFactor; }
     virtual bool isConvertible( const CUnit* /*i_pUnitDst*/, double /*i_fVal = 1.0*/ ) const { return false; }
     virtual double convertValue( double i_fVal, const CUnit* /*i_pUnitDst*/ ) const { return i_fVal; }
 public: // overridables (findBestUnit)
@@ -98,15 +92,19 @@ private: // default and copy ctor not allowed
 private: // assignment operator not allowed
     CUnit& operator = ( const CUnit& );
 protected: // instance members
-    EUnitClassType m_classType;         // [PhysScienceFields, Ratios, UserDefinedQuantities]
-    CUnitGrp*      m_pUnitGrp;
-    QString        m_strName;           // e.g. "Seconds", "Watt", "Volt", "Ampere", ...
-    QString        m_strSymbol;         // e.g. "s", "W", "V", "A", ...
-    QString        m_strKey;            // e.g. "Kinematics::Time::ms", ...
-    bool           m_bIsLogarithmic;    // e.g. "dBm" is logarithmic
-    double         m_fLogFactor;        // e.g. 10.0 for power related quantities, 20.0 for Volt etc.
-    CUnit*         m_pNextLower;        // e.g. ns if this is µs
-    CUnit*         m_pNextHigher;       // e.g. ms if this is µs
+    /*!< [PhysScienceFields, Ratios, UserDefinedQuantities] */
+    EUnitClassType m_classType;
+    CUnitGrp* m_pUnitGrp;
+    /*!< e.g. "s", "W", "V", "A", ... */
+    QString m_strSymbol;
+    /*!< e.g. "dBm" is logarithmic */
+    bool m_bIsLogarithmic;
+    /*!< e.g. 10.0 for power related quantities, 20.0 for Volt etc. */
+    double m_fLogFactor;
+    /*!< e.g. ns if this is µs */
+    CUnit* m_pNextLower;
+    /*!< e.g. ms if this is µs */
+    CUnit* m_pNextHigher;
 
 }; // class CUnit
 
@@ -116,15 +114,15 @@ class ZSPHYSVALDLL_API CPhysUnit : public CUnit
 {
 friend class CPhysSize;
 public: // ctors and dtor
-    CPhysUnit( // ctor for linear units
+    CPhysUnit(
         CPhysSize*     i_pPhysSize,
-        const QString& i_strPrefix );            // e.g. "" for SI-Base, "m", "k", "µ", "M", ...
-    CPhysUnit( // ctor for linear units
+        const QString& i_strPrefix );
+    CPhysUnit(
         CPhysSize*     i_pPhysSize,
-        bool           i_bIsLogarithmic,         // false for linear units (e.g. Degree), true for logarithmic units (e.g. dBm)
-        const QString& i_strName,                // e.g. "Degree", "Inch", ... or "dBWatt", "dBMilliWatt", "dBu(0.775V)", ...
-        const QString& i_strSymbol,              // e.g. "°", "in", ... or "dBW", "dBm", "dBu", ...
-        const double   i_fMFromBaseOrRefVal );   // e.g. "180/PI", 0.0254, ... or 1.0 for dBW, 1.0e-3 for dBm, 0.775 for 0.775 V, ...
+        bool           i_bIsLogarithmic,
+        const QString& i_strName,
+        const QString& i_strSymbol,
+        const double   i_fMFromBaseOrRefVal );
     virtual ~CPhysUnit();
 public: // operators
     bool operator == ( const CPhysUnit& i_physUnitOther ) const;
@@ -176,15 +174,18 @@ private: // default and copy ctor not allowed
 private: // assignment operator not allowed
     CPhysUnit& operator = ( const CPhysUnit& );
 protected: // instance members
-    CPhysSize*           m_pPhysSize;
-    CPhysUnit*           m_pPhysUnitSI;
-    QString              m_strPrefix;                   // e.g. M, k, m, etc.
-    bool                 m_bInitialized;
-    int                  m_iPhysSizeRowIdx;
-    CFctConvert          m_fctConvertFromSIUnit;
-    CFctConvert          m_fctConvertIntoSIUnit;
-    QVector<CFctConvert> m_arFctConvertsInternal;       // Array of direct conversion routines into units of same quantity
-    QVector<CFctConvert> m_arFctConvertsExternal;       // Array of direct conversion routines into units of other quantities
+    CPhysSize* m_pPhysSize;
+    CPhysUnit* m_pPhysUnitSI;
+    // e.g. M, k, m, etc.
+    QString m_strPrefix;
+    bool m_bInitialized;
+    //int m_iPhysSizeRowIdx;
+    CFctConvert m_fctConvertFromSIUnit;
+    CFctConvert m_fctConvertIntoSIUnit;
+    // Array of direct conversion routines into units of same quantity
+    QVector<CFctConvert> m_arFctConvertsInternal;
+    // Array of direct conversion routines into units of other quantities
+    QVector<CFctConvert> m_arFctConvertsExternal;
 
 }; // class CPhysUnit
 

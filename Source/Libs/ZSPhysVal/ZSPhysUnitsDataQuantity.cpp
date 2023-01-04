@@ -25,7 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSPhysVal/ZSPhysUnitsDataQuantity.h"
-#include "ZSPhysVal/ZSPhysUnitsPool.h"
+#include "ZSPhysVal/ZSPhysSizesIdxTree.h"
 #include "ZSPhysVal/ZSPhysValExceptions.h"
 #include "ZSSys/ZSSysErrResult.h"
 
@@ -55,8 +55,7 @@ CUnitDataQuantity::CUnitDataQuantity(
         /* bIsLogarithmic */ false,
         /* fLogFactor     */ 1.0,
         /* strName        */ i_strName,
-        /* strSymbol      */ i_strSymbol,
-        /* strKey         */ i_pUnitGrp->getKey() + i_pUnitGrp->getNameSeparator() + i_strSymbol ),
+        /* strSymbol      */ i_strSymbol ),
     m_fFactor(i_fFactor)
 {
 } // ctor
@@ -135,15 +134,13 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CUnitGrpDataQuantity::CUnitGrpDataQuantity( CUnitsPool* i_pUnitsPool ) :
+CUnitGrpDataQuantity::CUnitGrpDataQuantity( CIdxTree* i_pIdxTree ) :
 //------------------------------------------------------------------------------
     CUnitGrp(
-        /* pUnitsPool       */ i_pUnitsPool,
-        /* type             */ EUnitClassTypeDataQuantity,
-        /* strName          */ "DataQuantity",
-        /* strKey           */ "DataQuantity",
-        /* bIsNameSpaceNode */ false,
-        /* pUnitGrpParent   */ i_pUnitsPool == nullptr ? nullptr : i_pUnitsPool->getUnitClassTypeGroup(EUnitClassTypeDataQuantity) ),
+        /* pIdxTree       */ i_pIdxTree,
+        /* type           */ EUnitClassTypeDataQuantity,
+        /* strName        */ "DataQuantity",
+        /* pUnitGrpParent */ nullptr ),
     m_physUnitByte(
         /* pUnitGrp  */ this,
         /* strName   */ "Byte",

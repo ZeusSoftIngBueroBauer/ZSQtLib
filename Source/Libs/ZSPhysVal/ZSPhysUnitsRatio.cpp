@@ -25,7 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSPhysVal/ZSPhysUnitsRatio.h"
-#include "ZSPhysVal/ZSPhysUnitsPool.h"
+#include "ZSPhysVal/ZSPhysSizesIdxTree.h"
 #include "ZSPhysVal/ZSPhysValExceptions.h"
 #include "ZSSys/ZSSysErrResult.h"
 
@@ -55,8 +55,7 @@ CUnitRatio::CUnitRatio(
         /* bIsLogarithmic */ false,
         /* fLogFactor     */ 1.0,
         /* strName        */ i_strName,
-        /* strSymbol      */ i_strSymbol,
-        /* strKey         */ i_pUnitGrp->getKey() + i_pUnitGrp->getNameSeparator() + i_strSymbol ),
+        /* strSymbol      */ i_strSymbol ),
     m_fFactor(i_fFactor)
 {
 } // ctor
@@ -106,7 +105,7 @@ double CUnitRatio::convertValue( double i_fVal, const CUnit* i_pUnitDst ) const
 {
     if( i_pUnitDst->classType() != EUnitClassTypeRatios )
     {
-        QString strAddErrInfo = "Src:" + getUnitGroup()->getName() + ", Dst:" + i_pUnitDst->getUnitGroup()->getName();
+        QString strAddErrInfo = "Src:" + unitGroup()->name() + ", Dst:" + i_pUnitDst->unitGroup()->name();
         throw CUnitConversionException( __FILE__, __LINE__, EResultDifferentPhysSizes, strAddErrInfo );
     }
 
@@ -136,15 +135,13 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CUnitGrpRatio::CUnitGrpRatio( CUnitsPool* i_pUnitsPool ) :
+CUnitGrpRatio::CUnitGrpRatio( CIdxTree* i_pIdxTree ) :
 //------------------------------------------------------------------------------
     CUnitGrp(
-        /* pUnitsPool       */ i_pUnitsPool,
-        /* type             */ EUnitClassTypeRatios,
-        /* strName          */ "Ratio",
-        /* strKey           */ "Ratio",
-        /* bIsNameSpaceNode */ false,
-        /* pUnitGrpParent   */ i_pUnitsPool == nullptr ? nullptr : i_pUnitsPool->getUnitClassTypeGroup(EUnitClassTypeRatios) ),
+        /* pIdxTree       */ i_pIdxTree,
+        /* type           */ EUnitClassTypeRatios,
+        /* strName        */ "Ratio",
+        /* pUnitGrpParent */ nullptr ),
     m_unitRatioPerOne(
         /* pUnitGrp  */ this,
         /* strName   */ "Per One",

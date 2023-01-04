@@ -64,7 +64,7 @@ public: // instance methods
     void clear();
 public: // instance methods
     void setUnitGroup( PhysVal::CUnitGrp* i_pUnitGrp );
-    PhysVal::CUnitGrp* getUnitGroup() const { return m_pUnitGrp; }
+    PhysVal::CUnitGrp* unitGroup() const { return m_pUnitGrp; }
     void setUnit( PhysVal::CUnit* i_pUnit );
     PhysVal::CUnit* getUnit() const { return m_pUnit; }
 public: // instance methods

@@ -60,7 +60,7 @@ class ZSPHYSVALDLL_API CUnitGrpRatio : public CUnitGrp
 //******************************************************************************
 {
 public: // ctors and dtor
-    CUnitGrpRatio( CUnitsPool* i_pUnitsPool );
+    CUnitGrpRatio(ZS::System::CIdxTree* i_pIdxTree);
     virtual ~CUnitGrpRatio();
 public: // instance methods to access the ratio units
     CUnitRatio* PerOne() { return &m_unitRatioPerOne; }

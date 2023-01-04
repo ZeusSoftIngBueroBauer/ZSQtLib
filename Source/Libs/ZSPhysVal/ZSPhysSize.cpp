@@ -26,7 +26,7 @@ may result in using the software modules.
 
 #include "ZSPhysVal/ZSPhysSize.h"
 #include "ZSPhysVal/ZSPhysUnits.h"
-#include "ZSPhysVal/ZSPhysUnitsPool.h"
+#include "ZSPhysVal/ZSPhysSizesIdxTree.h"
 #include "ZSPhysVal/ZSPhysValExceptions.h"
 #include "ZSSys/ZSSysMath.h"
 #include "ZSSys/ZSSysErrResult.h"
@@ -47,8 +47,63 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief
+
+    @param [in] i_pIdxTree
+    @param [in] i_scienceField
+    @param [in] i_strName
+        e.g. "Time", "Length", "Power", "Voltage", ...
+    @param [in] i_strSIUnitName
+        e.g. "Second" for Time, "Meter" for Length, "Watt" for el. Power, "Volt" for el. Voltage, ...
+    @param [in] i_strSIUnitSymbol
+        e.g. "s" for Second, "m" for Meter, "W" for "Watt", "V" for el. Volt, ...
+    @param [in] i_strFormulaSymbol
+        e.g. "t" for Time, "l" for Length, "P" for Power, "U" for Voltage, ...
+    @param [in] i_bIsPowerRelated
+        true if X/dB = 10*log(X/X0), false if e.g. X/dB = 20*log(X/X0)
+*/
 CPhysSize::CPhysSize(
-    CUnitsPool*       i_pUnitsPool,
+    CIdxTree*         i_pIdxTree,
+    EPhysScienceField i_scienceField,
+    const QString&    i_strName,
+    const QString&    i_strSIUnitName,
+    const QString&    i_strSIUnitSymbol,
+    const QString&    i_strFormulaSymbol,
+    bool              i_bIsPowerRelated,
+    CIdxTreeEntry*    i_pParentBranch ) :
+//------------------------------------------------------------------------------
+    CUnitGrp(
+        /* pIdxTree      */ i_pIdxTree,
+        /* type          */ EUnitClassTypePhysScienceFields,
+        /* strName       */ i_strName,
+        /* pParentBranch */ i_pParentBranch ),
+    m_strSIUnitName(i_strSIUnitName),
+    m_strSIUnitSymbol(i_strSIUnitSymbol),
+    m_pPhysUnitSI(nullptr),
+    m_strFormulaSymbol(i_strFormulaSymbol),
+    m_bIsPowerRelated(i_bIsPowerRelated),
+    m_bInitialized(false)
+{
+} // ctor
+
+//------------------------------------------------------------------------------
+/*! @brief
+
+    @param [in] i_pIdxTree
+    @param [in] i_scienceField
+    @param [in] i_strName
+        e.g. "Time", "Length", "Power", "Voltage", ...
+    @param [in] i_strSIUnitName
+        e.g. "Second" for Time, "Meter" for Length, "Watt" for el. Power, "Volt" for el. Voltage, ...
+    @param [in] i_strSIUnitSymbol
+        e.g. "s" for Second, "m" for Meter, "W" for "Watt", "V" for el. Volt, ...
+    @param [in] i_strFormulaSymbol
+        e.g. "t" for Time, "l" for Length, "P" for Power, "U" for Voltage, ...
+    @param [in] i_bIsPowerRelated
+        true if X/dB = 10*log(X/X0), false if e.g. X/dB = 20*log(X/X0)
+*/
+CPhysSize::CPhysSize(
+    CIdxTreeEntry*    i_pParentBranch,
     EPhysScienceField i_scienceField,
     const QString&    i_strName,
     const QString&    i_strSIUnitName,
@@ -57,12 +112,9 @@ CPhysSize::CPhysSize(
     bool              i_bIsPowerRelated ) :
 //------------------------------------------------------------------------------
     CUnitGrp(
-        /* pUnitsPool       */ i_pUnitsPool,
-        /* type             */ EUnitClassTypePhysScienceFields,
-        /* strName          */ i_strName,
-        /* strKey           */ physScienceField2Str(i_scienceField) + QString(CUnitsPool::GetInstance() == nullptr ? "." : QString(CUnitsPool::GetInstance()->getNameSeparator())) + i_strName,
-        /* bIsNameSpaceNode */ false,
-        /* pUnitGrpParent   */ i_pUnitsPool == nullptr ? nullptr : i_pUnitsPool->getPhysScienceFieldUnitGroup(i_scienceField) ),
+        /* pParentBranch */ i_pParentBranch,
+        /* type          */ EUnitClassTypePhysScienceFields,
+        /* strName       */ i_strName ),
     m_strSIUnitName(i_strSIUnitName),
     m_strSIUnitSymbol(i_strSIUnitSymbol),
     m_pPhysUnitSI(nullptr),
@@ -117,192 +169,158 @@ bool CPhysSize::initialize( bool i_bCreateFindBestChainedList )
     // correspondingly (if no direct conversion routines into the SI unit have
     // not yet been set).
 
-    CUnit*       pUnit;
-    CPhysUnit*   pPhysUnitPrev = nullptr;
-    CPhysUnit*   pPhysUnitCurr = nullptr;
-    CPhysUnit*   pPhysUnitNext = nullptr;
-    CPhysUnit*   pPhysUnitDst = nullptr;
-    CFctConvert* pFctConvertIntoSIUnitSrc = nullptr;
-    CFctConvert* pFctConvertFromSIUnitDst = nullptr;
-    double       fMSrcInto;
-    double       fTSrcInto;
-    double       fMDstFrom;
-    double       fTDstFrom;
-    int          idxUnit;
-    int          idxUnitDst;
+    //CUnit*       pUnit;
+    //CPhysUnit*   pPhysUnitPrev = nullptr;
+    //CPhysUnit*   pPhysUnitCurr = nullptr;
+    //CPhysUnit*   pPhysUnitNext = nullptr;
+    //CPhysUnit*   pPhysUnitDst = nullptr;
+    //CFctConvert* pFctConvertIntoSIUnitSrc = nullptr;
+    //CFctConvert* pFctConvertFromSIUnitDst = nullptr;
+    //double       fMSrcInto;
+    //double       fTSrcInto;
+    //double       fMDstFrom;
+    //double       fTDstFrom;
+    //int          idxUnit;
+    //int          idxUnitDst;
 
-    if( m_vecpUnits.size() == 0 )
-    {
-        QString strAddErrInfo = "Physical size does not have any physical units.";
-        throw CException( __FILE__, __LINE__, EResultInvalidPhysSize, strAddErrInfo );
-    }
+    // Find the SI unit of this physical size
+    //---------------------------------------
 
-    // First step: set the row index of the physical units
-    //--------------------------------------------------------------------------
-
-    for( idxUnit = 0; idxUnit < m_vecpUnits.size(); idxUnit++ )
-    {
-        pUnit = m_vecpUnits[idxUnit];
-
-        pPhysUnitCurr = dynamic_cast<CPhysUnit*>(pUnit);
-
-        if( pPhysUnitCurr == nullptr )
-        {
-            QString strAddErrInfo = pUnit->getName(true) + " is not a physical unit.";
-            throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidPhysUnit, strAddErrInfo );
-        }
-
-        pPhysUnitCurr->m_iPhysSizeRowIdx = idxUnit;
-    }
-
-    // Second step: find the SI unit of this physical size
-    //--------------------------------------------------------------------------
-
-    for( idxUnit = 0; idxUnit < m_vecpUnits.size(); idxUnit++ )
-    {
-        pUnit = m_vecpUnits[idxUnit];
-
-        pPhysUnitCurr = dynamic_cast<CPhysUnit*>(pUnit);
-
-        if( pPhysUnitCurr->getName() == m_strSIUnitName && pPhysUnitCurr->getSymbol() == m_strSIUnitSymbol )
-        {
-            m_pPhysUnitSI = pPhysUnitCurr;
-            break;
-        }
-    }
-
-    if( m_pPhysUnitSI == nullptr )
-    {
-        QString strAddErrInfo = "SI Unit of " + getName(true) + " not defined.";
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSIUnitNotDefined, strAddErrInfo );
-    }
-
-    // Third step: set the SI unit for all units of this physical size
-    //--------------------------------------------------------------------------
-
-    for( idxUnit = 0; idxUnit < m_vecpUnits.size(); idxUnit++ )
-    {
-        pUnit = m_vecpUnits[idxUnit];
-
-        pPhysUnitCurr = dynamic_cast<CPhysUnit*>(pUnit);
-
-        pPhysUnitCurr->m_pPhysUnitSI = m_pPhysUnitSI;
-
-        pPhysUnitCurr->m_fctConvertFromSIUnit.m_pPhysUnitSrc = m_pPhysUnitSI;
-        pPhysUnitCurr->m_fctConvertFromSIUnit.buildFctConvertName();
-
-        pPhysUnitCurr->m_fctConvertIntoSIUnit.m_pPhysUnitDst = m_pPhysUnitSI;
-        pPhysUnitCurr->m_fctConvertIntoSIUnit.buildFctConvertName();
-    }
-
-    // Fourth step: create chained list through NextLower and NextHigher units
-    //--------------------------------------------------------------------------
-
-    if( i_bCreateFindBestChainedList )
-    {
-        for( pPhysUnitPrev = nullptr, idxUnit = 0; idxUnit < m_vecpUnits.size(); idxUnit++ )
-        {
-            pUnit = m_vecpUnits[idxUnit];
-
-            if( idxUnit == 0 )
-            {
-                pPhysUnitCurr = dynamic_cast<CPhysUnit*>(pUnit);
-            }
-            else
-            {
-                pPhysUnitCurr = pPhysUnitNext;
-            }
-            if( pPhysUnitCurr->m_bIsLogarithmic )
-            {
+    int iUnitsCount = 0;
+    for( int idxUnit = 0; idxUnit < m_arpTreeEntries.size(); idxUnit++ ) {
+        CPhysUnit* pUnit = dynamic_cast<CPhysUnit*>(m_arpTreeEntries[idxUnit]);
+        if( pUnit != nullptr ) {
+            iUnitsCount++;
+            if( pUnit->name() == m_strSIUnitName && pUnit->symbol() == m_strSIUnitSymbol ) {
+                m_pPhysUnitSI = pUnit;
                 break;
             }
-            if( idxUnit < m_vecpUnits.size()-1 )
-            {
-                pPhysUnitNext = dynamic_cast<CPhysUnit*>(m_vecpUnits[idxUnit+1]);
+        }
+    }
+    if( iUnitsCount== 0 ) {
+        throw CException(
+            __FILE__, __LINE__, EResultInvalidPhysSize,
+            "Physical size does not have any physical units." );
+    }
+    if( m_pPhysUnitSI == nullptr )
+    {
+        throw CException(
+            __FILE__, __LINE__, EResultSIUnitNotDefined,
+            "SI Unit of " + keyInTree() + " not defined." );
+    }
+
+    // Set the SI unit for all units of this physical size
+    //----------------------------------------------------
+
+    for( int idxUnit = 0; idxUnit < m_arpTreeEntries.size(); idxUnit++ )
+    {
+        CPhysUnit* pUnit = dynamic_cast<CPhysUnit*>(m_arpTreeEntries[idxUnit]);
+        if( pUnit != nullptr ) {
+            pUnit->m_pPhysUnitSI = m_pPhysUnitSI;
+            pUnit->m_fctConvertFromSIUnit.m_pPhysUnitSrc = m_pPhysUnitSI;
+            pUnit->m_fctConvertFromSIUnit.buildFctConvertName();
+            pUnit->m_fctConvertIntoSIUnit.m_pPhysUnitDst = m_pPhysUnitSI;
+            pUnit->m_fctConvertIntoSIUnit.buildFctConvertName();
+        }
+    }
+
+    // Create chained list through NextLower and NextHigher units
+    //-----------------------------------------------------------
+
+    if( i_bCreateFindBestChainedList ) {
+        CPhysUnit* pPhysUnitCurr = nullptr;
+        CPhysUnit* pPhysUnitNext = nullptr;
+        int idxUnit = 0;
+        for( CPhysUnit* pPhysUnitPrev = nullptr; idxUnit < m_arpTreeEntries.size(); idxUnit++ ) {
+            CPhysUnit* pUnit = dynamic_cast<CPhysUnit*>(m_arpTreeEntries[idxUnit]);
+            if( idxUnit == 0 ) {
+                pPhysUnitCurr = pUnit;
             }
-            else
-            {
+            else {
+                pPhysUnitCurr = pPhysUnitNext;
+            }
+            if( pPhysUnitCurr->m_bIsLogarithmic ) {
+                break;
+            }
+            if( idxUnit < m_arpTreeEntries.size()-1 ) {
+                pPhysUnitNext = dynamic_cast<CPhysUnit*>(m_arpTreeEntries[idxUnit+1]);
+            }
+            else {
                 pPhysUnitNext = nullptr;
             }
             pPhysUnitCurr->m_pNextLower = pPhysUnitPrev;
 
-            if( pPhysUnitNext == nullptr || pPhysUnitNext->m_bIsLogarithmic )
-            {
+            if( pPhysUnitNext == nullptr || pPhysUnitNext->m_bIsLogarithmic ) {
                 pPhysUnitCurr->m_pNextHigher = nullptr;
             }
-            else
-            {
+            else {
                 pPhysUnitCurr->m_pNextHigher = pPhysUnitNext;
             }
             pPhysUnitPrev = pPhysUnitCurr;
         }
 
-        for( ; idxUnit < m_vecpUnits.size(); idxUnit++ )
+        for( ; idxUnit < m_arpTreeEntries.size(); idxUnit++ )
         {
-            pUnit = m_vecpUnits[idxUnit];
-
-            pPhysUnitCurr = dynamic_cast<CPhysUnit*>(pUnit);
-
-            if( !pPhysUnitCurr->m_bIsLogarithmic )
+            CPhysUnit* pUnit = dynamic_cast<CPhysUnit*>(m_arpTreeEntries[idxUnit]);
+            if( !pUnit->m_bIsLogarithmic )
             {
-                QString strAddErrInfo = "Unexpected order of physical units. Logarithmic units must be added at the end of the list.";
-                throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidPhysSize, strAddErrInfo );
+                throw ZS::System::CException(
+                    __FILE__, __LINE__, EResultInvalidPhysSize,
+                    "Unexpected order of physical units. "
+                    "Logarithmic units must be added at the end of the list." );
             }
         }
     }
 
-    // Fifth step: for all units of this physical size allocate array for routines
-    // to convert units within this physical size (internal conversion routines)
+    // For all units of this physical size allocate array for routines to
+    // convert units within this physical size (internal conversion routines)
     //--------------------------------------------------------------------------
 
-    for( idxUnit = 0; idxUnit < m_vecpUnits.size(); idxUnit++ )
+    for( int idxUnit = 0; idxUnit < m_arpTreeEntries.size(); idxUnit++ )
     {
-        pUnit = m_vecpUnits[idxUnit];
-        pPhysUnitCurr = dynamic_cast<CPhysUnit*>(pUnit);
-        pPhysUnitCurr->m_arFctConvertsInternal.resize(m_vecpUnits.size());
+        CPhysUnit* pUnit = dynamic_cast<CPhysUnit*>(m_arpTreeEntries[idxUnit]);
+        pUnit->m_arFctConvertsInternal.resize(m_arpTreeEntries.size());
     }
 
-    // Sixth step: for all units of this physical size set the internal conversion routines.
+    // For all units of this physical size set the internal conversion routines.
     //--------------------------------------------------------------------------
 
-    for( idxUnit = 0; idxUnit < m_vecpUnits.size(); idxUnit++ )
+    for( int idxUnitSrc = 0; idxUnitSrc < m_arpTreeEntries.size(); idxUnitSrc++ )
     {
-        pUnit = m_vecpUnits[idxUnit];
+        CPhysUnit* pUnitSrc = dynamic_cast<CPhysUnit*>(m_arpTreeEntries[idxUnitSrc]);
 
-        pPhysUnitCurr = dynamic_cast<CPhysUnit*>(pUnit);
+        CFctConvert* pFctConvertIntoSIUnitSrc = &pUnitSrc->m_fctConvertIntoSIUnit;
 
-        pFctConvertIntoSIUnitSrc = &pPhysUnitCurr->m_fctConvertIntoSIUnit;
-        fMSrcInto = pFctConvertIntoSIUnitSrc->m_fM;
-        fTSrcInto = pFctConvertIntoSIUnitSrc->m_fT;
+        double fMSrcInto = pFctConvertIntoSIUnitSrc->m_fM;
+        double fTSrcInto = pFctConvertIntoSIUnitSrc->m_fT;
 
-        for( idxUnitDst = 0; idxUnitDst < m_vecpUnits.size(); idxUnitDst++ )
+        for( int idxUnitDst = 0; idxUnitDst < m_arpTreeEntries.size(); idxUnitDst++ )
         {
-            pUnit = m_vecpUnits[idxUnitDst];
+            CPhysUnit* pUnitDst = dynamic_cast<CPhysUnit*>(m_arpTreeEntries[idxUnitDst]);
 
-            pPhysUnitDst = dynamic_cast<CPhysUnit*>(pUnit);
+            CFctConvert* pFctConvertFromSIUnitDst = &pUnitDst->m_fctConvertFromSIUnit;
 
-            pFctConvertFromSIUnitDst = &pPhysUnitDst->m_fctConvertFromSIUnit;
-            fMDstFrom = pFctConvertFromSIUnitDst->m_fM;
-            fTDstFrom = pFctConvertFromSIUnitDst->m_fT;
+            double fMDstFrom = pFctConvertFromSIUnitDst->m_fM;
+            double fTDstFrom = pFctConvertFromSIUnitDst->m_fT;
 
-            pPhysUnitCurr->m_arFctConvertsInternal[idxUnitDst].m_pPhysUnitSrc = pPhysUnitCurr;
-            pPhysUnitCurr->m_arFctConvertsInternal[idxUnitDst].m_pPhysUnitDst = pPhysUnitDst;
+            pUnitSrc->m_arFctConvertsInternal[idxUnitDst].m_pPhysUnitSrc = pUnitSrc;
+            pUnitSrc->m_arFctConvertsInternal[idxUnitDst].m_pPhysUnitDst = pUnitDst;
 
             if( pFctConvertIntoSIUnitSrc->m_fctConvertType == EFctConvert_mMULxADDt )
             {
                 // Conversion from linear to linear unit:
                 if( pFctConvertFromSIUnitDst->m_fctConvertType == EFctConvert_mMULxADDt )
                 {
-                    pPhysUnitCurr->m_arFctConvertsInternal[idxUnitDst].m_fctConvertType = EFctConvert_mMULxADDt;
-                    pPhysUnitCurr->m_arFctConvertsInternal[idxUnitDst].m_fM = fMDstFrom*fMSrcInto;
-                    pPhysUnitCurr->m_arFctConvertsInternal[idxUnitDst].m_fT = fMDstFrom*fTSrcInto + fTDstFrom;
+                    pUnitSrc->m_arFctConvertsInternal[idxUnitDst].m_fctConvertType = EFctConvert_mMULxADDt;
+                    pUnitSrc->m_arFctConvertsInternal[idxUnitDst].m_fM = fMDstFrom*fMSrcInto;
+                    pUnitSrc->m_arFctConvertsInternal[idxUnitDst].m_fT = fMDstFrom*fTSrcInto + fTDstFrom;
                 }
                 // Conversion from linear to logarithmic unit:
                 else if( pFctConvertFromSIUnitDst->m_fctConvertType == EFctConvert_mLOGxADDt )
                 {
-                    pPhysUnitCurr->m_arFctConvertsInternal[idxUnitDst].m_fctConvertType = EFctConvert_mLOGxADDt;
-                    pPhysUnitCurr->m_arFctConvertsInternal[idxUnitDst].m_fM = fMDstFrom;
-                    pPhysUnitCurr->m_arFctConvertsInternal[idxUnitDst].m_fT = fMDstFrom*log10(fMSrcInto) + fTDstFrom;
+                    pUnitSrc->m_arFctConvertsInternal[idxUnitDst].m_fctConvertType = EFctConvert_mLOGxADDt;
+                    pUnitSrc->m_arFctConvertsInternal[idxUnitDst].m_fM = fMDstFrom;
+                    pUnitSrc->m_arFctConvertsInternal[idxUnitDst].m_fT = fMDstFrom*log10(fMSrcInto) + fTDstFrom;
                 }
                 else
                 {
@@ -314,16 +332,16 @@ bool CPhysSize::initialize( bool i_bCreateFindBestChainedList )
                 // Conversion from logarithmic to linear unit:
                 if( pFctConvertFromSIUnitDst->m_fctConvertType == EFctConvert_mMULxADDt )
                 {
-                    pPhysUnitCurr->m_arFctConvertsInternal[idxUnitDst].m_fctConvertType = EFctConvert_EXP__xADDt_DIVm_;
-                    pPhysUnitCurr->m_arFctConvertsInternal[idxUnitDst].m_fM = fMSrcInto;
-                    pPhysUnitCurr->m_arFctConvertsInternal[idxUnitDst].m_fT = fMSrcInto*log10(fMDstFrom) + fTSrcInto;
+                    pUnitSrc->m_arFctConvertsInternal[idxUnitDst].m_fctConvertType = EFctConvert_EXP__xADDt_DIVm_;
+                    pUnitSrc->m_arFctConvertsInternal[idxUnitDst].m_fM = fMSrcInto;
+                    pUnitSrc->m_arFctConvertsInternal[idxUnitDst].m_fT = fMSrcInto*log10(fMDstFrom) + fTSrcInto;
                 }
                 // Conversion from logarithmic to logarithmic unit:
                 else if( pFctConvertFromSIUnitDst->m_fctConvertType == EFctConvert_mLOGxADDt )
                 {
-                    pPhysUnitCurr->m_arFctConvertsInternal[idxUnitDst].m_fctConvertType = EFctConvert_mMULxADDt;
-                    pPhysUnitCurr->m_arFctConvertsInternal[idxUnitDst].m_fM = fMDstFrom/fMSrcInto;
-                    pPhysUnitCurr->m_arFctConvertsInternal[idxUnitDst].m_fT = (fMDstFrom*fTSrcInto)/fMSrcInto + fTDstFrom;
+                    pUnitSrc->m_arFctConvertsInternal[idxUnitDst].m_fctConvertType = EFctConvert_mMULxADDt;
+                    pUnitSrc->m_arFctConvertsInternal[idxUnitDst].m_fM = fMDstFrom/fMSrcInto;
+                    pUnitSrc->m_arFctConvertsInternal[idxUnitDst].m_fT = (fMDstFrom*fTSrcInto)/fMSrcInto + fTDstFrom;
                 }
                 else
                 {
@@ -336,19 +354,18 @@ bool CPhysSize::initialize( bool i_bCreateFindBestChainedList )
             }
 
             // For test and debugging purposes: build an expressive function name.
-            pPhysUnitCurr->m_arFctConvertsInternal[idxUnitDst].buildFctConvertName();
+            pUnitSrc->m_arFctConvertsInternal[idxUnitDst].buildFctConvertName();
 
-        } // for( idxUnitDst = 0; idxUnitDst < m_vecpUnits.size(); idxUnitDst++ )
-    } // for( idxUnit = 0; idxUnit < m_vecpUnits.size(); idxUnit++ )
+        } // for( idxUnitDst = 0; idxUnitDst < m_arpTreeEntries.size(); idxUnitDst++ )
+    } // for( idxUnitSrc = 0; idxUnitSrc < m_arpTreeEntries.size(); idxUnitSrc++ )
 
-    // Last step: Set flag that this physical size has been initialized
-    //--------------------------------------------------------------------------
+    // Set flag that this physical size has been initialized
+    //------------------------------------------------------
 
-    for( idxUnit = 0; idxUnit < m_vecpUnits.size(); idxUnit++ )
+    for( int idxUnit = 0; idxUnit < m_arpTreeEntries.size(); idxUnit++ )
     {
-        pUnit = m_vecpUnits[idxUnit];
-        pPhysUnitCurr = dynamic_cast<CPhysUnit*>(pUnit);
-        pPhysUnitCurr->m_bInitialized = true;
+        CPhysUnit* pUnit = dynamic_cast<CPhysUnit*>(m_arpTreeEntries[idxUnit]);
+        pUnit->m_bInitialized = true;
     }
 
     m_bInitialized = true;
@@ -377,11 +394,6 @@ void CPhysSize::addFctConvert(
         throw CException(__FILE__,__LINE__,EResultSIUnitNotDefined);
     }
 
-    int        idxChildSrc;
-    int        idxChildDst;
-    CPhysUnit* pPhysUnitSrc;
-    CPhysUnit* pPhysUnitDst;
-
     // First step: add an external conversion function to the SI unit
     //---------------------------------------------------------------
 
@@ -396,15 +408,15 @@ void CPhysSize::addFctConvert(
     // For each logarithmic unit within the other physical size an external conversion
     // routine will be added to each logarithmic unit of this physical size.
 
-    for( idxChildSrc = 0; idxChildSrc < getPhysUnitCount(); idxChildSrc++ )
+    for( int idxChildSrc = 0; idxChildSrc < m_arpTreeEntries.size(); idxChildSrc++ )
     {
-        pPhysUnitSrc = getPhysUnit(idxChildSrc);
+        CPhysUnit* pPhysUnitSrc = getPhysUnit(idxChildSrc);
 
         if( pPhysUnitSrc != nullptr && pPhysUnitSrc->isLogarithmic() )
         {
-            for( idxChildDst = 0; idxChildDst < i_pPhysSizeDst->getPhysUnitCount(); idxChildDst++ )
+            for( int idxChildDst = 0; idxChildDst < i_pPhysSizeDst->m_arpTreeEntries.size(); idxChildDst++ )
             {
-                pPhysUnitDst = i_pPhysSizeDst->getPhysUnit(idxChildDst);
+                CPhysUnit* pPhysUnitDst = i_pPhysSizeDst->getPhysUnit(idxChildDst);
 
                 if( pPhysUnitDst != nullptr && pPhysUnitDst->isLogarithmic() )
                 {
@@ -423,7 +435,7 @@ void CPhysSize::addFctConvert(
 CPhysUnit* CPhysSize::getPhysUnit( int i_idx )
 //------------------------------------------------------------------------------
 {
-    return dynamic_cast<CPhysUnit*>(getUnit(i_idx));
+    return dynamic_cast<CPhysUnit*>(at(i_idx));
 }
 
 //------------------------------------------------------------------------------
@@ -452,9 +464,14 @@ public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief
+
+    @param i_pPhysUnitRef [in]
+        nullptr to specify the SI unit.
+*/
 double CPhysSize::getRefVal( CPhysUnit* /*i_pPhysUnitRef*/ ) const
 //------------------------------------------------------------------------------
 {
-    QString strAddErrInfo = "No reference value defined for physical size " + getName(true);
+    QString strAddErrInfo = "No reference value defined for physical size " + keyInTree();
     throw CException( __FILE__, __LINE__, EResultInvalidRefVal, strAddErrInfo );
 }

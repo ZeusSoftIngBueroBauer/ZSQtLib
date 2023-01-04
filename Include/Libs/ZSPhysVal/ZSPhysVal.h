@@ -39,6 +39,7 @@ namespace ZS
 namespace PhysVal
 {
 class CPhysVal;
+class CIdxTreePhysSizes;
 
 /*******************************************************************************
 Exported methods
@@ -142,18 +143,18 @@ ZSPHYSVALDLL_API EFormatResult formatValue(
     int*           o_piDigitsExponent = nullptr );
 
 ZSPHYSVALDLL_API EFormatResult parseValStr(
-    const QString& i_strVal,
-    bool*          o_pbValOk,
-    double*        o_pfVal,
-    CUnitGrp**     io_ppUnitGrpVal,
-    CUnit**        io_ppUnitVal,
-    bool*          o_pbResOk,
-    double*        o_pfResVal,
-    CUnitGrp**     io_ppUnitGrpRes,
-    CUnit**        io_ppUnitRes,
-    CUnitsPool*    i_pUnitsPool );
+    const QString&     i_strVal,
+    bool*              o_pbValOk,
+    double*            o_pfVal,
+    CUnitGrp**         io_ppUnitGrpVal,
+    CUnit**            io_ppUnitVal,
+    bool*              o_pbResOk,
+    double*            o_pfResVal,
+    CUnitGrp**         io_ppUnitGrpRes,
+    CUnit**            io_ppUnitRes,
+    CIdxTreePhysSizes* i_pIdxTree );
 
-ZSPHYSVALDLL_API EFormatResult getSubStrings( const QString& i_strVal, QString* io_arSubStr/*[ESubStrCount]*/, CUnitsPool* i_pUnitsPool );
+ZSPHYSVALDLL_API EFormatResult getSubStrings( const QString& i_strVal, QString* io_arSubStr/*[ESubStrCount]*/, CIdxTreePhysSizes* i_pIdxTree );
 
 //******************************************************************************
 struct ZSPHYSVALDLL_API SValueFormatProvider
@@ -334,7 +335,7 @@ public: // instance methods
 public: // instance methods
     void setUnitGroup( CUnitGrp* i_pUnitGrp );
     void setUnitGroupKey( const QString& i_strUnitGrpKey );
-    CUnitGrp* getUnitGroup() const { return m_pUnitGrp; }
+    CUnitGrp* unitGroup() const { return m_pUnitGrp; }
     QString getUnitGroupName( bool i_bInsertParentNames = false ) const;
     QString getUnitGroupKey() const { return m_strUnitGrpKey; }
     CPhysSize* getPhysSize() const;

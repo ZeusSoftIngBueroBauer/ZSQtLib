@@ -26,15 +26,13 @@ may result in using the software modules.
 
 #include "ZSPhysVal/ZSPhysUnits.h"
 #include "ZSPhysVal/ZSPhysSize.h"
-#include "ZSPhysVal/ZSPhysUnitsPool.h"
 #include "ZSPhysVal/ZSPhysValExceptions.h"
-#include "ZSSys/ZSSysMath.h"
+#include "ZSSys/ZSSysIdxTree.h"
 #include "ZSSys/ZSSysErrResult.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 using namespace ZS::System;
-using namespace ZS::System::Math;
 using namespace ZS::PhysVal;
 
 
@@ -56,14 +54,13 @@ bool ZS::PhysVal::areOfSameUnitGroup( const CUnitGrp* i_pUnitGrp1, const CUnit* 
     }
     if( i_pUnitGrp1 != nullptr && i_pUnit2 != nullptr )
     {
-        if( i_pUnitGrp1 != i_pUnit2->getUnitGroup() )
+        if( i_pUnitGrp1 != i_pUnit2->unitGroup() )
         {
             return false;
         }
     }
     return true;
-
-} // areOfSameUnitGroup
+}
 
 //------------------------------------------------------------------------------
 bool ZS::PhysVal::areOfSameUnitGroup( const CUnit* i_pUnit1, const CUnit* i_pUnit2 )
@@ -79,42 +76,13 @@ bool ZS::PhysVal::areOfSameUnitGroup( const CUnit* i_pUnit1, const CUnit* i_pUni
     }
     if( i_pUnit1 != nullptr && i_pUnit2 != nullptr )
     {
-        if( i_pUnit1->getUnitGroup() != i_pUnit2->getUnitGroup() )
+        if( i_pUnit1->unitGroup() != i_pUnit2->unitGroup() )
         {
             return false;
         }
     }
     return true;
-
-} // areOfSameUnitGroup
-
-//------------------------------------------------------------------------------
-QString ZS::PhysVal::getSymbol( CUnit* i_pUnit )
-//------------------------------------------------------------------------------
-{
-    QString strSymbol;
-
-    if( i_pUnit != nullptr )
-    {
-        strSymbol = i_pUnit->getSymbol();
-    }
-    return strSymbol;
-
-} // getSymbol
-
-//------------------------------------------------------------------------------
-QString ZS::PhysVal::getName( CUnit* i_pUnit, bool i_bInsertParentNames )
-//------------------------------------------------------------------------------
-{
-    QString strName;
-
-    if( i_pUnit != nullptr )
-    {
-        strName = i_pUnit->getName(i_bInsertParentNames);
-    }
-    return strName;
-
-} // getName
+}
 
 
 /*******************************************************************************
@@ -131,14 +99,12 @@ CUnit::CUnit(
     bool           i_bIsLogarithmic,
     double         i_fLogFactor,
     const QString& i_strName,
-    const QString& i_strSymbol,
-    const QString& i_strKey ) :
+    const QString& i_strSymbol ) :
 //------------------------------------------------------------------------------
+    CIdxTreeEntry(EIdxTreeEntryType::Leave, i_strName),
     m_classType(i_pUnitGrp->classType()),
     m_pUnitGrp(nullptr), // set on calling i_pUnitGrp->addUnit(this)
-    m_strName(i_strName),
     m_strSymbol(i_strSymbol),
-    m_strKey(i_strKey),
     m_bIsLogarithmic(i_bIsLogarithmic),
     m_fLogFactor(i_fLogFactor),
     m_pNextLower(nullptr),
@@ -149,10 +115,9 @@ CUnit::CUnit(
         m_strName = m_strSymbol;
     }
 
-    // Add the unit to the unit group:
-    i_pUnitGrp->addUnit(this);
+    CIdxTree* pIdxTree = i_pUnitGrp->tree();
 
-    CUnitsPool::GetInstance()->onUnitCreated(this);
+    pIdxTree->add(this, i_pUnitGrp);
 
 } // ctor
 
@@ -171,17 +136,15 @@ CUnit::~CUnit()
     m_pNextLower = nullptr;
     m_pNextHigher = nullptr;
 
-    if( m_pUnitGrp != nullptr )
-    {
-        CUnit* pUnit = m_pUnitGrp->findUnitByName(m_strName);
-        if( pUnit != nullptr )
-        {
-            m_pUnitGrp->removeUnit(m_strName);
-        }
-    }
-    m_pUnitGrp = nullptr;
-
-    CUnitsPool::GetInstance()->onUnitDestroyed(m_strKey);
+    //if( m_pUnitGrp != nullptr )
+    //{
+    //    CUnit* pUnit = m_pUnitGrp->findUnitByName(m_strName);
+    //    if( pUnit != nullptr )
+    //    {
+    //        m_pUnitGrp->removeUnit(m_strName);
+    //    }
+    //}
+    //m_pUnitGrp = nullptr;
 
 } // dtor
 
@@ -196,66 +159,34 @@ QString CUnit::classType2Str() const
     return unitClassType2Str(m_classType);
 }
 
-//------------------------------------------------------------------------------
-QString CUnit::getGroupName( bool i_bInsertParentNames ) const
-//------------------------------------------------------------------------------
-{
-    QString strName;
-
-    if( m_pUnitGrp != nullptr )
-    {
-        strName = m_pUnitGrp->getName(i_bInsertParentNames);
-    }
-    return strName;
-
-} // getGroupName
-
-//------------------------------------------------------------------------------
-QString CUnit::getName( bool i_bInsertParentNames ) const
-//------------------------------------------------------------------------------
-{
-    QString strName = m_strName;
-
-    if( i_bInsertParentNames )
-    {
-        if( m_pUnitGrp != nullptr )
-        {
-            strName.insert( 0, m_pUnitGrp->getNameSeparator() );
-            strName.insert( 0, m_pUnitGrp->getName(true) );
-        }
-    }
-
-    return strName;
-
-} // getName
-
-//------------------------------------------------------------------------------
-QChar CUnit::getNameSeparator() const
-//------------------------------------------------------------------------------
-{
-    QChar cNameSeparator = '.';
-    if( m_pUnitGrp != nullptr )
-    {
-        cNameSeparator = m_pUnitGrp->getNameSeparator();
-    }
-    return cNameSeparator;
-}
+////------------------------------------------------------------------------------
+//QString CUnit::groupName( bool i_bInsertParentNames ) const
+////------------------------------------------------------------------------------
+//{
+//    QString strName;
+//
+//    if( m_pUnitGrp != nullptr )
+//    {
+//        strName = m_pUnitGrp->getName(i_bInsertParentNames);
+//    }
+//    return strName;
+//
+//} // getGroupName
 
 /*==============================================================================
 public: // operators
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool CUnit::operator == ( const CUnit& i_unitOther ) const
+bool CUnit::operator == ( const CUnit& i_other ) const
 //------------------------------------------------------------------------------
 {
-    if( this != &i_unitOther )
+    if( this != &i_other )
     {
         return false;
     }
     return true;
-
-} // operator ==
+}
 
 //------------------------------------------------------------------------------
 bool CUnit::operator != ( const CUnit& i_unitOther ) const
@@ -438,6 +369,12 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Constructor for linear units.
+
+    @param i_pPhysSize [in]
+    @param i_strPrefix [in]
+        e.g. "" for SI-Base, "m", "k", "µ", "M", ...
+*/
 CPhysUnit::CPhysUnit( CPhysSize* i_pPhysSize, const QString& i_strPrefix ) :
 //------------------------------------------------------------------------------
     CUnit(
@@ -445,13 +382,12 @@ CPhysUnit::CPhysUnit( CPhysSize* i_pPhysSize, const QString& i_strPrefix ) :
         /* bIsLogarithmic */ false,
         /* fLogFactor     */ 1.0,
         /* strName        */ getExponentStrFromPrefixStr(i_strPrefix) + i_pPhysSize->getSIUnitName(),
-        /* strSymbol      */ i_strPrefix + i_pPhysSize->getSIUnitSymbol(),
-        /* strKey         */ i_pPhysSize->getKey() + i_pPhysSize->getNameSeparator() + i_strPrefix + i_pPhysSize->getSIUnitSymbol() ),
+        /* strSymbol      */ i_strPrefix + i_pPhysSize->getSIUnitSymbol() ),
     m_pPhysSize(i_pPhysSize),
     m_pPhysUnitSI(nullptr),
     m_strPrefix(i_strPrefix),
     m_bInitialized(false),
-    m_iPhysSizeRowIdx(-1),
+    //m_iPhysSizeRowIdx(-1),
     m_fctConvertFromSIUnit(),
     m_fctConvertIntoSIUnit(),
     m_arFctConvertsInternal(),
@@ -488,6 +424,22 @@ CPhysUnit::CPhysUnit( CPhysSize* i_pPhysSize, const QString& i_strPrefix ) :
 } // ctor
 
 //------------------------------------------------------------------------------
+/*! @brief
+
+    Depending on the input parameter "IsLogarithmic" this is the ctor for either
+    - linear units whose factor is not one of the decade factors
+    - logarithmic units
+
+    @param i_pPhysSize [in]
+    @param i_bIsLogarithmic [in]
+        false for linear units (e.g. Degree), true for logarithmic units (e.g. dBm)
+    @param i_strName [in]
+        e.g. "Degree", "Inch", ... or "dBWatt", "dBMilliWatt", "dBu(0.775V)", ...
+    @param i_strSymbol [in]
+        e.g. "°", "in", ... or "dBW", "dBm", "dBu", ...
+    @param i_fMFromBaseOrRefVal [in]
+        e.g. "180/PI", 0.0254, ... or 1.0 for dBW, 1.0e-3 for dBm, 0.775 for 0.775 V, ...
+*/
 CPhysUnit::CPhysUnit(
     CPhysSize*     i_pPhysSize,
     bool           i_bIsLogarithmic,
@@ -500,24 +452,17 @@ CPhysUnit::CPhysUnit(
         /* bIsLogarithmic */ i_bIsLogarithmic,
         /* fLogFactor     */ 1.0,
         /* strName        */ i_strName,
-        /* strSymbol      */ i_strSymbol,
-        /* strKey         */ i_pPhysSize->getKey() + i_pPhysSize->getNameSeparator() + i_strSymbol ),
+        /* strSymbol      */ i_strSymbol ),
     m_pPhysSize(i_pPhysSize),
     m_pPhysUnitSI(nullptr),
     m_strPrefix(""),
     m_bInitialized(false),
-    m_iPhysSizeRowIdx(-1),
+    //m_iPhysSizeRowIdx(-1),
     m_fctConvertFromSIUnit(),
     m_fctConvertIntoSIUnit(),
     m_arFctConvertsInternal(),
     m_arFctConvertsExternal()
 {
-    //--------------------------------------------------------------------------
-    // Depending on the input parameter "IsLogarithmic" this is the ctor for either
-    // - linear units whose factor is not one of the decade factors
-    // - logarithmic units
-    //--------------------------------------------------------------------------
-
     // Set function to convert values from the SI unit into this unit
     //--------------------------------------------------------------------------
 
@@ -622,7 +567,7 @@ bool CPhysUnit::isConvertible( const CUnit* i_pUnitDst, double /*i_fVal*/ ) cons
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultClassNotInitialised );
     }
-    if( m_iPhysSizeRowIdx < 0 || m_iPhysSizeRowIdx >= m_arFctConvertsInternal.size() )
+    if( m_idxInParentBranch < 0 || m_idxInParentBranch >= m_arFctConvertsInternal.size() )
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultPhysSizeNotInitialized );
     }
@@ -641,7 +586,7 @@ bool CPhysUnit::isConvertible( const CUnit* i_pUnitDst, double /*i_fVal*/ ) cons
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultPhysSizeNotInitialized );
     }
-    if( pPhysUnitDst->m_iPhysSizeRowIdx < 0 || pPhysUnitDst->m_iPhysSizeRowIdx >= m_arFctConvertsInternal.size() )
+    if( pPhysUnitDst->m_idxInParentBranch < 0 || pPhysUnitDst->m_idxInParentBranch >= m_arFctConvertsInternal.size() )
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultPhysSizeNotInitialized );
     }
@@ -790,11 +735,11 @@ double CPhysUnit::convertValue(
     // If this and the destination unit are belonging to the same physical size ...
     if( m_pPhysSize == i_pPhysUnitDst->getPhysSize() )
     {
-        if( i_pPhysUnitDst->m_iPhysSizeRowIdx < 0 || i_pPhysUnitDst->m_iPhysSizeRowIdx >= m_arFctConvertsInternal.size() )
+        if( i_pPhysUnitDst->m_idxInParentBranch < 0 || i_pPhysUnitDst->m_idxInParentBranch >= m_arFctConvertsInternal.size() )
         {
             throw ZS::System::CException( __FILE__, __LINE__, EResultPhysSizeNotInitialized );
         }
-        pFctConvert = &m_arFctConvertsInternal.data()[i_pPhysUnitDst->m_iPhysSizeRowIdx];
+        pFctConvert = &m_arFctConvertsInternal.data()[i_pPhysUnitDst->m_idxInParentBranch];
     }
     // If this and the destination unit are not belonging to the same physical size ...
     else

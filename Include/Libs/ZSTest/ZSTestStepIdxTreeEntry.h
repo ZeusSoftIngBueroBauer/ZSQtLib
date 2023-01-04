@@ -36,11 +36,6 @@ may result in using the software modules.
 
 namespace ZS
 {
-namespace System
-{
-class CIdxTreeEntry;
-}
-
 namespace Test
 {
 class CTest;

@@ -50,7 +50,7 @@ class CDialog : public QDialog
 protected: // class members
 ==============================================================================*/
 
-QHash<QString,CDialog*> CDialog::s_hshpDlgs; // Key is string concatenated by NameSpace::ClassName::ObjName
+QHash<QString, CDialog*> CDialog::s_hshpDlgs; // Key is string concatenated by NameSpace::ClassName::ObjName
 
 /*==============================================================================
 public: // class methods

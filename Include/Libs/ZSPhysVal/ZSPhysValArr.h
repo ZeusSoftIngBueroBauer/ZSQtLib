@@ -77,7 +77,7 @@ public: // instance methods
 public: // instance methods
     void setUnitGroup( CUnitGrp* i_pUnitGrp );
     void setUnitGroupKey( const QString& i_strUnitGrpKey );
-    CUnitGrp* getUnitGroup() const;
+    CUnitGrp* unitGroup() const;
     QString getUnitGroupName( bool i_bInsertParentNames = false ) const;
     QString getUnitGroupKey() const { return m_strUnitGrpKey; }
 public: // instance methods

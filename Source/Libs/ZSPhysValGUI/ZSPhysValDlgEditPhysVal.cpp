@@ -106,18 +106,18 @@ CDlgEditPhysVal::CDlgEditPhysVal(
     // Unit Combo
     //-----------
 
-    if( m_pPhysSize != nullptr && m_pPhysUnit != nullptr && m_pPhysSize->getPhysUnitCount() > 0 )
+    if( m_pPhysSize != nullptr && m_pPhysUnit != nullptr && m_pPhysSize->count() > 0 )
     {
         int idxUnit;
 
         m_pCmbUnit = new QComboBox();
         m_pLytLine->addWidget(m_pCmbUnit);
 
-        for( idxUnit = 0; idxUnit < static_cast<int>(m_pPhysSize->getPhysUnitCount()); idxUnit++ )
+        for( idxUnit = 0; idxUnit < static_cast<int>(m_pPhysSize->count()); idxUnit++ )
         {
-            m_pCmbUnit->addItem(m_pPhysSize->getPhysUnit(idxUnit)->getSymbol());
+            m_pCmbUnit->addItem(m_pPhysSize->getPhysUnit(idxUnit)->symbol());
         }
-        m_pCmbUnit->setCurrentIndex( m_pCmbUnit->findText(m_pPhysUnit->getSymbol()) );
+        m_pCmbUnit->setCurrentIndex( m_pCmbUnit->findText(m_pPhysUnit->symbol()) );
 
         if( !connect(
             /* pObjSender   */ m_pCmbUnit,

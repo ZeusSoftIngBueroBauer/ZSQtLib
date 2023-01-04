@@ -76,11 +76,11 @@ CPhysValArr::CPhysValArr( CUnitGrp* i_pUnitGrp, EResType i_resType ) :
 
     if( m_pUnitGrp != nullptr )
     {
-        m_strUnitGrpKey = m_pUnitGrp->getKey();
+        m_strUnitGrpKey = m_pUnitGrp->keyInTree();
     }
     if( m_pUnit != nullptr )
     {
-        m_strUnitKey = m_pUnit->getKey();
+        m_strUnitKey = m_pUnit->keyInTree();
     }
 
 } // ctor
@@ -98,16 +98,16 @@ CPhysValArr::CPhysValArr( CUnit* i_pUnit, double i_fRes, EResType i_resType ) :
 {
     if( m_pUnit != nullptr )
     {
-        m_pUnitGrp = m_pUnit->getUnitGroup();
+        m_pUnitGrp = m_pUnit->unitGroup();
     }
 
     if( m_pUnitGrp != nullptr )
     {
-        m_strUnitGrpKey = m_pUnitGrp->getKey();
+        m_strUnitGrpKey = m_pUnitGrp->keyInTree();
     }
     if( m_pUnit != nullptr )
     {
-        m_strUnitKey = m_pUnit->getKey();
+        m_strUnitKey = m_pUnit->keyInTree();
     }
 
 } // ctor
@@ -130,11 +130,11 @@ CPhysValArr::CPhysValArr( int i_iValCount, CUnitGrp* i_pUnitGrp, EResType i_resT
 
     if( m_pUnitGrp != nullptr )
     {
-        m_strUnitGrpKey = m_pUnitGrp->getKey();
+        m_strUnitGrpKey = m_pUnitGrp->keyInTree();
     }
     if( m_pUnit != nullptr )
     {
-        m_strUnitKey = m_pUnit->getKey();
+        m_strUnitKey = m_pUnit->keyInTree();
     }
 
 } // ctor
@@ -157,16 +157,16 @@ CPhysValArr::CPhysValArr( int i_iValCount, CUnit* i_pUnit, double i_fRes, EResTy
 
     if( m_pUnit != nullptr )
     {
-        m_pUnitGrp = m_pUnit->getUnitGroup();
+        m_pUnitGrp = m_pUnit->unitGroup();
     }
 
     if( m_pUnitGrp != nullptr )
     {
-        m_strUnitGrpKey = m_pUnitGrp->getKey();
+        m_strUnitGrpKey = m_pUnitGrp->keyInTree();
     }
     if( m_pUnit != nullptr )
     {
-        m_strUnitKey = m_pUnit->getKey();
+        m_strUnitKey = m_pUnit->keyInTree();
     }
 
 } // ctor
@@ -174,7 +174,7 @@ CPhysValArr::CPhysValArr( int i_iValCount, CUnit* i_pUnit, double i_fRes, EResTy
 //------------------------------------------------------------------------------
 CPhysValArr::CPhysValArr( int i_iValCount, const CPhysVal& i_physValInit ) :
 //------------------------------------------------------------------------------
-    m_pUnitGrp(i_physValInit.getUnitGroup()),
+    m_pUnitGrp(i_physValInit.unitGroup()),
     m_pUnit(i_physValInit.getUnit()),
     m_strUnitGrpKey(),
     m_strUnitKey(),
@@ -189,11 +189,11 @@ CPhysValArr::CPhysValArr( int i_iValCount, const CPhysVal& i_physValInit ) :
 
     if( m_pUnitGrp != nullptr )
     {
-        m_strUnitGrpKey = m_pUnitGrp->getKey();
+        m_strUnitGrpKey = m_pUnitGrp->keyInTree();
     }
     if( m_pUnit != nullptr )
     {
-        m_strUnitKey = m_pUnit->getKey();
+        m_strUnitKey = m_pUnit->keyInTree();
     }
 
 } // ctor
@@ -216,16 +216,16 @@ CPhysValArr::CPhysValArr( int i_iValCount, double i_fInitVal, CUnit* i_pUnit, do
 
     if( m_pUnit != nullptr )
     {
-        m_pUnitGrp = m_pUnit->getUnitGroup();
+        m_pUnitGrp = m_pUnit->unitGroup();
     }
 
     if( m_pUnitGrp != nullptr )
     {
-        m_strUnitGrpKey = m_pUnitGrp->getKey();
+        m_strUnitGrpKey = m_pUnitGrp->keyInTree();
     }
     if( m_pUnit != nullptr )
     {
-        m_strUnitKey = m_pUnit->getKey();
+        m_strUnitKey = m_pUnit->keyInTree();
     }
 
 } // ctor
@@ -249,16 +249,16 @@ CPhysValArr::CPhysValArr( int i_iValCount, double* i_arfVals, CUnit* i_pUnit, do
 
     if( m_pUnit != nullptr )
     {
-        m_pUnitGrp = m_pUnit->getUnitGroup();
+        m_pUnitGrp = m_pUnit->unitGroup();
     }
 
     if( m_pUnitGrp != nullptr )
     {
-        m_strUnitGrpKey = m_pUnitGrp->getKey();
+        m_strUnitGrpKey = m_pUnitGrp->keyInTree();
     }
     if( m_pUnit != nullptr )
     {
-        m_strUnitKey = m_pUnit->getKey();
+        m_strUnitKey = m_pUnit->keyInTree();
     }
 
 } // ctor
@@ -276,16 +276,16 @@ CPhysValArr::CPhysValArr( const QVector<double>& i_arfVals, CUnit* i_pUnit, doub
 {
     if( m_pUnit != nullptr )
     {
-        m_pUnitGrp = m_pUnit->getUnitGroup();
+        m_pUnitGrp = m_pUnit->unitGroup();
     }
 
     if( m_pUnitGrp != nullptr )
     {
-        m_strUnitGrpKey = m_pUnitGrp->getKey();
+        m_strUnitGrpKey = m_pUnitGrp->keyInTree();
     }
     if( m_pUnit != nullptr )
     {
-        m_strUnitKey = m_pUnit->getKey();
+        m_strUnitKey = m_pUnit->keyInTree();
     }
 
 } // ctor
@@ -303,16 +303,16 @@ CPhysValArr::CPhysValArr( const QStringList& i_strlstVals, CUnit* i_pUnit, doubl
 {
     if( m_pUnit != nullptr )
     {
-        m_pUnitGrp = m_pUnit->getUnitGroup();
+        m_pUnitGrp = m_pUnit->unitGroup();
     }
 
     if( m_pUnitGrp != nullptr )
     {
-        m_strUnitGrpKey = m_pUnitGrp->getKey();
+        m_strUnitGrpKey = m_pUnitGrp->keyInTree();
     }
     if( m_pUnit != nullptr )
     {
-        m_strUnitKey = m_pUnit->getKey();
+        m_strUnitKey = m_pUnit->keyInTree();
     }
 
     *this = i_strlstVals;
@@ -697,11 +697,11 @@ void CPhysValArr::setUnitGroup( CUnitGrp* i_pUnitGrp )
 
         if( m_pUnitGrp != nullptr )
         {
-            m_strUnitGrpKey = m_pUnitGrp->getKey();
+            m_strUnitGrpKey = m_pUnitGrp->keyInTree();
         }
         if( m_pUnit != nullptr )
         {
-            m_strUnitKey = m_pUnit->getKey();
+            m_strUnitKey = m_pUnit->keyInTree();
         }
     }
 
@@ -713,12 +713,12 @@ void CPhysValArr::setUnitGroup( CUnitGrp* i_pUnitGrp )
 void CPhysValArr::setUnitGroupKey( const QString& i_strUnitGrpKey )
 //------------------------------------------------------------------------------
 {
-    if( m_pUnitGrp != nullptr && m_pUnitGrp->getKey() != i_strUnitGrpKey )
+    if( m_pUnitGrp != nullptr && m_pUnitGrp->keyInTree() != i_strUnitGrpKey )
     {
         QString strMethod, strArgs, strErr;
         strMethod = "CPhysValArr::setUnitGroupKey";
         strArgs   = "UnitGrpKey: " + i_strUnitGrpKey;
-        strErr    = "UnitGrpKey is different from key of already set unit group " + m_pUnitGrp->getKey();
+        strErr    = "UnitGrpKey is different from key of already set unit group " + m_pUnitGrp->keyInTree();
         throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidMethodCall, strMethod + "( " + strArgs + " ): " + strErr );
     }
 
@@ -729,7 +729,7 @@ void CPhysValArr::setUnitGroupKey( const QString& i_strUnitGrpKey )
 } // setUnitGroupKey
 
 //------------------------------------------------------------------------------
-CUnitGrp* CPhysValArr::getUnitGroup() const
+CUnitGrp* CPhysValArr::unitGroup() const
 //------------------------------------------------------------------------------
 {
     return m_pUnitGrp;
@@ -747,7 +747,7 @@ QString CPhysValArr::getUnitGroupName( bool i_bInsertParentNames ) const
     }
     else
     {
-        strName = m_pUnitGrp->getName(i_bInsertParentNames);
+        strName = m_pUnitGrp->keyInTree();
     }
     return strName;
 
@@ -771,7 +771,7 @@ void CPhysValArr::setUnit( CUnit* i_pUnit )
     }
     else
     {
-        m_pUnitGrp = m_pUnit->getUnitGroup();
+        m_pUnitGrp = m_pUnit->unitGroup();
     }
 
     if( m_pUnitGrp != pUnitGrp )
@@ -782,11 +782,11 @@ void CPhysValArr::setUnit( CUnit* i_pUnit )
 
     if( m_pUnitGrp != nullptr )
     {
-        m_strUnitGrpKey = m_pUnitGrp->getKey();
+        m_strUnitGrpKey = m_pUnitGrp->keyInTree();
     }
     if( m_pUnit != nullptr )
     {
-        m_strUnitKey = m_pUnit->getKey();
+        m_strUnitKey = m_pUnit->keyInTree();
     }
 
     if( m_physValRes.isValid() )
@@ -811,12 +811,12 @@ void CPhysValArr::setUnit( CUnit* i_pUnit )
 void CPhysValArr::setUnitKey( const QString& i_strUnitKey )
 //------------------------------------------------------------------------------
 {
-    if( m_pUnit != nullptr && m_pUnit->getKey() != i_strUnitKey )
+    if( m_pUnit != nullptr && m_pUnit->keyInTree() != i_strUnitKey )
     {
         QString strMethod, strArgs, strErr;
         strMethod = "CPhysValArr::setUnitKey";
         strArgs   = "UnitKey: " + i_strUnitKey;
-        strErr    = "UnitKey is different from key of already set unit " + m_pUnit->getKey();
+        strErr    = "UnitKey is different from key of already set unit " + m_pUnit->keyInTree();
         throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidMethodCall, strMethod + "( " + strArgs + " ): " + strErr );
     }
 
@@ -845,7 +845,7 @@ QString CPhysValArr::getUnitName( bool i_bInsertParentNames ) const
     }
     else
     {
-        strName = m_pUnit->getName(i_bInsertParentNames);
+        strName = m_pUnit->keyInTree();
     }
     return strName;
 
@@ -1073,11 +1073,11 @@ void CPhysValArr::setValues( int i_idxStart, const CPhysValArr& i_physValArr )
 
     if( m_pUnitGrp != nullptr )
     {
-        m_strUnitGrpKey = m_pUnitGrp->getKey();
+        m_strUnitGrpKey = m_pUnitGrp->keyInTree();
     }
     if( m_pUnit != nullptr )
     {
-        m_strUnitKey = m_pUnit->getKey();
+        m_strUnitKey = m_pUnit->keyInTree();
     }
 
     const CPhysValArr* pPhysValArr = &i_physValArr;
@@ -1782,15 +1782,15 @@ void CPhysValArr::convertValues( CUnit* i_pUnitDst )
             }
         }
         m_pUnit = i_pUnitDst;
-        m_pUnitGrp = m_pUnit->getUnitGroup();
+        m_pUnitGrp = m_pUnit->unitGroup();
 
         if( m_pUnitGrp != nullptr )
         {
-            m_strUnitGrpKey = m_pUnitGrp->getKey();
+            m_strUnitGrpKey = m_pUnitGrp->keyInTree();
         }
         if( m_pUnit != nullptr )
         {
-            m_strUnitKey = m_pUnit->getKey();
+            m_strUnitKey = m_pUnit->keyInTree();
         }
     }
 

@@ -25,7 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSPhysVal/ZSPhysValRes.h"
-#include "ZSPhysVal/ZSPhysUnitsPool.h"
+#include "ZSPhysVal/ZSPhysSizesIdxTree.h"
 #include "ZSPhysVal/ZSPhysVal.h"
 #include "ZSPhysVal/ZSPhysValExceptions.h"
 #include "ZSPhysVal/ZSPhysSize.h"
@@ -98,11 +98,11 @@ CPhysValRes::CPhysValRes( CUnitGrp* i_pUnitGrp, EResType i_resType ) :
     }
     if( m_pUnitGrp != nullptr )
     {
-        m_strUnitGrpKey = m_pUnitGrp->getKey();
+        m_strUnitGrpKey = m_pUnitGrp->keyInTree();
     }
     if( m_pUnit != nullptr )
     {
-        m_strUnitKey = m_pUnit->getKey();
+        m_strUnitKey = m_pUnit->keyInTree();
     }
 
 } // ctor
@@ -119,16 +119,16 @@ CPhysValRes::CPhysValRes( CUnit* i_pUnit, EResType i_resType ) :
 {
     if( i_pUnit != nullptr )
     {
-        m_pUnitGrp = i_pUnit->getUnitGroup();
+        m_pUnitGrp = i_pUnit->unitGroup();
         m_pUnit = i_pUnit;
     }
     if( m_pUnitGrp != nullptr )
     {
-        m_strUnitGrpKey = m_pUnitGrp->getKey();
+        m_strUnitGrpKey = m_pUnitGrp->keyInTree();
     }
     if( m_pUnit != nullptr )
     {
-        m_strUnitKey = m_pUnit->getKey();
+        m_strUnitKey = m_pUnit->keyInTree();
     }
 
 } // ctor
@@ -138,18 +138,18 @@ CPhysValRes::CPhysValRes( CUnitRatio* i_pUnitRatio, EResType i_resType ) :
 //------------------------------------------------------------------------------
     m_resType(i_resType),
     m_fVal(0.0),
-    m_pUnitGrp(i_pUnitRatio->getUnitGroup()),
+    m_pUnitGrp(i_pUnitRatio->unitGroup()),
     m_pUnit(i_pUnitRatio),
     m_strUnitGrpKey(),
     m_strUnitKey()
 {
     if( m_pUnitGrp != nullptr )
     {
-        m_strUnitGrpKey = m_pUnitGrp->getKey();
+        m_strUnitGrpKey = m_pUnitGrp->keyInTree();
     }
     if( m_pUnit != nullptr )
     {
-        m_strUnitKey = m_pUnit->getKey();
+        m_strUnitKey = m_pUnit->keyInTree();
     }
 
 } // ctor
@@ -159,18 +159,18 @@ CPhysValRes::CPhysValRes( CUnitDataQuantity* i_pUnitDataQuantity, EResType i_res
 //------------------------------------------------------------------------------
     m_resType(i_resType),
     m_fVal(0.0),
-    m_pUnitGrp(i_pUnitDataQuantity->getUnitGroup()),
+    m_pUnitGrp(i_pUnitDataQuantity->unitGroup()),
     m_pUnit(i_pUnitDataQuantity),
     m_strUnitGrpKey(),
     m_strUnitKey()
 {
     if( m_pUnitGrp != nullptr )
     {
-        m_strUnitGrpKey = m_pUnitGrp->getKey();
+        m_strUnitGrpKey = m_pUnitGrp->keyInTree();
     }
     if( m_pUnit != nullptr )
     {
-        m_strUnitKey = m_pUnit->getKey();
+        m_strUnitKey = m_pUnit->keyInTree();
     }
 
 } // ctor
@@ -187,11 +187,11 @@ CPhysValRes::CPhysValRes( CPhysUnit* i_pPhysUnit, EResType i_resType ) :
 {
     if( m_pUnitGrp != nullptr )
     {
-        m_strUnitGrpKey = m_pUnitGrp->getKey();
+        m_strUnitGrpKey = m_pUnitGrp->keyInTree();
     }
     if( m_pUnit != nullptr )
     {
-        m_strUnitKey = m_pUnit->getKey();
+        m_strUnitKey = m_pUnit->keyInTree();
     }
 
 } // ctor
@@ -224,11 +224,11 @@ CPhysValRes::CPhysValRes( double i_fVal, CUnitGrp* i_pUnitGrp, EResType i_resTyp
     }
     if( m_pUnitGrp != nullptr )
     {
-        m_strUnitGrpKey = m_pUnitGrp->getKey();
+        m_strUnitGrpKey = m_pUnitGrp->keyInTree();
     }
     if( m_pUnit != nullptr )
     {
-        m_strUnitKey = m_pUnit->getKey();
+        m_strUnitKey = m_pUnit->keyInTree();
     }
 
 } // ctor
@@ -245,16 +245,16 @@ CPhysValRes::CPhysValRes( double i_fVal, CUnit* i_pUnit, EResType i_resType ) :
 {
     if( i_pUnit != nullptr )
     {
-        m_pUnitGrp = i_pUnit->getUnitGroup();
+        m_pUnitGrp = i_pUnit->unitGroup();
         m_pUnit = i_pUnit;
     }
     if( m_pUnitGrp != nullptr )
     {
-        m_strUnitGrpKey = m_pUnitGrp->getKey();
+        m_strUnitGrpKey = m_pUnitGrp->keyInTree();
     }
     if( m_pUnit != nullptr )
     {
-        m_strUnitKey = m_pUnit->getKey();
+        m_strUnitKey = m_pUnit->keyInTree();
     }
 
 } // ctor
@@ -264,18 +264,18 @@ CPhysValRes::CPhysValRes( double i_fVal, CUnitRatio* i_pUnitRatio, EResType i_re
 //------------------------------------------------------------------------------
     m_resType(i_resType),
     m_fVal(i_fVal),
-    m_pUnitGrp(i_pUnitRatio->getUnitGroup()),
+    m_pUnitGrp(i_pUnitRatio->unitGroup()),
     m_pUnit(i_pUnitRatio),
     m_strUnitGrpKey(),
     m_strUnitKey()
 {
     if( m_pUnitGrp != nullptr )
     {
-        m_strUnitGrpKey = m_pUnitGrp->getKey();
+        m_strUnitGrpKey = m_pUnitGrp->keyInTree();
     }
     if( m_pUnit != nullptr )
     {
-        m_strUnitKey = m_pUnit->getKey();
+        m_strUnitKey = m_pUnit->keyInTree();
     }
 
 } // ctor
@@ -285,18 +285,18 @@ CPhysValRes::CPhysValRes( double i_fVal, CUnitDataQuantity* i_pUnitDataQuantity,
 //------------------------------------------------------------------------------
     m_resType(i_resType),
     m_fVal(i_fVal),
-    m_pUnitGrp(i_pUnitDataQuantity->getUnitGroup()),
+    m_pUnitGrp(i_pUnitDataQuantity->unitGroup()),
     m_pUnit(i_pUnitDataQuantity),
     m_strUnitGrpKey(),
     m_strUnitKey()
 {
     if( m_pUnitGrp != nullptr )
     {
-        m_strUnitGrpKey = m_pUnitGrp->getKey();
+        m_strUnitGrpKey = m_pUnitGrp->keyInTree();
     }
     if( m_pUnit != nullptr )
     {
-        m_strUnitKey = m_pUnit->getKey();
+        m_strUnitKey = m_pUnit->keyInTree();
     }
 
 } // ctor
@@ -313,11 +313,11 @@ CPhysValRes::CPhysValRes( double i_fVal, CPhysUnit* i_pPhysUnit, EResType i_resT
 {
     if( m_pUnitGrp != nullptr )
     {
-        m_strUnitGrpKey = m_pUnitGrp->getKey();
+        m_strUnitGrpKey = m_pUnitGrp->keyInTree();
     }
     if( m_pUnit != nullptr )
     {
-        m_strUnitKey = m_pUnit->getKey();
+        m_strUnitKey = m_pUnit->keyInTree();
     }
 
 } // ctor
@@ -350,11 +350,11 @@ CPhysValRes::CPhysValRes( const QString& i_strVal, CUnitGrp* i_pUnitGrp, EResTyp
     }
     if( m_pUnitGrp != nullptr )
     {
-        m_strUnitGrpKey = m_pUnitGrp->getKey();
+        m_strUnitGrpKey = m_pUnitGrp->keyInTree();
     }
     if( m_pUnit != nullptr )
     {
-        m_strUnitKey = m_pUnit->getKey();
+        m_strUnitKey = m_pUnit->keyInTree();
     }
 
     setVal(i_strVal);
@@ -373,16 +373,16 @@ CPhysValRes::CPhysValRes( const QString& i_strVal, CUnit* i_pUnit, EResType i_re
 {
     if( i_pUnit != nullptr )
     {
-        m_pUnitGrp = i_pUnit->getUnitGroup();
+        m_pUnitGrp = i_pUnit->unitGroup();
         m_pUnit = i_pUnit;
     }
     if( m_pUnitGrp != nullptr )
     {
-        m_strUnitGrpKey = m_pUnitGrp->getKey();
+        m_strUnitGrpKey = m_pUnitGrp->keyInTree();
     }
     if( m_pUnit != nullptr )
     {
-        m_strUnitKey = m_pUnit->getKey();
+        m_strUnitKey = m_pUnit->keyInTree();
     }
 
     setVal(i_strVal);
@@ -394,18 +394,18 @@ CPhysValRes::CPhysValRes( const QString& i_strVal, CUnitRatio* i_pUnitRatio, ERe
 //------------------------------------------------------------------------------
     m_resType(i_resType),
     m_fVal(0.0),
-    m_pUnitGrp(i_pUnitRatio->getUnitGroup()),
+    m_pUnitGrp(i_pUnitRatio->unitGroup()),
     m_pUnit(i_pUnitRatio),
     m_strUnitGrpKey(),
     m_strUnitKey()
 {
     if( m_pUnitGrp != nullptr )
     {
-        m_strUnitGrpKey = m_pUnitGrp->getKey();
+        m_strUnitGrpKey = m_pUnitGrp->keyInTree();
     }
     if( m_pUnit != nullptr )
     {
-        m_strUnitKey = m_pUnit->getKey();
+        m_strUnitKey = m_pUnit->keyInTree();
     }
 
     setVal(i_strVal);
@@ -417,18 +417,18 @@ CPhysValRes::CPhysValRes( const QString& i_strVal, CUnitDataQuantity* i_pUnitDat
 //------------------------------------------------------------------------------
     m_resType(i_resType),
     m_fVal(0.0),
-    m_pUnitGrp(i_pUnitDataQuantity->getUnitGroup()),
+    m_pUnitGrp(i_pUnitDataQuantity->unitGroup()),
     m_pUnit(i_pUnitDataQuantity),
     m_strUnitGrpKey(),
     m_strUnitKey()
 {
     if( m_pUnitGrp != nullptr )
     {
-        m_strUnitGrpKey = m_pUnitGrp->getKey();
+        m_strUnitGrpKey = m_pUnitGrp->keyInTree();
     }
     if( m_pUnit != nullptr )
     {
-        m_strUnitKey = m_pUnit->getKey();
+        m_strUnitKey = m_pUnit->keyInTree();
     }
 
     setVal(i_strVal);
@@ -447,11 +447,11 @@ CPhysValRes::CPhysValRes( const QString& i_strVal, CPhysUnit* i_pPhysUnit, EResT
 {
     if( m_pUnitGrp != nullptr )
     {
-        m_strUnitGrpKey = m_pUnitGrp->getKey();
+        m_strUnitGrpKey = m_pUnitGrp->keyInTree();
     }
     if( m_pUnit != nullptr )
     {
-        m_strUnitKey = m_pUnit->getKey();
+        m_strUnitKey = m_pUnit->keyInTree();
     }
 
     setVal(i_strVal);
@@ -519,11 +519,11 @@ void CPhysValRes::setUnitGroup( CUnitGrp* i_pUnitGrp )
     }
     if( m_pUnitGrp != nullptr )
     {
-        m_strUnitGrpKey = m_pUnitGrp->getKey();
+        m_strUnitGrpKey = m_pUnitGrp->keyInTree();
     }
     if( m_pUnit != nullptr )
     {
-        m_strUnitKey = m_pUnit->getKey();
+        m_strUnitKey = m_pUnit->keyInTree();
     }
 
 } // setUnitGroup
@@ -532,12 +532,12 @@ void CPhysValRes::setUnitGroup( CUnitGrp* i_pUnitGrp )
 void CPhysValRes::setUnitGroupKey( const QString& i_strUnitGrpKey )
 //------------------------------------------------------------------------------
 {
-    if( m_pUnitGrp != nullptr && m_pUnitGrp->getKey() != i_strUnitGrpKey )
+    if( m_pUnitGrp != nullptr && m_pUnitGrp->keyInTree() != i_strUnitGrpKey )
     {
         QString strMethod, strArgs, strErr;
         strMethod = "CPhysVal::setUnitGroupKey";
         strArgs   = "UnitGrpKey: " + i_strUnitGrpKey;
-        strErr    = "UnitGrpKey is different from key of already set unit group " + m_pUnitGrp->getKey();
+        strErr    = "UnitGrpKey is different from key of already set unit group " + m_pUnitGrp->keyInTree();
         throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidMethodCall, strMethod + "( " + strArgs + " ): " + strErr );
     }
 
@@ -546,7 +546,7 @@ void CPhysValRes::setUnitGroupKey( const QString& i_strUnitGrpKey )
 } // setUnitGroupKey
 
 //------------------------------------------------------------------------------
-CUnitGrp* CPhysValRes::getUnitGroup() const
+CUnitGrp* CPhysValRes::unitGroup() const
 //------------------------------------------------------------------------------
 {
     return m_pUnitGrp;
@@ -564,7 +564,7 @@ QString CPhysValRes::getUnitGroupName( bool i_bInsertParentNames ) const
     }
     else
     {
-        strName = m_pUnitGrp->getName(i_bInsertParentNames);
+        strName = m_pUnitGrp->keyInTree();
     }
     return strName;
 
@@ -593,16 +593,16 @@ void CPhysValRes::setUnit( CUnit* i_pUnit )
     }
     else
     {
-        m_pUnitGrp = m_pUnit->getUnitGroup();
+        m_pUnitGrp = m_pUnit->unitGroup();
     }
 
     if( m_pUnitGrp != nullptr )
     {
-        m_strUnitGrpKey = m_pUnitGrp->getKey();
+        m_strUnitGrpKey = m_pUnitGrp->keyInTree();
     }
     if( m_pUnit != nullptr )
     {
-        m_strUnitKey = m_pUnit->getKey();
+        m_strUnitKey = m_pUnit->keyInTree();
     }
 
 } // setUnit
@@ -619,16 +619,16 @@ void CPhysValRes::setUnitRatio( CUnitRatio* i_pUnitRatio )
     }
     else
     {
-        m_pUnitGrp = m_pUnit->getUnitGroup();
+        m_pUnitGrp = m_pUnit->unitGroup();
     }
 
     if( m_pUnitGrp != nullptr )
     {
-        m_strUnitGrpKey = m_pUnitGrp->getKey();
+        m_strUnitGrpKey = m_pUnitGrp->keyInTree();
     }
     if( m_pUnit != nullptr )
     {
-        m_strUnitKey = m_pUnit->getKey();
+        m_strUnitKey = m_pUnit->keyInTree();
     }
 
 } // setUnitRatio
@@ -645,16 +645,16 @@ void CPhysValRes::setUnitDataQuantity( CUnitDataQuantity* i_pUnitDataQuantity )
     }
     else
     {
-        m_pUnitGrp = m_pUnit->getUnitGroup();
+        m_pUnitGrp = m_pUnit->unitGroup();
     }
 
     if( m_pUnitGrp != nullptr )
     {
-        m_strUnitGrpKey = m_pUnitGrp->getKey();
+        m_strUnitGrpKey = m_pUnitGrp->keyInTree();
     }
     if( m_pUnit != nullptr )
     {
-        m_strUnitKey = m_pUnit->getKey();
+        m_strUnitKey = m_pUnit->keyInTree();
     }
 
 } // setUnitDataQuantity
@@ -676,11 +676,11 @@ void CPhysValRes::setPhysUnit( CPhysUnit* i_pPhysUnit )
 
     if( m_pUnitGrp != nullptr )
     {
-        m_strUnitGrpKey = m_pUnitGrp->getKey();
+        m_strUnitGrpKey = m_pUnitGrp->keyInTree();
     }
     if( m_pUnit != nullptr )
     {
-        m_strUnitKey = m_pUnit->getKey();
+        m_strUnitKey = m_pUnit->keyInTree();
     }
 
 } // setPhysUnit
@@ -689,12 +689,12 @@ void CPhysValRes::setPhysUnit( CPhysUnit* i_pPhysUnit )
 void CPhysValRes::setUnitKey( const QString& i_strUnitKey )
 //------------------------------------------------------------------------------
 {
-    if( m_pUnit != nullptr && m_pUnit->getKey() != i_strUnitKey )
+    if( m_pUnit != nullptr && m_pUnit->keyInTree() != i_strUnitKey )
     {
         QString strMethod, strArgs, strErr;
         strMethod = "CPhysVal::setUnitKey";
         strArgs   = "UnitKey: " + i_strUnitKey;
-        strErr    = "UnitKey is different from key of already set unit " + m_pUnit->getKey();
+        strErr    = "UnitKey is different from key of already set unit " + m_pUnit->keyInTree();
         throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidMethodCall, strMethod + "( " + strArgs + " ): " + strErr );
     }
 
@@ -742,7 +742,7 @@ QString CPhysValRes::getUnitName( bool i_bInsertParentNames ) const
     }
     else
     {
-        strName = m_pUnit->getName(i_bInsertParentNames);
+        strName = m_pUnit->keyInTree();
     }
     return strName;
 
@@ -955,22 +955,22 @@ QString CPhysValRes::toString( EUnitFind i_unitFind, int i_iSubStrVisibility ) c
         {
             // Use "key" instead of "name(IncludingParentNames)" as the path contains the
             // root nodes (UnitClassType) whereas the key starts with the name of the science field.
-            strUnitGrp = m_pUnit->getUnitGroup()->getKey();
+            strUnitGrp = m_pUnit->unitGroup()->keyInTree();
         }
         if( i_iSubStrVisibility & EPhysValSubStrUnitSymbol )
         {
-            strUnit = m_pUnit->getSymbol();
+            strUnit = m_pUnit->symbol();
         }
         else if( i_iSubStrVisibility & EPhysValSubStrUnitName )
         {
-            strUnit = m_pUnit->getName();
+            strUnit = m_pUnit->name();
         }
         if( !strUnitGrp.isEmpty() )
         {
             strVal += strUnitGrp;
             if( !strUnit.isEmpty() )
             {
-                strVal += m_pUnit->getNameSeparator();
+                strVal += m_pUnit->tree()->nodeSeparator();
             }
         }
         if( !strUnit.isEmpty() )
@@ -1028,22 +1028,22 @@ QString CPhysValRes::toString( const CUnit* i_pUnit, int i_iSubStrVisibility ) c
         {
             // Use "key" instead of "name(IncludingParentNames)" as the path contains the
             // root nodes (UnitClassType) whereas the key starts with the name of the science field.
-            strUnitGrp = i_pUnit->getUnitGroup()->getKey();
+            strUnitGrp = i_pUnit->unitGroup()->keyInTree();
         }
         if( i_iSubStrVisibility & EPhysValSubStrUnitSymbol )
         {
-            strUnit = i_pUnit->getSymbol();
+            strUnit = i_pUnit->symbol();
         }
         else if( i_iSubStrVisibility & EPhysValSubStrUnitName )
         {
-            strUnit = i_pUnit->getName();
+            strUnit = i_pUnit->name();
         }
         if( !strUnitGrp.isEmpty() )
         {
             strVal += strUnitGrp;
             if( !strUnit.isEmpty() )
             {
-                strVal += i_pUnit->getNameSeparator();
+                strVal += i_pUnit->tree()->nodeSeparator();
             }
         }
         if( !strUnit.isEmpty() )
@@ -1156,12 +1156,12 @@ CPhysValRes& CPhysValRes::operator += ( const CPhysValRes& i_physValResOp )
 
         if( m_pUnit->isLogarithmic() && !pUnitOp->isLogarithmic() )
         {
-            QString strAddErrInfo = "Val:" + m_pUnit->getName() + ", Op:" + pUnitOp->getName();
+            QString strAddErrInfo = "Val:" + m_pUnit->name() + ", Op:" + pUnitOp->name();
             throw CUnitConversionException( __FILE__, __LINE__, EResultMixedLinLogInMathOp, strAddErrInfo );
         }
         if( pUnitOp->isLogarithmic() )
         {
-            double fFactor = pow( 10.0, i_physValResOp.getVal()/pUnitOp->getLogarithmicFactor() );
+            double fFactor = pow( 10.0, i_physValResOp.getVal()/pUnitOp->logarithmicFactor() );
 
             m_fVal *= fFactor;
         }

@@ -24,35 +24,39 @@ may result in using the software modules.
 
 *******************************************************************************/
 
+#include "WidgetCentral.h"
+#include "App.h"
+#include "PhysSizes/Kinematics/Kinematics.h"
+#include "Test.h"
+
+#include "ZSPhysValGUI/ZSPhysSizesIdxTreeWdgt.h"
+#include "ZSPhysVal/ZSPhysSizesIdxTree.h"
+#include "ZSTestGUI/ZSTestStepIdxTreeWdgt.h"
+//#include "ZSSysGUI/ZSSysErrLogWdgt.h"
+#include "ZSSys/ZSSysErrCode.h"
+#include "ZSSys/ZSSysException.h"
+
 #include <QtCore/qsettings.h>
 
 #if QT_VERSION < 0x050000
-#include <QtGui/qgroupbox.h>
+//#include <QtGui/qgroupbox.h>
 #include <QtGui/qlayout.h>
 #include <QtGui/qsplitter.h>
 #include <QtGui/qtabwidget.h>
 #else
-#include <QtWidgets/qgroupbox.h>
+//#include <QtWidgets/qgroupbox.h>
 #include <QtWidgets/qlayout.h>
 #include <QtWidgets/qsplitter.h>
 #include <QtWidgets/qtabwidget.h>
 #endif
 
-#include "WidgetCentral.h"
-#include "App.h"
-#include "UnitsWdgt.h"
-#include "Test.h"
-
-#include "ZSTestGUI/ZSTestStepIdxTreeWdgt.h"
-#include "ZSSysGUI/ZSSysErrLogWdgt.h"
-#include "ZSSys/ZSSysErrCode.h"
-#include "ZSSys/ZSSysException.h"
-
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 
 using namespace ZS::System;
-using namespace ZS::System::GUI;
+//using namespace ZS::System::GUI;
+using namespace ZS::PhysVal;
+using namespace ZS::PhysVal::GUI;
 using namespace ZS::Test;
 using namespace ZS::Test::GUI;
 using namespace ZS::Apps::Test::PhysVal;
@@ -75,11 +79,8 @@ CWidgetCentral::CWidgetCentral( QWidget* i_pWdgtParent, Qt::WindowFlags  i_wflag
     m_pLyt(nullptr),
     m_pSplitter(nullptr),
     m_pTabWdgtMain(nullptr),
-    m_pWdgtUnits(nullptr),
-    m_pWdgtTest(nullptr),
-    m_pLytGrpErrLog(nullptr),
-    m_pGrpErrLog(nullptr),
-    m_pWdgtErrLog(nullptr)
+    m_pWdgtPhysSizes(nullptr),
+    m_pWdgtTest(nullptr)
 {
     if( s_pThis != nullptr )
     {
@@ -88,11 +89,6 @@ CWidgetCentral::CWidgetCentral( QWidget* i_pWdgtParent, Qt::WindowFlags  i_wflag
     s_pThis = this;
 
     setObjectName("CentralWidget");
-
-    //QPalette paletteWdgtCentral;
-    //paletteWdgtCentral.setColor(QPalette::Window,Qt::lightGray);
-    //setPalette(paletteWdgtCentral);
-    //setAutoFillBackground(true);
 
     m_pLyt = new QVBoxLayout();
     setLayout(m_pLyt);
@@ -109,8 +105,8 @@ CWidgetCentral::CWidgetCentral( QWidget* i_pWdgtParent, Qt::WindowFlags  i_wflag
     // <Tab> Units
     //-------------
 
-    m_pWdgtUnits = new CWdgtUnits("Units");
-    m_pTabWdgtMain->addTab(m_pWdgtUnits,"Units");
+    m_pWdgtPhysSizes = new CWdgtIdxTreePhysSizes(dynamic_cast<CIdxTreePhysSizes*>(Kinematics->tree()));
+    m_pTabWdgtMain->addTab(m_pWdgtPhysSizes,"Units");
 
     // <Tab> Test
     //-------------
@@ -118,28 +114,15 @@ CWidgetCentral::CWidgetCentral( QWidget* i_pWdgtParent, Qt::WindowFlags  i_wflag
     m_pWdgtTest = new CWdgtIdxTreeTestSteps( CApplication::GetInstance()->getTest() );
     m_pTabWdgtMain->addTab( m_pWdgtTest, "Test" );
 
-    // <Widget> Error Log
-    //===================
-
-    m_pGrpErrLog = new QGroupBox( "Errors" );
-    m_pSplitter->addWidget(m_pGrpErrLog);
-    m_pLytGrpErrLog = new QVBoxLayout();
-    m_pGrpErrLog->setLayout(m_pLytGrpErrLog);
-
-    m_pWdgtErrLog = new CWdgtErrLog();
-    m_pLytGrpErrLog->addWidget(m_pWdgtErrLog);
-
     // <Geometry>
     //===================
 
     QSettings settings;
 
-    QList<int> listSizes;
-    int        idx;
+    restoreGeometry( settings.value(objectName()+"/Geometry").toByteArray() );
 
-    listSizes = m_pSplitter->sizes();
-
-    for( idx = 0; idx < listSizes.count(); idx++ )
+    QList<int> listSizes = m_pSplitter->sizes();
+    for( int idx = 0; idx < listSizes.count(); idx++ )
     {
         listSizes[idx] = settings.value( objectName() + "/SplitterHeight" + QString::number(idx), 50 ).toInt();
     }
@@ -156,12 +139,8 @@ CWidgetCentral::~CWidgetCentral()
 {
     QSettings settings;
 
-    QList<int> listSizes;
-    int        idx;
-
-    listSizes = m_pSplitter->sizes();
-
-    for( idx = 0; idx < listSizes.count(); idx++ )
+    QList<int> listSizes = m_pSplitter->sizes();
+    for( int idx = 0; idx < listSizes.count(); idx++ )
     {
         settings.setValue( objectName() + "/SplitterHeight" + QString::number(idx), listSizes[idx] );
     }
@@ -169,10 +148,7 @@ CWidgetCentral::~CWidgetCentral()
     m_pLyt = nullptr;
     m_pSplitter = nullptr;
     m_pTabWdgtMain = nullptr;
-    m_pWdgtUnits = nullptr;
+    m_pWdgtPhysSizes = nullptr;
     m_pWdgtTest = nullptr;
-    m_pLytGrpErrLog = nullptr;
-    m_pGrpErrLog = nullptr;
-    m_pWdgtErrLog = nullptr;
 
 } // dtor

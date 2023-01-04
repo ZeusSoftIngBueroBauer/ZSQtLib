@@ -200,15 +200,15 @@ void CWdgtUnitView::setUnitsModelNode( SUnitsModelNode* i_pNode )
     }
     else if( m_pNode->m_pUnit != nullptr )
     {
-        m_pEdtPath->setText( m_pNode->m_pUnit->getGroupName(true) );
-        m_pEdtName->setText( m_pNode->m_pUnit->getName() );
-        m_pEdtKey->setText( m_pNode->m_pUnit->getKey() );
+        m_pEdtPath->setText( m_pNode->m_pUnit->parentBranchKeyInTree() );
+        m_pEdtName->setText( m_pNode->m_pUnit->name() );
+        m_pEdtKey->setText( m_pNode->m_pUnit->keyInTree() );
     }
     else if( m_pNode->m_pUnitGrp != nullptr )
     {
-        m_pEdtPath->setText( m_pNode->m_pUnitGrp->getName(true) );
-        m_pEdtName->setText( m_pNode->m_pUnitGrp->getName() );
-        m_pEdtKey->setText( m_pNode->m_pUnitGrp->getKey() );
+        m_pEdtPath->setText( m_pNode->m_pUnitGrp->keyInTree() );
+        m_pEdtName->setText( m_pNode->m_pUnitGrp->name() );
+        m_pEdtKey->setText( m_pNode->m_pUnitGrp->keyInTree() );
     }
     else
     {
@@ -428,7 +428,7 @@ void CWdgtUnitViewUnt::setUnitsModelNode( SUnitsModelNode* i_pNode )
     }
     else if( m_pNode->m_pUnit != nullptr )
     {
-        m_pEdtSymbol->setText( m_pNode->m_pUnit->getSymbol() );
+        m_pEdtSymbol->setText( m_pNode->m_pUnit->symbol() );
 
         if( m_pNode->m_pUnit->getNextLowerUnit() == nullptr) 
         {
@@ -436,7 +436,7 @@ void CWdgtUnitViewUnt::setUnitsModelNode( SUnitsModelNode* i_pNode )
         }
         else
         {
-            m_pEdtNextLower->setText( m_pNode->m_pUnit->getNextLowerUnit()->getName() );
+            m_pEdtNextLower->setText( m_pNode->m_pUnit->getNextLowerUnit()->name() );
         }
         if( m_pNode->m_pUnit->getNextHigherUnit() == nullptr) 
         {
@@ -444,7 +444,7 @@ void CWdgtUnitViewUnt::setUnitsModelNode( SUnitsModelNode* i_pNode )
         }
         else
         {
-            m_pEdtNextHigher->setText( m_pNode->m_pUnit->getNextHigherUnit()->getName() );
+            m_pEdtNextHigher->setText( m_pNode->m_pUnit->getNextHigherUnit()->name() );
         }
     }
     else

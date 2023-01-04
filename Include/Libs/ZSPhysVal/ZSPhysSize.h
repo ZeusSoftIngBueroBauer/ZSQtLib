@@ -44,13 +44,22 @@ class ZSPHYSVALDLL_API CPhysSize : public CUnitGrp
 {
 public: // ctors and dtor
     CPhysSize(
-        CUnitsPool*       i_pUnitsPool,
-        EPhysScienceField i_scienceField,
-        const QString&    i_strName,           // e.g. "Time", "Length", "Power", "Voltage", ...
-        const QString&    i_strSIUnitName,     // e.g. "Second" for Time, "Meter" for Length, "Watt" for el. Power, "Volt" for el. Voltage, ...
-        const QString&    i_strSIUnitSymbol,   // e.g. "s" for Second, "m" for Meter, "W" for "Watt", "V" for el. Volt, ...
-        const QString&    i_strFormulaSymbol,  // e.g. "t" for Time, "l" for Length, "P" for Power, "U" for Voltage, ...
-        bool              i_bIsPowerRelated ); // true if X/dB = 10*log(X/X0), false if e.g. X/dB = 20*log(X/X0)
+        ZS::System::CIdxTree* i_pIdxTree,
+        EPhysScienceField     i_scienceField,
+        const QString&        i_strName,
+        const QString&        i_strSIUnitName,
+        const QString&        i_strSIUnitSymbol,
+        const QString&        i_strFormulaSymbol,
+        bool                  i_bIsPowerRelated,
+        CIdxTreeEntry*        i_pParentBranch = nullptr );
+    CPhysSize(
+        ZS::System::CIdxTreeEntry* i_pParentBranch,
+        EPhysScienceField          i_scienceField,
+        const QString&             i_strName,
+        const QString&             i_strSIUnitName,
+        const QString&             i_strSIUnitSymbol,
+        const QString&             i_strFormulaSymbol,
+        bool                       i_bIsPowerRelated );
     virtual ~CPhysSize();
 public: // operators
     bool operator == ( const CPhysSize& i_physsizeOther ) const;
@@ -67,13 +76,13 @@ public: // instance methods
     CPhysUnit* getSIUnit() const { return m_pPhysUnitSI; }
     QString getFormulaSymbol() const { return m_strFormulaSymbol; }
     bool isPowerRelated() const { return m_bIsPowerRelated; }
-    int getPhysUnitCount() const { return m_vecpUnits.size(); }
+    //int getPhysUnitCount() const { return m_vecpUnits.size(); }
     CPhysUnit* getPhysUnit( int i_idx );
     CPhysUnit* findPhysUnit( const QString& i_strSymbolOrName );
     CPhysUnit* findPhysUnitBySymbol( const QString& i_strSymbol );
     CPhysUnit* findPhysUnitByName( const QString& i_strName );
 public: // overridables
-    virtual double getRefVal( CPhysUnit* i_pPhysUnitRef = nullptr ) const; // nullptr to specify the SI unit
+    virtual double getRefVal( CPhysUnit* i_pPhysUnitRef = nullptr ) const;
 private: // default and copy ctor not allowed
     CPhysSize();
     CPhysSize( const CPhysSize& );

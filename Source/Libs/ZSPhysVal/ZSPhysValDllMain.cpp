@@ -28,7 +28,7 @@ may result in using the software modules.
 
 #include "ZSPhysVal/ZSPhysValDllMain.h"
 #include "ZSPhysVal/ZSPhysSize.h"
-#include "ZSPhysVal/ZSPhysUnitsPool.h"
+#include "ZSPhysVal/ZSPhysSizesIdxTree.h"
 #include "ZSPhysVal/ZSPhysUnitsRatio.h"
 #include "ZSPhysVal/ZSPhysUnitsDataQuantity.h"
 #include "ZSSys/ZSSysAux.h"
@@ -54,8 +54,6 @@ using namespace ZS::PhysVal;
 /*******************************************************************************
 Static variables
 *******************************************************************************/
-
-static CUnitsPool* s_pUnitsPool = nullptr;
 
 static const SExponent c_arExponent[EExponentCount] = {
     //       { fFactor,        iExponent,        strExponent, strPrefix        }
@@ -403,7 +401,7 @@ QString ZS::PhysVal::getUnitName( const CUnit* i_pUnit, bool i_bInsertParentName
     }
     else
     {
-        strName = i_pUnit->getName(i_bInsertParentNames);
+        strName = i_pUnit->keyInTree();
     }
     return strName;
 
@@ -421,7 +419,7 @@ QString ZS::PhysVal::getUnitGroupName( const CUnit* i_pUnit, bool i_bInsertParen
     }
     else
     {
-        strName = i_pUnit->getUnitGroup()->getName(i_bInsertParentNames);
+        strName = i_pUnit->unitGroup()->keyInTree();
     }
     return strName;
 
@@ -439,7 +437,7 @@ QString ZS::PhysVal::getUnitGroupName( const CUnitGrp* i_pUnitGrp, bool i_bInser
     }
     else
     {
-        strName = i_pUnitGrp->getName(i_bInsertParentNames);
+        strName = i_pUnitGrp->keyInTree();
     }
     return strName;
 

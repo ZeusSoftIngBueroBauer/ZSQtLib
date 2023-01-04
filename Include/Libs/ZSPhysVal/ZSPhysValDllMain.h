@@ -62,7 +62,6 @@ namespace PhysVal
 {
 class CUnit;
 class CUnitGrp;
-class CUnitsPool;
 class CPhysUnit;
 class CPhysSize;
 class CUnitGrpRatio;
