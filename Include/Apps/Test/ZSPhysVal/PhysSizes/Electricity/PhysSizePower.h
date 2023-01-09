@@ -38,66 +38,51 @@ namespace Test
 {
 namespace PhysVal
 {
-//namespace Electricity
-//{
-////******************************************************************************
-//class CPhysSizePower : public ZS::PhysVal::CPhysSize
-////******************************************************************************
-//{
-//public: // ctors and dtor
-//    CPhysSizePower( ZS::PhysVal::CIdxTreePhysSizes* i_pIdxTree );
-//    ~CPhysSizePower();
-//public: // instance methods
-//    //ZS::PhysVal::CPhysUnit* YoktoWatt();
-//    //ZS::PhysVal::CPhysUnit* ZeptoWatt();
-//    //ZS::PhysVal::CPhysUnit* AttoWatt();
-//    //ZS::PhysVal::CPhysUnit* FemtoWatt();
-//    ZS::PhysVal::CPhysUnit* PicoWatt() { return &m_physUnitPicoWatt; }
-//    ZS::PhysVal::CPhysUnit* NanoWatt() { return &m_physUnitNanoWatt; }
-//    ZS::PhysVal::CPhysUnit* MicroWatt() { return &m_physUnitMicroWatt; }
-//    ZS::PhysVal::CPhysUnit* MilliWatt() { return &m_physUnitMilliWatt; }
-//    ZS::PhysVal::CPhysUnit* Watt() { return &m_physUnitWatt; }
-//    ZS::PhysVal::CPhysUnit* KiloWatt() { return &m_physUnitKiloWatt; }
-//    ZS::PhysVal::CPhysUnit* MegaWatt() { return &m_physUnitMegaWatt; }
-//    ZS::PhysVal::CPhysUnit* GigaWatt() { return &m_physUnitGigaWatt; }
-//    //ZS::PhysVal::CPhysUnit* TeraWatt();
-//    //ZS::PhysVal::CPhysUnit* PetaWatt();
-//    //ZS::PhysVal::CPhysUnit* ExaWatt();
-//    //ZS::PhysVal::CPhysUnit* ZettaWatt();
-//    //ZS::PhysVal::CPhysUnit* YottaWatt();
-//    ZS::PhysVal::CPhysUnit* dBWatt() { return &m_physUnitdBWatt; }
-//    ZS::PhysVal::CPhysUnit* dBMilliWatt() { return &m_physUnitdBMilliWatt; }
-//    ZS::PhysVal::CPhysUnit* dBm() { return &m_physUnitdBMilliWatt; }
-//    ZS::PhysVal::CPhysUnit* dBMicroWatt() { return &m_physUnitdBMicroWatt; }
-//    ZS::PhysVal::CPhysUnit* dBNanoWatt() { return &m_physUnitdBNanoWatt; }
-//    ZS::PhysVal::CPhysUnit* dBPicoWatt() { return &m_physUnitdBPicoWatt; }
-//protected: // instance members
-//    //ZS::PhysVal::CPhysUnit m_physUnitYoktoWatt;
-//    //ZS::PhysVal::CPhysUnit m_physUnitZeptoWatt;
-//    //ZS::PhysVal::CPhysUnit m_physUnitAttoWatt;
-//    //ZS::PhysVal::CPhysUnit m_physUnitFemtoWatt;
-//    ZS::PhysVal::CPhysUnit m_physUnitPicoWatt;
-//    ZS::PhysVal::CPhysUnit m_physUnitNanoWatt;
-//    ZS::PhysVal::CPhysUnit m_physUnitMicroWatt;
-//    ZS::PhysVal::CPhysUnit m_physUnitMilliWatt;
-//    ZS::PhysVal::CPhysUnit m_physUnitWatt;
-//    ZS::PhysVal::CPhysUnit m_physUnitKiloWatt;
-//    ZS::PhysVal::CPhysUnit m_physUnitMegaWatt;
-//    ZS::PhysVal::CPhysUnit m_physUnitGigaWatt;
-//    //ZS::PhysVal::CPhysUnit m_physUnitTeraWatt;
-//    //ZS::PhysVal::CPhysUnit m_physUnitPetaWatt;
-//    //ZS::PhysVal::CPhysUnit m_physUnitExaWatt;
-//    //ZS::PhysVal::CPhysUnit m_physUnitZettaWatt;
-//    //ZS::PhysVal::CPhysUnit m_physUnitYottaWatt;
-//    ZS::PhysVal::CPhysUnit m_physUnitdBWatt;
-//    ZS::PhysVal::CPhysUnit m_physUnitdBMilliWatt;
-//    ZS::PhysVal::CPhysUnit m_physUnitdBMicroWatt;
-//    ZS::PhysVal::CPhysUnit m_physUnitdBNanoWatt;
-//    ZS::PhysVal::CPhysUnit m_physUnitdBPicoWatt;
-//
-//}; // class CPhysSizePower
-//
-//} // namespace Electricity
+//******************************************************************************
+class CPhysSizePower : public ZS::PhysVal::CPhysSize
+//******************************************************************************
+{
+public: // ctors and dtor
+    CPhysSizePower( ZS::PhysVal::CIdxTreePhysSizes* i_pIdxTree );
+    CPhysSizePower(ZS::System::CIdxTreeEntry* i_pParentBranch);
+    CPhysSizePower(CPhysSizePower&& i_other) = delete;
+    CPhysSizePower(CPhysSizePower& i_other) = delete;
+    CPhysSizePower(const CPhysSizePower& i_other) = delete;
+    virtual ~CPhysSizePower();
+public: // operators
+    CPhysSizePower& operator=(CPhysSizePower& i_other) = delete;
+    CPhysSizePower& operator=(const CPhysSizePower& i_other) = delete;
+    CPhysSizePower& operator=(CPhysSizePower&& i_other) = delete;
+public: // instance members
+    ZS::PhysVal::CPhysUnit PicoWatt;
+    ZS::PhysVal::CPhysUnit NanoWatt;
+    ZS::PhysVal::CPhysUnit MicroWatt;
+    ZS::PhysVal::CPhysUnit MilliWatt;
+    ZS::PhysVal::CPhysUnit Watt;
+    ZS::PhysVal::CPhysUnit KiloWatt;
+    ZS::PhysVal::CPhysUnit MegaWatt;
+    ZS::PhysVal::CPhysUnit GigaWatt;
+    ZS::PhysVal::CPhysUnit dBWatt;
+    ZS::PhysVal::CPhysUnit dBMilliWatt;
+    ZS::PhysVal::CPhysUnit dBMicroWatt;
+    ZS::PhysVal::CPhysUnit dBNanoWatt;
+    ZS::PhysVal::CPhysUnit dBPicoWatt;
+    ZS::PhysVal::CPhysUnit& pW;
+    ZS::PhysVal::CPhysUnit& nW;
+    ZS::PhysVal::CPhysUnit& uW;
+    ZS::PhysVal::CPhysUnit& mW;
+    ZS::PhysVal::CPhysUnit& W;
+    ZS::PhysVal::CPhysUnit& kW;
+    ZS::PhysVal::CPhysUnit& MW;
+    ZS::PhysVal::CPhysUnit& GW;
+    ZS::PhysVal::CPhysUnit& dBW;
+    ZS::PhysVal::CPhysUnit& dBm;
+    ZS::PhysVal::CPhysUnit& dBmW;
+    ZS::PhysVal::CPhysUnit& dBuW;
+    ZS::PhysVal::CPhysUnit& dBnW;
+    ZS::PhysVal::CPhysUnit& dBpW;
+
+}; // class CPhysSizePower
 
 } // namespace PhysVal
 

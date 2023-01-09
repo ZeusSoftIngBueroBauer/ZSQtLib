@@ -71,7 +71,9 @@ CIdxTreePhysSizes* CIdxTreePhysSizes::CreateInstance( const QString& i_strObjNam
     if( pIdxTree == nullptr ) {
         pIdxTree = new CIdxTreePhysSizes(i_strObjName);
     }
-    pIdxTree->incrementRefCount();
+    else {
+        pIdxTree->incrementRefCount();
+    }
     return pIdxTree;
 }
 
@@ -218,15 +220,22 @@ protected: // ctors and dtor
     If an instance with the given name is already existing the reference to
     the existing instance is returned and a reference counter is incremented.
 
-    \param i_strName [in] Name of the unit pool (default "ZSPhysSizes")
+    @param i_strName [in] Name of the index tree (default "ZSPhysSizes")
+    @param i_pRootTreeEntry [in] Reference to the root entry of the index tree.
+           Usually the tree creates the node itself. However, if the root node needs
+           properties that go beyond the default implementation, a user-defined node
+           can be created and passed here. The root node becomes the property of the
+           tree and is destroyed along with the tree.
 
-    \return Pointer to unit pool instance.
+    @return Pointer to unit pool instance.
 */
-CIdxTreePhysSizes::CIdxTreePhysSizes( const QString& i_strObjName ) :
+CIdxTreePhysSizes::CIdxTreePhysSizes(
+    const QString& i_strObjName,
+    CIdxTreeEntry* i_pRootTreeEntry ) :
 //------------------------------------------------------------------------------
     CIdxTree(
         /* strIdxTreeName   */ i_strObjName,
-        /* pRootTreeEntry   */ nullptr,
+        /* pRootTreeEntry   */ i_pRootTreeEntry,
         /* strNodeSeparator */ ".",
         /* bCreateMutex     */ false,
         /* pObjParent       */ nullptr ),
@@ -239,6 +248,8 @@ CIdxTreePhysSizes::CIdxTreePhysSizes( const QString& i_strObjName ) :
         /* strMethodInArgs    */ "" );
 
     s_hshpIdxTrees[objectName()] = this;
+
+    m_iRefCount = 1;
 
 } // ctor
 

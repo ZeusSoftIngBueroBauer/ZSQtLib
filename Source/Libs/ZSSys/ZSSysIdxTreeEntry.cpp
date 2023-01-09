@@ -193,17 +193,13 @@ CIdxTreeEntry::CIdxTreeEntry( const CIdxTreeEntry& i_other ) :
     m_strKeyInTree(),
     m_idxInTree(-1),
     m_pParentBranch(nullptr),
-    m_strKeyInParentBranch(i_other.m_strKeyInParentBranch),
+    m_strKeyInParentBranch(),
     m_idxInParentBranch(-1),
     m_bIsAboutToBeDestroyed(false),
     m_mappTreeEntries(),
     m_arpTreeEntries()
 {
 } // ctor
-
-/*=============================================================================
-public: // dtor
-=============================================================================*/
 
 //-----------------------------------------------------------------------------
 /*! Destroys the index tree entry.
@@ -224,59 +220,7 @@ CIdxTreeEntry::~CIdxTreeEntry()
 
     m_bIsAboutToBeDestroyed = true;
 
-    CIdxTreeEntry* pTreeEntry;
-    int            idxEntry;
-
-    if( m_arpTreeEntries.size() > 0 )
-    {
-        for( idxEntry = m_arpTreeEntries.size() - 1; idxEntry >= 0; --idxEntry )
-        {
-            pTreeEntry = m_arpTreeEntries[idxEntry];
-
-            try
-            {
-                delete pTreeEntry; // calls "remove" as reentry
-            }
-            catch(...)
-            {
-            }
-            pTreeEntry = nullptr;
-        }
-    }
-
-    // As "remove" has been called as reentry for the deleted children
-    // the map and vector must already be empty.
-    if( m_mappTreeEntries.size() > 0 || m_arpTreeEntries.size() > 0 )
-    {
-        if( CErrLog::GetInstance() != nullptr )
-        {
-            SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
-                nameSpace(), className(), keyInTree(), "dtor",
-                EResultListNotEmpty, ZS::System::EResultSeverityCritical, "");
-            CErrLog::GetInstance()->addEntry(errResultInfo);
-        }
-    }
-
-    m_mappTreeEntries.clear();
-    m_arpTreeEntries.clear();
-
-    if( m_pTree != nullptr )
-    {
-        m_pTree->remove(this);
-    }
-
-    if( m_pParentBranch != nullptr )
-    {
-        m_pParentBranch->removeChild(this);
-    }
-
-    try
-    {
-        delete m_pMtx;
-    }
-    catch(...)
-    {
-    }
+    clear();
 
     m_entryType = static_cast<EIdxTreeEntryType>(0);
     //m_strName.clear();
@@ -290,6 +234,72 @@ CIdxTreeEntry::~CIdxTreeEntry()
     m_bIsAboutToBeDestroyed = false;
 
 } // dtor
+
+/*=============================================================================
+protected: // destructor
+=============================================================================*/
+
+//-----------------------------------------------------------------------------
+/*! @brief Clears the tree entry by removing itself from the index tree.
+
+    Also all children of this tree entry will be recursively removed and deleted.
+*/
+void CIdxTreeEntry::clear()
+//-----------------------------------------------------------------------------
+{
+    if( m_arpTreeEntries.size() > 0 )
+    {
+        for( int idxEntry = m_arpTreeEntries.size() - 1; idxEntry >= 0; --idxEntry )
+        {
+            CIdxTreeEntry* pTreeEntry = m_arpTreeEntries[idxEntry];
+            try {
+                // The dtor of the childs will recursively call "clear"
+                // until a child is reached which has no child.
+                delete pTreeEntry;
+            }
+            catch(...) {
+            }
+            pTreeEntry = nullptr;
+        }
+    }
+
+    // As "clear" has been called as reentry for the deleted children
+    // the map and vector must already be empty.
+    if( m_mappTreeEntries.size() > 0 || m_arpTreeEntries.size() > 0 )
+    {
+        if( CErrLog::GetInstance() != nullptr ) {
+            SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
+                nameSpace(), className(), keyInTree(), "dtor",
+                EResultListNotEmpty, ZS::System::EResultSeverityCritical, "");
+            CErrLog::GetInstance()->addEntry(errResultInfo);
+        }
+        m_mappTreeEntries.clear();
+        m_arpTreeEntries.clear();
+    }
+
+    if( m_pTree != nullptr ) {
+        m_pTree->remove(this);
+    }
+    m_pTree = nullptr;
+
+    if( m_pParentBranch != nullptr ) {
+        m_pParentBranch->removeChild(this);
+    }
+    m_pParentBranch = nullptr;
+
+    try {
+        delete m_pMtx;
+    }
+    catch(...)
+    {
+    }
+    m_pMtx = nullptr;
+
+} // clear
+
+/*=============================================================================
+public: // operators
+=============================================================================*/
 
 /*=============================================================================
 public: // overridables of base class CIdxTreeEntry
@@ -1040,7 +1050,8 @@ void CIdxTreeEntry::removeChild( CIdxTreeEntry* i_pChildTreeEntry )
     {
         SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
             nameSpace(), className(), keyInTree(), "removeChild",
-            EResultObjNotInList, ZS::System::EResultSeverityCritical, i_pChildTreeEntry->keyInParentBranch());
+            EResultObjNotInList, ZS::System::EResultSeverityCritical,
+            i_pChildTreeEntry->keyInParentBranch());
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
 

@@ -28,11 +28,9 @@ may result in using the software modules.
 #include "ZSSys/ZSSysMath.h"
 #include "ZSSys/ZSSysMemLeakDump.h"
 
-#if 0
-
-using namespace ZS::System::Math;
 using namespace ZS::PhysVal;
-using namespace ZS::PhysVal::Geometry;
+using namespace ZS::System::Math;
+using namespace ZS::Apps::Test::PhysVal;
 
 
 /*******************************************************************************
@@ -40,30 +38,67 @@ class CPhysSizeAngle : public CPhysSize
 *******************************************************************************/
 
 /*==============================================================================
+public: // class members
+
+==============================================================================*/
+
+const QString CPhysSizeAngle::c_strSymbolPhi(QChar(0x03C6));
+
+/*==============================================================================
 public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CPhysSizeAngle::CPhysSizeAngle() :
+CPhysSizeAngle::CPhysSizeAngle( CIdxTreePhysSizes* i_pIdxTree ) :
 //------------------------------------------------------------------------------
     CPhysSize(
-        /* scienceField     */ EPhysScienceFieldGeometry,
+        /* pIdxTree         */ i_pIdxTree,
         /* strName          */ "Angle",
         /* strSIUnitName    */ "Radiant",
         /* strSIUnitSymbol  */ "rad",
-        /* strFormulaSymbol */ c_strSymbolPhi,
+        /* strFormulaSymbol */ QString(QChar(0x03C6)),
         /* bIsPowerRelated  */ false ),
-    m_physUnitRad(
+    Rad(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ false,
         /* strName        */ "Radiant",
         /* strSymbol      */ "rad",
         /* fMFromSI       */ 1.0 ),
-  m_physUnitDegree(
+    Degree(
       /* pPhysSize      */ this,
       /* bIsLogarithmic */ false,
       /* strName        */ "Degree",
-      /* strSymbol      */ c_strSymbolDegree,
+      /* strSymbol      */ QString::fromLatin1("°"),
+      /* fMFromSI       */ 180.0/c_fPI )
+{
+    // Call function of base class CPhysSize to initialize the physical size together
+    // with its units (e.g. to create the field with internal conversion routines
+    // and to create the chained list of Lower/Higher units).
+    initialize(false);
+
+} // ctor
+
+//------------------------------------------------------------------------------
+CPhysSizeAngle::CPhysSizeAngle( CIdxTreeEntry* i_pParentBranch ) :
+//------------------------------------------------------------------------------
+    CPhysSize(
+        /* pParentBranch    */ i_pParentBranch,
+        /* strName          */ "Angle",
+        /* strSIUnitName    */ "Radiant",
+        /* strSIUnitSymbol  */ "rad",
+        /* strFormulaSymbol */ QString(QChar(0x03C6)),
+        /* bIsPowerRelated  */ false ),
+    Rad(
+        /* pPhysSize      */ this,
+        /* bIsLogarithmic */ false,
+        /* strName        */ "Radiant",
+        /* strSymbol      */ "rad",
+        /* fMFromSI       */ 1.0 ),
+    Degree(
+      /* pPhysSize      */ this,
+      /* bIsLogarithmic */ false,
+      /* strName        */ "Degree",
+      /* strSymbol      */ QString::fromLatin1("°"),
       /* fMFromSI       */ 180.0/c_fPI )
 {
     // Call function of base class CPhysSize to initialize the physical size together
@@ -78,5 +113,3 @@ CPhysSizeAngle::~CPhysSizeAngle()
 //------------------------------------------------------------------------------
 {
 } // dtor
-
-#endif

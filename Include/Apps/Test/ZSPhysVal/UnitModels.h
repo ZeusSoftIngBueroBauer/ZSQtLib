@@ -175,43 +175,43 @@ protected: // instance members
 }; // class CModelUnitGrpRatio
 
 
-//******************************************************************************
-class CModelUnitGrpDataQuantity : public QAbstractTableModel
-//******************************************************************************
-{
-    Q_OBJECT
-public: // type definitions and constants
-    typedef enum
-    {
-        EColumnName   = 0,
-        EColumnSymbol = 1,
-        EColumnFactor = 2,
-        EColumnCount
-    }   EColumn;
-public: // ctors and dtor
-    CModelUnitGrpDataQuantity( const QString& i_strObjName, QObject* i_pObjParent = nullptr );
-    virtual ~CModelUnitGrpDataQuantity();
-public: // instance methods
-    void setObjName( const QString& i_strObjName );
-    QString getObjName() const;
-    unsigned int getUnitCount() const;
-    void setUnitGroup( ZS::PhysVal::CUnitGrp* i_pUnitGrp );
-    ZS::PhysVal::CUnitGrp* unitGroup();
-public: // must overridables of base class QAbstractItemModel
-    virtual int rowCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
-    virtual int columnCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
-    virtual QVariant data( const QModelIndex& i_modelIdx, int i_iRole = Qt::DisplayRole ) const;
-public: // overridables of base class QAbstractItemModel
-    virtual QVariant headerData( int i_iSection, Qt::Orientation i_orientation, int i_iRole = Qt::DisplayRole) const;
-private: // copy ctor not allowed
-    CModelUnitGrpDataQuantity( const CModelUnitGrpDataQuantity& );
-private: // assignment operator not allowed
-    CModelUnitGrpDataQuantity& operator = ( const CModelUnitGrpDataQuantity& );
-protected: // instance members
-    QString                m_strObjName;
-    ZS::PhysVal::CUnitGrp* m_pUnitGrp;
-
-}; // class CModelUnitGrpDataQuantity
+////******************************************************************************
+//class CModelUnitGrpDataQuantity : public QAbstractTableModel
+////******************************************************************************
+//{
+//    Q_OBJECT
+//public: // type definitions and constants
+//    typedef enum
+//    {
+//        EColumnName   = 0,
+//        EColumnSymbol = 1,
+//        EColumnFactor = 2,
+//        EColumnCount
+//    }   EColumn;
+//public: // ctors and dtor
+//    CModelUnitGrpDataQuantity( const QString& i_strObjName, QObject* i_pObjParent = nullptr );
+//    virtual ~CModelUnitGrpDataQuantity();
+//public: // instance methods
+//    void setObjName( const QString& i_strObjName );
+//    QString getObjName() const;
+//    unsigned int getUnitCount() const;
+//    void setUnitGroup( ZS::PhysVal::CUnitGrp* i_pUnitGrp );
+//    ZS::PhysVal::CUnitGrp* unitGroup();
+//public: // must overridables of base class QAbstractItemModel
+//    virtual int rowCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
+//    virtual int columnCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
+//    virtual QVariant data( const QModelIndex& i_modelIdx, int i_iRole = Qt::DisplayRole ) const;
+//public: // overridables of base class QAbstractItemModel
+//    virtual QVariant headerData( int i_iSection, Qt::Orientation i_orientation, int i_iRole = Qt::DisplayRole) const;
+//private: // copy ctor not allowed
+//    CModelUnitGrpDataQuantity( const CModelUnitGrpDataQuantity& );
+//private: // assignment operator not allowed
+//    CModelUnitGrpDataQuantity& operator = ( const CModelUnitGrpDataQuantity& );
+//protected: // instance members
+//    QString                m_strObjName;
+//    ZS::PhysVal::CUnitGrp* m_pUnitGrp;
+//
+//}; // class CModelUnitGrpDataQuantity
 
 
 //******************************************************************************

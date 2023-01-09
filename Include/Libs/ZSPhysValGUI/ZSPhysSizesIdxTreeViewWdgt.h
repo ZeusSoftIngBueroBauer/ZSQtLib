@@ -83,6 +83,8 @@ protected slots:
     void onBtnTreeViewResizeRowsAndColumnsToContentsClicked( bool i_bChecked );
     void onBtnTreeViewExpandAllClicked( bool i_bChecked );
     void onBtnTreeViewCollapseAllClicked( bool i_bChecked );
+protected slots:
+    void onIdxTreeAboutToBeDestroyed();
 protected: // instance members
     CIdxTreePhysSizes* m_pIdxTree;
     QSize m_szBtns;

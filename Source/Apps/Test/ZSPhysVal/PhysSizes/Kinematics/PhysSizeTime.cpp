@@ -25,16 +25,14 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "PhysSizes/Kinematics/PhysSizeTime.h"
-#include "ZSSys/ZSSysMath.h"
 #include "ZSSys/ZSSysMemLeakDump.h"
 
-using namespace ZS::System;
 using namespace ZS::PhysVal;
 using namespace ZS::Apps::Test::PhysVal;
 
 
 /*******************************************************************************
-class CPhysSizeKinematicsTime : public CPhysSize
+class CPhysSizeTime : public CPhysSize
 *******************************************************************************/
 
 /*==============================================================================
@@ -42,72 +40,53 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CPhysSizeKinematicsTime::CPhysSizeKinematicsTime(
-    CIdxTree*      i_pIdxTree,
-    CIdxTreeEntry* i_pParentBranch ) :
+CPhysSizeTime::CPhysSizeTime( CIdxTreePhysSizes* i_pIdxTree ) :
 //------------------------------------------------------------------------------
     CPhysSize(
         /* pIdxTree         */ i_pIdxTree,
-        /* scienceField     */ EPhysScienceFieldKinematics,
         /* strName          */ "Time",
         /* strSIUnitName    */ "Seconds",
         /* strSIUnitSymbol  */ "s",
         /* strFormulaSymbol */ "t",
-        /* bIsPowerRelated  */ false,
-        /* pParentBranch    */ i_pParentBranch ),
-    NanoSeconds(nullptr),
-    MicroSeconds(nullptr),
-    MilliSeconds(nullptr),
-    Minutes(nullptr),
-    Hours(nullptr),
-    Days(nullptr),
-    ns(nullptr),
-    us(nullptr),
-    ms(nullptr),
-    s(nullptr),
-    m(nullptr),
-    h(nullptr),
-    d(nullptr)
-{
-    NanoSeconds = new CPhysUnit(
+        /* bIsPowerRelated  */ false ),
+    NanoSeconds(
         /* pPhysSize */ this,
-        /* strPrefix */ c_strPrefixNano );
-    MicroSeconds = new CPhysUnit(
+        /* strPrefix */ c_strPrefixNano ),
+    MicroSeconds(
         /* pPhysSize */ this,
-        /* strPrefix */ c_strPrefixMicro );
-    MilliSeconds = new CPhysUnit(
+        /* strPrefix */ c_strPrefixMicro ),
+    MilliSeconds(
         /* pPhysSize */ this,
-        /* strSymbol */ c_strPrefixMilli );
-    Seconds = new CPhysUnit(
+        /* strSymbol */ c_strPrefixMilli ),
+    Seconds(
         /* pPhysSize */ this,
-        /* strPrefix */ "" );
-    Minutes = new CPhysUnit(
+        /* strPrefix */ "" ),
+    Minutes(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ false,
         /* strName        */ "Minutes",
         /* strSymbol      */ "m",
-        /* fMFromSI       */ 1.0/60.0 );
-    Hours = new CPhysUnit(
+        /* fMFromSI       */ 1.0/60.0 ),
+    Hours(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ false,
         /* strName        */ "Hours",
         /* strSymbol      */ "h",
-        /* fMFromSI       */ 1.0/3600.0 );
-    Days = new CPhysUnit(
+        /* fMFromSI       */ 1.0/3600.0 ),
+    Days(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ false,
         /* strName        */ "Days",
         /* strSymbol      */ "d",
-        /* fMFromSI       */ 1.0/(24.0*3600.0) );
-
-    ns = NanoSeconds;
-    us = MilliSeconds;
-    ms = MilliSeconds;
-    s = Seconds;
-    m = Minutes;
-    h = Hours;
-    d = Days;
-
+        /* fMFromSI       */ 1.0/(24.0*3600.0) ),
+    ns(NanoSeconds),
+    us(MicroSeconds),
+    ms(MilliSeconds),
+    s(Seconds),
+    m(Minutes),
+    h(Hours),
+    d(Days)
+{
     // Call function of base class CPhysSize to initialize the physical size together
     // with its units (e.g. to create the field with internal conversion routines
     // and to create the chained list of Lower/Higher units).
@@ -116,120 +95,62 @@ CPhysSizeKinematicsTime::CPhysSizeKinematicsTime(
 } // ctor
 
 //------------------------------------------------------------------------------
-CPhysSizeKinematicsTime::~CPhysSizeKinematicsTime()
+CPhysSizeTime::CPhysSizeTime( CIdxTreeEntry* i_pParentBranch ) :
+//------------------------------------------------------------------------------
+    CPhysSize(
+        /* pParentBranch    */ i_pParentBranch,
+        /* strName          */ "Time",
+        /* strSIUnitName    */ "Seconds",
+        /* strSIUnitSymbol  */ "s",
+        /* strFormulaSymbol */ "t",
+        /* bIsPowerRelated  */ false ),
+    NanoSeconds(
+        /* pPhysSize */ this,
+        /* strPrefix */ c_strPrefixNano ),
+    MicroSeconds(
+        /* pPhysSize */ this,
+        /* strPrefix */ c_strPrefixMicro ),
+    MilliSeconds(
+        /* pPhysSize */ this,
+        /* strSymbol */ c_strPrefixMilli ),
+    Seconds(
+        /* pPhysSize */ this,
+        /* strPrefix */ "" ),
+    Minutes(
+        /* pPhysSize      */ this,
+        /* bIsLogarithmic */ false,
+        /* strName        */ "Minutes",
+        /* strSymbol      */ "m",
+        /* fMFromSI       */ 1.0/60.0 ),
+    Hours(
+        /* pPhysSize      */ this,
+        /* bIsLogarithmic */ false,
+        /* strName        */ "Hours",
+        /* strSymbol      */ "h",
+        /* fMFromSI       */ 1.0/3600.0 ),
+    Days(
+        /* pPhysSize      */ this,
+        /* bIsLogarithmic */ false,
+        /* strName        */ "Days",
+        /* strSymbol      */ "d",
+        /* fMFromSI       */ 1.0/(24.0*3600.0) ),
+    ns(NanoSeconds),
+    us(MicroSeconds),
+    ms(MilliSeconds),
+    s(Seconds),
+    m(Minutes),
+    h(Hours),
+    d(Days)
+{
+    // Call function of base class CPhysSize to initialize the physical size together
+    // with its units (e.g. to create the field with internal conversion routines
+    // and to create the chained list of Lower/Higher units).
+    initialize(true);
+
+} // ctor
+
+//------------------------------------------------------------------------------
+CPhysSizeTime::~CPhysSizeTime()
 //------------------------------------------------------------------------------
 {
-    try {
-        delete NanoSeconds;
-    }
-    catch(...) {
-    }
-    try {
-        delete MicroSeconds;
-    }
-    catch(...) {
-    }
-    try {
-        delete MilliSeconds;
-    }
-    catch(...) {
-    }
-    try {
-        delete Seconds;
-    }
-    catch(...) {
-    }
-    try {
-        delete Minutes;
-    }
-    catch(...) {
-    }
-    try {
-        delete Hours;
-    }
-    catch(...) {
-    }
-    try {
-        delete Days;
-    }
-    catch(...) {
-    }
-
-    NanoSeconds = nullptr;
-    MicroSeconds = nullptr;
-    MilliSeconds = nullptr;
-    Seconds = nullptr;
-    Minutes = nullptr;
-    Hours = nullptr;
-    Days = nullptr;
-    ns = nullptr;
-    us = nullptr;
-    ms = nullptr;
-    s = nullptr;
-    h = nullptr;
-    d = nullptr;
-
 } // dtor
-
-
-///*******************************************************************************
-//class CPhysSizeKinematicsTime : public CPhysSize
-//*******************************************************************************/
-//
-///*==============================================================================
-//public: // ctors and dtor
-//==============================================================================*/
-//
-////------------------------------------------------------------------------------
-//CPhysSizeKinematicsTime::CPhysSizeKinematicsTime() :
-////------------------------------------------------------------------------------
-//    CPhysSize(
-//        /* scienceField     */ EPhysScienceFieldKinematics,
-//        /* strName          */ "Time",
-//        /* strSIUnitName    */ "Seconds",
-//        /* strSIUnitSymbol  */ "s",
-//        /* strFormulaSymbol */ "t",
-//        /* bIsPowerRelated  */ false ),
-//    m_physUnitNanoSeconds(
-//        /* pPhysSize */ this,
-//        /* strPrefix */ c_strPrefixNano ),
-//    m_physUnitMicroSeconds(
-//        /* pPhysSize */ this,
-//        /* strPrefix */ c_strPrefixMicro ),
-//    m_physUnitMilliSeconds(
-//        /* pPhysSize */ this,
-//        /* strSymbol */ c_strPrefixMilli ),
-//    m_physUnitSeconds(
-//        /* pPhysSize */ this,
-//        /* strPrefix */ "" ),
-//    m_physUnitMinutes(
-//        /* pPhysSize      */ this,
-//        /* bIsLogarithmic */ false,
-//        /* strName        */ "Minutes",
-//        /* strSymbol      */ "m",
-//        /* fMFromSI       */ 1.0/60.0 ),
-//    m_physUnitHours(
-//        /* pPhysSize      */ this,
-//        /* bIsLogarithmic */ false,
-//        /* strName        */ "Hours",
-//        /* strSymbol      */ "h",
-//        /* fMFromSI       */ 1.0/3600.0 ),
-//    m_physUnitDays(
-//        /* pPhysSize      */ this,
-//        /* bIsLogarithmic */ false,
-//        /* strName        */ "Days",
-//        /* strSymbol      */ "d",
-//        /* fMFromSI       */ 1.0/(24.0*3600.0) )
-//{
-//    // Call function of base class CPhysSize to initialize the physical size together
-//    // with its units (e.g. to create the field with internal conversion routines
-//    // and to create the chained list of Lower/Higher units).
-//    initialize(true);
-//
-//} // ctor
-//
-////------------------------------------------------------------------------------
-//CPhysSizeTime::~CPhysSizeTime()
-////------------------------------------------------------------------------------
-//{
-//} // dtor

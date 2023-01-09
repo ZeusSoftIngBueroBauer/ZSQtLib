@@ -25,88 +25,36 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "PhysSizes/Geometry/Geometry.h"
-#include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysMemLeakDump.h"
 
-#if 0
-
-using namespace ZS::System;
-using namespace ZS::PhysVal::Geometry;
+using namespace ZS::PhysVal;
+using namespace ZS::Apps::Test::PhysVal;
 
 
 /*******************************************************************************
-namespace Geometry
+class CPhysScienceFieldElectricity
 *******************************************************************************/
 
-static CPhysSizeAngle*       s_pPhysSizeAngle       = nullptr;
-static CPhysSizeGraphDevice* s_pPhysSizeGraphDevice = nullptr;
-static CPhysSizeLength*      s_pPhysSizeLength      = nullptr;
+/*==============================================================================
+public: // ctors and dtor
+==============================================================================*/
 
 //------------------------------------------------------------------------------
-void ZS::PhysVal::Geometry::createPhysSizes()
+/*! @brief 
+
+*/
+CPhysScienceFieldGeometry::CPhysScienceFieldGeometry(CIdxTreePhysSizes* i_pIdxTree) :
 //------------------------------------------------------------------------------
+    CPhysScienceField(i_pIdxTree, EPhysScienceField::Geometry),
+    Angle(this),
+    GraphDevice(this),
+    Length(this)
 {
-    if( s_pPhysSizeAngle == nullptr )
-    {
-        s_pPhysSizeAngle = new CPhysSizeAngle();
-    }
-    if( s_pPhysSizeGraphDevice == nullptr )
-    {
-        s_pPhysSizeGraphDevice = new CPhysSizeGraphDevice();
-    }
-    if( s_pPhysSizeLength == nullptr )
-    {
-        s_pPhysSizeLength = new CPhysSizeLength();
-    }
-
-} // createPhysSizes
-
-//------------------------------------------------------------------------------
-void ZS::PhysVal::Geometry::deletePhysSizes()
-//------------------------------------------------------------------------------
-{
-    delete s_pPhysSizeLength;
-    s_pPhysSizeLength = nullptr;
-
-    delete s_pPhysSizeGraphDevice;
-    s_pPhysSizeGraphDevice = nullptr;
-
-    delete s_pPhysSizeAngle;
-    s_pPhysSizeAngle = nullptr;
-
-} // deletePhysSizes
-
-//------------------------------------------------------------------------------
-CPhysSizeAngle* ZS::PhysVal::Geometry::Angle()
-//------------------------------------------------------------------------------
-{
-    if( s_pPhysSizeAngle == nullptr )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSingletonClassNotInstantiated );
-    }
-    return s_pPhysSizeAngle;
 }
 
-//------------------------------------------------------------------------------
-CPhysSizeGraphDevice* ZS::PhysVal::Geometry::GraphDevice()
-//------------------------------------------------------------------------------
-{
-    if( s_pPhysSizeGraphDevice == nullptr )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSingletonClassNotInstantiated );
-    }
-    return s_pPhysSizeGraphDevice;
-}
 
 //------------------------------------------------------------------------------
-CPhysSizeLength* ZS::PhysVal::Geometry::Length()
+CPhysScienceFieldGeometry::~CPhysScienceFieldGeometry()
 //------------------------------------------------------------------------------
 {
-    if( s_pPhysSizeLength == nullptr )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSingletonClassNotInstantiated );
-    }
-    return s_pPhysSizeLength;
-}
-
-#endif
+} // dtor

@@ -25,47 +25,10 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "PhysSizes/Electricity/Electricity.h"
-#include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysMemLeakDump.h"
 
-#if 0
-
-using namespace ZS::System;
 using namespace ZS::PhysVal;
-using namespace ZS::Apps::Test::PhysVal::Electricity;
-
-
-/*******************************************************************************
-namespace ZS::Apps::Test::PhysVal::Electricity;
-*******************************************************************************/
-
-//------------------------------------------------------------------------------
-const ZS::Apps::Test::PhysVal::Electricity::CPhysSizeCurrent& Current()
-//------------------------------------------------------------------------------
-{
-    return CPhysScienceFieldElectricity::Current();
-}
-
-//------------------------------------------------------------------------------
-const ZS::Apps::Test::PhysVal::Electricity::CPhysSizePower& Power()
-//------------------------------------------------------------------------------
-{
-    return CPhysScienceFieldElectricity::Power();
-}
-
-//------------------------------------------------------------------------------
-const ZS::Apps::Test::PhysVal::Electricity::CPhysSizeResistance& Resistance()
-//------------------------------------------------------------------------------
-{
-    return CPhysScienceFieldElectricity::Resistance();
-}
-
-//------------------------------------------------------------------------------
-const ZS::Apps::Test::PhysVal::Electricity::CPhysSizeVoltage& Voltage()
-//------------------------------------------------------------------------------
-{
-    return CPhysScienceFieldElectricity::Voltage();
-}
+using namespace ZS::Apps::Test::PhysVal;
 
 
 /*******************************************************************************
@@ -73,108 +36,52 @@ class CPhysScienceFieldElectricity
 *******************************************************************************/
 
 /*==============================================================================
-private: // class members
-==============================================================================*/
-
-CPhysScienceFieldElectricity* CPhysScienceFieldElectricity::s_pTheInst = nullptr;
-
-CPhysSizeCurrent*    CPhysScienceFieldElectricity::s_pPhysSizeCurrent = nullptr;
-CPhysSizePower*      CPhysScienceFieldElectricity::s_pPhysSizePower = nullptr;
-CPhysSizeResistance* CPhysScienceFieldElectricity::s_pPhysSizeResistance = nullptr;
-CPhysSizeVoltage*    CPhysScienceFieldElectricity::s_pPhysSizeVoltage = nullptr;
-
-/*==============================================================================
-public: // class methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-const CPhysSizeCurrent& CPhysScienceFieldElectricity::Current()
-//------------------------------------------------------------------------------
-{
-    if( s_pTheInst == nullptr) {
-        throw CException(__FILE__, __LINE__, EResultSingletonClassNotInstantiated);
-    }
-    return *s_pPhysSizeCurrent;
-}
-
-//------------------------------------------------------------------------------
-const CPhysSizePower& CPhysScienceFieldElectricity::Power()
-//------------------------------------------------------------------------------
-{
-    if( s_pTheInst == nullptr) {
-        throw CException(__FILE__, __LINE__, EResultSingletonClassNotInstantiated);
-    }
-    return *s_pPhysSizePower;
-}
-
-//------------------------------------------------------------------------------
-const CPhysSizeResistance& CPhysScienceFieldElectricity::Resistance()
-//------------------------------------------------------------------------------
-{
-    if( s_pTheInst == nullptr) {
-        throw CException(__FILE__, __LINE__, EResultSingletonClassNotInstantiated);
-    }
-    return *s_pPhysSizeResistance;
-}
-
-//------------------------------------------------------------------------------
-const CPhysSizeVoltage& CPhysScienceFieldElectricity::Voltage()
-//------------------------------------------------------------------------------
-{
-    if( s_pTheInst == nullptr) {
-        throw CException(__FILE__, __LINE__, EResultSingletonClassNotInstantiated);
-    }
-    return *s_pPhysSizeVoltage;
-}
-
-/*==============================================================================
 public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CPhysScienceFieldElectricity::CPhysScienceFieldElectricity(CIdxTreePhysSizes* i_pIdxTree)
+/*! @brief 
+
+*/
+CPhysScienceFieldElectricity::CPhysScienceFieldElectricity(CIdxTreePhysSizes* i_pIdxTree) :
 //------------------------------------------------------------------------------
+    CPhysScienceField(i_pIdxTree, EPhysScienceField::Electricity),
+    Current(this),
+    Power(this),
+    Resistance(this),
+    Voltage(this)
 {
-    if( s_pTheInst != nullptr) {
-        throw CException(__FILE__, __LINE__, EResultSingletonClassAlreadyInstantiated);
-    }
-
-    s_pPhysSizeCurrent = new CPhysSizeCurrent(i_pIdxTree);
-    s_pPhysSizePower = new CPhysSizePower(i_pIdxTree);
-    s_pPhysSizeResistance = new CPhysSizeResistance(i_pIdxTree);
-    s_pPhysSizeVoltage = new CPhysSizeVoltage(i_pIdxTree);
-
     // Add conversion routines to convert units between different physical sizes
     //==========================================================================
 
-    s_pPhysSizeCurrent->addFctConvert( // P = I²*R
-        /* pPhysSizeDst   */ s_pPhysSizePower,
-        /* pPhysSizeRef   */ s_pPhysSizeResistance,
+    Current.addFctConvert( // P = I²*R
+        /* pPhysSizeDst   */ &Power,
+        /* pPhysSizeRef   */ &Resistance,
         /* fctConvert     */ EFctConvert_SQRxDIVr );
 
-    s_pPhysSizeCurrent->addFctConvert( // U = I*R
-        /* pPhysSizeDst   */ s_pPhysSizeVoltage,
-        /* pPhysSizeRef   */ s_pPhysSizeResistance,
+    Current.addFctConvert( // U = I*R
+        /* pPhysSizeDst   */ &Voltage,
+        /* pPhysSizeRef   */ &Resistance,
         /* fctConvert     */ EFctConvert_xMULr );
 
-    s_pPhysSizePower->addFctConvert( // U = sqrt(P*R)
-        /* pPhysSizeDst   */ s_pPhysSizeVoltage,
-        /* pPhysSizeRef   */ s_pPhysSizeResistance,
+    Power.addFctConvert( // U = sqrt(P*R)
+        /* pPhysSizeDst   */ &Voltage,
+        /* pPhysSizeRef   */ &Resistance,
         /* fctConvert     */ EFctConvert_SQRT_xMULr_ );
 
-    s_pPhysSizePower->addFctConvert( // I = sqrt(P/R)
-        /* pPhysSizeDst   */ s_pPhysSizeCurrent,
-        /* pPhysSizeRef   */ s_pPhysSizeResistance,
+    Power.addFctConvert( // I = sqrt(P/R)
+        /* pPhysSizeDst   */ &Current,
+        /* pPhysSizeRef   */ &Resistance,
         /* fctConvert     */ EFctConvert_SQRT_xDIVr_ );
 
-    s_pPhysSizeVoltage->addFctConvert( // P = U²/R
-        /* pPhysSizeDst   */ s_pPhysSizePower,
-        /* pPhysSizeRef   */ s_pPhysSizeResistance,
+    Voltage.addFctConvert( // P = U²/R
+        /* pPhysSizeDst   */ &Power,
+        /* pPhysSizeRef   */ &Resistance,
         /* fctConvert     */ EFctConvert_SQRxDIVr );
 
-    s_pPhysSizeVoltage->addFctConvert( // I = U/R
-        /* pPhysSizeDst   */ s_pPhysSizeCurrent,
-        /* pPhysSizeRef   */ s_pPhysSizeResistance,
+    Voltage.addFctConvert( // I = U/R
+        /* pPhysSizeDst   */ &Current,
+        /* pPhysSizeRef   */ &Resistance,
         /* fctConvert     */ EFctConvert_xDIVr );
 
 } // ctor
@@ -183,20 +90,4 @@ CPhysScienceFieldElectricity::CPhysScienceFieldElectricity(CIdxTreePhysSizes* i_
 CPhysScienceFieldElectricity::~CPhysScienceFieldElectricity()
 //------------------------------------------------------------------------------
 {
-    delete s_pPhysSizeCurrent;
-    s_pPhysSizeCurrent = nullptr;
-
-    delete s_pPhysSizePower;
-    s_pPhysSizePower = nullptr;
-
-    delete s_pPhysSizeResistance;
-    s_pPhysSizeResistance = nullptr;
-
-    delete s_pPhysSizeVoltage;
-    s_pPhysSizeVoltage = nullptr;
-
-    s_pTheInst = nullptr;
-
 } // dtor
-
-#endif

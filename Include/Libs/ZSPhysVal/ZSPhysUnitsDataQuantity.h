@@ -24,6 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
+#if 0
+
 #ifndef ZSPhysUnitsDataQuantity_h
 #define ZSPhysUnitsDataQuantity_h
 
@@ -38,6 +40,9 @@ namespace PhysVal
 class ZSPHYSVALDLL_API CUnitDataQuantity : public CUnit
 //******************************************************************************
 {
+public: // class methods
+    static QString NameSpace() { return "ZS::PhysVal"; }
+    static QString ClassName() { return "CUnitDataQuantity"; }
 public: // ctors and dtor
     CUnitDataQuantity(
         CUnitGrp*      i_pUnitGrp,
@@ -59,6 +64,9 @@ protected: // instance members
 class ZSPHYSVALDLL_API CUnitGrpDataQuantity : public CUnitGrp
 //******************************************************************************
 {
+public: // class methods
+    static QString NameSpace() { return "ZS::PhysVal"; }
+    static QString ClassName() { return "CUnitGrpDataQuantity"; }
 public: // ctors and dtor
     CUnitGrpDataQuantity(ZS::System::CIdxTree* i_pIdxTree);
     virtual ~CUnitGrpDataQuantity();
@@ -84,3 +92,5 @@ protected: // instance members
 } // namespace ZS
 
 #endif // #ifndef ZSPhysUnitsDataQuantity_h
+
+#endif

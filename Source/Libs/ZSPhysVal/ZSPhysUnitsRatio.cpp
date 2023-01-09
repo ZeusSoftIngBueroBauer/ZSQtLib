@@ -85,7 +85,7 @@ public: // overridables (converting values)
 bool CUnitRatio::isConvertible( const CUnit* i_pUnitDst, double /*i_fVal*/ ) const
 //------------------------------------------------------------------------------
 {
-    if( i_pUnitDst->classType() != EUnitClassTypeRatios )
+    if( i_pUnitDst->classType() != EUnitClassType::Ratios )
     {
         return false;
     }
@@ -103,7 +103,7 @@ bool CUnitRatio::isConvertible( const CUnit* i_pUnitDst, double /*i_fVal*/ ) con
 double CUnitRatio::convertValue( double i_fVal, const CUnit* i_pUnitDst ) const
 //------------------------------------------------------------------------------
 {
-    if( i_pUnitDst->classType() != EUnitClassTypeRatios )
+    if( i_pUnitDst->classType() != EUnitClassType::Ratios )
     {
         QString strAddErrInfo = "Src:" + unitGroup()->name() + ", Dst:" + i_pUnitDst->unitGroup()->name();
         throw CUnitConversionException( __FILE__, __LINE__, EResultDifferentPhysSizes, strAddErrInfo );
@@ -125,6 +125,7 @@ double CUnitRatio::convertValue( double i_fVal, const CUnit* i_pUnitDst ) const
 
 } // convertValue
 
+#if 0
 
 /*******************************************************************************
 class CUnitGrpRatio : public QObject
@@ -139,7 +140,7 @@ CUnitGrpRatio::CUnitGrpRatio( CIdxTree* i_pIdxTree ) :
 //------------------------------------------------------------------------------
     CUnitGrp(
         /* pIdxTree       */ i_pIdxTree,
-        /* type           */ EUnitClassTypeRatios,
+        /* type           */ EUnitClassType::Ratios,
         /* strName        */ "Ratio",
         /* pUnitGrpParent */ nullptr ),
     m_unitRatioPerOne(
@@ -170,3 +171,5 @@ CUnitGrpRatio::~CUnitGrpRatio()
 //------------------------------------------------------------------------------
 {
 } // dtor
+
+#endif

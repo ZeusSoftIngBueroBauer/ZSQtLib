@@ -25,15 +25,11 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "PhysSizes/Electricity/PhysSizeCurrent.h"
-#include "ZSSys/ZSSysMath.h"
 #include "ZSSys/ZSSysMemLeakDump.h"
 
-#if 0
 
-
-using namespace ZS::System::Math;
 using namespace ZS::PhysVal;
-using namespace ZS::Apps::Test::PhysVal::Electricity;
+using namespace ZS::Apps::Test::PhysVal;
 
 
 /*******************************************************************************
@@ -45,30 +41,73 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CPhysSizeCurrent::CPhysSizeCurrent() :
+CPhysSizeCurrent::CPhysSizeCurrent( CIdxTreePhysSizes* i_pIdxTree ) :
 //------------------------------------------------------------------------------
     CPhysSize(
-        /* scienceField     */ EPhysScienceFieldElectricity,
+        /* pIdxTree         */ i_pIdxTree,
         /* strName          */ "Current",
         /* strSIUnitName    */ "Ampere",
         /* strSIUnitSymbol  */ "A",
         /* strFormulaSymbol */ "I",
         /* bIsPowerRelated  */ false ),
-    m_physUnitPicoAmpere(
+    PicoAmpere(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixPico ),
-    m_physUnitNanoAmpere(
+    NanoAmpere(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixNano ),
-    m_physUnitMicroAmpere(
+    MicroAmpere(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixMicro ),
-    m_physUnitMilliAmpere(
+    MilliAmpere(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixMilli ),
-    m_physUnitAmpere(
+    Ampere(
         /* pPhysSize */ this,
-        /* strPrefix */ "" )
+        /* strPrefix */ "" ),
+    pA(PicoAmpere),
+    nA(NanoAmpere),
+    uA(MicroAmpere),
+    mA(MilliAmpere),
+    A(Ampere)
+{
+    // Call function of base class CPhysSize to initialize the physical size together
+    // with its units (e.g. to create the field with internal conversion routines
+    // and to create the chained list of Lower/Higher units).
+    initialize(true);
+
+} // ctor
+
+//------------------------------------------------------------------------------
+CPhysSizeCurrent::CPhysSizeCurrent( CIdxTreeEntry* i_pParentBranch ) :
+//------------------------------------------------------------------------------
+    CPhysSize(
+        /* pParentBranch    */ i_pParentBranch,
+        /* strName          */ "Current",
+        /* strSIUnitName    */ "Ampere",
+        /* strSIUnitSymbol  */ "A",
+        /* strFormulaSymbol */ "I",
+        /* bIsPowerRelated  */ false ),
+    PicoAmpere(
+        /* pPhysSize */ this,
+        /* strPrefix */ c_strPrefixPico ),
+    NanoAmpere(
+        /* pPhysSize */ this,
+        /* strPrefix */ c_strPrefixNano ),
+    MicroAmpere(
+        /* pPhysSize */ this,
+        /* strPrefix */ c_strPrefixMicro ),
+    MilliAmpere(
+        /* pPhysSize */ this,
+        /* strPrefix */ c_strPrefixMilli ),
+    Ampere(
+        /* pPhysSize */ this,
+        /* strPrefix */ "" ),
+    pA(PicoAmpere),
+    nA(NanoAmpere),
+    uA(MicroAmpere),
+    mA(MilliAmpere),
+    A(Ampere)
 {
     // Call function of base class CPhysSize to initialize the physical size together
     // with its units (e.g. to create the field with internal conversion routines
@@ -82,5 +121,3 @@ CPhysSizeCurrent::~CPhysSizeCurrent()
 //------------------------------------------------------------------------------
 {
 } // dtor
-
-#endif

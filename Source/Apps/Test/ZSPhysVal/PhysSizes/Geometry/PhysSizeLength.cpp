@@ -28,11 +28,8 @@ may result in using the software modules.
 #include "ZSSys/ZSSysMath.h"
 #include "ZSSys/ZSSysMemLeakDump.h"
 
-#if 0
-
-using namespace ZS::System::Math;
 using namespace ZS::PhysVal;
-using namespace ZS::PhysVal::Geometry;
+using namespace ZS::Apps::Test::PhysVal;
 
 
 /*******************************************************************************
@@ -44,69 +41,79 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CPhysSizeLength::CPhysSizeLength() :
+CPhysSizeLength::CPhysSizeLength( CIdxTreePhysSizes* i_pIdxTree ) :
 //------------------------------------------------------------------------------
     CPhysSize(
-        /* scienceField     */ EPhysScienceFieldGeometry,
+        /* pIdxTree         */ i_pIdxTree,
         /* strName          */ "Length",
         /* strSIUnitName    */ "Meter",
         /* strSIUnitSymbol  */ "m",
         /* strFormulaSymbol */ "l",
         /* bIsPowerRelated  */ false ),
-    m_physUnitPicoMeter(
+    PicoMeter(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixPico ),
-    m_physUnitNanoMeter(
+    NanoMeter(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixNano ),
-    m_physUnitMicroMeter(
+    MicroMeter(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixMicro ),
-    m_physUnitMilliMeter(
+    MilliMeter(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixMilli ),
-    m_physUnitCentiMeter(
+    CentiMeter(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixCenti ),
-    m_physUnitDeziMeter(
+    DeziMeter(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixDezi ),
-    m_physUnitMeter(
+    Meter(
         /* pPhysSize */ this,
         /* strPrefix */ "" ),
-    m_physUnitKiloMeter(
+    KiloMeter(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixKilo ),
-    m_physUnitInch(
+    Inch(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ false,
         /* strName        */ "Inch",
         /* strSymbol      */ "in",
         /* fMFromSI       */ 1.0/0.0254 ),
-    m_physUnitFoot(
+    Foot(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ false,
         /* strName        */ "Foot",
         /* strSymbol      */ "ft",
         /* fMFromSI       */ 1.0/(12.0*0.0254) ),
-    m_physUnitYard(
+    Yard(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ false,
         /* strName        */ "Yard",
         /* strSymbol      */ "yd",
         /* fMFromSI       */ 1.0/(36.0*0.0254) ),
-    m_physUnitMile(
+    Mile(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ false,
         /* strName        */ "Mile",
         /* strSymbol      */ "mi",
         /* fMFromSI       */ 1.0/1609.344 ),
-    m_physUnitNauticalMile(
+    NauticalMile(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ false,
         /* strName        */ "Nautical Mile",
         /* strSymbol      */ "sm",
-        /* fMFromSI       */ 1.0/1852.0 )
+        /* fMFromSI       */ 1.0/1852.0 ),
+    pm(PicoMeter),
+    nm(NanoMeter),
+    um(MicroMeter),
+    mm(MilliMeter),
+    cm(CentiMeter),
+    dm(DeziMeter),
+    m(Meter),
+    km(KiloMeter),
+    ft(Foot),
+    yd(Yard)
 {
     // Call function of base class CPhysSize to initialize the physical size together
     // with its units (e.g. to create the field with internal conversion routines).
@@ -118,12 +125,106 @@ CPhysSizeLength::CPhysSizeLength() :
     // Link the units to a chained list for the "findBestUnit" functionality:
     //======================================================================
 
-    m_physUnitPicoMeter. setNextLowerHigherUnits( nullptr,               &m_physUnitNanoMeter  );
-    m_physUnitNanoMeter. setNextLowerHigherUnits( &m_physUnitPicoMeter,  &m_physUnitMicroMeter );
-    m_physUnitMicroMeter.setNextLowerHigherUnits( &m_physUnitNanoMeter,  &m_physUnitMilliMeter );
-    m_physUnitMilliMeter.setNextLowerHigherUnits( &m_physUnitMicroMeter, &m_physUnitMeter      );
-    m_physUnitMeter.     setNextLowerHigherUnits( &m_physUnitMilliMeter, &m_physUnitKiloMeter  );
-    m_physUnitKiloMeter. setNextLowerHigherUnits( &m_physUnitMeter,      nullptr               );
+    PicoMeter. setNextLowerHigherUnits( nullptr,     &NanoMeter  );
+    NanoMeter. setNextLowerHigherUnits( &PicoMeter,  &MicroMeter );
+    MicroMeter.setNextLowerHigherUnits( &NanoMeter,  &MilliMeter );
+    MilliMeter.setNextLowerHigherUnits( &MicroMeter, &Meter      );
+    Meter.     setNextLowerHigherUnits( &MilliMeter, &KiloMeter  );
+    KiloMeter. setNextLowerHigherUnits( &Meter,      nullptr     );
+
+} // ctor
+
+//------------------------------------------------------------------------------
+CPhysSizeLength::CPhysSizeLength( CIdxTreeEntry* i_pParentBranch ) :
+//------------------------------------------------------------------------------
+    CPhysSize(
+        /* pParentBranch    */ i_pParentBranch,
+        /* strName          */ "Length",
+        /* strSIUnitName    */ "Meter",
+        /* strSIUnitSymbol  */ "m",
+        /* strFormulaSymbol */ "l",
+        /* bIsPowerRelated  */ false ),
+    PicoMeter(
+        /* pPhysSize */ this,
+        /* strPrefix */ c_strPrefixPico ),
+    NanoMeter(
+        /* pPhysSize */ this,
+        /* strPrefix */ c_strPrefixNano ),
+    MicroMeter(
+        /* pPhysSize */ this,
+        /* strPrefix */ c_strPrefixMicro ),
+    MilliMeter(
+        /* pPhysSize */ this,
+        /* strPrefix */ c_strPrefixMilli ),
+    CentiMeter(
+        /* pPhysSize */ this,
+        /* strPrefix */ c_strPrefixCenti ),
+    DeziMeter(
+        /* pPhysSize */ this,
+        /* strPrefix */ c_strPrefixDezi ),
+    Meter(
+        /* pPhysSize */ this,
+        /* strPrefix */ "" ),
+    KiloMeter(
+        /* pPhysSize */ this,
+        /* strPrefix */ c_strPrefixKilo ),
+    Inch(
+        /* pPhysSize      */ this,
+        /* bIsLogarithmic */ false,
+        /* strName        */ "Inch",
+        /* strSymbol      */ "in",
+        /* fMFromSI       */ 1.0/0.0254 ),
+    Foot(
+        /* pPhysSize      */ this,
+        /* bIsLogarithmic */ false,
+        /* strName        */ "Foot",
+        /* strSymbol      */ "ft",
+        /* fMFromSI       */ 1.0/(12.0*0.0254) ),
+    Yard(
+        /* pPhysSize      */ this,
+        /* bIsLogarithmic */ false,
+        /* strName        */ "Yard",
+        /* strSymbol      */ "yd",
+        /* fMFromSI       */ 1.0/(36.0*0.0254) ),
+    Mile(
+        /* pPhysSize      */ this,
+        /* bIsLogarithmic */ false,
+        /* strName        */ "Mile",
+        /* strSymbol      */ "mi",
+        /* fMFromSI       */ 1.0/1609.344 ),
+    NauticalMile(
+        /* pPhysSize      */ this,
+        /* bIsLogarithmic */ false,
+        /* strName        */ "Nautical Mile",
+        /* strSymbol      */ "sm",
+        /* fMFromSI       */ 1.0/1852.0 ),
+    pm(PicoMeter),
+    nm(NanoMeter),
+    um(MicroMeter),
+    mm(MilliMeter),
+    cm(CentiMeter),
+    dm(DeziMeter),
+    m(Meter),
+    km(KiloMeter),
+    ft(Foot),
+    yd(Yard)
+{
+    // Call function of base class CPhysSize to initialize the physical size together
+    // with its units (e.g. to create the field with internal conversion routines).
+    // Here we don't let the physical size create the chained list of Lower/Higher units
+    // for the "findBestUnit" functionality as "Inch", "Feet", "DeziMeter", "CentiMeter"
+    // etc. don't belong to those chained list.
+    initialize(false);
+
+    // Link the units to a chained list for the "findBestUnit" functionality:
+    //======================================================================
+
+    PicoMeter. setNextLowerHigherUnits( nullptr,     &NanoMeter  );
+    NanoMeter. setNextLowerHigherUnits( &PicoMeter,  &MicroMeter );
+    MicroMeter.setNextLowerHigherUnits( &NanoMeter,  &MilliMeter );
+    MilliMeter.setNextLowerHigherUnits( &MicroMeter, &Meter      );
+    Meter.     setNextLowerHigherUnits( &MilliMeter, &KiloMeter  );
+    KiloMeter. setNextLowerHigherUnits( &Meter,      nullptr     );
 
 } // ctor
 
@@ -132,5 +233,3 @@ CPhysSizeLength::~CPhysSizeLength()
 //------------------------------------------------------------------------------
 {
 } // dtor
-
-#endif

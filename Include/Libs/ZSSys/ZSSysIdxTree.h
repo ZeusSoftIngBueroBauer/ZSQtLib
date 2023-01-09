@@ -251,7 +251,7 @@ public: // overridables (createBranch and createLeave must be overridden to crea
     virtual CIdxTreeEntry* createTreeEntry( EIdxTreeEntryType i_entryType, const QString& i_strName ) const;
 public: // instance methods
     int treeEntriesVectorSize() const; // the number of used entries might be less
-    CIdxTreeEntry* getEntry( int i_idxObj ) const; // may return nullptr as some vector entries may have been freed
+    CIdxTreeEntry* getEntry( int i_idxInTree ) const; // may return nullptr as some vector entries may have been freed
 public: // instance methods
     CIdxTreeEntry* findBranch( const QString& i_strPath ) const;
     CIdxTreeEntry* findBranch( const QString& i_strParentPath, const QString& i_strBranchName ) const;

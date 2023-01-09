@@ -39,61 +39,37 @@ namespace Test
 namespace PhysVal
 {
 //******************************************************************************
-class CPhysSizeKinematicsTime : public ZS::PhysVal::CPhysSize
+class CPhysSizeTime : public ZS::PhysVal::CPhysSize
 //******************************************************************************
 {
 public: // ctors and dtor
-    CPhysSizeKinematicsTime(
-        ZS::System::CIdxTree* i_pIdxTree,
-        CIdxTreeEntry*        i_pParentBranch );
-    ~CPhysSizeKinematicsTime();
+    CPhysSizeTime(ZS::PhysVal::CIdxTreePhysSizes* i_pIdxTree);
+    CPhysSizeTime(ZS::System::CIdxTreeEntry* i_pParentBranch);
+    CPhysSizeTime(CPhysSizeTime&& i_other) = delete;
+    CPhysSizeTime(CPhysSizeTime& i_other) = delete;
+    CPhysSizeTime(const CPhysSizeTime& i_other) = delete;
+    virtual ~CPhysSizeTime();
+public: // operators
+    CPhysSizeTime& operator=(CPhysSizeTime& i_other) = delete;
+    CPhysSizeTime& operator=(const CPhysSizeTime& i_other) = delete;
+    CPhysSizeTime& operator=(CPhysSizeTime&& i_other) = delete;
 public: // instance members
-    ZS::PhysVal::CPhysUnit* NanoSeconds;
-    ZS::PhysVal::CPhysUnit* MicroSeconds;
-    ZS::PhysVal::CPhysUnit* MilliSeconds;
-    ZS::PhysVal::CPhysUnit* Seconds;
-    ZS::PhysVal::CPhysUnit* Minutes;
-    ZS::PhysVal::CPhysUnit* Hours;
-    ZS::PhysVal::CPhysUnit* Days;
-    ZS::PhysVal::CPhysUnit* ns;
-    ZS::PhysVal::CPhysUnit* us;
-    ZS::PhysVal::CPhysUnit* ms;
-    ZS::PhysVal::CPhysUnit* m;
-    ZS::PhysVal::CPhysUnit* s;
-    ZS::PhysVal::CPhysUnit* h;
-    ZS::PhysVal::CPhysUnit* d;
+    ZS::PhysVal::CPhysUnit NanoSeconds;
+    ZS::PhysVal::CPhysUnit MicroSeconds;
+    ZS::PhysVal::CPhysUnit MilliSeconds;
+    ZS::PhysVal::CPhysUnit Seconds;
+    ZS::PhysVal::CPhysUnit Minutes;
+    ZS::PhysVal::CPhysUnit Hours;
+    ZS::PhysVal::CPhysUnit Days;
+    ZS::PhysVal::CPhysUnit& ns;
+    ZS::PhysVal::CPhysUnit& us;
+    ZS::PhysVal::CPhysUnit& ms;
+    ZS::PhysVal::CPhysUnit& m;
+    ZS::PhysVal::CPhysUnit& s;
+    ZS::PhysVal::CPhysUnit& h;
+    ZS::PhysVal::CPhysUnit& d;
 
-}; // class CPhysSizeKinematicsTime
-
-//namespace Kinematics
-//{
-////******************************************************************************
-//class CPhysSizeTime : public ZS::PhysVal::CPhysSize
-////******************************************************************************
-//{
-//public: // ctors and dtor
-//    CPhysSizeTime( ZS::PhysVal::CIdxTreePhysSizes* i_pIdxTree );
-//    ~CPhysSizeTime();
-//public: // instance methods
-//    ZS::PhysVal::CPhysUnit* NanoSeconds() { return &m_physUnitNanoSeconds; }
-//    ZS::PhysVal::CPhysUnit* MicroSeconds() { return &m_physUnitMicroSeconds; }
-//    ZS::PhysVal::CPhysUnit* MilliSeconds() { return &m_physUnitMilliSeconds; }
-//    ZS::PhysVal::CPhysUnit* Seconds() { return &m_physUnitSeconds; }
-//    ZS::PhysVal::CPhysUnit* Minutes() { return &m_physUnitMinutes; }
-//    ZS::PhysVal::CPhysUnit* Hours() { return &m_physUnitHours; }
-//    ZS::PhysVal::CPhysUnit* Days() { return &m_physUnitDays; }
-//protected: // instance members
-//    ZS::PhysVal::CPhysUnit m_physUnitNanoSeconds;
-//    ZS::PhysVal::CPhysUnit m_physUnitMicroSeconds;
-//    ZS::PhysVal::CPhysUnit m_physUnitMilliSeconds;
-//    ZS::PhysVal::CPhysUnit m_physUnitSeconds;
-//    ZS::PhysVal::CPhysUnit m_physUnitMinutes;
-//    ZS::PhysVal::CPhysUnit m_physUnitHours;
-//    ZS::PhysVal::CPhysUnit m_physUnitDays;
-//
-//}; // class CPhysSizeTime
-
-//} // namespace Kinematics
+}; // class CPhysSizeTime
 
 } // namespace PhysVal
 

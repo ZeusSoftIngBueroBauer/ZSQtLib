@@ -24,40 +24,32 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include "PhysSizes/Kinematics/Kinematics.h"
+#include "PhysSizes/PhysSizes.h"
+#include "ZSPhysVal/ZSPhysSizesIdxTree.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
-
+using namespace ZS::System;
 using namespace ZS::PhysVal;
 using namespace ZS::Apps::Test::PhysVal;
 
 
-/*******************************************************************************
-class CPhysScienceFieldKinematics
-*******************************************************************************/
+#ifdef ZSSys_MemLeakDump_h
+#pragma push_macro("_ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE")
+#pragma warning( disable : 4005 )
+#define _ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE 0
+#endif
 
-/*==============================================================================
-public: // ctors and dtor
-==============================================================================*/
+CIdxTreePhysSizes ZS::Apps::Test::PhysVal::IdxTreePhysSizes(
+    "Physical Sizes", new CIdxTreeEntry(EIdxTreeEntryType::Root, "Physical Sizes"));
 
-//------------------------------------------------------------------------------
-/*! @brief 
+#ifdef ZSSys_MemLeakDump_h
+#pragma warning( default : 4005 )
+#pragma pop_macro("_ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE")
+#endif
 
-*/
-CPhysScienceFieldKinematics::CPhysScienceFieldKinematics(CIdxTreePhysSizes* i_pIdxTree) :
-//------------------------------------------------------------------------------
-    CPhysScienceField(i_pIdxTree, EPhysScienceField::Kinematics),
-    BitRate(this),
-    Frequency(this),
-    Samples(this),
-    Time(this),
-    Velocity(this)
-{
-}
 
-//------------------------------------------------------------------------------
-CPhysScienceFieldKinematics::~CPhysScienceFieldKinematics()
-//------------------------------------------------------------------------------
-{
-}
+CPhysScienceFieldElectricity ZS::Apps::Test::PhysVal::Electricity(&IdxTreePhysSizes);
+CPhysScienceFieldGeometry ZS::Apps::Test::PhysVal::Geometry(&IdxTreePhysSizes);
+CPhysScienceFieldKinematics ZS::Apps::Test::PhysVal::Kinematics(&IdxTreePhysSizes);
+

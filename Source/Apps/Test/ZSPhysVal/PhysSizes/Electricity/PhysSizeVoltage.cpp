@@ -25,14 +25,10 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "PhysSizes/Electricity/PhysSizeVoltage.h"
-#include "ZSSys/ZSSysMath.h"
 #include "ZSSys/ZSSysMemLeakDump.h"
 
-#if 0
-
-using namespace ZS::System::Math;
 using namespace ZS::PhysVal;
-using namespace ZS::PhysVal::Electricity;
+using namespace ZS::Apps::Test::PhysVal;
 
 
 /*******************************************************************************
@@ -44,72 +40,171 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CPhysSizeVoltage::CPhysSizeVoltage() :
+CPhysSizeVoltage::CPhysSizeVoltage( CIdxTreePhysSizes* i_pIdxTree ) :
 //------------------------------------------------------------------------------
     CPhysSize(
-        /* scienceField     */ EPhysScienceFieldElectricity,
+        /* pIdxTree         */ i_pIdxTree,
         /* strName          */ "Voltage",
         /* strSIUnitName    */ "Volt",
         /* strSIUnitSymbol  */ "V",
         /* strFormulaSymbol */ "U",
         /* bIsPowerRelated  */ false ),
-    m_physUnitPicoVolt(
+    PicoVolt(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixPico ),
-    m_physUnitNanoVolt(
+    NanoVolt(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixNano ),
-    m_physUnitMicroVolt(
+    MicroVolt(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixMicro ),
-    m_physUnitMilliVolt(
+    MilliVolt(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixMilli ),
-    m_physUnitVolt(
+    Volt(
         /* pPhysSize */ this,
         /* strPrefix */ "" ),
-    m_physUnitKiloVolt(
+    KiloVolt(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixKilo ),
-    m_physUnitMegaVolt(
+    MegaVolt(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixMega ),
-    m_physUnitdBVolt(
+    dBVolt(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ true,
         /* strName        */ "dBVolt",
         /* strSymbol      */ "dBV",
         /* fRefVal        */ 1.0 ),
-    m_physUnitdBu(
+    dBu(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ true,
-        /* strName        */ "dB(0.775V)",
+        /* strName        */ "dB(0,775V)",
         /* strSymbol      */ "dBu",
         /* fRefVal        */ c_fRefValdBu_0775V ),
-    m_physUnitdBMilliVolt(
+    dBMilliVolt(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ true,
-        /* strName        */ "dB" + c_strMilli + "Volt",
-        /* strSymbol      */ "dB" + c_strPrefixMilli + "V",
+        /* strName        */ "dB" + QString(c_strMilli) + "Volt",
+        /* strSymbol      */ "dB" + QString(c_strPrefixMilli) + "V",
         /* fRefVal        */ c_fFactorMilli ),
-    m_physUnitdBMicroVolt(
+    dBMicroVolt(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ true,
-        /* strName        */ "dB" + c_strMicro + "Volt",
-        /* strSymbol      */ "dB" + c_strPrefixMicro + "V",
+        /* strName        */ "dB" + QString(c_strMicro) + "Volt",
+        /* strSymbol      */ "dB" + QString(c_strPrefixMicro) + "V",
         /* fRefVal        */ c_fFactorMicro ),
-    m_physUnitdBNanoVolt(
+    dBNanoVolt(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ true,
-        /* strName        */ "dB" + c_strNano + "Volt",
-        /* strSymbol      */ "dB" + c_strPrefixNano + "V",
+        /* strName        */ "dB" + QString(c_strNano) + "Volt",
+        /* strSymbol      */ "dB" + QString(c_strPrefixNano) + "V",
         /* fRefVal        */ c_fFactorNano ),
-    m_physUnitdBPicoVolt(
+    dBPicoVolt(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ true,
-        /* strName        */ "dB" + c_strPico + "Volt",
-        /* strSymbol      */ "dB" + c_strPrefixPico + "V",
-        /* fRefVal        */ c_fFactorPico )
+        /* strName        */ "dB" + QString(c_strPico) + "Volt",
+        /* strSymbol      */ "dB" + QString(c_strPrefixPico) + "V",
+        /* fRefVal        */ c_fFactorPico ),
+    pV(PicoVolt),
+    nV(NanoVolt),
+    uV(MicroVolt),
+    mV(MilliVolt),
+    V(Volt),
+    kV(KiloVolt),
+    MV(MegaVolt),
+    dBV(dBVolt),
+    dBmV(dBMilliVolt),
+    dBuV(dBMicroVolt),
+    dBnV(dBNanoVolt),
+    dBpV(dBPicoVolt)
+{
+    // Call function of base class CPhysSize to initialize the physical size together
+    // with its units (e.g. to create the field with internal conversion routines
+    // and to create the chained list of Lower/Higher units).
+    initialize(true);
+
+} // ctor
+
+//------------------------------------------------------------------------------
+CPhysSizeVoltage::CPhysSizeVoltage( CIdxTreeEntry* i_pParentBranch ) :
+//------------------------------------------------------------------------------
+    CPhysSize(
+        /* pParentBranch    */ i_pParentBranch,
+        /* strName          */ "Voltage",
+        /* strSIUnitName    */ "Volt",
+        /* strSIUnitSymbol  */ "V",
+        /* strFormulaSymbol */ "U",
+        /* bIsPowerRelated  */ false ),
+    PicoVolt(
+        /* pPhysSize */ this,
+        /* strPrefix */ c_strPrefixPico ),
+    NanoVolt(
+        /* pPhysSize */ this,
+        /* strPrefix */ c_strPrefixNano ),
+    MicroVolt(
+        /* pPhysSize */ this,
+        /* strPrefix */ c_strPrefixMicro ),
+    MilliVolt(
+        /* pPhysSize */ this,
+        /* strPrefix */ c_strPrefixMilli ),
+    Volt(
+        /* pPhysSize */ this,
+        /* strPrefix */ "" ),
+    KiloVolt(
+        /* pPhysSize */ this,
+        /* strPrefix */ c_strPrefixKilo ),
+    MegaVolt(
+        /* pPhysSize */ this,
+        /* strPrefix */ c_strPrefixMega ),
+    dBVolt(
+        /* pPhysSize      */ this,
+        /* bIsLogarithmic */ true,
+        /* strName        */ "dBVolt",
+        /* strSymbol      */ "dBV",
+        /* fRefVal        */ 1.0 ),
+    dBu(
+        /* pPhysSize      */ this,
+        /* bIsLogarithmic */ true,
+        /* strName        */ "dB(0,775V)",
+        /* strSymbol      */ "dBu",
+        /* fRefVal        */ c_fRefValdBu_0775V ),
+    dBMilliVolt(
+        /* pPhysSize      */ this,
+        /* bIsLogarithmic */ true,
+        /* strName        */ "dB" + QString(c_strMilli) + "Volt",
+        /* strSymbol      */ "dB" + QString(c_strPrefixMilli) + "V",
+        /* fRefVal        */ c_fFactorMilli ),
+    dBMicroVolt(
+        /* pPhysSize      */ this,
+        /* bIsLogarithmic */ true,
+        /* strName        */ "dB" + QString(c_strMicro) + "Volt",
+        /* strSymbol      */ "dB" + QString(c_strPrefixMicro) + "V",
+        /* fRefVal        */ c_fFactorMicro ),
+    dBNanoVolt(
+        /* pPhysSize      */ this,
+        /* bIsLogarithmic */ true,
+        /* strName        */ "dB" + QString(c_strNano) + "Volt",
+        /* strSymbol      */ "dB" + QString(c_strPrefixNano) + "V",
+        /* fRefVal        */ c_fFactorNano ),
+    dBPicoVolt(
+        /* pPhysSize      */ this,
+        /* bIsLogarithmic */ true,
+        /* strName        */ "dB" + QString(c_strPico) + "Volt",
+        /* strSymbol      */ "dB" + QString(c_strPrefixPico) + "V",
+        /* fRefVal        */ c_fFactorPico ),
+    pV(PicoVolt),
+    nV(NanoVolt),
+    uV(MicroVolt),
+    mV(MilliVolt),
+    V(Volt),
+    kV(KiloVolt),
+    MV(MegaVolt),
+    dBV(dBVolt),
+    dBmV(dBMilliVolt),
+    dBuV(dBMicroVolt),
+    dBnV(dBNanoVolt),
+    dBpV(dBPicoVolt)
 {
     // Call function of base class CPhysSize to initialize the physical size together
     // with its units (e.g. to create the field with internal conversion routines
@@ -123,5 +218,3 @@ CPhysSizeVoltage::~CPhysSizeVoltage()
 //------------------------------------------------------------------------------
 {
 } // dtor
-
-#endif

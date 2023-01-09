@@ -24,6 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
+#if 0
+
 #include "ZSPhysVal/ZSPhysUnitsDataQuantity.h"
 #include "ZSPhysVal/ZSPhysSizesIdxTree.h"
 #include "ZSPhysVal/ZSPhysValExceptions.h"
@@ -85,7 +87,7 @@ public: // overridables (converting values)
 bool CUnitDataQuantity::isConvertible( const CUnit* i_pUnitDst, double /*i_fVal*/ ) const
 //------------------------------------------------------------------------------
 {
-    if( i_pUnitDst->classType() != EUnitClassTypeDataQuantity )
+    if( i_pUnitDst->classType() != EUnitClassType::DataQuantity )
     {
         return false;
     }
@@ -103,7 +105,7 @@ bool CUnitDataQuantity::isConvertible( const CUnit* i_pUnitDst, double /*i_fVal*
 double CUnitDataQuantity::convertValue( double i_fVal, const CUnit* i_pUnitDst ) const
 //------------------------------------------------------------------------------
 {
-    if( i_pUnitDst->classType() != EUnitClassTypeDataQuantity )
+    if( i_pUnitDst->classType() != EUnitClassType::DataQuantity )
     {
         throw CException(__FILE__,__LINE__,EResultDifferentPhysSizes);
     }
@@ -138,7 +140,7 @@ CUnitGrpDataQuantity::CUnitGrpDataQuantity( CIdxTree* i_pIdxTree ) :
 //------------------------------------------------------------------------------
     CUnitGrp(
         /* pIdxTree       */ i_pIdxTree,
-        /* type           */ EUnitClassTypeDataQuantity,
+        /* type           */ EUnitClassType::DataQuantity,
         /* strName        */ "DataQuantity",
         /* pUnitGrpParent */ nullptr ),
     m_physUnitByte(
@@ -201,3 +203,5 @@ CUnitDataQuantity* CUnitGrpDataQuantity::GigaByte()
 {
     return &m_physUnitGigaByte;
 }
+
+#endif

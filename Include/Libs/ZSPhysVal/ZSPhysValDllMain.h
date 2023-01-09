@@ -27,7 +27,7 @@ may result in using the software modules.
 #ifndef ZSPhysVal_DllMain_h
 #define ZSPhysVal_DllMain_h
 
-#include <QtCore/qstring.h>
+#include "ZSSys/ZSSysEnumTemplate.h"
 
 // generic export defines
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
@@ -51,6 +51,16 @@ may result in using the software modules.
     #define ZSPHYSVALDLL_API __API_IMPORT
 #endif
 
+// The static arrays "CEnum<>::s_arEnumEntries" are defined in the cpp file.
+#ifdef _WINDOWS
+#pragma warning( push )
+#pragma warning( disable : 4661 )
+#elif defined __linux__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-result"
+#pragma GCC diagnostic pop
+#endif
+
 
 /*******************************************************************************
 global type definitions and constants
@@ -60,86 +70,77 @@ namespace ZS
 {
 namespace PhysVal
 {
-class CUnit;
-class CUnitGrp;
-class CPhysUnit;
-class CPhysSize;
-class CUnitGrpRatio;
-class CUnitGrpDataQuantity;
+//class CUnit;
+//class CUnitGrp;
+//class CPhysUnit;
+//class CPhysSize;
+//class CUnitGrpRatio;
+//class CUnitGrpDataQuantity;
 
 ZSPHYSVALDLL_API QString invalidValueString();      // "---" as default
 ZSPHYSVALDLL_API void setInvalidValueString( const QString& i_str );
 
 const QString c_strSymbolDegree = QString::fromLatin1("°");     // "\u00b0"
 
-typedef enum
-{   // Please note that the bit number number 8 (0x80) indicates an error.
-    // If this bit is not set the result is either Ok or is just a warning.
-    EFormatResultOk                   = 0x00,
-    EFormatResultAccuracyOverflow     = 0x01,
-    EFormatResultAccuracyUnderflow    = 0x02,
-    EFormatResultError                = 0x80,
-    EFormatResultValueOverflow        = 0x81,
-    EFormatResultValueUnderflow       = 0x82,
-    EFormatResultUnitConversionFailed = 0x83
-}   EFormatResult;
+// Please note that the bit number number 8 (0x80) indicates an error.
+// If this bit is not set the result is either Ok or is just a warning.
+typedef quint8 TFormatResult;
+namespace FormatResult {
+    const TFormatResult Ok                   = 0x00;
+    const TFormatResult AccuracyOverflow     = 0x01;
+    const TFormatResult AccuracyUnderflow    = 0x02;
+    const TFormatResult Error                = 0x80;
+    const TFormatResult ValueOverflow        = 0x81;
+    const TFormatResult ValueUnderflow       = 0x82;
+    const TFormatResult UnitConversionFailed = 0x83;
+    ZSPHYSVALDLL_API bool isErrorResult( TFormatResult i_formatResult );
+    ZSPHYSVALDLL_API QString result2Str( TFormatResult i_formatResult );
+}
 
-ZSPHYSVALDLL_API bool isErrorFormatResult( EFormatResult i_formatResult );
-ZSPHYSVALDLL_API QString formatResult2Str( int i_formatResult );
-
-typedef enum
+enum class EUnitClassType
 {
-    EUnitClassTypeRatios                = 0,
-    EUnitClassTypeDataQuantity          = 1,
-    EUnitClassTypePhysScienceFields     = 2,
-    EUnitClassTypeUserDefinedQuantities = 3,
-    EUnitClassTypeCount,
-    EUnitClassTypeUndefined
-}   EUnitClassType;
+    Undefined             = 0,
+    Ratios                = 1,
+    DataQuantity          = 2,
+    PhysScienceFields     = 3,
+    UserDefinedQuantities = 4
+};
+template class ZSPHYSVALDLL_API ZS::System::CEnum<EUnitClassType>;
+typedef ZS::System::CEnum<EUnitClassType> CEnumUnitClassType;
 
-ZSPHYSVALDLL_API QString unitClassType2Str( int i_iType );
+enum class EPhysScienceField {
+    Undefined      = 0,
+    Geometry       = 1,
+    Kinematics     = 2,
+    Mechanics      = 3,
+    Electricity    = 4,
+    ThermoDynamics = 5,
+    Atomics        = 6,
+    Nucleonics     = 7,
+    Photometry     = 8
+};
+template class ZSPHYSVALDLL_API ZS::System::CEnum<EPhysScienceField>;
+typedef ZS::System::CEnum<EPhysScienceField> CEnumPhysScienceField;
 
-const QString c_strPhysScienceFieldGeometry       = "Geometry";
-const QString c_strPhysScienceFieldKinematics     = "Kinematics";
-const QString c_strPhysScienceFieldMechanics      = "Mechanics";
-const QString c_strPhysScienceFieldElectricity    = "Electricity";
-const QString c_strPhysScienceFieldThermoDynamics = "ThermoDynamics";
-const QString c_strPhysScienceFieldAtomics        = "Atomics";
-const QString c_strPhysScienceFieldNucleonics     = "Nucleonics";
-const QString c_strPhysScienceFieldPhotometry     = "Photometry";
+enum class EUnitFind {
+    None = 0,
+    Best = 1
+};
+template class ZSPHYSVALDLL_API ZS::System::CEnum<EUnitFind>;
+typedef ZS::System::CEnum<EUnitFind> CEnumUnitFind;
 
-typedef enum {
-    EPhysScienceFieldGeometry       = 0,
-    EPhysScienceFieldKinematics     = 1,
-    EPhysScienceFieldMechanics      = 2,
-    EPhysScienceFieldElectricity    = 3,
-    EPhysScienceFieldThermoDynamics = 4,
-    EPhysScienceFieldAtomics        = 5,
-    EPhysScienceFieldNucleonics     = 6,
-    EPhysScienceFieldPhotometry     = 7,
-    EPhysScienceFieldCount,
-    EPhysScienceFieldUndefined
-}   EPhysScienceField;
+typedef quint16 TPhysValSubStr;
+namespace PhysValSubStr {
+    static TPhysValSubStr None       = 0x0000;
+    static TPhysValSubStr Val        = 0x0001;
+    static TPhysValSubStr UnitGrp    = 0x0002;
+    static TPhysValSubStr UnitPrefix = 0x0004;
+    static TPhysValSubStr UnitSymbol = 0x0008;
+    static TPhysValSubStr UnitName   = 0x0010;
+    static TPhysValSubStr UnitMask   = 0x001e;
+}
 
-ZSPHYSVALDLL_API QString physScienceField2Str( int i_iField );
-
-typedef enum {
-    EUnitFindNone = 0,
-    EUnitFindBest = 1,
-}   EUnitFind;
-
-typedef enum {
-    EPhysValSubStrNone       = 0x0000,
-    EPhysValSubStrVal        = 0x0001,
-    EPhysValSubStrUnitGrp    = 0x0002,
-    EPhysValSubStrUnitPrefix = 0x0004,
-    EPhysValSubStrUnitSymbol = 0x0008,
-    EPhysValSubStrUnitName   = 0x0010,
-    EPhysValSubStrUnitMask   = 0x001e
-}   EPhysValSubStr;
-
-typedef enum
-{
+enum ESubStr {
     ESubStrVal         = 0,
     ESubStrValUnitGrp  = 1,
     ESubStrValUnit     = 2,
@@ -147,7 +148,7 @@ typedef enum
     ESubStrResUnitGrp  = 4,
     ESubStrResUnit     = 5,
     ESubStrCount
-}   ESubStr;
+};
 
 const double c_fFactorYokto  = 1.0e-24;
 const double c_fFactorZepto  = 1.0e-21;
@@ -193,51 +194,51 @@ const int c_iExponentExa    = 18;
 const int c_iExponentZetta  = 21;
 const int c_iExponentYotta  = 24;
 
-const QString c_strYokto  = "Yokto";
-const QString c_strZepto  = "Zepto";
-const QString c_strAtto   = "Atto";
-const QString c_strFemto  = "Femto";
-const QString c_strPico   = "Pico";
-const QString c_strNano   = "Nano";
-const QString c_strMicro  = "Micro";
-const QString c_strMilli  = "Milli";
-const QString c_strCenti  = "Centi";
-const QString c_strDezi   = "Dezi";
-const QString c_str0      = "";
-const QString c_strDeka   = "Deka";
-const QString c_strHekto  = "Hekto";
-const QString c_strKilo   = "Kilo";
-const QString c_strMega   = "Mega";
-const QString c_strGiga   = "Giga";
-const QString c_strTera   = "Tera";
-const QString c_strPeta   = "Peta";
-const QString c_strExa    = "Exa";
-const QString c_strZetta  = "Zetta";
-const QString c_strYotta  = "Yotta";
+static const char* c_strYokto  = "Yokto";
+static const char* c_strZepto  = "Zepto";
+static const char* c_strAtto   = "Atto";
+static const char* c_strFemto  = "Femto";
+static const char* c_strPico   = "Pico";
+static const char* c_strNano   = "Nano";
+static const char* c_strMicro  = "Micro";
+static const char* c_strMilli  = "Milli";
+static const char* c_strCenti  = "Centi";
+static const char* c_strDezi   = "Dezi";
+static const char* c_str0      = "";
+static const char* c_strDeka   = "Deka";
+static const char* c_strHekto  = "Hekto";
+static const char* c_strKilo   = "Kilo";
+static const char* c_strMega   = "Mega";
+static const char* c_strGiga   = "Giga";
+static const char* c_strTera   = "Tera";
+static const char* c_strPeta   = "Peta";
+static const char* c_strExa    = "Exa";
+static const char* c_strZetta  = "Zetta";
+static const char* c_strYotta  = "Yotta";
 
-const QString c_strPrefixYokto  = "y";
-const QString c_strPrefixZepto  = "z";
-const QString c_strPrefixAtto   = "a";
-const QString c_strPrefixFemto  = "f";
-const QString c_strPrefixPico   = "p";
-const QString c_strPrefixNano   = "n";
-const QString c_strPrefixMicro  = QString::fromLatin1("µ"); // "\u00b5"
-const QString c_strPrefixMilli  = "m";
-const QString c_strPrefixCenti  = "c";
-const QString c_strPrefixDezi   = "d";
-const QString c_strPrefix0      = "";
-const QString c_strPrefixDeka   = "da";
-const QString c_strPrefixHekto  = "h";
-const QString c_strPrefixKilo   = "k";
-const QString c_strPrefixMega   = "M";
-const QString c_strPrefixGiga   = "G";
-const QString c_strPrefixTera   = "T";
-const QString c_strPrefixPeta   = "P";
-const QString c_strPrefixExa    = "E";
-const QString c_strPrefixZetta  = "Z";
-const QString c_strPrefixYotta  = "Y";
+static const char* c_strPrefixYokto  = "y";
+static const char* c_strPrefixZepto  = "z";
+static const char* c_strPrefixAtto   = "a";
+static const char* c_strPrefixFemto  = "f";
+static const char* c_strPrefixPico   = "p";
+static const char* c_strPrefixNano   = "n";
+static const char* c_strPrefixMicro  = "u"; // QString::fromLatin1("µ"); // "\u00b5"
+static const char* c_strPrefixMilli  = "m";
+static const char* c_strPrefixCenti  = "c";
+static const char* c_strPrefixDezi   = "d";
+static const char* c_strPrefix0      = "";
+static const char* c_strPrefixDeka   = "da";
+static const char* c_strPrefixHekto  = "h";
+static const char* c_strPrefixKilo   = "k";
+static const char* c_strPrefixMega   = "M";
+static const char* c_strPrefixGiga   = "G";
+static const char* c_strPrefixTera   = "T";
+static const char* c_strPrefixPeta   = "P";
+static const char* c_strPrefixExa    = "E";
+static const char* c_strPrefixZetta  = "Z";
+static const char* c_strPrefixYotta  = "Y";
 
-typedef enum
+enum EExponent
 {
     EExponentYokto =  0,
     EExponentZepto =  1,
@@ -261,7 +262,7 @@ typedef enum
     EExponentZetta = 19,
     EExponentYotta = 20,
     EExponentCount
-}   EExponent;
+};
 
 struct SExponent
 {
@@ -283,9 +284,9 @@ ZSPHYSVALDLL_API QString getExponentStrFromPrefixStr( const QString& i_strPrefix
 Auxiliary methods
 *******************************************************************************/
 
-ZSPHYSVALDLL_API QString getUnitName( const CUnit* i_pUnit, bool i_bInsertParentNames = false );
-ZSPHYSVALDLL_API QString getUnitGroupName( const CUnit* i_pUnit, bool i_bInsertParentNames = false  );
-ZSPHYSVALDLL_API QString getUnitGroupName( const CUnitGrp* i_pUnitGrp, bool i_bInsertParentNames = false  );
+//ZSPHYSVALDLL_API QString getUnitName( const CUnit* i_pUnit, bool i_bInsertParentNames = false );
+//ZSPHYSVALDLL_API QString getUnitGroupName( const CUnit* i_pUnit, bool i_bInsertParentNames = false  );
+//ZSPHYSVALDLL_API QString getUnitGroupName( const CUnitGrp* i_pUnitGrp, bool i_bInsertParentNames = false  );
 
 } // namespace PhysVal
 

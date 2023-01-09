@@ -38,27 +38,28 @@ namespace Test
 {
 namespace PhysVal
 {
-//namespace Geometry
-//{
-//const QString c_strSymbolPhi(QChar(0x03C6));
-//
-////******************************************************************************
-//class CPhysSizeAngle : public ZS::PhysVal::CPhysSize
-////******************************************************************************
-//{
-//public: // ctors and dtor
-//    CPhysSizeAngle( ZS::PhysVal::CIdxTreePhysSizes* i_pIdxTree );
-//    ~CPhysSizeAngle();
-//public: // instance methods
-//    ZS::PhysVal::CPhysUnit* Rad() { return &m_physUnitRad; }
-//    ZS::PhysVal::CPhysUnit* Degree() { return &m_physUnitDegree; }
-//protected: // instance members
-//    ZS::PhysVal::CPhysUnit m_physUnitRad;
-//    ZS::PhysVal::CPhysUnit m_physUnitDegree;
-//
-//}; // CPhysSizeAngle
-//
-//} // namespace Geometry
+//******************************************************************************
+class CPhysSizeAngle : public ZS::PhysVal::CPhysSize
+//******************************************************************************
+{
+public: // ctors and dtor
+    CPhysSizeAngle( ZS::PhysVal::CIdxTreePhysSizes* i_pIdxTree );
+    CPhysSizeAngle(ZS::System::CIdxTreeEntry* i_pParentBranch);
+    CPhysSizeAngle(CPhysSizeAngle&& i_other) = delete;
+    CPhysSizeAngle(CPhysSizeAngle& i_other) = delete;
+    CPhysSizeAngle(const CPhysSizeAngle& i_other) = delete;
+    virtual ~CPhysSizeAngle();
+public: // operators
+    CPhysSizeAngle& operator=(CPhysSizeAngle& i_other) = delete;
+    CPhysSizeAngle& operator=(const CPhysSizeAngle& i_other) = delete;
+    CPhysSizeAngle& operator=(CPhysSizeAngle&& i_other) = delete;
+public: // class members
+    static const QString c_strSymbolPhi;
+public: // instance members
+    ZS::PhysVal::CPhysUnit Rad;
+    ZS::PhysVal::CPhysUnit Degree;
+
+}; // CPhysSizeAngle
 
 } // namespace PhysVal
 

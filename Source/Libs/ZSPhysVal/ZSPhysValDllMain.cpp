@@ -27,15 +27,6 @@ may result in using the software modules.
 #include <QtCore/qglobal.h>
 
 #include "ZSPhysVal/ZSPhysValDllMain.h"
-#include "ZSPhysVal/ZSPhysSize.h"
-#include "ZSPhysVal/ZSPhysSizesIdxTree.h"
-#include "ZSPhysVal/ZSPhysUnitsRatio.h"
-#include "ZSPhysVal/ZSPhysUnitsDataQuantity.h"
-#include "ZSSys/ZSSysAux.h"
-#include "ZSSys/ZSSysEnumEntry.h"
-#include "ZSSys/ZSSysException.h"
-#include "ZSSys/ZSSysMath.h"
-#include "ZSSys/ZSSysVersion.h"
 
 #ifdef _WINDOWS
 // As "min" will be defined as a macro with two arguments and qdatetime uses "min"
@@ -107,59 +98,60 @@ void ZS::PhysVal::setInvalidValueString( const QString& i_str )
     s_strInvalidValue = i_str;
 }
 
-/* BitField EFormatResult
+/* BitField TFormatResult
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool ZS::PhysVal::isErrorFormatResult( EFormatResult i_formatResult )
+bool ZS::PhysVal::FormatResult::isErrorResult( TFormatResult i_formatResult )
 //------------------------------------------------------------------------------
 {
-    bool bIs = false;
+    return (i_formatResult & FormatResult::Error);
+}
 
-    if( i_formatResult & EFormatResultError )
+//------------------------------------------------------------------------------
+QString ZS::PhysVal::FormatResult::result2Str( TFormatResult i_formatResult )
+//------------------------------------------------------------------------------
+{
+    QString str = "?";
+
+    if( i_formatResult == FormatResult::Ok )
     {
-        bIs = true;
     }
-    return bIs;
-
-} // isError
-
-//------------------------------------------------------------------------------
-QString ZS::PhysVal::formatResult2Str( int i_formatResult )
-//------------------------------------------------------------------------------
-{
-    QString strFormatResult = "?";
-
     switch( i_formatResult )
     {
-        case EFormatResultOk:
+        case FormatResult::Ok:
         {
-            strFormatResult = "Ok";
+            str = "Ok";
             break;
         }
-        case EFormatResultAccuracyOverflow:
+        case FormatResult::AccuracyOverflow:
         {
-            strFormatResult = "AccuracyOverflow";
+            str = "AccuracyOverflow";
             break;
         }
-        case EFormatResultAccuracyUnderflow:
+        case FormatResult::AccuracyUnderflow:
         {
-            strFormatResult = "AccuracyUnderflow";
+            str = "AccuracyUnderflow";
             break;
         }
-        case EFormatResultValueOverflow:
+        case FormatResult::Error:
         {
-            strFormatResult = "ValueOverflow";
+            str = "ValueOverflow";
             break;
         }
-        case EFormatResultValueUnderflow:
+        case FormatResult::ValueOverflow:
         {
-            strFormatResult = "ValueUnderflow";
+            str = "ValueOverflow";
             break;
         }
-        case EFormatResultUnitConversionFailed:
+        case FormatResult::ValueUnderflow:
         {
-            strFormatResult = "UnitConversionFailed";
+            str = "ValueUnderflow";
+            break;
+        }
+        case FormatResult::UnitConversionFailed:
+        {
+            str = "UnitConversionFailed";
             break;
         }
         default:
@@ -167,49 +159,73 @@ QString ZS::PhysVal::formatResult2Str( int i_formatResult )
             break;
         }
     }
-    return strFormatResult;
-
-} // formatResult2Str
+    return str;
+}
 
 /* enum EUnitClassType
 ==============================================================================*/
 
-const SEnumEntry s_arEnumStrUnitClassTypes[EUnitClassTypeCount] =
-{
-    /* 0 */ SEnumEntry( EUnitClassTypeRatios,                "Ratios",            "Ratios"                  ),
-    /* 1 */ SEnumEntry( EUnitClassTypeDataQuantity,          "DataQuantities",    "Data Quantities"         ),
-    /* 2 */ SEnumEntry( EUnitClassTypePhysScienceFields,     "PhysScienceFields", "Physical Science Fields" ),
-    /* 3 */ SEnumEntry( EUnitClassTypeUserDefinedQuantities, "UserDefQuantities", "User Defined Quantities" )
-};
+template<> QMutex CEnum<EUnitClassType>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<EUnitClassType>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
-//------------------------------------------------------------------------------
-QString ZS::PhysVal::unitClassType2Str( int i_iType )
-//------------------------------------------------------------------------------
+template<> const QVector<SEnumEntry> CEnum<EUnitClassType>::s_arEnumEntries(
 {
-    return SEnumEntry::enumerator2Str( s_arEnumStrUnitClassTypes, _ZSArrLen(s_arEnumStrUnitClassTypes), i_iType );
-}
+    /* 0 */ SEnumEntry( static_cast<int>(EUnitClassType::Undefined),             "Undefined",         "Undefined" ),
+    /* 1 */ SEnumEntry( static_cast<int>(EUnitClassType::Ratios),                "Ratios",            "Ratios" ),
+    /* 2 */ SEnumEntry( static_cast<int>(EUnitClassType::DataQuantity),          "DataQuantities",    "Data Quantities" ),
+    /* 3 */ SEnumEntry( static_cast<int>(EUnitClassType::PhysScienceFields),     "PhysScienceFields", "Physical Science Fields" ),
+    /* 4 */ SEnumEntry( static_cast<int>(EUnitClassType::UserDefinedQuantities), "UserDefQuantities", "User Defined Quantities" )
+});
 
 /* enum EPhysScienceField
 ==============================================================================*/
 
-const SEnumEntry s_arEnumStrPhysScienceFields[EPhysScienceFieldCount] =
-{
-    /* 0 */ SEnumEntry( EPhysScienceFieldGeometry,       c_strPhysScienceFieldGeometry       ),
-    /* 1 */ SEnumEntry( EPhysScienceFieldKinematics,     c_strPhysScienceFieldKinematics     ),
-    /* 2 */ SEnumEntry( EPhysScienceFieldMechanics,      c_strPhysScienceFieldMechanics      ),
-    /* 3 */ SEnumEntry( EPhysScienceFieldElectricity,    c_strPhysScienceFieldElectricity    ),
-    /* 4 */ SEnumEntry( EPhysScienceFieldThermoDynamics, c_strPhysScienceFieldThermoDynamics ),
-    /* 5 */ SEnumEntry( EPhysScienceFieldAtomics,        c_strPhysScienceFieldAtomics        ),
-    /* 6 */ SEnumEntry( EPhysScienceFieldNucleonics,     c_strPhysScienceFieldNucleonics     ),
-    /* 7 */ SEnumEntry( EPhysScienceFieldPhotometry,     c_strPhysScienceFieldPhotometry     )
-};
+template<> QMutex CEnum<EPhysScienceField>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<EPhysScienceField>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
-//------------------------------------------------------------------------------
-QString ZS::PhysVal::physScienceField2Str( int i_iField )
-//------------------------------------------------------------------------------
+template<> const QVector<SEnumEntry> CEnum<EPhysScienceField>::s_arEnumEntries(
 {
-    return SEnumEntry::enumerator2Str( s_arEnumStrPhysScienceFields, _ZSArrLen(s_arEnumStrPhysScienceFields), i_iField );
-}
+    /* 0 */ SEnumEntry( static_cast<int>(EPhysScienceField::Undefined),      "Undefined" ),
+    /* 1 */ SEnumEntry( static_cast<int>(EPhysScienceField::Geometry),       "Geometry" ),
+    /* 2 */ SEnumEntry( static_cast<int>(EPhysScienceField::Kinematics),     "Kinematics" ),
+    /* 3 */ SEnumEntry( static_cast<int>(EPhysScienceField::Mechanics),      "Mechanics" ),
+    /* 4 */ SEnumEntry( static_cast<int>(EPhysScienceField::Electricity),    "Electricity" ),
+    /* 5 */ SEnumEntry( static_cast<int>(EPhysScienceField::ThermoDynamics), "ThermoDynamics" ),
+    /* 6 */ SEnumEntry( static_cast<int>(EPhysScienceField::Atomics),        "Atomics" ),
+    /* 7 */ SEnumEntry( static_cast<int>(EPhysScienceField::Nucleonics),     "Nucleonics" ),
+    /* 8 */ SEnumEntry( static_cast<int>(EPhysScienceField::Photometry),     "Photometry" )
+});
+
+/* enum EUnitFind
+==============================================================================*/
+
+template<> QMutex CEnum<EUnitFind>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<EUnitFind>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+
+template<> const QVector<SEnumEntry> CEnum<EUnitFind>::s_arEnumEntries(
+{
+    /* 0 */ SEnumEntry( static_cast<int>(EUnitFind::None), "None" ),
+    /* 1 */ SEnumEntry( static_cast<int>(EUnitFind::Best), "Best" )
+});
+
+///* enum ESubStr
+//==============================================================================*/
+//
+//template<> QMutex CEnum<EPhysScienceField>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+//template<> QVector<QHash<QString, int>> CEnum<EPhysScienceField>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+//
+//template<> const QVector<SEnumEntry> CEnum<ESubStr>::s_arEnumEntries(
+//{
+//    /* 0 */ SEnumEntry( static_cast<int>(ESubStrVal),        "Val" ),
+//    /* 1 */ SEnumEntry( static_cast<int>(ESubStrValUnitGrp), "ValUnitGrp" ),
+//    /* 2 */ SEnumEntry( static_cast<int>(ESubStrValUnit),    "ValUnit" ),
+//    /* 3 */ SEnumEntry( static_cast<int>(ESubStrRes),        "Res" ),
+//    /* 4 */ SEnumEntry( static_cast<int>(ESubStrResUnitGrp), "ResUnitGrp" ),
+//    /* 5 */ SEnumEntry( static_cast<int>(ESubStrResUnit),    "ResUnit" )
+//});
+
+/* Exponents
+==============================================================================*/
 
 //------------------------------------------------------------------------------
 bool ZS::PhysVal::getPrefixStrFromFactor( double i_fFactor, QString* o_pStrPrefix )
@@ -389,82 +405,59 @@ QString ZS::PhysVal::getExponentStrFromPrefixStr( const QString& i_strPrefix )
 Auxiliary methods
 *******************************************************************************/
 
-//------------------------------------------------------------------------------
-QString ZS::PhysVal::getUnitName( const CUnit* i_pUnit, bool i_bInsertParentNames )
-//------------------------------------------------------------------------------
-{
-    QString strName;
-
-    if( i_pUnit == nullptr )
-    {
-        strName = "NoUnit";
-    }
-    else
-    {
-        strName = i_pUnit->keyInTree();
-    }
-    return strName;
-
-} // getUnitName
-
-//------------------------------------------------------------------------------
-QString ZS::PhysVal::getUnitGroupName( const CUnit* i_pUnit, bool i_bInsertParentNames )
-//------------------------------------------------------------------------------
-{
-    QString strName;
-
-    if( i_pUnit == nullptr )
-    {
-        strName = "NoUnit";
-    }
-    else
-    {
-        strName = i_pUnit->unitGroup()->keyInTree();
-    }
-    return strName;
-
-} // getUnitGroupName
-
-//------------------------------------------------------------------------------
-QString ZS::PhysVal::getUnitGroupName( const CUnitGrp* i_pUnitGrp, bool i_bInsertParentNames )
-//------------------------------------------------------------------------------
-{
-    QString strName;
-
-    if( i_pUnitGrp == nullptr )
-    {
-        strName = "NoUnit";
-    }
-    else
-    {
-        strName = i_pUnitGrp->keyInTree();
-    }
-    return strName;
-
-} // getUnitGroupName
-
-
-/*******************************************************************************
-Libraries depending on build configuration and used Qt version
-*******************************************************************************/
-
-#ifdef _WINDOWS
-
-#ifdef USE_PRAGMA_COMMENT_LIB_INCLUDE_IN_MAIN_MODULES
-
-#pragma message(__FILE__ ": Linking against = " QTCORELIB)
-#pragma comment(lib, QTCORELIB)
-#pragma message(__FILE__ ": Linking against = " QTNETWORKLIB)
-#pragma comment(lib, QTNETWORKLIB)
-#pragma message(__FILE__ ": Linking against = " QTXMLLIB)
-#pragma comment(lib, QTXMLLIB)
-
-#pragma message(__FILE__ ": Linking against = " ZSSYSLIB)
-#pragma comment(lib, ZSSYSLIB)
-
-#endif // #ifdef USE_PRAGMA_COMMENT_LIB_INCLUDE_IN_MAIN_MODULES
-
-#endif // #ifdef _WINDOWS
+////------------------------------------------------------------------------------
+//QString ZS::PhysVal::getUnitName( const CUnit* i_pUnit, bool i_bInsertParentNames )
+////------------------------------------------------------------------------------
+//{
+//    QString strName;
+//
+//    if( i_pUnit == nullptr )
+//    {
+//        strName = "NoUnit";
+//    }
+//    else
+//    {
+//        strName = i_pUnit->keyInTree();
+//    }
+//    return strName;
+//
+//} // getUnitName
+//
+////------------------------------------------------------------------------------
+//QString ZS::PhysVal::getUnitGroupName( const CUnit* i_pUnit, bool i_bInsertParentNames )
+////------------------------------------------------------------------------------
+//{
+//    QString strName;
+//
+//    if( i_pUnit == nullptr )
+//    {
+//        strName = "NoUnit";
+//    }
+//    else
+//    {
+//        strName = i_pUnit->unitGroup()->keyInTree();
+//    }
+//    return strName;
+//
+//} // getUnitGroupName
+//
+////------------------------------------------------------------------------------
+//QString ZS::PhysVal::getUnitGroupName( const CUnitGrp* i_pUnitGrp, bool i_bInsertParentNames )
+////------------------------------------------------------------------------------
+//{
+//    QString strName;
+//
+//    if( i_pUnitGrp == nullptr )
+//    {
+//        strName = "NoUnit";
+//    }
+//    else
+//    {
+//        strName = i_pUnitGrp->keyInTree();
+//    }
+//    return strName;
+//
+//} // getUnitGroupName
 
 
 /*******************************************************************************

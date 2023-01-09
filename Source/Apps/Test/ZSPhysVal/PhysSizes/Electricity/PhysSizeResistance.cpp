@@ -25,52 +25,96 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "PhysSizes/Electricity/PhysSizeResistance.h"
-#include "ZSSys/ZSSysMath.h"
 #include "ZSSys/ZSSysMemLeakDump.h"
 
-#if 0
-
-using namespace ZS::System::Math;
 using namespace ZS::PhysVal;
-using namespace ZS::PhysVal::Electricity;
+using namespace ZS::Apps::Test::PhysVal;
 
 
 /*******************************************************************************
 class CPhysSizeResistance : public CPhysSize
 *******************************************************************************/
 
+const QString CPhysSizeResistance::c_strSymbolOhm(QChar(0x03A9));
+
 /*==============================================================================
 public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CPhysSizeResistance::CPhysSizeResistance() :
+CPhysSizeResistance::CPhysSizeResistance( CIdxTreePhysSizes* i_pIdxTree ) :
 //------------------------------------------------------------------------------
     CPhysSize(
-        /* scienceField     */ EPhysScienceFieldElectricity,
+        /* pIdxTree         */ i_pIdxTree,
         /* strName          */ "Resistance",
         /* strSIUnitName    */ "Ohm",
-        /* strSIUnitSymbol  */ c_strSymbolOhm,
+        /* strSIUnitSymbol  */ QString(QChar(0x03A9)),
         /* strFormulaSymbol */ "R",
         /* bIsPowerRelated  */ false ),
-    m_physUnitNanoOhm(
+    NanoOhm(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixNano ),
-    m_physUnitMicroOhm(
+    MicroOhm(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixMicro ),
-    m_physUnitMilliOhm(
+    MilliOhm(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixMilli ),
-    m_physUnitOhm(
+    Ohm(
         /* pPhysSize */ this,
         /* strPrefix */ "" ),
-    m_physUnitKiloOhm(
+    KiloOhm(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixKilo ),
-    m_physUnitMegaOhm(
+    MegaOhm(
         /* pPhysSize */ this,
-        /* strPrefix */ c_strPrefixMega )
+        /* strPrefix */ c_strPrefixMega ),
+    nOhm(NanoOhm),
+    uOhm(MicroOhm),
+    mOhm(MilliOhm),
+    kOhm(KiloOhm),
+    MOhm(MegaOhm)
+{
+    // Call function of base class CPhysSize to initialize the physical size together
+    // with its units (e.g. to create the field with internal conversion routines
+    // and to create the chained list of Lower/Higher units).
+    initialize(true);
+
+} // ctor
+
+//------------------------------------------------------------------------------
+CPhysSizeResistance::CPhysSizeResistance( CIdxTreeEntry* i_pParentBranch ) :
+//------------------------------------------------------------------------------
+    CPhysSize(
+        /* pParentBranch    */ i_pParentBranch,
+        /* strName          */ "Resistance",
+        /* strSIUnitName    */ "Ohm",
+        /* strSIUnitSymbol  */ QString(QChar(0x03A9)),
+        /* strFormulaSymbol */ "R",
+        /* bIsPowerRelated  */ false ),
+    NanoOhm(
+        /* pPhysSize */ this,
+        /* strPrefix */ c_strPrefixNano ),
+    MicroOhm(
+        /* pPhysSize */ this,
+        /* strPrefix */ c_strPrefixMicro ),
+    MilliOhm(
+        /* pPhysSize */ this,
+        /* strPrefix */ c_strPrefixMilli ),
+    Ohm(
+        /* pPhysSize */ this,
+        /* strPrefix */ "" ),
+    KiloOhm(
+        /* pPhysSize */ this,
+        /* strPrefix */ c_strPrefixKilo ),
+    MegaOhm(
+        /* pPhysSize */ this,
+        /* strPrefix */ c_strPrefixMega ),
+    nOhm(NanoOhm),
+    uOhm(MicroOhm),
+    mOhm(MilliOhm),
+    kOhm(KiloOhm),
+    MOhm(MegaOhm)
 {
     // Call function of base class CPhysSize to initialize the physical size together
     // with its units (e.g. to create the field with internal conversion routines
@@ -95,11 +139,9 @@ double CPhysSizeResistance::getRefVal( CPhysUnit* i_pPhysUnitRef ) const
 {
     double fValRef = 50.0; // Ohm
 
-    if( i_pPhysUnitRef != nullptr && i_pPhysUnitRef != &m_physUnitOhm )
+    if( i_pPhysUnitRef != nullptr && i_pPhysUnitRef != &Ohm )
     {
-        fValRef = m_physUnitOhm.convertValue(fValRef,i_pPhysUnitRef);
+        fValRef = Ohm.convertValue(fValRef, i_pPhysUnitRef);
     }
     return fValRef;
 }
-
-#endif

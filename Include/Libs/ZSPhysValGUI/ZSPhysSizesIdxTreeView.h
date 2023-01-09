@@ -84,6 +84,8 @@ protected: // overridables of base class QTreeView
 protected slots:
     void onActionNameSpaceExpandTriggered( bool i_bChecked );
     void onActionNameSpaceCollapseTriggered( bool i_bChecked );
+protected slots:
+    void onIdxTreeAboutToBeDestroyed();
 protected: // instance members
     CIdxTreePhysSizes* m_pIdxTree;
     CModelIdxTreePhysSizes* m_pModel;

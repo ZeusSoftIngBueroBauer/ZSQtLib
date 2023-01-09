@@ -27,15 +27,19 @@ may result in using the software modules.
 #ifndef ZSApps_TestPhysVal_PhysSizes_Kinematics_h
 #define ZSApps_TestPhysVal_PhysSizes_Kinematics_h
 
-//#include "PhysSizes/Kinematics/PhysSizeBitRate.h"
-//#include "PhysSizes/Kinematics/PhysSizeFrequency.h"
-//#include "PhysSizes/Kinematics/PhysSizeSamples.h"
+#include "PhysSizes/Kinematics/PhysSizeBitRate.h"
+#include "PhysSizes/Kinematics/PhysSizeFrequency.h"
+#include "PhysSizes/Kinematics/PhysSizeSamples.h"
 #include "PhysSizes/Kinematics/PhysSizeTime.h"
-//#include "PhysSizes/Kinematics/PhysSizeVelocity.h"
+#include "PhysSizes/Kinematics/PhysSizeVelocity.h"
 #include "ZSPhysVal/ZSPhysScienceField.h"
 
 namespace ZS
 {
+namespace PhysVal
+{
+class CIdxTreePhysSizes;
+}
 namespace Apps
 {
 namespace Test
@@ -47,26 +51,23 @@ class CPhysScienceFieldKinematics : public ZS::PhysVal::CPhysScienceField
 //******************************************************************************
 {
 public: // ctors and dtor
-    CPhysScienceFieldKinematics();
+    CPhysScienceFieldKinematics(ZS::PhysVal::CIdxTreePhysSizes* i_pIdxTree);
+    CPhysScienceFieldKinematics(CPhysScienceFieldKinematics&& i_other) = delete;
+    CPhysScienceFieldKinematics(CPhysScienceFieldKinematics& i_other) = delete;
+    CPhysScienceFieldKinematics(const CPhysScienceFieldKinematics& i_other) = delete;
     ~CPhysScienceFieldKinematics();
-private: // class members
-    static CPhysScienceFieldKinematics* s_pTheInst;
+public: // operators
+    CPhysScienceFieldKinematics& operator=(CPhysScienceFieldKinematics& i_other) = delete;
+    CPhysScienceFieldKinematics& operator=(const CPhysScienceFieldKinematics& i_other) = delete;
+    CPhysScienceFieldKinematics& operator=(CPhysScienceFieldKinematics&& i_other) = delete;
 public: // instance members
-    CPhysSizeKinematicsTime* Time;
+    CPhysSizeBitRate BitRate;
+    CPhysSizeFrequency Frequency;
+    CPhysSizeSamples Samples;
+    CPhysSizeTime Time;
+    CPhysSizeVelocity Velocity;
 
 }; // class CPhysScienceFieldKinematics
-
-extern CPhysScienceFieldKinematics* Kinematics;
-
-//namespace Kinematics
-//{
-//const CPhysSizeTime& Time();
-//const CPhysSizeFrequency& Frequency();
-//const CPhysSizeVelocity& Velocity();
-//const CPhysSizeBitRate& BitRate();
-//const CPhysSizeSamples& Samples();
-
-//} // namespace Kinematics
 
 } // namespace PhysVal
 

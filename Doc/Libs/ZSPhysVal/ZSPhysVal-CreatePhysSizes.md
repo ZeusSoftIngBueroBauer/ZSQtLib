@@ -8,30 +8,44 @@ It would be nice if you could access the "MilliSeconds" unit as follows:
 - Kinematics.Time.ms
 - Kinematics.Time.MilliSeconds
 
-For this it would be necessary
+For this the following steps would be necessary:
 
-- implement a science field class `CPhysScienceFieldKinematiks` which inherits
-  from class `CPhysScienceField` and
-- create an instance of this class called `Kinematics` as a global variable so
-  that it can be accessed by all modules.
+1. Implement a class maybe called `CPhysSizeKinematiksTime` which inherits from class `CPhysSize`
+   and provides an instance member `MilliSeconds` of type `CPhysUnit` with public access.
+   This class also need to provide an instance member `ms` with public access which is a reference
+   to `MilliSeconds`.
+2. Implement a science field class maybe called `CPhysScienceFieldKinematiks` which inherits
+   from class `CPhysScienceField` and provides a member `Time` of type `CPhysSizeKinematiksTime`
+   with public access.
+3. Create an instance of class `CPhysSizeKinematiksTime` called `Kinematics` as a global variable so
+   that it can be accessed by all modules.
 
-Die Klasse `CPhysScienceFieldKinematiks` definiert Instanz Variablen mit Public
-Accessors für jeden zu implementierenden Einheitenring.
+Punkt 3 ist dabei problematisch. Die physikalischen Einheitenringe und ihre Einheiten müssen einem
+Index Baum hinzugefügt werden mit entsprechenden Parent/Child Verkettungen.
 
-Für den Einheitenring der physikalischen Größe Time wäre eine Klasse `CPhysSizeKinematicsTime`
-zu implementieren, die wiederum eine Instanzvariable `MilliSeconds` definiert und diese mit
-Public Accessor von außen zugänglich macht. Damit die Einheit `MilliSeconds` auch über das
-Einheiten Symbol `ms` erreicht werden kann, müsste zusätzlich eine Instanzvariable `ms` mit Public
-Accessor definiert werden, die als Referenz auf `MilliSeconds` zu initialisieren ist.
+Wird `Kinematics` als globale Variable definiert, muss der Index Baum bereits vorher angelegt worden sein,
+damit die phyisalikischen Einheitenringe, die innerhalb `Kinematics` definiert wurden, auch dem Index Baum
+hinzugefügt werden können. Das könnte man dadurch erreichen, dass man den Index Tree vor `Kinematics`
+definiert. Werden neben `Kinematics` auch weitere Einheiten Größen wie `Geometry` oder `Electricity` benötigt,
+müsste man die zugehörigen Klassen `CPhysScienceFieldGeometry` und `CPhysScienceFieldElectricity` innerhalb
+eines Moduls instanziieren, nachdem man den Index Baum instanziiert hat.
 
-Leider funktioniert das nicht so, wie gewünscht, da die Reihenfolge, in der globale, namespace und
-Klassenvariable initialisiert werden, nicht genau vorhersagbar und nicht durch den Programmierer
-vorgegeben werden kann.
+Dies könnte in einem Modul `Units` wie folgt geschehen:
 
-Wird die globale Variable `Kinematics` initialisiert und die Konstruktoren der Klassen `CPhysSize`
-usw. aufgerufen, werden Klassenvariable wie z.B. String Konstanten referenziert, die zu diesem
-Zeitpunkt noch nicht angelegt erzeugt wurden. Das Programm wird mit einer Zugriffsverletztung beim
-Anlegen der Instanz `Kinematics` terminieren.
+Header File Units.h:
+
+    extern CIdxTreePhysSizes IdxTreePhysSizes;
+    extern CPhysScienceFieldKinematics Kinematics;
+    extern CPhysScienceFieldGeometry Geometry;
+    extern CPhysScienceFieldElectricity Electricity;
+
+Source File Units.cpp:
+
+    CIdxTreePhysSizes IdxTreePhysSizes;
+    CPhysScienceFieldKinematics Kinematics(&IdxTreePhysSizes);
+    CPhysScienceFieldGeometry Geometry(&IdxTreePhysSizes);
+    CPhysScienceFieldElectricity Electricity(&IdxTreePhysSizes);
+
 
 Die Instanziierung der globalen `Kinematics` Variable "by value" hätte außerdem noch weitere Nachteile.
 Zum Einen wird der Konstruktor durchlaufen, noch bevor z.B. der Trace Server instanziiert ist und damit

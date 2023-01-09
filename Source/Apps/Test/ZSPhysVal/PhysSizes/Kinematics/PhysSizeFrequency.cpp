@@ -25,14 +25,11 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "PhysSizes/Kinematics/PhysSizeFrequency.h"
-#include "ZSSys/ZSSysMath.h"
 #include "ZSSys/ZSSysMemLeakDump.h"
 
-#if 0
 
-using namespace ZS::System::Math;
 using namespace ZS::PhysVal;
-using namespace ZS::PhysVal::Kinematics;
+using namespace ZS::Apps::Test::PhysVal;
 
 
 /*******************************************************************************
@@ -44,27 +41,65 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CPhysSizeFrequency::CPhysSizeFrequency() :
+CPhysSizeFrequency::CPhysSizeFrequency( CIdxTreeEntry* i_pParentBranch ) :
 //------------------------------------------------------------------------------
     CPhysSize(
-        /* scienceField     */ EPhysScienceFieldKinematics,
+        /* pParentBranch    */ i_pParentBranch,
         /* strName          */ "Frequency",
         /* strSIUnitName    */ "Hertz",
         /* strSIUnitSymbol  */ "Hz",
         /* strFormulaSymbol */ "f",
         /* bIsPowerRelated  */ false ),
-    m_physUnitHertz(
+    Hertz(
         /* pPhysSize */ this,
         /* strPrefix */ "" ),
-    m_physUnitKiloHertz(
+    KiloHertz(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixKilo ),
-    m_physUnitMegaHertz(
+    MegaHertz(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixMega ),
-    m_physUnitGigaHertz(
+    GigaHertz(
         /* pPhysSize */ this,
-        /* strPrefix */ c_strPrefixGiga )
+        /* strPrefix */ c_strPrefixGiga ),
+    Hz(Hertz),
+    kHz(KiloHertz),
+    MHz(MegaHertz),
+    GHz(GigaHertz)
+{
+    // Call function of base class CPhysSize to initialize the physical size together
+    // with its units (e.g. to create the field with internal conversion routines
+    // and to create the chained list of Lower/Higher units).
+    initialize(true);
+
+} // ctor
+
+//------------------------------------------------------------------------------
+CPhysSizeFrequency::CPhysSizeFrequency( CIdxTreePhysSizes* i_pIdxTree ) :
+//------------------------------------------------------------------------------
+    CPhysSize(
+        /* pIdxTree         */ i_pIdxTree,
+        /* strName          */ "Frequency",
+        /* strSIUnitName    */ "Hertz",
+        /* strSIUnitSymbol  */ "Hz",
+        /* strFormulaSymbol */ "f",
+        /* bIsPowerRelated  */ false ),
+    Hertz(
+        /* pPhysSize */ this,
+        /* strPrefix */ "" ),
+    KiloHertz(
+        /* pPhysSize */ this,
+        /* strPrefix */ c_strPrefixKilo ),
+    MegaHertz(
+        /* pPhysSize */ this,
+        /* strPrefix */ c_strPrefixMega ),
+    GigaHertz(
+        /* pPhysSize */ this,
+        /* strPrefix */ c_strPrefixGiga ),
+    Hz(Hertz),
+    kHz(KiloHertz),
+    MHz(MegaHertz),
+    GHz(GigaHertz)
 {
     // Call function of base class CPhysSize to initialize the physical size together
     // with its units (e.g. to create the field with internal conversion routines
@@ -78,5 +113,3 @@ CPhysSizeFrequency::~CPhysSizeFrequency()
 //------------------------------------------------------------------------------
 {
 } // dtor
-
-#endif

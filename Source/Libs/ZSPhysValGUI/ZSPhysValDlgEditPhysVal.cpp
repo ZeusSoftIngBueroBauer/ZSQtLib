@@ -73,8 +73,8 @@ CDlgEditPhysVal::CDlgEditPhysVal(
 //------------------------------------------------------------------------------
     QDialog(i_pWdgtParent),
     m_physValOld(i_physVal),
-    m_pPhysSize(i_physVal.getPhysSize()),
-    m_pPhysUnit(i_physVal.getPhysUnit()),
+    m_pPhysSize(i_physVal.physSize()),
+    m_pPhysUnit(i_physVal.physUnit()),
     m_fMin(i_fMin),
     m_fMax(i_fMax),
     m_iDecimals(i_iDecimals),

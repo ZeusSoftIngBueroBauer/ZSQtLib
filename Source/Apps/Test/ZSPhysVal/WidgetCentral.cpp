@@ -26,13 +26,12 @@ may result in using the software modules.
 
 #include "WidgetCentral.h"
 #include "App.h"
-#include "PhysSizes/Kinematics/Kinematics.h"
+#include "PhysSizes/PhysSizes.h"
 #include "Test.h"
 
 #include "ZSPhysValGUI/ZSPhysSizesIdxTreeWdgt.h"
 #include "ZSPhysVal/ZSPhysSizesIdxTree.h"
 #include "ZSTestGUI/ZSTestStepIdxTreeWdgt.h"
-//#include "ZSSysGUI/ZSSysErrLogWdgt.h"
 #include "ZSSys/ZSSysErrCode.h"
 #include "ZSSys/ZSSysException.h"
 
@@ -105,7 +104,7 @@ CWidgetCentral::CWidgetCentral( QWidget* i_pWdgtParent, Qt::WindowFlags  i_wflag
     // <Tab> Units
     //-------------
 
-    m_pWdgtPhysSizes = new CWdgtIdxTreePhysSizes(dynamic_cast<CIdxTreePhysSizes*>(Kinematics->tree()));
+    m_pWdgtPhysSizes = new CWdgtIdxTreePhysSizes(&IdxTreePhysSizes);
     m_pTabWdgtMain->addTab(m_pWdgtPhysSizes,"Units");
 
     // <Tab> Test

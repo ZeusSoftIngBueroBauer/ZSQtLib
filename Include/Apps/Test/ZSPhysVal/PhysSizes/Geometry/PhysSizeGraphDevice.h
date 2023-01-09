@@ -38,23 +38,26 @@ namespace Test
 {
 namespace PhysVal
 {
-//namespace Geometry
-//{
-////******************************************************************************
-//class CPhysSizeGraphDevice : public ZS::PhysVal::CPhysSize
-////******************************************************************************
-//{
-//public: // ctors and dtor
-//    CPhysSizeGraphDevice();
-//    ~CPhysSizeGraphDevice();
-//public: // instance methods
-//    ZS::PhysVal::CPhysUnit* Pixel() { return &m_physUnitPixel; }
-//protected: // instance members
-//    ZS::PhysVal::CPhysUnit m_physUnitPixel;
-//
-//}; // CPhysSizeGraphDevice
-//
-//} // namespace Geometry
+//******************************************************************************
+class CPhysSizeGraphDevice : public ZS::PhysVal::CPhysSize
+//******************************************************************************
+{
+public: // ctors and dtor
+    CPhysSizeGraphDevice(ZS::PhysVal::CIdxTreePhysSizes* i_pIdxTree);
+    CPhysSizeGraphDevice(ZS::System::CIdxTreeEntry* i_pParentBranch);
+    CPhysSizeGraphDevice(CPhysSizeGraphDevice&& i_other) = delete;
+    CPhysSizeGraphDevice(CPhysSizeGraphDevice& i_other) = delete;
+    CPhysSizeGraphDevice(const CPhysSizeGraphDevice& i_other) = delete;
+    virtual ~CPhysSizeGraphDevice();
+public: // operators
+    CPhysSizeGraphDevice& operator=(CPhysSizeGraphDevice& i_other) = delete;
+    CPhysSizeGraphDevice& operator=(const CPhysSizeGraphDevice& i_other) = delete;
+    CPhysSizeGraphDevice& operator=(CPhysSizeGraphDevice&& i_other) = delete;
+public: // instance members
+    ZS::PhysVal::CPhysUnit Pixel;
+    ZS::PhysVal::CPhysUnit& px;
+
+}; // CPhysSizeGraphDevice
 
 } // namespace PhysVal
 

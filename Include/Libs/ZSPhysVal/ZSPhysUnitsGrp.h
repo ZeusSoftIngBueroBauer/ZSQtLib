@@ -39,24 +39,34 @@ namespace ZS
 {
 namespace PhysVal
 {
-//class CIdxTreePhysSizes;
+class CIdxTreePhysSizes;
 class CUnit;
 
 //******************************************************************************
 class ZSPHYSVALDLL_API CUnitGrp : public ZS::System::CIdxTreeEntry
 //******************************************************************************
 {
+public: // class methods
+    static QString NameSpace() { return "ZS::PhysVal"; }
+    static QString ClassName() { return "CUnitGrp"; }
 public: // ctors and dtor
+    //CUnitGrp();
     CUnitGrp(
-        ZS::System::CIdxTree* i_pIdxTree,
-        EUnitClassType        i_classType,
-        const QString&        i_strName,
-        CIdxTreeEntry*        i_pParentBranch = nullptr );
+        CIdxTreePhysSizes* i_pIdxTree,
+        EUnitClassType     i_classType,
+        const QString&     i_strName );
     CUnitGrp(
         ZS::System::CIdxTreeEntry* i_pParentBranch,
         EUnitClassType             i_classType,
         const QString&             i_strName );
+    CUnitGrp(CUnitGrp&& i_other) = delete;
+    CUnitGrp(CUnitGrp& i_other) = delete;
+    CUnitGrp(const CUnitGrp& i_other) = delete;
     virtual ~CUnitGrp();
+public: // operators
+    CUnitGrp& operator=(CUnitGrp& i_other) = delete;
+    CUnitGrp& operator=(const CUnitGrp& i_other) = delete;
+    CUnitGrp& operator=(CUnitGrp&& i_other) = delete;
 public: // operators
     bool operator == ( const CUnitGrp& i_other ) const;
     bool operator != ( const CUnitGrp& i_other ) const;
@@ -77,13 +87,14 @@ public: // instance methods
     //CUnitGrp* getChildUnitGrp( int i_idx ) const;
     //CUnitGrp* findChildUnitGrp( const QString& i_strName ) const;
 public: // overridables of base class CIdxTreeEntry
-    //int getUnitCount() const { return m_vecpUnits.size(); }
     virtual int addChild( CIdxTreeEntry* i_pChildTreeEntry ) override;
+public: // instance methods
+    //int getUnitCount() const { return m_vecpUnits.size(); }
     //void addUnit( CUnit* i_pUnit );
     //void removeUnit( int i_idx );
     //void removeUnit( CUnit* i_pUnit );
     //void removeUnit( const QString& i_strSymbolOrName );
-    //CUnit* getUnit( int i_idx ) const;
+    //CUnit* unit( int i_idx ) const;
     CUnit* findUnit( const QString& i_strSymbolOrName ) const;
     CUnit* findUnitBySymbol( const QString& i_strSymbol ) const;
     CUnit* findUnitByName( const QString& i_strName ) const;
@@ -102,11 +113,6 @@ protected: // instance members
     //QVector<CUnit*> m_vecpUnits;
     /*!< Key is symbol of unit */
     QHash<QString, CUnit*> m_hshpUnitsBySymbol;
-    /*!< If this instance needed to create the physical sizes index tree
-         the index tree must be released if the physical science field
-         instance is destroyed. The reference counter is set to one
-         if the index tree was created by this science field. */
-    int m_iIdxTreeRefCount;
 
 }; // class CUnitGrp
 

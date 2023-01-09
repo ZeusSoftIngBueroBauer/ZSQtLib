@@ -30,31 +30,41 @@ may result in using the software modules.
 #include "PhysSizes/Geometry/PhysSizeAngle.h"
 #include "PhysSizes/Geometry/PhysSizeGraphDevice.h"
 #include "PhysSizes/Geometry/PhysSizeLength.h"
+#include "ZSPhysVal/ZSPhysScienceField.h"
 
-
-/*******************************************************************************
-interface description of exported methods
-*******************************************************************************/
 
 namespace ZS
 {
+namespace PhysVal
+{
+class CIdxTreePhysSizes;
+}
 namespace Apps
 {
 namespace Test
 {
 namespace PhysVal
 {
-//namespace Geometry
-//{
-//class CPhysSizeAngle;
-//class CPhysSizeGraphDevice;
-//class CPhysSizeLength;
-//
-//CPhysSizeAngle*       Angle();
-//CPhysSizeGraphDevice* GraphDevice();
-//CPhysSizeLength*      Length();
-//
-//} // namespace Geometry
+//******************************************************************************
+class CPhysScienceFieldGeometry : public ZS::PhysVal::CPhysScienceField
+//******************************************************************************
+{
+public: // ctors and dtor
+    CPhysScienceFieldGeometry(ZS::PhysVal::CIdxTreePhysSizes* i_pIdxTree);
+    CPhysScienceFieldGeometry(CPhysScienceFieldGeometry&& i_other) = delete;
+    CPhysScienceFieldGeometry(CPhysScienceFieldGeometry& i_other) = delete;
+    CPhysScienceFieldGeometry(const CPhysScienceFieldGeometry& i_other) = delete;
+    ~CPhysScienceFieldGeometry();
+public: // operators
+    CPhysScienceFieldGeometry& operator=(CPhysScienceFieldGeometry& i_other) = delete;
+    CPhysScienceFieldGeometry& operator=(const CPhysScienceFieldGeometry& i_other) = delete;
+    CPhysScienceFieldGeometry& operator=(CPhysScienceFieldGeometry&& i_other) = delete;
+public: // instance members
+    CPhysSizeAngle Angle;
+    CPhysSizeGraphDevice GraphDevice;
+    CPhysSizeLength Length;
+
+}; // class CPhysScienceFieldGeometry
 
 } // namespace PhysVal
 

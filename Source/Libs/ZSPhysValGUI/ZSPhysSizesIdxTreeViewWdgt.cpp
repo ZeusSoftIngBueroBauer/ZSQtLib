@@ -61,7 +61,7 @@ CWdgtIdxTreeViewPhysSizes::CWdgtIdxTreeViewPhysSizes(
     QWidget* i_pWdgtParent ) :
 //------------------------------------------------------------------------------
     QWidget(i_pWdgtParent),
-    m_pIdxTree(i_pIdxTree),
+    m_pIdxTree(nullptr),
     m_szBtns(24, 24),
     m_pLytMain(nullptr),
     m_pLytHeadLine(nullptr),
@@ -137,7 +137,7 @@ CWdgtIdxTreeViewPhysSizes::CWdgtIdxTreeViewPhysSizes(
     // <TreeView>
     //===============================
 
-    m_pTreeView = new CTreeViewIdxTreePhysSizes(m_pIdxTree, nullptr);
+    m_pTreeView = new CTreeViewIdxTreePhysSizes(nullptr, nullptr);
     m_pLytMain->addWidget(m_pTreeView, 1);
 
     QObject::connect(
@@ -145,6 +145,10 @@ CWdgtIdxTreeViewPhysSizes::CWdgtIdxTreeViewPhysSizes(
         this, &CWdgtIdxTreeViewPhysSizes::onTreeViewExpanded );
 
     m_pTreeView->resizeColumnToContents(CModelIdxTreePhysSizes::EColumnTreeEntryName);
+
+    if( i_pIdxTree != nullptr ) {
+        setIdxTree(i_pIdxTree);
+    }
 
 } // ctor
 
@@ -171,9 +175,29 @@ public: // instance methods
 void CWdgtIdxTreeViewPhysSizes::setIdxTree(CIdxTreePhysSizes* i_pIdxTree)
 //------------------------------------------------------------------------------
 {
-    m_pIdxTree = i_pIdxTree;
+    if( m_pIdxTree != i_pIdxTree )
+    {
+        if( m_pIdxTree != nullptr )
+        {
+            QObject::disconnect(
+                m_pIdxTree, &CIdxTreePhysSizes::aboutToBeDestroyed,
+                this, &CWdgtIdxTreeViewPhysSizes::onIdxTreeAboutToBeDestroyed);
+        }
 
-    m_pTreeView->setIdxTree(i_pIdxTree);
+        m_pIdxTree = i_pIdxTree;
+
+        if( m_pIdxTree != nullptr )
+        {
+            QObject::connect(
+                m_pIdxTree, &CIdxTreePhysSizes::aboutToBeDestroyed,
+                this, &CWdgtIdxTreeViewPhysSizes::onIdxTreeAboutToBeDestroyed);
+        }
+
+        if( m_pTreeView != nullptr )
+        {
+            m_pTreeView->setIdxTree(i_pIdxTree);
+        }
+    }
 }
 
 /*==============================================================================
@@ -237,5 +261,20 @@ void CWdgtIdxTreeViewPhysSizes::onBtnTreeViewCollapseAllClicked( bool i_bChecked
     if( m_pTreeView != nullptr )
     {
         m_pTreeView->collapseAll();
+    }
+}
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtIdxTreeViewPhysSizes::onIdxTreeAboutToBeDestroyed()
+//------------------------------------------------------------------------------
+{
+    m_pIdxTree = nullptr;
+
+    if( m_pTreeView != nullptr ) {
+        m_pTreeView->setIdxTree(nullptr);
     }
 }

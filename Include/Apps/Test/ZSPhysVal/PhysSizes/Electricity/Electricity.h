@@ -31,6 +31,7 @@ may result in using the software modules.
 #include "PhysSizes/Electricity/PhysSizePower.h"
 #include "PhysSizes/Electricity/PhysSizeResistance.h"
 #include "PhysSizes/Electricity/PhysSizeVoltage.h"
+#include "ZSPhysVal/ZSPhysScienceField.h"
 
 
 /*******************************************************************************
@@ -39,42 +40,37 @@ interface description of exported methods
 
 namespace ZS
 {
+namespace PhysVal
+{
+class CIdxTreePhysSizes;
+}
 namespace Apps
 {
 namespace Test
 {
 namespace PhysVal
 {
-//namespace Electricity
-//{
-//const CPhysSizeCurrent& Current();
-//const CPhysSizePower& Power();
-//const CPhysSizeResistance& Resistance();
-//const CPhysSizeVoltage& Voltage();
-//
-////******************************************************************************
-//class CPhysScienceFieldElectricity
-////******************************************************************************
-//{
-//public: // class methods
-//    static const CPhysSizeCurrent& Current();
-//    static const CPhysSizePower& Power();
-//    static const CPhysSizeResistance& Resistance();
-//    static const CPhysSizeVoltage& Voltage();
-//public: // ctors and dtor
-//    CPhysScienceFieldElectricity(ZS::PhysVal::CIdxTreePhysSizes* i_pIdxTree);
-//    ~CPhysScienceFieldElectricity();
-//private: // class members
-//    static CPhysScienceFieldElectricity* s_pTheInst;
-//private: // class members
-//    static CPhysSizeCurrent*    s_pPhysSizeCurrent;
-//    static CPhysSizePower*      s_pPhysSizePower;
-//    static CPhysSizeResistance* s_pPhysSizeResistance;
-//    static CPhysSizeVoltage*    s_pPhysSizeVoltage;
-//
-//}; // class CPhysScienceFieldElectricity
-//
-//} // namespace Electricity
+//******************************************************************************
+class CPhysScienceFieldElectricity : public ZS::PhysVal::CPhysScienceField
+//******************************************************************************
+{
+public: // ctors and dtor
+    CPhysScienceFieldElectricity(ZS::PhysVal::CIdxTreePhysSizes* i_pIdxTree);
+    CPhysScienceFieldElectricity(CPhysScienceFieldElectricity&& i_other) = delete;
+    CPhysScienceFieldElectricity(CPhysScienceFieldElectricity& i_other) = delete;
+    CPhysScienceFieldElectricity(const CPhysScienceFieldElectricity& i_other) = delete;
+    ~CPhysScienceFieldElectricity();
+public: // operators
+    CPhysScienceFieldElectricity& operator=(CPhysScienceFieldElectricity& i_other) = delete;
+    CPhysScienceFieldElectricity& operator=(const CPhysScienceFieldElectricity& i_other) = delete;
+    CPhysScienceFieldElectricity& operator=(CPhysScienceFieldElectricity&& i_other) = delete;
+public: // instance members
+    CPhysSizeCurrent Current;
+    CPhysSizePower Power;
+    CPhysSizeResistance Resistance;
+    CPhysSizeVoltage Voltage;
+
+}; // class CPhysScienceFieldElectricity
 
 } // namespace PhysVal
 

@@ -38,29 +38,39 @@ namespace ZS
 {
 namespace PhysVal
 {
+class CPhysScienceField;
+
 //******************************************************************************
 class ZSPHYSVALDLL_API CPhysSize : public CUnitGrp
 //******************************************************************************
 {
+public: // class methods
+    static QString NameSpace() { return "ZS::PhysVal"; }
+    static QString ClassName() { return "CPhysSize"; }
 public: // ctors and dtor
+    //CPhysSize();
     CPhysSize(
-        ZS::System::CIdxTree* i_pIdxTree,
-        EPhysScienceField     i_scienceField,
-        const QString&        i_strName,
-        const QString&        i_strSIUnitName,
-        const QString&        i_strSIUnitSymbol,
-        const QString&        i_strFormulaSymbol,
-        bool                  i_bIsPowerRelated,
-        CIdxTreeEntry*        i_pParentBranch = nullptr );
+        CIdxTreePhysSizes* i_pIdxTree,
+        const QString&     i_strName,
+        const QString&     i_strSIUnitName,
+        const QString&     i_strSIUnitSymbol,
+        const QString&     i_strFormulaSymbol,
+        bool               i_bIsPowerRelated );
     CPhysSize(
-        ZS::System::CIdxTreeEntry* i_pParentBranch,
-        EPhysScienceField          i_scienceField,
-        const QString&             i_strName,
-        const QString&             i_strSIUnitName,
-        const QString&             i_strSIUnitSymbol,
-        const QString&             i_strFormulaSymbol,
-        bool                       i_bIsPowerRelated );
+        CIdxTreeEntry* i_pParentBranch,
+        const QString& i_strName,
+        const QString& i_strSIUnitName,
+        const QString& i_strSIUnitSymbol,
+        const QString& i_strFormulaSymbol,
+        bool           i_bIsPowerRelated );
+    CPhysSize(CPhysSize&& i_other) = delete;
+    CPhysSize(CPhysSize& i_other) = delete;
+    CPhysSize(const CPhysSize& i_other) = delete;
     virtual ~CPhysSize();
+public: // operators
+    CPhysSize& operator=(CPhysSize& i_other) = delete;
+    CPhysSize& operator=(const CPhysSize& i_other) = delete;
+    CPhysSize& operator=(CPhysSize&& i_other) = delete;
 public: // operators
     bool operator == ( const CPhysSize& i_physsizeOther ) const;
     bool operator != ( const CPhysSize& i_physsizeOther ) const;
@@ -83,11 +93,6 @@ public: // instance methods
     CPhysUnit* findPhysUnitByName( const QString& i_strName );
 public: // overridables
     virtual double getRefVal( CPhysUnit* i_pPhysUnitRef = nullptr ) const;
-private: // default and copy ctor not allowed
-    CPhysSize();
-    CPhysSize( const CPhysSize& );
-private: // assignment operator not allowed
-    CPhysSize& operator = ( const CPhysSize& );
 protected: // instance members
     QString    m_strSIUnitName;
     QString    m_strSIUnitSymbol;

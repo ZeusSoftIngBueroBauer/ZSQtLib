@@ -38,69 +38,47 @@ namespace Test
 {
 namespace PhysVal
 {
-//namespace Geometry
-//{
-////******************************************************************************
-//class CPhysSizeLength : public ZS::PhysVal::CPhysSize
-////******************************************************************************
-//{
-//public: // ctors and dtor
-//    CPhysSizeLength( ZS::PhysVal::CIdxTreePhysSizes* i_pIdxTree );
-//    ~CPhysSizeLength();
-//public: // instance methods
-//    //ZS::PhysVal::CPhysUnit* YoktoMeter();
-//    //ZS::PhysVal::CPhysUnit* ZeptoMeter();
-//    //ZS::PhysVal::CPhysUnit* AttoMeter();
-//    //ZS::PhysVal::CPhysUnit* FemtoMeter();
-//    ZS::PhysVal::CPhysUnit* PicoMeter() { return &m_physUnitPicoMeter; }
-//    ZS::PhysVal::CPhysUnit* NanoMeter() { return &m_physUnitNanoMeter; }
-//    ZS::PhysVal::CPhysUnit* MicroMeter() { return &m_physUnitMicroMeter; }
-//    ZS::PhysVal::CPhysUnit* MilliMeter() { return &m_physUnitMilliMeter; }
-//    ZS::PhysVal::CPhysUnit* CentiMeter() { return &m_physUnitCentiMeter; }
-//    ZS::PhysVal::CPhysUnit* DeziMeter() { return &m_physUnitDeziMeter; }
-//    ZS::PhysVal::CPhysUnit* Meter() { return &m_physUnitMeter; }
-//    ZS::PhysVal::CPhysUnit* KiloMeter() { return &m_physUnitKiloMeter; }
-//    //ZS::PhysVal::CPhysUnit* MegaMeter();
-//    //ZS::PhysVal::CPhysUnit* GigaMeter();
-//    //ZS::PhysVal::CPhysUnit* TeraMeter();
-//    //ZS::PhysVal::CPhysUnit* PetaMeter();
-//    //ZS::PhysVal::CPhysUnit* ExaMeter();
-//    //ZS::PhysVal::CPhysUnit* ZettaMeter();
-//    //ZS::PhysVal::CPhysUnit* YottaMeter();
-//    ZS::PhysVal::CPhysUnit* Inch() { return &m_physUnitInch; }
-//    ZS::PhysVal::CPhysUnit* Foot() { return &m_physUnitFoot; }
-//    ZS::PhysVal::CPhysUnit* Yard() { return &m_physUnitYard; }
-//    ZS::PhysVal::CPhysUnit* Mile() { return &m_physUnitMile; }
-//    ZS::PhysVal::CPhysUnit* NauticalMile() { return &m_physUnitNauticalMile; }
-//protected: // instance members
-//    //ZS::PhysVal::CPhysUnit m_physUnitYoktoMeter;
-//    //ZS::PhysVal::CPhysUnit m_physUnitZeptoMeter;
-//    //ZS::PhysVal::CPhysUnit m_physUnitAttoMeter;
-//    //ZS::PhysVal::CPhysUnit m_physUnitFemtoMeter;
-//    ZS::PhysVal::CPhysUnit m_physUnitPicoMeter;
-//    ZS::PhysVal::CPhysUnit m_physUnitNanoMeter;
-//    ZS::PhysVal::CPhysUnit m_physUnitMicroMeter;
-//    ZS::PhysVal::CPhysUnit m_physUnitMilliMeter;
-//    ZS::PhysVal::CPhysUnit m_physUnitCentiMeter;
-//    ZS::PhysVal::CPhysUnit m_physUnitDeziMeter;
-//    ZS::PhysVal::CPhysUnit m_physUnitMeter;
-//    ZS::PhysVal::CPhysUnit m_physUnitKiloMeter;
-//    //ZS::PhysVal::CPhysUnit m_physUnitMegaMeter;
-//    //ZS::PhysVal::CPhysUnit m_physUnitGigaMeter;
-//    //ZS::PhysVal::CPhysUnit m_physUnitTeraMeter;
-//    //ZS::PhysVal::CPhysUnit m_physUnitPetaMeter;
-//    //ZS::PhysVal::CPhysUnit m_physUnitExaMeter;
-//    //ZS::PhysVal::CPhysUnit m_physUnitZettaMeter;
-//    //ZS::PhysVal::CPhysUnit m_physUnitYottaMeter;
-//    ZS::PhysVal::CPhysUnit m_physUnitInch;
-//    ZS::PhysVal::CPhysUnit m_physUnitFoot;
-//    ZS::PhysVal::CPhysUnit m_physUnitYard;
-//    ZS::PhysVal::CPhysUnit m_physUnitMile;
-//    ZS::PhysVal::CPhysUnit m_physUnitNauticalMile;
-//
-//}; // CPhysSizeLength
-//
-//} // namespace Geometry
+//******************************************************************************
+class CPhysSizeLength : public ZS::PhysVal::CPhysSize
+//******************************************************************************
+{
+public: // ctors and dtor
+    CPhysSizeLength( ZS::PhysVal::CIdxTreePhysSizes* i_pIdxTree );
+    CPhysSizeLength(ZS::System::CIdxTreeEntry* i_pParentBranch);
+    CPhysSizeLength(CPhysSizeLength&& i_other) = delete;
+    CPhysSizeLength(CPhysSizeLength& i_other) = delete;
+    CPhysSizeLength(const CPhysSizeLength& i_other) = delete;
+    virtual ~CPhysSizeLength();
+public: // operators
+    CPhysSizeLength& operator=(CPhysSizeLength& i_other) = delete;
+    CPhysSizeLength& operator=(const CPhysSizeLength& i_other) = delete;
+    CPhysSizeLength& operator=(CPhysSizeLength&& i_other) = delete;
+public: // instance members
+    ZS::PhysVal::CPhysUnit PicoMeter;
+    ZS::PhysVal::CPhysUnit NanoMeter;
+    ZS::PhysVal::CPhysUnit MicroMeter;
+    ZS::PhysVal::CPhysUnit MilliMeter;
+    ZS::PhysVal::CPhysUnit CentiMeter;
+    ZS::PhysVal::CPhysUnit DeziMeter;
+    ZS::PhysVal::CPhysUnit Meter;
+    ZS::PhysVal::CPhysUnit KiloMeter;
+    ZS::PhysVal::CPhysUnit Inch;
+    ZS::PhysVal::CPhysUnit Foot;
+    ZS::PhysVal::CPhysUnit Yard;
+    ZS::PhysVal::CPhysUnit Mile;
+    ZS::PhysVal::CPhysUnit NauticalMile;
+    ZS::PhysVal::CPhysUnit& pm;
+    ZS::PhysVal::CPhysUnit& nm;
+    ZS::PhysVal::CPhysUnit& um;
+    ZS::PhysVal::CPhysUnit& mm;
+    ZS::PhysVal::CPhysUnit& cm;
+    ZS::PhysVal::CPhysUnit& dm;
+    ZS::PhysVal::CPhysUnit& m;
+    ZS::PhysVal::CPhysUnit& km;
+    ZS::PhysVal::CPhysUnit& ft;
+    ZS::PhysVal::CPhysUnit& yd;
+
+}; // CPhysSizeLength
 
 } // namespace PhysVal
 

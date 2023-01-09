@@ -46,20 +46,46 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief
+/*! @brief Creates a unit group.
 
-    @param i_pIdxTree,
+    The constructor will add itself as a child of the root node
+    to the given index tree.
+
+    @param i_pIdxTree
     @param i_classType
         [PhysScienceFields, Ratios, UserDefinedQuantities]
     @param i_strName
         e.g. "Time", "Power", "Voltage", "Current", ...
-    @param i_pParentBranch
 */
 CUnitGrp::CUnitGrp(
-    CIdxTree*      i_pIdxTree,
+    CIdxTreePhysSizes* i_pIdxTree,
+    EUnitClassType     i_classType,
+    const QString&     i_strName ) :
+//------------------------------------------------------------------------------
+    CIdxTreeEntry(EIdxTreeEntryType::Branch, ""),
+    m_classType(EUnitClassType::Undefined),
+    m_hshpUnitsBySymbol()
+{
+    i_pIdxTree->add(this);
+
+} // ctor
+
+//------------------------------------------------------------------------------
+/*! @brief Creates a unit group.
+
+    The constructor will add itself to an index tree of physical sizes
+    as a child of the passed parent branch.
+
+    @param i_pParentBranch
+    @param i_classType
+        [PhysScienceFields, Ratios, UserDefinedQuantities]
+    @param i_strName
+        e.g. "Time", "Power", "Voltage", "Current", ...
+*/
+CUnitGrp::CUnitGrp(
+    CIdxTreeEntry* i_pParentBranch,
     EUnitClassType i_classType,
-    const QString& i_strName,
-    CIdxTreeEntry* i_pParentBranch ) :
+    const QString& i_strName ) :
 //------------------------------------------------------------------------------
     CIdxTreeEntry(EIdxTreeEntryType::Branch, i_strName),
     m_classType(i_classType),
@@ -67,57 +93,20 @@ CUnitGrp::CUnitGrp(
     //m_vecpUnitGrpChilds(),
     //m_hshpUnitGrpChilds(),
     //m_vecpUnits(),
-    m_hshpUnitsBySymbol(),
-    m_iIdxTreeRefCount(0)
+    m_hshpUnitsBySymbol()
 {
-    m_pTree = i_pIdxTree;
-    if( m_pTree == nullptr ) {
-        m_pTree = CIdxTreePhysSizes::GetInstance();
-        if( m_pTree == nullptr ) {
-            m_pTree = CIdxTreePhysSizes::CreateInstance();
-            m_iIdxTreeRefCount = 1;
-        }
-    }
-    m_pTree->add(this, i_pParentBranch);
+    i_pParentBranch->tree()->add(this, i_pParentBranch);
 
 } // ctor
 
 //------------------------------------------------------------------------------
-/*! @brief
+/*! @brief Destroys the unit group.
 
-    @param i_pParentBranch
-    @param i_classType
-        [PhysScienceFields, Ratios, UserDefinedQuantities]
-    @param i_strName
-        e.g. "Time", "Power", "Voltage", "Current", ...
+    The instance will be removed from the index tree.
+
+    If the constructor created an index tree with the default name
+    the index tree will be released by the destructor.
 */
-CUnitGrp::CUnitGrp(
-    CIdxTreeEntry*  i_pParentBranch,
-    EUnitClassType  i_classType,
-    const QString&  i_strName ) :
-//------------------------------------------------------------------------------
-    CIdxTreeEntry(EIdxTreeEntryType::Branch, i_strName),
-    m_classType(i_classType),
-    //m_pUnitGrpParent(nullptr),
-    //m_vecpUnitGrpChilds(),
-    //m_hshpUnitGrpChilds(),
-    //m_vecpUnits(),
-    m_hshpUnitsBySymbol(),
-    m_iIdxTreeRefCount(0)
-{
-    m_pTree = i_pParentBranch->tree();
-    if( m_pTree == nullptr ) {
-        m_pTree = CIdxTreePhysSizes::GetInstance();
-        if( m_pTree == nullptr ) {
-            m_pTree = CIdxTreePhysSizes::CreateInstance();
-            m_iIdxTreeRefCount = 1;
-        }
-    }
-    m_pTree->add(this, i_pParentBranch);
-
-} // ctor
-
-//------------------------------------------------------------------------------
 CUnitGrp::~CUnitGrp()
 //------------------------------------------------------------------------------
 {
@@ -157,13 +146,6 @@ CUnitGrp::~CUnitGrp()
     // Attention: on removing this from the index tree the member m_pTree
     // will be set to nullptr. To release the tree later on we need to store
     // the pointer in a stack variable.
-    CIdxTree* pIdxTree = m_pTree;
-
-    m_pTree->remove(this);
-
-    if( m_iIdxTreeRefCount > 0 ) {
-        CIdxTreePhysSizes::ReleaseInstance(pIdxTree->objectName());
-    }
 
     //// Inform parent that the unit group has been destroyed.
     //if( m_pUnitGrpParent != nullptr )
@@ -176,8 +158,7 @@ CUnitGrp::~CUnitGrp()
     //m_vecpUnitGrpChilds;
     //m_hshpUnitGrpChilds;
     //m_vecpUnits;
-    m_hshpUnitsBySymbol.clear();
-    m_iIdxTreeRefCount = 0;
+    //m_hshpUnitsBySymbol.clear();
 
 } // dtor
 
@@ -194,16 +175,14 @@ bool CUnitGrp::operator == ( const CUnitGrp& i_physsizeOther ) const
         return false;
     }
     return true;
-
-} // operator ==
+}
 
 //------------------------------------------------------------------------------
 bool CUnitGrp::operator != ( const CUnitGrp& i_physsizeOther ) const
 //------------------------------------------------------------------------------
 {
     return !(*this == i_physsizeOther );
-
-} // operator ==
+}
 
 /*==============================================================================
 public: // instance methods
@@ -213,7 +192,7 @@ public: // instance methods
 QString CUnitGrp::classType2Str() const
 //------------------------------------------------------------------------------
 {
-    return unitClassType2Str(m_classType);
+    return CEnumUnitClassType(m_classType).toString();
 }
 
 ////------------------------------------------------------------------------------
@@ -414,9 +393,9 @@ public: // instance methods
 //
 //} // findChildUnitGrp
 
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
+/*=============================================================================
+public: // overridables of base class CIdxTreeEntry
+=============================================================================*/
 
 //------------------------------------------------------------------------------
 int CUnitGrp::addChild( CIdxTreeEntry* i_pChildTreeEntry )
@@ -442,7 +421,12 @@ int CUnitGrp::addChild( CIdxTreeEntry* i_pChildTreeEntry )
         }
         m_hshpUnitsBySymbol[pUnit->symbol()] = pUnit;
     }
+    return idxInParentBranch;
 }
+
+/*=============================================================================
+public: // instance methods
+=============================================================================*/
 
 ////------------------------------------------------------------------------------
 //void CUnitGrp::addUnit( CUnit* i_pUnit )

@@ -60,7 +60,7 @@ CTreeViewIdxTreePhysSizes::CTreeViewIdxTreePhysSizes(
     QWidget* i_pWdgtParent ) :
 //------------------------------------------------------------------------------
     QTreeView(i_pWdgtParent),
-    m_pIdxTree(i_pIdxTree),
+    m_pIdxTree(nullptr),
     m_pModel(nullptr),
     m_pMenuNameSpaceContext(nullptr),
     m_pActionNameSpaceTitle(nullptr),
@@ -71,7 +71,7 @@ CTreeViewIdxTreePhysSizes::CTreeViewIdxTreePhysSizes(
 {
     setObjectName( QString(i_pIdxTree == nullptr ? "IdxTreePhysSizes" : i_pIdxTree->objectName()) );
 
-    m_pModel = new CModelIdxTreePhysSizes(m_pIdxTree, nullptr);
+    m_pModel = new CModelIdxTreePhysSizes(nullptr, nullptr);
 
     setModel(m_pModel);
 
@@ -115,6 +115,10 @@ CTreeViewIdxTreePhysSizes::CTreeViewIdxTreePhysSizes(
         m_pActionNameSpaceCollapse, &QAction::triggered,
         this, &CTreeViewIdxTreePhysSizes::onActionNameSpaceCollapseTriggered);
 
+    if( i_pIdxTree != nullptr ) {
+        setIdxTree(i_pIdxTree);
+    }
+
 } // ctor
 
 //------------------------------------------------------------------------------
@@ -146,7 +150,21 @@ void CTreeViewIdxTreePhysSizes::setIdxTree( CIdxTreePhysSizes* i_pIdxTree )
 {
     if( m_pIdxTree != i_pIdxTree )
     {
+        if( m_pIdxTree != nullptr )
+        {
+            QObject::disconnect(
+                m_pIdxTree, &CIdxTreePhysSizes::aboutToBeDestroyed,
+                this, &CTreeViewIdxTreePhysSizes::onIdxTreeAboutToBeDestroyed);
+        }
+
         m_pIdxTree = i_pIdxTree;
+
+        if( m_pIdxTree != nullptr )
+        {
+            QObject::connect(
+                m_pIdxTree, &CIdxTreePhysSizes::aboutToBeDestroyed,
+                this, &CTreeViewIdxTreePhysSizes::onIdxTreeAboutToBeDestroyed);
+        }
 
         m_pModel->setIdxTree(i_pIdxTree);
     }
@@ -384,4 +402,15 @@ void CTreeViewIdxTreePhysSizes::onActionNameSpaceCollapseTriggered( bool i_bChec
     {
         collapseRecursive(m_modelIdxSelectedOnMousePressEvent);
     }
+}
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CTreeViewIdxTreePhysSizes::onIdxTreeAboutToBeDestroyed()
+//------------------------------------------------------------------------------
+{
+    setIdxTree(nullptr);
 }

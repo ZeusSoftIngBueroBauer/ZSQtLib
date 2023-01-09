@@ -94,16 +94,28 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+CUnit::CUnit() :
+//------------------------------------------------------------------------------
+    CIdxTreeEntry(EIdxTreeEntryType::Leave, ""),
+    m_classType(EUnitClassType::Undefined),
+    m_strSymbol(),
+    m_bIsLogarithmic(false),
+    m_fLogFactor(0.0),
+    m_pNextLower(nullptr),
+    m_pNextHigher(nullptr)
+{
+} // ctor
+
+//------------------------------------------------------------------------------
 CUnit::CUnit(
-    CUnitGrp*      i_pUnitGrp,
+    CUnitGrp*      i_pParentBranch,
     bool           i_bIsLogarithmic,
     double         i_fLogFactor,
     const QString& i_strName,
     const QString& i_strSymbol ) :
 //------------------------------------------------------------------------------
     CIdxTreeEntry(EIdxTreeEntryType::Leave, i_strName),
-    m_classType(i_pUnitGrp->classType()),
-    m_pUnitGrp(nullptr), // set on calling i_pUnitGrp->addUnit(this)
+    m_classType(i_pParentBranch->classType()),
     m_strSymbol(i_strSymbol),
     m_bIsLogarithmic(i_bIsLogarithmic),
     m_fLogFactor(i_fLogFactor),
@@ -115,16 +127,31 @@ CUnit::CUnit(
         m_strName = m_strSymbol;
     }
 
-    CIdxTree* pIdxTree = i_pUnitGrp->tree();
-
-    pIdxTree->add(this, i_pUnitGrp);
+    if( i_pParentBranch != nullptr ) {
+        CIdxTree* pIdxTree = i_pParentBranch->tree();
+        if( pIdxTree != nullptr ) {
+            pIdxTree->add(this, i_pParentBranch);
+        }
+    }
 
 } // ctor
 
 //------------------------------------------------------------------------------
-CUnit::~CUnit()
+/*! @brief Move Constructor.
+
+    @param i_unit [in] Unit instance to be moved.
+*/
+CUnit::CUnit(CUnit&& i_other) :
 //------------------------------------------------------------------------------
+    CIdxTreeEntry(std::move(i_other)),
+    m_classType(i_other.m_classType),
+    m_strSymbol(i_other.m_strSymbol),
+    m_bIsLogarithmic(i_other.m_bIsLogarithmic),
+    m_fLogFactor(i_other.m_fLogFactor),
+    m_pNextLower(nullptr),
+    m_pNextHigher(nullptr)
 {
+    // Remove this entry from the chain of next lower and next higher units.
     if( m_pNextLower != nullptr && m_pNextLower->m_pNextHigher == this )
     {
         m_pNextLower->m_pNextHigher = m_pNextHigher;
@@ -133,45 +160,77 @@ CUnit::~CUnit()
     {
         m_pNextHigher->m_pNextLower = m_pNextLower;
     }
+
+    m_pNextLower = i_other.m_pNextLower;
+    m_pNextHigher = i_other.m_pNextHigher;
+
+    i_other.m_classType = EUnitClassType::Undefined;
+    //i_other.m_strSymbol;
+    i_other.m_bIsLogarithmic = false;
+    i_other.m_fLogFactor = 0.0;
+    i_other.m_pNextLower = nullptr;
+    i_other.m_pNextHigher = nullptr;
+}
+
+//------------------------------------------------------------------------------
+CUnit::~CUnit()
+//------------------------------------------------------------------------------
+{
+    // Remove this entry from the chain of next lower and next higher units.
+    if( m_pNextLower != nullptr && m_pNextLower->m_pNextHigher == this )
+    {
+        m_pNextLower->m_pNextHigher = m_pNextHigher;
+    }
+    if( m_pNextHigher != nullptr && m_pNextHigher->m_pNextLower == this )
+    {
+        m_pNextHigher->m_pNextLower = m_pNextLower;
+    }
+
+    m_classType = static_cast<EUnitClassType>(0);
+    //m_strSymbol;
+    m_bIsLogarithmic = false;
+    m_fLogFactor = 0.0;
     m_pNextLower = nullptr;
     m_pNextHigher = nullptr;
-
-    //if( m_pUnitGrp != nullptr )
-    //{
-    //    CUnit* pUnit = m_pUnitGrp->findUnitByName(m_strName);
-    //    if( pUnit != nullptr )
-    //    {
-    //        m_pUnitGrp->removeUnit(m_strName);
-    //    }
-    //}
-    //m_pUnitGrp = nullptr;
 
 } // dtor
 
 /*==============================================================================
-public: // instance methods (configuration)
+public: // operators
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QString CUnit::classType2Str() const
+CUnit& CUnit::operator=(CUnit&& i_other)
 //------------------------------------------------------------------------------
 {
-    return unitClassType2Str(m_classType);
-}
+    // Remove this entry from the chain of next lower and next higher units.
+    if( m_pNextLower != nullptr && m_pNextLower->m_pNextHigher == this )
+    {
+        m_pNextLower->m_pNextHigher = m_pNextHigher;
+    }
+    if( m_pNextHigher != nullptr && m_pNextHigher->m_pNextLower == this )
+    {
+        m_pNextHigher->m_pNextLower = m_pNextLower;
+    }
 
-////------------------------------------------------------------------------------
-//QString CUnit::groupName( bool i_bInsertParentNames ) const
-////------------------------------------------------------------------------------
-//{
-//    QString strName;
-//
-//    if( m_pUnitGrp != nullptr )
-//    {
-//        strName = m_pUnitGrp->getName(i_bInsertParentNames);
-//    }
-//    return strName;
-//
-//} // getGroupName
+    *static_cast<CIdxTreeEntry*>(this) = static_cast<CIdxTreeEntry&&>(std::move(i_other));
+
+    m_classType = i_other.m_classType;
+    m_strSymbol = i_other.m_strSymbol;
+    m_bIsLogarithmic = i_other.m_bIsLogarithmic;
+    m_fLogFactor = i_other.m_fLogFactor;
+    m_pNextLower = i_other.m_pNextLower;
+    m_pNextHigher = i_other.m_pNextHigher;
+
+    i_other.m_classType = EUnitClassType::Undefined;
+    //i_other.m_strSymbol;
+    i_other.m_bIsLogarithmic = false;
+    i_other.m_fLogFactor = 0.0;
+    i_other.m_pNextLower = nullptr;
+    i_other.m_pNextHigher = nullptr;
+
+    return *this;
+}
 
 /*==============================================================================
 public: // operators
@@ -189,12 +248,29 @@ bool CUnit::operator == ( const CUnit& i_other ) const
 }
 
 //------------------------------------------------------------------------------
-bool CUnit::operator != ( const CUnit& i_unitOther ) const
+bool CUnit::operator != ( const CUnit& i_other ) const
 //------------------------------------------------------------------------------
 {
-    return !(*this == i_unitOther);
+    return !(*this == i_other);
 }
 
+/*==============================================================================
+public: // instance methods (configuration)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QString CUnit::classType2Str() const
+//------------------------------------------------------------------------------
+{
+    return CEnumUnitClassType(m_classType).toString();
+}
+
+//------------------------------------------------------------------------------
+CUnitGrp* CUnit::unitGroup() const
+//------------------------------------------------------------------------------
+{
+    return dynamic_cast<CUnitGrp*>(m_pParentBranch);
+};
 
 /*==============================================================================
 public: // overridables
@@ -263,12 +339,12 @@ CUnit* CUnit::findBestUnit(
 
         if( iDigitsLeading > iDigitsLeadingMax )
         {
-            pUnitNext = pUnitPrev->getNextHigherUnit();
+            pUnitNext = pUnitPrev->nextHigherUnit();
             iNextUnitDir = 1;
         }
         else if( iDigitsTrailing > 0 )
         {
-            pUnitNext = pUnitPrev->getNextLowerUnit();
+            pUnitNext = pUnitPrev->nextLowerUnit();
             iNextUnitDir = -1;
         }
         else // if( iDigitsLeading <= iDigitsLeadingMax && iDigitsTrailing <= 0 )
@@ -301,7 +377,7 @@ CUnit* CUnit::findBestUnit(
             if( iDigitsLeading > iDigitsLeadingMax && iNextUnitDir > 0 )
             {
                 pUnitPrev = pUnitNext;
-                pUnitNext = pUnitPrev->getNextHigherUnit();
+                pUnitNext = pUnitPrev->nextHigherUnit();
                 if( pUnitNext == nullptr )
                 {
                     // There is no next higher unit. Previous unit is best.
@@ -311,7 +387,7 @@ CUnit* CUnit::findBestUnit(
             else if( iDigitsTrailing > 0 && iNextUnitDir < 0 )
             {
                 pUnitPrev = pUnitNext;
-                pUnitNext = pUnitPrev->getNextLowerUnit();
+                pUnitNext = pUnitPrev->nextLowerUnit();
                 if( pUnitNext == nullptr )
                 {
                     // There is no next lower unit. Previous unit is best.
@@ -369,6 +445,23 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Constructor for a dummy unit.
+*/
+CPhysUnit::CPhysUnit() :
+//------------------------------------------------------------------------------
+    CUnit(),
+    m_pPhysUnitSI(nullptr),
+    m_strPrefix(),
+    m_bInitialized(false),
+    //m_iPhysSizeRowIdx(-1),
+    m_fctConvertFromSIUnit(),
+    m_fctConvertIntoSIUnit(),
+    m_arFctConvertsInternal(),
+    m_arFctConvertsExternal()
+{
+} // ctor
+
+//------------------------------------------------------------------------------
 /*! @brief Constructor for linear units.
 
     @param i_pPhysSize [in]
@@ -383,7 +476,6 @@ CPhysUnit::CPhysUnit( CPhysSize* i_pPhysSize, const QString& i_strPrefix ) :
         /* fLogFactor     */ 1.0,
         /* strName        */ getExponentStrFromPrefixStr(i_strPrefix) + i_pPhysSize->getSIUnitName(),
         /* strSymbol      */ i_strPrefix + i_pPhysSize->getSIUnitSymbol() ),
-    m_pPhysSize(i_pPhysSize),
     m_pPhysUnitSI(nullptr),
     m_strPrefix(i_strPrefix),
     m_bInitialized(false),
@@ -453,7 +545,6 @@ CPhysUnit::CPhysUnit(
         /* fLogFactor     */ 1.0,
         /* strName        */ i_strName,
         /* strSymbol      */ i_strSymbol ),
-    m_pPhysSize(i_pPhysSize),
     m_pPhysUnitSI(nullptr),
     m_strPrefix(""),
     m_bInitialized(false),
@@ -474,7 +565,7 @@ CPhysUnit::CPhysUnit(
         m_fctConvertFromSIUnit.m_pPhysUnitDst = this;
         m_fctConvertFromSIUnit.m_fctConvertType = EFctConvert_mLOGxADDt;
 
-        if( m_pPhysSize->isPowerRelated() )
+        if( physSize()->isPowerRelated() )
         {
             m_fctConvertFromSIUnit.m_fM = 10.0;
             m_fLogFactor = 10.0;
@@ -519,7 +610,45 @@ CPhysUnit::CPhysUnit(
 CPhysUnit::~CPhysUnit()
 //------------------------------------------------------------------------------
 {
+    m_pPhysUnitSI = nullptr;
+    //m_strPrefix;
+    m_bInitialized = false;
+    //m_fctConvertFromSIUnit;
+    //m_fctConvertIntoSIUnit;
+    m_arFctConvertsInternal.clear();
+    m_arFctConvertsExternal.clear();
+
 } // dtor
+
+/*==============================================================================
+public: // operators
+==============================================================================*/
+
+////------------------------------------------------------------------------------
+//CPhysUnit& CPhysUnit::operator=(CPhysUnit&& i_other)
+////------------------------------------------------------------------------------
+//{
+//    *static_cast<CUnit*>(this) = static_cast<CUnit&&>(std::move(i_other));
+//
+//    m_pPhysUnitSI = i_other.m_pPhysUnitSI;
+//    m_strPrefix = i_other.m_strPrefix;
+//    m_bInitialized = i_other.m_bInitialized;
+//    //m_iPhysSizeRowIdx = i_other.m_iPhysSizeRowIdx;
+//    m_fctConvertFromSIUnit = std::move(i_other.m_fctConvertFromSIUnit);
+//    m_fctConvertIntoSIUnit = std::move(i_other.m_fctConvertIntoSIUnit);
+//    m_arFctConvertsInternal = std::move(i_other.m_arFctConvertsInternal);
+//    m_arFctConvertsExternal = std::move(i_other.m_arFctConvertsExternal);
+//
+//    i_other.m_pPhysUnitSI = nullptr;
+//    //i_other.m_strPrefix;
+//    i_other.m_bInitialized = false;
+//    i_other.m_fctConvertFromSIUnit = CFctConvert();
+//    i_other.m_fctConvertIntoSIUnit = CFctConvert();
+//    i_other.m_arFctConvertsInternal.clear();
+//    i_other.m_arFctConvertsExternal.clear();
+//
+//    return *this;
+//}
 
 /*==============================================================================
 public: // operators
@@ -543,6 +672,17 @@ bool CPhysUnit::operator != ( const CPhysUnit& i_physUnitOther ) const
 {
     return !(*this == i_physUnitOther);
 }
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CPhysSize* CPhysUnit::physSize() const
+//------------------------------------------------------------------------------
+{
+    return dynamic_cast<CPhysSize*>(m_pParentBranch);
+};
 
 /*==============================================================================
 public: // instance methods
@@ -575,7 +715,7 @@ bool CPhysUnit::isConvertible( const CUnit* i_pUnitDst, double /*i_fVal*/ ) cons
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultSIUnitNotDefined );
     }
-    if( i_pUnitDst->classType() != EUnitClassTypePhysScienceFields )
+    if( i_pUnitDst->classType() != EUnitClassType::PhysScienceFields )
     {
         return false;
     }
@@ -598,7 +738,7 @@ bool CPhysUnit::isConvertible( const CUnit* i_pUnitDst, double /*i_fVal*/ ) cons
     bool bConvertible = false;
 
     // If this and the destination unit are belonging to the same physical size ...
-    if( m_pPhysSize == pPhysUnitDst->getPhysSize() )
+    if( physSize() == pPhysUnitDst->physSize() )
     {
         // .. the unit is convertible if it has been initialized by the physical size
         // creating the array with internal conversion routines and setting the
@@ -620,7 +760,7 @@ bool CPhysUnit::isConvertible( const CUnit* i_pUnitDst, double /*i_fVal*/ ) cons
         else
         {
             // .. maybe a direct conversion between both SI units has been set.
-            CPhysUnit* pPhysUnitSrcSI = m_pPhysSize->getSIUnit();
+            CPhysUnit* pPhysUnitSrcSI = physSize()->getSIUnit();
             CPhysUnit* pPhysUnitDstSI = pPhysUnitDst->getSIUnit();
 
             if( pPhysUnitSrcSI != nullptr && pPhysUnitDstSI != nullptr )
@@ -655,7 +795,7 @@ bool CPhysUnit::isConvertible( const CUnit* i_pUnitDst, double /*i_fVal*/ ) cons
 double CPhysUnit::convertValue( double i_fVal, const CUnit* i_pUnitDst ) const
 //------------------------------------------------------------------------------
 {
-    if( i_pUnitDst->classType() != EUnitClassTypePhysScienceFields )
+    if( i_pUnitDst->classType() != EUnitClassType::PhysScienceFields )
     {
         return CUnit::convertValue(i_fVal,i_pUnitDst);
     }
@@ -733,7 +873,7 @@ double CPhysUnit::convertValue(
     const CFctConvert* pFctConvertDstFromSI = nullptr;
 
     // If this and the destination unit are belonging to the same physical size ...
-    if( m_pPhysSize == i_pPhysUnitDst->getPhysSize() )
+    if( physSize() == i_pPhysUnitDst->physSize() )
     {
         if( i_pPhysUnitDst->m_idxInParentBranch < 0 || i_pPhysUnitDst->m_idxInParentBranch >= m_arFctConvertsInternal.size() )
         {
@@ -790,7 +930,7 @@ double CPhysUnit::convertValue(
     {
         if( pFctConvert->m_pPhysUnitRef != nullptr )
         {
-            fValRef = pFctConvert->m_pPhysUnitRef->getPhysSize()->getRefVal(pFctConvert->m_pPhysUnitRef);
+            fValRef = pFctConvert->m_pPhysUnitRef->physSize()->getRefVal(pFctConvert->m_pPhysUnitRef);
         }
     }
 

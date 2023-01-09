@@ -224,7 +224,7 @@ void CWdgtIdxTreePhysSizes::setIdxTree( CIdxTreePhysSizes* i_pIdxTree )
         if( m_pIdxTree != nullptr )
         {
             QObject::disconnect(
-                m_pIdxTree, &CIdxTree::aboutToBeDestroyed,
+                m_pIdxTree, &CIdxTreePhysSizes::aboutToBeDestroyed,
                 this, &CWdgtIdxTreePhysSizes::onIdxTreeAboutToBeDestroyed);
         }
 
@@ -233,12 +233,14 @@ void CWdgtIdxTreePhysSizes::setIdxTree( CIdxTreePhysSizes* i_pIdxTree )
         if( m_pIdxTree != nullptr )
         {
             QObject::connect(
-                m_pIdxTree, &CIdxTree::aboutToBeDestroyed,
+                m_pIdxTree, &CIdxTreePhysSizes::aboutToBeDestroyed,
                 this, &CWdgtIdxTreePhysSizes::onIdxTreeAboutToBeDestroyed);
         }
 
-        m_pWdgtTreeView->setIdxTree(i_pIdxTree);
-
+        if( m_pWdgtTreeView != nullptr )
+        {
+            m_pWdgtTreeView->setIdxTree(i_pIdxTree);
+        }
         if( m_pWdgtTableViewBranchContent != nullptr )
         {
             m_pWdgtTableViewBranchContent->setIdxTree(i_pIdxTree);
@@ -344,4 +346,11 @@ void CWdgtIdxTreePhysSizes::onIdxTreeAboutToBeDestroyed()
 //------------------------------------------------------------------------------
 {
     m_pIdxTree = nullptr;
+
+    if( m_pWdgtTreeView != nullptr ) {
+        m_pWdgtTreeView->setIdxTree(nullptr);
+    }
+    if( m_pWdgtTableViewBranchContent != nullptr ) {
+        m_pWdgtTableViewBranchContent->setIdxTree(nullptr);
+    }
 }

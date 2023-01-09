@@ -2419,12 +2419,9 @@ void CIdxTree::remove( CIdxTreeEntry* i_pTreeEntry )
 
         if( pBranch != nullptr && pBranch->count() > 0 )
         {
-            CIdxTreeEntry* pTreeEntry;
-            int            idxEntry;
-
-            for( idxEntry = pBranch->count()-1; idxEntry >= 0; --idxEntry )
+            for( int idxEntry = pBranch->count()-1; idxEntry >= 0; --idxEntry )
             {
-                pTreeEntry = pBranch->at(idxEntry);
+                CIdxTreeEntry* pTreeEntry = pBranch->at(idxEntry);
                 remove(pTreeEntry);
             }
         }
@@ -3773,12 +3770,10 @@ int CIdxTree::copy(
     {
         CIdxTreeEntry* pBranch = i_pTreeEntry;
         CIdxTreeEntry* pTargetBranch = pTreeEntryTrg;
-        CIdxTreeEntry* pTreeEntry;
-        int            idxEntry;
 
-        for( idxEntry = 0; idxEntry < pBranch->count(); ++idxEntry )
+        for( int idxEntry = 0; idxEntry < pBranch->count(); ++idxEntry )
         {
-            pTreeEntry = pBranch->at(idxEntry);
+            CIdxTreeEntry* pTreeEntry = pBranch->at(idxEntry);
 
             copy(pTreeEntry, pTargetBranch);
         }
@@ -4144,12 +4139,10 @@ void CIdxTree::updateKeyInTree( CIdxTreeEntry* i_pTreeEntry )
     if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
     {
         CIdxTreeEntry* pBranch = i_pTreeEntry;
-        CIdxTreeEntry* pTreeEntry;
-        int            idxEntry;
 
-        for( idxEntry = 0; idxEntry < pBranch->count(); ++idxEntry )
+        for( int idxEntry = 0; idxEntry < pBranch->count(); ++idxEntry )
         {
-            pTreeEntry = pBranch->at(idxEntry);
+            CIdxTreeEntry* pTreeEntry = pBranch->at(idxEntry);
 
             updateKeyInTree(pTreeEntry);
         }
@@ -4194,12 +4187,9 @@ void CIdxTree::clear( CIdxTreeEntry* i_pBranch )
         throw CException(__FILE__, __LINE__, EResultInternalProgramError);
     }
 
-    CIdxTreeEntry* pTreeEntry;
-    int            idxEntry;
-
-    for( idxEntry = i_pBranch->count()-1; idxEntry >= 0; --idxEntry )
+    for( int idxEntry = i_pBranch->count()-1; idxEntry >= 0; --idxEntry )
     {
-        pTreeEntry = i_pBranch->at(idxEntry);
+        CIdxTreeEntry* pTreeEntry = i_pBranch->at(idxEntry);
 
         if( pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
         {

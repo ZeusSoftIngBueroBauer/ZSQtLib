@@ -133,43 +133,43 @@ protected: // instance members
 
 }; // class CWdgtUnitViewUnt
 
-//******************************************************************************
-class CWdgtUnitViewGrpRatios : public CWdgtUnitViewGrp
-//******************************************************************************
-{
-    Q_OBJECT
-public: // ctors and dtor
-    CWdgtUnitViewGrpRatios( QWidget* i_pWdgtParent = nullptr );
-    virtual ~CWdgtUnitViewGrpRatios();
-public: // overridables of base class CWdgtUnitView
-    virtual void setUnitsModelNode( SUnitsModelNode* i_pNode );
-protected: // instance members
-    // Table view with physical units of a physical size:
-    QVBoxLayout*        m_pLytTableView;
-    QWidget*            m_pWdgtTableView;
-    CModelUnitGrpRatio  m_model;
-    QTableView*         m_pTableView;
+////******************************************************************************
+//class CWdgtUnitViewGrpRatios : public CWdgtUnitViewGrp
+////******************************************************************************
+//{
+//    Q_OBJECT
+//public: // ctors and dtor
+//    CWdgtUnitViewGrpRatios( QWidget* i_pWdgtParent = nullptr );
+//    virtual ~CWdgtUnitViewGrpRatios();
+//public: // overridables of base class CWdgtUnitView
+//    virtual void setUnitsModelNode( SUnitsModelNode* i_pNode );
+//protected: // instance members
+//    // Table view with physical units of a physical size:
+//    QVBoxLayout*        m_pLytTableView;
+//    QWidget*            m_pWdgtTableView;
+//    CModelUnitGrpRatio  m_model;
+//    QTableView*         m_pTableView;
+//
+//}; // class CWdgtUnitViewGrpRatios
 
-}; // class CWdgtUnitViewGrpRatios
-
-//******************************************************************************
-class CWdgtUnitViewGrpDataQuantities : public CWdgtUnitViewGrp
-//******************************************************************************
-{
-    Q_OBJECT
-public: // ctors and dtor
-    CWdgtUnitViewGrpDataQuantities( QWidget* i_pWdgtParent = nullptr );
-    virtual ~CWdgtUnitViewGrpDataQuantities();
-public: // overridables of base class CWdgtUnitView
-    virtual void setUnitsModelNode( SUnitsModelNode* i_pNode );
-protected: // instance members
-    // Table view with physical units of a physical size:
-    QVBoxLayout*              m_pLytTableView;
-    QWidget*                  m_pWdgtTableView;
-    CModelUnitGrpDataQuantity m_model;
-    QTableView*               m_pTableView;
-
-}; // class CWdgtUnitViewGrpDataQuantities
+////******************************************************************************
+//class CWdgtUnitViewGrpDataQuantities : public CWdgtUnitViewGrp
+////******************************************************************************
+//{
+//    Q_OBJECT
+//public: // ctors and dtor
+//    CWdgtUnitViewGrpDataQuantities( QWidget* i_pWdgtParent = nullptr );
+//    virtual ~CWdgtUnitViewGrpDataQuantities();
+//public: // overridables of base class CWdgtUnitView
+//    virtual void setUnitsModelNode( SUnitsModelNode* i_pNode );
+//protected: // instance members
+//    // Table view with physical units of a physical size:
+//    QVBoxLayout*              m_pLytTableView;
+//    QWidget*                  m_pWdgtTableView;
+//    CModelUnitGrpDataQuantity m_model;
+//    QTableView*               m_pTableView;
+//
+//}; // class CWdgtUnitViewGrpDataQuantities
 
 //******************************************************************************
 class CWdgtUnitViewGrpPhysScienceFields : public CWdgtUnitViewGrp
@@ -220,39 +220,39 @@ public: // overridables of base class CWdgtUnitView
 
 }; // class CWdgtUnitViewGrpUserDefinedQuantities
 
-//******************************************************************************
-class CWdgtUnitViewUntRatio : public CWdgtUnitViewUnt
-//******************************************************************************
-{
-    Q_OBJECT
-public: // ctors and dtor
-    CWdgtUnitViewUntRatio( QWidget* i_pWdgtParent = nullptr );
-    virtual ~CWdgtUnitViewUntRatio();
-public: // overridables of base class CWdgtUnitView
-    virtual void setUnitsModelNode( SUnitsModelNode* i_pNode );
-protected: // instance members
-    QHBoxLayout* m_pLytFactor;
-    QLabel*      m_pLblFactor;
-    QLineEdit*   m_pEdtFactor;
+////******************************************************************************
+//class CWdgtUnitViewUntRatio : public CWdgtUnitViewUnt
+////******************************************************************************
+//{
+//    Q_OBJECT
+//public: // ctors and dtor
+//    CWdgtUnitViewUntRatio( QWidget* i_pWdgtParent = nullptr );
+//    virtual ~CWdgtUnitViewUntRatio();
+//public: // overridables of base class CWdgtUnitView
+//    virtual void setUnitsModelNode( SUnitsModelNode* i_pNode );
+//protected: // instance members
+//    QHBoxLayout* m_pLytFactor;
+//    QLabel*      m_pLblFactor;
+//    QLineEdit*   m_pEdtFactor;
+//
+//}; // class CWdgtUnitViewUntRatio
 
-}; // class CWdgtUnitViewUntRatio
-
-//******************************************************************************
-class CWdgtUnitViewUntDataQuantity : public CWdgtUnitViewUnt
-//******************************************************************************
-{
-    Q_OBJECT
-public: // ctors and dtor
-    CWdgtUnitViewUntDataQuantity( QWidget* i_pWdgtParent = nullptr );
-    virtual ~CWdgtUnitViewUntDataQuantity();
-public: // overridables of base class CWdgtUnitView
-    virtual void setUnitsModelNode( SUnitsModelNode* i_pNode );
-protected: // instance members
-    QHBoxLayout* m_pLytFactor;
-    QLabel*      m_pLblFactor;
-    QLineEdit*   m_pEdtFactor;
-
-}; // class CWdgtUnitViewUntDataQuantity
+////******************************************************************************
+//class CWdgtUnitViewUntDataQuantity : public CWdgtUnitViewUnt
+////******************************************************************************
+//{
+//    Q_OBJECT
+//public: // ctors and dtor
+//    CWdgtUnitViewUntDataQuantity( QWidget* i_pWdgtParent = nullptr );
+//    virtual ~CWdgtUnitViewUntDataQuantity();
+//public: // overridables of base class CWdgtUnitView
+//    virtual void setUnitsModelNode( SUnitsModelNode* i_pNode );
+//protected: // instance members
+//    QHBoxLayout* m_pLytFactor;
+//    QLabel*      m_pLblFactor;
+//    QLineEdit*   m_pEdtFactor;
+//
+//}; // class CWdgtUnitViewUntDataQuantity
 
 //******************************************************************************
 class CWdgtUnitViewPhysUnit : public CWdgtUnitViewUnt

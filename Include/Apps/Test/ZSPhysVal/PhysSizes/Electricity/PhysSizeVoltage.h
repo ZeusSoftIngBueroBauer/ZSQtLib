@@ -38,69 +38,51 @@ namespace Test
 {
 namespace PhysVal
 {
-//namespace Electricity
-//{
-//const double c_fRefValdBu_0775V = sqrt(0.6);
-//
-////******************************************************************************
-//class CPhysSizeVoltage : public ZS::PhysVal::CPhysSize
-////******************************************************************************
-//{
-//public: // ctors and dtor
-//    CPhysSizeVoltage( ZS::PhysVal::CIdxTreePhysSizes* i_pIdxTree );
-//    ~CPhysSizeVoltage();
-//public: // instance methods
-//    //ZS::PhysVal::CPhysUnit* YoktoVolt();
-//    //ZS::PhysVal::CPhysUnit* ZeptoVolt();
-//    //ZS::PhysVal::CPhysUnit* AttoVolt();
-//    //ZS::PhysVal::CPhysUnit* FemtoVolt();
-//    ZS::PhysVal::CPhysUnit* PicoVolt() { return &m_physUnitPicoVolt; }
-//    ZS::PhysVal::CPhysUnit* NanoVolt() { return &m_physUnitNanoVolt; }
-//    ZS::PhysVal::CPhysUnit* MicroVolt() { return &m_physUnitMicroVolt; }
-//    ZS::PhysVal::CPhysUnit* MilliVolt() { return &m_physUnitMilliVolt; }
-//    ZS::PhysVal::CPhysUnit* Volt() { return &m_physUnitVolt; }
-//    ZS::PhysVal::CPhysUnit* KiloVolt() { return &m_physUnitKiloVolt; }
-//    ZS::PhysVal::CPhysUnit* MegaVolt() { return &m_physUnitMegaVolt; }
-//    //ZS::PhysVal::CPhysUnit* GigaVolt();
-//    //ZS::PhysVal::CPhysUnit* TeraVolt();
-//    //ZS::PhysVal::CPhysUnit* PetaVolt();
-//    //ZS::PhysVal::CPhysUnit* ExaVolt();
-//    //ZS::PhysVal::CPhysUnit* ZettaVolt();
-//    //ZS::PhysVal::CPhysUnit* YottaVolt();
-//    ZS::PhysVal::CPhysUnit* dBVolt() { return &m_physUnitdBVolt; }
-//    ZS::PhysVal::CPhysUnit* dBu() { return &m_physUnitdBu; }
-//    ZS::PhysVal::CPhysUnit* dBMilliVolt() { return &m_physUnitdBMilliVolt; }
-//    ZS::PhysVal::CPhysUnit* dBMicroVolt() { return &m_physUnitdBMicroVolt; }
-//    ZS::PhysVal::CPhysUnit* dBNanoVolt() { return &m_physUnitdBNanoVolt; }
-//    ZS::PhysVal::CPhysUnit* dBPicoVolt() { return &m_physUnitdBPicoVolt; }
-//protected: // instance members
-//    //ZS::PhysVal::CPhysUnit m_physUnitYoktoVolt;
-//    //ZS::PhysVal::CPhysUnit m_physUnitZeptoVolt;
-//    //ZS::PhysVal::CPhysUnit m_physUnitAttoVolt;
-//    //ZS::PhysVal::CPhysUnit m_physUnitFemtoVolt;
-//    ZS::PhysVal::CPhysUnit m_physUnitPicoVolt;
-//    ZS::PhysVal::CPhysUnit m_physUnitNanoVolt;
-//    ZS::PhysVal::CPhysUnit m_physUnitMicroVolt;
-//    ZS::PhysVal::CPhysUnit m_physUnitMilliVolt;
-//    ZS::PhysVal::CPhysUnit m_physUnitVolt;
-//    ZS::PhysVal::CPhysUnit m_physUnitKiloVolt;
-//    ZS::PhysVal::CPhysUnit m_physUnitMegaVolt;
-//    //ZS::PhysVal::CPhysUnit m_physUnitGigaVolt;
-//    //ZS::PhysVal::CPhysUnit m_physUnitTeraVolt;
-//    //ZS::PhysVal::CPhysUnit m_physUnitPetaVolt;
-//    //ZS::PhysVal::CPhysUnit m_physUnitExaVolt;
-//    //ZS::PhysVal::CPhysUnit m_physUnitZettaVolt;
-//    //ZS::PhysVal::CPhysUnit m_physUnitYottaVolt;
-//    ZS::PhysVal::CPhysUnit m_physUnitdBVolt;
-//    ZS::PhysVal::CPhysUnit m_physUnitdBu;
-//    ZS::PhysVal::CPhysUnit m_physUnitdBMilliVolt;
-//    ZS::PhysVal::CPhysUnit m_physUnitdBMicroVolt;
-//    ZS::PhysVal::CPhysUnit m_physUnitdBNanoVolt;
-//    ZS::PhysVal::CPhysUnit m_physUnitdBPicoVolt;
-//
-//}; // class CPhysSizeVoltage
-//
-//} // namespace Electricity
+const double c_fRefValdBu_0775V = sqrt(0.6);
+
+//******************************************************************************
+class CPhysSizeVoltage : public ZS::PhysVal::CPhysSize
+//******************************************************************************
+{
+public: // ctors and dtor
+    CPhysSizeVoltage( ZS::PhysVal::CIdxTreePhysSizes* i_pIdxTree );
+    CPhysSizeVoltage(ZS::System::CIdxTreeEntry* i_pParentBranch);
+    CPhysSizeVoltage(CPhysSizeVoltage&& i_other) = delete;
+    CPhysSizeVoltage(CPhysSizeVoltage& i_other) = delete;
+    CPhysSizeVoltage(const CPhysSizeVoltage& i_other) = delete;
+    virtual ~CPhysSizeVoltage();
+public: // operators
+    CPhysSizeVoltage& operator=(CPhysSizeVoltage& i_other) = delete;
+    CPhysSizeVoltage& operator=(const CPhysSizeVoltage& i_other) = delete;
+    CPhysSizeVoltage& operator=(CPhysSizeVoltage&& i_other) = delete;
+public: // instance members
+    ZS::PhysVal::CPhysUnit PicoVolt;
+    ZS::PhysVal::CPhysUnit NanoVolt;
+    ZS::PhysVal::CPhysUnit MicroVolt;
+    ZS::PhysVal::CPhysUnit MilliVolt;
+    ZS::PhysVal::CPhysUnit Volt;
+    ZS::PhysVal::CPhysUnit KiloVolt;
+    ZS::PhysVal::CPhysUnit MegaVolt;
+    ZS::PhysVal::CPhysUnit dBVolt;
+    ZS::PhysVal::CPhysUnit dBu;
+    ZS::PhysVal::CPhysUnit dBMilliVolt;
+    ZS::PhysVal::CPhysUnit dBMicroVolt;
+    ZS::PhysVal::CPhysUnit dBNanoVolt;
+    ZS::PhysVal::CPhysUnit dBPicoVolt;
+    ZS::PhysVal::CPhysUnit& pV;
+    ZS::PhysVal::CPhysUnit& nV;
+    ZS::PhysVal::CPhysUnit& uV;
+    ZS::PhysVal::CPhysUnit& mV;
+    ZS::PhysVal::CPhysUnit& V;
+    ZS::PhysVal::CPhysUnit& kV;
+    ZS::PhysVal::CPhysUnit& MV;
+    ZS::PhysVal::CPhysUnit& dBV;
+    ZS::PhysVal::CPhysUnit& dBmV;
+    ZS::PhysVal::CPhysUnit& dBuV;
+    ZS::PhysVal::CPhysUnit& dBnV;
+    ZS::PhysVal::CPhysUnit& dBpV;
+
+}; // class CPhysSizeVoltage
 
 } // namespace PhysVal
 

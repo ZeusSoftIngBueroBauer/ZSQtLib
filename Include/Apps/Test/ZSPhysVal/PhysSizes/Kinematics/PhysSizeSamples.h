@@ -38,23 +38,25 @@ namespace Test
 {
 namespace PhysVal
 {
-//namespace Kinematics
-//{
-////******************************************************************************
-//class CPhysSizeSamples : public ZS::PhysVal::CPhysSize
-////******************************************************************************
-//{
-//public: // ctors and dtor
-//    CPhysSizeSamples( ZS::PhysVal::CIdxTreePhysSizes* i_pIdxTree );
-//    ~CPhysSizeSamples();
-//public: // instance methods
-//    ZS::PhysVal::CPhysUnit* Samples() { return &m_physUnitSamples; }
-//protected: // instance members
-//    ZS::PhysVal::CPhysUnit m_physUnitSamples;
-//
-//}; // class CPhysSizeSamples
-//
-//} // namespace Kinematics
+//******************************************************************************
+class CPhysSizeSamples : public ZS::PhysVal::CPhysSize
+//******************************************************************************
+{
+public: // ctors and dtor
+    CPhysSizeSamples( ZS::PhysVal::CIdxTreePhysSizes* i_pIdxTree );
+    CPhysSizeSamples(ZS::System::CIdxTreeEntry* i_pParentBranch);
+    CPhysSizeSamples(CPhysSizeSamples&& i_other) = delete;
+    CPhysSizeSamples(CPhysSizeSamples& i_other) = delete;
+    CPhysSizeSamples(const CPhysSizeSamples& i_other) = delete;
+    virtual ~CPhysSizeSamples();
+public: // operators
+    CPhysSizeSamples& operator=(CPhysSizeSamples& i_other) = delete;
+    CPhysSizeSamples& operator=(const CPhysSizeSamples& i_other) = delete;
+    CPhysSizeSamples& operator=(CPhysSizeSamples&& i_other) = delete;
+public: // instance members
+    ZS::PhysVal::CPhysUnit Samples;
+
+}; // class CPhysSizeSamples
 
 } // namespace PhysVal
 

@@ -250,14 +250,14 @@ void CWdgtEditPhysVal::setValue( const CPhysVal& i_physVal )
     {
         m_pUnitGrp = i_physVal.unitGroup();
     }
-    if( m_pUnit == nullptr && i_physVal.getUnit() != nullptr )
+    if( m_pUnit == nullptr && i_physVal.unit() != nullptr )
     {
-        setUnit( i_physVal.getUnit() );
+        setUnit( i_physVal.unit() );
     }
 
     m_physValOld = i_physVal;
 
-    if( m_physValOld.getUnit() != m_pUnit )
+    if( m_physValOld.unit() != m_pUnit )
     {
         m_physValOld.convertValue(m_pUnit);
     }
@@ -312,9 +312,9 @@ void CWdgtEditPhysVal::setMinimum( const CPhysVal& i_physValMin )
     {
         m_pUnitGrp = i_physValMin.unitGroup();
     }
-    if( m_pUnit == nullptr && i_physValMin.getUnit() != nullptr )
+    if( m_pUnit == nullptr && i_physValMin.unit() != nullptr )
     {
-        setUnit( i_physValMin.getUnit() );
+        setUnit( i_physValMin.unit() );
     }
 
     m_physValMin = i_physValMin;
@@ -347,9 +347,9 @@ void CWdgtEditPhysVal::setMaximum( const CPhysVal& i_physValMax )
     {
         m_pUnitGrp = i_physValMax.unitGroup();
     }
-    if( m_pUnit == nullptr && i_physValMax.getUnit() != nullptr )
+    if( m_pUnit == nullptr && i_physValMax.unit() != nullptr )
     {
-        setUnit( i_physValMax.getUnit() );
+        setUnit( i_physValMax.unit() );
     }
 
     m_physValMax = i_physValMax;
@@ -385,9 +385,9 @@ void CWdgtEditPhysVal::setResolution( const CPhysValRes& i_physValRes )
     {
         m_pUnitGrp = i_physValRes.unitGroup();
     }
-    if( m_pUnit == nullptr && i_physValRes.getUnit() != nullptr )
+    if( m_pUnit == nullptr && i_physValRes.unit() != nullptr )
     {
-        setUnit( i_physValRes.getUnit() );
+        setUnit( i_physValRes.unit() );
     }
 
     m_physValRes = i_physValRes;
@@ -408,7 +408,7 @@ void CWdgtEditPhysVal::setResolution( const CPhysValRes& i_physValRes )
 
             try
             {
-                strVal = m_physValOld.toString(EUnitFindNone,EPhysValSubStrVal);
+                strVal = m_physValOld.toString(EUnitFind::None,PhysValSubStr::Val);
             }
             catch( CPhysValException& )
             {
@@ -418,7 +418,7 @@ void CWdgtEditPhysVal::setResolution( const CPhysValRes& i_physValRes )
         {
             try
             {
-                strVal = m_physValRes.toString(EUnitFindNone,EPhysValSubStrVal);
+                strVal = m_physValRes.toString(EUnitFind::None,PhysValSubStr::Val);
             }
             catch( CPhysValException& )
             {

@@ -37,6 +37,9 @@ namespace PhysVal
 class ZSPHYSVALDLL_API CPhysValArr
 //******************************************************************************
 {
+public: // class methods
+    static QString NameSpace() { return "ZS::PhysVal"; }
+    static QString ClassName() { return "CPhysValArr"; }
 public: // ctors and dtor
     CPhysValArr( EResType i_resType = EResTypeResolution );
     CPhysValArr( CUnitGrp* i_pUnitGrp, EResType i_resType = EResTypeResolution );
@@ -83,7 +86,7 @@ public: // instance methods
 public: // instance methods
     void setUnit( CUnit* i_pUnit );
     void setUnitKey( const QString& i_strUnitKey );
-    CUnit* getUnit() const;
+    CUnit* unit() const;
     QString getUnitName( bool i_bInsertParentNames = false ) const;
     QString getUnitKey() const { return m_strUnitKey; }
 public: // instance methods

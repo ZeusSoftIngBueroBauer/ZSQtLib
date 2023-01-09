@@ -40,6 +40,8 @@ namespace PhysVal
 {
 class CUnit;
 class CUnitGrp;
+class CPhysSize;
+class CPhysUnit;
 
 //******************************************************************************
 class ZSPHYSVALDLL_API CIdxTreePhysSizes : public ZS::System::CIdxTree
@@ -48,13 +50,15 @@ class ZSPHYSVALDLL_API CIdxTreePhysSizes : public ZS::System::CIdxTree
 public: // class methods
     static QString NameSpace() { return "ZS::PhysVal"; }
     static QString ClassName() { return "CIdxTreePhysSizes"; }
-public: // class methods (CreateInstance must be implemented by the derived class)
+public: // class methods
     static CIdxTreePhysSizes* CreateInstance( const QString& i_strObjName = "PhysSizes" );
     static CIdxTreePhysSizes* GetInstance( const QString& i_strObjName = "PhysSizes" );
     static int ReleaseInstance( const QString& i_strObjName = "PhysSizes" );
     static int ReleaseInstance( CIdxTreePhysSizes* i_pIdxTree );
-protected: // ctors and dtor
-    CIdxTreePhysSizes( const QString& i_strObjName );
+public: // ctors and dtor
+    CIdxTreePhysSizes(
+        const QString& i_strObjName = "PhysSizes",
+        ZS::System::CIdxTreeEntry* i_pRootTreeEntry = nullptr );
     ~CIdxTreePhysSizes();
 public: // instance methods
     virtual QString nameSpace() const { return NameSpace(); }

@@ -430,21 +430,21 @@ void CWdgtUnitViewUnt::setUnitsModelNode( SUnitsModelNode* i_pNode )
     {
         m_pEdtSymbol->setText( m_pNode->m_pUnit->symbol() );
 
-        if( m_pNode->m_pUnit->getNextLowerUnit() == nullptr) 
+        if( m_pNode->m_pUnit->nextLowerUnit() == nullptr) 
         {
             m_pEdtNextLower->setText("---");
         }
         else
         {
-            m_pEdtNextLower->setText( m_pNode->m_pUnit->getNextLowerUnit()->name() );
+            m_pEdtNextLower->setText( m_pNode->m_pUnit->nextLowerUnit()->name() );
         }
-        if( m_pNode->m_pUnit->getNextHigherUnit() == nullptr) 
+        if( m_pNode->m_pUnit->nextHigherUnit() == nullptr) 
         {
             m_pEdtNextHigher->setText("---");
         }
         else
         {
-            m_pEdtNextHigher->setText( m_pNode->m_pUnit->getNextHigherUnit()->name() );
+            m_pEdtNextHigher->setText( m_pNode->m_pUnit->nextHigherUnit()->name() );
         }
     }
     else
@@ -460,6 +460,8 @@ void CWdgtUnitViewUnt::setUnitsModelNode( SUnitsModelNode* i_pNode )
 /*******************************************************************************
 class CWdgtUnitViewGrpRatios : public CWdgtUnitViewGrp
 *******************************************************************************/
+
+#if 0
 
 /*==============================================================================
 public: // ctors and dtor
@@ -545,10 +547,13 @@ void CWdgtUnitViewGrpRatios::setUnitsModelNode( SUnitsModelNode* i_pNode )
 
 } // setUnitsModelNode
 
+#endif
 
 /*******************************************************************************
 class CWdgtUnitViewGrpDataQuantities : public CWdgtUnitViewGrp
 *******************************************************************************/
+
+#if 0
 
 /*==============================================================================
 public: // ctors and dtor
@@ -634,6 +639,7 @@ void CWdgtUnitViewGrpDataQuantities::setUnitsModelNode( SUnitsModelNode* i_pNode
 
 } // setUnitsModelNode
 
+#endif
 
 /*******************************************************************************
 class CWdgtUnitViewGrpUserDefinedQuantities : public CWdgtUnitViewGrp
@@ -984,6 +990,8 @@ void CWdgtUnitViewGrpPhysScienceFields::updateTableView()
 class CWdgtUnitViewUntRatio : public CWdgtUnitViewUnt
 *******************************************************************************/
 
+#if 0
+
 /*==============================================================================
 public: // ctors and dtor
 ==============================================================================*/
@@ -1061,10 +1069,13 @@ void CWdgtUnitViewUntRatio::setUnitsModelNode( SUnitsModelNode* i_pNode )
 
 } // setUnitsModelNode
 
+#endif
 
 /*******************************************************************************
 class CWdgtUnitViewUntDataQuantity : public CWdgtUnitViewUnt
 *******************************************************************************/
+
+#if 0
 
 /*==============================================================================
 public: // ctors and dtor
@@ -1142,6 +1153,8 @@ void CWdgtUnitViewUntDataQuantity::setUnitsModelNode( SUnitsModelNode* i_pNode )
     }
 
 } // setUnitsModelNode
+
+#endif
 
 
 /*******************************************************************************

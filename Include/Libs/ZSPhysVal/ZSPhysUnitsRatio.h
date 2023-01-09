@@ -38,6 +38,9 @@ namespace PhysVal
 class ZSPHYSVALDLL_API CUnitRatio : public CUnit
 //******************************************************************************
 {
+public: // class methods
+    static QString NameSpace() { return "ZS::PhysVal"; }
+    static QString ClassName() { return "CUnitRatio"; }
 public: // ctors and dtor
     CUnitRatio(
         CUnitGrp*      i_pUnitGrp,
@@ -55,10 +58,15 @@ protected: // instance members
 
 }; // class CUnitRatio
 
+#if 0
+
 //******************************************************************************
 class ZSPHYSVALDLL_API CUnitGrpRatio : public CUnitGrp
 //******************************************************************************
 {
+public: // class methods
+    static QString NameSpace() { return "ZS::PhysVal"; }
+    static QString ClassName() { return "CUnitGrpRatio"; }
 public: // ctors and dtor
     CUnitGrpRatio(ZS::System::CIdxTree* i_pIdxTree);
     virtual ~CUnitGrpRatio();
@@ -69,7 +77,7 @@ public: // instance methods to access the ratio units
     CUnitRatio* dB() { return &m_unitRatioDezibel; }
     CUnitRatio* Dezibel() { return &m_unitRatioDezibel; }
 public: // instance methods
-    CUnitRatio* getUnit( int i_idx );
+    CUnitRatio* unit( int i_idx );
     CUnitRatio* findUnitBySymbol( const QString& i_strSymbol );
     CUnitRatio* findUnitByName( const QString& i_strName );
 private: // copy ctor not allowed
@@ -83,6 +91,8 @@ protected: // instance members
     CUnitRatio  m_unitRatioDezibel;
 
 }; // class CUnitGrpRatio
+
+#endif
 
 } // namespace PhysVal
 

@@ -38,57 +38,34 @@ namespace Test
 {
 namespace PhysVal
 {
-//namespace Kinematics
-//{
-//const double c_fRefValSampleRate_1000Hz = 1000.0;
-//
-////******************************************************************************
-//class CPhysSizeFrequency : public ZS::PhysVal::CPhysSize
-////******************************************************************************
-//{
-//public: // ctors and dtor
-//    CPhysSizeFrequency( ZS::PhysVal::CIdxTreePhysSizes* i_pIdxTree );
-//    ~CPhysSizeFrequency();
-//public: // instance methods
-//    //ZS::PhysVal::CPhysUnit* YoktoHertz();
-//    //ZS::PhysVal::CPhysUnit* ZeptoHertz();
-//    //ZS::PhysVal::CPhysUnit* AttoHertz();
-//    //ZS::PhysVal::CPhysUnit* FemtoHertz();
-//    //ZS::PhysVal::CPhysUnit* PicoHertz();
-//    //ZS::PhysVal::CPhysUnit* NanoHertz();
-//    //ZS::PhysVal::CPhysUnit* MicroHertz();
-//    //ZS::PhysVal::CPhysUnit* MilliHertz();
-//    ZS::PhysVal::CPhysUnit* Hertz() { return &m_physUnitHertz; }
-//    ZS::PhysVal::CPhysUnit* KiloHertz() { return &m_physUnitKiloHertz; }
-//    ZS::PhysVal::CPhysUnit* MegaHertz() { return &m_physUnitMegaHertz; }
-//    ZS::PhysVal::CPhysUnit* GigaHertz() { return &m_physUnitGigaHertz; }
-//    //ZS::PhysVal::CPhysUnit* TeraHertz();
-//    //ZS::PhysVal::CPhysUnit* PetaHertz();
-//    //ZS::PhysVal::CPhysUnit* ExaHertz();
-//    //ZS::PhysVal::CPhysUnit* ZettaHertz();
-//    //ZS::PhysVal::CPhysUnit* YottaHertz();
-//protected: // instance members
-//    //ZS::PhysVal::CPhysUnit m_physUnitYoktoHertz;
-//    //ZS::PhysVal::CPhysUnit m_physUnitZeptoHertz;
-//    //ZS::PhysVal::CPhysUnit m_physUnitAttoHertz;
-//    //ZS::PhysVal::CPhysUnit m_physUnitFemtoHertz;
-//    //ZS::PhysVal::CPhysUnit m_physUnitPicoHertz;
-//    //ZS::PhysVal::CPhysUnit m_physUnitNanoHertz;
-//    //ZS::PhysVal::CPhysUnit m_physUnitMicroHertz;
-//    //ZS::PhysVal::CPhysUnit m_physUnitMilliHertz;
-//    ZS::PhysVal::CPhysUnit m_physUnitHertz;
-//    ZS::PhysVal::CPhysUnit m_physUnitKiloHertz;
-//    ZS::PhysVal::CPhysUnit m_physUnitMegaHertz;
-//    ZS::PhysVal::CPhysUnit m_physUnitGigaHertz;
-//    //ZS::PhysVal::CPhysUnit m_physUnitTeraHertz;
-//    //ZS::PhysVal::CPhysUnit m_physUnitPetaHertz;
-//    //ZS::PhysVal::CPhysUnit m_physUnitExaHertz;
-//    //ZS::PhysVal::CPhysUnit m_physUnitZettaHertz;
-//    //ZS::PhysVal::CPhysUnit m_physUnitYottaHertz;
-//
-//}; // class CPhysSizeFrequency
-//
-//} // namespace Kinematics
+const double c_fRefValSampleRate_1000Hz = 1000.0;
+
+//******************************************************************************
+class CPhysSizeFrequency : public ZS::PhysVal::CPhysSize
+//******************************************************************************
+{
+public: // ctors and dtor
+    CPhysSizeFrequency( ZS::PhysVal::CIdxTreePhysSizes* i_pIdxTree );
+    CPhysSizeFrequency(ZS::System::CIdxTreeEntry* i_pParentBranch);
+    CPhysSizeFrequency(CPhysSizeFrequency&& i_other) = delete;
+    CPhysSizeFrequency(CPhysSizeFrequency& i_other) = delete;
+    CPhysSizeFrequency(const CPhysSizeFrequency& i_other) = delete;
+    virtual ~CPhysSizeFrequency();
+public: // operators
+    CPhysSizeFrequency& operator=(CPhysSizeFrequency& i_other) = delete;
+    CPhysSizeFrequency& operator=(const CPhysSizeFrequency& i_other) = delete;
+    CPhysSizeFrequency& operator=(CPhysSizeFrequency&& i_other) = delete;
+public: // instance members
+    ZS::PhysVal::CPhysUnit Hertz;
+    ZS::PhysVal::CPhysUnit KiloHertz;
+    ZS::PhysVal::CPhysUnit MegaHertz;
+    ZS::PhysVal::CPhysUnit GigaHertz;
+    ZS::PhysVal::CPhysUnit& Hz;
+    ZS::PhysVal::CPhysUnit& kHz;
+    ZS::PhysVal::CPhysUnit& MHz;
+    ZS::PhysVal::CPhysUnit& GHz;
+
+}; // class CPhysSizeFrequency
 
 } // namespace PhysVal
 

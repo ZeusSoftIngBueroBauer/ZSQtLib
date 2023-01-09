@@ -29,6 +29,7 @@ may result in using the software modules.
 #include "MainWindow.h"
 #include "Test.h"
 
+#include "ZSPhysVal/ZSPhysSizesIdxTree.h"
 #include "ZSIpcTrace/ZSIpcTrcServer.h"
 #include "ZSTest/ZSTestStepIdxTree.h"
 #include "ZSSys/ZSSysApp.h"
@@ -42,6 +43,7 @@ may result in using the software modules.
 
 using namespace ZS::System;
 using namespace ZS::Trace;
+using namespace ZS::PhysVal;
 using namespace ZS::Apps::Test::PhysVal;
 
 
@@ -77,6 +79,7 @@ CApplication::CApplication(
     m_pTest(nullptr),
     m_pMainWindow(nullptr),
     m_bAutoStartTest(false),
+    m_pIdxTreePhysSizes(nullptr),
     m_pTrcServer(nullptr),
     m_pTrcAdminObj(nullptr)
 {
@@ -137,15 +140,15 @@ CApplication::CApplication(
     // Trace Server
     //-------------
 
-    m_pTrcServer = CIpcTrcServer::CreateInstance();
-    m_pTrcServer->setLocalTrcFileSubFileLineCountMax(10000);
+    //m_pTrcServer = CIpcTrcServer::CreateInstance();
+    //m_pTrcServer->setLocalTrcFileSubFileLineCountMax(10000);
 
-    m_pTrcServer->setCacheTrcDataIfNotConnected(true);
-    m_pTrcServer->setCacheTrcDataMaxArrLen(5000);
-    m_pTrcServer->recallAdminObjs();
-    m_pTrcServer->startup();
+    //m_pTrcServer->setCacheTrcDataIfNotConnected(true);
+    //m_pTrcServer->setCacheTrcDataMaxArrLen(5000);
+    //m_pTrcServer->recallAdminObjs();
+    //m_pTrcServer->startup();
 
-    m_pTrcAdminObj = m_pTrcServer->GetTraceAdminObj(NameSpace(), ClassName(), objectName());
+    //m_pTrcAdminObj = m_pTrcServer->GetTraceAdminObj(NameSpace(), ClassName(), objectName());
 
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
@@ -156,7 +159,10 @@ CApplication::CApplication(
     // Physical Sizes
     //----------------
 
-    Kinematics = new CPhysScienceFieldKinematics();
+    //m_pIdxTreePhysSizes = CIdxTreePhysSizes::CreateInstance();
+    //Kinematics = new CPhysScienceFieldKinematics(m_pIdxTreePhysSizes);
+
+    //Kinematics = std::move(kinematics);
 
     // Test
     //----------------
@@ -189,22 +195,40 @@ CApplication::~CApplication()
     }
     m_pTest = nullptr;
 
-    try {
-        delete Kinematics;
-    }
-    catch(...) {
-    }
-    Kinematics = nullptr;
+    //try {
+    //    delete Kinematics;
+    //}
+    //catch(...) {
+    //}
+    //Kinematics = nullptr;
 
-    CIpcTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
-    m_pTrcAdminObj = nullptr;
+    //CPhysScienceFieldKinematics kinematics;
+    //Kinematics = std::move(kinematics);
+
+    // !! Please note !!
+    // On releasing the index tree the tree together with all its nodes would be deleted.
+    // The physical size nodes are created as instance members of the Kinematics global instance.
+    // The phyiscal units are instance members of the physical sizes created by the Kinematics global instance.
+    // The index tree nodes are not created on the heap and cannot be deleted separately with the delete operator.
+    // We therefore need to remove (delete) the Kinematics global instance before the index tree.
+    // The dtor of the global Kinematics will invoke the dtor of the its instance members (physical sizes) and
+    // the dtor of the global physical sizes will invoke the dtor of its instance members (physical units).
+    // The dtors will remove themselves from the index tree and afterward the index tree can be deleted.
+    if( m_pIdxTreePhysSizes != nullptr ) {
+        CIdxTreePhysSizes::ReleaseInstance(m_pIdxTreePhysSizes);
+        m_pIdxTreePhysSizes = nullptr;
+    }
+
+    if( m_pTrcAdminObj != nullptr ) {
+        CIpcTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
+        m_pTrcAdminObj = nullptr;
+    }
 
     if( m_pTrcServer != nullptr ) {
         m_pTrcServer->saveAdminObjs();
+        CIpcTrcServer::ReleaseInstance();
+        m_pTrcServer = nullptr;
     }
-
-    CIpcTrcServer::ReleaseInstance();
-    m_pTrcServer = nullptr;
 
     CErrLog::ReleaseInstance();
 

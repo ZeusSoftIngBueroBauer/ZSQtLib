@@ -27,13 +27,6 @@ may result in using the software modules.
 #include "ZSPhysValGUI/ZSPhysSizesIdxTreeTableViewBranchContent.h"
 #include "ZSPhysValGUI/ZSPhysSizesIdxTreeModelBranchContent.h"
 #include "ZSPhysVal/ZSPhysSizesIdxTree.h"
-//#include "ZSSysGUI/ZSSysIdxTreeModelEntry.h"
-//#include "ZSSysGUI/ZSSysGUIAux.h"
-//#include "ZSSys/ZSSysAux.h"
-//#include "ZSSys/ZSSysException.h"
-//#include "ZSSys/ZSSysTrcAdminObj.h"
-//#include "ZSSys/ZSSysTrcMethod.h"
-//#include "ZSSys/ZSSysTrcServer.h"
 
 #include <QtGui/qevent.h>
 

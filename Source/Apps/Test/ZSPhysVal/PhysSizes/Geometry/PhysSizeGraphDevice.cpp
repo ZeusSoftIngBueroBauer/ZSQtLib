@@ -25,14 +25,10 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "PhysSizes/Geometry/PhysSizeGraphDevice.h"
-#include "ZSSys/ZSSysMath.h"
 #include "ZSSys/ZSSysMemLeakDump.h"
 
-#if 0
-
-using namespace ZS::System::Math;
 using namespace ZS::PhysVal;
-using namespace ZS::PhysVal::Geometry;
+using namespace ZS::Apps::Test::PhysVal;
 
 
 /*******************************************************************************
@@ -44,18 +40,45 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CPhysSizeGraphDevice::CPhysSizeGraphDevice() :
+CPhysSizeGraphDevice::CPhysSizeGraphDevice( CIdxTreePhysSizes* i_pIdxTree ) :
 //------------------------------------------------------------------------------
     CPhysSize(
-        /* scienceField     */ EPhysScienceFieldGeometry,
+        /* pIdxTree         */ i_pIdxTree,
         /* strName          */ "GraphDevice",
         /* strSIUnitName    */ "Pixel",
         /* strSIUnitSymbol  */ "px",
         /* strFormulaSymbol */ "px",
         /* bIsPowerRelated  */ false ),
-    m_physUnitPixel(
+    Pixel(
         /* pPhysSize */ this,
-        /* strPrefix */ "" )
+        /* strPrefix */ "" ),
+    px(Pixel)
+{
+    // Call function of base class CPhysSize to initialize the physical size together
+    // with its units (e.g. to create the field with internal conversion routines).
+    initialize(true);
+
+    // Link the units to a chained list for the "findBestUnit" functionality:
+    //======================================================================
+
+    // Just one unit and therefore nothing to chain.
+
+} // ctor
+
+//------------------------------------------------------------------------------
+CPhysSizeGraphDevice::CPhysSizeGraphDevice( CIdxTreeEntry* i_pParentBranch ) :
+//------------------------------------------------------------------------------
+    CPhysSize(
+        /* pParentBranch    */ i_pParentBranch,
+        /* strName          */ "GraphDevice",
+        /* strSIUnitName    */ "Pixel",
+        /* strSIUnitSymbol  */ "px",
+        /* strFormulaSymbol */ "px",
+        /* bIsPowerRelated  */ false ),
+    Pixel(
+        /* pPhysSize */ this,
+        /* strPrefix */ "" ),
+    px(Pixel)
 {
     // Call function of base class CPhysSize to initialize the physical size together
     // with its units (e.g. to create the field with internal conversion routines).
@@ -73,5 +96,3 @@ CPhysSizeGraphDevice::~CPhysSizeGraphDevice()
 //------------------------------------------------------------------------------
 {
 } // dtor
-
-#endif

@@ -81,11 +81,12 @@ public: // class methods
     static QString NameSpace() { return "ZS::System"; }
     /*! Returns the class name. */
     static QString ClassName() { return "CIdxTreeEntry"; }
-public: // ctors
+public: // ctors and dtor
     CIdxTreeEntry( EIdxTreeEntryType i_entryType, const QString& i_strName );
     CIdxTreeEntry( const CIdxTreeEntry& i_other );
-public: // dtor
     virtual ~CIdxTreeEntry();
+protected: // destructor
+    void clear();
 public: // instance methods
     /*! This virtual method returns the name space of the object's class.
         This method can be reimplemented in derived classes so when invoked for the

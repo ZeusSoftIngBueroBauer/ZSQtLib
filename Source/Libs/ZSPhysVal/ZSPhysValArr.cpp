@@ -69,7 +69,7 @@ CPhysValArr::CPhysValArr( CUnitGrp* i_pUnitGrp, EResType i_resType ) :
     m_physValRes(i_pUnitGrp,i_resType),
     m_arfValues()
 {
-    if( i_pUnitGrp->classType() == EUnitClassTypePhysScienceFields )
+    if( i_pUnitGrp->classType() == EUnitClassType::PhysScienceFields )
     {
         m_pUnit = dynamic_cast<CPhysSize*>(i_pUnitGrp)->getSIUnit();
     }
@@ -175,7 +175,7 @@ CPhysValArr::CPhysValArr( int i_iValCount, CUnit* i_pUnit, double i_fRes, EResTy
 CPhysValArr::CPhysValArr( int i_iValCount, const CPhysVal& i_physValInit ) :
 //------------------------------------------------------------------------------
     m_pUnitGrp(i_physValInit.unitGroup()),
-    m_pUnit(i_physValInit.getUnit()),
+    m_pUnit(i_physValInit.unit()),
     m_strUnitGrpKey(),
     m_strUnitKey(),
     m_validity(i_physValInit.getValidity()),
@@ -690,7 +690,7 @@ void CPhysValArr::setUnitGroup( CUnitGrp* i_pUnitGrp )
         {
             m_pUnit = nullptr;
         }
-        else if( m_pUnitGrp->classType() == EUnitClassTypePhysScienceFields )
+        else if( m_pUnitGrp->classType() == EUnitClassType::PhysScienceFields )
         {
             m_pUnit = dynamic_cast<CPhysSize*>(m_pUnitGrp)->getSIUnit();
         }
@@ -791,9 +791,9 @@ void CPhysValArr::setUnit( CUnit* i_pUnit )
 
     if( m_physValRes.isValid() )
     {
-        if( m_physValRes.getUnit() != nullptr && m_pUnit != nullptr )
+        if( m_physValRes.unit() != nullptr && m_pUnit != nullptr )
         {
-            m_physValRes.getUnit()->convertValue(m_physValRes.getVal(),m_pUnit);
+            m_physValRes.unit()->convertValue(m_physValRes.getVal(),m_pUnit);
         }
         else
         {
@@ -827,7 +827,7 @@ void CPhysValArr::setUnitKey( const QString& i_strUnitKey )
 } // setUnitKey
 
 //------------------------------------------------------------------------------
-CUnit* CPhysValArr::getUnit() const
+CUnit* CPhysValArr::unit() const
 //------------------------------------------------------------------------------
 {
     return m_pUnit;
@@ -892,12 +892,12 @@ void CPhysValArr::setVal( int i_idx, double i_fVal, CUnit* i_pUnit )
 
     if( !areOfSameUnitGroup(m_pUnitGrp,pUnit) )
     {
-        QString strAddErrInfo = "Src:" + getUnitGroupName() + ", Dst:" + ZS::PhysVal::getUnitGroupName(i_pUnit);
+        QString strAddErrInfo = "Src:" + getUnitGroupName() + ", Dst:" + i_pUnit->parentBranchName();
         throw CUnitConversionException( __FILE__, __LINE__, EResultDifferentPhysSizes, strAddErrInfo );
     }
     if( m_pUnit != nullptr && !areOfSameUnitGroup(m_pUnit,pUnit) )
     {
-        QString strAddErrInfo = "Src:" + getUnitGroupName() + ", Dst:" + ZS::PhysVal::getUnitGroupName(i_pUnit);
+        QString strAddErrInfo = "Src:" + getUnitGroupName() + ", Dst:" + i_pUnit->parentBranchName();
         throw CUnitConversionException( __FILE__, __LINE__, EResultDifferentPhysSizes, strAddErrInfo );
     }
 
@@ -949,12 +949,12 @@ void CPhysValArr::insertVal( int i_idx, double i_fVal, CUnit* i_pUnit )
 
     if( !areOfSameUnitGroup(m_pUnitGrp,pUnit) )
     {
-        QString strAddErrInfo = "Src:" + getUnitGroupName() + ", Dst:" + ZS::PhysVal::getUnitGroupName(i_pUnit);
+        QString strAddErrInfo = "Src:" + getUnitGroupName() + ", Dst:" + i_pUnit->parentBranchName();
         throw CUnitConversionException( __FILE__, __LINE__, EResultDifferentPhysSizes, strAddErrInfo );
     }
     if( m_pUnit != nullptr && !areOfSameUnitGroup(m_pUnit,pUnit) )
     {
-        QString strAddErrInfo = "Src:" + getUnitGroupName() + ", Dst:" + ZS::PhysVal::getUnitGroupName(i_pUnit);
+        QString strAddErrInfo = "Src:" + getUnitGroupName() + ", Dst:" + i_pUnit->parentBranchName();
         throw CUnitConversionException( __FILE__, __LINE__, EResultDifferentPhysSizes, strAddErrInfo );
     }
 
@@ -1006,12 +1006,12 @@ void CPhysValArr::appendVal( double i_fVal, CUnit* i_pUnit )
 
     if( !areOfSameUnitGroup(m_pUnitGrp,pUnit) )
     {
-        QString strAddErrInfo = "Src:" + getUnitGroupName() + ", Dst:" + ZS::PhysVal::getUnitGroupName(i_pUnit);
+        QString strAddErrInfo = "Src:" + getUnitGroupName() + ", Dst:" + i_pUnit->parentBranchName();
         throw CUnitConversionException( __FILE__, __LINE__, EResultDifferentPhysSizes, strAddErrInfo );
     }
     if( m_pUnit != nullptr && !areOfSameUnitGroup(m_pUnit,pUnit) )
     {
-        QString strAddErrInfo = "Src:" + getUnitGroupName() + ", Dst:" + ZS::PhysVal::getUnitGroupName(i_pUnit);
+        QString strAddErrInfo = "Src:" + getUnitGroupName() + ", Dst:" + i_pUnit->parentBranchName();
         throw CUnitConversionException( __FILE__, __LINE__, EResultDifferentPhysSizes, strAddErrInfo );
     }
 
@@ -1055,20 +1055,20 @@ public: // instance methods (replacing all already existing values)
 void CPhysValArr::setValues( int i_idxStart, const CPhysValArr& i_physValArr )
 //------------------------------------------------------------------------------
 {
-    if( !areOfSameUnitGroup(m_pUnitGrp,i_physValArr.getUnit()) )
+    if( !areOfSameUnitGroup(m_pUnitGrp,i_physValArr.unit()) )
     {
-        QString strAddErrInfo = "Src:" + getUnitGroupName() + ", Dst:" + ZS::PhysVal::getUnitGroupName(i_physValArr.getUnit());
+        QString strAddErrInfo = "Src:" + getUnitGroupName() + ", Dst:" + i_physValArr.unit()->parentBranchName();
         throw CUnitConversionException( __FILE__, __LINE__, EResultDifferentPhysSizes, strAddErrInfo );
     }
-    if( m_pUnit != nullptr && !areOfSameUnitGroup(m_pUnit,i_physValArr.getUnit()) )
+    if( m_pUnit != nullptr && !areOfSameUnitGroup(m_pUnit,i_physValArr.unit()) )
     {
-        QString strAddErrInfo = "Src:" + getUnitGroupName() + ", Dst:" + ZS::PhysVal::getUnitGroupName(i_physValArr.getUnit());
+        QString strAddErrInfo = "Src:" + getUnitGroupName() + ", Dst:" + i_physValArr.unit()->parentBranchName();
         throw CUnitConversionException( __FILE__, __LINE__, EResultDifferentPhysSizes, strAddErrInfo );
     }
 
     if( m_pUnit == nullptr )
     {
-        m_pUnit = i_physValArr.getUnit();
+        m_pUnit = i_physValArr.unit();
     }
 
     if( m_pUnitGrp != nullptr )
@@ -1084,7 +1084,7 @@ void CPhysValArr::setValues( int i_idxStart, const CPhysValArr& i_physValArr )
 
     CPhysValArr physValArrTmp;
 
-    if( m_pUnit != i_physValArr.getUnit() )
+    if( m_pUnit != i_physValArr.unit() )
     {
         physValArrTmp = i_physValArr;
 
@@ -1131,12 +1131,12 @@ void CPhysValArr::setValues( int i_idxStart, const QVector<double>& i_arfVals, C
 
     if( !areOfSameUnitGroup(m_pUnitGrp,pUnit) )
     {
-        QString strAddErrInfo = "Src:" + getUnitGroupName() + ", Dst:" + ZS::PhysVal::getUnitGroupName(i_pUnit);
+        QString strAddErrInfo = "Src:" + getUnitGroupName() + ", Dst:" + i_pUnit->parentBranchName();
         throw CUnitConversionException( __FILE__, __LINE__, EResultDifferentPhysSizes, strAddErrInfo );
     }
     if( m_pUnit != nullptr && !areOfSameUnitGroup(m_pUnit,pUnit) )
     {
-        QString strAddErrInfo = "Src:" + getUnitGroupName() + ", Dst:" + ZS::PhysVal::getUnitGroupName(i_pUnit);
+        QString strAddErrInfo = "Src:" + getUnitGroupName() + ", Dst:" + i_pUnit->parentBranchName();
         throw CUnitConversionException( __FILE__, __LINE__, EResultDifferentPhysSizes, strAddErrInfo );
     }
 
@@ -1334,7 +1334,7 @@ double CPhysValArr::toDouble( int i_idx, const CUnit* i_pUnit ) const
 
     if( !areOfSameUnitGroup(m_pUnitGrp,pUnit) )
     {
-        QString strAddErrInfo = "Src:" + getUnitGroupName() + ", Dst:" + ZS::PhysVal::getUnitGroupName(i_pUnit);
+        QString strAddErrInfo = "Src:" + getUnitGroupName() + ", Dst:" + i_pUnit->parentBranchName();
         throw CUnitConversionException( __FILE__, __LINE__, EResultDifferentPhysSizes, strAddErrInfo );
     }
 
@@ -1386,7 +1386,7 @@ QVector<double> CPhysValArr::toDoubleVec( int i_idxStart, int i_iValCount, const
 
     if( !areOfSameUnitGroup(m_pUnit,pUnit) )
     {
-        QString strAddErrInfo = "Src:" + getUnitGroupName() + ", Dst:" + ZS::PhysVal::getUnitGroupName(i_pUnit);
+        QString strAddErrInfo = "Src:" + getUnitGroupName() + ", Dst:" + i_pUnit->parentBranchName();
         throw CUnitConversionException( __FILE__, __LINE__, EResultDifferentPhysSizes, strAddErrInfo );
     }
 
@@ -1489,7 +1489,7 @@ QString CPhysValArr::toString( int i_idx, const CUnit* i_pUnit ) const
 
     if( !areOfSameUnitGroup(m_pUnit,pUnit) )
     {
-        QString strAddErrInfo = "Src:" + getUnitGroupName() + ", Dst:" + ZS::PhysVal::getUnitGroupName(i_pUnit);
+        QString strAddErrInfo = "Src:" + getUnitGroupName() + ", Dst:" + i_pUnit->parentBranchName();
         throw CUnitConversionException( __FILE__, __LINE__, EResultDifferentPhysSizes, strAddErrInfo );
     }
 
@@ -1571,12 +1571,12 @@ void CPhysValArr::setValues( int i_idxStart, const QStringList& i_strlstVals, CU
 
     if( !areOfSameUnitGroup(m_pUnitGrp,pUnit) )
     {
-        QString strAddErrInfo = "Src:" + getUnitGroupName() + ", Dst:" + ZS::PhysVal::getUnitGroupName(i_pUnit);
+        QString strAddErrInfo = "Src:" + getUnitGroupName() + ", Dst:" + i_pUnit->parentBranchName();
         throw CUnitConversionException( __FILE__, __LINE__, EResultDifferentPhysSizes, strAddErrInfo );
     }
     if( m_pUnit != nullptr && !areOfSameUnitGroup(m_pUnit,pUnit) )
     {
-        QString strAddErrInfo = "Src:" + getUnitGroupName() + ", Dst:" + ZS::PhysVal::getUnitGroupName(i_pUnit);
+        QString strAddErrInfo = "Src:" + getUnitGroupName() + ", Dst:" + i_pUnit->parentBranchName();
         throw CUnitConversionException( __FILE__, __LINE__, EResultDifferentPhysSizes, strAddErrInfo );
     }
 
@@ -1651,7 +1651,7 @@ QStringList CPhysValArr::toStringList( int i_idxStart, int i_iValCount, const CU
 
     if( !areOfSameUnitGroup(m_pUnit,pUnit) )
     {
-        QString strAddErrInfo = "Src:" + getUnitGroupName() + ", Dst:" + ZS::PhysVal::getUnitGroupName(i_pUnit);
+        QString strAddErrInfo = "Src:" + getUnitGroupName() + ", Dst:" + i_pUnit->parentBranchName();
         throw CUnitConversionException( __FILE__, __LINE__, EResultDifferentPhysSizes, strAddErrInfo );
     }
 
@@ -1761,12 +1761,12 @@ void CPhysValArr::convertValues( CUnit* i_pUnitDst )
     {
         if( !areOfSameUnitGroup(m_pUnitGrp,i_pUnitDst) )
         {
-            QString strAddErrInfo = "Src:" + getUnitGroupName() + ", Dst:" + ZS::PhysVal::getUnitGroupName(i_pUnitDst);
+            QString strAddErrInfo = "Src:" + getUnitGroupName() + ", Dst:" + i_pUnitDst->parentBranchName();
             throw CUnitConversionException( __FILE__, __LINE__, EResultDifferentPhysSizes, strAddErrInfo );
         }
         if( m_pUnit != nullptr && !areOfSameUnitGroup(m_pUnit,i_pUnitDst) )
         {
-            QString strAddErrInfo = "Src:" + getUnitGroupName() + ", Dst:" + ZS::PhysVal::getUnitGroupName(i_pUnitDst);
+            QString strAddErrInfo = "Src:" + getUnitGroupName() + ", Dst:" + i_pUnitDst->parentBranchName();
             throw CUnitConversionException( __FILE__, __LINE__, EResultDifferentPhysSizes, strAddErrInfo );
         }
     }
@@ -1777,7 +1777,7 @@ void CPhysValArr::convertValues( CUnit* i_pUnitDst )
         {
             if( !areOfSameUnitGroup(m_pUnitGrp,i_pUnitDst) )
             {
-                QString strAddErrInfo = "Src:" + getUnitGroupName() + ", Dst:" + ZS::PhysVal::getUnitGroupName(i_pUnitDst);
+                QString strAddErrInfo = "Src:" + getUnitGroupName() + ", Dst:" + i_pUnitDst->parentBranchName();
                 throw CUnitConversionException( __FILE__, __LINE__, EResultDifferentPhysSizes, strAddErrInfo );
             }
         }

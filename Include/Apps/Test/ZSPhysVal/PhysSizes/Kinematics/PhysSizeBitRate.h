@@ -38,29 +38,32 @@ namespace Test
 {
 namespace PhysVal
 {
-//namespace Kinematics
-//{
-////******************************************************************************
-//class CPhysSizeBitRate : public ZS::PhysVal::CPhysSize
-////******************************************************************************
-//{
-//public: // ctors and dtor
-//    CPhysSizeBitRate( ZS::PhysVal::CIdxTreePhysSizes* i_pIdxTree );
-//    ~CPhysSizeBitRate();
-//public: // instance methods
-//    ZS::PhysVal::CPhysUnit* BitsPerSec() { return &m_physUnitBitsPerSec; }
-//    ZS::PhysVal::CPhysUnit* KiloBitsPerSec() { return &m_physUnitKiloBitsPerSec; }
-//    ZS::PhysVal::CPhysUnit* SymbolsPerSec() { return &m_physUnitSymbolsPerSec; }
-//    ZS::PhysVal::CPhysUnit* KiloSymbolsPerSec() { return &m_physUnitKiloSymbolsPerSec; }
-//protected: // instance members
-//    ZS::PhysVal::CPhysUnit m_physUnitBitsPerSec;
-//    ZS::PhysVal::CPhysUnit m_physUnitKiloBitsPerSec;
-//    ZS::PhysVal::CPhysUnit m_physUnitSymbolsPerSec;
-//    ZS::PhysVal::CPhysUnit m_physUnitKiloSymbolsPerSec;
-//
-//}; // class CPhysSizeBitRate
-//
-//} // namespace Kinematics
+//******************************************************************************
+class CPhysSizeBitRate : public ZS::PhysVal::CPhysSize
+//******************************************************************************
+{
+public: // ctors and dtor
+    CPhysSizeBitRate( ZS::PhysVal::CIdxTreePhysSizes* i_pIdxTree );
+    CPhysSizeBitRate(ZS::System::CIdxTreeEntry* i_pParentBranch);
+    CPhysSizeBitRate(CPhysSizeBitRate&& i_other) = delete;
+    CPhysSizeBitRate(CPhysSizeBitRate& i_other) = delete;
+    CPhysSizeBitRate(const CPhysSizeBitRate& i_other) = delete;
+    virtual ~CPhysSizeBitRate();
+public: // operators
+    CPhysSizeBitRate& operator=(CPhysSizeBitRate& i_other) = delete;
+    CPhysSizeBitRate& operator=(const CPhysSizeBitRate& i_other) = delete;
+    CPhysSizeBitRate& operator=(CPhysSizeBitRate&& i_other) = delete;
+public: // instance members
+    ZS::PhysVal::CPhysUnit BitsPerSec;
+    ZS::PhysVal::CPhysUnit KiloBitsPerSec;
+    ZS::PhysVal::CPhysUnit SymbolsPerSec;
+    ZS::PhysVal::CPhysUnit KiloSymbolsPerSec;
+    ZS::PhysVal::CPhysUnit& bps;
+    ZS::PhysVal::CPhysUnit& kbps;
+    ZS::PhysVal::CPhysUnit& symps;
+    ZS::PhysVal::CPhysUnit& ksymps;
+
+}; // class CPhysSizeBitRate
 
 } // namespace PhysVal
 

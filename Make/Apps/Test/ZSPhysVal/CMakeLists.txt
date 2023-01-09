@@ -42,6 +42,10 @@ list(APPEND _HeadersCommon
     ${_HeadersPath}/ZSPhysVal/UnitViewWdgts.h
 )
 
+list(APPEND _HeadersPhysSize
+    ${_HeadersPath}/ZSPhysVal/PhysSizes/PhysSizes.h
+)
+
 list(APPEND _HeadersPhysSizeElectricity
     ${_HeadersPath}/ZSPhysVal/PhysSizes/Electricity/Electricity.h
     ${_HeadersPath}/ZSPhysVal/PhysSizes/Electricity/PhysSizeCurrent.h
@@ -68,6 +72,7 @@ list(APPEND _HeadersPhysSizeKinematics
 
 list(APPEND _Headers
     ${_HeadersCommon}
+    ${_HeadersPhysSize}
     ${_HeadersPhysSizeElectricity}
     ${_HeadersPhysSizeGeometry}
     ${_HeadersPhysSizeKinematics}
@@ -87,6 +92,10 @@ list(APPEND _SourcesCommon
     ${_SourcesPath}/ZSPhysVal/UnitModels.cpp
     ${_SourcesPath}/ZSPhysVal/UnitsWdgt.cpp
     ${_SourcesPath}/ZSPhysVal/UnitViewWdgts.cpp
+)
+
+list(APPEND _SourcesPhysSize
+    ${_SourcesPath}/ZSPhysVal/PhysSizes/PhysSizes.cpp
 )
 
 list(APPEND _SourcesPhysSizeElectricity
@@ -115,6 +124,7 @@ list(APPEND _SourcesPhysSizeKinematics
 
 list(APPEND _Sources
     ${_SourcesCommon}
+    ${_SourcesPhysSize}
     ${_SourcesPhysSizeElectricity}
     ${_SourcesPhysSizeGeometry}
     ${_SourcesPhysSizeKinematics}
@@ -153,10 +163,12 @@ endif()
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${TargetOutputName})
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER Tests)
 
+source_group("Header Files/Physical Sizes" FILES ${_HeadersPhysSize})
 source_group("Header Files/Physical Sizes/Electricity" FILES ${_HeadersPhysSizeElectricity})
 source_group("Header Files/Physical Sizes/Geometry" FILES ${_HeadersPhysSizeGeometry})
 source_group("Header Files/Physical Sizes/Kinematics" FILES ${_HeadersPhysSizeKinematics})
 source_group("Header Files" FILES ${_HeadersCommon})
+source_group("Source Files/Physical Sizes" FILES ${_SourcesPhysSize})
 source_group("Source Files/Physical Sizes/Electricity" FILES ${_SourcesPhysSizeElectricity})
 source_group("Source Files/Physical Sizes/Geometry" FILES ${_SourcesPhysSizeGeometry})
 source_group("Source Files/Physical Sizes/Kinematics" FILES ${_SourcesPhysSizeKinematics})

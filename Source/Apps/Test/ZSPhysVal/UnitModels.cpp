@@ -112,15 +112,11 @@ CUnitsModel::CUnitsModel( QObject* i_pObjParent ) :
     m_pRootNode = new SUnitsModelNode();
     m_pRootNode->m_modelIdx = createIndex(0,0,m_pRootNode);
 
-    CUnitGrp*      pUnitGrp;
-    EUnitClassType classType;
-    int            idxClassType;
-
-    for( idxClassType = 0; idxClassType < EUnitClassTypeCount; idxClassType++ )
+    for( int idxClassType = 0; idxClassType < CEnumUnitClassType::count(); idxClassType++ )
     {
-        classType = static_cast<EUnitClassType>(idxClassType);
+        EUnitClassType classType = static_cast<EUnitClassType>(idxClassType);
 
-        //pUnitGrp = CIdxTreePhysSizes::GetUnitClassTypeGroup(classType);
+        //CUnitGrp* pUnitGrp = CIdxTreePhysSizes::GetUnitClassTypeGroup(classType);
 
         //if( pUnitGrp->getChildUnitGrpCount() > 0 || pUnitGrp->getUnitCount() > 0 )
         //{
@@ -551,7 +547,7 @@ QVariant CUnitsModel::headerData(
 //        return varData;
 //    }
 //
-//    pUnit = dynamic_cast<CUnitSIBase*>(m_pUnitGrp->getUnit(iRow));
+//    pUnit = dynamic_cast<CUnitSIBase*>(m_pUnitGrp->unit(iRow));
 //
 //    if( pUnit == nullptr )
 //    {
@@ -926,6 +922,7 @@ QVariant CModelUnitGrpRatio::headerData(
 /*******************************************************************************
 class CModelUnitGrpDataQuantity : public QAbstractTableModel
 *******************************************************************************/
+#if 0
 
 /*==============================================================================
 public: // ctors and dtor
@@ -1152,6 +1149,8 @@ QVariant CModelUnitGrpDataQuantity::headerData(
     return varData;
 
 } // headerData
+
+#endif
 
 
 /*******************************************************************************
@@ -1380,8 +1379,8 @@ QVariant CModelPhysSize::data( const QModelIndex& i_modelIdx, int i_iRole ) cons
     {
         return varData;
     }
-    pUnitNextLower  = dynamic_cast<CPhysUnit*>(pUnit->getNextLowerUnit());
-    pUnitNextHigher = dynamic_cast<CPhysUnit*>(pUnit->getNextHigherUnit());
+    pUnitNextLower  = dynamic_cast<CPhysUnit*>(pUnit->nextLowerUnit());
+    pUnitNextHigher = dynamic_cast<CPhysUnit*>(pUnit->nextHigherUnit());
 
     switch( m_viewMode )
     {

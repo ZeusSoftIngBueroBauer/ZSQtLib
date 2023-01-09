@@ -33,22 +33,19 @@ may result in using the software modules.
 
 class QSettings;
 
-namespace ZS
-{
-namespace System
-{
+namespace ZS {
+namespace System {
 class CTrcAdminObj;
 }
-namespace Trace
-{
+namespace Trace {
 class CIpcTrcServer;
 }
-namespace Apps
-{
-namespace Test
-{
-namespace PhysVal
-{
+namespace PhysVal {
+class CIdxTreePhysSizes;
+}
+namespace Apps {
+namespace Test {
+namespace PhysVal {
 class CMainWindow;
 class CTest;
 
@@ -73,21 +70,18 @@ public: // ctors and dtor
 public: // instance methods
     CTest* getTest() { return m_pTest; }
 private: // instance members
-    CTest*       m_pTest;
+    CTest* m_pTest;
     CMainWindow* m_pMainWindow;
-    bool         m_bAutoStartTest;
-private: // instance members (method tracing)
+    bool m_bAutoStartTest;
+    ZS::PhysVal::CIdxTreePhysSizes* m_pIdxTreePhysSizes;
     ZS::Trace::CIpcTrcServer* m_pTrcServer;
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CApplication
 
 } // namespace PhysVal
-
 } // namespace Test
-
 } // namespace Apps
-
 } // namespace ZS
 
 #endif // #ifndef ZSApps_TestPhysVal_App_h

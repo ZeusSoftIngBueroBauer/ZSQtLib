@@ -38,27 +38,30 @@ namespace Test
 {
 namespace PhysVal
 {
-//namespace Kinematics
-//{
-////******************************************************************************
-//class CPhysSizeVelocity : public ZS::PhysVal::CPhysSize
-////******************************************************************************
-//{
-//public: // ctors and dtor
-//    CPhysSizeVelocity();
-//    ~CPhysSizeVelocity();
-//public: // instance methods
-//    ZS::PhysVal::CPhysUnit* MetersPerSecond() { return &m_physUnitMetersPerSecond; }
-//    ZS::PhysVal::CPhysUnit* KilometersPerHour() { return &m_physUnitKilometersPerHour; }
-//    ZS::PhysVal::CPhysUnit* MilesPerHour() { return &m_physUnitMilesPerHour; }
-//protected: // instance members
-//    ZS::PhysVal::CPhysUnit m_physUnitMetersPerSecond;
-//    ZS::PhysVal::CPhysUnit m_physUnitKilometersPerHour;
-//    ZS::PhysVal::CPhysUnit m_physUnitMilesPerHour;
-//
-//}; // class CPhysSizeVelocity
-//
-//} // namespace Kinematics
+//******************************************************************************
+class CPhysSizeVelocity : public ZS::PhysVal::CPhysSize
+//******************************************************************************
+{
+public: // ctors and dtor
+    CPhysSizeVelocity(ZS::PhysVal::CIdxTreePhysSizes* i_pIdxTree);
+    CPhysSizeVelocity(ZS::System::CIdxTreeEntry* i_pParentBranch);
+    CPhysSizeVelocity(CPhysSizeVelocity&& i_other) = delete;
+    CPhysSizeVelocity(CPhysSizeVelocity& i_other) = delete;
+    CPhysSizeVelocity(const CPhysSizeVelocity& i_other) = delete;
+    virtual ~CPhysSizeVelocity();
+public: // operators
+    CPhysSizeVelocity& operator=(CPhysSizeVelocity& i_other) = delete;
+    CPhysSizeVelocity& operator=(const CPhysSizeVelocity& i_other) = delete;
+    CPhysSizeVelocity& operator=(CPhysSizeVelocity&& i_other) = delete;
+public: // instance members
+    ZS::PhysVal::CPhysUnit MetersPerSecond;
+    ZS::PhysVal::CPhysUnit KilometersPerHour;
+    ZS::PhysVal::CPhysUnit MilesPerHour;
+    ZS::PhysVal::CPhysUnit& mps;
+    ZS::PhysVal::CPhysUnit& kmph;
+    ZS::PhysVal::CPhysUnit& milesph;
+
+}; // class CPhysSizeVelocity
 
 } // namespace PhysVal
 

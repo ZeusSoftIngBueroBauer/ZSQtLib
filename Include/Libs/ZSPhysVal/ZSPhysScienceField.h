@@ -39,22 +39,26 @@ namespace ZS
 {
 namespace PhysVal
 {
-//class CIdxTreePhysSizes;
+class CIdxTreePhysSizes;
 
 //******************************************************************************
 class ZSPHYSVALDLL_API CPhysScienceField : public ZS::System::CIdxTreeEntry
 //******************************************************************************
 {
+public: // class methods
+    static QString NameSpace() { return "ZS::PhysVal"; }
+    static QString ClassName() { return "CPhysScienceField"; }
 public: // ctors and dtor
-    CPhysScienceField(const QString& i_strName, ZS::System::CIdxTree* i_pIdxTree = nullptr);
-    CPhysScienceField(const QString& i_strName, ZS::System::CIdxTreeEntry* i_pParentBranch);
+    CPhysScienceField(ZS::PhysVal::CIdxTreePhysSizes* i_pIdxTree, EPhysScienceField i_scienceField);
+    CPhysScienceField(ZS::System::CIdxTreeEntry* i_pParentBranch, EPhysScienceField i_scienceField);
+    CPhysScienceField(CPhysScienceField&& i_other) = delete;
+    CPhysScienceField(CPhysScienceField& i_other) = delete;
+    CPhysScienceField(const CPhysScienceField& i_other) = delete;
     virtual ~CPhysScienceField();
-protected: // instance members
-    /*!< If this instance needed to create the physical sizes index tree
-         the index tree must be released if the physical science field
-         instance is destroyed. The reference counter is set to one
-         if the index tree was created by this science field. */
-    int m_iIdxTreeRefCount;
+public: // operators
+    CPhysScienceField& operator=(CPhysScienceField& i_other) = delete;
+    CPhysScienceField& operator=(const CPhysScienceField& i_other) = delete;
+    CPhysScienceField& operator=(CPhysScienceField&& i_other) = delete;
 
 }; // class CPhysScienceField
 

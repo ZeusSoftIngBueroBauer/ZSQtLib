@@ -24,40 +24,32 @@ may result in using the software modules.
 
 *******************************************************************************/
 
+#ifndef ZSApps_TestPhysVal_PhysSizes_h
+#define ZSApps_TestPhysVal_PhysSizes_h
+
+#include "PhysSizes/Electricity/Electricity.h"
+#include "PhysSizes/Geometry/Geometry.h"
 #include "PhysSizes/Kinematics/Kinematics.h"
 
-#include "ZSSys/ZSSysMemLeakDump.h"
-
-
-using namespace ZS::PhysVal;
-using namespace ZS::Apps::Test::PhysVal;
-
-
-/*******************************************************************************
-class CPhysScienceFieldKinematics
-*******************************************************************************/
-
-/*==============================================================================
-public: // ctors and dtor
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! @brief 
-
-*/
-CPhysScienceFieldKinematics::CPhysScienceFieldKinematics(CIdxTreePhysSizes* i_pIdxTree) :
-//------------------------------------------------------------------------------
-    CPhysScienceField(i_pIdxTree, EPhysScienceField::Kinematics),
-    BitRate(this),
-    Frequency(this),
-    Samples(this),
-    Time(this),
-    Velocity(this)
+namespace ZS
 {
-}
-
-//------------------------------------------------------------------------------
-CPhysScienceFieldKinematics::~CPhysScienceFieldKinematics()
-//------------------------------------------------------------------------------
+namespace Apps
 {
-}
+namespace Test
+{
+namespace PhysVal
+{
+extern ZS::PhysVal::CIdxTreePhysSizes IdxTreePhysSizes;
+extern CPhysScienceFieldElectricity Electricity;
+extern CPhysScienceFieldGeometry Geometry;
+extern CPhysScienceFieldKinematics Kinematics;
+
+} // namespace PhysVal
+
+} // namespace Test
+
+} // namespace Apps
+
+} // namespace ZS
+
+#endif // #ifndef ZSApps_TestPhysVal_PhysSizes_h

@@ -25,11 +25,12 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSPhysVal/ZSPhysSize.h"
+#include "ZSPhysVal/ZSPhysScienceField.h"
 #include "ZSPhysVal/ZSPhysUnits.h"
 #include "ZSPhysVal/ZSPhysSizesIdxTree.h"
 #include "ZSPhysVal/ZSPhysValExceptions.h"
+#include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysMath.h"
-#include "ZSSys/ZSSysErrResult.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -47,10 +48,9 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief
+/*! @brief  Creates an instance of a group with physical units.
 
     @param [in] i_pIdxTree
-    @param [in] i_scienceField
     @param [in] i_strName
         e.g. "Time", "Length", "Power", "Voltage", ...
     @param [in] i_strSIUnitName
@@ -63,57 +63,16 @@ public: // ctors and dtor
         true if X/dB = 10*log(X/X0), false if e.g. X/dB = 20*log(X/X0)
 */
 CPhysSize::CPhysSize(
-    CIdxTree*         i_pIdxTree,
-    EPhysScienceField i_scienceField,
-    const QString&    i_strName,
-    const QString&    i_strSIUnitName,
-    const QString&    i_strSIUnitSymbol,
-    const QString&    i_strFormulaSymbol,
-    bool              i_bIsPowerRelated,
-    CIdxTreeEntry*    i_pParentBranch ) :
+    CIdxTreePhysSizes* i_pIdxTree,
+    const QString&     i_strName,
+    const QString&     i_strSIUnitName,
+    const QString&     i_strSIUnitSymbol,
+    const QString&     i_strFormulaSymbol,
+    bool               i_bIsPowerRelated ) :
 //------------------------------------------------------------------------------
     CUnitGrp(
-        /* pIdxTree      */ i_pIdxTree,
-        /* type          */ EUnitClassTypePhysScienceFields,
-        /* strName       */ i_strName,
-        /* pParentBranch */ i_pParentBranch ),
-    m_strSIUnitName(i_strSIUnitName),
-    m_strSIUnitSymbol(i_strSIUnitSymbol),
-    m_pPhysUnitSI(nullptr),
-    m_strFormulaSymbol(i_strFormulaSymbol),
-    m_bIsPowerRelated(i_bIsPowerRelated),
-    m_bInitialized(false)
-{
-} // ctor
-
-//------------------------------------------------------------------------------
-/*! @brief
-
-    @param [in] i_pIdxTree
-    @param [in] i_scienceField
-    @param [in] i_strName
-        e.g. "Time", "Length", "Power", "Voltage", ...
-    @param [in] i_strSIUnitName
-        e.g. "Second" for Time, "Meter" for Length, "Watt" for el. Power, "Volt" for el. Voltage, ...
-    @param [in] i_strSIUnitSymbol
-        e.g. "s" for Second, "m" for Meter, "W" for "Watt", "V" for el. Volt, ...
-    @param [in] i_strFormulaSymbol
-        e.g. "t" for Time, "l" for Length, "P" for Power, "U" for Voltage, ...
-    @param [in] i_bIsPowerRelated
-        true if X/dB = 10*log(X/X0), false if e.g. X/dB = 20*log(X/X0)
-*/
-CPhysSize::CPhysSize(
-    CIdxTreeEntry*    i_pParentBranch,
-    EPhysScienceField i_scienceField,
-    const QString&    i_strName,
-    const QString&    i_strSIUnitName,
-    const QString&    i_strSIUnitSymbol,
-    const QString&    i_strFormulaSymbol,
-    bool              i_bIsPowerRelated ) :
-//------------------------------------------------------------------------------
-    CUnitGrp(
-        /* pParentBranch */ i_pParentBranch,
-        /* type          */ EUnitClassTypePhysScienceFields,
+        /* pParentBranch */ i_pIdxTree,
+        /* type          */ EUnitClassType::PhysScienceFields,
         /* strName       */ i_strName ),
     m_strSIUnitName(i_strSIUnitName),
     m_strSIUnitSymbol(i_strSIUnitSymbol),
@@ -125,6 +84,44 @@ CPhysSize::CPhysSize(
 } // ctor
 
 //------------------------------------------------------------------------------
+/*! @brief  Creates an instance of a group with physical units.
+
+    @param [in] i_pParentBranch
+    @param [in] i_strName
+        e.g. "Time", "Length", "Power", "Voltage", ...
+    @param [in] i_strSIUnitName
+        e.g. "Second" for Time, "Meter" for Length, "Watt" for el. Power, "Volt" for el. Voltage, ...
+    @param [in] i_strSIUnitSymbol
+        e.g. "s" for Second, "m" for Meter, "W" for "Watt", "V" for el. Volt, ...
+    @param [in] i_strFormulaSymbol
+        e.g. "t" for Time, "l" for Length, "P" for Power, "U" for Voltage, ...
+    @param [in] i_bIsPowerRelated
+        true if X/dB = 10*log(X/X0), false if e.g. X/dB = 20*log(X/X0)
+*/
+CPhysSize::CPhysSize(
+    CIdxTreeEntry* i_pParentBranch,
+    const QString& i_strName,
+    const QString& i_strSIUnitName,
+    const QString& i_strSIUnitSymbol,
+    const QString& i_strFormulaSymbol,
+    bool           i_bIsPowerRelated ) :
+//------------------------------------------------------------------------------
+    CUnitGrp(
+        /* pParentBranch */ i_pParentBranch,
+        /* type          */ EUnitClassType::PhysScienceFields,
+        /* strName       */ i_strName ),
+    m_strSIUnitName(i_strSIUnitName),
+    m_strSIUnitSymbol(i_strSIUnitSymbol),
+    m_pPhysUnitSI(nullptr),
+    m_strFormulaSymbol(i_strFormulaSymbol),
+    m_bIsPowerRelated(i_bIsPowerRelated),
+    m_bInitialized(false)
+{
+} // ctor
+
+//------------------------------------------------------------------------------
+/*! @brief Destroys the group of physical units.
+*/
 CPhysSize::~CPhysSize()
 //------------------------------------------------------------------------------
 {
@@ -198,15 +195,29 @@ bool CPhysSize::initialize( bool i_bCreateFindBestChainedList )
         }
     }
     if( iUnitsCount== 0 ) {
-        throw CException(
-            __FILE__, __LINE__, EResultInvalidPhysSize,
-            "Physical size does not have any physical units." );
+        SErrResultInfo errResultInfo(
+            NameSpace(), ClassName(), name(), "initialize",
+            EResultListIsEmpty, EResultSeverityError,
+            "Physical size " + keyInTree() + " does not have any physical units.");
+        if( CErrLog::GetInstance() != nullptr ) {
+            CErrLog::GetInstance()->addEntry(errResultInfo);
+        }
+        else {
+            throw CException(__FILE__, __LINE__, errResultInfo);
+        }
     }
     if( m_pPhysUnitSI == nullptr )
     {
-        throw CException(
-            __FILE__, __LINE__, EResultSIUnitNotDefined,
-            "SI Unit of " + keyInTree() + " not defined." );
+        SErrResultInfo errResultInfo(
+            NameSpace(), ClassName(), name(), "initialize",
+            EResultSIUnitNotDefined, EResultSeverityError,
+            "SI Unit of " + keyInTree() + " not defined.");
+        if( CErrLog::GetInstance() != nullptr ) {
+            CErrLog::GetInstance()->addEntry(errResultInfo);
+        }
+        else {
+            throw CException(__FILE__, __LINE__, errResultInfo);
+        }
     }
 
     // Set the SI unit for all units of this physical size
