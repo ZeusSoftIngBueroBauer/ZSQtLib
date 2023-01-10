@@ -715,7 +715,7 @@ bool CPhysUnit::isConvertible( const CUnit* i_pUnitDst, double /*i_fVal*/ ) cons
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultSIUnitNotDefined );
     }
-    if( i_pUnitDst->classType() != EUnitClassType::PhysScienceFields )
+    if( i_pUnitDst->classType() != EUnitClassType::PhysSize )
     {
         return false;
     }
@@ -795,7 +795,7 @@ bool CPhysUnit::isConvertible( const CUnit* i_pUnitDst, double /*i_fVal*/ ) cons
 double CPhysUnit::convertValue( double i_fVal, const CUnit* i_pUnitDst ) const
 //------------------------------------------------------------------------------
 {
-    if( i_pUnitDst->classType() != EUnitClassType::PhysScienceFields )
+    if( i_pUnitDst->classType() != EUnitClassType::PhysSize )
     {
         return CUnit::convertValue(i_fVal,i_pUnitDst);
     }

@@ -47,7 +47,6 @@ public: // ctors and dtor
     virtual ~CTest();
 protected slots:
     void doTestStepFormatValue_1( ZS::Test::CTestStep* i_pTestStep );
-#if 0
     void doTestStepFormatValue_2( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepFormatValue_3( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepFormatValue_4( ZS::Test::CTestStep* i_pTestStep );
@@ -153,7 +152,7 @@ protected slots:
     void doTestStepAccuracyDigits_2( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepAccuracyDigits_3( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepAccuracyDigits_4( ZS::Test::CTestStep* i_pTestStep );
-#endif
+
 }; // class CTest
 
 } // namespace PhysVal

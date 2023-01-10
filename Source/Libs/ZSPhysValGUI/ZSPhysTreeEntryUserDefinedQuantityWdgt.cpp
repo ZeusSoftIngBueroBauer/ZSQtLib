@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer, Germany
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -24,25 +24,27 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include "WidgetCentral.h"
-#include "App.h"
-#include "PhysSizes/PhysSizes.h"
-#include "Test.h"
-
-#include "ZSPhysValGUI/ZSPhysSizesWdgt.h"
+#include "ZSPhysValGUI/ZSPhysTreeEntryUserDefinedQuantityWdgt.h"
 #include "ZSPhysVal/ZSPhysSizesIdxTree.h"
-#include "ZSTestGUI/ZSTestStepIdxTreeWdgt.h"
-#include "ZSSys/ZSSysErrCode.h"
-#include "ZSSys/ZSSysException.h"
 
 #if QT_VERSION < 0x050000
-#include <QtGui/qlayout.h>
-#include <QtGui/qsplitter.h>
-#include <QtGui/qtabwidget.h>
+//#include <QtGui/qcheckbox.h>
+//#include <QtGui/qcombobox.h>
+//#include <QtGui/qheaderview.h>
+//#include <QtGui/qlayout.h>
+//#include <QtGui/qlabel.h>
+//#include <QtGui/qlineedit.h>
+//#include <QtGui/qsplitter.h>
+//#include <QtGui/qtableview.h>
 #else
-#include <QtWidgets/qlayout.h>
-#include <QtWidgets/qsplitter.h>
-#include <QtWidgets/qtabwidget.h>
+//#include <QtWidgets/qcheckbox.h>
+//#include <QtWidgets/qcombobox.h>
+//#include <QtWidgets/qheaderview.h>
+//#include <QtWidgets/qlayout.h>
+//#include <QtWidgets/qlabel.h>
+//#include <QtWidgets/qlineedit.h>
+//#include <QtWidgets/qsplitter.h>
+//#include <QtWidgets/qtableview.h>
 #endif
 
 #include "ZSSys/ZSSysMemLeakDump.h"
@@ -51,71 +53,44 @@ may result in using the software modules.
 using namespace ZS::System;
 using namespace ZS::PhysVal;
 using namespace ZS::PhysVal::GUI;
-using namespace ZS::Test;
-using namespace ZS::Test::GUI;
-using namespace ZS::Apps::Test::PhysVal;
 
 
 /*******************************************************************************
-class CWidgetCentral : public QWidget
+class CWdgtUserDefinedQuantity : public QTableView
 *******************************************************************************/
-
-CWidgetCentral* CWidgetCentral::s_pThis = nullptr; // singleton class
 
 /*==============================================================================
 public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CWidgetCentral::CWidgetCentral( QWidget* i_pWdgtParent, Qt::WindowFlags  i_wflags ) :
+CWdgtUserDefinedQuantity::CWdgtUserDefinedQuantity(
+    CIdxTreePhysSizes* i_pIdxTree, QWidget* i_pWdgtParent ) :
 //------------------------------------------------------------------------------
-    QWidget(i_pWdgtParent,i_wflags),
-    m_pLyt(nullptr),
-    m_pTabWdgtMain(nullptr),
-    m_pWdgtPhysSizes(nullptr),
-    m_pWdgtTest(nullptr)
+    CWdgtAbstractTreeEntry(i_pIdxTree, i_pWdgtParent)
 {
-    if( s_pThis != nullptr )
-    {
-        throw CException(__FILE__,__LINE__,EResultSingletonClassAlreadyInstantiated);
-    }
-    s_pThis = this;
-
-    setObjectName("CentralWidget");
-
-    m_pLyt = new QVBoxLayout();
-    setLayout(m_pLyt);
-
-    // <TabWidget>
-    //============
-
-    m_pTabWdgtMain = new QTabWidget(this);
-    m_pLyt->addWidget(m_pTabWdgtMain);
-
-    // <Tab> Units
-    //-------------
-
-    m_pWdgtPhysSizes = new CWdgtPhysSizes(&IdxTreePhysSizes);
-    m_pTabWdgtMain->addTab(m_pWdgtPhysSizes,"Units");
-
-    // <Tab> Test
-    //-------------
-
-    m_pWdgtTest = new CWdgtIdxTreeTestSteps( CApplication::GetInstance()->getTest() );
-    m_pTabWdgtMain->addTab( m_pWdgtTest, "Test" );
-
-    setMinimumWidth(600);
-    setMinimumHeight(300);
+    setObjectName( QString(i_pIdxTree == nullptr ? "IdxTree" : i_pIdxTree->objectName()) );
 
 } // ctor
 
 //------------------------------------------------------------------------------
-CWidgetCentral::~CWidgetCentral()
+CWdgtUserDefinedQuantity::~CWdgtUserDefinedQuantity()
 //------------------------------------------------------------------------------
 {
-    m_pLyt = nullptr;
-    m_pTabWdgtMain = nullptr;
-    m_pWdgtPhysSizes = nullptr;
-    m_pWdgtTest = nullptr;
-
 } // dtor
+
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtUserDefinedQuantity::setKeyInTreeOfRootEntry( const QString& i_strKeyInTree )
+//------------------------------------------------------------------------------
+{
+    if( m_strKeyInTreeOfRootEntry != i_strKeyInTree )
+    {
+        m_strKeyInTreeOfRootEntry = i_strKeyInTree;
+
+        //m_pModel->setKeyInTreeOfRootEntry(i_strKeyInTree);
+    }
+}

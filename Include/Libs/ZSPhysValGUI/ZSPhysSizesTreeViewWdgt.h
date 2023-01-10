@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSPhysValGUI_PhysSizesIdxTreeViewWdgt_h
-#define ZSPhysValGUI_PhysSizesIdxTreeViewWdgt_h
+#ifndef ZSPhysValGUI_PhysSizesTreeViewWdgt_h
+#define ZSPhysValGUI_PhysSizesTreeViewWdgt_h
 
 #include <QtCore/qglobal.h>
 
@@ -51,34 +51,34 @@ class CIdxTreePhysSizes;
 
 namespace GUI
 {
-class CModelIdxTreePhysSizes;
-class CTreeViewIdxTreePhysSizes;
+class CTreeViewPhysSizes;
 
 //******************************************************************************
-class ZSPHYSVALGUIDLL_API CWdgtIdxTreeViewPhysSizes : public QWidget
+class ZSPHYSVALGUIDLL_API CWdgtTreeViewPhysSizes : public QWidget
 //******************************************************************************
 {
     Q_OBJECT
 public: // class methods
     static QString NameSpace() { return "ZS::PhysVal::GUI"; }
-    static QString ClassName() { return "CWdgtIdxTreeViewPhysSizes"; }
+    static QString ClassName() { return "CWdgtTreeViewPhysSizes"; }
 public: // ctors and dtor
-    CWdgtIdxTreeViewPhysSizes(
+    CWdgtTreeViewPhysSizes(
         CIdxTreePhysSizes* i_pIdxTree,
         QWidget* i_pWdgtParent = nullptr );
-    virtual ~CWdgtIdxTreeViewPhysSizes();
+    virtual ~CWdgtTreeViewPhysSizes();
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
     virtual QString className() const { return ClassName(); }
 signals:
     void currentRowChanged( const QModelIndex& i_modelIdxCurr, const QModelIndex& i_modelIdxPrev );
 public: // instance methods
-    CTreeViewIdxTreePhysSizes* treeView() { return m_pTreeView; }
+    CTreeViewPhysSizes* treeView() { return m_pTreeView; }
 public: // instance methods
     void setIdxTree(CIdxTreePhysSizes* i_pIdxTree);
     CIdxTreePhysSizes* idxTree() { return m_pIdxTree; }
 protected slots:
     void onTreeViewExpanded( const QModelIndex& i_modelIdx );
+    void onTreeViewCurrentRowChanged(const QModelIndex& i_modelIdxCurr, const QModelIndex& i_modelIdxPrev );
 protected slots:
     void onBtnTreeViewResizeRowsAndColumnsToContentsClicked( bool i_bChecked );
     void onBtnTreeViewExpandAllClicked( bool i_bChecked );
@@ -93,9 +93,9 @@ protected: // instance members
     QPushButton* m_pBtnTreeViewResizeRowsAndColumnsToContents;
     QPushButton* m_pBtnTreeViewExpandAll;
     QPushButton* m_pBtnTreeViewCollapseAll;
-    CTreeViewIdxTreePhysSizes* m_pTreeView;
+    CTreeViewPhysSizes* m_pTreeView;
 
-}; // class CWdgtIdxTreeViewPhysSizes
+}; // class CWdgtTreeViewPhysSizes
 
 } // namespace GUI
 
@@ -103,4 +103,4 @@ protected: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZSPhysValGUI_PhysSizesIdxTreeViewWdgt_h
+#endif // #ifndef ZSPhysValGUI_PhysSizesTreeViewWdgt_h

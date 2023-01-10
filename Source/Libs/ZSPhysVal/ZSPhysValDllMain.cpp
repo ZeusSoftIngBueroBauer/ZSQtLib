@@ -173,7 +173,7 @@ template<> const QVector<SEnumEntry> CEnum<EUnitClassType>::s_arEnumEntries(
     /* 0 */ SEnumEntry( static_cast<int>(EUnitClassType::Undefined),             "Undefined",         "Undefined" ),
     /* 1 */ SEnumEntry( static_cast<int>(EUnitClassType::Ratios),                "Ratios",            "Ratios" ),
     /* 2 */ SEnumEntry( static_cast<int>(EUnitClassType::DataQuantity),          "DataQuantities",    "Data Quantities" ),
-    /* 3 */ SEnumEntry( static_cast<int>(EUnitClassType::PhysScienceFields),     "PhysScienceFields", "Physical Science Fields" ),
+    /* 3 */ SEnumEntry( static_cast<int>(EUnitClassType::PhysSize),              "PhysSize",          "Physical Size" ),
     /* 4 */ SEnumEntry( static_cast<int>(EUnitClassType::UserDefinedQuantities), "UserDefQuantities", "User Defined Quantities" )
 });
 

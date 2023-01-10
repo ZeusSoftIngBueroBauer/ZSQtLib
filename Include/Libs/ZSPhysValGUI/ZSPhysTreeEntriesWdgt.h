@@ -24,19 +24,24 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSPhysValGUI_PhysSizesIdxTreeView_h
-#define ZSPhysValGUI_PhysSizesIdxTreeView_h
+#ifndef ZSPhysValGUI_PhysTreeEntriesWdgt_h
+#define ZSPhysValGUI_PhysTreeEntriesWdgt_h
 
 #include <QtCore/qglobal.h>
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#include <QtGui/qtreeview.h>
+#include <QtGui/qwidget.h>
 #else
-#include <QtWidgets/qtreeview.h>
+#include <QtWidgets/qwidget.h>
 #endif
 
 #include "ZSPhysValGUI/ZSPhysValGUIDllMain.h"
-#include "ZSSys/ZSSysCommon.h"
+
+class QLineEdit;
+class QPushButton;
+class QStackedWidget;
+class QHBoxLayout;
+class QVBoxLayout;
 
 namespace ZS
 {
@@ -46,57 +51,57 @@ class CIdxTreePhysSizes;
 
 namespace GUI
 {
-class CModelIdxTreePhysSizes;
+class CWdgtAbstractTreeEntry;
 
 //******************************************************************************
-class ZSPHYSVALGUIDLL_API CTreeViewIdxTreePhysSizes : public QTreeView
+class ZSPHYSVALGUIDLL_API CWdgtTreeEntries : public QWidget
 //******************************************************************************
 {
     Q_OBJECT
+protected: // type definitions and constants
+    typedef enum {
+        ETreeEntryTypeUndefined             = 0,
+        ETreeEntryTypeDataQuantities        = 1,
+        ETreeEntryTypePhysSize              = 2,
+        ETreeEntryTypeRatios                = 3,
+        ETreeEntryTypeUserDefinedQuantities = 4,
+        ETreeEntryTypeDataQuantity          = 5,
+        ETreeEntryTypePhysUnit              = 6,
+        ETreeEntryTypeRatio                 = 7,
+        ETreeEntryTypeUserDefinedQuantity   = 8,
+        ETreeEntryTypeCount
+    }   ETreeEntryType;
 public: // class methods
     static QString NameSpace() { return "ZS::PhysVal::GUI"; }
-    static QString ClassName() { return "CTreeViewIdxTreePhysSizes"; }
+    static QString ClassName() { return "CWdgtTreeEntries"; }
 public: // ctors and dtor
-    CTreeViewIdxTreePhysSizes(
+    CWdgtTreeEntries(
         CIdxTreePhysSizes* i_pIdxTree,
-        QWidget* i_pWdgtParent = nullptr );
-    virtual ~CTreeViewIdxTreePhysSizes();
-public: // overridables
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
+        QWidget* i_pWdgtParent = nullptr,
+        Qt::WindowFlags i_wflags = Qt::WindowFlags() );
+    virtual ~CWdgtTreeEntries();
 public: // instance methods
     void setIdxTree(CIdxTreePhysSizes* i_pIdxTree);
     CIdxTreePhysSizes* idxTree() { return m_pIdxTree; }
-public: // instance methods (hiding not overridable methods with same name in QTreeView)
-    virtual void expandAll();
-    virtual void collapseAll();
 public: // overridables
-    virtual void expandRecursive( const QModelIndex& i_modelIdx );      // to distinguish from QTreeView method "expand".
-    virtual void collapseRecursive( const QModelIndex& i_modelIdx );    // to distinguish from QTreeView method "collapse".
-public: // slots (hiding not overridable slots with same name in QTreeView)
-    virtual void expand( const QModelIndex& i_modelIdx );
-    virtual void collapse( const QModelIndex& i_modelIdx );
+    virtual void setKeyInTreeOfRootEntry( const QString& i_strKeyInTree );
+    QString getKeyInTreeOfRootEntry() const;
 protected slots:
-    void onCollapsed( const QModelIndex& i_modelIdx );
-    void onExpanded( const QModelIndex& i_modelIdx );
-protected: // overridables of base class QTreeView
-    virtual void mousePressEvent( QMouseEvent* i_pEv );
-protected slots:
-    void onActionNameSpaceExpandTriggered( bool i_bChecked );
-    void onActionNameSpaceCollapseTriggered( bool i_bChecked );
+    void onBtnTreeViewResizeRowsAndColumnsToContentsClicked( bool i_bChecked );
 protected slots:
     void onIdxTreeAboutToBeDestroyed();
 protected: // instance members
     CIdxTreePhysSizes* m_pIdxTree;
-    CModelIdxTreePhysSizes* m_pModel;
-    QMenu* m_pMenuNameSpaceContext;
-    QAction* m_pActionNameSpaceTitle;
-    QAction* m_pActionNameSpaceExpand;
-    QAction* m_pActionNameSpaceCollapse;
-    QModelIndex m_modelIdxSelectedOnMousePressEvent;
-    QModelIndex m_modelIdxSelectedOnMouseReleaseEvent;
+    QString m_strKeyInTreeOfRootEntry;
+    QSize m_szBtns;
+    QVBoxLayout* m_pLytMain;
+    QHBoxLayout* m_pLytHeadLine;
+    QPushButton* m_pBtnTreeViewResizeRowsAndColumnsToContents;
+    QLineEdit* m_pEdtRootEntryPath;
+    QStackedWidget* m_pStackedWdgtTreeEntryContent;
+    QVector<CWdgtAbstractTreeEntry*> m_arpWdgtsTreeEntryContent;
 
-}; // class CTreeViewIdxTreePhysSizes
+}; // class CWdgtTreeEntries
 
 } // namespace GUI
 
@@ -104,4 +109,4 @@ protected: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZSPhysValGUI_PhysSizesIdxTreeView_h
+#endif // #ifndef ZSPhysValGUI_PhysTreeEntriesWdgt_h

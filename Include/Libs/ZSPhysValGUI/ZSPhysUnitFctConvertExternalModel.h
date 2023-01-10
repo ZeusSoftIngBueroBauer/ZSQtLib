@@ -24,59 +24,51 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSPhysValGUI_PhysSizesIdxTreeTableViewBranchContent_h
-#define ZSPhysValGUI_PhysSizesIdxTreeTableViewBranchContent_h
+#ifndef ZSPhysValGUI_PhysUnitFctConvertInternalModel_h
+#define ZSPhysValGUI_PhysUnitFctConvertInternalModel_h
 
-#include <QtCore/qglobal.h>
-
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#include <QtGui/qtableview.h>
-#else
-#include <QtWidgets/qtableview.h>
-#endif
-
-#include "ZSPhysValGUI/ZSPhysValGUIDllMain.h"
+#include <QtCore/qabstractitemmodel.h>
 
 namespace ZS
 {
 namespace PhysVal
 {
 class CIdxTreePhysSizes;
+class CPhysUnit;
 
 namespace GUI
 {
-class CModelIdxTreePhysSizesBranchContent;
-
 //******************************************************************************
-class ZSPHYSVALGUIDLL_API CTableViewIdxTreePhysSizesBranchContent : public QTableView
+class CModelUnitFctConvertExternal : public QAbstractTableModel
 //******************************************************************************
 {
     Q_OBJECT
-public: // class methods
-    static QString NameSpace() { return "ZS::System::GUI"; }
-    static QString ClassName() { return "CTableViewPhysSizesIdxTreeBranchContent"; }
+public: // type definitions and constants
+    typedef enum
+    {
+        EColumnUnitGrp    = 0,
+        EColumnFctConvert = 1,
+        EColumnCount
+    }   EColumn;
 public: // ctors and dtor
-    CTableViewIdxTreePhysSizesBranchContent( CIdxTreePhysSizes* i_pIdxTree, QWidget* i_pWdgtParent = nullptr );
-    virtual ~CTableViewIdxTreePhysSizesBranchContent();
-public: // overridables
-    virtual QString nameSpace() const { return CTableViewIdxTreePhysSizesBranchContent::NameSpace(); }
-    virtual QString className() const { return CTableViewIdxTreePhysSizesBranchContent::ClassName(); }
+    CModelUnitFctConvertExternal( QObject* i_pObjParent = nullptr );
+    CModelUnitFctConvertExternal( CIdxTreePhysSizes* i_pIdxTree, QObject* i_pObjParent = nullptr );
+    virtual ~CModelUnitFctConvertExternal();
 public: // instance methods
-    void setIdxTree(CIdxTreePhysSizes* i_pIdxTree);
-    CIdxTreePhysSizes* idxTree() { return m_pIdxTree; }
-public: // overridables
+    virtual void setIdxTree( QObject* i_pIdxTree );
     virtual void setKeyInTreeOfRootEntry( const QString& i_strKeyInTree );
-    QString getKeyInTreeOfRootEntry() const;
-protected slots:
-    void onIdxTreeAboutToBeDestroyed();
+public: // must overridables of base class QAbstractItemModel
+    virtual int rowCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
+    virtual int columnCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
+    virtual QVariant data( const QModelIndex& i_modelIdx, int i_iRole = Qt::DisplayRole ) const;
+public: // overridables of base class QAbstractItemModel
+    virtual QVariant headerData( int i_iSection, Qt::Orientation i_orientation, int i_iRole = Qt::DisplayRole) const;
 protected: // instance members
     CIdxTreePhysSizes* m_pIdxTree;
-    CModelIdxTreePhysSizesBranchContent* m_pModel;
-    //QString m_strKeyInTreeOfRootEntry;
-    QModelIndex m_modelIdxSelectedOnMousePressEvent;
-    QModelIndex m_modelIdxSelectedOnMouseReleaseEvent;
+    QString m_strKeyInTreeOfRootEntry;
+    CPhysUnit* m_pPhysUnit;
 
-}; // class CTableViewIdxTreePhysSizesBranchContent
+}; // class CModelUnitFctConvertExternal
 
 } // namespace GUI
 
@@ -84,4 +76,5 @@ protected: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZSPhysValGUI_PhysSizesIdxTreeTableViewBranchContent_h
+#endif // #ifndef ZSPhysValGUI_PhysUnitFctConvertInternalModel_h
+

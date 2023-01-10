@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSPhysValGUI_PhysSizesIdxTreeTableViewBranchContentWdgt_h
-#define ZSPhysValGUI_PhysSizesIdxTreeTableViewBranchContentWdgt_h
+#ifndef ZSPhysValGUI_PhysSizesWdgt_h
+#define ZSPhysValGUI_PhysSizesWdgt_h
 
 #include <QtCore/qglobal.h>
 
@@ -36,8 +36,11 @@ may result in using the software modules.
 #endif
 
 #include "ZSPhysValGUI/ZSPhysValGUIDllMain.h"
+#include "ZSSys/ZSSysCommon.h"
 
+class QModelIndex;
 class QPushButton;
+class QSplitter;
 class QHBoxLayout;
 class QVBoxLayout;
 
@@ -49,43 +52,38 @@ class CIdxTreePhysSizes;
 
 namespace GUI
 {
-class CTableViewIdxTreePhysSizesBranchContent;
+class CWdgtTreeViewPhysSizes;
+class CWdgtTreeEntries;
 
 //******************************************************************************
-class ZSPHYSVALGUIDLL_API CWdgtIdxTreePhysSizesTableViewBranchContent : public QWidget
+class ZSPHYSVALGUIDLL_API CWdgtPhysSizes : public QWidget
 //******************************************************************************
 {
     Q_OBJECT
 public: // class methods
-    static QString NameSpace() { return "ZS::System::GUI"; }
-    static QString ClassName() { return "CWdgtIdxTreePhysSizesTableViewBranchContent"; }
+    static QString NameSpace() { return "ZS::PhysVal::GUI"; }
+    static QString ClassName() { return "CWdgtPhysSizes"; }
 public: // ctors and dtor
-    CWdgtIdxTreePhysSizesTableViewBranchContent(
+    CWdgtPhysSizes(
         CIdxTreePhysSizes* i_pIdxTree,
         QWidget* i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wflags = Qt::WindowFlags() );
-    virtual ~CWdgtIdxTreePhysSizesTableViewBranchContent();
-public: // instance methods
-    CTableViewIdxTreePhysSizesBranchContent* tableView() { return m_pTableViewBranchContent; }
+    virtual ~CWdgtPhysSizes();
 public: // instance methods
     void setIdxTree(CIdxTreePhysSizes* i_pIdxTree);
     CIdxTreePhysSizes* idxTree() { return m_pIdxTree; }
-public: // overridables
-    virtual void setKeyInTreeOfRootEntry( const QString& i_strKeyInTree );
-    QString getKeyInTreeOfRootEntry() const;
 protected slots:
-    void onBtnTreeViewResizeRowsAndColumnsToContentsClicked( bool i_bChecked );
+    void onTreeViewCurrentRowChanged( const QModelIndex& i_modelIdxCurr, const QModelIndex& i_modelIdxPrev );
 protected slots:
     void onIdxTreeAboutToBeDestroyed();
 protected: // instance members
     CIdxTreePhysSizes* m_pIdxTree;
-    QSize m_szBtns;
     QVBoxLayout* m_pLytMain;
-    QHBoxLayout* m_pLytHeadLine;
-    QPushButton* m_pBtnTreeViewResizeRowsAndColumnsToContents;
-    CTableViewIdxTreePhysSizesBranchContent* m_pTableViewBranchContent;
+    QSplitter* m_pSplitter;
+    CWdgtTreeViewPhysSizes* m_pWdgtTreeView;
+    CWdgtTreeEntries* m_pWdgtTreeEntries;
 
-}; // class CWdgtIdxTreePhysSizesTableViewBranchContent
+}; // class CWdgtPhysSizes
 
 } // namespace GUI
 
@@ -93,4 +91,4 @@ protected: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZSPhysValGUI_PhysSizesIdxTreeTableViewBranchContentWdgt_h
+#endif // #ifndef ZSPhysValGUI_PhysSizesWdgt_h

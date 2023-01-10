@@ -72,7 +72,7 @@ CPhysSize::CPhysSize(
 //------------------------------------------------------------------------------
     CUnitGrp(
         /* pParentBranch */ i_pIdxTree,
-        /* type          */ EUnitClassType::PhysScienceFields,
+        /* type          */ EUnitClassType::PhysSize,
         /* strName       */ i_strName ),
     m_strSIUnitName(i_strSIUnitName),
     m_strSIUnitSymbol(i_strSIUnitSymbol),
@@ -108,7 +108,7 @@ CPhysSize::CPhysSize(
 //------------------------------------------------------------------------------
     CUnitGrp(
         /* pParentBranch */ i_pParentBranch,
-        /* type          */ EUnitClassType::PhysScienceFields,
+        /* type          */ EUnitClassType::PhysSize,
         /* strName       */ i_strName ),
     m_strSIUnitName(i_strSIUnitName),
     m_strSIUnitSymbol(i_strSIUnitSymbol),

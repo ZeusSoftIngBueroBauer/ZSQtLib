@@ -53,6 +53,9 @@ class ZSPHYSVALGUIDLL_API CWdgtEditPhysVal : public QWidget
 //******************************************************************************
 {
     Q_OBJECT
+public: // class methods
+    static QString NameSpace() { return "ZS::PhysVal::GUI"; }
+    static QString ClassName() { return "CWdgtEditPhysVal"; }
 public: // ctors and dtor
     CWdgtEditPhysVal( QWidget* i_pWdgtParent = nullptr );
     virtual ~CWdgtEditPhysVal();

@@ -33,13 +33,11 @@ may result in using the software modules.
 #endif
 
 #include "ZSPhysValGUI/ZSPhysSizesIdxTreeDlg.h"
-#include "ZSPhysValGUI/ZSPhysSizesIdxTreeWdgt.h"
+#include "ZSPhysValGUI/ZSPhysSizesWdgt.h"
 #include "ZSPhysVal/ZSPhysSizesIdxTree.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysException.h"
-//#include "ZSSys/ZSSysTrcMethod.h"
-//#include "ZSSys/ZSSysTrcServer.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -112,7 +110,7 @@ CDlgIdxTreePhysSizes::CDlgIdxTreePhysSizes(
     m_pLyt = new QVBoxLayout();
     setLayout(m_pLyt);
 
-    m_pWdgtIdxTree = new CWdgtIdxTreePhysSizes(m_pIdxTree, nullptr);
+    m_pWdgtIdxTree = new CWdgtPhysSizes(m_pIdxTree, nullptr);
 
     m_pLyt->addWidget(m_pWdgtIdxTree);
 

@@ -1543,7 +1543,7 @@ TFormatResult ZS::PhysVal::parseValStr(
                 //// known reference to the unit group is used later on to find the
                 //// unit instance. But the code and comments should state the facts
                 //// around the main group name of the units.
-                //if( pUnitGrpVal->classType() == EUnitClassType::PhysScienceFields )
+                //if( pUnitGrpVal->classType() == EUnitClassType::PhysSize )
                 //{
                 //    // For physical units the group name of the unit group corresponds
                 //    // to the science field of the unit and is considered to be the
@@ -1652,7 +1652,7 @@ TFormatResult ZS::PhysVal::parseValStr(
                     //// known reference to the unit group is used later on to find the
                     //// unit instance. But the code and comments should state the facts
                     //// around the main group name of the units.
-                    //if( pUnitGrpRes->classType() == EUnitClassType::PhysScienceFields )
+                    //if( pUnitGrpRes->classType() == EUnitClassType::PhysSize )
                     //{
                     //    // For physical units the group name of the unit group corresponds
                     //    // to the science field of the unit and is considered to be the
@@ -2384,7 +2384,7 @@ CPhysVal::CPhysVal( CUnitGrp* i_pUnitGrp, EResType i_resType ) :
     m_fVal(0.0),
     m_physValRes(i_pUnitGrp,i_resType)
 {
-    if( m_pUnitGrp != nullptr && m_pUnitGrp->classType() == EUnitClassType::PhysScienceFields )
+    if( m_pUnitGrp != nullptr && m_pUnitGrp->classType() == EUnitClassType::PhysSize )
     {
         m_pUnit = dynamic_cast<CPhysSize*>(m_pUnitGrp)->getSIUnit();
     }
@@ -2463,7 +2463,7 @@ CPhysVal::CPhysVal( double i_fVal, CUnitGrp* i_pUnitGrp, EResType i_resType ) :
     m_fVal(i_fVal),
     m_physValRes(i_pUnitGrp,i_resType)
 {
-    if( i_pUnitGrp->classType() == EUnitClassType::PhysScienceFields )
+    if( i_pUnitGrp->classType() == EUnitClassType::PhysSize )
     {
         m_pUnit = dynamic_cast<CPhysSize*>(i_pUnitGrp)->getSIUnit();
     }
@@ -2963,7 +2963,7 @@ CPhysVal::CPhysVal( const QString& i_strVal, CUnitGrp* i_pUnitGrp, EResType i_re
     m_fVal(0.0),
     m_physValRes(i_resType)
 {
-    if( i_pUnitGrp->classType() == EUnitClassType::PhysScienceFields )
+    if( i_pUnitGrp->classType() == EUnitClassType::PhysSize )
     {
         m_pUnit = dynamic_cast<CPhysSize*>(i_pUnitGrp)->getSIUnit();
     }
@@ -2993,7 +2993,7 @@ CPhysVal::CPhysVal( const QString& i_strVal, CUnitGrp* i_pUnitGrp, double i_fRes
     m_fVal(0.0),
     m_physValRes(i_fResVal,i_resType)
 {
-    if( i_pUnitGrp->classType() == EUnitClassType::PhysScienceFields )
+    if( i_pUnitGrp->classType() == EUnitClassType::PhysSize )
     {
         m_pUnit = dynamic_cast<CPhysSize*>(i_pUnitGrp)->getSIUnit();
     }
@@ -3023,7 +3023,7 @@ CPhysVal::CPhysVal( const QString& i_strVal, CUnitGrp* i_pUnitGrpVal, CUnitGrp* 
     m_fVal(0.0),
     m_physValRes(i_pUnitGrpRes,i_resType)
 {
-    if( i_pUnitGrpVal->classType() == EUnitClassType::PhysScienceFields )
+    if( i_pUnitGrpVal->classType() == EUnitClassType::PhysSize )
     {
         m_pUnit = dynamic_cast<CPhysSize*>(i_pUnitGrpVal)->getSIUnit();
     }
@@ -3051,7 +3051,7 @@ CPhysVal::CPhysVal( const QString& i_strVal, CUnitGrp* i_pUnitGrpVal, double i_f
     m_fVal(0.0),
     m_physValRes(i_fResVal,i_pUnitRatioRes,i_resType)
 {
-    if( i_pUnitGrpVal->classType() == EUnitClassType::PhysScienceFields )
+    if( i_pUnitGrpVal->classType() == EUnitClassType::PhysSize )
     {
         m_pUnit = dynamic_cast<CPhysSize*>(i_pUnitGrpVal)->getSIUnit();
     }
@@ -3079,7 +3079,7 @@ CPhysVal::CPhysVal( const QString& i_strVal, CUnitGrp* i_pUnitGrpVal, double i_f
 //    m_fVal(0.0),
 //    m_physValRes(i_fResVal,i_pUnitDataQuantityRes,i_resType)
 //{
-//    if( i_pUnitGrpVal->classType() == EUnitClassType::PhysScienceFields )
+//    if( i_pUnitGrpVal->classType() == EUnitClassType::PhysSize )
 //    {
 //        m_pUnit = dynamic_cast<CPhysSize*>(i_pUnitGrpVal)->getSIUnit();
 //    }
@@ -3107,7 +3107,7 @@ CPhysVal::CPhysVal( const QString& i_strVal, CUnitGrp* i_pUnitGrpVal, double i_f
     m_fVal(0.0),
     m_physValRes(i_fResVal,i_pPhysUnitRes,i_resType)
 {
-    if( i_pUnitGrpVal->classType() == EUnitClassType::PhysScienceFields )
+    if( i_pUnitGrpVal->classType() == EUnitClassType::PhysSize )
     {
         m_pUnit = dynamic_cast<CPhysSize*>(i_pUnitGrpVal)->getSIUnit();
     }
@@ -3135,7 +3135,7 @@ CPhysVal::CPhysVal( const QString& i_strVal, CUnitGrp* i_pUnitGrpVal, const CPhy
     m_fVal(0.0),
     m_physValRes(i_physValRes)
 {
-    if( i_pUnitGrpVal->classType() == EUnitClassType::PhysScienceFields )
+    if( i_pUnitGrpVal->classType() == EUnitClassType::PhysSize )
     {
         m_pUnit = dynamic_cast<CPhysSize*>(i_pUnitGrpVal)->getSIUnit();
     }
@@ -4201,7 +4201,7 @@ void CPhysVal::setUnitGroup( CUnitGrp* i_pUnitGrp )
     {
         m_pUnit = nullptr;
     }
-    else if( m_pUnitGrp->classType() == EUnitClassType::PhysScienceFields )
+    else if( m_pUnitGrp->classType() == EUnitClassType::PhysSize )
     {
         m_pUnit = dynamic_cast<CPhysSize*>(m_pUnitGrp)->getSIUnit();
     }
@@ -4281,7 +4281,7 @@ void CPhysVal::setUnit( CUnit* i_pUnit )
     //{
     //    m_pUnitGrp = dynamic_cast<CUnitGrpDataQuantity*>(m_pUnit->unitGroup());
     //}
-    else if( m_pUnit->classType() == EUnitClassType::PhysScienceFields )
+    else if( m_pUnit->classType() == EUnitClassType::PhysSize )
     {
         m_pUnitGrp = dynamic_cast<CPhysUnit*>(m_pUnit)->physSize();
     }
@@ -4660,7 +4660,7 @@ double CPhysVal::getVal( const CPhysUnit* i_pPhysUnit ) const
 {
     double fVal = m_fVal;
 
-    if( m_pUnit == nullptr || m_pUnit->classType() != EUnitClassType::PhysScienceFields )
+    if( m_pUnit == nullptr || m_pUnit->classType() != EUnitClassType::PhysSize )
     {
         QString strAddErrInfo = "Src:" + getUnitGroupName() + ", Dst:" + i_pPhysUnit->unitGroup()->keyInTree();
         throw CUnitConversionException( __FILE__, __LINE__, EResultDifferentPhysSizes, strAddErrInfo );

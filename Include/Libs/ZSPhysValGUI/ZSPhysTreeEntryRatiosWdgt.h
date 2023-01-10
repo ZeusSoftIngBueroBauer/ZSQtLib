@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer, Germany
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -24,63 +24,50 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSApps_TestPhysVal_WidgetCentral_h
-#define ZSApps_TestPhysVal_WidgetCentral_h
+#ifndef ZSPhysValGUI_PhysTreeEntryRatiosWdgt_h
+#define ZSPhysValGUI_PhysTreeEntryRatiosWdgt_h
 
-#include <QtCore/qglobal.h>
+#include "ZSPhysValGUI/ZSPhysTreeEntryAbstractWdgt.h"
 
-#if QT_VERSION < 0x050000
-#include <QtGui/qwidget.h>
-#else
-#include <QtWidgets/qwidget.h>
-#endif
+//class QCheckBox;
+//class QComboBox;
+//class QLabel;
+//class QLineEdit;
+//class QSpacerItem;
+//class QSplitter;
+//class QTableView;
+//class QHBoxLayout;
+//class QVBoxLayout;
 
-class QTabWidget;
-class QHBoxLayout;
-class QVBoxLayout;
-
-namespace ZS {
-namespace PhysVal {
-namespace GUI {
-class CWdgtPhysSizes;
-}
-}
-namespace Test {
-namespace GUI {
-class CWdgtIdxTreeTestSteps;
-}
-}
-
-namespace Apps {
-namespace Test {
-namespace PhysVal {
-
+namespace ZS
+{
+namespace PhysVal
+{
+namespace GUI
+{
 //******************************************************************************
-class CWidgetCentral : public QWidget
+class ZSPHYSVALGUIDLL_API CWdgtRatios : public CWdgtAbstractTreeEntry
 //******************************************************************************
 {
     Q_OBJECT
 public: // class methods
-    static CWidgetCentral* GetInstance() { return s_pThis; } // singleton class
+    static QString NameSpace() { return "ZS::PhysVal::GUI"; }
+    static QString ClassName() { return "CWdgtRatios"; }
 public: // ctors and dtor
-    CWidgetCentral( QWidget* i_pWdgtParent = nullptr, Qt::WindowFlags i_wflags = Qt::WindowFlags() );
-    ~CWidgetCentral();
-protected: // class members
-    static CWidgetCentral* s_pThis; // singleton class
-protected: // instance members
-    QVBoxLayout* m_pLyt;
-    QTabWidget* m_pTabWdgtMain;
-    ZS::PhysVal::GUI::CWdgtPhysSizes* m_pWdgtPhysSizes;
-    ZS::Test::GUI::CWdgtIdxTreeTestSteps* m_pWdgtTest;
+    CWdgtRatios( CIdxTreePhysSizes* i_pIdxTree, QWidget* i_pWdgtParent = nullptr );
+    virtual ~CWdgtRatios();
+public: // overridables
+    virtual QString nameSpace() const { return CWdgtRatios::NameSpace(); }
+    virtual QString className() const { return CWdgtRatios::ClassName(); }
+public: // overridables
+    virtual void setKeyInTreeOfRootEntry( const QString& i_strKeyInTree ) override;
 
-}; // class CWidgetCentral
+}; // class CWdgtRatios
+
+} // namespace GUI
 
 } // namespace PhysVal
 
-} // namespace Test
-
-} // namespace Apps
-
 } // namespace ZS
 
-#endif // #ifndef ZSApps_TestPhysVal_WidgetCentral_h
+#endif // #ifndef ZSPhysValGUI_PhysTreeEntryRatiosWdgt_h

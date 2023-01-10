@@ -1288,7 +1288,7 @@ CTrcAdminObj* CTrcServer::renameTraceAdminObj(
     QMutexLocker mtxLocker(&s_mtx);
     CTrcAdminObj* pTrcAdminObj =
         m_pTrcAdminObjIdxTree->renameTraceAdminObj(i_pTrcAdminObj, i_strNewObjName);
-    QQmlEngine::setObjectOwnership(i_pTrcAdminObj, QQmlEngine::CppOwnership);
+    QQmlEngine::setObjectOwnership(pTrcAdminObj, QQmlEngine::CppOwnership);
     return pTrcAdminObj;
 }
 

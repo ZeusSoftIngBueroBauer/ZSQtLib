@@ -53,7 +53,7 @@ public: // ctors and dtor
 
     @param i_pIdxTree
     @param i_classType
-        [PhysScienceFields, Ratios, UserDefinedQuantities]
+        [PhysSize, Ratios, UserDefinedQuantities]
     @param i_strName
         e.g. "Time", "Power", "Voltage", "Current", ...
 */
@@ -78,7 +78,7 @@ CUnitGrp::CUnitGrp(
 
     @param i_pParentBranch
     @param i_classType
-        [PhysScienceFields, Ratios, UserDefinedQuantities]
+        [PhysSize, Ratios, UserDefinedQuantities]
     @param i_strName
         e.g. "Time", "Power", "Voltage", "Current", ...
 */

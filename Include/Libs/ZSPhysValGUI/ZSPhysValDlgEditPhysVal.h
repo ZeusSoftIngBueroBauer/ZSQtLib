@@ -55,6 +55,9 @@ class ZSPHYSVALGUIDLL_API CDlgEditPhysVal : public QDialog
 //******************************************************************************
 {
     Q_OBJECT
+public: // class methods
+    static QString NameSpace() { return "ZS::PhysVal::GUI"; }
+    static QString ClassName() { return "CDlgEditPhysVal"; }
 public: // ctors and dtor
     CDlgEditPhysVal(
         const PhysVal::CPhysVal& i_physVal,

@@ -24,58 +24,50 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSPhysValGUI_PhysSizesIdxTreeDlg_h
-#define ZSPhysValGUI_PhysSizesIdxTreeDlg_h
+#ifndef ZSPhysValGUI_PhysUnitFctConvertExternalModel_h
+#define ZSPhysValGUI_PhysUnitFctConvertExternalModel_h
 
-#include <QtCore/qglobal.h>
-
-#include "ZSPhysValGUI/ZSPhysValGUIDllMain.h"
-#include "ZSSysGUI/ZSSysDialog.h"
-#include "ZSSys/ZSSysAux.h"
-
-class QVBoxLayout;
+#include <QtCore/qabstractitemmodel.h>
 
 namespace ZS
 {
 namespace PhysVal
 {
 class CIdxTreePhysSizes;
+class CPhysUnit;
 
 namespace GUI
 {
-class CWdgtPhysSizes;
-
 //******************************************************************************
-class ZSPHYSVALGUIDLL_API CDlgIdxTreePhysSizes : public ZS::System::GUI::CDialog
+class CModelUnitFctConvertInternal : public QAbstractTableModel
 //******************************************************************************
 {
-public: // class methods
-    static QString NameSpace() { return "ZS::PhysVal::GUI"; }
-    static QString ClassName() { return "CDlgIdxTreePhysSizes"; }
-public: // class CDlgTrcServer
-    static CDlgIdxTreePhysSizes* CreateInstance(
-        const QString& i_strDlgTitle,
-        CIdxTreePhysSizes* i_pIdxTree,
-        QWidget* i_pWdgtParent = nullptr,
-        Qt::WindowFlags i_wFlags = Qt::WindowFlags() );
-    static CDlgIdxTreePhysSizes* GetInstance( const QString& i_strObjName );
-protected: // ctor
-    CDlgIdxTreePhysSizes(
-        const QString& i_strDlgTitle,
-        CIdxTreePhysSizes* i_pIdxTree,
-        QWidget* i_pWdgtParent = nullptr,
-        Qt::WindowFlags i_wFlags = Qt::WindowFlags() );
-public: // dtor
-    virtual ~CDlgIdxTreePhysSizes();
-public: // overridables of base class ZS::System::GUI::CDialog
-    virtual QString nameSpace() override { return NameSpace(); }
-    virtual QString className() override { return ClassName(); }
+    Q_OBJECT
+public: // type definitions and constants
+    typedef enum
+    {
+        EColumnFctConvert = 0,
+        EColumnCount
+    }   EColumn;
+public: // ctors and dtor
+    CModelUnitFctConvertInternal( QObject* i_pObjParent = nullptr );
+    CModelUnitFctConvertInternal( CIdxTreePhysSizes* i_pIdxTree, QObject* i_pObjParent = nullptr );
+    virtual ~CModelUnitFctConvertInternal();
+public: // instance methods
+    virtual void setIdxTree( QObject* i_pIdxTree );
+    virtual void setKeyInTreeOfRootEntry( const QString& i_strKeyInTree );
+public: // must overridables of base class QAbstractItemModel
+    virtual int rowCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
+    virtual int columnCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
+    virtual QVariant data( const QModelIndex& i_modelIdx, int i_iRole = Qt::DisplayRole ) const;
+public: // overridables of base class QAbstractItemModel
+    virtual QVariant headerData( int i_iSection, Qt::Orientation i_orientation, int i_iRole = Qt::DisplayRole) const;
 protected: // instance members
     CIdxTreePhysSizes* m_pIdxTree;
-    QVBoxLayout* m_pLyt;
-    CWdgtPhysSizes* m_pWdgtIdxTree;
+    QString m_strKeyInTreeOfRootEntry;
+    CPhysUnit* m_pPhysUnit;
 
-}; // class CDlgIdxTreePhysSizes
+}; // class CModelUnitFctConvertInternal
 
 } // namespace GUI
 
@@ -83,4 +75,4 @@ protected: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZSPhysValGUI_PhysSizesIdxTreeDlg_h
+#endif // #ifndef ZSPhysValGUI_PhysUnitFctConvertExternalModel_h

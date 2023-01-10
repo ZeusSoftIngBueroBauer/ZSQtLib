@@ -24,35 +24,34 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include <QtCore/qglobal.h>
-
-#include "ZSPhysValGUI/ZSPhysSizesIdxTreeTableViewBranchContentWdgt.h"
-#include "ZSPhysValGUI/ZSPhysSizesIdxTreeTableViewBranchContent.h"
-#include "ZSPhysValGUI/ZSPhysSizesIdxTreeModelBranchContent.h"
+#include "ZSPhysValGUI/ZSPhysSizesWdgt.h"
+#include "ZSPhysValGUI/ZSPhysSizesTreeViewWdgt.h"
+#include "ZSPhysValGUI/ZSPhysTreeEntriesWdgt.h"
 #include "ZSPhysVal/ZSPhysSizesIdxTree.h"
+#include "ZSSysGUI/ZSSysIdxTreeModelEntry.h"
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qlayout.h>
-#include <QtGui/qlineedit.h>
 #include <QtGui/qpushbutton.h>
 #include <QtGui/qsplitter.h>
 #else
 #include <QtWidgets/qlayout.h>
-#include <QtWidgets/qlineedit.h>
 #include <QtWidgets/qpushbutton.h>
 #include <QtWidgets/qsplitter.h>
 #endif
+
+#include <QtCore/qsettings.h>
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 
 using namespace ZS::System;
-using namespace ZS::PhysVal;
+using namespace ZS::System::GUI;
 using namespace ZS::PhysVal::GUI;
 
 
 /*******************************************************************************
-class CWdgtIdxTreePhysSizesTableViewBranchContent : public QWidget
+class CWdgtPhysSizes : public QWidget
 *******************************************************************************/
 
 /*==============================================================================
@@ -60,69 +59,89 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CWdgtIdxTreePhysSizesTableViewBranchContent::CWdgtIdxTreePhysSizesTableViewBranchContent(
+CWdgtPhysSizes::CWdgtPhysSizes(
     CIdxTreePhysSizes* i_pIdxTree,
     QWidget* i_pWdgtParent,
     Qt::WindowFlags i_wflags ) :
 //------------------------------------------------------------------------------
     QWidget(i_pWdgtParent,i_wflags),
     m_pIdxTree(nullptr),
-    m_szBtns(24, 24),
     m_pLytMain(nullptr),
-    m_pLytHeadLine(nullptr),
-    m_pBtnTreeViewResizeRowsAndColumnsToContents(nullptr),
-    m_pTableViewBranchContent(nullptr)
+    m_pSplitter(nullptr),
+    m_pWdgtTreeView(nullptr),
+    m_pWdgtTreeEntries(nullptr)
 {
-    setObjectName( i_pIdxTree == nullptr ? "IdxTree" : i_pIdxTree->objectName() );
+    setObjectName( i_pIdxTree == nullptr ? "IdxTreePhysSizes" : i_pIdxTree->objectName() );
 
     m_pLytMain = new QVBoxLayout();
     setLayout(m_pLytMain);
 
-    // Line with controls to modify optic of tree view
-    //================================================
+    // Split View with Tree View and Branch Content Widget
+    //====================================================
 
-    m_pLytHeadLine = new QHBoxLayout();
-    m_pLytMain->addLayout(m_pLytHeadLine);
+    m_pSplitter = new QSplitter(Qt::Horizontal);
+    m_pLytMain->addWidget(m_pSplitter, 1);
 
-    // <Button> Resize Columns To Contents
-    //------------------------------------
+    // <TreeView>
+    //-----------
 
-    QPixmap pxmResizeToContents(":/ZS/TreeView/TreeViewResizeToContents.png");
-
-    m_pBtnTreeViewResizeRowsAndColumnsToContents = new QPushButton();
-    m_pBtnTreeViewResizeRowsAndColumnsToContents->setIcon(pxmResizeToContents);
-    m_pBtnTreeViewResizeRowsAndColumnsToContents->setFixedSize(m_szBtns);
-    m_pBtnTreeViewResizeRowsAndColumnsToContents->setToolTip("Press to resize the columns to their contents");
-    m_pLytHeadLine->addWidget(m_pBtnTreeViewResizeRowsAndColumnsToContents);
+    m_pWdgtTreeView = new CWdgtTreeViewPhysSizes(nullptr, nullptr);
+    m_pWdgtTreeView->setMinimumWidth(50);
+    m_pSplitter->addWidget(m_pWdgtTreeView);
 
     QObject::connect(
-        m_pBtnTreeViewResizeRowsAndColumnsToContents, &QPushButton::clicked,
-        this, &CWdgtIdxTreePhysSizesTableViewBranchContent::onBtnTreeViewResizeRowsAndColumnsToContentsClicked );
-
-    m_pLytHeadLine->addSpacing(10);
+        m_pWdgtTreeView, &CWdgtTreeViewPhysSizes::currentRowChanged,
+        this, &CWdgtPhysSizes::onTreeViewCurrentRowChanged );
 
     // <TableView>
-    //============
+    //------------
 
-    m_pTableViewBranchContent = new CTableViewIdxTreePhysSizesBranchContent(nullptr, nullptr);
-    m_pLytMain->addWidget(m_pTableViewBranchContent, 1);
+    m_pWdgtTreeEntries = new CWdgtTreeEntries(nullptr, nullptr);
+    m_pSplitter->addWidget(m_pWdgtTreeEntries);
 
     if( i_pIdxTree != nullptr )
     {
         setIdxTree(i_pIdxTree);
     }
+
+    // <Geometry>
+    //===================
+
+    QSettings settings;
+
+    restoreGeometry( settings.value(ClassName() + "/" + objectName() + "/Geometry").toByteArray() );
+
+    QList<int> listSizes = m_pSplitter->sizes();
+    for( int idx = 0; idx < listSizes.count(); idx++ )
+    {
+        listSizes[idx] = settings.value( ClassName() + "/" + objectName() + "/SplitterHeight" + QString::number(idx), 50 ).toInt();
+    }
+    m_pSplitter->setSizes(listSizes);
+
 } // ctor
 
 //------------------------------------------------------------------------------
-CWdgtIdxTreePhysSizesTableViewBranchContent::~CWdgtIdxTreePhysSizesTableViewBranchContent()
+CWdgtPhysSizes::~CWdgtPhysSizes()
 //------------------------------------------------------------------------------
 {
+    QSettings settings;
+
+    QList<int> listSizes = m_pSplitter->sizes();
+    for( int idx = 0; idx < listSizes.count(); idx++ )
+    {
+        settings.setValue( ClassName() + "/" + objectName() + "/SplitterHeight" + QString::number(idx), listSizes[idx] );
+    }
+    settings.setValue( ClassName() + "/" + objectName() + "/Geometry", saveGeometry());
+
+    QObject::disconnect(
+        m_pWdgtTreeView, &CWdgtTreeViewPhysSizes::currentRowChanged,
+        this, &CWdgtPhysSizes::onTreeViewCurrentRowChanged );
+
     m_pIdxTree = nullptr;
-    m_szBtns = QSize(0, 0);
     m_pLytMain = nullptr;
-    m_pLytHeadLine = nullptr;
-    m_pBtnTreeViewResizeRowsAndColumnsToContents = nullptr;
-    m_pTableViewBranchContent = nullptr;
+    m_pSplitter = nullptr;
+    m_pWdgtTreeView = nullptr;
+    m_pWdgtTreeEntries = nullptr;
 
 } // dtor
 
@@ -131,7 +150,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtIdxTreePhysSizesTableViewBranchContent::setIdxTree( CIdxTreePhysSizes* i_pIdxTree )
+void CWdgtPhysSizes::setIdxTree( CIdxTreePhysSizes* i_pIdxTree )
 //------------------------------------------------------------------------------
 {
     if( m_pIdxTree != i_pIdxTree )
@@ -140,7 +159,7 @@ void CWdgtIdxTreePhysSizesTableViewBranchContent::setIdxTree( CIdxTreePhysSizes*
         {
             QObject::disconnect(
                 m_pIdxTree, &CIdxTreePhysSizes::aboutToBeDestroyed,
-                this, &CWdgtIdxTreePhysSizesTableViewBranchContent::onIdxTreeAboutToBeDestroyed);
+                this, &CWdgtPhysSizes::onIdxTreeAboutToBeDestroyed);
         }
 
         m_pIdxTree = i_pIdxTree;
@@ -149,29 +168,12 @@ void CWdgtIdxTreePhysSizesTableViewBranchContent::setIdxTree( CIdxTreePhysSizes*
         {
             QObject::connect(
                 m_pIdxTree, &CIdxTreePhysSizes::aboutToBeDestroyed,
-                this, &CWdgtIdxTreePhysSizesTableViewBranchContent::onIdxTreeAboutToBeDestroyed);
+                this, &CWdgtPhysSizes::onIdxTreeAboutToBeDestroyed);
         }
 
-        m_pTableViewBranchContent->setIdxTree(i_pIdxTree);
+        m_pWdgtTreeView->setIdxTree(i_pIdxTree);
+        m_pWdgtTreeEntries->setIdxTree(i_pIdxTree);
     }
-}
-
-/*==============================================================================
-public: // overridables
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CWdgtIdxTreePhysSizesTableViewBranchContent::setKeyInTreeOfRootEntry( const QString& i_strKeyInTree )
-//------------------------------------------------------------------------------
-{
-    m_pTableViewBranchContent->setKeyInTreeOfRootEntry(i_strKeyInTree);
-}
-
-//------------------------------------------------------------------------------
-QString CWdgtIdxTreePhysSizesTableViewBranchContent::getKeyInTreeOfRootEntry() const
-//------------------------------------------------------------------------------
-{
-    return m_pTableViewBranchContent->getKeyInTreeOfRootEntry();
 }
 
 /*==============================================================================
@@ -179,14 +181,22 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtIdxTreePhysSizesTableViewBranchContent::onBtnTreeViewResizeRowsAndColumnsToContentsClicked( bool i_bChecked )
+void CWdgtPhysSizes::onTreeViewCurrentRowChanged(
+    const QModelIndex& i_modelIdxCurr,
+    const QModelIndex& i_modelIdxPrev )
 //------------------------------------------------------------------------------
 {
-    if( m_pTableViewBranchContent != nullptr )
+    if( i_modelIdxCurr.isValid() )
     {
-        for( int idxClm = 0; idxClm < CModelIdxTreePhysSizesBranchContent::EColumnCount; idxClm++ )
+        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdxCurr.internalPointer());
+
+        if( pModelTreeEntry != nullptr )
         {
-            m_pTableViewBranchContent->resizeColumnToContents(idxClm);
+            m_pWdgtTreeEntries->setKeyInTreeOfRootEntry(pModelTreeEntry->keyInTree());
+        }
+        else
+        {
+            m_pWdgtTreeEntries->setKeyInTreeOfRootEntry("");
         }
     }
 }
@@ -196,8 +206,15 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtIdxTreePhysSizesTableViewBranchContent::onIdxTreeAboutToBeDestroyed()
+void CWdgtPhysSizes::onIdxTreeAboutToBeDestroyed()
 //------------------------------------------------------------------------------
 {
     m_pIdxTree = nullptr;
+
+    if( m_pWdgtTreeView != nullptr ) {
+        m_pWdgtTreeView->setIdxTree(nullptr);
+    }
+    if( m_pWdgtTreeEntries != nullptr ) {
+        m_pWdgtTreeEntries->setIdxTree(nullptr);
+    }
 }

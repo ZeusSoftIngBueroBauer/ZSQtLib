@@ -98,7 +98,7 @@ public: // overridables (findBestUnit)
         double* o_pfValue = nullptr,
         int     i_iDigitsLeadingMax = 3 ) const;
 protected: // instance members
-    /*!< [PhysScienceFields, Ratios, UserDefinedQuantities] */
+    /*!< [PhysSize, Ratios, UserDefinedQuantities] */
     EUnitClassType m_classType;
     /*!< e.g. "s", "W", "V", "A", ... */
     QString m_strSymbol;

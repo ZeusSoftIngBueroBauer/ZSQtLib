@@ -27,8 +27,7 @@ may result in using the software modules.
 #include <QtWidgets/qapplication.h>
 #include <QtGui/qevent.h>
 
-#include "ZSPhysValGUI/ZSPhysSizesIdxTreeView.h"
-#include "ZSPhysValGUI/ZSPhysSizesIdxTreeModel.h"
+#include "ZSPhysValGUI/ZSPhysSizesTreeView.h"
 #include "ZSPhysVal/ZSPhysSizesIdxTree.h"
 #include "ZSSysGUI/ZSSysIdxTreeModelEntry.h"
 
@@ -47,7 +46,7 @@ using namespace ZS::PhysVal::GUI;
 
 
 /*******************************************************************************
-class CTreeViewIdxTreePhysSizes : public QTreeView
+class CTreeViewPhysSizes : public QTreeView
 *******************************************************************************/
 
 /*==============================================================================
@@ -55,7 +54,7 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CTreeViewIdxTreePhysSizes::CTreeViewIdxTreePhysSizes(
+CTreeViewPhysSizes::CTreeViewPhysSizes(
     CIdxTreePhysSizes* i_pIdxTree,
     QWidget* i_pWdgtParent ) :
 //------------------------------------------------------------------------------
@@ -71,7 +70,7 @@ CTreeViewIdxTreePhysSizes::CTreeViewIdxTreePhysSizes(
 {
     setObjectName( QString(i_pIdxTree == nullptr ? "IdxTreePhysSizes" : i_pIdxTree->objectName()) );
 
-    m_pModel = new CModelIdxTreePhysSizes(nullptr, nullptr);
+    m_pModel = new CModelIdxTree(nullptr, false, Qt::IgnoreAction, nullptr);
 
     setModel(m_pModel);
 
@@ -86,8 +85,8 @@ CTreeViewIdxTreePhysSizes::CTreeViewIdxTreePhysSizes(
     hideColumn(CModelIdxTree::EColumnTreeEntryTypeImageUrl);
     hideColumn(CModelIdxTree::EColumnTreeEntryTypeIcon);
     hideColumn(CModelIdxTree::EColumnTreeEntryType);
-    //hideColumn(CModelIdxTree::EColumnInternalId);
-    //hideColumn(CModelIdxTree::EColumnIdxInTree);
+    hideColumn(CModelIdxTree::EColumnInternalId);
+    hideColumn(CModelIdxTree::EColumnIdxInTree);
     hideColumn(CModelIdxTree::EColumnIdxInParentBranch);
     hideColumn(CModelIdxTree::EColumnKeyInTree);
     hideColumn(CModelIdxTree::EColumnKeyInParentBranch);
@@ -105,7 +104,7 @@ CTreeViewIdxTreePhysSizes::CTreeViewIdxTreePhysSizes(
 
     QObject::connect(
         m_pActionNameSpaceExpand, &QAction::triggered,
-        this, &CTreeViewIdxTreePhysSizes::onActionNameSpaceExpandTriggered);
+        this, &CTreeViewPhysSizes::onActionNameSpaceExpandTriggered);
 
     QPixmap pxmCollapseAll(":/ZS/TreeView/TreeViewCollapseAll.png");
     m_pActionNameSpaceCollapse = new QAction(pxmCollapseAll, "Collapse", this);
@@ -113,7 +112,7 @@ CTreeViewIdxTreePhysSizes::CTreeViewIdxTreePhysSizes(
 
     QObject::connect(
         m_pActionNameSpaceCollapse, &QAction::triggered,
-        this, &CTreeViewIdxTreePhysSizes::onActionNameSpaceCollapseTriggered);
+        this, &CTreeViewPhysSizes::onActionNameSpaceCollapseTriggered);
 
     if( i_pIdxTree != nullptr ) {
         setIdxTree(i_pIdxTree);
@@ -122,7 +121,7 @@ CTreeViewIdxTreePhysSizes::CTreeViewIdxTreePhysSizes(
 } // ctor
 
 //------------------------------------------------------------------------------
-CTreeViewIdxTreePhysSizes::~CTreeViewIdxTreePhysSizes()
+CTreeViewPhysSizes::~CTreeViewPhysSizes()
 //------------------------------------------------------------------------------
 {
     try
@@ -145,7 +144,7 @@ CTreeViewIdxTreePhysSizes::~CTreeViewIdxTreePhysSizes()
 } // dtor
 
 //------------------------------------------------------------------------------
-void CTreeViewIdxTreePhysSizes::setIdxTree( CIdxTreePhysSizes* i_pIdxTree )
+void CTreeViewPhysSizes::setIdxTree( CIdxTreePhysSizes* i_pIdxTree )
 //------------------------------------------------------------------------------
 {
     if( m_pIdxTree != i_pIdxTree )
@@ -154,7 +153,7 @@ void CTreeViewIdxTreePhysSizes::setIdxTree( CIdxTreePhysSizes* i_pIdxTree )
         {
             QObject::disconnect(
                 m_pIdxTree, &CIdxTreePhysSizes::aboutToBeDestroyed,
-                this, &CTreeViewIdxTreePhysSizes::onIdxTreeAboutToBeDestroyed);
+                this, &CTreeViewPhysSizes::onIdxTreeAboutToBeDestroyed);
         }
 
         m_pIdxTree = i_pIdxTree;
@@ -163,7 +162,7 @@ void CTreeViewIdxTreePhysSizes::setIdxTree( CIdxTreePhysSizes* i_pIdxTree )
         {
             QObject::connect(
                 m_pIdxTree, &CIdxTreePhysSizes::aboutToBeDestroyed,
-                this, &CTreeViewIdxTreePhysSizes::onIdxTreeAboutToBeDestroyed);
+                this, &CTreeViewPhysSizes::onIdxTreeAboutToBeDestroyed);
         }
 
         m_pModel->setIdxTree(i_pIdxTree);
@@ -175,7 +174,7 @@ public: // overridable slots of base class QTreeView
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTreeViewIdxTreePhysSizes::expandAll()
+void CTreeViewPhysSizes::expandAll()
 //------------------------------------------------------------------------------
 {
     QTreeView::expandAll();
@@ -184,7 +183,7 @@ void CTreeViewIdxTreePhysSizes::expandAll()
 }
 
 //------------------------------------------------------------------------------
-void CTreeViewIdxTreePhysSizes::collapseAll()
+void CTreeViewPhysSizes::collapseAll()
 //------------------------------------------------------------------------------
 {
     QTreeView::collapseAll();
@@ -197,7 +196,7 @@ public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTreeViewIdxTreePhysSizes::expandRecursive( const QModelIndex& i_modelIdx )
+void CTreeViewPhysSizes::expandRecursive( const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
     CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
@@ -226,7 +225,7 @@ void CTreeViewIdxTreePhysSizes::expandRecursive( const QModelIndex& i_modelIdx )
 }
 
 //------------------------------------------------------------------------------
-void CTreeViewIdxTreePhysSizes::collapseRecursive( const QModelIndex& i_modelIdx )
+void CTreeViewPhysSizes::collapseRecursive( const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
     CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
@@ -258,7 +257,7 @@ public: // slots (hiding not overridable slots with same name in QTreeView)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTreeViewIdxTreePhysSizes::expand( const QModelIndex& i_modelIdx )
+void CTreeViewPhysSizes::expand( const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
     // If calling "expandAll" the signal "expanded" is not invoked for all
@@ -273,7 +272,7 @@ void CTreeViewIdxTreePhysSizes::expand( const QModelIndex& i_modelIdx )
 }
 
 //------------------------------------------------------------------------------
-void CTreeViewIdxTreePhysSizes::collapse( const QModelIndex& i_modelIdx )
+void CTreeViewPhysSizes::collapse( const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
     // If calling "collapseAll" the signal "collapsed" is not invoked for all
@@ -292,7 +291,7 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTreeViewIdxTreePhysSizes::onCollapsed( const QModelIndex& i_modelIdx )
+void CTreeViewPhysSizes::onCollapsed( const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
     if( i_modelIdx.isValid() )
@@ -310,7 +309,7 @@ void CTreeViewIdxTreePhysSizes::onCollapsed( const QModelIndex& i_modelIdx )
 }
 
 //------------------------------------------------------------------------------
-void CTreeViewIdxTreePhysSizes::onExpanded( const QModelIndex& i_modelIdx )
+void CTreeViewPhysSizes::onExpanded( const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
     if( i_modelIdx.isValid() )
@@ -338,7 +337,7 @@ protected: // overridables of base class QTreeView
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTreeViewIdxTreePhysSizes::mousePressEvent( QMouseEvent* i_pEv )
+void CTreeViewPhysSizes::mousePressEvent( QMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     bool bEventHandled = false;
@@ -355,7 +354,7 @@ void CTreeViewIdxTreePhysSizes::mousePressEvent( QMouseEvent* i_pEv )
             {
                 if( pModelTreeEntry->isRoot() || pModelTreeEntry->isBranch() )
                 {
-                    if( m_modelIdxSelectedOnMousePressEvent.column() == CModelIdxTreePhysSizes::EColumnTreeEntryName )
+                    if( m_modelIdxSelectedOnMousePressEvent.column() == CModelIdxTree::EColumnTreeEntryName )
                     {
                         if( m_pMenuNameSpaceContext != nullptr )
                         {
@@ -381,7 +380,7 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTreeViewIdxTreePhysSizes::onActionNameSpaceExpandTriggered( bool i_bChecked )
+void CTreeViewPhysSizes::onActionNameSpaceExpandTriggered( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     if( m_modelIdxSelectedOnMousePressEvent.isValid() )
@@ -395,7 +394,7 @@ void CTreeViewIdxTreePhysSizes::onActionNameSpaceExpandTriggered( bool i_bChecke
 }
 
 //------------------------------------------------------------------------------
-void CTreeViewIdxTreePhysSizes::onActionNameSpaceCollapseTriggered( bool i_bChecked )
+void CTreeViewPhysSizes::onActionNameSpaceCollapseTriggered( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     if( m_modelIdxSelectedOnMousePressEvent.isValid() )
@@ -409,7 +408,7 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTreeViewIdxTreePhysSizes::onIdxTreeAboutToBeDestroyed()
+void CTreeViewPhysSizes::onIdxTreeAboutToBeDestroyed()
 //------------------------------------------------------------------------------
 {
     setIdxTree(nullptr);

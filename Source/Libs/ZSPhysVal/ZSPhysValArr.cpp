@@ -69,7 +69,7 @@ CPhysValArr::CPhysValArr( CUnitGrp* i_pUnitGrp, EResType i_resType ) :
     m_physValRes(i_pUnitGrp,i_resType),
     m_arfValues()
 {
-    if( i_pUnitGrp->classType() == EUnitClassType::PhysScienceFields )
+    if( i_pUnitGrp->classType() == EUnitClassType::PhysSize )
     {
         m_pUnit = dynamic_cast<CPhysSize*>(i_pUnitGrp)->getSIUnit();
     }
@@ -690,7 +690,7 @@ void CPhysValArr::setUnitGroup( CUnitGrp* i_pUnitGrp )
         {
             m_pUnit = nullptr;
         }
-        else if( m_pUnitGrp->classType() == EUnitClassType::PhysScienceFields )
+        else if( m_pUnitGrp->classType() == EUnitClassType::PhysSize )
         {
             m_pUnit = dynamic_cast<CPhysSize*>(m_pUnitGrp)->getSIUnit();
         }

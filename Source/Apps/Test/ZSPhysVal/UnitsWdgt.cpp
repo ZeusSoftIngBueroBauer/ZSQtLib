@@ -274,7 +274,7 @@ void CWdgtUnits::selectedTreeEntryChanged(
             {
                 treeEntryType = ETreeEntryTypeUntDataQuantity;
             }
-            else if( pNode->m_pUnit->classType() == EUnitClassType::PhysScienceFields )
+            else if( pNode->m_pUnit->classType() == EUnitClassType::PhysSize )
             {
                 treeEntryType = ETreeEntryTypePhysUnit;
             }
@@ -294,7 +294,7 @@ void CWdgtUnits::selectedTreeEntryChanged(
             {
                 treeEntryType = ETreeEntryTypeGrpDataQuantities;
             }
-            else if( pNode->m_pUnitGrp->classType() == EUnitClassType::PhysScienceFields )
+            else if( pNode->m_pUnitGrp->classType() == EUnitClassType::PhysSize )
             {
                 treeEntryType = ETreeEntryTypeGrpPhysScienceFields;
             }

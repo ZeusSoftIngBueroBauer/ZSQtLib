@@ -70,13 +70,6 @@ namespace ZS
 {
 namespace PhysVal
 {
-//class CUnit;
-//class CUnitGrp;
-//class CPhysUnit;
-//class CPhysSize;
-//class CUnitGrpRatio;
-//class CUnitGrpDataQuantity;
-
 ZSPHYSVALDLL_API QString invalidValueString();      // "---" as default
 ZSPHYSVALDLL_API void setInvalidValueString( const QString& i_str );
 
@@ -102,7 +95,7 @@ enum class EUnitClassType
     Undefined             = 0,
     Ratios                = 1,
     DataQuantity          = 2,
-    PhysScienceFields     = 3,
+    PhysSize              = 3,
     UserDefinedQuantities = 4
 };
 template class ZSPHYSVALDLL_API ZS::System::CEnum<EUnitClassType>;

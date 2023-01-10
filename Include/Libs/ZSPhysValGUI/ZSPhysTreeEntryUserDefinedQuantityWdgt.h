@@ -24,51 +24,45 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSPhysValGUI_PhysSizesIdxTreeModel_h
-#define ZSPhysValGUI_PhysSizesIdxTreeModel_h
+#ifndef ZSPhysValGUI_PhysTreeEntryUserDefinedQuantityWdgt_h
+#define ZSPhysValGUI_PhysTreeEntryUserDefinedQuantityWdgt_h
 
-#include "ZSPhysValGUI/ZSPhysValGUIDllMain.h"
-#include "ZSSysGUI/ZSSysIdxTreeModel.h"
+#include "ZSPhysValGUI/ZSPhysTreeEntryAbstractWdgt.h"
+
+//class QCheckBox;
+//class QComboBox;
+//class QLabel;
+//class QLineEdit;
+//class QSpacerItem;
+//class QSplitter;
+//class QTableView;
+//class QHBoxLayout;
+//class QVBoxLayout;
 
 namespace ZS
 {
 namespace PhysVal
 {
-class CIdxTreePhysSizes;
-
 namespace GUI
 {
 //******************************************************************************
-class ZSPHYSVALGUIDLL_API CModelIdxTreePhysSizes : public ZS::System::GUI::CModelIdxTree
+class ZSPHYSVALGUIDLL_API CWdgtUserDefinedQuantity : public CWdgtAbstractTreeEntry
 //******************************************************************************
 {
     Q_OBJECT
 public: // class methods
     static QString NameSpace() { return "ZS::PhysVal::GUI"; }
-    static QString ClassName() { return "CModelIdxTreePhysSizes"; }
-public: // type definitions and constants
-    enum EColumn {
-        EColumn0  = CModelIdxTree::EColumnCount + 0,
-        EColumnCount
-    };
+    static QString ClassName() { return "CWdgtUserDefinedQuantity"; }
 public: // ctors and dtor
-    CModelIdxTreePhysSizes(
-        CIdxTreePhysSizes* i_pIdxTree = nullptr,
-        QObject* i_pObjParent = nullptr );
-    virtual ~CModelIdxTreePhysSizes();
+    CWdgtUserDefinedQuantity( CIdxTreePhysSizes* i_pIdxTree, QWidget* i_pWdgtParent = nullptr );
+    virtual ~CWdgtUserDefinedQuantity();
 public: // overridables
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
-public: // instance methods
-    CIdxTreePhysSizes* idxTree();
-public: // instance methods
-    //virtual void reset();
-public: // overridables of base class QAbstractItemModel
-    virtual int columnCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const override;
-    virtual QVariant headerData( int i_iSection, Qt::Orientation i_orientation, int i_iRole = Qt::DisplayRole) const;
-    virtual QVariant data( const QModelIndex& i_modelIdx, int i_iRole = Qt::DisplayRole ) const override;
+    virtual QString nameSpace() const { return CWdgtUserDefinedQuantity::NameSpace(); }
+    virtual QString className() const { return CWdgtUserDefinedQuantity::ClassName(); }
+public: // overridables
+    virtual void setKeyInTreeOfRootEntry( const QString& i_strKeyInTree ) override;
 
-}; // class CModelIdxTreePhysSizes
+}; // class CWdgtUserDefinedQuantity
 
 } // namespace GUI
 
@@ -76,4 +70,4 @@ public: // overridables of base class QAbstractItemModel
 
 } // namespace ZS
 
-#endif // #ifndef ZSPhysValGUI_PhysSizesIdxTreeModel_h
+#endif // #ifndef ZSPhysValGUI_PhysTreeEntryUserDefinedQuantityWdgt_h

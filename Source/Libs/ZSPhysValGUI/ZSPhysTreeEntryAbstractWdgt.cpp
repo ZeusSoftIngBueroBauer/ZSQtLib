@@ -24,17 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include "ZSPhysValGUI/ZSPhysSizesIdxTreeTableViewBranchContent.h"
-#include "ZSPhysValGUI/ZSPhysSizesIdxTreeModelBranchContent.h"
+#include "ZSPhysValGUI/ZSPhysTreeEntryAbstractWdgt.h"
 #include "ZSPhysVal/ZSPhysSizesIdxTree.h"
-
-#include <QtGui/qevent.h>
-
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#include <QtGui/qmenu.h>
-#else
-#include <QtWidgets/qmenu.h>
-#endif
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -45,7 +36,7 @@ using namespace ZS::PhysVal::GUI;
 
 
 /*******************************************************************************
-class CTableViewIdxTreePhysSizesBranchContent : public QTableView
+class CWdgtAbstractTreeEntry : public QWidget
 *******************************************************************************/
 
 /*==============================================================================
@@ -53,24 +44,17 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CTableViewIdxTreePhysSizesBranchContent::CTableViewIdxTreePhysSizesBranchContent(
+CWdgtAbstractTreeEntry::CWdgtAbstractTreeEntry(
     CIdxTreePhysSizes* i_pIdxTree, QWidget* i_pWdgtParent ) :
 //------------------------------------------------------------------------------
-    QTableView(i_pWdgtParent),
+    QWidget(i_pWdgtParent),
     m_pIdxTree(nullptr),
-    m_pModel(nullptr),
-    //m_strKeyInTreeOfRootEntry(),
-    m_modelIdxSelectedOnMousePressEvent(),
-    m_modelIdxSelectedOnMouseReleaseEvent()
+    m_strKeyInTreeOfRootEntry(),
+    m_cxLblMinWidth(140),
+    m_cxEdtMinWidth(160),
+    m_cxEdtMaxWidth(240)
 {
     setObjectName( QString(i_pIdxTree == nullptr ? "IdxTree" : i_pIdxTree->objectName()) );
-
-    m_pModel = new CModelIdxTreePhysSizesBranchContent(nullptr, nullptr);
-
-    setModel(m_pModel);
-
-    setSelectionBehavior(QAbstractItemView::SelectItems);
-    setSelectionMode(QAbstractItemView::SingleSelection);
 
     if( i_pIdxTree != nullptr )
     {
@@ -79,22 +63,14 @@ CTableViewIdxTreePhysSizesBranchContent::CTableViewIdxTreePhysSizesBranchContent
 } // ctor
 
 //------------------------------------------------------------------------------
-CTableViewIdxTreePhysSizesBranchContent::~CTableViewIdxTreePhysSizesBranchContent()
+CWdgtAbstractTreeEntry::~CWdgtAbstractTreeEntry()
 //------------------------------------------------------------------------------
 {
-    try
-    {
-        delete m_pModel;
-    }
-    catch(...)
-    {
-    }
-
     m_pIdxTree = nullptr;
-    m_pModel = nullptr;
     //m_strKeyInTreeOfRootEntry;
-    //m_modelIdxSelectedOnMousePressEvent;
-    //m_modelIdxSelectedOnMouseReleaseEvent;
+    m_cxLblMinWidth = 0;
+    m_cxEdtMinWidth = 0;
+    m_cxEdtMaxWidth = 0;
 
 } // dtor
 
@@ -103,7 +79,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTableViewIdxTreePhysSizesBranchContent::setIdxTree( CIdxTreePhysSizes* i_pIdxTree )
+void CWdgtAbstractTreeEntry::setIdxTree( CIdxTreePhysSizes* i_pIdxTree )
 //------------------------------------------------------------------------------
 {
     if( m_pIdxTree != i_pIdxTree )
@@ -112,19 +88,18 @@ void CTableViewIdxTreePhysSizesBranchContent::setIdxTree( CIdxTreePhysSizes* i_p
         {
             QObject::disconnect(
                 m_pIdxTree, &CIdxTreePhysSizes::aboutToBeDestroyed,
-                this, &CTableViewIdxTreePhysSizesBranchContent::onIdxTreeAboutToBeDestroyed);
+                this, &CWdgtAbstractTreeEntry::onIdxTreeAboutToBeDestroyed);
         }
 
         m_pIdxTree = i_pIdxTree;
+        m_strKeyInTreeOfRootEntry = "";
 
         if( m_pIdxTree != nullptr )
         {
             QObject::connect(
                 m_pIdxTree, &CIdxTreePhysSizes::aboutToBeDestroyed,
-                this, &CTableViewIdxTreePhysSizesBranchContent::onIdxTreeAboutToBeDestroyed);
+                this, &CWdgtAbstractTreeEntry::onIdxTreeAboutToBeDestroyed);
         }
-
-        m_pModel->setIdxTree(i_pIdxTree);
     }
 }
 
@@ -133,17 +108,30 @@ public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTableViewIdxTreePhysSizesBranchContent::setKeyInTreeOfRootEntry( const QString& i_strKeyInTree )
+void CWdgtAbstractTreeEntry::setKeyInTreeOfRootEntry( const QString& i_strKeyInTree )
 //------------------------------------------------------------------------------
 {
-    m_pModel->setKeyInTreeOfRootEntry(i_strKeyInTree);
+    if( m_strKeyInTreeOfRootEntry != i_strKeyInTree )
+    {
+        m_strKeyInTreeOfRootEntry = i_strKeyInTree;
+    }
 }
 
 //------------------------------------------------------------------------------
-QString CTableViewIdxTreePhysSizesBranchContent::getKeyInTreeOfRootEntry() const
+QString CWdgtAbstractTreeEntry::getKeyInTreeOfRootEntry() const
 //------------------------------------------------------------------------------
 {
-    return m_pModel->getKeyInTreeOfRootEntry();
+    return m_strKeyInTreeOfRootEntry;
+}
+
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtAbstractTreeEntry::resizeToContents()
+//------------------------------------------------------------------------------
+{
 }
 
 /*==============================================================================
@@ -151,7 +139,7 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTableViewIdxTreePhysSizesBranchContent::onIdxTreeAboutToBeDestroyed()
+void CWdgtAbstractTreeEntry::onIdxTreeAboutToBeDestroyed()
 //------------------------------------------------------------------------------
 {
     m_pIdxTree = nullptr;

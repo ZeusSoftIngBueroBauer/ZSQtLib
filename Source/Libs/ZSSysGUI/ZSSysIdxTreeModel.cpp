@@ -485,17 +485,21 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CModelIdxTree::CModelIdxTree( QObject* i_pObjParent ) :
 //------------------------------------------------------------------------------
-    CModelIdxTree(nullptr, i_pObjParent)
+    CModelIdxTree(nullptr, true, (Qt::CopyAction | Qt::MoveAction), i_pObjParent)
 {
 }
 
 //------------------------------------------------------------------------------
 CModelIdxTree::CModelIdxTree(
     CIdxTree* i_pIdxTree,
+    bool i_bNamesAreEditable,
+    Qt::DropActions i_supportedDropActions,
     QObject* i_pObjParent ) :
 //------------------------------------------------------------------------------
     QAbstractItemModel(i_pObjParent),
     m_pIdxTree(nullptr),
+    m_bNamesAreEditable(i_bNamesAreEditable),
+    m_supportedDropActions(i_supportedDropActions),
     m_bExcludeLeaves(false),
     m_sortOrder(EIdxTreeSortOrder::Config),
     m_mappModelTreeEntries(),
@@ -519,6 +523,8 @@ CModelIdxTree::CModelIdxTree(
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "IdxTree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName());
+        strMthInArgs += ", NamesAreEditable: " + bool2Str(i_bNamesAreEditable);
+        strMthInArgs += ", DropActions: " + qDropActions2Str(m_supportedDropActions);
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
@@ -617,6 +623,8 @@ CModelIdxTree::~CModelIdxTree()
     #endif
 
     m_pIdxTree = nullptr;
+    m_bNamesAreEditable = false;
+    m_supportedDropActions = static_cast<Qt::DropAction>(0);
     m_bExcludeLeaves = false;
     m_sortOrder = static_cast<EIdxTreeSortOrder>(0);
     m_mappModelTreeEntries.clear();
@@ -655,6 +663,9 @@ void CModelIdxTree::setIdxTree( QObject* i_pIdxTree )
         /* strMethod          */ "setIdxTree",
         /* strMethodInArgs    */ strMthInArgs );
     #endif
+
+    QString strObjNameOrig = objectName();
+    QString strObjNameNew = QString(i_pIdxTree == nullptr ? "IdxTree" : i_pIdxTree->objectName());
 
     if( m_pIdxTree != i_pIdxTree )
     {
@@ -752,6 +763,21 @@ void CModelIdxTree::setIdxTree( QObject* i_pIdxTree )
         emit idxTreeChanged(m_pIdxTree);
 
     } // if( m_pIdxTree != i_pIdxTree )
+
+    if( strObjNameOrig.compare(strObjNameNew) != 0 )
+    {
+        setObjectName(strObjNameNew);
+
+        #ifdef ZS_TRACE_GUI_MODELS
+        mthTracer.onAdminObjAboutToBeReleased();
+        if( m_pTrcAdminObj != nullptr ) {
+            m_pTrcAdminObj = CTrcServer::RenameTraceAdminObj(m_pTrcAdminObj, strObjNameNew);
+        }
+        if( m_pTrcAdminObjNoisyMethods != nullptr ) {
+            m_pTrcAdminObjNoisyMethods = CTrcServer::RenameTraceAdminObj(m_pTrcAdminObjNoisyMethods, strObjNameNew);
+        }
+        #endif
+    }
 } // setIdxTree
 
 //------------------------------------------------------------------------------
@@ -2592,71 +2618,33 @@ Qt::ItemFlags CModelIdxTree::flags( const QModelIndex& i_modelIdx ) const
 
     if( pModelTreeEntry != nullptr )
     {
-        if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root )
+        if( m_supportedDropActions & (Qt::CopyAction | Qt::MoveAction))
         {
-            uFlags = uFlags | Qt::ItemIsDropEnabled;
-        }
-        else if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
-        {
-            uFlags = uFlags | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
-        }
-        else if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Leave )
-        {
-            uFlags = uFlags | Qt::ItemIsDragEnabled;
+            if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root )
+            {
+                uFlags = uFlags | Qt::ItemIsDropEnabled;
+            }
+            else if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+            {
+                uFlags = uFlags | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
+            }
+            else if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+            {
+                uFlags = uFlags | Qt::ItemIsDragEnabled;
+            }
         }
 
-        switch( i_modelIdx.column() )
+        if( i_modelIdx.column() == EColumnTreeEntryName )
         {
-            case EColumnTreeEntryName:
+            if( m_bNamesAreEditable )
             {
                 if( pModelTreeEntry != m_pModelRootEntry )
                 {
                     uFlags = uFlags | Qt::ItemIsEditable;
                 }
-                uFlags = uFlags | Qt::ItemIsSelectable | Qt::ItemIsUserCheckable;
-                break;
             }
-            case EColumnTreeEntryNameDecorated:
-            {
-                break;
-            }
-            case EColumnTreeEntryTypeImageUrl:
-            {
-                break;
-            }
-            case EColumnTreeEntryTypeIcon:
-            {
-                break;
-            }
-            case EColumnTreeEntryType:
-            {
-                break;
-            }
-            case EColumnInternalId:
-            {
-                break;
-            }
-            case EColumnIdxInTree:
-            {
-                break;
-            }
-            case EColumnIdxInParentBranch:
-            {
-                break;
-            }
-            case EColumnKeyInTree:
-            {
-                break;
-            }
-            case EColumnKeyInParentBranch:
-            {
-                break;
-            }
-            default:
-            {
-                break;
-            }
-        } // switch( i_modelIdx.column() )
+            uFlags = uFlags | Qt::ItemIsSelectable | Qt::ItemIsUserCheckable;
+        }
     } // if( pModelTreeEntry != nullptr )
 
     #ifdef ZS_TRACE_GUI_MODELS
@@ -2679,18 +2667,13 @@ Qt::DropActions CModelIdxTree::supportedDropActions() const
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "supportedDropActions",
         /* strMethodInArgs    */ "" );
-    #endif
-
-    Qt::DropActions dropActions = Qt::CopyAction | Qt::MoveAction;
-
-    #ifdef ZS_TRACE_GUI_MODELS
     if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
-        mthTracer.setMethodReturn(qDropActions2Str(dropActions));
+        mthTracer.setMethodReturn(qDropActions2Str(m_supportedDropActions));
     }
     #endif
 
-    return dropActions;
+    return m_supportedDropActions;
 }
 
 //------------------------------------------------------------------------------

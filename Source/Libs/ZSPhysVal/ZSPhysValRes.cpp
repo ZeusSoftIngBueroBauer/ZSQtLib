@@ -92,7 +92,7 @@ CPhysValRes::CPhysValRes( CUnitGrp* i_pUnitGrp, EResType i_resType ) :
     m_strUnitGrpKey(),
     m_strUnitKey()
 {
-    if( m_pUnitGrp != nullptr && m_pUnitGrp->classType() == EUnitClassType::PhysScienceFields )
+    if( m_pUnitGrp != nullptr && m_pUnitGrp->classType() == EUnitClassType::PhysSize )
     {
         m_pUnit = dynamic_cast<CPhysSize*>(m_pUnitGrp)->getSIUnit();
     }
@@ -218,7 +218,7 @@ CPhysValRes::CPhysValRes( double i_fVal, CUnitGrp* i_pUnitGrp, EResType i_resTyp
     m_strUnitGrpKey(),
     m_strUnitKey()
 {
-    if( m_pUnitGrp != nullptr && m_pUnitGrp->classType() == EUnitClassType::PhysScienceFields )
+    if( m_pUnitGrp != nullptr && m_pUnitGrp->classType() == EUnitClassType::PhysSize )
     {
         m_pUnit = dynamic_cast<CPhysSize*>(m_pUnitGrp)->getSIUnit();
     }
@@ -344,7 +344,7 @@ CPhysValRes::CPhysValRes( const QString& i_strVal, CUnitGrp* i_pUnitGrp, EResTyp
     m_strUnitGrpKey(),
     m_strUnitKey()
 {
-    if( m_pUnitGrp != nullptr && m_pUnitGrp->classType() == EUnitClassType::PhysScienceFields )
+    if( m_pUnitGrp != nullptr && m_pUnitGrp->classType() == EUnitClassType::PhysSize )
     {
         m_pUnit = dynamic_cast<CPhysSize*>(m_pUnitGrp)->getSIUnit();
     }
@@ -513,7 +513,7 @@ void CPhysValRes::setUnitGroup( CUnitGrp* i_pUnitGrp )
     {
         m_pUnit = nullptr;
     }
-    else if( m_pUnitGrp->classType() == EUnitClassType::PhysScienceFields )
+    else if( m_pUnitGrp->classType() == EUnitClassType::PhysSize )
     {
         m_pUnit = dynamic_cast<CPhysSize*>(m_pUnitGrp)->getSIUnit();
     }

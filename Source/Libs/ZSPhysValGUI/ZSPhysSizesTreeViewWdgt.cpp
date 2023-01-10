@@ -34,21 +34,22 @@ may result in using the software modules.
 #include <QtWidgets/qpushbutton.h>
 #endif
 
-#include "ZSPhysValGUI/ZSPhysSizesIdxTreeViewWdgt.h"
-#include "ZSPhysValGUI/ZSPhysSizesIdxTreeModel.h"
-#include "ZSPhysValGUI/ZSPhysSizesIdxTreeView.h"
+#include "ZSPhysValGUI/ZSPhysSizesTreeViewWdgt.h"
+#include "ZSPhysValGUI/ZSPhysSizesTreeView.h"
 #include "ZSPhysVal/ZSPhysSizesIdxTree.h"
+#include "ZSSysGUI/ZSSysIdxTreeModel.h"
 #include "ZSSys/ZSSysException.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 using namespace ZS::System;
+using namespace ZS::System::GUI;
 using namespace ZS::PhysVal;
 using namespace ZS::PhysVal::GUI;
 
 
 /*******************************************************************************
-class CWdgtIdxTreeViewPhysSizes : public QWidget
+class CWdgtTreeViewPhysSizes : public QWidget
 *******************************************************************************/
 
 /*==============================================================================
@@ -56,7 +57,7 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CWdgtIdxTreeViewPhysSizes::CWdgtIdxTreeViewPhysSizes(
+CWdgtTreeViewPhysSizes::CWdgtTreeViewPhysSizes(
     CIdxTreePhysSizes* i_pIdxTree,
     QWidget* i_pWdgtParent ) :
 //------------------------------------------------------------------------------
@@ -96,7 +97,7 @@ CWdgtIdxTreeViewPhysSizes::CWdgtIdxTreeViewPhysSizes(
 
     QObject::connect(
         m_pBtnTreeViewResizeRowsAndColumnsToContents, &QPushButton::clicked,
-        this, &CWdgtIdxTreeViewPhysSizes::onBtnTreeViewResizeRowsAndColumnsToContentsClicked );
+        this, &CWdgtTreeViewPhysSizes::onBtnTreeViewResizeRowsAndColumnsToContentsClicked );
 
     m_pLytHeadLine->addSpacing(10);
 
@@ -113,7 +114,7 @@ CWdgtIdxTreeViewPhysSizes::CWdgtIdxTreeViewPhysSizes(
 
     QObject::connect(
         m_pBtnTreeViewExpandAll, &QPushButton::clicked,
-        this, &CWdgtIdxTreeViewPhysSizes::onBtnTreeViewExpandAllClicked );
+        this, &CWdgtTreeViewPhysSizes::onBtnTreeViewExpandAllClicked );
 
     m_pLytHeadLine->addSpacing(10);
 
@@ -130,21 +131,24 @@ CWdgtIdxTreeViewPhysSizes::CWdgtIdxTreeViewPhysSizes(
 
     QObject::connect(
         m_pBtnTreeViewCollapseAll, &QPushButton::clicked,
-        this, &CWdgtIdxTreeViewPhysSizes::onBtnTreeViewCollapseAllClicked );
+        this, &CWdgtTreeViewPhysSizes::onBtnTreeViewCollapseAllClicked );
 
     m_pLytHeadLine->addStretch();
 
     // <TreeView>
     //===============================
 
-    m_pTreeView = new CTreeViewIdxTreePhysSizes(nullptr, nullptr);
+    m_pTreeView = new CTreeViewPhysSizes(nullptr, nullptr);
     m_pLytMain->addWidget(m_pTreeView, 1);
 
     QObject::connect(
-        m_pTreeView, &CTreeViewIdxTreePhysSizes::expanded,
-        this, &CWdgtIdxTreeViewPhysSizes::onTreeViewExpanded );
+        m_pTreeView, &CTreeViewPhysSizes::expanded,
+        this, &CWdgtTreeViewPhysSizes::onTreeViewExpanded );
+    QObject::connect(
+        m_pTreeView->selectionModel(), &QItemSelectionModel::currentRowChanged,
+        this, &CWdgtTreeViewPhysSizes::onTreeViewCurrentRowChanged );
 
-    m_pTreeView->resizeColumnToContents(CModelIdxTreePhysSizes::EColumnTreeEntryName);
+    m_pTreeView->resizeColumnToContents(CModelIdxTree::EColumnTreeEntryName);
 
     if( i_pIdxTree != nullptr ) {
         setIdxTree(i_pIdxTree);
@@ -153,9 +157,16 @@ CWdgtIdxTreeViewPhysSizes::CWdgtIdxTreeViewPhysSizes(
 } // ctor
 
 //------------------------------------------------------------------------------
-CWdgtIdxTreeViewPhysSizes::~CWdgtIdxTreeViewPhysSizes()
+CWdgtTreeViewPhysSizes::~CWdgtTreeViewPhysSizes()
 //------------------------------------------------------------------------------
 {
+    QObject::disconnect(
+        m_pTreeView, &CTreeViewPhysSizes::expanded,
+        this, &CWdgtTreeViewPhysSizes::onTreeViewExpanded );
+    QObject::disconnect(
+        m_pTreeView->selectionModel(), &QItemSelectionModel::currentRowChanged,
+        this, &CWdgtTreeViewPhysSizes::onTreeViewCurrentRowChanged );
+
     m_pIdxTree = nullptr;
     m_szBtns = QSize(0, 0);
     m_pLytMain = nullptr;
@@ -172,7 +183,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtIdxTreeViewPhysSizes::setIdxTree(CIdxTreePhysSizes* i_pIdxTree)
+void CWdgtTreeViewPhysSizes::setIdxTree(CIdxTreePhysSizes* i_pIdxTree)
 //------------------------------------------------------------------------------
 {
     if( m_pIdxTree != i_pIdxTree )
@@ -181,7 +192,7 @@ void CWdgtIdxTreeViewPhysSizes::setIdxTree(CIdxTreePhysSizes* i_pIdxTree)
         {
             QObject::disconnect(
                 m_pIdxTree, &CIdxTreePhysSizes::aboutToBeDestroyed,
-                this, &CWdgtIdxTreeViewPhysSizes::onIdxTreeAboutToBeDestroyed);
+                this, &CWdgtTreeViewPhysSizes::onIdxTreeAboutToBeDestroyed);
         }
 
         m_pIdxTree = i_pIdxTree;
@@ -190,7 +201,7 @@ void CWdgtIdxTreeViewPhysSizes::setIdxTree(CIdxTreePhysSizes* i_pIdxTree)
         {
             QObject::connect(
                 m_pIdxTree, &CIdxTreePhysSizes::aboutToBeDestroyed,
-                this, &CWdgtIdxTreeViewPhysSizes::onIdxTreeAboutToBeDestroyed);
+                this, &CWdgtTreeViewPhysSizes::onIdxTreeAboutToBeDestroyed);
         }
 
         if( m_pTreeView != nullptr )
@@ -205,7 +216,7 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtIdxTreeViewPhysSizes::onTreeViewExpanded( const QModelIndex& i_modelIdx )
+void CWdgtTreeViewPhysSizes::onTreeViewExpanded( const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
     if( i_modelIdx.isValid() )
@@ -214,17 +225,26 @@ void CWdgtIdxTreeViewPhysSizes::onTreeViewExpanded( const QModelIndex& i_modelId
     }
 }
 
+//------------------------------------------------------------------------------
+void CWdgtTreeViewPhysSizes::onTreeViewCurrentRowChanged(
+    const QModelIndex& i_modelIdxCurr,
+    const QModelIndex& i_modelIdxPrev )
+//------------------------------------------------------------------------------
+{
+    emit currentRowChanged(i_modelIdxCurr, i_modelIdxPrev);
+}
+
 /*==============================================================================
 protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtIdxTreeViewPhysSizes::onBtnTreeViewResizeRowsAndColumnsToContentsClicked( bool i_bChecked )
+void CWdgtTreeViewPhysSizes::onBtnTreeViewResizeRowsAndColumnsToContentsClicked( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     if( m_pTreeView != nullptr )
     {
-        for( int idxClm = 0; idxClm < CModelIdxTreePhysSizes::EColumnCount; idxClm++ )
+        for( int idxClm = 0; idxClm < CModelIdxTree::EColumnCount; idxClm++ )
         {
             m_pTreeView->resizeColumnToContents(idxClm);
         }
@@ -232,30 +252,30 @@ void CWdgtIdxTreeViewPhysSizes::onBtnTreeViewResizeRowsAndColumnsToContentsClick
 }
 
 //------------------------------------------------------------------------------
-void CWdgtIdxTreeViewPhysSizes::onBtnTreeViewExpandAllClicked( bool i_bChecked )
+void CWdgtTreeViewPhysSizes::onBtnTreeViewExpandAllClicked( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     if( m_pTreeView != nullptr )
     {
         QObject::disconnect(
-            m_pTreeView, &CTreeViewIdxTreePhysSizes::expanded,
-            this, &CWdgtIdxTreeViewPhysSizes::onTreeViewExpanded );
+            m_pTreeView, &CTreeViewPhysSizes::expanded,
+            this, &CWdgtTreeViewPhysSizes::onTreeViewExpanded );
 
         m_pTreeView->expandAll();
 
-        for( int idxClm = 0; idxClm < CModelIdxTreePhysSizes::EColumnCount; idxClm++ )
+        for( int idxClm = 0; idxClm < CModelIdxTree::EColumnCount; idxClm++ )
         {
             m_pTreeView->resizeColumnToContents(idxClm);
         }
 
         QObject::connect(
-            m_pTreeView, &CTreeViewIdxTreePhysSizes::expanded,
-            this, &CWdgtIdxTreeViewPhysSizes::onTreeViewExpanded );
+            m_pTreeView, &CTreeViewPhysSizes::expanded,
+            this, &CWdgtTreeViewPhysSizes::onTreeViewExpanded );
     }
 }
 
 //------------------------------------------------------------------------------
-void CWdgtIdxTreeViewPhysSizes::onBtnTreeViewCollapseAllClicked( bool i_bChecked )
+void CWdgtTreeViewPhysSizes::onBtnTreeViewCollapseAllClicked( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     if( m_pTreeView != nullptr )
@@ -269,7 +289,7 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtIdxTreeViewPhysSizes::onIdxTreeAboutToBeDestroyed()
+void CWdgtTreeViewPhysSizes::onIdxTreeAboutToBeDestroyed()
 //------------------------------------------------------------------------------
 {
     m_pIdxTree = nullptr;
