@@ -736,8 +736,8 @@ CTreeViewIdxTreeTrcAdminObjs::CTreeViewIdxTreeTrcAdminObjs(
     hideColumn(CModelIdxTree::EColumnTreeEntryTypeImageUrl);
     hideColumn(CModelIdxTree::EColumnTreeEntryTypeIcon);
     hideColumn(CModelIdxTree::EColumnTreeEntryType);
-    //hideColumn(CModelIdxTree::EColumnInternalId);
-    //hideColumn(CModelIdxTree::EColumnIdxInTree);
+    hideColumn(CModelIdxTree::EColumnInternalId);
+    hideColumn(CModelIdxTree::EColumnIdxInTree);
     hideColumn(CModelIdxTree::EColumnIdxInParentBranch);
     hideColumn(CModelIdxTree::EColumnKeyInTree);
     hideColumn(CModelIdxTree::EColumnKeyInParentBranch);
