@@ -36,8 +36,8 @@ namespace ZS
 {
 namespace PhysVal
 {
-class CUnit;
-class CUnitGrp;
+class CUnitTreeEntry;
+class CUnitGrpTreeEntry;
 }
 
 namespace Apps
@@ -52,12 +52,12 @@ struct SUnitsModelNode
 {
 public: // ctors and dtor
     SUnitsModelNode();
-    SUnitsModelNode( ZS::PhysVal::CUnitGrp* i_pUnitGrp );
-    SUnitsModelNode( ZS::PhysVal::CUnit* i_pUnit );
+    SUnitsModelNode( ZS::PhysVal::CUnitGrpTreeEntry* i_pUnitGrp );
+    SUnitsModelNode( ZS::PhysVal::CUnitTreeEntry* i_pUnit );
     ~SUnitsModelNode();
 public: // struct members
-    ZS::PhysVal::CUnitGrp*  m_pUnitGrp; // Either root node, node for UnitGrp or node for Unit
-    ZS::PhysVal::CUnit*     m_pUnit;    // (for root node both UnitGrp and Unit are nullptr, for other nodes either UnitGrp or Unit must be nullptr)
+    ZS::PhysVal::CUnitGrpTreeEntry*  m_pUnitGrp; // Either root node, node for UnitGrp or node for Unit
+    ZS::PhysVal::CUnitTreeEntry*     m_pUnit;    // (for root node both UnitGrp and Unit are nullptr, for other nodes either UnitGrp or Unit must be nullptr)
     QModelIndex             m_modelIdx;
     SUnitsModelNode*        m_pParentNode;
     QList<SUnitsModelNode*> m_arpChildNodes;
@@ -80,7 +80,7 @@ public: // ctors and dtor
     virtual ~CUnitsModel();
 protected: // instance methods
     void clear( SUnitsModelNode* i_pModelNode );
-    void addNode( SUnitsModelNode* i_pParentNode, ZS::PhysVal::CUnitGrp* i_pUnitGrp );
+    void addNode( SUnitsModelNode* i_pParentNode, ZS::PhysVal::CUnitGrpTreeEntry* i_pUnitGrp );
 public: // must overridables of base class QAbstractItemModel
     virtual int rowCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
     virtual int columnCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
@@ -117,7 +117,7 @@ protected: // instance members
 //    void setObjName( const QString& i_strObjName );
 //    QString getObjName() const;
 //    unsigned int getUnitCount() const;
-//    void setUnitGroup( ZS::PhysVal::CUnitGrp* i_pUnitGrp );
+//    void setUnitGroup( ZS::PhysVal::CUnitGrpTreeEntry* i_pUnitGrp );
 //    ZS::PhysVal::CUnitGrp* unitGroup();
 //public: // must overridables of base class QAbstractItemModel
 //    virtual int rowCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
@@ -130,8 +130,8 @@ protected: // instance members
 //private: // assignment operator not allowed
 //    CModelUnitGrpSIBase& operator = ( const CModelUnitGrpSIBase& );
 //protected: // instance members
-//    QString                m_strObjName;
-//    ZS::PhysVal::CUnitGrp* m_pUnitGrp;
+//    QString m_strObjName;
+//    ZS::PhysVal::CUnitGrpTreeEntry* m_pUnitGrp;
 //
 //}; // class CModelUnitGrpSIBase
 
@@ -156,8 +156,8 @@ public: // instance methods
     void setObjName( const QString& i_strObjName );
     QString getObjName() const;
     unsigned int getUnitCount() const;
-    void setUnitGroup( ZS::PhysVal::CUnitGrp* i_pUnitGrp );
-    ZS::PhysVal::CUnitGrp* unitGroup();
+    void setUnitGroup( ZS::PhysVal::CUnitGrpTreeEntry* i_pUnitGrp );
+    ZS::PhysVal::CUnitGrpTreeEntry* unitGroup();
 public: // must overridables of base class QAbstractItemModel
     virtual int rowCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
     virtual int columnCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
@@ -169,8 +169,8 @@ private: // copy ctor not allowed
 private: // assignment operator not allowed
     CModelUnitGrpRatio& operator = ( const CModelUnitGrpRatio& );
 protected: // instance members
-    QString                m_strObjName;
-    ZS::PhysVal::CUnitGrp* m_pUnitGrp;
+    QString m_strObjName;
+    ZS::PhysVal::CUnitGrpTreeEntry* m_pUnitGrp;
 
 }; // class CModelUnitGrpRatio
 
@@ -195,8 +195,8 @@ protected: // instance members
 //    void setObjName( const QString& i_strObjName );
 //    QString getObjName() const;
 //    unsigned int getUnitCount() const;
-//    void setUnitGroup( ZS::PhysVal::CUnitGrp* i_pUnitGrp );
-//    ZS::PhysVal::CUnitGrp* unitGroup();
+//    void setUnitGroup( ZS::PhysVal::CUnitGrpTreeEntry* i_pUnitGrp );
+//    ZS::PhysVal::CUnitGrpTreeEntry* unitGroup();
 //public: // must overridables of base class QAbstractItemModel
 //    virtual int rowCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
 //    virtual int columnCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
@@ -208,8 +208,8 @@ protected: // instance members
 //private: // assignment operator not allowed
 //    CModelUnitGrpDataQuantity& operator = ( const CModelUnitGrpDataQuantity& );
 //protected: // instance members
-//    QString                m_strObjName;
-//    ZS::PhysVal::CUnitGrp* m_pUnitGrp;
+//    QString m_strObjName;
+//    ZS::PhysVal::CUnitGrpTreeEntry* m_pUnitGrp;
 //
 //}; // class CModelUnitGrpDataQuantity
 
@@ -248,8 +248,8 @@ public: // instance methods
     bool setViewMode( EViewMode i_viewMode );
     EViewMode getViewMode() const;
     unsigned int getUnitCount() const;
-    void setUnitGroup( ZS::PhysVal::CUnitGrp* i_pUnitGrp );
-    ZS::PhysVal::CUnitGrp* unitGroup();
+    void setUnitGroup( ZS::PhysVal::CUnitGrpTreeEntry* i_pUnitGrp );
+    ZS::PhysVal::CUnitGrpTreeEntry* unitGroup();
 public: // must overridables of base class QAbstractItemModel
     virtual int rowCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
     virtual int columnCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
@@ -261,9 +261,9 @@ private: // copy ctor not allowed
 private: // assignment operator not allowed
     CModelPhysSize& operator = ( const CModelPhysSize& );
 protected: // instance members
-    QString                m_strObjName;
-    ZS::PhysVal::CUnitGrp* m_pUnitGrp;
-    EViewMode              m_viewMode;
+    QString m_strObjName;
+    ZS::PhysVal::CUnitGrpTreeEntry* m_pUnitGrp;
+    EViewMode m_viewMode;
 
 }; // class CModelPhysSize
 
@@ -286,7 +286,7 @@ public: // instance methods
     void setObjName( const QString& i_strObjName );
     QString getObjName() const;
     unsigned int getFctConvertsCount() const;
-    void setPhysUnit( ZS::PhysVal::CPhysUnit* i_pPhysUnit );
+    void setPhysUnit( ZS::PhysVal::CPhysUnitTreeEntry* i_pPhysUnit );
 public: // must overridables of base class QAbstractItemModel
     virtual int rowCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
     virtual int columnCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
@@ -298,8 +298,8 @@ private: // copy ctor not allowed
 private: // assignment operator not allowed
     CModelFctConvertInternal& operator = ( const CModelFctConvertInternal& );
 protected: // instance members
-    QString                 m_strObjName;
-    ZS::PhysVal::CPhysUnit* m_pPhysUnit;
+    QString m_strObjName;
+    ZS::PhysVal::CPhysUnitTreeEntry* m_pPhysUnit;
 
 }; // class CModelFctConvertInternal
 
@@ -323,7 +323,7 @@ public: // instance methods
     void setObjName( const QString& i_strObjName );
     QString getObjName() const;
     unsigned int getFctConvertsCount() const;
-    void setPhysUnit( ZS::PhysVal::CPhysUnit* i_pPhysUnit );
+    void setPhysUnit( ZS::PhysVal::CPhysUnitTreeEntry* i_pPhysUnit );
 public: // must overridables of base class QAbstractItemModel
     virtual int rowCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
     virtual int columnCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
@@ -335,8 +335,8 @@ private: // copy ctor not allowed
 private: // assignment operator not allowed
     CModelFctConvertExternal& operator = ( const CModelFctConvertExternal& );
 protected: // instance members
-    QString                 m_strObjName;
-    ZS::PhysVal::CPhysUnit* m_pPhysUnit;
+    QString m_strObjName;
+    ZS::PhysVal::CPhysUnitTreeEntry* m_pPhysUnit;
 
 }; // class CModelFctConvertExternal
 

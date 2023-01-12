@@ -46,7 +46,7 @@ namespace Test
 namespace PhysVal
 {
 //******************************************************************************
-class CPhysScienceFieldGeometry : public ZS::PhysVal::CPhysScienceField
+class CPhysScienceFieldGeometry : public ZS::PhysVal::CPhysScienceFieldTreeEntry
 //******************************************************************************
 {
 public: // ctors and dtor
@@ -59,10 +59,14 @@ public: // operators
     CPhysScienceFieldGeometry& operator=(CPhysScienceFieldGeometry& i_other) = delete;
     CPhysScienceFieldGeometry& operator=(const CPhysScienceFieldGeometry& i_other) = delete;
     CPhysScienceFieldGeometry& operator=(CPhysScienceFieldGeometry&& i_other) = delete;
+private: // instance members
+    CPhysSizeAngle m_treeEntryAngle;
+    CPhysSizeGraphDevice m_treeEntryGraphDevice;
+    CPhysSizeLength m_treeEntryLength;
 public: // instance members
-    CPhysSizeAngle Angle;
-    CPhysSizeGraphDevice GraphDevice;
-    CPhysSizeLength Length;
+    ZS::PhysVal::CPhysSize Angle;
+    ZS::PhysVal::CPhysSize GraphDevice;
+    ZS::PhysVal::CPhysSize Length;
 
 }; // class CPhysScienceFieldGeometry
 

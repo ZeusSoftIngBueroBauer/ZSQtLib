@@ -38,7 +38,7 @@ using namespace ZS::PhysVal;
 
 
 /*******************************************************************************
-class CUnitDataQuantity : public CUnit
+class CUnitDataQuantityTreeEntry : public CUnitTreeEntry
 *******************************************************************************/
 
 /*==============================================================================
@@ -46,13 +46,13 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CUnitDataQuantity::CUnitDataQuantity(
-    CUnitGrp*      i_pUnitGrp,
-    const QString& i_strName,
-    const QString& i_strSymbol,
-    double         i_fFactor ) :
+CUnitDataQuantityTreeEntry::CUnitDataQuantityTreeEntry(
+    CUnitGrpTreeEntry* i_pUnitGrp,
+    const QString&     i_strName,
+    const QString&     i_strSymbol,
+    double             i_fFactor ) :
 //------------------------------------------------------------------------------
-    CUnit(
+    CUnitTreeEntry(
         /* pUnitGrp       */ i_pUnitGrp,
         /* bIsLogarithmic */ false,
         /* fLogFactor     */ 1.0,
@@ -63,7 +63,7 @@ CUnitDataQuantity::CUnitDataQuantity(
 } // ctor
 
 //------------------------------------------------------------------------------
-CUnitDataQuantity::~CUnitDataQuantity()
+CUnitDataQuantityTreeEntry::~CUnitDataQuantityTreeEntry()
 //------------------------------------------------------------------------------
 {
 } // dtor
@@ -73,7 +73,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-double CUnitDataQuantity::getFactor() const
+double CUnitDataQuantityTreeEntry::getFactor() const
 //------------------------------------------------------------------------------
 {
     return m_fFactor;
@@ -84,7 +84,7 @@ public: // overridables (converting values)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool CUnitDataQuantity::isConvertible( const CUnit* i_pUnitDst, double /*i_fVal*/ ) const
+bool CUnitDataQuantityTreeEntry::isConvertible( const CUnitTreeEntry* i_pUnitDst, double /*i_fVal*/ ) const
 //------------------------------------------------------------------------------
 {
     if( i_pUnitDst->classType() != EUnitClassType::DataQuantity )
@@ -92,7 +92,7 @@ bool CUnitDataQuantity::isConvertible( const CUnit* i_pUnitDst, double /*i_fVal*
         return false;
     }
 
-    const CUnitDataQuantity* pUnitDst = dynamic_cast<const CUnitDataQuantity*>(i_pUnitDst);
+    const CUnitDataQuantityTreeEntry* pUnitDst = dynamic_cast<const CUnitDataQuantityTreeEntry*>(i_pUnitDst);
 
     if( pUnitDst->m_fFactor == 0.0 )
     {
@@ -102,7 +102,7 @@ bool CUnitDataQuantity::isConvertible( const CUnit* i_pUnitDst, double /*i_fVal*
 }
 
 //------------------------------------------------------------------------------
-double CUnitDataQuantity::convertValue( double i_fVal, const CUnit* i_pUnitDst ) const
+double CUnitDataQuantityTreeEntry::convertValue( double i_fVal, const CUnitTreeEntry* i_pUnitDst ) const
 //------------------------------------------------------------------------------
 {
     if( i_pUnitDst->classType() != EUnitClassType::DataQuantity )
@@ -110,7 +110,7 @@ double CUnitDataQuantity::convertValue( double i_fVal, const CUnit* i_pUnitDst )
         throw CException(__FILE__,__LINE__,EResultDifferentPhysSizes);
     }
 
-    const CUnitDataQuantity* pUnitDst = dynamic_cast<const CUnitDataQuantity*>(i_pUnitDst);
+    const CUnitDataQuantityTreeEntry* pUnitDst = dynamic_cast<const CUnitDataQuantityTreeEntry*>(i_pUnitDst);
 
     if( pUnitDst->m_fFactor == 0.0 )
     {
@@ -128,7 +128,7 @@ double CUnitDataQuantity::convertValue( double i_fVal, const CUnit* i_pUnitDst )
 
 
 /*******************************************************************************
-class CUnitGrpDataQuantity : public QObject
+class CUnitGrpDataQuantityTreeEntry : public QObject
 *******************************************************************************/
 
 /*==============================================================================
@@ -136,7 +136,7 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CUnitGrpDataQuantity::CUnitGrpDataQuantity( CIdxTree* i_pIdxTree ) :
+CUnitGrpDataQuantityTreeEntry::CUnitGrpDataQuantityTreeEntry( CIdxTree* i_pIdxTree ) :
 //------------------------------------------------------------------------------
     CUnitGrp(
         /* pIdxTree       */ i_pIdxTree,
@@ -167,7 +167,7 @@ CUnitGrpDataQuantity::CUnitGrpDataQuantity( CIdxTree* i_pIdxTree ) :
 } // ctor
 
 //------------------------------------------------------------------------------
-CUnitGrpDataQuantity::~CUnitGrpDataQuantity()
+CUnitGrpDataQuantityTreeEntry::~CUnitGrpDataQuantityTreeEntry()
 //------------------------------------------------------------------------------
 {
 } // dtor
@@ -177,28 +177,28 @@ public: // instance methods to access the ratio units
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CUnitDataQuantity* CUnitGrpDataQuantity::Byte()
+CUnitDataQuantityTreeEntry* CUnitGrpDataQuantityTreeEntry::Byte()
 //------------------------------------------------------------------------------
 {
     return &m_physUnitByte;
 }
 
 //------------------------------------------------------------------------------
-CUnitDataQuantity* CUnitGrpDataQuantity::KiloByte()
+CUnitDataQuantityTreeEntry* CUnitGrpDataQuantityTreeEntry::KiloByte()
 //------------------------------------------------------------------------------
 {
     return &m_physUnitKiloByte;
 }
 
 //------------------------------------------------------------------------------
-CUnitDataQuantity* CUnitGrpDataQuantity::MegaByte()
+CUnitDataQuantityTreeEntry* CUnitGrpDataQuantityTreeEntry::MegaByte()
 //------------------------------------------------------------------------------
 {
     return &m_physUnitMegaByte;
 }
 
 //------------------------------------------------------------------------------
-CUnitDataQuantity* CUnitGrpDataQuantity::GigaByte()
+CUnitDataQuantityTreeEntry* CUnitGrpDataQuantityTreeEntry::GigaByte()
 //------------------------------------------------------------------------------
 {
     return &m_physUnitGigaByte;

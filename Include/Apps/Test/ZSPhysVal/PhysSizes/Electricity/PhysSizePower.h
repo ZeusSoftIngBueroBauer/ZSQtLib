@@ -39,12 +39,12 @@ namespace Test
 namespace PhysVal
 {
 //******************************************************************************
-class CPhysSizePower : public ZS::PhysVal::CPhysSize
+class CPhysSizePower : public ZS::PhysVal::CPhysSizeTreeEntry
 //******************************************************************************
 {
 public: // ctors and dtor
-    CPhysSizePower( ZS::PhysVal::CIdxTreePhysSizes* i_pIdxTree );
-    CPhysSizePower(ZS::System::CIdxTreeEntry* i_pParentBranch);
+    CPhysSizePower(ZS::PhysVal::CIdxTreePhysSizes* i_pIdxTree);
+    CPhysSizePower(ZS::PhysVal::CPhysScienceFieldTreeEntry* i_pParentBranch);
     CPhysSizePower(CPhysSizePower&& i_other) = delete;
     CPhysSizePower(CPhysSizePower& i_other) = delete;
     CPhysSizePower(const CPhysSizePower& i_other) = delete;
@@ -53,6 +53,20 @@ public: // operators
     CPhysSizePower& operator=(CPhysSizePower& i_other) = delete;
     CPhysSizePower& operator=(const CPhysSizePower& i_other) = delete;
     CPhysSizePower& operator=(CPhysSizePower&& i_other) = delete;
+private: // instance members
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryPicoWatt;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryNanoWatt;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryMicroWatt;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryMilliWatt;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryWatt;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryKiloWatt;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryMegaWatt;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryGigaWatt;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntrydBWatt;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntrydBMilliWatt;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntrydBMicroWatt;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntrydBNanoWatt;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntrydBPicoWatt;
 public: // instance members
     ZS::PhysVal::CPhysUnit PicoWatt;
     ZS::PhysVal::CPhysUnit NanoWatt;
@@ -67,20 +81,20 @@ public: // instance members
     ZS::PhysVal::CPhysUnit dBMicroWatt;
     ZS::PhysVal::CPhysUnit dBNanoWatt;
     ZS::PhysVal::CPhysUnit dBPicoWatt;
-    ZS::PhysVal::CPhysUnit& pW;
-    ZS::PhysVal::CPhysUnit& nW;
-    ZS::PhysVal::CPhysUnit& uW;
-    ZS::PhysVal::CPhysUnit& mW;
-    ZS::PhysVal::CPhysUnit& W;
-    ZS::PhysVal::CPhysUnit& kW;
-    ZS::PhysVal::CPhysUnit& MW;
-    ZS::PhysVal::CPhysUnit& GW;
-    ZS::PhysVal::CPhysUnit& dBW;
-    ZS::PhysVal::CPhysUnit& dBm;
-    ZS::PhysVal::CPhysUnit& dBmW;
-    ZS::PhysVal::CPhysUnit& dBuW;
-    ZS::PhysVal::CPhysUnit& dBnW;
-    ZS::PhysVal::CPhysUnit& dBpW;
+    ZS::PhysVal::CPhysUnit pW;
+    ZS::PhysVal::CPhysUnit nW;
+    ZS::PhysVal::CPhysUnit uW;
+    ZS::PhysVal::CPhysUnit mW;
+    ZS::PhysVal::CPhysUnit W;
+    ZS::PhysVal::CPhysUnit kW;
+    ZS::PhysVal::CPhysUnit MW;
+    ZS::PhysVal::CPhysUnit GW;
+    ZS::PhysVal::CPhysUnit dBW;
+    ZS::PhysVal::CPhysUnit dBm;
+    ZS::PhysVal::CPhysUnit dBmW;
+    ZS::PhysVal::CPhysUnit dBuW;
+    ZS::PhysVal::CPhysUnit dBnW;
+    ZS::PhysVal::CPhysUnit dBpW;
 
 }; // class CPhysSizePower
 

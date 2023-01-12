@@ -384,6 +384,18 @@ public: // instance methods
 =============================================================================*/
 
 //-----------------------------------------------------------------------------
+/*! Returns the node separator.
+
+    @return Node separater which has been set at the index tree.
+*/
+QString CIdxTreeEntry::nodeSeparator() const
+//-----------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+    return m_pTree != nullptr ? m_pTree->nodeSeparator() : "::";
+}
+
+//-----------------------------------------------------------------------------
 /*! Returns the unique key string of the entry within the index tree.
 
     The key does not include the name of the root entry.

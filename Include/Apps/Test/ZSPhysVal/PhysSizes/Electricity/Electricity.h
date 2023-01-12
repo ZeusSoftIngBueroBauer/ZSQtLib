@@ -34,10 +34,6 @@ may result in using the software modules.
 #include "ZSPhysVal/ZSPhysScienceField.h"
 
 
-/*******************************************************************************
-interface description of exported methods
-*******************************************************************************/
-
 namespace ZS
 {
 namespace PhysVal
@@ -51,7 +47,7 @@ namespace Test
 namespace PhysVal
 {
 //******************************************************************************
-class CPhysScienceFieldElectricity : public ZS::PhysVal::CPhysScienceField
+class CPhysScienceFieldElectricity : public ZS::PhysVal::CPhysScienceFieldTreeEntry
 //******************************************************************************
 {
 public: // ctors and dtor
@@ -64,11 +60,16 @@ public: // operators
     CPhysScienceFieldElectricity& operator=(CPhysScienceFieldElectricity& i_other) = delete;
     CPhysScienceFieldElectricity& operator=(const CPhysScienceFieldElectricity& i_other) = delete;
     CPhysScienceFieldElectricity& operator=(CPhysScienceFieldElectricity&& i_other) = delete;
-public: // instance members
+private: // instance members
     CPhysSizeCurrent Current;
     CPhysSizePower Power;
-    CPhysSizeResistance Resistance;
-    CPhysSizeVoltage Voltage;
+    CPhysSizeResistance m_treeEntryResistance;
+    CPhysSizeVoltage m_treeEntryVoltage;
+public: // instance members
+    ZS::PhysVal::CPhysSize Current;
+    ZS::PhysVal::CPhysSize Power;
+    ZS::PhysVal::CPhysSize Resistance;
+    ZS::PhysVal::CPhysSize Voltage;
 
 }; // class CPhysScienceFieldElectricity
 

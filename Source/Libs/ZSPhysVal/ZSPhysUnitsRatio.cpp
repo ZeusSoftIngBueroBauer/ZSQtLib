@@ -36,7 +36,7 @@ using namespace ZS::PhysVal;
 
 
 /*******************************************************************************
-class CUnitRatio : public CUnit
+class CUnitRatioTreeEntry : public CUnitTreeEntry
 *******************************************************************************/
 
 /*==============================================================================
@@ -44,13 +44,13 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CUnitRatio::CUnitRatio(
-    CUnitGrp*      i_pUnitGrp,
-    const QString& i_strName,
-    const QString& i_strSymbol,
-    double         i_fFactor ) :
+CUnitRatioTreeEntry::CUnitRatioTreeEntry(
+    CUnitGrpTreeEntry* i_pUnitGrp,
+    const QString&     i_strName,
+    const QString&     i_strSymbol,
+    double             i_fFactor ) :
 //------------------------------------------------------------------------------
-    CUnit(
+    CUnitTreeEntry(
         /* pUnitGrp       */ i_pUnitGrp,
         /* bIsLogarithmic */ false,
         /* fLogFactor     */ 1.0,
@@ -61,7 +61,7 @@ CUnitRatio::CUnitRatio(
 } // ctor
 
 //------------------------------------------------------------------------------
-CUnitRatio::~CUnitRatio()
+CUnitRatioTreeEntry::~CUnitRatioTreeEntry()
 //------------------------------------------------------------------------------
 {
 } // dtor
@@ -71,7 +71,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-double CUnitRatio::getFactor() const
+double CUnitRatioTreeEntry::factor() const
 //------------------------------------------------------------------------------
 {
     return m_fFactor;
@@ -82,7 +82,7 @@ public: // overridables (converting values)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool CUnitRatio::isConvertible( const CUnit* i_pUnitDst, double /*i_fVal*/ ) const
+bool CUnitRatioTreeEntry::isConvertible( const CUnitTreeEntry* i_pUnitDst, double /*i_fVal*/ ) const
 //------------------------------------------------------------------------------
 {
     if( i_pUnitDst->classType() != EUnitClassType::Ratios )
@@ -90,7 +90,7 @@ bool CUnitRatio::isConvertible( const CUnit* i_pUnitDst, double /*i_fVal*/ ) con
         return false;
     }
 
-    const CUnitRatio* pUnitRatioDst = dynamic_cast<const CUnitRatio*>(i_pUnitDst);
+    const CUnitRatioTreeEntry* pUnitRatioDst = dynamic_cast<const CUnitRatioTreeEntry*>(i_pUnitDst);
 
     if( pUnitRatioDst->m_fFactor == 0.0 )
     {
@@ -100,7 +100,7 @@ bool CUnitRatio::isConvertible( const CUnit* i_pUnitDst, double /*i_fVal*/ ) con
 }
 
 //------------------------------------------------------------------------------
-double CUnitRatio::convertValue( double i_fVal, const CUnit* i_pUnitDst ) const
+double CUnitRatioTreeEntry::convertValue( double i_fVal, const CUnitTreeEntry* i_pUnitDst ) const
 //------------------------------------------------------------------------------
 {
     if( i_pUnitDst->classType() != EUnitClassType::Ratios )
@@ -109,7 +109,7 @@ double CUnitRatio::convertValue( double i_fVal, const CUnit* i_pUnitDst ) const
         throw CUnitConversionException( __FILE__, __LINE__, EResultDifferentPhysSizes, strAddErrInfo );
     }
 
-    const CUnitRatio* pUnitRatioDst = dynamic_cast<const CUnitRatio*>(i_pUnitDst);
+    const CUnitRatioTreeEntry* pUnitRatioDst = dynamic_cast<const CUnitRatioTreeEntry*>(i_pUnitDst);
 
     if( pUnitRatioDst->m_fFactor == 0.0 )
     {
@@ -124,6 +124,124 @@ double CUnitRatio::convertValue( double i_fVal, const CUnit* i_pUnitDst ) const
     return fVal;
 
 } // convertValue
+
+
+/*******************************************************************************
+class CUnitRatio : public CUnit
+*******************************************************************************/
+
+/*==============================================================================
+public: // ctors and dtor
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CUnitRatio::CUnitRatio() :
+//------------------------------------------------------------------------------
+    CUnit()
+{
+}
+
+//------------------------------------------------------------------------------
+CUnitRatio::CUnitRatio(CUnitRatio* i_pUnitRatio) :
+//------------------------------------------------------------------------------
+    CUnit(i_pUnitRatio)
+{
+}
+
+//------------------------------------------------------------------------------
+CUnitRatio::CUnitRatio(const CUnitRatio* i_pUnitRatio) :
+//------------------------------------------------------------------------------
+    CUnit(i_pUnitRatio)
+{
+}
+
+//------------------------------------------------------------------------------
+CUnitRatio::CUnitRatio(CUnitRatio& i_unitRatio) :
+//------------------------------------------------------------------------------
+    CUnit(i_unitRatio)
+{
+}
+
+//------------------------------------------------------------------------------
+CUnitRatio::CUnitRatio(const CUnitRatio& i_unitRatio) :
+//------------------------------------------------------------------------------
+    CUnit(i_unitRatio)
+{
+}
+
+//------------------------------------------------------------------------------
+CUnitRatio::CUnitRatio(CUnitRatioTreeEntry* i_pUnitRatio) :
+//------------------------------------------------------------------------------
+    CUnit(i_pUnitRatio)
+{
+}
+
+//------------------------------------------------------------------------------
+CUnitRatio::CUnitRatio(const CUnitRatioTreeEntry* i_pUnitRatio) :
+//------------------------------------------------------------------------------
+    CUnit(i_pUnitRatio)
+{
+}
+
+//------------------------------------------------------------------------------
+CUnitRatio::CUnitRatio(CUnitRatioTreeEntry& i_unitRatio) :
+//------------------------------------------------------------------------------
+    CUnit(&i_unitRatio)
+{
+}
+
+//------------------------------------------------------------------------------
+CUnitRatio::CUnitRatio(const CUnitRatioTreeEntry& i_unitRatio) :
+//------------------------------------------------------------------------------
+    CUnit(&i_unitRatio)
+{
+}
+
+//------------------------------------------------------------------------------
+CUnitRatio::CUnitRatio(const QString& i_strUniqueName) :
+//------------------------------------------------------------------------------
+    CUnit(i_strUniqueName)
+{
+}
+
+//------------------------------------------------------------------------------
+CUnitRatio::~CUnitRatio()
+//------------------------------------------------------------------------------
+{
+}
+
+/*==============================================================================
+public: // operators
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+bool CUnitRatio::operator == ( const CUnitRatio& i_other ) const
+//------------------------------------------------------------------------------
+{
+    bool bEqual = (m_pTreeEntry == i_other.m_pTreeEntry);
+    if( bEqual ) bEqual = (m_strUniqueName.compare(i_other.m_strUniqueName) == 0);
+    return bEqual;
+}
+
+//------------------------------------------------------------------------------
+bool CUnitRatio::operator != ( const CUnitRatio& i_other ) const
+//------------------------------------------------------------------------------
+{
+    return !(*this == i_other);
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+double CUnitRatio::factor() const
+//------------------------------------------------------------------------------
+{
+    CUnitRatioTreeEntry* pUnitRatio = dynamic_cast<CUnitRatioTreeEntry*>(m_pTreeEntry);
+    return pUnitRatio == nullptr ? 0.0 : pUnitRatio->factor();
+}
+
 
 #if 0
 

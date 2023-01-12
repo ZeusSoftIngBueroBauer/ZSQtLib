@@ -41,7 +41,7 @@ using namespace ZS::Apps::Test::PhysVal;
 #endif
 
 CIdxTreePhysSizes ZS::Apps::Test::PhysVal::IdxTreePhysSizes(
-    "Physical Sizes", new CIdxTreeEntry(EIdxTreeEntryType::Root, "Physical Sizes"));
+    new CIdxTreeEntry(EIdxTreeEntryType::Root, "Physical Sizes"));
 
 #ifdef ZSSys_MemLeakDump_h
 #pragma warning( default : 4005 )

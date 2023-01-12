@@ -42,81 +42,94 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CPhysSizePower::CPhysSizePower( CIdxTreePhysSizes* i_pIdxTree ) :
 //------------------------------------------------------------------------------
-    CPhysSize(
+    CPhysSizeTreeEntry(
         /* pIdxTree         */ i_pIdxTree,
         /* strName          */ "Power",
         /* strSIUnitName    */ "Watt",
         /* strSIUnitSymbol  */ "W",
         /* strFormulaSymbol */ "P",
         /* bIsPowerRelated  */ true ),
-    PicoWatt(
+    m_treeEntryPicoWatt(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixPico ),
-    NanoWatt(
+    m_treeEntryNanoWatt(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixNano ),
-    MicroWatt(
+    m_treeEntryMicroWatt(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixMicro ),
-    MilliWatt(
+    m_treeEntryMilliWatt(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixMilli ),
-    Watt(
+    m_treeEntryWatt(
         /* pPhysSize */ this,
         /* strPrefix */ "" ),
-    KiloWatt(
+    m_treeEntryKiloWatt(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixKilo ),
-    MegaWatt(
+    m_treeEntryMegaWatt(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixMega ),
-    GigaWatt(
+    m_treeEntryGigaWatt(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixGiga ),
-    dBWatt(
+    m_treeEntrydBWatt(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ true,
         /* strName        */ "dBWatt",
         /* strSymbol      */ "dBW",
         /* fRefVal        */ 1.0 ),
-    dBMilliWatt(
+    m_treeEntrydBMilliWatt(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ true,
         /* strName        */ "dBMilliWatt",
         /* strSymbol      */ "dB" + QString(c_strPrefixMilli),
         /* fRefVal        */ c_fFactorMilli ),
-    dBMicroWatt(
+    m_treeEntrydBMicroWatt(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ true,
         /* strName        */ "dBMicroWatt",
         /* strSymbol      */ "dB" + QString(c_strPrefixMicro) + "W",
         /* fRefVal        */ c_fFactorMicro ),
-    dBNanoWatt(
+    m_treeEntrydBNanoWatt(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ true,
         /* strName        */ "dBNanoWatt",
         /* strSymbol      */ "dB" + QString(c_strPrefixNano) + "W",
         /* fRefVal        */ c_fFactorNano ),
-    dBPicoWatt(
+    m_treeEntrydBPicoWatt(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ true,
         /* strName        */ "dBPicoWatt",
         /* strSymbol      */ "dB" + QString(c_strPrefixPico) + "W",
         /* fRefVal        */ c_fFactorPico ),
-    pW(PicoWatt),
-    nW(NanoWatt),
-    uW(MicroWatt),
-    mW(MilliWatt),
-    W(Watt),
-    kW(KiloWatt),
-    MW(MegaWatt),
-    GW(GigaWatt),
-    dBW(dBWatt),
-    dBm(dBMilliWatt),
-    dBmW(dBMilliWatt),
-    dBuW(dBMicroWatt),
-    dBnW(dBNanoWatt),
-    dBpW(dBPicoWatt)
+    PicoWatt(m_treeEntryPicoWatt),
+    NanoWatt(m_treeEntryNanoWatt),
+    MicroWatt(m_treeEntryMicroWatt),
+    MilliWatt(m_treeEntryMilliWatt),
+    Watt(m_treeEntryWatt),
+    KiloWatt(m_treeEntryKiloWatt),
+    MegaWatt(m_treeEntryMegaWatt),
+    GigaWatt(m_treeEntryGigaWatt),
+    dBWatt(m_treeEntrydBWatt),
+    dBMilliWatt(m_treeEntrydBMilliWatt),
+    dBMicroWatt(m_treeEntrydBMicroWatt),
+    dBNanoWatt(m_treeEntrydBNanoWatt),
+    dBPicoWatt(m_treeEntrydBPicoWatt),
+    pW(m_treeEntryPicoWatt),
+    nW(m_treeEntryNanoWatt),
+    uW(m_treeEntryMicroWatt),
+    mW(m_treeEntryMilliWatt),
+    W(m_treeEntryWatt),
+    kW(m_treeEntryKiloWatt),
+    MW(m_treeEntryMegaWatt),
+    GW(m_treeEntryGigaWatt),
+    dBW(m_treeEntrydBWatt),
+    dBm(m_treeEntrydBMilliWatt),
+    dBmW(m_treeEntrydBMilliWatt),
+    dBuW(m_treeEntrydBMicroWatt),
+    dBnW(m_treeEntrydBNanoWatt),
+    dBpW(m_treeEntrydBPicoWatt)
 {
     // Call function of base class CPhysSize to initialize the physical size together
     // with its units (e.g. to create the field with internal conversion routines
@@ -126,83 +139,96 @@ CPhysSizePower::CPhysSizePower( CIdxTreePhysSizes* i_pIdxTree ) :
 } // ctor
 
 //------------------------------------------------------------------------------
-CPhysSizePower::CPhysSizePower( CIdxTreeEntry* i_pParentBranch ) :
+CPhysSizePower::CPhysSizePower( CPhysScienceFieldTreeEntry* i_pParentBranch ) :
 //------------------------------------------------------------------------------
-    CPhysSize(
+    CPhysSizeTreeEntry(
         /* pParentBranch    */ i_pParentBranch,
         /* strName          */ "Power",
         /* strSIUnitName    */ "Watt",
         /* strSIUnitSymbol  */ "W",
         /* strFormulaSymbol */ "P",
         /* bIsPowerRelated  */ true ),
-    PicoWatt(
+    m_treeEntryPicoWatt(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixPico ),
-    NanoWatt(
+    m_treeEntryNanoWatt(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixNano ),
-    MicroWatt(
+    m_treeEntryMicroWatt(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixMicro ),
-    MilliWatt(
+    m_treeEntryMilliWatt(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixMilli ),
-    Watt(
+    m_treeEntryWatt(
         /* pPhysSize */ this,
         /* strPrefix */ "" ),
-    KiloWatt(
+    m_treeEntryKiloWatt(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixKilo ),
-    MegaWatt(
+    m_treeEntryMegaWatt(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixMega ),
-    GigaWatt(
+    m_treeEntryGigaWatt(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixGiga ),
-    dBWatt(
+    m_treeEntrydBWatt(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ true,
         /* strName        */ "dBWatt",
         /* strSymbol      */ "dBW",
         /* fRefVal        */ 1.0 ),
-    dBMilliWatt(
+    m_treeEntrydBMilliWatt(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ true,
         /* strName        */ "dBMilliWatt",
         /* strSymbol      */ "dB" + QString(c_strPrefixMilli),
         /* fRefVal        */ c_fFactorMilli ),
-    dBMicroWatt(
+    m_treeEntrydBMicroWatt(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ true,
         /* strName        */ "dBMicroWatt",
         /* strSymbol      */ "dB" + QString(c_strPrefixMicro) + "W",
         /* fRefVal        */ c_fFactorMicro ),
-    dBNanoWatt(
+    m_treeEntrydBNanoWatt(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ true,
         /* strName        */ "dBNanoWatt",
         /* strSymbol      */ "dB" + QString(c_strPrefixNano) + "W",
         /* fRefVal        */ c_fFactorNano ),
-    dBPicoWatt(
+    m_treeEntrydBPicoWatt(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ true,
         /* strName        */ "dBPicoWatt",
         /* strSymbol      */ "dB" + QString(c_strPrefixPico) + "W",
         /* fRefVal        */ c_fFactorPico ),
-    pW(PicoWatt),
-    nW(NanoWatt),
-    uW(MicroWatt),
-    mW(MilliWatt),
-    W(Watt),
-    kW(KiloWatt),
-    MW(MegaWatt),
-    GW(GigaWatt),
-    dBW(dBWatt),
-    dBm(dBMilliWatt),
-    dBmW(dBMilliWatt),
-    dBuW(dBMicroWatt),
-    dBnW(dBNanoWatt),
-    dBpW(dBPicoWatt)
+    PicoWatt(m_treeEntryPicoWatt),
+    NanoWatt(m_treeEntryNanoWatt),
+    MicroWatt(m_treeEntryMicroWatt),
+    MilliWatt(m_treeEntryMilliWatt),
+    Watt(m_treeEntryWatt),
+    KiloWatt(m_treeEntryKiloWatt),
+    MegaWatt(m_treeEntryMegaWatt),
+    GigaWatt(m_treeEntryGigaWatt),
+    dBWatt(m_treeEntrydBWatt),
+    dBMilliWatt(m_treeEntrydBMilliWatt),
+    dBMicroWatt(m_treeEntrydBMicroWatt),
+    dBNanoWatt(m_treeEntrydBNanoWatt),
+    dBPicoWatt(m_treeEntrydBPicoWatt),
+    pW(m_treeEntryPicoWatt),
+    nW(m_treeEntryNanoWatt),
+    uW(m_treeEntryMicroWatt),
+    mW(m_treeEntryMilliWatt),
+    W(m_treeEntryWatt),
+    kW(m_treeEntryKiloWatt),
+    MW(m_treeEntryMegaWatt),
+    GW(m_treeEntryGigaWatt),
+    dBW(m_treeEntrydBWatt),
+    dBm(m_treeEntrydBMilliWatt),
+    dBmW(m_treeEntrydBMilliWatt),
+    dBuW(m_treeEntrydBMicroWatt),
+    dBnW(m_treeEntrydBNanoWatt),
+    dBpW(m_treeEntrydBPicoWatt)
 {
     // Call function of base class CPhysSize to initialize the physical size together
     // with its units (e.g. to create the field with internal conversion routines

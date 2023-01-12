@@ -45,7 +45,7 @@ public: // ctors and dtor
 */
 CPhysScienceFieldGeometry::CPhysScienceFieldGeometry(CIdxTreePhysSizes* i_pIdxTree) :
 //------------------------------------------------------------------------------
-    CPhysScienceField(i_pIdxTree, EPhysScienceField::Geometry),
+    CPhysScienceFieldTreeEntry(i_pIdxTree, EPhysScienceField::Geometry),
     Angle(this),
     GraphDevice(this),
     Length(this)

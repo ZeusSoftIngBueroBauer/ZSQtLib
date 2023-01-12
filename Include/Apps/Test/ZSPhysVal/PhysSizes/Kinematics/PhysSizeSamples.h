@@ -39,12 +39,12 @@ namespace Test
 namespace PhysVal
 {
 //******************************************************************************
-class CPhysSizeSamples : public ZS::PhysVal::CPhysSize
+class CPhysSizeSamples : public ZS::PhysVal::CPhysSizeTreeEntry
 //******************************************************************************
 {
 public: // ctors and dtor
-    CPhysSizeSamples( ZS::PhysVal::CIdxTreePhysSizes* i_pIdxTree );
-    CPhysSizeSamples(ZS::System::CIdxTreeEntry* i_pParentBranch);
+    CPhysSizeSamples(ZS::PhysVal::CIdxTreePhysSizes* i_pIdxTree);
+    CPhysSizeSamples(ZS::PhysVal::CPhysScienceFieldTreeEntry* i_pParentBranch);
     CPhysSizeSamples(CPhysSizeSamples&& i_other) = delete;
     CPhysSizeSamples(CPhysSizeSamples& i_other) = delete;
     CPhysSizeSamples(const CPhysSizeSamples& i_other) = delete;
@@ -53,6 +53,8 @@ public: // operators
     CPhysSizeSamples& operator=(CPhysSizeSamples& i_other) = delete;
     CPhysSizeSamples& operator=(const CPhysSizeSamples& i_other) = delete;
     CPhysSizeSamples& operator=(CPhysSizeSamples&& i_other) = delete;
+public: // instance members
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntrySamples;
 public: // instance members
     ZS::PhysVal::CPhysUnit Samples;
 

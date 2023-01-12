@@ -241,11 +241,11 @@ void CWdgtTreeEntries::setKeyInTreeOfRootEntry( const QString& i_strKeyInTree )
             {
                 if( pTreeEntry->isRoot() || pTreeEntry->isBranch() )
                 {
-                    CUnitGrp* pUnitGrp = dynamic_cast<CUnitGrp*>(pTreeEntry);
+                    CUnitGrpTreeEntry* pUnitGrp = dynamic_cast<CUnitGrpTreeEntry*>(pTreeEntry);
 
                     if( pUnitGrp == nullptr )
                     {
-                        CPhysScienceField* pPhysScienceField = dynamic_cast<CPhysScienceField*>(pTreeEntry);
+                        CPhysScienceFieldTreeEntry* pPhysScienceField = dynamic_cast<CPhysScienceFieldTreeEntry*>(pTreeEntry);
                         if( pPhysScienceField != nullptr )
                         {
                             unitClassType = EUnitClassType::PhysSize;
@@ -274,7 +274,7 @@ void CWdgtTreeEntries::setKeyInTreeOfRootEntry( const QString& i_strKeyInTree )
                 }
                 else if( pTreeEntry->isLeave() )
                 {
-                    CUnit* pUnit = dynamic_cast<CUnit*>(pTreeEntry);
+                    CUnitTreeEntry* pUnit = dynamic_cast<CUnitTreeEntry*>(pTreeEntry);
 
                     if( pUnit != nullptr )
                     {

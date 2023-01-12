@@ -39,12 +39,12 @@ namespace Test
 namespace PhysVal
 {
 //******************************************************************************
-class CPhysSizeLength : public ZS::PhysVal::CPhysSize
+class CPhysSizeLength : public ZS::PhysVal::CPhysSizeTreeEntry
 //******************************************************************************
 {
 public: // ctors and dtor
-    CPhysSizeLength( ZS::PhysVal::CIdxTreePhysSizes* i_pIdxTree );
-    CPhysSizeLength(ZS::System::CIdxTreeEntry* i_pParentBranch);
+    CPhysSizeLength(ZS::PhysVal::CIdxTreePhysSizes* i_pIdxTree);
+    CPhysSizeLength(ZS::PhysVal::CPhysScienceFieldTreeEntry* i_pParentBranch);
     CPhysSizeLength(CPhysSizeLength&& i_other) = delete;
     CPhysSizeLength(CPhysSizeLength& i_other) = delete;
     CPhysSizeLength(const CPhysSizeLength& i_other) = delete;
@@ -53,6 +53,20 @@ public: // operators
     CPhysSizeLength& operator=(CPhysSizeLength& i_other) = delete;
     CPhysSizeLength& operator=(const CPhysSizeLength& i_other) = delete;
     CPhysSizeLength& operator=(CPhysSizeLength&& i_other) = delete;
+private: // instance members
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryPicoMeter;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryNanoMeter;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryMicroMeter;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryMilliMeter;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryCentiMeter;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryDeziMeter;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryMeter;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryKiloMeter;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryInch;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryFoot;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryYard;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryMile;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryNauticalMile;
 public: // instance members
     ZS::PhysVal::CPhysUnit PicoMeter;
     ZS::PhysVal::CPhysUnit NanoMeter;
@@ -67,16 +81,16 @@ public: // instance members
     ZS::PhysVal::CPhysUnit Yard;
     ZS::PhysVal::CPhysUnit Mile;
     ZS::PhysVal::CPhysUnit NauticalMile;
-    ZS::PhysVal::CPhysUnit& pm;
-    ZS::PhysVal::CPhysUnit& nm;
-    ZS::PhysVal::CPhysUnit& um;
-    ZS::PhysVal::CPhysUnit& mm;
-    ZS::PhysVal::CPhysUnit& cm;
-    ZS::PhysVal::CPhysUnit& dm;
-    ZS::PhysVal::CPhysUnit& m;
-    ZS::PhysVal::CPhysUnit& km;
-    ZS::PhysVal::CPhysUnit& ft;
-    ZS::PhysVal::CPhysUnit& yd;
+    ZS::PhysVal::CPhysUnit pm;
+    ZS::PhysVal::CPhysUnit nm;
+    ZS::PhysVal::CPhysUnit um;
+    ZS::PhysVal::CPhysUnit mm;
+    ZS::PhysVal::CPhysUnit cm;
+    ZS::PhysVal::CPhysUnit dm;
+    ZS::PhysVal::CPhysUnit m;
+    ZS::PhysVal::CPhysUnit km;
+    ZS::PhysVal::CPhysUnit ft;
+    ZS::PhysVal::CPhysUnit yd;
 
 }; // CPhysSizeLength
 

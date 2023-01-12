@@ -25,8 +25,10 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSPhysVal/ZSPhysSizesIdxTree.h"
+#include "ZSPhysVal/ZSPhysScienceField.h"
 #include "ZSPhysVal/ZSPhysSize.h"
 #include "ZSPhysVal/ZSPhysUnits.h"
+#include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 
@@ -44,32 +46,29 @@ class CIdxTreePhysSizes : public ZS::System::CIdxTree
 protected: // class members
 ==============================================================================*/
 
-QHash<QString, CIdxTreePhysSizes*> CIdxTreePhysSizes::s_hshpIdxTrees;
+CIdxTreePhysSizes* CIdxTreePhysSizes::s_pTheInst = nullptr;
 
 /*==============================================================================
 public: // class methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Creates an index if an index tree with the given name is not already existing.
+/*! @brief Creates an index tree instance if if not already existing.
 
-    If an index tree with the given name is already existing the reference counter of
+    If an index tree is already existing the reference counter of
     the existing index tree is incremented and this index tree is returned.
 
     @note After a CreateInstance call a ReleaseInstance call MUST follow if no
           the index tree is no longer needed to avoid memory leaks.
 
-    @param i_strObjName [in] Name of the index tree.
-        Default: "PhysSizes"
-
     @return Pointer to index tree instance.
 */
-CIdxTreePhysSizes* CIdxTreePhysSizes::CreateInstance( const QString& i_strObjName )
+CIdxTreePhysSizes* CIdxTreePhysSizes::CreateInstance()
 //------------------------------------------------------------------------------
 {
-    CIdxTreePhysSizes* pIdxTree = CIdxTreePhysSizes::GetInstance(i_strObjName);
+    CIdxTreePhysSizes* pIdxTree = CIdxTreePhysSizes::GetInstance();
     if( pIdxTree == nullptr ) {
-        pIdxTree = new CIdxTreePhysSizes(i_strObjName);
+        pIdxTree = new CIdxTreePhysSizes();
     }
     else {
         pIdxTree->incrementRefCount();
@@ -95,10 +94,10 @@ CIdxTreePhysSizes* CIdxTreePhysSizes::CreateInstance( const QString& i_strObjNam
 
     @return Pointer to index tree instance.
 */
-CIdxTreePhysSizes* CIdxTreePhysSizes::GetInstance( const QString& i_strObjName )
+CIdxTreePhysSizes* CIdxTreePhysSizes::GetInstance()
 //------------------------------------------------------------------------------
 {
-    return s_hshpIdxTrees.value(i_strObjName, nullptr);
+    return s_pTheInst;
 }
 
 //------------------------------------------------------------------------------
@@ -115,16 +114,16 @@ CIdxTreePhysSizes* CIdxTreePhysSizes::GetInstance( const QString& i_strObjName )
 
     @return Current increment counter.
 */
-int CIdxTreePhysSizes::ReleaseInstance( const QString& i_strObjName )
+int CIdxTreePhysSizes::ReleaseInstance()
 //------------------------------------------------------------------------------
 {
-    CIdxTreePhysSizes* pIdxTree = GetInstance(i_strObjName);
+    CIdxTreePhysSizes* pIdxTree = GetInstance();
 
     if( pIdxTree == nullptr )
     {
         throw CException(
             __FILE__, __LINE__, EResultSingletonClassNotInstantiated,
-            NameSpace() + "::" + ClassName() + "::ReleaseInstance(" + i_strObjName + ")");
+            NameSpace() + "::" + ClassName() + "::ReleaseInstance");
     }
 
     int iRefCount = pIdxTree->getRefCount();
@@ -133,7 +132,7 @@ int CIdxTreePhysSizes::ReleaseInstance( const QString& i_strObjName )
     {
         throw CException(
             __FILE__, __LINE__, EResultInternalProgramError,
-            NameSpace() + "::" + ClassName() + "::ReleaseInstance(" + i_strObjName + "): "
+            NameSpace() + "::" + ClassName() + "::ReleaseInstance: "
             "Reference Counter is already less or equal to 0 (=" + QString::number(iRefCount) + ")");
     }
 
@@ -154,61 +153,6 @@ int CIdxTreePhysSizes::ReleaseInstance( const QString& i_strObjName )
 
 } // ReleaseInstance
 
-//------------------------------------------------------------------------------
-/*! @brief Releases the given index tree.
-
-    This method has been provided for convinience and retrieves the object
-    name from the given index tree to release the instance.
-
-    @param i_strObjName [in] Name of the index tree.
-        Default: "PhysSizes"
-
-    @return Current increment counter.
-*/
-int CIdxTreePhysSizes::ReleaseInstance( CIdxTreePhysSizes* i_pIdxTree )
-//------------------------------------------------------------------------------
-{
-    if( i_pIdxTree == nullptr )
-    {
-        throw CException(
-            __FILE__, __LINE__, EResultArgOutOfRange,
-            NameSpace() + "::" + ClassName() + "::ReleaseInstance(i_pIdxTree == nullptr)");
-    }
-
-    if( GetInstance(i_pIdxTree->objectName()) == nullptr )
-    {
-        throw CException(
-            __FILE__, __LINE__, EResultArgOutOfRange,
-            NameSpace() + "::" + ClassName() + "::ReleaseInstance(i_pIdxTree == nullptr)");
-    }
-
-    int iRefCount = i_pIdxTree->getRefCount();
-
-    if( iRefCount <= 0 )
-    {
-        throw CException(
-            __FILE__, __LINE__, EResultInternalProgramError,
-            NameSpace() + "::" + ClassName() + "::ReleaseInstance(" + i_pIdxTree->objectName() + "): "
-            "Reference Counter is already less or equal to 0 (=" + QString::number(iRefCount) + ")");
-    }
-
-    iRefCount = i_pIdxTree->decrementRefCount();
-
-    if( iRefCount == 0 )
-    {
-        try
-        {
-            delete i_pIdxTree;
-        }
-        catch(...)
-        {
-        }
-        i_pIdxTree = nullptr;
-    }
-    return iRefCount;
-
-} // ReleaseInstance
-
 /*==============================================================================
 protected: // ctors and dtor
 ==============================================================================*/
@@ -220,7 +164,6 @@ protected: // ctors and dtor
     If an instance with the given name is already existing the reference to
     the existing instance is returned and a reference counter is incremented.
 
-    @param i_strName [in] Name of the index tree (default "ZSPhysSizes")
     @param i_pRootTreeEntry [in] Reference to the root entry of the index tree.
            Usually the tree creates the node itself. However, if the root node needs
            properties that go beyond the default implementation, a user-defined node
@@ -229,12 +172,10 @@ protected: // ctors and dtor
 
     @return Pointer to unit pool instance.
 */
-CIdxTreePhysSizes::CIdxTreePhysSizes(
-    const QString& i_strObjName,
-    CIdxTreeEntry* i_pRootTreeEntry ) :
+CIdxTreePhysSizes::CIdxTreePhysSizes( CIdxTreeEntry* i_pRootTreeEntry ) :
 //------------------------------------------------------------------------------
     CIdxTree(
-        /* strIdxTreeName   */ i_strObjName,
+        /* strIdxTreeName   */ "Physical Sizes",
         /* pRootTreeEntry   */ i_pRootTreeEntry,
         /* strNodeSeparator */ ".",
         /* bCreateMutex     */ false,
@@ -247,7 +188,13 @@ CIdxTreePhysSizes::CIdxTreePhysSizes(
         /* strMethod          */ "ctor",
         /* strMethodInArgs    */ "" );
 
-    s_hshpIdxTrees[objectName()] = this;
+    if( s_pTheInst != nullptr )
+    {
+        throw CException(
+            __FILE__, __LINE__, EResultSingletonClassAlreadyInstantiated,
+            NameSpace() + "::" + ClassName() + "::ctor");
+    }
+    s_pTheInst = this;
 
     m_iRefCount = 1;
 
@@ -263,7 +210,30 @@ CIdxTreePhysSizes::~CIdxTreePhysSizes()
         /* strMethod          */ "dtor",
         /* strMethodInArgs    */ "" );
 
-    s_hshpIdxTrees.remove(objectName());
+    if( m_iRefCount <= 0 )
+    {
+        if( CErrLog::GetInstance() != nullptr ) {
+            SErrResultInfo errResultInfo(
+                NameSpace(), ClassName(), objectName(), "dtor",
+                EResultInvalidMethodCall, EResultSeverityError,
+                "Destructor of singleton class called but reference counter "
+                "is less or equal to 0 (=" + QString::number(m_iRefCount) + ").");
+            CErrLog::GetInstance()->addEntry(errResultInfo);
+        }
+    }
+    else if( m_iRefCount > 1 )
+    {
+        if( CErrLog::GetInstance() != nullptr ) {
+            SErrResultInfo errResultInfo(
+                NameSpace(), ClassName(), objectName(), "dtor",
+                EResultInvalidMethodCall, EResultSeverityError,
+                "Destructor of singleton class called but reference counter "
+                "is greater than 1 (=" + QString::number(m_iRefCount) + ").");
+            CErrLog::GetInstance()->addEntry(errResultInfo);
+        }
+    }
+
+    s_pTheInst = nullptr;
 
     m_iRefCount = 0;
 
@@ -274,20 +244,27 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CUnitGrp* CIdxTreePhysSizes::findUnitGrp( const QString& i_strKeyInTree )
+CPhysScienceFieldTreeEntry* CIdxTreePhysSizes::findPhysScienceField( const QString& i_strKeyInTree )
 //------------------------------------------------------------------------------
 {
-    return dynamic_cast<CUnitGrp*>(findEntry(i_strKeyInTree));
+    return dynamic_cast<CPhysScienceFieldTreeEntry*>(findEntry(i_strKeyInTree));
+}
+
+//------------------------------------------------------------------------------
+CUnitGrpTreeEntry* CIdxTreePhysSizes::findUnitGrp( const QString& i_strKeyInTree )
+//------------------------------------------------------------------------------
+{
+    return dynamic_cast<CUnitGrpTreeEntry*>(findEntry(i_strKeyInTree));
 }
 
 //------------------------------------------------------------------------------
 /*! @brief
     Same as "findUnitGrp" but with implicit type cast.
 */
-CPhysSize* CIdxTreePhysSizes::findPhysSize( const QString& i_strKeyInTree )
+CPhysSizeTreeEntry* CIdxTreePhysSizes::findPhysSize( const QString& i_strKeyInTree )
 //------------------------------------------------------------------------------
 {
-    return dynamic_cast<CPhysSize*>(findEntry(i_strKeyInTree));
+    return dynamic_cast<CPhysSizeTreeEntry*>(findEntry(i_strKeyInTree));
 }
 
 /*==============================================================================
@@ -295,37 +272,37 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CUnit* CIdxTreePhysSizes::findUnit( const QString& i_strKeyInTree )
+CUnitTreeEntry* CIdxTreePhysSizes::findUnit( const QString& i_strKeyInTree )
 //------------------------------------------------------------------------------
 {
-    return dynamic_cast<CUnit*>(findEntry(i_strKeyInTree));
+    return dynamic_cast<CUnitTreeEntry*>(findEntry(i_strKeyInTree));
 }
 
 //------------------------------------------------------------------------------
-CUnit* CIdxTreePhysSizes::findUnit( const QString& i_strUnitGrpKey, const QString& i_strUnit )
+CUnitTreeEntry* CIdxTreePhysSizes::findUnit( const QString& i_strUnitGrpKey, const QString& i_strUnit )
 //------------------------------------------------------------------------------
 {
-    return dynamic_cast<CUnit*>(findLeave(i_strUnitGrpKey, i_strUnit));
-}
-
-//------------------------------------------------------------------------------
-/*! @brief
-    Same as "findUnit" but with implicit type cast
-*/
-CPhysUnit* CIdxTreePhysSizes::findPhysUnit( const QString& i_strKeyInTree )
-//------------------------------------------------------------------------------
-{
-    return dynamic_cast<CPhysUnit*>(findEntry(i_strKeyInTree));
+    return dynamic_cast<CUnitTreeEntry*>(findLeave(i_strUnitGrpKey, i_strUnit));
 }
 
 //------------------------------------------------------------------------------
 /*! @brief
     Same as "findUnit" but with implicit type cast
 */
-CPhysUnit* CIdxTreePhysSizes::findPhysUnit( const QString& i_strUnitGrpKey, const QString& i_strUnit )
+CPhysUnitTreeEntry* CIdxTreePhysSizes::findPhysUnit( const QString& i_strKeyInTree )
 //------------------------------------------------------------------------------
 {
-    return dynamic_cast<CPhysUnit*>(findLeave(i_strUnitGrpKey, i_strUnit));
+    return dynamic_cast<CPhysUnitTreeEntry*>(findEntry(i_strKeyInTree));
+}
+
+//------------------------------------------------------------------------------
+/*! @brief
+    Same as "findUnit" but with implicit type cast
+*/
+CPhysUnitTreeEntry* CIdxTreePhysSizes::findPhysUnit( const QString& i_strUnitGrpKey, const QString& i_strUnit )
+//------------------------------------------------------------------------------
+{
+    return dynamic_cast<CPhysUnitTreeEntry*>(findLeave(i_strUnitGrpKey, i_strUnit));
 }
 
 /*==============================================================================
@@ -366,7 +343,7 @@ int CIdxTreePhysSizes::decrementRefCount()
 {
     if( m_iRefCount <= 0)
     {
-        throw CException(__FILE__, __LINE__, EResultObjRefCounterIsZero, "CLogServer::" + objectName());
+        throw CException(__FILE__, __LINE__, EResultObjRefCounterIsZero, ClassName() + "::" + objectName());
     }
     return --m_iRefCount;
 }

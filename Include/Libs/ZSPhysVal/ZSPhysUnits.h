@@ -27,73 +27,69 @@ may result in using the software modules.
 #ifndef ZSPhysVal_PhysUnits_h
 #define ZSPhysVal_PhysUnits_h
 
-#include <QtCore/qobject.h>
 #include <QtCore/qstring.h>
 #include <QtCore/qvector.h>
 
-#include "ZSPhysVal/ZSPhysValDllMain.h"
+#include "ZSPhysVal/ZSPhysSize.h"
 #include "ZSPhysVal/ZSPhysUnitsFctConvert.h"
-#include "ZSSys/ZSSysIdxTreeEntry.h"
 
 namespace ZS
 {
 namespace PhysVal
 {
-class CUnit;
+class CUnitGrpTreeEntry;
+class CUnitTreeEntry;
 class CUnitGrp;
-class CPhysSize;
-class CPhysUnit;
+class CUnit;
 
 /*******************************************************************************
 Exported methods
 *******************************************************************************/
 
-ZSPHYSVALDLL_API bool areOfSameUnitGroup( const CUnitGrp* i_pUnitGrp1, const CUnit* i_pUnit2 );
-ZSPHYSVALDLL_API bool areOfSameUnitGroup( const CUnit* i_pUnit1, const CUnit* i_pUnit2 );
+ZSPHYSVALDLL_API bool areOfSameUnitGroup( const CUnitGrp& i_unitGrp1, const CUnit& i_unit2 );
+ZSPHYSVALDLL_API bool areOfSameUnitGroup( const CUnit& i_unit1, const CUnit& i_unit2 );
 
 
 //******************************************************************************
-class ZSPHYSVALDLL_API CUnit : public ZS::System::CIdxTreeEntry
+class ZSPHYSVALDLL_API CUnitTreeEntry : public ZS::System::CIdxTreeEntry
 //******************************************************************************
 {
 public: // class methods
     static QString NameSpace() { return "ZS::PhysVal"; }
-    static QString ClassName() { return "CUnit"; }
+    static QString ClassName() { return "CUnitTreeEntry"; }
 public: // ctors and dtor
-    CUnit();
-    CUnit(
-        CUnitGrp*      i_pParentBranch,
-        bool           i_bIsLogarithmic,
-        double         i_fLogFactor,
-        const QString& i_strName,
-        const QString& i_strSymbol );
-    CUnit(CUnit&& i_other);
-    CUnit(CUnit& i_other) = delete;
-    CUnit(const CUnit& i_other) = delete;
-    virtual ~CUnit();
+    CUnitTreeEntry(
+        CUnitGrpTreeEntry* i_pParentBranch,
+        bool               i_bIsLogarithmic,
+        double             i_fLogFactor,
+        const QString&     i_strName,
+        const QString&     i_strSymbol );
+    CUnitTreeEntry(CUnitTreeEntry&& i_other);
+    CUnitTreeEntry(CUnitTreeEntry& i_other) = delete;
+    CUnitTreeEntry(const CUnitTreeEntry& i_other) = delete;
+    virtual ~CUnitTreeEntry();
 public: // operators
-    CUnit& operator=(CUnit& i_other) = delete;
-    CUnit& operator=(const CUnit& i_other) = delete;
-    CUnit& operator=(CUnit&& i_other);
+    CUnitTreeEntry& operator=(CUnitTreeEntry& i_other) = delete;
+    CUnitTreeEntry& operator=(const CUnitTreeEntry& i_other) = delete;
+    CUnitTreeEntry& operator=(CUnitTreeEntry&& i_other);
 public: // operators
-    bool operator == ( const CUnit& i_other ) const;
-    bool operator != ( const CUnit& i_other ) const;
+    bool operator == ( const CUnitTreeEntry& i_other ) const;
+    bool operator != ( const CUnitTreeEntry& i_other ) const;
 public: // instance methods (configuration)
     EUnitClassType classType() const { return m_classType; }
     QString classType2Str() const;
-    CUnitGrp* unitGroup() const;
-    //QString groupName( bool i_bInsertParentNames = false ) const;
+    CUnitGrpTreeEntry* unitGroup() const;
     QString symbol() const { return m_strSymbol; }
 public: // overridables (converting values)
     virtual bool isLogarithmic() const { return m_bIsLogarithmic; }
     virtual double logarithmicFactor() const { return m_fLogFactor; }
-    virtual bool isConvertible( const CUnit* /*i_pUnitDst*/, double /*i_fVal = 1.0*/ ) const { return false; }
-    virtual double convertValue( double i_fVal, const CUnit* /*i_pUnitDst*/ ) const { return i_fVal; }
+    virtual bool isConvertible( const CUnitTreeEntry* /*i_pUnitDst*/, double /*i_fVal = 1.0*/ ) const { return false; }
+    virtual double convertValue( double i_fVal, const CUnitTreeEntry* /*i_pUnitDst*/ ) const { return i_fVal; }
 public: // overridables (findBestUnit)
-    virtual void setNextLowerHigherUnits( CUnit* i_pNextLower, CUnit* i_pNextHigher );
-    virtual CUnit* nextLowerUnit() const { return m_pNextLower; }
-    virtual CUnit* nextHigherUnit() const { return m_pNextHigher; }
-    virtual CUnit* findBestUnit(
+    virtual void setNextLowerHigherUnits( CUnitTreeEntry* i_pNextLower, CUnitTreeEntry* i_pNextHigher );
+    virtual CUnitTreeEntry* nextLowerUnit() const { return m_pNextLower; }
+    virtual CUnitTreeEntry* nextHigherUnit() const { return m_pNextHigher; }
+    virtual CUnitTreeEntry* findBestUnit(
         double  i_fVal,
         double* o_pfValue = nullptr,
         int     i_iDigitsLeadingMax = 3 ) const;
@@ -107,60 +103,107 @@ protected: // instance members
     /*!< e.g. 10.0 for power related quantities, 20.0 for Volt etc. */
     double m_fLogFactor;
     /*!< e.g. ns if this is µs */
-    CUnit* m_pNextLower;
+    CUnitTreeEntry* m_pNextLower;
     /*!< e.g. ms if this is µs */
-    CUnit* m_pNextHigher;
+    CUnitTreeEntry* m_pNextHigher;
+
+}; // class CUnitTreeEntry
+
+//******************************************************************************
+class ZSPHYSVALDLL_API CUnit
+//******************************************************************************
+{
+public: // class methods
+    static QString NameSpace() { return "ZS::PhysVal"; }
+    static QString ClassName() { return "CUnit"; }
+public: // ctors and dtor
+    CUnit();
+    CUnit(CUnit* i_pUnit);
+    CUnit(const CUnit* i_pUnit);
+    CUnit(CUnit& i_unit);
+    CUnit(const CUnit& i_unit);
+    CUnit(CUnitTreeEntry* i_pUnit);
+    CUnit(const CUnitTreeEntry* i_pUnit);
+    CUnit(CUnitTreeEntry& i_unit);
+    CUnit(const CUnitTreeEntry& i_unit);
+    CUnit(const QString& i_strUniqueName);
+    virtual ~CUnit();
+public: // operators
+    bool operator == ( const CUnit& i_other ) const;
+    bool operator != ( const CUnit& i_other ) const;
+public: // instance methods
+    QString nodeSeparator() const;
+    QString keyInTree() const;
+    CUnitGrp unitGroup() const;
+    QString name() const;
+    QString symbol() const;
+public: // overridables
+    virtual bool isValid() const;
+    virtual EUnitClassType classType() const;
+    virtual QString classType2Str() const;
+public: // overridables (converting values)
+    virtual bool isLogarithmic() const;
+    virtual double logarithmicFactor() const;
+    virtual bool isConvertible( const CUnit& i_unitDst, double i_fVal = 1.0 ) const;
+    virtual double convertValue( double i_fVal, const CUnit& i_unitDst ) const;
+public: // overridables (findBestUnit)
+    virtual CUnit nextLowerUnit() const;
+    virtual CUnit nextHigherUnit() const;
+    virtual CUnit findBestUnit(
+        double  i_fVal,
+        double* o_pfValue = nullptr,
+        int     i_iDigitsLeadingMax = 3 ) const;
+protected: // instance members
+    CUnitTreeEntry* m_pTreeEntry;
+    QString m_strUniqueName;
 
 }; // class CUnit
 
 //******************************************************************************
-class ZSPHYSVALDLL_API CPhysUnit : public CUnit
+class ZSPHYSVALDLL_API CPhysUnitTreeEntry : public CUnitTreeEntry
 //******************************************************************************
 {
-friend class CPhysSize;
+friend class CPhysSizeTreeEntry;
 public: // class methods
     static QString NameSpace() { return "ZS::PhysVal"; }
-    static QString ClassName() { return "CPhysUnit"; }
+    static QString ClassName() { return "CPhysUnitTreeEntry"; }
 public: // ctors and dtor
-    CPhysUnit();
-    CPhysUnit(
-        CPhysSize*     i_pPhysSize,
-        const QString& i_strPrefix );
-    CPhysUnit(
-        CPhysSize*     i_pPhysSize,
-        bool           i_bIsLogarithmic,
-        const QString& i_strName,
-        const QString& i_strSymbol,
-        const double   i_fMFromBaseOrRefVal );
-    CPhysUnit(CPhysUnit&& i_unit) = delete;
-    CPhysUnit(CPhysUnit& i_unit) = delete;
-    CPhysUnit(const CPhysUnit& i_unit) = delete;
-    virtual ~CPhysUnit();
+    CPhysUnitTreeEntry(
+        CPhysSizeTreeEntry* i_pPhysSize,
+        const QString&      i_strPrefix );
+    CPhysUnitTreeEntry(
+        CPhysSizeTreeEntry* i_pPhysSize,
+        bool                i_bIsLogarithmic,
+        const QString&      i_strName,
+        const QString&      i_strSymbol,
+        const double        i_fMFromBaseOrRefVal );
+    CPhysUnitTreeEntry(CPhysUnitTreeEntry&& i_unit) = delete;
+    CPhysUnitTreeEntry(CPhysUnitTreeEntry& i_unit) = delete;
+    CPhysUnitTreeEntry(const CPhysUnitTreeEntry& i_unit) = delete;
+    virtual ~CPhysUnitTreeEntry();
 public: // operators
-    CPhysUnit& operator=(CPhysUnit& i_other) = delete;
-    CPhysUnit& operator=(const CPhysUnit& i_other) = delete;
-    CPhysUnit& operator=(CPhysUnit&& i_other) = delete;
+    CPhysUnitTreeEntry& operator=(CPhysUnitTreeEntry& i_other) = delete;
+    CPhysUnitTreeEntry& operator=(const CPhysUnitTreeEntry& i_other) = delete;
+    CPhysUnitTreeEntry& operator=(CPhysUnitTreeEntry&& i_other) = delete;
 public: // operators
-    bool operator == ( const CPhysUnit& i_other ) const;
-    bool operator != ( const CPhysUnit& i_other ) const;
+    bool operator == ( const CPhysUnitTreeEntry& i_other ) const;
+    bool operator != ( const CPhysUnitTreeEntry& i_other ) const;
 public: // instance methods
-    CPhysSize* physSize() const;
-    CPhysUnit* getSIUnit() const { return m_pPhysUnitSI; }
+    CPhysSizeTreeEntry* physSize() const;
+    CPhysUnitTreeEntry* getSIUnit() const { return m_pPhysUnitSI; }
     QString prefixStr() const { return m_strPrefix; }
 public: // instance methods
     double getFactorConvertFromSIUnit() const { return m_fctConvertFromSIUnit.m_fM; }
     void setFactorConvertFromSIUnit( double i_fFactor );
-public: // overridables of base class CUnit (converting values)
-    virtual bool isConvertible( const CUnit* i_pUnitDst, double i_fVal = 1.0 ) const;
-    virtual double convertValue( double i_fVal, const CUnit* i_pUnitDst ) const;
+public: // overridables of base class CUnitTreeEntry (converting values)
+    virtual bool isConvertible( const CUnitTreeEntry* i_pUnitDst, double i_fVal = 1.0 ) const;
+    virtual double convertValue( double i_fVal, const CUnitTreeEntry* i_pUnitDst ) const;
 public: // instance methods (converting values)
     double convertFromSIUnit( double i_fVal ) const;
     double convertIntoSIUnit( double i_fVal ) const;
     double convertValue(
-        double           i_fVal,
-        const CPhysUnit* i_pUnitDst,
-        double           i_fValRef,
-        const CPhysUnit* i_pUnitRef ) const;
+        double i_fVal, const CPhysUnitTreeEntry* i_pUnitDst,
+        double i_fValRef, const CPhysUnitTreeEntry* i_pUnitRef ) const;
 public: // instance methods (conversion routine into SI unit)
     const CFctConvert& getFctConvertFromSIUnit() const { return m_fctConvertIntoSIUnit; }
     QString getFctConvertFromSIUnitName() const { return m_fctConvertFromSIUnit.m_strFctConvertName; }
@@ -168,25 +211,24 @@ public: // instance methods (conversion routine into SI unit)
     QString getFctConvertIntoSIUnitName() const { return m_fctConvertIntoSIUnit.m_strFctConvertName; }
 public: // instance methods (conversion routines to convert into units of same quantity)
     int getFctConvertsInternalCount() const { return m_arFctConvertsInternal.size(); }
-    int findFctConvertInternalIdx( const CPhysUnit* i_pPhysUnitDst ) const;
+    int findFctConvertInternalIdx( const CPhysUnitTreeEntry* i_pPhysUnitDst ) const;
     CFctConvert* getFctConvertInternal( int i_idx ) const;
-    CFctConvert* findFctConvertInternal( const CPhysUnit* i_pPhysUnitDst ) const;
-    QString findFctConvertInternalName( const CPhysUnit* i_pPhysUnitDst ) const;
+    CFctConvert* findFctConvertInternal( const CPhysUnitTreeEntry* i_pPhysUnitDst ) const;
+    QString findFctConvertInternalName( const CPhysUnitTreeEntry* i_pPhysUnitDst ) const;
     QString getFctConvertInternalName( int i_idx ) const;
 public: // instance methods (conversion routines to convert into units of other quantities)
     void addFctConvertExternal(
-        CPhysUnit*  i_pPhysUnitDst,
-        CPhysUnit*  i_pPhysUnitRef,
-        EFctConvert i_fctConvert );
+        CPhysUnitTreeEntry* i_pPhysUnitDst,
+        CPhysUnitTreeEntry* i_pPhysUnitRef,
+        EFctConvert         i_fctConvert );
     int getFctConvertsExternalCount() const { return m_arFctConvertsExternal.size(); }
-    int findFctConvertExternalIdx( const CPhysUnit* i_pPhysUnitDst ) const;
+    int findFctConvertExternalIdx( const CPhysUnitTreeEntry* i_pPhysUnitDst ) const;
     CFctConvert* getFctConvertExternal( int i_idx ) const;
-    CFctConvert* findFctConvertExternal( const CPhysUnit* i_pPhysUnitDst ) const;
-    QString findFctConvertExternalName( const CPhysUnit* i_pPhysUnitDst ) const;
+    CFctConvert* findFctConvertExternal( const CPhysUnitTreeEntry* i_pPhysUnitDst ) const;
+    QString findFctConvertExternalName( const CPhysUnitTreeEntry* i_pPhysUnitDst ) const;
     QString getFctConvertExternalName( int i_idx ) const;
 protected: // instance members
-    //CPhysSize* m_pPhysSize;
-    CPhysUnit* m_pPhysUnitSI;
+    CPhysUnitTreeEntry* m_pPhysUnitSI;
     // e.g. M, k, m, etc.
     QString m_strPrefix;
     bool m_bInitialized;
@@ -198,7 +240,33 @@ protected: // instance members
     // Array of direct conversion routines into units of other quantities
     QVector<CFctConvert> m_arFctConvertsExternal;
 
-}; // class CPhysUnit
+}; // class CPhysUnitTreeEntry
+
+//******************************************************************************
+class ZSPHYSVALDLL_API CPhysUnit : public CUnit
+//******************************************************************************
+{
+public: // class methods
+    static QString NameSpace() { return "ZS::PhysVal"; }
+    static QString ClassName() { return "CPhysUnit"; }
+public: // ctors and dtor
+    CPhysUnit();
+    CPhysUnit(CPhysUnit* i_pPhysUnit);
+    CPhysUnit(const CPhysUnit* i_pPhysUnit);
+    CPhysUnit(CPhysUnit& i_physUnit);
+    CPhysUnit(const CPhysUnit& i_physUnit);
+    CPhysUnit(CPhysUnitTreeEntry* i_pPhysUnit);
+    CPhysUnit(const CPhysUnitTreeEntry* i_pPhysUnit);
+    CPhysUnit(CPhysUnitTreeEntry& i_physUnit);
+    CPhysUnit(const CPhysUnitTreeEntry& i_physUnit);
+    CPhysUnit(const QString& i_strUniqueName);
+    virtual ~CPhysUnit();
+public: // operators
+    bool operator == ( const CPhysUnit& i_other ) const;
+    bool operator != ( const CPhysUnit& i_other ) const;
+public: // instance methods
+    CPhysSize physSize() const;
+};
 
 } // namespace PhysVal
 

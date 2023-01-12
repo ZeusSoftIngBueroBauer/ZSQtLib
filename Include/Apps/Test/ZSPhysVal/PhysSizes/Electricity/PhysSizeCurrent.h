@@ -41,12 +41,12 @@ namespace PhysVal
 const double c_fRefValCurrent_1A = 1.0;
 
 //******************************************************************************
-class CPhysSizeCurrent : public ZS::PhysVal::CPhysSize
+class CPhysSizeCurrent : public ZS::PhysVal::CPhysSizeTreeEntry
 //******************************************************************************
 {
 public: // ctors and dtor
     CPhysSizeCurrent(ZS::PhysVal::CIdxTreePhysSizes* i_pIdxTree);
-    CPhysSizeCurrent(ZS::System::CIdxTreeEntry* i_pParentBranch);
+    CPhysSizeCurrent(ZS::PhysVal::CPhysScienceFieldTreeEntry* i_pParentBranch);
     CPhysSizeCurrent(CPhysSizeCurrent&& i_other) = delete;
     CPhysSizeCurrent(CPhysSizeCurrent& i_other) = delete;
     CPhysSizeCurrent(const CPhysSizeCurrent& i_other) = delete;
@@ -56,16 +56,22 @@ public: // operators
     CPhysSizeCurrent& operator=(const CPhysSizeCurrent& i_other) = delete;
     CPhysSizeCurrent& operator=(CPhysSizeCurrent&& i_other) = delete;
 public: // instance members
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryPicoAmpere;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryNanoAmpere;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryMicroAmpere;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryMilliAmpere;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryAmpere;
+public: // instance members
     ZS::PhysVal::CPhysUnit PicoAmpere;
     ZS::PhysVal::CPhysUnit NanoAmpere;
     ZS::PhysVal::CPhysUnit MicroAmpere;
     ZS::PhysVal::CPhysUnit MilliAmpere;
     ZS::PhysVal::CPhysUnit Ampere;
-    ZS::PhysVal::CPhysUnit& pA;
-    ZS::PhysVal::CPhysUnit& nA;
-    ZS::PhysVal::CPhysUnit& uA;
-    ZS::PhysVal::CPhysUnit& mA;
-    ZS::PhysVal::CPhysUnit& A;
+    ZS::PhysVal::CPhysUnit pA;
+    ZS::PhysVal::CPhysUnit nA;
+    ZS::PhysVal::CPhysUnit uA;
+    ZS::PhysVal::CPhysUnit mA;
+    ZS::PhysVal::CPhysUnit A;
 
 }; // class CPhysSizeCurrent
 

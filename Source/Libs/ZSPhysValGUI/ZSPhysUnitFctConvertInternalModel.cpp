@@ -117,7 +117,7 @@ void CModelUnitFctConvertInternal::setKeyInTreeOfRootEntry( const QString& i_str
 
         if( pTreeEntry != nullptr && pTreeEntry->isLeave() )
         {
-            m_pPhysUnit = dynamic_cast<CPhysUnit*>(pTreeEntry);
+            m_pPhysUnit = dynamic_cast<CPhysUnitTreeEntry*>(pTreeEntry);
         }
 
         if( rowCount() > 0 )
@@ -156,11 +156,12 @@ int CModelUnitFctConvertInternal::columnCount( const QModelIndex& /*i_modelIdxPa
 QVariant CModelUnitFctConvertInternal::data( const QModelIndex& i_modelIdx, int i_iRole ) const
 //------------------------------------------------------------------------------
 {
-    QVariant     varData;
-    int          iRow = i_modelIdx.row();
-    int          iCol = i_modelIdx.column();
+    QVariant varData;
+
+    int iRow = i_modelIdx.row();
+    int iCol = i_modelIdx.column();
     CFctConvert* pfctConvert = nullptr;
-    CPhysUnit*   pPhysUnitDst = nullptr;
+    CPhysUnitTreeEntry* pPhysUnitDst = nullptr;
 
     if( !i_modelIdx.isValid() )
     {

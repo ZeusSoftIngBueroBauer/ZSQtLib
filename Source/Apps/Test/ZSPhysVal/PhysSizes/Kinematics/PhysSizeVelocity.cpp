@@ -42,31 +42,34 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CPhysSizeVelocity::CPhysSizeVelocity( CIdxTreePhysSizes* i_pIdxTree ) :
 //------------------------------------------------------------------------------
-    CPhysSize(
+    CPhysSizeTreeEntry(
         /* pIdxTree         */ i_pIdxTree,
         /* strName          */ "Velocity",
         /* strSIUnitName    */ "Meter Per Second",
         /* strSIUnitSymbol  */ "m/s",
         /* strFormulaSymbol */ "v",
         /* bIsPowerRelated  */ false ),
-    MetersPerSecond(
+    m_treeEntryMetersPerSecond(
         /* pPhysSize */ this,
         /* strPrefix */ "" ),
-    KilometersPerHour(
+    m_treeEntryKilometersPerHour(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ false,
         /* strName        */ "Kilometer Per Hour",
         /* strSymbol      */ "km/h",
         /* fMFromSI       */ 3.6 ),
-    MilesPerHour(
+    m_treeEntryMilesPerHour(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ false,
         /* strName        */ "Miles Per Hour",
         /* strSymbol      */ "mi/h",
         /* fMFromSI       */ 3600.0/1.609344e3 ),
-    mps(MetersPerSecond),
-    kmph(KilometersPerHour),
-    milesph(MilesPerHour)
+    MetersPerSecond(m_treeEntryMetersPerSecond),
+    KilometersPerHour(m_treeEntryKilometersPerHour),
+    MilesPerHour(m_treeEntryMilesPerHour),
+    mps(m_treeEntryMetersPerSecond),
+    kmph(m_treeEntryKilometersPerHour),
+    milesph(m_treeEntryMilesPerHour)
 {
     // Call function of base class CPhysSize to initialize the physical size together
     // with its units (e.g. to create the field with internal conversion routines
@@ -76,33 +79,36 @@ CPhysSizeVelocity::CPhysSizeVelocity( CIdxTreePhysSizes* i_pIdxTree ) :
 } // ctor
 
 //------------------------------------------------------------------------------
-CPhysSizeVelocity::CPhysSizeVelocity( CIdxTreeEntry* i_pParentBranch ) :
+CPhysSizeVelocity::CPhysSizeVelocity( CPhysScienceFieldTreeEntry* i_pParentBranch ) :
 //------------------------------------------------------------------------------
-    CPhysSize(
+    CPhysSizeTreeEntry(
         /* pParentBranch    */ i_pParentBranch,
         /* strName          */ "Velocity",
         /* strSIUnitName    */ "Meter Per Second",
         /* strSIUnitSymbol  */ "m/s",
         /* strFormulaSymbol */ "v",
         /* bIsPowerRelated  */ false ),
-    MetersPerSecond(
+    m_treeEntryMetersPerSecond(
         /* pPhysSize */ this,
         /* strPrefix */ "" ),
-    KilometersPerHour(
+    m_treeEntryKilometersPerHour(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ false,
         /* strName        */ "Kilometer Per Hour",
         /* strSymbol      */ "km/h",
         /* fMFromSI       */ 3.6 ),
-    MilesPerHour(
+    m_treeEntryMilesPerHour(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ false,
         /* strName        */ "Miles Per Hour",
         /* strSymbol      */ "mi/h",
         /* fMFromSI       */ 3600.0/1.609344e3 ),
-    mps(MetersPerSecond),
-    kmph(KilometersPerHour),
-    milesph(MilesPerHour)
+    MetersPerSecond(m_treeEntryMetersPerSecond),
+    KilometersPerHour(m_treeEntryKilometersPerHour),
+    MilesPerHour(m_treeEntryMilesPerHour),
+    mps(m_treeEntryMetersPerSecond),
+    kmph(m_treeEntryKilometersPerHour),
+    milesph(m_treeEntryMilesPerHour)
 {
     // Call function of base class CPhysSize to initialize the physical size together
     // with its units (e.g. to create the field with internal conversion routines

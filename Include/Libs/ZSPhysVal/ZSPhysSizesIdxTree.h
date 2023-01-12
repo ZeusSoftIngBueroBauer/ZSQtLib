@@ -38,10 +38,11 @@ namespace ZS
 {
 namespace PhysVal
 {
-class CUnit;
-class CUnitGrp;
-class CPhysSize;
-class CPhysUnit;
+class CPhysScienceFieldTreeEntry;
+class CUnitGrpTreeEntry;
+class CUnitTreeEntry;
+class CPhysSizeTreeEntry;
+class CPhysUnitTreeEntry;
 
 //******************************************************************************
 class ZSPHYSVALDLL_API CIdxTreePhysSizes : public ZS::System::CIdxTree
@@ -51,14 +52,11 @@ public: // class methods
     static QString NameSpace() { return "ZS::PhysVal"; }
     static QString ClassName() { return "CIdxTreePhysSizes"; }
 public: // class methods
-    static CIdxTreePhysSizes* CreateInstance( const QString& i_strObjName = "PhysSizes" );
-    static CIdxTreePhysSizes* GetInstance( const QString& i_strObjName = "PhysSizes" );
-    static int ReleaseInstance( const QString& i_strObjName = "PhysSizes" );
-    static int ReleaseInstance( CIdxTreePhysSizes* i_pIdxTree );
+    static CIdxTreePhysSizes* CreateInstance();
+    static CIdxTreePhysSizes* GetInstance();
+    static int ReleaseInstance();
 public: // ctors and dtor
-    CIdxTreePhysSizes(
-        const QString& i_strObjName = "PhysSizes",
-        ZS::System::CIdxTreeEntry* i_pRootTreeEntry = nullptr );
+    CIdxTreePhysSizes(ZS::System::CIdxTreeEntry* i_pRootTreeEntry = nullptr);
     ~CIdxTreePhysSizes();
 public: // instance methods
     virtual QString nameSpace() const { return NameSpace(); }
@@ -67,20 +65,21 @@ public: // instance methods
     //CUnitGrp* getUnitClassTypeGroup( EUnitClassType i_classType );
     //CUnitGrp* getPhysScienceFieldUnitGroup( EPhysScienceField i_scienceField );
 public: // instance methods
-    CUnitGrp* findUnitGrp( const QString& i_strKeyInTree );
-    CPhysSize* findPhysSize( const QString& i_strKeyInTree );
+    CPhysScienceFieldTreeEntry* findPhysScienceField( const QString& i_strKeyInTree );
+    CUnitGrpTreeEntry* findUnitGrp( const QString& i_strKeyInTree );
+    CPhysSizeTreeEntry* findPhysSize( const QString& i_strKeyInTree );
 public: // instance methods
-    CUnit* findUnit( const QString& i_strKeyInTree );
-    CUnit* findUnit( const QString& i_strGrpKey, const QString& i_strUnit );
-    CPhysUnit* findPhysUnit( const QString& i_strKeyInTree );
-    CPhysUnit* findPhysUnit( const QString& i_strGrpKey, const QString& i_strUnit );
+    CUnitTreeEntry* findUnit( const QString& i_strKeyInTree );
+    CUnitTreeEntry* findUnit( const QString& i_strGrpKey, const QString& i_strUnit );
+    CPhysUnitTreeEntry* findPhysUnit( const QString& i_strKeyInTree );
+    CPhysUnitTreeEntry* findPhysUnit( const QString& i_strGrpKey, const QString& i_strUnit );
 protected: // reference counter
     int getRefCount() const;
     int incrementRefCount();
     int decrementRefCount();
 protected: // class members
-    /*! < Key is name of the index tree. */
-    static QHash<QString, CIdxTreePhysSizes*> s_hshpIdxTrees;
+    /*!< Singleton class. */
+    static CIdxTreePhysSizes* s_pTheInst;
 protected: // instance members
     /*<! Reference counter for createInstance and releaseInstance. */
     int m_iRefCount;

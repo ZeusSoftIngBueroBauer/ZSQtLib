@@ -40,7 +40,7 @@ using namespace ZS::PhysVal;
 
 
 /*******************************************************************************
-class CPhysSize : public CUnitGrp
+class CPhysSizeTreeEntry : public CUnitGrpTreeEntry
 *******************************************************************************/
 
 /*==============================================================================
@@ -62,7 +62,7 @@ public: // ctors and dtor
     @param [in] i_bIsPowerRelated
         true if X/dB = 10*log(X/X0), false if e.g. X/dB = 20*log(X/X0)
 */
-CPhysSize::CPhysSize(
+CPhysSizeTreeEntry::CPhysSizeTreeEntry(
     CIdxTreePhysSizes* i_pIdxTree,
     const QString&     i_strName,
     const QString&     i_strSIUnitName,
@@ -70,10 +70,7 @@ CPhysSize::CPhysSize(
     const QString&     i_strFormulaSymbol,
     bool               i_bIsPowerRelated ) :
 //------------------------------------------------------------------------------
-    CUnitGrp(
-        /* pParentBranch */ i_pIdxTree,
-        /* type          */ EUnitClassType::PhysSize,
-        /* strName       */ i_strName ),
+    CUnitGrpTreeEntry(i_pIdxTree, EUnitClassType::PhysSize, i_strName),
     m_strSIUnitName(i_strSIUnitName),
     m_strSIUnitSymbol(i_strSIUnitSymbol),
     m_pPhysUnitSI(nullptr),
@@ -98,18 +95,15 @@ CPhysSize::CPhysSize(
     @param [in] i_bIsPowerRelated
         true if X/dB = 10*log(X/X0), false if e.g. X/dB = 20*log(X/X0)
 */
-CPhysSize::CPhysSize(
-    CIdxTreeEntry* i_pParentBranch,
+CPhysSizeTreeEntry::CPhysSizeTreeEntry(
+    CPhysScienceFieldTreeEntry* i_pParentBranch,
     const QString& i_strName,
     const QString& i_strSIUnitName,
     const QString& i_strSIUnitSymbol,
     const QString& i_strFormulaSymbol,
     bool           i_bIsPowerRelated ) :
 //------------------------------------------------------------------------------
-    CUnitGrp(
-        /* pParentBranch */ i_pParentBranch,
-        /* type          */ EUnitClassType::PhysSize,
-        /* strName       */ i_strName ),
+    CUnitGrpTreeEntry(i_pParentBranch, EUnitClassType::PhysSize, i_strName),
     m_strSIUnitName(i_strSIUnitName),
     m_strSIUnitSymbol(i_strSIUnitSymbol),
     m_pPhysUnitSI(nullptr),
@@ -122,7 +116,7 @@ CPhysSize::CPhysSize(
 //------------------------------------------------------------------------------
 /*! @brief Destroys the group of physical units.
 */
-CPhysSize::~CPhysSize()
+CPhysSizeTreeEntry::~CPhysSizeTreeEntry()
 //------------------------------------------------------------------------------
 {
     m_pPhysUnitSI = nullptr;
@@ -134,7 +128,7 @@ public: // operators
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool CPhysSize::operator == ( const CPhysSize& i_physsizeOther ) const
+bool CPhysSizeTreeEntry::operator == ( const CPhysSizeTreeEntry& i_physsizeOther ) const
 //------------------------------------------------------------------------------
 {
     if( this != &i_physsizeOther )
@@ -146,7 +140,7 @@ bool CPhysSize::operator == ( const CPhysSize& i_physsizeOther ) const
 } // operator ==
 
 //------------------------------------------------------------------------------
-bool CPhysSize::operator != ( const CPhysSize& i_physsizeOther ) const
+bool CPhysSizeTreeEntry::operator != ( const CPhysSizeTreeEntry& i_physsizeOther ) const
 //------------------------------------------------------------------------------
 {
     return !(*this == i_physsizeOther );
@@ -158,7 +152,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool CPhysSize::initialize( bool i_bCreateFindBestChainedList )
+bool CPhysSizeTreeEntry::initialize( bool i_bCreateFindBestChainedList )
 //------------------------------------------------------------------------------
 {
     // The physical size scans all its physical units and will set the default
@@ -166,26 +160,12 @@ bool CPhysSize::initialize( bool i_bCreateFindBestChainedList )
     // correspondingly (if no direct conversion routines into the SI unit have
     // not yet been set).
 
-    //CUnit*       pUnit;
-    //CPhysUnit*   pPhysUnitPrev = nullptr;
-    //CPhysUnit*   pPhysUnitCurr = nullptr;
-    //CPhysUnit*   pPhysUnitNext = nullptr;
-    //CPhysUnit*   pPhysUnitDst = nullptr;
-    //CFctConvert* pFctConvertIntoSIUnitSrc = nullptr;
-    //CFctConvert* pFctConvertFromSIUnitDst = nullptr;
-    //double       fMSrcInto;
-    //double       fTSrcInto;
-    //double       fMDstFrom;
-    //double       fTDstFrom;
-    //int          idxUnit;
-    //int          idxUnitDst;
-
     // Find the SI unit of this physical size
     //---------------------------------------
 
     int iUnitsCount = 0;
     for( int idxUnit = 0; idxUnit < m_arpTreeEntries.size(); idxUnit++ ) {
-        CPhysUnit* pUnit = dynamic_cast<CPhysUnit*>(m_arpTreeEntries[idxUnit]);
+        CPhysUnitTreeEntry* pUnit = dynamic_cast<CPhysUnitTreeEntry*>(m_arpTreeEntries[idxUnit]);
         if( pUnit != nullptr ) {
             iUnitsCount++;
             if( pUnit->name() == m_strSIUnitName && pUnit->symbol() == m_strSIUnitSymbol ) {
@@ -225,7 +205,7 @@ bool CPhysSize::initialize( bool i_bCreateFindBestChainedList )
 
     for( int idxUnit = 0; idxUnit < m_arpTreeEntries.size(); idxUnit++ )
     {
-        CPhysUnit* pUnit = dynamic_cast<CPhysUnit*>(m_arpTreeEntries[idxUnit]);
+        CPhysUnitTreeEntry* pUnit = dynamic_cast<CPhysUnitTreeEntry*>(m_arpTreeEntries[idxUnit]);
         if( pUnit != nullptr ) {
             pUnit->m_pPhysUnitSI = m_pPhysUnitSI;
             pUnit->m_fctConvertFromSIUnit.m_pPhysUnitSrc = m_pPhysUnitSI;
@@ -239,11 +219,11 @@ bool CPhysSize::initialize( bool i_bCreateFindBestChainedList )
     //-----------------------------------------------------------
 
     if( i_bCreateFindBestChainedList ) {
-        CPhysUnit* pPhysUnitCurr = nullptr;
-        CPhysUnit* pPhysUnitNext = nullptr;
+        CPhysUnitTreeEntry* pPhysUnitCurr = nullptr;
+        CPhysUnitTreeEntry* pPhysUnitNext = nullptr;
         int idxUnit = 0;
-        for( CPhysUnit* pPhysUnitPrev = nullptr; idxUnit < m_arpTreeEntries.size(); idxUnit++ ) {
-            CPhysUnit* pUnit = dynamic_cast<CPhysUnit*>(m_arpTreeEntries[idxUnit]);
+        for( CPhysUnitTreeEntry* pPhysUnitPrev = nullptr; idxUnit < m_arpTreeEntries.size(); idxUnit++ ) {
+            CPhysUnitTreeEntry* pUnit = dynamic_cast<CPhysUnitTreeEntry*>(m_arpTreeEntries[idxUnit]);
             if( idxUnit == 0 ) {
                 pPhysUnitCurr = pUnit;
             }
@@ -254,7 +234,7 @@ bool CPhysSize::initialize( bool i_bCreateFindBestChainedList )
                 break;
             }
             if( idxUnit < m_arpTreeEntries.size()-1 ) {
-                pPhysUnitNext = dynamic_cast<CPhysUnit*>(m_arpTreeEntries[idxUnit+1]);
+                pPhysUnitNext = dynamic_cast<CPhysUnitTreeEntry*>(m_arpTreeEntries[idxUnit+1]);
             }
             else {
                 pPhysUnitNext = nullptr;
@@ -272,7 +252,7 @@ bool CPhysSize::initialize( bool i_bCreateFindBestChainedList )
 
         for( ; idxUnit < m_arpTreeEntries.size(); idxUnit++ )
         {
-            CPhysUnit* pUnit = dynamic_cast<CPhysUnit*>(m_arpTreeEntries[idxUnit]);
+            CPhysUnitTreeEntry* pUnit = dynamic_cast<CPhysUnitTreeEntry*>(m_arpTreeEntries[idxUnit]);
             if( !pUnit->m_bIsLogarithmic )
             {
                 throw ZS::System::CException(
@@ -289,7 +269,7 @@ bool CPhysSize::initialize( bool i_bCreateFindBestChainedList )
 
     for( int idxUnit = 0; idxUnit < m_arpTreeEntries.size(); idxUnit++ )
     {
-        CPhysUnit* pUnit = dynamic_cast<CPhysUnit*>(m_arpTreeEntries[idxUnit]);
+        CPhysUnitTreeEntry* pUnit = dynamic_cast<CPhysUnitTreeEntry*>(m_arpTreeEntries[idxUnit]);
         pUnit->m_arFctConvertsInternal.resize(m_arpTreeEntries.size());
     }
 
@@ -298,7 +278,7 @@ bool CPhysSize::initialize( bool i_bCreateFindBestChainedList )
 
     for( int idxUnitSrc = 0; idxUnitSrc < m_arpTreeEntries.size(); idxUnitSrc++ )
     {
-        CPhysUnit* pUnitSrc = dynamic_cast<CPhysUnit*>(m_arpTreeEntries[idxUnitSrc]);
+        CPhysUnitTreeEntry* pUnitSrc = dynamic_cast<CPhysUnitTreeEntry*>(m_arpTreeEntries[idxUnitSrc]);
 
         CFctConvert* pFctConvertIntoSIUnitSrc = &pUnitSrc->m_fctConvertIntoSIUnit;
 
@@ -307,7 +287,7 @@ bool CPhysSize::initialize( bool i_bCreateFindBestChainedList )
 
         for( int idxUnitDst = 0; idxUnitDst < m_arpTreeEntries.size(); idxUnitDst++ )
         {
-            CPhysUnit* pUnitDst = dynamic_cast<CPhysUnit*>(m_arpTreeEntries[idxUnitDst]);
+            CPhysUnitTreeEntry* pUnitDst = dynamic_cast<CPhysUnitTreeEntry*>(m_arpTreeEntries[idxUnitDst]);
 
             CFctConvert* pFctConvertFromSIUnitDst = &pUnitDst->m_fctConvertFromSIUnit;
 
@@ -375,7 +355,7 @@ bool CPhysSize::initialize( bool i_bCreateFindBestChainedList )
 
     for( int idxUnit = 0; idxUnit < m_arpTreeEntries.size(); idxUnit++ )
     {
-        CPhysUnit* pUnit = dynamic_cast<CPhysUnit*>(m_arpTreeEntries[idxUnit]);
+        CPhysUnitTreeEntry* pUnit = dynamic_cast<CPhysUnitTreeEntry*>(m_arpTreeEntries[idxUnit]);
         pUnit->m_bInitialized = true;
     }
 
@@ -386,9 +366,9 @@ bool CPhysSize::initialize( bool i_bCreateFindBestChainedList )
 } // initialize
 
 //------------------------------------------------------------------------------
-void CPhysSize::addFctConvert(
-    CPhysSize*  i_pPhysSizeDst,
-    CPhysSize*  i_pPhysSizeRef,
+void CPhysSizeTreeEntry::addFctConvert(
+    CPhysSizeTreeEntry*  i_pPhysSizeDst,
+    CPhysSizeTreeEntry*  i_pPhysSizeRef,
     EFctConvert i_fctConvert )
 //------------------------------------------------------------------------------
 {
@@ -421,13 +401,13 @@ void CPhysSize::addFctConvert(
 
     for( int idxChildSrc = 0; idxChildSrc < m_arpTreeEntries.size(); idxChildSrc++ )
     {
-        CPhysUnit* pPhysUnitSrc = getPhysUnit(idxChildSrc);
+        CPhysUnitTreeEntry* pPhysUnitSrc = getPhysUnit(idxChildSrc);
 
         if( pPhysUnitSrc != nullptr && pPhysUnitSrc->isLogarithmic() )
         {
             for( int idxChildDst = 0; idxChildDst < i_pPhysSizeDst->m_arpTreeEntries.size(); idxChildDst++ )
             {
-                CPhysUnit* pPhysUnitDst = i_pPhysSizeDst->getPhysUnit(idxChildDst);
+                CPhysUnitTreeEntry* pPhysUnitDst = i_pPhysSizeDst->getPhysUnit(idxChildDst);
 
                 if( pPhysUnitDst != nullptr && pPhysUnitDst->isLogarithmic() )
                 {
@@ -443,31 +423,31 @@ void CPhysSize::addFctConvert(
 } // addFctConvert
 
 //------------------------------------------------------------------------------
-CPhysUnit* CPhysSize::getPhysUnit( int i_idx )
+CPhysUnitTreeEntry* CPhysSizeTreeEntry::getPhysUnit( int i_idx ) const
 //------------------------------------------------------------------------------
 {
-    return dynamic_cast<CPhysUnit*>(at(i_idx));
+    return dynamic_cast<CPhysUnitTreeEntry*>(at(i_idx));
 }
 
 //------------------------------------------------------------------------------
-CPhysUnit* CPhysSize::findPhysUnit( const QString& i_strSymbolOrName )
+CPhysUnitTreeEntry* CPhysSizeTreeEntry::findPhysUnit( const QString& i_strSymbolOrName ) const
 //------------------------------------------------------------------------------
 {
-    return dynamic_cast<CPhysUnit*>(findUnit(i_strSymbolOrName));
+    return dynamic_cast<CPhysUnitTreeEntry*>(findUnit(i_strSymbolOrName));
 }
 
 //------------------------------------------------------------------------------
-CPhysUnit* CPhysSize::findPhysUnitBySymbol( const QString& i_strSymbol )
+CPhysUnitTreeEntry* CPhysSizeTreeEntry::findPhysUnitBySymbol( const QString& i_strSymbol ) const
 //------------------------------------------------------------------------------
 {
-    return dynamic_cast<CPhysUnit*>(findUnitBySymbol(i_strSymbol));
+    return dynamic_cast<CPhysUnitTreeEntry*>(findUnitBySymbol(i_strSymbol));
 }
 
 //------------------------------------------------------------------------------
-CPhysUnit* CPhysSize::findPhysUnitByName( const QString& i_strName )
+CPhysUnitTreeEntry* CPhysSizeTreeEntry::findPhysUnitByName( const QString& i_strName ) const
 //------------------------------------------------------------------------------
 {
-    return dynamic_cast<CPhysUnit*>(findUnitByName(i_strName));
+    return dynamic_cast<CPhysUnitTreeEntry*>(findUnitByName(i_strName));
 }
 
 /*==============================================================================
@@ -480,9 +460,205 @@ public: // overridables
     @param i_pPhysUnitRef [in]
         nullptr to specify the SI unit.
 */
-double CPhysSize::getRefVal( CPhysUnit* /*i_pPhysUnitRef*/ ) const
+double CPhysSizeTreeEntry::getRefVal( CPhysUnitTreeEntry* /*i_pPhysUnitRef*/ ) const
 //------------------------------------------------------------------------------
 {
     QString strAddErrInfo = "No reference value defined for physical size " + keyInTree();
     throw CException( __FILE__, __LINE__, EResultInvalidRefVal, strAddErrInfo );
+}
+
+
+/*******************************************************************************
+class CPhysSize : public CUnitGrp
+*******************************************************************************/
+
+/*==============================================================================
+public: // ctors and dtor
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CPhysSize::CPhysSize() :
+//------------------------------------------------------------------------------
+    CUnitGrp()
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysSize::CPhysSize(CPhysSize* i_pPhysSize) :
+//------------------------------------------------------------------------------
+    CUnitGrp(i_pPhysSize)
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysSize::CPhysSize(const CPhysSize* i_pPhysSize) :
+//------------------------------------------------------------------------------
+    CUnitGrp(i_pPhysSize)
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysSize::CPhysSize(CPhysSize& i_physSize) :
+//------------------------------------------------------------------------------
+    CUnitGrp(i_physSize)
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysSize::CPhysSize(const CPhysSize& i_physSize) :
+//------------------------------------------------------------------------------
+    CUnitGrp(i_physSize)
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysSize::CPhysSize(CPhysSizeTreeEntry* i_pPhysSize) :
+//------------------------------------------------------------------------------
+    CUnitGrp(i_pPhysSize)
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysSize::CPhysSize(const CPhysSizeTreeEntry* i_pPhysSize) :
+//------------------------------------------------------------------------------
+    CUnitGrp(i_pPhysSize)
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysSize::CPhysSize(CPhysSizeTreeEntry& i_physSize) :
+//------------------------------------------------------------------------------
+    CUnitGrp(&i_physSize)
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysSize::CPhysSize(const CPhysSizeTreeEntry& i_physSize) :
+//------------------------------------------------------------------------------
+    CUnitGrp(&i_physSize)
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysSize::CPhysSize(const QString& i_strUniqueName) :
+//------------------------------------------------------------------------------
+    CUnitGrp(i_strUniqueName)
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysSize::~CPhysSize()
+//------------------------------------------------------------------------------
+{
+}
+
+/*==============================================================================
+public: // operators
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+bool CPhysSize::operator == ( const CPhysSize& i_other ) const
+//------------------------------------------------------------------------------
+{
+    bool bEqual = (m_pTreeEntry == i_other.m_pTreeEntry);
+    if( bEqual ) bEqual = (m_strUniqueName.compare(i_other.m_strUniqueName) == 0);
+    return bEqual;
+}
+
+//------------------------------------------------------------------------------
+bool CPhysSize::operator != ( const CPhysSize& i_other ) const
+//------------------------------------------------------------------------------
+{
+    return !(*this == i_other);
+}
+
+/*==============================================================================
+public: // overridables of base class CUnitGrp
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+bool CPhysSize::isValid() const
+//------------------------------------------------------------------------------
+{
+    return (m_pTreeEntry != nullptr);
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QString CPhysSize::getSIUnitName() const
+//------------------------------------------------------------------------------
+{
+    CPhysSizeTreeEntry* pPhysSize = dynamic_cast<CPhysSizeTreeEntry*>(m_pTreeEntry);
+    return pPhysSize == nullptr ? "" : pPhysSize->getSIUnitName();
+}
+
+//------------------------------------------------------------------------------
+QString CPhysSize::getSIUnitSymbol() const
+//------------------------------------------------------------------------------
+{
+    CPhysSizeTreeEntry* pPhysSize = dynamic_cast<CPhysSizeTreeEntry*>(m_pTreeEntry);
+    return pPhysSize == nullptr ? "" : pPhysSize->getSIUnitSymbol();
+}
+
+//------------------------------------------------------------------------------
+CPhysUnit CPhysSize::getSIUnit() const
+//------------------------------------------------------------------------------
+{
+    CPhysSizeTreeEntry* pPhysSize = dynamic_cast<CPhysSizeTreeEntry*>(m_pTreeEntry);
+    return pPhysSize == nullptr ? CPhysUnit() : pPhysSize->getSIUnit();
+}
+
+//------------------------------------------------------------------------------
+QString CPhysSize::getFormulaSymbol() const
+//------------------------------------------------------------------------------
+{
+    CPhysSizeTreeEntry* pPhysSize = dynamic_cast<CPhysSizeTreeEntry*>(m_pTreeEntry);
+    return pPhysSize == nullptr ? "" : pPhysSize->getFormulaSymbol();
+}
+
+//------------------------------------------------------------------------------
+bool CPhysSize::isPowerRelated() const
+//------------------------------------------------------------------------------
+{
+    CPhysSizeTreeEntry* pPhysSize = dynamic_cast<CPhysSizeTreeEntry*>(m_pTreeEntry);
+    return pPhysSize == nullptr ? "" : pPhysSize->isPowerRelated();
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CPhysUnit CPhysSize::getPhysUnit( int i_idx ) const
+//------------------------------------------------------------------------------
+{
+    CPhysSizeTreeEntry* pPhysSize = dynamic_cast<CPhysSizeTreeEntry*>(m_pTreeEntry);
+    return pPhysSize == nullptr ? CPhysUnit() : pPhysSize->getPhysUnit(i_idx);
+}
+
+//------------------------------------------------------------------------------
+CPhysUnit CPhysSize::findPhysUnit( const QString& i_strSymbolOrName ) const
+//------------------------------------------------------------------------------
+{
+    CPhysSizeTreeEntry* pPhysSize = dynamic_cast<CPhysSizeTreeEntry*>(m_pTreeEntry);
+    return pPhysSize == nullptr ? CPhysUnit() : pPhysSize->findPhysUnit(i_strSymbolOrName);
+}
+
+//------------------------------------------------------------------------------
+CPhysUnit CPhysSize::findPhysUnitBySymbol( const QString& i_strSymbol ) const
+//------------------------------------------------------------------------------
+{
+    CPhysSizeTreeEntry* pPhysSize = dynamic_cast<CPhysSizeTreeEntry*>(m_pTreeEntry);
+    return pPhysSize == nullptr ? CPhysUnit() : pPhysSize->findPhysUnitBySymbol(i_strSymbol);
+}
+
+//------------------------------------------------------------------------------
+CPhysUnit CPhysSize::findPhysUnitByName( const QString& i_strName ) const
+//------------------------------------------------------------------------------
+{
+    CPhysSizeTreeEntry* pPhysSize = dynamic_cast<CPhysSizeTreeEntry*>(m_pTreeEntry);
+    return pPhysSize == nullptr ? CPhysUnit() : pPhysSize->findPhysUnitByName(i_strName);
 }

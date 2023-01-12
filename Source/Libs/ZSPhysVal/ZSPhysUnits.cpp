@@ -25,7 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSPhysVal/ZSPhysUnits.h"
-#include "ZSPhysVal/ZSPhysSize.h"
+#include "ZSPhysVal/ZSPhysSizesIdxTree.h"
 #include "ZSPhysVal/ZSPhysValExceptions.h"
 #include "ZSSys/ZSSysIdxTree.h"
 #include "ZSSys/ZSSysErrResult.h"
@@ -41,52 +41,22 @@ Exported methods
 *******************************************************************************/
 
 //------------------------------------------------------------------------------
-bool ZS::PhysVal::areOfSameUnitGroup( const CUnitGrp* i_pUnitGrp1, const CUnit* i_pUnit2 )
+bool ZS::PhysVal::areOfSameUnitGroup( const CUnitGrp& i_unitGrp1, const CUnit& i_unit2 )
 //------------------------------------------------------------------------------
 {
-    if( i_pUnitGrp1 != nullptr && i_pUnit2 == nullptr )
-    {
-        return false;
-    }
-    if( i_pUnitGrp1 == nullptr && i_pUnit2 != nullptr )
-    {
-        return false;
-    }
-    if( i_pUnitGrp1 != nullptr && i_pUnit2 != nullptr )
-    {
-        if( i_pUnitGrp1 != i_pUnit2->unitGroup() )
-        {
-            return false;
-        }
-    }
-    return true;
+    return i_unitGrp1 == i_unit2.unitGroup();
 }
 
 //------------------------------------------------------------------------------
-bool ZS::PhysVal::areOfSameUnitGroup( const CUnit* i_pUnit1, const CUnit* i_pUnit2 )
+bool ZS::PhysVal::areOfSameUnitGroup( const CUnit& i_unit1, const CUnit& i_unit2 )
 //------------------------------------------------------------------------------
 {
-    if( i_pUnit1 != nullptr && i_pUnit2 == nullptr )
-    {
-        return false;
-    }
-    if( i_pUnit1 == nullptr && i_pUnit2 != nullptr )
-    {
-        return false;
-    }
-    if( i_pUnit1 != nullptr && i_pUnit2 != nullptr )
-    {
-        if( i_pUnit1->unitGroup() != i_pUnit2->unitGroup() )
-        {
-            return false;
-        }
-    }
-    return true;
+    return i_unit1.unitGroup() == i_unit2.unitGroup();
 }
 
 
 /*******************************************************************************
-class CUnit
+class CUnitTreeEntry
 *******************************************************************************/
 
 /*==============================================================================
@@ -94,25 +64,12 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CUnit::CUnit() :
-//------------------------------------------------------------------------------
-    CIdxTreeEntry(EIdxTreeEntryType::Leave, ""),
-    m_classType(EUnitClassType::Undefined),
-    m_strSymbol(),
-    m_bIsLogarithmic(false),
-    m_fLogFactor(0.0),
-    m_pNextLower(nullptr),
-    m_pNextHigher(nullptr)
-{
-} // ctor
-
-//------------------------------------------------------------------------------
-CUnit::CUnit(
-    CUnitGrp*      i_pParentBranch,
-    bool           i_bIsLogarithmic,
-    double         i_fLogFactor,
-    const QString& i_strName,
-    const QString& i_strSymbol ) :
+CUnitTreeEntry::CUnitTreeEntry(
+    CUnitGrpTreeEntry* i_pParentBranch,
+    bool               i_bIsLogarithmic,
+    double             i_fLogFactor,
+    const QString&     i_strName,
+    const QString&     i_strSymbol ) :
 //------------------------------------------------------------------------------
     CIdxTreeEntry(EIdxTreeEntryType::Leave, i_strName),
     m_classType(i_pParentBranch->classType()),
@@ -141,7 +98,7 @@ CUnit::CUnit(
 
     @param i_unit [in] Unit instance to be moved.
 */
-CUnit::CUnit(CUnit&& i_other) :
+CUnitTreeEntry::CUnitTreeEntry(CUnitTreeEntry&& i_other) :
 //------------------------------------------------------------------------------
     CIdxTreeEntry(std::move(i_other)),
     m_classType(i_other.m_classType),
@@ -173,7 +130,7 @@ CUnit::CUnit(CUnit&& i_other) :
 }
 
 //------------------------------------------------------------------------------
-CUnit::~CUnit()
+CUnitTreeEntry::~CUnitTreeEntry()
 //------------------------------------------------------------------------------
 {
     // Remove this entry from the chain of next lower and next higher units.
@@ -200,7 +157,7 @@ public: // operators
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CUnit& CUnit::operator=(CUnit&& i_other)
+CUnitTreeEntry& CUnitTreeEntry::operator=(CUnitTreeEntry&& i_other)
 //------------------------------------------------------------------------------
 {
     // Remove this entry from the chain of next lower and next higher units.
@@ -237,7 +194,7 @@ public: // operators
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool CUnit::operator == ( const CUnit& i_other ) const
+bool CUnitTreeEntry::operator == ( const CUnitTreeEntry& i_other ) const
 //------------------------------------------------------------------------------
 {
     if( this != &i_other )
@@ -248,7 +205,7 @@ bool CUnit::operator == ( const CUnit& i_other ) const
 }
 
 //------------------------------------------------------------------------------
-bool CUnit::operator != ( const CUnit& i_other ) const
+bool CUnitTreeEntry::operator != ( const CUnitTreeEntry& i_other ) const
 //------------------------------------------------------------------------------
 {
     return !(*this == i_other);
@@ -259,25 +216,25 @@ public: // instance methods (configuration)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QString CUnit::classType2Str() const
+QString CUnitTreeEntry::classType2Str() const
 //------------------------------------------------------------------------------
 {
     return CEnumUnitClassType(m_classType).toString();
 }
 
 //------------------------------------------------------------------------------
-CUnitGrp* CUnit::unitGroup() const
+CUnitGrpTreeEntry* CUnitTreeEntry::unitGroup() const
 //------------------------------------------------------------------------------
 {
-    return dynamic_cast<CUnitGrp*>(m_pParentBranch);
-};
+    return dynamic_cast<CUnitGrpTreeEntry*>(m_pParentBranch);
+}
 
 /*==============================================================================
 public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CUnit::setNextLowerHigherUnits( CUnit* i_pNextLower, CUnit* i_pNextHigher )
+void CUnitTreeEntry::setNextLowerHigherUnits( CUnitTreeEntry* i_pNextLower, CUnitTreeEntry* i_pNextHigher )
 //------------------------------------------------------------------------------
 {
     m_pNextLower = i_pNextLower;
@@ -285,7 +242,7 @@ void CUnit::setNextLowerHigherUnits( CUnit* i_pNextLower, CUnit* i_pNextHigher )
 }
 
 //------------------------------------------------------------------------------
-CUnit* CUnit::findBestUnit(
+CUnitTreeEntry* CUnitTreeEntry::findBestUnit(
     double  i_fVal,
     double* o_pfVal,
     int     i_iDigitsLeadingMax ) const
@@ -294,9 +251,9 @@ CUnit* CUnit::findBestUnit(
     double       fValAbs       = fabs(i_fVal);
     double       fValAbsPrev   = fValAbs;
     double       fValSign      = i_fVal >= 0.0 ? 1.0 : -1.0;
-    const CUnit* pUnitBest = this;
-    const CUnit* pUnitPrev = this;
-    const CUnit* pUnitNext = nullptr;
+    const CUnitTreeEntry* pUnitBest = this;
+    const CUnitTreeEntry* pUnitPrev = this;
+    const CUnitTreeEntry* pUnitNext = nullptr;
     int          iNextUnitDir; // 0 = AbortSearch, -1 = LowerUnit, +1 = HigherUnit
     int          iDigitsLeadingMax = i_iDigitsLeadingMax;
     int          iDigitsLeadingPrev;
@@ -431,13 +388,13 @@ CUnit* CUnit::findBestUnit(
     {
         *o_pfVal = fValSign*fValAbs;
     }
-    return const_cast<CUnit*>(pUnitBest);
+    return const_cast<CUnitTreeEntry*>(pUnitBest);
 
 } // findBestUnit
 
 
 /*******************************************************************************
-class CPhysUnit : public CUnit
+class CUnit
 *******************************************************************************/
 
 /*==============================================================================
@@ -445,21 +402,251 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Constructor for a dummy unit.
-*/
-CPhysUnit::CPhysUnit() :
+CUnit::CUnit() :
 //------------------------------------------------------------------------------
-    CUnit(),
-    m_pPhysUnitSI(nullptr),
-    m_strPrefix(),
-    m_bInitialized(false),
-    //m_iPhysSizeRowIdx(-1),
-    m_fctConvertFromSIUnit(),
-    m_fctConvertIntoSIUnit(),
-    m_arFctConvertsInternal(),
-    m_arFctConvertsExternal()
+    m_pTreeEntry(nullptr),
+    m_strUniqueName()
 {
-} // ctor
+}
+
+//------------------------------------------------------------------------------
+CUnit::CUnit(CUnit* i_pUnit) :
+//------------------------------------------------------------------------------
+    m_pTreeEntry(i_pUnit->m_pTreeEntry),
+    m_strUniqueName(i_pUnit->m_strUniqueName)
+{
+}
+
+//------------------------------------------------------------------------------
+CUnit::CUnit(const CUnit* i_pUnit) :
+//------------------------------------------------------------------------------
+    m_pTreeEntry(i_pUnit->m_pTreeEntry),
+    m_strUniqueName(i_pUnit->m_strUniqueName)
+{
+}
+
+//------------------------------------------------------------------------------
+CUnit::CUnit(CUnit& i_unit) :
+//------------------------------------------------------------------------------
+    m_pTreeEntry(i_unit.m_pTreeEntry),
+    m_strUniqueName(i_unit.m_strUniqueName)
+{
+}
+
+//------------------------------------------------------------------------------
+CUnit::CUnit(const CUnit& i_unit) :
+//------------------------------------------------------------------------------
+    m_pTreeEntry(i_unit.m_pTreeEntry),
+    m_strUniqueName(i_unit.m_strUniqueName)
+{
+}
+
+//------------------------------------------------------------------------------
+CUnit::CUnit(CUnitTreeEntry* i_pUnit) :
+//------------------------------------------------------------------------------
+    m_pTreeEntry(i_pUnit),
+    m_strUniqueName(i_pUnit->keyInTree())
+{
+}
+
+//------------------------------------------------------------------------------
+CUnit::CUnit(const CUnitTreeEntry* i_pUnit) :
+//------------------------------------------------------------------------------
+    m_pTreeEntry(const_cast<CUnitTreeEntry*>(i_pUnit)),
+    m_strUniqueName(i_pUnit->keyInTree())
+{
+}
+
+//------------------------------------------------------------------------------
+CUnit::CUnit(CUnitTreeEntry& i_unit) :
+//------------------------------------------------------------------------------
+    m_pTreeEntry(&i_unit),
+    m_strUniqueName(i_unit.keyInTree())
+{
+}
+
+//------------------------------------------------------------------------------
+CUnit::CUnit(const CUnitTreeEntry& i_unit) :
+//------------------------------------------------------------------------------
+    m_pTreeEntry(const_cast<CUnitTreeEntry*>(&i_unit)),
+    m_strUniqueName(i_unit.keyInTree())
+{
+}
+
+//------------------------------------------------------------------------------
+CUnit::CUnit(const QString& i_strUniqueName) :
+//------------------------------------------------------------------------------
+    m_pTreeEntry(CIdxTreePhysSizes::GetInstance()->findUnit(i_strUniqueName)),
+    m_strUniqueName(i_strUniqueName)
+{
+}
+
+//------------------------------------------------------------------------------
+CUnit::~CUnit()
+//------------------------------------------------------------------------------
+{
+    m_pTreeEntry = nullptr;
+    //m_strUniqueName;
+}
+
+/*==============================================================================
+public: // operators
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+bool CUnit::operator == ( const CUnit& i_other ) const
+//------------------------------------------------------------------------------
+{
+    bool bEqual = (m_pTreeEntry == i_other.m_pTreeEntry);
+    if( bEqual ) bEqual = (m_strUniqueName.compare(i_other.m_strUniqueName) == 0);
+    return bEqual;
+}
+
+//------------------------------------------------------------------------------
+bool CUnit::operator != ( const CUnit& i_other ) const
+//------------------------------------------------------------------------------
+{
+    return !(*this == i_other);
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QString CUnit::nodeSeparator() const
+//------------------------------------------------------------------------------
+{
+    return QString(m_pTreeEntry == nullptr ? "" : m_pTreeEntry->nodeSeparator());
+}
+
+//------------------------------------------------------------------------------
+QString CUnit::keyInTree() const
+//------------------------------------------------------------------------------
+{
+    return QString(m_pTreeEntry == nullptr ? "" : m_pTreeEntry->keyInTree());
+}
+
+//------------------------------------------------------------------------------
+CUnitGrp CUnit::unitGroup() const
+//------------------------------------------------------------------------------
+{
+    return m_pTreeEntry == nullptr ? CUnitGrp() : m_pTreeEntry->unitGroup();
+}
+
+//------------------------------------------------------------------------------
+QString CUnit::name() const
+//------------------------------------------------------------------------------
+{
+    return QString(m_pTreeEntry == nullptr ? "" : m_pTreeEntry->name());
+}
+
+//------------------------------------------------------------------------------
+QString CUnit::symbol() const
+//------------------------------------------------------------------------------
+{
+    return QString(m_pTreeEntry == nullptr ? "" : m_pTreeEntry->symbol());
+}
+
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+bool CUnit::isValid() const
+//------------------------------------------------------------------------------
+{
+    return (m_pTreeEntry != nullptr);
+}
+
+//------------------------------------------------------------------------------
+EUnitClassType CUnit::classType() const
+//------------------------------------------------------------------------------
+{
+    return m_pTreeEntry == nullptr ?
+        EUnitClassType::Undefined : m_pTreeEntry->classType();
+}
+
+//------------------------------------------------------------------------------
+QString CUnit::classType2Str() const
+//------------------------------------------------------------------------------
+{
+    return m_pTreeEntry == nullptr ?
+        CEnumUnitClassType(EUnitClassType::Undefined).toString() :
+        m_pTreeEntry->classType2Str();
+}
+
+/*==============================================================================
+public: // overridables (converting values)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+bool CUnit::isLogarithmic() const
+//------------------------------------------------------------------------------
+{
+    return m_pTreeEntry == nullptr ? false : m_pTreeEntry->isLogarithmic();
+}
+
+//------------------------------------------------------------------------------
+double CUnit::logarithmicFactor() const
+//------------------------------------------------------------------------------
+{
+    return m_pTreeEntry == nullptr ? 0.0 : m_pTreeEntry->logarithmicFactor();
+}
+
+//------------------------------------------------------------------------------
+bool CUnit::isConvertible( const CUnit& i_unitDst, double i_fVal ) const
+//------------------------------------------------------------------------------
+{
+    return m_pTreeEntry == nullptr ?
+        false : m_pTreeEntry->isConvertible(i_unitDst.m_pTreeEntry, i_fVal);
+}
+
+//------------------------------------------------------------------------------
+double CUnit::convertValue( double i_fVal, const CUnit& i_unitDst ) const
+//------------------------------------------------------------------------------
+{
+    return m_pTreeEntry == nullptr ?
+        0.0 : m_pTreeEntry->convertValue(i_fVal, i_unitDst.m_pTreeEntry);
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CUnit CUnit::nextLowerUnit() const
+//------------------------------------------------------------------------------
+{
+    return m_pTreeEntry == nullptr ? nullptr : m_pTreeEntry->nextLowerUnit();
+}
+
+//------------------------------------------------------------------------------
+CUnit CUnit::nextHigherUnit() const
+//------------------------------------------------------------------------------
+{
+    return m_pTreeEntry == nullptr ? nullptr : m_pTreeEntry->nextHigherUnit();
+}
+
+//------------------------------------------------------------------------------
+CUnit CUnit::findBestUnit(
+    double  i_fVal,
+    double* o_pfValue,
+    int     i_iDigitsLeadingMax ) const
+//------------------------------------------------------------------------------
+{
+    return m_pTreeEntry == nullptr ?
+        nullptr : m_pTreeEntry->findBestUnit(i_fVal, o_pfValue, i_iDigitsLeadingMax);
+}
+
+
+/*******************************************************************************
+class CPhysUnitTreeEntry : public CUnitTreeEntry
+*******************************************************************************/
+
+/*==============================================================================
+public: // ctors and dtor
+==============================================================================*/
 
 //------------------------------------------------------------------------------
 /*! @brief Constructor for linear units.
@@ -468,9 +655,9 @@ CPhysUnit::CPhysUnit() :
     @param i_strPrefix [in]
         e.g. "" for SI-Base, "m", "k", "µ", "M", ...
 */
-CPhysUnit::CPhysUnit( CPhysSize* i_pPhysSize, const QString& i_strPrefix ) :
+CPhysUnitTreeEntry::CPhysUnitTreeEntry( CPhysSizeTreeEntry* i_pPhysSize, const QString& i_strPrefix ) :
 //------------------------------------------------------------------------------
-    CUnit(
+    CUnitTreeEntry(
         /* pUnitGrp       */ i_pPhysSize,
         /* bIsLogarithmic */ false,
         /* fLogFactor     */ 1.0,
@@ -532,14 +719,14 @@ CPhysUnit::CPhysUnit( CPhysSize* i_pPhysSize, const QString& i_strPrefix ) :
     @param i_fMFromBaseOrRefVal [in]
         e.g. "180/PI", 0.0254, ... or 1.0 for dBW, 1.0e-3 for dBm, 0.775 for 0.775 V, ...
 */
-CPhysUnit::CPhysUnit(
-    CPhysSize*     i_pPhysSize,
-    bool           i_bIsLogarithmic,
-    const QString& i_strName,
-    const QString& i_strSymbol,
-    const double   i_fMFromBaseOrRefVal ) :
+CPhysUnitTreeEntry::CPhysUnitTreeEntry(
+    CPhysSizeTreeEntry* i_pPhysSize,
+    bool                i_bIsLogarithmic,
+    const QString&      i_strName,
+    const QString&      i_strSymbol,
+    const double        i_fMFromBaseOrRefVal ) :
 //------------------------------------------------------------------------------
-    CUnit(
+    CUnitTreeEntry(
         /* pUnitGrp       */ i_pPhysSize,
         /* bIsLogarithmic */ i_bIsLogarithmic,
         /* fLogFactor     */ 1.0,
@@ -607,7 +794,7 @@ CPhysUnit::CPhysUnit(
 } // ctor
 
 //------------------------------------------------------------------------------
-CPhysUnit::~CPhysUnit()
+CPhysUnitTreeEntry::~CPhysUnitTreeEntry()
 //------------------------------------------------------------------------------
 {
     m_pPhysUnitSI = nullptr;
@@ -625,10 +812,10 @@ public: // operators
 ==============================================================================*/
 
 ////------------------------------------------------------------------------------
-//CPhysUnit& CPhysUnit::operator=(CPhysUnit&& i_other)
+//CPhysUnitTreeEntry& CPhysUnitTreeEntry::operator=(CPhysUnitTreeEntry&& i_other)
 ////------------------------------------------------------------------------------
 //{
-//    *static_cast<CUnit*>(this) = static_cast<CUnit&&>(std::move(i_other));
+//    *static_cast<CUnitTreeEntry*>(this) = static_cast<CUnitTreeEntry&&>(std::move(i_other));
 //
 //    m_pPhysUnitSI = i_other.m_pPhysUnitSI;
 //    m_strPrefix = i_other.m_strPrefix;
@@ -655,7 +842,7 @@ public: // operators
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool CPhysUnit::operator == ( const CPhysUnit& i_physUnitOther ) const
+bool CPhysUnitTreeEntry::operator == ( const CPhysUnitTreeEntry& i_physUnitOther ) const
 //------------------------------------------------------------------------------
 {
     if( this != &i_physUnitOther )
@@ -667,7 +854,7 @@ bool CPhysUnit::operator == ( const CPhysUnit& i_physUnitOther ) const
 } // operator ==
 
 //------------------------------------------------------------------------------
-bool CPhysUnit::operator != ( const CPhysUnit& i_physUnitOther ) const
+bool CPhysUnitTreeEntry::operator != ( const CPhysUnitTreeEntry& i_physUnitOther ) const
 //------------------------------------------------------------------------------
 {
     return !(*this == i_physUnitOther);
@@ -678,10 +865,10 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CPhysSize* CPhysUnit::physSize() const
+CPhysSizeTreeEntry* CPhysUnitTreeEntry::physSize() const
 //------------------------------------------------------------------------------
 {
-    return dynamic_cast<CPhysSize*>(m_pParentBranch);
+    return dynamic_cast<CPhysSizeTreeEntry*>(m_pParentBranch);
 };
 
 /*==============================================================================
@@ -689,18 +876,18 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CPhysUnit::setFactorConvertFromSIUnit( double i_fFactor )
+void CPhysUnitTreeEntry::setFactorConvertFromSIUnit( double i_fFactor )
 //------------------------------------------------------------------------------
 {
     m_fctConvertFromSIUnit.m_fM = i_fFactor;
 }
 
 /*==============================================================================
-public: // overridables of base class CUnit (converting values)
+public: // overridables of base class CUnitTreeEntry (converting values)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool CPhysUnit::isConvertible( const CUnit* i_pUnitDst, double /*i_fVal*/ ) const
+bool CPhysUnitTreeEntry::isConvertible( const CUnitTreeEntry* i_pUnitDst, double /*i_fVal*/ ) const
 //------------------------------------------------------------------------------
 {
     if( !m_bInitialized )
@@ -720,7 +907,7 @@ bool CPhysUnit::isConvertible( const CUnit* i_pUnitDst, double /*i_fVal*/ ) cons
         return false;
     }
 
-    const CPhysUnit* pPhysUnitDst = dynamic_cast<const CPhysUnit*>(i_pUnitDst);
+    const CPhysUnitTreeEntry* pPhysUnitDst = dynamic_cast<const CPhysUnitTreeEntry*>(i_pUnitDst);
 
     if( !pPhysUnitDst->m_bInitialized )
     {
@@ -760,8 +947,8 @@ bool CPhysUnit::isConvertible( const CUnit* i_pUnitDst, double /*i_fVal*/ ) cons
         else
         {
             // .. maybe a direct conversion between both SI units has been set.
-            CPhysUnit* pPhysUnitSrcSI = physSize()->getSIUnit();
-            CPhysUnit* pPhysUnitDstSI = pPhysUnitDst->getSIUnit();
+            CPhysUnitTreeEntry* pPhysUnitSrcSI = physSize()->getSIUnit();
+            CPhysUnitTreeEntry* pPhysUnitDstSI = pPhysUnitDst->getSIUnit();
 
             if( pPhysUnitSrcSI != nullptr && pPhysUnitDstSI != nullptr )
             {
@@ -792,15 +979,15 @@ bool CPhysUnit::isConvertible( const CUnit* i_pUnitDst, double /*i_fVal*/ ) cons
 } // isConvertible
 
 //------------------------------------------------------------------------------
-double CPhysUnit::convertValue( double i_fVal, const CUnit* i_pUnitDst ) const
+double CPhysUnitTreeEntry::convertValue( double i_fVal, const CUnitTreeEntry* i_pUnitDst ) const
 //------------------------------------------------------------------------------
 {
     if( i_pUnitDst->classType() != EUnitClassType::PhysSize )
     {
-        return CUnit::convertValue(i_fVal,i_pUnitDst);
+        return CUnitTreeEntry::convertValue(i_fVal,i_pUnitDst);
     }
 
-    const CPhysUnit* pPhysUnitDst = dynamic_cast<const CPhysUnit*>(i_pUnitDst);
+    const CPhysUnitTreeEntry* pPhysUnitDst = dynamic_cast<const CPhysUnitTreeEntry*>(i_pUnitDst);
 
     return convertValue(
         /* fVal         */ i_fVal,
@@ -815,7 +1002,7 @@ public: // instance methods (conversion routines)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-double CPhysUnit::convertFromSIUnit( double i_fVal ) const
+double CPhysUnitTreeEntry::convertFromSIUnit( double i_fVal ) const
 //------------------------------------------------------------------------------
 {
     if( m_pPhysUnitSI == nullptr )
@@ -827,7 +1014,7 @@ double CPhysUnit::convertFromSIUnit( double i_fVal ) const
 } // convertFromSIUnit
 
 //------------------------------------------------------------------------------
-double CPhysUnit::convertIntoSIUnit( double i_fVal ) const
+double CPhysUnitTreeEntry::convertIntoSIUnit( double i_fVal ) const
 //------------------------------------------------------------------------------
 {
     if( m_pPhysUnitSI == nullptr )
@@ -839,11 +1026,11 @@ double CPhysUnit::convertIntoSIUnit( double i_fVal ) const
 } // convertIntoSIUnit
 
 //------------------------------------------------------------------------------
-double CPhysUnit::convertValue(
+double CPhysUnitTreeEntry::convertValue(
     double           i_fVal,
-    const CPhysUnit* i_pPhysUnitDst,
+    const CPhysUnitTreeEntry* i_pPhysUnitDst,
     double           i_fValRef,
-    const CPhysUnit* i_pPhysUnitRef ) const
+    const CPhysUnitTreeEntry* i_pPhysUnitRef ) const
 //------------------------------------------------------------------------------
 {
     if( !m_bInitialized )
@@ -1037,7 +1224,7 @@ public: // instance methods (conversion routines to convert into units of same q
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-int CPhysUnit::findFctConvertInternalIdx( const CPhysUnit* i_pPhysUnitDst ) const
+int CPhysUnitTreeEntry::findFctConvertInternalIdx( const CPhysUnitTreeEntry* i_pPhysUnitDst ) const
 //------------------------------------------------------------------------------
 {
     int idxFct = -1;
@@ -1056,7 +1243,7 @@ int CPhysUnit::findFctConvertInternalIdx( const CPhysUnit* i_pPhysUnitDst ) cons
 } // findFctConvertInternalIdx
 
 //------------------------------------------------------------------------------
-CFctConvert* CPhysUnit::getFctConvertInternal( int i_idx ) const
+CFctConvert* CPhysUnitTreeEntry::getFctConvertInternal( int i_idx ) const
 //------------------------------------------------------------------------------
 {
     CFctConvert* pFctConvert = nullptr;
@@ -1070,7 +1257,7 @@ CFctConvert* CPhysUnit::getFctConvertInternal( int i_idx ) const
 } // getFctConvertInternal
 
 //------------------------------------------------------------------------------
-CFctConvert* CPhysUnit::findFctConvertInternal( const CPhysUnit* i_pPhysUnitDst ) const
+CFctConvert* CPhysUnitTreeEntry::findFctConvertInternal( const CPhysUnitTreeEntry* i_pPhysUnitDst ) const
 //------------------------------------------------------------------------------
 {
     CFctConvert* pFctConvert = nullptr;
@@ -1085,7 +1272,7 @@ CFctConvert* CPhysUnit::findFctConvertInternal( const CPhysUnit* i_pPhysUnitDst 
 } // findFctConvertInternal
 
 //------------------------------------------------------------------------------
-QString CPhysUnit::findFctConvertInternalName( const CPhysUnit* i_pPhysUnitDst ) const
+QString CPhysUnitTreeEntry::findFctConvertInternalName( const CPhysUnitTreeEntry* i_pPhysUnitDst ) const
 //------------------------------------------------------------------------------
 {
     QString            strFctConvertName = "?";
@@ -1108,7 +1295,7 @@ QString CPhysUnit::findFctConvertInternalName( const CPhysUnit* i_pPhysUnitDst )
 } // findFctConvertInternalName
 
 //------------------------------------------------------------------------------
-QString CPhysUnit::getFctConvertInternalName( int i_idx ) const
+QString CPhysUnitTreeEntry::getFctConvertInternalName( int i_idx ) const
 //------------------------------------------------------------------------------
 {
     QString            strFctConvertName = "?";
@@ -1127,9 +1314,9 @@ public: // instance methods (conversion routines to convert into units of other 
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CPhysUnit::addFctConvertExternal(
-    CPhysUnit*  i_pPhysUnitDst,
-    CPhysUnit*  i_pPhysUnitRef,
+void CPhysUnitTreeEntry::addFctConvertExternal(
+    CPhysUnitTreeEntry*  i_pPhysUnitDst,
+    CPhysUnitTreeEntry*  i_pPhysUnitRef,
     EFctConvert i_fctConvert )
 //------------------------------------------------------------------------------
 {
@@ -1284,7 +1471,7 @@ void CPhysUnit::addFctConvertExternal(
 } // addFctConvertExternal
 
 //------------------------------------------------------------------------------
-int CPhysUnit::findFctConvertExternalIdx( const CPhysUnit* i_pPhysUnitDst ) const
+int CPhysUnitTreeEntry::findFctConvertExternalIdx( const CPhysUnitTreeEntry* i_pPhysUnitDst ) const
 //------------------------------------------------------------------------------
 {
     int idxFct = -1;
@@ -1303,7 +1490,7 @@ int CPhysUnit::findFctConvertExternalIdx( const CPhysUnit* i_pPhysUnitDst ) cons
 } // findFctConvertExternalIdx
 
 //------------------------------------------------------------------------------
-CFctConvert* CPhysUnit::getFctConvertExternal( int i_idx ) const
+CFctConvert* CPhysUnitTreeEntry::getFctConvertExternal( int i_idx ) const
 //------------------------------------------------------------------------------
 {
     CFctConvert* pFctConvert = nullptr;
@@ -1317,7 +1504,7 @@ CFctConvert* CPhysUnit::getFctConvertExternal( int i_idx ) const
 } // getFctConvertExternal
 
 //------------------------------------------------------------------------------
-CFctConvert* CPhysUnit::findFctConvertExternal( const CPhysUnit* i_pPhysUnitDst ) const
+CFctConvert* CPhysUnitTreeEntry::findFctConvertExternal( const CPhysUnitTreeEntry* i_pPhysUnitDst ) const
 //------------------------------------------------------------------------------
 {
     int          idxFct = findFctConvertExternalIdx(i_pPhysUnitDst);
@@ -1332,7 +1519,7 @@ CFctConvert* CPhysUnit::findFctConvertExternal( const CPhysUnit* i_pPhysUnitDst 
 } // findFctConvertExternal
 
 //------------------------------------------------------------------------------
-QString CPhysUnit::findFctConvertExternalName( const CPhysUnit* i_pPhysUnitDst ) const
+QString CPhysUnitTreeEntry::findFctConvertExternalName( const CPhysUnitTreeEntry* i_pPhysUnitDst ) const
 //------------------------------------------------------------------------------
 {
     QString            strFctConvertName = "?";
@@ -1355,7 +1542,7 @@ QString CPhysUnit::findFctConvertExternalName( const CPhysUnit* i_pPhysUnitDst )
 } // findFctConvertExternalName
 
 //------------------------------------------------------------------------------
-QString CPhysUnit::getFctConvertExternalName( int i_idx ) const
+QString CPhysUnitTreeEntry::getFctConvertExternalName( int i_idx ) const
 //------------------------------------------------------------------------------
 {
     QString      strFctConvertName = "?";
@@ -1368,3 +1555,119 @@ QString CPhysUnit::getFctConvertExternalName( int i_idx ) const
     return strFctConvertName;
 
 } // getFctConvertExternalName
+
+
+/*******************************************************************************
+class CPhysUnit : public CUnit
+*******************************************************************************/
+
+/*==============================================================================
+public: // ctors and dtor
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CPhysUnit::CPhysUnit() :
+//------------------------------------------------------------------------------
+    CUnit()
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysUnit::CPhysUnit(CPhysUnit* i_pPhysUnit) :
+//------------------------------------------------------------------------------
+    CUnit(i_pPhysUnit)
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysUnit::CPhysUnit(const CPhysUnit* i_pPhysUnit) :
+//------------------------------------------------------------------------------
+    CUnit(i_pPhysUnit)
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysUnit::CPhysUnit(CPhysUnit& i_physUnit) :
+//------------------------------------------------------------------------------
+    CUnit(i_physUnit)
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysUnit::CPhysUnit(const CPhysUnit& i_physUnit) :
+//------------------------------------------------------------------------------
+    CUnit(i_physUnit)
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysUnit::CPhysUnit(CPhysUnitTreeEntry* i_pPhysUnit) :
+//------------------------------------------------------------------------------
+    CUnit(i_pPhysUnit)
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysUnit::CPhysUnit(const CPhysUnitTreeEntry* i_pPhysUnit) :
+//------------------------------------------------------------------------------
+    CUnit(const_cast<CPhysUnitTreeEntry*>(i_pPhysUnit))
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysUnit::CPhysUnit(CPhysUnitTreeEntry& i_physUnit) :
+//------------------------------------------------------------------------------
+    CUnit(&i_physUnit)
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysUnit::CPhysUnit(const CPhysUnitTreeEntry& i_physUnit) :
+//------------------------------------------------------------------------------
+    CUnit(&i_physUnit)
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysUnit::CPhysUnit(const QString& i_strUniqueName) :
+//------------------------------------------------------------------------------
+    CUnit(i_strUniqueName)
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysUnit::~CPhysUnit()
+//------------------------------------------------------------------------------
+{
+}
+
+/*==============================================================================
+public: // operators
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+bool CPhysUnit::operator == ( const CPhysUnit& i_other ) const
+//------------------------------------------------------------------------------
+{
+    bool bEqual = (m_pTreeEntry == i_other.m_pTreeEntry);
+    if( bEqual ) bEqual = (m_strUniqueName.compare(i_other.m_strUniqueName) == 0);
+    return bEqual;
+}
+
+//------------------------------------------------------------------------------
+bool CPhysUnit::operator != ( const CPhysUnit& i_other ) const
+//------------------------------------------------------------------------------
+{
+    return !(*this == i_other);
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CPhysSize CPhysUnit::physSize() const
+//------------------------------------------------------------------------------
+{
+    return dynamic_cast<CPhysSizeTreeEntry*>(m_pTreeEntry);
+}

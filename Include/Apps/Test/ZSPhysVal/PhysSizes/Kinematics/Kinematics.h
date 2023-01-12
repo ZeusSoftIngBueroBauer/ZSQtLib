@@ -47,7 +47,7 @@ namespace Test
 namespace PhysVal
 {
 //******************************************************************************
-class CPhysScienceFieldKinematics : public ZS::PhysVal::CPhysScienceField
+class CPhysScienceFieldKinematics : public ZS::PhysVal::CPhysScienceFieldTreeEntry
 //******************************************************************************
 {
 public: // ctors and dtor
@@ -60,12 +60,18 @@ public: // operators
     CPhysScienceFieldKinematics& operator=(CPhysScienceFieldKinematics& i_other) = delete;
     CPhysScienceFieldKinematics& operator=(const CPhysScienceFieldKinematics& i_other) = delete;
     CPhysScienceFieldKinematics& operator=(CPhysScienceFieldKinematics&& i_other) = delete;
+private: // instance members
+    CPhysSizeBitRate m_treeEntryBitRate;
+    CPhysSizeFrequency m_treeEntryFrequency;
+    CPhysSizeSamples m_treeEntrySamples;
+    CPhysSizeTime m_treeEntryTime;
+    CPhysSizeVelocity m_treeEntryVelocity;
 public: // instance members
-    CPhysSizeBitRate BitRate;
-    CPhysSizeFrequency Frequency;
-    CPhysSizeSamples Samples;
-    CPhysSizeTime Time;
-    CPhysSizeVelocity Velocity;
+    ZS::PhysVal::CPhysSize BitRate;
+    ZS::PhysVal::CPhysSize Frequency;
+    ZS::PhysVal::CPhysSize Samples;
+    ZS::PhysVal::CPhysSize Time;
+    ZS::PhysVal::CPhysSize Velocity;
 
 }; // class CPhysScienceFieldKinematics
 

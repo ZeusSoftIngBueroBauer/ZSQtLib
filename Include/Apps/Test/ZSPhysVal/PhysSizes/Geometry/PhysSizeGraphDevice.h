@@ -39,12 +39,12 @@ namespace Test
 namespace PhysVal
 {
 //******************************************************************************
-class CPhysSizeGraphDevice : public ZS::PhysVal::CPhysSize
+class CPhysSizeGraphDevice : public ZS::PhysVal::CPhysSizeTreeEntry
 //******************************************************************************
 {
 public: // ctors and dtor
     CPhysSizeGraphDevice(ZS::PhysVal::CIdxTreePhysSizes* i_pIdxTree);
-    CPhysSizeGraphDevice(ZS::System::CIdxTreeEntry* i_pParentBranch);
+    CPhysSizeGraphDevice(ZS::PhysVal::CPhysScienceFieldTreeEntry* i_pParentBranch);
     CPhysSizeGraphDevice(CPhysSizeGraphDevice&& i_other) = delete;
     CPhysSizeGraphDevice(CPhysSizeGraphDevice& i_other) = delete;
     CPhysSizeGraphDevice(const CPhysSizeGraphDevice& i_other) = delete;
@@ -53,9 +53,11 @@ public: // operators
     CPhysSizeGraphDevice& operator=(CPhysSizeGraphDevice& i_other) = delete;
     CPhysSizeGraphDevice& operator=(const CPhysSizeGraphDevice& i_other) = delete;
     CPhysSizeGraphDevice& operator=(CPhysSizeGraphDevice&& i_other) = delete;
+private: // instance members
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryPixel;
 public: // instance members
     ZS::PhysVal::CPhysUnit Pixel;
-    ZS::PhysVal::CPhysUnit& px;
+    ZS::PhysVal::CPhysUnit px;
 
 }; // CPhysSizeGraphDevice
 

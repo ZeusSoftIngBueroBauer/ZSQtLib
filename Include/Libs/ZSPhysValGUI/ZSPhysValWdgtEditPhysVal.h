@@ -66,35 +66,35 @@ signals:
 public: // instance methods
     void clear();
 public: // instance methods
-    void setUnitGroup( PhysVal::CUnitGrp* i_pUnitGrp );
-    PhysVal::CUnitGrp* unitGroup() const { return m_pUnitGrp; }
-    void setUnit( PhysVal::CUnit* i_pUnit );
-    PhysVal::CUnit* getUnit() const { return m_pUnit; }
+    void setUnitGroup( const CUnitGrp& i_unitGrp );
+    CUnitGrp unitGroup() const { return m_unitGrp; }
+    void setUnit( const CUnit& i_unit );
+    CUnit unit() const { return m_unit; }
 public: // instance methods
-    void setValue( const PhysVal::CPhysVal& i_physVal );
-    PhysVal::CPhysVal value() const;
+    void setValue( const CPhysVal& i_physVal );
+    CPhysVal value() const;
 public: // instance methods
-    void setMinimum( const PhysVal::CPhysVal& i_physValMin );
-    PhysVal::CPhysVal minimum() const { return m_physValMin; }
+    void setMinimum( const CPhysVal& i_physValMin );
+    CPhysVal minimum() const { return m_physValMin; }
 public: // instance methods
-    void setMaximum( const PhysVal::CPhysVal& i_physValMax );
-    PhysVal::CPhysVal maximum() const { return m_physValMax; }
+    void setMaximum( const CPhysVal& i_physValMax );
+    CPhysVal maximum() const { return m_physValMax; }
 public: // instance methods
-    void setResolution( const PhysVal::CPhysValRes& i_physValRes );
-    PhysVal::CPhysValRes resolution() const { return m_physValRes; }
+    void setResolution( const CPhysValRes& i_physValRes );
+    CPhysValRes resolution() const { return m_physValRes; }
 protected slots:
     void onEdtEditingFinished();
     void onEdtValueChanged( double i_fVal );
     void onEdtValueChanged( const QString& i_strVal );
 private: // instance members
-    QHBoxLayout*         m_pLyt;
-    CDoubleSpinBox*      m_pEdt;
-    PhysVal::CUnitGrp*   m_pUnitGrp;
-    PhysVal::CUnit*      m_pUnit;
-    PhysVal::CPhysVal    m_physValOld;
-    PhysVal::CPhysVal    m_physValMin;
-    PhysVal::CPhysVal    m_physValMax;
-    PhysVal::CPhysValRes m_physValRes;
+    QHBoxLayout*    m_pLyt;
+    CDoubleSpinBox* m_pEdt;
+    CUnitGrp        m_unitGrp;
+    CUnit           m_unit;
+    CPhysVal        m_physValOld;
+    CPhysVal        m_physValMin;
+    CPhysVal        m_physValMax;
+    CPhysValRes     m_physValRes;
 
 }; // class CWdgtEditPhysVal
 

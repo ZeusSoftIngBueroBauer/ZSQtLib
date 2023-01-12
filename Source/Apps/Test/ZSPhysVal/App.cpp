@@ -215,7 +215,7 @@ CApplication::~CApplication()
     // the dtor of the global physical sizes will invoke the dtor of its instance members (physical units).
     // The dtors will remove themselves from the index tree and afterward the index tree can be deleted.
     if( m_pIdxTreePhysSizes != nullptr ) {
-        CIdxTreePhysSizes::ReleaseInstance(m_pIdxTreePhysSizes);
+        CIdxTreePhysSizes::ReleaseInstance();
         m_pIdxTreePhysSizes = nullptr;
     }
 

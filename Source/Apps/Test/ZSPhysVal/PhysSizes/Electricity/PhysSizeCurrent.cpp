@@ -43,33 +43,38 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CPhysSizeCurrent::CPhysSizeCurrent( CIdxTreePhysSizes* i_pIdxTree ) :
 //------------------------------------------------------------------------------
-    CPhysSize(
+    CPhysSizeTreeEntry(
         /* pIdxTree         */ i_pIdxTree,
         /* strName          */ "Current",
         /* strSIUnitName    */ "Ampere",
         /* strSIUnitSymbol  */ "A",
         /* strFormulaSymbol */ "I",
         /* bIsPowerRelated  */ false ),
-    PicoAmpere(
+    m_treeEntryPicoAmpere(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixPico ),
-    NanoAmpere(
+    m_treeEntryNanoAmpere(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixNano ),
-    MicroAmpere(
+    m_treeEntryMicroAmpere(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixMicro ),
-    MilliAmpere(
+    m_treeEntryMilliAmpere(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixMilli ),
-    Ampere(
+    m_treeEntryAmpere(
         /* pPhysSize */ this,
         /* strPrefix */ "" ),
-    pA(PicoAmpere),
-    nA(NanoAmpere),
-    uA(MicroAmpere),
-    mA(MilliAmpere),
-    A(Ampere)
+    PicoAmpere(m_treeEntryPicoAmpere),
+    NanoAmpere(m_treeEntryNanoAmpere),
+    MicroAmpere(m_treeEntryMicroAmpere),
+    MilliAmpere(m_treeEntryMilliAmpere),
+    Ampere(m_treeEntryAmpere),
+    pA(m_treeEntryPicoAmpere),
+    nA(m_treeEntryNanoAmpere),
+    uA(m_treeEntryMicroAmpere),
+    mA(m_treeEntryMilliAmpere),
+    A(m_treeEntryAmpere)
 {
     // Call function of base class CPhysSize to initialize the physical size together
     // with its units (e.g. to create the field with internal conversion routines
@@ -79,35 +84,40 @@ CPhysSizeCurrent::CPhysSizeCurrent( CIdxTreePhysSizes* i_pIdxTree ) :
 } // ctor
 
 //------------------------------------------------------------------------------
-CPhysSizeCurrent::CPhysSizeCurrent( CIdxTreeEntry* i_pParentBranch ) :
+CPhysSizeCurrent::CPhysSizeCurrent( CPhysScienceFieldTreeEntry* i_pParentBranch ) :
 //------------------------------------------------------------------------------
-    CPhysSize(
+    CPhysSizeTreeEntry(
         /* pParentBranch    */ i_pParentBranch,
         /* strName          */ "Current",
         /* strSIUnitName    */ "Ampere",
         /* strSIUnitSymbol  */ "A",
         /* strFormulaSymbol */ "I",
         /* bIsPowerRelated  */ false ),
-    PicoAmpere(
+    m_treeEntryPicoAmpere(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixPico ),
-    NanoAmpere(
+    m_treeEntryNanoAmpere(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixNano ),
-    MicroAmpere(
+    m_treeEntryMicroAmpere(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixMicro ),
-    MilliAmpere(
+    m_treeEntryMilliAmpere(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixMilli ),
-    Ampere(
+    m_treeEntryAmpere(
         /* pPhysSize */ this,
         /* strPrefix */ "" ),
-    pA(PicoAmpere),
-    nA(NanoAmpere),
-    uA(MicroAmpere),
-    mA(MilliAmpere),
-    A(Ampere)
+    PicoAmpere(m_treeEntryPicoAmpere),
+    NanoAmpere(m_treeEntryNanoAmpere),
+    MicroAmpere(m_treeEntryMicroAmpere),
+    MilliAmpere(m_treeEntryMilliAmpere),
+    Ampere(m_treeEntryAmpere),
+    pA(m_treeEntryPicoAmpere),
+    nA(m_treeEntryNanoAmpere),
+    uA(m_treeEntryMicroAmpere),
+    mA(m_treeEntryMilliAmpere),
+    A(m_treeEntryAmpere)
 {
     // Call function of base class CPhysSize to initialize the physical size together
     // with its units (e.g. to create the field with internal conversion routines

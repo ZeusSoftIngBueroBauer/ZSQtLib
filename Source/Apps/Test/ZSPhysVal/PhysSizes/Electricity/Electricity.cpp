@@ -45,7 +45,7 @@ public: // ctors and dtor
 */
 CPhysScienceFieldElectricity::CPhysScienceFieldElectricity(CIdxTreePhysSizes* i_pIdxTree) :
 //------------------------------------------------------------------------------
-    CPhysScienceField(i_pIdxTree, EPhysScienceField::Electricity),
+    CPhysScienceFieldTreeEntry(i_pIdxTree, EPhysScienceField::Electricity),
     Current(this),
     Power(this),
     Resistance(this),

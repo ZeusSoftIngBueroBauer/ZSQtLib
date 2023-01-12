@@ -43,41 +43,45 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CPhysSizeBitRate::CPhysSizeBitRate( CIdxTreePhysSizes* i_pIdxTree ) :
 //------------------------------------------------------------------------------
-    CPhysSize(
+    CPhysSizeTreeEntry(
         /* pIdxTree         */ i_pIdxTree,
         /* strName          */ "BitRate",
         /* strSIUnitName    */ "BitsPerSec",
         /* strSIUnitSymbol  */ "b/s",
         /* strFormulaSymbol */ "b/s",
         /* bIsPowerRelated  */ false ),
-    BitsPerSec(
+    m_treeEntryBitsPerSec(
         /* pPhysSize          */ this,
         /* bIsLogarithmic     */ false,
         /* strName            */ "BitsPerSec",
         /* strSymbol          */ "b/s",
         /* fMFromBaseOrRefVal */ 1.0 ),
-    KiloBitsPerSec(
+    m_treeEntryKiloBitsPerSec(
         /* pPhysSize          */ this,
         /* bIsLogarithmic     */ false,
         /* strName            */ c_strKilo + QString("BitsPerSec"),
         /* strSymbol          */ c_strPrefixKilo + QString("b/s"),
         /* fMFromBaseOrRefVal */ 1.0e-3 ),
-    SymbolsPerSec(
+    m_treeEntrySymbolsPerSec(
         /* pPhysSize          */ this,
         /* bIsLogarithmic     */ false,
         /* strName            */ "SymbolsPerSec",
         /* strSymbol          */ "Symb/s",
         /* fMFromBaseOrRefVal */ 1.0 ),
-    KiloSymbolsPerSec(
+    m_treeEntryKiloSymbolsPerSec(
         /* pPhysSize          */ this,
         /* bIsLogarithmic     */ false,
         /* strName            */ c_strKilo + QString("SymbolsPerSec"),
         /* strSymbol          */ c_strPrefixKilo + QString("Symb/s"),
         /* fMFromBaseOrRefVal */ 1.0e-3 ),
-    bps(BitsPerSec),
-    kbps(KiloBitsPerSec),
-    symps(SymbolsPerSec),
-    ksymps(KiloSymbolsPerSec)
+    BitsPerSec(m_treeEntryBitsPerSec),
+    KiloBitsPerSec(m_treeEntryKiloBitsPerSec),
+    SymbolsPerSec(m_treeEntrySymbolsPerSec),
+    KiloSymbolsPerSec(m_treeEntryKiloSymbolsPerSec),
+    bps(m_treeEntryBitsPerSec),
+    kbps(m_treeEntryKiloBitsPerSec),
+    symps(m_treeEntrySymbolsPerSec),
+    ksymps(m_treeEntryKiloSymbolsPerSec)
 {
     // Call function of base class CPhysSize to initialize the physical size together
     // with its units (e.g. to create the field with internal conversion routines
@@ -87,43 +91,47 @@ CPhysSizeBitRate::CPhysSizeBitRate( CIdxTreePhysSizes* i_pIdxTree ) :
 } // ctor
 
 //------------------------------------------------------------------------------
-CPhysSizeBitRate::CPhysSizeBitRate( CIdxTreeEntry* i_pParentBranch ) :
+CPhysSizeBitRate::CPhysSizeBitRate( CPhysScienceFieldTreeEntry* i_pParentBranch ) :
 //------------------------------------------------------------------------------
-    CPhysSize(
+    CPhysSizeTreeEntry(
         /* pIdxTree         */ i_pParentBranch,
         /* strName          */ "BitRate",
         /* strSIUnitName    */ "BitsPerSec",
         /* strSIUnitSymbol  */ "b/s",
         /* strFormulaSymbol */ "b/s",
         /* bIsPowerRelated  */ false ),
-    BitsPerSec(
+    m_treeEntryBitsPerSec(
         /* pPhysSize          */ this,
         /* bIsLogarithmic     */ false,
         /* strName            */ "BitsPerSec",
         /* strSymbol          */ "b/s",
         /* fMFromBaseOrRefVal */ 1.0 ),
-    KiloBitsPerSec(
+    m_treeEntryKiloBitsPerSec(
         /* pPhysSize          */ this,
         /* bIsLogarithmic     */ false,
         /* strName            */ c_strKilo + QString("BitsPerSec"),
         /* strSymbol          */ c_strPrefixKilo + QString("b/s"),
         /* fMFromBaseOrRefVal */ 1.0e-3 ),
-    SymbolsPerSec(
+    m_treeEntrySymbolsPerSec(
         /* pPhysSize          */ this,
         /* bIsLogarithmic     */ false,
         /* strName            */ "SymbolsPerSec",
         /* strSymbol          */ "Symb/s",
         /* fMFromBaseOrRefVal */ 1.0 ),
-    KiloSymbolsPerSec(
+    m_treeEntryKiloSymbolsPerSec(
         /* pPhysSize          */ this,
         /* bIsLogarithmic     */ false,
         /* strName            */ c_strKilo + QString("SymbolsPerSec"),
         /* strSymbol          */ c_strPrefixKilo + QString("Symb/s"),
         /* fMFromBaseOrRefVal */ 1.0e-3 ),
-    bps(BitsPerSec),
-    kbps(KiloBitsPerSec),
-    symps(SymbolsPerSec),
-    ksymps(KiloSymbolsPerSec)
+    BitsPerSec(m_treeEntryBitsPerSec),
+    KiloBitsPerSec(m_treeEntryKiloBitsPerSec),
+    SymbolsPerSec(m_treeEntrySymbolsPerSec),
+    KiloSymbolsPerSec(m_treeEntryKiloSymbolsPerSec),
+    bps(m_treeEntryBitsPerSec),
+    kbps(m_treeEntryKiloBitsPerSec),
+    symps(m_treeEntrySymbolsPerSec),
+    ksymps(m_treeEntryKiloSymbolsPerSec)
 {
     // Call function of base class CPhysSize to initialize the physical size together
     // with its units (e.g. to create the field with internal conversion routines

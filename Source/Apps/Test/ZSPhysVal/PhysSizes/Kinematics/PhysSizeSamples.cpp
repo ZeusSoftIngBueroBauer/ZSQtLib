@@ -42,19 +42,20 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CPhysSizeSamples::CPhysSizeSamples( CIdxTreePhysSizes* i_pIdxTree ) :
 //------------------------------------------------------------------------------
-    CPhysSize(
+    CPhysSizeTreeEntry(
         /* pIdxTree         */ i_pIdxTree,
         /* strName          */ "Samples",
         /* strSIUnitName    */ "Samples",
         /* strSIUnitSymbol  */ "Samples",
         /* strFormulaSymbol */ "S",
         /* bIsPowerRelated  */ false ),
-    Samples(
+    m_treeEntrySamples(
         /* pPhysSize          */ this,
         /* bIsLogarithmic     */ false,
         /* strName            */ "Samples",
         /* strSymbol          */ "Samples",
-        /* fMFromBaseOrRefVal */ 1.0 )
+        /* fMFromBaseOrRefVal */ 1.0 ),
+    Samples(m_treeEntrySamples)
 {
     // Call function of base class CPhysSize to initialize the physical size together
     // with its units (e.g. to create the field with internal conversion routines
@@ -64,21 +65,22 @@ CPhysSizeSamples::CPhysSizeSamples( CIdxTreePhysSizes* i_pIdxTree ) :
 } // ctor
 
 //------------------------------------------------------------------------------
-CPhysSizeSamples::CPhysSizeSamples( CIdxTreeEntry* i_pParentBranch ) :
+CPhysSizeSamples::CPhysSizeSamples( CPhysScienceFieldTreeEntry* i_pParentBranch ) :
 //------------------------------------------------------------------------------
-    CPhysSize(
+    CPhysSizeTreeEntry(
         /* pParentBranch    */ i_pParentBranch,
         /* strName          */ "Samples",
         /* strSIUnitName    */ "Samples",
         /* strSIUnitSymbol  */ "Samples",
         /* strFormulaSymbol */ "S",
         /* bIsPowerRelated  */ false ),
-    Samples(
+    m_treeEntrySamples(
         /* pPhysSize          */ this,
         /* bIsLogarithmic     */ false,
         /* strName            */ "Samples",
         /* strSymbol          */ "Samples",
-        /* fMFromBaseOrRefVal */ 1.0 )
+        /* fMFromBaseOrRefVal */ 1.0 ),
+    Samples(m_treeEntrySamples)
 {
     // Call function of base class CPhysSize to initialize the physical size together
     // with its units (e.g. to create the field with internal conversion routines

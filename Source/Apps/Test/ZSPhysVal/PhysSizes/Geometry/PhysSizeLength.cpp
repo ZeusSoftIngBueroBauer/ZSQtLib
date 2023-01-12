@@ -43,77 +43,90 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CPhysSizeLength::CPhysSizeLength( CIdxTreePhysSizes* i_pIdxTree ) :
 //------------------------------------------------------------------------------
-    CPhysSize(
+    CPhysSizeTreeEntry(
         /* pIdxTree         */ i_pIdxTree,
         /* strName          */ "Length",
         /* strSIUnitName    */ "Meter",
         /* strSIUnitSymbol  */ "m",
         /* strFormulaSymbol */ "l",
         /* bIsPowerRelated  */ false ),
-    PicoMeter(
+    m_treeEntryPicoMeter(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixPico ),
-    NanoMeter(
+    m_treeEntryNanoMeter(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixNano ),
-    MicroMeter(
+    m_treeEntryMicroMeter(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixMicro ),
-    MilliMeter(
+    m_treeEntryMilliMeter(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixMilli ),
-    CentiMeter(
+    m_treeEntryCentiMeter(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixCenti ),
-    DeziMeter(
+    m_treeEntryDeziMeter(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixDezi ),
-    Meter(
+    m_treeEntryMeter(
         /* pPhysSize */ this,
         /* strPrefix */ "" ),
-    KiloMeter(
+    m_treeEntryKiloMeter(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixKilo ),
-    Inch(
+    m_treeEntryInch(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ false,
         /* strName        */ "Inch",
         /* strSymbol      */ "in",
         /* fMFromSI       */ 1.0/0.0254 ),
-    Foot(
+    m_treeEntryFoot(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ false,
         /* strName        */ "Foot",
         /* strSymbol      */ "ft",
         /* fMFromSI       */ 1.0/(12.0*0.0254) ),
-    Yard(
+    m_treeEntryYard(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ false,
         /* strName        */ "Yard",
         /* strSymbol      */ "yd",
         /* fMFromSI       */ 1.0/(36.0*0.0254) ),
-    Mile(
+    m_treeEntryMile(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ false,
         /* strName        */ "Mile",
         /* strSymbol      */ "mi",
         /* fMFromSI       */ 1.0/1609.344 ),
-    NauticalMile(
+    m_treeEntryNauticalMile(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ false,
         /* strName        */ "Nautical Mile",
         /* strSymbol      */ "sm",
         /* fMFromSI       */ 1.0/1852.0 ),
-    pm(PicoMeter),
-    nm(NanoMeter),
-    um(MicroMeter),
-    mm(MilliMeter),
-    cm(CentiMeter),
-    dm(DeziMeter),
-    m(Meter),
-    km(KiloMeter),
-    ft(Foot),
-    yd(Yard)
+    PicoMeter(m_treeEntryPicoMeter),
+    NanoMeter(m_treeEntryNanoMeter),
+    MicroMeter(m_treeEntryMicroMeter),
+    MilliMeter(m_treeEntryMilliMeter),
+    CentiMeter(m_treeEntryCentiMeter),
+    DeziMeter(m_treeEntryDeziMeter),
+    Meter(m_treeEntryMeter),
+    KiloMeter(m_treeEntryKiloMeter),
+    Inch(m_treeEntryInch),
+    Foot(m_treeEntryFoot),
+    Yard(m_treeEntryYard),
+    Mile(m_treeEntryMile),
+    NauticalMile(m_treeEntryNauticalMile),
+    pm(m_treeEntryPicoMeter),
+    nm(m_treeEntryNanoMeter),
+    um(m_treeEntryMicroMeter),
+    mm(m_treeEntryMilliMeter),
+    cm(m_treeEntryCentiMeter),
+    dm(m_treeEntryDeziMeter),
+    m(m_treeEntryMeter),
+    km(m_treeEntryKiloMeter),
+    ft(m_treeEntryFoot),
+    yd(m_treeEntryYard)
 {
     // Call function of base class CPhysSize to initialize the physical size together
     // with its units (e.g. to create the field with internal conversion routines).
@@ -125,89 +138,102 @@ CPhysSizeLength::CPhysSizeLength( CIdxTreePhysSizes* i_pIdxTree ) :
     // Link the units to a chained list for the "findBestUnit" functionality:
     //======================================================================
 
-    PicoMeter. setNextLowerHigherUnits( nullptr,     &NanoMeter  );
-    NanoMeter. setNextLowerHigherUnits( &PicoMeter,  &MicroMeter );
-    MicroMeter.setNextLowerHigherUnits( &NanoMeter,  &MilliMeter );
-    MilliMeter.setNextLowerHigherUnits( &MicroMeter, &Meter      );
-    Meter.     setNextLowerHigherUnits( &MilliMeter, &KiloMeter  );
-    KiloMeter. setNextLowerHigherUnits( &Meter,      nullptr     );
+    m_treeEntryPicoMeter. setNextLowerHigherUnits( nullptr,                &m_treeEntryNanoMeter  );
+    m_treeEntryNanoMeter. setNextLowerHigherUnits( &m_treeEntryPicoMeter,  &m_treeEntryMicroMeter );
+    m_treeEntryMicroMeter.setNextLowerHigherUnits( &m_treeEntryNanoMeter,  &m_treeEntryMilliMeter );
+    m_treeEntryMilliMeter.setNextLowerHigherUnits( &m_treeEntryMicroMeter, &m_treeEntryMeter      );
+    m_treeEntryMeter.     setNextLowerHigherUnits( &m_treeEntryMilliMeter, &m_treeEntryKiloMeter  );
+    m_treeEntryKiloMeter. setNextLowerHigherUnits( &m_treeEntryMeter,      nullptr                );
 
 } // ctor
 
 //------------------------------------------------------------------------------
-CPhysSizeLength::CPhysSizeLength( CIdxTreeEntry* i_pParentBranch ) :
+CPhysSizeLength::CPhysSizeLength( CPhysScienceFieldTreeEntry* i_pParentBranch ) :
 //------------------------------------------------------------------------------
-    CPhysSize(
+    CPhysSizeTreeEntry(
         /* pParentBranch    */ i_pParentBranch,
         /* strName          */ "Length",
         /* strSIUnitName    */ "Meter",
         /* strSIUnitSymbol  */ "m",
         /* strFormulaSymbol */ "l",
         /* bIsPowerRelated  */ false ),
-    PicoMeter(
+    m_treeEntryPicoMeter(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixPico ),
-    NanoMeter(
+    m_treeEntryNanoMeter(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixNano ),
-    MicroMeter(
+    m_treeEntryMicroMeter(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixMicro ),
-    MilliMeter(
+    m_treeEntryMilliMeter(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixMilli ),
-    CentiMeter(
+    m_treeEntryCentiMeter(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixCenti ),
-    DeziMeter(
+    m_treeEntryDeziMeter(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixDezi ),
-    Meter(
+    m_treeEntryMeter(
         /* pPhysSize */ this,
         /* strPrefix */ "" ),
-    KiloMeter(
+    m_treeEntryKiloMeter(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixKilo ),
-    Inch(
+    m_treeEntryInch(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ false,
         /* strName        */ "Inch",
         /* strSymbol      */ "in",
         /* fMFromSI       */ 1.0/0.0254 ),
-    Foot(
+    m_treeEntryFoot(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ false,
         /* strName        */ "Foot",
         /* strSymbol      */ "ft",
         /* fMFromSI       */ 1.0/(12.0*0.0254) ),
-    Yard(
+    m_treeEntryYard(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ false,
         /* strName        */ "Yard",
         /* strSymbol      */ "yd",
         /* fMFromSI       */ 1.0/(36.0*0.0254) ),
-    Mile(
+    m_treeEntryMile(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ false,
         /* strName        */ "Mile",
         /* strSymbol      */ "mi",
         /* fMFromSI       */ 1.0/1609.344 ),
-    NauticalMile(
+    m_treeEntryNauticalMile(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ false,
         /* strName        */ "Nautical Mile",
         /* strSymbol      */ "sm",
         /* fMFromSI       */ 1.0/1852.0 ),
-    pm(PicoMeter),
-    nm(NanoMeter),
-    um(MicroMeter),
-    mm(MilliMeter),
-    cm(CentiMeter),
-    dm(DeziMeter),
-    m(Meter),
-    km(KiloMeter),
-    ft(Foot),
-    yd(Yard)
+    PicoMeter(m_treeEntryPicoMeter),
+    NanoMeter(m_treeEntryNanoMeter),
+    MicroMeter(m_treeEntryMicroMeter),
+    MilliMeter(m_treeEntryMilliMeter),
+    CentiMeter(m_treeEntryCentiMeter),
+    DeziMeter(m_treeEntryDeziMeter),
+    Meter(m_treeEntryMeter),
+    KiloMeter(m_treeEntryKiloMeter),
+    Inch(m_treeEntryInch),
+    Foot(m_treeEntryFoot),
+    Yard(m_treeEntryYard),
+    Mile(m_treeEntryMile),
+    NauticalMile(m_treeEntryNauticalMile),
+    pm(m_treeEntryPicoMeter),
+    nm(m_treeEntryNanoMeter),
+    um(m_treeEntryMicroMeter),
+    mm(m_treeEntryMilliMeter),
+    cm(m_treeEntryCentiMeter),
+    dm(m_treeEntryDeziMeter),
+    m(m_treeEntryMeter),
+    km(m_treeEntryKiloMeter),
+    ft(m_treeEntryFoot),
+    yd(m_treeEntryYard)
 {
     // Call function of base class CPhysSize to initialize the physical size together
     // with its units (e.g. to create the field with internal conversion routines).
@@ -219,12 +245,12 @@ CPhysSizeLength::CPhysSizeLength( CIdxTreeEntry* i_pParentBranch ) :
     // Link the units to a chained list for the "findBestUnit" functionality:
     //======================================================================
 
-    PicoMeter. setNextLowerHigherUnits( nullptr,     &NanoMeter  );
-    NanoMeter. setNextLowerHigherUnits( &PicoMeter,  &MicroMeter );
-    MicroMeter.setNextLowerHigherUnits( &NanoMeter,  &MilliMeter );
-    MilliMeter.setNextLowerHigherUnits( &MicroMeter, &Meter      );
-    Meter.     setNextLowerHigherUnits( &MilliMeter, &KiloMeter  );
-    KiloMeter. setNextLowerHigherUnits( &Meter,      nullptr     );
+    m_treeEntryPicoMeter. setNextLowerHigherUnits( nullptr,                &m_treeEntryNanoMeter  );
+    m_treeEntryNanoMeter. setNextLowerHigherUnits( &m_treeEntryPicoMeter,  &m_treeEntryMicroMeter );
+    m_treeEntryMicroMeter.setNextLowerHigherUnits( &m_treeEntryNanoMeter,  &m_treeEntryMilliMeter );
+    m_treeEntryMilliMeter.setNextLowerHigherUnits( &m_treeEntryMicroMeter, &m_treeEntryMeter      );
+    m_treeEntryMeter.     setNextLowerHigherUnits( &m_treeEntryMilliMeter, &m_treeEntryKiloMeter  );
+    m_treeEntryKiloMeter. setNextLowerHigherUnits( &m_treeEntryMeter,      nullptr                );
 
 } // ctor
 

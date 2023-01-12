@@ -34,7 +34,7 @@ using namespace ZS::PhysVal;
 
 
 /*******************************************************************************
-class CPhysScienceField : public ZS::System::CIdxTreeEntry
+class CPhysScienceFieldTreeEntry : public ZS::System::CIdxTreeEntry
 *******************************************************************************/
 
 /*==============================================================================
@@ -59,7 +59,7 @@ public: // ctors and dtor
         If not an index tree with the default name will be created.
         The destructor will again release the index tree in this case.
 */
-CPhysScienceField::CPhysScienceField(
+CPhysScienceFieldTreeEntry::CPhysScienceFieldTreeEntry(
     CIdxTreePhysSizes* i_pIdxTree, EPhysScienceField i_scienceField ) :
 //------------------------------------------------------------------------------
     CIdxTreeEntry(EIdxTreeEntryType::Branch, CEnumPhysScienceField(i_scienceField).toString())
@@ -86,13 +86,12 @@ CPhysScienceField::CPhysScienceField(
         If not an index tree with the default name will be created.
         The destructor will again release the index tree in this case.
 */
-CPhysScienceField::CPhysScienceField(
-    CIdxTreeEntry* i_pParentBranch, EPhysScienceField i_scienceField ) :
+CPhysScienceFieldTreeEntry::CPhysScienceFieldTreeEntry(
+    CUnitGrpTreeEntry* i_pParentBranch, EPhysScienceField i_scienceField ) :
 //------------------------------------------------------------------------------
     CIdxTreeEntry(EIdxTreeEntryType::Branch, CEnumPhysScienceField(i_scienceField).toString())
 {
-    CIdxTree* pIdxTree = i_pParentBranch->tree();
-    pIdxTree->add(this);
+    i_pParentBranch->tree()->add(this, i_pParentBranch);
 
 } // ctor
 
@@ -104,8 +103,136 @@ CPhysScienceField::CPhysScienceField(
     If the constructor created an index tree with the default name
     the index tree will be released by the destructor.
 */
-CPhysScienceField::~CPhysScienceField()
+CPhysScienceFieldTreeEntry::~CPhysScienceFieldTreeEntry()
 //------------------------------------------------------------------------------
 {
 } // dtor
+
+
+/*******************************************************************************
+class CPhysScienceField
+*******************************************************************************/
+
+/*==============================================================================
+public: // ctors and dtor
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CPhysScienceField::CPhysScienceField() :
+//------------------------------------------------------------------------------
+    m_pTreeEntry(nullptr),
+    m_strUniqueName()
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysScienceField::CPhysScienceField(CPhysScienceField* i_pScienceField) :
+//------------------------------------------------------------------------------
+    m_pTreeEntry(i_pScienceField->m_pTreeEntry),
+    m_strUniqueName(i_pScienceField->m_strUniqueName)
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysScienceField::CPhysScienceField(const CPhysScienceField* i_pScienceField) :
+//------------------------------------------------------------------------------
+    m_pTreeEntry(i_pScienceField->m_pTreeEntry),
+    m_strUniqueName(i_pScienceField->m_strUniqueName)
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysScienceField::CPhysScienceField(CPhysScienceField& i_scienceField) :
+//------------------------------------------------------------------------------
+    m_pTreeEntry(i_scienceField.m_pTreeEntry),
+    m_strUniqueName(i_scienceField.m_strUniqueName)
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysScienceField::CPhysScienceField(const CPhysScienceField& i_scienceField) :
+//------------------------------------------------------------------------------
+    m_pTreeEntry(i_scienceField.m_pTreeEntry),
+    m_strUniqueName(i_scienceField.m_strUniqueName)
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysScienceField::CPhysScienceField(CPhysScienceFieldTreeEntry* i_pScienceField) :
+//------------------------------------------------------------------------------
+    m_pTreeEntry(i_pScienceField),
+    m_strUniqueName(i_pScienceField->keyInTree())
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysScienceField::CPhysScienceField(const CPhysScienceFieldTreeEntry* i_pScienceField) :
+//------------------------------------------------------------------------------
+    m_pTreeEntry(const_cast<CPhysScienceFieldTreeEntry*>(i_pScienceField)),
+    m_strUniqueName(i_pScienceField->keyInTree())
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysScienceField::CPhysScienceField(CPhysScienceFieldTreeEntry& i_scienceField) :
+//------------------------------------------------------------------------------
+    m_pTreeEntry(&i_scienceField),
+    m_strUniqueName(i_scienceField.keyInTree())
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysScienceField::CPhysScienceField(const CPhysScienceFieldTreeEntry& i_scienceField) :
+//------------------------------------------------------------------------------
+    m_pTreeEntry(const_cast<CPhysScienceFieldTreeEntry*>(&i_scienceField)),
+    m_strUniqueName(i_scienceField.keyInTree())
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysScienceField::CPhysScienceField(const QString& i_strUniqueName) :
+//------------------------------------------------------------------------------
+    m_pTreeEntry(CIdxTreePhysSizes::GetInstance()->findPhysScienceField(i_strUniqueName)),
+    m_strUniqueName(i_strUniqueName)
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysScienceField::~CPhysScienceField()
+//------------------------------------------------------------------------------
+{
+    m_pTreeEntry = nullptr;
+    //m_strUniqueName;
+}
+
+/*==============================================================================
+public: // operators
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+bool CPhysScienceField::operator == ( const CPhysScienceField& i_other ) const
+//------------------------------------------------------------------------------
+{
+    bool bEqual = (m_pTreeEntry == i_other.m_pTreeEntry);
+    if( bEqual ) bEqual = (m_strUniqueName.compare(i_other.m_strUniqueName) == 0);
+    return bEqual;
+}
+
+//------------------------------------------------------------------------------
+bool CPhysScienceField::operator != ( const CPhysScienceField& i_other ) const
+//------------------------------------------------------------------------------
+{
+    return !(*this == i_other);
+}
+
+/*==============================================================================
+public: // overridables of base class CUnitGrp
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+bool CPhysScienceField::isValid() const
+//------------------------------------------------------------------------------
+{
+    return (m_pTreeEntry != nullptr);
+}
 

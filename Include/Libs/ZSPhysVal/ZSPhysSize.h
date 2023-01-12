@@ -38,7 +38,70 @@ namespace ZS
 {
 namespace PhysVal
 {
-class CPhysScienceField;
+class CPhysScienceFieldTreeEntry;
+class CPhysUnit;
+
+//******************************************************************************
+class ZSPHYSVALDLL_API CPhysSizeTreeEntry : public CUnitGrpTreeEntry
+//******************************************************************************
+{
+public: // class methods
+    static QString NameSpace() { return "ZS::PhysVal"; }
+    static QString ClassName() { return "CPhysSizeTreeEntry"; }
+public: // ctors and dtor
+    CPhysSizeTreeEntry(
+        CIdxTreePhysSizes* i_pIdxTree,
+        const QString&     i_strName,
+        const QString&     i_strSIUnitName,
+        const QString&     i_strSIUnitSymbol,
+        const QString&     i_strFormulaSymbol,
+        bool               i_bIsPowerRelated );
+    CPhysSizeTreeEntry(
+        CPhysScienceFieldTreeEntry* i_pParentBranch,
+        const QString& i_strName,
+        const QString& i_strSIUnitName,
+        const QString& i_strSIUnitSymbol,
+        const QString& i_strFormulaSymbol,
+        bool           i_bIsPowerRelated );
+    CPhysSizeTreeEntry(CPhysSizeTreeEntry&& i_other) = delete;
+    CPhysSizeTreeEntry(CPhysSizeTreeEntry& i_other) = delete;
+    CPhysSizeTreeEntry(const CPhysSizeTreeEntry& i_other) = delete;
+    virtual ~CPhysSizeTreeEntry();
+public: // operators
+    CPhysSizeTreeEntry& operator=(CPhysSizeTreeEntry& i_other) = delete;
+    CPhysSizeTreeEntry& operator=(const CPhysSizeTreeEntry& i_other) = delete;
+    CPhysSizeTreeEntry& operator=(CPhysSizeTreeEntry&& i_other) = delete;
+public: // operators
+    bool operator == ( const CPhysSizeTreeEntry& i_physsizeOther ) const;
+    bool operator != ( const CPhysSizeTreeEntry& i_physsizeOther ) const;
+public: // instance methods
+    bool initialize( bool i_bCreateFindBestChainedList );
+    void addFctConvert(
+        CPhysSizeTreeEntry*  i_pPhysSizeDst,
+        CPhysSizeTreeEntry*  i_pPhysSizeRef,
+        EFctConvert i_fctConvert );
+public: // instance methods
+    QString getSIUnitName() const { return m_strSIUnitName; }
+    QString getSIUnitSymbol() const { return m_strSIUnitSymbol; }
+    CPhysUnitTreeEntry* getSIUnit() const { return m_pPhysUnitSI; }
+    QString getFormulaSymbol() const { return m_strFormulaSymbol; }
+    bool isPowerRelated() const { return m_bIsPowerRelated; }
+public: // instance methods
+    CPhysUnitTreeEntry* getPhysUnit( int i_idx ) const;
+    CPhysUnitTreeEntry* findPhysUnit( const QString& i_strSymbolOrName ) const;
+    CPhysUnitTreeEntry* findPhysUnitBySymbol( const QString& i_strSymbol ) const;
+    CPhysUnitTreeEntry* findPhysUnitByName( const QString& i_strName ) const;
+public: // overridables
+    virtual double getRefVal( CPhysUnitTreeEntry* i_pPhysUnitRef = nullptr ) const;
+protected: // instance members
+    QString m_strSIUnitName;
+    QString  m_strSIUnitSymbol;
+    CPhysUnitTreeEntry* m_pPhysUnitSI;
+    QString m_strFormulaSymbol;
+    bool m_bIsPowerRelated;
+    bool m_bInitialized;
+
+}; // class CPhysSizeTreeEntry
 
 //******************************************************************************
 class ZSPHYSVALDLL_API CPhysSize : public CUnitGrp
@@ -48,58 +111,35 @@ public: // class methods
     static QString NameSpace() { return "ZS::PhysVal"; }
     static QString ClassName() { return "CPhysSize"; }
 public: // ctors and dtor
-    //CPhysSize();
-    CPhysSize(
-        CIdxTreePhysSizes* i_pIdxTree,
-        const QString&     i_strName,
-        const QString&     i_strSIUnitName,
-        const QString&     i_strSIUnitSymbol,
-        const QString&     i_strFormulaSymbol,
-        bool               i_bIsPowerRelated );
-    CPhysSize(
-        CIdxTreeEntry* i_pParentBranch,
-        const QString& i_strName,
-        const QString& i_strSIUnitName,
-        const QString& i_strSIUnitSymbol,
-        const QString& i_strFormulaSymbol,
-        bool           i_bIsPowerRelated );
-    CPhysSize(CPhysSize&& i_other) = delete;
-    CPhysSize(CPhysSize& i_other) = delete;
-    CPhysSize(const CPhysSize& i_other) = delete;
+    CPhysSize();
+    CPhysSize(CPhysSize* i_pPhysSize);
+    CPhysSize(const CPhysSize* i_pPhysSize);
+    CPhysSize(CPhysSize& i_physSize);
+    CPhysSize(const CPhysSize& i_physSize);
+    CPhysSize(CPhysSizeTreeEntry* i_pPhysSize);
+    CPhysSize(const CPhysSizeTreeEntry* i_pPhysSize);
+    CPhysSize(CPhysSizeTreeEntry& i_physSize);
+    CPhysSize(const CPhysSizeTreeEntry& i_physSize);
+    CPhysSize(const QString& i_strUniqueName);
     virtual ~CPhysSize();
 public: // operators
-    CPhysSize& operator=(CPhysSize& i_other) = delete;
-    CPhysSize& operator=(const CPhysSize& i_other) = delete;
-    CPhysSize& operator=(CPhysSize&& i_other) = delete;
-public: // operators
-    bool operator == ( const CPhysSize& i_physsizeOther ) const;
-    bool operator != ( const CPhysSize& i_physsizeOther ) const;
+    bool operator == ( const CPhysSize& i_other ) const;
+    bool operator != ( const CPhysSize& i_other ) const;
+public: // overridables of base class CUnitGrp
+    virtual bool isValid() const override;
 public: // instance methods
-    bool initialize( bool i_bCreateFindBestChainedList );
-    void addFctConvert(
-        CPhysSize*  i_pPhysSizeDst,
-        CPhysSize*  i_pPhysSizeRef,
-        EFctConvert i_fctConvert );
+    QString getSIUnitName() const;
+    QString getSIUnitSymbol() const;
+    CPhysUnit getSIUnit() const;
+    QString getFormulaSymbol() const;
+    bool isPowerRelated() const;
 public: // instance methods
-    QString getSIUnitName() const { return m_strSIUnitName; }
-    QString getSIUnitSymbol() const { return m_strSIUnitSymbol; }
-    CPhysUnit* getSIUnit() const { return m_pPhysUnitSI; }
-    QString getFormulaSymbol() const { return m_strFormulaSymbol; }
-    bool isPowerRelated() const { return m_bIsPowerRelated; }
-    //int getPhysUnitCount() const { return m_vecpUnits.size(); }
-    CPhysUnit* getPhysUnit( int i_idx );
-    CPhysUnit* findPhysUnit( const QString& i_strSymbolOrName );
-    CPhysUnit* findPhysUnitBySymbol( const QString& i_strSymbol );
-    CPhysUnit* findPhysUnitByName( const QString& i_strName );
+    CPhysUnit getPhysUnit( int i_idx ) const;
+    CPhysUnit findPhysUnit( const QString& i_strSymbolOrName ) const;
+    CPhysUnit findPhysUnitBySymbol( const QString& i_strSymbol ) const;
+    CPhysUnit findPhysUnitByName( const QString& i_strName ) const;
 public: // overridables
-    virtual double getRefVal( CPhysUnit* i_pPhysUnitRef = nullptr ) const;
-protected: // instance members
-    QString    m_strSIUnitName;
-    QString    m_strSIUnitSymbol;
-    CPhysUnit* m_pPhysUnitSI;
-    QString    m_strFormulaSymbol;
-    bool       m_bIsPowerRelated;
-    bool       m_bInitialized;
+    //virtual double getRefVal( CPhysUnitTreeEntry* i_pPhysUnitRef = nullptr ) const;
 
 }; // class CPhysSize
 

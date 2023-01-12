@@ -76,7 +76,7 @@ ZSPHYSVALDLL_API TFormatResult formatString(
 
 ZSPHYSVALDLL_API TFormatResult formatValue(
     double       i_fVal,
-    const CUnit* i_pUnitVal,
+    const CUnit& i_unitVal,
     double       i_fRes,
     const CUnit* i_pUnitRes,
     EResType     i_resType,
@@ -85,14 +85,14 @@ ZSPHYSVALDLL_API TFormatResult formatValue(
     bool         i_bUseEngineeringFormat = false,
     double*      o_pfVal = nullptr,
     QString*     o_pstrVal = nullptr,
-    CUnit**      o_ppUnitVal = nullptr,
+    CUnit*       o_pUnitVal = nullptr,
     int*         o_piDigitsLeading = nullptr,
     int*         o_piDigitsTrailing = nullptr,
     int*         o_piDigitsExponent = nullptr );
 
 ZSPHYSVALDLL_API TFormatResult formatValue(
     double         i_fVal,
-    const CUnit*   i_pUnitVal,
+    const CUnit&   i_unitVal,
     double         i_fRes,
     const CUnit*   i_pUnitRes,
     EResType       i_resType,
@@ -104,29 +104,29 @@ ZSPHYSVALDLL_API TFormatResult formatValue(
     bool           i_bUseEngineeringFormat = false,
     double*        o_pfVal = nullptr,
     QString*       o_pstrVal = nullptr,
-    CUnit**        o_ppUnitVal = nullptr,
+    CUnit*         o_pUnitVal = nullptr,
     int*           o_piDigitsLeading = nullptr,
     int*           o_piDigitsTrailing = nullptr,
     int*           o_piDigitsExponent = nullptr );
 
 ZSPHYSVALDLL_API TFormatResult formatValue(
-    double         i_fVal,
-    const CUnit*   i_pUnitVal,
-    int            i_iDigitsMantissaMax,
-    bool           i_bDigitsAccuracyLimitsMantissa,
-    int            i_iDigitsAccuracy,
-    int            i_iDigitsExponent,
-    bool           i_bUseEngineeringFormat = false,
-    double*        o_pfVal = nullptr,
-    QString*       o_pstrVal = nullptr,
-    CUnit**        o_ppUnitVal = nullptr,
-    int*           o_piDigitsLeading = nullptr,
-    int*           o_piDigitsTrailing = nullptr,
-    int*           o_piDigitsExponent = nullptr );
+    double       i_fVal,
+    const CUnit& i_unitVal,
+    int          i_iDigitsMantissaMax,
+    bool         i_bDigitsAccuracyLimitsMantissa,
+    int          i_iDigitsAccuracy,
+    int          i_iDigitsExponent,
+    bool         i_bUseEngineeringFormat = false,
+    double*      o_pfVal = nullptr,
+    QString*     o_pstrVal = nullptr,
+    CUnit*       o_pUnitVal = nullptr,
+    int*         o_piDigitsLeading = nullptr,
+    int*         o_piDigitsTrailing = nullptr,
+    int*         o_piDigitsExponent = nullptr );
 
 ZSPHYSVALDLL_API TFormatResult formatValue(
     double         i_fVal,
-    const CUnit*   i_pUnitVal,
+    const CUnit&   i_unitVal,
     int            i_iDigitsMantissaMax,
     bool           i_bDigitsAccuracyLimitsMantissa,
     int            i_iDigitsAccuracy,
@@ -137,7 +137,7 @@ ZSPHYSVALDLL_API TFormatResult formatValue(
     bool           i_bUseEngineeringFormat = false,
     double*        o_pfVal = nullptr,
     QString*       o_pstrVal = nullptr,
-    CUnit**        o_ppUnitVal = nullptr,
+    CUnit*         o_pUnitVal = nullptr,
     int*           o_piDigitsLeading = nullptr,
     int*           o_piDigitsTrailing = nullptr,
     int*           o_piDigitsExponent = nullptr );
@@ -146,12 +146,12 @@ ZSPHYSVALDLL_API TFormatResult parseValStr(
     const QString&     i_strVal,
     bool*              o_pbValOk,
     double*            o_pfVal,
-    CUnitGrp**         io_ppUnitGrpVal,
-    CUnit**            io_ppUnitVal,
+    CUnitGrp*          o_pUnitGrpVal,
+    CUnit*             o_pUnitVal,
     bool*              o_pbResOk,
     double*            o_pfResVal,
-    CUnitGrp**         io_ppUnitGrpRes,
-    CUnit**            io_ppUnitRes,
+    CUnitGrp*          o_pUnitGrpRes,
+    CUnit*             o_pUnitRes,
     CIdxTreePhysSizes* i_pIdxTree );
 
 ZSPHYSVALDLL_API TFormatResult getSubStrings( const QString& i_strVal, QString* io_arSubStr/*[ESubStrCount]*/, CIdxTreePhysSizes* i_pIdxTree );
@@ -244,52 +244,55 @@ public: // class methods
     static QString ClassName() { return "CPhysVal"; }
 public: // ctors and dtor
     CPhysVal( EResType i_resType = EResTypeResolution );
-    CPhysVal( CUnitGrp* i_pUnitGrp, EResType i_resType = EResTypeResolution );
-    CPhysVal( CUnit* i_pUnit, EResType i_resType = EResTypeResolution );
+    CPhysVal( const CUnitGrp& i_unitGrp, EResType i_resType = EResTypeResolution );
+    CPhysVal( const CPhysSize& i_physSize, EResType i_resType = EResTypeResolution );
+    CPhysVal( const CUnit& i_unit, EResType i_resType = EResTypeResolution );
+    CPhysVal( const CPhysUnit& i_unit, EResType i_resType = EResTypeResolution );
     CPhysVal( double i_fVal, EResType i_resType = EResTypeResolution );
     CPhysVal( double i_fVal, double i_fResVal, EResType i_resType = EResTypeResolution );
-    CPhysVal( double i_fVal, CUnitGrp* i_pUnitGrp, EResType i_resType = EResTypeResolution );
-    CPhysVal( double i_fVal, CUnit* i_pUnit, EResType i_resType = EResTypeResolution );
-    CPhysVal( double i_fVal, CUnit* i_pUnit, double i_fResVal, EResType i_resType = EResTypeResolution );
-    CPhysVal( double i_fVal, CUnit* i_pUnitVal, double i_fResVal, CUnit* i_pUnitRes, EResType i_resType = EResTypeResolution );
-    CPhysVal( double i_fVal, CUnit* i_pUnitVal, const CPhysValRes& i_physValRes );
-    CPhysVal( double i_fVal, CUnitRatio* i_pUnitRatio, double i_fResVal = 0.0, EResType i_resType = EResTypeResolution );
-    CPhysVal( double i_fVal, CUnitRatio* i_pUnitRatioVal, double i_fResVal, CUnitRatio* i_pUnitRatioRes, EResType i_resType = EResTypeResolution );
-    CPhysVal( double i_fVal, CUnitRatio* i_pUnitRatioVal, const CPhysValRes& i_physValRes );
-    //CPhysVal( double i_fVal, CUnitDataQuantity* i_pUnitDataQuantity, double i_fResVal = 0.0, EResType i_resType = EResTypeResolution );
-    //CPhysVal( double i_fVal, CUnitDataQuantity* i_pUnitDataQuantity, double i_fResVal, CUnitRatio* i_pUnitRatioRes, EResType i_resType = EResTypeResolution );
-    //CPhysVal( double i_fVal, CUnitDataQuantity* i_pUnitDataQuantity, const CPhysValRes& i_physValRes );
-    CPhysVal( double i_fVal, CPhysUnit* i_pPhysUnit, double i_fResVal = 0.0, EResType i_resType = EResTypeResolution );
-    CPhysVal( double i_fVal, CPhysUnit* i_pPhysUnitVal, double i_fResVal, CUnitRatio* i_pUnitRatioRes, EResType i_resType = EResTypeResolution );
-    CPhysVal( double i_fVal, CPhysUnit* i_pPhysUnitVal, double i_fResVal, CPhysUnit* i_pPhysUnitRes, EResType i_resType = EResTypeResolution );
-    CPhysVal( double i_fVal, CPhysUnit* i_pPhysUnitVal, const CPhysValRes& i_physValRes );
+    CPhysVal( double i_fVal, const CUnitGrp& i_unitGrp, EResType i_resType = EResTypeResolution );
+    CPhysVal( double i_fVal, const CPhysSize& i_physSize, EResType i_resType = EResTypeResolution );
+    CPhysVal( double i_fVal, const CUnit& i_unit, EResType i_resType = EResTypeResolution );
+    CPhysVal( double i_fVal, const CUnit& i_unit, double i_fResVal, EResType i_resType = EResTypeResolution );
+    CPhysVal( double i_fVal, const CUnit& i_unitVal, double i_fResVal, const CUnit& i_unitRes, EResType i_resType = EResTypeResolution );
+    CPhysVal( double i_fVal, const CUnit& i_unitVal, const CPhysValRes& i_physValRes );
+    CPhysVal( double i_fVal, const CUnitRatio& i_unitRatio, double i_fResVal = 0.0, EResType i_resType = EResTypeResolution );
+    CPhysVal( double i_fVal, const CUnitRatio& i_unitRatioVal, double i_fResVal, const CUnitRatio& i_unitRatioRes, EResType i_resType = EResTypeResolution );
+    CPhysVal( double i_fVal, const CUnitRatio& i_unitRatioVal, const CPhysValRes& i_physValRes );
+    //CPhysVal( double i_fVal, const CUnitDataQuantity& i_unitDataQuantity, double i_fResVal = 0.0, EResType i_resType = EResTypeResolution );
+    //CPhysVal( double i_fVal, const CUnitDataQuantity& i_unitDataQuantity, double i_fResVal, const CUnitRatio& i_unitRatioRes, EResType i_resType = EResTypeResolution );
+    //CPhysVal( double i_fVal, const CUnitDataQuantity& i_unitDataQuantity, const CPhysValRes& i_physValRes );
+    CPhysVal( double i_fVal, const CPhysUnit& i_physUnit, double i_fResVal = 0.0, EResType i_resType = EResTypeResolution );
+    CPhysVal( double i_fVal, const CPhysUnit& i_physUnitVal, double i_fResVal, const CUnitRatio& i_unitRatioRes, EResType i_resType = EResTypeResolution );
+    CPhysVal( double i_fVal, const CPhysUnit& i_physUnitVal, double i_fResVal, const CPhysUnit& i_physUnitRes, EResType i_resType = EResTypeResolution );
+    CPhysVal( double i_fVal, const CPhysUnit& i_physUnitVal, const CPhysValRes& i_physValRes );
     CPhysVal( const QString& i_strVal, EResType i_resType = EResTypeResolution );
     CPhysVal( const QString& i_strVal, double i_fResVal, EResType i_resType = EResTypeResolution );
-    CPhysVal( const QString& i_strVal, CUnit* i_pUnit, EResType i_resType = EResTypeResolution );
-    CPhysVal( const QString& i_strVal, CUnit* i_pUnit, double i_fResVal, EResType i_resType = EResTypeResolution );
-    CPhysVal( const QString& i_strVal, CUnit* i_pUnitVal, double i_fResVal, CUnit* i_pUnitRes, EResType i_resType = EResTypeResolution );
-    CPhysVal( const QString& i_strVal, CUnit* i_pUnitVal, const CPhysValRes& i_physValRes );
-    CPhysVal( const QString& i_strVal, CUnitGrp* i_pUnitGrp, EResType i_resType = EResTypeResolution );
-    CPhysVal( const QString& i_strVal, CUnitGrp* i_pUnitGrp, double i_fResVal, EResType i_resType = EResTypeResolution );
-    CPhysVal( const QString& i_strVal, CUnitGrp* i_pUnitGrpVal, CUnitGrp* i_pUnitGrpRes, EResType i_resType = EResTypeResolution );
-    CPhysVal( const QString& i_strVal, CUnitGrp* i_pUnitGrpVal, double i_fResVal, CUnitRatio* i_pUnitRatioRes, EResType i_resType = EResTypeResolution );
-    //CPhysVal( const QString& i_strVal, CUnitGrp* i_pUnitGrpVal, double i_fResVal, CUnitDataQuantity* i_pUnitDataQuantity, EResType i_resType = EResTypeResolution );
-    CPhysVal( const QString& i_strVal, CUnitGrp* i_pUnitGrpVal, double i_fResVal, CPhysUnit* i_pPhysUnitRes, EResType i_resType = EResTypeResolution );
-    CPhysVal( const QString& i_strVal, CUnitGrp* i_pUnitGrpVal, const CPhysValRes& i_physValRes );
-    CPhysVal( const QString& i_strVal, CUnitRatio* i_pUnitRatio, EResType i_resType = EResTypeResolution );
-    CPhysVal( const QString& i_strVal, CUnitRatio* i_pUnitRatio, double i_fResVal, EResType i_resType = EResTypeResolution );
-    CPhysVal( const QString& i_strVal, CUnitRatio* i_pUnitRatioVal, double i_fResVal, CUnitRatio* i_pUnitRatioRes, EResType i_resType = EResTypeResolution );
-    CPhysVal( const QString& i_strVal, CUnitRatio* i_pUnitRatioVal, const CPhysValRes& i_physValRes );
-    //CPhysVal( const QString& i_strVal, CUnitDataQuantity* i_pUnitDataQuantity, EResType i_resType = EResTypeResolution );
-    //CPhysVal( const QString& i_strVal, CUnitDataQuantity* i_pUnitDataQuantity, double i_fResVal, EResType i_resType = EResTypeResolution );
-    //CPhysVal( const QString& i_strVal, CUnitDataQuantity* i_pUnitDataQuantity, double i_fResVal, CUnitRatio* i_pUnitRatioRes, EResType i_resType = EResTypeResolution );
-    //CPhysVal( const QString& i_strVal, CUnitDataQuantity* i_pUnitDataQuantity, double i_fResVal, CUnitDataQuantity* i_pUnitDataQuantityRes, EResType i_resType = EResTypeResolution );
-    //CPhysVal( const QString& i_strVal, CUnitDataQuantity* i_pUnitDataQuantity, const CPhysValRes& i_physValRes );
-    CPhysVal( const QString& i_strVal, CPhysUnit* i_pPhysUnit, EResType i_resType = EResTypeResolution );
-    CPhysVal( const QString& i_strVal, CPhysUnit* i_pPhysUnit, double i_fResVal, EResType i_resType = EResTypeResolution );
-    CPhysVal( const QString& i_strVal, CPhysUnit* i_pPhysUnitVal, double i_fResVal, CUnitRatio* i_pUnitRatioRes, EResType i_resType = EResTypeResolution );
-    CPhysVal( const QString& i_strVal, CPhysUnit* i_pPhysUnitVal, double i_fResVal, CPhysUnit* i_pPhysUnitRes, EResType i_resType = EResTypeResolution );
-    CPhysVal( const QString& i_strVal, CPhysUnit* i_pPhysUnitVal, const CPhysValRes& i_physValRes );
+    CPhysVal( const QString& i_strVal, const CUnit& i_unit, EResType i_resType = EResTypeResolution );
+    CPhysVal( const QString& i_strVal, const CUnit& i_unit, double i_fResVal, EResType i_resType = EResTypeResolution );
+    CPhysVal( const QString& i_strVal, const CUnit& i_unitVal, double i_fResVal, const CUnit& i_unitRes, EResType i_resType = EResTypeResolution );
+    CPhysVal( const QString& i_strVal, const CUnit& i_unitVal, const CPhysValRes& i_physValRes );
+    CPhysVal( const QString& i_strVal, const CUnitGrp& i_unitGrp, EResType i_resType = EResTypeResolution );
+    CPhysVal( const QString& i_strVal, const CUnitGrp& i_unitGrp, double i_fResVal, EResType i_resType = EResTypeResolution );
+    CPhysVal( const QString& i_strVal, const CUnitGrp& i_unitGrpVal, const CUnitGrp& i_unitGrpRes, EResType i_resType = EResTypeResolution );
+    CPhysVal( const QString& i_strVal, const CUnitGrp& i_unitGrpVal, double i_fResVal, const CUnitRatio& i_unitRatioRes, EResType i_resType = EResTypeResolution );
+    //CPhysVal( const QString& i_strVal, const CUnitGrp& i_unitGrpVal, double i_fResVal, const CUnitDataQuantity& i_unitDataQuantity, EResType i_resType = EResTypeResolution );
+    CPhysVal( const QString& i_strVal, const CUnitGrp& i_unitGrpVal, double i_fResVal, const CPhysUnit& i_physUnitRes, EResType i_resType = EResTypeResolution );
+    CPhysVal( const QString& i_strVal, const CUnitGrp& i_unitGrpVal, const CPhysValRes& i_physValRes );
+    CPhysVal( const QString& i_strVal, const CUnitRatio& i_unitRatio, EResType i_resType = EResTypeResolution );
+    CPhysVal( const QString& i_strVal, const CUnitRatio& i_unitRatio, double i_fResVal, EResType i_resType = EResTypeResolution );
+    CPhysVal( const QString& i_strVal, const CUnitRatio& i_unitRatioVal, double i_fResVal, const CUnitRatio& i_unitRatioRes, EResType i_resType = EResTypeResolution );
+    CPhysVal( const QString& i_strVal, const CUnitRatio& i_unitRatioVal, const CPhysValRes& i_physValRes );
+    //CPhysVal( const QString& i_strVal, const CUnitDataQuantity& i_unitDataQuantity, EResType i_resType = EResTypeResolution );
+    //CPhysVal( const QString& i_strVal, const CUnitDataQuantity& i_unitDataQuantity, double i_fResVal, EResType i_resType = EResTypeResolution );
+    //CPhysVal( const QString& i_strVal, const CUnitDataQuantity& i_unitDataQuantity, double i_fResVal, const CUnitRatio& i_unitRatioRes, EResType i_resType = EResTypeResolution );
+    //CPhysVal( const QString& i_strVal, const CUnitDataQuantity& i_unitDataQuantity, double i_fResVal, const CUnitDataQuantity& i_unitDataQuantityRes, EResType i_resType = EResTypeResolution );
+    //CPhysVal( const QString& i_strVal, const CUnitDataQuantity& i_unitDataQuantity, const CPhysValRes& i_physValRes );
+    CPhysVal( const QString& i_strVal, const CPhysUnit& i_physUnit, EResType i_resType = EResTypeResolution );
+    CPhysVal( const QString& i_strVal, const CPhysUnit& i_physUnit, double i_fResVal, EResType i_resType = EResTypeResolution );
+    CPhysVal( const QString& i_strVal, const CPhysUnit& i_physUnitVal, double i_fResVal, const CUnitRatio& i_unitRatioRes, EResType i_resType = EResTypeResolution );
+    CPhysVal( const QString& i_strVal, const CPhysUnit& i_physUnitVal, double i_fResVal, const CPhysUnit& i_physUnitRes, EResType i_resType = EResTypeResolution );
+    CPhysVal( const QString& i_strVal, const CPhysUnit& i_physUnitVal, const CPhysValRes& i_physValRes );
     CPhysVal( const CPhysVal& i_physVal );
     ~CPhysVal();
 public: // operators
@@ -336,44 +339,40 @@ public: // instance methods
     void setValidity( ZS::System::EValueValidity i_validity );
     ZS::System::EValueValidity getValidity() const { return m_validity; }
 public: // instance methods
-    void setUnitGroup( CUnitGrp* i_pUnitGrp );
+    void setUnitGroup( const CUnitGrp& i_unitGrp );
     void setUnitGroupKey( const QString& i_strUnitGrpKey );
-    CUnitGrp* unitGroup() const { return m_pUnitGrp; }
-    QString getUnitGroupName( bool i_bInsertParentNames = false ) const;
-    QString getUnitGroupKey() const { return m_strUnitGrpKey; }
-    CPhysSize* physSize() const;
+    CUnitGrp unitGroup() const { return m_unitGrp; }
+    CPhysSize physSize() const;
 public: // instance methods
-    void setUnit( CUnit* i_pUnit );
+    void setUnit( const CUnit& i_unit );
     void setUnitKey( const QString& i_strUnitKey );
-    void setUnitRatio( CUnitRatio* i_pUnitRatio );
-    //void setUnitDataQuantity( CUnitDataQuantity* i_pUnitDataQuantity );
-    void setPhysUnit( CPhysUnit* i_pPhysUnit );
-    CUnit* unit() const { return m_pUnit; }
-    CUnitRatio* getUnitRatio() const;
-    //CUnitDataQuantity* getUnitDataQuantity() const;
-    CPhysUnit* physUnit() const;
-    QString getUnitName( bool i_bInsertParentNames = false ) const;
-    QString getUnitKey() const { return m_strUnitKey; }
+    void setUnitRatio( const CUnitRatio& i_unitRatio );
+    //void setUnitDataQuantity( const CUnitDataQuantity& i_unitDataQuantity );
+    void setPhysUnit( const CPhysUnit& i_physUnit );
+    CUnit unit() const { return m_unit; }
+    CUnitRatio unitRatio() const;
+    //CUnitDataQuantity* unitDataQuantity() const;
+    CPhysUnit physUnit() const;
 public: // instance methods
     void invalidateObjectReferences();
 public: // instance methods (to set the value)
     void setVal( double i_fVal );
-    void setVal( double i_fVal, CUnit* i_pUnit );
-    void setVal( double i_fVal, CUnitRatio* i_pUnitRatio );
-    //void setVal( double i_fVal, CUnitDataQuantity* i_pUnitDataQuantity );
-    void setVal( double i_fVal, CPhysUnit* i_pPhysUnit );
+    void setVal( double i_fVal, const CUnit& i_unit );
+    void setVal( double i_fVal, const CUnitRatio& i_unitRatio );
+    //void setVal( double i_fVal, const CUnitDataQuantity& i_unitDataQuantity );
+    void setVal( double i_fVal, const CPhysUnit& i_physUnit );
 public: // instance methods (to set the value)
     TFormatResult setVal( const QString& i_strVal );
-    TFormatResult setVal( const QString& i_strVal, CUnit* i_pUnit );
-    TFormatResult setVal( const QString& i_strVal, CUnitRatio* i_pUnitRatio );
-    //TFormatResult setVal( const QString& i_strVal, CUnitDataQuantity* i_pUnitDataQuantity );
-    TFormatResult setVal( const QString& i_strVal, CPhysUnit* i_pPhysUnit );
+    TFormatResult setVal( const QString& i_strVal, const CUnit& i_unit );
+    TFormatResult setVal( const QString& i_strVal, const CUnitRatio& i_unitRatio );
+    //TFormatResult setVal( const QString& i_strVal, const CUnitDataQuantity& i_unitDataQuantity );
+    TFormatResult setVal( const QString& i_strVal, const CPhysUnit& i_physUnit );
 public: // instance methods (to get the double value)
     double getVal() const { return m_fVal; }
-    double getVal( const CUnit* i_pUnit ) const;
-    double getVal( const CUnitRatio* i_pUnitRatio ) const;
-    //double getVal( const CUnitDataQuantity* i_pUnitDataQuantity ) const;
-    double getVal( const CPhysUnit* i_pPhysUnit ) const;
+    double getVal( const CUnit& i_unit ) const;
+    double getVal( const CUnitRatio& i_unitRatio ) const;
+    //double getVal( const CUnitDataQuantity& i_unitDataQuantity ) const;
+    double getVal( const CPhysUnit& i_physUnit ) const;
 public: // instance methods (to convert the value into a string)
     QString toString(
         EUnitFind i_unitFindVal          = EUnitFind::None,
@@ -383,39 +382,35 @@ public: // instance methods (to convert the value into a string)
     QString toString(
         EUnitFind    i_unitFindVal,
         int          i_iValSubStrVisibility,
-        const CUnit* i_pUnitRes,
+        const CUnit& i_unitRes,
         int          i_iResSubStrVisibility = PhysValSubStr::Val|PhysValSubStr::UnitSymbol ) const;
     QString toString(
-        const CUnit* i_pUnitVal,
+        const CUnit& i_unitVal,
         int          i_iValSubStrVisibility = PhysValSubStr::Val|PhysValSubStr::UnitSymbol,
         EUnitFind    i_unitFindRes          = EUnitFind::None,
         int          i_iResSubStrVisibility = PhysValSubStr::Val|PhysValSubStr::UnitSymbol ) const;
     QString toString(
-        const CUnit* i_pUnitVal,
+        const CUnit& i_unitVal,
         int          i_iValSubStrVisibility,
-        const CUnit* i_pUnitRes,
+        const CUnit& i_unitRes,
         int          i_iResSubStrVisibility = PhysValSubStr::Val|PhysValSubStr::UnitSymbol ) const;
     QString toString( const SValueFormatProvider& i_valueFormat ) const;
 public: // instance methods (to get and set the resolution of the value)
     bool hasRes() const { return m_physValRes.isValid(); }
     CPhysValRes getRes() const { return m_physValRes; }
     void setRes( double i_fRes );
-    void setRes( double i_fRes, CUnit* i_pUnit );
+    void setRes( double i_fRes, const CUnit& i_unit );
     void setRes( const CPhysValRes& i_physValRes );
 public: // instance methods (to convert the value into another unit)
-    void convertValue( CUnit* i_pUnitDst );
+    void convertValue( const CUnit& i_unitDst );
 protected: // instance members
-    // Please note that object references are only valid if the referenced objects
-    // are living in the same thread context (and therefore within the same process
-    // and same machine). If the value has to be exchanged between threads, processes
-    // or to remote machines unique keys are necessary.
-    CUnitGrp*                  m_pUnitGrp;      // Could be either CUnitGrpRatio or CPhysSize
-    CUnit*                     m_pUnit;         // Could be either CUnitRatio, CUnitDataQuantity or CPhysUnit
-    QString                    m_strUnitGrpKey;
-    QString                    m_strUnitKey;
+    // Could be either CUnitGrpRatio or CPhysSize
+    CUnitGrp m_unitGrp;
+    // Could be either CUnitRatio, CUnitDataQuantity or CPhysUnit
+    CUnit m_unit;
     ZS::System::EValueValidity m_validity;
-    double                     m_fVal;
-    CPhysValRes                m_physValRes;
+    double m_fVal;
+    CPhysValRes m_physValRes;
 
 }; // class CPhysVal
 

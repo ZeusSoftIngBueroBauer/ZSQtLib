@@ -73,8 +73,8 @@ CDlgEditPhysVal::CDlgEditPhysVal(
 //------------------------------------------------------------------------------
     QDialog(i_pWdgtParent),
     m_physValOld(i_physVal),
-    m_pPhysSize(i_physVal.physSize()),
-    m_pPhysUnit(i_physVal.physUnit()),
+    m_physSize(i_physVal.physSize()),
+    m_physUnit(i_physVal.physUnit()),
     m_fMin(i_fMin),
     m_fMax(i_fMax),
     m_iDecimals(i_iDecimals),
@@ -106,18 +106,18 @@ CDlgEditPhysVal::CDlgEditPhysVal(
     // Unit Combo
     //-----------
 
-    if( m_pPhysSize != nullptr && m_pPhysUnit != nullptr && m_pPhysSize->count() > 0 )
+    if( m_physSize.isValid() && m_physUnit.isValid() && m_physSize.count() > 0 )
     {
         int idxUnit;
 
         m_pCmbUnit = new QComboBox();
         m_pLytLine->addWidget(m_pCmbUnit);
 
-        for( idxUnit = 0; idxUnit < static_cast<int>(m_pPhysSize->count()); idxUnit++ )
+        for( idxUnit = 0; idxUnit < static_cast<int>(m_physSize.count()); idxUnit++ )
         {
-            m_pCmbUnit->addItem(m_pPhysSize->getPhysUnit(idxUnit)->symbol());
+            m_pCmbUnit->addItem(m_physSize.getPhysUnit(idxUnit).symbol());
         }
-        m_pCmbUnit->setCurrentIndex( m_pCmbUnit->findText(m_pPhysUnit->symbol()) );
+        m_pCmbUnit->setCurrentIndex( m_pCmbUnit->findText(m_physUnit.symbol()) );
 
         if( !connect(
             /* pObjSender   */ m_pCmbUnit,
@@ -178,8 +178,12 @@ CDlgEditPhysVal::CDlgEditPhysVal(
 CDlgEditPhysVal::~CDlgEditPhysVal()
 //------------------------------------------------------------------------------
 {
-    m_pPhysSize = nullptr;
-    m_pPhysUnit = nullptr;
+    //m_physValOld;
+    //m_physSize;
+    //m_physUnit;
+    m_fMin = 0.0;
+    m_fMax = 0.0;
+    m_iDecimals = 0;
     m_pLytDlg = nullptr;
     m_pLytLine = nullptr;
     m_pEdtVal = nullptr;
@@ -196,22 +200,21 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CPhysVal CDlgEditPhysVal::getPhysVal() const
+CPhysVal CDlgEditPhysVal::value() const
 //------------------------------------------------------------------------------
 {
-    CPhysVal   physVal = m_physValOld;
+    CPhysVal  physVal = m_physValOld;
 
-    QString    strSymbol = m_pCmbUnit->currentText();
-    CPhysUnit* pPhysUnit = m_pPhysSize->findPhysUnitBySymbol(strSymbol);
-    double     fVal = m_pEdtVal->text().toDouble();
+    QString   strSymbol = m_pCmbUnit->currentText();
+    CPhysUnit physUnit = m_physSize.findPhysUnitBySymbol(strSymbol);
+    double    fVal = m_pEdtVal->text().toDouble();
 
-    if( pPhysUnit != nullptr )
+    if( physUnit.isValid() )
     {
-        physVal = CPhysVal( fVal, pPhysUnit );
+        physVal = CPhysVal(fVal, physUnit);
     }
     return physVal;
-
-} // getPhysVal
+}
 
 /*==============================================================================
 protected slots: // overridables of base class QDialog
@@ -245,15 +248,14 @@ void CDlgEditPhysVal::onDlgBtnResetClicked()
 void CDlgEditPhysVal::onCmbUnitActivated( int /*i_idx*/ )
 //------------------------------------------------------------------------------
 {
-    QString    strSymbol = m_pCmbUnit->currentText();
-    CPhysUnit* pPhysUnit = m_pPhysSize->findPhysUnitBySymbol(strSymbol);
-    double     fVal = m_pEdtVal->text().toDouble();
+    QString   strSymbol = m_pCmbUnit->currentText();
+    CPhysUnit physUnit = m_physSize.findPhysUnitBySymbol(strSymbol);
+    double    fVal = m_pEdtVal->text().toDouble();
 
-    if( pPhysUnit != nullptr && pPhysUnit != m_pPhysUnit )
+    if( physUnit.isValid() && physUnit != m_physUnit )
     {
-        fVal = CPhysVal(fVal,m_pPhysUnit).getVal(pPhysUnit);
-        m_pPhysUnit = pPhysUnit;
+        fVal = CPhysVal(fVal, m_physUnit).getVal(physUnit);
+        m_physUnit = physUnit;
         m_pEdtVal->setText( QString::number(fVal) );
     }
-
-} // onCmbUnitActivated
+}

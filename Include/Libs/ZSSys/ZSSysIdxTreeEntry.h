@@ -118,7 +118,7 @@ public: // instance methods
 public: // instance methods
     /*! Returns the index tree of the entry. */
     CIdxTree* tree() const { return m_pTree; }
-    /*! Returns the unique key of the entry within the index tree (e.g. "L:ZS::Data::CDataTable::Customers". */
+    QString nodeSeparator() const;
     QString keyInTree() const;
     /*! Returns the index of the entry within the index trees vector of entries. */
     int indexInTree() const { return m_idxInTree; }

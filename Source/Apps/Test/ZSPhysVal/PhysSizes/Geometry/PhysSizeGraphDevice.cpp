@@ -42,17 +42,18 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CPhysSizeGraphDevice::CPhysSizeGraphDevice( CIdxTreePhysSizes* i_pIdxTree ) :
 //------------------------------------------------------------------------------
-    CPhysSize(
+    CPhysSizeTreeEntry(
         /* pIdxTree         */ i_pIdxTree,
         /* strName          */ "GraphDevice",
         /* strSIUnitName    */ "Pixel",
         /* strSIUnitSymbol  */ "px",
         /* strFormulaSymbol */ "px",
         /* bIsPowerRelated  */ false ),
-    Pixel(
+    m_treeEntryPixel(
         /* pPhysSize */ this,
         /* strPrefix */ "" ),
-    px(Pixel)
+    Pixel(m_treeEntryPixel),
+    px(m_treeEntryPixel)
 {
     // Call function of base class CPhysSize to initialize the physical size together
     // with its units (e.g. to create the field with internal conversion routines).
@@ -66,19 +67,20 @@ CPhysSizeGraphDevice::CPhysSizeGraphDevice( CIdxTreePhysSizes* i_pIdxTree ) :
 } // ctor
 
 //------------------------------------------------------------------------------
-CPhysSizeGraphDevice::CPhysSizeGraphDevice( CIdxTreeEntry* i_pParentBranch ) :
+CPhysSizeGraphDevice::CPhysSizeGraphDevice( CPhysScienceFieldTreeEntry* i_pParentBranch ) :
 //------------------------------------------------------------------------------
-    CPhysSize(
+    CPhysSizeTreeEntry(
         /* pParentBranch    */ i_pParentBranch,
         /* strName          */ "GraphDevice",
         /* strSIUnitName    */ "Pixel",
         /* strSIUnitSymbol  */ "px",
         /* strFormulaSymbol */ "px",
         /* bIsPowerRelated  */ false ),
-    Pixel(
+    m_treeEntryPixel(
         /* pPhysSize */ this,
         /* strPrefix */ "" ),
-    px(Pixel)
+    Pixel(m_treeEntryPixel),
+    px(m_treeEntryPixel)
 {
     // Call function of base class CPhysSize to initialize the physical size together
     // with its units (e.g. to create the field with internal conversion routines).

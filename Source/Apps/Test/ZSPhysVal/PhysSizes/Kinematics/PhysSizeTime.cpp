@@ -42,50 +42,57 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CPhysSizeTime::CPhysSizeTime( CIdxTreePhysSizes* i_pIdxTree ) :
 //------------------------------------------------------------------------------
-    CPhysSize(
+    CPhysSizeTreeEntry(
         /* pIdxTree         */ i_pIdxTree,
         /* strName          */ "Time",
         /* strSIUnitName    */ "Seconds",
         /* strSIUnitSymbol  */ "s",
         /* strFormulaSymbol */ "t",
         /* bIsPowerRelated  */ false ),
-    NanoSeconds(
+    m_treeEntryNanoSeconds(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixNano ),
-    MicroSeconds(
+    m_treeEntryMicroSeconds(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixMicro ),
-    MilliSeconds(
+    m_treeEntryMilliSeconds(
         /* pPhysSize */ this,
         /* strSymbol */ c_strPrefixMilli ),
-    Seconds(
+    m_treeEntrySeconds(
         /* pPhysSize */ this,
         /* strPrefix */ "" ),
-    Minutes(
+    m_treeEntryMinutes(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ false,
         /* strName        */ "Minutes",
         /* strSymbol      */ "m",
         /* fMFromSI       */ 1.0/60.0 ),
-    Hours(
+    m_treeEntryHours(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ false,
         /* strName        */ "Hours",
         /* strSymbol      */ "h",
         /* fMFromSI       */ 1.0/3600.0 ),
-    Days(
+    m_treeEntryDays(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ false,
         /* strName        */ "Days",
         /* strSymbol      */ "d",
         /* fMFromSI       */ 1.0/(24.0*3600.0) ),
-    ns(NanoSeconds),
-    us(MicroSeconds),
-    ms(MilliSeconds),
-    s(Seconds),
-    m(Minutes),
-    h(Hours),
-    d(Days)
+    NanoSeconds(m_treeEntryNanoSeconds),
+    MicroSeconds(m_treeEntryMicroSeconds),
+    MilliSeconds(m_treeEntryMilliSeconds),
+    Seconds(m_treeEntrySeconds),
+    Minutes(m_treeEntryMinutes),
+    Hours(m_treeEntryHours),
+    Days(m_treeEntryDays),
+    ns(m_treeEntryNanoSeconds),
+    us(m_treeEntryMicroSeconds),
+    ms(m_treeEntryMilliSeconds),
+    s(m_treeEntrySeconds),
+    m(m_treeEntryMinutes),
+    h(m_treeEntryHours),
+    d(m_treeEntryDays)
 {
     // Call function of base class CPhysSize to initialize the physical size together
     // with its units (e.g. to create the field with internal conversion routines
@@ -95,52 +102,59 @@ CPhysSizeTime::CPhysSizeTime( CIdxTreePhysSizes* i_pIdxTree ) :
 } // ctor
 
 //------------------------------------------------------------------------------
-CPhysSizeTime::CPhysSizeTime( CIdxTreeEntry* i_pParentBranch ) :
+CPhysSizeTime::CPhysSizeTime( CPhysScienceFieldTreeEntry* i_pParentBranch ) :
 //------------------------------------------------------------------------------
-    CPhysSize(
+    CPhysSizeTreeEntry(
         /* pParentBranch    */ i_pParentBranch,
         /* strName          */ "Time",
         /* strSIUnitName    */ "Seconds",
         /* strSIUnitSymbol  */ "s",
         /* strFormulaSymbol */ "t",
         /* bIsPowerRelated  */ false ),
-    NanoSeconds(
+    m_treeEntryNanoSeconds(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixNano ),
-    MicroSeconds(
+    m_treeEntryMicroSeconds(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixMicro ),
-    MilliSeconds(
+    m_treeEntryMilliSeconds(
         /* pPhysSize */ this,
         /* strSymbol */ c_strPrefixMilli ),
-    Seconds(
+    m_treeEntrySeconds(
         /* pPhysSize */ this,
         /* strPrefix */ "" ),
-    Minutes(
+    m_treeEntryMinutes(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ false,
         /* strName        */ "Minutes",
         /* strSymbol      */ "m",
         /* fMFromSI       */ 1.0/60.0 ),
-    Hours(
+    m_treeEntryHours(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ false,
         /* strName        */ "Hours",
         /* strSymbol      */ "h",
         /* fMFromSI       */ 1.0/3600.0 ),
-    Days(
+    m_treeEntryDays(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ false,
         /* strName        */ "Days",
         /* strSymbol      */ "d",
         /* fMFromSI       */ 1.0/(24.0*3600.0) ),
-    ns(NanoSeconds),
-    us(MicroSeconds),
-    ms(MilliSeconds),
-    s(Seconds),
-    m(Minutes),
-    h(Hours),
-    d(Days)
+    NanoSeconds(m_treeEntryNanoSeconds),
+    MicroSeconds(m_treeEntryMicroSeconds),
+    MilliSeconds(m_treeEntryMilliSeconds),
+    Seconds(m_treeEntrySeconds),
+    Minutes(m_treeEntryMinutes),
+    Hours(m_treeEntryHours),
+    Days(m_treeEntryDays),
+    ns(m_treeEntryNanoSeconds),
+    us(m_treeEntryMicroSeconds),
+    ms(m_treeEntryMilliSeconds),
+    s(m_treeEntrySeconds),
+    m(m_treeEntryMinutes),
+    h(m_treeEntryHours),
+    d(m_treeEntryDays)
 {
     // Call function of base class CPhysSize to initialize the physical size together
     // with its units (e.g. to create the field with internal conversion routines

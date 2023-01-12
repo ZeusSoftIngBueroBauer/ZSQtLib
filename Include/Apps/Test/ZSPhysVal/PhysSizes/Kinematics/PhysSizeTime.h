@@ -39,12 +39,12 @@ namespace Test
 namespace PhysVal
 {
 //******************************************************************************
-class CPhysSizeTime : public ZS::PhysVal::CPhysSize
+class CPhysSizeTime : public ZS::PhysVal::CPhysSizeTreeEntry
 //******************************************************************************
 {
 public: // ctors and dtor
     CPhysSizeTime(ZS::PhysVal::CIdxTreePhysSizes* i_pIdxTree);
-    CPhysSizeTime(ZS::System::CIdxTreeEntry* i_pParentBranch);
+    CPhysSizeTime(ZS::PhysVal::CPhysScienceFieldTreeEntry* i_pParentBranch);
     CPhysSizeTime(CPhysSizeTime&& i_other) = delete;
     CPhysSizeTime(CPhysSizeTime& i_other) = delete;
     CPhysSizeTime(const CPhysSizeTime& i_other) = delete;
@@ -53,6 +53,14 @@ public: // operators
     CPhysSizeTime& operator=(CPhysSizeTime& i_other) = delete;
     CPhysSizeTime& operator=(const CPhysSizeTime& i_other) = delete;
     CPhysSizeTime& operator=(CPhysSizeTime&& i_other) = delete;
+private: // instance members
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryNanoSeconds;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryMicroSeconds;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryMilliSeconds;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntrySeconds;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryMinutes;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryHours;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryDays;
 public: // instance members
     ZS::PhysVal::CPhysUnit NanoSeconds;
     ZS::PhysVal::CPhysUnit MicroSeconds;
@@ -61,13 +69,13 @@ public: // instance members
     ZS::PhysVal::CPhysUnit Minutes;
     ZS::PhysVal::CPhysUnit Hours;
     ZS::PhysVal::CPhysUnit Days;
-    ZS::PhysVal::CPhysUnit& ns;
-    ZS::PhysVal::CPhysUnit& us;
-    ZS::PhysVal::CPhysUnit& ms;
-    ZS::PhysVal::CPhysUnit& m;
-    ZS::PhysVal::CPhysUnit& s;
-    ZS::PhysVal::CPhysUnit& h;
-    ZS::PhysVal::CPhysUnit& d;
+    ZS::PhysVal::CPhysUnit ns;
+    ZS::PhysVal::CPhysUnit us;
+    ZS::PhysVal::CPhysUnit ms;
+    ZS::PhysVal::CPhysUnit m;
+    ZS::PhysVal::CPhysUnit s;
+    ZS::PhysVal::CPhysUnit h;
+    ZS::PhysVal::CPhysUnit d;
 
 }; // class CPhysSizeTime
 

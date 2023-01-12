@@ -39,12 +39,12 @@ namespace Test
 namespace PhysVal
 {
 //******************************************************************************
-class CPhysSizeAngle : public ZS::PhysVal::CPhysSize
+class CPhysSizeAngle : public ZS::PhysVal::CPhysSizeTreeEntry
 //******************************************************************************
 {
 public: // ctors and dtor
-    CPhysSizeAngle( ZS::PhysVal::CIdxTreePhysSizes* i_pIdxTree );
-    CPhysSizeAngle(ZS::System::CIdxTreeEntry* i_pParentBranch);
+    CPhysSizeAngle(ZS::PhysVal::CIdxTreePhysSizes* i_pIdxTree);
+    CPhysSizeAngle(ZS::PhysVal::CPhysScienceFieldTreeEntry* i_pParentBranch);
     CPhysSizeAngle(CPhysSizeAngle&& i_other) = delete;
     CPhysSizeAngle(CPhysSizeAngle& i_other) = delete;
     CPhysSizeAngle(const CPhysSizeAngle& i_other) = delete;
@@ -55,6 +55,9 @@ public: // operators
     CPhysSizeAngle& operator=(CPhysSizeAngle&& i_other) = delete;
 public: // class members
     static const QString c_strSymbolPhi;
+private: // instance members
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryRad;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryDegree;
 public: // instance members
     ZS::PhysVal::CPhysUnit Rad;
     ZS::PhysVal::CPhysUnit Degree;

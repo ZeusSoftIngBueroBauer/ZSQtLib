@@ -37,7 +37,7 @@ namespace ZS
 namespace PhysVal
 {
 class CIdxTreePhysSizes;
-class CPhysSize;
+class CPhysSizeTreeEntry;
 
 namespace GUI
 {
@@ -104,7 +104,7 @@ protected: // class members
     static QHash<int, QByteArray> s_clm2Name;
 protected: // instance members
     EViewMode m_viewMode;
-    CPhysSize* m_pPhysSize;
+    CPhysSizeTreeEntry* m_pPhysSize;
 
 }; // class CModelPhysSize
 

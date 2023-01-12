@@ -35,6 +35,30 @@ namespace ZS
 namespace PhysVal
 {
 //******************************************************************************
+class ZSPHYSVALDLL_API CUnitRatioTreeEntry : public CUnitTreeEntry
+//******************************************************************************
+{
+public: // class methods
+    static QString NameSpace() { return "ZS::PhysVal"; }
+    static QString ClassName() { return "CUnitRatioTreeEntry"; }
+public: // ctors and dtor
+    CUnitRatioTreeEntry(
+        CUnitGrpTreeEntry* i_pUnitGrp,
+        const QString&     i_strName,
+        const QString&     i_strSymbol,
+        double             i_fFactor );
+    virtual ~CUnitRatioTreeEntry();
+public: // instance methods
+    double factor() const;
+public: // overridables of base class CUnitTreeEntry (converting values)
+    virtual bool isConvertible( const CUnitTreeEntry* i_pUnitDst, double i_fVal = 1.0 ) const override;
+    virtual double convertValue( double i_fVal, const CUnitTreeEntry* i_pUnitDst ) const override;
+protected: // instance members
+    double m_fFactor;
+
+}; // class CUnitRatioTreeEntry
+
+//******************************************************************************
 class ZSPHYSVALDLL_API CUnitRatio : public CUnit
 //******************************************************************************
 {
@@ -42,55 +66,57 @@ public: // class methods
     static QString NameSpace() { return "ZS::PhysVal"; }
     static QString ClassName() { return "CUnitRatio"; }
 public: // ctors and dtor
-    CUnitRatio(
-        CUnitGrp*      i_pUnitGrp,
-        const QString& i_strName,
-        const QString& i_strSymbol,
-        double         i_fFactor );
+    CUnitRatio();
+    CUnitRatio(CUnitRatio* i_pUnitRatio);
+    CUnitRatio(const CUnitRatio* i_unitRatio);
+    CUnitRatio(CUnitRatio& i_unitRatio);
+    CUnitRatio(const CUnitRatio& i_unitRatio);
+    CUnitRatio(CUnitRatioTreeEntry* i_pUnitRatio);
+    CUnitRatio(const CUnitRatioTreeEntry* i_pUnitRatio);
+    CUnitRatio(CUnitRatioTreeEntry& i_unitRatio);
+    CUnitRatio(const CUnitRatioTreeEntry& i_unitRatio);
+    CUnitRatio(const QString& i_strUniqueName);
     virtual ~CUnitRatio();
+public: // operators
+    bool operator == ( const CUnitRatio& i_other ) const;
+    bool operator != ( const CUnitRatio& i_other ) const;
 public: // instance methods
-    double getFactor() const;
-public: // overridables of base class CUnit (converting values)
-    virtual bool isConvertible( const CUnit* i_pUnitDst, double i_fVal = 1.0 ) const;
-    virtual double convertValue( double i_fVal, const CUnit* i_pUnitDst ) const;
-protected: // instance members
-    double m_fFactor;
-
-}; // class CUnitRatio
+    double factor() const;
+};
 
 #if 0
 
 //******************************************************************************
-class ZSPHYSVALDLL_API CUnitGrpRatio : public CUnitGrp
+class ZSPHYSVALDLL_API CUnitGrpRatioTreeEntry : public CUnitGrpTreeEntry
 //******************************************************************************
 {
 public: // class methods
     static QString NameSpace() { return "ZS::PhysVal"; }
-    static QString ClassName() { return "CUnitGrpRatio"; }
+    static QString ClassName() { return "CUnitGrpRatioTreeEntry"; }
 public: // ctors and dtor
-    CUnitGrpRatio(ZS::System::CIdxTree* i_pIdxTree);
-    virtual ~CUnitGrpRatio();
+    CUnitGrpRatioTreeEntry(ZS::System::CIdxTree* i_pIdxTree);
+    virtual ~CUnitGrpRatioTreeEntry();
 public: // instance methods to access the ratio units
-    CUnitRatio* PerOne() { return &m_unitRatioPerOne; }
-    CUnitRatio* PerCent() { return &m_unitRatioPerCent; }
-    CUnitRatio* PerMille() { return &m_unitRatioPerMille; }
-    CUnitRatio* dB() { return &m_unitRatioDezibel; }
-    CUnitRatio* Dezibel() { return &m_unitRatioDezibel; }
+    CUnitRatioTreeEntry* PerOne() { return &m_unitRatioPerOne; }
+    CUnitRatioTreeEntry* PerCent() { return &m_unitRatioPerCent; }
+    CUnitRatioTreeEntry* PerMille() { return &m_unitRatioPerMille; }
+    CUnitRatioTreeEntry* dB() { return &m_unitRatioDezibel; }
+    CUnitRatioTreeEntry* Dezibel() { return &m_unitRatioDezibel; }
 public: // instance methods
-    CUnitRatio* unit( int i_idx );
-    CUnitRatio* findUnitBySymbol( const QString& i_strSymbol );
-    CUnitRatio* findUnitByName( const QString& i_strName );
+    CUnitRatioTreeEntry* unit( int i_idx );
+    CUnitRatioTreeEntry* findUnitBySymbol( const QString& i_strSymbol );
+    CUnitRatioTreeEntry* findUnitByName( const QString& i_strName );
 private: // copy ctor not allowed
-    CUnitGrpRatio( const CUnitGrpRatio& );
+    CUnitGrpRatioTreeEntry( const CUnitGrpRatio& );
 private: // assignment operator not allowed
-    CUnitGrpRatio& operator = ( const CUnitGrpRatio& );
+    CUnitGrpRatioTreeEntry& operator = ( const CUnitGrpRatio& );
 protected: // instance members
-    CUnitRatio  m_unitRatioPerOne;
-    CUnitRatio  m_unitRatioPerCent;
-    CUnitRatio  m_unitRatioPerMille;
-    CUnitRatio  m_unitRatioDezibel;
+    CUnitRatioTreeEntry  m_unitRatioPerOne;
+    CUnitRatioTreeEntry  m_unitRatioPerCent;
+    CUnitRatioTreeEntry  m_unitRatioPerMille;
+    CUnitRatioTreeEntry  m_unitRatioDezibel;
 
-}; // class CUnitGrpRatio
+}; // class CUnitGrpRatioTreeEntry
 
 #endif
 

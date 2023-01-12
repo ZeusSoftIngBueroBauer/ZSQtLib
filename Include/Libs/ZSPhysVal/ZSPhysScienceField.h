@@ -33,7 +33,7 @@ may result in using the software modules.
 #include <QtCore/qvector.h>
 
 #include "ZSPhysVal/ZSPhysValDllMain.h"
-#include "ZSSys/ZSSysIdxTreeEntry.h"
+#include "ZSPhysVal/ZSPhysUnitsGrp.h"
 
 namespace ZS
 {
@@ -42,25 +42,56 @@ namespace PhysVal
 class CIdxTreePhysSizes;
 
 //******************************************************************************
-class ZSPHYSVALDLL_API CPhysScienceField : public ZS::System::CIdxTreeEntry
+class ZSPHYSVALDLL_API CPhysScienceFieldTreeEntry : public ZS::System::CIdxTreeEntry
+//******************************************************************************
+{
+public: // class methods
+    static QString NameSpace() { return "ZS::PhysVal"; }
+    static QString ClassName() { return "CPhysScienceFieldTreeEntry"; }
+public: // ctors and dtor
+    CPhysScienceFieldTreeEntry(CIdxTreePhysSizes* i_pIdxTree, EPhysScienceField i_scienceField);
+    CPhysScienceFieldTreeEntry(CUnitGrpTreeEntry* i_pParentBranch, EPhysScienceField i_scienceField);
+    CPhysScienceFieldTreeEntry(CPhysScienceFieldTreeEntry&& i_other) = delete;
+    CPhysScienceFieldTreeEntry(CPhysScienceFieldTreeEntry& i_other) = delete;
+    CPhysScienceFieldTreeEntry(const CPhysScienceFieldTreeEntry& i_other) = delete;
+    virtual ~CPhysScienceFieldTreeEntry();
+public: // operators
+    CPhysScienceFieldTreeEntry& operator=(CPhysScienceFieldTreeEntry& i_other) = delete;
+    CPhysScienceFieldTreeEntry& operator=(const CPhysScienceFieldTreeEntry& i_other) = delete;
+    CPhysScienceFieldTreeEntry& operator=(CPhysScienceFieldTreeEntry&& i_other) = delete;
+
+}; // class CPhysScienceFieldTreeEntry
+
+
+//******************************************************************************
+class ZSPHYSVALDLL_API CPhysScienceField
 //******************************************************************************
 {
 public: // class methods
     static QString NameSpace() { return "ZS::PhysVal"; }
     static QString ClassName() { return "CPhysScienceField"; }
 public: // ctors and dtor
-    CPhysScienceField(ZS::PhysVal::CIdxTreePhysSizes* i_pIdxTree, EPhysScienceField i_scienceField);
-    CPhysScienceField(ZS::System::CIdxTreeEntry* i_pParentBranch, EPhysScienceField i_scienceField);
-    CPhysScienceField(CPhysScienceField&& i_other) = delete;
-    CPhysScienceField(CPhysScienceField& i_other) = delete;
-    CPhysScienceField(const CPhysScienceField& i_other) = delete;
+    CPhysScienceField();
+    CPhysScienceField(CPhysScienceField* i_pScienceField);
+    CPhysScienceField(const CPhysScienceField* i_pScienceField);
+    CPhysScienceField(CPhysScienceField& i_scienceField);
+    CPhysScienceField(const CPhysScienceField& i_scienceField);
+    CPhysScienceField(CPhysScienceFieldTreeEntry* i_pScienceField);
+    CPhysScienceField(const CPhysScienceFieldTreeEntry* i_pScienceField);
+    CPhysScienceField(CPhysScienceFieldTreeEntry& i_scienceField);
+    CPhysScienceField(const CPhysScienceFieldTreeEntry& i_scienceField);
+    CPhysScienceField(const QString& i_strUniqueName);
     virtual ~CPhysScienceField();
 public: // operators
-    CPhysScienceField& operator=(CPhysScienceField& i_other) = delete;
-    CPhysScienceField& operator=(const CPhysScienceField& i_other) = delete;
-    CPhysScienceField& operator=(CPhysScienceField&& i_other) = delete;
+    bool operator == ( const CPhysScienceField& i_other ) const;
+    bool operator != ( const CPhysScienceField& i_other ) const;
+public: // overridables
+    virtual bool isValid() const;
+protected: // instance members
+    CPhysScienceFieldTreeEntry* m_pTreeEntry;
+    QString m_strUniqueName;
 
-}; // class CPhysScienceField
+}; // class CPhysScienceFieldTreeEntry
 
 } // namespace PhysVal
 

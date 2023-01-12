@@ -353,13 +353,13 @@ void CWdgtPhysUnit::setKeyInTreeOfRootEntry( const QString& i_strKeyInTree )
 
         CIdxTreeEntry* pTreeEntry = m_pIdxTree->findEntry(m_strKeyInTreeOfRootEntry);
 
-        CPhysUnit* pPhysUnit = nullptr;
+        CPhysUnitTreeEntry* pPhysUnit = nullptr;
 
         if( pTreeEntry != nullptr )
         {
             if( pTreeEntry->isLeave() )
             {
-                pPhysUnit = dynamic_cast<CPhysUnit*>(pTreeEntry);
+                pPhysUnit = dynamic_cast<CPhysUnitTreeEntry*>(pTreeEntry);
             }
         }
 

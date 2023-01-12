@@ -39,12 +39,12 @@ namespace Test
 namespace PhysVal
 {
 //******************************************************************************
-class CPhysSizeVelocity : public ZS::PhysVal::CPhysSize
+class CPhysSizeVelocity : public ZS::PhysVal::CPhysSizeTreeEntry
 //******************************************************************************
 {
 public: // ctors and dtor
     CPhysSizeVelocity(ZS::PhysVal::CIdxTreePhysSizes* i_pIdxTree);
-    CPhysSizeVelocity(ZS::System::CIdxTreeEntry* i_pParentBranch);
+    CPhysSizeVelocity(ZS::PhysVal::CPhysScienceFieldTreeEntry* i_pParentBranch);
     CPhysSizeVelocity(CPhysSizeVelocity&& i_other) = delete;
     CPhysSizeVelocity(CPhysSizeVelocity& i_other) = delete;
     CPhysSizeVelocity(const CPhysSizeVelocity& i_other) = delete;
@@ -54,12 +54,16 @@ public: // operators
     CPhysSizeVelocity& operator=(const CPhysSizeVelocity& i_other) = delete;
     CPhysSizeVelocity& operator=(CPhysSizeVelocity&& i_other) = delete;
 public: // instance members
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryMetersPerSecond;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryKilometersPerHour;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryMilesPerHour;
+public: // instance members
     ZS::PhysVal::CPhysUnit MetersPerSecond;
     ZS::PhysVal::CPhysUnit KilometersPerHour;
     ZS::PhysVal::CPhysUnit MilesPerHour;
-    ZS::PhysVal::CPhysUnit& mps;
-    ZS::PhysVal::CPhysUnit& kmph;
-    ZS::PhysVal::CPhysUnit& milesph;
+    ZS::PhysVal::CPhysUnit mps;
+    ZS::PhysVal::CPhysUnit kmph;
+    ZS::PhysVal::CPhysUnit milesph;
 
 }; // class CPhysSizeVelocity
 

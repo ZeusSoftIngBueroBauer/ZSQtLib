@@ -40,36 +40,36 @@ namespace ZS
 namespace PhysVal
 {
 class CIdxTreePhysSizes;
+class CUnitTreeEntry;
 class CUnit;
 
 //******************************************************************************
-class ZSPHYSVALDLL_API CUnitGrp : public ZS::System::CIdxTreeEntry
+class ZSPHYSVALDLL_API CUnitGrpTreeEntry : public ZS::System::CIdxTreeEntry
 //******************************************************************************
 {
 public: // class methods
     static QString NameSpace() { return "ZS::PhysVal"; }
-    static QString ClassName() { return "CUnitGrp"; }
+    static QString ClassName() { return "CUnitGrpTreeEntry"; }
 public: // ctors and dtor
-    //CUnitGrp();
-    CUnitGrp(
+    CUnitGrpTreeEntry(
         CIdxTreePhysSizes* i_pIdxTree,
         EUnitClassType     i_classType,
         const QString&     i_strName );
-    CUnitGrp(
-        ZS::System::CIdxTreeEntry* i_pParentBranch,
-        EUnitClassType             i_classType,
-        const QString&             i_strName );
-    CUnitGrp(CUnitGrp&& i_other) = delete;
-    CUnitGrp(CUnitGrp& i_other) = delete;
-    CUnitGrp(const CUnitGrp& i_other) = delete;
-    virtual ~CUnitGrp();
+    CUnitGrpTreeEntry(
+        CIdxTreeEntry* i_pParentBranch,
+        EUnitClassType i_classType,
+        const QString& i_strName );
+    CUnitGrpTreeEntry(CUnitGrpTreeEntry&& i_other) = delete;
+    CUnitGrpTreeEntry(CUnitGrpTreeEntry& i_other) = delete;
+    CUnitGrpTreeEntry(const CUnitGrpTreeEntry& i_other) = delete;
+    virtual ~CUnitGrpTreeEntry();
 public: // operators
-    CUnitGrp& operator=(CUnitGrp& i_other) = delete;
-    CUnitGrp& operator=(const CUnitGrp& i_other) = delete;
-    CUnitGrp& operator=(CUnitGrp&& i_other) = delete;
+    CUnitGrpTreeEntry& operator=(CUnitGrpTreeEntry& i_other) = delete;
+    CUnitGrpTreeEntry& operator=(const CUnitGrpTreeEntry& i_other) = delete;
+    CUnitGrpTreeEntry& operator=(CUnitGrpTreeEntry&& i_other) = delete;
 public: // operators
-    bool operator == ( const CUnitGrp& i_other ) const;
-    bool operator != ( const CUnitGrp& i_other ) const;
+    bool operator == ( const CUnitGrpTreeEntry& i_other ) const;
+    bool operator != ( const CUnitGrpTreeEntry& i_other ) const;
 public: // instance methods
     EUnitClassType classType() const { return m_classType; }
     QString classType2Str() const;
@@ -80,12 +80,12 @@ public: // instance methods
     //bool isNameSpaceNode() const { return m_bIsNameSpaceNode; }
 public: // instance methods
     //int getChildUnitGrpCount() const { return m_vecpUnitGrpChilds.size(); }
-    //void addChildUnitGrp( CUnitGrp* i_pUnitGrp );
+    //void addChildUnitGrp( CUnitGrpTreeEntry* i_pUnitGrp );
     //void removeChildUnitGrp( int i_idx );
-    //void removeChildUnitGrp( CUnitGrp* i_pUnitGrp );
+    //void removeChildUnitGrp( CUnitGrpTreeEntry* i_pUnitGrp );
     //void removeChildUnitGrp( const QString& i_strName );
-    //CUnitGrp* getChildUnitGrp( int i_idx ) const;
-    //CUnitGrp* findChildUnitGrp( const QString& i_strName ) const;
+    //CUnitGrpTreeEntry* getChildUnitGrp( int i_idx ) const;
+    //CUnitGrpTreeEntry* findChildUnitGrp( const QString& i_strName ) const;
 public: // overridables of base class CIdxTreeEntry
     virtual int addChild( CIdxTreeEntry* i_pChildTreeEntry ) override;
 public: // instance methods
@@ -95,24 +95,64 @@ public: // instance methods
     //void removeUnit( CUnit* i_pUnit );
     //void removeUnit( const QString& i_strSymbolOrName );
     //CUnit* unit( int i_idx ) const;
-    CUnit* findUnit( const QString& i_strSymbolOrName ) const;
-    CUnit* findUnitBySymbol( const QString& i_strSymbol ) const;
-    CUnit* findUnitByName( const QString& i_strName ) const;
+    CUnitTreeEntry* findUnit( const QString& i_strSymbolOrName ) const;
+    CUnitTreeEntry* findUnitBySymbol( const QString& i_strSymbol ) const;
+    CUnitTreeEntry* findUnitByName( const QString& i_strName ) const;
 protected: // instance members
     EUnitClassType m_classType;
     //QString m_strName;
     /*!< Key used to insert the group in the units pool */
     //QString m_strKey;
     //bool m_bIsNameSpaceNode;
-    //CUnitGrp* m_pUnitGrpParent;
+    //CUnitGrpTreeEntry* m_pUnitGrpParent;
     /*!< Can't have both types of children (one list must be empty): */
-    //QVector<CUnitGrp*> m_vecpUnitGrpChilds;
+    //QVector<CUnitGrpTreeEntry*> m_vecpUnitGrpChilds;
     /*!< key is name of unit group */
-    //QHash<QString,CUnitGrp*> m_hshpUnitGrpChilds;
+    //QHash<QString,CUnitGrpTreeEntry*> m_hshpUnitGrpChilds;
     /*!< Either UnitGrps (if NameSpaceNode) or Units (if not NameSpaceNode). */
     //QVector<CUnit*> m_vecpUnits;
     /*!< Key is symbol of unit */
-    QHash<QString, CUnit*> m_hshpUnitsBySymbol;
+    QHash<QString, CUnitTreeEntry*> m_hshpUnitsBySymbol;
+
+}; // class CUnitGrpTreeEntry
+
+//******************************************************************************
+class ZSPHYSVALDLL_API CUnitGrp
+//******************************************************************************
+{
+public: // class methods
+    static QString NameSpace() { return "ZS::PhysVal"; }
+    static QString ClassName() { return "CUnitGrp"; }
+public: // ctors and dtor
+    CUnitGrp();
+    CUnitGrp(CUnitGrp* i_pUnitGrp);
+    CUnitGrp(const CUnitGrp* i_pUnitGrp);
+    CUnitGrp(CUnitGrp& i_unitGrp);
+    CUnitGrp(const CUnitGrp& i_unitGrp);
+    CUnitGrp(CUnitGrpTreeEntry* i_pUnitGrp);
+    CUnitGrp(const CUnitGrpTreeEntry* i_pUnitGrp);
+    CUnitGrp(CUnitGrpTreeEntry& i_unitGrp);
+    CUnitGrp(const CUnitGrpTreeEntry& i_unitGrp);
+    CUnitGrp(const QString& i_strUniqueName);
+    virtual ~CUnitGrp();
+public: // operators
+    bool operator == ( const CUnitGrp& i_other ) const;
+    bool operator != ( const CUnitGrp& i_other ) const;
+public: // instance methods
+    QString nodeSeparator() const;
+    QString keyInTree() const;
+public: // overridables
+    virtual bool isValid() const;
+    virtual EUnitClassType classType() const;
+    virtual QString classType2Str() const;
+public: // instance methods
+    int count() const;
+    CUnit findUnit( const QString& i_strSymbolOrName ) const;
+    CUnit findUnitBySymbol( const QString& i_strSymbol ) const;
+    CUnit findUnitByName( const QString& i_strName ) const;
+protected: // instance members
+    CUnitGrpTreeEntry* m_pTreeEntry;
+    QString m_strUniqueName;
 
 }; // class CUnitGrp
 

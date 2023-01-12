@@ -41,12 +41,12 @@ namespace PhysVal
 const double c_fRefValSampleRate_1000Hz = 1000.0;
 
 //******************************************************************************
-class CPhysSizeFrequency : public ZS::PhysVal::CPhysSize
+class CPhysSizeFrequency : public ZS::PhysVal::CPhysSizeTreeEntry
 //******************************************************************************
 {
 public: // ctors and dtor
-    CPhysSizeFrequency( ZS::PhysVal::CIdxTreePhysSizes* i_pIdxTree );
-    CPhysSizeFrequency(ZS::System::CIdxTreeEntry* i_pParentBranch);
+    CPhysSizeFrequency(ZS::PhysVal::CIdxTreePhysSizes* i_pIdxTree);
+    CPhysSizeFrequency(ZS::PhysVal::CPhysScienceFieldTreeEntry* i_pParentBranch);
     CPhysSizeFrequency(CPhysSizeFrequency&& i_other) = delete;
     CPhysSizeFrequency(CPhysSizeFrequency& i_other) = delete;
     CPhysSizeFrequency(const CPhysSizeFrequency& i_other) = delete;
@@ -55,15 +55,20 @@ public: // operators
     CPhysSizeFrequency& operator=(CPhysSizeFrequency& i_other) = delete;
     CPhysSizeFrequency& operator=(const CPhysSizeFrequency& i_other) = delete;
     CPhysSizeFrequency& operator=(CPhysSizeFrequency&& i_other) = delete;
+private: // instance members
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryHertz;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryKiloHertz;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryMegaHertz;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryGigaHertz;
 public: // instance members
     ZS::PhysVal::CPhysUnit Hertz;
     ZS::PhysVal::CPhysUnit KiloHertz;
     ZS::PhysVal::CPhysUnit MegaHertz;
     ZS::PhysVal::CPhysUnit GigaHertz;
-    ZS::PhysVal::CPhysUnit& Hz;
-    ZS::PhysVal::CPhysUnit& kHz;
-    ZS::PhysVal::CPhysUnit& MHz;
-    ZS::PhysVal::CPhysUnit& GHz;
+    ZS::PhysVal::CPhysUnit Hz;
+    ZS::PhysVal::CPhysUnit kHz;
+    ZS::PhysVal::CPhysUnit MHz;
+    ZS::PhysVal::CPhysUnit GHz;
 
 }; // class CPhysSizeFrequency
 

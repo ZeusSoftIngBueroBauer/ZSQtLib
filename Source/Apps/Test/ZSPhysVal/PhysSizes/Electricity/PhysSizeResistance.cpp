@@ -44,36 +44,41 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CPhysSizeResistance::CPhysSizeResistance( CIdxTreePhysSizes* i_pIdxTree ) :
 //------------------------------------------------------------------------------
-    CPhysSize(
+    CPhysSizeTreeEntry(
         /* pIdxTree         */ i_pIdxTree,
         /* strName          */ "Resistance",
         /* strSIUnitName    */ "Ohm",
         /* strSIUnitSymbol  */ QString(QChar(0x03A9)),
         /* strFormulaSymbol */ "R",
         /* bIsPowerRelated  */ false ),
-    NanoOhm(
+    m_treeEntryNanoOhm(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixNano ),
-    MicroOhm(
+    m_treeEntryMicroOhm(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixMicro ),
-    MilliOhm(
+    m_treeEntryMilliOhm(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixMilli ),
-    Ohm(
+    m_treeEntryOhm(
         /* pPhysSize */ this,
         /* strPrefix */ "" ),
-    KiloOhm(
+    m_treeEntryKiloOhm(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixKilo ),
-    MegaOhm(
+    m_treeEntryMegaOhm(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixMega ),
-    nOhm(NanoOhm),
-    uOhm(MicroOhm),
-    mOhm(MilliOhm),
-    kOhm(KiloOhm),
-    MOhm(MegaOhm)
+    NanoOhm(m_treeEntryNanoOhm),
+    MicroOhm(m_treeEntryMicroOhm),
+    MilliOhm(m_treeEntryMilliOhm),
+    KiloOhm(m_treeEntryKiloOhm),
+    MegaOhm(m_treeEntryMegaOhm),
+    nOhm(m_treeEntryNanoOhm),
+    uOhm(m_treeEntryMicroOhm),
+    mOhm(m_treeEntryMilliOhm),
+    kOhm(m_treeEntryKiloOhm),
+    MOhm(m_treeEntryMegaOhm)
 {
     // Call function of base class CPhysSize to initialize the physical size together
     // with its units (e.g. to create the field with internal conversion routines
@@ -83,38 +88,43 @@ CPhysSizeResistance::CPhysSizeResistance( CIdxTreePhysSizes* i_pIdxTree ) :
 } // ctor
 
 //------------------------------------------------------------------------------
-CPhysSizeResistance::CPhysSizeResistance( CIdxTreeEntry* i_pParentBranch ) :
+CPhysSizeResistance::CPhysSizeResistance( CPhysScienceFieldTreeEntry* i_pParentBranch ) :
 //------------------------------------------------------------------------------
-    CPhysSize(
+    CPhysSizeTreeEntry(
         /* pParentBranch    */ i_pParentBranch,
         /* strName          */ "Resistance",
         /* strSIUnitName    */ "Ohm",
         /* strSIUnitSymbol  */ QString(QChar(0x03A9)),
         /* strFormulaSymbol */ "R",
         /* bIsPowerRelated  */ false ),
-    NanoOhm(
+    m_treeEntryNanoOhm(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixNano ),
-    MicroOhm(
+    m_treeEntryMicroOhm(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixMicro ),
-    MilliOhm(
+    m_treeEntryMilliOhm(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixMilli ),
-    Ohm(
+    m_treeEntryOhm(
         /* pPhysSize */ this,
         /* strPrefix */ "" ),
-    KiloOhm(
+    m_treeEntryKiloOhm(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixKilo ),
-    MegaOhm(
+    m_treeEntryMegaOhm(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixMega ),
-    nOhm(NanoOhm),
-    uOhm(MicroOhm),
-    mOhm(MilliOhm),
-    kOhm(KiloOhm),
-    MOhm(MegaOhm)
+    NanoOhm(m_treeEntryNanoOhm),
+    MicroOhm(m_treeEntryMicroOhm),
+    MilliOhm(m_treeEntryMilliOhm),
+    KiloOhm(m_treeEntryKiloOhm),
+    MegaOhm(m_treeEntryMegaOhm),
+    nOhm(m_treeEntryNanoOhm),
+    uOhm(m_treeEntryMicroOhm),
+    mOhm(m_treeEntryMilliOhm),
+    kOhm(m_treeEntryKiloOhm),
+    MOhm(m_treeEntryMegaOhm)
 {
     // Call function of base class CPhysSize to initialize the physical size together
     // with its units (e.g. to create the field with internal conversion routines
@@ -134,14 +144,14 @@ public: // overridables of base class CPhysSize
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-double CPhysSizeResistance::getRefVal( CPhysUnit* i_pPhysUnitRef ) const
+double CPhysSizeResistance::getRefVal( const CPhysUnit& i_physUnitRef ) const
 //------------------------------------------------------------------------------
 {
     double fValRef = 50.0; // Ohm
 
-    if( i_pPhysUnitRef != nullptr && i_pPhysUnitRef != &Ohm )
+    if( i_physUnitRef.isValid() && i_physUnitRef != Ohm )
     {
-        fValRef = Ohm.convertValue(fValRef, i_pPhysUnitRef);
+        fValRef = CPhysUnit(Ohm).convertValue(fValRef, i_physUnitRef);
     }
     return fValRef;
 }

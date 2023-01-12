@@ -51,25 +51,27 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CPhysSizeAngle::CPhysSizeAngle( CIdxTreePhysSizes* i_pIdxTree ) :
 //------------------------------------------------------------------------------
-    CPhysSize(
+    CPhysSizeTreeEntry(
         /* pIdxTree         */ i_pIdxTree,
         /* strName          */ "Angle",
         /* strSIUnitName    */ "Radiant",
         /* strSIUnitSymbol  */ "rad",
         /* strFormulaSymbol */ QString(QChar(0x03C6)),
         /* bIsPowerRelated  */ false ),
-    Rad(
+    m_treeEntryRad(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ false,
         /* strName        */ "Radiant",
         /* strSymbol      */ "rad",
         /* fMFromSI       */ 1.0 ),
-    Degree(
+    m_treeEntryDegree(
       /* pPhysSize      */ this,
       /* bIsLogarithmic */ false,
       /* strName        */ "Degree",
       /* strSymbol      */ QString::fromLatin1("°"),
-      /* fMFromSI       */ 180.0/c_fPI )
+      /* fMFromSI       */ 180.0/c_fPI ),
+    Rad(m_treeEntryRad),
+    Degree(m_treeEntryDegree)
 {
     // Call function of base class CPhysSize to initialize the physical size together
     // with its units (e.g. to create the field with internal conversion routines
@@ -79,27 +81,29 @@ CPhysSizeAngle::CPhysSizeAngle( CIdxTreePhysSizes* i_pIdxTree ) :
 } // ctor
 
 //------------------------------------------------------------------------------
-CPhysSizeAngle::CPhysSizeAngle( CIdxTreeEntry* i_pParentBranch ) :
+CPhysSizeAngle::CPhysSizeAngle( CPhysScienceFieldTreeEntry* i_pParentBranch ) :
 //------------------------------------------------------------------------------
-    CPhysSize(
+    CPhysSizeTreeEntry(
         /* pParentBranch    */ i_pParentBranch,
         /* strName          */ "Angle",
         /* strSIUnitName    */ "Radiant",
         /* strSIUnitSymbol  */ "rad",
         /* strFormulaSymbol */ QString(QChar(0x03C6)),
         /* bIsPowerRelated  */ false ),
-    Rad(
+    m_treeEntryRad(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ false,
         /* strName        */ "Radiant",
         /* strSymbol      */ "rad",
         /* fMFromSI       */ 1.0 ),
-    Degree(
+    m_treeEntryDegree(
       /* pPhysSize      */ this,
       /* bIsLogarithmic */ false,
       /* strName        */ "Degree",
       /* strSymbol      */ QString::fromLatin1("°"),
-      /* fMFromSI       */ 180.0/c_fPI )
+      /* fMFromSI       */ 180.0/c_fPI ),
+    Rad(m_treeEntryRad),
+    Degree(m_treeEntryDegree)
 {
     // Call function of base class CPhysSize to initialize the physical size together
     // with its units (e.g. to create the field with internal conversion routines

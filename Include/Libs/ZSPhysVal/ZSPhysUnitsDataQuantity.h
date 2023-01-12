@@ -37,19 +37,19 @@ namespace ZS
 namespace PhysVal
 {
 //******************************************************************************
-class ZSPHYSVALDLL_API CUnitDataQuantity : public CUnit
+class ZSPHYSVALDLL_API CUnitDataQuantityTreeEntry : public CUnitTreeEntry
 //******************************************************************************
 {
 public: // class methods
     static QString NameSpace() { return "ZS::PhysVal"; }
-    static QString ClassName() { return "CUnitDataQuantity"; }
+    static QString ClassName() { return "CUnitDataQuantityTreeEntry"; }
 public: // ctors and dtor
-    CUnitDataQuantity(
-        CUnitGrp*      i_pUnitGrp,
-        const QString& i_strName,
-        const QString& i_strSymbol,
-        double         i_fFactor );
-    virtual ~CUnitDataQuantity();
+    CUnitDataQuantityTreeEntry(
+        CUnitGrpTreeEntry* i_pUnitGrp,
+        const QString&     i_strName,
+        const QString&     i_strSymbol,
+        double             i_fFactor );
+    virtual ~CUnitDataQuantityTreeEntry();
 public: // instance methods
     double getFactor() const;
 public: // overridables of base class CUnit (converting values)
@@ -58,34 +58,34 @@ public: // overridables of base class CUnit (converting values)
 protected: // instance members
     double m_fFactor;
 
-}; // class CUnitDataQuantity
+}; // class CUnitDataQuantityTreeEntry
 
 //******************************************************************************
-class ZSPHYSVALDLL_API CUnitGrpDataQuantity : public CUnitGrp
+class ZSPHYSVALDLL_API CUnitGrpDataQuantityTreeEntry : public CUnitGrpTreeEntry
 //******************************************************************************
 {
 public: // class methods
     static QString NameSpace() { return "ZS::PhysVal"; }
-    static QString ClassName() { return "CUnitGrpDataQuantity"; }
+    static QString ClassName() { return "CUnitGrpDataQuantityTreeEntry"; }
 public: // ctors and dtor
-    CUnitGrpDataQuantity(ZS::System::CIdxTree* i_pIdxTree);
-    virtual ~CUnitGrpDataQuantity();
+    CUnitGrpDataQuantityTreeEntry(ZS::System::CIdxTree* i_pIdxTree);
+    virtual ~CUnitGrpDataQuantityTreeEntry();
 public: // instance methods to access the ratio units
-    CUnitDataQuantity* Byte();
-    CUnitDataQuantity* KiloByte();
-    CUnitDataQuantity* MegaByte();
-    CUnitDataQuantity* GigaByte();
+    CUnitDataQuantityTreeEntry* Byte();
+    CUnitDataQuantityTreeEntry* KiloByte();
+    CUnitDataQuantityTreeEntry* MegaByte();
+    CUnitDataQuantityTreeEntry* GigaByte();
 private: // copy ctor not allowed
-    CUnitGrpDataQuantity( const CUnitGrpDataQuantity& );
+    CUnitGrpDataQuantityTreeEntry( const CUnitGrpDataQuantityTreeEntry& );
 private: // assignment operator not allowed
-    void operator = ( const CUnitGrpDataQuantity& );
+    void operator = ( const CUnitGrpDataQuantityTreeEntry& );
 protected: // instance members
-    CUnitDataQuantity  m_physUnitByte;
-    CUnitDataQuantity  m_physUnitKiloByte;
-    CUnitDataQuantity  m_physUnitMegaByte;
-    CUnitDataQuantity  m_physUnitGigaByte;
+    CUnitDataQuantityTreeEntry  m_physUnitByte;
+    CUnitDataQuantityTreeEntry  m_physUnitKiloByte;
+    CUnitDataQuantityTreeEntry  m_physUnitMegaByte;
+    CUnitDataQuantityTreeEntry  m_physUnitGigaByte;
 
-}; // class CUnitGrpDataQuantity
+}; // class CUnitGrpDataQuantityTreeEntry
 
 } // namespace PhysVal
 

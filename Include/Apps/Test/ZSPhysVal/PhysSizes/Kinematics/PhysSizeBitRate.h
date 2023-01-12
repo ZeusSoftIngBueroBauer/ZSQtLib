@@ -39,12 +39,12 @@ namespace Test
 namespace PhysVal
 {
 //******************************************************************************
-class CPhysSizeBitRate : public ZS::PhysVal::CPhysSize
+class CPhysSizeBitRate : public ZS::PhysVal::CPhysSizeTreeEntry
 //******************************************************************************
 {
 public: // ctors and dtor
-    CPhysSizeBitRate( ZS::PhysVal::CIdxTreePhysSizes* i_pIdxTree );
-    CPhysSizeBitRate(ZS::System::CIdxTreeEntry* i_pParentBranch);
+    CPhysSizeBitRate(ZS::PhysVal::CIdxTreePhysSizes* i_pIdxTree);
+    CPhysSizeBitRate(ZS::PhysVal::CPhysScienceFieldTreeEntry* i_pParentBranch);
     CPhysSizeBitRate(CPhysSizeBitRate&& i_other) = delete;
     CPhysSizeBitRate(CPhysSizeBitRate& i_other) = delete;
     CPhysSizeBitRate(const CPhysSizeBitRate& i_other) = delete;
@@ -53,15 +53,20 @@ public: // operators
     CPhysSizeBitRate& operator=(CPhysSizeBitRate& i_other) = delete;
     CPhysSizeBitRate& operator=(const CPhysSizeBitRate& i_other) = delete;
     CPhysSizeBitRate& operator=(CPhysSizeBitRate&& i_other) = delete;
+private: // instance members
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryBitsPerSec;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryKiloBitsPerSec;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntrySymbolsPerSec;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryKiloSymbolsPerSec;
 public: // instance members
     ZS::PhysVal::CPhysUnit BitsPerSec;
     ZS::PhysVal::CPhysUnit KiloBitsPerSec;
     ZS::PhysVal::CPhysUnit SymbolsPerSec;
     ZS::PhysVal::CPhysUnit KiloSymbolsPerSec;
-    ZS::PhysVal::CPhysUnit& bps;
-    ZS::PhysVal::CPhysUnit& kbps;
-    ZS::PhysVal::CPhysUnit& symps;
-    ZS::PhysVal::CPhysUnit& ksymps;
+    ZS::PhysVal::CPhysUnit bps;
+    ZS::PhysVal::CPhysUnit kbps;
+    ZS::PhysVal::CPhysUnit symps;
+    ZS::PhysVal::CPhysUnit ksymps;
 
 }; // class CPhysSizeBitRate
 

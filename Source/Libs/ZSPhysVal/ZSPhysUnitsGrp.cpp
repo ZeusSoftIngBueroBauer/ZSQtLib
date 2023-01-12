@@ -25,7 +25,6 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSPhysVal/ZSPhysUnitsGrp.h"
-#include "ZSPhysVal/ZSPhysSize.h"
 #include "ZSPhysVal/ZSPhysUnits.h"
 #include "ZSPhysVal/ZSPhysSizesIdxTree.h"
 #include "ZSPhysVal/ZSPhysValExceptions.h"
@@ -38,7 +37,7 @@ using namespace ZS::PhysVal;
 
 
 /*******************************************************************************
-class CUnitGrp
+class CUnitGrpTreeEntry : CIdxTreeEntry
 *******************************************************************************/
 
 /*==============================================================================
@@ -57,12 +56,12 @@ public: // ctors and dtor
     @param i_strName
         e.g. "Time", "Power", "Voltage", "Current", ...
 */
-CUnitGrp::CUnitGrp(
+CUnitGrpTreeEntry::CUnitGrpTreeEntry(
     CIdxTreePhysSizes* i_pIdxTree,
     EUnitClassType     i_classType,
     const QString&     i_strName ) :
 //------------------------------------------------------------------------------
-    CIdxTreeEntry(EIdxTreeEntryType::Branch, ""),
+    CIdxTreeEntry(EIdxTreeEntryType::Branch, i_strName),
     m_classType(EUnitClassType::Undefined),
     m_hshpUnitsBySymbol()
 {
@@ -82,7 +81,7 @@ CUnitGrp::CUnitGrp(
     @param i_strName
         e.g. "Time", "Power", "Voltage", "Current", ...
 */
-CUnitGrp::CUnitGrp(
+CUnitGrpTreeEntry::CUnitGrpTreeEntry(
     CIdxTreeEntry* i_pParentBranch,
     EUnitClassType i_classType,
     const QString& i_strName ) :
@@ -107,7 +106,7 @@ CUnitGrp::CUnitGrp(
     If the constructor created an index tree with the default name
     the index tree will be released by the destructor.
 */
-CUnitGrp::~CUnitGrp()
+CUnitGrpTreeEntry::~CUnitGrpTreeEntry()
 //------------------------------------------------------------------------------
 {
     //if( m_vecpUnits.count() > 0 )
@@ -130,7 +129,7 @@ CUnitGrp::~CUnitGrp()
     //{
     //    for( int idxChild = m_vecpUnitGrpChilds.count()-1; idxChild >= 0; idxChild-- )
     //    {
-    //        CUnitGrp* pUnitGrp = m_vecpUnitGrpChilds[idxChild];
+    //        CUnitGrpTreeEntry* pUnitGrp = m_vecpUnitGrpChilds[idxChild];
 
     //        try {
     //            // The dtor of the unit group also deletes child unit groups or units belonging to the unit group
@@ -167,7 +166,7 @@ public: // operators
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool CUnitGrp::operator == ( const CUnitGrp& i_physsizeOther ) const
+bool CUnitGrpTreeEntry::operator == ( const CUnitGrpTreeEntry& i_physsizeOther ) const
 //------------------------------------------------------------------------------
 {
     if( this != &i_physsizeOther )
@@ -178,7 +177,7 @@ bool CUnitGrp::operator == ( const CUnitGrp& i_physsizeOther ) const
 }
 
 //------------------------------------------------------------------------------
-bool CUnitGrp::operator != ( const CUnitGrp& i_physsizeOther ) const
+bool CUnitGrpTreeEntry::operator != ( const CUnitGrpTreeEntry& i_physsizeOther ) const
 //------------------------------------------------------------------------------
 {
     return !(*this == i_physsizeOther );
@@ -189,14 +188,14 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QString CUnitGrp::classType2Str() const
+QString CUnitGrpTreeEntry::classType2Str() const
 //------------------------------------------------------------------------------
 {
     return CEnumUnitClassType(m_classType).toString();
 }
 
 ////------------------------------------------------------------------------------
-//QString CUnitGrp::getParentGroupName( bool i_bInsertParentNames ) const
+//QString CUnitGrpTreeEntry::getParentGroupName( bool i_bInsertParentNames ) const
 ////------------------------------------------------------------------------------
 //{
 //    QString strName;
@@ -208,7 +207,7 @@ QString CUnitGrp::classType2Str() const
 //
 //    if( i_bInsertParentNames && m_pUnitGrpParent != nullptr )
 //    {
-//        CUnitGrp* pUnitGrpParent = m_pUnitGrpParent;
+//        CUnitGrpTreeEntry* pUnitGrpParent = m_pUnitGrpParent;
 //
 //        while( pUnitGrpParent != nullptr )
 //        {
@@ -224,7 +223,7 @@ QString CUnitGrp::classType2Str() const
 //} // getParentGroupName
 
 ////------------------------------------------------------------------------------
-//QString CUnitGrp::getName( bool i_bInsertParentNames ) const
+//QString CUnitGrpTreeEntry::getName( bool i_bInsertParentNames ) const
 ////------------------------------------------------------------------------------
 //{
 //    QString strName = m_strName;
@@ -247,7 +246,7 @@ public: // instance methods
 ==============================================================================*/
 
 ////------------------------------------------------------------------------------
-//void CUnitGrp::addChildUnitGrp( CUnitGrp* i_pUnitGrp )
+//void CUnitGrpTreeEntry::addChildUnitGrp( CUnitGrpTreeEntry* i_pUnitGrp )
 ////------------------------------------------------------------------------------
 //{
 //    if( i_pUnitGrp == nullptr )
@@ -267,7 +266,7 @@ public: // instance methods
 //    }
 //
 //    // The name got to be unique:
-//    CUnitGrp* pUnitGrp = findChildUnitGrp(i_pUnitGrp->name());
+//    CUnitGrpTreeEntry* pUnitGrp = findChildUnitGrp(i_pUnitGrp->name());
 //    if( pUnitGrp != nullptr )
 //    {
 //        QString strAddErrInfo = "A unit group with name " + i_pUnitGrp->name() + " already belongs to unit group " + keyInTree();
@@ -282,7 +281,7 @@ public: // instance methods
 //} // addChildUnitGrp
 //
 ////------------------------------------------------------------------------------
-//void CUnitGrp::removeChildUnitGrp( int i_idx )
+//void CUnitGrpTreeEntry::removeChildUnitGrp( int i_idx )
 ////------------------------------------------------------------------------------
 //{
 //    if( m_vecpUnitGrpChilds.count() == 0 )
@@ -297,7 +296,7 @@ public: // instance methods
 //        throw CException( __FILE__, __LINE__, EResultArgOutOfRange, strAddErrInfo );
 //    }
 //
-//    CUnitGrp* pUnitGrp = m_vecpUnitGrpChilds[i_idx];
+//    CUnitGrpTreeEntry* pUnitGrp = m_vecpUnitGrpChilds[i_idx];
 //
 //    m_vecpUnitGrpChilds.remove(i_idx);
 //    m_hshpUnitGrpChilds.remove(pUnitGrp->name());
@@ -305,7 +304,7 @@ public: // instance methods
 //} // removeChildUnitGrp
 //
 ////------------------------------------------------------------------------------
-//void CUnitGrp::removeChildUnitGrp( CUnitGrp* i_pUnitGrp )
+//void CUnitGrpTreeEntry::removeChildUnitGrp( CUnitGrpTreeEntry* i_pUnitGrp )
 ////------------------------------------------------------------------------------
 //{
 //    if( i_pUnitGrp == nullptr )
@@ -318,7 +317,7 @@ public: // instance methods
 //
 //    if( m_vecpUnitGrpChilds.count() > 0 )
 //    {
-//        CUnitGrp* pUnitGrpTmp;
+//        CUnitGrpTreeEntry* pUnitGrpTmp;
 //        int       idxChildTmp;
 //
 //        for( idxChildTmp = m_vecpUnitGrpChilds.count()-1; idxChildTmp >= 0; idxChildTmp-- )
@@ -344,10 +343,10 @@ public: // instance methods
 //} // removeChildUnitGrp
 //
 ////------------------------------------------------------------------------------
-//void CUnitGrp::removeChildUnitGrp( const QString& i_strName )
+//void CUnitGrpTreeEntry::removeChildUnitGrp( const QString& i_strName )
 ////------------------------------------------------------------------------------
 //{
-//    CUnitGrp* pUnitGrp = findChildUnitGrp(i_strName);
+//    CUnitGrpTreeEntry* pUnitGrp = findChildUnitGrp(i_strName);
 //
 //    if( pUnitGrp == nullptr )
 //    {
@@ -360,7 +359,7 @@ public: // instance methods
 //} // removeChildUnitGrp
 //
 ////------------------------------------------------------------------------------
-//CUnitGrp* CUnitGrp::getChildUnitGrp( int i_idx ) const
+//CUnitGrpTreeEntry* CUnitGrpTreeEntry::getChildUnitGrp( int i_idx ) const
 ////------------------------------------------------------------------------------
 //{
 //    if( m_vecpUnitGrpChilds.count() == 0 )
@@ -380,10 +379,10 @@ public: // instance methods
 //} // getChildUnitGrp
 //
 ////------------------------------------------------------------------------------
-//CUnitGrp* CUnitGrp::findChildUnitGrp( const QString& i_strName ) const
+//CUnitGrpTreeEntry* CUnitGrpTreeEntry::findChildUnitGrp( const QString& i_strName ) const
 ////------------------------------------------------------------------------------
 //{
-//    CUnitGrp* pUnitGrp = nullptr;
+//    CUnitGrpTreeEntry* pUnitGrp = nullptr;
 //
 //    if( m_hshpUnitGrpChilds.contains(i_strName) )
 //    {
@@ -398,7 +397,7 @@ public: // overridables of base class CIdxTreeEntry
 =============================================================================*/
 
 //------------------------------------------------------------------------------
-int CUnitGrp::addChild( CIdxTreeEntry* i_pChildTreeEntry )
+int CUnitGrpTreeEntry::addChild( CIdxTreeEntry* i_pChildTreeEntry )
 //------------------------------------------------------------------------------
 {
     int idxInParentBranch = CIdxTreeEntry::addChild(i_pChildTreeEntry);
@@ -407,7 +406,7 @@ int CUnitGrp::addChild( CIdxTreeEntry* i_pChildTreeEntry )
     // If the name would not have been unique the addChild method above
     // would have thrown an exception. Here we check whether the symbol is unique.
     if( i_pChildTreeEntry->isLeave() ) {
-        CUnit* pUnit = dynamic_cast<CUnit*>(i_pChildTreeEntry);
+        CUnitTreeEntry* pUnit = dynamic_cast<CUnitTreeEntry*>(i_pChildTreeEntry);
         if( pUnit == nullptr ) {
             throw CException(
                 __FILE__, __LINE__, EResultInternalProgramError,
@@ -429,7 +428,7 @@ public: // instance methods
 =============================================================================*/
 
 ////------------------------------------------------------------------------------
-//void CUnitGrp::addUnit( CUnit* i_pUnit )
+//void CUnitGrpTreeEntry::addUnit( CUnit* i_pUnit )
 ////------------------------------------------------------------------------------
 //{
 //    if( i_pUnit == nullptr )
@@ -470,7 +469,7 @@ public: // instance methods
 //} // addUnit
 
 ////------------------------------------------------------------------------------
-//void CUnitGrp::removeUnit( int i_idx )
+//void CUnitGrpTreeEntry::removeUnit( int i_idx )
 ////------------------------------------------------------------------------------
 //{
 //    if( m_vecpUnits.count() == 0 )
@@ -493,7 +492,7 @@ public: // instance methods
 //} // removeUnit
 //
 ////------------------------------------------------------------------------------
-//void CUnitGrp::removeUnit( CUnit* i_pUnit )
+//void CUnitGrpTreeEntry::removeUnit( CUnit* i_pUnit )
 ////------------------------------------------------------------------------------
 //{
 //    if( i_pUnit == nullptr )
@@ -532,7 +531,7 @@ public: // instance methods
 //} // removeUnit
 //
 ////------------------------------------------------------------------------------
-//void CUnitGrp::removeUnit( const QString& i_strSymbolOrName )
+//void CUnitGrpTreeEntry::removeUnit( const QString& i_strSymbolOrName )
 ////------------------------------------------------------------------------------
 //{
 //    CUnit* pUnit = findUnit(i_strSymbolOrName);
@@ -548,7 +547,7 @@ public: // instance methods
 //} // removeUnit
 //
 ////------------------------------------------------------------------------------
-//CUnit* CUnitGrp::getUnit( int i_idx ) const
+//CUnit* CUnitGrpTreeEntry::getUnit( int i_idx ) const
 ////------------------------------------------------------------------------------
 //{
 //    if( m_vecpUnits.count() == 0 )
@@ -568,10 +567,10 @@ public: // instance methods
 //} // getUnit
 
 //------------------------------------------------------------------------------
-CUnit* CUnitGrp::findUnit( const QString& i_strSymbolOrName ) const
+CUnitTreeEntry* CUnitGrpTreeEntry::findUnit( const QString& i_strSymbolOrName ) const
 //------------------------------------------------------------------------------
 {
-    CUnit* pUnit = findUnitBySymbol(i_strSymbolOrName);
+    CUnitTreeEntry* pUnit = findUnitBySymbol(i_strSymbolOrName);
     if( pUnit == nullptr )
     {
         pUnit = findUnitByName(i_strSymbolOrName);
@@ -580,15 +579,213 @@ CUnit* CUnitGrp::findUnit( const QString& i_strSymbolOrName ) const
 }
 
 //------------------------------------------------------------------------------
-CUnit* CUnitGrp::findUnitBySymbol( const QString& i_strSymbol ) const
+CUnitTreeEntry* CUnitGrpTreeEntry::findUnitBySymbol( const QString& i_strSymbol ) const
 //------------------------------------------------------------------------------
 {
     return m_hshpUnitsBySymbol.value(i_strSymbol, nullptr);
 }
 
 //------------------------------------------------------------------------------
-CUnit* CUnitGrp::findUnitByName( const QString& i_strName ) const
+CUnitTreeEntry* CUnitGrpTreeEntry::findUnitByName( const QString& i_strName ) const
 //------------------------------------------------------------------------------
 {
-    return dynamic_cast<CUnit*>(find(EIdxTreeEntryType::Leave, i_strName));
+    return dynamic_cast<CUnitTreeEntry*>(find(EIdxTreeEntryType::Leave, i_strName));
+}
+
+
+/*******************************************************************************
+class CUnitGrp
+*******************************************************************************/
+
+/*==============================================================================
+public: // ctors and dtor
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CUnitGrp::CUnitGrp() :
+//------------------------------------------------------------------------------
+    m_pTreeEntry(nullptr),
+    m_strUniqueName()
+{
+}
+
+//------------------------------------------------------------------------------
+CUnitGrp::CUnitGrp(CUnitGrp* i_pUnitGrp) :
+//------------------------------------------------------------------------------
+    m_pTreeEntry(i_pUnitGrp->m_pTreeEntry),
+    m_strUniqueName(i_pUnitGrp->m_strUniqueName)
+{
+}
+
+//------------------------------------------------------------------------------
+CUnitGrp::CUnitGrp(const CUnitGrp* i_pUnitGrp) :
+//------------------------------------------------------------------------------
+    m_pTreeEntry(i_pUnitGrp->m_pTreeEntry),
+    m_strUniqueName(i_pUnitGrp->m_strUniqueName)
+{
+}
+
+//------------------------------------------------------------------------------
+CUnitGrp::CUnitGrp(CUnitGrp& i_unitGrp) :
+//------------------------------------------------------------------------------
+    m_pTreeEntry(i_unitGrp.m_pTreeEntry),
+    m_strUniqueName(i_unitGrp.m_strUniqueName)
+{
+}
+
+//------------------------------------------------------------------------------
+CUnitGrp::CUnitGrp(const CUnitGrp& i_unitGrp) :
+//------------------------------------------------------------------------------
+    m_pTreeEntry(i_unitGrp.m_pTreeEntry),
+    m_strUniqueName(i_unitGrp.m_strUniqueName)
+{
+}
+
+//------------------------------------------------------------------------------
+CUnitGrp::CUnitGrp(CUnitGrpTreeEntry* i_pUnitGrp) :
+//------------------------------------------------------------------------------
+    m_pTreeEntry(i_pUnitGrp),
+    m_strUniqueName(i_pUnitGrp->keyInTree())
+{
+}
+
+//------------------------------------------------------------------------------
+CUnitGrp::CUnitGrp(const CUnitGrpTreeEntry* i_pUnitGrp) :
+//------------------------------------------------------------------------------
+    m_pTreeEntry(const_cast<CUnitGrpTreeEntry*>(i_pUnitGrp)),
+    m_strUniqueName(i_pUnitGrp->keyInTree())
+{
+}
+
+//------------------------------------------------------------------------------
+CUnitGrp::CUnitGrp(CUnitGrpTreeEntry& i_unitGrp) :
+//------------------------------------------------------------------------------
+    m_pTreeEntry(&i_unitGrp),
+    m_strUniqueName(i_unitGrp.keyInTree())
+{
+}
+
+//------------------------------------------------------------------------------
+CUnitGrp::CUnitGrp(const CUnitGrpTreeEntry& i_unitGrp) :
+//------------------------------------------------------------------------------
+    m_pTreeEntry(const_cast<CUnitGrpTreeEntry*>(&i_unitGrp)),
+    m_strUniqueName(i_unitGrp.keyInTree())
+{
+}
+
+//------------------------------------------------------------------------------
+CUnitGrp::CUnitGrp(const QString& i_strUniqueName) :
+//------------------------------------------------------------------------------
+    m_pTreeEntry(CIdxTreePhysSizes::GetInstance()->findUnitGrp(i_strUniqueName)),
+    m_strUniqueName(i_strUniqueName)
+{
+}
+
+//------------------------------------------------------------------------------
+CUnitGrp::~CUnitGrp()
+//------------------------------------------------------------------------------
+{
+    m_pTreeEntry = nullptr;
+    //m_strUniqueName;
+}
+
+/*==============================================================================
+public: // operators
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+bool CUnitGrp::operator == ( const CUnitGrp& i_other ) const
+//------------------------------------------------------------------------------
+{
+    bool bEqual = (m_pTreeEntry == i_other.m_pTreeEntry);
+    if( bEqual ) bEqual = (m_strUniqueName.compare(i_other.m_strUniqueName) == 0);
+    return bEqual;
+}
+
+//------------------------------------------------------------------------------
+bool CUnitGrp::operator != ( const CUnitGrp& i_other ) const
+//------------------------------------------------------------------------------
+{
+    return !(*this == i_other);
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QString CUnitGrp::nodeSeparator() const
+//------------------------------------------------------------------------------
+{
+    return QString(m_pTreeEntry == nullptr ? "" : m_pTreeEntry->nodeSeparator());
+}
+
+//------------------------------------------------------------------------------
+QString CUnitGrp::keyInTree() const
+//------------------------------------------------------------------------------
+{
+    return QString(m_pTreeEntry == nullptr ? "" : m_pTreeEntry->keyInTree());
+}
+
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+bool CUnitGrp::isValid() const
+//------------------------------------------------------------------------------
+{
+    return (m_pTreeEntry != nullptr);
+}
+
+//------------------------------------------------------------------------------
+EUnitClassType CUnitGrp::classType() const
+//------------------------------------------------------------------------------
+{
+    return m_pTreeEntry == nullptr ?
+        EUnitClassType::Undefined : m_pTreeEntry->classType();
+}
+
+//------------------------------------------------------------------------------
+QString CUnitGrp::classType2Str() const
+//------------------------------------------------------------------------------
+{
+    return m_pTreeEntry == nullptr ?
+        CEnumUnitClassType(EUnitClassType::Undefined).toString() :
+        m_pTreeEntry->classType2Str();
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+int CUnitGrp::count() const
+//------------------------------------------------------------------------------
+{
+    return m_pTreeEntry == nullptr ? 0 : m_pTreeEntry->count();
+}
+
+//------------------------------------------------------------------------------
+CUnit CUnitGrp::findUnit( const QString& i_strSymbolOrName ) const
+//------------------------------------------------------------------------------
+{
+    return m_pTreeEntry == nullptr ?
+        CUnit() : m_pTreeEntry->findUnit(i_strSymbolOrName);
+}
+
+//------------------------------------------------------------------------------
+CUnit CUnitGrp::findUnitBySymbol( const QString& i_strSymbol ) const
+//------------------------------------------------------------------------------
+{
+    return m_pTreeEntry == nullptr ?
+        CUnit() : m_pTreeEntry->findUnitBySymbol(i_strSymbol);
+}
+
+//------------------------------------------------------------------------------
+CUnit CUnitGrp::findUnitByName( const QString& i_strName ) const
+//------------------------------------------------------------------------------
+{
+    return m_pTreeEntry == nullptr ?
+        CUnit() : m_pTreeEntry->findUnitByName(i_strName);
 }

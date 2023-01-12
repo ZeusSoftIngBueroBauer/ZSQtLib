@@ -34,7 +34,7 @@ namespace ZS
 namespace PhysVal
 {
 class CIdxTreePhysSizes;
-class CPhysUnit;
+class CPhysUnitTreeEntry;
 
 namespace GUI
 {
@@ -65,7 +65,7 @@ public: // overridables of base class QAbstractItemModel
 protected: // instance members
     CIdxTreePhysSizes* m_pIdxTree;
     QString m_strKeyInTreeOfRootEntry;
-    CPhysUnit* m_pPhysUnit;
+    CPhysUnitTreeEntry* m_pPhysUnit;
 
 }; // class CModelUnitFctConvertInternal
 

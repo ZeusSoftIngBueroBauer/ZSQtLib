@@ -1342,11 +1342,11 @@ void CWdgtUnitViewPhysUnit::setUnitsModelNode( SUnitsModelNode* i_pNode )
 {
     CWdgtUnitViewUnt::setUnitsModelNode(i_pNode);
 
-    CPhysUnit* pPhysUnit = nullptr;
+    CPhysUnitTreeEntry* pPhysUnit = nullptr;
 
     if( m_pNode != nullptr && m_pNode->m_pUnit != nullptr )
     {
-        pPhysUnit = dynamic_cast<CPhysUnit*>(m_pNode->m_pUnit);
+        pPhysUnit = dynamic_cast<CPhysUnitTreeEntry*>(m_pNode->m_pUnit);
     }
 
     // PhysUnit

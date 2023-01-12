@@ -291,13 +291,13 @@ void CWdgtPhysSize::setKeyInTreeOfRootEntry( const QString& i_strKeyInTree )
 
         CIdxTreeEntry* pTreeEntry = m_pIdxTree->findEntry(m_strKeyInTreeOfRootEntry);
 
-        CPhysSize* pPhysSize = nullptr;
+        CPhysSizeTreeEntry* pPhysSize = nullptr;
 
         if( pTreeEntry != nullptr )
         {
             if( pTreeEntry->isRoot() || pTreeEntry->isBranch() )
             {
-                pPhysSize = dynamic_cast<CPhysSize*>(pTreeEntry);
+                pPhysSize = dynamic_cast<CPhysSizeTreeEntry*>(pTreeEntry);
             }
         }
 

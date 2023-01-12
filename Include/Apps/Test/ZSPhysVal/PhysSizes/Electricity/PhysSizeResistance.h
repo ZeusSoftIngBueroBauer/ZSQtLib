@@ -42,12 +42,12 @@ const double c_fRefValResistance_50Ohm = 50.0;
 const double c_fRefValResistance_10log50Ohm = 10.0*log10(50.0);
 
 //******************************************************************************
-class CPhysSizeResistance : public ZS::PhysVal::CPhysSize
+class CPhysSizeResistance : public ZS::PhysVal::CPhysSizeTreeEntry
 //******************************************************************************
 {
 public: // ctors and dtor
-    CPhysSizeResistance( ZS::PhysVal::CIdxTreePhysSizes* i_pIdxTree );
-    CPhysSizeResistance(ZS::System::CIdxTreeEntry* i_pParentBranch);
+    CPhysSizeResistance(ZS::PhysVal::CIdxTreePhysSizes* i_pIdxTree);
+    CPhysSizeResistance(ZS::PhysVal::CPhysScienceFieldTreeEntry* i_pParentBranch);
     CPhysSizeResistance(CPhysSizeResistance&& i_other) = delete;
     CPhysSizeResistance(CPhysSizeResistance& i_other) = delete;
     CPhysSizeResistance(const CPhysSizeResistance& i_other) = delete;
@@ -57,7 +57,14 @@ public: // operators
     CPhysSizeResistance& operator=(const CPhysSizeResistance& i_other) = delete;
     CPhysSizeResistance& operator=(CPhysSizeResistance&& i_other) = delete;
 public: // overridables of base class CPhysSize
-    virtual double getRefVal( ZS::PhysVal::CPhysUnit* i_pPhysUnitRef ) const;
+    virtual double getRefVal( const ZS::PhysVal::CPhysUnit& i_physUnitRef ) const;
+private: // instance members
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryNanoOhm;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryMicroOhm;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryMilliOhm;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryOhm;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryKiloOhm;
+    ZS::PhysVal::CPhysUnitTreeEntry m_treeEntryMegaOhm;
 public: // class members
     static const QString c_strSymbolOhm;
 public: // instance members
@@ -67,11 +74,11 @@ public: // instance members
     ZS::PhysVal::CPhysUnit Ohm;
     ZS::PhysVal::CPhysUnit KiloOhm;
     ZS::PhysVal::CPhysUnit MegaOhm;
-    ZS::PhysVal::CPhysUnit& nOhm;
-    ZS::PhysVal::CPhysUnit& uOhm;
-    ZS::PhysVal::CPhysUnit& mOhm;
-    ZS::PhysVal::CPhysUnit& kOhm;
-    ZS::PhysVal::CPhysUnit& MOhm;
+    ZS::PhysVal::CPhysUnit nOhm;
+    ZS::PhysVal::CPhysUnit uOhm;
+    ZS::PhysVal::CPhysUnit mOhm;
+    ZS::PhysVal::CPhysUnit kOhm;
+    ZS::PhysVal::CPhysUnit MOhm;
 
 }; // class CPhysSizeResistance
 

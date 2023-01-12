@@ -41,31 +41,35 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CPhysSizeFrequency::CPhysSizeFrequency( CIdxTreeEntry* i_pParentBranch ) :
+CPhysSizeFrequency::CPhysSizeFrequency( CIdxTreePhysSizes* i_pIdxTree ) :
 //------------------------------------------------------------------------------
-    CPhysSize(
-        /* pParentBranch    */ i_pParentBranch,
+    CPhysSizeTreeEntry(
+        /* pIdxTree         */ i_pIdxTree,
         /* strName          */ "Frequency",
         /* strSIUnitName    */ "Hertz",
         /* strSIUnitSymbol  */ "Hz",
         /* strFormulaSymbol */ "f",
         /* bIsPowerRelated  */ false ),
-    Hertz(
+    m_treeEntryHertz(
         /* pPhysSize */ this,
         /* strPrefix */ "" ),
-    KiloHertz(
+    m_treeEntryKiloHertz(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixKilo ),
-    MegaHertz(
+    m_treeEntryMegaHertz(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixMega ),
-    GigaHertz(
+    m_treeEntryGigaHertz(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixGiga ),
-    Hz(Hertz),
-    kHz(KiloHertz),
-    MHz(MegaHertz),
-    GHz(GigaHertz)
+    Hertz(m_treeEntryHertz),
+    KiloHertz(m_treeEntryKiloHertz),
+    MegaHertz(m_treeEntryMegaHertz),
+    GigaHertz(m_treeEntryGigaHertz),
+    Hz(m_treeEntryHertz),
+    kHz(m_treeEntryKiloHertz),
+    MHz(m_treeEntryMegaHertz),
+    GHz(m_treeEntryGigaHertz)
 {
     // Call function of base class CPhysSize to initialize the physical size together
     // with its units (e.g. to create the field with internal conversion routines
@@ -75,31 +79,35 @@ CPhysSizeFrequency::CPhysSizeFrequency( CIdxTreeEntry* i_pParentBranch ) :
 } // ctor
 
 //------------------------------------------------------------------------------
-CPhysSizeFrequency::CPhysSizeFrequency( CIdxTreePhysSizes* i_pIdxTree ) :
+CPhysSizeFrequency::CPhysSizeFrequency( CPhysScienceFieldTreeEntry* i_pParentBranch ) :
 //------------------------------------------------------------------------------
-    CPhysSize(
-        /* pIdxTree         */ i_pIdxTree,
+    CPhysSizeTreeEntry(
+        /* pParentBranch    */ i_pParentBranch,
         /* strName          */ "Frequency",
         /* strSIUnitName    */ "Hertz",
         /* strSIUnitSymbol  */ "Hz",
         /* strFormulaSymbol */ "f",
         /* bIsPowerRelated  */ false ),
-    Hertz(
+    m_treeEntryHertz(
         /* pPhysSize */ this,
         /* strPrefix */ "" ),
-    KiloHertz(
+    m_treeEntryKiloHertz(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixKilo ),
-    MegaHertz(
+    m_treeEntryMegaHertz(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixMega ),
-    GigaHertz(
+    m_treeEntryGigaHertz(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixGiga ),
-    Hz(Hertz),
-    kHz(KiloHertz),
-    MHz(MegaHertz),
-    GHz(GigaHertz)
+    Hertz(m_treeEntryHertz),
+    KiloHertz(m_treeEntryKiloHertz),
+    MegaHertz(m_treeEntryMegaHertz),
+    GigaHertz(m_treeEntryGigaHertz),
+    Hz(m_treeEntryHertz),
+    kHz(m_treeEntryKiloHertz),
+    MHz(m_treeEntryMegaHertz),
+    GHz(m_treeEntryGigaHertz)
 {
     // Call function of base class CPhysSize to initialize the physical size together
     // with its units (e.g. to create the field with internal conversion routines

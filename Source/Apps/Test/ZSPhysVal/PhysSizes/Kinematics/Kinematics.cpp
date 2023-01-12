@@ -47,7 +47,7 @@ public: // ctors and dtor
 */
 CPhysScienceFieldKinematics::CPhysScienceFieldKinematics(CIdxTreePhysSizes* i_pIdxTree) :
 //------------------------------------------------------------------------------
-    CPhysScienceField(i_pIdxTree, EPhysScienceField::Kinematics),
+    CPhysScienceFieldTreeEntry(i_pIdxTree, EPhysScienceField::Kinematics),
     BitRate(this),
     Frequency(this),
     Samples(this),
