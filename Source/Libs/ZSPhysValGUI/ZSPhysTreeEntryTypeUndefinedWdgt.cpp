@@ -25,7 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSPhysValGUI/ZSPhysTreeEntryTypeUndefinedWdgt.h"
-#include "ZSPhysVal/ZSPhysSizesIdxTree.h"
+#include "ZSPhysVal/ZSPhysUnitsIdxTree.h"
 
 #if QT_VERSION < 0x050000
 //#include <QtGui/qcheckbox.h>
@@ -65,9 +65,10 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CWdgtEntryTypeUndefined::CWdgtEntryTypeUndefined(
-    CIdxTreePhysSizes* i_pIdxTree, QWidget* i_pWdgtParent ) :
+    CIdxTreeUnits* i_pIdxTree, QWidget* i_pWdgtParent ) :
 //------------------------------------------------------------------------------
     CWdgtAbstractTreeEntry(i_pIdxTree, i_pWdgtParent),
+    m_pLyt(nullptr),
     m_pLblPxmZeusSoft(nullptr)
 {
     m_pLyt = new QVBoxLayout;

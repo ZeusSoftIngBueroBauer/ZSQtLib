@@ -349,7 +349,9 @@ QString CIdxTreeEntry::entryType2Str( int i_alias ) const
 //-----------------------------------------------------------------------------
 /*! Returns the path string of the entry within the index tree.
 
-    The path does not contain the type of the entry.
+    The path ends with the name of the node.
+    The path does not start with the type name and does not contain the name
+    of the root entry.
 
     @return Path string (e.g. "ZS::Data::CDataTable::Customers").
 */

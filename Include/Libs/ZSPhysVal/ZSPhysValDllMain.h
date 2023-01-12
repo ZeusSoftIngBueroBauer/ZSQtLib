@@ -70,6 +70,8 @@ namespace ZS
 {
 namespace PhysVal
 {
+class CUnit;
+
 ZSPHYSVALDLL_API QString invalidValueString();      // "---" as default
 ZSPHYSVALDLL_API void setInvalidValueString( const QString& i_str );
 
@@ -92,11 +94,10 @@ namespace FormatResult {
 
 enum class EUnitClassType
 {
-    Undefined             = 0,
-    Ratios                = 1,
-    DataQuantity          = 2,
-    PhysSize              = 3,
-    UserDefinedQuantities = 4
+    Undefined = 0,
+    Ratio     = 1,
+    Quantity  = 2,
+    PhysSize  = 3
 };
 template class ZSPHYSVALDLL_API ZS::System::CEnum<EUnitClassType>;
 typedef ZS::System::CEnum<EUnitClassType> CEnumUnitClassType;
@@ -121,6 +122,15 @@ enum class EUnitFind {
 };
 template class ZSPHYSVALDLL_API ZS::System::CEnum<EUnitFind>;
 typedef ZS::System::CEnum<EUnitFind> CEnumUnitFind;
+
+enum class EResType {
+    Undefined  = 0,
+    Resolution = 1,
+    Accuracy   = 2
+};
+
+template class ZSPHYSVALDLL_API ZS::System::CEnum<EResType>;
+typedef ZS::System::CEnum<EResType> CEnumResType;
 
 typedef quint16 TPhysValSubStr;
 namespace PhysValSubStr {
@@ -186,6 +196,9 @@ const int c_iExponentPeta   = 15;
 const int c_iExponentExa    = 18;
 const int c_iExponentZetta  = 21;
 const int c_iExponentYotta  = 24;
+
+const QChar   c_chSymbolPlusMinus(0x00B1);
+const QString c_strSymbolPlusMinus(c_chSymbolPlusMinus);
 
 static const char* c_strYokto  = "Yokto";
 static const char* c_strZepto  = "Zepto";
@@ -277,9 +290,104 @@ ZSPHYSVALDLL_API QString getExponentStrFromPrefixStr( const QString& i_strPrefix
 Auxiliary methods
 *******************************************************************************/
 
-//ZSPHYSVALDLL_API QString getUnitName( const CUnit* i_pUnit, bool i_bInsertParentNames = false );
-//ZSPHYSVALDLL_API QString getUnitGroupName( const CUnit* i_pUnit, bool i_bInsertParentNames = false  );
-//ZSPHYSVALDLL_API QString getUnitGroupName( const CUnitGrp* i_pUnitGrp, bool i_bInsertParentNames = false  );
+ZSPHYSVALDLL_API void insertDelimiter(
+    int            i_iDigitsPerDigitGroup,
+    const QString& i_strDelimiter,
+    QString*       io_pstrValue,
+    int            i_iDigitsLeading,
+    int            i_iDigitsTrailing );
+
+ZSPHYSVALDLL_API void removeTrailingZeros(
+    QString* io_pstrValue,
+    int      i_iDigitsTrailingMin = 1,
+    QChar    i_charDecPoint = '.' );
+
+ZSPHYSVALDLL_API void removeLeadingZerosFromExponent( QString* io_pstrValue );
+
+ZSPHYSVALDLL_API TFormatResult formatString(
+    const QString& i_strValue,
+    int*           o_piDigitsLeading,
+    int*           o_piDigitsTrailing,
+    int*           o_piDigitsExponent );
+
+ZSPHYSVALDLL_API TFormatResult formatValue(
+    double       i_fVal,
+    const CUnit& i_unitVal,
+    double       i_fRes,
+    const CUnit* i_pUnitRes,
+    EResType     i_resType,
+    int          i_iDigitsMantissa,
+    int          i_iDigitsExponent,
+    bool         i_bUseEngineeringFormat = false,
+    double*      o_pfVal = nullptr,
+    QString*     o_pstrVal = nullptr,
+    CUnit*       o_pUnitVal = nullptr,
+    int*         o_piDigitsLeading = nullptr,
+    int*         o_piDigitsTrailing = nullptr,
+    int*         o_piDigitsExponent = nullptr );
+
+ZSPHYSVALDLL_API TFormatResult formatValue(
+    double         i_fVal,
+    const CUnit&   i_unitVal,
+    double         i_fRes,
+    const CUnit*   i_pUnitRes,
+    EResType       i_resType,
+    int            i_iDigitsMantissa,
+    int            i_iDigitsExponent,
+    int            i_iDigitsPerDigitGroup,
+    const QString* i_pstrDigitsGroupDelimiter,
+    const QString* i_pstrDecimalPoint = nullptr,
+    bool           i_bUseEngineeringFormat = false,
+    double*        o_pfVal = nullptr,
+    QString*       o_pstrVal = nullptr,
+    CUnit*         o_pUnitVal = nullptr,
+    int*           o_piDigitsLeading = nullptr,
+    int*           o_piDigitsTrailing = nullptr,
+    int*           o_piDigitsExponent = nullptr );
+
+ZSPHYSVALDLL_API TFormatResult formatValue(
+    double       i_fVal,
+    const CUnit& i_unitVal,
+    int          i_iDigitsMantissaMax,
+    bool         i_bDigitsAccuracyLimitsMantissa,
+    int          i_iDigitsAccuracy,
+    int          i_iDigitsExponent,
+    bool         i_bUseEngineeringFormat = false,
+    double*      o_pfVal = nullptr,
+    QString*     o_pstrVal = nullptr,
+    CUnit*       o_pUnitVal = nullptr,
+    int*         o_piDigitsLeading = nullptr,
+    int*         o_piDigitsTrailing = nullptr,
+    int*         o_piDigitsExponent = nullptr );
+
+ZSPHYSVALDLL_API TFormatResult formatValue(
+    double         i_fVal,
+    const CUnit&   i_unitVal,
+    int            i_iDigitsMantissaMax,
+    bool           i_bDigitsAccuracyLimitsMantissa,
+    int            i_iDigitsAccuracy,
+    int            i_iDigitsExponent,
+    int            i_iDigitsPerDigitGroup,
+    const QString* i_pstrDigitsGroupDelimiter,
+    const QString* i_pstrDecimalPoint = nullptr,
+    bool           i_bUseEngineeringFormat = false,
+    double*        o_pfVal = nullptr,
+    QString*       o_pstrVal = nullptr,
+    CUnit*         o_pUnitVal = nullptr,
+    int*           o_piDigitsLeading = nullptr,
+    int*           o_piDigitsTrailing = nullptr,
+    int*           o_piDigitsExponent = nullptr );
+
+ZSPHYSVALDLL_API TFormatResult parseValStr(
+    const QString& i_strVal,
+    bool*          o_pbValOk,
+    double*        o_pfVal,
+    CUnit*         o_pUnitVal,
+    bool*          o_pbResOk,
+    double*        o_pfResVal,
+    CUnit*         o_pUnitRes );
+
+ZSPHYSVALDLL_API TFormatResult getSubStrings( const QString& i_strVal, QString* io_arSubStr/*[ESubStrCount]*/ );
 
 } // namespace PhysVal
 

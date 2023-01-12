@@ -37,7 +37,6 @@ may result in using the software modules.
 #endif
 
 #include "ZSPhysValGUI/ZSPhysValWdgtEditPhysVal.h"
-#include "ZSPhysVal/ZSPhysSize.h"
 #include "ZSPhysVal/ZSPhysValExceptions.h"
 #include "ZSSys/ZSSysErrResult.h"
 
@@ -112,7 +111,6 @@ CWdgtEditPhysVal::CWdgtEditPhysVal( QWidget* i_pWdgtParent ) :
     QWidget(i_pWdgtParent),
     m_pLyt(nullptr),
     m_pEdt(nullptr),
-    m_unitGrp(),
     m_unit(),
     m_physValOld(),
     m_physValMin(),
@@ -167,7 +165,6 @@ CWdgtEditPhysVal::~CWdgtEditPhysVal()
 {
     m_pLyt = nullptr;
     m_pEdt = nullptr;
-    //m_unitGrp;
     //m_unit;
     //m_physValOld;
     //m_physValMin;
@@ -184,8 +181,6 @@ public: // instance methods
 void CWdgtEditPhysVal::clear()
 //------------------------------------------------------------------------------
 {
-    setUnitGroup(CUnitGrp());
-
     m_physValOld = CPhysVal();
     m_physValMin = CPhysVal();
     m_physValMax = CPhysVal();
@@ -203,17 +198,6 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtEditPhysVal::setUnitGroup( const CUnitGrp& i_unitGrp )
-//------------------------------------------------------------------------------
-{
-    if( m_unitGrp != i_unitGrp )
-    {
-        m_unitGrp = i_unitGrp;
-        setUnit(CUnit());
-    }
-}
-
-//------------------------------------------------------------------------------
 void CWdgtEditPhysVal::setUnit( const CUnit& i_unit )
 //------------------------------------------------------------------------------
 {
@@ -223,12 +207,10 @@ void CWdgtEditPhysVal::setUnit( const CUnit& i_unit )
 
         if( !m_unit.isValid() )
         {
-            m_unitGrp = CUnitGrp();
             m_pEdt->setSuffix("");
         }
         else
         {
-            m_unitGrp = m_unit.unitGroup();
             m_pEdt->setSuffix( " " + m_unit.symbol() );
         }
     }
@@ -242,13 +224,9 @@ public: // instance methods
 void CWdgtEditPhysVal::setValue( const CPhysVal& i_physVal )
 //------------------------------------------------------------------------------
 {
-    if( m_unitGrp.isValid() && m_unitGrp != i_physVal.unitGroup() )
+    if( areOfSameUnitGroup(m_unit, i_physVal.unit()) )
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultDifferentPhysSizes );
-    }
-    if( !m_unitGrp.isValid() && i_physVal.unitGroup().isValid() )
-    {
-        m_unitGrp = i_physVal.unitGroup();
     }
     if( !m_unit.isValid() && i_physVal.unit().isValid() )
     {
@@ -278,19 +256,15 @@ void CWdgtEditPhysVal::setValue( const CPhysVal& i_physVal )
 CPhysVal CWdgtEditPhysVal::value() const
 //------------------------------------------------------------------------------
 {
-    double  fVal      = m_pEdt->value();
+    double fVal = m_pEdt->value();
     QString strSymbol = m_pEdt->suffix();
-    CUnit   unit;
 
-    if( m_unitGrp.isValid() )
+    if( strSymbol.startsWith(" ") )
     {
-        if( strSymbol.startsWith(" ") )
-        {
-            strSymbol.remove(0,1);
-        }
-        unit = m_unitGrp.findUnitBySymbol(strSymbol);
+        strSymbol.remove(0,1);
     }
-
+    CUnit unit(m_unit);
+    unit.setSymbol(strSymbol);
     return CPhysVal(fVal, unit);
 }
 
@@ -302,13 +276,9 @@ public: // instance methods
 void CWdgtEditPhysVal::setMinimum( const CPhysVal& i_physValMin )
 //------------------------------------------------------------------------------
 {
-    if( m_unitGrp.isValid() && m_unitGrp != i_physValMin.unitGroup() )
+    if( !areOfSameUnitGroup(m_unit,i_physValMin.unit()) )
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultDifferentPhysSizes );
-    }
-    if( !m_unitGrp.isValid() && i_physValMin.unitGroup().isValid() )
-    {
-        m_unitGrp = i_physValMin.unitGroup();
     }
     if( !m_unit.isValid() && i_physValMin.unit().isValid() )
     {
@@ -336,13 +306,9 @@ public: // instance methods
 void CWdgtEditPhysVal::setMaximum( const CPhysVal& i_physValMax )
 //------------------------------------------------------------------------------
 {
-    if( m_unitGrp.isValid() && m_unitGrp != i_physValMax.unitGroup() )
+    if( !areOfSameUnitGroup(m_unit,i_physValMax.unit()) )
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultDifferentPhysSizes );
-    }
-    if( !m_unitGrp.isValid() && i_physValMax.unitGroup().isValid() )
-    {
-        m_unitGrp = i_physValMax.unitGroup();
     }
     if( !m_unit.isValid() && i_physValMax.unit().isValid() )
     {
@@ -370,16 +336,9 @@ public: // instance methods
 void CWdgtEditPhysVal::setResolution( const CPhysValRes& i_physValRes )
 //------------------------------------------------------------------------------
 {
-    if( i_physValRes.unitGroup().isValid() )
+    if( !areOfSameUnitGroup(m_unit,i_physValRes.unit()) )
     {
-        if( m_unitGrp.isValid() && m_unitGrp != i_physValRes.unitGroup() )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultDifferentPhysSizes );
-        }
-    }
-    if( !m_unitGrp.isValid() && i_physValRes.unitGroup().isValid() )
-    {
-        m_unitGrp = i_physValRes.unitGroup();
+        throw ZS::System::CException( __FILE__, __LINE__, EResultDifferentPhysSizes );
     }
     if( !m_unit.isValid() && i_physValRes.unit().isValid() )
     {

@@ -27,12 +27,15 @@ may result in using the software modules.
 #ifndef ZSPhysVal_PhysValArr_h
 #define ZSPhysVal_PhysValArr_h
 
-#include "ZSPhysVal/ZSPhysVal.h"
+#include "ZSPhysVal/ZSPhysValRes.h"
+#include "ZSSys/ZSSysCommon.h"
 
 namespace ZS
 {
 namespace PhysVal
 {
+class CPhysVal;
+
 //******************************************************************************
 class ZSPHYSVALDLL_API CPhysValArr
 //******************************************************************************
@@ -41,22 +44,14 @@ public: // class methods
     static QString NameSpace() { return "ZS::PhysVal"; }
     static QString ClassName() { return "CPhysValArr"; }
 public: // ctors and dtor
-    CPhysValArr( EResType i_resType = EResTypeResolution );
-    CPhysValArr( const CUnitGrp& i_unitGrp, EResType i_resType = EResTypeResolution );
-    CPhysValArr( const CUnit& i_unit, double i_fRes = 0.0, EResType i_resType = EResTypeResolution );
-    CPhysValArr( int i_iValCount, const CUnitGrp& i_unitGrp, EResType i_resType = EResTypeResolution );
-    CPhysValArr( int i_iValCount, const CUnit& i_unit, double i_fRes = 0.0, EResType i_resType = EResTypeResolution );
+    CPhysValArr( EResType i_resType = EResType::Resolution );
+    CPhysValArr( const CUnit& i_unit, double i_fRes = 0.0, EResType i_resType = EResType::Resolution );
     CPhysValArr( int i_iValCount, const CPhysVal& i_physValInit );
-    CPhysValArr( int i_iValCount, double i_fInitVal, const CUnit& i_unit, double i_fRes = 0.0, EResType i_resType = EResTypeResolution );
-    CPhysValArr( int i_iValCount, double* i_arfVals, const CUnit& i_unit, double i_fRes = 0.0, EResType i_resType = EResTypeResolution );
-    CPhysValArr( const QVector<double>& i_arfVals, const CUnit& i_unit, double i_fRes = 0.0, EResType i_resType = EResTypeResolution );
-    CPhysValArr( const QStringList& i_strlstVals, const CUnit& i_unit, double i_fRes = 0.0, EResType i_resType = EResTypeResolution );
-    CPhysValArr( const QString& i_strUnitKey, double i_fRes = 0.0, EResType i_resType = EResTypeResolution );
-    CPhysValArr( int i_iValCount, const QString& i_strUnitKey, double i_fRes = 0.0, EResType i_resType = EResTypeResolution );
-    CPhysValArr( int i_iValCount, double i_fInitVal, const QString& i_strUnitKey, double i_fRes = 0.0, EResType i_resType = EResTypeResolution );
-    CPhysValArr( int i_iValCount, double* i_arfVals, const QString& i_strUnitKey, double i_fRes = 0.0, EResType i_resType = EResTypeResolution );
-    CPhysValArr( const QVector<double>& i_arfVals, const QString& i_strUnitKey, double i_fRes = 0.0, EResType i_resType = EResTypeResolution );
-    CPhysValArr( const QStringList& i_strlstVals, const QString& i_strUnitKey, double i_fRes = 0.0, EResType i_resType = EResTypeResolution );
+    CPhysValArr( int i_iValCount, const CUnit& i_unit, double i_fRes = 0.0, EResType i_resType = EResType::Resolution );
+    CPhysValArr( int i_iValCount, double i_fInitVal, const CUnit& i_unit, double i_fRes = 0.0, EResType i_resType = EResType::Resolution );
+    CPhysValArr( int i_iValCount, double* i_arfVals, const CUnit& i_unit, double i_fRes = 0.0, EResType i_resType = EResType::Resolution );
+    CPhysValArr( const QVector<double>& i_arfVals, const CUnit& i_unit, double i_fRes = 0.0, EResType i_resType = EResType::Resolution );
+    CPhysValArr( const QStringList& i_strlstVals, const CUnit& i_unit, double i_fRes = 0.0, EResType i_resType = EResType::Resolution );
     CPhysValArr( const CPhysValArr& i_physValArr );
     virtual ~CPhysValArr();
 public: // operators
@@ -78,12 +73,7 @@ public: // instance methods
     void setValidity( ZS::System::EValueValidity i_validity );
     ZS::System::EValueValidity getValidity() const;
 public: // instance methods
-    void setUnitGroup( const CUnitGrp& i_unitGrp );
-    void setUnitGroupKey( const QString& i_strUnitGrpKey );
-    CUnitGrp unitGroup() const;
-public: // instance methods
     void setUnit( const CUnit& i_unit );
-    void setUnitKey( const QString& i_strUnitKey );
     CUnit unit() const;
 public: // instance methods
     void invalidateObjectReferences();
@@ -158,9 +148,6 @@ private: // operators (to avoid that anyone use the statement "arPhysVal[4] = 5.
     CPhysVal& operator [] ( int i_idx );
     const CPhysVal& operator [] ( int i_idx ) const;
 protected: // instance members
-    /*!< could be either CUnitGrpRatio or CPhysSize */
-    CUnitGrp m_unitGrp;
-    /*!< could be either CUnitRatio or CPhysUnit */
     CUnit m_unit;
     ZS::System::EValueValidity m_validity;
     CPhysValRes m_physValRes;

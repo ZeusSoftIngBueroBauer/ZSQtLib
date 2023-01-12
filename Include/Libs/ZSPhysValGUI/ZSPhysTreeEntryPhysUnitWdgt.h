@@ -54,13 +54,13 @@ public: // class methods
     static QString NameSpace() { return "ZS::PhysVal::GUI"; }
     static QString ClassName() { return "CWdgtPhysUnit"; }
 public: // ctors and dtor
-    CWdgtPhysUnit( CIdxTreePhysSizes* i_pIdxTree, QWidget* i_pWdgtParent = nullptr );
+    CWdgtPhysUnit( CIdxTreeUnits* i_pIdxTree, QWidget* i_pWdgtParent = nullptr );
     virtual ~CWdgtPhysUnit();
 public: // overridables
     virtual QString nameSpace() const { return CWdgtPhysUnit::NameSpace(); }
     virtual QString className() const { return CWdgtPhysUnit::ClassName(); }
 public: // overridables
-    virtual void setIdxTree(CIdxTreePhysSizes* i_pIdxTree) override;
+    virtual void setIdxTree(CIdxTreeUnits* i_pIdxTree) override;
     virtual void setKeyInTreeOfRootEntry( const QString& i_strKeyInTree ) override;
     virtual void resizeToContents() override;
 protected: // instance members

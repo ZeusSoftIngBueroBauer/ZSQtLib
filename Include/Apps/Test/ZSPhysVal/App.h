@@ -41,7 +41,7 @@ namespace Trace {
 class CIpcTrcServer;
 }
 namespace PhysVal {
-class CIdxTreePhysSizes;
+class CIdxTreeUnits;
 }
 namespace Apps {
 namespace Test {
@@ -73,7 +73,7 @@ private: // instance members
     CTest* m_pTest;
     CMainWindow* m_pMainWindow;
     bool m_bAutoStartTest;
-    ZS::PhysVal::CIdxTreePhysSizes* m_pIdxTreePhysSizes;
+    ZS::PhysVal::CIdxTreeUnits* m_pIdxTreePhysSizes;
     ZS::Trace::CIpcTrcServer* m_pTrcServer;
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 

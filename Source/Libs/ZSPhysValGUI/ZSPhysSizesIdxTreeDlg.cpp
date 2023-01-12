@@ -34,7 +34,7 @@ may result in using the software modules.
 
 #include "ZSPhysValGUI/ZSPhysSizesIdxTreeDlg.h"
 #include "ZSPhysValGUI/ZSPhysSizesWdgt.h"
-#include "ZSPhysVal/ZSPhysSizesIdxTree.h"
+#include "ZSPhysVal/ZSPhysUnitsIdxTree.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysException.h"
@@ -58,7 +58,7 @@ public: // class methods
 //------------------------------------------------------------------------------
 CDlgIdxTreePhysSizes* CDlgIdxTreePhysSizes::CreateInstance(
     const QString& i_strDlgTitle,
-    CIdxTreePhysSizes* i_pIdxTree,
+    CIdxTreeUnits* i_pIdxTree,
     QWidget* i_pWdgtParent,
     Qt::WindowFlags i_wFlags )
 //------------------------------------------------------------------------------
@@ -92,7 +92,7 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CDlgIdxTreePhysSizes::CDlgIdxTreePhysSizes(
     const QString& i_strDlgTitle,
-    CIdxTreePhysSizes* i_pIdxTree,
+    CIdxTreeUnits* i_pIdxTree,
     QWidget* i_pWdgtParent,
     Qt::WindowFlags i_wFlags ) :
 //------------------------------------------------------------------------------

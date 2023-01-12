@@ -41,7 +41,7 @@ namespace ZS
 {
 namespace PhysVal
 {
-class CIdxTreePhysSizes;
+class CIdxTreeUnits;
 
 namespace GUI
 {
@@ -54,14 +54,14 @@ public: // class methods
     static QString NameSpace() { return "ZS::PhysVal::GUI"; }
     static QString ClassName() { return "CWdgtAbstractTreeEntry"; }
 public: // ctors and dtor
-    CWdgtAbstractTreeEntry( CIdxTreePhysSizes* i_pIdxTree, QWidget* i_pWdgtParent = nullptr );
+    CWdgtAbstractTreeEntry( CIdxTreeUnits* i_pIdxTree, QWidget* i_pWdgtParent = nullptr );
     virtual ~CWdgtAbstractTreeEntry();
 public: // overridables
     virtual QString nameSpace() const { return CWdgtAbstractTreeEntry::NameSpace(); }
     virtual QString className() const { return CWdgtAbstractTreeEntry::ClassName(); }
 public: // instance methods
-    virtual void setIdxTree(CIdxTreePhysSizes* i_pIdxTree);
-    CIdxTreePhysSizes* idxTree() { return m_pIdxTree; }
+    virtual void setIdxTree(CIdxTreeUnits* i_pIdxTree);
+    CIdxTreeUnits* idxTree() { return m_pIdxTree; }
 public: // overridables
     virtual void setKeyInTreeOfRootEntry( const QString& i_strKeyInTree );
     QString getKeyInTreeOfRootEntry() const;
@@ -70,7 +70,7 @@ public: // overridables
 protected slots:
     void onIdxTreeAboutToBeDestroyed();
 protected: // instance members
-    CIdxTreePhysSizes* m_pIdxTree;
+    CIdxTreeUnits* m_pIdxTree;
     QString m_strKeyInTreeOfRootEntry;
     int m_cxLblMinWidth;
     int m_cxEdtMinWidth;

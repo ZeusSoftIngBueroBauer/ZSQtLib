@@ -36,8 +36,8 @@ namespace ZS
 {
 namespace PhysVal
 {
-class CIdxTreePhysSizes;
-class CPhysSizeTreeEntry;
+class CIdxTreeUnits;
+class CUnitsTreeEntryGrpPhysUnits;
 
 namespace GUI
 {
@@ -79,7 +79,7 @@ public: // class methods
     Q_INVOKABLE static QString modelIdx2Str( const QModelIndex& i_modelIdx, int i_iRole = -1, bool i_bIncludeId = false );
 public: // ctors and dtor
     CModelPhysSize( QObject* i_pObjParent = nullptr );
-    CModelPhysSize( CIdxTreePhysSizes* i_pIdxTree, QObject*  i_pObjParent = nullptr );
+    CModelPhysSize( CIdxTreeUnits* i_pIdxTree, QObject*  i_pObjParent = nullptr );
     virtual ~CModelPhysSize();
 public: // overridables
     virtual QString nameSpace() const { return CModelPhysSize::NameSpace(); }
@@ -104,7 +104,7 @@ protected: // class members
     static QHash<int, QByteArray> s_clm2Name;
 protected: // instance members
     EViewMode m_viewMode;
-    CPhysSizeTreeEntry* m_pPhysSize;
+    CUnitsTreeEntryGrpPhysUnits* m_pPhysSize;
 
 }; // class CModelPhysSize
 

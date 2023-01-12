@@ -39,7 +39,7 @@ namespace ZS
 {
 namespace PhysVal
 {
-class CIdxTreePhysSizes;
+class CIdxTreeUnits;
 
 namespace GUI
 {
@@ -55,14 +55,14 @@ public: // class methods
 public: // class CDlgTrcServer
     static CDlgIdxTreePhysSizes* CreateInstance(
         const QString& i_strDlgTitle,
-        CIdxTreePhysSizes* i_pIdxTree,
+        CIdxTreeUnits* i_pIdxTree,
         QWidget* i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wFlags = Qt::WindowFlags() );
     static CDlgIdxTreePhysSizes* GetInstance( const QString& i_strObjName );
 protected: // ctor
     CDlgIdxTreePhysSizes(
         const QString& i_strDlgTitle,
-        CIdxTreePhysSizes* i_pIdxTree,
+        CIdxTreeUnits* i_pIdxTree,
         QWidget* i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wFlags = Qt::WindowFlags() );
 public: // dtor
@@ -71,7 +71,7 @@ public: // overridables of base class ZS::System::GUI::CDialog
     virtual QString nameSpace() override { return NameSpace(); }
     virtual QString className() override { return ClassName(); }
 protected: // instance members
-    CIdxTreePhysSizes* m_pIdxTree;
+    CIdxTreeUnits* m_pIdxTree;
     QVBoxLayout* m_pLyt;
     CWdgtPhysSizes* m_pWdgtIdxTree;
 

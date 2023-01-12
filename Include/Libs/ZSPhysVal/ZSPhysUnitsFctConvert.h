@@ -36,7 +36,7 @@ namespace ZS
 {
 namespace PhysVal
 {
-class CPhysUnitTreeEntry;
+class CUnitsTreeEntryPhysUnit;
 
 typedef enum
 {
@@ -79,9 +79,9 @@ public: // instance methods
     void buildFctConvertName();
     bool isValid() const;
 public: // instance members
-    CPhysUnitTreeEntry* m_pPhysUnitSrc;
-    CPhysUnitTreeEntry* m_pPhysUnitDst;
-    CPhysUnitTreeEntry* m_pPhysUnitRef;
+    CUnitsTreeEntryPhysUnit* m_pPhysUnitSrc;
+    CUnitsTreeEntryPhysUnit* m_pPhysUnitDst;
+    CUnitsTreeEntryPhysUnit* m_pPhysUnitRef;
     EFctConvert m_fctConvertType;
     QString m_strFctConvertName;
     double m_fM;

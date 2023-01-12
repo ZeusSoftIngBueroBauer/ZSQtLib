@@ -26,11 +26,11 @@ may result in using the software modules.
 
 #include "WidgetCentral.h"
 #include "App.h"
-#include "PhysSizes/PhysSizes.h"
+#include "Units/Units.h"
 #include "Test.h"
 
 #include "ZSPhysValGUI/ZSPhysSizesWdgt.h"
-#include "ZSPhysVal/ZSPhysSizesIdxTree.h"
+#include "ZSPhysVal/ZSPhysUnitsIdxTree.h"
 #include "ZSTestGUI/ZSTestStepIdxTreeWdgt.h"
 #include "ZSSys/ZSSysErrCode.h"
 #include "ZSSys/ZSSysException.h"
@@ -95,7 +95,7 @@ CWidgetCentral::CWidgetCentral( QWidget* i_pWdgtParent, Qt::WindowFlags  i_wflag
     // <Tab> Units
     //-------------
 
-    m_pWdgtPhysSizes = new CWdgtPhysSizes(&IdxTreePhysSizes);
+    m_pWdgtPhysSizes = new CWdgtPhysSizes(&IdxTreeUnits);
     m_pTabWdgtMain->addTab(m_pWdgtPhysSizes,"Units");
 
     // <Tab> Test

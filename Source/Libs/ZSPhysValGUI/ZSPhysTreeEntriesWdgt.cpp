@@ -27,19 +27,15 @@ may result in using the software modules.
 #include <QtCore/qglobal.h>
 
 #include "ZSPhysValGUI/ZSPhysTreeEntriesWdgt.h"
-#include "ZSPhysValGUI/ZSPhysTreeEntryDataQuantitiesWdgt.h"
-#include "ZSPhysValGUI/ZSPhysTreeEntryDataQuantityWdgt.h"
-#include "ZSPhysValGUI/ZSPhysTreeEntryRatiosWdgt.h"
-#include "ZSPhysValGUI/ZSPhysTreeEntryRatioWdgt.h"
 #include "ZSPhysValGUI/ZSPhysTreeEntryPhysSizeWdgt.h"
 #include "ZSPhysValGUI/ZSPhysTreeEntryPhysUnitWdgt.h"
+#include "ZSPhysValGUI/ZSPhysTreeEntryQuantityWdgt.h"
+#include "ZSPhysValGUI/ZSPhysTreeEntryRatioWdgt.h"
 #include "ZSPhysValGUI/ZSPhysTreeEntryTypeUndefinedWdgt.h"
-#include "ZSPhysValGUI/ZSPhysTreeEntryUserDefinedQuantitiesWdgt.h"
-#include "ZSPhysValGUI/ZSPhysTreeEntryUserDefinedQuantityWdgt.h"
-#include "ZSPhysVal/ZSPhysSizesIdxTree.h"
-#include "ZSPhysVal/ZSPhysScienceField.h"
-#include "ZSPhysVal/ZSPhysSize.h"
-#include "ZSPhysVal/ZSPhysUnits.h"
+#include "ZSPhysVal/ZSPhysTreeEntryGrpBase.h"
+#include "ZSPhysVal/ZSPhysTreeEntryGrpScienceField.h"
+#include "ZSPhysVal/ZSPhysTreeEntryUnitBase.h"
+#include "ZSPhysVal/ZSPhysUnitsIdxTree.h"
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qlayout.h>
@@ -73,7 +69,7 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CWdgtTreeEntries::CWdgtTreeEntries(
-    CIdxTreePhysSizes* i_pIdxTree,
+    CIdxTreeUnits* i_pIdxTree,
     QWidget* i_pWdgtParent,
     Qt::WindowFlags i_wflags ) :
 //------------------------------------------------------------------------------
@@ -130,22 +126,14 @@ CWdgtTreeEntries::CWdgtTreeEntries(
 
     m_arpWdgtsTreeEntryContent[ETreeEntryTypeUndefined] =
         new CWdgtEntryTypeUndefined(nullptr, nullptr);
-    m_arpWdgtsTreeEntryContent[ETreeEntryTypeDataQuantities] =
-        new CWdgtDataQuantities(nullptr, nullptr);
     m_arpWdgtsTreeEntryContent[ETreeEntryTypePhysSize] =
         new CWdgtPhysSize(nullptr, nullptr);
-    m_arpWdgtsTreeEntryContent[ETreeEntryTypeRatios] =
-        new CWdgtRatios(nullptr, nullptr);
-    m_arpWdgtsTreeEntryContent[ETreeEntryTypeUserDefinedQuantities] =
-        new CWdgtUserDefinedQuantities(nullptr, nullptr);
-    m_arpWdgtsTreeEntryContent[ETreeEntryTypeDataQuantity] =
-        new CWdgtDataQuantity(nullptr, nullptr);
+    m_arpWdgtsTreeEntryContent[ETreeEntryTypeQuantity] =
+        new CWdgtQuantity(nullptr, nullptr);
     m_arpWdgtsTreeEntryContent[ETreeEntryTypePhysUnit] =
         new CWdgtPhysUnit(nullptr, nullptr);
     m_arpWdgtsTreeEntryContent[ETreeEntryTypeRatio] =
         new CWdgtRatio(nullptr, nullptr);
-    m_arpWdgtsTreeEntryContent[ETreeEntryTypeUserDefinedQuantity] =
-        new CWdgtUserDefinedQuantity(nullptr, nullptr);
 
     for( int idxEntryType = 0; idxEntryType < ETreeEntryTypeCount; idxEntryType++ )
     {
@@ -183,7 +171,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtTreeEntries::setIdxTree( CIdxTreePhysSizes* i_pIdxTree )
+void CWdgtTreeEntries::setIdxTree( CIdxTreeUnits* i_pIdxTree )
 //------------------------------------------------------------------------------
 {
     if( m_pIdxTree != i_pIdxTree )
@@ -191,7 +179,7 @@ void CWdgtTreeEntries::setIdxTree( CIdxTreePhysSizes* i_pIdxTree )
         if( m_pIdxTree != nullptr )
         {
             QObject::disconnect(
-                m_pIdxTree, &CIdxTreePhysSizes::aboutToBeDestroyed,
+                m_pIdxTree, &CIdxTreeUnits::aboutToBeDestroyed,
                 this, &CWdgtTreeEntries::onIdxTreeAboutToBeDestroyed);
         }
 
@@ -202,7 +190,7 @@ void CWdgtTreeEntries::setIdxTree( CIdxTreePhysSizes* i_pIdxTree )
         if( m_pIdxTree != nullptr )
         {
             QObject::connect(
-                m_pIdxTree, &CIdxTreePhysSizes::aboutToBeDestroyed,
+                m_pIdxTree, &CIdxTreeUnits::aboutToBeDestroyed,
                 this, &CWdgtTreeEntries::onIdxTreeAboutToBeDestroyed);
         }
 
@@ -241,60 +229,36 @@ void CWdgtTreeEntries::setKeyInTreeOfRootEntry( const QString& i_strKeyInTree )
             {
                 if( pTreeEntry->isRoot() || pTreeEntry->isBranch() )
                 {
-                    CUnitGrpTreeEntry* pUnitGrp = dynamic_cast<CUnitGrpTreeEntry*>(pTreeEntry);
+                    CUnitsTreeEntryGrpBase* pUnitGrp = dynamic_cast<CUnitsTreeEntryGrpBase*>(pTreeEntry);
 
-                    if( pUnitGrp == nullptr )
-                    {
-                        CPhysScienceFieldTreeEntry* pPhysScienceField = dynamic_cast<CPhysScienceFieldTreeEntry*>(pTreeEntry);
-                        if( pPhysScienceField != nullptr )
-                        {
-                            unitClassType = EUnitClassType::PhysSize;
-                        }
-                    }
-                    else
+                    if( pUnitGrp != nullptr )
                     {
                         unitClassType = pUnitGrp->classType();
                     }
-                    if( unitClassType == EUnitClassType::DataQuantity )
-                    {
-                        treeEntryType = ETreeEntryTypeDataQuantities;
-                    }
-                    else if( unitClassType == EUnitClassType::PhysSize )
+                    if( unitClassType == EUnitClassType::PhysSize )
                     {
                         treeEntryType = ETreeEntryTypePhysSize;
-                    }
-                    else if( unitClassType == EUnitClassType::Ratios )
-                    {
-                        treeEntryType = ETreeEntryTypeRatios;
-                    }
-                    else if( unitClassType == EUnitClassType::UserDefinedQuantities )
-                    {
-                        treeEntryType = ETreeEntryTypeUserDefinedQuantities;
                     }
                 }
                 else if( pTreeEntry->isLeave() )
                 {
-                    CUnitTreeEntry* pUnit = dynamic_cast<CUnitTreeEntry*>(pTreeEntry);
+                    CUnitsTreeEntryUnitBase* pUnit = dynamic_cast<CUnitsTreeEntryUnitBase*>(pTreeEntry);
 
                     if( pUnit != nullptr )
                     {
                         unitClassType = pUnit->classType();
 
-                        if( unitClassType == EUnitClassType::DataQuantity )
+                        if( unitClassType == EUnitClassType::Quantity )
                         {
-                            treeEntryType = ETreeEntryTypeDataQuantity;
+                            treeEntryType = ETreeEntryTypeQuantity;
                         }
                         else if( unitClassType == EUnitClassType::PhysSize )
                         {
                             treeEntryType = ETreeEntryTypePhysUnit;
                         }
-                        else if( unitClassType == EUnitClassType::Ratios )
+                        else if( unitClassType == EUnitClassType::Ratio )
                         {
                             treeEntryType = ETreeEntryTypeRatio;
-                        }
-                        else if( unitClassType == EUnitClassType::UserDefinedQuantities )
-                        {
-                            treeEntryType = ETreeEntryTypeUserDefinedQuantity;
                         }
                     }
                 }

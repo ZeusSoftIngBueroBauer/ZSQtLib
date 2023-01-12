@@ -25,8 +25,8 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSPhysVal/ZSPhysUnitsFctConvert.h"
-#include "ZSPhysVal/ZSPhysSize.h"
-#include "ZSPhysVal/ZSPhysUnits.h"
+#include "ZSPhysVal/ZSPhysTreeEntryGrpPhysUnits.h"
+#include "ZSPhysVal/ZSPhysTreeEntryPhysUnit.h"
 #include "ZSPhysVal/ZSPhysValExceptions.h"
 #include "ZSSys/ZSSysMath.h"
 #include "ZSSys/ZSSysErrResult.h"
@@ -311,7 +311,7 @@ void CFctConvert::buildFctConvertName()
         return;
     }
 
-    CPhysSizeTreeEntry* pPhysSizeDst = m_pPhysUnitDst->physSize();
+    CUnitsTreeEntryGrpPhysUnits* pPhysSizeDst = m_pPhysUnitDst->physSize();
 
     strFctConvertName = pPhysSizeDst->getFormulaSymbol() + "/" + m_pPhysUnitDst->symbol() + " = ";
 
@@ -321,7 +321,7 @@ void CFctConvert::buildFctConvertName()
         return;
     }
 
-    CPhysSizeTreeEntry* pPhysSizeSrc = m_pPhysUnitSrc->physSize();
+    CUnitsTreeEntryGrpPhysUnits* pPhysSizeSrc = m_pPhysUnitSrc->physSize();
 
     switch( m_fctConvertType )
     {
@@ -415,7 +415,7 @@ void CFctConvert::buildFctConvertName()
             }
             else
             {
-                CPhysSizeTreeEntry* pPhysSizeRef = m_pPhysUnitRef->physSize();
+                CUnitsTreeEntryGrpPhysUnits* pPhysSizeRef = m_pPhysUnitRef->physSize();
                 strFctConvertName +=
                     "(" + pPhysSizeSrc->getFormulaSymbol() + "/" + m_pPhysUnitSrc->symbol() + ") "
                     "* (" + pPhysSizeRef->getFormulaSymbol() + "/" + m_pPhysUnitRef->symbol() + ")";
@@ -430,7 +430,7 @@ void CFctConvert::buildFctConvertName()
             }
             else
             {
-                CPhysSizeTreeEntry* pPhysSizeRef = m_pPhysUnitRef->physSize();
+                CUnitsTreeEntryGrpPhysUnits* pPhysSizeRef = m_pPhysUnitRef->physSize();
                 strFctConvertName +=
                     "(" + pPhysSizeSrc->getFormulaSymbol() + "/" + m_pPhysUnitSrc->symbol() + ") "
                     "/ (" + pPhysSizeRef->getFormulaSymbol() + "/" + m_pPhysUnitRef->symbol() + ")";
@@ -445,7 +445,7 @@ void CFctConvert::buildFctConvertName()
             }
             else
             {
-                CPhysSizeTreeEntry* pPhysSizeRef = m_pPhysUnitRef->physSize();
+                CUnitsTreeEntryGrpPhysUnits* pPhysSizeRef = m_pPhysUnitRef->physSize();
                 strFctConvertName +=
                     "(" + pPhysSizeSrc->getFormulaSymbol() + "/" + m_pPhysUnitSrc->symbol() + ")² "
                     "/ (" + pPhysSizeRef->getFormulaSymbol() + "/" + m_pPhysUnitRef->symbol() + ")";
@@ -460,7 +460,7 @@ void CFctConvert::buildFctConvertName()
             }
             else
             {
-                CPhysSizeTreeEntry* pPhysSizeRef = m_pPhysUnitRef->physSize();
+                CUnitsTreeEntryGrpPhysUnits* pPhysSizeRef = m_pPhysUnitRef->physSize();
                 strFctConvertName +=
                     c_strSymbolSquareRoot + "( (" + pPhysSizeSrc->getFormulaSymbol() + "/" + m_pPhysUnitSrc->symbol() + ") "
                     "* (" + pPhysSizeRef->getFormulaSymbol() + "/" + m_pPhysUnitRef->symbol() + ") )";
@@ -475,7 +475,7 @@ void CFctConvert::buildFctConvertName()
             }
             else
             {
-                CPhysSizeTreeEntry* pPhysSizeRef = m_pPhysUnitRef->physSize();
+                CUnitsTreeEntryGrpPhysUnits* pPhysSizeRef = m_pPhysUnitRef->physSize();
                 strFctConvertName +=
                     "(" + pPhysSizeSrc->getFormulaSymbol() + "/" + m_pPhysUnitSrc->symbol() + ")² "
                     "* (" + pPhysSizeRef->getFormulaSymbol() + "/" + m_pPhysUnitRef->symbol() + ")";
@@ -490,7 +490,7 @@ void CFctConvert::buildFctConvertName()
             }
             else
             {
-                CPhysSizeTreeEntry* pPhysSizeRef = m_pPhysUnitRef->physSize();
+                CUnitsTreeEntryGrpPhysUnits* pPhysSizeRef = m_pPhysUnitRef->physSize();
                 strFctConvertName +=
                     c_strSymbolSquareRoot + "( (" + pPhysSizeSrc->getFormulaSymbol() + "/" + m_pPhysUnitSrc->symbol() + ") "
                     "/ (" + pPhysSizeRef->getFormulaSymbol() + "/" + m_pPhysUnitRef->symbol() + ") )";
@@ -505,7 +505,7 @@ void CFctConvert::buildFctConvertName()
             }
             else
             {
-                CPhysSizeTreeEntry* pPhysSizeRef = m_pPhysUnitRef->physSize();
+                CUnitsTreeEntryGrpPhysUnits* pPhysSizeRef = m_pPhysUnitRef->physSize();
 
                 strM = FormatM(m_fM);
                 strT = FormatT(fabs(m_fT));

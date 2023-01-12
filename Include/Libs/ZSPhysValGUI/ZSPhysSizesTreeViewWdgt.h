@@ -47,7 +47,7 @@ namespace ZS
 {
 namespace PhysVal
 {
-class CIdxTreePhysSizes;
+class CIdxTreeUnits;
 
 namespace GUI
 {
@@ -63,7 +63,7 @@ public: // class methods
     static QString ClassName() { return "CWdgtTreeViewPhysSizes"; }
 public: // ctors and dtor
     CWdgtTreeViewPhysSizes(
-        CIdxTreePhysSizes* i_pIdxTree,
+        CIdxTreeUnits* i_pIdxTree,
         QWidget* i_pWdgtParent = nullptr );
     virtual ~CWdgtTreeViewPhysSizes();
 public: // overridables
@@ -74,8 +74,8 @@ signals:
 public: // instance methods
     CTreeViewPhysSizes* treeView() { return m_pTreeView; }
 public: // instance methods
-    void setIdxTree(CIdxTreePhysSizes* i_pIdxTree);
-    CIdxTreePhysSizes* idxTree() { return m_pIdxTree; }
+    void setIdxTree(CIdxTreeUnits* i_pIdxTree);
+    CIdxTreeUnits* idxTree() { return m_pIdxTree; }
 protected slots:
     void onTreeViewExpanded( const QModelIndex& i_modelIdx );
     void onTreeViewCurrentRowChanged(const QModelIndex& i_modelIdxCurr, const QModelIndex& i_modelIdxPrev );
@@ -86,7 +86,7 @@ protected slots:
 protected slots:
     void onIdxTreeAboutToBeDestroyed();
 protected: // instance members
-    CIdxTreePhysSizes* m_pIdxTree;
+    CIdxTreeUnits* m_pIdxTree;
     QSize m_szBtns;
     QVBoxLayout* m_pLytMain;
     QHBoxLayout* m_pLytHeadLine;

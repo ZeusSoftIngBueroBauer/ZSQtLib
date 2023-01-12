@@ -27,8 +27,8 @@ may result in using the software modules.
 #include "ZSPhysValGUI/ZSPhysTreeEntryPhysUnitWdgt.h"
 #include "ZSPhysValGUI/ZSPhysUnitFctConvertInternalModel.h"
 #include "ZSPhysValGUI/ZSPhysUnitFctConvertExternalModel.h"
-#include "ZSPhysVal/ZSPhysSizesIdxTree.h"
-#include "ZSPhysVal/ZSPhysUnits.h"
+#include "ZSPhysVal/ZSPhysTreeEntryPhysUnit.h"
+#include "ZSPhysVal/ZSPhysUnitsIdxTree.h"
 
 #if QT_VERSION < 0x050000
 #include <QtGui/qheaderview.h>
@@ -64,7 +64,7 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CWdgtPhysUnit::CWdgtPhysUnit(
-    CIdxTreePhysSizes* i_pIdxTree, QWidget* i_pWdgtParent ) :
+    CIdxTreeUnits* i_pIdxTree, QWidget* i_pWdgtParent ) :
 //------------------------------------------------------------------------------
     CWdgtAbstractTreeEntry(i_pIdxTree, i_pWdgtParent),
     m_pLyt(nullptr),
@@ -332,7 +332,7 @@ public: // overridables of base class CWdgtAbstractTreeEntry
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtPhysUnit::setIdxTree( CIdxTreePhysSizes* i_pIdxTree )
+void CWdgtPhysUnit::setIdxTree( CIdxTreeUnits* i_pIdxTree )
 //------------------------------------------------------------------------------
 {
     CWdgtAbstractTreeEntry::setIdxTree(i_pIdxTree);
@@ -353,13 +353,13 @@ void CWdgtPhysUnit::setKeyInTreeOfRootEntry( const QString& i_strKeyInTree )
 
         CIdxTreeEntry* pTreeEntry = m_pIdxTree->findEntry(m_strKeyInTreeOfRootEntry);
 
-        CPhysUnitTreeEntry* pPhysUnit = nullptr;
+        CUnitsTreeEntryPhysUnit* pPhysUnit = nullptr;
 
         if( pTreeEntry != nullptr )
         {
             if( pTreeEntry->isLeave() )
             {
-                pPhysUnit = dynamic_cast<CPhysUnitTreeEntry*>(pTreeEntry);
+                pPhysUnit = dynamic_cast<CUnitsTreeEntryPhysUnit*>(pTreeEntry);
             }
         }
 

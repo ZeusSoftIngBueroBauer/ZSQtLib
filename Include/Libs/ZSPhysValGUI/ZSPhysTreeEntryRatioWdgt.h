@@ -29,15 +29,10 @@ may result in using the software modules.
 
 #include "ZSPhysValGUI/ZSPhysTreeEntryAbstractWdgt.h"
 
-//class QCheckBox;
-//class QComboBox;
-//class QLabel;
-//class QLineEdit;
-//class QSpacerItem;
-//class QSplitter;
-//class QTableView;
-//class QHBoxLayout;
-//class QVBoxLayout;
+class QLabel;
+class QLineEdit;
+class QHBoxLayout;
+class QVBoxLayout;
 
 namespace ZS
 {
@@ -54,13 +49,27 @@ public: // class methods
     static QString NameSpace() { return "ZS::PhysVal::GUI"; }
     static QString ClassName() { return "CWdgtRatio"; }
 public: // ctors and dtor
-    CWdgtRatio( CIdxTreePhysSizes* i_pIdxTree, QWidget* i_pWdgtParent = nullptr );
+    CWdgtRatio( CIdxTreeUnits* i_pIdxTree, QWidget* i_pWdgtParent = nullptr );
     virtual ~CWdgtRatio();
 public: // overridables
     virtual QString nameSpace() const { return CWdgtRatio::NameSpace(); }
     virtual QString className() const { return CWdgtRatio::ClassName(); }
 public: // overridables
     virtual void setKeyInTreeOfRootEntry( const QString& i_strKeyInTree ) override;
+protected: // instance members
+    QVBoxLayout* m_pLyt;
+    QHBoxLayout* m_pLytSymbol;
+    QLabel*      m_pLblSymbol;
+    QLineEdit*   m_pEdtSymbol;
+    QHBoxLayout* m_pLytFactor;
+    QLabel*      m_pLblFactor;
+    QLineEdit*   m_pEdtFactor;
+    QHBoxLayout* m_pLytNextLower;
+    QLabel*      m_pLblNextLower;
+    QLineEdit*   m_pEdtNextLower;
+    QHBoxLayout* m_pLytNextHigher;
+    QLabel*      m_pLblNextHigher;
+    QLineEdit*   m_pEdtNextHigher;
 
 }; // class CWdgtRatio
 

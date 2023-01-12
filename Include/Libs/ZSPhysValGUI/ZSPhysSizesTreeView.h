@@ -49,7 +49,7 @@ class CModelIdxTree;
 }
 namespace PhysVal
 {
-class CIdxTreePhysSizes;
+class CIdxTreeUnits;
 
 namespace GUI
 {
@@ -63,15 +63,15 @@ public: // class methods
     static QString ClassName() { return "CTreeViewPhysSizes"; }
 public: // ctors and dtor
     CTreeViewPhysSizes(
-        CIdxTreePhysSizes* i_pIdxTree,
+        CIdxTreeUnits* i_pIdxTree,
         QWidget* i_pWdgtParent = nullptr );
     virtual ~CTreeViewPhysSizes();
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
     virtual QString className() const { return ClassName(); }
 public: // instance methods
-    void setIdxTree(CIdxTreePhysSizes* i_pIdxTree);
-    CIdxTreePhysSizes* idxTree() { return m_pIdxTree; }
+    void setIdxTree(CIdxTreeUnits* i_pIdxTree);
+    CIdxTreeUnits* idxTree() { return m_pIdxTree; }
 public: // instance methods (hiding not overridable methods with same name in QTreeView)
     virtual void expandAll();
     virtual void collapseAll();
@@ -92,7 +92,7 @@ protected slots:
 protected slots:
     void onIdxTreeAboutToBeDestroyed();
 protected: // instance members
-    CIdxTreePhysSizes* m_pIdxTree;
+    CIdxTreeUnits* m_pIdxTree;
     ZS::System::GUI::CModelIdxTree* m_pModel;
     QMenu* m_pMenuNameSpaceContext;
     QAction* m_pActionNameSpaceTitle;

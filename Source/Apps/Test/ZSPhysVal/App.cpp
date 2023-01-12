@@ -25,11 +25,11 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "App.h"
-#include "PhysSizes/Kinematics/Kinematics.h"
+#include "Units/Kinematics/Kinematics.h"
 #include "MainWindow.h"
 #include "Test.h"
 
-#include "ZSPhysVal/ZSPhysSizesIdxTree.h"
+#include "ZSPhysVal/ZSPhysUnitsIdxTree.h"
 #include "ZSIpcTrace/ZSIpcTrcServer.h"
 #include "ZSTest/ZSTestStepIdxTree.h"
 #include "ZSSys/ZSSysApp.h"
@@ -159,7 +159,7 @@ CApplication::CApplication(
     // Physical Sizes
     //----------------
 
-    //m_pIdxTreePhysSizes = CIdxTreePhysSizes::CreateInstance();
+    //m_pIdxTreePhysSizes = CIdxTreeUnits::CreateInstance();
     //Kinematics = new CPhysScienceFieldKinematics(m_pIdxTreePhysSizes);
 
     //Kinematics = std::move(kinematics);
@@ -215,7 +215,7 @@ CApplication::~CApplication()
     // the dtor of the global physical sizes will invoke the dtor of its instance members (physical units).
     // The dtors will remove themselves from the index tree and afterward the index tree can be deleted.
     if( m_pIdxTreePhysSizes != nullptr ) {
-        CIdxTreePhysSizes::ReleaseInstance();
+        CIdxTreeUnits::ReleaseInstance();
         m_pIdxTreePhysSizes = nullptr;
     }
 

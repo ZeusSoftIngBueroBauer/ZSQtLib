@@ -43,8 +43,7 @@ may result in using the software modules.
 #include "UnitModels.h"
 #include "UnitViewWdgts.h"
 
-#include "ZSPhysVal/ZSPhysUnits.h"
-#include "ZSPhysVal/ZSPhysUnitsGrp.h"
+#include "ZSPhysVal/ZSPhysTreeEntryGrpBase.h"
 #include "ZSSysGUI/ZSSysIdxTreeModel.h"
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysException.h"
@@ -266,11 +265,11 @@ void CWdgtUnits::selectedTreeEntryChanged(
 
         if( pNode->m_pUnit != nullptr )
         {
-            if( pNode->m_pUnit->classType() == EUnitClassType::Ratios )
+            if( pNode->m_pUnit->isRatio() )
             {
                 treeEntryType = ETreeEntryTypeUntRatio;
             }
-            else if( pNode->m_pUnit->classType() == EUnitClassType::DataQuantity )
+            else if( pNode->m_pUnit->classType() == EUnitClassType::Quantity )
             {
                 treeEntryType = ETreeEntryTypeUntDataQuantity;
             }
@@ -278,19 +277,15 @@ void CWdgtUnits::selectedTreeEntryChanged(
             {
                 treeEntryType = ETreeEntryTypePhysUnit;
             }
-            //else if( pNode->m_pUnit->classType() == EUnitClassTypeUserDefinedQuantities )
-            //{
-            //    treeEntryType = ETreeEntryTypeUntUserDefinedQuantity;
-            //}
         }
 
         else if( pNode->m_pUnitGrp != nullptr )
         {
-            if( pNode->m_pUnitGrp->classType() == EUnitClassType::Ratios )
+            if( pNode->m_pUnitGrp->classType() == EUnitClassType::Ratio )
             {
                 treeEntryType = ETreeEntryTypeGrpRatios;
             }
-            else if( pNode->m_pUnitGrp->classType() == EUnitClassType::DataQuantity )
+            else if( pNode->m_pUnitGrp->classType() == EUnitClassType::Quantity )
             {
                 treeEntryType = ETreeEntryTypeGrpDataQuantities;
             }
@@ -298,10 +293,6 @@ void CWdgtUnits::selectedTreeEntryChanged(
             {
                 treeEntryType = ETreeEntryTypeGrpPhysScienceFields;
             }
-            //else if( pNode->m_pUnitGrp->classType() == EUnitClassTypeUserDefinedQuantities )
-            //{
-            //    treeEntryType = ETreeEntryTypeGrpUserDefinedQuantities;
-            //}
         }
 
         CWdgtUnitView* pWdgtUnitView = m_arpWdgtUnitViews[treeEntryType];

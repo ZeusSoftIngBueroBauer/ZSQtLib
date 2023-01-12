@@ -42,40 +42,51 @@ list(APPEND _HeadersCommon
     ${_HeadersPath}/ZSPhysVal/UnitViewWdgts.h
 )
 
-list(APPEND _HeadersPhysSize
-    ${_HeadersPath}/ZSPhysVal/PhysSizes/PhysSizes.h
+list(APPEND _HeadersUnits
+    ${_HeadersPath}/ZSPhysVal/Units/Units.h
 )
 
-list(APPEND _HeadersPhysSizeElectricity
-    ${_HeadersPath}/ZSPhysVal/PhysSizes/Electricity/Electricity.h
-    ${_HeadersPath}/ZSPhysVal/PhysSizes/Electricity/PhysSizeCurrent.h
-    ${_HeadersPath}/ZSPhysVal/PhysSizes/Electricity/PhysSizePower.h
-    ${_HeadersPath}/ZSPhysVal/PhysSizes/Electricity/PhysSizeResistance.h
-    ${_HeadersPath}/ZSPhysVal/PhysSizes/Electricity/PhysSizeVoltage.h
+list(APPEND _HeadersUnitsElectricity
+    ${_HeadersPath}/ZSPhysVal/Units/Electricity/Electricity.h
+    ${_HeadersPath}/ZSPhysVal/Units/Electricity/PhysSizeCurrent.h
+    ${_HeadersPath}/ZSPhysVal/Units/Electricity/PhysSizePower.h
+    ${_HeadersPath}/ZSPhysVal/Units/Electricity/PhysSizeResistance.h
+    ${_HeadersPath}/ZSPhysVal/Units/Electricity/PhysSizeVoltage.h
 )
 
-list(APPEND _HeadersPhysSizeGeometry
-    ${_HeadersPath}/ZSPhysVal/PhysSizes/Geometry/Geometry.h
-    ${_HeadersPath}/ZSPhysVal/PhysSizes/Geometry/PhysSizeAngle.h
-    ${_HeadersPath}/ZSPhysVal/PhysSizes/Geometry/PhysSizeGraphDevice.h
-    ${_HeadersPath}/ZSPhysVal/PhysSizes/Geometry/PhysSizeLength.h
+list(APPEND _HeadersUnitsGeometry
+    ${_HeadersPath}/ZSPhysVal/Units/Geometry/Geometry.h
+    ${_HeadersPath}/ZSPhysVal/Units/Geometry/PhysSizeAngle.h
+    ${_HeadersPath}/ZSPhysVal/Units/Geometry/PhysSizeGraphDevice.h
+    ${_HeadersPath}/ZSPhysVal/Units/Geometry/PhysSizeLength.h
 )
 
-list(APPEND _HeadersPhysSizeKinematics
-    ${_HeadersPath}/ZSPhysVal/PhysSizes/Kinematics/Kinematics.h
-    ${_HeadersPath}/ZSPhysVal/PhysSizes/Kinematics/PhysSizeBitRate.h
-    ${_HeadersPath}/ZSPhysVal/PhysSizes/Kinematics/PhysSizeFrequency.h
-    ${_HeadersPath}/ZSPhysVal/PhysSizes/Kinematics/PhysSizeSamples.h
-    ${_HeadersPath}/ZSPhysVal/PhysSizes/Kinematics/PhysSizeTime.h
-    ${_HeadersPath}/ZSPhysVal/PhysSizes/Kinematics/PhysSizeVelocity.h
+list(APPEND _HeadersUnitsKinematics
+    ${_HeadersPath}/ZSPhysVal/Units/Kinematics/Kinematics.h
+    ${_HeadersPath}/ZSPhysVal/Units/Kinematics/PhysSizeBitRate.h
+    ${_HeadersPath}/ZSPhysVal/Units/Kinematics/PhysSizeFrequency.h
+    ${_HeadersPath}/ZSPhysVal/Units/Kinematics/PhysSizeSamples.h
+    ${_HeadersPath}/ZSPhysVal/Units/Kinematics/PhysSizeTime.h
+    ${_HeadersPath}/ZSPhysVal/Units/Kinematics/PhysSizeVelocity.h
+)
+
+list(APPEND _HeadersUnitsRatios
+    ${_HeadersPath}/ZSPhysVal/Units/Ratios/Ratios.h
+)
+
+list(APPEND _HeadersUnitsQuantities
+    ${_HeadersPath}/ZSPhysVal/Units/Quantities/Quantities.h
+    ${_HeadersPath}/ZSPhysVal/Units/Quantities/Bytes.h
 )
 
 list(APPEND _Headers
     ${_HeadersCommon}
-    ${_HeadersPhysSize}
-    ${_HeadersPhysSizeElectricity}
-    ${_HeadersPhysSizeGeometry}
-    ${_HeadersPhysSizeKinematics}
+    ${_HeadersUnits}
+    ${_HeadersUnitsElectricity}
+    ${_HeadersUnitsGeometry}
+    ${_HeadersUnitsKinematics}
+    ${_HeadersUnitsRatios}
+    ${_HeadersUnitsQuantities}
 )
 
 configure_file(
@@ -94,40 +105,51 @@ list(APPEND _SourcesCommon
     ${_SourcesPath}/ZSPhysVal/UnitViewWdgts.cpp
 )
 
-list(APPEND _SourcesPhysSize
-    ${_SourcesPath}/ZSPhysVal/PhysSizes/PhysSizes.cpp
+list(APPEND _SourcesUnits
+    ${_SourcesPath}/ZSPhysVal/Units/Units.cpp
 )
 
-list(APPEND _SourcesPhysSizeElectricity
-    ${_SourcesPath}/ZSPhysVal/PhysSizes/Electricity/Electricity.cpp
-    ${_SourcesPath}/ZSPhysVal/PhysSizes/Electricity/PhysSizeCurrent.cpp
-    ${_SourcesPath}/ZSPhysVal/PhysSizes/Electricity/PhysSizePower.cpp
-    ${_SourcesPath}/ZSPhysVal/PhysSizes/Electricity/PhysSizeResistance.cpp
-    ${_SourcesPath}/ZSPhysVal/PhysSizes/Electricity/PhysSizeVoltage.cpp
+list(APPEND _SourcesUnitsElectricity
+    ${_SourcesPath}/ZSPhysVal/Units/Electricity/Electricity.cpp
+    ${_SourcesPath}/ZSPhysVal/Units/Electricity/PhysSizeCurrent.cpp
+    ${_SourcesPath}/ZSPhysVal/Units/Electricity/PhysSizePower.cpp
+    ${_SourcesPath}/ZSPhysVal/Units/Electricity/PhysSizeResistance.cpp
+    ${_SourcesPath}/ZSPhysVal/Units/Electricity/PhysSizeVoltage.cpp
 )
 
-list(APPEND _SourcesPhysSizeGeometry
-    ${_SourcesPath}/ZSPhysVal/PhysSizes/Geometry/Geometry.cpp
-    ${_SourcesPath}/ZSPhysVal/PhysSizes/Geometry/PhysSizeAngle.cpp
-    ${_SourcesPath}/ZSPhysVal/PhysSizes/Geometry/PhysSizeGraphDevice.cpp
-    ${_SourcesPath}/ZSPhysVal/PhysSizes/Geometry/PhysSizeLength.cpp
+list(APPEND _SourcesUnitsGeometry
+    ${_SourcesPath}/ZSPhysVal/Units/Geometry/Geometry.cpp
+    ${_SourcesPath}/ZSPhysVal/Units/Geometry/PhysSizeAngle.cpp
+    ${_SourcesPath}/ZSPhysVal/Units/Geometry/PhysSizeGraphDevice.cpp
+    ${_SourcesPath}/ZSPhysVal/Units/Geometry/PhysSizeLength.cpp
 )
 
-list(APPEND _SourcesPhysSizeKinematics
-    ${_SourcesPath}/ZSPhysVal/PhysSizes/Kinematics/Kinematics.cpp
-    ${_SourcesPath}/ZSPhysVal/PhysSizes/Kinematics/PhysSizeBitRate.cpp
-    ${_SourcesPath}/ZSPhysVal/PhysSizes/Kinematics/PhysSizeFrequency.cpp
-    ${_SourcesPath}/ZSPhysVal/PhysSizes/Kinematics/PhysSizeSamples.cpp
-    ${_SourcesPath}/ZSPhysVal/PhysSizes/Kinematics/PhysSizeTime.cpp
-    ${_SourcesPath}/ZSPhysVal/PhysSizes/Kinematics/PhysSizeVelocity.cpp
+list(APPEND _SourcesUnitsKinematics
+    ${_SourcesPath}/ZSPhysVal/Units/Kinematics/Kinematics.cpp
+    ${_SourcesPath}/ZSPhysVal/Units/Kinematics/PhysSizeBitRate.cpp
+    ${_SourcesPath}/ZSPhysVal/Units/Kinematics/PhysSizeFrequency.cpp
+    ${_SourcesPath}/ZSPhysVal/Units/Kinematics/PhysSizeSamples.cpp
+    ${_SourcesPath}/ZSPhysVal/Units/Kinematics/PhysSizeTime.cpp
+    ${_SourcesPath}/ZSPhysVal/Units/Kinematics/PhysSizeVelocity.cpp
+)
+
+list(APPEND _SourcesUnitsRatios
+    ${_SourcesPath}/ZSPhysVal/Units/Ratios/Ratios.cpp
+)
+
+list(APPEND _SourcesUnitsQuantities
+    ${_SourcesPath}/ZSPhysVal/Units/Quantities/Quantities.cpp
+    ${_SourcesPath}/ZSPhysVal/Units/Quantities/Bytes.cpp
 )
 
 list(APPEND _Sources
     ${_SourcesCommon}
-    ${_SourcesPhysSize}
-    ${_SourcesPhysSizeElectricity}
-    ${_SourcesPhysSizeGeometry}
-    ${_SourcesPhysSizeKinematics}
+    ${_SourcesUnits}
+    ${_SourcesUnitsElectricity}
+    ${_SourcesUnitsGeometry}
+    ${_SourcesUnitsKinematics}
+    ${_SourcesUnitsRatios}
+    ${_SourcesUnitsQuantities}
 )
 
 list(APPEND _Resources
@@ -163,15 +185,19 @@ endif()
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${TargetOutputName})
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER Tests)
 
-source_group("Header Files/Physical Sizes" FILES ${_HeadersPhysSize})
-source_group("Header Files/Physical Sizes/Electricity" FILES ${_HeadersPhysSizeElectricity})
-source_group("Header Files/Physical Sizes/Geometry" FILES ${_HeadersPhysSizeGeometry})
-source_group("Header Files/Physical Sizes/Kinematics" FILES ${_HeadersPhysSizeKinematics})
+source_group("Header Files/Units" FILES ${_HeadersUnits})
+source_group("Header Files/Units/Electricity" FILES ${_HeadersUnitsElectricity})
+source_group("Header Files/Units/Geometry" FILES ${_HeadersUnitsGeometry})
+source_group("Header Files/Units/Kinematics" FILES ${_HeadersUnitsKinematics})
+source_group("Header Files/Units/Ratios" FILES ${_HeadersUnitsRatios})
+source_group("Header Files/Units/Quantities" FILES ${_HeadersUnitsQuantities})
 source_group("Header Files" FILES ${_HeadersCommon})
-source_group("Source Files/Physical Sizes" FILES ${_SourcesPhysSize})
-source_group("Source Files/Physical Sizes/Electricity" FILES ${_SourcesPhysSizeElectricity})
-source_group("Source Files/Physical Sizes/Geometry" FILES ${_SourcesPhysSizeGeometry})
-source_group("Source Files/Physical Sizes/Kinematics" FILES ${_SourcesPhysSizeKinematics})
+source_group("Source Files/Units" FILES ${_SourcesUnits})
+source_group("Source Files/Units/Electricity" FILES ${_SourcesUnitsElectricity})
+source_group("Source Files/Units/Geometry" FILES ${_SourcesUnitsGeometry})
+source_group("Source Files/Units/Kinematics" FILES ${_SourcesUnitsKinematics})
+source_group("Source Files/Units/Ratios" FILES ${_SourcesUnitsRatios})
+source_group("Source Files/Units/Quantities" FILES ${_SourcesUnitsQuantities})
 source_group("Source Files" FILES ${_SourcesCommon})
 source_group("Resource Files" FILES ${_Resources})
 

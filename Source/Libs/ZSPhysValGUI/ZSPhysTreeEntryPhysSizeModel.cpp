@@ -25,9 +25,9 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSPhysValGUI/ZSPhysTreeEntryPhysSizeModel.h"
-#include "ZSPhysVal/ZSPhysSizesIdxTree.h"
-#include "ZSPhysVal/ZSPhysSize.h"
-#include "ZSPhysVal/ZSPhysUnits.h"
+#include "ZSPhysVal/ZSPhysUnitsIdxTree.h"
+#include "ZSPhysVal/ZSPhysTreeEntryGrpPhysUnits.h"
+#include "ZSPhysVal/ZSPhysTreeEntryPhysUnit.h"
 #include "ZSSysGUI/ZSSysIdxTreeModelEntry.h"
 #include "ZSSys/ZSSysAux.h"
 #ifdef ZS_TRACE_GUI_MODELS
@@ -211,7 +211,7 @@ CModelPhysSize::CModelPhysSize( QObject* i_pObjParent ) :
 
 //------------------------------------------------------------------------------
 CModelPhysSize::CModelPhysSize(
-    CIdxTreePhysSizes* i_pIdxTree, QObject* i_pObjParent ) :
+    CIdxTreeUnits* i_pIdxTree, QObject* i_pObjParent ) :
 //------------------------------------------------------------------------------
     CModelIdxTreeBranchContent(i_pIdxTree, i_pObjParent),
     m_viewMode(EViewModeNormal),
@@ -341,7 +341,7 @@ void CModelPhysSize::setKeyInTreeOfRootEntry( const QString& i_strKeyInTree )
 
             if( pTreeEntry != nullptr && (pTreeEntry->isRoot() || pTreeEntry->isBranch()) )
             {
-                m_pPhysSize = dynamic_cast<CPhysSizeTreeEntry*>(pTreeEntry);
+                m_pPhysSize = dynamic_cast<CUnitsTreeEntryGrpPhysUnits*>(pTreeEntry);
 
                 if( m_pPhysSize != nullptr )
                 {
@@ -538,13 +538,11 @@ QVariant CModelPhysSize::headerData(
     {
         if( i_iRole == Qt::DisplayRole )
         {
-            CPhysUnit* pUnit = nullptr;
-
             if( i_iSection >= 0 && i_iSection < rowCount() )
             {
                 if( m_pPhysSize != nullptr )
                 {
-                    pUnit = dynamic_cast<CPhysUnit*>(m_pPhysSize->at(i_iSection));
+                    CUnitsTreeEntryPhysUnit* pUnit = dynamic_cast<CUnitsTreeEntryPhysUnit*>(m_pPhysSize->at(i_iSection));
                     if( pUnit == nullptr )
                     {
                         return varData;
@@ -602,17 +600,17 @@ QVariant CModelPhysSize::data( const QModelIndex& i_modelIdx, int i_iRole ) cons
 
     QVariant varData;
 
-    CPhysUnitTreeEntry* pUnit = nullptr;
+    CUnitsTreeEntryPhysUnit* pUnit = nullptr;
 
     if( i_modelIdx.isValid() && m_pPhysSize != nullptr )
     {
-        pUnit = dynamic_cast<CPhysUnitTreeEntry*>(m_pPhysSize->at(i_modelIdx.row()));
+        pUnit = dynamic_cast<CUnitsTreeEntryPhysUnit*>(m_pPhysSize->at(i_modelIdx.row()));
     }
 
     if( pUnit != nullptr && s_rolesHandled.contains(iRole) )
     {
-        CPhysUnitTreeEntry* pUnitNextLower  = dynamic_cast<CPhysUnitTreeEntry*>(pUnit->nextLowerUnit());
-        CPhysUnitTreeEntry* pUnitNextHigher = dynamic_cast<CPhysUnitTreeEntry*>(pUnit->nextHigherUnit());
+        CUnitsTreeEntryPhysUnit* pUnitNextLower  = dynamic_cast<CUnitsTreeEntryPhysUnit*>(pUnit->nextLowerUnit());
+        CUnitsTreeEntryPhysUnit* pUnitNextHigher = dynamic_cast<CUnitsTreeEntryPhysUnit*>(pUnit->nextHigherUnit());
 
         if( m_viewMode == EViewModeNormal )
         {
@@ -674,7 +672,7 @@ QVariant CModelPhysSize::data( const QModelIndex& i_modelIdx, int i_iRole ) cons
         {
             if( iRole == Qt::DisplayRole || iRole == Qt::EditRole )
             {
-                CPhysUnitTreeEntry* pUnitClm = dynamic_cast<CPhysUnitTreeEntry*>(m_pPhysSize->at(clm));
+                CUnitsTreeEntryPhysUnit* pUnitClm = dynamic_cast<CUnitsTreeEntryPhysUnit*>(m_pPhysSize->at(clm));
 
                 if( pUnitClm != nullptr )
                 {

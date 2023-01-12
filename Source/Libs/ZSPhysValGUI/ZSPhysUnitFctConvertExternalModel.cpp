@@ -25,8 +25,8 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSPhysValGUI/ZSPhysUnitFctConvertExternalModel.h"
-#include "ZSPhysVal/ZSPhysSizesIdxTree.h"
-#include "ZSPhysVal/ZSPhysUnits.h"
+#include "ZSPhysVal/ZSPhysTreeEntryPhysUnit.h"
+#include "ZSPhysVal/ZSPhysUnitsIdxTree.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -52,7 +52,7 @@ CModelUnitFctConvertExternal::CModelUnitFctConvertExternal( QObject* i_pObjParen
 
 //------------------------------------------------------------------------------
 CModelUnitFctConvertExternal::CModelUnitFctConvertExternal(
-    CIdxTreePhysSizes* i_pIdxTree, QObject* i_pObjParent ) :
+    CIdxTreeUnits* i_pIdxTree, QObject* i_pObjParent ) :
 //------------------------------------------------------------------------------
     QAbstractTableModel(i_pObjParent),
     m_pIdxTree(nullptr),
@@ -89,7 +89,7 @@ void CModelUnitFctConvertExternal::setIdxTree( QObject* i_pIdxTree )
         {
         }
 
-        m_pIdxTree = dynamic_cast<CIdxTreePhysSizes*>(i_pIdxTree);
+        m_pIdxTree = dynamic_cast<CIdxTreeUnits*>(i_pIdxTree);
 
         if( m_pIdxTree != nullptr )
         {
@@ -117,7 +117,7 @@ void CModelUnitFctConvertExternal::setKeyInTreeOfRootEntry( const QString& i_str
 
         if( pTreeEntry != nullptr && pTreeEntry->isLeave() )
         {
-            m_pPhysUnit = dynamic_cast<CPhysUnitTreeEntry*>(pTreeEntry);
+            m_pPhysUnit = dynamic_cast<CUnitsTreeEntryPhysUnit*>(pTreeEntry);
         }
 
         if( rowCount() > 0 )
@@ -161,7 +161,7 @@ QVariant CModelUnitFctConvertExternal::data( const QModelIndex& i_modelIdx, int 
     int iRow = i_modelIdx.row();
     int iCol = i_modelIdx.column();
     CFctConvert* pfctConvert = nullptr;
-    CPhysUnitTreeEntry* pPhysUnitDst = nullptr;
+    CUnitsTreeEntryPhysUnit* pPhysUnitDst = nullptr;
 
     if( !i_modelIdx.isValid() )
     {

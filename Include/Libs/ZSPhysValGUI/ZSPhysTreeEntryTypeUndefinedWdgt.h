@@ -47,7 +47,7 @@ public: // class methods
     static QString NameSpace() { return "ZS::PhysVal::GUI"; }
     static QString ClassName() { return "CWdgtEntryTypeUndefined"; }
 public: // ctors and dtor
-    CWdgtEntryTypeUndefined( CIdxTreePhysSizes* i_pIdxTree, QWidget* i_pWdgtParent = nullptr );
+    CWdgtEntryTypeUndefined( CIdxTreeUnits* i_pIdxTree, QWidget* i_pWdgtParent = nullptr );
     virtual ~CWdgtEntryTypeUndefined();
 public: // overridables
     virtual QString nameSpace() const { return CWdgtEntryTypeUndefined::NameSpace(); }

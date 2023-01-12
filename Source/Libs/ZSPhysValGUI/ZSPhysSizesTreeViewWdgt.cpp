@@ -36,7 +36,7 @@ may result in using the software modules.
 
 #include "ZSPhysValGUI/ZSPhysSizesTreeViewWdgt.h"
 #include "ZSPhysValGUI/ZSPhysSizesTreeView.h"
-#include "ZSPhysVal/ZSPhysSizesIdxTree.h"
+#include "ZSPhysVal/ZSPhysUnitsIdxTree.h"
 #include "ZSSysGUI/ZSSysIdxTreeModel.h"
 #include "ZSSys/ZSSysException.h"
 
@@ -58,7 +58,7 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CWdgtTreeViewPhysSizes::CWdgtTreeViewPhysSizes(
-    CIdxTreePhysSizes* i_pIdxTree,
+    CIdxTreeUnits* i_pIdxTree,
     QWidget* i_pWdgtParent ) :
 //------------------------------------------------------------------------------
     QWidget(i_pWdgtParent),
@@ -183,7 +183,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtTreeViewPhysSizes::setIdxTree(CIdxTreePhysSizes* i_pIdxTree)
+void CWdgtTreeViewPhysSizes::setIdxTree(CIdxTreeUnits* i_pIdxTree)
 //------------------------------------------------------------------------------
 {
     if( m_pIdxTree != i_pIdxTree )
@@ -191,7 +191,7 @@ void CWdgtTreeViewPhysSizes::setIdxTree(CIdxTreePhysSizes* i_pIdxTree)
         if( m_pIdxTree != nullptr )
         {
             QObject::disconnect(
-                m_pIdxTree, &CIdxTreePhysSizes::aboutToBeDestroyed,
+                m_pIdxTree, &CIdxTreeUnits::aboutToBeDestroyed,
                 this, &CWdgtTreeViewPhysSizes::onIdxTreeAboutToBeDestroyed);
         }
 
@@ -200,7 +200,7 @@ void CWdgtTreeViewPhysSizes::setIdxTree(CIdxTreePhysSizes* i_pIdxTree)
         if( m_pIdxTree != nullptr )
         {
             QObject::connect(
-                m_pIdxTree, &CIdxTreePhysSizes::aboutToBeDestroyed,
+                m_pIdxTree, &CIdxTreeUnits::aboutToBeDestroyed,
                 this, &CWdgtTreeViewPhysSizes::onIdxTreeAboutToBeDestroyed);
         }
 

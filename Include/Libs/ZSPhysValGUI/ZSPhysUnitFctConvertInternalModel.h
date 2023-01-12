@@ -33,8 +33,8 @@ namespace ZS
 {
 namespace PhysVal
 {
-class CIdxTreePhysSizes;
-class CPhysUnitTreeEntry;
+class CIdxTreeUnits;
+class CUnitsTreeEntryPhysUnit;
 
 namespace GUI
 {
@@ -51,7 +51,7 @@ public: // type definitions and constants
     }   EColumn;
 public: // ctors and dtor
     CModelUnitFctConvertInternal( QObject* i_pObjParent = nullptr );
-    CModelUnitFctConvertInternal( CIdxTreePhysSizes* i_pIdxTree, QObject* i_pObjParent = nullptr );
+    CModelUnitFctConvertInternal( CIdxTreeUnits* i_pIdxTree, QObject* i_pObjParent = nullptr );
     virtual ~CModelUnitFctConvertInternal();
 public: // instance methods
     virtual void setIdxTree( QObject* i_pIdxTree );
@@ -63,9 +63,9 @@ public: // must overridables of base class QAbstractItemModel
 public: // overridables of base class QAbstractItemModel
     virtual QVariant headerData( int i_iSection, Qt::Orientation i_orientation, int i_iRole = Qt::DisplayRole) const;
 protected: // instance members
-    CIdxTreePhysSizes* m_pIdxTree;
+    CIdxTreeUnits* m_pIdxTree;
     QString m_strKeyInTreeOfRootEntry;
-    CPhysUnitTreeEntry* m_pPhysUnit;
+    CUnitsTreeEntryPhysUnit* m_pPhysUnit;
 
 }; // class CModelUnitFctConvertInternal
 

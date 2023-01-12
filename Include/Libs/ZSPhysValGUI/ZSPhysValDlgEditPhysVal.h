@@ -76,8 +76,7 @@ protected slots: // instance methods
     void onCmbUnitActivated( int i_idx );
 private: // instance members
     CPhysVal m_physValOld;
-    CPhysSize m_physSize;
-    CPhysUnit m_physUnit;
+    CUnit m_unit;
     double m_fMin;
     double m_fMax;
     int m_iDecimals;

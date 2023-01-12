@@ -33,14 +33,16 @@ set(_ResourcesPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../Resources/Libs)
 
 list(APPEND _Headers
     ${_HeadersPath}/ZSSys/ZSSysVersion.h
-    ${_HeadersPath}/ZSPhysVal/ZSPhysScienceField.h
-    ${_HeadersPath}/ZSPhysVal/ZSPhysSize.h
-    ${_HeadersPath}/ZSPhysVal/ZSPhysSizesIdxTree.h
-    ${_HeadersPath}/ZSPhysVal/ZSPhysUnits.h
-    ${_HeadersPath}/ZSPhysVal/ZSPhysUnitsDataQuantity.h
+    ${_HeadersPath}/ZSPhysVal/ZSPhysTreeEntryGrpBase.h
+    ${_HeadersPath}/ZSPhysVal/ZSPhysTreeEntryGrpPhysUnits.h
+    ${_HeadersPath}/ZSPhysVal/ZSPhysTreeEntryGrpScienceField.h
+    ${_HeadersPath}/ZSPhysVal/ZSPhysTreeEntryPhysUnit.h
+    ${_HeadersPath}/ZSPhysVal/ZSPhysTreeEntryUnitBase.h
+    ${_HeadersPath}/ZSPhysVal/ZSPhysTreeEntryUnitQuantity.h
+    ${_HeadersPath}/ZSPhysVal/ZSPhysTreeEntryUnitRatio.h
+    ${_HeadersPath}/ZSPhysVal/ZSPhysUnitsIdxTree.h
+    ${_HeadersPath}/ZSPhysVal/ZSPhysUnit.h
     ${_HeadersPath}/ZSPhysVal/ZSPhysUnitsFctConvert.h
-    ${_HeadersPath}/ZSPhysVal/ZSPhysUnitsGrp.h
-    ${_HeadersPath}/ZSPhysVal/ZSPhysUnitsRatio.h
     ${_HeadersPath}/ZSPhysVal/ZSPhysVal.h
     ${_HeadersPath}/ZSPhysVal/ZSPhysValArr.h
     ${_HeadersPath}/ZSPhysVal/ZSPhysValDllMain.h
@@ -49,14 +51,16 @@ list(APPEND _Headers
 )
 
 list(APPEND _Sources
-    ${_SourcesPath}/ZSPhysVal/ZSPhysScienceField.cpp
-    ${_SourcesPath}/ZSPhysVal/ZSPhysSize.cpp
-    ${_SourcesPath}/ZSPhysVal/ZSPhysSizesIdxTree.cpp
-    ${_SourcesPath}/ZSPhysVal/ZSPhysUnits.cpp
-    ${_SourcesPath}/ZSPhysVal/ZSPhysUnitsDataQuantity.cpp
+    ${_SourcesPath}/ZSPhysVal/ZSPhysTreeEntryGrpBase.cpp
+    ${_SourcesPath}/ZSPhysVal/ZSPhysTreeEntryGrpPhysUnits.cpp
+    ${_SourcesPath}/ZSPhysVal/ZSPhysTreeEntryGrpScienceField.cpp
+    ${_SourcesPath}/ZSPhysVal/ZSPhysTreeEntryPhysUnit.cpp
+    ${_SourcesPath}/ZSPhysVal/ZSPhysTreeEntryUnitBase.cpp
+    ${_SourcesPath}/ZSPhysVal/ZSPhysTreeEntryUnitQuantity.cpp
+    ${_SourcesPath}/ZSPhysVal/ZSPhysTreeEntryUnitRatio.cpp
+    ${_SourcesPath}/ZSPhysVal/ZSPhysUnitsIdxTree.cpp
+    ${_SourcesPath}/ZSPhysVal/ZSPhysUnit.cpp
     ${_SourcesPath}/ZSPhysVal/ZSPhysUnitsFctConvert.cpp
-    ${_SourcesPath}/ZSPhysVal/ZSPhysUnitsGrp.cpp
-    ${_SourcesPath}/ZSPhysVal/ZSPhysUnitsRatio.cpp
     ${_SourcesPath}/ZSPhysVal/ZSPhysVal.cpp
     ${_SourcesPath}/ZSPhysVal/ZSPhysValArr.cpp
     ${_SourcesPath}/ZSPhysVal/ZSPhysValDllMain.cpp

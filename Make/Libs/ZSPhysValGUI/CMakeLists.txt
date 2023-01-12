@@ -39,16 +39,12 @@ list(APPEND _Headers
     ${_HeadersPath}/ZSPhysValGUI/ZSPhysSizesWdgt.h
     ${_HeadersPath}/ZSPhysValGUI/ZSPhysTreeEntriesWdgt.h
     ${_HeadersPath}/ZSPhysValGUI/ZSPhysTreeEntryAbstractWdgt.h
-    ${_HeadersPath}/ZSPhysValGUI/ZSPhysTreeEntryDataQuantitiesWdgt.h
-    ${_HeadersPath}/ZSPhysValGUI/ZSPhysTreeEntryDataQuantityWdgt.h
     ${_HeadersPath}/ZSPhysValGUI/ZSPhysTreeEntryPhysSizeModel.h
     ${_HeadersPath}/ZSPhysValGUI/ZSPhysTreeEntryPhysSizeWdgt.h
     ${_HeadersPath}/ZSPhysValGUI/ZSPhysTreeEntryPhysUnitWdgt.h
-    ${_HeadersPath}/ZSPhysValGUI/ZSPhysTreeEntryRatiosWdgt.h
+    ${_HeadersPath}/ZSPhysValGUI/ZSPhysTreeEntryQuantityWdgt.h
     ${_HeadersPath}/ZSPhysValGUI/ZSPhysTreeEntryRatioWdgt.h
     ${_HeadersPath}/ZSPhysValGUI/ZSPhysTreeEntryTypeUndefinedWdgt.h
-    ${_HeadersPath}/ZSPhysValGUI/ZSPhysTreeEntryUserDefinedQuantitiesWdgt.h
-    ${_HeadersPath}/ZSPhysValGUI/ZSPhysTreeEntryUserDefinedQuantityWdgt.h
     ${_HeadersPath}/ZSPhysValGUI/ZSPhysUnitFctConvertInternalModel.h
     ${_HeadersPath}/ZSPhysValGUI/ZSPhysUnitFctConvertExternalModel.h
     ${_HeadersPath}/ZSPhysValGUI/ZSPhysValDlgEditPhysVal.h
@@ -63,16 +59,12 @@ list(APPEND _Sources
     ${_SourcesPath}/ZSPhysValGUI/ZSPhysSizesWdgt.cpp
     ${_SourcesPath}/ZSPhysValGUI/ZSPhysTreeEntriesWdgt.cpp
     ${_SourcesPath}/ZSPhysValGUI/ZSPhysTreeEntryAbstractWdgt.cpp
-    ${_SourcesPath}/ZSPhysValGUI/ZSPhysTreeEntryDataQuantitiesWdgt.cpp
-    ${_SourcesPath}/ZSPhysValGUI/ZSPhysTreeEntryDataQuantityWdgt.cpp
     ${_SourcesPath}/ZSPhysValGUI/ZSPhysTreeEntryPhysSizeModel.cpp
     ${_SourcesPath}/ZSPhysValGUI/ZSPhysTreeEntryPhysSizeWdgt.cpp
     ${_SourcesPath}/ZSPhysValGUI/ZSPhysTreeEntryPhysUnitWdgt.cpp
-    ${_SourcesPath}/ZSPhysValGUI/ZSPhysTreeEntryRatiosWdgt.cpp
+    ${_SourcesPath}/ZSPhysValGUI/ZSPhysTreeEntryQuantityWdgt.cpp
     ${_SourcesPath}/ZSPhysValGUI/ZSPhysTreeEntryRatioWdgt.cpp
     ${_SourcesPath}/ZSPhysValGUI/ZSPhysTreeEntryTypeUndefinedWdgt.cpp
-    ${_SourcesPath}/ZSPhysValGUI/ZSPhysTreeEntryUserDefinedQuantitiesWdgt.cpp
-    ${_SourcesPath}/ZSPhysValGUI/ZSPhysTreeEntryUserDefinedQuantityWdgt.cpp
     ${_SourcesPath}/ZSPhysValGUI/ZSPhysUnitFctConvertInternalModel.cpp
     ${_SourcesPath}/ZSPhysValGUI/ZSPhysUnitFctConvertExternalModel.cpp
     ${_SourcesPath}/ZSPhysValGUI/ZSPhysValDlgEditPhysVal.cpp

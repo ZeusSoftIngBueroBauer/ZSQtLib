@@ -28,7 +28,7 @@ may result in using the software modules.
 #include <QtGui/qevent.h>
 
 #include "ZSPhysValGUI/ZSPhysSizesTreeView.h"
-#include "ZSPhysVal/ZSPhysSizesIdxTree.h"
+#include "ZSPhysVal/ZSPhysUnitsIdxTree.h"
 #include "ZSSysGUI/ZSSysIdxTreeModelEntry.h"
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
@@ -55,7 +55,7 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CTreeViewPhysSizes::CTreeViewPhysSizes(
-    CIdxTreePhysSizes* i_pIdxTree,
+    CIdxTreeUnits* i_pIdxTree,
     QWidget* i_pWdgtParent ) :
 //------------------------------------------------------------------------------
     QTreeView(i_pWdgtParent),
@@ -144,7 +144,7 @@ CTreeViewPhysSizes::~CTreeViewPhysSizes()
 } // dtor
 
 //------------------------------------------------------------------------------
-void CTreeViewPhysSizes::setIdxTree( CIdxTreePhysSizes* i_pIdxTree )
+void CTreeViewPhysSizes::setIdxTree( CIdxTreeUnits* i_pIdxTree )
 //------------------------------------------------------------------------------
 {
     if( m_pIdxTree != i_pIdxTree )
@@ -152,7 +152,7 @@ void CTreeViewPhysSizes::setIdxTree( CIdxTreePhysSizes* i_pIdxTree )
         if( m_pIdxTree != nullptr )
         {
             QObject::disconnect(
-                m_pIdxTree, &CIdxTreePhysSizes::aboutToBeDestroyed,
+                m_pIdxTree, &CIdxTreeUnits::aboutToBeDestroyed,
                 this, &CTreeViewPhysSizes::onIdxTreeAboutToBeDestroyed);
         }
 
@@ -161,7 +161,7 @@ void CTreeViewPhysSizes::setIdxTree( CIdxTreePhysSizes* i_pIdxTree )
         if( m_pIdxTree != nullptr )
         {
             QObject::connect(
-                m_pIdxTree, &CIdxTreePhysSizes::aboutToBeDestroyed,
+                m_pIdxTree, &CIdxTreeUnits::aboutToBeDestroyed,
                 this, &CTreeViewPhysSizes::onIdxTreeAboutToBeDestroyed);
         }
 

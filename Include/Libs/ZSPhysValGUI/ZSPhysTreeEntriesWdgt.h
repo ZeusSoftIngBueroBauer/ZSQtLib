@@ -47,7 +47,7 @@ namespace ZS
 {
 namespace PhysVal
 {
-class CIdxTreePhysSizes;
+class CIdxTreeUnits;
 
 namespace GUI
 {
@@ -60,15 +60,11 @@ class ZSPHYSVALGUIDLL_API CWdgtTreeEntries : public QWidget
     Q_OBJECT
 protected: // type definitions and constants
     typedef enum {
-        ETreeEntryTypeUndefined             = 0,
-        ETreeEntryTypeDataQuantities        = 1,
-        ETreeEntryTypePhysSize              = 2,
-        ETreeEntryTypeRatios                = 3,
-        ETreeEntryTypeUserDefinedQuantities = 4,
-        ETreeEntryTypeDataQuantity          = 5,
-        ETreeEntryTypePhysUnit              = 6,
-        ETreeEntryTypeRatio                 = 7,
-        ETreeEntryTypeUserDefinedQuantity   = 8,
+        ETreeEntryTypeUndefined = 0,
+        ETreeEntryTypePhysSize  = 1,
+        ETreeEntryTypeQuantity  = 2,
+        ETreeEntryTypePhysUnit  = 3,
+        ETreeEntryTypeRatio     = 4,
         ETreeEntryTypeCount
     }   ETreeEntryType;
 public: // class methods
@@ -76,13 +72,13 @@ public: // class methods
     static QString ClassName() { return "CWdgtTreeEntries"; }
 public: // ctors and dtor
     CWdgtTreeEntries(
-        CIdxTreePhysSizes* i_pIdxTree,
+        CIdxTreeUnits* i_pIdxTree,
         QWidget* i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wflags = Qt::WindowFlags() );
     virtual ~CWdgtTreeEntries();
 public: // instance methods
-    void setIdxTree(CIdxTreePhysSizes* i_pIdxTree);
-    CIdxTreePhysSizes* idxTree() { return m_pIdxTree; }
+    void setIdxTree(CIdxTreeUnits* i_pIdxTree);
+    CIdxTreeUnits* idxTree() { return m_pIdxTree; }
 public: // overridables
     virtual void setKeyInTreeOfRootEntry( const QString& i_strKeyInTree );
     QString getKeyInTreeOfRootEntry() const;
@@ -91,7 +87,7 @@ protected slots:
 protected slots:
     void onIdxTreeAboutToBeDestroyed();
 protected: // instance members
-    CIdxTreePhysSizes* m_pIdxTree;
+    CIdxTreeUnits* m_pIdxTree;
     QString m_strKeyInTreeOfRootEntry;
     QSize m_szBtns;
     QVBoxLayout* m_pLytMain;

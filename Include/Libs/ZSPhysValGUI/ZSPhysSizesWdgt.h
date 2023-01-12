@@ -48,7 +48,7 @@ namespace ZS
 {
 namespace PhysVal
 {
-class CIdxTreePhysSizes;
+class CIdxTreeUnits;
 
 namespace GUI
 {
@@ -65,19 +65,19 @@ public: // class methods
     static QString ClassName() { return "CWdgtPhysSizes"; }
 public: // ctors and dtor
     CWdgtPhysSizes(
-        CIdxTreePhysSizes* i_pIdxTree,
+        CIdxTreeUnits* i_pIdxTree,
         QWidget* i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wflags = Qt::WindowFlags() );
     virtual ~CWdgtPhysSizes();
 public: // instance methods
-    void setIdxTree(CIdxTreePhysSizes* i_pIdxTree);
-    CIdxTreePhysSizes* idxTree() { return m_pIdxTree; }
+    void setIdxTree(CIdxTreeUnits* i_pIdxTree);
+    CIdxTreeUnits* idxTree() { return m_pIdxTree; }
 protected slots:
     void onTreeViewCurrentRowChanged( const QModelIndex& i_modelIdxCurr, const QModelIndex& i_modelIdxPrev );
 protected slots:
     void onIdxTreeAboutToBeDestroyed();
 protected: // instance members
-    CIdxTreePhysSizes* m_pIdxTree;
+    CIdxTreeUnits* m_pIdxTree;
     QVBoxLayout* m_pLytMain;
     QSplitter* m_pSplitter;
     CWdgtTreeViewPhysSizes* m_pWdgtTreeView;

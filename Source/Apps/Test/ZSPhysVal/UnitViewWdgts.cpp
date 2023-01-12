@@ -48,9 +48,7 @@ may result in using the software modules.
 
 #include "UnitViewWdgts.h"
 
-#include "ZSPhysVal/ZSPhysSize.h"
-#include "ZSPhysVal/ZSPhysUnitsRatio.h"
-#include "ZSPhysVal/ZSPhysUnitsDataQuantity.h"
+#include "ZSPhysVal/ZSPhysTreeEntryGrpPhysUnits.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysIdxTree.h"
 
@@ -864,7 +862,7 @@ void CWdgtUnitViewGrpPhysScienceFields::setUnitsModelNode( SUnitsModelNode* i_pN
 {
     CWdgtUnitViewGrp::setUnitsModelNode(i_pNode);
 
-    CPhysSize* pPhysSize = nullptr;
+    CUnitsTreeEntryGrpPhysUnits* pPhysSize = nullptr;
 
     if( m_pNode == nullptr )
     {
@@ -872,7 +870,7 @@ void CWdgtUnitViewGrpPhysScienceFields::setUnitsModelNode( SUnitsModelNode* i_pN
     }
     else if( m_pNode->m_pUnitGrp != nullptr )
     {
-        pPhysSize = dynamic_cast<CPhysSize*>(m_pNode->m_pUnitGrp);
+        pPhysSize = dynamic_cast<CUnitsTreeEntryGrpPhysUnits*>(m_pNode->m_pUnitGrp);
         m_model.setUnitGroup(m_pNode->m_pUnitGrp);
     }
     else
@@ -1342,11 +1340,11 @@ void CWdgtUnitViewPhysUnit::setUnitsModelNode( SUnitsModelNode* i_pNode )
 {
     CWdgtUnitViewUnt::setUnitsModelNode(i_pNode);
 
-    CPhysUnitTreeEntry* pPhysUnit = nullptr;
+    CUnitsTreeEntryPhysUnit* pPhysUnit = nullptr;
 
     if( m_pNode != nullptr && m_pNode->m_pUnit != nullptr )
     {
-        pPhysUnit = dynamic_cast<CPhysUnitTreeEntry*>(m_pNode->m_pUnit);
+        pPhysUnit = dynamic_cast<CUnitsTreeEntryPhysUnit*>(m_pNode->m_pUnit);
     }
 
     // PhysUnit

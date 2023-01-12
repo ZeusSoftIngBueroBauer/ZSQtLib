@@ -66,8 +66,6 @@ signals:
 public: // instance methods
     void clear();
 public: // instance methods
-    void setUnitGroup( const CUnitGrp& i_unitGrp );
-    CUnitGrp unitGroup() const { return m_unitGrp; }
     void setUnit( const CUnit& i_unit );
     CUnit unit() const { return m_unit; }
 public: // instance methods
@@ -89,7 +87,6 @@ protected slots:
 private: // instance members
     QHBoxLayout*    m_pLyt;
     CDoubleSpinBox* m_pEdt;
-    CUnitGrp        m_unitGrp;
     CUnit           m_unit;
     CPhysVal        m_physValOld;
     CPhysVal        m_physValMin;

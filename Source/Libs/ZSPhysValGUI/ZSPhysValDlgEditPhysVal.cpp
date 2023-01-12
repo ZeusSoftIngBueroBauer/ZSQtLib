@@ -43,7 +43,9 @@ may result in using the software modules.
 #endif
 
 #include "ZSPhysValGUI/ZSPhysValDlgEditPhysVal.h"
-#include "ZSPhysVal/ZSPhysSize.h"
+#include "ZSPhysVal/ZSPhysUnitsIdxTree.h"
+#include "ZSPhysVal/ZSPhysTreeEntryGrpPhysUnits.h"
+#include "ZSPhysVal/ZSPhysTreeEntryPhysUnit.h"
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysException.h"
 
@@ -73,8 +75,7 @@ CDlgEditPhysVal::CDlgEditPhysVal(
 //------------------------------------------------------------------------------
     QDialog(i_pWdgtParent),
     m_physValOld(i_physVal),
-    m_physSize(i_physVal.physSize()),
-    m_physUnit(i_physVal.physUnit()),
+    m_unit(i_physVal.unit()),
     m_fMin(i_fMin),
     m_fMax(i_fMax),
     m_iDecimals(i_iDecimals),
@@ -106,18 +107,18 @@ CDlgEditPhysVal::CDlgEditPhysVal(
     // Unit Combo
     //-----------
 
-    if( m_physSize.isValid() && m_physUnit.isValid() && m_physSize.count() > 0 )
-    {
-        int idxUnit;
+    CUnitsTreeEntryGrpPhysUnits* pPhysSize = CIdxTreeUnits::GetInstance()->findPhysUnitsGroup(m_unit.groupPath());
 
+    if( pPhysSize != nullptr && pPhysSize->count() > 0 )
+    {
         m_pCmbUnit = new QComboBox();
         m_pLytLine->addWidget(m_pCmbUnit);
 
-        for( idxUnit = 0; idxUnit < static_cast<int>(m_physSize.count()); idxUnit++ )
+        for( int idxUnit = 0; idxUnit < pPhysSize->count(); idxUnit++ )
         {
-            m_pCmbUnit->addItem(m_physSize.getPhysUnit(idxUnit).symbol());
+            m_pCmbUnit->addItem(pPhysSize->getPhysUnit(idxUnit)->symbol());
         }
-        m_pCmbUnit->setCurrentIndex( m_pCmbUnit->findText(m_physUnit.symbol()) );
+        m_pCmbUnit->setCurrentIndex( m_pCmbUnit->findText(pPhysSize->getSIUnitName()) );
 
         if( !connect(
             /* pObjSender   */ m_pCmbUnit,
@@ -203,15 +204,15 @@ public: // instance methods
 CPhysVal CDlgEditPhysVal::value() const
 //------------------------------------------------------------------------------
 {
-    CPhysVal  physVal = m_physValOld;
+    CPhysVal physVal = m_physValOld;
 
-    QString   strSymbol = m_pCmbUnit->currentText();
-    CPhysUnit physUnit = m_physSize.findPhysUnitBySymbol(strSymbol);
-    double    fVal = m_pEdtVal->text().toDouble();
+    QString strSymbol = m_pCmbUnit->currentText();
+    CUnit   unit(strSymbol);
+    double  fVal = m_pEdtVal->text().toDouble();
 
-    if( physUnit.isValid() )
+    if( unit.isValid() )
     {
-        physVal = CPhysVal(fVal, physUnit);
+        physVal = CPhysVal(fVal, unit);
     }
     return physVal;
 }
@@ -242,20 +243,20 @@ protected slots:
 void CDlgEditPhysVal::onDlgBtnResetClicked()
 //------------------------------------------------------------------------------
 {
-} // onDlgBtnResetClicked
+}
 
 //------------------------------------------------------------------------------
 void CDlgEditPhysVal::onCmbUnitActivated( int /*i_idx*/ )
 //------------------------------------------------------------------------------
 {
-    QString   strSymbol = m_pCmbUnit->currentText();
-    CPhysUnit physUnit = m_physSize.findPhysUnitBySymbol(strSymbol);
-    double    fVal = m_pEdtVal->text().toDouble();
+    QString strSymbol = m_pCmbUnit->currentText();
+    CUnit   unit(strSymbol);
+    double  fVal = m_pEdtVal->text().toDouble();
 
-    if( physUnit.isValid() && physUnit != m_physUnit )
+    if( unit.isValid() && unit != m_unit )
     {
-        fVal = CPhysVal(fVal, m_physUnit).getVal(physUnit);
-        m_physUnit = physUnit;
+        fVal = CPhysVal(fVal, m_unit).getVal(unit);
+        m_unit = unit;
         m_pEdtVal->setText( QString::number(fVal) );
     }
 }
