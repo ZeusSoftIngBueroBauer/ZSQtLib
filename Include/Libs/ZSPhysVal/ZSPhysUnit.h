@@ -39,14 +39,12 @@ class CIdxTreeEntry;
 namespace PhysVal
 {
 class CUnit;
-class CUnitsTreeEntryGrpRatios;
-class CUnitsTreeEntryGrpDataQuantities;
+class CUnitsTreeEntryGrpBase;
 class CUnitsTreeEntryGrpPhysUnits;
 class CUnitsTreeEntryUnitBase;
 class CUnitsTreeEntryUnitRatio;
 class CUnitsTreeEntryUnitQuantity;
 class CUnitsTreeEntryPhysUnit;
-//class CUnitsTreeEntryUserDefinedQuantity;
 
 /*******************************************************************************
 Exported methods
@@ -68,6 +66,10 @@ public: // ctors and dtor
     CUnit(const CUnit* i_pUnit);
     CUnit(CUnit& i_unit);
     CUnit(const CUnit& i_unit);
+    CUnit(CUnitsTreeEntryGrpBase* i_pGrpEntry);
+    CUnit(const CUnitsTreeEntryGrpBase* i_pGrpEntry);
+    CUnit(CUnitsTreeEntryGrpBase& i_grpEntry);
+    CUnit(const CUnitsTreeEntryGrpBase& i_grpEntry);
     CUnit(CUnitsTreeEntryGrpPhysUnits* i_pGrpEntry);
     CUnit(const CUnitsTreeEntryGrpPhysUnits* i_pGrpEntry);
     CUnit(CUnitsTreeEntryGrpPhysUnits& i_grpEntry);

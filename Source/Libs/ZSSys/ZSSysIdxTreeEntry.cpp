@@ -165,6 +165,7 @@ CIdxTreeEntry::CIdxTreeEntry(
     m_pTree(nullptr),
     m_strKeyInTree(),
     m_idxInTree(-1),
+    m_strlstShortcuts(),
     m_pParentBranch(nullptr),
     m_strKeyInParentBranch(),
     m_idxInParentBranch(-1),
@@ -192,6 +193,7 @@ CIdxTreeEntry::CIdxTreeEntry( const CIdxTreeEntry& i_other ) :
     m_pTree(nullptr),
     m_strKeyInTree(),
     m_idxInTree(-1),
+    m_strlstShortcuts(),
     m_pParentBranch(nullptr),
     m_strKeyInParentBranch(),
     m_idxInParentBranch(-1),
@@ -228,6 +230,7 @@ CIdxTreeEntry::~CIdxTreeEntry()
     m_pTree = nullptr;
     //m_strKeyInTree.clear();
     m_idxInTree = 0;
+    m_strlstShortcuts.clear();
     m_pParentBranch = nullptr;
     //m_strKeyInParentBranch.clear();
     m_idxInParentBranch = 0;
@@ -1258,8 +1261,48 @@ void CIdxTreeEntry::setIndexInParentBranch( int i_idx )
 }
 
 /*=============================================================================
-protected: // overridables
+protected: // instance methods
 =============================================================================*/
+
+//-----------------------------------------------------------------------------
+/*! @brief Adds the given unique name to the list of shortcuts.
+
+    Shortcuts to tree entries can only be added by invoking the
+    "addShortcut" method of the index tree class.
+    To remove the shortcuts again if the tree entry is removed from
+    the index tree the shortcuts are saved in the tree entry.
+    Only the index tree may invoke the "addShortcut" methof the
+    tree entries.
+
+    @param i_strUniqueName [in]
+        Unique name as a shortcut in the index tree to this entry.
+*/
+void CIdxTreeEntry::addShortcut( const QString& i_strUniqueName )
+//-----------------------------------------------------------------------------
+{
+    m_strlstShortcuts.append(i_strUniqueName);
+}
+
+//-----------------------------------------------------------------------------
+/*! @brief Removes the given unique name to the list of shortcuts.
+
+    Shortcuts to tree entries can only be removed by invoking the
+    "removeShortcut" method of the index tree class or if tree entries
+    are removed from the index tree.
+
+    To remove the shortcuts again if the tree entry is removed from
+    the index tree the shortcuts are saved in the tree entry.
+    Only the index tree may invoke the "removeShortcut" method the
+    tree entries.
+
+    @param i_strUniqueName [in]
+        Unique name as a shortcut in the index tree to this entry.
+*/
+void CIdxTreeEntry::removeShortcut( const QString& i_strUniqueName )
+//-----------------------------------------------------------------------------
+{
+    m_strlstShortcuts.removeOne(i_strUniqueName);
+}
 
 //-----------------------------------------------------------------------------
 /*! Sets the index tree the entry belongs to.

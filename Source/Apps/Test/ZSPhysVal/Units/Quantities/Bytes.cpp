@@ -25,7 +25,8 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "Units/Quantities/Bytes.h"
-
+#include "ZSPhysVal/ZSPhysTreeEntryGrpScienceField.h"
+#include "ZSPhysVal/ZSPhysUnitsIdxTree.h"
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 using namespace ZS::PhysVal;
@@ -75,6 +76,13 @@ CUnitsQuantitiesBytes::CUnitsQuantitiesBytes(CIdxTreeEntry* i_pParentBranch) :
     MB(m_treeEntryMegaByte),
     GB(m_treeEntryGigaByte)
 {
+    // To allow "short" unit strings like "Bytes.kB" we add a shortcut to this phyiscal size.
+    i_pParentBranch->tree()->addShortcut(this, "Bytes");
+
+    // To allow "short" unit strings like "MB" we add shortcuts to each unit.
+    i_pParentBranch->tree()->addShortcut(&m_treeEntryKiloByte, "kB");
+    i_pParentBranch->tree()->addShortcut(&m_treeEntryMegaByte, "MB");
+    i_pParentBranch->tree()->addShortcut(&m_treeEntryGigaByte, "GB");
 }
 
 //------------------------------------------------------------------------------

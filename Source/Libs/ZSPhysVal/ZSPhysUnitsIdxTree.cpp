@@ -29,6 +29,7 @@ may result in using the software modules.
 #include "ZSPhysVal/ZSPhysTreeEntryGrpPhysUnits.h"
 #include "ZSPhysVal/ZSPhysTreeEntryPhysUnit.h"
 #include "ZSPhysVal/ZSPhysTreeEntryUnitRatio.h"
+#include "ZSPhysVal/ZSPhysTreeEntryUnitQuantity.h"
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
@@ -245,27 +246,48 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CUnitsTreeEntryGrpScienceField* CIdxTreeUnits::findPhysScienceField( const QString& i_strUniqueName )
-//------------------------------------------------------------------------------
-{
-    return dynamic_cast<CUnitsTreeEntryGrpScienceField*>(findEntry(i_strUniqueName));
-}
+/*! @brief Tries to find the unit group entry by the given unique name.
 
-//------------------------------------------------------------------------------
+    Units are added as childs to group nodes in the index tree.
+    in case of phyiscal units the parent node is a physical size node
+    (group with physical units only).
+    In case of ratio and quantity unit the parent is a unit group just containing
+    either ratio or quantity units.
+
+    @param i_strUniqueName Unique name of the group.
+        The unique name may be either the key of the unit group starting
+        - (optional) with the type of the entry ("B" for branches)
+        - followed by the path to the units group entry.
+        Examples:
+            "L:Electricity.Power"
+
+    @return Pointer to units group entry or nullptr, if the node has not been found.
+*/
 CUnitsTreeEntryGrpBase* CIdxTreeUnits::findUnitGrp( const QString& i_strUniqueName )
 //------------------------------------------------------------------------------
 {
-    return dynamic_cast<CUnitsTreeEntryGrpBase*>(findEntry(i_strUniqueName));
+    return dynamic_cast<CUnitsTreeEntryGrpBase*>(findBranch(i_strUniqueName));
 }
 
 //------------------------------------------------------------------------------
-/*! @brief
-    Same as "findUnitGrp" but with implicit type cast.
+/*! @brief Same as "findUnitGrp" but with implicit type cast.
+
+    A physical science field node don't contain units but groups with physical
+    unit and servers as a parent to group the physical science group nodes.
+*/
+CUnitsTreeEntryGrpScienceField* CIdxTreeUnits::findPhysScienceField( const QString& i_strUniqueName )
+//------------------------------------------------------------------------------
+{
+    return dynamic_cast<CUnitsTreeEntryGrpScienceField*>(findBranch(i_strUniqueName));
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Same as "findUnitGrp" but with implicit type cast.
 */
 CUnitsTreeEntryGrpPhysUnits* CIdxTreeUnits::findPhysUnitsGroup( const QString& i_strUniqueName )
 //------------------------------------------------------------------------------
 {
-    return dynamic_cast<CUnitsTreeEntryGrpPhysUnits*>(findEntry(i_strUniqueName));
+    return dynamic_cast<CUnitsTreeEntryGrpPhysUnits*>(findBranch(i_strUniqueName));
 }
 
 /*==============================================================================
@@ -273,57 +295,110 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Tries to find the unit tree entry by the given unique unit name.
+
+    @param i_strUniqueName Unique name of the unit.
+        The unique name may be either the key of the unit starting
+        - (optional) with the type of the entry ("L" for Leaves)
+        - followed by the path to the units group entry (the path to the parent node)
+        - and terminated by the name of the unit which may be the name of the unit,
+          the units symbol or just the factor prefix (e.g. "k").
+        Examples:
+            "L:Electricity.Power.KiloWatt"
+            "Electricity.Power.kW"
+            "Electricity.Power.k"
+
+    @return Pointer to unit entry or nullptr, if the node has not been found.
+*/
 CUnitsTreeEntryUnitBase* CIdxTreeUnits::findUnit( const QString& i_strUniqueName )
 //------------------------------------------------------------------------------
 {
-    return dynamic_cast<CUnitsTreeEntryUnitBase*>(findEntry(i_strUniqueName));
+    return dynamic_cast<CUnitsTreeEntryUnitBase*>(findLeave(i_strUniqueName));
 }
 
 //------------------------------------------------------------------------------
-CUnitsTreeEntryUnitBase* CIdxTreeUnits::findUnit( const QString& i_strGrpPath, const QString& i_strUnitName )
+/*! @brief Tries to find the unit tree entry.
+
+    The method tries to find the entry using the given group path and unit name.
+    The unit name may be either the name of the unit, the symbol or - in case of
+    physical units - the factor prefix.
+
+    @param i_strGrpPath Path of the parent node of the unit.
+        For physical units this is the path to the physical size
+        (e.g. "Kinematics.Electricity.Power").
+    @param i_strSymbolOrName Name of the unit to be searched for.
+        The name may be either the name of the unit (e.g. "KiloWatt"), the
+        symbol of the unit (e.g. "kW") or just the factor prefix (e.g. "k").
+
+    @return Pointer to unit entry or nullptr, if the node has not been found.
+*/
+CUnitsTreeEntryUnitBase* CIdxTreeUnits::findUnit(
+    const QString& i_strGrpPath, const QString& i_strSymbolOrName )
 //------------------------------------------------------------------------------
 {
-    return dynamic_cast<CUnitsTreeEntryUnitBase*>(findLeave(i_strGrpPath, i_strUnitName));
+    CUnitsTreeEntryUnitBase* pUnit = nullptr;
+    CUnitsTreeEntryGrpBase* pGrp = dynamic_cast<CUnitsTreeEntryGrpBase*>(findBranch(i_strGrpPath));
+    if( pGrp != nullptr ) {
+        pUnit = pGrp->findUnit(i_strSymbolOrName);
+    }
+    return pUnit;
 }
 
 //------------------------------------------------------------------------------
-/*! @brief
-    Same as "findUnit" but with implicit type cast
+/*! @brief Same as "findUnit" but with implicit type cast.
 */
 CUnitsTreeEntryPhysUnit* CIdxTreeUnits::findPhysUnit( const QString& i_strUniqueName )
 //------------------------------------------------------------------------------
 {
-    return dynamic_cast<CUnitsTreeEntryPhysUnit*>(findEntry(i_strUniqueName));
+    return dynamic_cast<CUnitsTreeEntryPhysUnit*>(findUnit(i_strUniqueName));
 }
 
 //------------------------------------------------------------------------------
-/*! @brief
-    Same as "findUnit" but with implicit type cast
+/*! @brief Same as "findUnit" but with implicit type cast.
 */
-CUnitsTreeEntryPhysUnit* CIdxTreeUnits::findPhysUnit( const QString& i_strGrpPath, const QString& i_strUnitName )
+CUnitsTreeEntryPhysUnit* CIdxTreeUnits::findPhysUnit(
+    const QString& i_strGrpPath, const QString& i_strSymbolOrName )
 //------------------------------------------------------------------------------
 {
-    return dynamic_cast<CUnitsTreeEntryPhysUnit*>(findLeave(i_strGrpPath, i_strUnitName));
+    return dynamic_cast<CUnitsTreeEntryPhysUnit*>(findUnit(i_strGrpPath, i_strSymbolOrName));
 }
 
 //------------------------------------------------------------------------------
-/*! @brief
-    Same as "findUnit" but with implicit type cast
+/*! @brief Same as "findUnit" but with implicit type cast.
 */
-CUnitsTreeEntryUnitRatio* CIdxTreeUnits::findRatio( const QString& i_strUniqueName )
+CUnitsTreeEntryUnitRatio* CIdxTreeUnits::findUnitRatio( const QString& i_strUniqueName )
 //------------------------------------------------------------------------------
 {
-    return dynamic_cast<CUnitsTreeEntryUnitRatio*>(findEntry(i_strUniqueName));
+    return dynamic_cast<CUnitsTreeEntryUnitRatio*>(findUnit(i_strUniqueName));
 }
 
 //------------------------------------------------------------------------------
-/*! @brief
-    Same as "findUnit" but with implicit type cast
+/*! @brief Same as "findUnit" but with implicit type cast.
 */
-CUnitsTreeEntryUnitRatio* CIdxTreeUnits::findRatio( const QString& i_strGrpPath, const QString& i_strUnitName )
+CUnitsTreeEntryUnitRatio* CIdxTreeUnits::findUnitRatio(
+    const QString& i_strGrpPath, const QString& i_strSymbolOrName )
 //------------------------------------------------------------------------------
 {
-    return dynamic_cast<CUnitsTreeEntryUnitRatio*>(findLeave(i_strGrpPath, i_strUnitName));
+    return dynamic_cast<CUnitsTreeEntryUnitRatio*>(findUnit(i_strGrpPath, i_strSymbolOrName));
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Same as "findUnit" but with implicit type cast.
+*/
+CUnitsTreeEntryUnitQuantity* CIdxTreeUnits::findUnitQuantity( const QString& i_strUniqueName )
+//------------------------------------------------------------------------------
+{
+    return dynamic_cast<CUnitsTreeEntryUnitQuantity*>(findUnit(i_strUniqueName));
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Same as "findUnit" but with implicit type cast.
+*/
+CUnitsTreeEntryUnitQuantity* CIdxTreeUnits::findUnitQuantity(
+    const QString& i_strGrpPath, const QString& i_strSymbolOrName )
+//------------------------------------------------------------------------------
+{
+    return dynamic_cast<CUnitsTreeEntryUnitQuantity*>(findUnit(i_strGrpPath, i_strSymbolOrName));
 }
 
 /*==============================================================================
@@ -334,7 +409,7 @@ protected: // instance methods
 /*! Returns the number of active references to this instance.
     If the count reaches 0 the instance has to be deleted.
 
-    /return Number of active references.
+    @return Number of active references.
 */
 //------------------------------------------------------------------------------
 int CIdxTreeUnits::getRefCount() const
@@ -345,7 +420,7 @@ int CIdxTreeUnits::getRefCount() const
 //------------------------------------------------------------------------------
 /*! Increments the number of active reference to this instance.
 
-    /return Number of active references after increment.
+    @return Number of active references after increment.
 */
 //------------------------------------------------------------------------------
 int CIdxTreeUnits::incrementRefCount()
@@ -357,7 +432,7 @@ int CIdxTreeUnits::incrementRefCount()
 /*! Decrements the number of active reference to this instance.
     If the count reaches 0 the instance has to be deleted.
 
-    /return Number of active references after decrement.
+    @return Number of active references after decrement.
 */
 //------------------------------------------------------------------------------
 int CIdxTreeUnits::decrementRefCount()

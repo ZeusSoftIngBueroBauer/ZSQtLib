@@ -721,6 +721,25 @@ void CModelIdxTree::setIdxTree( QObject* i_pIdxTree )
 
             setObjectName(m_pIdxTree->objectName());
 
+            if( m_pIdxTree->root() != nullptr )
+            {
+                _beginInsertRows(QModelIndex(), 0, 0);
+
+                m_pModelRootEntry = new CModelIdxTreeEntry(m_pIdxTree->root());
+
+                // The root entry will neither be added to the list nor to the map of tree entries.
+                m_pModelRootEntry->setIndexInParentBranch(0);
+                m_pModelRootEntry->setSortOrder(m_sortOrder);
+
+                _endInsertRows();
+
+                for( int idxEntry = 0; idxEntry < m_pIdxTree->root()->size(); ++idxEntry )
+                {
+                    CIdxTreeEntry* pTreeEntry = m_pIdxTree->root()->at(idxEntry);
+                    onIdxTreeEntryAdded(pTreeEntry->keyInTree());
+                }
+            } // if( m_pIdxTree->root() != nullptr )
+
             QObject::connect(
                 m_pIdxTree, &CIdxTree::aboutToBeDestroyed,
                 this, &CModelIdxTree::onIdxTreeAboutToBeDestroyed);
@@ -740,24 +759,6 @@ void CModelIdxTree::setIdxTree( QObject* i_pIdxTree )
                 m_pIdxTree, &CIdxTree::treeEntryKeyInTreeChanged,
                 this, &CModelIdxTree::onIdxTreeEntryKeyInTreeChanged);
 
-            if( m_pIdxTree->root() != nullptr )
-            {
-                _beginInsertRows(QModelIndex(), 0, 0);
-
-                m_pModelRootEntry = new CModelIdxTreeEntry(m_pIdxTree->root());
-
-                // The root entry will neither be added to the list nor to the map of tree entries.
-                m_pModelRootEntry->setIndexInParentBranch(0);
-                m_pModelRootEntry->setSortOrder(m_sortOrder);
-
-                _endInsertRows();
-
-                for( int idxEntry = 0; idxEntry < m_pIdxTree->root()->size(); ++idxEntry )
-                {
-                    CIdxTreeEntry* pTreeEntry = m_pIdxTree->root()->at(idxEntry);
-                    onIdxTreeEntryAdded(pTreeEntry->keyInTree());
-                }
-            } // if( m_pIdxTree->root() != nullptr )
         } // if( m_pIdxTree != nullptr )
 
         emit idxTreeChanged(m_pIdxTree);

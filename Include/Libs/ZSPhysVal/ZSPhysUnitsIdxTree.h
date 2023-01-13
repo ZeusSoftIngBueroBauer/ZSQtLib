@@ -44,6 +44,7 @@ class CUnitsTreeEntryGrpPhysUnits;
 class CUnitsTreeEntryUnitBase;
 class CUnitsTreeEntryPhysUnit;
 class CUnitsTreeEntryUnitRatio;
+class CUnitsTreeEntryUnitQuantity;
 
 //******************************************************************************
 class ZSPHYSVALDLL_API CIdxTreeUnits : public ZS::System::CIdxTree
@@ -63,23 +64,18 @@ public: // instance methods
     virtual QString nameSpace() const { return NameSpace(); }
     virtual QString className() const { return ClassName(); }
 public: // instance methods
-    //CUnitGrp* getUnitClassTypeGroup( EUnitClassType i_classType );
-    //CUnitGrp* getPhysScienceFieldUnitGroup( EPhysScienceField i_scienceField );
-public: // instance methods
-    CUnitsTreeEntryGrpScienceField* findPhysScienceField( const QString& i_strUniqueName );
     CUnitsTreeEntryGrpBase* findUnitGrp( const QString& i_strUniqueName );
+    CUnitsTreeEntryGrpScienceField* findPhysScienceField( const QString& i_strUniqueName );
     CUnitsTreeEntryGrpPhysUnits* findPhysUnitsGroup( const QString& i_strUniqueName );
-    //CUnitsTreeEntryGrpRatios* findRatiosGroup( const QString& i_strUniqueName );
-    //CUnitsTreeEntryGrpDataQuantities* findDataQuantitiesGroup( const QString& i_strUniqueName );
 public: // instance methods
     CUnitsTreeEntryUnitBase* findUnit( const QString& i_strUniqueName );
-    CUnitsTreeEntryUnitBase* findUnit( const QString& i_strGrpPath, const QString& i_strUnitName );
+    CUnitsTreeEntryUnitBase* findUnit( const QString& i_strGrpPath, const QString& i_strSymbolOrName );
     CUnitsTreeEntryPhysUnit* findPhysUnit( const QString& i_strUniqueName );
-    CUnitsTreeEntryPhysUnit* findPhysUnit( const QString& i_strGrpPath, const QString& i_strUnitName );
-    CUnitsTreeEntryUnitRatio* findRatio( const QString& i_strUniqueName );
-    CUnitsTreeEntryUnitRatio* findRatio( const QString& i_strGrpPath, const QString& i_strUnitName );
-    //CUnitsTreeEntryDataQuantity* findDataQuantity( const QString& i_strUniqueName );
-    //CUnitsTreeEntryDataQuantity* findDataQuantity( const QString& i_strGrpPath, const QString& i_strUnitName );
+    CUnitsTreeEntryPhysUnit* findPhysUnit( const QString& i_strGrpPath, const QString& i_strSymbolOrName );
+    CUnitsTreeEntryUnitRatio* findUnitRatio( const QString& i_strUniqueName );
+    CUnitsTreeEntryUnitRatio* findUnitRatio( const QString& i_strGrpPath, const QString& i_strSymbolOrName );
+    CUnitsTreeEntryUnitQuantity* findUnitQuantity( const QString& i_strUniqueName );
+    CUnitsTreeEntryUnitQuantity* findUnitQuantity( const QString& i_strGrpPath, const QString& i_strSymbolOrName );
 protected: // reference counter
     int getRefCount() const;
     int incrementRefCount();

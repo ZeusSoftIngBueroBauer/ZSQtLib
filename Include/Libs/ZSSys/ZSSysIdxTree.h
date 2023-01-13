@@ -298,6 +298,10 @@ public: // instance methods
 public: // instance methods
     void rename( const QString& i_strSourcePath, const QString& i_strNameNew );
     void rename( CIdxTreeEntry* i_pTreeEntry, const QString& i_strNameNew );
+public: // instance methods
+    SErrResultInfo canAddShortcut( const QString& i_strUniqueName ) const;
+    void addShortcut( CIdxTreeEntry* i_pTreeEntry, const QString& i_strUniqueName );
+    SErrResultInfo removeShortcut( const QString& i_strUniqueName );
 protected: // instance methods
     void updateKeyInTree( CIdxTreeEntry* i_pTreeEntry );
 protected: // instance methods
@@ -346,6 +350,8 @@ protected: // instance members
     QVector<CIdxTreeEntry*> m_arpTreeEntries;
     /*!< Map with free indices in the vector of entries. */
     QMap<int, int> m_mapFreeIdxs;
+    /*!< Map with pointers to tree entry for which a unique name as a shortcut has been added. */
+    QMap<QString, CIdxTreeEntry*> m_mappShortcutTreeEntries;
     /*!< Pointer to root entry. */
     CIdxTreeEntry* m_pRoot;
     /*!< Trace detail level for method tracing.

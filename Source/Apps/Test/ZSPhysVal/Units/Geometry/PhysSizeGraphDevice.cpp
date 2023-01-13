@@ -25,6 +25,8 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "Units/Geometry/PhysSizeGraphDevice.h"
+#include "ZSPhysVal/ZSPhysTreeEntryGrpScienceField.h"
+#include "ZSPhysVal/ZSPhysUnitsIdxTree.h"
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 using namespace ZS::PhysVal;
@@ -60,9 +62,13 @@ CPhysSizeGraphDevice::CPhysSizeGraphDevice( CUnitsTreeEntryGrpScienceField* i_pP
     initialize(true);
 
     // Link the units to a chained list for the "findBestUnit" functionality:
-    //======================================================================
-
     // Just one unit and therefore nothing to chain.
+
+    // To allow "short" unit strings like "GraphDevice.px" we add a shortcut to this phyiscal size.
+    i_pParentBranch->tree()->addShortcut(this, "GraphDevice");
+
+    // To allow "short" unit strings like "px" we add shortcuts to each unit.
+    i_pParentBranch->tree()->addShortcut(&m_treeEntryPixel, "px");
 
 } // ctor
 

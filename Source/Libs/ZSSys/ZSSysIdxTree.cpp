@@ -289,6 +289,7 @@ CIdxTree::CIdxTree(
     m_mappTreeEntries(),
     m_arpTreeEntries(),
     m_mapFreeIdxs(),
+    m_mappShortcutTreeEntries(),
     m_pRoot(i_pRootTreeEntry),
     m_eTrcMthFileDetailLevel(i_eTrcDetailLevel),
     m_pTrcMthFile(nullptr),
@@ -426,6 +427,7 @@ CIdxTree::~CIdxTree()
     m_mappTreeEntries.clear();
     m_arpTreeEntries.clear();
     m_mapFreeIdxs.clear();
+    m_mappShortcutTreeEntries.clear();
     m_pRoot = nullptr;
     m_eTrcMthFileDetailLevel = static_cast<EMethodTraceDetailLevel>(0);
     m_pTrcMthFile = nullptr;
@@ -1042,16 +1044,65 @@ CIdxTreeEntry* CIdxTree::findBranch( const QString& i_strPath ) const
         /* strMethodInArgs    */ "" );
 
     QString strEntryType = idxTreeEntryType2Str(EIdxTreeEntryType::Branch, EEnumEntryAliasStrSymbol);
-    QString strKeyInTree = i_strPath;
+    QString strPath;
+    QString strKeyInTree;
 
-    if( !strKeyInTree.startsWith(strEntryType + ":") )
+    if( i_strPath.startsWith(strEntryType + ":") )
     {
-        strKeyInTree.insert(0, strEntryType + ":");
+        strKeyInTree = i_strPath;
+        strPath = strKeyInTree.mid(strEntryType.length() + 1);
+    }
+    else
+    {
+        strKeyInTree = strEntryType + ":" + i_strPath;
+        strPath = i_strPath;
     }
 
     CMutexLocker mtxLocker(m_pMtx);
 
-    return m_mappTreeEntries.value(strKeyInTree, nullptr);
+    CIdxTreeEntry* pTreeEntry = nullptr;
+
+    if( m_mappShortcutTreeEntries.contains(strPath) )
+    {
+        pTreeEntry = m_mappShortcutTreeEntries.value(strPath, nullptr);
+    }
+    else
+    {
+        pTreeEntry = m_mappTreeEntries.value(strKeyInTree, nullptr);
+    }
+
+    // Still not found? Maybe shortcuts have been added to starting
+    // sections of the given path.
+    if( pTreeEntry == nullptr && !m_mappShortcutTreeEntries.isEmpty() )
+    {
+        QStringList strlstPathSections = strPath.split(m_strNodeSeparator);
+        QString strPathTmp;
+        QString strPathRemaining;
+        for( const QString& strSection : strlstPathSections )
+        {
+            if( strPathTmp.isEmpty() ) {
+                strPathTmp = strSection;
+            } else {
+                strPathTmp += m_strNodeSeparator + strSection;
+            }
+            if( pTreeEntry == nullptr ) {
+                pTreeEntry = m_mappShortcutTreeEntries.value(strPathTmp, nullptr);
+            } else {
+                strPathRemaining += m_strNodeSeparator + strSection;
+            }
+        }
+        if( pTreeEntry != nullptr )
+        {
+            strKeyInTree = strEntryType + ":" + pTreeEntry->path() + strPathRemaining;
+            pTreeEntry = m_mappTreeEntries.value(strKeyInTree, nullptr);
+        }
+    }
+
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        mthTracer.setMethodReturn(pTreeEntry == nullptr ? "null" : pTreeEntry->keyInTree());
+    }
+
+    return pTreeEntry;
 
 } // findBranch
 
@@ -1081,24 +1132,70 @@ CIdxTreeEntry* CIdxTree::findBranch( const QString& i_strParentPath, const QStri
         /* strMethodInArgs    */ "" );
 
     QString strEntryType = idxTreeEntryType2Str(EIdxTreeEntryType::Branch, EEnumEntryAliasStrSymbol);
-    QString strKeyInTree = i_strParentPath;
+    QString strPath;
+    QString strKeyInTree;
 
     if( i_strParentPath.isEmpty() )
     {
-        strKeyInTree = strEntryType + ":" + i_strBranchName;
+        strPath = i_strBranchName;
+        strKeyInTree = strEntryType + ":" + strPath;
     }
-    else if( i_strParentPath.startsWith(strKeyInTree + ":") )
+    else if( i_strParentPath.startsWith(strEntryType + ":") )
     {
         strKeyInTree = i_strParentPath + m_strNodeSeparator + i_strBranchName;
+        strPath = strKeyInTree.mid(strEntryType.length() + 1);
     }
     else
     {
-        strKeyInTree = strEntryType + ":" + i_strParentPath + m_strNodeSeparator + i_strBranchName;
+        strPath = i_strParentPath + m_strNodeSeparator + i_strBranchName;
+        strKeyInTree = strEntryType + ":" + strPath;
     }
 
     CMutexLocker mtxLocker(m_pMtx);
 
-    return m_mappTreeEntries.value(strKeyInTree, nullptr);
+    CIdxTreeEntry* pTreeEntry = nullptr;
+
+    if( m_mappShortcutTreeEntries.contains(strPath) )
+    {
+        pTreeEntry = m_mappShortcutTreeEntries.value(strPath, nullptr);
+    }
+    else
+    {
+        pTreeEntry = m_mappTreeEntries.value(strKeyInTree, nullptr);
+    }
+
+    // Still not found? Maybe shortcuts have been added to starting
+    // sections of the given path.
+    if( pTreeEntry == nullptr && !m_mappShortcutTreeEntries.isEmpty() )
+    {
+        QStringList strlstPathSections = strPath.split(m_strNodeSeparator);
+        QString strPathTmp;
+        QString strPathRemaining;
+        for( const QString& strSection : strlstPathSections )
+        {
+            if( strPathTmp.isEmpty() ) {
+                strPathTmp = strSection;
+            } else {
+                strPathTmp += m_strNodeSeparator + strSection;
+            }
+            if( pTreeEntry == nullptr ) {
+                pTreeEntry = m_mappShortcutTreeEntries.value(strPathTmp, nullptr);
+            } else {
+                strPathRemaining += m_strNodeSeparator + strSection;
+            }
+        }
+        if( pTreeEntry != nullptr )
+        {
+            strKeyInTree = strEntryType + ":" + pTreeEntry->path() + strPathRemaining;
+            pTreeEntry = m_mappTreeEntries.value(strKeyInTree, nullptr);
+        }
+    }
+
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        mthTracer.setMethodReturn(pTreeEntry == nullptr ? "null" : pTreeEntry->keyInTree());
+    }
+
+    return pTreeEntry;
 
 } // findBranch
 
@@ -1127,16 +1224,65 @@ CIdxTreeEntry* CIdxTree::findLeave( const QString& i_strPath ) const
         /* strMethodInArgs    */ "" );
 
     QString strEntryType = idxTreeEntryType2Str(EIdxTreeEntryType::Leave, EEnumEntryAliasStrSymbol);
-    QString strKeyInTree = i_strPath;
+    QString strPath;
+    QString strKeyInTree;
 
-    if( !strKeyInTree.startsWith(strEntryType + ":") )
+    if( i_strPath.startsWith(strEntryType + ":") )
     {
-        strKeyInTree.insert(0, strEntryType + ":");
+        strKeyInTree = i_strPath;
+        strPath = strKeyInTree.mid(strEntryType.length() + 1);
+    }
+    else
+    {
+        strKeyInTree = strEntryType + ":" + i_strPath;
+        strPath = i_strPath;
     }
 
     CMutexLocker mtxLocker(m_pMtx);
 
-    return m_mappTreeEntries.value(strKeyInTree, nullptr);
+    CIdxTreeEntry* pTreeEntry = nullptr;
+
+    if( m_mappShortcutTreeEntries.contains(i_strPath) )
+    {
+        pTreeEntry = m_mappShortcutTreeEntries.value(i_strPath, nullptr);
+    }
+    else
+    {
+        pTreeEntry = m_mappTreeEntries.value(strKeyInTree, nullptr);
+    }
+
+    // Still not found? Maybe shortcuts have been added to starting
+    // sections of the given path.
+    if( pTreeEntry == nullptr && !m_mappShortcutTreeEntries.isEmpty() )
+    {
+        QStringList strlstPathSections = strPath.split(m_strNodeSeparator);
+        QString strPathTmp;
+        QString strPathRemaining;
+        for( const QString& strSection : strlstPathSections )
+        {
+            if( strPathTmp.isEmpty() ) {
+                strPathTmp = strSection;
+            } else {
+                strPathTmp += m_strNodeSeparator + strSection;
+            }
+            if( pTreeEntry == nullptr ) {
+                pTreeEntry = m_mappShortcutTreeEntries.value(strPathTmp, nullptr);
+            } else {
+                strPathRemaining += m_strNodeSeparator + strSection;
+            }
+        }
+        if( pTreeEntry != nullptr )
+        {
+            strKeyInTree = strEntryType + ":" + pTreeEntry->path() + strPathRemaining;
+            pTreeEntry = m_mappTreeEntries.value(strKeyInTree, nullptr);
+        }
+    }
+
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        mthTracer.setMethodReturn(pTreeEntry == nullptr ? "null" : pTreeEntry->keyInTree());
+    }
+
+    return pTreeEntry;
 
 } // findLeave
 
@@ -1166,24 +1312,70 @@ CIdxTreeEntry* CIdxTree::findLeave( const QString& i_strParentPath, const QStrin
         /* strMethodInArgs    */ "" );
 
     QString strEntryType = idxTreeEntryType2Str(EIdxTreeEntryType::Leave, EEnumEntryAliasStrSymbol);
-    QString strKeyInTree = i_strParentPath;
+    QString strPath;
+    QString strKeyInTree;
 
     if( i_strParentPath.isEmpty() )
     {
-        strKeyInTree = strEntryType + ":" + i_strLeaveName;
+        strPath = i_strLeaveName;
+        strKeyInTree = strEntryType + ":" + strPath;
     }
-    else if( i_strParentPath.startsWith(strKeyInTree + ":") )
+    else if( i_strParentPath.startsWith(strEntryType + ":") )
     {
         strKeyInTree = i_strParentPath + m_strNodeSeparator + i_strLeaveName;
+        strPath = strKeyInTree.mid(strEntryType.length() + 1);
     }
     else
     {
-        strKeyInTree = strEntryType + ":" + i_strParentPath + m_strNodeSeparator + i_strLeaveName;
+        strPath = i_strParentPath + m_strNodeSeparator + i_strLeaveName;
+        strKeyInTree = strEntryType + ":" + strPath;
     }
 
     CMutexLocker mtxLocker(m_pMtx);
 
-    return m_mappTreeEntries.value(strKeyInTree, nullptr);
+    CIdxTreeEntry* pTreeEntry = nullptr;
+
+    if( m_mappShortcutTreeEntries.contains(strPath) )
+    {
+        pTreeEntry = m_mappShortcutTreeEntries.value(strPath, nullptr);
+    }
+    else
+    {
+        pTreeEntry = m_mappTreeEntries.value(strKeyInTree, nullptr);
+    }
+
+    // Still not found? Maybe shortcuts have been added to starting
+    // sections of the given path.
+    if( pTreeEntry == nullptr && !m_mappShortcutTreeEntries.isEmpty() )
+    {
+        QStringList strlstPathSections = strPath.split(m_strNodeSeparator);
+        QString strPathTmp;
+        QString strPathRemaining;
+        for( const QString& strSection : strlstPathSections )
+        {
+            if( strPathTmp.isEmpty() ) {
+                strPathTmp = strSection;
+            } else {
+                strPathTmp += m_strNodeSeparator + strSection;
+            }
+            if( pTreeEntry == nullptr ) {
+                pTreeEntry = m_mappShortcutTreeEntries.value(strPathTmp, nullptr);
+            } else {
+                strPathRemaining += m_strNodeSeparator + strSection;
+            }
+        }
+        if( pTreeEntry != nullptr )
+        {
+            strKeyInTree = strEntryType + ":" + pTreeEntry->path() + strPathRemaining;
+            pTreeEntry = m_mappTreeEntries.value(strKeyInTree, nullptr);
+        }
+    }
+
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        mthTracer.setMethodReturn(pTreeEntry == nullptr ? "null" : pTreeEntry->keyInTree());
+    }
+
+    return pTreeEntry;
 
 } // findLeave
 
@@ -1212,10 +1404,26 @@ CIdxTreeEntry* CIdxTree::findEntry( const QString& i_strKeyInTree ) const
         /* strMethodInArgs    */ "" );
 
     CMutexLocker mtxLocker(m_pMtx);
+
     CIdxTreeEntry* pTreeEntry = m_mappTreeEntries.value(i_strKeyInTree, nullptr);
-    if( pTreeEntry == nullptr && m_pRoot != nullptr && m_pRoot->keyInTree() == i_strKeyInTree )
+
+    if( pTreeEntry == nullptr )
     {
-        pTreeEntry = m_pRoot;
+        if( m_pRoot != nullptr && m_pRoot->keyInTree() == i_strKeyInTree )
+        {
+            pTreeEntry = m_pRoot;
+        }
+        else
+        {
+            QString strEntryType = idxTreeEntryType2Str(EIdxTreeEntryType::Leave, EEnumEntryAliasStrSymbol);
+            QString strPath = i_strKeyInTree;
+
+            if( i_strKeyInTree.startsWith(strEntryType + ":") )
+            {
+                strPath = i_strKeyInTree.mid(strEntryType.length() + 1);
+            }
+            pTreeEntry = m_mappShortcutTreeEntries.value(strPath, nullptr);
+        }
     }
     return pTreeEntry;
 }
@@ -2440,6 +2648,15 @@ void CIdxTree::remove( CIdxTreeEntry* i_pTreeEntry )
         }
 
         m_mappTreeEntries.remove(strKeyInTree);
+
+        for( const QString& strShortcut : i_pTreeEntry->shortcuts() )
+        {
+            if( m_mappShortcutTreeEntries.contains(strShortcut) )
+            {
+                m_mappShortcutTreeEntries.remove(strShortcut);
+            }
+            i_pTreeEntry->removeShortcut(strShortcut);
+        }
 
         if( idxInTree < 0 || idxInTree >= m_arpTreeEntries.size() )
         {
@@ -4061,6 +4278,229 @@ void CIdxTree::rename( CIdxTreeEntry* i_pTreeEntry, const QString& i_strNameNew 
     emit_treeEntryRenamed(i_pTreeEntry->keyInTree(), strKeyInTreePrev, strNamePrev);
 
 } // rename
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! Checks whether the given unique name can be added to the map of shourtcuts.
+
+    If the given shortcut name already exists the method returns en error result.
+
+    @param i_strUniqueName [in] Unique shortcut key.
+
+    @return Error result struct with additional information.
+        - EResultSuccess .. The entry may be added.
+        - EResultObjAlreadyInList (Severtiy: Error) .. There already exists
+            an entry with the given shortcut.
+*/
+SErrResultInfo CIdxTree::canAddShortcut( const QString& i_strUniqueName ) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    {
+        strMthInArgs = i_strUniqueName;
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "canAddShortcut",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    QString strMth = "addShortcut";
+
+    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
+
+    CMutexLocker mtxLocker(m_pMtx);
+
+    if( i_strUniqueName.isEmpty() )
+    {
+        errResultInfo.setSeverity(EResultSeverityError);
+        errResultInfo.setResult(EResultArgOutOfRange);
+        errResultInfo.setAddErrInfoDscr("i_strUniqueName.isEmpty()");
+    }
+    else
+    {
+        if( m_mappShortcutTreeEntries.contains(i_strUniqueName) )
+        {
+            errResultInfo.setSeverity(EResultSeverityError);
+            errResultInfo.setResult(EResultObjAlreadyInList);
+            errResultInfo.setAddErrInfoDscr(
+                "A shortcut with " + i_strUniqueName + " is already existing.");
+        }
+    }
+
+    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    {
+        int iErrResultInfoDetailLevel = 0;
+        if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
+        else if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsDetailed ) iErrResultInfoDetailLevel = 1;
+        mthTracer.setMethodReturn(errResultInfo.toString(iErrResultInfoDetailLevel));
+    }
+
+    return errResultInfo;
+
+} // canAddShortcut
+
+//------------------------------------------------------------------------------
+/*! Adds the given tree entry to the map with shortcuts.
+
+    The shourtcut name must be unique.
+    If the given shortcut name already exists the shortcut is refused and the
+    method returns en error result.
+
+    @param i_pTreeEntry [in] Pointer to tree entry to be added to the map with shortcuts.
+    @param i_strUniqueName [in] Unique shortcut key.
+
+    @return throws an exception if the shortcuts unique name is already existing.
+*/
+void CIdxTree::addShortcut( CIdxTreeEntry* i_pTreeEntry, const QString& i_strUniqueName )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    {
+        strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->name());
+        strMthInArgs += ", UniqueName: " + i_strUniqueName;
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "addShortcut",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    CMutexLocker mtxLocker(m_pMtx);
+
+    QString strMth = "addShortcut";
+
+    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
+
+    if( i_strUniqueName.isEmpty() )
+    {
+        errResultInfo.setSeverity(EResultSeverityError);
+        errResultInfo.setResult(EResultArgOutOfRange);
+        errResultInfo.setAddErrInfoDscr("i_strUniqueName.isEmpty()");
+    }
+    else
+    {
+        if( m_mappShortcutTreeEntries.contains(i_strUniqueName) )
+        {
+            errResultInfo.setSeverity(EResultSeverityError);
+            errResultInfo.setResult(EResultObjAlreadyInList);
+            errResultInfo.setAddErrInfoDscr(
+                "A shortcut with " + i_strUniqueName + " is already existing.");
+        }
+        else
+        {
+            m_mappShortcutTreeEntries[i_strUniqueName] = i_pTreeEntry;
+            i_pTreeEntry->addShortcut(i_strUniqueName);
+        }
+    }
+
+    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    {
+        int iErrResultInfoDetailLevel = 0;
+        if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
+        else if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsDetailed ) iErrResultInfoDetailLevel = 1;
+        mthTracer.setMethodReturn(errResultInfo.toString(iErrResultInfoDetailLevel));
+    }
+
+    if( errResultInfo.isErrorResult() )
+    {
+        throw CException(__FILE__, __LINE__, errResultInfo);
+    }
+
+} // addShortcut
+
+//------------------------------------------------------------------------------
+/*! Adds the given tree entry to the map with shortcuts.
+
+    The shourtcut name must be unique.
+    If the given shortcut name already exists the shortcut is refused and the
+    method returns en error result.
+
+    @param i_pTreeEntry [in] Pointer to tree entry to be added to the map with shortcuts.
+    @param i_strUniqueName [in] Unique shortcut key.
+
+    @return true, if the shortcut key was successfully added, false otherwise.
+*/
+SErrResultInfo CIdxTree::removeShortcut( const QString& i_strUniqueName )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    {
+        strMthInArgs = i_strUniqueName;
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "removeShortcut",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    CMutexLocker mtxLocker(m_pMtx);
+
+    QString strMth = "removeShortcut";
+
+    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
+
+    if( i_strUniqueName.isEmpty() )
+    {
+        errResultInfo.setSeverity(EResultSeverityError);
+        errResultInfo.setResult(EResultArgOutOfRange);
+        errResultInfo.setAddErrInfoDscr("i_strUniqueName.isEmpty()");
+    }
+    else
+    {
+        if( !m_mappShortcutTreeEntries.contains(i_strUniqueName) )
+        {
+            errResultInfo.setSeverity(EResultSeverityError);
+            errResultInfo.setResult(EResultObjNotInList);
+            errResultInfo.setAddErrInfoDscr(
+                "A shortcut with " + i_strUniqueName + " is not existing.");
+        }
+        else
+        {
+            CIdxTreeEntry* pTreeEntry = m_mappShortcutTreeEntries[i_strUniqueName];
+            pTreeEntry->removeShortcut(i_strUniqueName);
+            m_mappShortcutTreeEntries.remove(i_strUniqueName);
+        }
+    }
+
+    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    {
+        int iErrResultInfoDetailLevel = 0;
+        if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
+        else if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsDetailed ) iErrResultInfoDetailLevel = 1;
+        mthTracer.setMethodReturn(errResultInfo.toString(iErrResultInfoDetailLevel));
+    }
+
+    return errResultInfo;
+
+} // removeShortcut
 
 /*==============================================================================
 protected: // instance methods

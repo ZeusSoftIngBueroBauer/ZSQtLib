@@ -51,16 +51,17 @@ public: // ctors and dtor
     @param i_strPrefix [in]
         e.g. "" for SI-Base, "m", "k", "µ", "M", ...
 */
-CUnitsTreeEntryPhysUnit::CUnitsTreeEntryPhysUnit( CUnitsTreeEntryGrpPhysUnits* i_pPhysSize, const QString& i_strPrefix ) :
+CUnitsTreeEntryPhysUnit::CUnitsTreeEntryPhysUnit(
+    CUnitsTreeEntryGrpPhysUnits* i_pPhysSize, const QString& i_strFactorPrefix ) :
 //------------------------------------------------------------------------------
     CUnitsTreeEntryUnitBase(
-        /* pUnitGrp       */ i_pPhysSize,
-        /* bIsLogarithmic */ false,
-        /* fLogFactor     */ 1.0,
-        /* strName        */ getExponentStrFromPrefixStr(i_strPrefix) + i_pPhysSize->getSIUnitName(),
-        /* strSymbol      */ i_strPrefix + i_pPhysSize->getSIUnitSymbol() ),
+        /* pUnitGrp        */ i_pPhysSize,
+        /* bIsLogarithmic  */ false,
+        /* fLogFactor      */ 1.0,
+        /* strName         */ getExponentStrFromPrefixStr(i_strFactorPrefix) + i_pPhysSize->getSIUnitName(),
+        /* strSymbol       */ i_strFactorPrefix + i_pPhysSize->getSIUnitSymbol(),
+        /* strFactorPrefix */ i_strFactorPrefix ),
     m_pPhysUnitSI(nullptr),
-    m_strPrefix(i_strPrefix),
     m_bInitialized(false),
     //m_iPhysSizeRowIdx(-1),
     m_fctConvertFromSIUnit(),
@@ -73,12 +74,12 @@ CUnitsTreeEntryPhysUnit::CUnitsTreeEntryPhysUnit( CUnitsTreeEntryGrpPhysUnits* i
     //--------------------------------------------------------------------------
 
     // Please note: for "kilo" the factor is 10e3, for "milli" the factor is 10e-3.
-    double fFactorIntoSIUnit = getFactorFromPrefixStr(i_strPrefix);
+    double fFactorIntoSIUnit = getFactorFromPrefixStr(i_strFactorPrefix);
 
     // We don't calculate the factor from SI unit by "1/FactorIntoSIUnit" as by
     // the floating point division the calculated factor may be inaccurate.
     // Better (more precise) is to get the inverted factor from the exponent table.
-    double fFactorFromSIUnit = getFactorFromPrefixStr(i_strPrefix,true);
+    double fFactorFromSIUnit = getFactorFromPrefixStr(i_strFactorPrefix,true);
 
     // Set function to convert values from the SI unit into this unit
     //--------------------------------------------------------------------------
@@ -117,19 +118,19 @@ CUnitsTreeEntryPhysUnit::CUnitsTreeEntryPhysUnit( CUnitsTreeEntryGrpPhysUnits* i
 */
 CUnitsTreeEntryPhysUnit::CUnitsTreeEntryPhysUnit(
     CUnitsTreeEntryGrpPhysUnits* i_pPhysSize,
-    bool                i_bIsLogarithmic,
-    const QString&      i_strName,
-    const QString&      i_strSymbol,
-    const double        i_fMFromBaseOrRefVal ) :
+    bool           i_bIsLogarithmic,
+    const QString& i_strName,
+    const QString& i_strSymbol,
+    const double   i_fMFromBaseOrRefVal ) :
 //------------------------------------------------------------------------------
     CUnitsTreeEntryUnitBase(
-        /* pUnitGrp       */ i_pPhysSize,
-        /* bIsLogarithmic */ i_bIsLogarithmic,
-        /* fLogFactor     */ 1.0,
-        /* strName        */ i_strName,
-        /* strSymbol      */ i_strSymbol ),
+        /* pUnitGrp        */ i_pPhysSize,
+        /* bIsLogarithmic  */ i_bIsLogarithmic,
+        /* fLogFactor      */ 1.0,
+        /* strName         */ i_strName,
+        /* strSymbol       */ i_strSymbol,
+        /* strFactorPrefix */ "" ),
     m_pPhysUnitSI(nullptr),
-    m_strPrefix(""),
     m_bInitialized(false),
     //m_iPhysSizeRowIdx(-1),
     m_fctConvertFromSIUnit(),
@@ -194,7 +195,6 @@ CUnitsTreeEntryPhysUnit::~CUnitsTreeEntryPhysUnit()
 //------------------------------------------------------------------------------
 {
     m_pPhysUnitSI = nullptr;
-    //m_strPrefix;
     m_bInitialized = false;
     //m_fctConvertFromSIUnit;
     //m_fctConvertIntoSIUnit;
@@ -202,36 +202,6 @@ CUnitsTreeEntryPhysUnit::~CUnitsTreeEntryPhysUnit()
     m_arFctConvertsExternal.clear();
 
 } // dtor
-
-/*==============================================================================
-public: // operators
-==============================================================================*/
-
-////------------------------------------------------------------------------------
-//CUnitsTreeEntryPhysUnit& CUnitsTreeEntryPhysUnit::operator=(CUnitsTreeEntryPhysUnit&& i_other)
-////------------------------------------------------------------------------------
-//{
-//    *static_cast<CUnitsTreeEntryUnitBase*>(this) = static_cast<CUnitsTreeEntryUnitBase&&>(std::move(i_other));
-//
-//    m_pPhysUnitSI = i_other.m_pPhysUnitSI;
-//    m_strPrefix = i_other.m_strPrefix;
-//    m_bInitialized = i_other.m_bInitialized;
-//    //m_iPhysSizeRowIdx = i_other.m_iPhysSizeRowIdx;
-//    m_fctConvertFromSIUnit = std::move(i_other.m_fctConvertFromSIUnit);
-//    m_fctConvertIntoSIUnit = std::move(i_other.m_fctConvertIntoSIUnit);
-//    m_arFctConvertsInternal = std::move(i_other.m_arFctConvertsInternal);
-//    m_arFctConvertsExternal = std::move(i_other.m_arFctConvertsExternal);
-//
-//    i_other.m_pPhysUnitSI = nullptr;
-//    //i_other.m_strPrefix;
-//    i_other.m_bInitialized = false;
-//    i_other.m_fctConvertFromSIUnit = CFctConvert();
-//    i_other.m_fctConvertIntoSIUnit = CFctConvert();
-//    i_other.m_arFctConvertsInternal.clear();
-//    i_other.m_arFctConvertsExternal.clear();
-//
-//    return *this;
-//}
 
 /*==============================================================================
 public: // operators
@@ -382,16 +352,13 @@ double CUnitsTreeEntryPhysUnit::convertValue( double i_fVal, const CUnitsTreeEnt
     {
         return CUnitsTreeEntryUnitBase::convertValue(i_fVal,i_pUnitDst);
     }
-
     const CUnitsTreeEntryPhysUnit* pPhysUnitDst = dynamic_cast<const CUnitsTreeEntryPhysUnit*>(i_pUnitDst);
-
     return convertValue(
         /* fVal         */ i_fVal,
         /* physUnitDst  */ pPhysUnitDst,
         /* fRefVal      */ 0.0,
         /* pPhysUnitRef */ nullptr );
-
-} // convertValue
+}
 
 /*==============================================================================
 public: // instance methods (conversion routines)
@@ -406,8 +373,7 @@ double CUnitsTreeEntryPhysUnit::convertFromSIUnit( double i_fVal ) const
         throw ZS::System::CException( __FILE__, __LINE__, EResultSIUnitNotDefined );
     }
     return m_pPhysUnitSI->convertValue(i_fVal,this);
-
-} // convertFromSIUnit
+}
 
 //------------------------------------------------------------------------------
 double CUnitsTreeEntryPhysUnit::convertIntoSIUnit( double i_fVal ) const
@@ -418,15 +384,12 @@ double CUnitsTreeEntryPhysUnit::convertIntoSIUnit( double i_fVal ) const
         throw ZS::System::CException( __FILE__, __LINE__, EResultSIUnitNotDefined );
     }
     return convertValue(i_fVal,m_pPhysUnitSI);
-
-} // convertIntoSIUnit
+}
 
 //------------------------------------------------------------------------------
 double CUnitsTreeEntryPhysUnit::convertValue(
-    double           i_fVal,
-    const CUnitsTreeEntryPhysUnit* i_pPhysUnitDst,
-    double           i_fValRef,
-    const CUnitsTreeEntryPhysUnit* i_pPhysUnitRef ) const
+    double i_fVal, const CUnitsTreeEntryPhysUnit* i_pPhysUnitDst,
+    double i_fValRef, const CUnitsTreeEntryPhysUnit* i_pPhysUnitRef ) const
 //------------------------------------------------------------------------------
 {
     if( !m_bInitialized )
@@ -446,11 +409,12 @@ double CUnitsTreeEntryPhysUnit::convertValue(
         throw CException(__FILE__,__LINE__,EResultSIUnitNotDefined);
     }
 
-    double             fVal = i_fVal;
-    double             fValRef = i_fValRef;
-    double             fM = 1.0;
-    double             fT = 0.0;
-    double             fK = 0.0;
+    double fVal = i_fVal;
+    double fValRef = i_fValRef;
+    double fM = 1.0;
+    double fT = 0.0;
+    double fK = 0.0;
+
     const CFctConvert* pFctConvert = nullptr;
     const CFctConvert* pFctConvertSrcIntoSI = nullptr;
     const CFctConvert* pFctConvertDstFromSI = nullptr;
@@ -624,9 +588,7 @@ int CUnitsTreeEntryPhysUnit::findFctConvertInternalIdx( const CUnitsTreeEntryPhy
 //------------------------------------------------------------------------------
 {
     int idxFct = -1;
-    int idx;
-
-    for( idx = 0; idx < m_arFctConvertsInternal.size(); idx++ )
+    for( int idx = 0; idx < m_arFctConvertsInternal.size(); idx++ )
     {
         if( m_arFctConvertsInternal[idx].m_pPhysUnitDst == i_pPhysUnitDst )
         {
@@ -635,22 +597,19 @@ int CUnitsTreeEntryPhysUnit::findFctConvertInternalIdx( const CUnitsTreeEntryPhy
         }
     }
     return idxFct;
-
-} // findFctConvertInternalIdx
+}
 
 //------------------------------------------------------------------------------
 CFctConvert* CUnitsTreeEntryPhysUnit::getFctConvertInternal( int i_idx ) const
 //------------------------------------------------------------------------------
 {
     CFctConvert* pFctConvert = nullptr;
-
     if( i_idx < m_arFctConvertsInternal.size() )
     {
         pFctConvert = const_cast<CFctConvert*>(&m_arFctConvertsInternal.data()[i_idx]);
     }
     return pFctConvert;
-
-} // getFctConvertInternal
+}
 
 //------------------------------------------------------------------------------
 CFctConvert* CUnitsTreeEntryPhysUnit::findFctConvertInternal( const CUnitsTreeEntryPhysUnit* i_pPhysUnitDst ) const
@@ -658,52 +617,45 @@ CFctConvert* CUnitsTreeEntryPhysUnit::findFctConvertInternal( const CUnitsTreeEn
 {
     CFctConvert* pFctConvert = nullptr;
     int idxFct = findFctConvertInternalIdx(i_pPhysUnitDst);
-
     if( idxFct >= 0 && idxFct < m_arFctConvertsInternal.size() )
     {
         pFctConvert = const_cast<CFctConvert*>(&m_arFctConvertsInternal.data()[idxFct]);
     }
     return pFctConvert;
-
-} // findFctConvertInternal
+}
 
 //------------------------------------------------------------------------------
 QString CUnitsTreeEntryPhysUnit::findFctConvertInternalName( const CUnitsTreeEntryPhysUnit* i_pPhysUnitDst ) const
 //------------------------------------------------------------------------------
 {
-    QString            strFctConvertName = "?";
-    const CFctConvert* pFctConvert;
+    QString strFctConvertName = "?";
 
     int idxFct = findFctConvertInternalIdx(i_pPhysUnitDst);
 
     // If a special (direct) conversion function has been set ..
     if( idxFct >= 0 && idxFct < m_arFctConvertsInternal.size() )
     {
-        pFctConvert = getFctConvertInternal(idxFct);
-
+        const CFctConvert* pFctConvert = getFctConvertInternal(idxFct);
         if( pFctConvert != nullptr )
         {
             strFctConvertName = pFctConvert->m_strFctConvertName;
         }
     }
     return strFctConvertName;
-
-} // findFctConvertInternalName
+}
 
 //------------------------------------------------------------------------------
 QString CUnitsTreeEntryPhysUnit::getFctConvertInternalName( int i_idx ) const
 //------------------------------------------------------------------------------
 {
-    QString            strFctConvertName = "?";
+    QString strFctConvertName = "?";
     const CFctConvert* pFctConvert = getFctConvertInternal(i_idx);
-
     if( pFctConvert != nullptr )
     {
         strFctConvertName = pFctConvert->m_strFctConvertName;
     }
     return strFctConvertName;
-
-} // getFctConvertInternalName
+}
 
 /*==============================================================================
 public: // instance methods (conversion routines to convert into units of other quantities)
@@ -871,9 +823,7 @@ int CUnitsTreeEntryPhysUnit::findFctConvertExternalIdx( const CUnitsTreeEntryPhy
 //------------------------------------------------------------------------------
 {
     int idxFct = -1;
-    int idx;
-
-    for( idx = 0; idx < m_arFctConvertsExternal.size(); idx++ )
+    for( int idx = 0; idx < m_arFctConvertsExternal.size(); idx++ )
     {
         if( m_arFctConvertsExternal[idx].m_pPhysUnitDst == i_pPhysUnitDst )
         {
@@ -882,72 +832,60 @@ int CUnitsTreeEntryPhysUnit::findFctConvertExternalIdx( const CUnitsTreeEntryPhy
         }
     }
     return idxFct;
-
-} // findFctConvertExternalIdx
+}
 
 //------------------------------------------------------------------------------
 CFctConvert* CUnitsTreeEntryPhysUnit::getFctConvertExternal( int i_idx ) const
 //------------------------------------------------------------------------------
 {
     CFctConvert* pFctConvert = nullptr;
-
     if( i_idx < m_arFctConvertsExternal.size() )
     {
         pFctConvert = const_cast<CFctConvert*>(&m_arFctConvertsExternal.data()[i_idx]);
     }
     return pFctConvert;
-
-} // getFctConvertExternal
+}
 
 //------------------------------------------------------------------------------
 CFctConvert* CUnitsTreeEntryPhysUnit::findFctConvertExternal( const CUnitsTreeEntryPhysUnit* i_pPhysUnitDst ) const
 //------------------------------------------------------------------------------
 {
-    int          idxFct = findFctConvertExternalIdx(i_pPhysUnitDst);
     CFctConvert* pFctConvert = nullptr;
-
+    int idxFct = findFctConvertExternalIdx(i_pPhysUnitDst);
     if( idxFct >= 0 && idxFct < m_arFctConvertsExternal.size() )
     {
         pFctConvert = const_cast<CFctConvert*>(&m_arFctConvertsExternal.data()[idxFct]);
     }
     return pFctConvert;
-
-} // findFctConvertExternal
+}
 
 //------------------------------------------------------------------------------
 QString CUnitsTreeEntryPhysUnit::findFctConvertExternalName( const CUnitsTreeEntryPhysUnit* i_pPhysUnitDst ) const
 //------------------------------------------------------------------------------
 {
-    QString            strFctConvertName = "?";
-    const CFctConvert* pFctConvert;
-
+    QString strFctConvertName = "?";
     int idxFct = findFctConvertExternalIdx(i_pPhysUnitDst);
-
     // If a special (direct) conversion function has been set ..
     if( idxFct >= 0 && idxFct < m_arFctConvertsExternal.size() )
     {
-        pFctConvert = getFctConvertExternal(idxFct);
-
+        const CFctConvert* pFctConvert = getFctConvertExternal(idxFct);
         if( pFctConvert != nullptr )
         {
             strFctConvertName = pFctConvert->m_strFctConvertName;
         }
     }
     return strFctConvertName;
-
-} // findFctConvertExternalName
+}
 
 //------------------------------------------------------------------------------
 QString CUnitsTreeEntryPhysUnit::getFctConvertExternalName( int i_idx ) const
 //------------------------------------------------------------------------------
 {
-    QString      strFctConvertName = "?";
+    QString strFctConvertName = "?";
     CFctConvert* pFctConvert = getFctConvertExternal(i_idx);
-
     if( pFctConvert != nullptr )
     {
         strFctConvertName = pFctConvert->m_strFctConvertName;
     }
     return strFctConvertName;
-
-} // getFctConvertExternalName
+}

@@ -60,7 +60,7 @@ public: // instance members
     ZS::PhysVal::CUnit PerCent;
     ZS::PhysVal::CUnit PerMille;
     ZS::PhysVal::CUnit Dezibel;
-    ZS::PhysVal::CUnit db;
+    ZS::PhysVal::CUnit dB;
 
 }; // class CUnitsRatios
 

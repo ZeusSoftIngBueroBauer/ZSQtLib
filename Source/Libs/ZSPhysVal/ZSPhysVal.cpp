@@ -26,16 +26,11 @@ may result in using the software modules.
 
 #include "ZSPhysVal/ZSPhysVal.h"
 #include "ZSPhysVal/ZSPhysUnit.h"
-//#include "ZSPhysVal/ZSPhysUnitsIdxTree.h"
 #include "ZSPhysVal/ZSPhysValExceptions.h"
-//#include "ZSSys/ZSSysAux.h"
-//#include "ZSSys/ZSSysMath.h"
-//#include "ZSSys/ZSSysErrResult.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 using namespace ZS::System;
-//using namespace ZS::System::Math;
 using namespace ZS::PhysVal;
 
 
@@ -52,64 +47,51 @@ CPhysVal ZS::PhysVal::minPhysVal( const QVector<CPhysVal>& i_arphysval )
         throw CException( __FILE__, __LINE__, EResultArgOutOfRange, "i_arphysval.size() == " + QString::number(i_arphysval.size()) );
     }
 
-    int      iValIdx;
     CPhysVal physvalMin = i_arphysval[0];
 
-    for( iValIdx = 1; iValIdx < i_arphysval.size(); iValIdx++ )
+    for( int iValIdx = 1; iValIdx < i_arphysval.size(); iValIdx++ )
     {
         CPhysVal physval = i_arphysval[iValIdx];
-
         if( physval < physvalMin )
         {
             physvalMin = physval;
         }
     }
-
     return physvalMin;
-
-} // minPhysVal
+}
 
 //------------------------------------------------------------------------------
 CPhysVal ZS::PhysVal::minPhysVal( const CPhysVal& i_physval1, const CPhysVal& i_physval2 )
 //------------------------------------------------------------------------------
 {
     QVector<CPhysVal> arphysVal;
-
     arphysVal.append(i_physval1);
     arphysVal.append(i_physval2);
-
     return minPhysVal(arphysVal);
-
-} // minPhysVal
+}
 
 //------------------------------------------------------------------------------
 CPhysVal ZS::PhysVal::minPhysVal( const CPhysVal& i_physval1, const CPhysVal& i_physval2, const CPhysVal& i_physval3 )
 //------------------------------------------------------------------------------
 {
     QVector<CPhysVal> arphysVal;
-
     arphysVal.append(i_physval1);
     arphysVal.append(i_physval2);
     arphysVal.append(i_physval3);
-
     return minPhysVal(arphysVal);
-
-} // minPhysVal
+}
 
 //------------------------------------------------------------------------------
 CPhysVal ZS::PhysVal::minPhysVal( const CPhysVal& i_physval1, const CPhysVal& i_physval2, const CPhysVal& i_physval3, const CPhysVal& i_physval4 )
 //------------------------------------------------------------------------------
 {
     QVector<CPhysVal> arphysVal;
-
     arphysVal.append(i_physval1);
     arphysVal.append(i_physval2);
     arphysVal.append(i_physval3);
     arphysVal.append(i_physval4);
-
     return minPhysVal(arphysVal);
-
-} // minPhysVal
+}
 
 //------------------------------------------------------------------------------
 CPhysVal ZS::PhysVal::maxPhysVal( const QVector<CPhysVal>& i_arphysval )
@@ -120,64 +102,51 @@ CPhysVal ZS::PhysVal::maxPhysVal( const QVector<CPhysVal>& i_arphysval )
         throw CException( __FILE__, __LINE__, EResultArgOutOfRange, "i_arphysval.size() == " + QString::number(i_arphysval.size()) );
     }
 
-    int      iValIdx;
     CPhysVal physvalMax = i_arphysval[0];
-
-    for( iValIdx = 1; iValIdx < i_arphysval.size(); iValIdx++ )
+    for( int iValIdx = 1; iValIdx < i_arphysval.size(); iValIdx++ )
     {
         CPhysVal physval = i_arphysval[iValIdx];
-
         if( physval > physvalMax )
         {
             physvalMax = physval;
         }
     }
-
     return physvalMax;
-
-} // maxPhysVal
+}
 
 //------------------------------------------------------------------------------
 CPhysVal ZS::PhysVal::maxPhysVal( const CPhysVal& i_physval1, const CPhysVal& i_physval2 )
 //------------------------------------------------------------------------------
 {
     QVector<CPhysVal> arphysVal;
-
     arphysVal.append(i_physval1);
     arphysVal.append(i_physval2);
-
     return maxPhysVal(arphysVal);
-
-} // maxPhysVal
+}
 
 //------------------------------------------------------------------------------
 CPhysVal ZS::PhysVal::maxPhysVal( const CPhysVal& i_physval1, const CPhysVal& i_physval2, const CPhysVal& i_physval3 )
 //------------------------------------------------------------------------------
 {
     QVector<CPhysVal> arphysVal;
-
     arphysVal.append(i_physval1);
     arphysVal.append(i_physval2);
     arphysVal.append(i_physval3);
-
     return maxPhysVal(arphysVal);
-
-} // maxPhysVal
+}
 
 //------------------------------------------------------------------------------
 CPhysVal ZS::PhysVal::maxPhysVal( const CPhysVal& i_physval1, const CPhysVal& i_physval2, const CPhysVal& i_physval3, const CPhysVal& i_physval4 )
 //------------------------------------------------------------------------------
 {
     QVector<CPhysVal> arphysVal;
-
     arphysVal.append(i_physval1);
     arphysVal.append(i_physval2);
     arphysVal.append(i_physval3);
     arphysVal.append(i_physval4);
-
     return maxPhysVal(arphysVal);
+}
 
-} // maxPhysVal
 
 /*******************************************************************************
 struct SValueFormatProvider
@@ -237,7 +206,6 @@ SValueFormatProvider::SValueFormatProvider( const SValueFormatProvider& i_other 
     {
         m_pstrDecimalPoint = new QString(*i_other.m_pstrDecimalPoint);
     }
-
 } // copy ctor
 
 //------------------------------------------------------------------------------
@@ -277,7 +245,6 @@ SValueFormatProvider::SValueFormatProvider(
     {
         m_pstrDecimalPoint = new QString(*i_pstrDecimalPoint);
     }
-
 }
 
 //------------------------------------------------------------------------------
@@ -322,7 +289,6 @@ SValueFormatProvider::SValueFormatProvider(
     {
         m_pstrDecimalPoint = new QString(*i_pstrDecimalPoint);
     }
-
 }
 
 //------------------------------------------------------------------------------
@@ -364,7 +330,6 @@ SValueFormatProvider::SValueFormatProvider(
     {
         m_pstrDecimalPoint = new QString(*i_pstrDecimalPoint);
     }
-
 }
 
 //------------------------------------------------------------------------------
@@ -480,6 +445,16 @@ CPhysVal::CPhysVal( const CUnit& i_unit, EResType i_resType ) :
 }
 
 //------------------------------------------------------------------------------
+CPhysVal::CPhysVal( const CUnit& i_unitVal, const CUnit& i_unitRes, EResType i_resType ) :
+//------------------------------------------------------------------------------
+    m_unit(i_unitVal),
+    m_validity(EValueValidity::Invalid),
+    m_fVal(0.0),
+    m_physValRes(i_unitRes, i_resType)
+{
+}
+
+//------------------------------------------------------------------------------
 CPhysVal::CPhysVal( double i_fVal, EResType i_resType ) :
 //------------------------------------------------------------------------------
     m_unit(),
@@ -506,6 +481,18 @@ CPhysVal::CPhysVal( double i_fVal, const CUnit& i_unit, EResType i_resType ) :
     m_validity(EValueValidity::Valid),
     m_fVal(i_fVal),
     m_physValRes(i_unit, i_resType)
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysVal::CPhysVal(
+    double i_fVal, const CUnit& i_unitVal,
+    const CUnit& i_unitRes, EResType i_resType ) :
+//------------------------------------------------------------------------------
+    m_unit(i_unitVal),
+    m_validity(EValueValidity::Valid),
+    m_fVal(i_fVal),
+    m_physValRes(i_unitRes, i_resType)
 {
 }
 
@@ -557,23 +544,49 @@ CPhysVal::CPhysVal( const QString& i_strVal, EResType i_resType ) :
 }
 
 //------------------------------------------------------------------------------
-CPhysVal::CPhysVal( const QString& i_strVal, double i_fResVal, EResType i_resType ) :
-//------------------------------------------------------------------------------
-    m_unit(),
-    m_validity(EValueValidity::Invalid),
-    m_fVal(0.0),
-    m_physValRes(i_fResVal,i_resType)
-{
-    setVal(i_strVal);
-}
-
-//------------------------------------------------------------------------------
 CPhysVal::CPhysVal( const QString& i_strVal, const CUnit& i_unit, EResType i_resType ) :
 //------------------------------------------------------------------------------
     m_unit(i_unit),
     m_validity(EValueValidity::Invalid),
     m_fVal(0.0),
     m_physValRes(i_unit, i_resType)
+{
+    setVal(i_strVal);
+}
+
+//------------------------------------------------------------------------------
+CPhysVal::CPhysVal( const QString& i_strVal, double i_fResVal, EResType i_resType ) :
+//------------------------------------------------------------------------------
+    m_unit(),
+    m_validity(EValueValidity::Invalid),
+    m_fVal(0.0),
+    m_physValRes(i_fResVal, i_resType)
+{
+    setVal(i_strVal);
+}
+
+//------------------------------------------------------------------------------
+CPhysVal::CPhysVal(
+    const QString& i_strVal, const CUnit& i_unitVal,
+    const CUnit& i_unitRes, EResType i_resType ) :
+//------------------------------------------------------------------------------
+    m_unit(i_unitVal),
+    m_validity(EValueValidity::Invalid),
+    m_fVal(0.0),
+    m_physValRes(i_unitRes, i_resType)
+{
+    setVal(i_strVal);
+}
+
+//------------------------------------------------------------------------------
+CPhysVal::CPhysVal(
+    const QString& i_strVal,
+    double i_fResVal, const CUnit& i_unitRes, EResType i_resType ) :
+//------------------------------------------------------------------------------
+    m_unit(),
+    m_validity(EValueValidity::Invalid),
+    m_fVal(0.0),
+    m_physValRes(i_fResVal, i_unitRes, i_resType)
 {
     setVal(i_strVal);
 }
@@ -1288,12 +1301,12 @@ public: // instance methods (to set the value)
 TFormatResult CPhysVal::setVal( const QString& i_strVal )
 //------------------------------------------------------------------------------
 {
-    bool     bValOk = false;
-    double   fVal = 0.0;
-    CUnit    unitVal = m_unit;
-    bool     bResOk = false;
-    double   fResVal = 0.0;
-    CUnit    unitRes = m_physValRes.unit();
+    bool   bValOk = false;
+    double fVal = 0.0;
+    CUnit  unitVal = m_unit;
+    bool   bResOk = false;
+    double fResVal = 0.0;
+    CUnit  unitRes = m_physValRes.unit();
 
     TFormatResult formatResult = parseValStr(
         /* strVal   */ i_strVal,

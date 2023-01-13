@@ -59,7 +59,7 @@ private: // instance members
 extern ZS::Apps::Test::PhysVal::CIdxTreeUnitsPhysValTest IdxTreeUnits;
 
 extern CUnitsQuantities Quantities;
-extern CUnitsRatios Ratios;
+extern CUnitsRatios Ratio;
 extern CPhysScienceFieldElectricity Electricity;
 extern CPhysScienceFieldGeometry Geometry;
 extern CPhysScienceFieldKinematics Kinematics;

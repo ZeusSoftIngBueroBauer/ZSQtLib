@@ -25,7 +25,8 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "Units/Geometry/PhysSizeLength.h"
-#include "ZSSys/ZSSysMath.h"
+#include "ZSPhysVal/ZSPhysTreeEntryGrpScienceField.h"
+#include "ZSPhysVal/ZSPhysUnitsIdxTree.h"
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 using namespace ZS::PhysVal;
@@ -136,14 +137,20 @@ CPhysSizeLength::CPhysSizeLength( CUnitsTreeEntryGrpScienceField* i_pParentBranc
     initialize(false);
 
     // Link the units to a chained list for the "findBestUnit" functionality:
-    //======================================================================
-
     m_treeEntryPicoMeter. setNextLowerHigherUnits( nullptr,                &m_treeEntryNanoMeter  );
     m_treeEntryNanoMeter. setNextLowerHigherUnits( &m_treeEntryPicoMeter,  &m_treeEntryMicroMeter );
     m_treeEntryMicroMeter.setNextLowerHigherUnits( &m_treeEntryNanoMeter,  &m_treeEntryMilliMeter );
     m_treeEntryMilliMeter.setNextLowerHigherUnits( &m_treeEntryMicroMeter, &m_treeEntryMeter      );
     m_treeEntryMeter.     setNextLowerHigherUnits( &m_treeEntryMilliMeter, &m_treeEntryKiloMeter  );
     m_treeEntryKiloMeter. setNextLowerHigherUnits( &m_treeEntryMeter,      nullptr                );
+
+    // To allow "short" unit strings like "Length.m" we add a shortcut to this phyiscal size.
+    i_pParentBranch->tree()->addShortcut(this, "Length");
+
+    // To allow "short" unit strings like "mA" we add shortcuts to each unit.
+    i_pParentBranch->tree()->addShortcut(&m_treeEntryMilliMeter, "mm");
+    i_pParentBranch->tree()->addShortcut(&m_treeEntryMeter, "m");
+    i_pParentBranch->tree()->addShortcut(&m_treeEntryKiloMeter, "km");
 
 } // ctor
 

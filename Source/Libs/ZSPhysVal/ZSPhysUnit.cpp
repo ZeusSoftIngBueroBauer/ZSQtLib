@@ -46,8 +46,9 @@ bool ZS::PhysVal::areOfSameUnitGroup( const CUnit& i_unit1, const CUnit& i_unit2
 //------------------------------------------------------------------------------
 {
     bool bOk = false;
-    if( i_unit1.isValidGroup() && i_unit2.isValidGroup() )
-    {
+    if( !i_unit1.isValidGroup() && !i_unit2.isValidGroup() ) {
+        bOk = true;
+    } else if( i_unit1.isValidGroup() && i_unit2.isValidGroup() ) {
         bOk = (i_unit1.groupPath() == i_unit2.groupPath());
     }
     return bOk;
@@ -123,6 +124,94 @@ CUnit::CUnit(const CUnit& i_unit) :
 }
 
 //------------------------------------------------------------------------------
+CUnit::CUnit(CUnitsTreeEntryGrpBase* i_pGrpEntry) :
+//------------------------------------------------------------------------------
+    m_pTreeEntry(i_pGrpEntry),
+    m_classType(i_pGrpEntry == nullptr ? EUnitClassType::Undefined : i_pGrpEntry->classType()),
+    m_strKeyInTree(i_pGrpEntry == nullptr ? "" : i_pGrpEntry->keyInTree()),
+    m_strUnitName(),
+    m_strGrpPath(i_pGrpEntry == nullptr ? "" : i_pGrpEntry->path()),
+    m_strSymbol()
+{
+    if( i_pGrpEntry != nullptr && i_pGrpEntry->classType() == EUnitClassType::PhysSize ) {
+        CUnitsTreeEntryGrpPhysUnits* pPhysSize =
+            dynamic_cast<CUnitsTreeEntryGrpPhysUnits*>(i_pGrpEntry);
+        if( pPhysSize != nullptr && pPhysSize->getSIUnit() != nullptr ) {
+            m_pTreeEntry = pPhysSize->getSIUnit();
+            m_strKeyInTree = m_pTreeEntry->keyInTree();
+            m_strUnitName = pPhysSize->getSIUnit()->name();
+            m_strSymbol = pPhysSize->getSIUnit()->symbol();
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+CUnit::CUnit(const CUnitsTreeEntryGrpBase* i_pGrpEntry) :
+//------------------------------------------------------------------------------
+    m_pTreeEntry(const_cast<CUnitsTreeEntryGrpBase*>(i_pGrpEntry)),
+    m_classType(i_pGrpEntry == nullptr ? EUnitClassType::Undefined : i_pGrpEntry->classType()),
+    m_strKeyInTree(i_pGrpEntry == nullptr ? "" : i_pGrpEntry->keyInTree()),
+    m_strUnitName(),
+    m_strGrpPath(i_pGrpEntry == nullptr ? "" : i_pGrpEntry->path()),
+    m_strSymbol()
+{
+    if( i_pGrpEntry != nullptr && i_pGrpEntry->classType() == EUnitClassType::PhysSize ) {
+        const CUnitsTreeEntryGrpPhysUnits* pPhysSize =
+            dynamic_cast<const CUnitsTreeEntryGrpPhysUnits*>(i_pGrpEntry);
+        if( pPhysSize != nullptr && pPhysSize->getSIUnit() != nullptr ) {
+            m_pTreeEntry = pPhysSize->getSIUnit();
+            m_strKeyInTree = m_pTreeEntry->keyInTree();
+            m_strUnitName = pPhysSize->getSIUnit()->name();
+            m_strSymbol = pPhysSize->getSIUnit()->symbol();
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+CUnit::CUnit(CUnitsTreeEntryGrpBase& i_grpEntry) :
+//------------------------------------------------------------------------------
+    m_pTreeEntry(&i_grpEntry),
+    m_classType(i_grpEntry.classType()),
+    m_strKeyInTree(i_grpEntry.keyInTree()),
+    m_strUnitName(),
+    m_strGrpPath(i_grpEntry.path()),
+    m_strSymbol()
+{
+    if( i_grpEntry.classType() == EUnitClassType::PhysSize ) {
+        const CUnitsTreeEntryGrpPhysUnits* pPhysSize =
+            dynamic_cast<CUnitsTreeEntryGrpPhysUnits*>(&i_grpEntry);
+        if( pPhysSize != nullptr && pPhysSize->getSIUnit() != nullptr ) {
+            m_pTreeEntry = pPhysSize->getSIUnit();
+            m_strKeyInTree = m_pTreeEntry->keyInTree();
+            m_strUnitName = pPhysSize->getSIUnit()->name();
+            m_strSymbol = pPhysSize->getSIUnit()->symbol();
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+CUnit::CUnit(const CUnitsTreeEntryGrpBase& i_grpEntry) :
+//------------------------------------------------------------------------------
+    m_pTreeEntry(const_cast<CUnitsTreeEntryGrpBase*>(&i_grpEntry)),
+    m_classType(i_grpEntry.classType()),
+    m_strKeyInTree(i_grpEntry.keyInTree()),
+    m_strUnitName(),
+    m_strGrpPath(i_grpEntry.path()),
+    m_strSymbol()
+{
+    if( i_grpEntry.classType() == EUnitClassType::PhysSize ) {
+        const CUnitsTreeEntryGrpPhysUnits* pPhysSize =
+            dynamic_cast<const CUnitsTreeEntryGrpPhysUnits*>(&i_grpEntry);
+        if( pPhysSize != nullptr && pPhysSize->getSIUnit() != nullptr ) {
+            m_pTreeEntry = pPhysSize->getSIUnit();
+            m_strKeyInTree = m_pTreeEntry->keyInTree();
+            m_strUnitName = pPhysSize->getSIUnit()->name();
+            m_strSymbol = pPhysSize->getSIUnit()->symbol();
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
 CUnit::CUnit(CUnitsTreeEntryGrpPhysUnits* i_pGrpEntry) :
 //------------------------------------------------------------------------------
     m_pTreeEntry(i_pGrpEntry),
@@ -132,6 +221,12 @@ CUnit::CUnit(CUnitsTreeEntryGrpPhysUnits* i_pGrpEntry) :
     m_strGrpPath(i_pGrpEntry == nullptr ? "" : i_pGrpEntry->path()),
     m_strSymbol()
 {
+    if( i_pGrpEntry != nullptr && i_pGrpEntry->getSIUnit() != nullptr ) {
+        m_pTreeEntry = i_pGrpEntry->getSIUnit();
+        m_strKeyInTree = m_pTreeEntry->keyInTree();
+        m_strUnitName = i_pGrpEntry->getSIUnit()->name();
+        m_strSymbol = i_pGrpEntry->getSIUnit()->symbol();
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -144,6 +239,12 @@ CUnit::CUnit(const CUnitsTreeEntryGrpPhysUnits* i_pGrpEntry) :
     m_strGrpPath(i_pGrpEntry == nullptr ? "" : i_pGrpEntry->path()),
     m_strSymbol()
 {
+    if( i_pGrpEntry != nullptr && i_pGrpEntry->getSIUnit() != nullptr ) {
+        m_pTreeEntry = i_pGrpEntry->getSIUnit();
+        m_strKeyInTree = m_pTreeEntry->keyInTree();
+        m_strUnitName = i_pGrpEntry->getSIUnit()->name();
+        m_strSymbol = i_pGrpEntry->getSIUnit()->symbol();
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -156,6 +257,12 @@ CUnit::CUnit(CUnitsTreeEntryGrpPhysUnits& i_grpEntry) :
     m_strGrpPath(i_grpEntry.path()),
     m_strSymbol()
 {
+    if( i_grpEntry.getSIUnit() != nullptr ) {
+        m_pTreeEntry = i_grpEntry.getSIUnit();
+        m_strKeyInTree = m_pTreeEntry->keyInTree();
+        m_strUnitName = i_grpEntry.getSIUnit()->name();
+        m_strSymbol = i_grpEntry.getSIUnit()->symbol();
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -168,6 +275,12 @@ CUnit::CUnit(const CUnitsTreeEntryGrpPhysUnits& i_grpEntry) :
     m_strGrpPath(i_grpEntry.path()),
     m_strSymbol()
 {
+    if( i_grpEntry.getSIUnit() != nullptr ) {
+        m_pTreeEntry = i_grpEntry.getSIUnit();
+        m_strKeyInTree = m_pTreeEntry->keyInTree();
+        m_strUnitName = i_grpEntry.getSIUnit()->name();
+        m_strSymbol = i_grpEntry.getSIUnit()->symbol();
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -346,6 +459,16 @@ CUnit::CUnit(const QString& i_strUniqueName) :
                 m_classType = pGrpEntry->classType();
                 m_strKeyInTree = pGrpEntry->keyInTree();
                 m_strGrpPath = pGrpEntry->path();
+                if( pGrpEntry->classType() == EUnitClassType::PhysSize ) {
+                    CUnitsTreeEntryGrpPhysUnits* pPhysSize =
+                        dynamic_cast<CUnitsTreeEntryGrpPhysUnits*>(pGrpEntry);
+                    if( pPhysSize != nullptr && pPhysSize->getSIUnit() != nullptr ) {
+                        m_pTreeEntry = pPhysSize->getSIUnit();
+                        m_strKeyInTree = m_pTreeEntry->keyInTree();
+                        m_strUnitName = pPhysSize->getSIUnit()->name();
+                        m_strSymbol = pPhysSize->getSIUnit()->symbol();
+                    }
+                }
             }
         }
         else if( m_pTreeEntry->isLeave() ) {
@@ -448,7 +571,14 @@ void CUnit::setGroupPath(const QString& i_strPath)
                     m_classType = pGrpEntry->classType();
                     m_strKeyInTree = pGrpEntry->keyInTree();
                     m_strGrpPath = pGrpEntry->path();
-                    m_strSymbol = "";
+                    if( pGrpEntry->classType() == EUnitClassType::PhysSize ) {
+                        CUnitsTreeEntryGrpPhysUnits* pPhysSize =
+                            dynamic_cast<CUnitsTreeEntryGrpPhysUnits*>(pGrpEntry);
+                        if( pPhysSize != nullptr && pPhysSize->getSIUnit() != nullptr ) {
+                            m_strUnitName = pPhysSize->getSIUnit()->name();
+                            m_strSymbol = pPhysSize->getSIUnit()->symbol();
+                        }
+                    }
                 }
             }
         }
@@ -462,6 +592,9 @@ void CUnit::setGroupPath(const QString& i_strPath)
                         m_classType = pUnitEntry->classType();
                         m_strKeyInTree = pUnitEntry->keyInTree();
                         m_strSymbol = pUnitEntry->symbol();
+                        // As the given unit name could have been the prefix string
+                        // we set the unit name again.
+                        m_strUnitName = pUnitEntry->name();
                     }
                 }
             }
@@ -476,6 +609,9 @@ void CUnit::setGroupPath(const QString& i_strPath)
                         m_classType = pUnitEntry->classType();
                         m_strKeyInTree = pUnitEntry->keyInTree();
                         m_strUnitName = pUnitEntry->name();
+                        // As the given symbol could have been the prefix string
+                        // we set the symbol again.
+                        m_strSymbol = pUnitEntry->symbol();
                     }
                 }
             }
@@ -525,6 +661,9 @@ void CUnit::setUnitName(const QString& i_strName)
                     }
                     m_strKeyInTree = pUnitEntry->keyInTree();
                     m_strSymbol = pUnitEntry->symbol();
+                    // As the given unit name could have been the symbol or
+                    // prefix string we set the unit name again.
+                    m_strUnitName = pUnitEntry->name();
                 }
             }
         }

@@ -25,6 +25,8 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "Units/Electricity/PhysSizePower.h"
+#include "ZSPhysVal/ZSPhysTreeEntryGrpScienceField.h"
+#include "ZSPhysVal/ZSPhysUnitsIdxTree.h"
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 using namespace ZS::PhysVal;
@@ -135,6 +137,14 @@ CPhysSizePower::CPhysSizePower( CUnitsTreeEntryGrpScienceField* i_pParentBranch 
     // with its units (e.g. to create the field with internal conversion routines
     // and to create the chained list of Lower/Higher units).
     initialize(true);
+
+    // To allow "short" unit strings like "Power.mW" we add a shortcut to this phyiscal size.
+    i_pParentBranch->tree()->addShortcut(this, "Power");
+
+    // To allow "short" unit strings like "mW" we add shortcuts to each unit.
+    i_pParentBranch->tree()->addShortcut(&m_treeEntryMilliWatt, "mW");
+    i_pParentBranch->tree()->addShortcut(&m_treeEntryWatt, "W");
+    i_pParentBranch->tree()->addShortcut(&m_treeEntrydBMilliWatt, "dBm");
 
 } // ctor
 

@@ -51,51 +51,39 @@ QString CFctConvert::FormatM( double i_fM )
 //------------------------------------------------------------------------------
 {
     QString strM;
-    int     iExponent;
-
-    if( i_fM != 1.0 )
-    {
-        if( getExponentFromFactor(i_fM,&iExponent) )
-        {
-            if( iExponent != 0 )
-            {
+    if( i_fM != 1.0 ) {
+        bool bOk = false;
+        int iExponent = getExponentFromFactor(i_fM,&bOk);
+        if( bOk ) {
+            if( iExponent != 0 ) {
                 strM = "1e" + QString::number(iExponent);
             }
-        }
-        else
-        {
+        } else {
             strM = FormatOperand(i_fM);
         }
     }
     return strM;
-
-} // FormatM
+}
 
 //------------------------------------------------------------------------------
 QString CFctConvert::FormatT( double i_fT )
 //------------------------------------------------------------------------------
 {
     QString strT;
-
-    if( i_fT != 0.0 )
-    {
-        int iExponent;
-
-        if( getExponentFromFactor(i_fT,&iExponent) )
-        {
-            if( iExponent != 0 )
-            {
+    if( i_fT != 0.0 ) {
+        bool bOk = false;
+        int iExponent = getExponentFromFactor(i_fT,&bOk);
+        if( bOk ) {
+            if( iExponent != 0 ) {
                 strT = "1e" + QString::number(iExponent);
             }
         }
-        else
-        {
+        else {
             strT = FormatOperand(i_fT);
         }
     }
     return strT;
-
-} // FormatT
+}
 
 //------------------------------------------------------------------------------
 QString CFctConvert::FormatOperand( double i_fOp )

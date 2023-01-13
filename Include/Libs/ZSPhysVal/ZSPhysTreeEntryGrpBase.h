@@ -53,60 +53,29 @@ public: // ctors and dtor
         CIdxTreeEntry* i_pParentBranch,
         EUnitClassType i_classType,
         const QString& i_strName );
-    CUnitsTreeEntryGrpBase(CUnitsTreeEntryGrpBase&& i_other) = delete;
-    CUnitsTreeEntryGrpBase(CUnitsTreeEntryGrpBase& i_other) = delete;
-    CUnitsTreeEntryGrpBase(const CUnitsTreeEntryGrpBase& i_other) = delete;
     virtual ~CUnitsTreeEntryGrpBase();
-public: // operators
-    CUnitsTreeEntryGrpBase& operator=(CUnitsTreeEntryGrpBase& i_other) = delete;
-    CUnitsTreeEntryGrpBase& operator=(const CUnitsTreeEntryGrpBase& i_other) = delete;
-    CUnitsTreeEntryGrpBase& operator=(CUnitsTreeEntryGrpBase&& i_other) = delete;
 public: // operators
     bool operator == ( const CUnitsTreeEntryGrpBase& i_other ) const;
     bool operator != ( const CUnitsTreeEntryGrpBase& i_other ) const;
 public: // instance methods
     EUnitClassType classType() const { return m_classType; }
     QString classType2Str() const;
-    //QString getParentGroupName( bool i_bInsertParentNames = false ) const;
-    //QString getName( bool i_bInsertParentNames = false ) const;
-    //QString getKey() const { return m_strKey; }
-public: // instance methods
-    //bool isNameSpaceNode() const { return m_bIsNameSpaceNode; }
-public: // instance methods
-    //int getChildUnitGrpCount() const { return m_vecpUnitGrpChilds.size(); }
-    //void addChildUnitGrp( CUnitsTreeEntryGrpBase* i_pUnitGrp );
-    //void removeChildUnitGrp( int i_idx );
-    //void removeChildUnitGrp( CUnitsTreeEntryGrpBase* i_pUnitGrp );
-    //void removeChildUnitGrp( const QString& i_strName );
-    //CUnitsTreeEntryGrpBase* getChildUnitGrp( int i_idx ) const;
-    //CUnitsTreeEntryGrpBase* findChildUnitGrp( const QString& i_strName ) const;
 public: // overridables of base class CIdxTreeEntry
     virtual int addChild( CIdxTreeEntry* i_pChildTreeEntry ) override;
 public: // instance methods
-    //int getUnitCount() const { return m_vecpUnits.size(); }
-    //void addUnit( CUnit* i_pUnit );
-    //void removeUnit( int i_idx );
-    //void removeUnit( CUnit* i_pUnit );
-    //void removeUnit( const QString& i_strSymbolOrName );
-    //CUnit* unit( int i_idx ) const;
-    CUnitsTreeEntryUnitBase* findUnit( const QString& i_strSymbolOrName ) const;
-    CUnitsTreeEntryUnitBase* findUnitBySymbol( const QString& i_strSymbol ) const;
-    CUnitsTreeEntryUnitBase* findUnitByName( const QString& i_strName ) const;
+    virtual CUnitsTreeEntryUnitBase* findUnit( const QString& i_strSymbolOrName ) const;
+    virtual CUnitsTreeEntryUnitBase* findUnitByName( const QString& i_strName ) const;
+    virtual CUnitsTreeEntryUnitBase* findUnitBySymbol( const QString& i_strSymbol ) const;
+    virtual CUnitsTreeEntryUnitBase* findUnitByFactorPrefix( const QString& i_strPrefix ) const;
 protected: // instance members
+    /*!< Class type of the child nodes.
+         A group may be the parent of either
+         Ratio, Quantity or PhysUnit entries. */
     EUnitClassType m_classType;
-    //QString m_strName;
-    /*!< Key used to insert the group in the units pool */
-    //QString m_strKey;
-    //bool m_bIsNameSpaceNode;
-    //CUnitsTreeEntryGrpBase* m_pUnitGrpParent;
-    /*!< Can't have both types of children (one list must be empty): */
-    //QVector<CUnitsTreeEntryGrpBase*> m_vecpUnitGrpChilds;
-    /*!< key is name of unit group */
-    //QHash<QString,CUnitsTreeEntryGrpBase*> m_hshpUnitGrpChilds;
-    /*!< Either UnitGrps (if NameSpaceNode) or Units (if not NameSpaceNode). */
-    //QVector<CUnit*> m_vecpUnits;
-    /*!< Key is symbol of unit */
+    /*!< Key is symbol of unit (e.g. "mW", "GW"). */
     QHash<QString, CUnitsTreeEntryUnitBase*> m_hshpUnitsBySymbol;
+    /*!< Key is factor prefix of unit (e.g. "k", "G"). */
+    QHash<QString, CUnitsTreeEntryUnitBase*> m_hshpUnitsByPrefix;
 
 }; // class CUnitsTreeEntryGrpBase
 

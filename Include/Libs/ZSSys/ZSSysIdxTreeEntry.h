@@ -180,6 +180,9 @@ protected: // overridables
     virtual void setKeyInParentBranch( const QString& i_strKey );
     virtual void setIndexInParentBranch( int i_idx );
 protected: // instance methods
+    void addShortcut( const QString& i_strUniqueName );
+    void removeShortcut( const QString& i_strUniqueName );
+    QStringList shortcuts() const { return m_strlstShortcuts; }
     void setTree( CIdxTree* i_pTree );
 protected: // instance members
     /*!< The type may be either Root, Branch or Leave.
@@ -202,6 +205,12 @@ protected: // instance members
     /*!< Index of this entry in the tree's vector of entries
          ("global tree index or object Id"). */
     int m_idxInTree;
+    /*!< For faster or easier access to the index tree entry
+         unique names can be addes as shortcuts to the index tree.
+         The shortcuts are stored in the tree entry so that they
+         can be fastly removed (without scanning the whole shortcut map)
+         from the index tree together with the tree entry. */
+    QStringList m_strlstShortcuts;
     /*!< Reference to the parent branch. */
     CIdxTreeEntry* m_pParentBranch;
     /*!< Unique key of the entry in the parent branch composed of

@@ -25,6 +25,8 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "Units/Kinematics/PhysSizeSamples.h"
+#include "ZSPhysVal/ZSPhysTreeEntryGrpScienceField.h"
+#include "ZSPhysVal/ZSPhysUnitsIdxTree.h"
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 using namespace ZS::PhysVal;
@@ -61,6 +63,12 @@ CPhysSizeSamples::CPhysSizeSamples( CUnitsTreeEntryGrpScienceField* i_pParentBra
     // with its units (e.g. to create the field with internal conversion routines
     // and to create the chained list of Lower/Higher units).
     initialize(true);
+
+    // This physical size node is not added below the root node.
+    // The keys start with the parent path ("Quantities").
+    // To allow "short" unit strings like "Samples" we add a shortcut
+    // to this phyiscal size.
+    i_pParentBranch->tree()->addShortcut(this, "Samples");
 
 } // ctor
 

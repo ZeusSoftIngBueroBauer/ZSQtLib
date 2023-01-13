@@ -52,15 +52,9 @@ public: // ctors and dtor
         bool           i_bIsLogarithmic,
         double         i_fLogFactor,
         const QString& i_strName,
-        const QString& i_strSymbol );
-    CUnitsTreeEntryUnitBase(CUnitsTreeEntryUnitBase&& i_other) = delete;
-    CUnitsTreeEntryUnitBase(CUnitsTreeEntryUnitBase& i_other) = delete;
-    CUnitsTreeEntryUnitBase(const CUnitsTreeEntryUnitBase& i_other) = delete;
+        const QString& i_strSymbol,
+        const QString& i_strFactorPrefix );
     virtual ~CUnitsTreeEntryUnitBase();
-public: // operators
-    CUnitsTreeEntryUnitBase& operator=(CUnitsTreeEntryUnitBase& i_other) = delete;
-    CUnitsTreeEntryUnitBase& operator=(const CUnitsTreeEntryUnitBase& i_other) = delete;
-    CUnitsTreeEntryUnitBase& operator=(CUnitsTreeEntryUnitBase&& i_other) = delete;
 public: // operators
     bool operator == ( const CUnitsTreeEntryUnitBase& i_other ) const;
     bool operator != ( const CUnitsTreeEntryUnitBase& i_other ) const;
@@ -73,6 +67,7 @@ public: // instance methods (configuration)
     bool isPhysSize() const;
     CUnitsTreeEntryGrpBase* unitGroup() const;
     QString symbol() const { return m_strSymbol; }
+    QString factorPrefix() const { return m_strFactorPrefix; }
 public: // overridables (converting values)
     virtual bool isLogarithmic() const { return m_bIsLogarithmic; }
     virtual double logarithmicFactor() const { return m_fLogFactor; }
@@ -91,6 +86,8 @@ protected: // instance members
     EUnitClassType m_classType;
     /*!< e.g. "s", "W", "V", "A", ... */
     QString m_strSymbol;
+    /*!< e.g. M, k, m, ... */
+    QString m_strFactorPrefix;
     /*!< e.g. "dBm" is logarithmic */
     bool m_bIsLogarithmic;
     /*!< e.g. 10.0 for power related quantities, 20.0 for Volt etc. */

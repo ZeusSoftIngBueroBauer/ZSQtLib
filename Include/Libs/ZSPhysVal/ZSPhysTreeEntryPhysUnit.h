@@ -45,28 +45,20 @@ public: // class methods
 public: // ctors and dtor
     CUnitsTreeEntryPhysUnit(
         CUnitsTreeEntryGrpPhysUnits* i_pPhysSize,
-        const QString&      i_strPrefix );
+        const QString& i_strFactorPrefix );
     CUnitsTreeEntryPhysUnit(
         CUnitsTreeEntryGrpPhysUnits* i_pPhysSize,
-        bool                i_bIsLogarithmic,
-        const QString&      i_strName,
-        const QString&      i_strSymbol,
-        const double        i_fMFromBaseOrRefVal );
-    CUnitsTreeEntryPhysUnit(CUnitsTreeEntryPhysUnit&& i_unit) = delete;
-    CUnitsTreeEntryPhysUnit(CUnitsTreeEntryPhysUnit& i_unit) = delete;
-    CUnitsTreeEntryPhysUnit(const CUnitsTreeEntryPhysUnit& i_unit) = delete;
+        bool i_bIsLogarithmic,
+        const QString& i_strName,
+        const QString& i_strSymbol,
+        const double i_fMFromBaseOrRefVal );
     virtual ~CUnitsTreeEntryPhysUnit();
-public: // operators
-    CUnitsTreeEntryPhysUnit& operator=(CUnitsTreeEntryPhysUnit& i_other) = delete;
-    CUnitsTreeEntryPhysUnit& operator=(const CUnitsTreeEntryPhysUnit& i_other) = delete;
-    CUnitsTreeEntryPhysUnit& operator=(CUnitsTreeEntryPhysUnit&& i_other) = delete;
 public: // operators
     bool operator == ( const CUnitsTreeEntryPhysUnit& i_other ) const;
     bool operator != ( const CUnitsTreeEntryPhysUnit& i_other ) const;
 public: // instance methods
     CUnitsTreeEntryGrpPhysUnits* physSize() const;
     CUnitsTreeEntryPhysUnit* getSIUnit() const { return m_pPhysUnitSI; }
-    QString prefixStr() const { return m_strPrefix; }
 public: // instance methods
     double getFactorConvertFromSIUnit() const { return m_fctConvertFromSIUnit.m_fM; }
     void setFactorConvertFromSIUnit( double i_fFactor );
@@ -104,8 +96,6 @@ public: // instance methods (conversion routines to convert into units of other 
     QString getFctConvertExternalName( int i_idx ) const;
 protected: // instance members
     CUnitsTreeEntryPhysUnit* m_pPhysUnitSI;
-    // e.g. M, k, m, etc.
-    QString m_strPrefix;
     bool m_bInitialized;
     //int m_iPhysSizeRowIdx;
     CFctConvert m_fctConvertFromSIUnit;

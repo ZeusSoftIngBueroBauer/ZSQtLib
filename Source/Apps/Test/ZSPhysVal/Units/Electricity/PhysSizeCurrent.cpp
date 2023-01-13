@@ -25,6 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "Units/Electricity/PhysSizeCurrent.h"
+#include "ZSPhysVal/ZSPhysTreeEntryGrpScienceField.h"
 #include "ZSPhysVal/ZSPhysUnitsIdxTree.h"
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -81,6 +82,16 @@ CPhysSizeCurrent::CPhysSizeCurrent( CUnitsTreeEntryGrpScienceField* i_pParentBra
     // with its units (e.g. to create the field with internal conversion routines
     // and to create the chained list of Lower/Higher units).
     initialize(true);
+
+    // To allow "short" unit strings like "Current.mA" we add a shortcut to this phyiscal size.
+    i_pParentBranch->tree()->addShortcut(this, "Current");
+
+    // To allow "short" unit strings like "mA" we add shortcuts to each unit.
+    i_pParentBranch->tree()->addShortcut(&m_treeEntryPicoAmpere, "pA");
+    i_pParentBranch->tree()->addShortcut(&m_treeEntryNanoAmpere, "nA");
+    i_pParentBranch->tree()->addShortcut(&m_treeEntryMicroAmpere, "uA");
+    i_pParentBranch->tree()->addShortcut(&m_treeEntryMilliAmpere, "mA");
+    i_pParentBranch->tree()->addShortcut(&m_treeEntryAmpere, "A");
 
 } // ctor
 

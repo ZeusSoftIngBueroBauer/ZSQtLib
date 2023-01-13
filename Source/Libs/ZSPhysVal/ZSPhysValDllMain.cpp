@@ -224,197 +224,206 @@ template<> const QVector<SEnumEntry> CEnum<EResType>::s_arEnumEntries(
     /* 2 */ SEnumEntry( static_cast<int>(EResType::Accuracy), "Accuracy" )
 });
 
-///* enum ESubStr
-//==============================================================================*/
-//
-//template<> QMutex CEnum<EPhysScienceField>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-//template<> QVector<QHash<QString, int>> CEnum<EPhysScienceField>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
-//
-//template<> const QVector<SEnumEntry> CEnum<ESubStr>::s_arEnumEntries(
-//{
-//    /* 0 */ SEnumEntry( static_cast<int>(ESubStrVal),        "Val" ),
-//    /* 1 */ SEnumEntry( static_cast<int>(ESubStrValUnitGrp), "ValUnitGrp" ),
-//    /* 2 */ SEnumEntry( static_cast<int>(ESubStrValUnit),    "ValUnit" ),
-//    /* 3 */ SEnumEntry( static_cast<int>(ESubStrRes),        "Res" ),
-//    /* 4 */ SEnumEntry( static_cast<int>(ESubStrResUnitGrp), "ResUnitGrp" ),
-//    /* 5 */ SEnumEntry( static_cast<int>(ESubStrResUnit),    "ResUnit" )
-//});
-
-/* Exponents
+/* Exponents and Factors
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool ZS::PhysVal::getPrefixStrFromFactor( double i_fFactor, QString* o_pStrPrefix )
+QString ZS::PhysVal::getPrefixStrFromFactor( double i_fFactor, bool* o_pbOk )
 //------------------------------------------------------------------------------
 {
-    if( o_pStrPrefix == nullptr )
-    {
-        return false;
-    }
-
-    bool             bOk = false;
-    const SExponent* pExp;
-    int              idxExponent;
-    double           fMin = i_fFactor-2.0*DBL_EPSILON;
-    double           fMax = i_fFactor+2.0*DBL_EPSILON ;
-
-    for( pExp = c_arExponent, idxExponent = 0; idxExponent < EExponentCount; idxExponent++, pExp++ )
-    {
-        if( pExp->m_fFactor >= fMin && pExp->m_fFactor <= fMax )
-        {
-            *o_pStrPrefix = pExp->m_strPrefix;
+    QString strPrefix;
+    bool bOk = false;
+    double fMin = i_fFactor - 2.0 * DBL_EPSILON;
+    double fMax = i_fFactor + 2.0 * DBL_EPSILON ;
+    const SExponent* pExp = c_arExponent;
+    for( int idxExp = 0; idxExp < EExponentCount; ++idxExp, ++pExp ) {
+        if( pExp->m_fFactor >= fMin && pExp->m_fFactor <= fMax ) {
+            strPrefix = pExp->m_strPrefix;
             bOk = true;
             break;
         }
     }
-    return bOk;
-
-} // getPrefixStrFromFactor
+    if( o_pbOk != nullptr ) {
+        *o_pbOk = bOk;
+    }
+    return strPrefix;
+}
 
 //------------------------------------------------------------------------------
-bool ZS::PhysVal::getExponentFromFactor( double i_fFactor, int* o_piExponent )
+int ZS::PhysVal::getExponentFromFactor( double i_fFactor, bool* o_pbOk )
 //------------------------------------------------------------------------------
 {
-    if( o_piExponent == nullptr )
-    {
-        return false;
-    }
-
-    bool             bOk = false;
-    const SExponent* pExp;
-    int              idxExponent;
-    double           fMin = i_fFactor-2.0*DBL_EPSILON;
-    double           fMax = i_fFactor+2.0*DBL_EPSILON;
-
-    for( pExp = c_arExponent, idxExponent = 0; idxExponent < EExponentCount; idxExponent++, pExp++ )
-    {
-        if( pExp->m_fFactor >= fMin && pExp->m_fFactor <= fMax )
-        {
-            *o_piExponent = pExp->m_iExponent;
+    int iExponent = 0;
+    bool bOk = false;
+    double fMin = i_fFactor - 2.0 * DBL_EPSILON;
+    double fMax = i_fFactor + 2.0 * DBL_EPSILON;
+    const SExponent* pExp = c_arExponent;
+    for( int idxExp = 0; idxExp < EExponentCount; ++idxExp, ++pExp ) {
+        if( pExp->m_fFactor >= fMin && pExp->m_fFactor <= fMax ) {
+            iExponent = pExp->m_iExponent;
             bOk = true;
             break;
         }
     }
+    if( o_pbOk != nullptr ) {
+        *o_pbOk = bOk;
+    }
     return bOk;
-
-} // getExponentFromFactor
+}
 
 //------------------------------------------------------------------------------
-bool ZS::PhysVal::getFactorInverted( double i_fFactor, double* o_pfFactorInverted )
+double ZS::PhysVal::getFactorInverted( double i_fFactor, bool* o_pbOk )
 //------------------------------------------------------------------------------
 {
-    if( o_pfFactorInverted == nullptr )
-    {
-        return false;
-    }
-
-    bool             bOk = false;
-    const SExponent* pExp;
-    int              idxExponent;
-    double           fMin = i_fFactor-2.0*DBL_EPSILON;
-    double           fMax = i_fFactor+2.0*DBL_EPSILON;
-
-    for( pExp = c_arExponent, idxExponent = 0; idxExponent < EExponentCount; idxExponent++, pExp++ )
-    {
-        if( pExp->m_fFactor >= fMin && pExp->m_fFactor <= fMax )
-        {
-            if( idxExponent < EExponent0 )
-            {
-                *o_pfFactorInverted = c_arExponent[2*EExponent0-idxExponent].m_fFactor;
+    double fFactor = 0.0;
+    bool bOk = false;
+    double fMin = i_fFactor - 2.0 * DBL_EPSILON;
+    double fMax = i_fFactor + 2.0 * DBL_EPSILON;
+    const SExponent* pExp = c_arExponent;
+    for( int idxExp = 0; idxExp < EExponentCount; ++idxExp, ++pExp ) {
+        if( pExp->m_fFactor >= fMin && pExp->m_fFactor <= fMax ) {
+            if( idxExp < EExponent0 ) {
+                fFactor = c_arExponent[2*EExponent0-idxExp].m_fFactor;
             }
-            else if( idxExponent > EExponent0 )
-            {
-                *o_pfFactorInverted = c_arExponent[2*EExponent0-idxExponent].m_fFactor;
+            else if( idxExp > EExponent0 ) {
+                fFactor = c_arExponent[2*EExponent0-idxExp].m_fFactor;
             }
-            else
-            {
-                *o_pfFactorInverted = pExp->m_fFactor;
+            else {
+                fFactor = pExp->m_fFactor;
             }
             bOk = true;
             break;
         }
     }
+    if( o_pbOk != nullptr ) {
+        *o_pbOk = bOk;
+    }
     return bOk;
-
-} // getFactorInverted
+}
 
 //------------------------------------------------------------------------------
-double ZS::PhysVal::getFactorFromPrefixStr( const QString& i_strPrefix, bool i_bInverted )
+double ZS::PhysVal::getFactorFromPrefixStr(
+    const QString& i_strPrefix, bool i_bInverted, bool* o_pbOk )
 //------------------------------------------------------------------------------
 {
-    double           fFactor = 1.0;
-    const SExponent* pExp;
-    int              idxExponent;
-
-    for( pExp = c_arExponent, idxExponent = 0; idxExponent < EExponentCount; idxExponent++, pExp++ )
-    {
-        if( pExp->m_strPrefix == i_strPrefix )
-        {
-            if( i_bInverted )
-            {
-                if( idxExponent < EExponent0 )
-                {
-                    fFactor = c_arExponent[2*EExponent0-idxExponent].m_fFactor;
+    double fFactor = 1.0;
+    bool bOk = false;
+    const SExponent* pExp = c_arExponent;
+    for( int idxExp = 0; idxExp < EExponentCount; ++idxExp, ++pExp ) {
+        if( pExp->m_strPrefix == i_strPrefix ) {
+            if( i_bInverted ) {
+                if( idxExp < EExponent0 ) {
+                    fFactor = c_arExponent[2*EExponent0-idxExp].m_fFactor;
                 }
-                else if( idxExponent > EExponent0 )
-                {
-                    fFactor = c_arExponent[2*EExponent0-idxExponent].m_fFactor;
+                else if( idxExp > EExponent0 ) {
+                    fFactor = c_arExponent[2*EExponent0-idxExp].m_fFactor;
                 }
-                else
-                {
+                else {
                     fFactor = pExp->m_fFactor;
                 }
             }
-            else
-            {
+            else {
                 fFactor = pExp->m_fFactor;
             }
+            bOk = true;
             break;
         }
+    }
+    if( o_pbOk != nullptr ) {
+        *o_pbOk = bOk;
     }
     return fFactor;
-
-} // getFactorFromPrefixStr
+}
 
 //------------------------------------------------------------------------------
-int ZS::PhysVal::getExponentFromPrefixStr( const QString& i_strPrefix )
+int ZS::PhysVal::getExponentFromPrefixStr( const QString& i_strPrefix, bool* o_pbOk )
 //------------------------------------------------------------------------------
 {
-    int              iExponent = 0;
-    const SExponent* pExp;
-    int              idxExponent;
-
-    for( pExp = c_arExponent, idxExponent = 0; idxExponent < EExponentCount; idxExponent++, pExp++ )
-    {
-        if( pExp->m_strPrefix == i_strPrefix )
-        {
+    int iExponent = 0;
+    bool bOk = false;
+    const SExponent* pExp = c_arExponent;
+    for( int idxExp = 0; idxExp < EExponentCount; ++idxExp, ++pExp ) {
+        if( pExp->m_strPrefix == i_strPrefix ) {
             iExponent = pExp->m_iExponent;
+            bOk = true;
             break;
         }
+    }
+    if( o_pbOk != nullptr ) {
+        *o_pbOk = bOk;
     }
     return iExponent;
-
-} // getExponentFromPrefixStr
+}
 
 //------------------------------------------------------------------------------
-QString ZS::PhysVal::getExponentStrFromPrefixStr( const QString& i_strPrefix )
+QString ZS::PhysVal::getExponentStrFromPrefixStr( const QString& i_strPrefix, bool* o_pbOk )
 //------------------------------------------------------------------------------
 {
-    QString          strExponent = "?";
-    const SExponent* pExp;
-    int              idxExponent;
-
-    for( pExp = c_arExponent, idxExponent = 0; idxExponent < EExponentCount; idxExponent++, pExp++ )
-    {
-        if( pExp->m_strPrefix == i_strPrefix )
-        {
+    QString strExponent = "?";
+    bool bOk = false;
+    const SExponent* pExp = c_arExponent;
+    for( int idxExp = 0; idxExp < EExponentCount; ++idxExp, ++pExp ) {
+        if( pExp->m_strPrefix == i_strPrefix ) {
             strExponent = pExp->m_strExponent;
+            bOk = true;
             break;
         }
     }
+    if( o_pbOk != nullptr ) {
+        *o_pbOk = bOk;
+    }
     return strExponent;
+}
 
-} // getExponentStrFromPrefixStr
+//------------------------------------------------------------------------------
+QString ZS::PhysVal::getFactorPrefixFromSymbol( const QString& i_strSymbol, bool* o_pbOk )
+//------------------------------------------------------------------------------
+{
+    QString strPrefix;
+    bool bOk = false;
+    if( !i_strSymbol.isEmpty() ) {
+        const SExponent* pExp = c_arExponent;
+        for( int idxExp = 0; idxExp < EExponentCount; ++idxExp, ++pExp ) {
+            if( !pExp->m_strPrefix.isEmpty() && i_strSymbol.startsWith(pExp->m_strPrefix) ) {
+                strPrefix = pExp->m_strPrefix;
+                bOk = true;
+                break;
+            }
+        }
+    }
+    if( o_pbOk != nullptr ) {
+        *o_pbOk = bOk;
+    }
+    return strPrefix;
+}
+
+//------------------------------------------------------------------------------
+QString ZS::PhysVal::getFactorPrefixFromSymbol(
+    const QString& i_strSymbol, double i_fFactor, bool* o_pbOk )
+//------------------------------------------------------------------------------
+{
+    QString strPrefix;
+    bool bOk = false;
+    if( !i_strSymbol.isEmpty() ) {
+        double fMin = i_fFactor - 2.0 * DBL_EPSILON;
+        double fMax = i_fFactor + 2.0 * DBL_EPSILON ;
+        const SExponent* pExp = c_arExponent;
+        for( int idxExp = 0; idxExp < EExponentCount; ++idxExp, ++pExp ) {
+            if( !pExp->m_strPrefix.isEmpty() ) {
+                if( (pExp->m_fFactor >= fMin && pExp->m_fFactor <= fMax)
+                 && i_strSymbol.startsWith(pExp->m_strPrefix) ) {
+                    strPrefix = pExp->m_strPrefix;
+                    bOk = true;
+                    break;
+                }
+            }
+        }
+    }
+    if( o_pbOk != nullptr ) {
+        *o_pbOk = bOk;
+    }
+    return strPrefix;
+}
 
 
 /*******************************************************************************
@@ -1691,7 +1700,7 @@ TFormatResult ZS::PhysVal::parseValStr(
     double   fVal = 0.0;
     CUnit    unitVal(io_pUnitVal);
     double   fRes = 0.0;
-    CUnit    unitRes;
+    CUnit    unitRes(io_pUnitRes);
     bool     bOk;
 
     if( o_pbValOk != nullptr )

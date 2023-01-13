@@ -49,11 +49,13 @@ CUnitsTreeEntryUnitBase::CUnitsTreeEntryUnitBase(
     bool i_bIsLogarithmic,
     double i_fLogFactor,
     const QString& i_strName,
-    const QString& i_strSymbol ) :
+    const QString& i_strSymbol,
+    const QString& i_strFactorPrefix ) :
 //------------------------------------------------------------------------------
     CIdxTreeEntry(EIdxTreeEntryType::Leave, i_strName),
     m_classType(i_pParentBranch->classType()),
     m_strSymbol(i_strSymbol),
+    m_strFactorPrefix(i_strFactorPrefix),
     m_bIsLogarithmic(i_bIsLogarithmic),
     m_fLogFactor(i_fLogFactor),
     m_pNextLower(nullptr),
@@ -89,6 +91,7 @@ CUnitsTreeEntryUnitBase::~CUnitsTreeEntryUnitBase()
 
     m_classType = static_cast<EUnitClassType>(0);
     //m_strSymbol;
+    //m_strFactorPrefix;
     m_bIsLogarithmic = false;
     m_fLogFactor = 0.0;
     m_pNextLower = nullptr;

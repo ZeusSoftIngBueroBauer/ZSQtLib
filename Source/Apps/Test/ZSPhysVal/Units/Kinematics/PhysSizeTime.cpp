@@ -25,6 +25,8 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "Units/Kinematics/PhysSizeTime.h"
+#include "ZSPhysVal/ZSPhysTreeEntryGrpScienceField.h"
+#include "ZSPhysVal/ZSPhysUnitsIdxTree.h"
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 using namespace ZS::PhysVal;
@@ -98,6 +100,15 @@ CPhysSizeTime::CPhysSizeTime( CUnitsTreeEntryGrpScienceField* i_pParentBranch ) 
     // with its units (e.g. to create the field with internal conversion routines
     // and to create the chained list of Lower/Higher units).
     initialize(true);
+
+    // To allow "short" unit strings like "Time.ms" we add a shortcut to this phyiscal size.
+    i_pParentBranch->tree()->addShortcut(this, "Time");
+
+    // To allow "short" unit strings like "ms" we add shortcuts to each unit.
+    i_pParentBranch->tree()->addShortcut(&m_treeEntryNanoSeconds, "ns");
+    i_pParentBranch->tree()->addShortcut(&m_treeEntryMicroSeconds, "us");
+    i_pParentBranch->tree()->addShortcut(&m_treeEntryMilliSeconds, "ms");
+    i_pParentBranch->tree()->addShortcut(&m_treeEntrySeconds, "s");
 
 } // ctor
 

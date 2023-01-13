@@ -25,6 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSPhysVal/ZSPhysTreeEntryGrpScienceField.h"
+#include "ZSPhysVal/ZSPhysTreeEntryGrpPhysUnits.h"
 #include "ZSPhysVal/ZSPhysUnitsIdxTree.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
@@ -46,54 +47,40 @@ public: // ctors and dtor
 
     The constructor will add itself to an index tree of physical sizes.
 
-    If no index tree is passed the constructor will look for an index tree
-    with the default name "PhysSizes". If also this index tree is not yet
-    existing the constructor will create an index tree with the default name.
-
-    @param i_strName [in]
-        e.g. "Kinematics", "Electricity", "Geometry", ...
     @param i_pIdxTree [in]
         Pointer to index tree the science field should be added to.
-        If nullptr is passed the constructor first checks whether
-        an index tree with the default name "PhysSizes" is existing.
-        If not an index tree with the default name will be created.
-        The destructor will again release the index tree in this case.
+    @param i_scienceField [in]
+        e.g. Kinematics, Electricity, Geometry, ...
 */
 CUnitsTreeEntryGrpScienceField::CUnitsTreeEntryGrpScienceField(
     CIdxTreeUnits* i_pIdxTree, EPhysScienceField i_scienceField ) :
 //------------------------------------------------------------------------------
-    CIdxTreeEntry(EIdxTreeEntryType::Branch, CEnumPhysScienceField(i_scienceField).toString())
+    CUnitsTreeEntryGrpBase(
+        i_pIdxTree, EUnitClassType::PhysSize,
+        CEnumPhysScienceField(i_scienceField).toString())
 {
-    i_pIdxTree->add(this);
-
-} // ctor
+}
 
 //------------------------------------------------------------------------------
 /*! @brief Creates an instance of a physical science field.
 
-    The constructor will add itself to an index tree of physical sizes.
+    The constructor will add itself to the index tree as a child of
+    the given parent branch.
 
-    If no index tree is passed the constructor will look for an index tree
-    with the default name "PhysSizes". If also this index tree is not yet
-    existing the constructor will create an index tree with the default name.
-
-    @param i_strName [in]
-        e.g. "Kinematics", "Electricity", "Geometry", ...
-    @param i_pIdxTree [in]
-        Pointer to index tree the science field should be added to.
-        If nullptr is passed the constructor first checks whether
-        an index tree with the default name "PhysSizes" is existing.
-        If not an index tree with the default name will be created.
-        The destructor will again release the index tree in this case.
+    @param i_pParentBranch [in]
+        Pointer to parent branch the science field should be
+        added to as a child.
+    @param i_scienceField [in]
+        e.g. Kinematics, Electricity, Geometry, ...
 */
 CUnitsTreeEntryGrpScienceField::CUnitsTreeEntryGrpScienceField(
     CIdxTreeEntry* i_pParentBranch, EPhysScienceField i_scienceField ) :
 //------------------------------------------------------------------------------
-    CIdxTreeEntry(EIdxTreeEntryType::Branch, CEnumPhysScienceField(i_scienceField).toString())
+    CUnitsTreeEntryGrpBase(
+        i_pParentBranch, EUnitClassType::PhysSize,
+        CEnumPhysScienceField(i_scienceField).toString())
 {
-    i_pParentBranch->tree()->add(this, i_pParentBranch);
-
-} // ctor
+}
 
 //------------------------------------------------------------------------------
 /*! @brief Destroys the science field instance.
@@ -106,5 +93,76 @@ CUnitsTreeEntryGrpScienceField::CUnitsTreeEntryGrpScienceField(
 CUnitsTreeEntryGrpScienceField::~CUnitsTreeEntryGrpScienceField()
 //------------------------------------------------------------------------------
 {
-} // dtor
+}
 
+/*=============================================================================
+public: // overridables of base class CUnitsTreeEntryGrpBase
+=============================================================================*/
+
+//------------------------------------------------------------------------------
+CUnitsTreeEntryUnitBase* CUnitsTreeEntryGrpScienceField::findUnit( const QString& i_strSymbolOrName ) const
+//------------------------------------------------------------------------------
+{
+    CUnitsTreeEntryUnitBase* pUnit = findUnitBySymbol(i_strSymbolOrName);
+    if( pUnit == nullptr ) {
+        pUnit = findUnitByName(i_strSymbolOrName);
+    }
+    if( pUnit == nullptr ) {
+        pUnit = findUnitByFactorPrefix(i_strSymbolOrName);
+    }
+    return pUnit;
+}
+
+//------------------------------------------------------------------------------
+CUnitsTreeEntryUnitBase* CUnitsTreeEntryGrpScienceField::findUnitByName( const QString& i_strName ) const
+//------------------------------------------------------------------------------
+{
+    CUnitsTreeEntryUnitBase* pUnit = nullptr;
+    for( const CIdxTreeEntry* pTreeEntryChild : m_arpTreeEntries ) {
+        const CUnitsTreeEntryGrpPhysUnits* pPhysSize =
+            dynamic_cast<const CUnitsTreeEntryGrpPhysUnits*>(pTreeEntryChild);
+        if( pPhysSize != nullptr ) {
+            pUnit = pPhysSize->findUnitByName(i_strName);
+            if( pUnit != nullptr) {
+                break;
+            }
+        }
+    }
+    return pUnit;
+}
+
+//------------------------------------------------------------------------------
+CUnitsTreeEntryUnitBase* CUnitsTreeEntryGrpScienceField::findUnitBySymbol( const QString& i_strSymbol ) const
+//------------------------------------------------------------------------------
+{
+    CUnitsTreeEntryUnitBase* pUnit = nullptr;
+    for( const CIdxTreeEntry* pTreeEntryChild : m_arpTreeEntries ) {
+        const CUnitsTreeEntryGrpPhysUnits* pPhysSize =
+            dynamic_cast<const CUnitsTreeEntryGrpPhysUnits*>(pTreeEntryChild);
+        if( pPhysSize != nullptr ) {
+            pUnit = pPhysSize->findUnitBySymbol(i_strSymbol);
+            if( pUnit != nullptr) {
+                break;
+            }
+        }
+    }
+    return pUnit;
+}
+
+//------------------------------------------------------------------------------
+CUnitsTreeEntryUnitBase* CUnitsTreeEntryGrpScienceField::findUnitByFactorPrefix( const QString& i_strPrefix ) const
+//------------------------------------------------------------------------------
+{
+    CUnitsTreeEntryUnitBase* pUnit = nullptr;
+    for( const CIdxTreeEntry* pTreeEntryChild : m_arpTreeEntries ) {
+        const CUnitsTreeEntryGrpPhysUnits* pPhysSize =
+            dynamic_cast<const CUnitsTreeEntryGrpPhysUnits*>(pTreeEntryChild);
+        if( pPhysSize != nullptr ) {
+            pUnit = pPhysSize->findUnitByFactorPrefix(i_strPrefix);
+            if( pUnit != nullptr) {
+                break;
+            }
+        }
+    }
+    return pUnit;
+}

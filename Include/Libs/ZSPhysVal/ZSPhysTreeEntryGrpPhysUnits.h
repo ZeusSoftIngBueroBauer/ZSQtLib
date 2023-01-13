@@ -30,7 +30,6 @@ may result in using the software modules.
 #include <QtCore/qobject.h>
 #include <QtCore/qstring.h>
 
-#include "ZSPhysVal/ZSPhysValDllMain.h"
 #include "ZSPhysVal/ZSPhysTreeEntryGrpBase.h"
 #include "ZSPhysVal/ZSPhysUnitsFctConvert.h"
 
@@ -62,14 +61,7 @@ public: // ctors and dtor
         const QString& i_strSIUnitSymbol,
         const QString& i_strFormulaSymbol,
         bool           i_bIsPowerRelated );
-    CUnitsTreeEntryGrpPhysUnits(CUnitsTreeEntryGrpPhysUnits&& i_other) = delete;
-    CUnitsTreeEntryGrpPhysUnits(CUnitsTreeEntryGrpPhysUnits& i_other) = delete;
-    CUnitsTreeEntryGrpPhysUnits(const CUnitsTreeEntryGrpPhysUnits& i_other) = delete;
     virtual ~CUnitsTreeEntryGrpPhysUnits();
-public: // operators
-    CUnitsTreeEntryGrpPhysUnits& operator=(CUnitsTreeEntryGrpPhysUnits& i_other) = delete;
-    CUnitsTreeEntryGrpPhysUnits& operator=(const CUnitsTreeEntryGrpPhysUnits& i_other) = delete;
-    CUnitsTreeEntryGrpPhysUnits& operator=(CUnitsTreeEntryGrpPhysUnits&& i_other) = delete;
 public: // operators
     bool operator == ( const CUnitsTreeEntryGrpPhysUnits& i_physsizeOther ) const;
     bool operator != ( const CUnitsTreeEntryGrpPhysUnits& i_physsizeOther ) const;

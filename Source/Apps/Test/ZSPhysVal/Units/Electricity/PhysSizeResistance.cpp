@@ -25,6 +25,8 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "Units/Electricity/PhysSizeResistance.h"
+#include "ZSPhysVal/ZSPhysTreeEntryGrpScienceField.h"
+#include "ZSPhysVal/ZSPhysUnitsIdxTree.h"
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 using namespace ZS::PhysVal;
@@ -72,6 +74,7 @@ CPhysSizeResistance::CPhysSizeResistance( CUnitsTreeEntryGrpScienceField* i_pPar
     NanoOhm(m_treeEntryNanoOhm),
     MicroOhm(m_treeEntryMicroOhm),
     MilliOhm(m_treeEntryMilliOhm),
+    Ohm(m_treeEntryOhm),
     KiloOhm(m_treeEntryKiloOhm),
     MegaOhm(m_treeEntryMegaOhm),
     nOhm(m_treeEntryNanoOhm),
@@ -84,6 +87,13 @@ CPhysSizeResistance::CPhysSizeResistance( CUnitsTreeEntryGrpScienceField* i_pPar
     // with its units (e.g. to create the field with internal conversion routines
     // and to create the chained list of Lower/Higher units).
     initialize(true);
+
+    // To allow "short" unit strings like "Resistance.mOhm" we add a shortcut to this phyiscal size.
+    i_pParentBranch->tree()->addShortcut(this, "Resistance");
+
+    // To allow "short" unit strings like "Ohm" we add shortcuts to each unit.
+    i_pParentBranch->tree()->addShortcut(&m_treeEntryMilliOhm, "mOhm");
+    i_pParentBranch->tree()->addShortcut(&m_treeEntryOhm, "Ohm");
 
 } // ctor
 

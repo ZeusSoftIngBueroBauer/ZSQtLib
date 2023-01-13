@@ -27,8 +27,7 @@ may result in using the software modules.
 #ifndef ZSPhysVal_PhysTreeEntryGrpScienceField_h
 #define ZSPhysVal_PhysTreeEntryGrpScienceField_h
 
-#include "ZSPhysVal/ZSPhysValDllMain.h"
-#include "ZSSys/ZSSysIdxTreeEntry.h"
+#include "ZSPhysVal/ZSPhysTreeEntryGrpBase.h"
 
 namespace ZS
 {
@@ -37,7 +36,7 @@ namespace PhysVal
 class CIdxTreeUnits;
 
 //******************************************************************************
-class ZSPHYSVALDLL_API CUnitsTreeEntryGrpScienceField : public ZS::System::CIdxTreeEntry
+class ZSPHYSVALDLL_API CUnitsTreeEntryGrpScienceField : public CUnitsTreeEntryGrpBase
 //******************************************************************************
 {
 public: // class methods
@@ -45,15 +44,13 @@ public: // class methods
     static QString ClassName() { return "CUnitsTreeEntryGrpScienceField"; }
 public: // ctors and dtor
     CUnitsTreeEntryGrpScienceField(CIdxTreeUnits* i_pIdxTree, EPhysScienceField i_scienceField);
-    CUnitsTreeEntryGrpScienceField(CIdxTreeEntry* i_pParentBranch, EPhysScienceField i_scienceField);
-    CUnitsTreeEntryGrpScienceField(CUnitsTreeEntryGrpScienceField&& i_other) = delete;
-    CUnitsTreeEntryGrpScienceField(CUnitsTreeEntryGrpScienceField& i_other) = delete;
-    CUnitsTreeEntryGrpScienceField(const CUnitsTreeEntryGrpScienceField& i_other) = delete;
+    CUnitsTreeEntryGrpScienceField(ZS::System::CIdxTreeEntry* i_pParentBranch, EPhysScienceField i_scienceField);
     virtual ~CUnitsTreeEntryGrpScienceField();
-public: // operators
-    CUnitsTreeEntryGrpScienceField& operator=(CUnitsTreeEntryGrpScienceField& i_other) = delete;
-    CUnitsTreeEntryGrpScienceField& operator=(const CUnitsTreeEntryGrpScienceField& i_other) = delete;
-    CUnitsTreeEntryGrpScienceField& operator=(CUnitsTreeEntryGrpScienceField&& i_other) = delete;
+public: // overridables of base class CUnitsTreeEntryGrpBase
+    virtual CUnitsTreeEntryUnitBase* findUnit( const QString& i_strSymbolOrName ) const override;
+    virtual CUnitsTreeEntryUnitBase* findUnitByName( const QString& i_strName ) const override;
+    virtual CUnitsTreeEntryUnitBase* findUnitBySymbol( const QString& i_strSymbol ) const override;
+    virtual CUnitsTreeEntryUnitBase* findUnitByFactorPrefix( const QString& i_strPrefix ) const override;
 
 }; // class CUnitsTreeEntryGrpScienceField
 

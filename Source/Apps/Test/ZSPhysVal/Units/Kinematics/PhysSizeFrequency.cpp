@@ -25,6 +25,8 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "Units/Kinematics/PhysSizeFrequency.h"
+#include "ZSPhysVal/ZSPhysTreeEntryGrpScienceField.h"
+#include "ZSPhysVal/ZSPhysUnitsIdxTree.h"
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 
@@ -75,6 +77,15 @@ CPhysSizeFrequency::CPhysSizeFrequency( CUnitsTreeEntryGrpScienceField* i_pParen
     // with its units (e.g. to create the field with internal conversion routines
     // and to create the chained list of Lower/Higher units).
     initialize(true);
+
+    // To allow "short" unit strings like "Frequency.Hz" we add a shortcut to this phyiscal size.
+    i_pParentBranch->tree()->addShortcut(this, "Frequency");
+
+    // To allow "short" unit strings like "Hz" we add shortcuts to each unit.
+    i_pParentBranch->tree()->addShortcut(&m_treeEntryHertz, "Hz");
+    i_pParentBranch->tree()->addShortcut(&m_treeEntryKiloHertz, "kHz");
+    i_pParentBranch->tree()->addShortcut(&m_treeEntryMegaHertz, "MHz");
+    i_pParentBranch->tree()->addShortcut(&m_treeEntryGigaHertz, "GHz");
 
 } // ctor
 

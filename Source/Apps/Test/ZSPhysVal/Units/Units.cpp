@@ -44,7 +44,7 @@ using namespace ZS::Apps::Test::PhysVal;
 CIdxTreeUnitsPhysValTest ZS::Apps::Test::PhysVal::IdxTreeUnits;
 
 CUnitsQuantities ZS::Apps::Test::PhysVal::Quantities(IdxTreeUnits.root());
-CUnitsRatios ZS::Apps::Test::PhysVal::Ratios(IdxTreeUnits.root());
+CUnitsRatios ZS::Apps::Test::PhysVal::Ratio(IdxTreeUnits.root());
 CPhysScienceFieldElectricity ZS::Apps::Test::PhysVal::Electricity(IdxTreeUnits.scienceFieldsTreeEntry());
 CPhysScienceFieldGeometry ZS::Apps::Test::PhysVal::Geometry(IdxTreeUnits.scienceFieldsTreeEntry());
 CPhysScienceFieldKinematics ZS::Apps::Test::PhysVal::Kinematics(IdxTreeUnits.scienceFieldsTreeEntry());

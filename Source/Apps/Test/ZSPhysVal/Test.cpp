@@ -1338,10 +1338,9 @@ void CTest::doTestStepCtorWithDblVals_2( ZS::Test::CTestStep* i_pTestStep )
 
     try
     {
-        //CPhysVal physVal( 10.0, Ratio.PerCent );
-        //physVal.convertValue(Kinematics.Frequency.MegaHertz);
-        //i_pTestStep->setResultValue( physVal.toString() );
-        i_pTestStep->setResultValue( "ToDo" );
+        CPhysVal physVal( 10.0, Ratio.PerCent );
+        physVal.convertValue(Kinematics.Frequency.MegaHertz);
+        i_pTestStep->setResultValue( physVal.toString() );
     }
     catch( CException& exc )
     {
@@ -1361,10 +1360,9 @@ void CTest::doTestStepCtorWithDblVals_3( ZS::Test::CTestStep* i_pTestStep )
 
     try
     {
-        //CPhysVal physVal( 10.0, Ratio.PerCent );
-        //physVal.convertValue( Ratio.PerMille );
-        //i_pTestStep->setResultValue( physVal.toString() );
-        i_pTestStep->setResultValue( "ToDo" );
+        CPhysVal physVal( 10.0, Ratio.PerCent );
+        physVal.convertValue( Ratio.PerMille );
+        i_pTestStep->setResultValue( physVal.toString() );
     }
     catch( CException& exc )
     {
@@ -1410,10 +1408,9 @@ void CTest::doTestStepCtorWithDblValsAndRes_2( ZS::Test::CTestStep* i_pTestStep 
 
     try
     {
-        //CPhysVal physVal( 1.0, Ratio.PerCent, 0.5, EResType::Accuracy );
-        //QString strResultValue = physVal.toString();
-        //i_pTestStep->setResultValue( physVal.toString() );
-        i_pTestStep->setResultValue( "ToDo" );
+        CPhysVal physVal( 1.0, Ratio.PerCent, 0.5, EResType::Accuracy );
+        QString strResultValue = physVal.toString();
+        i_pTestStep->setResultValue( physVal.toString() );
     }
     catch( CException& exc )
     {
@@ -1433,10 +1430,9 @@ void CTest::doTestStepCtorWithDblValsAndRes_3( ZS::Test::CTestStep* i_pTestStep 
 
     try
     {
-        //CPhysVal physVal( 1.2345678, Ratio.PerCent, 5.0, Ratio.PerMille, EResType::Accuracy );
-        //QString strResultValue = physVal.toString();
-        //i_pTestStep->setResultValue( physVal.toString() );
-        i_pTestStep->setResultValue( "ToDo" );
+        CPhysVal physVal( 1.2345678, Ratio.PerCent, 5.0, Ratio.PerMille, EResType::Accuracy );
+        QString strResultValue = physVal.toString();
+        i_pTestStep->setResultValue( physVal.toString() );
     }
     catch( CException& exc )
     {
@@ -1456,10 +1452,9 @@ void CTest::doTestStepCtorWithDblValsAndRes_4( ZS::Test::CTestStep* i_pTestStep 
 
     try
     {
-        //CPhysVal physVal( 1.2345678, Ratio.PerCent, CPhysValRes(0.5,Ratio.PerMille,EResType::Accuracy) );
-        //QString strResultValue = physVal.toString();
-        //i_pTestStep->setResultValue( physVal.toString() );
-        i_pTestStep->setResultValue( "ToDo" );
+        CPhysVal physVal( 1.2345678, Ratio.PerCent, CPhysValRes(0.5,Ratio.PerMille,EResType::Accuracy) );
+        QString strResultValue = physVal.toString();
+        i_pTestStep->setResultValue( physVal.toString() );
     }
     catch( CException& exc )
     {
@@ -1501,10 +1496,9 @@ void CTest::doTestStepCtorWithDblValsAndRes_6( ZS::Test::CTestStep* i_pTestStep 
 
     try
     {
-        //CPhysVal physVal( 12.34567, Geometry.Length.KiloMeter, 2.0, Ratio.PerCent, EResType::Accuracy );
-        //QString strResultValue = physVal.toString();
-        //i_pTestStep->setResultValue( physVal.toString() );
-        i_pTestStep->setResultValue("ToDo");
+        CPhysVal physVal( 12.34567, Geometry.Length.KiloMeter, 2.0, Ratio.PerCent, EResType::Accuracy );
+        QString strResultValue = physVal.toString();
+        i_pTestStep->setResultValue( physVal.toString() );
     }
     catch( CException& exc )
     {
@@ -1524,14 +1518,13 @@ void CTest::doTestStepCtorWithDblValsAndRes_7( ZS::Test::CTestStep* i_pTestStep 
 
     try
     {
-        //CPhysVal physVal( 12.34567, Geometry.Length.KiloMeter, 2.0, Ratio.PerCent, EResType::Accuracy );
-        //QString strResultValue = physVal.toString(
-        //    /* unitFindVal          */ EUnitFind::None,
-        //    /* iValSubStrVisibility */ PhysValSubStr::Val|PhysValSubStr::UnitSymbol,
-        //    /* unitFindRes          */ EUnitFind::None,
-        //    /* iResSubStrVisibility */ PhysValSubStr::Val );
-        //i_pTestStep->setResultValue( strResultValue );
-        i_pTestStep->setResultValue("ToDo");
+        CPhysVal physVal( 12.34567, Geometry.Length.KiloMeter, 2.0, Ratio.PerCent, EResType::Accuracy );
+        QString strResultValue = physVal.toString(
+            /* unitFindVal          */ EUnitFind::None,
+            /* iValSubStrVisibility */ PhysValSubStr::Val|PhysValSubStr::UnitSymbol,
+            /* unitFindRes          */ EUnitFind::None,
+            /* iResSubStrVisibility */ PhysValSubStr::Val );
+        i_pTestStep->setResultValue( strResultValue );
     }
     catch( CException& exc )
     {
@@ -1820,14 +1813,15 @@ void CTest::doTestStepCtorWithStrValsConvert2Str_10( ZS::Test::CTestStep* i_pTes
 
     try
     {
-        //CPhysVal physVal( "(45 " + c_strSymbolPlusMinus + " 2) %", Ratio, EResType::Accuracy );
-        //QString strResultValue = physVal.toString(
-        //    /* unitFindVal          */ EUnitFind::None,
-        //    /* iValSubStrVisibility */ PhysValSubStr::Val|PhysValSubStr::UnitSymbol,
-        //    /* unitFindRes          */ EUnitFind::None,
-        //    /* iResSubStrVisibility */ PhysValSubStr::Val );
-        //i_pTestStep->setResultValue(strResultValue);
-        i_pTestStep->setResultValue("ToDo");
+        CPhysVal physVal(
+            "(45 " + c_strSymbolPlusMinus + " 2) %",
+            CUnit(Ratio), EResType::Accuracy );
+        QString strResultValue = physVal.toString(
+            /* unitFindVal          */ EUnitFind::None,
+            /* iValSubStrVisibility */ PhysValSubStr::Val|PhysValSubStr::UnitSymbol,
+            /* unitFindRes          */ EUnitFind::None,
+            /* iResSubStrVisibility */ PhysValSubStr::Val );
+        i_pTestStep->setResultValue(strResultValue);
     }
     catch( CException& exc )
     {
@@ -1843,18 +1837,19 @@ void CTest::doTestStepCtorWithStrValsConvert2Str_10( ZS::Test::CTestStep* i_pTes
 void CTest::doTestStepCtorWithStrValsConvert2Str_11( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    i_pTestStep->setExpectedValue( "(8.900 " + c_strSymbolPlusMinus + " 0.0045) " + QString::fromLatin1("µ") + "V" );
+    i_pTestStep->setExpectedValue( "(8.900 " + c_strSymbolPlusMinus + " 0.0045) uV" );
 
     try
     {
-        //CPhysVal physVal( "8.9 " + QString::fromLatin1("µ") + "V" + c_strSymbolPlusMinus + " 0.05 %", Electricity.Voltage, Ratio, EResType::Accuracy );
-        //QString strResultValue = physVal.toString(
-        //    /* unitFindVal          */ EUnitFind::None,
-        //    /* iValSubStrVisibility */ PhysValSubStr::Val|PhysValSubStr::UnitSymbol,
-        //    /* unitFindRes          */ EUnitFind::None,
-        //    /* iResSubStrVisibility */ PhysValSubStr::Val );
-        //i_pTestStep->setResultValue(strResultValue);
-        i_pTestStep->setResultValue("ToDo");
+        CPhysVal physVal(
+            "8.9 uV" + c_strSymbolPlusMinus + " 0.05 %", CUnit(Electricity.Voltage),
+            CUnit(Ratio), EResType::Accuracy );
+        QString strResultValue = physVal.toString(
+            /* unitFindVal          */ EUnitFind::None,
+            /* iValSubStrVisibility */ PhysValSubStr::Val|PhysValSubStr::UnitSymbol,
+            /* unitFindRes          */ EUnitFind::None,
+            /* iResSubStrVisibility */ PhysValSubStr::Val );
+        i_pTestStep->setResultValue(strResultValue);
     }
     catch( CException& exc )
     {
@@ -1870,18 +1865,19 @@ void CTest::doTestStepCtorWithStrValsConvert2Str_11( ZS::Test::CTestStep* i_pTes
 void CTest::doTestStepCtorWithStrValsConvert2Str_12( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    i_pTestStep->setExpectedValue( "8.900 " + QString::fromLatin1("µ") + "V " + c_strSymbolPlusMinus + " 0.05 %" );
+    i_pTestStep->setExpectedValue( "8.900 uV " + c_strSymbolPlusMinus + " 0.05 %" );
 
     try
     {
-        //CPhysVal physVal( "8.9 " + QString::fromLatin1("µ") + "V " + c_strSymbolPlusMinus + " 0.05 %", Electricity.Voltage, Ratio, EResType::Accuracy );
-        //QString strResultValue = physVal.toString(
-        //    /* unitFindVal          */ EUnitFind::None,
-        //    /* iValSubStrVisibility */ PhysValSubStr::Val|PhysValSubStr::UnitSymbol,
-        //    /* unitFindRes          */ EUnitFind::None,
-        //    /* iResSubStrVisibility */ PhysValSubStr::Val|PhysValSubStr::UnitSymbol );
-        //i_pTestStep->setResultValue(strResultValue);
-        i_pTestStep->setResultValue("ToDo");
+        CPhysVal physVal(
+            "8.9 uV " + c_strSymbolPlusMinus + " 0.05 %", CUnit(Electricity.Voltage),
+            CUnit(Ratio), EResType::Accuracy );
+        QString strResultValue = physVal.toString(
+            /* unitFindVal          */ EUnitFind::None,
+            /* iValSubStrVisibility */ PhysValSubStr::Val|PhysValSubStr::UnitSymbol,
+            /* unitFindRes          */ EUnitFind::None,
+            /* iResSubStrVisibility */ PhysValSubStr::Val|PhysValSubStr::UnitSymbol );
+        i_pTestStep->setResultValue(strResultValue);
     }
     catch( CException& exc )
     {
@@ -1897,18 +1893,19 @@ void CTest::doTestStepCtorWithStrValsConvert2Str_12( ZS::Test::CTestStep* i_pTes
 void CTest::doTestStepCtorWithStrValsConvert2Str_13( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    i_pTestStep->setExpectedValue( "8.900 " + QString::fromLatin1("µ") + "V " + c_strSymbolPlusMinus + " 4.5 nV" );
+    i_pTestStep->setExpectedValue( "8.900 uV " + c_strSymbolPlusMinus + " 4.5 nV" );
 
     try
     {
-        //CPhysVal physVal( "8.9 " + QString::fromLatin1("µ") + "V" + c_strSymbolPlusMinus + " 0.05 %", Electricity.Voltage, Ratio, EResType::Accuracy );
-        //QString strResultValue = physVal.toString(
-        //    /* unitFindVal          */ EUnitFind::None,
-        //    /* iValSubStrVisibility */ PhysValSubStr::Val|PhysValSubStr::UnitSymbol,
-        //    /* unitRes              */ Electricity.Voltage.NanoVolt,
-        //    /* iResSubStrVisibility */ PhysValSubStr::Val|PhysValSubStr::UnitSymbol );
-        //i_pTestStep->setResultValue(strResultValue);
-        i_pTestStep->setResultValue("ToDo");
+        CPhysVal physVal(
+            "8.9 uV" + c_strSymbolPlusMinus + " 0.05 %", CUnit(Electricity.Voltage),
+            CUnit(Ratio), EResType::Accuracy );
+        QString strResultValue = physVal.toString(
+            /* unitFindVal          */ EUnitFind::None,
+            /* iValSubStrVisibility */ PhysValSubStr::Val|PhysValSubStr::UnitSymbol,
+            /* unitRes              */ Electricity.Voltage.NanoVolt,
+            /* iResSubStrVisibility */ PhysValSubStr::Val|PhysValSubStr::UnitSymbol );
+        i_pTestStep->setResultValue(strResultValue);
     }
     catch( CException& exc )
     {
@@ -2100,14 +2097,13 @@ void CTest::doTestStepAssignmentOperator( ZS::Test::CTestStep* i_pTestStep )
 
     try
     {
-        //CPhysVal physVal1( 8.9e3, Electricity.Voltage.MilliVolt );
-        //CPhysVal physVal2( Ratio );
-        //physVal2 = physVal1;
-        //QString strResultValue = physVal2.toString(
-        //    /* unitFindVal          */ EUnitFind::None,
-        //    /* iValSubStrVisibility */ PhysValSubStr::Val|PhysValSubStr::UnitSymbol );
-        //i_pTestStep->setResultValue(strResultValue);
-        i_pTestStep->setResultValue("ToDo");
+        CPhysVal physVal1( 8.9e3, Electricity.Voltage.MilliVolt );
+        CPhysVal physVal2 = CPhysVal(CUnit(Ratio));
+        physVal2 = physVal1;
+        QString strResultValue = physVal2.toString(
+            /* unitFindVal          */ EUnitFind::None,
+            /* iValSubStrVisibility */ PhysValSubStr::Val|PhysValSubStr::UnitSymbol );
+        i_pTestStep->setResultValue(strResultValue);
     }
     catch( CException& exc )
     {
@@ -2809,8 +2805,8 @@ void CTest::doTestStepOperatorsWithStringOperand_1( ZS::Test::CTestStep* i_pTest
 
     try
     {
-        CPhysVal physVal1( -23.45e-3 );
-        QString strResultValue = bool2Str( physVal1 == "-0.02345" );
+        CPhysVal physVal( -23.45e-3 );
+        QString strResultValue = bool2Str( physVal == "-0.02345" );
         i_pTestStep->setResultValue(strResultValue);
     }
     catch( CException& exc )
@@ -2831,8 +2827,8 @@ void CTest::doTestStepOperatorsWithStringOperand_2( ZS::Test::CTestStep* i_pTest
 
     try
     {
-        CPhysVal physVal1( -23.45e-3, Electricity.Power.Watt );
-        QString strResultValue = bool2Str( physVal1 == "-0.02345 W" );
+        CPhysVal physVal( -23.45e-3, Electricity.Power.Watt );
+        QString strResultValue = bool2Str( physVal == "-0.02345 W" );
         i_pTestStep->setResultValue(strResultValue);
     }
     catch( CException& exc )
@@ -2853,8 +2849,8 @@ void CTest::doTestStepOperatorsWithStringOperand_3( ZS::Test::CTestStep* i_pTest
 
     try
     {
-        CPhysVal physVal1( -23.45e-3, Electricity.Power.Watt );
-        QString strResultValue = bool2Str( physVal1 != "-0.02345 W" );
+        CPhysVal physVal( -23.45e-3, Electricity.Power.Watt );
+        QString strResultValue = bool2Str( physVal != "-0.02345 W" );
         i_pTestStep->setResultValue(strResultValue);
     }
     catch( CException& exc )
@@ -2875,8 +2871,8 @@ void CTest::doTestStepOperatorsWithStringOperand_4( ZS::Test::CTestStep* i_pTest
 
     try
     {
-        CPhysVal physVal1( -23.45e-3 );
-        QString strResultValue = bool2Str( physVal1 < "-0.02345" );
+        CPhysVal physVal( -23.45e-3 );
+        QString strResultValue = bool2Str( physVal < "-0.02345" );
         i_pTestStep->setResultValue(strResultValue);
     }
     catch( CException& exc )
@@ -2897,8 +2893,8 @@ void CTest::doTestStepOperatorsWithStringOperand_5( ZS::Test::CTestStep* i_pTest
 
     try
     {
-        CPhysVal physVal1( -23.45e-3 );
-        QString strResultValue = bool2Str( physVal1 > "-0.02345" );
+        CPhysVal physVal( -23.45e-3 );
+        QString strResultValue = bool2Str( physVal > "-0.02345" );
         i_pTestStep->setResultValue(strResultValue);
     }
     catch( CException& exc )
@@ -2919,8 +2915,8 @@ void CTest::doTestStepOperatorsWithStringOperand_6( ZS::Test::CTestStep* i_pTest
 
     try
     {
-        CPhysVal physVal1( -23.45e-3 );
-        QString strResultValue = bool2Str( physVal1 <= "-0.02345" );
+        CPhysVal physVal( -23.45e-3 );
+        QString strResultValue = bool2Str( physVal <= "-0.02345" );
         i_pTestStep->setResultValue(strResultValue);
     }
     catch( CException& exc )
@@ -2941,8 +2937,8 @@ void CTest::doTestStepOperatorsWithStringOperand_7( ZS::Test::CTestStep* i_pTest
 
     try
     {
-        CPhysVal physVal1( -23.45e-3 );
-        QString strResultValue = bool2Str( physVal1 >= "-0.02345" );
+        CPhysVal physVal( -23.45e-3 );
+        QString strResultValue = bool2Str( physVal >= "-0.02345" );
         i_pTestStep->setResultValue(strResultValue);
     }
     catch( CException& exc )

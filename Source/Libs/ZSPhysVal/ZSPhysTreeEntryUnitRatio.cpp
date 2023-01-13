@@ -46,16 +46,17 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CUnitsTreeEntryUnitRatio::CUnitsTreeEntryUnitRatio(
     CUnitsTreeEntryGrpBase* i_pUnitGrp,
-    const QString& i_strName,
-    const QString& i_strSymbol,
-    double         i_fFactor ) :
+    const QString&          i_strName,
+    const QString&          i_strSymbol,
+    double                  i_fFactor ) :
 //------------------------------------------------------------------------------
     CUnitsTreeEntryUnitBase(
-        /* pUnitGrp       */ i_pUnitGrp,
-        /* bIsLogarithmic */ false,
-        /* fLogFactor     */ 1.0,
-        /* strName        */ i_strName,
-        /* strSymbol      */ i_strSymbol ),
+        /* pUnitGrp        */ i_pUnitGrp,
+        /* bIsLogarithmic  */ false,
+        /* fLogFactor      */ 1.0,
+        /* strName         */ i_strName,
+        /* strSymbol       */ i_strSymbol,
+        /* strFactorPrefix */ getFactorPrefixFromSymbol(i_strSymbol, i_fFactor) ),
     m_fFactor(i_fFactor)
 {
 } // ctor

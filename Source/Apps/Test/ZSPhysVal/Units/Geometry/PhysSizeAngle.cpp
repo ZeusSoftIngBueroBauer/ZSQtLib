@@ -25,11 +25,13 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "Units/Geometry/PhysSizeAngle.h"
+#include "ZSPhysVal/ZSPhysTreeEntryGrpScienceField.h"
+#include "ZSPhysVal/ZSPhysUnitsIdxTree.h"
 #include "ZSSys/ZSSysMath.h"
 #include "ZSSys/ZSSysMemLeakDump.h"
 
+using namespace ZS::System;
 using namespace ZS::PhysVal;
-using namespace ZS::System::Math;
 using namespace ZS::Apps::Test::PhysVal;
 
 
@@ -69,7 +71,7 @@ CPhysSizeAngle::CPhysSizeAngle( CUnitsTreeEntryGrpScienceField* i_pParentBranch 
       /* bIsLogarithmic */ false,
       /* strName        */ "Degree",
       /* strSymbol      */ QString::fromLatin1("°"),
-      /* fMFromSI       */ 180.0/c_fPI ),
+      /* fMFromSI       */ 180.0/Math::c_fPI ),
     Rad(m_treeEntryRad),
     Degree(m_treeEntryDegree)
 {

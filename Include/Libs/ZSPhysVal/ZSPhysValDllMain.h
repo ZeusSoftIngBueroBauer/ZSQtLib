@@ -278,12 +278,14 @@ struct SExponent
     QString m_strPrefix;
 };
 
-ZSPHYSVALDLL_API bool    getPrefixStrFromFactor( double i_fFactor, QString* o_pStrPrefix );
-ZSPHYSVALDLL_API bool    getExponentFromFactor( double i_fFactor, int* o_piExponent );
-ZSPHYSVALDLL_API bool    getFactorInverted( double i_fFactor, double* o_pfFactorInverted );
-ZSPHYSVALDLL_API double  getFactorFromPrefixStr( const QString& i_strPrefix, bool i_bInverted = false );
-ZSPHYSVALDLL_API int     getExponentFromPrefixStr( const QString& i_strPrefix );
-ZSPHYSVALDLL_API QString getExponentStrFromPrefixStr( const QString& i_strPrefix );
+ZSPHYSVALDLL_API QString getPrefixStrFromFactor( double i_fFactor, bool* o_pbOk = nullptr );
+ZSPHYSVALDLL_API int getExponentFromFactor( double i_fFactor, bool* o_pbOk = nullptr );
+ZSPHYSVALDLL_API double getFactorInverted( double i_fFactor, bool* o_pbOk = nullptr );
+ZSPHYSVALDLL_API double getFactorFromPrefixStr( const QString& i_strPrefix, bool i_bInverted = false, bool* o_pbOk = nullptr );
+ZSPHYSVALDLL_API int getExponentFromPrefixStr( const QString& i_strPrefix, bool* o_pbOk = nullptr );
+ZSPHYSVALDLL_API QString getExponentStrFromPrefixStr( const QString& i_strPrefix, bool* o_pbOk = nullptr );
+ZSPHYSVALDLL_API QString getFactorPrefixFromSymbol( const QString& i_strSymbol, bool* o_pbOk = nullptr );
+ZSPHYSVALDLL_API QString getFactorPrefixFromSymbol( const QString& i_strSymbol, double i_fFactor, bool* o_pbOk = nullptr );
 
 
 /*******************************************************************************

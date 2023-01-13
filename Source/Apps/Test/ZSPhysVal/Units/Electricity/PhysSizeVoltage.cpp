@@ -25,6 +25,8 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "Units/Electricity/PhysSizeVoltage.h"
+#include "ZSPhysVal/ZSPhysTreeEntryGrpScienceField.h"
+#include "ZSPhysVal/ZSPhysUnitsIdxTree.h"
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 using namespace ZS::PhysVal;
@@ -136,6 +138,14 @@ CPhysSizeVoltage::CPhysSizeVoltage( CUnitsTreeEntryGrpScienceField* i_pParentBra
     // with its units (e.g. to create the field with internal conversion routines
     // and to create the chained list of Lower/Higher units).
     initialize(true);
+
+    // To allow "short" unit strings like "Voltage.mV" we add a shortcut to this phyiscal size.
+    i_pParentBranch->tree()->addShortcut(this, "Voltage");
+
+    // To allow "short" unit strings like "mA" we add shortcuts to each unit.
+    i_pParentBranch->tree()->addShortcut(&m_treeEntryMilliVolt, "mV");
+    i_pParentBranch->tree()->addShortcut(&m_treeEntryVolt, "V");
+    i_pParentBranch->tree()->addShortcut(&m_treeEntryKiloVolt, "kV");
 
 } // ctor
 

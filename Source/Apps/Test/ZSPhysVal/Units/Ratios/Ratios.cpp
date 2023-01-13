@@ -74,7 +74,7 @@ CUnitsRatios::CUnitsRatios(CIdxTreeEntry* i_pParentBranch) :
     PerCent(m_treeEntryRatioPerCent),
     PerMille(m_treeEntryRatioPerMille),
     Dezibel(m_treeEntryRatioDezibel),
-    db(m_treeEntryRatioDezibel)
+    dB(m_treeEntryRatioDezibel)
 {
 }
 

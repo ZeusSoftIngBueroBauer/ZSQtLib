@@ -47,7 +47,7 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief  Creates an instance of a group with physical units.
+/*! @brief  Creates an instance of a group for physical units.
 
     @param [in] i_pIdxTree
     @param [in] i_strName
@@ -80,7 +80,7 @@ CUnitsTreeEntryGrpPhysUnits::CUnitsTreeEntryGrpPhysUnits(
 } // ctor
 
 //------------------------------------------------------------------------------
-/*! @brief  Creates an instance of a group with physical units.
+/*! @brief  Creates an instance of a for with physical units.
 
     @param [in] i_pParentBranch
     @param [in] i_strName
