@@ -135,6 +135,12 @@ CApplication::CApplication(
 
     m_pTrcAdminObj = m_pTrcServer->GetTraceAdminObj(NameSpace(), ClassName(), objectName());
 
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "ctor",
+        /* strMthInArgs       */ "" );
+
     m_pQmlAppEngine = new QQmlApplicationEngine();
     // Add import path to the applications resource storage.
     m_pQmlAppEngine->addImportPath("qrc:/");
@@ -215,6 +221,12 @@ CApplication::CApplication(
 CApplication::~CApplication()
 //------------------------------------------------------------------------------
 {
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "ctor",
+        /* strMthInArgs       */ "" );
+
     try {
         delete m_pQmlAppEngine;
     }

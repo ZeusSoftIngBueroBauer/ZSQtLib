@@ -355,7 +355,7 @@ CTreeViewIdxTree::CTreeViewIdxTree( CIdxTree* i_pIdxTree, QWidget* i_pWdgtParent
         /* strMethod          */ "ctor",
         /* strMethodInArgs    */ strMthInArgs );
 
-    m_pModel = new CModelIdxTree(nullptr, nullptr);
+    m_pModel = new CModelIdxTree(nullptr, true);
 
     setModel(m_pModel);
 

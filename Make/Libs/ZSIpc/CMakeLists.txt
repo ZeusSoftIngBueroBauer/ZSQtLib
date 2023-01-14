@@ -98,7 +98,7 @@ endif()
 
 # Got to create the following target name:
 # (ProjectName)Qt$(QT_VERSION_MAJOR)$(QT_LIBINFIX)[d]
-# e.g.: "ZSIpcQt5d", "ZSSIpcQt5Swpd"
+# e.g.: "ZSIpcQt5d", "ZSIpcQt5Swpd"
 set(TargetOutputName ${PROJECT_NAME}Qt${QT_VERSION_MAJOR}${QT_LIBINFIX})
 if(CMAKE_BUILD_TYPE MATCHES Debug)
     set(TargetOutputName ${TargetOutputName}d)
@@ -114,8 +114,7 @@ source_group("Header Files" FILES ${_Headers})
 source_group("Source Files" FILES ${_Sources})
 source_group("Resource Files" FILES ${_Resources})
 
-target_compile_definitions(${PROJECT_NAME}
-    PRIVATE ZSIPCDLL_EXPORTS)
+target_compile_definitions(${PROJECT_NAME} PRIVATE ZSIPCDLL_EXPORTS)
 
 target_include_directories(${PROJECT_NAME}
     PUBLIC

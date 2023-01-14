@@ -148,7 +148,11 @@ protected: // class methods
     static bool areIconsCreated();
 public: // ctors and dtor
     CModelIdxTree( QObject* i_pObjParent = nullptr );
-    CModelIdxTree( CIdxTree* i_pIdxTree, QObject* i_pObjParent = nullptr );
+    CModelIdxTree(
+        CIdxTree* i_pIdxTree,
+        bool i_bNamesAreEditable = true,
+        Qt::DropActions i_supportedDropActions = (Qt::CopyAction | Qt::MoveAction),
+        QObject* i_pObjParent = nullptr );
     virtual ~CModelIdxTree();
 signals:
     void idxTreeChanged( QObject* i_pIdxTree );
@@ -286,8 +290,20 @@ protected: // class members
     static QHash<QByteArray, int> s_roleValues;
     static QHash<int, QByteArray> s_clm2Name;
 protected: // instance members
+    /*!< Pointer to index tree which should be indicated by the tree view
+         connected to the model. */
     CIdxTree* m_pIdxTree;
+    /*!< Flag to indicate whether the names of the tree entries may be changed
+         by the delegate assigned to the tree view.
+         Default: true */
+    bool m_bNamesAreEditable;
+    /*!< Drop actions the model supports.
+         Defaults is (Qt::CopyAction | Qt::MoveAction) */
+    Qt::DropActions m_supportedDropActions;
+    /*!< true if leaves should not be indicated.
+         false otherwise. */
     bool m_bExcludeLeaves;
+    /*!< Sort order in which the entries should be indicated by the tree view. */
     EIdxTreeSortOrder m_sortOrder;
     /*!< Need a copy of the index tree entries as entries may be added, changed
          or removed from different threads. When removing an entry the signal
@@ -297,7 +313,9 @@ protected: // instance members
          @Note Key is: <EntryTypeSymbol>:<ParentPath>/<Name>
                (e.g. "L:ZS::Data::CDataTable::FDAC::RF1In") */
     QMap<QString, CModelIdxTreeEntry*> m_mappModelTreeEntries;
+    /*!< The root model entry. */
     CModelIdxTreeEntry* m_pModelRootEntry;
+    /*!< Most recently calculated column widths. */
     QVector<int> m_ariClmWidths;
     #ifdef ZS_TRACE_GUI_MODELS
     /*!< Trace admin object to control trace outputs of the class.

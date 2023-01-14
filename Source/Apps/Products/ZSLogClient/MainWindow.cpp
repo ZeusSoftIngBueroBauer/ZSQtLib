@@ -523,7 +523,7 @@ CMainWindow::~CMainWindow()
 {
     QSettings settings;
 
-    settings.setValue( "MainWindow/Geometry",saveGeometry());
+    settings.setValue( "MainWindow/Geometry", saveGeometry());
 
     CDialog::DestroyAllInstances();
 

@@ -293,6 +293,9 @@ void CModelIdxTreeBranchContent::setIdxTree( QObject* i_pIdxTree )
         /* strMethodInArgs    */ strMthInArgs );
     #endif
 
+    QString strObjNameOrig = objectName();
+    QString strObjNameNew = QString(i_pIdxTree == nullptr ? "IdxTree" : i_pIdxTree->objectName());
+
     if( m_pIdxTree != i_pIdxTree )
     {
         if( m_pIdxTree != nullptr )
@@ -352,6 +355,21 @@ void CModelIdxTreeBranchContent::setIdxTree( QObject* i_pIdxTree )
         emit idxTreeChanged(m_pIdxTree);
 
     } // if( m_pIdxTree != i_pIdxTree )
+
+    if( strObjNameOrig.compare(strObjNameNew) != 0 )
+    {
+        setObjectName(strObjNameNew);
+
+        #ifdef ZS_TRACE_GUI_MODELS
+        mthTracer.onAdminObjAboutToBeReleased();
+        if( m_pTrcAdminObj != nullptr ) {
+            m_pTrcAdminObj = CTrcServer::RenameTraceAdminObj(m_pTrcAdminObj, strObjNameNew);
+        }
+        if( m_pTrcAdminObjNoisyMethods != nullptr ) {
+            m_pTrcAdminObjNoisyMethods = CTrcServer::RenameTraceAdminObj(m_pTrcAdminObjNoisyMethods, strObjNameNew);
+        }
+        #endif
+    }
 } // setIdxTree
 
 //------------------------------------------------------------------------------

@@ -59,8 +59,8 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CIdxTreeTrcAdminObjs::CIdxTreeTrcAdminObjs(
-    const QString&               i_strObjName,
-    QObject*                     i_pObjParent,
+    const QString&          i_strObjName,
+    QObject*                i_pObjParent,
     EMethodTraceDetailLevel i_eTrcDetailLevel,
     EMethodTraceDetailLevel i_eTrcDetailLevelMutex ) :
 //------------------------------------------------------------------------------

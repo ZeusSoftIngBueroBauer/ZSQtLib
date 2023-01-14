@@ -251,7 +251,7 @@ public: // overridables (createBranch and createLeave must be overridden to crea
     virtual CIdxTreeEntry* createTreeEntry( EIdxTreeEntryType i_entryType, const QString& i_strName ) const;
 public: // instance methods
     int treeEntriesVectorSize() const; // the number of used entries might be less
-    CIdxTreeEntry* getEntry( int i_idxObj ) const; // may return nullptr as some vector entries may have been freed
+    CIdxTreeEntry* getEntry( int i_idxInTree ) const; // may return nullptr as some vector entries may have been freed
 public: // instance methods
     CIdxTreeEntry* findBranch( const QString& i_strPath ) const;
     CIdxTreeEntry* findBranch( const QString& i_strParentPath, const QString& i_strBranchName ) const;
@@ -298,6 +298,10 @@ public: // instance methods
 public: // instance methods
     void rename( const QString& i_strSourcePath, const QString& i_strNameNew );
     void rename( CIdxTreeEntry* i_pTreeEntry, const QString& i_strNameNew );
+public: // instance methods
+    SErrResultInfo canAddShortcut( const QString& i_strUniqueName ) const;
+    void addShortcut( CIdxTreeEntry* i_pTreeEntry, const QString& i_strUniqueName );
+    SErrResultInfo removeShortcut( const QString& i_strUniqueName );
 protected: // instance methods
     void updateKeyInTree( CIdxTreeEntry* i_pTreeEntry );
 protected: // instance methods
@@ -336,12 +340,20 @@ protected: // instance methods (tracing of signals)
 protected slots:
     void onTrcAdminObjChanged( QObject* i_pTrcAdminObj );
 protected: // instance members
-    QString                       m_strNodeSeparator;   /*!< String used to seperate the node names with an entries path. */
-    mutable CMutex*               m_pMtx;               /*!< Mutex to protect the instance if accessed by different threads. */
-    QMap<QString, CIdxTreeEntry*> m_mappTreeEntries;    /*!< Map with pointers to all tree entries. */
-    QVector<CIdxTreeEntry*>       m_arpTreeEntries;     /*!< Vector with pointers to all tree entries. */
-    QMap<int, int>                m_mapFreeIdxs;        /*!< Map with free indices in the vector of entries. */
-    CIdxTreeEntry*                m_pRoot;              /*!< Pointer to root entry. */
+    /*!< String used to seperate the node names with an entries path. */
+    QString m_strNodeSeparator;
+    /*!< Mutex to protect the instance if accessed by different threads. */
+    mutable CMutex* m_pMtx;
+    /*!< Map with pointers to all tree entries. */
+    QMap<QString, CIdxTreeEntry*> m_mappTreeEntries;
+    /*!< Vector with pointers to all tree entries. */
+    QVector<CIdxTreeEntry*> m_arpTreeEntries;
+    /*!< Map with free indices in the vector of entries. */
+    QMap<int, int> m_mapFreeIdxs;
+    /*!< Map with pointers to tree entry for which a unique name as a shortcut has been added. */
+    QMap<QString, CIdxTreeEntry*> m_mappShortcutTreeEntries;
+    /*!< Pointer to root entry. */
+    CIdxTreeEntry* m_pRoot;
     /*!< Trace detail level for method tracing.
          Trace output may not be controlled by trace admin objects
          if the index tree belongs the trace server. */

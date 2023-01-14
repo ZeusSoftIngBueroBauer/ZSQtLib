@@ -152,12 +152,8 @@ CWidgetCentral::CWidgetCentral(
 
     if( m_pSplitter != nullptr )
     {
-        QList<int> listSizes;
-        int        idx;
-
-        listSizes = m_pSplitter->sizes();
-
-        for( idx = 0; idx < listSizes.count(); idx++ )
+        QList<int> listSizes = m_pSplitter->sizes();
+        for( int idx = 0; idx < listSizes.count(); idx++ )
         {
             listSizes[idx] = settings.value( objectName() + "/SplitterHeight" + QString::number(idx), 50 ).toInt();
         }
