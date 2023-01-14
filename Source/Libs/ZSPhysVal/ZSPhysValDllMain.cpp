@@ -268,7 +268,7 @@ int ZS::PhysVal::getExponentFromFactor( double i_fFactor, bool* o_pbOk )
     if( o_pbOk != nullptr ) {
         *o_pbOk = bOk;
     }
-    return bOk;
+    return iExponent;
 }
 
 //------------------------------------------------------------------------------
@@ -298,7 +298,7 @@ double ZS::PhysVal::getFactorInverted( double i_fFactor, bool* o_pbOk )
     if( o_pbOk != nullptr ) {
         *o_pbOk = bOk;
     }
-    return bOk;
+    return fFactor;
 }
 
 //------------------------------------------------------------------------------
