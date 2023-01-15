@@ -25,7 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDiagram/ZSDiagObjProgressBar.h"
-#include "ZSDiagram/ZSDiagram.h"
+#include "ZSDiagram/ZSDiagramProcWdgt.h"
 #include "ZSDiagram/ZSDiagramFrameStyles.h"
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysException.h"

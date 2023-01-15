@@ -28,7 +28,10 @@ may result in using the software modules.
 #include "App.h"
 #include "Test.h"
 #include "WdgtTestOutput.h"
+#include "Units/Units.h"
 
+#include "ZSPhysValGUI/ZSPhysSizesWdgt.h"
+#include "ZSPhysVal/ZSPhysUnitsIdxTree.h"
 #include "ZSTestGUI/ZSTestStepIdxTreeWdgt.h"
 
 #include <QtCore/qsettings.h>
@@ -40,19 +43,22 @@ may result in using the software modules.
 #include <QtGui/qlayout.h>
 #include <QtGui/qpushbutton.h>
 #include <QtGui/qsplitter.h>
+#include <QtGui/qtabwidget.h>
 #else
 #include <QtWidgets/qgroupbox.h>
 #include <QtWidgets/qlayout.h>
 #include <QtWidgets/qpushbutton.h>
 #include <QtWidgets/qsplitter.h>
+#include <QtWidgets/qtabwidget.h>
 #endif
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 using namespace ZS::System;
+using namespace ZS::PhysVal;
+using namespace ZS::PhysVal::GUI;
 using namespace ZS::Test;
 using namespace ZS::Test::GUI;
-using namespace ZS::Trace;
 using namespace ZS::Apps::Test::Diagram;
 
 
@@ -88,6 +94,8 @@ CWidgetCentral::CWidgetCentral(
 //------------------------------------------------------------------------------
     QWidget(i_pWdgtParent,i_wflags),
     m_pLyt(nullptr),
+    m_pTabWdgtMain(nullptr),
+    m_pWdgtPhysSizes(nullptr),
     m_pSplitter(nullptr),
     m_pGrpTestOutput(nullptr),
     m_pLytGrpTestOutput(nullptr),
@@ -104,12 +112,27 @@ CWidgetCentral::CWidgetCentral(
     m_pLyt = new QVBoxLayout();
     setLayout(m_pLyt);
 
+    // <TabWidget>
+    //============
+
+    m_pTabWdgtMain = new QTabWidget(this);
+    m_pLyt->addWidget(m_pTabWdgtMain);
+
+    // <Tab> Units
+    //-------------
+
+    m_pWdgtPhysSizes = new CWdgtPhysSizes(&IdxTreeUnits);
+    m_pTabWdgtMain->addTab(m_pWdgtPhysSizes,"Units");
+
+    // <Tab> Test
+    //-------------
+
     // <Splitter> Following widgets organized in splitter
     //---------------------------------------------------
 
     m_pSplitter = new QSplitter(Qt::Vertical);
     m_pSplitter->setChildrenCollapsible(false);
-    m_pLyt->addWidget(m_pSplitter);
+    m_pTabWdgtMain->addTab(m_pSplitter, "Test");
 
     // <TestSteps>
     //----------------
@@ -173,6 +196,8 @@ CWidgetCentral::~CWidgetCentral()
     }
 
     m_pLyt = nullptr;
+    m_pTabWdgtMain = nullptr;
+    m_pWdgtPhysSizes = nullptr;
     m_pSplitter = nullptr;
     m_pWdgtTest = nullptr;
     m_pGrpTestOutput = nullptr;

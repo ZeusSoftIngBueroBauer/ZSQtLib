@@ -26,17 +26,11 @@ may result in using the software modules.
 
 #include "ZSDiagram/ZSDiagTrace.h"
 #include "ZSDiagram/ZSDiagScale.h"
-#include "ZSDiagram/ZSDiagram.h"
-//#include "ZSPhysVal/ZSPhysVal.h"
-//#include "ZSSys/ZSSysErrResult.h"
-//#include "ZSSys/ZSSysException.h"
+#include "ZSDiagram/ZSDiagramProcData.h"
 #include "ZSSys/ZSSysMath.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
-
-//#include <float.h>
-//#include <math.h>
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -465,7 +459,7 @@ void CDiagTrace::setValues( EScaleDir i_scaleDir, const CPhysValArr& i_physValAr
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "copyValues",
+        /* strMethod    */ "setValues",
         /* strAddInfo   */ "" );
 
     if( i_scaleDir < EScaleDirMin || i_scaleDir > EScaleDirMax )
@@ -507,7 +501,7 @@ void CDiagTrace::setValues(
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "copyValues",
+        /* strMethod    */ "setValues",
         /* strAddInfo   */ "" );
 
     if( i_scaleDir < EScaleDirMin || i_scaleDir > EScaleDirMax )

@@ -28,8 +28,9 @@ may result in using the software modules.
 #include "App.h"
 #include "WidgetCentral.h"
 #include "WdgtTestOutput.h"
+#include "Units/Units.h"
 
-#include "ZSDiagram/ZSDiagram.h"
+#include "ZSDiagram/ZSDiagramProcWdgt.h"
 #include "ZSDiagram/ZSDiagScale.h"
 #include "ZSDiagram/ZSDiagTrace.h"
 #include "ZSDiagram/ZSDiagObjAxisLabel.h"
@@ -155,13 +156,10 @@ CTest::CTest() :
     // Test Group: Signal Generator
     //------------------------------
 
-    #if 0
-
     ZS::Test::CTestStepGroup* pGrpSigGen = new ZS::Test::CTestStepGroup(
         /* pTest           */ this,
         /* strName         */ "Group " + QString::number(++idxSubGroup) + " Signal Generator",
         /* pTSGrpParent    */ nullptr );
-
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -214,10 +212,17 @@ CTest::CTest() :
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " Set Values",
+        /* strName         */ "Step " + QString::number(++idxStep) + " Start Signal Generator",
         /* strOperation    */ "CDiagTrace::setValues()",
         /* pTSGrpParent    */ pGrpSigGen,
-        /* szDoTestStepFct */ SLOT(doTestStepSigGenSetValues(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepSigGenStart(ZS::Test::CTestStep*)) );
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Stop Signal Generator",
+        /* strOperation    */ "TimerSigGen.stop()",
+        /* pTSGrpParent    */ pGrpSigGen,
+        /* szDoTestStepFct */ SLOT(doTestStepSigGenStop(ZS::Test::CTestStep*)) );
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -267,8 +272,6 @@ CTest::CTest() :
         /* strOperation    */ "delete CDiagram",
         /* pTSGrpParent    */ pGrpSigGen,
         /* szDoTestStepFct */ SLOT(doTestStepSigGenDestroyDiagram(ZS::Test::CTestStep*)) );
-
-    #endif // #if 0
 
     // Recall test step settings
     //--------------------------
@@ -338,16 +341,13 @@ public slots: // test step methods (Signal Generators)
 void CTest::doTestStepSigGenCreateDiagram( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strExpectedValue;
     QStringList strlstExpectedValues;
-    QString     strResultValue;
     QStringList strlstResultValues;
 
     // Expected Values
     //---------------
 
-    strlstExpectedValues.append(strExpectedValue);
-
+    strlstExpectedValues.append("Diagram Window Visible");
     i_pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Test Step
@@ -390,10 +390,7 @@ void CTest::doTestStepSigGenCreateDiagram( ZS::Test::CTestStep* i_pTestStep )
     //---------------
 
     // Please note that to finish a test step the list of actual values may not be empty.
-    if( strlstResultValues.size() == 0 )
-    {
-        strlstResultValues.append("Test Step not implemented");
-    }
+    strlstResultValues.append("Diagram Window Visible");
     i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepSigGenCreateDiagram
@@ -402,16 +399,13 @@ void CTest::doTestStepSigGenCreateDiagram( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepSigGenDestroyDiagram( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strExpectedValue;
     QStringList strlstExpectedValues;
-    QString     strResultValue;
     QStringList strlstResultValues;
 
     // Expected Values
     //---------------
 
-    strlstExpectedValues.append(strExpectedValue);
-
+    strlstExpectedValues.append("Diagram Window Destroyed");
     i_pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Test Step
@@ -427,15 +421,11 @@ void CTest::doTestStepSigGenDestroyDiagram( ZS::Test::CTestStep* i_pTestStep )
     //---------------------
 
     // Please note that to finish a test step the list of actual values may not be empty.
-    if( strlstResultValues.size() == 0 )
-    {
-        strlstResultValues.append("Test Step not implemented");
-    }
+    strlstResultValues.append("Diagram Window Destroyed");
     i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepSigGenDestroyDiagram
 
-#if 0
 //------------------------------------------------------------------------------
 void CTest::doTestStepSigGenAddScales( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
@@ -460,7 +450,7 @@ void CTest::doTestStepSigGenAddScales( ZS::Test::CTestStep* i_pTestStep )
         ZS::Diagram::SScale scaleX(
             /* fMin  */ 899.0e6,
             /* fMax  */ 901.0e6,
-            /* pUnit */ Frequency()->Hertz() );
+            /* pUnit */ Frequency.Hertz );
 
         m_pDiagScaleX = new CDiagScale(
             /* strObjName */ "DiagScaleX",
@@ -473,7 +463,7 @@ void CTest::doTestStepSigGenAddScales( ZS::Test::CTestStep* i_pTestStep )
         ZS::Diagram::SScale scaleY(
             /* fMin      */ 0.0,
             /* fMax      */ 40.0,
-            /* pPhysUnit */ Power()->dBm() );
+            /* pPhysUnit */ Power.dBm );
 
         m_pDiagScaleY = new CDiagScale(
             /* strObjName */ "DiagScaleY",
@@ -496,9 +486,7 @@ void CTest::doTestStepSigGenAddScales( ZS::Test::CTestStep* i_pTestStep )
     i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepSigGenAddScales
-#endif
 
-#if 0
 //------------------------------------------------------------------------------
 void CTest::doTestStepSigGenRemoveScales( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
@@ -543,9 +531,7 @@ void CTest::doTestStepSigGenRemoveScales( ZS::Test::CTestStep* i_pTestStep )
     i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepSigGenRemoveScales
-#endif
 
-#if 0
 //------------------------------------------------------------------------------
 void CTest::doTestStepSigGenAddTraces( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
@@ -592,9 +578,7 @@ void CTest::doTestStepSigGenAddTraces( ZS::Test::CTestStep* i_pTestStep )
     i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepSigGenAddTraces
-#endif
 
-#if 0
 //------------------------------------------------------------------------------
 void CTest::doTestStepSigGenRemoveTraces( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
@@ -639,9 +623,7 @@ void CTest::doTestStepSigGenRemoveTraces( ZS::Test::CTestStep* i_pTestStep )
     i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepSigGenRemoveTraces
-#endif
 
-#if 0
 //------------------------------------------------------------------------------
 void CTest::doTestStepSigGenAddGrid( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
@@ -684,9 +666,7 @@ void CTest::doTestStepSigGenAddGrid( ZS::Test::CTestStep* i_pTestStep )
     i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepSigGenAddGrid
-#endif
 
-#if 0
 //------------------------------------------------------------------------------
 void CTest::doTestStepSigGenRemoveGrid( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
@@ -729,9 +709,7 @@ void CTest::doTestStepSigGenRemoveGrid( ZS::Test::CTestStep* i_pTestStep )
     i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepSigGenRemoveGrid
-#endif
 
-#if 0
 //------------------------------------------------------------------------------
 void CTest::doTestStepSigGenAddAxisLabels( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
@@ -785,9 +763,7 @@ void CTest::doTestStepSigGenAddAxisLabels( ZS::Test::CTestStep* i_pTestStep )
     i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepSigGenAddAxisLabels
-#endif
 
-#if 0
 //------------------------------------------------------------------------------
 void CTest::doTestStepSigGenRemoveAxisLabels( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
@@ -837,9 +813,7 @@ void CTest::doTestStepSigGenRemoveAxisLabels( ZS::Test::CTestStep* i_pTestStep )
     i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepSigGenRemoveAxisLabels
-#endif
 
-#if 0
 //------------------------------------------------------------------------------
 void CTest::doTestStepSigGenAddCurves( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
@@ -914,9 +888,7 @@ void CTest::doTestStepSigGenAddCurves( ZS::Test::CTestStep* i_pTestStep )
     i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepSigGenAddCurves
-#endif
 
-#if 0
 //------------------------------------------------------------------------------
 void CTest::doTestStepSigGenRemoveCurves( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
@@ -966,9 +938,7 @@ void CTest::doTestStepSigGenRemoveCurves( ZS::Test::CTestStep* i_pTestStep )
     i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepSigGenRemoveCurves
-#endif
 
-#if 0
 //------------------------------------------------------------------------------
 void CTest::doTestStepSigGenAddMarkers( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
@@ -1100,9 +1070,7 @@ void CTest::doTestStepSigGenAddMarkers( ZS::Test::CTestStep* i_pTestStep )
     i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepSigGenAddMarkers
-#endif
 
-#if 0
 //------------------------------------------------------------------------------
 void CTest::doTestStepSigGenRemoveMarkers( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
@@ -1152,11 +1120,9 @@ void CTest::doTestStepSigGenRemoveMarkers( ZS::Test::CTestStep* i_pTestStep )
     i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepSigGenRemoveMarkers
-#endif
 
-#if 0
 //------------------------------------------------------------------------------
-void CTest::doTestStepSigGenSetValues( ZS::Test::CTestStep* i_pTestStep )
+void CTest::doTestStepSigGenStart( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
     QString     strExpectedValue;
@@ -1174,17 +1140,17 @@ void CTest::doTestStepSigGenSetValues( ZS::Test::CTestStep* i_pTestStep )
     // Test Step
     //----------
 
-    //m_pTimerSigGen = new QTimer(this);
-    //m_pTimerSigGen->start(10);
+    m_pTimerSigGen = new QTimer(this);
+    m_pTimerSigGen->start(10);
 
-    //if( !connect(
-    //    /* pObjSender   */ m_pTimerSigGen,
-    //    /* szSignal     */ SIGNAL(timeout()),
-    //    /* pObjReceiver */ this,
-    //    /* szSlot       */ SLOT(onTimerSigGenTimeout()) ) )
-    //{
-    //    throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    //}
+    if( !connect(
+        /* pObjSender   */ m_pTimerSigGen,
+        /* szSignal     */ SIGNAL(timeout()),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onTimerSigGenTimeout()) ) )
+    {
+        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+    }
 
     // Actual Result Values
     //---------------------
@@ -1196,8 +1162,52 @@ void CTest::doTestStepSigGenSetValues( ZS::Test::CTestStep* i_pTestStep )
     }
     i_pTestStep->setResultValues(strlstResultValues);
 
-} // doTestStepSigGenSetValues
-#endif
+} // doTestStepSigGenStart
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepSigGenStop( ZS::Test::CTestStep* i_pTestStep )
+//------------------------------------------------------------------------------
+{
+    QString     strExpectedValue;
+    QStringList strlstExpectedValues;
+    QString     strResultValue;
+    QStringList strlstResultValues;
+
+    // Expected Values
+    //---------------
+
+    strlstExpectedValues.append(strExpectedValue);
+
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Test Step
+    //----------
+
+    if( m_pTimerSigGen != nullptr )
+    {
+        m_pTimerSigGen->stop();
+    }
+
+    try
+    {
+        delete m_pTimerSigGen;
+    }
+    catch(...)
+    {
+    }
+    m_pTimerSigGen = nullptr;
+
+    // Actual Result Values
+    //---------------------
+
+    // Please note that to finish a test step the list of actual values may not be empty.
+    if( strlstResultValues.size() == 0 )
+    {
+        strlstResultValues.append("Test Step not implemented");
+    }
+    i_pTestStep->setResultValues(strlstResultValues);
+
+} // doTestStepSigGenStop
 
 /*==============================================================================
 private slots:

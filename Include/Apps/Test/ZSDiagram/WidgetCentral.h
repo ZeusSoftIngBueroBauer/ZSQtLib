@@ -37,14 +37,17 @@ may result in using the software modules.
 
 class QGroupBox;
 class QSplitter;
+class QTabWidget;
 class QVBoxLayout;
 
-namespace ZS
-{
-namespace Test
-{
-namespace GUI
-{
+namespace ZS {
+namespace PhysVal {
+namespace GUI {
+class CWdgtPhysSizes;
+}
+}
+namespace Test {
+namespace GUI {
 class CWdgtIdxTreeTestSteps;
 }
 }
@@ -73,6 +76,8 @@ private: // class members
     static CWidgetCentral*   s_pThis; // singleton class
 protected: // instance members
     QVBoxLayout*                          m_pLyt;
+    QTabWidget*                           m_pTabWdgtMain;
+    ZS::PhysVal::GUI::CWdgtPhysSizes*     m_pWdgtPhysSizes;
     QSplitter*                            m_pSplitter;
     ZS::Test::GUI::CWdgtIdxTreeTestSteps* m_pWdgtTest;
     QGroupBox*                            m_pGrpTestOutput;

@@ -25,7 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDiagram/ZSDiagObjLine.h"
-#include "ZSDiagram/ZSDiagram.h"
+#include "ZSDiagram/ZSDiagramProcWdgt.h"
 #include "ZSDiagram/ZSDiagramLineStyles.h"
 #include "ZSDiagram/ZSDiagScale.h"
 #include "ZSSys/ZSSysErrResult.h"

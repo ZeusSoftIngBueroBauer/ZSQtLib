@@ -31,7 +31,7 @@ set(_HeadersPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Include/Apps/Test)
 set(_SourcesPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Source/Apps/Test)
 set(_ResourcesPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Resources/Apps/Test)
 
-list(APPEND _Headers
+list(APPEND _HeadersCommon
     ${_HeadersPath}/../../Libs/ZSSys/ZSSysVersion.h
     ${_HeadersPath}/ZSDiagram/App.h
     ${_HeadersPath}/ZSDiagram/MainWindow.h
@@ -43,9 +43,20 @@ list(APPEND _Headers
 configure_file(
     ${_HeadersPath}/ZSDiagram/TestConfig.h.in
     ${_HeadersPath}/ZSDiagram/TestConfig.h)
-set(_Headers ${_Headers} ${_HeadersPath}/ZSDiagram/TestConfig.h)
+set(_HeadersCommon ${_HeadersCommon} ${_HeadersPath}/ZSDiagram/TestConfig.h)
 
-list(APPEND _Sources
+list(APPEND _HeadersUnits
+    ${_HeadersPath}/ZSDiagram/Units/Frequency.h
+    ${_HeadersPath}/ZSDiagram/Units/Power.h
+    ${_HeadersPath}/ZSDiagram/Units/Units.h
+)
+
+list(APPEND _Headers
+    ${_HeadersCommon}
+    ${_HeadersUnits}
+)
+
+list(APPEND _SourcesCommon
     ${_SourcesPath}/ZSDiagram/Main.cpp
     ${_SourcesPath}/ZSDiagram/App.cpp
     ${_SourcesPath}/ZSDiagram/MainWindow.cpp
@@ -54,7 +65,18 @@ list(APPEND _Sources
     ${_SourcesPath}/ZSDiagram/Test.cpp
 )
 
+list(APPEND _SourcesUnits
+    ${_SourcesPath}/ZSDiagram/Units/Frequency.cpp
+    ${_SourcesPath}/ZSDiagram/Units/Power.cpp
+    ${_SourcesPath}/ZSDiagram/Units/Units.cpp
+)
+
 list(APPEND _Resources
+)
+
+list(APPEND _Sources
+    ${_SourcesCommon}
+    ${_SourcesUnits}
 )
 
 if(WIN32)
@@ -87,8 +109,10 @@ endif()
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${TargetOutputName})
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER Tests)
 
-source_group("Header Files" FILES ${_Headers})
-source_group("Source Files" FILES ${_Sources})
+source_group("Header Files/Units" FILES ${_HeadersUnits})
+source_group("Header Files" FILES ${_HeadersCommon})
+source_group("Source Files/Units" FILES ${_SourcesUnits})
+source_group("Source Files" FILES ${_SourcesCommon})
 source_group("Resource Files" FILES ${_Resources})
 
 target_include_directories(${PROJECT_NAME}

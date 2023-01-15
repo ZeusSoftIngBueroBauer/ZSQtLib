@@ -25,9 +25,8 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDiagram/ZSDiagObjGrid.h"
-#include "ZSDiagram/ZSDiagram.h"
+#include "ZSDiagram/ZSDiagramProcWdgt.h"
 #include "ZSDiagram/ZSDiagScale.h"
-//#include "ZSPhysVal/ZSPhysVal.h"
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
@@ -35,7 +34,6 @@ may result in using the software modules.
 #include "ZSSys/ZSSysTrcServer.h"
 
 #include <QtGui/qpainter.h>
-//#include <QtGui/qpixmap.h>
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 

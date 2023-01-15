@@ -487,7 +487,7 @@ void CMainWindow::onActDebugErrLogTriggered()
 
     if( pDlg == nullptr )
     {
-        pDlg = CDlgErrLog::CreateInstance("ErrLog", strDlgTitle);
+        pDlg = CDlgErrLog::CreateInstance(strDlgTitle);
         pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
         pDlg->adjustSize();
         pDlg->show();

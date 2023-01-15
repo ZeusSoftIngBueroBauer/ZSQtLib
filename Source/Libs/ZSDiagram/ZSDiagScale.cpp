@@ -24,11 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include <float.h>
-#include <math.h>
-
 #include "ZSDiagram/ZSDiagScale.h"
-#include "ZSDiagram/ZSDiagram.h"
+#include "ZSDiagram/ZSDiagramProcData.h"
 #include "ZSSys/ZSSysMath.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"

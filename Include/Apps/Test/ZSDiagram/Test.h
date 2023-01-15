@@ -65,19 +65,20 @@ public: // ctors and dtor
 private slots: // test step methods (Signal Generators)
     void doTestStepSigGenCreateDiagram( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepSigGenDestroyDiagram( ZS::Test::CTestStep* i_pTestStep );
-    //void doTestStepSigGenAddScales( ZS::Test::CTestStep* i_pTestStep );
-    //void doTestStepSigGenRemoveScales( ZS::Test::CTestStep* i_pTestStep );
-    //void doTestStepSigGenAddTraces( ZS::Test::CTestStep* i_pTestStep );
-    //void doTestStepSigGenRemoveTraces( ZS::Test::CTestStep* i_pTestStep );
-    //void doTestStepSigGenAddGrid( ZS::Test::CTestStep* i_pTestStep );
-    //void doTestStepSigGenRemoveGrid( ZS::Test::CTestStep* i_pTestStep );
-    //void doTestStepSigGenAddAxisLabels( ZS::Test::CTestStep* i_pTestStep );
-    //void doTestStepSigGenRemoveAxisLabels( ZS::Test::CTestStep* i_pTestStep );
-    //void doTestStepSigGenAddCurves( ZS::Test::CTestStep* i_pTestStep );
-    //void doTestStepSigGenRemoveCurves( ZS::Test::CTestStep* i_pTestStep );
-    //void doTestStepSigGenAddMarkers( ZS::Test::CTestStep* i_pTestStep );
-    //void doTestStepSigGenRemoveMarkers( ZS::Test::CTestStep* i_pTestStep );
-    //void doTestStepSigGenSetValues( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepSigGenAddScales( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepSigGenRemoveScales( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepSigGenAddTraces( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepSigGenRemoveTraces( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepSigGenAddGrid( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepSigGenRemoveGrid( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepSigGenAddAxisLabels( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepSigGenRemoveAxisLabels( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepSigGenAddCurves( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepSigGenRemoveCurves( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepSigGenAddMarkers( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepSigGenRemoveMarkers( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepSigGenStart( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepSigGenStop( ZS::Test::CTestStep* i_pTestStep );
 private slots:
     void onTimerSigGenTimeout();
 private slots:

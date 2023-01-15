@@ -49,13 +49,15 @@ list(APPEND _Headers
     ${_HeadersPath}/${PROJECT_NAME}/ZSDiagObjRect.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSDiagObjTable.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSDiagObjValueProvider.h
-    ${_HeadersPath}/${PROJECT_NAME}/ZSDiagram.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSDiagramAux.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSDiagramDllMain.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSDiagramFrameStyles.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSDiagramImageStyles.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSDiagramLabelStyles.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSDiagramLineStyles.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSDiagramProcData.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSDiagramProcPixmap.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSDiagramProcWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSDiagramToolTipStyles.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSDiagScale.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSDiagTrace.h
@@ -75,13 +77,15 @@ list(APPEND _Sources
     ${_SourcesPath}/${PROJECT_NAME}/ZSDiagObjRect.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSDiagObjTable.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSDiagObjValueProvider.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/ZSDiagram.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSDiagramAux.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSDiagramDllMain.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSDiagramFrameStyles.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSDiagramImageStyles.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSDiagramLabelStyles.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSDiagramLineStyles.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSDiagramProcData.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSDiagramProcPixmap.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSDiagramProcWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSDiagramToolTipStyles.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSDiagScale.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSDiagTrace.cpp
