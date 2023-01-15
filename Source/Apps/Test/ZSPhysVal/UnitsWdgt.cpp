@@ -221,7 +221,7 @@ void CWdgtUnits::showEvent( QShowEvent* i_pEv )
 {
     //int idxColumn;
 
-    //for( idxColumn = 0; idxColumn < CModelObjPool::EColumnCount; idxColumn++ )
+    //for( idxColumn = 0; idxColumn < CModel::EColumnCount; idxColumn++ )
     //{
     //    if( m_pTreeView != nullptr )
     //    {

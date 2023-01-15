@@ -177,6 +177,7 @@ ZSSYSDLL_API Qt::KeyboardModifiers char2QKeyboardModifiers( const QChar& i_ch );
 ZSSYSDLL_API QString qMouseButton2Str( int i_iBtn, bool i_bShort = true );
 ZSSYSDLL_API QString qMouseButtons2Str( int i_iBtns, bool i_bShort = true );
 ZSSYSDLL_API QString qPoint2Str( const QPoint& i_pt, bool i_bShort = true );
+ZSSYSDLL_API QString qSize2Str( const QSize& i_size, bool i_bShort = true );
 ZSSYSDLL_API QString qRect2Str( const QRect& i_rct, bool i_bShort = true );
 ZSSYSDLL_API QString qMargins2Str( const QMargins& i_margins, bool i_bShort = true );
 ZSSYSDLL_API QString qMimeData2Str( const QMimeData* i_pMimeData, int i_iDetailLevel = 0 );

@@ -3180,7 +3180,6 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
 
 } // qMouseButtons2Str
 
-
 /*==============================================================================
 class QPoint
 ==============================================================================*/
@@ -3190,20 +3189,32 @@ QString ZS::System::qPoint2Str( const QPoint& i_pt, bool i_bShort )
 //------------------------------------------------------------------------------
 {
     QString str;
-
-    if( i_bShort )
-    {
+    if( i_bShort ) {
         str  = QString::number(i_pt.x()) + ", " + QString::number(i_pt.y());
-    }
-    else
-    {
+    } else {
         str  = "x: " + QString::number(i_pt.x());
         str += ", y: " + QString::number(i_pt.y());
     }
     return str;
+}
 
-} // qPoint2Str
+/*==============================================================================
+class QSize
+==============================================================================*/
 
+//------------------------------------------------------------------------------
+QString ZS::System::qSize2Str( const QSize& i_size, bool i_bShort )
+//------------------------------------------------------------------------------
+{
+    QString str;
+    if( i_bShort ) {
+        str  = QString::number(i_size.width()) + ", " + QString::number(i_size.height());
+    } else {
+        str  = "w: " + QString::number(i_size.width());
+        str += ", h: " + QString::number(i_size.height());
+    }
+    return str;
+}
 
 /*==============================================================================
 class QRect
@@ -3214,23 +3225,17 @@ QString ZS::System::qRect2Str( const QRect& i_rct, bool i_bShort )
 //------------------------------------------------------------------------------
 {
     QString str;
-
-    if( i_bShort )
-    {
+    if( i_bShort ) {
         str  = QString::number(i_rct.x()) + ", " + QString::number(i_rct.y());
         str += ", " + QString::number(i_rct.width()) + ", " + QString::number(i_rct.height());
-    }
-    else
-    {
+    } else {
         str  = "x: " + QString::number(i_rct.x());
         str += ", y: " + QString::number(i_rct.y());
         str += ", w: " + QString::number(i_rct.width());
         str += ", h: " + QString::number(i_rct.height());
     }
     return str;
-
-} // qRect2Str
-
+}
 
 /*==============================================================================
 class QMargins
