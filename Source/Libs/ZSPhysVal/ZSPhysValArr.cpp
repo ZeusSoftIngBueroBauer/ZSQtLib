@@ -580,25 +580,17 @@ void CPhysValArr::setValues( int i_idxStart, const QVector<double>& i_arfVals, c
         QString strAddErrInfo = "Src:" + m_unit.keyInTree() + ", Dst:" + i_unit.keyInTree();
         throw CUnitConversionException( __FILE__, __LINE__, EResultDifferentPhysSizes, strAddErrInfo );
     }
-
     if( m_unit != i_unit )
     {
         setUnit(i_unit);
     }
-
     if( i_idxStart + i_arfVals.size() > m_arfValues.size() )
     {
         m_arfValues.resize( i_idxStart + i_arfVals.size() );
     }
-
-    for( int idx = 0; idx < i_arfVals.size(); idx++ )
-    {
-        m_arfValues[i_idxStart+idx] = i_arfVals[idx];
-    }
-
+    memcpy(&m_arfValues.data()[i_idxStart], i_arfVals.data(), sizeof(double)*i_arfVals.size());
     m_validity = EValueValidity::Valid;
-
-} // setValues
+}
 
 /*==============================================================================
 public: // instance methods (replacing all already existing values)

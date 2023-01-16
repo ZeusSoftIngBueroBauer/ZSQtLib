@@ -92,17 +92,17 @@ CWidgetCentral::CWidgetCentral( QWidget* i_pWdgtParent, Qt::WindowFlags  i_wflag
     m_pTabWdgtMain = new QTabWidget(this);
     m_pLyt->addWidget(m_pTabWdgtMain);
 
-    // <Tab> Units
-    //-------------
-
-    m_pWdgtPhysSizes = new CWdgtPhysSizes(&IdxTreeUnits);
-    m_pTabWdgtMain->addTab(m_pWdgtPhysSizes,"Units");
-
     // <Tab> Test
     //-------------
 
     m_pWdgtTest = new CWdgtIdxTreeTestSteps( CApplication::GetInstance()->getTest() );
     m_pTabWdgtMain->addTab( m_pWdgtTest, "Test" );
+
+    // <Tab> Units
+    //-------------
+
+    m_pWdgtPhysSizes = new CWdgtPhysSizes(&IdxTreeUnits);
+    m_pTabWdgtMain->addTab(m_pWdgtPhysSizes,"Units");
 
     setMinimumWidth(600);
     setMinimumHeight(300);

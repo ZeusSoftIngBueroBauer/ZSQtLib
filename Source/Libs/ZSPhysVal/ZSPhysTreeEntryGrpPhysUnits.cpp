@@ -113,6 +113,39 @@ CUnitsTreeEntryGrpPhysUnits::CUnitsTreeEntryGrpPhysUnits(
 } // ctor
 
 //------------------------------------------------------------------------------
+/*! @brief  Creates an instance of a for with physical units.
+
+    @param [in] i_pParentBranch
+    @param [in] i_strName
+        e.g. "Time", "Length", "Power", "Voltage", ...
+    @param [in] i_strSIUnitName
+        e.g. "Second" for Time, "Meter" for Length, "Watt" for el. Power, "Volt" for el. Voltage, ...
+    @param [in] i_strSIUnitSymbol
+        e.g. "s" for Second, "m" for Meter, "W" for "Watt", "V" for el. Volt, ...
+    @param [in] i_strFormulaSymbol
+        e.g. "t" for Time, "l" for Length, "P" for Power, "U" for Voltage, ...
+    @param [in] i_bIsPowerRelated
+        true if X/dB = 10*log(X/X0), false if e.g. X/dB = 20*log(X/X0)
+*/
+CUnitsTreeEntryGrpPhysUnits::CUnitsTreeEntryGrpPhysUnits(
+    CIdxTreeEntry* i_pParentBranch,
+    const QString& i_strName,
+    const QString& i_strSIUnitName,
+    const QString& i_strSIUnitSymbol,
+    const QString& i_strFormulaSymbol,
+    bool           i_bIsPowerRelated ) :
+//------------------------------------------------------------------------------
+    CUnitsTreeEntryGrpBase(i_pParentBranch, EUnitClassType::PhysSize, i_strName),
+    m_strSIUnitName(i_strSIUnitName),
+    m_strSIUnitSymbol(i_strSIUnitSymbol),
+    m_pPhysUnitSI(nullptr),
+    m_strFormulaSymbol(i_strFormulaSymbol),
+    m_bIsPowerRelated(i_bIsPowerRelated),
+    m_bInitialized(false)
+{
+} // ctor
+
+//------------------------------------------------------------------------------
 /*! @brief Destroys the group of physical units.
 */
 CUnitsTreeEntryGrpPhysUnits::~CUnitsTreeEntryGrpPhysUnits()

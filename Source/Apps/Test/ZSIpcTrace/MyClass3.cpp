@@ -596,6 +596,16 @@ void CMyClass3::setObjectName(const QString& i_strObjName)
     {
         m_pTrcAdminObj = CTrcServer::RenameTraceAdminObj(m_pTrcAdminObj, objectName());
     }
+    if( m_pTrcAdminObjNoisyMethods != nullptr )
+    {
+        m_pTrcAdminObjNoisyMethods =
+            CTrcServer::RenameTraceAdminObj(m_pTrcAdminObjNoisyMethods, objectName());
+    }
+    if( m_pTrcAdminObjVeryNoisyMethods != nullptr )
+    {
+        m_pTrcAdminObjVeryNoisyMethods =
+            CTrcServer::RenameTraceAdminObj(m_pTrcAdminObjVeryNoisyMethods, objectName());
+    }
 
 } // setObjectName
 

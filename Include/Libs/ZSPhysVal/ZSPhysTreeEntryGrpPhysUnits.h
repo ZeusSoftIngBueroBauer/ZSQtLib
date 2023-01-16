@@ -61,6 +61,13 @@ public: // ctors and dtor
         const QString& i_strSIUnitSymbol,
         const QString& i_strFormulaSymbol,
         bool           i_bIsPowerRelated );
+    CUnitsTreeEntryGrpPhysUnits(
+        ZS::System::CIdxTreeEntry* i_pParentBranch,
+        const QString& i_strName,
+        const QString& i_strSIUnitName,
+        const QString& i_strSIUnitSymbol,
+        const QString& i_strFormulaSymbol,
+        bool           i_bIsPowerRelated );
     virtual ~CUnitsTreeEntryGrpPhysUnits();
 public: // operators
     bool operator == ( const CUnitsTreeEntryGrpPhysUnits& i_physsizeOther ) const;
