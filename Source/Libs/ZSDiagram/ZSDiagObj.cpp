@@ -165,9 +165,7 @@ CDiagObj::CDiagObj(
     QObject(),
     m_strObjName(i_strObjName),
     m_iObjId(-1),
-    m_pDataDiagram(nullptr),
-    m_pPixmapDiagram(nullptr),
-    m_pWdgtDiagram(nullptr),
+    m_pDiagram(nullptr),
     m_pDiagTrace(i_pDiagTrace),
     //m_arpDiagScale[EScaleDirCount]
     m_uUpdateFlags(EUpdateAll),
@@ -236,9 +234,7 @@ CDiagObj::CDiagObj(
     QObject(),
     m_strObjName(i_strObjName),
     m_iObjId(-1),
-    m_pDataDiagram(nullptr),
-    m_pPixmapDiagram(nullptr),
-    m_pWdgtDiagram(nullptr),
+    m_pDiagram(nullptr),
     m_pDiagTrace(nullptr),
     //m_arpDiagScale[EScaleDirCount]
     m_uUpdateFlags(EUpdateAll),
@@ -327,9 +323,7 @@ CDiagObj::~CDiagObj()
 
     //m_strObjName;
     m_iObjId = 0;
-    m_pDataDiagram = nullptr;
-    m_pPixmapDiagram = nullptr;
-    m_pWdgtDiagram = nullptr;
+    m_pDiagram = nullptr;
     m_pDiagTrace = nullptr;
     memset(m_arpDiagScale, 0x00, EScaleDirCount*sizeof(m_arpDiagScale[0]));
     m_uUpdateFlags = 0;
@@ -429,7 +423,7 @@ int CDiagObj::getObjId() const
 CDataDiagram* CDiagObj::getDiagram()
 //------------------------------------------------------------------------------
 {
-    return m_pDataDiagram;
+    return m_pDiagram;
 }
 
 //------------------------------------------------------------------------------
@@ -1090,18 +1084,18 @@ void CDiagObj::invalidate( unsigned int i_uUpdateFlags, bool i_bInformDiagram )
         mthTracer.trace(strTrcMsg);
     }
 
-    if( i_uUpdateFlags != EUpdateNone && m_pDataDiagram == nullptr )
+    if( i_uUpdateFlags != EUpdateNone && m_pDiagram == nullptr )
     {
         // Widget processing is not needed.
         m_uUpdateFlags |= (i_uUpdateFlags & ~EUpdateWidget);
     }
-    else if( i_uUpdateFlags != EUpdateNone && m_pDataDiagram != nullptr )
+    else if( i_uUpdateFlags != EUpdateNone && m_pDiagram != nullptr )
     {
         // The process depth to be invalidated depends on whether the object is
         // part of a widget diagram, a pixmap diagram or just a data diagram.
         // If a bit is set the corresponding update process need to be executed
         // (keeping the current update processes that still need to be executed):
-        switch( m_pDataDiagram->getUpdateType() )
+        switch( m_pDiagram->getUpdateType() )
         {
             case EDiagramUpdateTypeWidget:
             {
@@ -1128,7 +1122,7 @@ void CDiagObj::invalidate( unsigned int i_uUpdateFlags, bool i_bInformDiagram )
         if( i_bInformDiagram )
         {
             // .. inform the diagram about the necessary process depth.
-            m_pDataDiagram->invalidate(this,m_uUpdateFlags);
+            m_pDiagram->invalidate(this,m_uUpdateFlags);
         }
     }
 
@@ -1199,7 +1193,7 @@ public: // overridables of base class QObject
 //        if( pMsgErr != nullptr )
 //        {
 //            onReceivedError(pMsgErr);
-//            m_pDataDiagram->updateDiagram();
+//            m_pDiagram->update(this, m_rectContent);
 //        }
 //        else
 //        {
@@ -1213,7 +1207,7 @@ public: // overridables of base class QObject
 //                    {
 //                        SErrResultInfo errResultInfo = onReceivedReqShow(pMsgReq);
 //
-//                        m_pDataDiagram->updateDiagram();
+//                        m_pDiagram->update(this, m_rectContent);
 //
 //                        if( pMsgReq->mustBeConfirmed() && pMsgReq->getSender() != nullptr )
 //                        {
@@ -1238,7 +1232,7 @@ public: // overridables of base class QObject
 //                    {
 //                        SErrResultInfo errResultInfo = onReceivedReqHide(pMsgReq);
 //
-//                        m_pDataDiagram->updateDiagram();
+//                        m_pDiagram->update(this, m_rectContent);
 //
 //                        if( pMsgReq->mustBeConfirmed() && pMsgReq->getSender() != nullptr )
 //                        {
@@ -1263,7 +1257,7 @@ public: // overridables of base class QObject
 //                    {
 //                        SErrResultInfo errResultInfo = onReceivedReqSetValue(pMsgReq);
 //
-//                        m_pDataDiagram->updateDiagram();
+//                        m_pDiagram->update(this, m_rectContent);
 //
 //                        if( pMsgReq->mustBeConfirmed() && pMsgReq->getSender() != nullptr )
 //                        {

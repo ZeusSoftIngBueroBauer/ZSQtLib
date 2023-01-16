@@ -26,7 +26,7 @@ may result in using the software modules.
 
 #include "ZSDiagram/ZSDiagObjTable.h"
 #include "ZSDiagram/ZSDiagObjValueProvider.h"
-#include "ZSDiagram/ZSDiagramProcWdgt.h"
+#include "ZSDiagram/ZSDiagramProcPixmap.h"
 #include "ZSDiagram/ZSDiagramFrameStyles.h"
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysException.h"
@@ -115,20 +115,13 @@ CDiagObjTable::CDiagObjTable(
     // Flag to indicate that the table content has been changed.
     m_bUpdWidget(true)
 {
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Diagram", "CDiagObjTable", m_strObjName);
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ "" );
 
-    int idxOrientation;
-    int idxRow;
-    int idxClm;
-    int idxCell;
-
-    for( idxOrientation = 0; idxOrientation < EOrientationCount; idxOrientation++ )
+    for( int idxOrientation = 0; idxOrientation < EOrientationCount; idxOrientation++ )
     {
         m_arbShowGridLines[idxOrientation] = false;
     }
@@ -152,7 +145,7 @@ CDiagObjTable::CDiagObjTable(
     m_ardataTypeClmVal = new EDataType[m_iClmCountMax];
     m_ardataTypeClmDpl = new EDataType[m_iClmCountMax];
 
-    for( idxClm = 0; idxClm < m_iClmCountMax; idxClm++ )
+    for( int idxClm = 0; idxClm < m_iClmCountMax; idxClm++ )
     {
         m_ariClmAlignmentFlags[idxClm] = Qt::AlignHCenter|Qt::AlignVCenter; //lint !e655 .. das nervt
         m_arcxClmFixedWidth[idxClm] = -1;
@@ -177,9 +170,9 @@ CDiagObjTable::CDiagObjTable(
     m_ararpPxmCellData = new QPixmap*[m_iRowCountMax*m_iClmCountMax];
     m_ararpPhysValCellData = new CPhysVal*[m_iRowCountMax*m_iClmCountMax];
 
-    for( idxRow = 0, idxCell = 0; idxRow < m_iRowCountMax; idxRow++ )
+    for( int idxRow = 0, idxCell = 0; idxRow < m_iRowCountMax; idxRow++ )
     {
-        for( idxClm = 0; idxClm < m_iClmCountMax; idxClm++ )
+        for( int idxClm = 0; idxClm < m_iClmCountMax; idxClm++ )
         {
             m_arariCellAlignmentFlags[idxCell] = 0;
             m_ararpDiagObjValueProvider[idxCell] = nullptr;
@@ -207,10 +200,6 @@ CDiagObjTable::~CDiagObjTable()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
-    int idxRow;
-    int idxClm;
-    int idxCell;
-
     try
     {
         delete m_pFrameStyle;
@@ -222,7 +211,7 @@ CDiagObjTable::~CDiagObjTable()
 
     if( m_arpValueFormatClm != nullptr && m_iClmCountMax > 0 )
     {
-        for( idxClm = 0; idxClm < m_iClmCountMax; idxClm++ )
+        for( int idxClm = 0; idxClm < m_iClmCountMax; idxClm++ )
         {
             try
             {
@@ -238,10 +227,11 @@ CDiagObjTable::~CDiagObjTable()
     // So umstaendlich programmiert weil lint sonst keine Ruhe gibt ...
     if( m_ararpDiagObjValueProvider != nullptr && m_iRowCountMax > 0 && m_iClmCountMax > 0 )
     {
-        for( idxRow = 0; idxRow < m_iRowCountMax; idxRow++ )
+        for( int idxRow = 0; idxRow < m_iRowCountMax; idxRow++ )
         {
-            for( idxClm = 0; idxClm < m_iClmCountMax; idxClm++ )
+            for( int idxClm = 0; idxClm < m_iClmCountMax; idxClm++ )
             {
+                int idxCell = 0;
                 try
                 {
                     idxCell = getCellIdx(idxRow,idxClm);
@@ -257,10 +247,11 @@ CDiagObjTable::~CDiagObjTable()
     // So umstaendlich programmiert weil lint sonst keine Ruhe gibt ...
     if( m_ararpValueFormatCell != nullptr && m_iRowCountMax > 0 && m_iClmCountMax > 0 )
     {
-        for( idxRow = 0; idxRow < m_iRowCountMax; idxRow++ )
+        for( int idxRow = 0; idxRow < m_iRowCountMax; idxRow++ )
         {
-            for( idxClm = 0; idxClm < m_iClmCountMax; idxClm++ )
+            for( int idxClm = 0; idxClm < m_iClmCountMax; idxClm++ )
             {
+                int idxCell = 0;
                 try
                 {
                     idxCell = getCellIdx(idxRow,idxClm);
@@ -277,10 +268,11 @@ CDiagObjTable::~CDiagObjTable()
     // So umstaendlich programmiert weil lint sonst keine Ruhe gibt ...
     if( m_ararpPxmCellData != nullptr && m_iRowCountMax > 0 && m_iClmCountMax > 0 )
     {
-        for( idxRow = 0; idxRow < m_iRowCountMax; idxRow++ )
+        for( int idxRow = 0; idxRow < m_iRowCountMax; idxRow++ )
         {
-            for( idxClm = 0; idxClm < m_iClmCountMax; idxClm++ )
+            for( int idxClm = 0; idxClm < m_iClmCountMax; idxClm++ )
             {
+                int idxCell = 0;
                 try
                 {
                     idxCell = getCellIdx(idxRow,idxClm);
@@ -297,10 +289,11 @@ CDiagObjTable::~CDiagObjTable()
     // So umstaendlich programmiert weil lint sonst keine Ruhe gibt ...
     if( m_ararpPhysValCellData != nullptr && m_iRowCountMax > 0 && m_iClmCountMax > 0 )
     {
-        for( idxRow = 0; idxRow < m_iRowCountMax; idxRow++ )
+        for( int idxRow = 0; idxRow < m_iRowCountMax; idxRow++ )
         {
-            for( idxClm = 0; idxClm < m_iClmCountMax; idxClm++ )
+            for( int idxClm = 0; idxClm < m_iClmCountMax; idxClm++ )
             {
+                int idxCell = 0;
                 try
                 {
                     idxCell = getCellIdx(idxRow,idxClm);
@@ -354,9 +347,6 @@ CDiagObjTable::~CDiagObjTable()
     m_ararpPxmCellData = nullptr;
     delete [] m_ararpPhysValCellData;
     m_ararpPhysValCellData = nullptr;
-
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
-    m_pTrcAdminObj = nullptr;
 
 } // dtor
 
@@ -2082,20 +2072,16 @@ void CDiagObjTable::updateLayout()
         /* strMethod    */ "updateLayout",
         /* strAddInfo   */ "" );
 
-    if( m_pDataDiagram == nullptr || !isVisible() )
+    if( m_pDiagram == nullptr || !isVisible() )
     {
         return;
     }
 
     // As a matter of fact there is no sense in adding a table object to
     // a diagram just designed to analyze data.
-    if( m_pDataDiagram->getUpdateType() >= EDiagramUpdateTypePixmap )
+    if( m_pDiagram->getUpdateType() < EDiagramUpdateTypePixmap )
     {
-        const CPixmapDiagram* pPixmapDiagram = dynamic_cast<const CPixmapDiagram*>(m_pDataDiagram);
-        if( pPixmapDiagram == nullptr )
-        {
-            return;
-        }
+        return;
     }
 
     EDataType    dataTypeCellDpl;
@@ -2368,9 +2354,9 @@ void CDiagObjTable::updatePixmap( QPaintDevice* i_pPaintDevice )
 
     // As a matter of fact there is no sense in adding an axis label object to
     // a diagram just designed to analyze data.
-    if( m_pDataDiagram != nullptr && m_pDataDiagram->getUpdateType() >= EDiagramUpdateTypePixmap )
+    if( m_pDiagram != nullptr && m_pDiagram->getUpdateType() >= EDiagramUpdateTypePixmap )
     {
-        pPixmapDiagram = dynamic_cast<const CPixmapDiagram*>(m_pDataDiagram);
+        pPixmapDiagram = dynamic_cast<const CPixmapDiagram*>(m_pDiagram);
     }
     if( pPixmapDiagram == nullptr )
     {
@@ -2694,43 +2680,33 @@ void CDiagObjTable::updateWidget()
         /* strMethod    */ "updateWidget",
         /* strAddInfo   */ "" );
 
-    CWdgtDiagram* pWdgtDiagram = nullptr;
-
-    if( m_pDataDiagram->getUpdateType() >= EDiagramUpdateTypeWidget )
+    // Invalidate output region of the diagram object to update (repaint) content of diagram.
+    if( m_rectContentPrev.isValid() && m_bUpdWidget )
     {
-        pWdgtDiagram = dynamic_cast<CWdgtDiagram*>(m_pDataDiagram);
+        m_pDiagram->update(this, m_rectContentPrev);
+        m_rectContentPrev = m_rectContent;
     }
-    if( pWdgtDiagram != nullptr )
+    if( m_rectContent.isValid() && m_bUpdWidget )
     {
-        // Invalidate output region of the diagram object to update (repaint) content of diagram.
-        if( m_rectContentPrev.isValid() && m_bUpdWidget )
-        {
-            pWdgtDiagram->update(this,m_rectContentPrev);
-            m_rectContentPrev = m_rectContent;
-        }
-        if( m_rectContent.isValid() && m_bUpdWidget )
-        {
-            pWdgtDiagram->update(this,m_rectContent);
-        }
+        m_pDiagram->update(this, m_rectContent);
+    }
 
-        //// Invalidate output region of the diagram object to update (repaint) content of diagram.
-        //if( m_rectTable.width() > 0 && m_rectTable.height() > 0 )
-        //{
-        //    pWdgtDiagram->update(this,m_rectTable);
-        //}
-        //if( !isVisible() )
-        //{
-        //    m_rectTable.setWidth(0);
-        //    m_rectTable.setHeight(0);
-        //}
+    //// Invalidate output region of the diagram object to update (repaint) content of diagram.
+    //if( m_rectTable.width() > 0 && m_rectTable.height() > 0 )
+    //{
+    //    pWdgtDiagram->update(this,m_rectTable);
+    //}
+    //if( !isVisible() )
+    //{
+    //    m_rectTable.setWidth(0);
+    //    m_rectTable.setHeight(0);
+    //}
 
-        // On changing the size of the diagram or the content of the table the table need
-        // to be updated on the screen. Updating the content rectangle of the label is
-        // therefore only necessary if previously layout or data processing has been executed
-        // or if the style of any cell has been changed.
-        m_bUpdWidget = false;
-
-    } // if( pWdgtDiagram != nullptr )
+    // On changing the size of the diagram or the content of the table the table need
+    // to be updated on the screen. Updating the content rectangle of the label is
+    // therefore only necessary if previously layout or data processing has been executed
+    // or if the style of any cell has been changed.
+    m_bUpdWidget = false;
 
     // Mark current process depth as executed (reset bit)
     //---------------------------------------------------

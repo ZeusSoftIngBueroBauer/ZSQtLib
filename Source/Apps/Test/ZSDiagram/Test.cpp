@@ -50,9 +50,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysMath.h"
 
-//#include <QtCore/qfile.h>
 #include <QtCore/qtimer.h>
-//#include <QtNetwork/qhostinfo.h>
 
 #if QT_VERSION < 0x050000
 #include <QtGui/qframe.h>
@@ -209,6 +207,13 @@ CTest::CTest() :
         /* strOperation    */ "CDiagram::addDiagObj(CDiagObjMarker)",
         /* pTSGrpParent    */ pGrpSigGen,
         /* szDoTestStepFct */ SLOT(doTestStepSigGenAddMarkers(ZS::Test::CTestStep*)) );
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Single Shot Signal Generator",
+        /* strOperation    */ "CDiagTrace::setValues()",
+        /* pTSGrpParent    */ pGrpSigGen,
+        /* szDoTestStepFct */ SLOT(doTestStepSigGenSingleShot(ZS::Test::CTestStep*)) );
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -390,7 +395,10 @@ void CTest::doTestStepSigGenCreateDiagram( ZS::Test::CTestStep* i_pTestStep )
     //---------------
 
     // Please note that to finish a test step the list of actual values may not be empty.
-    strlstResultValues.append("Diagram Window Visible");
+    if( strlstResultValues.size() == 0 )
+    {
+        strlstResultValues.append("Test Step not completely implemented");
+    }
     i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepSigGenCreateDiagram
@@ -421,7 +429,10 @@ void CTest::doTestStepSigGenDestroyDiagram( ZS::Test::CTestStep* i_pTestStep )
     //---------------------
 
     // Please note that to finish a test step the list of actual values may not be empty.
-    strlstResultValues.append("Diagram Window Destroyed");
+    if( strlstResultValues.size() == 0 )
+    {
+        strlstResultValues.append("Test Step not completely implemented");
+    }
     i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepSigGenDestroyDiagram
@@ -481,7 +492,7 @@ void CTest::doTestStepSigGenAddScales( ZS::Test::CTestStep* i_pTestStep )
     // Please note that to finish a test step the list of actual values may not be empty.
     if( strlstResultValues.size() == 0 )
     {
-        strlstResultValues.append("Test Step not implemented");
+        strlstResultValues.append("Test Step not completely implemented");
     }
     i_pTestStep->setResultValues(strlstResultValues);
 
@@ -526,7 +537,7 @@ void CTest::doTestStepSigGenRemoveScales( ZS::Test::CTestStep* i_pTestStep )
     // Please note that to finish a test step the list of actual values may not be empty.
     if( strlstResultValues.size() == 0 )
     {
-        strlstResultValues.append("Test Step not implemented");
+        strlstResultValues.append("Test Step not completely implemented");
     }
     i_pTestStep->setResultValues(strlstResultValues);
 
@@ -573,7 +584,7 @@ void CTest::doTestStepSigGenAddTraces( ZS::Test::CTestStep* i_pTestStep )
     // Please note that to finish a test step the list of actual values may not be empty.
     if( strlstResultValues.size() == 0 )
     {
-        strlstResultValues.append("Test Step not implemented");
+        strlstResultValues.append("Test Step not completely implemented");
     }
     i_pTestStep->setResultValues(strlstResultValues);
 
@@ -618,7 +629,7 @@ void CTest::doTestStepSigGenRemoveTraces( ZS::Test::CTestStep* i_pTestStep )
     // Please note that to finish a test step the list of actual values may not be empty.
     if( strlstResultValues.size() == 0 )
     {
-        strlstResultValues.append("Test Step not implemented");
+        strlstResultValues.append("Test Step not completely implemented");
     }
     i_pTestStep->setResultValues(strlstResultValues);
 
@@ -661,7 +672,7 @@ void CTest::doTestStepSigGenAddGrid( ZS::Test::CTestStep* i_pTestStep )
     // Please note that to finish a test step the list of actual values may not be empty.
     if( strlstResultValues.size() == 0 )
     {
-        strlstResultValues.append("Test Step not implemented");
+        strlstResultValues.append("Test Step not completely implemented");
     }
     i_pTestStep->setResultValues(strlstResultValues);
 
@@ -704,7 +715,7 @@ void CTest::doTestStepSigGenRemoveGrid( ZS::Test::CTestStep* i_pTestStep )
     // Please note that to finish a test step the list of actual values may not be empty.
     if( strlstResultValues.size() == 0 )
     {
-        strlstResultValues.append("Test Step not implemented");
+        strlstResultValues.append("Test Step not completely implemented");
     }
     i_pTestStep->setResultValues(strlstResultValues);
 
@@ -758,7 +769,7 @@ void CTest::doTestStepSigGenAddAxisLabels( ZS::Test::CTestStep* i_pTestStep )
     // Please note that to finish a test step the list of actual values may not be empty.
     if( strlstResultValues.size() == 0 )
     {
-        strlstResultValues.append("Test Step not implemented");
+        strlstResultValues.append("Test Step not completely implemented");
     }
     i_pTestStep->setResultValues(strlstResultValues);
 
@@ -808,7 +819,7 @@ void CTest::doTestStepSigGenRemoveAxisLabels( ZS::Test::CTestStep* i_pTestStep )
     // Please note that to finish a test step the list of actual values may not be empty.
     if( strlstResultValues.size() == 0 )
     {
-        strlstResultValues.append("Test Step not implemented");
+        strlstResultValues.append("Test Step not completely implemented");
     }
     i_pTestStep->setResultValues(strlstResultValues);
 
@@ -883,7 +894,7 @@ void CTest::doTestStepSigGenAddCurves( ZS::Test::CTestStep* i_pTestStep )
     // Please note that to finish a test step the list of actual values may not be empty.
     if( strlstResultValues.size() == 0 )
     {
-        strlstResultValues.append("Test Step not implemented");
+        strlstResultValues.append("Test Step not completely implemented");
     }
     i_pTestStep->setResultValues(strlstResultValues);
 
@@ -933,7 +944,7 @@ void CTest::doTestStepSigGenRemoveCurves( ZS::Test::CTestStep* i_pTestStep )
     // Please note that to finish a test step the list of actual values may not be empty.
     if( strlstResultValues.size() == 0 )
     {
-        strlstResultValues.append("Test Step not implemented");
+        strlstResultValues.append("Test Step not completely implemented");
     }
     i_pTestStep->setResultValues(strlstResultValues);
 
@@ -1065,7 +1076,7 @@ void CTest::doTestStepSigGenAddMarkers( ZS::Test::CTestStep* i_pTestStep )
     // Please note that to finish a test step the list of actual values may not be empty.
     if( strlstResultValues.size() == 0 )
     {
-        strlstResultValues.append("Test Step not implemented");
+        strlstResultValues.append("Test Step not completely implemented");
     }
     i_pTestStep->setResultValues(strlstResultValues);
 
@@ -1120,6 +1131,39 @@ void CTest::doTestStepSigGenRemoveMarkers( ZS::Test::CTestStep* i_pTestStep )
     i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepSigGenRemoveMarkers
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepSigGenSingleShot( ZS::Test::CTestStep* i_pTestStep )
+//------------------------------------------------------------------------------
+{
+    QString     strExpectedValue;
+    QStringList strlstExpectedValues;
+    QString     strResultValue;
+    QStringList strlstResultValues;
+
+    // Expected Values
+    //---------------
+
+    strlstExpectedValues.append(strExpectedValue);
+
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Test Step
+    //----------
+
+    onTimerSigGenTimeout();
+
+    // Actual Result Values
+    //---------------------
+
+    // Please note that to finish a test step the list of actual values may not be empty.
+    if( strlstResultValues.size() == 0 )
+    {
+        strlstResultValues.append("Test Step not implemented");
+    }
+    i_pTestStep->setResultValues(strlstResultValues);
+
+} // doTestStepSigGenSingleShot
 
 //------------------------------------------------------------------------------
 void CTest::doTestStepSigGenStart( ZS::Test::CTestStep* i_pTestStep )
@@ -1234,9 +1278,6 @@ void CTest::onTimerSigGenTimeout()
         double fyRange = fabs(scaleY.m_fMax - scaleY.m_fMin);
         double fT = 0.5 * fxRange;
         double fxStep = fxRange / (c_iValCount-1);
-        double fx, fy;
-        double fRad;
-        int    idxVal;
 
         s_fRadDrift += c_fRadDrift;
 
@@ -1245,15 +1286,24 @@ void CTest::onTimerSigGenTimeout()
             s_fRadDrift = 0.0;
         }
 
-        for( idxVal = 0; idxVal < c_iValCount; idxVal++ )
+        for( int idxVal = 0; idxVal < c_iValCount; idxVal++ )
         {
-            fx = scaleX.m_fMin + idxVal*fxStep;
+            double fx = scaleX.m_fMin + idxVal*fxStep;
             s_arfXValuesTraces01[idxVal] = fx;
 
-            fRad = s_fRadDrift + 2.0*Math::c_fPI*(fx - scaleX.m_fMin) / fT;
-            fy = scaleY.m_fMin + fyRange/2.0 + sin(fRad)*fyRange/5.0;
-            s_arfYValuesTrace0[idxVal] = fy - 2.0 * fyRange + (static_cast<double>(rand()) / (static_cast<double>(RAND_MAX) + 1.0) - 0.5) * 0.02 * fyRange;
-            s_arfYValuesTrace1[idxVal] = fy + 2.0 * fyRange + (static_cast<double>(rand()) / (static_cast<double>(RAND_MAX) + 1.0) - 0.5) * 0.1 * fyRange;
+            double fRad = s_fRadDrift + 2.0*Math::c_fPI*(fx - scaleX.m_fMin) / fT;
+            double fy = scaleY.m_fMin + fyRange/2.0 + sin(fRad)*fyRange/5.0;
+
+            // Simulate sinus with a little bit signal noise.
+            // Random factor in the range of [-0.5 .. 0.5].
+            double fRandFacTrace0 = static_cast<double>(rand()) / (static_cast<double>(RAND_MAX) + 1.0) - 0.5;
+            double fRandFacTrace1 = static_cast<double>(rand()) / (static_cast<double>(RAND_MAX) + 1.0) - 0.5;
+
+            // Signal1 noise 1% of yRange.
+            s_arfYValuesTrace0[idxVal] = fy + (fRandFacTrace0 / 100.0) * fyRange;
+
+            // Signal2 noise 10% of yRange.
+            s_arfYValuesTrace1[idxVal] = fy + (fRandFacTrace1 / 10.0) * fyRange;
         }
 
         if( m_pDiagTraceSigGen1 != nullptr )

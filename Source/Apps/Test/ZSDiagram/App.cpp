@@ -97,13 +97,14 @@ CApplication::CApplication(
     QCoreApplication::setOrganizationDomain(i_strOrganizationDomain);
     QCoreApplication::setApplicationName(i_strAppName);
 
+    QPixmap pxmApp32x32(":/ZS/App/ZeusSoft_32x32.png");
+    QPixmap pxmApp48x48(":/ZS/App/ZeusSoft_48x48.png");
+    QPixmap pxmApp64x64(":/ZS/App/ZeusSoft_64x64.png");
+
     QIcon iconApp;
-
-    QPixmap pxmApp16x16(":/ZS/App/Zeus16x16.png");
-    QPixmap pxmApp32x32(":/ZS/App/Zeus32x32.png");
-
-    iconApp.addPixmap(pxmApp16x16);
     iconApp.addPixmap(pxmApp32x32);
+    iconApp.addPixmap(pxmApp48x48);
+    iconApp.addPixmap(pxmApp64x64);
 
     QApplication::setWindowIcon(iconApp);
 
@@ -120,6 +121,7 @@ CApplication::CApplication(
     m_pTrcServer->setHostSettings(m_trcServerHostSettings);
     m_pTrcServer->setTraceSettings(m_trcServerSettings);
     m_pTrcServer->recallAdminObjs();
+    m_pTrcServer->startup();
 
     // Get trace admin object
     //-----------------------

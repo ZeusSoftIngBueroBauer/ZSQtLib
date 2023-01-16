@@ -25,7 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDiagram/ZSDiagObjGrid.h"
-#include "ZSDiagram/ZSDiagramProcWdgt.h"
+#include "ZSDiagram/ZSDiagramProcData.h"
 #include "ZSDiagram/ZSDiagScale.h"
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysException.h"
@@ -66,8 +66,6 @@ CDiagObjGrid::CDiagObjGrid(
     //m_arbShow[EDivLineLayerCount]
     m_bUpdWidget(true)
 {
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Diagram", "CDiagObjGrid", m_strObjName);
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -101,8 +99,10 @@ CDiagObjGrid::~CDiagObjGrid()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
-    m_pTrcAdminObj = nullptr;
+    memset(m_arcol, 0x00, EDivLineLayerCount*sizeof(m_arcol[0]));
+    memset(m_arpenStyle, 0x00, EDivLineLayerCount*sizeof(m_arpenStyle[0]));
+    memset(m_arbShow, 0x00, EDivLineLayerCount*sizeof(m_arbShow[0]));
+    m_bUpdWidget = false;
 
 } // dtor
 
@@ -391,61 +391,50 @@ void CDiagObjGrid::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDe
 
         if( isVisible() )
         {
-            const CPixmapDiagram* pPixmapDiagram = nullptr;
+            QPainter painter(i_pPaintDevice);
+            int      xDivLine;
+            int      yDivLine;
+            int      xLeft, xRight, yTop, yBottom;
+            int      iLayer;
+            int      idxDivLine;
 
-            // As a matter of fact there is no sense in adding a curve object to
-            // a diagram just designed to analyze data.
-            if( m_pDataDiagram != nullptr && m_pDataDiagram->getUpdateType() >= EDiagramUpdateTypePixmap )
+            // We are going to draw the grid lines starting with the lowest layer so
+            // that main grid lines will not be covered by sub grid lines.
+
+            for( iLayer = EDivLineLayerCount-1; iLayer >= 0; iLayer-- )
             {
-                pPixmapDiagram = dynamic_cast<const CPixmapDiagram*>(m_pDataDiagram);
-            }
-            if( pPixmapDiagram != nullptr )
-            {
-                QPainter painter(i_pPaintDevice);
-                int      xDivLine;
-                int      yDivLine;
-                int      xLeft, xRight, yTop, yBottom;
-                int      iLayer;
-                int      idxDivLine;
-
-                // We are going to draw the grid lines starting with the lowest layer so
-                // that main grid lines will not be covered by sub grid lines.
-
-                for( iLayer = EDivLineLayerCount-1; iLayer >= 0; iLayer-- )
+                if( m_arbShow[iLayer] )
                 {
-                    if( m_arbShow[iLayer] )
+                    QPen pen(m_arcol[iLayer],0,m_arpenStyle[iLayer]);
+                    painter.setPen(pen);
+
+                    // Vertical lines (from left to right)
+                    yTop    = m_rectContent.top();
+                    yBottom = m_rectContent.bottom();
+                    for( idxDivLine = 0; idxDivLine < m_arpDiagScale[EScaleDirX]->getDivLineCount(iLayer); idxDivLine++ )
                     {
-                        QPen pen(m_arcol[iLayer],0,m_arpenStyle[iLayer]);
-                        painter.setPen(pen);
-
-                        // Vertical lines (from left to right)
-                        yTop    = m_rectContent.top();
-                        yBottom = m_rectContent.bottom();
-                        for( idxDivLine = 0; idxDivLine < m_arpDiagScale[EScaleDirX]->getDivLineCount(iLayer); idxDivLine++ )
+                        xDivLine = static_cast<int>(m_arpDiagScale[EScaleDirX]->getDivLinePix(iLayer,idxDivLine)+0.5);
+                        if( xDivLine > m_rectContent.left()+1 && xDivLine < m_rectContent.right()-1 )
                         {
-                            xDivLine = static_cast<int>(m_arpDiagScale[EScaleDirX]->getDivLinePix(iLayer,idxDivLine)+0.5);
-                            if( xDivLine > m_rectContent.left()+1 && xDivLine < m_rectContent.right()-1 )
-                            {
-                                painter.drawLine(xDivLine,yTop,xDivLine,yBottom);
-                            }
+                            painter.drawLine(xDivLine,yTop,xDivLine,yBottom);
                         }
+                    }
 
-                        // Horizontal lines (from bottom to top)
-                        xLeft  = m_rectContent.left();
-                        xRight = m_rectContent.right();
-                        for( idxDivLine = 0; idxDivLine < m_arpDiagScale[EScaleDirY]->getDivLineCount(iLayer); idxDivLine++ )
+                    // Horizontal lines (from bottom to top)
+                    xLeft  = m_rectContent.left();
+                    xRight = m_rectContent.right();
+                    for( idxDivLine = 0; idxDivLine < m_arpDiagScale[EScaleDirY]->getDivLineCount(iLayer); idxDivLine++ )
+                    {
+                        // Remember: drawing from bottom to top: the pixel values of the lower (min)
+                        // values are greater than the pixel values of the higher (max) scale values.
+                        yDivLine = static_cast<int>(m_arpDiagScale[EScaleDirY]->getDivLinePix(iLayer,idxDivLine)+0.5);
+                        if( yDivLine < m_rectContent.bottom()-1 && yDivLine > m_rectContent.top()+1 )
                         {
-                            // Remember: drawing from bottom to top: the pixel values of the lower (min)
-                            // values are greater than the pixel values of the higher (max) scale values.
-                            yDivLine = static_cast<int>(m_arpDiagScale[EScaleDirY]->getDivLinePix(iLayer,idxDivLine)+0.5);
-                            if( yDivLine < m_rectContent.bottom()-1 && yDivLine > m_rectContent.top()+1 )
-                            {
-                                painter.drawLine(xLeft,yDivLine,xRight,yDivLine);
-                            }
+                            painter.drawLine(xLeft,yDivLine,xRight,yDivLine);
                         }
-                    } // if( arbShow[iLayer] )
-                } // for( iLayer >= 0 )
-            } // if( pPixmapDiagram != nullptr )
+                    }
+                } // if( arbShow[iLayer] )
+            } // for( iLayer >= 0 )
         } // if( isVisible() )
 
         // Mark current process depth as executed (reset bit):
@@ -454,27 +443,15 @@ void CDiagObjGrid::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDe
     } // if( EUpdatePixmap )
 
     // If the widget need to be updated ..
-    if( i_uUpdateFlags & EUpdateWidget && m_uUpdateFlags & EUpdateWidget && m_pDataDiagram != nullptr )
+    if( i_uUpdateFlags & EUpdateWidget && m_uUpdateFlags & EUpdateWidget && m_pDiagram != nullptr )
     {
         mthTracer.trace("Processing Widget", ELogDetailLevel::Debug);
 
-        CWdgtDiagram* pWdgtDiagram = nullptr;
-
-        // As a matter of fact there is no sense in adding a grid object to
-        // a diagram just designed to analyze data.
-        if( m_pDataDiagram->getUpdateType() >= EDiagramUpdateTypeWidget )
+        // Invalidate output region of the diagram object to update (repaint) content of diagram.
+        if( m_rectContent.isValid() && m_bUpdWidget )
         {
-            pWdgtDiagram = dynamic_cast<CWdgtDiagram*>(m_pDataDiagram);
+            m_pDiagram->update(this, m_rectContent);
         }
-        if( pWdgtDiagram != nullptr )
-        {
-            // Invalidate output region of the diagram object to update (repaint) content of diagram.
-            if( m_rectContent.isValid() && m_bUpdWidget )
-            {
-                pWdgtDiagram->update(this,m_rectContent);
-            }
-
-        } // if( pWdgtDiagram != nullptr )
 
         // Mark current process depth as executed (reset bit):
         validate(EUpdateWidget);

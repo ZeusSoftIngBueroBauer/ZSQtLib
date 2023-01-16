@@ -71,8 +71,6 @@ CDiagObjValueProvider::CDiagObjValueProvider(
     m_physVal(),
     m_strVal("---")
 {
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Diagram", "CDiagObjValueProvider", m_strObjName);
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -166,9 +164,6 @@ CDiagObjValueProvider::~CDiagObjValueProvider()
     //m_valueFormat;
     //m_physVal;
     //m_strVal;
-
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
-    m_pTrcAdminObj = nullptr;
 
 } // dtor
 

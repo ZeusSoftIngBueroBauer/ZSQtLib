@@ -105,10 +105,11 @@ public: // instance methods to set and get the attributes of the diagram
     SFrameStyle* getFrameStylePartCenter();
     QPixmap* getPixmap();
 public: // overridables of base class CDataDiagram
+    virtual void update( CDiagObj* i_pDiagObj, const QRect& i_rect );
     virtual void invalidate( CDiagObj* i_pDiagObj, unsigned int i_uUpdateFlags ) override;
-protected: // overridables of base class CDataDiagram
+protected: // overridable auxiliary instance methods of base class CDataDiagram
     virtual void updateLayout() override;
-protected: // overridables
+protected: // overridable auxiliary instance methods
     virtual void updatePixmap();
 private: // copy ctor not allowed
     CPixmapDiagram( const CPixmapDiagram& );
@@ -139,6 +140,12 @@ protected:  // instance members
     QRect        m_rectFramePartCenterBottomLineInv;
     QRect        m_rectFramePartCenterLeftLineInv;
     QRect        m_rectFramePartCenterRightLineInv;
+private:  // instance members
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjUpdate;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjEvents;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjLayout;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjValidate;
 
 }; // class CPixmapDiagram
 

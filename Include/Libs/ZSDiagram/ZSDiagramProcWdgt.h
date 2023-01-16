@@ -119,11 +119,12 @@ signals:
     void gotFocus( ZS::Diagram::CWdgtDiagram* i_pWdgtDiagram );
     void lostFocus( ZS::Diagram::CWdgtDiagram* i_pWdgtDiagram );
     void painted( ZS::Diagram::CWdgtDiagram* i_pWdgtDiagram );
+public: // overridables of base class CPixmapDiagram
+    virtual void update( CDiagObj* i_pDiagObj, const QRect& i_rect ) override;
+public: //overridables (reimplemented (hiding) methods of QWidget for method tracing)
+    void update();
+    void update( const QRect& i_rect );
 public: // overridables
-    virtual void update( CDiagObj* i_pDiagObj, const QRect& i_rect ); // used instead of QWidget::update(rect) to trace the calling diagram object
-public: // overridables
-    virtual void update();
-    virtual void update( const QRect& i_rect );
     virtual void setMouseTracking( bool i_bEnable );
     virtual void setEraseColor( const QColor& i_col );
     virtual void setFocus();
@@ -141,10 +142,10 @@ public: // overridables of base class QWidget
     virtual void focusOutEvent( QFocusEvent* i_pEv ) override;
 protected: // instance methods
     bool processMoveKeyEvent( int i_iKey );
-protected: // overridables of base class CPixmapDiagram
+protected: // overridable auxiliary instance methods of base class CPixmapDiagram
     virtual void updatePixmap() override;
 protected: // overridables
-    virtual void updateWidget();
+    //virtual void updateWidget();
 protected slots: // overridable instance methods
     virtual void popupMenuContextItemSaveActivated( void );
     virtual void popupMenuContextItemPrintActivated( void );
@@ -192,6 +193,12 @@ protected:  // instance members
     CDiagObj*    m_pDiagObjEditing;
     CDiagObj*    m_pDiagObjEditingByKeyEvent;
     CDiagObj*    m_pDiagObjEditingByMouseEvent;
+private:  // instance members
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjUpdate;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjEvents;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjLayout;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjValidate;
 
 }; // class CWdgtDiagram
 

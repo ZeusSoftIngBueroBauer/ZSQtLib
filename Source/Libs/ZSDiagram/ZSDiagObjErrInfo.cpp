@@ -25,7 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDiagram/ZSDiagObjErrInfo.h"
-#include "ZSDiagram/ZSDiagramProcWdgt.h"
+#include "ZSDiagram/ZSDiagramProcData.h"
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
@@ -74,8 +74,6 @@ CDiagObjErrInfo::CDiagObjErrInfo(
     m_rectTextCurr(),
     m_rectTextPrev()
 {
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Diagram", "CDiagObjErrInfo", m_strObjName);
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -114,10 +112,20 @@ CDiagObjErrInfo::~CDiagObjErrInfo()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
+    //m_errResultInfoCurr;
+    //m_errResultInfoPrev;
     m_pTimer = nullptr;
-
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
-    m_pTrcAdminObj = nullptr;
+    memset(m_ariTimeout_ms, 0x00, EResultSeverityCount*sizeof(m_ariTimeout_ms[0]));
+    memset(m_arfntText, 0x00, EResultSeverityCount*sizeof(m_arcolText[0]));
+    memset(m_arcolText, 0x00, EResultSeverityCount*sizeof(m_arfntText[0]));
+    m_iMarginTop = 0;
+    m_iMarginBottom = 0;
+    m_iMarginLeft = 0;
+    m_iMarginRight = 0;
+    m_textDirection = static_cast<ETextDirection>(0);
+    //m_strText;
+    //m_rectTextCurr;
+    //m_rectTextPrev;
 
 } // dtor
 
@@ -327,15 +335,7 @@ QSize CDiagObjErrInfo::sizeHint()
     int cxWidth  = 0;
     int cyHeight = 0;
 
-    const CPixmapDiagram* pPixmapDiagram = nullptr;
-
-    // As a matter of fact there is no sense in adding a label object to
-    // a diagram just designed to analyze data.
-    if( m_pDataDiagram->getUpdateType() >= EDiagramUpdateTypePixmap )
-    {
-        pPixmapDiagram = dynamic_cast<const CPixmapDiagram*>(m_pDataDiagram);
-    }
-    if( pPixmapDiagram != nullptr && isVisible() )
+    if( isVisible() )
     {
         // Calculate extent of label:
         QFontMetrics fntmtr(m_arfntText[m_errResultInfoCurr.getSeverity()]);
@@ -362,7 +362,7 @@ QSize CDiagObjErrInfo::sizeHint()
                 break;
             }
         }
-    } // if( pPixmapDiagram != nullptr && isVisible() )
+    } // if( isVisible() )
 
     if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -471,7 +471,7 @@ void CDiagObjErrInfo::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPain
 
         // As a matter of fact there is no sense in adding a label object to
         // a diagram just designed to analyze data.
-        if( isVisible() && m_pDataDiagram->getUpdateType() >= EDiagramUpdateTypePixmap )
+        if( isVisible() && m_pDiagram->getUpdateType() >= EDiagramUpdateTypePixmap )
         {
             if( m_errResultInfoCurr != m_errResultInfoPrev )
             {
@@ -582,108 +582,96 @@ void CDiagObjErrInfo::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPain
     {
         mthTracer.trace("Processing Pixmap", ELogDetailLevel::Debug);
 
-        if( isVisible() )
+        if( isVisible() && !m_strText.isEmpty() )
         {
-            const CPixmapDiagram* pPixmapDiagram = nullptr;
+            QPainter painter(i_pPaintDevice);
 
-            // As a matter of fact there is no sense in adding an axis label object to
-            // a diagram just designed to analyze data.
-            if( m_pDataDiagram->getUpdateType() >= EDiagramUpdateTypePixmap )
+            ZS::System::SErrResult  errResult = m_errResultInfoCurr.getErrResult();
+            EResultSeverity severity = errResult.getSeverity();
+
+            painter.setFont(m_arfntText[severity]);
+            painter.setPen(m_arcolText[severity]);
+
+            switch( m_textDirection )
             {
-                pPixmapDiagram = dynamic_cast<CPixmapDiagram*>(m_pDataDiagram);
-            }
-            if( pPixmapDiagram != nullptr && !m_strText.isEmpty() )
-            {
-                QPainter painter(i_pPaintDevice);
-
-                ZS::System::SErrResult  errResult = m_errResultInfoCurr.getErrResult();
-                EResultSeverity severity = errResult.getSeverity();
-
-                painter.setFont(m_arfntText[severity]);
-                painter.setPen(m_arcolText[severity]);
-
-                switch( m_textDirection )
+                case ETextDirectionLeft2Right:
                 {
-                    case ETextDirectionLeft2Right:
-                    {
-                        painter.drawText( m_rectTextCurr, Qt::AlignVCenter|Qt::AlignHCenter, m_strText ); //lint !e655
-                        break;
-                    }
-                    case ETextDirectionRight2Left:
-                    {
-                        #if QT_VERSION < 0x050000
-                        QMatrix matrix;
-                        #else
-                        QTransform matrix;
-                        #endif
-                        painter.save();
-                        matrix.translate( static_cast<double>(m_rectTextCurr.center().x()), static_cast<double>(m_rectTextCurr.center().y()) );
-                        matrix.rotate(-180.0);
-                        #if QT_VERSION < 0x050000
-                        painter.setWorldMatrix(matrix);
-                        #else
-                        painter.setWorldTransform(matrix);
-                        #endif
-                        painter.drawText(
-                            /* x   */ -m_rectTextCurr.height()/2,
-                            /* y   */ m_rectTextCurr.width()/2,
-                            /* str */ m_strText );
-                        painter.restore();
-                        break;
-                    }
-                    case ETextDirectionBottom2Top:
-                    {
-                        #if QT_VERSION < 0x050000
-                        QMatrix matrix;
-                        #else
-                        QTransform matrix;
-                        #endif
-                        painter.save();
-                        matrix.translate( static_cast<double>(m_rectTextCurr.center().x()), static_cast<double>(m_rectTextCurr.center().y()) );
-                        matrix.rotate(-90.0);
-                        #if QT_VERSION < 0x050000
-                        painter.setWorldMatrix(matrix);
-                        #else
-                        painter.setWorldTransform(matrix);
-                        #endif
-                        painter.drawText(
-                            /* x   */ -m_rectTextCurr.height()/2,
-                            /* y   */ m_rectTextCurr.width()/2,
-                            /* str */ m_strText );
-                        painter.restore();
-                        break;
-                    }
-                    case ETextDirectionTop2Bottom:
-                    {
-                        #if QT_VERSION < 0x050000
-                        QMatrix matrix;
-                        #else
-                        QTransform matrix;
-                        #endif
-                        painter.save();
-                        matrix.translate( static_cast<double>(m_rectTextCurr.center().x()), static_cast<double>(m_rectTextCurr.center().y()) );
-                        matrix.rotate(90.0);
-                        #if QT_VERSION < 0x050000
-                        painter.setWorldMatrix(matrix);
-                        #else
-                        painter.setWorldTransform(matrix);
-                        #endif
-                        painter.drawText(
-                            /* x   */ -m_rectTextCurr.height()/2,
-                            /* y   */ m_rectTextCurr.width()/2,
-                            /* str */ m_strText );
-                        painter.restore();
-                        break;
-                    }
-                    default:
-                    {
-                        break;
-                    }
+                    painter.drawText( m_rectTextCurr, Qt::AlignVCenter|Qt::AlignHCenter, m_strText ); //lint !e655
+                    break;
+                }
+                case ETextDirectionRight2Left:
+                {
+                    #if QT_VERSION < 0x050000
+                    QMatrix matrix;
+                    #else
+                    QTransform matrix;
+                    #endif
+                    painter.save();
+                    matrix.translate( static_cast<double>(m_rectTextCurr.center().x()), static_cast<double>(m_rectTextCurr.center().y()) );
+                    matrix.rotate(-180.0);
+                    #if QT_VERSION < 0x050000
+                    painter.setWorldMatrix(matrix);
+                    #else
+                    painter.setWorldTransform(matrix);
+                    #endif
+                    painter.drawText(
+                        /* x   */ -m_rectTextCurr.height()/2,
+                        /* y   */ m_rectTextCurr.width()/2,
+                        /* str */ m_strText );
+                    painter.restore();
+                    break;
+                }
+                case ETextDirectionBottom2Top:
+                {
+                    #if QT_VERSION < 0x050000
+                    QMatrix matrix;
+                    #else
+                    QTransform matrix;
+                    #endif
+                    painter.save();
+                    matrix.translate( static_cast<double>(m_rectTextCurr.center().x()), static_cast<double>(m_rectTextCurr.center().y()) );
+                    matrix.rotate(-90.0);
+                    #if QT_VERSION < 0x050000
+                    painter.setWorldMatrix(matrix);
+                    #else
+                    painter.setWorldTransform(matrix);
+                    #endif
+                    painter.drawText(
+                        /* x   */ -m_rectTextCurr.height()/2,
+                        /* y   */ m_rectTextCurr.width()/2,
+                        /* str */ m_strText );
+                    painter.restore();
+                    break;
+                }
+                case ETextDirectionTop2Bottom:
+                {
+                    #if QT_VERSION < 0x050000
+                    QMatrix matrix;
+                    #else
+                    QTransform matrix;
+                    #endif
+                    painter.save();
+                    matrix.translate( static_cast<double>(m_rectTextCurr.center().x()), static_cast<double>(m_rectTextCurr.center().y()) );
+                    matrix.rotate(90.0);
+                    #if QT_VERSION < 0x050000
+                    painter.setWorldMatrix(matrix);
+                    #else
+                    painter.setWorldTransform(matrix);
+                    #endif
+                    painter.drawText(
+                        /* x   */ -m_rectTextCurr.height()/2,
+                        /* y   */ m_rectTextCurr.width()/2,
+                        /* str */ m_strText );
+                    painter.restore();
+                    break;
+                }
+                default:
+                {
+                    break;
+                }
 
-                } // switch( m_textDirection )
-
-            } // if( pPixmapDiagram != nullptr )
-        } // if( isVisible() )
+            } // switch( m_textDirection )
+        } // if( isVisible() && !m_strText.isEmpty() )
 
         // Mark current process depth as executed (reset bit):
         validate(EUpdatePixmap);
@@ -695,43 +683,37 @@ void CDiagObjErrInfo::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPain
     {
         mthTracer.trace("Processing Widget", ELogDetailLevel::Debug);
 
-        CWdgtDiagram* pWdgtDiagram = dynamic_cast<CWdgtDiagram*>(m_pDataDiagram);
-
-        if( pWdgtDiagram != nullptr )
+        // Invalidate output region of the diagram object to update (repaint) content of diagram.
+        if( m_rectTextPrev.isValid() && m_rectTextPrev != m_rectTextCurr )
         {
-            // Invalidate output region of the diagram object to update (repaint) content of diagram.
-            if( m_rectTextPrev.isValid() && m_rectTextPrev != m_rectTextCurr )
-            {
-                pWdgtDiagram->update(this,m_rectTextPrev);
-            }
-            if( !isVisible() )
-            {
-                m_rectTextCurr.setWidth(0);
-                m_rectTextCurr.setHeight(0);
-            }
-            if( m_rectTextCurr.isValid() )
-            {
-                pWdgtDiagram->update(this,m_rectTextCurr);
-            }
-            m_rectTextPrev = m_rectTextCurr;
+            m_pDiagram->update(this, m_rectTextPrev);
+        }
+        if( !isVisible() )
+        {
+            m_rectTextCurr.setWidth(0);
+            m_rectTextCurr.setHeight(0);
+        }
+        if( m_rectTextCurr.isValid() )
+        {
+            m_pDiagram->update(this, m_rectTextCurr);
+        }
+        m_rectTextPrev = m_rectTextCurr;
 
-            if( m_errResultInfoCurr != m_errResultInfoPrev )
+        if( m_errResultInfoCurr != m_errResultInfoPrev )
+        {
+            ZS::System::SErrResult  errResultCurr = m_errResultInfoCurr.getErrResult();
+            EResultSeverity severityCurr  = errResultCurr.getSeverity();
+
+            if( m_pTimer->isActive() )
             {
-                ZS::System::SErrResult  errResultCurr = m_errResultInfoCurr.getErrResult();
-                EResultSeverity severityCurr  = errResultCurr.getSeverity();
-
-                if( m_pTimer->isActive() )
-                {
-                    m_pTimer->stop();
-                }
-                if( m_ariTimeout_ms[severityCurr] > 0 )
-                {
-                    m_pTimer->start(m_ariTimeout_ms[severityCurr]);
-                }
-                m_errResultInfoPrev = m_errResultInfoCurr;
+                m_pTimer->stop();
             }
-
-        } // if( pWdgtDiagram != nullptr )
+            if( m_ariTimeout_ms[severityCurr] > 0 )
+            {
+                m_pTimer->start(m_ariTimeout_ms[severityCurr]);
+            }
+            m_errResultInfoPrev = m_errResultInfoCurr;
+        }
 
         // Mark current process depth as executed (reset bit):
         validate(EUpdateWidget);
@@ -783,5 +765,5 @@ void CDiagObjErrInfo::timeout()
 
     setErrResultInfo(ErrResultSuccess);
 
-    m_pDataDiagram->updateDiagram();
+    m_pDiagram->update(this, m_rectContent);
 }

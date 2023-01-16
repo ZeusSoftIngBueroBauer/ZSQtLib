@@ -25,7 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDiagram/ZSDiagObjLabel.h"
-#include "ZSDiagram/ZSDiagramProcWdgt.h"
+#include "ZSDiagram/ZSDiagramProcPixmap.h"
 #include "ZSDiagram/ZSDiagramFrameStyles.h"
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysException.h"
@@ -90,15 +90,11 @@ CDiagObjLabel::CDiagObjLabel(
     m_rectPixmap(),
     m_bUpdWidget(true)
 {
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Diagram", "CDiagObjLabel", m_strObjName);
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ "" );
-
-    int idxState;
 
     if( m_iStateCount == 0 )
     {
@@ -117,7 +113,7 @@ CDiagObjLabel::CDiagObjLabel(
     m_arcolText[0] = Qt::black;
     //m_arpxm[0] = ; default ctor is ok here
 
-    for( idxState = 1; idxState < m_iStateCount; idxState++ )
+    for( int idxState = 1; idxState < m_iStateCount; idxState++ )
     {
         m_arcolBg[idxState] = Qt::lightGray;
         m_arbrushStyle[idxState] = Qt::NoBrush;
@@ -168,15 +164,11 @@ CDiagObjLabel::CDiagObjLabel(
     m_rectPixmap(),
     m_bUpdWidget(true)
 {
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Diagram", "CDiagObjLabel", m_strObjName);
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ "" );
-
-    int idxState;
 
     if( m_iStateCount == 0 )
     {
@@ -195,7 +187,7 @@ CDiagObjLabel::CDiagObjLabel(
     m_arcolText[0] = Qt::black;
     m_arpxm[0] = i_pxm;
 
-    for( idxState = 1; idxState < m_iStateCount; idxState++ )
+    for( int idxState = 1; idxState < m_iStateCount; idxState++ )
     {
         m_arcolBg[idxState] = Qt::lightGray;
         m_arbrushStyle[idxState] = Qt::NoBrush;
@@ -216,42 +208,72 @@ CDiagObjLabel::~CDiagObjLabel()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
-    try
-    {
+    try {
         delete m_pFrameStyle;
-    }
-    catch(...)
-    {
+    } catch(...) {
     }
     m_pFrameStyle = nullptr;
 
-    delete [] m_arcolBg;
+    try {
+        delete [] m_arcolBg;
+    } catch(...) {
+    }
     m_arcolBg = nullptr;
-    delete [] m_arbrushStyle;
-    m_arbrushStyle = nullptr;
-    delete [] m_arcolText;
-    m_arcolText = nullptr;
 
     try
     {
-        delete [] m_arstrText;
+        delete [] m_arbrushStyle;
+    } catch(...) {
     }
-    catch(...)
+    m_arbrushStyle = nullptr;
+
+    try
     {
+        delete [] m_arcolText;
+    } catch(...) {
+    }
+    m_arcolText = nullptr;
+
+    try {
+        delete [] m_arstrText;
+    } catch(...) {
     }
     m_arstrText = nullptr;
 
-    try
-    {
+    try {
         delete [] m_arpxm;
-    }
-    catch(...)
-    {
+    } catch(...) {
     }
     m_arpxm = nullptr;
 
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
-    m_pTrcAdminObj = nullptr;
+    m_iState = 0;
+    m_iStateCount = 0;
+    m_cxMinimumWidth = 0;
+    m_cxMaximumWidth = 0;
+    m_cyMinimumHeight = 0;
+    m_cyMaximumHeight = 0;
+    m_iLayoutPosAlignmentFlags = 0;
+    m_cxLayoutPosOffs = 0;
+    m_cyLayoutPosOffs = 0;
+    //m_pFrameStyle;
+    //m_arcolBg;
+    //m_arbrushStyle;
+    m_iMarginTop = 0;
+    m_iMarginBottom = 0;
+    m_iMarginLeft = 0;
+    m_iMarginRight = 0;
+    //m_arstrText;
+    //m_arcolText;
+    //m_fntText;
+    m_iTextAlignmentFlags = 0;
+    m_textDirection = static_cast<ETextDirection>(0);
+    //m_arpxm;
+    m_iPixmapAlignmentFlags = 0;
+    //m_rectOuterFrame;
+    //m_rectInnerFrame;
+    //m_rectText;
+    //m_rectPixmap;
+    m_bUpdWidget = false;
 
 } // dtor
 
@@ -683,15 +705,7 @@ QSize CDiagObjLabel::sizeHint()
     int cxOuterFrameWidth  = 0;
     int cyOuterFrameHeight = 0;
 
-    const CPixmapDiagram* pPixmapDiagram = nullptr;
-
-    // As a matter of fact there is no sense in adding a label object to
-    // a diagram just designed to analyze data.
-    if( m_pDataDiagram->getUpdateType() >= EDiagramUpdateTypePixmap )
-    {
-        pPixmapDiagram = dynamic_cast<const CPixmapDiagram*>(m_pDataDiagram);
-    }
-    if( pPixmapDiagram != nullptr && isVisible() )
+    if( isVisible() )
     {
         QSize sizeInnerFrame;
         QSize sizeOuterFrame;
@@ -842,7 +856,7 @@ QSize CDiagObjLabel::sizeHint()
         cxOuterFrameWidth  = sizeOuterFrame.width();
         cyOuterFrameHeight = sizeOuterFrame.height();
 
-    } // if( pPixmapDiagram != nullptr && isVisible() )
+    } // if( isVisible() )
 
     if( m_cxMinimumWidth > 0 && cxOuterFrameWidth < m_cxMinimumWidth )
     {
@@ -1007,9 +1021,9 @@ void CDiagObjLabel::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintD
 
     // As a matter of fact there is no sense in adding a label object to
     // a diagram just designed to analyze data.
-    if( m_pDataDiagram != nullptr && m_pDataDiagram->getUpdateType() >= EDiagramUpdateTypePixmap )
+    if( m_pDiagram != nullptr && m_pDiagram->getUpdateType() >= EDiagramUpdateTypePixmap )
     {
-        pPixmapDiagram = dynamic_cast<CPixmapDiagram*>(m_pDataDiagram);
+        pPixmapDiagram = dynamic_cast<CPixmapDiagram*>(m_pDiagram);
     }
 
     // If the internal data structures need to be updated ..
@@ -1413,26 +1427,20 @@ void CDiagObjLabel::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintD
     } // if( EUpdatePixmap )
 
     // If the widget need to be updated ..
-    if( i_uUpdateFlags & EUpdateWidget && m_uUpdateFlags & EUpdateWidget && m_pDataDiagram != nullptr )
+    if( i_uUpdateFlags & EUpdateWidget && m_uUpdateFlags & EUpdateWidget && m_pDiagram != nullptr )
     {
         mthTracer.trace("Processing Widget", ELogDetailLevel::Debug);
 
-        CWdgtDiagram* pWdgtDiagram = dynamic_cast<CWdgtDiagram*>(m_pDataDiagram);
-
-        if( pWdgtDiagram != nullptr )
+        // Invalidate output region of the diagram object to update (repaint) content of diagram.
+        if( m_rectText.isValid() && m_bUpdWidget )
         {
-            // Invalidate output region of the diagram object to update (repaint) content of diagram.
-            if( m_rectText.isValid() && m_bUpdWidget )
-            {
-                pWdgtDiagram->update(this,m_rectText);
-            }
-            if( !isVisible() )
-            {
-                m_rectText.setWidth(0);
-                m_rectText.setHeight(0);
-            }
-
-        } // if( pWdgtDiagram != nullptr )
+            m_pDiagram->update(this, m_rectText);
+        }
+        if( !isVisible() )
+        {
+            m_rectText.setWidth(0);
+            m_rectText.setHeight(0);
+        }
 
         // Only on changing the size of the diagram or the content of the label the label
         // need to be updated on the screen. Updating the content rectangle of the label is therefore

@@ -30,8 +30,6 @@ may result in using the software modules.
 #include "ZSDiagram/ZSDiagObj.h"
 #include "ZSPhysVal/ZSPhysVal.h"
 
-//#include <QtCore/qobject.h>
-
 namespace ZS
 {
 namespace Diagram

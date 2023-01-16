@@ -25,7 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDiagram/ZSDiagObjProgressBar.h"
-#include "ZSDiagram/ZSDiagramProcWdgt.h"
+#include "ZSDiagram/ZSDiagramProcPixmap.h"
 #include "ZSDiagram/ZSDiagramFrameStyles.h"
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysException.h"
@@ -76,8 +76,6 @@ CDiagObjProgressBar::CDiagObjProgressBar(
     m_rectBarInFrameValue(),
     m_bUpdWidget(true)
 {
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Diagram", "CDiagObjProgressBar", m_strObjName);
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -105,8 +103,22 @@ CDiagObjProgressBar::~CDiagObjProgressBar()
     }
     m_pFrameStyle = nullptr;
 
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
-    m_pTrcAdminObj = nullptr;
+    m_fValMin = 0.0;
+    m_fValMax = 0.0;
+    m_fVal = 0.0;
+    //m_colFg;
+    //m_colBg;
+    m_iIndentTop = 0;
+    m_iIndentBottom = 0;
+    m_iIndentLeft = 0;
+    m_iIndentRight = 0;
+    //m_pFrameStyle;
+    m_iWidth = 0;
+    //m_rectBarContent;
+    //m_rectBarFrame;
+    //m_rectBarInFrameContent;
+    //m_rectBarInFrameValue;
+    m_bUpdWidget = false;
 
 } // dtor
 
@@ -466,9 +478,9 @@ void CDiagObjProgressBar::update( unsigned int i_uUpdateFlags, QPaintDevice* i_p
 
             // As a matter of fact there is no sense in adding a progress bar object to
             // a diagram just designed to analyze data.
-            if( m_pDataDiagram != nullptr && m_pDataDiagram->getUpdateType() >= EDiagramUpdateTypePixmap )
+            if( m_pDiagram != nullptr && m_pDiagram->getUpdateType() >= EDiagramUpdateTypePixmap )
             {
-                pPixmapDiagram = dynamic_cast<const CPixmapDiagram*>(m_pDataDiagram);
+                pPixmapDiagram = dynamic_cast<const CPixmapDiagram*>(m_pDiagram);
             }
             if( pPixmapDiagram != nullptr )
             {
@@ -557,25 +569,15 @@ void CDiagObjProgressBar::update( unsigned int i_uUpdateFlags, QPaintDevice* i_p
     } // if( EUpdatePixmap )
 
     // If the widget need to be updated ..
-    if( i_uUpdateFlags & EUpdateWidget && m_uUpdateFlags & EUpdateWidget && m_pDataDiagram != nullptr )
+    if( i_uUpdateFlags & EUpdateWidget && m_uUpdateFlags & EUpdateWidget && m_pDiagram != nullptr )
     {
         mthTracer.trace("Processing Widget", ELogDetailLevel::Debug);
 
-        CWdgtDiagram* pWdgtDiagram = nullptr;
-
-        if( m_pDataDiagram->getUpdateType() >= EDiagramUpdateTypeWidget )
+        // Invalidate output region of the diagram object to update (repaint) content of diagram.
+        if( m_rectContent.isValid() && m_bUpdWidget )
         {
-            pWdgtDiagram = dynamic_cast<CWdgtDiagram*>(m_pDataDiagram);
+            m_pDiagram->update(this, m_rectContent);
         }
-        if( pWdgtDiagram != nullptr )
-        {
-            // Invalidate output region of the diagram object to update (repaint) content of diagram.
-            if( m_rectContent.isValid() && m_bUpdWidget )
-            {
-                pWdgtDiagram->update(this,m_rectContent);
-            }
-
-        } // if( pWdgtDiagram != nullptr )
 
         // Only on changing the size of the diagram or the content of the progress bar the bar
         // need to be updated on the screen. Updating the content rectangle of the bar is therefore

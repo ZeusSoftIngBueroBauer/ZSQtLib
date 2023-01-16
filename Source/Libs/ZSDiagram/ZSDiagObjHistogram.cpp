@@ -25,7 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDiagram/ZSDiagObjHistogram.h"
-#include "ZSDiagram/ZSDiagramProcWdgt.h"
+#include "ZSDiagram/ZSDiagramProcData.h"
 #include "ZSDiagram/ZSDiagTrace.h"
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysException.h"
@@ -63,8 +63,6 @@ CDiagObjHistogram::CDiagObjHistogram(
     m_pPtArr(nullptr),
     m_bUpdWidget(true)
 {
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Diagram", "CDiagObjHistogram", m_strObjName);
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -91,9 +89,7 @@ CDiagObjHistogram::~CDiagObjHistogram()
     {
     }
     m_pPtArr = nullptr;
-
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
-    m_pTrcAdminObj = nullptr;
+    m_bUpdWidget = false;
 
 } // dtor
 
@@ -184,7 +180,7 @@ void CDiagObjHistogram::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPa
     {
         return;
     }
-    if( m_pDataDiagram == nullptr )
+    if( m_pDiagram == nullptr )
     {
         return;
     }
@@ -220,127 +216,115 @@ void CDiagObjHistogram::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPa
 
         mthTracer.trace("Processing Data", ELogDetailLevel::Debug);
 
-        const CPixmapDiagram* pPixmapDiagram = nullptr;
+        // Calculate the point array:
+        //---------------------------
 
-        // As a matter of fact there is no sense in adding a histogram object to
-        // a diagram just designed to analyze data.
-        if( m_pDataDiagram->getUpdateType() >= EDiagramUpdateTypePixmap )
+        int iValCount;
+
+        iValCount = arfXValues.size();
+        if( iValCount > arfYValues.size() )
         {
-            pPixmapDiagram = dynamic_cast<const CPixmapDiagram*>(m_pDataDiagram);
+            iValCount = arfYValues.size();
         }
-        if( pPixmapDiagram != nullptr )
+        if( !isVisible() || iValCount <= 1 )
         {
-            // Calculate the point array:
-            //---------------------------
+            delete m_pPtArr;
+            m_pPtArr = nullptr;
+            return;
+        }
 
-            int iValCount;
+        int           idxValMinPrev;
+        int           idxValMaxNext;
+        int           idxVal;
+        int           iPtCount;
+        QPoint*       pPt;
+        const double* pfX;
+        const double* pfY;
+        double        fXMin = m_pDiagTrace->getScale(EScaleDirX).m_fMin;
+        double        fXMax = m_pDiagTrace->getScale(EScaleDirX).m_fMax;
+        double        fx, fy;
+        int           xPix, yPix;
 
-            iValCount = arfXValues.size();
-            if( iValCount > arfYValues.size() )
+        // TODO: der erste Startwert koennte optimiert berechnet werden.
+
+        // Check how many points are visible ...
+        for( idxVal = 0, idxValMinPrev = -1, idxValMaxNext = -1, iPtCount = 0, pfX = arfXValues.data();
+                idxVal < iValCount;
+                idxVal++, pfX++ )
+        {
+            if( *pfX < fXMin )
             {
-                iValCount = arfYValues.size();
+                idxValMinPrev = idxVal;
             }
-            if( !isVisible() || iValCount <= 1 )
+            else if( *pfX > fXMax )
             {
-                delete m_pPtArr;
-                m_pPtArr = nullptr;
-                return;
-            }
-
-            int           idxValMinPrev;
-            int           idxValMaxNext;
-            int           idxVal;
-            int           iPtCount;
-            QPoint*       pPt;
-            const double* pfX;
-            const double* pfY;
-            double        fXMin = m_pDiagTrace->getScale(EScaleDirX).m_fMin;
-            double        fXMax = m_pDiagTrace->getScale(EScaleDirX).m_fMax;
-            double        fx, fy;
-            int           xPix, yPix;
-
-            // TODO: der erste Startwert koennte optimiert berechnet werden.
-
-            // Check how many points are visible ...
-            for( idxVal = 0, idxValMinPrev = -1, idxValMaxNext = -1, iPtCount = 0, pfX = arfXValues.data();
-                 idxVal < iValCount;
-                 idxVal++, pfX++ )
-            {
-                if( *pfX < fXMin )
-                {
-                    idxValMinPrev = idxVal;
-                }
-                else if( *pfX > fXMax )
-                {
-                    idxValMaxNext = idxVal;
-                    break;
-                }
-                else
-                {
-                    iPtCount++;
-                }
-            }
-
-            // If all of the points are left of XScaleMin (incl. XScaleMin) ...
-            if( iPtCount <= 1 && idxValMaxNext == -1 )
-            {
-                // ... none of the points is visible.
-                delete m_pPtArr;
-                m_pPtArr = nullptr;
-                return;
-            }
-            // If all of the points are right of XScaleMax (incl. XScaleMax) ...
-            else if( iPtCount <= 1 && idxValMinPrev == -1 )
-            {
-                // ... none of the points is visible.
-                delete m_pPtArr;
-                m_pPtArr = nullptr;
-                return;
-            }
-
-            // The number of the points to be calculated are known now and the
-            // point array will be allocated:
-            if( m_pPtArr != nullptr )
-            {
-                if( m_pPtArr->size() != iPtCount )
-                {
-                    delete m_pPtArr;
-                    #if QT_VERSION >= 0x040100
-                    m_pPtArr = new QPolygon(iPtCount);
-                    #else
-                    m_pPtArr = new QPointArray(iPtCount);
-                    #endif
-                }
+                idxValMaxNext = idxVal;
+                break;
             }
             else
             {
+                iPtCount++;
+            }
+        }
+
+        // If all of the points are left of XScaleMin (incl. XScaleMin) ...
+        if( iPtCount <= 1 && idxValMaxNext == -1 )
+        {
+            // ... none of the points is visible.
+            delete m_pPtArr;
+            m_pPtArr = nullptr;
+            return;
+        }
+        // If all of the points are right of XScaleMax (incl. XScaleMax) ...
+        else if( iPtCount <= 1 && idxValMinPrev == -1 )
+        {
+            // ... none of the points is visible.
+            delete m_pPtArr;
+            m_pPtArr = nullptr;
+            return;
+        }
+
+        // The number of the points to be calculated are known now and the
+        // point array will be allocated:
+        if( m_pPtArr != nullptr )
+        {
+            if( m_pPtArr->size() != iPtCount )
+            {
+                delete m_pPtArr;
                 #if QT_VERSION >= 0x040100
                 m_pPtArr = new QPolygon(iPtCount);
                 #else
                 m_pPtArr = new QPointArray(iPtCount);
                 #endif
             }
-            pPt = m_pPtArr->data();
+        }
+        else
+        {
+            #if QT_VERSION >= 0x040100
+            m_pPtArr = new QPolygon(iPtCount);
+            #else
+            m_pPtArr = new QPointArray(iPtCount);
+            #endif
+        }
+        pPt = m_pPtArr->data();
 
-            // Calculate the points between XScaleMin and XScaleMax ...
-            pfX = &arfXValues.data()[idxValMinPrev+1];
-            pfY = &arfYValues.data()[idxValMinPrev+1];
-            for( idxVal = idxValMinPrev+1; idxVal < iValCount; idxVal++, pfX++, pfY++, pPt++ )
+        // Calculate the points between XScaleMin and XScaleMax ...
+        pfX = &arfXValues.data()[idxValMinPrev+1];
+        pfY = &arfYValues.data()[idxValMinPrev+1];
+        for( idxVal = idxValMinPrev+1; idxVal < iValCount; idxVal++, pfX++, pfY++, pPt++ )
+        {
+            fx = *pfX;
+            if( fx > fXMax )
             {
-                fx = *pfX;
-                if( fx > fXMax )
-                {
-                    break;
-                }
-                xPix = m_pDiagTrace->getValPix(EScaleDirX,fx);
-                pPt->setX(xPix);
-
-                fy = *pfY;
-                yPix = m_pDiagTrace->getValPix(EScaleDirY,fy);
-                pPt->setY(yPix);
+                break;
             }
+            xPix = m_pDiagTrace->getValPix(EScaleDirX,fx);
+            pPt->setX(xPix);
 
-        } // if( pPixmapDiagram != nullptr )
+            fy = *pfY;
+            yPix = m_pDiagTrace->getValPix(EScaleDirY,fy);
+            pPt->setY(yPix);
+        }
 
         // If data processing was necessary the trace values might have
         // been changed and the histogram need to be updated on the screen.
@@ -358,37 +342,25 @@ void CDiagObjHistogram::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPa
 
         if( isVisible() )
         {
-            const CPixmapDiagram* pPixmapDiagram = nullptr;
+            QPainter painter(i_pPaintDevice);
 
-            // As a matter of fact there is no sense in adding a histogram object to
-            // a diagram just designed to analyze data.
-            if( m_pDataDiagram->getUpdateType() >= EDiagramUpdateTypePixmap )
+            int idxVal;
+
+            painter.setClipRect(m_rectContent);
+            painter.setClipping(true);
+            painter.setPen(m_col);
+
+            if( m_pPtArr != nullptr )
             {
-                pPixmapDiagram = dynamic_cast<const CPixmapDiagram*>(m_pDataDiagram);
-            }
-            if( pPixmapDiagram != nullptr )
-            {
-                QPainter painter(i_pPaintDevice);
-
-                int idxVal;
-
-                painter.setClipRect(m_rectContent);
-                painter.setClipping(true);
-                painter.setPen(m_col);
-
-                if( m_pPtArr != nullptr )
+                for( idxVal = 0; idxVal < m_pPtArr->count(); idxVal++ )
                 {
-                    for( idxVal = 0; idxVal < m_pPtArr->count(); idxVal++ )
-                    {
-                        painter.drawLine(
-                            /* x1 */ m_pPtArr->at(idxVal).x(),
-                            /* y1 */ m_pDiagTrace->getScaleMinValPix(EScaleDirY),
-                            /* x2 */ m_pPtArr->at(idxVal).x(),
-                            /* y2 */ m_pPtArr->at(idxVal).y() );
-                    }
+                    painter.drawLine(
+                        /* x1 */ m_pPtArr->at(idxVal).x(),
+                        /* y1 */ m_pDiagTrace->getScaleMinValPix(EScaleDirY),
+                        /* x2 */ m_pPtArr->at(idxVal).x(),
+                        /* y2 */ m_pPtArr->at(idxVal).y() );
                 }
-
-            }// if( pPixmapDiagram != nullptr )
+            }
         } // if( isVisible() )
 
         // Mark current process depth as executed (reset bit):
@@ -401,19 +373,13 @@ void CDiagObjHistogram::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPa
     {
         mthTracer.trace("Processing Widget", ELogDetailLevel::Debug);
 
-        CWdgtDiagram* pWdgtDiagram = dynamic_cast<CWdgtDiagram*>(m_pDataDiagram);
-
-        if( pWdgtDiagram != nullptr )
+        // Invalidate output region of the diagram object to update (repaint) content of diagram.
+        // The histogram is output in the center area of the diagram and the whole center area
+        // need to be updated if the histogram has been changed.
+        if( m_rectContent.isValid() && m_bUpdWidget )
         {
-            // Invalidate output region of the diagram object to update (repaint) content of diagram.
-            // The histogram is output in the center area of the diagram and the whole center area
-            // need to be updated if the histogram has been changed.
-            if( m_rectContent.isValid() && m_bUpdWidget )
-            {
-                pWdgtDiagram->update(this,m_rectContent);
-            }
-
-        } // if( pWdgtDiagram != nullptr )
+            m_pDiagram->update(this, m_rectContent);
+        }
 
         // Only on changing the scale, the trace values, the colors or pen styles the histograms content
         // need to be updated on the screen. Updating the content rectangle of the histogram is therefore

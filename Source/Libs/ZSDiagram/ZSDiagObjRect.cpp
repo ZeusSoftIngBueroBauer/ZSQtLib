@@ -25,7 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDiagram/ZSDiagObjRect.h"
-#include "ZSDiagram/ZSDiagramProcWdgt.h"
+#include "ZSDiagram/ZSDiagramProcData.h"
 #include "ZSDiagram/ZSDiagTrace.h"
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysException.h"
@@ -34,7 +34,6 @@ may result in using the software modules.
 #include "ZSSys/ZSSysTrcServer.h"
 
 #include <QtGui/qpainter.h>
-//#include <QtGui/qpixmap.h>
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -62,10 +61,9 @@ CDiagObjRect::CDiagObjRect(
         /* layoutPos  */ ELayoutPosCenter ),
     m_pen(Qt::white),
     m_brush(),
+    m_rct(),
     m_bUpdWidget(true)
 {
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Diagram", "CDiagObjRect", m_strObjName);
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -83,9 +81,6 @@ CDiagObjRect::~CDiagObjRect()
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
-
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
-    m_pTrcAdminObj = nullptr;
 
     //m_pen;
     //m_brush;
@@ -215,77 +210,66 @@ void CDiagObjRect::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDe
 
             mthTracer.trace("Processing Data", ELogDetailLevel::Debug);
 
-            const CPixmapDiagram* pPixmapDiagram = nullptr;
+            // Calculate the point array:
+            //---------------------------
 
-            // As a matter of fact there is no sense in adding a curve object to
-            // a diagram just designed to analyse data.
-            if( m_pDataDiagram->getUpdateType() >= EDiagramUpdateTypePixmap )
+            int iValCount;
+
+            iValCount = arfXValues.size();
+            if( iValCount > arfYValues.size() )
             {
-                pPixmapDiagram = dynamic_cast<const CPixmapDiagram*>(m_pDataDiagram);
+                iValCount = arfYValues.size();
             }
-            if( pPixmapDiagram != nullptr )
+            if( !isVisible() || iValCount < 2 )
             {
-                // Calculate the point array:
-                //---------------------------
+                m_rct = QRect();
+                return;
+            }
 
-                int iValCount;
+            double fXMin = m_pDiagTrace->getScale(EScaleDirX).m_fMin;
+            double fXMax = m_pDiagTrace->getScale(EScaleDirX).m_fMax;
+            double fYMin = m_pDiagTrace->getScale(EScaleDirY).m_fMin;
+            double fYMax = m_pDiagTrace->getScale(EScaleDirY).m_fMax;
+            int    x1, x2;
+            int    y1, y2;
 
-                iValCount = arfXValues.size();
-                if( iValCount > arfYValues.size() )
-                {
-                    iValCount = arfYValues.size();
-                }
-                if( !isVisible() || iValCount < 2 )
-                {
-                    m_rct = QRect();
-                    return;
-                }
+            double fX1 = arfXValues.first();
+            double fX2 = arfXValues.last();
+            double fY1 = arfYValues.first();
+            double fY2 = arfYValues.last();
 
-                double fXMin = m_pDiagTrace->getScale(EScaleDirX).m_fMin;
-                double fXMax = m_pDiagTrace->getScale(EScaleDirX).m_fMax;
-                double fYMin = m_pDiagTrace->getScale(EScaleDirY).m_fMin;
-                double fYMax = m_pDiagTrace->getScale(EScaleDirY).m_fMax;
-                int    x1, x2;
-                int    y1, y2;
+            // If the points out of the visible scale range move them to be witin the scale range.
+            if( fX1 < fXMin ) fX1 = fXMin;
+            if( fX1 > fXMax ) fX1 = fXMax;
+            if( fY1 < fYMin ) fY1 = fYMin;
+            if( fY1 > fYMax ) fY1 = fYMax;
 
-                double fX1 = arfXValues.first();
-                double fX2 = arfXValues.last();
-                double fY1 = arfYValues.first();
-                double fY2 = arfYValues.last();
+            // Calculate the points between XScaleMin and XScaleMax ...
+            x1 = m_pDiagTrace->getValPix(EScaleDirX, fX1);
+            x2 = m_pDiagTrace->getValPix(EScaleDirX, fX2);
+            y1 = m_pDiagTrace->getValPix(EScaleDirY, fY1);
+            y2 = m_pDiagTrace->getValPix(EScaleDirY, fY2);
 
-                // If the points out of the visible scale range move them to be witin the scale range.
-                if( fX1 < fXMin ) fX1 = fXMin;
-                if( fX1 > fXMax ) fX1 = fXMax;
-                if( fY1 < fYMin ) fY1 = fYMin;
-                if( fY1 > fYMax ) fY1 = fYMax;
-
-                // Calculate the points between XScaleMin and XScaleMax ...
-                x1 = m_pDiagTrace->getValPix(EScaleDirX, fX1);
-                x2 = m_pDiagTrace->getValPix(EScaleDirX, fX2);
-                y1 = m_pDiagTrace->getValPix(EScaleDirY, fY1);
-                y2 = m_pDiagTrace->getValPix(EScaleDirY, fY2);
-
-                if( x1 < x2 )
-                {
-                    m_rct.setLeft(x1);
-                    m_rct.setRight(x2);
-                }
-                else
-                {
-                    m_rct.setLeft(x2);
-                    m_rct.setRight(x1);
-                }
-                if( y1 < y2 )
-                {
-                    m_rct.setTop(y1);
-                    m_rct.setBottom(y2);
-                }
-                else
-                {
-                    m_rct.setTop(y2);
-                    m_rct.setBottom(y1);
-                }
-            } // if( pPixmapDiagram != nullptr )
+            if( x1 < x2 )
+            {
+                m_rct.setLeft(x1);
+                m_rct.setRight(x2);
+            }
+            else
+            {
+                m_rct.setLeft(x2);
+                m_rct.setRight(x1);
+            }
+            if( y1 < y2 )
+            {
+                m_rct.setTop(y1);
+                m_rct.setBottom(y2);
+            }
+            else
+            {
+                m_rct.setTop(y2);
+                m_rct.setBottom(y1);
+            }
         } // if( m_pDiagTrace != nullptr )
 
         // If data processing was necessary for the curve the trace values might have
@@ -304,28 +288,17 @@ void CDiagObjRect::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDe
 
         if( isVisible() )
         {
-            const CPixmapDiagram* pPixmapDiagram = nullptr;
+            QPainter painter(i_pPaintDevice);
 
-            // As a matter of fact there is no sense in adding a curve object to
-            // a diagram just designed to analyze data.
-            if( m_pDataDiagram != nullptr && m_pDataDiagram->getUpdateType() >= EDiagramUpdateTypePixmap )
+            painter.setClipRect(m_rectContent);
+            painter.setClipping(true);
+            painter.setPen(m_pen);
+            painter.setBrush(m_brush);
+
+            if( m_rct.isValid() )
             {
-                pPixmapDiagram = dynamic_cast<const CPixmapDiagram*>(m_pDataDiagram);
+                painter.drawRect(m_rct);
             }
-            if( pPixmapDiagram != nullptr )
-            {
-                QPainter painter(i_pPaintDevice);
-
-                painter.setClipRect(m_rectContent);
-                painter.setClipping(true);
-                painter.setPen(m_pen);
-                painter.setBrush(m_brush);
-
-                if( m_rct.isValid() )
-                {
-                    painter.drawRect(m_rct);
-                }
-            }// if( pPixmapDiagram != nullptr )
         } // if( isVisible() )
 
         // Mark current process depth as executed (reset bit):
@@ -334,21 +307,11 @@ void CDiagObjRect::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDe
     } // if( EUpdatePixmap )
 
     // If the widget need to be updated ..
-    if( i_uUpdateFlags & EUpdateWidget && m_uUpdateFlags & EUpdateWidget && m_pDataDiagram != nullptr )
+    if( i_uUpdateFlags & EUpdateWidget && m_uUpdateFlags & EUpdateWidget && m_pDiagram != nullptr )
     {
         mthTracer.trace("Processing Widget", ELogDetailLevel::Debug);
 
-        CWdgtDiagram* pWdgtDiagram = dynamic_cast<CWdgtDiagram*>(m_pDataDiagram);
-
-        if( pWdgtDiagram != nullptr )
-        {
-            // Invalidate output region of the diagram object to update (repaint) content of diagram.
-            if( m_rectContent.isValid() && m_bUpdWidget )
-            {
-                pWdgtDiagram->update(this,m_rectContent);
-            }
-
-        } // if( pWdgtDiagram != nullptr )
+        m_pDiagram->update(this,m_rectContent);
 
         // Mark current process depth as executed (reset bit):
         validate(EUpdateWidget);

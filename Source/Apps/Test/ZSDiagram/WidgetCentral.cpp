@@ -118,12 +118,6 @@ CWidgetCentral::CWidgetCentral(
     m_pTabWdgtMain = new QTabWidget(this);
     m_pLyt->addWidget(m_pTabWdgtMain);
 
-    // <Tab> Units
-    //-------------
-
-    m_pWdgtPhysSizes = new CWdgtPhysSizes(&IdxTreeUnits);
-    m_pTabWdgtMain->addTab(m_pWdgtPhysSizes,"Units");
-
     // <Tab> Test
     //-------------
 
@@ -150,6 +144,12 @@ CWidgetCentral::CWidgetCentral(
 
     m_pWdgtTestOutput = new CWdgtTestOutput();
     m_pLytGrpTestOutput->addWidget(m_pWdgtTestOutput);
+
+    // <Tab> Units
+    //-------------
+
+    m_pWdgtPhysSizes = new CWdgtPhysSizes(&IdxTreeUnits);
+    m_pTabWdgtMain->addTab(m_pWdgtPhysSizes,"Units");
 
     // Restore geometry of widget
     //---------------------------

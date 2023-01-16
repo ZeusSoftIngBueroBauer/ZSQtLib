@@ -27,8 +27,11 @@ may result in using the software modules.
 #ifndef ZSDiagramLineStyles_h
 #define ZSDiagramLineStyles_h
 
-#include <QtGui/qcolor.h>
 #include "ZSDiagram/ZSDiagramDllMain.h"
+
+#include <QtGui/qcolor.h>
+
+class QPainter;
 
 namespace ZS
 {

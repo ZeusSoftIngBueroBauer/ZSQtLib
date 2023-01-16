@@ -29,6 +29,7 @@ may result in using the software modules.
 #include "ZSDiagram/ZSDiagScale.h"
 #include "ZSDiagram/ZSDiagTrace.h"
 #include "ZSDiagram/ZSDiagramFrameStyles.h"
+#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysTime.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
@@ -186,8 +187,23 @@ CPixmapDiagram::CPixmapDiagram(
     m_rectFramePartCenterTopLineInv(),
     m_rectFramePartCenterBottomLineInv(),
     m_rectFramePartCenterLeftLineInv(),
-    m_rectFramePartCenterRightLineInv()
+    m_rectFramePartCenterRightLineInv(),
+    m_pTrcAdminObj(nullptr),
+    m_pTrcAdminObjUpdate(nullptr),
+    m_pTrcAdminObjEvents(nullptr),
+    m_pTrcAdminObjLayout(nullptr),
+    m_pTrcAdminObjValidate(nullptr)
 {
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
+        NameSpace(), ClassName(), m_strObjName);
+    m_pTrcAdminObjUpdate = CTrcServer::GetTraceAdminObj(
+        NameSpace(), ClassName() + "::Update", m_strObjName);
+    m_pTrcAdminObjEvents = CTrcServer::GetTraceAdminObj(
+        NameSpace(), ClassName() + "::Events", m_strObjName);
+    m_pTrcAdminObjLayout = CTrcServer::GetTraceAdminObj(
+        NameSpace(), ClassName() + "::Layout", m_strObjName);
+    m_pTrcAdminObjValidate = CTrcServer::GetTraceAdminObj(
+        NameSpace(), ClassName() + "::Validate", m_strObjName);
     QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
@@ -250,8 +266,18 @@ CPixmapDiagram::~CPixmapDiagram()
     }
     m_pFrameStylePartCenter = nullptr;
 
+    mthTracer.onAdminObjAboutToBeReleased();
+
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
     m_pTrcAdminObj = nullptr;
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjUpdate);
+    m_pTrcAdminObjUpdate = nullptr;
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjEvents);
+    m_pTrcAdminObjEvents = nullptr;
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjLayout);
+    m_pTrcAdminObjLayout = nullptr;
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjValidate);
+    m_pTrcAdminObjValidate = nullptr;
 
 } // dtor
 
@@ -1122,9 +1148,49 @@ void CPixmapDiagram::invalidate( CDiagObj* i_pDiagObj, unsigned int i_uUpdateFla
 } // invalidate
 //lint +esym(818,i_pDiagObj)
 
+/*==============================================================================
+protected: // overridables of base class CDataDiagram
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CPixmapDiagram::update( CDiagObj* i_pDiagObj, const QRect& i_rect )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    QString strAddTrcInfo;
+
+    if( m_pTrcAdminObjUpdate != nullptr && m_pTrcAdminObjUpdate->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        strMthInArgs = QString(i_pDiagObj == nullptr ? "null" : i_pDiagObj->getObjName());
+        strMthInArgs += ", " + qRect2Str(i_rect);
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjUpdate,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "update",
+        /* strAddInfo   */ strMthInArgs );
+
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
+    {
+        strAddTrcInfo = "OldUpdFlags: " + updateFlags2Str(m_uUpdateFlags);
+        mthTracer.trace(strAddTrcInfo);
+    }
+
+    CDataDiagram::update(i_pDiagObj, i_rect);
+
+    updatePixmap();
+
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
+    {
+        strAddTrcInfo = "NewUpdFlags: " + updateFlags2Str(m_uUpdateFlags);
+        mthTracer.trace(strAddTrcInfo);
+    }
+
+} // update
 
 /*==============================================================================
-protected: // overridables ob base class CDataDiagram
+protected: // overridable auxiliary instance methods of base class CDataDiagram
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -1141,8 +1207,7 @@ void CPixmapDiagram::updateLayout()
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
-        strTrcMsg  = "OldUpdFlags=";
-        strTrcMsg += updateFlags2Str(m_uUpdateFlags);
+        strTrcMsg = "OldUpdFlags: " + updateFlags2Str(m_uUpdateFlags);
         mthTracer.trace(strTrcMsg);
     }
 
@@ -1684,12 +1749,15 @@ void CPixmapDiagram::updateLayout()
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
-        strTrcMsg  = "NewUpdFlags=";
-        strTrcMsg += updateFlags2Str(m_uUpdateFlags);
+        strTrcMsg = "NewUpdFlags: " + updateFlags2Str(m_uUpdateFlags);
         mthTracer.trace(strTrcMsg);
     }
 
 } // updateLayout
+
+/*==============================================================================
+protected: // overridable auxiliary instance methods
+==============================================================================*/
 
 //------------------------------------------------------------------------------
 void CPixmapDiagram::updatePixmap()
@@ -1705,8 +1773,7 @@ void CPixmapDiagram::updatePixmap()
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
-        strTrcMsg  = "OldUpdFlags=";
-        strTrcMsg += updateFlags2Str(m_uUpdateFlags);
+        strTrcMsg  = "OldUpdFlags: " + updateFlags2Str(m_uUpdateFlags);
         mthTracer.trace(strTrcMsg);
     }
 

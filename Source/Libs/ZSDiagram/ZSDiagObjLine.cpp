@@ -25,7 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDiagram/ZSDiagObjLine.h"
-#include "ZSDiagram/ZSDiagramProcWdgt.h"
+#include "ZSDiagram/ZSDiagramProcData.h"
 #include "ZSDiagram/ZSDiagramLineStyles.h"
 #include "ZSDiagram/ZSDiagScale.h"
 #include "ZSSys/ZSSysErrResult.h"
@@ -383,16 +383,10 @@ void CDiagObjLine::update( unsigned int i_uUpdateFlags , QPaintDevice* i_pPaintD
     {
         mthTracer.trace("Processing Widget", ELogDetailLevel::Debug);
 
-        CWdgtDiagram* pWdgtDiagram = dynamic_cast<CWdgtDiagram*>(m_pDataDiagram);
-
-        if( pWdgtDiagram != nullptr )
-        {
-            // Invalidate output region of the diagram object to update (repaint) content of diagram.
-            // The histogram is output in the center area of the diagram and the whole center area
-            // need to be updated if the histogram has been changed.
-            pWdgtDiagram->update(this,m_rectContent);
-
-        } // if( pWdgtDiagram != nullptr )
+        // Invalidate output region of the diagram object to update (repaint) content of diagram.
+        // The histogram is output in the center area of the diagram and the whole center area
+        // need to be updated if the histogram has been changed.
+        m_pDiagram->update(this, m_rectContent);
 
         // Mark current process depth as executed (reset bit):
         validate(EUpdateWidget);

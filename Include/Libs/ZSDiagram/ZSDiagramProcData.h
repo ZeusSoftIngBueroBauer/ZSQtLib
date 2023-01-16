@@ -61,7 +61,8 @@ public: // instance methods
     QString getObjName() const;
     EDiagramUpdateType getUpdateType() const;
 public: // overridables to update the content of the diagram
-    virtual void updateDiagram( CDiagObj* i_pDiagObj = nullptr ); // need a method name different from QWidget::update
+    //virtual void updateDiagram( CDiagObj* i_pDiagObj = nullptr ); // need a method name different from QWidget::update
+    virtual void update( CDiagObj* i_pDiagObj, const QRect& i_rect );
     virtual void invalidate( CDiagObj* i_pDiagObj, unsigned int i_uUpdateFlags );
     virtual void validate( unsigned int i_uUpdateFlags );
 public: // overridables to rescale the diagram or output new X/Y values
@@ -95,7 +96,7 @@ public: // instance methods to add, remove, and change diagram objects
 public: // overridables (callbacks from CDiagScale, CDiagTrace and CDiagObj)
     virtual void scaleChanged( ZS::Diagram::CDiagScale* i_pDiagScale );
     virtual void traceChanged( ZS::Diagram::CDiagTrace* i_pDiagTrace );
-protected: // overridables to update the content of the diagram
+protected: // overridables (auxiliary instance methods)
     virtual void updateLayout();
     virtual void updateData();
 private: // copy ctor not allowed
@@ -103,24 +104,25 @@ private: // copy ctor not allowed
 private: // assignment operator not allowed
     void operator=( const CDataDiagram& );
 protected:  // instance members
-    QString                   m_strObjName;
-    EDiagramUpdateType        m_updateType;
-    unsigned int              m_uUpdateFlags;
-    EMeasState                m_measState;
-    EMeasMode                 m_measMode;
-    int                       m_iMeasType;
-    ESpacing                  m_arSpacing[EScaleDirCount];
-    int                       m_iDiagScaleCount;
-    CDiagScale*               m_pDiagScaleFirst;
-    CDiagScale*               m_pDiagScaleLast;
-    int                       m_iDiagTraceCount;
-    CDiagTrace*               m_pDiagTraceFirst;
-    CDiagTrace*               m_pDiagTraceLast;
-    int                       m_iDiagObjCount;
-    CDiagObj*                 m_pDiagObjFirst;
-    CDiagObj*                 m_pDiagObjLast;
-    CDiagObj*                 m_pDiagObjPaintFirst;
-    CDiagObj*                 m_pDiagObjPaintLast;
+    QString            m_strObjName;
+    EDiagramUpdateType m_updateType;
+    unsigned int       m_uUpdateFlags;
+    EMeasState         m_measState;
+    EMeasMode          m_measMode;
+    int                m_iMeasType;
+    ESpacing           m_arSpacing[EScaleDirCount];
+    int                m_iDiagScaleCount;
+    CDiagScale*        m_pDiagScaleFirst;
+    CDiagScale*        m_pDiagScaleLast;
+    int                m_iDiagTraceCount;
+    CDiagTrace*        m_pDiagTraceFirst;
+    CDiagTrace*        m_pDiagTraceLast;
+    int                m_iDiagObjCount;
+    CDiagObj*          m_pDiagObjFirst;
+    CDiagObj*          m_pDiagObjLast;
+    CDiagObj*          m_pDiagObjPaintFirst;
+    CDiagObj*          m_pDiagObjPaintLast;
+private:  // instance members
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjUpdate;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjEvents;

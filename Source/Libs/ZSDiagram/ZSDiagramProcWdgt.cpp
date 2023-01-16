@@ -29,6 +29,7 @@ may result in using the software modules.
 #include "ZSDiagram/ZSDiagScale.h"
 #include "ZSDiagram/ZSDiagTrace.h"
 #include "ZSDiagram/ZSDiagramFrameStyles.h"
+#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysTime.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
@@ -107,8 +108,24 @@ CWdgtDiagram::CWdgtDiagram(const QString& i_strObjName, QWidget* i_pWdgtParent) 
     m_pDiagObjFocusedRecently(nullptr),
     m_pDiagObjEditing(nullptr),
     m_pDiagObjEditingByKeyEvent(nullptr),
-    m_pDiagObjEditingByMouseEvent(nullptr)
+    m_pDiagObjEditingByMouseEvent(nullptr),
+    m_pTrcAdminObj(nullptr),
+    m_pTrcAdminObjUpdate(nullptr),
+    m_pTrcAdminObjEvents(nullptr),
+    m_pTrcAdminObjLayout(nullptr),
+    m_pTrcAdminObjValidate(nullptr)
 {
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
+        NameSpace(), ClassName(), m_strObjName);
+    m_pTrcAdminObjUpdate = CTrcServer::GetTraceAdminObj(
+        NameSpace(), ClassName() + "::Update", m_strObjName);
+    m_pTrcAdminObjEvents = CTrcServer::GetTraceAdminObj(
+        NameSpace(), ClassName() + "::Events", m_strObjName);
+    m_pTrcAdminObjLayout = CTrcServer::GetTraceAdminObj(
+        NameSpace(), ClassName() + "::Layout", m_strObjName);
+    m_pTrcAdminObjValidate = CTrcServer::GetTraceAdminObj(
+        NameSpace(), ClassName() + "::Validate", m_strObjName);
+
     QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
@@ -172,8 +189,18 @@ CWdgtDiagram::~CWdgtDiagram()
     m_pDiagObjEditingByKeyEvent = nullptr;
     m_pDiagObjEditingByMouseEvent = nullptr;
 
+    mthTracer.onAdminObjAboutToBeReleased();
+
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
     m_pTrcAdminObj = nullptr;
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjUpdate);
+    m_pTrcAdminObjUpdate = nullptr;
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjEvents);
+    m_pTrcAdminObjEvents = nullptr;
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjLayout);
+    m_pTrcAdminObjLayout = nullptr;
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjValidate);
+    m_pTrcAdminObjValidate = nullptr;
 
 } // dtor
 
@@ -583,50 +610,73 @@ void CWdgtDiagram::disableMoveKeyAcceleration()
 }
 
 /*==============================================================================
-public: // overridables
+public: // overridables of base class CPixmapDiagram
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief This method is called by the diagram objects to trigger a paint event.
+
+    Used instead of QWidget::update(rect) to trace the calling diagram object.
+*/
 void CWdgtDiagram::update( CDiagObj* i_pDiagObj, const QRect& i_rect )
 //------------------------------------------------------------------------------
 {
-    QString strTrcMsg;
+    QString strMthInArgs;
+    QString strAddTrcInfo;
 
     if( m_pTrcAdminObjUpdate != nullptr && m_pTrcAdminObjUpdate->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
     {
-        if( i_pDiagObj != nullptr )
-        {
-            strTrcMsg = i_pDiagObj->getObjName() + ", ";
-        }
-        strTrcMsg += "UpdRect[x,y,w,h]=";
-        strTrcMsg += QString::number(i_rect.x()) + ",";
-        strTrcMsg += QString::number(i_rect.y()) + ",";
-        strTrcMsg += QString::number(i_rect.width()) + ",";
-        strTrcMsg += QString::number(i_rect.height());
+        strMthInArgs = QString(i_pDiagObj == nullptr ? "null" : i_pDiagObj->getObjName());
+        strMthInArgs += ", " + qRect2Str(i_rect);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjUpdate,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "update",
-        /* strAddInfo   */ strTrcMsg );
+        /* strAddInfo   */ strMthInArgs );
+
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
+    {
+        strAddTrcInfo = "OldUpdFlags: " + updateFlags2Str(m_uUpdateFlags);
+        mthTracer.trace(strAddTrcInfo);
+    }
+
+    //CPixmapDiagram::update(i_pDiagObj, i_rect);
 
     // This method is called by the diagram objects after they have
     // recalculated their outputs within their update methods.
     if( i_rect.isValid() )
     {
-        QWidget::update(i_rect);
+        // Trigger paint event.
+        update(i_rect);
     }
 
     // Mark current process depth as executed (reset bit):
     validate(EUpdateWidget);
 
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
+    {
+        strAddTrcInfo = "NewUpdFlags: " + updateFlags2Str(m_uUpdateFlags);
+        mthTracer.trace(strAddTrcInfo);
+    }
+
 } // update
 
+/*==============================================================================
+public: // reimplemented (hiding) methods of QWidget for method tracing
+==============================================================================*/
+
 //------------------------------------------------------------------------------
+/*! @brief This method is called by the diagram itself to trigger a paint event.
+
+    Used instead of QWidget::update() to trace the method.
+*/
 void CWdgtDiagram::update()
 //------------------------------------------------------------------------------
 {
+    QString strAddTrcInfo;
+
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjUpdate,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -636,22 +686,10 @@ void CWdgtDiagram::update()
     // This method is called by the underlying window system but may also be called
     // by objects controlling the diagram to update the content of the diagram.
 
-    if( m_uUpdateFlags & EUpdateData )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
-        updateData();
-    }
-    if( m_uUpdateFlags & EUpdateLayout )
-    {
-        updateLayout();
-    }
-    if( m_uUpdateFlags & EUpdatePixmap )
-    {
-        updatePixmap();
-    }
-    if( m_uUpdateFlags & EUpdateWidget )
-    {
-        // Update the pixmap (but not yet the widget)
-        updateWidget();
+        strAddTrcInfo = "OldUpdFlags: " + updateFlags2Str(m_uUpdateFlags);
+        mthTracer.trace(strAddTrcInfo);
     }
 
     // Trigger update (repainting) content of diagram
@@ -660,28 +698,34 @@ void CWdgtDiagram::update()
     // Mark current process depth as executed (reset bit):
     validate(EUpdateWidget);
 
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
+    {
+        strAddTrcInfo = "NewUpdFlags: " + updateFlags2Str(m_uUpdateFlags);
+        mthTracer.trace(strAddTrcInfo);
+    }
+
 } // update
 
 //------------------------------------------------------------------------------
+/*! @brief This method is called by the diagram itself to trigger a paint event.
+
+    Used instead of QWidget::update(QRect) to trace the method.
+*/
 void CWdgtDiagram::update( const QRect& i_rect )
 //------------------------------------------------------------------------------
 {
-    QString strTrcMsg;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObjUpdate != nullptr && m_pTrcAdminObjUpdate->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
     {
-        strTrcMsg  = "UpdRect[x,y,w,h]=";
-        strTrcMsg += QString::number(i_rect.x()) + ",";
-        strTrcMsg += QString::number(i_rect.y()) + ",";
-        strTrcMsg += QString::number(i_rect.width()) + ",";
-        strTrcMsg += QString::number(i_rect.height());
+        strMthInArgs = qRect2Str(i_rect);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjUpdate,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "update",
-        /* strAddInfo   */ strTrcMsg );
+        /* strAddInfo   */ strMthInArgs );
 
     // This method is called by the underlying window system to force an update
     // of an invalidated region but also by the diagram objects after they have
@@ -695,6 +739,10 @@ void CWdgtDiagram::update( const QRect& i_rect )
     validate(EUpdateWidget);
 
 } // update
+
+/*==============================================================================
+public: // overridables
+==============================================================================*/
 
 //------------------------------------------------------------------------------
 void CWdgtDiagram::setMouseTracking( bool i_bEnable )
@@ -1601,6 +1649,9 @@ void CWdgtDiagram::mouseMoveEvent( QMouseEvent* i_pEv )
         // Invalidate old and new output region of zooming rectangle
         // (corresponds to update process depth "Widget").
 
+        // Trigger paintEvent to redraw the diagram.
+        // -----------------------------------------
+
         // Old output region:
         update( QRect(rectZoomPrev.left(),rectZoomPrev.top(),rectZoomPrev.width(),1) );
         update( QRect(rectZoomPrev.left(),rectZoomPrev.bottom(),rectZoomPrev.width(),1) );
@@ -1614,7 +1665,7 @@ void CWdgtDiagram::mouseMoveEvent( QMouseEvent* i_pEv )
         update( QRect(m_rectZoom.right(),m_rectZoom.top(),1,m_rectZoom.height()) );
 
         // Trigger paintEvent to redraw the diagram.
-        update();
+        //update();
     }
 
     else if( m_pDiagObjFocusedByKeyEvent == nullptr )
@@ -2168,97 +2219,99 @@ void CWdgtDiagram::updatePixmap()
 
 } // updatePixmap
 
-//------------------------------------------------------------------------------
-void CWdgtDiagram::updateWidget()
-//------------------------------------------------------------------------------
-{
-    QString strTrcMsg;
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjUpdate,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "updateWidget",
-        /* strAddInfo   */ "" );
-
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strTrcMsg  = "OldUpdFlags=";
-        strTrcMsg += updateFlags2Str(m_uUpdateFlags);
-        mthTracer.trace(strTrcMsg);
-    }
-
-    // This method is called by objects controlled by the diagram to update the
-    // content of the diagram.
-
-    CDiagObj* pDiagObj;
-
-    // Please note that only if by invalidating the flag (setting the bit) in the
-    // internal update flags and on requesting the process depth by this update
-    // method the corresponding update process will be executed.
-
-    pDiagObj = m_pDiagObjPaintFirst;
-    while( pDiagObj != nullptr )
-    {
-        // Please also note that also invisible objects need to mark their dirty
-        // rectangles during widget processing.
-        pDiagObj->update(EUpdateWidget);
-
-        pDiagObj = pDiagObj->m_pDiagObjPaintNext;
-    }
-
-    if( m_pFrameStylePartCenter != nullptr )
-    {
-        if( m_rectFramePartCenterTopLineInv.width() > 0 && m_rectFramePartCenterTopLineInv.height() > 0 )
-        {
-            update(m_rectFramePartCenterTopLineInv);
-        }
-        if( m_rectFramePartCenterBottomLineInv.width() > 0 && m_rectFramePartCenterBottomLineInv.height() > 0 )
-        {
-            update(m_rectFramePartCenterBottomLineInv);
-        }
-        if( m_rectFramePartCenterLeftLineInv.width() > 0 && m_rectFramePartCenterLeftLineInv.height() > 0 )
-        {
-            update(m_rectFramePartCenterLeftLineInv);
-        }
-        if( m_rectFramePartCenterRightLineInv.width() > 0 && m_rectFramePartCenterRightLineInv.height() > 0 )
-        {
-            update(m_rectFramePartCenterRightLineInv);
-        }
-        m_rectFramePartCenterTopLineInv.setWidth(0);
-        m_rectFramePartCenterTopLineInv.setHeight(0);
-        m_rectFramePartCenterBottomLineInv.setWidth(0);
-        m_rectFramePartCenterBottomLineInv.setHeight(0);
-        m_rectFramePartCenterLeftLineInv.setWidth(0);
-        m_rectFramePartCenterLeftLineInv.setHeight(0);
-        m_rectFramePartCenterRightLineInv.setWidth(0);
-        m_rectFramePartCenterRightLineInv.setHeight(0);
-    }
-
-    // The diagram itself draws frames (around the whole diagram widget or around
-    // the center part). If the center part changes its size also the frame need
-    // to be marked as a "dirty" rectangle.
-
-    // Mark current process depth as executed (reset bit):
-    validate(EUpdateWidget);
-
-    if( m_pLblTipOfTheDay != nullptr && m_pLblTipOfTheDay->isVisible() )
-    {
-        QRect rctTipOfTheDay;
-        rctTipOfTheDay.setLeft( m_rectPartCenter.left() + m_iTipOfTheDayIndentLeft );
-        rctTipOfTheDay.setTop( m_rectPartCenter.top() + m_iTipOfTheDayIndentTop );
-        rctTipOfTheDay.setRight( m_rectPartCenter.right() - m_iTipOfTheDayIndentRight );
-        rctTipOfTheDay.setBottom( m_rectPartCenter.bottom() - m_iTipOfTheDayIndentBottom );
-        m_pLblTipOfTheDay->setGeometry(rctTipOfTheDay);
-    }
-
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strTrcMsg  = "NewUpdFlags=";
-        strTrcMsg += updateFlags2Str(m_uUpdateFlags);
-        mthTracer.trace(strTrcMsg);
-    }
-
-} // updateWidget
+////------------------------------------------------------------------------------
+//void CWdgtDiagram::updateWidget()
+////------------------------------------------------------------------------------
+//{
+//    QString strTrcMsg;
+//
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjUpdate,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strMethod    */ "updateWidget",
+//        /* strAddInfo   */ "" );
+//
+//    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
+//    {
+//        strTrcMsg  = "OldUpdFlags=";
+//        strTrcMsg += updateFlags2Str(m_uUpdateFlags);
+//        mthTracer.trace(strTrcMsg);
+//    }
+//
+//    // This method is called by objects controlled by the diagram to update the
+//    // content of the diagram.
+//
+//    // Please note that only if by invalidating the flag (setting the bit) in the
+//    // internal update flags and on requesting the process depth by this update
+//    // method the corresponding update process will be executed.
+//
+//    CDiagObj* pDiagObj = m_pDiagObjPaintFirst;
+//    while( pDiagObj != nullptr )
+//    {
+//        // Please also note that also invisible objects need to mark their dirty
+//        // rectangles during widget processing.
+//        pDiagObj->update(EUpdateWidget);
+//
+//        pDiagObj = pDiagObj->m_pDiagObjPaintNext;
+//    }
+//
+//    if( m_pFrameStylePartCenter != nullptr )
+//    {
+//        // Trigger paint event to update content of widget
+//        //--------------------------------------------------
+//
+//        if( m_rectFramePartCenterTopLineInv.width() > 0 && m_rectFramePartCenterTopLineInv.height() > 0 )
+//        {
+//            update(m_rectFramePartCenterTopLineInv);
+//        }
+//        if( m_rectFramePartCenterBottomLineInv.width() > 0 && m_rectFramePartCenterBottomLineInv.height() > 0 )
+//        {
+//            update(m_rectFramePartCenterBottomLineInv);
+//        }
+//        if( m_rectFramePartCenterLeftLineInv.width() > 0 && m_rectFramePartCenterLeftLineInv.height() > 0 )
+//        {
+//            update(m_rectFramePartCenterLeftLineInv);
+//        }
+//        if( m_rectFramePartCenterRightLineInv.width() > 0 && m_rectFramePartCenterRightLineInv.height() > 0 )
+//        {
+//            update(m_rectFramePartCenterRightLineInv);
+//        }
+//
+//        m_rectFramePartCenterTopLineInv.setWidth(0);
+//        m_rectFramePartCenterTopLineInv.setHeight(0);
+//        m_rectFramePartCenterBottomLineInv.setWidth(0);
+//        m_rectFramePartCenterBottomLineInv.setHeight(0);
+//        m_rectFramePartCenterLeftLineInv.setWidth(0);
+//        m_rectFramePartCenterLeftLineInv.setHeight(0);
+//        m_rectFramePartCenterRightLineInv.setWidth(0);
+//        m_rectFramePartCenterRightLineInv.setHeight(0);
+//    }
+//
+//    // The diagram itself draws frames (around the whole diagram widget or around
+//    // the center part). If the center part changes its size also the frame need
+//    // to be marked as a "dirty" rectangle.
+//
+//    // Mark current process depth as executed (reset bit):
+//    validate(EUpdateWidget);
+//
+//    if( m_pLblTipOfTheDay != nullptr && m_pLblTipOfTheDay->isVisible() )
+//    {
+//        QRect rctTipOfTheDay;
+//        rctTipOfTheDay.setLeft( m_rectPartCenter.left() + m_iTipOfTheDayIndentLeft );
+//        rctTipOfTheDay.setTop( m_rectPartCenter.top() + m_iTipOfTheDayIndentTop );
+//        rctTipOfTheDay.setRight( m_rectPartCenter.right() - m_iTipOfTheDayIndentRight );
+//        rctTipOfTheDay.setBottom( m_rectPartCenter.bottom() - m_iTipOfTheDayIndentBottom );
+//        m_pLblTipOfTheDay->setGeometry(rctTipOfTheDay);
+//    }
+//
+//    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
+//    {
+//        strTrcMsg  = "NewUpdFlags=";
+//        strTrcMsg += updateFlags2Str(m_uUpdateFlags);
+//        mthTracer.trace(strTrcMsg);
+//    }
+//
+//} // updateWidget
 
 /*==============================================================================
 protected slots: // overridable instance methods

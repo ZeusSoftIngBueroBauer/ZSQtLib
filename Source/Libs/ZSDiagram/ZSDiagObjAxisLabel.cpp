@@ -25,7 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDiagram/ZSDiagObjAxisLabel.h"
-#include "ZSDiagram/ZSDiagramProcWdgt.h"
+#include "ZSDiagram/ZSDiagramProcPixmap.h"
 #include "ZSDiagram/ZSDiagScale.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
@@ -106,8 +106,6 @@ CDiagObjAxisLabel::CDiagObjAxisLabel(
     m_iAxisLabelsToBeConsidered(0),
     m_arpAxisLabelsToBeConsidered(nullptr)
 {
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Diagram", "CDiagObjAxisLabel", m_strObjName);
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -199,11 +197,7 @@ CDiagObjAxisLabel::~CDiagObjAxisLabel()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
-    int iLayer;
-
-    m_pDiagScale = nullptr;
-
-    for( iLayer = 0; iLayer < EDivLineLayerCount; iLayer++ )
+    for( int iLayer = 0; iLayer < EDivLineLayerCount; iLayer++ )
     {
         delete [] m_arpiDivLines[iLayer];
         m_arpiDivLines[iLayer] = nullptr;
@@ -225,11 +219,42 @@ CDiagObjAxisLabel::~CDiagObjAxisLabel()
 
     delete m_arpAxisLabelsToBeConsidered;
     m_arpAxisLabelsToBeConsidered = nullptr;
+
+    m_pDiagScale = nullptr;
+    m_pUnit = nullptr;
+    //m_unitLabels;
+    //m_strPhysUnitLabels;
+    m_iSpaceDiagPartCenter2DivLineLabels = 0;
+    m_iSpaceDivLineLabels2AxisLabel = 0;
+    m_iSpaceDiagBorder2AxisLabel = 0;
+    memset(m_ararbShow, 0x00, EPartCount*EDivLineLayerCount*sizeof(m_ararbShow[0][0]));
+    memset(m_arbShowUnit, 0x00, EPartCount*sizeof(m_arbShowUnit[0]));
+    memset(m_arcolFg, 0x00, EPartCount*sizeof(m_arcolFg[0]));
+    memset(m_arpenStyle, 0x00, EPartCount*sizeof(m_arpenStyle[0]));
+    memset(m_arcolBg, 0x00, EPartCount*sizeof(m_arcolBg[0]));
+    memset(m_arbrushStyle, 0x00, EPartCount*sizeof(m_arbrushStyle[0]));
+    memset(m_arfnt, 0x00, EPartCount*sizeof(m_arfnt[0]));
+    m_iDivLineLabelsDigitsCountMax = 0;
+    m_bUseEngineeringFormat = false;
+    //m_strAxisLabel;
+    //m_rectAxisLabel;
+    m_iDivLineLabelsTrailingDigits = 0;
+    m_iDivLineLabelsExponentDigits = 0;
+    //m_rectDivLineLabelsMaxTextExtent;
+    m_cxDivLineLabelsSpace = 0;
+    memset(m_ariDivLinesCount, 0x00, EDivLineLayerCount*sizeof(m_ariDivLinesCount[0]));
+    memset(m_arpiDivLines, 0x00, EDivLineLayerCount*sizeof(m_arpiDivLines[0]));
+    memset(m_arpRectDivLineLabels, 0x00, EDivLineLayerCount*sizeof(m_arpRectDivLineLabels[0]));
+    memset(m_arpStrDivLineLabels, 0x00, EDivLineLayerCount*sizeof(m_arpStrDivLineLabels[0]));
+    memset(m_arpbDivLineLabelsVisible, 0x00, EDivLineLayerCount*sizeof(m_arpbDivLineLabelsVisible[0]));
+    //m_rectDivLineLabelsPhysUnit;
+    m_bDivLineLabelsPhysUnitVisible = false;
+    //m_arstrScaleMinMaxVal[2];
+    //m_arrectScaleMinMaxVal[2];
+    memset(m_arbScaleMinMaxValVisible, 0x00, 2*sizeof(m_arbScaleMinMaxValVisible[0]));
     m_iAxisLabelsToBeConsideredListSize = 0;
     m_iAxisLabelsToBeConsidered = 0;
-
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
-    m_pTrcAdminObj = nullptr;
+    m_arpAxisLabelsToBeConsidered = nullptr;
 
 } // dtor
 
@@ -806,7 +831,7 @@ QSize CDiagObjAxisLabel::sizeHint()
     int cxWidth  = 0;
     int cyHeight = 0;
 
-    if( m_pDataDiagram == nullptr )
+    if( m_pDiagram == nullptr )
     {
         return QSize(0,0);
     }
@@ -817,9 +842,9 @@ QSize CDiagObjAxisLabel::sizeHint()
 
         // As a matter of fact there is no sense in adding an axis label object to
         // a diagram just designed to analyze data.
-        if( m_pDataDiagram->getUpdateType() >= EDiagramUpdateTypePixmap )
+        if( m_pDiagram->getUpdateType() >= EDiagramUpdateTypePixmap )
         {
-            pPixmapDiagram = dynamic_cast<const CPixmapDiagram*>(m_pDataDiagram);
+            pPixmapDiagram = dynamic_cast<const CPixmapDiagram*>(m_pDiagram);
         }
         if( pPixmapDiagram != nullptr )
         {
@@ -1048,13 +1073,13 @@ void CDiagObjAxisLabel::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPa
         /* strMethod    */ "update",
         /* strAddInfo   */ strTrcMsg );
 
-    if( i_uUpdateFlags == EUpdateNone || m_pDataDiagram == nullptr || m_pDiagScale == nullptr || !isVisible() )
+    if( i_uUpdateFlags == EUpdateNone || m_pDiagram == nullptr || m_pDiagScale == nullptr || !isVisible() )
     {
         return;
     }
     // As a matter of fact there is no sense in adding an axis label object to
     // a diagram just designed to analyze data.
-    if( m_pDataDiagram->getUpdateType() < EDiagramUpdateTypePixmap )
+    if( m_pDiagram->getUpdateType() < EDiagramUpdateTypePixmap )
     {
         return;
     }
@@ -1118,7 +1143,7 @@ void CDiagObjAxisLabel::updateLayout()
         /* strMethod    */ "updateLayout",
         /* strAddInfo   */ "" );
 
-    if( m_pDataDiagram == nullptr || m_pDiagScale == nullptr || !isVisible() )
+    if( m_pDiagram == nullptr || m_pDiagScale == nullptr || !isVisible() )
     {
         return;
     }
@@ -1131,9 +1156,9 @@ void CDiagObjAxisLabel::updateLayout()
 
     // As a matter of fact there is no sense in adding an axis label object to
     // a diagram just designed to analyze data.
-    if( m_pDataDiagram->getUpdateType() >= EDiagramUpdateTypePixmap )
+    if( m_pDiagram->getUpdateType() >= EDiagramUpdateTypePixmap )
     {
-        const CPixmapDiagram* pPixmapDiagram = dynamic_cast<const CPixmapDiagram*>(m_pDataDiagram);
+        const CPixmapDiagram* pPixmapDiagram = dynamic_cast<const CPixmapDiagram*>(m_pDiagram);
         if( pPixmapDiagram == nullptr )
         {
             return;
@@ -2463,9 +2488,9 @@ void CDiagObjAxisLabel::updateData()
 
     // As a matter of fact there is no sense in adding an axis label object to
     // a diagram just designed to analyze data.
-    if( m_pDataDiagram->getUpdateType() >= EDiagramUpdateTypePixmap )
+    if( m_pDiagram->getUpdateType() >= EDiagramUpdateTypePixmap )
     {
-        pPixmapDiagram = dynamic_cast<const CPixmapDiagram*>(m_pDataDiagram);
+        pPixmapDiagram = dynamic_cast<const CPixmapDiagram*>(m_pDiagram);
     }
     if( pPixmapDiagram == nullptr )
     {
@@ -2990,9 +3015,9 @@ void CDiagObjAxisLabel::updatePixmap( QPaintDevice* i_pPaintDevice )
 
     // As a matter of fact there is no sense in adding an axis label object to
     // a diagram just designed to analyze data.
-    if( m_pDataDiagram != nullptr && m_pDataDiagram->getUpdateType() >= EDiagramUpdateTypePixmap )
+    if( m_pDiagram != nullptr && m_pDiagram->getUpdateType() >= EDiagramUpdateTypePixmap )
     {
-        pPixmapDiagram = dynamic_cast<const CPixmapDiagram*>(m_pDataDiagram);
+        pPixmapDiagram = dynamic_cast<const CPixmapDiagram*>(m_pDiagram);
     }
     if( pPixmapDiagram == nullptr )
     {
@@ -3900,23 +3925,17 @@ void CDiagObjAxisLabel::updateWidget()
         /* strMethod    */ "updateWidget",
         /* strAddInfo   */ "" );
 
-    CWdgtDiagram* pWdgtDiagram = nullptr;
-
-    if( m_pDataDiagram->getUpdateType() >= EDiagramUpdateTypeWidget )
-    {
-        pWdgtDiagram = dynamic_cast<CWdgtDiagram*>(m_pDataDiagram);
-    }
-    if( pWdgtDiagram != nullptr )
+    if( m_pDiagram->getUpdateType() >= EDiagramUpdateTypeWidget )
     {
         // Invalidate output region of the diagram object to update (repaint) content of diagram.
         if( m_rectContentPrev.isValid() )
         {
-            pWdgtDiagram->update(this,m_rectContentPrev);
+            m_pDiagram->update(this, m_rectContentPrev);
             m_rectContentPrev = m_rectContent;
         }
         if( m_rectContent.isValid() )
         {
-            pWdgtDiagram->update(this,m_rectContent);
+            m_pDiagram->update(this, m_rectContent);
         }
 
     } // if( pWdgtDiagram != nullptr )

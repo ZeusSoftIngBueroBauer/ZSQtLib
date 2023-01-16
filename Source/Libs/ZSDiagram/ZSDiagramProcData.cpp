@@ -29,6 +29,7 @@ may result in using the software modules.
 #include "ZSDiagram/ZSDiagObj.h"
 #include "ZSDiagram/ZSDiagScale.h"
 #include "ZSDiagram/ZSDiagTrace.h"
+#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysTime.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
@@ -304,30 +305,28 @@ public: // overridables to update the content of the diagram
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDataDiagram::updateDiagram( CDiagObj* i_pDiagObj )
+void CDataDiagram::update( CDiagObj* i_pDiagObj, const QRect& i_rect )
 //------------------------------------------------------------------------------
 {
-    QString strTrcMsg;
+    QString strMthInArgs;
+    QString strAddTrcInfo;
 
     if( m_pTrcAdminObjUpdate != nullptr && m_pTrcAdminObjUpdate->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
-        if( i_pDiagObj != nullptr )
-        {
-            strTrcMsg = i_pDiagObj->getObjName();
-        }
+        strMthInArgs = QString(i_pDiagObj == nullptr ? "null" : i_pDiagObj->getObjName());
+        strMthInArgs += ", " + qRect2Str(i_rect);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjUpdate,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "updateDiagram",
-        /* strAddInfo   */ strTrcMsg );
+        /* strMethod    */ "update",
+        /* strAddInfo   */ strMthInArgs );
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
-        strTrcMsg  = "OldUpdFlags=";
-        strTrcMsg += updateFlags2Str(m_uUpdateFlags);
-        mthTracer.trace(strTrcMsg);
+        strAddTrcInfo = "OldUpdFlags: " + updateFlags2Str(m_uUpdateFlags);
+        mthTracer.trace(strAddTrcInfo);
     }
 
     // This method is called by objects controlling the diagram to update the
@@ -398,12 +397,11 @@ void CDataDiagram::updateDiagram( CDiagObj* i_pDiagObj )
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
-        strTrcMsg  = "NewUpdFlags=";
-        strTrcMsg += updateFlags2Str(m_uUpdateFlags);
-        mthTracer.trace(strTrcMsg);
+        strAddTrcInfo = "NewUpdFlags: " + updateFlags2Str(m_uUpdateFlags);
+        mthTracer.trace(strAddTrcInfo);
     }
 
-} // updateDiagram
+} // update
 
 //lint -esym(818,i_pDiagObj)
 //------------------------------------------------------------------------------
@@ -996,20 +994,7 @@ void CDataDiagram::addDiagObj( CDiagObj* i_pDiagObj )
 
     // Initialize some instance members of the diagram object which can only be
     // set if the object has been added to the diagram.
-    i_pDiagObj->m_pDataDiagram = this;
-
-    #ifdef _WINDOWS
-    #pragma message(__TODO__"DiagObj should not know the type of the diagram.")
-    #endif
-
-    if( getUpdateType() >= EDiagramUpdateTypePixmap )
-    {
-        i_pDiagObj->m_pPixmapDiagram = dynamic_cast<CPixmapDiagram*>(this);
-    }
-    if( getUpdateType() >= EDiagramUpdateTypeWidget )
-    {
-        i_pDiagObj->m_pWdgtDiagram = dynamic_cast<CWdgtDiagram*>(this);
-    }
+    i_pDiagObj->m_pDiagram = this;
 
     invalidate(nullptr, EUpdateLayoutDataPixmapWidget);
 
@@ -1087,9 +1072,7 @@ void CDataDiagram::removeDiagObj( CDiagObj* i_pDiagObj )
         i_pDiagObj->m_pDiagObjPaintNext->m_pDiagObjPaintPrev = i_pDiagObj->m_pDiagObjPaintPrev;
     }
 
-    i_pDiagObj->m_pDataDiagram   = nullptr;
-    i_pDiagObj->m_pPixmapDiagram = nullptr;
-    i_pDiagObj->m_pWdgtDiagram   = nullptr;
+    i_pDiagObj->m_pDiagram = nullptr;
 
     invalidate(nullptr, EUpdateLayoutDataPixmapWidget);
 

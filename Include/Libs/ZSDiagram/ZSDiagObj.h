@@ -173,9 +173,7 @@ private: // assignment operator not allowed
 protected:  // instance members
     QString                   m_strObjName;
     int                       m_iObjId; // on adding the object to the diagram the diagram will assign the id to the object
-    CDataDiagram*             m_pDataDiagram;
-    CPixmapDiagram*           m_pPixmapDiagram;
-    CWdgtDiagram*             m_pWdgtDiagram;
+    CDataDiagram*             m_pDiagram;
     CDiagTrace*               m_pDiagTrace;
     CDiagScale*               m_arpDiagScale[EScaleDirCount];
     unsigned int              m_uUpdateFlags;
