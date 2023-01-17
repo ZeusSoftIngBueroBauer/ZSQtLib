@@ -65,7 +65,6 @@ may result in using the software modules.
 using namespace ZS::System;
 using namespace ZS::System::GUI;
 using namespace ZS::Draw;
-using namespace ZS::Trace;
 
 
 /*******************************************************************************
@@ -126,7 +125,7 @@ CDlgFormatGraphObjs::CDlgFormatGraphObjs(
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ "" );
 
@@ -174,7 +173,7 @@ CDlgFormatGraphObjs::CDlgFormatGraphObjs(
 
         QListWidgetItem* pListWdgtItemLineStyle = nullptr;
 
-        if( m_pGraphObj != nullptr && m_pGraphObj->getType() == EGraphObjTypePoint )
+        if( m_pGraphObj != nullptr && m_pGraphObj->isPoint() )
         {
             pListWdgtItemLineStyle = new QListWidgetItem( iconLine, tr("Pen Style"), m_pListWdgt );
         }
@@ -231,7 +230,7 @@ CDlgFormatGraphObjs::CDlgFormatGraphObjs(
     m_arpWdgtsFormatGraphObjs.insert(c_strWdgtGeometry,pWdgtGeometry);
     m_pStackedWdgt->addWidget(pWdgtGeometry);
 
-    if( m_pGraphObj->getType() == EGraphObjTypeText )
+    if( m_pGraphObj->isText() )
     {
         QIcon   iconText;
         QPixmap pxmText(":/ZS/Draw/DrawText16x16.bmp");
@@ -350,7 +349,7 @@ CDlgFormatGraphObjs::~CDlgFormatGraphObjs()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
@@ -389,14 +388,14 @@ void CDlgFormatGraphObjs::addWidget(
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = i_strWdgtName;
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "addWidget",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -414,14 +413,14 @@ void CDlgFormatGraphObjs::setCurrentWidget( const QString& i_strWdgtName )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = i_strWdgtName;
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setCurrentWidget",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -451,13 +450,13 @@ void CDlgFormatGraphObjs::closeEvent( QCloseEvent* i_pEv )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "closeEvent",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -478,13 +477,13 @@ void CDlgFormatGraphObjs::showEvent( QShowEvent* i_pEv )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "showEvent",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -513,13 +512,13 @@ void CDlgFormatGraphObjs::accept()
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "accept",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -535,13 +534,13 @@ void CDlgFormatGraphObjs::reject()
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "reject",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -561,13 +560,13 @@ void CDlgFormatGraphObjs::onBtnAcceptClicked()
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onBtnAcceptClicked",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -591,13 +590,13 @@ void CDlgFormatGraphObjs::onBtnResetClicked()
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onBtnResetClicked",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -677,13 +676,13 @@ void CDlgFormatGraphObjs::onListWdgtCurrentRowChanged( int i_iRow )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onListWdgtCurrentRowChanged",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -703,13 +702,13 @@ void CDlgFormatGraphObjs::hidePopups()
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "hidePopups",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -731,13 +730,13 @@ void CDlgFormatGraphObjs::setWindowTitle()
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setWindowTitle",
         /* strAddInfo   */ strAddTrcInfo );
 

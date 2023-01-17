@@ -61,7 +61,6 @@ may result in using the software modules.
 using namespace ZS::System;
 using namespace ZS::Draw;
 using namespace ZS::PhysVal;
-using namespace ZS::Trace;
 
 
 /*******************************************************************************
@@ -99,7 +98,7 @@ CDlgPageSetup::CDlgPageSetup( CDrawingView* i_pDrawingView, QWidget* /*i_pWdgtPa
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ "" );
 
@@ -251,7 +250,7 @@ CDlgPageSetup::~CDlgPageSetup()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
@@ -293,13 +292,13 @@ void CDlgPageSetup::setCurrentWidget( EWidget i_wdgt )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setCurrentWidget",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -320,13 +319,13 @@ void CDlgPageSetup::closeEvent( QCloseEvent* i_pEv )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "closeEvent",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -340,13 +339,13 @@ void CDlgPageSetup::showEvent( QShowEvent* i_pEv )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "showEvent",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -364,13 +363,13 @@ void CDlgPageSetup::accept()
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "accept",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -386,13 +385,13 @@ void CDlgPageSetup::reject()
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "reject",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -410,13 +409,13 @@ void CDlgPageSetup::onBtnAcceptClicked()
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onBtnAcceptClicked",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -444,13 +443,13 @@ void CDlgPageSetup::onListWdgtCurrentRowChanged( int i_iRow )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onListWdgtCurrentRowChanged",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -468,13 +467,13 @@ void CDlgPageSetup::onWdgtDrawingPaperSettingsChanged()
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onWdgtDrawingPaperSettingsChanged",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -495,13 +494,13 @@ void CDlgPageSetup::onWdgtDrawingViewSettingsChanged()
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onWdgtDrawingViewSettingsChanged",
         /* strAddInfo   */ strAddTrcInfo );
 

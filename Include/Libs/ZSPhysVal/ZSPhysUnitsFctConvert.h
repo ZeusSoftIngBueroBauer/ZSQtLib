@@ -36,7 +36,7 @@ namespace ZS
 {
 namespace PhysVal
 {
-class CPhysUnit;
+class CUnitsTreeEntryPhysUnit;
 
 typedef enum
 {
@@ -59,23 +59,34 @@ class ZSPHYSVALDLL_API CFctConvert
 //******************************************************************************
 {
 public: // class methods
+    static QString NameSpace() { return "ZS::PhysVal"; }
+    static QString ClassName() { return "CFctConvert"; }
+public: // class methods
     static QString FormatM( double i_fM );
     static QString FormatT( double i_fT );
     static QString FormatOperand( double i_fOp );
 public: // ctors and dtor
     CFctConvert();
+    CFctConvert(CFctConvert& i_other);
+    CFctConvert(const CFctConvert& i_other);
+    CFctConvert(CFctConvert&& i_other);
+    virtual ~CFctConvert();
+public: // operators
+    CFctConvert& operator=(CFctConvert& i_other);
+    CFctConvert& operator=(const CFctConvert& i_other);
+    CFctConvert& operator=(CFctConvert&& i_other);
 public: // instance methods
     void buildFctConvertName();
     bool isValid() const;
 public: // instance members
-    CPhysUnit*    m_pPhysUnitSrc;
-    CPhysUnit*    m_pPhysUnitDst;
-    CPhysUnit*    m_pPhysUnitRef;
-    EFctConvert   m_fctConvertType;
-    QString       m_strFctConvertName;
-    double        m_fM;
-    double        m_fT;
-    double        m_fK;
+    CUnitsTreeEntryPhysUnit* m_pPhysUnitSrc;
+    CUnitsTreeEntryPhysUnit* m_pPhysUnitDst;
+    CUnitsTreeEntryPhysUnit* m_pPhysUnitRef;
+    EFctConvert m_fctConvertType;
+    QString m_strFctConvertName;
+    double m_fM;
+    double m_fT;
+    double m_fK;
 
 }; // class CFctConvert
 

@@ -532,9 +532,9 @@ class CInitEnumDirection
 public: // ctor
     CInitEnumDirection() {
         QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnum<EDirection>::s_arEnumEntries);
-        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(EDirection::Vertical),   "Vertical",   "Ver"  ) );
-        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(EDirection::Horizontal), "Horizontal", "Hor"  ) );
-        pVEnumEntries->append( /* 3 */ SEnumEntry( static_cast<int>(EDirection::Undefined),  "Undefined",  "?"    ) );
+        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(EDirection::Horizontal), "Horizontal", "Hor"  ) );
+        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(EDirection::Vertical),   "Vertical",   "Ver"  ) );
+        pVEnumEntries->append( /* 2 */ SEnumEntry( static_cast<int>(EDirection::Undefined),  "Undefined",  "?"    ) );
     }
 };
 static CInitEnumDirection s_initEnumDirection;
@@ -543,9 +543,9 @@ static CInitEnumDirection s_initEnumDirection;
 template<> const QVector<SEnumEntry> CEnum<EDirection>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                       // Enumerator,                            Name,         Symbol
-    /* 0 */ SEnumEntry( static_cast<int>(EDirection::Vertical),   "Vertical",   "Ver"  ),
-    /* 1 */ SEnumEntry( static_cast<int>(EDirection::Horizontal), "Horizontal", "Hor"  ),
-    /* 3 */ SEnumEntry( static_cast<int>(EDirection::Undefined),  "Undefined",  "?"    )
+    /* 0 */ SEnumEntry( static_cast<int>(EDirection::Horizontal), "Horizontal", "Hor"  ),
+    /* 1 */ SEnumEntry( static_cast<int>(EDirection::Vertical),   "Vertical",   "Ver"  ),
+    /* 2 */ SEnumEntry( static_cast<int>(EDirection::Undefined),  "Undefined",  "?"    )
 };
 #endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 /*! @endcond */

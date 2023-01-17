@@ -54,7 +54,7 @@ namespace GUI
 class CPushButton;
 }
 }
-namespace Trace
+namespace System
 {
 class CTrcAdminObj;
 }
@@ -173,7 +173,7 @@ private: // instance members
     QLabel*                       m_pLblZValue;
     QDoubleSpinBox*               m_pEdtZValue;
     // Trace
-    ZS::Trace::CTrcAdminObj*      m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj*      m_pTrcAdminObj;
 
 }; // class CWdgtFormatGraphObjsGeometry
 

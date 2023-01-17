@@ -29,13 +29,14 @@ may result in using the software modules.
 
 #include "ZSDraw/ZSDrawDllMain.h"
 
+#include "ZSPhysVal/ZSPhysVal.h"
+#include "ZSSys/ZSSysEnumTemplate.h"
+
 #if QT_VERSION < 0x050000
 #include <QtGui/qgraphicsitem.h>
 #else
 #include <QtWidgets/qgraphicsitem.h>
 #endif
-
-#include "ZSSys/ZSSysEnumTemplate.h"
 
 
 /*******************************************************************************
@@ -46,6 +47,88 @@ namespace ZS
 {
 namespace Draw
 {
+class CGraphObj;
+
+//==============================================================================
+struct ZSDRAWDLL_API SAttribute
+//==============================================================================
+{
+public: // ctors
+    SAttribute() :
+        m_strName(),
+        m_val(),
+        m_bIsUsed(true)
+    {
+    }
+    SAttribute( const QString& i_strName, QVariant::Type i_type ) :
+        m_strName(i_strName),
+        m_val(i_type),
+        m_bIsUsed(true)
+    {
+    }
+    SAttribute( const QString& i_strName, const QVariant& i_val, bool i_bIsUsed ) :
+        m_strName(i_strName),
+        m_val(i_val),
+        m_bIsUsed(i_bIsUsed)
+    {
+    }
+public: // operators
+    SAttribute& operator = ( const QVariant& i_val )
+    {
+        m_val = i_val;
+        return *this;
+    }
+    bool operator == ( const SAttribute& i_attrOther ) const
+    {
+        bool bEqual = true;
+        if( m_strName != i_attrOther.m_strName || m_val != i_attrOther.m_val )
+        {
+            bEqual = false;
+        }
+        return bEqual;
+    }
+    bool operator != ( const SAttribute& i_attrOther ) const
+    {
+        return !(*this == i_attrOther);
+    }
+public: // struct members
+    QString  m_strName;
+    QVariant m_val;
+    bool     m_bIsUsed;
+
+}; // struct SAttribute
+
+
+/*==============================================================================
+Signatures for simulation event methods
+==============================================================================*/
+
+typedef void (*TFctMouseEvent)( void* i_pvThis, void* i_pvData, CGraphObj* i_pGraphObj, QGraphicsSceneMouseEvent* i_pEv );
+typedef void (*TFctKeyEvent)( void* i_pvThis, void* i_pvData, CGraphObj* i_pGraphObj, QKeyEvent* i_pEv );
+
+
+//==============================================================================
+struct ZSDRAWDLL_API SDrawArea
+//==============================================================================
+{
+public: // ctors and dtor
+    SDrawArea();
+    SDrawArea(
+        const ZS::PhysVal::CPhysVal& i_physValWidth,
+        const ZS::PhysVal::CPhysVal& i_physValHeight,
+        double                       i_fXScaleFactor,
+        double                       i_fYScaleFactor );
+public: // methods
+    bool isValid() const;
+public: // struct members
+    ZS::PhysVal::CPhysVal m_physValWidth;
+    ZS::PhysVal::CPhysVal m_physValHeight;
+    double                m_fXScaleFac;
+    double                m_fYScaleFac;
+
+}; // struct SDrawArea
+
+
 //==============================================================================
 /*! Supported paper formats for printing.
 */

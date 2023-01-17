@@ -476,8 +476,8 @@ protected: // instance members
     ZS::Draw::CDrawingView*                             m_pDrawingView;
     QWidget*                                            m_pWdgtCentral;
     // Trace
-    ZS::Trace::CTrcAdminObj*                            m_pTrcAdminObj;
-    ZS::Trace::CTrcAdminObj*                            m_pTrcAdminObjMouseEvents;
+    ZS::System::CTrcAdminObj*                            m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj*                            m_pTrcAdminObjMouseEvents;
 
 }; // class CMainWindow
 

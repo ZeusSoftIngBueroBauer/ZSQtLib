@@ -59,7 +59,6 @@ may result in using the software modules.
 using namespace ZS::System;
 using namespace ZS::System::GUI;
 using namespace ZS::Draw;
-using namespace ZS::Trace;
 
 
 /*******************************************************************************
@@ -157,14 +156,14 @@ CWdgtFormatGraphObjsLabelVisibilities::CWdgtFormatGraphObjsLabelVisibilities(
 
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->path());
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
 
@@ -187,7 +186,7 @@ CWdgtFormatGraphObjsLabelVisibilities::CWdgtFormatGraphObjsLabelVisibilities(
     int cxSpacingClm1Cml2 = 10;
     int cxSpacingClm2Cml3 = 10;
 
-    EGraphObjType graphObjType = m_pGraphObj->getType();
+    EGraphObjType graphObjType = m_pGraphObj->type();
 
     // Headline
     //=========
@@ -838,7 +837,7 @@ CWdgtFormatGraphObjsLabelVisibilities::~CWdgtFormatGraphObjsLabelVisibilities()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
@@ -936,13 +935,13 @@ void CWdgtFormatGraphObjsLabelVisibilities::applyChanges()
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "applyChanges",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1144,13 +1143,13 @@ void CWdgtFormatGraphObjsLabelVisibilities::resetChanges()
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "resetChanges",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1164,13 +1163,13 @@ bool CWdgtFormatGraphObjsLabelVisibilities::hasChanges() const
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "hasChanges",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1261,7 +1260,7 @@ bool CWdgtFormatGraphObjsLabelVisibilities::hasChanges() const
     //=============================
 
 
-    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         mthTracer.setMethodReturn(bHasChanges);
     }
@@ -1280,13 +1279,13 @@ void CWdgtFormatGraphObjsLabelVisibilities::onGraphObjChanged()
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onGraphObjChanged",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1319,14 +1318,14 @@ void CWdgtFormatGraphObjsLabelVisibilities::onCmbNameLabelAnchorSelPtCurrentInde
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = CEnumSelectionPoint::toString(static_cast<ESelectionPoint>(i_iIdx));
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onCmbNameLabelAnchorSelPtCurrentIndexChanged",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1338,14 +1337,14 @@ void CWdgtFormatGraphObjsLabelVisibilities::onChkNameLabelVisibleStateChanged( i
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = qCheckState2Str(i_iCheckState);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onChkNameLabelVisibleStateChanged",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1357,14 +1356,14 @@ void CWdgtFormatGraphObjsLabelVisibilities::onChkNameLabelAnchorLineVisibleState
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = qCheckState2Str(i_iCheckState);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onChkNameLabelAnchorLineVisibleStateChanged",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1376,14 +1375,14 @@ void CWdgtFormatGraphObjsLabelVisibilities::onCmbPathLabelAnchorSelPtCurrentInde
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = CEnumSelectionPoint::toString(static_cast<ESelectionPoint>(i_iIdx));
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onCmbPathLabelAnchorSelPtCurrentIndexChanged",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1395,14 +1394,14 @@ void CWdgtFormatGraphObjsLabelVisibilities::onChkPathLabelVisibleStateChanged( i
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = qCheckState2Str(i_iCheckState);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onChkPathLabelVisibleStateChanged",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1414,14 +1413,14 @@ void CWdgtFormatGraphObjsLabelVisibilities::onChkPathLabelAnchorLineVisibleState
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = qCheckState2Str(i_iCheckState);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onChkPathLabelAnchorLineVisibleStateChanged",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1433,14 +1432,14 @@ void CWdgtFormatGraphObjsLabelVisibilities::onCmbDescriptionLabelAnchorSelPtCurr
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = CEnumSelectionPoint::toString(static_cast<ESelectionPoint>(i_iIdx));
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onCmbDescriptionLabelAnchorSelPtCurrentIndexChanged",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1452,14 +1451,14 @@ void CWdgtFormatGraphObjsLabelVisibilities::onChkDescriptionLabelVisibleStateCha
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = qCheckState2Str(i_iCheckState);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onChkDescriptionLabelVisibleStateChanged",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1471,14 +1470,14 @@ void CWdgtFormatGraphObjsLabelVisibilities::onChkDescriptionLabelAnchorLineVisib
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = qCheckState2Str(i_iCheckState);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onChkDescriptionLabelAnchorLineVisibleStateChanged",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1490,14 +1489,14 @@ void CWdgtFormatGraphObjsLabelVisibilities::onCmbDimensionPosLabelAnchorSelPtCur
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = CEnumSelectionPoint::toString(static_cast<ESelectionPoint>(i_iIdx));
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onCmbDimensionPosLabelAnchorSelPtCurrentIndexChanged",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1530,14 +1529,14 @@ void CWdgtFormatGraphObjsLabelVisibilities::onChkDimensionPosLabelVisibleStateCh
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = qCheckState2Str(i_iCheckState);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onChkDimensionPosLabelVisibleStateChanged",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1577,14 +1576,14 @@ void CWdgtFormatGraphObjsLabelVisibilities::onChkDimensionPosLabelAnchorLineVisi
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = qCheckState2Str(i_iCheckState);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onChkDimensionPosLabelAnchorLineVisibleStateChanged",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1596,14 +1595,14 @@ void CWdgtFormatGraphObjsLabelVisibilities::onCmbDimensionWidthLabelAnchorSelPtC
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = CEnumSelectionPoint::toString(static_cast<ESelectionPoint>(i_iIdx));
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onCmbDimensionWidthLabelAnchorSelPtCurrentIndexChanged",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1615,14 +1614,14 @@ void CWdgtFormatGraphObjsLabelVisibilities::onChkDimensionWidthLabelVisibleState
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = qCheckState2Str(i_iCheckState);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onChkDimensionWidthLabelVisibleStateChanged",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1634,14 +1633,14 @@ void CWdgtFormatGraphObjsLabelVisibilities::onChkDimensionWidthLabelAnchorLineVi
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = qCheckState2Str(i_iCheckState);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onChkDimensionWidthLabelAnchorLineVisibleStateChanged",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1653,14 +1652,14 @@ void CWdgtFormatGraphObjsLabelVisibilities::onCmbDimensionHeightLabelAnchorSelPt
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = CEnumSelectionPoint::toString(static_cast<ESelectionPoint>(i_iIdx));
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onCmbDimensionHeightLabelAnchorSelPtCurrentIndexChanged",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1672,14 +1671,14 @@ void CWdgtFormatGraphObjsLabelVisibilities::onChkDimensionHeightLabelVisibleStat
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = qCheckState2Str(i_iCheckState);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onChkDimensionHeightLabelVisibleStateChanged",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1691,14 +1690,14 @@ void CWdgtFormatGraphObjsLabelVisibilities::onChkDimensionHeightLabelAnchorLineV
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = qCheckState2Str(i_iCheckState);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onChkDimensionHeightLabelAnchorLineVisibleStateChanged",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1710,14 +1709,14 @@ void CWdgtFormatGraphObjsLabelVisibilities::onCmbDimensionRotationAngleLabelAnch
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = CEnumSelectionPoint::toString(static_cast<ESelectionPoint>(i_iIdx));
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onCmbDimensionRotationAngleLabelAnchorSelPtCurrentIndexChanged",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1729,14 +1728,14 @@ void CWdgtFormatGraphObjsLabelVisibilities::onChkDimensionRotationAngleLabelVisi
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = qCheckState2Str(i_iCheckState);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onChkDimensionRotationAngleLabelVisibleStateChanged",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1748,14 +1747,14 @@ void CWdgtFormatGraphObjsLabelVisibilities::onChkDimensionRotationAngleLabelAnch
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = qCheckState2Str(i_iCheckState);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onChkDimensionRotationAngleLabelAnchorLineVisibleStateChanged",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1767,14 +1766,14 @@ void CWdgtFormatGraphObjsLabelVisibilities::onChkDimensionLinesBoundingRectVisib
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = qCheckState2Str(i_iCheckState);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onChkDimensionLinesBoundingRectVisibleStateChanged",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1786,14 +1785,14 @@ void CWdgtFormatGraphObjsLabelVisibilities::onChkDimensionLinesBoundingRectDiago
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = qCheckState2Str(i_iCheckState);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onChkDimensionLinesBoundingRectDiagonalsVisibleStateChanged",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1805,14 +1804,14 @@ void CWdgtFormatGraphObjsLabelVisibilities::onChkDimensionLinesBoundingRectHoriz
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = qCheckState2Str(i_iCheckState);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onChkDimensionLinesBoundingRectHorizontalSymmetryAxisVisibleStateChanged",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1824,14 +1823,14 @@ void CWdgtFormatGraphObjsLabelVisibilities::onChkDimensionLinesBoundingRectVerti
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = qCheckState2Str(i_iCheckState);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onChkDimensionLinesBoundingRectVerticalSymmetryAxisVisibleStateChanged",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1847,17 +1846,17 @@ void CWdgtFormatGraphObjsLabelVisibilities::fillComboAnchorSelPt( QComboBox* i_p
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "fillComboAnchorSelPt",
         /* strAddInfo   */ strMthInArgs );
 
-    EGraphObjType graphObjType = m_pGraphObj->getType();
+    EGraphObjType graphObjType = m_pGraphObj->type();
 
     if( graphObjType == EGraphObjTypePoint )
     {
@@ -1892,18 +1891,18 @@ void CWdgtFormatGraphObjsLabelVisibilities::updateVisibilityCheckStates(
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = i_pCmbSelPt->objectName();
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "updateVisibilityCheckStates",
         /* strAddInfo   */ strMthInArgs );
 
-    EGraphObjType graphObjType = m_pGraphObj->getType();
+    EGraphObjType graphObjType = m_pGraphObj->type();
 
     QString strAnchorSelPt = i_pCmbSelPt->currentText();
     bool bConverted = false;

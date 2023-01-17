@@ -76,7 +76,7 @@ private: // instance members
     QDoubleSpinBox*          m_pEdtVoltage;
     QCheckBox*               m_pChkVoltageVisible;
     // Trace
-    ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CWdgtFormatGraphObjsVoltageSource
 

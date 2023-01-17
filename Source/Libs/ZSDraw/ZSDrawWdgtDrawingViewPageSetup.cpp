@@ -54,7 +54,6 @@ may result in using the software modules.
 using namespace ZS::System;
 using namespace ZS::Draw;
 using namespace ZS::PhysVal;
-using namespace ZS::Trace;
 
 
 /*******************************************************************************
@@ -133,7 +132,7 @@ CWdgtDrawingViewPageSetup::CWdgtDrawingViewPageSetup(
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ "" );
 
@@ -155,13 +154,15 @@ CWdgtDrawingViewPageSetup::CWdgtDrawingViewPageSetup(
     // <Section> Resolution
     //=====================
 
-    double  fXResolution_dpi = i_pDrawingView->getXResolutionInDpmm()*25.4;
-    double  fYResolution_dpi = i_pDrawingView->getYResolutionInDpmm()*25.4;
+    double fXResolution_dpmm = Units.GraphDevice.dpmm(EDirection::Horizontal);
+    double fYResolution_dpmm = Units.GraphDevice.dpmm(EDirection::Vertical);
+    double fXResolution_dpi = fXResolution_dpmm*25.4;
+    double fYResolution_dpi = fYResolution_dpmm*25.4;
 
     QString strXDpi  = QString::number(fXResolution_dpi,'f',2);
     QString strYDpi  = QString::number(fYResolution_dpi,'f',2);
-    QString strXDpmm = QString::number(i_pDrawingView->getXResolutionInDpmm(),'f',2);
-    QString strYDpmm = QString::number(i_pDrawingView->getYResolutionInDpmm(),'f',2);
+    QString strXDpmm = QString::number(fXResolution_dpmm,'f',2);
+    QString strYDpmm = QString::number(fYResolution_dpmm,'f',2);
     QString strResolution;
 
     // <Label> Resolution - dots per inch
@@ -402,13 +403,13 @@ CWdgtDrawingViewPageSetup::CWdgtDrawingViewPageSetup(
     m_pCmbDrawingMetricsSizeUnit->setFixedWidth(cxEdtWidth);
 
     CPageSetup* pageSetup = m_pDrawingView->getPageSetup();
-    CPhysSizeGeometry* physSizeGeometry = pageSetup->getPhysSizeWidth();
+    //CPhysSizeGeometry* physSizeGeometry = pageSetup->getPhysSizeWidth();
 
-    for( int idxUnit = 0; idxUnit < physSizeGeometry->getUnitCount(); ++idxUnit )
-    {
-        m_pCmbDrawingMetricsSizeUnit->addItem(physSizeGeometry->getUnit(idxUnit)->getSymbol());
-    }
-    m_pCmbDrawingMetricsSizeUnit->setCurrentText(physSizeGeometry->CentiMeter()->getSymbol());
+    //for( int idxUnit = 0; idxUnit < physSizeGeometry->getUnitCount(); ++idxUnit )
+    //{
+    //    m_pCmbDrawingMetricsSizeUnit->addItem(physSizeGeometry->getUnit(idxUnit)->getSymbol());
+    //}
+    //m_pCmbDrawingMetricsSizeUnit->setCurrentText(physSizeGeometry->CentiMeter()->getSymbol());
     m_pLytLineDrawingMetricsSize->addWidget(m_pCmbDrawingMetricsSizeUnit);
     m_pLytLineDrawingMetricsSize->addStretch();
 
@@ -592,7 +593,7 @@ CWdgtDrawingViewPageSetup::~CWdgtDrawingViewPageSetup()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
@@ -706,7 +707,7 @@ void CWdgtDrawingViewPageSetup::acceptChanges() const
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "acceptChanges",
         /* strAddInfo   */ "" );
 
@@ -751,14 +752,14 @@ void CWdgtDrawingViewPageSetup::onEdtSizeWidthEditingFinished()
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Height: " + m_pEdtImageSizeWidth->text();
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onEdtSizeWidthEditingFinished",
         /* strAddInfo   */ strMthInArgs );
 
@@ -772,14 +773,14 @@ void CWdgtDrawingViewPageSetup::onEdtSizeHeightEditingFinished()
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Height: " + m_pEdtImageSizeHeight->text();
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onEdtSizeHeightEditingFinished",
         /* strAddInfo   */ strMthInArgs );
 
@@ -793,14 +794,14 @@ void CWdgtDrawingViewPageSetup::onEdtMarginsLeftEditingFinished()
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Margins.Left: " + m_pEdtMarginsLeft->text();
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onEdtMarginsLeftEditingFinished",
         /* strAddInfo   */ strMthInArgs );
 
@@ -814,14 +815,14 @@ void CWdgtDrawingViewPageSetup::onEdtMarginsTopEditingFinished()
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Margins.Top: " + m_pEdtMarginsTop->text();
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onEdtMarginsTopEditingFinished",
         /* strAddInfo   */ strMthInArgs );
 
@@ -835,14 +836,14 @@ void CWdgtDrawingViewPageSetup::onEdtMarginsRightEditingFinished()
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Margins.Right: " + m_pEdtMarginsRight->text();
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onEdtMarginsRightEditingFinished",
         /* strAddInfo   */ strMthInArgs );
 
@@ -856,14 +857,14 @@ void CWdgtDrawingViewPageSetup::onEdtMarginsBottomEditingFinished()
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Margins.Bottom: " + m_pEdtMarginsBottom->text();
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onEdtMarginsBottomEditingFinished",
         /* strAddInfo   */ strMthInArgs );
 

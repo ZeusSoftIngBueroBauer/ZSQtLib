@@ -94,7 +94,7 @@ QVariant CObjFactoriesModel::data( const QModelIndex& i_modelIdx, int i_iRole ) 
 
         if( pModelTreeEntry != nullptr )
         {
-            CObjFactory* pObjFactory = dynamic_cast<CObjFactory*>(pModelTreeEntry->treeEntry());
+            CObjFactory* pObjFactory = CObjFactory::FindObjFactory(pModelTreeEntry->keyInTree());
 
             switch( i_modelIdx.column() )
             {
@@ -108,7 +108,7 @@ QVariant CObjFactoriesModel::data( const QModelIndex& i_modelIdx, int i_iRole ) 
                     {
                         if( pObjFactory == nullptr )
                         {
-                            varData = ZS::System::GUI::CModelIdxTree::GetIcon(pModelTreeEntry->entryType());
+                            varData = ZS::System::GUI::CModelIdxTree::getIcon(pModelTreeEntry->entryType());
                         }
                         else
                         {
@@ -141,7 +141,7 @@ Qt::ItemFlags CObjFactoriesModel::flags( const QModelIndex& i_modelIdx ) const
 
         if( pModelTreeEntry != nullptr )
         {
-            CObjFactory* pObjFactory = dynamic_cast<CObjFactory*>(pModelTreeEntry->treeEntry());
+            CObjFactory* pObjFactory = CObjFactory::FindObjFactory(pModelTreeEntry->keyInTree());
 
             if( pObjFactory != nullptr )
             {
@@ -237,7 +237,7 @@ QMimeData* CObjFactoriesModel::mimeData( const QModelIndexList& i_modelIdxList )
 
             if( pModelTreeEntry != nullptr )
             {
-                pObjFactory = dynamic_cast<CObjFactory*>(pModelTreeEntry->treeEntry());
+                pObjFactory = CObjFactory::FindObjFactory(pModelTreeEntry->keyInTree());
 
                 if( pObjFactory != nullptr )
                 {

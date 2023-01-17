@@ -40,7 +40,7 @@ may result in using the software modules.
 
 namespace ZS
 {
-namespace Trace
+namespace System
 {
 class CTrcAdminObj;
 }

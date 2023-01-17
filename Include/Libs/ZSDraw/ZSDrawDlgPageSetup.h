@@ -47,7 +47,7 @@ class QVBoxLayout;
 
 namespace ZS
 {
-namespace Trace
+namespace System
 {
 class CTrcAdminObj;
 }
@@ -117,7 +117,7 @@ private: // instance members
     QPushButton*                m_pBtnAccept;
     QPushButton*                m_pBtnCancel;
     // Trace
-    ZS::Trace::CTrcAdminObj*    m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj*    m_pTrcAdminObj;
 
 }; // CDlgPageSetup
 

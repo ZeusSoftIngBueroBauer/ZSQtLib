@@ -47,7 +47,7 @@ class QHBoxLayout;
 
 namespace ZS
 {
-namespace Trace
+namespace System
 {
 class CTrcAdminObj;
 }
@@ -145,7 +145,7 @@ private: // instance members
     QLabel*                  m_pLblMarginsBottom;
     QSpinBox*                m_pEdtMarginsBottom;
     // Trace
-    ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // CWdgtDrawingViewPageSetup
 

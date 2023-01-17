@@ -153,7 +153,7 @@ public: // instance members
     //int                      m_iWdgtLabelsCount;
     //int                      m_iWdgtLineEditsCount;
     //int                      m_iWdgtPushButtonsCount;
-    ZS::Trace::CTrcAdminObj*   m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj*   m_pTrcAdminObj;
 
 }; // class CTest
 

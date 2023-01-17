@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -27,15 +27,18 @@ may result in using the software modules.
 #include <QtCore/qglobal.h>
 
 #if QT_VERSION < 0x050000
+#include <QtGui/qcombobox.h>
 #include <QtGui/qlabel.h>
 #include <QtGui/qlayout.h>
+#include <QtGui/qlineedit.h>
 #else
+#include <QtWidgets/qcombobox.h>
 #include <QtWidgets/qlabel.h>
 #include <QtWidgets/qlayout.h>
+#include <QtWidgets/qlineedit.h>
 #endif
 
 #include "ZSDraw/ZSDrawWdgtDrawingPaperPageSetup.h"
-#include "ZSDraw/ZSDrawingView.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
@@ -44,12 +47,13 @@ may result in using the software modules.
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 
+using namespace ZS::System;
 using namespace ZS::Draw;
-using namespace ZS::Trace;
+//using namespace ZS::PhysVal;
 
 
 /*******************************************************************************
-class CWdgtDrawingPaperPageSetup : public QWidget
+class CWdgtDrawingPaperPageSetup : public CWdgtPageSetup
 *******************************************************************************/
 
 /*==============================================================================
@@ -61,8 +65,7 @@ CWdgtDrawingPaperPageSetup::CWdgtDrawingPaperPageSetup(
     CDrawingView* i_pDrawingView,
     QWidget*      i_pWdgtParent ) :
 //------------------------------------------------------------------------------
-    QWidget(i_pWdgtParent),
-    m_pDrawingView(i_pDrawingView),
+    QWidget(),
     m_pLyt(nullptr),
     m_pLblHeadLine(nullptr),
     // Trace
@@ -70,11 +73,12 @@ CWdgtDrawingPaperPageSetup::CWdgtDrawingPaperPageSetup(
 {
     setObjectName("WdgtPageSetupDrawingPaper");
 
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
+        NameSpace(), ClassName(), objectName());
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ "" );
 
@@ -101,7 +105,7 @@ CWdgtDrawingPaperPageSetup::CWdgtDrawingPaperPageSetup(
     // Set settings at GUI controls
     //-----------------------------
 
-    //setPageSetup(i_pDrawingView->getPageSetup());
+    //setSettings(m_pageSetup);
 
 } // ctor
 
@@ -111,18 +115,17 @@ CWdgtDrawingPaperPageSetup::~CWdgtDrawingPaperPageSetup()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
-
-    mthTracer.onAdminObjAboutToBeReleased();
 
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
     m_pTrcAdminObj = nullptr;
 
-    m_pDrawingView = nullptr;
     m_pLyt = nullptr;
     m_pLblHeadLine = nullptr;
+
+    // Trace
     m_pTrcAdminObj = nullptr;
 
 } // dtor
@@ -135,20 +138,37 @@ public: // instance methods
 bool CWdgtDrawingPaperPageSetup::hasChanges() const
 //------------------------------------------------------------------------------
 {
-    bool bHasChanges = false;
-
-    return bHasChanges;
-
-} // hasChanges
+    return true;
+}
 
 //------------------------------------------------------------------------------
 void CWdgtDrawingPaperPageSetup::acceptChanges() const
 //------------------------------------------------------------------------------
 {
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "acceptChanges",
-        /* strAddInfo   */ "" );
+}
 
-} // acceptChanges
+/*==============================================================================
+public: // overridables of base class CWdgtFormatGraphObjs
+==============================================================================*/
+
+////------------------------------------------------------------------------------
+//void CWdgtDrawingPaperPageSetup::setSettings( const CPageSetup& i_pageSetup )
+////------------------------------------------------------------------------------
+//{
+//    QString strAddTrcInfo;
+//
+//    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+//    {
+//    }
+//
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObj,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strMethod    */ "setSettings",
+//        /* strAddInfo   */ strAddTrcInfo );
+//
+//    m_pageSetup = i_pageSetup;
+//
+//    //emit pageSetupAttributeChanged( EPageSetupAttribute.., m_pageSetup.get..() );
+//
+//} // setSettings

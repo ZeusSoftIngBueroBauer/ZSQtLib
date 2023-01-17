@@ -48,9 +48,7 @@ may result in using the software modules.
 
 #include "UnitViewWdgts.h"
 
-#include "ZSPhysVal/ZSPhysSize.h"
-#include "ZSPhysVal/ZSPhysUnitsRatio.h"
-#include "ZSPhysVal/ZSPhysUnitsDataQuantity.h"
+#include "ZSPhysVal/ZSPhysTreeEntryGrpPhysUnits.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysIdxTree.h"
 
@@ -200,15 +198,15 @@ void CWdgtUnitView::setUnitsModelNode( SUnitsModelNode* i_pNode )
     }
     else if( m_pNode->m_pUnit != nullptr )
     {
-        m_pEdtPath->setText( m_pNode->m_pUnit->getGroupName(true) );
-        m_pEdtName->setText( m_pNode->m_pUnit->getName() );
-        m_pEdtKey->setText( m_pNode->m_pUnit->getKey() );
+        m_pEdtPath->setText( m_pNode->m_pUnit->parentBranchKeyInTree() );
+        m_pEdtName->setText( m_pNode->m_pUnit->name() );
+        m_pEdtKey->setText( m_pNode->m_pUnit->keyInTree() );
     }
     else if( m_pNode->m_pUnitGrp != nullptr )
     {
-        m_pEdtPath->setText( m_pNode->m_pUnitGrp->getName(true) );
-        m_pEdtName->setText( m_pNode->m_pUnitGrp->getName() );
-        m_pEdtKey->setText( m_pNode->m_pUnitGrp->getKey() );
+        m_pEdtPath->setText( m_pNode->m_pUnitGrp->keyInTree() );
+        m_pEdtName->setText( m_pNode->m_pUnitGrp->name() );
+        m_pEdtKey->setText( m_pNode->m_pUnitGrp->keyInTree() );
     }
     else
     {
@@ -428,23 +426,23 @@ void CWdgtUnitViewUnt::setUnitsModelNode( SUnitsModelNode* i_pNode )
     }
     else if( m_pNode->m_pUnit != nullptr )
     {
-        m_pEdtSymbol->setText( m_pNode->m_pUnit->getSymbol() );
+        m_pEdtSymbol->setText( m_pNode->m_pUnit->symbol() );
 
-        if( m_pNode->m_pUnit->getNextLowerUnit() == nullptr) 
+        if( m_pNode->m_pUnit->nextLowerUnit() == nullptr) 
         {
             m_pEdtNextLower->setText("---");
         }
         else
         {
-            m_pEdtNextLower->setText( m_pNode->m_pUnit->getNextLowerUnit()->getName() );
+            m_pEdtNextLower->setText( m_pNode->m_pUnit->nextLowerUnit()->name() );
         }
-        if( m_pNode->m_pUnit->getNextHigherUnit() == nullptr) 
+        if( m_pNode->m_pUnit->nextHigherUnit() == nullptr) 
         {
             m_pEdtNextHigher->setText("---");
         }
         else
         {
-            m_pEdtNextHigher->setText( m_pNode->m_pUnit->getNextHigherUnit()->getName() );
+            m_pEdtNextHigher->setText( m_pNode->m_pUnit->nextHigherUnit()->name() );
         }
     }
     else
@@ -460,6 +458,8 @@ void CWdgtUnitViewUnt::setUnitsModelNode( SUnitsModelNode* i_pNode )
 /*******************************************************************************
 class CWdgtUnitViewGrpRatios : public CWdgtUnitViewGrp
 *******************************************************************************/
+
+#if 0
 
 /*==============================================================================
 public: // ctors and dtor
@@ -545,10 +545,13 @@ void CWdgtUnitViewGrpRatios::setUnitsModelNode( SUnitsModelNode* i_pNode )
 
 } // setUnitsModelNode
 
+#endif
 
 /*******************************************************************************
 class CWdgtUnitViewGrpDataQuantities : public CWdgtUnitViewGrp
 *******************************************************************************/
+
+#if 0
 
 /*==============================================================================
 public: // ctors and dtor
@@ -634,6 +637,7 @@ void CWdgtUnitViewGrpDataQuantities::setUnitsModelNode( SUnitsModelNode* i_pNode
 
 } // setUnitsModelNode
 
+#endif
 
 /*******************************************************************************
 class CWdgtUnitViewGrpUserDefinedQuantities : public CWdgtUnitViewGrp
@@ -858,7 +862,7 @@ void CWdgtUnitViewGrpPhysScienceFields::setUnitsModelNode( SUnitsModelNode* i_pN
 {
     CWdgtUnitViewGrp::setUnitsModelNode(i_pNode);
 
-    CPhysSize* pPhysSize = nullptr;
+    CUnitsTreeEntryGrpPhysUnits* pPhysSize = nullptr;
 
     if( m_pNode == nullptr )
     {
@@ -866,7 +870,7 @@ void CWdgtUnitViewGrpPhysScienceFields::setUnitsModelNode( SUnitsModelNode* i_pN
     }
     else if( m_pNode->m_pUnitGrp != nullptr )
     {
-        pPhysSize = dynamic_cast<CPhysSize*>(m_pNode->m_pUnitGrp);
+        pPhysSize = dynamic_cast<CUnitsTreeEntryGrpPhysUnits*>(m_pNode->m_pUnitGrp);
         m_model.setUnitGroup(m_pNode->m_pUnitGrp);
     }
     else
@@ -984,6 +988,8 @@ void CWdgtUnitViewGrpPhysScienceFields::updateTableView()
 class CWdgtUnitViewUntRatio : public CWdgtUnitViewUnt
 *******************************************************************************/
 
+#if 0
+
 /*==============================================================================
 public: // ctors and dtor
 ==============================================================================*/
@@ -1061,10 +1067,13 @@ void CWdgtUnitViewUntRatio::setUnitsModelNode( SUnitsModelNode* i_pNode )
 
 } // setUnitsModelNode
 
+#endif
 
 /*******************************************************************************
 class CWdgtUnitViewUntDataQuantity : public CWdgtUnitViewUnt
 *******************************************************************************/
+
+#if 0
 
 /*==============================================================================
 public: // ctors and dtor
@@ -1142,6 +1151,8 @@ void CWdgtUnitViewUntDataQuantity::setUnitsModelNode( SUnitsModelNode* i_pNode )
     }
 
 } // setUnitsModelNode
+
+#endif
 
 
 /*******************************************************************************
@@ -1329,11 +1340,11 @@ void CWdgtUnitViewPhysUnit::setUnitsModelNode( SUnitsModelNode* i_pNode )
 {
     CWdgtUnitViewUnt::setUnitsModelNode(i_pNode);
 
-    CPhysUnit* pPhysUnit = nullptr;
+    CUnitsTreeEntryPhysUnit* pPhysUnit = nullptr;
 
     if( m_pNode != nullptr && m_pNode->m_pUnit != nullptr )
     {
-        pPhysUnit = dynamic_cast<CPhysUnit*>(m_pNode->m_pUnit);
+        pPhysUnit = dynamic_cast<CUnitsTreeEntryPhysUnit*>(m_pNode->m_pUnit);
     }
 
     // PhysUnit

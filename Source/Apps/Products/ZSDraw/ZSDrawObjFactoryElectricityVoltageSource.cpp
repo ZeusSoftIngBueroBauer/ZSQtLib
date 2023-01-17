@@ -54,7 +54,6 @@ may result in using the software modules.
 using namespace ZS::System;
 using namespace ZS::Draw;
 using namespace ZS::Draw::Electricity;
-using namespace ZS::Trace;
 
 
 /*******************************************************************************
@@ -95,14 +94,14 @@ CGraphObj* CObjFactoryVoltageSource::createGraphObj(
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = "ItemPos:" + QString::number(i_ptItemPos.x()) + "," + QString::number(i_ptItemPos.y());
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createGraphObj",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -127,7 +126,7 @@ SErrResultInfo CObjFactoryVoltageSource::saveGraphObj(
 
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo  = "GraphObj:" + i_pGraphObj->nameSpace();
         strAddTrcInfo += "::" + i_pGraphObj->className();
@@ -136,7 +135,7 @@ SErrResultInfo CObjFactoryVoltageSource::saveGraphObj(
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "saveGraphObj",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -194,7 +193,7 @@ SErrResultInfo CObjFactoryVoltageSource::saveGraphObj(
     //    i_xmlStreamWriter.writeEndElement();
     //}
 
-    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         mthTracer.setMethodReturn(errResultInfo);
     }
@@ -222,7 +221,7 @@ CGraphObj* CObjFactoryVoltageSource::loadGraphObj(
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "loadGraphObj",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -404,7 +403,7 @@ CGraphObj* CObjFactoryVoltageSource::loadGraphObj(
 
     } // if( i_pDrawingScene->findGraphObj(i_strObjId) == nullptr )
 
-    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = "ErrResultInfo {" + io_errResultInfo.toString() + "}";
         mthTracer.setMethodOutArgs(strAddTrcInfo);

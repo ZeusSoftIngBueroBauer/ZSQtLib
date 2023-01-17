@@ -135,7 +135,7 @@ protected: // instance members
     QVBoxLayout*           m_pLytGrpWdgtTestStep;
     CWdgtTestStep*         m_pWdgtTestStep;
 
-}; // class CWgdtTest
+}; // class CWdgtIdxTreeTestSteps
 
 } // namespace GUI
 

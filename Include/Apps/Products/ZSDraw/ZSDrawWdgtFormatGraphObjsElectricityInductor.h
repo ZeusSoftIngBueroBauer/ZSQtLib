@@ -76,7 +76,7 @@ private: // instance members
     QDoubleSpinBox*          m_pEdtInductance;
     QCheckBox*               m_pChkInductanceVisible;
     // Trace
-    ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CWdgtFormatGraphObjsInductor
 

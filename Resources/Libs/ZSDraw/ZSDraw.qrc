@@ -1,0 +1,37 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource prefix="ZS/Draw">
+        <file alias="CursorPin16x16.bmp">Images/CursorPin16x16.bmp</file>
+        <file alias="CursorPin32x32.bmp">Images/CursorPin32x32.bmp</file>
+        <file alias="CursorRotateFree16x16.bmp">Images/CursorRotateFree16x16.bmp</file>
+        <file alias="CursorSelect16x16.bmp">Images/CursorSelect16x16.bmp</file>
+        <file alias="DrawToolBrush16x16.bmp">Images/DrawToolBrush16x16.bmp</file>
+        <file alias="DrawToolGeometry16x16.bmp">Images/DrawToolGeometry16x16.bmp</file>
+        <file alias="DrawToolLine16x16.bmp">Images/DrawToolLine16x16.bmp</file>
+        <file alias="DrawToolPen16x16.bmp">Images/DrawToolPen16x16.bmp</file>
+        <file alias="DrawToolText16x16.bmp">Images/DrawToolText16x16.bmp</file>
+        <file alias="DrawToolRotateLeftBy90Degrees16x16.bmp">Images/DrawToolRotateLeftBy90Degrees16x16.bmp</file>
+        <file alias="DrawToolRotateRightBy90Degrees16x16.bmp">Images/DrawToolRotateRightBy90Degrees16x16.bmp</file>
+        <file alias="DrawToolMirrorVertical16x16.bmp">Images/DrawToolMirrorVertical16x16.bmp</file>
+        <file alias="DrawToolMirrorHorizontal16x16.bmp">Images/DrawToolMirrorHorizontal16x16.bmp</file>
+        <file alias="DrawConnectionLine16x16.bmp">Images/DrawConnectionLine16x16.bmp</file>
+        <file alias="DrawConnectionPoint16x16.bmp">Images/DrawConnectionPoint16x16.bmp</file>
+        <file alias="DrawEllipse16x16.bmp">Images/DrawEllipse16x16.bmp</file>
+        <file alias="DrawImage16x16.bmp">Images/DrawImage16x16.bmp</file>
+        <file alias="DrawLabel16x16.bmp">Images/DrawLabel16x16.bmp</file>
+        <file alias="DrawLine16x16.bmp">Images/DrawLine16x16.bmp</file>
+        <file alias="DrawPoint16x16.bmp">Images/DrawPoint16x16.bmp</file>
+        <file alias="DrawPolygon16x16.bmp">Images/DrawPolygon16x16.bmp</file>
+        <file alias="DrawPolyline16x16.bmp">Images/DrawPolyline16x16.bmp</file>
+        <file alias="DrawRect16x16.bmp">Images/DrawRect16x16.bmp</file>
+        <file alias="DrawSelectionPoint16x16.bmp">Images/DrawSelectionPoint16x16.bmp</file>
+        <file alias="DrawText16x16.bmp">Images/DrawText16x16.bmp</file>
+        <file alias="EditGroup16x16.bmp">Images/EditGroup16x16.bmp</file>
+        <file alias="EditUngroup16x16.bmp">Images/EditUngroup16x16.bmp</file>
+        <file alias="FilePageSetup16x16.bmp">Images/FilePageSetup16x16.bmp</file>
+        <file alias="Key16x16.bmp">Images/Key16x16.bmp</file>
+        <file alias="Refresh16x16.bmp">Images/Refresh16x16.bmp</file>
+        <file alias="Refresh24x24.bmp">Images/Refresh24x24.bmp</file>
+        <file alias="Refresh32x32.bmp">Images/Refresh32x32.bmp</file>
+    </qresource>
+</RCC>

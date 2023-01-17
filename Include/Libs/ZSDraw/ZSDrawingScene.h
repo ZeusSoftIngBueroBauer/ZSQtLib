@@ -37,7 +37,7 @@ may result in using the software modules.
 
 #include "ZSDraw/ZSDrawDllMain.h"
 #include "ZSDraw/ZSDrawCommon.h"
-#include "ZSDraw/ZSDrawPhysSizeGeometry.h"
+#include "ZSDraw/ZSDrawUnits.h"
 #include "ZSSys/ZSSysCommon.h"
 #include "ZSDraw/ZSDrawSettings.h"
 
@@ -50,7 +50,7 @@ namespace System
 class CIdxTree;
 class CIdxTreeEntry;
 }
-namespace Trace
+namespace System
 {
 class CTrcAdminObj;
 }
@@ -99,11 +99,6 @@ signals:
     //void graphObjNameChanged( const QString& i_strObjId, const QString& i_strObjNameOld, const QString& i_strObjNameNew );
 public: // instance methods
     ZS::System::CIdxTree* getGraphObjsIdxTree() { return m_pGraphObjsIdxTree; }
-public: // instance methods
-    void setXResolutionInDpmm( double i_fRes_dpmm );
-    double getXResolutionInDpmm() const;
-    void setYResolutionInDpmm( double i_fRes_dpmm );
-    double getYResolutionInDpmm() const;
 public: // instance methods
     ZS::System::SErrResultInfo load( const QString& i_strFileName );
     ZS::System::SErrResultInfo save( const QString& i_strFileName );
@@ -241,8 +236,8 @@ protected slots:
     void onGraphObjsIdxTreeEntryMoved( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry, const QString& i_strKeyInTreePrev, ZS::System::CIdxTreeEntry* i_pTargetBranch );
     void onGraphObjsIdxTreeEntryRenamed( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry, const QString& i_strKeyInTreePrev, const QString& i_strNamePrev );
 protected: // instance members
-    CPhysSizeGeometry        m_physSizeWidth;
-    CPhysSizeGeometry        m_physSizeHeight;
+    ZS::PhysVal::CUnit       m_unitWidth;
+    ZS::PhysVal::CUnit       m_unitHeight;
     CDrawSettings            m_drawSettings;
     ZS::System::CEnumMode    m_mode;
     CEnumEditTool            m_editTool;
@@ -263,9 +258,9 @@ protected: // instance members
     bool                     m_bMouseDoubleClickEventInProcess;
     QPointF                  m_ptMouseEvScenePosOnMousePressEvent;
     int                      m_iEvKeyModifiers;
-    ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
-    ZS::Trace::CTrcAdminObj* m_pTrcAdminObjMouseMoveEvent;
-    ZS::Trace::CTrcAdminObj* m_pTrcAdminObjPaintEvent;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjMouseMoveEvent;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjPaintEvent;
 
 }; // class CDrawingScene
 

@@ -28,7 +28,8 @@ may result in using the software modules.
 #define ZSDraw_PageSetup_h
 
 #include "ZSDraw/ZSDrawDllMain.h"
-#include "ZSDraw/ZSDrawPhysSizeGeometry.h"
+#include "ZSDraw/ZSDrawUnits.h"
+#include "ZSPhysVal/ZSPhysVal.h"
 
 class QSettings;
 class QXmlStreamReader;
@@ -46,25 +47,17 @@ public: // class methods
     //static double GetFormatWidthInMilliMeter( EPaperFormat i_format, EPaperOrientation i_orientation );
     //static double GetFormatHeightInMilliMeter( EPaperFormat i_format, EPaperOrientation i_orientation );
 public: // ctors and dtor
-    CPageSetup( double i_fXResolution_dpmm = 3.78, double i_fYResolution_dpmm = 3.78 );
+    CPageSetup();
     ~CPageSetup();
 public: // operators
-    bool operator == ( const CPageSetup& i_other ) const;
-    bool operator != ( const CPageSetup& i_other ) const;
+    bool operator == (const CPageSetup& i_other) const;
+    bool operator != (const CPageSetup& i_other) const;
 public: // instance methods
-    CPhysSizeGeometry* getPhysSizeWidth() { return &m_physSizeWidth; }
-    CPhysSizeGeometry* getPhysSizeHeight() { return &m_physSizeHeight; }
+    void save(QSettings& i_settings, const QString& i_strSettingsKey);
+    void load(QSettings& i_settings, const QString& i_strSettingsKey);
 public: // instance methods
-    void setXResolutionInDpmm( double i_fRes_dpmm );
-    double getXResolutionInDpmm() const;
-    void setYResolutionInDpmm( double i_fRes_dpmm );
-    double getYResolutionInDpmm() const;
-public: // instance methods
-    void save( QSettings& i_settings, const QString& i_strSettingsKey );
-    void load( QSettings& i_settings, const QString& i_strSettingsKey );
-public: // instance methods
-    void save( QXmlStreamWriter& i_xmlStreamWriter );
-    void load( QXmlStreamReader& i_xmlStreamReader );
+    void save(QXmlStreamWriter& i_xmlStreamWriter);
+    void load(QXmlStreamReader& i_xmlStreamReader);
 public: // instance methods
     //void setPaperFormat( EPaperFormat i_format );
     //EPaperFormat getPaperFormat() const { return m_paperFormat; }
@@ -108,21 +101,23 @@ public: // instance methods (drawing area)
 public: // instance methods (drawing area)
     //void setDrawArea( const SDrawArea& i_drawArea );
     //SDrawArea getDrawArea() const;
-    void setDrawingWidthInPixels( int i_iWidth_px );
-    int getDrawingWidthInPixels() const;
-    void setDrawingHeightInPixels( int i_iHeight_px );
-    int getDrawingHeightInPixels() const;
-    //void setDrawingXScaleFactor( double i_fScaleFactor );
-    //double getDrawingXScaleFactor() const { return m_drawArea.m_fXScaleFac; }
-    //void setDrawingYScaleFactor( double i_fScaleFactor );
-    //double getDrawingYScaleFactor() const { return m_drawArea.m_fYScaleFac; }
+public: // instance methods
+    ZS::PhysVal::CUnit unit( ZS::System::EDirection i_direction ) const;
+public: // instance methods
+    void setDrawingSize( const ZS::PhysVal::CPhysVal& i_width, const ZS::PhysVal::CPhysVal& i_height );
+    void setDrawingWidth( const ZS::PhysVal::CPhysVal& i_width );
+    ZS::PhysVal::CPhysVal drawingWidth() const;
+    void setDrawingHeight( const ZS::PhysVal::CPhysVal& i_height );
+    ZS::PhysVal::CPhysVal drawingHeight() const;
+public: // instance methods
+    void setDrawingScale( double i_fScale );
+    double drawingScale() const;
+    void setDrawingScales( double i_fScaleWidth, double i_fScaleHeight );
+    void setDrawingScale( ZS::System::EDirection i_direction, double i_fScaleFactor );
+    double drawingScale( ZS::System::EDirection i_direction ) const;
 protected: // instance members
-    double            m_fXResolution_dpmm;
-    double            m_fYResolution_dpmm;
-    int               m_cxImageWidth_px;
-    int               m_cyImageHeight_px;
-    CPhysSizeGeometry m_physSizeWidth;
-    CPhysSizeGeometry m_physSizeHeight;
+    QVector<ZS::PhysVal::CPhysVal> m_arPhysValsSize;
+    QVector<double> m_arfLengthScaleFactors;
 
 }; // class CPageSetup
 

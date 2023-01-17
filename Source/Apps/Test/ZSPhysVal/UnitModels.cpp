@@ -28,11 +28,10 @@ may result in using the software modules.
 
 #include "UnitModels.h"
 
-#include "ZSPhysVal/ZSPhysUnitsPool.h"
-#include "ZSPhysVal/ZSPhysUnitsRatio.h"
-#include "ZSPhysVal/ZSPhysUnitsDataQuantity.h"
+#include "ZSPhysVal/ZSPhysUnitsIdxTree.h"
+#include "ZSPhysVal/ZSPhysTreeEntryGrpBase.h"
+#include "ZSPhysVal/ZSPhysTreeEntryUnitRatio.h"
 #include "ZSSysGUI/ZSSysIdxTreeModel.h"
-#include "ZSSys/ZSSysEnumEntry.h"
 #include "ZSSys/ZSSysException.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
@@ -62,7 +61,7 @@ SUnitsModelNode::SUnitsModelNode() :
 } // ctor
 
 //------------------------------------------------------------------------------
-SUnitsModelNode::SUnitsModelNode( ZS::PhysVal::CUnitGrp* i_pUnitGrp ) :
+SUnitsModelNode::SUnitsModelNode( ZS::PhysVal::CUnitsTreeEntryGrpBase* i_pUnitGrp ) :
 //------------------------------------------------------------------------------
     m_pUnitGrp(i_pUnitGrp),
     m_pUnit(nullptr),
@@ -73,7 +72,7 @@ SUnitsModelNode::SUnitsModelNode( ZS::PhysVal::CUnitGrp* i_pUnitGrp ) :
 } // ctor
 
 //------------------------------------------------------------------------------
-SUnitsModelNode::SUnitsModelNode( ZS::PhysVal::CUnit* i_pUnit ) :
+SUnitsModelNode::SUnitsModelNode( ZS::PhysVal::CUnitsTreeEntryUnitBase* i_pUnit ) :
 //------------------------------------------------------------------------------
     m_pUnitGrp(nullptr),
     m_pUnit(i_pUnit),
@@ -112,22 +111,17 @@ CUnitsModel::CUnitsModel( QObject* i_pObjParent ) :
     m_pRootNode = new SUnitsModelNode();
     m_pRootNode->m_modelIdx = createIndex(0,0,m_pRootNode);
 
-    CUnitGrp*      pUnitGrp;
-    EUnitClassType classType;
-    int            idxClassType;
-
-    for( idxClassType = 0; idxClassType < EUnitClassTypeCount; idxClassType++ )
+    for( int idxClassType = 0; idxClassType < CEnumUnitClassType::count(); idxClassType++ )
     {
-        classType = static_cast<EUnitClassType>(idxClassType);
+        EUnitClassType classType = static_cast<EUnitClassType>(idxClassType);
 
-        pUnitGrp = CUnitsPool::GetUnitClassTypeGroup(classType);
+        //CUnitGrp* pUnitGrp = CIdxTreeUnits::GetUnitClassTypeGroup(classType);
 
-        if( pUnitGrp->getChildUnitGrpCount() > 0 || pUnitGrp->getUnitCount() > 0 )
-        {
-            addNode(m_pRootNode,pUnitGrp);
-        }
+        //if( pUnitGrp->getChildUnitGrpCount() > 0 || pUnitGrp->getUnitCount() > 0 )
+        //{
+        //    addNode(m_pRootNode,pUnitGrp);
+        //}
     }
-
 } // ctor
 
 //------------------------------------------------------------------------------
@@ -175,7 +169,7 @@ void CUnitsModel::clear( SUnitsModelNode* i_pModelNode )
 } // clear
 
 //------------------------------------------------------------------------------
-void CUnitsModel::addNode( SUnitsModelNode* i_pParentNode, CUnitGrp* i_pUnitGrp )
+void CUnitsModel::addNode( SUnitsModelNode* i_pParentNode, CUnitsTreeEntryGrpBase* i_pUnitGrp )
 //------------------------------------------------------------------------------
 {
     SUnitsModelNode* pNodeUnitGrp = new SUnitsModelNode(i_pUnitGrp);
@@ -185,27 +179,25 @@ void CUnitsModel::addNode( SUnitsModelNode* i_pParentNode, CUnitGrp* i_pUnitGrp 
     pNodeUnitGrp->m_pParentNode = i_pParentNode;
     pNodeUnitGrp->m_modelIdx = createIndex(i_pParentNode->m_arpChildNodes.size()-1,0,pNodeUnitGrp);
 
-    if( i_pUnitGrp->getChildUnitGrpCount() > 0 )
+    if( i_pUnitGrp->count() > 0 )
     {
-        CUnitGrp* pUnitGrp;
-        int       idxUnitGrp;
+        CUnitsTreeEntryGrpBase* pUnitGrp;
 
-        for( idxUnitGrp = 0; idxUnitGrp < i_pUnitGrp->getChildUnitGrpCount(); idxUnitGrp++ )
+        for( int idxUnitGrp = 0; idxUnitGrp < i_pUnitGrp->count(); idxUnitGrp++ )
         {
-            pUnitGrp = i_pUnitGrp->getChildUnitGrp(idxUnitGrp);
+            pUnitGrp = dynamic_cast<CUnitsTreeEntryGrpBase*>(i_pUnitGrp->at(idxUnitGrp));
 
-            addNode(pNodeUnitGrp,pUnitGrp);
+            addNode(pNodeUnitGrp, pUnitGrp);
         }
     }
     else // if( pUnitGrp->getUnitCount() > 0 )
     {
         SUnitsModelNode* pNodeUnit;
-        CUnit*           pUnit;
-        int              idxUnit;
+        CUnitsTreeEntryUnitBase* pUnit;
 
-        for( idxUnit = 0; idxUnit < i_pUnitGrp->getUnitCount(); idxUnit++ )
+        for( int idxUnit = 0; idxUnit < i_pUnitGrp->count(); idxUnit++ )
         {
-            pUnit = i_pUnitGrp->getUnit(idxUnit);
+            pUnit = dynamic_cast<CUnitsTreeEntryUnitBase*>(i_pUnitGrp->at(idxUnit));
 
             pNodeUnit = new SUnitsModelNode(pUnit);
 
@@ -279,11 +271,11 @@ QVariant CUnitsModel::data( const QModelIndex& i_modelIdx, int i_iRole ) const
             {
                 if( pNode->m_pUnit != nullptr )
                 {
-                    varData = pNode->m_pUnit->getName();
+                    varData = pNode->m_pUnit->name();
                 }
                 else if( pNode->m_pUnitGrp != nullptr )
                 {
-                    varData = pNode->m_pUnitGrp->getName();
+                    varData = pNode->m_pUnitGrp->name();
                 }
                 else
                 {
@@ -294,15 +286,15 @@ QVariant CUnitsModel::data( const QModelIndex& i_modelIdx, int i_iRole ) const
             {
                 if( pNode->m_pUnit != nullptr )
                 {
-                    varData = CModelIdxTree::GetIcon(EIdxTreeEntryType::Leave);
+                    varData = CModelIdxTree::getIcon(EIdxTreeEntryType::Leave);
                 }
                 else if( pNode->m_pUnitGrp != nullptr )
                 {
-                    varData = CModelIdxTree::GetIcon(EIdxTreeEntryType::Branch);
+                    varData = CModelIdxTree::getIcon(EIdxTreeEntryType::Branch);
                 }
                 else
                 {
-                    varData = CModelIdxTree::GetIcon(EIdxTreeEntryType::Root);
+                    varData = CModelIdxTree::getIcon(EIdxTreeEntryType::Root);
                 }
             }
             break;
@@ -502,7 +494,7 @@ QVariant CUnitsModel::headerData(
 //}
 //
 ////------------------------------------------------------------------------------
-//CUnitGrp* CModelUnitGrpSIBase::getUnitGroup()
+//CUnitGrp* CModelUnitGrpSIBase::unitGroup()
 ////------------------------------------------------------------------------------
 //{
 //    return m_pUnitGrp;
@@ -552,7 +544,7 @@ QVariant CUnitsModel::headerData(
 //        return varData;
 //    }
 //
-//    pUnit = dynamic_cast<CUnitSIBase*>(m_pUnitGrp->getUnit(iRow));
+//    pUnit = dynamic_cast<CUnitSIBase*>(m_pUnitGrp->unit(iRow));
 //
 //    if( pUnit == nullptr )
 //    {
@@ -581,7 +573,7 @@ QVariant CUnitsModel::headerData(
 //        {
 //            if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
 //            {
-//                varData = pUnit->getSymbol();
+//                varData = pUnit->symbol();
 //            }
 //            break;
 //        }
@@ -746,13 +738,13 @@ unsigned int CModelUnitGrpRatio::getUnitCount() const
 
     if( m_pUnitGrp != nullptr )
     {
-        uUnitCount = m_pUnitGrp->getUnitCount();
+        uUnitCount = m_pUnitGrp->count();
     }
     return uUnitCount;
 }
 
 //------------------------------------------------------------------------------
-void CModelUnitGrpRatio::setUnitGroup( CUnitGrp* i_pUnitGrp )
+void CModelUnitGrpRatio::setUnitGroup( CUnitsTreeEntryGrpBase* i_pUnitGrp )
 //------------------------------------------------------------------------------
 {
     if( getUnitCount() > 0 )
@@ -771,7 +763,7 @@ void CModelUnitGrpRatio::setUnitGroup( CUnitGrp* i_pUnitGrp )
 }
 
 //------------------------------------------------------------------------------
-CUnitGrp* CModelUnitGrpRatio::getUnitGroup()
+CUnitsTreeEntryGrpBase* CModelUnitGrpRatio::unitGroup()
 //------------------------------------------------------------------------------
 {
     return m_pUnitGrp;
@@ -799,10 +791,11 @@ int CModelUnitGrpRatio::columnCount( const QModelIndex& /*i_modelIdxParent*/ ) c
 QVariant CModelUnitGrpRatio::data( const QModelIndex& i_modelIdx, int i_iRole ) const
 //------------------------------------------------------------------------------
 {
-    QVariant     varData;
-    int          iRow = i_modelIdx.row();
-    int          iCol = i_modelIdx.column();
-    CUnitRatio*  pUnit = nullptr;
+    QVariant varData;
+
+    int iRow = i_modelIdx.row();
+    int iCol = i_modelIdx.column();
+    CUnitsTreeEntryUnitRatio* pUnit = nullptr;
 
     if( !i_modelIdx.isValid() )
     {
@@ -821,7 +814,7 @@ QVariant CModelUnitGrpRatio::data( const QModelIndex& i_modelIdx, int i_iRole ) 
         return varData;
     }
 
-    pUnit = dynamic_cast<CUnitRatio*>(m_pUnitGrp->getUnit(iRow));
+    pUnit = dynamic_cast<CUnitsTreeEntryUnitRatio*>(m_pUnitGrp->at(iRow));
 
     if( pUnit == nullptr )
     {
@@ -834,7 +827,7 @@ QVariant CModelUnitGrpRatio::data( const QModelIndex& i_modelIdx, int i_iRole ) 
         {
             if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
             {
-                varData = pUnit->getName();
+                varData = pUnit->name();
             }
             break;
         }
@@ -842,7 +835,7 @@ QVariant CModelUnitGrpRatio::data( const QModelIndex& i_modelIdx, int i_iRole ) 
         {
             if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
             {
-                varData = pUnit->getSymbol();
+                varData = pUnit->symbol();
             }
             break;
         }
@@ -850,7 +843,7 @@ QVariant CModelUnitGrpRatio::data( const QModelIndex& i_modelIdx, int i_iRole ) 
         {
             if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
             {
-                varData = pUnit->getFactor();
+                varData = pUnit->factor();
             }
             break;
         }
@@ -927,6 +920,7 @@ QVariant CModelUnitGrpRatio::headerData(
 /*******************************************************************************
 class CModelUnitGrpDataQuantity : public QAbstractTableModel
 *******************************************************************************/
+#if 0
 
 /*==============================================================================
 public: // ctors and dtor
@@ -977,7 +971,7 @@ unsigned int CModelUnitGrpDataQuantity::getUnitCount() const
 
     if( m_pUnitGrp != nullptr )
     {
-        uUnitCount = m_pUnitGrp->getUnitCount();
+        uUnitCount = m_pUnitGrp->count();
     }
     return uUnitCount;
 }
@@ -1002,7 +996,7 @@ void CModelUnitGrpDataQuantity::setUnitGroup( CUnitGrp* i_pUnitGrp )
 }
 
 //------------------------------------------------------------------------------
-CUnitGrp* CModelUnitGrpDataQuantity::getUnitGroup()
+CUnitGrp* CModelUnitGrpDataQuantity::unitGroup()
 //------------------------------------------------------------------------------
 {
     return m_pUnitGrp;
@@ -1052,7 +1046,7 @@ QVariant CModelUnitGrpDataQuantity::data( const QModelIndex& i_modelIdx, int i_i
         return varData;
     }
 
-    pUnit = dynamic_cast<CUnitDataQuantity*>(m_pUnitGrp->getUnit(iRow));
+    pUnit = dynamic_cast<CUnitDataQuantity*>(m_pUnitGrp->at(iRow));
 
     if( pUnit == nullptr )
     {
@@ -1065,7 +1059,7 @@ QVariant CModelUnitGrpDataQuantity::data( const QModelIndex& i_modelIdx, int i_i
         {
             if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
             {
-                varData = pUnit->getName();
+                varData = pUnit->name();
             }
             break;
         }
@@ -1073,7 +1067,7 @@ QVariant CModelUnitGrpDataQuantity::data( const QModelIndex& i_modelIdx, int i_i
         {
             if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
             {
-                varData = pUnit->getSymbol();
+                varData = pUnit->symbol();
             }
             break;
         }
@@ -1153,6 +1147,8 @@ QVariant CModelUnitGrpDataQuantity::headerData(
     return varData;
 
 } // headerData
+
+#endif
 
 
 /*******************************************************************************
@@ -1268,13 +1264,13 @@ unsigned int CModelPhysSize::getUnitCount() const
 
     if( m_pUnitGrp != nullptr )
     {
-        uUnitCount = m_pUnitGrp->getUnitCount();
+        uUnitCount = m_pUnitGrp->count();
     }
     return uUnitCount;
 }
 
 //------------------------------------------------------------------------------
-void CModelPhysSize::setUnitGroup( CUnitGrp* i_pUnitGrp )
+void CModelPhysSize::setUnitGroup( CUnitsTreeEntryGrpBase* i_pUnitGrp )
 //------------------------------------------------------------------------------
 {
     if( getUnitCount() > 0 )
@@ -1304,7 +1300,7 @@ void CModelPhysSize::setUnitGroup( CUnitGrp* i_pUnitGrp )
 } // setUnitGroup
 
 //------------------------------------------------------------------------------
-CUnitGrp* CModelPhysSize::getUnitGroup()
+CUnitsTreeEntryGrpBase* CModelPhysSize::unitGroup()
 //------------------------------------------------------------------------------
 {
     return m_pUnitGrp;
@@ -1351,12 +1347,13 @@ int CModelPhysSize::columnCount( const QModelIndex& /*i_modelIdxParent*/ ) const
 QVariant CModelPhysSize::data( const QModelIndex& i_modelIdx, int i_iRole ) const
 //------------------------------------------------------------------------------
 {
-    QVariant   varData;
-    int        iRow = i_modelIdx.row();
-    int        iCol = i_modelIdx.column();
-    CPhysUnit* pUnit = nullptr;
-    CPhysUnit* pUnitNextLower = nullptr;
-    CPhysUnit* pUnitNextHigher = nullptr;
+    QVariant varData;
+
+    int iRow = i_modelIdx.row();
+    int iCol = i_modelIdx.column();
+    CUnitsTreeEntryPhysUnit* pUnit = nullptr;
+    CUnitsTreeEntryPhysUnit* pUnitNextLower = nullptr;
+    CUnitsTreeEntryPhysUnit* pUnitNextHigher = nullptr;
 
     if( !i_modelIdx.isValid() )
     {
@@ -1375,14 +1372,14 @@ QVariant CModelPhysSize::data( const QModelIndex& i_modelIdx, int i_iRole ) cons
         return varData;
     }
 
-    pUnit = dynamic_cast<CPhysUnit*>(m_pUnitGrp->getUnit(iRow));
+    pUnit = dynamic_cast<CUnitsTreeEntryPhysUnit*>(m_pUnitGrp->at(iRow));
 
     if( pUnit == nullptr )
     {
         return varData;
     }
-    pUnitNextLower  = dynamic_cast<CPhysUnit*>(pUnit->getNextLowerUnit());
-    pUnitNextHigher = dynamic_cast<CPhysUnit*>(pUnit->getNextHigherUnit());
+    pUnitNextLower  = dynamic_cast<CUnitsTreeEntryPhysUnit*>(pUnit->nextLowerUnit());
+    pUnitNextHigher = dynamic_cast<CUnitsTreeEntryPhysUnit*>(pUnit->nextHigherUnit());
 
     switch( m_viewMode )
     {
@@ -1394,7 +1391,7 @@ QVariant CModelPhysSize::data( const QModelIndex& i_modelIdx, int i_iRole ) cons
                 {
                     if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
                     {
-                        varData = pUnit->getName();
+                        varData = pUnit->name();
                     }
                     break;
                 }
@@ -1402,7 +1399,7 @@ QVariant CModelPhysSize::data( const QModelIndex& i_modelIdx, int i_iRole ) cons
                 {
                     if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
                     {
-                        varData = pUnit->getSymbol();
+                        varData = pUnit->symbol();
                     }
                     break;
                 }
@@ -1412,7 +1409,7 @@ QVariant CModelPhysSize::data( const QModelIndex& i_modelIdx, int i_iRole ) cons
                     {
                         if( pUnitNextLower != nullptr )
                         {
-                            varData = pUnitNextLower->getName();
+                            varData = pUnitNextLower->name();
                         }
                     }
                     break;
@@ -1423,7 +1420,7 @@ QVariant CModelPhysSize::data( const QModelIndex& i_modelIdx, int i_iRole ) cons
                     {
                         if( pUnitNextHigher != nullptr )
                         {
-                            varData = pUnitNextHigher->getName();
+                            varData = pUnitNextHigher->name();
                         }
                     }
                     break;
@@ -1454,11 +1451,11 @@ QVariant CModelPhysSize::data( const QModelIndex& i_modelIdx, int i_iRole ) cons
 
         case EViewModeContingencyTable:
         {
-            CPhysUnit* pUnitCol = nullptr;
+            CUnitsTreeEntryPhysUnit* pUnitCol = nullptr;
 
             if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
             {
-                pUnitCol = dynamic_cast<CPhysUnit*>(m_pUnitGrp->getUnit(iCol));
+                pUnitCol = dynamic_cast<CUnitsTreeEntryPhysUnit*>(m_pUnitGrp->at(iCol));
                 if( pUnitCol == nullptr )
                 {
                     return varData;
@@ -1585,7 +1582,7 @@ QVariant CModelPhysSize::headerData(
         {
             if( i_iRole == Qt::DisplayRole )
             {
-                CPhysUnit* pUnit = nullptr;
+                CUnitsTreeEntryPhysUnit* pUnit = nullptr;
 
                 if( i_iSection < 0 || i_iSection >= static_cast<int>(getUnitCount()) )
                 {
@@ -1595,12 +1592,12 @@ QVariant CModelPhysSize::headerData(
                 {
                     return varData;
                 }
-                pUnit = dynamic_cast<CPhysUnit*>(m_pUnitGrp->getUnit(i_iSection));
+                pUnit = dynamic_cast<CUnitsTreeEntryPhysUnit*>(m_pUnitGrp->at(i_iSection));
                 if( pUnit == nullptr )
                 {
                     return varData;
                 }
-                varData = pUnit->getSymbol();
+                varData = pUnit->symbol();
             }
             break;
         }
@@ -1674,7 +1671,7 @@ unsigned int CModelFctConvertInternal::getFctConvertsCount() const
 }
 
 //------------------------------------------------------------------------------
-void CModelFctConvertInternal::setPhysUnit( CPhysUnit* i_pPhysUnit )
+void CModelFctConvertInternal::setPhysUnit( CUnitsTreeEntryPhysUnit* i_pPhysUnit )
 //------------------------------------------------------------------------------
 {
     if( getFctConvertsCount() > 0 )
@@ -1715,11 +1712,12 @@ int CModelFctConvertInternal::columnCount( const QModelIndex& /*i_modelIdxParent
 QVariant CModelFctConvertInternal::data( const QModelIndex& i_modelIdx, int i_iRole ) const
 //------------------------------------------------------------------------------
 {
-    QVariant     varData;
-    int          iRow = i_modelIdx.row();
-    int          iCol = i_modelIdx.column();
+    QVariant varData;
+
+    int iRow = i_modelIdx.row();
+    int iCol = i_modelIdx.column();
     CFctConvert* pfctConvert = nullptr;
-    CPhysUnit*   pPhysUnitDst = nullptr;
+    CUnitsTreeEntryPhysUnit* pPhysUnitDst = nullptr;
 
     if( !i_modelIdx.isValid() )
     {
@@ -1865,7 +1863,7 @@ unsigned int CModelFctConvertExternal::getFctConvertsCount() const
 }
 
 //------------------------------------------------------------------------------
-void CModelFctConvertExternal::setPhysUnit( CPhysUnit* i_pPhysUnit )
+void CModelFctConvertExternal::setPhysUnit( CUnitsTreeEntryPhysUnit* i_pPhysUnit )
 //------------------------------------------------------------------------------
 {
     if( getFctConvertsCount() > 0 )
@@ -1906,11 +1904,12 @@ int CModelFctConvertExternal::columnCount( const QModelIndex& /*i_modelIdxParent
 QVariant CModelFctConvertExternal::data( const QModelIndex& i_modelIdx, int i_iRole ) const
 //------------------------------------------------------------------------------
 {
-    QVariant     varData;
-    int          iRow = i_modelIdx.row();
-    int          iCol = i_modelIdx.column();
+    QVariant varData;
+
+    int iRow = i_modelIdx.row();
+    int iCol = i_modelIdx.column();
     CFctConvert* pfctConvert = nullptr;
-    CPhysUnit*   pPhysUnitDst = nullptr;
+    CUnitsTreeEntryPhysUnit* pPhysUnitDst = nullptr;
 
     if( !i_modelIdx.isValid() )
     {
@@ -1945,7 +1944,7 @@ QVariant CModelFctConvertExternal::data( const QModelIndex& i_modelIdx, int i_iR
         {
             if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
             {
-                varData = pPhysUnitDst->getGroupName(true);
+                varData = pPhysUnitDst->parentBranchKeyInTree();
             }
             break;
         }

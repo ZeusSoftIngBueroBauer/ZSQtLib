@@ -58,7 +58,6 @@ using namespace ZS::Draw;
 using namespace ZS::Draw::Electricity;
 using namespace ZS::PhysVal;
 using namespace ZS::Apps::Products::Draw;
-using namespace ZS::Trace;
 
 
 /*******************************************************************************

@@ -55,7 +55,7 @@ namespace GUI
 class CPushButton;
 }
 }
-namespace Trace
+namespace System
 {
 class CTrcAdminObj;
 }
@@ -176,7 +176,7 @@ protected: // instance members
     QTableView*                   m_pViewLineEndSizesLineEnd;
     QStandardItemModel*           m_pModelLineEndSizesLineEnd;
     // Trace
-    ZS::Trace::CTrcAdminObj*      m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj*      m_pTrcAdminObj;
 
 }; // class CWdgtFormatGraphObjsLineStyle
 

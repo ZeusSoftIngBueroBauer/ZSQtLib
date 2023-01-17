@@ -42,7 +42,7 @@ may result in using the software modules.
 
 using namespace ZS::System;
 using namespace ZS::Draw;
-//using namespace ZS::PhysVal;
+using namespace ZS::PhysVal;
 
 
 /*******************************************************************************
@@ -197,28 +197,23 @@ public: // ctors and dtor
         Resolution of one pixel per milli meter on the screen in Y (vertical) direction.
         Defaults to 96.0 dpi (=3.78 dpmm).
 */
-CPageSetup::CPageSetup( double i_fXResolution_dpmm, double i_fYResolution_dpmm ) :
+CPageSetup::CPageSetup() :
 //------------------------------------------------------------------------------
-    m_fXResolution_dpmm(i_fXResolution_dpmm),
-    m_fYResolution_dpmm(i_fYResolution_dpmm),
-    m_cxImageWidth_px(800),
-    m_cyImageHeight_px(600),
-    m_physSizeWidth(i_fXResolution_dpmm),
-    m_physSizeHeight(i_fYResolution_dpmm)
+    m_arPhysValsSize(CEnumDirection::count()),
+    m_arfLengthScaleFactors(CEnumDirection::count())
 {
+    m_arPhysValsSize[static_cast<int>(EDirection::Horizontal)] = CPhysVal(Units.GraphDevice.px);
+    m_arPhysValsSize[static_cast<int>(EDirection::Vertical)] = CPhysVal(Units.GraphDevice.px);
+
+    m_arfLengthScaleFactors[static_cast<int>(EDirection::Horizontal)] = 1.0;
+    m_arfLengthScaleFactors[static_cast<int>(EDirection::Vertical)] = 1.0;
+
 } // ctor
 
 //------------------------------------------------------------------------------
 CPageSetup::~CPageSetup()
 //------------------------------------------------------------------------------
 {
-    m_fXResolution_dpmm = 0.0;
-    m_fYResolution_dpmm = 0.0;
-    m_cxImageWidth_px = 0;
-    m_cyImageHeight_px = 0;
-    //m_physSizeWidth;
-    //m_physSizeHeight;
-
 } // dtor
 
 /*==============================================================================
@@ -230,75 +225,20 @@ bool CPageSetup::operator == ( const CPageSetup& i_other ) const
 //------------------------------------------------------------------------------
 {
     bool bEqual = true;
-
-    if( m_fXResolution_dpmm != i_other.m_fXResolution_dpmm )
-    {
+    if( m_arPhysValsSize != i_other.m_arPhysValsSize ) {
         bEqual = false;
     }
-    else if( m_fYResolution_dpmm != i_other.m_fYResolution_dpmm )
-    {
+    else if( m_arfLengthScaleFactors != i_other.m_arfLengthScaleFactors ) {
         bEqual = false;
     }
-    else if( m_cxImageWidth_px != i_other.m_cxImageWidth_px )
-    {
-        bEqual = false;
-    }
-    else if( m_cyImageHeight_px != i_other.m_cyImageHeight_px )
-    {
-        bEqual = false;
-    }
-
     return bEqual;
-
-} // operator ==
+}
 
 //------------------------------------------------------------------------------
 bool CPageSetup::operator != ( const CPageSetup& i_other ) const
 //------------------------------------------------------------------------------
 {
     return !(*this == i_other);
-}
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CPageSetup::setXResolutionInDpmm( double i_fRes_dpmm )
-//------------------------------------------------------------------------------
-{
-    if( m_fXResolution_dpmm != i_fRes_dpmm )
-    {
-        m_fXResolution_dpmm = i_fRes_dpmm;
-
-        m_physSizeWidth.setDpmm(i_fRes_dpmm);
-    }
-}
-
-//------------------------------------------------------------------------------
-double CPageSetup::getXResolutionInDpmm() const
-//------------------------------------------------------------------------------
-{
-    return m_fXResolution_dpmm;
-}
-
-//------------------------------------------------------------------------------
-void CPageSetup::setYResolutionInDpmm( double i_fRes_dpmm )
-//------------------------------------------------------------------------------
-{
-    if( m_fYResolution_dpmm != i_fRes_dpmm )
-    {
-        m_fYResolution_dpmm = i_fRes_dpmm;
-
-        m_physSizeHeight.setDpmm(i_fRes_dpmm);
-    }
-}
-
-//------------------------------------------------------------------------------
-double CPageSetup::getYResolutionInDpmm() const
-//------------------------------------------------------------------------------
-{
-    return m_fYResolution_dpmm;
 }
 
 /*==============================================================================
@@ -566,58 +506,95 @@ public: // instance methods
 //    m_drawArea = i_drawArea;
 //}
 
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
 //------------------------------------------------------------------------------
-void CPageSetup::setDrawingWidthInPixels( int i_iWidth_px )
+CUnit CPageSetup::unit( ZS::System::EDirection i_direction ) const
 //------------------------------------------------------------------------------
 {
-    m_cxImageWidth_px = i_iWidth_px;
+    return m_arPhysValsSize[static_cast<int>(EDirection::Vertical)].unit();
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CPageSetup::setDrawingSize( const CPhysVal& i_width, const CPhysVal& i_height )
+//------------------------------------------------------------------------------
+{
+    m_arPhysValsSize[static_cast<int>(EDirection::Horizontal)] = i_width;
+    m_arPhysValsSize[static_cast<int>(EDirection::Vertical)] = i_height;
 }
 
 //------------------------------------------------------------------------------
-int CPageSetup::getDrawingWidthInPixels() const
+void CPageSetup::setDrawingWidth( const CPhysVal& i_width )
 //------------------------------------------------------------------------------
 {
-    return m_cxImageWidth_px;
-}
-
-////------------------------------------------------------------------------------
-//void CPageSetup::setDrawingWidth( const CPhysVal& i_physValWidth )
-////------------------------------------------------------------------------------
-//{
-//    m_drawArea.m_physValWidth = i_physValWidth;
-//}
-
-//------------------------------------------------------------------------------
-void CPageSetup::setDrawingHeightInPixels( int i_iHeight_px )
-//------------------------------------------------------------------------------
-{
-    m_cyImageHeight_px = i_iHeight_px;
+    m_arPhysValsSize[static_cast<int>(EDirection::Horizontal)] = i_width;
 }
 
 //------------------------------------------------------------------------------
-int CPageSetup::getDrawingHeightInPixels() const
+CPhysVal CPageSetup::drawingWidth() const
 //------------------------------------------------------------------------------
 {
-    return m_cyImageHeight_px;
+    return m_arPhysValsSize[static_cast<int>(EDirection::Horizontal)];
 }
 
-////------------------------------------------------------------------------------
-//void CPageSetup::setDrawingHeight( const CPhysVal& i_physValHeight )
-////------------------------------------------------------------------------------
-//{
-//    m_drawArea.m_physValHeight = i_physValHeight;
-//}
+//------------------------------------------------------------------------------
+void CPageSetup::setDrawingHeight( const CPhysVal& i_height )
+//------------------------------------------------------------------------------
+{
+    m_arPhysValsSize[static_cast<int>(EDirection::Vertical)] = i_height;
+}
 
-////------------------------------------------------------------------------------
-//void CPageSetup::setDrawingXScaleFactor( double i_fScaleFactor )
-////------------------------------------------------------------------------------
-//{
-//    m_drawArea.m_fXScaleFac = i_fScaleFactor;
-//}
+//------------------------------------------------------------------------------
+CPhysVal CPageSetup::drawingHeight() const
+//------------------------------------------------------------------------------
+{
+    return m_arPhysValsSize[static_cast<int>(EDirection::Vertical)];
+}
 
-////------------------------------------------------------------------------------
-//void CPageSetup::setDrawingYScaleFactor( double i_fScaleFactor )
-////------------------------------------------------------------------------------
-//{
-//    m_drawArea.m_fYScaleFac = i_fScaleFactor;
-//}
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CPageSetup::setDrawingScale( double i_fScale )
+//------------------------------------------------------------------------------
+{
+    for( CEnumDirection eDir = 0; eDir < CEnumDirection::count(); ++eDir ) {
+        m_arfLengthScaleFactors[eDir.enumeratorAsInt()] = i_fScale;
+    }
+}
+
+//------------------------------------------------------------------------------
+double CPageSetup::drawingScale() const
+//------------------------------------------------------------------------------
+{
+    return m_arfLengthScaleFactors[0];
+}
+
+//------------------------------------------------------------------------------
+void CPageSetup::setDrawingScales( double i_fScaleWidth, double i_fScaleHeight )
+//------------------------------------------------------------------------------
+{
+    m_arfLengthScaleFactors[static_cast<int>(EDirection::Horizontal)] = i_fScaleWidth;
+    m_arfLengthScaleFactors[static_cast<int>(EDirection::Vertical)] = i_fScaleHeight;
+}
+
+//------------------------------------------------------------------------------
+void CPageSetup::setDrawingScale( EDirection i_direction, double i_fScale )
+//------------------------------------------------------------------------------
+{
+    m_arfLengthScaleFactors[static_cast<int>(i_direction)] = i_fScale;
+}
+
+//------------------------------------------------------------------------------
+double CPageSetup::drawingScale( EDirection i_direction ) const
+//------------------------------------------------------------------------------
+{
+    return m_arfLengthScaleFactors[static_cast<int>(i_direction)];
+}

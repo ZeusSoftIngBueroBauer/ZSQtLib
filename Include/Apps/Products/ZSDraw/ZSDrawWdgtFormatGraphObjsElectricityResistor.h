@@ -76,7 +76,7 @@ private: // instance members
     QDoubleSpinBox*          m_pEdtResistance;
     QCheckBox*               m_pChkResistanceVisible;
     // Trace
-    ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CWdgtFormatGraphObjsResistor
 

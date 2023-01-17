@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -41,7 +41,9 @@ class CObjFactoryWdgtLabel : public CObjFactory
 //******************************************************************************
 {
 public: // ctors and dtor
-    CObjFactoryWdgtLabel( const QPixmap& i_pxmToolIcon = QPixmap() );
+    CObjFactoryWdgtLabel(
+        bool         i_bAddToToolBoxObjPool = true,
+        const QIcon& i_toolIcon = QIcon() );
     virtual ~CObjFactoryWdgtLabel();
 public: // interface methods of base class CObjFactory
     virtual CGraphObj* createGraphObj(
@@ -58,6 +60,7 @@ public: // interface methods of base class CObjFactory
         const QString&              i_strObjId,
         QXmlStreamReader&           i_xmlStreamReader,
         ZS::System::SErrResultInfo& io_errResultInfo );
+    virtual void ResetCtorsDtorsCounters();
 
 }; // class CObjFactoryWdgtLabel
 

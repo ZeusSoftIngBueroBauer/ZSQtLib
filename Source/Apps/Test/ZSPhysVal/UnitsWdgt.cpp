@@ -43,8 +43,7 @@ may result in using the software modules.
 #include "UnitModels.h"
 #include "UnitViewWdgts.h"
 
-#include "ZSPhysVal/ZSPhysUnits.h"
-#include "ZSPhysVal/ZSPhysUnitsGrp.h"
+#include "ZSPhysVal/ZSPhysTreeEntryGrpBase.h"
 #include "ZSSysGUI/ZSSysIdxTreeModel.h"
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysException.h"
@@ -140,12 +139,12 @@ CWdgtUnits::CWdgtUnits( const QString& i_strObjName, QWidget* i_pWdgtParent ) :
     }
 
     m_arpWdgtUnitViews[ETreeEntryTypeUndefined]                = new CWdgtUnitViewUndefined();
-    m_arpWdgtUnitViews[ETreeEntryTypeGrpRatios]                = new CWdgtUnitViewGrpRatios();
-    m_arpWdgtUnitViews[ETreeEntryTypeGrpDataQuantities]        = new CWdgtUnitViewGrpDataQuantities();
+    //m_arpWdgtUnitViews[ETreeEntryTypeGrpRatios]                = new CWdgtUnitViewGrpRatios();
+    //m_arpWdgtUnitViews[ETreeEntryTypeGrpDataQuantities]        = new CWdgtUnitViewGrpDataQuantities();
     m_arpWdgtUnitViews[ETreeEntryTypeGrpPhysScienceFields]     = new CWdgtUnitViewGrpPhysScienceFields();
     m_arpWdgtUnitViews[ETreeEntryTypeGrpUserDefinedQuantities] = new CWdgtUnitViewGrpUserDefinedQuantities();
-    m_arpWdgtUnitViews[ETreeEntryTypeUntRatio]                 = new CWdgtUnitViewUntRatio();
-    m_arpWdgtUnitViews[ETreeEntryTypeUntDataQuantity]          = new CWdgtUnitViewUntDataQuantity();
+    //m_arpWdgtUnitViews[ETreeEntryTypeUntRatio]                 = new CWdgtUnitViewUntRatio();
+    //m_arpWdgtUnitViews[ETreeEntryTypeUntDataQuantity]          = new CWdgtUnitViewUntDataQuantity();
     m_arpWdgtUnitViews[ETreeEntryTypePhysUnit]                 = new CWdgtUnitViewPhysUnit();
     m_arpWdgtUnitViews[ETreeEntryTypeUntUserDefinedQuantity]   = new CWdgtUnitViewUntUserDefinedQuantity();
 
@@ -222,7 +221,7 @@ void CWdgtUnits::showEvent( QShowEvent* i_pEv )
 {
     //int idxColumn;
 
-    //for( idxColumn = 0; idxColumn < CModelObjPool::EColumnCount; idxColumn++ )
+    //for( idxColumn = 0; idxColumn < CModel::EColumnCount; idxColumn++ )
     //{
     //    if( m_pTreeView != nullptr )
     //    {
@@ -266,41 +265,33 @@ void CWdgtUnits::selectedTreeEntryChanged(
 
         if( pNode->m_pUnit != nullptr )
         {
-            if( pNode->m_pUnit->classType() == EUnitClassTypeRatios )
+            if( pNode->m_pUnit->isRatio() )
             {
                 treeEntryType = ETreeEntryTypeUntRatio;
             }
-            else if( pNode->m_pUnit->classType() == EUnitClassTypeDataQuantity )
+            else if( pNode->m_pUnit->classType() == EUnitClassType::Quantity )
             {
                 treeEntryType = ETreeEntryTypeUntDataQuantity;
             }
-            else if( pNode->m_pUnit->classType() == EUnitClassTypePhysScienceFields )
+            else if( pNode->m_pUnit->classType() == EUnitClassType::PhysSize )
             {
                 treeEntryType = ETreeEntryTypePhysUnit;
-            }
-            else if( pNode->m_pUnit->classType() == EUnitClassTypeUserDefinedQuantities )
-            {
-                treeEntryType = ETreeEntryTypeUntUserDefinedQuantity;
             }
         }
 
         else if( pNode->m_pUnitGrp != nullptr )
         {
-            if( pNode->m_pUnitGrp->classType() == EUnitClassTypeRatios )
+            if( pNode->m_pUnitGrp->classType() == EUnitClassType::Ratio )
             {
                 treeEntryType = ETreeEntryTypeGrpRatios;
             }
-            else if( pNode->m_pUnitGrp->classType() == EUnitClassTypeDataQuantity )
+            else if( pNode->m_pUnitGrp->classType() == EUnitClassType::Quantity )
             {
                 treeEntryType = ETreeEntryTypeGrpDataQuantities;
             }
-            else if( pNode->m_pUnitGrp->classType() == EUnitClassTypePhysScienceFields )
+            else if( pNode->m_pUnitGrp->classType() == EUnitClassType::PhysSize )
             {
                 treeEntryType = ETreeEntryTypeGrpPhysScienceFields;
-            }
-            else if( pNode->m_pUnitGrp->classType() == EUnitClassTypeUserDefinedQuantities )
-            {
-                treeEntryType = ETreeEntryTypeGrpUserDefinedQuantities;
             }
         }
 

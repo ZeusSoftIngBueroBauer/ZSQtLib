@@ -45,7 +45,7 @@ namespace System
 {
 class CIdxTree;
 }
-namespace Trace
+namespace System
 {
 class CTrcAdminObj;
 }
@@ -149,7 +149,7 @@ protected: // instance members
     QPixmap                  m_pxmToolIcon;             /*!< Pixmap for icon to indicate the graphic items created by this factory in the index tree. */
     QString                  m_strFileDir;              /*!< The file's path (which may be absolute or relative). This doesn't include the file name. */
     QString                  m_strFileName;             /*!< Name of the file, excluding the path. */
-    ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;            /*!< Trace admin object. */
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;            /*!< Trace admin object. */
 
 }; // class CObjFactory
 

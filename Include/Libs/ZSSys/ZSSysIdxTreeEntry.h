@@ -81,11 +81,12 @@ public: // class methods
     static QString NameSpace() { return "ZS::System"; }
     /*! Returns the class name. */
     static QString ClassName() { return "CIdxTreeEntry"; }
-public: // ctors
+public: // ctors and dtor
     CIdxTreeEntry( EIdxTreeEntryType i_entryType, const QString& i_strName );
     CIdxTreeEntry( const CIdxTreeEntry& i_other );
-public: // dtor
     virtual ~CIdxTreeEntry();
+protected: // destructor
+    void clear();
 public: // instance methods
     /*! This virtual method returns the name space of the object's class.
         This method can be reimplemented in derived classes so when invoked for the
@@ -117,7 +118,7 @@ public: // instance methods
 public: // instance methods
     /*! Returns the index tree of the entry. */
     CIdxTree* tree() const { return m_pTree; }
-    /*! Returns the unique key of the entry within the index tree (e.g. "L:ZS::Data::CDataTable::Customers". */
+    QString nodeSeparator() const;
     QString keyInTree() const;
     /*! Returns the index of the entry within the index trees vector of entries. */
     int indexInTree() const { return m_idxInTree; }
@@ -179,26 +180,52 @@ protected: // overridables
     virtual void setKeyInParentBranch( const QString& i_strKey );
     virtual void setIndexInParentBranch( int i_idx );
 protected: // instance methods
+    void addShortcut( const QString& i_strUniqueName );
+    void removeShortcut( const QString& i_strUniqueName );
+    QStringList shortcuts() const { return m_strlstShortcuts; }
     void setTree( CIdxTree* i_pTree );
 protected: // instance members
-    EIdxTreeEntryType m_entryType;               /*!< The type may be either Root, Branch or Leave.
-                                                      Leave entries may not have children.
-                                                      A root entry may not have a parent. */
-    QString           m_strName;                 /*!< Name of node (object name). */
-    QMutex*           m_pMtx;                    /*!< Mutex to protect the instance if several threads may access it (may be nullptr if not used).
-                                                      If you want to protect the index tree entry via this mutex you must derive your own class
-                                                      for the tree entry and create the mutex in the derived classes constructor. */
-    CIdxTree*         m_pTree;                   /*!< Reference to index tree. */
-    QString           m_strKeyInTree;            /*!< Unique key in the index tree: composed of "<EntryTypeSymbol>:<ParentPath>/<Name>" (e.g. "L:ZS::Data::CDataTable::Customers"). */
-    int               m_idxInTree;               /*!< Index of this entry in the tree's vector of entries ("global tree index or object Id"). */
-    CIdxTreeEntry*    m_pParentBranch;           /*!< Reference to the parent branch. */
-    QString           m_strKeyInParentBranch;    /*!< Unique key of the entry in the parent branch composed of "<EntryTypeSymbol>:<Name>" (e.g. "L:Customers"). */
-    int               m_idxInParentBranch;       /*!< Index of this entry in this parent branch's vector of child entries ("local branch index"). */
-    bool              m_bIsAboutToBeDestroyed;   /*!< True if the destructor is active. */
-protected: // instance members
-    QMap<QString, CIdxTreeEntry*> m_mappTreeEntries;   /*!< Map with all child entries of the branch.
-                                                            Key is: "<EntryTypeSymbol>:<Name>" (e.g. "L:Customers") */
-    QVector<CIdxTreeEntry*>       m_arpTreeEntries;    /*!< Vector with all child entries of the branch. */
+    /*!< The type may be either Root, Branch or Leave.
+         Leave entries may not have children.
+         A root entry may not have a parent. */
+    EIdxTreeEntryType m_entryType;
+    /*!< Name of node. */
+    QString m_strName;
+    /*!< Mutex to protect the instance if several threads may access it
+         (may be nullptr if not used). If you want to protect the index tree entry via
+         this mutex you must derive your own class for the tree entry and create the
+         mutex in the derived classes constructor. */
+    QMutex* m_pMtx;
+    /*!< Reference to index tree. */
+    CIdxTree* m_pTree;
+    /*!< Unique key in the index tree:
+         composed of "<EntryTypeSymbol>:<ParentPath>/<Name>"
+         (e.g. "L:ZS::Data::CDataTable::Customers"). */
+    QString m_strKeyInTree;
+    /*!< Index of this entry in the tree's vector of entries
+         ("global tree index or object Id"). */
+    int m_idxInTree;
+    /*!< For faster or easier access to the index tree entry
+         unique names can be addes as shortcuts to the index tree.
+         The shortcuts are stored in the tree entry so that they
+         can be fastly removed (without scanning the whole shortcut map)
+         from the index tree together with the tree entry. */
+    QStringList m_strlstShortcuts;
+    /*!< Reference to the parent branch. */
+    CIdxTreeEntry* m_pParentBranch;
+    /*!< Unique key of the entry in the parent branch composed of
+         "<EntryTypeSymbol>:<Name>" (e.g. "L:Customers"). */
+    QString m_strKeyInParentBranch;
+    /*!< Index of this entry in this parent branch's vector
+         of child entries ("local branch index"). */
+    int m_idxInParentBranch;
+    /*!< True if the destructor is active. */
+    bool m_bIsAboutToBeDestroyed;
+    /*!< Map with all child entries of the branch.
+         Key is: "<EntryTypeSymbol>:<Name>" (e.g. "L:Customers") */
+    QMap<QString, CIdxTreeEntry*> m_mappTreeEntries;
+    /*!< Vector with all child entries of the branch. */
+    QVector<CIdxTreeEntry*> m_arpTreeEntries;
 
 }; // class CIdxTreeEntry
 

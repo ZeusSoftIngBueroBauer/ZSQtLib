@@ -76,7 +76,7 @@ private: // instance members
     QDoubleSpinBox*          m_pEdtCapacitance;
     QCheckBox*               m_pChkCapacitanceVisible;
     // Trace
-    ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CWdgtFormatGraphObjsCapacitor
 

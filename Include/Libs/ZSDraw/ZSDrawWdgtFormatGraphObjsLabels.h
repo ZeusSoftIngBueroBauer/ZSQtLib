@@ -43,7 +43,7 @@ class QVBoxLayout;
 
 namespace ZS
 {
-namespace Trace
+namespace System
 {
 class CTrcAdminObj;
 }
@@ -94,7 +94,7 @@ private: // instance members
     QLabel*                  m_pLblDescription;
     QLineEdit*               m_pEdtDescription;
     // Trace
-    ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CWdgtFormatGraphObjsLabels
 

@@ -52,6 +52,7 @@ public: // class methods
     static QString ClassName() { return "CModelIdxTreeBranchContent"; }
 public: // type definitions and constants
     enum EColumn {
+        EColumnUndefined         = -1,
         EColumnTreeEntryName     = 0,
         EColumnTreeEntryType     = 1,
         EColumnInternalId        = 2,
@@ -59,8 +60,7 @@ public: // type definitions and constants
         EColumnIdxInParentBranch = 4,
         EColumnKeyInTree         = 5,
         EColumnKeyInParentBranch = 6,
-        EColumnCount,
-        EColumnUndefined
+        EColumnCount
     };
     static QString column2Str(EColumn i_clm);
 public: // type definitions and constants
@@ -104,17 +104,17 @@ public: // overridables
     virtual QString className() const { return CModelIdxTreeBranchContent::ClassName(); }
 public: // instance methods
     Q_PROPERTY(QObject* idxTree READ idxTree WRITE setIdxTree NOTIFY idxTreeChanged)
-    void setIdxTree( QObject* i_pIdxTree );
+    virtual void setIdxTree( QObject* i_pIdxTree );
     QObject* idxTree();
 public: // instance methods
     Q_PROPERTY(QString keyInTreeOfRootEntry READ getKeyInTreeOfRootEntry WRITE setKeyInTreeOfRootEntry NOTIFY keyInTreeOfRootEntryChanged)
-    void setKeyInTreeOfRootEntry( const QString& i_strKeyInTree );
+    virtual void setKeyInTreeOfRootEntry( const QString& i_strKeyInTree );
     QString getKeyInTreeOfRootEntry() const;
     CModelIdxTreeEntry* modelRootEntry() const { return m_pModelRootEntry; }
 public: // instance methods
     Q_PROPERTY(QString sortOrder READ sortOrderAsString WRITE setSortOrder NOTIFY sortOrderChanged)
-    void setSortOrder( EIdxTreeSortOrder i_sortOrder );
-    void setSortOrder( const QString& i_strSortOrder );
+    virtual void setSortOrder( EIdxTreeSortOrder i_sortOrder );
+    virtual void setSortOrder( const QString& i_strSortOrder );
     EIdxTreeSortOrder sortOrder() const;
     QString sortOrderAsString() const;
 public: // instance methods

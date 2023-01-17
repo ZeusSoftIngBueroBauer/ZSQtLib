@@ -53,7 +53,6 @@ may result in using the software modules.
 using namespace ZS::System;
 using namespace ZS::Draw;
 using namespace ZS::Draw::QtWidgets;
-using namespace ZS::Trace;
 
 
 /*******************************************************************************
@@ -94,14 +93,14 @@ CGraphObj* CObjFactoryWdgtPushButton::createGraphObj(
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = "ItemPos:" + QString::number(i_ptItemPos.x()) + "," + QString::number(i_ptItemPos.y());
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createGraphObj",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -126,7 +125,7 @@ SErrResultInfo CObjFactoryWdgtPushButton::saveGraphObj(
 
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo  = "GraphObj:" + i_pGraphObj->nameSpace();
         strAddTrcInfo += "::" + i_pGraphObj->className();
@@ -135,7 +134,7 @@ SErrResultInfo CObjFactoryWdgtPushButton::saveGraphObj(
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "saveGraphObj",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -148,7 +147,7 @@ SErrResultInfo CObjFactoryWdgtPushButton::saveGraphObj(
         throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjWdgtPushButton == nullptr" );
     }
 
-    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         mthTracer.setMethodReturn(errResultInfo);
     }
@@ -176,13 +175,13 @@ CGraphObj* CObjFactoryWdgtPushButton::loadGraphObj(
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "loadGraphObj",
         /* strAddInfo   */ strAddTrcInfo );
 
     CGraphObjWdgtPushButton* pGraphObj = nullptr;
 
-    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = "ErrResultInfo {" + io_errResultInfo.toString() + "}";
         mthTracer.setMethodOutArgs(strAddTrcInfo);

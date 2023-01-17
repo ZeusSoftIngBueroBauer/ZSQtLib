@@ -1,0 +1,21 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource prefix="ZS/Draw">
+        <file alias="CheckBox16x16.bmp">Images/QtWidgets/CheckBox16x16.bmp</file>
+        <file alias="ComboBox16x16.bmp">Images/QtWidgets/ComboBox16x16.bmp</file>
+        <file alias="GroupBox16x16.bmp">Images/QtWidgets/GroupBox16x16.bmp</file>
+        <file alias="Label16x16.bmp">Images/QtWidgets/Label16x16.bmp</file>
+        <file alias="LineEdit16x16.bmp">Images/QtWidgets/LineEdit16x16.bmp</file>
+        <file alias="PushButton16x16.bmp">Images/QtWidgets/PushButton16x16.bmp</file>
+    </qresource>
+    <qresource prefix="ZS/Draw">
+        <file alias="Capacitor16x16.bmp">Images/Electricity/Capacitor16x16.bmp</file>
+        <file alias="Diode16x16.bmp">Images/Electricity/Diode16x16.bmp</file>
+        <file alias="Inductor16x16.bmp">Images/Electricity/Inductor16x16.bmp</file>
+        <file alias="Inductor16x10.bmp">Images/Electricity/Inductor16x10.bmp</file>
+        <file alias="Resistor16x16.bmp">Images/Electricity/Resistor16x16.bmp</file>
+        <file alias="Switch16x16.bmp">Images/Electricity/Switch16x16.bmp</file>
+        <file alias="Transistor16x16.bmp">Images/Electricity/Transistor16x16.bmp</file>
+        <file alias="VoltageSource16x16.bmp">Images/Electricity/VoltageSource16x16.bmp</file>
+    </qresource>
+</RCC>

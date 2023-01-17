@@ -63,8 +63,6 @@ class CPhysVal;
 namespace Draw
 {
 class CDrawSettings;
-//class CGraphObj;
-//class CGraphObjLabel;
 struct SGraphObjHitInfo;
 
 

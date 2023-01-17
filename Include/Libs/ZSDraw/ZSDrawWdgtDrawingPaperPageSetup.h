@@ -43,7 +43,7 @@ class QVBoxLayout;
 
 namespace ZS
 {
-namespace Trace
+namespace System
 {
 class CTrcAdminObj;
 }
@@ -83,8 +83,7 @@ protected: // instance members
     CDrawingView*            m_pDrawingView;
     QVBoxLayout*             m_pLyt;
     QLabel*                  m_pLblHeadLine;
-    // Trace
-    ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // CWdgtDrawingPaperPageSetup
 

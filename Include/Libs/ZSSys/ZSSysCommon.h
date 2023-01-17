@@ -427,8 +427,8 @@ typedef CEnum<EIODir> CEnumIODir;
 enum class EDirection
 //==============================================================================
 {
-    Vertical   = 0, /*!< Vertically aligned. */
-    Horizontal = 1, /*!< Horizontally aligned. */
+    Horizontal = 0, /*!< Horizontally aligned. */
+    Vertical   = 1, /*!< Vertically aligned. */
     Undefined  = 2  /*!< The direction is undefined. */
 };
 

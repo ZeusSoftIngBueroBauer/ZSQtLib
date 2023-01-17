@@ -79,7 +79,6 @@ using namespace ZS::Draw::Electricity;
 using namespace ZS::Draw::QtWidgets;
 using namespace ZS::PhysVal;
 using namespace ZS::Apps::Products::Draw;
-using namespace ZS::Trace;
 
 
 /*******************************************************************************
@@ -142,7 +141,7 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ "" );
 
@@ -184,7 +183,7 @@ CTest::~CTest()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
@@ -266,14 +265,14 @@ void CTest::createTestGroupMouseEvents( int& io_idxGroup )
     QString strMthInArgs;
     QString strMthOutArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "IdxGroup:" + QString::number(io_idxGroup);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupMouseEvents",
         /* strAddInfo   */ strMthInArgs );
 
@@ -284,7 +283,7 @@ void CTest::createTestGroupMouseEvents( int& io_idxGroup )
 
     createTestGroupMouseEventsStandardShapes(pGrp, io_idxGroup);
 
-    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
         mthTracer.setMethodOutArgs(strMthOutArgs);
@@ -299,7 +298,7 @@ void CTest::createTestGroupMouseEventsStandardShapes( ZS::Test::CTestStepGroup* 
     QString strMthInArgs;
     QString strMthOutArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Parent: " + QString(i_pTestGroupParent == nullptr ? "nullptr" : i_pTestGroupParent->path());
         strMthInArgs += ", IdxGroup:" + QString::number(io_idxGroup);
@@ -307,7 +306,7 @@ void CTest::createTestGroupMouseEventsStandardShapes( ZS::Test::CTestStepGroup* 
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupMouseEventsStandardShapes",
         /* strAddInfo   */ strMthInArgs );
 
@@ -318,7 +317,7 @@ void CTest::createTestGroupMouseEventsStandardShapes( ZS::Test::CTestStepGroup* 
 
     createTestGroupMouseEventsStandardShapesPoints(pGrp, io_idxGroup);
 
-    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
         mthTracer.setMethodOutArgs(strMthOutArgs);

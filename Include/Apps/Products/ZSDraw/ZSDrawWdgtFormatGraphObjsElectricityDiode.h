@@ -76,7 +76,7 @@ private: // instance members
     QDoubleSpinBox*          m_pEdtCutOffVoltage;
     QCheckBox*               m_pChkCutOffVoltageVisible;
     // Trace
-    ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CWdgtFormatGraphObjsDiode
 

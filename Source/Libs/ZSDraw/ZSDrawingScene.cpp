@@ -64,7 +64,6 @@ may result in using the software modules.
 
 using namespace ZS::System;
 using namespace ZS::Draw;
-using namespace ZS::Trace;
 
 
 /*******************************************************************************
@@ -128,8 +127,8 @@ public: // ctors and dtor
 CDrawingScene::CDrawingScene( QObject* i_pObjParent ) :
 //------------------------------------------------------------------------------
     QGraphicsScene(i_pObjParent),
-    m_physSizeWidth(),
-    m_physSizeHeight(),
+    m_unitWidth(Units.GraphDevice.px),
+    m_unitHeight(Units.GraphDevice.px),
     m_drawSettings(),
     m_mode(EMode::Undefined),
     m_editTool(EEditTool::None),
@@ -165,7 +164,7 @@ CDrawingScene::CDrawingScene( QObject* i_pObjParent ) :
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ "" );
 
@@ -174,8 +173,7 @@ CDrawingScene::CDrawingScene( QObject* i_pObjParent ) :
         /* pRootTreeEntry   */ nullptr,
         /* strNodeSeparator */ "::",
         /* bCreateMutex     */ false,
-        /* pObjParent       */ nullptr,
-        /* iTrcDetailLevel  */ ETraceDetailLevelNone );
+        /* pObjParent       */ nullptr );
 
     if( !QObject::connect(
         /* pObjSender   */ m_pGraphObjsIdxTree,
@@ -215,8 +213,7 @@ CDrawingScene::CDrawingScene( QObject* i_pObjParent ) :
         /* pRootTreeEntry   */ nullptr,
         /* strNodeSeparator */ "::",
         /* bCreateMutex     */ false,
-        /* pObjParent       */ nullptr,
-        /* iTrcDetailLevel  */ ETraceDetailLevelNone );
+        /* pObjParent       */ nullptr );
 
     //setItemIndexMethod(NoIndex);
 
@@ -238,7 +235,7 @@ CDrawingScene::~CDrawingScene()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
@@ -272,8 +269,8 @@ CDrawingScene::~CDrawingScene()
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjMouseMoveEvent);
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjPaintEvent);
 
-    //m_physSizeWidth;
-    //m_physSizeHeight;
+    //m_unitWidgt;
+    //m_unitHeight;
     //m_drawSettings;
     m_mode = static_cast<ZS::System::EMode>(0);
     m_editTool = static_cast<EEditTool>(0);
@@ -305,51 +302,19 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDrawingScene::setXResolutionInDpmm( double i_fRes_dpmm )
-//------------------------------------------------------------------------------
-{
-    m_physSizeWidth.setDpmm(i_fRes_dpmm);
-}
-
-//------------------------------------------------------------------------------
-double CDrawingScene::getXResolutionInDpmm() const
-//------------------------------------------------------------------------------
-{
-    return m_physSizeWidth.getDpmm();
-}
-
-//------------------------------------------------------------------------------
-void CDrawingScene::setYResolutionInDpmm( double i_fRes_dpmm )
-//------------------------------------------------------------------------------
-{
-    m_physSizeHeight.setDpmm(i_fRes_dpmm);
-}
-
-//------------------------------------------------------------------------------
-double CDrawingScene::getYResolutionInDpmm() const
-//------------------------------------------------------------------------------
-{
-    return m_physSizeHeight.getDpmm();
-}
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
 SErrResultInfo CDrawingScene::load( const QString& i_strFileName )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "FileName:" + i_strFileName;
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "load",
         /* strAddInfo   */ strMthInArgs );
 
@@ -485,7 +450,7 @@ SErrResultInfo CDrawingScene::load( const QString& i_strFileName )
         }
     } // if( !errResultInfo.isErrorResult() )
 
-    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         mthTracer.setMethodReturn(errResultInfo);
     }
@@ -500,14 +465,14 @@ SErrResultInfo CDrawingScene::save( const QString& i_strFileName )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "FileName:" + i_strFileName;
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "save",
         /* strAddInfo   */ strMthInArgs );
 
@@ -601,7 +566,7 @@ SErrResultInfo CDrawingScene::save( const QString& i_strFileName )
 
     } // if( !errResultInfo.isErrorResult() )
 
-    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         mthTracer.setMethodReturn(errResultInfo);
     }
@@ -624,7 +589,7 @@ SErrResultInfo CDrawingScene::save( CGraphObj* i_pGraphObj, QXmlStreamWriter& i_
 
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "GraphObj:" + i_pGraphObj->nameSpace();
         strMthInArgs += "::" + i_pGraphObj->className();
@@ -633,7 +598,7 @@ SErrResultInfo CDrawingScene::save( CGraphObj* i_pGraphObj, QXmlStreamWriter& i_
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "save",
         /* strAddInfo   */ strMthInArgs );
 
@@ -641,7 +606,7 @@ SErrResultInfo CDrawingScene::save( CGraphObj* i_pGraphObj, QXmlStreamWriter& i_
 
     QString strNameSpace    = i_pGraphObj->nameSpace();
     QString strClassName    = i_pGraphObj->className();
-    QString strGraphObjType = i_pGraphObj->getTypeAsString();
+    QString strGraphObjType = i_pGraphObj->typeAsString();
     QString strObjName      = i_pGraphObj->name();
     QString strObjId        = i_pGraphObj->keyInTree();
 
@@ -667,7 +632,7 @@ SErrResultInfo CDrawingScene::save( CGraphObj* i_pGraphObj, QXmlStreamWriter& i_
         i_xmlStreamWriter.writeEndElement();
     }
 
-    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         mthTracer.setMethodReturn(errResultInfo);
     }
@@ -686,7 +651,7 @@ void CDrawingScene::clear()
 {
    CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "clear",
         /* strAddInfo   */ "" );
 
@@ -746,7 +711,7 @@ void CDrawingScene::addGraphObj( CGraphObj* i_pGraphObj, CGraphObj* i_pGraphObjP
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->path());
         strMthInArgs += ", Parent: " + QString(i_pGraphObjParent == nullptr ? "nullptr" : i_pGraphObjParent->path());
@@ -754,7 +719,7 @@ void CDrawingScene::addGraphObj( CGraphObj* i_pGraphObj, CGraphObj* i_pGraphObjP
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "addGraphObj",
         /* strAddInfo   */ strMthInArgs );
 
@@ -772,7 +737,7 @@ void CDrawingScene::addGraphObj( CGraphObj* i_pGraphObj, CGraphObj* i_pGraphObjP
 
     QGraphicsItem* pGraphicsItemParent = nullptr;
 
-    if( i_pGraphObj->getType() != EGraphObjTypeSelectionPoint && i_pGraphObj->getType() != EGraphObjTypeLabel )
+    if( !i_pGraphObj->isSelectionPoint() && !i_pGraphObj->isLabel() )
     {
         if( i_pGraphObjParent != nullptr )
         {
@@ -797,14 +762,14 @@ void CDrawingScene::removeGraphObj( CGraphObj* i_pGraphObj )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->path());
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "removeGraphObj",
         /* strAddInfo   */ strMthInArgs );
 
@@ -845,7 +810,7 @@ void CDrawingScene::addItem( QGraphicsItem* i_pGraphicsItem, QGraphicsItem* i_pG
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
         CGraphObj* pGraphObjParent = dynamic_cast<CGraphObj*>(i_pGraphicsItemParent);
@@ -855,7 +820,7 @@ void CDrawingScene::addItem( QGraphicsItem* i_pGraphicsItem, QGraphicsItem* i_pG
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "addItem",
         /* strAddInfo   */ strMthInArgs );
 
@@ -874,7 +839,7 @@ void CDrawingScene::removeItem( QGraphicsItem* i_pGraphicsItem )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
         strMthInArgs = QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->path());
@@ -882,7 +847,7 @@ void CDrawingScene::removeItem( QGraphicsItem* i_pGraphicsItem )
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "removeItem",
         /* strAddInfo   */ strMthInArgs );
 
@@ -900,7 +865,7 @@ void CDrawingScene::deleteItem( QGraphicsItem* i_pGraphicsItem )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
         strMthInArgs = QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->path());
@@ -908,7 +873,7 @@ void CDrawingScene::deleteItem( QGraphicsItem* i_pGraphicsItem )
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "deleteItem",
         /* strAddInfo   */ strMthInArgs );
 
@@ -929,14 +894,14 @@ void CDrawingScene::deleteItem( CGraphObj* i_pGraphObj )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->path());
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "deleteItem",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1002,7 +967,7 @@ protected: // instance methods
 //{
 //    QString strMthInArgs;
 //
-//    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+//    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
 //    {
 //        CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
 //        strMthInArgs = QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->path());
@@ -1010,7 +975,7 @@ protected: // instance methods
 //
 //    CMethodTracer mthTracer(
 //        /* pAdminObj    */ m_pTrcAdminObj,
-//        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
 //        /* strMethod    */ "addChildItems",
 //        /* strAddInfo   */ strMthInArgs );
 //
@@ -1097,7 +1062,7 @@ void CDrawingScene::setMode(
     QString strMthInArgs;
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "Mode:" + i_mode.toString();
         strMthInArgs += ", EditTool:" + i_editTool.toString();
@@ -1108,7 +1073,7 @@ void CDrawingScene::setMode(
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setMode",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1187,7 +1152,7 @@ void CDrawingScene::setMode(
         emit modeChanged();
     }
 
-    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         strAddTrcInfo  = "Mode:" + m_mode.toString();
         strAddTrcInfo += ", EditTool:" + m_editTool.toString();
@@ -1225,18 +1190,18 @@ void CDrawingScene::setCurrentDrawingTool( CObjFactory* i_pObjFactory )
     QString strMthInArgs;
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = QString(i_pObjFactory == nullptr ? "nullptr" : i_pObjFactory->path());
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setCurrentDrawingTool",
         /* strAddInfo   */ strMthInArgs );
 
-    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         strAddTrcInfo  = "Mode:" + m_mode.toString();
         strAddTrcInfo += ", EditTool:" + m_editTool.toString();
@@ -1306,7 +1271,7 @@ void CDrawingScene::setCurrentDrawingTool( CObjFactory* i_pObjFactory )
         }
     }
 
-    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         strAddTrcInfo = QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
         mthTracer.trace(strAddTrcInfo);
@@ -1340,14 +1305,14 @@ void CDrawingScene::setCurrentDrawingTool(
     QString strMthInArgs;
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = i_strFactoryGrpName + "::" + i_strGraphObjType;
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setCurrentDrawingTool",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1443,18 +1408,18 @@ QCursor CDrawingScene::getProposedCursor( const QPointF& i_ptPos ) const
     QString strMthInArgs;
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjMouseMoveEvent != nullptr && m_pTrcAdminObjMouseMoveEvent->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObjMouseMoveEvent != nullptr && m_pTrcAdminObjMouseMoveEvent->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Pos:" + point2Str(i_ptPos);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseMoveEvent,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "getProposedCursor",
         /* strAddInfo   */ strMthInArgs );
 
-    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         strAddTrcInfo = "Mode:" + m_mode.toString();
         strAddTrcInfo += ", EditTool:" + m_editTool.toString();
@@ -1633,7 +1598,7 @@ QCursor CDrawingScene::getProposedCursor( const QPointF& i_ptPos ) const
         } // switch( m_editTool )
     } // if( m_mode == EMode::Edit )
 
-    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         mthTracer.setMethodReturn(qCursorShape2Str(cursor.shape()));
     }
@@ -1652,7 +1617,7 @@ double CDrawingScene::bringToFront( QGraphicsItem* i_pGraphicsItem, const QPoint
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
         strMthInArgs = QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->path());
@@ -1661,7 +1626,7 @@ double CDrawingScene::bringToFront( QGraphicsItem* i_pGraphicsItem, const QPoint
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "bringToFront",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1677,7 +1642,7 @@ double CDrawingScene::sendToBack( QGraphicsItem* i_pGraphicsItem, const QPointF&
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
         strMthInArgs = QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->path());
@@ -1686,7 +1651,7 @@ double CDrawingScene::sendToBack( QGraphicsItem* i_pGraphicsItem, const QPointF&
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "sendToBack",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1721,7 +1686,7 @@ double CDrawingScene::bringToFront( QGraphicsItem* i_pGraphicsItem, const QList<
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
         strMthInArgs = QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->keyInTree());
@@ -1729,7 +1694,7 @@ double CDrawingScene::bringToFront( QGraphicsItem* i_pGraphicsItem, const QList<
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "bringToFront",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1789,7 +1754,7 @@ double CDrawingScene::sendToBack( QGraphicsItem* i_pGraphicsItem, const QList<QG
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
         strMthInArgs = QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->keyInTree());
@@ -1797,7 +1762,7 @@ double CDrawingScene::sendToBack( QGraphicsItem* i_pGraphicsItem, const QList<QG
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "sendToBack",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1856,18 +1821,18 @@ void CDrawingScene::onGraphObjAddingShapePointsStarted( CGraphObj* i_pGraphObj )
     QString strMthInArgs;
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->keyInTree());
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onGraphObjAddingShapePointsStarted",
         /* strAddInfo   */ strMthInArgs );
 
-    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         strAddTrcInfo = "Mode:" + m_mode.toString();
         strAddTrcInfo += ", EditTool:" + m_editTool.toString();
@@ -1915,18 +1880,18 @@ void CDrawingScene::onGraphObjAddingShapePointsFinished( CGraphObj* i_pGraphObj 
     QString strMthInArgs;
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->keyInTree());
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onGraphObjAddingShapePointsFinished",
         /* strAddInfo   */ strMthInArgs );
 
-    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         strAddTrcInfo = "Mode:" + m_mode.toString();
         strAddTrcInfo += ", EditTool:" + m_editTool.toString();
@@ -1972,18 +1937,18 @@ void CDrawingScene::onGraphObjCreationFinished( CGraphObj* i_pGraphObj )
     QString strMthInArgs;
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->keyInTree());
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onGraphObjCreationFinished",
         /* strAddInfo   */ strMthInArgs );
 
-    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         strAddTrcInfo = "Mode:" + m_mode.toString();
         strAddTrcInfo += ", EditTool:" + m_editTool.toString();
@@ -2025,7 +1990,7 @@ void CDrawingScene::onGraphObjCreationFinished( CGraphObj* i_pGraphObj )
 
     //emit graphObjCreated(i_pGraphObj);
 
-    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         QString strAddTrcInfo = "GraphObjId:" + i_pGraphObj->keyInTree();
         mthTracer.trace(strAddTrcInfo);
@@ -2040,18 +2005,18 @@ void CDrawingScene::onGraphObjDestroying( const QString& i_strObjId )
     QString strMthInArgs;
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "GraphObjId:" + i_strObjId;
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onGraphObjDestroying",
         /* strAddInfo   */ strMthInArgs );
 
-    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         strAddTrcInfo = "Mode:" + m_mode.toString();
         strAddTrcInfo += ", EditTool:" + m_editTool.toString();
@@ -2125,18 +2090,18 @@ void CDrawingScene::onGraphObjDestroying( const QString& i_strObjId )
 //    QString strMthInArgs;
 //    QString strAddTrcInfo;
 //
-//    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+//    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
 //    {
 //        strMthInArgs  = "GraphObjId:" + i_strObjId;
 //    }
 //
 //    CMethodTracer mthTracer(
 //        /* pAdminObj    */ m_pTrcAdminObj,
-//        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
 //        /* strMethod    */ "onGraphObjDestroyed",
 //        /* strAddInfo   */ strMthInArgs );
 //
-//    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+//    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
 //    {
 //        strAddTrcInfo = "Mode:" + m_mode.toString();
 //        strAddTrcInfo += ", EditTool:" + m_editTool.toString();
@@ -2169,7 +2134,7 @@ void CDrawingScene::onGraphObjDestroying( const QString& i_strObjId )
 //    QString strMthInArgs;
 //    QString strAddTrcInfo;
 //
-//    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+//    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
 //    {
 //        strMthInArgs  = "GraphObjIdOld:" + i_strObjIdOld;
 //        strMthInArgs += ", GraphObjIdNew:" + i_strObjIdNew;
@@ -2177,11 +2142,11 @@ void CDrawingScene::onGraphObjDestroying( const QString& i_strObjId )
 //
 //    CMethodTracer mthTracer(
 //        /* pAdminObj    */ m_pTrcAdminObj,
-//        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
 //        /* strMethod    */ "onGraphObjIdChanged",
 //        /* strAddInfo   */ strMthInArgs );
 //
-//    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+//    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
 //    {
 //        strAddTrcInfo  = "Mode:" + m_mode.toString();
 //        strAddTrcInfo += ", EditTool:" + m_editTool.toString();
@@ -2205,7 +2170,7 @@ void CDrawingScene::onGraphObjDestroying( const QString& i_strObjId )
 //    QString strMthInArgs;
 //    QString strAddTrcInfo;
 //
-//    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+//    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
 //    {
 //        strMthInArgs  = "GraphObjId:" + i_strObjId;
 //        strMthInArgs += ", GraphObjNameOld:" + i_strObjNameOld;
@@ -2214,11 +2179,11 @@ void CDrawingScene::onGraphObjDestroying( const QString& i_strObjId )
 //
 //    CMethodTracer mthTracer(
 //        /* pAdminObj    */ m_pTrcAdminObj,
-//        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
 //        /* strMethod    */ "onGraphObjNameChanged",
 //        /* strAddInfo   */ strMthInArgs );
 //
-//    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+//    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
 //    {
 //        strAddTrcInfo  = "Mode:" + m_mode.toString();
 //        strAddTrcInfo += ", EditTool:" + m_editTool.toString();
@@ -2378,17 +2343,17 @@ int CDrawingScene::groupGraphObjsSelected()
     QString strMthInArgs;
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "groupGraphObjsSelected",
         /* strAddInfo   */ strMthInArgs );
 
-    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         strAddTrcInfo = "Mode:" + m_mode.toString();
         strAddTrcInfo += ", EditTool:" + m_editTool.toString();
@@ -2504,7 +2469,7 @@ int CDrawingScene::groupGraphObjsSelected()
                     throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjSelected == nullptr" );
                 }
 
-                if( pGraphObjSelected->getType() != EGraphObjTypeConnectionLine )
+                if( !pGraphObjSelected->isConnectionLine() )
                 {
                     QPointF posItem = pGraphObjSelected->getPos();
                     QSizeF  sizItem = pGraphObjSelected->getSize();
@@ -2570,7 +2535,7 @@ int CDrawingScene::groupGraphObjsSelected()
             {
                 CGraphObj* pGraphObjSelected = dynamic_cast<CGraphObj*>(pGraphicsItemSelected);
 
-                if( pGraphObjSelected->getType() != EGraphObjTypeConnectionLine )
+                if( !pGraphObjSelected->isConnectionLine() )
                 {
                     QPointF posItem = pGraphObjSelected->getPos(); // for debugging purposes also called here before adding the item to the group
                     QSizeF  sizItem = pGraphObjSelected->getSize();
@@ -2654,17 +2619,17 @@ int CDrawingScene::ungroupGraphObjsSelected()
     QString strMthInArgs;
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ungroupGraphObjsSelected",
         /* strAddInfo   */ strMthInArgs );
 
-    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         strAddTrcInfo = "Mode:" + m_mode.toString();
         strAddTrcInfo += ", EditTool:" + m_editTool.toString();
@@ -2688,7 +2653,7 @@ int CDrawingScene::ungroupGraphObjsSelected()
             throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjSelected == nullptr" );
         }
 
-        if( pGraphObjSelected->getType() == EGraphObjTypeGroup )
+        if( pGraphObjSelected->isGroup() )
         {
             CGraphObjGroup* pGraphObjGroupSelected = dynamic_cast<CGraphObjGroup*>(pGraphicsItemSelected);
 
@@ -2746,13 +2711,13 @@ void CDrawingScene::setDrawSettings( const CDrawSettings& i_settings )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setDrawSettings",
         /* strAddInfo   */ strMthInArgs );
 
@@ -2775,14 +2740,14 @@ void CDrawingScene::setPenColor( const QColor& i_clr )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = i_clr.name();
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setPenColor",
         /* strAddInfo   */ strMthInArgs );
 
@@ -2801,14 +2766,14 @@ void CDrawingScene::setPenWidth( int i_iPenWidth )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = QString::number(i_iPenWidth);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setPenWidth",
         /* strAddInfo   */ strMthInArgs );
 
@@ -2831,14 +2796,14 @@ void CDrawingScene::setLineStyle( ELineStyle i_lineStyle )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = CEnumLineStyle(i_lineStyle).toString();
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setLineStyle",
         /* strAddInfo   */ strMthInArgs );
 
@@ -2861,14 +2826,14 @@ void CDrawingScene::setFillColor( const QColor& i_clr )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = i_clr.name();
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setFillColor",
         /* strAddInfo   */ strMthInArgs );
 
@@ -2887,14 +2852,14 @@ void CDrawingScene::setFillStyle( EFillStyle i_fillStyle )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = CEnumFillStyle(i_fillStyle).toString();
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setFillStyle",
         /* strAddInfo   */ strMthInArgs );
 
@@ -2917,14 +2882,14 @@ void CDrawingScene::setLineRecordType( ELineRecordType i_lineRecordType )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = CEnumLineRecordType(i_lineRecordType).toString();
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setLineRecordType",
         /* strAddInfo   */ strMthInArgs );
 
@@ -2943,14 +2908,14 @@ void CDrawingScene::setLineExtent( int i_iLineExtent )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = QString::number(i_iLineExtent);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setLineExtent",
         /* strAddInfo   */ strMthInArgs );
 
@@ -2973,7 +2938,7 @@ void CDrawingScene::setLineEndStyle( ELinePoint i_linePoint, ELineEndStyle i_end
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = CEnumLinePoint(i_linePoint).toString();
         strMthInArgs += ", " + CEnumLineEndStyle(i_endStyle).toString();
@@ -2981,7 +2946,7 @@ void CDrawingScene::setLineEndStyle( ELinePoint i_linePoint, ELineEndStyle i_end
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setLineEndStyle",
         /* strAddInfo   */ strMthInArgs );
 
@@ -3000,7 +2965,7 @@ void CDrawingScene::setLineEndBaseLineType( ELinePoint i_linePoint, ELineEndBase
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = CEnumLinePoint(i_linePoint).toString();
         strMthInArgs += ", " + CEnumLineEndBaseLineType(i_baseLineType).toString();
@@ -3008,7 +2973,7 @@ void CDrawingScene::setLineEndBaseLineType( ELinePoint i_linePoint, ELineEndBase
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setLineEndBaseLineType",
         /* strAddInfo   */ strMthInArgs );
 
@@ -3027,7 +2992,7 @@ void CDrawingScene::setLineEndFillStyle( ELinePoint i_linePoint, ELineEndFillSty
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = CEnumLinePoint(i_linePoint).toString();
         strMthInArgs += ", " + CEnumLineEndFillStyle(i_fillStyle).toString();
@@ -3035,7 +3000,7 @@ void CDrawingScene::setLineEndFillStyle( ELinePoint i_linePoint, ELineEndFillSty
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setLineEndFillStyle",
         /* strAddInfo   */ strMthInArgs );
 
@@ -3054,7 +3019,7 @@ void CDrawingScene::setLineEndWidth( ELinePoint i_linePoint, ELineEndWidth i_wid
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = CEnumLinePoint(i_linePoint).toString();
         strMthInArgs += ", " + CEnumLineEndWidth(i_width).toString();
@@ -3062,7 +3027,7 @@ void CDrawingScene::setLineEndWidth( ELinePoint i_linePoint, ELineEndWidth i_wid
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setLineEndWidth",
         /* strAddInfo   */ strMthInArgs );
 
@@ -3081,7 +3046,7 @@ void CDrawingScene::setLineEndLength( ELinePoint i_linePoint, ELineEndLength i_l
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = CEnumLinePoint(i_linePoint).toString();
         strMthInArgs += ", " + CEnumLineEndLength(i_length).toString();
@@ -3089,7 +3054,7 @@ void CDrawingScene::setLineEndLength( ELinePoint i_linePoint, ELineEndLength i_l
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setLineEndLength",
         /* strAddInfo   */ strMthInArgs );
 
@@ -3112,14 +3077,14 @@ void CDrawingScene::setTextColor( const QColor& i_clr )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = i_clr.name();
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setTextColor",
         /* strAddInfo   */ strMthInArgs );
 
@@ -3138,14 +3103,14 @@ void CDrawingScene::setTextFont( const QFont& i_fnt )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = i_fnt.family();
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setTextFont",
         /* strAddInfo   */ strMthInArgs );
 
@@ -3164,14 +3129,14 @@ void CDrawingScene::setTextSize( ETextSize i_size )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = textSize2Str(i_size);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setTextSize",
         /* strAddInfo   */ strMthInArgs );
 
@@ -3190,14 +3155,14 @@ void CDrawingScene::setTextStyle( ETextStyle i_style )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = CEnumTextStyle(i_style).toString();
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setTextStyle",
         /* strAddInfo   */ strMthInArgs );
 
@@ -3216,14 +3181,14 @@ void CDrawingScene::setTextEffect( ETextEffect i_effect )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = CEnumTextEffect(i_effect).toString();
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setTextEffect",
         /* strAddInfo   */ strMthInArgs );
 
@@ -3250,7 +3215,7 @@ void CDrawingScene::dragEnterEvent( QGraphicsSceneDragDropEvent* i_pEv )
     QString strMthInArgs;
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "EvItemPos:(" + QString::number(i_pEv->pos().x()) + "," + QString::number(i_pEv->pos().y()) + ")";
         strMthInArgs += ", EvScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
@@ -3263,11 +3228,11 @@ void CDrawingScene::dragEnterEvent( QGraphicsSceneDragDropEvent* i_pEv )
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "dragEnterEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         strAddTrcInfo = "Mode:" + m_mode.toString();
         strAddTrcInfo += ", EditTool:" + m_editTool.toString();
@@ -3311,7 +3276,7 @@ void CDrawingScene::dragMoveEvent( QGraphicsSceneDragDropEvent* i_pEv )
 
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "EvItemPos:(" + QString::number(i_pEv->pos().x()) + "," + QString::number(i_pEv->pos().y()) + ")";
         strMthInArgs += ", EvScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
@@ -3335,7 +3300,7 @@ void CDrawingScene::dragMoveEvent( QGraphicsSceneDragDropEvent* i_pEv )
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "dragMoveEvent",
         /* strAddInfo   */ strMthInArgs );
 
@@ -3369,7 +3334,7 @@ void CDrawingScene::dragLeaveEvent( QGraphicsSceneDragDropEvent* i_pEv )
 
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "EvItemPos:(" + QString::number(i_pEv->pos().x()) + "," + QString::number(i_pEv->pos().y()) + ")";
         strMthInArgs += ", EvScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
@@ -3393,7 +3358,7 @@ void CDrawingScene::dragLeaveEvent( QGraphicsSceneDragDropEvent* i_pEv )
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "dragLeaveEvent",
         /* strAddInfo   */ strMthInArgs );
 
@@ -3440,7 +3405,7 @@ void CDrawingScene::dropEvent( QGraphicsSceneDragDropEvent* i_pEv )
 
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "EvItemPos:(" + QString::number(i_pEv->pos().x()) + "," + QString::number(i_pEv->pos().y()) + ")";
         strMthInArgs += ", EvScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
@@ -3464,7 +3429,7 @@ void CDrawingScene::dropEvent( QGraphicsSceneDragDropEvent* i_pEv )
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "dropEvent",
         /* strAddInfo   */ strMthInArgs );
 
@@ -3597,7 +3562,7 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
     QString strMthInArgs;
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "EvItemPos:(" + QString::number(i_pEv->pos().x()) + "," + QString::number(i_pEv->pos().y()) + ")";
         strMthInArgs += ", EvScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
@@ -3606,11 +3571,11 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mousePressEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         strAddTrcInfo = "Mode:" + m_mode.toString();
         strAddTrcInfo += ", EditTool:" + m_editTool.toString();
@@ -4091,7 +4056,7 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     } // if( !bEventHandled )
 
-    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         strAddTrcInfo  = "Mode:" + m_mode.toString();
         strAddTrcInfo += ", EditTool:" + m_editTool.toString();
@@ -4113,7 +4078,7 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
     QString strMthInArgs;
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjMouseMoveEvent != nullptr && m_pTrcAdminObjMouseMoveEvent->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObjMouseMoveEvent != nullptr && m_pTrcAdminObjMouseMoveEvent->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "EvItemPos:(" + QString::number(i_pEv->pos().x()) + "," + QString::number(i_pEv->pos().x()) + ")";
         strMthInArgs += ", EvScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().x()) + ")";
@@ -4122,11 +4087,11 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseMoveEvent,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mouseMoveEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         strAddTrcInfo = "Mode:" + m_mode.toString();
         strAddTrcInfo += ", EditTool:" + m_editTool.toString();
@@ -4360,7 +4325,7 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
                         {
                             bCheckIsHit = false;
 
-                            switch( pGraphObj->getType() )
+                            switch( pGraphObj->type() )
                             {
                                 case EGraphObjTypeSelectionPoint:
                                 {
@@ -4494,7 +4459,7 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         QGraphicsScene::mouseMoveEvent(i_pEv);
     }
 
-    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         strAddTrcInfo  = "Mode:" + m_mode.toString();
         strAddTrcInfo += ", EditTool:" + m_editTool.toString();
@@ -4516,7 +4481,7 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
     QString strMthInArgs;
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "EvItemPos:(" + QString::number(i_pEv->pos().x()) + "," + QString::number(i_pEv->pos().x()) + ")";
         strMthInArgs += ", EvScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().x()) + ")";
@@ -4525,11 +4490,11 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mouseReleaseEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         strAddTrcInfo = "Mode:" + m_mode.toString();
         strAddTrcInfo += ", EditTool:" + m_editTool.toString();
@@ -4645,7 +4610,7 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
         QGraphicsScene::mouseReleaseEvent(i_pEv);
     }
 
-    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         strAddTrcInfo  = "Mode:" + m_mode.toString();
         strAddTrcInfo += ", EditTool:" + m_editTool.toString();
@@ -4667,7 +4632,7 @@ void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
     QString strMthInArgs;
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "EvItemPos:(" + QString::number(i_pEv->pos().x()) + "," + QString::number(i_pEv->pos().x()) + ")";
         strMthInArgs += ", EvScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().x()) + ")";
@@ -4676,11 +4641,11 @@ void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mouseDoubleClickEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         strAddTrcInfo = "Mode:" + m_mode.toString();
         strAddTrcInfo += ", EditTool:" + m_editTool.toString();
@@ -4816,7 +4781,7 @@ void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     m_bMouseDoubleClickEventInProcess = false;
 
-    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         strAddTrcInfo  = "Mode:" + m_mode.toString();
         strAddTrcInfo += ", EditTool:" + m_editTool.toString();
@@ -4841,7 +4806,7 @@ void CDrawingScene::keyPressEvent( QKeyEvent* i_pEv )
     QString strMthInArgs;
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "Key:" + qKeyCode2Str(i_pEv->key()) + " (" + i_pEv->text() + ")";
         strMthInArgs += ", Count:" + QString::number(i_pEv->count());
@@ -4851,11 +4816,11 @@ void CDrawingScene::keyPressEvent( QKeyEvent* i_pEv )
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "keyPressEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         strAddTrcInfo = "Mode:" + m_mode.toString();
         strAddTrcInfo += ", EditTool:" + m_editTool.toString();
@@ -5369,7 +5334,7 @@ void CDrawingScene::keyReleaseEvent( QKeyEvent* i_pEv )
     QString strMthInArgs;
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "Key:" + qKeyCode2Str(i_pEv->key()) + " (" + i_pEv->text() + ")";
         strMthInArgs += ", Count:" + QString::number(i_pEv->count());
@@ -5379,11 +5344,11 @@ void CDrawingScene::keyReleaseEvent( QKeyEvent* i_pEv )
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "keyReleaseEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         strAddTrcInfo = "Mode:" + m_mode.toString();
         strAddTrcInfo += ", EditTool:" + m_editTool.toString();
@@ -5413,7 +5378,7 @@ void CDrawingScene::drawBackground( QPainter* i_pPainter, const QRectF& i_rect )
     QString strMthInArgs;
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjPaintEvent != nullptr && m_pTrcAdminObjPaintEvent->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObjPaintEvent != nullptr && m_pTrcAdminObjPaintEvent->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "Rect(x,y,w,h):(" + QString::number(i_rect.x()) + "," + QString::number(i_rect.y());
         strMthInArgs += "," + QString::number(i_rect.width()) + "," + QString::number(i_rect.height()) + ")";
@@ -5421,11 +5386,11 @@ void CDrawingScene::drawBackground( QPainter* i_pPainter, const QRectF& i_rect )
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjPaintEvent,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "drawBackground",
         /* strAddInfo   */ strMthInArgs );
 
-    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         strAddTrcInfo  = "SceneRect(x,y,w,h):(" + QString::number(sceneRect().x()) + "," + QString::number(sceneRect().y());
         strAddTrcInfo += "," + QString::number(sceneRect().width()) + "," + QString::number(sceneRect().height()) + ")";
@@ -5449,7 +5414,7 @@ void CDrawingScene::drawForeground( QPainter* i_pPainter, const QRectF& i_rect )
     QString strMthInArgs;
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjPaintEvent != nullptr && m_pTrcAdminObjPaintEvent->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObjPaintEvent != nullptr && m_pTrcAdminObjPaintEvent->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "Rect(x,y,w,h):(" + QString::number(i_rect.x()) + "," + QString::number(i_rect.y());
         strMthInArgs += "," + QString::number(i_rect.width()) + "," + QString::number(i_rect.height()) + ")";
@@ -5457,11 +5422,11 @@ void CDrawingScene::drawForeground( QPainter* i_pPainter, const QRectF& i_rect )
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjPaintEvent,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "drawForeground",
         /* strAddInfo   */ strMthInArgs );
 
-    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         strAddTrcInfo  = "SceneRect(x,y,w,h):(" + QString::number(sceneRect().x()) + "," + QString::number(sceneRect().y());
         strAddTrcInfo += "," + QString::number(sceneRect().width()) + "," + QString::number(sceneRect().height()) + ")";
@@ -5494,14 +5459,14 @@ void CDrawingScene::onGraphObjFactoryDestroyed( QObject* i_pObjFactory )
     QString strMthInArgs;
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = QString(i_pObjFactory == nullptr ? "nullptr" : i_pObjFactory->objectName());
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onGraphObjFactoryDestroyed",
         /* strAddInfo   */ strMthInArgs );
 
@@ -5532,7 +5497,7 @@ void CDrawingScene::onGraphObjsIdxTreeEntryAdded( CIdxTree* i_pIdxTree, CIdxTree
     QString strMthInArgs;
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs =  "Tree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName());
         strMthInArgs += ", Entry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->path());
@@ -5540,7 +5505,7 @@ void CDrawingScene::onGraphObjsIdxTreeEntryAdded( CIdxTree* i_pIdxTree, CIdxTree
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onGraphObjsIdxTreeEntryAdded",
         /* strAddInfo   */ strMthInArgs );
 
@@ -5572,7 +5537,7 @@ void CDrawingScene::onGraphObjsIdxTreeEntryChanged( CIdxTree* i_pIdxTree, CIdxTr
     QString strMthInArgs;
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs =  "Tree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName());
         strMthInArgs += ", Entry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->path());
@@ -5580,7 +5545,7 @@ void CDrawingScene::onGraphObjsIdxTreeEntryChanged( CIdxTree* i_pIdxTree, CIdxTr
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onGraphObjsIdxTreeEntryChanged",
         /* strAddInfo   */ strMthInArgs );
 
@@ -5620,7 +5585,7 @@ void CDrawingScene::onGraphObjsIdxTreeEntryMoved(
     QString strMthInArgs;
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs =  "Tree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName());
         strMthInArgs += ", Entry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->path());
@@ -5628,7 +5593,7 @@ void CDrawingScene::onGraphObjsIdxTreeEntryMoved(
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onGraphObjsIdxTreeEntryMoved",
         /* strAddInfo   */ strMthInArgs );
 
@@ -5668,7 +5633,7 @@ void CDrawingScene::onGraphObjsIdxTreeEntryRenamed(
     QString strMthInArgs;
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs =  "Tree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName());
         strMthInArgs += ", Entry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->path());
@@ -5676,7 +5641,7 @@ void CDrawingScene::onGraphObjsIdxTreeEntryRenamed(
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onGraphObjsIdxTreeEntryRenamed",
         /* strAddInfo   */ strMthInArgs );
 

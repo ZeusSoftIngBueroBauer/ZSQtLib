@@ -55,16 +55,19 @@ class ZSPHYSVALGUIDLL_API CDlgEditPhysVal : public QDialog
 //******************************************************************************
 {
     Q_OBJECT
+public: // class methods
+    static QString NameSpace() { return "ZS::PhysVal::GUI"; }
+    static QString ClassName() { return "CDlgEditPhysVal"; }
 public: // ctors and dtor
     CDlgEditPhysVal(
-        const PhysVal::CPhysVal& i_physVal,
-        double                   i_fMin,
-        double                   i_fMax,
-        double                   i_iDecimals,
-        QWidget*                 i_pWdgtParent = nullptr );
+        const CPhysVal& i_physVal,
+        double i_fMin,
+        double i_fMax,
+        double i_iDecimals,
+        QWidget* i_pWdgtParent = nullptr );
     virtual ~CDlgEditPhysVal();
 public: // instance methods
-    PhysVal::CPhysVal getPhysVal() const;
+    CPhysVal value() const;
 protected slots: // overridables of base class QDialog
     virtual void accept();
     virtual void reject();
@@ -72,20 +75,19 @@ protected slots: // instance methods
     void onDlgBtnResetClicked();
     void onCmbUnitActivated( int i_idx );
 private: // instance members
-    PhysVal::CPhysVal   m_physValOld;
-    PhysVal::CPhysSize* m_pPhysSize;
-    PhysVal::CPhysUnit* m_pPhysUnit;
-    double              m_fMin;
-    double              m_fMax;
-    int                 m_iDecimals;
-    QVBoxLayout*        m_pLytDlg;
-    QHBoxLayout*        m_pLytLine;
-    QLineEdit*          m_pEdtVal;
-    QComboBox*          m_pCmbUnit;
-    QHBoxLayout*        m_pLytButtons;
-    QPushButton*        m_pBtnOk;
-    QPushButton*        m_pBtnReset;
-    QPushButton*        m_pBtnCancel;
+    CPhysVal m_physValOld;
+    CUnit m_unit;
+    double m_fMin;
+    double m_fMax;
+    int m_iDecimals;
+    QVBoxLayout* m_pLytDlg;
+    QHBoxLayout* m_pLytLine;
+    QLineEdit* m_pEdtVal;
+    QComboBox* m_pCmbUnit;
+    QHBoxLayout* m_pLytButtons;
+    QPushButton* m_pBtnOk;
+    QPushButton* m_pBtnReset;
+    QPushButton* m_pBtnCancel;
 
 }; // class CDlgEditPhysVal
 

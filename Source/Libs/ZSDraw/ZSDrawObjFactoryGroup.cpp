@@ -45,7 +45,6 @@ may result in using the software modules.
 
 using namespace ZS::System;
 using namespace ZS::Draw;
-using namespace ZS::Trace;
 
 
 /*******************************************************************************
@@ -86,13 +85,13 @@ CGraphObj* CObjFactoryGroup::createGraphObj(
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createGraphObj",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -115,7 +114,7 @@ SErrResultInfo CObjFactoryGroup::saveGraphObj(
 
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo  = "GraphObj:" + i_pGraphObj->nameSpace();
         strAddTrcInfo += "::" + i_pGraphObj->className();
@@ -124,7 +123,7 @@ SErrResultInfo CObjFactoryGroup::saveGraphObj(
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "saveGraphObj",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -201,7 +200,7 @@ SErrResultInfo CObjFactoryGroup::saveGraphObj(
 
             strNameSpaceChild = pGraphObjChild->nameSpace();
             strClassNameChild = pGraphObjChild->className();
-            strObjTypeChild   = pGraphObjChild->getTypeAsString();
+            strObjTypeChild   = pGraphObjChild->typeAsString();
             strObjNameChild   = pGraphObjChild->name();
             strObjIdChild     = pGraphObjChild->keyInTree();
 
@@ -243,7 +242,7 @@ SErrResultInfo CObjFactoryGroup::saveGraphObj(
 
                 strNameSpaceChild = pGraphObjChild->nameSpace();
                 strClassNameChild = pGraphObjChild->className();
-                strObjTypeChild   = pGraphObjChild->getTypeAsString();
+                strObjTypeChild   = pGraphObjChild->typeAsString();
                 strObjNameChild   = pGraphObjChild->name();
                 strObjIdChild     = pGraphObjChild->keyInTree();
 
@@ -272,7 +271,7 @@ SErrResultInfo CObjFactoryGroup::saveGraphObj(
         }
     }
 
-    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         mthTracer.setMethodReturn(errResultInfo);
     }
@@ -300,7 +299,7 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "loadGraphObj",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -595,7 +594,7 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
 
     } // if( i_pDrawingScene->findGraphObj(i_strObjId) == nullptr )
 
-    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         mthTracer.setMethodReturn(io_errResultInfo);
     }

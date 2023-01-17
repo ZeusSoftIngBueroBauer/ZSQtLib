@@ -38,49 +38,6 @@ may result in using the software modules.
 
 
 /*******************************************************************************
-Libraries depending on build configuration and used Qt version
-*******************************************************************************/
-
-#ifdef _WINDOWS
-
-#ifdef USE_PRAGMA_COMMENT_LIB_INCLUDE_IN_MAIN_MODULES
-
-#pragma message(__FILE__ ": Linking against = " QTCORELIB)
-#pragma comment(lib, QTCORELIB)
-#pragma message(__FILE__ ": Linking against = " QTNETWORKLIB)
-#pragma comment(lib, QTNETWORKLIB)
-#pragma message(__FILE__ ": Linking against = " QTXMLLIB)
-#pragma comment(lib, QTXMLLIB)
-#pragma message(__FILE__ ": Linking against = " QTGUILIB)
-#pragma comment( lib, QTGUILIB )
-#if QT_VERSION >= 0x050000 && QT_VERSION < 0x060000
-#pragma message(__FILE__ ": Linking against = " QTWIDGETSLIB)
-#pragma comment( lib, QTWIDGETSLIB )
-#endif
-
-#pragma message(__FILE__ ": Linking against = " ZSSYSLIB)
-#pragma comment(lib, ZSSYSLIB)
-#pragma message(__FILE__ ": Linking against = " ZSSYSGUILIB)
-#pragma comment(lib, ZSSYSGUILIB)
-#pragma message(__FILE__ ": Linking against = " ZSIPCLIB)
-#pragma comment(lib, ZSIPCLIB)
-#pragma message(__FILE__ ": Linking against = " ZSIPCGUILIB)
-#pragma comment(lib, ZSIPCGUILIB)
-#pragma message(__FILE__ ": Linking against = " ZSIPCTRACELIB)
-#pragma comment(lib, ZSIPCTRACELIB)
-#pragma message(__FILE__ ": Linking against = " ZSIPCTRACEGUILIB)
-#pragma comment(lib, ZSIPCTRACEGUILIB)
-#pragma message(__FILE__ ": Linking against = " ZSPHYSVALLIB)
-#pragma comment(lib, ZSPHYSVALLIB)
-#pragma message(__FILE__ ": Linking against = " ZSPHYSSIZESGEOMETRYLIB)
-#pragma comment(lib, ZSPHYSSIZESGEOMETRYLIB)
-
-#endif // #ifdef USE_PRAGMA_COMMENT_LIB_INCLUDE_IN_MAIN_MODULES
-
-#endif // #ifdef _WINDOWS
-
-
-/*******************************************************************************
 Entry point for the DLL application.
 *******************************************************************************/
 

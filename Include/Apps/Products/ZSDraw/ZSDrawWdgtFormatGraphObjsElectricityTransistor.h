@@ -76,7 +76,7 @@ private: // instance members
     QComboBox*               m_pCmbDopingType;
     QCheckBox*               m_pChkDopingTypeVisible;
     // Trace
-    ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CWdgtFormatGraphObjsTransistor
 

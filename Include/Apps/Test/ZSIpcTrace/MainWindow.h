@@ -48,23 +48,6 @@ namespace System
 {
 class CRequest;
 struct SErrResultInfo;
-
-namespace GUI
-{
-class CDlgErrLog;
-class CDlgIdxTreeTrcAdminObjs;
-class CDlgRequestExecTree;
-}
-}
-namespace Trace
-{
-class CIpcTrcClient;
-class CIpcTrcServer;
-
-namespace GUI
-{
-class CDlgTrcServer;
-}
 }
 
 namespace Apps

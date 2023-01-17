@@ -307,7 +307,7 @@ QGraphicsItem::GraphicsItemChange
 const ZS::System::SEnumEntry s_arEnumStrGraphicsItemChange[] =
 {
     /*  0 */ SEnumEntry( QGraphicsItem::ItemPositionChange, "PositionChange" ),
-    /*  1 */ SEnumEntry( QGraphicsItem::ItemMatrixChange, "MatrixChange" ),
+    /*  1 */ SEnumEntry( 1 /*QGraphicsItem::ItemMatrixChange*/, "MatrixChange" ),
     /*  2 */ SEnumEntry( QGraphicsItem::ItemVisibleChange, "VisibleChange" ),
     /*  3 */ SEnumEntry( QGraphicsItem::ItemEnabledChange, "EnabledChange" ),
     /*  4 */ SEnumEntry( QGraphicsItem::ItemSelectedChange, "SelectedChange" ),

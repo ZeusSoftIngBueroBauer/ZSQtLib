@@ -36,7 +36,7 @@ may result in using the software modules.
 
 namespace ZS
 {
-namespace Trace
+namespace System
 {
 class CTrcAdminObj;
 }
@@ -155,7 +155,6 @@ class ZSDRAWDLL_API CGraphObj : public ZS::System::CIdxTreeEntry
 //******************************************************************************
 {
 friend class CGraphObjLabel;
-
 public: // class methods
     /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
@@ -181,6 +180,23 @@ public: // must overridables
 public: // overridables
     virtual QString nameSpace() { return NameSpace(); }
     virtual QString className() { return ClassName(); }
+    virtual QString objectName() { return name(); }
+public: // instance methods
+    EGraphObjType type() const { return m_type; }
+    QString typeAsString() const { return m_strType; }
+    bool isPoint() const { return m_type == EGraphObjTypePoint; }
+    bool isLine() const { return m_type == EGraphObjTypeLine; }
+    bool isRect() const { return m_type == EGraphObjTypeRect; }
+    bool isEllipse() const { return m_type == EGraphObjTypeEllipse; }
+    bool isPolygon() const { return m_type == EGraphObjTypePolygon; }
+    bool isPolyline() const { return m_type == EGraphObjTypePolyline; }
+    bool isText() const { return m_type == EGraphObjTypeText; }
+    bool isImage() const { return m_type == EGraphObjTypeImage; }
+    bool isConnectionPoint() const { return m_type == EGraphObjTypeConnectionPoint; }
+    bool isConnectionLine() const { return m_type == EGraphObjTypeConnectionLine; }
+    bool isGroup() const { return m_type == EGraphObjTypeGroup; }
+    bool isSelectionPoint() const { return m_type == EGraphObjTypeSelectionPoint; }
+    bool isLabel() const { return m_type == EGraphObjTypeLabel; }
 public: // instance methods
     CDrawingScene* getDrawingScene() { return m_pDrawingScene; }
 public: // overridables
@@ -192,8 +208,6 @@ protected: // overridables of base class CIdxTreeEntry
     virtual void setKeyInTree( const QString& i_strKey ) override;
 public: // instance methods
     QString getFactoryGroupName() const { return m_strFactoryGroupName; }
-    EGraphObjType getType() const { return m_type; }
-    QString getTypeAsString() const { return m_strType; }
     CEnumEditMode getEditMode() const { return m_editMode; }
     CEnumEditResizeMode getEditResizeMode() const { return m_editResizeMode; }
 public: // overridables
@@ -460,15 +474,15 @@ protected: // instance members
     QList<SGraphObjKeyEventFct>       m_arKeyPressEventFunctions;
     QList<SGraphObjKeyEventFct>       m_arKeyReleaseEventFunctions;
     // Method Tracing (has to be created in ctor of "final" class)
-    ZS::Trace::CTrcAdminObj*          m_pTrcAdminObjCtorsAndDtor;
-    ZS::Trace::CTrcAdminObj*          m_pTrcAdminObjItemChange;
-    ZS::Trace::CTrcAdminObj*          m_pTrcAdminObjBoundingRect;
-    ZS::Trace::CTrcAdminObj*          m_pTrcAdminObjPaint;
-    ZS::Trace::CTrcAdminObj*          m_pTrcAdminObjSceneEvent;
-    ZS::Trace::CTrcAdminObj*          m_pTrcAdminObjSceneEventFilter;
-    ZS::Trace::CTrcAdminObj*          m_pTrcAdminObjHoverEvents;
-    ZS::Trace::CTrcAdminObj*          m_pTrcAdminObjMouseEvents;
-    ZS::Trace::CTrcAdminObj*          m_pTrcAdminObjKeyEvents;
+    ZS::System::CTrcAdminObj*          m_pTrcAdminObjCtorsAndDtor;
+    ZS::System::CTrcAdminObj*          m_pTrcAdminObjItemChange;
+    ZS::System::CTrcAdminObj*          m_pTrcAdminObjBoundingRect;
+    ZS::System::CTrcAdminObj*          m_pTrcAdminObjPaint;
+    ZS::System::CTrcAdminObj*          m_pTrcAdminObjSceneEvent;
+    ZS::System::CTrcAdminObj*          m_pTrcAdminObjSceneEventFilter;
+    ZS::System::CTrcAdminObj*          m_pTrcAdminObjHoverEvents;
+    ZS::System::CTrcAdminObj*          m_pTrcAdminObjMouseEvents;
+    ZS::System::CTrcAdminObj*          m_pTrcAdminObjKeyEvents;
 
 }; // class CGraphObj
 

@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -33,6 +33,11 @@ class QLineEdit;
 
 namespace ZS
 {
+namespace Trace
+{
+class CTrcAdminObj;
+}
+
 namespace Draw
 {
 class CDrawSettings;
@@ -45,23 +50,22 @@ class CGraphObjWdgtLineEdit : public CGraphObjWdgt
 //******************************************************************************
 {
 public: // class methods
-    /*! Returns the namespace the class belongs to. */
-    static QString NameSpace() { return "ZS::Draw::QtWidgets"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
-    /*! Returns the class name. */
-    static QString ClassName() { return "CGraphObjWdgtLineEdit"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
+    // For sub system test used. Method call only allowed if currently no
+    // graphical objects of this class are created.
+    static void ResetCtorsDtorsCounters();
 public: // ctors and dtor
     CGraphObjWdgtLineEdit(
         CDrawingScene*       i_pDrawingScene,
         const CDrawSettings& i_drawSettings,
-        const QString&       i_strObjName = "" );
+        const QString&       i_strObjName = "",
+        const QString&       i_strObjId = "" );
     virtual ~CGraphObjWdgtLineEdit();
-public: // overridables
-    virtual QString nameSpace() { return NameSpace(); }
-    virtual QString className() { return ClassName(); }
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone();
 protected: // class members
-    static qint64 s_iInstCount;
+    static qint64                   s_iCtorsCount;
+    static qint64                   s_iDtorsCount;
+    static ZS::System::CTrcAdminObj* s_pTrcAdminObjCtorsAndDtor;
 protected: // instance members
     QLineEdit* m_pLineEdit;
 

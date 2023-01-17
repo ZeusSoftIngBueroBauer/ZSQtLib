@@ -76,7 +76,7 @@ private: // instance members
     QComboBox*               m_pCmbState;
     QCheckBox*               m_pChkStateVisible;
     // Trace
-    ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CWdgtFormatGraphObjsSwitch
 

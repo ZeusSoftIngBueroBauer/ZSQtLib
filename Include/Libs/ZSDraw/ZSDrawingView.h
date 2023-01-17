@@ -40,7 +40,7 @@ may result in using the software modules.
 
 namespace ZS
 {
-namespace Trace
+namespace System
 {
 class CTrcAdminObj;
 }
@@ -79,9 +79,6 @@ public: // overridables
 public: // instance methods
     CPageSetup* getPageSetup() { return &m_pageSetup; }
     CDrawingScene* getDrawingScene() { return m_pDrawingScene; }
-public: // instance methods
-    double getXResolutionInDpmm();  // horizontal resolution of paint device in dots per milli meter
-    double getYResolutionInDpmm();  // vertical resolution of paint device in dots per milli meter
 public: // instance methods (drawing area)
     void setDrawingSize( const QSize& i_size );
     void setDrawingSizeInPixels( int i_iWidth_px, int i_iHeight_px );
@@ -109,9 +106,9 @@ protected slots:
 protected: // instance members
     CPageSetup               m_pageSetup;
     CDrawingScene*           m_pDrawingScene;
-    ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
-    ZS::Trace::CTrcAdminObj* m_pTrcAdminObjMouseMoveEvent;
-    ZS::Trace::CTrcAdminObj* m_pTrcAdminObjPaintEvent;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjMouseMoveEvent;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjPaintEvent;
 
 }; // class CDrawingView
 
