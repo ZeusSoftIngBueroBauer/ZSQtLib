@@ -186,31 +186,31 @@ protected slots:
 protected slots:
     void onIdxTreeAboutToBeDestroyed();
 protected: // instance members
-    CIdxTree*         m_pIdxTree;
+    CIdxTree* m_pIdxTree;
     CDelegateIdxTree* m_pDelegate;
-    CModelIdxTree*    m_pModel;
-    QMenu*      m_pMenuBranchContext;
-    QAction*    m_pActionBranchTitle;
-    QAction*    m_pActionBranchExpand;
-    QAction*    m_pActionBranchCollapse;
-    QAction*    m_pActionBranchCreateNewBranch;
-    QAction*    m_pActionBranchCreateNewLeave;
-    QAction*    m_pActionBranchDelete;
-    QAction*    m_pActionBranchCut;
-    QAction*    m_pActionBranchCopy;
-    QAction*    m_pActionBranchPaste;
-    QMenu*      m_pMenuLeaveContext;
-    QAction*    m_pActionLeaveTitle;
-    QAction*    m_pActionLeaveDelete;
-    QAction*    m_pActionLeaveCut;
-    QAction*    m_pActionLeaveCopy;
-    QAction*    m_pActionLeavePaste;
+    CModelIdxTree*m_pModel;
+    QMenu* m_pMenuBranchContext;
+    QAction* m_pActionBranchTitle;
+    QAction* m_pActionBranchExpand;
+    QAction* m_pActionBranchCollapse;
+    QAction* m_pActionBranchCreateNewBranch;
+    QAction* m_pActionBranchCreateNewLeave;
+    QAction* m_pActionBranchDelete;
+    QAction* m_pActionBranchCut;
+    QAction* m_pActionBranchCopy;
+    QAction* m_pActionBranchPaste;
+    QMenu* m_pMenuLeaveContext;
+    QAction* m_pActionLeaveTitle;
+    QAction* m_pActionLeaveDelete;
+    QAction* m_pActionLeaveCut;
+    QAction* m_pActionLeaveCopy;
+    QAction* m_pActionLeavePaste;
     QModelIndex m_modelIdxSelectedOnMousePressEvent;
     QModelIndex m_modelIdxSelectedOnMouseReleaseEvent;
     QModelIndex m_modelIdxSelectedForPaste;
     EPasteMode  m_pasteMode;
-    bool        m_bSilentlyExecuteDeleteRequests;
-    bool        m_bSilentlyIgnoreInvalidCopyRequests;
+    bool m_bSilentlyExecuteDeleteRequests;
+    bool m_bSilentlyIgnoreInvalidCopyRequests;
     /*!< Trace admin object to control trace outputs of the class. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 

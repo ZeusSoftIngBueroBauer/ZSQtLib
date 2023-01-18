@@ -27,6 +27,8 @@ may result in using the software modules.
 #ifndef ZSDraw_GraphicsItemsModel_h
 #define ZSDraw_GraphicsItemsModel_h
 
+#if 0
+
 #include <QtCore/qabstractitemmodel.h>
 #include <QtGui/qicon.h>
 
@@ -56,7 +58,7 @@ public: // class methods
     /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
     /*! Returns the class name. */
-    static QString ClassName() { return "QAbstractItemModel"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
+    static QString ClassName() { return "CGraphicsItemsModel"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
 public: // type definitions and constants
     typedef enum
     {
@@ -110,5 +112,7 @@ protected: // instance members
 } // namespace Draw
 
 } // namespace ZS
+
+#endif // #if 0
 
 #endif // #ifndef ZSDraw_GraphicsItemsModel_h

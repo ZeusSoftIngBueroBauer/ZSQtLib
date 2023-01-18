@@ -13,6 +13,8 @@ Content: This file is part of the ZSQtLib.
 
 *******************************************************************************/
 
+#if 0
+
 #include <QtGui/QBitmap>
 
 #include "ZSDraw/ZSDrawGraphicsItemsModel.h"
@@ -887,3 +889,5 @@ QVariant CGraphicsItemsModel::headerData(
     return varData;
 
 } // headerData
+
+#endif // #if 0

@@ -71,40 +71,40 @@ may result in using the software modules.
 
 #include "MainWindow.h"
 #include "App.h"
-#include "ZSDrawObjFactoryWdgtCheckBox.h"
-#include "ZSDrawObjFactoryWdgtComboBox.h"
-#include "ZSDrawObjFactoryWdgtGroupBox.h"
-#include "ZSDrawObjFactoryWdgtLabel.h"
-#include "ZSDrawObjFactoryWdgtLineEdit.h"
-#include "ZSDrawObjFactoryWdgtPushButton.h"
-#include "ZSDrawObjFactoryElectricityCapacitor.h"
-#include "ZSDrawObjFactoryElectricityDiode.h"
-#include "ZSDrawObjFactoryElectricityInductor.h"
-#include "ZSDrawObjFactoryElectricitySwitch.h"
-#include "ZSDrawObjFactoryElectricityResistor.h"
-#include "ZSDrawObjFactoryElectricityTransistor.h"
-#include "ZSDrawObjFactoryElectricityVoltageSource.h"
 
-#include "ZSDraw/ZSDrawAux.h"
-#include "ZSDraw/ZSDrawDlgFormatGraphObjs.h"
-#include "ZSDraw/ZSDrawDlgPageSetup.h"
-#include "ZSDraw/ZSDrawingScene.h"
-#include "ZSDraw/ZSDrawingView.h"
-#include "ZSDraw/ZSDrawGraphObj.h"
-#include "ZSDraw/ZSDrawGraphObjsTreeModel.h"
-#include "ZSDraw/ZSDrawGraphObjsTreeView.h"
-#include "ZSDraw/ZSDrawObjFactoriesModel.h"
-#include "ZSDraw/ZSDrawObjFactoryConnectionLine.h"
-#include "ZSDraw/ZSDrawObjFactoryConnectionPoint.h"
-#include "ZSDraw/ZSDrawObjFactoryEllipse.h"
-#include "ZSDraw/ZSDrawObjFactoryGroup.h"
-#include "ZSDraw/ZSDrawObjFactoryImage.h"
-#include "ZSDraw/ZSDrawObjFactoryLine.h"
-#include "ZSDraw/ZSDrawObjFactoryPoint.h"
-#include "ZSDraw/ZSDrawObjFactoryPolygon.h"
-#include "ZSDraw/ZSDrawObjFactoryPolyline.h"
-#include "ZSDraw/ZSDrawObjFactoryRect.h"
-#include "ZSDraw/ZSDrawObjFactoryText.h"
+#include "Electricity/ZSDrawObjFactoryElectricityCapacitor.h"
+#include "Electricity/ZSDrawObjFactoryElectricityDiode.h"
+#include "Electricity/ZSDrawObjFactoryElectricityInductor.h"
+#include "Electricity/ZSDrawObjFactoryElectricitySwitch.h"
+#include "Electricity/ZSDrawObjFactoryElectricityResistor.h"
+#include "Electricity/ZSDrawObjFactoryElectricityTransistor.h"
+#include "Electricity/ZSDrawObjFactoryElectricityVoltageSource.h"
+#include "QtWidgets/ZSDrawObjFactoryWdgtCheckBox.h"
+#include "QtWidgets/ZSDrawObjFactoryWdgtComboBox.h"
+#include "QtWidgets/ZSDrawObjFactoryWdgtGroupBox.h"
+#include "QtWidgets/ZSDrawObjFactoryWdgtLabel.h"
+#include "QtWidgets/ZSDrawObjFactoryWdgtLineEdit.h"
+#include "QtWidgets/ZSDrawObjFactoryWdgtPushButton.h"
+
+#include "ZSDraw/Common/ZSDrawAux.h"
+#include "ZSDraw/GraphObjFormat/ZSDrawDlgFormatGraphObjs.h"
+#include "ZSDraw/DrawingPageSetup/ZSDrawDlgPageSetup.h"
+#include "ZSDraw/Drawing/ZSDrawingScene.h"
+#include "ZSDraw/Drawing/ZSDrawingView.h"
+#include "ZSDraw/GraphObjs/ZSDrawGraphObj.h"
+#include "ZSDraw/GraphObjs/ZSDrawGraphObjsTreeViewWdgt.h"
+#include "ZSDraw/GraphObjFactories/ZSDrawObjFactoriesModel.h"
+#include "ZSDraw/GraphObjFactories/ZSDrawObjFactoryConnectionLine.h"
+#include "ZSDraw/GraphObjFactories/ZSDrawObjFactoryConnectionPoint.h"
+#include "ZSDraw/GraphObjFactories/ZSDrawObjFactoryEllipse.h"
+#include "ZSDraw/GraphObjFactories/ZSDrawObjFactoryGroup.h"
+#include "ZSDraw/GraphObjFactories/ZSDrawObjFactoryImage.h"
+#include "ZSDraw/GraphObjFactories/ZSDrawObjFactoryLine.h"
+#include "ZSDraw/GraphObjFactories/ZSDrawObjFactoryPoint.h"
+#include "ZSDraw/GraphObjFactories/ZSDrawObjFactoryPolygon.h"
+#include "ZSDraw/GraphObjFactories/ZSDrawObjFactoryPolyline.h"
+#include "ZSDraw/GraphObjFactories/ZSDrawObjFactoryRect.h"
+#include "ZSDraw/GraphObjFactories/ZSDrawObjFactoryText.h"
 #include "ZSPhysValGUI/ZSPhysValDlgEditPhysVal.h"
 #include "ZSIpcTraceGUI/ZSIpcTrcServerDlg.h"
 #include "ZSTestGUI/ZSTestDlg.h"
@@ -361,7 +361,6 @@ CMainWindow::CMainWindow(
     m_pTabWdgtGraphObjs(nullptr),
     // Dock Widget - GraphObjs - Tab GraphicsItems (tree View with graphics items as in drawing scene's items list)
     m_pWdgtGraphicsItems(nullptr),
-    m_pModelIdxTreeGraphObjs(nullptr),
     // Dialogs
     m_pDlgTest(nullptr),
     // Status Bar
@@ -412,62 +411,47 @@ CMainWindow::CMainWindow(
     m_pDrawingScene = new CDrawingScene(/*this*/);
     //m_pDrawingScene->setBackgroundBrush(Qt::blue);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pDrawingScene,
-        /* szSignal     */ SIGNAL(changed(const QList<QRectF>&)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onDrawingSceneChanged(const QList<QRectF>&)) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pDrawingScene,
-        /* szSignal     */ SIGNAL(focusItemChanged(QGraphicsItem*, QGraphicsItem*, Qt::FocusReason)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onDrawingSceneFocusItemChanged(QGraphicsItem*, QGraphicsItem*, Qt::FocusReason)) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pDrawingScene,
-        /* szSignal     */ SIGNAL(sceneRectChanged(const QRectF&)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onDrawingSceneRectChanged(const QRectF&)) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pDrawingScene,
-        /* szSignal     */ SIGNAL(selectionChanged()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onDrawingSceneSelectionChanged()) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pDrawingScene,
-        /* szSignal     */ SIGNAL(mousePosChanged(const QPointF&)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onDrawingSceneMousePosChanged(const QPointF&)) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pDrawingScene,
-        /* szSignal     */ SIGNAL(modeChanged()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onDrawingSceneModeChanged()) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pDrawingScene,
-        /* szSignal     */ SIGNAL(drawSettingsChanged(const ZS::Draw::CDrawSettings&)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onDrawingSceneDrawSettingsChanged(const ZS::Draw::CDrawSettings&)) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pDrawingScene, &CDrawingScene::changed,
+        this, &CMainWindow::onDrawingSceneChanged );
+    QObject::connect(
+        m_pDrawingScene, &CDrawingScene::focusItemChanged,
+        this, &CMainWindow::onDrawingSceneFocusItemChanged );
+    QObject::connect(
+        m_pDrawingScene, &CDrawingScene::sceneRectChanged,
+        this, &CMainWindow::onDrawingSceneRectChanged );
+    QObject::connect(
+        m_pDrawingScene, &CDrawingScene::selectionChanged,
+        this, &CMainWindow::onDrawingSceneSelectionChanged );
+    QObject::connect(
+        m_pDrawingScene, &CDrawingScene::mousePosChanged,
+        this, &CMainWindow::onDrawingSceneMousePosChanged );
+    QObject::connect(
+        m_pDrawingScene, &CDrawingScene::modeChanged,
+        this, &CMainWindow::onDrawingSceneModeChanged );
+    QObject::connect(
+        m_pDrawingScene, &CDrawingScene::drawSettingsChanged,
+        this, &CMainWindow::onDrawingSceneDrawSettingsChanged );
+
+    // Central Widget
+    //---------------
+
+    // Tool bars must have been created before.
+
+    m_pLyt = new QHBoxLayout();
+    m_pWdgtCentral = new QWidget();
+    m_pWdgtCentral->setLayout(m_pLyt);
+    setCentralWidget(m_pWdgtCentral);
+
+    m_pDrawingView = new CDrawingView(m_pDrawingScene);
+    m_pDrawingView->setMouseTracking(true);
+    m_pLyt->addWidget(m_pDrawingView/*, 0, Qt::AlignCenter*/);
+
+    setUnifiedTitleAndToolBarOnMac(true);
+
+    QObject::connect(
+        m_pDrawingView, &CDrawingView::mousePosChanged,
+        this, &CMainWindow::onDrawingViewMousePosChanged );
 
     // Actions
     //--------
@@ -521,31 +505,16 @@ CMainWindow::CMainWindow(
 
         updateErrorsStatus();
 
-        if( !QObject::connect(
-            /* pObjSender   */ CErrLog::GetInstance(),
-            /* szSignal     */ SIGNAL(entryAdded(const ZS::System::SErrResultInfo&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onErrLogEntryAdded(const ZS::System::SErrResultInfo&)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-        if( !QObject::connect(
-            /* pObjSender   */ CErrLog::GetInstance(),
-            /* szSignal     */ SIGNAL(entryChanged(const ZS::System::SErrResultInfo&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onErrLogEntryChanged(const ZS::System::SErrResultInfo&)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-        if( !QObject::connect(
-            /* pObjSender   */ CErrLog::GetInstance(),
-            /* szSignal     */ SIGNAL(entryRemoved(const ZS::System::SErrResultInfo&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onErrLogEntryRemoved(const ZS::System::SErrResultInfo&)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-    } // if( CErrLog::GetInstance() != nullptr )
+        QObject::connect(
+            CErrLog::GetInstance(), &CErrLog::entryAdded,
+            this, &CMainWindow::onErrLogEntryAdded );
+        QObject::connect(
+            CErrLog::GetInstance(), &CErrLog::entryChanged,
+            this, &CMainWindow::onErrLogEntryChanged );
+        QObject::connect(
+            CErrLog::GetInstance(), &CErrLog::entryRemoved,
+            this, &CMainWindow::onErrLogEntryRemoved );
+    }
 
     // ToolBars
     //---------
@@ -556,31 +525,6 @@ CMainWindow::CMainWindow(
     //------------
 
     createDockWidgets();
-
-    // Central Widget
-    //---------------
-
-    // Tool bars must have been created before.
-
-    m_pLyt = new QHBoxLayout();
-    m_pWdgtCentral = new QWidget();
-    m_pWdgtCentral->setLayout(m_pLyt);
-    setCentralWidget(m_pWdgtCentral);
-
-    m_pDrawingView = new CDrawingView(m_pDrawingScene);
-    m_pDrawingView->setMouseTracking(true);
-    m_pLyt->addWidget(m_pDrawingView/*, 0, Qt::AlignCenter*/);
-
-    setUnifiedTitleAndToolBarOnMac(true);
-
-    if( !QObject::connect(
-        /* pObjSender   */ m_pDrawingView,
-        /* szSignal     */ SIGNAL(mousePosChanged(const QPointF&)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onDrawingViewMousePosChanged(const QPointF&)) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
 
     // Restore Geometry
     //-----------------
@@ -624,15 +568,6 @@ CMainWindow::~CMainWindow()
     {
     }
     m_pDlgTest = nullptr;
-
-    try
-    {
-        delete m_pModelIdxTreeGraphObjs;
-    }
-    catch(...)
-    {
-    }
-    m_pModelIdxTreeGraphObjs = nullptr;
 
     try
     {
@@ -1033,7 +968,6 @@ CMainWindow::~CMainWindow()
     m_pTabWdgtGraphObjs = nullptr;
     // Dock Widget - GraphObjs - Tab GraphicsItems (tree View with graphics items as in drawing scene's items list)
     m_pWdgtGraphicsItems = nullptr;
-    m_pModelIdxTreeGraphObjs = nullptr;
     // Dialogs
     m_pDlgTest = nullptr;
     // Status Bar
@@ -1343,14 +1277,9 @@ void CMainWindow::createActions()
     m_pActFileNew->setShortcuts(QKeySequence::New);
     m_pActFileNew->setStatusTip(tr("Create a new file"));
 
-    if( !connect(
-        /* pObjSender   */ m_pActFileNew,
-        /* szSignal     */ SIGNAL(triggered(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActionFileNewTriggered(bool)) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActFileNew, &QAction::triggered,
+        this, &CMainWindow::onActionFileNewTriggered );
 
     // <MenuItem> File::Open
     //----------------------
@@ -1367,14 +1296,9 @@ void CMainWindow::createActions()
     m_pActFileOpen->setShortcuts(QKeySequence::Open);
     m_pActFileOpen->setStatusTip(tr("Open an existing file"));
 
-    if( !connect(
-        /* pObjSender   */ m_pActFileOpen,
-        /* szSignal     */ SIGNAL(triggered(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActionFileOpenTriggered(bool)) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActFileOpen, &QAction::triggered,
+        this, &CMainWindow::onActionFileOpenTriggered );
 
     // <MenuItem> File::Save
     //----------------------
@@ -1391,14 +1315,9 @@ void CMainWindow::createActions()
     m_pActFileSave->setShortcuts(QKeySequence::Save);
     m_pActFileSave->setStatusTip(tr("Save current file"));
 
-    if( !connect(
-        /* pObjSender   */ m_pActFileSave,
-        /* szSignal     */ SIGNAL(triggered(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActionFileSaveTriggered(bool)) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActFileSave, &QAction::triggered,
+        this, &CMainWindow::onActionFileSaveTriggered );
 
     // <MenuItem> File::Save As
     //-------------------------
@@ -1415,14 +1334,9 @@ void CMainWindow::createActions()
     m_pActFileSaveAs->setShortcuts(QKeySequence::SaveAs);
     m_pActFileSaveAs->setStatusTip(tr("Save current file choosing a different file name"));
 
-    if( !connect(
-        /* pObjSender   */ m_pActFileSaveAs,
-        /* szSignal     */ SIGNAL(triggered(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActionFileSaveAsTriggered(bool)) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActFileSaveAs, &QAction::triggered,
+        this, &CMainWindow::onActionFileSaveAsTriggered );
 
     // <MenuItem> File::Page Setup
     //----------------------------
@@ -1438,14 +1352,9 @@ void CMainWindow::createActions()
     m_pActFilePageSetup->setShortcuts(QKeySequence::Preferences);
     m_pActFilePageSetup->setStatusTip(tr("Set properties of current page"));
 
-    if( !connect(
-        /* pObjSender   */ m_pActFilePageSetup,
-        /* szSignal     */ SIGNAL(triggered(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActionFilePageSetupTriggered(bool)) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActFilePageSetup, &QAction::triggered,
+        this, &CMainWindow::onActionFilePageSetupTriggered );
 
     // <MenuItem> File::Recent Files
     //------------------------------
@@ -1471,14 +1380,9 @@ void CMainWindow::createActions()
                 m_arpActFilesRecent[idxFile] = new QAction(this);
                 m_arpActFilesRecent[idxFile]->setVisible(false);
 
-                if( !connect(
-                    /* pObjSender   */ m_arpActFilesRecent[idxFile],
-                    /* szSignal     */ SIGNAL(triggered(bool)),
-                    /* pObjReceiver */ this,
-                    /* szSlot       */ SLOT(onActionFileRecentTriggered(bool)) ) )
-                {
-                    throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-                }
+                QObject::connect(
+                    m_arpActFilesRecent[idxFile], &QAction::triggered,
+                    this, &CMainWindow::onActionFileRecentTriggered );
             }
         }
 
@@ -1492,14 +1396,9 @@ void CMainWindow::createActions()
     m_pActFileQuit = new QAction( c_strActionNameFileQuit.section(":",-1,-1), this );
     m_pActFileQuit->setStatusTip( tr("Quit application") );
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pActFileQuit,
-        /* szSignal     */ SIGNAL(triggered(bool)),
-        /* pObjReceiver */ QApplication::instance(),
-        /* szSlot       */ SLOT(onLastWindowClosed()) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActFileQuit, &QAction::triggered,
+        this, &CApplication::quit );
 
     // <Menu> Mode
     //============
@@ -1516,14 +1415,9 @@ void CMainWindow::createActions()
     m_pActModeEdit->setCheckable(true);
     m_pActModeEdit->setChecked(true);
 
-    if( !connect(
-        /* pObjSender   */ m_pActModeEdit,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActionModeEditToggled(bool)) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActModeEdit, &QAction::triggered,
+        this, &CMainWindow::onActionModeEditToggled );
 
     // <MenuItem> Mode::Simulation
     //-------------------------------
@@ -1536,14 +1430,9 @@ void CMainWindow::createActions()
     m_pActModeSimulation->setStatusTip( tr("Activate Simulation Mode") );
     m_pActModeSimulation->setCheckable(true);
 
-    if( !connect(
-        /* pObjSender   */ m_pActModeSimulation,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActionModeSimulationToggled(bool)) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActModeSimulation, &QAction::triggered,
+        this, &CMainWindow::onActionModeSimulationToggled );
 
     // <Menu> Edit
     //============
@@ -1563,14 +1452,9 @@ void CMainWindow::createActions()
     m_pActEditSelect->setCheckable(true);
     m_pActEditSelect->setEnabled(false);
 
-    if( !connect(
-        /* pObjSender   */ m_pActEditSelect,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActionEditSelectToggled(bool)) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActEditSelect, &QAction::triggered,
+        this, &CMainWindow::onActionEditSelectToggled );
 
     // <MenuItem> Edit::Rotate::Left
     //------------------------------
@@ -1586,14 +1470,9 @@ void CMainWindow::createActions()
     m_pActEditRotateLeft->setStatusTip( tr("Rotate Selected Object(s) Left (counterclockwise)") );
     m_pActEditRotateLeft->setEnabled(false);
 
-    if( !connect(
-        /* pObjSender   */ m_pActEditRotateLeft,
-        /* szSignal     */ SIGNAL(triggered(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActionEditRotateLeftTriggered(bool)) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActEditRotateLeft, &QAction::triggered,
+        this, &CMainWindow::onActionEditRotateLeftTriggered );
 
     // <MenuItem> Edit::Rotate::Right
     //-------------------------------
@@ -1609,14 +1488,9 @@ void CMainWindow::createActions()
     m_pActEditRotateRight->setStatusTip( tr("Rotate Selected Object(s) Right (clockwise)") );
     m_pActEditRotateRight->setEnabled(false);
 
-    if( !connect(
-        /* pObjSender   */ m_pActEditRotateRight,
-        /* szSignal     */ SIGNAL(triggered(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActionEditRotateRightTriggered(bool)) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActEditRotateRight, &QAction::triggered,
+        this, &CMainWindow::onActionEditRotateRightTriggered );
 
     // <MenuItem> Edit::Rotate::Angle
     //-------------------------------
@@ -1637,14 +1511,9 @@ void CMainWindow::createActions()
     m_pActEditMirrorVertical->setStatusTip( tr("Vertically Mirror Selected Object(s)") );
     m_pActEditMirrorVertical->setEnabled(false);
 
-    if( !connect(
-        /* pObjSender   */ m_pActEditMirrorVertical,
-        /* szSignal     */ SIGNAL(triggered(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActionEditMirrorVerticalTriggered(bool)) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActEditMirrorVertical, &QAction::triggered,
+        this, &CMainWindow::onActionEditMirrorVerticalTriggered );
 
     // <MenuItem> Edit::Mirror::Horizontal
     //------------------------------------
@@ -1660,14 +1529,9 @@ void CMainWindow::createActions()
     m_pActEditMirrorHorizontal->setStatusTip( tr("Horizontally Mirror Selected Object(s)") );
     m_pActEditMirrorHorizontal->setEnabled(false);
 
-    if( !connect(
-        /* pObjSender   */ m_pActEditMirrorHorizontal,
-        /* szSignal     */ SIGNAL(triggered(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActionEditMirrorHorizontalTriggered(bool)) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActEditMirrorHorizontal, &QAction::triggered,
+        this, &CMainWindow::onActionEditMirrorHorizontalTriggered );
 
     // <MenuItem> Edit::Group
     //-----------------------
@@ -1683,14 +1547,9 @@ void CMainWindow::createActions()
     m_pActEditGroup->setStatusTip(tr("Group Selected Objects"));
     m_pActEditGroup->setEnabled(false);
 
-    if( !connect(
-        /* pObjSender   */ m_pActEditGroup,
-        /* szSignal     */ SIGNAL(triggered(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActionEditGroupTriggered(bool)) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActEditGroup, &QAction::triggered,
+        this, &CMainWindow::onActionEditGroupTriggered );
 
     // <MenuItem> Edit::Ungroup
     //-------------------------
@@ -1706,14 +1565,9 @@ void CMainWindow::createActions()
     m_pActEditUngroup->setStatusTip( tr("Ungroup Selected Group(s)") );
     m_pActEditUngroup->setEnabled(false);
 
-    if( !connect(
-        /* pObjSender   */ m_pActEditUngroup,
-        /* szSignal     */ SIGNAL(triggered(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActionEditUngroupTriggered(bool)) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActEditUngroup, &QAction::triggered,
+        this, &CMainWindow::onActionEditUngroupTriggered );
 
     // <Menu> Draw
     //============
@@ -1734,14 +1588,9 @@ void CMainWindow::createActions()
     m_pActDrawSettingsLine = new QAction( iconEditDrawSettingsLine, c_strActionNameDrawSettingsLine.section(":",-1,-1), this );
     m_pActDrawSettingsLine->setStatusTip( tr("Draw Settings Line Style") );
 
-    if( !connect(
-        /* pObjSender   */ m_pActDrawSettingsLine,
-        /* szSignal     */ SIGNAL(triggered(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActionDrawSettingsLineTriggered(bool)) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActDrawSettingsLine, &QAction::triggered,
+        this, &CMainWindow::onActionDrawSettingsLineTriggered );
 
     // <MenuItem> Draw::Settings::Fill
     //---------------------------------
@@ -1756,14 +1605,9 @@ void CMainWindow::createActions()
     m_pActDrawSettingsFill = new QAction( iconEditDrawSettingsFill, c_strActionNameDrawSettingsFill.section(":",-1,-1), this );
     m_pActDrawSettingsFill->setStatusTip( tr("Draw Settings Fill Style") );
 
-    if( !connect(
-        /* pObjSender   */ m_pActDrawSettingsFill,
-        /* szSignal     */ SIGNAL(triggered(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActionDrawSettingsFillTriggered(bool)) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActDrawSettingsFill, &QAction::triggered,
+        this, &CMainWindow::onActionDrawSettingsFillTriggered );
 
     // <MenuItem> Draw::Settings::Text
     //---------------------------------
@@ -1778,14 +1622,9 @@ void CMainWindow::createActions()
     m_pActDrawSettingsText = new QAction( iconEditDrawSettingsText, c_strActionNameDrawSettingsText.section(":",-1,-1), this );
     m_pActDrawSettingsText->setStatusTip( tr("Draw Settings Text Style") );
 
-    if( !connect(
-        /* pObjSender   */ m_pActDrawSettingsText,
-        /* szSignal     */ SIGNAL(triggered(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActionDrawSettingsTextTriggered(bool)) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActDrawSettingsText, &QAction::triggered,
+        this, &CMainWindow::onActionDrawSettingsTextTriggered );
 
     // <Menu> Draw::Standard Shapes
     //---------------------------------------------
@@ -1802,14 +1641,9 @@ void CMainWindow::createActions()
     m_pActDrawStandardShapePoint->setStatusTip(tr("Draw Points"));
     m_pActDrawStandardShapePoint->setCheckable(true);
 
-    if( !connect(
-        /* pObjSender   */ m_pActDrawStandardShapePoint,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActionDrawStandardShapePointToggled(bool)) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActDrawStandardShapePoint, &QAction::triggered,
+        this, &CMainWindow::onActionDrawStandardShapePointToggled );
 
     // <MenuItem> Draw::Standard Shapes::Draw Line
     //--------------------------------------------
@@ -1823,14 +1657,9 @@ void CMainWindow::createActions()
     m_pActDrawStandardShapeLine->setStatusTip(tr("Draw Lines"));
     m_pActDrawStandardShapeLine->setCheckable(true);
 
-    if( !connect(
-        /* pObjSender   */ m_pActDrawStandardShapeLine,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActionDrawStandardShapeLineToggled(bool)) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActDrawStandardShapeLine, &QAction::triggered,
+        this, &CMainWindow::onActionDrawStandardShapeLineToggled );
 
     // <MenuItem> Draw::Standard Shapes::Draw Rect
     //--------------------------------------------
@@ -1844,14 +1673,9 @@ void CMainWindow::createActions()
     m_pActDrawStandardShapeRect->setStatusTip(tr("Draw Rectangles"));
     m_pActDrawStandardShapeRect->setCheckable(true);
 
-    if( !connect(
-        /* pObjSender   */ m_pActDrawStandardShapeRect,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActionDrawStandardShapeRectToggled(bool)) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActDrawStandardShapeRect, &QAction::triggered,
+        this, &CMainWindow::onActionDrawStandardShapeRectToggled );
 
     // <MenuItem> Draw::Standard Shapes::Draw Ellipse
     //-----------------------------------------------
@@ -1865,14 +1689,9 @@ void CMainWindow::createActions()
     m_pActDrawStandardShapeEllipse->setStatusTip(tr("Draw Ellipses"));
     m_pActDrawStandardShapeEllipse->setCheckable(true);
 
-    if( !connect(
-        /* pObjSender   */ m_pActDrawStandardShapeEllipse,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActionDrawStandardShapeEllipseToggled(bool)) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActDrawStandardShapeEllipse, &QAction::triggered,
+        this, &CMainWindow::onActionDrawStandardShapeEllipseToggled );
 
     // <MenuItem> Draw::Standard Shapes::Draw Polyline
     //------------------------------------------------
@@ -1886,14 +1705,9 @@ void CMainWindow::createActions()
     m_pActDrawStandardShapePolyline->setStatusTip(tr("Draw Polylines"));
     m_pActDrawStandardShapePolyline->setCheckable(true);
 
-    if( !connect(
-        /* pObjSender   */ m_pActDrawStandardShapePolyline,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActionDrawStandardShapePolylineToggled(bool)) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActDrawStandardShapePolyline, &QAction::triggered,
+        this, &CMainWindow::onActionDrawStandardShapePolylineToggled );
 
     // <MenuItem> Draw::Standard Shapes::Draw Polygon
     //------------------------------------------------
@@ -1907,14 +1721,9 @@ void CMainWindow::createActions()
     m_pActDrawStandardShapePolygon->setStatusTip(tr("Draw Polygons"));
     m_pActDrawStandardShapePolygon->setCheckable(true);
 
-    if( !connect(
-        /* pObjSender   */ m_pActDrawStandardShapePolygon,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActionDrawStandardShapePolygonToggled(bool)) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActDrawStandardShapePolygon, &QAction::triggered,
+        this, &CMainWindow::onActionDrawStandardShapePolygonToggled );
 
     // <MenuItem> Draw::Standard Shapes::Draw Text
     //------------------------------------------------
@@ -1928,14 +1737,9 @@ void CMainWindow::createActions()
     m_pActDrawStandardShapeText->setStatusTip(tr("Draw Texts"));
     m_pActDrawStandardShapeText->setCheckable(true);
 
-    if( !connect(
-        /* pObjSender   */ m_pActDrawStandardShapeText,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActionDrawStandardShapeTextToggled(bool)) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActDrawStandardShapeText, &QAction::triggered,
+        this, &CMainWindow::onActionDrawStandardShapeTextToggled );
 
     // <Menu> Draw::Graphics
     //----------------------
@@ -1952,14 +1756,9 @@ void CMainWindow::createActions()
     m_pActDrawGraphicsImage->setStatusTip(tr("Insert Images"));
     m_pActDrawGraphicsImage->setCheckable(false);
 
-    if( !connect(
-        /* pObjSender   */ m_pActDrawGraphicsImage,
-        /* szSignal     */ SIGNAL(triggered(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActionDrawGraphicsImageTriggered(bool)) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActDrawGraphicsImage, &QAction::triggered,
+        this, &CMainWindow::onActionDrawGraphicsImageTriggered );
 
     // <Menu> Draw::Connections
     //-------------------------
@@ -1976,14 +1775,9 @@ void CMainWindow::createActions()
     m_pActDrawConnectionPoint->setStatusTip(tr("Draw Connection Point"));
     m_pActDrawConnectionPoint->setCheckable(true);
 
-    if( !connect(
-        /* pObjSender   */ m_pActDrawConnectionPoint,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActionDrawConnectionPointToggled(bool)) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActDrawConnectionPoint, &QAction::triggered,
+        this, &CMainWindow::onActionDrawConnectionPointToggled );
 
     // <MenuItem> Draw::Connections::Draw Connection Line
     //----------------------------------------------------
@@ -1997,14 +1791,9 @@ void CMainWindow::createActions()
     m_pActDrawConnectionLine->setStatusTip(tr("Draw Connection Line"));
     m_pActDrawConnectionLine->setCheckable(true);
 
-    if( !connect(
-        /* pObjSender   */ m_pActDrawConnectionLine,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActionDrawConnectionLineToggled(bool)) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActDrawConnectionLine, &QAction::triggered,
+        this, &CMainWindow::onActionDrawConnectionLineToggled );
 
     // <Menu> View
     //============
@@ -2020,14 +1809,9 @@ void CMainWindow::createActions()
     m_pActViewZoomIn = new QAction(iconViewZoomIn, c_strActionNameViewZoomIn.section(":",-1,-1), this);
     m_pActViewZoomIn->setStatusTip( tr("Zoom In") );
 
-    if( !connect(
-        /* pObjSender   */ m_pActViewZoomIn,
-        /* szSignal     */ SIGNAL(triggered(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActionViewZoomInTriggered(bool)) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActViewZoomIn, &QAction::triggered,
+        this, &CMainWindow::onActionViewZoomInTriggered );
 
     // <MenuItem> View::ZoomOut
     //-------------------------
@@ -2040,14 +1824,9 @@ void CMainWindow::createActions()
     m_pActViewZoomOut = new QAction(iconViewZoomOut, c_strActionNameViewZoomOut.section(":",-1,-1), this);
     m_pActViewZoomOut->setStatusTip( tr("Zoom Out") );
 
-    if( !connect(
-        /* pObjSender   */ m_pActViewZoomOut,
-        /* szSignal     */ SIGNAL(triggered(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActionViewZoomOutTriggered(bool)) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActViewZoomOut, &QAction::triggered,
+        this, &CMainWindow::onActionViewZoomOutTriggered );
 
     // <Menu> Debug & Trace
     //=====================
@@ -2059,14 +1838,9 @@ void CMainWindow::createActions()
     {
         m_pActTraceErrLog = new QAction(c_strActionNameTraceErrLog.section(":",-1,-1),this);
 
-        if( !QObject::connect(
-            /* pObjSender   */ m_pActTraceErrLog,
-            /* szSignal     */ SIGNAL(triggered(bool)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onActionTraceErrLogTriggered(bool)) ) )
-        {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-        }
+        QObject::connect(
+            m_pActTraceErrLog, &QAction::triggered,
+            this, &CMainWindow::onActionTraceErrLogTriggered );
     }
 
     // <MenuItem> DebugTrace::Trace Server
@@ -2076,14 +1850,9 @@ void CMainWindow::createActions()
     {
         m_pActTraceServer = new QAction(c_strActionNameTraceServer.section(":",-1,-1),this);
 
-        if( !QObject::connect(
-            /* pObjSender   */ m_pActTraceServer,
-            /* szSignal     */ SIGNAL(triggered(bool)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onActionTraceServerTriggered(bool)) ) )
-        {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-        }
+        QObject::connect(
+            m_pActTraceServer, &QAction::triggered,
+            this, &CMainWindow::onActionTraceServerTriggered );
     }
 
     // <MenuItem> DebugTrace::Trace Admin Objects
@@ -2093,14 +1862,9 @@ void CMainWindow::createActions()
     {
         m_pActTraceAdminObjIdxTree = new QAction(c_strActionNameTraceAdminObjIdxTree.section(":",-1,-1),this);
 
-        if( !QObject::connect(
-            /* pObjSender   */ m_pActTraceAdminObjIdxTree,
-            /* szSignal     */ SIGNAL(triggered(bool)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onActionTraceAdminObjIdxTreeTriggered(bool)) ) )
-        {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-        }
+        QObject::connect(
+            m_pActTraceAdminObjIdxTree, &QAction::triggered,
+            this, &CMainWindow::onActionTraceAdminObjIdxTreeTriggered );
     }
 
     // <MenuItem> DebugTrace::Test
@@ -2110,16 +1874,10 @@ void CMainWindow::createActions()
     {
         m_pActionDebugTest = new QAction( "Subsystem Test", this );
 
-        if( !connect(
-            /* pObjSender   */ m_pActionDebugTest,
-            /* szSignal     */ SIGNAL(triggered(bool)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onActionDebugTestTriggered(bool)) ) )
-        {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-        }
-
-    } // if( m_pTest != nullptr )
+        QObject::connect(
+            m_pActionDebugTest, &QAction::triggered,
+            this, &CMainWindow::onActionDebugTestTriggered );
+    }
 
     // <Menu> Info
     //=====================
@@ -2899,14 +2657,9 @@ void CMainWindow::createToolBars()
         m_pEdtViewZoomFactor_perCent->setValue(m_iViewZoomFactor_perCent);
         m_pToolBarView->addWidget(m_pEdtViewZoomFactor_perCent);
 
-        if( !QObject::connect(
-            /* pObjSender   */ m_pEdtViewZoomFactor_perCent,
-            /* szSignal     */ SIGNAL( editingFinished() ),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT( onEdtViewZoomFactorEditingFinished() ) ) )
-        {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-        }
+        QObject::connect(
+            m_pEdtViewZoomFactor_perCent, &QSpinBox::editingFinished,
+            this, &CMainWindow::onEdtViewZoomFactorEditingFinished );
     }
 
 } // createToolBars
@@ -2948,23 +2701,12 @@ void CMainWindow::createDockWidgets()
 
         addDockWidget( Qt::LeftDockWidgetArea, m_pDockWdgtObjFactories );
 
-        if( !QObject::connect(
-            /* pObjSender   */ m_pTreeViewObjFactories,
-            /* szSignal     */ SIGNAL( expanded(const QModelIndex&) ),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT( onTreeViewObjFactoriesExpanded(const QModelIndex&) ) ) )
-        {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-        }
-
-        if( !QObject::connect(
-            /* pObjSender   */ m_pTreeViewObjFactories->selectionModel(),
-            /* szSignal     */ SIGNAL( currentChanged(const QModelIndex&, const QModelIndex&) ),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT( onTreeViewObjFactoriesCurrentChanged(const QModelIndex&, const QModelIndex&) ) ) )
-        {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-        }
+        QObject::connect(
+            m_pTreeViewObjFactories, &QTreeView::expanded,
+            this, &CMainWindow::onTreeViewObjFactoriesExpanded );
+        QObject::connect(
+            m_pTreeViewObjFactories->selectionModel(), &QItemSelectionModel::currentChanged,
+            this, &CMainWindow::onTreeViewObjFactoriesCurrentChanged );
 
         if( m_pMenuView != nullptr )
         {
@@ -3004,10 +2746,7 @@ void CMainWindow::createDockWidgets()
     //--------------------------------------------
 
     // Tree View with graphics items as in drawing scene's items list
-
-    m_pModelIdxTreeGraphObjs = new CModelIdxTreeGraphObjs(m_pDrawingScene);
-
-    m_pWdgtGraphicsItems = new CTreeViewIdxTreeGraphObjs(m_pModelIdxTreeGraphObjs);
+    m_pWdgtGraphicsItems = new CWdgtIdxTreeViewGraphObjs(m_pDrawingScene);
     m_pTabWdgtGraphObjs->addTab( m_pWdgtGraphicsItems, "Graphics Items" );
 
 } // createDockWidgets
@@ -5466,10 +5205,8 @@ void CMainWindow::selectTreeViewObjFactoryNode( ZS::Draw::CObjFactory* i_pObjFac
     if( m_pTreeViewObjFactories != nullptr )
     {
         QObject::disconnect(
-            /* pObjSender   */ m_pTreeViewObjFactories->selectionModel(),
-            /* szSignal     */ SIGNAL( currentChanged(const QModelIndex&, const QModelIndex&) ),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT( onTreeViewObjFactoriesCurrentChanged(const QModelIndex&, const QModelIndex&) ) );
+            m_pTreeViewObjFactories->selectionModel(), &QItemSelectionModel::currentChanged,
+            this, &CMainWindow::onTreeViewObjFactoriesCurrentChanged );
 
         if( m_pTreeViewObjFactories != nullptr && m_pModelObjFactories != nullptr )
         {
@@ -5508,14 +5245,10 @@ void CMainWindow::selectTreeViewObjFactoryNode( ZS::Draw::CObjFactory* i_pObjFac
             }
         }
 
-        if( !QObject::connect(
-            /* pObjSender   */ m_pTreeViewObjFactories->selectionModel(),
-            /* szSignal     */ SIGNAL( currentChanged(const QModelIndex&, const QModelIndex&) ),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT( onTreeViewObjFactoriesCurrentChanged(const QModelIndex&, const QModelIndex&) ) ) )
-        {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-        }
+        QObject::connect(
+            m_pTreeViewObjFactories->selectionModel(), &QItemSelectionModel::currentChanged,
+            this, &CMainWindow::onTreeViewObjFactoriesCurrentChanged );
+
     } // if( m_pTreeViewObjFactories != nullptr )
 
 } // selectTreeViewObjFactoryNode

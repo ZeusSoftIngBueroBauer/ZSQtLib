@@ -3190,10 +3190,26 @@ QString ZS::System::qPoint2Str( const QPoint& i_pt, bool i_bShort )
 {
     QString str;
     if( i_bShort ) {
-        str  = QString::number(i_pt.x()) + ", " + QString::number(i_pt.y());
+        str = QString::number(i_pt.x())
+            + ", " + QString::number(i_pt.y());
     } else {
-        str  = "x: " + QString::number(i_pt.x());
-        str += ", y: " + QString::number(i_pt.y());
+        str = "x: " + QString::number(i_pt.x())
+            + ", y: " + QString::number(i_pt.y());
+    }
+    return str;
+}
+
+//------------------------------------------------------------------------------
+QString ZS::System::qPoint2Str( const QPointF& i_pt, bool i_bShort )
+//------------------------------------------------------------------------------
+{
+    QString str;
+    if( i_bShort ) {
+        str = QString::number(i_pt.x(),'f',1)
+            + ", " + QString::number(i_pt.y(),'f',1);
+    } else {
+        str = "x: " + QString::number(i_pt.x(),'f',1)
+            + ", y: " + QString::number(i_pt.y(),'f',1);
     }
     return str;
 }
@@ -3208,10 +3224,26 @@ QString ZS::System::qSize2Str( const QSize& i_size, bool i_bShort )
 {
     QString str;
     if( i_bShort ) {
-        str  = QString::number(i_size.width()) + ", " + QString::number(i_size.height());
+        str = QString::number(i_size.width())
+            + ", " + QString::number(i_size.height());
     } else {
-        str  = "w: " + QString::number(i_size.width());
-        str += ", h: " + QString::number(i_size.height());
+        str = "w: " + QString::number(i_size.width())
+            + ", h: " + QString::number(i_size.height());
+    }
+    return str;
+}
+
+//------------------------------------------------------------------------------
+QString ZS::System::qSize2Str( const QSizeF& i_size, bool i_bShort )
+//------------------------------------------------------------------------------
+{
+    QString str;
+    if( i_bShort ) {
+        str = QString::number(i_size.width(),'f',1)
+            + ", " + QString::number(i_size.height(),'f',1);
+    } else {
+        str = "w: " + QString::number(i_size.width(),'f',1)
+            + ", h: " + QString::number(i_size.height(),'f',1);
     }
     return str;
 }
@@ -3226,13 +3258,34 @@ QString ZS::System::qRect2Str( const QRect& i_rct, bool i_bShort )
 {
     QString str;
     if( i_bShort ) {
-        str  = QString::number(i_rct.x()) + ", " + QString::number(i_rct.y());
-        str += ", " + QString::number(i_rct.width()) + ", " + QString::number(i_rct.height());
+        str  = QString::number(i_rct.x())
+             + ", " + QString::number(i_rct.y())
+             + ", " + QString::number(i_rct.width())
+             + ", " + QString::number(i_rct.height());
     } else {
-        str  = "x: " + QString::number(i_rct.x());
-        str += ", y: " + QString::number(i_rct.y());
-        str += ", w: " + QString::number(i_rct.width());
-        str += ", h: " + QString::number(i_rct.height());
+        str  = "x: " + QString::number(i_rct.x())
+             + ", y: " + QString::number(i_rct.y())
+             + ", w: " + QString::number(i_rct.width())
+             + ", h: " + QString::number(i_rct.height());
+    }
+    return str;
+}
+
+//------------------------------------------------------------------------------
+QString ZS::System::qRect2Str( const QRectF& i_rct, bool i_bShort )
+//------------------------------------------------------------------------------
+{
+    QString str;
+    if( i_bShort ) {
+        str = QString::number(i_rct.x(),'f',1)
+            + ", " + QString::number(i_rct.y(),'f',1)
+            + ", " + QString::number(i_rct.width(),'f',1)
+            + ", " + QString::number(i_rct.height(),'f',1);
+    } else {
+        str = "x: " + QString::number(i_rct.x(),'f',1)
+            + ", y: " + QString::number(i_rct.y(),'f',1)
+            + ", w: " + QString::number(i_rct.width(),'f',1)
+            + ", h: " + QString::number(i_rct.height(),'f',1);
     }
     return str;
 }

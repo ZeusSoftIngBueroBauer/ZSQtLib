@@ -26,7 +26,7 @@ may result in using the software modules.
 
 #include "App.h"
 #include "MainWindow.h"
-#include "Test.h"
+#include "Test/Test.h"
 
 #include "ZSIpcTrace/ZSIpcTrcServer.h"
 #include "ZSSysGUI/ZSSysErrLogModel.h"

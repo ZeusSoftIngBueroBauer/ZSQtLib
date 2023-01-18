@@ -98,8 +98,7 @@ class CObjFactoryText;
 class CObjFactoryConnectionPoint;
 class CObjFactoryConnectionLine;
 class CObjFactoryGroup;
-class CModelIdxTreeGraphObjs;
-class CTreeViewIdxTreeGraphObjs;
+class CWdgtIdxTreeViewGraphObjs;
 
 namespace QtWidgets
 {
@@ -333,150 +332,149 @@ protected: // instance methods
 protected: // type definitions and constants
     enum { EFilesRecentCountMax = 4 };
 protected: // class members
-    static CMainWindow*                                 s_pThis; // singleton class
+    static CMainWindow* s_pThis; // singleton class
 protected: // instance members
-    QString                                             m_strWindowTitleAppName;
-    unsigned int                                        m_uAddObjFactories;
-    ZS::Test::CTest*                                    m_pTest;
+    QString m_strWindowTitleAppName;
+    unsigned int m_uAddObjFactories;
+    ZS::Test::CTest* m_pTest;
     // Object Factories
-    ZS::Draw::CObjFactoryPoint*                         m_pObjFactoryPoint;
-    ZS::Draw::CObjFactoryLine*                          m_pObjFactoryLine;
-    ZS::Draw::CObjFactoryRect*                          m_pObjFactoryRect;
-    ZS::Draw::CObjFactoryEllipse*                       m_pObjFactoryEllipse;
-    ZS::Draw::CObjFactoryPolygon*                       m_pObjFactoryPolygon;
-    ZS::Draw::CObjFactoryPolyline*                      m_pObjFactoryPolyline;
-    ZS::Draw::CObjFactoryText*                          m_pObjFactoryText;
-    ZS::Draw::CObjFactoryImage*                         m_pObjFactoryImage;
-    ZS::Draw::CObjFactoryConnectionPoint*               m_pObjFactoryConnectionPoint;
-    ZS::Draw::CObjFactoryConnectionLine*                m_pObjFactoryConnectionLine;
-    ZS::Draw::CObjFactoryGroup*                         m_pObjFactoryGroup;
-    ZS::Draw::QtWidgets::CObjFactoryWdgtCheckBox*       m_pObjFactoryWdgtCheckBox;
-    ZS::Draw::QtWidgets::CObjFactoryWdgtComboBox*       m_pObjFactoryWdgtComboBox;
-    ZS::Draw::QtWidgets::CObjFactoryWdgtGroupBox*       m_pObjFactoryWdgtGroupBox;
-    ZS::Draw::QtWidgets::CObjFactoryWdgtLabel*          m_pObjFactoryWdgtLabel;
-    ZS::Draw::QtWidgets::CObjFactoryWdgtLineEdit*       m_pObjFactoryWdgtLineEdit;
-    ZS::Draw::QtWidgets::CObjFactoryWdgtPushButton*     m_pObjFactoryWdgtPushButton;
-    ZS::Draw::Electricity::CObjFactoryCapacitor*        m_pObjFactoryElectricityCapacitor;
-    ZS::Draw::Electricity::CObjFactoryDiode*            m_pObjFactoryElectricityDiode;
-    ZS::Draw::Electricity::CObjFactoryInductor*         m_pObjFactoryElectricityInductor;
-    ZS::Draw::Electricity::CObjFactoryResistor*         m_pObjFactoryElectricityResistor;
-    ZS::Draw::Electricity::CObjFactorySwitch*           m_pObjFactoryElectricitySwitch;
-    ZS::Draw::Electricity::CObjFactoryTransistor*       m_pObjFactoryElectricityTransistor;
-    ZS::Draw::Electricity::CObjFactoryVoltageSource*    m_pObjFactoryElectricityVoltageSource;
+    ZS::Draw::CObjFactoryPoint*           m_pObjFactoryPoint;
+    ZS::Draw::CObjFactoryLine*            m_pObjFactoryLine;
+    ZS::Draw::CObjFactoryRect*            m_pObjFactoryRect;
+    ZS::Draw::CObjFactoryEllipse*         m_pObjFactoryEllipse;
+    ZS::Draw::CObjFactoryPolygon*         m_pObjFactoryPolygon;
+    ZS::Draw::CObjFactoryPolyline*        m_pObjFactoryPolyline;
+    ZS::Draw::CObjFactoryText*            m_pObjFactoryText;
+    ZS::Draw::CObjFactoryImage*           m_pObjFactoryImage;
+    ZS::Draw::CObjFactoryConnectionPoint* m_pObjFactoryConnectionPoint;
+    ZS::Draw::CObjFactoryConnectionLine*  m_pObjFactoryConnectionLine;
+    ZS::Draw::CObjFactoryGroup*           m_pObjFactoryGroup;
+    ZS::Draw::QtWidgets::CObjFactoryWdgtCheckBox*    m_pObjFactoryWdgtCheckBox;
+    ZS::Draw::QtWidgets::CObjFactoryWdgtComboBox*    m_pObjFactoryWdgtComboBox;
+    ZS::Draw::QtWidgets::CObjFactoryWdgtGroupBox*    m_pObjFactoryWdgtGroupBox;
+    ZS::Draw::QtWidgets::CObjFactoryWdgtLabel*       m_pObjFactoryWdgtLabel;
+    ZS::Draw::QtWidgets::CObjFactoryWdgtLineEdit*    m_pObjFactoryWdgtLineEdit;
+    ZS::Draw::QtWidgets::CObjFactoryWdgtPushButton*  m_pObjFactoryWdgtPushButton;
+    ZS::Draw::Electricity::CObjFactoryCapacitor*     m_pObjFactoryElectricityCapacitor;
+    ZS::Draw::Electricity::CObjFactoryDiode*         m_pObjFactoryElectricityDiode;
+    ZS::Draw::Electricity::CObjFactoryInductor*      m_pObjFactoryElectricityInductor;
+    ZS::Draw::Electricity::CObjFactoryResistor*      m_pObjFactoryElectricityResistor;
+    ZS::Draw::Electricity::CObjFactorySwitch*        m_pObjFactoryElectricitySwitch;
+    ZS::Draw::Electricity::CObjFactoryTransistor*    m_pObjFactoryElectricityTransistor;
+    ZS::Draw::Electricity::CObjFactoryVoltageSource* m_pObjFactoryElectricityVoltageSource;
     // Menus and Actions
-    QMenuBar*                                           m_pMenuBar;
+    QMenuBar* m_pMenuBar;
     // Menu - File
-    QMenu*                                              m_pMenuFile;
-    QToolBar*                                           m_pToolBarFile;
-    QAction*                                            m_pActFileNew;
-    QAction*                                            m_pActFileOpen;
-    QAction*                                            m_pActFileSave;
-    QAction*                                            m_pActFileSaveAs;
-    QAction*                                            m_pActFilePageSetup;
-    QAction*                                            m_pActFilesRecentSeparator;
-    QAction*                                            m_arpActFilesRecent[EFilesRecentCountMax];
-    bool                                                m_bDrawingChangedSinceLastSave;
-    QString                                             m_strCurrentFile;
-    QAction*                                            m_pActFileQuit;
+    QMenu*    m_pMenuFile;
+    QToolBar* m_pToolBarFile;
+    QAction*  m_pActFileNew;
+    QAction*  m_pActFileOpen;
+    QAction*  m_pActFileSave;
+    QAction*  m_pActFileSaveAs;
+    QAction*  m_pActFilePageSetup;
+    QAction*  m_pActFilesRecentSeparator;
+    QAction*  m_arpActFilesRecent[EFilesRecentCountMax];
+    bool      m_bDrawingChangedSinceLastSave;
+    QString   m_strCurrentFile;
+    QAction*  m_pActFileQuit;
     // Menu - Mode
-    QMenu*                                              m_pMenuMode;
-    QToolBar*                                           m_pToolBarMode;
-    QAction*                                            m_pActModeEdit;
-    QAction*                                            m_pActModeSimulation;
+    QMenu*    m_pMenuMode;
+    QToolBar* m_pToolBarMode;
+    QAction*  m_pActModeEdit;
+    QAction*  m_pActModeSimulation;
     // Menu - Edit
-    QMenu*                                              m_pMenuEdit;
+    QMenu*    m_pMenuEdit;
     // Menu - Edit - Select
-    QToolBar*                                           m_pToolBarEditSelect;
-    QAction*                                            m_pActEditSelect;
+    QToolBar* m_pToolBarEditSelect;
+    QAction*  m_pActEditSelect;
     // Menu - Edit - Rotate and Mirror
-    QToolBar*                                           m_pToolBarEditRotateAndMirror;
+    QToolBar* m_pToolBarEditRotateAndMirror;
     // Menu - Edit - Rotate
-    QMenu*                                              m_pMenuEditRotate;
-    QAction*                                            m_pActEditRotateLeft;
-    QAction*                                            m_pActEditRotateRight;
-    QDoubleSpinBox*                                     m_pEdtEditRotateAngle;
+    QMenu*    m_pMenuEditRotate;
+    QAction*  m_pActEditRotateLeft;
+    QAction*  m_pActEditRotateRight;
+    QDoubleSpinBox* m_pEdtEditRotateAngle;
     // Menu - Edit - Mirror
-    QMenu*                                              m_pMenuEditMirror;
-    QAction*                                            m_pActEditMirrorVertical;
-    QAction*                                            m_pActEditMirrorHorizontal;
+    QMenu*   m_pMenuEditMirror;
+    QAction* m_pActEditMirrorVertical;
+    QAction* m_pActEditMirrorHorizontal;
     // Menu - Edit - Group
-    QToolBar*                                           m_pToolBarEditGroup;
-    QAction*                                            m_pActEditGroup;
-    QAction*                                            m_pActEditUngroup;
+    QToolBar* m_pToolBarEditGroup;
+    QAction*  m_pActEditGroup;
+    QAction*  m_pActEditUngroup;
     // Menu - Draw
-    QMenu*                                              m_pMenuDraw;
-    QAction*                                            m_pActDrawChecked; // Currently active (checked) draw action
+    QMenu*    m_pMenuDraw;
+    QAction*  m_pActDrawChecked; // Currently active (checked) draw action
     // Menu - Draw - Settings
-    QMenu*                                              m_pMenuDrawSettings;
-    QToolBar*                                           m_pToolBarDrawSettings;
-    QAction*                                            m_pActDrawSettingsLine;
-    QAction*                                            m_pActDrawSettingsFill;
-    QAction*                                            m_pActDrawSettingsText;
+    QMenu*    m_pMenuDrawSettings;
+    QToolBar* m_pToolBarDrawSettings;
+    QAction*  m_pActDrawSettingsLine;
+    QAction*  m_pActDrawSettingsFill;
+    QAction*  m_pActDrawSettingsText;
     // Menu - Draw - Standard Shapes
-    QMenu*                                              m_pMenuDrawStandardShapes;
-    QToolBar*                                           m_pToolBarDrawStandardShapes;
-    QAction*                                            m_pActDrawStandardShapePoint;
-    QAction*                                            m_pActDrawStandardShapeLine;
-    QAction*                                            m_pActDrawStandardShapeRect;
-    QAction*                                            m_pActDrawStandardShapeEllipse;
-    QAction*                                            m_pActDrawStandardShapePolyline;
-    QAction*                                            m_pActDrawStandardShapePolygon;
-    QAction*                                            m_pActDrawStandardShapeText;
+    QMenu*    m_pMenuDrawStandardShapes;
+    QToolBar* m_pToolBarDrawStandardShapes;
+    QAction*  m_pActDrawStandardShapePoint;
+    QAction*  m_pActDrawStandardShapeLine;
+    QAction*  m_pActDrawStandardShapeRect;
+    QAction*  m_pActDrawStandardShapeEllipse;
+    QAction*  m_pActDrawStandardShapePolyline;
+    QAction*  m_pActDrawStandardShapePolygon;
+    QAction*  m_pActDrawStandardShapeText;
     // Menu - Draw - Graphics
-    QMenu*                                              m_pMenuDrawGraphics;
-    QToolBar*                                           m_pToolBarDrawGraphics;
-    QAction*                                            m_pActDrawGraphicsImage;
+    QMenu*    m_pMenuDrawGraphics;
+    QToolBar* m_pToolBarDrawGraphics;
+    QAction*  m_pActDrawGraphicsImage;
     // Menu - Draw - Connections
-    QMenu*                                              m_pMenuDrawConnections;
-    QToolBar*                                           m_pToolBarDrawConnections;
-    QAction*                                            m_pActDrawConnectionPoint;
-    QAction*                                            m_pActDrawConnectionLine;
+    QMenu*    m_pMenuDrawConnections;
+    QToolBar* m_pToolBarDrawConnections;
+    QAction*  m_pActDrawConnectionPoint;
+    QAction*  m_pActDrawConnectionLine;
     // Menu - View
-    QMenu*                                              m_pMenuView;
-    QToolBar*                                           m_pToolBarView;
-    QAction*                                            m_pActViewZoomIn;
-    QAction*                                            m_pActViewZoomOut;
-    QSpinBox*                                           m_pEdtViewZoomFactor_perCent;
-    int                                                 m_iViewZoomFactor_perCent;
+    QMenu*    m_pMenuView;
+    QToolBar* m_pToolBarView;
+    QAction*  m_pActViewZoomIn;
+    QAction*  m_pActViewZoomOut;
+    QSpinBox* m_pEdtViewZoomFactor_perCent;
+    int       m_iViewZoomFactor_perCent;
     // Menu - Trace
-    QMenu*                                              m_pMenuDebugTrace;
-    QAction*                                            m_pActTraceErrLog;
-    QAction*                                            m_pActTraceServer;
-    QAction*                                            m_pActTraceAdminObjIdxTree;
-    QAction*                                            m_pActionDebugTest;
+    QMenu*    m_pMenuDebugTrace;
+    QAction*  m_pActTraceErrLog;
+    QAction*  m_pActTraceServer;
+    QAction*  m_pActTraceAdminObjIdxTree;
+    QAction*  m_pActionDebugTest;
     // Menu - Info
-    QMenu*                                              m_pMenuInfo;
-    QAction*                                            m_pActInfoVersion;
-    QAction*                                            m_pActInfoSettingsFile;
+    QMenu*    m_pMenuInfo;
+    QAction*  m_pActInfoVersion;
+    QAction*  m_pActInfoSettingsFile;
     // Dock Widgets
     // Dock Widget - Object Factories
-    QDockWidget*                                        m_pDockWdgtObjFactories;
-    QTreeView*                                          m_pTreeViewObjFactories;
-    ZS::Draw::CObjFactoriesModel*                       m_pModelObjFactories;
+    QDockWidget* m_pDockWdgtObjFactories;
+    QTreeView*   m_pTreeViewObjFactories;
+    ZS::Draw::CObjFactoriesModel* m_pModelObjFactories;
     // Dock Widget - GraphObjs (Tabs with tree views with differently sorted and ordered graphical objects)
-    QDockWidget*                                        m_pDockWdgtGraphObjs;
-    QTabWidget*                                         m_pTabWdgtGraphObjs;
+    QDockWidget* m_pDockWdgtGraphObjs;
+    QTabWidget*  m_pTabWdgtGraphObjs;
     // Dock Widget - GraphObjs - Tab GraphicsItems (tree View with graphics items as in drawing scene's items list)
-    ZS::Draw::CTreeViewIdxTreeGraphObjs*                m_pWdgtGraphicsItems;
-    ZS::Draw::CModelIdxTreeGraphObjs*                   m_pModelIdxTreeGraphObjs;
+    ZS::Draw::CWdgtIdxTreeViewGraphObjs* m_pWdgtGraphicsItems;
     // Dialogs
-    ZS::Test::GUI::CDlgTest*                            m_pDlgTest;
+    ZS::Test::GUI::CDlgTest* m_pDlgTest;
     // Status Bar
-    QLabel*                                             m_pLblStatusBarDrawingSceneEditTool;
-    QLabel*                                             m_pLblStatusBarDrawingSceneEditMode;
-    QLabel*                                             m_pLblStatusBarDrawingSceneGraphObjEditInfo;
-    QLabel*                                             m_pLblStatusBarDrawingSceneRect;
-    QLabel*                                             m_pLblStatusBarDrawingSceneMouseCursorPos;
-    QLabel*                                             m_pLblStatusBarDrawingViewMouseCursorPos;
-    QLabel*                                             m_pLblErrors;
+    QLabel* m_pLblStatusBarDrawingSceneEditTool;
+    QLabel* m_pLblStatusBarDrawingSceneEditMode;
+    QLabel* m_pLblStatusBarDrawingSceneGraphObjEditInfo;
+    QLabel* m_pLblStatusBarDrawingSceneRect;
+    QLabel* m_pLblStatusBarDrawingSceneMouseCursorPos;
+    QLabel* m_pLblStatusBarDrawingViewMouseCursorPos;
+    QLabel* m_pLblErrors;
     // Central Widget with Drawing
-    QHBoxLayout*                                        m_pLyt;
-    ZS::Draw::CDrawingScene*                            m_pDrawingScene;
-    ZS::Draw::CDrawingView*                             m_pDrawingView;
-    QWidget*                                            m_pWdgtCentral;
+    QHBoxLayout*             m_pLyt;
+    ZS::Draw::CDrawingScene* m_pDrawingScene;
+    ZS::Draw::CDrawingView*  m_pDrawingView;
+    QWidget*                 m_pWdgtCentral;
     // Trace
-    ZS::System::CTrcAdminObj*                            m_pTrcAdminObj;
-    ZS::System::CTrcAdminObj*                            m_pTrcAdminObjMouseEvents;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjMouseEvents;
 
 }; // class CMainWindow
 
