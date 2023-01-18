@@ -33,7 +33,7 @@ class QLineEdit;
 
 namespace ZS
 {
-namespace Trace
+namespace System
 {
 class CTrcAdminObj;
 }
@@ -49,23 +49,17 @@ namespace QtWidgets
 class CGraphObjWdgtLineEdit : public CGraphObjWdgt
 //******************************************************************************
 {
-public: // class methods
-    // For sub system test used. Method call only allowed if currently no
-    // graphical objects of this class are created.
-    static void ResetCtorsDtorsCounters();
 public: // ctors and dtor
     CGraphObjWdgtLineEdit(
         CDrawingScene*       i_pDrawingScene,
         const CDrawSettings& i_drawSettings,
-        const QString&       i_strObjName = "",
-        const QString&       i_strObjId = "" );
+        const QString&       i_strObjName = "" );
     virtual ~CGraphObjWdgtLineEdit();
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone();
 protected: // class members
-    static qint64                   s_iCtorsCount;
-    static qint64                   s_iDtorsCount;
-    static ZS::System::CTrcAdminObj* s_pTrcAdminObjCtorsAndDtor;
+    /*!< Needed to set an initial unique name when creating a new instance. */
+    static qint64 s_iInstCount;
 protected: // instance members
     QLineEdit* m_pLineEdit;
 

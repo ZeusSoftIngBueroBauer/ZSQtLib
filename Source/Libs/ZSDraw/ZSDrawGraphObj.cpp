@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -508,15 +508,7 @@ CGraphObj::~CGraphObj()
 
     mthTracer.onAdminObjAboutToBeReleased();
 
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjCtorsAndDtor);
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjItemChange);
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjBoundingRect);
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjPaint);
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjSceneEvent);
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjSceneEventFilter);
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjHoverEvents);
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjMouseEvents);
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjKeyEvents);
+    releaseTrcAdminObjs();
 
     m_bDtorInProgress = false;
     m_pDrawingScene = nullptr;
@@ -626,6 +618,7 @@ void CGraphObj::rename( const QString& i_strNameNew )
 
     if( m_strName != i_strNameNew )
     {
+        // "setName" is called as reentry by the index tree.
         m_pTree->rename(this, i_strNameNew);
     }
 
@@ -727,6 +720,8 @@ void CGraphObj::setName( const QString& i_strName )
 
     if( m_strName != i_strName )
     {
+        renameTrcAdminObjs(i_strName);
+
         CIdxTreeEntry::setName(i_strName);
 
         if( m_arpNameLabels.contains(c_strKeyLabelName) )
@@ -5649,6 +5644,11 @@ void CGraphObj::showLabel(
         ptLabelTmp.setY( ptLabelTmp.y() - pGraphObjLabel->getHeight() );
     }
 
+/*==============================================================================
+protected: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
     bool bUniquePos = false;
 
     while( !bUniquePos )
@@ -5734,3 +5734,102 @@ void CGraphObj::destroyLabels( QHash<QString, CGraphObjLabel*>& i_arpLabels )
     i_arpLabels.clear();
 
 } // destroyLabels
+
+/*==============================================================================
+protected: // instance methods (trace admin objects have to be created in ctor of "final" class)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Creates the trace admin objects for method tracing.
+
+    This method has to be called in the constructor of the "final" class.
+
+    @param [in] i_strNameSpace
+    @param [in] i_strClassName
+    @param [in] i_strObjName
+*/
+void CGraphObj::createTrcAdminObjs(
+    const QString i_strNameSpace,
+    const QString& i_strClassName,
+    const QString& i_strObjName)
+//------------------------------------------------------------------------------
+{
+    m_pTrcAdminObjCtorsAndDtor = CTrcServer::GetTraceAdminObj(
+        i_strNameSpace, i_strClassName + "::CtorsAndDtor", i_strObjName);
+    m_pTrcAdminObjItemChange = CTrcServer::GetTraceAdminObj(
+        i_strNameSpace, i_strClassName + "::ItemChange", i_strObjName);
+    m_pTrcAdminObjBoundingRect = CTrcServer::GetTraceAdminObj(
+        i_strNameSpace, i_strClassName + "::BoundingRect", i_strObjName);
+    m_pTrcAdminObjPaint = CTrcServer::GetTraceAdminObj(
+        i_strNameSpace, i_strClassName + "::Paint", i_strObjName);
+    m_pTrcAdminObjSceneEvent = CTrcServer::GetTraceAdminObj(
+        i_strNameSpace, i_strClassName + "::SceneEvent", i_strObjName);
+    m_pTrcAdminObjSceneEventFilter = CTrcServer::GetTraceAdminObj(
+        i_strNameSpace, i_strClassName + "::SceneEventFilter", i_strObjName);
+    m_pTrcAdminObjHoverEvents = CTrcServer::GetTraceAdminObj(
+        i_strNameSpace, i_strClassName + "::HoverEvents", i_strObjName);
+    m_pTrcAdminObjMouseEvents = CTrcServer::GetTraceAdminObj(
+        i_strNameSpace, i_strClassName + "::MouseEvents", i_strObjName);
+    m_pTrcAdminObjKeyEvents = CTrcServer::GetTraceAdminObj(
+        i_strNameSpace, i_strClassName + "::KeyEvents", i_strObjName);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Releases the trace admin objects for method tracing.
+
+    This method is called by the destructor of the base class CGraphObj and
+    therefore don't need to be called by the destructor of the "final" class.
+*/
+void CGraphObj::releaseTrcAdminObjs()
+//------------------------------------------------------------------------------
+{
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjCtorsAndDtor);
+    m_pTrcAdminObjCtorsAndDtor = nullptr;
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjItemChange);
+    m_pTrcAdminObjItemChange = nullptr;
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjBoundingRect);
+    m_pTrcAdminObjBoundingRect = nullptr;
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjPaint);
+    m_pTrcAdminObjPaint = nullptr;
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjSceneEvent);
+    m_pTrcAdminObjSceneEvent = nullptr;
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjSceneEventFilter);
+    m_pTrcAdminObjSceneEventFilter = nullptr;
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjHoverEvents);
+    m_pTrcAdminObjHoverEvents = nullptr;
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjMouseEvents);
+    m_pTrcAdminObjMouseEvents = nullptr;
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjKeyEvents);
+    m_pTrcAdminObjKeyEvents = nullptr;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Renames the trace admin objects for method tracing.
+
+    This method has to be called if the object is renamed and is called by
+    the "setName" method of the base class CGraphObj.
+
+    @param [in] i_strObjName
+*/
+void CGraphObj::renameTrcAdminObjs( const QString& i_strObjName )
+//------------------------------------------------------------------------------
+{
+    m_pTrcAdminObjCtorsAndDtor =
+        CTrcServer::RenameTraceAdminObj(m_pTrcAdminObjCtorsAndDtor, i_strObjName);
+    m_pTrcAdminObjItemChange =
+        CTrcServer::RenameTraceAdminObj(m_pTrcAdminObjItemChange, i_strObjName);
+    m_pTrcAdminObjBoundingRect =
+        CTrcServer::RenameTraceAdminObj(m_pTrcAdminObjBoundingRect, i_strObjName);
+    m_pTrcAdminObjPaint =
+        CTrcServer::RenameTraceAdminObj(m_pTrcAdminObjPaint, i_strObjName);
+    m_pTrcAdminObjSceneEvent =
+        CTrcServer::RenameTraceAdminObj(m_pTrcAdminObjSceneEvent, i_strObjName);
+    m_pTrcAdminObjSceneEventFilter =
+        CTrcServer::RenameTraceAdminObj(m_pTrcAdminObjSceneEventFilter, i_strObjName);
+    m_pTrcAdminObjHoverEvents =
+        CTrcServer::RenameTraceAdminObj(m_pTrcAdminObjHoverEvents, i_strObjName);
+    m_pTrcAdminObjMouseEvents =
+        CTrcServer::RenameTraceAdminObj(m_pTrcAdminObjMouseEvents, i_strObjName);
+    m_pTrcAdminObjKeyEvents =
+        CTrcServer::RenameTraceAdminObj(m_pTrcAdminObjKeyEvents, i_strObjName);
+}

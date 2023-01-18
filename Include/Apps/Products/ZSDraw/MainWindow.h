@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -53,6 +53,7 @@ namespace ZS
 namespace System
 {
 struct SErrResultInfo;
+class CTrcAdminObj;
 
 namespace GUI
 {
@@ -62,8 +63,6 @@ class CDlgErrLog;
 
 namespace Trace
 {
-class CTrcAdminObj;
-
 namespace GUI
 {
 class CDlgTrcServer;
@@ -100,7 +99,7 @@ class CObjFactoryConnectionPoint;
 class CObjFactoryConnectionLine;
 class CObjFactoryGroup;
 class CModelIdxTreeGraphObjs;
-class CWdgtIdxTreeGraphObjs;
+class CTreeViewIdxTreeGraphObjs;
 
 namespace QtWidgets
 {
@@ -458,7 +457,7 @@ protected: // instance members
     QDockWidget*                                        m_pDockWdgtGraphObjs;
     QTabWidget*                                         m_pTabWdgtGraphObjs;
     // Dock Widget - GraphObjs - Tab GraphicsItems (tree View with graphics items as in drawing scene's items list)
-    ZS::Draw::CWdgtIdxTreeGraphObjs*                    m_pWdgtGraphicsItems;
+    ZS::Draw::CTreeViewIdxTreeGraphObjs*                m_pWdgtGraphicsItems;
     ZS::Draw::CModelIdxTreeGraphObjs*                   m_pModelIdxTreeGraphObjs;
     // Dialogs
     ZS::Test::GUI::CDlgTest*                            m_pDlgTest;

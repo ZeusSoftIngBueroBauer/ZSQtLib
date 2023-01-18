@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -40,7 +40,7 @@ class QPainterPath;
 
 namespace ZS
 {
-namespace Trace
+namespace System
 {
 class CTrcAdminObj;
 }
@@ -66,30 +66,30 @@ class CTest : public ZS::Test::CTest
 {
     Q_OBJECT
 public: // ctors and dtor
-    CTest( const QString& i_strTestStepsFileName );
+    CTest();
     ~CTest();
 public: // instance methods
     void setMainWindow( CMainWindow* i_pMainWindow );
 protected: // instance methods
-    void createTestGroupAndroidWallpaperTemplate( int& io_idxGroup );
+    //void createTestGroupAndroidWallpaperTemplate( int& io_idxGroup );
 protected slots:
-    void doTestStepAndroidWallpaperTemplatePageSetup( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepAndroidWallpaperTemplateSaveAsWallpaperPng( ZS::Test::CTestStep* i_pTestStep );
+    //void doTestStepAndroidWallpaperTemplatePageSetup( ZS::Test::CTestStep* i_pTestStep );
+    //void doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep* i_pTestStep );
+    //void doTestStepAndroidWallpaperTemplateSaveAsWallpaperPng( ZS::Test::CTestStep* i_pTestStep );
 protected: // instance methods
-    void createTestGroupMouseEvents( int& io_idxGroup );
+    //void createTestGroupMouseEvents( int& io_idxGroup );
 protected: // instance methods
-    void createTestGroupMouseEventsStandardShapes( ZS::Test::CTestStepGroup* i_pTestGroupParent, int& io_idxGroup );
+    //void createTestGroupMouseEventsStandardShapes( ZS::Test::CTestStepGroup* i_pTestGroupParent, int& io_idxGroup );
 protected: // instance methods
-    void createTestGroupMouseEventsStandardShapesPoints( ZS::Test::CTestStepGroup* i_pTestGroupParent, int& io_idxGroup );
+    //void createTestGroupMouseEventsStandardShapesPoints( ZS::Test::CTestStepGroup* i_pTestGroupParent, int& io_idxGroup );
 protected slots:
-    void doTestStepMouseEventsStandardShapesPointsClearDrawingScene( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepMouseEventsStandardShapesPointsActivateDrawingTool( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepMouseEventsStandardShapesPointsActivateEditSelect( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepMouseEventsStandardShapesPointsTriggerEditGroup( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepMouseEventsStandardShapesPointsTriggerEditUngroup( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepMouseEventsStandardShapesPointsCheckResult( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepMouseEventsStandardShapesPoints( ZS::Test::CTestStep* i_pTestStep );
+    //void doTestStepMouseEventsStandardShapesPointsClearDrawingScene( ZS::Test::CTestStep* i_pTestStep );
+    //void doTestStepMouseEventsStandardShapesPointsActivateDrawingTool( ZS::Test::CTestStep* i_pTestStep );
+    //void doTestStepMouseEventsStandardShapesPointsActivateEditSelect( ZS::Test::CTestStep* i_pTestStep );
+    //void doTestStepMouseEventsStandardShapesPointsTriggerEditGroup( ZS::Test::CTestStep* i_pTestStep );
+    //void doTestStepMouseEventsStandardShapesPointsTriggerEditUngroup( ZS::Test::CTestStep* i_pTestStep );
+    //void doTestStepMouseEventsStandardShapesPointsCheckResult( ZS::Test::CTestStep* i_pTestStep );
+    //void doTestStepMouseEventsStandardShapesPoints( ZS::Test::CTestStep* i_pTestStep );
 protected slots:
     //void doTestStepStandardShapesLines( ZS::Test::CTestStep* i_pTestStep );
 protected slots:

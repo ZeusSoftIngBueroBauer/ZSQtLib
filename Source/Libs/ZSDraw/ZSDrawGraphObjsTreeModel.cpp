@@ -32,7 +32,6 @@ Content: This file is part of the ZSQtLib.
 using namespace ZS::System;
 using namespace ZS::System::GUI;
 using namespace ZS::Draw;
-using namespace ZS::Trace;
 
 
 /*******************************************************************************
@@ -54,14 +53,11 @@ CModelIdxTreeGraphObjs::CModelIdxTreeGraphObjs(
     m_iconSelectionPointEntry(),
     m_iconLabelEntry(),
     m_iconBranchEntry(),
-    m_iconLeaveEntry(),
-    m_pTrcAdminObj(nullptr)
+    m_iconLeaveEntry()
 {
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ "" );
 
@@ -142,7 +138,7 @@ CModelIdxTreeGraphObjs::~CModelIdxTreeGraphObjs()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
@@ -156,7 +152,6 @@ CModelIdxTreeGraphObjs::~CModelIdxTreeGraphObjs()
     //m_iconLabelEntry;
     //m_iconBranchEntry;
     //m_iconLeaveEntry;
-    m_pTrcAdminObj = nullptr;
 
 } // dtor
 
@@ -170,18 +165,18 @@ int CModelIdxTreeGraphObjs::columnCount( const QModelIndex& i_modelIdxParent ) c
 {
     QString strMthInArgs;
 
-    if(m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelVerbose))
+    if(m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
-        strMthInArgs = "ModelIdxParent {" + ModelIdx2Str(i_modelIdxParent) + "}";
+        strMthInArgs = "ModelIdxParent {" + modelIdx2Str(i_modelIdxParent) + "}";
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelVerbose,
+        /* pAdminObj    */ m_pTrcAdminObjNoisyMethods,
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "columnCount",
         /* strAddInfo   */ strMthInArgs );
 
-    if( mthTracer.isActive(ETraceDetailLevelVerbose) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         mthTracer.setMethodReturn(EColumnCount);
     }
@@ -199,7 +194,7 @@ QVariant CModelIdxTreeGraphObjs::headerData(
 {
     QString strMthInArgs;
 
-    if(m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelVerbose))
+    if(m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "Section: " + QString::number(i_iSection);
         strMthInArgs += ", Orientation: " + qOrientation2Str(i_orientation);
@@ -207,8 +202,8 @@ QVariant CModelIdxTreeGraphObjs::headerData(
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelVerbose,
+        /* pAdminObj    */ m_pTrcAdminObjNoisyMethods,
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "headerData",
         /* strAddInfo   */ strMthInArgs );
 
@@ -273,15 +268,15 @@ QVariant CModelIdxTreeGraphObjs::data( const QModelIndex& i_modelIdx, int i_iRol
 {
     QString strMthInArgs;
 
-    if(m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelVerbose))
+    if(m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
-        strMthInArgs = "ModelIdx {" + ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + modelIdx2Str(i_modelIdx) + "}";
         strMthInArgs += ", Role: " + qItemDataRole2Str(i_iRole);
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelVerbose,
+        /* pAdminObj    */ m_pTrcAdminObjNoisyMethods,
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "data",
         /* strAddInfo   */ strMthInArgs );
 
@@ -298,7 +293,7 @@ QVariant CModelIdxTreeGraphObjs::data( const QModelIndex& i_modelIdx, int i_iRol
 
     if( pModelTreeEntry != nullptr )
     {
-        pIdxTreeEntry = dynamic_cast<CIdxTreeEntry*>(pModelTreeEntry->treeEntry());
+        pIdxTreeEntry = m_pIdxTree->findEntry(pModelTreeEntry->keyInTree());
     }
 
     if( pIdxTreeEntry != nullptr )
@@ -324,7 +319,7 @@ QVariant CModelIdxTreeGraphObjs::data( const QModelIndex& i_modelIdx, int i_iRol
                     {
                         CObjFactory* pObjFactory = nullptr;
 
-                        pObjFactory = CObjFactory::FindObjFactory(pGraphObj->getFactoryGroupName(), pGraphObj->getTypeAsString());
+                        pObjFactory = CObjFactory::FindObjFactory(pGraphObj->getFactoryGroupName(), pGraphObj->typeAsString());
 
                         if( pObjFactory != nullptr )
                         {
@@ -339,11 +334,11 @@ QVariant CModelIdxTreeGraphObjs::data( const QModelIndex& i_modelIdx, int i_iRol
                             }
                             varData = pxm;
                         }
-                        else if( pGraphObj->getType() == EGraphObjTypeSelectionPoint )
+                        else if( pGraphObj->isSelectionPoint() )
                         {
                             varData = m_iconSelectionPointEntry;
                         }
-                        else if( pGraphObj->getType() == EGraphObjTypeLabel )
+                        else if( pGraphObj->isLabel() )
                         {
                             varData = m_iconLabelEntry;
                         }

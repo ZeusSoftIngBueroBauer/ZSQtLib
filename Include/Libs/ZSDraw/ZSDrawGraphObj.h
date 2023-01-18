@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -421,6 +421,10 @@ protected: // overridables
     virtual void showLabel( QHash<QString, CGraphObjLabel*>& i_arpLabels, const QString& i_strKey, const QString& i_strText, ESelectionPoint i_selPt );
     virtual void hideLabel( QHash<QString, CGraphObjLabel*>& i_arpLabels, const QString& i_strKey );
     virtual void destroyLabels( QHash<QString, CGraphObjLabel*>& i_arpLabels );
+protected: // instance methods (trace admin objects for method tracing)
+    void createTrcAdminObjs(const QString i_strNameSpace, const QString& i_strClassName, const QString& i_strObjName);
+    void releaseTrcAdminObjs();
+    void renameTrcAdminObjs(const QString& i_strObjName);
 protected: // instance members
     bool                              m_bDtorInProgress;
     CDrawingScene*                    m_pDrawingScene;
@@ -473,16 +477,17 @@ protected: // instance members
     QList<SGraphObjMouseEventFct>     m_arMouseMoveEventFunctions;
     QList<SGraphObjKeyEventFct>       m_arKeyPressEventFunctions;
     QList<SGraphObjKeyEventFct>       m_arKeyReleaseEventFunctions;
-    // Method Tracing (has to be created in ctor of "final" class)
-    ZS::System::CTrcAdminObj*          m_pTrcAdminObjCtorsAndDtor;
-    ZS::System::CTrcAdminObj*          m_pTrcAdminObjItemChange;
-    ZS::System::CTrcAdminObj*          m_pTrcAdminObjBoundingRect;
-    ZS::System::CTrcAdminObj*          m_pTrcAdminObjPaint;
-    ZS::System::CTrcAdminObj*          m_pTrcAdminObjSceneEvent;
-    ZS::System::CTrcAdminObj*          m_pTrcAdminObjSceneEventFilter;
-    ZS::System::CTrcAdminObj*          m_pTrcAdminObjHoverEvents;
-    ZS::System::CTrcAdminObj*          m_pTrcAdminObjMouseEvents;
-    ZS::System::CTrcAdminObj*          m_pTrcAdminObjKeyEvents;
+    // Method Tracing (trace admin objects have to be created in ctor of "final" class)
+    // by calling "createTrcAdminObjs".
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjCtorsAndDtor;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjItemChange;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjBoundingRect;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjPaint;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjSceneEvent;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjSceneEventFilter;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjHoverEvents;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjMouseEvents;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjKeyEvents;
 
 }; // class CGraphObj
 

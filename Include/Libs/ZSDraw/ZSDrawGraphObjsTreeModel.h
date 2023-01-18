@@ -32,7 +32,7 @@ may result in using the software modules.
 
 namespace ZS
 {
-namespace Trace
+namespace System
 {
 class CTrcAdminObj;
 }
@@ -78,13 +78,12 @@ public: // overridables of base class QAbstractItemModel
     virtual QVariant headerData( int i_iSection, Qt::Orientation i_orientation, int i_iRole = Qt::DisplayRole ) const;
     virtual QVariant data( const QModelIndex& i_modelIdx, int i_iRole = Qt::DisplayRole ) const;
 protected: // instance members
-    CDrawingScene*           m_pDrawingScene;
-    QIcon                    m_iconRootEntry;
-    QIcon                    m_iconSelectionPointEntry;
-    QIcon                    m_iconLabelEntry;
-    QIcon                    m_iconBranchEntry;
-    QIcon                    m_iconLeaveEntry;
-    ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
+    CDrawingScene* m_pDrawingScene;
+    QIcon          m_iconRootEntry;
+    QIcon          m_iconSelectionPointEntry;
+    QIcon          m_iconLabelEntry;
+    QIcon          m_iconBranchEntry;
+    QIcon          m_iconLeaveEntry;
 
 }; // class CModelIdxTreeGraphObjs
 

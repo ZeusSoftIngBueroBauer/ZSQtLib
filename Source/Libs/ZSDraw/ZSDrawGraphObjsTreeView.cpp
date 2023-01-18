@@ -58,7 +58,6 @@ may result in using the software modules.
 using namespace ZS::System;
 using namespace ZS::System::GUI;
 using namespace ZS::Draw;
-using namespace ZS::Trace;
 
 
 /*******************************************************************************
@@ -83,14 +82,14 @@ CDelegateIdxTreeGraphObjs::CDelegateIdxTreeGraphObjs( QObject* i_pObjParent ) :
 
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs ) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal ) )
     {
         strMthInArgs = "Parent: " + QString(i_pObjParent == nullptr ? "nullptr" : i_pObjParent->objectName());
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ctor",
         /* strMthInArgs */ strMthInArgs );
 
@@ -104,7 +103,7 @@ CDelegateIdxTreeGraphObjs::~CDelegateIdxTreeGraphObjs()
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ctor",
         /* strMthInArgs */ strMthInArgs );
 
@@ -142,14 +141,14 @@ QWidget* CDelegateIdxTreeGraphObjs::createEditor(
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs ) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal ) )
     {
-        strMthInArgs = "ModelIdx {" + CModelIdxTree::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelIdxTree::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createEditor",
         /* strMthInArgs */ strMthInArgs );
 
@@ -197,14 +196,14 @@ void CDelegateIdxTreeGraphObjs::setEditorData(
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs ) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal ) )
     {
-        strMthInArgs = "ModelIdx {" + CModelIdxTree::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelIdxTree::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setEditorData",
         /* strMthInArgs */ strMthInArgs );
 
@@ -221,15 +220,15 @@ void CDelegateIdxTreeGraphObjs::setModelData(
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs ) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal ) )
     {
         strMthInArgs  = "Model: " + QString(i_pModel == nullptr ? "nullptr" : i_pModel->objectName());
-        strMthInArgs += ", ModelIdx {" + CModelIdxTree::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs += ", ModelIdx {" + CModelIdxTree::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setModelData",
         /* strMthInArgs */ strMthInArgs );
 
@@ -276,14 +275,14 @@ void CDelegateIdxTreeGraphObjs::updateEditorGeometry(
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs ) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal ) )
     {
-        strMthInArgs = "ModelIdx {" + CModelIdxTree::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelIdxTree::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "updateEditorGeometry",
         /* strMthInArgs */ strMthInArgs );
 
@@ -303,7 +302,7 @@ void CDelegateIdxTreeGraphObjs::onEdtNameDestroyed( QObject* /*i_pWdgtEditor*/ )
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onEdtNameDestroyed",
         /* strMthInArgs */ strMthInArgs );
 
@@ -347,14 +346,14 @@ CTreeViewIdxTreeGraphObjs::CTreeViewIdxTreeGraphObjs(
 
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs ) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal ) )
     {
         strMthInArgs = "Model: " + QString(i_pModel == nullptr ? "nullptr" : i_pModel->objectName());
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "ctor",
         /* strMethodInArgs    */ strMthInArgs );
 
@@ -474,7 +473,7 @@ CTreeViewIdxTreeGraphObjs::~CTreeViewIdxTreeGraphObjs()
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "dtor",
         /* strMthInArgs */ strMthInArgs );
 
@@ -508,14 +507,14 @@ void CTreeViewIdxTreeGraphObjs::setSortOrder( EIdxTreeSortOrder i_sortOrder )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs ) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal ) )
     {
         strMthInArgs = "SortOrder: " + idxTreeSortOrder2Str(i_sortOrder);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setSortOrder",
         /* strMthInArgs */ strMthInArgs );
 
@@ -585,14 +584,14 @@ void CTreeViewIdxTreeGraphObjs::setSilentlyExecuteDeleteRequests( bool i_bExecut
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs ) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal ) )
     {
         strMthInArgs = "ExecuteSilently: " + bool2Str(i_bExecuteSilently);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setSilentlyExecuteDeleteRequests",
         /* strMthInArgs */ strMthInArgs );
 
@@ -612,7 +611,7 @@ void CTreeViewIdxTreeGraphObjs::expandAll()
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "expandAll",
         /* strMthInArgs */ strMthInArgs );
 
@@ -634,7 +633,7 @@ void CTreeViewIdxTreeGraphObjs::collapseAll()
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "collapseAll",
         /* strMthInArgs */ strMthInArgs );
 
@@ -656,14 +655,14 @@ void CTreeViewIdxTreeGraphObjs::expandRecursive( const QModelIndex& i_modelIdx )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs ) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal ) )
     {
-        strMthInArgs = "ModelIdx {" + CModelIdxTree::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelIdxTree::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "expandRecursive",
         /* strMthInArgs */ strMthInArgs );
 
@@ -701,14 +700,14 @@ void CTreeViewIdxTreeGraphObjs::collapseRecursive( const QModelIndex& i_modelIdx
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs ) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal ) )
     {
-        strMthInArgs = "ModelIdx {" + CModelIdxTree::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelIdxTree::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "collapseRecursive",
         /* strMthInArgs */ strMthInArgs );
 
@@ -749,14 +748,14 @@ void CTreeViewIdxTreeGraphObjs::expand( const QModelIndex& i_modelIdx )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs ) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal ) )
     {
-        strMthInArgs = "ModelIdx {" + CModelIdxTree::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelIdxTree::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "expand",
         /* strMthInArgs */ strMthInArgs );
 
@@ -780,14 +779,14 @@ void CTreeViewIdxTreeGraphObjs::collapse( const QModelIndex& i_modelIdx )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs ) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal ) )
     {
-        strMthInArgs = "ModelIdx {" + CModelIdxTree::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelIdxTree::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "collapse",
         /* strMthInArgs */ strMthInArgs );
 
@@ -815,14 +814,14 @@ void CTreeViewIdxTreeGraphObjs::onCollapsed( const QModelIndex& i_modelIdx )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs ) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal ) )
     {
-        strMthInArgs = "ModelIdx {" + CModelIdxTree::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelIdxTree::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onCollapsed",
         /* strMthInArgs */ strMthInArgs );
 
@@ -847,14 +846,14 @@ void CTreeViewIdxTreeGraphObjs::onExpanded( const QModelIndex& i_modelIdx )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs ) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal ) )
     {
-        strMthInArgs = "ModelIdx {" + CModelIdxTree::ModelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelIdxTree::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onExpanded",
         /* strMthInArgs */ strMthInArgs );
 
@@ -892,7 +891,7 @@ void CTreeViewIdxTreeGraphObjs::onDrawingSceneSelectionChanged()
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onDrawingSceneSelectionChanged",
         /* strAddInfo   */ strMthInArgs );
 
@@ -906,7 +905,7 @@ void CTreeViewIdxTreeGraphObjs::onDrawingSceneSelectionChanged()
 
     QList<QGraphicsItem*> arpSelectedItems = m_pDrawingScene->selectedItems();
 
-    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         strAddTrcInfo = "SelectedItems: " + QString::number(arpSelectedItems.size());
         if( arpSelectedItems.size() > 0 )
@@ -962,15 +961,14 @@ bool CTreeViewIdxTreeGraphObjs::event( QEvent* i_pEv )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObjEvent != nullptr && m_pTrcAdminObjEvent->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObjEvent != nullptr && m_pTrcAdminObjEvent->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
-        int iEventDetails = m_pTrcAdminObjEvent->getTraceDetailLevel() >= ETraceDetailLevelInternalStates ? 1 : 0;
-        strMthInArgs = "Event {" + qEvent2Str(i_pEv, iEventDetails) + "}";
+        strMthInArgs = "Event {" + qEvent2Str(i_pEv) + "}";
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjEvent,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "event",
         /* strMthInArgs */ strMthInArgs );
 
@@ -989,15 +987,14 @@ void CTreeViewIdxTreeGraphObjs::keyPressEvent( QKeyEvent* i_pEv )
     QString strMthInArgs;
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
-        int iEventDetails = m_pTrcAdminObj->getTraceDetailLevel() >= ETraceDetailLevelInternalStates ? 1 : 0;
-        strMthInArgs = "Event {" + qKeyEvent2Str(i_pEv, iEventDetails) + "}";
+        strMthInArgs = "Event {" + qKeyEvent2Str(i_pEv) + "}";
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "keyPressEvent",
         /* strMthInArgs */ strMthInArgs );
 
@@ -1011,9 +1008,9 @@ void CTreeViewIdxTreeGraphObjs::keyPressEvent( QKeyEvent* i_pEv )
     {
         CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(modelIdxSelected.internalPointer());
 
-        if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+        if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
         {
-            strAddTrcInfo = "ModelIdxSelected {" + CModelIdxTree::ModelIdx2Str(modelIdxSelected) + "}";
+            strAddTrcInfo = "ModelIdxSelected {" + CModelIdxTree::modelIdx2Str(modelIdxSelected) + "}";
             mthTracer.trace(strAddTrcInfo);
         }
 
@@ -1033,13 +1030,13 @@ void CTreeViewIdxTreeGraphObjs::keyPressEvent( QKeyEvent* i_pEv )
                 }
                 case Qt::Key_Delete:
                 {
-                    CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pModelTreeEntry->treeEntry());
+                    CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pModelTreeEntry->getIdxTreeEntry());
 
                     if( pGraphObj != nullptr && !pGraphObj->isRoot() )
                     {
                         // Selection points and labels cannot be deleted by the user
                         // but will be implicitly deleted if the item is deselected.
-                        if( pGraphObj->getType() != EGraphObjTypeSelectionPoint && pGraphObj->getType() != EGraphObjTypeLabel )
+                        if( !pGraphObj->isSelectionPoint() && !pGraphObj->isLabel() )
                         {
                             int iRet = QMessageBox::Yes;
 
@@ -1097,15 +1094,14 @@ void CTreeViewIdxTreeGraphObjs::mousePressEvent( QMouseEvent* i_pEv )
     QString strMthInArgs;
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
-        int iEventDetails = m_pTrcAdminObj->getTraceDetailLevel() >= ETraceDetailLevelInternalStates ? 1 : 0;
-        strMthInArgs = "Event {" + qMouseEvent2Str(i_pEv, iEventDetails) + "}";
+        strMthInArgs = "Event {" + qMouseEvent2Str(i_pEv) + "}";
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mousePressEvent",
         /* strMthInArgs */ strMthInArgs );
 
@@ -1115,9 +1111,9 @@ void CTreeViewIdxTreeGraphObjs::mousePressEvent( QMouseEvent* i_pEv )
 
     if( m_modelIdxSelectedOnMousePressEvent.isValid() )
     {
-        if( mthTracer.isActive(ETraceDetailLevelInternalStates ) )
+        if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug ) )
         {
-            strAddTrcInfo = "ModelIdxPressed {" + CModelIdxTree::ModelIdx2Str(m_modelIdxSelectedOnMousePressEvent) + "}";
+            strAddTrcInfo = "ModelIdxPressed {" + CModelIdxTree::modelIdx2Str(m_modelIdxSelectedOnMousePressEvent) + "}";
             mthTracer.trace(strAddTrcInfo);
         }
 
@@ -1125,7 +1121,7 @@ void CTreeViewIdxTreeGraphObjs::mousePressEvent( QMouseEvent* i_pEv )
 
         if( pModelTreeEntry != nullptr )
         {
-            CGraphObj* pGraphObjClicked = dynamic_cast<CGraphObj*>(pModelTreeEntry->treeEntry());
+            CGraphObj* pGraphObjClicked = dynamic_cast<CGraphObj*>(pModelTreeEntry->getIdxTreeEntry());
 
             if( pGraphObjClicked != nullptr && !pGraphObjClicked->isRoot() )
             {
@@ -1136,7 +1132,7 @@ void CTreeViewIdxTreeGraphObjs::mousePressEvent( QMouseEvent* i_pEv )
 
                 // Ensure that only the clicked graphic item is selected taking into accout that selection points
                 // and labels cannot be selected but instead select their parents (if not already selected).
-                if( pGraphObjClicked->getType() == EGraphObjTypeSelectionPoint || pGraphObjClicked->getType() == EGraphObjTypeLabel )
+                if( pGraphObjClicked->isSelectionPoint() || pGraphObjClicked->isLabel() )
                 {
                     pGraphObj = pGraphObjClicked->parentGraphObj();
                     // Selection points and labels don't have graphics item as a parent.
@@ -1177,15 +1173,14 @@ void CTreeViewIdxTreeGraphObjs::mouseReleaseEvent( QMouseEvent* i_pEv )
     QString strMthInArgs;
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
-        int iEventDetails = m_pTrcAdminObj->getTraceDetailLevel() >= ETraceDetailLevelInternalStates ? 1 : 0;
-        strMthInArgs = "Event {" + qMouseEvent2Str(i_pEv, iEventDetails) + "}";
+        strMthInArgs = "Event {" + qMouseEvent2Str(i_pEv) + "}";
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mouseReleaseEvent",
         /* strMthInArgs */ strMthInArgs );
 
@@ -1195,9 +1190,9 @@ void CTreeViewIdxTreeGraphObjs::mouseReleaseEvent( QMouseEvent* i_pEv )
 
     if( m_modelIdxSelectedOnMouseReleaseEvent.isValid() )
     {
-        if( mthTracer.isActive(ETraceDetailLevelInternalStates ) )
+        if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug ) )
         {
-            strAddTrcInfo = "ModelIdxReleased {" + CModelIdxTree::ModelIdx2Str(m_modelIdxSelectedOnMouseReleaseEvent) + "}";
+            strAddTrcInfo = "ModelIdxReleased {" + CModelIdxTree::modelIdx2Str(m_modelIdxSelectedOnMouseReleaseEvent) + "}";
             mthTracer.trace(strAddTrcInfo);
         }
     }
@@ -1216,15 +1211,14 @@ void CTreeViewIdxTreeGraphObjs::mouseDoubleClickEvent( QMouseEvent* i_pEv )
     QString strMthInArgs;
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
-        int iEventDetails = m_pTrcAdminObj->getTraceDetailLevel() >= ETraceDetailLevelInternalStates ? 1 : 0;
-        strMthInArgs = "Event {" + qMouseEvent2Str(i_pEv, iEventDetails) + "}";
+        strMthInArgs = "Event {" + qMouseEvent2Str(i_pEv) + "}";
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mouseDoubleClickEvent",
         /* strMthInArgs */ strMthInArgs );
 
@@ -1234,9 +1228,9 @@ void CTreeViewIdxTreeGraphObjs::mouseDoubleClickEvent( QMouseEvent* i_pEv )
 
     if( modelIdx.isValid() )
     {
-        if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+        if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
         {
-            strAddTrcInfo = "ModelIdxClicked {" + CModelIdxTree::ModelIdx2Str(modelIdx) + "}";
+            strAddTrcInfo = "ModelIdxClicked {" + CModelIdxTree::modelIdx2Str(modelIdx) + "}";
             mthTracer.trace(strAddTrcInfo);
         }
 
@@ -1244,7 +1238,7 @@ void CTreeViewIdxTreeGraphObjs::mouseDoubleClickEvent( QMouseEvent* i_pEv )
 
         if( pModelTreeEntry != nullptr )
         {
-            CGraphObj* pGraphObjClicked = dynamic_cast<CGraphObj*>(pModelTreeEntry->treeEntry());
+            CGraphObj* pGraphObjClicked = dynamic_cast<CGraphObj*>(pModelTreeEntry->getIdxTreeEntry());
 
             if( pGraphObjClicked != nullptr && !pGraphObjClicked->isRoot() )
             {
@@ -1259,7 +1253,7 @@ void CTreeViewIdxTreeGraphObjs::mouseDoubleClickEvent( QMouseEvent* i_pEv )
 
                         // Ensure that only the clicked graphic item is selected taking into accout that selection points
                         // and labels cannot be selected but instead select their parents (if not already selected).
-                        if( pGraphObjClicked->getType() == EGraphObjTypeSelectionPoint || pGraphObjClicked->getType() == EGraphObjTypeLabel )
+                        if( pGraphObjClicked->isSelectionPoint() || pGraphObjClicked->isLabel() )
                         {
                             pGraphObjSelected = pGraphObjClicked->parentGraphObj();
                             // Selection points and labels don't have graphics item as a parent.
@@ -1303,15 +1297,14 @@ void CTreeViewIdxTreeGraphObjs::mouseMoveEvent( QMouseEvent* i_pEv )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
-        int iEventDetails = m_pTrcAdminObj->getTraceDetailLevel() >= ETraceDetailLevelInternalStates ? 1 : 0;
-        strMthInArgs = "Event {" + qMouseEvent2Str(i_pEv, iEventDetails) + "}";
+        strMthInArgs = "Event {" + qMouseEvent2Str(i_pEv) + "}";
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mouseMoveEvent",
         /* strMthInArgs */ strMthInArgs );
 
@@ -1336,7 +1329,7 @@ void CTreeViewIdxTreeGraphObjs::selectionChanged(
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Selected: " + QString::number(i_selected.indexes().size());
         if( i_selected.indexes().size() > 0 )
@@ -1345,7 +1338,7 @@ void CTreeViewIdxTreeGraphObjs::selectionChanged(
             for( const auto& modelIdx : i_selected.indexes() )
             {
                 if( !strMthInArgs.endsWith("[") ) strMthInArgs += ", ";
-                strMthInArgs += CModelIdxTree::ModelIdx2Str(modelIdx);
+                strMthInArgs += CModelIdxTree::modelIdx2Str(modelIdx);
             }
             strMthInArgs += "]";
         }
@@ -1356,7 +1349,7 @@ void CTreeViewIdxTreeGraphObjs::selectionChanged(
             for( const auto& modelIdx : i_deselected.indexes() )
             {
                 if( !strMthInArgs.endsWith("[") ) strMthInArgs += ", ";
-                strMthInArgs += CModelIdxTree::ModelIdx2Str(modelIdx);
+                strMthInArgs += CModelIdxTree::modelIdx2Str(modelIdx);
             }
             strMthInArgs += "]";
         }
@@ -1364,7 +1357,7 @@ void CTreeViewIdxTreeGraphObjs::selectionChanged(
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "selectionChanged",
         /* strMthInArgs */ strMthInArgs );
 
@@ -1377,9 +1370,9 @@ void CTreeViewIdxTreeGraphObjs::selectionChanged(
     {
         CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(modelIdx.internalPointer());
 
-        if( pModelTreeEntry != nullptr && !pModelTreeEntry->isAboutToBeDestroyed() )
+        if( pModelTreeEntry != nullptr && !pModelTreeEntry->getIdxTreeEntry()->isAboutToBeDestroyed() )
         {
-            CGraphObj* pGraphObjSelected = dynamic_cast<CGraphObj*>(pModelTreeEntry->treeEntry());
+            CGraphObj* pGraphObjSelected = dynamic_cast<CGraphObj*>(pModelTreeEntry->getIdxTreeEntry());
 
             if( pGraphObjSelected != nullptr && !pGraphObjSelected->isRoot() )
             {
@@ -1389,7 +1382,7 @@ void CTreeViewIdxTreeGraphObjs::selectionChanged(
                 QGraphicsItem* pGraphicsItem = pGraphicsItemSelected;
 
                 // Selection points and labels cannot be selected but instead select their parents (if not already selected).
-                if( pGraphObj->getType() == EGraphObjTypeSelectionPoint || pGraphObj->getType() == EGraphObjTypeLabel )
+                if( pGraphObj->isSelectionPoint() || pGraphObj->isLabel() )
                 {
                     pGraphObj = pGraphObj->parentGraphObj();
                     // Selection points and labels don't have graphics item as a parent.
@@ -1414,9 +1407,9 @@ void CTreeViewIdxTreeGraphObjs::selectionChanged(
     {
         CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(modelIdx.internalPointer());
 
-        if( pModelTreeEntry != nullptr && !pModelTreeEntry->isAboutToBeDestroyed() )
+        if( pModelTreeEntry != nullptr && !pModelTreeEntry->getIdxTreeEntry()->isAboutToBeDestroyed() )
         {
-            CGraphObj* pGraphObjSelected = dynamic_cast<CGraphObj*>(pModelTreeEntry->treeEntry());
+            CGraphObj* pGraphObjSelected = dynamic_cast<CGraphObj*>(pModelTreeEntry->getIdxTreeEntry());
 
             if( pGraphObjSelected != nullptr && !pGraphObjSelected->isRoot() )
             {
@@ -1426,7 +1419,7 @@ void CTreeViewIdxTreeGraphObjs::selectionChanged(
                 QGraphicsItem* pGraphicsItem = pGraphicsItemSelected;
 
                 // Selection points and labels can neither be selected nor deselected.
-                if( pGraphObj->getType() == EGraphObjTypeSelectionPoint || pGraphObj->getType() == EGraphObjTypeLabel )
+                if( pGraphObj->isSelectionPoint() || pGraphObj->isLabel() )
                 {
                     pGraphObj = pGraphObj->parentGraphObj();
                     // Selection points and labels don't have graphics item as a parent.
@@ -1471,14 +1464,14 @@ void CTreeViewIdxTreeGraphObjs::onActionGraphObjExpandTriggered( bool i_bChecked
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onActionGraphObjExpandTriggered",
         /* strMthInArgs */ strMthInArgs );
 
@@ -1499,14 +1492,14 @@ void CTreeViewIdxTreeGraphObjs::onActionGraphObjCollapseTriggered( bool i_bCheck
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onActionGraphObjCollapseTriggered",
         /* strMthInArgs */ strMthInArgs );
 
@@ -1523,22 +1516,22 @@ void CTreeViewIdxTreeGraphObjs::onActionGraphObjDeleteTriggered( bool i_bChecked
     QString strMthInArgs;
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onActionGraphObjDeleteTriggered",
         /* strMthInArgs */ strMthInArgs );
 
     if( m_modelIdxSelectedOnMousePressEvent.isValid() )
     {
-        if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+        if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
         {
-            strAddTrcInfo = "ModelIdxSelected {" + CModelIdxTree::ModelIdx2Str(m_modelIdxSelectedOnMousePressEvent) + "}";
+            strAddTrcInfo = "ModelIdxSelected {" + CModelIdxTree::modelIdx2Str(m_modelIdxSelectedOnMousePressEvent) + "}";
             mthTracer.trace(strAddTrcInfo);
         }
 
@@ -1546,13 +1539,13 @@ void CTreeViewIdxTreeGraphObjs::onActionGraphObjDeleteTriggered( bool i_bChecked
 
         if( pModelTreeEntry != nullptr )
         {
-            CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pModelTreeEntry->treeEntry());
+            CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pModelTreeEntry->getIdxTreeEntry());
 
             if( pGraphObj != nullptr && !pGraphObj->isRoot() )
             {
                 // Selection points and labels cannot be deleted by the user
                 // but will be implicitly deleted if the item is deselected.
-                if( pGraphObj->getType() != EGraphObjTypeSelectionPoint && pGraphObj->getType() != EGraphObjTypeLabel )
+                if( !pGraphObj->isSelectionPoint() && !pGraphObj->isLabel() )
                 {
                     int iRet = QMessageBox::Yes;
 

@@ -44,7 +44,7 @@ class QLineEdit;
 
 namespace ZS
 {
-namespace Trace
+namespace System
 {
 class CTrcAdminObj;
 }
@@ -92,9 +92,9 @@ private: // copy ctor not implemented
 private: // assignment operator not implemented
     CDelegateIdxTreeGraphObjs& operator = ( const CDelegateIdxTreeGraphObjs& );
 private: // instance members
-    QLineEdit*               m_pEdtName;
-    bool                     m_bEdtNameDestroyedSignalConnected;
-    ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
+    QLineEdit* m_pEdtName;
+    bool       m_bEdtNameDestroyedSignalConnected;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CDelegateIdxTreeGraphObjs
 
@@ -162,8 +162,8 @@ protected: // instance members
     QModelIndex                m_modelIdxSelectedOnMousePressEvent;
     QModelIndex                m_modelIdxSelectedOnMouseReleaseEvent;
     bool                       m_bSilentlyExecuteDeleteRequests;
-    ZS::Trace::CTrcAdminObj*   m_pTrcAdminObj;
-    ZS::Trace::CTrcAdminObj*   m_pTrcAdminObjEvent;
+    ZS::System::CTrcAdminObj*  m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj*  m_pTrcAdminObjEvent;
 
 }; // class CTreeViewIdxTreeGraphObjs
 

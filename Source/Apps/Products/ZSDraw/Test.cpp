@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -90,12 +90,9 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CTest::CTest( const QString& i_strTestStepsFileName ) :
+CTest::CTest() :
 //------------------------------------------------------------------------------
-    ZS::Test::CTest(
-        /* strName              */ "Draw",
-        /* strTestStepsFileName */ i_strTestStepsFileName,
-        /* iTestStepInterval_ms */ 100 ),
+    ZS::Test::CTest("ZSDraw"),
     m_pMainWindow(nullptr),
     m_pDrawingView(nullptr),
     m_pDrawingScene(nullptr),
@@ -150,30 +147,17 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
     // Grid Lines
     //-----------
 
-    createTestGroupAndroidWallpaperTemplate(idxGroup);
+    //createTestGroupAndroidWallpaperTemplate(idxGroup);
 
     // Mouse Events
     //-------------
 
-    createTestGroupMouseEvents(idxGroup);
+    //createTestGroupMouseEvents(idxGroup);
 
     // Recall test step settings
     //--------------------------
 
-    QFileInfo fileInfo(i_strTestStepsFileName);
-
-    if( fileInfo.exists() )
-    {
-        SErrResultInfo errResultInfo = recall(i_strTestStepsFileName);
-
-        if(errResultInfo.isErrorResult())
-        {
-            if(CErrLog::GetInstance() != nullptr)
-            {
-                CErrLog::GetInstance()->addEntry(errResultInfo);
-            }
-        }
-    }
+    recallTestSteps();
 
 } // ctor
 
@@ -187,7 +171,7 @@ CTest::~CTest()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
-    SErrResultInfo errResultInfo = save();
+    SErrResultInfo errResultInfo = saveTestSteps();
 
     if(errResultInfo.isErrorResult())
     {
@@ -258,69 +242,69 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
 protected: // instance methods
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-void CTest::createTestGroupMouseEvents( int& io_idxGroup )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    QString strMthOutArgs;
+////------------------------------------------------------------------------------
+//void CTest::createTestGroupMouseEvents( int& io_idxGroup )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    QString strMthOutArgs;
+//
+//    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+//    {
+//        strMthInArgs = "IdxGroup:" + QString::number(io_idxGroup);
+//    }
+//
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObj,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strMethod    */ "createTestGroupMouseEvents",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    ZS::Test::CTestStepGroup* pGrp = new ZS::Test::CTestStepGroup(
+//        /* pTest           */ this,
+//        /* strName         */ "Group " + QString::number(++io_idxGroup) + " Mouse Events",
+//        /* pTSGrpParent    */ nullptr );
+//
+//    createTestGroupMouseEventsStandardShapes(pGrp, io_idxGroup);
+//
+//    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+//    {
+//        strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
+//        mthTracer.setMethodOutArgs(strMthOutArgs);
+//    }
+//
+//} // createTestGroupMouseEvents
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strMthInArgs = "IdxGroup:" + QString::number(io_idxGroup);
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "createTestGroupMouseEvents",
-        /* strAddInfo   */ strMthInArgs );
-
-    ZS::Test::CTestStepGroup* pGrp = new ZS::Test::CTestStepGroup(
-        /* pTest           */ this,
-        /* strName         */ "Group " + QString::number(++io_idxGroup) + " Mouse Events",
-        /* pTSGrpParent    */ nullptr );
-
-    createTestGroupMouseEventsStandardShapes(pGrp, io_idxGroup);
-
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
-        mthTracer.setMethodOutArgs(strMthOutArgs);
-    }
-
-} // createTestGroupMouseEvents
-
-//------------------------------------------------------------------------------
-void CTest::createTestGroupMouseEventsStandardShapes( ZS::Test::CTestStepGroup* i_pTestGroupParent, int& io_idxGroup )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    QString strMthOutArgs;
-
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strMthInArgs = "Parent: " + QString(i_pTestGroupParent == nullptr ? "nullptr" : i_pTestGroupParent->path());
-        strMthInArgs += ", IdxGroup:" + QString::number(io_idxGroup);
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "createTestGroupMouseEventsStandardShapes",
-        /* strAddInfo   */ strMthInArgs );
-
-    ZS::Test::CTestStepGroup* pGrp = new ZS::Test::CTestStepGroup(
-        /* pTest           */ this,
-        /* strName         */ "Group " + QString::number(++io_idxGroup) + " Standard Shapes",
-        /* pTSGrpParent    */ i_pTestGroupParent );
-
-    createTestGroupMouseEventsStandardShapesPoints(pGrp, io_idxGroup);
-
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
-        mthTracer.setMethodOutArgs(strMthOutArgs);
-    }
-
-} // createTestGroupMouseEventsStandardShapes
+////------------------------------------------------------------------------------
+//void CTest::createTestGroupMouseEventsStandardShapes( ZS::Test::CTestStepGroup* i_pTestGroupParent, int& io_idxGroup )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    QString strMthOutArgs;
+//
+//    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+//    {
+//        strMthInArgs = "Parent: " + QString(i_pTestGroupParent == nullptr ? "nullptr" : i_pTestGroupParent->path());
+//        strMthInArgs += ", IdxGroup:" + QString::number(io_idxGroup);
+//    }
+//
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObj,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strMethod    */ "createTestGroupMouseEventsStandardShapes",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    ZS::Test::CTestStepGroup* pGrp = new ZS::Test::CTestStepGroup(
+//        /* pTest           */ this,
+//        /* strName         */ "Group " + QString::number(++io_idxGroup) + " Standard Shapes",
+//        /* pTSGrpParent    */ i_pTestGroupParent );
+//
+//    createTestGroupMouseEventsStandardShapesPoints(pGrp, io_idxGroup);
+//
+//    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+//    {
+//        strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
+//        mthTracer.setMethodOutArgs(strMthOutArgs);
+//    }
+//
+//} // createTestGroupMouseEventsStandardShapes

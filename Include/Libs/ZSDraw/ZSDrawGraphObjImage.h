@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -59,8 +59,6 @@ public: // class methods
     static QString NameSpace() { return "ZS::Draw"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjImage"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
-public: // class methods
-    static int getCurrentInstCount() { return s_iInstCount; }
 public: // ctors and dtor
     CGraphObjImage(
         CDrawingScene*       i_pDrawingScene,
@@ -116,11 +114,12 @@ protected: // overridables of base class QGraphicsItem
     virtual void mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv );
 protected: // overridables of base class QGraphicsItem
     virtual QVariant itemChange( GraphicsItemChange i_change, const QVariant& i_value );
-protected: // class members
-    static qint64 s_iInstCount;
 protected: // instance members
     QString m_strImgFilePath;
     QPixmap m_pxmOrig;
+protected: // class members
+    /*!< Needed to set an initial unique name when creating a new instance. */
+    static qint64 s_iInstCount;
 
 }; // class CGraphObjImage
 

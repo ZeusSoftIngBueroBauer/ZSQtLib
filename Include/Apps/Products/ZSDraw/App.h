@@ -34,20 +34,9 @@ may result in using the software modules.
 #include "ZSIpc/ZSIpcSrvCltMsg.h"
 #include "ZSSys/ZSSysRequestQueue.h"
 
-class QAction;
-class QLabel;
-class QSettings;
-class QStatusBar;
-
 namespace ZS
 {
 namespace System
-{
-class CErrLog;
-class CRequestExecTree;
-}
-
-namespace Trace
 {
 class CTrcAdminObj;
 class CIpcTrcServer;
@@ -78,24 +67,14 @@ public: // ctors and dtor
         const QString& i_strAppName,
         const QString& i_strWindowTitle );
     ~CApplication();
-public: // instance methods
-    void readSettings();
-    void saveSettings();
 protected slots: // instance methods of system shutdown
     void onLastWindowClosed();
 protected: // instance members
-    QSettings*                    m_pSettingsFile;
-    QString                       m_strErrLogFileAbsFilePath;
-    bool                          m_bReqExecTreeGarbageCollectorEnabled;
-    double                        m_fReqExecTreeGarbageCollectorInterval_s;
-    double                        m_fReqExecTreeGarbageCollectorElapsed_s;
-    ZS::System::CRequestExecTree* m_pReqExecTree;
-    ZS::Ipc::SServerHostSettings  m_trcServerHostSettings;
-    ZS::Trace::STrcServerSettings m_trcServerSettings;
-    ZS::Trace::CIpcTrcServer*     m_pTrcServer;
-    QString                       m_strTestStepsFileAbsFilePath;
-    CTest*                        m_pTest;
-    CMainWindow*                  m_pMainWindow;
+    ZS::Ipc::SServerHostSettings   m_trcServerHostSettings;
+    ZS::System::STrcServerSettings m_trcServerSettings;
+    ZS::Trace::CIpcTrcServer*      m_pTrcServer;
+    CTest*                         m_pTest;
+    CMainWindow*                   m_pMainWindow;
     ZS::System::CTrcAdminObj*      m_pTrcAdminObj;
 
 }; // class CApplication

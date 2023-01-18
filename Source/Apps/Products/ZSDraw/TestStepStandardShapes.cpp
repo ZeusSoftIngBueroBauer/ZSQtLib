@@ -49,7 +49,7 @@ may result in using the software modules.
 #include "ZSDraw/ZSDrawGraphObjPolyline.h"
 #include "ZSDraw/ZSDrawGraphObjRect.h"
 #include "ZSDraw/ZSDrawGraphObjText.h"
-#include "ZSPhysSizes/Geometry/ZSPhysSizes.h"
+#include "ZSDraw/ZSDrawUnits.h"
 #include "ZSTest/ZSTestStep.h"
 #include "ZSTest/ZSTestStepGroup.h"
 #include "ZSSys/ZSSysException.h"

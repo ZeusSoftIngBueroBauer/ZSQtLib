@@ -60,6 +60,7 @@ CGraphObjModelEntry::~CGraphObjModelEntry()
     m_pModel = nullptr;
     m_pDrawingScene = nullptr;
     m_pParent = nullptr;
+    m_graphObjType = static_cast<EGraphObjType>(0);
 
 } // dtor
 

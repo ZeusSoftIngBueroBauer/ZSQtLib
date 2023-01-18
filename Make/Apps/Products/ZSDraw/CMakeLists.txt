@@ -118,7 +118,6 @@ list(APPEND _Sources
     ${_SourcesPath}/ZSDraw/ZSDrawWdgtFormatGraphObjsElectricityTransistor.cpp
     ${_SourcesPath}/ZSDraw/ZSDrawWdgtFormatGraphObjsElectricityVoltageSource.cpp
     ${_SourcesPath}/ZSDraw/Test.cpp
-    ${_SourcesPath}/ZSDraw/TestGroupInterferenceChecks.cpp
     ${_SourcesPath}/ZSDraw/TestStepElectricity.cpp
     ${_SourcesPath}/ZSDraw/TestStepElectricityCapacitors.cpp
     ${_SourcesPath}/ZSDraw/TestStepElectricityInductors.cpp
@@ -205,7 +204,7 @@ source_group("Image Files/QtWidgets" FILES ${_QtWidgetsImages})
 target_include_directories(${PROJECT_NAME}
     PRIVATE ${CMAKE_SOURCE_DIR}/../Include/Apps/Products/ZSDraw)
 
-set(_Libs ZSIpcTraceGUI ZSPhysValGUI ZSDraw)
+set(_Libs ZSIpcTraceGUI ZSPhysValGUI ZSTestGUI ZSDraw)
 
 target_link_libraries(${PROJECT_NAME} ${_Libs})
 

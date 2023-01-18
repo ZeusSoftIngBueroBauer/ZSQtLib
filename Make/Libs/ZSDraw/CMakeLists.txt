@@ -46,13 +46,15 @@ list(APPEND _Headers
     ${_HeadersPath}/${PROJECT_NAME}/ZSDrawGraphObjImage.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSDrawGraphObjLabel.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSDrawGraphObjLine.h
-    ${_HeadersPath}/${PROJECT_NAME}/ZSDrawGraphObjModelEntry.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSDrawGraphObjPoint.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSDrawGraphObjPolygon.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSDrawGraphObjPolyline.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSDrawGraphObjRect.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSDrawGraphObjSelectionPoint.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSDrawGraphObjText.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSDrawGraphObjModelEntry.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSDrawGraphObjsTreeModel.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSDrawGraphObjsTreeView.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSDrawingScene.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSDrawingView.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSDrawObjFactoriesModel.h
@@ -100,13 +102,15 @@ list(APPEND _Sources
     ${_SourcesPath}/${PROJECT_NAME}/ZSDrawGraphObjImage.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSDrawGraphObjLabel.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSDrawGraphObjLine.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/ZSDrawGraphObjModelEntry.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSDrawGraphObjPoint.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSDrawGraphObjPolygon.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSDrawGraphObjPolyline.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSDrawGraphObjRect.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSDrawGraphObjSelectionPoint.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSDrawGraphObjText.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSDrawGraphObjModelEntry.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSDrawGraphObjsTreeModel.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSDrawGraphObjsTreeView.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSDrawingScene.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSDrawingView.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSDrawObjFactoriesModel.cpp

@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -92,7 +92,7 @@ may result in using the software modules.
 #include "ZSDraw/ZSDrawingView.h"
 #include "ZSDraw/ZSDrawGraphObj.h"
 #include "ZSDraw/ZSDrawGraphObjsTreeModel.h"
-#include "ZSDraw/ZSDrawGraphObjsTreeWdgt.h"
+#include "ZSDraw/ZSDrawGraphObjsTreeView.h"
 #include "ZSDraw/ZSDrawObjFactoriesModel.h"
 #include "ZSDraw/ZSDrawObjFactoryConnectionLine.h"
 #include "ZSDraw/ZSDrawObjFactoryConnectionPoint.h"
@@ -483,7 +483,7 @@ CMainWindow::CMainWindow(
     //-----------
 
     CPageSetup* pageSetup = m_pDrawingView->getPageSetup();
-    CPhysSizeGeometry* physSizeWidth = pageSetup->getPhysSizeWidth();
+    CUnit unitWidth = pageSetup->unit(EDirection::Horizontal);
 
     m_pLblStatusBarDrawingSceneEditTool = new QLabel("Tool: -");
     m_pLblStatusBarDrawingSceneEditTool->setMinimumWidth(80);
@@ -497,15 +497,15 @@ CMainWindow::CMainWindow(
     m_pLblStatusBarDrawingSceneGraphObjEditInfo->setMinimumWidth(120);
     statusBar()->addPermanentWidget(m_pLblStatusBarDrawingSceneGraphObjEditInfo);
 
-    m_pLblStatusBarDrawingSceneRect = new QLabel("SceneRect: -/-, -/- [" + physSizeWidth->Pixel()->getSymbol() + "]");
+    m_pLblStatusBarDrawingSceneRect = new QLabel("SceneRect: -/-, -/- [" + unitWidth.symbol() + "]");
     m_pLblStatusBarDrawingSceneRect->setMinimumWidth(160);
     statusBar()->addPermanentWidget(m_pLblStatusBarDrawingSceneRect);
 
-    m_pLblStatusBarDrawingSceneMouseCursorPos = new QLabel( "ScenePos: -/- [" + physSizeWidth->Pixel()->getSymbol() + "]" );
+    m_pLblStatusBarDrawingSceneMouseCursorPos = new QLabel( "ScenePos: -/- [" + unitWidth.symbol() + "]" );
     m_pLblStatusBarDrawingSceneMouseCursorPos->setMinimumWidth(140);
     statusBar()->addPermanentWidget(m_pLblStatusBarDrawingSceneMouseCursorPos);
 
-    m_pLblStatusBarDrawingViewMouseCursorPos = new QLabel( "ViewPos: -/- [" + physSizeWidth->Pixel()->getSymbol() + "]" );
+    m_pLblStatusBarDrawingViewMouseCursorPos = new QLabel( "ViewPos: -/- [" + unitWidth.symbol() + "]" );
     m_pLblStatusBarDrawingViewMouseCursorPos->setMinimumWidth(140);
     statusBar()->addPermanentWidget(m_pLblStatusBarDrawingViewMouseCursorPos);
 
@@ -2138,12 +2138,12 @@ void CMainWindow::createActions()
     // <MenuItem> Info::Settings File
     //-------------------------------
 
-    if( CApplication::GetInstance()->getSettingsFile() != nullptr )
-    {
-        QString strActionInfoSettingsFile = "Settings File: " + CApplication::GetInstance()->getSettingsFile()->fileName();
+    //if( CApplication::GetInstance()->getSettingsFile() != nullptr )
+    //{
+    //    QString strActionInfoSettingsFile = "Settings File: " + CApplication::GetInstance()->getSettingsFile()->fileName();
 
-        m_pActInfoSettingsFile = new QAction(strActionInfoSettingsFile,this);
-    }
+    //    m_pActInfoSettingsFile = new QAction(strActionInfoSettingsFile,this);
+    //}
 
 } // createActions
 
@@ -3007,7 +3007,7 @@ void CMainWindow::createDockWidgets()
 
     m_pModelIdxTreeGraphObjs = new CModelIdxTreeGraphObjs(m_pDrawingScene);
 
-    m_pWdgtGraphicsItems = new CWdgtIdxTreeGraphObjs(m_pModelIdxTreeGraphObjs);
+    m_pWdgtGraphicsItems = new CTreeViewIdxTreeGraphObjs(m_pModelIdxTreeGraphObjs);
     m_pTabWdgtGraphObjs->addTab( m_pWdgtGraphicsItems, "Graphics Items" );
 
 } // createDockWidgets
@@ -3905,7 +3905,7 @@ void CMainWindow::onActionEditRotateLeftTriggered( bool )
 
             if( pGraphObj != nullptr )
             {
-                if( pGraphObj->getType() != EGraphObjTypeLabel && pGraphObj->getType() != EGraphObjTypeSelectionPoint )
+                if( !pGraphObj->isLabel() && !pGraphObj->isSelectionPoint() )
                 {
                     double fAngleTmp_deg = pGraphObj->getRotationAngleInDegree();
                     pGraphObj->setRotationAngleInDegree(fAngleTmp_deg+fAngle_deg);
@@ -3956,7 +3956,7 @@ void CMainWindow::onActionEditRotateRightTriggered( bool )
 
             if( pGraphObj != nullptr )
             {
-                if( pGraphObj->getType() != EGraphObjTypeLabel && pGraphObj->getType() != EGraphObjTypeSelectionPoint )
+                if( !pGraphObj->isLabel() && !pGraphObj->isSelectionPoint() )
                 {
                     double fAngleTmp_deg = pGraphObj->getRotationAngleInDegree();
                     pGraphObj->setRotationAngleInDegree(fAngleTmp_deg+fAngle_deg);
@@ -4951,13 +4951,12 @@ void CMainWindow::onActionTraceAdminObjIdxTreeTriggered( bool /*i_bChecked*/ )
         if( pDlg == nullptr )
         {
             pDlg = CDlgIdxTreeTrcAdminObjs::CreateInstance(
-                /* pTrcAdmIdxTree */ CTrcServer::GetTraceAdminObjIdxTree(),
-                /* strDlgTitle    */ strDlgTitle );
+                strDlgTitle, CTrcServer::GetTraceAdminObjIdxTree());
             pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
             pDlg->adjustSize();
             pDlg->show();
         }
-        else // if( pReqSeq != nullptr )
+        else
         {
             if( pDlg->isHidden() )
             {
@@ -5115,12 +5114,12 @@ void CMainWindow::onDrawingSceneRectChanged( const QRectF& i_rect )
         if( m_pDrawingView != nullptr )
         {
             CPageSetup* pageSetup = m_pDrawingView->getPageSetup();
-            CPhysSizeGeometry* physSizeWidth = pageSetup->getPhysSizeWidth();
+            CUnit unitWidth = pageSetup->unit(EDirection::Horizontal);
             QRectF rect = m_pDrawingScene->sceneRect();
             QPointF ptTL = m_pDrawingView->mapFromScene(rect.topLeft());
             rect.moveTopLeft(ptTL);
             QString strRect = point2Str(ptTL) + ", " + size2Str(rect.size());
-            m_pLblStatusBarDrawingSceneRect->setText("SceneRect: " + strRect + " [" + physSizeWidth->Pixel()->getSymbol() + "]");
+            m_pLblStatusBarDrawingSceneRect->setText("SceneRect: " + strRect + " [" + unitWidth.symbol() + "]");
         }
     }
 
@@ -5160,7 +5159,7 @@ void CMainWindow::onDrawingSceneMousePosChanged( const QPointF& i_ptMousePos )
     if( m_pLblStatusBarDrawingSceneMouseCursorPos != nullptr )
     {
         CPageSetup* pageSetup = m_pDrawingView->getPageSetup();
-        CPhysSizeGeometry* physSizeWidth = pageSetup->getPhysSizeWidth();
+        CUnit unitWidth = pageSetup->unit(EDirection::Horizontal);
 
         QString strMouseCursorPos;
 
@@ -5169,7 +5168,7 @@ void CMainWindow::onDrawingSceneMousePosChanged( const QPointF& i_ptMousePos )
         strMouseCursorPos += QString("/");
         strMouseCursorPos += QString::number(i_ptMousePos.y());
         strMouseCursorPos += QString(" [");
-        strMouseCursorPos += QString(physSizeWidth->Pixel()->getSymbol());
+        strMouseCursorPos += QString(unitWidth.symbol());
         strMouseCursorPos += QString("]");
 
         //if( m_drawArea.isValid() && m_drawArea.m_physValWidth.getPhysSize() != &Geometry::GraphDevice() )
@@ -5352,7 +5351,7 @@ void CMainWindow::onDrawingViewMousePosChanged( const QPointF& i_ptMousePos )
     if( m_pLblStatusBarDrawingViewMouseCursorPos != nullptr )
     {
         CPageSetup* pageSetup = m_pDrawingView->getPageSetup();
-        CPhysSizeGeometry* physSizeWidth = pageSetup->getPhysSizeWidth();
+        CUnit unitWidth = pageSetup->unit(EDirection::Horizontal);
 
         QString strMouseCursorPos;
 
@@ -5361,7 +5360,7 @@ void CMainWindow::onDrawingViewMousePosChanged( const QPointF& i_ptMousePos )
         strMouseCursorPos += QString("/");
         strMouseCursorPos += QString::number(i_ptMousePos.y());
         strMouseCursorPos += QString(" [");
-        strMouseCursorPos += QString(physSizeWidth->Pixel()->getSymbol());
+        strMouseCursorPos += QString(unitWidth.symbol());
         strMouseCursorPos += QString("]");
 
         m_pLblStatusBarDrawingViewMouseCursorPos->setText(strMouseCursorPos);
@@ -5480,9 +5479,10 @@ void CMainWindow::selectTreeViewObjFactoryNode( ZS::Draw::CObjFactory* i_pObjFac
             }
             else
             {
-                CIdxTreeEntry* pTreeEntry = m_pModelObjFactories->idxTree()->findLeave(
-                    /* strNameSpace */ i_pObjFactory->getGroupName(),               // see CObjFactory::registerObjFactory
-                    /* strObjName   */ i_pObjFactory->getGraphObjTypeAsString() );  // see CObjFactory::registerObjFactory
+                CIdxTreeEntry* pTreeEntry =
+                    dynamic_cast<CIdxTree*>(m_pModelObjFactories->idxTree())->findLeave(
+                        i_pObjFactory->getGroupName(),               // see CObjFactory::registerObjFactory
+                        i_pObjFactory->getGraphObjTypeAsString() );  // see CObjFactory::registerObjFactory
 
                 if( pTreeEntry != nullptr )
                 {
@@ -5549,12 +5549,12 @@ void CMainWindow::resizeEvent( QResizeEvent* i_pEv )
         if( m_pDrawingView != nullptr )
         {
             CPageSetup* pageSetup = m_pDrawingView->getPageSetup();
-            CPhysSizeGeometry* physSizeWidth = pageSetup->getPhysSizeWidth();
+            CUnit unitWidth = pageSetup->unit(EDirection::Horizontal);
             QRectF rect = m_pDrawingScene->sceneRect();
             QPointF ptTL = m_pDrawingView->mapFromScene(rect.topLeft());
             rect.moveTopLeft(ptTL);
             QString strRect = point2Str(ptTL) + ", " + size2Str(rect.size());
-            m_pLblStatusBarDrawingSceneRect->setText("SceneRect: " + strRect + " [" + physSizeWidth->Pixel()->getSymbol() + "]");
+            m_pLblStatusBarDrawingSceneRect->setText("SceneRect: " + strRect + " [" + unitWidth.symbol() + "]");
         }
     }
 
@@ -5583,12 +5583,12 @@ void CMainWindow::showEvent( QShowEvent* i_pEv )
         if( m_pDrawingView != nullptr )
         {
             CPageSetup* pageSetup = m_pDrawingView->getPageSetup();
-            CPhysSizeGeometry* physSizeWidth = pageSetup->getPhysSizeWidth();
+            CUnit unitWidth = pageSetup->unit(EDirection::Horizontal);
             QRectF rect = m_pDrawingScene->sceneRect();
             QPointF ptTL = m_pDrawingView->mapFromScene(rect.topLeft());
             rect.moveTopLeft(ptTL);
             QString strRect = point2Str(ptTL) + ", " + size2Str(rect.size());
-            m_pLblStatusBarDrawingSceneRect->setText("SceneRect: " + strRect + " [" + physSizeWidth->Pixel()->getSymbol() + "]");
+            m_pLblStatusBarDrawingSceneRect->setText("SceneRect: " + strRect + " [" + unitWidth.symbol() + "]");
         }
     }
 

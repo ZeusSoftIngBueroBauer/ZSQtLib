@@ -1,11 +1,11 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
-                         Gewerbepark 28
-                         D-83670 Bad Heilbrunn
-                         Tel: 0049 8046 9488
-                         www.zeussoft.de
-                         E-Mail: mailbox@zeussoft.de
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
+                      Gewerbepark 28
+                      D-83670 Bad Heilbrunn
+                      Tel: 0049 8046 9488
+                      www.zeussoft.de
+                      E-Mail: mailbox@zeussoft.de
 
 --------------------------------------------------------------------------------
 
@@ -27,12 +27,13 @@ may result in using the software modules.
 #ifndef ZSDraw_ObjFactory_h
 #define ZSDraw_ObjFactory_h
 
-#include <QtCore/qobject.h>
-#include <QtCore/qsize.h>
-#include <QtGui/qpixmap.h>
 #include "ZSDraw/ZSDrawDllMain.h"
 #include "ZSSys/ZSSysIdxTreeEntry.h"
 #include "ZSSys/ZSSysErrResult.h"
+
+#include <QtCore/qobject.h>
+#include <QtCore/qsize.h>
+#include <QtGui/qpixmap.h>
 
 class QGraphicsScene;
 class QGraphicsItem;
