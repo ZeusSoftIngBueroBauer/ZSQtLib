@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSPhysValGUI_PhysTreeEntryQuantityWdgt_h
-#define ZSPhysValGUI_PhysTreeEntryQuantityWdgt_h
+#ifndef ZSPhysValGUI_PhysTreeEntryUnitRatioWdgt_h
+#define ZSPhysValGUI_PhysTreeEntryUnitRatioWdgt_h
 
 #include "ZSPhysValGUI/ZSPhysTreeEntryAbstractWdgt.h"
 
@@ -41,19 +41,19 @@ namespace PhysVal
 namespace GUI
 {
 //******************************************************************************
-class ZSPHYSVALGUIDLL_API CWdgtQuantity : public CWdgtAbstractTreeEntry
+class ZSPHYSVALGUIDLL_API CWdgtUnitRatio : public CWdgtAbstractTreeEntry
 //******************************************************************************
 {
     Q_OBJECT
 public: // class methods
     static QString NameSpace() { return "ZS::PhysVal::GUI"; }
-    static QString ClassName() { return "CWdgtQuantity"; }
+    static QString ClassName() { return "CWdgtUnitRatio"; }
 public: // ctors and dtor
-    CWdgtQuantity( CIdxTreeUnits* i_pIdxTree, QWidget* i_pWdgtParent = nullptr );
-    virtual ~CWdgtQuantity();
+    CWdgtUnitRatio(QWidget* i_pWdgtParent = nullptr );
+    virtual ~CWdgtUnitRatio();
 public: // overridables
-    virtual QString nameSpace() const { return CWdgtQuantity::NameSpace(); }
-    virtual QString className() const { return CWdgtQuantity::ClassName(); }
+    virtual QString nameSpace() const { return CWdgtUnitRatio::NameSpace(); }
+    virtual QString className() const { return CWdgtUnitRatio::ClassName(); }
 public: // overridables
     virtual void setKeyInTreeOfRootEntry( const QString& i_strKeyInTree ) override;
 protected: // instance members
@@ -71,7 +71,7 @@ protected: // instance members
     QLabel*      m_pLblNextHigher;
     QLineEdit*   m_pEdtNextHigher;
 
-}; // class CWdgtQuantity
+}; // class CWdgtUnitRatio
 
 } // namespace GUI
 
@@ -79,4 +79,4 @@ protected: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZSPhysValGUI_PhysTreeEntryQuantityWdgt_h
+#endif // #ifndef ZSPhysValGUI_PhysTreeEntryUnitRatioWdgt_h

@@ -529,23 +529,22 @@ void CMainWindow::onActFileSaveTestResultsTriggered()
 void CMainWindow::onActDebugZSTrcServerTriggered()
 //------------------------------------------------------------------------------
 {
-    QString strDlgTitle = QCoreApplication::applicationName() + ": ZS Trace Server";
-
     CIpcTrcServer* pServer = CIpcTrcServer::GetInstance();
 
     if( pServer != nullptr )
     {
-        CDlgTrcServer* pDlg = CDlgTrcServer::GetInstance(pServer->objectName());
+        CDlgTrcServer* pDlg = CDlgTrcServer::GetInstance();
 
         if( pDlg == nullptr )
         {
-            pDlg = CDlgTrcServer::CreateInstance(strDlgTitle, pServer->objectName());
+            QString strDlgTitle = QCoreApplication::applicationName() + ": ZS Trace Server";
+            pDlg = CDlgTrcServer::CreateInstance(strDlgTitle);
             pDlg->setServer(pServer);
             pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
             pDlg->adjustSize();
             pDlg->show();
         }
-        else // if( pDlg != nullptr )
+        else
         {
             if( pDlg->isHidden() )
             {
@@ -580,7 +579,7 @@ void CMainWindow::onActDebugZSTrcServerAdminObjIdxTreeTriggered()
             pDlg->adjustSize();
             pDlg->show();
         }
-        else // if( pDlg != nullptr )
+        else
         {
             if( pDlg->isHidden() )
             {
@@ -612,7 +611,7 @@ void CMainWindow::onActDebugZSTrcClientTriggered()
             pDlg->adjustSize();
             pDlg->show();
         }
-        else // if( pDlg != nullptr )
+        else
         {
             if( pDlg->isHidden() )
             {
@@ -647,7 +646,7 @@ void CMainWindow::onActDebugZSTrcClientAdminObjIdxTreeTriggered()
             pDlg->adjustSize();
             pDlg->show();
         }
-        else // if( pDlg != nullptr )
+        else
         {
             if( pDlg->isHidden() )
             {
@@ -674,7 +673,7 @@ void CMainWindow::onActDebugErrLogTriggered()
         pDlg->adjustSize();
         pDlg->show();
     }
-    else // if( pReqSeq != nullptr )
+    else
     {
         if( pDlg->isHidden() )
         {
@@ -682,9 +681,7 @@ void CMainWindow::onActDebugErrLogTriggered()
         }
         pDlg->raise();
         pDlg->activateWindow();
-
-    } // if( pDlg != nullptr )
-
+    }
 } // onActDebugErrLogTriggered
 
 //------------------------------------------------------------------------------
@@ -702,7 +699,7 @@ void CMainWindow::onActDebugRequestExecTreeTriggered()
         pDlg->adjustSize();
         pDlg->show();
     }
-    else // if( pReqSeq != nullptr )
+    else
     {
         if( pDlg->isHidden() )
         {
@@ -710,9 +707,7 @@ void CMainWindow::onActDebugRequestExecTreeTriggered()
         }
         pDlg->raise();
         pDlg->activateWindow();
-
-    } // if( pDlg != nullptr )
-
+    }
 } // onActDebugRequestExecTreeTriggered
 
 /*==============================================================================

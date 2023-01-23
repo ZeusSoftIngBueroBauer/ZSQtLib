@@ -32,8 +32,8 @@ may result in using the software modules.
 #include <QtWidgets/qlayout.h>
 #endif
 
-#include "ZSPhysValGUI/ZSPhysSizesIdxTreeDlg.h"
-#include "ZSPhysValGUI/ZSPhysSizesWdgt.h"
+#include "ZSPhysValGUI/ZSPhysUnitsDlg.h"
+#include "ZSPhysValGUI/ZSPhysUnitsWdgt.h"
 #include "ZSPhysVal/ZSPhysUnitsIdxTree.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrResult.h"
@@ -48,7 +48,7 @@ using namespace ZS::PhysVal::GUI;
 
 
 /*******************************************************************************
-class CDlgIdxTreePhysSizes : public QDialog
+class CDlgPhysUnits : public QDialog
 *******************************************************************************/
 
 /*==============================================================================
@@ -56,33 +56,29 @@ public: // class methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CDlgIdxTreePhysSizes* CDlgIdxTreePhysSizes::CreateInstance(
+CDlgPhysUnits* CDlgPhysUnits::GetInstance()
+//------------------------------------------------------------------------------
+{
+    QString strObjName = CIdxTreeUnits::GetInstance()->objectName();
+    return dynamic_cast<CDlgPhysUnits*>(CDialog::GetInstance(NameSpace(), ClassName(), strObjName));
+}
+
+//------------------------------------------------------------------------------
+CDlgPhysUnits* CDlgPhysUnits::CreateInstance(
     const QString& i_strDlgTitle,
-    CIdxTreeUnits* i_pIdxTree,
     QWidget* i_pWdgtParent,
     Qt::WindowFlags i_wFlags )
 //------------------------------------------------------------------------------
 {
-    if( CDialog::GetInstance(NameSpace(), ClassName(), i_pIdxTree->objectName()) != nullptr )
+    if( GetInstance() != nullptr )
     {
-        QString strKey = buildPathStr("::", NameSpace(), ClassName(), i_pIdxTree->objectName());
+        QString strObjName = CIdxTreeUnits::GetInstance()->objectName();
+        QString strKey = buildPathStr("::", NameSpace(), ClassName(), strObjName);
         throw CException(__FILE__, __LINE__, EResultObjAlreadyInList, strKey);
     }
 
     // The ctor of base class CDialog adds the instance to the hash of dialogs.
-    return new CDlgIdxTreePhysSizes(
-        /* strDlgTitle                 */ i_strDlgTitle,
-        /* pIdxTree                    */ i_pIdxTree,
-        /* pWdgtParent                 */ i_pWdgtParent,
-        /* wFlags                      */ i_wFlags );
-
-} // CreateInstance
-
-//------------------------------------------------------------------------------
-CDlgIdxTreePhysSizes* CDlgIdxTreePhysSizes::GetInstance( const QString& i_strObjName )
-//------------------------------------------------------------------------------
-{
-    return dynamic_cast<CDlgIdxTreePhysSizes*>(CDialog::GetInstance(NameSpace(), ClassName(), i_strObjName));
+    return new CDlgPhysUnits(i_strDlgTitle, i_pWdgtParent, i_wFlags);
 }
 
 /*==============================================================================
@@ -90,9 +86,8 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CDlgIdxTreePhysSizes::CDlgIdxTreePhysSizes(
+CDlgPhysUnits::CDlgPhysUnits(
     const QString& i_strDlgTitle,
-    CIdxTreeUnits* i_pIdxTree,
     QWidget* i_pWdgtParent,
     Qt::WindowFlags i_wFlags ) :
 //------------------------------------------------------------------------------
@@ -100,29 +95,25 @@ CDlgIdxTreePhysSizes::CDlgIdxTreePhysSizes(
         /* strDlgTitle  */ i_strDlgTitle,
         /* strNameSpace */ NameSpace(),
         /* strClassName */ ClassName(),
-        /* strObjName   */ i_pIdxTree->objectName(),
+        /* strObjName   */ CIdxTreeUnits::GetInstance()->objectName(),
         /* pWdgtParent  */ i_pWdgtParent,
         /* wFlags       */ i_wFlags ),
-    m_pIdxTree(i_pIdxTree),
     m_pLyt(nullptr),
-    m_pWdgtIdxTree(nullptr)
+    m_pWdgtUnits(nullptr)
 {
     m_pLyt = new QVBoxLayout();
     setLayout(m_pLyt);
 
-    m_pWdgtIdxTree = new CWdgtPhysSizes(m_pIdxTree, nullptr);
-
-    m_pLyt->addWidget(m_pWdgtIdxTree);
+    m_pWdgtUnits = new CWdgtUnits();
+    m_pLyt->addWidget(m_pWdgtUnits);
 
 } // ctor
 
 //------------------------------------------------------------------------------
-CDlgIdxTreePhysSizes::~CDlgIdxTreePhysSizes()
+CDlgPhysUnits::~CDlgPhysUnits()
 //------------------------------------------------------------------------------
 {
-    m_pIdxTree = nullptr;
     m_pLyt = nullptr;
-    m_pWdgtIdxTree = nullptr;
-    m_pTrcAdminObj = nullptr;
+    m_pWdgtUnits = nullptr;
 
 } // dtor

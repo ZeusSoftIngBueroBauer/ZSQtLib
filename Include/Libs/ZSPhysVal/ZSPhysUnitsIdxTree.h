@@ -84,7 +84,7 @@ protected: // class members
     /*!< Singleton class. */
     static CIdxTreeUnits* s_pTheInst;
 protected: // instance members
-    /*<! Reference counter for createInstance and releaseInstance. */
+    /*!< Reference counter for createInstance and releaseInstance. */
     int m_iRefCount;
 
 }; // class CIdxTreeUnits

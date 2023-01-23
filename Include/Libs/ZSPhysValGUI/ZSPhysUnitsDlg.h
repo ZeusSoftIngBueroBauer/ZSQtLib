@@ -24,54 +24,55 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSPhysValGUI_PhysTreeEntryRatioWdgt_h
-#define ZSPhysValGUI_PhysTreeEntryRatioWdgt_h
+#ifndef ZSPhysValGUI_PhysUnitsDlg_h
+#define ZSPhysValGUI_PhysUnitsDlg_h
 
-#include "ZSPhysValGUI/ZSPhysTreeEntryAbstractWdgt.h"
+#include <QtCore/qglobal.h>
 
-class QLabel;
-class QLineEdit;
-class QHBoxLayout;
+#include "ZSPhysValGUI/ZSPhysValGUIDllMain.h"
+#include "ZSSysGUI/ZSSysDialog.h"
+#include "ZSSys/ZSSysAux.h"
+
 class QVBoxLayout;
 
 namespace ZS
 {
 namespace PhysVal
 {
+class CIdxTreeUnits;
+
 namespace GUI
 {
+class CWdgtUnits;
+
 //******************************************************************************
-class ZSPHYSVALGUIDLL_API CWdgtRatio : public CWdgtAbstractTreeEntry
+class ZSPHYSVALGUIDLL_API CDlgPhysUnits : public ZS::System::GUI::CDialog
 //******************************************************************************
 {
-    Q_OBJECT
 public: // class methods
     static QString NameSpace() { return "ZS::PhysVal::GUI"; }
-    static QString ClassName() { return "CWdgtRatio"; }
-public: // ctors and dtor
-    CWdgtRatio( CIdxTreeUnits* i_pIdxTree, QWidget* i_pWdgtParent = nullptr );
-    virtual ~CWdgtRatio();
-public: // overridables
-    virtual QString nameSpace() const { return CWdgtRatio::NameSpace(); }
-    virtual QString className() const { return CWdgtRatio::ClassName(); }
-public: // overridables
-    virtual void setKeyInTreeOfRootEntry( const QString& i_strKeyInTree ) override;
+    static QString ClassName() { return "CDlgPhysUnits"; }
+public: // class CDlgTrcServer
+    static CDlgPhysUnits* CreateInstance(
+        const QString& i_strDlgTitle,
+        QWidget* i_pWdgtParent = nullptr,
+        Qt::WindowFlags i_wFlags = Qt::WindowFlags() );
+    static CDlgPhysUnits* GetInstance();
+protected: // ctor
+    CDlgPhysUnits(
+        const QString& i_strDlgTitle,
+        QWidget* i_pWdgtParent = nullptr,
+        Qt::WindowFlags i_wFlags = Qt::WindowFlags() );
+public: // dtor
+    virtual ~CDlgPhysUnits();
+public: // overridables of base class ZS::System::GUI::CDialog
+    virtual QString nameSpace() override { return NameSpace(); }
+    virtual QString className() override { return ClassName(); }
 protected: // instance members
     QVBoxLayout* m_pLyt;
-    QHBoxLayout* m_pLytSymbol;
-    QLabel*      m_pLblSymbol;
-    QLineEdit*   m_pEdtSymbol;
-    QHBoxLayout* m_pLytFactor;
-    QLabel*      m_pLblFactor;
-    QLineEdit*   m_pEdtFactor;
-    QHBoxLayout* m_pLytNextLower;
-    QLabel*      m_pLblNextLower;
-    QLineEdit*   m_pEdtNextLower;
-    QHBoxLayout* m_pLytNextHigher;
-    QLabel*      m_pLblNextHigher;
-    QLineEdit*   m_pEdtNextHigher;
+    CWdgtUnits* m_pWdgtUnits;
 
-}; // class CWdgtRatio
+}; // class CDlgPhysUnits
 
 } // namespace GUI
 
@@ -79,4 +80,4 @@ protected: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZSPhysValGUI_PhysTreeEntryRatioWdgt_h
+#endif // #ifndef ZSPhysValGUI_PhysUnitsDlg_h

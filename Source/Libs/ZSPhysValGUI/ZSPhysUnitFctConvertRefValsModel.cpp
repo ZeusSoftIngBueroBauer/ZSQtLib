@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include "ZSPhysValGUI/ZSPhysUnitFctConvertExternalModel.h"
-#include "ZSPhysVal/ZSPhysTreeEntryPhysUnit.h"
+#include "ZSPhysValGUI/ZSPhysUnitFctConvertRefValsModel.h"
+#include "ZSPhysVal/ZSPhysTreeEntryGrpPhysUnits.h"
 #include "ZSPhysVal/ZSPhysUnitsIdxTree.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
@@ -36,7 +36,7 @@ using namespace ZS::PhysVal::GUI;
 
 
 /*******************************************************************************
-class CModelUnitFctConvertExternal : public QAbstractTableModel
+class CModelUnitFctConvertRefVals : public QAbstractTableModel
 *******************************************************************************/
 
 /*==============================================================================
@@ -44,20 +44,20 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CModelUnitFctConvertExternal::CModelUnitFctConvertExternal( QObject* i_pObjParent ) :
+CModelUnitFctConvertRefVals::CModelUnitFctConvertRefVals( QObject* i_pObjParent ) :
 //------------------------------------------------------------------------------
     QAbstractTableModel(i_pObjParent),
     m_strKeyInTreeOfRootEntry(),
-    m_pPhysUnit(nullptr)
+    m_pUnitsGrp(nullptr)
 {
 } // ctor
 
 //------------------------------------------------------------------------------
-CModelUnitFctConvertExternal::~CModelUnitFctConvertExternal()
+CModelUnitFctConvertRefVals::~CModelUnitFctConvertRefVals()
 //------------------------------------------------------------------------------
 {
     //m_strKeyInTreeOfRootEntry;
-    m_pPhysUnit = nullptr;
+    m_pUnitsGrp = nullptr;
 
 } // dtor
 
@@ -66,7 +66,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CModelUnitFctConvertExternal::setKeyInTreeOfRootEntry( const QString& i_strKeyInTree )
+void CModelUnitFctConvertRefVals::setKeyInTreeOfRootEntry( const QString& i_strKeyInTree )
 //------------------------------------------------------------------------------
 {
     if( m_strKeyInTreeOfRootEntry.compare(i_strKeyInTree) != 0 )
@@ -77,13 +77,13 @@ void CModelUnitFctConvertExternal::setKeyInTreeOfRootEntry( const QString& i_str
             endRemoveRows();
         }
 
-        m_pPhysUnit = nullptr;
+        m_pUnitsGrp = nullptr;
 
         CIdxTreeEntry* pTreeEntry = CIdxTreeUnits::GetInstance()->findEntry(i_strKeyInTree);
 
-        if( pTreeEntry != nullptr && pTreeEntry->isLeave() )
+        if( pTreeEntry != nullptr && pTreeEntry->isBranch() )
         {
-            m_pPhysUnit = dynamic_cast<CUnitsTreeEntryPhysUnit*>(pTreeEntry);
+            m_pUnitsGrp = dynamic_cast<CUnitsTreeEntryGrpBase*>(pTreeEntry);
         }
 
         if( rowCount() > 0 )
@@ -99,45 +99,43 @@ public: // must overridables of base class QAbstractTableModel
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-int CModelUnitFctConvertExternal::rowCount( const QModelIndex& /*i_modelIdxParent*/ ) const
+int CModelUnitFctConvertRefVals::rowCount( const QModelIndex& /*i_modelIdxParent*/ ) const
 //------------------------------------------------------------------------------
 {
     int iRowCount = 0;
 
-    if( m_pPhysUnit != nullptr )
+    if( m_pUnitsGrp != nullptr )
     {
-        iRowCount = m_pPhysUnit->getFctConvertsExternalCount();
+        iRowCount = m_pUnitsGrp->getReferenceValuesCount();
     }
     return iRowCount;
 }
 
 //------------------------------------------------------------------------------
-int CModelUnitFctConvertExternal::columnCount( const QModelIndex& /*i_modelIdxParent*/ ) const
+int CModelUnitFctConvertRefVals::columnCount( const QModelIndex& /*i_modelIdxParent*/ ) const
 //------------------------------------------------------------------------------
 {
     return EColumnCount;
 }
 
 //------------------------------------------------------------------------------
-QVariant CModelUnitFctConvertExternal::data( const QModelIndex& i_modelIdx, int i_iRole ) const
+QVariant CModelUnitFctConvertRefVals::data( const QModelIndex& i_modelIdx, int i_iRole ) const
 //------------------------------------------------------------------------------
 {
     QVariant varData;
 
     int iRow = i_modelIdx.row();
     int iCol = i_modelIdx.column();
-    SFctConvert* pfctConvert = nullptr;
-    CUnitsTreeEntryPhysUnit* pPhysUnitDst = nullptr;
 
     if( !i_modelIdx.isValid() )
     {
         return varData;
     }
-    if( m_pPhysUnit == nullptr )
+    if( m_pUnitsGrp == nullptr )
     {
         return varData;
     }
-    if( iRow < 0 || iRow >= static_cast<int>(m_pPhysUnit->getFctConvertsExternalCount()) )
+    if( iRow < 0 || iRow >= static_cast<int>(m_pUnitsGrp->getReferenceValuesCount()) )
     {
         return varData;
     }
@@ -145,32 +143,22 @@ QVariant CModelUnitFctConvertExternal::data( const QModelIndex& i_modelIdx, int 
     {
         return varData;
     }
-    pfctConvert = m_pPhysUnit->getFctConvertExternal(static_cast<unsigned int>(iRow));
-    if( pfctConvert == nullptr )
-    {
-        return varData;
-    }
-    pPhysUnitDst = pfctConvert->m_pPhysUnitDst;
-    if( pPhysUnitDst == nullptr )
-    {
-        return varData;
-    }
 
     switch( i_modelIdx.column() )
     {
-        case EColumnUnitGrp:
+        case EColumnName:
         {
             if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
             {
-                varData = pPhysUnitDst->parentBranchPath();
+                varData = m_pUnitsGrp->getReferenceValueName(iRow);
             }
             break;
         }
-        case EColumnFctConvert:
+        case EColumnValue:
         {
             if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
             {
-                varData = m_pPhysUnit->findFctConvertExternalName(pPhysUnitDst);
+                varData = m_pUnitsGrp->getReferenceValue(iRow).toString();
             }
             break;
         }
@@ -184,7 +172,7 @@ QVariant CModelUnitFctConvertExternal::data( const QModelIndex& i_modelIdx, int 
 } // data
 
 //------------------------------------------------------------------------------
-QVariant CModelUnitFctConvertExternal::headerData(
+QVariant CModelUnitFctConvertRefVals::headerData(
     int             i_iSection,
     Qt::Orientation i_orientation,
     int             i_iRole ) const
@@ -194,24 +182,24 @@ QVariant CModelUnitFctConvertExternal::headerData(
 
     switch( i_iSection )
     {
-        case EColumnUnitGrp:
+        case EColumnName:
         {
             if( i_iRole == Qt::DisplayRole )
             {
                 if( i_orientation == Qt::Horizontal )
                 {
-                    varData = "Target Unit Group";
+                    varData = "Name";
                 }
             }
             break;
         }
-        case EColumnFctConvert:
+        case EColumnValue:
         {
             if( i_iRole == Qt::DisplayRole )
             {
                 if( i_orientation == Qt::Horizontal )
                 {
-                    varData = "Function";
+                    varData = "Value";
                 }
             }
             break;

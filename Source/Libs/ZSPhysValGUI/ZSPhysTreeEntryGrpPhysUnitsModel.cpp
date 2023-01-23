@@ -24,7 +24,7 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include "ZSPhysValGUI/ZSPhysTreeEntryPhysSizeModel.h"
+#include "ZSPhysValGUI/ZSPhysTreeEntryGrpPhysUnitsModel.h"
 #include "ZSPhysVal/ZSPhysUnitsIdxTree.h"
 #include "ZSPhysVal/ZSPhysTreeEntryGrpPhysUnits.h"
 #include "ZSPhysVal/ZSPhysTreeEntryPhysUnit.h"
@@ -59,7 +59,7 @@ class CInitModulePhysTreeEntryPhysSizeModel
 public: // ctor
     CInitModulePhysTreeEntryPhysSizeModel()
     {
-        qmlRegisterType<CModelPhysSize>("ZSPhysValGUI", 1, 0, "ModelPhysSize");
+        qmlRegisterType<CModelPhysUnitsGrp>("ZSPhysValGUI", 1, 0, "ModelPhysSize");
     }
 };
 
@@ -67,7 +67,7 @@ static CInitModulePhysTreeEntryPhysSizeModel s_initModule;
 
 
 /*******************************************************************************
-class CModelPhysSize : public QAbstractTableModel
+class CModelPhysUnitsGrp : public QAbstractTableModel
 *******************************************************************************/
 
 /*==============================================================================
@@ -78,22 +78,22 @@ public: // type definitions and constants
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-static const ZS::System::SEnumEntry s_arEnumEntriesViewMode[CModelPhysSize::EViewModeCount] =
+static const ZS::System::SEnumEntry s_arEnumEntriesViewMode[CModelPhysUnitsGrp::EViewModeCount] =
 //------------------------------------------------------------------------------
 {
-    SEnumEntry( CModelPhysSize::EViewModeNormal,           "Normal"            ),
-    SEnumEntry( CModelPhysSize::EViewModeContingencyTable, "Contingency Table" )
+    SEnumEntry( CModelPhysUnitsGrp::EViewModeNormal,           "Normal"            ),
+    SEnumEntry( CModelPhysUnitsGrp::EViewModeContingencyTable, "Contingency Table" )
 };
 
 //------------------------------------------------------------------------------
-QString CModelPhysSize::viewMode2Str( int i_iViewMode )
+QString CModelPhysUnitsGrp::viewMode2Str( int i_iViewMode )
 //------------------------------------------------------------------------------
 {
     return SEnumEntry::enumerator2Str(s_arEnumEntriesViewMode,EViewModeCount,i_iViewMode);
 }
 
 //------------------------------------------------------------------------------
-CModelPhysSize::EViewMode CModelPhysSize::str2ViewMode( const QString& i_str )
+CModelPhysUnitsGrp::EViewMode CModelPhysUnitsGrp::str2ViewMode( const QString& i_str )
 //------------------------------------------------------------------------------
 {
     EViewMode viewMode = EViewModeUndefined;
@@ -108,19 +108,19 @@ CModelPhysSize::EViewMode CModelPhysSize::str2ViewMode( const QString& i_str )
 /* enum EColumn
 ==============================================================================*/
 
-QHash<int, QByteArray> CModelPhysSize::s_roleNames;
-QHash<QByteArray, int> CModelPhysSize::s_roleValues;
+QHash<int, QByteArray> CModelPhysUnitsGrp::s_roleNames;
+QHash<QByteArray, int> CModelPhysUnitsGrp::s_roleValues;
 
-QHash<int, QByteArray> CModelPhysSize::s_clm2Name {
-    { CModelPhysSize::EColumnSymbol, "Symbol"},
-    { CModelPhysSize::EColumnNextLower, "NextLower"},
-    { CModelPhysSize::EColumnNextHigher, "NextHigher"},
-    { CModelPhysSize::EColumnFctConvertIntoSIUnit, "FctConvertIntoSIUnit"},
-    { CModelPhysSize::EColumnFctConvertFromSIUnit, "FctConvertFromSIUnit"}
+QHash<int, QByteArray> CModelPhysUnitsGrp::s_clm2Name {
+    { CModelPhysUnitsGrp::EColumnSymbol, "Symbol"},
+    { CModelPhysUnitsGrp::EColumnNextLower, "NextLower"},
+    { CModelPhysUnitsGrp::EColumnNextHigher, "NextHigher"},
+    { CModelPhysUnitsGrp::EColumnFctConvertIntoSIUnit, "FctConvertIntoSIUnit"},
+    { CModelPhysUnitsGrp::EColumnFctConvertFromSIUnit, "FctConvertFromSIUnit"}
 };
 
 //------------------------------------------------------------------------------
-QString CModelPhysSize::column2Str(EColumn i_clm)
+QString CModelPhysUnitsGrp::column2Str(EColumn i_clm)
 //------------------------------------------------------------------------------
 {
     QString str;
@@ -138,7 +138,7 @@ public: // class methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CModelPhysSize::EColumn CModelPhysSize::role2Column(int i_iRole)
+CModelPhysUnitsGrp::EColumn CModelPhysUnitsGrp::role2Column(int i_iRole)
 //------------------------------------------------------------------------------
 {
     if( i_iRole >= static_cast<int>(ERole::FirstDataColumnRole)
@@ -150,28 +150,28 @@ CModelPhysSize::EColumn CModelPhysSize::role2Column(int i_iRole)
 }
 
 //------------------------------------------------------------------------------
-QString CModelPhysSize::role2Str(int i_iRole)
+QString CModelPhysUnitsGrp::role2Str(int i_iRole)
 //------------------------------------------------------------------------------
 {
     return s_roleNames.value(i_iRole, "? (" + QByteArray::number(i_iRole) + ")");
 }
 
 //------------------------------------------------------------------------------
-int CModelPhysSize::byteArr2Role(const QByteArray& i_byteArrRole)
+int CModelPhysUnitsGrp::byteArr2Role(const QByteArray& i_byteArrRole)
 //------------------------------------------------------------------------------
 {
     return s_roleValues.value(i_byteArrRole, Qt::DisplayRole);
 }
 
 //------------------------------------------------------------------------------
-int CModelPhysSize::column2Role(EColumn i_clm)
+int CModelPhysUnitsGrp::column2Role(EColumn i_clm)
 //------------------------------------------------------------------------------
 {
     return static_cast<int>(ERole::FirstDataColumnRole) + i_clm;
 }
 
 //------------------------------------------------------------------------------
-QString CModelPhysSize::modelIdx2Str(
+QString CModelPhysUnitsGrp::modelIdx2Str(
     const QModelIndex& i_modelIdx,
     int i_iRole,
     bool i_bIncludeId )
@@ -183,7 +183,7 @@ QString CModelPhysSize::modelIdx2Str(
     } else {
         CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
         str  = "Row: " + QString::number(i_modelIdx.row());
-        if( i_iRole >= static_cast<int>(CModelPhysSize::ERole::FirstDataColumnRole) ) {
+        if( i_iRole >= static_cast<int>(CModelPhysUnitsGrp::ERole::FirstDataColumnRole) ) {
             str += ", Clm: " + QString::number(i_modelIdx.column());
         } else if ((i_modelIdx.column() >= 0) && (i_modelIdx.column() < EColumnCount)) {
             str += ", Clm: " + column2Str(static_cast<EColumn>(i_modelIdx.column()));
@@ -203,19 +203,11 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CModelPhysSize::CModelPhysSize( QObject* i_pObjParent ) :
+CModelPhysUnitsGrp::CModelPhysUnitsGrp(QObject* i_pObjParent) :
 //------------------------------------------------------------------------------
-    CModelPhysSize(nullptr, i_pObjParent)
-{
-} // ctor
-
-//------------------------------------------------------------------------------
-CModelPhysSize::CModelPhysSize(
-    CIdxTreeUnits* i_pIdxTree, QObject* i_pObjParent ) :
-//------------------------------------------------------------------------------
-    CModelIdxTreeBranchContent(i_pIdxTree, i_pObjParent),
+    CModelIdxTreeBranchContent(CIdxTreeUnits::GetInstance(), i_pObjParent),
     m_viewMode(EViewModeNormal),
-    m_pPhysSize(nullptr)
+    m_pUnitsGrp(nullptr)
 {
     fillRoleNames();
 
@@ -223,7 +215,6 @@ CModelPhysSize::CModelPhysSize(
     QString strMthInArgs;
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strMthInArgs = "IdxTree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName());
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
@@ -235,7 +226,7 @@ CModelPhysSize::CModelPhysSize(
 } // ctor
 
 //------------------------------------------------------------------------------
-CModelPhysSize::~CModelPhysSize()
+CModelPhysUnitsGrp::~CModelPhysUnitsGrp()
 //------------------------------------------------------------------------------
 {
     #ifdef ZS_TRACE_GUI_MODELS
@@ -247,7 +238,7 @@ CModelPhysSize::~CModelPhysSize()
     #endif
 
     m_viewMode = static_cast<EViewMode>(0);
-    m_pPhysSize = nullptr;
+    m_pUnitsGrp = nullptr;
 
 } // dtor
 
@@ -256,7 +247,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool CModelPhysSize::setViewMode( EViewMode i_viewMode )
+void CModelPhysUnitsGrp::setViewMode( EViewMode i_viewMode )
 //------------------------------------------------------------------------------
 {
     #ifdef ZS_TRACE_GUI_MODELS
@@ -277,11 +268,10 @@ bool CModelPhysSize::setViewMode( EViewMode i_viewMode )
         m_viewMode = i_viewMode;
         endResetModel();
     }
-    return true;
 }
 
 //------------------------------------------------------------------------------
-CModelPhysSize::EViewMode CModelPhysSize::getViewMode() const
+CModelPhysUnitsGrp::EViewMode CModelPhysUnitsGrp::getViewMode() const
 //------------------------------------------------------------------------------
 {
     return m_viewMode;
@@ -292,7 +282,7 @@ public: // overridables of base class CModelIdxTreeBranchContent
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CModelPhysSize::setKeyInTreeOfRootEntry( const QString& i_strKeyInTree )
+void CModelPhysUnitsGrp::setKeyInTreeOfRootEntry( const QString& i_strKeyInTree )
 //------------------------------------------------------------------------------
 {
     #ifdef ZS_TRACE_GUI_MODELS
@@ -333,24 +323,24 @@ void CModelPhysSize::setKeyInTreeOfRootEntry( const QString& i_strKeyInTree )
         // from the index tree to the model as only those entries will be added
         // whose parent node have this key.
         m_strKeyInTreeOfRootEntry = i_strKeyInTree;
-        m_pPhysSize = nullptr;
+        m_pUnitsGrp = nullptr;
 
         if( m_pIdxTree != nullptr )
         {
-            CIdxTreeEntry* pTreeEntry = m_pIdxTree->findEntry(i_strKeyInTree);
+            CIdxTreeEntry* pTreeEntry = m_pIdxTree->findEntry(m_strKeyInTreeOfRootEntry);
 
             if( pTreeEntry != nullptr && (pTreeEntry->isRoot() || pTreeEntry->isBranch()) )
             {
-                m_pPhysSize = dynamic_cast<CUnitsTreeEntryGrpPhysUnits*>(pTreeEntry);
+                m_pUnitsGrp = dynamic_cast<CUnitsTreeEntryGrpPhysUnits*>(pTreeEntry);
 
-                if( m_pPhysSize != nullptr )
+                if( m_pUnitsGrp != nullptr )
                 {
-                    m_pModelRootEntry = new CModelIdxTreeEntry(m_pPhysSize);
+                    m_pModelRootEntry = new CModelIdxTreeEntry(m_pUnitsGrp);
                     m_pModelRootEntry->setSortOrder(m_sortOrder);
 
-                    for( int idxEntry = 0; idxEntry < m_pPhysSize->count(); ++idxEntry )
+                    for( int idxEntry = 0; idxEntry < m_pUnitsGrp->count(); ++idxEntry )
                     {
-                        CIdxTreeEntry* pTreeEntryChild = m_pPhysSize->at(idxEntry);
+                        CIdxTreeEntry* pTreeEntryChild = m_pUnitsGrp->at(idxEntry);
                         onIdxTreeEntryAdded(pTreeEntryChild->keyInTree());
                     }
                 }
@@ -372,47 +362,14 @@ public: // overridables of base class QAbstractItemModel
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QHash<int, QByteArray> CModelPhysSize::roleNames() const
+QHash<int, QByteArray> CModelPhysUnitsGrp::roleNames() const
 //------------------------------------------------------------------------------
 {
     return s_roleNames;
 }
 
 //------------------------------------------------------------------------------
-int CModelPhysSize::rowCount( const QModelIndex& i_modelIdxParent ) const
-//------------------------------------------------------------------------------
-{
-    #ifdef ZS_TRACE_GUI_MODELS
-    QString strMthInArgs;
-    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strMthInArgs = "ModelIdxParent {" + modelIdx2Str(i_modelIdxParent) + "}";
-    }
-    CMethodTracer mthTracer(
-        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
-        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod          */ "rowCount",
-        /* strMethodInArgs    */ strMthInArgs );
-    #endif
-
-    int iRowCount = 0;
-
-    if( m_pPhysSize != nullptr )
-    {
-        iRowCount = m_pPhysSize->count();
-    }
-
-    #ifdef ZS_TRACE_GUI_MODELS
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
-        mthTracer.setMethodReturn(iRowCount);
-    }
-    #endif
-
-    return iRowCount;
-}
-
-//------------------------------------------------------------------------------
-int CModelPhysSize::columnCount( const QModelIndex& i_modelIdxParent ) const
+int CModelPhysUnitsGrp::columnCount( const QModelIndex& i_modelIdxParent ) const
 //------------------------------------------------------------------------------
 {
     #ifdef ZS_TRACE_GUI_MODELS
@@ -462,7 +419,7 @@ public: // overridables of base class QAbstractItemModel
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QVariant CModelPhysSize::headerData(
+QVariant CModelPhysUnitsGrp::headerData(
     int             i_iSection,
     Qt::Orientation i_orientation,
     int             i_iRole ) const
@@ -540,9 +497,10 @@ QVariant CModelPhysSize::headerData(
         {
             if( i_iSection >= 0 && i_iSection < rowCount() )
             {
-                if( m_pPhysSize != nullptr )
+                if( m_pUnitsGrp != nullptr )
                 {
-                    CUnitsTreeEntryPhysUnit* pUnit = dynamic_cast<CUnitsTreeEntryPhysUnit*>(m_pPhysSize->at(i_iSection));
+                    CUnitsTreeEntryPhysUnit* pUnit =
+                        dynamic_cast<CUnitsTreeEntryPhysUnit*>(m_pUnitsGrp->at(i_iSection));
                     if( pUnit == nullptr )
                     {
                         return varData;
@@ -564,7 +522,7 @@ QVariant CModelPhysSize::headerData(
 } // headerData
 
 //------------------------------------------------------------------------------
-QVariant CModelPhysSize::data( const QModelIndex& i_modelIdx, int i_iRole ) const
+QVariant CModelPhysUnitsGrp::data( const QModelIndex& i_modelIdx, int i_iRole ) const
 //------------------------------------------------------------------------------
 {
     EColumn clm = static_cast<EColumn>(i_modelIdx.column());
@@ -602,9 +560,9 @@ QVariant CModelPhysSize::data( const QModelIndex& i_modelIdx, int i_iRole ) cons
 
     CUnitsTreeEntryPhysUnit* pUnit = nullptr;
 
-    if( i_modelIdx.isValid() && m_pPhysSize != nullptr )
+    if( i_modelIdx.isValid() && m_pUnitsGrp != nullptr )
     {
-        pUnit = dynamic_cast<CUnitsTreeEntryPhysUnit*>(m_pPhysSize->at(i_modelIdx.row()));
+        pUnit = dynamic_cast<CUnitsTreeEntryPhysUnit*>(m_pUnitsGrp->at(i_modelIdx.row()));
     }
 
     if( pUnit != nullptr && s_rolesHandled.contains(iRole) )
@@ -672,7 +630,8 @@ QVariant CModelPhysSize::data( const QModelIndex& i_modelIdx, int i_iRole ) cons
         {
             if( iRole == Qt::DisplayRole || iRole == Qt::EditRole )
             {
-                CUnitsTreeEntryPhysUnit* pUnitClm = dynamic_cast<CUnitsTreeEntryPhysUnit*>(m_pPhysSize->at(clm));
+                CUnitsTreeEntryPhysUnit* pUnitClm =
+                    dynamic_cast<CUnitsTreeEntryPhysUnit*>(m_pUnitsGrp->at(clm));
 
                 if( pUnitClm != nullptr )
                 {
@@ -704,7 +663,7 @@ protected: // auxiliary instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CModelPhysSize::fillRoleNames()
+void CModelPhysUnitsGrp::fillRoleNames()
 //------------------------------------------------------------------------------
 {
     if( s_roleNames.isEmpty() )

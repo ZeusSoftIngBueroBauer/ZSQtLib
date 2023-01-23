@@ -72,27 +72,19 @@ public: // class methods
     static QString ClassName() { return "CWdgtTreeEntries"; }
 public: // ctors and dtor
     CWdgtTreeEntries(
-        CIdxTreeUnits* i_pIdxTree,
-        QWidget* i_pWdgtParent = nullptr,
+         QWidget* i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wflags = Qt::WindowFlags() );
     virtual ~CWdgtTreeEntries();
-public: // instance methods
-    void setIdxTree(CIdxTreeUnits* i_pIdxTree);
-    CIdxTreeUnits* idxTree() { return m_pIdxTree; }
 public: // overridables
     virtual void setKeyInTreeOfRootEntry( const QString& i_strKeyInTree );
     QString getKeyInTreeOfRootEntry() const;
-protected slots:
-    void onBtnTreeViewResizeRowsAndColumnsToContentsClicked( bool i_bChecked );
-protected slots:
-    void onIdxTreeAboutToBeDestroyed();
+protected slots: // overridables
+    virtual void onIdxTreeAboutToBeDestroyed();
 protected: // instance members
     CIdxTreeUnits* m_pIdxTree;
     QString m_strKeyInTreeOfRootEntry;
-    QSize m_szBtns;
     QVBoxLayout* m_pLytMain;
     QHBoxLayout* m_pLytHeadLine;
-    QPushButton* m_pBtnTreeViewResizeRowsAndColumnsToContents;
     QLineEdit* m_pEdtRootEntryPath;
     QStackedWidget* m_pStackedWdgtTreeEntryContent;
     QVector<CWdgtAbstractTreeEntry*> m_arpWdgtsTreeEntryContent;

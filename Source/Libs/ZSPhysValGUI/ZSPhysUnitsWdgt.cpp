@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include "ZSPhysValGUI/ZSPhysSizesWdgt.h"
-#include "ZSPhysValGUI/ZSPhysSizesTreeViewWdgt.h"
+#include "ZSPhysValGUI/ZSPhysUnitsWdgt.h"
+#include "ZSPhysValGUI/ZSPhysUnitsTreeWdgt.h"
 #include "ZSPhysValGUI/ZSPhysTreeEntriesWdgt.h"
 #include "ZSPhysVal/ZSPhysUnitsIdxTree.h"
 #include "ZSSysGUI/ZSSysIdxTreeModelEntry.h"
@@ -51,7 +51,7 @@ using namespace ZS::PhysVal::GUI;
 
 
 /*******************************************************************************
-class CWdgtPhysSizes : public QWidget
+class CWdgtUnits : public QWidget
 *******************************************************************************/
 
 /*==============================================================================
@@ -59,19 +59,17 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CWdgtPhysSizes::CWdgtPhysSizes(
-    CIdxTreeUnits* i_pIdxTree,
+CWdgtUnits::CWdgtUnits(
     QWidget* i_pWdgtParent,
     Qt::WindowFlags i_wflags ) :
 //------------------------------------------------------------------------------
     QWidget(i_pWdgtParent,i_wflags),
-    m_pIdxTree(nullptr),
     m_pLytMain(nullptr),
     m_pSplitter(nullptr),
     m_pWdgtTreeView(nullptr),
     m_pWdgtTreeEntries(nullptr)
 {
-    setObjectName( i_pIdxTree == nullptr ? "IdxTreePhysSizes" : i_pIdxTree->objectName() );
+    setObjectName( CIdxTreeUnits::GetInstance()->objectName() );
 
     m_pLytMain = new QVBoxLayout();
     setLayout(m_pLytMain);
@@ -85,24 +83,19 @@ CWdgtPhysSizes::CWdgtPhysSizes(
     // <TreeView>
     //-----------
 
-    m_pWdgtTreeView = new CWdgtTreeViewPhysSizes(nullptr, nullptr);
+    m_pWdgtTreeView = new CWdgtUnitsTree();
     m_pWdgtTreeView->setMinimumWidth(50);
     m_pSplitter->addWidget(m_pWdgtTreeView);
 
     QObject::connect(
-        m_pWdgtTreeView, &CWdgtTreeViewPhysSizes::currentRowChanged,
-        this, &CWdgtPhysSizes::onTreeViewCurrentRowChanged );
+        m_pWdgtTreeView, &CWdgtUnitsTree::currentRowChanged,
+        this, &CWdgtUnits::onTreeViewCurrentRowChanged );
 
     // <TableView>
     //------------
 
-    m_pWdgtTreeEntries = new CWdgtTreeEntries(nullptr, nullptr);
+    m_pWdgtTreeEntries = new CWdgtTreeEntries();
     m_pSplitter->addWidget(m_pWdgtTreeEntries);
-
-    if( i_pIdxTree != nullptr )
-    {
-        setIdxTree(i_pIdxTree);
-    }
 
     // <Geometry>
     //===================
@@ -121,7 +114,7 @@ CWdgtPhysSizes::CWdgtPhysSizes(
 } // ctor
 
 //------------------------------------------------------------------------------
-CWdgtPhysSizes::~CWdgtPhysSizes()
+CWdgtUnits::~CWdgtUnits()
 //------------------------------------------------------------------------------
 {
     QSettings settings;
@@ -134,10 +127,9 @@ CWdgtPhysSizes::~CWdgtPhysSizes()
     settings.setValue( ClassName() + "/" + objectName() + "/Geometry", saveGeometry());
 
     QObject::disconnect(
-        m_pWdgtTreeView, &CWdgtTreeViewPhysSizes::currentRowChanged,
-        this, &CWdgtPhysSizes::onTreeViewCurrentRowChanged );
+        m_pWdgtTreeView, &CWdgtUnitsTree::currentRowChanged,
+        this, &CWdgtUnits::onTreeViewCurrentRowChanged );
 
-    m_pIdxTree = nullptr;
     m_pLytMain = nullptr;
     m_pSplitter = nullptr;
     m_pWdgtTreeView = nullptr;
@@ -146,42 +138,11 @@ CWdgtPhysSizes::~CWdgtPhysSizes()
 } // dtor
 
 /*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CWdgtPhysSizes::setIdxTree( CIdxTreeUnits* i_pIdxTree )
-//------------------------------------------------------------------------------
-{
-    if( m_pIdxTree != i_pIdxTree )
-    {
-        if( m_pIdxTree != nullptr )
-        {
-            QObject::disconnect(
-                m_pIdxTree, &CIdxTreeUnits::aboutToBeDestroyed,
-                this, &CWdgtPhysSizes::onIdxTreeAboutToBeDestroyed);
-        }
-
-        m_pIdxTree = i_pIdxTree;
-
-        if( m_pIdxTree != nullptr )
-        {
-            QObject::connect(
-                m_pIdxTree, &CIdxTreeUnits::aboutToBeDestroyed,
-                this, &CWdgtPhysSizes::onIdxTreeAboutToBeDestroyed);
-        }
-
-        m_pWdgtTreeView->setIdxTree(i_pIdxTree);
-        m_pWdgtTreeEntries->setIdxTree(i_pIdxTree);
-    }
-}
-
-/*==============================================================================
 protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtPhysSizes::onTreeViewCurrentRowChanged(
+void CWdgtUnits::onTreeViewCurrentRowChanged(
     const QModelIndex& i_modelIdxCurr,
     const QModelIndex& i_modelIdxPrev )
 //------------------------------------------------------------------------------
@@ -198,23 +159,5 @@ void CWdgtPhysSizes::onTreeViewCurrentRowChanged(
         {
             m_pWdgtTreeEntries->setKeyInTreeOfRootEntry("");
         }
-    }
-}
-
-/*==============================================================================
-protected slots:
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CWdgtPhysSizes::onIdxTreeAboutToBeDestroyed()
-//------------------------------------------------------------------------------
-{
-    m_pIdxTree = nullptr;
-
-    if( m_pWdgtTreeView != nullptr ) {
-        m_pWdgtTreeView->setIdxTree(nullptr);
-    }
-    if( m_pWdgtTreeEntries != nullptr ) {
-        m_pWdgtTreeEntries->setIdxTree(nullptr);
     }
 }

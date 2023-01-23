@@ -202,8 +202,8 @@ CPageSetup::CPageSetup() :
     m_arPhysValsSize(CEnumDirection::count()),
     m_arfLengthScaleFactors(CEnumDirection::count())
 {
-    m_arPhysValsSize[static_cast<int>(EDirection::Horizontal)] = CPhysVal(Units.GraphDevice.px);
-    m_arPhysValsSize[static_cast<int>(EDirection::Vertical)] = CPhysVal(Units.GraphDevice.px);
+    m_arPhysValsSize[static_cast<int>(EDirection::Horizontal)] = CPhysVal(Units.Length.pxX);
+    m_arPhysValsSize[static_cast<int>(EDirection::Vertical)] = CPhysVal(Units.Length.pxY);
 
     m_arfLengthScaleFactors[static_cast<int>(EDirection::Horizontal)] = 1.0;
     m_arfLengthScaleFactors[static_cast<int>(EDirection::Vertical)] = 1.0;

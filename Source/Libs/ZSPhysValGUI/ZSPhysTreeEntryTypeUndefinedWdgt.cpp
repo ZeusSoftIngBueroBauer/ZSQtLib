@@ -28,23 +28,11 @@ may result in using the software modules.
 #include "ZSPhysVal/ZSPhysUnitsIdxTree.h"
 
 #if QT_VERSION < 0x050000
-//#include <QtGui/qcheckbox.h>
-//#include <QtGui/qcombobox.h>
-//#include <QtGui/qheaderview.h>
 #include <QtGui/qlayout.h>
 #include <QtGui/qlabel.h>
-//#include <QtGui/qlineedit.h>
-//#include <QtGui/qsplitter.h>
-//#include <QtGui/qtableview.h>
 #else
-//#include <QtWidgets/qcheckbox.h>
-//#include <QtWidgets/qcombobox.h>
-//#include <QtWidgets/qheaderview.h>
 #include <QtWidgets/qlayout.h>
 #include <QtWidgets/qlabel.h>
-//#include <QtWidgets/qlineedit.h>
-//#include <QtWidgets/qsplitter.h>
-//#include <QtWidgets/qtableview.h>
 #endif
 
 #include "ZSSys/ZSSysMemLeakDump.h"
@@ -64,10 +52,9 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CWdgtEntryTypeUndefined::CWdgtEntryTypeUndefined(
-    CIdxTreeUnits* i_pIdxTree, QWidget* i_pWdgtParent ) :
+CWdgtEntryTypeUndefined::CWdgtEntryTypeUndefined(QWidget* i_pWdgtParent) :
 //------------------------------------------------------------------------------
-    CWdgtAbstractTreeEntry(i_pIdxTree, i_pWdgtParent),
+    CWdgtAbstractTreeEntry(i_pWdgtParent),
     m_pLyt(nullptr),
     m_pLblPxmZeusSoft(nullptr)
 {

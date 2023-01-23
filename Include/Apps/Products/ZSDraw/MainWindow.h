@@ -159,7 +159,7 @@ public: // class members
     static const QString c_strMenuNameDrawWidgets;
     static const QString c_strMenuNameDrawElectricity;
     static const QString c_strMenuNameView;
-    static const QString c_strMenuNameDebugTrace;
+    static const QString c_strMenuNameDebug;
     static const QString c_strMenuNameInfo;
     static const QString c_strActionNameFileNew;
     static const QString c_strActionNameFileOpen;
@@ -203,9 +203,10 @@ public: // class members
     static const QString c_strActionNameViewZoomIn;
     static const QString c_strActionNameViewZoomOut;
     static const QString c_strActionNameViewZoom;
-    static const QString c_strActionNameTraceErrLog;
-    static const QString c_strActionNameTraceServer;
-    static const QString c_strActionNameTraceAdminObjIdxTree;
+    static const QString c_strActionNameDebugErrLog;
+    static const QString c_strActionNameDebugUnits;
+    static const QString c_strActionNameDebugTraceServer;
+    static const QString c_strActionNameDebugTraceAdminObjs;
     static const QString c_strActionNameInfoVersion;
 public: // ctors and dtor
     CMainWindow(
@@ -296,9 +297,10 @@ public slots: // Menu - View - Zoom
     void onActionViewZoomOutTriggered( bool );
     void onEdtViewZoomFactorEditingFinished();
 public slots: // Menu - Trace
-    void onActionTraceErrLogTriggered( bool );
-    void onActionTraceServerTriggered( bool );
-    void onActionTraceAdminObjIdxTreeTriggered( bool );
+    void onActionDebugErrLogTriggered( bool );
+    void onActionDebugUnitsTriggered( bool );
+    void onActionDebugTraceServerTriggered( bool );
+    void onActionDebugTraceAdminObjsTriggered( bool );
     void onActionDebugTestTriggered( bool );
 public slots: // Drawing Scene
     void onDrawingSceneChanged( const QList<QRectF>& i_region );
@@ -437,12 +439,13 @@ protected: // instance members
     QAction*  m_pActViewZoomOut;
     QSpinBox* m_pEdtViewZoomFactor_perCent;
     int       m_iViewZoomFactor_perCent;
-    // Menu - Trace
-    QMenu*    m_pMenuDebugTrace;
-    QAction*  m_pActTraceErrLog;
-    QAction*  m_pActTraceServer;
-    QAction*  m_pActTraceAdminObjIdxTree;
-    QAction*  m_pActionDebugTest;
+    // Menu - Debug
+    QMenu*    m_pMenuDebug;
+    QAction*  m_pActDebugErrLog;
+    QAction*  m_pActDebugUnits;
+    QAction*  m_pActDebugTraceServer;
+    QAction*  m_pActDebugTraceAdminObjs;
+    QAction*  m_pActDebugTest;
     // Menu - Info
     QMenu*    m_pMenuInfo;
     QAction*  m_pActInfoVersion;

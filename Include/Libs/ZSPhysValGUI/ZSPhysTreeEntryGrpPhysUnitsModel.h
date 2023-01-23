@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSPhysValGUI_PhysTreeEntryPhysSizeModel_h
-#define ZSPhysValGUI_PhysTreeEntryPhysSizeModel_h
+#ifndef ZSPhysValGUI_PhysTreeEntryGrpPhysUnitsModel_h
+#define ZSPhysValGUI_PhysTreeEntryGrpPhysUnitsModel_h
 
 #include <QtCore/qabstractitemmodel.h>
 
@@ -42,13 +42,13 @@ class CUnitsTreeEntryGrpPhysUnits;
 namespace GUI
 {
 //******************************************************************************
-class ZSPHYSVALGUIDLL_API CModelPhysSize : public ZS::System::GUI::CModelIdxTreeBranchContent
+class ZSPHYSVALGUIDLL_API CModelPhysUnitsGrp : public ZS::System::GUI::CModelIdxTreeBranchContent
 //******************************************************************************
 {
     Q_OBJECT
 public: // class methods
     static QString NameSpace() { return "ZS::PhysVal::GUI"; }
-    static QString ClassName() { return "CModelPhysSize"; }
+    static QString ClassName() { return "CModelPhysUnitsGrp"; }
 public: // type definitions and constants
     typedef enum
     {
@@ -78,20 +78,18 @@ public: // class methods
     static int column2Role(EColumn i_clm);
     Q_INVOKABLE static QString modelIdx2Str( const QModelIndex& i_modelIdx, int i_iRole = -1, bool i_bIncludeId = false );
 public: // ctors and dtor
-    CModelPhysSize( QObject* i_pObjParent = nullptr );
-    CModelPhysSize( CIdxTreeUnits* i_pIdxTree, QObject*  i_pObjParent = nullptr );
-    virtual ~CModelPhysSize();
+    CModelPhysUnitsGrp( QObject* i_pObjParent = nullptr );
+    virtual ~CModelPhysUnitsGrp();
 public: // overridables
-    virtual QString nameSpace() const { return CModelPhysSize::NameSpace(); }
-    virtual QString className() const { return CModelPhysSize::ClassName(); }
+    virtual QString nameSpace() const { return CModelPhysUnitsGrp::NameSpace(); }
+    virtual QString className() const { return CModelPhysUnitsGrp::ClassName(); }
 public: // instance methods
-    bool setViewMode( EViewMode i_viewMode );
+    void setViewMode( EViewMode i_viewMode );
     EViewMode getViewMode() const;
 public: // overridables of base class CModelIdxTreeBranchContent
     virtual void setKeyInTreeOfRootEntry( const QString& i_strKeyInTree ) override;
 public: // overridables of base class QAbstractItemModel
     virtual QHash<int, QByteArray> roleNames() const override;
-    virtual int rowCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const override;
     virtual int columnCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const override;
 public: // overridables of base class QAbstractItemModel
     virtual QVariant headerData( int i_iSection, Qt::Orientation i_orientation, int i_iRole = Qt::DisplayRole) const override;
@@ -104,9 +102,9 @@ protected: // class members
     static QHash<int, QByteArray> s_clm2Name;
 protected: // instance members
     EViewMode m_viewMode;
-    CUnitsTreeEntryGrpPhysUnits* m_pPhysSize;
+    CUnitsTreeEntryGrpPhysUnits* m_pUnitsGrp;
 
-}; // class CModelPhysSize
+}; // class CModelPhysUnitsGrp
 
 } // namespace GUI
 
@@ -114,4 +112,4 @@ protected: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZSPhysValGUI_PhysTreeEntryPhysSizeModel_h
+#endif // #ifndef ZSPhysValGUI_PhysTreeEntryGrpPhysUnitsModel_h

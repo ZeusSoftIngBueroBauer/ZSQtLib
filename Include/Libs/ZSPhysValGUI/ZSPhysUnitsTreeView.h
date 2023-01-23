@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSPhysValGUI_PhysSizesTreeView_h
-#define ZSPhysValGUI_PhysSizesTreeView_h
+#ifndef ZSPhysValGUI_PhysUnitsTreeView_h
+#define ZSPhysValGUI_PhysUnitsTreeView_h
 
 #include <QtCore/qglobal.h>
 
@@ -54,24 +54,19 @@ class CIdxTreeUnits;
 namespace GUI
 {
 //******************************************************************************
-class ZSPHYSVALGUIDLL_API CTreeViewPhysSizes : public QTreeView
+class ZSPHYSVALGUIDLL_API CTreeViewUnits : public QTreeView
 //******************************************************************************
 {
     Q_OBJECT
 public: // class methods
     static QString NameSpace() { return "ZS::PhysVal::GUI"; }
-    static QString ClassName() { return "CTreeViewPhysSizes"; }
+    static QString ClassName() { return "CTreeViewUnits"; }
 public: // ctors and dtor
-    CTreeViewPhysSizes(
-        CIdxTreeUnits* i_pIdxTree,
-        QWidget* i_pWdgtParent = nullptr );
-    virtual ~CTreeViewPhysSizes();
+    CTreeViewUnits(QWidget* i_pWdgtParent = nullptr);
+    virtual ~CTreeViewUnits();
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
     virtual QString className() const { return ClassName(); }
-public: // instance methods
-    void setIdxTree(CIdxTreeUnits* i_pIdxTree);
-    CIdxTreeUnits* idxTree() { return m_pIdxTree; }
 public: // instance methods (hiding not overridable methods with same name in QTreeView)
     virtual void expandAll();
     virtual void collapseAll();
@@ -101,7 +96,7 @@ protected: // instance members
     QModelIndex m_modelIdxSelectedOnMousePressEvent;
     QModelIndex m_modelIdxSelectedOnMouseReleaseEvent;
 
-}; // class CTreeViewPhysSizes
+}; // class CTreeViewUnits
 
 } // namespace GUI
 
@@ -109,4 +104,4 @@ protected: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZSPhysValGUI_PhysSizesTreeView_h
+#endif // #ifndef ZSPhysValGUI_PhysUnitsTreeView_h

@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSPhysValGUI_PhysTreeEntryPhySizeWdgt_h
-#define ZSPhysValGUI_PhysTreeEntryPhySizeWdgt_h
+#ifndef ZSPhysValGUI_PhysTreeEntryGrpPhysUnitsWdgt_h
+#define ZSPhysValGUI_PhysTreeEntryGrpPhysUnitsWdgt_h
 
 #include "ZSPhysValGUI/ZSPhysTreeEntryAbstractWdgt.h"
 
@@ -33,7 +33,8 @@ class QCheckBox;
 class QComboBox;
 class QLabel;
 class QLineEdit;
-class QSpacerItem;
+class QPushButton;
+class QSplitter;
 class QTableView;
 class QHBoxLayout;
 class QVBoxLayout;
@@ -44,31 +45,34 @@ namespace PhysVal
 {
 namespace GUI
 {
-class CModelPhysSize;
+class CModelPhysUnitsGrp;
+class CModelUnitFctConvertRefVals;
 
 //******************************************************************************
-class ZSPHYSVALGUIDLL_API CWdgtPhysSize : public CWdgtAbstractTreeEntry
+class ZSPHYSVALGUIDLL_API CWdgtPhysUnitsGrp : public CWdgtAbstractTreeEntry
 //******************************************************************************
 {
     Q_OBJECT
 public: // class methods
     static QString NameSpace() { return "ZS::PhysVal::GUI"; }
-    static QString ClassName() { return "CWdgtPhysSize"; }
+    static QString ClassName() { return "CWdgtPhysUnitsGrp"; }
 public: // ctors and dtor
-    CWdgtPhysSize( CIdxTreeUnits* i_pIdxTree, QWidget* i_pWdgtParent = nullptr );
-    virtual ~CWdgtPhysSize();
+    CWdgtPhysUnitsGrp(QWidget* i_pWdgtParent = nullptr);
+    virtual ~CWdgtPhysUnitsGrp();
 public: // overridables
-    virtual QString nameSpace() const { return CWdgtPhysSize::NameSpace(); }
-    virtual QString className() const { return CWdgtPhysSize::ClassName(); }
+    virtual QString nameSpace() const { return CWdgtPhysUnitsGrp::NameSpace(); }
+    virtual QString className() const { return CWdgtPhysUnitsGrp::ClassName(); }
 public: // overridables of base class CWdgtAbstractTreeEntry
-    virtual void setIdxTree(CIdxTreeUnits* i_pIdxTree) override;
     virtual void setKeyInTreeOfRootEntry( const QString& i_strKeyInTree ) override;
     virtual void resizeToContents() override;
 protected slots:
+    void onBtnTableViewRefValsResizeToContentsClicked( bool i_bChecked );
+    void onBtnTableViewUnitsGrpResizeToContentsClicked( bool i_bChecked );
     void onCmbViewModeCurrentIndexChanged( const QString& i_strCurrentText );
 protected: // instance methods
     void updateTableView();
 protected: // instance members
+    QSize m_szBtns;
     QVBoxLayout* m_pLyt;
     QHBoxLayout* m_pLytSIUnit;
     QLabel* m_pLblSIUnit;
@@ -79,17 +83,28 @@ protected: // instance members
     QHBoxLayout* m_pLytIsPowerRelated;
     QLabel* m_pLblIsPowerRelated;
     QCheckBox* m_pChkIsPowerRelated;
-    QHBoxLayout* m_pLytViewMode;
-    QLabel* m_pLblViewMode;
-    QComboBox* m_pCmbViewMode;
-    // Table view with the physical units of the physical size
-    QVBoxLayout* m_pLytTableView;
-    QWidget* m_pWdgtTableView;
-    CModelPhysSize* m_pModel;
-    QTableView* m_pTableView;
-    QSpacerItem* m_pSpacerItemStretchAtBottom;
+    // Table views
+    QSplitter* m_pSplTableViews;
+    // Table view with reference values
+    QWidget* m_pWdgtTableViewRefVals;
+    QVBoxLayout* m_pLytTableViewRefVals;
+    QHBoxLayout* m_pLytHeadlineRefVals;
+    QLabel* m_pLblHeadlineRefVals;
+    QPushButton* m_pBtnTableViewRefValsResizeToContents;
+    CModelUnitFctConvertRefVals* m_pModelRefVals;
+    QTableView* m_pTableViewRefVals;
+    // Table view with the units of the units group
+    QWidget* m_pWdgtTableViewUnitsGrp;
+    QVBoxLayout* m_pLytTableViewUnitsGrp;
+    QHBoxLayout* m_pLytHeadlineUnitsGrp;
+    QLabel* m_pLblHeadlineUnitsGrp;
+    QLabel* m_pLblViewModeUnitsGrp;
+    QComboBox* m_pCmbViewModeUnitsGrp;
+    QPushButton* m_pBtnTableViewUnitsGrpResizeToContents;
+    CModelPhysUnitsGrp* m_pModelUnitsGrp;
+    QTableView* m_pTableViewUnitsGrp;
 
-}; // class CWdgtPhysSize
+}; // class CWdgtPhysUnitsGrp
 
 } // namespace GUI
 
@@ -97,4 +112,4 @@ protected: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZSPhysValGUI_PhysTreeEntryPhySizeWdgt_h
+#endif // #ifndef ZSPhysValGUI_PhysTreeEntryGrpPhysUnitsWdgt_h

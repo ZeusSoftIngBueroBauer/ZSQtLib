@@ -621,7 +621,7 @@ void CMainWindow::onActDebugErrLogTriggered()
         pDlg->adjustSize();
         pDlg->show();
     }
-    else // if( pReqSeq != nullptr )
+    else
     {
         if( pDlg->isHidden() )
         {
@@ -629,27 +629,24 @@ void CMainWindow::onActDebugErrLogTriggered()
         }
         pDlg->raise();
         pDlg->activateWindow();
-
-    } // if( pDlg != nullptr )
-
+    }
 } // onActDebugErrLogTriggered
 
 //------------------------------------------------------------------------------
 void CMainWindow::onActDebugTrcServerTriggered()
 //------------------------------------------------------------------------------
 {
-    QString strDlgTitle = QCoreApplication::applicationName() + ": Method Trace Server";
-
-    CDlgTrcServer* pDlg = dynamic_cast<CDlgTrcServer*>(CDlgTrcServer::GetInstance(strDlgTitle));
+    CDlgTrcServer* pDlg = dynamic_cast<CDlgTrcServer*>(CDlgTrcServer::GetInstance());
 
     if( pDlg == nullptr )
     {
-        pDlg = CDlgTrcServer::CreateInstance(strDlgTitle, "MethodTraceServer");
+        QString strDlgTitle = QCoreApplication::applicationName() + ": Method Trace Server";
+        pDlg = CDlgTrcServer::CreateInstance(strDlgTitle);
         pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
         pDlg->adjustSize();
         pDlg->show();
     }
-    else // if( pDlg != nullptr )
+    else
     {
         if( pDlg->isHidden() )
         {
@@ -658,7 +655,6 @@ void CMainWindow::onActDebugTrcServerTriggered()
         pDlg->raise();
         pDlg->activateWindow();
     }
-
 } // onActDebugTrcServerTriggered
 
 //------------------------------------------------------------------------------
@@ -676,7 +672,7 @@ void CMainWindow::onActDebugTrcAdminObjIdxTreeTriggered()
         pDlg->adjustSize();
         pDlg->show();
     }
-    else // if( pReqSeq != nullptr )
+    else
     {
         if( pDlg->isHidden() )
         {
@@ -684,9 +680,7 @@ void CMainWindow::onActDebugTrcAdminObjIdxTreeTriggered()
         }
         pDlg->raise();
         pDlg->activateWindow();
-
-    } // if( pDlg != nullptr )
-
+    }
 } // onActDebugTrcAdminObjIdxTreeTriggered
 
 /*==============================================================================

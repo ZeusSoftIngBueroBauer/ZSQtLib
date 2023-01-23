@@ -302,7 +302,7 @@ void CMainWindow::onActDebugErrLogTriggered()
         pDlg->adjustSize();
         pDlg->show();
     }
-    else // if( pReqSeq != nullptr )
+    else
     {
         if( pDlg->isHidden() )
         {
@@ -310,9 +310,7 @@ void CMainWindow::onActDebugErrLogTriggered()
         }
         pDlg->raise();
         pDlg->activateWindow();
-
-    } // if( pDlg != nullptr )
-
+    }
 } // onActDebugErrLogTriggered
 
 /*==============================================================================

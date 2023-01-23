@@ -127,8 +127,8 @@ public: // ctors and dtor
 CDrawingScene::CDrawingScene( QObject* i_pObjParent ) :
 //------------------------------------------------------------------------------
     QGraphicsScene(i_pObjParent),
-    m_unitWidth(Units.GraphDevice.px),
-    m_unitHeight(Units.GraphDevice.px),
+    m_unitWidth(Units.Length.pxX),
+    m_unitHeight(Units.Length.pxY),
     m_drawSettings(),
     m_mode(EMode::Undefined),
     m_editTool(EEditTool::None),

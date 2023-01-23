@@ -27,7 +27,7 @@ may result in using the software modules.
 #ifndef ZSPhysVal_PhysTreeEntryGrpBase_h
 #define ZSPhysVal_PhysTreeEntryGrpBase_h
 
-#include "ZSPhysVal/ZSPhysValDllMain.h"
+#include "ZSPhysVal/ZSPhysVal.h"
 #include "ZSSys/ZSSysIdxTreeEntry.h"
 
 namespace ZS
@@ -67,6 +67,12 @@ public: // instance methods
     virtual CUnitsTreeEntryUnitBase* findUnitByName( const QString& i_strName ) const;
     virtual CUnitsTreeEntryUnitBase* findUnitBySymbol( const QString& i_strSymbol ) const;
     virtual CUnitsTreeEntryUnitBase* findUnitByFactorPrefix( const QString& i_strPrefix ) const;
+public: // overidables
+    virtual int setReferenceValue( const QString& i_strName, const CPhysVal& i_physVal );
+    virtual int getReferenceValuesCount() const;
+    virtual CPhysVal getReferenceValue( int i_idx ) const;
+    virtual QString getReferenceValueName( int i_idx ) const;
+    virtual CPhysVal getReferenceValue( const QString& i_strName ) const;
 protected: // instance members
     /*!< Class type of the child nodes.
          A group may be the parent of either
@@ -76,6 +82,13 @@ protected: // instance members
     QHash<QString, CUnitsTreeEntryUnitBase*> m_hshpUnitsBySymbol;
     /*!< Key is factor prefix of unit (e.g. "k", "G"). */
     QHash<QString, CUnitsTreeEntryUnitBase*> m_hshpUnitsByPrefix;
+    /*!< Array with reference values. */
+    QVector<CPhysVal> m_arRefVals;
+    /*!< Key is name of reference value, value is index into array of reference values. */
+    QHash<QString, int> m_hshRefValIdxsByName;
+    /*!< Key is index of reference value in array of reference values,
+         value is name of reference values. */
+    QHash<int, QString> m_hshRefValNamesByIdx;
 
 }; // class CUnitsTreeEntryGrpBase
 

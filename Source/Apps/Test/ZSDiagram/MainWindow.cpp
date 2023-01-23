@@ -421,18 +421,17 @@ protected slots:
 void CMainWindow::onActDebugTrcServerTriggered()
 //------------------------------------------------------------------------------
 {
-    QString strDlgTitle = getMainWindowTitle() + ": Trace Server";
-
-    CDlgTrcServer* pDlg = dynamic_cast<CDlgTrcServer*>(CDlgTrcServer::GetInstance(strDlgTitle));
+    CDlgTrcServer* pDlg = dynamic_cast<CDlgTrcServer*>(CDlgTrcServer::GetInstance());
 
     if( pDlg == nullptr )
     {
-        pDlg = CDlgTrcServer::CreateInstance(objectName() + ".TrcServer", strDlgTitle);
+        QString strDlgTitle = getMainWindowTitle() + ": Trace Server";
+        pDlg = CDlgTrcServer::CreateInstance(strDlgTitle);
         pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
         pDlg->adjustSize();
         pDlg->show();
     }
-    else // if( pDlg != nullptr )
+    else
     {
         if( pDlg->isHidden() )
         {
@@ -440,9 +439,7 @@ void CMainWindow::onActDebugTrcServerTriggered()
         }
         pDlg->raise();
         pDlg->activateWindow();
-
-    } // if( pDlg != nullptr )
-
+    }
 } // onActDebugTrcServerTriggered
 
 //------------------------------------------------------------------------------
@@ -464,7 +461,7 @@ void CMainWindow::onActDebugTrcServerAdminObjIdxTreeTriggered()
         pDlg->adjustSize();
         pDlg->show();
     }
-    else // if( pDlg != nullptr )
+    else
     {
         if( pDlg->isHidden() )
         {
@@ -472,9 +469,7 @@ void CMainWindow::onActDebugTrcServerAdminObjIdxTreeTriggered()
         }
         pDlg->raise();
         pDlg->activateWindow();
-
-    } // if( pDlg != nullptr )
-
+    }
 } // onActDebugTrcServerAdminObjIdxTreeTriggered
 
 //------------------------------------------------------------------------------
@@ -492,7 +487,7 @@ void CMainWindow::onActDebugErrLogTriggered()
         pDlg->adjustSize();
         pDlg->show();
     }
-    else // if( pReqSeq != nullptr )
+    else
     {
         if( pDlg->isHidden() )
         {
@@ -500,9 +495,7 @@ void CMainWindow::onActDebugErrLogTriggered()
         }
         pDlg->raise();
         pDlg->activateWindow();
-
-    } // if( pDlg != nullptr )
-
+    }
 } // onActDebugErrLogTriggered
 
 /*==============================================================================

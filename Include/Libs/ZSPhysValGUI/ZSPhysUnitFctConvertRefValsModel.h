@@ -24,66 +24,47 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSPhysValGUI_PhysSizesWdgt_h
-#define ZSPhysValGUI_PhysSizesWdgt_h
+#ifndef ZSPhysValGUI_PhysUnitFctConvertRefValsModel_h
+#define ZSPhysValGUI_PhysUnitFctConvertRefValsModel_h
 
-#include <QtCore/qglobal.h>
-
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#include <QtGui/qwidget.h>
-#else
-#include <QtWidgets/qwidget.h>
-#endif
-
-#include "ZSPhysValGUI/ZSPhysValGUIDllMain.h"
-#include "ZSSys/ZSSysCommon.h"
-
-class QModelIndex;
-class QPushButton;
-class QSplitter;
-class QHBoxLayout;
-class QVBoxLayout;
+#include <QtCore/qabstractitemmodel.h>
 
 namespace ZS
 {
 namespace PhysVal
 {
-class CIdxTreeUnits;
+class CUnitsTreeEntryGrpBase;
 
 namespace GUI
 {
-class CWdgtTreeViewPhysSizes;
-class CWdgtTreeEntries;
-
 //******************************************************************************
-class ZSPHYSVALGUIDLL_API CWdgtPhysSizes : public QWidget
+class CModelUnitFctConvertRefVals : public QAbstractTableModel
 //******************************************************************************
 {
     Q_OBJECT
-public: // class methods
-    static QString NameSpace() { return "ZS::PhysVal::GUI"; }
-    static QString ClassName() { return "CWdgtPhysSizes"; }
+public: // type definitions and constants
+    typedef enum
+    {
+        EColumnName = 0,
+        EColumnValue = 1,
+        EColumnCount
+    }   EColumn;
 public: // ctors and dtor
-    CWdgtPhysSizes(
-        CIdxTreeUnits* i_pIdxTree,
-        QWidget* i_pWdgtParent = nullptr,
-        Qt::WindowFlags i_wflags = Qt::WindowFlags() );
-    virtual ~CWdgtPhysSizes();
+    CModelUnitFctConvertRefVals( QObject* i_pObjParent = nullptr );
+    virtual ~CModelUnitFctConvertRefVals();
 public: // instance methods
-    void setIdxTree(CIdxTreeUnits* i_pIdxTree);
-    CIdxTreeUnits* idxTree() { return m_pIdxTree; }
-protected slots:
-    void onTreeViewCurrentRowChanged( const QModelIndex& i_modelIdxCurr, const QModelIndex& i_modelIdxPrev );
-protected slots:
-    void onIdxTreeAboutToBeDestroyed();
+    virtual void setKeyInTreeOfRootEntry( const QString& i_strKeyInTree );
+public: // must overridables of base class QAbstractItemModel
+    virtual int rowCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
+    virtual int columnCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
+    virtual QVariant data( const QModelIndex& i_modelIdx, int i_iRole = Qt::DisplayRole ) const;
+public: // overridables of base class QAbstractItemModel
+    virtual QVariant headerData( int i_iSection, Qt::Orientation i_orientation, int i_iRole = Qt::DisplayRole) const;
 protected: // instance members
-    CIdxTreeUnits* m_pIdxTree;
-    QVBoxLayout* m_pLytMain;
-    QSplitter* m_pSplitter;
-    CWdgtTreeViewPhysSizes* m_pWdgtTreeView;
-    CWdgtTreeEntries* m_pWdgtTreeEntries;
+    QString m_strKeyInTreeOfRootEntry;
+    CUnitsTreeEntryGrpBase* m_pUnitsGrp;
 
-}; // class CWdgtPhysSizes
+}; // class CModelUnitFctConvertRefVals
 
 } // namespace GUI
 
@@ -91,4 +72,5 @@ protected: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZSPhysValGUI_PhysSizesWdgt_h
+#endif // #ifndef ZSPhysValGUI_PhysUnitFctConvertRefValsModel_h
+

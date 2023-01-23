@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include "ZSPhysValGUI/ZSPhysTreeEntryQuantityWdgt.h"
-#include "ZSPhysVal/ZSPhysTreeEntryUnitQuantity.h"
+#include "ZSPhysValGUI/ZSPhysTreeEntryUnitRatioWdgt.h"
+#include "ZSPhysVal/ZSPhysTreeEntryUnitRatio.h"
 #include "ZSPhysVal/ZSPhysUnitsIdxTree.h"
 
 #if QT_VERSION < 0x050000
@@ -47,7 +47,7 @@ using namespace ZS::PhysVal::GUI;
 
 
 /*******************************************************************************
-class CWdgtQuantity : public QTableView
+class CWdgtUnitRatio : public QTableView
 *******************************************************************************/
 
 /*==============================================================================
@@ -55,10 +55,9 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CWdgtQuantity::CWdgtQuantity(
-    CIdxTreeUnits* i_pIdxTree, QWidget* i_pWdgtParent ) :
+CWdgtUnitRatio::CWdgtUnitRatio(QWidget* i_pWdgtParent) :
 //------------------------------------------------------------------------------
-    CWdgtAbstractTreeEntry(i_pIdxTree, i_pWdgtParent),
+    CWdgtAbstractTreeEntry(i_pWdgtParent),
     m_pLyt(nullptr),
     m_pLytSymbol(nullptr),
     m_pLblSymbol(nullptr),
@@ -82,13 +81,12 @@ CWdgtQuantity::CWdgtQuantity(
     m_pLytSymbol = new QHBoxLayout;
     m_pLyt->addLayout(m_pLytSymbol);
     m_pEdtSymbol = new QLineEdit();
-    m_pEdtSymbol->setMinimumWidth(m_cxEdtMinWidth);
-    m_pEdtSymbol->setMaximumWidth(m_cxEdtMaxWidth);
+    m_pEdtSymbol->setFixedWidth(m_cxEdtWidth);
     m_pEdtSymbol->setReadOnly(true);
     //m_pEdtSymbol->setEnabled(false);
     m_pLblSymbol = new QLabel();
     m_pLblSymbol->setBuddy(m_pEdtSymbol);
-    m_pLblSymbol->setMinimumWidth(m_cxLblMinWidth);
+    m_pLblSymbol->setMinimumWidth(m_cxLblWidth);
     m_pLblSymbol->setText(tr("Symbol:"));
     m_pLytSymbol->addWidget(m_pLblSymbol);
     m_pLytSymbol->addWidget(m_pEdtSymbol);
@@ -100,13 +98,12 @@ CWdgtQuantity::CWdgtQuantity(
     m_pLytFactor = new QHBoxLayout;
     m_pLyt->addLayout(m_pLytFactor);
     m_pEdtFactor = new QLineEdit();
-    m_pEdtFactor->setMinimumWidth(m_cxEdtMinWidth);
-    m_pEdtFactor->setMaximumWidth(m_cxEdtMaxWidth);
+    m_pEdtFactor->setFixedWidth(m_cxEdtWidth);
     m_pEdtFactor->setReadOnly(true);
     //m_pEdtFactor->setEnabled(false);
     m_pLblFactor = new QLabel();
     m_pLblFactor->setBuddy(m_pEdtFactor);
-    m_pLblFactor->setMinimumWidth(m_cxLblMinWidth);
+    m_pLblFactor->setMinimumWidth(m_cxLblWidth);
     m_pLblFactor->setText(tr("Factor:"));
     m_pLytFactor->addWidget(m_pLblFactor);
     m_pLytFactor->addWidget(m_pEdtFactor);
@@ -118,13 +115,12 @@ CWdgtQuantity::CWdgtQuantity(
     m_pLytNextLower = new QHBoxLayout;
     m_pLyt->addLayout(m_pLytNextLower);
     m_pEdtNextLower = new QLineEdit();
-    m_pEdtNextLower->setMinimumWidth(m_cxEdtMinWidth);
-    m_pEdtNextLower->setMaximumWidth(m_cxEdtMaxWidth);
+    m_pEdtNextLower->setFixedWidth(m_cxEdtWidth);
     m_pEdtNextLower->setReadOnly(true);
     //m_pEdtNextLower->setEnabled(false);
     m_pLblNextLower = new QLabel();
     m_pLblNextLower->setBuddy(m_pEdtNextLower);
-    m_pLblNextLower->setMinimumWidth(m_cxLblMinWidth);
+    m_pLblNextLower->setMinimumWidth(m_cxLblWidth);
     m_pLblNextLower->setText(tr("NextLower:"));
     m_pLytNextLower->addWidget(m_pLblNextLower);
     m_pLytNextLower->addWidget(m_pEdtNextLower);
@@ -136,13 +132,12 @@ CWdgtQuantity::CWdgtQuantity(
     m_pLytNextHigher = new QHBoxLayout;
     m_pLyt->addLayout(m_pLytNextHigher);
     m_pEdtNextHigher = new QLineEdit();
-    m_pEdtNextHigher->setMinimumWidth(m_cxEdtMinWidth);
-    m_pEdtNextHigher->setMaximumWidth(m_cxEdtMaxWidth);
+    m_pEdtNextHigher->setFixedWidth(m_cxEdtWidth);
     m_pEdtNextHigher->setReadOnly(true);
     //m_pEdtNextHigher->setEnabled(false);
     m_pLblNextHigher = new QLabel();
     m_pLblNextHigher->setBuddy(m_pEdtNextHigher);
-    m_pLblNextHigher->setMinimumWidth(m_cxLblMinWidth);
+    m_pLblNextHigher->setMinimumWidth(m_cxLblWidth);
     m_pLblNextHigher->setText(tr("NextHigher:"));
     m_pLytNextHigher->addWidget(m_pLblNextHigher);
     m_pLytNextHigher->addWidget(m_pEdtNextHigher);
@@ -156,7 +151,7 @@ CWdgtQuantity::CWdgtQuantity(
 } // ctor
 
 //------------------------------------------------------------------------------
-CWdgtQuantity::~CWdgtQuantity()
+CWdgtUnitRatio::~CWdgtUnitRatio()
 //------------------------------------------------------------------------------
 {
     m_pLyt = nullptr;
@@ -180,7 +175,7 @@ public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtQuantity::setKeyInTreeOfRootEntry( const QString& i_strKeyInTree )
+void CWdgtUnitRatio::setKeyInTreeOfRootEntry( const QString& i_strKeyInTree )
 //------------------------------------------------------------------------------
 {
     if( m_strKeyInTreeOfRootEntry != i_strKeyInTree )
@@ -189,13 +184,13 @@ void CWdgtQuantity::setKeyInTreeOfRootEntry( const QString& i_strKeyInTree )
 
         CIdxTreeEntry* pTreeEntry = m_pIdxTree->findEntry(m_strKeyInTreeOfRootEntry);
 
-        CUnitsTreeEntryUnitQuantity* pUnit = nullptr;
+        CUnitsTreeEntryUnitRatio* pUnit = nullptr;
 
         if( pTreeEntry != nullptr )
         {
             if( pTreeEntry->isLeave() )
             {
-                pUnit = dynamic_cast<CUnitsTreeEntryUnitQuantity*>(pTreeEntry);
+                pUnit = dynamic_cast<CUnitsTreeEntryUnitRatio*>(pTreeEntry);
             }
         }
 

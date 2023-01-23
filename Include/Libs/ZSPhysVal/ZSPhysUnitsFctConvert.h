@@ -30,7 +30,7 @@ may result in using the software modules.
 #include <QtCore/qobject.h>
 #include <QtCore/qstring.h>
 
-#include "ZSPhysVal/ZSPhysValDllMain.h"
+#include "ZSPhysVal/ZSPhysVal.h"
 
 namespace ZS
 {
@@ -44,51 +44,60 @@ typedef enum
     EFctConvert_mMULxADDt         =  1, // y = m*x + t
     EFctConvert_mLOGxADDt         =  2, // y = m*log10(x) + t
     EFctConvert_EXP__xADDt_DIVm_  =  3, // y = 10exp((x+t)/m)
-    EFctConvert_xMULr             =  4, // y = x*r
-    EFctConvert_xDIVr             =  5, // y = x/r
-    EFctConvert_SQRxDIVr          =  6, // y = x²/r
-    EFctConvert_SQRT_xMULr_       =  7, // y = sqrt(x*r)
-    EFctConvert_SQRxMULr          =  8, // y = x²*r
-    EFctConvert_SQRT_xDIVr_       =  9, // y = sqrt(x/r)
-    EFctConvert_mMULxADDtADDkLOGr = 10, // y = m*x + t + k*log10(r)
+    //EFctConvert_xMULr             =  4, // y = x*r
+    //EFctConvert_xDIVr             =  5, // y = x/r
+    //EFctConvert_SQRxDIVr          =  6, // y = x²/r
+    //EFctConvert_SQRT_xMULr_       =  7, // y = sqrt(x*r)
+    //EFctConvert_SQRxMULr          =  8, // y = x²*r
+    //EFctConvert_SQRT_xDIVr_       =  9, // y = sqrt(x/r)
+    //EFctConvert_mMULxADDtADDkLOGr = 10, // y = m*x + t + k*log10(r)
     EFctConvert_Count
 }   EFctConvert;
 
 //******************************************************************************
-class ZSPHYSVALDLL_API CFctConvert
+struct ZSPHYSVALDLL_API SFctConvert
 //******************************************************************************
 {
 public: // class methods
     static QString NameSpace() { return "ZS::PhysVal"; }
-    static QString ClassName() { return "CFctConvert"; }
+    static QString ClassName() { return "SFctConvert"; }
 public: // class methods
     static QString FormatM( double i_fM );
     static QString FormatT( double i_fT );
     static QString FormatOperand( double i_fOp );
 public: // ctors and dtor
-    CFctConvert();
-    CFctConvert(CFctConvert& i_other);
-    CFctConvert(const CFctConvert& i_other);
-    CFctConvert(CFctConvert&& i_other);
-    virtual ~CFctConvert();
+    SFctConvert();
+    SFctConvert(
+        EFctConvert i_fctConvertType,
+        CUnitsTreeEntryPhysUnit* i_pPhysUnitSrc,
+        CUnitsTreeEntryPhysUnit* i_pPhysUnitDst,
+        const CPhysVal& i_physValM,
+        const CPhysVal& i_physValT = CPhysVal(),
+        const CPhysVal& i_physValK = CPhysVal());
+    SFctConvert(SFctConvert& i_other);
+    SFctConvert(const SFctConvert& i_other);
+    SFctConvert(SFctConvert&& i_other);
+    virtual ~SFctConvert();
 public: // operators
-    CFctConvert& operator=(CFctConvert& i_other);
-    CFctConvert& operator=(const CFctConvert& i_other);
-    CFctConvert& operator=(CFctConvert&& i_other);
+    SFctConvert& operator=(SFctConvert& i_other);
+    SFctConvert& operator=(const SFctConvert& i_other);
+    SFctConvert& operator=(SFctConvert&& i_other);
 public: // instance methods
     void buildFctConvertName();
     bool isValid() const;
 public: // instance members
     CUnitsTreeEntryPhysUnit* m_pPhysUnitSrc;
     CUnitsTreeEntryPhysUnit* m_pPhysUnitDst;
-    CUnitsTreeEntryPhysUnit* m_pPhysUnitRef;
     EFctConvert m_fctConvertType;
     QString m_strFctConvertName;
-    double m_fM;
-    double m_fT;
-    double m_fK;
+    /*!< Gradient m in conversion routine y = mx + t. */
+    CPhysVal m_physValM;
+    /*!< Offset t in conversion routine y = mx + t. */
+    CPhysVal m_physValT;
+    /*!< Operand k in logarithmic conversion routine y = mx + t k*log10(r). */
+    CPhysVal m_physValK;
 
-}; // class CFctConvert
+}; // struc SFctConvert
 
 } // namespace PhysVal
 

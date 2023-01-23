@@ -74,10 +74,11 @@ public: // operators
     bool operator != ( const CUnitsTreeEntryGrpPhysUnits& i_physsizeOther ) const;
 public: // instance methods
     bool initialize( bool i_bCreateFindBestChainedList );
-    void addFctConvert(
-        CUnitsTreeEntryGrpPhysUnits* i_pPhysSizeDst,
-        CUnitsTreeEntryGrpPhysUnits* i_pPhysSizeRef,
-        EFctConvert i_fctConvert );
+    void updateInternalConversionRoutines();
+    //void addFctConvert(
+    //    CUnitsTreeEntryGrpPhysUnits* i_pPhysSizeDst,
+    //    CUnitsTreeEntryGrpPhysUnits* i_pPhysSizeRef,
+    //    EFctConvert i_fctConvert );
 public: // instance methods
     QString getSIUnitName() const { return m_strSIUnitName; }
     QString getSIUnitSymbol() const { return m_strSIUnitSymbol; }
@@ -89,8 +90,10 @@ public: // instance methods
     CUnitsTreeEntryPhysUnit* findPhysUnit( const QString& i_strSymbolOrName ) const;
     CUnitsTreeEntryPhysUnit* findPhysUnitBySymbol( const QString& i_strSymbol ) const;
     CUnitsTreeEntryPhysUnit* findPhysUnitByName( const QString& i_strName ) const;
-public: // overridables
-    virtual double getRefVal( CUnitsTreeEntryPhysUnit* i_pPhysUnitRef = nullptr ) const;
+protected: // auxiliary instance methods
+    void findAndSetSIUnit();
+    void createFindBestUnitChainedList();
+    void setInternalConversionRoutines();
 protected: // instance members
     QString m_strSIUnitName;
     QString  m_strSIUnitSymbol;

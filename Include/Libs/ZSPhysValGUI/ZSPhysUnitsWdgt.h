@@ -24,15 +24,24 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSPhysValGUI_PhysSizesIdxTreeDlg_h
-#define ZSPhysValGUI_PhysSizesIdxTreeDlg_h
+#ifndef ZSPhysValGUI_PhysUnitsWdgt_h
+#define ZSPhysValGUI_PhysUnitsWdgt_h
 
 #include <QtCore/qglobal.h>
 
-#include "ZSPhysValGUI/ZSPhysValGUIDllMain.h"
-#include "ZSSysGUI/ZSSysDialog.h"
-#include "ZSSys/ZSSysAux.h"
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#include <QtGui/qwidget.h>
+#else
+#include <QtWidgets/qwidget.h>
+#endif
 
+#include "ZSPhysValGUI/ZSPhysValGUIDllMain.h"
+#include "ZSSys/ZSSysCommon.h"
+
+class QModelIndex;
+class QPushButton;
+class QSplitter;
+class QHBoxLayout;
 class QVBoxLayout;
 
 namespace ZS
@@ -43,39 +52,32 @@ class CIdxTreeUnits;
 
 namespace GUI
 {
-class CWdgtPhysSizes;
+class CWdgtUnitsTree;
+class CWdgtTreeEntries;
 
 //******************************************************************************
-class ZSPHYSVALGUIDLL_API CDlgIdxTreePhysSizes : public ZS::System::GUI::CDialog
+class ZSPHYSVALGUIDLL_API CWdgtUnits : public QWidget
 //******************************************************************************
 {
+    Q_OBJECT
 public: // class methods
     static QString NameSpace() { return "ZS::PhysVal::GUI"; }
-    static QString ClassName() { return "CDlgIdxTreePhysSizes"; }
-public: // class CDlgTrcServer
-    static CDlgIdxTreePhysSizes* CreateInstance(
-        const QString& i_strDlgTitle,
-        CIdxTreeUnits* i_pIdxTree,
+    static QString ClassName() { return "CWdgtUnits"; }
+public: // ctors and dtor
+    CWdgtUnits(
         QWidget* i_pWdgtParent = nullptr,
-        Qt::WindowFlags i_wFlags = Qt::WindowFlags() );
-    static CDlgIdxTreePhysSizes* GetInstance( const QString& i_strObjName );
-protected: // ctor
-    CDlgIdxTreePhysSizes(
-        const QString& i_strDlgTitle,
-        CIdxTreeUnits* i_pIdxTree,
-        QWidget* i_pWdgtParent = nullptr,
-        Qt::WindowFlags i_wFlags = Qt::WindowFlags() );
-public: // dtor
-    virtual ~CDlgIdxTreePhysSizes();
-public: // overridables of base class ZS::System::GUI::CDialog
-    virtual QString nameSpace() override { return NameSpace(); }
-    virtual QString className() override { return ClassName(); }
+        Qt::WindowFlags i_wflags = Qt::WindowFlags() );
+    virtual ~CWdgtUnits();
+protected slots:
+    void onTreeViewCurrentRowChanged(
+        const QModelIndex& i_modelIdxCurr, const QModelIndex& i_modelIdxPrev);
 protected: // instance members
-    CIdxTreeUnits* m_pIdxTree;
-    QVBoxLayout* m_pLyt;
-    CWdgtPhysSizes* m_pWdgtIdxTree;
+    QVBoxLayout* m_pLytMain;
+    QSplitter* m_pSplitter;
+    CWdgtUnitsTree* m_pWdgtTreeView;
+    CWdgtTreeEntries* m_pWdgtTreeEntries;
 
-}; // class CDlgIdxTreePhysSizes
+}; // class CWdgtUnits
 
 } // namespace GUI
 
@@ -83,4 +85,4 @@ protected: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZSPhysValGUI_PhysSizesIdxTreeDlg_h
+#endif // #ifndef ZSPhysValGUI_PhysUnitsWdgt_h

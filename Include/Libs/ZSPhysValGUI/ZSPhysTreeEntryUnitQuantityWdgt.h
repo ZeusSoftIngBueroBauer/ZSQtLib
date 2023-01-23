@@ -24,55 +24,54 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSPhysValGUI_PhysTreeEntryAbstractWdgt_h
-#define ZSPhysValGUI_PhysTreeEntryAbstractWdgt_h
+#ifndef ZSPhysValGUI_PhysTreeEntryUnitQuantityWdgt_h
+#define ZSPhysValGUI_PhysTreeEntryUnitQuantityWdgt_h
 
-#include <QtCore/qglobal.h>
+#include "ZSPhysValGUI/ZSPhysTreeEntryAbstractWdgt.h"
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#include <QtGui/qwidget.h>
-#else
-#include <QtWidgets/qwidget.h>
-#endif
-
-#include "ZSPhysValGUI/ZSPhysValGUIDllMain.h"
+class QLabel;
+class QLineEdit;
+class QHBoxLayout;
+class QVBoxLayout;
 
 namespace ZS
 {
 namespace PhysVal
 {
-class CIdxTreeUnits;
-
 namespace GUI
 {
 //******************************************************************************
-class ZSPHYSVALGUIDLL_API CWdgtAbstractTreeEntry : public QWidget
+class ZSPHYSVALGUIDLL_API CWdgtUnitQuantity : public CWdgtAbstractTreeEntry
 //******************************************************************************
 {
     Q_OBJECT
 public: // class methods
     static QString NameSpace() { return "ZS::PhysVal::GUI"; }
-    static QString ClassName() { return "CWdgtAbstractTreeEntry"; }
+    static QString ClassName() { return "CWdgtUnitQuantity"; }
 public: // ctors and dtor
-    CWdgtAbstractTreeEntry(QWidget* i_pWdgtParent = nullptr);
-    virtual ~CWdgtAbstractTreeEntry();
+    CWdgtUnitQuantity(QWidget* i_pWdgtParent = nullptr);
+    virtual ~CWdgtUnitQuantity();
 public: // overridables
-    virtual QString nameSpace() const { return CWdgtAbstractTreeEntry::NameSpace(); }
-    virtual QString className() const { return CWdgtAbstractTreeEntry::ClassName(); }
+    virtual QString nameSpace() const { return CWdgtUnitQuantity::NameSpace(); }
+    virtual QString className() const { return CWdgtUnitQuantity::ClassName(); }
 public: // overridables
-    virtual void setKeyInTreeOfRootEntry( const QString& i_strKeyInTree );
-    QString getKeyInTreeOfRootEntry() const;
-public: // overridables
-    virtual void resizeToContents();
-protected slots:
-    void onIdxTreeAboutToBeDestroyed();
+    virtual void setKeyInTreeOfRootEntry( const QString& i_strKeyInTree ) override;
 protected: // instance members
-    CIdxTreeUnits* m_pIdxTree;
-    QString m_strKeyInTreeOfRootEntry;
-    int m_cxLblWidth;
-    int m_cxEdtWidth;
+    QVBoxLayout* m_pLyt;
+    QHBoxLayout* m_pLytSymbol;
+    QLabel*      m_pLblSymbol;
+    QLineEdit*   m_pEdtSymbol;
+    QHBoxLayout* m_pLytFactor;
+    QLabel*      m_pLblFactor;
+    QLineEdit*   m_pEdtFactor;
+    QHBoxLayout* m_pLytNextLower;
+    QLabel*      m_pLblNextLower;
+    QLineEdit*   m_pEdtNextLower;
+    QHBoxLayout* m_pLytNextHigher;
+    QLabel*      m_pLblNextHigher;
+    QLineEdit*   m_pEdtNextHigher;
 
-}; // class CWdgtAbstractTreeEntry
+}; // class CWdgtUnitQuantity
 
 } // namespace GUI
 
@@ -80,4 +79,4 @@ protected: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZSPhysValGUI_PhysTreeEntryAbstractWdgt_h
+#endif // #ifndef ZSPhysValGUI_PhysTreeEntryUnitQuantityWdgt_h

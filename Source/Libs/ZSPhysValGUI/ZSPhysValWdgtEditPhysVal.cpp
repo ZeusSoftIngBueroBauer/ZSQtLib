@@ -28,6 +28,7 @@ may result in using the software modules.
 
 #include <QtCore/qcoreapplication.h>
 
+#include <QtGui/qevent.h>
 #if QT_VERSION < 0x050000
 #include <QtGui/qlayout.h>
 #include <QtGui/qspinbox.h>
@@ -67,8 +68,6 @@ CDoubleSpinBox( QWidget* i_pWdgtParent = nullptr ) :
 //------------------------------------------------------------------------------
     QDoubleSpinBox(i_pWdgtParent)
 {
-    //QLineEdit* pLineEdit = lineEdit();
-
 } // ctor
 
 //------------------------------------------------------------------------------
@@ -86,6 +85,16 @@ virtual QValidator::State validate( QString& i_strVal, int& i_iPos ) const
 //------------------------------------------------------------------------------
 {
     return QDoubleSpinBox::validate(i_strVal,i_iPos);
+}
+
+//==============================================================================
+public: // overridables of base class QAbstractSpinBox
+//==============================================================================
+
+virtual void keyPressEvent(QKeyEvent* i_pEv) override
+{
+    //QString strTxt = i_pEv->text();
+    return QDoubleSpinBox::keyPressEvent(i_pEv);
 }
 
 }; // class CDoubleSpinBox

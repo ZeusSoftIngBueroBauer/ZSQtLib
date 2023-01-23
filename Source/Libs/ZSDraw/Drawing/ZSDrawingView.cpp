@@ -66,7 +66,8 @@ CDrawingView::CDrawingView(
 {
     setObjectName("DrawingView");
 
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
+        NameSpace(), ClassName(), objectName());
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -74,13 +75,12 @@ CDrawingView::CDrawingView(
         /* strMethod    */ "ctor",
         /* strAddInfo   */ "" );
 
-    m_pTrcAdminObjMouseMoveEvent = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName() + "-MouseMoveEvent");;
-    m_pTrcAdminObjPaintEvent = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName() + "-PaintEvent");;
+    m_pTrcAdminObjMouseMoveEvent = CTrcServer::GetTraceAdminObj(
+        NameSpace(), ClassName(), objectName() + "-MouseMoveEvent");;
+    m_pTrcAdminObjPaintEvent = CTrcServer::GetTraceAdminObj(
+        NameSpace(), ClassName(), objectName() + "-PaintEvent");;
 
-    double fXResolution_dpmm = logicalDpiX() / 25.4; // dots per milli meter
-    double fYResolution_dpmm = logicalDpiY() / 25.4; // dots per milli meter
-
-    Units.GraphDevice.setDpmms(fXResolution_dpmm, fYResolution_dpmm);
+    Units.Length.setPxpis(logicalDpiX(), logicalDpiY());
 
     m_pDrawingScene->setSceneRect(0.0, 0.0, 640.0, 480.0);
 

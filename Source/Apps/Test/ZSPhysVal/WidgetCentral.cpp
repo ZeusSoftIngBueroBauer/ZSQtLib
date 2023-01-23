@@ -29,7 +29,7 @@ may result in using the software modules.
 #include "Units/Units.h"
 #include "Test.h"
 
-#include "ZSPhysValGUI/ZSPhysSizesWdgt.h"
+#include "ZSPhysValGUI/ZSPhysUnitsWdgt.h"
 #include "ZSPhysVal/ZSPhysUnitsIdxTree.h"
 #include "ZSTestGUI/ZSTestStepIdxTreeWdgt.h"
 #include "ZSSys/ZSSysErrCode.h"
@@ -101,7 +101,7 @@ CWidgetCentral::CWidgetCentral( QWidget* i_pWdgtParent, Qt::WindowFlags  i_wflag
     // <Tab> Units
     //-------------
 
-    m_pWdgtPhysSizes = new CWdgtPhysSizes(&IdxTreeUnits);
+    m_pWdgtPhysSizes = new CWdgtUnits();
     m_pTabWdgtMain->addTab(m_pWdgtPhysSizes,"Units");
 
     setMinimumWidth(600);

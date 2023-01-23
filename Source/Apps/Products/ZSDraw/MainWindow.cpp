@@ -105,6 +105,7 @@ may result in using the software modules.
 #include "ZSDraw/GraphObjFactories/ZSDrawObjFactoryPolyline.h"
 #include "ZSDraw/GraphObjFactories/ZSDrawObjFactoryRect.h"
 #include "ZSDraw/GraphObjFactories/ZSDrawObjFactoryText.h"
+#include "ZSPhysValGUI/ZSPhysUnitsDlg.h"
 #include "ZSPhysValGUI/ZSPhysValDlgEditPhysVal.h"
 #include "ZSIpcTraceGUI/ZSIpcTrcServerDlg.h"
 #include "ZSTestGUI/ZSTestDlg.h"
@@ -145,21 +146,21 @@ class CMainWindow : public QMainWindow
 public: // class members
 ==============================================================================*/
 
-const QString CMainWindow::c_strMenuNameFile                         = "&File";
-const QString CMainWindow::c_strMenuNameMode                         = "&Mode";
-const QString CMainWindow::c_strMenuNameEdit                         = "&Edit";
-const QString CMainWindow::c_strMenuNameEditRotate                   = "Edit:&Rotate";
-const QString CMainWindow::c_strMenuNameEditMirror                   = "Edit:&Mirror";
-const QString CMainWindow::c_strMenuNameDraw                         = "&Draw";
-const QString CMainWindow::c_strMenuNameDrawSettings                 = "Draw:S&ettings";
-const QString CMainWindow::c_strMenuNameDrawStandardShapes           = "Draw:&Standard Shapes";
-const QString CMainWindow::c_strMenuNameDrawGraphics                 = "Draw:&Graphics";
-const QString CMainWindow::c_strMenuNameDrawConnections              = "Draw:&Connections";
-const QString CMainWindow::c_strMenuNameDrawWidgets                  = "Draw:&Widgets";
-const QString CMainWindow::c_strMenuNameDrawElectricity              = "Draw:&Electricity";
-const QString CMainWindow::c_strMenuNameView                         = "&View";
-const QString CMainWindow::c_strMenuNameDebugTrace                   = "Debug and &Trace";
-const QString CMainWindow::c_strMenuNameInfo                         = "&Info";
+const QString CMainWindow::c_strMenuNameFile               = "&File";
+const QString CMainWindow::c_strMenuNameMode               = "&Mode";
+const QString CMainWindow::c_strMenuNameEdit               = "&Edit";
+const QString CMainWindow::c_strMenuNameEditRotate         = "Edit:&Rotate";
+const QString CMainWindow::c_strMenuNameEditMirror         = "Edit:&Mirror";
+const QString CMainWindow::c_strMenuNameDraw               = "&Draw";
+const QString CMainWindow::c_strMenuNameDrawSettings       = "Draw:S&ettings";
+const QString CMainWindow::c_strMenuNameDrawStandardShapes = "Draw:&Standard Shapes";
+const QString CMainWindow::c_strMenuNameDrawGraphics       = "Draw:&Graphics";
+const QString CMainWindow::c_strMenuNameDrawConnections    = "Draw:&Connections";
+const QString CMainWindow::c_strMenuNameDrawWidgets        = "Draw:&Widgets";
+const QString CMainWindow::c_strMenuNameDrawElectricity    = "Draw:&Electricity";
+const QString CMainWindow::c_strMenuNameView               = "&View";
+const QString CMainWindow::c_strMenuNameDebug              = "Debug";
+const QString CMainWindow::c_strMenuNameInfo               = "&Info";
 
 const QString CMainWindow::c_strActionNameFileNew                    = c_strMenuNameFile + ":&New ...";
 const QString CMainWindow::c_strActionNameFileOpen                   = c_strMenuNameFile + ":&Open ...";
@@ -203,9 +204,10 @@ const QString CMainWindow::c_strActionNameDrawElectricityTransistor  = c_strMenu
 const QString CMainWindow::c_strActionNameViewZoomIn                 = c_strMenuNameView + ":&Zoom In";
 const QString CMainWindow::c_strActionNameViewZoomOut                = c_strMenuNameView + ":&Zoom Out";
 const QString CMainWindow::c_strActionNameViewZoom                   = c_strMenuNameView + ":&Zoom";
-const QString CMainWindow::c_strActionNameTraceErrLog                = c_strMenuNameDebugTrace + ":&Error Log";
-const QString CMainWindow::c_strActionNameTraceServer                = c_strMenuNameDebugTrace + ":&Trace Server";
-const QString CMainWindow::c_strActionNameTraceAdminObjIdxTree       = c_strMenuNameDebugTrace + ":&Trace Admin Objects";
+const QString CMainWindow::c_strActionNameDebugErrLog                = c_strMenuNameDebug + ":&Error Log";
+const QString CMainWindow::c_strActionNameDebugUnits                 = c_strMenuNameDebug + ":&Units";
+const QString CMainWindow::c_strActionNameDebugTraceServer           = c_strMenuNameDebug + ":&Trace Server";
+const QString CMainWindow::c_strActionNameDebugTraceAdminObjs        = c_strMenuNameDebug + ":&Trace Admin Objects";
 const QString CMainWindow::c_strActionNameInfoVersion                = c_strMenuNameInfo + ":&Version";
 
 /*==============================================================================
@@ -341,12 +343,13 @@ CMainWindow::CMainWindow(
     m_pActViewZoomOut(nullptr),
     m_pEdtViewZoomFactor_perCent(nullptr),
     m_iViewZoomFactor_perCent(100),
-    // Menu - Trace
-    m_pMenuDebugTrace(nullptr),
-    m_pActTraceErrLog(nullptr),
-    m_pActTraceServer(nullptr),
-    m_pActTraceAdminObjIdxTree(nullptr),
-    m_pActionDebugTest(nullptr),
+    // Menu - Debug
+    m_pMenuDebug(nullptr),
+    m_pActDebugErrLog(nullptr),
+    m_pActDebugUnits(nullptr),
+    m_pActDebugTraceServer(nullptr),
+    m_pActDebugTraceAdminObjs(nullptr),
+    m_pActDebugTest(nullptr),
     // Menu - Info
     m_pMenuInfo(nullptr),
     m_pActInfoVersion(nullptr),
@@ -949,11 +952,12 @@ CMainWindow::~CMainWindow()
     m_pEdtViewZoomFactor_perCent = nullptr;
     m_iViewZoomFactor_perCent = 0;
     // Menu - Trace
-    m_pMenuDebugTrace = nullptr;
-    m_pActTraceErrLog = nullptr;
-    m_pActTraceServer = nullptr;
-    m_pActTraceAdminObjIdxTree = nullptr;
-    m_pActionDebugTest = nullptr;
+    m_pMenuDebug = nullptr;
+    m_pActDebugErrLog = nullptr;
+    m_pActDebugUnits = nullptr;
+    m_pActDebugTraceServer = nullptr;
+    m_pActDebugTraceAdminObjs = nullptr;
+    m_pActDebugTest = nullptr;
     // Menu - Info
     m_pMenuInfo = nullptr;
     m_pActInfoVersion = nullptr;
@@ -1836,23 +1840,32 @@ void CMainWindow::createActions()
 
     if( CErrLog::GetInstance() != nullptr )
     {
-        m_pActTraceErrLog = new QAction(c_strActionNameTraceErrLog.section(":",-1,-1),this);
+        m_pActDebugErrLog = new QAction(c_strActionNameDebugErrLog.section(":",-1,-1),this);
 
         QObject::connect(
-            m_pActTraceErrLog, &QAction::triggered,
-            this, &CMainWindow::onActionTraceErrLogTriggered );
+            m_pActDebugErrLog, &QAction::triggered,
+            this, &CMainWindow::onActionDebugErrLogTriggered );
     }
+
+    // <MenuItem> DebugTrace::Units
+    //---------------------------------
+
+    m_pActDebugUnits = new QAction(c_strActionNameDebugUnits.section(":",-1,-1),this);
+
+    QObject::connect(
+        m_pActDebugUnits, &QAction::triggered,
+        this, &CMainWindow::onActionDebugUnitsTriggered );
 
     // <MenuItem> DebugTrace::Trace Server
     //------------------------------------
 
     if( CTrcServer::GetInstance() != nullptr )
     {
-        m_pActTraceServer = new QAction(c_strActionNameTraceServer.section(":",-1,-1),this);
+        m_pActDebugTraceServer = new QAction(c_strActionNameDebugTraceServer.section(":",-1,-1),this);
 
         QObject::connect(
-            m_pActTraceServer, &QAction::triggered,
-            this, &CMainWindow::onActionTraceServerTriggered );
+            m_pActDebugTraceServer, &QAction::triggered,
+            this, &CMainWindow::onActionDebugTraceServerTriggered );
     }
 
     // <MenuItem> DebugTrace::Trace Admin Objects
@@ -1860,11 +1873,11 @@ void CMainWindow::createActions()
 
     if( CTrcServer::GetInstance() != nullptr )
     {
-        m_pActTraceAdminObjIdxTree = new QAction(c_strActionNameTraceAdminObjIdxTree.section(":",-1,-1),this);
+        m_pActDebugTraceAdminObjs = new QAction(c_strActionNameDebugTraceAdminObjs.section(":",-1,-1),this);
 
         QObject::connect(
-            m_pActTraceAdminObjIdxTree, &QAction::triggered,
-            this, &CMainWindow::onActionTraceAdminObjIdxTreeTriggered );
+            m_pActDebugTraceAdminObjs, &QAction::triggered,
+            this, &CMainWindow::onActionDebugTraceAdminObjsTriggered );
     }
 
     // <MenuItem> DebugTrace::Test
@@ -1872,10 +1885,10 @@ void CMainWindow::createActions()
 
     if( m_pTest != nullptr )
     {
-        m_pActionDebugTest = new QAction( "Subsystem Test", this );
+        m_pActDebugTest = new QAction( "Subsystem Test", this );
 
         QObject::connect(
-            m_pActionDebugTest, &QAction::triggered,
+            m_pActDebugTest, &QAction::triggered,
             this, &CMainWindow::onActionDebugTestTriggered );
     }
 
@@ -2182,12 +2195,12 @@ void CMainWindow::createMenus()
     }
 
     // <MenuItem> Draw::Image
-    //---------------------------------
+    //-----------------------
 
     m_pMenuDrawGraphics = m_pMenuDraw->addMenu(c_strMenuNameDrawGraphics.section(":",-1,-1));
 
     // <MenuItem> Draw::Graphics:Image
-    //---------------------------------------------
+    //--------------------------------
 
     if( m_pActDrawGraphicsImage != nullptr )
     {
@@ -2220,9 +2233,6 @@ void CMainWindow::createMenus()
 
     m_pMenuView = m_pMenuBar->addMenu(c_strMenuNameView);
 
-    // <MenuItem> View::Zoom
-    //----------------------
-
     // <MenuItem> View::ZoomIn
     //------------------------
 
@@ -2242,47 +2252,57 @@ void CMainWindow::createMenus()
     // <Menu> Debug & Trace
     //=====================
 
-    if( m_pActTraceErrLog != nullptr || m_pActTraceServer != nullptr || m_pActTraceAdminObjIdxTree != nullptr || m_pActionDebugTest != nullptr )
+    if( m_pActDebugErrLog != nullptr || m_pActDebugUnits != nullptr
+     || m_pActDebugTraceServer != nullptr || m_pActDebugTraceAdminObjs != nullptr
+     || m_pActDebugTest != nullptr )
     {
-        m_pMenuDebugTrace = m_pMenuBar->addMenu(c_strMenuNameDebugTrace);
+        m_pMenuDebug = m_pMenuBar->addMenu(c_strMenuNameDebug);
 
         // <MenuItem> DebugTrace::Error Log
         //---------------------------------
 
-        if( m_pActTraceErrLog != nullptr )
+        if( m_pActDebugErrLog != nullptr )
         {
-            m_pMenuDebugTrace->addAction(m_pActTraceErrLog);
+            m_pMenuDebug->addAction(m_pActDebugErrLog);
+        }
+
+        // <MenuItem> DebugTrace::Units
+        //-----------------------------
+
+        if( m_pActDebugUnits != nullptr )
+        {
+            m_pMenuDebug->addAction(m_pActDebugUnits);
         }
 
         // <MenuItem> DebugTrace::Trace Server
         //------------------------------------
 
-        if( m_pActTraceServer != nullptr )
+        if( m_pActDebugTraceServer != nullptr )
         {
-            m_pMenuDebugTrace->addAction(m_pActTraceServer);
+            m_pMenuDebug->addAction(m_pActDebugTraceServer);
         }
 
         // <MenuItem> DebugTrace::Trace Admin Objects
         //-------------------------------------------
 
-        if( m_pActTraceAdminObjIdxTree != nullptr )
+        if( m_pActDebugTraceAdminObjs != nullptr )
         {
-            m_pMenuDebugTrace->addAction(m_pActTraceAdminObjIdxTree);
+            m_pMenuDebug->addAction(m_pActDebugTraceAdminObjs);
         }
 
         // <MenuItem> DebugTrace::Test
         //-----------------------------------------------------------------------
 
-        if( m_pActionDebugTest != nullptr )
+        if( m_pActDebugTest != nullptr )
         {
-            if( !m_pMenuDebugTrace->isEmpty() )
+            if( !m_pMenuDebug->isEmpty() )
             {
-                m_pMenuDebugTrace->addSeparator();
+                m_pMenuDebug->addSeparator();
             }
-            m_pMenuDebugTrace->addAction(m_pActionDebugTest);
+            m_pMenuDebug->addAction(m_pActDebugTest);
         }
 
-    } // if( m_pActTraceErrLog != nullptr || m_pActTraceServer != nullptr || m_pActTraceAdminObjIdxTree != nullptr || m_pActionDebugTest != nullptr )
+    } // if( m_pActDebugErrLog != nullptr || m_pActDebugTraceServer != nullptr || m_pActDebugTraceAdminObjs != nullptr || m_pActionDebugTest != nullptr )
 
     // <Menu> Info
     //============
@@ -2828,7 +2848,7 @@ bool CMainWindow::eventFilter( QObject* i_pObjWatched, QEvent* i_pEv )
     {
         if( i_pEv->type() == QEvent::MouseButtonDblClick )
         {
-            onActionTraceErrLogTriggered(false);
+            onActionDebugErrLogTriggered(false);
             bHandled = true;
         }
     }
@@ -4600,17 +4620,17 @@ void CMainWindow::onEdtViewZoomFactorEditingFinished()
 } // onEdtViewZoomFactorEditingFinished
 
 /*==============================================================================
-public slots: // Menu - Trace
+public slots: // Menu - Debug
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActionTraceErrLogTriggered( bool /*i_bChecked*/ )
+void CMainWindow::onActionDebugErrLogTriggered( bool /*i_bChecked*/ )
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onActionTraceErrLogTriggered",
+        /* strMethod    */ "onActionDebugErrLogTriggered",
         /* strAddInfo   */ "" );
 
     QString strDlgTitle = QCoreApplication::applicationName() + ": Error Log";
@@ -4624,7 +4644,7 @@ void CMainWindow::onActionTraceErrLogTriggered( bool /*i_bChecked*/ )
         pDlg->adjustSize();
         pDlg->show();
     }
-    else // if( pReqSeq != nullptr )
+    else
     {
         if( pDlg->isHidden() )
         {
@@ -4632,33 +4652,61 @@ void CMainWindow::onActionTraceErrLogTriggered( bool /*i_bChecked*/ )
         }
         pDlg->raise();
         pDlg->activateWindow();
-
-    } // if( pDlg != nullptr )
-
-} // onActionTraceErrLogTriggered
+    }
+} // onActionDebugErrLogTriggered
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActionTraceServerTriggered( bool /*i_bChecked*/ )
+void CMainWindow::onActionDebugUnitsTriggered( bool /*i_bChecked*/ )
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onActionTraceServerTriggered",
+        /* strMethod    */ "onActionDebugUnitsTriggered",
         /* strAddInfo   */ "" );
 
-    QString strDlgTitle = QCoreApplication::applicationName() + ": Method Trace Server";
-
-    CDlgTrcServer* pDlg = dynamic_cast<CDlgTrcServer*>(CDlgTrcServer::GetInstance(strDlgTitle));
+    CDlgPhysUnits* pDlg = CDlgPhysUnits::GetInstance();
 
     if( pDlg == nullptr )
     {
+        QString strDlgTitle = QCoreApplication::applicationName() + ": Units";
+        pDlg = CDlgPhysUnits::CreateInstance(strDlgTitle);
+        pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
+        pDlg->adjustSize();
+        pDlg->show();
+    }
+    else
+    {
+        if( pDlg->isHidden() )
+        {
+            pDlg->show();
+        }
+        pDlg->raise();
+        pDlg->activateWindow();
+    }
+} // onActionDebugUnitsTriggered
+
+//------------------------------------------------------------------------------
+void CMainWindow::onActionDebugTraceServerTriggered( bool /*i_bChecked*/ )
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onActionDebugTraceServerTriggered",
+        /* strAddInfo   */ "" );
+
+    CDlgTrcServer* pDlg = CDlgTrcServer::GetInstance();
+
+    if( pDlg == nullptr )
+    {
+        QString strDlgTitle = QCoreApplication::applicationName() + ": Method Trace Server";
         pDlg = CDlgTrcServer::CreateInstance(strDlgTitle);
         pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
         pDlg->adjustSize();
         pDlg->show();
     }
-    else // if( pReqSeq != nullptr )
+    else
     {
         if( pDlg->isHidden() )
         {
@@ -4666,26 +4714,26 @@ void CMainWindow::onActionTraceServerTriggered( bool /*i_bChecked*/ )
         }
         pDlg->raise();
         pDlg->activateWindow();
-
-    } // if( pDlg != nullptr )
-
-} // onActionTraceServerTriggered
+    }
+} // onActionDebugTraceServerTriggered
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActionTraceAdminObjIdxTreeTriggered( bool /*i_bChecked*/ )
+void CMainWindow::onActionDebugTraceAdminObjsTriggered( bool /*i_bChecked*/ )
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onActionTraceAdminObjIdxTreeTriggered",
+        /* strMethod    */ "onActionDebugTraceAdminObjsTriggered",
         /* strAddInfo   */ "" );
 
     if( CTrcServer::GetTraceAdminObjIdxTree() != nullptr )
     {
         QString strDlgTitle = QCoreApplication::applicationName() + ": Trace Admin Objects";
 
-        CDlgIdxTreeTrcAdminObjs* pDlg = CDlgIdxTreeTrcAdminObjs::GetInstance(CTrcServer::GetTraceAdminObjIdxTree()->objectName());
+        CDlgIdxTreeTrcAdminObjs* pDlg =
+            CDlgIdxTreeTrcAdminObjs::GetInstance(
+                CTrcServer::GetTraceAdminObjIdxTree()->objectName());
 
         if( pDlg == nullptr )
         {
@@ -4703,11 +4751,9 @@ void CMainWindow::onActionTraceAdminObjIdxTreeTriggered( bool /*i_bChecked*/ )
             }
             pDlg->raise();
             pDlg->activateWindow();
-
-        } // if( pDlg != nullptr )
-    } // if( CTrcServer::GetTraceAdminObjIdxTree() != nullptr )
-
-} // onActionTraceAdminObjIdxTreeTriggered
+        }
+    }
+} // onActionDebugTraceAdminObjsTriggered
 
 //------------------------------------------------------------------------------
 void CMainWindow::onActionDebugTestTriggered( bool /*i_bChecked*/ )
@@ -6006,17 +6052,17 @@ void CMainWindow::updateActions()
     // Menu - Trace
     //---------------------
 
-    //if( m_pActTraceErrLog != nullptr )
+    //if( m_pActDebugErrLog != nullptr )
     //{
-    //    m_pActTraceErrLog;
+    //    m_pActDebugErrLog;
     //}
-    //if( m_pActTraceServer != nullptr )
+    //if( m_pActDebugTraceServer != nullptr )
     //{
-    //    m_pActTraceServer;
+    //    m_pActDebugTraceServer;
     //}
-    //if( m_pActTraceAdminObjIdxTree != nullptr )
+    //if( m_pActDebugTraceAdminObjs != nullptr )
     //{
-    //    m_pActTraceAdminObjIdxTree;
+    //    m_pActDebugTraceAdminObjs;
     //}
     //if( m_pActionDebugTest != nullptr )
     //{

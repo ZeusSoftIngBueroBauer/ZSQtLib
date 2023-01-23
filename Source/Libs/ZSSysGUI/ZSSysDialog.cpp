@@ -50,14 +50,33 @@ class CDialog : public QDialog
 protected: // class members
 ==============================================================================*/
 
-QHash<QString, CDialog*> CDialog::s_hshpDlgs; // Key is string concatenated by NameSpace::ClassName::ObjName
+// Key is string concatenated by NameSpace::ClassName::ObjName
+QHash<QString, CDialog*> CDialog::s_hshpDlgs;
 
 /*==============================================================================
 public: // class methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CDialog* CDialog::GetInstance( const QString& i_strNameSpace, const QString& i_strClassName, const QString& i_strObjName )
+/*! @brief Returns a pointer to the dialog whose unique key is defined by
+           the NameSpace, ClassName and objectName.
+
+    @param [in] i_strNameSpace
+        Name space of the class derived from CDialog.
+    @param [in] i_strClassName
+        Class name of the class derived from CDialog.
+    @param [in] i_strObjName
+        Object name of the instance to be created.
+
+    @return If a dialog with the with the given name space, class name and
+            object name derived from CDialog is already existing the pointer
+            to this dialog instance is returned.
+            nullptr otherwise.
+*/
+CDialog* CDialog::GetInstance(
+    const QString& i_strNameSpace,
+    const QString& i_strClassName,
+    const QString& i_strObjName )
 //------------------------------------------------------------------------------
 {
     QString strKey = buildPathStr("::", i_strNameSpace, i_strClassName, i_strObjName);
@@ -66,7 +85,10 @@ CDialog* CDialog::GetInstance( const QString& i_strNameSpace, const QString& i_s
 }
 
 //------------------------------------------------------------------------------
-void CDialog::DestroyInstance( const QString& i_strNameSpace, const QString& i_strClassName, const QString& i_strObjName )
+void CDialog::DestroyInstance(
+    const QString& i_strNameSpace,
+    const QString& i_strClassName,
+    const QString& i_strObjName )
 //------------------------------------------------------------------------------
 {
     QString strKey = buildPathStr("::", i_strNameSpace, i_strClassName, i_strObjName);
@@ -138,6 +160,30 @@ protected: // ctors
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Creates an instance of a dialog.
+
+    This method is protected as instances derived from CDialog may only be created
+    using the CreateInstance methods.
+
+    The dialog enteres itself into the hash of dialogs.
+    The key into this hash is the concatenated string of the name space and
+    class name as passed to the constructor. This must be the name space and
+    class name of the derived class.
+
+    In addition the passed object name is appended to the name space and class name.
+
+    @param [in] i_strNameSpace
+        Name space of the class derived from CDialog.
+    @param [in] i_strClassName
+        Class name of the class derived from CDialog.
+    @param [in] i_strObjName
+        Object name of the instance to be created.
+
+    @return If a dialog with the with the given name space, class name and
+            object name derived from CDialog is already existing the pointer
+            to this dialog instance is returned.
+            nullptr otherwise.
+*/
 CDialog::CDialog(
     const QString&  i_strDlgTitle,
     const QString&  i_strNameSpace,
@@ -149,11 +195,13 @@ CDialog::CDialog(
     QDialog(i_pWdgtParent, i_wFlags),
     m_strNameSpace(i_strNameSpace),
     m_strClassName(i_strClassName),
+    m_strObjName(i_strObjName),
     m_pTrcAdminObj(nullptr)
 {
     setObjectName(i_strObjName);
 
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(i_strNameSpace, i_strClassName, objectName());
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
+        m_strNameSpace, m_strClassName, m_strObjName);
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -161,21 +209,17 @@ CDialog::CDialog(
         /* strMethod    */ "ctor",
         /* strAddInfo   */ "" );
 
-    if( i_strDlgTitle.isEmpty() )
-    {
+    if( i_strDlgTitle.isEmpty() ) {
         setWindowTitle( getMainWindowTitle() + ": " + i_strObjName );
     }
-    else
-    {
+    else {
         setWindowTitle(i_strDlgTitle);
     }
 
-    QString strKey = buildPathStr("::", m_strNameSpace, m_strClassName, objectName());
-
+    QString strKey = buildPathStr("::", m_strNameSpace, m_strClassName, m_strObjName);
     s_hshpDlgs[strKey] = this;
 
     QSettings settings;
-
     restoreGeometry( settings.value(strKey + "/Geometry").toByteArray() );
 
 } // ctor
@@ -194,14 +238,12 @@ CDialog::~CDialog()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
-    QString strKey = buildPathStr("::", m_strNameSpace, m_strClassName, objectName());
+    QString strKey = buildPathStr("::", m_strNameSpace, m_strClassName, m_strObjName);
 
     QSettings settings;
-
     settings.setValue( strKey + "/Geometry", saveGeometry() );
 
-    if( s_hshpDlgs.contains(strKey) )
-    {
+    if( s_hshpDlgs.contains(strKey) ) {
         s_hshpDlgs.remove(strKey);
     }
 
@@ -211,6 +253,7 @@ CDialog::~CDialog()
 
     //m_strNameSpace;
     //m_strClassName;
+    //m_strObjName;
     m_pTrcAdminObj = nullptr;
 
 } // dtor

@@ -117,10 +117,11 @@ CWdgtPageSetupDrawingScene::CWdgtPageSetupDrawingScene(
     // <Section> Resolution
     //---------------------
 
-    double fXResolution_dpmm = Units.GraphDevice.dpmm(EDirection::Horizontal);
-    double fYResolution_dpmm = Units.GraphDevice.dpmm(EDirection::Vertical);
-    double fXResolution_dpi = fXResolution_dpmm*25.4;
-    double fYResolution_dpi = fYResolution_dpmm*25.4;
+    double fXResolution_dpi = Units.Length.dpi(EDirection::Horizontal);
+    double fYResolution_dpi = Units.Length.dpi(EDirection::Vertical);
+    // (1 Inch = 2.54cm = 25.4 mm)
+    double fXResolution_dpmm = fXResolution_dpi/25.4;
+    double fYResolution_dpmm = fYResolution_dpi/25.4;
 
     QString strXDpi  = QString::number(fXResolution_dpi,'f',2);
     QString strYDpi  = QString::number(fYResolution_dpi,'f',2);
@@ -290,13 +291,13 @@ void CWdgtPageSetupDrawingScene::setSettings( const CPageSetup& i_pageSetup )
     //-------------------------
 
     m_pEdtSizeWidth->setText(
-        QString::number(m_pageSetup.drawingWidth().getVal(Units.GraphDevice.px)) );
+        QString::number(m_pageSetup.drawingWidth().getVal(Units.Length.pxX)) );
 
     // <EditField> Size - Height
     //-------------------------
 
     m_pEdtSizeHeight->setText(
-        QString::number(m_pageSetup.drawingHeight().getVal(Units.GraphDevice.px)) );
+        QString::number(m_pageSetup.drawingHeight().getVal(Units.Length.pxY)) );
 
     //emit pageSetupAttributeChanged(
     //    EPageSetupAttributeDrawingWidthInPixels,

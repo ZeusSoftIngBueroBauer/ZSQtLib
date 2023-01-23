@@ -45,6 +45,12 @@ class ZSDRAWDLL_API CUnitsLength : public ZS::PhysVal::CUnitsTreeEntryGrpPhysUni
 public: // ctors and dtor
     CUnitsLength(ZS::System::CIdxTreeEntry* i_pParentBranch);
     ~CUnitsLength();
+public: // instance methods (resolution of monitor, pixels per inches)
+    void setPxpis( double i_fPxpiX, double i_fPxpiY );
+    double pxpi( ZS::System::EDirection i_direction ) const;
+public: // instance methods (resolution of printer, dots per inches)
+    void setDpis( double i_fDpiX, double i_fDpiY );
+    double dpi( ZS::System::EDirection i_direction ) const;
 private: // instance methods
     ZS::PhysVal::CUnitsTreeEntryPhysUnit m_treeEntryMicroMeter;
     ZS::PhysVal::CUnitsTreeEntryPhysUnit m_treeEntryMilliMeter;
@@ -52,6 +58,13 @@ private: // instance methods
     ZS::PhysVal::CUnitsTreeEntryPhysUnit m_treeEntryDeziMeter;
     ZS::PhysVal::CUnitsTreeEntryPhysUnit m_treeEntryMeter;
     ZS::PhysVal::CUnitsTreeEntryPhysUnit m_treeEntryKiloMeter;
+    /*!< Inches (1 Inch = 25.4 mm = 2.54cm = 0.0254m)
+         MToSI: 0.0254 -> MFromSI: 1.0/MToSI */
+    ZS::PhysVal::CUnitsTreeEntryPhysUnit m_treeEntryInch;
+    ZS::PhysVal::CUnitsTreeEntryPhysUnit m_treeEntryPixelX;
+    ZS::PhysVal::CUnitsTreeEntryPhysUnit m_treeEntryPixelY;
+    ZS::PhysVal::CUnitsTreeEntryPhysUnit m_treeEntryDotsX;
+    ZS::PhysVal::CUnitsTreeEntryPhysUnit m_treeEntryDotsY;
 public: // instance members
     ZS::PhysVal::CUnit um;
     ZS::PhysVal::CUnit mm;
@@ -59,28 +72,13 @@ public: // instance members
     ZS::PhysVal::CUnit dm;
     ZS::PhysVal::CUnit m;
     ZS::PhysVal::CUnit km;
+    ZS::PhysVal::CUnit in;
+    ZS::PhysVal::CUnit pxX;
+    ZS::PhysVal::CUnit pxY;
+    ZS::PhysVal::CUnit dotsX;
+    ZS::PhysVal::CUnit dotsY;
 
 }; // CUnitsLength
-
-//******************************************************************************
-class ZSDRAWDLL_API CUnitsGraphDevice : public ZS::PhysVal::CUnitsTreeEntryGrpPhysUnits
-//******************************************************************************
-{
-public: // ctors and dtor
-    CUnitsGraphDevice(ZS::System::CIdxTreeEntry* i_pParentBranch);
-    ~CUnitsGraphDevice();
-public: // instance methods
-    void setDpmms( double i_fDpmmX, double i_fDpmmY );
-    void setDpmm( ZS::System::EDirection i_direction, double i_fDpmm );
-    double dpmm( ZS::System::EDirection i_direction ) const;
-private: // instance methods (screen resolution)
-    QVector<double> m_arfDpmms;
-private: // instance methods
-    ZS::PhysVal::CUnitsTreeEntryPhysUnit m_treeEntryPixel;
-public: // instance members
-    ZS::PhysVal::CUnit px;
-
-}; // CUnitsGraphDevice
 
 //******************************************************************************
 class ZSDRAWDLL_API CUnits : public ZS::PhysVal::CIdxTreeUnits
@@ -90,8 +88,7 @@ public: // ctors and dtor
     CUnits();
     ~CUnits();
 public: // instance members
-    CUnitsLength      Length;
-    CUnitsGraphDevice GraphDevice;
+    CUnitsLength Length;
 
 }; // CUnits
 

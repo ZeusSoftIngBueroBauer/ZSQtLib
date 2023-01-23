@@ -33,40 +33,42 @@ set(_ResourcesPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../Resources/Libs)
 
 list(APPEND _Headers
     ${_HeadersPath}/ZSSys/ZSSysVersion.h
-    ${_HeadersPath}/ZSPhysValGUI/ZSPhysSizesIdxTreeDlg.h
-    ${_HeadersPath}/ZSPhysValGUI/ZSPhysSizesTreeView.h
-    ${_HeadersPath}/ZSPhysValGUI/ZSPhysSizesTreeViewWdgt.h
-    ${_HeadersPath}/ZSPhysValGUI/ZSPhysSizesWdgt.h
+    ${_HeadersPath}/ZSPhysValGUI/ZSPhysUnitsDlg.h
+    ${_HeadersPath}/ZSPhysValGUI/ZSPhysUnitsTreeView.h
+    ${_HeadersPath}/ZSPhysValGUI/ZSPhysUnitsTreeWdgt.h
+    ${_HeadersPath}/ZSPhysValGUI/ZSPhysUnitsWdgt.h
     ${_HeadersPath}/ZSPhysValGUI/ZSPhysTreeEntriesWdgt.h
     ${_HeadersPath}/ZSPhysValGUI/ZSPhysTreeEntryAbstractWdgt.h
-    ${_HeadersPath}/ZSPhysValGUI/ZSPhysTreeEntryPhysSizeModel.h
-    ${_HeadersPath}/ZSPhysValGUI/ZSPhysTreeEntryPhysSizeWdgt.h
+    ${_HeadersPath}/ZSPhysValGUI/ZSPhysTreeEntryGrpPhysUnitsModel.h
+    ${_HeadersPath}/ZSPhysValGUI/ZSPhysTreeEntryGrpPhysUnitsWdgt.h
     ${_HeadersPath}/ZSPhysValGUI/ZSPhysTreeEntryPhysUnitWdgt.h
-    ${_HeadersPath}/ZSPhysValGUI/ZSPhysTreeEntryQuantityWdgt.h
-    ${_HeadersPath}/ZSPhysValGUI/ZSPhysTreeEntryRatioWdgt.h
+    ${_HeadersPath}/ZSPhysValGUI/ZSPhysTreeEntryUnitQuantityWdgt.h
+    ${_HeadersPath}/ZSPhysValGUI/ZSPhysTreeEntryUnitRatioWdgt.h
     ${_HeadersPath}/ZSPhysValGUI/ZSPhysTreeEntryTypeUndefinedWdgt.h
     ${_HeadersPath}/ZSPhysValGUI/ZSPhysUnitFctConvertInternalModel.h
     ${_HeadersPath}/ZSPhysValGUI/ZSPhysUnitFctConvertExternalModel.h
+    ${_HeadersPath}/ZSPhysValGUI/ZSPhysUnitFctConvertRefValsModel.h
     ${_HeadersPath}/ZSPhysValGUI/ZSPhysValDlgEditPhysVal.h
     ${_HeadersPath}/ZSPhysValGUI/ZSPhysValGUIDllMain.h
     ${_HeadersPath}/ZSPhysValGUI/ZSPhysValWdgtEditPhysVal.h
 )
 
 list(APPEND _Sources
-    ${_SourcesPath}/ZSPhysValGUI/ZSPhysSizesIdxTreeDlg.cpp
-    ${_SourcesPath}/ZSPhysValGUI/ZSPhysSizesTreeView.cpp
-    ${_SourcesPath}/ZSPhysValGUI/ZSPhysSizesTreeViewWdgt.cpp
-    ${_SourcesPath}/ZSPhysValGUI/ZSPhysSizesWdgt.cpp
+    ${_SourcesPath}/ZSPhysValGUI/ZSPhysUnitsDlg.cpp
+    ${_SourcesPath}/ZSPhysValGUI/ZSPhysUnitsTreeView.cpp
+    ${_SourcesPath}/ZSPhysValGUI/ZSPhysUnitsTreeWdgt.cpp
+    ${_SourcesPath}/ZSPhysValGUI/ZSPhysUnitsWdgt.cpp
     ${_SourcesPath}/ZSPhysValGUI/ZSPhysTreeEntriesWdgt.cpp
     ${_SourcesPath}/ZSPhysValGUI/ZSPhysTreeEntryAbstractWdgt.cpp
-    ${_SourcesPath}/ZSPhysValGUI/ZSPhysTreeEntryPhysSizeModel.cpp
-    ${_SourcesPath}/ZSPhysValGUI/ZSPhysTreeEntryPhysSizeWdgt.cpp
+    ${_SourcesPath}/ZSPhysValGUI/ZSPhysTreeEntryGrpPhysUnitsModel.cpp
+    ${_SourcesPath}/ZSPhysValGUI/ZSPhysTreeEntryGrpPhysUnitsWdgt.cpp
     ${_SourcesPath}/ZSPhysValGUI/ZSPhysTreeEntryPhysUnitWdgt.cpp
-    ${_SourcesPath}/ZSPhysValGUI/ZSPhysTreeEntryQuantityWdgt.cpp
-    ${_SourcesPath}/ZSPhysValGUI/ZSPhysTreeEntryRatioWdgt.cpp
+    ${_SourcesPath}/ZSPhysValGUI/ZSPhysTreeEntryUnitQuantityWdgt.cpp
+    ${_SourcesPath}/ZSPhysValGUI/ZSPhysTreeEntryUnitRatioWdgt.cpp
     ${_SourcesPath}/ZSPhysValGUI/ZSPhysTreeEntryTypeUndefinedWdgt.cpp
     ${_SourcesPath}/ZSPhysValGUI/ZSPhysUnitFctConvertInternalModel.cpp
     ${_SourcesPath}/ZSPhysValGUI/ZSPhysUnitFctConvertExternalModel.cpp
+    ${_SourcesPath}/ZSPhysValGUI/ZSPhysUnitFctConvertRefValsModel.cpp
     ${_SourcesPath}/ZSPhysValGUI/ZSPhysValDlgEditPhysVal.cpp
     ${_SourcesPath}/ZSPhysValGUI/ZSPhysValGUIDllMain.cpp
     ${_SourcesPath}/ZSPhysValGUI/ZSPhysValWdgtEditPhysVal.cpp

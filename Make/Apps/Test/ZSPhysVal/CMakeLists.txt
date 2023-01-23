@@ -37,9 +37,6 @@ list(APPEND _HeadersCommon
     ${_HeadersPath}/ZSPhysVal/MainWindow.h
     ${_HeadersPath}/ZSPhysVal/WidgetCentral.h
     ${_HeadersPath}/ZSPhysVal/Test.h
-    ${_HeadersPath}/ZSPhysVal/UnitModels.h
-    ${_HeadersPath}/ZSPhysVal/UnitsWdgt.h
-    ${_HeadersPath}/ZSPhysVal/UnitViewWdgts.h
 )
 
 list(APPEND _HeadersUnits
@@ -100,9 +97,6 @@ list(APPEND _SourcesCommon
     ${_SourcesPath}/ZSPhysVal/MainWindow.cpp
     ${_SourcesPath}/ZSPhysVal/WidgetCentral.cpp
     ${_SourcesPath}/ZSPhysVal/Test.cpp
-    ${_SourcesPath}/ZSPhysVal/UnitModels.cpp
-    ${_SourcesPath}/ZSPhysVal/UnitsWdgt.cpp
-    ${_SourcesPath}/ZSPhysVal/UnitViewWdgts.cpp
 )
 
 list(APPEND _SourcesUnits

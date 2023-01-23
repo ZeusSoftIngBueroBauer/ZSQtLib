@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSPhysValGUI_PhysUnitFctConvertInternalModel_h
-#define ZSPhysValGUI_PhysUnitFctConvertInternalModel_h
+#ifndef ZSPhysValGUI_PhysUnitFctConvertExternalModel_h
+#define ZSPhysValGUI_PhysUnitFctConvertExternalModel_h
 
 #include <QtCore/qabstractitemmodel.h>
 
@@ -52,10 +52,8 @@ public: // type definitions and constants
     }   EColumn;
 public: // ctors and dtor
     CModelUnitFctConvertExternal( QObject* i_pObjParent = nullptr );
-    CModelUnitFctConvertExternal( CIdxTreeUnits* i_pIdxTree, QObject* i_pObjParent = nullptr );
     virtual ~CModelUnitFctConvertExternal();
 public: // instance methods
-    virtual void setIdxTree( QObject* i_pIdxTree );
     virtual void setKeyInTreeOfRootEntry( const QString& i_strKeyInTree );
 public: // must overridables of base class QAbstractItemModel
     virtual int rowCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
@@ -64,7 +62,6 @@ public: // must overridables of base class QAbstractItemModel
 public: // overridables of base class QAbstractItemModel
     virtual QVariant headerData( int i_iSection, Qt::Orientation i_orientation, int i_iRole = Qt::DisplayRole) const;
 protected: // instance members
-    CIdxTreeUnits* m_pIdxTree;
     QString m_strKeyInTreeOfRootEntry;
     CUnitsTreeEntryPhysUnit* m_pPhysUnit;
 
@@ -76,5 +73,5 @@ protected: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZSPhysValGUI_PhysUnitFctConvertInternalModel_h
+#endif // #ifndef ZSPhysValGUI_PhysUnitFctConvertExternalModel_h
 

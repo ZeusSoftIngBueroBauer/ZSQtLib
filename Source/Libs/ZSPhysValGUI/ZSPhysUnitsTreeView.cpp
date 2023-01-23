@@ -27,7 +27,7 @@ may result in using the software modules.
 #include <QtWidgets/qapplication.h>
 #include <QtGui/qevent.h>
 
-#include "ZSPhysValGUI/ZSPhysSizesTreeView.h"
+#include "ZSPhysValGUI/ZSPhysUnitsTreeView.h"
 #include "ZSPhysVal/ZSPhysUnitsIdxTree.h"
 #include "ZSSysGUI/ZSSysIdxTreeModelEntry.h"
 
@@ -46,7 +46,7 @@ using namespace ZS::PhysVal::GUI;
 
 
 /*******************************************************************************
-class CTreeViewPhysSizes : public QTreeView
+class CTreeViewUnits : public QTreeView
 *******************************************************************************/
 
 /*==============================================================================
@@ -54,12 +54,10 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CTreeViewPhysSizes::CTreeViewPhysSizes(
-    CIdxTreeUnits* i_pIdxTree,
-    QWidget* i_pWdgtParent ) :
+CTreeViewUnits::CTreeViewUnits(QWidget* i_pWdgtParent) :
 //------------------------------------------------------------------------------
     QTreeView(i_pWdgtParent),
-    m_pIdxTree(nullptr),
+    m_pIdxTree(CIdxTreeUnits::GetInstance()),
     m_pModel(nullptr),
     m_pMenuNameSpaceContext(nullptr),
     m_pActionNameSpaceTitle(nullptr),
@@ -68,9 +66,16 @@ CTreeViewPhysSizes::CTreeViewPhysSizes(
     m_modelIdxSelectedOnMousePressEvent(),
     m_modelIdxSelectedOnMouseReleaseEvent()
 {
-    setObjectName( QString(i_pIdxTree == nullptr ? "IdxTreePhysSizes" : i_pIdxTree->objectName()) );
+    setObjectName(m_pIdxTree->objectName());
 
-    m_pModel = new CModelIdxTree(nullptr, false, Qt::IgnoreAction, nullptr);
+    QObject::connect(
+        m_pIdxTree, &CIdxTreeUnits::aboutToBeDestroyed,
+        this, &CTreeViewUnits::onIdxTreeAboutToBeDestroyed);
+
+    m_pModel = new CModelIdxTree(
+        /* pIdxTree             */ CIdxTreeUnits::GetInstance(),
+        /* bNamesAreEditable    */ false,
+        /* supportedDropActions */ Qt::IgnoreAction );
 
     setModel(m_pModel);
 
@@ -104,7 +109,7 @@ CTreeViewPhysSizes::CTreeViewPhysSizes(
 
     QObject::connect(
         m_pActionNameSpaceExpand, &QAction::triggered,
-        this, &CTreeViewPhysSizes::onActionNameSpaceExpandTriggered);
+        this, &CTreeViewUnits::onActionNameSpaceExpandTriggered);
 
     QPixmap pxmCollapseAll(":/ZS/TreeView/TreeViewCollapseAll.png");
     m_pActionNameSpaceCollapse = new QAction(pxmCollapseAll, "Collapse", this);
@@ -112,16 +117,12 @@ CTreeViewPhysSizes::CTreeViewPhysSizes(
 
     QObject::connect(
         m_pActionNameSpaceCollapse, &QAction::triggered,
-        this, &CTreeViewPhysSizes::onActionNameSpaceCollapseTriggered);
-
-    if( i_pIdxTree != nullptr ) {
-        setIdxTree(i_pIdxTree);
-    }
+        this, &CTreeViewUnits::onActionNameSpaceCollapseTriggered);
 
 } // ctor
 
 //------------------------------------------------------------------------------
-CTreeViewPhysSizes::~CTreeViewPhysSizes()
+CTreeViewUnits::~CTreeViewUnits()
 //------------------------------------------------------------------------------
 {
     try
@@ -143,38 +144,12 @@ CTreeViewPhysSizes::~CTreeViewPhysSizes()
 
 } // dtor
 
-//------------------------------------------------------------------------------
-void CTreeViewPhysSizes::setIdxTree( CIdxTreeUnits* i_pIdxTree )
-//------------------------------------------------------------------------------
-{
-    if( m_pIdxTree != i_pIdxTree )
-    {
-        if( m_pIdxTree != nullptr )
-        {
-            QObject::disconnect(
-                m_pIdxTree, &CIdxTreeUnits::aboutToBeDestroyed,
-                this, &CTreeViewPhysSizes::onIdxTreeAboutToBeDestroyed);
-        }
-
-        m_pIdxTree = i_pIdxTree;
-
-        if( m_pIdxTree != nullptr )
-        {
-            QObject::connect(
-                m_pIdxTree, &CIdxTreeUnits::aboutToBeDestroyed,
-                this, &CTreeViewPhysSizes::onIdxTreeAboutToBeDestroyed);
-        }
-
-        m_pModel->setIdxTree(i_pIdxTree);
-    }
-}
-
 /*==============================================================================
 public: // overridable slots of base class QTreeView
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTreeViewPhysSizes::expandAll()
+void CTreeViewUnits::expandAll()
 //------------------------------------------------------------------------------
 {
     QTreeView::expandAll();
@@ -183,7 +158,7 @@ void CTreeViewPhysSizes::expandAll()
 }
 
 //------------------------------------------------------------------------------
-void CTreeViewPhysSizes::collapseAll()
+void CTreeViewUnits::collapseAll()
 //------------------------------------------------------------------------------
 {
     QTreeView::collapseAll();
@@ -196,7 +171,7 @@ public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTreeViewPhysSizes::expandRecursive( const QModelIndex& i_modelIdx )
+void CTreeViewUnits::expandRecursive( const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
     CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
@@ -225,7 +200,7 @@ void CTreeViewPhysSizes::expandRecursive( const QModelIndex& i_modelIdx )
 }
 
 //------------------------------------------------------------------------------
-void CTreeViewPhysSizes::collapseRecursive( const QModelIndex& i_modelIdx )
+void CTreeViewUnits::collapseRecursive( const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
     CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
@@ -257,7 +232,7 @@ public: // slots (hiding not overridable slots with same name in QTreeView)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTreeViewPhysSizes::expand( const QModelIndex& i_modelIdx )
+void CTreeViewUnits::expand( const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
     // If calling "expandAll" the signal "expanded" is not invoked for all
@@ -272,7 +247,7 @@ void CTreeViewPhysSizes::expand( const QModelIndex& i_modelIdx )
 }
 
 //------------------------------------------------------------------------------
-void CTreeViewPhysSizes::collapse( const QModelIndex& i_modelIdx )
+void CTreeViewUnits::collapse( const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
     // If calling "collapseAll" the signal "collapsed" is not invoked for all
@@ -291,7 +266,7 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTreeViewPhysSizes::onCollapsed( const QModelIndex& i_modelIdx )
+void CTreeViewUnits::onCollapsed( const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
     if( i_modelIdx.isValid() )
@@ -309,7 +284,7 @@ void CTreeViewPhysSizes::onCollapsed( const QModelIndex& i_modelIdx )
 }
 
 //------------------------------------------------------------------------------
-void CTreeViewPhysSizes::onExpanded( const QModelIndex& i_modelIdx )
+void CTreeViewUnits::onExpanded( const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
     if( i_modelIdx.isValid() )
@@ -337,7 +312,7 @@ protected: // overridables of base class QTreeView
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTreeViewPhysSizes::mousePressEvent( QMouseEvent* i_pEv )
+void CTreeViewUnits::mousePressEvent( QMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     bool bEventHandled = false;
@@ -380,7 +355,7 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTreeViewPhysSizes::onActionNameSpaceExpandTriggered( bool i_bChecked )
+void CTreeViewUnits::onActionNameSpaceExpandTriggered( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     if( m_modelIdxSelectedOnMousePressEvent.isValid() )
@@ -394,7 +369,7 @@ void CTreeViewPhysSizes::onActionNameSpaceExpandTriggered( bool i_bChecked )
 }
 
 //------------------------------------------------------------------------------
-void CTreeViewPhysSizes::onActionNameSpaceCollapseTriggered( bool i_bChecked )
+void CTreeViewUnits::onActionNameSpaceCollapseTriggered( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     if( m_modelIdxSelectedOnMousePressEvent.isValid() )
@@ -408,8 +383,8 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTreeViewPhysSizes::onIdxTreeAboutToBeDestroyed()
+void CTreeViewUnits::onIdxTreeAboutToBeDestroyed()
 //------------------------------------------------------------------------------
 {
-    setIdxTree(nullptr);
+    m_pIdxTree = nullptr;
 }

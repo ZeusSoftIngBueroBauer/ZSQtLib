@@ -27,10 +27,10 @@ may result in using the software modules.
 #include <QtCore/qglobal.h>
 
 #include "ZSPhysValGUI/ZSPhysTreeEntriesWdgt.h"
-#include "ZSPhysValGUI/ZSPhysTreeEntryPhysSizeWdgt.h"
+#include "ZSPhysValGUI/ZSPhysTreeEntryGrpPhysUnitsWdgt.h"
 #include "ZSPhysValGUI/ZSPhysTreeEntryPhysUnitWdgt.h"
-#include "ZSPhysValGUI/ZSPhysTreeEntryQuantityWdgt.h"
-#include "ZSPhysValGUI/ZSPhysTreeEntryRatioWdgt.h"
+#include "ZSPhysValGUI/ZSPhysTreeEntryUnitQuantityWdgt.h"
+#include "ZSPhysValGUI/ZSPhysTreeEntryUnitRatioWdgt.h"
 #include "ZSPhysValGUI/ZSPhysTreeEntryTypeUndefinedWdgt.h"
 #include "ZSPhysVal/ZSPhysTreeEntryGrpBase.h"
 #include "ZSPhysVal/ZSPhysTreeEntryGrpScienceField.h"
@@ -69,71 +69,52 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CWdgtTreeEntries::CWdgtTreeEntries(
-    CIdxTreeUnits* i_pIdxTree,
     QWidget* i_pWdgtParent,
     Qt::WindowFlags i_wflags ) :
 //------------------------------------------------------------------------------
     QWidget(i_pWdgtParent,i_wflags),
-    m_pIdxTree(nullptr),
+    m_pIdxTree(CIdxTreeUnits::GetInstance()),
     m_strKeyInTreeOfRootEntry(),
-    m_szBtns(24, 24),
     m_pLytMain(nullptr),
     m_pLytHeadLine(nullptr),
-    m_pBtnTreeViewResizeRowsAndColumnsToContents(nullptr),
     m_pEdtRootEntryPath(nullptr),
     m_pStackedWdgtTreeEntryContent(nullptr),
     m_arpWdgtsTreeEntryContent(ETreeEntryTypeCount, nullptr)
 {
-    setObjectName( i_pIdxTree == nullptr ? "IdxTree" : i_pIdxTree->objectName() );
+    setObjectName(m_pIdxTree->objectName());
+
+    QObject::connect(
+        m_pIdxTree, &CIdxTreeUnits::aboutToBeDestroyed,
+        this, &CWdgtTreeEntries::onIdxTreeAboutToBeDestroyed);
 
     m_pLytMain = new QVBoxLayout();
     setLayout(m_pLytMain);
 
-    // Line with controls to modify optic of tree view
-    //================================================
+    // Headline
+    //---------
 
     m_pLytHeadLine = new QHBoxLayout();
     m_pLytMain->addLayout(m_pLytHeadLine);
-
-    // <Button> Resize Columns To Contents
-    //------------------------------------
-
-    QPixmap pxmResizeToContents(":/ZS/TreeView/TreeViewResizeToContents.png");
-
-    m_pBtnTreeViewResizeRowsAndColumnsToContents = new QPushButton();
-    m_pBtnTreeViewResizeRowsAndColumnsToContents->setIcon(pxmResizeToContents);
-    m_pBtnTreeViewResizeRowsAndColumnsToContents->setFixedSize(m_szBtns);
-    m_pBtnTreeViewResizeRowsAndColumnsToContents->setToolTip("Press to resize the columns to their contents");
-    m_pLytHeadLine->addWidget(m_pBtnTreeViewResizeRowsAndColumnsToContents);
-
-    QObject::connect(
-        m_pBtnTreeViewResizeRowsAndColumnsToContents, &QPushButton::clicked,
-        this, &CWdgtTreeEntries::onBtnTreeViewResizeRowsAndColumnsToContentsClicked );
-
-    m_pLytHeadLine->addSpacing(10);
-
-    // <LineEdit> Selected tree node
-    //------------------------------
 
     m_pEdtRootEntryPath = new QLineEdit();
     m_pLytHeadLine->addWidget(m_pEdtRootEntryPath, 1);
 
     // Content of selected tree node
-    //==============================
+    //------------------------------
 
     m_pStackedWdgtTreeEntryContent = new QStackedWidget();
     m_pLytMain->addWidget(m_pStackedWdgtTreeEntryContent, 1);
 
     m_arpWdgtsTreeEntryContent[ETreeEntryTypeUndefined] =
-        new CWdgtEntryTypeUndefined(nullptr, nullptr);
+        new CWdgtEntryTypeUndefined();
     m_arpWdgtsTreeEntryContent[ETreeEntryTypePhysSize] =
-        new CWdgtPhysSize(nullptr, nullptr);
+        new CWdgtPhysUnitsGrp();
     m_arpWdgtsTreeEntryContent[ETreeEntryTypeQuantity] =
-        new CWdgtQuantity(nullptr, nullptr);
+        new CWdgtUnitQuantity();
     m_arpWdgtsTreeEntryContent[ETreeEntryTypePhysUnit] =
-        new CWdgtPhysUnit(nullptr, nullptr);
+        new CWdgtPhysUnit();
     m_arpWdgtsTreeEntryContent[ETreeEntryTypeRatio] =
-        new CWdgtRatio(nullptr, nullptr);
+        new CWdgtUnitRatio();
 
     for( int idxEntryType = 0; idxEntryType < ETreeEntryTypeCount; idxEntryType++ )
     {
@@ -144,10 +125,6 @@ CWdgtTreeEntries::CWdgtTreeEntries(
     }
     m_pStackedWdgtTreeEntryContent->setCurrentIndex(ETreeEntryTypeUndefined);
 
-    if( i_pIdxTree != nullptr )
-    {
-        setIdxTree(i_pIdxTree);
-    }
 } // ctor
 
 //------------------------------------------------------------------------------
@@ -156,54 +133,13 @@ CWdgtTreeEntries::~CWdgtTreeEntries()
 {
     m_pIdxTree = nullptr;
     //m_strKeyInTreeOfRootEntry;
-    m_szBtns = QSize(0, 0);
     m_pLytMain = nullptr;
     m_pLytHeadLine = nullptr;
     m_pEdtRootEntryPath = nullptr;
-    m_pBtnTreeViewResizeRowsAndColumnsToContents = nullptr;
     m_pStackedWdgtTreeEntryContent = nullptr;
     //m_arpWdgtsTreeEntryContent.clear();
 
 } // dtor
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CWdgtTreeEntries::setIdxTree( CIdxTreeUnits* i_pIdxTree )
-//------------------------------------------------------------------------------
-{
-    if( m_pIdxTree != i_pIdxTree )
-    {
-        if( m_pIdxTree != nullptr )
-        {
-            QObject::disconnect(
-                m_pIdxTree, &CIdxTreeUnits::aboutToBeDestroyed,
-                this, &CWdgtTreeEntries::onIdxTreeAboutToBeDestroyed);
-        }
-
-        m_pIdxTree = i_pIdxTree;
-        m_strKeyInTreeOfRootEntry = "";
-        m_pEdtRootEntryPath->setText("");
-
-        if( m_pIdxTree != nullptr )
-        {
-            QObject::connect(
-                m_pIdxTree, &CIdxTreeUnits::aboutToBeDestroyed,
-                this, &CWdgtTreeEntries::onIdxTreeAboutToBeDestroyed);
-        }
-
-        for( int idxEntryType = 0; idxEntryType < ETreeEntryTypeCount; idxEntryType++ )
-        {
-            if( m_arpWdgtsTreeEntryContent[idxEntryType] != nullptr )
-            {
-                m_arpWdgtsTreeEntryContent[idxEntryType]->setIdxTree(m_pIdxTree);
-                m_arpWdgtsTreeEntryContent[idxEntryType]->setKeyInTreeOfRootEntry(m_strKeyInTreeOfRootEntry);
-            }
-        }
-    }
-}
 
 /*==============================================================================
 public: // overridables
@@ -292,25 +228,6 @@ QString CWdgtTreeEntries::getKeyInTreeOfRootEntry() const
 //------------------------------------------------------------------------------
 {
     return m_strKeyInTreeOfRootEntry;
-}
-
-/*==============================================================================
-protected slots:
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CWdgtTreeEntries::onBtnTreeViewResizeRowsAndColumnsToContentsClicked( bool i_bChecked )
-//------------------------------------------------------------------------------
-{
-    int idxEntryType = m_pStackedWdgtTreeEntryContent->currentIndex();
-
-    if( idxEntryType >= 0 && idxEntryType < m_arpWdgtsTreeEntryContent.size() )
-    {
-        if( m_arpWdgtsTreeEntryContent[idxEntryType] != nullptr )
-        {
-            m_arpWdgtsTreeEntryContent[idxEntryType]->resizeToContents();
-        }
-    }
 }
 
 /*==============================================================================

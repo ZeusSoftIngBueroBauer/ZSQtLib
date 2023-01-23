@@ -29,8 +29,10 @@ may result in using the software modules.
 
 #include "ZSPhysValGUI/ZSPhysTreeEntryAbstractWdgt.h"
 
+class QComboBox;
 class QLabel;
 class QLineEdit;
+class QPushButton;
 class QSplitter;
 class QTableView;
 class QHBoxLayout;
@@ -42,6 +44,7 @@ namespace PhysVal
 {
 namespace GUI
 {
+class CWdgtEditPhysVal;
 class CModelUnitFctConvertInternal;
 class CModelUnitFctConvertExternal;
 
@@ -54,16 +57,20 @@ public: // class methods
     static QString NameSpace() { return "ZS::PhysVal::GUI"; }
     static QString ClassName() { return "CWdgtPhysUnit"; }
 public: // ctors and dtor
-    CWdgtPhysUnit( CIdxTreeUnits* i_pIdxTree, QWidget* i_pWdgtParent = nullptr );
+    CWdgtPhysUnit(QWidget* i_pWdgtParent = nullptr);
     virtual ~CWdgtPhysUnit();
 public: // overridables
     virtual QString nameSpace() const { return CWdgtPhysUnit::NameSpace(); }
     virtual QString className() const { return CWdgtPhysUnit::ClassName(); }
 public: // overridables
-    virtual void setIdxTree(CIdxTreeUnits* i_pIdxTree) override;
     virtual void setKeyInTreeOfRootEntry( const QString& i_strKeyInTree ) override;
-    virtual void resizeToContents() override;
+protected slots:
+    void onEdtPhysValSrcEditingFinished();
+    void onCmbUnitsDstCurrentIndexChanged(int i_iIdx);
+    void onBtnTableViewFctConvertsInternalResizeToContentsClicked( bool i_bChecked );
+    void onBtnTableViewFctConvertsExternalResizeToContentsClicked( bool i_bChecked );
 protected: // instance members
+    QSize m_szBtns;
     QVBoxLayout* m_pLyt;
     QHBoxLayout* m_pLytSymbol;
     QLabel* m_pLblSymbol;
@@ -81,16 +88,30 @@ protected: // instance members
     QHBoxLayout* m_pLytFctConvertIntoSIUnit;
     QLabel* m_pLblFctConvertIntoSIUnit;
     QLineEdit* m_pEdtFctConvertIntoSIUnit;
+    // Conversion test
+    QHBoxLayout* m_pLytLinePhysValSrc;
+    QLabel* m_pLblPhysValSrc;
+    CWdgtEditPhysVal* m_pEdtPhysValSrc;
+    QHBoxLayout* m_pLytLineValDst;
+    QLabel* m_pLblValDst;
+    QLineEdit* m_pEdtValDst;
+    QComboBox* m_pCmbUnitsDst;
     // Table views with conversion functions
     QSplitter* m_pSplTableViewFctConverts;
-    QVBoxLayout* m_pLytTableViewFctConvertsInternal;
+    // Internal conversion functions
     QWidget* m_pWdgtTableViewFctConvertsInternal;
-    QLabel* m_pLblTableViewFctConvertsInternal;
+    QVBoxLayout* m_pLytTableViewFctConvertsInternal;
+    QHBoxLayout* m_pLytHeadlineFctConvertsInternal;
+    QLabel* m_pLblHeadlineFctConvertsInternal;
+    QPushButton* m_pBtnTableViewFctConvertsInternalResizeToContents;
     CModelUnitFctConvertInternal* m_pModelFctConvertsInternal;
     QTableView* m_pTableViewFctConvertsInternal;
-    QVBoxLayout* m_pLytTableViewFctConvertsExternal;
+    // External conversion functions
     QWidget* m_pWdgtTableViewFctConvertsExternal;
-    QLabel* m_pLblTableViewFctConvertsExternal;
+    QVBoxLayout* m_pLytTableViewFctConvertsExternal;
+    QHBoxLayout* m_pLytHeadlineFctConvertsExternal;
+    QLabel* m_pLblHeadlineFctConvertsExternal;
+    QPushButton* m_pBtnTableViewFctConvertsExternalResizeToContents;
     CModelUnitFctConvertExternal* m_pModelFctConvertsExternal;
     QTableView* m_pTableViewFctConvertsExternal;
 

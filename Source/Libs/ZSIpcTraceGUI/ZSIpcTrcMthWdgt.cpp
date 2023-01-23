@@ -1065,7 +1065,7 @@ void CWdgtTrcMthList::onBtnTrcAdminObjIdxTreeClicked( bool /*i_bChecked*/ )
         pDlg->adjustSize();
         pDlg->show();
     }
-    else // if( pReqSeq != nullptr )
+    else
     {
         if( pDlg->isHidden() )
         {
@@ -1073,8 +1073,7 @@ void CWdgtTrcMthList::onBtnTrcAdminObjIdxTreeClicked( bool /*i_bChecked*/ )
         }
         pDlg->raise();
         pDlg->activateWindow();
-
-    } // if( pDlg != nullptr )
+    }
 } // onBtnTrcAdminObjIdxTreeClicked
 
 //------------------------------------------------------------------------------
