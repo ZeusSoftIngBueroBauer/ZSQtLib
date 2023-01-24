@@ -172,7 +172,7 @@ protected: // ctor
         const QString&                i_strType,
         const QString&                i_strObjName,
         const CDrawSettings&          i_drawSettings,
-        ZS::System::EIdxTreeEntryType i_idxTreeEntryType = ZS::System::EIdxTreeEntryType::Branch );
+        ZS::System::CIdxTreeEntry::EEntryType i_idxTreeEntryType = ZS::System::CIdxTreeEntry::EEntryType::Branch );
 public: // dtor
     virtual ~CGraphObj();
 public: // must overridables

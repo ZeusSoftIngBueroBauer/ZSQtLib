@@ -24,51 +24,64 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSTest_TestStepGroup_h
-#define ZSTest_TestStepGroup_h
+#ifndef ZSDraw_GraphObjAbstractWdgt_h
+#define ZSDraw_GraphObjAbstractWdgt_h
 
-#include "ZSTest/ZSTestStepIdxTreeEntry.h"
+#include <QtCore/qglobal.h>
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#include <QtGui/qwidget.h>
+#else
+#include <QtWidgets/qwidget.h>
+#endif
+
+#include "ZSDraw/Common/ZSDrawDllMain.h"
 
 namespace ZS
 {
-namespace Test
+namespace System
 {
+class CIdxTree;
+}
+
+namespace Draw
+{
+class CDrawingScene;
+
 //******************************************************************************
-class ZSTESTDLL_API CTestStepGroup : public CAbstractTestStepIdxTreeEntry
+class ZSDRAWDLL_API CWdgtAbstractGraphObj : public QWidget
 //******************************************************************************
 {
     Q_OBJECT
 public: // class methods
-    static QString NameSpace() { return "ZS::Test"; }
-    static QString ClassName() { return "CTestStepGroup"; }
+    static QString NameSpace() { return "ZS::Draw"; }
+    static QString ClassName() { return "CWdgtAbstractGraphObj"; }
 public: // ctors and dtor
-    CTestStepGroup(
-        CTest*          i_pTest,
-        const QString&  i_strName,
-        CTestStepGroup* i_pTSGrpParent = nullptr );
-    virtual ~CTestStepGroup();
-protected: // ctor for class CTestGroupRoot
-    CTestStepGroup(
-        CTest* i_pTest,
-        ZS::System::CIdxTreeEntry::EEntryType i_entryType,
-        const QString& i_strName );
+    CWdgtAbstractGraphObj(  
+        CDrawingScene* i_pDrawingScene,
+        QWidget* i_pWdgtParent = nullptr);
+    virtual ~CWdgtAbstractGraphObj();
 public: // overridables
-    virtual QString nameSpace() const { return CTestStepGroup::NameSpace(); }
-    virtual QString className() const { return CTestStepGroup::ClassName(); }
-public: // instance methods
-    void onTestStepResultChanged( CAbstractTestStepIdxTreeEntry* i_pTreeEntry, const CEnumTestResult& i_testResult );
-public: // must overridables of base class CAbstractTestStepIdxTreeEntry
-    virtual CEnumTestResult getTestResult() const override;
-    virtual double getTestDurationInSec() const override;
-private: // default ctor not allowed
-    CTestStepGroup();
-private: // copy ctor not allowed
-    CTestStepGroup( const CTestStepGroup& );
+    virtual QString nameSpace() const { return CWdgtAbstractGraphObj::NameSpace(); }
+    virtual QString className() const { return CWdgtAbstractGraphObj::ClassName(); }
+public: // overridables
+    virtual void setKeyInTree( const QString& i_strKeyInTree );
+    QString getKeyInTree() const;
+public: // overridables
+    virtual void resizeToContents();
+protected slots:
+    void onIdxTreeAboutToBeDestroyed();
+protected: // instance members
+    CDrawingScene* m_pDrawingScene;
+    ZS::System::CIdxTree* m_pIdxTree;
+    QString m_strKeyInTree;
+    int m_cxLblWidth;
+    int m_cxEdtWidth;
 
-}; // class CTestStepGroup
+}; // class CWdgtAbstractGraphObj
 
-} // namespace Test
+} // namespace Draw
 
 } // namespace ZS
 
-#endif // #ifndef ZSTest_TestStepGroup_h
+#endif // #ifndef ZSDraw_GraphObjAbstractWdgt_h

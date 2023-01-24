@@ -753,7 +753,7 @@ void CWdgtDrawingViewPageSetup::onEdtSizeWidthEditingFinished()
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Height: " + m_pEdtImageSizeWidth->text();
     }
@@ -774,7 +774,7 @@ void CWdgtDrawingViewPageSetup::onEdtSizeHeightEditingFinished()
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Height: " + m_pEdtImageSizeHeight->text();
     }
@@ -795,7 +795,7 @@ void CWdgtDrawingViewPageSetup::onEdtMarginsLeftEditingFinished()
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Margins.Left: " + m_pEdtMarginsLeft->text();
     }
@@ -816,7 +816,7 @@ void CWdgtDrawingViewPageSetup::onEdtMarginsTopEditingFinished()
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Margins.Top: " + m_pEdtMarginsTop->text();
     }
@@ -837,7 +837,7 @@ void CWdgtDrawingViewPageSetup::onEdtMarginsRightEditingFinished()
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Margins.Right: " + m_pEdtMarginsRight->text();
     }
@@ -858,7 +858,7 @@ void CWdgtDrawingViewPageSetup::onEdtMarginsBottomEditingFinished()
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Margins.Bottom: " + m_pEdtMarginsBottom->text();
     }

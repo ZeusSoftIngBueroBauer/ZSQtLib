@@ -209,7 +209,7 @@ CDiagObj::CDiagObj(
 
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = i_strObjName;
         strMthInArgs += ", Trace: " + QString(i_pDiagTrace == nullptr ? "nullptr" : i_pDiagTrace->objectName());
@@ -278,7 +278,7 @@ CDiagObj::CDiagObj(
 
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = i_strObjName;
         strMthInArgs += ", ScaleX: " + QString(i_pDiagScaleX == nullptr ? "nullptr" : i_pDiagScaleX->objectName());
@@ -361,7 +361,7 @@ void CDiagObj::setObjName( const QString& i_strObjName )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = i_strObjName;
     }
@@ -463,7 +463,7 @@ void CDiagObj::setDiagTrace( CDiagTrace* i_pDiagTrace )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = QString(i_pDiagTrace == nullptr ? "null" : i_pDiagTrace->objectName());
     }
@@ -511,7 +511,7 @@ void CDiagObj::setAdjustContentRect2DiagPartCenter( bool i_bAdjust )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = bool2Str(i_bAdjust);
     }
@@ -539,7 +539,7 @@ void CDiagObj::show( bool i_bInformDiagram )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = bool2Str(i_bInformDiagram);
     }
@@ -579,7 +579,7 @@ void CDiagObj::hide( bool i_bInformDiagram )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = bool2Str(i_bInformDiagram);
     }
@@ -678,7 +678,7 @@ void CDiagObj::setIsFocusable( bool i_bFocusable )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = bool2Str(i_bFocusable);
     }

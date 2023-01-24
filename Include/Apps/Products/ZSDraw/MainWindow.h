@@ -98,7 +98,7 @@ class CObjFactoryText;
 class CObjFactoryConnectionPoint;
 class CObjFactoryConnectionLine;
 class CObjFactoryGroup;
-class CWdgtIdxTreeViewGraphObjs;
+class CWdgtIdxTreeGraphObjs;
 
 namespace QtWidgets
 {
@@ -459,7 +459,7 @@ protected: // instance members
     QDockWidget* m_pDockWdgtGraphObjs;
     QTabWidget*  m_pTabWdgtGraphObjs;
     // Dock Widget - GraphObjs - Tab GraphicsItems (tree View with graphics items as in drawing scene's items list)
-    ZS::Draw::CWdgtIdxTreeViewGraphObjs* m_pWdgtGraphicsItems;
+    ZS::Draw::CWdgtIdxTreeGraphObjs* m_pWdgtGraphicsItems;
     // Dialogs
     ZS::Test::GUI::CDlgTest* m_pDlgTest;
     // Status Bar

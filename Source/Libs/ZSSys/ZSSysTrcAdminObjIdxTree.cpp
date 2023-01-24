@@ -801,11 +801,11 @@ void CIdxTreeTrcAdminObjs::setEnabled( int i_iIdxInTree, EEnabled i_enabled )
 
     if( pTreeEntry != nullptr )
     {
-        if( pTreeEntry->entryType() == EIdxTreeEntryType::Root || pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        if( pTreeEntry->isRoot() || pTreeEntry->isBranch() )
         {
             setEnabled(pTreeEntry, i_enabled);
         }
-        else if( pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+        else if( pTreeEntry->isLeave() )
         {
             CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
 
@@ -846,11 +846,11 @@ void CIdxTreeTrcAdminObjs::setMethodCallsTraceDetailLevel(
 
     if( pTreeEntry != nullptr )
     {
-        if( pTreeEntry->entryType() == EIdxTreeEntryType::Root || pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        if( pTreeEntry->isRoot() || pTreeEntry->isBranch() )
         {
             setMethodCallsTraceDetailLevel(pTreeEntry, i_eDetailLevel);
         }
-        else if( pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+        else if( pTreeEntry->isLeave() )
         {
             CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
 
@@ -891,11 +891,11 @@ void CIdxTreeTrcAdminObjs::setRuntimeInfoTraceDetailLevel(
 
     if( pTreeEntry != nullptr )
     {
-        if( pTreeEntry->entryType() == EIdxTreeEntryType::Root || pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        if( pTreeEntry->isRoot() || pTreeEntry->isBranch() )
         {
             setRuntimeInfoTraceDetailLevel(pTreeEntry, i_eDetailLevel);
         }
-        else if( pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+        else if( pTreeEntry->isLeave() )
         {
             CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
 
@@ -936,11 +936,11 @@ void CIdxTreeTrcAdminObjs::setTraceDataFilter(
 
     if( pTreeEntry != nullptr )
     {
-        if( pTreeEntry->entryType() == EIdxTreeEntryType::Root || pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        if( pTreeEntry->isRoot() || pTreeEntry->isBranch() )
         {
             setTraceDataFilter(pTreeEntry, i_strDataFilter);
         }
-        else if( pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+        else if( pTreeEntry->isLeave() )
         {
             CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
 
@@ -992,7 +992,7 @@ void CIdxTreeTrcAdminObjs::setEnabled( CIdxTreeEntry* i_pBranch, EEnabled i_enab
 
             if( pTreeEntry != nullptr )
             {
-                if( pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+                if( pTreeEntry->isLeave() )
                 {
                     pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
 
@@ -1050,7 +1050,7 @@ void CIdxTreeTrcAdminObjs::setMethodCallsTraceDetailLevel(
 
             if( pTreeEntry != nullptr )
             {
-                if( pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+                if( pTreeEntry->isLeave() )
                 {
                     pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
 
@@ -1108,7 +1108,7 @@ void CIdxTreeTrcAdminObjs::setRuntimeInfoTraceDetailLevel(
 
             if( pTreeEntry != nullptr )
             {
-                if( pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+                if( pTreeEntry->isLeave() )
                 {
                     pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
 
@@ -1166,7 +1166,7 @@ void CIdxTreeTrcAdminObjs::setTraceDataFilter(
 
             if( pTreeEntry != nullptr )
             {
-                if( pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+                if( pTreeEntry->isLeave() )
                 {
                     pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
 
@@ -1481,7 +1481,7 @@ void CIdxTreeTrcAdminObjs::save(
     CTrcAdminObj*  pTrcAdminObj;
     int            idxEntry;
 
-    if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+    if( i_pTreeEntry->isLeave() )
     {
         pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(i_pTreeEntry);
 

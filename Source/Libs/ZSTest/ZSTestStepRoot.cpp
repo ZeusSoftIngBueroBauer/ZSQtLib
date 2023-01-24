@@ -55,13 +55,10 @@ public: // ctors and dtor
 
     @param i_pTest [in] Reference to test the entry belongs to (must not be nullptr).
     @param i_strName [in] Name of the entry.
-    @param i_pTSGrpParent [in] Parent test group or nullptr, if the entry does not have a parent.
 */
-CTestStepRoot::CTestStepRoot(
-    CTest*          i_pTest,
-    const QString&  i_strName ) :
+CTestStepRoot::CTestStepRoot( CTest* i_pTest, const QString& i_strName ) :
 //------------------------------------------------------------------------------
-    CTestStepGroup(i_pTest, EIdxTreeEntryType::Root, i_strName)
+    CTestStepGroup(i_pTest, CIdxTreeEntry::EEntryType::Root, i_strName)
 {
 } // ctor
 

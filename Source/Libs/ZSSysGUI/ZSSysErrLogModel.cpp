@@ -185,7 +185,7 @@ CModelErrLog::CModelErrLog( CErrLog* i_pErrLog, QObject* i_pObjParent ) :
 
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "ErrLog: " + i_pErrLog->objectName();
     }
@@ -249,7 +249,7 @@ void CModelErrLog::setErrLog( QObject* i_pErrLog )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         if( m_pErrLog == nullptr ) {
             strMthInArgs = "ErrLog: " + QString(i_pErrLog == nullptr ? "nullptr" : i_pErrLog->objectName());
@@ -429,7 +429,7 @@ void CModelErrLog::removeEntries( const QModelIndexList& i_modelIdxList )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "ModelIdxList[" + QString::number(i_modelIdxList.count()) + "]";
         if( i_modelIdxList.count() > 0 ) {
@@ -473,7 +473,7 @@ void CModelErrLog::removeEntries( const QVariantList& i_arRowIdxs )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "RowIdxList[" + QString::number(i_arRowIdxs.count()) + "]";
         if( i_arRowIdxs.count() > 0 ) {
@@ -520,7 +520,7 @@ void CModelErrLog::removeEntry( int i_iRowIdx )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "RowIdx: " + QString::number(i_iRowIdx);
     }
@@ -578,7 +578,7 @@ void CModelErrLog::onEntryAdded( const ZS::System::SErrResultInfo& i_errResultIn
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = i_errResultInfo.toString(2);
     }
@@ -628,7 +628,7 @@ void CModelErrLog::onEntryChanged( const ZS::System::SErrResultInfo& i_errResult
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = i_errResultInfo.toString(2);
     }
@@ -665,7 +665,7 @@ void CModelErrLog::onEntryRemoved( const ZS::System::SErrResultInfo& i_errResult
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = i_errResultInfo.toString();
     }
@@ -705,7 +705,7 @@ int CModelErrLog::columnWidthByColumn(int i_iClm, int i_iFontPixelSize) const
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Clm: " + column2Str(static_cast<EColumn>(i_iClm));
         strMthInArgs += ", FontPixelSize: " + QString::number(i_iFontPixelSize);
@@ -783,7 +783,7 @@ int CModelErrLog::columnWidthByRole(const QByteArray& i_byteArrRole, int i_iFont
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Role: " + i_byteArrRole;
         strMthInArgs += ", FontPixelSize: " + QString::number(i_iFontPixelSize);
@@ -832,7 +832,7 @@ int CModelErrLog::rowCount( const QModelIndex& i_modelIdxParent ) const
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObjNoisyMethods, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Parent {" + modelIdx2Str(i_modelIdxParent) + "}";
     }
@@ -864,7 +864,7 @@ int CModelErrLog::columnCount( const QModelIndex& i_modelIdxParent ) const
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObjNoisyMethods, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Parent {" + modelIdx2Str(i_modelIdxParent) + "}";
     }
@@ -899,7 +899,7 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
 
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "ModelIdx {" + modelIdx2Str(i_modelIdx) + "}";
         strMthInArgs += ", Role: " + QString::number(i_iRole) + " (" + role2Str(i_iRole) + ")";
@@ -1138,7 +1138,7 @@ QModelIndex CModelErrLog::index( int i_iRow, int i_iClm, const QModelIndex& i_mo
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObjNoisyMethods, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "Row: " + QString::number(i_iRow);
         strMthInArgs += ", Clm: " + column2Str(static_cast<EColumn>(i_iClm));
@@ -1170,7 +1170,7 @@ QModelIndex CModelErrLog::parent( const QModelIndex& i_modelIdx ) const
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObjNoisyMethods, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "{" + modelIdx2Str(i_modelIdx) + "}";
     }
@@ -1204,7 +1204,7 @@ QVariant CModelErrLog::headerData(
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Section: " + column2Str(static_cast<EColumn>(i_iSection));
         strMthInArgs += ", Orientation: " + qOrientation2Str(i_orientation);

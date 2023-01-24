@@ -61,6 +61,43 @@ static CInitModuleSysTrcAdminObj s_initModule;
 
 
 /*******************************************************************************
+// Global methods
+/*******************************************************************************
+
+//------------------------------------------------------------------------------
+/*! @brief Checks whether the given filter detail level is equal or greater than
+           the current trace admin objects detail level and trace output should
+           be created.
+
+    This method has mainly been introduced to make the code more readable.
+
+        if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+
+    The code line above is simply shorter than:
+
+        if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+
+    @param [in] i_pTrcAdminObj
+        Pointer to trace admin object. May also be nullptr.
+    @param [in] i_filterDetailLevel
+        Filter detail level which should be checked.
+
+    @return true if tracing method calls is active for the given filter detail level,
+            false otherwise.
+*/
+bool ZS::System::areMethodCallsActive(
+    CTrcAdminObj* i_pTrcAdminObj, EMethodTraceDetailLevel i_filterDetailLevel )
+//------------------------------------------------------------------------------
+{
+    if( i_pTrcAdminObj != nullptr && i_pTrcAdminObj->areMethodCallsActive(i_filterDetailLevel) )
+    {
+        return true;
+    }
+    return false;
+}
+
+
+/*******************************************************************************
 class CTrcAdminObj : public QObject, public CIdxTreeEntry
 *******************************************************************************/
 
@@ -80,7 +117,7 @@ protected: // ctors and dtor (trace admin objects may only be created by the tra
 CTrcAdminObj::CTrcAdminObj() :
 //------------------------------------------------------------------------------
     QObject(),
-    CIdxTreeEntry(EIdxTreeEntryType::Leave, ""),
+    CIdxTreeEntry(EEntryType::Leave, ""),
     m_iBlockTreeEntryChangedSignalCounter(0),
     m_strNameSpace(),
     m_strClassName(),
@@ -170,7 +207,7 @@ CTrcAdminObj::CTrcAdminObj(
     const QString& i_strTreeEntryName ) :
 //------------------------------------------------------------------------------
     QObject(),
-    CIdxTreeEntry(EIdxTreeEntryType::Leave, i_strTreeEntryName),
+    CIdxTreeEntry(EEntryType::Leave, i_strTreeEntryName),
     m_iBlockTreeEntryChangedSignalCounter(0),
     m_strNameSpace(i_strNameSpace),
     m_strClassName(i_strClassName),

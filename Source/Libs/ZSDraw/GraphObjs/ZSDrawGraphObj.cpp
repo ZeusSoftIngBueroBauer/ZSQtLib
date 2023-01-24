@@ -330,13 +330,13 @@ protected: // ctor
         will be set to Leave.
 */
 CGraphObj::CGraphObj(
-    CDrawingScene*       i_pDrawingScene,
-    const QString&       i_strFactoryGroupName,
-    EGraphObjType        i_type,
-    const QString&       i_strType,
-    const QString&       i_strObjName,
+    CDrawingScene* i_pDrawingScene,
+    const QString& i_strFactoryGroupName,
+    EGraphObjType i_type,
+    const QString& i_strType,
+    const QString& i_strObjName,
     const CDrawSettings& i_settings,
-    EIdxTreeEntryType    i_idxTreeEntryType ) :
+    CIdxTreeEntry::EEntryType i_idxTreeEntryType ) :
 //------------------------------------------------------------------------------
     CIdxTreeEntry(i_idxTreeEntryType, i_strObjName),
     m_bDtorInProgress(false),

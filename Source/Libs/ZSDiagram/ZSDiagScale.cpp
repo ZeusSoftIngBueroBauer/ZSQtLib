@@ -373,7 +373,7 @@ CDiagScale::CDiagScale(
 
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = i_strObjName;
         strMthInArgs += ", ScaleDir: " + scaleDir2Str(i_scaleDir);

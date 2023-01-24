@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include "ZSDraw/GraphObjs/ZSDrawGraphObjsTreeViewWdgt.h"
-#include "ZSDraw/GraphObjs/ZSDrawGraphObjsTreeView.h"
+#include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjsTreeViewWdgt.h"
+#include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjsTreeView.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSSysGUI/ZSSysIdxTreeModelEntry.h"
 #include "ZSSys/ZSSysAux.h"
@@ -39,14 +39,10 @@ may result in using the software modules.
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qlayout.h>
-//#include <QtGui/qlineedit.h>
 #include <QtGui/qpushbutton.h>
-//#include <QtGui/qsplitter.h>
 #else
 #include <QtWidgets/qlayout.h>
-//#include <QtWidgets/qlineedit.h>
 #include <QtWidgets/qpushbutton.h>
-//#include <QtWidgets/qsplitter.h>
 #endif
 
 #include "ZSSys/ZSSysMemLeakDump.h"
@@ -62,6 +58,46 @@ class CWdgtIdxTreeViewGraphObjs : public QWidget
 *******************************************************************************/
 
 /*==============================================================================
+public: // type definitions and constants
+==============================================================================*/
+
+/* enum class EViewMode
+==============================================================================*/
+
+static const SEnumEntry s_arEnumStrWdgtIdxTreeViewModes[] = {
+    /*  0 */ SEnumEntry( static_cast<int>(CWdgtIdxTreeViewGraphObjs::EViewMode::NavPanelOnly),           "NavPanelOnly" ),
+    /*  1 */ SEnumEntry( static_cast<int>(CWdgtIdxTreeViewGraphObjs::EViewMode::NavPanelAndNodeContent), "NavPanelAndNodeContent" )
+};
+
+//------------------------------------------------------------------------------
+QString CWdgtIdxTreeViewGraphObjs::viewMode2Str( EViewMode i_eVal, int i_alias )
+//------------------------------------------------------------------------------
+{
+    return SEnumEntry::enumerator2Str(s_arEnumStrWdgtIdxTreeViewModes, _ZSArrLen(s_arEnumStrWdgtIdxTreeViewModes), static_cast<int>(i_eVal), i_alias);
+}
+
+//------------------------------------------------------------------------------
+QPixmap CWdgtIdxTreeViewGraphObjs::viewMode2Pixmap( EViewMode i_eVal, const QSize& i_sz )
+//------------------------------------------------------------------------------
+{
+    QString str = viewMode2Str(i_eVal);
+    if( i_eVal == EViewMode::NavPanelAndNodeContent ) {
+        str = "NavPanelAndBranchContent";
+    }
+    QPixmap pxm = QPixmap( ":/ZS/TreeView/TreeViewViewMode" + str + ".png" );
+    pxm = pxm.scaled(i_sz);
+    return pxm;
+}
+
+//------------------------------------------------------------------------------
+CWdgtIdxTreeViewGraphObjs::EViewMode CWdgtIdxTreeViewGraphObjs::str2ViewMode( const QString& i_str )
+//------------------------------------------------------------------------------
+{
+    return static_cast<EViewMode>(SEnumEntry::str2Enumerator(
+        s_arEnumStrWdgtIdxTreeViewModes, _ZSArrLen(s_arEnumStrWdgtIdxTreeViewModes), i_str));
+}
+
+/*==============================================================================
 public: // ctors and dtor
 ==============================================================================*/
 
@@ -74,8 +110,10 @@ CWdgtIdxTreeViewGraphObjs::CWdgtIdxTreeViewGraphObjs(
     QWidget(i_pWdgtParent,i_wflags),
     m_pDrawingScene(i_pDrawingScene),
     m_szBtns(24, 24),
+    m_viewMode(EViewMode::NavPanelOnly),
     m_pLytMain(nullptr),
     m_pLytHeadLine(nullptr),
+    m_pBtnViewMode(nullptr),
     m_pBtnTreeViewResizeRowsAndColumnsToContents(nullptr),
     m_pBtnTreeViewExpandAll(nullptr),
     m_pBtnTreeViewCollapseAll(nullptr),
@@ -83,15 +121,15 @@ CWdgtIdxTreeViewGraphObjs::CWdgtIdxTreeViewGraphObjs(
     m_pTreeView(nullptr),
     m_pTrcAdminObj(nullptr)
 {
-    setObjectName( i_pDrawingScene == nullptr ? "IdxTree" : i_pDrawingScene->objectName() );
+    setObjectName(i_pDrawingScene->objectName());
 
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
 
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strMthInArgs =  QString(i_pDrawingScene == nullptr ? "nullptr" : i_pDrawingScene->objectName());
+        strMthInArgs = i_pDrawingScene->objectName();
     }
 
     CMethodTracer mthTracer(
@@ -109,6 +147,22 @@ CWdgtIdxTreeViewGraphObjs::CWdgtIdxTreeViewGraphObjs(
     m_pLytHeadLine = new QHBoxLayout();
     m_pLytMain->addLayout(m_pLytHeadLine);
 
+    // <Button> View Mode
+    //-------------------
+
+    QPixmap pxmViewMode = viewMode2Pixmap(m_viewMode, m_szBtns);
+
+    m_pBtnViewMode = new QPushButton();
+    m_pBtnViewMode->setFixedSize(m_szBtns);
+    m_pBtnViewMode->setIcon(pxmViewMode);
+    m_pBtnViewMode->setToolTip("Press to toggle view mode between NavPanelOnly and NavPanelAndBranchContent");
+    m_pLytHeadLine->addWidget(m_pBtnViewMode);
+    m_pLytHeadLine->addSpacing(10);
+
+    QObject::connect(
+        m_pBtnViewMode, &QPushButton::clicked,
+        this, &CWdgtIdxTreeViewGraphObjs::onBtnViewModeClicked );
+
     // <Button> Resize Columns To Contents
     //------------------------------------
 
@@ -119,12 +173,11 @@ CWdgtIdxTreeViewGraphObjs::CWdgtIdxTreeViewGraphObjs(
     m_pBtnTreeViewResizeRowsAndColumnsToContents->setFixedSize(m_szBtns);
     m_pBtnTreeViewResizeRowsAndColumnsToContents->setToolTip("Press to resize the columns to their contents");
     m_pLytHeadLine->addWidget(m_pBtnTreeViewResizeRowsAndColumnsToContents);
+    m_pLytHeadLine->addSpacing(10);
 
     QObject::connect(
         m_pBtnTreeViewResizeRowsAndColumnsToContents, &QPushButton::clicked,
         this, &CWdgtIdxTreeViewGraphObjs::onBtnTreeViewResizeRowsAndColumnsToContentsClicked );
-
-    m_pLytHeadLine->addSpacing(10);
 
     // <Button> Expand All
     //--------------------
@@ -136,12 +189,11 @@ CWdgtIdxTreeViewGraphObjs::CWdgtIdxTreeViewGraphObjs(
     m_pBtnTreeViewExpandAll->setFixedSize(m_szBtns);
     m_pBtnTreeViewExpandAll->setToolTip("Press to expand all branches of the tree");
     m_pLytHeadLine->addWidget(m_pBtnTreeViewExpandAll);
+    m_pLytHeadLine->addSpacing(10);
 
     QObject::connect(
         m_pBtnTreeViewExpandAll, &QPushButton::clicked,
         this, &CWdgtIdxTreeViewGraphObjs::onBtnTreeViewExpandAllClicked );
-
-    m_pLytHeadLine->addSpacing(10);
 
     // <Button> Collapse All
     //----------------------
@@ -153,12 +205,11 @@ CWdgtIdxTreeViewGraphObjs::CWdgtIdxTreeViewGraphObjs(
     m_pBtnTreeViewCollapseAll->setFixedSize(m_szBtns);
     m_pBtnTreeViewCollapseAll->setToolTip("Press to collapse all branches of the tree");
     m_pLytHeadLine->addWidget(m_pBtnTreeViewCollapseAll);
+    m_pLytHeadLine->addSpacing(10);
 
     QObject::connect(
         m_pBtnTreeViewCollapseAll, &QPushButton::clicked,
         this, &CWdgtIdxTreeViewGraphObjs::onBtnTreeViewCollapseAllClicked );
-
-    m_pLytHeadLine->addSpacing(10);
 
     // <Button> Sort Order
     //----------------------
@@ -171,12 +222,11 @@ CWdgtIdxTreeViewGraphObjs::CWdgtIdxTreeViewGraphObjs(
     m_pBtnSortOrder->setProperty("SortOrderCurr", QVariant(static_cast<int>(EIdxTreeSortOrder::Config)));
     m_pBtnSortOrder->setToolTip("Press to toggle the sort order between \"As Configured\" and \"Alphabetically Sorted\"");
     m_pLytHeadLine->addWidget(m_pBtnSortOrder);
+    m_pLytHeadLine->addStretch();
 
     QObject::connect(
         m_pBtnSortOrder, &QPushButton::clicked,
         this, &CWdgtIdxTreeViewGraphObjs::onBtnSortOrderClicked );
-
-    m_pLytHeadLine->addStretch();
 
     // <TreeView>
     //===========
@@ -229,8 +279,10 @@ CWdgtIdxTreeViewGraphObjs::~CWdgtIdxTreeViewGraphObjs()
 
     m_pDrawingScene = nullptr;
     m_szBtns = QSize(0, 0);
+    m_viewMode = static_cast<EViewMode>(0);
     m_pLytMain = nullptr;
     m_pLytHeadLine = nullptr;
+    m_pBtnViewMode = nullptr;
     m_pBtnTreeViewResizeRowsAndColumnsToContents = nullptr;
     m_pBtnTreeViewExpandAll = nullptr;
     m_pBtnTreeViewCollapseAll = nullptr;
@@ -250,7 +302,7 @@ public: // instance methods
 //{
 //    QString strMthInArgs;
 //
-//    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+//    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
 //    {
 //        strMthInArgs = bool2Str(i_bExcludeLeaves);
 //    }
@@ -276,26 +328,47 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtIdxTreeViewGraphObjs::onBtnTreeViewResizeRowsAndColumnsToContentsClicked( bool i_bChecked )
+void CWdgtIdxTreeViewGraphObjs::onBtnViewModeClicked( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
 
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onBtnViewModeClicked",
+        /* strMthInArgs */ strMthInArgs );
+
+    m_viewMode =
+        m_viewMode == EViewMode::NavPanelOnly ?
+            EViewMode::NavPanelAndNodeContent : EViewMode::NavPanelOnly;
+    QPixmap pxmViewMode = viewMode2Pixmap(m_viewMode, m_szBtns);
+    m_pBtnViewMode->setIcon(pxmViewMode);
+    emit viewModeChanged(viewMode2Str(m_viewMode));
+}
+
+//------------------------------------------------------------------------------
+void CWdgtIdxTreeViewGraphObjs::onBtnTreeViewResizeRowsAndColumnsToContentsClicked( bool i_bChecked )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+    }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "onBtnTreeViewResizeRowsAndColumnsToContentsClicked",
         /* strMethodInArgs    */ strMthInArgs );
 
-    if( m_pTreeView != nullptr )
-    {
-        for( int idxClm = 0; idxClm < CModelIdxTree::EColumnCount; idxClm++ )
-        {
+    if( m_pTreeView != nullptr ) {
+        for( int idxClm = 0; idxClm < CModelIdxTree::EColumnCount; idxClm++ ) {
             m_pTreeView->resizeColumnToContents(idxClm);
         }
     }
@@ -306,24 +379,19 @@ void CWdgtIdxTreeViewGraphObjs::onBtnTreeViewExpandAllClicked( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "onBtnTreeViewExpandAllClicked",
         /* strMethodInArgs    */ strMthInArgs );
 
-    if( m_pTreeView != nullptr )
-    {
+    if( m_pTreeView != nullptr ) {
         m_pTreeView->expandAll();
-
-        for( int idxClm = 0; idxClm < CModelIdxTree::EColumnCount; idxClm++ )
-        {
+        for( int idxClm = 0; idxClm < CModelIdxTree::EColumnCount; idxClm++ ) {
             m_pTreeView->resizeColumnToContents(idxClm);
         }
     }
@@ -334,20 +402,17 @@ void CWdgtIdxTreeViewGraphObjs::onBtnTreeViewCollapseAllClicked( bool i_bChecked
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "onBtnTreeViewCollapseAllClicked",
         /* strMethodInArgs    */ strMthInArgs );
 
-    if( m_pTreeView != nullptr )
-    {
+    if( m_pTreeView != nullptr ) {
         m_pTreeView->collapseAll();
     }
 }
@@ -357,12 +422,10 @@ void CWdgtIdxTreeViewGraphObjs::onBtnSortOrderClicked( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -380,8 +443,7 @@ void CWdgtIdxTreeViewGraphObjs::onBtnSortOrderClicked( bool i_bChecked )
         sortOrderNew = EIdxTreeSortOrder::Config;
     }
 
-    if( m_pTreeView != nullptr )
-    {
+    if( m_pTreeView != nullptr ) {
         m_pTreeView->setSortOrder(sortOrderNew);
     }
 
@@ -400,12 +462,10 @@ void CWdgtIdxTreeViewGraphObjs::onTreeViewSortOrderChanged( EIdxTreeSortOrder i_
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = idxTreeSortOrder2Str(i_sortOrder);
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -425,13 +485,11 @@ void CWdgtIdxTreeViewGraphObjs::onTreeViewCurrentRowChanged(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "Curr {" + CModelIdxTree::modelIdx2Str(i_modelIdxCurr) + "}";
         strMthInArgs += ", Prev {" + CModelIdxTree::modelIdx2Str(i_modelIdxPrev) + "}";
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -452,13 +510,11 @@ void CWdgtIdxTreeViewGraphObjs::emit_currentRowChanged(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "Curr {" + CModelIdxTree::modelIdx2Str(i_modelIdxCurr) + "}";
         strMthInArgs += ", Prev {" + CModelIdxTree::modelIdx2Str(i_modelIdxPrev) + "}";
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,

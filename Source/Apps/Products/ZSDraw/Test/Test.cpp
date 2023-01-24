@@ -249,7 +249,7 @@ protected: // instance methods
 //    QString strMthInArgs;
 //    QString strMthOutArgs;
 //
-//    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+//    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
 //    {
 //        strMthInArgs = "IdxGroup:" + QString::number(io_idxGroup);
 //    }
@@ -282,7 +282,7 @@ protected: // instance methods
 //    QString strMthInArgs;
 //    QString strMthOutArgs;
 //
-//    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+//    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
 //    {
 //        strMthInArgs = "Parent: " + QString(i_pTestGroupParent == nullptr ? "nullptr" : i_pTestGroupParent->path());
 //        strMthInArgs += ", IdxGroup:" + QString::number(io_idxGroup);

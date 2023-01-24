@@ -213,7 +213,7 @@ CModelPhysUnitsGrp::CModelPhysUnitsGrp(QObject* i_pObjParent) :
 
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
     CMethodTracer mthTracer(
@@ -252,7 +252,7 @@ void CModelPhysUnitsGrp::setViewMode( EViewMode i_viewMode )
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
         strMthInArgs = viewMode2Str(i_viewMode);
     }
     CMethodTracer mthTracer(
@@ -287,7 +287,7 @@ void CModelPhysUnitsGrp::setKeyInTreeOfRootEntry( const QString& i_strKeyInTree 
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = i_strKeyInTree;
     }
@@ -374,7 +374,7 @@ int CModelPhysUnitsGrp::columnCount( const QModelIndex& i_modelIdxParent ) const
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObjNoisyMethods, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "ModelIdxParent {" + modelIdx2Str(i_modelIdxParent) + "}";
     }
@@ -427,7 +427,7 @@ QVariant CModelPhysUnitsGrp::headerData(
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObjNoisyMethods, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Section: " + QString::number(i_iSection);
         strMthInArgs += ", Orientation: " + qOrientation2Str(i_orientation);
@@ -536,7 +536,7 @@ QVariant CModelPhysUnitsGrp::data( const QModelIndex& i_modelIdx, int i_iRole ) 
 
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+    if( areMethodCallsActive(m_pTrcAdminObjNoisyMethods, EMethodTraceDetailLevel::ArgsNormal) ) {
         strMthInArgs  = "ModelIdx {" + modelIdx2Str(i_modelIdx, i_iRole) + "}";
         strMthInArgs += ", Role: " + QString::number(i_iRole) + " (" + role2Str(i_iRole) + ")";
     }

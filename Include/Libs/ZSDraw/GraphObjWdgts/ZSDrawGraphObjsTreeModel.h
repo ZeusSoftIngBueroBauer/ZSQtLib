@@ -51,14 +51,6 @@ public: // class methods
     static QString NameSpace() { return "ZS::Draw"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
     /*! Returns the class name. */
     static QString ClassName() { return "CModelIdxTreeGraphObjs"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
-public: // type definitions and constants
-    typedef enum
-    {
-        EColumnGraphObjName  =  0,
-        EColumnGraphObjId    =  1,
-        EColumnGraphObjState =  2,
-        EColumnCount
-    }   EColumn;
 public: // ctors and dtor
     CModelIdxTreeGraphObjs( CDrawingScene* i_pDrawingScene, QObject* i_pObjParent = nullptr );
     virtual ~CModelIdxTreeGraphObjs();
@@ -74,8 +66,6 @@ public: // overridables
 public:
     CDrawingScene* getDrawingScene() { return m_pDrawingScene; }
 public: // overridables of base class QAbstractItemModel
-    virtual int columnCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
-    virtual QVariant headerData( int i_iSection, Qt::Orientation i_orientation, int i_iRole = Qt::DisplayRole ) const;
     virtual QVariant data( const QModelIndex& i_modelIdx, int i_iRole = Qt::DisplayRole ) const;
 protected: // instance members
     CDrawingScene* m_pDrawingScene;

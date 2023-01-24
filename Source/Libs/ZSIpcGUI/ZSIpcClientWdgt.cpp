@@ -707,7 +707,7 @@ void CWdgtIpcClient::setClient( CClient* i_pClient )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = "Client: " + QString( i_pClient == nullptr ? "nullptr" : i_pClient->objectName() );
     }
@@ -828,7 +828,7 @@ void CWdgtIpcClient::setProtocolTypeImage( const QPixmap& i_pxm )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
@@ -853,7 +853,7 @@ void CWdgtIpcClient::setProtocolTypeImageVisible( bool i_bVisible )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = bool2Str(i_bVisible);
     }
@@ -891,7 +891,7 @@ void CWdgtIpcClient::applySettings()
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
@@ -935,7 +935,7 @@ void CWdgtIpcClient::readSettings()
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
@@ -991,7 +991,7 @@ void CWdgtIpcClient::saveSettings()
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
@@ -1026,7 +1026,7 @@ void CWdgtIpcClient::onCmbSocketTypeCurrentIndexChanged( int i_iIdx )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo  = QString::number(i_iIdx);
         strAddTrcInfo += " (" + socketType2Str(i_iIdx) + ")";
@@ -1089,7 +1089,7 @@ void CWdgtIpcClient::onEdtRemoteHostNameTextChanged( const QString& i_strText )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = i_strText;
     }
@@ -1136,7 +1136,7 @@ void CWdgtIpcClient::onEdtRemotePortTextChanged( const QString& i_strText )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = i_strText;
     }
@@ -1189,7 +1189,7 @@ void CWdgtIpcClient::onEdtConnectTimeoutTextChanged( const QString& i_strText )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = i_strText;
     }
@@ -1242,7 +1242,7 @@ void CWdgtIpcClient::onEdtBufferSizeTextChanged( const QString& i_strText )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = i_strText;
     }
@@ -1299,7 +1299,7 @@ void CWdgtIpcClient::onChkWatchDogTimerEnabledToggled( bool i_bChecked )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = bool2Str(i_bChecked);
     }
@@ -1346,7 +1346,7 @@ void CWdgtIpcClient::onEdtWatchDogTimerIntervalTextChanged( const QString& i_str
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = i_strText;
     }
@@ -1399,7 +1399,7 @@ void CWdgtIpcClient::onEdtWatchDogTimeoutTextChanged( const QString& i_strText )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = i_strText;
     }
@@ -1456,7 +1456,7 @@ void CWdgtIpcClient::onBtnOkClicked( bool /*i_bChecked*/ )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
@@ -1481,7 +1481,7 @@ void CWdgtIpcClient::onBtnCancelClicked( bool /*i_bChecked*/ )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
@@ -1541,7 +1541,7 @@ void CWdgtIpcClient::onBtnResetClicked( bool /*i_bChecked*/ )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
@@ -1598,7 +1598,7 @@ void CWdgtIpcClient::onBtnApplyClicked( bool /*i_bChecked*/ )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
@@ -1621,7 +1621,7 @@ void CWdgtIpcClient::onBtnConnectClicked( bool /*i_bChecked*/ )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
@@ -1669,7 +1669,7 @@ void CWdgtIpcClient::onBtnDetailsClicked( bool /*i_bChecked*/ )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
@@ -1702,7 +1702,7 @@ void CWdgtIpcClient::onClientStateChanged( QObject* i_pClient, int i_iState )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo  = "Client: " + QString( i_pClient == nullptr ? "nullptr" : i_pClient->objectName() );
         strAddTrcInfo += ", State: " + CClient::State2Str(i_iState);
@@ -1759,7 +1759,7 @@ void CWdgtIpcClient::onClientSettingsChanged( QObject* i_pClient )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = "Client: " + QString( i_pClient == nullptr ? "nullptr" : i_pClient->objectName() );
     }
@@ -1817,7 +1817,7 @@ void CWdgtIpcClient::onClientRequestInProgressChanged( QObject* i_pClient, ZS::S
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         int iAddTrcInfoDetailLevel = 0;
         if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
@@ -2018,7 +2018,7 @@ void CWdgtIpcClient::onRemoteHostInfoLookedUp( const QHostInfo& i_hostInfo )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
@@ -2083,7 +2083,7 @@ void CWdgtIpcClient::onShowDetailsChanged()
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
@@ -2595,7 +2595,7 @@ void CWdgtIpcClient::fillCnctControls(
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         int iAddTrcInfoDetailLevel = m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ? 1 : 0;
 

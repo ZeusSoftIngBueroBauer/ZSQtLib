@@ -40,7 +40,15 @@ namespace ZS
 namespace System
 {
 class CIdxTreeTrcAdminObjs;
+class CTrcAdminObj;
 class CTrcServer;
+
+//******************************************************************************
+// Global methods
+//******************************************************************************
+
+ZSSYSDLL_API bool areMethodCallsActive(CTrcAdminObj* i_pTrcAdminObj, EMethodTraceDetailLevel i_filterDetailLevel );
+
 
 //******************************************************************************
 /*! @brief Instances of this class are used to filter method tracing.

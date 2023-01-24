@@ -86,7 +86,7 @@ CGraphObj* CObjFactoryPolygon::createGraphObj(
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = "ItemPos:" + QString::number(i_ptItemPos.x()) + "," + QString::number(i_ptItemPos.y());
     }
@@ -125,7 +125,7 @@ SErrResultInfo CObjFactoryPolygon::saveGraphObj(
 
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo  = "GraphObj:" + i_pGraphObj->nameSpace();
         strAddTrcInfo += "::" + i_pGraphObj->className();

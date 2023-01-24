@@ -157,7 +157,7 @@ public: // overridables of base class CWdgtFormatGraphObjs
 //{
 //    QString strAddTrcInfo;
 //
-//    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+//    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
 //    {
 //    }
 //

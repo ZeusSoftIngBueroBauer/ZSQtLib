@@ -188,7 +188,7 @@ void CTreeViewUnits::expandRecursive( const QModelIndex& i_modelIdx )
             {
                 pModelTreeEntryChild = pModelBranch->at(idxEntry);
 
-                if( pModelTreeEntryChild->entryType() == EIdxTreeEntryType::Root || pModelTreeEntryChild->entryType() == EIdxTreeEntryType::Branch )
+                if( pModelTreeEntryChild->isRoot() || pModelTreeEntryChild->isBranch() )
                 {
                     modelIdxChild = model()->index(idxEntry, 0, i_modelIdx);
                     expandRecursive(modelIdxChild);
@@ -216,7 +216,7 @@ void CTreeViewUnits::collapseRecursive( const QModelIndex& i_modelIdx )
             {
                 pModelTreeEntry = pModelBranch->at(idxEntry);
 
-                if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+                if( pModelTreeEntry->isRoot() || pModelTreeEntry->isBranch() )
                 {
                     modelIdx = model()->index(idxEntry, 0, i_modelIdx);
                     collapseRecursive(modelIdx);
@@ -275,7 +275,7 @@ void CTreeViewUnits::onCollapsed( const QModelIndex& i_modelIdx )
 
         CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
 
-        if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        if( pModelTreeEntry->isRoot() || pModelTreeEntry->isBranch() )
         {
             CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
             pModelIdxTree->setIsExpanded(pModelBranch, false);
@@ -299,7 +299,7 @@ void CTreeViewUnits::onExpanded( const QModelIndex& i_modelIdx )
 
         CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
 
-        if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        if( pModelTreeEntry->isRoot() || pModelTreeEntry->isBranch() )
         {
             CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
             pModelIdxTree->setIsExpanded(pModelBranch, true);

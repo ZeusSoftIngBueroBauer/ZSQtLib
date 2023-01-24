@@ -78,7 +78,7 @@ protected: // ctors and dtor
 CLogger::CLogger( const QString& i_strLeaveName ) :
 //------------------------------------------------------------------------------
     QObject(),
-    CIdxTreeEntry(EIdxTreeEntryType::Leave, i_strLeaveName),
+    CIdxTreeEntry(EEntryType::Leave, i_strLeaveName),
     m_iBlockTreeEntryChangedSignalCounter(0),
     m_bAddThreadName(false),
     m_bAddDateTime(false),

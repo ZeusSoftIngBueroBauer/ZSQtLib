@@ -64,7 +64,7 @@ CDrawingView::CDrawingView(
     m_pTrcAdminObjMouseMoveEvent(nullptr),
     m_pTrcAdminObjPaintEvent(nullptr)
 {
-    setObjectName("DrawingView");
+    setObjectName("Drawing");
 
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
         NameSpace(), ClassName(), objectName());
@@ -136,7 +136,7 @@ void CDrawingView::setDrawingSize( const QSize& i_size )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = size2Str(i_size);
     }
@@ -165,7 +165,7 @@ void CDrawingView::setDrawingSizeInPixels( int i_iWidth_px, int i_iHeight_px )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "Width: " + QString::number(i_iWidth_px);
         strMthInArgs += ", Height: " + QString::number(i_iHeight_px);
@@ -196,7 +196,7 @@ void CDrawingView::setDrawingWidthInPixels( int i_iWidth_px )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = QString::number(i_iWidth_px);
     }
@@ -225,7 +225,7 @@ void CDrawingView::setDrawingHeightInPixels( int i_iHeight_px )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = QString::number(i_iHeight_px);
     }
@@ -280,7 +280,7 @@ void CDrawingView::setViewportMargins(int i_iLeft, int i_iTop, int i_iRight, int
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "Left: "+ QString::number(i_iLeft);
         strMthInArgs += ", Top: "+ QString::number(i_iTop);
@@ -311,7 +311,7 @@ void CDrawingView::setViewportMargins(const QMargins& i_margins)
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = qMargins2Str(i_margins);
     }
@@ -348,7 +348,7 @@ void CDrawingView::mousePressEvent( QMouseEvent* i_pEv )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         #if QT_VERSION < 0x050000
         strMthInArgs = "Pos:(" + QString::number(i_pEv->posF().x()) + "," + QString::number(i_pEv->posF().y()) + ")";
@@ -489,7 +489,7 @@ void CDrawingView::mouseReleaseEvent( QMouseEvent* i_pEv )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         #if QT_VERSION < 0x050000
         strMthInArgs = "Pos:(" + QString::number(i_pEv->posF().x()) + "," + QString::number(i_pEv->posF().y()) + ")";
@@ -560,7 +560,7 @@ void CDrawingView::mouseDoubleClickEvent( QMouseEvent* i_pEv )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         #if QT_VERSION < 0x050000
         strMthInArgs = "Pos:(" + QString::number(i_pEv->posF().x()) + "," + QString::number(i_pEv->posF().y()) + ")";
@@ -635,7 +635,7 @@ void CDrawingView::keyPressEvent( QKeyEvent* i_pEv )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "Key:" + qKeyCode2Str(i_pEv->key()) + " (" + i_pEv->text() + ")";
         strMthInArgs += ", Count:" + QString::number(i_pEv->count());
@@ -659,7 +659,7 @@ void CDrawingView::keyReleaseEvent( QKeyEvent* i_pEv )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "Key:" + qKeyCode2Str(i_pEv->key()) + " (" + i_pEv->text() + ")";
         strMthInArgs += ", Count:" + QString::number(i_pEv->count());

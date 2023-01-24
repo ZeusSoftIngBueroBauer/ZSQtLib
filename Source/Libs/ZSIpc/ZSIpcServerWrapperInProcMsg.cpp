@@ -133,7 +133,7 @@ void CInProcMsgServerWrapper::setMsgReadBuffCopyDepth( ECopyDepth i_copyDepth )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = CEnumCopyDepth::toString(i_copyDepth);
     }
@@ -163,7 +163,7 @@ void CInProcMsgServerWrapper::setMaxPendingConnections( int i_iMaxConnections )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = QString::number(i_iMaxConnections);
     }

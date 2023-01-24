@@ -1294,11 +1294,11 @@ void CIpcTrcClient::resetTrcAdminRefCounters( ZS::System::CIdxTreeEntry* i_pBran
 
         if( pTreeEntry != nullptr )
         {
-            if( pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+            if( pTreeEntry->isBranch() )
             {
                 resetTrcAdminRefCounters(pTreeEntry);
             }
-            else if( pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+            else if( pTreeEntry->isLeave() )
             {
                 CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
 

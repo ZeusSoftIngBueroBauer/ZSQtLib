@@ -86,7 +86,7 @@ CGraphObjLabel::CGraphObjLabel(
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeLabel),
         /* strObjName          */ i_pGraphObjParent->path() + ".Label." + i_strKey,
         /* drawSettings        */ CDrawSettings(),
-        /* idxTreeEntryType    */ EIdxTreeEntryType::Leave ),
+        /* idxTreeEntryType    */ EEntryType::Leave ),
     QGraphicsSimpleTextItem(i_strText),
     m_strKey(i_strKey),
     m_pGraphObjParent(i_pGraphObjParent),

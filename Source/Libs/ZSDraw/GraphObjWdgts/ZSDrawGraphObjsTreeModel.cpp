@@ -16,7 +16,7 @@ Content: This file is part of the ZSQtLib.
 #include <QtGui/QBitmap>
 #include <QtGui/QPainter>
 
-#include "ZSDraw/GraphObjs/ZSDrawGraphObjsTreeModel.h"
+#include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjsTreeModel.h"
 #include "ZSDraw/GraphObjs/ZSDrawGraphObj.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSDraw/GraphObjFactories/ZSDrawObjFactory.h"
@@ -160,109 +160,6 @@ public: // must overridables of base class QAbstractItemModel
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-int CModelIdxTreeGraphObjs::columnCount( const QModelIndex& i_modelIdxParent ) const
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if(m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strMthInArgs = "ModelIdxParent {" + modelIdx2Str(i_modelIdxParent) + "}";
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjNoisyMethods,
-        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "columnCount",
-        /* strAddInfo   */ strMthInArgs );
-
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        mthTracer.setMethodReturn(EColumnCount);
-    }
-
-    return EColumnCount;
-
-} // columnCount
-
-//------------------------------------------------------------------------------
-QVariant CModelIdxTreeGraphObjs::headerData(
-    int             i_iSection,
-    Qt::Orientation i_orientation,
-    int             i_iRole ) const
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if(m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strMthInArgs = "Section: " + QString::number(i_iSection);
-        strMthInArgs += ", Orientation: " + qOrientation2Str(i_orientation);
-        strMthInArgs += ", Role: " + qItemDataRole2Str(i_iRole);
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjNoisyMethods,
-        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "headerData",
-        /* strAddInfo   */ strMthInArgs );
-
-    QVariant varData;
-
-    if( i_orientation == Qt::Horizontal )
-    {
-        switch( i_iSection )
-        {
-            case EColumnGraphObjName:
-            {
-                if( i_iRole == Qt::DisplayRole )
-                {
-                    varData = "Name";
-                }
-                else if( i_iRole == Qt::SizeHintRole )
-                {
-                    //varData = QSize(10,16);
-                }
-                break;
-            }
-            case EColumnGraphObjId:
-            {
-                if( i_iRole == Qt::DisplayRole )
-                {
-                    varData = "Id";
-                }
-                break;
-            }
-            case EColumnGraphObjState:
-            {
-                if( i_iRole == Qt::DisplayRole )
-                {
-                    varData = "State (ActiveEnabledSelected)";
-                }
-                break;
-            }
-            default:
-            {
-                if( i_iRole == Qt::DisplayRole )
-                {
-                    varData = "?";
-                }
-                else if( i_iRole == Qt::SizeHintRole )
-                {
-                    //varData = QSize(10,16);
-                }
-                break;
-            }
-        }
-    }
-    else // if( i_orientation == Qt::Vertical )
-    {
-    }
-    return varData;
-
-} // headerData
-
-//------------------------------------------------------------------------------
 QVariant CModelIdxTreeGraphObjs::data( const QModelIndex& i_modelIdx, int i_iRole ) const
 //------------------------------------------------------------------------------
 {
@@ -301,87 +198,67 @@ QVariant CModelIdxTreeGraphObjs::data( const QModelIndex& i_modelIdx, int i_iRol
         QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(pIdxTreeEntry);
         CGraphObj*     pGraphObj     = dynamic_cast<CGraphObj*>(pIdxTreeEntry);
 
-        switch( i_modelIdx.column() )
+        if( i_modelIdx.column() == EColumnTreeEntryName )
         {
-            case EColumnGraphObjName:
+            if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
             {
-                if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
+                varData = pIdxTreeEntry->name();
+            }
+            else if( i_iRole == Qt::DecorationRole )
+            {
+                if( pIdxTreeEntry->isRoot() )
                 {
-                    varData = pIdxTreeEntry->name();
+                    varData = m_iconRootEntry;
                 }
-                else if( i_iRole == Qt::DecorationRole )
+                else if( pGraphObj != nullptr && pGraphicsItem != nullptr )
                 {
-                    if( pIdxTreeEntry->isRoot() )
-                    {
-                        varData = m_iconRootEntry;
-                    }
-                    else if( pGraphObj != nullptr && pGraphicsItem != nullptr )
-                    {
-                        CObjFactory* pObjFactory = nullptr;
+                    CObjFactory* pObjFactory = nullptr;
 
-                        pObjFactory = CObjFactory::FindObjFactory(pGraphObj->getFactoryGroupName(), pGraphObj->typeAsString());
+                    pObjFactory = CObjFactory::FindObjFactory(pGraphObj->getFactoryGroupName(), pGraphObj->typeAsString());
 
-                        if( pObjFactory != nullptr )
-                        {
-                            QPixmap pxm = pObjFactory->getToolIconPixmap();
-                            if( pGraphicsItem->isSelected() )
-                            {
-                                QPainter painter(&pxm);
-                                painter.setPen(Qt::red);
-                                painter.setBrush(Qt::white);
-                                QSize size = pxm.size();
-                                painter.drawEllipse(0, size.height()/2-3, 6, 6);
-                            }
-                            varData = pxm;
-                        }
-                        else if( pGraphObj->isSelectionPoint() )
-                        {
-                            varData = m_iconSelectionPointEntry;
-                        }
-                        else if( pGraphObj->isLabel() )
-                        {
-                            varData = m_iconLabelEntry;
-                        }
-                        else if( pIdxTreeEntry->isBranch() )
-                        {
-                            varData = m_iconBranchEntry;
-                        }
-                        else
-                        {
-                            varData = m_iconLeaveEntry;
-                        }
-                    }
-                }
-                break;
-            }
-            case EColumnGraphObjId:
-            {
-                if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
-                {
-                    varData = pIdxTreeEntry->keyInTree();
-                }
-                break;
-            }
-            case EColumnGraphObjState:
-            {
-                if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
-                {
-                    if( pGraphObj != nullptr && pGraphicsItem != nullptr )
+                    if( pObjFactory != nullptr )
                     {
-                        QString strData;
-                        strData += pGraphicsItem->isActive() ? "a" : "-";
-                        strData += pGraphicsItem->isEnabled() ? "e" : "-";
-                        strData += pGraphicsItem->isSelected() ? "s" : "-";
-                        varData = strData;
+                        QPixmap pxm = pObjFactory->getToolIconPixmap();
+                        if( pGraphicsItem->isSelected() )
+                        {
+                            QPainter painter(&pxm);
+                            painter.setPen(Qt::red);
+                            painter.setBrush(Qt::white);
+                            QSize size = pxm.size();
+                            painter.drawEllipse(0, size.height()/2-3, 6, 6);
+                        }
+                        varData = pxm;
                     }
-                }
-                break;
-            }
-            default:
-            {
-                break;
-            }
-        } // switch( i_modelIdx.column() )
+                    else if( pGraphObj->isSelectionPoint() )
+                    {
+                        varData = m_iconSelectionPointEntry;
+                    }
+                    else if( pGraphObj->isLabel() )
+                    {
+                        varData = m_iconLabelEntry;
+                    }
+                    else if( pIdxTreeEntry->isBranch() )
+                    {
+                        varData = m_iconBranchEntry;
+                    }
+                    else
+                    {
+                        varData = m_iconLeaveEntry;
+                    }
+                    #pragma message(__TODO__"Small icons for states")
+                    if( pGraphicsItem->isActive() ) {
+                    }
+                    if( pGraphicsItem->isEnabled() ) {
+                    }
+                    if( pGraphicsItem->isSelected() ) {
+                    }
+                } // if( pGraphObj != nullptr && pGraphicsItem != nullptr )
+            } // if( i_iRole == Qt::DecorationRole )
+        } // if( i_modelIdx.column() == EColumnTreeEntryName )
+
+        else {
+            varData = CModelIdxTree::data(i_modelIdx, i_iRole);
+        }
     } // if( pIdxTreeEntry != nullptr )
 
     return varData;

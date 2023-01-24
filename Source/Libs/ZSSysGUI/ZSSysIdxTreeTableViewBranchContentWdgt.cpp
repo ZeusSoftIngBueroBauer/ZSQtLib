@@ -85,7 +85,7 @@ CWdgtIdxTreeTableViewBranchContent::CWdgtIdxTreeTableViewBranchContent(
 
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "IdxTree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName());
     }
@@ -193,7 +193,7 @@ void CWdgtIdxTreeTableViewBranchContent::setIdxTree( CIdxTree* i_pIdxTree )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = QString(i_pIdxTree == nullptr ? "null" : i_pIdxTree->objectName());
     }
@@ -236,7 +236,7 @@ void CWdgtIdxTreeTableViewBranchContent::setKeyInTreeOfRootEntry( const QString&
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = i_strKeyInTree;
     }
@@ -267,7 +267,7 @@ void CWdgtIdxTreeTableViewBranchContent::onBtnTreeViewResizeRowsAndColumnsToCont
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -293,7 +293,7 @@ void CWdgtIdxTreeTableViewBranchContent::onBtnSortOrderClicked( bool i_bChecked 
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -336,7 +336,7 @@ void CWdgtIdxTreeTableViewBranchContent::onTableViewSortOrderChanged( EIdxTreeSo
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = idxTreeSortOrder2Str(i_sortOrder);
     }

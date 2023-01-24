@@ -62,7 +62,7 @@ public: // type definitions and constants
         EColumnCount
     };
 public: // class methods
-    static QIcon GetIcon( ZS::System::EIdxTreeEntryType i_entryType );
+    static QIcon GetIcon( const QString& i_strEntryType );
 public: // ctors and dtor
     CModelIdxTreeTrcAdminObjs(
         CIdxTreeTrcAdminObjs* i_pIdxTree = nullptr,

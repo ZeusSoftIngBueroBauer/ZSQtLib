@@ -51,10 +51,10 @@ public: // class methods
     static QString ClassName() { return "CAbstractTestStepIdxTreeEntry"; }
 protected: // ctor
     CAbstractTestStepIdxTreeEntry(
-        CTest*                        i_pTest,
-        ZS::System::EIdxTreeEntryType i_entryType,
-        const QString&                i_strName,
-        CTestStepGroup*               i_pTSGrpParent );
+        CTest* i_pTest,
+        ZS::System::CIdxTreeEntry::EEntryType i_entryType,
+        const QString& i_strName,
+        CTestStepGroup* i_pTSGrpParent );
 public: // dtor
     virtual ~CAbstractTestStepIdxTreeEntry();
 public: // overridables

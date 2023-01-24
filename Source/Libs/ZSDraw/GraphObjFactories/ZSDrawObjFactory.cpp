@@ -175,7 +175,7 @@ CObjFactory::CObjFactory(
     const QPixmap& i_pxmToolIcon ) :
 //------------------------------------------------------------------------------
     QObject(),
-    CIdxTreeEntry(EIdxTreeEntryType::Leave, i_strGraphObjType),
+    CIdxTreeEntry(EEntryType::Leave, i_strGraphObjType),
     m_strGroupName(i_strGroupName),
     m_iGraphObjType(i_iGraphObjType),
     m_pxmToolIcon(i_pxmToolIcon),
@@ -198,7 +198,7 @@ CObjFactory::CObjFactory(
 
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Group: " + i_strGroupName;
         strMthInArgs += "ObjType: " + i_strGraphObjType + "(" + QString::number(i_iGraphObjType) + ")";
@@ -272,7 +272,7 @@ void CObjFactory::setToolIconPixmap( const QPixmap& i_pxm )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
@@ -296,7 +296,7 @@ void CObjFactory::setFileDir( const QString& i_strFileDir )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = "FileDir:" + i_strFileDir;
     }
@@ -317,7 +317,7 @@ void CObjFactory::setFileName( const QString& i_strFileName )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = "FileName:" + i_strFileName;
     }
@@ -348,7 +348,7 @@ void CObjFactory::setFilePath( const QString& i_strFilePath )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = "FilePath:" + i_strFilePath;
     }
@@ -400,7 +400,7 @@ SErrResultInfo CObjFactory::saveGraphObjLabels(
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 

@@ -71,7 +71,7 @@ CMutex::CMutex(QMutex::RecursionMode i_mode, const QString& i_strObjName) :
     #ifdef ZS_TRACE_MUTEXES
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), i_strObjName);
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = qMutexRecursionMode2Str(i_mode);
     }
@@ -252,7 +252,7 @@ void CMutex::setObjectName(const QString& i_strObjName)
 {
     #ifdef ZS_TRACE_MUTEXES
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = i_strObjName;
     }
@@ -710,7 +710,7 @@ void CRecursiveMutex::setObjectName(const QString& i_strObjName)
 {
     #ifdef ZS_TRACE_MUTEXES
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = i_strObjName;
     }

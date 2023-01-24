@@ -61,7 +61,7 @@ CUnitsTreeEntryGrpBase::CUnitsTreeEntryGrpBase(
     EUnitClassType i_classType,
     const QString& i_strName ) :
 //------------------------------------------------------------------------------
-    CIdxTreeEntry(EIdxTreeEntryType::Branch, i_strName),
+    CIdxTreeEntry(EEntryType::Branch, i_strName),
     m_classType(EUnitClassType::Undefined),
     m_hshpUnitsBySymbol(),
     m_hshpUnitsByPrefix(),
@@ -89,7 +89,7 @@ CUnitsTreeEntryGrpBase::CUnitsTreeEntryGrpBase(
     EUnitClassType i_classType,
     const QString& i_strName ) :
 //------------------------------------------------------------------------------
-    CIdxTreeEntry(EIdxTreeEntryType::Branch, i_strName),
+    CIdxTreeEntry(CIdxTreeEntry::EEntryType::Branch, i_strName),
     m_classType(i_classType),
     m_hshpUnitsBySymbol(),
     m_hshpUnitsByPrefix(),
@@ -220,7 +220,9 @@ CUnitsTreeEntryUnitBase* CUnitsTreeEntryGrpBase::findUnit( const QString& i_strS
 CUnitsTreeEntryUnitBase* CUnitsTreeEntryGrpBase::findUnitByName( const QString& i_strName ) const
 //------------------------------------------------------------------------------
 {
-    return dynamic_cast<CUnitsTreeEntryUnitBase*>(find(EIdxTreeEntryType::Leave, i_strName));
+    QString strEntryTypeSymbol =
+        CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Leave, EEnumEntryAliasStrSymbol);
+    return dynamic_cast<CUnitsTreeEntryUnitBase*>(find(strEntryTypeSymbol, i_strName));
 }
 
 //------------------------------------------------------------------------------

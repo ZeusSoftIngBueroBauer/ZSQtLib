@@ -311,7 +311,7 @@ public: // ctors and dtor
 */
 CUnits::CUnits() :
 //------------------------------------------------------------------------------
-    CIdxTreeUnits(new CIdxTreeEntry(EIdxTreeEntryType::Root, "Units")),
+    CIdxTreeUnits(new CIdxTreeEntry(CIdxTreeEntry::EEntryType::Root, "Units")),
     Length(root())
 {
 } // ctor

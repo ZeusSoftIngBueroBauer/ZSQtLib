@@ -206,7 +206,7 @@ CPixmapDiagram::CPixmapDiagram(
         NameSpace(), ClassName() + "::Validate", m_strObjName);
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = i_strObjName;
         strMthInArgs += ", UpdateType: " + diagramUpdateType2Str(i_updateType);
@@ -584,7 +584,7 @@ void CPixmapDiagram::setWidth( int i_cxWidth )
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObjLayout != nullptr && m_pTrcAdminObjLayout->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
+    if( areMethodCallsActive(m_pTrcAdminObjLayout, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strTrcMsg = QString::number(i_cxWidth);
     }
@@ -613,7 +613,7 @@ void CPixmapDiagram::setHeight( int i_cyHeight )
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObjLayout != nullptr && m_pTrcAdminObjLayout->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
+    if( areMethodCallsActive(m_pTrcAdminObjLayout, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strTrcMsg = QString::number(i_cyHeight);
     }
@@ -642,7 +642,7 @@ void CPixmapDiagram::setSize( const QSize& i_size )
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObjLayout != nullptr && m_pTrcAdminObjLayout->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
+    if( areMethodCallsActive(m_pTrcAdminObjLayout, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strTrcMsg = QString::number(m_size.width());
         strTrcMsg +=  "," + QString::number(m_size.height());
@@ -709,7 +709,7 @@ void CPixmapDiagram::setMarginTop( int i_iMargin )
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObjLayout != nullptr && m_pTrcAdminObjLayout->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
+    if( areMethodCallsActive(m_pTrcAdminObjLayout, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strTrcMsg = QString::number(i_iMargin);
     }
@@ -737,7 +737,7 @@ void CPixmapDiagram::setMarginBottom( int i_iMargin )
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObjLayout != nullptr && m_pTrcAdminObjLayout->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
+    if( areMethodCallsActive(m_pTrcAdminObjLayout, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strTrcMsg = QString::number(i_iMargin);
     }
@@ -765,7 +765,7 @@ void CPixmapDiagram::setMarginLeft( int i_iMargin )
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObjLayout != nullptr && m_pTrcAdminObjLayout->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
+    if( areMethodCallsActive(m_pTrcAdminObjLayout, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strTrcMsg = QString::number(i_iMargin);
     }
@@ -793,7 +793,7 @@ void CPixmapDiagram::setMarginRight( int i_iMargin )
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObjLayout != nullptr && m_pTrcAdminObjLayout->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
+    if( areMethodCallsActive(m_pTrcAdminObjLayout, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strTrcMsg = QString::number(i_iMargin);
     }
@@ -877,7 +877,7 @@ void CPixmapDiagram::setMinimumHeightPartTop( int i_cyHeight )
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObjLayout != nullptr && m_pTrcAdminObjLayout->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
+    if( areMethodCallsActive(m_pTrcAdminObjLayout, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strTrcMsg = QString::number(i_cyHeight);
     }
@@ -905,7 +905,7 @@ void CPixmapDiagram::setMinimumHeightPartBottom( int i_cyHeight )
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObjLayout != nullptr && m_pTrcAdminObjLayout->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
+    if( areMethodCallsActive(m_pTrcAdminObjLayout, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strTrcMsg = QString::number(i_cyHeight);
     }
@@ -933,7 +933,7 @@ void CPixmapDiagram::setMinimumWidthPartLeft( int i_cxWidth )
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObjLayout != nullptr && m_pTrcAdminObjLayout->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
+    if( areMethodCallsActive(m_pTrcAdminObjLayout, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strTrcMsg = QString::number(i_cxWidth);
     }
@@ -961,7 +961,7 @@ void CPixmapDiagram::setMinimumWidthPartRight( int i_cxWidth )
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObjLayout != nullptr && m_pTrcAdminObjLayout->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
+    if( areMethodCallsActive(m_pTrcAdminObjLayout, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strTrcMsg = QString::number(i_cxWidth);
     }

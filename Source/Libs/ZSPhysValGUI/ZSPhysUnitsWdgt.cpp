@@ -30,6 +30,8 @@ may result in using the software modules.
 #include "ZSPhysVal/ZSPhysUnitsIdxTree.h"
 #include "ZSSysGUI/ZSSysIdxTreeModelEntry.h"
 
+#include <QtCore/qsettings.h>
+
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qlayout.h>
 #include <QtGui/qpushbutton.h>
@@ -39,8 +41,6 @@ may result in using the software modules.
 #include <QtWidgets/qpushbutton.h>
 #include <QtWidgets/qsplitter.h>
 #endif
-
-#include <QtCore/qsettings.h>
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 

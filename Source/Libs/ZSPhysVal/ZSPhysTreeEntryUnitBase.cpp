@@ -52,7 +52,7 @@ CUnitsTreeEntryUnitBase::CUnitsTreeEntryUnitBase(
     const QString& i_strSymbol,
     const QString& i_strFactorPrefix ) :
 //------------------------------------------------------------------------------
-    CIdxTreeEntry(EIdxTreeEntryType::Leave, i_strName),
+    CIdxTreeEntry(CIdxTreeEntry::EEntryType::Leave, i_strName),
     m_classType(i_pParentBranch->classType()),
     m_strSymbol(i_strSymbol),
     m_strFactorPrefix(i_strFactorPrefix),

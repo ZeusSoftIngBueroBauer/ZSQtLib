@@ -1014,7 +1014,7 @@ void CIpcLogClient::onLoggersIdxTreeEntryChanged( const QString& i_strKeyInTree 
 
     if( pTreeEntry != nullptr )
     {
-        if( pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+        if( pTreeEntry->isLeave() )
         {
             sendLeave(
                 /* systemMsgType */ MsgProtocol::ESystemMsgTypeReq,

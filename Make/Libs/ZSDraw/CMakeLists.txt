@@ -92,17 +92,22 @@ list(APPEND _HeadersGraphObjs
     ${_HeadersPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjImage.h
     ${_HeadersPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjLabel.h
     ${_HeadersPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjLine.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjModelEntry.h
     ${_HeadersPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjPoint.h
     ${_HeadersPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjPolygon.h
     ${_HeadersPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjPolyline.h
     ${_HeadersPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjRect.h
     ${_HeadersPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjSelectionPoint.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjsTreeModel.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjsTreeView.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjsTreeViewWdgt.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjsTreeWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjText.h
+)
+
+list(APPEND _HeadersGraphObjWdgts
+    ${_HeadersPath}/${PROJECT_NAME}/GraphObjWdgts/ZSDrawGraphObjAbstractWdgt.h
+    ${_HeadersPath}/${PROJECT_NAME}/GraphObjWdgts/ZSDrawGraphObjModelEntry.h
+    ${_HeadersPath}/${PROJECT_NAME}/GraphObjWdgts/ZSDrawGraphObjsTreeModel.h
+    ${_HeadersPath}/${PROJECT_NAME}/GraphObjWdgts/ZSDrawGraphObjsTreeView.h
+    ${_HeadersPath}/${PROJECT_NAME}/GraphObjWdgts/ZSDrawGraphObjsTreeViewWdgt.h
+    ${_HeadersPath}/${PROJECT_NAME}/GraphObjWdgts/ZSDrawGraphObjsTreeWdgt.h
+    ${_HeadersPath}/${PROJECT_NAME}/GraphObjWdgts/ZSDrawGraphObjsWdgt.h
 )
 
 list(APPEND _Headers
@@ -112,6 +117,7 @@ list(APPEND _Headers
     ${_HeadersGraphObjFactories}
     ${_HeadersGraphObjFormat}
     ${_HeadersGraphObjs}
+    ${_HeadersGraphObjWdgts}
 )
 
 list(APPEND _SourcesCommon
@@ -174,17 +180,22 @@ list(APPEND _SourcesGraphObjs
     ${_SourcesPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjImage.cpp
     ${_SourcesPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjLabel.cpp
     ${_SourcesPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjLine.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjModelEntry.cpp
     ${_SourcesPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjPoint.cpp
     ${_SourcesPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjPolygon.cpp
     ${_SourcesPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjPolyline.cpp
     ${_SourcesPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjRect.cpp
     ${_SourcesPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjSelectionPoint.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjsTreeModel.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjsTreeView.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjsTreeViewWdgt.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjsTreeWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjText.cpp
+)
+
+list(APPEND _SourcesGraphObjWdgts
+    ${_SourcesPath}/${PROJECT_NAME}/GraphObjWdgts/ZSDrawGraphObjAbstractWdgt.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/GraphObjWdgts/ZSDrawGraphObjModelEntry.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/GraphObjWdgts/ZSDrawGraphObjsTreeModel.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/GraphObjWdgts/ZSDrawGraphObjsTreeView.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/GraphObjWdgts/ZSDrawGraphObjsTreeViewWdgt.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/GraphObjWdgts/ZSDrawGraphObjsTreeWdgt.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/GraphObjWdgts/ZSDrawGraphObjsWdgt.cpp
 )
 
 list(APPEND _Sources
@@ -194,6 +205,7 @@ list(APPEND _Sources
     ${_SourcesGraphObjFactories}
     ${_SourcesGraphObjFormat}
     ${_SourcesGraphObjs}
+    ${_SourcesGraphObjWdgts}
 )
 
 list(APPEND _Resources
@@ -261,12 +273,14 @@ source_group("Header Files/DrawingPageSetup" FILES ${_HeadersDrawingPageSetup})
 source_group("Header Files/GraphObjFactories" FILES ${_HeadersGraphObjFactories})
 source_group("Header Files/GraphObjFormat" FILES ${_HeadersGraphObjFormat})
 source_group("Header Files/GraphObjs" FILES ${_HeadersGraphObjs})
+source_group("Header Files/GraphObjWdgts" FILES ${_HeadersGraphObjWdgts})
 source_group("Source Files/Common" FILES ${_SourcesCommon})
 source_group("Source Files/Drawing" FILES ${_SourcesDrawing})
 source_group("Source Files/DrawingPageSetup" FILES ${_SourcesDrawingPageSetup})
 source_group("Source Files/GraphObjFactories" FILES ${_SourcesGraphObjFactories})
 source_group("Source Files/GraphObjFormat" FILES ${_SourcesGraphObjFormat})
 source_group("Source Files/GraphObjs" FILES ${_SourcesGraphObjs})
+source_group("Source Files/GraphObjWdgts" FILES ${_SourcesGraphObjWdgts})
 source_group("Resource Files" FILES ${_Resources})
 source_group("Image Files" FILES ${_Images})
 

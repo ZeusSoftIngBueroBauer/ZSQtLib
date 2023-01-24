@@ -86,7 +86,8 @@ CTestStep::CTestStep(
     CTestStepGroup* i_pTSGrpParent,
     const char*     i_szDoTestStepSlotFct ) :
 //------------------------------------------------------------------------------
-    CAbstractTestStepIdxTreeEntry(i_pTest, EIdxTreeEntryType::Leave, i_strName, i_pTSGrpParent),
+    CAbstractTestStepIdxTreeEntry(
+        i_pTest, CIdxTreeEntry::EEntryType::Leave, i_strName, i_pTSGrpParent),
     m_strOperation(i_strOperation),
     m_strDescription(),
     m_hshConfigValues(),

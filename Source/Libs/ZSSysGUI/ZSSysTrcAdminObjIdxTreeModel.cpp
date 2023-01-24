@@ -70,7 +70,7 @@ public: // class methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QIcon CModelIdxTreeTrcAdminObjs::GetIcon( EIdxTreeEntryType i_entryType )
+QIcon CModelIdxTreeTrcAdminObjs::GetIcon( const QString& i_strEntryType )
 //------------------------------------------------------------------------------
 {
     QIcon icon;
@@ -117,28 +117,25 @@ QIcon CModelIdxTreeTrcAdminObjs::GetIcon( EIdxTreeEntryType i_entryType )
         s_bIconsCreated = true;
     }
 
-    switch( i_entryType )
+    if( i_strEntryType.startsWith("R") )
     {
-        case EIdxTreeEntryType::Root:
-        case EIdxTreeEntryType::Branch:
+        if( s_pIconRoot != nullptr )
         {
-            if( s_pIconBranch != nullptr )
-            {
-                icon = *s_pIconBranch;
-            }
-            break;
+            icon = *s_pIconBranch;
         }
-        case EIdxTreeEntryType::Leave:
+    }
+    else if( i_strEntryType.startsWith("B") )
+    {
+        if( s_pIconBranch != nullptr )
         {
-            if( s_pIconLeave != nullptr )
-            {
-                icon = *s_pIconLeave;
-            }
-            break;
+            icon = *s_pIconBranch;
         }
-        default:
+    }
+    else if( i_strEntryType.startsWith("L") )
+    {
+        if( s_pIconLeave != nullptr )
         {
-            break;
+            icon = *s_pIconLeave;
         }
     }
 
@@ -159,7 +156,7 @@ CModelIdxTreeTrcAdminObjs::CModelIdxTreeTrcAdminObjs(
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "IdxTree: " + QString(i_pTrcAdminObjIdxTree == nullptr ? "nullptr" : i_pTrcAdminObjIdxTree->objectName());
     }
@@ -227,7 +224,7 @@ int CModelIdxTreeTrcAdminObjs::columnCount( const QModelIndex& i_modelIdxParent 
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "ModelIdxParent {" + modelIdx2Str(i_modelIdxParent) + "}";
     }
@@ -261,7 +258,7 @@ QVariant CModelIdxTreeTrcAdminObjs::headerData(
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Section: " + QString::number(i_iSection);
         strMthInArgs += ", Orientation: " + qOrientation2Str(i_orientation);
@@ -403,7 +400,7 @@ Qt::ItemFlags CModelIdxTreeTrcAdminObjs::flags( const QModelIndex& i_modelIdx ) 
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "ModelIdx {" + modelIdx2Str(i_modelIdx) + "}";
     }
@@ -487,7 +484,7 @@ QVariant CModelIdxTreeTrcAdminObjs::data( const QModelIndex& i_modelIdx, int i_i
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "ModelIdx {" + modelIdx2Str(i_modelIdx, i_iRole) + "}";
         strMthInArgs += ", Role: " + role2Str(i_iRole);
@@ -548,7 +545,7 @@ QVariant CModelIdxTreeTrcAdminObjs::data( const QModelIndex& i_modelIdx, int i_i
                 }
                 else if( i_iRole == Qt::DecorationRole )
                 {
-                    varData = GetIcon(pModelTreeEntry->entryType());
+                    varData = GetIcon(pModelTreeEntry->entryTypeSymbol());
                 }
                 break;
             }
@@ -747,7 +744,7 @@ bool CModelIdxTreeTrcAdminObjs::setData( const QModelIndex& i_modelIdx, const QV
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "ModelIdx {" + modelIdx2Str(i_modelIdx, i_iRole) + "}";
         strMthInArgs += ", Data: " + i_varData.toString();

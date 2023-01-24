@@ -799,7 +799,7 @@ void CTreeViewIdxTreeLoggers::expandRecursive( const QModelIndex& i_modelIdx )
             {
                 pModelTreeEntryChild = pModelBranch->at(idxEntry);
 
-                if( pModelTreeEntryChild->entryType() == EIdxTreeEntryType::Root || pModelTreeEntryChild->entryType() == EIdxTreeEntryType::Branch )
+                if( pModelTreeEntryChild->isRoot() || pModelTreeEntryChild->isBranch() )
                 {
                     modelIdxChild = model()->index(idxEntry, 0, i_modelIdx);
                     expandRecursive(modelIdxChild);
@@ -827,7 +827,7 @@ void CTreeViewIdxTreeLoggers::collapseRecursive( const QModelIndex& i_modelIdx )
             {
                 pModelTreeEntry = pModelBranch->at(idxEntry);
 
-                if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+                if( pModelTreeEntry->isRoot() || pModelTreeEntry->isBranch() )
                 {
                     modelIdx = model()->index(idxEntry, 0, i_modelIdx);
                     collapseRecursive(modelIdx);
@@ -836,7 +836,7 @@ void CTreeViewIdxTreeLoggers::collapseRecursive( const QModelIndex& i_modelIdx )
 
             collapse(i_modelIdx);
 
-        } // if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        } // if( pModelTreeEntry->isRoot() || pModelTreeEntry->isBranch() )
     } // if( pModelTreeEntry != nullptr )
 }
 
@@ -888,7 +888,7 @@ void CTreeViewIdxTreeLoggers::onCollapsed( const QModelIndex& i_modelIdx )
 
         CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
 
-        if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        if( pModelTreeEntry->isRoot() || pModelTreeEntry->isBranch() )
         {
             CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
             pModelIdxTree->setIsExpanded(pModelBranch, false);
@@ -912,7 +912,7 @@ void CTreeViewIdxTreeLoggers::onExpanded( const QModelIndex& i_modelIdx )
 
         CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
 
-        if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        if( pModelTreeEntry->isRoot() || pModelTreeEntry->isBranch() )
         {
             CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
             pModelIdxTree->setIsExpanded(pModelBranch, true);

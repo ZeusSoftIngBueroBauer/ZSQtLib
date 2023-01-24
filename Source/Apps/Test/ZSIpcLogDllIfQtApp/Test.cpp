@@ -2049,7 +2049,7 @@ void CTest::doTestStepModifyLogServerLoggerFile( ZS::Test::CTestStep* i_pTestSte
 
     for( auto& pTreeEntry : arpTreeEntriesServerSaved )
     {
-        if( pTreeEntry != nullptr && pTreeEntry->entryType() == EIdxTreeEntryType::Leave)
+        if( pTreeEntry != nullptr && pTreeEntry->isLeave() )
         {
             ZS::System::CLogger* pLogger = dynamic_cast<ZS::System::CLogger*>(pTreeEntry);
             strExpectedValue = pLogger->keyInTree() + ": ";
@@ -2087,7 +2087,7 @@ void CTest::doTestStepModifyLogServerLoggerFile( ZS::Test::CTestStep* i_pTestSte
 
     for( auto& pTreeEntry : arpTreeEntriesServerRecalled )
     {
-        if( pTreeEntry != nullptr && pTreeEntry->entryType() == EIdxTreeEntryType::Leave)
+        if( pTreeEntry != nullptr && pTreeEntry->isLeave() )
         {
             ZS::System::CLogger* pLogger = dynamic_cast<ZS::System::CLogger*>(pTreeEntry);
             strResultValue = pLogger->keyInTree() + ": ";

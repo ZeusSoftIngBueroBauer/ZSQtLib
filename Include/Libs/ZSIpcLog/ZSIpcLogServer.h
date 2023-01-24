@@ -163,7 +163,7 @@ protected: // overridables to parse and execute the incoming data stream
     void onIpcServerReceivedReqUpdate( int i_iSocketId, const QString& i_strData );
 protected slots: // connected to the signals of the index tree
     void onLoggersIdxTreeEntryAdded( const QString& i_strKeyInTree );
-    void onLoggersIdxTreeEntryAboutToBeRemoved( ZS::System::EIdxTreeEntryType i_entryType, const QString& i_strKeyInTree, int i_idxInTree );
+    void onLoggersIdxTreeEntryAboutToBeRemoved( const QString& i_strKeyInTree, int i_idxInTree );
     void onLoggersIdxTreeEntryChanged( const QString& i_strKeyInTree );
 protected: // overridables of inherited class QObject
     virtual bool event( QEvent* i_pEv ) override;

@@ -61,7 +61,7 @@ public: // ctors and dtor
 */
 CIdxTreeUnitsPhysValTest::CIdxTreeUnitsPhysValTest() :
 //------------------------------------------------------------------------------
-    CIdxTreeUnits(new CIdxTreeEntry(EIdxTreeEntryType::Root, "Units"))
+    CIdxTreeUnits(new CIdxTreeEntry(CIdxTreeEntry::EEntryType::Root, "Units"))
 {
 }
 

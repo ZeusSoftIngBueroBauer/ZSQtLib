@@ -128,7 +128,7 @@ CWdgtDiagram::CWdgtDiagram(const QString& i_strObjName, QWidget* i_pWdgtParent) 
 
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = i_strObjName;
     }

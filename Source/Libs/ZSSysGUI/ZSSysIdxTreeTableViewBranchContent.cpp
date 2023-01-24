@@ -91,7 +91,7 @@ CTableViewIdxTreeBranchContent::CTableViewIdxTreeBranchContent(
 
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "ModelIdxTree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName());
     }
@@ -276,7 +276,7 @@ void CTableViewIdxTreeBranchContent::setIdxTree( CIdxTree* i_pIdxTree )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = QString(i_pIdxTree == nullptr ? "null" : i_pIdxTree->objectName());
     }
@@ -319,7 +319,7 @@ void CTableViewIdxTreeBranchContent::setKeyInTreeOfRootEntry( const QString& i_s
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = i_strKeyInTree;
     }
@@ -350,7 +350,7 @@ void CTableViewIdxTreeBranchContent::setSortOrder( EIdxTreeSortOrder i_sortOrder
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = idxTreeSortOrder2Str(i_sortOrder);
     }
@@ -381,7 +381,7 @@ void CTableViewIdxTreeBranchContent::onModelSortOrderChanged(EIdxTreeSortOrder i
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = idxTreeSortOrder2Str(i_sortOrder);
     }
@@ -406,7 +406,7 @@ void CTableViewIdxTreeBranchContent::keyPressEvent( QKeyEvent* i_pEv )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "{" + qKeyEvent2Str(i_pEv) + "}";
     }
@@ -432,7 +432,7 @@ void CTableViewIdxTreeBranchContent::mousePressEvent( QMouseEvent* i_pEv )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "{" + qMouseEvent2Str(i_pEv) + "}";
     }
@@ -461,7 +461,7 @@ void CTableViewIdxTreeBranchContent::mousePressEvent( QMouseEvent* i_pEv )
         {
             if( i_pEv->buttons() & Qt::RightButton )
             {
-                if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+                if( pModelTreeEntry->isRoot() || pModelTreeEntry->isBranch() )
                 {
                     if( m_pMenuBranchContext != nullptr )
                     {
@@ -469,10 +469,8 @@ void CTableViewIdxTreeBranchContent::mousePressEvent( QMouseEvent* i_pEv )
                         m_pMenuBranchContext->popup(QWidget::mapToGlobal(i_pEv->pos()));
                     }
                     bEventHandled = true;
-
-                } // if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
-
-                else if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+                }
+                else if( pModelTreeEntry->isLeave() )
                 {
                     if( m_pMenuLeaveContext != nullptr )
                     {
@@ -480,9 +478,8 @@ void CTableViewIdxTreeBranchContent::mousePressEvent( QMouseEvent* i_pEv )
                         m_pMenuLeaveContext->popup(QWidget::mapToGlobal(i_pEv->pos()));
                     }
                     bEventHandled = true;
-
-                } // if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Leave )
-            } // if( i_pEv->buttons() & Qt::RightButton )
+                }
+            }
         } // if( pModelTreeEntry != nullptr )
     } // if( m_modelIdxSelectedOnMousePressEvent.isValid() )
 
@@ -499,7 +496,7 @@ void CTableViewIdxTreeBranchContent::mouseReleaseEvent( QMouseEvent* i_pEv )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "{" + qMouseEvent2Str(i_pEv) + "}";
     }
@@ -549,7 +546,7 @@ void CTableViewIdxTreeBranchContent::onActionBranchCreateNewBranchTriggered( boo
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -572,7 +569,7 @@ void CTableViewIdxTreeBranchContent::onActionBranchCreateNewLeaveTriggered( bool
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -595,7 +592,7 @@ void CTableViewIdxTreeBranchContent::onActionBranchDeleteTriggered( bool i_bChec
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -618,7 +615,7 @@ void CTableViewIdxTreeBranchContent::onActionBranchCutTriggered( bool i_bChecked
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -641,7 +638,7 @@ void CTableViewIdxTreeBranchContent::onActionBranchCopyTriggered( bool i_bChecke
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -664,7 +661,7 @@ void CTableViewIdxTreeBranchContent::onActionBranchPasteTriggered( bool i_bCheck
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -691,7 +688,7 @@ void CTableViewIdxTreeBranchContent::onActionLeaveDeleteTriggered( bool i_bCheck
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -714,7 +711,7 @@ void CTableViewIdxTreeBranchContent::onActionLeaveCutTriggered( bool i_bChecked 
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -737,7 +734,7 @@ void CTableViewIdxTreeBranchContent::onActionLeaveCopyTriggered( bool i_bChecked
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -760,7 +757,7 @@ void CTableViewIdxTreeBranchContent::onActionLeavePasteTriggered( bool i_bChecke
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }

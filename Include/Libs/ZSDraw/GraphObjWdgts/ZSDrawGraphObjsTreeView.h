@@ -37,7 +37,7 @@ may result in using the software modules.
 #include <QtWidgets/qtreeview.h>
 #endif
 
-#include "ZSDraw/GraphObjs/ZSDrawGraphObjsTreeModel.h"
+#include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjsTreeModel.h"
 
 class QLineEdit;
 

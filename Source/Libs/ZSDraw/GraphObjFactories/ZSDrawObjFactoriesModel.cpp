@@ -108,7 +108,8 @@ QVariant CObjFactoriesModel::data( const QModelIndex& i_modelIdx, int i_iRole ) 
                     {
                         if( pObjFactory == nullptr )
                         {
-                            varData = ZS::System::GUI::CModelIdxTree::getIcon(pModelTreeEntry->entryType());
+                            varData = ZS::System::GUI::CModelIdxTree::getIcon(
+                                pModelTreeEntry->entryTypeSymbol());
                         }
                         else
                         {

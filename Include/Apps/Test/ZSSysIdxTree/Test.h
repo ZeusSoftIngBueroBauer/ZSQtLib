@@ -65,13 +65,14 @@ public: // operators
 public: // instance methods
     QString toString( bool i_bWithKeyInTree = false, bool i_bWithIdxInParentBranch = false, bool i_bWithKeyInParentBranch = false ) const;
 public: // instance members
-    ZS::System::EIdxTreeEntryType m_entryType;
-    QString                       m_strName;
-    QString                       m_strKeyInTree;           // Key is: <EntryTypeSymbol>:<ParentPath>/<Name> (e.g. "L:ZS::Data::CDataTable::FDAC::RF1In")
-    int                           m_idxInTree;              // Index of this entry in the tree's vector of entries ("global tree index").
-    QString                       m_strParentBranchPath;
-    QString                       m_strKeyInParentBranch;   // Key is: <EntryTypeSymbol>:<Name> (e.g. "L:RF1In")
-    int                           m_idxInParentBranch;      // Index of this entry in this parent branch's vector of child entries ("local branch index").
+    QString  m_strEntryType;
+    QString  m_strEntryTypeSymbol;
+    QString  m_strName;
+    QString  m_strKeyInTree;           // Key is: <EntryTypeSymbol>:<ParentPath>/<Name> (e.g. "L:ZS::Data::CDataTable::FDAC::RF1In")
+    int      m_idxInTree;              // Index of this entry in the tree's vector of entries ("global tree index").
+    QString  m_strParentBranchPath;
+    QString  m_strKeyInParentBranch;   // Key is: <EntryTypeSymbol>:<Name> (e.g. "L:RF1In")
+    int      m_idxInParentBranch;      // Index of this entry in this parent branch's vector of child entries ("local branch index").
 };
 
 //******************************************************************************
