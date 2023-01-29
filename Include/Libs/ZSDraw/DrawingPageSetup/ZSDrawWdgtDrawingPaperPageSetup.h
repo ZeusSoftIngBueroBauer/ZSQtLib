@@ -24,6 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
+#if 0
+
 #ifndef ZSDraw_WgdtDrawingPaperPageSetup_h
 #define ZSDraw_WgdtDrawingPaperPageSetup_h
 
@@ -92,3 +94,5 @@ protected: // instance members
 } // namespace ZS
 
 #endif // #ifndef ZSDraw_WgdtDrawingPaperPageSetup_h
+
+#endif

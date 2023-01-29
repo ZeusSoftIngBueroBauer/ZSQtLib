@@ -120,7 +120,60 @@ static const ZS::System::SEnumEntry s_arEnumStrQItemViewCursorAction[] =
 QString ZS::System::GUI::qItemViewCursorAction2Str( int i_iVal, EEnumEntryAliasStr i_alias )
 //------------------------------------------------------------------------------
 {
-    return SEnumEntry::enumerator2Str( s_arEnumStrQItemViewCursorAction, _ZSArrLen(s_arEnumStrQItemViewCursorAction), i_iVal, i_alias );
+    return SEnumEntry::enumerator2Str(
+        s_arEnumStrQItemViewCursorAction, _ZSArrLen(s_arEnumStrQItemViewCursorAction), i_iVal, i_alias );
+}
+
+/*==============================================================================
+Enum Qt::DockWidgetArea
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QString ZS::System::GUI::qDockWidgetArea2Str( Qt::DockWidgetAreas i_areas, EEnumEntryAliasStr /*i_alias*/ )
+//------------------------------------------------------------------------------
+{
+    QString str;
+    if(i_areas == Qt::NoDockWidgetArea) {
+        str = "None";
+    }
+    else {
+        if(i_areas & Qt::LeftDockWidgetArea) {
+            str += "Left";
+        }
+        if(i_areas & Qt::RightDockWidgetArea) {
+            if( !str.isEmpty() ) str += "|";
+            str += "Right";
+        }
+        if(i_areas & Qt::TopDockWidgetArea) {
+            if( !str.isEmpty() ) str += "|";
+            str += "Top";
+        }
+        if(i_areas & Qt::BottomDockWidgetArea) {
+            if( !str.isEmpty() ) str += "|";
+            str += "Bottom";
+        }
+    }
+    return str;
+}
+
+//------------------------------------------------------------------------------
+Qt::DockWidgetArea ZS::System::GUI::str2QDockWidgetArea( const QString& i_str )
+//------------------------------------------------------------------------------
+{
+    Qt::DockWidgetArea area = Qt::NoDockWidgetArea;
+    if( i_str.compare("Left", Qt::CaseInsensitive) == 0 ) {
+        area = Qt::LeftDockWidgetArea;
+    }
+    else if( i_str.compare("Right", Qt::CaseInsensitive) == 0 ) {
+        area = Qt::LeftDockWidgetArea;
+    }
+    else if( i_str.compare("Top", Qt::CaseInsensitive) == 0 ) {
+        area = Qt::LeftDockWidgetArea;
+    }
+    else if( i_str.compare("Bottom", Qt::CaseInsensitive) == 0 ) {
+        area = Qt::LeftDockWidgetArea;
+    }
+    return area;
 }
 
 /*==============================================================================

@@ -24,19 +24,10 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include <QtCore/qfileinfo.h>
-#include <QtCore/qtimer.h>
-
-#include <QtGui/qevent.h>
-
-#if QT_VERSION < 0x050000
-#include <QtGui/qaction.h>
-#else
-#include <QtWidgets/qaction.h>
-#endif
-
 #include "Test/Test.h"
 #include "MainWindow.h"
+#include "WidgetCentral.h"
+
 #include "Electricity/ZSDrawGraphObjElectricityResistor.h"
 #include "Electricity/ZSDrawGraphObjElectricityCapacitor.h"
 #include "Electricity/ZSDrawGraphObjElectricityInductor.h"
@@ -70,6 +61,17 @@ may result in using the software modules.
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
+
+#include <QtCore/qfileinfo.h>
+#include <QtCore/qtimer.h>
+
+#include <QtGui/qevent.h>
+
+#if QT_VERSION < 0x050000
+#include <QtGui/qaction.h>
+#else
+#include <QtWidgets/qaction.h>
+#endif
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -234,8 +236,8 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
 //------------------------------------------------------------------------------
 {
     m_pMainWindow = i_pMainWindow;
-    m_pDrawingView = m_pMainWindow->getDrawingView();
-    m_pDrawingScene = m_pMainWindow->getDrawingScene();
+    m_pDrawingView = CWidgetCentral::GetInstance()->drawingView();
+    m_pDrawingScene = CWidgetCentral::GetInstance()->drawingScene();
 }
 
 /*==============================================================================

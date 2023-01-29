@@ -35,6 +35,7 @@ list(APPEND _HeadersCommon
     ${_HeadersPath}/../../Libs/ZSSys/ZSSysVersion.h
     ${_HeadersPath}/ZSDraw/App.h
     ${_HeadersPath}/ZSDraw/MainWindow.h
+    ${_HeadersPath}/ZSDraw/WidgetCentral.h
 )
 
 list(APPEND _HeadersElectricity
@@ -98,6 +99,7 @@ list(APPEND _SourcesCommon
     ${_SourcesPath}/ZSDraw/Main.cpp
     ${_SourcesPath}/ZSDraw/App.cpp
     ${_SourcesPath}/ZSDraw/MainWindow.cpp
+    ${_SourcesPath}/ZSDraw/WidgetCentral.cpp
 )
 
 list(APPEND _SourcesElectricity

@@ -39,6 +39,7 @@ may result in using the software modules.
 
 class QLineEdit;
 class QStackedWidget;
+class QSettings;
 class QHBoxLayout;
 class QVBoxLayout;
 
@@ -62,6 +63,7 @@ class ZSDRAWDLL_API CWdgtGraphObjs : public QWidget
 protected: // type definitions and constants
     typedef enum {
         EGraphObjTypeUndefined = 0,
+        EGraphObjTypeDrawing   = 1,
         EGraphObjTypeCount
     }   EGraphObjType;
 public: // class methods
@@ -73,8 +75,11 @@ public: // ctors and dtor
         QWidget* i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wflags = Qt::WindowFlags() );
     virtual ~CWdgtGraphObjs();
-public: // overridables
-    virtual void setKeyInTree( const QString& i_strKeyInTree );
+public: // instance methods
+    void saveState(QSettings& i_settings) const;
+    void restoreState(const QSettings& i_settings);
+public: // instance methods
+    void setKeyInTree( const QString& i_strKeyInTree );
     QString getKeyInTree() const;
 protected slots: // overridables
     virtual void onIdxTreeAboutToBeDestroyed();
@@ -88,7 +93,7 @@ protected: // instance members
     QStackedWidget* m_pStackedWdgtGraphObjs;
     QVector<CWdgtAbstractGraphObj*> m_arpWdgtsGraphObj;
 
-}; // class CWdgtTreeEntries
+}; // class CWdgtGraphObjs
 
 } // namespace Draw
 

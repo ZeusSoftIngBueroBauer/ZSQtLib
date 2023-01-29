@@ -24,6 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
+#if 0
+
 #include <QtCore/qglobal.h>
 
 #if QT_VERSION < 0x050000
@@ -363,3 +365,5 @@ void CWdgtPageSetupDrawingScene::onEdtSizeHeightTextChanged( const QString& i_st
     //    static_cast<int>(m_pageSetup.drawingHeight().getVal(Units.GraphDevice.px)) );
 
 } // onEdtSizeHeightTextChanged
+
+#endif

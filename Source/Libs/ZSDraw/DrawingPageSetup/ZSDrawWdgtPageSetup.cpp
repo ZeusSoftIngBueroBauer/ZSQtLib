@@ -24,6 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
+#if 0
+
 #include <QtCore/qglobal.h>
 
 #include "ZSDraw/DrawingPageSetup/ZSDrawWdgtPageSetup.h"
@@ -94,3 +96,5 @@ void CWdgtPageSetup::hidePopups( QWidget* i_pWdgtKeepVisible )
     }
 
 } // hidePopups
+
+#endif

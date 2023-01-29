@@ -55,7 +55,7 @@ class CTrcAdminObj;
 namespace Draw
 {
 class CDrawingView;
-class CWdgtDrawingPaperPageSetup;
+//class CWdgtDrawingPaperPageSetup;
 class CWdgtDrawingViewPageSetup;
 
 //******************************************************************************
@@ -103,21 +103,21 @@ protected slots:
     void onWdgtDrawingPaperSettingsChanged();
     void onWdgtDrawingViewSettingsChanged();
 private: // instance members
-    CDrawingView*               m_pDrawingView;
-    QVBoxLayout*                m_pLyt;
-    QHBoxLayout*                m_pLytSettings;
-    QListWidget*                m_pListWdgt;
-    QStackedWidget*             m_pStackedWdgt;
+    CDrawingView* m_pDrawingView;
+    QVBoxLayout* m_pLyt;
+    QHBoxLayout* m_pLytSettings;
+    QListWidget* m_pListWdgt;
+    QStackedWidget* m_pStackedWdgt;
     // Format Widgets
-    CWdgtDrawingPaperPageSetup* m_pWdgtDrawingPaperPageSetup;
-    CWdgtDrawingViewPageSetup*  m_pWdgtDrawingViewPageSetup;
+    //CWdgtDrawingPaperPageSetup* m_pWdgtDrawingPaperPageSetup;
+    CWdgtDrawingViewPageSetup* m_pWdgtDrawingViewPageSetup;
     // Buttons
-    QHBoxLayout*                m_pLytBtns;
-    QPushButton*                m_pBtnOk;
-    QPushButton*                m_pBtnAccept;
-    QPushButton*                m_pBtnCancel;
+    QHBoxLayout* m_pLytBtns;
+    QPushButton* m_pBtnOk;
+    QPushButton* m_pBtnAccept;
+    QPushButton* m_pBtnCancel;
     // Trace
-    ZS::System::CTrcAdminObj*    m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // CDlgPageSetup
 

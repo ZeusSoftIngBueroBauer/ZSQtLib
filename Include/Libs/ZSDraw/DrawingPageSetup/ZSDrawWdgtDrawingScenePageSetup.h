@@ -24,6 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
+#if 0
+
 #ifndef ZSDraw_WgdtPageSetupDrawingScene_h
 #define ZSDraw_WgdtPageSetupDrawingScene_h
 
@@ -93,3 +95,5 @@ private: // instance members
 } // namespace ZS
 
 #endif // #ifndef ZSDraw_WgdtPageSetupDrawingScene_h
+
+#endif

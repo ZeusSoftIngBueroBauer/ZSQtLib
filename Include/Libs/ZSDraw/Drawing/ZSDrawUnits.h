@@ -51,6 +51,8 @@ public: // instance methods (resolution of monitor, pixels per inches)
 public: // instance methods (resolution of printer, dots per inches)
     void setDpis( double i_fDpiX, double i_fDpiY );
     double dpi( ZS::System::EDirection i_direction ) const;
+public: // instance methods (distinguish between metric system and pixels or dots)
+    bool isMetricUnit(const QString& i_strSymbolOrName) const;
 private: // instance methods
     ZS::PhysVal::CUnitsTreeEntryPhysUnit m_treeEntryMicroMeter;
     ZS::PhysVal::CUnitsTreeEntryPhysUnit m_treeEntryMilliMeter;

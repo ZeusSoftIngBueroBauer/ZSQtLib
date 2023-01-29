@@ -24,6 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
+#if 0
+
 #include <QtCore/qglobal.h>
 
 #if QT_VERSION < 0x050000
@@ -172,3 +174,5 @@ public: // overridables of base class CWdgtFormatGraphObjs
 //    //emit pageSetupAttributeChanged( EPageSetupAttribute.., m_pageSetup.get..() );
 //
 //} // setSettings
+
+#endif

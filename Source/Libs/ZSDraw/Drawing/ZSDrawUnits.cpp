@@ -291,6 +291,30 @@ double CUnitsLength::dpi( EDirection i_direction ) const
     return getReferenceValue(strRefValName).getVal();
 }
 
+/*==============================================================================
+public: // instance methods (distinguish between metric system and pixels or dots)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+bool CUnitsLength::isMetricUnit(const QString& i_strSymbolOrName) const
+//------------------------------------------------------------------------------
+{
+    bool bIsMetricUnit = true;
+    if( i_strSymbolOrName == pxX.symbol() || i_strSymbolOrName == pxX.unitName() ) {
+        bIsMetricUnit = false;
+    }
+    else if( i_strSymbolOrName == pxY.symbol() || i_strSymbolOrName == pxY.unitName() ) {
+        bIsMetricUnit = false;
+    }
+    if( i_strSymbolOrName == dotsX.symbol() || i_strSymbolOrName == dotsX.unitName() ) {
+        bIsMetricUnit = false;
+    }
+    else if( i_strSymbolOrName == dotsY.symbol() || i_strSymbolOrName == dotsY.unitName() ) {
+        bIsMetricUnit = false;
+    }
+    return bIsMetricUnit;
+}
+
 
 /*******************************************************************************
 class CUnits : public CIdxTreeUnits

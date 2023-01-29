@@ -26,6 +26,7 @@ may result in using the software modules.
 
 #include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjsWdgt.h"
 #include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjAbstractWdgt.h"
+#include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjDrawingWdgt.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
@@ -97,6 +98,8 @@ CWdgtGraphObjs::CWdgtGraphObjs(
 
     m_arpWdgtsGraphObj[EGraphObjTypeUndefined] =
         new CWdgtAbstractGraphObj(m_pDrawingScene);
+    m_arpWdgtsGraphObj[EGraphObjTypeDrawing] =
+        new CWdgtGraphObjDrawing(m_pDrawingScene);
 
     for( int idxGraphObjType = 0; idxGraphObjType < EGraphObjTypeCount; idxGraphObjType++ )
     {
@@ -124,7 +127,23 @@ CWdgtGraphObjs::~CWdgtGraphObjs()
 } // dtor
 
 /*==============================================================================
-public: // overridables
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjs::saveState(QSettings& i_settings) const
+//------------------------------------------------------------------------------
+{
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjs::restoreState(const QSettings& i_settings)
+//------------------------------------------------------------------------------
+{
+}
+
+/*==============================================================================
+public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -144,7 +163,11 @@ void CWdgtGraphObjs::setKeyInTree( const QString& i_strKeyInTree )
 
             if( pTreeEntry != nullptr )
             {
-                if( pTreeEntry->isRoot() || pTreeEntry->isBranch() )
+                if( pTreeEntry->isRoot() )
+                {
+                    graphObjType = EGraphObjTypeDrawing;
+                }
+                else if( pTreeEntry->isBranch() )
                 {
                 }
                 else if( pTreeEntry->isLeave() )
@@ -168,7 +191,7 @@ void CWdgtGraphObjs::setKeyInTree( const QString& i_strKeyInTree )
         m_pStackedWdgtGraphObjs->setCurrentIndex(graphObjType);
 
     } // if( m_strKeyInTree != i_strKeyInTree )
-} // setKeyInTreeOfRootEntry
+} // setKeyInTree
 
 //------------------------------------------------------------------------------
 QString CWdgtGraphObjs::getKeyInTree() const

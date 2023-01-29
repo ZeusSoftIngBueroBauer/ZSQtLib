@@ -40,6 +40,7 @@ may result in using the software modules.
 
 class QModelIndex;
 class QPushButton;
+class QSettings;
 class QHBoxLayout;
 class QVBoxLayout;
 
@@ -80,6 +81,9 @@ public: // ctors and dtor
 signals:
     void viewModeChanged( const QString& i_strViewMode );
     void currentRowChanged( const QModelIndex& i_modelIdxCurr, const QModelIndex& i_modelIdxPrev );
+public: // instance methods
+    void saveState(QSettings& i_settings) const;
+    void restoreState(const QSettings& i_settings);
 public: // instance methods
     EViewMode viewMode() const { return m_viewMode; }
     CTreeViewIdxTreeGraphObjs* treeView() { return m_pTreeView; }

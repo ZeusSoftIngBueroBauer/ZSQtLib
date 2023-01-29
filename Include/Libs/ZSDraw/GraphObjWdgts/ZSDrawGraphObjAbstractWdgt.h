@@ -35,7 +35,9 @@ may result in using the software modules.
 #include <QtWidgets/qwidget.h>
 #endif
 
-#include "ZSDraw/Common/ZSDrawDllMain.h"
+#include "ZSDraw/Common/ZSDrawCommon.h"
+
+class QSettings;
 
 namespace ZS
 {
@@ -65,6 +67,9 @@ public: // overridables
     virtual QString nameSpace() const { return CWdgtAbstractGraphObj::NameSpace(); }
     virtual QString className() const { return CWdgtAbstractGraphObj::ClassName(); }
 public: // overridables
+    virtual void saveState(QSettings& i_settings) const;
+    virtual void restoreState(const QSettings& i_settings);
+public: // overridables
     virtual void setKeyInTree( const QString& i_strKeyInTree );
     QString getKeyInTree() const;
 public: // overridables
@@ -75,8 +80,11 @@ protected: // instance members
     CDrawingScene* m_pDrawingScene;
     ZS::System::CIdxTree* m_pIdxTree;
     QString m_strKeyInTree;
-    int m_cxLblWidth;
-    int m_cxEdtWidth;
+    int m_cxLblWidthClm1;
+    int m_cxEdtWidthClm1;
+    int m_cxLblWidthClm2;
+    int m_cxEdtWidthClm2;
+    int m_cxClmSpacing;
 
 }; // class CWdgtAbstractGraphObj
 

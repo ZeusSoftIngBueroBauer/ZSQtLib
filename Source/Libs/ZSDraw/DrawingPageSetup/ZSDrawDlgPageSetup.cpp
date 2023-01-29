@@ -80,7 +80,7 @@ CDlgPageSetup::CDlgPageSetup( CDrawingView* i_pDrawingView, QWidget* /*i_pWdgtPa
     m_pListWdgt(nullptr),
     m_pStackedWdgt(nullptr),
     // Format Widgets
-    m_pWdgtDrawingPaperPageSetup(nullptr),
+    //m_pWdgtDrawingPaperPageSetup(nullptr),
     m_pWdgtDrawingViewPageSetup(nullptr),
     // Buttons
     m_pLytBtns(nullptr),
@@ -155,17 +155,17 @@ CDlgPageSetup::CDlgPageSetup( CDrawingView* i_pDrawingView, QWidget* /*i_pWdgtPa
     // <Widget> Drawing Paper
     //-----------------------
 
-    m_pWdgtDrawingPaperPageSetup = new CWdgtDrawingPaperPageSetup(m_pDrawingView);
-    m_pStackedWdgt->addWidget(m_pWdgtDrawingPaperPageSetup);
+    //m_pWdgtDrawingPaperPageSetup = new CWdgtDrawingPaperPageSetup(m_pDrawingView);
+    //m_pStackedWdgt->addWidget(m_pWdgtDrawingPaperPageSetup);
 
-    if( !connect(
-        /* pObjSender   */ m_pWdgtDrawingPaperPageSetup,
-        /* szSignal     */ SIGNAL(settingsChanged()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onWdgtDrawingPaperSettingsChanged()) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    //if( !connect(
+    //    /* pObjSender   */ m_pWdgtDrawingPaperPageSetup,
+    //    /* szSignal     */ SIGNAL(settingsChanged()),
+    //    /* pObjReceiver */ this,
+    //    /* szSlot       */ SLOT(onWdgtDrawingPaperSettingsChanged()) ) )
+    //{
+    //    throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+    //}
 
     // <Widget> Drawing Scene
     //-----------------------
@@ -269,7 +269,7 @@ CDlgPageSetup::~CDlgPageSetup()
     m_pListWdgt = nullptr;
     m_pStackedWdgt = nullptr;
     // Format Widgets
-    m_pWdgtDrawingPaperPageSetup = nullptr;
+    //m_pWdgtDrawingPaperPageSetup = nullptr;
     m_pWdgtDrawingViewPageSetup = nullptr;
     // Buttons
     m_pLytBtns = nullptr;
@@ -419,10 +419,10 @@ void CDlgPageSetup::onBtnAcceptClicked()
         /* strMethod    */ "onBtnAcceptClicked",
         /* strAddInfo   */ strAddTrcInfo );
 
-    m_pWdgtDrawingPaperPageSetup->acceptChanges();
+    //m_pWdgtDrawingPaperPageSetup->acceptChanges();
     m_pWdgtDrawingViewPageSetup->acceptChanges();
 
-    if( m_pWdgtDrawingPaperPageSetup->hasChanges() || m_pWdgtDrawingViewPageSetup->hasChanges() )
+    if( /*m_pWdgtDrawingPaperPageSetup->hasChanges() ||*/ m_pWdgtDrawingViewPageSetup->hasChanges() )
     {
         m_pBtnAccept->setEnabled(true);
     }
@@ -477,7 +477,7 @@ void CDlgPageSetup::onWdgtDrawingPaperSettingsChanged()
         /* strMethod    */ "onWdgtDrawingPaperSettingsChanged",
         /* strAddInfo   */ strAddTrcInfo );
 
-    if( m_pWdgtDrawingPaperPageSetup->hasChanges() || m_pWdgtDrawingViewPageSetup->hasChanges() )
+    if( /*m_pWdgtDrawingPaperPageSetup->hasChanges() ||*/ m_pWdgtDrawingViewPageSetup->hasChanges() )
     {
         m_pBtnAccept->setEnabled(true);
     }
@@ -504,7 +504,7 @@ void CDlgPageSetup::onWdgtDrawingViewSettingsChanged()
         /* strMethod    */ "onWdgtDrawingViewSettingsChanged",
         /* strAddInfo   */ strAddTrcInfo );
 
-    if( m_pWdgtDrawingPaperPageSetup->hasChanges() || m_pWdgtDrawingViewPageSetup->hasChanges() )
+    if( /*m_pWdgtDrawingPaperPageSetup->hasChanges() ||*/ m_pWdgtDrawingViewPageSetup->hasChanges() )
     {
         m_pBtnAccept->setEnabled(true);
     }

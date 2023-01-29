@@ -109,7 +109,7 @@ CWdgtIdxTreeGraphObjs::CWdgtIdxTreeGraphObjs(
     //-----------
 
     m_pWdgtTreeView = new CWdgtIdxTreeViewGraphObjs(m_pDrawingScene);
-    m_pWdgtTreeView->setMinimumWidth(50);
+    m_pWdgtTreeView->setMinimumWidth(180);
     m_pSplitter->addWidget(m_pWdgtTreeView);
 
     QObject::connect(
@@ -130,20 +130,6 @@ CWdgtIdxTreeGraphObjs::CWdgtIdxTreeGraphObjs(
     if( viewMode == CWdgtIdxTreeViewGraphObjs::EViewMode::NavPanelOnly ) {
         m_pWdgtGraphObjs->hide();
     }
-
-    // <Geometry>
-    //===================
-
-    QSettings settings;
-
-    restoreGeometry( settings.value(ClassName() + "/" + objectName() + "/Geometry").toByteArray() );
-
-    QList<int> listSizes = m_pSplitter->sizes();
-    for( int idx = 0; idx < listSizes.count(); idx++ )
-    {
-        listSizes[idx] = settings.value( ClassName() + "/" + objectName() + "/SplitterHeight" + QString::number(idx), 50 ).toInt();
-    }
-    m_pSplitter->setSizes(listSizes);
 
 } // ctor
 
@@ -173,6 +159,43 @@ CWdgtIdxTreeGraphObjs::~CWdgtIdxTreeGraphObjs()
 } // dtor
 
 /*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtIdxTreeGraphObjs::saveState(QSettings& i_settings) const
+//------------------------------------------------------------------------------
+{
+    if( m_pSplitter != nullptr ) {
+        QList<int> listSizes = m_pSplitter->sizes();
+        for( int idx = 0; idx < listSizes.count(); idx++ ) {
+            i_settings.setValue(
+                ClassName() + "/" + objectName() + "/SplitterHeight" + QString::number(idx), listSizes[idx]);
+        }
+    }
+
+    m_pWdgtTreeView->saveState(i_settings);
+    m_pWdgtGraphObjs->saveState(i_settings);
+}
+
+//------------------------------------------------------------------------------
+void CWdgtIdxTreeGraphObjs::restoreState(const QSettings& i_settings)
+//------------------------------------------------------------------------------
+{
+    m_pWdgtTreeView->restoreState(i_settings);
+    m_pWdgtGraphObjs->restoreState(i_settings);
+
+    if( m_pSplitter != nullptr ) {
+        QList<int> listSizes = m_pSplitter->sizes();
+        for( int idx = 0; idx < listSizes.count(); idx++ ) {
+            listSizes[idx] = i_settings.value(
+                ClassName() + "/" + objectName() + "/SplitterHeight" + QString::number(idx), 50).toInt();
+        }
+        m_pSplitter->setSizes(listSizes);
+    }
+}
+
+/*==============================================================================
 protected slots:
 ==============================================================================*/
 
@@ -197,9 +220,11 @@ void CWdgtIdxTreeGraphObjs::onTreeViewViewModeChanged( const QString& i_strViewM
         CWdgtIdxTreeViewGraphObjs::str2ViewMode(i_strViewMode);
 
     if( viewMode == CWdgtIdxTreeViewGraphObjs::EViewMode::NavPanelAndNodeContent ) {
+        m_pWdgtTreeView->setMinimumWidth(180);
         m_pWdgtGraphObjs->show();
     }
     else {
+        m_pWdgtTreeView->setMinimumWidth(180);
         m_pWdgtGraphObjs->hide();
     }
 }

@@ -52,8 +52,11 @@ CWdgtAbstractGraphObj::CWdgtAbstractGraphObj(
     m_pDrawingScene(i_pDrawingScene),
     m_pIdxTree(i_pDrawingScene->getGraphObjsIdxTree()),
     m_strKeyInTree(),
-    m_cxLblWidth(140),
-    m_cxEdtWidth(200)
+    m_cxLblWidthClm1(80),
+    m_cxEdtWidthClm1(160),
+    m_cxLblWidthClm2(80),
+    m_cxEdtWidthClm2(160),
+    m_cxClmSpacing(30)
 {
     setObjectName(m_pIdxTree->objectName());
 
@@ -70,10 +73,29 @@ CWdgtAbstractGraphObj::~CWdgtAbstractGraphObj()
     m_pDrawingScene = nullptr;
     m_pIdxTree = nullptr;
     //m_strKeyInTree;
-    m_cxLblWidth = 0;
-    m_cxEdtWidth = 0;
+    m_cxLblWidthClm1 = 0;
+    m_cxEdtWidthClm1 = 0;
+    m_cxLblWidthClm2 = 0;
+    m_cxEdtWidthClm2 = 0;
+    m_cxClmSpacing = 0;
 
 } // dtor
+
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtAbstractGraphObj::saveState(QSettings& i_settings) const
+//------------------------------------------------------------------------------
+{
+}
+
+//------------------------------------------------------------------------------
+void CWdgtAbstractGraphObj::restoreState(const QSettings& i_settings)
+//------------------------------------------------------------------------------
+{
+}
 
 /*==============================================================================
 public: // overridables

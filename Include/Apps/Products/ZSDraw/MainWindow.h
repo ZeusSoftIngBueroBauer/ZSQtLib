@@ -131,6 +131,8 @@ namespace Products
 {
 namespace Draw
 {
+class CWidgetCentral;
+
 //******************************************************************************
 class CMainWindow : public QMainWindow
 //******************************************************************************
@@ -216,9 +218,8 @@ public: // ctors and dtor
         QWidget*         i_pWdgtParent = nullptr,
         Qt::WindowFlags  i_wflags = Qt::WindowFlags());
     virtual ~CMainWindow();
-public: // instance methods
-    ZS::Draw::CDrawingView* getDrawingView() { return m_pDrawingView; }
-    ZS::Draw::CDrawingScene* getDrawingScene() { return m_pDrawingScene; }
+protected: // overridables of base class QWidget
+    virtual void closeEvent( QCloseEvent* i_pEv );
 public: // instance methods
     unsigned int getAddedObjFactories() const { return m_uAddObjFactories; }
 protected: // instance methods
@@ -227,10 +228,10 @@ protected: // instance methods (for ctor)
     void createObjFactories();
     void createActions();
     void createMenus();
+    void createStatusBar();
     void createToolBars();
     void createDockWidgets();
 protected: // overridables of base class QWidget
-    virtual void closeEvent( QCloseEvent* i_pEv );
     virtual bool eventFilter( QObject* i_pObjWatched, QEvent* i_pEv );
 public: // instance methods
     void setCheckedActionModeEdit( bool i_bChecked );
@@ -453,12 +454,10 @@ protected: // instance members
     // Dock Widgets
     // Dock Widget - Object Factories
     QDockWidget* m_pDockWdgtObjFactories;
-    QTreeView*   m_pTreeViewObjFactories;
+    QTreeView* m_pTreeViewObjFactories;
     ZS::Draw::CObjFactoriesModel* m_pModelObjFactories;
-    // Dock Widget - GraphObjs (Tabs with tree views with differently sorted and ordered graphical objects)
+    // Dock Widget - GraphObjs
     QDockWidget* m_pDockWdgtGraphObjs;
-    QTabWidget*  m_pTabWdgtGraphObjs;
-    // Dock Widget - GraphObjs - Tab GraphicsItems (tree View with graphics items as in drawing scene's items list)
     ZS::Draw::CWdgtIdxTreeGraphObjs* m_pWdgtGraphicsItems;
     // Dialogs
     ZS::Test::GUI::CDlgTest* m_pDlgTest;
@@ -471,10 +470,7 @@ protected: // instance members
     QLabel* m_pLblStatusBarDrawingViewMouseCursorPos;
     QLabel* m_pLblErrors;
     // Central Widget with Drawing
-    QHBoxLayout*             m_pLyt;
-    ZS::Draw::CDrawingScene* m_pDrawingScene;
-    ZS::Draw::CDrawingView*  m_pDrawingView;
-    QWidget*                 m_pWdgtCentral;
+    CWidgetCentral* m_pWdgtCentral;
     // Trace
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjMouseEvents;

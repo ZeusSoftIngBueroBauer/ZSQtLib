@@ -39,6 +39,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysEnumEntry.h"
 
 class QPushButton;
+class QSettings;
 class QSplitter;
 class QHBoxLayout;
 class QVBoxLayout;
@@ -69,6 +70,9 @@ public: // ctors and dtor
         QWidget* i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wflags = Qt::WindowFlags() );
     virtual ~CWdgtIdxTreeGraphObjs();
+public: // instance methods
+    void saveState(QSettings& i_settings) const;
+    void restoreState(const QSettings& i_settings);
 protected slots:
     void onTreeViewViewModeChanged( const QString& i_strViewMode );
     void onTreeViewCurrentRowChanged( const QModelIndex& i_modelIdxCurr, const QModelIndex& i_modelIdxPrev );

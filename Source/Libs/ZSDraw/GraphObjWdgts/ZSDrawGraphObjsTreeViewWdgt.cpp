@@ -35,7 +35,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
 
-#include <QtCore/qglobal.h>
+#include <QtCore/qsettings.h>
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qlayout.h>
@@ -93,8 +93,15 @@ QPixmap CWdgtIdxTreeViewGraphObjs::viewMode2Pixmap( EViewMode i_eVal, const QSiz
 CWdgtIdxTreeViewGraphObjs::EViewMode CWdgtIdxTreeViewGraphObjs::str2ViewMode( const QString& i_str )
 //------------------------------------------------------------------------------
 {
-    return static_cast<EViewMode>(SEnumEntry::str2Enumerator(
-        s_arEnumStrWdgtIdxTreeViewModes, _ZSArrLen(s_arEnumStrWdgtIdxTreeViewModes), i_str));
+    EViewMode viewMode = EViewMode::Undefined;
+    try {
+        viewMode = static_cast<EViewMode>(SEnumEntry::str2Enumerator(
+            s_arEnumStrWdgtIdxTreeViewModes, _ZSArrLen(s_arEnumStrWdgtIdxTreeViewModes), i_str));
+    }
+    catch(CException&) {
+        viewMode = EViewMode::Undefined;
+    }
+    return viewMode;
 }
 
 /*==============================================================================
@@ -291,6 +298,33 @@ CWdgtIdxTreeViewGraphObjs::~CWdgtIdxTreeViewGraphObjs()
     m_pTrcAdminObj = nullptr;
 
 } // dtor
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtIdxTreeViewGraphObjs::saveState(QSettings& i_settings) const
+//------------------------------------------------------------------------------
+{
+    i_settings.setValue(
+        ClassName() + "/" + objectName() + "/ViewMode", viewMode2Str(m_viewMode));
+}
+
+//------------------------------------------------------------------------------
+void CWdgtIdxTreeViewGraphObjs::restoreState(const QSettings& i_settings)
+//------------------------------------------------------------------------------
+{
+    QString strViewMode = i_settings.value(
+        ClassName() + "/" + objectName() + "/ViewMode", viewMode2Str(m_viewMode)).toString();
+    EViewMode viewMode = str2ViewMode(strViewMode);
+    if( viewMode != EViewMode::Undefined && viewMode != m_viewMode ) {
+        m_viewMode = viewMode;
+        QPixmap pxmViewMode = viewMode2Pixmap(m_viewMode, m_szBtns);
+        m_pBtnViewMode->setIcon(pxmViewMode);
+        emit viewModeChanged(viewMode2Str(m_viewMode));
+    }
+}
 
 /*==============================================================================
 public: // instance methods

@@ -50,6 +50,20 @@ namespace Draw
 class CGraphObj;
 
 //==============================================================================
+/*! Dimension unit for the drawing.
+*/
+enum class EDrawingDimensionUnit {
+//==============================================================================
+    Pixels, /*!< Dimensions defined based on pixels. */
+    Metric  /*!< Dimensions defined based on metric units.
+                 The logical pixel positions got to be calculated depending
+                 on the screen resolution given in Dots/Inch or Pixels/Inch. */
+};
+
+template class ZSDRAWDLL_API ZS::System::CEnum<EDrawingDimensionUnit>;
+typedef ZS::System::CEnum<EDrawingDimensionUnit> CEnumDrawingDimensionUnit;
+
+//==============================================================================
 struct ZSDRAWDLL_API SAttribute
 //==============================================================================
 {

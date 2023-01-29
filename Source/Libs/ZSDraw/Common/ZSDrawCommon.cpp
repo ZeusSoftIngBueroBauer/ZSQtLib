@@ -39,6 +39,21 @@ global type definitions and constants
 *******************************************************************************/
 
 /*==============================================================================
+Enum EDrawingDimensionUnit
+==============================================================================*/
+
+template<> QMutex ZS::System::CEnum<EDrawingDimensionUnit>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> ZS::System::CEnum<EDrawingDimensionUnit>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+
+//------------------------------------------------------------------------------
+template<> const QVector<SEnumEntry> ZS::System::CEnum<EDrawingDimensionUnit>::s_arEnumEntries =
+//------------------------------------------------------------------------------
+{
+    /* 0 */ SEnumEntry( static_cast<int>(EDrawingDimensionUnit::Pixels), "Pixels" ),
+    /* 1 */ SEnumEntry( static_cast<int>(EDrawingDimensionUnit::Metric), "Metric" )
+};
+
+/*==============================================================================
 Enum EPaperFormat
 ==============================================================================*/
 
@@ -55,7 +70,6 @@ template<> const QVector<SEnumEntry> ZS::System::CEnum<EPaperFormat>::s_arEnumEn
     /* 3 */ SEnumEntry( static_cast<int>(EPaperFormat::DinA2),       "Din A2",       QSizeF(c_fPaperFormatWidthDinA2_mm, c_fPaperFormatHeightDinA2_mm) ),
     /* 4 */ SEnumEntry( static_cast<int>(EPaperFormat::UserDefined), "User Defined", QSizeF() )
 };
-
 
 /*==============================================================================
 Enum EPaperOrientation
