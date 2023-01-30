@@ -40,12 +40,13 @@ list(APPEND _HeadersCommon
 list(APPEND _HeadersDrawing
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/ZSDrawingScene.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/ZSDrawingView.h
+    ${_HeadersPath}/${PROJECT_NAME}/Drawing/ZSDrawingViewPropertiesWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/ZSDrawSettings.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/ZSDrawUnits.h
 )
 
 list(APPEND _HeadersDrawingPageSetup
-    ${_HeadersPath}/${PROJECT_NAME}/DrawingPageSetup/ZSDrawDlgPageSetup.h
+    ${_HeadersPath}/${PROJECT_NAME}/DrawingPageSetup/ZSDrawDlgDrawingViewSetup.h
     ${_HeadersPath}/${PROJECT_NAME}/DrawingPageSetup/ZSDrawingViewPageSetup.h
     ${_HeadersPath}/${PROJECT_NAME}/DrawingPageSetup/ZSDrawPageSetup.h
     ${_HeadersPath}/${PROJECT_NAME}/DrawingPageSetup/ZSDrawWdgtDrawingPaperPageSetup.h
@@ -101,12 +102,11 @@ list(APPEND _HeadersGraphObjs
 )
 
 list(APPEND _HeadersGraphObjWdgts
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjWdgts/ZSDrawGraphObjAbstractWdgt.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjWdgts/ZSDrawGraphObjDrawingWdgt.h
+    ${_HeadersPath}/${PROJECT_NAME}/GraphObjWdgts/ZSDrawGraphObjPropertiesAbstractWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/GraphObjWdgts/ZSDrawGraphObjModelEntry.h
+    ${_HeadersPath}/${PROJECT_NAME}/GraphObjWdgts/ZSDrawGraphObjsPropertiesWdgtStack.h
     ${_HeadersPath}/${PROJECT_NAME}/GraphObjWdgts/ZSDrawGraphObjsTreeModel.h
     ${_HeadersPath}/${PROJECT_NAME}/GraphObjWdgts/ZSDrawGraphObjsTreeView.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjWdgts/ZSDrawGraphObjsTreeViewWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/GraphObjWdgts/ZSDrawGraphObjsTreeWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/GraphObjWdgts/ZSDrawGraphObjsWdgt.h
 )
@@ -130,12 +130,13 @@ list(APPEND _SourcesCommon
 list(APPEND _SourcesDrawing
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/ZSDrawingScene.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/ZSDrawingView.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Drawing/ZSDrawingViewPropertiesWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/ZSDrawSettings.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/ZSDrawUnits.cpp
 )
 
 list(APPEND _SourcesDrawingPageSetup
-    ${_SourcesPath}/${PROJECT_NAME}/DrawingPageSetup/ZSDrawDlgPageSetup.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/DrawingPageSetup/ZSDrawDlgDrawingViewSetup.cpp
     ${_SourcesPath}/${PROJECT_NAME}/DrawingPageSetup/ZSDrawingViewPageSetup.cpp
     ${_SourcesPath}/${PROJECT_NAME}/DrawingPageSetup/ZSDrawPageSetup.cpp
     ${_SourcesPath}/${PROJECT_NAME}/DrawingPageSetup/ZSDrawWdgtDrawingPaperPageSetup.cpp
@@ -190,12 +191,11 @@ list(APPEND _SourcesGraphObjs
 )
 
 list(APPEND _SourcesGraphObjWdgts
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjWdgts/ZSDrawGraphObjAbstractWdgt.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjWdgts/ZSDrawGraphObjDrawingWdgt.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/GraphObjWdgts/ZSDrawGraphObjPropertiesAbstractWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/GraphObjWdgts/ZSDrawGraphObjModelEntry.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/GraphObjWdgts/ZSDrawGraphObjsPropertiesWdgtStack.cpp
     ${_SourcesPath}/${PROJECT_NAME}/GraphObjWdgts/ZSDrawGraphObjsTreeModel.cpp
     ${_SourcesPath}/${PROJECT_NAME}/GraphObjWdgts/ZSDrawGraphObjsTreeView.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjWdgts/ZSDrawGraphObjsTreeViewWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/GraphObjWdgts/ZSDrawGraphObjsTreeWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/GraphObjWdgts/ZSDrawGraphObjsWdgt.cpp
 )

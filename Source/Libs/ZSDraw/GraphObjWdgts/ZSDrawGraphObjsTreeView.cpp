@@ -61,7 +61,7 @@ using namespace ZS::Draw;
 
 
 /*******************************************************************************
-class CDelegateIdxTreeGraphObjs : public QStyledItemDelegate
+class CDelegateGraphObjsTreeView : public QStyledItemDelegate
 *******************************************************************************/
 
 /*==============================================================================
@@ -69,7 +69,7 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CDelegateIdxTreeGraphObjs::CDelegateIdxTreeGraphObjs( QObject* i_pObjParent ) :
+CDelegateGraphObjsTreeView::CDelegateGraphObjsTreeView( QObject* i_pObjParent ) :
 //------------------------------------------------------------------------------
     QStyledItemDelegate(i_pObjParent),
     m_pEdtName(nullptr),
@@ -96,7 +96,7 @@ CDelegateIdxTreeGraphObjs::CDelegateIdxTreeGraphObjs( QObject* i_pObjParent ) :
 } // ctor
 
 //------------------------------------------------------------------------------
-CDelegateIdxTreeGraphObjs::~CDelegateIdxTreeGraphObjs()
+CDelegateGraphObjsTreeView::~CDelegateGraphObjsTreeView()
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -122,7 +122,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QLineEdit* CDelegateIdxTreeGraphObjs::nameColumnEditor()
+QLineEdit* CDelegateGraphObjsTreeView::nameColumnEditor()
 //------------------------------------------------------------------------------
 {
     return m_pEdtName;
@@ -133,7 +133,7 @@ public: // overridables of base class QStyledItemDelegate
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QWidget* CDelegateIdxTreeGraphObjs::createEditor(
+QWidget* CDelegateGraphObjsTreeView::createEditor(
     QWidget*                    i_pWdgtParent,
     const QStyleOptionViewItem& i_option,
     const QModelIndex&          i_modelIdx ) const
@@ -154,7 +154,7 @@ QWidget* CDelegateIdxTreeGraphObjs::createEditor(
 
     QWidget* pWdgtEditor = nullptr;
 
-    CDelegateIdxTreeGraphObjs* pVThis = const_cast<CDelegateIdxTreeGraphObjs*>(this);
+    CDelegateGraphObjsTreeView* pVThis = const_cast<CDelegateGraphObjsTreeView*>(this);
 
     if( i_modelIdx.column() == CModelIdxTree::EColumnTreeEntryName )
     {
@@ -189,7 +189,7 @@ QWidget* CDelegateIdxTreeGraphObjs::createEditor(
 } // createEditor
 
 //------------------------------------------------------------------------------
-void CDelegateIdxTreeGraphObjs::setEditorData(
+void CDelegateGraphObjsTreeView::setEditorData(
     QWidget*            i_pWdgtEditor,
     const QModelIndex&  i_modelIdx ) const
 //------------------------------------------------------------------------------
@@ -212,7 +212,7 @@ void CDelegateIdxTreeGraphObjs::setEditorData(
 } // setEditorData
 
 //------------------------------------------------------------------------------
-void CDelegateIdxTreeGraphObjs::setModelData(
+void CDelegateGraphObjsTreeView::setModelData(
     QWidget*            i_pWdgtEditor,
     QAbstractItemModel* i_pModel,
     const QModelIndex&  i_modelIdx ) const
@@ -239,7 +239,7 @@ void CDelegateIdxTreeGraphObjs::setModelData(
 
     if( i_modelIdx.column() == CModelIdxTree::EColumnTreeEntryName )
     {
-        CDelegateIdxTreeGraphObjs* pVThis = const_cast<CDelegateIdxTreeGraphObjs*>(this);
+        CDelegateGraphObjsTreeView* pVThis = const_cast<CDelegateGraphObjsTreeView*>(this);
 
         pVThis->m_pEdtName = dynamic_cast<QLineEdit*>(i_pWdgtEditor);
 
@@ -267,7 +267,7 @@ void CDelegateIdxTreeGraphObjs::setModelData(
 } // setModelData
 
 //------------------------------------------------------------------------------
-void CDelegateIdxTreeGraphObjs::updateEditorGeometry(
+void CDelegateGraphObjsTreeView::updateEditorGeometry(
     QWidget*                    i_pWdgtEditor,
     const QStyleOptionViewItem& i_option,
     const QModelIndex&          i_modelIdx ) const
@@ -295,7 +295,7 @@ protected: // slots
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDelegateIdxTreeGraphObjs::onEdtNameDestroyed( QObject* /*i_pWdgtEditor*/ )
+void CDelegateGraphObjsTreeView::onEdtNameDestroyed( QObject* /*i_pWdgtEditor*/ )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -313,7 +313,7 @@ void CDelegateIdxTreeGraphObjs::onEdtNameDestroyed( QObject* /*i_pWdgtEditor*/ )
 
 
 /*******************************************************************************
-class CTreeViewIdxTreeGraphObjs : public QTreeView
+class CTreeViewGraphObjs : public QTreeView
 *******************************************************************************/
 
 /*==============================================================================
@@ -321,7 +321,7 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CTreeViewIdxTreeGraphObjs::CTreeViewIdxTreeGraphObjs(
+CTreeViewGraphObjs::CTreeViewGraphObjs(
     CDrawingScene* i_pDrawingScene,
     QWidget*       i_pWdgtParent ) :
 //------------------------------------------------------------------------------
@@ -361,7 +361,7 @@ CTreeViewIdxTreeGraphObjs::CTreeViewIdxTreeGraphObjs(
     m_pModelIdxTreeGraphObjs = new CModelIdxTreeGraphObjs(m_pDrawingScene);
     setModel(m_pModelIdxTreeGraphObjs);
 
-    //m_pDelegate = new CDelegateIdxTreeGraphObjs(this);
+    //m_pDelegate = new CDelegateGraphObjsTreeView(this);
 
     //setItemDelegate(m_pDelegate);
 
@@ -474,7 +474,7 @@ CTreeViewIdxTreeGraphObjs::CTreeViewIdxTreeGraphObjs(
 } // ctor
 
 //------------------------------------------------------------------------------
-CTreeViewIdxTreeGraphObjs::~CTreeViewIdxTreeGraphObjs()
+CTreeViewGraphObjs::~CTreeViewGraphObjs()
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -519,7 +519,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTreeViewIdxTreeGraphObjs::setSortOrder( EIdxTreeSortOrder i_sortOrder )
+void CTreeViewGraphObjs::setSortOrder( EIdxTreeSortOrder i_sortOrder )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -583,7 +583,7 @@ void CTreeViewIdxTreeGraphObjs::setSortOrder( EIdxTreeSortOrder i_sortOrder )
 } // setSortOrder
 
 //------------------------------------------------------------------------------
-EIdxTreeSortOrder CTreeViewIdxTreeGraphObjs::sortOrder() const
+EIdxTreeSortOrder CTreeViewGraphObjs::sortOrder() const
 //------------------------------------------------------------------------------
 {
     CModelIdxTree* pModel = dynamic_cast<CModelIdxTree*>(model());
@@ -595,7 +595,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTreeViewIdxTreeGraphObjs::setSilentlyExecuteDeleteRequests( bool i_bExecuteSilently )
+void CTreeViewGraphObjs::setSilentlyExecuteDeleteRequests( bool i_bExecuteSilently )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -620,7 +620,7 @@ public: // overridable slots of base class QTreeView
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTreeViewIdxTreeGraphObjs::expandAll()
+void CTreeViewGraphObjs::expandAll()
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -642,7 +642,7 @@ void CTreeViewIdxTreeGraphObjs::expandAll()
 } // expandAll
 
 //------------------------------------------------------------------------------
-void CTreeViewIdxTreeGraphObjs::collapseAll()
+void CTreeViewGraphObjs::collapseAll()
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -666,7 +666,7 @@ public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTreeViewIdxTreeGraphObjs::expandRecursive( const QModelIndex& i_modelIdx )
+void CTreeViewGraphObjs::expandRecursive( const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -711,7 +711,7 @@ void CTreeViewIdxTreeGraphObjs::expandRecursive( const QModelIndex& i_modelIdx )
 } // expandRecursive
 
 //------------------------------------------------------------------------------
-void CTreeViewIdxTreeGraphObjs::collapseRecursive( const QModelIndex& i_modelIdx )
+void CTreeViewGraphObjs::collapseRecursive( const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -759,7 +759,7 @@ public: // slots (hiding not overridable slots with same name in QTreeView)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTreeViewIdxTreeGraphObjs::expand( const QModelIndex& i_modelIdx )
+void CTreeViewGraphObjs::expand( const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -790,7 +790,7 @@ void CTreeViewIdxTreeGraphObjs::expand( const QModelIndex& i_modelIdx )
 } // expand
 
 //------------------------------------------------------------------------------
-void CTreeViewIdxTreeGraphObjs::collapse( const QModelIndex& i_modelIdx )
+void CTreeViewGraphObjs::collapse( const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -825,7 +825,7 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTreeViewIdxTreeGraphObjs::onCollapsed( const QModelIndex& i_modelIdx )
+void CTreeViewGraphObjs::onCollapsed( const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -857,7 +857,7 @@ void CTreeViewIdxTreeGraphObjs::onCollapsed( const QModelIndex& i_modelIdx )
 } // onCollapsed
 
 //------------------------------------------------------------------------------
-void CTreeViewIdxTreeGraphObjs::onExpanded( const QModelIndex& i_modelIdx )
+void CTreeViewGraphObjs::onExpanded( const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -899,7 +899,7 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTreeViewIdxTreeGraphObjs::onDrawingSceneSelectionChanged()
+void CTreeViewGraphObjs::onDrawingSceneSelectionChanged()
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -972,7 +972,7 @@ protected: // overridables of base class QObject
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool CTreeViewIdxTreeGraphObjs::event( QEvent* i_pEv )
+bool CTreeViewGraphObjs::event( QEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -997,7 +997,7 @@ protected: // overridables of base class QTreeView
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTreeViewIdxTreeGraphObjs::keyPressEvent( QKeyEvent* i_pEv )
+void CTreeViewGraphObjs::keyPressEvent( QKeyEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1104,7 +1104,7 @@ protected: // overridables of base class QTreeView
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTreeViewIdxTreeGraphObjs::mousePressEvent( QMouseEvent* i_pEv )
+void CTreeViewGraphObjs::mousePressEvent( QMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1183,7 +1183,7 @@ void CTreeViewIdxTreeGraphObjs::mousePressEvent( QMouseEvent* i_pEv )
 } // mousePressEvent
 
 //------------------------------------------------------------------------------
-void CTreeViewIdxTreeGraphObjs::mouseReleaseEvent( QMouseEvent* i_pEv )
+void CTreeViewGraphObjs::mouseReleaseEvent( QMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1221,7 +1221,7 @@ void CTreeViewIdxTreeGraphObjs::mouseReleaseEvent( QMouseEvent* i_pEv )
 } // mouseReleaseEvent
 
 //------------------------------------------------------------------------------
-void CTreeViewIdxTreeGraphObjs::mouseDoubleClickEvent( QMouseEvent* i_pEv )
+void CTreeViewGraphObjs::mouseDoubleClickEvent( QMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1308,7 +1308,7 @@ void CTreeViewIdxTreeGraphObjs::mouseDoubleClickEvent( QMouseEvent* i_pEv )
 } // mouseDoubleClickEvent
 
 //------------------------------------------------------------------------------
-void CTreeViewIdxTreeGraphObjs::mouseMoveEvent( QMouseEvent* i_pEv )
+void CTreeViewGraphObjs::mouseMoveEvent( QMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1338,7 +1338,7 @@ protected: // overridables of base class QTreeView
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTreeViewIdxTreeGraphObjs::selectionChanged(
+void CTreeViewGraphObjs::selectionChanged(
     const QItemSelection& i_selected,
     const QItemSelection& i_deselected )
 //------------------------------------------------------------------------------
@@ -1475,7 +1475,7 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTreeViewIdxTreeGraphObjs::onActionGraphObjExpandTriggered( bool i_bChecked )
+void CTreeViewGraphObjs::onActionGraphObjExpandTriggered( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1503,7 +1503,7 @@ void CTreeViewIdxTreeGraphObjs::onActionGraphObjExpandTriggered( bool i_bChecked
 } // onActionGraphObjExpandTriggered
 
 //------------------------------------------------------------------------------
-void CTreeViewIdxTreeGraphObjs::onActionGraphObjCollapseTriggered( bool i_bChecked )
+void CTreeViewGraphObjs::onActionGraphObjCollapseTriggered( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1526,7 +1526,7 @@ void CTreeViewIdxTreeGraphObjs::onActionGraphObjCollapseTriggered( bool i_bCheck
 } // onActionGraphObjCollapseTriggered
 
 //------------------------------------------------------------------------------
-void CTreeViewIdxTreeGraphObjs::onActionGraphObjDeleteTriggered( bool i_bChecked )
+void CTreeViewGraphObjs::onActionGraphObjDeleteTriggered( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;

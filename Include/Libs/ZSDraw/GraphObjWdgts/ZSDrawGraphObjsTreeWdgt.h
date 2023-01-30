@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZDraw_GraphObjsTreeWdgt_h
-#define ZDraw_GraphObjsTreeWdgt_h
+#ifndef ZSDraw_GraphObjsTreeWdgt_h
+#define ZSDraw_GraphObjsTreeWdgt_h
 
 #include <QtCore/qglobal.h>
 
@@ -35,12 +35,12 @@ may result in using the software modules.
 #include <QtWidgets/qwidget.h>
 #endif
 
-#include "ZSDraw/Common/ZSDrawDllMain.h"
-#include "ZSSys/ZSSysEnumEntry.h"
+#include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjsTreeModel.h"
+#include "ZSSysGUI/ZSSysIdxTreeModel.h"
 
+class QModelIndex;
 class QPushButton;
 class QSettings;
-class QSplitter;
 class QHBoxLayout;
 class QVBoxLayout;
 
@@ -52,43 +52,75 @@ class CTrcAdminObj;
 }
 namespace Draw
 {
-class CDrawingScene;
-class CWdgtIdxTreeViewGraphObjs;
-class CWdgtGraphObjs;
+class CDrawingView;
+class CTreeViewGraphObjs;
 
 //******************************************************************************
-class ZSDRAWDLL_API CWdgtIdxTreeGraphObjs : public QWidget
+class ZSDRAWDLL_API CWdgtGraphObjsTree : public QWidget
 //******************************************************************************
 {
     Q_OBJECT
 public: // class methods
     static QString NameSpace() { return "ZS::Draw"; }
-    static QString ClassName() { return "CWdgtIdxTreeGraphObjs"; }
+    static QString ClassName() { return "CWdgtGraphObjsTree"; }
+public: // type definitions and constants
+    enum class EViewMode {
+        NavPanelOnly           = 0,
+        NavPanelAndNodeContent = 1,
+        Count,
+        Undefined
+    };
+    static QString viewMode2Str( EViewMode i_eVal, int i_alias = ZS::System::EEnumEntryAliasStrName );
+    static QPixmap viewMode2Pixmap( EViewMode i_eVal, const QSize& i_sz = QSize(24,24));
+    static EViewMode str2ViewMode( const QString& i_str );
 public: // ctors and dtor
-    CWdgtIdxTreeGraphObjs(
-        CDrawingScene* i_pDrawingScene,
+    CWdgtGraphObjsTree(
+        CDrawingView* i_pDrawingView,
         QWidget* i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wflags = Qt::WindowFlags() );
-    virtual ~CWdgtIdxTreeGraphObjs();
+    virtual ~CWdgtGraphObjsTree();
+signals:
+    void viewModeChanged( const QString& i_strViewMode );
+    void currentRowChanged( const QModelIndex& i_modelIdxCurr, const QModelIndex& i_modelIdxPrev );
 public: // instance methods
     void saveState(QSettings& i_settings) const;
     void restoreState(const QSettings& i_settings);
+public: // instance methods
+    EViewMode viewMode() const { return m_viewMode; }
+    CTreeViewGraphObjs* treeView() { return m_pTreeView; }
+//public: // instance methods
+//    void setExcludeLeaves(bool i_bExcludeLeaves);
+//    bool areLeavesExcluded() const;
 protected slots:
-    void onTreeViewViewModeChanged( const QString& i_strViewMode );
+    void onBtnViewModeClicked( bool i_bChecked );
+    void onBtnTreeViewResizeRowsAndColumnsToContentsClicked( bool i_bChecked );
+    void onBtnTreeViewExpandAllClicked( bool i_bChecked );
+    void onBtnTreeViewCollapseAllClicked( bool i_bChecked );
+    void onBtnSortOrderClicked( bool i_bChecked );
+protected slots:
+    void onTreeViewSortOrderChanged(ZS::System::GUI::EIdxTreeSortOrder i_sortOrder);
     void onTreeViewCurrentRowChanged( const QModelIndex& i_modelIdxCurr, const QModelIndex& i_modelIdxPrev );
+private: // auxiliary methods (tracing)
+    void emit_currentRowChanged( const QModelIndex& i_modelIdxCurr, const QModelIndex& i_modelIdxPrev );
 protected: // instance members
-    CDrawingScene* m_pDrawingScene;
+    CDrawingView* m_pDrawingView;
+    QSize m_szBtns;
+    EViewMode m_viewMode;
     QVBoxLayout* m_pLytMain;
-    QSplitter* m_pSplitter;
-    CWdgtIdxTreeViewGraphObjs* m_pWdgtTreeView;
-    CWdgtGraphObjs* m_pWdgtGraphObjs;
+    QHBoxLayout* m_pLytHeadLine;
+    QPushButton* m_pBtnViewMode;
+    QPushButton* m_pBtnTreeViewResizeRowsAndColumnsToContents;
+    QPushButton* m_pBtnTreeViewExpandAll;
+    QPushButton* m_pBtnTreeViewCollapseAll;
+    QPushButton* m_pBtnSortOrder;
+    CTreeViewGraphObjs* m_pTreeView;
     /*!< Trace admin object to control trace outputs of the class. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
-}; // class CWdgtIdxTree
+}; // class CWdgtGraphObjsTree
 
 } // namespace Draw
 
 } // namespace ZS
 
-#endif // #ifndef ZDraw_GraphObjsTreeWdgt_h
+#endif // #ifndef ZSDraw_GraphObjsTreeWdgt_h

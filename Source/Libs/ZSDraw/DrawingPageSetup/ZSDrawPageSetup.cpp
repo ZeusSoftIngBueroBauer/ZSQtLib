@@ -24,6 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
+#if 0
+
 #include <QtCore/qsettings.h>
 #include <QtGui/qpaintdevice.h>
 
@@ -598,3 +600,5 @@ double CPageSetup::drawingScale( EDirection i_direction ) const
 {
     return m_arfLengthScaleFactors[static_cast<int>(i_direction)];
 }
+
+#endif

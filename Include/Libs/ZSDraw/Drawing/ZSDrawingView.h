@@ -36,7 +36,6 @@ may result in using the software modules.
 #endif
 
 #include "ZSDraw/Common/ZSDrawDllMain.h"
-#include "ZSDraw/DrawingPageSetup/ZSDrawPageSetup.h"
 
 namespace ZS
 {
@@ -54,18 +53,21 @@ class ZSDRAWDLL_API CDrawingView : public QGraphicsView
 //******************************************************************************
 {
     Q_OBJECT
-    /*! Returns the namespace the class belongs to. */
-    static QString NameSpace() { return "ZS::Draw"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
-    /*! Returns the class name. */
-    static QString ClassName() { return "CDrawingView"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
+public: // class methods
+    /*! Returns the namespace the class belongs to.
+        Please note that the static class functions name must be different from
+        the non static virtual member function "nameSpace"*/
+    static QString NameSpace() { return "ZS::Draw"; }
+    /*! Returns the class name.
+        Please note that the static class functions name must be different from
+        the non static virtual member function "className"*/
+    static QString ClassName() { return "CDrawingView"; }
 public: // ctors and dtor
-    CDrawingView(
-        CDrawingScene* i_pDrawingScene,
-        QWidget*       i_pWdgtParent = nullptr );
+    CDrawingView( CDrawingScene* i_pDrawingScene, QWidget* i_pWdgtParent = nullptr );
     ~CDrawingView();
 signals:
     void mousePosChanged( const QPointF& i_ptMousePos );
-    void sceneRectChanged( const QRectF& i_rect );
+    void drawingSizeChanged( const QSize& i_size );
     void viewportMarginsChanged( const QMargins& i_margins );
 public: // overridables
     /*! This virtual method returns the name space of the object's class.
@@ -77,20 +79,18 @@ public: // overridables
         polymorphic base type the method returns the name of the derived class. */
     virtual QString className() const { return ClassName(); }
 public: // instance methods
-    CPageSetup* getPageSetup() { return &m_pageSetup; }
-    CDrawingScene* getDrawingScene() { return m_pDrawingScene; }
+    CDrawingScene* drawingScene() { return m_pDrawingScene; }
 public: // instance methods (drawing area)
     void setDrawingSize( const QSize& i_size );
     void setDrawingSizeInPixels( int i_iWidth_px, int i_iHeight_px );
     void setDrawingWidthInPixels( int i_iWidth_px );
     void setDrawingHeightInPixels( int i_iHeight_px );
-    QSize getDrawingSizeInPixels() const;
-    int getDrawingWidthInPixels() const;
-    int getDrawingHeightInPixels() const;
+    QSize drawingSizeInPixels() const;
+    int drawingWidthInPixels() const;
+    int drawingHeightInPixels() const;
 public: // instance methods (drawing area)
     void setViewportMargins( int i_iLeft, int i_iTop, int i_iRight, int i_iBottom );
     void setViewportMargins( const QMargins& i_margins );
-    QMargins getViewportMargins() const;
 public: // overridables of base class QWidget
     virtual void mousePressEvent( QMouseEvent* i_pEv );
     virtual void mouseMoveEvent( QMouseEvent* i_pEv );
@@ -104,8 +104,7 @@ protected: // overridables of base class QGraphicsView
 protected slots:
     void onSceneRectChanged( const QRectF& i_rect );
 protected: // instance members
-    CPageSetup               m_pageSetup;
-    CDrawingScene*           m_pDrawingScene;
+    CDrawingScene* m_pDrawingScene;
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjMouseMoveEvent;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjPaintEvent;

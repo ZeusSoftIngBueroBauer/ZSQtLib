@@ -24,10 +24,10 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSDraw_GraphObjDrawingWdgt_h
-#define ZSDraw_GraphObjDrawingWdgt_h
+#ifndef ZSDraw_DrawingViewPropertiesWdgt_h
+#define ZSDraw_DrawingViewPropertiesWdgt_h
 
-#include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjAbstractWdgt.h"
+#include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjPropertiesAbstractWdgt.h"
 
 //class QCheckBox;
 class QComboBox;
@@ -58,29 +58,33 @@ class CWdgtEditPhysVal;
 }
 namespace Draw
 {
+class CDrawingView;
+
 //******************************************************************************
-class ZSDRAWDLL_API CWdgtGraphObjDrawing : public CWdgtAbstractGraphObj
+class ZSDRAWDLL_API CWdgtDrawingViewProperties : public CWdgtGraphObjPropertiesAbstract
 //******************************************************************************
 {
     Q_OBJECT
 public: // class methods
     static QString NameSpace() { return "ZS::Draw"; }
-    static QString ClassName() { return "CWdgtGraphObjDrawing"; }
+    static QString ClassName() { return "CWdgtDrawingViewProperties"; }
 public: // ctors and dtor
-    CWdgtGraphObjDrawing(
-        CDrawingScene* i_pDrawingScene,
+    CWdgtDrawingViewProperties(
+        CDrawingView* i_pDrawingView,
         QWidget* i_pWdgtParent = nullptr);
-    virtual ~CWdgtGraphObjDrawing();
+    virtual ~CWdgtDrawingViewProperties();
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
     virtual QString className() const { return ClassName(); }
 public: // instance methods
     void setDimensionUnit( EDrawingDimensionUnit i_dimensionUnit );
 protected slots:
+    void onDrawingViewDrawingSizeChanged(const QSize& i_size);
     void onCmbDimensionUnitCurrentIndexChanged(int i_idx);
     void onEdtSizeWidthPxEditingFinished();
     void onEdtSizeHeightPxEditingFinished();
 protected: // instance members
+    CDrawingView* m_pDrawingView;
     QVBoxLayout* m_pLyt;
     QHBoxLayout* m_pLytLineDimensionUnit;
     QLabel* m_pLblDimensionUnit;
@@ -124,10 +128,10 @@ protected: // instance members
     QLabel* m_pLblImageSizeHeight_px;
     QSpinBox* m_pEdtImageSizeHeight_px;
 
-}; // class CWdgtGraphObjDrawing
+}; // class CWdgtDrawingViewProperties
 
 } // namespace Draw
 
 } // namespace ZS
 
-#endif // #ifndef ZSDraw_GraphObjDrawingWdgt_h
+#endif // #ifndef ZSDraw_DrawingViewPropertiesWdgt_h

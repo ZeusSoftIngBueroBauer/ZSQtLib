@@ -53,7 +53,7 @@ class CGraphObj;
 class CModelIdxTreeGraphObjs;
 
 //******************************************************************************
-class ZSDRAWDLL_API CDelegateIdxTreeGraphObjs : public QStyledItemDelegate
+class ZSDRAWDLL_API CDelegateGraphObjsTreeView : public QStyledItemDelegate
 //******************************************************************************
 {
     Q_OBJECT
@@ -61,8 +61,8 @@ public: // class methods
     static QString NameSpace() { return "ZS::Draw"; }
     static QString ClassName() { return "CDelegateIdxTree"; }
 public: // ctors and dtor
-    CDelegateIdxTreeGraphObjs( QObject* i_pObjParent = nullptr );
-    virtual ~CDelegateIdxTreeGraphObjs();
+    CDelegateGraphObjsTreeView( QObject* i_pObjParent = nullptr );
+    virtual ~CDelegateGraphObjsTreeView();
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
     virtual QString className() const { return ClassName(); }
@@ -87,29 +87,29 @@ public: // overridables of base class QStyledItemDelegate
 protected slots:
     void onEdtNameDestroyed( QObject* i_pWdgtEditor );
 private: // copy ctor not implemented
-    CDelegateIdxTreeGraphObjs( const CDelegateIdxTreeGraphObjs& );
+    CDelegateGraphObjsTreeView( const CDelegateGraphObjsTreeView& );
 private: // assignment operator not implemented
-    CDelegateIdxTreeGraphObjs& operator = ( const CDelegateIdxTreeGraphObjs& );
+    CDelegateGraphObjsTreeView& operator = ( const CDelegateGraphObjsTreeView& );
 private: // instance members
     QLineEdit* m_pEdtName;
     bool       m_bEdtNameDestroyedSignalConnected;
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
-}; // class CDelegateIdxTreeGraphObjs
+}; // class CDelegateGraphObjsTreeView
 
 //******************************************************************************
-class ZSDRAWDLL_API CTreeViewIdxTreeGraphObjs : public QTreeView
+class ZSDRAWDLL_API CTreeViewGraphObjs : public QTreeView
 //******************************************************************************
 {
     Q_OBJECT
 public: // class methods
     static QString NameSpace() { return "ZS::Draw"; }
-    static QString ClassName() { return "CTreeViewIdxTreeGraphObjs"; }
+    static QString ClassName() { return "CTreeViewGraphObjs"; }
 public: // ctors and dtor
-    CTreeViewIdxTreeGraphObjs(
+    CTreeViewGraphObjs(
         CDrawingScene* i_pDrawingScene,
         QWidget*       i_pWdgtParent = nullptr );
-    virtual ~CTreeViewIdxTreeGraphObjs();
+    virtual ~CTreeViewGraphObjs();
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
     virtual QString className() const { return ClassName(); }
@@ -152,7 +152,7 @@ protected slots:
     void onActionGraphObjDeleteTriggered( bool i_bChecked );
 protected: // instance members
     CDrawingScene* m_pDrawingScene;
-    CDelegateIdxTreeGraphObjs* m_pDelegate;
+    CDelegateGraphObjsTreeView* m_pDelegate;
     ZS::Draw::CModelIdxTreeGraphObjs* m_pModelIdxTreeGraphObjs;
     QMenu* m_pMenuGraphObjContext;
     QAction* m_pActionGraphObjTitle;
@@ -165,7 +165,7 @@ protected: // instance members
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjEvent;
 
-}; // class CTreeViewIdxTreeGraphObjs
+}; // class CTreeViewGraphObjs
 
 } // namespace Draw
 

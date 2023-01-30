@@ -251,28 +251,33 @@ protected: // auxiliary methods (trace emitting signals)
     //void emit_graphObjIdChanged( const QString& i_strObjIdOld, const QString& i_strObjIdNew );
     //void emit_graphObjNameChanged( const QString& i_strObjId, const QString& i_strObjNameOld, const QString& i_strObjNameNew );
 protected: // instance members
-    ZS::PhysVal::CUnit       m_unitWidth;
-    ZS::PhysVal::CUnit       m_unitHeight;
-    CDrawSettings            m_drawSettings;
-    ZS::System::CEnumMode    m_mode;
-    CEnumEditTool            m_editTool;
-    CEnumEditMode            m_editMode;
-    CEnumEditResizeMode      m_editResizeMode;
-    QGraphicsRectItem*       m_pGraphicsItemSelectionArea;
-    CObjFactory*             m_pObjFactory;                    /*! Corresponds to the selected drawing tool. */
-    QGraphicsItem*           m_pGraphicsItemCreating;          /*! Same object as GraphObjCreating (just a different name for the same thing to avoid unnecessary dynamic_casts). */
-    CGraphObj*               m_pGraphObjCreating;              /*! Same object as GraphicsItemCreating (just a different name for the same thing to avoid unnecessary dynamic_casts). */
-    QGraphicsItem*           m_pGraphicsItemAddingShapePoints; /*! Same object as GraphObjAddingShapePoints (just a different name for the same thing to avoid unnecessary dynamic_casts). */
-    CGraphObj*               m_pGraphObjAddingShapePoints;     /*! Same object as GraphicsItemAddingShapePoints (just a different name for the same thing to avoid unnecessary dynamic_casts). */
-    QString                  m_strGraphObjNameSeparator;
-    ZS::System::CIdxTree*    m_pGraphObjsIdxTree;
-    ZS::System::CIdxTree*    m_pGraphObjsIdxTreeClipboard;
-    QList<QGraphicsItem*>    m_arpGraphicsItemsAcceptingHoverEvents;
-    double                   m_fRotAngleRes_degree;
-    double                   m_fHitTolerance_px;
-    bool                     m_bMouseDoubleClickEventInProcess;
-    QPointF                  m_ptMouseEvScenePosOnMousePressEvent;
-    int                      m_iEvKeyModifiers;
+    ZS::PhysVal::CUnit m_unitWidth;
+    ZS::PhysVal::CUnit m_unitHeight;
+    CDrawSettings m_drawSettings;
+    ZS::System::CEnumMode m_mode;
+    CEnumEditTool m_editTool;
+    CEnumEditMode m_editMode;
+    CEnumEditResizeMode m_editResizeMode;
+    QGraphicsRectItem* m_pGraphicsItemSelectionArea;
+    /*!< Corresponds to the selected drawing tool. */
+    CObjFactory* m_pObjFactory;
+    /*!< Same object as GraphObjCreating (just a different name for the same thing to avoid unnecessary dynamic_casts). */
+    QGraphicsItem* m_pGraphicsItemCreating;
+    /*! Same object as GraphicsItemCreating (just a different name for the same thing to avoid unnecessary dynamic_casts). */
+    CGraphObj* m_pGraphObjCreating;
+    /*! Same object as GraphObjAddingShapePoints (just a different name for the same thing to avoid unnecessary dynamic_casts). */
+    QGraphicsItem* m_pGraphicsItemAddingShapePoints;
+    /*! Same object as GraphicsItemAddingShapePoints (just a different name for the same thing to avoid unnecessary dynamic_casts). */
+    CGraphObj* m_pGraphObjAddingShapePoints;
+    QString m_strGraphObjNameSeparator;
+    ZS::System::CIdxTree* m_pGraphObjsIdxTree;
+    ZS::System::CIdxTree* m_pGraphObjsIdxTreeClipboard;
+    QList<QGraphicsItem*> m_arpGraphicsItemsAcceptingHoverEvents;
+    double m_fRotAngleRes_degree;
+    double m_fHitTolerance_px;
+    bool m_bMouseDoubleClickEventInProcess;
+    QPointF m_ptMouseEvScenePosOnMousePressEvent;
+    int m_iEvKeyModifiers;
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjMouseMoveEvent;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjPaintEvent;

@@ -53,12 +53,9 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CDrawingView::CDrawingView(
-    CDrawingScene* i_pDrawingScene,
-    QWidget*       i_pWdgtParent ) :
+CDrawingView::CDrawingView( CDrawingScene* i_pDrawingScene, QWidget* i_pWdgtParent ) :
 //------------------------------------------------------------------------------
-    QGraphicsView(i_pDrawingScene,i_pWdgtParent),
-    m_pageSetup(),
+    QGraphicsView(i_pDrawingScene, i_pWdgtParent),
     m_pDrawingScene(i_pDrawingScene),
     m_pTrcAdminObj(nullptr),
     m_pTrcAdminObjMouseMoveEvent(nullptr),
@@ -82,21 +79,16 @@ CDrawingView::CDrawingView(
 
     Units.Length.setPxpis(logicalDpiX(), logicalDpiY());
 
-    m_pDrawingScene->setSceneRect(0.0, 0.0, 640.0, 480.0);
+    m_pDrawingScene->setSceneRect(0.0, 0.0, 1024.0, 768.0);
 
     setViewportMargins(10.0, 10.0, 10.0, 10.0);
 
     setMouseTracking(true);
     setAcceptDrops(true);
 
-    if( !connect(
-        /* pObjSender   */ m_pDrawingScene,
-        /* szSignal     */ SIGNAL(sceneRectChanged(const QRectF&)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onSceneRectChanged(const QRectF&)) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pDrawingScene, &CDrawingScene::sceneRectChanged,
+        this, &CDrawingView::onSceneRectChanged );
 
 } // ctor
 
@@ -135,12 +127,9 @@ void CDrawingView::setDrawingSize( const QSize& i_size )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
         strMthInArgs = size2Str(i_size);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -156,6 +145,8 @@ void CDrawingView::setDrawingSize( const QSize& i_size )
         // QGraphicsScene emits "sceneRectChanged" -> slot "CDrawingView::onSceneRectChanged" is called.
         // The DrawingViews slot emits DrawingViews signal "sceneRectChanged".
         m_pDrawingScene->setSceneRect(sceneRect);
+
+        emit drawingSizeChanged(i_size);
     }
 } // setDrawingSize
 
@@ -164,13 +155,10 @@ void CDrawingView::setDrawingSizeInPixels( int i_iWidth_px, int i_iHeight_px )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
         strMthInArgs  = "Width: " + QString::number(i_iWidth_px);
         strMthInArgs += ", Height: " + QString::number(i_iHeight_px);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -187,6 +175,8 @@ void CDrawingView::setDrawingSizeInPixels( int i_iWidth_px, int i_iHeight_px )
         // QGraphicsScene emits "sceneRectChanged" -> slot "CDrawingView::onSceneRectChanged" is called.
         // The DrawingViews slot emits DrawingViews signal "sceneRectChanged".
         m_pDrawingScene->setSceneRect(sceneRect);
+
+        emit drawingSizeChanged(sceneRect.size().toSize());
     }
 } // setDrawingSizeInPixels
 
@@ -195,12 +185,9 @@ void CDrawingView::setDrawingWidthInPixels( int i_iWidth_px )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
         strMthInArgs = QString::number(i_iWidth_px);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -216,6 +203,8 @@ void CDrawingView::setDrawingWidthInPixels( int i_iWidth_px )
         // QGraphicsScene emits "sceneRectChanged" -> slot "CDrawingView::onSceneRectChanged" is called.
         // The DrawingViews slot emits DrawingViews signal "sceneRectChanged".
         m_pDrawingScene->setSceneRect(sceneRect);
+
+        emit drawingSizeChanged(sceneRect.size().toSize());
     }
 } // setDrawingWidthInPixels
 
@@ -224,12 +213,9 @@ void CDrawingView::setDrawingHeightInPixels( int i_iHeight_px )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
         strMthInArgs = QString::number(i_iHeight_px);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -245,11 +231,13 @@ void CDrawingView::setDrawingHeightInPixels( int i_iHeight_px )
         // QGraphicsScene emits "sceneRectChanged" -> slot "CDrawingView::onSceneRectChanged" is called.
         // The DrawingViews slot emits DrawingViews signal "sceneRectChanged".
         m_pDrawingScene->setSceneRect(sceneRect);
+
+        emit drawingSizeChanged(sceneRect.size().toSize());
     }
 } // setDrawingHeightInPixels
 
 //------------------------------------------------------------------------------
-QSize CDrawingView::getDrawingSizeInPixels() const
+QSize CDrawingView::drawingSizeInPixels() const
 //------------------------------------------------------------------------------
 {
     QSizeF size = m_pDrawingScene->sceneRect().size();
@@ -257,14 +245,14 @@ QSize CDrawingView::getDrawingSizeInPixels() const
 }
 
 //------------------------------------------------------------------------------
-int CDrawingView::getDrawingWidthInPixels() const
+int CDrawingView::drawingWidthInPixels() const
 //------------------------------------------------------------------------------
 {
     return m_pDrawingScene->sceneRect().width();
 }
 
 //------------------------------------------------------------------------------
-int CDrawingView::getDrawingHeightInPixels() const
+int CDrawingView::drawingHeightInPixels() const
 //------------------------------------------------------------------------------
 {
     return m_pDrawingScene->sceneRect().height();
@@ -330,13 +318,6 @@ void CDrawingView::setViewportMargins(const QMargins& i_margins)
         emit viewportMarginsChanged(viewportMargins());
     }
 } // setViewportMargins
-
-//------------------------------------------------------------------------------
-QMargins CDrawingView::getViewportMargins() const
-//------------------------------------------------------------------------------
-{
-    return viewportMargins();
-}
 
 /*==============================================================================
 protected slots:
@@ -734,7 +715,5 @@ void CDrawingView::onSceneRectChanged( const QRectF& i_rect )
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onSceneRectChanged",
         /* strAddInfo   */ strMthInArgs );
-
-    emit sceneRectChanged(i_rect);
 
 } // onSceneRectChanged

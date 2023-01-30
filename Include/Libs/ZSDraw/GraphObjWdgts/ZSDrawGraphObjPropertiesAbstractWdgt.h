@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSDraw_GraphObjAbstractWdgt_h
-#define ZSDraw_GraphObjAbstractWdgt_h
+#ifndef ZSDraw_GraphObjPropertiesAbstractWdgt_h
+#define ZSDraw_GraphObjPropertiesAbstractWdgt_h
 
 #include <QtCore/qglobal.h>
 
@@ -51,21 +51,21 @@ namespace Draw
 class CDrawingScene;
 
 //******************************************************************************
-class ZSDRAWDLL_API CWdgtAbstractGraphObj : public QWidget
+class ZSDRAWDLL_API CWdgtGraphObjPropertiesAbstract : public QWidget
 //******************************************************************************
 {
     Q_OBJECT
 public: // class methods
     static QString NameSpace() { return "ZS::Draw"; }
-    static QString ClassName() { return "CWdgtAbstractGraphObj"; }
+    static QString ClassName() { return "CWdgtGraphObjPropertiesAbstract"; }
 public: // ctors and dtor
-    CWdgtAbstractGraphObj(  
+    CWdgtGraphObjPropertiesAbstract(
         CDrawingScene* i_pDrawingScene,
         QWidget* i_pWdgtParent = nullptr);
-    virtual ~CWdgtAbstractGraphObj();
+    virtual ~CWdgtGraphObjPropertiesAbstract();
 public: // overridables
-    virtual QString nameSpace() const { return CWdgtAbstractGraphObj::NameSpace(); }
-    virtual QString className() const { return CWdgtAbstractGraphObj::ClassName(); }
+    virtual QString nameSpace() const { return CWdgtGraphObjPropertiesAbstract::NameSpace(); }
+    virtual QString className() const { return CWdgtGraphObjPropertiesAbstract::ClassName(); }
 public: // overridables
     virtual void saveState(QSettings& i_settings) const;
     virtual void restoreState(const QSettings& i_settings);
@@ -86,10 +86,10 @@ protected: // instance members
     int m_cxEdtWidthClm2;
     int m_cxClmSpacing;
 
-}; // class CWdgtAbstractGraphObj
+}; // class CWdgtGraphObjPropertiesAbstract
 
 } // namespace Draw
 
 } // namespace ZS
 
-#endif // #ifndef ZSDraw_GraphObjAbstractWdgt_h
+#endif // #ifndef ZSDraw_GraphObjPropertiesAbstractWdgt_h

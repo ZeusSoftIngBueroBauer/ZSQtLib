@@ -24,9 +24,10 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjDrawingWdgt.h"
+#include "ZSDraw/Drawing/ZSDrawingViewPropertiesWdgt.h"
 #include "ZSDraw/Common/ZSDrawCommon.h"
 #include "ZSDraw/Drawing/ZSDrawUnits.h"
+#include "ZSDraw/Drawing/ZSDrawingView.h"
 #include "ZSPhysValGUI/ZSPhysValWdgtEditPhysVal.h"
 #include "ZSSysGUI/ZSSysSepLine.h"
 
@@ -56,7 +57,7 @@ using namespace ZS::Draw;
 
 
 /*******************************************************************************
-class CWdgtGraphObjDrawing : public CWdgtAbstractGraphObj
+class CWdgtDrawingViewProperties : public CWdgtGraphObjPropertiesAbstract
 *******************************************************************************/
 
 /*==============================================================================
@@ -64,10 +65,11 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CWdgtGraphObjDrawing::CWdgtGraphObjDrawing(
-    CDrawingScene* i_pDrawingScene, QWidget* i_pWdgtParent) :
+CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
+    CDrawingView* i_pDrawingView, QWidget* i_pWdgtParent) :
 //------------------------------------------------------------------------------
-    CWdgtAbstractGraphObj(i_pDrawingScene, i_pWdgtParent),
+    CWdgtGraphObjPropertiesAbstract(i_pDrawingView->drawingScene(), i_pWdgtParent),
+    m_pDrawingView(i_pDrawingView),
     m_pLyt(nullptr),
     m_pLytLineDimensionUnit(nullptr),
     m_pLblDimensionUnit(nullptr),
@@ -114,6 +116,10 @@ CWdgtGraphObjDrawing::CWdgtGraphObjDrawing(
     m_pLyt = new QVBoxLayout;
     setLayout(m_pLyt);
 
+    QObject::connect(
+        m_pDrawingView, &CDrawingView::drawingSizeChanged,
+        this, &CWdgtDrawingViewProperties::onDrawingViewDrawingSizeChanged );
+
     // <Section> Dimension Unit
     //=========================
 
@@ -133,7 +139,7 @@ CWdgtGraphObjDrawing::CWdgtGraphObjDrawing(
     m_pCmbDimensionUnit->setCurrentIndex(static_cast<int>(m_dimensionUnit));
     QObject::connect(
         m_pCmbDimensionUnit, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
-        this, &CWdgtGraphObjDrawing::onCmbDimensionUnitCurrentIndexChanged );
+        this, &CWdgtDrawingViewProperties::onCmbDimensionUnitCurrentIndexChanged );
 
     // <Section> Metric System
     //========================
@@ -285,7 +291,7 @@ CWdgtGraphObjDrawing::CWdgtGraphObjDrawing(
     m_pLytLineMetricSize->addSpacing(m_cxClmSpacing);
     //QObject::connect(
     //    m_pEdtImageMetricWidth, &QSpinBox::editingFinished,
-    //    this, &CWdgtGraphObjDrawing::);
+    //    this, &CWdgtDrawingViewProperties::);
 
     // <Edit> Image Height
     //--------------------
@@ -304,7 +310,7 @@ CWdgtGraphObjDrawing::CWdgtGraphObjDrawing(
     m_pLytLineMetricSize->addStretch();
     //QObject::connect(
     //    m_pEdtImageMetricHeight, &QSpinBox::editingFinished,
-    //    this, &CWdgtGraphObjDrawing::);
+    //    this, &CWdgtDrawingViewProperties::);
 
     // <Visibility> Metric Widget
     //---------------------------
@@ -321,7 +327,7 @@ CWdgtGraphObjDrawing::CWdgtGraphObjDrawing(
     m_pSepLineImageSize_px = new CSepLine(10);
     m_pLytSepLineImageSize_px->addWidget(m_pSepLineImageSize_px,1);
 
-    //QSize sizeDrawing = m_pDrawingView->getDrawingSizeInPixels();
+    QSize sizeDrawing = m_pDrawingView->drawingSizeInPixels();
 
     // <Line> Image Size
     //------------------
@@ -339,6 +345,7 @@ CWdgtGraphObjDrawing::CWdgtGraphObjDrawing(
     m_pEdtImageSizeWidth_px->setFixedWidth(m_cxEdtWidthClm1);
     m_pEdtImageSizeWidth_px->setMinimum(1);
     m_pEdtImageSizeWidth_px->setMaximum(100000);
+    m_pEdtImageSizeWidth_px->setValue(sizeDrawing.width());
     m_pEdtImageSizeWidth_px->setSuffix(" px");
     m_pEdtImageSizeWidth_px->setReadOnly(m_dimensionUnit == EDrawingDimensionUnit::Metric);
     //m_pEdtImageSizeWidth_px->setValue(sizeDrawing.width());
@@ -346,7 +353,7 @@ CWdgtGraphObjDrawing::CWdgtGraphObjDrawing(
     m_pLytLineImageSize_px->addSpacing(m_cxClmSpacing);
     QObject::connect(
         m_pEdtImageSizeWidth_px, &QSpinBox::editingFinished,
-        this, &CWdgtGraphObjDrawing::onEdtSizeWidthPxEditingFinished);
+        this, &CWdgtDrawingViewProperties::onEdtSizeWidthPxEditingFinished);
 
     // <Edit> Image Height
     //--------------------
@@ -358,6 +365,7 @@ CWdgtGraphObjDrawing::CWdgtGraphObjDrawing(
     m_pEdtImageSizeHeight_px->setFixedWidth(m_cxEdtWidthClm2);
     m_pEdtImageSizeHeight_px->setMinimum(1);
     m_pEdtImageSizeHeight_px->setMaximum(100000);
+    m_pEdtImageSizeHeight_px->setValue(sizeDrawing.height());
     m_pEdtImageSizeHeight_px->setSuffix(" px");
     m_pEdtImageSizeHeight_px->setReadOnly(m_dimensionUnit == EDrawingDimensionUnit::Metric);
     //m_pEdtImageSizeHeight_px->setValue(sizeDrawing.height());
@@ -365,7 +373,7 @@ CWdgtGraphObjDrawing::CWdgtGraphObjDrawing(
     m_pLytLineImageSize_px->addStretch();
     QObject::connect(
         m_pEdtImageSizeHeight_px, &QSpinBox::editingFinished,
-        this, &CWdgtGraphObjDrawing::onEdtSizeHeightPxEditingFinished);
+        this, &CWdgtDrawingViewProperties::onEdtSizeHeightPxEditingFinished);
 
     // <Stretch> At bottom of main layout
     //-----------------------------------
@@ -375,9 +383,10 @@ CWdgtGraphObjDrawing::CWdgtGraphObjDrawing(
 } // ctor
 
 //------------------------------------------------------------------------------
-CWdgtGraphObjDrawing::~CWdgtGraphObjDrawing()
+CWdgtDrawingViewProperties::~CWdgtDrawingViewProperties()
 //------------------------------------------------------------------------------
 {
+    m_pDrawingView = nullptr;
     m_pLyt = nullptr;
     m_pLytLineDimensionUnit = nullptr;
     m_pLblDimensionUnit = nullptr;
@@ -427,7 +436,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjDrawing::setDimensionUnit( EDrawingDimensionUnit i_dimensionUnit )
+void CWdgtDrawingViewProperties::setDimensionUnit( EDrawingDimensionUnit i_dimensionUnit )
 //------------------------------------------------------------------------------
 {
     if( m_dimensionUnit != i_dimensionUnit ) {
@@ -451,20 +460,26 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjDrawing::onCmbDimensionUnitCurrentIndexChanged( int i_idx )
+void CWdgtDrawingViewProperties::onDrawingViewDrawingSizeChanged(const QSize& i_size)
+//------------------------------------------------------------------------------
+{
+}
+
+//------------------------------------------------------------------------------
+void CWdgtDrawingViewProperties::onCmbDimensionUnitCurrentIndexChanged( int i_idx )
 //------------------------------------------------------------------------------
 {
     setDimensionUnit(static_cast<EDrawingDimensionUnit>(i_idx));
 }
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjDrawing::onEdtSizeWidthPxEditingFinished()
+void CWdgtDrawingViewProperties::onEdtSizeWidthPxEditingFinished()
 //------------------------------------------------------------------------------
 {
 }
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjDrawing::onEdtSizeHeightPxEditingFinished()
+void CWdgtDrawingViewProperties::onEdtSizeHeightPxEditingFinished()
 //------------------------------------------------------------------------------
 {
 }

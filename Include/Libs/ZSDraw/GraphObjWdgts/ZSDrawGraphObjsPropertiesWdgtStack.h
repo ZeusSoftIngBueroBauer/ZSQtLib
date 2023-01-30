@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZDraw_GraphObjsTreeWdgt_h
-#define ZDraw_GraphObjsTreeWdgt_h
+#ifndef ZSDraw_GraphObjsPropertiesWdgtStack_h
+#define ZSDraw_GraphObjsPropertiesWdgtStack_h
 
 #include <QtCore/qglobal.h>
 
@@ -36,11 +36,10 @@ may result in using the software modules.
 #endif
 
 #include "ZSDraw/Common/ZSDrawDllMain.h"
-#include "ZSSys/ZSSysEnumEntry.h"
 
-class QPushButton;
+class QLineEdit;
+class QStackedWidget;
 class QSettings;
-class QSplitter;
 class QHBoxLayout;
 class QVBoxLayout;
 
@@ -48,47 +47,56 @@ namespace ZS
 {
 namespace System
 {
-class CTrcAdminObj;
+class CIdxTree;
 }
+
 namespace Draw
 {
 class CDrawingView;
-class CWdgtGraphObjsTree;
-class CWdgtStackGraphObjsProperties;
+class CWdgtGraphObjPropertiesAbstract;
 
 //******************************************************************************
-class ZSDRAWDLL_API CWdgtGraphObjs : public QWidget
+class ZSDRAWDLL_API CWdgtStackGraphObjsProperties : public QWidget
 //******************************************************************************
 {
     Q_OBJECT
+protected: // type definitions and constants
+    typedef enum {
+        EGraphObjTypeUndefined = 0,
+        EGraphObjTypeDrawing   = 1,
+        EGraphObjTypeCount
+    }   EGraphObjType;
 public: // class methods
     static QString NameSpace() { return "ZS::Draw"; }
-    static QString ClassName() { return "CWdgtGraphObjs"; }
+    static QString ClassName() { return "CWdgtStackGraphObjsProperties"; }
 public: // ctors and dtor
-    CWdgtGraphObjs(
+    CWdgtStackGraphObjsProperties(
         CDrawingView* i_pDrawingView,
         QWidget* i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wflags = Qt::WindowFlags() );
-    virtual ~CWdgtGraphObjs();
+    virtual ~CWdgtStackGraphObjsProperties();
 public: // instance methods
     void saveState(QSettings& i_settings) const;
     void restoreState(const QSettings& i_settings);
-protected slots:
-    void onWdgtTreeViewModeChanged( const QString& i_strViewMode );
-    void onWdgtTreeViewCurrentRowChanged( const QModelIndex& i_modelIdxCurr, const QModelIndex& i_modelIdxPrev );
+public: // instance methods
+    void setKeyInTree( const QString& i_strKeyInTree );
+    QString getKeyInTree() const;
+protected slots: // overridables
+    virtual void onIdxTreeAboutToBeDestroyed();
 protected: // instance members
     CDrawingView* m_pDrawingView;
+    ZS::System::CIdxTree* m_pIdxTree;
+    QString m_strKeyInTree;
     QVBoxLayout* m_pLytMain;
-    QSplitter* m_pSplitter;
-    CWdgtGraphObjsTree* m_pWdgtTreeView;
-    CWdgtStackGraphObjsProperties* m_pWdgtGraphObjs;
-    /*!< Trace admin object to control trace outputs of the class. */
-    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
+    QHBoxLayout* m_pLytHeadLine;
+    QLineEdit* m_pEdtPath;
+    QStackedWidget* m_pStackedWdgtGraphObjsProperties;
+    QVector<CWdgtGraphObjPropertiesAbstract*> m_arpWdgtsGraphObjProperties;
 
-}; // class CWdgtIdxTree
+}; // class CWdgtStackGraphObjsProperties
 
 } // namespace Draw
 
 } // namespace ZS
 
-#endif // #ifndef ZDraw_GraphObjsTreeWdgt_h
+#endif // #ifndef ZSDraw_GraphObjsPropertiesWdgtStack_h

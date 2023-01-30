@@ -44,11 +44,11 @@ may result in using the software modules.
 
 #include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSDraw/GraphObjFormat/ZSDrawDlgFormatGraphObjs.h"
-#include "ZSDraw/DrawingPageSetup/ZSDrawDlgPageSetup.h"
+#include "ZSDraw/DrawingPageSetup/ZSDrawDlgDrawingViewSetup.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSDraw/Drawing/ZSDrawingView.h"
 #include "ZSDraw/GraphObjs/ZSDrawGraphObj.h"
-#include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjsTreeWdgt.h"
+#include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjsWdgt.h"
 #include "ZSDraw/GraphObjFactories/ZSDrawObjFactoriesModel.h"
 #include "ZSDraw/GraphObjFactories/ZSDrawObjFactoryConnectionLine.h"
 #include "ZSDraw/GraphObjFactories/ZSDrawObjFactoryConnectionPoint.h"
@@ -366,7 +366,7 @@ CMainWindow::CMainWindow(
     m_pModelObjFactories(nullptr),
     // Dock Widget - GraphObjs
     m_pDockWdgtGraphObjs(nullptr),
-    m_pWdgtGraphicsItems(nullptr),
+    m_pWdgtGraphObjs(nullptr),
     // Dialogs
     m_pDlgTest(nullptr),
     // Status Bar
@@ -421,9 +421,6 @@ CMainWindow::CMainWindow(
         pDrawingScene, &CDrawingScene::focusItemChanged,
         this, &CMainWindow::onDrawingSceneFocusItemChanged );
     QObject::connect(
-        pDrawingScene, &CDrawingScene::sceneRectChanged,
-        this, &CMainWindow::onDrawingSceneRectChanged );
-    QObject::connect(
         pDrawingScene, &CDrawingScene::selectionChanged,
         this, &CMainWindow::onDrawingSceneSelectionChanged );
     QObject::connect(
@@ -465,7 +462,6 @@ CMainWindow::CMainWindow(
 
     onDrawingSceneModeChanged();
     onDrawingSceneDrawSettingsChanged(pDrawingScene->getDrawSettings());
-    onDrawingSceneRectChanged(pDrawingScene->sceneRect());
 
 } // ctor
 
@@ -819,7 +815,7 @@ CMainWindow::~CMainWindow()
     m_pModelObjFactories = nullptr;
     // Dock Widget - GraphObjs
     m_pDockWdgtGraphObjs = nullptr;
-    m_pWdgtGraphicsItems = nullptr;
+    m_pWdgtGraphObjs = nullptr;
     // Dialogs
     m_pDlgTest = nullptr;
     // Status Bar
@@ -887,7 +883,7 @@ void CMainWindow::closeEvent( QCloseEvent* i_pEv )
         }
 
         if( m_pDockWdgtGraphObjs != nullptr ) {
-            m_pWdgtGraphicsItems->saveState(settings);
+            m_pWdgtGraphObjs->saveState(settings);
             if( m_pDockWdgtGraphObjs->isVisible() ) {
                 m_pDockWdgtGraphObjs->hide();
             }
@@ -2292,6 +2288,7 @@ void CMainWindow::createDockWidgets()
 
     QSettings settings;
 
+    CDrawingView* pDrawingView = m_pWdgtCentral->drawingView();
     CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
 
     // <DockWidget> Tree View Object Factories
@@ -2342,12 +2339,12 @@ void CMainWindow::createDockWidgets()
     m_pDockWdgtGraphObjs->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
 
     // Tree View with graphics items as in drawing scene's items list
-    m_pWdgtGraphicsItems = new CWdgtIdxTreeGraphObjs(pDrawingScene);
-    m_pDockWdgtGraphObjs->setWidget(m_pWdgtGraphicsItems);
+    m_pWdgtGraphObjs = new CWdgtGraphObjs(pDrawingView);
+    m_pDockWdgtGraphObjs->setWidget(m_pWdgtGraphObjs);
 
     addDockWidget(Qt::RightDockWidgetArea, m_pDockWdgtGraphObjs);
 
-    m_pWdgtGraphicsItems->restoreState(settings);
+    m_pWdgtGraphObjs->restoreState(settings);
 
     if( m_pMenuView != nullptr ) {
         if( !m_pMenuView->isEmpty() ) {
@@ -2938,8 +2935,8 @@ void CMainWindow::onActionFileSaveAsTriggered( bool )
         }
         else {
             QImage img(
-                pDrawingView->getDrawingWidthInPixels(),
-                pDrawingView->getDrawingHeightInPixels(),
+                pDrawingView->drawingWidthInPixels(),
+                pDrawingView->drawingHeightInPixels(),
                 QImage::Format_ARGB32_Premultiplied);
             QPainter painter(&img);
             pDrawingScene->render(&painter);
@@ -2960,8 +2957,8 @@ void CMainWindow::onActionFilePageSetupTriggered( bool )
         /* strAddInfo   */ "" );
 
     CDrawingView* pDrawingView = m_pWdgtCentral->drawingView();
-    CDlgPageSetup* pDlgPageSetup = new CDlgPageSetup(pDrawingView);
-    pDlgPageSetup->setCurrentWidget(CDlgPageSetup::EWidgetDrawingView);
+    CDlgDrawingViewSetup* pDlgPageSetup = new CDlgDrawingViewSetup(pDrawingView);
+    pDlgPageSetup->setCurrentWidget(CDlgDrawingViewSetup::EWidgetDrawingView);
     pDlgPageSetup->exec();
 }
 
@@ -4061,35 +4058,6 @@ void CMainWindow::onDrawingSceneFocusItemChanged(
 } // onDrawingSceneFocusItemChanged
 
 //------------------------------------------------------------------------------
-void CMainWindow::onDrawingSceneRectChanged( const QRectF& i_rect )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
-        strMthInArgs += rect2Str(i_rect);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onDrawingSceneRectChanged",
-        /* strAddInfo   */ strMthInArgs );
-
-    if( m_pLblStatusBarDrawingSceneRect != nullptr )
-    {
-        CDrawingView* pDrawingView = m_pWdgtCentral->drawingView();
-        CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
-
-        CPageSetup* pageSetup = pDrawingView->getPageSetup();
-        CUnit unitWidth = pageSetup->unit(EDirection::Horizontal);
-        QRectF rect = pDrawingScene->sceneRect();
-        QPointF ptTL = pDrawingView->mapFromScene(rect.topLeft());
-        rect.moveTopLeft(ptTL);
-        QString strRect = point2Str(ptTL) + ", " + size2Str(rect.size());
-        m_pLblStatusBarDrawingSceneRect->setText("SceneRect: " + strRect + " [" + unitWidth.symbol() + "]");
-    }
-} // onDrawingSceneChanged
-
-//------------------------------------------------------------------------------
 void CMainWindow::onDrawingSceneSelectionChanged()
 //------------------------------------------------------------------------------
 {
@@ -4118,17 +4086,17 @@ void CMainWindow::onDrawingSceneMousePosChanged( const QPointF& i_ptMousePos )
         /* strAddInfo   */ strMthInArgs );
 
     if( m_pLblStatusBarDrawingSceneMouseCursorPos != nullptr ) {
-        CDrawingView* pDrawingView = m_pWdgtCentral->drawingView();
-        CPageSetup* pageSetup = pDrawingView->getPageSetup();
-        CUnit unitWidth = pageSetup->unit(EDirection::Horizontal);
-        QString strMouseCursorPos;
-        strMouseCursorPos += QString("ScenePos: ");
-        strMouseCursorPos += QString::number(i_ptMousePos.x());
-        strMouseCursorPos += QString("/");
-        strMouseCursorPos += QString::number(i_ptMousePos.y());
-        strMouseCursorPos += QString(" [");
-        strMouseCursorPos += QString(unitWidth.symbol());
-        strMouseCursorPos += QString("]");
+        //CDrawingView* pDrawingView = m_pWdgtCentral->drawingView();
+        //CPageSetup* pageSetup = pDrawingView->getPageSetup();
+        //CUnit unitWidth = pageSetup->unit(EDirection::Horizontal);
+        //QString strMouseCursorPos;
+        //strMouseCursorPos += QString("ScenePos: ");
+        //strMouseCursorPos += QString::number(i_ptMousePos.x());
+        //strMouseCursorPos += QString("/");
+        //strMouseCursorPos += QString::number(i_ptMousePos.y());
+        //strMouseCursorPos += QString(" [");
+        //strMouseCursorPos += QString(unitWidth.symbol());
+        //strMouseCursorPos += QString("]");
 
         //if( m_drawArea.isValid() && m_drawArea.m_physValWidth.getPhysSize() != &Geometry::GraphDevice() )
         //{
@@ -4146,7 +4114,7 @@ void CMainWindow::onDrawingSceneMousePosChanged( const QPointF& i_ptMousePos )
         //    strMouseCursorPos += QString(")");
         //}
 
-        m_pLblStatusBarDrawingSceneMouseCursorPos->setText(strMouseCursorPos);
+        //m_pLblStatusBarDrawingSceneMouseCursorPos->setText(strMouseCursorPos);
 
     } // if( m_pLblStatusBarDrawingSceneMouseCursorPos != nullptr )
 
@@ -4299,21 +4267,21 @@ void CMainWindow::onDrawingViewMousePosChanged( const QPointF& i_ptMousePos )
 
     if( m_pLblStatusBarDrawingViewMouseCursorPos != nullptr )
     {
-        CDrawingView* pDrawingView = m_pWdgtCentral->drawingView();
-        CPageSetup* pageSetup = pDrawingView->getPageSetup();
-        CUnit unitWidth = pageSetup->unit(EDirection::Horizontal);
+        //CDrawingView* pDrawingView = m_pWdgtCentral->drawingView();
+        //CPageSetup* pageSetup = pDrawingView->getPageSetup();
+        //CUnit unitWidth = pageSetup->unit(EDirection::Horizontal);
 
-        QString strMouseCursorPos;
+        //QString strMouseCursorPos;
 
-        strMouseCursorPos += QString("ViewPos: ");
-        strMouseCursorPos += QString::number(i_ptMousePos.x());
-        strMouseCursorPos += QString("/");
-        strMouseCursorPos += QString::number(i_ptMousePos.y());
-        strMouseCursorPos += QString(" [");
-        strMouseCursorPos += QString(unitWidth.symbol());
-        strMouseCursorPos += QString("]");
+        //strMouseCursorPos += QString("ViewPos: ");
+        //strMouseCursorPos += QString::number(i_ptMousePos.x());
+        //strMouseCursorPos += QString("/");
+        //strMouseCursorPos += QString::number(i_ptMousePos.y());
+        //strMouseCursorPos += QString(" [");
+        //strMouseCursorPos += QString(unitWidth.symbol());
+        //strMouseCursorPos += QString("]");
 
-        m_pLblStatusBarDrawingViewMouseCursorPos->setText(strMouseCursorPos);
+        //m_pLblStatusBarDrawingViewMouseCursorPos->setText(strMouseCursorPos);
 
     } // if( m_pLblStatusBarDrawingViewMouseCursorPos != nullptr )
 
@@ -4473,16 +4441,16 @@ void CMainWindow::resizeEvent( QResizeEvent* i_pEv )
 
     if( m_pLblStatusBarDrawingSceneRect != nullptr )
     {
-        CDrawingView* pDrawingView = m_pWdgtCentral->drawingView();
-        CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
+        //CDrawingView* pDrawingView = m_pWdgtCentral->drawingView();
+        //CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
 
-        CPageSetup* pageSetup = pDrawingView->getPageSetup();
-        CUnit unitWidth = pageSetup->unit(EDirection::Horizontal);
-        QRectF rect = pDrawingScene->sceneRect();
-        QPointF ptTL = pDrawingView->mapFromScene(rect.topLeft());
-        rect.moveTopLeft(ptTL);
-        QString strRect = point2Str(ptTL) + ", " + size2Str(rect.size());
-        m_pLblStatusBarDrawingSceneRect->setText("SceneRect: " + strRect + " [" + unitWidth.symbol() + "]");
+        //CPageSetup* pageSetup = pDrawingView->getPageSetup();
+        //CUnit unitWidth = pageSetup->unit(EDirection::Horizontal);
+        //QRectF rect = pDrawingScene->sceneRect();
+        //QPointF ptTL = pDrawingView->mapFromScene(rect.topLeft());
+        //rect.moveTopLeft(ptTL);
+        //QString strRect = point2Str(ptTL) + ", " + size2Str(rect.size());
+        //m_pLblStatusBarDrawingSceneRect->setText("SceneRect: " + strRect + " [" + unitWidth.symbol() + "]");
     }
 } // resizeEvent
 
@@ -4502,16 +4470,16 @@ void CMainWindow::showEvent( QShowEvent* i_pEv )
     QMainWindow::showEvent(i_pEv);
 
     if( m_pLblStatusBarDrawingSceneRect != nullptr ) {
-        CDrawingView* pDrawingView = m_pWdgtCentral->drawingView();
-        CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
+        //CDrawingView* pDrawingView = m_pWdgtCentral->drawingView();
+        //CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
 
-        CPageSetup* pageSetup = pDrawingView->getPageSetup();
-        CUnit unitWidth = pageSetup->unit(EDirection::Horizontal);
-        QRectF rect = pDrawingScene->sceneRect();
-        QPointF ptTL = pDrawingView->mapFromScene(rect.topLeft());
-        rect.moveTopLeft(ptTL);
-        QString strRect = point2Str(ptTL) + ", " + size2Str(rect.size());
-        m_pLblStatusBarDrawingSceneRect->setText("SceneRect: " + strRect + " [" + unitWidth.symbol() + "]");
+        //CPageSetup* pageSetup = pDrawingView->getPageSetup();
+        //CUnit unitWidth = pageSetup->unit(EDirection::Horizontal);
+        //QRectF rect = pDrawingScene->sceneRect();
+        //QPointF ptTL = pDrawingView->mapFromScene(rect.topLeft());
+        //rect.moveTopLeft(ptTL);
+        //QString strRect = point2Str(ptTL) + ", " + size2Str(rect.size());
+        //m_pLblStatusBarDrawingSceneRect->setText("SceneRect: " + strRect + " [" + unitWidth.symbol() + "]");
     }
 } // showEvent
 

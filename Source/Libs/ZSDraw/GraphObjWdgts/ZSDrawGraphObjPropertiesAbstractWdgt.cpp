@@ -24,7 +24,7 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjAbstractWdgt.h"
+#include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjPropertiesAbstractWdgt.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSSys/ZSSysIdxTree.h"
 
@@ -36,7 +36,7 @@ using namespace ZS::Draw;
 
 
 /*******************************************************************************
-class CWdgtAbstractGraphObj : public QWidget
+class CWdgtGraphObjPropertiesAbstract : public QWidget
 *******************************************************************************/
 
 /*==============================================================================
@@ -44,7 +44,7 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CWdgtAbstractGraphObj::CWdgtAbstractGraphObj(
+CWdgtGraphObjPropertiesAbstract::CWdgtGraphObjPropertiesAbstract(
     CDrawingScene* i_pDrawingScene,
     QWidget* i_pWdgtParent) :
 //------------------------------------------------------------------------------
@@ -62,12 +62,12 @@ CWdgtAbstractGraphObj::CWdgtAbstractGraphObj(
 
     QObject::connect(
         m_pIdxTree, &CIdxTree::aboutToBeDestroyed,
-        this, &CWdgtAbstractGraphObj::onIdxTreeAboutToBeDestroyed);
+        this, &CWdgtGraphObjPropertiesAbstract::onIdxTreeAboutToBeDestroyed);
 
 } // ctor
 
 //------------------------------------------------------------------------------
-CWdgtAbstractGraphObj::~CWdgtAbstractGraphObj()
+CWdgtGraphObjPropertiesAbstract::~CWdgtGraphObjPropertiesAbstract()
 //------------------------------------------------------------------------------
 {
     m_pDrawingScene = nullptr;
@@ -86,13 +86,13 @@ public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtAbstractGraphObj::saveState(QSettings& i_settings) const
+void CWdgtGraphObjPropertiesAbstract::saveState(QSettings& i_settings) const
 //------------------------------------------------------------------------------
 {
 }
 
 //------------------------------------------------------------------------------
-void CWdgtAbstractGraphObj::restoreState(const QSettings& i_settings)
+void CWdgtGraphObjPropertiesAbstract::restoreState(const QSettings& i_settings)
 //------------------------------------------------------------------------------
 {
 }
@@ -102,7 +102,7 @@ public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtAbstractGraphObj::setKeyInTree( const QString& i_strKeyInTree )
+void CWdgtGraphObjPropertiesAbstract::setKeyInTree( const QString& i_strKeyInTree )
 //------------------------------------------------------------------------------
 {
     if( m_strKeyInTree != i_strKeyInTree )
@@ -112,7 +112,7 @@ void CWdgtAbstractGraphObj::setKeyInTree( const QString& i_strKeyInTree )
 }
 
 //------------------------------------------------------------------------------
-QString CWdgtAbstractGraphObj::getKeyInTree() const
+QString CWdgtGraphObjPropertiesAbstract::getKeyInTree() const
 //------------------------------------------------------------------------------
 {
     return m_strKeyInTree;
@@ -123,7 +123,7 @@ public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtAbstractGraphObj::resizeToContents()
+void CWdgtGraphObjPropertiesAbstract::resizeToContents()
 //------------------------------------------------------------------------------
 {
 }
@@ -133,7 +133,7 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtAbstractGraphObj::onIdxTreeAboutToBeDestroyed()
+void CWdgtGraphObjPropertiesAbstract::onIdxTreeAboutToBeDestroyed()
 //------------------------------------------------------------------------------
 {
     m_pIdxTree = nullptr;

@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -25,26 +25,35 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjsWdgt.h"
-#include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjAbstractWdgt.h"
-#include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjDrawingWdgt.h"
-#include "ZSDraw/Drawing/ZSDrawingScene.h"
+#include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjsTreeWdgt.h"
+#include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjsPropertiesWdgtStack.h"
+#include "ZSDraw/Drawing/ZSDrawingView.h"
+#include "ZSSysGUI/ZSSysIdxTreeModelEntry.h"
+#include "ZSSys/ZSSysAux.h"
+#include "ZSSys/ZSSysException.h"
+#include "ZSSys/ZSSysTrcAdminObj.h"
+#include "ZSSys/ZSSysTrcMethod.h"
+#include "ZSSys/ZSSysTrcServer.h"
+
+#include <QtCore/qsettings.h>
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qlayout.h>
 #include <QtGui/qlineedit.h>
+#include <QtGui/qpushbutton.h>
 #include <QtGui/qsplitter.h>
-#include <QtGui/qstackedwidget.h>
 #else
 #include <QtWidgets/qlayout.h>
 #include <QtWidgets/qlineedit.h>
+#include <QtWidgets/qpushbutton.h>
 #include <QtWidgets/qsplitter.h>
-#include <QtWidgets/qstackedwidget.h>
 #endif
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 
 using namespace ZS::System;
+using namespace ZS::System::GUI;
 using namespace ZS::Draw;
 
 
@@ -58,57 +67,69 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CWdgtGraphObjs::CWdgtGraphObjs(
-    CDrawingScene* i_pDrawingScene,
+    CDrawingView* i_pDrawingView,
     QWidget* i_pWdgtParent,
     Qt::WindowFlags i_wflags ) :
 //------------------------------------------------------------------------------
     QWidget(i_pWdgtParent,i_wflags),
-    m_pDrawingScene(i_pDrawingScene),
-    m_pIdxTree(i_pDrawingScene->getGraphObjsIdxTree()),
-    m_strKeyInTree(),
+    m_pDrawingView(i_pDrawingView),
     m_pLytMain(nullptr),
-    m_pLytHeadLine(nullptr),
-    m_pEdtPath(nullptr),
-    m_pStackedWdgtGraphObjs(nullptr),
-    m_arpWdgtsGraphObj(EGraphObjTypeCount, nullptr)
+    m_pSplitter(nullptr),
+    m_pWdgtTreeView(nullptr),
+    m_pWdgtGraphObjs(nullptr),
+    m_pTrcAdminObj(nullptr)
 {
-    setObjectName(m_pIdxTree->objectName());
+    setObjectName(i_pDrawingView->objectName());
 
-    QObject::connect(
-        m_pIdxTree, &CIdxTree::aboutToBeDestroyed,
-        this, &CWdgtGraphObjs::onIdxTreeAboutToBeDestroyed);
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
 
-    m_pLytMain = new QVBoxLayout();
+    QString strMthInArgs;
+
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        strMthInArgs =  QString(i_pDrawingView->objectName());
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "ctor",
+        /* strAddInfo   */ "" );
+
+    m_pLytMain = new QVBoxLayout;
     setLayout(m_pLytMain);
 
-    // Headline
-    //---------
+    // Split View with Tree View and Node Content
+    //===========================================
 
-    m_pLytHeadLine = new QHBoxLayout();
-    m_pLytMain->addLayout(m_pLytHeadLine);
+    m_pSplitter = new QSplitter(Qt::Horizontal);
+    m_pLytMain->addWidget(m_pSplitter, 1);
 
-    m_pEdtPath = new QLineEdit();
-    m_pLytHeadLine->addWidget(m_pEdtPath, 1);
+    // <TreeView>
+    //-----------
 
-    // Content of selected tree node
-    //------------------------------
+    m_pWdgtTreeView = new CWdgtGraphObjsTree(m_pDrawingView);
+    m_pWdgtTreeView->setMinimumWidth(180);
+    m_pSplitter->addWidget(m_pWdgtTreeView);
 
-    m_pStackedWdgtGraphObjs = new QStackedWidget();
-    m_pLytMain->addWidget(m_pStackedWdgtGraphObjs, 1);
+    QObject::connect(
+        m_pWdgtTreeView, &CWdgtGraphObjsTree::viewModeChanged,
+        this, &CWdgtGraphObjs::onWdgtTreeViewModeChanged );
+    QObject::connect(
+        m_pWdgtTreeView, &CWdgtGraphObjsTree::currentRowChanged,
+        this, &CWdgtGraphObjs::onWdgtTreeViewCurrentRowChanged );
 
-    m_arpWdgtsGraphObj[EGraphObjTypeUndefined] =
-        new CWdgtAbstractGraphObj(m_pDrawingScene);
-    m_arpWdgtsGraphObj[EGraphObjTypeDrawing] =
-        new CWdgtGraphObjDrawing(m_pDrawingScene);
+    // <TableView>
+    //------------
 
-    for( int idxGraphObjType = 0; idxGraphObjType < EGraphObjTypeCount; idxGraphObjType++ )
-    {
-        if( m_arpWdgtsGraphObj[idxGraphObjType] != nullptr )
-        {
-            m_pStackedWdgtGraphObjs->addWidget(m_arpWdgtsGraphObj[idxGraphObjType]);
-        }
+    m_pWdgtGraphObjs = new CWdgtStackGraphObjsProperties(m_pDrawingView);
+    m_pSplitter->addWidget(m_pWdgtGraphObjs);
+
+    CWdgtGraphObjsTree::EViewMode viewMode = m_pWdgtTreeView->viewMode();
+
+    if( viewMode == CWdgtGraphObjsTree::EViewMode::NavPanelOnly ) {
+        m_pWdgtGraphObjs->hide();
     }
-    m_pStackedWdgtGraphObjs->setCurrentIndex(EGraphObjTypeUndefined);
 
 } // ctor
 
@@ -116,13 +137,24 @@ CWdgtGraphObjs::CWdgtGraphObjs(
 CWdgtGraphObjs::~CWdgtGraphObjs()
 //------------------------------------------------------------------------------
 {
-    m_pIdxTree = nullptr;
-    //m_strKeyInTree;
+    QString strMthInArgs;
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "dtor",
+        /* strAddInfo   */ "" );
+
+    mthTracer.onAdminObjAboutToBeReleased();
+
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
+
+    m_pDrawingView = nullptr;
     m_pLytMain = nullptr;
-    m_pLytHeadLine = nullptr;
-    m_pEdtPath = nullptr;
-    m_pStackedWdgtGraphObjs = nullptr;
-    //m_arpWdgtsGraphObj.clear();
+    m_pSplitter = nullptr;
+    m_pWdgtTreeView = nullptr;
+    m_pWdgtGraphObjs = nullptr;
+    m_pTrcAdminObj = nullptr;
 
 } // dtor
 
@@ -134,70 +166,33 @@ public: // instance methods
 void CWdgtGraphObjs::saveState(QSettings& i_settings) const
 //------------------------------------------------------------------------------
 {
+    if( m_pSplitter != nullptr ) {
+        QList<int> listSizes = m_pSplitter->sizes();
+        for( int idx = 0; idx < listSizes.count(); idx++ ) {
+            i_settings.setValue(
+                ClassName() + "/" + objectName() + "/SplitterHeight" + QString::number(idx), listSizes[idx]);
+        }
+    }
+
+    m_pWdgtTreeView->saveState(i_settings);
+    m_pWdgtGraphObjs->saveState(i_settings);
 }
 
 //------------------------------------------------------------------------------
 void CWdgtGraphObjs::restoreState(const QSettings& i_settings)
 //------------------------------------------------------------------------------
 {
-}
+    m_pWdgtTreeView->restoreState(i_settings);
+    m_pWdgtGraphObjs->restoreState(i_settings);
 
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CWdgtGraphObjs::setKeyInTree( const QString& i_strKeyInTree )
-//------------------------------------------------------------------------------
-{
-    if( m_strKeyInTree != i_strKeyInTree )
-    {
-        m_strKeyInTree = i_strKeyInTree;
-
-        EGraphObjType graphObjType = EGraphObjTypeUndefined;
-        QString       strEntryPath;
-
-        if( m_pIdxTree != nullptr )
-        {
-            CIdxTreeEntry* pTreeEntry = m_pIdxTree->findEntry(i_strKeyInTree);
-
-            if( pTreeEntry != nullptr )
-            {
-                if( pTreeEntry->isRoot() )
-                {
-                    graphObjType = EGraphObjTypeDrawing;
-                }
-                else if( pTreeEntry->isBranch() )
-                {
-                }
-                else if( pTreeEntry->isLeave() )
-                {
-                }
-                strEntryPath += pTreeEntry->path();
-
-            } // if( pTreeEntry != nullptr )
-        } // if( m_pIdxTree != nullptr )
-
-        m_pEdtPath->setText(strEntryPath);
-
-        for( int idxGraphObjType = 0; idxGraphObjType < EGraphObjTypeCount; idxGraphObjType++ )
-        {
-            if( m_arpWdgtsGraphObj[idxGraphObjType] != nullptr )
-            {
-                m_arpWdgtsGraphObj[idxGraphObjType]->setKeyInTree(m_strKeyInTree);
-            }
+    if( m_pSplitter != nullptr ) {
+        QList<int> listSizes = m_pSplitter->sizes();
+        for( int idx = 0; idx < listSizes.count(); idx++ ) {
+            listSizes[idx] = i_settings.value(
+                ClassName() + "/" + objectName() + "/SplitterHeight" + QString::number(idx), 50).toInt();
         }
-
-        m_pStackedWdgtGraphObjs->setCurrentIndex(graphObjType);
-
-    } // if( m_strKeyInTree != i_strKeyInTree )
-} // setKeyInTree
-
-//------------------------------------------------------------------------------
-QString CWdgtGraphObjs::getKeyInTree() const
-//------------------------------------------------------------------------------
-{
-    return m_strKeyInTree;
+        m_pSplitter->setSizes(listSizes);
+    }
 }
 
 /*==============================================================================
@@ -205,8 +200,65 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjs::onIdxTreeAboutToBeDestroyed()
+void CWdgtGraphObjs::onWdgtTreeViewModeChanged( const QString& i_strViewMode )
 //------------------------------------------------------------------------------
 {
-    m_pIdxTree = nullptr;
+    QString strMthInArgs;
+
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        strMthInArgs = i_strViewMode;
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onWdgtTreeViewModeChanged",
+        /* strMthInArgs */ strMthInArgs );
+
+    CWdgtGraphObjsTree::EViewMode viewMode =
+        CWdgtGraphObjsTree::str2ViewMode(i_strViewMode);
+
+    if( viewMode == CWdgtGraphObjsTree::EViewMode::NavPanelAndNodeContent ) {
+        m_pWdgtTreeView->setMinimumWidth(180);
+        m_pWdgtGraphObjs->show();
+    }
+    else {
+        m_pWdgtTreeView->setMinimumWidth(180);
+        m_pWdgtGraphObjs->hide();
+    }
 }
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjs::onWdgtTreeViewCurrentRowChanged(
+    const QModelIndex& i_modelIdxCurr,
+    const QModelIndex& i_modelIdxPrev )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    {
+        strMthInArgs  = "Curr {" + CModelIdxTreeGraphObjs::modelIdx2Str(i_modelIdxCurr) + "}";
+        strMthInArgs += ", Prev {" + CModelIdxTreeGraphObjs::modelIdx2Str(i_modelIdxPrev) + "}";
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onWdgtTreeViewCurrentRowChanged",
+        /* strMthInArgs */ strMthInArgs );
+
+    if( i_modelIdxCurr.isValid() )
+    {
+        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdxCurr.internalPointer());
+
+        if( pModelTreeEntry != nullptr ) {
+            m_pWdgtGraphObjs->setKeyInTree(pModelTreeEntry->keyInTree());
+        }
+        else {
+            m_pWdgtGraphObjs->setKeyInTree("");
+        }
+    }
+
+} // onWdgtTreeViewCurrentRowChanged

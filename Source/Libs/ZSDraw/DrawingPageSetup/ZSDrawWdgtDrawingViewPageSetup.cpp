@@ -24,6 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
+#if 0
+
 #include <QtCore/qglobal.h>
 
 #if QT_VERSION < 0x050000
@@ -202,7 +204,7 @@ CWdgtDrawingViewPageSetup::CWdgtDrawingViewPageSetup(
 
     int cxEdtWidth = 100;
 
-    QSize sizeDrawing = m_pDrawingView->getDrawingSizeInPixels();
+    QSize sizeDrawing = m_pDrawingView->drawingSizeInPixels();
 
     m_pLyt->addSpacing(4);
 
@@ -403,7 +405,7 @@ CWdgtDrawingViewPageSetup::CWdgtDrawingViewPageSetup(
     m_pCmbDrawingMetricsSizeUnit = new QComboBox();
     m_pCmbDrawingMetricsSizeUnit->setFixedWidth(cxEdtWidth);
 
-    CPageSetup* pageSetup = m_pDrawingView->getPageSetup();
+    CPageSetup pageSetup = m_pDrawingView->pageSetup();
     //CPhysSizeGeometry* physSizeGeometry = pageSetup->getPhysSizeWidth();
 
     //for( int idxUnit = 0; idxUnit < physSizeGeometry->getUnitCount(); ++idxUnit )
@@ -460,7 +462,7 @@ CWdgtDrawingViewPageSetup::CWdgtDrawingViewPageSetup(
     // <Separator> Margins
     //--------------------
 
-    QMargins margins = m_pDrawingView->getViewportMargins();
+    QMargins margins = m_pDrawingView->viewportMargins();
 
     m_pLyt->addSpacing(4);
 
@@ -689,7 +691,7 @@ bool CWdgtDrawingViewPageSetup::hasChanges() const
         int iMarginRight = m_pEdtMarginsRight->value();
         int iMarginBottom = m_pEdtMarginsBottom->value();
 
-        QMargins margins = m_pDrawingView->getViewportMargins();
+        QMargins margins = m_pDrawingView->viewportMargins();
 
         if( margins.left() != iMarginLeft || margins.top() != iMarginTop
             || margins.right() != iMarginRight || margins.bottom() != iMarginBottom )
@@ -725,14 +727,14 @@ void CWdgtDrawingViewPageSetup::acceptChanges() const
     // by the scroll bars of the QGraphicsView.
     // Here we don't want to change the visible areay within the scroll bars but
     // the scenes rectangle size.
-    m_pDrawingView->getDrawingScene()->setSceneRect(rect);
+    m_pDrawingView->drawingScene()->setSceneRect(rect);
 
     int iMarginLeft = m_pEdtMarginsLeft->value();
     int iMarginTop = m_pEdtMarginsTop->value();
     int iMarginRight = m_pEdtMarginsRight->value();
     int iMarginBottom = m_pEdtMarginsBottom->value();
 
-    QMargins margins = m_pDrawingView->getViewportMargins();
+    QMargins margins = m_pDrawingView->viewportMargins();
 
     margins.setLeft(iMarginLeft);
     margins.setTop(iMarginTop);
@@ -872,3 +874,5 @@ void CWdgtDrawingViewPageSetup::onEdtMarginsBottomEditingFinished()
     emit settingsChanged();
 
 } // onEdtMarginsBottomEditingFinished
+
+#endif

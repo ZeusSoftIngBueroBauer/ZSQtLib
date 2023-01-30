@@ -98,7 +98,7 @@ class CObjFactoryText;
 class CObjFactoryConnectionPoint;
 class CObjFactoryConnectionLine;
 class CObjFactoryGroup;
-class CWdgtIdxTreeGraphObjs;
+class CWdgtGraphObjs;
 
 namespace QtWidgets
 {
@@ -306,7 +306,6 @@ public slots: // Menu - Trace
 public slots: // Drawing Scene
     void onDrawingSceneChanged( const QList<QRectF>& i_region );
     void onDrawingSceneFocusItemChanged( QGraphicsItem* i_pNewFocusItem, QGraphicsItem* i_pOldFocusItem, Qt::FocusReason reason );
-    void onDrawingSceneRectChanged( const QRectF& i_rect );
     void onDrawingSceneSelectionChanged();
     void onDrawingSceneMousePosChanged( const QPointF& i_ptMousePos );
     void onDrawingSceneModeChanged();
@@ -458,7 +457,7 @@ protected: // instance members
     ZS::Draw::CObjFactoriesModel* m_pModelObjFactories;
     // Dock Widget - GraphObjs
     QDockWidget* m_pDockWdgtGraphObjs;
-    ZS::Draw::CWdgtIdxTreeGraphObjs* m_pWdgtGraphicsItems;
+    ZS::Draw::CWdgtGraphObjs* m_pWdgtGraphObjs;
     // Dialogs
     ZS::Test::GUI::CDlgTest* m_pDlgTest;
     // Status Bar

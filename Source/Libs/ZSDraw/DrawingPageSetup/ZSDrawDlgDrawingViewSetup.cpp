@@ -43,9 +43,8 @@ may result in using the software modules.
 #include <QtWidgets/qstackedwidget.h>
 #endif
 
-#include "ZSDraw/DrawingPageSetup/ZSDrawDlgPageSetup.h"
-#include "ZSDraw/DrawingPageSetup/ZSDrawWdgtDrawingPaperPageSetup.h"
-#include "ZSDraw/DrawingPageSetup/ZSDrawWdgtDrawingViewPageSetup.h"
+#include "ZSDraw/DrawingPageSetup/ZSDrawDlgDrawingViewSetup.h"
+#include "ZSDraw/Drawing/ZSDrawingViewPropertiesWdgt.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSDraw/Drawing/ZSDrawingView.h"
 #include "ZSSys/ZSSysAux.h"
@@ -64,7 +63,7 @@ using namespace ZS::PhysVal;
 
 
 /*******************************************************************************
-class CDlgPageSetup : public QDialog
+class CDlgDrawingViewSetup : public QDialog
 *******************************************************************************/
 
 /*==============================================================================
@@ -72,7 +71,7 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CDlgPageSetup::CDlgPageSetup( CDrawingView* i_pDrawingView, QWidget* /*i_pWdgtParent*/ ) :
+CDlgDrawingViewSetup::CDlgDrawingViewSetup( CDrawingView* i_pDrawingView, QWidget* /*i_pWdgtParent*/ ) :
 //------------------------------------------------------------------------------
     QDialog(i_pDrawingView),
     m_pDrawingView(i_pDrawingView),
@@ -81,7 +80,7 @@ CDlgPageSetup::CDlgPageSetup( CDrawingView* i_pDrawingView, QWidget* /*i_pWdgtPa
     m_pStackedWdgt(nullptr),
     // Format Widgets
     //m_pWdgtDrawingPaperPageSetup(nullptr),
-    m_pWdgtDrawingViewPageSetup(nullptr),
+    m_pWdgtDrawingViewProperties(nullptr),
     // Buttons
     m_pLytBtns(nullptr),
     m_pBtnOk(nullptr),
@@ -170,11 +169,11 @@ CDlgPageSetup::CDlgPageSetup( CDrawingView* i_pDrawingView, QWidget* /*i_pWdgtPa
     // <Widget> Drawing Scene
     //-----------------------
 
-    m_pWdgtDrawingViewPageSetup = new CWdgtDrawingViewPageSetup(m_pDrawingView);
-    m_pStackedWdgt->addWidget(m_pWdgtDrawingViewPageSetup);
+    m_pWdgtDrawingViewProperties = new CWdgtDrawingViewProperties(m_pDrawingView);
+    m_pStackedWdgt->addWidget(m_pWdgtDrawingViewProperties);
 
-    if( !connect(
-        /* pObjSender   */ m_pWdgtDrawingViewPageSetup,
+    if( !QObject::connect(
+        /* pObjSender   */ m_pWdgtDrawingViewProperties,
         /* szSignal     */ SIGNAL(settingsChanged()),
         /* pObjReceiver */ this,
         /* szSlot       */ SLOT(onWdgtDrawingViewSettingsChanged()) ) )
@@ -195,7 +194,7 @@ CDlgPageSetup::CDlgPageSetup( CDrawingView* i_pDrawingView, QWidget* /*i_pWdgtPa
     m_pLytBtns->addWidget(m_pBtnOk);
     m_pBtnOk->setDefault(true);
 
-    if( !connect(
+    if( !QObject::connect(
         /* pObjSender   */ m_pBtnOk,
         /* szSignal     */ SIGNAL(clicked()),
         /* pObjReceiver */ this,
@@ -208,7 +207,7 @@ CDlgPageSetup::CDlgPageSetup( CDrawingView* i_pDrawingView, QWidget* /*i_pWdgtPa
     m_pBtnAccept->setEnabled(false);
     m_pLytBtns->addWidget(m_pBtnAccept);
 
-    if( !connect(
+    if( !QObject::connect(
         /* pObjSender   */ m_pBtnAccept,
         /* szSignal     */ SIGNAL(clicked()),
         /* pObjReceiver */ this,
@@ -220,7 +219,7 @@ CDlgPageSetup::CDlgPageSetup( CDrawingView* i_pDrawingView, QWidget* /*i_pWdgtPa
     m_pBtnCancel = new QPushButton("Cancel");
     m_pLytBtns->addWidget(m_pBtnCancel);
 
-    if( !connect(
+    if( !QObject::connect(
         /* pObjSender   */ m_pBtnCancel,
         /* szSignal     */ SIGNAL(clicked()),
         /* pObjReceiver */ this,
@@ -245,7 +244,7 @@ CDlgPageSetup::CDlgPageSetup( CDrawingView* i_pDrawingView, QWidget* /*i_pWdgtPa
 } // ctor
 
 //------------------------------------------------------------------------------
-CDlgPageSetup::~CDlgPageSetup()
+CDlgDrawingViewSetup::~CDlgDrawingViewSetup()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -270,7 +269,7 @@ CDlgPageSetup::~CDlgPageSetup()
     m_pStackedWdgt = nullptr;
     // Format Widgets
     //m_pWdgtDrawingPaperPageSetup = nullptr;
-    m_pWdgtDrawingViewPageSetup = nullptr;
+    m_pWdgtDrawingViewProperties = nullptr;
     // Buttons
     m_pLytBtns = nullptr;
     m_pBtnOk = nullptr;
@@ -287,7 +286,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDlgPageSetup::setCurrentWidget( EWidget i_wdgt )
+void CDlgDrawingViewSetup::setCurrentWidget( EWidget i_wdgt )
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
@@ -314,7 +313,7 @@ protected slots: // overridables of base class QDialog
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDlgPageSetup::closeEvent( QCloseEvent* i_pEv )
+void CDlgDrawingViewSetup::closeEvent( QCloseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
@@ -334,7 +333,7 @@ void CDlgPageSetup::closeEvent( QCloseEvent* i_pEv )
 } // closeEvent
 
 //------------------------------------------------------------------------------
-void CDlgPageSetup::showEvent( QShowEvent* i_pEv )
+void CDlgDrawingViewSetup::showEvent( QShowEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
@@ -358,7 +357,7 @@ protected slots: // overridables of base class QDialog
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDlgPageSetup::accept()
+void CDlgDrawingViewSetup::accept()
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
@@ -380,7 +379,7 @@ void CDlgPageSetup::accept()
 } // accept
 
 //------------------------------------------------------------------------------
-void CDlgPageSetup::reject()
+void CDlgDrawingViewSetup::reject()
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
@@ -404,7 +403,7 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDlgPageSetup::onBtnAcceptClicked()
+void CDlgDrawingViewSetup::onBtnAcceptClicked()
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
@@ -420,16 +419,16 @@ void CDlgPageSetup::onBtnAcceptClicked()
         /* strAddInfo   */ strAddTrcInfo );
 
     //m_pWdgtDrawingPaperPageSetup->acceptChanges();
-    m_pWdgtDrawingViewPageSetup->acceptChanges();
+    //m_pWdgtDrawingViewProperties->acceptChanges();
 
-    if( /*m_pWdgtDrawingPaperPageSetup->hasChanges() ||*/ m_pWdgtDrawingViewPageSetup->hasChanges() )
-    {
-        m_pBtnAccept->setEnabled(true);
-    }
-    else
-    {
-        m_pBtnAccept->setEnabled(false);
-    }
+    //if( /*m_pWdgtDrawingPaperPageSetup->hasChanges() ||*/ m_pWdgtDrawingViewProperties->hasChanges() )
+    //{
+    //    m_pBtnAccept->setEnabled(true);
+    //}
+    //else
+    //{
+    //    m_pBtnAccept->setEnabled(false);
+    //}
 
 } // onBtnAcceptClicked
 
@@ -438,7 +437,7 @@ protected slots: // instance methods (List Widget)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDlgPageSetup::onListWdgtCurrentRowChanged( int i_iRow )
+void CDlgDrawingViewSetup::onListWdgtCurrentRowChanged( int i_iRow )
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
@@ -462,7 +461,7 @@ protected slots: // Format Widgets
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDlgPageSetup::onWdgtDrawingPaperSettingsChanged()
+void CDlgDrawingViewSetup::onWdgtDrawingPaperSettingsChanged()
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
@@ -477,19 +476,19 @@ void CDlgPageSetup::onWdgtDrawingPaperSettingsChanged()
         /* strMethod    */ "onWdgtDrawingPaperSettingsChanged",
         /* strAddInfo   */ strAddTrcInfo );
 
-    if( /*m_pWdgtDrawingPaperPageSetup->hasChanges() ||*/ m_pWdgtDrawingViewPageSetup->hasChanges() )
-    {
-        m_pBtnAccept->setEnabled(true);
-    }
-    else
-    {
-        m_pBtnAccept->setEnabled(false);
-    }
+    //if( /*m_pWdgtDrawingPaperPageSetup->hasChanges() ||*/ m_pWdgtDrawingViewProperties->hasChanges() )
+    //{
+    //    m_pBtnAccept->setEnabled(true);
+    //}
+    //else
+    //{
+    //    m_pBtnAccept->setEnabled(false);
+    //}
 
 } // onWdgtDrawingPaperSettingsChanged
 
 //------------------------------------------------------------------------------
-void CDlgPageSetup::onWdgtDrawingViewSettingsChanged()
+void CDlgDrawingViewSetup::onWdgtDrawingViewSettingsChanged()
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
@@ -504,13 +503,13 @@ void CDlgPageSetup::onWdgtDrawingViewSettingsChanged()
         /* strMethod    */ "onWdgtDrawingViewSettingsChanged",
         /* strAddInfo   */ strAddTrcInfo );
 
-    if( /*m_pWdgtDrawingPaperPageSetup->hasChanges() ||*/ m_pWdgtDrawingViewPageSetup->hasChanges() )
-    {
-        m_pBtnAccept->setEnabled(true);
-    }
-    else
-    {
-        m_pBtnAccept->setEnabled(false);
-    }
+    //if( /*m_pWdgtDrawingPaperPageSetup->hasChanges() ||*/ m_pWdgtDrawingViewProperties->hasChanges() )
+    //{
+    //    m_pBtnAccept->setEnabled(true);
+    //}
+    //else
+    //{
+    //    m_pBtnAccept->setEnabled(false);
+    //}
 
 } // onWdgtDrawingViewSettingsChanged

@@ -90,7 +90,7 @@ class CDrawingView;
 //class CObjFactoryConnectionPoint;
 //class CObjFactoryConnectionLine;
 //class CObjFactoryGroup;
-//class CWdgtIdxTreeGraphObjs;
+//class CWdgtGraphObjs;
 
 //namespace QtWidgets
 //{

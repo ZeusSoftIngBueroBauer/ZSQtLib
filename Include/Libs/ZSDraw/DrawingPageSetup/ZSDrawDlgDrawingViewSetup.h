@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSDraw_DlgPageSetup_h
-#define ZSDraw_DlgPageSetup_h
+#ifndef ZSDraw_DlgDrawingViewSetup_h
+#define ZSDraw_DlgDrawingViewSetup_h
 
 #include <QtCore/qglobal.h>
 
@@ -56,10 +56,10 @@ namespace Draw
 {
 class CDrawingView;
 //class CWdgtDrawingPaperPageSetup;
-class CWdgtDrawingViewPageSetup;
+class CWdgtDrawingViewProperties;
 
 //******************************************************************************
-class ZSDRAWDLL_API CDlgPageSetup : public QDialog
+class ZSDRAWDLL_API CDlgDrawingViewSetup : public QDialog
 //******************************************************************************
 {
     Q_OBJECT
@@ -67,7 +67,7 @@ public: // class methods
     /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
     /*! Returns the class name. */
-    static QString ClassName() { return "CDlgPageSetup"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
+    static QString ClassName() { return "CDlgDrawingViewSetup"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
 public: // type definitions and constants
     enum EWidget
     {
@@ -76,8 +76,8 @@ public: // type definitions and constants
         EWidgetCount
     };
 public: // instance methods
-    CDlgPageSetup( CDrawingView* i_pDrawingView, QWidget* i_pWdgtParent = nullptr );
-    ~CDlgPageSetup();
+    CDlgDrawingViewSetup( CDrawingView* i_pDrawingView, QWidget* i_pWdgtParent = nullptr );
+    ~CDlgDrawingViewSetup();
 public: // overridables
     /*! This virtual method returns the name space of the object's class.
         This method can be reimplemented in derived classes so when invoked for the
@@ -110,7 +110,7 @@ private: // instance members
     QStackedWidget* m_pStackedWdgt;
     // Format Widgets
     //CWdgtDrawingPaperPageSetup* m_pWdgtDrawingPaperPageSetup;
-    CWdgtDrawingViewPageSetup* m_pWdgtDrawingViewPageSetup;
+    CWdgtDrawingViewProperties* m_pWdgtDrawingViewProperties;
     // Buttons
     QHBoxLayout* m_pLytBtns;
     QPushButton* m_pBtnOk;
@@ -119,10 +119,10 @@ private: // instance members
     // Trace
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
-}; // CDlgPageSetup
+}; // CDlgDrawingViewSetup
 
 } // namespace Draw
 
 } // namespace ZS
 
-#endif // #ifndef ZSDraw_DlgPageSetup_h
+#endif // #ifndef ZSDraw_DlgDrawingViewSetup_h
