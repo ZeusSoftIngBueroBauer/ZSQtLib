@@ -74,7 +74,6 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pLytLineDimensionUnit(nullptr),
     m_pLblDimensionUnit(nullptr),
     m_pCmbDimensionUnit(nullptr),
-    m_dimensionUnit(EDrawingDimensionUnit::Pixels),
     // Metric system
     m_pWdgtMetric(nullptr),
     m_pLytWdgtMetric(nullptr),
@@ -111,7 +110,16 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pLblImageSizeWidth_px(nullptr),
     m_pEdtImageSizeWidth_px(nullptr),
     m_pLblImageSizeHeight_px(nullptr),
-    m_pEdtImageSizeHeight_px(nullptr)
+    m_pEdtImageSizeHeight_px(nullptr),
+    // Caching values
+    m_dimensionUnit(EDrawingDimensionUnit::Pixels),
+    m_iMetricScaleFactorDividend(1),
+    m_iMetricScaleFactorDivisor(1),
+    m_strMetricUnitSymbol(Units.Length.mm.symbol()),
+    m_fImageMetricWidth(0.0),
+    m_fImageMetricHeight(0.0),
+    m_cxImageSizeWidth_px(0),
+    m_cyImageSizeHeight_px(0)
 {
     m_pLyt = new QVBoxLayout;
     setLayout(m_pLyt);
@@ -119,6 +127,20 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     QObject::connect(
         m_pDrawingView, &CDrawingView::drawingSizeChanged,
         this, &CWdgtDrawingViewProperties::onDrawingViewDrawingSizeChanged );
+
+    QSize sizeDrawing = m_pDrawingView->drawingSizeInPixels();
+
+    m_cxImageSizeWidth_px = sizeDrawing.width();
+    m_cyImageSizeHeight_px = sizeDrawing.height();
+
+    CPhysVal physValWidth(m_cxImageSizeWidth_px, Units.Length.pxX);
+    CPhysVal physValHeight(m_cyImageSizeHeight_px, Units.Length.pxY);
+
+    physValWidth.convertValue(Units.Length.mm);
+    physValHeight.convertValue(Units.Length.mm);
+
+    m_fImageMetricWidth = physValWidth.getVal();
+    m_fImageMetricHeight = physValHeight.getVal();
 
     // <Section> Dimension Unit
     //=========================
@@ -136,7 +158,7 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     for( CEnumDrawingDimensionUnit eVal = 0; eVal < CEnumDrawingDimensionUnit::count(); ++eVal ) {
         m_pCmbDimensionUnit->addItem(eVal.toString(), eVal.enumeratorAsInt());
     }
-    m_pCmbDimensionUnit->setCurrentIndex(static_cast<int>(m_dimensionUnit));
+    m_pCmbDimensionUnit->setCurrentIndex(static_cast<int>(EDrawingDimensionUnit::Pixels));
     QObject::connect(
         m_pCmbDimensionUnit, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
         this, &CWdgtDrawingViewProperties::onCmbDimensionUnitCurrentIndexChanged );
@@ -201,6 +223,8 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     // <Section> Image Size in Metric System
     //======================================
 
+    #pragma message(__TODO__"Add Edit Controls to set Resolution, Minimum and Maximum")
+
     m_pLytSepLineImageMetric = new QHBoxLayout();
     m_pLytWdgtMetric->addLayout(m_pLytSepLineImageMetric);
     m_pLblSepLineImageMetric = new QLabel("Metric Sizes");
@@ -226,11 +250,14 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pLytLineImageMetricScaleFactor->addWidget(pWdgtImageMetricScaleFactor);
 
     m_pCmbImageMetricScaleFactorDividend = new QComboBox();
+    m_pCmbImageMetricScaleFactorDividend->setEnabled(false);
     pLytWdgtImageMetricScaleFactor->addWidget(m_pCmbImageMetricScaleFactorDividend, 1);
     m_pLblImageMetricScaleFactorHyphen = new QLabel(":");
     pLytWdgtImageMetricScaleFactor->addWidget(m_pLblImageMetricScaleFactorHyphen);
     m_pCmbImageMetricScaleFactorDivisor = new QComboBox();
+    m_pCmbImageMetricScaleFactorDivisor->setEnabled(false);
     pLytWdgtImageMetricScaleFactor->addWidget(m_pCmbImageMetricScaleFactorDivisor, 1);
+    m_pLytLineImageMetricScaleFactor->addSpacing(m_cxClmSpacing);
 
     const QVector<int> arMetricScaleFactorsPredefined = {
         1, 10, 100,
@@ -241,15 +268,25 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
         m_pCmbImageMetricScaleFactorDividend->addItem(QString::number(iScaleFactor));
         m_pCmbImageMetricScaleFactorDivisor->addItem(QString::number(iScaleFactor));
     }
-    m_pLytLineImageMetricScaleFactor->addSpacing(m_cxClmSpacing);
+    m_pCmbImageMetricScaleFactorDividend->setCurrentText(
+        QString::number(m_iMetricScaleFactorDividend));
+    m_pCmbImageMetricScaleFactorDivisor->setCurrentText(
+        QString::number(m_iMetricScaleFactorDivisor));
+    QObject::connect(
+        m_pCmbImageMetricScaleFactorDividend, &QComboBox::currentTextChanged,
+        this, &CWdgtDrawingViewProperties::onCmbImageMetricScaleFactorDividendCurrentTextChanged );
+    QObject::connect(
+        m_pCmbImageMetricScaleFactorDivisor, &QComboBox::currentTextChanged,
+        this, &CWdgtDrawingViewProperties::onCmbImageMetricScaleFactorDivisorCurrentTextChanged );
 
     m_pLblImageMetricUnit = new QLabel("Unit:");
     m_pLblImageMetricUnit->setFixedWidth(m_cxLblWidthClm2);
     m_pLytLineImageMetricScaleFactor->addWidget(m_pLblImageMetricUnit);
     m_pCmbImageMetricUnit = new QComboBox();
     m_pCmbImageMetricUnit->setFixedWidth(m_cxEdtWidthClm2);
+    m_pCmbImageMetricUnit->setEnabled(false);
     m_pLytLineImageMetricScaleFactor->addWidget(m_pCmbImageMetricUnit);
-
+    m_pLytLineImageMetricScaleFactor->addStretch();
     for( int idxUnit = 0; idxUnit < Units.Length.count(); ++idxUnit )
     {
         CUnitsTreeEntryPhysUnit* pUnitEntry =
@@ -260,16 +297,13 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
             }
         }
     }
-
-    m_pLytLineImageMetricScaleFactor->addStretch();
+    m_pCmbImageMetricUnit->setCurrentText(m_strMetricUnitSymbol);
+    QObject::connect(
+        m_pCmbImageMetricUnit, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+        this, &CWdgtDrawingViewProperties::onCmbImageMetricUnitCurrentIndexChanged );
 
     // <Line> Metric Image Size
     //-------------------------
-
-    QLabel* m_pLblImageMetricWidth;
-    ZS::PhysVal::GUI::CWdgtEditPhysVal* m_pEdtImageMetricWidth;
-    QLabel* m_pLblImageMetricHeight;
-    ZS::PhysVal::GUI::CWdgtEditPhysVal* m_pEdtImageMetricHeight;
 
     m_pLytLineMetricSize = new QHBoxLayout();
     m_pLytWdgtMetric->addLayout(m_pLytLineMetricSize);
@@ -282,16 +316,18 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pLytLineMetricSize->addWidget(m_pLblImageMetricWidth);
     m_pEdtImageMetricWidth = new CWdgtEditPhysVal();
     m_pEdtImageMetricWidth->setFixedWidth(m_cxEdtWidthClm1);
-    m_pEdtImageMetricWidth->setMinimum(1);
+    m_pEdtImageMetricWidth->setReadOnly(true);
+    m_pEdtImageMetricWidth->setUnit(physValWidth.unit());
+    m_pEdtImageMetricWidth->setValue(physValWidth.getVal());
+    m_pEdtImageMetricWidth->setMinimum(1.0e-9);
     m_pEdtImageMetricWidth->setMaximum(100000);
-    //m_pEdtImageMetricWidth->setSuffix(" px");
-    //m_pEdtImageMetricWidth->setReadOnly(m_dimensionUnit == EDrawingDimensionUnit::Metric);
-    //m_pEdtImageSizeWidth_px->setValue(sizeDrawing.width());
+    #pragma message(__TODO__"setResolution depending on screen resolution")
+    m_pEdtImageMetricWidth->setResolution(0.001);
     m_pLytLineMetricSize->addWidget(m_pEdtImageMetricWidth);
     m_pLytLineMetricSize->addSpacing(m_cxClmSpacing);
-    //QObject::connect(
-    //    m_pEdtImageMetricWidth, &QSpinBox::editingFinished,
-    //    this, &CWdgtDrawingViewProperties::);
+    QObject::connect(
+        m_pEdtImageMetricWidth, &CWdgtEditPhysVal::editingFinished,
+        this, &CWdgtDrawingViewProperties::onEdtImageMetricWidthEditingFinished);
 
     // <Edit> Image Height
     //--------------------
@@ -300,22 +336,24 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pLblImageMetricHeight->setFixedWidth(m_cxLblWidthClm2);
     m_pLytLineMetricSize->addWidget(m_pLblImageMetricHeight);
     m_pEdtImageMetricHeight = new CWdgtEditPhysVal();
+    m_pEdtImageMetricHeight->setUnit(physValHeight.unit());
+    m_pEdtImageMetricHeight->setValue(physValHeight.getVal());
+    m_pEdtImageMetricHeight->setMinimum(1.0e-9);
+    m_pEdtImageMetricHeight->setMaximum(1.0e6);
+    #pragma message(__TODO__"setResolution depending on screen resolution")
+    m_pEdtImageMetricHeight->setResolution(0.001);
     m_pEdtImageMetricHeight->setFixedWidth(m_cxEdtWidthClm2);
-    m_pEdtImageMetricHeight->setMinimum(1);
-    m_pEdtImageMetricHeight->setMaximum(100000);
-    //m_pEdtImageMetricHeight->setSuffix(" px");
-    //m_pEdtImageMetricHeight->setReadOnly(m_dimensionUnit == EDrawingDimensionUnit::Metric);
-    //m_pEdtImageMetricHeight->setValue(sizeDrawing.height());
+    m_pEdtImageMetricHeight->setReadOnly(true);
     m_pLytLineMetricSize->addWidget(m_pEdtImageMetricHeight);
     m_pLytLineMetricSize->addStretch();
-    //QObject::connect(
-    //    m_pEdtImageMetricHeight, &QSpinBox::editingFinished,
-    //    this, &CWdgtDrawingViewProperties::);
+    QObject::connect(
+        m_pEdtImageMetricHeight, &CWdgtEditPhysVal::editingFinished,
+        this, &CWdgtDrawingViewProperties::onEdtImageMetricHeightEditingFinished);
 
     // <Visibility> Metric Widget
     //---------------------------
 
-    m_pWdgtMetric->setVisible(m_dimensionUnit == EDrawingDimensionUnit::Metric);
+    m_pWdgtMetric->setVisible(false);
 
     // <Section> Image Size
     //=====================
@@ -326,8 +364,6 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pLytSepLineImageSize_px->addWidget(m_pLblSepLineImageSize_px);
     m_pSepLineImageSize_px = new CSepLine(10);
     m_pLytSepLineImageSize_px->addWidget(m_pSepLineImageSize_px,1);
-
-    QSize sizeDrawing = m_pDrawingView->drawingSizeInPixels();
 
     // <Line> Image Size
     //------------------
@@ -345,15 +381,14 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pEdtImageSizeWidth_px->setFixedWidth(m_cxEdtWidthClm1);
     m_pEdtImageSizeWidth_px->setMinimum(1);
     m_pEdtImageSizeWidth_px->setMaximum(100000);
-    m_pEdtImageSizeWidth_px->setValue(sizeDrawing.width());
+    m_pEdtImageSizeWidth_px->setValue(m_cxImageSizeWidth_px);
     m_pEdtImageSizeWidth_px->setSuffix(" px");
-    m_pEdtImageSizeWidth_px->setReadOnly(m_dimensionUnit == EDrawingDimensionUnit::Metric);
-    //m_pEdtImageSizeWidth_px->setValue(sizeDrawing.width());
+    m_pEdtImageSizeWidth_px->setReadOnly(false);
     m_pLytLineImageSize_px->addWidget(m_pEdtImageSizeWidth_px);
     m_pLytLineImageSize_px->addSpacing(m_cxClmSpacing);
     QObject::connect(
         m_pEdtImageSizeWidth_px, &QSpinBox::editingFinished,
-        this, &CWdgtDrawingViewProperties::onEdtSizeWidthPxEditingFinished);
+        this, &CWdgtDrawingViewProperties::onEdtImageSizeWidthPxEditingFinished);
 
     // <Edit> Image Height
     //--------------------
@@ -365,15 +400,14 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pEdtImageSizeHeight_px->setFixedWidth(m_cxEdtWidthClm2);
     m_pEdtImageSizeHeight_px->setMinimum(1);
     m_pEdtImageSizeHeight_px->setMaximum(100000);
-    m_pEdtImageSizeHeight_px->setValue(sizeDrawing.height());
+    m_pEdtImageSizeHeight_px->setValue(m_cyImageSizeHeight_px);
     m_pEdtImageSizeHeight_px->setSuffix(" px");
-    m_pEdtImageSizeHeight_px->setReadOnly(m_dimensionUnit == EDrawingDimensionUnit::Metric);
-    //m_pEdtImageSizeHeight_px->setValue(sizeDrawing.height());
+    m_pEdtImageSizeHeight_px->setReadOnly(false);
     m_pLytLineImageSize_px->addWidget(m_pEdtImageSizeHeight_px);
     m_pLytLineImageSize_px->addStretch();
     QObject::connect(
         m_pEdtImageSizeHeight_px, &QSpinBox::editingFinished,
-        this, &CWdgtDrawingViewProperties::onEdtSizeHeightPxEditingFinished);
+        this, &CWdgtDrawingViewProperties::onEdtImageSizeHeightPxEditingFinished);
 
     // <Stretch> At bottom of main layout
     //-----------------------------------
@@ -428,6 +462,15 @@ CWdgtDrawingViewProperties::~CWdgtDrawingViewProperties()
     m_pEdtImageSizeWidth_px = nullptr;
     m_pLblImageSizeHeight_px = nullptr;
     m_pEdtImageSizeHeight_px = nullptr;
+    // Caching values
+    m_dimensionUnit = static_cast<EDrawingDimensionUnit>(0);
+    m_iMetricScaleFactorDividend = 0;
+    m_iMetricScaleFactorDivisor = 0;
+    //m_strMetricUnitSymbol;
+    m_fImageMetricWidth = 0.0;
+    m_fImageMetricHeight = 0.0;
+    m_cxImageSizeWidth_px = 0;
+    m_cyImageSizeHeight_px = 0;
 
 } // dtor
 
@@ -441,17 +484,54 @@ void CWdgtDrawingViewProperties::setDimensionUnit( EDrawingDimensionUnit i_dimen
 {
     if( m_dimensionUnit != i_dimensionUnit ) {
         m_dimensionUnit = i_dimensionUnit;
-        m_pCmbDimensionUnit->setCurrentIndex(static_cast<int>(i_dimensionUnit));
-        if( m_dimensionUnit == EDrawingDimensionUnit::Pixels ) {
-            m_pWdgtMetric->hide();
-            m_pEdtImageSizeWidth_px->setReadOnly(false);
-            m_pEdtImageSizeHeight_px->setReadOnly(false);
-        }
-        else if( m_dimensionUnit == EDrawingDimensionUnit::Metric ) {
-            m_pWdgtMetric->show();
-            m_pEdtImageSizeWidth_px->setReadOnly(true);
-            m_pEdtImageSizeHeight_px->setReadOnly(true);
-        }
+        m_pCmbDimensionUnit->setCurrentIndex(static_cast<int>(m_dimensionUnit));
+        m_pWdgtMetric->setVisible(
+            m_dimensionUnit == EDrawingDimensionUnit::Metric);
+        m_pCmbImageMetricScaleFactorDividend->setEnabled(
+            m_dimensionUnit == EDrawingDimensionUnit::Metric);
+        m_pCmbImageMetricScaleFactorDivisor->setEnabled(
+            m_dimensionUnit == EDrawingDimensionUnit::Metric);
+        m_pCmbImageMetricUnit->setEnabled(
+            m_dimensionUnit == EDrawingDimensionUnit::Metric);
+        m_pEdtImageMetricWidth->setReadOnly(
+            m_dimensionUnit != EDrawingDimensionUnit::Metric);
+        m_pEdtImageMetricHeight->setReadOnly(
+            m_dimensionUnit != EDrawingDimensionUnit::Metric);
+        m_pEdtImageSizeWidth_px->setReadOnly(
+            m_dimensionUnit != EDrawingDimensionUnit::Pixels);
+        m_pEdtImageSizeHeight_px->setReadOnly(
+            m_dimensionUnit != EDrawingDimensionUnit::Pixels);
+    }
+}
+
+//------------------------------------------------------------------------------
+void CWdgtDrawingViewProperties::setMetricUnit( const QString& i_strMetricUnitSymbol )
+//------------------------------------------------------------------------------
+{
+    if( m_strMetricUnitSymbol != i_strMetricUnitSymbol ) {
+        // If changing the unit the metrics width and height and also the
+        // size in pixels remain the same. Only the unit in which the values
+        // are indicated will be changed.
+        CPhysVal physValWidth(m_fImageMetricWidth, m_strMetricUnitSymbol);
+        CPhysVal physValHeight(m_fImageMetricHeight, m_strMetricUnitSymbol);
+        m_strMetricUnitSymbol = i_strMetricUnitSymbol;
+        physValWidth.convertValue(m_strMetricUnitSymbol);
+        physValHeight.convertValue(m_strMetricUnitSymbol);
+        m_fImageMetricWidth = physValWidth.getVal();
+        m_fImageMetricHeight = physValHeight.getVal();
+        m_pCmbImageMetricUnit->setCurrentText(m_strMetricUnitSymbol);
+        m_pEdtImageMetricWidth->setUnit(physValWidth.unit());
+        m_pEdtImageMetricWidth->setValue(physValWidth.getVal());
+        m_pEdtImageMetricWidth->setMinimum(1.0e-9);
+        m_pEdtImageMetricWidth->setMaximum(1.0e6);
+        #pragma message(__TODO__"setResolution depending on screen resolution")
+        m_pEdtImageMetricWidth->setResolution(0.001);
+        m_pEdtImageMetricHeight->setUnit(physValHeight.unit());
+        m_pEdtImageMetricHeight->setValue(physValHeight.getVal());
+        m_pEdtImageMetricHeight->setMinimum(1.0e-9);
+        m_pEdtImageMetricHeight->setMaximum(1.0e6);
+        #pragma message(__TODO__"setResolution depending on screen resolution")
+        m_pEdtImageMetricHeight->setResolution(0.001);
     }
 }
 
@@ -473,13 +553,44 @@ void CWdgtDrawingViewProperties::onCmbDimensionUnitCurrentIndexChanged( int i_id
 }
 
 //------------------------------------------------------------------------------
-void CWdgtDrawingViewProperties::onEdtSizeWidthPxEditingFinished()
+void CWdgtDrawingViewProperties::onCmbImageMetricScaleFactorDividendCurrentTextChanged(const QString& i_strText)
 //------------------------------------------------------------------------------
 {
 }
 
 //------------------------------------------------------------------------------
-void CWdgtDrawingViewProperties::onEdtSizeHeightPxEditingFinished()
+void CWdgtDrawingViewProperties::onCmbImageMetricScaleFactorDivisorCurrentTextChanged(const QString& i_strText)
+//------------------------------------------------------------------------------
+{
+}
+
+//------------------------------------------------------------------------------
+void CWdgtDrawingViewProperties::onCmbImageMetricUnitCurrentIndexChanged(int i_idx)
+//------------------------------------------------------------------------------
+{
+    setMetricUnit(m_pCmbImageMetricUnit->currentText());
+}
+
+//------------------------------------------------------------------------------
+void CWdgtDrawingViewProperties::onEdtImageMetricWidthEditingFinished()
+//------------------------------------------------------------------------------
+{
+}
+
+//------------------------------------------------------------------------------
+void CWdgtDrawingViewProperties::onEdtImageMetricHeightEditingFinished()
+//------------------------------------------------------------------------------
+{
+}
+
+//------------------------------------------------------------------------------
+void CWdgtDrawingViewProperties::onEdtImageSizeWidthPxEditingFinished()
+//------------------------------------------------------------------------------
+{
+}
+
+//------------------------------------------------------------------------------
+void CWdgtDrawingViewProperties::onEdtImageSizeHeightPxEditingFinished()
 //------------------------------------------------------------------------------
 {
 }

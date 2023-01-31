@@ -62,36 +62,40 @@ public: // ctors and dtor
 signals:
     void editingFinished();
     void valueChanged( const ZS::PhysVal::CPhysVal& i_val );
-    void valueChanged( const QString& i_strVal );
+    void textChanged( const QString& i_strVal );
 public: // instance methods
     void clear();
 public: // instance methods
-    void setUnit( const CUnit& i_unit );
-    CUnit unit() const { return m_unit; }
+    void setEnabled(bool i_bEnabled);
+    bool isEnabled() const;
+    void setReadOnly(bool i_bReadOnly);
+    bool isReadOnly() const;
 public: // instance methods
-    void setValue( const CPhysVal& i_physVal );
+    void setUnit( const CUnit& i_unit );
+    CUnit unit() const;
+public: // instance methods
+    void setValue( double i_fVal );
     CPhysVal value() const;
 public: // instance methods
-    void setMinimum( const CPhysVal& i_physValMin );
-    CPhysVal minimum() const { return m_physValMin; }
+    void setMinimum( double i_fVal );
+    CPhysVal minimum() const;
 public: // instance methods
-    void setMaximum( const CPhysVal& i_physValMax );
-    CPhysVal maximum() const { return m_physValMax; }
+    void setMaximum( double i_fVal );
+    CPhysVal maximum() const;
 public: // instance methods
-    void setResolution( const CPhysValRes& i_physValRes );
-    CPhysValRes resolution() const { return m_physValRes; }
+    void setResolution( double i_fVal );
+    CPhysValRes resolution() const;
 protected slots:
     void onEdtEditingFinished();
     void onEdtValueChanged( double i_fVal );
-    void onEdtValueChanged( const QString& i_strVal );
+    void onEdtTextChanged( const QString& i_strText );
 private: // instance members
-    QHBoxLayout*    m_pLyt;
+    QHBoxLayout* m_pLyt;
     CDoubleSpinBox* m_pEdt;
-    CUnit           m_unit;
-    CPhysVal        m_physValOld;
-    CPhysVal        m_physValMin;
-    CPhysVal        m_physValMax;
-    CPhysValRes     m_physValRes;
+    CPhysVal m_physVal;
+    CPhysVal m_physValMin;
+    CPhysVal m_physValMax;
+    CPhysValRes m_physValRes;
 
 }; // class CWdgtEditPhysVal
 

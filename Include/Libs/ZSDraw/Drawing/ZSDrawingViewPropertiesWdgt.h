@@ -78,18 +78,23 @@ public: // overridables
     virtual QString className() const { return ClassName(); }
 public: // instance methods
     void setDimensionUnit( EDrawingDimensionUnit i_dimensionUnit );
+    void setMetricUnit( const QString& i_strMetricUnitSymbol );
 protected slots:
     void onDrawingViewDrawingSizeChanged(const QSize& i_size);
     void onCmbDimensionUnitCurrentIndexChanged(int i_idx);
-    void onEdtSizeWidthPxEditingFinished();
-    void onEdtSizeHeightPxEditingFinished();
+    void onCmbImageMetricScaleFactorDividendCurrentTextChanged(const QString& i_strText);
+    void onCmbImageMetricScaleFactorDivisorCurrentTextChanged(const QString& i_strText);
+    void onCmbImageMetricUnitCurrentIndexChanged(int i_idx);
+    void onEdtImageMetricWidthEditingFinished();
+    void onEdtImageMetricHeightEditingFinished();
+    void onEdtImageSizeWidthPxEditingFinished();
+    void onEdtImageSizeHeightPxEditingFinished();
 protected: // instance members
     CDrawingView* m_pDrawingView;
     QVBoxLayout* m_pLyt;
     QHBoxLayout* m_pLytLineDimensionUnit;
     QLabel* m_pLblDimensionUnit;
     QComboBox* m_pCmbDimensionUnit;
-    EDrawingDimensionUnit m_dimensionUnit;
     // Metric system
     QWidget* m_pWdgtMetric;
     QVBoxLayout* m_pLytWdgtMetric;
@@ -127,6 +132,15 @@ protected: // instance members
     QSpinBox* m_pEdtImageSizeWidth_px;
     QLabel* m_pLblImageSizeHeight_px;
     QSpinBox* m_pEdtImageSizeHeight_px;
+    // Caching values
+    EDrawingDimensionUnit m_dimensionUnit;
+    int m_iMetricScaleFactorDividend;
+    int m_iMetricScaleFactorDivisor;
+    QString m_strMetricUnitSymbol;
+    double m_fImageMetricWidth;
+    double m_fImageMetricHeight;
+    int m_cxImageSizeWidth_px;
+    int m_cyImageSizeHeight_px;
 
 }; // class CWdgtDrawingViewProperties
 

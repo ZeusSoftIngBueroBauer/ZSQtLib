@@ -120,8 +120,7 @@ CWdgtEditPhysVal::CWdgtEditPhysVal( QWidget* i_pWdgtParent ) :
     QWidget(i_pWdgtParent),
     m_pLyt(nullptr),
     m_pEdt(nullptr),
-    m_unit(),
-    m_physValOld(),
+    m_physVal(),
     m_physValMin(),
     m_physValMax(),
     m_physValRes()
@@ -139,32 +138,15 @@ CWdgtEditPhysVal::CWdgtEditPhysVal( QWidget* i_pWdgtParent ) :
 
     m_pLyt->addWidget(m_pEdt);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pEdt,
-        /* szSignal     */ SIGNAL( editingFinished() ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onEdtEditingFinished() ) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-
-    if( !QObject::connect(
-        /* pObjSender   */ m_pEdt,
-        /* szSignal     */ SIGNAL( valueChanged(double) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onEdtValueChanged(double) ) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-
-    if( !QObject::connect(
-        /* pObjSender   */ m_pEdt,
-        /* szSignal     */ SIGNAL( valueChanged(const QString&) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onEdtValueChanged(const QString&) ) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pEdt, &QDoubleSpinBox::editingFinished,
+        this, &CWdgtEditPhysVal::onEdtEditingFinished);
+    QObject::connect(
+        m_pEdt, static_cast<void (QDoubleSpinBox::*)(const QString&)>(&QDoubleSpinBox::textChanged),
+        this, static_cast<void (CWdgtEditPhysVal::*)(const QString&)>(&CWdgtEditPhysVal::onEdtTextChanged));
+    QObject::connect(
+        m_pEdt, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
+        this, static_cast<void (CWdgtEditPhysVal::*)(double)>(&CWdgtEditPhysVal::onEdtValueChanged));
 
 } // ctor
 
@@ -190,7 +172,7 @@ public: // instance methods
 void CWdgtEditPhysVal::clear()
 //------------------------------------------------------------------------------
 {
-    m_physValOld = CPhysVal();
+    m_physVal = CPhysVal();
     m_physValMin = CPhysVal();
     m_physValMax = CPhysVal();
     m_physValRes = CPhysValRes();
@@ -207,22 +189,31 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtEditPhysVal::setUnit( const CUnit& i_unit )
+void CWdgtEditPhysVal::setEnabled(bool i_bEnabled)
 //------------------------------------------------------------------------------
 {
-    if( m_unit != i_unit )
-    {
-        m_unit = i_unit;
+    m_pEdt->setEnabled(i_bEnabled);
+}
 
-        if( !m_unit.isValid() )
-        {
-            m_pEdt->setSuffix("");
-        }
-        else
-        {
-            m_pEdt->setSuffix( " " + m_unit.symbol() );
-        }
-    }
+//------------------------------------------------------------------------------
+bool CWdgtEditPhysVal::isEnabled() const
+//------------------------------------------------------------------------------
+{
+    return m_pEdt->isEnabled();
+}
+
+//------------------------------------------------------------------------------
+void CWdgtEditPhysVal::setReadOnly(bool i_bReadOnly)
+//------------------------------------------------------------------------------
+{
+    m_pEdt->setReadOnly(i_bReadOnly);
+}
+
+//------------------------------------------------------------------------------
+bool CWdgtEditPhysVal::isReadOnly() const
+//------------------------------------------------------------------------------
+{
+    return m_pEdt->isReadOnly();
 }
 
 /*==============================================================================
@@ -230,51 +221,41 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtEditPhysVal::setValue( const CPhysVal& i_physVal )
+void CWdgtEditPhysVal::setUnit( const CUnit& i_unit )
 //------------------------------------------------------------------------------
 {
-    if( areOfSameUnitGroup(m_unit, i_physVal.unit()) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultDifferentPhysSizes );
-    }
-    if( !m_unit.isValid() && i_physVal.unit().isValid() )
-    {
-        setUnit( i_physVal.unit() );
-    }
+    m_physVal.setUnit(i_unit);
+    m_physValRes.setUnit(i_unit);
+    m_physValMin.setUnit(i_unit);
+    m_physValMax.setUnit(i_unit);
 
-    m_physValOld = i_physVal;
+    m_pEdt->setSuffix( " " + m_physVal.unit().symbol() );
+}
 
-    if( m_physValOld.unit() != m_unit )
-    {
-        m_physValOld.convertValue(m_unit);
-    }
+//------------------------------------------------------------------------------
+CUnit CWdgtEditPhysVal::unit() const
+//------------------------------------------------------------------------------
+{
+    return m_physVal.unit();
+}
 
-    m_pEdt->setValue( m_physValOld.getVal() );
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
 
-    if( m_physValRes.isValid() )
-    {
-        setResolution(m_physValRes);
-    }
-    else if( m_physValOld.hasRes() )
-    {
-        setResolution( m_physValOld.getRes() );
-    }
-} // setValue
+//------------------------------------------------------------------------------
+void CWdgtEditPhysVal::setValue( double i_fVal )
+//------------------------------------------------------------------------------
+{
+    m_physVal.setVal(i_fVal);
+    m_pEdt->setValue(i_fVal);
+}
 
 //------------------------------------------------------------------------------
 CPhysVal CWdgtEditPhysVal::value() const
 //------------------------------------------------------------------------------
 {
-    double fVal = m_pEdt->value();
-    QString strSymbol = m_pEdt->suffix();
-
-    if( strSymbol.startsWith(" ") )
-    {
-        strSymbol.remove(0,1);
-    }
-    CUnit unit(m_unit);
-    unit.setSymbol(strSymbol);
-    return CPhysVal(fVal, unit);
+    return m_physVal;
 }
 
 /*==============================================================================
@@ -282,79 +263,48 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtEditPhysVal::setMinimum( const CPhysVal& i_physValMin )
+void CWdgtEditPhysVal::setMinimum( double i_fVal )
 //------------------------------------------------------------------------------
 {
-    if( !areOfSameUnitGroup(m_unit,i_physValMin.unit()) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultDifferentPhysSizes );
-    }
-    if( !m_unit.isValid() && i_physValMin.unit().isValid() )
-    {
-        setUnit(i_physValMin.unit());
-    }
+    m_physValMin.setVal(i_fVal);
+    m_pEdt->setMinimum(i_fVal);
+}
 
-    m_physValMin = i_physValMin;
-
-    if( m_physValMin.isValid() && !m_physValMin.isNull() )
-    {
-        double fValMin = m_physValMin.getVal(m_unit);
-        m_pEdt->setMinimum(fValMin);
-    }
-    else
-    {
-        m_pEdt->setMinimum(DBL_MIN);
-    }
-} // setMinimum
+//------------------------------------------------------------------------------
+CPhysVal CWdgtEditPhysVal::minimum() const
+//------------------------------------------------------------------------------
+{
+    return m_physValMin;
+}
 
 /*==============================================================================
 public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtEditPhysVal::setMaximum( const CPhysVal& i_physValMax )
+void CWdgtEditPhysVal::setMaximum( double i_fVal )
 //------------------------------------------------------------------------------
 {
-    if( !areOfSameUnitGroup(m_unit,i_physValMax.unit()) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultDifferentPhysSizes );
-    }
-    if( !m_unit.isValid() && i_physValMax.unit().isValid() )
-    {
-        setUnit( i_physValMax.unit() );
-    }
+    m_physValMax.setVal(i_fVal);
+    m_pEdt->setMaximum(i_fVal);
+}
 
-    m_physValMax = i_physValMax;
-
-    if( m_physValMax.isValid() && !m_physValMax.isNull() )
-    {
-        double fValMax = m_physValMax.getVal(m_unit);
-        m_pEdt->setMaximum(fValMax);
-    }
-    else
-    {
-        m_pEdt->setMaximum(DBL_MAX);
-    }
-} // setMaximum
+//------------------------------------------------------------------------------
+CPhysVal CWdgtEditPhysVal::maximum() const
+//------------------------------------------------------------------------------
+{
+    return m_physValMax;
+}
 
 /*==============================================================================
 public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtEditPhysVal::setResolution( const CPhysValRes& i_physValRes )
+void CWdgtEditPhysVal::setResolution( double i_fVal )
 //------------------------------------------------------------------------------
 {
-    if( !areOfSameUnitGroup(m_unit,i_physValRes.unit()) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultDifferentPhysSizes );
-    }
-    if( !m_unit.isValid() && i_physValRes.unit().isValid() )
-    {
-        setUnit( i_physValRes.unit() );
-    }
-
-    m_physValRes = i_physValRes;
+    m_physValRes.setVal(i_fVal);
 
     int     iDecimals = DBL_DIG;
     double  fStep     = 1.0;
@@ -362,39 +312,30 @@ void CWdgtEditPhysVal::setResolution( const CPhysValRes& i_physValRes )
     QChar   chDecimalPoint = locale.decimalPoint();
     QString strVal;
 
-    if( m_physValRes.isValid() )
-    {
+    if( m_physValRes.isValid() ) {
         iDecimals = 0;
 
-        if( m_physValOld.isValid() )
-        {
-            m_physValOld.setRes(m_physValRes);
+        if( m_physVal.isValid() ) {
+            m_physVal.setRes(m_physValRes);
 
-            try
-            {
-                strVal = m_physValOld.toString(EUnitFind::None,PhysValSubStr::Val);
+            try {
+                strVal = m_physVal.toString(EUnitFind::None,PhysValSubStr::Val);
             }
-            catch( CPhysValException& )
-            {
+            catch( CPhysValException& ) {
             }
         }
-        else
-        {
-            try
-            {
+        else {
+            try {
                 strVal = m_physValRes.toString(EUnitFind::None,PhysValSubStr::Val);
             }
-            catch( CPhysValException& )
-            {
+            catch( CPhysValException& ) {
             }
         }
 
-        if( !strVal.isEmpty() )
-        {
+        if( !strVal.isEmpty() ) {
             int iPosDecimalPoint = strVal.indexOf(chDecimalPoint);
 
-            if( iPosDecimalPoint >= 0 )
-            {
+            if( iPosDecimalPoint >= 0 ) {
                 iDecimals = strVal.length() - iPosDecimalPoint - 1;
             }
         }
@@ -405,6 +346,13 @@ void CWdgtEditPhysVal::setResolution( const CPhysValRes& i_physValRes )
 
 } // setResolution
 
+//------------------------------------------------------------------------------
+CPhysValRes CWdgtEditPhysVal::resolution() const
+//------------------------------------------------------------------------------
+{
+    return m_physValRes;
+}
+
 /*==============================================================================
 protected slots:
 ==============================================================================*/
@@ -413,6 +361,12 @@ protected slots:
 void CWdgtEditPhysVal::onEdtEditingFinished()
 //------------------------------------------------------------------------------
 {
+    double fVal = m_pEdt->value();
+    QString strSymbol = m_pEdt->suffix();
+    if( strSymbol.startsWith(" ") ) {
+        strSymbol.remove(0,1);
+    }
+    m_physVal = CPhysVal(fVal, strSymbol);
     emit editingFinished();
 }
 
@@ -420,13 +374,24 @@ void CWdgtEditPhysVal::onEdtEditingFinished()
 void CWdgtEditPhysVal::onEdtValueChanged( double i_fVal )
 //------------------------------------------------------------------------------
 {
-    CPhysVal physVal(i_fVal, m_unit);
-    emit valueChanged(physVal);
+    double fVal = m_pEdt->value();
+    QString strSymbol = m_pEdt->suffix();
+    if( strSymbol.startsWith(" ") ) {
+        strSymbol.remove(0,1);
+    }
+    m_physVal = CPhysVal(fVal, strSymbol);
+    emit valueChanged(m_physVal);
 }
 
 //------------------------------------------------------------------------------
-void CWdgtEditPhysVal::onEdtValueChanged( const QString& i_strVal )
+void CWdgtEditPhysVal::onEdtTextChanged( const QString& i_strText )
 //------------------------------------------------------------------------------
 {
-    emit valueChanged(i_strVal);
+    double fVal = m_pEdt->value();
+    QString strSymbol = m_pEdt->suffix();
+    if( strSymbol.startsWith(" ") ) {
+        strSymbol.remove(0,1);
+    }
+    m_physVal = CPhysVal(fVal, strSymbol);
+    emit textChanged(i_strText);
 }
