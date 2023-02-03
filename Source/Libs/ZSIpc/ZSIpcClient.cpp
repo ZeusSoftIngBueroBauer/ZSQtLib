@@ -2124,14 +2124,6 @@ void CClient::executeConnectRequest( CRequest* i_pReq )
         } // if( !errResultInfo.isErrorResult() )
     } // if( m_state == EStateUnconnected )
 
-    else // if( m_state != EStateUnconnected )
-    {
-        errResultInfo.setSeverity(EResultSeverityError);
-        errResultInfo.setResult(EResultRequestRefused);
-        errResultInfo.setAddErrInfoDscr( "Client is already connected." );
-
-    } // if( m_state != EStateUnconnected )
-
     if( errResultInfo.isErrorResult() )
     {
         i_pReq->setErrResultInfo(errResultInfo);
@@ -2301,7 +2293,7 @@ void CClient::executeDisconnectRequest( CRequest* i_pReq )
     bool bWasConnected = isConnected();
 
     // If the client is connected ...
-    if( m_state >= EStateConnected )
+    if( m_state == EStateConnected )
     {
         CRequest* pReqDisconnectGateway = disconnectGateway(
             /* iTimeout_ms  */ i_pReq->getTimeoutInMs(),
@@ -2324,15 +2316,7 @@ void CClient::executeDisconnectRequest( CRequest* i_pReq )
             i_pReq->setProgressInPerCent(100);
             i_pReq->update();
         }
-    } // if( m_state >= EStateConnected )
-
-    else // if( m_state < EStateConnected )
-    {
-        errResultInfo.setSeverity(EResultSeverityError);
-        errResultInfo.setResult(EResultRequestRefused);
-        errResultInfo.setAddErrInfoDscr( "Client is not connected." );
-
-    } // if( m_state < EStateConnected )
+    } // if( m_state == EStateConnected )
 
     if( errResultInfo.isErrorResult() )
     {
@@ -2515,10 +2499,8 @@ void CClient::executeChangeSettingsRequest( CRequest* i_pReq )
         i_pReq->setErrResultInfo(errResultInfo);
         i_pReq->setProgressInPerCent(100);
         i_pReq->update();
-
-    } // if( m_state == EStateUnconnected )
-
-    else // if( m_state != EStateUnconnected )
+    }
+    else // if( m_state == EStateConnected )
     {
         if( m_pGateway == nullptr )
         {
@@ -2580,7 +2562,7 @@ void CClient::executeChangeSettingsRequest( CRequest* i_pReq )
                 i_pReq->update();
             }
         } // if( m_pGateway != nullptr )
-    } // if( m_state != EStateUnconnected )
+    } // if( m_state == EStateConnected )
 
     if( errResultInfo.isErrorResult() )
     {

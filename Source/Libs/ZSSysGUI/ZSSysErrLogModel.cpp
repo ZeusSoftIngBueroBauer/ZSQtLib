@@ -734,7 +734,11 @@ int CModelErrLog::columnWidthByColumn(int i_iClm, int i_iFontPixelSize) const
 
             QFontMetrics fntMetrics = QFontMetrics(fnt);
             QString strClmHeader = headerData(i_iClm, Qt::Horizontal).toString();
+            #if QT_VERSION >= QT_VERSION_CHECK(5, 11, 0)
             iClmWidth = fntMetrics.horizontalAdvance(strClmHeader + QLatin1String(" ^")) + 8;
+            #else
+            iClmWidth = fntMetrics.boundingRect(strClmHeader + QLatin1String(" ^")).width() + 8;
+            #endif
 
             for( int iRowIdx = 0; iRowIdx < rowCount(); ++iRowIdx )
             {
@@ -750,7 +754,11 @@ int CModelErrLog::columnWidthByColumn(int i_iClm, int i_iFontPixelSize) const
                     if( varData.canConvert(QVariant::String) )
                     {
                         QString strCellData = varData.toString();
+                        #if QT_VERSION >= QT_VERSION_CHECK(5, 11, 0)
                         iClmWidth = qMax(iClmWidth, fntMetrics.horizontalAdvance(strCellData));
+                        #else
+                        iClmWidth = qMax(iClmWidth, fntMetrics.boundingRect(strCellData).width());
+                        #endif
                     }
                 }
                 else if( strType == "imageUrl" || strType == "icon" )

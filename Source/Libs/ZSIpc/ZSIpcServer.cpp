@@ -2146,16 +2146,8 @@ void CServer::executeStartupRequest( CRequest* i_pReq )
                 i_pReq->setProgressInPerCent(100);
                 i_pReq->update();
             }
-        } // if( !errResultInfo.isErrorResult() )
+        }
     } // if( m_state == EStateIdle )
-
-    else // if( m_state != EStateIdle )
-    {
-        errResultInfo.setSeverity(EResultSeverityError);
-        errResultInfo.setResult(EResultRequestRefused);
-        errResultInfo.setAddErrInfoDscr( "Server is already running." );
-
-    } // if( m_state != EStateIdle )
 
     if( errResultInfo.isErrorResult() )
     {
@@ -2315,14 +2307,6 @@ void CServer::executeShutdownRequest( CRequest* i_pReq )
             i_pReq->update();
         }
     } // if( m_state == EStateListening )
-
-    else // if( m_state != EStateListening )
-    {
-        errResultInfo.setSeverity(EResultSeverityError);
-        errResultInfo.setResult(EResultRequestRefused);
-        errResultInfo.setAddErrInfoDscr( "Server is not started." );
-
-    } // if( m_state != EStateListening )
 
     if( errResultInfo.isErrorResult() )
     {
