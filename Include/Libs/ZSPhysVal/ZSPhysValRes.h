@@ -48,6 +48,14 @@ public: // ctors and dtor
     CPhysValRes( double i_fVal, const CUnit& i_unit, EResType i_resType = EResType::Resolution );
     CPhysValRes( const QString& i_strVal, const CUnit& i_unit, EResType i_resType = EResType::Resolution );
     virtual ~CPhysValRes();
+public: // operators
+    bool operator == ( const CPhysValRes& i_physValResOther ) const;
+    bool operator != ( const CPhysValRes& i_physValResOther ) const;
+    CPhysValRes& operator = ( const CPhysValRes& i_physValResNew );
+    CPhysValRes operator + ( const CPhysValRes& i_physValResOp ) const;
+    CPhysValRes& operator += ( const CPhysValRes& i_physValResOp );
+    CPhysValRes operator * ( double i_fOp ) const;
+    CPhysValRes& operator *= ( double i_fOp );
 public: // instance methods
     bool isValid() const;
     EResType type() const;
@@ -66,14 +74,8 @@ public: // instance methods
 public: // instance methods (to convert the value into a string)
     QString toString( EUnitFind i_unitFind = EUnitFind::None, int i_iSubStrVisibility = PhysValSubStr::Val ) const;
     QString toString( const CUnit& i_unit, int i_iSubStrVisibility = PhysValSubStr::Val ) const;
-public: // operators
-    bool operator == ( const CPhysValRes& i_physValResOther ) const;
-    bool operator != ( const CPhysValRes& i_physValResOther ) const;
-    CPhysValRes& operator = ( const CPhysValRes& i_physValResNew );
-    CPhysValRes operator + ( const CPhysValRes& i_physValResOp ) const;
-    CPhysValRes& operator += ( const CPhysValRes& i_physValResOp );
-    CPhysValRes operator * ( double i_fOp ) const;
-    CPhysValRes& operator *= ( double i_fOp );
+public: // instance methods (to convert the value into another unit)
+    void convertValue( const CUnit& i_unitDst );
 protected: // instance members
     EResType m_resType;
     double m_fVal;

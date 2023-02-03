@@ -54,36 +54,38 @@ template<> const QVector<SEnumEntry> ZS::System::CEnum<EDrawingDimensionUnit>::s
 };
 
 /*==============================================================================
-Enum EPaperFormat
+Enum ENormedPaperSizes
 ==============================================================================*/
 
-template<> QMutex ZS::System::CEnum<EPaperFormat>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<EPaperFormat>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex ZS::System::CEnum<ENormedPaperSize>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> ZS::System::CEnum<ENormedPaperSize>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 //------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> ZS::System::CEnum<EPaperFormat>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> ZS::System::CEnum<ENormedPaperSize>::s_arEnumEntries =
 //------------------------------------------------------------------------------
-{                       // Enumerator,                                Name,      Symbol, Text,  SCIPShort, SCPILong, Value
-    /* 0 */ SEnumEntry( static_cast<int>(EPaperFormat::DinA5),       "Din A5",       QSizeF(c_fPaperFormatWidthDinA5_mm, c_fPaperFormatHeightDinA5_mm) ),
-    /* 1 */ SEnumEntry( static_cast<int>(EPaperFormat::DinA4),       "Din A4",       QSizeF(c_fPaperFormatWidthDinA4_mm, c_fPaperFormatHeightDinA4_mm) ),
-    /* 2 */ SEnumEntry( static_cast<int>(EPaperFormat::DinA3),       "Din A3",       QSizeF(c_fPaperFormatWidthDinA3_mm, c_fPaperFormatHeightDinA3_mm) ),
-    /* 3 */ SEnumEntry( static_cast<int>(EPaperFormat::DinA2),       "Din A2",       QSizeF(c_fPaperFormatWidthDinA2_mm, c_fPaperFormatHeightDinA2_mm) ),
-    /* 4 */ SEnumEntry( static_cast<int>(EPaperFormat::UserDefined), "User Defined", QSizeF() )
-};
-
-/*==============================================================================
-Enum EPaperOrientation
-==============================================================================*/
-
-template<> QMutex ZS::System::CEnum<EPaperOrientation>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<EPaperOrientation>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
-
-//------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> ZS::System::CEnum<EPaperOrientation>::s_arEnumEntries =
-//------------------------------------------------------------------------------
-{                       // Enumerator,                                  Name,      Symbol, Text,  SCIPShort, SCPILong, Value
-    /* 0 */ SEnumEntry( static_cast<int>(EPaperOrientation::Portrait),  "Portrait"  ),
-    /* 1 */ SEnumEntry( static_cast<int>(EPaperOrientation::Landscape), "Landscape" )
+{
+    SEnumEntry( static_cast<int>(ENormedPaperSize::DinA0),  "DinA0",  "A0",  "DIN A0",
+        QSizeF(c_fNormedPaperSizeWidthDinA0_mm, c_fNormedPaperSizeHeightDinA0_mm) ),
+    SEnumEntry( static_cast<int>(ENormedPaperSize::DinA1),  "DinA1",  "A1",  "DIN A1",
+        QSizeF(c_fNormedPaperSizeWidthDinA1_mm, c_fNormedPaperSizeHeightDinA1_mm) ),
+    SEnumEntry( static_cast<int>(ENormedPaperSize::DinA2),  "DinA2",  "A2",  "DIN A2",
+        QSizeF(c_fNormedPaperSizeWidthDinA2_mm, c_fNormedPaperSizeHeightDinA2_mm) ),
+    SEnumEntry( static_cast<int>(ENormedPaperSize::DinA3),  "DinA3",  "A3",  "DIN A3",
+        QSizeF(c_fNormedPaperSizeWidthDinA3_mm, c_fNormedPaperSizeHeightDinA3_mm) ),
+    SEnumEntry( static_cast<int>(ENormedPaperSize::DinA4),  "DinA4",  "A4",  "DIN A4",
+        QSizeF(c_fNormedPaperSizeWidthDinA4_mm, c_fNormedPaperSizeHeightDinA4_mm) ),
+    SEnumEntry( static_cast<int>(ENormedPaperSize::DinA5),  "DinA5",  "A5",  "DIN A5",
+        QSizeF(c_fNormedPaperSizeWidthDinA5_mm, c_fNormedPaperSizeHeightDinA5_mm) ),
+    SEnumEntry( static_cast<int>(ENormedPaperSize::DinA6),  "DinA6",  "A6",  "DIN A6",
+        QSizeF(c_fNormedPaperSizeWidthDinA6_mm, c_fNormedPaperSizeHeightDinA6_mm) ),
+    SEnumEntry( static_cast<int>(ENormedPaperSize::DinA7),  "DinA7",  "A7",  "DIN A7",
+        QSizeF(c_fNormedPaperSizeWidthDinA7_mm, c_fNormedPaperSizeHeightDinA7_mm) ),
+    SEnumEntry( static_cast<int>(ENormedPaperSize::DinA8),  "DinA8",  "A8",  "DIN A8",
+        QSizeF(c_fNormedPaperSizeWidthDinA8_mm, c_fNormedPaperSizeHeightDinA8_mm) ),
+    SEnumEntry( static_cast<int>(ENormedPaperSize::DinA9),  "DinA9",  "A9",  "DIN A9",
+        QSizeF(c_fNormedPaperSizeWidthDinA9_mm, c_fNormedPaperSizeHeightDinA9_mm) ),
+    SEnumEntry( static_cast<int>(ENormedPaperSize::DinA10), "DinA10", "A10", "DIN A10",
+        QSizeF(c_fNormedPaperSizeWidthDinA10_mm, c_fNormedPaperSizeHeightDinA10_mm) )
 };
 
 

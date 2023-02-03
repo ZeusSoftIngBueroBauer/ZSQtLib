@@ -464,7 +464,8 @@ bool SErrSource::operator == ( const SErrSource& i_other ) const
     {
         bEqual = false;
     }
-    else if( m_strThreadName != i_other.m_strThreadName )
+    // Don't compare thread names if a thread name has not been assigned.
+    else if( !m_strThreadName.startsWith("0x") && m_strThreadName != i_other.m_strThreadName )
     {
         bEqual = false;
     }

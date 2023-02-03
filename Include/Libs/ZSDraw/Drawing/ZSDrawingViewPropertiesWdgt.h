@@ -87,6 +87,8 @@ protected slots:
     void onCmbImageMetricUnitCurrentIndexChanged(int i_idx);
     void onEdtImageMetricWidthEditingFinished();
     void onEdtImageMetricHeightEditingFinished();
+    void onCmbImageMetricNormedPaperSizesCurrentIndexChanged(int i_idx);
+    void onCmbImageMetricNormedPaperOrientationCurrentIndexChanged(int i_idx);
     void onEdtImageSizeWidthPxEditingFinished();
     void onEdtImageSizeHeightPxEditingFinished();
 protected: // instance members
@@ -123,6 +125,11 @@ protected: // instance members
     ZS::PhysVal::GUI::CWdgtEditPhysVal* m_pEdtImageMetricWidth;
     QLabel* m_pLblImageMetricHeight;
     ZS::PhysVal::GUI::CWdgtEditPhysVal* m_pEdtImageMetricHeight;
+    QHBoxLayout* m_pLytLineImageMetricNormedPaper;
+    QLabel* m_pLblImageMetricNormedPaperSizes;
+    QComboBox* m_pCmbImageMetricNormedPaperSizes;
+    QLabel* m_pLblImageMetricNormedPaperOrientation;
+    QComboBox* m_pCmbImageMetricNormedPaperOrientation;
     // Image Size in Pixels
     QHBoxLayout* m_pLytSepLineImageSize_px;
     QLabel* m_pLblSepLineImageSize_px;

@@ -543,9 +543,9 @@ static CInitEnumDirection s_initEnumDirection;
 template<> const QVector<SEnumEntry> CEnum<EDirection>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                       // Enumerator,                            Name,         Symbol
-    /* 0 */ SEnumEntry( static_cast<int>(EDirection::Horizontal), "Horizontal", "Hor"  ),
-    /* 1 */ SEnumEntry( static_cast<int>(EDirection::Vertical),   "Vertical",   "Ver"  ),
-    /* 2 */ SEnumEntry( static_cast<int>(EDirection::Undefined),  "Undefined",  "?"    )
+    /* 0 */ SEnumEntry( static_cast<int>(EDirection::Horizontal), "Horizontal", "H"  ),
+    /* 1 */ SEnumEntry( static_cast<int>(EDirection::Vertical),   "Vertical",   "V"  ),
+    /* 2 */ SEnumEntry( static_cast<int>(EDirection::Undefined),  "Undefined",  "?"  )
 };
 #endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 /*! @endcond */

@@ -102,6 +102,11 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pEdtImageMetricWidth(nullptr),
     m_pLblImageMetricHeight(nullptr),
     m_pEdtImageMetricHeight(nullptr),
+    m_pLytLineImageMetricNormedPaper(nullptr),
+    m_pLblImageMetricNormedPaperSizes(nullptr),
+    m_pCmbImageMetricNormedPaperSizes(nullptr),
+    m_pLblImageMetricNormedPaperOrientation(nullptr),
+    m_pCmbImageMetricNormedPaperOrientation(nullptr),
     // Image Size in Pixels
     m_pLytSepLineImageSize_px(nullptr),
     m_pLblSepLineImageSize_px(nullptr),
@@ -287,8 +292,7 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pCmbImageMetricUnit->setEnabled(false);
     m_pLytLineImageMetricScaleFactor->addWidget(m_pCmbImageMetricUnit);
     m_pLytLineImageMetricScaleFactor->addStretch();
-    for( int idxUnit = 0; idxUnit < Units.Length.count(); ++idxUnit )
-    {
+    for( int idxUnit = 0; idxUnit < Units.Length.count(); ++idxUnit ) {
         CUnitsTreeEntryPhysUnit* pUnitEntry =
             dynamic_cast<CUnitsTreeEntryPhysUnit*>(Units.Length.at(idxUnit));
         if( pUnitEntry != nullptr ) {
@@ -318,11 +322,10 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pEdtImageMetricWidth->setFixedWidth(m_cxEdtWidthClm1);
     m_pEdtImageMetricWidth->setReadOnly(true);
     m_pEdtImageMetricWidth->setUnit(physValWidth.unit());
-    m_pEdtImageMetricWidth->setValue(physValWidth.getVal());
-    m_pEdtImageMetricWidth->setMinimum(1.0e-9);
-    m_pEdtImageMetricWidth->setMaximum(100000);
     #pragma message(__TODO__"setResolution depending on screen resolution")
     m_pEdtImageMetricWidth->setResolution(0.001);
+    m_pEdtImageMetricWidth->setMaximum(100000);
+    m_pEdtImageMetricWidth->setValue(physValWidth.getVal());
     m_pLytLineMetricSize->addWidget(m_pEdtImageMetricWidth);
     m_pLytLineMetricSize->addSpacing(m_cxClmSpacing);
     QObject::connect(
@@ -337,11 +340,10 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pLytLineMetricSize->addWidget(m_pLblImageMetricHeight);
     m_pEdtImageMetricHeight = new CWdgtEditPhysVal();
     m_pEdtImageMetricHeight->setUnit(physValHeight.unit());
-    m_pEdtImageMetricHeight->setValue(physValHeight.getVal());
-    m_pEdtImageMetricHeight->setMinimum(1.0e-9);
-    m_pEdtImageMetricHeight->setMaximum(1.0e6);
     #pragma message(__TODO__"setResolution depending on screen resolution")
     m_pEdtImageMetricHeight->setResolution(0.001);
+    m_pEdtImageMetricHeight->setMaximum(1.0e6);
+    m_pEdtImageMetricHeight->setValue(physValHeight.getVal());
     m_pEdtImageMetricHeight->setFixedWidth(m_cxEdtWidthClm2);
     m_pEdtImageMetricHeight->setReadOnly(true);
     m_pLytLineMetricSize->addWidget(m_pEdtImageMetricHeight);
@@ -349,6 +351,52 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     QObject::connect(
         m_pEdtImageMetricHeight, &CWdgtEditPhysVal::editingFinished,
         this, &CWdgtDrawingViewProperties::onEdtImageMetricHeightEditingFinished);
+
+    // <Line> Normed Paper Sizes
+    //--------------------------
+
+    m_pLytLineImageMetricNormedPaper = new QHBoxLayout();
+    m_pLytWdgtMetric->addLayout(m_pLytLineImageMetricNormedPaper);
+
+    // <ComboBox> Normed Paper Sizes
+    //------------------------------
+
+    m_pLblImageMetricNormedPaperSizes = new QLabel("Normed Sizes:");
+    m_pLblImageMetricNormedPaperSizes->setFixedWidth(m_cxLblWidthClm1);
+    m_pLytLineImageMetricNormedPaper->addWidget(m_pLblImageMetricNormedPaperSizes);
+    m_pCmbImageMetricNormedPaperSizes = new QComboBox();
+    m_pCmbImageMetricNormedPaperSizes->setFixedWidth(m_cxEdtWidthClm1);
+    m_pCmbImageMetricNormedPaperSizes->setEnabled(false);
+    m_pLytLineImageMetricNormedPaper->addWidget(m_pCmbImageMetricNormedPaperSizes);
+    m_pLytLineImageMetricNormedPaper->addSpacing(m_cxClmSpacing);
+    for( CEnumNormedPaperSize eVal = 0; eVal < CEnumNormedPaperSize::count(); ++eVal ) {
+        m_pCmbImageMetricNormedPaperSizes->addItem(eVal.toString(), eVal.toValue());
+    }
+    m_pCmbImageMetricNormedPaperSizes->addItem("User Defined");
+    m_pCmbImageMetricNormedPaperSizes->setCurrentText("User Defined");
+    QObject::connect(
+        m_pCmbImageMetricNormedPaperSizes, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+        this, &CWdgtDrawingViewProperties::onCmbImageMetricNormedPaperSizesCurrentIndexChanged );
+
+    // <ComboBox> Paper Layout
+    //------------------------
+
+    m_pLblImageMetricNormedPaperOrientation = new QLabel("Orientation:");
+    m_pLblImageMetricNormedPaperOrientation->setFixedWidth(m_cxLblWidthClm1);
+    m_pLytLineImageMetricNormedPaper->addWidget(m_pLblImageMetricNormedPaperOrientation);
+    m_pCmbImageMetricNormedPaperOrientation = new QComboBox();
+    m_pCmbImageMetricNormedPaperOrientation->setFixedWidth(m_cxEdtWidthClm1);
+    m_pCmbImageMetricNormedPaperOrientation->setEnabled(false);
+    m_pLytLineImageMetricNormedPaper->addWidget(m_pCmbImageMetricNormedPaperOrientation);
+    m_pLytLineImageMetricNormedPaper->addSpacing(m_cxClmSpacing);
+    for( CEnumDirection eVal = 0; eVal < CEnumDirection::count(); ++eVal ) {
+        m_pCmbImageMetricNormedPaperOrientation->addItem(eVal.toString(), eVal.toValue());
+    }
+    m_pCmbImageMetricNormedPaperOrientation->setCurrentText(
+        CEnumDirection(EDirection::Horizontal).toString());
+    QObject::connect(
+        m_pCmbImageMetricNormedPaperOrientation, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+        this, &CWdgtDrawingViewProperties::onCmbImageMetricNormedPaperOrientationCurrentIndexChanged );
 
     // <Visibility> Metric Widget
     //---------------------------
@@ -453,6 +501,11 @@ CWdgtDrawingViewProperties::~CWdgtDrawingViewProperties()
     m_pEdtImageMetricWidth = nullptr;
     m_pLblImageMetricHeight = nullptr;
     m_pEdtImageMetricHeight = nullptr;
+    m_pLytLineImageMetricNormedPaper = nullptr;
+    m_pLblImageMetricNormedPaperSizes = nullptr;
+    m_pCmbImageMetricNormedPaperSizes = nullptr;
+    m_pLblImageMetricNormedPaperOrientation = nullptr;
+    m_pCmbImageMetricNormedPaperOrientation = nullptr;
     // Image Size in Pixels
     m_pLytSepLineImageSize_px = nullptr;
     m_pLblSepLineImageSize_px = nullptr;
@@ -501,6 +554,14 @@ void CWdgtDrawingViewProperties::setDimensionUnit( EDrawingDimensionUnit i_dimen
             m_dimensionUnit != EDrawingDimensionUnit::Pixels);
         m_pEdtImageSizeHeight_px->setReadOnly(
             m_dimensionUnit != EDrawingDimensionUnit::Pixels);
+        m_pCmbImageMetricNormedPaperSizes->setEnabled(
+            m_dimensionUnit == EDrawingDimensionUnit::Metric);
+        m_pCmbImageMetricNormedPaperOrientation->setEnabled(
+            m_dimensionUnit == EDrawingDimensionUnit::Metric);
+        //m_pEdtImageSizeWidth_px->setEnabled(
+        //    m_dimensionUnit == EDrawingDimensionUnit::Pixels);
+        //m_pEdtImageSizeHeight_px->setEnabled(
+        //    m_dimensionUnit == EDrawingDimensionUnit::Pixels);
     }
 }
 
@@ -521,17 +582,14 @@ void CWdgtDrawingViewProperties::setMetricUnit( const QString& i_strMetricUnitSy
         m_fImageMetricHeight = physValHeight.getVal();
         m_pCmbImageMetricUnit->setCurrentText(m_strMetricUnitSymbol);
         m_pEdtImageMetricWidth->setUnit(physValWidth.unit());
-        m_pEdtImageMetricWidth->setValue(physValWidth.getVal());
-        m_pEdtImageMetricWidth->setMinimum(1.0e-9);
-        m_pEdtImageMetricWidth->setMaximum(1.0e6);
         #pragma message(__TODO__"setResolution depending on screen resolution")
-        m_pEdtImageMetricWidth->setResolution(0.001);
+        //m_pEdtImageMetricWidth->setValue(physValWidth.getVal());
+        //m_pEdtImageMetricWidth->setResolution(0.001);
+        //m_pEdtImageMetricWidth->setMaximum(1.0e6);
         m_pEdtImageMetricHeight->setUnit(physValHeight.unit());
-        m_pEdtImageMetricHeight->setValue(physValHeight.getVal());
-        m_pEdtImageMetricHeight->setMinimum(1.0e-9);
-        m_pEdtImageMetricHeight->setMaximum(1.0e6);
-        #pragma message(__TODO__"setResolution depending on screen resolution")
-        m_pEdtImageMetricHeight->setResolution(0.001);
+        //m_pEdtImageMetricHeight->setValue(physValHeight.getVal());
+        //m_pEdtImageMetricHeight->setResolution(0.001);
+        //m_pEdtImageMetricHeight->setMaximum(1.0e6);
     }
 }
 
@@ -540,7 +598,7 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtDrawingViewProperties::onDrawingViewDrawingSizeChanged(const QSize& i_size)
+void CWdgtDrawingViewProperties::onDrawingViewDrawingSizeChanged(const QSize& /*i_size*/)
 //------------------------------------------------------------------------------
 {
 }
@@ -565,7 +623,7 @@ void CWdgtDrawingViewProperties::onCmbImageMetricScaleFactorDivisorCurrentTextCh
 }
 
 //------------------------------------------------------------------------------
-void CWdgtDrawingViewProperties::onCmbImageMetricUnitCurrentIndexChanged(int i_idx)
+void CWdgtDrawingViewProperties::onCmbImageMetricUnitCurrentIndexChanged(int /*i_idx*/)
 //------------------------------------------------------------------------------
 {
     setMetricUnit(m_pCmbImageMetricUnit->currentText());
@@ -579,6 +637,18 @@ void CWdgtDrawingViewProperties::onEdtImageMetricWidthEditingFinished()
 
 //------------------------------------------------------------------------------
 void CWdgtDrawingViewProperties::onEdtImageMetricHeightEditingFinished()
+//------------------------------------------------------------------------------
+{
+}
+
+//------------------------------------------------------------------------------
+void CWdgtDrawingViewProperties::onCmbImageMetricNormedPaperSizesCurrentIndexChanged(int /*i_idx*/)
+//------------------------------------------------------------------------------
+{
+}
+
+//------------------------------------------------------------------------------
+void CWdgtDrawingViewProperties::onCmbImageMetricNormedPaperOrientationCurrentIndexChanged(int /*i_idx*/)
 //------------------------------------------------------------------------------
 {
 }

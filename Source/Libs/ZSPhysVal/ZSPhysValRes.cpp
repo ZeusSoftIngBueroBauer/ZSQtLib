@@ -127,6 +127,128 @@ EResType CPhysValRes::type() const
 }
 
 /*==============================================================================
+public: // operators
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+bool CPhysValRes::operator == ( const CPhysValRes& i_physValResOther ) const
+//------------------------------------------------------------------------------
+{
+    if( m_resType != i_physValResOther.m_resType )
+    {
+        return false;
+    }
+
+    double fValOther;
+
+    if( m_unit.isValid() )
+    {
+        fValOther = i_physValResOther.getVal(m_unit);
+    }
+    else
+    {
+        fValOther = i_physValResOther.getVal();
+    }
+    if( m_fVal == fValOther )
+    {
+        return true;
+    }
+    return false;
+
+} // operator ==
+
+//------------------------------------------------------------------------------
+bool CPhysValRes::operator != ( const CPhysValRes& i_physValResOther ) const
+//------------------------------------------------------------------------------
+{
+    return !(*this == i_physValResOther);
+}
+
+//------------------------------------------------------------------------------
+CPhysValRes& CPhysValRes::operator = ( const CPhysValRes& i_physValResNew )
+//------------------------------------------------------------------------------
+{
+    m_resType = i_physValResNew.m_resType;
+    m_fVal    = i_physValResNew.m_fVal;
+    m_unit    = i_physValResNew.m_unit;
+    return *this;
+}
+
+//------------------------------------------------------------------------------
+CPhysValRes CPhysValRes::operator + ( const CPhysValRes& i_physValResOp ) const
+//------------------------------------------------------------------------------
+{
+    if( !areOfSameUnitGroup(m_unit,i_physValResOp.unit()) )
+    {
+        CPhysValRes physValResThis(*this);
+        CPhysValRes physValResOther(i_physValResOp);
+        QString     strAddErrInfo = physValResThis.toString() + " + " + physValResOther.toString();
+        throw CUnitConversionException( __FILE__, __LINE__, EResultDifferentPhysSizes, strAddErrInfo );
+    }
+    CPhysValRes physValResSum(*this);
+    physValResSum += i_physValResOp;
+    return physValResSum;
+}
+
+//------------------------------------------------------------------------------
+CPhysValRes& CPhysValRes::operator += ( const CPhysValRes& i_physValResOp )
+//------------------------------------------------------------------------------
+{
+    if( !areOfSameUnitGroup(m_unit,i_physValResOp.unit()) )
+    {
+        CPhysValRes physValResThis(*this);
+        CPhysValRes physValResOther(i_physValResOp);
+        QString     strAddErrInfo = physValResThis.toString() + " += " + physValResOther.toString();
+        throw CUnitConversionException( __FILE__, __LINE__, EResultDifferentPhysSizes, strAddErrInfo );
+    }
+
+    // Same unit group, so both units are either nullptr or not.
+    if( !m_unit.isValid() )
+    {
+        m_fVal += i_physValResOp.getVal();
+    }
+    else
+    {
+        CUnit unitOp = i_physValResOp.unit();
+
+        if( m_unit.isLogarithmic() && !unitOp.isLogarithmic() )
+        {
+            QString strAddErrInfo = "Val:" + m_unit.keyInTree() + ", Op:" + unitOp.keyInTree();
+            throw CUnitConversionException(
+                __FILE__, __LINE__, EResultMixedLinLogInMathOp, strAddErrInfo);
+        }
+        if( unitOp.isLogarithmic() )
+        {
+            double fFactor = pow( 10.0, i_physValResOp.getVal()/unitOp.logarithmicFactor() );
+            m_fVal *= fFactor;
+        }
+        else
+        {
+            m_fVal += i_physValResOp.getVal(m_unit);
+        }
+    }
+    return *this;
+
+} // operator +=
+
+//------------------------------------------------------------------------------
+CPhysValRes CPhysValRes::operator * ( double i_fOp ) const
+//------------------------------------------------------------------------------
+{
+    CPhysValRes physValResMul(*this);
+    physValResMul.m_fVal *= i_fOp;
+    return physValResMul;
+}
+
+//------------------------------------------------------------------------------
+CPhysValRes& CPhysValRes::operator *= ( double i_fOp )
+//------------------------------------------------------------------------------
+{
+    m_fVal *= i_fOp;
+    return *this;
+}
+
+/*==============================================================================
 public: // instance methods
 ==============================================================================*/
 
@@ -396,123 +518,21 @@ QString CPhysValRes::toString( const CUnit& i_unit, int i_iSubStrVisibility ) co
 } // toString
 
 /*==============================================================================
-public: // operators
+public: // instance methods (to convert the unit)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool CPhysValRes::operator == ( const CPhysValRes& i_physValResOther ) const
+void CPhysValRes::convertValue( const CUnit& i_unitDst )
 //------------------------------------------------------------------------------
 {
-    if( m_resType != i_physValResOther.m_resType )
+    if( !areOfSameUnitGroup(m_unit,i_unitDst) )
     {
-        return false;
-    }
-
-    double fValOther;
-
-    if( m_unit.isValid() )
-    {
-        fValOther = i_physValResOther.getVal(m_unit);
-    }
-    else
-    {
-        fValOther = i_physValResOther.getVal();
-    }
-    if( m_fVal == fValOther )
-    {
-        return true;
-    }
-    return false;
-
-} // operator ==
-
-//------------------------------------------------------------------------------
-bool CPhysValRes::operator != ( const CPhysValRes& i_physValResOther ) const
-//------------------------------------------------------------------------------
-{
-    return !(*this == i_physValResOther);
-}
-
-//------------------------------------------------------------------------------
-CPhysValRes& CPhysValRes::operator = ( const CPhysValRes& i_physValResNew )
-//------------------------------------------------------------------------------
-{
-    m_resType = i_physValResNew.m_resType;
-    m_fVal    = i_physValResNew.m_fVal;
-    m_unit    = i_physValResNew.m_unit;
-    return *this;
-}
-
-//------------------------------------------------------------------------------
-CPhysValRes CPhysValRes::operator + ( const CPhysValRes& i_physValResOp ) const
-//------------------------------------------------------------------------------
-{
-    if( !areOfSameUnitGroup(m_unit,i_physValResOp.unit()) )
-    {
-        CPhysValRes physValResThis(*this);
-        CPhysValRes physValResOther(i_physValResOp);
-        QString     strAddErrInfo = physValResThis.toString() + " + " + physValResOther.toString();
+        QString strAddErrInfo = "Src:" + m_unit.keyInTree() + ", Dst:" + i_unitDst.keyInTree();
         throw CUnitConversionException( __FILE__, __LINE__, EResultDifferentPhysSizes, strAddErrInfo );
     }
-    CPhysValRes physValResSum(*this);
-    physValResSum += i_physValResOp;
-    return physValResSum;
-}
-
-//------------------------------------------------------------------------------
-CPhysValRes& CPhysValRes::operator += ( const CPhysValRes& i_physValResOp )
-//------------------------------------------------------------------------------
-{
-    if( !areOfSameUnitGroup(m_unit,i_physValResOp.unit()) )
+    if( isValid() && m_unit.isValid() && i_unitDst.isValid() && m_unit != i_unitDst )
     {
-        CPhysValRes physValResThis(*this);
-        CPhysValRes physValResOther(i_physValResOp);
-        QString     strAddErrInfo = physValResThis.toString() + " += " + physValResOther.toString();
-        throw CUnitConversionException( __FILE__, __LINE__, EResultDifferentPhysSizes, strAddErrInfo );
+        m_fVal = m_unit.convertValue(m_fVal, i_unitDst);
+        m_unit = i_unitDst;
     }
-
-    // Same unit group, so both units are either nullptr or not.
-    if( !m_unit.isValid() )
-    {
-        m_fVal += i_physValResOp.getVal();
-    }
-    else
-    {
-        CUnit unitOp = i_physValResOp.unit();
-
-        if( m_unit.isLogarithmic() && !unitOp.isLogarithmic() )
-        {
-            QString strAddErrInfo = "Val:" + m_unit.keyInTree() + ", Op:" + unitOp.keyInTree();
-            throw CUnitConversionException(
-                __FILE__, __LINE__, EResultMixedLinLogInMathOp, strAddErrInfo);
-        }
-        if( unitOp.isLogarithmic() )
-        {
-            double fFactor = pow( 10.0, i_physValResOp.getVal()/unitOp.logarithmicFactor() );
-            m_fVal *= fFactor;
-        }
-        else
-        {
-            m_fVal += i_physValResOp.getVal(m_unit);
-        }
-    }
-    return *this;
-
-} // operator +=
-
-//------------------------------------------------------------------------------
-CPhysValRes CPhysValRes::operator * ( double i_fOp ) const
-//------------------------------------------------------------------------------
-{
-    CPhysValRes physValResMul(*this);
-    physValResMul.m_fVal *= i_fOp;
-    return physValResMul;
-}
-
-//------------------------------------------------------------------------------
-CPhysValRes& CPhysValRes::operator *= ( double i_fOp )
-//------------------------------------------------------------------------------
-{
-    m_fVal *= i_fOp;
-    return *this;
 }

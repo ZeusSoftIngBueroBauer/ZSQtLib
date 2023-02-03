@@ -89,6 +89,7 @@ CWdgtStackGraphObjsProperties::CWdgtStackGraphObjsProperties(
     m_pLytMain->addLayout(m_pLytHeadLine);
 
     m_pEdtPath = new QLineEdit();
+    m_pEdtPath->setReadOnly(true);
     m_pLytHeadLine->addWidget(m_pEdtPath, 1);
 
     // Content of selected tree node

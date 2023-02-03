@@ -64,6 +64,61 @@ template class ZSDRAWDLL_API ZS::System::CEnum<EDrawingDimensionUnit>;
 typedef ZS::System::CEnum<EDrawingDimensionUnit> CEnumDrawingDimensionUnit;
 
 //==============================================================================
+/*! Normed paper sizes.
+*/
+enum class ENormedPaperSize {
+//==============================================================================
+    DinA0, /*!< 841 x 1189 mm. */
+    DinA1, /*!< 549 x 841 mm. */
+    DinA2, /*!< 420 x 594 mm. */
+    DinA3, /*!< 297 x 420 mm. */
+    DinA4, /*!< 210 x 297 mm. */
+    DinA5, /*!< 148 x 210 mm. */
+    DinA6, /*!< 105 x 148 mm. */
+    DinA7, /*!< 74 x 105 mm. */
+    DinA8, /*!< 52 x 74 mm. */
+    DinA9, /*!< 37 x 52 mm. */
+    DinA10 /*!< 26 x 37 mm. */
+};
+
+template class ZSDRAWDLL_API ZS::System::CEnum<ENormedPaperSize>;
+typedef ZS::System::CEnum<ENormedPaperSize> CEnumNormedPaperSize;
+
+const double c_fNormedPaperSizeWidthDinA0_mm  = 841.0;
+const double c_fNormedPaperSizeHeightDinA0_mm = 1189.0;
+
+const double c_fNormedPaperSizeWidthDinA1_mm  = 594;
+const double c_fNormedPaperSizeHeightDinA1_mm = c_fNormedPaperSizeHeightDinA0_mm;
+
+const double c_fNormedPaperSizeWidthDinA2_mm  = 420.0;
+const double c_fNormedPaperSizeHeightDinA2_mm = c_fNormedPaperSizeHeightDinA1_mm;
+
+const double c_fNormedPaperSizeWidthDinA3_mm  = 297.0;
+const double c_fNormedPaperSizeHeightDinA3_mm = c_fNormedPaperSizeHeightDinA2_mm;
+
+const double c_fNormedPaperSizeWidthDinA4_mm  = 210.0;
+const double c_fNormedPaperSizeHeightDinA4_mm = c_fNormedPaperSizeHeightDinA3_mm;
+
+const double c_fNormedPaperSizeWidthDinA5_mm  = 148.0;
+const double c_fNormedPaperSizeHeightDinA5_mm = c_fNormedPaperSizeHeightDinA4_mm;
+
+const double c_fNormedPaperSizeWidthDinA6_mm  = 148.0;
+const double c_fNormedPaperSizeHeightDinA6_mm = c_fNormedPaperSizeHeightDinA5_mm;
+
+const double c_fNormedPaperSizeWidthDinA7_mm  = 148.0;
+const double c_fNormedPaperSizeHeightDinA7_mm = c_fNormedPaperSizeHeightDinA6_mm;
+
+const double c_fNormedPaperSizeWidthDinA8_mm  = 148.0;
+const double c_fNormedPaperSizeHeightDinA8_mm = c_fNormedPaperSizeHeightDinA7_mm;
+
+const double c_fNormedPaperSizeWidthDinA9_mm  = 148.0;
+const double c_fNormedPaperSizeHeightDinA9_mm = c_fNormedPaperSizeHeightDinA8_mm;
+
+const double c_fNormedPaperSizeWidthDinA10_mm  = 148.0;
+const double c_fNormedPaperSizeHeightDinA10_mm = c_fNormedPaperSizeHeightDinA9_mm;
+
+
+//==============================================================================
 struct ZSDRAWDLL_API SAttribute
 //==============================================================================
 {
@@ -141,49 +196,6 @@ public: // struct members
     double                m_fYScaleFac;
 
 }; // struct SDrawArea
-
-
-//==============================================================================
-/*! Supported paper formats for printing.
-*/
-enum class EPaperFormat
-//==============================================================================
-{
-    DinA5       = 0, /*!< DinA5 (148 x 210 mm). */
-    DinA4       = 1, /*!< DinA4 (210 x 297 mm). */
-    DinA3       = 2, /*!< DinA3 (297 x 420 mm). */
-    DinA2       = 3, /*!< DinA2 (420 x 594 mm). */
-    UserDefined = 4  /*!< User defined format. */
-};
-
-template class ZSDRAWDLL_API ZS::System::CEnum<EPaperFormat>;
-typedef ZS::System::CEnum<EPaperFormat> CEnumPaperFormat;
-
-const double c_fPaperFormatWidthDinA5_mm  = 148.0;
-const double c_fPaperFormatHeightDinA5_mm = 210.0;
-
-const double c_fPaperFormatWidthDinA4_mm  = 210.0;
-const double c_fPaperFormatHeightDinA4_mm = 297.0;
-
-const double c_fPaperFormatWidthDinA3_mm  = 297.0;
-const double c_fPaperFormatHeightDinA3_mm = 420.0;
-
-const double c_fPaperFormatWidthDinA2_mm  = 420.0;
-const double c_fPaperFormatHeightDinA2_mm = 594.0;
-
-
-//==============================================================================
-/*! Paper orientation.
-*/
-enum class EPaperOrientation
-//==============================================================================
-{
-    Portrait  = 0,   /*!< Portrait (vertical). */
-    Landscape = 1    /*!< Landscape (horizontal). */
-};
-
-template class ZSDRAWDLL_API ZS::System::CEnum<EPaperOrientation>;
-typedef ZS::System::CEnum<EPaperOrientation> CEnumPaperOrientation;
 
 
 //==============================================================================
