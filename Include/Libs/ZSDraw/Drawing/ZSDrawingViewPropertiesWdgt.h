@@ -79,16 +79,18 @@ public: // overridables
 public: // instance methods
     void setDimensionUnit( EDrawingDimensionUnit i_dimensionUnit );
     void setMetricUnit( const QString& i_strMetricUnitSymbol );
+    void setNormedPaperSize( const QString& i_strPaperSize );
+    void setNormedPaperOrientation( const QString& i_strOrientation );
 protected slots:
     void onDrawingViewDrawingSizeChanged(const QSize& i_size);
     void onCmbDimensionUnitCurrentIndexChanged(int i_idx);
-    void onCmbImageMetricScaleFactorDividendCurrentTextChanged(const QString& i_strText);
-    void onCmbImageMetricScaleFactorDivisorCurrentTextChanged(const QString& i_strText);
     void onCmbImageMetricUnitCurrentIndexChanged(int i_idx);
     void onEdtImageMetricWidthEditingFinished();
     void onEdtImageMetricHeightEditingFinished();
     void onCmbImageMetricNormedPaperSizesCurrentIndexChanged(int i_idx);
     void onCmbImageMetricNormedPaperOrientationCurrentIndexChanged(int i_idx);
+    void onCmbImageMetricScaleFactorDividendCurrentTextChanged(const QString& i_strText);
+    void onCmbImageMetricScaleFactorDivisorCurrentTextChanged(const QString& i_strText);
     void onEdtImageSizeWidthPxEditingFinished();
     void onEdtImageSizeHeightPxEditingFinished();
 protected: // instance members
@@ -113,11 +115,7 @@ protected: // instance members
     QHBoxLayout* m_pLytSepLineImageMetric;
     QLabel* m_pLblSepLineImageMetric;
     ZS::System::GUI::CSepLine* m_pSepLineImageMetric;
-    QHBoxLayout* m_pLytLineImageMetricScaleFactor;
-    QLabel* m_pLblImageMetricScaleFactor;
-    QComboBox* m_pCmbImageMetricScaleFactorDividend;
-    QLabel* m_pLblImageMetricScaleFactorHyphen;
-    QComboBox* m_pCmbImageMetricScaleFactorDivisor;
+    QHBoxLayout* m_pLytLineImageMetricUnit;
     QLabel* m_pLblImageMetricUnit;
     QComboBox* m_pCmbImageMetricUnit;
     QHBoxLayout* m_pLytLineMetricSize;
@@ -130,6 +128,11 @@ protected: // instance members
     QComboBox* m_pCmbImageMetricNormedPaperSizes;
     QLabel* m_pLblImageMetricNormedPaperOrientation;
     QComboBox* m_pCmbImageMetricNormedPaperOrientation;
+    QHBoxLayout* m_pLytLineImageMetricScaleFactor;
+    QLabel* m_pLblImageMetricScaleFactor;
+    QComboBox* m_pCmbImageMetricScaleFactorDividend;
+    QLabel* m_pLblImageMetricScaleFactorHyphen;
+    QComboBox* m_pCmbImageMetricScaleFactorDivisor;
     // Image Size in Pixels
     QHBoxLayout* m_pLytSepLineImageSize_px;
     QLabel* m_pLblSepLineImageSize_px;
@@ -141,11 +144,13 @@ protected: // instance members
     QSpinBox* m_pEdtImageSizeHeight_px;
     // Caching values
     EDrawingDimensionUnit m_dimensionUnit;
-    int m_iMetricScaleFactorDividend;
-    int m_iMetricScaleFactorDivisor;
     QString m_strMetricUnitSymbol;
     double m_fImageMetricWidth;
     double m_fImageMetricHeight;
+    QString m_strImageMetricNormedPaperSize;
+    QString m_strImageMetricNormedPaperOrientation;
+    int m_iMetricScaleFactorDividend;
+    int m_iMetricScaleFactorDivisor;
     int m_cxImageSizeWidth_px;
     int m_cyImageSizeHeight_px;
 

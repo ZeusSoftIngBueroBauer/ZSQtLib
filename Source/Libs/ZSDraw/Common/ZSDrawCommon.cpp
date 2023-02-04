@@ -63,7 +63,7 @@ template<> QVector<QHash<QString, int>> ZS::System::CEnum<ENormedPaperSize>::s_a
 //------------------------------------------------------------------------------
 template<> const QVector<SEnumEntry> ZS::System::CEnum<ENormedPaperSize>::s_arEnumEntries =
 //------------------------------------------------------------------------------
-{
+{                                                         // Name,   Symbol, Text
     SEnumEntry( static_cast<int>(ENormedPaperSize::DinA0),  "DinA0",  "A0",  "DIN A0",
         QSizeF(c_fNormedPaperSizeWidthDinA0_mm, c_fNormedPaperSizeHeightDinA0_mm) ),
     SEnumEntry( static_cast<int>(ENormedPaperSize::DinA1),  "DinA1",  "A1",  "DIN A1",
@@ -85,6 +85,8 @@ template<> const QVector<SEnumEntry> ZS::System::CEnum<ENormedPaperSize>::s_arEn
     SEnumEntry( static_cast<int>(ENormedPaperSize::DinA9),  "DinA9",  "A9",  "DIN A9",
         QSizeF(c_fNormedPaperSizeWidthDinA9_mm, c_fNormedPaperSizeHeightDinA9_mm) ),
     SEnumEntry( static_cast<int>(ENormedPaperSize::DinA10), "DinA10", "A10", "DIN A10",
+        QSizeF(c_fNormedPaperSizeWidthDinA10_mm, c_fNormedPaperSizeHeightDinA10_mm) ),
+    SEnumEntry( static_cast<int>(ENormedPaperSize::Undefined), "Undefined", "?", "---",
         QSizeF(c_fNormedPaperSizeWidthDinA10_mm, c_fNormedPaperSizeHeightDinA10_mm) )
 };
 

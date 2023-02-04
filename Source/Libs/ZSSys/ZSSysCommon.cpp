@@ -532,9 +532,9 @@ class CInitEnumDirection
 public: // ctor
     CInitEnumDirection() {
         QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnum<EDirection>::s_arEnumEntries);
-        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(EDirection::Horizontal), "Horizontal", "Hor"  ) );
-        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(EDirection::Vertical),   "Vertical",   "Ver"  ) );
-        pVEnumEntries->append( /* 2 */ SEnumEntry( static_cast<int>(EDirection::Undefined),  "Undefined",  "?"    ) );
+        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(EDirection::Horizontal), "Horizontal", "H", "Horizontal" ) );
+        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(EDirection::Vertical),   "Vertical",   "V", "Vertical"   ) );
+        pVEnumEntries->append( /* 2 */ SEnumEntry( static_cast<int>(EDirection::Undefined),  "Undefined",  "?", "---"        ) );
     }
 };
 static CInitEnumDirection s_initEnumDirection;
@@ -542,10 +542,10 @@ static CInitEnumDirection s_initEnumDirection;
 //------------------------------------------------------------------------------
 template<> const QVector<SEnumEntry> CEnum<EDirection>::s_arEnumEntries =
 //------------------------------------------------------------------------------
-{                       // Enumerator,                            Name,         Symbol
-    /* 0 */ SEnumEntry( static_cast<int>(EDirection::Horizontal), "Horizontal", "H"  ),
-    /* 1 */ SEnumEntry( static_cast<int>(EDirection::Vertical),   "Vertical",   "V"  ),
-    /* 2 */ SEnumEntry( static_cast<int>(EDirection::Undefined),  "Undefined",  "?"  )
+{                       // Enumerator,                            Name,      Symbol, Text
+    /* 0 */ SEnumEntry( static_cast<int>(EDirection::Horizontal), "Horizontal", "H", "Horizontal" ),
+    /* 1 */ SEnumEntry( static_cast<int>(EDirection::Vertical),   "Vertical",   "V", "Vertical"   ),
+    /* 2 */ SEnumEntry( static_cast<int>(EDirection::Undefined),  "Undefined",  "?", "---"        )
 };
 #endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 /*! @endcond */

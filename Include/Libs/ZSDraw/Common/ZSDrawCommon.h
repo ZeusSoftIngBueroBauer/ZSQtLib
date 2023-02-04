@@ -78,7 +78,8 @@ enum class ENormedPaperSize {
     DinA7, /*!< 74 x 105 mm. */
     DinA8, /*!< 52 x 74 mm. */
     DinA9, /*!< 37 x 52 mm. */
-    DinA10 /*!< 26 x 37 mm. */
+    DinA10, /*!< 26 x 37 mm. */
+    Undefined
 };
 
 template class ZSDRAWDLL_API ZS::System::CEnum<ENormedPaperSize>;
@@ -88,34 +89,34 @@ const double c_fNormedPaperSizeWidthDinA0_mm  = 841.0;
 const double c_fNormedPaperSizeHeightDinA0_mm = 1189.0;
 
 const double c_fNormedPaperSizeWidthDinA1_mm  = 594;
-const double c_fNormedPaperSizeHeightDinA1_mm = c_fNormedPaperSizeHeightDinA0_mm;
+const double c_fNormedPaperSizeHeightDinA1_mm = c_fNormedPaperSizeWidthDinA0_mm;
 
 const double c_fNormedPaperSizeWidthDinA2_mm  = 420.0;
-const double c_fNormedPaperSizeHeightDinA2_mm = c_fNormedPaperSizeHeightDinA1_mm;
+const double c_fNormedPaperSizeHeightDinA2_mm = c_fNormedPaperSizeWidthDinA1_mm;
 
 const double c_fNormedPaperSizeWidthDinA3_mm  = 297.0;
-const double c_fNormedPaperSizeHeightDinA3_mm = c_fNormedPaperSizeHeightDinA2_mm;
+const double c_fNormedPaperSizeHeightDinA3_mm = c_fNormedPaperSizeWidthDinA2_mm;
 
 const double c_fNormedPaperSizeWidthDinA4_mm  = 210.0;
-const double c_fNormedPaperSizeHeightDinA4_mm = c_fNormedPaperSizeHeightDinA3_mm;
+const double c_fNormedPaperSizeHeightDinA4_mm = c_fNormedPaperSizeWidthDinA3_mm;
 
 const double c_fNormedPaperSizeWidthDinA5_mm  = 148.0;
-const double c_fNormedPaperSizeHeightDinA5_mm = c_fNormedPaperSizeHeightDinA4_mm;
+const double c_fNormedPaperSizeHeightDinA5_mm = c_fNormedPaperSizeWidthDinA4_mm;
 
-const double c_fNormedPaperSizeWidthDinA6_mm  = 148.0;
-const double c_fNormedPaperSizeHeightDinA6_mm = c_fNormedPaperSizeHeightDinA5_mm;
+const double c_fNormedPaperSizeWidthDinA6_mm  = 105.0;
+const double c_fNormedPaperSizeHeightDinA6_mm = c_fNormedPaperSizeWidthDinA5_mm;
 
-const double c_fNormedPaperSizeWidthDinA7_mm  = 148.0;
-const double c_fNormedPaperSizeHeightDinA7_mm = c_fNormedPaperSizeHeightDinA6_mm;
+const double c_fNormedPaperSizeWidthDinA7_mm  = 74.0;
+const double c_fNormedPaperSizeHeightDinA7_mm = c_fNormedPaperSizeWidthDinA6_mm;
 
-const double c_fNormedPaperSizeWidthDinA8_mm  = 148.0;
-const double c_fNormedPaperSizeHeightDinA8_mm = c_fNormedPaperSizeHeightDinA7_mm;
+const double c_fNormedPaperSizeWidthDinA8_mm  = 52.0;
+const double c_fNormedPaperSizeHeightDinA8_mm = c_fNormedPaperSizeWidthDinA7_mm;
 
-const double c_fNormedPaperSizeWidthDinA9_mm  = 148.0;
-const double c_fNormedPaperSizeHeightDinA9_mm = c_fNormedPaperSizeHeightDinA8_mm;
+const double c_fNormedPaperSizeWidthDinA9_mm  = 37.0;
+const double c_fNormedPaperSizeHeightDinA9_mm = c_fNormedPaperSizeWidthDinA8_mm;
 
-const double c_fNormedPaperSizeWidthDinA10_mm  = 148.0;
-const double c_fNormedPaperSizeHeightDinA10_mm = c_fNormedPaperSizeHeightDinA9_mm;
+const double c_fNormedPaperSizeWidthDinA10_mm  = 26.0;
+const double c_fNormedPaperSizeHeightDinA10_mm = c_fNormedPaperSizeWidthDinA9_mm;
 
 
 //==============================================================================
