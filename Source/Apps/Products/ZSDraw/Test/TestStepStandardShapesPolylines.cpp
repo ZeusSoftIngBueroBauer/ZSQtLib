@@ -686,8 +686,8 @@ void CTest::doTestStepStandardShapesPolylines( ZS::Test::CTestStepGroup* i_pTest
             m_fxOffsHor = s_arsizePolylinesCreatePolyline1FirstLineSegmentMovePt2TestSteps[m_iTestStepLev4].width();
             m_fyOffsHor = s_arsizePolylinesCreatePolyline1FirstLineSegmentMovePt2TestSteps[m_iTestStepLev4].height();
 
-            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2nearest(m_fxOffsHor,0) );
-            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2nearest(m_fyOffsHor,0) );
+            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2Nearest(m_fxOffsHor,0) );
+            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2Nearest(m_fyOffsHor,0) );
 
             m_ptDrawingViewMousePos = m_pDrawingView->mapFromScene(m_ptDrawingSceneMousePos);
 
@@ -808,8 +808,8 @@ void CTest::doTestStepStandardShapesPolylines( ZS::Test::CTestStepGroup* i_pTest
             m_fxOffsHor = s_arsizePolylinesCreatePolyline1SecondLineSegmentMovePt3TestSteps[m_iTestStepLev4].width();
             m_fyOffsHor = s_arsizePolylinesCreatePolyline1SecondLineSegmentMovePt3TestSteps[m_iTestStepLev4].height();
 
-            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2nearest(m_fxOffsHor,0) );
-            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2nearest(m_fyOffsHor,0) );
+            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2Nearest(m_fxOffsHor,0) );
+            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2Nearest(m_fyOffsHor,0) );
 
             m_ptDrawingViewMousePos = m_pDrawingView->mapFromScene(m_ptDrawingSceneMousePos);
 
@@ -1051,8 +1051,8 @@ void CTest::doTestStepStandardShapesPolylines( ZS::Test::CTestStepGroup* i_pTest
             m_fxOffsHor = s_arsizePolylinesCreatePolyline2FirstLineSegmentMovePt2TestSteps[m_iTestStepLev4].width();
             m_fyOffsHor = s_arsizePolylinesCreatePolyline2FirstLineSegmentMovePt2TestSteps[m_iTestStepLev4].height();
 
-            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2nearest(m_fxOffsHor,0) );
-            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2nearest(m_fyOffsHor,0) );
+            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2Nearest(m_fxOffsHor,0) );
+            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2Nearest(m_fyOffsHor,0) );
 
             m_ptDrawingViewMousePos = m_pDrawingView->mapFromScene(m_ptDrawingSceneMousePos);
 
@@ -1173,8 +1173,8 @@ void CTest::doTestStepStandardShapesPolylines( ZS::Test::CTestStepGroup* i_pTest
             m_fxOffsHor = s_arsizePolylinesCreatePolyline2SecondLineSegmentMovePt3TestSteps[m_iTestStepLev4].width();
             m_fyOffsHor = s_arsizePolylinesCreatePolyline2SecondLineSegmentMovePt3TestSteps[m_iTestStepLev4].height();
 
-            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2nearest(m_fxOffsHor,0) );
-            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2nearest(m_fyOffsHor,0) );
+            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2Nearest(m_fxOffsHor,0) );
+            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2Nearest(m_fyOffsHor,0) );
 
             m_ptDrawingViewMousePos = m_pDrawingView->mapFromScene(m_ptDrawingSceneMousePos);
 
@@ -1410,8 +1410,8 @@ void CTest::doTestStepStandardShapesPolylines( ZS::Test::CTestStepGroup* i_pTest
             m_fxOffsHor = s_arsizePolylinesMovePolyline1Steps[m_iTestStepLev4].width();
             m_fyOffsHor = s_arsizePolylinesMovePolyline1Steps[m_iTestStepLev4].height();
 
-            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2nearest(m_fxOffsHor,0) );
-            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2nearest(m_fyOffsHor,0) );
+            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2Nearest(m_fxOffsHor,0) );
+            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2Nearest(m_fyOffsHor,0) );
 
             m_ptDrawingViewMousePos = m_pDrawingView->mapFromScene(m_ptDrawingSceneMousePos);
 
@@ -1712,8 +1712,8 @@ void CTest::doTestStepStandardShapesPolylines( ZS::Test::CTestStepGroup* i_pTest
             m_fxOffsHor = s_arsizePolylinesResizePolyline1MoveBoundingRectPtBottomRightTestSteps[m_iTestStepLev4].width();
             m_fyOffsHor = s_arsizePolylinesResizePolyline1MoveBoundingRectPtBottomRightTestSteps[m_iTestStepLev4].height();
 
-            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2nearest(m_fxOffsHor,0) );
-            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2nearest(m_fyOffsHor,0) );
+            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2Nearest(m_fxOffsHor,0) );
+            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2Nearest(m_fyOffsHor,0) );
 
             m_ptDrawingViewMousePos = m_pDrawingView->mapFromScene(m_ptDrawingSceneMousePos);
 
@@ -1907,8 +1907,8 @@ void CTest::doTestStepStandardShapesPolylines( ZS::Test::CTestStepGroup* i_pTest
             m_fxOffsHor = s_arsizePolylinesResizePolyline1MoveBoundingRectPtTopLeftTestSteps[m_iTestStepLev4].width();
             m_fyOffsHor = s_arsizePolylinesResizePolyline1MoveBoundingRectPtTopLeftTestSteps[m_iTestStepLev4].height();
 
-            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2nearest(m_fxOffsHor,0) );
-            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2nearest(m_fyOffsHor,0) );
+            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2Nearest(m_fxOffsHor,0) );
+            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2Nearest(m_fyOffsHor,0) );
 
             m_ptDrawingViewMousePos = m_pDrawingView->mapFromScene(m_ptDrawingSceneMousePos);
 
@@ -2102,8 +2102,8 @@ void CTest::doTestStepStandardShapesPolylines( ZS::Test::CTestStepGroup* i_pTest
             m_fxOffsHor = s_arsizePolylinesResizePolyline1MoveBoundingRectPtTopRightTestSteps[m_iTestStepLev4].width();
             m_fyOffsHor = s_arsizePolylinesResizePolyline1MoveBoundingRectPtTopRightTestSteps[m_iTestStepLev4].height();
 
-            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2nearest(m_fxOffsHor,0) );
-            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2nearest(m_fyOffsHor,0) );
+            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2Nearest(m_fxOffsHor,0) );
+            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2Nearest(m_fyOffsHor,0) );
 
             m_ptDrawingViewMousePos = m_pDrawingView->mapFromScene(m_ptDrawingSceneMousePos);
 
@@ -2297,8 +2297,8 @@ void CTest::doTestStepStandardShapesPolylines( ZS::Test::CTestStepGroup* i_pTest
             m_fxOffsHor = s_arsizePolylinesResizePolyline1MoveBoundingRectPtBottomLeftTestSteps[m_iTestStepLev4].width();
             m_fyOffsHor = s_arsizePolylinesResizePolyline1MoveBoundingRectPtBottomLeftTestSteps[m_iTestStepLev4].height();
 
-            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2nearest(m_fxOffsHor,0) );
-            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2nearest(m_fyOffsHor,0) );
+            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2Nearest(m_fxOffsHor,0) );
+            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2Nearest(m_fyOffsHor,0) );
 
             m_ptDrawingViewMousePos = m_pDrawingView->mapFromScene(m_ptDrawingSceneMousePos);
 
@@ -2492,8 +2492,8 @@ void CTest::doTestStepStandardShapesPolylines( ZS::Test::CTestStepGroup* i_pTest
             m_fxOffsHor = s_arsizePolylinesResizePolyline1MoveBoundingRectPtBottomCenterTestSteps[m_iTestStepLev4].width();
             m_fyOffsHor = s_arsizePolylinesResizePolyline1MoveBoundingRectPtBottomCenterTestSteps[m_iTestStepLev4].height();
 
-            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2nearest(m_fxOffsHor,0) );
-            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2nearest(m_fyOffsHor,0) );
+            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2Nearest(m_fxOffsHor,0) );
+            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2Nearest(m_fyOffsHor,0) );
 
             m_ptDrawingViewMousePos = m_pDrawingView->mapFromScene(m_ptDrawingSceneMousePos);
 
@@ -2687,8 +2687,8 @@ void CTest::doTestStepStandardShapesPolylines( ZS::Test::CTestStepGroup* i_pTest
             m_fxOffsHor = s_arsizePolylinesResizePolyline1MoveBoundingRectPtTopCenterTestSteps[m_iTestStepLev4].width();
             m_fyOffsHor = s_arsizePolylinesResizePolyline1MoveBoundingRectPtTopCenterTestSteps[m_iTestStepLev4].height();
 
-            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2nearest(m_fxOffsHor,0) );
-            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2nearest(m_fyOffsHor,0) );
+            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2Nearest(m_fxOffsHor,0) );
+            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2Nearest(m_fyOffsHor,0) );
 
             m_ptDrawingViewMousePos = m_pDrawingView->mapFromScene(m_ptDrawingSceneMousePos);
 
@@ -2882,8 +2882,8 @@ void CTest::doTestStepStandardShapesPolylines( ZS::Test::CTestStepGroup* i_pTest
             m_fxOffsHor = s_arsizePolylinesResizePolyline1MoveBoundingRectPtRightCenterTestSteps[m_iTestStepLev4].width();
             m_fyOffsHor = s_arsizePolylinesResizePolyline1MoveBoundingRectPtRightCenterTestSteps[m_iTestStepLev4].height();
 
-            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2nearest(m_fxOffsHor,0) );
-            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2nearest(m_fyOffsHor,0) );
+            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2Nearest(m_fxOffsHor,0) );
+            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2Nearest(m_fyOffsHor,0) );
 
             m_ptDrawingViewMousePos = m_pDrawingView->mapFromScene(m_ptDrawingSceneMousePos);
 
@@ -3077,8 +3077,8 @@ void CTest::doTestStepStandardShapesPolylines( ZS::Test::CTestStepGroup* i_pTest
             m_fxOffsHor = s_arsizePolylinesResizePolyline1MoveBoundingRectPtLeftCenterTestSteps[m_iTestStepLev4].width();
             m_fyOffsHor = s_arsizePolylinesResizePolyline1MoveBoundingRectPtLeftCenterTestSteps[m_iTestStepLev4].height();
 
-            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2nearest(m_fxOffsHor,0) );
-            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2nearest(m_fyOffsHor,0) );
+            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2Nearest(m_fxOffsHor,0) );
+            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2Nearest(m_fyOffsHor,0) );
 
             m_ptDrawingViewMousePos = m_pDrawingView->mapFromScene(m_ptDrawingSceneMousePos);
 

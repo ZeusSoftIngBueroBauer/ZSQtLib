@@ -70,12 +70,10 @@ public: // ctors and dtor
 protected slots: // instance methods of system shutdown
     void onLastWindowClosed();
 protected: // instance members
-    ZS::Ipc::SServerHostSettings   m_trcServerHostSettings;
-    ZS::System::STrcServerSettings m_trcServerSettings;
-    ZS::Trace::CIpcTrcServer*      m_pTrcServer;
-    CTest*                         m_pTest;
-    CMainWindow*                   m_pMainWindow;
-    ZS::System::CTrcAdminObj*      m_pTrcAdminObj;
+    ZS::Trace::CIpcTrcServer* m_pTrcServer;
+    CTest* m_pTest;
+    CMainWindow* m_pMainWindow;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CApplication
 

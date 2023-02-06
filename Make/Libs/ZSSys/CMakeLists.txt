@@ -58,6 +58,7 @@ list(APPEND _Headers
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysMsg.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysMsgProtocol.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysMutex.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysRefCountGuard.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysRequest.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysRequestExecTree.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysRequestQueue.h
@@ -98,6 +99,7 @@ list(APPEND _Sources
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysMsg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysMsgProtocol.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysMutex.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysRefCountGuard.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysRequest.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysRequestExecTree.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysRequestQueue.cpp

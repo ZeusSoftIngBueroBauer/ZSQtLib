@@ -270,8 +270,8 @@ void CTest::doTestStepStandardShapesPolygons( ZS::Test::CTestStepGroup* i_pTestS
             m_fxOffsHor = s_arsizePolygonsCreatePolygon1FirstLineSegmentMovePt2TestSteps[m_iTestStepLev4].width();
             m_fyOffsHor = s_arsizePolygonsCreatePolygon1FirstLineSegmentMovePt2TestSteps[m_iTestStepLev4].height();
 
-            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2nearest(m_fxOffsHor,0) );
-            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2nearest(m_fyOffsHor,0) );
+            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2Nearest(m_fxOffsHor,0) );
+            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2Nearest(m_fyOffsHor,0) );
 
             m_ptDrawingViewMousePos = m_pDrawingView->mapFromScene(m_ptDrawingSceneMousePos);
 
@@ -392,8 +392,8 @@ void CTest::doTestStepStandardShapesPolygons( ZS::Test::CTestStepGroup* i_pTestS
             m_fxOffsHor = s_arsizePolygonsCreatePolygon1SecondLineSegmentMovePt3TestSteps[m_iTestStepLev4].width();
             m_fyOffsHor = s_arsizePolygonsCreatePolygon1SecondLineSegmentMovePt3TestSteps[m_iTestStepLev4].height();
 
-            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2nearest(m_fxOffsHor,0) );
-            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2nearest(m_fyOffsHor,0) );
+            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2Nearest(m_fxOffsHor,0) );
+            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2Nearest(m_fyOffsHor,0) );
 
             m_ptDrawingViewMousePos = m_pDrawingView->mapFromScene(m_ptDrawingSceneMousePos);
 

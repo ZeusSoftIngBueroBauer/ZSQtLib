@@ -878,7 +878,7 @@ TFormatResult ZS::PhysVal::formatValue(
             }
             else if( i_resType == EResType::Resolution )
             {
-                fValAbs = Math::round2Res(fValAbs, fResAbs);
+                fValAbs = Math::round2Resolution(fValAbs, fResAbs);
             }
 
             // If the value was greater than the resolution ...

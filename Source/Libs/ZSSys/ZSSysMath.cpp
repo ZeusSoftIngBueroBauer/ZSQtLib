@@ -70,7 +70,7 @@ double Math::deg2Rad( double i_fVal_deg )
 }
 
 //------------------------------------------------------------------------------
-double Math::round2nearest( double i_fVal, int i_iTrailingDigits )
+double Math::round2Nearest( double i_fVal, int i_iTrailingDigits )
 //------------------------------------------------------------------------------
 {
     double fVal = 0.0;
@@ -146,10 +146,10 @@ double Math::round2nearest( double i_fVal, int i_iTrailingDigits )
     }
     return fVal;
 
-} // round2nearest
+} // round2Nearest
 
 //------------------------------------------------------------------------------
-double Math::round2lower( double i_fVal, int i_iTrailingDigits )
+double Math::round2Lower( double i_fVal, int i_iTrailingDigits )
 //------------------------------------------------------------------------------
 {
     double fVal = 0.0;
@@ -177,10 +177,10 @@ double Math::round2lower( double i_fVal, int i_iTrailingDigits )
 
     return fVal;
 
-} // round2lower
+} // round2Lower
 
 //------------------------------------------------------------------------------
-double Math::round2upper( double i_fVal, int i_iTrailingDigits )
+double Math::round2Upper( double i_fVal, int i_iTrailingDigits )
 //------------------------------------------------------------------------------
 {
     double fVal = 0.0;
@@ -208,10 +208,10 @@ double Math::round2upper( double i_fVal, int i_iTrailingDigits )
 
     return fVal;
 
-} // round2upper
+} // round2Upper
 
 //------------------------------------------------------------------------------
-double Math::round2Res( double i_fVal, double i_fRes )
+double Math::round2Resolution( double i_fVal, double i_fRes )
 //------------------------------------------------------------------------------
 {
     double fVal = i_fVal;
@@ -225,7 +225,7 @@ double Math::round2Res( double i_fVal, double i_fRes )
     }
     return fVal;
 
-} // round2Res
+} // round2Resolution
 
 //------------------------------------------------------------------------------
 void Math::normalize( double i_fVal, int* o_piSign, int* o_piMant, int* o_piExp )

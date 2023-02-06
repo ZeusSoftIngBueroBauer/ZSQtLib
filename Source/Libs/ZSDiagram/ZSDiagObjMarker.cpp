@@ -1353,7 +1353,7 @@ void CDiagObjMarker::moveEvent( CDiagObjMoveEvent* i_pEv, bool i_bInformDiagram 
     // If the marker was moved to a X/Y value ...
     else
     {
-        fValue = Math::round2Res(fValue,fRes);
+        fValue = Math::round2Resolution(fValue,fRes);
         if( fValue < fScaleMin )
         {
             fValue = fScaleMin;

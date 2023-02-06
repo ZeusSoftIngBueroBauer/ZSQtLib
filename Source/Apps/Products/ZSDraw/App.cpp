@@ -100,8 +100,6 @@ CApplication::CApplication(
     const QString& /*i_strWindowTitle*/ ) :
 //------------------------------------------------------------------------------
     CGUIApp(i_argc,i_argv),
-    m_trcServerHostSettings(24763, 30),
-    m_trcServerSettings(),
     m_pTrcServer(nullptr),
     m_pTest(nullptr),
     m_pMainWindow(nullptr),
@@ -132,9 +130,6 @@ CApplication::CApplication(
     iconApp.addPixmap(pxmApp64x64);
 
     QApplication::setWindowIcon(iconApp);
-
-    ZS::Ipc::SServerHostSettings trcServerHostSettingsDefault = m_trcServerHostSettings;
-    ZS::System::STrcServerSettings trcServerSettingsDefault = m_trcServerSettings;
 
     // Parse command arguments
     //------------------------
@@ -180,8 +175,8 @@ CApplication::CApplication(
 
     m_pTrcServer = ZS::Trace::CIpcTrcServer::CreateInstance();
 
-    m_pTrcServer->setHostSettings(m_trcServerHostSettings);
-    m_pTrcServer->setTraceSettings(m_trcServerSettings);
+    m_pTrcServer->setCacheTrcDataIfNotConnected(true);
+    m_pTrcServer->setCacheTrcDataMaxArrLen(1000);
     m_pTrcServer->recallAdminObjs();
     m_pTrcServer->startup();
 

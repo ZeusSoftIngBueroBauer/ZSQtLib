@@ -506,8 +506,8 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
             m_fxOffsHor = s_arsizeTextsHoverText1TestSteps[m_iTestStepLev4].width();
             m_fyOffsHor = s_arsizeTextsHoverText1TestSteps[m_iTestStepLev4].height();
 
-            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2nearest(m_fxOffsHor,0) );
-            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2nearest(m_fyOffsHor,0) );
+            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2Nearest(m_fxOffsHor,0) );
+            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2Nearest(m_fyOffsHor,0) );
 
             m_ptDrawingViewMousePos = m_pDrawingView->mapFromScene(m_ptDrawingSceneMousePos);
 
@@ -671,8 +671,8 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
             m_fxOffsHor = s_arsizeTextsMoveText1TestSteps[m_iTestStepLev4].width();
             m_fyOffsHor = s_arsizeTextsMoveText1TestSteps[m_iTestStepLev4].height();
 
-            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2nearest(m_fxOffsHor,0) );
-            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2nearest(m_fyOffsHor,0) );
+            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2Nearest(m_fxOffsHor,0) );
+            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2Nearest(m_fyOffsHor,0) );
 
             m_ptDrawingViewMousePos = m_pDrawingView->mapFromScene(m_ptDrawingSceneMousePos);
 
@@ -984,7 +984,7 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
             fAngle_rad = getAngleRad( ptCenter, ptSelPtRot );
             m_fAngle_degree = Math::rad2Deg(fAngle_rad);
             m_fAngle_degree -= 90.0; // Top center rotation point was selected
-            m_fAngle_degree = Math::round2Res( m_fAngle_degree, m_pDrawingScene->getRotationAngleResolutionInDegree() );
+            m_fAngle_degree = Math::round2Resolution( m_fAngle_degree, m_pDrawingScene->getRotationAngleResolutionInDegree() );
             fAngle_rad = Math::deg2Rad(m_fAngle_degree);
 
             m_ptDrawingViewMousePos = m_pDrawingView->mapFromScene(ptSelPtRot);

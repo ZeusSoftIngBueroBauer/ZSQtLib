@@ -29,14 +29,10 @@ may result in using the software modules.
 
 #include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjPropertiesAbstractWdgt.h"
 
-//class QCheckBox;
 class QComboBox;
 class QLabel;
 class QLineEdit;
-//class QPushButton;
 class QSpinBox;
-//class QSplitter;
-//class QTableView;
 class QHBoxLayout;
 class QVBoxLayout;
 
@@ -44,6 +40,9 @@ namespace ZS
 {
 namespace System
 {
+class CTrcAdminObj;
+class CMethodTracer;
+
 namespace GUI
 {
 class CSepLine;
@@ -51,6 +50,8 @@ class CSepLine;
 }
 namespace PhysVal
 {
+class CPhysVal;
+
 namespace GUI
 {
 class CWdgtEditPhysVal;
@@ -76,23 +77,33 @@ public: // ctors and dtor
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
     virtual QString className() const { return ClassName(); }
-public: // instance methods
-    void setDimensionUnit( EDrawingDimensionUnit i_dimensionUnit );
-    void setMetricUnit( const QString& i_strMetricUnitSymbol );
-    void setNormedPaperSize( const QString& i_strPaperSize );
-    void setNormedPaperOrientation( const QString& i_strOrientation );
 protected slots:
     void onDrawingViewDrawingSizeChanged(const QSize& i_size);
     void onCmbDimensionUnitCurrentIndexChanged(int i_idx);
     void onCmbImageMetricUnitCurrentIndexChanged(int i_idx);
-    void onEdtImageMetricWidthEditingFinished();
-    void onEdtImageMetricHeightEditingFinished();
+    void onEdtImageMetricWidthValueChanged(const ZS::PhysVal::CPhysVal& i_physValWidth);
+    void onEdtImageMetricHeightValueChanged(const ZS::PhysVal::CPhysVal& i_physValHeight);
     void onCmbImageMetricNormedPaperSizesCurrentIndexChanged(int i_idx);
     void onCmbImageMetricNormedPaperOrientationCurrentIndexChanged(int i_idx);
-    void onCmbImageMetricScaleFactorDividendCurrentTextChanged(const QString& i_strText);
-    void onCmbImageMetricScaleFactorDivisorCurrentTextChanged(const QString& i_strText);
-    void onEdtImageSizeWidthPxEditingFinished();
-    void onEdtImageSizeHeightPxEditingFinished();
+    void onCmbImageMetricScaleFactorDividendCurrentTextChanged(const QString& i_strDividend);
+    void onCmbImageMetricScaleFactorDividendEditTextChanged(const QString& i_strDividend);
+    void onCmbImageMetricScaleFactorDivisorCurrentTextChanged(const QString& i_strDivisor);
+    void onCmbImageMetricScaleFactorDivisorEditTextChanged(const QString& i_strDivisor);
+    void onEdtImageSizeWidthPxValueChanged(int i_cxWidth_px);
+    void onEdtImageSizeHeightPxValueChanged(int i_cyHeight_px);
+protected: // instance methods
+    void setDimensionUnit( EDrawingDimensionUnit i_dimensionUnit );
+    void setMetricUnit( const QString& i_strMetricUnitSymbol );
+    void setNormedPaperSize( const QString& i_strPaperSize );
+    void setNormedPaperOrientation( const QString& i_strOrientation );
+    void setScaleFactor( int i_iDividend, int i_iDivisor );
+    void setImageSize( const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight );
+protected: // instance methods
+    void updateImageSizeInPixels();
+    void updateImageSizeMetrics();
+    void updatePaperFormat();
+protected: // instance methods (method tracing)
+    void traceValues(ZS::System::CMethodTracer& i_mthTracer, ZS::System::EMethodDir i_methodDir);
 protected: // instance members
     CDrawingView* m_pDrawingView;
     QVBoxLayout* m_pLyt;
@@ -151,8 +162,12 @@ protected: // instance members
     QString m_strImageMetricNormedPaperOrientation;
     int m_iMetricScaleFactorDividend;
     int m_iMetricScaleFactorDivisor;
-    int m_cxImageSizeWidth_px;
-    int m_cyImageSizeHeight_px;
+    double m_fImageSizeWidth_px;
+    double m_fImageSizeHeight_px;
+    /*!< Blocking signals counter. */
+    int m_iValueChangedSignalsBlocked;
+    /*!< Trace admin object for method tracing. */
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CWdgtDrawingViewProperties
 

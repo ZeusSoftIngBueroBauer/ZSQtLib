@@ -565,8 +565,8 @@ void CTest::doTestStepElectricitySwitches( ZS::Test::CTestStepGroup* i_pTestStep
             m_fxOffsHor = s_arsizeGroupsResizeSwitch1MovePtBottomRightTestSteps[m_iTestStepLev4].width();
             m_fyOffsHor = s_arsizeGroupsResizeSwitch1MovePtBottomRightTestSteps[m_iTestStepLev4].height();
 
-            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2nearest(m_fxOffsHor,0) );
-            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2nearest(m_fyOffsHor,0) );
+            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2Nearest(m_fxOffsHor,0) );
+            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2Nearest(m_fyOffsHor,0) );
 
             m_ptDrawingViewMousePos = m_pDrawingView->mapFromScene(m_ptDrawingSceneMousePos);
 

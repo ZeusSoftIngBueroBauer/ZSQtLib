@@ -94,10 +94,10 @@ double ZSSYSDLL_API sqr( double i_fVal );
 double ZSSYSDLL_API abs( double i_fVal );
 double ZSSYSDLL_API rad2Deg( double i_fVal_rad );
 double ZSSYSDLL_API deg2Rad( double i_fVal_deg );
-double ZSSYSDLL_API round2nearest( double i_fVal, int i_iTrailingDigits = -1 ); // -1 means c_iCalculationAccuracyTrailingDigits
-double ZSSYSDLL_API round2lower( double i_fVal, int i_iTrailingDigits = -1 );   // -1 means c_iCalculationAccuracyTrailingDigits
-double ZSSYSDLL_API round2upper( double i_fVal, int i_iTrailingDigits = -1 );   // -1 means c_iCalculationAccuracyTrailingDigits
-double ZSSYSDLL_API round2Res( double i_fVal, double i_fRes );
+double ZSSYSDLL_API round2Nearest( double i_fVal, int i_iTrailingDigits = -1 ); // -1 means c_iCalculationAccuracyTrailingDigits
+double ZSSYSDLL_API round2Lower( double i_fVal, int i_iTrailingDigits = -1 );   // -1 means c_iCalculationAccuracyTrailingDigits
+double ZSSYSDLL_API round2Upper( double i_fVal, int i_iTrailingDigits = -1 );   // -1 means c_iCalculationAccuracyTrailingDigits
+double ZSSYSDLL_API round2Resolution( double i_fVal, double i_fRes );
 void   ZSSYSDLL_API normalize( double i_fVal, int* o_piSign, int* o_piMant, int* o_piExp );
 double ZSSYSDLL_API round2LowerDecade( double i_fVal );
 double ZSSYSDLL_API round2UpperDecade( double i_fVal );

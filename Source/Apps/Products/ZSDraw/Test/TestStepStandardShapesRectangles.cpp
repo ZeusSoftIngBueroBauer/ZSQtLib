@@ -573,8 +573,8 @@ void CTest::doTestStepStandardShapesRectangles( ZS::Test::CTestStepGroup* i_pTes
             m_fxOffsHor = s_arsizeRectanglesCreateRectangle1MovePtBottomRightTestSteps[m_iTestStepLev4].width();
             m_fyOffsHor = s_arsizeRectanglesCreateRectangle1MovePtBottomRightTestSteps[m_iTestStepLev4].height();
 
-            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2nearest(m_fxOffsHor,0) );
-            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2nearest(m_fyOffsHor,0) );
+            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2Nearest(m_fxOffsHor,0) );
+            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2Nearest(m_fyOffsHor,0) );
 
             m_ptDrawingViewMousePos = m_pDrawingView->mapFromScene(m_ptDrawingSceneMousePos);
 
@@ -798,8 +798,8 @@ void CTest::doTestStepStandardShapesRectangles( ZS::Test::CTestStepGroup* i_pTes
             m_fxOffsHor = s_arsizeRectanglesMoveRectangle1TestSteps[m_iTestStepLev4].width();
             m_fyOffsHor = s_arsizeRectanglesMoveRectangle1TestSteps[m_iTestStepLev4].height();
 
-            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2nearest(m_fxOffsHor,0) );
-            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2nearest(m_fyOffsHor,0) );
+            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2Nearest(m_fxOffsHor,0) );
+            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2Nearest(m_fyOffsHor,0) );
 
             m_ptDrawingViewMousePos = m_pDrawingView->mapFromScene(m_ptDrawingSceneMousePos);
 
@@ -1103,8 +1103,8 @@ void CTest::doTestStepStandardShapesRectangles( ZS::Test::CTestStepGroup* i_pTes
             m_fxOffsHor = s_arsizeRectanglesResizeRectangle1MovePtBottomRightTestSteps[m_iTestStepLev4].width();
             m_fyOffsHor = s_arsizeRectanglesResizeRectangle1MovePtBottomRightTestSteps[m_iTestStepLev4].height();
 
-            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2nearest(m_fxOffsHor,0) );
-            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2nearest(m_fyOffsHor,0) );
+            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2Nearest(m_fxOffsHor,0) );
+            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2Nearest(m_fyOffsHor,0) );
 
             m_ptDrawingViewMousePos = m_pDrawingView->mapFromScene(m_ptDrawingSceneMousePos);
 
@@ -1320,8 +1320,8 @@ void CTest::doTestStepStandardShapesRectangles( ZS::Test::CTestStepGroup* i_pTes
             m_fxOffsHor = s_arsizeRectanglesResizeRectangle1MovePtTopLeftTestSteps[m_iTestStepLev4].width();
             m_fyOffsHor = s_arsizeRectanglesResizeRectangle1MovePtTopLeftTestSteps[m_iTestStepLev4].height();
 
-            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2nearest(m_fxOffsHor,0) );
-            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2nearest(m_fyOffsHor,0) );
+            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2Nearest(m_fxOffsHor,0) );
+            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2Nearest(m_fyOffsHor,0) );
 
             m_ptDrawingViewMousePos = m_pDrawingView->mapFromScene(m_ptDrawingSceneMousePos);
 
@@ -1533,8 +1533,8 @@ void CTest::doTestStepStandardShapesRectangles( ZS::Test::CTestStepGroup* i_pTes
             m_fxOffsHor = s_arsizeRectanglesResizeRectangle1MovePtTopRightTestSteps[m_iTestStepLev4].width();
             m_fyOffsHor = s_arsizeRectanglesResizeRectangle1MovePtTopRightTestSteps[m_iTestStepLev4].height();
 
-            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2nearest(m_fxOffsHor,0) );
-            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2nearest(m_fyOffsHor,0) );
+            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2Nearest(m_fxOffsHor,0) );
+            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2Nearest(m_fyOffsHor,0) );
 
             m_ptDrawingViewMousePos = m_pDrawingView->mapFromScene(m_ptDrawingSceneMousePos);
 
@@ -1746,8 +1746,8 @@ void CTest::doTestStepStandardShapesRectangles( ZS::Test::CTestStepGroup* i_pTes
             m_fxOffsHor = s_arsizeRectanglesResizeRectangle1MovePtBottomLeftTestSteps[m_iTestStepLev4].width();
             m_fyOffsHor = s_arsizeRectanglesResizeRectangle1MovePtBottomLeftTestSteps[m_iTestStepLev4].height();
 
-            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2nearest(m_fxOffsHor,0) );
-            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2nearest(m_fyOffsHor,0) );
+            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2Nearest(m_fxOffsHor,0) );
+            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2Nearest(m_fyOffsHor,0) );
 
             m_ptDrawingViewMousePos = m_pDrawingView->mapFromScene(m_ptDrawingSceneMousePos);
 
@@ -1959,8 +1959,8 @@ void CTest::doTestStepStandardShapesRectangles( ZS::Test::CTestStepGroup* i_pTes
             m_fxOffsHor = s_arsizeRectanglesResizeRectangle1MovePtBottomCenterTestSteps[m_iTestStepLev4].width();
             m_fyOffsHor = s_arsizeRectanglesResizeRectangle1MovePtBottomCenterTestSteps[m_iTestStepLev4].height();
 
-            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2nearest(m_fxOffsHor,0) );
-            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2nearest(m_fyOffsHor,0) );
+            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2Nearest(m_fxOffsHor,0) );
+            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2Nearest(m_fyOffsHor,0) );
 
             m_ptDrawingViewMousePos = m_pDrawingView->mapFromScene(m_ptDrawingSceneMousePos);
 
@@ -2172,8 +2172,8 @@ void CTest::doTestStepStandardShapesRectangles( ZS::Test::CTestStepGroup* i_pTes
             m_fxOffsHor = s_arsizeRectanglesResizeRectangle1MovePtTopCenterTestSteps[m_iTestStepLev4].width();
             m_fyOffsHor = s_arsizeRectanglesResizeRectangle1MovePtTopCenterTestSteps[m_iTestStepLev4].height();
 
-            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2nearest(m_fxOffsHor,0) );
-            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2nearest(m_fyOffsHor,0) );
+            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2Nearest(m_fxOffsHor,0) );
+            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2Nearest(m_fyOffsHor,0) );
 
             m_ptDrawingViewMousePos = m_pDrawingView->mapFromScene(m_ptDrawingSceneMousePos);
 
@@ -2385,8 +2385,8 @@ void CTest::doTestStepStandardShapesRectangles( ZS::Test::CTestStepGroup* i_pTes
             m_fxOffsHor = s_arsizeRectanglesResizeRectangle1MovePtRightCenterTestSteps[m_iTestStepLev4].width();
             m_fyOffsHor = s_arsizeRectanglesResizeRectangle1MovePtRightCenterTestSteps[m_iTestStepLev4].height();
 
-            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2nearest(m_fxOffsHor,0) );
-            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2nearest(m_fyOffsHor,0) );
+            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2Nearest(m_fxOffsHor,0) );
+            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2Nearest(m_fyOffsHor,0) );
 
             m_ptDrawingViewMousePos = m_pDrawingView->mapFromScene(m_ptDrawingSceneMousePos);
 
@@ -2597,8 +2597,8 @@ void CTest::doTestStepStandardShapesRectangles( ZS::Test::CTestStepGroup* i_pTes
             m_fxOffsHor = s_arsizeRectanglesResizeRectangle1MovePtLeftCenterTestSteps[m_iTestStepLev4].width();
             m_fyOffsHor = s_arsizeRectanglesResizeRectangle1MovePtLeftCenterTestSteps[m_iTestStepLev4].height();
 
-            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2nearest(m_fxOffsHor,0) );
-            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2nearest(m_fyOffsHor,0) );
+            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2Nearest(m_fxOffsHor,0) );
+            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2Nearest(m_fyOffsHor,0) );
 
             m_ptDrawingViewMousePos = m_pDrawingView->mapFromScene(m_ptDrawingSceneMousePos);
 

@@ -868,7 +868,7 @@ double CDiagScale::round2ScaleRes( double i_fVal, CUnit* i_pUnit ) const
 //------------------------------------------------------------------------------
 {
     double fRes = getScaleRes(i_fVal, i_pUnit);
-    double fVal = Math::round2Res(i_fVal, fRes);
+    double fVal = Math::round2Resolution(i_fVal, fRes);
     return fVal;
 }
 
@@ -1368,7 +1368,7 @@ double CDiagScale::getVal( double i_fPix, CUnit* i_pUnit ) const
         {
             fPixRes = getScaleRes(fVal);
         }
-        fVal = Math::round2Res(fVal,fPixRes);
+        fVal = Math::round2Resolution(fVal,fPixRes);
 
     } // if( isScaleValid() )
 

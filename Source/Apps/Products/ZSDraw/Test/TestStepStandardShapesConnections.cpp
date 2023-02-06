@@ -782,8 +782,8 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             m_fxOffsHor = s_arsizeConnectionsCreateCnct1CnctLine1CreateFirstLineSegmentTestSteps[m_iTestStepLev4].width();
             m_fyOffsHor = s_arsizeConnectionsCreateCnct1CnctLine1CreateFirstLineSegmentTestSteps[m_iTestStepLev4].height();
 
-            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2nearest(m_fxOffsHor,0) );
-            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2nearest(m_fyOffsHor,0) );
+            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2Nearest(m_fxOffsHor,0) );
+            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2Nearest(m_fyOffsHor,0) );
 
             m_ptDrawingViewMousePos = m_pDrawingView->mapFromScene(m_ptDrawingSceneMousePos);
 
@@ -899,8 +899,8 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             m_fxOffsHor = s_arsizeConnectionsCreateCnct1CnctLine1CreateSecondLineSegmentTestSteps[m_iTestStepLev4].width();
             m_fyOffsHor = s_arsizeConnectionsCreateCnct1CnctLine1CreateSecondLineSegmentTestSteps[m_iTestStepLev4].height();
 
-            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2nearest(m_fxOffsHor,0) );
-            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2nearest(m_fyOffsHor,0) );
+            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2Nearest(m_fxOffsHor,0) );
+            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2Nearest(m_fyOffsHor,0) );
 
             m_ptDrawingViewMousePos = m_pDrawingView->mapFromScene(m_ptDrawingSceneMousePos);
 
@@ -1124,8 +1124,8 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             m_fxOffsHor = s_arsizeConnectionsCreateCnct1CnctLine2CreateFirstLineSegmentTestSteps[m_iTestStepLev4].width();
             m_fyOffsHor = s_arsizeConnectionsCreateCnct1CnctLine2CreateFirstLineSegmentTestSteps[m_iTestStepLev4].height();
 
-            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2nearest(m_fxOffsHor,0) );
-            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2nearest(m_fyOffsHor,0) );
+            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2Nearest(m_fxOffsHor,0) );
+            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2Nearest(m_fyOffsHor,0) );
 
             m_ptDrawingViewMousePos = m_pDrawingView->mapFromScene(m_ptDrawingSceneMousePos);
 
@@ -1241,8 +1241,8 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             m_fxOffsHor = s_arsizeConnectionsCreateCnct1CnctLine2CreateSecondLineSegmentTestSteps[m_iTestStepLev4].width();
             m_fyOffsHor = s_arsizeConnectionsCreateCnct1CnctLine2CreateSecondLineSegmentTestSteps[m_iTestStepLev4].height();
 
-            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2nearest(m_fxOffsHor,0) );
-            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2nearest(m_fyOffsHor,0) );
+            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2Nearest(m_fxOffsHor,0) );
+            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2Nearest(m_fyOffsHor,0) );
 
             m_ptDrawingViewMousePos = m_pDrawingView->mapFromScene(m_ptDrawingSceneMousePos);
 
@@ -1487,8 +1487,8 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             m_fxOffsHor = s_arsizeConnectionsCreateCnct1CnctLine2CreateThirdLineSegmentTestSteps[m_iTestStepLev4].width();
             m_fyOffsHor = s_arsizeConnectionsCreateCnct1CnctLine2CreateThirdLineSegmentTestSteps[m_iTestStepLev4].height();
 
-            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2nearest(m_fxOffsHor,0) );
-            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2nearest(m_fyOffsHor,0) );
+            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2Nearest(m_fxOffsHor,0) );
+            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2Nearest(m_fyOffsHor,0) );
 
             m_ptDrawingViewMousePos = m_pDrawingView->mapFromScene(m_ptDrawingSceneMousePos);
 
@@ -1665,8 +1665,8 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             m_fxOffsHor = s_arsizeConnectionsCreateCnct1CnctLine2CreateFourthLineSegmentTestSteps[m_iTestStepLev4].width();
             m_fyOffsHor = s_arsizeConnectionsCreateCnct1CnctLine2CreateFourthLineSegmentTestSteps[m_iTestStepLev4].height();
 
-            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2nearest(m_fxOffsHor,0) );
-            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2nearest(m_fyOffsHor,0) );
+            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2Nearest(m_fxOffsHor,0) );
+            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2Nearest(m_fyOffsHor,0) );
 
             m_ptDrawingViewMousePos = m_pDrawingView->mapFromScene(m_ptDrawingSceneMousePos);
 
@@ -1920,8 +1920,8 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             m_fxOffsHor = s_arsizeConnectionsMoveCnct1CnctPt1TestSteps[m_iTestStepLev4].width();
             m_fyOffsHor = s_arsizeConnectionsMoveCnct1CnctPt1TestSteps[m_iTestStepLev4].height();
 
-            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2nearest(m_fxOffsHor,0) );
-            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2nearest(m_fyOffsHor,0) );
+            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2Nearest(m_fxOffsHor,0) );
+            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2Nearest(m_fyOffsHor,0) );
 
             m_ptDrawingViewMousePos = m_pDrawingView->mapFromScene(m_ptDrawingSceneMousePos);
 
@@ -2144,8 +2144,8 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             m_fxOffsHor = s_arsizeConnectionsMoveCnct1CnctPt2TestSteps[m_iTestStepLev4].width();
             m_fyOffsHor = s_arsizeConnectionsMoveCnct1CnctPt2TestSteps[m_iTestStepLev4].height();
 
-            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2nearest(m_fxOffsHor,0) );
-            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2nearest(m_fyOffsHor,0) );
+            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2Nearest(m_fxOffsHor,0) );
+            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2Nearest(m_fyOffsHor,0) );
 
             m_ptDrawingViewMousePos = m_pDrawingView->mapFromScene(m_ptDrawingSceneMousePos);
 
@@ -2486,8 +2486,8 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             m_fxOffsHor = s_arsizeConnectionsResizeCnct1CnctLine2MoveFirstShapePointFromCnctPt2TestSteps[m_iTestStepLev4].width();
             m_fyOffsHor = s_arsizeConnectionsResizeCnct1CnctLine2MoveFirstShapePointFromCnctPt2TestSteps[m_iTestStepLev4].height();
 
-            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2nearest(m_fxOffsHor,0) );
-            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2nearest(m_fyOffsHor,0) );
+            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2Nearest(m_fxOffsHor,0) );
+            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2Nearest(m_fyOffsHor,0) );
 
             m_ptDrawingViewMousePos = m_pDrawingView->mapFromScene(m_ptDrawingSceneMousePos);
 
@@ -2600,8 +2600,8 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             m_fxOffsHor = s_arsizeConnectionsResizeCnct1CnctLine2MoveFirstShapePointToCnctPt3TestSteps[m_iTestStepLev4].width();
             m_fyOffsHor = s_arsizeConnectionsResizeCnct1CnctLine2MoveFirstShapePointToCnctPt3TestSteps[m_iTestStepLev4].height();
 
-            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2nearest(m_fxOffsHor,0) );
-            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2nearest(m_fyOffsHor,0) );
+            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2Nearest(m_fxOffsHor,0) );
+            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2Nearest(m_fyOffsHor,0) );
 
             m_ptDrawingViewMousePos = m_pDrawingView->mapFromScene(m_ptDrawingSceneMousePos);
 
@@ -2882,8 +2882,8 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             m_fxOffsHor = s_arsizeConnectionsResizeCnct1CnctLine2MoveLastShapePointFromCnctPt1TestSteps[m_iTestStepLev4].width();
             m_fyOffsHor = s_arsizeConnectionsResizeCnct1CnctLine2MoveLastShapePointFromCnctPt1TestSteps[m_iTestStepLev4].height();
 
-            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2nearest(m_fxOffsHor,0) );
-            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2nearest(m_fyOffsHor,0) );
+            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2Nearest(m_fxOffsHor,0) );
+            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2Nearest(m_fyOffsHor,0) );
 
             m_ptDrawingViewMousePos = m_pDrawingView->mapFromScene(m_ptDrawingSceneMousePos);
 
@@ -3173,8 +3173,8 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             m_fxOffsHor = s_arsizeConnectionsResizeCnct1CnctLine2MoveFirstShapePointFromCnctPt3TestSteps[m_iTestStepLev4].width();
             m_fyOffsHor = s_arsizeConnectionsResizeCnct1CnctLine2MoveFirstShapePointFromCnctPt3TestSteps[m_iTestStepLev4].height();
 
-            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2nearest(m_fxOffsHor,0) );
-            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2nearest(m_fyOffsHor,0) );
+            m_ptDrawingSceneMousePos.setX( m_ptDrawingSceneMousePos.x() + Math::round2Nearest(m_fxOffsHor,0) );
+            m_ptDrawingSceneMousePos.setY( m_ptDrawingSceneMousePos.y() + Math::round2Nearest(m_fyOffsHor,0) );
 
             m_ptDrawingViewMousePos = m_pDrawingView->mapFromScene(m_ptDrawingSceneMousePos);
 

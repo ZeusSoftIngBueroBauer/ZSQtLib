@@ -24,47 +24,31 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSApps_TestTemplate_Test_h
-#define ZSApps_TestTemplate_Test_h
+#ifndef ZSSys_RefCountGuard_h
+#define ZSSys_RefCountGuard_h
 
-#include "ZSTest/ZSTest.h"
-#include "ZSTest/ZSTestStepIdxTreeEntry.h"
-
-class QTimer;
+#include "ZSSys/ZSSysDllMain.h"
 
 namespace ZS
 {
-namespace Apps
-{
-namespace Test
-{
-namespace Template
+namespace System
 {
 //******************************************************************************
-class CTest : public ZS::Test::CTest
+class ZSSYSDLL_API CRefCountGuard
 //******************************************************************************
 {
-    Q_OBJECT
 public: // ctors and dtor
-    CTest();
-    ~CTest();
-public slots:
-    void doTestStepRound2Nearest( ZS::Test::CTestStep* i_pTestStep );
-private: // instance auxiliary methods
-    void splitMethodCallOperation(
-        const QString& i_strOperation,
-        QString& o_strMth,
-        QStringList& o_strlstInArgs,
-        QString& o_strMthRet ) const;
+    CRefCountGuard( int* i_piRefCount );
+    ~CRefCountGuard();
+public: // instance methods
+    void decrementAndReleaseCounter();
+private: // instance members
+    int* m_piRefCount;
 
-}; // class CTest
+}; // class CRefCountGuard
 
-} // namespace Template
-
-} // namespace Test
-
-} // namespace Apps
+} // namespace System
 
 } // namespace ZS
 
-#endif // #ifndef ZSApps_TestTemplate_Test_h
+#endif // #ifndef ZSSys_RefCountGuard_h

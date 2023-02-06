@@ -40,6 +40,7 @@ may result in using the software modules.
 #include "ZSPhysValGUI/ZSPhysValWdgtEditPhysVal.h"
 #include "ZSPhysVal/ZSPhysValExceptions.h"
 #include "ZSSys/ZSSysErrResult.h"
+#include "ZSSys/ZSSysRefCountGuard.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -55,35 +56,6 @@ namespace PhysVal
 {
 namespace GUI
 {
-//******************************************************************************
-class CRefCountGuard
-//******************************************************************************
-{
-public: // ctors and dtor
-    CRefCountGuard( int* i_piRefCount ) :
-        m_piRefCount(i_piRefCount)
-    {
-        (*m_piRefCount)++;
-    }
-    virtual ~CRefCountGuard()
-    {
-        if( m_piRefCount != nullptr ) {
-            (*m_piRefCount)--;
-        }
-    }
-public: // instance methods
-    void decrementAndReleaseCounter()
-    {
-        if( m_piRefCount != nullptr ) {
-            (*m_piRefCount)--;
-            m_piRefCount = nullptr;
-        }
-    }
-private: // instance members
-    int* m_piRefCount = nullptr;
-
-}; // class CRefCountGuard
-
 //******************************************************************************
 class CDoubleSpinBox : public QDoubleSpinBox
 //******************************************************************************
@@ -345,7 +317,7 @@ void CWdgtEditPhysVal::setUnit( const CUnit& i_unit )
             emit textChanged(m_pEdt->text());
         }
         if( fValPrev != m_pEdt->value() ) {
-            emit valueChanged(m_pEdt->value());
+            emit valueChanged(m_physVal);
         }
     }
 } // setUnit
@@ -437,7 +409,7 @@ void CWdgtEditPhysVal::setMinimum( double i_fVal )
             emit textChanged(m_pEdt->text());
         }
         if( fValPrev != m_pEdt->value() ) {
-            emit valueChanged(m_pEdt->value());
+            emit valueChanged(m_physVal);
         }
     }
 }
@@ -514,7 +486,7 @@ void CWdgtEditPhysVal::setMaximum( double i_fVal )
             emit textChanged(m_pEdt->text());
         }
         if( fValPrev != m_pEdt->value() ) {
-            emit valueChanged(m_pEdt->value());
+            emit valueChanged(m_physVal);
         }
     }
 }
@@ -609,7 +581,7 @@ void CWdgtEditPhysVal::setResolution( double i_fVal )
             emit textChanged(m_pEdt->text());
         }
         if( fValPrev != m_pEdt->value() ) {
-            emit valueChanged(m_pEdt->value());
+            emit valueChanged(m_physVal);
         }
     }
 } // setResolution

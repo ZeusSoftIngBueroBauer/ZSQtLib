@@ -2054,7 +2054,7 @@ QString ZS::Draw::point2Str( const QPointF& i_pt, char i_cF, int i_iPrecision, b
 
     if( i_bRound2Nearest && i_iPrecision > 0 )
     {
-        str = QString::number(Math::round2nearest(i_pt.x(),1),i_cF,i_iPrecision) + "/" + QString::number(Math::round2nearest(i_pt.y(),1),i_cF,i_iPrecision);
+        str = QString::number(Math::round2Nearest(i_pt.x(),1),i_cF,i_iPrecision) + "/" + QString::number(Math::round2Nearest(i_pt.y(),1),i_cF,i_iPrecision);
     }
     else
     {
@@ -2155,7 +2155,7 @@ QString ZS::Draw::size2Str( const QSizeF& i_size, char i_cF, int i_iPrecision, b
 
     if( i_bRound2Nearest && i_iPrecision > 0 )
     {
-        str = QString::number(Math::round2nearest(i_size.width(),1),i_cF,i_iPrecision) + "/" + QString::number(Math::round2nearest(i_size.height(),1),i_cF,i_iPrecision);
+        str = QString::number(Math::round2Nearest(i_size.width(),1),i_cF,i_iPrecision) + "/" + QString::number(Math::round2Nearest(i_size.height(),1),i_cF,i_iPrecision);
     }
     else
     {

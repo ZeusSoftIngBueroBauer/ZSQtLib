@@ -360,7 +360,7 @@ double CDiagTrace::round2ScaleRes( EScaleDir i_scaleDir, double i_fVal, CUnit* i
     }
 
     double fRes = getScaleRes(i_scaleDir,i_fVal,i_pUnit);
-    double fVal = Math::round2Res(i_fVal,fRes);
+    double fVal = Math::round2Resolution(i_fVal,fRes);
     return fVal;
 
 } // round2ScaleRes
@@ -448,7 +448,7 @@ double CDiagTrace::round2ValRes( EScaleDir i_scaleDir, double i_fVal, CUnit* i_p
         throw ZS::System::CException(__FILE__,__LINE__,EResultArgOutOfRange);
     }
     double fRes = getValRes(i_scaleDir, i_fVal, i_pUnit);
-    double fVal = Math::round2Res(i_fVal, fRes);
+    double fVal = Math::round2Resolution(i_fVal, fRes);
     return fVal;
 }
 
@@ -896,7 +896,7 @@ EValueValidity CDiagTrace::getVal(
         }
         if( fResDst != 0.0 && i_bRound2Res )
         {
-            fValDst = Math::round2Res( fValDst, fabs(fResDst) );
+            fValDst = Math::round2Resolution( fValDst, fabs(fResDst) );
         }
         if( i_pUnitDst != nullptr && *i_pUnitDst != pDiagScaleDst->getScale().m_unit )
         {
