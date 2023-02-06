@@ -2147,7 +2147,17 @@ void CServer::executeStartupRequest( CRequest* i_pReq )
                 i_pReq->update();
             }
         }
-    } // if( m_state == EStateIdle )
+    }
+    else // if( m_state == EStateListening )
+    {
+        if( errResultInfo.getResult() == EResultUndefined )
+        {
+            errResultInfo.setErrResult(ErrResultSuccess);
+        }
+        i_pReq->setErrResultInfo(errResultInfo);
+        i_pReq->setProgressInPerCent(100);
+        i_pReq->update();
+    }
 
     if( errResultInfo.isErrorResult() )
     {
@@ -2283,7 +2293,17 @@ void CServer::executeShutdownRequest( CRequest* i_pReq )
 
     EState statePrev = m_state;
 
-    if( m_state == EStateListening )
+    if( m_state == EStateIdle )
+    {
+        if( errResultInfo.getResult() == EResultUndefined )
+        {
+            errResultInfo.setErrResult(ErrResultSuccess);
+        }
+        i_pReq->setErrResultInfo(errResultInfo);
+        i_pReq->setProgressInPerCent(100);
+        i_pReq->update();
+    }
+    else // if( m_state == EStateListening )
     {
         CRequest* pReqShutdownGateway = shutdownGateway(
             /* iTimeout_ms  */ i_pReq->getTimeoutInMs(),
@@ -2451,14 +2471,11 @@ void CServer::executeChangeSettingsRequest( CRequest* i_pReq )
         {
             errResultInfo.setErrResult(ErrResultSuccess);
         }
-
         i_pReq->setErrResultInfo(errResultInfo);
         i_pReq->setProgressInPerCent(100);
         i_pReq->update();
-
-    } // if( m_state == EStateIdle )
-
-    else // if( m_state != EStateIdle )
+    }
+    else // if( m_state == EStateListening )
     {
         if( m_pGateway == nullptr )
         {

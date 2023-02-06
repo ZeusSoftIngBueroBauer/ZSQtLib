@@ -2101,7 +2101,6 @@ void CClient::executeConnectRequest( CRequest* i_pReq )
 
     bool bWasConnected = isConnected();
 
-    // If the client is not connected ...
     if( m_state == EStateUnconnected )
     {
         m_pGatewayThread = createGatewayThread();
@@ -2122,7 +2121,17 @@ void CClient::executeConnectRequest( CRequest* i_pReq )
                 i_pReq->update();
             }
         } // if( !errResultInfo.isErrorResult() )
-    } // if( m_state == EStateUnconnected )
+    }
+    else // if( m_state == EStateConnected )
+    {
+        if( errResultInfo.getResult() == EResultUndefined )
+        {
+            errResultInfo.setErrResult(ErrResultSuccess);
+        }
+        i_pReq->setErrResultInfo(errResultInfo);
+        i_pReq->setProgressInPerCent(100);
+        i_pReq->update();
+    }
 
     if( errResultInfo.isErrorResult() )
     {
@@ -2293,7 +2302,17 @@ void CClient::executeDisconnectRequest( CRequest* i_pReq )
     bool bWasConnected = isConnected();
 
     // If the client is connected ...
-    if( m_state == EStateConnected )
+    if( m_state == EStateUnconnected )
+    {
+        if( errResultInfo.getResult() == EResultUndefined )
+        {
+            errResultInfo.setErrResult(ErrResultSuccess);
+        }
+        i_pReq->setErrResultInfo(errResultInfo);
+        i_pReq->setProgressInPerCent(100);
+        i_pReq->update();
+    }
+    else // if( m_state == EStateConnected )
     {
         CRequest* pReqDisconnectGateway = disconnectGateway(
             /* iTimeout_ms  */ i_pReq->getTimeoutInMs(),
@@ -2495,7 +2514,6 @@ void CClient::executeChangeSettingsRequest( CRequest* i_pReq )
         {
             errResultInfo.setErrResult(ErrResultSuccess);
         }
-
         i_pReq->setErrResultInfo(errResultInfo);
         i_pReq->setProgressInPerCent(100);
         i_pReq->update();
