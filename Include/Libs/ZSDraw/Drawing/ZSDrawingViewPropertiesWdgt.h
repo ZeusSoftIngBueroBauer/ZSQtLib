@@ -28,6 +28,7 @@ may result in using the software modules.
 #define ZSDraw_DrawingViewPropertiesWdgt_h
 
 #include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjPropertiesAbstractWdgt.h"
+#include "ZSDraw/Drawing/ZSDrawingSize.h"
 
 class QComboBox;
 class QLabel;
@@ -41,7 +42,6 @@ namespace ZS
 namespace System
 {
 class CTrcAdminObj;
-class CMethodTracer;
 
 namespace GUI
 {
@@ -92,10 +92,10 @@ protected slots:
     void onEdtImageSizeWidthPxValueChanged(int i_cxWidth_px);
     void onEdtImageSizeHeightPxValueChanged(int i_cyHeight_px);
 protected: // instance methods
-    void setDimensionUnit( EDrawingDimensionUnit i_dimensionUnit );
-    void setMetricUnit( const QString& i_strMetricUnitSymbol );
-    void setNormedPaperSize( const QString& i_strPaperSize );
-    void setNormedPaperOrientation( const QString& i_strOrientation );
+    void setDimensionUnit( const CEnumDrawingDimensionUnit& i_eDimensionUnit );
+    void setMetricUnit( const ZS::PhysVal::CUnit& i_metricUnit );
+    void setNormedPaperSize( const CEnumNormedPaperSize& i_ePaperSize );
+    void setNormedPaperOrientation( const ZS::System::CEnumDirection& i_eDirection );
     void setScaleFactor( int i_iDividend, int i_iDivisor );
     void setImageSize( const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight );
 protected: // instance methods
@@ -154,16 +154,7 @@ protected: // instance members
     QLabel* m_pLblImageSizeHeight_px;
     QSpinBox* m_pEdtImageSizeHeight_px;
     // Caching values
-    EDrawingDimensionUnit m_dimensionUnit;
-    QString m_strMetricUnitSymbol;
-    double m_fImageMetricWidth;
-    double m_fImageMetricHeight;
-    QString m_strImageMetricNormedPaperSize;
-    QString m_strImageMetricNormedPaperOrientation;
-    int m_iMetricScaleFactorDividend;
-    int m_iMetricScaleFactorDivisor;
-    double m_fImageSizeWidth_px;
-    double m_fImageSizeHeight_px;
+    CDrawingSize m_drawingSize;
     /*!< Blocking signals counter. */
     int m_iValueChangedSignalsBlocked;
     /*!< Trace admin object for method tracing. */

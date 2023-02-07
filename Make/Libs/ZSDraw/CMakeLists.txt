@@ -39,6 +39,7 @@ list(APPEND _HeadersCommon
 
 list(APPEND _HeadersDrawing
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/ZSDrawingScene.h
+    ${_HeadersPath}/${PROJECT_NAME}/Drawing/ZSDrawingSize.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/ZSDrawingView.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/ZSDrawingViewPropertiesWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/ZSDrawSettings.h
@@ -48,7 +49,6 @@ list(APPEND _HeadersDrawing
 list(APPEND _HeadersDrawingPageSetup
     ${_HeadersPath}/${PROJECT_NAME}/DrawingPageSetup/ZSDrawDlgDrawingViewSetup.h
     ${_HeadersPath}/${PROJECT_NAME}/DrawingPageSetup/ZSDrawingViewPageSetup.h
-    ${_HeadersPath}/${PROJECT_NAME}/DrawingPageSetup/ZSDrawPageSetup.h
     ${_HeadersPath}/${PROJECT_NAME}/DrawingPageSetup/ZSDrawWdgtDrawingPaperPageSetup.h
     ${_HeadersPath}/${PROJECT_NAME}/DrawingPageSetup/ZSDrawWdgtDrawingScenePageSetup.h
     ${_HeadersPath}/${PROJECT_NAME}/DrawingPageSetup/ZSDrawWdgtDrawingViewPageSetup.h
@@ -129,6 +129,7 @@ list(APPEND _SourcesCommon
 
 list(APPEND _SourcesDrawing
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/ZSDrawingScene.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Drawing/ZSDrawingSize.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/ZSDrawingView.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/ZSDrawingViewPropertiesWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/ZSDrawSettings.cpp
@@ -138,7 +139,6 @@ list(APPEND _SourcesDrawing
 list(APPEND _SourcesDrawingPageSetup
     ${_SourcesPath}/${PROJECT_NAME}/DrawingPageSetup/ZSDrawDlgDrawingViewSetup.cpp
     ${_SourcesPath}/${PROJECT_NAME}/DrawingPageSetup/ZSDrawingViewPageSetup.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/DrawingPageSetup/ZSDrawPageSetup.cpp
     ${_SourcesPath}/${PROJECT_NAME}/DrawingPageSetup/ZSDrawWdgtDrawingPaperPageSetup.cpp
     ${_SourcesPath}/${PROJECT_NAME}/DrawingPageSetup/ZSDrawWdgtDrawingScenePageSetup.cpp
     ${_SourcesPath}/${PROJECT_NAME}/DrawingPageSetup/ZSDrawWdgtDrawingViewPageSetup.cpp

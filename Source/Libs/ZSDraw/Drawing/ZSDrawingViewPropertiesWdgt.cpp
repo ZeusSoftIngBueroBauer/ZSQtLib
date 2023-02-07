@@ -123,18 +123,7 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pLblImageSizeHeight_px(nullptr),
     m_pEdtImageSizeHeight_px(nullptr),
     // Caching values
-    m_dimensionUnit(EDrawingDimensionUnit::Pixels),
-    m_strMetricUnitSymbol(Units.Length.mm.symbol()),
-    m_fImageMetricWidth(0.0),
-    m_fImageMetricHeight(0.0),
-    m_strImageMetricNormedPaperSize(
-        CEnumNormedPaperSize(ENormedPaperSize::Undefined).toString(EEnumEntryAliasStrText)),
-    m_strImageMetricNormedPaperOrientation(
-        CEnumDirection(EDirection::Undefined).toString(EEnumEntryAliasStrText)),
-    m_iMetricScaleFactorDividend(1),
-    m_iMetricScaleFactorDivisor(1),
-    m_fImageSizeWidth_px(0.0),
-    m_fImageSizeHeight_px(0.0),
+    m_drawingSize(i_pDrawingView->objectName()),
     // Blocking signals counter
     m_iValueChangedSignalsBlocked(0),
     // Trace admin object for method tracing
@@ -157,19 +146,7 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
         m_pDrawingView, &CDrawingView::drawingSizeChanged,
         this, &CWdgtDrawingViewProperties::onDrawingViewDrawingSizeChanged );
 
-    QSize sizeDrawing = m_pDrawingView->drawingSizeInPixels();
-
-    m_fImageSizeWidth_px = sizeDrawing.width();
-    m_fImageSizeHeight_px = sizeDrawing.height();
-
-    //CPhysVal physValWidth(m_fImageSizeWidth_px, Units.Length.pxX);
-    //CPhysVal physValHeight(m_fImageSizeHeight_px, Units.Length.pxY);
-
-    //physValWidth.convertValue(Units.Length.mm);
-    //physValHeight.convertValue(Units.Length.mm);
-
-    //m_fImageMetricWidth = physValWidth.getVal();
-    //m_fImageMetricHeight = physValHeight.getVal();
+    m_drawingSize = m_pDrawingView->drawingSizeInPixels();
 
     // <Section> Dimension Unit
     //=========================
@@ -284,7 +261,7 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
             }
         }
     }
-    m_pCmbImageMetricUnit->setCurrentText(m_strMetricUnitSymbol);
+    m_pCmbImageMetricUnit->setCurrentText(m_drawingSize.metricUnit().symbol());
     QObject::connect(
         m_pCmbImageMetricUnit, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
         this, &CWdgtDrawingViewProperties::onCmbImageMetricUnitCurrentIndexChanged );
@@ -352,7 +329,14 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
                 ePaperSize.toString(EEnumEntryAliasStrSymbol), ePaperSize.toValue());
         }
     }
-    m_pCmbImageMetricNormedPaperSizes->setCurrentText(m_strImageMetricNormedPaperSize);
+    if( m_drawingSize.normedPaperSize() == ENormedPaperSize::Undefined) {
+        m_pCmbImageMetricNormedPaperSizes->setCurrentText(
+            m_drawingSize.normedPaperSize().toString(EEnumEntryAliasStrText));
+    }
+    else {
+        m_pCmbImageMetricNormedPaperSizes->setCurrentText(
+            m_drawingSize.normedPaperSize().toString(EEnumEntryAliasStrSymbol));
+    }
     QObject::connect(
         m_pCmbImageMetricNormedPaperSizes, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
         this, &CWdgtDrawingViewProperties::onCmbImageMetricNormedPaperSizesCurrentIndexChanged );
@@ -369,7 +353,7 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pCmbImageMetricNormedPaperOrientation->setEnabled(false);
     m_pLytLineImageMetricNormedPaper->addWidget(m_pCmbImageMetricNormedPaperOrientation);
     m_pLytLineImageMetricNormedPaper->addStretch();
-    m_pCmbImageMetricNormedPaperOrientation->addItem(m_strImageMetricNormedPaperOrientation);
+    m_pCmbImageMetricNormedPaperOrientation->addItem(m_drawingSize.normedPaperOrientation().toString());
     m_pCmbImageMetricNormedPaperOrientation->setVisible(false);
     QObject::connect(
         m_pCmbImageMetricNormedPaperOrientation, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
@@ -420,9 +404,9 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
         m_pCmbImageMetricScaleFactorDivisor->addItem(QString::number(iScaleFactor));
     }
     m_pCmbImageMetricScaleFactorDividend->setCurrentText(
-        QString::number(m_iMetricScaleFactorDividend));
+        QString::number(m_drawingSize.scaleFactorDividend()));
     m_pCmbImageMetricScaleFactorDivisor->setCurrentText(
-        QString::number(m_iMetricScaleFactorDivisor));
+        QString::number(m_drawingSize.scaleFactorDivisor()));
     QObject::connect(
         m_pCmbImageMetricScaleFactorDividend, &QComboBox::currentTextChanged,
         this, &CWdgtDrawingViewProperties::onCmbImageMetricScaleFactorDividendCurrentTextChanged );
@@ -467,7 +451,7 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pEdtImageSizeWidth_px->setFixedWidth(m_cxEdtWidthClm1);
     m_pEdtImageSizeWidth_px->setMinimum(1);
     m_pEdtImageSizeWidth_px->setMaximum(100000);
-    m_pEdtImageSizeWidth_px->setValue(m_fImageSizeWidth_px);
+    m_pEdtImageSizeWidth_px->setValue(m_drawingSize.imageSizeInPixels().width());
     m_pEdtImageSizeWidth_px->setSuffix(" px");
     m_pEdtImageSizeWidth_px->setReadOnly(false);
     m_pLytLineImageSize_px->addWidget(m_pEdtImageSizeWidth_px);
@@ -486,7 +470,7 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pEdtImageSizeHeight_px->setFixedWidth(m_cxEdtWidthClm2);
     m_pEdtImageSizeHeight_px->setMinimum(1);
     m_pEdtImageSizeHeight_px->setMaximum(100000);
-    m_pEdtImageSizeHeight_px->setValue(m_fImageSizeHeight_px);
+    m_pEdtImageSizeHeight_px->setValue(m_drawingSize.imageSizeInPixels().height());
     m_pEdtImageSizeHeight_px->setSuffix(" px");
     m_pEdtImageSizeHeight_px->setReadOnly(false);
     m_pLytLineImageSize_px->addWidget(m_pEdtImageSizeHeight_px);
@@ -569,17 +553,10 @@ CWdgtDrawingViewProperties::~CWdgtDrawingViewProperties()
     m_pLblImageSizeHeight_px = nullptr;
     m_pEdtImageSizeHeight_px = nullptr;
     // Caching values
-    m_dimensionUnit = static_cast<EDrawingDimensionUnit>(0);
-    //m_strMetricUnitSymbol;
-    m_fImageMetricWidth = 0.0;
-    m_fImageMetricHeight = 0.0;
-    //m_strImageMetricNormedPaperSize;
-    //m_strImageMetricNormedPaperOrientation;
-    m_iMetricScaleFactorDividend = 0;
-    m_iMetricScaleFactorDivisor = 0;
-    m_fImageSizeWidth_px = 0.0;
-    m_fImageSizeHeight_px = 0.0;
+    //m_drawingSize;
+    // Blocking signals counter
     m_iValueChangedSignalsBlocked = 0;
+    // Trace admin object for method tracing
     m_pTrcAdminObj = nullptr;
 
 } // dtor
@@ -920,13 +897,12 @@ protected: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtDrawingViewProperties::setDimensionUnit( EDrawingDimensionUnit i_dimensionUnit )
+void CWdgtDrawingViewProperties::setDimensionUnit( const CEnumDrawingDimensionUnit& i_eDimensionUnit )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
-        strMthInArgs = CEnumDrawingDimensionUnit(i_dimensionUnit).toString()
-                     + " (Prev: " + CEnumDrawingDimensionUnit(m_dimensionUnit).toString() + ")";
+        strMthInArgs = i_eDimensionUnit.toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -934,39 +910,39 @@ void CWdgtDrawingViewProperties::setDimensionUnit( EDrawingDimensionUnit i_dimen
         /* strMethod    */ "setDimensionUnit",
         /* strAddInfo   */ strMthInArgs );
 
-    if( m_dimensionUnit != i_dimensionUnit ) {
-        m_dimensionUnit = i_dimensionUnit;
-        m_pCmbDimensionUnit->setCurrentIndex(static_cast<int>(m_dimensionUnit));
+    if( m_drawingSize.dimensionUnit() != i_eDimensionUnit ) {
+        m_drawingSize.setDimensionUnit(i_eDimensionUnit);
+        m_pCmbDimensionUnit->setCurrentIndex(i_eDimensionUnit.enumeratorAsInt());
         m_pWdgtMetric->setVisible(
-            m_dimensionUnit == EDrawingDimensionUnit::Metric);
+            i_eDimensionUnit == EDrawingDimensionUnit::Metric);
         m_pCmbImageMetricUnit->setEnabled(
-            m_dimensionUnit == EDrawingDimensionUnit::Metric);
+            i_eDimensionUnit == EDrawingDimensionUnit::Metric);
         m_pEdtImageMetricWidth->setReadOnly(
-            m_dimensionUnit != EDrawingDimensionUnit::Metric);
+            i_eDimensionUnit != EDrawingDimensionUnit::Metric);
         m_pEdtImageMetricHeight->setReadOnly(
-            m_dimensionUnit != EDrawingDimensionUnit::Metric);
+            i_eDimensionUnit != EDrawingDimensionUnit::Metric);
         m_pCmbImageMetricNormedPaperSizes->setEnabled(
-            m_dimensionUnit == EDrawingDimensionUnit::Metric);
+            i_eDimensionUnit == EDrawingDimensionUnit::Metric);
         m_pCmbImageMetricNormedPaperOrientation->setEnabled(
-            m_dimensionUnit == EDrawingDimensionUnit::Metric);
+            i_eDimensionUnit == EDrawingDimensionUnit::Metric);
         m_pCmbImageMetricScaleFactorDividend->setEnabled(
-            m_dimensionUnit == EDrawingDimensionUnit::Metric);
+            i_eDimensionUnit == EDrawingDimensionUnit::Metric);
         m_pCmbImageMetricScaleFactorDivisor->setEnabled(
-            m_dimensionUnit == EDrawingDimensionUnit::Metric);
+            i_eDimensionUnit == EDrawingDimensionUnit::Metric);
         m_pEdtImageSizeWidth_px->setReadOnly(
-            m_dimensionUnit != EDrawingDimensionUnit::Pixels);
+            i_eDimensionUnit != EDrawingDimensionUnit::Pixels);
         m_pEdtImageSizeHeight_px->setReadOnly(
-            m_dimensionUnit != EDrawingDimensionUnit::Pixels);
+            i_eDimensionUnit != EDrawingDimensionUnit::Pixels);
     }
 }
 
 //------------------------------------------------------------------------------
-void CWdgtDrawingViewProperties::setMetricUnit( const QString& i_strMetricUnitSymbol )
+void CWdgtDrawingViewProperties::setMetricUnit( const CUnit& i_metricUnit )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
-        strMthInArgs = i_strMetricUnitSymbol + " (Prev: " + m_strMetricUnitSymbol + ")";
+        strMthInArgs = i_metricUnit.symbol();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -974,31 +950,25 @@ void CWdgtDrawingViewProperties::setMetricUnit( const QString& i_strMetricUnitSy
         /* strMethod    */ "setMetricUnit",
         /* strAddInfo   */ strMthInArgs );
 
-    if( m_strMetricUnitSymbol != i_strMetricUnitSymbol ) {
+    if( m_drawingSize.metricUnit() != i_metricUnit ) {
         CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
         // If changing the unit the metrics width and height and also the
         // size in pixels remain the same. Only the unit in which the values
         // are indicated will be changed.
-        CPhysVal physValWidth(m_fImageMetricWidth, m_strMetricUnitSymbol);   // Value in previous unit
-        CPhysVal physValHeight(m_fImageMetricHeight, m_strMetricUnitSymbol); // Value in previous unit
-        m_strMetricUnitSymbol = i_strMetricUnitSymbol;
-        physValWidth.convertValue(m_strMetricUnitSymbol);
-        physValHeight.convertValue(m_strMetricUnitSymbol);
-        m_fImageMetricWidth = physValWidth.getVal();
-        m_fImageMetricHeight = physValHeight.getVal();
-        m_pCmbImageMetricUnit->setCurrentText(m_strMetricUnitSymbol);
-        m_pEdtImageMetricWidth->setUnit(physValWidth.unit());
-        m_pEdtImageMetricHeight->setUnit(physValHeight.unit());
+        m_drawingSize.setMetricUnit(i_metricUnit);
+        m_pCmbImageMetricUnit->setCurrentText(i_metricUnit.symbol());
+        m_pEdtImageMetricWidth->setUnit(i_metricUnit);
+        m_pEdtImageMetricHeight->setUnit(i_metricUnit);
     }
 }
 
 //------------------------------------------------------------------------------
-void CWdgtDrawingViewProperties::setNormedPaperSize( const QString& i_strPaperSize )
+void CWdgtDrawingViewProperties::setNormedPaperSize( const CEnumNormedPaperSize& i_ePaperSize )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
-        strMthInArgs = i_strPaperSize + " (Prev: " + m_strImageMetricNormedPaperSize + ")";
+        strMthInArgs = i_ePaperSize.toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -1006,14 +976,13 @@ void CWdgtDrawingViewProperties::setNormedPaperSize( const QString& i_strPaperSi
         /* strMethod    */ "setNormedPaperSize",
         /* strAddInfo   */ strMthInArgs );
 
-    if( m_strImageMetricNormedPaperSize != i_strPaperSize ) {
+    if( m_drawingSize.normedPaperSize() != i_ePaperSize ) {
         CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
-        m_strImageMetricNormedPaperSize = i_strPaperSize;
-        CEnumNormedPaperSize ePaperSize = m_strImageMetricNormedPaperSize;
-        m_pLblImageMetricNormedPaperOrientation->setVisible(ePaperSize != ENormedPaperSize::Undefined);
-        m_pCmbImageMetricNormedPaperOrientation->setVisible(ePaperSize != ENormedPaperSize::Undefined);
+        m_drawingSize.setNormedPaperSize(i_ePaperSize);
+        m_pLblImageMetricNormedPaperOrientation->setVisible(i_ePaperSize != ENormedPaperSize::Undefined);
+        m_pCmbImageMetricNormedPaperOrientation->setVisible(i_ePaperSize != ENormedPaperSize::Undefined);
         m_pCmbImageMetricNormedPaperOrientation->clear();
-        if( ePaperSize == ENormedPaperSize::Undefined ) {
+        if( i_ePaperSize == ENormedPaperSize::Undefined ) {
             // The combo box is hidden. Not really needed to update the items.
             // Only updated for the sake of clarification. But we keep the current
             // setting for the orientation so that it can be restored when switching back
@@ -1028,42 +997,22 @@ void CWdgtDrawingViewProperties::setNormedPaperSize( const QString& i_strPaperSi
                         eDirection.toString(EEnumEntryAliasStrText));
                 }
             }
-            CEnumDirection eDirection = m_strImageMetricNormedPaperOrientation;
-            if( eDirection == EDirection::Undefined ) {
-                eDirection = EDirection::Horizontal;
-                m_strImageMetricNormedPaperOrientation = eDirection.toString();
-            }
-            m_pCmbImageMetricNormedPaperOrientation->setCurrentText(m_strImageMetricNormedPaperOrientation);
-
-            QVariant varPaperSize = ePaperSize.toValue();
-            if( varPaperSize.type() == QVariant::SizeF ) {
-                QSizeF sizeF = varPaperSize.toSizeF();
-                // Default: Horizontal Orientation
-                CPhysVal physValWidth(sizeF.height(), Units.Length.mm);
-                CPhysVal physValHeight(sizeF.width(), Units.Length.mm);
-                if( eDirection == EDirection::Vertical ) {
-                    physValWidth = sizeF.width();
-                    physValHeight = sizeF.height();
-                }
-                physValWidth.convertValue(m_strMetricUnitSymbol);
-                physValHeight.convertValue(m_strMetricUnitSymbol);
-                m_fImageMetricWidth = physValWidth.getVal();
-                m_fImageMetricHeight = physValHeight.getVal();
-                m_pEdtImageMetricWidth->setValue(physValWidth.getVal());
-                m_pEdtImageMetricHeight->setValue(physValHeight.getVal());
-                updateImageSizeInPixels();
-            }
+            CEnumDirection eDirection = m_drawingSize.normedPaperOrientation();
+            m_pCmbImageMetricNormedPaperOrientation->setCurrentText(eDirection.toString());
+            m_pEdtImageMetricWidth->setValue(m_drawingSize.metricImageWidth().getVal());
+            m_pEdtImageMetricHeight->setValue(m_drawingSize.metricImageHeight().getVal());
+            updateImageSizeInPixels();
         }
     }
 }
 
 //------------------------------------------------------------------------------
-void CWdgtDrawingViewProperties::setNormedPaperOrientation( const QString& i_strOrientation )
+void CWdgtDrawingViewProperties::setNormedPaperOrientation( const CEnumDirection& i_eDirection )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
-        strMthInArgs = i_strOrientation + " (Prev: " + m_strImageMetricNormedPaperOrientation + ")";
+        strMthInArgs = i_eDirection.toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -1071,34 +1020,18 @@ void CWdgtDrawingViewProperties::setNormedPaperOrientation( const QString& i_str
         /* strMethod    */ "setNormedPaperOrientation",
         /* strAddInfo   */ strMthInArgs );
 
-    if( m_strImageMetricNormedPaperOrientation != i_strOrientation ) {
+    if( m_drawingSize.normedPaperOrientation() != i_eDirection ) {
         CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
-        m_strImageMetricNormedPaperOrientation = i_strOrientation;
+        m_drawingSize.setNormedPaperOrientation(i_eDirection);
         // Setting values according to orientation makes only sense for normed paper sizes.
         // For user defined paper sizes there is no orientation. The width might be
         // greater than the height or vice versa. The orientation will be stored if later
         // on a normed paper size is set but for now the values will not be adjusted.
-        CEnumNormedPaperSize ePaperSize = m_strImageMetricNormedPaperSize;
+        CEnumNormedPaperSize ePaperSize = m_drawingSize.normedPaperSize();
         if( ePaperSize != ENormedPaperSize::Undefined ) {
-            QVariant varPaperSize = ePaperSize.toValue();
-            if( varPaperSize.type() == QVariant::SizeF ) {
-                QSizeF sizeF = varPaperSize.toSizeF();
-                CEnumDirection eDirection = m_strImageMetricNormedPaperOrientation;
-                // Default: Horizontal Orientation
-                CPhysVal physValWidth(sizeF.height(), Units.Length.mm);
-                CPhysVal physValHeight(sizeF.width(), Units.Length.mm);
-                if( eDirection == EDirection::Vertical ) {
-                    physValWidth = sizeF.width();
-                    physValHeight = sizeF.height();
-                }
-                physValWidth.convertValue(m_strMetricUnitSymbol);
-                physValHeight.convertValue(m_strMetricUnitSymbol);
-                m_fImageMetricWidth = physValWidth.getVal();
-                m_fImageMetricHeight = physValHeight.getVal();
-                m_pEdtImageMetricWidth->setValue(physValWidth.getVal());
-                m_pEdtImageMetricHeight->setValue(physValHeight.getVal());
-                updateImageSizeInPixels();
-            }
+            m_pEdtImageMetricWidth->setValue(m_drawingSize.metricImageWidth().getVal());
+            m_pEdtImageMetricHeight->setValue(m_drawingSize.metricImageHeight().getVal());
+            updateImageSizeInPixels();
         }
     }
 }
@@ -1109,9 +1042,7 @@ void CWdgtDrawingViewProperties::setScaleFactor( int i_iDividend, int i_iDivisor
 {
     QString strMthInArgs;
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
-        strMthInArgs = QString::number(i_iDividend) + "/" + QString::number(i_iDivisor)
-                     + " (Prev: " + QString::number(m_iMetricScaleFactorDividend)
-                     + "/" + QString::number(m_iMetricScaleFactorDivisor) + ")";
+        strMthInArgs = QString::number(i_iDividend) + "/" + QString::number(i_iDivisor);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -1122,21 +1053,20 @@ void CWdgtDrawingViewProperties::setScaleFactor( int i_iDividend, int i_iDivisor
     if( i_iDividend <= 0 ) {
         throw CException(
             __FILE__, __LINE__, EResultArgOutOfRange,
-            "CWdgtDrawingViewProperties::setScaleFactor("
+            ClassName() + "::setScaleFactor("
                 + QString::number(i_iDividend) + ", " + QString::number(i_iDivisor) + "): "
                 + "!Dividend <= 0!");
     }
     if( i_iDivisor <= 0 ) {
         throw CException(
             __FILE__, __LINE__, EResultArgOutOfRange,
-            "CWdgtDrawingViewProperties::setScaleFactor("
+            ClassName() + "::setScaleFactor("
                 + QString::number(i_iDividend) + ", " + QString::number(i_iDivisor) + "): "
                 + "!Divisor <= 0!");
     }
-    if( m_iMetricScaleFactorDividend != i_iDividend || m_iMetricScaleFactorDivisor != i_iDivisor ) {
+    if( m_drawingSize.scaleFactorDividend() != i_iDividend || m_drawingSize.scaleFactorDivisor() != i_iDivisor ) {
         CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
-        m_iMetricScaleFactorDividend = i_iDividend;
-        m_iMetricScaleFactorDivisor = i_iDivisor;
+        m_drawingSize.setScaleFactor(i_iDividend, i_iDivisor);
         updateImageSizeInPixels();
     }
 }
@@ -1148,11 +1078,7 @@ void CWdgtDrawingViewProperties::setImageSize(
 {
     QString strMthInArgs;
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
-        strMthInArgs = i_physValWidth.toString() + ", " + i_physValHeight.toString()
-                    + " (Prev: " + CPhysVal(m_fImageSizeWidth_px, Units.Length.pxX).toString()
-                    + ", " + CPhysVal(m_fImageSizeHeight_px, Units.Length.pxY).toString() + ")"
-                    + ", (Prev: " + CPhysVal(m_fImageMetricWidth, m_strMetricUnitSymbol).toString()
-                    + ", " + CPhysVal(m_fImageMetricHeight, m_strMetricUnitSymbol).toString() + ")";
+        strMthInArgs = i_physValWidth.toString() + ", " + i_physValHeight.toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -1163,14 +1089,14 @@ void CWdgtDrawingViewProperties::setImageSize(
     if( !i_physValWidth.isValid() || i_physValWidth.getVal() <= 0.0 ) {
         throw CException(
             __FILE__, __LINE__, EResultArgOutOfRange,
-            "CWdgtDrawingViewProperties::setImageSize("
+            ClassName() + "::setImageSize("
                 + i_physValWidth.toString() + ", " + i_physValHeight.toString() + "): "
                 + "!i_physValWidth <= 0.0!");
     }
     if( !i_physValHeight.isValid() || i_physValHeight.getVal() <= 0.0 ) {
         throw CException(
             __FILE__, __LINE__, EResultArgOutOfRange,
-            "CWdgtDrawingViewProperties::setImageSize("
+            ClassName() + "::setImageSize("
                 + i_physValWidth.toString() + ", " + i_physValHeight.toString() + "): "
                 + "!i_physValHeight <= 0.0!");
     }
@@ -1178,36 +1104,28 @@ void CWdgtDrawingViewProperties::setImageSize(
      || (i_physValWidth.unit() != Units.Length.pxX && i_physValHeight.unit() == Units.Length.pxY) ) {
         throw CException(
             __FILE__, __LINE__, EResultArgOutOfRange,
-            "CWdgtDrawingViewProperties::setImageSize("
+            ClassName() + "::setImageSize("
                 + i_physValWidth.toString() + ", " + i_physValHeight.toString() + "): "
                 + "Either set size in pixels or in metrics");
     }
 
-    CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
-    if( i_physValWidth.unit() == Units.Length.pxX ) {
-        double fImageSizeWidth_px = i_physValWidth.getVal();
-        double fImageSizeHeight_px = i_physValHeight.getVal();
-        if( m_fImageSizeWidth_px != fImageSizeWidth_px || m_fImageSizeHeight_px != fImageSizeHeight_px ) {
-            m_fImageSizeWidth_px = fImageSizeWidth_px;
-            m_fImageSizeHeight_px = fImageSizeHeight_px;
+    QSize sizePrev_px = m_drawingSize.imageSizeInPixels();
+    m_drawingSize.setImageSize(i_physValWidth, i_physValHeight);
+    QSize sizeCurr_px = m_drawingSize.imageSizeInPixels();
+    if( sizePrev_px != sizeCurr_px ) {
+        CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
+        if( i_physValWidth.unit() == Units.Length.pxX ) {
             updateImageSizeMetrics();
-            updatePaperFormat();
         }
-    }
-    else {
-        double fImageMetricWidth = i_physValWidth.getVal(m_strMetricUnitSymbol);
-        double fImageMetricHeight = i_physValHeight.getVal(m_strMetricUnitSymbol);
-        if( m_fImageMetricWidth != fImageMetricWidth || m_fImageMetricHeight != fImageMetricHeight ) {
-            m_fImageMetricWidth = fImageMetricWidth;
-            m_fImageMetricHeight = fImageMetricHeight;
+        else {
             updateImageSizeInPixels();
-            updatePaperFormat();
         }
+        updatePaperFormat();
     }
 }
 
 /*==============================================================================
-protected: // instance methods (method tracing)
+protected: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -1224,18 +1142,9 @@ void CWdgtDrawingViewProperties::updateImageSizeInPixels()
     }
 
     CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
-    double fFactor =  static_cast<double>(m_iMetricScaleFactorDividend)
-                    / static_cast<double>(m_iMetricScaleFactorDivisor);
-    double fScaledWidth = fFactor * m_fImageMetricWidth;
-    double fScaledHeight = fFactor * m_fImageMetricHeight;
-    CPhysVal physValWidth(fScaledWidth, m_strMetricUnitSymbol);
-    CPhysVal physValHeight(fScaledHeight, m_strMetricUnitSymbol);
-    physValWidth.convertValue(Units.Length.pxX);
-    physValHeight.convertValue(Units.Length.pxY);
-    m_fImageSizeWidth_px = physValWidth.getVal();
-    m_fImageSizeHeight_px = physValHeight.getVal();
-    m_pEdtImageSizeWidth_px->setValue(physValWidth.getVal());
-    m_pEdtImageSizeHeight_px->setValue(physValHeight.getVal());
+    QSize size_px = m_drawingSize.imageSizeInPixels();
+    m_pEdtImageSizeWidth_px->setValue(size_px.width());
+    m_pEdtImageSizeHeight_px->setValue(size_px.height());
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) ) {
         traceValues(mthTracer, EMethodDir::Leave);
@@ -1256,22 +1165,16 @@ void CWdgtDrawingViewProperties::updateImageSizeMetrics()
     }
 
     CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
-    CPhysVal physValWidth(m_fImageSizeWidth_px, Units.Length.pxX);
-    CPhysVal physValHeight(m_fImageSizeHeight_px, Units.Length.pxY);
-    physValWidth.convertValue(m_strMetricUnitSymbol);
-    physValHeight.convertValue(m_strMetricUnitSymbol);
-    m_fImageMetricWidth = physValWidth.getVal();
-    m_fImageMetricHeight = physValHeight.getVal();
-    m_pEdtImageMetricWidth->setUnit(physValWidth.unit());
+    m_pEdtImageMetricWidth->setUnit(m_drawingSize.metricUnit());
     #pragma message(__TODO__"setResolution depending on screen resolution")
     m_pEdtImageMetricWidth->setResolution(0.001);
     m_pEdtImageMetricWidth->setMaximum(100000);
-    m_pEdtImageMetricWidth->setValue(physValWidth.getVal());
-    m_pEdtImageMetricHeight->setUnit(physValHeight.unit());
+    m_pEdtImageMetricWidth->setValue(m_drawingSize.metricImageWidth().getVal());
+    m_pEdtImageMetricHeight->setUnit(m_drawingSize.metricUnit());
     #pragma message(__TODO__"setResolution depending on screen resolution")
     m_pEdtImageMetricHeight->setResolution(0.001);
-    m_pEdtImageMetricHeight->setMaximum(1.0e6);
-    m_pEdtImageMetricHeight->setValue(physValHeight.getVal());
+    m_pEdtImageMetricHeight->setMaximum(100000);
+    m_pEdtImageMetricHeight->setValue(m_drawingSize.metricImageHeight().getVal());
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) ) {
         traceValues(mthTracer, EMethodDir::Leave);
@@ -1294,52 +1197,25 @@ void CWdgtDrawingViewProperties::updatePaperFormat()
 
     CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
 
-    CPhysVal physValWidth(m_fImageMetricWidth, m_strMetricUnitSymbol);
-    CPhysVal physValHeight(m_fImageMetricHeight, m_strMetricUnitSymbol);
-    CEnumDirection eDirection = m_strImageMetricNormedPaperOrientation;
-    if( eDirection == EDirection::Horizontal ) {
-        physValWidth.setVal(m_fImageMetricHeight);
-        physValHeight.setVal(m_fImageMetricWidth);
-    }
-    physValWidth.convertValue(Units.Length.mm);
-    physValHeight.convertValue(Units.Length.mm);
-    QSizeF sizePaper(physValWidth.getVal(), physValHeight.getVal());
-    int idx = m_pCmbImageMetricNormedPaperSizes->findData(sizePaper);
-    if( idx >= 0 ) {
-        m_pCmbImageMetricNormedPaperSizes->setCurrentIndex(idx);
-        if( m_strImageMetricNormedPaperSize != m_pCmbImageMetricNormedPaperSizes->currentText() ) {
-            m_strImageMetricNormedPaperSize = m_pCmbImageMetricNormedPaperSizes->currentText();
-            CEnumNormedPaperSize ePaperSize = m_strImageMetricNormedPaperSize;
-            m_pLblImageMetricNormedPaperOrientation->setVisible(ePaperSize != ENormedPaperSize::Undefined);
-            m_pCmbImageMetricNormedPaperOrientation->setVisible(ePaperSize != ENormedPaperSize::Undefined);
-            m_pCmbImageMetricNormedPaperOrientation->clear();
-            if( ePaperSize == ENormedPaperSize::Undefined ) {
-                // The combo box is hidden. Not really needed to update the items.
-                // Only updated for the sake of clarification. But we keep the current
-                // setting for the orientation so that it can be restored when switching back
-                // to a normed paper size.
-                CEnumDirection eDirection(EDirection::Undefined);
-                m_pCmbImageMetricNormedPaperOrientation->addItem(eDirection.toString(EEnumEntryAliasStrText));
-            }
-            else {
-                for( CEnumDirection eDirection = 0; eDirection < CEnumDirection::count(); ++eDirection ) {
-                    if( eDirection != EDirection::Undefined) {
-                        m_pCmbImageMetricNormedPaperOrientation->addItem(
-                            eDirection.toString(EEnumEntryAliasStrText));
-                    }
-                }
-                if( eDirection == EDirection::Undefined ) {
-                    eDirection = EDirection::Horizontal;
-                    m_strImageMetricNormedPaperOrientation = eDirection.toString();
-                }
-                m_pCmbImageMetricNormedPaperOrientation->setCurrentText(m_strImageMetricNormedPaperOrientation);
+    CEnumNormedPaperSize ePaperSize = m_drawingSize.normedPaperSize();
+    CEnumDirection eDirection = m_drawingSize.normedPaperOrientation();
+
+    if( ePaperSize != ENormedPaperSize::Undefined ) {
+        m_pCmbImageMetricNormedPaperSizes->setCurrentText(ePaperSize.toString(EEnumEntryAliasStrSymbol));
+        m_pLblImageMetricNormedPaperOrientation->setVisible(true);
+        m_pCmbImageMetricNormedPaperOrientation->setVisible(true);
+        m_pCmbImageMetricNormedPaperOrientation->clear();
+        for( CEnumDirection eDirection = 0; eDirection < CEnumDirection::count(); ++eDirection ) {
+            if( eDirection != EDirection::Undefined) {
+                m_pCmbImageMetricNormedPaperOrientation->addItem(
+                    eDirection.toString(EEnumEntryAliasStrText));
             }
         }
+        m_pCmbImageMetricNormedPaperOrientation->setCurrentText(eDirection.toString());
     }
     else {
-        CEnumNormedPaperSize ePaperSize = ENormedPaperSize::Undefined;
-        m_strImageMetricNormedPaperSize = ePaperSize.toString(EEnumEntryAliasStrText);
-        m_pCmbImageMetricNormedPaperSizes->setCurrentText(m_strImageMetricNormedPaperSize);
+        m_pCmbImageMetricNormedPaperSizes->setCurrentText(ePaperSize.toString(EEnumEntryAliasStrText));
+        m_pLblImageMetricNormedPaperOrientation->setVisible(false);
         m_pCmbImageMetricNormedPaperOrientation->setVisible(false);
     }
 
@@ -1357,17 +1233,6 @@ void CWdgtDrawingViewProperties::traceValues(CMethodTracer& mthTracer, EMethodDi
 //------------------------------------------------------------------------------
 {
     QString strMthLog = QString(i_methodDir == EMethodDir::Enter ? "-+ " : "+- ")
-        + "Cached Values {" + CEnumDrawingDimensionUnit(m_dimensionUnit).toString()
-        + ", Paper (" + m_strImageMetricNormedPaperSize
-            + ", " + m_strImageMetricNormedPaperOrientation + ")"
-        + ", Scale (" + QString::number(m_iMetricScaleFactorDividend)
-            + "/" + QString::number(m_iMetricScaleFactorDivisor) + ")"
-        + ", Size (" + QString::number(m_fImageMetricWidth) + " " + m_strMetricUnitSymbol
-            + " * " + QString::number(m_fImageMetricHeight) + " " + m_strMetricUnitSymbol + ")"
-        + ", Size (" + QString::number(m_fImageSizeWidth_px)
-            + " * " + QString::number(m_fImageSizeHeight_px) + " px)}";
-    mthTracer.trace(strMthLog);
-    strMthLog = QString(i_methodDir == EMethodDir::Enter ? "-+ " : "+- ")
         + "Edit Controls {" + m_pCmbDimensionUnit->currentText()
         + ", Paper (" + m_pCmbImageMetricNormedPaperSizes->currentText() 
             + ", " + m_pCmbImageMetricNormedPaperOrientation->currentText() + ")"
