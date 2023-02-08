@@ -33,6 +33,7 @@ may result in using the software modules.
 class QComboBox;
 class QLabel;
 class QLineEdit;
+class QPushButton;
 class QSpinBox;
 class QHBoxLayout;
 class QVBoxLayout;
@@ -78,7 +79,7 @@ public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
     virtual QString className() const { return ClassName(); }
 protected slots:
-    void onDrawingViewDrawingSizeChanged(const QSize& i_size);
+    void onDrawingViewDrawingSizeChanged(const ZS::Draw::CDrawingSize& i_size);
     void onCmbDimensionUnitCurrentIndexChanged(int i_idx);
     void onCmbImageMetricUnitCurrentIndexChanged(int i_idx);
     void onEdtImageMetricWidthValueChanged(const ZS::PhysVal::CPhysVal& i_physValWidth);
@@ -91,6 +92,10 @@ protected slots:
     void onCmbImageMetricScaleFactorDivisorEditTextChanged(const QString& i_strDivisor);
     void onEdtImageSizeWidthPxValueChanged(int i_cxWidth_px);
     void onEdtImageSizeHeightPxValueChanged(int i_cyHeight_px);
+    void onBtnApplyClicked(bool i_bChecked = false);
+    void onBtnResetClicked(bool i_bChecked = false);
+protected: // instance methods
+    bool hasChanges() const;
 protected: // instance methods
     void setDimensionUnit( const CEnumDrawingDimensionUnit& i_eDimensionUnit );
     void setMetricUnit( const ZS::PhysVal::CUnit& i_metricUnit );
@@ -102,6 +107,7 @@ protected: // instance methods
     void updateImageSizeInPixels();
     void updateImageSizeMetrics();
     void updatePaperFormat();
+    void updateButtonStates();
 protected: // instance methods (method tracing)
     void traceValues(ZS::System::CMethodTracer& i_mthTracer, ZS::System::EMethodDir i_methodDir);
 protected: // instance members
@@ -153,6 +159,11 @@ protected: // instance members
     QSpinBox* m_pEdtImageSizeWidth_px;
     QLabel* m_pLblImageSizeHeight_px;
     QSpinBox* m_pEdtImageSizeHeight_px;
+    // Button Line
+    QWidget* m_pWdgtButtons;
+    QHBoxLayout* m_pLytWdgtButtons;
+    QPushButton* m_pBtnApply;
+    QPushButton* m_pBtnReset;
     // Caching values
     CDrawingSize m_drawingSize;
     /*!< Blocking signals counter. */

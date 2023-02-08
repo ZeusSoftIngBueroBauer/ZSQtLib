@@ -42,12 +42,14 @@ may result in using the software modules.
 #include <QtGui/qlabel.h>
 #include <QtGui/qlayout.h>
 #include <QtGui/qlineedit.h>
+#include <QtGui/qpushbutton.h>
 #include <QtGui/qspinbox.h>
 #else
 #include <QtWidgets/qcombobox.h>
 #include <QtWidgets/qlabel.h>
 #include <QtWidgets/qlayout.h>
 #include <QtWidgets/qlineedit.h>
+#include <QtWidgets/qpushbutton.h>
 #include <QtWidgets/qspinbox.h>
 #endif
 
@@ -122,8 +124,13 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pEdtImageSizeWidth_px(nullptr),
     m_pLblImageSizeHeight_px(nullptr),
     m_pEdtImageSizeHeight_px(nullptr),
+    // Button Line
+    m_pWdgtButtons(nullptr),
+    m_pLytWdgtButtons(nullptr),
+    m_pBtnApply(nullptr),
+    m_pBtnReset(nullptr),
     // Caching values
-    m_drawingSize(i_pDrawingView->objectName()),
+    m_drawingSize("DrawingViewPropertiesWdgt"),
     // Blocking signals counter
     m_iValueChangedSignalsBlocked(0),
     // Trace admin object for method tracing
@@ -146,7 +153,7 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
         m_pDrawingView, &CDrawingView::drawingSizeChanged,
         this, &CWdgtDrawingViewProperties::onDrawingViewDrawingSizeChanged );
 
-    m_drawingSize = m_pDrawingView->drawingSizeInPixels();
+    m_drawingSize = m_pDrawingView->drawingSize();
 
     // <Section> Dimension Unit
     //=========================
@@ -479,10 +486,35 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
         m_pEdtImageSizeHeight_px, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
         this, &CWdgtDrawingViewProperties::onEdtImageSizeHeightPxValueChanged);
 
-    // <Stretch> At bottom of main layout
-    //-----------------------------------
+    // <Stretch> to buttons line
+    //--------------------------
 
     m_pLyt->addStretch();
+
+    // <Buttons>
+    //----------
+
+    m_pWdgtButtons = new QWidget();
+    m_pLytWdgtButtons = new QHBoxLayout();
+    m_pWdgtButtons->setLayout(m_pLytWdgtButtons);
+    m_pLytWdgtButtons->setContentsMargins(0, 0, 0, 0);
+    m_pLyt->addWidget(m_pWdgtButtons);
+
+    m_pBtnApply = new QPushButton("Apply");
+    m_pBtnApply->setEnabled(false);
+    m_pLytWdgtButtons->addWidget(m_pBtnApply);
+    QObject::connect(
+        m_pBtnApply, &QPushButton::clicked,
+        this, &CWdgtDrawingViewProperties::onBtnApplyClicked);
+
+    m_pBtnReset = new QPushButton("Reset");
+    m_pBtnReset->setEnabled(false);
+    m_pLytWdgtButtons->addWidget(m_pBtnReset);
+    QObject::connect(
+        m_pBtnReset, &QPushButton::clicked,
+        this, &CWdgtDrawingViewProperties::onBtnResetClicked);
+
+    m_pLytWdgtButtons->addStretch();
 
     // Update metrics
     //---------------
@@ -552,6 +584,11 @@ CWdgtDrawingViewProperties::~CWdgtDrawingViewProperties()
     m_pEdtImageSizeWidth_px = nullptr;
     m_pLblImageSizeHeight_px = nullptr;
     m_pEdtImageSizeHeight_px = nullptr;
+    // Button Line
+    m_pWdgtButtons = nullptr;
+    m_pLytWdgtButtons = nullptr;
+    m_pBtnApply = nullptr;
+    m_pBtnReset = nullptr;
     // Caching values
     //m_drawingSize;
     // Blocking signals counter
@@ -566,7 +603,7 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtDrawingViewProperties::onDrawingViewDrawingSizeChanged(const QSize& i_size)
+void CWdgtDrawingViewProperties::onDrawingViewDrawingSizeChanged(const CDrawingSize& i_size)
 //------------------------------------------------------------------------------
 {
     if( m_iValueChangedSignalsBlocked > 0 ) {
@@ -575,7 +612,7 @@ void CWdgtDrawingViewProperties::onDrawingViewDrawingSizeChanged(const QSize& i_
 
     QString strMthInArgs;
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
-        strMthInArgs = qSize2Str(i_size);
+        strMthInArgs = i_size.toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -583,10 +620,17 @@ void CWdgtDrawingViewProperties::onDrawingViewDrawingSizeChanged(const QSize& i_
         /* strMethod    */ "onDrawingViewDrawingSizeChanged",
         /* strAddInfo   */ strMthInArgs );
 
-    CPhysVal physValWidth(i_size.width(), Units.Length.pxX);
-    CPhysVal physValHeight(i_size.height(), Units.Length.pxY);
-    if( physValWidth.getVal() > 0.0 && physValHeight.getVal() > 0.0 ) {
-        setImageSize(physValWidth, physValHeight);
+    if( m_drawingSize != i_size ) {
+        m_drawingSize = i_size;
+        CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
+        if( m_drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels ) {
+            updateImageSizeMetrics();
+        }
+        else if( m_drawingSize.dimensionUnit() == EDrawingDimensionUnit::Metric ) {
+            updateImageSizeInPixels();
+        }
+        updatePaperFormat();
+        updateButtonStates();
     }
 }
 
@@ -892,6 +936,50 @@ void CWdgtDrawingViewProperties::onEdtImageSizeHeightPxValueChanged(int i_cyHeig
     }
 }
 
+//------------------------------------------------------------------------------
+void CWdgtDrawingViewProperties::onBtnApplyClicked(bool /*i_bChecked*/)
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onBtnApplyClicked",
+        /* strAddInfo   */ "" );
+
+    CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
+    m_pDrawingView->setDrawingSize(m_drawingSize);
+    updateButtonStates();
+}
+
+//------------------------------------------------------------------------------
+void CWdgtDrawingViewProperties::onBtnResetClicked(bool /*i_bChecked*/)
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onBtnResetClicked",
+        /* strAddInfo   */ "" );
+
+    m_drawingSize = m_pDrawingView->drawingSize();
+
+    updateImageSizeInPixels();
+    updateImageSizeMetrics();
+    updatePaperFormat();
+    updateButtonStates();
+}
+
+/*==============================================================================
+protected: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+bool CWdgtDrawingViewProperties::hasChanges() const
+//------------------------------------------------------------------------------
+{
+    return (m_drawingSize != m_pDrawingView->drawingSize());
+}
+
 /*==============================================================================
 protected: // instance methods
 ==============================================================================*/
@@ -933,6 +1021,7 @@ void CWdgtDrawingViewProperties::setDimensionUnit( const CEnumDrawingDimensionUn
             i_eDimensionUnit != EDrawingDimensionUnit::Pixels);
         m_pEdtImageSizeHeight_px->setReadOnly(
             i_eDimensionUnit != EDrawingDimensionUnit::Pixels);
+        updateButtonStates();
     }
 }
 
@@ -959,6 +1048,7 @@ void CWdgtDrawingViewProperties::setMetricUnit( const CUnit& i_metricUnit )
         m_pCmbImageMetricUnit->setCurrentText(i_metricUnit.symbol());
         m_pEdtImageMetricWidth->setUnit(i_metricUnit);
         m_pEdtImageMetricHeight->setUnit(i_metricUnit);
+        updateButtonStates();
     }
 }
 
@@ -1003,6 +1093,7 @@ void CWdgtDrawingViewProperties::setNormedPaperSize( const CEnumNormedPaperSize&
             m_pEdtImageMetricHeight->setValue(m_drawingSize.metricImageHeight().getVal());
             updateImageSizeInPixels();
         }
+        updateButtonStates();
     }
 }
 
@@ -1033,6 +1124,7 @@ void CWdgtDrawingViewProperties::setNormedPaperOrientation( const CEnumDirection
             m_pEdtImageMetricHeight->setValue(m_drawingSize.metricImageHeight().getVal());
             updateImageSizeInPixels();
         }
+        updateButtonStates();
     }
 }
 
@@ -1068,6 +1160,7 @@ void CWdgtDrawingViewProperties::setScaleFactor( int i_iDividend, int i_iDivisor
         CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
         m_drawingSize.setScaleFactor(i_iDividend, i_iDivisor);
         updateImageSizeInPixels();
+        updateButtonStates();
     }
 }
 
@@ -1121,6 +1214,7 @@ void CWdgtDrawingViewProperties::setImageSize(
             updateImageSizeInPixels();
         }
         updatePaperFormat();
+        updateButtonStates();
     }
 }
 
@@ -1224,6 +1318,34 @@ void CWdgtDrawingViewProperties::updatePaperFormat()
     }
 } // updatePaperFormat
 
+//------------------------------------------------------------------------------
+void CWdgtDrawingViewProperties::updateButtonStates()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "updateButtonStates",
+        /* strAddInfo   */ "" );
+
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) ) {
+        traceValues(mthTracer, EMethodDir::Enter);
+    }
+
+    if( hasChanges()) {
+        m_pBtnApply->setEnabled(true);
+        m_pBtnReset->setEnabled(true);
+    }
+    else {
+        m_pBtnApply->setEnabled(false);
+        m_pBtnReset->setEnabled(false);
+    }
+
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) ) {
+        traceValues(mthTracer, EMethodDir::Leave);
+    }
+}
+
 /*==============================================================================
 protected: // instance methods (method tracing)
 ==============================================================================*/
@@ -1233,7 +1355,7 @@ void CWdgtDrawingViewProperties::traceValues(CMethodTracer& mthTracer, EMethodDi
 //------------------------------------------------------------------------------
 {
     QString strMthLog = QString(i_methodDir == EMethodDir::Enter ? "-+ " : "+- ")
-        + "Edit Controls {" + m_pCmbDimensionUnit->currentText()
+        + m_pCmbDimensionUnit->currentText()
         + ", Paper (" + m_pCmbImageMetricNormedPaperSizes->currentText() 
             + ", " + m_pCmbImageMetricNormedPaperOrientation->currentText() + ")"
         + ", Scale (" + m_pCmbImageMetricScaleFactorDividend->currentText()
@@ -1241,6 +1363,8 @@ void CWdgtDrawingViewProperties::traceValues(CMethodTracer& mthTracer, EMethodDi
         + ", Size (" + m_pEdtImageMetricWidth->value().toString()
             + " * " + m_pEdtImageMetricHeight->value().toString() + ")"
         + ", Size (" + QString::number(m_pEdtImageSizeWidth_px->value())
-            + " * " + QString::number(m_pEdtImageSizeHeight_px->value()) + " px)}";
+            + " * " + QString::number(m_pEdtImageSizeHeight_px->value()) + " px)"
+        + ", ButtonsEnabled (Apply: " + bool2Str(m_pBtnApply->isEnabled())
+            + ", Reset: " + bool2Str(m_pBtnReset->isEnabled()) + ")";
     mthTracer.trace(strMthLog);
 }

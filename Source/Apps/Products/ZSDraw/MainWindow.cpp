@@ -2934,9 +2934,10 @@ void CMainWindow::onActionFileSaveAsTriggered( bool )
             setCurrentFile(strFileName);
         }
         else {
+            CDrawingSize drawingSize = pDrawingView->drawingSize();
             QImage img(
-                pDrawingView->drawingWidthInPixels(),
-                pDrawingView->drawingHeightInPixels(),
+                drawingSize.imageSizeInPixels().width(),
+                drawingSize.imageSizeInPixels().height(),
                 QImage::Format_ARGB32_Premultiplied);
             QPainter painter(&img);
             pDrawingScene->render(&painter);

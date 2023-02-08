@@ -50,9 +50,11 @@ public: // class methods
     static QString ClassName() { return "CDrawingSize"; }
 public: // ctors and dtor
     CDrawingSize(const QString& i_strName);
+    CDrawingSize(const QString& i_strName, const QSize& i_size);
+    CDrawingSize(const CDrawingSize& i_other);
     ~CDrawingSize();
 public: // operators
-    CDrawingSize& operator = (const QSize& i_size_px);
+    CDrawingSize& operator = (const CDrawingSize& i_other);
 public: // operators
     bool operator == (const CDrawingSize& i_other) const;
     bool operator != (const CDrawingSize& i_other) const;
@@ -79,6 +81,8 @@ protected: // instance methods
     void updateImageSizeInPixels();
     void updateImageSizeMetrics();
     void updatePaperFormat();
+public: // instance methods
+    QString toString() const;
 protected: // instance methods (method tracing)
     void traceValues(ZS::System::CMethodTracer& i_mthTracer, ZS::System::EMethodDir i_methodDir);
 private: // instance members

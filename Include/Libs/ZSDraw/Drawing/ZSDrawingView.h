@@ -35,7 +35,7 @@ may result in using the software modules.
 #include <QtWidgets/qgraphicsview.h>
 #endif
 
-#include "ZSDraw/Common/ZSDrawDllMain.h"
+#include "ZSDraw/Drawing/ZSDrawingSize.h"
 
 namespace ZS
 {
@@ -67,8 +67,8 @@ public: // ctors and dtor
     ~CDrawingView();
 signals:
     void mousePosChanged( const QPointF& i_ptMousePos );
-    void drawingSizeChanged( const QSize& i_size );
-    void viewportMarginsChanged( const QMargins& i_margins );
+    void drawingSizeChanged( const ZS::Draw::CDrawingSize& i_size );
+    //void viewportMarginsChanged( const QMargins& i_margins );
 public: // overridables
     /*! This virtual method returns the name space of the object's class.
         This method can be reimplemented in derived classes so when invoked for the
@@ -81,16 +81,11 @@ public: // overridables
 public: // instance methods
     CDrawingScene* drawingScene() { return m_pDrawingScene; }
 public: // instance methods (drawing area)
-    void setDrawingSize( const QSize& i_size );
-    void setDrawingSizeInPixels( int i_iWidth_px, int i_iHeight_px );
-    void setDrawingWidthInPixels( int i_iWidth_px );
-    void setDrawingHeightInPixels( int i_iHeight_px );
-    QSize drawingSizeInPixels() const;
-    int drawingWidthInPixels() const;
-    int drawingHeightInPixels() const;
+    void setDrawingSize( const CDrawingSize& i_size );
+    CDrawingSize drawingSize() const;
 public: // instance methods (drawing area)
-    void setViewportMargins( int i_iLeft, int i_iTop, int i_iRight, int i_iBottom );
-    void setViewportMargins( const QMargins& i_margins );
+    //void setViewportMargins( int i_iLeft, int i_iTop, int i_iRight, int i_iBottom );
+    //void setViewportMargins( const QMargins& i_margins );
 public: // overridables of base class QWidget
     virtual void mousePressEvent( QMouseEvent* i_pEv );
     virtual void mouseMoveEvent( QMouseEvent* i_pEv );
@@ -102,7 +97,7 @@ public: // overridables of base class QWidget
 protected: // overridables of base class QGraphicsView
     virtual void paintEvent( QPaintEvent* i_pEv );
 protected slots:
-    void onSceneRectChanged( const QRectF& i_rect );
+    void onSceneDrawingSizeChanged( const ZS::Draw::CDrawingSize& i_size );
 protected: // instance members
     CDrawingScene* m_pDrawingScene;
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;

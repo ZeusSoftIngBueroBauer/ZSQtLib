@@ -127,8 +127,7 @@ public: // ctors and dtor
 CDrawingScene::CDrawingScene( QObject* i_pObjParent ) :
 //------------------------------------------------------------------------------
     QGraphicsScene(i_pObjParent),
-    m_unitWidth(Units.Length.pxX),
-    m_unitHeight(Units.Length.pxY),
+    m_drawingSize("DrawingScene"),
     m_drawSettings(),
     m_mode(EMode::Undefined),
     m_editTool(EEditTool::None),
@@ -249,9 +248,7 @@ CDrawingScene::~CDrawingScene()
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjMouseMoveEvent);
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjPaintEvent);
 
-    //m_unitWidgt;
-    //m_unitHeight;
-    //m_drawSettings;
+    //m_drawingScene;
     m_mode = static_cast<ZS::System::EMode>(0);
     m_editTool = static_cast<EEditTool>(0);
     m_editMode = static_cast<EEditMode>(0);
@@ -276,6 +273,40 @@ CDrawingScene::~CDrawingScene()
     m_pTrcAdminObjPaintEvent = nullptr;
 
 } // dtor
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CDrawingScene::setDrawingSize( const CDrawingSize& i_size)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = i_size.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setDrawingSize",
+        /* strAddInfo   */ strMthInArgs );
+
+    if( m_drawingSize != i_size )
+    {
+        m_drawingSize = i_size;
+        QRectF rect(QPointF(0.0, 0.0), m_drawingSize.imageSizeInPixels());
+        setSceneRect(rect);
+        emit drawingSizeChanged(m_drawingSize);
+    }
+}
+
+//------------------------------------------------------------------------------
+CDrawingSize CDrawingScene::drawingSize() const
+//------------------------------------------------------------------------------
+{
+    return m_drawingSize;
+}
 
 /*==============================================================================
 public: // instance methods

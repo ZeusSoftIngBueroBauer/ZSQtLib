@@ -79,7 +79,8 @@ CDrawingView::CDrawingView( CDrawingScene* i_pDrawingScene, QWidget* i_pWdgtPare
 
     Units.Length.setPxpis(logicalDpiX(), logicalDpiY());
 
-    m_pDrawingScene->setSceneRect(0.0, 0.0, 1024.0, 768.0);
+    m_pDrawingScene->setDrawingSize(
+        CDrawingSize("DrawingScene", QSize(1024, 768)));
 
     setViewportMargins(10.0, 10.0, 10.0, 10.0);
 
@@ -87,8 +88,8 @@ CDrawingView::CDrawingView( CDrawingScene* i_pDrawingScene, QWidget* i_pWdgtPare
     setAcceptDrops(true);
 
     QObject::connect(
-        m_pDrawingScene, &CDrawingScene::sceneRectChanged,
-        this, &CDrawingView::onSceneRectChanged );
+        m_pDrawingScene, &CDrawingScene::drawingSizeChanged,
+        this, &CDrawingView::onSceneDrawingSizeChanged );
 
 } // ctor
 
@@ -123,12 +124,12 @@ public: // instance methods (drawing area)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDrawingView::setDrawingSize( const QSize& i_size )
+void CDrawingView::setDrawingSize( const CDrawingSize& i_size )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
-        strMthInArgs = size2Str(i_size);
+        strMthInArgs = i_size.toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -136,188 +137,78 @@ void CDrawingView::setDrawingSize( const QSize& i_size )
         /* strMethod    */ "setDrawingSize",
         /* strAddInfo   */ strMthInArgs );
 
-    QRectF sceneRect = m_pDrawingScene->sceneRect();
-
-    if( sceneRect.size() != i_size )
-    {
-        sceneRect.setSize(i_size);
-
-        // QGraphicsScene emits "sceneRectChanged" -> slot "CDrawingView::onSceneRectChanged" is called.
-        // The DrawingViews slot emits DrawingViews signal "sceneRectChanged".
-        m_pDrawingScene->setSceneRect(sceneRect);
-
-        emit drawingSizeChanged(i_size);
-    }
-} // setDrawingSize
-
-//------------------------------------------------------------------------------
-void CDrawingView::setDrawingSizeInPixels( int i_iWidth_px, int i_iHeight_px )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
-        strMthInArgs  = "Width: " + QString::number(i_iWidth_px);
-        strMthInArgs += ", Height: " + QString::number(i_iHeight_px);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setDrawingSizeInPixels",
-        /* strAddInfo   */ strMthInArgs );
-
-    QRectF sceneRect = m_pDrawingScene->sceneRect();
-
-    if( sceneRect.width() != i_iWidth_px || sceneRect.height() != i_iHeight_px )
-    {
-        sceneRect.setWidth(i_iWidth_px);
-        sceneRect.setHeight(i_iHeight_px);
-
-        // QGraphicsScene emits "sceneRectChanged" -> slot "CDrawingView::onSceneRectChanged" is called.
-        // The DrawingViews slot emits DrawingViews signal "sceneRectChanged".
-        m_pDrawingScene->setSceneRect(sceneRect);
-
-        emit drawingSizeChanged(sceneRect.size().toSize());
-    }
-} // setDrawingSizeInPixels
-
-//------------------------------------------------------------------------------
-void CDrawingView::setDrawingWidthInPixels( int i_iWidth_px )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
-        strMthInArgs = QString::number(i_iWidth_px);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setDrawingWidthInPixels",
-        /* strAddInfo   */ strMthInArgs );
-
-    QRectF sceneRect = m_pDrawingScene->sceneRect();
-
-    if( sceneRect.width() != i_iWidth_px )
-    {
-        sceneRect.setWidth(i_iWidth_px);
-
-        // QGraphicsScene emits "sceneRectChanged" -> slot "CDrawingView::onSceneRectChanged" is called.
-        // The DrawingViews slot emits DrawingViews signal "sceneRectChanged".
-        m_pDrawingScene->setSceneRect(sceneRect);
-
-        emit drawingSizeChanged(sceneRect.size().toSize());
-    }
-} // setDrawingWidthInPixels
-
-//------------------------------------------------------------------------------
-void CDrawingView::setDrawingHeightInPixels( int i_iHeight_px )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
-        strMthInArgs = QString::number(i_iHeight_px);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setDrawingWidthInPixels",
-        /* strAddInfo   */ strMthInArgs );
-
-    QRectF sceneRect = m_pDrawingScene->sceneRect();
-
-    if( sceneRect.height() != i_iHeight_px )
-    {
-        sceneRect.setHeight(i_iHeight_px);
-
-        // QGraphicsScene emits "sceneRectChanged" -> slot "CDrawingView::onSceneRectChanged" is called.
-        // The DrawingViews slot emits DrawingViews signal "sceneRectChanged".
-        m_pDrawingScene->setSceneRect(sceneRect);
-
-        emit drawingSizeChanged(sceneRect.size().toSize());
-    }
-} // setDrawingHeightInPixels
-
-//------------------------------------------------------------------------------
-QSize CDrawingView::drawingSizeInPixels() const
-//------------------------------------------------------------------------------
-{
-    QSizeF size = m_pDrawingScene->sceneRect().size();
-    return QSize(size.width(), size.height());
+    // QGraphicsScene emits "drawingSizeChanged". The slot
+    // "onSceneDrawingSizeChanged" is called emitting "drawingSizeChanged".
+    m_pDrawingScene->setDrawingSize(i_size);
 }
 
 //------------------------------------------------------------------------------
-int CDrawingView::drawingWidthInPixels() const
+CDrawingSize CDrawingView::drawingSize() const
 //------------------------------------------------------------------------------
 {
-    return m_pDrawingScene->sceneRect().width();
-}
-
-//------------------------------------------------------------------------------
-int CDrawingView::drawingHeightInPixels() const
-//------------------------------------------------------------------------------
-{
-    return m_pDrawingScene->sceneRect().height();
+    return m_pDrawingScene->drawingSize();
 }
 
 /*==============================================================================
 public: // instance methods (drawing area)
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-void CDrawingView::setViewportMargins(int i_iLeft, int i_iTop, int i_iRight, int i_iBottom)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strMthInArgs  = "Left: "+ QString::number(i_iLeft);
-        strMthInArgs += ", Top: "+ QString::number(i_iTop);
-        strMthInArgs += ", Right: "+ QString::number(i_iRight);
-        strMthInArgs += ", Bottom: "+ QString::number(i_iBottom);
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setViewportMargins",
-        /* strAddInfo   */ strMthInArgs );
-
-    QMargins margins(i_iLeft, i_iTop, i_iRight, i_iBottom);
-
-    if( margins != viewportMargins() )
-    {
-        QGraphicsView::setViewportMargins(margins);
-
-        // QGraphicsView has no signal "viewportMarginsChanged".
-        emit viewportMarginsChanged(viewportMargins());
-    }
-} // setViewportMargins
-
-//------------------------------------------------------------------------------
-void CDrawingView::setViewportMargins(const QMargins& i_margins)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strMthInArgs = qMargins2Str(i_margins);
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setViewportMargins",
-        /* strAddInfo   */ strMthInArgs );
-
-    if( i_margins != viewportMargins() )
-    {
-        QGraphicsView::setViewportMargins(i_margins);
-
-        // QGraphicsView has no signal "viewportMarginsChanged".
-        emit viewportMarginsChanged(viewportMargins());
-    }
-} // setViewportMargins
+////------------------------------------------------------------------------------
+//void CDrawingView::setViewportMargins(int i_iLeft, int i_iTop, int i_iRight, int i_iBottom)
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//
+//    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+//    {
+//        strMthInArgs  = "Left: "+ QString::number(i_iLeft);
+//        strMthInArgs += ", Top: "+ QString::number(i_iTop);
+//        strMthInArgs += ", Right: "+ QString::number(i_iRight);
+//        strMthInArgs += ", Bottom: "+ QString::number(i_iBottom);
+//    }
+//
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObj,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strMethod    */ "setViewportMargins",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    QMargins margins(i_iLeft, i_iTop, i_iRight, i_iBottom);
+//
+//    if( margins != viewportMargins() )
+//    {
+//        QGraphicsView::setViewportMargins(margins);
+//
+//        // QGraphicsView has no signal "viewportMarginsChanged".
+//        //emit viewportMarginsChanged(viewportMargins());
+//    }
+//} // setViewportMargins
+//
+////------------------------------------------------------------------------------
+//void CDrawingView::setViewportMargins(const QMargins& i_margins)
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//
+//    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+//    {
+//        strMthInArgs = qMargins2Str(i_margins);
+//    }
+//
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObj,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strMethod    */ "setViewportMargins",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    if( i_margins != viewportMargins() )
+//    {
+//        QGraphicsView::setViewportMargins(i_margins);
+//
+//        // QGraphicsView has no signal "viewportMarginsChanged".
+//        //emit viewportMarginsChanged(viewportMargins());
+//    }
+//} // setViewportMargins
 
 /*==============================================================================
 protected slots:
@@ -700,20 +591,21 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDrawingView::onSceneRectChanged( const QRectF& i_rect )
+void CDrawingView::onSceneDrawingSizeChanged( const CDrawingSize& i_size )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
 
     if( m_pTrcAdminObjPaintEvent != nullptr && m_pTrcAdminObjPaintEvent->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strMthInArgs = rect2Str(i_rect);
+        strMthInArgs = i_size.toString();
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onSceneRectChanged",
+        /* strMethod    */ "onSceneDrawingSizeChanged",
         /* strAddInfo   */ strMthInArgs );
 
-} // onSceneRectChanged
+    emit drawingSizeChanged(i_size);
+}

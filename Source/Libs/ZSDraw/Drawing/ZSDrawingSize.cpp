@@ -80,6 +80,65 @@ CDrawingSize::CDrawingSize(const QString& i_strName) :
 } // ctor
 
 //------------------------------------------------------------------------------
+/*! Creates an instance of the class.
+*/
+CDrawingSize::CDrawingSize(const QString& i_strName, const QSize& i_size) :
+//------------------------------------------------------------------------------
+    m_strName(i_strName),
+    m_eDimensionUnit(EDrawingDimensionUnit::Pixels),
+    m_metricUnit(Units.Length.mm),
+    m_fImageMetricWidth(0.0),
+    m_fImageMetricHeight(0.0),
+    m_eNormedPaperSize(ENormedPaperSize::Undefined),
+    m_eNormedPaperOrientation(EDirection::Undefined),
+    m_iMetricScaleFactorDividend(1),
+    m_iMetricScaleFactorDivisor(1),
+    m_fImageSizeWidth_px(i_size.width()),
+    m_fImageSizeHeight_px(i_size.height()),
+    m_pTrcAdminObj(nullptr)
+{
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), m_strName);
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "ctor",
+        /* strAddInfo   */ "" );
+
+    updateImageSizeMetrics();
+    updatePaperFormat();
+
+} // ctor
+
+//------------------------------------------------------------------------------
+/*! Creates an instance of the class.
+*/
+CDrawingSize::CDrawingSize(const CDrawingSize& i_other) :
+//------------------------------------------------------------------------------
+    m_strName(i_other.m_strName),
+    m_eDimensionUnit(i_other.m_eDimensionUnit),
+    m_metricUnit(i_other.m_metricUnit),
+    m_fImageMetricWidth(i_other.m_fImageMetricWidth),
+    m_fImageMetricHeight(i_other.m_fImageMetricHeight),
+    m_eNormedPaperSize(i_other.m_eNormedPaperSize),
+    m_eNormedPaperOrientation(i_other.m_eNormedPaperOrientation),
+    m_iMetricScaleFactorDividend(i_other.m_iMetricScaleFactorDividend),
+    m_iMetricScaleFactorDivisor(i_other.m_iMetricScaleFactorDivisor),
+    m_fImageSizeWidth_px(i_other.m_fImageSizeWidth_px),
+    m_fImageSizeHeight_px(i_other.m_fImageSizeHeight_px),
+    m_pTrcAdminObj(nullptr)
+{
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), m_strName);
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "ctor",
+        /* strAddInfo   */ "" );
+
+} // copy ctor
+
+//------------------------------------------------------------------------------
 CDrawingSize::~CDrawingSize()
 //------------------------------------------------------------------------------
 {
@@ -111,24 +170,31 @@ public: // operators
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CDrawingSize& CDrawingSize::operator = (const QSize& i_size_px)
+CDrawingSize& CDrawingSize::operator = (const CDrawingSize& i_other)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
-        strMthInArgs = qSize2Str(i_size_px);
+        strMthInArgs = i_other.toString();
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "=QSize",
+        /* strMethod    */ "=Other",
         /* strAddInfo   */ strMthInArgs );
 
-    m_fImageSizeWidth_px = i_size_px.width();
-    m_fImageSizeHeight_px = i_size_px.height();
-
-    updateImageSizeMetrics();
+    m_strName = i_other.m_strName;
+    m_eDimensionUnit = i_other.m_eDimensionUnit;
+    m_metricUnit = i_other.m_metricUnit;
+    m_fImageMetricWidth = i_other.m_fImageMetricWidth;
+    m_fImageMetricHeight = i_other.m_fImageMetricHeight;
+    m_eNormedPaperSize = i_other.m_eNormedPaperSize;
+    m_eNormedPaperOrientation = i_other.m_eNormedPaperOrientation;
+    m_iMetricScaleFactorDividend = i_other.m_iMetricScaleFactorDividend;
+    m_iMetricScaleFactorDivisor = i_other.m_iMetricScaleFactorDivisor;
+    m_fImageSizeWidth_px = i_other.m_fImageSizeWidth_px;
+    m_fImageSizeHeight_px = i_other.m_fImageSizeHeight_px;
 
     return *this;
 }
@@ -142,10 +208,7 @@ bool CDrawingSize::operator == ( const CDrawingSize& i_other ) const
 //------------------------------------------------------------------------------
 {
     bool bEqual = true;
-    if( m_strName != i_other.m_strName ) {
-        bEqual = false;
-    }
-    else if( m_eDimensionUnit != i_other.m_eDimensionUnit ) {
+    if( m_eDimensionUnit != i_other.m_eDimensionUnit ) {
         bEqual = false;
     }
     else if( m_metricUnit != i_other.m_metricUnit ) {
@@ -601,6 +664,27 @@ void CDrawingSize::updatePaperFormat()
 } // updatePaperFormat
 
 /*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QString CDrawingSize::toString() const
+//------------------------------------------------------------------------------
+{
+    QString str = m_strName
+        +  ", " + m_eDimensionUnit.toString()
+        + ", Paper (" + m_eNormedPaperSize.toString()
+            + ", " + m_eNormedPaperOrientation.toString() + ")"
+        + ", Scale (" + QString::number(m_iMetricScaleFactorDividend)
+            + "/" + QString::number(m_iMetricScaleFactorDivisor) + ")"
+        + ", Size (" + QString::number(m_fImageMetricWidth) + " " + m_metricUnit.symbol()
+            + " * " + QString::number(m_fImageMetricHeight) + " " + m_metricUnit.symbol() + ")"
+        + ", Size (" + QString::number(m_fImageSizeWidth_px)
+            + " * " + QString::number(m_fImageSizeHeight_px) + " px)";
+    return str;
+}
+
+/*==============================================================================
 protected: // instance methods (method tracing)
 ==============================================================================*/
 
@@ -609,7 +693,7 @@ void CDrawingSize::traceValues(CMethodTracer& mthTracer, EMethodDir i_methodDir)
 //------------------------------------------------------------------------------
 {
     QString strMthLog = QString(i_methodDir == EMethodDir::Enter ? "-+ " : "+- ")
-        + "Cached Values {" + m_eDimensionUnit.toString()
+        +  m_eDimensionUnit.toString()
         + ", Paper (" + m_eNormedPaperSize.toString()
             + ", " + m_eNormedPaperOrientation.toString() + ")"
         + ", Scale (" + QString::number(m_iMetricScaleFactorDividend)
@@ -617,6 +701,6 @@ void CDrawingSize::traceValues(CMethodTracer& mthTracer, EMethodDir i_methodDir)
         + ", Size (" + QString::number(m_fImageMetricWidth) + " " + m_metricUnit.symbol()
             + " * " + QString::number(m_fImageMetricHeight) + " " + m_metricUnit.symbol() + ")"
         + ", Size (" + QString::number(m_fImageSizeWidth_px)
-            + " * " + QString::number(m_fImageSizeHeight_px) + " px)}";
+            + " * " + QString::number(m_fImageSizeHeight_px) + " px)";
     mthTracer.trace(strMthLog);
 }

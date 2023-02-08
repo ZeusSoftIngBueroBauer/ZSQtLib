@@ -39,6 +39,7 @@ may result in using the software modules.
 #include "ZSDraw/Common/ZSDrawCommon.h"
 #include "ZSDraw/Drawing/ZSDrawUnits.h"
 #include "ZSDraw/Drawing/ZSDrawSettings.h"
+#include "ZSDraw/Drawing/ZSDrawingSize.h"
 #include "ZSSys/ZSSysCommon.h"
 
 class QXmlStreamWriter;
@@ -82,6 +83,7 @@ public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
     virtual QString className() const { return ClassName(); }
 signals:
+    void drawingSizeChanged( const ZS::Draw::CDrawingSize& i_size );
     void mousePosChanged( const QPointF& i_ptMousePos );
     void modeChanged();
     void drawSettingsChanged( const ZS::Draw::CDrawSettings& i_drawSettings );
@@ -97,6 +99,9 @@ signals:
     //void graphObjDestroyed( const QString& i_strObjId );
     //void graphObjIdChanged( const QString& i_strObjIdOld, const QString& i_strObjIdNew );
     //void graphObjNameChanged( const QString& i_strObjId, const QString& i_strObjNameOld, const QString& i_strObjNameNew );
+public: // instance methods
+    void setDrawingSize( const CDrawingSize& i_size);
+    CDrawingSize drawingSize() const;
 public: // instance methods
     ZS::System::CIdxTree* getGraphObjsIdxTree() { return m_pGraphObjsIdxTree; }
 public: // instance methods
@@ -251,8 +256,7 @@ protected: // auxiliary methods (trace emitting signals)
     //void emit_graphObjIdChanged( const QString& i_strObjIdOld, const QString& i_strObjIdNew );
     //void emit_graphObjNameChanged( const QString& i_strObjId, const QString& i_strObjNameOld, const QString& i_strObjNameNew );
 protected: // instance members
-    ZS::PhysVal::CUnit m_unitWidth;
-    ZS::PhysVal::CUnit m_unitHeight;
+    CDrawingSize m_drawingSize;
     CDrawSettings m_drawSettings;
     ZS::System::CEnumMode m_mode;
     CEnumEditTool m_editTool;
