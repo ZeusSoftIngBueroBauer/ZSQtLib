@@ -29,6 +29,8 @@ may result in using the software modules.
 #include "ZSSys/ZSSysIdxTree.h"
 #include "ZSSys/ZSSysErrResult.h"
 
+#include <math.h>
+
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 using namespace ZS::System;

@@ -40,6 +40,8 @@ class CTrcAdminObj;
 
 namespace Diagram
 {
+class CDataDiagram;
+
 //******************************************************************************
 class ZSDIAGRAMDLL_API CDiagScale : public QObject
 //******************************************************************************

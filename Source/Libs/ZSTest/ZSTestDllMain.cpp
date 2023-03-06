@@ -48,8 +48,8 @@ exported methods
 Enum ETestResult
 ==============================================================================*/
 
-template<> QMutex ZS::System::CEnum<ETestResult>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<ETestResult>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<ETestResult>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<ETestResult>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
@@ -70,7 +70,7 @@ public: // ctor
 static CInitEnumTestResult s_initEnumTestResult;
 #else // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> ZS::System::CEnum<ETestResult>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<ETestResult>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                       // Enumerator,                              Name,        Symbol,  Text,        SCIPShort, SCPILong
     /* 0 */ SEnumEntry( static_cast<int>(ETestResult::Undefined),   "Undefined", "?",     "Undefined", "UND",     "UNDefined" ),
@@ -85,8 +85,8 @@ template<> const QVector<SEnumEntry> ZS::System::CEnum<ETestResult>::s_arEnumEnt
 Enum ETestState
 ==============================================================================*/
 
-template<> QMutex ZS::System::CEnum<ETestState>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<ETestState>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<ETestState>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<ETestState>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
@@ -106,7 +106,7 @@ public: // ctor
 static CInitEnumTestState s_initEnumTestState;
 #else // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> ZS::System::CEnum<ETestState>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<ETestState>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                       // Enumerator,                         Name,      Symbol,    Text,      SCIPShort, SCPILong
     /* 0 */ SEnumEntry( static_cast<int>(ETestState::Idle),    "Idle",    "Idle",    "Idle",    "IDLE",    "IDLE"    ),

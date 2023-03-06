@@ -33,6 +33,9 @@ may result in using the software modules.
 
 #include <QtGui/qpainter.h>
 
+#include <float.h>
+#include <math.h>
+
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 using namespace ZS::System;
