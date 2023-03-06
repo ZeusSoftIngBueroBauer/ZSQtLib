@@ -54,10 +54,8 @@ interface description of exported methods
 #pragma GCC diagnostic pop
 #endif
 
-namespace ZS
-{
-namespace Test
-{
+namespace ZS {
+namespace Test {
 //==============================================================================
 /*! Possible results of test steps and the overall test.
 */
@@ -68,24 +66,18 @@ enum class ETestResult {
     TestPassed  = 2,
     TestSkipped = 3
 };
-} // namespace Test
-} // namespace ZS
+} }
 
 // MinGW compile error: explicit instantiation of '<namespace>::<templated class>' must occur in namespace '<namespace>'
 // Workaround: close namespaces before defining template class and define it outside namespaces.
-template class ZSTESTDLL_API ZS::System::CEnum<ZS::Test::ETestResult>;
-namespace ZS
-{
-namespace Test
-{
-typedef ZS::System::CEnum<ZS::Test::ETestResult> CEnumTestResult;
-} // namespace Test
-} // namespace ZS
+template class ZSTESTDLL_API CEnum<ZS::Test::ETestResult>;
+namespace ZS {
+namespace Test {
+typedef CEnum<ZS::Test::ETestResult> CEnumTestResult;
+} }
 
-namespace ZS
-{
-namespace Test
-{
+namespace ZS {
+namespace Test {
 //==============================================================================
 /*! Possible states of a test.
 */
@@ -96,19 +88,15 @@ enum class ETestState
     Running = 1,  /*! Test is running. */
     Paused  = 2   /*! Test has been paused. */
 };
-} // namespace Test
-} // namespace ZS
+} }
 
 // MinGW compile error: explicit instantiation of '<namespace>::<templated class>' must occur in namespace '<namespace>'
 // Workaround: close namespaces before defining template class and define it outside namespaces.
-template class ZSTESTDLL_API ZS::System::CEnum<ZS::Test::ETestState>;
-namespace ZS
-{
-namespace Test
-{
-typedef ZS::System::CEnum<ZS::Test::ETestState> CEnumTestState;
-} // namespace Test
-} // namespace ZS
+template class ZSTESTDLL_API CEnum<ZS::Test::ETestState>;
+namespace ZS {
+namespace Test {
+typedef CEnum<ZS::Test::ETestState> CEnumTestState;
+} }
 
 #ifdef _WINDOWS
 #pragma warning( pop )

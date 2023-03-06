@@ -45,6 +45,7 @@ class CUnit;
 }
 namespace Diagram
 {
+class CDataDiagram;
 class CDiagScale;
 class CDiagTrace;
 

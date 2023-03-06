@@ -1753,6 +1753,10 @@ void CDiagObjMarker::updateData()
         {
             *pPhysValSrc = physValScaleMinSrc;
         }
+
+        CUnit unitPhysValSrc = pPhysValSrc->unit();
+        CUnit unitPhysValDst = pPhysValDst->unit();
+
         m_ptPos.setX(m_pDiagTrace->getScaleMinValPix(EScaleDirX));
         m_ptPos.setY(m_pDiagTrace->getScaleMinValPix(EScaleDirY));
 
@@ -1771,7 +1775,7 @@ void CDiagObjMarker::updateData()
                 *pPhysValSrc = physValScaleMaxSrc;
             }
             if( m_pDiagTrace->getVal(
-                m_scaleDirCursorMove, pPhysValSrc->getVal(), &pPhysValSrc->unit(),
+                m_scaleDirCursorMove, pPhysValSrc->getVal(), &unitPhysValSrc,
                 scaleDirDst, &fValDst, &unitDst, false) == EValueValidity::Valid )
             {
                 if( unitDst.isValid() )
@@ -1809,7 +1813,7 @@ void CDiagObjMarker::updateData()
         // If the markers X position is changeable by the user ..
         if( m_scaleDirCursorMove == EScaleDirX )
         {
-            xPix = m_pDiagTrace->getValPix(EScaleDirX, pPhysValSrc->getVal(), &pPhysValSrc->unit());
+            xPix = m_pDiagTrace->getValPix(EScaleDirX, pPhysValSrc->getVal(), &unitPhysValSrc);
 
             // If the marker is positioned between two valid values ...
             if( pPhysValDst->isValid() )
@@ -1835,12 +1839,12 @@ void CDiagObjMarker::updateData()
         // If the markers Y position is changeable by the user ..
         else if( m_scaleDirCursorMove == EScaleDirY )
         {
-            yPix = m_pDiagTrace->getValPix(EScaleDirY, pPhysValSrc->getVal(), &pPhysValSrc->unit());
+            yPix = m_pDiagTrace->getValPix(EScaleDirY, pPhysValSrc->getVal(), &unitPhysValSrc);
 
             // If the marker is positioned between two valid values ...
             if( pPhysValDst->isValid() )
             {
-                xPix = m_pDiagTrace->getValPix(EScaleDirX, pPhysValDst->getVal(), &pPhysValDst->unit());
+                xPix = m_pDiagTrace->getValPix(EScaleDirX, pPhysValDst->getVal(), &unitPhysValDst);
             }
             if( yPix < m_rectContent.top() )
             {
@@ -1953,8 +1957,9 @@ void CDiagObjMarker::updateData()
             for( idxScaleDir = 0; idxScaleDir < EScaleDirCount; idxScaleDir++ )
             {
                 CPhysVal physVal = m_arphysVal[idxScaleDir];
+                CUnit unitPhysVal = physVal.unit();
                 physVal.setRes(
-                    getValRes(static_cast<EScaleDir>(idxScaleDir), physVal.getVal(), &physVal.unit()) );
+                    getValRes(static_cast<EScaleDir>(idxScaleDir), physVal.getVal(), &unitPhysVal) );
 
                 if( m_arpValueFormatToolTip[idxScaleDir] == nullptr )
                 {

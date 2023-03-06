@@ -40,8 +40,8 @@ Enum EMode
 ==============================================================================*/
 
 /*! @cond */
-template<> QMutex ZS::System::CEnum<EMode>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<EMode>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<EMode>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<EMode>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
@@ -61,7 +61,7 @@ public: // ctor
 static CInitEnumMode s_initEnumMode;
 #else // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> ZS::System::CEnum<EMode>::s_arEnumEntries(
+template<> const QVector<SEnumEntry> CEnum<EMode>::s_arEnumEntries(
 //------------------------------------------------------------------------------
 {
     /* 0 */ SEnumEntry( static_cast<int>(EMode::Edit),       "Edit",       "E", "Edit",       "", "", "Design",     "Edit"      ),
@@ -77,8 +77,8 @@ Enum ERunMode
 ==============================================================================*/
 
 /*! @cond */
-template<> QMutex ZS::System::CEnum<ERunMode>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<ERunMode>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<ERunMode>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<ERunMode>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
@@ -113,8 +113,8 @@ Enum EYesNo
 ==============================================================================*/
 
 /*! @cond */
-template<> QMutex ZS::System::CEnum<EYesNo>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<EYesNo>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<EYesNo>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<EYesNo>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
@@ -149,8 +149,8 @@ Enum EStateOnOff
 ==============================================================================*/
 
 /*! @cond */
-template<> QMutex ZS::System::CEnum<EStateOnOff>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<EStateOnOff>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<EStateOnOff>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<EStateOnOff>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
@@ -185,8 +185,8 @@ Enum EEnabled
 ==============================================================================*/
 
 /*! @cond */
-template<> QMutex ZS::System::CEnum<EEnabled>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<EEnabled>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<EEnabled>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<EEnabled>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
@@ -205,7 +205,7 @@ public: // ctor
 static CInitEnumEnabled s_initEnumEnabled;
 #else // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> ZS::System::CEnum<EEnabled>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<EEnabled>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                        // Enumerator,                         Name
     /*  0 */ SEnumEntry( static_cast<int>(EEnabled::No),        "No"  ),
@@ -220,8 +220,8 @@ Enum ECopyDepth
 ==============================================================================*/
 
 /*! @cond */
-template<> QMutex ZS::System::CEnum<ECopyDepth>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<ECopyDepth>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<ECopyDepth>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<ECopyDepth>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
@@ -256,8 +256,8 @@ Enum EObjState
 ==============================================================================*/
 
 /*! @cond */
-template<> QMutex ZS::System::CEnum<EObjState>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<EObjState>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<EObjState>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<EObjState>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
@@ -298,8 +298,8 @@ enum ERowVersion
 ==============================================================================*/
 
 /*! @cond */
-template<> QMutex ZS::System::CEnum<ERowVersion>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<ERowVersion>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<ERowVersion>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<ERowVersion>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
@@ -332,8 +332,8 @@ enum ERowState
 ==============================================================================*/
 
 /*! @cond */
-template<> QMutex ZS::System::CEnum<ERowState>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<ERowState>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<ERowState>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<ERowState>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
@@ -374,8 +374,8 @@ Enum EContentToStrFormat
 ==============================================================================*/
 
 /*! @cond */
-template<> QMutex ZS::System::CEnum<EContentToStrFormat>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<EContentToStrFormat>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<EContentToStrFormat>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<EContentToStrFormat>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
@@ -410,8 +410,8 @@ Enum EMethodDir
 ==============================================================================*/
 
 /*! @cond */
-template<> QMutex ZS::System::CEnum<EMethodDir>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<EMethodDir>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<EMethodDir>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<EMethodDir>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
@@ -448,8 +448,8 @@ Enum ETransmitDir
 ==============================================================================*/
 
 /*! @cond */
-template<> QMutex ZS::System::CEnum<ETransmitDir>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<ETransmitDir>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<ETransmitDir>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<ETransmitDir>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
@@ -484,8 +484,8 @@ Enum EIODir
 ==============================================================================*/
 
 /*! @cond */
-template<> QMutex ZS::System::CEnum<EIODir>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<EIODir>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<EIODir>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<EIODir>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
@@ -520,8 +520,8 @@ Enum EDirection
 ==============================================================================*/
 
 /*! @cond */
-template<> QMutex ZS::System::CEnum<EDirection>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<EDirection>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<EDirection>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<EDirection>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
@@ -556,8 +556,8 @@ Enum EComparisonOperator
 ==============================================================================*/
 
 /*! @cond */
-template<> QMutex ZS::System::CEnum<EComparisonOperator>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<EComparisonOperator>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<EComparisonOperator>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<EComparisonOperator>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
@@ -592,8 +592,8 @@ Enum EValueValidity
 ==============================================================================*/
 
 /*! @cond */
-template<> QMutex ZS::System::CEnum<EValueValidity>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<EValueValidity>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<EValueValidity>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<EValueValidity>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
@@ -630,8 +630,8 @@ enum EDimensionType
 ==============================================================================*/
 
 /*! @cond */
-template<> QMutex ZS::System::CEnum<EDimensionType>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<EDimensionType>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<EDimensionType>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<EDimensionType>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
@@ -1157,12 +1157,12 @@ Enum EMethodTraceDetailLevel
 ==============================================================================*/
 
 /*! @cond */
-template<> QMutex ZS::System::CEnum<EMethodTraceDetailLevel>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<EMethodTraceDetailLevel>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<EMethodTraceDetailLevel>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<EMethodTraceDetailLevel>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> ZS::System::CEnum<EMethodTraceDetailLevel>::s_arEnumEntries;
+const QVector<SEnumEntry> CEnum<EMethodTraceDetailLevel>::s_arEnumEntries;
 //------------------------------------------------------------------------------
 class CInitEnumTraceDetailLevelMethodCalls
 {
@@ -1181,7 +1181,7 @@ public: // ctor
 static CInitEnumTraceDetailLevelMethodCalls s_initEnumTraceDetailLevelMethodCalls;
 #else // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> ZS::System::CEnum<EMethodTraceDetailLevel>::s_arEnumEntries{
+template<> const QVector<SEnumEntry> CEnum<EMethodTraceDetailLevel>::s_arEnumEntries{
 //------------------------------------------------------------------------------
     /* 0 */ SEnumEntry( static_cast<int>(EMethodTraceDetailLevel::None),         "None",         "-",    "None",               "NONE", "NONE"      ),
     /* 1 */ SEnumEntry( static_cast<int>(EMethodTraceDetailLevel::EnterLeave),   "EnterLeave",   "EL",   "Enter Leave",        "ELEA", "ELEAve"    ),
@@ -1198,12 +1198,12 @@ Enum ELogDetailLevel
 ==============================================================================*/
 
 /*! @cond */
-template<> QMutex ZS::System::CEnum<ELogDetailLevel>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<ELogDetailLevel>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<ELogDetailLevel>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<ELogDetailLevel>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> ZS::System::CEnum<ELogDetailLevel>::s_arEnumEntries;
+const QVector<SEnumEntry> CEnum<ELogDetailLevel>::s_arEnumEntries;
 //------------------------------------------------------------------------------
 class CInitEnumTraceDetailLevelMethodCalls
 {
@@ -1226,7 +1226,7 @@ public: // ctor
 static CInitEnumTraceDetailLevelMethodCalls s_initEnumTraceDetailLevelMethodCalls;
 #else // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> ZS::System::CEnum<ELogDetailLevel>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<ELogDetailLevel>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {
     /* 0 */ SEnumEntry( static_cast<int>(ELogDetailLevel::None),           "None",           "-",   "None",            "NONE", "NONE"      ),

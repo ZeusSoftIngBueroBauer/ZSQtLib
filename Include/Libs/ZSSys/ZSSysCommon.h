@@ -88,10 +88,8 @@ global type definitions and constants
 #pragma GCC diagnostic pop
 #endif
 
-namespace ZS
-{
-namespace System
-{
+namespace ZS {
+namespace System {
 //==============================================================================
 /*! A mode is often used to distinguish between different settings.
 
@@ -114,10 +112,17 @@ enum class EMode
     Undefined  = 2, /*!< Indicates that the control is in Undefined mode. */
     Ignore     = 2  /*!< Indicates that the Mode parameter should be ignored (alias for Undefined mode). */
 };
+} }
 
-template class ZSSYSDLL_API CEnum<EMode>;
-typedef CEnum<EMode> CEnumMode;
+template class ZSSYSDLL_API CEnum<ZS::System::EMode>;
 
+namespace ZS {
+namespace System {
+typedef CEnum<ZS::System::EMode> CEnumMode;
+} }
+
+namespace ZS {
+namespace System {
 //==============================================================================
 /*! The run mode enumeration is used to distinguish between two different run
     modes of a sequence.
@@ -135,10 +140,16 @@ enum class ERunMode
     SingleStep = 1, /*! The sequence should perform just one step. */
     Undefined  = 2  /*! The run mode is not set and unknown. */
 };
+} }
 
-template class ZSSYSDLL_API CEnum<ERunMode>;
+template class ZSSYSDLL_API CEnum<ZS::System::ERunMode>;
+namespace ZS {
+namespace System {
 typedef CEnum<ERunMode> CEnumRunMode;
+} }
 
+namespace ZS {
+namespace System {
 //==============================================================================
 /*! "Yes" and "No" might be more readable to reflect a boolean value instead
     of "true" and "false".
@@ -156,10 +167,16 @@ enum class EYesNo
     Yes       = 1,  /*! Indicates that the option has been chosen (alias for true). */
     Undefined = 2   /*! The variable is not yet initialised and its value is unknown. */
 };
+} }
 
-template class ZSSYSDLL_API CEnum<EYesNo>;
+template class ZSSYSDLL_API CEnum<ZS::System::EYesNo>;
+namespace ZS {
+namespace System {
 typedef CEnum<EYesNo> CEnumYesNo;
+} }
 
+namespace ZS {
+namespace System {
 //==============================================================================
 /*! "On" and "Off" might be more readable to reflect a boolean value instead
     of "true" and "false".
@@ -177,11 +194,16 @@ enum class EStateOnOff
     On        = 1,  /*! Indicates that the state is switched on (alias for true). */
     Undefined = 2   /*! The variable is not yet initialised and its value is unknown. */
 };
+} }
 
-template class ZSSYSDLL_API CEnum<EStateOnOff>;
+template class ZSSYSDLL_API CEnum<ZS::System::EStateOnOff>;
+namespace ZS {
+namespace System {
 typedef CEnum<EStateOnOff> CEnumStateOnOff;
+} }
 
-
+namespace ZS {
+namespace System {
 //==============================================================================
 /*! Indicates whether an optional value is enabled or disabled.
 
@@ -198,12 +220,16 @@ enum class EEnabled
     Yes       = 1, /*! Indicates that the option is enabled (alias for true). */
     Undefined = 2  /*! The variable is not yet initialised and its value is unknown. */
 };
+} }
 
-
-template class ZSSYSDLL_API CEnum<EEnabled>;
+template class ZSSYSDLL_API CEnum<ZS::System::EEnabled>;
+namespace ZS {
+namespace System {
 typedef CEnum<EEnabled> CEnumEnabled;
+} }
 
-
+namespace ZS {
+namespace System {
 //==============================================================================
 /*! When passing pointers as arguments to methods this enumeration defines how
     to handle the addressed memory. It may be possible just to reuse the pointer,
@@ -253,10 +279,16 @@ enum class ECopyDepth
     FlatReleaseOwnwership = 1, /*! The source object releases the ownership of the pointer. */
     Deep                  = 2  /*! The addressed memory will be cloned and both the source and target use their own and different pointers. */
 };
+} }
 
-template class ZSSYSDLL_API CEnum<ECopyDepth>;
+template class ZSSYSDLL_API CEnum<ZS::System::ECopyDepth>;
+namespace ZS {
+namespace System {
 typedef CEnum<ECopyDepth> CEnumCopyDepth;
+} }
 
+namespace ZS {
+namespace System {
 //==============================================================================
 /*! Defines the different life cycle states of an object.
 
@@ -274,11 +306,16 @@ enum class EObjState
     Destroyed  = 4, /*!< The object has been destroyed. */
     Undefined  = 5  /*!< The object state is not defined. */
 };
+} }
 
-template class ZSSYSDLL_API CEnum<EObjState>;
+template class ZSSYSDLL_API CEnum<ZS::System::EObjState>;
+namespace ZS {
+namespace System {
 typedef CEnum<EObjState> CEnumObjState;
+} }
 
-
+namespace ZS {
+namespace System {
 //==============================================================================
 /*! Defines different row versions.
 
@@ -292,11 +329,16 @@ enum class ERowVersion
     Original  = 0,  /*!< Original version before changing the value. */
     Current   = 1   /*!< After editing a value the current version might be differet from the original value. */
 };
+} }
 
-template class ZSSYSDLL_API CEnum<ERowVersion>;
+template class ZSSYSDLL_API CEnum<ZS::System::ERowVersion>;
+namespace ZS {
+namespace System {
 typedef CEnum<ERowVersion> CEnumRowVersion;
+} }
 
-
+namespace ZS {
+namespace System {
 //==============================================================================
 /* This enumeration is used to indicate the state of values in lists.
 
@@ -322,11 +364,16 @@ enum class ERowState
                         state may be set to Modified. */
     Undefined = 5  /*!< The row state is not defined. */
 };
+} }
 
-template class ZSSYSDLL_API CEnum<ERowState>;
+template class ZSSYSDLL_API CEnum<ZS::System::ERowState>;
+namespace ZS {
+namespace System {
 typedef CEnum<ERowState> CEnumRowState;
+} }
 
-
+namespace ZS {
+namespace System {
 //==============================================================================
 /*! Defines the desired format of an string.
 
@@ -341,11 +388,16 @@ enum class EContentToStrFormat
     HtmlText  = 1,  /*!< Text containing HTML format strings. */
     Undefined = 2   /*!< The desired format is not defined. */
 };
+} }
 
-template class ZSSYSDLL_API CEnum<EContentToStrFormat>;
+template class ZSSYSDLL_API CEnum<ZS::System::EContentToStrFormat>;
+namespace ZS {
+namespace System {
 typedef CEnum<EContentToStrFormat> CEnumContentToStrFormat;
+} }
 
-
+namespace ZS {
+namespace System {
 //==============================================================================
 /*! This enum is mainly used to define for what purpose trace outputs should
     be generated.
@@ -362,11 +414,16 @@ enum class EMethodDir
     None      = 2,  /*!< The method in somewhere in the middle (indicating usually with "  " in text output). */
     Undefined = 3   /*!< The direction is not defined. */
 };
+} }
 
-template class ZSSYSDLL_API CEnum<EMethodDir>;
+template class ZSSYSDLL_API CEnum<ZS::System::EMethodDir>;
+namespace ZS {
+namespace System {
 typedef CEnum<EMethodDir> CEnumMethodDir;
+} }
 
-
+namespace ZS {
+namespace System {
 //==============================================================================
 /*! Defines whether a data stream is input or output.
 
@@ -385,11 +442,16 @@ enum class ETransmitDir
     Write     = 1,  /*!< The data (message) is written (alias for Send). */
     Undefined = 2   /*!< The transmission direction is undefined. */
 };
+} }
 
-template class ZSSYSDLL_API CEnum<ETransmitDir>;
+template class ZSSYSDLL_API CEnum<ZS::System::ETransmitDir>;
+namespace ZS {
+namespace System {
 typedef CEnum<ETransmitDir> CEnumTransmitDir;
+} }
 
-
+namespace ZS {
+namespace System {
 //==============================================================================
 /*! Defines whether a data stream is input or output.
 
@@ -412,11 +474,16 @@ enum class EIODir
     Write     = 1,  /*!< The data (message) is written (alias for Out). */
     Undefined = 2   /*!< The IO direction is undefined. */
 };
+} }
 
-template class ZSSYSDLL_API CEnum<EIODir>;
+template class ZSSYSDLL_API CEnum<ZS::System::EIODir>;
+namespace ZS {
+namespace System {
 typedef CEnum<EIODir> CEnumIODir;
+} }
 
-
+namespace ZS {
+namespace System {
 //==============================================================================
 /*! Defines the alignment of a direction.
 
@@ -431,11 +498,16 @@ enum class EDirection
     Horizontal = 1, /*!< Horizontally aligned. */
     Undefined  = 2  /*!< The direction is undefined. */
 };
+} }
 
-template class ZSSYSDLL_API CEnum<EDirection>;
+template class ZSSYSDLL_API CEnum<ZS::System::EDirection>;
+namespace ZS {
+namespace System {
 typedef CEnum<EDirection> CEnumDirection;
+} }
 
-
+namespace ZS {
+namespace System {
 //==============================================================================
 /*! Defines the comparison operator to be used.
 
@@ -450,11 +522,16 @@ enum EComparisonOperator
     Unequal   = 1,  /*!< To be compared for inequality (!=). */
     Undefined = 2   /*!< Comparison operator not defined. */
 };
+} }
 
-template class ZSSYSDLL_API CEnum<EComparisonOperator>;
+template class ZSSYSDLL_API CEnum<ZS::System::EComparisonOperator>;
+namespace ZS {
+namespace System {
 typedef CEnum<EComparisonOperator> CEnumComparisonOperator;
+} }
 
-
+namespace ZS {
+namespace System {
 //==============================================================================
 /*! Defines the validity of a value.
 
@@ -477,11 +554,16 @@ enum class EValueValidity
     Valid     = 2,  /*!< The value is valid. */
     Undefined = 3   /*!< The validity is undefined. */
 };
+} }
 
-template class ZSSYSDLL_API CEnum<EValueValidity>;
+template class ZSSYSDLL_API CEnum<ZS::System::EValueValidity>;
+namespace ZS {
+namespace System {
 typedef CEnum<EValueValidity> CEnumValueValidity;
+} }
 
-
+namespace ZS {
+namespace System {
 //==============================================================================
 /*! Defines the dimensin type of parameter arrays.
 
@@ -497,6 +579,7 @@ enum class EDimensionType
     MoreDimensional = 2,    /*!< More dimensional arrays (an array of arrrays). */
     Undefined       = 3     /*!< The dimension type is undefined. */
 };
+} }
 
 //#ifdef _WINDOWS
 //#pragma warning( push )
@@ -506,10 +589,14 @@ enum class EDimensionType
 //#pragma GCC diagnostic ignored "-Wunused-result"
 //#pragma GCC diagnostic pop
 //#endif
-template class ZSSYSDLL_API CEnum<EDimensionType>;
+template class ZSSYSDLL_API CEnum<ZS::System::EDimensionType>;
+namespace ZS {
+namespace System {
 typedef CEnum<EDimensionType> CEnumDimensionType;
+} }
 
-
+namespace ZS {
+namespace System {
 // Negative values for array indices are invalid. Some of those negative values
 // are used to indicate special ranges or special elements within the array.
 const int EArrayIndexUndefined        = -1;
@@ -557,10 +644,16 @@ enum class EMethodTraceDetailLevel
     Undefined    = 5  /*!< Used e.g. to indicate that the trace level should not be used
                            but the predefined detail level should be used. */
 };
+} }
 
-template class ZSSYSDLL_API CEnum<EMethodTraceDetailLevel>;
+template class ZSSYSDLL_API CEnum<ZS::System::EMethodTraceDetailLevel>;
+namespace ZS {
+namespace System {
 typedef CEnum<EMethodTraceDetailLevel> CEnumMethodTraceDetailLevel;
+} }
 
+namespace ZS {
+namespace System {
 //==============================================================================
 /*! Predefined detail levels to trace runtime info.
 
@@ -591,13 +684,17 @@ enum class ELogDetailLevel
     Undefined     = 9  /*!< Used e.g. to indicate that the log level should not be used
                             but the predefined detail level should be used. */
 };
+} }
 
-template class ZSSYSDLL_API CEnum<ELogDetailLevel>;
+template class ZSSYSDLL_API CEnum<ZS::System::ELogDetailLevel>;
+namespace ZS {
+namespace System {
 typedef CEnum<ELogDetailLevel> CEnumLogDetailLevel;
+} }
 
-} // namespace System
+//} // namespace System
 
-} // namespace ZS
+//} // namespace ZS
 
 #ifdef _WINDOWS
 #pragma warning( pop )

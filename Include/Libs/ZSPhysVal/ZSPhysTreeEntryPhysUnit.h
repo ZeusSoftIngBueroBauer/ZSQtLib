@@ -34,6 +34,8 @@ namespace ZS
 {
 namespace PhysVal
 {
+class CUnitsTreeEntryGrpPhysUnits;
+
 //******************************************************************************
 class ZSPHYSVALDLL_API CUnitsTreeEntryPhysUnit : public CUnitsTreeEntryUnitBase
 //******************************************************************************

@@ -31,6 +31,8 @@ may result in using the software modules.
 #include "ZSPhysVal/ZSPhysTreeEntryPhysUnit.h"
 #include "ZSPhysVal/ZSPhysUnit.h"
 
+#include <math.h>
+
 namespace ZS
 {
 namespace Apps
