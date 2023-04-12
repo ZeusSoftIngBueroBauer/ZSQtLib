@@ -27,39 +27,23 @@ may result in using the software modules.
 #ifndef ZSDraw_DlgDrawingViewSetup_h
 #define ZSDraw_DlgDrawingViewSetup_h
 
-#include <QtCore/qglobal.h>
-
-#if QT_VERSION < 0x050000
-#include <QtGui/qdialog.h>
-#else
-#include <QtWidgets/qdialog.h>
-#endif
-
 #include "ZSDraw/Common/ZSDrawDllMain.h"
-#include "ZSPhysVal/ZSPhysVal.h"
+#include "ZSSysGUI/ZSSysDialog.h"
 
-class QListWidget;
-class QListWidgetItem;
 class QPushButton;
-class QStackedWidget;
 class QHBoxLayout;
 class QVBoxLayout;
 
 namespace ZS
 {
-namespace System
-{
-class CTrcAdminObj;
-}
-
 namespace Draw
 {
+class CDrawingSize;
 class CDrawingView;
-//class CWdgtDrawingPaperPageSetup;
 class CWdgtDrawingViewProperties;
 
 //******************************************************************************
-class ZSDRAWDLL_API CDlgDrawingViewSetup : public QDialog
+class ZSDRAWDLL_API CDlgDrawingViewSetup : public ZS::System::GUI::CDialog
 //******************************************************************************
 {
     Q_OBJECT
@@ -68,16 +52,21 @@ public: // class methods
     static QString NameSpace() { return "ZS::Draw"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
     /*! Returns the class name. */
     static QString ClassName() { return "CDlgDrawingViewSetup"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
-public: // type definitions and constants
-    enum EWidget
-    {
-        EWidgetDrawingPaper = 0,
-        EWidgetDrawingView  = 1,
-        EWidgetCount
-    };
-public: // instance methods
-    CDlgDrawingViewSetup( CDrawingView* i_pDrawingView, QWidget* i_pWdgtParent = nullptr );
-    ~CDlgDrawingViewSetup();
+public: // class methods
+    static CDlgDrawingViewSetup* CreateInstance(
+        const QString&  i_strDlgTitle,
+        CDrawingView*   i_pDrawingView,
+        QWidget*        i_pWdgtParent = nullptr,
+        Qt::WindowFlags i_wflags = Qt::WindowFlags());
+    static CDlgDrawingViewSetup* GetInstance( CDrawingView* i_pDrawingView );
+protected: // ctor
+    CDlgDrawingViewSetup(
+        const QString&  i_strDlgTitle,
+        CDrawingView*   i_pDrawingView,
+        QWidget*        i_pWdgtParent = nullptr,
+        Qt::WindowFlags i_wFlags = Qt::WindowFlags());
+public: // dtor
+    virtual ~CDlgDrawingViewSetup();
 public: // overridables
     /*! This virtual method returns the name space of the object's class.
         This method can be reimplemented in derived classes so when invoked for the
@@ -87,37 +76,25 @@ public: // overridables
         This method can be reimplemented in derived classes so when invoked for the
         polymorphic base type the method returns the name of the derived class. */
     virtual QString className() const { return ClassName(); }
-public: // instance methods
-    void setCurrentWidget( EWidget i_wdgt );
-protected: // overridables of base class QDialog
-    virtual void closeEvent( QCloseEvent* i_pEv );
-    virtual void showEvent( QShowEvent* i_pEv );
-protected slots: // overridables of base class QDialog
-    virtual void accept();
-    virtual void reject();
 protected slots: // instance methods
-    void onBtnAcceptClicked();
-protected slots: // List Widget
-    void onListWdgtCurrentRowChanged( int i_iRow );
+    void onBtnOkClicked(bool i_bChecked = false);
+    void onBtnApplyClicked(bool i_bChecked = false);
+    void onBtnResetClicked(bool i_bChecked = false);
+    void onBtnCancelClicked(bool i_bChecked = false);
 protected slots:
-    void onWdgtDrawingPaperSettingsChanged();
-    void onWdgtDrawingViewSettingsChanged();
+    void onWdgtDrawingViewPropertiesDrawingSizeChanged(const ZS::Draw::CDrawingSize& i_size);
 private: // instance members
     CDrawingView* m_pDrawingView;
     QVBoxLayout* m_pLyt;
-    QHBoxLayout* m_pLytSettings;
-    QListWidget* m_pListWdgt;
-    QStackedWidget* m_pStackedWdgt;
-    // Format Widgets
-    //CWdgtDrawingPaperPageSetup* m_pWdgtDrawingPaperPageSetup;
+    //QHBoxLayout* m_pLytSettings;
+    //QListWidget* m_pListWdgt;
+    //QStackedWidget* m_pStackedWdgt;
     CWdgtDrawingViewProperties* m_pWdgtDrawingViewProperties;
-    // Buttons
-    QHBoxLayout* m_pLytBtns;
+    QHBoxLayout* m_pLytLineBtns;
     QPushButton* m_pBtnOk;
-    QPushButton* m_pBtnAccept;
+    QPushButton* m_pBtnApply;
+    QPushButton* m_pBtnReset;
     QPushButton* m_pBtnCancel;
-    // Trace
-    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // CDlgDrawingViewSetup
 

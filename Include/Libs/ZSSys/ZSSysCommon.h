@@ -107,9 +107,6 @@ enum class EMode
 //==============================================================================
 {
     Edit       = 0, /*!< Indicates that the control is in Edit mode. */
-    Design     = 0, /*!< Indicates that the control is in Design mode (alias for Edit mode). */
-    Simulation = 1, /*!< Indicates that the control is in Simulation mode. */
-    Run        = 1, /*!< Indicates that the control is in Run mode (alias for Simulation mode). */
     View       = 1, /*!< Indicates that the control is in View mode (alias for Simulation mode). */
     Undefined  = 2, /*!< Indicates that the control is in Undefined mode. */
     Ignore     = 2  /*!< Indicates that the Mode parameter should be ignored (alias for Undefined mode). */

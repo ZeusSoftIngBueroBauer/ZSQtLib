@@ -170,7 +170,7 @@ public: // class members
     static const QString c_strActionNameFilePageSetup;
     static const QString c_strActionNameFileQuit;
     static const QString c_strActionNameModeEdit;
-    static const QString c_strActionNameModeSimulation;
+    static const QString c_strActionNameModeView;
     static const QString c_strActionNameEditSelect;
     static const QString c_strActionNameEditRotateLeft;
     static const QString c_strActionNameEditRotateRight;
@@ -235,7 +235,7 @@ protected: // overridables of base class QWidget
     virtual bool eventFilter( QObject* i_pObjWatched, QEvent* i_pEv );
 public: // instance methods
     void setCheckedActionModeEdit( bool i_bChecked );
-    void setCheckedActionModeSimulation( bool i_bChecked );
+    void setCheckedActionModeView( bool i_bChecked );
 public: // instance methods
     void setCheckedActionEditSelect( bool i_bChecked );
     void triggerActionEditRotateLeft();
@@ -264,7 +264,7 @@ public slots: // Menu - File
     void onActionFileRecentTriggered( bool );
 public slots: // Menu - Mode
     void onActionModeEditToggled( bool );
-    void onActionModeSimulationToggled( bool );
+    void onActionModeViewToggled( bool );
 public slots: // Menu - Edit - Select/RotateFree
     void onActionEditSelectToggled( bool );
 public slots: // Menu - Edit - Rotate
@@ -383,7 +383,7 @@ protected: // instance members
     QMenu*    m_pMenuMode;
     QToolBar* m_pToolBarMode;
     QAction*  m_pActModeEdit;
-    QAction*  m_pActModeSimulation;
+    QAction*  m_pActModeView;
     // Menu - Edit
     QMenu*    m_pMenuEdit;
     // Menu - Edit - Select

@@ -6467,7 +6467,7 @@ void CTest::doTestStepStandardShapesGroups( ZS::Test::CTestStepGroup* i_pTestSte
 
                 if( m_pDrawingScene->getMode() != EMode::Simulation )
                 {
-                    m_pMainWindow->setCheckedActionModeSimulation(true);
+                    m_pMainWindow->setCheckedActionModeView(true);
                 }
 
                 if( m_pDrawingScene->getCurrentDrawingTool() != nullptr )

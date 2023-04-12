@@ -241,6 +241,7 @@ protected slots:
     void onGraphObjsIdxTreeEntryMoved( const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree, const QString& i_strKeyInTreeOfTargetBranch );
     void onGraphObjsIdxTreeEntryRenamed( const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree, const QString& i_strOrigName );
 protected: // auxiliary methods (trace emitting signals)
+    void emit_drawingSizeChanged( const ZS::Draw::CDrawingSize& i_size );
     void emit_mousePosChanged( const QPointF& i_ptMousePos );
     void emit_modeChanged();
     void emit_drawSettingsChanged( const ZS::Draw::CDrawSettings& i_drawSettings );

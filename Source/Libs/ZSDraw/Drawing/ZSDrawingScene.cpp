@@ -297,7 +297,7 @@ void CDrawingScene::setDrawingSize( const CDrawingSize& i_size)
         m_drawingSize = i_size;
         QRectF rect(QPointF(0.0, 0.0), m_drawingSize.imageSizeInPixels());
         setSceneRect(rect);
-        emit drawingSizeChanged(m_drawingSize);
+        emit_drawingSizeChanged(m_drawingSize);
     }
 }
 
@@ -1029,12 +1029,12 @@ public: // instance methods
     rotieren, seine Form zu ändern, zu selektieren und zu gruppieren, muessen verschiedene
     Modi korrekt gesetzt werden.
 
-    @param i_mode [in] Range [Edit, Simulation und Ignore]
+    @param i_mode [in] Range [Edit, View und Ignore]
         Ignore ist zu übergeben, wenn der Mode nicht geändert werden soll und das Argument
         somit zu ignorieren ist.
         Nur im Edit Mode können Objekte auf der grafischen Oberfläche durch die Maus angelegt
         und verändert werden.
-        Der Simulation Mode dient dazu, die Maus-Events an die Objekte selbst weiterzuleiten,
+        Der View Mode dient dazu, die Maus-Events an die Objekte selbst weiterzuleiten,
         die entsprechend darauf reagieren können. Ist z.B. eine ComboBox als Objekt der Empfänger
         der Maus-Events verarbeitet die ComboBox die Events, um z.B. die PullDown-List zu öffnen.
         Bei dem Objekt kann es sich aber auch um ein vollständig benutzerdefiniertes Objekt wie
@@ -1093,7 +1093,7 @@ void CDrawingScene::setMode(
 
         m_mode = i_mode;
 
-        if( m_mode == EMode::Simulation )
+        if( m_mode == EMode::View )
         {
             if( i_editTool == EEditTool::Ignore )
             {
@@ -1157,7 +1157,7 @@ void CDrawingScene::setMode(
     {
         update();
 
-        emit modeChanged();
+        emit_modeChanged();
     }
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
@@ -1443,7 +1443,7 @@ QCursor CDrawingScene::getProposedCursor( const QPointF& i_ptPos ) const
 
     QCursor cursor = Qt::ArrowCursor;
 
-    if( m_mode == EMode::Simulation )
+    if( m_mode == EMode::View )
     {
         cursor = Qt::ArrowCursor;
     }
@@ -1996,7 +1996,7 @@ void CDrawingScene::onGraphObjCreationFinished( CGraphObj* i_pGraphObj )
         }
     }
 
-    //emit graphObjCreated(i_pGraphObj);
+    //emit_graphObjCreated(i_pGraphObj);
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
@@ -2048,7 +2048,7 @@ void CDrawingScene::onGraphObjDestroying( const QString& i_strObjId )
 
     //if( m_dctpGraphObjs.contains(i_strObjId) )
     //{
-    //    //emit graphObjDestroying(i_strObjId);
+    //    //emit_graphObjDestroying(i_strObjId);
     //
     //    m_dctpGraphObjs.remove(i_strObjId);
     //
@@ -2131,7 +2131,7 @@ void CDrawingScene::onGraphObjDestroying( const QString& i_strObjId )
 //    //QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
 //    //removeItem(pGraphicsItem);
 //
-//    //emit graphObjDestroyed(i_strObjId);
+//    //emit_graphObjDestroyed(i_strObjId);
 //
 //} // onGraphObjDestroyed
 
@@ -2164,7 +2164,7 @@ void CDrawingScene::onGraphObjDestroying( const QString& i_strObjId )
 //        mthTracer.trace(strAddTrcInfo);
 //    }
 //
-//    //emit graphObjIdChanged(i_strObjIdOld, i_strObjIdNew);
+//    //emit_graphObjIdChanged(i_strObjIdOld, i_strObjIdNew);
 //
 //} // onGraphObjIdChanged
 
@@ -2201,7 +2201,7 @@ void CDrawingScene::onGraphObjDestroying( const QString& i_strObjId )
 //        mthTracer.trace(strAddTrcInfo);
 //    }
 //
-//    //emit graphObjNameChanged(i_strObjId, i_strObjNameOld, i_strObjNameNew);
+//    //emit_graphObjNameChanged(i_strObjId, i_strObjNameOld, i_strObjNameNew);
 //
 //} // onGraphObjNameChanged
 
@@ -2733,7 +2733,7 @@ void CDrawingScene::setDrawSettings( const CDrawSettings& i_settings )
     {
         m_drawSettings = i_settings;
 
-        emit drawSettingsChanged(m_drawSettings);
+        emit_drawSettingsChanged(m_drawSettings);
     }
 
 } // setDrawSettings
@@ -2763,7 +2763,7 @@ void CDrawingScene::setPenColor( const QColor& i_clr )
     {
         m_drawSettings.setPenColor(i_clr);
 
-        emit drawSettingsChanged(m_drawSettings);
+        emit_drawSettingsChanged(m_drawSettings);
     }
 
 } // setPenColor
@@ -2789,7 +2789,7 @@ void CDrawingScene::setPenWidth( int i_iPenWidth )
     {
         m_drawSettings.setPenWidth(i_iPenWidth);
 
-        emit drawSettingsChanged(m_drawSettings);
+        emit_drawSettingsChanged(m_drawSettings);
     }
 
 } // setPenWidth
@@ -2819,7 +2819,7 @@ void CDrawingScene::setLineStyle( ELineStyle i_lineStyle )
     {
         m_drawSettings.setLineStyle(i_lineStyle);
 
-        emit drawSettingsChanged(m_drawSettings);
+        emit_drawSettingsChanged(m_drawSettings);
     }
 
 } // setLineStyle
@@ -2849,7 +2849,7 @@ void CDrawingScene::setFillColor( const QColor& i_clr )
     {
         m_drawSettings.setFillColor(i_clr);
 
-        emit drawSettingsChanged(m_drawSettings);
+        emit_drawSettingsChanged(m_drawSettings);
     }
 
 } // setFillColor
@@ -2875,7 +2875,7 @@ void CDrawingScene::setFillStyle( EFillStyle i_fillStyle )
     {
         m_drawSettings.setFillStyle(i_fillStyle);
 
-        emit drawSettingsChanged(m_drawSettings);
+        emit_drawSettingsChanged(m_drawSettings);
     }
 
 } // setFillStyle
@@ -2905,7 +2905,7 @@ void CDrawingScene::setLineRecordType( ELineRecordType i_lineRecordType )
     {
         m_drawSettings.setLineRecordType(i_lineRecordType);
 
-        emit drawSettingsChanged(m_drawSettings);
+        emit_drawSettingsChanged(m_drawSettings);
     }
 
 } // setLineRecordType
@@ -2931,7 +2931,7 @@ void CDrawingScene::setLineExtent( int i_iLineExtent )
     {
         m_drawSettings.setLineExtent(i_iLineExtent);
 
-        emit drawSettingsChanged(m_drawSettings);
+        emit_drawSettingsChanged(m_drawSettings);
     }
 
 } // setLineExtent
@@ -2962,7 +2962,7 @@ void CDrawingScene::setLineEndStyle( ELinePoint i_linePoint, ELineEndStyle i_end
     {
         m_drawSettings.setLineEndStyle(i_linePoint,i_endStyle);
 
-        emit drawSettingsChanged(m_drawSettings);
+        emit_drawSettingsChanged(m_drawSettings);
     }
 
 } // setLineEndStyle
@@ -2989,7 +2989,7 @@ void CDrawingScene::setLineEndBaseLineType( ELinePoint i_linePoint, ELineEndBase
     {
         m_drawSettings.setLineEndBaseLineType(i_linePoint,i_baseLineType);
 
-        emit drawSettingsChanged(m_drawSettings);
+        emit_drawSettingsChanged(m_drawSettings);
     }
 
 } // setLineEndBaseLineType
@@ -3016,7 +3016,7 @@ void CDrawingScene::setLineEndFillStyle( ELinePoint i_linePoint, ELineEndFillSty
     {
         m_drawSettings.setLineEndFillStyle(i_linePoint,i_fillStyle);
 
-        emit drawSettingsChanged(m_drawSettings);
+        emit_drawSettingsChanged(m_drawSettings);
     }
 
 } // setLineEndFillStyle
@@ -3043,7 +3043,7 @@ void CDrawingScene::setLineEndWidth( ELinePoint i_linePoint, ELineEndWidth i_wid
     {
         m_drawSettings.setLineEndWidth(i_linePoint,i_width);
 
-        emit drawSettingsChanged(m_drawSettings);
+        emit_drawSettingsChanged(m_drawSettings);
     }
 
 } // setLineEndWidth
@@ -3070,7 +3070,7 @@ void CDrawingScene::setLineEndLength( ELinePoint i_linePoint, ELineEndLength i_l
     {
         m_drawSettings.setLineEndLength(i_linePoint,i_length);
 
-        emit drawSettingsChanged(m_drawSettings);
+        emit_drawSettingsChanged(m_drawSettings);
     }
 
 } // setLineEndLength
@@ -3100,7 +3100,7 @@ void CDrawingScene::setTextColor( const QColor& i_clr )
     {
         m_drawSettings.setTextColor(i_clr);
 
-        emit drawSettingsChanged(m_drawSettings);
+        emit_drawSettingsChanged(m_drawSettings);
     }
 
 } // setTextColor
@@ -3126,7 +3126,7 @@ void CDrawingScene::setTextFont( const QFont& i_fnt )
     {
         m_drawSettings.setTextFont(i_fnt);
 
-        emit drawSettingsChanged(m_drawSettings);
+        emit_drawSettingsChanged(m_drawSettings);
     }
 
 } // setTextFont
@@ -3152,7 +3152,7 @@ void CDrawingScene::setTextSize( ETextSize i_size )
     {
         m_drawSettings.setTextSize(i_size);
 
-        emit drawSettingsChanged(m_drawSettings);
+        emit_drawSettingsChanged(m_drawSettings);
     }
 
 } // setTextSize
@@ -3178,7 +3178,7 @@ void CDrawingScene::setTextStyle( ETextStyle i_style )
     {
         m_drawSettings.setTextStyle(i_style);
 
-        emit drawSettingsChanged(m_drawSettings);
+        emit_drawSettingsChanged(m_drawSettings);
     }
 
 } // setTextStyle
@@ -3204,7 +3204,7 @@ void CDrawingScene::setTextEffect( ETextEffect i_effect )
     {
         m_drawSettings.setTextEffect(i_effect);
 
-        emit drawSettingsChanged(m_drawSettings);
+        emit_drawSettingsChanged(m_drawSettings);
     }
 
 } // setTextEffect
@@ -3602,7 +3602,7 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     m_ptMouseEvScenePosOnMousePressEvent = ptMouseScenePos;
 
-    emit mousePosChanged(m_ptMouseEvScenePosOnMousePressEvent);
+    emit_mousePosChanged(m_ptMouseEvScenePosOnMousePressEvent);
 
     int iObjFactoryType = static_cast<int>(EGraphObjTypeUndefined);
 
@@ -3768,7 +3768,7 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                                 pGraphObjCnctLineCreating->setConnectionPoint(ELinePoint::Start,pGraphObjCnctPtHit);
                             }
 
-                            emit modeChanged();
+                            emit_modeChanged();
 
                         } // if( m_pGraphObjCreating != nullptr )
                     } // if( bCreateObj )
@@ -3859,7 +3859,7 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         // loops to achieve the following order (items at the end of the list are
         // "above" the objects listed before and will receive the mouse events).
         // Please note that the second outer loop for selected objects will be
-        // executed also in simulation mode even if unnecessary as in simulation
+        // executed also in view mode even if unnecessary as in simulation
         // mode there will be no selected objects.
         //
         //   1. Not selected objects
@@ -3867,13 +3867,13 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         //     1.2. Selection Points of Graphics Items
         //     1.3. Labels of Graphics Items
         //     1.4. Connection Points
-        //     1.5. Groups (only in simulation mode)
+        //     1.5. Groups (only in view mode)
         //   2. Selected objects
         //     2.1. Graphics Items
         //     2.2. Selection Points of Graphics Items
         //     2.3. Labels of Graphics Items
         //     2.4. Connection Points
-        //     2.5. Groups (only in simulation mode)
+        //     2.5. Groups (only in view mode)
 
         const int c_iNotSelectedObjects = 0;
         const int c_iSelectedObjects    = 1;
@@ -3952,7 +3952,7 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                             else if( idxSel == c_iSelectedObjects )
                             {
                                 // As mentioned above: the second outer loop for selected objects will be
-                                // executed also in simulation mode even if unnecessary as in simulation
+                                // executed also in view mode even if unnecessary as in view
                                 // mode there will be no selected objects.
                                 if( pGraphicsItem->isSelected() )
                                 {
@@ -4114,7 +4114,7 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     QPointF ptMouseScenePos = i_pEv->scenePos();
 
-    emit mousePosChanged(ptMouseScenePos);
+    emit_mousePosChanged(ptMouseScenePos);
 
     int iObjFactoryType = static_cast<int>(EGraphObjTypeUndefined);
 
@@ -4461,7 +4461,7 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         } // if( m_pGraphObjCreating == nullptr && m_pGraphObjAddingShapePoints == nullptr )
     } // if( m_mode == EMode::Edit )
 
-    else if( m_mode == EMode::Simulation )
+    else if( m_mode == EMode::View )
     {
         // ... dispatch mouse event to objects "under cursor".
         QGraphicsScene::mouseMoveEvent(i_pEv);
@@ -4532,7 +4532,7 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     QPointF ptScenePosMouseEvent = i_pEv->scenePos();
 
-    emit mousePosChanged(ptScenePosMouseEvent);
+    emit_mousePosChanged(ptScenePosMouseEvent);
 
     if( m_mode == EMode::Edit )
     {
@@ -4612,7 +4612,7 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
         } // if( m_pGraphObjCreating == nullptr && m_pGraphObjAddingShapePoints == nullptr )
     } // if( m_mode == EMode::Edit )
 
-    else if( m_mode == EMode::Simulation )
+    else if( m_mode == EMode::View )
     {
         // ... dispatch mouse event to objects "under cursor".
         QGraphicsScene::mouseReleaseEvent(i_pEv);
@@ -4690,7 +4690,7 @@ void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     QPointF ptScenePosMouseEvent = i_pEv->scenePos();
 
-    emit mousePosChanged(ptScenePosMouseEvent);
+    emit_mousePosChanged(ptScenePosMouseEvent);
 
     if( m_mode == EMode::Edit )
     {
@@ -4781,7 +4781,7 @@ void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     } // if( m_mode == EMode::Edit )
 
-    else if( m_mode == EMode::Simulation )
+    else if( m_mode == EMode::View )
     {
         // ... dispatch mouse event to objects "under cursor".
         QGraphicsScene::mouseDoubleClickEvent(i_pEv);
@@ -5547,7 +5547,7 @@ void CDrawingScene::onGraphObjsIdxTreeEntryChanged( const QString& i_strKeyInTre
     if( pGraphObj == nullptr ) {
         throw(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObj == nullptr");
     }
-    emit graphObjChanged(this, pGraphObj);
+    emit_graphObjChanged(this, pGraphObj);
 }
 
 //------------------------------------------------------------------------------
@@ -5585,7 +5585,7 @@ void CDrawingScene::onGraphObjsIdxTreeEntryMoved(
     if( pGraphObj == nullptr ) {
         throw(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObj == nullptr");
     }
-    emit graphObjChanged(this, pGraphObj);
+    emit_graphObjChanged(this, pGraphObj);
 }
 
 //------------------------------------------------------------------------------
@@ -5623,7 +5623,7 @@ void CDrawingScene::onGraphObjsIdxTreeEntryRenamed(
     if( pGraphObj == nullptr ) {
         throw(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObj == nullptr");
     }
-    emit graphObjChanged(this, pGraphObj);
+    emit_graphObjChanged(this, pGraphObj);
 }
 
 /*==============================================================================
@@ -5631,15 +5631,31 @@ protected: // auxiliary methods (trace emitting signals)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDrawingScene::emit_mousePosChanged( const QPointF& i_ptMousePos )
+void CDrawingScene::emit_drawingSizeChanged( const ZS::Draw::CDrawingSize& i_size )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
-        strMthInArgs = qPoint2Str(i_ptMousePos);
+        strMthInArgs = i_size.toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "emit_drawingSizeChanged",
+        /* strAddInfo   */ strMthInArgs );
+    emit drawingSizeChanged(i_size);
+}
+
+//------------------------------------------------------------------------------
+void CDrawingScene::emit_mousePosChanged( const QPointF& i_ptMousePos )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( areMethodCallsActive(m_pTrcAdminObjMouseMoveEvent, EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = qPoint2Str(i_ptMousePos);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjMouseMoveEvent,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "emit_mousePosChanged",
         /* strAddInfo   */ strMthInArgs );
@@ -5768,7 +5784,7 @@ void CDrawingScene::emit_graphObjChanged(CDrawingScene* i_pDrawingScene, CGraphO
 //    CMethodTracer mthTracer(
 //        /* pAdminObj    */ m_pTrcAdminObj,
 //        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strMethod    */ "emit_mousePosChanged",
+//        /* strMethod    */ "emit_graphObjNameChanged",
 //        /* strAddInfo   */ strMthInArgs );
 //    emit graphObjNameChanged(i_strObjId, i_strObjNameOld, i_strObjNameNew);
 //}

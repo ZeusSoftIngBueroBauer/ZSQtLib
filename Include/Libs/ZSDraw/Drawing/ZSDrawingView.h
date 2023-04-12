@@ -66,8 +66,8 @@ public: // ctors and dtor
     CDrawingView( CDrawingScene* i_pDrawingScene, QWidget* i_pWdgtParent = nullptr );
     ~CDrawingView();
 signals:
-    void mousePosChanged( const QPointF& i_ptMousePos );
     void drawingSizeChanged( const ZS::Draw::CDrawingSize& i_size );
+    void mousePosChanged( const QPointF& i_ptMousePos );
     //void viewportMarginsChanged( const QMargins& i_margins );
 public: // overridables
     /*! This virtual method returns the name space of the object's class.
@@ -98,6 +98,9 @@ protected: // overridables of base class QGraphicsView
     virtual void paintEvent( QPaintEvent* i_pEv );
 protected slots:
     void onSceneDrawingSizeChanged( const ZS::Draw::CDrawingSize& i_size );
+protected: // instance methods (method tracing)
+    void emit_mousePosChanged( const QPointF& i_ptMousePos );
+    void emit_drawingSizeChanged( const ZS::Draw::CDrawingSize& i_size );
 protected: // instance members
     CDrawingScene* m_pDrawingScene;
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;

@@ -44,15 +44,7 @@ list(APPEND _HeadersDrawing
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/ZSDrawingViewPropertiesWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/ZSDrawSettings.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/ZSDrawUnits.h
-)
-
-list(APPEND _HeadersDrawingPageSetup
-    ${_HeadersPath}/${PROJECT_NAME}/DrawingPageSetup/ZSDrawDlgDrawingViewSetup.h
-    ${_HeadersPath}/${PROJECT_NAME}/DrawingPageSetup/ZSDrawingViewPageSetup.h
-    ${_HeadersPath}/${PROJECT_NAME}/DrawingPageSetup/ZSDrawWdgtDrawingPaperPageSetup.h
-    ${_HeadersPath}/${PROJECT_NAME}/DrawingPageSetup/ZSDrawWdgtDrawingScenePageSetup.h
-    ${_HeadersPath}/${PROJECT_NAME}/DrawingPageSetup/ZSDrawWdgtDrawingViewPageSetup.h
-    ${_HeadersPath}/${PROJECT_NAME}/DrawingPageSetup/ZSDrawWdgtPageSetup.h
+    ${_HeadersPath}/${PROJECT_NAME}/Drawing/ZSDrawDlgDrawingViewSetup.h
 )
 
 list(APPEND _HeadersGraphObjFactories
@@ -114,7 +106,6 @@ list(APPEND _HeadersGraphObjWdgts
 list(APPEND _Headers
     ${_HeadersCommon}
     ${_HeadersDrawing}
-    ${_HeadersDrawingPageSetup}
     ${_HeadersGraphObjFactories}
     ${_HeadersGraphObjFormat}
     ${_HeadersGraphObjs}
@@ -134,15 +125,7 @@ list(APPEND _SourcesDrawing
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/ZSDrawingViewPropertiesWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/ZSDrawSettings.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/ZSDrawUnits.cpp
-)
-
-list(APPEND _SourcesDrawingPageSetup
-    ${_SourcesPath}/${PROJECT_NAME}/DrawingPageSetup/ZSDrawDlgDrawingViewSetup.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/DrawingPageSetup/ZSDrawingViewPageSetup.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/DrawingPageSetup/ZSDrawWdgtDrawingPaperPageSetup.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/DrawingPageSetup/ZSDrawWdgtDrawingScenePageSetup.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/DrawingPageSetup/ZSDrawWdgtDrawingViewPageSetup.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/DrawingPageSetup/ZSDrawWdgtPageSetup.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Drawing/ZSDrawDlgDrawingViewSetup.cpp
 )
 
 list(APPEND _SourcesGraphObjFactories
@@ -203,7 +186,6 @@ list(APPEND _SourcesGraphObjWdgts
 list(APPEND _Sources
     ${_SourcesCommon}
     ${_SourcesDrawing}
-    ${_SourcesDrawingPageSetup}
     ${_SourcesGraphObjFactories}
     ${_SourcesGraphObjFormat}
     ${_SourcesGraphObjs}
@@ -271,14 +253,12 @@ set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER Libs)
 
 source_group("Header Files/Common" FILES ${_HeadersCommon})
 source_group("Header Files/Drawing" FILES ${_HeadersDrawing})
-source_group("Header Files/DrawingPageSetup" FILES ${_HeadersDrawingPageSetup})
 source_group("Header Files/GraphObjFactories" FILES ${_HeadersGraphObjFactories})
 source_group("Header Files/GraphObjFormat" FILES ${_HeadersGraphObjFormat})
 source_group("Header Files/GraphObjs" FILES ${_HeadersGraphObjs})
 source_group("Header Files/GraphObjWdgts" FILES ${_HeadersGraphObjWdgts})
 source_group("Source Files/Common" FILES ${_SourcesCommon})
 source_group("Source Files/Drawing" FILES ${_SourcesDrawing})
-source_group("Source Files/DrawingPageSetup" FILES ${_SourcesDrawingPageSetup})
 source_group("Source Files/GraphObjFactories" FILES ${_SourcesGraphObjFactories})
 source_group("Source Files/GraphObjFormat" FILES ${_SourcesGraphObjFormat})
 source_group("Source Files/GraphObjs" FILES ${_SourcesGraphObjs})

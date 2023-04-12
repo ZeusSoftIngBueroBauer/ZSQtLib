@@ -142,10 +142,6 @@ CModelIdxTreeGraphObjs::~CModelIdxTreeGraphObjs()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
-    mthTracer.onAdminObjAboutToBeReleased();
-
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
-
     m_pDrawingScene = nullptr;
     //m_iconRootEntry;
     //m_iconSelectionPointEntry;

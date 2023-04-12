@@ -52,10 +52,9 @@ class CInitEnumMode
 public: // ctor
     CInitEnumMode() {
         QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnum<EMode>::s_arEnumEntries);
-                                                     // Enumerator,                       Name,      Symbol, Text,  SCIPShort, SCPILong, Alias6, Alias7
-        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(EMode::Edit),       "Edit",       "E", "Edit",       "", "", "Design",     "Edit"      ) );
-        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(EMode::Simulation), "Simulation", "S", "Simulation", "", "", "Simulation", "View"      ) );
-        pVEnumEntries->append( /* 3 */ SEnumEntry( static_cast<int>(EMode::Undefined),  "Undefined",  "?", "Undefined",  "", "", "Undefined",  "Undefined" ) );
+        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(EMode::Edit),      "Edit",      "E", "Edit"      ) );
+        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(EMode::View),      "View",      "V", "View"      ) );
+        pVEnumEntries->append( /* 3 */ SEnumEntry( static_cast<int>(EMode::Undefined), "Undefined", "?", "Undefined" ) );
     }
 };
 static CInitEnumMode s_initEnumMode;
@@ -64,9 +63,9 @@ static CInitEnumMode s_initEnumMode;
 template<> const QVector<SEnumEntry> ZS::System::CEnum<EMode>::s_arEnumEntries(
 //------------------------------------------------------------------------------
 {
-    /* 0 */ SEnumEntry( static_cast<int>(EMode::Edit),       "Edit",       "E", "Edit",       "", "", "Design",     "Edit"      ),
-    /* 1 */ SEnumEntry( static_cast<int>(EMode::Simulation), "Simulation", "S", "Simulation", "", "", "Simulation", "View"      ),
-    /* 3 */ SEnumEntry( static_cast<int>(EMode::Undefined),  "Undefined",  "?", "Undefined",  "", "", "Undefined",  "Undefined" )
+    /* 0 */ SEnumEntry( static_cast<int>(EMode::Edit),      "Edit",      "E", "Edit"      ),
+    /* 1 */ SEnumEntry( static_cast<int>(EMode::View),      "View",      "V", "View"      ),
+    /* 2 */ SEnumEntry( static_cast<int>(EMode::Undefined), "Undefined", "?", "Undefined" )
 });
 #endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 /*! @endcond */

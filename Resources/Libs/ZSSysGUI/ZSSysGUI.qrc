@@ -3,9 +3,9 @@
         <file alias="ModeEdit16x16.bmp">Images/ModeEdit16x16.bmp</file>
         <file alias="ModeEdit24x24.bmp">Images/ModeEdit24x24.bmp</file>
         <file alias="ModeEdit32x32.bmp">Images/ModeEdit32x32.bmp</file>
-        <file alias="ModeSimulation16x16.bmp">Images/ModeSimulation16x16.bmp</file>
-        <file alias="ModeSimulation24x24.bmp">Images/ModeSimulation24x24.bmp</file>
-        <file alias="ModeSimulation32x32.bmp">Images/ModeSimulation32x32.bmp</file>
+        <file alias="ModeView16x16.bmp">Images/ModeView16x16.bmp</file>
+        <file alias="ModeView24x24.bmp">Images/ModeView24x24.bmp</file>
+        <file alias="ModeView32x32.bmp">Images/ModeView32x32.bmp</file>
         <file alias="RSIcon16x16.bmp">Images/RSIcon16x16.bmp</file>
         <file alias="RSIcon32x32.bmp">Images/RSIcon32x32.bmp</file>
         <file alias="ZeusSoft_32x32.png">Images/ZeusSoft_32x32.png</file>

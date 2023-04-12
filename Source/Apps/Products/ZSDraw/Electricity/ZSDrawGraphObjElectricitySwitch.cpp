@@ -569,9 +569,9 @@ void CGraphObjSwitch::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     CEnumMode modeDrawing = m_pDrawingScene->getMode();
 
-    if( modeDrawing == EMode::Simulation )
+    if( modeDrawing == EMode::View )
     {
-    } // if( modeDrawing == EMode::Simulation )
+    }
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
@@ -612,7 +612,7 @@ void CGraphObjSwitch::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     CEnumMode modeDrawing = m_pDrawingScene->getMode();
 
-    if( modeDrawing == EMode::Simulation )
+    if( modeDrawing == EMode::View )
     {
         toggleState();
     }
@@ -701,9 +701,9 @@ void CGraphObjSwitch::keyPressEvent( QKeyEvent* i_pEv )
 
     CEnumMode modeDrawing = m_pDrawingScene->getMode();
 
-    if( modeDrawing == EMode::Simulation )
+    if( modeDrawing == EMode::View )
     {
-    } // if( modeDrawing == EMode::Simulation )
+    }
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
@@ -743,9 +743,9 @@ void CGraphObjSwitch::keyReleaseEvent( QKeyEvent* i_pEv )
 
     CEnumMode modeDrawing = m_pDrawingScene->getMode();
 
-    if( modeDrawing == EMode::Simulation )
+    if( modeDrawing == EMode::View )
     {
-    } // if( modeDrawing == EMode::Simulation )
+    }
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {

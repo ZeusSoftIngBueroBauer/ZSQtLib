@@ -3416,7 +3416,7 @@ void CGraphObjGroup::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     } // if( modeDrawing == EMode::Edit )
 
-    else if( modeDrawing == EMode::Simulation )
+    else if( modeDrawing == EMode::View )
     {
         SGraphObjMouseEventFct fctEntry;
         int                    idxFct;
@@ -3430,8 +3430,7 @@ void CGraphObjGroup::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                 fctEntry.m_pFct( fctEntry.m_pvThis, fctEntry.m_pvData, this, i_pEv );
             }
         }
-
-    } // if( modeDrawing == EMode::Simulation )
+    }
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
@@ -3573,7 +3572,7 @@ void CGraphObjGroup::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     } // if( modeDrawing == EMode::Edit )
 
-    else if( modeDrawing == EMode::Simulation )
+    else if( modeDrawing == EMode::View )
     {
         SGraphObjMouseEventFct fctEntry;
         int                    idxFct;
@@ -3587,8 +3586,7 @@ void CGraphObjGroup::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
                 fctEntry.m_pFct( fctEntry.m_pvThis, fctEntry.m_pvData, this, i_pEv );
             }
         }
-
-    } // if( modeDrawing == EMode::Simulation )
+    }
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
@@ -3706,7 +3704,7 @@ void CGraphObjGroup::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     } // if( modeDrawing == EMode::Edit )
 
-    else if( modeDrawing == EMode::Simulation )
+    else if( modeDrawing == EMode::View )
     {
         SGraphObjMouseEventFct fctEntry;
         int                    idxFct;
@@ -3720,8 +3718,7 @@ void CGraphObjGroup::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
                 fctEntry.m_pFct( fctEntry.m_pvThis, fctEntry.m_pvData, this, i_pEv );
             }
         }
-
-    } // if( modeDrawing == EMode::Simulation )
+    }
 
     // The mouse release event would select the object.
     // This is not wanted if the selection tool is not active.
@@ -3795,10 +3792,8 @@ void CGraphObjGroup::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
         {
             onCreateAndExecDlgFormatGraphObjs();
         }
-
-    } // if( modeDrawing == EMode::Edit )
-
-    else if( modeDrawing == EMode::Simulation )
+    }
+    else if( modeDrawing == EMode::View )
     {
         SGraphObjMouseEventFct fctEntry;
         int                    idxFct;
@@ -3812,8 +3807,7 @@ void CGraphObjGroup::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
                 fctEntry.m_pFct( fctEntry.m_pvThis, fctEntry.m_pvData, this, i_pEv );
             }
         }
-
-    } // if( modeDrawing == EMode::Simulation )
+    }
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
@@ -3864,10 +3858,8 @@ void CGraphObjGroup::keyPressEvent( QKeyEvent* i_pEv )
     if( modeDrawing == EMode::Edit )
     {
         QGraphicsItemGroup::keyPressEvent(i_pEv);
-
-    } // if( modeDrawing == EMode::Edit )
-
-    else if( modeDrawing == EMode::Simulation )
+    }
+    else if( modeDrawing == EMode::View )
     {
         SGraphObjKeyEventFct fctEntry;
         int                  idxFct;
@@ -3881,8 +3873,7 @@ void CGraphObjGroup::keyPressEvent( QKeyEvent* i_pEv )
                 fctEntry.m_pFct( fctEntry.m_pvThis, fctEntry.m_pvData, this, i_pEv );
             }
         }
-
-    } // if( modeDrawing == EMode::Simulation )
+    }
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
@@ -3929,10 +3920,8 @@ void CGraphObjGroup::keyReleaseEvent( QKeyEvent* i_pEv )
     if( modeDrawing == EMode::Edit )
     {
         QGraphicsItemGroup::keyReleaseEvent(i_pEv);
-
-    } // if( modeDrawing == EMode::Edit )
-
-    else if( modeDrawing == EMode::Simulation )
+    }
+    else if( modeDrawing == EMode::View )
     {
         SGraphObjKeyEventFct fctEntry;
         int                  idxFct;
@@ -3946,8 +3935,7 @@ void CGraphObjGroup::keyReleaseEvent( QKeyEvent* i_pEv )
                 fctEntry.m_pFct( fctEntry.m_pvThis, fctEntry.m_pvData, this, i_pEv );
             }
         }
-
-    } // if( modeDrawing == EMode::Simulation )
+    }
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {

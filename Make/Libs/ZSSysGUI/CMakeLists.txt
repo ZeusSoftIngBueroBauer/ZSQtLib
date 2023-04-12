@@ -126,9 +126,9 @@ list(APPEND _AppImages
     ${_ResourcesPath}/${PROJECT_NAME}/Images/ModeEdit16x16.bmp
     ${_ResourcesPath}/${PROJECT_NAME}/Images/ModeEdit24x24.bmp
     ${_ResourcesPath}/${PROJECT_NAME}/Images/ModeEdit32x32.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ModeSimulation16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ModeSimulation24x24.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ModeSimulation32x32.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ModeView16x16.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ModeView24x24.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ModeView32x32.bmp
     ${_ResourcesPath}/${PROJECT_NAME}/Images/RSIcon16x16.bmp
     ${_ResourcesPath}/${PROJECT_NAME}/Images/RSIcon32x32.bmp
     ${_ResourcesPath}/${PROJECT_NAME}/Images/ZeusSoft_32x32.png

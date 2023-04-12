@@ -2169,8 +2169,8 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodToString( ZS::Test::C
     for( iEnumerator = 0; iEnumerator < CEnumMode::count(); ++iEnumerator )
     {
         if( iEnumerator == 0 ) { enumerator = EMode::Edit; strEnumerator = "Edit"; }
-        else if( iEnumerator == 1 ) { enumerator = EMode::Simulation; strEnumerator = "Simulation"; }
-        else if( iEnumerator == 2 ) { enumerator = EMode::Simulation; strEnumerator = "Undefined"; }
+        else if( iEnumerator == 1 ) { enumerator = EMode::View; strEnumerator = "View"; }
+        else if( iEnumerator == 2 ) { enumerator = EMode::Undefined; strEnumerator = "Undefined"; }
         else { enumerator = static_cast<EMode>(iEnumerator); strEnumerator = QString::number(iEnumerator); }
 
         strExpectedValue = "CEnumMode::toString(" + strEnumerator + "): " + strEnumerator;
@@ -2196,11 +2196,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodToString( ZS::Test::C
             }
             else if( iEnumerator == 1 )
             {
-                enumerator = EMode::Simulation;
-                strEnumerator = "Simulation";
-                if( idxAlias == EEnumEntryAliasStrName ) strResultExpected = "Simulation";
-                else if( idxAlias == EEnumEntryAliasStrSymbol ) strResultExpected = "S";
-                else if( idxAlias == EEnumEntryAliasStrText ) strResultExpected = "Simulation";
+                enumerator = EMode::View;
+                strEnumerator = "View";
+                if( idxAlias == EEnumEntryAliasStrName ) strResultExpected = "View";
+                else if( idxAlias == EEnumEntryAliasStrSymbol ) strResultExpected = "V";
+                else if( idxAlias == EEnumEntryAliasStrText ) strResultExpected = "View";
             }
             else if( iEnumerator == 2 )
             {
@@ -2235,7 +2235,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodToString( ZS::Test::C
     for( iEnumerator = 0; iEnumerator < CEnumMode::count(); ++iEnumerator )
     {
         if( iEnumerator == 0 ) { enumerator = EMode::Edit; strEnumerator = "Edit"; }
-        else if( iEnumerator == 1 ) { enumerator = EMode::Simulation; strEnumerator = "Simulation"; }
+        else if( iEnumerator == 1 ) { enumerator = EMode::View; strEnumerator = "View"; }
         else if( iEnumerator == 2 ) { enumerator = EMode::Undefined; strEnumerator = "Undefined"; }
         else { enumerator = static_cast<EMode>(iEnumerator); strEnumerator = QString::number(static_cast<int>(enumerator)); }
 
@@ -2333,7 +2333,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodToEnumerator( ZS::Tes
     for( iEnumerator = 0; iEnumerator < CEnumMode::count(); ++iEnumerator )
     {
         if( iEnumerator == 0 ) { strEnumeratorSource = "Edit"; }
-        else if( iEnumerator == 1 ) { strEnumeratorSource = "Simulation"; }
+        else if( iEnumerator == 1 ) { strEnumeratorSource = "View"; }
         else if( iEnumerator == 2 ) { strEnumeratorSource = "Undefined"; }
         else { strEnumeratorSource = QString::number(iEnumerator); }
 
@@ -2344,7 +2344,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodToEnumerator( ZS::Tes
         enumerator = CEnumMode::toEnumerator(strEnumeratorSource);
 
         if( enumerator == EMode::Edit ) { strEnumeratorResult = "Edit"; }
-        else if( enumerator == EMode::Simulation ) { strEnumeratorResult = "Simulation"; }
+        else if( enumerator == EMode::View ) { strEnumeratorResult = "View"; }
         else if( enumerator == EMode::Undefined ) { strEnumeratorResult = "Undefined"; }
         else { strEnumeratorResult = QString::number(static_cast<int>(enumerator)); }
 
@@ -2373,12 +2373,12 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodToEnumerator( ZS::Tes
             }
             else if( iEnumerator == 1 )
             {
-                enumerator = EMode::Simulation;
-                strEnumeratorResult = "Simulation";
+                enumerator = EMode::View;
+                strEnumeratorResult = "View";
 
-                if( idxAlias == EEnumEntryAliasStrName ) strEnumeratorSource = "Simulation";
-                else if( idxAlias == EEnumEntryAliasStrSymbol ) strEnumeratorSource = "S";
-                else if( idxAlias == EEnumEntryAliasStrText ) strEnumeratorSource = "Simulation";
+                if( idxAlias == EEnumEntryAliasStrName ) strEnumeratorSource = "View";
+                else if( idxAlias == EEnumEntryAliasStrSymbol ) strEnumeratorSource = "V";
+                else if( idxAlias == EEnumEntryAliasStrText ) strEnumeratorSource = "View";
                 else strEnumeratorSource = QString::number(iEnumerator);
             }
             else if( iEnumerator == 2 )
@@ -2405,7 +2405,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodToEnumerator( ZS::Tes
             enumerator = CEnumMode::toEnumerator(strEnumeratorSource, idxAlias);
 
             if( enumerator == EMode::Edit ) { strEnumeratorResult = "Edit"; }
-            else if( enumerator == EMode::Simulation ) { strEnumeratorResult = "Simulation"; }
+            else if( enumerator == EMode::View ) { strEnumeratorResult = "View"; }
             else if( enumerator == EMode::Undefined ) { strEnumeratorResult = "Undefined"; }
             else { strEnumeratorResult = QString::number(static_cast<int>(enumerator)); }
 
@@ -2418,12 +2418,12 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodToEnumerator( ZS::Tes
 
     // -------------------------------------------------------------------------
 
-    strEnumeratorSource = "Simulation";
+    strEnumeratorSource = "View";
     idxAlias = ZS::System::EEnumEntryAliasStrName;
     strAlias = enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias));
     caseSensitivity = Qt::CaseSensitive;
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
-    strEnumeratorResult = "Simulation";
+    strEnumeratorResult = "View";
 
     strExpectedValue = "CEnumMode::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
     strExpectedValue += strEnumeratorResult + ", true";
@@ -2431,14 +2431,14 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodToEnumerator( ZS::Tes
 
     enumerator = CEnumMode::toEnumerator(strEnumeratorSource, idxAlias, caseSensitivity, &bOk);
     if( enumerator == EMode::Edit ) strEnumeratorResult = "Edit";
-    else if( enumerator == EMode::Simulation ) strEnumeratorResult = "Simulation";
+    else if( enumerator == EMode::View ) strEnumeratorResult = "View";
     else if( enumerator == EMode::Undefined ) strEnumeratorResult = "Undefined";
     else strEnumeratorResult = QString::number(static_cast<int>(enumerator));
     strResultValue = "CEnumMode::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
     strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
     strlstResultValues.append(strResultValue);
 
-    strEnumeratorSource = "simULATION";
+    strEnumeratorSource = "vIEW";
     idxAlias = ZS::System::EEnumEntryAliasStrName;
     strAlias = enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias));
     caseSensitivity = Qt::CaseSensitive;
@@ -2451,19 +2451,19 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodToEnumerator( ZS::Tes
 
     enumerator = CEnumMode::toEnumerator(strEnumeratorSource, idxAlias, caseSensitivity, &bOk);
     if( enumerator == EMode::Edit ) strEnumeratorResult = "Edit";
-    else if( enumerator == EMode::Simulation ) strEnumeratorResult = "Simulation";
+    else if( enumerator == EMode::View ) strEnumeratorResult = "View";
     else if( enumerator == EMode::Undefined ) strEnumeratorResult = "Undefined";
     else strEnumeratorResult = QString::number(static_cast<int>(enumerator));
     strResultValue = "CEnumMode::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
     strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
     strlstResultValues.append(strResultValue);
 
-    strEnumeratorSource = "simULATION";
+    strEnumeratorSource = "vIEW";
     idxAlias = ZS::System::EEnumEntryAliasStrName;
     strAlias = enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias));
     caseSensitivity = Qt::CaseInsensitive;
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
-    strEnumeratorResult = "Simulation";
+    strEnumeratorResult = "View";
 
     strExpectedValue = "CEnumMode::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
     strExpectedValue += strEnumeratorResult + ", true";
@@ -2471,14 +2471,14 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodToEnumerator( ZS::Tes
 
     enumerator = CEnumMode::toEnumerator(strEnumeratorSource, idxAlias, caseSensitivity, &bOk);
     if( enumerator == EMode::Edit ) strEnumeratorResult = "Edit";
-    else if( enumerator == EMode::Simulation ) strEnumeratorResult = "Simulation";
+    else if( enumerator == EMode::View ) strEnumeratorResult = "View";
     else if( enumerator == EMode::Undefined ) strEnumeratorResult = "Undefined";
     else strEnumeratorResult = QString::number(static_cast<int>(enumerator));
     strResultValue = "CEnumMode::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
     strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
     strlstResultValues.append(strResultValue);
 
-    strEnumeratorSource = "simULATION";
+    strEnumeratorSource = "vIEW";
     idxAlias = ZS::System::EEnumEntryAliasStrUndefined;
     strAlias = enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias));
     caseSensitivity = Qt::CaseSensitive;
@@ -2491,19 +2491,19 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodToEnumerator( ZS::Tes
 
     enumerator = CEnumMode::toEnumerator(strEnumeratorSource, idxAlias, caseSensitivity, &bOk);
     if( enumerator == EMode::Edit ) strEnumeratorResult = "Edit";
-    else if( enumerator == EMode::Simulation ) strEnumeratorResult = "Simulation";
+    else if( enumerator == EMode::View ) strEnumeratorResult = "View";
     else if( enumerator == EMode::Undefined ) strEnumeratorResult = "Undefined";
     else strEnumeratorResult = QString::number(static_cast<int>(enumerator));
     strResultValue = "CEnumMode::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
     strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
     strlstResultValues.append(strResultValue);
 
-    strEnumeratorSource = "simULATION";
+    strEnumeratorSource = "vIEW";
     idxAlias = ZS::System::EEnumEntryAliasStrUndefined;
     strAlias = enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias));
     caseSensitivity = Qt::CaseInsensitive;
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
-    strEnumeratorResult = "Simulation";
+    strEnumeratorResult = "View";
 
     strExpectedValue = "CEnumMode::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
     strExpectedValue += strEnumeratorResult + ", true";
@@ -2511,14 +2511,14 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodToEnumerator( ZS::Tes
 
     enumerator = CEnumMode::toEnumerator(strEnumeratorSource, idxAlias, caseSensitivity, &bOk);
     if( enumerator == EMode::Edit ) strEnumeratorResult = "Edit";
-    else if( enumerator == EMode::Simulation ) strEnumeratorResult = "Simulation";
+    else if( enumerator == EMode::View ) strEnumeratorResult = "View";
     else if( enumerator == EMode::Undefined ) strEnumeratorResult = "Undefined";
     else strEnumeratorResult = QString::number(static_cast<int>(enumerator));
     strResultValue = "CEnumMode::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
     strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
     strlstResultValues.append(strResultValue);
 
-    strEnumeratorSource = "Simulation";
+    strEnumeratorSource = "View";
     idxAlias = ZS::System::EEnumEntryAliasStrAlias8;
     strAlias = enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias));
     caseSensitivity = Qt::CaseInsensitive;
@@ -2534,7 +2534,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodToEnumerator( ZS::Tes
         bOk = false;
         enumerator = CEnumMode::toEnumerator(strEnumeratorSource, idxAlias, caseSensitivity, &bOk);
         if( enumerator == EMode::Edit ) strEnumeratorResult = "Edit";
-        else if( enumerator == EMode::Simulation ) strEnumeratorResult = "Simulation";
+        else if( enumerator == EMode::View ) strEnumeratorResult = "View";
         else if( enumerator == EMode::Undefined ) strEnumeratorResult = "Undefined";
         else strEnumeratorResult = QString::number(static_cast<int>(enumerator));
     }
@@ -2579,7 +2579,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodFromString( ZS::Test:
     for( iEnumerator = 0; iEnumerator < CEnumMode::count(); ++iEnumerator )
     {
         if( iEnumerator == 0 ) { strEnumeratorSource = "Edit"; }
-        else if( iEnumerator == 1 ) { strEnumeratorSource = "Simulation"; }
+        else if( iEnumerator == 1 ) { strEnumeratorSource = "View"; }
         else if( iEnumerator == 2 ) { strEnumeratorSource = "Undefined"; }
         else { strEnumeratorSource = QString::number(iEnumerator); }
 
@@ -2590,7 +2590,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodFromString( ZS::Test:
         enumInst = CEnumMode::fromString(strEnumeratorSource);
 
         if( enumInst.enumerator() == EMode::Edit ) { strEnumeratorResult = "Edit"; }
-        else if( enumInst.enumerator() == EMode::Simulation ) { strEnumeratorResult = "Simulation"; }
+        else if( enumInst.enumerator() == EMode::View ) { strEnumeratorResult = "View"; }
         else if( enumInst.enumerator() == EMode::Undefined ) { strEnumeratorResult = "Undefined"; }
         else { strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator())); }
 
@@ -2618,11 +2618,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodFromString( ZS::Test:
             }
             else if( iEnumerator == 1 )
             {
-                strEnumeratorResult = "Simulation";
+                strEnumeratorResult = "View";
 
-                if( idxAlias == EEnumEntryAliasStrName ) strEnumeratorSource = "Simulation";
-                else if( idxAlias == EEnumEntryAliasStrSymbol ) strEnumeratorSource = "S";
-                else if( idxAlias == EEnumEntryAliasStrText ) strEnumeratorSource = "Simulation";
+                if( idxAlias == EEnumEntryAliasStrName ) strEnumeratorSource = "View";
+                else if( idxAlias == EEnumEntryAliasStrSymbol ) strEnumeratorSource = "V";
+                else if( idxAlias == EEnumEntryAliasStrText ) strEnumeratorSource = "View";
                 else strEnumeratorSource = QString::number(iEnumerator);
             }
             else if( iEnumerator == 2 )
@@ -2647,7 +2647,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodFromString( ZS::Test:
             strResultValue = "CEnumMode::fromString(" + strEnumeratorSource + ", " + strAlias + "): ";
             enumInst = CEnumMode::fromString(strEnumeratorSource, idxAlias);
             if( enumInst.enumerator() == EMode::Edit ) strEnumeratorResult = "Edit";
-            else if( enumInst.enumerator() == EMode::Simulation ) strEnumeratorResult = "Simulation";
+            else if( enumInst.enumerator() == EMode::View ) strEnumeratorResult = "View";
             else if( enumInst.enumerator() == EMode::Undefined ) strEnumeratorResult = "Undefined";
             else strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator()));
             strResultValue += strEnumeratorResult;
@@ -2658,12 +2658,12 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodFromString( ZS::Test:
 
     // -------------------------------------------------------------------------
 
-    strEnumeratorSource = "Simulation";
+    strEnumeratorSource = "View";
     idxAlias = ZS::System::EEnumEntryAliasStrName;
     strAlias = enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias));
     caseSensitivity = Qt::CaseSensitive;
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
-    strEnumeratorResult = "Simulation";
+    strEnumeratorResult = "View";
 
     strExpectedValue = "CEnumMode::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
     strExpectedValue += strEnumeratorResult + ", true";
@@ -2672,7 +2672,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodFromString( ZS::Test:
     strResultValue = "CEnumMode::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
     enumInst = CEnumMode::fromString(strEnumeratorSource, idxAlias, caseSensitivity, &bOk);
     if( enumInst.enumerator() == EMode::Edit ) strEnumeratorResult = "Edit";
-    else if( enumInst.enumerator() == EMode::Simulation ) strEnumeratorResult = "Simulation";
+    else if( enumInst.enumerator() == EMode::View ) strEnumeratorResult = "View";
     else if( enumInst.enumerator() == EMode::Undefined ) strEnumeratorResult = "Undefined";
     else strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator()));
     strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
@@ -2680,7 +2680,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodFromString( ZS::Test:
 
     // -------------------------------------------------------------------------
 
-    strEnumeratorSource = "simULATION";
+    strEnumeratorSource = "vIEW";
     idxAlias = ZS::System::EEnumEntryAliasStrName;
     strAlias = enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias));
     caseSensitivity = Qt::CaseSensitive;
@@ -2694,7 +2694,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodFromString( ZS::Test:
     strResultValue = "CEnumMode::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
     enumInst = CEnumMode::fromString(strEnumeratorSource, idxAlias, caseSensitivity, &bOk);
     if( enumInst.enumerator() == EMode::Edit ) strEnumeratorResult = "Edit";
-    else if( enumInst.enumerator() == EMode::Simulation ) strEnumeratorResult = "Simulation";
+    else if( enumInst.enumerator() == EMode::View ) strEnumeratorResult = "View";
     else if( enumInst.enumerator() == EMode::Undefined ) strEnumeratorResult = "Undefined";
     else strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator()));
     strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
@@ -2702,12 +2702,12 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodFromString( ZS::Test:
 
     // -------------------------------------------------------------------------
 
-    strEnumeratorSource = "simULATION";
+    strEnumeratorSource = "vIEW";
     idxAlias = ZS::System::EEnumEntryAliasStrName;
     strAlias = enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias));
     caseSensitivity = Qt::CaseInsensitive;
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
-    strEnumeratorResult = "Simulation";
+    strEnumeratorResult = "View";
 
     strExpectedValue = "CEnumMode::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
     strExpectedValue += strEnumeratorResult + ", true";
@@ -2716,7 +2716,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodFromString( ZS::Test:
     strResultValue = "CEnumMode::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
     enumInst = CEnumMode::fromString(strEnumeratorSource, idxAlias, caseSensitivity, &bOk);
     if( enumInst.enumerator() == EMode::Edit ) strEnumeratorResult = "Edit";
-    else if( enumInst.enumerator() == EMode::Simulation ) strEnumeratorResult = "Simulation";
+    else if( enumInst.enumerator() == EMode::View ) strEnumeratorResult = "View";
     else if( enumInst.enumerator() == EMode::Undefined ) strEnumeratorResult = "Undefined";
     else strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator()));
     strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
@@ -2724,7 +2724,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodFromString( ZS::Test:
 
     // -------------------------------------------------------------------------
 
-    strEnumeratorSource = "simULATION";
+    strEnumeratorSource = "vIEW";
     idxAlias = ZS::System::EEnumEntryAliasStrUndefined;
     strAlias = enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias));
     caseSensitivity = Qt::CaseSensitive;
@@ -2738,7 +2738,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodFromString( ZS::Test:
     strResultValue = "CEnumMode::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
     enumInst = CEnumMode::fromString(strEnumeratorSource, idxAlias, caseSensitivity, &bOk);
     if( enumInst.enumerator() == EMode::Edit ) strEnumeratorResult = "Edit";
-    else if( enumInst.enumerator() == EMode::Simulation ) strEnumeratorResult = "Simulation";
+    else if( enumInst.enumerator() == EMode::View ) strEnumeratorResult = "View";
     else if( enumInst.enumerator() == EMode::Undefined ) strEnumeratorResult = "Undefined";
     else strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator()));
     strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
@@ -2746,12 +2746,12 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodFromString( ZS::Test:
 
     // -------------------------------------------------------------------------
 
-    strEnumeratorSource = "simULATION";
+    strEnumeratorSource = "vIEW";
     idxAlias = ZS::System::EEnumEntryAliasStrUndefined;
     strAlias = enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias));
     caseSensitivity = Qt::CaseInsensitive;
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
-    strEnumeratorResult = "Simulation";
+    strEnumeratorResult = "View";
 
     strExpectedValue = "CEnumMode::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
     strExpectedValue += strEnumeratorResult + ", true";
@@ -2760,7 +2760,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodFromString( ZS::Test:
     strResultValue = "CEnumMode::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
     enumInst = CEnumMode::fromString(strEnumeratorSource, idxAlias, caseSensitivity, &bOk);
     if( enumInst.enumerator() == EMode::Edit ) strEnumeratorResult = "Edit";
-    else if( enumInst.enumerator() == EMode::Simulation ) strEnumeratorResult = "Simulation";
+    else if( enumInst.enumerator() == EMode::View ) strEnumeratorResult = "View";
     else if( enumInst.enumerator() == EMode::Undefined ) strEnumeratorResult = "Undefined";
     else strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator()));
     strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
@@ -2768,7 +2768,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodFromString( ZS::Test:
 
     // -------------------------------------------------------------------------
 
-    strEnumeratorSource = "Simulation";
+    strEnumeratorSource = "View";
     idxAlias = ZS::System::EEnumEntryAliasStrAlias8;
     strAlias = enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias));
     caseSensitivity = Qt::CaseInsensitive;
@@ -2784,7 +2784,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodFromString( ZS::Test:
         strResultValue = "CEnumMode::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
         enumInst = CEnumMode::fromString(strEnumeratorSource, idxAlias, caseSensitivity, &bOk);
         if( enumInst.enumerator() == EMode::Edit ) strEnumeratorResult = "Edit";
-        else if( enumInst.enumerator() == EMode::Simulation ) strEnumeratorResult = "Simulation";
+        else if( enumInst.enumerator() == EMode::View ) strEnumeratorResult = "View";
         else if( enumInst.enumerator() == EMode::Undefined ) strEnumeratorResult = "Undefined";
         else strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator()));
         strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
@@ -2830,7 +2830,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
 
     pEnumInst = new CEnumMode();
     if( pEnumInst->enumerator() == EMode::Edit ) { strEnumerator = "Edit"; }
-    else if( pEnumInst->enumerator() == EMode::Simulation ) { strEnumerator = "Simulation"; }
+    else if( pEnumInst->enumerator() == EMode::View ) { strEnumerator = "View"; }
     else if( pEnumInst->enumerator() == EMode::Undefined ) { strEnumerator = "Undefined"; }
     else { strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator())); }
     strResultValue = "CEnumMode::ctor(): " + strEnumerator;
@@ -2845,7 +2845,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
         strEnumerator = "-1";
 
         if( iEnumerator == 0 ) { strEnumerator = "Edit"; }
-        else if( iEnumerator == 1 ) { strEnumerator = "Simulation"; }
+        else if( iEnumerator == 1 ) { strEnumerator = "View"; }
         else if( iEnumerator == 2 ) { strEnumerator = "Undefined"; }
         else { strEnumerator = QString::number(iEnumerator); }
 
@@ -2856,7 +2856,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
         strResultValue = "CEnumMode::ctor(" + strEnumerator + "): ";
         pEnumInst = new CEnumMode(static_cast<EMode>(iEnumerator));
         if( pEnumInst->enumerator() == EMode::Edit ) { strEnumerator = "Edit"; }
-        else if( pEnumInst->enumerator() == EMode::Simulation ) { strEnumerator = "Simulation"; }
+        else if( pEnumInst->enumerator() == EMode::View ) { strEnumerator = "View"; }
         else if( pEnumInst->enumerator() == EMode::Undefined ) { strEnumerator = "Undefined"; }
         else { strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator())); }
         strResultValue += strEnumerator;
@@ -2879,7 +2879,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
         strResultValue = "CEnumMode::ctor(" + strEnumerator + "): ";
         pEnumInst = new CEnumMode(static_cast<EMode>(iEnumerator));
         if( pEnumInst->enumerator() == EMode::Edit ) { strEnumerator = "Edit"; }
-        else if( pEnumInst->enumerator() == EMode::Simulation ) { strEnumerator = "Simulation"; }
+        else if( pEnumInst->enumerator() == EMode::View ) { strEnumerator = "View"; }
         else if( pEnumInst->enumerator() == EMode::Undefined ) { strEnumerator = "Undefined"; }
         else { strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator())); }
         strResultValue += strEnumerator;
@@ -2911,7 +2911,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
         strResultValue = "CEnumMode::ctor(" + strEnumerator + "): ";
         pEnumInst = new CEnumMode(static_cast<EMode>(iEnumerator));
         if( pEnumInst->enumerator() == EMode::Edit ) { strEnumerator = "Edit"; }
-        else if( pEnumInst->enumerator() == EMode::Simulation ) { strEnumerator = "Simulation"; }
+        else if( pEnumInst->enumerator() == EMode::View ) { strEnumerator = "View"; }
         else if( pEnumInst->enumerator() == EMode::Undefined ) { strEnumerator = "Undefined"; }
         else { strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator())); }
         strResultValue += strEnumerator;
@@ -2936,7 +2936,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
         strEnumerator = "-1";
 
         if( iEnumerator == 0 ) { strEnumerator = "Edit"; }
-        else if( iEnumerator == 1 ) { strEnumerator = "Simulation"; }
+        else if( iEnumerator == 1 ) { strEnumerator = "View"; }
         else if( iEnumerator == 2 ) { strEnumerator = "Undefined"; }
         else { strEnumerator = QString::number(iEnumerator); }
 
@@ -2947,7 +2947,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
         strResultValue = "CEnumMode::ctor(" + strEnumerator + "): ";
         pEnumInst = new CEnumMode(iEnumerator);
         if( pEnumInst->enumerator() == EMode::Edit ) { strEnumerator = "Edit"; }
-        else if( pEnumInst->enumerator() == EMode::Simulation ) { strEnumerator = "Simulation"; }
+        else if( pEnumInst->enumerator() == EMode::View ) { strEnumerator = "View"; }
         else if( pEnumInst->enumerator() == EMode::Undefined ) { strEnumerator = "Undefined"; }
         else { strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator())); }
         strResultValue += strEnumerator;
@@ -2970,7 +2970,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
         strResultValue = "CEnumMode::ctor(" + strEnumerator + "): ";
         pEnumInst = new CEnumMode(iEnumerator);
         if( pEnumInst->enumerator() == EMode::Edit ) { strEnumerator = "Edit"; }
-        else if( pEnumInst->enumerator() == EMode::Simulation ) { strEnumerator = "Simulation"; }
+        else if( pEnumInst->enumerator() == EMode::View ) { strEnumerator = "View"; }
         else if( pEnumInst->enumerator() == EMode::Undefined ) { strEnumerator = "Undefined"; }
         else { strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator())); }
         strResultValue += strEnumerator;
@@ -3002,7 +3002,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
         strResultValue = "CEnumMode::ctor(" + strEnumerator + "): ";
         pEnumInst = new CEnumMode(iEnumerator);
         if( pEnumInst->enumerator() == EMode::Edit ) { strEnumerator = "Edit"; }
-        else if( pEnumInst->enumerator() == EMode::Simulation ) { strEnumerator = "Simulation"; }
+        else if( pEnumInst->enumerator() == EMode::View ) { strEnumerator = "View"; }
         else if( pEnumInst->enumerator() == EMode::Undefined ) { strEnumerator = "Undefined"; }
         else { strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator())); }
         strResultValue += strEnumerator;
@@ -3027,7 +3027,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
         strEnumerator = "-1";
 
         if( iEnumerator == 0 ) { strEnumerator = "Edit"; }
-        else if( iEnumerator == 1 ) { strEnumerator = "Simulation"; }
+        else if( iEnumerator == 1 ) { strEnumerator = "View"; }
         else if( iEnumerator == 2 ) { strEnumerator = "Undefined"; }
         else { strEnumerator = QString::number(iEnumerator); }
 
@@ -3038,7 +3038,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
         strResultValue = "CEnumMode::ctor(" + strEnumerator + "): ";
         pEnumInst = new CEnumMode(strEnumerator);
         if( pEnumInst->enumerator() == EMode::Edit ) { strEnumerator = "Edit"; }
-        else if( pEnumInst->enumerator() == EMode::Simulation ) { strEnumerator = "Simulation"; }
+        else if( pEnumInst->enumerator() == EMode::View ) { strEnumerator = "View"; }
         else if( pEnumInst->enumerator() == EMode::Undefined ) { strEnumerator = "Undefined"; }
         else { strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator())); }
         strResultValue += strEnumerator;
@@ -3049,7 +3049,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
 
     // -------------------------------------------------------------------------
 
-    strEnumerator = "Simulation";
+    strEnumerator = "View";
     idxAlias = ZS::System::EEnumEntryAliasStrName;
     strAlias = enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias));
     caseSensitivity = Qt::CaseSensitive;
@@ -3062,7 +3062,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
     strResultValue = "CEnumMode::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
     pEnumInst = new CEnumMode(strEnumerator, idxAlias, caseSensitivity);
     if( pEnumInst->enumerator() == EMode::Edit ) strEnumerator = "Edit";
-    else if( pEnumInst->enumerator() == EMode::Simulation ) strEnumerator = "Simulation";
+    else if( pEnumInst->enumerator() == EMode::View ) strEnumerator = "View";
     else if( pEnumInst->enumerator() == EMode::Undefined ) { strEnumerator = "Undefined"; }
     else strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator()));
     strResultValue += strEnumerator;
@@ -3086,7 +3086,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
     strResultValue = "CEnumMode::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
     pEnumInst = new CEnumMode(strEnumerator, idxAlias, caseSensitivity);
     if( pEnumInst->enumerator() == EMode::Edit ) strEnumerator = "Edit";
-    else if( pEnumInst->enumerator() == EMode::Simulation ) strEnumerator = "Simulation";
+    else if( pEnumInst->enumerator() == EMode::View ) strEnumerator = "View";
     else if( pEnumInst->enumerator() == EMode::Undefined ) { strEnumerator = "Undefined"; }
     else strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator()));
     strResultValue += strEnumerator;
@@ -3101,7 +3101,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
     strAlias = enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias));
     caseSensitivity = Qt::CaseInsensitive;
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
-    strEnumerator = "Simulation";
+    strEnumerator = "View";
 
     strExpectedValue = "CEnumMode::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
     strExpectedValue += strEnumerator;
@@ -3110,7 +3110,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
     strResultValue = "CEnumMode::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
     pEnumInst = new CEnumMode(strEnumerator, idxAlias, caseSensitivity);
     if( pEnumInst->enumerator() == EMode::Edit ) strEnumerator = "Edit";
-    else if( pEnumInst->enumerator() == EMode::Simulation ) strEnumerator = "Simulation";
+    else if( pEnumInst->enumerator() == EMode::View ) strEnumerator = "View";
     else if( pEnumInst->enumerator() == EMode::Undefined ) { strEnumerator = "Undefined"; }
     else strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator()));
     strResultValue += strEnumerator;
@@ -3125,7 +3125,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
     strAlias = enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias));
     caseSensitivity = Qt::CaseSensitive;
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
-    strEnumerator = "Simulation";
+    strEnumerator = "View";
 
     strExpectedValue = "CEnumMode::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
     strExpectedValue += strEnumerator;
@@ -3134,7 +3134,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
     strResultValue = "CEnumMode::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
     pEnumInst = new CEnumMode(strEnumerator, idxAlias, caseSensitivity);
     if( pEnumInst->enumerator() == EMode::Edit ) strEnumerator = "Edit";
-    else if( pEnumInst->enumerator() == EMode::Simulation ) strEnumerator = "Simulation";
+    else if( pEnumInst->enumerator() == EMode::View ) strEnumerator = "View";
     else if( pEnumInst->enumerator() == EMode::Undefined ) { strEnumerator = "Undefined"; }
     else strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator()));
     strResultValue += strEnumerator;
@@ -3158,7 +3158,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
     strResultValue = "CEnumMode::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
     pEnumInst = new CEnumMode(strEnumerator, idxAlias, caseSensitivity);
     if( pEnumInst->enumerator() == EMode::Edit ) strEnumerator = "Edit";
-    else if( pEnumInst->enumerator() == EMode::Simulation ) strEnumerator = "Simulation";
+    else if( pEnumInst->enumerator() == EMode::View ) strEnumerator = "View";
     else if( pEnumInst->enumerator() == EMode::Undefined ) { strEnumerator = "Undefined"; }
     else strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator()));
     strResultValue += strEnumerator;
@@ -3173,7 +3173,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
     strAlias = enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias));
     caseSensitivity = Qt::CaseInsensitive;
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
-    strEnumerator = "Simulation";
+    strEnumerator = "View";
 
     strExpectedValue = "CEnumMode::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
     strExpectedValue += strEnumerator;
@@ -3182,7 +3182,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
     strResultValue = "CEnumMode::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
     pEnumInst = new CEnumMode(strEnumerator, idxAlias, caseSensitivity);
     if( pEnumInst->enumerator() == EMode::Edit ) strEnumerator = "Edit";
-    else if( pEnumInst->enumerator() == EMode::Simulation ) strEnumerator = "Simulation";
+    else if( pEnumInst->enumerator() == EMode::View ) strEnumerator = "View";
     else if( pEnumInst->enumerator() == EMode::Undefined ) { strEnumerator = "Undefined"; }
     else strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator()));
     strResultValue += strEnumerator;
@@ -3192,7 +3192,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
 
     // -------------------------------------------------------------------------
 
-    strEnumerator = "Simulation";
+    strEnumerator = "View";
     idxAlias = ZS::System::EEnumEntryAliasStrAlias8;
     strAlias = enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias));
     caseSensitivity = Qt::CaseInsensitive;
@@ -3208,7 +3208,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
         strResultValue = "CEnumMode::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
         pEnumInst = new CEnumMode(strEnumerator, idxAlias, caseSensitivity);
         if( pEnumInst->enumerator() == EMode::Edit ) strEnumerator = "Edit";
-        else if( pEnumInst->enumerator() == EMode::Simulation ) strEnumerator = "Simulation";
+        else if( pEnumInst->enumerator() == EMode::View ) strEnumerator = "View";
         else if( pEnumInst->enumerator() == EMode::Undefined ) { strEnumerator = "Undefined"; }
         else strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator()));
         strResultValue += strEnumerator;
@@ -3255,7 +3255,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorAssign( ZS::Test::CTestS
         strEnumeratorSource = "-1";
 
         if( iEnumerator == 0 ) { strEnumeratorSource = "Edit"; }
-        else if( iEnumerator == 1 ) { strEnumeratorSource = "Simulation"; }
+        else if( iEnumerator == 1 ) { strEnumeratorSource = "View"; }
         else if( iEnumerator == 2 ) { strEnumeratorSource = "Undefined"; }
         else { strEnumeratorSource = QString::number(iEnumerator); }
 
@@ -3266,7 +3266,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorAssign( ZS::Test::CTestS
         strResultValue = "CEnumMode = " + strEnumeratorSource + ": ";
         enumInst = static_cast<EMode>(iEnumerator);
         if( enumInst.enumerator() == EMode::Edit ) { strEnumeratorResult = "Edit"; }
-        else if( enumInst.enumerator() == EMode::Simulation ) { strEnumeratorResult = "Simulation"; }
+        else if( enumInst.enumerator() == EMode::View ) { strEnumeratorResult = "View"; }
         else if( enumInst.enumerator() == EMode::Undefined ) { strEnumeratorResult = "Undefined"; }
         else { strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator())); }
         strResultValue += strEnumeratorResult;
@@ -3287,7 +3287,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorAssign( ZS::Test::CTestS
         strResultValue = "CEnumMode = " + strEnumeratorSource + ": ";
         enumInst = static_cast<EMode>(iEnumerator);
         if( enumInst.enumerator() == EMode::Edit ) { strEnumeratorResult = "Edit"; }
-        else if( enumInst.enumerator() == EMode::Simulation ) { strEnumeratorResult = "Simulation"; }
+        else if( enumInst.enumerator() == EMode::View ) { strEnumeratorResult = "View"; }
         else if( enumInst.enumerator() == EMode::Undefined ) { strEnumeratorResult = "Undefined"; }
         else { strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator())); }
         strResultValue += strEnumeratorResult;
@@ -3317,7 +3317,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorAssign( ZS::Test::CTestS
         strResultValue = "CEnumMode = " + strEnumeratorSource + ": ";
         enumInst = static_cast<EMode>(iEnumerator);
         if( enumInst.enumerator() == EMode::Edit ) { strEnumeratorResult = "Edit"; }
-        else if( enumInst.enumerator() == EMode::Simulation ) { strEnumeratorResult = "Simulation"; }
+        else if( enumInst.enumerator() == EMode::View ) { strEnumeratorResult = "View"; }
         else if( enumInst.enumerator() == EMode::Undefined ) { strEnumeratorResult = "Undefined"; }
         else { strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator())); }
         strResultValue += strEnumeratorResult;
@@ -3340,7 +3340,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorAssign( ZS::Test::CTestS
         strEnumeratorSource = "-1";
 
         if( iEnumerator == 0 ) { strEnumeratorSource = "Edit"; }
-        else if( iEnumerator == 1 ) { strEnumeratorSource = "Simulation"; }
+        else if( iEnumerator == 1 ) { strEnumeratorSource = "View"; }
         else if( iEnumerator == 2 ) { strEnumeratorSource = "Undefined"; }
         else { strEnumeratorSource = QString::number(iEnumerator); }
 
@@ -3351,7 +3351,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorAssign( ZS::Test::CTestS
         strResultValue = "CEnumMode = " + strEnumeratorSource + ": ";
         enumInst = iEnumerator;
         if( enumInst.enumerator() == EMode::Edit ) { strEnumeratorResult = "Edit"; }
-        else if( enumInst.enumerator() == EMode::Simulation ) { strEnumeratorResult = "Simulation"; }
+        else if( enumInst.enumerator() == EMode::View ) { strEnumeratorResult = "View"; }
         else if( enumInst.enumerator() == EMode::Undefined ) { strEnumeratorResult = "Undefined"; }
         else { strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator())); }
         strResultValue += strEnumeratorResult;
@@ -3372,7 +3372,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorAssign( ZS::Test::CTestS
         strResultValue = "CEnumMode = " + strEnumeratorSource + ": ";
         enumInst = iEnumerator;
         if( enumInst.enumerator() == EMode::Edit ) { strEnumeratorResult = "Edit"; }
-        else if( enumInst.enumerator() == EMode::Simulation ) { strEnumeratorResult = "Simulation"; }
+        else if( enumInst.enumerator() == EMode::View ) { strEnumeratorResult = "View"; }
         else if( enumInst.enumerator() == EMode::Undefined ) { strEnumeratorResult = "Undefined"; }
         else { strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator())); }
         strResultValue += strEnumeratorResult;
@@ -3402,7 +3402,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorAssign( ZS::Test::CTestS
         strResultValue = "CEnumMode = " + strEnumeratorSource + ": ";
         enumInst = iEnumerator;
         if( enumInst.enumerator() == EMode::Edit ) { strEnumeratorResult = "Edit"; }
-        else if( enumInst.enumerator() == EMode::Simulation ) { strEnumeratorResult = "Simulation"; }
+        else if( enumInst.enumerator() == EMode::View ) { strEnumeratorResult = "View"; }
         else if( enumInst.enumerator() == EMode::Undefined ) { strEnumeratorResult = "Undefined"; }
         else { strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator())); }
         strResultValue += strEnumeratorResult;
@@ -3437,11 +3437,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorAssign( ZS::Test::CTestS
             }
             else if( iEnumerator == 1 )
             {
-                strEnumeratorResult = "Simulation";
+                strEnumeratorResult = "View";
 
-                if( idxAlias == EEnumEntryAliasStrName ) strEnumeratorSource = "Simulation";
-                else if( idxAlias == EEnumEntryAliasStrSymbol ) strEnumeratorSource = "S";
-                else if( idxAlias == EEnumEntryAliasStrText ) strEnumeratorSource = "Simulation";
+                if( idxAlias == EEnumEntryAliasStrName ) strEnumeratorSource = "View";
+                else if( idxAlias == EEnumEntryAliasStrSymbol ) strEnumeratorSource = "V";
+                else if( idxAlias == EEnumEntryAliasStrText ) strEnumeratorSource = "View";
                 else strEnumeratorSource = QString::number(iEnumerator);
             }
             else if( iEnumerator == 2 )
@@ -3466,7 +3466,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorAssign( ZS::Test::CTestS
             strResultValue = "CEnumMode = " + strEnumeratorSource + ": ";
             enumInst = strEnumeratorSource;
             if( enumInst.enumerator() == EMode::Edit ) strEnumeratorResult = "Edit";
-            else if( enumInst.enumerator() == EMode::Simulation ) strEnumeratorResult = "Simulation";
+            else if( enumInst.enumerator() == EMode::View ) strEnumeratorResult = "View";
             else if( enumInst.enumerator() == EMode::Undefined ) strEnumeratorResult = "Undefined";
             else strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator()));
             strResultValue += strEnumeratorResult;
@@ -3477,7 +3477,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorAssign( ZS::Test::CTestS
 
     // -------------------------------------------------------------------------
 
-    strEnumeratorSource = "simULATION";
+    strEnumeratorSource = "vIEW";
 
     strExpectedValue = "CEnumMode = " + strEnumeratorSource + ": -1";
     strlstExpectedValues.append(strExpectedValue);
@@ -3485,7 +3485,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorAssign( ZS::Test::CTestS
     strResultValue = "CEnumMode = " + strEnumeratorSource + ": ";
     enumInst = strEnumeratorSource;
     if( enumInst.enumerator() == EMode::Edit ) strEnumeratorResult = "Edit";
-    else if( enumInst.enumerator() == EMode::Simulation ) strEnumeratorResult = "Simulation";
+    else if( enumInst.enumerator() == EMode::View ) strEnumeratorResult = "View";
     else if( enumInst.enumerator() == EMode::Undefined ) strEnumeratorResult = "Undefined";
     else strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator()));
     strResultValue += strEnumeratorResult;
@@ -3514,21 +3514,21 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( Z
 
     // -------------------------------------------------------------------------
 
-    enumerator = EMode::Simulation;
-    enumInst = EMode::Simulation;
+    enumerator = EMode::View;
+    enumInst = EMode::View;
 
     try
     {
-        strExpectedValue = "Simulation == Simulation";
+        strExpectedValue = "View == View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == enumerator )
         {
-            strResultValue = "Simulation == Simulation";
+            strResultValue = "View == View";
         }
         else
         {
-            strResultValue = "Simulation != Simulation";
+            strResultValue = "View != View";
         }
     }
     catch( CException& exc )
@@ -3539,16 +3539,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( Z
 
     try
     {
-        strExpectedValue = "Simulation == Simulation";
+        strExpectedValue = "View == View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != enumerator )
         {
-            strResultValue = "Simulation != Simulation";
+            strResultValue = "View != View";
         }
         else
         {
-            strResultValue = "Simulation == Simulation";
+            strResultValue = "View == View";
         }
     }
     catch( CException& exc )
@@ -3561,16 +3561,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( Z
 
     try
     {
-        strExpectedValue = "Simulation >= Simulation";
+        strExpectedValue = "View >= View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < enumerator )
         {
-            strResultValue = "Simulation < Simulation";
+            strResultValue = "View < View";
         }
         else
         {
-            strResultValue = "Simulation >= Simulation";
+            strResultValue = "View >= View";
         }
     }
     catch( CException& exc )
@@ -3581,16 +3581,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( Z
 
     try
     {
-        strExpectedValue = "Simulation <= Simulation";
+        strExpectedValue = "View <= View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > enumerator )
         {
-            strResultValue = "Simulation > Simulation";
+            strResultValue = "View > View";
         }
         else
         {
-            strResultValue = "Simulation <= Simulation";
+            strResultValue = "View <= View";
         }
     }
     catch( CException& exc )
@@ -3603,16 +3603,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( Z
 
     try
     {
-        strExpectedValue = "Simulation <= Simulation";
+        strExpectedValue = "View <= View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= enumerator )
         {
-            strResultValue = "Simulation <= Simulation";
+            strResultValue = "View <= View";
         }
         else
         {
-            strResultValue = "Simulation > Simulation";
+            strResultValue = "View > View";
         }
     }
     catch( CException& exc )
@@ -3623,16 +3623,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( Z
 
     try
     {
-        strExpectedValue = "Simulation >= Simulation";
+        strExpectedValue = "View >= View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= enumerator )
         {
-            strResultValue = "Simulation >= Simulation";
+            strResultValue = "View >= View";
         }
         else
         {
-            strResultValue = "Simulation < Simulation";
+            strResultValue = "View < View";
         }
     }
     catch( CException& exc )
@@ -3644,20 +3644,20 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( Z
     // -------------------------------------------------------------------------
 
     enumInst = EMode::Edit;
-    enumerator = EMode::Simulation;
+    enumerator = EMode::View;
 
     try
     {
-        strExpectedValue = "Edit != Simulation";
+        strExpectedValue = "Edit != View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == enumerator )
         {
-            strResultValue = "Edit == Simulation";
+            strResultValue = "Edit == View";
         }
         else
         {
-            strResultValue = "Edit != Simulation";
+            strResultValue = "Edit != View";
         }
     }
     catch( CException& exc )
@@ -3668,16 +3668,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( Z
 
     try
     {
-        strExpectedValue = "Edit != Simulation";
+        strExpectedValue = "Edit != View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != enumerator )
         {
-            strResultValue = "Edit != Simulation";
+            strResultValue = "Edit != View";
         }
         else
         {
-            strResultValue = "Edit == Simulation";
+            strResultValue = "Edit == View";
         }
     }
     catch( CException& exc )
@@ -3690,16 +3690,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( Z
 
     try
     {
-        strExpectedValue = "Edit < Simulation";
+        strExpectedValue = "Edit < View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < enumerator )
         {
-            strResultValue = "Edit < Simulation";
+            strResultValue = "Edit < View";
         }
         else
         {
-            strResultValue = "Edit >= Simulation";
+            strResultValue = "Edit >= View";
         }
     }
     catch( CException& exc )
@@ -3710,16 +3710,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( Z
 
     try
     {
-        strExpectedValue = "Edit <= Simulation";
+        strExpectedValue = "Edit <= View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > enumerator )
         {
-            strResultValue = "Edit > Simulation";
+            strResultValue = "Edit > View";
         }
         else
         {
-            strResultValue = "Edit <= Simulation";
+            strResultValue = "Edit <= View";
         }
     }
     catch( CException& exc )
@@ -3732,16 +3732,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( Z
 
     try
     {
-        strExpectedValue = "Edit <= Simulation";
+        strExpectedValue = "Edit <= View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= enumerator )
         {
-            strResultValue = "Edit <= Simulation";
+            strResultValue = "Edit <= View";
         }
         else
         {
-            strResultValue = "Edit > Simulation";
+            strResultValue = "Edit > View";
         }
     }
     catch( CException& exc )
@@ -3752,16 +3752,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( Z
 
     try
     {
-        strExpectedValue = "Edit < Simulation";
+        strExpectedValue = "Edit < View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= enumerator )
         {
-            strResultValue = "Edit >= Simulation";
+            strResultValue = "Edit >= View";
         }
         else
         {
-            strResultValue = "Edit < Simulation";
+            strResultValue = "Edit < View";
         }
     }
     catch( CException& exc )
@@ -3773,20 +3773,20 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( Z
     // -------------------------------------------------------------------------
 
     enumInst = CEnumMode(); // InvalidEnumerator
-    enumerator = EMode::Simulation;
+    enumerator = EMode::View;
 
     try
     {
-        strExpectedValue = "Invalid != Simulation";
+        strExpectedValue = "Invalid != View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == enumerator )
         {
-            strResultValue = "Invalid == Simulation";
+            strResultValue = "Invalid == View";
         }
         else
         {
-            strResultValue = "Invalid != Simulation";
+            strResultValue = "Invalid != View";
         }
     }
     catch( CException& exc )
@@ -3797,16 +3797,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( Z
 
     try
     {
-        strExpectedValue = "Invalid != Simulation";
+        strExpectedValue = "Invalid != View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != enumerator )
         {
-            strResultValue = "Invalid != Simulation";
+            strResultValue = "Invalid != View";
         }
         else
         {
-            strResultValue = "Invalid == Simulation";
+            strResultValue = "Invalid == View";
         }
     }
     catch( CException& exc )
@@ -3824,11 +3824,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( Z
 
         if( enumInst < enumerator )
         {
-            strResultValue = "Invalid < Simulation";
+            strResultValue = "Invalid < View";
         }
         else
         {
-            strResultValue = "Invalid >= Simulation";
+            strResultValue = "Invalid >= View";
         }
     }
     catch( CException& exc )
@@ -3849,11 +3849,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( Z
 
         if( enumInst > enumerator )
         {
-            strResultValue = "Invalid > Simulation";
+            strResultValue = "Invalid > View";
         }
         else
         {
-            strResultValue = "Invalid <= Simulation";
+            strResultValue = "Invalid <= View";
         }
     }
     catch( CException& exc )
@@ -3876,11 +3876,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( Z
 
         if( enumInst <= enumerator )
         {
-            strResultValue = "Invalid <= Simulation";
+            strResultValue = "Invalid <= View";
         }
         else
         {
-            strResultValue = "Invalid > Simulation";
+            strResultValue = "Invalid > View";
         }
     }
     catch( CException& exc )
@@ -3901,11 +3901,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( Z
 
         if( enumInst >= enumerator )
         {
-            strResultValue = "Invalid >= Simulation";
+            strResultValue = "Invalid >= View";
         }
         else
         {
-            strResultValue = "Invalid < Simulation";
+            strResultValue = "Invalid < View";
         }
     }
     catch( CException& exc )
@@ -3921,21 +3921,21 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( Z
 
     // -------------------------------------------------------------------------
 
-    enumInst = EMode::Simulation;
+    enumInst = EMode::View;
     enumerator = static_cast<EMode>(EInvalidEnumerator);
 
     try
     {
-        strExpectedValue = "Simulation != Invalid";
+        strExpectedValue = "View != Invalid";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == enumerator )
         {
-            strResultValue = "Simulation == Invalid";
+            strResultValue = "View == Invalid";
         }
         else
         {
-            strResultValue = "Simulation != Invalid";
+            strResultValue = "View != Invalid";
         }
     }
     catch( CException& exc )
@@ -3946,16 +3946,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( Z
 
     try
     {
-        strExpectedValue = "Simulation != Invalid";
+        strExpectedValue = "View != Invalid";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != enumerator )
         {
-            strResultValue = "Simulation != Invalid";
+            strResultValue = "View != Invalid";
         }
         else
         {
-            strResultValue = "Simulation == Invalid";
+            strResultValue = "View == Invalid";
         }
     }
     catch( CException& exc )
@@ -3973,11 +3973,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( Z
 
         if( enumInst < enumerator )
         {
-            strResultValue = "Simulation < Invalid";
+            strResultValue = "View < Invalid";
         }
         else
         {
-            strResultValue = "Simulation >= Invalid";
+            strResultValue = "View >= Invalid";
         }
     }
     catch( CException& exc )
@@ -3998,11 +3998,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( Z
 
         if( enumInst > enumerator )
         {
-            strResultValue = "Simulation > Invalid";
+            strResultValue = "View > Invalid";
         }
         else
         {
-            strResultValue = "Simulation <= Invalid";
+            strResultValue = "View <= Invalid";
         }
     }
     catch( CException& exc )
@@ -4025,11 +4025,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( Z
 
         if( enumInst <= enumerator )
         {
-            strResultValue = "Simulation <= Invalid";
+            strResultValue = "View <= Invalid";
         }
         else
         {
-            strResultValue = "Simulation > Invalid";
+            strResultValue = "View > Invalid";
         }
     }
     catch( CException& exc )
@@ -4050,11 +4050,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( Z
 
         if( enumInst >= enumerator )
         {
-            strResultValue = "Simulation >= Invalid";
+            strResultValue = "View >= Invalid";
         }
         else
         {
-            strResultValue = "Simulation < Invalid";
+            strResultValue = "View < Invalid";
         }
     }
     catch( CException& exc )
@@ -4240,21 +4240,21 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithInt( ZS::Test
 
     // -------------------------------------------------------------------------
 
-    enumInst = EMode::Simulation;
-    iEnumerator = static_cast<int>(EMode::Simulation);
+    enumInst = EMode::View;
+    iEnumerator = static_cast<int>(EMode::View);
 
     try
     {
-        strExpectedValue = "Simulation == Simulation";
+        strExpectedValue = "View == View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == iEnumerator )
         {
-            strResultValue = "Simulation == Simulation";
+            strResultValue = "View == View";
         }
         else
         {
-            strResultValue = "Simulation != Simulation";
+            strResultValue = "View != View";
         }
     }
     catch( CException& exc )
@@ -4265,16 +4265,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithInt( ZS::Test
 
     try
     {
-        strExpectedValue = "Simulation == Simulation";
+        strExpectedValue = "View == View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != iEnumerator )
         {
-            strResultValue = "Simulation != Simulation";
+            strResultValue = "View != View";
         }
         else
         {
-            strResultValue = "Simulation == Simulation";
+            strResultValue = "View == View";
         }
     }
     catch( CException& exc )
@@ -4287,16 +4287,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithInt( ZS::Test
 
     try
     {
-        strExpectedValue = "Simulation >= Simulation";
+        strExpectedValue = "View >= View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < iEnumerator )
         {
-            strResultValue = "Simulation < Simulation";
+            strResultValue = "View < View";
         }
         else
         {
-            strResultValue = "Simulation >= Simulation";
+            strResultValue = "View >= View";
         }
     }
     catch( CException& exc )
@@ -4307,16 +4307,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithInt( ZS::Test
 
     try
     {
-        strExpectedValue = "Simulation <= Simulation";
+        strExpectedValue = "View <= View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > iEnumerator )
         {
-            strResultValue = "Simulation > Simulation";
+            strResultValue = "View > View";
         }
         else
         {
-            strResultValue = "Simulation <= Simulation";
+            strResultValue = "View <= View";
         }
     }
     catch( CException& exc )
@@ -4329,16 +4329,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithInt( ZS::Test
 
     try
     {
-        strExpectedValue = "Simulation <= Simulation";
+        strExpectedValue = "View <= View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= iEnumerator )
         {
-            strResultValue = "Simulation <= Simulation";
+            strResultValue = "View <= View";
         }
         else
         {
-            strResultValue = "Simulation > Simulation";
+            strResultValue = "View > View";
         }
     }
     catch( CException& exc )
@@ -4349,16 +4349,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithInt( ZS::Test
 
     try
     {
-        strExpectedValue = "Simulation >= Simulation";
+        strExpectedValue = "View >= View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= iEnumerator )
         {
-            strResultValue = "Simulation >= Simulation";
+            strResultValue = "View >= View";
         }
         else
         {
-            strResultValue = "Simulation < Simulation";
+            strResultValue = "View < View";
         }
     }
     catch( CException& exc )
@@ -4370,20 +4370,20 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithInt( ZS::Test
     // -------------------------------------------------------------------------
 
     enumInst = EMode::Edit;
-    iEnumerator = static_cast<int>(EMode::Simulation);
+    iEnumerator = static_cast<int>(EMode::View);
 
     try
     {
-        strExpectedValue = "Edit != Simulation";
+        strExpectedValue = "Edit != View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == iEnumerator )
         {
-            strResultValue = "Edit == Simulation";
+            strResultValue = "Edit == View";
         }
         else
         {
-            strResultValue = "Edit != Simulation";
+            strResultValue = "Edit != View";
         }
     }
     catch( CException& exc )
@@ -4394,16 +4394,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithInt( ZS::Test
 
     try
     {
-        strExpectedValue = "Edit != Simulation";
+        strExpectedValue = "Edit != View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != iEnumerator )
         {
-            strResultValue = "Edit != Simulation";
+            strResultValue = "Edit != View";
         }
         else
         {
-            strResultValue = "Edit == Simulation";
+            strResultValue = "Edit == View";
         }
     }
     catch( CException& exc )
@@ -4416,16 +4416,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithInt( ZS::Test
 
     try
     {
-        strExpectedValue = "Edit < Simulation";
+        strExpectedValue = "Edit < View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < iEnumerator )
         {
-            strResultValue = "Edit < Simulation";
+            strResultValue = "Edit < View";
         }
         else
         {
-            strResultValue = "Edit >= Simulation";
+            strResultValue = "Edit >= View";
         }
     }
     catch( CException& exc )
@@ -4436,16 +4436,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithInt( ZS::Test
 
     try
     {
-        strExpectedValue = "Edit <= Simulation";
+        strExpectedValue = "Edit <= View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > iEnumerator )
         {
-            strResultValue = "Edit > Simulation";
+            strResultValue = "Edit > View";
         }
         else
         {
-            strResultValue = "Edit <= Simulation";
+            strResultValue = "Edit <= View";
         }
     }
     catch( CException& exc )
@@ -4458,16 +4458,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithInt( ZS::Test
 
     try
     {
-        strExpectedValue = "Edit <= Simulation";
+        strExpectedValue = "Edit <= View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= iEnumerator )
         {
-            strResultValue = "Edit <= Simulation";
+            strResultValue = "Edit <= View";
         }
         else
         {
-            strResultValue = "Edit > Simulation";
+            strResultValue = "Edit > View";
         }
     }
     catch( CException& exc )
@@ -4478,16 +4478,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithInt( ZS::Test
 
     try
     {
-        strExpectedValue = "Edit < Simulation";
+        strExpectedValue = "Edit < View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= iEnumerator )
         {
-            strResultValue = "Edit >= Simulation";
+            strResultValue = "Edit >= View";
         }
         else
         {
-            strResultValue = "Edit < Simulation";
+            strResultValue = "Edit < View";
         }
     }
     catch( CException& exc )
@@ -4499,20 +4499,20 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithInt( ZS::Test
     // -------------------------------------------------------------------------
 
     enumInst = CEnumMode(); // InvalidEnumerator
-    iEnumerator = static_cast<int>(EMode::Simulation);
+    iEnumerator = static_cast<int>(EMode::View);
 
     try
     {
-        strExpectedValue = "Invalid != Simulation";
+        strExpectedValue = "Invalid != View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == iEnumerator )
         {
-            strResultValue = "Invalid == Simulation";
+            strResultValue = "Invalid == View";
         }
         else
         {
-            strResultValue = "Invalid != Simulation";
+            strResultValue = "Invalid != View";
         }
     }
     catch( CException& exc )
@@ -4523,16 +4523,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithInt( ZS::Test
 
     try
     {
-        strExpectedValue = "Invalid != Simulation";
+        strExpectedValue = "Invalid != View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != iEnumerator )
         {
-            strResultValue = "Invalid != Simulation";
+            strResultValue = "Invalid != View";
         }
         else
         {
-            strResultValue = "Invalid == Simulation";
+            strResultValue = "Invalid == View";
         }
     }
     catch( CException& exc )
@@ -4545,16 +4545,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithInt( ZS::Test
 
     try
     {
-        strExpectedValue = "Invalid < Simulation: false";
+        strExpectedValue = "Invalid < View: false";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < iEnumerator )
         {
-            strResultValue = "Invalid < Simulation";
+            strResultValue = "Invalid < View";
         }
         else
         {
-            strResultValue = "Invalid < Simulation: false";
+            strResultValue = "Invalid < View: false";
         }
     }
     catch( CException& exc )
@@ -4565,16 +4565,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithInt( ZS::Test
 
     try
     {
-        strExpectedValue = "Invalid > Simulation: false";
+        strExpectedValue = "Invalid > View: false";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > iEnumerator )
         {
-            strResultValue = "Invalid > Simulation";
+            strResultValue = "Invalid > View";
         }
         else
         {
-            strResultValue = "Invalid > Simulation: false";
+            strResultValue = "Invalid > View: false";
         }
     }
     catch( CException& exc )
@@ -4587,16 +4587,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithInt( ZS::Test
 
     try
     {
-        strExpectedValue = "Invalid <= Simulation: false";
+        strExpectedValue = "Invalid <= View: false";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= iEnumerator )
         {
-            strResultValue = "Invalid <= Simulation";
+            strResultValue = "Invalid <= View";
         }
         else
         {
-            strResultValue = "Invalid <= Simulation: false";
+            strResultValue = "Invalid <= View: false";
         }
     }
     catch( CException& exc )
@@ -4607,16 +4607,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithInt( ZS::Test
 
     try
     {
-        strExpectedValue = "Invalid >= Simulation: false";
+        strExpectedValue = "Invalid >= View: false";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= iEnumerator )
         {
-            strResultValue = "Invalid >= Simulation";
+            strResultValue = "Invalid >= View";
         }
         else
         {
-            strResultValue = "Invalid >= Simulation: false";
+            strResultValue = "Invalid >= View: false";
         }
     }
     catch( CException& exc )
@@ -4627,21 +4627,21 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithInt( ZS::Test
 
     // -------------------------------------------------------------------------
 
-    enumInst = EMode::Simulation;
+    enumInst = EMode::View;
     iEnumerator = EInvalidEnumerator;
 
     try
     {
-        strExpectedValue = "Simulation != Invalid";
+        strExpectedValue = "View != Invalid";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == iEnumerator )
         {
-            strResultValue = "Simulation == Invalid";
+            strResultValue = "View == Invalid";
         }
         else
         {
-            strResultValue = "Simulation != Invalid";
+            strResultValue = "View != Invalid";
         }
     }
     catch( CException& exc )
@@ -4652,16 +4652,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithInt( ZS::Test
 
     try
     {
-        strExpectedValue = "Simulation != Invalid";
+        strExpectedValue = "View != Invalid";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != iEnumerator )
         {
-            strResultValue = "Simulation != Invalid";
+            strResultValue = "View != Invalid";
         }
         else
         {
-            strResultValue = "Simulation == Invalid";
+            strResultValue = "View == Invalid";
         }
     }
     catch( CException& exc )
@@ -4674,16 +4674,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithInt( ZS::Test
 
     try
     {
-        strExpectedValue = "Simulation < Invalid: false";
+        strExpectedValue = "View < Invalid: false";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < iEnumerator )
         {
-            strResultValue = "Simulation < Invalid";
+            strResultValue = "View < Invalid";
         }
         else
         {
-            strResultValue = "Simulation < Invalid: false";
+            strResultValue = "View < Invalid: false";
         }
     }
     catch( CException& exc )
@@ -4694,16 +4694,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithInt( ZS::Test
 
     try
     {
-        strExpectedValue = "Simulation > Invalid: false";
+        strExpectedValue = "View > Invalid: false";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > iEnumerator )
         {
-            strResultValue = "Simulation > Invalid";
+            strResultValue = "View > Invalid";
         }
         else
         {
-            strResultValue = "Simulation > Invalid: false";
+            strResultValue = "View > Invalid: false";
         }
     }
     catch( CException& exc )
@@ -4716,16 +4716,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithInt( ZS::Test
 
     try
     {
-        strExpectedValue = "Simulation <= Invalid: false";
+        strExpectedValue = "View <= Invalid: false";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= iEnumerator )
         {
-            strResultValue = "Simulation <= Invalid";
+            strResultValue = "View <= Invalid";
         }
         else
         {
-            strResultValue = "Simulation <= Invalid: false";
+            strResultValue = "View <= Invalid: false";
         }
     }
     catch( CException& exc )
@@ -4736,16 +4736,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithInt( ZS::Test
 
     try
     {
-        strExpectedValue = "Simulation >= Invalid: false";
+        strExpectedValue = "View >= Invalid: false";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= iEnumerator )
         {
-            strResultValue = "Simulation >= Invalid";
+            strResultValue = "View >= Invalid";
         }
         else
         {
-            strResultValue = "Simulation >= Invalid: false";
+            strResultValue = "View >= Invalid: false";
         }
     }
     catch( CException& exc )
@@ -4904,21 +4904,21 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithCharPtr( ZS::
 
     // -------------------------------------------------------------------------
 
-    enumInst = EMode::Simulation;
-    const char* szEnumerator = "Simulation";
+    enumInst = EMode::View;
+    const char* szEnumerator = "View";
 
     try
     {
-        strExpectedValue = "Simulation == Simulation";
+        strExpectedValue = "View == View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == szEnumerator )
         {
-            strResultValue = "Simulation == Simulation";
+            strResultValue = "View == View";
         }
         else
         {
-            strResultValue = "Simulation != Simulation";
+            strResultValue = "View != View";
         }
     }
     catch( CException& exc )
@@ -4929,16 +4929,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithCharPtr( ZS::
 
     try
     {
-        strExpectedValue = "Simulation == Simulation";
+        strExpectedValue = "View == View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != szEnumerator )
         {
-            strResultValue = "Simulation != Simulation";
+            strResultValue = "View != View";
         }
         else
         {
-            strResultValue = "Simulation == Simulation";
+            strResultValue = "View == View";
         }
     }
     catch( CException& exc )
@@ -4951,16 +4951,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithCharPtr( ZS::
 
     try
     {
-        strExpectedValue = "Simulation >= Simulation";
+        strExpectedValue = "View >= View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < szEnumerator )
         {
-            strResultValue = "Simulation < Simulation";
+            strResultValue = "View < View";
         }
         else
         {
-            strResultValue = "Simulation >= Simulation";
+            strResultValue = "View >= View";
         }
     }
     catch( CException& exc )
@@ -4971,16 +4971,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithCharPtr( ZS::
 
     try
     {
-        strExpectedValue = "Simulation <= Simulation";
+        strExpectedValue = "View <= View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > szEnumerator )
         {
-            strResultValue = "Simulation > Simulation";
+            strResultValue = "View > View";
         }
         else
         {
-            strResultValue = "Simulation <= Simulation";
+            strResultValue = "View <= View";
         }
     }
     catch( CException& exc )
@@ -4993,16 +4993,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithCharPtr( ZS::
 
     try
     {
-        strExpectedValue = "Simulation <= Simulation";
+        strExpectedValue = "View <= View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= szEnumerator )
         {
-            strResultValue = "Simulation <= Simulation";
+            strResultValue = "View <= View";
         }
         else
         {
-            strResultValue = "Simulation > Simulation";
+            strResultValue = "View > View";
         }
     }
     catch( CException& exc )
@@ -5013,16 +5013,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithCharPtr( ZS::
 
     try
     {
-        strExpectedValue = "Simulation >= Simulation";
+        strExpectedValue = "View >= View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= szEnumerator )
         {
-            strResultValue = "Simulation >= Simulation";
+            strResultValue = "View >= View";
         }
         else
         {
-            strResultValue = "Simulation < Simulation";
+            strResultValue = "View < View";
         }
     }
     catch( CException& exc )
@@ -5034,20 +5034,20 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithCharPtr( ZS::
     // -------------------------------------------------------------------------
 
     enumInst = EMode::Edit;
-    szEnumerator = "Simulation";
+    szEnumerator = "View";
 
     try
     {
-        strExpectedValue = "Edit != Simulation";
+        strExpectedValue = "Edit != View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == szEnumerator )
         {
-            strResultValue = "Edit == Simulation";
+            strResultValue = "Edit == View";
         }
         else
         {
-            strResultValue = "Edit != Simulation";
+            strResultValue = "Edit != View";
         }
     }
     catch( CException& exc )
@@ -5058,16 +5058,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithCharPtr( ZS::
 
     try
     {
-        strExpectedValue = "Edit != Simulation";
+        strExpectedValue = "Edit != View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != szEnumerator )
         {
-            strResultValue = "Edit != Simulation";
+            strResultValue = "Edit != View";
         }
         else
         {
-            strResultValue = "Edit == Simulation";
+            strResultValue = "Edit == View";
         }
     }
     catch( CException& exc )
@@ -5080,16 +5080,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithCharPtr( ZS::
 
     try
     {
-        strExpectedValue = "Edit < Simulation";
+        strExpectedValue = "Edit < View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < szEnumerator )
         {
-            strResultValue = "Edit < Simulation";
+            strResultValue = "Edit < View";
         }
         else
         {
-            strResultValue = "Edit >= Simulation";
+            strResultValue = "Edit >= View";
         }
     }
     catch( CException& exc )
@@ -5100,16 +5100,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithCharPtr( ZS::
 
     try
     {
-        strExpectedValue = "Edit <= Simulation";
+        strExpectedValue = "Edit <= View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > szEnumerator )
         {
-            strResultValue = "Edit > Simulation";
+            strResultValue = "Edit > View";
         }
         else
         {
-            strResultValue = "Edit <= Simulation";
+            strResultValue = "Edit <= View";
         }
     }
     catch( CException& exc )
@@ -5122,16 +5122,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithCharPtr( ZS::
 
     try
     {
-        strExpectedValue = "Edit <= Simulation";
+        strExpectedValue = "Edit <= View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= szEnumerator )
         {
-            strResultValue = "Edit <= Simulation";
+            strResultValue = "Edit <= View";
         }
         else
         {
-            strResultValue = "Edit > Simulation";
+            strResultValue = "Edit > View";
         }
     }
     catch( CException& exc )
@@ -5142,16 +5142,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithCharPtr( ZS::
 
     try
     {
-        strExpectedValue = "Edit < Simulation";
+        strExpectedValue = "Edit < View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= szEnumerator )
         {
-            strResultValue = "Edit >= Simulation";
+            strResultValue = "Edit >= View";
         }
         else
         {
-            strResultValue = "Edit < Simulation";
+            strResultValue = "Edit < View";
         }
     }
     catch( CException& exc )
@@ -5163,20 +5163,20 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithCharPtr( ZS::
     // -------------------------------------------------------------------------
 
     enumInst = CEnumMode(); // InvalidEnumerator
-    szEnumerator = "Simulation";
+    szEnumerator = "View";
 
     try
     {
-        strExpectedValue = "Invalid != Simulation";
+        strExpectedValue = "Invalid != View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == szEnumerator )
         {
-            strResultValue = "Invalid == Simulation";
+            strResultValue = "Invalid == View";
         }
         else
         {
-            strResultValue = "Invalid != Simulation";
+            strResultValue = "Invalid != View";
         }
     }
     catch( CException& exc )
@@ -5187,16 +5187,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithCharPtr( ZS::
 
     try
     {
-        strExpectedValue = "Invalid != Simulation";
+        strExpectedValue = "Invalid != View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != szEnumerator )
         {
-            strResultValue = "Invalid != Simulation";
+            strResultValue = "Invalid != View";
         }
         else
         {
-            strResultValue = "Invalid == Simulation";
+            strResultValue = "Invalid == View";
         }
     }
     catch( CException& exc )
@@ -5209,16 +5209,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithCharPtr( ZS::
 
     try
     {
-        strExpectedValue = "Invalid < Simulation: false";
+        strExpectedValue = "Invalid < View: false";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < szEnumerator )
         {
-            strResultValue = "Invalid < Simulation";
+            strResultValue = "Invalid < View";
         }
         else
         {
-            strResultValue = "Invalid < Simulation: false";
+            strResultValue = "Invalid < View: false";
         }
     }
     catch( CException& exc )
@@ -5229,16 +5229,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithCharPtr( ZS::
 
     try
     {
-        strExpectedValue = "Invalid > Simulation: false";
+        strExpectedValue = "Invalid > View: false";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > szEnumerator )
         {
-            strResultValue = "Invalid > Simulation";
+            strResultValue = "Invalid > View";
         }
         else
         {
-            strResultValue = "Invalid > Simulation: false";
+            strResultValue = "Invalid > View: false";
         }
     }
     catch( CException& exc )
@@ -5251,16 +5251,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithCharPtr( ZS::
 
     try
     {
-        strExpectedValue = "Invalid <= Simulation: false";
+        strExpectedValue = "Invalid <= View: false";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= szEnumerator )
         {
-            strResultValue = "Invalid <= Simulation";
+            strResultValue = "Invalid <= View";
         }
         else
         {
-            strResultValue = "Invalid <= Simulation: false";
+            strResultValue = "Invalid <= View: false";
         }
     }
     catch( CException& exc )
@@ -5271,16 +5271,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithCharPtr( ZS::
 
     try
     {
-        strExpectedValue = "Invalid >= Simulation: false";
+        strExpectedValue = "Invalid >= View: false";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= szEnumerator )
         {
-            strResultValue = "Invalid >= Simulation";
+            strResultValue = "Invalid >= View";
         }
         else
         {
-            strResultValue = "Invalid >= Simulation: false";
+            strResultValue = "Invalid >= View: false";
         }
     }
     catch( CException& exc )
@@ -5291,21 +5291,21 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithCharPtr( ZS::
 
     // -------------------------------------------------------------------------
 
-    enumInst = EMode::Simulation;
+    enumInst = EMode::View;
     szEnumerator = "Unknown";
 
     try
     {
-        strExpectedValue = "Simulation != Unknown";
+        strExpectedValue = "View != Unknown";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == szEnumerator )
         {
-            strResultValue = "Simulation == Unknown";
+            strResultValue = "View == Unknown";
         }
         else
         {
-            strResultValue = "Simulation != Unknown";
+            strResultValue = "View != Unknown";
         }
     }
     catch( CException& exc )
@@ -5316,16 +5316,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithCharPtr( ZS::
 
     try
     {
-        strExpectedValue = "Simulation != Unknown";
+        strExpectedValue = "View != Unknown";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != szEnumerator )
         {
-            strResultValue = "Simulation != Unknown";
+            strResultValue = "View != Unknown";
         }
         else
         {
-            strResultValue = "Simulation == Unknown";
+            strResultValue = "View == Unknown";
         }
     }
     catch( CException& exc )
@@ -5338,16 +5338,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithCharPtr( ZS::
 
     try
     {
-        strExpectedValue = "Simulation < Unknown: false";
+        strExpectedValue = "View < Unknown: false";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < szEnumerator )
         {
-            strResultValue = "Simulation < Unknown";
+            strResultValue = "View < Unknown";
         }
         else
         {
-            strResultValue = "Simulation < Unknown: false";
+            strResultValue = "View < Unknown: false";
         }
     }
     catch( CException& exc )
@@ -5358,16 +5358,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithCharPtr( ZS::
 
     try
     {
-        strExpectedValue = "Simulation > Unknown: false";
+        strExpectedValue = "View > Unknown: false";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > szEnumerator )
         {
-            strResultValue = "Simulation > Unknown";
+            strResultValue = "View > Unknown";
         }
         else
         {
-            strResultValue = "Simulation > Unknown: false";
+            strResultValue = "View > Unknown: false";
         }
     }
     catch( CException& exc )
@@ -5380,16 +5380,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithCharPtr( ZS::
 
     try
     {
-        strExpectedValue = "Simulation <= Unknown: false";
+        strExpectedValue = "View <= Unknown: false";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= szEnumerator )
         {
-            strResultValue = "Simulation <= Unknown";
+            strResultValue = "View <= Unknown";
         }
         else
         {
-            strResultValue = "Simulation <= Unknown: false";
+            strResultValue = "View <= Unknown: false";
         }
     }
     catch( CException& exc )
@@ -5400,16 +5400,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithCharPtr( ZS::
 
     try
     {
-        strExpectedValue = "Simulation >= Unknown: false";
+        strExpectedValue = "View >= Unknown: false";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= szEnumerator )
         {
-            strResultValue = "Simulation >= Unknown";
+            strResultValue = "View >= Unknown";
         }
         else
         {
-            strResultValue = "Simulation >= Unknown: false";
+            strResultValue = "View >= Unknown: false";
         }
     }
     catch( CException& exc )
@@ -5570,21 +5570,21 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithQString( ZS::
 
     // -------------------------------------------------------------------------
 
-    enumInst = EMode::Simulation;
-    strEnumerator = "Simulation";
+    enumInst = EMode::View;
+    strEnumerator = "View";
 
     try
     {
-        strExpectedValue = "Simulation == Simulation";
+        strExpectedValue = "View == View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == strEnumerator )
         {
-            strResultValue = "Simulation == Simulation";
+            strResultValue = "View == View";
         }
         else
         {
-            strResultValue = "Simulation != Simulation";
+            strResultValue = "View != View";
         }
     }
     catch( CException& exc )
@@ -5595,16 +5595,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithQString( ZS::
 
     try
     {
-        strExpectedValue = "Simulation == Simulation";
+        strExpectedValue = "View == View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != strEnumerator )
         {
-            strResultValue = "Simulation != Simulation";
+            strResultValue = "View != View";
         }
         else
         {
-            strResultValue = "Simulation == Simulation";
+            strResultValue = "View == View";
         }
     }
     catch( CException& exc )
@@ -5617,16 +5617,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithQString( ZS::
 
     try
     {
-        strExpectedValue = "Simulation >= Simulation";
+        strExpectedValue = "View >= View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < strEnumerator )
         {
-            strResultValue = "Simulation < Simulation";
+            strResultValue = "View < View";
         }
         else
         {
-            strResultValue = "Simulation >= Simulation";
+            strResultValue = "View >= View";
         }
     }
     catch( CException& exc )
@@ -5637,16 +5637,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithQString( ZS::
 
     try
     {
-        strExpectedValue = "Simulation <= Simulation";
+        strExpectedValue = "View <= View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > strEnumerator )
         {
-            strResultValue = "Simulation > Simulation";
+            strResultValue = "View > View";
         }
         else
         {
-            strResultValue = "Simulation <= Simulation";
+            strResultValue = "View <= View";
         }
     }
     catch( CException& exc )
@@ -5659,16 +5659,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithQString( ZS::
 
     try
     {
-        strExpectedValue = "Simulation <= Simulation";
+        strExpectedValue = "View <= View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= strEnumerator )
         {
-            strResultValue = "Simulation <= Simulation";
+            strResultValue = "View <= View";
         }
         else
         {
-            strResultValue = "Simulation > Simulation";
+            strResultValue = "View > View";
         }
     }
     catch( CException& exc )
@@ -5679,16 +5679,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithQString( ZS::
 
     try
     {
-        strExpectedValue = "Simulation >= Simulation";
+        strExpectedValue = "View >= View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= strEnumerator )
         {
-            strResultValue = "Simulation >= Simulation";
+            strResultValue = "View >= View";
         }
         else
         {
-            strResultValue = "Simulation < Simulation";
+            strResultValue = "View < View";
         }
     }
     catch( CException& exc )
@@ -5700,20 +5700,20 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithQString( ZS::
     // -------------------------------------------------------------------------
 
     enumInst = EMode::Edit;
-    strEnumerator = "Simulation";
+    strEnumerator = "View";
 
     try
     {
-        strExpectedValue = "Edit != Simulation";
+        strExpectedValue = "Edit != View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == strEnumerator )
         {
-            strResultValue = "Edit == Simulation";
+            strResultValue = "Edit == View";
         }
         else
         {
-            strResultValue = "Edit != Simulation";
+            strResultValue = "Edit != View";
         }
     }
     catch( CException& exc )
@@ -5724,16 +5724,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithQString( ZS::
 
     try
     {
-        strExpectedValue = "Edit != Simulation";
+        strExpectedValue = "Edit != View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != strEnumerator )
         {
-            strResultValue = "Edit != Simulation";
+            strResultValue = "Edit != View";
         }
         else
         {
-            strResultValue = "Edit == Simulation";
+            strResultValue = "Edit == View";
         }
     }
     catch( CException& exc )
@@ -5746,16 +5746,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithQString( ZS::
 
     try
     {
-        strExpectedValue = "Edit < Simulation";
+        strExpectedValue = "Edit < View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < strEnumerator )
         {
-            strResultValue = "Edit < Simulation";
+            strResultValue = "Edit < View";
         }
         else
         {
-            strResultValue = "Edit >= Simulation";
+            strResultValue = "Edit >= View";
         }
     }
     catch( CException& exc )
@@ -5766,16 +5766,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithQString( ZS::
 
     try
     {
-        strExpectedValue = "Edit <= Simulation";
+        strExpectedValue = "Edit <= View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > strEnumerator )
         {
-            strResultValue = "Edit > Simulation";
+            strResultValue = "Edit > View";
         }
         else
         {
-            strResultValue = "Edit <= Simulation";
+            strResultValue = "Edit <= View";
         }
     }
     catch( CException& exc )
@@ -5788,16 +5788,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithQString( ZS::
 
     try
     {
-        strExpectedValue = "Edit <= Simulation";
+        strExpectedValue = "Edit <= View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= strEnumerator )
         {
-            strResultValue = "Edit <= Simulation";
+            strResultValue = "Edit <= View";
         }
         else
         {
-            strResultValue = "Edit > Simulation";
+            strResultValue = "Edit > View";
         }
     }
     catch( CException& exc )
@@ -5808,16 +5808,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithQString( ZS::
 
     try
     {
-        strExpectedValue = "Edit < Simulation";
+        strExpectedValue = "Edit < View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= strEnumerator )
         {
-            strResultValue = "Edit >= Simulation";
+            strResultValue = "Edit >= View";
         }
         else
         {
-            strResultValue = "Edit < Simulation";
+            strResultValue = "Edit < View";
         }
     }
     catch( CException& exc )
@@ -5829,20 +5829,20 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithQString( ZS::
     // -------------------------------------------------------------------------
 
     enumInst = CEnumMode(); // InvalidEnumerator
-    strEnumerator = "Simulation";
+    strEnumerator = "View";
 
     try
     {
-        strExpectedValue = "Invalid != Simulation";
+        strExpectedValue = "Invalid != View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == strEnumerator )
         {
-            strResultValue = "Invalid == Simulation";
+            strResultValue = "Invalid == View";
         }
         else
         {
-            strResultValue = "Invalid != Simulation";
+            strResultValue = "Invalid != View";
         }
     }
     catch( CException& exc )
@@ -5853,16 +5853,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithQString( ZS::
 
     try
     {
-        strExpectedValue = "Invalid != Simulation";
+        strExpectedValue = "Invalid != View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != strEnumerator )
         {
-            strResultValue = "Invalid != Simulation";
+            strResultValue = "Invalid != View";
         }
         else
         {
-            strResultValue = "Invalid == Simulation";
+            strResultValue = "Invalid == View";
         }
     }
     catch( CException& exc )
@@ -5875,16 +5875,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithQString( ZS::
 
     try
     {
-        strExpectedValue = "Invalid < Simulation: false";
+        strExpectedValue = "Invalid < View: false";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < strEnumerator )
         {
-            strResultValue = "Invalid < Simulation";
+            strResultValue = "Invalid < View";
         }
         else
         {
-            strResultValue = "Invalid < Simulation: false";
+            strResultValue = "Invalid < View: false";
         }
     }
     catch( CException& exc )
@@ -5895,16 +5895,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithQString( ZS::
 
     try
     {
-        strExpectedValue = "Invalid > Simulation: false";
+        strExpectedValue = "Invalid > View: false";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > strEnumerator )
         {
-            strResultValue = "Invalid > Simulation";
+            strResultValue = "Invalid > View";
         }
         else
         {
-            strResultValue = "Invalid > Simulation: false";
+            strResultValue = "Invalid > View: false";
         }
     }
     catch( CException& exc )
@@ -5917,16 +5917,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithQString( ZS::
 
     try
     {
-        strExpectedValue = "Invalid <= Simulation: false";
+        strExpectedValue = "Invalid <= View: false";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= strEnumerator )
         {
-            strResultValue = "Invalid <= Simulation";
+            strResultValue = "Invalid <= View";
         }
         else
         {
-            strResultValue = "Invalid <= Simulation: false";
+            strResultValue = "Invalid <= View: false";
         }
     }
     catch( CException& exc )
@@ -5937,16 +5937,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithQString( ZS::
 
     try
     {
-        strExpectedValue = "Invalid >= Simulation: false";
+        strExpectedValue = "Invalid >= View: false";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= strEnumerator )
         {
-            strResultValue = "Invalid >= Simulation";
+            strResultValue = "Invalid >= View";
         }
         else
         {
-            strResultValue = "Invalid >= Simulation: false";
+            strResultValue = "Invalid >= View: false";
         }
     }
     catch( CException& exc )
@@ -5957,21 +5957,21 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithQString( ZS::
 
     // -------------------------------------------------------------------------
 
-    enumInst = EMode::Simulation;
+    enumInst = EMode::View;
     strEnumerator = "Unknown";
 
     try
     {
-        strExpectedValue = "Simulation != Unknown";
+        strExpectedValue = "View != Unknown";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == strEnumerator )
         {
-            strResultValue = "Simulation == Unknown";
+            strResultValue = "View == Unknown";
         }
         else
         {
-            strResultValue = "Simulation != Unknown";
+            strResultValue = "View != Unknown";
         }
     }
     catch( CException& exc )
@@ -5982,16 +5982,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithQString( ZS::
 
     try
     {
-        strExpectedValue = "Simulation != Unknown";
+        strExpectedValue = "View != Unknown";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != strEnumerator )
         {
-            strResultValue = "Simulation != Unknown";
+            strResultValue = "View != Unknown";
         }
         else
         {
-            strResultValue = "Simulation == Unknown";
+            strResultValue = "View == Unknown";
         }
     }
     catch( CException& exc )
@@ -6004,16 +6004,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithQString( ZS::
 
     try
     {
-        strExpectedValue = "Simulation < Unknown: false";
+        strExpectedValue = "View < Unknown: false";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < strEnumerator )
         {
-            strResultValue = "Simulation < Unknown";
+            strResultValue = "View < Unknown";
         }
         else
         {
-            strResultValue = "Simulation < Unknown: false";
+            strResultValue = "View < Unknown: false";
         }
     }
     catch( CException& exc )
@@ -6024,16 +6024,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithQString( ZS::
 
     try
     {
-        strExpectedValue = "Simulation > Unknown: false";
+        strExpectedValue = "View > Unknown: false";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > strEnumerator )
         {
-            strResultValue = "Simulation > Unknown";
+            strResultValue = "View > Unknown";
         }
         else
         {
-            strResultValue = "Simulation > Unknown: false";
+            strResultValue = "View > Unknown: false";
         }
     }
     catch( CException& exc )
@@ -6046,16 +6046,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithQString( ZS::
 
     try
     {
-        strExpectedValue = "Simulation <= Unknown: false";
+        strExpectedValue = "View <= Unknown: false";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= strEnumerator )
         {
-            strResultValue = "Simulation <= Unknown";
+            strResultValue = "View <= Unknown";
         }
         else
         {
-            strResultValue = "Simulation <= Unknown: false";
+            strResultValue = "View <= Unknown: false";
         }
     }
     catch( CException& exc )
@@ -6066,16 +6066,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithQString( ZS::
 
     try
     {
-        strExpectedValue = "Simulation >= Unknown: false";
+        strExpectedValue = "View >= Unknown: false";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= strEnumerator )
         {
-            strResultValue = "Simulation >= Unknown";
+            strResultValue = "View >= Unknown";
         }
         else
         {
-            strResultValue = "Simulation >= Unknown: false";
+            strResultValue = "View >= Unknown: false";
         }
     }
     catch( CException& exc )
@@ -6235,21 +6235,21 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate(
 
     // -------------------------------------------------------------------------
 
-    enumInst1 = EMode::Simulation;
-    enumInst2 = EMode::Simulation;
+    enumInst1 = EMode::View;
+    enumInst2 = EMode::View;
 
     try
     {
-        strExpectedValue = "Simulation == Simulation";
+        strExpectedValue = "View == View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 == enumInst2 )
         {
-            strResultValue = "Simulation == Simulation";
+            strResultValue = "View == View";
         }
         else
         {
-            strResultValue = "Simulation != Simulation";
+            strResultValue = "View != View";
         }
     }
     catch( CException& exc )
@@ -6260,16 +6260,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate(
 
     try
     {
-        strExpectedValue = "Simulation == Simulation";
+        strExpectedValue = "View == View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 != enumInst2 )
         {
-            strResultValue = "Simulation != Simulation";
+            strResultValue = "View != View";
         }
         else
         {
-            strResultValue = "Simulation == Simulation";
+            strResultValue = "View == View";
         }
     }
     catch( CException& exc )
@@ -6282,16 +6282,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate(
 
     try
     {
-        strExpectedValue = "Simulation >= Simulation";
+        strExpectedValue = "View >= View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 < enumInst2 )
         {
-            strResultValue = "Simulation < Simulation";
+            strResultValue = "View < View";
         }
         else
         {
-            strResultValue = "Simulation >= Simulation";
+            strResultValue = "View >= View";
         }
     }
     catch( CException& exc )
@@ -6302,16 +6302,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate(
 
     try
     {
-        strExpectedValue = "Simulation <= Simulation";
+        strExpectedValue = "View <= View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 > enumInst2 )
         {
-            strResultValue = "Simulation > Simulation";
+            strResultValue = "View > View";
         }
         else
         {
-            strResultValue = "Simulation <= Simulation";
+            strResultValue = "View <= View";
         }
     }
     catch( CException& exc )
@@ -6324,16 +6324,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate(
 
     try
     {
-        strExpectedValue = "Simulation <= Simulation";
+        strExpectedValue = "View <= View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 <= enumInst2 )
         {
-            strResultValue = "Simulation <= Simulation";
+            strResultValue = "View <= View";
         }
         else
         {
-            strResultValue = "Simulation > Simulation";
+            strResultValue = "View > View";
         }
     }
     catch( CException& exc )
@@ -6344,16 +6344,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate(
 
     try
     {
-        strExpectedValue = "Simulation >= Simulation";
+        strExpectedValue = "View >= View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 >= enumInst2 )
         {
-            strResultValue = "Simulation >= Simulation";
+            strResultValue = "View >= View";
         }
         else
         {
-            strResultValue = "Simulation < Simulation";
+            strResultValue = "View < View";
         }
     }
     catch( CException& exc )
@@ -6365,20 +6365,20 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate(
     // -------------------------------------------------------------------------
 
     enumInst1 = EMode::Edit;
-    enumInst2 = EMode::Simulation;
+    enumInst2 = EMode::View;
 
     try
     {
-        strExpectedValue = "Edit != Simulation";
+        strExpectedValue = "Edit != View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 == enumInst2 )
         {
-            strResultValue = "Edit == Simulation";
+            strResultValue = "Edit == View";
         }
         else
         {
-            strResultValue = "Edit != Simulation";
+            strResultValue = "Edit != View";
         }
     }
     catch( CException& exc )
@@ -6389,16 +6389,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate(
 
     try
     {
-        strExpectedValue = "Edit != Simulation";
+        strExpectedValue = "Edit != View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 != enumInst2 )
         {
-            strResultValue = "Edit != Simulation";
+            strResultValue = "Edit != View";
         }
         else
         {
-            strResultValue = "Edit == Simulation";
+            strResultValue = "Edit == View";
         }
     }
     catch( CException& exc )
@@ -6411,16 +6411,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate(
 
     try
     {
-        strExpectedValue = "Edit < Simulation";
+        strExpectedValue = "Edit < View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 < enumInst2 )
         {
-            strResultValue = "Edit < Simulation";
+            strResultValue = "Edit < View";
         }
         else
         {
-            strResultValue = "Edit >= Simulation";
+            strResultValue = "Edit >= View";
         }
     }
     catch( CException& exc )
@@ -6431,16 +6431,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate(
 
     try
     {
-        strExpectedValue = "Edit <= Simulation";
+        strExpectedValue = "Edit <= View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 > enumInst2 )
         {
-            strResultValue = "Edit > Simulation";
+            strResultValue = "Edit > View";
         }
         else
         {
-            strResultValue = "Edit <= Simulation";
+            strResultValue = "Edit <= View";
         }
     }
     catch( CException& exc )
@@ -6453,16 +6453,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate(
 
     try
     {
-        strExpectedValue = "Edit <= Simulation";
+        strExpectedValue = "Edit <= View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 <= enumInst2 )
         {
-            strResultValue = "Edit <= Simulation";
+            strResultValue = "Edit <= View";
         }
         else
         {
-            strResultValue = "Edit > Simulation";
+            strResultValue = "Edit > View";
         }
     }
     catch( CException& exc )
@@ -6473,16 +6473,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate(
 
     try
     {
-        strExpectedValue = "Edit < Simulation";
+        strExpectedValue = "Edit < View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 >= enumInst2 )
         {
-            strResultValue = "Edit >= Simulation";
+            strResultValue = "Edit >= View";
         }
         else
         {
-            strResultValue = "Edit < Simulation";
+            strResultValue = "Edit < View";
         }
     }
     catch( CException& exc )
@@ -6494,20 +6494,20 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate(
     // -------------------------------------------------------------------------
 
     enumInst1 = CEnumMode(); // InvalidEnumerator
-    enumInst2 = EMode::Simulation;
+    enumInst2 = EMode::View;
 
     try
     {
-        strExpectedValue = "Invalid != Simulation";
+        strExpectedValue = "Invalid != View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 == enumInst2 )
         {
-            strResultValue = "Invalid == Simulation";
+            strResultValue = "Invalid == View";
         }
         else
         {
-            strResultValue = "Invalid != Simulation";
+            strResultValue = "Invalid != View";
         }
     }
     catch( CException& exc )
@@ -6518,16 +6518,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate(
 
     try
     {
-        strExpectedValue = "Invalid != Simulation";
+        strExpectedValue = "Invalid != View";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 != enumInst2 )
         {
-            strResultValue = "Invalid != Simulation";
+            strResultValue = "Invalid != View";
         }
         else
         {
-            strResultValue = "Invalid == Simulation";
+            strResultValue = "Invalid == View";
         }
     }
     catch( CException& exc )
@@ -6545,11 +6545,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate(
 
         if( enumInst1 < enumInst2 )
         {
-            strResultValue = "Invalid < Simulation";
+            strResultValue = "Invalid < View";
         }
         else
         {
-            strResultValue = "Invalid >= Simulation";
+            strResultValue = "Invalid >= View";
         }
     }
     catch( CException& exc )
@@ -6570,11 +6570,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate(
 
         if( enumInst1 > enumInst2 )
         {
-            strResultValue = "Invalid > Simulation";
+            strResultValue = "Invalid > View";
         }
         else
         {
-            strResultValue = "Invalid <= Simulation";
+            strResultValue = "Invalid <= View";
         }
     }
     catch( CException& exc )
@@ -6597,11 +6597,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate(
 
         if( enumInst1 <= enumInst2 )
         {
-            strResultValue = "Invalid <= Simulation";
+            strResultValue = "Invalid <= View";
         }
         else
         {
-            strResultValue = "Invalid > Simulation";
+            strResultValue = "Invalid > View";
         }
     }
     catch( CException& exc )
@@ -6622,11 +6622,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate(
 
         if( enumInst1 >= enumInst2 )
         {
-            strResultValue = "Invalid >= Simulation";
+            strResultValue = "Invalid >= View";
         }
         else
         {
-            strResultValue = "Invalid < Simulation";
+            strResultValue = "Invalid < View";
         }
     }
     catch( CException& exc )
@@ -6642,21 +6642,21 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate(
 
     // -------------------------------------------------------------------------
 
-    enumInst1 = EMode::Simulation;
+    enumInst1 = EMode::View;
     enumInst2 = CEnumMode(); // InvalidEnumerator
 
     try
     {
-        strExpectedValue = "Simulation != Invalid";
+        strExpectedValue = "View != Invalid";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 == enumInst2 )
         {
-            strResultValue = "Simulation == Invalid";
+            strResultValue = "View == Invalid";
         }
         else
         {
-            strResultValue = "Simulation != Invalid";
+            strResultValue = "View != Invalid";
         }
     }
     catch( CException& exc )
@@ -6667,16 +6667,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate(
 
     try
     {
-        strExpectedValue = "Simulation != Invalid";
+        strExpectedValue = "View != Invalid";
         strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 != enumInst2 )
         {
-            strResultValue = "Simulation != Invalid";
+            strResultValue = "View != Invalid";
         }
         else
         {
-            strResultValue = "Simulation == Invalid";
+            strResultValue = "View == Invalid";
         }
     }
     catch( CException& exc )
@@ -6694,11 +6694,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate(
 
         if( enumInst1 < enumInst2 )
         {
-            strResultValue = "Simulation < Invalid";
+            strResultValue = "View < Invalid";
         }
         else
         {
-            strResultValue = "Simulation >= Invalid";
+            strResultValue = "View >= Invalid";
         }
     }
     catch( CException& exc )
@@ -6719,11 +6719,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate(
 
         if( enumInst1 > enumInst2 )
         {
-            strResultValue = "Simulation > Invalid";
+            strResultValue = "View > Invalid";
         }
         else
         {
-            strResultValue = "Simulation <= Invalid";
+            strResultValue = "View <= Invalid";
         }
     }
     catch( CException& exc )
@@ -6746,11 +6746,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate(
 
         if( enumInst1 <= enumInst2 )
         {
-            strResultValue = "Simulation <= Invalid";
+            strResultValue = "View <= Invalid";
         }
         else
         {
-            strResultValue = "Simulation > Invalid";
+            strResultValue = "View > Invalid";
         }
     }
     catch( CException& exc )
@@ -6771,11 +6771,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate(
 
         if( enumInst1 >= enumInst2 )
         {
-            strResultValue = "Simulation >= Invalid";
+            strResultValue = "View >= Invalid";
         }
         else
         {
-            strResultValue = "Simulation < Invalid";
+            strResultValue = "View < Invalid";
         }
     }
     catch( CException& exc )
@@ -6969,8 +6969,8 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorIncDec( ZS::Test::CTestS
         try
         {
             enumInst = static_cast<EMode>(iEnumerator);
-            if( enumInst.enumerator() == EMode::Edit ) { strEnumeratorSource = "Edit"; strEnumeratorResult = "Simulation"; }
-            else if( enumInst.enumerator() == EMode::Simulation ) { strEnumeratorSource = "Simulation"; strEnumeratorResult = "Undefined"; }
+            if( enumInst.enumerator() == EMode::Edit ) { strEnumeratorSource = "Edit"; strEnumeratorResult = "View"; }
+            else if( enumInst.enumerator() == EMode::View ) { strEnumeratorSource = "View"; strEnumeratorResult = "Undefined"; }
             else if( enumInst.enumerator() == EMode::Undefined ) { strEnumeratorSource = "Undefined"; strEnumeratorResult = "Invalid"; }
             else strEnumeratorSource = "Invalid";
             strExpectedValue = strEnumeratorSource + "++: " + strEnumeratorResult;
@@ -6978,7 +6978,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorIncDec( ZS::Test::CTestS
 
             enumInst++;
             if( enumInst.enumerator() == EMode::Edit ) { strEnumeratorResult = "Edit"; }
-            else if( enumInst.enumerator() == EMode::Simulation ) { strEnumeratorResult = "Simulation"; }
+            else if( enumInst.enumerator() == EMode::View ) { strEnumeratorResult = "View"; }
             else if( enumInst.enumerator() == EMode::Undefined ) { strEnumeratorResult = "Undefined"; }
             else strEnumeratorResult = "Invalid";
             strResultValue = strEnumeratorSource + "++: " + strEnumeratorResult;
@@ -6997,8 +6997,8 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorIncDec( ZS::Test::CTestS
         try
         {
             enumInst = static_cast<EMode>(iEnumerator);
-            if( enumInst.enumerator() == EMode::Edit ) { strEnumeratorSource = "Edit"; strEnumeratorResult = "Simulation"; }
-            else if( enumInst.enumerator() == EMode::Simulation ) { strEnumeratorSource = "Simulation"; strEnumeratorResult = "Undefined"; }
+            if( enumInst.enumerator() == EMode::Edit ) { strEnumeratorSource = "Edit"; strEnumeratorResult = "View"; }
+            else if( enumInst.enumerator() == EMode::View ) { strEnumeratorSource = "View"; strEnumeratorResult = "Undefined"; }
             else if( enumInst.enumerator() == EMode::Undefined ) { strEnumeratorSource = "Undefined"; strEnumeratorResult = "Invalid"; }
             else strEnumeratorSource = "Invalid";
             strExpectedValue = "++" + strEnumeratorSource + ": " + strEnumeratorResult;
@@ -7006,7 +7006,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorIncDec( ZS::Test::CTestS
 
             ++enumInst;
             if( enumInst.enumerator() == EMode::Edit ) { strEnumeratorResult = "Edit"; }
-            else if( enumInst.enumerator() == EMode::Simulation ) { strEnumeratorResult = "Simulation"; }
+            else if( enumInst.enumerator() == EMode::View ) { strEnumeratorResult = "View"; }
             else if( enumInst.enumerator() == EMode::Undefined ) { strEnumeratorResult = "Undefined"; }
             else strEnumeratorResult = "Invalid";
             strResultValue = "++" + strEnumeratorSource + ": " + strEnumeratorResult;
@@ -7026,15 +7026,15 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorIncDec( ZS::Test::CTestS
         {
             enumInst = static_cast<EMode>(iEnumerator);
             if( enumInst.enumerator() == EMode::Edit ) { strEnumeratorSource = "Edit"; strEnumeratorResult = "Invalid"; }
-            else if( enumInst.enumerator() == EMode::Simulation ) { strEnumeratorSource = "Simulation"; strEnumeratorResult = "Edit"; }
-            else if( enumInst.enumerator() == EMode::Undefined ) { strEnumeratorSource = "Undefined"; strEnumeratorResult = "Simulation"; }
+            else if( enumInst.enumerator() == EMode::View ) { strEnumeratorSource = "View"; strEnumeratorResult = "Edit"; }
+            else if( enumInst.enumerator() == EMode::Undefined ) { strEnumeratorSource = "Undefined"; strEnumeratorResult = "View"; }
             else strEnumeratorSource = "Invalid";
             strExpectedValue = strEnumeratorSource + "--: " + strEnumeratorResult;
             strlstExpectedValues.append(strExpectedValue);
 
             enumInst--;
             if( enumInst.enumerator() == EMode::Edit ) { strEnumeratorResult = "Edit"; }
-            else if( enumInst.enumerator() == EMode::Simulation ) { strEnumeratorResult = "Simulation"; }
+            else if( enumInst.enumerator() == EMode::View ) { strEnumeratorResult = "View"; }
             else if( enumInst.enumerator() == EMode::Undefined ) { strEnumeratorResult = "Undefined"; }
             else strEnumeratorResult = "Invalid";
             strResultValue = strEnumeratorSource + "--: " + strEnumeratorResult;
@@ -7054,15 +7054,15 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorIncDec( ZS::Test::CTestS
         {
             enumInst = static_cast<EMode>(iEnumerator);
             if( enumInst.enumerator() == EMode::Edit ) { strEnumeratorSource = "Edit"; strEnumeratorResult = "Invalid"; }
-            else if( enumInst.enumerator() == EMode::Simulation ) { strEnumeratorSource = "Simulation"; strEnumeratorResult = "Edit"; }
-            else if( enumInst.enumerator() == EMode::Undefined ) { strEnumeratorSource = "Undefined"; strEnumeratorResult = "Simulation"; }
+            else if( enumInst.enumerator() == EMode::View ) { strEnumeratorSource = "View"; strEnumeratorResult = "Edit"; }
+            else if( enumInst.enumerator() == EMode::Undefined ) { strEnumeratorSource = "Undefined"; strEnumeratorResult = "View"; }
             else strEnumeratorSource = "Invalid";
             strExpectedValue = "--" + strEnumeratorSource + ": " + strEnumeratorResult;
             strlstExpectedValues.append(strExpectedValue);
 
             --enumInst;
             if( enumInst.enumerator() == EMode::Edit ) { strEnumeratorResult = "Edit"; }
-            else if( enumInst.enumerator() == EMode::Simulation ) { strEnumeratorResult = "Simulation"; }
+            else if( enumInst.enumerator() == EMode::View ) { strEnumeratorResult = "View"; }
             else if( enumInst.enumerator() == EMode::Undefined ) { strEnumeratorResult = "Undefined"; }
             else strEnumeratorResult = "Invalid";
             strResultValue = "--" + strEnumeratorSource + ": " + strEnumeratorResult;
@@ -7119,11 +7119,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeInstMethodToString( ZS::Test::CT
                     else if( idxAlias == EEnumEntryAliasStrText ) { strEnumeratorSource = "Edit"; }
                     else { strEnumeratorSource = ""; }
                 }
-                else if( iEnumerator == static_cast<int>(EMode::Simulation) )
+                else if( iEnumerator == static_cast<int>(EMode::View) )
                 {
-                    if( idxAlias == EEnumEntryAliasStrName ) { strEnumeratorSource = "Simulation"; }
-                    else if( idxAlias == EEnumEntryAliasStrSymbol ) { strEnumeratorSource = "S"; }
-                    else if( idxAlias == EEnumEntryAliasStrText ) { strEnumeratorSource = "Simulation"; }
+                    if( idxAlias == EEnumEntryAliasStrName ) { strEnumeratorSource = "View"; }
+                    else if( idxAlias == EEnumEntryAliasStrSymbol ) { strEnumeratorSource = "V"; }
+                    else if( idxAlias == EEnumEntryAliasStrText ) { strEnumeratorSource = "View"; }
                     else { strEnumeratorSource = ""; }
                 }
                 else if( iEnumerator == static_cast<int>(EMode::Undefined) )
@@ -7180,7 +7180,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeForLoop( ZS::Test::CTestStep* i_
     for( iEnumerator = 0, enumInst = 0; enumInst < CEnumMode::count(); ++iEnumerator, ++enumInst )
     {
         if( iEnumerator == 0 ) { strEnumerator = "Edit"; }
-        else if( iEnumerator == 1 ) { strEnumerator = "Simulation"; }
+        else if( iEnumerator == 1 ) { strEnumerator = "View"; }
         else if( iEnumerator == 2 ) { strEnumerator = "Undefined"; }
         else { strEnumerator = QString::number(iEnumerator); }
 
@@ -7196,7 +7196,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeForLoop( ZS::Test::CTestStep* i_
     for( iEnumerator = CEnumMode::count()-1, enumInst = CEnumMode::count()-1; enumInst >= 0; --iEnumerator, --enumInst )
     {
         if( iEnumerator == 0 ) { strEnumerator = "Edit"; }
-        else if( iEnumerator == 1 ) { strEnumerator = "Simulation"; }
+        else if( iEnumerator == 1 ) { strEnumerator = "View"; }
         else if( iEnumerator == 2 ) { strEnumerator = "Undefined"; }
         else { strEnumerator = QString::number(iEnumerator); }
 

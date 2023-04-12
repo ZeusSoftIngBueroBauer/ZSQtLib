@@ -557,11 +557,9 @@ void CGraphObjWdgt::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
             {
                 setCursor(hitInfo.m_cursor);
             }
-        } // if( editToolDrawing == EEditTool::Select )
-
-    } // if( modeDrawing == EMode::Edit )
-
-    else // if( modeDrawing == EMode::Simulation )
+        }
+    }
+    else
     {
         QGraphicsProxyWidget::hoverEnterEvent(i_pEv);
     }
@@ -589,11 +587,9 @@ void CGraphObjWdgt::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
             {
                 setCursor(hitInfo.m_cursor);
             }
-        } // if( editToolDrawing == EEditTool::Select )
-
-    } // if( modeDrawing == EMode::Edit )
-
-    else // if( modeDrawing == EMode::Simulation )
+        }
+    }
+    else
     {
         QGraphicsProxyWidget::hoverMoveEvent(i_pEv);
     }
@@ -678,14 +674,11 @@ void CGraphObjWdgt::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 
                 updateEditInfo();
                 updateToolTip();
+            }
+        }
+    }
 
-            } // if( editToolDrawing == EEditTool::Select )
-
-        } // if( m_editMode == EEditMode::None )
-
-    } // if( modeDrawing == EMode::Edit )
-
-    else // if( modeDrawing == EMode::Simulation )
+    else // if( modeDrawing == EMode::View )
     {
         QGraphicsProxyWidget::mousePressEvent(i_pEv);
     }
@@ -766,12 +759,10 @@ void CGraphObjWdgt::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         else if( m_editMode == EEditMode::Rotate )
         {
             // Rotating a widget is not supported.
+        }
+    }
 
-        } // if( m_editMode == EEditMode::Rotate )
-
-    } // if( m_pDrawingScene->getMode() == EMode::Edit )
-
-    else // if( m_pDrawingScene->getMode() == EMode::Simulation )
+    else // if( m_pDrawingScene->getMode() == EMode::View )
     {
         QGraphicsProxyWidget::mouseMoveEvent(i_pEv);
     }
@@ -811,10 +802,8 @@ void CGraphObjWdgt::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 
         updateEditInfo();
         updateToolTip();
-
-    } // if( m_pDrawingScene->getMode() == EMode::Edit )
-
-    else // if( m_pDrawingScene->getMode() == EMode::Simulation )
+    }
+    else // if( m_pDrawingScene->getMode() == EMode::View )
     {
         QGraphicsProxyWidget::mouseReleaseEvent(i_pEv);
     }
@@ -838,10 +827,8 @@ void CGraphObjWdgt::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
         {
             onCreateAndExecDlgFormatGraphObjs();
         }
-
-    } // if( modeDrawing == EMode::Edit )
-
-    else // if( modeDrawing == EMode::Simulation )
+    }
+    else // if( modeDrawing == EMode::View )
     {
         QGraphicsProxyWidget::mouseDoubleClickEvent(i_pEv);
     }

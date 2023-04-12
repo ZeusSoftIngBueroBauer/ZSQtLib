@@ -869,10 +869,9 @@ void CGraphObjImage::paint(
             i_pPainter->setPen(pn);
             i_pPainter->drawRect(m_rctCurr);
         }
-
     } // if( m_pDrawingScene->getMode() == EMode::Edit )
 
-    else // if( m_pDrawingScene->getMode() == EMode::Simulation )
+    else // if( m_pDrawingScene->getMode() == EMode::View )
     {
         if( m_drawSettings.getLineStyle() != ELineStyle::NoLine )
         {

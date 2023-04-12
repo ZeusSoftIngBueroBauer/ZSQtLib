@@ -180,7 +180,7 @@ public: // instance methods (drawing area)
 //        QGraphicsView::setViewportMargins(margins);
 //
 //        // QGraphicsView has no signal "viewportMarginsChanged".
-//        //emit viewportMarginsChanged(viewportMargins());
+//        //emit_viewportMarginsChanged(viewportMargins());
 //    }
 //} // setViewportMargins
 //
@@ -206,7 +206,7 @@ public: // instance methods (drawing area)
 //        QGraphicsView::setViewportMargins(i_margins);
 //
 //        // QGraphicsView has no signal "viewportMarginsChanged".
-//        //emit viewportMarginsChanged(viewportMargins());
+//        //emit_viewportMarginsChanged(viewportMargins());
 //    }
 //} // setViewportMargins
 
@@ -237,7 +237,7 @@ void CDrawingView::mousePressEvent( QMouseEvent* i_pEv )
 
     QPointF ptPos = i_pEv->pos();
 
-    emit mousePosChanged(ptPos);
+    emit_mousePosChanged(ptPos);
 
     QGraphicsView::mousePressEvent(i_pEv);
 
@@ -308,7 +308,7 @@ void CDrawingView::mouseMoveEvent( QMouseEvent* i_pEv )
 
     QPoint ptPos = i_pEv->pos();
 
-    emit mousePosChanged(ptPos);
+    emit_mousePosChanged(ptPos);
 
     QGraphicsView::mouseMoveEvent(i_pEv);
 
@@ -378,7 +378,7 @@ void CDrawingView::mouseReleaseEvent( QMouseEvent* i_pEv )
 
     QPointF ptPos = i_pEv->pos();
 
-    emit mousePosChanged(ptPos);
+    emit_mousePosChanged(ptPos);
 
     QGraphicsView::mouseReleaseEvent(i_pEv);
 
@@ -449,7 +449,7 @@ void CDrawingView::mouseDoubleClickEvent( QMouseEvent* i_pEv )
 
     QPointF ptPos = i_pEv->pos();
 
-    emit mousePosChanged(ptPos);
+    emit_mousePosChanged(ptPos);
 
     QGraphicsView::mouseDoubleClickEvent(i_pEv);
 
@@ -595,17 +595,50 @@ void CDrawingView::onSceneDrawingSizeChanged( const CDrawingSize& i_size )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_pTrcAdminObjPaintEvent != nullptr && m_pTrcAdminObjPaintEvent->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
         strMthInArgs = i_size.toString();
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onSceneDrawingSizeChanged",
         /* strAddInfo   */ strMthInArgs );
 
+    emit_drawingSizeChanged(i_size);
+}
+
+/*==============================================================================
+protected: // instance methods (method tracing)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CDrawingView::emit_drawingSizeChanged( const ZS::Draw::CDrawingSize& i_size )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = i_size.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "emit_drawingSizeChanged",
+        /* strAddInfo   */ strMthInArgs );
     emit drawingSizeChanged(i_size);
+}
+
+//------------------------------------------------------------------------------
+void CDrawingView::emit_mousePosChanged( const QPointF& i_ptMousePos )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( areMethodCallsActive(m_pTrcAdminObjMouseMoveEvent, EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = qPoint2Str(i_ptMousePos);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjMouseMoveEvent,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "emit_mousePosChanged",
+        /* strAddInfo   */ strMthInArgs );
+    emit mousePosChanged(i_ptMousePos);
 }

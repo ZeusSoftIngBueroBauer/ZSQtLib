@@ -44,7 +44,7 @@ may result in using the software modules.
 
 #include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSDraw/GraphObjFormat/ZSDrawDlgFormatGraphObjs.h"
-#include "ZSDraw/DrawingPageSetup/ZSDrawDlgDrawingViewSetup.h"
+#include "ZSDraw/Drawing/ZSDrawDlgDrawingViewSetup.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSDraw/Drawing/ZSDrawingView.h"
 #include "ZSDraw/GraphObjs/ZSDrawGraphObj.h"
@@ -174,7 +174,7 @@ const QString CMainWindow::c_strActionNameFileSaveAs                 = c_strMenu
 const QString CMainWindow::c_strActionNameFilePageSetup              = c_strMenuNameFile + ":Page Set&up ...";
 const QString CMainWindow::c_strActionNameFileQuit                   = c_strMenuNameFile + ":&Quit";
 const QString CMainWindow::c_strActionNameModeEdit                   = c_strMenuNameMode + ":&Edit";
-const QString CMainWindow::c_strActionNameModeSimulation             = c_strMenuNameMode + ":&Simulation";
+const QString CMainWindow::c_strActionNameModeView                   = c_strMenuNameMode + ":&View";
 const QString CMainWindow::c_strActionNameEditSelect                 = c_strMenuNameDraw + ":&Select";
 const QString CMainWindow::c_strActionNameEditRotateLeft             = c_strMenuNameEdit + ":Rotate &Left by ";
 const QString CMainWindow::c_strActionNameEditRotateRight            = c_strMenuNameEdit + ":Rotate &Right by ";
@@ -292,7 +292,7 @@ CMainWindow::CMainWindow(
     m_pMenuMode(nullptr),
     m_pToolBarMode(nullptr),
     m_pActModeEdit(nullptr),
-    m_pActModeSimulation(nullptr),
+    m_pActModeView(nullptr),
     // Menu - Edit
     m_pMenuEdit(nullptr),
     // Menu - Edit - Select
@@ -741,7 +741,7 @@ CMainWindow::~CMainWindow()
     m_pMenuMode = nullptr;
     m_pToolBarMode = nullptr;
     m_pActModeEdit = nullptr;
-    m_pActModeSimulation = nullptr;
+    m_pActModeView = nullptr;
     // Menu - Edit
     m_pMenuEdit = nullptr;
     // Menu - Edit - Select
@@ -1314,20 +1314,20 @@ void CMainWindow::createActions()
         m_pActModeEdit, &QAction::triggered,
         this, &CMainWindow::onActionModeEditToggled );
 
-    // <MenuItem> Mode::Simulation
+    // <MenuItem> Mode::View
     //-------------------------------
 
-    QIcon iconModeSimulation;
+    QIcon iconModeView;
 
-    iconModeSimulation.addPixmap( mode2Pixmap(static_cast<int>(EMode::Simulation),24) );
+    iconModeView.addPixmap( mode2Pixmap(static_cast<int>(EMode::View),24) );
 
-    m_pActModeSimulation = new QAction( iconModeSimulation, c_strActionNameModeSimulation.section(":",-1,-1), this );
-    m_pActModeSimulation->setStatusTip( tr("Activate Simulation Mode") );
-    m_pActModeSimulation->setCheckable(true);
+    m_pActModeView = new QAction( iconModeView, c_strActionNameModeView.section(":",-1,-1), this );
+    m_pActModeView->setStatusTip( tr("Activate View Mode") );
+    m_pActModeView->setCheckable(true);
 
     QObject::connect(
-        m_pActModeSimulation, &QAction::triggered,
-        this, &CMainWindow::onActionModeSimulationToggled );
+        m_pActModeView, &QAction::triggered,
+        this, &CMainWindow::onActionModeViewToggled );
 
     // <Menu> Edit
     //============
@@ -1868,8 +1868,8 @@ void CMainWindow::createMenus()
     if( m_pActModeEdit != nullptr ) {
         m_pMenuMode->addAction(m_pActModeEdit);
     }
-    if( m_pActModeSimulation != nullptr ) {
-        m_pMenuMode->addAction(m_pActModeSimulation);
+    if( m_pActModeView != nullptr ) {
+        m_pMenuMode->addAction(m_pActModeView);
     }
 
     // <Menu> Edit
@@ -2120,7 +2120,7 @@ void CMainWindow::createToolBars()
     // <Menu> Mode
     //------------
 
-    m_pToolBarMode = addToolBar("Switching Between Simulation and Edit Mode");
+    m_pToolBarMode = addToolBar("Switching Between View and Edit Mode");
     m_pToolBarMode->setObjectName("Mode");
     //m_pToolBarMode->setMaximumHeight(24);
     m_pToolBarMode->setIconSize( QSize(16,16) );
@@ -2128,8 +2128,8 @@ void CMainWindow::createToolBars()
     if( m_pActModeEdit != nullptr ) {
         m_pToolBarMode->addAction(m_pActModeEdit);
     }
-    if( m_pActModeSimulation != nullptr ) {
-        m_pToolBarMode->addAction(m_pActModeSimulation);
+    if( m_pActModeView != nullptr ) {
+        m_pToolBarMode->addAction(m_pActModeView);
     }
 
     // <Menu> Edit
@@ -2429,7 +2429,7 @@ void CMainWindow::setCheckedActionModeEdit( bool i_bChecked )
 } // setCheckedActionModeEdit
 
 //------------------------------------------------------------------------------
-void CMainWindow::setCheckedActionModeSimulation( bool i_bChecked )
+void CMainWindow::setCheckedActionModeView( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
@@ -2442,15 +2442,15 @@ void CMainWindow::setCheckedActionModeSimulation( bool i_bChecked )
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setCheckedActionModeSimulation",
+        /* strMethod    */ "setCheckedActionModeView",
         /* strAddInfo   */ strAddTrcInfo );
 
-    if( m_pActModeSimulation != nullptr )
+    if( m_pActModeView != nullptr )
     {
-        m_pActModeSimulation->setChecked(i_bChecked);
+        m_pActModeView->setChecked(i_bChecked);
     }
 
-} // setCheckedActionModeSimulation
+} // setCheckedActionModeView
 
 /*==============================================================================
 public: // instance methods
@@ -2958,9 +2958,21 @@ void CMainWindow::onActionFilePageSetupTriggered( bool )
         /* strAddInfo   */ "" );
 
     CDrawingView* pDrawingView = m_pWdgtCentral->drawingView();
-    CDlgDrawingViewSetup* pDlgPageSetup = new CDlgDrawingViewSetup(pDrawingView);
-    pDlgPageSetup->setCurrentWidget(CDlgDrawingViewSetup::EWidgetDrawingView);
-    pDlgPageSetup->exec();
+    QString strDlgTitle = QCoreApplication::applicationName() + ": Page Setup";
+    CDlgDrawingViewSetup* pDlg = CDlgDrawingViewSetup::GetInstance(pDrawingView);
+    if( pDlg == nullptr ) {
+        pDlg = CDlgDrawingViewSetup::CreateInstance(strDlgTitle, pDrawingView);
+        pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
+        pDlg->adjustSize();
+        pDlg->show();
+    }
+    else {
+        if( pDlg->isHidden() ) {
+            pDlg->show();
+        }
+        pDlg->raise();
+        pDlg->activateWindow();
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -2999,14 +3011,14 @@ void CMainWindow::onActionModeEditToggled( bool i_bChecked )
         pDrawingScene->setCurrentDrawingTool(nullptr);
         pDrawingScene->setMode(EMode::Edit);
     }
-    else if( !i_bChecked && pDrawingScene->getMode() != EMode::Simulation ) {
+    else if( !i_bChecked && pDrawingScene->getMode() != EMode::View ) {
         pDrawingScene->setCurrentDrawingTool(nullptr);
-        pDrawingScene->setMode(EMode::Simulation);
+        pDrawingScene->setMode(EMode::View);
     }
 } // onActionModeEditToggled
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActionModeSimulationToggled( bool i_bChecked )
+void CMainWindow::onActionModeViewToggled( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -3016,19 +3028,19 @@ void CMainWindow::onActionModeSimulationToggled( bool i_bChecked )
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onActionModeSimulationToggled",
+        /* strMethod    */ "onActionModeViewToggled",
         /* strAddInfo   */ strMthInArgs );
 
     CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
-    if( i_bChecked && pDrawingScene->getMode() != EMode::Simulation ) {
+    if( i_bChecked && pDrawingScene->getMode() != EMode::View ) {
         pDrawingScene->setCurrentDrawingTool(nullptr);
-        pDrawingScene->setMode(EMode::Simulation);
+        pDrawingScene->setMode(EMode::View);
     }
     else if( !i_bChecked && pDrawingScene->getMode() != EMode::Edit ) {
         pDrawingScene->setCurrentDrawingTool(nullptr);
         pDrawingScene->setMode(EMode::Edit);
     }
-} // onActionModeSimulationToggled
+} // onActionModeViewToggled
 
 /*==============================================================================
 public slots: // Menu - Edit - Select/RotateFree
@@ -4686,9 +4698,9 @@ void CMainWindow::updateActions()
     {
         m_pActModeEdit->setChecked( mode == EMode::Edit );
     }
-    if( m_pActModeSimulation != nullptr )
+    if( m_pActModeView != nullptr )
     {
-        m_pActModeSimulation->setChecked( mode == EMode::Simulation );
+        m_pActModeView->setChecked( mode == EMode::View );
     }
 
     // Menu - Edit - Select
@@ -4696,7 +4708,7 @@ void CMainWindow::updateActions()
 
     if( m_pActEditSelect != nullptr )
     {
-        if( mode == EMode::Simulation )
+        if( mode == EMode::View )
         {
             m_pActEditSelect->setEnabled(false);
         }
@@ -4724,7 +4736,7 @@ void CMainWindow::updateActions()
     // Menu - Edit - Rotate and Mirror
     //--------------------------------
 
-    if( mode == EMode::Simulation )
+    if( mode == EMode::View )
     {
         if( m_pActEditRotateLeft != nullptr )
         {
@@ -4746,8 +4758,7 @@ void CMainWindow::updateActions()
         {
             m_pActEditMirrorHorizontal->setEnabled(false);
         }
-    } // if( mode == EMode::Simulation )
-
+    }
     else // if( mode == EMode::Edit )
     {
         if( arpGraphicItemsSelected.size() == 0 )
@@ -4803,7 +4814,7 @@ void CMainWindow::updateActions()
     // Menu - Edit - Group
     //---------------------
 
-    if( mode == EMode::Simulation )
+    if( mode == EMode::View )
     {
         if( m_pActEditGroup != nullptr )
         {
@@ -4882,7 +4893,7 @@ void CMainWindow::updateActions()
 
     if( m_pActDrawSettingsLine != nullptr )
     {
-        if( mode == EMode::Simulation )
+        if( mode == EMode::View )
         {
             m_pActDrawSettingsLine->setEnabled(false);
         }
@@ -4894,7 +4905,7 @@ void CMainWindow::updateActions()
 
     if( m_pActDrawSettingsFill != nullptr )
     {
-        if( mode == EMode::Simulation )
+        if( mode == EMode::View )
         {
             m_pActDrawSettingsFill->setEnabled(false);
         }
@@ -4906,7 +4917,7 @@ void CMainWindow::updateActions()
 
     if( m_pActDrawSettingsText != nullptr )
     {
-        if( mode == EMode::Simulation )
+        if( mode == EMode::View )
         {
             m_pActDrawSettingsText->setEnabled(false);
         }
@@ -4921,7 +4932,7 @@ void CMainWindow::updateActions()
 
     if( m_pActDrawStandardShapePoint != nullptr )
     {
-        if( mode == EMode::Simulation )
+        if( mode == EMode::View )
         {
             m_pActDrawStandardShapePoint->setEnabled(false);
             m_pActDrawStandardShapePoint->setChecked(false);
@@ -4943,7 +4954,7 @@ void CMainWindow::updateActions()
 
     if( m_pActDrawStandardShapeLine != nullptr )
     {
-        if( mode == EMode::Simulation )
+        if( mode == EMode::View )
         {
             m_pActDrawStandardShapeLine->setEnabled(false);
             m_pActDrawStandardShapeLine->setChecked(false);
@@ -4965,7 +4976,7 @@ void CMainWindow::updateActions()
 
     if( m_pActDrawStandardShapeRect != nullptr )
     {
-        if( mode == EMode::Simulation )
+        if( mode == EMode::View )
         {
             m_pActDrawStandardShapeRect->setEnabled(false);
             m_pActDrawStandardShapeRect->setChecked(false);
@@ -4987,7 +4998,7 @@ void CMainWindow::updateActions()
 
     if( m_pActDrawStandardShapeEllipse != nullptr )
     {
-        if( mode == EMode::Simulation )
+        if( mode == EMode::View )
         {
             m_pActDrawStandardShapeEllipse->setEnabled(false);
             m_pActDrawStandardShapeEllipse->setChecked(false);
@@ -5009,7 +5020,7 @@ void CMainWindow::updateActions()
 
     if( m_pActDrawStandardShapePolyline != nullptr )
     {
-        if( mode == EMode::Simulation )
+        if( mode == EMode::View )
         {
             m_pActDrawStandardShapePolyline->setEnabled(false);
             m_pActDrawStandardShapePolyline->setChecked(false);
@@ -5031,7 +5042,7 @@ void CMainWindow::updateActions()
 
     if( m_pActDrawStandardShapePolygon != nullptr )
     {
-        if( mode == EMode::Simulation )
+        if( mode == EMode::View )
         {
             m_pActDrawStandardShapePolygon->setEnabled(false);
             m_pActDrawStandardShapePolygon->setChecked(false);
@@ -5053,7 +5064,7 @@ void CMainWindow::updateActions()
 
     if( m_pActDrawStandardShapeText != nullptr )
     {
-        if( mode == EMode::Simulation )
+        if( mode == EMode::View )
         {
             m_pActDrawStandardShapeText->setEnabled(false);
             m_pActDrawStandardShapeText->setChecked(false);
@@ -5078,7 +5089,7 @@ void CMainWindow::updateActions()
 
     if( m_pActDrawGraphicsImage != nullptr )
     {
-        if( mode == EMode::Simulation )
+        if( mode == EMode::View )
         {
             m_pActDrawGraphicsImage->setEnabled(false);
         }
@@ -5093,7 +5104,7 @@ void CMainWindow::updateActions()
 
     if( m_pActDrawConnectionPoint != nullptr )
     {
-        if( mode == EMode::Simulation )
+        if( mode == EMode::View )
         {
             m_pActDrawConnectionPoint->setEnabled(false);
             m_pActDrawConnectionPoint->setChecked(false);
@@ -5115,7 +5126,7 @@ void CMainWindow::updateActions()
 
     if( m_pActDrawConnectionLine != nullptr )
     {
-        if( mode == EMode::Simulation )
+        if( mode == EMode::View )
         {
             m_pActDrawConnectionLine->setEnabled(false);
             m_pActDrawConnectionLine->setChecked(false);
@@ -5163,7 +5174,7 @@ void CMainWindow::updateActions()
 
     if( m_pDockWdgtObjFactories != nullptr )
     {
-        if( mode == EMode::Simulation )
+        if( mode == EMode::View )
         {
             m_pDockWdgtObjFactories->hide();
         }
@@ -5173,7 +5184,7 @@ void CMainWindow::updateActions()
         }
     }
 
-    if( mode == EMode::Simulation )
+    if( mode == EMode::View )
     {
         selectTreeViewObjFactoryNode(nullptr);
     }

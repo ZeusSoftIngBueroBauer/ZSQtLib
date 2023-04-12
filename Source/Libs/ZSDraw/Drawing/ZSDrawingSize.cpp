@@ -256,12 +256,144 @@ public: // instance methods
 void CDrawingSize::save( QXmlStreamWriter& i_xmlStreamWriter )
 //------------------------------------------------------------------------------
 {
+#if 0
+    i_xmlStreamWriter.writeStartElement("Drawing");
+    i_xmlStreamWriter.writeStartElement("Size");
+
+    i_xmlStreamWriter.writeAttribute("Width", QString::number(m_sizeDrawing.width()));
+    i_xmlStreamWriter.writeAttribute("Height", QString::number(m_sizeDrawing.height()));
+
+    i_xmlStreamWriter.writeEndElement(); // "Size"
+    i_xmlStreamWriter.writeEndElement(); // "Drawing"
+
+    i_xmlStreamWriter.writeStartElement("Viewport");
+    i_xmlStreamWriter.writeStartElement("Margins");
+
+    i_xmlStreamWriter.writeAttribute("Left", QString::number(m_marginsViewport.left()));
+    i_xmlStreamWriter.writeAttribute("Right", QString::number(m_marginsViewport.right()));
+    i_xmlStreamWriter.writeAttribute("Top", QString::number(m_marginsViewport.top()));
+    i_xmlStreamWriter.writeAttribute("Bottom", QString::number(m_marginsViewport.bottom()));
+
+    i_xmlStreamWriter.writeEndElement(); // "Margins"
+    i_xmlStreamWriter.writeEndElement(); // "Viewport"
+#endif
 } // save
 
 //------------------------------------------------------------------------------
 void CDrawingSize::load( QXmlStreamReader& i_xmlStreamReader )
 //------------------------------------------------------------------------------
 {
+#if 0
+    QXmlStreamReader::TokenType xmlStreamTokenType;
+
+    QString  strElemName;
+    QString  strElemPath;
+    bool     bConverted;
+    QString  strVal;
+    int      iVal;
+
+    QMargins marginsViewport;
+    QSize    sizeDrawing;
+
+    while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
+    {
+        xmlStreamTokenType = i_xmlStreamReader.readNext();
+
+        if( i_xmlStreamReader.isStartElement() || i_xmlStreamReader.isEndElement() )
+        {
+            strElemName = i_xmlStreamReader.name().toString();
+
+            if( i_xmlStreamReader.isStartElement() )
+            {
+                strElemPath += strElemName;
+
+                if( strElemName == "Drawing" )
+                {
+                }
+                else if( strElemName == "Size" )
+                {
+                    if( strElemPath.startsWith("Drawing") )
+                    {
+                        strVal = i_xmlStreamReader.attributes().value("Width").toString();
+                        iVal = strVal.toInt(&bConverted);
+                        if( bConverted ) sizeDrawing.setWidth(iVal);
+                        else i_xmlStreamReader.raiseError("Attribute \"" + strElemPath + "Width\" (" + strVal + ") is out of range");
+
+                        if( !i_xmlStreamReader.hasError() )
+                        {
+                            strVal = i_xmlStreamReader.attributes().value("Height").toString();
+                            iVal = strVal.toInt(&bConverted);
+                            if( bConverted ) sizeDrawing.setHeight(iVal);
+                            else i_xmlStreamReader.raiseError("Attribute \"" + strElemPath + "Height\" (" + strVal + ") is out of range");
+                        }
+                    }
+                }
+                else if( strElemName == "Viewport" )
+                {
+                }
+                else if( strElemName == "Margins" )
+                {
+                    if( strElemPath.startsWith("Viewport") )
+                    {
+                        strVal = i_xmlStreamReader.attributes().value("Left").toString();
+                        iVal = strVal.toInt(&bConverted);
+                        if( bConverted ) marginsViewport.setLeft(iVal);
+                        else i_xmlStreamReader.raiseError("Attribute \"" + strElemPath + "Left\" (" + strVal + ") is out of range");
+
+                        if( !i_xmlStreamReader.hasError() )
+                        {
+                            strVal = i_xmlStreamReader.attributes().value("Right").toString();
+                            iVal = strVal.toInt(&bConverted);
+                            if( bConverted ) marginsViewport.setLeft(iVal);
+                            else i_xmlStreamReader.raiseError("Attribute \"" + strElemPath + "Right\" (" + strVal + ") is out of range");
+                        }
+
+                        if( !i_xmlStreamReader.hasError() )
+                        {
+                            strVal = i_xmlStreamReader.attributes().value("Top").toString();
+                            iVal = strVal.toInt(&bConverted);
+                            if( bConverted ) marginsViewport.setLeft(iVal);
+                            else i_xmlStreamReader.raiseError("Attribute \"" + strElemPath + "Top\" (" + strVal + ") is out of range");
+                        }
+
+                        if( !i_xmlStreamReader.hasError() )
+                        {
+                            strVal = i_xmlStreamReader.attributes().value("Bottom").toString();
+                            iVal = strVal.toInt(&bConverted);
+                            if( bConverted ) marginsViewport.setLeft(iVal);
+                            else i_xmlStreamReader.raiseError("Attribute \"" + strElemPath + "Bottom\" (" + strVal + ") is out of range");
+                        }
+                    }
+                }
+            } // if( i_xmlStreamReader.isStartElement() )
+
+            else if( i_xmlStreamReader.isEndElement() )
+            {
+                if( strElemPath.endsWith(strElemName) ) strElemPath.remove(strElemPath.length() - strElemName.length(), strElemName.length());
+                else i_xmlStreamReader.raiseError("EndElement for " + strElemName + " not expected");
+
+                if( strElemName == "Drawing" )
+                {
+                }
+                else if( strElemName == "Size" )
+                {
+                    m_sizeDrawing = sizeDrawing;
+                }
+                else if( strElemName == "Viewport" )
+                {
+                }
+                else if( strElemName == "Margins" )
+                {
+                    m_marginsViewport = marginsViewport;
+                }
+                else if( strElemName == "PageSetup" )
+                {
+                    break;
+                }
+            }
+        } // if( i_xmlStreamReader.isStartElement() || i_xmlStreamReader.isEndElement() )
+    } // while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
+#endif
 } // load
 
 /*==============================================================================

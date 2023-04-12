@@ -73,11 +73,21 @@ public: // class methods
 public: // ctors and dtor
     CWdgtDrawingViewProperties(
         CDrawingView* i_pDrawingView,
+        ZS::System::EMode i_mode = ZS::System::EMode::View,
         QWidget* i_pWdgtParent = nullptr);
     virtual ~CWdgtDrawingViewProperties();
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
     virtual QString className() const { return ClassName(); }
+signals:
+    void drawingSizeChanged(const ZS::Draw::CDrawingSize& i_size);
+public: // instance methods
+    bool hasChanges() const;
+    void acceptChanges();
+    void rejectChanges();
+protected: // instance methods
+    void setMode(ZS::System::EMode i_mode);
+    ZS::System::EMode mode() const;
 protected slots:
     void onDrawingViewDrawingSizeChanged(const ZS::Draw::CDrawingSize& i_size);
     void onCmbDimensionUnitCurrentIndexChanged(int i_idx);
@@ -92,10 +102,7 @@ protected slots:
     void onCmbImageMetricScaleFactorDivisorEditTextChanged(const QString& i_strDivisor);
     void onEdtImageSizeWidthPxValueChanged(int i_cxWidth_px);
     void onEdtImageSizeHeightPxValueChanged(int i_cyHeight_px);
-    void onBtnApplyClicked(bool i_bChecked = false);
-    void onBtnResetClicked(bool i_bChecked = false);
-protected: // instance methods
-    bool hasChanges() const;
+    void onBtnEditClicked(bool i_bChecked = false);
 protected: // instance methods
     void setDimensionUnit( const CEnumDrawingDimensionUnit& i_eDimensionUnit );
     void setMetricUnit( const ZS::PhysVal::CUnit& i_metricUnit );
@@ -104,14 +111,16 @@ protected: // instance methods
     void setScaleFactor( int i_iDividend, int i_iDivisor );
     void setImageSize( const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight );
 protected: // instance methods
+    void updateDimensionUnit();
     void updateImageSizeInPixels();
     void updateImageSizeMetrics();
     void updatePaperFormat();
-    void updateButtonStates();
 protected: // instance methods (method tracing)
+    void emit_drawingSizeChanged(const ZS::Draw::CDrawingSize& i_size);
     void traceValues(ZS::System::CMethodTracer& i_mthTracer, ZS::System::EMethodDir i_methodDir);
 protected: // instance members
     CDrawingView* m_pDrawingView;
+    ZS::System::EMode m_mode;
     QVBoxLayout* m_pLyt;
     QHBoxLayout* m_pLytLineDimensionUnit;
     QLabel* m_pLblDimensionUnit;
@@ -162,8 +171,7 @@ protected: // instance members
     // Button Line
     QWidget* m_pWdgtButtons;
     QHBoxLayout* m_pLytWdgtButtons;
-    QPushButton* m_pBtnApply;
-    QPushButton* m_pBtnReset;
+    QPushButton* m_pBtnEdit;
     // Caching values
     CDrawingSize m_drawingSize;
     /*!< Blocking signals counter. */
