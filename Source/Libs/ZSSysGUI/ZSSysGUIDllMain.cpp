@@ -143,13 +143,10 @@ QMainWindow* ZS::System::GUI::getMainWindowOfApp()
 //------------------------------------------------------------------------------
 {
     QMainWindow* pMainWindow = nullptr;
-
     QApplication* pApp = dynamic_cast<QApplication*>(QApplication::instance());
-
     foreach( QWidget* pWdgt, pApp->topLevelWidgets() )
     {
         QMainWindow* pMainWindowTmp = dynamic_cast<QMainWindow*>(pWdgt);
-
         if( pMainWindowTmp != nullptr )
         {
             pMainWindow = pMainWindowTmp;
@@ -157,24 +154,28 @@ QMainWindow* ZS::System::GUI::getMainWindowOfApp()
         }
     }
     return pMainWindow;
-
-} // getMainWindowOfApp
+}
 
 //------------------------------------------------------------------------------
 QString ZS::System::GUI::getMainWindowTitle()
 //------------------------------------------------------------------------------
 {
-    QString strTitle = QCoreApplication::applicationName();
-
+    QString strTitle;
     QMainWindow* pMainWindow = getMainWindowOfApp();
-
-    if( pMainWindow != nullptr )
+    if (pMainWindow != nullptr )
     {
         strTitle = pMainWindow->windowTitle();
     }
+    if (strTitle.isEmpty())
+    {
+        strTitle = QGuiApplication::applicationDisplayName();
+    }
+    if (strTitle.isEmpty())
+    {
+        strTitle = QCoreApplication::applicationName();
+    }
     return strTitle;
-
-} // getMainWindowTitle
+}
 
 /*==============================================================================
 Error Pixmaps

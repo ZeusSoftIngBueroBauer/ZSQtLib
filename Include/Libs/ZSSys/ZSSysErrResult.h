@@ -436,7 +436,7 @@ protected: // instance members
     @endcode
 */
 //------------------------------------------------------------------------------
-#define ErrResultInfoError(_strMth, _result, _strAddErrInfo) ZS::System::SErrResultInfo(nameSpace(), className(), objectName(), _strMth, _result, ZS::System::EResultSeverityWarning, _strAddErrInfo)
+#define ErrResultInfoError(_strMth, _result, _strAddErrInfo) ZS::System::SErrResultInfo(nameSpace(), className(), objectName(), _strMth, _result, ZS::System::EResultSeverityError, _strAddErrInfo)
 
 //------------------------------------------------------------------------------
 /*! Macro to initialise an error result info structure indicating and error

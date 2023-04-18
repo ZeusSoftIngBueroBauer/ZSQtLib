@@ -425,7 +425,7 @@ void CMainWindow::onActDebugTrcServerTriggered()
 
     if( pDlg == nullptr )
     {
-        QString strDlgTitle = getMainWindowTitle() + ": Trace Server";
+        QString strDlgTitle = ZS::System::GUI::getMainWindowTitle() + ": Trace Server";
         pDlg = CDlgTrcServer::CreateInstance(strDlgTitle);
         pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
         pDlg->adjustSize();
@@ -446,7 +446,7 @@ void CMainWindow::onActDebugTrcServerTriggered()
 void CMainWindow::onActDebugTrcServerAdminObjIdxTreeTriggered()
 //------------------------------------------------------------------------------
 {
-    QString strDlgTitle = getMainWindowTitle() + ": Trace Server Admin Objects";
+    QString strDlgTitle = ZS::System::GUI::getMainWindowTitle() + ": Trace Server Admin Objects";
 
     CDlgIdxTreeTrcAdminObjs* pDlg = CDlgIdxTreeTrcAdminObjs::GetInstance(CTrcServer::GetTraceAdminObjIdxTree()->objectName());
 
@@ -476,7 +476,7 @@ void CMainWindow::onActDebugTrcServerAdminObjIdxTreeTriggered()
 void CMainWindow::onActDebugErrLogTriggered()
 //------------------------------------------------------------------------------
 {
-    QString strDlgTitle = getMainWindowTitle() + ": Error Log";
+    QString strDlgTitle = ZS::System::GUI::getMainWindowTitle() + ": Error Log";
 
     CDlgErrLog* pDlg = dynamic_cast<CDlgErrLog*>(CDlgErrLog::GetInstance(strDlgTitle));
 

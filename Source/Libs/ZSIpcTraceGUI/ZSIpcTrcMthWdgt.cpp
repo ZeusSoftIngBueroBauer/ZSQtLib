@@ -912,7 +912,7 @@ public: // instance methods
 void CWdgtTrcMthList::findText()
 //------------------------------------------------------------------------------
 {
-    QString strDlgTitle = getMainWindowTitle() + ": Find Text";
+    QString strDlgTitle = ZS::System::GUI::getMainWindowTitle() + ": Find Text";
 
     CDlgFindText* pDlg = dynamic_cast<CDlgFindText*>(CDlgFindText::GetInstance("FindText"));
 
@@ -1054,7 +1054,7 @@ void CWdgtTrcMthList::onChkServerUseIpcServerToggled( bool i_bChecked )
 void CWdgtTrcMthList::onBtnTrcAdminObjIdxTreeClicked( bool /*i_bChecked*/ )
 //------------------------------------------------------------------------------
 {
-    QString strDlgTitle = getMainWindowTitle() + ": Trace Admin Objects";
+    QString strDlgTitle = ZS::System::GUI::getMainWindowTitle() + ": Trace Admin Objects";
 
     CDlgIdxTreeTrcAdminObjs* pDlg = CDlgIdxTreeTrcAdminObjs::GetInstance(m_pTrcClient->getTraceAdminObjIdxTree()->objectName());
 
@@ -1855,7 +1855,7 @@ void CWdgtTrcMthList::showAndCheckDataRates()
 
                     QMessageBox* msgBox = new QMessageBox();
                     msgBox->setIcon(QMessageBox::Critical);
-                    msgBox->setWindowTitle(getMainWindowTitle() + ": Too much data");
+                    msgBox->setWindowTitle(ZS::System::GUI::getMainWindowTitle() + ": Too much data");
                     msgBox->setText(strText);
                     msgBox->setAttribute(Qt::WA_DeleteOnClose);
                     msgBox->setModal(false);

@@ -595,7 +595,7 @@ void CMainWindow::onActDebugZSTrcServerAdminObjIdxTreeTriggered()
 void CMainWindow::onActDebugZSTrcClientTriggered()
 //------------------------------------------------------------------------------
 {
-    QString strDlgTitle = getMainWindowTitle() + ": ZS Trace Client";
+    QString strDlgTitle = ZS::System::GUI::getMainWindowTitle() + ": ZS Trace Client";
 
     CIpcTrcClient* pTrcClient = CApplication::GetInstance()->getTrcClient();
 

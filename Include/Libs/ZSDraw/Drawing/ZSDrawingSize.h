@@ -59,9 +59,6 @@ public: // operators
     bool operator == (const CDrawingSize& i_other) const;
     bool operator != (const CDrawingSize& i_other) const;
 public: // instance methods
-    void save(QXmlStreamWriter& i_xmlStreamWriter);
-    void load(QXmlStreamReader& i_xmlStreamReader);
-public: // instance methods
     void setDimensionUnit( const CEnumDrawingDimensionUnit& i_eDimensionUnit );
     CEnumDrawingDimensionUnit dimensionUnit() const;
     void setMetricUnit( const ZS::PhysVal::CUnit& i_unit );

@@ -826,7 +826,7 @@ public: // instance methods
 void CWdgtLog::findText()
 //------------------------------------------------------------------------------
 {
-    QString strDlgTitle = getMainWindowTitle() + ": Find Text";
+    QString strDlgTitle = ZS::System::GUI::getMainWindowTitle() + ": Find Text";
 
     CDlgFindText* pDlg = dynamic_cast<CDlgFindText*>(CDlgFindText::GetInstance("FindText"));
 
@@ -942,7 +942,7 @@ void CWdgtLog::onChkServerUseIpcServerToggled( bool i_bChecked )
 void CWdgtLog::onBtnLoggerIdxTreeClicked( bool /*i_bChecked*/ )
 //------------------------------------------------------------------------------
 {
-    QString strDlgTitle = getMainWindowTitle() + ": Loggers";
+    QString strDlgTitle = ZS::System::GUI::getMainWindowTitle() + ": Loggers";
 
     CDlgIdxTreeLoggers* pDlg = CDlgIdxTreeLoggers::GetInstance(m_pLogClient->getLoggersIdxTree()->objectName());
 

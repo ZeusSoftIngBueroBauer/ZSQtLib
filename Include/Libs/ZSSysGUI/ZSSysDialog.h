@@ -62,12 +62,16 @@ namespace GUI
     With the class method GetInstance it could be checked whether a dialog of
     the class and the given object instance is already existing.
 
-    If the GetInstance method return a valid pointer, the show method of the
+    If the GetInstance method returns a valid pointer the show method of the
     returned dialog instance puts the dialog into front.
 
     If a dialog instance is not yet existing the CreateInstance method will
     create the dialog, enter the dialog with the given NameSpace, ClassName
     and objectName as key into the map of dialogs.
+
+    @note If you call "exec" on the dialog the dialog will be deleted by the
+          Qt framework on leaving the "exec" function and you cannot retrieve
+          any further information from the dialog afterwards.
 */
 class ZSSYSGUIDLL_API CDialog : public QDialog
 //******************************************************************************

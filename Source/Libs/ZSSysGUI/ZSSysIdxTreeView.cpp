@@ -1106,7 +1106,7 @@ void CTreeViewIdxTree::keyPressEvent( QKeyEvent* i_pEv )
                         QString strMsg = "Do you really want to delete \"" + pModelTreeEntrySelected->keyInTree() + "\"?";
                         iRet = QMessageBox::question(
                             /* pWdgtParent     */ this,
-                            /* strTitle        */ getMainWindowTitle(),
+                            /* strTitle        */ ZS::System::GUI::getMainWindowTitle(),
                             /* strText         */ strMsg,
                             /* standardButtons */ QMessageBox::Yes | QMessageBox::No,
                             /* defaultButton   */ QMessageBox::No );

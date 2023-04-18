@@ -178,7 +178,7 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     for( CEnumDrawingDimensionUnit eVal = 0; eVal < CEnumDrawingDimensionUnit::count(); ++eVal ) {
         m_pCmbDimensionUnit->addItem(eVal.toString(), eVal.enumeratorAsInt());
     }
-    m_pCmbDimensionUnit->setCurrentIndex(static_cast<int>(EDrawingDimensionUnit::Pixels));
+    m_pCmbDimensionUnit->setCurrentIndex(m_drawingSize.dimensionUnit().enumeratorAsInt());
     QObject::connect(
         m_pCmbDimensionUnit, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
         this, &CWdgtDrawingViewProperties::onCmbDimensionUnitCurrentIndexChanged );
@@ -521,7 +521,7 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     // Update metrics
     //---------------
 
-    updateImageSizeMetrics();
+    updateDimensionUnit();
 
     // Set Mode
     //---------
@@ -1117,9 +1117,7 @@ void CWdgtDrawingViewProperties::setMetricUnit( const CUnit& i_metricUnit )
         // size in pixels remain the same. Only the unit in which the values
         // are indicated will be changed.
         m_drawingSize.setMetricUnit(i_metricUnit);
-        m_pCmbImageMetricUnit->setCurrentText(i_metricUnit.symbol());
-        m_pEdtImageMetricWidth->setUnit(i_metricUnit);
-        m_pEdtImageMetricHeight->setUnit(i_metricUnit);
+        updateImageSizeMetrics();
         emit_drawingSizeChanged(m_drawingSize);
     }
 }
@@ -1375,16 +1373,25 @@ void CWdgtDrawingViewProperties::updateImageSizeMetrics()
     }
 
     CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
+
+    m_pCmbImageMetricUnit->setCurrentText(m_drawingSize.metricUnit().symbol());
+
     m_pEdtImageMetricWidth->setUnit(m_drawingSize.metricUnit());
     #pragma message(__TODO__"setResolution depending on screen resolution")
     m_pEdtImageMetricWidth->setResolution(0.001);
     m_pEdtImageMetricWidth->setMaximum(100000);
     m_pEdtImageMetricWidth->setValue(m_drawingSize.metricImageWidth().getVal());
+
     m_pEdtImageMetricHeight->setUnit(m_drawingSize.metricUnit());
     #pragma message(__TODO__"setResolution depending on screen resolution")
     m_pEdtImageMetricHeight->setResolution(0.001);
     m_pEdtImageMetricHeight->setMaximum(100000);
     m_pEdtImageMetricHeight->setValue(m_drawingSize.metricImageHeight().getVal());
+
+    m_pCmbImageMetricScaleFactorDividend->setCurrentText(
+        QString::number(m_drawingSize.scaleFactorDividend()));
+    m_pCmbImageMetricScaleFactorDivisor->setCurrentText(
+        QString::number(m_drawingSize.scaleFactorDivisor()));
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) ) {
         traceValues(mthTracer, EMethodDir::Leave);

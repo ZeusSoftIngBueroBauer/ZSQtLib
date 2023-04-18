@@ -750,7 +750,7 @@ protected slots:
 void CMainWindow::onActSettingsLogClientTriggered()
 //------------------------------------------------------------------------------
 {
-    QString strDlgTitle = getMainWindowTitle() + ": Log Client";
+    QString strDlgTitle = ZS::System::GUI::getMainWindowTitle() + ": Log Client";
     CDlgLogClient* pDlg = CDlgLogClient::GetInstance(CApplication::GetInstance()->getLogClient()->objectName());
     if( pDlg == nullptr ) {
         pDlg = CDlgLogClient::CreateInstance(
@@ -775,7 +775,7 @@ void CMainWindow::onActSettingsLogClientTriggered()
 void CMainWindow::onActSettingsLoggersIdxTreeTriggered()
 //------------------------------------------------------------------------------
 {
-    QString strDlgTitle = getMainWindowTitle() + ": Loggers";
+    QString strDlgTitle = ZS::System::GUI::getMainWindowTitle() + ": Loggers";
     CDlgIdxTreeLoggers* pDlg = CDlgIdxTreeLoggers::GetInstance(m_pLogClient->getLoggersIdxTree()->objectName());
     if( pDlg == nullptr ) {
         pDlg = CDlgIdxTreeLoggers::CreateInstance(

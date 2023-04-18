@@ -27,8 +27,7 @@ may result in using the software modules.
 #ifndef ZSApps_Draw_MainWindow_h
 #define ZSApps_Draw_MainWindow_h
 
-#include <QtCore/qglobal.h>
-#include <QtCore/qhash.h>
+#include "ZSSys/ZSSysApp.h"
 
 #if QT_VERSION < 0x050000
 #include <QtGui/qmainwindow.h>
@@ -82,6 +81,7 @@ class CDlgTest;
 namespace Draw
 {
 class CDrawingScene;
+class CDrawingSize;
 class CDrawingView;
 class CDrawSettings;
 class CGraphObj;
@@ -138,17 +138,17 @@ class CMainWindow : public QMainWindow
 //******************************************************************************
 {
     Q_OBJECT
-public: // type definitions and constants
-    enum {
-        EAddObjFactoriesNone        = 0x0000,
-        EAddObjFactoriesQtWidgets   = 0x0001,
-        EAddObjFactoriesElectricity = 0x0002,
-        EAddObjFactoriesAll         = 0xffff
-    };
+public: // class methods
+    static QString NameSpace() { return "Apps::Products::Draw"; }
+    static QString ClassName() { return "CMainWindow"; }
 public: // class methods
     static CMainWindow* GetInstance(); // singleton class
 public: // class members
+    static const QString c_strObjFactoryQtWidgets;
+    static const QString c_strObjFactoryElectricity;
+public: // class members
     static const QString c_strMenuNameFile;
+    static const QString c_strMenuNameFileOpenLastUsed;
     static const QString c_strMenuNameMode;
     static const QString c_strMenuNameEdit;
     static const QString c_strMenuNameEditRotate;
@@ -167,6 +167,7 @@ public: // class members
     static const QString c_strActionNameFileOpen;
     static const QString c_strActionNameFileSave;
     static const QString c_strActionNameFileSaveAs;
+    //static const QString c_strActionNameFileOpenLastUsed;
     static const QString c_strActionNameFilePageSetup;
     static const QString c_strActionNameFileQuit;
     static const QString c_strActionNameModeEdit;
@@ -212,18 +213,21 @@ public: // class members
     static const QString c_strActionNameInfoVersion;
 public: // ctors and dtor
     CMainWindow(
-        const QString&   i_strWindowTitleAppName,
-        ZS::Test::CTest* i_pTest,
-        unsigned int     i_uAddObjFactories,
-        QWidget*         i_pWdgtParent = nullptr,
-        Qt::WindowFlags  i_wflags = Qt::WindowFlags());
+        const QString&     i_strWindowTitleAppName,
+        ZS::Test::CTest*   i_pTest,
+        const QStringList& i_strlstObjFactories,
+        QWidget*           i_pWdgtParent = nullptr,
+        Qt::WindowFlags    i_wflags = Qt::WindowFlags());
     virtual ~CMainWindow();
+public: // overridables
+    virtual QString nameSpace() const { return NameSpace(); }
+    virtual QString className() const { return ClassName(); }
 protected: // overridables of base class QWidget
     virtual void closeEvent( QCloseEvent* i_pEv );
 public: // instance methods
-    unsigned int getAddedObjFactories() const { return m_uAddObjFactories; }
+    QStringList getAddedObjFactories() const { return m_strlstObjFactories; }
 protected: // instance methods
-    void setWindowTitle();
+    void updateWindowTitle();
 protected: // instance methods (for ctor)
     void createObjFactories();
     void createActions();
@@ -234,10 +238,12 @@ protected: // instance methods (for ctor)
 protected: // overridables of base class QWidget
     virtual bool eventFilter( QObject* i_pObjWatched, QEvent* i_pEv );
 public: // instance methods
-    void setCheckedActionModeEdit( bool i_bChecked );
-    void setCheckedActionModeView( bool i_bChecked );
+    void setCurrentUsedFile( const QString& i_strAbsFilePath );
 public: // instance methods
-    void setCheckedActionEditSelect( bool i_bChecked );
+    void setCheckedActionModeEdit(bool i_bChecked);
+    void setCheckedActionModeView(bool i_bChecked);
+public: // instance methods
+    void setCheckedActionEditSelect(bool i_bChecked);
     void triggerActionEditRotateLeft();
     void triggerActionEditRotateRight();
     void triggerActionEditMirrorVertical();
@@ -245,65 +251,67 @@ public: // instance methods
     void triggerActionEditGroup();
     void triggerActionEditUngroup();
 public: // instance methods
-    void setCheckedActionDrawStandardShapePoint( bool i_bChecked );
-    void setCheckedActionDrawStandardShapeLine( bool i_bChecked );
-    void setCheckedActionDrawStandardShapeRect( bool i_bChecked );
-    void setCheckedActionDrawStandardShapeEllipse( bool i_bChecked );
-    void setCheckedActionDrawStandardShapePolyline( bool i_bChecked );
-    void setCheckedActionDrawStandardShapePolygon( bool i_bChecked );
-    void setCheckedActionDrawStandardShapeText( bool i_bChecked );
+    void setCheckedActionDrawStandardShapePoint(bool i_bChecked);
+    void setCheckedActionDrawStandardShapeLine(bool i_bChecked);
+    void setCheckedActionDrawStandardShapeRect(bool i_bChecked);
+    void setCheckedActionDrawStandardShapeEllipse(bool i_bChecked);
+    void setCheckedActionDrawStandardShapePolyline(bool i_bChecked);
+    void setCheckedActionDrawStandardShapePolygon(bool i_bChecked);
+    void setCheckedActionDrawStandardShapeText(bool i_bChecked);
     void triggerActionDrawGraphicsImage();
-    void setCheckedActionDrawConnectionPoint( bool i_bChecked );
-    void setCheckedActionDrawConnectionLine( bool i_bChecked );
+    void setCheckedActionDrawConnectionPoint(bool i_bChecked);
+    void setCheckedActionDrawConnectionLine(bool i_bChecked);
 public slots: // Menu - File
-    void onActionFileNewTriggered( bool );
-    void onActionFileOpenTriggered( bool );
-    void onActionFileSaveTriggered( bool );
-    void onActionFileSaveAsTriggered( bool );
-    void onActionFilePageSetupTriggered( bool );
-    void onActionFileRecentTriggered( bool );
+    void onActionFileNewTriggered(bool i_bChecked = false);
+    void onActionFileOpenTriggered(bool i_bChecked = false);
+    void onActionFileSaveTriggered(bool i_bChecked = false);
+    void onActionFileSaveAsTriggered(bool i_bChecked = false);
+    void onActionFilePageSetupTriggered(bool i_bChecked = false);
+    void onActionFileLastUsedFilesTriggered(bool i_bChecked = false);
+    void onActionFileQuitTriggered(bool i_bChecked = false);
 public slots: // Menu - Mode
-    void onActionModeEditToggled( bool );
-    void onActionModeViewToggled( bool );
+    void onActionModeEditToggled(bool i_bChecked = false);
+    void onActionModeViewToggled(bool i_bChecked = false);
 public slots: // Menu - Edit - Select/RotateFree
-    void onActionEditSelectToggled( bool );
+    void onActionEditSelectToggled(bool i_bChecked = false);
 public slots: // Menu - Edit - Rotate
-    void onActionEditRotateLeftTriggered(bool);
-    void onActionEditRotateRightTriggered(bool);
+    void onActionEditRotateLeftTriggered(bool i_bChecked = false);
+    void onActionEditRotateRightTriggered(bool i_bChecked = false);
 public slots: // Menu - Edit - Mirror
-    void onActionEditMirrorVerticalTriggered(bool);
-    void onActionEditMirrorHorizontalTriggered(bool);
+    void onActionEditMirrorVerticalTriggered(bool i_bChecked = false);
+    void onActionEditMirrorHorizontalTriggered(bool i_bChecked = false);
 public slots: // Menu - Edit - Group
-    void onActionEditGroupTriggered(bool);
-    void onActionEditUngroupTriggered(bool);
+    void onActionEditGroupTriggered(bool i_bChecked = false);
+    void onActionEditUngroupTriggered(bool i_bChecked = false);
 public slots: // Menu - Draw - Settings
-    void onActionDrawSettingsLineTriggered( bool );
-    void onActionDrawSettingsFillTriggered( bool );
-    void onActionDrawSettingsTextTriggered( bool );
+    void onActionDrawSettingsLineTriggered(bool i_bChecked = false);
+    void onActionDrawSettingsFillTriggered(bool i_bChecked = false);
+    void onActionDrawSettingsTextTriggered(bool i_bChecked = false);
 public slots: // Menu - Draw - Standard Shapes
-    void onActionDrawStandardShapePointToggled( bool );
-    void onActionDrawStandardShapeLineToggled( bool );
-    void onActionDrawStandardShapeRectToggled( bool );
-    void onActionDrawStandardShapeEllipseToggled( bool );
-    void onActionDrawStandardShapePolylineToggled( bool );
-    void onActionDrawStandardShapePolygonToggled( bool );
-    void onActionDrawStandardShapeTextToggled( bool );
+    void onActionDrawStandardShapePointToggled(bool i_bChecked = false);
+    void onActionDrawStandardShapeLineToggled(bool i_bChecked = false);
+    void onActionDrawStandardShapeRectToggled(bool i_bChecked = false);
+    void onActionDrawStandardShapeEllipseToggled(bool i_bChecked = false);
+    void onActionDrawStandardShapePolylineToggled(bool i_bChecked = false);
+    void onActionDrawStandardShapePolygonToggled(bool i_bChecked = false);
+    void onActionDrawStandardShapeTextToggled(bool i_bChecked = false);
 public slots: // Menu - Draw - Graphics
-    void onActionDrawGraphicsImageTriggered( bool );
+    void onActionDrawGraphicsImageTriggered(bool i_bChecked = false);
 public slots: // Menu - Draw - Connections
-    void onActionDrawConnectionPointToggled( bool );
-    void onActionDrawConnectionLineToggled( bool );
+    void onActionDrawConnectionPointToggled(bool i_bChecked = false);
+    void onActionDrawConnectionLineToggled(bool i_bChecked = false);
 public slots: // Menu - View - Zoom
-    void onActionViewZoomInTriggered( bool );
-    void onActionViewZoomOutTriggered( bool );
+    void onActionViewZoomInTriggered(bool i_bChecked = false);
+    void onActionViewZoomOutTriggered(bool i_bChecked = false);
     void onEdtViewZoomFactorEditingFinished();
 public slots: // Menu - Trace
-    void onActionDebugErrLogTriggered( bool );
-    void onActionDebugUnitsTriggered( bool );
-    void onActionDebugTraceServerTriggered( bool );
-    void onActionDebugTraceAdminObjsTriggered( bool );
-    void onActionDebugTestTriggered( bool );
+    void onActionDebugErrLogTriggered(bool i_bChecked = false);
+    void onActionDebugUnitsTriggered(bool i_bChecked = false);
+    void onActionDebugTraceServerTriggered(bool i_bChecked = false);
+    void onActionDebugTraceAdminObjsTriggered(bool i_bChecked = false);
+    void onActionDebugTestTriggered(bool i_bChecked = false);
 public slots: // Drawing Scene
+    void onDrawingSceneSizeChanged( const ZS::Draw::CDrawingSize& i_drawingSize);
     void onDrawingSceneChanged( const QList<QRectF>& i_region );
     void onDrawingSceneFocusItemChanged( QGraphicsItem* i_pNewFocusItem, QGraphicsItem* i_pOldFocusItem, Qt::FocusReason reason );
     void onDrawingSceneSelectionChanged();
@@ -321,10 +329,11 @@ protected: // overridables of base class QWidget
     virtual void resizeEvent( QResizeEvent* i_pEv ) override;
     virtual void showEvent( QShowEvent* i_pEv ) override;
 protected: // instance methods
-    void setCurrentFile( const QString& i_strFileName );
     void updateStatusBar();
     void updateActions();
-    void updateActionsFilesRecent();
+    void updateActionsLastUsedFiles();
+protected: // instance methods
+    void updateCurrentUsedFile( const QString& i_strAbsFilePath );
 protected slots:
     void onErrLogEntryAdded( const ZS::System::SErrResultInfo& i_errResultInfo );
     void onErrLogEntryChanged( const ZS::System::SErrResultInfo& i_errResultInfo );
@@ -332,14 +341,14 @@ protected slots:
 protected: // instance methods
     void updateErrorsStatus();
 protected: // type definitions and constants
-    enum { EFilesRecentCountMax = 4 };
+    const int c_iLastUsedFilesCountMax = 10;
 protected: // class members
     static CMainWindow* s_pThis; // singleton class
 protected: // instance members
     QString m_strWindowTitleAppName;
-    unsigned int m_uAddObjFactories;
+    QStringList m_strlstObjFactories;
     ZS::Test::CTest* m_pTest;
-    // Object Factories
+    // Object Factories (Standard Shapes)
     ZS::Draw::CObjFactoryPoint*           m_pObjFactoryPoint;
     ZS::Draw::CObjFactoryLine*            m_pObjFactoryLine;
     ZS::Draw::CObjFactoryRect*            m_pObjFactoryRect;
@@ -351,6 +360,7 @@ protected: // instance members
     ZS::Draw::CObjFactoryConnectionPoint* m_pObjFactoryConnectionPoint;
     ZS::Draw::CObjFactoryConnectionLine*  m_pObjFactoryConnectionLine;
     ZS::Draw::CObjFactoryGroup*           m_pObjFactoryGroup;
+    // Object Factories (User Defined)
     ZS::Draw::QtWidgets::CObjFactoryWdgtCheckBox*    m_pObjFactoryWdgtCheckBox;
     ZS::Draw::QtWidgets::CObjFactoryWdgtComboBox*    m_pObjFactoryWdgtComboBox;
     ZS::Draw::QtWidgets::CObjFactoryWdgtGroupBox*    m_pObjFactoryWdgtGroupBox;
@@ -368,16 +378,19 @@ protected: // instance members
     QMenuBar* m_pMenuBar;
     // Menu - File
     QMenu*    m_pMenuFile;
+    QMenu*    m_pMenuLastUsedFiles;
     QToolBar* m_pToolBarFile;
     QAction*  m_pActFileNew;
     QAction*  m_pActFileOpen;
     QAction*  m_pActFileSave;
     QAction*  m_pActFileSaveAs;
     QAction*  m_pActFilePageSetup;
-    QAction*  m_pActFilesRecentSeparator;
-    QAction*  m_arpActFilesRecent[EFilesRecentCountMax];
+    //QAction*  m_pActLastUsedFiles;
+    QList<ZS::System::SLastUsedFile> m_arLastUsedFiles;
+    QList<QAction*> m_arpActsLastUsedFiles;
     bool      m_bDrawingChangedSinceLastSave;
-    QString   m_strCurrentFile;
+    QString   m_strCurrentFileAbsFilePath;
+    QDateTime m_dtCurrentFileLastUsed;
     QAction*  m_pActFileQuit;
     // Menu - Mode
     QMenu*    m_pMenuMode;

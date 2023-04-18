@@ -54,6 +54,8 @@ list(APPEND _Headers
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysIdxTreeView.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysIdxTreeViewWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysIdxTreeWdgt.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysLastUsedFileDlg.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysLastUsedFileTreeWdgtItem.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysLoggerIdxTreeDlg.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysLoggerIdxTreeModel.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysLoggerIdxTreeView.h
@@ -96,6 +98,8 @@ list(APPEND _Sources
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysIdxTreeView.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysIdxTreeViewWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysIdxTreeWdgt.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysLastUsedFileTreeWdgtItem.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysLastUsedFileDlg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysLoggerIdxTreeDlg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysLoggerIdxTreeModel.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysLoggerIdxTreeView.cpp
@@ -189,10 +193,10 @@ list(APPEND _CnctStateImages
 list(APPEND _MenuImages
     ${_ResourcesPath}/${PROJECT_NAME}/Images/MenuFileAdd16x16.bmp
     ${_ResourcesPath}/${PROJECT_NAME}/Images/MenuFileEdit16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/MenuFileNew16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/MenuFileOpen16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/MenuFileSave16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/MenuFileSaveAs16x16.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/MenuFileNew16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/MenuFileOpen16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/MenuFileSave16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/MenuFileSaveAs16x16.png
 )
 
 list(APPEND _TreeViewImages

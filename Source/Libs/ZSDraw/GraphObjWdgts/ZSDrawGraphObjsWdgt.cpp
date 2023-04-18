@@ -76,7 +76,7 @@ CWdgtGraphObjs::CWdgtGraphObjs(
     m_pLytMain(nullptr),
     m_pSplitter(nullptr),
     m_pWdgtTreeView(nullptr),
-    m_pWdgtGraphObjs(nullptr),
+    m_pWdgtStackGraphObjsProperties(nullptr),
     m_pTrcAdminObj(nullptr)
 {
     setObjectName(i_pDrawingView->objectName());
@@ -122,13 +122,14 @@ CWdgtGraphObjs::CWdgtGraphObjs(
     // <TableView>
     //------------
 
-    m_pWdgtGraphObjs = new CWdgtStackGraphObjsProperties(m_pDrawingView);
-    m_pSplitter->addWidget(m_pWdgtGraphObjs);
+    m_pWdgtStackGraphObjsProperties = new CWdgtStackGraphObjsProperties(m_pDrawingView);
+    m_pWdgtStackGraphObjsProperties->setMinimumWidth(180);
+    m_pSplitter->addWidget(m_pWdgtStackGraphObjsProperties);
 
     CWdgtGraphObjsTree::EViewMode viewMode = m_pWdgtTreeView->viewMode();
 
     if( viewMode == CWdgtGraphObjsTree::EViewMode::NavPanelOnly ) {
-        m_pWdgtGraphObjs->hide();
+        m_pWdgtStackGraphObjsProperties->hide();
     }
 
 } // ctor
@@ -153,7 +154,7 @@ CWdgtGraphObjs::~CWdgtGraphObjs()
     m_pLytMain = nullptr;
     m_pSplitter = nullptr;
     m_pWdgtTreeView = nullptr;
-    m_pWdgtGraphObjs = nullptr;
+    m_pWdgtStackGraphObjsProperties = nullptr;
     m_pTrcAdminObj = nullptr;
 
 } // dtor
@@ -175,7 +176,7 @@ void CWdgtGraphObjs::saveState(QSettings& i_settings) const
     }
 
     m_pWdgtTreeView->saveState(i_settings);
-    m_pWdgtGraphObjs->saveState(i_settings);
+    m_pWdgtStackGraphObjsProperties->saveState(i_settings);
 }
 
 //------------------------------------------------------------------------------
@@ -183,7 +184,7 @@ void CWdgtGraphObjs::restoreState(const QSettings& i_settings)
 //------------------------------------------------------------------------------
 {
     m_pWdgtTreeView->restoreState(i_settings);
-    m_pWdgtGraphObjs->restoreState(i_settings);
+    m_pWdgtStackGraphObjsProperties->restoreState(i_settings);
 
     if( m_pSplitter != nullptr ) {
         QList<int> listSizes = m_pSplitter->sizes();
@@ -221,11 +222,11 @@ void CWdgtGraphObjs::onWdgtTreeViewModeChanged( const QString& i_strViewMode )
 
     if( viewMode == CWdgtGraphObjsTree::EViewMode::NavPanelAndNodeContent ) {
         m_pWdgtTreeView->setMinimumWidth(180);
-        m_pWdgtGraphObjs->show();
+        m_pWdgtStackGraphObjsProperties->show();
     }
     else {
         m_pWdgtTreeView->setMinimumWidth(180);
-        m_pWdgtGraphObjs->hide();
+        m_pWdgtStackGraphObjsProperties->hide();
     }
 }
 
@@ -254,10 +255,10 @@ void CWdgtGraphObjs::onWdgtTreeViewCurrentRowChanged(
         CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdxCurr.internalPointer());
 
         if( pModelTreeEntry != nullptr ) {
-            m_pWdgtGraphObjs->setKeyInTree(pModelTreeEntry->keyInTree());
+            m_pWdgtStackGraphObjsProperties->setKeyInTree(pModelTreeEntry->keyInTree());
         }
         else {
-            m_pWdgtGraphObjs->setKeyInTree("");
+            m_pWdgtStackGraphObjsProperties->setKeyInTree("");
         }
     }
 

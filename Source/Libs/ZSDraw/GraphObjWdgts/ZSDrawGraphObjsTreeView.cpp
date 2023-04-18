@@ -1061,7 +1061,7 @@ void CTreeViewGraphObjs::keyPressEvent( QKeyEvent* i_pEv )
                                 QString strMsg = "Do you really want to delete \"" + pModelTreeEntry->keyInTree() + "\"?";
                                 iRet = QMessageBox::question(
                                     /* pWdgtParent     */ this,
-                                    /* strTitle        */ getMainWindowTitle(),
+                                    /* strTitle        */ ZS::System::GUI::getMainWindowTitle(),
                                     /* strText         */ strMsg,
                                     /* standardButtons */ QMessageBox::Yes | QMessageBox::No,
                                     /* defaultButton   */ QMessageBox::No );
@@ -1570,7 +1570,7 @@ void CTreeViewGraphObjs::onActionGraphObjDeleteTriggered( bool i_bChecked )
                         QString strMsg = "Do you really want to delete \"" + pModelTreeEntry->keyInTree() + "\"?";
                         iRet = QMessageBox::question(
                             /* pWdgtParent     */ this,
-                            /* strTitle        */ getMainWindowTitle(),
+                            /* strTitle        */ ZS::System::GUI::getMainWindowTitle(),
                             /* strText         */ strMsg,
                             /* standardButtons */ QMessageBox::Yes | QMessageBox::No,
                             /* defaultButton   */ QMessageBox::No );

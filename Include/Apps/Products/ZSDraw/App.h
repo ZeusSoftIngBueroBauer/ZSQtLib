@@ -57,6 +57,9 @@ class CApplication : public ZS::System::GUI::CGUIApp
 {
     Q_OBJECT
 public: // class methods
+    static QString NameSpace() { return "Apps::Products::Draw"; }
+    static QString ClassName() { return "CApplication"; }
+public: // class methods
     static CApplication* GetInstance();
 public: // ctors and dtor
     CApplication(
@@ -64,9 +67,16 @@ public: // ctors and dtor
         char*          i_argv[],
         const QString& i_strOrganizationName,
         const QString& i_strOrganizationDomain,
-        const QString& i_strAppName,
-        const QString& i_strWindowTitle );
+        const QString& i_strAppName );
     ~CApplication();
+public: // overridables
+    virtual QString nameSpace() const { return NameSpace(); }
+    virtual QString className() const { return ClassName(); }
+public: // instance methods
+    void createAndShowMainWindow(
+        const QString&     i_strMainWindowTitle,
+        const QString&     i_strFileName,
+        const QStringList& i_strlstObjFactories);
 protected slots: // instance methods of system shutdown
     void onLastWindowClosed();
 protected: // instance members

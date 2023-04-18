@@ -519,6 +519,117 @@ QString ZS::System::getAppDataDir( const QString& i_strIniFileScope, bool i_bCre
 } // getAppDataDir
 
 
+//------------------------------------------------------------------------------
+/*! @brief Returns a list with the last used files from the given settings with
+           the given key. The returned list is sorted according to the date time
+           the have been used recently (the most recently used file at first,
+           the "oldest" entry at the end.
+
+    @param i_settings Settings instance to be used.
+    @param i_strKey Settings key to be used.
+
+    @return List with last used files sorted by used date times
+            (the most recently used file at first, the "oldest" entry at the end.
+*/
+QList<SLastUsedFile> ZS::System::readLastUsedFiles(
+    const QSettings& i_settings, const QString& i_strKey)
+//------------------------------------------------------------------------------
+{
+    QList<SLastUsedFile> arLastUsedFiles;
+    QString strValue = i_settings.value(i_strKey, "").toString();
+    if (!strValue.isEmpty())
+    {
+        QStringList strlstLastUsedFiles = strValue.split("<", Qt::SkipEmptyParts);
+        for (int idxFile = 0; idxFile < strlstLastUsedFiles.size(); ++idxFile)
+        {
+            QStringList strlstLastUsedFile = strlstLastUsedFiles[idxFile].remove(">").split("*");
+            if (strlstLastUsedFile.size() == 2)
+            {
+                QString strAbsFilePath = strlstLastUsedFile[0];
+                QDateTime dtLastUsed = QDateTime::fromString(strlstLastUsedFile[1], "yyyy.MM.dd hh:mm:ss");
+                if (!strAbsFilePath.isEmpty() && dtLastUsed.isValid())
+                {
+                    arLastUsedFiles.append({strAbsFilePath, dtLastUsed});
+                }
+            }
+        }
+        sortLastUsedFiles(arLastUsedFiles);
+    }
+    return arLastUsedFiles;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Writes the list with the last used files into the given settings
+           and the given key.
+
+    @param i_arLastUsedFiles List with elments of the last used files.
+           Each element contains the absolute file path and the date time
+           the file has been used for the last time.
+    @param i_settings Settings instance to be used.
+    @param i_strKey Settings key to be used.
+*/
+void ZS::System::writeLastUsedFiles(
+    const QList<SLastUsedFile>& i_arLastUsedFiles, QSettings& i_settings, const QString& i_strKey)
+//------------------------------------------------------------------------------
+{
+    QString strValue;
+    for( int idxFile = 0; idxFile < i_arLastUsedFiles.size(); ++idxFile)
+    {
+        // Use delimiters (< > *) which are neither allowed in file names
+        // nor in the date time format.
+        strValue += "<" + i_arLastUsedFiles[idxFile].m_strAbsFilePath + "*"
+                + i_arLastUsedFiles[idxFile].m_dtLastUsed.toString("yyyy.MM.dd hh:mm:ss") + ">";
+    }
+    i_settings.setValue(i_strKey, strValue);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sorts the given list with last recent files according to the
+           date time the files have been used.
+
+    The method also ensures that therea are no duplicate file names in the
+    sorted list.
+
+    @param i_arLastUsedFiles List with elments of the last used files.
+           Each element contains the absolute file path and the date time
+           the file has been used for the last time.
+           After invoking the method the list is sorted according to their
+           used date times. The most recently used file at the beginning,
+           the "oldest" file at the end. In addition the list does not contain
+           duplicate file paths.
+*/
+void ZS::System::sortLastUsedFiles(QList<SLastUsedFile>& i_arLastUsedFiles)
+//------------------------------------------------------------------------------
+{
+    QMultiMap<QDateTime, QString> mapLastUsedFiles;
+    for (int idxFile = 0; idxFile < i_arLastUsedFiles.size(); ++idxFile)
+    {
+        mapLastUsedFiles.insert(
+            i_arLastUsedFiles[idxFile].m_dtLastUsed,
+            i_arLastUsedFiles[idxFile].m_strAbsFilePath);
+    }
+    i_arLastUsedFiles.clear();
+    if (!mapLastUsedFiles.isEmpty())
+    {
+        // Sorted by date time at this point means that the "oldest" entry
+        // is the first in the map, the newest entry the last as the newest
+        // entry is the "highest" date time. We need to reverse the order.
+        QSet<QString> hshAbsFilePaths;
+        QList<QDateTime> arDateTimes = mapLastUsedFiles.keys();
+        for (int idxFile = arDateTimes.size()-1; idxFile >= 0; --idxFile)
+        {
+            const QDateTime& dtLastUsed = arDateTimes[idxFile];
+            const QString& strAbsFilePath = mapLastUsedFiles.value(dtLastUsed);
+            if (!hshAbsFilePaths.contains(strAbsFilePath))
+            {
+                i_arLastUsedFiles.append({strAbsFilePath, dtLastUsed});
+                hshAbsFilePaths.insert(strAbsFilePath);
+            }
+        }
+    }
+}
+
+
 /*******************************************************************************
 class CCoreApp : public QCoreApplication
 *******************************************************************************/

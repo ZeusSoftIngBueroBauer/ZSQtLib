@@ -25,62 +25,14 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "App.h"
+#include "MainWindow.h"
 
+#include "ZSSys/ZSSysApp.h"
 #include "ZSSys/ZSSysTrcServer.h"
 #include "ZSSys/ZSSysVersion.h"
+#include "ZSSysGUI/ZSSysLastUsedFileDlg.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
-
-
-/*******************************************************************************
-Libraries depending on build configuration and used Qt version
-*******************************************************************************/
-
-#ifdef _WINDOWS
-
-#ifdef USE_PRAGMA_COMMENT_LIB_INCLUDE_IN_MAIN_MODULES
-
-#pragma message(__FILE__ ": Linking against = " QTMAINLIB)
-#pragma comment( lib, QTMAINLIB )
-#pragma message(__FILE__ ": Linking against = " QTCORELIB)
-#pragma comment(lib, QTCORELIB)
-#pragma message(__FILE__ ": Linking against = " QTNETWORKLIB)
-#pragma comment(lib, QTNETWORKLIB)
-#pragma message(__FILE__ ": Linking against = " QTXMLLIB)
-#pragma comment(lib, QTXMLLIB)
-#pragma message(__FILE__ ": Linking against = " QTGUILIB)
-#pragma comment( lib, QTGUILIB )
-#if QT_VERSION >= 0x050000 && QT_VERSION < 0x060000
-#pragma message(__FILE__ ": Linking against = " QTWIDGETSLIB)
-#pragma comment( lib, QTWIDGETSLIB )
-#endif
-
-#pragma message(__FILE__ ": Linking against = " ZSSYSLIB)
-#pragma comment(lib, ZSSYSLIB)
-#pragma message(__FILE__ ": Linking against = " ZSSYSGUILIB)
-#pragma comment(lib, ZSSYSGUILIB)
-#pragma message(__FILE__ ": Linking against = " ZSTESTLIB)
-#pragma comment(lib, ZSTESTLIB)
-#pragma message(__FILE__ ": Linking against = " ZSTESTGUILIB)
-#pragma comment(lib, ZSTESTGUILIB)
-#pragma message(__FILE__ ": Linking against = " ZSIPCLIB)
-#pragma comment(lib, ZSIPCLIB)
-#pragma message(__FILE__ ": Linking against = " ZSIPCGUILIB)
-#pragma comment(lib, ZSIPCGUILIB)
-#pragma message(__FILE__ ": Linking against = " ZSIPCTRACELIB)
-#pragma comment(lib, ZSIPCTRACELIB)
-#pragma message(__FILE__ ": Linking against = " ZSIPCTRACEGUILIB)
-#pragma comment(lib, ZSIPCTRACEGUILIB)
-#pragma message(__FILE__ ": Linking against = " ZSPHYSVALLIB)
-#pragma comment(lib, ZSPHYSVALLIB)
-#pragma message(__FILE__ ": Linking against = " ZSPHYSVALGUILIB)
-#pragma comment(lib, ZSPHYSVALGUILIB)
-#pragma message(__FILE__ ": Linking against = " ZSDRAWLIB)
-#pragma comment(lib, ZSDRAWLIB)
-
-#endif // #ifdef USE_PRAGMA_COMMENT_LIB_INCLUDE_IN_MAIN_MODULES
-
-#endif // #ifdef _WINDOWS
 
 
 /*******************************************************************************
@@ -88,10 +40,44 @@ Entry point for the DLL application.
 *******************************************************************************/
 
 //------------------------------------------------------------------------------
-int main( int argc, char* argv[] )
+int main( int i_argc, char* i_argv[] )
 //------------------------------------------------------------------------------
 {
     int iAppResult = 0;
+
+    // Parse command arguments
+    //------------------------
+
+    QStringList strlstArgsPar;
+    QStringList strlstArgsVal;
+
+    ZS::System::parseAppArgs(i_argc, i_argv, strlstArgsPar, strlstArgsVal);
+
+    bool bTest = false;
+    QStringList strlstObjFactories;
+
+    #if QT_VERSION >= 0x040501
+    for( int idxArg = 0; idxArg < strlstArgsPar.length() && idxArg < strlstArgsVal.length(); idxArg++ )
+    #else
+    for( int idxArg = 0; idxArg < strListArgsPar.size() && idxArg < strListArgsVal.size(); idxArg++ )
+    #endif
+    {
+        QString strArg = strlstArgsPar[idxArg];
+        QString strVal = strlstArgsVal[idxArg];
+
+        if( strArg.compare("Test",Qt::CaseInsensitive) == 0 )
+        {
+            bTest = true;
+        }
+        if( strArg.compare("DemoQtWidgets",Qt::CaseInsensitive) == 0 )
+        {
+            strlstObjFactories << ZS::Apps::Products::Draw::CMainWindow::c_strObjFactoryQtWidgets;
+        }
+        else if( strArg.compare("DemoElectricity",Qt::CaseInsensitive) == 0 )
+        {
+            strlstObjFactories << ZS::Apps::Products::Draw::CMainWindow::c_strObjFactoryElectricity;
+        }
+    }
 
     // Create and start application
     //-----------------------------
@@ -101,17 +87,41 @@ int main( int argc, char* argv[] )
     try
     {
         pApp = new ZS::Apps::Products::Draw::CApplication(
-            /* argc                  */ argc,
-            /* argv                  */ argv,
+            /* argc                  */ i_argc,
+            /* argv                  */ i_argv,
             /* strOrganizationName   */ "ZeusSoft",
             /* strOrganizationDomain */ "ZeusSoft.de",
-            /* strAppName            */ "ZSAppDraw",
-            /* strAppNameWindowTitle */ "Draw" );
+            /* strAppName            */ "ZSAppDraw" );
     }
     catch(...)
     {
         return -1;
     }
+
+    // Open most recently used files
+    //------------------------------
+
+    QString strMainWindowTitle = "ZS Draw";
+
+    ZS::System::SLastUsedFile lastUsedFile;
+    int iDlgOpenLastUsedFileResult = QDialog::Rejected;
+
+    if (!bTest)
+    {
+        ZS::System::GUI::CDlgOpenLastUsedFile* pDlg =
+            ZS::System::GUI::CDlgOpenLastUsedFile::CreateInstance(strMainWindowTitle);
+        pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
+        pDlg->adjustSize();
+        iDlgOpenLastUsedFileResult = pDlg->exec();
+        pDlg = nullptr; // When leaving the exec function the dialog has already been destroyed by the Qt framework.
+
+        if (iDlgOpenLastUsedFileResult == QDialog::Accepted)
+        {
+            lastUsedFile = ZS::System::GUI::CDlgOpenLastUsedFile::getSelectedFile();
+        }
+    }
+
+    pApp->createAndShowMainWindow(strMainWindowTitle, lastUsedFile.m_strAbsFilePath, strlstObjFactories);
 
     iAppResult = pApp->exec();
 

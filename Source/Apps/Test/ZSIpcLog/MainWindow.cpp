@@ -659,7 +659,7 @@ void CMainWindow::onActDebugLogServerLoggersIdxTreeTriggered()
 void CMainWindow::onActDebugLogClientTriggered()
 //------------------------------------------------------------------------------
 {
-    QString strDlgTitle = getMainWindowTitle() + ": Log Client";
+    QString strDlgTitle = ZS::System::GUI::getMainWindowTitle() + ": Log Client";
 
     CIpcLogClient* pLogClient = CApplication::GetInstance()->getLogClient();
 

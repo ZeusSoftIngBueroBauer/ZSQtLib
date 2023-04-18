@@ -65,6 +65,7 @@ may result in using the software modules.
 #include "ZSPhysValGUI/ZSPhysValDlgEditPhysVal.h"
 #include "ZSIpcTraceGUI/ZSIpcTrcServerDlg.h"
 #include "ZSTestGUI/ZSTestDlg.h"
+#include "ZSTest/ZSTest.h"
 #include "ZSSysGUI/ZSSysGUIAux.h"
 #include "ZSSysGUI/ZSSysErrLogDlg.h"
 #include "ZSSysGUI/ZSSysIdxTreeModelEntry.h"
@@ -84,6 +85,7 @@ may result in using the software modules.
 //#include <QtCore/qaction.h>
 #include <QtCore/qfileinfo.h>
 #include <QtCore/qsettings.h>
+#include <QtCore/qstandardpaths.h>
 //#include <QtCore/qtimer.h>
 
 //#include <QtGui/qbitmap.h>
@@ -151,7 +153,11 @@ class CMainWindow : public QMainWindow
 public: // class members
 ==============================================================================*/
 
+const QString CMainWindow::c_strObjFactoryQtWidgets = "QtWidgets";
+const QString CMainWindow::c_strObjFactoryElectricity = "Electricity";
+
 const QString CMainWindow::c_strMenuNameFile               = "&File";
+const QString CMainWindow::c_strMenuNameFileOpenLastUsed   = "Last Used Files ...";
 const QString CMainWindow::c_strMenuNameMode               = "&Mode";
 const QString CMainWindow::c_strMenuNameEdit               = "&Edit";
 const QString CMainWindow::c_strMenuNameEditRotate         = "Edit:&Rotate";
@@ -171,6 +177,7 @@ const QString CMainWindow::c_strActionNameFileNew                    = c_strMenu
 const QString CMainWindow::c_strActionNameFileOpen                   = c_strMenuNameFile + ":&Open ...";
 const QString CMainWindow::c_strActionNameFileSave                   = c_strMenuNameFile + ":&Save ...";
 const QString CMainWindow::c_strActionNameFileSaveAs                 = c_strMenuNameFile + ":Save &As ...";
+//const QString CMainWindow::c_strActionNameFileOpenLastUsed           = c_strMenuNameFile + ":Last Used Files ...";
 const QString CMainWindow::c_strActionNameFilePageSetup              = c_strMenuNameFile + ":Page Set&up ...";
 const QString CMainWindow::c_strActionNameFileQuit                   = c_strMenuNameFile + ":&Quit";
 const QString CMainWindow::c_strActionNameModeEdit                   = c_strMenuNameMode + ":&Edit";
@@ -238,15 +245,15 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CMainWindow::CMainWindow(
-    const QString&   i_strWindowTitleAppName,
-    ZS::Test::CTest* i_pTest,
-    unsigned int     i_uAddObjFactories,
-    QWidget*         i_pWdgtParent,
-    Qt::WindowFlags  i_wflags ) :
+    const QString&     i_strWindowTitleAppName,
+    ZS::Test::CTest*   i_pTest,
+    const QStringList& i_strlstObjFactories,
+    QWidget*           i_pWdgtParent,
+    Qt::WindowFlags    i_wflags ) :
 //------------------------------------------------------------------------------
-    QMainWindow(i_pWdgtParent,i_wflags),
+    QMainWindow(i_pWdgtParent, i_wflags),
     m_strWindowTitleAppName(i_strWindowTitleAppName),
-    m_uAddObjFactories(i_uAddObjFactories),
+    m_strlstObjFactories(i_strlstObjFactories),
     m_pTest(i_pTest),
     // Object Factories
     m_pObjFactoryPoint(nullptr),
@@ -277,16 +284,18 @@ CMainWindow::CMainWindow(
     m_pMenuBar(nullptr),
     // Menu - File
     m_pMenuFile(nullptr),
+    m_pMenuLastUsedFiles(nullptr),
     m_pToolBarFile(nullptr),
     m_pActFileNew(nullptr),
     m_pActFileOpen(nullptr),
     m_pActFileSave(nullptr),
     m_pActFileSaveAs(nullptr),
     m_pActFilePageSetup(nullptr),
-    m_pActFilesRecentSeparator(nullptr),
-    //m_arpActFilesRecent[EFilesRecentCountMax]
+    m_arLastUsedFiles(),
+    m_arpActsLastUsedFiles(),
     m_bDrawingChangedSinceLastSave(false),
-    m_strCurrentFile(),
+    m_strCurrentFileAbsFilePath(),
+    m_dtCurrentFileLastUsed(),
     m_pActFileQuit(nullptr),
     // Menu - Mode
     m_pMenuMode(nullptr),
@@ -393,13 +402,22 @@ CMainWindow::CMainWindow(
 
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Apps::Products::Draw", "CMainWindow", objectName());
 
+    QString strMthInArgs;
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
+    {
+        strMthInArgs = "WindowTitle: " + i_strWindowTitleAppName;
+        strMthInArgs += ", Test: " + QString(i_pTest == nullptr ? "-" : i_pTest->objectName());
+        strMthInArgs += ", ObjFactories [" + i_strlstObjFactories.join(", ") + "]";
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ctor",
-        /* strAddInfo   */ "" );
+        /* strAddInfo   */ strMthInArgs );
 
     m_pTrcAdminObjMouseEvents = CTrcServer::GetTraceAdminObj("ZS::Apps::Products::Draw", "CMainWindow", objectName() + "-MouseEvents");
+
+    updateWindowTitle();
 
     // Graph Object Factories
     //-----------------------
@@ -414,6 +432,9 @@ CMainWindow::CMainWindow(
 
     CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
 
+    QObject::connect(
+        pDrawingScene, &CDrawingScene::drawingSizeChanged,
+        this, &CMainWindow::onDrawingSceneSizeChanged );
     QObject::connect(
         pDrawingScene, &CDrawingScene::changed,
         this, &CMainWindow::onDrawingSceneChanged );
@@ -444,6 +465,13 @@ CMainWindow::CMainWindow(
     // Actions/Menu/StatusBar/ToolBars/DockWidgets
     //--------------------------------------------
 
+    QSettings settings;
+
+    m_arLastUsedFiles = ZS::System::readLastUsedFiles(settings);
+    while (m_arLastUsedFiles.size() > c_iLastUsedFilesCountMax) {
+        m_arLastUsedFiles.removeLast();
+    }
+
     createActions();
     createMenus();
     createStatusBar();
@@ -453,9 +481,8 @@ CMainWindow::CMainWindow(
     // Restore Geometry
     //-----------------
 
-    QSettings settings;
-    restoreGeometry( settings.value(objectName()+"/Geometry").toByteArray() );
-    restoreState( settings.value(objectName()+"/WindowState").toByteArray() );
+    restoreGeometry(settings.value(objectName()+"/Geometry").toByteArray());
+    restoreState(settings.value(objectName()+"/WindowState").toByteArray());
 
     // Initialize Status Settings
     //---------------------------
@@ -728,14 +755,15 @@ CMainWindow::~CMainWindow()
     m_pMenuBar = nullptr;
     // Menu - File
     m_pMenuFile = nullptr;
+    m_pMenuLastUsedFiles = nullptr;
     m_pToolBarFile = nullptr;
     m_pActFileNew = nullptr;
     m_pActFileOpen = nullptr;
     m_pActFileSave = nullptr;
     m_pActFileSaveAs = nullptr;
     m_pActFilePageSetup = nullptr;
-    m_pActFilesRecentSeparator = nullptr;
-    memset( m_arpActFilesRecent, 0x00, _ZSArrLen(m_arpActFilesRecent) );
+    //m_arLastUsedFiles.clear();
+    //m_arpActsLastUsedFiles.clear();
     m_pActFileQuit = nullptr;
     // Menu - Mode
     m_pMenuMode = nullptr;
@@ -856,11 +884,16 @@ void CMainWindow::closeEvent( QCloseEvent* i_pEv )
             "Do you want to save your changes?";
         QMessageBox::StandardButton msgBoxBtn = QMessageBox::warning(
             /* pWdgtParent */ this,
-            /* strTitle    */ QApplication::applicationName(),
+            /* strTitle    */ ZS::System::GUI::getMainWindowTitle(),
             /* strText     */ strMsgText,
             /* buttons     */ QMessageBox::Save | QMessageBox::No | QMessageBox::Cancel );
         if( msgBoxBtn == QMessageBox::Save ) {
-            onActionFileSaveTriggered(true);
+            if (m_strCurrentFileAbsFilePath.isEmpty()) {
+                onActionFileSaveAsTriggered();
+            }
+            else {
+                onActionFileSaveTriggered();
+            }
             i_pEv->accept();
         }
         else if( msgBoxBtn == QMessageBox::Cancel ) {
@@ -901,29 +934,28 @@ protected: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CMainWindow::setWindowTitle()
+void CMainWindow::updateWindowTitle()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
-        strAddTrcInfo = "FileName:" + m_strCurrentFile;
-    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setWindowTitle",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strMethod    */ "updateWindowTitle",
+        /* strAddInfo   */ "" );
 
     QString strWindowTitle = m_strWindowTitleAppName;
-    QString strFileName = tr("Unnamed");
-    if( !m_strCurrentFile.isEmpty() ) {
-        QFileInfo fileInfo(m_strCurrentFile);
-        strFileName = fileInfo.fileName();
+    QString strAbsFilePath = tr("Unnamed");
+    if (!m_strCurrentFileAbsFilePath.isEmpty())
+    {
+        strAbsFilePath = m_strCurrentFileAbsFilePath;
     }
-    CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
-    CEnumMode mode = pDrawingScene->getMode();
-    strWindowTitle += " - " + mode.toString();
-    strWindowTitle += " - " + strFileName;
+    //if (m_pWdgtCentral != nullptr)
+    //{
+    //    CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
+    //    CEnumMode mode = pDrawingScene->getMode();
+    //    strWindowTitle += " - " + mode.toString();
+    //}
+    strWindowTitle += " - " + strAbsFilePath;
     QMainWindow::setWindowTitle(strWindowTitle);
 }
 
@@ -1038,7 +1070,7 @@ void CMainWindow::createObjFactories()
     // <Menu> Draw::Widgets
     //----------------------
 
-    if( m_uAddObjFactories & EAddObjFactoriesQtWidgets )
+    if( m_strlstObjFactories.contains(c_strObjFactoryQtWidgets) )
     {
         // <MenuItem> Draw::Widgets::CheckBox
         //-----------------------------------
@@ -1081,13 +1113,12 @@ void CMainWindow::createObjFactories()
         QPixmap pxmDrawWdgtPushButton16x16(":/ZS/Draw/QtWidgets/PushButton16x16.bmp");
         pxmDrawWdgtPushButton16x16.setMask(pxmDrawWdgtPushButton16x16.createHeuristicMask());
         m_pObjFactoryWdgtPushButton = new CObjFactoryWdgtPushButton(pxmDrawWdgtPushButton16x16);
-
-    } // if( m_uAddObjFactories & EAddObjFactoriesQtWidgets )
+    }
 
     // <Menu> Draw::Electricity
     //-------------------------
 
-    if( m_uAddObjFactories & EAddObjFactoriesElectricity )
+    if( m_strlstObjFactories.contains(c_strObjFactoryElectricity) )
     {
         // <MenuItem> Draw::Electricity::VoltageSource
         //--------------------------------------------
@@ -1137,8 +1168,7 @@ void CMainWindow::createObjFactories()
         QPixmap pxmDrawTransistor(":/ZS/Draw/Electricity/Transistor16x16.bmp");
         pxmDrawTransistor.setMask(pxmDrawTransistor.createHeuristicMask());
         m_pObjFactoryElectricityTransistor = new CObjFactoryTransistor(pxmDrawTransistor);
-
-    } // if( m_uAddObjFactories & EAddObjFactoriesElectricity )
+    }
 
 } // createObjFactories
 
@@ -1161,11 +1191,8 @@ void CMainWindow::createActions()
     //----------------------
 
     QIcon iconFileNew;
-
-    QPixmap pxmFileNew16x16(":/ZS/Menu/MenuFileNew16x16.bmp");
-
+    QPixmap pxmFileNew16x16(":/ZS/Menu/MenuFileNew16x16.png");
     pxmFileNew16x16.setMask(pxmFileNew16x16.createHeuristicMask());
-
     iconFileNew.addPixmap(pxmFileNew16x16);
 
     m_pActFileNew = new QAction( iconFileNew, c_strActionNameFileNew.section(":",-1,-1), this );
@@ -1180,11 +1207,8 @@ void CMainWindow::createActions()
     //----------------------
 
     QIcon iconFileOpen;
-
-    QPixmap pxmFileOpen16x16(":/ZS/Menu/MenuFileOpen16x16.bmp");
-
+    QPixmap pxmFileOpen16x16(":/ZS/Menu/MenuFileOpen16x16.png");
     pxmFileOpen16x16.setMask(pxmFileOpen16x16.createHeuristicMask());
-
     iconFileOpen.addPixmap(pxmFileOpen16x16);
 
     m_pActFileOpen = new QAction( iconFileOpen, c_strActionNameFileOpen.section(":",-1,-1), this );
@@ -1199,11 +1223,8 @@ void CMainWindow::createActions()
     //----------------------
 
     QIcon iconFileSave;
-
-    QPixmap pxmFileSave16x16(":/ZS/Menu/MenuFileSave16x16.bmp");
-
+    QPixmap pxmFileSave16x16(":/ZS/Menu/MenuFileSave16x16.png");
     pxmFileSave16x16.setMask(pxmFileSave16x16.createHeuristicMask());
-
     iconFileSave.addPixmap(pxmFileSave16x16);
 
     m_pActFileSave = new QAction( iconFileSave, c_strActionNameFileSave.section(":",-1,-1), this );
@@ -1218,11 +1239,8 @@ void CMainWindow::createActions()
     //-------------------------
 
     QIcon iconFileSaveAs;
-
-    QPixmap pxmFileSaveAs16x16(":/ZS/Menu/MenuFileSaveAs16x16.bmp");
-
+    QPixmap pxmFileSaveAs16x16(":/ZS/Menu/MenuFileSaveAs16x16.png");
     pxmFileSaveAs16x16.setMask(pxmFileSaveAs16x16.createHeuristicMask());
-
     iconFileSaveAs.addPixmap(pxmFileSaveAs16x16);
 
     m_pActFileSaveAs = new QAction( iconFileSaveAs, c_strActionNameFileSaveAs.section(":",-1,-1), this );
@@ -1236,11 +1254,9 @@ void CMainWindow::createActions()
     // <MenuItem> File::Page Setup
     //----------------------------
 
-    QIcon   iconFilePageSetup;
+    QIcon iconFilePageSetup;
     QPixmap pxmFilePageSetup16x16(":/ZS/Draw/FilePageSetup16x16.bmp");
-
     pxmFilePageSetup16x16.setMask(pxmFilePageSetup16x16.createHeuristicMask());
-
     iconFilePageSetup.addPixmap(pxmFilePageSetup16x16);
 
     m_pActFilePageSetup = new QAction( iconFilePageSetup, c_strActionNameFilePageSetup.section(":",-1,-1), this );
@@ -1251,40 +1267,6 @@ void CMainWindow::createActions()
         m_pActFilePageSetup, &QAction::triggered,
         this, &CMainWindow::onActionFilePageSetupTriggered );
 
-    // <MenuItem> File::Recent Files
-    //------------------------------
-
-    bool bHasActFilesRecent = false;
-    int  idxFile;
-
-    for( idxFile = 0; idxFile < _ZSArrLen(m_arpActFilesRecent); idxFile++ )
-    {
-        if( m_arpActFilesRecent[idxFile] != nullptr )
-        {
-            bHasActFilesRecent = true;
-            break;
-        }
-    }
-
-    if( bHasActFilesRecent )
-    {
-        for( idxFile = 0; idxFile < _ZSArrLen(m_arpActFilesRecent); idxFile++ )
-        {
-            if( m_arpActFilesRecent[idxFile] != nullptr )
-            {
-                m_arpActFilesRecent[idxFile] = new QAction(this);
-                m_arpActFilesRecent[idxFile]->setVisible(false);
-
-                QObject::connect(
-                    m_arpActFilesRecent[idxFile], &QAction::triggered,
-                    this, &CMainWindow::onActionFileRecentTriggered );
-            }
-        }
-
-        updateActionsFilesRecent();
-
-    } // if( bHasActFilesRecent )
-
     // <MenuItem> File::Quit
     //----------------------
 
@@ -1293,7 +1275,7 @@ void CMainWindow::createActions()
 
     QObject::connect(
         m_pActFileQuit, &QAction::triggered,
-        this, &CApplication::quit );
+        this, &CMainWindow::onActionFileQuitTriggered );
 
     // <Menu> Mode
     //============
@@ -1302,7 +1284,6 @@ void CMainWindow::createActions()
     //----------------------
 
     QIcon iconModeEdit;
-
     iconModeEdit.addPixmap( mode2Pixmap(static_cast<int>(EMode::Edit),24) );
 
     m_pActModeEdit = new QAction( iconModeEdit, c_strActionNameModeEdit.section(":",-1,-1), this );
@@ -1318,7 +1299,6 @@ void CMainWindow::createActions()
     //-------------------------------
 
     QIcon iconModeView;
-
     iconModeView.addPixmap( mode2Pixmap(static_cast<int>(EMode::View),24) );
 
     m_pActModeView = new QAction( iconModeView, c_strActionNameModeView.section(":",-1,-1), this );
@@ -1335,11 +1315,9 @@ void CMainWindow::createActions()
     // <MenuItem> Edit::Select
     //-------------------------------
 
-    QIcon   iconEditSelect;
+    QIcon iconEditSelect;
     QPixmap pxmEditSelect16x16(":/ZS/Draw/CursorSelect16x16.bmp");
-
     pxmEditSelect16x16.setMask(pxmEditSelect16x16.createHeuristicMask());
-
     iconEditSelect.addPixmap(pxmEditSelect16x16);
 
     m_pActEditSelect = new QAction( iconEditSelect, c_strActionNameEditSelect.section(":",-1,-1), this );
@@ -1354,11 +1332,9 @@ void CMainWindow::createActions()
     // <MenuItem> Edit::Rotate::Left
     //------------------------------
 
-    QIcon   iconEditRotateLeft;
+    QIcon iconEditRotateLeft;
     QPixmap pxmEditRotateLeft(":/ZS/Draw/DrawToolRotateLeftBy90Degrees16x16.bmp");
-
     pxmEditRotateLeft.setMask(pxmEditRotateLeft.createHeuristicMask());
-
     iconEditRotateLeft.addPixmap(pxmEditRotateLeft);
 
     m_pActEditRotateLeft = new QAction( iconEditRotateLeft, c_strActionNameEditRotateLeft.section(":",-1,-1), this );
@@ -1372,11 +1348,9 @@ void CMainWindow::createActions()
     // <MenuItem> Edit::Rotate::Right
     //-------------------------------
 
-    QIcon   iconEditRotateRight;
+    QIcon iconEditRotateRight;
     QPixmap pxmEditRotateRight(":/ZS/Draw/DrawToolRotateRightBy90Degrees16x16.bmp");
-
     pxmEditRotateRight.setMask(pxmEditRotateRight.createHeuristicMask());
-
     iconEditRotateRight.addPixmap(pxmEditRotateRight);
 
     m_pActEditRotateRight = new QAction( iconEditRotateRight, c_strActionNameEditRotateRight.section(":",-1,-1), this );
@@ -1395,11 +1369,9 @@ void CMainWindow::createActions()
     // <MenuItem> Edit::Mirror::Vertical
     //----------------------------------
 
-    QIcon   iconEditMirrorVertical;
+    QIcon iconEditMirrorVertical;
     QPixmap pxmEditMirrorVertical(":/ZS/Draw/DrawToolMirrorVertical16x16.bmp");
-
     pxmEditMirrorVertical.setMask(pxmEditMirrorVertical.createHeuristicMask());
-
     iconEditMirrorVertical.addPixmap(pxmEditMirrorVertical);
 
     m_pActEditMirrorVertical = new QAction( iconEditMirrorVertical, c_strActionNameEditMirrorVertical.section(":",-1,-1), this );
@@ -1413,11 +1385,9 @@ void CMainWindow::createActions()
     // <MenuItem> Edit::Mirror::Horizontal
     //------------------------------------
 
-    QIcon   iconEditMirrorHorizontal;
+    QIcon iconEditMirrorHorizontal;
     QPixmap pxmEditMirrorHorizontal(":/ZS/Draw/DrawToolMirrorHorizontal16x16.bmp");
-
     pxmEditMirrorHorizontal.setMask(pxmEditMirrorHorizontal.createHeuristicMask());
-
     iconEditMirrorHorizontal.addPixmap(pxmEditMirrorHorizontal);
 
     m_pActEditMirrorHorizontal = new QAction( iconEditMirrorHorizontal, c_strActionNameEditMirrorHorizontal.section(":",-1,-1), this );
@@ -1431,11 +1401,9 @@ void CMainWindow::createActions()
     // <MenuItem> Edit::Group
     //-----------------------
 
-    QIcon   iconEditGroup;
+    QIcon iconEditGroup;
     QPixmap pxmEditGroup16x16(":/ZS/Draw/EditGroup16x16.bmp");
-
     pxmEditGroup16x16.setMask(pxmEditGroup16x16.createMaskFromColor(Qt::white));
-
     iconEditGroup.addPixmap(pxmEditGroup16x16);
 
     m_pActEditGroup = new QAction(iconEditGroup, c_strActionNameEditGroup.section(":",-1,-1), this);
@@ -1473,11 +1441,9 @@ void CMainWindow::createActions()
     // <MenuItem> Draw::Settings::Line
     //--------------------------------
 
-    QIcon   iconEditDrawSettingsLine;
+    QIcon iconEditDrawSettingsLine;
     QPixmap pxmEditDrawSettingsLine(":/ZS/Draw/DrawToolPen16x16.bmp");
-
     pxmEditDrawSettingsLine.setMask(pxmEditDrawSettingsLine.createHeuristicMask());
-
     iconEditDrawSettingsLine.addPixmap(pxmEditDrawSettingsLine);
 
     m_pActDrawSettingsLine = new QAction( iconEditDrawSettingsLine, c_strActionNameDrawSettingsLine.section(":",-1,-1), this );
@@ -1490,11 +1456,9 @@ void CMainWindow::createActions()
     // <MenuItem> Draw::Settings::Fill
     //---------------------------------
 
-    QIcon   iconEditDrawSettingsFill;
+    QIcon iconEditDrawSettingsFill;
     QPixmap pxmEditDrawSettingsFill(":/ZS/Draw/DrawToolBrush16x16.bmp");
-
     pxmEditDrawSettingsFill.setMask(pxmEditDrawSettingsFill.createHeuristicMask());
-
     iconEditDrawSettingsFill.addPixmap(pxmEditDrawSettingsFill);
 
     m_pActDrawSettingsFill = new QAction( iconEditDrawSettingsFill, c_strActionNameDrawSettingsFill.section(":",-1,-1), this );
@@ -1507,11 +1471,9 @@ void CMainWindow::createActions()
     // <MenuItem> Draw::Settings::Text
     //---------------------------------
 
-    QIcon   iconEditDrawSettingsText;
+    QIcon iconEditDrawSettingsText;
     QPixmap pxmEditDrawSettingsText(":/ZS/Draw/DrawToolText16x16.bmp");
-
     pxmEditDrawSettingsText.setMask(pxmEditDrawSettingsText.createHeuristicMask());
-
     iconEditDrawSettingsText.addPixmap(pxmEditDrawSettingsText);
 
     m_pActDrawSettingsText = new QAction( iconEditDrawSettingsText, c_strActionNameDrawSettingsText.section(":",-1,-1), this );
@@ -1829,6 +1791,11 @@ void CMainWindow::createMenus()
     // <Menu> File
     //------------
 
+    QIcon iconFileOpen;
+    QPixmap pxmFileOpen16x16(":/ZS/Menu/MenuFileOpen16x16.png");
+    pxmFileOpen16x16.setMask(pxmFileOpen16x16.createHeuristicMask());
+    iconFileOpen.addPixmap(pxmFileOpen16x16);
+
     m_pMenuFile = m_pMenuBar->addMenu(c_strMenuNameFile);
 
     m_pMenuFile->addAction(m_pActFileNew);
@@ -1837,22 +1804,12 @@ void CMainWindow::createMenus()
     m_pMenuFile->addAction(m_pActFileSave);
     m_pMenuFile->addAction(m_pActFileSaveAs);
     m_pMenuFile->addSeparator();
+    m_pMenuLastUsedFiles = m_pMenuFile->addMenu(iconFileOpen, c_strMenuNameFileOpenLastUsed);
+    m_pMenuFile->addSeparator();
     m_pMenuFile->addAction(m_pActFilePageSetup);
 
-    bool bHasActFilesRecent = false;
-    for( int idxFile = 0; idxFile < _ZSArrLen(m_arpActFilesRecent); idxFile++ ) {
-        if( m_arpActFilesRecent[idxFile] != nullptr ) {
-            bHasActFilesRecent = true;
-            break;
-        }
-    }
-    if( bHasActFilesRecent ) {
-        m_pActFilesRecentSeparator = m_pMenuFile->addSeparator();
-        for( int idxFile = 0; idxFile < _ZSArrLen(m_arpActFilesRecent); idxFile++ ) {
-            if( m_arpActFilesRecent[idxFile] != nullptr ) {
-                m_pMenuFile->addAction(m_arpActFilesRecent[idxFile]);
-            }
-        }
+    if( m_arLastUsedFiles.size() == 0 ) {
+        m_pMenuLastUsedFiles->setEnabled(false);
     }
 
     if( m_pActFileQuit != nullptr ) {
@@ -2286,15 +2243,11 @@ void CMainWindow::createDockWidgets()
         /* strMethod    */ "createDockWidgets",
         /* strAddInfo   */ "" );
 
-    QSettings settings;
-
-    CDrawingView* pDrawingView = m_pWdgtCentral->drawingView();
-    CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
-
     // <DockWidget> Tree View Object Factories
     //----------------------------------------
 
-    if( m_uAddObjFactories != EAddObjFactoriesNone ) {
+    if( !m_strlstObjFactories.isEmpty() )
+    {
         m_pDockWdgtObjFactories = new QDockWidget("Tool Box");
         m_pDockWdgtObjFactories->setObjectName("Object Factories");
         m_pDockWdgtObjFactories->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
@@ -2329,7 +2282,7 @@ void CMainWindow::createDockWidgets()
             }
             m_pMenuView->addAction(m_pDockWdgtObjFactories->toggleViewAction());
         }
-    } // if( m_uAddObjFactories != EAddObjFactoriesNone )
+    }
 
     // Dock Widget - GraphObjs
     //------------------------
@@ -2339,11 +2292,12 @@ void CMainWindow::createDockWidgets()
     m_pDockWdgtGraphObjs->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
 
     // Tree View with graphics items as in drawing scene's items list
-    m_pWdgtGraphObjs = new CWdgtGraphObjs(pDrawingView);
+    m_pWdgtGraphObjs = new CWdgtGraphObjs(m_pWdgtCentral->drawingView());
     m_pDockWdgtGraphObjs->setWidget(m_pWdgtGraphObjs);
 
     addDockWidget(Qt::RightDockWidgetArea, m_pDockWdgtGraphObjs);
 
+    QSettings settings;
     m_pWdgtGraphObjs->restoreState(settings);
 
     if( m_pMenuView != nullptr ) {
@@ -2364,7 +2318,7 @@ bool CMainWindow::eventFilter( QObject* i_pObjWatched, QEvent* i_pEv )
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "Obj: " + QString(i_pObjWatched == nullptr ? "nullptr" : i_pObjWatched->objectName());
     }
@@ -2381,7 +2335,7 @@ bool CMainWindow::eventFilter( QObject* i_pObjWatched, QEvent* i_pEv )
     {
         if( i_pEv->type() == QEvent::MouseButtonDblClick )
         {
-            onActionDebugErrLogTriggered(false);
+            onActionDebugErrLogTriggered();
             bHandled = true;
         }
     }
@@ -2405,68 +2359,138 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CMainWindow::setCheckedActionModeEdit( bool i_bChecked )
+void CMainWindow::setCurrentUsedFile( const QString& i_strAbsFilePath )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strAddTrcInfo = "Checked:" + bool2Str(i_bChecked);
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strAbsFilePath;
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setCheckedActionModeEdit",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strMethod    */ "setCurrentUsedFile",
+        /* strAddInfo   */ strMthInArgs );
 
-    if( m_pActModeEdit != nullptr )
+    if( !i_strAbsFilePath.isEmpty() )
     {
-        m_pActModeEdit->setChecked(i_bChecked);
+        SErrResultInfo errResultInfo;
+
+        QFileInfo fileInfo(i_strAbsFilePath);
+
+        if (!fileInfo.isFile() || !fileInfo.exists())
+        {
+            errResultInfo = ErrResultInfoError("setCurrentUsedFile", EResultFileNotFound, i_strAbsFilePath);
+        }
+        else
+        {
+            CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
+            // Clear drawing on opening a new file.
+            pDrawingScene->clear();
+            errResultInfo = pDrawingScene->load(i_strAbsFilePath);
+        }
+        if( !errResultInfo.isErrorResult() )
+        {
+            updateCurrentUsedFile(i_strAbsFilePath);
+        }
+        else
+        {
+            QMessageBox::StandardButtons msgBoxBtns = QMessageBox::Ok;
+            QString strMsg;
+            strMsg  = "Error on reading file \"" + i_strAbsFilePath + "\"";
+            strMsg += "\n\nErrorCode:\t" + errResultInfo.getResultStr();
+            if (errResultInfo.getAddErrInfoDscr() != i_strAbsFilePath)
+            {
+                strMsg += "\n\n" + errResultInfo.getAddErrInfoDscr();
+            }
+            if (errResultInfo.getResult() == EResultFileNotFound)
+            {
+                strMsg += "\n\nDo you want to remove the file from list of last open files?";
+                msgBoxBtns = QMessageBox::Yes | QMessageBox::No;
+            }
+            QMessageBox::StandardButton msgBoxBtnPressed;
+            if( errResultInfo.getSeverity() == EResultSeverityCritical )
+            {
+                msgBoxBtnPressed = QMessageBox::critical(this, windowTitle(), strMsg, msgBoxBtns);
+            }
+            else
+            {
+                msgBoxBtnPressed = QMessageBox::warning(this, windowTitle(), strMsg, msgBoxBtns);
+            }
+            if( msgBoxBtnPressed == QMessageBox::Yes )
+            {
+                for (int idxFile = 0; idxFile < m_arLastUsedFiles.size(); ++idxFile)
+                {
+                    if (m_arLastUsedFiles[idxFile].m_strAbsFilePath == i_strAbsFilePath)
+                    {
+                        m_arLastUsedFiles.removeAt(idxFile);
+                        break;
+                    }
+                }
+                QSettings settings;
+                ZS::System::writeLastUsedFiles(m_arLastUsedFiles, settings);
+                updateActionsLastUsedFiles();
+            }
+        }
     }
-
-} // setCheckedActionModeEdit
-
-//------------------------------------------------------------------------------
-void CMainWindow::setCheckedActionModeView( bool i_bChecked )
-//------------------------------------------------------------------------------
-{
-    QString strAddTrcInfo;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strAddTrcInfo = "Checked:" + bool2Str(i_bChecked);
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setCheckedActionModeView",
-        /* strAddInfo   */ strAddTrcInfo );
-
-    if( m_pActModeView != nullptr )
-    {
-        m_pActModeView->setChecked(i_bChecked);
-    }
-
-} // setCheckedActionModeView
+} // setCurrentUsedFile
 
 /*==============================================================================
 public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CMainWindow::setCheckedActionEditSelect( bool i_bChecked )
+void CMainWindow::setCheckedActionModeEdit(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strMthInArgs = "Checked:" + bool2Str(i_bChecked);
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setCheckedActionModeEdit",
+        /* strAddInfo   */ strMthInArgs );
 
+    if( m_pActModeEdit != nullptr )
+    {
+        m_pActModeEdit->setChecked(i_bChecked);
+    }
+}
+
+//------------------------------------------------------------------------------
+void CMainWindow::setCheckedActionModeView(bool i_bChecked)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setCheckedActionModeView",
+        /* strAddInfo   */ strMthInArgs );
+
+    if( m_pActModeView != nullptr )
+    {
+        m_pActModeView->setChecked(i_bChecked);
+    }
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CMainWindow::setCheckedActionEditSelect(bool i_bChecked)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -2477,8 +2501,7 @@ void CMainWindow::setCheckedActionEditSelect( bool i_bChecked )
     {
         m_pActEditSelect->setChecked(i_bChecked);
     }
-
-} // setCheckedActionEditSelect
+}
 
 //------------------------------------------------------------------------------
 void CMainWindow::triggerActionEditRotateLeft()
@@ -2587,16 +2610,13 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CMainWindow::setCheckedActionDrawStandardShapePoint( bool i_bChecked )
+void CMainWindow::setCheckedActionDrawStandardShapePoint(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strMthInArgs = "Checked:" + bool2Str(i_bChecked);
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -2607,20 +2627,16 @@ void CMainWindow::setCheckedActionDrawStandardShapePoint( bool i_bChecked )
     {
         m_pActDrawStandardShapePoint->setChecked(i_bChecked);
     }
-
-} // setCheckedActionDrawStandardShapePoint
+}
 
 //------------------------------------------------------------------------------
-void CMainWindow::setCheckedActionDrawStandardShapeLine( bool i_bChecked )
+void CMainWindow::setCheckedActionDrawStandardShapeLine(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strMthInArgs = "Checked:" + bool2Str(i_bChecked);
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -2631,20 +2647,16 @@ void CMainWindow::setCheckedActionDrawStandardShapeLine( bool i_bChecked )
     {
         m_pActDrawStandardShapeLine->setChecked(i_bChecked);
     }
-
-} // setCheckedActionDrawStandardShapeLine
+}
 
 //------------------------------------------------------------------------------
-void CMainWindow::setCheckedActionDrawStandardShapeRect( bool i_bChecked )
+void CMainWindow::setCheckedActionDrawStandardShapeRect(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strMthInArgs = "Checked:" + bool2Str(i_bChecked);
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -2655,20 +2667,16 @@ void CMainWindow::setCheckedActionDrawStandardShapeRect( bool i_bChecked )
     {
         m_pActDrawStandardShapeRect->setChecked(i_bChecked);
     }
-
-} // setCheckedActionDrawStandardShapeRect
+}
 
 //------------------------------------------------------------------------------
-void CMainWindow::setCheckedActionDrawStandardShapeEllipse( bool i_bChecked )
+void CMainWindow::setCheckedActionDrawStandardShapeEllipse(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strMthInArgs = "Checked:" + bool2Str(i_bChecked);
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -2679,20 +2687,16 @@ void CMainWindow::setCheckedActionDrawStandardShapeEllipse( bool i_bChecked )
     {
         m_pActDrawStandardShapeEllipse->setChecked(i_bChecked);
     }
-
-} // setCheckedActionDrawStandardShapeEllipse
+}
 
 //------------------------------------------------------------------------------
-void CMainWindow::setCheckedActionDrawStandardShapePolyline( bool i_bChecked )
+void CMainWindow::setCheckedActionDrawStandardShapePolyline(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strMthInArgs = "Checked:" + bool2Str(i_bChecked);
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -2703,20 +2707,16 @@ void CMainWindow::setCheckedActionDrawStandardShapePolyline( bool i_bChecked )
     {
         m_pActDrawStandardShapePolyline->setChecked(i_bChecked);
     }
-
-} // setCheckedActionDrawStandardShapePolyline
+}
 
 //------------------------------------------------------------------------------
-void CMainWindow::setCheckedActionDrawStandardShapePolygon( bool i_bChecked )
+void CMainWindow::setCheckedActionDrawStandardShapePolygon(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strMthInArgs = "Checked:" + bool2Str(i_bChecked);
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -2727,20 +2727,16 @@ void CMainWindow::setCheckedActionDrawStandardShapePolygon( bool i_bChecked )
     {
         m_pActDrawStandardShapePolygon->setChecked(i_bChecked);
     }
-
-} // setCheckedActionDrawStandardShapePolygon
+}
 
 //------------------------------------------------------------------------------
-void CMainWindow::setCheckedActionDrawStandardShapeText( bool i_bChecked )
+void CMainWindow::setCheckedActionDrawStandardShapeText(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strMthInArgs = "Checked:" + bool2Str(i_bChecked);
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -2751,8 +2747,7 @@ void CMainWindow::setCheckedActionDrawStandardShapeText( bool i_bChecked )
     {
         m_pActDrawStandardShapeText->setChecked(i_bChecked);
     }
-
-} // setCheckedActionDrawStandardShapeText
+}
 
 //------------------------------------------------------------------------------
 void CMainWindow::triggerActionDrawGraphicsImage()
@@ -2772,16 +2767,13 @@ void CMainWindow::triggerActionDrawGraphicsImage()
 } // triggerActionDrawGraphicsImage
 
 //------------------------------------------------------------------------------
-void CMainWindow::setCheckedActionDrawConnectionPoint( bool i_bChecked )
+void CMainWindow::setCheckedActionDrawConnectionPoint(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strMthInArgs = "Checked:" + bool2Str(i_bChecked);
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -2792,20 +2784,16 @@ void CMainWindow::setCheckedActionDrawConnectionPoint( bool i_bChecked )
     {
         m_pActDrawConnectionPoint->setChecked(i_bChecked);
     }
-
-} // setCheckedActionDrawConnectionPoint
+}
 
 //------------------------------------------------------------------------------
-void CMainWindow::setCheckedActionDrawConnectionLine( bool i_bChecked )
+void CMainWindow::setCheckedActionDrawConnectionLine(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strMthInArgs = "Checked:" + bool2Str(i_bChecked);
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -2816,67 +2804,174 @@ void CMainWindow::setCheckedActionDrawConnectionLine( bool i_bChecked )
     {
         m_pActDrawConnectionLine->setChecked(i_bChecked);
     }
-
-} // setCheckedActionDrawConnectionLine
+}
 
 /*==============================================================================
 public slots: // Menu - File
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActionFileNewTriggered( bool )
+void CMainWindow::onActionFileNewTriggered(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onActionFileNewTriggered",
-        /* strAddInfo   */ "" );
+        /* strAddInfo   */ strMthInArgs );
 
     m_pWdgtCentral->drawingScene()->clear();
-    setCurrentFile("");
+    updateCurrentUsedFile("");
 }
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActionFileOpenTriggered( bool )
+void CMainWindow::onActionFileOpenTriggered(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onActionFileOpenTriggered",
-        /* strAddInfo   */ "" );
+        /* strAddInfo   */ strMthInArgs );
 
-    QString strFileName = QFileDialog::getOpenFileName(
+    QDir dir;
+    if (m_strCurrentFileAbsFilePath.isEmpty()) {
+        QString strDocsDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+        dir.setPath(strDocsDir);
+    }
+    else {
+        QFileInfo fileInfoCurrentFile(m_strCurrentFileAbsFilePath);
+        dir.setPath(fileInfoCurrentFile.absolutePath());
+    }
+    QString strAbsFilePath = QFileDialog::getOpenFileName(
         /* pWdgtParent */ this,
         /* strCaption  */ "Choose a file to open",
-        /* strDir      */ "",
+        /* strDir      */ dir.absolutePath(),
         /* strFilter   */ "Drawings (*.xml)" );
 
-    if( !strFileName.isEmpty() ) {
+    if( !strAbsFilePath.isEmpty() )
+    {
+        setCurrentUsedFile(strAbsFilePath);
+    }
+}
+
+//------------------------------------------------------------------------------
+void CMainWindow::onActionFileSaveTriggered(bool i_bChecked)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onActionFileSaveTriggered",
+        /* strAddInfo   */ strMthInArgs );
+
+    if( m_strCurrentFileAbsFilePath.isEmpty() ) {
+        onActionFileSaveAsTriggered();
+    }
+    else {
         CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
-
-        // Clear drawing on opening a new file.
-        pDrawingScene->clear();
-
-        SErrResultInfo errResultInfo = pDrawingScene->load(strFileName);
-        if( !errResultInfo.isErrorResult() ) {
-            setCurrentFile(strFileName);
-        }
-        else {
+        SErrResultInfo errResultInfo = pDrawingScene->save(m_strCurrentFileAbsFilePath);
+        if (errResultInfo.isErrorResult()) {
             QString strMsg;
-            strMsg  = "Error on reading file \"" + strFileName + "\"";
+            strMsg  = "Error on saving file \"" + m_strCurrentFileAbsFilePath + "\"";
             strMsg += "\n\nErrorCode:\t" + errResultInfo.getResultStr();
             strMsg += "\n\n" + errResultInfo.getAddErrInfoDscr();
-
             if( errResultInfo.getSeverity() == EResultSeverityCritical ) {
                 QMessageBox::critical(
                     /* pWdgtParent */ this,
                     /* strTitly    */ windowTitle(),
                     /* strText     */ strMsg,
                     /* buttons     */ QMessageBox::Ok );
+            } else {
+                QMessageBox::warning(
+                    /* pWdgtParent */ this,
+                    /* strTitly    */ windowTitle(),
+                    /* strText     */ strMsg,
+                    /* buttons     */ QMessageBox::Ok );
             }
-            else {
+        }
+        else {
+            updateCurrentUsedFile(m_strCurrentFileAbsFilePath);
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+void CMainWindow::onActionFileSaveAsTriggered(bool i_bChecked)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onActionFileSaveAsTriggered",
+        /* strAddInfo   */ strMthInArgs );
+
+    QDir dir;
+    if (m_strCurrentFileAbsFilePath.isEmpty()) {
+        QString strDocsDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+        dir.setPath(strDocsDir);
+    }
+    else {
+        QFileInfo fileInfoCurrentFile(m_strCurrentFileAbsFilePath);
+        dir.setPath(fileInfoCurrentFile.absolutePath());
+    }
+    QString strAbsFilePath = QFileDialog::getSaveFileName(
+        /* pWdgtParent */ this,
+        /* strCaption  */ "Choose a filename to save under",
+        /* strDir      */ dir.absolutePath(),
+        /* strFilter   */ "XML File (*.xml);; Image (*.png);; Image (*.jpg);; Image (*.bmp)" );
+
+    if( !strAbsFilePath.isEmpty() ) {
+        SErrResultInfo errResultInfo;
+        CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
+        if( strAbsFilePath.toLower().endsWith(".xml") ) {
+            errResultInfo = pDrawingScene->save(strAbsFilePath);
+        }
+        else {
+            CDrawingSize drawingSize = pDrawingScene->drawingSize();
+            QImage img(
+                drawingSize.imageSizeInPixels().width(),
+                drawingSize.imageSizeInPixels().height(),
+                QImage::Format_ARGB32_Premultiplied);
+            QPainter painter(&img);
+            pDrawingScene->render(&painter);
+            painter.end();
+            if( !img.save(strAbsFilePath) ) {
+                errResultInfo.setSeverity(EResultSeverityError);
+                errResultInfo.setResult(EResultFileWriteContent);
+            }
+        }
+        if( !errResultInfo.isErrorResult() ) {
+            updateCurrentUsedFile(strAbsFilePath);
+        }
+        else {
+            QString strMsg;
+            strMsg  = "Error on writing file \"" + strAbsFilePath + "\"";
+            strMsg += "\n\nErrorCode:\t" + errResultInfo.getResultStr();
+            strMsg += "\n\n" + errResultInfo.getAddErrInfoDscr();
+            if( errResultInfo.getSeverity() == EResultSeverityCritical ) {
+                QMessageBox::critical(
+                    /* pWdgtParent */ this,
+                    /* strTitly    */ windowTitle(),
+                    /* strText     */ strMsg,
+                    /* buttons     */ QMessageBox::Ok );
+            } else {
                 QMessageBox::warning(
                     /* pWdgtParent */ this,
                     /* strTitly    */ windowTitle(),
@@ -2885,80 +2980,24 @@ void CMainWindow::onActionFileOpenTriggered( bool )
             }
         }
     }
-} // onActionFileOpenTriggered
-
-//------------------------------------------------------------------------------
-void CMainWindow::onActionFileSaveTriggered( bool )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
-        strMthInArgs = "FileName:" + m_strCurrentFile;
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onActionFileSaveTriggered",
-        /* strAddInfo   */ strMthInArgs );
-
-    if( m_strCurrentFile.isEmpty() ) {
-        onActionFileSaveAsTriggered(true);
-    }
-    else {
-        CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
-        pDrawingScene->save(m_strCurrentFile);
-    }
-} // onActionFileSaveTriggered
-
-//------------------------------------------------------------------------------
-void CMainWindow::onActionFileSaveAsTriggered( bool )
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onActionFileSaveAsTriggered",
-        /* strAddInfo   */ "" );
-
-    QString strFileName = QFileDialog::getSaveFileName(
-        /* pWdgtParent */ this,
-        /* strCaption  */ "Choose a filename to save under",
-        /* strDir      */ "",
-        /* strFilter   */ "XML File (*.xml);; Image (*.png);; Image (*.jpg);; Image (*.bmp)" );
-
-    if( !strFileName.isEmpty() ) {
-        CDrawingView* pDrawingView = m_pWdgtCentral->drawingView();
-        CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
-        if( strFileName.toLower().endsWith(".xml") ) {
-            pDrawingScene->save(strFileName);
-            setCurrentFile(strFileName);
-        }
-        else {
-            CDrawingSize drawingSize = pDrawingView->drawingSize();
-            QImage img(
-                drawingSize.imageSizeInPixels().width(),
-                drawingSize.imageSizeInPixels().height(),
-                QImage::Format_ARGB32_Premultiplied);
-            QPainter painter(&img);
-            pDrawingScene->render(&painter);
-            painter.end();
-            img.save(strFileName);
-        }
-    }
 } // onActionFileSaveAsTriggered
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActionFilePageSetupTriggered( bool )
+void CMainWindow::onActionFilePageSetupTriggered(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onActionFilePageSetupTriggered",
-        /* strAddInfo   */ "" );
+        /* strAddInfo   */ strMthInArgs );
 
     CDrawingView* pDrawingView = m_pWdgtCentral->drawingView();
-    QString strDlgTitle = QCoreApplication::applicationName() + ": Page Setup";
+    QString strDlgTitle = ZS::System::GUI::getMainWindowTitle() + ": Page Setup";
     CDlgDrawingViewSetup* pDlg = CDlgDrawingViewSetup::GetInstance(pDrawingView);
     if( pDlg == nullptr ) {
         pDlg = CDlgDrawingViewSetup::CreateInstance(strDlgTitle, pDrawingView);
@@ -2976,35 +3015,58 @@ void CMainWindow::onActionFilePageSetupTriggered( bool )
 }
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActionFileRecentTriggered( bool /*i_bChecked*/ )
+void CMainWindow::onActionFileLastUsedFilesTriggered(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onActionFileRecentTriggered",
-        /* strAddInfo   */ "" );
+        /* strMethod    */ "onActionFileLastUsedFilesTriggered",
+        /* strAddInfo   */ strMthInArgs );
 
-    //QAction* pAct = dynamic_cast<QAction*>(sender());
-    //if( m_pDrawPaper != nullptr && pAct != nullptr ) {
-    //    m_pDrawPaper->fileOpen( pAct->data().toString() );
-    //    setCurrentFile( m_pDrawPaper->getFileName() );
-    //}
-} // onActionFileRecentTriggered
+    QAction* pAct = dynamic_cast<QAction*>(sender());
+    QString strAbsFilePath = pAct->data().toString();
+    setCurrentUsedFile(strAbsFilePath);
+}
+
+//------------------------------------------------------------------------------
+void CMainWindow::onActionFileQuitTriggered(bool i_bChecked)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onActionFileQuitTriggered",
+        /* strAddInfo   */ strMthInArgs );
+
+    close();
+}
 
 /*==============================================================================
 public slots: // Menu - Mode
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActionModeEditToggled( bool i_bChecked )
+void CMainWindow::onActionModeEditToggled(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onActionModeEditToggled",
-        /* strAddInfo   */ "" );
+        /* strAddInfo   */ strMthInArgs );
 
     CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
     if( i_bChecked && pDrawingScene->getMode() != EMode::Edit ) {
@@ -3015,14 +3077,14 @@ void CMainWindow::onActionModeEditToggled( bool i_bChecked )
         pDrawingScene->setCurrentDrawingTool(nullptr);
         pDrawingScene->setMode(EMode::View);
     }
-} // onActionModeEditToggled
+}
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActionModeViewToggled( bool i_bChecked )
+void CMainWindow::onActionModeViewToggled(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
     CMethodTracer mthTracer(
@@ -3047,11 +3109,11 @@ public slots: // Menu - Edit - Select/RotateFree
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActionEditSelectToggled( bool i_bChecked )
+void CMainWindow::onActionEditSelectToggled(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
     CMethodTracer mthTracer(
@@ -3086,14 +3148,18 @@ public slots: // Menu - Edit - Rotate
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActionEditRotateLeftTriggered( bool )
+void CMainWindow::onActionEditRotateLeftTriggered(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onActionEditRotateLeftTriggered",
-        /* strAddInfo   */ "" );
+        /* strAddInfo   */ strMthInArgs );
 
     double fAngle_deg = 90.0;
     if( m_pEdtEditRotateAngle != nullptr ) {
@@ -3120,14 +3186,18 @@ void CMainWindow::onActionEditRotateLeftTriggered( bool )
 } // onActionEditRotateLeftTriggered
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActionEditRotateRightTriggered( bool )
+void CMainWindow::onActionEditRotateRightTriggered(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onActionEditRotateRightTriggered",
-        /* strAddInfo   */ "" );
+        /* strAddInfo   */ strMthInArgs );
 
     double fAngle_deg = -90.0;
     if( m_pEdtEditRotateAngle != nullptr ) {
@@ -3158,14 +3228,18 @@ public slots: // Menu - Edit - Mirror
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActionEditMirrorVerticalTriggered( bool )
+void CMainWindow::onActionEditMirrorVerticalTriggered(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onActionEditMirrorVerticalTriggered",
-        /* strAddInfo   */ "" );
+        /* strAddInfo   */ strMthInArgs );
 
     //graphicsItem->scale(1,-1);
 
@@ -3177,14 +3251,18 @@ void CMainWindow::onActionEditMirrorVerticalTriggered( bool )
 } // onActionEditMirrorVerticalTriggered
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActionEditMirrorHorizontalTriggered( bool )
+void CMainWindow::onActionEditMirrorHorizontalTriggered(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onActionEditMirrorHorizontalTriggered",
-        /* strAddInfo   */ "" );
+        /* strAddInfo   */ strMthInArgs );
 
     //graphicsItem->scale(-1,1);
 
@@ -3200,14 +3278,18 @@ public slots: // Menu - Edit - Group
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActionEditGroupTriggered( bool )
+void CMainWindow::onActionEditGroupTriggered(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onActionEditGroupTriggered",
-        /* strAddInfo   */ "" );
+        /* strAddInfo   */ strMthInArgs );
 
     CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
     pDrawingScene->groupGraphObjsSelected();
@@ -3215,14 +3297,18 @@ void CMainWindow::onActionEditGroupTriggered( bool )
 } // onActionEditGroupTriggered
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActionEditUngroupTriggered( bool )
+void CMainWindow::onActionEditUngroupTriggered(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onActionEditUngroupTriggered",
-        /* strAddInfo   */ "" );
+        /* strAddInfo   */ strMthInArgs );
 
     CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
     pDrawingScene->ungroupGraphObjsSelected();
@@ -3234,14 +3320,18 @@ public slots: // Menu - Draw - Settings
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActionDrawSettingsLineTriggered( bool )
+void CMainWindow::onActionDrawSettingsLineTriggered(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onActionDrawSettingsLineTriggered",
-        /* strAddInfo   */ "" );
+        /* strAddInfo   */ strMthInArgs );
 
     CDlgFormatGraphObjs* pDlgFormatGraphObjs = nullptr;
     CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
@@ -3274,14 +3364,18 @@ void CMainWindow::onActionDrawSettingsLineTriggered( bool )
 } // onActionDrawSettingsLineTriggered
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActionDrawSettingsFillTriggered( bool )
+void CMainWindow::onActionDrawSettingsFillTriggered(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onActionDrawSettingsFillTriggered",
-        /* strAddInfo   */ "" );
+        /* strAddInfo   */ strMthInArgs );
 
     CDlgFormatGraphObjs* pDlgFormatGraphObjs = nullptr;
     CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
@@ -3315,14 +3409,18 @@ void CMainWindow::onActionDrawSettingsFillTriggered( bool )
 } // onActionDrawSettingsFillTriggered
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActionDrawSettingsTextTriggered( bool )
+void CMainWindow::onActionDrawSettingsTextTriggered(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onActionDrawSettingsTextTriggered",
-        /* strAddInfo   */ "" );
+        /* strAddInfo   */ strMthInArgs );
 
     CDlgFormatGraphObjs* pDlgFormatGraphObjs = nullptr;
     CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
@@ -3359,11 +3457,11 @@ public slots: // Menu - Draw - Standard Shapes
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActionDrawStandardShapePointToggled( bool i_bChecked )
+void CMainWindow::onActionDrawStandardShapePointToggled(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
     CMethodTracer mthTracer(
@@ -3380,7 +3478,7 @@ void CMainWindow::onActionDrawStandardShapePointToggled( bool i_bChecked )
         m_pActDrawChecked = m_pActDrawStandardShapePoint;
         pDrawingScene->setCurrentDrawingTool(m_pObjFactoryPoint);
     }
-    else { // if( !i_bChecked )
+    else {
         if( m_pActDrawChecked == m_pActDrawStandardShapePoint ) {
             m_pActDrawChecked = nullptr;
         }
@@ -3391,11 +3489,11 @@ void CMainWindow::onActionDrawStandardShapePointToggled( bool i_bChecked )
 } // onActionDrawStandardShapePointToggled
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActionDrawStandardShapeLineToggled( bool i_bChecked )
+void CMainWindow::onActionDrawStandardShapeLineToggled(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
     CMethodTracer mthTracer(
@@ -3412,7 +3510,7 @@ void CMainWindow::onActionDrawStandardShapeLineToggled( bool i_bChecked )
         m_pActDrawChecked = m_pActDrawStandardShapeLine;
         pDrawingScene->setCurrentDrawingTool(m_pObjFactoryLine);
     }
-    else { // if( !i_bChecked )
+    else {
         if( m_pActDrawChecked == m_pActDrawStandardShapeLine ) {
             m_pActDrawChecked = nullptr;
         }
@@ -3423,11 +3521,11 @@ void CMainWindow::onActionDrawStandardShapeLineToggled( bool i_bChecked )
 } // onActionDrawStandardShapeLineToggled
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActionDrawStandardShapeRectToggled( bool i_bChecked )
+void CMainWindow::onActionDrawStandardShapeRectToggled(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
     CMethodTracer mthTracer(
@@ -3445,7 +3543,7 @@ void CMainWindow::onActionDrawStandardShapeRectToggled( bool i_bChecked )
         m_pActDrawChecked = m_pActDrawStandardShapeRect;
         pDrawingScene->setCurrentDrawingTool(m_pObjFactoryRect);
     }
-    else { // if( !i_bChecked )
+    else {
         if( m_pActDrawChecked == m_pActDrawStandardShapeRect ) {
             m_pActDrawChecked = nullptr;
         }
@@ -3456,11 +3554,11 @@ void CMainWindow::onActionDrawStandardShapeRectToggled( bool i_bChecked )
 } // onActionDrawStandardShapeRectToggled
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActionDrawStandardShapeEllipseToggled( bool i_bChecked )
+void CMainWindow::onActionDrawStandardShapeEllipseToggled(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
     CMethodTracer mthTracer(
@@ -3478,7 +3576,7 @@ void CMainWindow::onActionDrawStandardShapeEllipseToggled( bool i_bChecked )
         m_pActDrawChecked = m_pActDrawStandardShapeEllipse;
         pDrawingScene->setCurrentDrawingTool(m_pObjFactoryEllipse);
     }
-    else { // if( !i_bChecked )
+    else {
         if( m_pActDrawChecked == m_pActDrawStandardShapeEllipse ) {
             m_pActDrawChecked = nullptr;
         }
@@ -3489,11 +3587,11 @@ void CMainWindow::onActionDrawStandardShapeEllipseToggled( bool i_bChecked )
 } // onActionDrawStandardShapeEllipseToggled
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActionDrawStandardShapePolylineToggled( bool i_bChecked )
+void CMainWindow::onActionDrawStandardShapePolylineToggled(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
     CMethodTracer mthTracer(
@@ -3511,7 +3609,7 @@ void CMainWindow::onActionDrawStandardShapePolylineToggled( bool i_bChecked )
         m_pActDrawChecked = m_pActDrawStandardShapePolyline;
         pDrawingScene->setCurrentDrawingTool(m_pObjFactoryPolyline);
     }
-    else { // if( !i_bChecked )
+    else {
         if( m_pActDrawChecked == m_pActDrawStandardShapePolyline ) {
             m_pActDrawChecked = nullptr;
         }
@@ -3522,11 +3620,11 @@ void CMainWindow::onActionDrawStandardShapePolylineToggled( bool i_bChecked )
 } // onActionDrawStandardShapePolylineToggled
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActionDrawStandardShapePolygonToggled( bool i_bChecked )
+void CMainWindow::onActionDrawStandardShapePolygonToggled(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
     CMethodTracer mthTracer(
@@ -3544,7 +3642,7 @@ void CMainWindow::onActionDrawStandardShapePolygonToggled( bool i_bChecked )
         m_pActDrawChecked = m_pActDrawStandardShapePolygon;
         pDrawingScene->setCurrentDrawingTool(m_pObjFactoryPolygon);
     }
-    else { // if( !i_bChecked )
+    else {
         if( m_pActDrawChecked == m_pActDrawStandardShapePolygon ) {
             m_pActDrawChecked = nullptr;
         }
@@ -3555,11 +3653,11 @@ void CMainWindow::onActionDrawStandardShapePolygonToggled( bool i_bChecked )
 } // onActionDrawStandardShapePolygonToggled
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActionDrawStandardShapeTextToggled( bool i_bChecked )
+void CMainWindow::onActionDrawStandardShapeTextToggled(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
     CMethodTracer mthTracer(
@@ -3577,7 +3675,7 @@ void CMainWindow::onActionDrawStandardShapeTextToggled( bool i_bChecked )
         m_pActDrawChecked = m_pActDrawStandardShapeText;
         pDrawingScene->setCurrentDrawingTool(m_pObjFactoryText);
     }
-    else { // if( !i_bChecked )
+    else {
         if( m_pActDrawChecked == m_pActDrawStandardShapeText ) {
             m_pActDrawChecked = nullptr;
         }
@@ -3592,11 +3690,11 @@ public slots: // Menu - Draw - Graphics
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActionDrawGraphicsImageTriggered( bool i_bChecked )
+void CMainWindow::onActionDrawGraphicsImageTriggered(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
 
@@ -3631,11 +3729,11 @@ public slots: // Menu - Draw - Connections
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActionDrawConnectionPointToggled( bool i_bChecked )
+void CMainWindow::onActionDrawConnectionPointToggled(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
     CMethodTracer mthTracer(
@@ -3653,7 +3751,7 @@ void CMainWindow::onActionDrawConnectionPointToggled( bool i_bChecked )
         m_pActDrawChecked = m_pActDrawConnectionPoint;
         pDrawingScene->setCurrentDrawingTool(m_pObjFactoryConnectionPoint);
     }
-    else { // if( !i_bChecked )
+    else {
         if( m_pActDrawChecked == m_pActDrawConnectionPoint ) {
             m_pActDrawChecked = nullptr;
         }
@@ -3664,11 +3762,11 @@ void CMainWindow::onActionDrawConnectionPointToggled( bool i_bChecked )
 } // onActionDrawConnectionPointToggled
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActionDrawConnectionLineToggled( bool i_bChecked )
+void CMainWindow::onActionDrawConnectionLineToggled(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
     CMethodTracer mthTracer(
@@ -3686,7 +3784,7 @@ void CMainWindow::onActionDrawConnectionLineToggled( bool i_bChecked )
         m_pActDrawChecked = m_pActDrawConnectionLine;
         pDrawingScene->setCurrentDrawingTool(m_pObjFactoryConnectionLine);
     }
-    else { // if( !i_bChecked )
+    else {
         if( m_pActDrawChecked == m_pActDrawConnectionLine ) {
             m_pActDrawChecked = nullptr;
         }
@@ -3701,11 +3799,11 @@ public slots: // Menu - View - Zoom
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActionViewZoomInTriggered( bool i_bChecked )
+void CMainWindow::onActionViewZoomInTriggered(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
     CMethodTracer mthTracer(
@@ -3763,11 +3861,11 @@ void CMainWindow::onActionViewZoomInTriggered( bool i_bChecked )
 } // onActionViewZoomInTriggered
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActionViewZoomOutTriggered( bool i_bChecked )
+void CMainWindow::onActionViewZoomOutTriggered(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
     CMethodTracer mthTracer(
@@ -3830,7 +3928,7 @@ void CMainWindow::onEdtViewZoomFactorEditingFinished()
 {
     QString strMthInArgs;
     int iZoomFactor_perCent = m_pEdtViewZoomFactor_perCent->value();
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "ZoomFactor: " + QString::number(iZoomFactor_perCent) + " %";
     }
     CMethodTracer mthTracer(
@@ -3852,14 +3950,18 @@ public slots: // Menu - Debug
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActionDebugErrLogTriggered( bool /*i_bChecked*/ )
+void CMainWindow::onActionDebugErrLogTriggered(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onActionDebugErrLogTriggered",
-        /* strAddInfo   */ "" );
+        /* strAddInfo   */ strMthInArgs );
 
     QString strDlgTitle = QCoreApplication::applicationName() + ": Error Log";
     CDlgErrLog* pDlg = dynamic_cast<CDlgErrLog*>(CDlgErrLog::GetInstance(strDlgTitle));
@@ -3879,14 +3981,18 @@ void CMainWindow::onActionDebugErrLogTriggered( bool /*i_bChecked*/ )
 } // onActionDebugErrLogTriggered
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActionDebugUnitsTriggered( bool /*i_bChecked*/ )
+void CMainWindow::onActionDebugUnitsTriggered(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onActionDebugUnitsTriggered",
-        /* strAddInfo   */ "" );
+        /* strAddInfo   */ strMthInArgs );
 
     CDlgPhysUnits* pDlg = CDlgPhysUnits::GetInstance();
     if( pDlg == nullptr ) {
@@ -3906,14 +4012,18 @@ void CMainWindow::onActionDebugUnitsTriggered( bool /*i_bChecked*/ )
 } // onActionDebugUnitsTriggered
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActionDebugTraceServerTriggered( bool /*i_bChecked*/ )
+void CMainWindow::onActionDebugTraceServerTriggered(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onActionDebugTraceServerTriggered",
-        /* strAddInfo   */ "" );
+        /* strAddInfo   */ strMthInArgs );
 
     CDlgTrcServer* pDlg = CDlgTrcServer::GetInstance();
 
@@ -3934,14 +4044,18 @@ void CMainWindow::onActionDebugTraceServerTriggered( bool /*i_bChecked*/ )
 } // onActionDebugTraceServerTriggered
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActionDebugTraceAdminObjsTriggered( bool /*i_bChecked*/ )
+void CMainWindow::onActionDebugTraceAdminObjsTriggered(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onActionDebugTraceAdminObjsTriggered",
-        /* strAddInfo   */ "" );
+        /* strAddInfo   */ strMthInArgs );
 
     if( CTrcServer::GetTraceAdminObjIdxTree() != nullptr )
     {
@@ -3969,14 +4083,18 @@ void CMainWindow::onActionDebugTraceAdminObjsTriggered( bool /*i_bChecked*/ )
 } // onActionDebugTraceAdminObjsTriggered
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActionDebugTestTriggered( bool /*i_bChecked*/ )
+void CMainWindow::onActionDebugTestTriggered(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onActionDebugTestTriggered",
-        /* strAddInfo   */ "" );
+        /* strAddInfo   */ strMthInArgs );
 
     if( m_pDlgTest == nullptr ) {
         m_pDlgTest = new ZS::Test::GUI::CDlgTest(
@@ -3997,11 +4115,31 @@ public slots: // Drawing Scene
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+void CMainWindow::onDrawingSceneSizeChanged( const CDrawingSize& i_drawingSize)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_drawingSize.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onDrawingSceneSizeChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    if( !m_bDrawingChangedSinceLastSave ) {
+        m_bDrawingChangedSinceLastSave = true;
+        updateActions();
+    }
+}
+
+//------------------------------------------------------------------------------
 void CMainWindow::onDrawingSceneChanged( const QList<QRectF>& i_region )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "RectsCount:" + QString::number(i_region.size());
         for( int idx = 0; idx < i_region.size(); idx++ ) {
             QRectF rct = i_region[idx];
@@ -4023,10 +4161,10 @@ void CMainWindow::onDrawingSceneChanged( const QList<QRectF>& i_region )
         /* strAddInfo   */ strMthInArgs );
 
     if( !m_bDrawingChangedSinceLastSave ) {
-        if( !m_strCurrentFile.isEmpty() ) {
-            m_bDrawingChangedSinceLastSave = true;
-        }
-        else if( i_region.size() != 1 ) {
+        //if( !m_strCurrentFileAbsFilePath.isEmpty() ) {
+        //    m_bDrawingChangedSinceLastSave = true;
+        //}
+        if( i_region.size() != 1 ) {
             m_bDrawingChangedSinceLastSave = true;
         }
         else { // if( i_region.size() == 1 )
@@ -4039,10 +4177,8 @@ void CMainWindow::onDrawingSceneChanged( const QList<QRectF>& i_region )
             }
         }
     }
-
     updateActions();
-
-} // onDrawingSceneChanged
+}
 
 //------------------------------------------------------------------------------
 void CMainWindow::onDrawingSceneFocusItemChanged(
@@ -4053,7 +4189,7 @@ void CMainWindow::onDrawingSceneFocusItemChanged(
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         CGraphObj* pGraphObjNew = dynamic_cast<CGraphObj*>(i_pNewFocusItem);
         CGraphObj* pGraphObjOld = dynamic_cast<CGraphObj*>(i_pOldFocusItem);
@@ -4139,7 +4275,7 @@ void CMainWindow::onDrawingSceneModeChanged()
 {
     QString strMthInArgs;
     QString strAddTrcInfo;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -4161,7 +4297,7 @@ void CMainWindow::onDrawingSceneModeChanged()
         strAddTrcInfo += ", GraphObjCreating: " + QString(pGraphObjCreating == nullptr ? "nullptr" : pGraphObjCreating->name());
     }
 
-    setWindowTitle();
+    updateWindowTitle();
     updateActions();
     updateStatusBar();
 
@@ -4310,7 +4446,7 @@ void CMainWindow::onTreeViewObjFactoriesExpanded( const QModelIndex& i_modelIdx 
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
     }
 
@@ -4335,7 +4471,7 @@ void CMainWindow::onTreeViewObjFactoriesCurrentChanged(
 {
     QString strMthInArgs;
     QString strAddTrcInfo;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = qModelIndex2Str(i_modelIdxCurr);
     }
     CMethodTracer mthTracer(
@@ -4374,7 +4510,7 @@ void CMainWindow::selectTreeViewObjFactoryNode( ZS::Draw::CObjFactory* i_pObjFac
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString(i_pObjFactory == nullptr ? "nullptr" : i_pObjFactory->path());
     }
     CMethodTracer mthTracer(
@@ -4438,7 +4574,7 @@ void CMainWindow::resizeEvent( QResizeEvent* i_pEv )
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs  = "Size: " + size2Str(i_pEv->size());
         strMthInArgs += ", OldSize: " + size2Str(i_pEv->oldSize());
@@ -4472,7 +4608,7 @@ void CMainWindow::showEvent( QShowEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -4499,50 +4635,6 @@ void CMainWindow::showEvent( QShowEvent* i_pEv )
 /*==============================================================================
 protected: // instance methods
 ==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CMainWindow::setCurrentFile( const QString& i_strFileName )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
-        strMthInArgs = "FileName:" + i_strFileName;
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setCurrentFile",
-        /* strAddInfo   */ strMthInArgs );
-
-    m_bDrawingChangedSinceLastSave = false;
-    m_strCurrentFile = i_strFileName;
-
-    setWindowTitle();
-
-    //if( m_strCurrentFile.isEmpty() )
-    //{
-    //    setWindowTitle( m_strWindowTitleAppName );
-    //}
-    //else
-    //{
-    //    setWindowTitle( m_strWindowTitleAppName + " - " + m_strCurrentFile );
-    //}
-
-    //QStringList strlstFilesRecent = m_pSettingsFile->value( m_strSettingsKey + "/RecentFilesList" ).toStringList();
-
-    //strlstFilesRecent.removeAll(m_strCurrentFile);
-    //strlstFilesRecent.prepend(m_strCurrentFile);
-
-    //while( strlstFilesRecent.size() > EFilesRecentCountMax )
-    //{
-    //    strlstFilesRecent.removeLast();
-    //}
-
-    //m_pSettingsFile->setValue( m_strSettingsKey + "/RecentFilesList", strlstFilesRecent );
-
-    //updateActionsFilesRecent();
-
-} // setCurrentFile
 
 //------------------------------------------------------------------------------
 void CMainWindow::updateStatusBar()
@@ -5199,55 +5291,109 @@ void CMainWindow::updateActions()
 } // updateActions
 
 //------------------------------------------------------------------------------
-void CMainWindow::updateActionsFilesRecent()
+void CMainWindow::updateActionsLastUsedFiles()
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-    }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "updateActionsFilesRecent",
+        /* strMethod    */ "updateActionsLastUsedFiles",
+        /* strAddInfo   */ "" );
+
+    for (int idxFile = 0; idxFile < m_arpActsLastUsedFiles.size(); ++idxFile)
+    {
+        delete m_arpActsLastUsedFiles[idxFile];
+        m_arpActsLastUsedFiles[idxFile] = nullptr;
+    }
+    m_arpActsLastUsedFiles.clear();
+
+    QIcon iconApp;
+
+    QPixmap pxmApp32x32(":/ZS/App/ZeusSoft_32x32.png");
+    QPixmap pxmApp48x48(":/ZS/App/ZeusSoft_48x48.png");
+    QPixmap pxmApp64x64(":/ZS/App/ZeusSoft_64x64.png");
+
+    iconApp.addPixmap(pxmApp32x32);
+    iconApp.addPixmap(pxmApp48x48);
+    iconApp.addPixmap(pxmApp64x64);
+
+    for( int idxFile = 0; idxFile < m_arLastUsedFiles.size(); idxFile++ )
+    {
+        QAction* pAct = new QAction(iconApp, m_arLastUsedFiles[idxFile].m_strAbsFilePath, this);
+        pAct->setData(m_arLastUsedFiles[idxFile].m_strAbsFilePath);
+        pAct->setVisible(true);
+        QObject::connect(
+            pAct, &QAction::triggered,
+            this, &CMainWindow::onActionFileLastUsedFilesTriggered );
+        m_arpActsLastUsedFiles.append(pAct);
+        m_pMenuLastUsedFiles->addAction(pAct);
+        if (m_arLastUsedFiles[idxFile].m_strAbsFilePath == m_strCurrentFileAbsFilePath)
+        {
+            pAct->setEnabled(false);
+        }
+        else
+        {
+            QObject::connect(
+                pAct, &QAction::triggered,
+                this, &CMainWindow::onActionFileLastUsedFilesTriggered);
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+void CMainWindow::updateCurrentUsedFile( const QString& i_strAbsFilePath )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "File:" + i_strAbsFilePath;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "updateCurrentUsedFile",
         /* strAddInfo   */ strMthInArgs );
 
-    QSettings settings;
+    if (i_strAbsFilePath.isEmpty()) {
+        m_dtCurrentFileLastUsed = QDateTime();
+    }
+    else {
+        m_dtCurrentFileLastUsed = QDateTime::currentDateTime();
+    }
 
-    QStringList strlstFilesRecent = settings.value(objectName()+"/RecentFilesList").toStringList();
-    int         idxFile;
-
-    int iFilesRecentCount = Math::minVal( 2, strlstFilesRecent.size(), _ZSArrLen(m_arpActFilesRecent) );
-
-    for( idxFile = 0; idxFile < iFilesRecentCount; idxFile++ )
+    if (m_strCurrentFileAbsFilePath != i_strAbsFilePath)
     {
-        QString strFileNameStripped = QFileInfo(strlstFilesRecent[idxFile]).fileName();
-        QString strText = tr("&%1 %2").arg(idxFile).arg(strFileNameStripped);
+        m_bDrawingChangedSinceLastSave = false;
+        m_strCurrentFileAbsFilePath = i_strAbsFilePath;
+        updateWindowTitle();
+    }
 
-        if( m_arpActFilesRecent[idxFile] != nullptr )
+    if (!m_strCurrentFileAbsFilePath.isEmpty())
+    {
+        bool bCurrentFileUpdated = false;
+        for (int idxFile = 0; idxFile < m_arLastUsedFiles.size(); ++idxFile)
         {
-            m_arpActFilesRecent[idxFile]->setText(strText);
-            m_arpActFilesRecent[idxFile]->setData(strlstFilesRecent[idxFile]);
-            m_arpActFilesRecent[idxFile]->setVisible(true);
+            if (m_arLastUsedFiles[idxFile].m_strAbsFilePath == i_strAbsFilePath)
+            {
+                m_arLastUsedFiles[idxFile].m_dtLastUsed = m_dtCurrentFileLastUsed;
+                bCurrentFileUpdated = true;
+                break;
+            }
         }
-    }
-
-    for( idxFile = iFilesRecentCount; idxFile < _ZSArrLen(m_arpActFilesRecent); idxFile++ )
-    {
-        if( m_arpActFilesRecent[idxFile] != nullptr )
+        if (!bCurrentFileUpdated)
         {
-            m_arpActFilesRecent[idxFile]->setVisible(false);
+            m_arLastUsedFiles.append({m_strCurrentFileAbsFilePath, m_dtCurrentFileLastUsed});
         }
+        ZS::System::sortLastUsedFiles(m_arLastUsedFiles);
+        while (m_arLastUsedFiles.size() > c_iLastUsedFilesCountMax)
+        {
+            m_arLastUsedFiles.removeLast();
+        }
+        QSettings settings;
+        ZS::System::writeLastUsedFiles(m_arLastUsedFiles, settings);
+        updateActionsLastUsedFiles();
     }
-
-    if( m_pActFilesRecentSeparator != nullptr )
-    {
-        m_pActFilesRecentSeparator->setVisible( iFilesRecentCount > 0 );
-    }
-
-} // updateActionsFilesRecent
+}
 
 /*==============================================================================
 protected slots:

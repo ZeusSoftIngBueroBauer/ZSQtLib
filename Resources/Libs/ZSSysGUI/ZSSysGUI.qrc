@@ -63,10 +63,10 @@
     <qresource prefix="/ZS/Menu">
         <file alias="MenuFileAdd16x16.bmp">Images/MenuFileAdd16x16.bmp</file>
         <file alias="MenuFileEdit16x16.bmp">Images/MenuFileEdit16x16.bmp</file>
-        <file alias="MenuFileNew16x16.bmp">Images/MenuFileNew16x16.bmp</file>
-        <file alias="MenuFileOpen16x16.bmp">Images/MenuFileOpen16x16.bmp</file>
-        <file alias="MenuFileSave16x16.bmp">Images/MenuFileSave16x16.bmp</file>
-        <file alias="MenuFileSaveAs16x16.bmp">Images/MenuFileSaveAs16x16.bmp</file>
+        <file alias="MenuFileNew16x16.png">Images/MenuFileNew16x16.png</file>
+        <file alias="MenuFileOpen16x16.png">Images/MenuFileOpen16x16.png</file>
+        <file alias="MenuFileSave16x16.png">Images/MenuFileSave16x16.png</file>
+        <file alias="MenuFileSaveAs16x16.png">Images/MenuFileSaveAs16x16.png</file>
     </qresource>
     <qresource prefix="/ZS/TreeView">
         <file alias="TreeViewBranchEntry.png">Images/TreeViewBranchEntry.png</file>

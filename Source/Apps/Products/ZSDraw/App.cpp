@@ -94,10 +94,9 @@ public: // ctors and dtor
 CApplication::CApplication(
     int            i_argc,
     char*          i_argv[],
-    const QString& /*i_strOrganizationName*/,
-    const QString& /*i_strOrganizationDomain*/,
-    const QString& /*i_strAppName*/,
-    const QString& /*i_strWindowTitle*/ ) :
+    const QString& i_strOrganizationName,
+    const QString& i_strOrganizationDomain,
+    const QString& i_strAppName ) :
 //------------------------------------------------------------------------------
     CGUIApp(i_argc,i_argv),
     m_pTrcServer(nullptr),
@@ -112,9 +111,14 @@ CApplication::CApplication(
         thread()->setObjectName("GUIMain");
     }
 
-    QCoreApplication::setOrganizationName("ZeusSoft");
-    QCoreApplication::setOrganizationDomain("ZeusSoft.de");
-    QCoreApplication::setApplicationName("ZSAppDraw");
+    QCoreApplication::setOrganizationName(i_strOrganizationName);
+    QCoreApplication::setOrganizationDomain(i_strOrganizationDomain);
+    QCoreApplication::setApplicationName(i_strAppName);
+    // On some desktop platforms (including Windows and Unix), the application name
+    // (from QGuiApplication::applicationDisplayName) is added at the end of the
+    // window title, if set. This is done by the QPA plugin, so it is shown to the user,
+    // but isn't part of the windowTitle string. !! This is not desired !!
+    //QGuiApplication::setApplicationDisplayName(i_strWindowTitle);
 
     QString strAppDirPath = QCoreApplication::applicationDirPath();
     QString strAppName = QCoreApplication::applicationName();
@@ -130,40 +134,6 @@ CApplication::CApplication(
     iconApp.addPixmap(pxmApp64x64);
 
     QApplication::setWindowIcon(iconApp);
-
-    // Parse command arguments
-    //------------------------
-
-    QStringList strlstArgsPar;
-    QStringList strlstArgsVal;
-
-    parseAppArgs(i_argc, i_argv, strlstArgsPar, strlstArgsVal);
-
-    unsigned int uAddObjFactories = CMainWindow::EAddObjFactoriesNone;
-    bool bTest = false;
-
-    #if QT_VERSION >= 0x040501
-    for( int idxArg = 0; idxArg < strlstArgsPar.length() && idxArg < strlstArgsVal.length(); idxArg++ )
-    #else
-    for( int idxArg = 0; idxArg < strListArgsPar.size() && idxArg < strListArgsVal.size(); idxArg++ )
-    #endif
-    {
-        QString strArg = strlstArgsPar[idxArg];
-        QString strVal = strlstArgsVal[idxArg];
-
-        if( strArg.compare("DemoQtWidgets",Qt::CaseInsensitive) == 0 )
-        {
-            uAddObjFactories |= CMainWindow::EAddObjFactoriesQtWidgets;
-        }
-        else if( strArg.compare("DemoElectricity",Qt::CaseInsensitive) == 0 )
-        {
-            uAddObjFactories |= CMainWindow::EAddObjFactoriesElectricity;
-        }
-        else if( strArg.compare("Test",Qt::CaseInsensitive) == 0 )
-        {
-            bTest = true;
-        }
-    }
 
     // Create error manager
     //------------------------
@@ -191,40 +161,39 @@ CApplication::CApplication(
         /* strMethod    */ "ctor",
         /* strAddInfo   */ "" );
 
-    // Main Window
-    //------------
+    // Parse command arguments
+    //------------------------
 
-    setQuitOnLastWindowClosed(false);
+    QStringList strlstArgsPar;
+    QStringList strlstArgsVal;
 
-    if( !QObject::connect(
-        /* pObjSender   */ this,
-        /* szSignal     */ SIGNAL(lastWindowClosed()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onLastWindowClosed()) ) )
+    ZS::System::parseAppArgs(i_argc, i_argv, strlstArgsPar, strlstArgsVal);
+
+    bool bTest = false;
+
+    #if QT_VERSION >= 0x040501
+    for( int idxArg = 0; idxArg < strlstArgsPar.length() && idxArg < strlstArgsVal.length(); idxArg++ )
+    #else
+    for( int idxArg = 0; idxArg < strListArgsPar.size() && idxArg < strListArgsVal.size(); idxArg++ )
+    #endif
     {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+        QString strArg = strlstArgsPar[idxArg];
+        QString strVal = strlstArgsVal[idxArg];
+
+        if( strArg.compare("Test",Qt::CaseInsensitive) == 0 )
+        {
+            bTest = true;
+        }
     }
+
+    // Create Test (if desired)
+    //-------------------------
 
     if( bTest )
     {
         m_pTest = new CTest();
     }
-
-    m_pMainWindow = new CMainWindow(
-        /* strWindowTitleAppName */ applicationName(),
-        /* pTest                 */ m_pTest,
-        /* uAddObjFactories      */ uAddObjFactories );
-    m_pMainWindow->show();
-
-    // Test
-    //-----
-
-    if( m_pTest != nullptr )
-    {
-        m_pTest->setMainWindow(m_pMainWindow);
-    }
-
-} // ctor
+}
 
 //------------------------------------------------------------------------------
 CApplication::~CApplication()
@@ -288,6 +257,56 @@ CApplication::~CApplication()
 } // dtor
 
 /*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CApplication::createAndShowMainWindow(
+    const QString&     i_strMainWindowTitle,
+    const QString&     i_strFileName,
+    const QStringList& i_strlstObjFactories)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
+    {
+        strMthInArgs = "MainWindowTitle: " + i_strMainWindowTitle;
+        strMthInArgs += ", FileName: " + i_strFileName;
+        strMthInArgs += ", ObjFactories: " + i_strlstObjFactories.join(", ");
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "showMainWindow",
+        /* strAddInfo   */ strMthInArgs );
+
+    setQuitOnLastWindowClosed(false);
+
+    QObject::connect(
+        this, &CApplication::lastWindowClosed,
+        this, &CApplication::onLastWindowClosed);
+
+    m_pMainWindow = new CMainWindow(
+        /* strWindowTitleAppName */ i_strMainWindowTitle,
+        /* pTest                 */ m_pTest,
+        /* strlstObjFactories    */ i_strlstObjFactories );
+    m_pMainWindow->show();
+
+    if (m_pTest != nullptr )
+    {
+        m_pTest->setMainWindow(m_pMainWindow);
+    }
+    if (i_strFileName.isEmpty())
+    {
+        m_pMainWindow->onActionFilePageSetupTriggered(false);
+    }
+    else
+    {
+        m_pMainWindow->setCurrentUsedFile(i_strFileName);
+    }
+}
+
+/*==============================================================================
 protected slots: // instance methods of system shutdown
 ==============================================================================*/
 
@@ -303,5 +322,4 @@ void CApplication::onLastWindowClosed()
 
     // Quit the application (terminate main event loop)
     quit();
-
-} // onLastWindowClosed
+}

@@ -81,11 +81,11 @@ protected: // instance members
     QVBoxLayout* m_pLytMain;
     QSplitter* m_pSplitter;
     CWdgtGraphObjsTree* m_pWdgtTreeView;
-    CWdgtStackGraphObjsProperties* m_pWdgtGraphObjs;
+    CWdgtStackGraphObjsProperties* m_pWdgtStackGraphObjsProperties;
     /*!< Trace admin object to control trace outputs of the class. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
-}; // class CWdgtIdxTree
+}; // class CWdgtGraphObjs
 
 } // namespace Draw
 

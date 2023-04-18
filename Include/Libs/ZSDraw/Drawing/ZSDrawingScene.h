@@ -43,6 +43,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysCommon.h"
 
 class QXmlStreamWriter;
+class QXmlStreamAttributes;
 
 namespace ZS
 {
@@ -72,6 +73,16 @@ public: // class methods
     static QString NameSpace() { return "ZS::Draw"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
     /*! Returns the class name. */
     static QString ClassName() { return "CDrawingScene"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
+public: // type definitions and constants
+    const QString c_strXmlElemNameDrawing = "Drawing";
+public: // type definitions and constants
+    const QString c_strXmlAttrDimensionUnit = "DimensionUnit";
+    const QString c_strXmlAttrUnit = "Unit";
+    const QString c_strXmlAttrWidth = "Width";
+    const QString c_strXmlAttrHeight = "Height";
+    const QString c_strXmlAttrScaleFactor = "ScaleFactor";
+    const QString c_strXmlAttrPaperSize = "PaperSize";
+    const QString c_strXmlAttrPaperOrientation = "PaperOrientation";
 public: // class methods
     //static QString FindUniqueGraphObjId(
     //    const QMap<QString,CGraphObj*>& i_dctpGraphObjs,
@@ -240,6 +251,16 @@ protected slots:
     void onGraphObjsIdxTreeEntryChanged( const QString& i_strKeyInTree );
     void onGraphObjsIdxTreeEntryMoved( const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree, const QString& i_strKeyInTreeOfTargetBranch );
     void onGraphObjsIdxTreeEntryRenamed( const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree, const QString& i_strOrigName );
+protected: // auxiliary methods
+    void raiseErrorAttributeNotDefined(QXmlStreamReader& i_xmlStreamReader, const QString& i_strElemName, const QString& i_strAttrName) const;
+    void raiseErrorAttributeOutOfRange(QXmlStreamReader& i_xmlStreamReader, const QString& i_strElemName, const QString& i_strAttrName, const QString& i_strAttrVal) const;
+    CEnumDrawingDimensionUnit getDimensionUnit(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName) const;
+    CEnumNormedPaperSize getNormedPaperSize(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName) const;
+    ZS::System::CEnumDirection getDirection(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName) const;
+    ZS::PhysVal::CUnit getUnit(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName) const;
+    ZS::PhysVal::CPhysVal getPhysVal(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName) const;
+    int getIntVal(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName) const;
+    std::pair<int, int> getIntPair(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, const QString& i_strDelimiter = ":") const;
 protected: // auxiliary methods (trace emitting signals)
     void emit_drawingSizeChanged( const ZS::Draw::CDrawingSize& i_size );
     void emit_mousePosChanged( const QPointF& i_ptMousePos );

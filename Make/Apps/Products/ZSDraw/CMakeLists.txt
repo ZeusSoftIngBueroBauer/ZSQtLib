@@ -31,7 +31,7 @@ set(_HeadersPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Include/Apps/Products)
 set(_SourcesPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Source/Apps/Products)
 set(_ResourcesPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Resources/Apps/Products)
 
-list(APPEND _HeadersCommon
+list(APPEND _HeadersMain
     ${_HeadersPath}/../../Libs/ZSSys/ZSSysVersion.h
     ${_HeadersPath}/ZSDraw/App.h
     ${_HeadersPath}/ZSDraw/MainWindow.h
@@ -89,13 +89,13 @@ configure_file(
 set(_HeadersTest ${_HeadersTest} ${_HeadersPath}/ZSDraw/Test/TestConfig.h)
 
 list(APPEND _Headers
-    ${_HeadersCommon}
+    ${_HeadersMain}
     ${_HeadersElectricity}
     ${_HeadersQtWidgets}
     ${_HeadersTest}
 )
 
-list(APPEND _SourcesCommon
+list(APPEND _SourcesMain
     ${_SourcesPath}/ZSDraw/Main.cpp
     ${_SourcesPath}/ZSDraw/App.cpp
     ${_SourcesPath}/ZSDraw/MainWindow.cpp
@@ -165,7 +165,7 @@ list(APPEND _SourcesTest
 )
 
 list(APPEND _Sources
-    ${_SourcesCommon}
+    ${_SourcesMain}
     ${_SourcesElectricity}
     ${_SourcesQtWidgets}
     ${_SourcesTest}
@@ -230,11 +230,11 @@ endif()
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${TargetOutputName})
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER Products)
 
-source_group("Header Files/Common" FILES ${_HeadersCommon})
+source_group("Header Files/Main" FILES ${_HeadersMain})
 source_group("Header Files/Electricity" FILES ${_HeadersElectricity})
 source_group("Header Files/QtWidgets" FILES ${_HeadersQtWidgets})
 source_group("Header Files/Test" FILES ${_HeadersTest})
-source_group("Source Files/Common" FILES ${_SourcesCommon})
+source_group("Source Files/Main" FILES ${_SourcesMain})
 source_group("Source Files/Electricity" FILES ${_SourcesElectricity})
 source_group("Source Files/QtWidgets" FILES ${_SourcesQtWidgets})
 source_group("Source Files/Test" FILES ${_SourcesTest})

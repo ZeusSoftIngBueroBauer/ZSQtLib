@@ -764,7 +764,7 @@ protected slots:
 void CMainWindow::onActSettingsWdgtTrcMthListTriggered()
 //------------------------------------------------------------------------------
 {
-    QString strDlgTitle = getMainWindowTitle() + ": Method Trace Widget Settings";
+    QString strDlgTitle = ZS::System::GUI::getMainWindowTitle() + ": Method Trace Widget Settings";
 
     CDlgWdgtTrcMthListSettings* pDlg = CDlgWdgtTrcMthListSettings::GetInstance(
         m_pWdgtCentral->getTraceMethodListWidget()->objectName());
@@ -795,7 +795,7 @@ void CMainWindow::onActSettingsWdgtTrcMthListTriggered()
 void CMainWindow::onActSettingsTrcClientTriggered()
 //------------------------------------------------------------------------------
 {
-    QString strDlgTitle = getMainWindowTitle() + ": Trace Client";
+    QString strDlgTitle = ZS::System::GUI::getMainWindowTitle() + ": Trace Client";
 
     CDlgTrcClient* pDlg = CDlgTrcClient::GetInstance(CApplication::GetInstance()->getTrcClient()->objectName());
 
@@ -825,7 +825,7 @@ void CMainWindow::onActSettingsTrcClientTriggered()
 void CMainWindow::onActSettingsTrcAdminObjIdxTreeTriggered()
 //------------------------------------------------------------------------------
 {
-    QString strDlgTitle = getMainWindowTitle() + ": Trace Admin Objects";
+    QString strDlgTitle = ZS::System::GUI::getMainWindowTitle() + ": Trace Admin Objects";
 
     CDlgIdxTreeTrcAdminObjs* pDlg = CDlgIdxTreeTrcAdminObjs::GetInstance(m_pTrcClient->getTraceAdminObjIdxTree()->objectName());
 
