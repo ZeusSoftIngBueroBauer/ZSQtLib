@@ -30,12 +30,6 @@ may result in using the software modules.
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
 
-//#if QT_VERSION < 0x050000
-//#include <QtXml/qxmlstream.h>
-//#else
-//#include <QtCore/qxmlstream.h>
-//#endif
-
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 using namespace ZS::System;

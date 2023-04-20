@@ -90,6 +90,9 @@ CDrawingView::CDrawingView( CDrawingScene* i_pDrawingScene, QWidget* i_pWdgtPare
     QObject::connect(
         m_pDrawingScene, &CDrawingScene::drawingSizeChanged,
         this, &CDrawingView::onSceneDrawingSizeChanged );
+    QObject::connect(
+        m_pDrawingScene, &CDrawingScene::gridSettingsChanged,
+        this, &CDrawingView::onSceneGridSettingsChanged );
 
 } // ctor
 
@@ -147,6 +150,34 @@ CDrawingSize CDrawingView::drawingSize() const
 //------------------------------------------------------------------------------
 {
     return m_pDrawingScene->drawingSize();
+}
+
+/*==============================================================================
+public: // instance methods (grid lines with labels)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CDrawingView::setGridSettings( const CDrawGridSettings& i_settings )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = i_settings.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setGridSettings",
+        /* strAddInfo   */ strMthInArgs );
+
+    m_pDrawingScene->setGridSettings(i_settings);
+}
+
+//------------------------------------------------------------------------------
+CDrawGridSettings CDrawingView::gridSettings() const
+//------------------------------------------------------------------------------
+{
+    return m_pDrawingScene->gridSettings();
 }
 
 /*==============================================================================
@@ -607,6 +638,23 @@ void CDrawingView::onSceneDrawingSizeChanged( const CDrawingSize& i_size )
     emit_drawingSizeChanged(i_size);
 }
 
+//------------------------------------------------------------------------------
+void CDrawingView::onSceneGridSettingsChanged( const CDrawGridSettings& i_settings )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = i_settings.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onSceneGridSettingsChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    emit_gridSettingsChanged(i_settings);
+}
+
 /*==============================================================================
 protected: // instance methods (method tracing)
 ==============================================================================*/
@@ -624,8 +672,27 @@ void CDrawingView::emit_drawingSizeChanged( const ZS::Draw::CDrawingSize& i_size
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "emit_drawingSizeChanged",
         /* strAddInfo   */ strMthInArgs );
+
     emit drawingSizeChanged(i_size);
 }
+
+//------------------------------------------------------------------------------
+void CDrawingView::emit_gridSettingsChanged( const ZS::Draw::CDrawGridSettings& i_settings )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = i_settings.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "emit_gridSettingsChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    emit gridSettingsChanged(i_settings);
+}
+
 
 //------------------------------------------------------------------------------
 void CDrawingView::emit_mousePosChanged( const QPointF& i_ptMousePos )

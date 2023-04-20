@@ -173,6 +173,9 @@ CDlgOpenLastUsedFile::CDlgOpenLastUsedFile(
     m_pTreeWdgtLastUsedFiles->expandAll();
 
     QObject::connect(
+        m_pTreeWdgtLastUsedFiles, &QTreeWidget::itemClicked,
+        this, &CDlgOpenLastUsedFile::onTreeWidgetItemClicked);
+    QObject::connect(
         m_pTreeWdgtLastUsedFiles, &QTreeWidget::itemDoubleClicked,
         this, &CDlgOpenLastUsedFile::onTreeWidgetItemDoubleClicked);
 
@@ -348,6 +351,65 @@ void CDlgOpenLastUsedFile::updateButtonFileOpenLastUsedDir()
 /*==============================================================================
 protected slots:
 ==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CDlgOpenLastUsedFile::onTreeWidgetItemClicked(
+    QTreeWidgetItem* i_pItem, int i_iColumn)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
+    {
+        strMthInArgs = "Item: " + QString(i_pItem == nullptr ? "null" : i_pItem->text(i_iColumn));
+        strMthInArgs += ", Column: " + QString::number(i_iColumn);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onTreeWidgetItemClicked",
+        /* strAddInfo   */ strMthInArgs );
+
+    CTreeWdgtItemLastUsedFile* pLastUsedFileItem = dynamic_cast<CTreeWdgtItemLastUsedFile*>(i_pItem);
+
+    if (pLastUsedFileItem != nullptr)
+    {
+        QFileInfo fileInfo(pLastUsedFileItem->lastUsedFile().m_strAbsFilePath);
+
+        if (!fileInfo.isFile() || !fileInfo.exists())
+        {
+            QString strMsg;
+            strMsg  = "Error on reading file \"" + fileInfo.absoluteFilePath() + "\"";
+            strMsg += "\n\nErrorCode:\t" + result2Str(EResultFileNotFound);
+            strMsg += "\n\nDo you want to remove the file from list of last open files?";
+            QMessageBox::StandardButton msgBoxBtn = QMessageBox::warning(
+                /* pWdgtParent */ this,
+                /* strTitly    */ windowTitle(),
+                /* strText     */ strMsg,
+                /* buttons     */ QMessageBox::Yes | QMessageBox::No );
+            if( msgBoxBtn == QMessageBox::Yes )
+            {
+                for (int idxFile = 0; idxFile < m_arLastUsedFiles.size(); ++idxFile)
+                {
+                    if (m_arLastUsedFiles[idxFile].m_strAbsFilePath == fileInfo.absoluteFilePath())
+                    {
+                        m_arLastUsedFiles.removeAt(idxFile);
+                        break;
+                    }
+                }
+                QSettings settings;
+                ZS::System::writeLastUsedFiles(m_arLastUsedFiles, settings);
+                updateTreeWdgtLastUsedFiles();
+                updateButtonFileOpenLastUsedDir();
+                m_pTreeWdgtLastUsedFiles->expandAll();
+            }
+        }
+        else
+        {
+            s_selectedFile = pLastUsedFileItem->lastUsedFile();
+            accept();
+        }
+    }
+}
 
 //------------------------------------------------------------------------------
 void CDlgOpenLastUsedFile::onTreeWidgetItemDoubleClicked(

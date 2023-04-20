@@ -104,6 +104,7 @@ protected: // instance methods
     void updateTreeWdgtLastUsedFiles();
     void updateButtonFileOpenLastUsedDir();
 protected slots:
+    void onTreeWidgetItemClicked(QTreeWidgetItem* i_pItem, int i_iColumn);
     void onTreeWidgetItemDoubleClicked(QTreeWidgetItem* i_pItem, int i_iColumn);
     void onBtnFileOpenUserDocDirClicked(bool i_bChecked = false);
     void onBtnFileOpenLastUsedDirClicked(bool i_bChecked = false);

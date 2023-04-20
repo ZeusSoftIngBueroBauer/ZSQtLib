@@ -35,6 +35,7 @@ may result in using the software modules.
 #include <QtWidgets/qgraphicsview.h>
 #endif
 
+#include "ZSDraw/Drawing/ZSDrawGridSettings.h"
 #include "ZSDraw/Drawing/ZSDrawingSize.h"
 
 namespace ZS
@@ -67,6 +68,7 @@ public: // ctors and dtor
     ~CDrawingView();
 signals:
     void drawingSizeChanged( const ZS::Draw::CDrawingSize& i_size );
+    void gridSettingsChanged( const ZS::Draw::CDrawGridSettings& i_settings );
     void mousePosChanged( const QPointF& i_ptMousePos );
     //void viewportMarginsChanged( const QMargins& i_margins );
 public: // overridables
@@ -83,6 +85,9 @@ public: // instance methods
 public: // instance methods (drawing area)
     void setDrawingSize( const CDrawingSize& i_size );
     CDrawingSize drawingSize() const;
+public: // instance methods (grid lines with labels)
+    void setGridSettings( const CDrawGridSettings& i_settings );
+    CDrawGridSettings gridSettings() const;
 public: // instance methods (drawing area)
     //void setViewportMargins( int i_iLeft, int i_iTop, int i_iRight, int i_iBottom );
     //void setViewportMargins( const QMargins& i_margins );
@@ -98,9 +103,11 @@ protected: // overridables of base class QGraphicsView
     virtual void paintEvent( QPaintEvent* i_pEv );
 protected slots:
     void onSceneDrawingSizeChanged( const ZS::Draw::CDrawingSize& i_size );
+    void onSceneGridSettingsChanged( const ZS::Draw::CDrawGridSettings& i_settings );
 protected: // instance methods (method tracing)
     void emit_mousePosChanged( const QPointF& i_ptMousePos );
     void emit_drawingSizeChanged( const ZS::Draw::CDrawingSize& i_size );
+    void emit_gridSettingsChanged( const ZS::Draw::CDrawGridSettings& i_settings );
 protected: // instance members
     CDrawingScene* m_pDrawingScene;
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;

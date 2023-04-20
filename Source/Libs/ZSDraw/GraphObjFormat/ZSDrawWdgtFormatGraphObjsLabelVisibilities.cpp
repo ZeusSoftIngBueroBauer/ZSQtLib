@@ -155,22 +155,19 @@ CWdgtFormatGraphObjsLabelVisibilities::CWdgtFormatGraphObjsLabelVisibilities(
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
 
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
         strMthInArgs = QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->path());
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
 
-    if( i_pGraphObj == nullptr )
-    {
-        throw ZS::System::CException(__FILE__, __LINE__, EResultArgOutOfRange, "i_pGraphObj == nullptr");
-    }
+    //if( i_pGraphObj == nullptr )
+    //{
+    //    throw ZS::System::CException(__FILE__, __LINE__, EResultArgOutOfRange, "i_pGraphObj == nullptr");
+    //}
 
     QRectF rctScene = m_pDrawingScene->sceneRect();
 
@@ -186,7 +183,7 @@ CWdgtFormatGraphObjsLabelVisibilities::CWdgtFormatGraphObjsLabelVisibilities(
     int cxSpacingClm1Cml2 = 10;
     int cxSpacingClm2Cml3 = 10;
 
-    EGraphObjType graphObjType = m_pGraphObj->type();
+    EGraphObjType graphObjType = m_pGraphObj == nullptr ? EGraphObjTypeUndefined : m_pGraphObj->type();
 
     // Headline
     //=========
@@ -689,7 +686,7 @@ CWdgtFormatGraphObjsLabelVisibilities::CWdgtFormatGraphObjsLabelVisibilities(
     // <Widget> Dimension Lines
     //=========================
 
-    if( m_pGraphObj->hasBoundingRect() )
+    if( m_pGraphObj != nullptr && m_pGraphObj->hasBoundingRect() )
     {
         //cxLblWidthClm2 = 120;
 
@@ -1175,90 +1172,93 @@ bool CWdgtFormatGraphObjsLabelVisibilities::hasChanges() const
 
     bool bHasChanges = false;
 
-    // Label Visibilities
-    //===================
-
-    if( !bHasChanges && m_pCmbNameLabelAnchorSelPt != nullptr && m_pChkNameLabelVisible != nullptr && m_pChkNameLabelAnchorLineVisible != nullptr )
+    if (m_pGraphObj != nullptr)
     {
-        QString strAnchorSelPt = m_pCmbNameLabelAnchorSelPt->currentText();
-        bool bConverted = false;
-        CEnumSelectionPoint eSelPt = CEnumSelectionPoint::fromString(strAnchorSelPt, &bConverted);
+        // Label Visibilities
+        //===================
 
-        bHasChanges = (m_pGraphObj->isNameLabelVisible(eSelPt.enumerator()) != m_pChkNameLabelVisible->isChecked());
-
-        if( !bHasChanges )
+        if( !bHasChanges && m_pCmbNameLabelAnchorSelPt != nullptr && m_pChkNameLabelVisible != nullptr && m_pChkNameLabelAnchorLineVisible != nullptr )
         {
-            bHasChanges = (m_pGraphObj->isNameLabelAnchorLineVisible() != m_pChkNameLabelAnchorLineVisible->isChecked());
-        }
-    }
+            QString strAnchorSelPt = m_pCmbNameLabelAnchorSelPt->currentText();
+            bool bConverted = false;
+            CEnumSelectionPoint eSelPt = CEnumSelectionPoint::fromString(strAnchorSelPt, &bConverted);
 
-    if( !bHasChanges && m_pCmbPathLabelAnchorSelPt != nullptr && m_pChkPathLabelVisible != nullptr && m_pChkPathLabelAnchorLineVisible != nullptr )
-    {
-        QString strAnchorSelPt = m_pCmbPathLabelAnchorSelPt->currentText();
-        bool bConverted = false;
-        CEnumSelectionPoint eSelPt = CEnumSelectionPoint::fromString(strAnchorSelPt, &bConverted);
+            bHasChanges = (m_pGraphObj->isNameLabelVisible(eSelPt.enumerator()) != m_pChkNameLabelVisible->isChecked());
 
-        bHasChanges = (m_pGraphObj->isPathLabelVisible(eSelPt.enumerator()) != m_pChkPathLabelVisible->isChecked());
-
-        if( !bHasChanges )
-        {
-            bHasChanges = (m_pGraphObj->isPathLabelAnchorLineVisible() != m_pChkPathLabelAnchorLineVisible->isChecked());
-        }
-    }
-
-    if( !bHasChanges && m_pCmbDescriptionLabelAnchorSelPt != nullptr && m_pChkDescriptionLabelVisible != nullptr && m_pChkDescriptionLabelAnchorLineVisible != nullptr )
-    {
-        QString strAnchorSelPt = m_pCmbDescriptionLabelAnchorSelPt->currentText();
-        bool bConverted = false;
-        CEnumSelectionPoint eSelPt = CEnumSelectionPoint::fromString(strAnchorSelPt, &bConverted);
-
-        bHasChanges = (m_pGraphObj->isDescriptionLabelVisible() != m_pChkDescriptionLabelVisible->isChecked());
-
-        if( !bHasChanges )
-        {
-            bHasChanges = (m_pGraphObj->isDescriptionLabelAnchorLineVisible() != m_pChkDescriptionLabelAnchorLineVisible->isChecked());
-        }
-    }
-
-    // Dimension Label Visibilities
-    //=============================
-
-    if( !bHasChanges && m_pCmbDimensionPosLabelAnchorSelPt != nullptr && m_pChkDimensionPosLabelVisible != nullptr && m_pChkDimensionPosLabelAnchorLineVisible != nullptr )
-    {
-        QString strAnchorSelPt = m_pCmbDimensionPosLabelAnchorSelPt->currentText();
-        bool bConverted = false;
-        CEnumSelectionPoint eSelPt = CEnumSelectionPoint::fromString(strAnchorSelPt, &bConverted);
-
-        if( bConverted )
-        {
-            Qt::CheckState checkStatePosLabelVisible = m_pChkDimensionPosLabelVisible->checkState();
-            Qt::CheckState checkStatePosLabelAnchorLineVisible = m_pChkDimensionPosLabelAnchorLineVisible->checkState();
-
-            if( checkStatePosLabelVisible == Qt::Checked )
-            {
-                bHasChanges = !m_pGraphObj->isPositionLabelVisible(eSelPt.enumerator());
-            }
-            else if( checkStatePosLabelVisible == Qt::Unchecked )
-            {
-                bHasChanges = m_pGraphObj->isPositionLabelVisible(eSelPt.enumerator());
-            }
             if( !bHasChanges )
             {
-                if( checkStatePosLabelAnchorLineVisible == Qt::Checked )
+                bHasChanges = (m_pGraphObj->isNameLabelAnchorLineVisible() != m_pChkNameLabelAnchorLineVisible->isChecked());
+            }
+        }
+
+        if( !bHasChanges && m_pCmbPathLabelAnchorSelPt != nullptr && m_pChkPathLabelVisible != nullptr && m_pChkPathLabelAnchorLineVisible != nullptr )
+        {
+            QString strAnchorSelPt = m_pCmbPathLabelAnchorSelPt->currentText();
+            bool bConverted = false;
+            CEnumSelectionPoint eSelPt = CEnumSelectionPoint::fromString(strAnchorSelPt, &bConverted);
+
+            bHasChanges = (m_pGraphObj->isPathLabelVisible(eSelPt.enumerator()) != m_pChkPathLabelVisible->isChecked());
+
+            if( !bHasChanges )
+            {
+                bHasChanges = (m_pGraphObj->isPathLabelAnchorLineVisible() != m_pChkPathLabelAnchorLineVisible->isChecked());
+            }
+        }
+
+        if( !bHasChanges && m_pCmbDescriptionLabelAnchorSelPt != nullptr && m_pChkDescriptionLabelVisible != nullptr && m_pChkDescriptionLabelAnchorLineVisible != nullptr )
+        {
+            QString strAnchorSelPt = m_pCmbDescriptionLabelAnchorSelPt->currentText();
+            bool bConverted = false;
+            CEnumSelectionPoint eSelPt = CEnumSelectionPoint::fromString(strAnchorSelPt, &bConverted);
+
+            bHasChanges = (m_pGraphObj->isDescriptionLabelVisible() != m_pChkDescriptionLabelVisible->isChecked());
+
+            if( !bHasChanges )
+            {
+                bHasChanges = (m_pGraphObj->isDescriptionLabelAnchorLineVisible() != m_pChkDescriptionLabelAnchorLineVisible->isChecked());
+            }
+        }
+
+        // Dimension Label Visibilities
+        //=============================
+
+        if( !bHasChanges && m_pCmbDimensionPosLabelAnchorSelPt != nullptr && m_pChkDimensionPosLabelVisible != nullptr && m_pChkDimensionPosLabelAnchorLineVisible != nullptr )
+        {
+            QString strAnchorSelPt = m_pCmbDimensionPosLabelAnchorSelPt->currentText();
+            bool bConverted = false;
+            CEnumSelectionPoint eSelPt = CEnumSelectionPoint::fromString(strAnchorSelPt, &bConverted);
+
+            if( bConverted )
+            {
+                Qt::CheckState checkStatePosLabelVisible = m_pChkDimensionPosLabelVisible->checkState();
+                Qt::CheckState checkStatePosLabelAnchorLineVisible = m_pChkDimensionPosLabelAnchorLineVisible->checkState();
+
+                if( checkStatePosLabelVisible == Qt::Checked )
                 {
-                    bHasChanges = !m_pGraphObj->isPositionLabelAnchorLineVisible(eSelPt.enumerator());
+                    bHasChanges = !m_pGraphObj->isPositionLabelVisible(eSelPt.enumerator());
                 }
-                else if( checkStatePosLabelAnchorLineVisible == Qt::Unchecked )
+                else if( checkStatePosLabelVisible == Qt::Unchecked )
                 {
-                    bHasChanges = m_pGraphObj->isPositionLabelAnchorLineVisible(eSelPt.enumerator());
+                    bHasChanges = m_pGraphObj->isPositionLabelVisible(eSelPt.enumerator());
+                }
+                if( !bHasChanges )
+                {
+                    if( checkStatePosLabelAnchorLineVisible == Qt::Checked )
+                    {
+                        bHasChanges = !m_pGraphObj->isPositionLabelAnchorLineVisible(eSelPt.enumerator());
+                    }
+                    else if( checkStatePosLabelAnchorLineVisible == Qt::Unchecked )
+                    {
+                        bHasChanges = m_pGraphObj->isPositionLabelAnchorLineVisible(eSelPt.enumerator());
+                    }
                 }
             }
         }
+
+        // Dimension Line Visibilities
+        //=============================
+
     }
-
-    // Dimension Line Visibilities
-    //=============================
-
 
     if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -1856,7 +1856,7 @@ void CWdgtFormatGraphObjsLabelVisibilities::fillComboAnchorSelPt( QComboBox* i_p
         /* strMethod    */ "fillComboAnchorSelPt",
         /* strAddInfo   */ strMthInArgs );
 
-    EGraphObjType graphObjType = m_pGraphObj->type();
+    EGraphObjType graphObjType = m_pGraphObj == nullptr ? EGraphObjTypeUndefined : m_pGraphObj->type();
 
     if( graphObjType == EGraphObjTypePoint )
     {
@@ -1902,7 +1902,7 @@ void CWdgtFormatGraphObjsLabelVisibilities::updateVisibilityCheckStates(
         /* strMethod    */ "updateVisibilityCheckStates",
         /* strAddInfo   */ strMthInArgs );
 
-    EGraphObjType graphObjType = m_pGraphObj->type();
+    EGraphObjType graphObjType = m_pGraphObj == nullptr ? EGraphObjTypeUndefined : m_pGraphObj->type();
 
     QString strAnchorSelPt = i_pCmbSelPt->currentText();
     bool bConverted = false;

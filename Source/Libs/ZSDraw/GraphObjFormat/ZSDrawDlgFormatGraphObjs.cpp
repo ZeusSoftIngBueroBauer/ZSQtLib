@@ -123,16 +123,21 @@ CDlgFormatGraphObjs::CDlgFormatGraphObjs(
 
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
 
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "DrawingScene: " + QString(i_pDrawingScene == nullptr ? "null" : i_pDrawingScene->objectName())
+                     + ", GraphObj: " + QString(i_pGraphObj == nullptr ? "null" : i_pGraphObj->typeAsString() + ":" + i_pGraphObj->objectName());
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ctor",
-        /* strAddInfo   */ "" );
+        /* strAddInfo   */ strMthInArgs );
 
-    if( i_pGraphObj == nullptr )
-    {
-        throw ZS::System::CException(__FILE__, __LINE__, EResultArgOutOfRange, "i_pGraphObj == nullptr");
-    }
+    //if( i_pGraphObj == nullptr )
+    //{
+    //    throw ZS::System::CException(__FILE__, __LINE__, EResultArgOutOfRange, "i_pGraphObj == nullptr");
+    //}
 
     QVBoxLayout* m_pLyt = new QVBoxLayout();
     setLayout(m_pLyt);
@@ -143,7 +148,12 @@ CDlgFormatGraphObjs::CDlgFormatGraphObjs(
     // List Widget (on the left) and Stacked Widget (on the right)
     //============================================================
 
-    CDrawSettings drawSettings = m_pGraphObj->getDrawSettings();
+    CDrawSettings drawSettings;
+
+    if( m_pGraphObj != nullptr)
+    {
+        drawSettings = m_pGraphObj->getDrawSettings();
+    }
 
     m_pListWdgt = new QListWidget();
     m_pListWdgt->setMaximumWidth(120);
@@ -157,10 +167,10 @@ CDlgFormatGraphObjs::CDlgFormatGraphObjs(
     pxmLabels.setMask(pxmLabels.createHeuristicMask());
     iconLabels.addPixmap(pxmLabels);
 
-    QListWidgetItem* pListWdgtItemLabels = new QListWidgetItem( iconLabels, c_strWdgtLabels, m_pListWdgt );
+    QListWidgetItem* pListWdgtItemLabels = new QListWidgetItem(iconLabels, c_strWdgtLabels, m_pListWdgt);
     m_arpListWdgtItems.insert(c_strWdgtLabels,pListWdgtItemLabels);
 
-    CWdgtFormatGraphObjsLabels* pWdgtLabels = new CWdgtFormatGraphObjsLabels(m_pDrawingScene,m_pGraphObj);
+    CWdgtFormatGraphObjsLabels* pWdgtLabels = new CWdgtFormatGraphObjsLabels(m_pDrawingScene, m_pGraphObj);
     m_arpWdgtsFormatGraphObjs.insert(c_strWdgtLabels,pWdgtLabels);
     m_pStackedWdgt->addWidget(pWdgtLabels);
 
@@ -175,15 +185,15 @@ CDlgFormatGraphObjs::CDlgFormatGraphObjs(
 
         if( m_pGraphObj != nullptr && m_pGraphObj->isPoint() )
         {
-            pListWdgtItemLineStyle = new QListWidgetItem( iconLine, tr("Pen Style"), m_pListWdgt );
+            pListWdgtItemLineStyle = new QListWidgetItem(iconLine, tr("Pen Style"), m_pListWdgt);
         }
         else
         {
-            pListWdgtItemLineStyle = new QListWidgetItem( iconLine, c_strWdgtLineStyle, m_pListWdgt );
+            pListWdgtItemLineStyle = new QListWidgetItem(iconLine, c_strWdgtLineStyle, m_pListWdgt);
         }
         m_arpListWdgtItems.insert(c_strWdgtLineStyle,pListWdgtItemLineStyle);
 
-        CWdgtFormatGraphObjsLineStyle* pWdgtLineStyle = new CWdgtFormatGraphObjsLineStyle(m_pDrawingScene,m_pGraphObj);
+        CWdgtFormatGraphObjsLineStyle* pWdgtLineStyle = new CWdgtFormatGraphObjsLineStyle(m_pDrawingScene, m_pGraphObj);
         m_arpWdgtsFormatGraphObjs.insert(c_strWdgtLineStyle,pWdgtLineStyle);
         m_pStackedWdgt->addWidget(pWdgtLineStyle);
     }
@@ -195,10 +205,10 @@ CDlgFormatGraphObjs::CDlgFormatGraphObjs(
         pxmFill.setMask(pxmFill.createHeuristicMask());
         iconFill.addPixmap(pxmFill);
 
-        QListWidgetItem* pListWdgtItemFillStyle = new QListWidgetItem( iconFill, c_strWdgtFillStyle, m_pListWdgt );
+        QListWidgetItem* pListWdgtItemFillStyle = new QListWidgetItem(iconFill, c_strWdgtFillStyle, m_pListWdgt);
         m_arpListWdgtItems.insert(c_strWdgtFillStyle,pListWdgtItemFillStyle);
 
-        CWdgtFormatGraphObjsFillStyle* pWdgtFillStyle = new CWdgtFormatGraphObjsFillStyle(m_pDrawingScene,m_pGraphObj);
+        CWdgtFormatGraphObjsFillStyle* pWdgtFillStyle = new CWdgtFormatGraphObjsFillStyle(m_pDrawingScene, m_pGraphObj);
         m_arpWdgtsFormatGraphObjs.insert(c_strWdgtFillStyle,pWdgtFillStyle);
         m_pStackedWdgt->addWidget(pWdgtFillStyle);
     }
@@ -210,7 +220,7 @@ CDlgFormatGraphObjs::CDlgFormatGraphObjs(
         pxmText.setMask(pxmText.createHeuristicMask());
         iconText.addPixmap(pxmText);
 
-        QListWidgetItem* pListWdgtItemTextStyle = new QListWidgetItem( iconText, c_strWdgtTextStyle, m_pListWdgt );
+        QListWidgetItem* pListWdgtItemTextStyle = new QListWidgetItem(iconText, c_strWdgtTextStyle, m_pListWdgt);
         m_arpListWdgtItems.insert(c_strWdgtTextStyle,pListWdgtItemTextStyle);
 
         CWdgtFormatGraphObjsTextStyle* pWdgtTextStyle = new CWdgtFormatGraphObjsTextStyle(m_pDrawingScene, m_pGraphObj);
@@ -223,21 +233,21 @@ CDlgFormatGraphObjs::CDlgFormatGraphObjs(
     pxmGeometry.setMask(pxmGeometry.createHeuristicMask());
     iconGeometry.addPixmap(pxmGeometry);
 
-    QListWidgetItem* pListWdgtItemGeometry = new QListWidgetItem( iconGeometry, c_strWdgtGeometry, m_pListWdgt );
+    QListWidgetItem* pListWdgtItemGeometry = new QListWidgetItem(iconGeometry, c_strWdgtGeometry, m_pListWdgt);
     m_arpListWdgtItems.insert(c_strWdgtGeometry,pListWdgtItemGeometry);
 
     CWdgtFormatGraphObjsGeometry* pWdgtGeometry = new CWdgtFormatGraphObjsGeometry(m_pDrawingScene, m_pGraphObj);
     m_arpWdgtsFormatGraphObjs.insert(c_strWdgtGeometry,pWdgtGeometry);
     m_pStackedWdgt->addWidget(pWdgtGeometry);
 
-    if( m_pGraphObj->isText() )
+    if( m_pGraphObj != nullptr && m_pGraphObj->isText() )
     {
         QIcon   iconText;
         QPixmap pxmText(":/ZS/Draw/DrawText16x16.bmp");
         pxmText.setMask(pxmText.createHeuristicMask());
         iconText.addPixmap(pxmText);
 
-        QListWidgetItem* pListWdgtItemText = new QListWidgetItem( iconText, c_strWdgtText, m_pListWdgt );
+        QListWidgetItem* pListWdgtItemText = new QListWidgetItem(iconText, c_strWdgtText, m_pListWdgt);
         m_arpListWdgtItems.insert(c_strWdgtText,pListWdgtItemText);
 
         CWdgtFormatGraphObjsText* pWdgtText = new CWdgtFormatGraphObjsText(m_pDrawingScene, m_pGraphObj);

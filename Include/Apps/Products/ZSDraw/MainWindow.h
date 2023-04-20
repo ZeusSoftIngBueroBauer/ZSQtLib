@@ -80,6 +80,7 @@ class CDlgTest;
 
 namespace Draw
 {
+class CDrawGridSettings;
 class CDrawingScene;
 class CDrawingSize;
 class CDrawingView;
@@ -312,6 +313,7 @@ public slots: // Menu - Trace
     void onActionDebugTestTriggered(bool i_bChecked = false);
 public slots: // Drawing Scene
     void onDrawingSceneSizeChanged( const ZS::Draw::CDrawingSize& i_drawingSize);
+    void onDrawingSceneGridSettingsChanged( const ZS::Draw::CDrawGridSettings& i_gridSettings );
     void onDrawingSceneChanged( const QList<QRectF>& i_region );
     void onDrawingSceneFocusItemChanged( QGraphicsItem* i_pNewFocusItem, QGraphicsItem* i_pOldFocusItem, Qt::FocusReason reason );
     void onDrawingSceneSelectionChanged();

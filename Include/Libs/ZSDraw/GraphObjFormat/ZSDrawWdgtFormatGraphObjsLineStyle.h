@@ -176,7 +176,7 @@ protected: // instance members
     QTableView*                   m_pViewLineEndSizesLineEnd;
     QStandardItemModel*           m_pModelLineEndSizesLineEnd;
     // Trace
-    ZS::System::CTrcAdminObj*      m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CWdgtFormatGraphObjsLineStyle
 

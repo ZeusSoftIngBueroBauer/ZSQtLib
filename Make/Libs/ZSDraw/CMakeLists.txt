@@ -38,13 +38,14 @@ list(APPEND _HeadersCommon
 )
 
 list(APPEND _HeadersDrawing
+    ${_HeadersPath}/${PROJECT_NAME}/Drawing/ZSDrawDlgDrawingViewSetup.h
+    ${_HeadersPath}/${PROJECT_NAME}/Drawing/ZSDrawGridSettings.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/ZSDrawingScene.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/ZSDrawingSize.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/ZSDrawingView.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/ZSDrawingViewPropertiesWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/ZSDrawSettings.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/ZSDrawUnits.h
-    ${_HeadersPath}/${PROJECT_NAME}/Drawing/ZSDrawDlgDrawingViewSetup.h
 )
 
 list(APPEND _HeadersGraphObjFactories
@@ -119,13 +120,14 @@ list(APPEND _SourcesCommon
 )
 
 list(APPEND _SourcesDrawing
+    ${_SourcesPath}/${PROJECT_NAME}/Drawing/ZSDrawDlgDrawingViewSetup.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Drawing/ZSDrawGridSettings.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/ZSDrawingScene.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/ZSDrawingSize.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/ZSDrawingView.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/ZSDrawingViewPropertiesWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/ZSDrawSettings.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/ZSDrawUnits.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/Drawing/ZSDrawDlgDrawingViewSetup.cpp
 )
 
 list(APPEND _SourcesGraphObjFactories

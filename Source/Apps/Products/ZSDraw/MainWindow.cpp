@@ -436,6 +436,9 @@ CMainWindow::CMainWindow(
         pDrawingScene, &CDrawingScene::drawingSizeChanged,
         this, &CMainWindow::onDrawingSceneSizeChanged );
     QObject::connect(
+        pDrawingScene, &CDrawingScene::gridSettingsChanged,
+        this, &CMainWindow::onDrawingSceneGridSettingsChanged );
+    QObject::connect(
         pDrawingScene, &CDrawingScene::changed,
         this, &CMainWindow::onDrawingSceneChanged );
     QObject::connect(
@@ -4126,6 +4129,26 @@ void CMainWindow::onDrawingSceneSizeChanged( const CDrawingSize& i_drawingSize)
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onDrawingSceneSizeChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    if( !m_bDrawingChangedSinceLastSave ) {
+        m_bDrawingChangedSinceLastSave = true;
+        updateActions();
+    }
+}
+
+//------------------------------------------------------------------------------
+void CMainWindow::onDrawingSceneGridSettingsChanged( const CDrawGridSettings& i_settings)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_settings.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onDrawingSceneGridSettingsChanged",
         /* strAddInfo   */ strMthInArgs );
 
     if( !m_bDrawingChangedSinceLastSave ) {

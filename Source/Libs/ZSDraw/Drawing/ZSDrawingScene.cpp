@@ -130,6 +130,7 @@ CDrawingScene::CDrawingScene( QObject* i_pObjParent ) :
 //------------------------------------------------------------------------------
     QGraphicsScene(i_pObjParent),
     m_drawingSize("DrawingScene"),
+    m_gridSettings("DrawingScene"),
     m_drawSettings(),
     m_mode(EMode::Undefined),
     m_editTool(EEditTool::None),
@@ -308,6 +309,38 @@ CDrawingSize CDrawingScene::drawingSize() const
 //------------------------------------------------------------------------------
 {
     return m_drawingSize;
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CDrawingScene::setGridSettings( const CDrawGridSettings& i_settings)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = i_settings.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setGridSettings",
+        /* strAddInfo   */ strMthInArgs );
+
+    if( m_gridSettings != i_settings )
+    {
+        m_gridSettings = i_settings;
+        emit_gridSettingsChanged(m_gridSettings);
+    }
+}
+
+//------------------------------------------------------------------------------
+CDrawGridSettings CDrawingScene::gridSettings() const
+//------------------------------------------------------------------------------
+{
+    return m_gridSettings;
 }
 
 /*==============================================================================
@@ -5922,7 +5955,7 @@ protected: // auxiliary methods (trace emitting signals)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDrawingScene::emit_drawingSizeChanged( const ZS::Draw::CDrawingSize& i_size )
+void CDrawingScene::emit_drawingSizeChanged( const CDrawingSize& i_size )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -5934,7 +5967,25 @@ void CDrawingScene::emit_drawingSizeChanged( const ZS::Draw::CDrawingSize& i_siz
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "emit_drawingSizeChanged",
         /* strAddInfo   */ strMthInArgs );
+
     emit drawingSizeChanged(i_size);
+}
+
+//------------------------------------------------------------------------------
+void CDrawingScene::emit_gridSettingsChanged( const CDrawGridSettings& i_settings )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = i_settings.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "emit_gridSettingsChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    emit gridSettingsChanged(i_settings);
 }
 
 //------------------------------------------------------------------------------

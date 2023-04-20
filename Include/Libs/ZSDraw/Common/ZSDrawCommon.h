@@ -423,6 +423,9 @@ enum class ETextStyle
 template class ZSDRAWDLL_API ZS::System::CEnum<ETextStyle>;
 typedef ZS::System::CEnum<ETextStyle> CEnumTextStyle;
 
+ZSDRAWDLL_API bool isTextStyleBold(ETextStyle i_style);
+ZSDRAWDLL_API bool isTextStyleItalic(ETextStyle i_style);
+
 
 //==============================================================================
 /*!
@@ -474,6 +477,8 @@ enum class ETextEffect
 template class ZSDRAWDLL_API ZS::System::CEnum<ETextEffect>;
 typedef ZS::System::CEnum<ETextEffect> CEnumTextEffect;
 
+ZSDRAWDLL_API bool isTextEffectStrikeout(ETextEffect i_textEffect);
+ZSDRAWDLL_API bool isTextEffectUnderline(ETextEffect i_textEffect);
 
 //==============================================================================
 /*!

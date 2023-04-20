@@ -96,8 +96,7 @@ CPushButton::~CPushButton()
 //------------------------------------------------------------------------------
 {
     m_pLabel = nullptr;
-
-} // dtor
+}
 
 /*==============================================================================
 public: // instance methods
@@ -108,8 +107,7 @@ void CPushButton::setText( const QString& i_strText )
 //------------------------------------------------------------------------------
 {
     m_pLabel->setText(i_strText);
-
-} // setText
+}
 
 //------------------------------------------------------------------------------
 QString CPushButton::text() const
@@ -123,8 +121,7 @@ void CPushButton::setPixmap( const QPixmap& i_pxm )
 //------------------------------------------------------------------------------
 {
     m_pLabel->setPixmap(i_pxm);
-
-} // setPixmap
+}
 
 //------------------------------------------------------------------------------
 QPixmap CPushButton::pixmap() const

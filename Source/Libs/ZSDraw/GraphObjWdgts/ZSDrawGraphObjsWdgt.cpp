@@ -111,6 +111,7 @@ CWdgtGraphObjs::CWdgtGraphObjs(
     m_pWdgtTreeView = new CWdgtGraphObjsTree(m_pDrawingView);
     m_pWdgtTreeView->setMinimumWidth(180);
     m_pSplitter->addWidget(m_pWdgtTreeView);
+    m_pSplitter->setChildrenCollapsible(false);
 
     QObject::connect(
         m_pWdgtTreeView, &CWdgtGraphObjsTree::viewModeChanged,

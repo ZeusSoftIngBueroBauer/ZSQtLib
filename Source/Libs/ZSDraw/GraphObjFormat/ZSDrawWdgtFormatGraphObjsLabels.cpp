@@ -173,7 +173,7 @@ CWdgtFormatGraphObjsLabels::CWdgtFormatGraphObjsLabels(
     {
         m_pEdtName->setEnabled(false);
     }
-    else // if( m_pGraphObj != nullptr )
+    else
     {
         onGraphObjChanged();
     }

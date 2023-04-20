@@ -28,13 +28,18 @@ may result in using the software modules.
 #define ZSDraw_DrawingViewPropertiesWdgt_h
 
 #include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjPropertiesAbstractWdgt.h"
+#include "ZSDraw/Drawing/ZSDrawGridSettings.h"
 #include "ZSDraw/Drawing/ZSDrawingSize.h"
 
+class QCheckBox;
 class QComboBox;
+class QFontComboBox;
 class QLabel;
 class QLineEdit;
+class QListView;
 class QPushButton;
 class QSpinBox;
+class QStandardItemModel;
 class QHBoxLayout;
 class QVBoxLayout;
 
@@ -46,6 +51,7 @@ class CTrcAdminObj;
 
 namespace GUI
 {
+class CPushButton;
 class CSepLine;
 }
 }
@@ -72,15 +78,16 @@ public: // class methods
     static QString ClassName() { return "CWdgtDrawingViewProperties"; }
 public: // ctors and dtor
     CWdgtDrawingViewProperties(
-        CDrawingView* i_pDrawingView,
-        ZS::System::EMode i_mode = ZS::System::EMode::View,
-        QWidget* i_pWdgtParent = nullptr);
+    CDrawingView* i_pDrawingView,
+    ZS::System::EMode i_mode = ZS::System::EMode::View,
+    QWidget* i_pWdgtParent = nullptr);
     virtual ~CWdgtDrawingViewProperties();
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
     virtual QString className() const { return ClassName(); }
 signals:
     void drawingSizeChanged(const ZS::Draw::CDrawingSize& i_size);
+    void gridSettingsChanged(const ZS::Draw::CDrawGridSettings& i_settings);
 public: // instance methods
     bool hasChanges() const;
     void acceptChanges();
@@ -90,6 +97,8 @@ protected: // instance methods
     ZS::System::EMode mode() const;
 protected slots:
     void onDrawingViewDrawingSizeChanged(const ZS::Draw::CDrawingSize& i_size);
+    void onDrawingViewGridSettingsChanged(const ZS::Draw::CDrawGridSettings& i_settings);
+protected slots:
     void onCmbDimensionUnitCurrentIndexChanged(int i_idx);
     void onCmbImageMetricUnitCurrentIndexChanged(int i_idx);
     void onEdtImageMetricWidthValueChanged(const ZS::PhysVal::CPhysVal& i_physValWidth);
@@ -102,6 +111,19 @@ protected slots:
     void onCmbImageMetricScaleFactorDivisorEditTextChanged(const QString& i_strDivisor);
     void onEdtImageSizeWidthPxValueChanged(int i_cxWidth_px);
     void onEdtImageSizeHeightPxValueChanged(int i_cyHeight_px);
+    void onChkGridVisibleStateChanged(int i_iState);
+    void onBtnGridLineStyleClicked(bool i_bChecked);
+    void onListViewGridLineStylesClicked(const QModelIndex& i_modelIdx);
+    void onBtnGridPenColorClicked(bool i_bChecked);
+    void onEdtGridPenWidthValueChanged(int i_iVal);
+    void onChkGridScaleLabelsVisibleStateChanged(int i_iState);
+    void onCmbGridScaleLabelsCurrentFontChanged(const QFont& i_fnt);
+    void onCmbGridScaleLabelsFontSizeCurrentIndexChanged(int i_iCurrentIndex);
+    void onChkGridScaleLabelsFontStyleBoldStateChanged(int i_iState);
+    void onChkGridScaleLabelsFontStyleItalicStateChanged(int i_iState);
+    void onChkGridScaleLabelsTextEffectUnderlineStateChanged(int i_iState);
+    void onChkGridScaleLabelsTextEffectStrikeoutStateChanged(int i_iState);
+    void onBtnGridScaleLabelsTextColorClicked(bool i_bChecked);
     void onBtnEditClicked(bool i_bChecked = false);
 protected: // instance methods
     void setDimensionUnit( const CEnumDrawingDimensionUnit& i_eDimensionUnit );
@@ -111,17 +133,42 @@ protected: // instance methods
     void setScaleFactor( int i_iDividend, int i_iDivisor );
     void setImageSize( const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight );
 protected: // instance methods
+    void setGridVisible(bool i_bVisible);
+    void setGridLineStyle(ELineStyle i_lineStyle);
+    void setGridPenColor(const QColor& i_color);
+    void setGridPenWidth(int i_iWidth_px);
+    void setGridLabelsVisible(bool i_bVisible);
+    void setGridLabelsFont(const QFont& i_fnt);
+    void setGridLabelsTextStyle(ETextStyle i_textStyle);
+    void setGridLabelsTextSize(ETextSize i_textSize);
+    void setGridLabelsTextEffect(const ETextEffect i_textEffect);
+    void setGridLabelsTextColor(const QColor& i_color);
+protected: // instance methods
     void updateDimensionUnit();
     void updateImageSizeInPixels();
     void updateImageSizeMetrics();
     void updatePaperFormat();
+protected: // instance methods
+    void updateGridSettings();
+    void fillGridLineStylesModel();
+    void updateGridLineStyleButtonPixmap();
+    void updateGridPenColorButtonIcon();
+    void updateGridLabelsTextColorButtonIcon();
 protected: // instance methods (method tracing)
     void emit_drawingSizeChanged(const ZS::Draw::CDrawingSize& i_size);
+    void emit_gridSettingsChanged(const ZS::Draw::CDrawGridSettings& i_settings);
     void traceValues(ZS::System::CMethodTracer& i_mthTracer, ZS::System::EMethodDir i_methodDir);
 protected: // instance members
     CDrawingView* m_pDrawingView;
     ZS::System::EMode m_mode;
+    // Caching values
+    CDrawingSize m_drawingSize;
+    CDrawGridSettings m_gridSettings;
+    /*!< Blocking signals counter. */
+    int m_iValueChangedSignalsBlocked;
+    // Edit Controls
     QVBoxLayout* m_pLyt;
+    // Geometry
     QHBoxLayout* m_pLytLineDimensionUnit;
     QLabel* m_pLblDimensionUnit;
     QComboBox* m_pCmbDimensionUnit;
@@ -168,14 +215,49 @@ protected: // instance members
     QSpinBox* m_pEdtImageSizeWidth_px;
     QLabel* m_pLblImageSizeHeight_px;
     QSpinBox* m_pEdtImageSizeHeight_px;
+    // Grid
+    QHBoxLayout* m_pLytSepLineGrid;
+    QLabel* m_pLblSepLineGrid;
+    ZS::System::GUI::CSepLine* m_pSepLineGrid;
+    QHBoxLayout* m_pLytLineGridVisible;
+    QLabel* m_pLblGridVisible;
+    QCheckBox* m_pChkGridVisible;
+    QLabel* m_pLblLineStyle;
+    ZS::System::GUI::CPushButton* m_pBtnGridLineStyle;
+    QListView* m_pListViewGridLineStyles;
+    QStandardItemModel* m_pModelGridLineStyles;
+    QHBoxLayout* m_pLytLineGridPenColor;
+    QLabel* m_pLblGridPenColor;
+    QPixmap* m_pPxmBtnGridPenColor;
+    QRect m_rctBtnGridPenColor;
+    QLine m_lineBtnGridPenColor1;
+    QLine m_lineBtnGridPenColor2;
+    QLine m_lineBtnGridPenColor3;
+    ZS::System::GUI::CPushButton* m_pBtnGridPenColor;
+    QLabel* m_pLblGridPenWidth;
+    QSpinBox* m_pEdtGridPenWidth;
+    // Grid Scale Labels
+    QHBoxLayout* m_pLytSepLineGridScaleLabel;
+    QLabel* m_pLblSepLineGridScaleLabels;
+    ZS::System::GUI::CSepLine* m_pSepLineGridScaleLabels;
+    QHBoxLayout* m_pLytLineGridScaleLabelsVisible;
+    QLabel* m_pLblGridScaleLabelsVisible;
+    QCheckBox* m_pChkGridScaleLabelsVisible;
+    QLabel* m_pLblGridScaleLabelsFont;
+    QFontComboBox* m_pCmbGridScaleLabelsFont;
+    QComboBox* m_pCmbGridScaleLabelsFontSize;
+    QHBoxLayout* m_pLytLineGridScaleLabelsFontStyles;
+    QCheckBox* m_pChkGridScaleLabelsFontStyleBold;
+    QCheckBox* m_pChkGridScaleLabelsFontStyleItalic;
+    QCheckBox* m_pChkGridScaleLabelsTextEffectUnderline;
+    QCheckBox* m_pChkGridScaleLabelsTextEffectStrikeout;
+    QPixmap* m_pPxmBtnGridScaleLabelsTextColor;
+    QRect m_rctBtnGridScaleLabelsTextColor;
+    QPushButton* m_pBtnGridScaleLabelsTextColor;
     // Button Line
     QWidget* m_pWdgtButtons;
     QHBoxLayout* m_pLytWdgtButtons;
     QPushButton* m_pBtnEdit;
-    // Caching values
-    CDrawingSize m_drawingSize;
-    /*!< Blocking signals counter. */
-    int m_iValueChangedSignalsBlocked;
     /*!< Trace admin object for method tracing. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 

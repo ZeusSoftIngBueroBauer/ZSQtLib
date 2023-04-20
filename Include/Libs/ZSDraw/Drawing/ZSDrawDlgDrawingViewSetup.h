@@ -38,6 +38,7 @@ namespace ZS
 {
 namespace Draw
 {
+class CDrawGridSettings;
 class CDrawingSize;
 class CDrawingView;
 class CWdgtDrawingViewProperties;
@@ -83,6 +84,7 @@ protected slots: // instance methods
     void onBtnCancelClicked(bool i_bChecked = false);
 protected slots:
     void onWdgtDrawingViewPropertiesDrawingSizeChanged(const ZS::Draw::CDrawingSize& i_size);
+    void onWdgtDrawingViewPropertiesGridSettingsChanged(const ZS::Draw::CDrawGridSettings& i_settings);
 private: // instance members
     CDrawingView* m_pDrawingView;
     QVBoxLayout* m_pLyt;

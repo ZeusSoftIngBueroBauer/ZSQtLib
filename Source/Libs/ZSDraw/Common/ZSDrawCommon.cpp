@@ -743,6 +743,27 @@ template<> const QVector<SEnumEntry> ZS::System::CEnum<ETextStyle>::s_arEnumEntr
     /* 3 */ SEnumEntry( static_cast<int>(ETextStyle::BoldItalic), "BoldItalic", "Bold Italic" )
 };
 
+//------------------------------------------------------------------------------
+bool ZS::Draw::isTextStyleBold(ETextStyle i_style)
+//------------------------------------------------------------------------------
+{
+    if (i_style == ETextStyle::Bold || i_style == ETextStyle::BoldItalic)
+    {
+        return true;
+    }
+    return false;
+}
+
+//------------------------------------------------------------------------------
+bool ZS::Draw::isTextStyleItalic(ETextStyle i_style)
+//------------------------------------------------------------------------------
+{
+    if (i_style == ETextStyle::Italic || i_style == ETextStyle::BoldItalic)
+    {
+        return true;
+    }
+    return false;
+}
 
 /*==============================================================================
 Enum ETextSize
@@ -859,6 +880,27 @@ template<> const QVector<SEnumEntry> ZS::System::CEnum<ETextEffect>::s_arEnumEnt
     /* 3 */ SEnumEntry( static_cast<int>(ETextEffect::StrikeoutUnderline), "StrikeoutUnderline", "StrikeoutUnderline" )
 };
 
+//------------------------------------------------------------------------------
+bool ZS::Draw::isTextEffectStrikeout(ETextEffect i_textEffect)
+//------------------------------------------------------------------------------
+{
+    if (i_textEffect == ETextEffect::Strikeout || i_textEffect == ETextEffect::StrikeoutUnderline)
+    {
+        return true;
+    }
+    return false;
+}
+
+//------------------------------------------------------------------------------
+bool ZS::Draw::isTextEffectUnderline(ETextEffect i_textEffect)
+//------------------------------------------------------------------------------
+{
+    if (i_textEffect == ETextEffect::Underline || i_textEffect == ETextEffect::StrikeoutUnderline)
+    {
+        return true;
+    }
+    return false;
+}
 
 /*==============================================================================
 Enum EFillStyle

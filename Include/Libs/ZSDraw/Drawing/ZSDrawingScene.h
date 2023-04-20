@@ -37,9 +37,10 @@ may result in using the software modules.
 
 #include "ZSDraw/Common/ZSDrawDllMain.h"
 #include "ZSDraw/Common/ZSDrawCommon.h"
-#include "ZSDraw/Drawing/ZSDrawUnits.h"
+#include "ZSDraw/Drawing/ZSDrawGridSettings.h"
 #include "ZSDraw/Drawing/ZSDrawSettings.h"
 #include "ZSDraw/Drawing/ZSDrawingSize.h"
+#include "ZSDraw/Drawing/ZSDrawUnits.h"
 #include "ZSSys/ZSSysCommon.h"
 
 class QXmlStreamWriter;
@@ -95,6 +96,7 @@ public: // overridables
     virtual QString className() const { return ClassName(); }
 signals:
     void drawingSizeChanged( const ZS::Draw::CDrawingSize& i_size );
+    void gridSettingsChanged( const ZS::Draw::CDrawGridSettings& i_settings );
     void mousePosChanged( const QPointF& i_ptMousePos );
     void modeChanged();
     void drawSettingsChanged( const ZS::Draw::CDrawSettings& i_drawSettings );
@@ -113,6 +115,9 @@ signals:
 public: // instance methods
     void setDrawingSize( const CDrawingSize& i_size);
     CDrawingSize drawingSize() const;
+public: // instance methods
+    void setGridSettings( const CDrawGridSettings& i_settings);
+    CDrawGridSettings gridSettings() const;
 public: // instance methods
     ZS::System::CIdxTree* getGraphObjsIdxTree() { return m_pGraphObjsIdxTree; }
 public: // instance methods
@@ -263,6 +268,7 @@ protected: // auxiliary methods
     std::pair<int, int> getIntPair(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, const QString& i_strDelimiter = ":") const;
 protected: // auxiliary methods (trace emitting signals)
     void emit_drawingSizeChanged( const ZS::Draw::CDrawingSize& i_size );
+    void emit_gridSettingsChanged( const ZS::Draw::CDrawGridSettings& i_settings );
     void emit_mousePosChanged( const QPointF& i_ptMousePos );
     void emit_modeChanged();
     void emit_drawSettingsChanged( const ZS::Draw::CDrawSettings& i_drawSettings );
@@ -279,6 +285,7 @@ protected: // auxiliary methods (trace emitting signals)
     //void emit_graphObjNameChanged( const QString& i_strObjId, const QString& i_strObjNameOld, const QString& i_strObjNameNew );
 protected: // instance members
     CDrawingSize m_drawingSize;
+    CDrawGridSettings m_gridSettings;
     CDrawSettings m_drawSettings;
     ZS::System::CEnumMode m_mode;
     CEnumEditTool m_editTool;
