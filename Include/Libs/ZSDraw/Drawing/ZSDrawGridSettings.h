@@ -62,39 +62,39 @@ public: // operators
 public: // instance methods
     void setVisible(bool i_bVisible);
     bool isVisible() const;
-    void setLineStyle(ELineStyle i_lineStyle);
-    ELineStyle lineStyle() const;
-    void setPenColor(const QColor& i_color);
-    QColor penColor() const;
+    void setLineStyle(const CEnumLineStyle& i_eLineStyle);
+    CEnumLineStyle lineStyle() const;
     void setPenWidth(int i_iWidth_px);
     int penWidth() const;
+    void setPenColor(const QColor& i_color);
+    QColor penColor() const;
 public: // instance methods
     void setLabelsVisible(bool i_bVisible);
     bool areLabelsVisible() const;
     void setLabelsFont(const QFont& i_fnt);
     QFont labelsFont() const;
-    void setLabelsTextStyle(ETextStyle i_textStyle);
-    ETextStyle labelsTextStyle() const;
     void setLabelsTextSize(ETextSize i_textSize);
     ETextSize labelsTextSize() const;
-    void setLabelsTextEffect(const ETextEffect i_textEffect);
-    ETextEffect labelsTextEffect() const;
     void setLabelsTextColor(const QColor& i_color);
     QColor labelsTextColor() const;
+    void setLabelsTextStyle(const CEnumTextStyle& i_eTextStyle);
+    CEnumTextStyle labelsTextStyle() const;
+    void setLabelsTextEffect(const CEnumTextEffect& i_eTextEffect);
+    CEnumTextEffect labelsTextEffect() const;
 public: // instance methods
     QString toString() const;
 protected: // instance members
     QString m_strName;
     bool m_bIsVisible;
-    ELineStyle m_lineStyle;
-    QColor m_penColor;
+    CEnumLineStyle m_eLineStyle;
     int m_iPenWidth_px;
+    QColor m_penColor;
     bool m_bLabelsVisible;
     QFont m_fntLabels;
-    ETextStyle m_textStyleLabels;
     ETextSize m_textSizeLabels;
-    ETextEffect m_textEffectLabels;
     QColor m_colorLabelsText;
+    CEnumTextStyle m_eTextStyleLabels;
+    CEnumTextEffect m_eTextEffectLabels;
 
 }; // class CDrawGridSettings
 

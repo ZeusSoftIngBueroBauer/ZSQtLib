@@ -34,12 +34,14 @@ may result in using the software modules.
 class QCheckBox;
 class QComboBox;
 class QFontComboBox;
+class QGroupBox;
 class QLabel;
 class QLineEdit;
 class QListView;
 class QPushButton;
 class QSpinBox;
 class QStandardItemModel;
+class QGridLayout;
 class QHBoxLayout;
 class QVBoxLayout;
 
@@ -51,7 +53,6 @@ class CTrcAdminObj;
 
 namespace GUI
 {
-class CPushButton;
 class CSepLine;
 }
 }
@@ -111,19 +112,18 @@ protected slots:
     void onCmbImageMetricScaleFactorDivisorEditTextChanged(const QString& i_strDivisor);
     void onEdtImageSizeWidthPxValueChanged(int i_cxWidth_px);
     void onEdtImageSizeHeightPxValueChanged(int i_cyHeight_px);
-    void onChkGridVisibleStateChanged(int i_iState);
-    void onBtnGridLineStyleClicked(bool i_bChecked);
-    void onListViewGridLineStylesClicked(const QModelIndex& i_modelIdx);
-    void onBtnGridPenColorClicked(bool i_bChecked);
+    void onChkGridLinesVisibleStateChanged(int i_iState);
+    void onCmbGridLineStyleCurrentIndexChanged(int i_idx);
     void onEdtGridPenWidthValueChanged(int i_iVal);
+    void onBtnGridPenColorClicked(bool i_bChecked);
     void onChkGridScaleLabelsVisibleStateChanged(int i_iState);
     void onCmbGridScaleLabelsCurrentFontChanged(const QFont& i_fnt);
     void onCmbGridScaleLabelsFontSizeCurrentIndexChanged(int i_iCurrentIndex);
-    void onChkGridScaleLabelsFontStyleBoldStateChanged(int i_iState);
-    void onChkGridScaleLabelsFontStyleItalicStateChanged(int i_iState);
-    void onChkGridScaleLabelsTextEffectUnderlineStateChanged(int i_iState);
-    void onChkGridScaleLabelsTextEffectStrikeoutStateChanged(int i_iState);
     void onBtnGridScaleLabelsTextColorClicked(bool i_bChecked);
+    void onBtnGridScaleLabelsFontStyleBoldToggled(int i_iState);
+    void onBtnGridScaleLabelsFontStyleItalicToggled(int i_iState);
+    void onBtnGridScaleLabelsTextEffectUnderlineToggled(int i_iState);
+    void onBtnGridScaleLabelsTextEffectStrikeoutToggled(int i_iState);
     void onBtnEditClicked(bool i_bChecked = false);
 protected: // instance methods
     void setDimensionUnit( const CEnumDrawingDimensionUnit& i_eDimensionUnit );
@@ -139,10 +139,10 @@ protected: // instance methods
     void setGridPenWidth(int i_iWidth_px);
     void setGridLabelsVisible(bool i_bVisible);
     void setGridLabelsFont(const QFont& i_fnt);
-    void setGridLabelsTextStyle(ETextStyle i_textStyle);
     void setGridLabelsTextSize(ETextSize i_textSize);
-    void setGridLabelsTextEffect(const ETextEffect i_textEffect);
     void setGridLabelsTextColor(const QColor& i_color);
+    void setGridLabelsTextStyle(ETextStyle i_textStyle);
+    void setGridLabelsTextEffect(const ETextEffect i_textEffect);
 protected: // instance methods
     void updateDimensionUnit();
     void updateImageSizeInPixels();
@@ -150,10 +150,13 @@ protected: // instance methods
     void updatePaperFormat();
 protected: // instance methods
     void updateGridSettings();
-    void fillGridLineStylesModel();
-    void updateGridLineStyleButtonPixmap();
+    QSize fillGridLineStylesModel();
     void updateGridPenColorButtonIcon();
     void updateGridLabelsTextColorButtonIcon();
+    void updateGridLabelsTextStyleBoldButton();
+    void updateGridLabelsTextStyleItalicButton();
+    void updateGridLabelsTextEffectUnderlineButton();
+    void updateGridLabelsTextEffectStrikeoutButton();
 protected: // instance methods (method tracing)
     void emit_drawingSizeChanged(const ZS::Draw::CDrawingSize& i_size);
     void emit_gridSettingsChanged(const ZS::Draw::CDrawGridSettings& i_settings);
@@ -169,6 +172,8 @@ protected: // instance members
     // Edit Controls
     QVBoxLayout* m_pLyt;
     // Geometry
+    QGroupBox* m_pGrpGeometry;
+    QVBoxLayout* m_pLytGrpGeometry;
     QHBoxLayout* m_pLytLineDimensionUnit;
     QLabel* m_pLblDimensionUnit;
     QComboBox* m_pCmbDimensionUnit;
@@ -216,44 +221,33 @@ protected: // instance members
     QLabel* m_pLblImageSizeHeight_px;
     QSpinBox* m_pEdtImageSizeHeight_px;
     // Grid
-    QHBoxLayout* m_pLytSepLineGrid;
-    QLabel* m_pLblSepLineGrid;
-    ZS::System::GUI::CSepLine* m_pSepLineGrid;
-    QHBoxLayout* m_pLytLineGridVisible;
-    QLabel* m_pLblGridVisible;
-    QCheckBox* m_pChkGridVisible;
-    QLabel* m_pLblLineStyle;
-    ZS::System::GUI::CPushButton* m_pBtnGridLineStyle;
-    QListView* m_pListViewGridLineStyles;
+    QGroupBox* m_pGrpGrid;
+    QHBoxLayout* m_pLytGrpGrid;
+    QGridLayout* m_pLytGridSettings;
+    QLabel* m_pLblGridLines;
+    QCheckBox* m_pChkGridLinesVisible;
+    QComboBox* m_pCmbGridLineStyle;
     QStandardItemModel* m_pModelGridLineStyles;
-    QHBoxLayout* m_pLytLineGridPenColor;
-    QLabel* m_pLblGridPenColor;
+    QSpinBox* m_pEdtGridPenWidth;
     QPixmap* m_pPxmBtnGridPenColor;
     QRect m_rctBtnGridPenColor;
     QLine m_lineBtnGridPenColor1;
     QLine m_lineBtnGridPenColor2;
     QLine m_lineBtnGridPenColor3;
-    ZS::System::GUI::CPushButton* m_pBtnGridPenColor;
-    QLabel* m_pLblGridPenWidth;
-    QSpinBox* m_pEdtGridPenWidth;
+    QPushButton* m_pBtnGridPenColor;
     // Grid Scale Labels
-    QHBoxLayout* m_pLytSepLineGridScaleLabel;
-    QLabel* m_pLblSepLineGridScaleLabels;
-    ZS::System::GUI::CSepLine* m_pSepLineGridScaleLabels;
-    QHBoxLayout* m_pLytLineGridScaleLabelsVisible;
-    QLabel* m_pLblGridScaleLabelsVisible;
+    QLabel* m_pLblGridScaleLabels;
     QCheckBox* m_pChkGridScaleLabelsVisible;
     QLabel* m_pLblGridScaleLabelsFont;
     QFontComboBox* m_pCmbGridScaleLabelsFont;
     QComboBox* m_pCmbGridScaleLabelsFontSize;
-    QHBoxLayout* m_pLytLineGridScaleLabelsFontStyles;
-    QCheckBox* m_pChkGridScaleLabelsFontStyleBold;
-    QCheckBox* m_pChkGridScaleLabelsFontStyleItalic;
-    QCheckBox* m_pChkGridScaleLabelsTextEffectUnderline;
-    QCheckBox* m_pChkGridScaleLabelsTextEffectStrikeout;
     QPixmap* m_pPxmBtnGridScaleLabelsTextColor;
     QRect m_rctBtnGridScaleLabelsTextColor;
     QPushButton* m_pBtnGridScaleLabelsTextColor;
+    QPushButton* m_pBtnGridScaleLabelsFontStyleBold;
+    QPushButton* m_pBtnGridScaleLabelsFontStyleItalic;
+    QPushButton* m_pBtnGridScaleLabelsTextEffectUnderline;
+    QPushButton* m_pBtnGridScaleLabelsTextEffectStrikeout;
     // Button Line
     QWidget* m_pWdgtButtons;
     QHBoxLayout* m_pLytWdgtButtons;

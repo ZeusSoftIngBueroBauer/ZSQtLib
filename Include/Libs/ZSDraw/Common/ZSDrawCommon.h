@@ -459,7 +459,7 @@ typedef enum {
 
 ZSDRAWDLL_API int textSize2SizeInPixels( ETextSize i_textSize );
 ZSDRAWDLL_API QString textSize2Str( ETextSize i_textSize );
-ZSDRAWDLL_API ETextSize str2TextSize( const QString& i_str );
+ZSDRAWDLL_API ETextSize str2TextSize( const QString& i_str, bool* o_pbConverted = nullptr );
 
 
 //==============================================================================

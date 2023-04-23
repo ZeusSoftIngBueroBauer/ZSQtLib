@@ -48,15 +48,15 @@ CDrawGridSettings::CDrawGridSettings(const QString& i_strName) :
 //------------------------------------------------------------------------------
     m_strName(i_strName),
     m_bIsVisible(false),
-    m_lineStyle(ELineStyle::SolidLine),
-    m_penColor(Qt::black),
+    m_eLineStyle(ELineStyle::SolidLine),
     m_iPenWidth_px(1),
+    m_penColor(Qt::black),
     m_bLabelsVisible(false),
     m_fntLabels(),
-    m_textStyleLabels(ETextStyle::Normal),
     m_textSizeLabels(ETextSize8),
-    m_textEffectLabels(ETextEffect::None),
-    m_colorLabelsText(Qt::black)
+    m_colorLabelsText(Qt::black),
+    m_eTextStyleLabels(ETextStyle::Normal),
+    m_eTextEffectLabels(ETextEffect::None)
 {
 }
 
@@ -65,15 +65,15 @@ CDrawGridSettings::CDrawGridSettings(const CDrawGridSettings& i_other) :
 //------------------------------------------------------------------------------
     m_strName(i_other.m_strName),
     m_bIsVisible(i_other.m_bIsVisible),
-    m_lineStyle(i_other.m_lineStyle),
-    m_penColor(i_other.m_penColor),
+    m_eLineStyle(i_other.m_eLineStyle),
     m_iPenWidth_px(i_other.m_iPenWidth_px),
+    m_penColor(i_other.m_penColor),
     m_bLabelsVisible(i_other.m_bLabelsVisible),
     m_fntLabels(i_other.m_fntLabels),
-    m_textStyleLabels(i_other.m_textStyleLabels),
     m_textSizeLabels(i_other.m_textSizeLabels),
-    m_textEffectLabels(i_other.m_textEffectLabels),
-    m_colorLabelsText(i_other.m_colorLabelsText)
+    m_colorLabelsText(i_other.m_colorLabelsText),
+    m_eTextStyleLabels(i_other.m_eTextStyleLabels),
+    m_eTextEffectLabels(i_other.m_eTextEffectLabels)
 {
 }
 
@@ -83,15 +83,15 @@ CDrawGridSettings::~CDrawGridSettings()
 {
     //m_strName;
     m_bIsVisible = false;
-    m_lineStyle = static_cast<ELineStyle>(0);
-    //m_penColor;
+    m_eLineStyle = static_cast<ELineStyle>(0);
     m_iPenWidth_px = 0;
+    //m_penColor;
     m_bLabelsVisible = false;
     //m_fntLabels;
-    m_textStyleLabels = static_cast<ETextStyle>(0);
     m_textSizeLabels = static_cast<ETextSize>(0);
-    m_textEffectLabels = static_cast<ETextEffect>(0);
     //m_colorLabelsText;
+    m_eTextStyleLabels = static_cast<ETextStyle>(0);
+    m_eTextEffectLabels = static_cast<ETextEffect>(0);
 }
 
 /*==============================================================================
@@ -106,13 +106,13 @@ bool CDrawGridSettings::operator == (const CDrawGridSettings& i_other) const
     if (m_bIsVisible != i_other.m_bIsVisible) {
         bEqual = false;
     }
-    else if (m_lineStyle != i_other.m_lineStyle) {
-        bEqual = false;
-    }
-    else if (m_penColor != i_other.m_penColor) {
+    else if (m_eLineStyle != i_other.m_eLineStyle) {
         bEqual = false;
     }
     else if (m_iPenWidth_px != i_other.m_iPenWidth_px) {
+        bEqual = false;
+    }
+    else if (m_penColor != i_other.m_penColor) {
         bEqual = false;
     }
     else if (m_bLabelsVisible != i_other.m_bLabelsVisible) {
@@ -121,16 +121,16 @@ bool CDrawGridSettings::operator == (const CDrawGridSettings& i_other) const
     else if (m_fntLabels != i_other.m_fntLabels) {
         bEqual = false;
     }
-    else if (m_textStyleLabels != i_other.m_textStyleLabels) {
-        bEqual = false;
-    }
     else if (m_textSizeLabels != i_other.m_textSizeLabels) {
         bEqual = false;
     }
-    else if (m_textEffectLabels != i_other.m_textEffectLabels) {
+    else if (m_colorLabelsText != i_other.m_colorLabelsText) {
         bEqual = false;
     }
-    else if (m_colorLabelsText != i_other.m_colorLabelsText) {
+    else if (m_eTextStyleLabels != i_other.m_eTextStyleLabels) {
+        bEqual = false;
+    }
+    else if (m_eTextEffectLabels != i_other.m_eTextEffectLabels) {
         bEqual = false;
     }
     return bEqual;
@@ -162,31 +162,17 @@ bool CDrawGridSettings::isVisible() const
 }
 
 //------------------------------------------------------------------------------
-void CDrawGridSettings::setLineStyle(ELineStyle i_lineStyle)
+void CDrawGridSettings::setLineStyle(const CEnumLineStyle& i_eLineStyle)
 //------------------------------------------------------------------------------
 {
-    m_lineStyle = i_lineStyle;
+    m_eLineStyle = i_eLineStyle;
 }
 
 //------------------------------------------------------------------------------
-ELineStyle CDrawGridSettings::lineStyle() const
+CEnumLineStyle CDrawGridSettings::lineStyle() const
 //------------------------------------------------------------------------------
 {
-    return m_lineStyle;
-}
-
-//------------------------------------------------------------------------------
-void CDrawGridSettings::setPenColor(const QColor& i_color)
-//------------------------------------------------------------------------------
-{
-    m_penColor = i_color;
-}
-
-//------------------------------------------------------------------------------
-QColor CDrawGridSettings::penColor() const
-//------------------------------------------------------------------------------
-{
-    return m_penColor;
+    return m_eLineStyle;
 }
 
 //------------------------------------------------------------------------------
@@ -201,6 +187,20 @@ int CDrawGridSettings::penWidth() const
 //------------------------------------------------------------------------------
 {
     return m_iPenWidth_px;
+}
+
+//------------------------------------------------------------------------------
+void CDrawGridSettings::setPenColor(const QColor& i_color)
+//------------------------------------------------------------------------------
+{
+    m_penColor = i_color;
+}
+
+//------------------------------------------------------------------------------
+QColor CDrawGridSettings::penColor() const
+//------------------------------------------------------------------------------
+{
+    return m_penColor;
 }
 
 /*==============================================================================
@@ -236,20 +236,6 @@ QFont CDrawGridSettings::labelsFont() const
 }
 
 //------------------------------------------------------------------------------
-void CDrawGridSettings::setLabelsTextStyle(ETextStyle i_textStyle)
-//------------------------------------------------------------------------------
-{
-    m_textStyleLabels = i_textStyle;
-}
-
-//------------------------------------------------------------------------------
-ETextStyle CDrawGridSettings::labelsTextStyle() const
-//------------------------------------------------------------------------------
-{
-    return m_textStyleLabels;
-}
-
-//------------------------------------------------------------------------------
 void CDrawGridSettings::setLabelsTextSize(ETextSize i_textSize)
 //------------------------------------------------------------------------------
 {
@@ -261,20 +247,6 @@ ETextSize CDrawGridSettings::labelsTextSize() const
 //------------------------------------------------------------------------------
 {
     return m_textSizeLabels;
-}
-
-//------------------------------------------------------------------------------
-void CDrawGridSettings::setLabelsTextEffect(const ETextEffect i_textEffect)
-//------------------------------------------------------------------------------
-{
-    m_textEffectLabels = i_textEffect;
-}
-
-//------------------------------------------------------------------------------
-ETextEffect CDrawGridSettings::labelsTextEffect() const
-//------------------------------------------------------------------------------
-{
-    return m_textEffectLabels;
 }
 
 //------------------------------------------------------------------------------
@@ -291,6 +263,34 @@ QColor CDrawGridSettings::labelsTextColor() const
     return m_colorLabelsText;
 }
 
+//------------------------------------------------------------------------------
+void CDrawGridSettings::setLabelsTextStyle(const CEnumTextStyle& i_eTextStyle)
+//------------------------------------------------------------------------------
+{
+    m_eTextStyleLabels = i_eTextStyle;
+}
+
+//------------------------------------------------------------------------------
+CEnumTextStyle CDrawGridSettings::labelsTextStyle() const
+//------------------------------------------------------------------------------
+{
+    return m_eTextStyleLabels;
+}
+
+//------------------------------------------------------------------------------
+void CDrawGridSettings::setLabelsTextEffect(const CEnumTextEffect& i_eTextEffect)
+//------------------------------------------------------------------------------
+{
+    m_eTextEffectLabels = i_eTextEffect;
+}
+
+//------------------------------------------------------------------------------
+CEnumTextEffect CDrawGridSettings::labelsTextEffect() const
+//------------------------------------------------------------------------------
+{
+    return m_eTextEffectLabels;
+}
+
 /*==============================================================================
 public: // instance methods
 ==============================================================================*/
@@ -301,14 +301,14 @@ QString CDrawGridSettings::toString() const
 {
     QString str = m_strName
         + " Lines {Visible: " + bool2Str(m_bIsVisible)
-        + ", Style: " + CEnumLineStyle(m_lineStyle).toString()
+        + ", Style: " + m_eLineStyle.toString()
         + ", Color: " + m_penColor.name()
         + ", PenWidth: " + QString::number(m_iPenWidth_px) + "}"
         + ", Labels {Visible: " + bool2Str(m_bLabelsVisible)
         + ", Font: " + m_fntLabels.family()
-        + ", TextStyle: " + CEnumTextStyle(m_textStyleLabels).toString()
+        + ", TextStyle: " + m_eTextStyleLabels.toString()
         + ", TextSize: " + textSize2Str(m_textSizeLabels)
-        + ", TextEffect: " + CEnumTextEffect().toString(m_textEffectLabels)
+        + ", TextEffect: " + m_eTextEffectLabels.toString()
         + ", TextColor: " + m_colorLabelsText.name() + "}";
     return str;
 }

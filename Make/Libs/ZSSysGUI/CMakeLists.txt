@@ -127,6 +127,7 @@ list(APPEND _Resources
 )
 
 list(APPEND _AppImages
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/Checkmark.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/ModeEdit16x16.bmp
     ${_ResourcesPath}/${PROJECT_NAME}/Images/ModeEdit24x24.bmp
     ${_ResourcesPath}/${PROJECT_NAME}/Images/ModeEdit32x32.bmp

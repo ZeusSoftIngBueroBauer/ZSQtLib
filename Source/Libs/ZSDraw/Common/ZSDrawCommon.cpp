@@ -828,8 +828,7 @@ int ZS::Draw::textSize2SizeInPixels( ETextSize i_textSize )
         return iSize_px = s_ariTextSizes_px[i_textSize];
     }
     return iSize_px;
-
-} // textSize2SizeInPixels
+}
 
 //------------------------------------------------------------------------------
 QString ZS::Draw::textSize2Str( ETextSize i_textSize )
@@ -839,28 +838,32 @@ QString ZS::Draw::textSize2Str( ETextSize i_textSize )
 }
 
 //------------------------------------------------------------------------------
-ETextSize ZS::Draw::str2TextSize( const QString& i_str )
+ETextSize ZS::Draw::str2TextSize( const QString& i_str, bool* o_pbConverted )
 //------------------------------------------------------------------------------
 {
     ETextSize textSize = ETextSize11;
-    int       iTextSize = SEnumEntry::str2Enumerator(s_arEnumStrTextSize,_ZSArrLen(s_arEnumStrTextSize),i_str);
+    int iTextSize = SEnumEntry::str2Enumerator(s_arEnumStrTextSize,_ZSArrLen(s_arEnumStrTextSize),i_str);
+    bool bConverted = false;
 
     if( iTextSize >= 0 && iTextSize < _ZSArrLen(s_arEnumStrTextSize) )
     {
         textSize = static_cast<ETextSize>(iTextSize);
+        bConverted = true;
     }
     else
     {
-        bool bConverted;
         iTextSize = i_str.toInt(&bConverted);
         if( bConverted && iTextSize >= 0 && iTextSize < _ZSArrLen(s_arEnumStrTextSize) )
         {
             textSize = static_cast<ETextSize>(iTextSize);
         }
     }
+    if (o_pbConverted != nullptr)
+    {
+        *o_pbConverted = bConverted;
+    }
     return textSize;
-
-} // str2TextSize
+}
 
 
 /*==============================================================================

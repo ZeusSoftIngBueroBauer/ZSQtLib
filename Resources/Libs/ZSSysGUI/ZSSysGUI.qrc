@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/ZS/App">
+        <file alias="Checkmark.png">Images/Checkmark.png</file>
         <file alias="ModeEdit16x16.bmp">Images/ModeEdit16x16.bmp</file>
         <file alias="ModeEdit24x24.bmp">Images/ModeEdit24x24.bmp</file>
         <file alias="ModeEdit32x32.bmp">Images/ModeEdit32x32.bmp</file>

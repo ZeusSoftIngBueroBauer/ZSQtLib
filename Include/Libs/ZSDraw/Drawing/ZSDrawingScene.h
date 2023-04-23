@@ -84,6 +84,16 @@ public: // type definitions and constants
     const QString c_strXmlAttrScaleFactor = "ScaleFactor";
     const QString c_strXmlAttrPaperSize = "PaperSize";
     const QString c_strXmlAttrPaperOrientation = "PaperOrientation";
+    const QString c_strXmlAttrGridLinesVisible = "GridLinesVisible";
+    const QString c_strXmlAttrGridLinesStyle = "GridLinesStyle";
+    const QString c_strXmlAttrGridLinesPenWidth = "GridLinesPenWidth";
+    const QString c_strXmlAttrGridLinesPenColor = "GridLinesPenColor";
+    const QString c_strXmlAttrGridLabelsVisible = "GridLabelsVisible";
+    const QString c_strXmlAttrGridLabelsFont = "GridLabelsFont";
+    const QString c_strXmlAttrGridLabelsTextSize = "GridLabelsTextSize";
+    const QString c_strXmlAttrGridLabelsTextColor = "GridLabelsTextColor";
+    const QString c_strXmlAttrGridLabelsTextStyle = "GridLabelsTextStyle";
+    const QString c_strXmlAttrGridLabelsTextEffect = "GridLabelsTextEffect";
 public: // class methods
     //static QString FindUniqueGraphObjId(
     //    const QMap<QString,CGraphObj*>& i_dctpGraphObjs,
@@ -259,13 +269,21 @@ protected slots:
 protected: // auxiliary methods
     void raiseErrorAttributeNotDefined(QXmlStreamReader& i_xmlStreamReader, const QString& i_strElemName, const QString& i_strAttrName) const;
     void raiseErrorAttributeOutOfRange(QXmlStreamReader& i_xmlStreamReader, const QString& i_strElemName, const QString& i_strAttrName, const QString& i_strAttrVal) const;
-    CEnumDrawingDimensionUnit getDimensionUnit(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName) const;
-    CEnumNormedPaperSize getNormedPaperSize(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName) const;
-    ZS::System::CEnumDirection getDirection(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName) const;
-    ZS::PhysVal::CUnit getUnit(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName) const;
-    ZS::PhysVal::CPhysVal getPhysVal(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName) const;
-    int getIntVal(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName) const;
-    std::pair<int, int> getIntPair(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, const QString& i_strDelimiter = ":") const;
+protected: // auxiliary methods
+    CEnumDrawingDimensionUnit getDimensionUnit(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, const CEnumDrawingDimensionUnit& i_eDefaultVal = EDrawingDimensionUnit::Pixels) const;
+    CEnumNormedPaperSize getNormedPaperSize(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, const CEnumNormedPaperSize& i_eDefaultVal = ENormedPaperSize::Undefined) const;
+    ZS::System::CEnumDirection getDirection(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, const ZS::System::CEnumDirection& i_eDefaultVal = ZS::System::EDirection::Undefined) const;
+    CEnumLineStyle getLineStyle(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, const CEnumLineStyle& i_eDefaultVal = ELineStyle::SolidLine) const;
+    ETextSize getTextSize(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, ETextSize i_eDefaultVal = ETextSize11) const;
+    CEnumTextStyle getTextStyle(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, const CEnumTextStyle& i_eDefaultVal = ETextStyle::Normal) const;
+    CEnumTextEffect getTextEffect(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, const CEnumTextEffect& i_eDefaultVal = ETextEffect::None) const;
+    ZS::PhysVal::CUnit getUnit(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, const ZS::PhysVal::CUnit& i_unitDefault = Units.Length.mm) const;
+    ZS::PhysVal::CPhysVal getPhysVal(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, const ZS::PhysVal::CPhysVal& i_physValDefault = ZS::PhysVal::CPhysVal(0.0, Units.Length.mm)) const;
+    QFont getFont(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, const QFont& i_fntDefault = QFont()) const;
+    QColor getColor(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, const QColor& i_clrDefault = Qt::black) const;
+    bool getBoolVal(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, bool i_bDefaultVal = false) const;
+    int getIntVal(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, int iValDefault = 0) const;
+    std::pair<int, int> getIntPair(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, const QString& i_strDelimiter = ":", bool i_bAttrIsMandatory = true, const std::pair<int, int>& i_valDefault = std::make_pair(0, 0)) const;
 protected: // auxiliary methods (trace emitting signals)
     void emit_drawingSizeChanged( const ZS::Draw::CDrawingSize& i_size );
     void emit_gridSettingsChanged( const ZS::Draw::CDrawGridSettings& i_settings );
