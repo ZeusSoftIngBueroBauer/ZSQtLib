@@ -69,6 +69,8 @@ namespace ZS
 {
 namespace System
 {
+class CTrcAdminObj;
+
 namespace Math
 {
 const int    c_iCalculationAccuracyTrailingDigits = 14; // maximum digits according computation accuracy of floating point unit
@@ -115,6 +117,19 @@ double ZSSYSDLL_API fctFFTWindowHanning( double i_fVal, int i_iFFTSegmentLen );
 double ZSSYSDLL_API fctFFTWindowFlatTop( double i_fVal, int i_iFFTSegmentLen );
 double ZSSYSDLL_API fctFFTWindowBlackman( double i_fVal, int i_iFFTSegmentLen );
 double ZSSYSDLL_API fctFFTWindowWelch( double i_fVal, int i_iFFTSegmentLen );
+
+int ZSSYSDLL_API calculateDivLines4LinSpacing(
+    double  i_fScaleMinVal,
+    double  i_fScaleMaxVal,
+    int     i_iScaleRangePix,
+    double  i_fDivLineDistMinVal,
+    int     i_iDivLineDistMinPix,
+    bool    i_bUseDivLineDistValDecimalFactor25,
+    double* o_pfDivLineFirstVal,
+    double* o_pfDivLineDistFirstPix,
+    double* o_pfDivLineDistVal,
+    double* o_pfDivLineDistPix,
+    CTrcAdminObj* i_pTrcAdminObj = nullptr);
 
 } // namespace Math
 

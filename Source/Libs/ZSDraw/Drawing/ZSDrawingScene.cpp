@@ -24,6 +24,22 @@ may result in using the software modules.
 
 *******************************************************************************/
 
+#include "ZSDraw/Drawing/ZSDrawingScene.h"
+#include "ZSDraw/Common/ZSDrawAux.h"
+#include "ZSDraw/GraphObjFactories/ZSDrawObjFactory.h"
+#include "ZSDraw/GraphObjs/ZSDrawGraphObj.h"
+#include "ZSDraw/GraphObjFactories/ZSDrawObjFactoryGroup.h"
+#include "ZSDraw/GraphObjs/ZSDrawGraphObjConnectionLine.h"
+#include "ZSDraw/GraphObjs/ZSDrawGraphObjConnectionPoint.h"
+#include "ZSDraw/GraphObjs/ZSDrawGraphObjGroup.h"
+#include "ZSDraw/GraphObjs/ZSDrawGraphObjImage.h"
+#include "ZSDraw/Drawing/ZSDrawUnits.h"
+#include "ZSSys/ZSSysAux.h"
+#include "ZSSys/ZSSysIdxTree.h"
+#include "ZSSys/ZSSysMath.h"
+#include "ZSSys/ZSSysTrcMethod.h"
+#include "ZSSys/ZSSysTrcServer.h"
+
 #include <QtCore/qfile.h>
 #include <QtCore/qmimedata.h>
 #include <QtCore/qsettings.h>
@@ -44,21 +60,6 @@ may result in using the software modules.
 #else
 #include <QtWidgets/QGraphicsSceneEvent>
 #endif
-
-#include "ZSDraw/Drawing/ZSDrawingScene.h"
-#include "ZSDraw/Common/ZSDrawAux.h"
-#include "ZSDraw/GraphObjFactories/ZSDrawObjFactory.h"
-#include "ZSDraw/GraphObjs/ZSDrawGraphObj.h"
-#include "ZSDraw/GraphObjFactories/ZSDrawObjFactoryGroup.h"
-#include "ZSDraw/GraphObjs/ZSDrawGraphObjConnectionLine.h"
-#include "ZSDraw/GraphObjs/ZSDrawGraphObjConnectionPoint.h"
-#include "ZSDraw/GraphObjs/ZSDrawGraphObjGroup.h"
-#include "ZSDraw/GraphObjs/ZSDrawGraphObjImage.h"
-#include "ZSDraw/Drawing/ZSDrawUnits.h"
-#include "ZSSys/ZSSysAux.h"
-#include "ZSSys/ZSSysIdxTree.h"
-#include "ZSSys/ZSSysTrcMethod.h"
-#include "ZSSys/ZSSysTrcServer.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -300,6 +301,7 @@ void CDrawingScene::setDrawingSize( const CDrawingSize& i_size)
         m_drawingSize = i_size;
         QRectF rect(QPointF(0.0, 0.0), m_drawingSize.imageSizeInPixels());
         setSceneRect(rect);
+        update();
         emit_drawingSizeChanged(m_drawingSize);
     }
 }
@@ -332,6 +334,7 @@ void CDrawingScene::setGridSettings( const CDrawGridSettings& i_settings)
     if( m_gridSettings != i_settings )
     {
         m_gridSettings = i_settings;
+        update();
         emit_gridSettingsChanged(m_gridSettings);
     }
 }
@@ -5580,13 +5583,11 @@ void CDrawingScene::drawBackground( QPainter* i_pPainter, const QRectF& i_rect )
 {
     QString strMthInArgs;
     QString strAddTrcInfo;
-
-    if( m_pTrcAdminObjPaintEvent != nullptr && m_pTrcAdminObjPaintEvent->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObjPaintEvent, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "Rect(x,y,w,h):(" + QString::number(i_rect.x()) + "," + QString::number(i_rect.y());
         strMthInArgs += "," + QString::number(i_rect.width()) + "," + QString::number(i_rect.height()) + ")";
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjPaintEvent,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -5600,15 +5601,24 @@ void CDrawingScene::drawBackground( QPainter* i_pPainter, const QRectF& i_rect )
         mthTracer.trace(strAddTrcInfo);
     }
 
-    QGraphicsScene::drawBackground(i_pPainter,i_rect);
+    QGraphicsScene::drawBackground(i_pPainter, i_rect);
 
     QRectF rctScene = sceneRect();
+
+    i_pPainter->save();
+
+    #pragma message(__TODO__"Background color as changable property")
 
     i_pPainter->setPen(Qt::NoPen);
     i_pPainter->setBrush(Qt::white);
     i_pPainter->drawRect(rctScene);
 
-} // drawBackground
+    if (m_gridSettings.isVisible())
+    {
+        drawGrid(i_pPainter);
+    }
+    i_pPainter->restore();
+}
 
 //------------------------------------------------------------------------------
 void CDrawingScene::drawForeground( QPainter* i_pPainter, const QRectF& i_rect )
@@ -5638,9 +5648,8 @@ void CDrawingScene::drawForeground( QPainter* i_pPainter, const QRectF& i_rect )
 
     i_pPainter->setClipRect(i_rect);
 
-    QGraphicsScene::drawForeground(i_pPainter,i_rect);
-
-} // drawForeground
+    QGraphicsScene::drawForeground(i_pPainter, i_rect);
+}
 
 /*==============================================================================
 protected slots:
@@ -5819,6 +5828,128 @@ void CDrawingScene::onGraphObjsIdxTreeEntryRenamed(
         throw(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObj == nullptr");
     }
     emit_graphObjChanged(this, pGraphObj);
+}
+
+/*==============================================================================
+protected: // auxiliary methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CDrawingScene::drawGrid(QPainter* i_pPainter)
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjPaintEvent,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "drawGrid",
+        /* strAddInfo   */ "" );
+
+    #pragma message(__TODO__"m_gridSettings.linesDistMinXInPixels()")
+    #pragma message(__TODO__"m_gridSettings.linesDistMinYInPixels()")
+    #pragma message(__TODO__"m_gridSettings.useDivLineDistValDecimalFactor25()")
+
+    QRectF rctScene = sceneRect();
+
+    double fDivLineFirstVal = 0.0;
+    double fDivLineDistFirstPix = 0.0;
+    double fDivLineDistVal = 0.0;
+    double fDivLineDistPix = 0.0;
+    int iDivLinesCount = 0;
+
+    #pragma message(__TODO__"calculateDivLines4LinSpacing only if gridSettings or drawingSize changed")
+
+    // X-Scale
+    //--------
+
+    if (m_drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels)
+    {
+        iDivLinesCount = Math::calculateDivLines4LinSpacing(
+            /* fScaleMinVal          */ 0.0,
+            /* fScaleMaxVal          */ m_drawingSize.imageSizeInPixels().width(),
+            /* iScaleRangePix        */ m_drawingSize.imageSizeInPixels().width(),
+            /* fDivLineDistMinVal    */ 10.0, //m_gridSettings.linesDistMinXInPixels(),
+            /* iDivLineDistMinPix    */ 10, //m_gridSettings.linesDistMinXInPixels(),
+            /* bUseDivLineFactor25   */ false, //m_gridSettings.useDivLineDistValDecimalFactor25(),
+            /* pfDivLineFirstVal     */ &fDivLineFirstVal,
+            /* pfDivLineDistFirstPix */ &fDivLineDistFirstPix,
+            /* pfDivLineDistVal      */ &fDivLineDistVal,
+            /* pfDivLineDistPix      */ &fDivLineDistPix,
+            /* pTrcAdminObj          */ m_pTrcAdminObjPaintEvent);
+    }
+    else
+    {
+        iDivLinesCount = Math::calculateDivLines4LinSpacing(
+            /* fScaleMinVal          */ 0.0,
+            /* fScaleMaxVal          */ m_drawingSize.metricImageWidth().getVal(),
+            /* iScaleRangePix        */ m_drawingSize.imageSizeInPixels().width(),
+            /* fDivLineDistMinVal    */ 10.0, //m_gridSettings.linesDistMinVal(),
+            /* iDivLineDistMinPix    */ 10, //m_gridSettings.linesDistMinXInPixels(),
+            /* bUseDivLineFactor25   */ false, //m_gridSettings.useDivLineDistValDecimalFactor25(),
+            /* pfDivLineFirstVal     */ &fDivLineFirstVal,
+            /* pfDivLineDistFirstPix */ &fDivLineDistFirstPix,
+            /* pfDivLineDistVal      */ &fDivLineDistVal,
+            /* pfDivLineDistPix      */ &fDivLineDistPix,
+            /* pTrcAdminObj          */ m_pTrcAdminObjPaintEvent);
+    }
+    if (iDivLinesCount > 0)
+    {
+        QPen pen(m_gridSettings.penColor());
+        pen.setStyle(lineStyle2QtPenStyle(m_gridSettings.lineStyle().enumerator()));
+        pen.setWidth(m_gridSettings.penWidth());
+        i_pPainter->setPen(pen);
+
+        for (int idxLine = 0; idxLine < iDivLinesCount; ++idxLine ) {
+            int x = fDivLineDistFirstPix + idxLine * fDivLineDistPix;
+            i_pPainter->drawLine(x, rctScene.top(), x, rctScene.bottom());
+        }
+    }
+
+    // Y-Scale
+    //--------
+
+    if (m_drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels)
+    {
+        iDivLinesCount = Math::calculateDivLines4LinSpacing(
+            /* fScaleMinVal          */ 0.0,
+            /* fScaleMaxVal          */ m_drawingSize.imageSizeInPixels().height(),
+            /* iScaleRangePix        */ m_drawingSize.imageSizeInPixels().height(),
+            /* fDivLineDistMinVal    */ 10.0, //m_gridSettings.linesDistMinYInPixels(),
+            /* iDivLineDistMinPix    */ 10, //m_gridSettings.linesDistMinYInPixels(),
+            /* bUseDivLineFactor25   */ false, //m_gridSettings.useDivLineDistValDecimalFactor25(),
+            /* pfDivLineFirstVal     */ &fDivLineFirstVal,
+            /* pfDivLineDistFirstPix */ &fDivLineDistFirstPix,
+            /* pfDivLineDistVal      */ &fDivLineDistVal,
+            /* pfDivLineDistPix      */ &fDivLineDistPix,
+            /* pTrcAdminObj          */ m_pTrcAdminObjPaintEvent);
+    }
+    else
+    {
+        iDivLinesCount = Math::calculateDivLines4LinSpacing(
+            /* fScaleMinVal          */ 0.0,
+            /* fScaleMaxVal          */ m_drawingSize.metricImageHeight().getVal(),
+            /* iScaleRangePix        */ m_drawingSize.imageSizeInPixels().height(),
+            /* fDivLineDistMinVal    */ 10.0, //m_gridSettings.linesDistMinVal(),
+            /* iDivLineDistMinPix    */ 10, //m_gridSettings.linesDistMinYInPixels(),
+            /* bUseDivLineFactor25   */ false, //m_gridSettings.useDivLineDistValDecimalFactor25(),
+            /* pfDivLineFirstVal     */ &fDivLineFirstVal,
+            /* pfDivLineDistFirstPix */ &fDivLineDistFirstPix,
+            /* pfDivLineDistVal      */ &fDivLineDistVal,
+            /* pfDivLineDistPix      */ &fDivLineDistPix,
+            /* pTrcAdminObj          */ m_pTrcAdminObjPaintEvent);
+    }
+
+    if (iDivLinesCount > 0)
+    {
+        QPen pen(m_gridSettings.penColor());
+        pen.setStyle(lineStyle2QtPenStyle(m_gridSettings.lineStyle().enumerator()));
+        pen.setWidth(m_gridSettings.penWidth());
+        i_pPainter->setPen(pen);
+
+        for (int idxLine = 0; idxLine < iDivLinesCount; ++idxLine ) {
+            int y = fDivLineDistFirstPix + idxLine * fDivLineDistPix;
+            i_pPainter->drawLine(rctScene.left(), y, rctScene.right(), y);
+        }
+    }
 }
 
 /*==============================================================================

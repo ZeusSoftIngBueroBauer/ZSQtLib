@@ -50,6 +50,7 @@ public: // ctors and dtor
     ~CTest();
 public slots:
     void doTestStepRound2Nearest( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepCalculateDivLines4LinSpacing( ZS::Test::CTestStep* i_pTestStep );
 private: // instance auxiliary methods
     void splitMethodCallOperation(
         const QString& i_strOperation,

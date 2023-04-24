@@ -59,6 +59,8 @@ CTest::CTest() :
 //------------------------------------------------------------------------------
     ZS::Test::CTest("ZSSysMath")
 {
+    ZS::Test::CTestStep* pTestStep;
+
     int idxStep = 0;
 
     ZS::Test::CTestStepGroup* pGrpRounding = new ZS::Test::CTestStepGroup(
@@ -71,19 +73,51 @@ CTest::CTest() :
         /* strName    */ "Round2Nearest",
         /* pGrpParent */ pGrpRounding );
 
-    new ZS::Test::CTestStep(
+    idxStep = 0;
+
+    pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep),
         /* strOperation    */ "1 = round2Nearest(1.1, 0)",
         /* pGrpParent      */ pGrpRound2Nearest,
         /* szDoTestStepFct */ SLOT(doTestStepRound2Nearest(ZS::Test::CTestStep*)) );
-
-    new ZS::Test::CTestStep(
+    pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep),
         /* strOperation    */ "2 = round2Nearest(1.6, 0)",
         /* pGrpParent      */ pGrpRound2Nearest,
         /* szDoTestStepFct */ SLOT(doTestStepRound2Nearest(ZS::Test::CTestStep*)) );
+
+    ZS::Test::CTestStepGroup* pGrpDivLines = new ZS::Test::CTestStepGroup(
+        /* pTest      */ this,
+        /* strName    */ "Division Lines",
+        /* pGrpParent */ nullptr );
+
+    idxStep = 0;
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep),
+        /* strOperation    */ "calculateDivLines4LinSpacing()",
+        /* pGrpParent      */ pGrpDivLines,
+        /* szDoTestStepFct */ SLOT(doTestStepCalculateDivLines4LinSpacing(ZS::Test::CTestStep*)) );
+    pTestStep->addDataRow({
+        {"ScaleMinVal", 0}, {"ScaleMaxVal", 0}, {"ScaleRangePix", 0},
+        {"DivLineDistMinVal", 0}, {"DivLineDistMinPix", 0}, {"UseDivLineDistValDecimalFactor25", false},
+        {"DivLineFirstVal", 0}, {"DivLineDistFirstPix", 0}, {"DivLineDistVal", 0}, {"DivLineDistPix", 0},
+        {"DivLinesCount", 0}});
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep),
+        /* strOperation    */ "calculateDivLines4LinSpacing()",
+        /* pGrpParent      */ pGrpDivLines,
+        /* szDoTestStepFct */ SLOT(doTestStepCalculateDivLines4LinSpacing(ZS::Test::CTestStep*)) );
+    pTestStep->addDataRow({
+        {"ScaleMinVal", 0}, {"ScaleMaxVal", 100.0}, {"ScaleRangePix", 1000},
+        {"DivLineDistMinVal", 10.0}, {"DivLineDistMinPix", 50}, {"UseDivLineDistValDecimalFactor25", false},
+        {"DivLineFirstVal", 0.0}, {"DivLineDistFirstPix", 0.0}, {"DivLineDistVal", 10.0}, {"DivLineDistPix", 100},
+        {"DivLinesCount", 11}});
 
     // Recall test step settings
     //--------------------------
@@ -107,6 +141,10 @@ CTest::~CTest()
     }
 
 } // dtor
+
+/*==============================================================================
+public slots:
+==============================================================================*/
 
 //------------------------------------------------------------------------------
 void CTest::doTestStepRound2Nearest( ZS::Test::CTestStep* i_pTestStep )
@@ -149,6 +187,119 @@ void CTest::doTestStepRound2Nearest( ZS::Test::CTestStep* i_pTestStep )
     i_pTestStep->setResultValue(strResultValue);
 
 } // doTestStepRound2Nearest
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepCalculateDivLines4LinSpacing( ZS::Test::CTestStep* i_pTestStep )
+//------------------------------------------------------------------------------
+{
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
+
+    for (int idxRow = 0; idxRow < i_pTestStep->getDataRowCount(); ++idxRow)
+    {
+        double  fScaleMinVal = 0.0;
+        double  fScaleMaxVal = 0.0;
+        int     iScaleRangePix = 0;
+        double  fDivLineDistMinVal = 0.0;
+        int     iDivLineDistMinPix = 0;
+        bool    bUseDivLineDistValDecimalFactor25 = false;
+        double  fDivLineFirstValExpected = 0.0;
+        double  fDivLineDistFirstPixExpected = 0.0;
+        double  fDivLineDistValExpected = 0.0;
+        double  fDivLineDistPixExpected = 0.0;
+        int     iDivLineCountExpected = 0;
+
+        QMap<QString, QString> mapExpectedValues;
+        QMap<QString, QString> mapResultValues;
+
+        QHash<QString, QVariant> dataRow = i_pTestStep->getDataRow(idxRow);
+
+        for (const QString& strKey : dataRow.keys())
+        {
+            if (strKey == "ScaleMinVal") {
+                fScaleMinVal = dataRow["ScaleMinVal"].toDouble();
+            }
+            else if (strKey == "ScaleMaxVal") {
+                fScaleMaxVal = dataRow["ScaleMaxVal"].toDouble();
+            }
+            else if (strKey == "ScaleRangePix") {
+                iScaleRangePix = dataRow["ScaleRangePix"].toInt();
+            }
+            else if (strKey == "DivLineDistMinVal") {
+                fDivLineDistMinVal = dataRow["DivLineDistMinVal"].toDouble();
+            }
+            else if (strKey == "DivLineDistMinPix") {
+                iDivLineDistMinPix = dataRow["DivLineDistMinPix"].toInt();
+            }
+            else if (strKey == "UseDivLineDistValDecimalFactor25") {
+                bUseDivLineDistValDecimalFactor25 = dataRow["UseDivLineDistValDecimalFactor25"].toBool();
+            }
+            else if (strKey == "DivLineFirstVal") {
+                fDivLineFirstValExpected = dataRow["DivLineFirstVal"].toDouble();
+                mapExpectedValues[strKey] = dataRow["DivLineFirstVal"].toString();
+            }
+            else if (strKey == "DivLineDistFirstPix") {
+                fDivLineDistFirstPixExpected = dataRow["DivLineDistFirstPix"].toDouble();
+                mapExpectedValues[strKey] = dataRow["DivLineDistFirstPix"].toString();
+            }
+            else if (strKey == "DivLineDistVal") {
+                fDivLineDistValExpected = dataRow["DivLineDistVal"].toDouble();
+                mapExpectedValues[strKey] = dataRow["DivLineDistVal"].toString();
+            }
+            else if (strKey == "DivLineDistPix") {
+                fDivLineDistPixExpected = dataRow["DivLineDistPix"].toDouble();
+                mapExpectedValues[strKey] = dataRow["DivLineDistPix"].toString();
+            }
+            else if (strKey == "DivLinesCount") {
+                iDivLineCountExpected = dataRow["DivLinesCount"].toInt();
+                mapExpectedValues[strKey] = dataRow["DivLinesCount"].toString();
+            }
+        }
+
+        double fDivLineFirstValResult = 0.0;
+        double fDivLineDistFirstPixResult = 0.0;
+        double fDivLineDistValResult = 0.0;
+        double fDivLineDistPixResult = 0.0;
+
+        int iDivLineCountResult = Math::calculateDivLines4LinSpacing(
+            /* fScaleMinVal          */ fScaleMinVal,
+            /* fScaleMaxVal          */ fScaleMaxVal,
+            /* iScaleRangePix        */ iScaleRangePix,
+            /* fDivLineDistMinVal    */ fDivLineDistMinVal,
+            /* iDivLineDistMinPix    */ iDivLineDistMinPix,
+            /* bUseDivLineFactor25   */ bUseDivLineDistValDecimalFactor25,
+            /* pfDivLineFirstVal     */ &fDivLineFirstValResult,
+            /* pfDivLineDistFirstPix */ &fDivLineDistFirstPixResult,
+            /* pfDivLineDistVal      */ &fDivLineDistValResult,
+            /* pfDivLineDistPix      */ &fDivLineDistPixResult );
+
+        mapResultValues["DivLineFirstVal"] = QString::number(fDivLineFirstValResult);
+        mapResultValues["DivLineDistFirstPix"] = QString::number(fDivLineDistFirstPixResult);
+        mapResultValues["DivLineDistVal"] = QString::number(fDivLineDistValResult);
+        mapResultValues["DivLineDistPix"] = QString::number(fDivLineDistPixResult);
+        mapResultValues["DivLinesCount"] = QString::number(iDivLineCountResult);
+
+        QString strExpectedValues;
+        for (const QString& strKey : mapExpectedValues.keys())
+        {
+            if (!strExpectedValues.isEmpty()) strExpectedValues += ", ";
+            strExpectedValues += strKey + "=" + mapExpectedValues[strKey];
+        }
+        strlstExpectedValues.append(strExpectedValues);
+
+        QString strResultValues;
+        for (const QString& strKey : mapResultValues.keys())
+        {
+            if (!strResultValues.isEmpty()) strResultValues += ", ";
+            strResultValues += strKey + "=" + mapResultValues[strKey];
+        }
+        strlstResultValues.append(strResultValues);
+    }
+
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
+
+} // doTestStepCalculateDivLines4LinSpacing
 
 /*==============================================================================
 private: // instance auxiliary methods

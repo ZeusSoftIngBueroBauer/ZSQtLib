@@ -53,280 +53,6 @@ double CDiagScale::s_arfScaleRangeFacPixDivValLog[9];
 public: // class methods
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-int CDiagScale::CalculateDivLines4LinSpacing(
-    double  i_fScaleMinVal,
-    double  i_fScaleMaxVal,
-    int     i_iScaleRangePix,
-    double  i_fDivLineDistMinVal,
-    int     i_iDivLineDistMinPix,
-    bool    i_bUseDivLineDistValDecimalFactor25,
-    double* o_pfDivLineFirstVal,
-    double* o_pfDivLineDistFirstPix,
-    double* o_pfDivLineDistVal,
-    double* o_pfDivLineDistPix )
-//------------------------------------------------------------------------------
-{
-    double fScaleRangeVal;
-    double fScaleRangeFacPixDivVal;
-    double fDivLineDistMinVal;
-    double fDivLineDistVal;
-    double fDivLineDistPix;
-    double fDivLineVal;
-    double fAbortVal;
-    double fDivLineFirstVal;
-    double fDivLineDistFirstPix;
-    double fDivLineLastVal;
-    double fDivLineDistLastPix;
-    double fDivLineRangeVal;
-    double fDivLineRangePix;
-    int    iDivLineCountMax;
-    int    iDivLineCount;
-    int    iDivLineDistValDecimalFactor;
-    double fDivLineDistValDecimalFactor;
-    double fDivLineDistValBeforeCorr;
-    double fDivLineDistPixBeforeCorr;
-
-    if( o_pfDivLineFirstVal != nullptr )
-    {
-        *o_pfDivLineFirstVal = i_fScaleMinVal;
-    }
-    if( o_pfDivLineDistFirstPix != nullptr )
-    {
-        *o_pfDivLineDistFirstPix = 0.0;
-    }
-    if( o_pfDivLineDistVal != nullptr )
-    {
-        *o_pfDivLineDistVal = i_fScaleMaxVal - i_fScaleMinVal;
-    }
-    if( o_pfDivLineDistPix != nullptr )
-    {
-        *o_pfDivLineDistPix = i_iScaleRangePix;
-    }
-
-    fScaleRangeVal = i_fScaleMaxVal - i_fScaleMinVal;
-
-    if( fScaleRangeVal <= 0.0 )
-    {
-        return 0;
-    }
-    if( i_iScaleRangePix <= 1 )
-    {
-        return 0;
-    }
-    if( i_iDivLineDistMinPix <= 1 )
-    {
-        return 0;
-    }
-
-    fScaleRangeFacPixDivVal = i_iScaleRangePix/fScaleRangeVal;
-
-    // Maximum possible count of grid lines:
-    iDivLineCountMax = static_cast<int>(static_cast<double>(i_iScaleRangePix)/static_cast<double>(i_iDivLineDistMinPix)) + 1;
-
-    // On dividing the pixel range by the maximum possible count of grid lines the
-    // distance between two grid lines would be:
-    if( i_fDivLineDistMinVal > 0.0 )
-    {
-        fDivLineDistMinVal = i_fDivLineDistMinVal;
-    }
-    else
-    {
-        fDivLineDistMinVal = fScaleRangeVal / iDivLineCountMax;
-    }
-
-    // But DivLineDistMinVal might have a fractional part. And thats not what we want.
-    // We need to set the grid lines to "human readable" values like 0.1 .. 0.2 .. 0.3 or
-    // 10.0 .. 20.0 ..30.0 or 1.25 .. 1.50 .. 1.75 and so on.
-
-    // For this we are going to calculate "DivLineDistVal" which is less or equal to the distance
-    // between two grid lines if the pixel range would be divided by the maximum possible count
-    // of grid lines and with the first valid digit "1" (e.g. 100.0, 1.0, 0.001, etc.).
-    fDivLineDistVal = 1.0;
-    if( fDivLineDistMinVal > 1.0 )
-    {
-        fAbortVal = fDivLineDistMinVal/10.0;
-        while( fDivLineDistVal <= fAbortVal )
-        {
-            fDivLineDistVal *= 10.0;
-        }
-    }
-    else if( fDivLineDistMinVal < 1.0 )
-    {
-        fAbortVal = fDivLineDistMinVal;
-        while( fDivLineDistVal >= fAbortVal )
-        {
-            fDivLineDistVal /= 10.0;
-        }
-    }
-
-    // Now calculate the distance between grid lines if the current "DivLineDistVal"
-    // would be used. For this we calculate the values and pixel positions of the
-    // first and last grid lines, calculate the resulting count of grid lines and the
-    // resulting distance in pixels between two grid lines.
-
-    // The values of the first and last grid lines must be a whole number multiple of
-    // the distance between two grid lines:
-    modf(i_fScaleMinVal/fDivLineDistVal,&fDivLineFirstVal);
-    fDivLineFirstVal *= fDivLineDistVal;
-    if( fDivLineFirstVal < i_fScaleMinVal-DBL_EPSILON )
-    {
-        fDivLineFirstVal += fDivLineDistVal;
-    }
-    fDivLineDistFirstPix = fScaleRangeFacPixDivVal*(fDivLineFirstVal-i_fScaleMinVal);
-    modf(i_fScaleMaxVal/fDivLineDistVal,&fDivLineLastVal);
-    fDivLineLastVal *= fDivLineDistVal;
-    if( fDivLineLastVal > i_fScaleMaxVal+DBL_EPSILON )
-    {
-        fDivLineLastVal -= fDivLineDistVal;
-    }
-    fDivLineDistLastPix = fScaleRangeFacPixDivVal*(i_fScaleMaxVal-fDivLineLastVal);
-
-    // Range between first and last grid line:
-    fDivLineRangeVal = fDivLineLastVal - fDivLineFirstVal;
-    fDivLineRangePix = i_iScaleRangePix - fDivLineDistFirstPix - fDivLineDistLastPix; //lint !e834
-    iDivLineCount = static_cast<int>(fDivLineRangeVal/fDivLineDistVal) + 1;
-
-    // Distance between two grid lines between the first and last grid line:
-    if( iDivLineCount < 2 )
-    {
-        fDivLineDistPix = 0.0;
-    }
-    else
-    {
-        fDivLineDistPix = fDivLineRangePix/(iDivLineCount-1);
-
-        // Please note that at this point of execution "DivLineDistVal" is always less or equal
-        // to the distance between two grid lines if the pixel range would be divided by the
-        // maximum possible count of grid lines and its first valid digit is always 1
-        // (e.g. 100.0, 1.0, 0.001, etc.). So definitely "DivLineDistPix" is less or equal to
-        // "DistMinPix" (the user setting for the minimum distance in pixels between two grid lines).
-
-        // In the following loop we are going to optimize "DivLineDistVal" by increasing the value
-        // and the distance between by the factor of 2, 2.5, 4.0, and 5.0 until the "best human readable"
-        // division of the axis has been reached.
-        iDivLineDistValDecimalFactor = 10;
-        fDivLineDistValDecimalFactor = 1.0;
-        fDivLineDistValBeforeCorr = fDivLineDistVal;
-        fDivLineDistPixBeforeCorr = fDivLineDistPix;
-
-        // As long as the grid lines are too close to each other ...
-        while( fDivLineDistPix < i_iDivLineDistMinPix )
-        {
-            switch( iDivLineDistValDecimalFactor )
-            {
-                case 10:
-                {
-                    iDivLineDistValDecimalFactor = 20;
-                    fDivLineDistValDecimalFactor *= (20.0/10.0);
-                    break;
-                }
-                case 20:
-                {
-                    if( i_bUseDivLineDistValDecimalFactor25 )
-                    {
-                        iDivLineDistValDecimalFactor = 25;
-                        fDivLineDistValDecimalFactor *= (25.0/20.0);
-                    }
-                    else
-                    {
-                        iDivLineDistValDecimalFactor = 50;
-                        fDivLineDistValDecimalFactor *= (50.0/25.0);
-                    }
-                    break;
-                }
-                case 25:
-                {
-                    iDivLineDistValDecimalFactor = 50;
-                    fDivLineDistValDecimalFactor *= (50.0/25.0);
-                    break;
-                }
-                case 50:
-                {
-                    iDivLineDistValDecimalFactor = 10;
-                    fDivLineDistValDecimalFactor *= (100.0/50.0);
-                    break;
-                }
-                default:
-                {
-                    break;
-                }
-            }
-            fDivLineDistVal = fDivLineDistValDecimalFactor * fDivLineDistValBeforeCorr;
-            fDivLineDistPix = fDivLineDistValDecimalFactor * fDivLineDistPixBeforeCorr;
-        }
-    }
-
-    // The value of the first grid line must be a whole number multiple of the distance
-    // between two grid lines:
-    modf(i_fScaleMinVal/fDivLineDistVal,&fDivLineFirstVal);
-    fDivLineFirstVal *= fDivLineDistVal;
-    if( fDivLineFirstVal < i_fScaleMinVal-DBL_EPSILON )
-    {
-        fDivLineFirstVal += fDivLineDistVal;
-    }
-    fDivLineDistFirstPix = fScaleRangeFacPixDivVal*(fDivLineFirstVal-i_fScaleMinVal);
-
-    // Calculate number of division lines. Algorithm could be optimized ...
-
-    // If the value 0.0 is included ...
-    if( i_fScaleMinVal < 0.0 && i_fScaleMaxVal > 0.0 )
-    {
-        // ... there should be always a line at 0.0 ...
-        int    iDivLineCountBelowZero;
-        double fDivLineOffsetVal;
-        double fDivLineOffsetPix;
-
-        iDivLineCountBelowZero = static_cast<int>(-i_fScaleMinVal/fDivLineDistVal);
-        fDivLineOffsetVal      = -(i_fScaleMinVal + iDivLineCountBelowZero*fDivLineDistVal);
-        fDivLineOffsetPix      = fScaleRangeFacPixDivVal*fDivLineOffsetVal;
-        fDivLineFirstVal       = i_fScaleMinVal + fDivLineOffsetVal;
-        fDivLineDistFirstPix   = fDivLineOffsetPix;
-    }
-
-    iDivLineCount = 0;
-    fDivLineVal = fDivLineFirstVal; // please note that the first digit of "DivLineFirstVal" is "1".
-    if( fDivLineVal >= i_fScaleMinVal )
-    {
-        iDivLineCount++;
-    }
-    while( fDivLineVal <= i_fScaleMaxVal )
-    {
-        iDivLineCount++;
-        fDivLineVal += fDivLineDistVal;
-
-        // If DivLineDistVal is very small (but still greater than DBL_EPSILON),
-        // adding fDivLineDistVal to fDivLineVal may not change the value of fDivLineVal
-        // (maybe bug in floating point library?). To avoid an endless loop ...
-        if( fDivLineFirstVal + iDivLineCount*fDivLineDistVal > i_fScaleMaxVal )
-        {
-            break;
-        }
-    }
-    if( fDivLineVal > i_fScaleMaxVal )
-    {
-        iDivLineCount--;
-    }
-    if( o_pfDivLineFirstVal != nullptr )
-    {
-        *o_pfDivLineFirstVal = fDivLineFirstVal;
-    }
-    if( o_pfDivLineDistFirstPix != nullptr )
-    {
-        *o_pfDivLineDistFirstPix = fDivLineDistFirstPix;
-    }
-    if( o_pfDivLineDistVal != nullptr )
-    {
-        *o_pfDivLineDistVal = fDivLineDistVal;
-    }
-    if( o_pfDivLineDistPix != nullptr )
-    {
-        *o_pfDivLineDistPix = fDivLineDistPix;
-    }
-    return iDivLineCount;
-
-} // CalculateDivLines4LinSpacing
-
 /*==============================================================================
 public: // ctors and dtor
 ==============================================================================*/
@@ -1479,7 +1205,7 @@ void CDiagScale::update()
                 for( iLayer = 0; iLayer < EDivLineLayerCount; iLayer++ )
                 {
                     // Calculate optimized distance between two grid lines:
-                    ariDivLineCountTmp[iLayer] = CalculateDivLines4LinSpacing(
+                    ariDivLineCountTmp[iLayer] = Math::calculateDivLines4LinSpacing(
                         /* fScaleMinVal          */ fDivLineDistValMin,
                         /* fScaleMaxVal          */ fDivLineDistValMax,
                         /* iScaleRangePix        */ iScaleRangePix,
@@ -1489,14 +1215,15 @@ void CDiagScale::update()
                         /* pfDivLineFirstVal     */ &arfDivLineFirstVal[iLayer],
                         /* pfDivLineDistFirstPix */ &arfDivLineDistFirstPix[iLayer],
                         /* pfDivLineDistVal      */ &arfDivLineDistVal[iLayer],
-                        /* pfDivLineDistPix      */ &arfDivLineDistPix[iLayer] );
+                        /* pfDivLineDistPix      */ &arfDivLineDistPix[iLayer],
+                        /* pTrcAdminObj          */ m_pTrcAdminObjUpdate);
 
                     // Store the calculated results:
                     if( ariDivLineCountTmp[iLayer] > 0 )
                     {
                         if( iLayer == 0 )
                         {
-                            // Count visible sub division lines (thats eays for the main grid lines):
+                            // Count visible division lines for the main grid lines:
                             ariDivLineCount[iLayer] = ariDivLineCountTmp[iLayer];
 
                             m_ararfDivLineVal[iLayer] = new double[ariDivLineCount[iLayer]];
@@ -1517,7 +1244,7 @@ void CDiagScale::update()
                         else
                         {
                             // Count visible sub division lines:
-                            modf(m_scale.m_fMin/arfDivLineDistVal[iLayer-1],&fPrevLayerDivLineVal);
+                            modf(m_scale.m_fMin/arfDivLineDistVal[iLayer-1], &fPrevLayerDivLineVal);
                             fPrevLayerDivLineVal *= arfDivLineDistVal[iLayer-1];
                             fCurrLayerDivLineVal = fPrevLayerDivLineVal;
                             while( fCurrLayerDivLineVal <= m_scale.m_fMax )
@@ -1732,7 +1459,7 @@ void CDiagScale::update()
                     }
 
                     // Calculate optimized distance between two main grid lines:
-                    ariDivLineCount[iLayerMain] = CalculateDivLines4LinSpacing(
+                    ariDivLineCount[iLayerMain] = Math::calculateDivLines4LinSpacing(
                         /* fScaleMinVal          */ fScaleMinValLog,
                         /* fScaleMaxVal          */ fScaleMaxValLog,
                         /* iScaleRangePix        */ iScaleRangePix,
@@ -1742,7 +1469,8 @@ void CDiagScale::update()
                         /* pfDivLineFirstVal     */ &arfDivLineFirstValLog[iLayerMain],
                         /* pfDivLineDistFirstPix */ &arfDivLineDistFirstPix[iLayerMain],
                         /* pfDivLineDistVal      */ &arfDivLineDistValLog[iLayerMain],
-                        /* pfDivLineDistPix      */ &arfDivLineDistPix[iLayerMain] );
+                        /* pfDivLineDistPix      */ &arfDivLineDistPix[iLayerMain],
+                        /* pTrcAdminObj          */ m_pTrcAdminObjUpdate);
                 }
 
                 // Store the calculated results:
@@ -1775,7 +1503,7 @@ void CDiagScale::update()
                     // Calculate optimized distance between two sub grid lines:
                     if( m_ariDivLineDistMinPix[iLayerSub] > 1 && m_ariDivLineDistMinPix[iLayerMain] > 2*m_ariDivLineDistMinPix[iLayerSub] )
                     {
-                        ariDivLineCountTmp[iLayerSub] = CalculateDivLines4LinSpacing(
+                        ariDivLineCountTmp[iLayerSub] = Math::calculateDivLines4LinSpacing(
                             /* fScaleMinVal          */ arfDivLineFirstValLog[iLayerMain],
                             /* fScaleMaxVal          */ arfDivLineFirstValLog[iLayerMain]+arfDivLineDistValLog[iLayerMain],
                             /* iScaleRangePix        */ static_cast<int>(arfDivLineDistPix[iLayerMain]),
@@ -1785,7 +1513,8 @@ void CDiagScale::update()
                             /* pfDivLineFirstVal     */ &arfDivLineFirstValLog[iLayerSub],
                             /* pfDivLineDistFirstPix */ &arfDivLineDistFirstPix[iLayerSub],
                             /* pfDivLineDistVal      */ &arfDivLineDistValLog[iLayerSub],
-                            /* pfDivLineDistPix      */ nullptr );
+                            /* pfDivLineDistPix      */ nullptr,
+                            /* pTrcAdminObj          */ m_pTrcAdminObjUpdate);
 
                         // Store the calculated results:
                         if( ariDivLineCountTmp[iLayerSub] > 2 )

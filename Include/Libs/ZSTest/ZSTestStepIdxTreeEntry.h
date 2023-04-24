@@ -74,6 +74,11 @@ public: // overridables
 public: // overridables
     virtual void setToolTip( const QString& i_strToolTip );
     virtual QString getToolTip() const { return m_strToolTip; }
+public: // overridables
+    virtual int getDataRowCount() const { return m_arDataRows.size(); }
+    virtual void addDataRow(const QHash<QString, QVariant>& i_dataRow);
+    virtual void addDataRow(const QHash<QString, QVariant>&& i_dataRow);
+    virtual QHash<QString, QVariant> getDataRow(int i_idxRow) const;
 public: // must overridables
     virtual CEnumTestResult getTestResult() const = 0;
     virtual double getTestDurationInSec() const = 0;
@@ -86,10 +91,11 @@ private: // default ctor not allowed
 private: // copy ctor not allowed
     CAbstractTestStepIdxTreeEntry( const CAbstractTestStepIdxTreeEntry& );
 protected: // instance members
-    CTest*               m_pTest;
+    CTest* m_pTest;
     ZS::System::EEnabled m_enabled;
-    QString              m_strToolTip;
-    CEnumTestResult      m_testResult;
+    QString m_strToolTip;
+    CEnumTestResult m_testResult;
+    QList<QHash<QString, QVariant>> m_arDataRows;
 
 }; // class CAbstractTestStepIdxTreeEntry
 

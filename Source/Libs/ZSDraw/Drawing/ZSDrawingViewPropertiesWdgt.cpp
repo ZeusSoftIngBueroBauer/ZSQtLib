@@ -604,6 +604,10 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pCmbGridLineStyle->setModel(m_pModelGridLineStyles);
     m_pCmbGridLineStyle->setIconSize(iconSize);
     m_pLytGridSettings->addWidget(m_pCmbGridLineStyle, iRow, iClm);
+    int idx = m_pCmbGridLineStyle->findData(m_gridSettings.lineStyle().enumeratorAsInt());
+    if (idx >= 0) {
+        m_pCmbGridLineStyle->setCurrentIndex(idx);
+    }
     QObject::connect(
         m_pCmbGridLineStyle, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
         this, &CWdgtDrawingViewProperties::onCmbGridLineStyleCurrentIndexChanged);

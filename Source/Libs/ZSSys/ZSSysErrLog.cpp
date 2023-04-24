@@ -508,6 +508,10 @@ void CErrLog::QtMsgHandler( QtMsgType i_msgType, const QMessageLogContext& i_con
                 {
                     strDummy = "Set breakpoint here if desired";
                 }
+                else if( i_strMsg.contains("QWindowsWindow::setGeometry: Unable to set geometry",Qt::CaseInsensitive) )
+                {
+                    strDummy = "Set breakpoint here if desired";
+                }
                 else if( i_strMsg.contains("qrc:",Qt::CaseInsensitive) && i_strMsg.contains("qml",Qt::CaseInsensitive) )
                 {
                     if( i_strMsg.contains("binding loop detected",Qt::CaseInsensitive) )

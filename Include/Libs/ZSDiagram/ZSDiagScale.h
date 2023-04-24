@@ -51,18 +51,6 @@ friend class CWdgtDiagram;
 public: // class methods
     static QString NameSpace() { return "ZS::Diagram"; }
     static QString ClassName() { return "CDiagScale"; }
-public: // class methods
-    static int CalculateDivLines4LinSpacing(
-        double  i_fScaleMinVal,
-        double  i_fScaleMaxVal,
-        int     i_iScaleRangePix,
-        double  i_fDivLineDistMinVal,
-        int     i_iDivLineDistMinPix,
-        bool    i_bUseDivLineDistValDecimalFactor25,
-        double* o_pfDivLineFirstVal,
-        double* o_pfDivLineDistFirstPix,
-        double* o_pfDivLineDistVal,
-        double* o_pfDivLineDistPix );
 public: // ctors and dtor
     CDiagScale(
         const QString& i_strObjName,
