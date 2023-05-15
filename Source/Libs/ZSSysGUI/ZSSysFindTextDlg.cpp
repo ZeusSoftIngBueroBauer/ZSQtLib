@@ -113,6 +113,7 @@ CDlgFindText::CDlgFindText(
     m_pLytFindText(nullptr),
     m_pEdtFindText(nullptr),
     m_pBtnFindNext(nullptr),
+    m_pBtnFindPrev(nullptr),
     m_pLytFindTextResult(nullptr),
     m_pLblFindTextResult(nullptr)
 {
@@ -128,14 +129,16 @@ CDlgFindText::CDlgFindText(
     m_pBtnFindNext = new QPushButton("Next");
     m_pLytFindText->addWidget(m_pBtnFindNext);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnFindNext,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnFindNextClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnFindNext, &QPushButton::clicked,
+        this, &CDlgFindText::onBtnFindNextClicked);
+
+    m_pBtnFindPrev = new QPushButton("Prev");
+    m_pLytFindText->addWidget(m_pBtnFindPrev);
+
+    QObject::connect(
+        m_pBtnFindPrev, &QPushButton::clicked,
+        this, &CDlgFindText::onBtnFindPrevClicked);
 
     m_pLytFindTextResult = new QHBoxLayout();
     m_pLyt->addLayout(m_pLytFindTextResult);
@@ -158,6 +161,7 @@ CDlgFindText::~CDlgFindText()
     m_pLytFindText = nullptr;
     m_pEdtFindText = nullptr;
     m_pBtnFindNext = nullptr;
+    m_pBtnFindPrev = nullptr;
     m_pLytFindTextResult = nullptr;
     m_pLblFindTextResult = nullptr;
 
@@ -193,11 +197,10 @@ void CDlgFindText::findNext()
 
         QTextDocument::FindFlags findFlags;
 
-        //QTextDocument::FindBackward;
         //QTextDocument::FindCaseSensitively;
         //QTextDocument::FindWholeWords;
 
-        bool bExpFound = m_pEdt->find(strExp,findFlags);
+        bool bExpFound = m_pEdt->find(strExp, findFlags);
 
         if( m_pLblFindTextResult != nullptr )
         {
@@ -211,8 +214,40 @@ void CDlgFindText::findNext()
             }
         }
     }
-
 } // findNext
+
+//------------------------------------------------------------------------------
+void CDlgFindText::findPrev()
+//------------------------------------------------------------------------------
+{
+    if( m_pLblFindTextResult != nullptr )
+    {
+        m_pLblFindTextResult->setText("");
+    }
+
+    if( m_pEdtFindText != nullptr && m_pEdt != nullptr )
+    {
+        QString strExp = m_pEdtFindText->text();
+
+        QTextDocument::FindFlags findFlags = QTextDocument::FindBackward;
+        //QTextDocument::FindCaseSensitively;
+        //QTextDocument::FindWholeWords;
+
+        bool bExpFound = m_pEdt->find(strExp, findFlags);
+
+        if( m_pLblFindTextResult != nullptr )
+        {
+            if( bExpFound )
+            {
+                m_pLblFindTextResult->setText("Text found");
+            }
+            else
+            {
+                m_pLblFindTextResult->setText("Text not found");
+            }
+        }
+    }
+} // findPrev
 
 /*==============================================================================
 protected slots:
@@ -223,4 +258,11 @@ void CDlgFindText::onBtnFindNextClicked( bool /*i_bChecked*/ )
 //------------------------------------------------------------------------------
 {
     findNext();
+}
+
+//------------------------------------------------------------------------------
+void CDlgFindText::onBtnFindPrevClicked( bool /*i_bChecked*/ )
+//------------------------------------------------------------------------------
+{
+    findPrev();
 }
