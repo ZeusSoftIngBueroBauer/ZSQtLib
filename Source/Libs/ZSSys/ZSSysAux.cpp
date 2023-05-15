@@ -2081,8 +2081,7 @@ Enum Qt::Key
 //------------------------------------------------------------------------------
 static const ZS::System::SEnumEntry s_arEnumStrQKeyCode[] =
 //------------------------------------------------------------------------------
-{                                           // IdxName, Symbol, Text
-
+{
     /* 000: 0x00000020 (     032) */ SEnumEntry( Qt::Key_Space, "Key_Space", " ", " " ),
     /* 001: 0x00000021 (     033) */ SEnumEntry( Qt::Key_Exclam, "Key_Exclam", "?", "?" ),
     /* 002: 0x00000022 (     034) */ SEnumEntry( Qt::Key_QuoteDbl, "Key_QuoteDbl", "\"", "\"" ),

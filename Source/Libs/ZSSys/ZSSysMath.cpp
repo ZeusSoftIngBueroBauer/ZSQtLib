@@ -576,6 +576,75 @@ double Math::fctFFTWindowWelch( double i_fVal, int i_iFFTSegmentLen )
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Returns the given logarithmic resolution of the given linear
+           value into a linear resolution.
+
+    @param i_fResLog [in]
+        Logarithmic value of the resolution of the linear value.
+    @param i_fValLin [in]
+        The linear value for which the logarithmic resolution is defined.
+
+    @return Linear resolution value.
+*/
+double Math::logRes2LinRes( double i_fResLog, double i_fValLin )
+//------------------------------------------------------------------------------
+{
+    //fValLin = i_fValLin/11.0;
+    //fValLin = round2LowerDecade(fValLin);
+    //fResLin = fValLin * pow(10.0,fResLog);
+    //fResLin = round2LowerDecade(fResLin);
+
+    double fValLog = log10(i_fValLin);
+    //fValLog1 = fValLog - fResLog/2.0;
+    //fValLog2 = fValLog + fResLog/2.0;
+    double fValLog1 = fValLog;
+    double fValLog2 = fValLog + i_fResLog;
+
+    double fValLin1 = pow(10.0,fValLog1);
+    double fValLin2 = pow(10.0,fValLog2);
+    double fValLinDiff = fValLin2 - fValLin1;
+
+    return Math::round2LowerDecade(fValLinDiff);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the rectangle for the given start and end points.
+
+    @param i_ptStart [in] Start point.
+    @param i_ptEnd [in] End point.
+
+    @return Covered rectangle.
+*/
+QRect Math::calcRect( const QPoint& i_ptStart, const QPoint& i_ptEnd )
+//------------------------------------------------------------------------------
+{
+    QRect rct;
+
+    // Previously zoomed area:
+    if( i_ptStart.x() < i_ptEnd.x() )
+    {
+        rct.setX(i_ptStart.x());
+        rct.setWidth(i_ptEnd.x()-i_ptStart.x()+1); //lint !e834
+    }
+    else
+    {
+        rct.setX(i_ptEnd.x());
+        rct.setWidth(i_ptStart.x()-i_ptEnd.x()+1); //lint !e834
+    }
+    if( i_ptStart.y() < i_ptEnd.y() )
+    {
+        rct.setY(i_ptStart.y());
+        rct.setHeight(i_ptEnd.y()-i_ptStart.y()+1); //lint !e834
+    }
+    else
+    {
+        rct.setY(i_ptEnd.y());
+        rct.setHeight(i_ptStart.y()-i_ptEnd.y()+1); //lint !e834
+    }
+    return rct;
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Calculates division lines for the given scale values.
 
     @param i_fScaleMinVal
@@ -692,7 +761,7 @@ int Math::calculateDivLines4LinSpacing(
         // On dividing the pixel range by the maximum possible count of grid lines the
         // distance between two grid lines would be:
         double fDivLineDistMinVal = i_fDivLineDistMinVal;
-        if( i_fDivLineDistMinVal < 0.0 )
+        if( i_fDivLineDistMinVal <= 0.0 )
         {
             fDivLineDistMinVal = fScaleRangeVal / iDivLineCountMax;
         }

@@ -40,16 +40,6 @@ namespace Diagram
 class ZSDIAGRAMDLL_API CDiagObjAxisLabel : public CDiagObj
 //******************************************************************************
 {
-public: // type definitions and constants
-    typedef enum {
-        EPartMin           = 0,
-        EPartDivLines      = 0,
-        EPartDivLineLabels = 1,
-        EPartAxisLabel     = 2,
-        EPartMax           = 2,
-        EPartCount,
-        EPartUndefined
-    }   EPart;
 public: // ctors and dtor
     CDiagObjAxisLabel(
         const QString& i_strObjName,
@@ -61,20 +51,20 @@ public: // instance methods
     void setUnit( PhysVal::CUnit* i_pUnit ); // nullptr means "use best unit"
     PhysVal::CUnit* getUnit();
     // Methods for adjusting and reading properties of (almost) all parts
-    void show( EPart i_part, EDivLineLayer i_layer );
-    void hide( EPart i_part, EDivLineLayer i_layer );
-    void showUnit( EPart i_part );
-    void hideUnit( EPart i_part );
-    void setColFg( EPart i_part, const QColor& i_col );
-    QColor getColFg( EPart i_part ) const;
-    void setPenStyle( EPart i_part, const Qt::PenStyle& i_penStyle );
-    Qt::PenStyle getPenStyle( EPart i_part ) const;
-    void setColBg( EPart i_part, const QColor& i_col );
-    QColor getColBg( EPart i_part ) const;
-    void setBrushStyle( EPart i_part, const Qt::BrushStyle& i_brushStyle );
-    Qt::BrushStyle getBrushStyle( EPart i_part ) const;
-    void setFont( EPart i_part, const QFont& i_fnt );
-    QFont getFont( EPart i_part ) const;
+    void show( const CEnumDivLineLabelsPart& i_ePart, const CEnumDivLineLayer& i_eLayer );
+    void hide( const CEnumDivLineLabelsPart& i_ePart, const CEnumDivLineLayer& i_eLayer );
+    void showUnit( const CEnumDivLineLabelsPart& i_ePart );
+    void hideUnit( const CEnumDivLineLabelsPart& i_ePart );
+    void setColFg( const CEnumDivLineLabelsPart& i_ePart, const QColor& i_col );
+    QColor getColFg( const CEnumDivLineLabelsPart& i_ePart ) const;
+    void setPenStyle( const CEnumDivLineLabelsPart& i_ePart, const Qt::PenStyle& i_penStyle );
+    Qt::PenStyle getPenStyle( const CEnumDivLineLabelsPart& i_ePart ) const;
+    void setColBg( const CEnumDivLineLabelsPart& i_ePart, const QColor& i_col );
+    QColor getColBg( const CEnumDivLineLabelsPart& i_ePart ) const;
+    void setBrushStyle( const CEnumDivLineLabelsPart& i_ePart, const Qt::BrushStyle& i_brushStyle );
+    Qt::BrushStyle getBrushStyle( const CEnumDivLineLabelsPart& i_ePart ) const;
+    void setFont( const CEnumDivLineLabelsPart& i_ePart, const QFont& i_fnt );
+    QFont getFont( const CEnumDivLineLabelsPart& i_ePart ) const;
     // Methods affecting the labels at the division lines
     void setDigitsCountMax( int i_iDigitsCountMax );
     int getDigitsCountMax() const;
@@ -92,8 +82,8 @@ public: // instance methods
     // Space between the axis label and the diagram border
     void setSpaceDiagBorder2AxisLabel( int i_iSpace );
     int getSpaceDiagBorder2AxisLabel() const;
-    void addAxisLabelToBeConsidered( CDiagObjAxisLabel* i_pDiagObjAxisLabel );
-    void removeAxisLabelToBeConsidered( const CDiagObjAxisLabel* i_pDiagObjAxisLabel );
+    //void addAxisLabelToBeConsidered( CDiagObjAxisLabel* i_pDiagObjAxisLabel );
+    //void removeAxisLabelToBeConsidered( const CDiagObjAxisLabel* i_pDiagObjAxisLabel );
 public: // overridables of base class CDiagObj
     virtual void show( bool i_bInformDiagram = true );
     virtual void hide( bool i_bInformDiagram = true );
@@ -107,52 +97,51 @@ protected: // instance methods
     void updatePixmap( QPaintDevice* i_pPaintDevice );
     void updateWidget();
     bool intersectsDivLineLabels(
-        const QRect& i_rectDivLineLabel,
-        int          i_iDivLineLayer,
-        bool         i_bCheckAxisLabelsToBeConsidered,
-        int          i_idxDivLineLabelMin = -1,
-        int          i_idxDivLineLabelMax = -1 ) const;
+        const QRect& i_rect,
+        const CEnumDivLineLayer& i_eLayer,
+        int i_idxDivLineLabelMin,
+        int i_idxDivLineLabelMax ) const;
+    bool intersectsDivLineLabelsPhysUnit(const QRect& i_rect) const;
     QString formatValue( double i_fVal, PhysVal::CUnit* i_pUnit = nullptr ) const;
 private: // copy ctor not allowed
     CDiagObjAxisLabel( const CDiagObjAxisLabel& );
 private: // assignment operator not allowed
     void operator=( const CDiagObjAxisLabel& );
 protected:  // instance members
-    CDiagScale*                 m_pDiagScale;
-    PhysVal::CUnit*             m_pUnit;      // nullptr means "use best unit"
-    PhysVal::CUnit              m_unitLabels; // Used to indicate the values (may differ from "m_pUnit")
-    QString                     m_strPhysUnitLabels;
-    int                         m_iSpaceDiagPartCenter2DivLineLabels;
-    int                         m_iSpaceDivLineLabels2AxisLabel;
-    int                         m_iSpaceDiagBorder2AxisLabel;
-    bool                        m_ararbShow[EPartCount][EDivLineLayerCount];
-    bool                        m_arbShowUnit[EPartCount];
-    QColor                      m_arcolFg[EPartCount];
-    Qt::PenStyle                m_arpenStyle[EPartCount];
-    QColor                      m_arcolBg[EPartCount];
-    Qt::BrushStyle              m_arbrushStyle[EPartCount];
-    QFont                       m_arfnt[EPartCount];
-    int                         m_iDivLineLabelsDigitsCountMax;
-    bool                        m_bUseEngineeringFormat;
-    QString                     m_strAxisLabel;
-    QRect                       m_rectAxisLabel;
-    int                         m_iDivLineLabelsTrailingDigits;
-    int                         m_iDivLineLabelsExponentDigits;
-    QRect                       m_rectDivLineLabelsMaxTextExtent;
-    int                         m_cxDivLineLabelsSpace;
-    int                         m_ariDivLinesCount[EDivLineLayerCount];
-    int*                        m_arpiDivLines[EDivLineLayerCount];
-    QRect*                      m_arpRectDivLineLabels[EDivLineLayerCount];
-    QString*                    m_arpStrDivLineLabels[EDivLineLayerCount];
-    bool*                       m_arpbDivLineLabelsVisible[EDivLineLayerCount];
-    QRect                       m_rectDivLineLabelsPhysUnit;
-    bool                        m_bDivLineLabelsPhysUnitVisible;
-    QString                     m_arstrScaleMinMaxVal[2];
-    QRect                       m_arrectScaleMinMaxVal[2];
-    bool                        m_arbScaleMinMaxValVisible[2];
-    int                         m_iAxisLabelsToBeConsideredListSize;
-    int                         m_iAxisLabelsToBeConsidered;
-    CDiagObjAxisLabel**         m_arpAxisLabelsToBeConsidered;
+    CDiagScale* m_pDiagScale;
+    /*!< nullptr means "use best unit" */
+    PhysVal::CUnit* m_pUnit;
+    /*!< Used to indicate the values (may differ from "m_pUnit") */
+    PhysVal::CUnit m_unitLabels;
+    QString m_strPhysUnitLabels;
+    int m_iSpaceDiagPartCenter2DivLineLabels;
+    int m_iSpaceDivLineLabels2AxisLabel;
+    int m_iSpaceDiagBorder2AxisLabel;
+    QVector<QVector<bool>> m_ararbShowPartsLayer;
+    QVector<bool> m_arbShowPartsUnit;
+    QVector<QColor> m_arcolPartsFg;
+    QVector<Qt::PenStyle> m_arpenStyleParts;
+    QVector<QColor> m_arcolPartsBg;
+    QVector<Qt::BrushStyle> m_arbrushStyleParts;
+    QVector<QFont> m_arfntParts;
+    int m_iDivLineLabelsDigitsCountMax;
+    bool m_bUseEngineeringFormat;
+    QString m_strAxisLabel;
+    QRect m_rectAxisLabel;
+    int m_iDivLineLabelsTrailingDigits;
+    int m_iDivLineLabelsExponentDigits;
+    QRect m_rectDivLineLabelsMaxTextExtent;
+    int m_cxDivLineLabelsSpace;
+    QVector<int> m_ariDivLinesCount;
+    QVector<QVector<int>> m_arariDivLines_px;
+    QVector<QVector<QRect>> m_ararrectDivLineLabels;
+    QVector<QVector<QString>> m_ararstrDivLineLabels;
+    QVector<QVector<bool>> m_ararbDivLineLabelsVisible;
+    QRect m_rectDivLineLabelsPhysUnit;
+    bool m_bDivLineLabelsPhysUnitVisible;
+    QVector<QString> m_arstrScaleMinMaxVal;
+    QVector<QRect> m_arrectScaleMinMaxVal;
+    QVector<bool> m_arbScaleMinMaxValVisible;
 
 }; // class CDiagObjAxisLabel
 

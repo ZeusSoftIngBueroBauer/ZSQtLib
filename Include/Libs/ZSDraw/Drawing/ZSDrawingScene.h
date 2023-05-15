@@ -86,8 +86,8 @@ public: // type definitions and constants
     const QString c_strXmlAttrPaperOrientation = "PaperOrientation";
     const QString c_strXmlAttrGridLinesVisible = "GridLinesVisible";
     const QString c_strXmlAttrGridLinesStyle = "GridLinesStyle";
-    const QString c_strXmlAttrGridLinesPenWidth = "GridLinesPenWidth";
-    const QString c_strXmlAttrGridLinesPenColor = "GridLinesPenColor";
+    const QString c_strXmlAttrGridLinesWidth = "GridLinesWidth";
+    const QString c_strXmlAttrGridLinesColor = "GridLinesColor";
     const QString c_strXmlAttrGridLabelsVisible = "GridLabelsVisible";
     const QString c_strXmlAttrGridLabelsFont = "GridLabelsFont";
     const QString c_strXmlAttrGridLabelsTextSize = "GridLabelsTextSize";

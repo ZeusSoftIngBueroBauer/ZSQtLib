@@ -145,15 +145,50 @@ typedef enum {
 }   ELayoutPos;
 ZSDIAGRAMDLL_API QString layoutPos2Str( int i_iLayoutPos );
 
-typedef enum {
-    EDivLineLayerMin  = 0,
-    EDivLineLayerMain = 0,
-    EDivLineLayerSub  = 1,
-    EDivLineLayerMax  = 1,
-    EDivLineLayerCount,
-    EDivLineLayerUndefined
-}   EDivLineLayer;
-ZSDIAGRAMDLL_API QString divLineLayer2Str( int i_iLayer );
+//==============================================================================
+/*! For grids in diagrams main and sub division lines may be drawn.
+
+    Main division lines are usually more emphasized than sub division lines.
+    Some of the sub division lines don't need to be drawn as they overlay
+    main division lines.
+
+    @see ZS::System::SEnumEntry
+    @see ZS::System::CEnum
+    @see _GRP_BasicConcepts_Enumerations
+*/
+enum class EDivLineLayer {
+//==============================================================================
+    Main,       /*!< Main division lines. */
+    Sub,        /*!< Sub division lines which are less emphasized than the main lines. */
+};
+template class ZSDIAGRAMDLL_API ZS::System::CEnum<EDivLineLayer>;
+typedef ZS::System::CEnum<EDivLineLayer> CEnumDivLineLayer;
+
+//==============================================================================
+/*! Labeling axis lines is done in three different parts.
+
+    -|-----|-----|-----|-----|    <- Lines
+    0.0   1.0   2.0   3.0   Freq/MHz
+    Labels                  AxisLabel
+
+    - The Lines are used to indicate at which position the axis is divided.
+      If also grid is shown the Lines of the axis may be superfluous.
+    - Labels are shown at the Lines to indicate the corresponding value.
+    - The AxisLabel is used to indicate the physical size (Frequency)
+      together with the physical unit.
+
+    @see ZS::System::SEnumEntry
+    @see ZS::System::CEnum
+    @see _GRP_BasicConcepts_Enumerations
+*/
+enum class EDivLineLabelsPart {
+//==============================================================================
+    Lines,      /*!< Lines to divide the axis into sections. */
+    Labels,     /*!< Labels at the lines to indicate their values. */
+    AxisLabel   /*!< Indicates the physical size and unit. */
+};
+template class ZSDIAGRAMDLL_API ZS::System::CEnum<EDivLineLabelsPart>;
+typedef ZS::System::CEnum<EDivLineLabelsPart> CEnumDivLineLabelsPart;
 
 typedef enum {
     ETextDirectionMin        = 0,
@@ -214,11 +249,6 @@ ZSDIAGRAMDLL_API double getValRes(
     PhysVal::CUnit* i_pUnitVal,    // use unit of scale if nullptr
     double          i_fVal,
     PhysVal::CUnit* i_pUnitRes );  // use unit of value if nullptr
-ZSDIAGRAMDLL_API double logRes2LinRes( double i_fResLog, double i_fValLin );
-
-ZSDIAGRAMDLL_API QRect calcRect( const QPoint& i_ptStart, const QPoint& i_ptEnd );
-ZSDIAGRAMDLL_API QString qtKey2Str( int i_iKey );
-
 
 //******************************************************************************
 struct ZSDIAGRAMDLL_API SScale

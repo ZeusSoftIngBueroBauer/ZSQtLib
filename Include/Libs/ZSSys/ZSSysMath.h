@@ -32,6 +32,7 @@ may result in using the software modules.
 #include <float.h>
 
 #include <QtCore/qstring.h>
+#include <QtCore/qrect.h>
 
 #include "ZSSys/ZSSysDllMain.h"
 
@@ -117,6 +118,10 @@ double ZSSYSDLL_API fctFFTWindowHanning( double i_fVal, int i_iFFTSegmentLen );
 double ZSSYSDLL_API fctFFTWindowFlatTop( double i_fVal, int i_iFFTSegmentLen );
 double ZSSYSDLL_API fctFFTWindowBlackman( double i_fVal, int i_iFFTSegmentLen );
 double ZSSYSDLL_API fctFFTWindowWelch( double i_fVal, int i_iFFTSegmentLen );
+
+ZSSYSDLL_API double logRes2LinRes( double i_fResLog, double i_fValLin );
+
+ZSSYSDLL_API QRect calcRect( const QPoint& i_ptStart, const QPoint& i_ptEnd );
 
 int ZSSYSDLL_API calculateDivLines4LinSpacing(
     double  i_fScaleMinVal,

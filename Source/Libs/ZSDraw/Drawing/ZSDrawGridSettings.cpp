@@ -47,10 +47,10 @@ public: // ctors and dtor
 CDrawGridSettings::CDrawGridSettings(const QString& i_strName) :
 //------------------------------------------------------------------------------
     m_strName(i_strName),
-    m_bIsVisible(false),
-    m_eLineStyle(ELineStyle::SolidLine),
-    m_iPenWidth_px(1),
-    m_penColor(Qt::black),
+    m_bLinesVisible(false),
+    m_eLinesStyle(ELineStyle::SolidLine),
+    m_iLinesWidth_px(1),
+    m_colorLines(Qt::black),
     m_bLabelsVisible(false),
     m_fntLabels(),
     m_textSizeLabels(ETextSize8),
@@ -64,10 +64,10 @@ CDrawGridSettings::CDrawGridSettings(const QString& i_strName) :
 CDrawGridSettings::CDrawGridSettings(const CDrawGridSettings& i_other) :
 //------------------------------------------------------------------------------
     m_strName(i_other.m_strName),
-    m_bIsVisible(i_other.m_bIsVisible),
-    m_eLineStyle(i_other.m_eLineStyle),
-    m_iPenWidth_px(i_other.m_iPenWidth_px),
-    m_penColor(i_other.m_penColor),
+    m_bLinesVisible(i_other.m_bLinesVisible),
+    m_eLinesStyle(i_other.m_eLinesStyle),
+    m_iLinesWidth_px(i_other.m_iLinesWidth_px),
+    m_colorLines(i_other.m_colorLines),
     m_bLabelsVisible(i_other.m_bLabelsVisible),
     m_fntLabels(i_other.m_fntLabels),
     m_textSizeLabels(i_other.m_textSizeLabels),
@@ -82,10 +82,10 @@ CDrawGridSettings::~CDrawGridSettings()
 //------------------------------------------------------------------------------
 {
     //m_strName;
-    m_bIsVisible = false;
-    m_eLineStyle = static_cast<ELineStyle>(0);
-    m_iPenWidth_px = 0;
-    //m_penColor;
+    m_bLinesVisible = false;
+    m_eLinesStyle = static_cast<ELineStyle>(0);
+    m_iLinesWidth_px = 0;
+    //m_colorLines;
     m_bLabelsVisible = false;
     //m_fntLabels;
     m_textSizeLabels = static_cast<ETextSize>(0);
@@ -103,16 +103,16 @@ bool CDrawGridSettings::operator == (const CDrawGridSettings& i_other) const
 //------------------------------------------------------------------------------
 {
     bool bEqual = true;
-    if (m_bIsVisible != i_other.m_bIsVisible) {
+    if (m_bLinesVisible != i_other.m_bLinesVisible) {
         bEqual = false;
     }
-    else if (m_eLineStyle != i_other.m_eLineStyle) {
+    else if (m_eLinesStyle != i_other.m_eLinesStyle) {
         bEqual = false;
     }
-    else if (m_iPenWidth_px != i_other.m_iPenWidth_px) {
+    else if (m_iLinesWidth_px != i_other.m_iLinesWidth_px) {
         bEqual = false;
     }
-    else if (m_penColor != i_other.m_penColor) {
+    else if (m_colorLines != i_other.m_colorLines) {
         bEqual = false;
     }
     else if (m_bLabelsVisible != i_other.m_bLabelsVisible) {
@@ -148,59 +148,59 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDrawGridSettings::setVisible(bool i_bVisible)
+void CDrawGridSettings::setLinesVisible(bool i_bVisible)
 //------------------------------------------------------------------------------
 {
-    m_bIsVisible = i_bVisible;
+    m_bLinesVisible = i_bVisible;
 }
 
 //------------------------------------------------------------------------------
-bool CDrawGridSettings::isVisible() const
+bool CDrawGridSettings::areLinesVisible() const
 //------------------------------------------------------------------------------
 {
-    return m_bIsVisible;
+    return m_bLinesVisible;
 }
 
 //------------------------------------------------------------------------------
-void CDrawGridSettings::setLineStyle(const CEnumLineStyle& i_eLineStyle)
+void CDrawGridSettings::setLinesStyle(const CEnumLineStyle& i_eLineStyle)
 //------------------------------------------------------------------------------
 {
-    m_eLineStyle = i_eLineStyle;
+    m_eLinesStyle = i_eLineStyle;
 }
 
 //------------------------------------------------------------------------------
-CEnumLineStyle CDrawGridSettings::lineStyle() const
+CEnumLineStyle CDrawGridSettings::linesStyle() const
 //------------------------------------------------------------------------------
 {
-    return m_eLineStyle;
+    return m_eLinesStyle;
 }
 
 //------------------------------------------------------------------------------
-void CDrawGridSettings::setPenWidth(int i_iWidth_px)
+void CDrawGridSettings::setLinesWidth(int i_iWidth_px)
 //------------------------------------------------------------------------------
 {
-    m_iPenWidth_px = i_iWidth_px;
+    m_iLinesWidth_px = i_iWidth_px;
 }
 
 //------------------------------------------------------------------------------
-int CDrawGridSettings::penWidth() const
+int CDrawGridSettings::linesWidth() const
 //------------------------------------------------------------------------------
 {
-    return m_iPenWidth_px;
+    return m_iLinesWidth_px;
 }
 
 //------------------------------------------------------------------------------
-void CDrawGridSettings::setPenColor(const QColor& i_color)
+void CDrawGridSettings::setLinesColor(const QColor& i_color)
 //------------------------------------------------------------------------------
 {
-    m_penColor = i_color;
+    m_colorLines = i_color;
 }
 
 //------------------------------------------------------------------------------
-QColor CDrawGridSettings::penColor() const
+QColor CDrawGridSettings::linesColor() const
 //------------------------------------------------------------------------------
 {
-    return m_penColor;
+    return m_colorLines;
 }
 
 /*==============================================================================
@@ -300,10 +300,10 @@ QString CDrawGridSettings::toString() const
 //------------------------------------------------------------------------------
 {
     QString str = m_strName
-        + " Lines {Visible: " + bool2Str(m_bIsVisible)
-        + ", Style: " + m_eLineStyle.toString()
-        + ", Color: " + m_penColor.name()
-        + ", PenWidth: " + QString::number(m_iPenWidth_px) + "}"
+        + " Lines {Visible: " + bool2Str(m_bLinesVisible)
+        + ", Style: " + m_eLinesStyle.toString()
+        + ", Color: " + m_colorLines.name()
+        + ", PenWidth: " + QString::number(m_iLinesWidth_px) + "}"
         + ", Labels {Visible: " + bool2Str(m_bLabelsVisible)
         + ", Font: " + m_fntLabels.family()
         + ", TextStyle: " + m_eTextStyleLabels.toString()

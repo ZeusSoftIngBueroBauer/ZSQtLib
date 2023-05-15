@@ -30,6 +30,7 @@ may result in using the software modules.
 #include "ZSDiagram/ZSDiagTrace.h"
 #include "ZSDiagram/ZSDiagramFrameStyles.h"
 #include "ZSSys/ZSSysAux.h"
+#include "ZSSys/ZSSysMath.h"
 #include "ZSSys/ZSSysTime.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
@@ -846,7 +847,7 @@ void CWdgtDiagram::keyPressEvent( QKeyEvent* i_pEv )
 
     if( m_pTrcAdminObjEvents != nullptr && m_pTrcAdminObjEvents->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
     {
-        strTrcMsg = qtKey2Str(i_pEv->key());
+        strTrcMsg = qKeyCode2Str(i_pEv->key());
     }
 
     CMethodTracer mthTracer(
@@ -1306,7 +1307,7 @@ void CWdgtDiagram::keyReleaseEvent( QKeyEvent* i_pEv )
 
     if( m_pTrcAdminObjEvents != nullptr && m_pTrcAdminObjEvents->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strTrcMsg = qtKey2Str(i_pEv->key());
+        strTrcMsg = qKeyCode2Str(i_pEv->key());
     }
 
     CMethodTracer mthTracer(
@@ -1401,7 +1402,7 @@ void CWdgtDiagram::mousePressEvent( QMouseEvent* i_pEv )
                 m_bIsZooming = true;
                 m_ptZoomStart = i_pEv->pos();
                 m_ptZoomEnd = i_pEv->pos();
-                m_rectZoom = calcRect(m_ptZoomStart,m_ptZoomEnd);
+                m_rectZoom = Math::calcRect(m_ptZoomStart,m_ptZoomEnd);
             }
         }
 
@@ -1478,7 +1479,7 @@ void CWdgtDiagram::mouseReleaseEvent( QMouseEvent* i_pEv )
             }
             m_ptZoomEnd = ptZoomEnd;
 
-            m_rectZoom = calcRect(m_ptZoomStart,m_ptZoomEnd);
+            m_rectZoom = Math::calcRect(m_ptZoomStart,m_ptZoomEnd);
 
             if( !isZoomingEnabled(EScaleDirX) )
             {
@@ -1640,7 +1641,7 @@ void CWdgtDiagram::mouseMoveEvent( QMouseEvent* i_pEv )
 
         // Calculate new output region of zooming rectangle.
         m_ptZoomEnd = i_pEv->pos();
-        m_rectZoom = calcRect(m_ptZoomStart,m_ptZoomEnd);
+        m_rectZoom = Math::calcRect(m_ptZoomStart,m_ptZoomEnd);
 
         // The objects and the diagram need to redraw the pixmap. Widget processing
         // will be realized by invalidating the zooming rectangle border lines below.
@@ -1942,7 +1943,7 @@ bool CWdgtDiagram::processMoveKeyEvent( int i_iKey )
 
     if( m_pTrcAdminObjEvents != nullptr && m_pTrcAdminObjEvents->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strTrcMsg = qtKey2Str(i_iKey);
+        strTrcMsg = qKeyCode2Str(i_iKey);
     }
 
     CMethodTracer mthTracer(

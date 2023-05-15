@@ -60,14 +60,14 @@ public: // operators
     bool operator == (const CDrawGridSettings& i_other) const;
     bool operator != (const CDrawGridSettings& i_other) const;
 public: // instance methods
-    void setVisible(bool i_bVisible);
-    bool isVisible() const;
-    void setLineStyle(const CEnumLineStyle& i_eLineStyle);
-    CEnumLineStyle lineStyle() const;
-    void setPenWidth(int i_iWidth_px);
-    int penWidth() const;
-    void setPenColor(const QColor& i_color);
-    QColor penColor() const;
+    void setLinesVisible(bool i_bVisible);
+    bool areLinesVisible() const;
+    void setLinesStyle(const CEnumLineStyle& i_eLineStyle);
+    CEnumLineStyle linesStyle() const;
+    void setLinesWidth(int i_iWidth_px);
+    int linesWidth() const;
+    void setLinesColor(const QColor& i_color);
+    QColor linesColor() const;
 public: // instance methods
     void setLabelsVisible(bool i_bVisible);
     bool areLabelsVisible() const;
@@ -85,10 +85,10 @@ public: // instance methods
     QString toString() const;
 protected: // instance members
     QString m_strName;
-    bool m_bIsVisible;
-    CEnumLineStyle m_eLineStyle;
-    int m_iPenWidth_px;
-    QColor m_penColor;
+    bool m_bLinesVisible;
+    CEnumLineStyle m_eLinesStyle;
+    int m_iLinesWidth_px;
+    QColor m_colorLines;
     bool m_bLabelsVisible;
     QFont m_fntLabels;
     ETextSize m_textSizeLabels;

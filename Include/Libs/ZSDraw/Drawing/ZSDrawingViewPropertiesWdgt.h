@@ -113,9 +113,9 @@ protected slots:
     void onEdtImageSizeWidthPxValueChanged(int i_cxWidth_px);
     void onEdtImageSizeHeightPxValueChanged(int i_cyHeight_px);
     void onChkGridLinesVisibleStateChanged(int i_iState);
-    void onCmbGridLineStyleCurrentIndexChanged(int i_idx);
-    void onEdtGridPenWidthValueChanged(int i_iVal);
-    void onBtnGridPenColorClicked(bool i_bChecked);
+    void onCmbGridLinesStyleCurrentIndexChanged(int i_idx);
+    void onEdtGridLinesWidthValueChanged(int i_iVal);
+    void onBtnGridLinesColorClicked(bool i_bChecked);
     void onChkGridScaleLabelsVisibleStateChanged(int i_iState);
     void onCmbGridScaleLabelsCurrentFontChanged(const QFont& i_fnt);
     void onCmbGridScaleLabelsFontSizeCurrentIndexChanged(int i_iCurrentIndex);
@@ -133,10 +133,10 @@ protected: // instance methods
     void setScaleFactor( int i_iDividend, int i_iDivisor );
     void setImageSize( const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight );
 protected: // instance methods
-    void setGridVisible(bool i_bVisible);
-    void setGridLineStyle(ELineStyle i_lineStyle);
-    void setGridPenColor(const QColor& i_color);
-    void setGridPenWidth(int i_iWidth_px);
+    void setGridLinesVisible(bool i_bVisible);
+    void setGridLinesStyle(ELineStyle i_lineStyle);
+    void setGridLinesColor(const QColor& i_color);
+    void setGridLinesWidth(int i_iWidth_px);
     void setGridLabelsVisible(bool i_bVisible);
     void setGridLabelsFont(const QFont& i_fnt);
     void setGridLabelsTextSize(ETextSize i_textSize);
@@ -151,7 +151,7 @@ protected: // instance methods
 protected: // instance methods
     void updateGridSettings();
     QSize fillGridLineStylesModel();
-    void updateGridPenColorButtonIcon();
+    void updateGridLinesColorButtonIcon();
     void updateGridLabelsTextColorButtonIcon();
     void updateGridLabelsTextStyleBoldButton();
     void updateGridLabelsTextStyleItalicButton();
@@ -226,15 +226,15 @@ protected: // instance members
     QGridLayout* m_pLytGridSettings;
     QLabel* m_pLblGridLines;
     QCheckBox* m_pChkGridLinesVisible;
-    QComboBox* m_pCmbGridLineStyle;
+    QComboBox* m_pCmbGridLinesStyle;
     QStandardItemModel* m_pModelGridLineStyles;
-    QSpinBox* m_pEdtGridPenWidth;
-    QPixmap* m_pPxmBtnGridPenColor;
-    QRect m_rctBtnGridPenColor;
-    QLine m_lineBtnGridPenColor1;
-    QLine m_lineBtnGridPenColor2;
-    QLine m_lineBtnGridPenColor3;
-    QPushButton* m_pBtnGridPenColor;
+    QSpinBox* m_pEdtGridLinesWidth;
+    QPixmap* m_pPxmBtnGridLinesColor;
+    QRect m_rctBtnGridLinesColor;
+    QLine m_lineBtnGridLinesColor1;
+    QLine m_lineBtnGridLinesColor2;
+    QLine m_lineBtnGridLinesColor3;
+    QPushButton* m_pBtnGridLinesColor;
     // Grid Scale Labels
     QLabel* m_pLblGridScaleLabels;
     QCheckBox* m_pChkGridScaleLabelsVisible;

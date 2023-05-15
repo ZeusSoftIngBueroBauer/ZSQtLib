@@ -46,12 +46,12 @@ public: // ctors and dtor
         CDiagScale*    i_pDiagScaleY );
     virtual ~CDiagObjGrid();
 public: // instance methods
-    void show( EDivLineLayer i_layer );
-    void hide( EDivLineLayer i_layer );
-    void setCol( EDivLineLayer i_layer, const QColor& i_col );
-    QColor getCol( EDivLineLayer i_layer ) const;
-    void setPenStyle( EDivLineLayer i_layer, const Qt::PenStyle& i_penStyle );
-    Qt::PenStyle getPenStyle( EDivLineLayer i_layer ) const;
+    void show( const CEnumDivLineLayer& i_eLayer );
+    void hide( const CEnumDivLineLayer& i_eLayer );
+    void setCol( const CEnumDivLineLayer& i_eLayer, const QColor& i_col );
+    QColor getCol( const CEnumDivLineLayer& i_eLayer ) const;
+    void setPenStyle( const CEnumDivLineLayer& i_eLayer, const Qt::PenStyle& i_penStyle );
+    Qt::PenStyle getPenStyle( const CEnumDivLineLayer& i_eLayer ) const;
 public: // overridables of base class CDiagObj
     virtual void show( bool i_bInformDiagram = true );
     virtual void hide( bool i_bInformDiagram = true );
@@ -63,10 +63,10 @@ private: // copy ctor not allowed
 private: // assignment operator not allowed
     void operator=( const CDiagObjGrid& );
 protected:  // instance members
-    QColor       m_arcol[EDivLineLayerCount];
-    Qt::PenStyle m_arpenStyle[EDivLineLayerCount];
-    bool         m_arbShow[EDivLineLayerCount];
-    bool         m_bUpdWidget;
+    QVector<QColor> m_arcol; //[EDivLineLayerCount];
+    QVector<Qt::PenStyle> m_arpenStyle; //[EDivLineLayerCount];
+    QVector<bool> m_arbShow; //[EDivLineLayerCount];
+    bool m_bUpdWidget;
 
 }; // class CDiagObjGrid
 

@@ -467,7 +467,7 @@ void CTest::doTestStepSigGenAddScales( ZS::Test::CTestStep* i_pTestStep )
             /* strObjName */ "DiagScaleX",
             /* scaleDir   */ EScaleDirX,
             /* scale      */ scaleX );
-        m_pDiagScaleX->setDivLineDistMinPix(EDivLineLayerMain, 20);
+        m_pDiagScaleX->setDivLineDistMinPix(EDivLineLayer::Main, 20);
 
         m_pWdgtDiagram->addDiagScale(m_pDiagScaleX);
 
@@ -480,7 +480,7 @@ void CTest::doTestStepSigGenAddScales( ZS::Test::CTestStep* i_pTestStep )
             /* strObjName */ "DiagScaleY",
             /* scaleDir   */ EScaleDirY,
             /* scale      */ scaleY );
-        m_pDiagScaleY->setDivLineDistMinPix(EDivLineLayerMain, 20);
+        m_pDiagScaleY->setDivLineDistMinPix(EDivLineLayer::Main, 20);
 
         m_pWdgtDiagram->addDiagScale(m_pDiagScaleY);
 

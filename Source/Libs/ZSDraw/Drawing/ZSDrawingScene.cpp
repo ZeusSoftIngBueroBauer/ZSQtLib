@@ -474,34 +474,34 @@ SErrResultInfo CDrawingScene::load( const QString& i_strFileName )
                             bool bGridLinesVisible = getBoolVal(
                                 xmlStreamReader, xmlStreamAttrs, strElemName,
                                 c_strXmlAttrGridLinesVisible, false);
-                            bool bGridLabelsVisible = false;
                             if (!xmlStreamReader.hasError()) {
-                                gridSettings.setVisible(bGridLinesVisible);
+                                gridSettings.setLinesVisible(bGridLinesVisible);
                             }
                             if (!xmlStreamReader.hasError()) {
                                 CEnumLineStyle eLineStyle = getLineStyle(
                                     xmlStreamReader, xmlStreamAttrs, strElemName,
                                     c_strXmlAttrGridLinesStyle, bGridLinesVisible);
                                 if (!xmlStreamReader.hasError() && eLineStyle.isValid()) {
-                                    gridSettings.setLineStyle(eLineStyle);
+                                    gridSettings.setLinesStyle(eLineStyle);
                                 }
                             }
                             if (!xmlStreamReader.hasError()) {
                                 int iPenWidth = getIntVal(
                                     xmlStreamReader, xmlStreamAttrs, strElemName,
-                                    c_strXmlAttrGridLinesPenWidth, bGridLinesVisible, 1);
+                                    c_strXmlAttrGridLinesWidth, bGridLinesVisible, 1);
                                 if (!xmlStreamReader.hasError()) {
-                                    gridSettings.setPenWidth(iPenWidth);
+                                    gridSettings.setLinesWidth(iPenWidth);
                                 }
                             }
                             if (!xmlStreamReader.hasError()) {
                                 QColor clrPen = getColor(
                                     xmlStreamReader, xmlStreamAttrs, strElemName,
-                                    c_strXmlAttrGridLinesPenColor, bGridLinesVisible);
+                                    c_strXmlAttrGridLinesColor, bGridLinesVisible);
                                 if (!xmlStreamReader.hasError()) {
-                                    gridSettings.setPenColor(clrPen);
+                                    gridSettings.setLinesColor(clrPen);
                                 }
                             }
+                            bool bGridLabelsVisible = false;
                             if (!xmlStreamReader.hasError()) {
                                 bGridLabelsVisible = getBoolVal(
                                     xmlStreamReader, xmlStreamAttrs, strElemName,
@@ -699,10 +699,10 @@ SErrResultInfo CDrawingScene::save( const QString& i_strFileName )
                 xmlStreamWriter.writeAttribute(c_strXmlAttrPaperSize, m_drawingSize.normedPaperSize().toString());
                 xmlStreamWriter.writeAttribute(c_strXmlAttrPaperOrientation, m_drawingSize.normedPaperOrientation().toString());
             }
-            xmlStreamWriter.writeAttribute(c_strXmlAttrGridLinesVisible, bool2Str(m_gridSettings.isVisible()));
-            xmlStreamWriter.writeAttribute(c_strXmlAttrGridLinesStyle, CEnumLineStyle(m_gridSettings.lineStyle()).toString());
-            xmlStreamWriter.writeAttribute(c_strXmlAttrGridLinesPenWidth, QString::number(m_gridSettings.penWidth()));
-            xmlStreamWriter.writeAttribute(c_strXmlAttrGridLinesPenColor, m_gridSettings.penColor().name());
+            xmlStreamWriter.writeAttribute(c_strXmlAttrGridLinesVisible, bool2Str(m_gridSettings.areLinesVisible()));
+            xmlStreamWriter.writeAttribute(c_strXmlAttrGridLinesStyle, CEnumLineStyle(m_gridSettings.linesStyle()).toString());
+            xmlStreamWriter.writeAttribute(c_strXmlAttrGridLinesWidth, QString::number(m_gridSettings.linesWidth()));
+            xmlStreamWriter.writeAttribute(c_strXmlAttrGridLinesColor, m_gridSettings.linesColor().name());
             xmlStreamWriter.writeAttribute(c_strXmlAttrGridLabelsVisible, bool2Str(m_gridSettings.areLabelsVisible()));
             xmlStreamWriter.writeAttribute(c_strXmlAttrGridLabelsFont, m_gridSettings.labelsFont().family());
             xmlStreamWriter.writeAttribute(c_strXmlAttrGridLabelsTextSize, QString::number(m_gridSettings.labelsTextSize()));
@@ -5613,7 +5613,7 @@ void CDrawingScene::drawBackground( QPainter* i_pPainter, const QRectF& i_rect )
     i_pPainter->setBrush(Qt::white);
     i_pPainter->drawRect(rctScene);
 
-    if (m_gridSettings.isVisible())
+    if (m_gridSettings.areLinesVisible())
     {
         drawGrid(i_pPainter);
     }
@@ -5893,9 +5893,9 @@ void CDrawingScene::drawGrid(QPainter* i_pPainter)
     }
     if (iDivLinesCount > 0)
     {
-        QPen pen(m_gridSettings.penColor());
-        pen.setStyle(lineStyle2QtPenStyle(m_gridSettings.lineStyle().enumerator()));
-        pen.setWidth(m_gridSettings.penWidth());
+        QPen pen(m_gridSettings.linesColor());
+        pen.setStyle(lineStyle2QtPenStyle(m_gridSettings.linesStyle().enumerator()));
+        pen.setWidth(m_gridSettings.linesWidth());
         i_pPainter->setPen(pen);
 
         for (int idxLine = 0; idxLine < iDivLinesCount; ++idxLine ) {
@@ -5940,9 +5940,9 @@ void CDrawingScene::drawGrid(QPainter* i_pPainter)
 
     if (iDivLinesCount > 0)
     {
-        QPen pen(m_gridSettings.penColor());
-        pen.setStyle(lineStyle2QtPenStyle(m_gridSettings.lineStyle().enumerator()));
-        pen.setWidth(m_gridSettings.penWidth());
+        QPen pen(m_gridSettings.linesColor());
+        pen.setStyle(lineStyle2QtPenStyle(m_gridSettings.linesStyle().enumerator()));
+        pen.setWidth(m_gridSettings.linesWidth());
         i_pPainter->setPen(pen);
 
         for (int idxLine = 0; idxLine < iDivLinesCount; ++idxLine ) {
