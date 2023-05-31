@@ -1953,7 +1953,7 @@ CDiagObj* CDiagObjTable::clone( CDataDiagram* i_pDiagramTrg ) const
             if( m_ararpDiagObjValueProvider[idxCell] != nullptr )
             {
                 pDiagObjValueProvider = m_ararpDiagObjValueProvider[idxCell];
-                pDiagObjValueProvider = dynamic_cast<CDiagObjValueProvider*>(i_pDiagramTrg->getDiagObj(pDiagObjValueProvider->getObjId()));
+                pDiagObjValueProvider = dynamic_cast<CDiagObjValueProvider*>(i_pDiagramTrg->findDiagObj(pDiagObjValueProvider->getObjName()));
                 pDiagObj->m_ararpDiagObjValueProvider[idxCell] = pDiagObjValueProvider;
 
                 if( !QObject::connect(

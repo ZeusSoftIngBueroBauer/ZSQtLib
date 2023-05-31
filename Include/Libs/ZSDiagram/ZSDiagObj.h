@@ -122,7 +122,6 @@ signals:
 public: // instance methods
     void setObjName( const QString& i_strObjName );
     QString getObjName() const;
-    int getObjId() const;
     CDataDiagram* getDiagram();
     CDiagScale* getDiagScale( EScaleDir i_scaleDir );
     CDiagTrace* getDiagTrace();
@@ -171,28 +170,24 @@ private: // copy ctor not allowed
 private: // assignment operator not allowed
     void operator=( const CDiagObj& );
 protected:  // instance members
-    QString                   m_strObjName;
-    int                       m_iObjId; // on adding the object to the diagram the diagram will assign the id to the object
-    CDataDiagram*             m_pDiagram;
-    CDiagTrace*               m_pDiagTrace;
-    CDiagScale*               m_arpDiagScale[EScaleDirCount];
-    unsigned int              m_uUpdateFlags;
-    ELayoutPos                m_layoutPos;
-    QRect                     m_rectContent;
-    QRect                     m_rectContentPrev;
-    bool                      m_bAdjustContentRect2DiagPartCenter;
-    bool                      m_bVisible;
-    EDiagObjState             m_state;
-    bool                      m_bIsFocusable;
-    bool                      m_bPtFocusedValid;
-    QPoint                    m_ptFocused;
-    bool                      m_bIsEditable;
-    bool                      m_bPtEditSessionValid;
-    QPoint                    m_ptEditSession;
-    CDiagObj*                 m_pDiagObjNext;
-    CDiagObj*                 m_pDiagObjPrev;
-    CDiagObj*                 m_pDiagObjPaintNext;
-    CDiagObj*                 m_pDiagObjPaintPrev;
+    QString m_strObjName;
+    CDataDiagram* m_pDiagram;
+    CDiagTrace* m_pDiagTrace;
+    CDiagScale* m_arpDiagScale[EScaleDirCount];
+    unsigned int m_uUpdateFlags;
+    ELayoutPos m_layoutPos;
+    QRect m_rectContent;
+    QRect m_rectContentPrev;
+    bool m_bAdjustContentRect2DiagPartCenter;
+    bool m_bVisible;
+    EDiagObjState m_state;
+    bool m_bIsFocusable;
+    bool m_bPtFocusedValid;
+    QPoint m_ptFocused;
+    bool m_bIsEditable;
+    bool m_bPtEditSessionValid;
+    QPoint m_ptEditSession;
+protected:  // instance members
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjUpdate;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjEvents;

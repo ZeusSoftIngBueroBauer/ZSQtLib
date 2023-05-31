@@ -261,6 +261,7 @@ public: // ctors
 public: // instance methods
     PhysVal::CPhysVal physValMin() const;
     PhysVal::CPhysVal physValMax() const;
+    PhysVal::CPhysVal physValRange() const;
 public: // operators
     bool operator == ( const SScale& i_scaleOther ) const;
     bool operator != ( const SScale& i_scaleOther ) const;

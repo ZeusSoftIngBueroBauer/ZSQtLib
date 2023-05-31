@@ -221,12 +221,7 @@ CDataDiagram* CWdgtDiagram::clone( EDiagramUpdateType i_diagramUpdateType ) cons
     }
     else
     {
-        CWdgtDiagram*     pWdgtDiagram = new CWdgtDiagram(m_strObjName);
-        int               idxScaleDir;
-        const CDiagScale* pDiagScale;
-        const CDiagTrace* pDiagTrace;
-        const CDiagObj*   pDiagObj;
-        CDiagObj*         pDiagObjCloned;
+        CWdgtDiagram* pWdgtDiagram = new CWdgtDiagram(m_strObjName);
 
         // Data Diagram
         //-------------
@@ -236,53 +231,22 @@ CDataDiagram* CWdgtDiagram::clone( EDiagramUpdateType i_diagramUpdateType ) cons
         pWdgtDiagram->m_measMode = m_measMode;
         pWdgtDiagram->m_iMeasType = m_iMeasType;
 
-        for( idxScaleDir = 0; idxScaleDir < EScaleDirCount; idxScaleDir++ )
+        for (int idx = 0; idx < EScaleDirCount; idx++)
         {
-            pWdgtDiagram->m_arSpacing[idxScaleDir] = m_arSpacing[idxScaleDir];
+            pWdgtDiagram->m_arSpacing[idx] = m_arSpacing[idx];
         }
-
-        pDiagScale = m_pDiagScaleFirst;
-        while( pDiagScale != nullptr )
+        for (int idx = 0; idx < m_arpDiagScales.size(); ++idx)
         {
-            pDiagScale->clone(pWdgtDiagram);
-            pDiagScale = pDiagScale->m_pDiagScaleNext;
+            m_arpDiagScales[idx]->clone(pWdgtDiagram);
         }
-
-        pDiagTrace = m_pDiagTraceFirst;
-        while( pDiagTrace != nullptr )
+        for (int idx = 0; idx < m_arpDiagTraces.size(); ++idx)
         {
-            pDiagTrace->clone(pWdgtDiagram);
-            pDiagTrace = pDiagTrace->m_pDiagTraceNext;
+            m_arpDiagTraces[idx]->clone(pWdgtDiagram);
         }
-
-        pDiagObj = m_pDiagObjFirst;
-        while( pDiagObj != nullptr )
+        for (int idx = 0; idx < m_arpDiagObjs.size(); ++idx)
         {
-            pDiagObj->clone(pWdgtDiagram);
-            pDiagObj = pDiagObj->m_pDiagObjNext;
-        }
-
-        if( m_pDiagObjPaintFirst != nullptr && m_pDiagObjPaintLast != nullptr )
-        {
-            pDiagObj = m_pDiagObjPaintFirst;
-            while( pDiagObj != nullptr )
-            {
-                pDiagObjCloned = pWdgtDiagram->getDiagObj( pDiagObj->getObjId() );
-
-                if( pDiagObjCloned == nullptr )
-                {
-                    throw ZS::System::CException(__FILE__,__LINE__,EResultInternalProgramError);
-                }
-
-                if( pDiagObj->m_pDiagObjPaintPrev != nullptr && pDiagObj->m_pDiagObjPaintNext != nullptr )
-                {
-                    pDiagObjCloned->m_pDiagObjPaintPrev = pWdgtDiagram->getDiagObj( pDiagObj->m_pDiagObjPaintPrev->getObjId() ); //lint !e613
-                    pDiagObjCloned->m_pDiagObjPaintNext = pWdgtDiagram->getDiagObj( pDiagObj->m_pDiagObjPaintNext->getObjId() ); //lint !e613
-                }
-                pDiagObj = pDiagObj->m_pDiagObjPaintNext;
-            }
-            pWdgtDiagram->m_pDiagObjPaintFirst = pWdgtDiagram->getDiagObj( m_pDiagObjPaintFirst->getObjId() );
-            pWdgtDiagram->m_pDiagObjPaintLast  = pWdgtDiagram->getDiagObj( m_pDiagObjPaintLast->getObjId() );
+            CDiagObj* pDiagObj = m_arpDiagObjs[idx]->clone(pWdgtDiagram);
+            pWdgtDiagram->m_hshpDiagObjs[m_arpDiagObjs[idx]->getObjName()] = pDiagObj;
         }
 
         // Pixmap Diagram
@@ -856,8 +820,6 @@ void CWdgtDiagram::keyPressEvent( QKeyEvent* i_pEv )
         /* strMethod    */ "keyPressEvent",
         /* strAddInfo   */ strTrcMsg );
 
-    CDiagObj* pDiagObj;
-
     // As default we ignore the event ..
     i_pEv->ignore();
 
@@ -977,15 +939,13 @@ void CWdgtDiagram::keyPressEvent( QKeyEvent* i_pEv )
                 else
                 {
                     // Check if any object is focusable. If - set the focus on the first found object.
-                    pDiagObj = m_pDiagObjFirst;
-                    while( pDiagObj != nullptr )
+                    for (CDiagObj* pDiagObj : m_arpDiagObjs)
                     {
                         if( pDiagObj->isFocusable() && pDiagObj->isEditable() )
                         {
                             m_pDiagObjFocused = pDiagObj;
                             break;
                         }
-                        pDiagObj = pDiagObj->m_pDiagObjNext;
                     }
                 }
 
@@ -1331,8 +1291,6 @@ void CWdgtDiagram::mousePressEvent( QMouseEvent* i_pEv )
         /* strMethod    */ "mousePressEvent",
         /* strAddInfo   */ "" );
 
-    CDiagObj* pDiagObj;
-
     // Maybe also parents are interested in the mouse event ...
     i_pEv->ignore();
 
@@ -1368,30 +1326,32 @@ void CWdgtDiagram::mousePressEvent( QMouseEvent* i_pEv )
         }
 
         // Check if any object has been hit. If - start editing the object.
-        pDiagObj = m_pDiagObjPaintLast;
-        while( pDiagObj != nullptr )
+        if (m_arpDiagObjs.size() > 0)
         {
-            if( pDiagObj->isFocusable() && pDiagObj->isEditable() && pDiagObj->isHit(i_pEv->pos()) )
+            for (int idx = m_arpDiagObjs.size()-1; idx >= 0; --idx)
             {
-                // Store the focused object:
-                m_pDiagObjFocused = pDiagObj;
-                m_pDiagObjFocusedByMouseEvent = pDiagObj;
-                m_pDiagObjFocusedRecently = pDiagObj;
+                CDiagObj* pDiagObj = m_arpDiagObjs[idx];
+                if( pDiagObj->isFocusable() && pDiagObj->isEditable() && pDiagObj->isHit(i_pEv->pos()) )
+                {
+                    // Store the focused object:
+                    m_pDiagObjFocused = pDiagObj;
+                    m_pDiagObjFocusedByMouseEvent = pDiagObj;
+                    m_pDiagObjFocusedRecently = pDiagObj;
 
-                // Store the edited object:
-                m_pDiagObjEditing = pDiagObj;
-                m_pDiagObjEditingByMouseEvent = pDiagObj;
+                    // Store the edited object:
+                    m_pDiagObjEditing = pDiagObj;
+                    m_pDiagObjEditingByMouseEvent = pDiagObj;
 
-                // The focused object need to be updated at last so that no other
-                // object overwrites the graphic output of the focused object:
-                moveDiagObjInPaintList(m_pDiagObjFocused,EDiagObjMoveModeToTop);
+                    // The focused object need to be updated at last so that no other
+                    // object overwrites the graphic output of the focused object:
+                    moveDiagObjInPaintList(m_pDiagObjFocused,EDiagObjMoveModeToTop);
 
-                // If the graphical output of the object changes the corresponding
-                // update flags will be invalidated (the bits will be set).
-                m_pDiagObjFocused->startEditSession(i_pEv->pos()); // implicitly sets the focus on this object
-                break;
+                    // If the graphical output of the object changes the corresponding
+                    // update flags will be invalidated (the bits will be set).
+                    m_pDiagObjFocused->startEditSession(i_pEv->pos()); // implicitly sets the focus on this object
+                    break;
+                }
             }
-            pDiagObj = pDiagObj->m_pDiagObjPaintPrev;
         }
 
         // If none of the diagram objects has been hit and if zooming is enabled ...
@@ -1458,8 +1418,7 @@ void CWdgtDiagram::mouseReleaseEvent( QMouseEvent* i_pEv )
 
         if( m_bIsZooming )
         {
-            CDiagScale* pDiagScale;
-            QPoint      ptZoomEnd = i_pEv->pos();
+            QPoint ptZoomEnd = i_pEv->pos();
 
             if( ptZoomEnd.x() < m_rectPartCenter.left() )
             {
@@ -1494,8 +1453,7 @@ void CWdgtDiagram::mouseReleaseEvent( QMouseEvent* i_pEv )
 
             if( m_rectZoom.width() >= 2 && m_rectZoom.height() >= 2 )
             {
-                pDiagScale = m_pDiagScaleFirst;
-                while( pDiagScale != nullptr )
+                for (CDiagScale* pDiagScale : m_arpDiagScales)
                 {
                     switch( pDiagScale->getScaleDir() )
                     {
@@ -1514,7 +1472,6 @@ void CWdgtDiagram::mouseReleaseEvent( QMouseEvent* i_pEv )
                             break;
                         }
                     }
-                    pDiagScale = pDiagScale->m_pDiagScaleNext;
                 }
                 m_iZoomCount++;
             }
@@ -1562,14 +1519,9 @@ void CWdgtDiagram::mouseDoubleClickEvent( QMouseEvent* i_pEv )
 
     if( m_iZoomCount > 0 )
     {
-        CDiagScale* pDiagScale;
-        SScale      scale;
-
-        pDiagScale = m_pDiagScaleFirst;
-        while( pDiagScale != nullptr )
+        for (CDiagScale* pDiagScale : m_arpDiagScales)
         {
             pDiagScale->zoomOut();
-            pDiagScale = pDiagScale->m_pDiagScaleNext;
         }
         m_iZoomCount--;
 
@@ -1680,15 +1632,13 @@ void CWdgtDiagram::mouseMoveEvent( QMouseEvent* i_pEv )
             m_pDiagObjFocusedByMouseEvent = nullptr;
         }
 
-        CDiagObj* pDiagObj = m_pDiagObjFirst;
-        while( pDiagObj != nullptr )
+        for (CDiagObj* pDiagObj : m_arpDiagObjs)
         {
             if( pDiagObj->isFocusable() && pDiagObj->isEditable() && pDiagObj->isHit(i_pEv->pos()) )
             {
                 m_pDiagObjFocusedByMouseEvent = pDiagObj;
                 break;
             }
-            pDiagObj = pDiagObj->m_pDiagObjNext;
         }
         if( m_pDiagObjFocusedByMouseEvent != nullptr )
         {
@@ -1744,11 +1694,9 @@ void CWdgtDiagram::paintEvent( QPaintEvent* i_pEv )
     // We are going to clear the update widget flags of the objects as the paint
     // event might have been triggered on the resize event and for better
     // performance the resize event has just executed the layout processing.
-    CDiagObj* pDiagObj = m_pDiagObjFirst;
-    while( pDiagObj != nullptr )
+    for (CDiagObj* pDiagObj : m_arpDiagObjs)
     {
         pDiagObj->validate(EUpdateWidget);
-        pDiagObj = pDiagObj->m_pDiagObjNext;
     }
 
     QPainter painter(this);
@@ -1999,13 +1947,16 @@ bool CWdgtDiagram::processMoveKeyEvent( int i_iKey )
                     mthTracer.trace(strTrcMsgMoveKey);
                 }
 
-                CDiagObj* pDiagObj;
-
                 // ... set focus on previous object.
-                pDiagObj = m_pDiagObjFocused->m_pDiagObjPrev;
-                if( pDiagObj == nullptr )
+                CDiagObj* pDiagObj = nullptr;
+                int idx = m_arpDiagObjs.indexOf(m_pDiagObjFocused);
+                if (idx == 0)
                 {
-                    pDiagObj = m_pDiagObjLast;
+                    pDiagObj = m_arpDiagObjs.last();
+                }
+                else
+                {
+                    pDiagObj = m_arpDiagObjs[idx-1];
                 }
                 while( pDiagObj != nullptr && pDiagObj != m_pDiagObjFocused )
                 {
@@ -2024,7 +1975,7 @@ bool CWdgtDiagram::processMoveKeyEvent( int i_iKey )
 
                         // The focused object need to be updated at last so that no other
                         // object overwrites the graphic output of the focused object:
-                        moveDiagObjInPaintList(m_pDiagObjFocused,EDiagObjMoveModeToTop);
+                        moveDiagObjInPaintList(m_pDiagObjFocused, EDiagObjMoveModeToTop);
 
                         // If the graphical output of the object changes the corresponding
                         // update flags will be invalidated (the bits will be set), data
@@ -2042,13 +1993,14 @@ bool CWdgtDiagram::processMoveKeyEvent( int i_iKey )
                         update();
                         break;
                     }
-                    if( pDiagObj == m_pDiagObjFirst )
+                    idx = m_arpDiagObjs.indexOf(pDiagObj);
+                    if (idx == 0)
                     {
-                        pDiagObj = m_pDiagObjLast;
+                        pDiagObj = m_arpDiagObjs.last();
                     }
                     else
                     {
-                        pDiagObj = pDiagObj->m_pDiagObjPrev;
+                        pDiagObj = m_arpDiagObjs[idx-1];
                     }
                 }
                 bHandled = true;
@@ -2097,13 +2049,16 @@ bool CWdgtDiagram::processMoveKeyEvent( int i_iKey )
                     mthTracer.trace(strTrcMsgMoveKey);
                 }
 
-                CDiagObj* pDiagObj;
-
                 // ... set focus on next object.
-                pDiagObj = m_pDiagObjFocused->m_pDiagObjNext;
-                if( pDiagObj == nullptr )
+                CDiagObj* pDiagObj = nullptr;
+                int idx = m_arpDiagObjs.indexOf(m_pDiagObjFocused);
+                if (idx == m_arpDiagObjs.size()-1)
                 {
-                    pDiagObj = m_pDiagObjFirst;
+                    pDiagObj = m_arpDiagObjs.first();
+                }
+                else
+                {
+                    pDiagObj = m_arpDiagObjs[idx+1];
                 }
                 while( pDiagObj != nullptr && pDiagObj != m_pDiagObjFocused )
                 {
@@ -2138,13 +2093,14 @@ bool CWdgtDiagram::processMoveKeyEvent( int i_iKey )
                         update();
                         break;
                     }
-                    if( pDiagObj == m_pDiagObjLast )
+                    idx = m_arpDiagObjs.indexOf(pDiagObj);
+                    if (idx == m_arpDiagObjs.size()-1)
                     {
-                        pDiagObj = m_pDiagObjFirst;
+                        pDiagObj = m_arpDiagObjs.first();
                     }
                     else
                     {
-                        pDiagObj = pDiagObj->m_pDiagObjNext;
+                        pDiagObj = m_arpDiagObjs[idx+1];
                     }
                 }
                 bHandled = true;
@@ -2436,3 +2392,49 @@ void CWdgtDiagram::popupMenuContextItemPrintActivated( void )
     }
 
 } // popupMenuContextItemPrintActivated
+
+/*==============================================================================
+protected: // overridables of base class CDataDiagram for emitting the signals
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtDiagram::emit_diagScaleAdded(const QString& i_strObjName)
+//------------------------------------------------------------------------------
+{
+    emit diagScaleAdded(i_strObjName);
+}
+
+//------------------------------------------------------------------------------
+void CWdgtDiagram::emit_diagScaleRemoved(const QString& i_strObjName)
+//------------------------------------------------------------------------------
+{
+    emit diagScaleRemoved(i_strObjName);
+}
+
+//------------------------------------------------------------------------------
+void CWdgtDiagram::emit_diagTraceAdded(const QString& i_strObjName)
+//------------------------------------------------------------------------------
+{
+    emit diagTraceAdded(i_strObjName);
+}
+
+//------------------------------------------------------------------------------
+void CWdgtDiagram::emit_diagTraceRemoved(const QString& i_strObjName)
+//------------------------------------------------------------------------------
+{
+    emit diagTraceRemoved(i_strObjName);
+}
+
+//------------------------------------------------------------------------------
+void CWdgtDiagram::emit_diagObjAdded(const QString& i_strObjName)
+//------------------------------------------------------------------------------
+{
+    emit diagObjAdded(i_strObjName);
+}
+
+//------------------------------------------------------------------------------
+void CWdgtDiagram::emit_diagObjRemoved(const QString& i_strObjName)
+//------------------------------------------------------------------------------
+{
+    emit diagObjRemoved(i_strObjName);
+}

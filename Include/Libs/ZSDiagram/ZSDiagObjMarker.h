@@ -67,6 +67,7 @@ public: // overridables to get and set the cursor position
     virtual bool getCalculateCursorPos() const;
     virtual void setCursorMoveDir( EScaleDir i_moveDir );
     virtual EScaleDir getCursorMoveDir() const;
+    virtual void setVal( EScaleDir i_scaleDir, const PhysVal::CPhysVal& i_physVal );
     virtual void setVal( EScaleDir i_scaleDir, double i_fXVal, PhysVal::CUnit* i_pUnit = nullptr );
     virtual QPoint getPos() const;
 public: // overridables to modify the marker style

@@ -101,6 +101,11 @@ protected: // instance methods
         const CEnumDivLineLayer& i_eLayer,
         int i_idxDivLineLabelMin,
         int i_idxDivLineLabelMax ) const;
+protected: // auxiliary instance methods
+    QRect getDiagRect() const;
+    PhysVal::CUnit getAxisLabelUnit() const;
+    bool isAxisLabelVisible() const;
+    QRect getAxisLabelBoundingRect() const;
     bool intersectsDivLineLabelsPhysUnit(const QRect& i_rect) const;
     QString formatValue( double i_fVal, PhysVal::CUnit* i_pUnit = nullptr ) const;
 private: // copy ctor not allowed

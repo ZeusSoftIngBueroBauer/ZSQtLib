@@ -71,27 +71,32 @@ public: // instance methods to add and remove scale objects
     void addDiagScale( CDiagScale* i_pDiagScale );
     void removeDiagScale( CDiagScale* i_pDiagScale );
     CDiagScale* removeDiagScale( const QString& i_strObjName );
-    CDiagScale* getDiagScale( const QString& i_strObjName );
+    CDiagScale* findDiagScale( const QString& i_strObjName ) const;
+    int getDiagScalesCount() const;
+    CDiagScale* getDiagScale( int i_idx ) const;
 public: // instance methods to add and remove trace objects
     void addDiagTrace( CDiagTrace* i_pDiagTrace );
     void removeDiagTrace( CDiagTrace* i_pDiagTrace );
     CDiagTrace* removeDiagTrace( const QString& i_strObjName );
-    CDiagTrace* getDiagTrace( const QString& i_strObjName );
-public: // instance methods to add, remove, and change diagram objects
+    CDiagTrace* findDiagTrace( const QString& i_strObjName ) const;
+    int getDiagTracesCount() const;
+    CDiagTrace* getDiagTrace( int i_idx ) const;
+public: // instance methods to add and remove diagram objects
     void addDiagObj( CDiagObj* i_pDiagObj );
     void removeDiagObj( CDiagObj* i_pDiagObj );
     CDiagObj* removeDiagObj( const QString& i_strObjName );
-    CDiagObj* removeDiagObj( int i_iObjId );
-    CDiagObj* getDiagObj( const QString& i_strObjName ) const;
-    CDiagObj* getDiagObj( int i_iObjId ) const;
+    CDiagObj* findDiagObj( const QString& i_strObjName ) const;
+    int getDiagObjsCount() const;
+    CDiagObj* getDiagObj( int i_idx ) const;
+public: // instance methods to change diagram objects
     void showDiagObj( const QString& i_strObjName ) const;
-    void showDiagObj( int i_iObjId ) const;
+    void showDiagObj( int i_idx ) const;
     void hideDiagObj( const QString& i_strObjName ) const;
-    void hideDiagObj( int i_iObjId ) const;
+    void hideDiagObj( int i_idx ) const;
     bool isDiagObjVisible( const QString& i_strObjName ) const;
-    bool isDiagObjVisible( int i_iObjId ) const;
+    bool isDiagObjVisible( int i_idx ) const;
     void moveDiagObjInPaintList( const QString& i_strObjName, EDiagObjMoveMode i_moveMode, int i_idxCount = 0 );
-    void moveDiagObjInPaintList( int i_iObjId, EDiagObjMoveMode i_moveMode, int i_idxCount = 0 );
+    void moveDiagObjInPaintList( int i_idx, EDiagObjMoveMode i_moveMode, int i_idxCount = 0 );
     void moveDiagObjInPaintList( CDiagObj* i_pDiagObj, EDiagObjMoveMode i_moveMode, int i_idxCount = 0 );
 public: // overridables (callbacks from CDiagScale, CDiagTrace and CDiagObj)
     virtual void scaleChanged( ZS::Diagram::CDiagScale* i_pDiagScale );
@@ -99,29 +104,33 @@ public: // overridables (callbacks from CDiagScale, CDiagTrace and CDiagObj)
 protected: // overridables (auxiliary instance methods)
     virtual void updateLayout();
     virtual void updateData();
+protected: // CWdgtDiagram needs to overwrite the method for emitting the signals
+    virtual void emit_diagScaleAdded(const QString& i_strObjName) {}
+    virtual void emit_diagScaleRemoved(const QString& i_strObjName) {}
+    virtual void emit_diagTraceAdded(const QString& i_strObjName) {}
+    virtual void emit_diagTraceRemoved(const QString& i_strObjName) {}
+    virtual void emit_diagObjAdded(const QString& i_strObjName) {}
+    virtual void emit_diagObjRemoved(const QString& i_strObjName) {}
 private: // copy ctor not allowed
     CDataDiagram( const CDataDiagram& );
 private: // assignment operator not allowed
     void operator=( const CDataDiagram& );
 protected:  // instance members
-    QString            m_strObjName;
+    QString m_strObjName;
     EDiagramUpdateType m_updateType;
-    unsigned int       m_uUpdateFlags;
-    EMeasState         m_measState;
-    EMeasMode          m_measMode;
-    int                m_iMeasType;
-    ESpacing           m_arSpacing[EScaleDirCount];
-    int                m_iDiagScaleCount;
-    CDiagScale*        m_pDiagScaleFirst;
-    CDiagScale*        m_pDiagScaleLast;
-    int                m_iDiagTraceCount;
-    CDiagTrace*        m_pDiagTraceFirst;
-    CDiagTrace*        m_pDiagTraceLast;
-    int                m_iDiagObjCount;
-    CDiagObj*          m_pDiagObjFirst;
-    CDiagObj*          m_pDiagObjLast;
-    CDiagObj*          m_pDiagObjPaintFirst;
-    CDiagObj*          m_pDiagObjPaintLast;
+    unsigned int m_uUpdateFlags;
+    EMeasState m_measState;
+    EMeasMode m_measMode;
+    int m_iMeasType;
+    ESpacing m_arSpacing[EScaleDirCount];
+    /*!< List with scale objects. */
+    QVector<CDiagScale*> m_arpDiagScales;
+    /*!< List with traces. */
+    QVector<CDiagTrace*> m_arpDiagTraces;
+    /*!< List with diagram objects. The diagram object at the lowest index will be painted first. */
+    QVector<CDiagObj*> m_arpDiagObjs;
+    /*!< Hash with diagram objects. The key is the name of the object. */
+    QHash<QString, CDiagObj*> m_hshpDiagObjs;
 private:  // instance members
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjUpdate;

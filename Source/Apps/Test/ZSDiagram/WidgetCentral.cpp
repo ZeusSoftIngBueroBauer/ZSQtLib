@@ -137,7 +137,7 @@ CWidgetCentral::CWidgetCentral(
     // <GroupBox> Test
     //---------------------------
 
-    m_pGrpTestOutput = new QGroupBox("Test");
+    m_pGrpTestOutput = new QGroupBox("Diagram");
     m_pLytGrpTestOutput = new QVBoxLayout();
     m_pGrpTestOutput->setLayout(m_pLytGrpTestOutput);
     m_pSplitter->addWidget(m_pGrpTestOutput);

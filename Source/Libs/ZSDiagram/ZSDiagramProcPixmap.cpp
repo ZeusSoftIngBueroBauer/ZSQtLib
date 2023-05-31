@@ -297,12 +297,7 @@ CDataDiagram* CPixmapDiagram::clone( EDiagramUpdateType i_diagramUpdateType ) co
     }
     else
     {
-        CPixmapDiagram*   pPixmapDiagram = new CPixmapDiagram(m_strObjName);
-        int               idxScaleDir;
-        const CDiagScale* pDiagScale;
-        const CDiagTrace* pDiagTrace;
-        const CDiagObj*   pDiagObj;
-        CDiagObj*         pDiagObjCloned;
+        CPixmapDiagram* pPixmapDiagram = new CPixmapDiagram(m_strObjName);
 
         // Data Diagram
         //-------------
@@ -312,64 +307,22 @@ CDataDiagram* CPixmapDiagram::clone( EDiagramUpdateType i_diagramUpdateType ) co
         pPixmapDiagram->m_measMode = m_measMode;
         pPixmapDiagram->m_iMeasType = m_iMeasType;
 
-        for( idxScaleDir = 0; idxScaleDir < EScaleDirCount; idxScaleDir++ )
+        for (int idx = 0; idx < EScaleDirCount; idx++)
         {
-            pPixmapDiagram->m_arSpacing[idxScaleDir] = m_arSpacing[idxScaleDir];
+            pPixmapDiagram->m_arSpacing[idx] = m_arSpacing[idx];
         }
-
-        pDiagScale = m_pDiagScaleFirst;
-        while( pDiagScale != nullptr )
+        for (int idx = 0; idx < m_arpDiagScales.size(); ++idx)
         {
-            pDiagScale->clone(pPixmapDiagram);
-            pDiagScale = pDiagScale->m_pDiagScaleNext;
+            m_arpDiagScales[idx]->clone(pPixmapDiagram);
         }
-
-        pDiagTrace = m_pDiagTraceFirst;
-        while( pDiagTrace != nullptr )
+        for (int idx = 0; idx < m_arpDiagTraces.size(); ++idx)
         {
-            pDiagTrace->clone(pPixmapDiagram);
-            pDiagTrace = pDiagTrace->m_pDiagTraceNext;
+            m_arpDiagTraces[idx]->clone(pPixmapDiagram);
         }
-
-        pDiagObj = m_pDiagObjFirst;
-        while( pDiagObj != nullptr )
+        for (int idx = 0; idx < m_arpDiagObjs.size(); ++idx)
         {
-            pDiagObj->clone(pPixmapDiagram);
-            pDiagObj = pDiagObj->m_pDiagObjNext;
-        }
-
-        if( m_pDiagObjPaintFirst != nullptr && m_pDiagObjPaintLast != nullptr )
-        {
-            pDiagObj = m_pDiagObjPaintFirst;
-            while( pDiagObj != nullptr )
-            {
-                pDiagObjCloned = pPixmapDiagram->getDiagObj( pDiagObj->getObjId() );
-
-                if( pDiagObjCloned == nullptr )
-                {
-                    throw ZS::System::CException(__FILE__,__LINE__,EResultInternalProgramError);
-                }
-
-                if( pDiagObj->m_pDiagObjPaintPrev == nullptr )
-                {
-                    pDiagObjCloned->m_pDiagObjPaintPrev = nullptr;
-                }
-                else
-                {
-                    pDiagObjCloned->m_pDiagObjPaintPrev = pPixmapDiagram->getDiagObj( pDiagObj->m_pDiagObjPaintPrev->getObjId() ); //lint !e613
-                }
-                if( pDiagObj->m_pDiagObjPaintNext == nullptr )
-                {
-                    pDiagObjCloned->m_pDiagObjPaintNext = nullptr;
-                }
-                else
-                {
-                    pDiagObjCloned->m_pDiagObjPaintNext = pPixmapDiagram->getDiagObj( pDiagObj->m_pDiagObjPaintNext->getObjId() ); //lint !e613
-                }
-                pDiagObj = pDiagObj->m_pDiagObjPaintNext;
-            }
-            pPixmapDiagram->m_pDiagObjPaintFirst = pPixmapDiagram->getDiagObj( m_pDiagObjPaintFirst->getObjId() );
-            pPixmapDiagram->m_pDiagObjPaintLast  = pPixmapDiagram->getDiagObj( m_pDiagObjPaintLast->getObjId() );
+            CDiagObj* pDiagObj = m_arpDiagObjs[idx]->clone(pPixmapDiagram);
+            pPixmapDiagram->m_hshpDiagObjs[m_arpDiagObjs[idx]->getObjName()] = pDiagObj;
         }
 
         // Pixmap Diagram
@@ -1124,8 +1077,7 @@ void CPixmapDiagram::invalidate( CDiagObj* i_pDiagObj, unsigned int i_uUpdateFla
         // all other objects also need to be redrawn.
         if( uUpdateFlagsForObjects != EUpdateNone )
         {
-            CDiagObj* pDiagObj = m_pDiagObjFirst;
-            while( pDiagObj != nullptr )
+            for (CDiagObj* pDiagObj : m_arpDiagObjs)
             {
                 // Don't invalidate the sender object. Its not necessary and
                 // might lead to endless recursive calls.
@@ -1133,7 +1085,6 @@ void CPixmapDiagram::invalidate( CDiagObj* i_pDiagObj, unsigned int i_uUpdateFla
                 {
                     pDiagObj->invalidate(uUpdateFlagsForObjects,false);
                 }
-                pDiagObj = pDiagObj->m_pDiagObjNext; //lint !e613 .. da irrt sich blint
             }
         }
     }
@@ -1258,27 +1209,24 @@ void CPixmapDiagram::updateLayout()
     // So the whole layout stuff is an iterative process and will be repeated until
     // the size of center area is no longer changing ...
 
-    CDiagObj*    pDiagObj;
-    CDiagScale*  pDiagScale;
-    CDiagTrace*  pDiagTrace;
-    QRect        rectPartCenterPrev;
-    int          iIterations;
-    int          cyPartTopHeight;
-    int          cyPartBottomHeight;
-    int          cxPartLeftWidth;
-    int          cxPartRightWidth;
-    int          cxPartCenterWidth;
-    int          cyPartCenterHeight;
-    int          iFrameWidth = 0;
-    int          iFrameWidthPartCenter = 0;
-    int          iDiagObjExtent;
-    int*         ariDiagObjOffset = new int[m_iDiagObjCount];
-    int*         ariDiagObjExtent = new int[m_iDiagObjCount];
-    ELayoutPos*  arLytPosDiagObj = new ELayoutPos[m_iDiagObjCount];
-    int*         piDiagObjOffset;
-    int*         piDiagObjExtent;
-    ELayoutPos*  pLytPosDiagObj;
-    QRect        rectDiagObjContent;
+    QRect rectPartCenterPrev;
+    int iIterations;
+    int cyPartTopHeight;
+    int cyPartBottomHeight;
+    int cxPartLeftWidth;
+    int cxPartRightWidth;
+    int cxPartCenterWidth;
+    int cyPartCenterHeight;
+    int iFrameWidth = 0;
+    int iFrameWidthPartCenter = 0;
+    int iDiagObjExtent;
+    int* ariDiagObjOffset = new int[getDiagObjsCount()];
+    int* ariDiagObjExtent = new int[getDiagObjsCount()];
+    ELayoutPos* arLytPosDiagObj = new ELayoutPos[getDiagObjsCount()];
+    int* piDiagObjOffset;
+    int* piDiagObjExtent;
+    ELayoutPos* pLytPosDiagObj;
+    QRect rectDiagObjContent;
 
     if( m_pFrameStyle != nullptr )
     {
@@ -1325,8 +1273,7 @@ void CPixmapDiagram::updateLayout()
     // size of the diagram areas will be calculated as some objects may change
     // their size according to the number and position of the scale division lines.
     // But setting the (probable) scale geometry in advance may save time ...
-    pDiagScale = m_pDiagScaleFirst;
-    while( pDiagScale != nullptr )
+    for (CDiagScale* pDiagScale : m_arpDiagScales)
     {
         // If the scale will be changed the method "scaleChanged" of the diagram will be
         // called invalidating the data of all objects linked to the changed scale.
@@ -1355,9 +1302,7 @@ void CPixmapDiagram::updateLayout()
                 break;
             }
         }
-        pDiagScale = pDiagScale->m_pDiagScaleNext;
-
-    } // while( pDiagScale != nullptr )
+    }
 
     // As long as the maximum number of iterations is not exceeded ...
     for( iIterations = 0; iIterations < 10; iIterations++ )
@@ -1371,33 +1316,28 @@ void CPixmapDiagram::updateLayout()
         rectPartCenterPrev = m_rectPartCenter;
 
         // Trigger the recalculation of the scale division lines for all scale objects.
-        pDiagScale = m_pDiagScaleFirst;
-        while( pDiagScale != nullptr )
+        for (CDiagScale* pDiagScale : m_arpDiagScales)
         {
             // If the scale will be changed the method "scaleChanged" of the diagram will be
             // called invalidating the data of all objects linked to the changed scale.
             pDiagScale->update();
-            pDiagScale = pDiagScale->m_pDiagScaleNext;
         }
 
         // Trigger the recalculation of internal constants within the traces. Those are used
         // to analyze the trace e.g. converting physical values into pixel coordinates and
         // vice versa, value resolutions and other things.
-        pDiagTrace = m_pDiagTraceFirst;
-        while( pDiagTrace != nullptr )
+        for (CDiagTrace* pDiagTrace : m_arpDiagTraces)
         {
             // If the trace will be changed the method "traceChanged" of the diagram will be
             // called invalidating the data of all objects linked to the changed trace.
             pDiagTrace->update(EUpdateLayout);
-            pDiagTrace = pDiagTrace->m_pDiagTraceNext;
         }
 
         // Trigger the recalculation of the output data for all diagram objects
         // (e.g. the diagram axis labels have to calculate the rectangles to output
         // the scale division lines, the curves have to transform the X/Y values
         // into point arrays, etc.).
-        pDiagObj = m_pDiagObjFirst;
-        while( pDiagObj != nullptr )
+        for (CDiagObj* pDiagObj : m_arpDiagObjs)
         {
             // Please note that also invisible objects need to mark their dirty rectangles
             // during widget processing. For invisible objects layout processing is not
@@ -1406,15 +1346,13 @@ void CPixmapDiagram::updateLayout()
             // executed for invisible objects. But that should not slow down the
             // the system as only visible objects should really recalculate their data.
             pDiagObj->update(EUpdateLayout);
-
-            pDiagObj = pDiagObj->m_pDiagObjNext;
         }
 
-        pDiagObj        = m_pDiagObjFirst;
         piDiagObjOffset = &ariDiagObjOffset[0];
         piDiagObjExtent = &ariDiagObjExtent[0];
         pLytPosDiagObj  = &arLytPosDiagObj[0];
-        while( pDiagObj != nullptr )
+
+        for (CDiagObj* pDiagObj : m_arpDiagObjs)
         {
             if( pDiagObj->isVisible() )
             {
@@ -1471,12 +1409,10 @@ void CPixmapDiagram::updateLayout()
             }
             *pLytPosDiagObj = pDiagObj->getLayoutPos();
 
-            pDiagObj = pDiagObj->m_pDiagObjNext;
             piDiagObjOffset++;
             piDiagObjExtent++;
             pLytPosDiagObj++;
-
-        } // while( pDiagObj != nullptr )
+        }
 
         if( m_cyMinimumHeightPartTop > 0 && cyPartTopHeight < m_cyMinimumHeightPartTop )
         {
@@ -1516,8 +1452,7 @@ void CPixmapDiagram::updateLayout()
         // Set the scale extent of the scale objects. Please note that the scales just
         // store their new extent but do not recalculate the division lines.
         // This must be triggered later ...
-        pDiagScale = m_pDiagScaleFirst;
-        while( pDiagScale != nullptr )
+        for (CDiagScale* pDiagScale : m_arpDiagScales)
         {
             // If the scale will be changed the method "scaleChanged" of the diagram will be
             // called invalidating the data of all objects linked to the changed scale.
@@ -1546,10 +1481,7 @@ void CPixmapDiagram::updateLayout()
                     break;
                 }
             }
-            pDiagScale = pDiagScale->m_pDiagScaleNext;
-
-        } // while( pDiagScale != nullptr )
-
+        }
     } // for( iIterations < 10 )
 
     if( m_pFrameStylePartCenter != nullptr )
@@ -1650,11 +1582,11 @@ void CPixmapDiagram::updateLayout()
 
     // Move and resize the diagram objects according to the newly calculated
     // rectangle extents of the border areas:
-    pDiagObj        = m_pDiagObjFirst;
     piDiagObjOffset = &ariDiagObjOffset[0];
     piDiagObjExtent = &ariDiagObjExtent[0];
     pLytPosDiagObj  = &arLytPosDiagObj[0];
-    while( pDiagObj != nullptr )
+
+    for (CDiagObj* pDiagObj : m_arpDiagObjs)
     {
         switch( pDiagObj->getLayoutPos() )
         {
@@ -1724,12 +1656,10 @@ void CPixmapDiagram::updateLayout()
             }
         }
 
-        pDiagObj = pDiagObj->m_pDiagObjNext;
         piDiagObjOffset++;
         piDiagObjExtent++;
         pLytPosDiagObj++;
-
-    } // while( pDiagObj != nullptr )
+    }
 
     delete [] ariDiagObjOffset;
     ariDiagObjOffset = nullptr;
@@ -1739,11 +1669,9 @@ void CPixmapDiagram::updateLayout()
     arLytPosDiagObj = nullptr;
 
     // Mark current process depth as executed (reset bit):
-    pDiagObj = m_pDiagObjFirst;
-    while( pDiagObj != nullptr )
+    for (CDiagObj* pDiagObj : m_arpDiagObjs)
     {
         pDiagObj->validate(EUpdateLayout);
-        pDiagObj = pDiagObj->m_pDiagObjNext;
     }
     validate(EUpdateLayout);
 
@@ -1752,7 +1680,6 @@ void CPixmapDiagram::updateLayout()
         strTrcMsg = "NewUpdFlags: " + updateFlags2Str(m_uUpdateFlags);
         mthTracer.trace(strTrcMsg);
     }
-
 } // updateLayout
 
 /*==============================================================================
@@ -1788,11 +1715,10 @@ void CPixmapDiagram::updatePixmap()
         return;
     }
 
-    QBrush    brush;
-    QPen      pen;
-    QPainter  painterPixmap;
-    QRect     rectFrame;
-    CDiagObj* pDiagObj;
+    QBrush brush;
+    QPen pen;
+    QPainter painterPixmap;
+    QRect rectFrame;
 
     painterPixmap.begin(m_pPixmap);
 
@@ -1857,8 +1783,7 @@ void CPixmapDiagram::updatePixmap()
     painterPixmap.end();
 
     // Let the diagram objects draw their data into the bitmap.
-    pDiagObj = m_pDiagObjPaintFirst;
-    while( pDiagObj != nullptr )
+    for (CDiagObj* pDiagObj : m_arpDiagObjs)
     {
         // Please note that the pixmap has been erased before and therefore each object
         // need to be redrawn. Thats why before calling "update" of the object the pixmap
@@ -1868,7 +1793,6 @@ void CPixmapDiagram::updatePixmap()
             pDiagObj->invalidate(EUpdatePixmapWidget,false);
             pDiagObj->update(EUpdatePixmap,m_pPixmap);
         }
-        pDiagObj = pDiagObj->m_pDiagObjPaintNext;
     }
 
     // Mark current process depth as executed (reset bit):

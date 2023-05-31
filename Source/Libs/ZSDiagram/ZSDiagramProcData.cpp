@@ -63,17 +63,10 @@ CDataDiagram::CDataDiagram(
     m_measMode(EMeasModeUndefined),
     m_iMeasType(-1),
     //m_arSpacing[EScaleDirCount],
-    m_iDiagScaleCount(0),
-    m_pDiagScaleFirst(nullptr),
-    m_pDiagScaleLast(nullptr),
-    m_iDiagTraceCount(0),
-    m_pDiagTraceFirst(nullptr),
-    m_pDiagTraceLast(nullptr),
-    m_iDiagObjCount(0),
-    m_pDiagObjFirst(nullptr),
-    m_pDiagObjLast(nullptr),
-    m_pDiagObjPaintFirst(nullptr),
-    m_pDiagObjPaintLast(nullptr),
+    m_arpDiagScales(),
+    m_arpDiagTraces(),
+    m_arpDiagObjs(0),
+    m_hshpDiagObjs(),
     m_pTrcAdminObj(nullptr),
     m_pTrcAdminObjUpdate(nullptr),
     m_pTrcAdminObjEvents(nullptr),
@@ -121,64 +114,45 @@ CDataDiagram::~CDataDiagram()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
-    CDiagScale* pDiagScale = m_pDiagScaleFirst;
-    while( pDiagScale != nullptr )
+    for (int idx = 0; idx < m_arpDiagTraces.size(); ++idx)
     {
-        CDiagScale* pDiagScaleNext = pDiagScale->m_pDiagScaleNext;
-
         try
         {
-            delete pDiagScale;
+            delete m_arpDiagTraces[idx];
         }
         catch(...)
         {
         }
-        pDiagScale = pDiagScaleNext;
+        m_arpDiagTraces[idx] = nullptr;
     }
+    m_arpDiagTraces.clear();
 
-    m_iDiagScaleCount = 0;
-    m_pDiagScaleFirst = nullptr;
-    m_pDiagScaleLast  = nullptr;
-
-    CDiagTrace* pDiagTrace = m_pDiagTraceFirst;
-    while( pDiagTrace != nullptr )
+    for (int idx = 0; idx < m_arpDiagScales.size(); ++idx)
     {
-        CDiagTrace* pDiagTraceNext = pDiagTrace->m_pDiagTraceNext;
-
         try
         {
-            delete pDiagTrace;
+            delete m_arpDiagScales[idx];
         }
         catch(...)
         {
         }
-        pDiagTrace = pDiagTraceNext;
+        m_arpDiagScales[idx] = nullptr;
     }
+    m_arpDiagScales.clear();
 
-    m_iDiagTraceCount = 0;
-    m_pDiagTraceFirst = nullptr;
-    m_pDiagTraceLast  = nullptr;
-
-    CDiagObj* pDiagObj = m_pDiagObjFirst;
-    while( pDiagObj != nullptr )
+    for (int idx = 0; idx < m_arpDiagObjs.size(); ++idx)
     {
-        CDiagObj* pDiagObjNext = pDiagObj->m_pDiagObjNext;
-
         try
         {
-            delete pDiagObj;
+            delete m_arpDiagObjs[idx];
         }
         catch(...)
         {
         }
-        pDiagObj = pDiagObjNext;
+        m_arpDiagObjs[idx] = nullptr;
     }
-
-    m_iDiagObjCount = 0;
-    m_pDiagObjFirst = nullptr;
-    m_pDiagObjLast = nullptr;
-    m_pDiagObjPaintFirst = nullptr;
-    m_pDiagObjPaintLast = nullptr;
+    m_arpDiagObjs.clear();
+    m_hshpDiagObjs.clear();
 
     mthTracer.onAdminObjAboutToBeReleased();
 
@@ -210,70 +184,32 @@ public: // copy ctor not allowed but diagrams may be cloned
 CDataDiagram* CDataDiagram::clone( EDiagramUpdateType /*i_diagramUpdateType*/ ) const
 //------------------------------------------------------------------------------
 {
-    CDataDiagram*     pDiagram = new CDataDiagram(m_strObjName);
-    int               idxScaleDir;
-    const CDiagScale* pDiagScale;
-    const CDiagTrace* pDiagTrace;
-    const CDiagObj*   pDiagObj;
-    CDiagObj*         pDiagObjCloned;
+    CDataDiagram* pDiagram = new CDataDiagram(m_strObjName);
 
     pDiagram->m_uUpdateFlags = m_uUpdateFlags;
     pDiagram->m_measState = m_measState;
     pDiagram->m_measMode = m_measMode;
     pDiagram->m_iMeasType = m_iMeasType;
 
-    for( idxScaleDir = 0; idxScaleDir < EScaleDirCount; idxScaleDir++ )
+    for (int idx = 0; idx < EScaleDirCount; idx++)
     {
-        pDiagram->m_arSpacing[idxScaleDir] = m_arSpacing[idxScaleDir];
+        pDiagram->m_arSpacing[idx] = m_arSpacing[idx];
     }
-
-    pDiagScale = m_pDiagScaleFirst;
-    while( pDiagScale != nullptr )
+    for (int idx = 0; idx < m_arpDiagScales.size(); ++idx)
     {
-        pDiagScale->clone(pDiagram);
-        pDiagScale = pDiagScale->m_pDiagScaleNext;
+        m_arpDiagScales[idx]->clone(pDiagram);
     }
-
-    pDiagTrace = m_pDiagTraceFirst;
-    while( pDiagTrace != nullptr )
+    for (int idx = 0; idx < m_arpDiagTraces.size(); ++idx)
     {
-        pDiagTrace->clone(pDiagram);
-        pDiagTrace = pDiagTrace->m_pDiagTraceNext;
+        m_arpDiagTraces[idx]->clone(pDiagram);
     }
-
-    pDiagObj = m_pDiagObjFirst;
-    while( pDiagObj != nullptr )
+    for (int idx = 0; idx < m_arpDiagObjs.size(); ++idx)
     {
-        pDiagObj->clone(pDiagram);
-        pDiagObj = pDiagObj->m_pDiagObjNext;
+        CDiagObj* pDiagObj = m_arpDiagObjs[idx]->clone(pDiagram);
+        pDiagram->m_hshpDiagObjs[m_arpDiagObjs[idx]->getObjName()] = pDiagObj;
     }
-
-    if( m_pDiagObjPaintFirst != nullptr && m_pDiagObjPaintLast != nullptr )
-    {
-        pDiagObj = m_pDiagObjPaintFirst;
-        while( pDiagObj != nullptr )
-        {
-            pDiagObjCloned = pDiagram->getDiagObj( pDiagObj->getObjId() );
-
-            if( pDiagObjCloned == nullptr )
-            {
-                throw ZS::System::CException(__FILE__,__LINE__,EResultInternalProgramError);
-            }
-
-            if( pDiagObj->m_pDiagObjPaintPrev != nullptr && pDiagObj->m_pDiagObjPaintNext != nullptr )
-            {
-                pDiagObjCloned->m_pDiagObjPaintPrev = pDiagram->getDiagObj( pDiagObj->m_pDiagObjPaintPrev->getObjId() ); //lint !e613
-                pDiagObjCloned->m_pDiagObjPaintNext = pDiagram->getDiagObj( pDiagObj->m_pDiagObjPaintNext->getObjId() ); //lint !e613
-            }
-            pDiagObj = pDiagObj->m_pDiagObjPaintNext;
-        }
-        pDiagram->m_pDiagObjPaintFirst = pDiagram->getDiagObj( m_pDiagObjPaintFirst->getObjId() );
-        pDiagram->m_pDiagObjPaintLast  = pDiagram->getDiagObj( m_pDiagObjPaintLast->getObjId() );
-    }
-
     return pDiagram;
-
-} // clone
+}
 
 /*==============================================================================
 public: // instance methods
@@ -341,23 +277,17 @@ void CDataDiagram::update( CDiagObj* i_pDiagObj, const QRect& i_rect )
     // internal update flags and on requesting the process depth by this update
     // method the corresponding update process will be executed.
 
-    int  iIterations;
-    int  iIterationsLayout;
-    int  iIterationsData;
-    bool bUpdLayout;
-    bool bUpdData;
-
     // As long as the maximum number of iterations is not exceeded ...
-    for( iIterations = 0; iIterations < 10; iIterations++ )
+    for( int iIterations = 0; iIterations < 10; iIterations++ )
     {
-        bUpdLayout = false;
-        bUpdData = false;
+        bool bUpdLayout = false;
+        bool bUpdData = false;
 
         // If the layout need to be updated ..
         if( m_uUpdateFlags & EUpdateLayout )
         {
             // As long as the maximum number of iterations is not exceeded ...
-            for( iIterationsLayout = 0; iIterationsLayout < 10; iIterationsLayout++ )
+            for( int iIterationsLayout = 0; iIterationsLayout < 10; iIterationsLayout++ )
             {
                 updateLayout();
                 bUpdLayout = true;
@@ -375,7 +305,7 @@ void CDataDiagram::update( CDiagObj* i_pDiagObj, const QRect& i_rect )
         if( m_uUpdateFlags & EUpdateData )
         {
             // As long as the maximum number of iterations is not exceeded ...
-            for( iIterationsData = 0; iIterationsData < 10; iIterationsData++ )
+            for( int iIterationsData = 0; iIterationsData < 10; iIterationsData++ )
             {
                 updateData();
                 bUpdData = true;
@@ -466,16 +396,14 @@ void CDataDiagram::invalidate( CDiagObj* i_pDiagObj, unsigned int i_uUpdateFlags
         // data process depth ...
         if( uUpdateFlagsForObjects != EUpdateNone )
         {
-            CDiagObj* pDiagObj = m_pDiagObjFirst;
-            while( pDiagObj != nullptr )
+            for (CDiagObj* pDiagObj : m_arpDiagObjs)
             {
                 // Don't invalidate the sender object. Its not necessary and
                 // might lead to endless recursive calls.
                 if( pDiagObj != i_pDiagObj )
                 {
-                    pDiagObj->invalidate(uUpdateFlagsForObjects,false);
+                    pDiagObj->invalidate(uUpdateFlagsForObjects, false);
                 }
-                pDiagObj = pDiagObj->m_pDiagObjNext;
             }
         }
     }
@@ -527,7 +455,6 @@ void CDataDiagram::validate( unsigned int i_uUpdateFlags )
         strTrcMsg += updateFlags2Str(m_uUpdateFlags);
         mthTracer.trace(strTrcMsg);
     }
-
 } // validate
 
 /*==============================================================================
@@ -562,8 +489,6 @@ void CDataDiagram::setSpacing( EScaleDir i_scaleDir, ESpacing i_spacing )
     // Dispatch new spacing to scale objects
     //--------------------------------------
 
-    CDiagScale* pDiagScale;
-
     // Please note that the scale objects just store the new scale values but do not
     // recalculate the scale division lines. This must be triggered later by explicitly
     // calling "update".
@@ -572,8 +497,7 @@ void CDataDiagram::setSpacing( EScaleDir i_scaleDir, ESpacing i_spacing )
     // also for the scale objects linked to a specific trace.
     m_arSpacing[i_scaleDir] = i_spacing;
 
-    pDiagScale = m_pDiagScaleFirst;
-    while( pDiagScale != nullptr )
+    for (CDiagScale* pDiagScale : m_arpDiagScales)
     {
         // If the scale will be changed the method "scaleChanged" of the diagram will be
         // called invalidating the data of all objects linked to the changed scale.
@@ -581,9 +505,7 @@ void CDataDiagram::setSpacing( EScaleDir i_scaleDir, ESpacing i_spacing )
         {
             pDiagScale->setSpacing(m_arSpacing[i_scaleDir]);
         }
-        pDiagScale = pDiagScale->m_pDiagScaleNext;
     }
-
 } // setSpacing
 
 /*==============================================================================
@@ -607,42 +529,19 @@ void CDataDiagram::addDiagScale( CDiagScale* i_pDiagScale )
         /* strMethod    */ "addDiagScale",
         /* strAddInfo   */ strTrcMsg );
 
-    if( i_pDiagScale == nullptr )
+    if (findDiagScale(i_pDiagScale->getObjName()) != nullptr)
     {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultObjNotDefined);
+        throw ZS::System::CException(__FILE__, __LINE__, EResultObjAlreadyInList);
     }
 
-    // First scale ..
-    if( m_iDiagScaleCount == 0 )
-    {
-        i_pDiagScale->m_pDiagScalePrev = nullptr;
-        i_pDiagScale->m_pDiagScaleNext = nullptr;
-
-        m_pDiagScaleFirst = i_pDiagScale;
-        m_pDiagScaleLast  = i_pDiagScale;
-    }
-    // Not the first scale ...
-    else
-    {
-        if( m_pDiagScaleLast == nullptr )
-        {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultInternalProgramError);
-        }
-
-        m_pDiagScaleLast->m_pDiagScaleNext = i_pDiagScale;
-
-        i_pDiagScale->m_pDiagScalePrev = m_pDiagScaleLast;
-        i_pDiagScale->m_pDiagScaleNext = nullptr;
-
-        m_pDiagScaleLast = i_pDiagScale;
-    }
-    m_iDiagScaleCount++;
+    m_arpDiagScales.append(i_pDiagScale);
 
     // Initialize some instance members of the scale object which can only be set if the
     // scale object has been added to the diagram.
     i_pDiagScale->m_pDiagram = this;
 
-} // addDiagScale
+    emit_diagScaleAdded(i_pDiagScale->getObjName());
+}
 
 //------------------------------------------------------------------------------
 void CDataDiagram::removeDiagScale( CDiagScale* i_pDiagScale )
@@ -661,78 +560,33 @@ void CDataDiagram::removeDiagScale( CDiagScale* i_pDiagScale )
         /* strMethod    */ "removeDiagScale",
         /* strAddInfo   */ strTrcMsg );
 
-    if( i_pDiagScale == nullptr )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultObjNotDefined);
-    }
-    if( m_iDiagScaleCount == 0 )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultObjNotDefined);
-    }
-    const CDiagScale* pDiagScale = m_pDiagScaleFirst;
-    while( pDiagScale != nullptr && pDiagScale != i_pDiagScale )
-    {
-        pDiagScale = pDiagScale->m_pDiagScaleNext;
-    }
-    if( pDiagScale == nullptr )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultObjNotDefined);
-    }
-
-    CDiagTrace* pDiagTrace;
-    CDiagObj*   pDiagObj;
-
-    // First scale ...
-    if( i_pDiagScale == m_pDiagScaleFirst )
-    {
-        m_pDiagScaleFirst = i_pDiagScale->m_pDiagScaleNext;
-    }
-    // Last scale ...
-    if( i_pDiagScale == m_pDiagScaleLast )
-    {
-        m_pDiagScaleLast = i_pDiagScale->m_pDiagScalePrev;
-    }
-    if( i_pDiagScale->m_pDiagScalePrev != nullptr )
-    {
-        i_pDiagScale->m_pDiagScalePrev->m_pDiagScaleNext = i_pDiagScale->m_pDiagScaleNext;
-    }
-    if( i_pDiagScale->m_pDiagScaleNext != nullptr )
-    {
-        i_pDiagScale->m_pDiagScaleNext->m_pDiagScalePrev = i_pDiagScale->m_pDiagScalePrev;
-    }
-    m_iDiagScaleCount--;
-
+    m_arpDiagScales.removeOne(i_pDiagScale);
     i_pDiagScale->m_pDiagram = nullptr;
 
     // Remove scale object from trace objects.
-    pDiagTrace = m_pDiagTraceFirst;
-    while( pDiagTrace != nullptr )
+    for (CDiagTrace* pDiagTrace : m_arpDiagTraces)
     {
         if( pDiagTrace->m_arpDiagScale[i_pDiagScale->getScaleDir()] == i_pDiagScale )
         {
             pDiagTrace->m_arpDiagScale[i_pDiagScale->getScaleDir()] = nullptr;
         }
-        pDiagTrace = pDiagTrace->m_pDiagTraceNext;
     }
-
     // Remove scale object from diagram objects.
-    pDiagObj = m_pDiagObjFirst;
-    while( pDiagObj != nullptr )
+    for (CDiagObj* pDiagObj : m_arpDiagObjs)
     {
         if( pDiagObj->m_arpDiagScale[i_pDiagScale->getScaleDir()] == i_pDiagScale )
         {
             pDiagObj->m_arpDiagScale[i_pDiagScale->getScaleDir()] = nullptr;
         }
-        pDiagObj = pDiagObj->m_pDiagObjNext;
     }
-
-} // removeDiagScale
+    emit_diagScaleRemoved(i_pDiagScale->getObjName());
+}
 
 //------------------------------------------------------------------------------
 CDiagScale* CDataDiagram::removeDiagScale( const QString& i_strObjName )
 //------------------------------------------------------------------------------
 {
-    CDiagScale* pDiagScale = getDiagScale(i_strObjName);
+    CDiagScale* pDiagScale = findDiagScale(i_strObjName);
 
     if( pDiagScale == nullptr )
     {
@@ -742,25 +596,38 @@ CDiagScale* CDataDiagram::removeDiagScale( const QString& i_strObjName )
     removeDiagScale(pDiagScale);
 
     return pDiagScale;
-
-} // removeDiagScale
+}
 
 //------------------------------------------------------------------------------
-CDiagScale* CDataDiagram::getDiagScale( const QString& i_strObjName )
+CDiagScale* CDataDiagram::findDiagScale( const QString& i_strObjName ) const
 //------------------------------------------------------------------------------
 {
-    CDiagScale* pDiagScale = m_pDiagScaleFirst;
-    while( pDiagScale != nullptr )
+    CDiagScale* pDiagScale = nullptr;
+
+    for (CDiagScale* pDiagScaleTmp : m_arpDiagScales)
     {
-        if( pDiagScale->getObjName() == i_strObjName )
+        if( pDiagScaleTmp->getObjName() == i_strObjName )
         {
+            pDiagScale = pDiagScaleTmp;
             break;
         }
-        pDiagScale = pDiagScale->m_pDiagScaleNext;
     }
     return pDiagScale;
+}
 
-} // getDiagScale
+//------------------------------------------------------------------------------
+int CDataDiagram::getDiagScalesCount() const
+//------------------------------------------------------------------------------
+{
+    return m_arpDiagScales.size();
+}
+
+//------------------------------------------------------------------------------
+CDiagScale* CDataDiagram::getDiagScale( int i_idx ) const
+//------------------------------------------------------------------------------
+{
+    return m_arpDiagScales[i_idx];
+}
 
 /*==============================================================================
 public: // instance methods to add and remove trace objects
@@ -783,42 +650,19 @@ void CDataDiagram::addDiagTrace( CDiagTrace* i_pDiagTrace )
         /* strMethod    */ "addDiagTrace",
         /* strAddInfo   */ strTrcMsg );
 
-    if( i_pDiagTrace == nullptr )
+    if (findDiagTrace(i_pDiagTrace->getObjName()) != nullptr)
     {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultObjNotDefined);
+        throw ZS::System::CException(__FILE__, __LINE__, EResultObjAlreadyInList);
     }
 
-    // First trace ..
-    if( m_iDiagTraceCount == 0 )
-    {
-        i_pDiagTrace->m_pDiagTracePrev = nullptr;
-        i_pDiagTrace->m_pDiagTraceNext = nullptr;
-
-        m_pDiagTraceFirst = i_pDiagTrace;
-        m_pDiagTraceLast  = i_pDiagTrace;
-    }
-    // Not the first trace ...
-    else
-    {
-        if( m_pDiagTraceLast == nullptr )
-        {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultInternalProgramError);
-        }
-
-        m_pDiagTraceLast->m_pDiagTraceNext = i_pDiagTrace;
-
-        i_pDiagTrace->m_pDiagTracePrev = m_pDiagTraceLast;
-        i_pDiagTrace->m_pDiagTraceNext = nullptr;
-
-        m_pDiagTraceLast = i_pDiagTrace;
-    }
-    m_iDiagTraceCount++;
+    m_arpDiagTraces.append(i_pDiagTrace);
 
     // Initialize some instance members of the scale object which can only be set if the
     // scale object has been added to the diagram.
     i_pDiagTrace->m_pDiagram = this;
 
-} // addDiagTrace
+    emit_diagTraceAdded(i_pDiagTrace->getObjName());
+}
 
 //------------------------------------------------------------------------------
 void CDataDiagram::removeDiagTrace( CDiagTrace* i_pDiagTrace )
@@ -837,98 +681,69 @@ void CDataDiagram::removeDiagTrace( CDiagTrace* i_pDiagTrace )
         /* strMethod    */ "removeDiagTrace",
         /* strAddInfo   */ strTrcMsg );
 
-    if( i_pDiagTrace == nullptr )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultObjNotDefined);
-    }
-    if( m_iDiagTraceCount == 0 )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultObjNotDefined);
-    }
-    const CDiagTrace* pDiagTrace = m_pDiagTraceFirst;
-    while( pDiagTrace != nullptr && pDiagTrace != i_pDiagTrace )
-    {
-        pDiagTrace = pDiagTrace->m_pDiagTraceNext;
-    }
-    if( pDiagTrace == nullptr )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultObjNotDefined);
-    }
-
-    CDiagObj* pDiagObj;
-
-    // First trace ...
-    if( i_pDiagTrace == m_pDiagTraceFirst )
-    {
-        m_pDiagTraceFirst = i_pDiagTrace->m_pDiagTraceNext;
-    }
-    // Last trace ...
-    if( i_pDiagTrace == m_pDiagTraceLast )
-    {
-        m_pDiagTraceLast = i_pDiagTrace->m_pDiagTracePrev;
-    }
-    if( i_pDiagTrace->m_pDiagTracePrev != nullptr )
-    {
-        i_pDiagTrace->m_pDiagTracePrev->m_pDiagTraceNext = i_pDiagTrace->m_pDiagTraceNext;
-    }
-    if( i_pDiagTrace->m_pDiagTraceNext != nullptr )
-    {
-        i_pDiagTrace->m_pDiagTraceNext->m_pDiagTracePrev = i_pDiagTrace->m_pDiagTracePrev;
-    }
-    m_iDiagTraceCount--;
-
+    m_arpDiagTraces.removeOne(i_pDiagTrace);
     i_pDiagTrace->m_pDiagram = nullptr;
 
     // Remove trace object from diagram objects.
-    pDiagObj = m_pDiagObjFirst;
-    while( pDiagObj != nullptr )
+    for (CDiagObj* pDiagObj : m_arpDiagObjs)
     {
         if( pDiagObj->m_pDiagTrace == i_pDiagTrace )
         {
             pDiagObj->m_pDiagTrace = nullptr;
         }
-        pDiagObj = pDiagObj->m_pDiagObjNext;
     }
-
-} // removeDiagTrace
+    emit_diagTraceRemoved(i_pDiagTrace->getObjName());
+}
 
 //------------------------------------------------------------------------------
 CDiagTrace* CDataDiagram::removeDiagTrace( const QString& i_strObjName )
 //------------------------------------------------------------------------------
 {
-    CDiagTrace* pDiagTrace = getDiagTrace(i_strObjName);
+    CDiagTrace* pDiagTrace = findDiagTrace(i_strObjName);
 
     if( pDiagTrace == nullptr )
     {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultObjNotDefined);
+        throw ZS::System::CException(__FILE__, __LINE__, EResultObjNotDefined);
     }
 
     removeDiagTrace(pDiagTrace);
 
     return pDiagTrace;
-
-} // removeDiagTrace
+}
 
 //------------------------------------------------------------------------------
-CDiagTrace* CDataDiagram::getDiagTrace( const QString& i_strObjName )
+CDiagTrace* CDataDiagram::findDiagTrace( const QString& i_strObjName ) const
 //------------------------------------------------------------------------------
 {
-    CDiagTrace* pDiagTrace = m_pDiagTraceFirst;
+    CDiagTrace* pDiagTrace = nullptr;
 
-    while( pDiagTrace != nullptr )
+    for (CDiagTrace* pDiagTraceTmp : m_arpDiagTraces)
     {
-        if( pDiagTrace->getObjName() == i_strObjName )
+        if( pDiagTraceTmp->getObjName() == i_strObjName )
         {
+            pDiagTrace = pDiagTraceTmp;
             break;
         }
-        pDiagTrace = pDiagTrace->m_pDiagTraceNext;
     }
     return pDiagTrace;
+}
 
-} // getDiagTrace
+//------------------------------------------------------------------------------
+int CDataDiagram::getDiagTracesCount() const
+//------------------------------------------------------------------------------
+{
+    return m_arpDiagTraces.size();
+}
+
+//------------------------------------------------------------------------------
+CDiagTrace* CDataDiagram::getDiagTrace( int i_idx ) const
+//------------------------------------------------------------------------------
+{
+    return m_arpDiagTraces[i_idx];
+}
 
 /*==============================================================================
-public: // instance methods to add, remove, and change diagram objects
+public: // instance methods to add and remove diagram objects
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -948,57 +763,21 @@ void CDataDiagram::addDiagObj( CDiagObj* i_pDiagObj )
         /* strMethod    */ "addDiagObj",
         /* strAddInfo   */ strTrcMsg );
 
-    if( i_pDiagObj == nullptr )
+    if (findDiagObj(i_pDiagObj->getObjName()) != nullptr)
     {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultObjNotDefined);
+        throw ZS::System::CException(__FILE__, __LINE__, EResultObjAlreadyInList);
     }
 
-    // First object ..
-    if( m_iDiagObjCount == 0 )
-    {
-        i_pDiagObj->m_pDiagObjPrev      = nullptr;
-        i_pDiagObj->m_pDiagObjNext      = nullptr;
-        i_pDiagObj->m_pDiagObjPaintPrev = nullptr;
-        i_pDiagObj->m_pDiagObjPaintNext = nullptr;
-
-        m_pDiagObjFirst      = i_pDiagObj;
-        m_pDiagObjLast       = i_pDiagObj;
-        m_pDiagObjPaintFirst = i_pDiagObj;
-        m_pDiagObjPaintLast  = i_pDiagObj;
-    }
-    // Not the first object ...
-    else
-    {
-        if( m_pDiagObjLast == nullptr )
-        {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultInternalProgramError);
-        }
-        if( m_pDiagObjPaintLast == nullptr )
-        {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultInternalProgramError);
-        }
-
-        m_pDiagObjLast->m_pDiagObjNext           = i_pDiagObj;
-        m_pDiagObjPaintLast->m_pDiagObjPaintNext = i_pDiagObj;
-
-        i_pDiagObj->m_pDiagObjPrev      = m_pDiagObjLast;
-        i_pDiagObj->m_pDiagObjNext      = nullptr;
-        i_pDiagObj->m_pDiagObjPaintPrev = m_pDiagObjPaintLast;
-        i_pDiagObj->m_pDiagObjPaintNext = nullptr;
-
-        m_pDiagObjLast      = i_pDiagObj;
-        m_pDiagObjPaintLast = i_pDiagObj;
-    }
-    i_pDiagObj->m_iObjId = m_iDiagObjCount;
-    m_iDiagObjCount++;
+    m_arpDiagObjs.append(i_pDiagObj);
 
     // Initialize some instance members of the diagram object which can only be
     // set if the object has been added to the diagram.
     i_pDiagObj->m_pDiagram = this;
 
-    invalidate(nullptr, EUpdateLayoutDataPixmapWidget);
+    emit_diagObjAdded(i_pDiagObj->getObjName());
 
-} // addDiagObj
+    invalidate(nullptr, EUpdateLayoutDataPixmapWidget);
+}
 
 //------------------------------------------------------------------------------
 void CDataDiagram::removeDiagObj( CDiagObj* i_pDiagObj )
@@ -1017,132 +796,49 @@ void CDataDiagram::removeDiagObj( CDiagObj* i_pDiagObj )
         /* strMethod    */ "removeDiagObj",
         /* strAddInfo   */ strTrcMsg );
 
-    if( i_pDiagObj == nullptr )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultObjNotDefined);
-    }
-    if( m_iDiagObjCount == 0 )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultObjNotDefined);
-    }
-    const CDiagObj* pDiagObj = m_pDiagObjFirst;
-    while( pDiagObj != nullptr && pDiagObj != i_pDiagObj )
-    {
-        pDiagObj = pDiagObj->m_pDiagObjNext;
-    }
-    if( pDiagObj == nullptr )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultObjNotDefined);
-    }
-
-    // Diagram object list
-    if( i_pDiagObj == m_pDiagObjFirst )
-    {
-        m_pDiagObjFirst = i_pDiagObj->m_pDiagObjNext;
-    }
-    if( i_pDiagObj == m_pDiagObjLast )
-    {
-        m_pDiagObjLast = i_pDiagObj->m_pDiagObjPrev;
-    }
-    if( i_pDiagObj->m_pDiagObjPrev != nullptr )
-    {
-        i_pDiagObj->m_pDiagObjPrev->m_pDiagObjNext = i_pDiagObj->m_pDiagObjNext;
-    }
-    if( i_pDiagObj->m_pDiagObjNext != nullptr )
-    {
-        i_pDiagObj->m_pDiagObjNext->m_pDiagObjPrev = i_pDiagObj->m_pDiagObjPrev;
-    }
-    m_iDiagObjCount--;
-
-    // Diagram object paint list
-    if( i_pDiagObj == m_pDiagObjPaintFirst )
-    {
-        m_pDiagObjPaintFirst = i_pDiagObj->m_pDiagObjPaintNext;
-    }
-    if( i_pDiagObj == m_pDiagObjPaintLast )
-    {
-        m_pDiagObjPaintLast = i_pDiagObj->m_pDiagObjPaintPrev;
-    }
-    if( i_pDiagObj->m_pDiagObjPaintPrev != nullptr )
-    {
-        i_pDiagObj->m_pDiagObjPaintPrev->m_pDiagObjPaintNext = i_pDiagObj->m_pDiagObjPaintNext;
-    }
-    if( i_pDiagObj->m_pDiagObjPaintNext != nullptr )
-    {
-        i_pDiagObj->m_pDiagObjPaintNext->m_pDiagObjPaintPrev = i_pDiagObj->m_pDiagObjPaintPrev;
-    }
-
+    m_arpDiagObjs.removeOne(i_pDiagObj);
     i_pDiagObj->m_pDiagram = nullptr;
 
-    invalidate(nullptr, EUpdateLayoutDataPixmapWidget);
+    m_hshpDiagObjs.remove(i_pDiagObj->getObjName());
 
-} // removeDiagObj
+    emit_diagObjRemoved(i_pDiagObj->getObjName());
+
+    invalidate(nullptr, EUpdateLayoutDataPixmapWidget);
+}
 
 //------------------------------------------------------------------------------
 CDiagObj* CDataDiagram::removeDiagObj( const QString& i_strObjName )
 //------------------------------------------------------------------------------
 {
-    CDiagObj* pDiagObj = getDiagObj(i_strObjName);
-
-    if( pDiagObj == nullptr )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultObjNotDefined);
-    }
-
+    CDiagObj* pDiagObj = findDiagObj(i_strObjName);
     removeDiagObj(pDiagObj);
-
     return pDiagObj;
 }
 
 //------------------------------------------------------------------------------
-CDiagObj* CDataDiagram::removeDiagObj( int i_iObjId )
+CDiagObj* CDataDiagram::findDiagObj( const QString& i_strObjName ) const
 //------------------------------------------------------------------------------
 {
-    CDiagObj* pDiagObj = getDiagObj(i_iObjId);
-
-    if( pDiagObj == nullptr )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultObjNotDefined);
-    }
-
-    removeDiagObj(pDiagObj);
-
-    return pDiagObj;
+    return m_hshpDiagObjs.value(i_strObjName, nullptr);
 }
 
 //------------------------------------------------------------------------------
-CDiagObj* CDataDiagram::getDiagObj( const QString& i_strObjName ) const
+int CDataDiagram::getDiagObjsCount() const
 //------------------------------------------------------------------------------
 {
-    CDiagObj* pDiagObj = m_pDiagObjFirst;
-
-    while( pDiagObj != nullptr )
-    {
-        if( pDiagObj->getObjName() == i_strObjName )
-        {
-            break;
-        }
-        pDiagObj = pDiagObj->m_pDiagObjNext;
-    }
-    return pDiagObj;
+    return m_arpDiagObjs.size();
 }
 
 //------------------------------------------------------------------------------
-CDiagObj* CDataDiagram::getDiagObj( int i_iObjId ) const
+CDiagObj* CDataDiagram::getDiagObj( int i_idx ) const
 //------------------------------------------------------------------------------
 {
-    CDiagObj* pDiagObj = m_pDiagObjFirst;
-
-    while( pDiagObj != nullptr )
-    {
-        if( pDiagObj->getObjId() == i_iObjId )
-        {
-            break;
-        }
-        pDiagObj = pDiagObj->m_pDiagObjNext;
-    }
-    return pDiagObj;
+    return m_arpDiagObjs[i_idx];
 }
+
+/*==============================================================================
+public: // instance methods to change diagram objects
+==============================================================================*/
 
 //------------------------------------------------------------------------------
 void CDataDiagram::showDiagObj( const QString& i_strObjName ) const
@@ -1154,23 +850,23 @@ void CDataDiagram::showDiagObj( const QString& i_strObjName ) const
         /* strMethod    */ "showDiagObj",
         /* strAddInfo   */ i_strObjName );
 
-    CDiagObj* pDiagObj = getDiagObj(i_strObjName);
+    CDiagObj* pDiagObj = findDiagObj(i_strObjName);
 
     if( pDiagObj != nullptr )
     {
-        pDiagObj->show(true); // also inform other objects of necessary layout processing
+        pDiagObj->show(true); // also informs other objects of necessary layout processing
     }
 }
 
 //------------------------------------------------------------------------------
-void CDataDiagram::showDiagObj( int i_iObjId ) const
+void CDataDiagram::showDiagObj( int i_idx ) const
 //------------------------------------------------------------------------------
 {
     QString strTrcMsg;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
     {
-        strTrcMsg = QString::number(i_iObjId);
+        strTrcMsg = QString::number(i_idx);
     }
 
     CMethodTracer mthTracer(
@@ -1179,11 +875,11 @@ void CDataDiagram::showDiagObj( int i_iObjId ) const
         /* strMethod    */ "showDiagObj",
         /* strAddInfo   */ strTrcMsg );
 
-    CDiagObj* pDiagObj = getDiagObj(i_iObjId);
+    CDiagObj* pDiagObj = getDiagObj(i_idx);
 
     if( pDiagObj != nullptr )
     {
-        pDiagObj->show(true); // also inform other objects of necessary layout processing
+        pDiagObj->show(true); // also informs other objects of necessary layout processing
     }
 }
 
@@ -1197,23 +893,23 @@ void CDataDiagram::hideDiagObj( const QString& i_strObjName ) const
         /* strMethod    */ "hideDiagObj",
         /* strAddInfo   */ i_strObjName );
 
-    CDiagObj* pDiagObj = getDiagObj(i_strObjName);
+    CDiagObj* pDiagObj = findDiagObj(i_strObjName);
 
     if( pDiagObj != nullptr )
     {
-        pDiagObj->hide(true); // also inform other objects of necessary layout processing
+        pDiagObj->hide(true); // also informs other objects of necessary layout processing
     }
 }
 
 //------------------------------------------------------------------------------
-void CDataDiagram::hideDiagObj( int i_iObjId ) const
+void CDataDiagram::hideDiagObj( int i_idx ) const
 //------------------------------------------------------------------------------
 {
     QString strTrcMsg;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
     {
-        strTrcMsg = QString::number(i_iObjId);
+        strTrcMsg = QString::number(i_idx);
     }
 
     CMethodTracer mthTracer(
@@ -1222,11 +918,11 @@ void CDataDiagram::hideDiagObj( int i_iObjId ) const
         /* strMethod    */ "hideDiagObj",
         /* strAddInfo   */ strTrcMsg );
 
-    CDiagObj* pDiagObj = getDiagObj(i_iObjId);
+    CDiagObj* pDiagObj = getDiagObj(i_idx);
 
     if( pDiagObj != nullptr )
     {
-        pDiagObj->hide(true); // also inform other objects of necessary layout processing
+        pDiagObj->hide(true); // also informs other objects of necessary layout processing
     }
 }
 
@@ -1234,7 +930,7 @@ void CDataDiagram::hideDiagObj( int i_iObjId ) const
 bool CDataDiagram::isDiagObjVisible( const QString& i_strObjName ) const
 //------------------------------------------------------------------------------
 {
-    const CDiagObj* pDiagObj = getDiagObj(i_strObjName);
+    const CDiagObj* pDiagObj = findDiagObj(i_strObjName);
 
     if( pDiagObj != nullptr )
     {
@@ -1244,10 +940,10 @@ bool CDataDiagram::isDiagObjVisible( const QString& i_strObjName ) const
 }
 
 //------------------------------------------------------------------------------
-bool CDataDiagram::isDiagObjVisible( int i_iObjId ) const
+bool CDataDiagram::isDiagObjVisible( int i_idx ) const
 //------------------------------------------------------------------------------
 {
-    const CDiagObj* pDiagObj = getDiagObj(i_iObjId);
+    const CDiagObj* pDiagObj = getDiagObj(i_idx);
 
     if( pDiagObj != nullptr )
     {
@@ -1260,29 +956,29 @@ bool CDataDiagram::isDiagObjVisible( int i_iObjId ) const
 void CDataDiagram::moveDiagObjInPaintList(
     const QString&   i_strObjName,
     EDiagObjMoveMode i_moveMode,
-    int              /*i_idxCount*/ )
+    int              i_idxCount )
 //------------------------------------------------------------------------------
 {
-    CDiagObj* pDiagObj = getDiagObj(i_strObjName);
+    CDiagObj* pDiagObj = findDiagObj(i_strObjName);
 
     if( pDiagObj != nullptr )
     {
-        moveDiagObjInPaintList(pDiagObj,i_moveMode);
+        moveDiagObjInPaintList(pDiagObj, i_moveMode, i_idxCount);
     }
 }
 
 //------------------------------------------------------------------------------
 void CDataDiagram::moveDiagObjInPaintList(
-    int              i_iObjId,
+    int              i_idx,
     EDiagObjMoveMode i_moveMode,
-    int              /*i_idxCount*/ )
+    int              i_idxCount )
 //------------------------------------------------------------------------------
 {
-    CDiagObj* pDiagObj = getDiagObj(i_iObjId);
+    CDiagObj* pDiagObj = getDiagObj(i_idx);
 
     if( pDiagObj != nullptr )
     {
-        moveDiagObjInPaintList(pDiagObj,i_moveMode);
+        moveDiagObjInPaintList(pDiagObj, i_moveMode, i_idxCount);
     }
 }
 
@@ -1290,14 +986,14 @@ void CDataDiagram::moveDiagObjInPaintList(
 void CDataDiagram::moveDiagObjInPaintList(
     CDiagObj*        i_pDiagObj,
     EDiagObjMoveMode i_moveMode,
-    int              /*i_idxCount*/ )
+    int              i_idxCount )
 //------------------------------------------------------------------------------
 {
     QString strTrcMsg;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
     {
-        strTrcMsg = i_pDiagObj->getObjName() + "," + moveMode2Str(i_moveMode);
+        strTrcMsg = i_pDiagObj->getObjName() + "," + moveMode2Str(i_moveMode) + ", " + QString::number(i_idxCount);
     }
 
     CMethodTracer mthTracer(
@@ -1306,77 +1002,38 @@ void CDataDiagram::moveDiagObjInPaintList(
         /* strMethod    */ "moveDiagObjInUpdateList",
         /* strAddInfo   */ strTrcMsg );
 
-    if( i_pDiagObj == nullptr )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultObjNotDefined);
-    }
-    if( m_iDiagObjCount == 0 )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultObjNotDefined);
-    }
-    if( m_pDiagObjFirst == nullptr )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultInternalProgramError);
-    }
-    if( m_pDiagObjLast == nullptr )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultInternalProgramError);
-    }
-    if( m_pDiagObjPaintFirst == nullptr )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultInternalProgramError);
-    }
-    if( m_pDiagObjPaintLast == nullptr )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultInternalProgramError);
-    }
-
     switch( i_moveMode )
     {
         case EDiagObjMoveModeToTop:
         {
-            // Not yet the last object in the list ...
-            if( i_pDiagObj->m_pDiagObjPaintNext != nullptr )
-            {
-                CDiagObj* pDiagObjA = i_pDiagObj->m_pDiagObjPaintPrev;
-                CDiagObj* pDiagObjB = i_pDiagObj->m_pDiagObjPaintNext;
-
-                if( pDiagObjA != nullptr )
-                {
-                    pDiagObjA->m_pDiagObjPaintNext = pDiagObjB;
-                }
-                else
-                {
-                    m_pDiagObjPaintFirst = pDiagObjB;
-                }
-                i_pDiagObj->m_pDiagObjPaintNext = nullptr;
-                i_pDiagObj->m_pDiagObjPaintPrev = m_pDiagObjPaintLast;
-                if( pDiagObjB->m_pDiagObjPaintNext == nullptr )
-                {
-                    pDiagObjB->m_pDiagObjPaintNext = i_pDiagObj;
-                }
-                else
-                {
-                    m_pDiagObjPaintLast->m_pDiagObjPaintNext = i_pDiagObj;
-                }
-                pDiagObjB->m_pDiagObjPaintPrev = pDiagObjA;
-                m_pDiagObjPaintLast = i_pDiagObj;
-            }
+            m_arpDiagObjs.removeOne(i_pDiagObj);
+            m_arpDiagObjs.insert(0, i_pDiagObj);
             break;
         }
         case EDiagObjMoveModeToBottom:
         {
-            // not yet supported
+            m_arpDiagObjs.removeOne(i_pDiagObj);
+            m_arpDiagObjs.append(i_pDiagObj);
             break;
         }
         case EDiagObjMoveModeOneStepUp:
         {
-            // not yet supported
+            if (m_arpDiagObjs.first() != i_pDiagObj)
+            {
+                int idx = m_arpDiagObjs.indexOf(i_pDiagObj);
+                m_arpDiagObjs.removeOne(i_pDiagObj);
+                m_arpDiagObjs.insert(idx-1, i_pDiagObj);
+            }
             break;
         }
         case EDiagObjMoveModeOneStepDown:
         {
-            // not yet supported
+            if (m_arpDiagObjs.last() != i_pDiagObj)
+            {
+                int idx = m_arpDiagObjs.indexOf(i_pDiagObj);
+                m_arpDiagObjs.removeOne(i_pDiagObj);
+                m_arpDiagObjs.insert(idx+1, i_pDiagObj);
+            }
             break;
         }
         case EDiagObjMoveModeRelative:
@@ -1395,7 +1052,7 @@ void CDataDiagram::moveDiagObjInPaintList(
         }
     }
 
-    // TODO: Pixmap processing for all objects
+    invalidate(nullptr, EUpdateLayoutDataPixmapWidget);
 
 } // moveDiagObjInPaintList
 
@@ -1446,19 +1103,14 @@ void CDataDiagram::scaleChanged( ZS::Diagram::CDiagScale* i_pDiagScale )
         }
     }
 
-    bool              bDiagObjUpdData = false;
-    int               idxScaleDir;
-    const CDiagScale* pDiagScale;
-    CDiagTrace*       pDiagTrace;
-    CDiagObj*         pDiagObj;
+    bool bDiagObjUpdData = false;
 
     // All objects linked to the changed scale will be invalidated.
-    pDiagObj = m_pDiagObjFirst;
-    while( pDiagObj != nullptr )
+    for (CDiagObj* pDiagObj : m_arpDiagObjs )
     {
-        for( idxScaleDir = 0; idxScaleDir < EScaleDirCount; idxScaleDir++ )
+        for( int idxScaleDir = 0; idxScaleDir < EScaleDirCount; idxScaleDir++ )
         {
-            pDiagScale = pDiagObj->m_arpDiagScale[idxScaleDir];
+            CDiagScale* pDiagScale = pDiagObj->m_arpDiagScale[idxScaleDir];
             if( pDiagScale == nullptr && pDiagObj->m_pDiagTrace != nullptr )
             {
                 pDiagScale = pDiagObj->m_pDiagTrace->getDiagScale(static_cast<EScaleDir>(idxScaleDir));
@@ -1474,14 +1126,12 @@ void CDataDiagram::scaleChanged( ZS::Diagram::CDiagScale* i_pDiagScale )
                 bDiagObjUpdData = true;
             }
         }
-        pDiagObj = pDiagObj->m_pDiagObjNext;
     }
 
     // All traces linked to the changed scale will be invalidated.
-    pDiagTrace = m_pDiagTraceFirst;
-    while( pDiagTrace != nullptr )
+    for (CDiagTrace* pDiagTrace : m_arpDiagTraces)
     {
-        for( idxScaleDir = 0; idxScaleDir < EScaleDirCount; idxScaleDir++ )
+        for( int idxScaleDir = 0; idxScaleDir < EScaleDirCount; idxScaleDir++ )
         {
             // If the trace is linked to the changed scale ..
             if( pDiagTrace->m_arpDiagScale[idxScaleDir] == i_pDiagScale )
@@ -1497,8 +1147,7 @@ void CDataDiagram::scaleChanged( ZS::Diagram::CDiagScale* i_pDiagScale )
                 }
 
                 // All objects linked to the changed traces will be invalidated.
-                pDiagObj = m_pDiagObjFirst;
-                while( pDiagObj != nullptr )
+                for (CDiagObj* pDiagObj : m_arpDiagObjs)
                 {
                     // If the object is linked to the changed trace ..
                     if( pDiagObj->m_pDiagTrace == pDiagTrace )
@@ -1509,11 +1158,9 @@ void CDataDiagram::scaleChanged( ZS::Diagram::CDiagScale* i_pDiagScale )
                         // all other objects also need to be redrawn.
                         bDiagObjUpdData = true;
                     }
-                    pDiagObj = pDiagObj->m_pDiagObjNext;
                 }
             }
         }
-        pDiagTrace = pDiagTrace->m_pDiagTraceNext;
     }
 
     // If pixmap processing is necessary for one object
@@ -1521,11 +1168,9 @@ void CDataDiagram::scaleChanged( ZS::Diagram::CDiagScale* i_pDiagScale )
     // all other objects also need to be redrawn.
     if( bDiagObjUpdData )
     {
-        pDiagObj = m_pDiagObjFirst;
-        while( pDiagObj != nullptr )
+        for (CDiagObj* pDiagObj : m_arpDiagObjs)
         {
             pDiagObj->invalidate(EUpdatePixmapWidget,false);
-            pDiagObj = pDiagObj->m_pDiagObjNext;
         }
     }
 
@@ -1596,11 +1241,9 @@ void CDataDiagram::traceChanged( ZS::Diagram::CDiagTrace* i_pDiagTrace )
         }
     }
 
-    bool      bDiagObjUpdData = false;
-    CDiagObj* pDiagObj;
+    bool bDiagObjUpdData = false;
 
-    pDiagObj = m_pDiagObjFirst;
-    while( pDiagObj != nullptr )
+    for (CDiagObj* pDiagObj : m_arpDiagObjs)
     {
         // If the object is linked to the changed trace ..
         if( pDiagObj->m_pDiagTrace == i_pDiagTrace )
@@ -1611,7 +1254,6 @@ void CDataDiagram::traceChanged( ZS::Diagram::CDiagTrace* i_pDiagTrace )
             // all other objects also need to be redrawn.
             bDiagObjUpdData = true;
         }
-        pDiagObj = pDiagObj->m_pDiagObjNext;
     }
 
     // If pixmap processing is necessary for one object
@@ -1619,11 +1261,9 @@ void CDataDiagram::traceChanged( ZS::Diagram::CDiagTrace* i_pDiagTrace )
     // all other objects also need to be redrawn.
     if( bDiagObjUpdData )
     {
-        pDiagObj = m_pDiagObjFirst;
-        while( pDiagObj != nullptr )
+        for (CDiagObj* pDiagObj : m_arpDiagObjs)
         {
             pDiagObj->invalidate(EUpdatePixmapWidget,false);
-            pDiagObj = pDiagObj->m_pDiagObjNext;
         }
     }
 
@@ -1681,11 +1321,9 @@ void CDataDiagram::updateLayout()
     // This is the data diagram which does not contain a layout, no pixmap and no widget.
 
     // Mark current process depth as executed (reset bit):
-    CDiagObj* pDiagObj = m_pDiagObjFirst;
-    while( pDiagObj != nullptr )
+    for (CDiagObj* pDiagObj : m_arpDiagObjs)
     {
         pDiagObj->validate(EUpdateLayout);
-        pDiagObj = pDiagObj->m_pDiagObjNext;
     }
     validate(EUpdateLayout);
 
@@ -1695,7 +1333,6 @@ void CDataDiagram::updateLayout()
         strTrcMsg += updateFlags2Str(m_uUpdateFlags);
         mthTracer.trace(strTrcMsg);
     }
-
 } // updateLayout
 
 //------------------------------------------------------------------------------
@@ -1720,10 +1357,6 @@ void CDataDiagram::updateData()
     // This method is called by objects controlling the diagram to update the
     // content of the diagram.
 
-    CDiagScale*  pDiagScale;
-    CDiagTrace*  pDiagTrace;
-    CDiagObj*    pDiagObj;
-
     // Mark current process depth as executed (reset bit):
     // On updating an object this object may emit a "valueChanged" signal
     // whereupon other objects may need to be recalculated and will be
@@ -1731,33 +1364,28 @@ void CDataDiagram::updateData()
     validate(EUpdateData);
 
     // Trigger the recalculation of the scale division lines for all scale objects.
-    pDiagScale = m_pDiagScaleFirst;
-    while( pDiagScale != nullptr )
+    for (CDiagScale* pDiagScale : m_arpDiagScales)
     {
         // If the scale will be changed the method "scaleChanged" of the diagram will be
         // called invalidating the data of all objects linked to the changed scale.
         pDiagScale->update();
-        pDiagScale = pDiagScale->m_pDiagScaleNext;
     }
 
     // Trigger the recalculation of internal constants within the traces. Those are used
     // to analyze the trace e.g. converting physical values into pixel coordinates and
     // vice versa, value resolutions and other things.
-    pDiagTrace = m_pDiagTraceFirst;
-    while( pDiagTrace != nullptr )
+    for (CDiagTrace* pDiagTrace : m_arpDiagTraces)
     {
         // If the trace will be changed the method "traceChanged" of the diagram will be
         // called invalidating the data of all objects linked to the changed trace.
         pDiagTrace->update(EUpdateData);
-        pDiagTrace = pDiagTrace->m_pDiagTraceNext;
     }
 
     // Trigger the recalculation of the output data for all diagram objects
     // (e.g. the diagram axis labels have to calculate the rectangles to output
     // the scale division lines, the curves have to transform the X/Y values
     // into point arrays, etc.).
-    pDiagObj = m_pDiagObjFirst;
-    while( pDiagObj != nullptr )
+    for (CDiagObj* pDiagObj : m_arpDiagObjs)
     {
         // Please note that also invisible objects need to mark their dirty rectangles
         // during widget processing. For invisible objects data processing is not
@@ -1766,8 +1394,6 @@ void CDataDiagram::updateData()
         // executed for invisible objects. But that should not slow down the
         // the system as only visible objects should really recalculate their data.
         pDiagObj->update(EUpdateData);
-
-        pDiagObj = pDiagObj->m_pDiagObjNext;
     }
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )

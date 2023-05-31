@@ -76,6 +76,7 @@ private slots: // test step methods (Signal Generators)
     void doTestStepSigGenAddCurves( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepSigGenRemoveCurves( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepSigGenAddMarkers( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepSigGenMoveMarkers( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepSigGenRemoveMarkers( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepSigGenSingleShot( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepSigGenStart( ZS::Test::CTestStep* i_pTestStep );

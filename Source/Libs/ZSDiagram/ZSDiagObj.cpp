@@ -164,7 +164,6 @@ CDiagObj::CDiagObj(
 //------------------------------------------------------------------------------
     QObject(),
     m_strObjName(i_strObjName),
-    m_iObjId(-1),
     m_pDiagram(nullptr),
     m_pDiagTrace(i_pDiagTrace),
     //m_arpDiagScale[EScaleDirCount]
@@ -181,10 +180,6 @@ CDiagObj::CDiagObj(
     m_bIsEditable(false),
     m_bPtEditSessionValid(false),
     m_ptEditSession(),
-    m_pDiagObjNext(nullptr),
-    m_pDiagObjPrev(nullptr),
-    m_pDiagObjPaintNext(nullptr),
-    m_pDiagObjPaintPrev(nullptr),
     m_pTrcAdminObj(nullptr),
     m_pTrcAdminObjUpdate(nullptr),
     m_pTrcAdminObjEvents(nullptr),
@@ -233,7 +228,6 @@ CDiagObj::CDiagObj(
 //------------------------------------------------------------------------------
     QObject(),
     m_strObjName(i_strObjName),
-    m_iObjId(-1),
     m_pDiagram(nullptr),
     m_pDiagTrace(nullptr),
     //m_arpDiagScale[EScaleDirCount]
@@ -250,10 +244,6 @@ CDiagObj::CDiagObj(
     m_bIsEditable(false),
     m_bPtEditSessionValid(false),
     m_ptEditSession(),
-    m_pDiagObjNext(nullptr),
-    m_pDiagObjPrev(nullptr),
-    m_pDiagObjPaintNext(nullptr),
-    m_pDiagObjPaintPrev(nullptr),
     m_pTrcAdminObj(nullptr),
     m_pTrcAdminObjUpdate(nullptr),
     m_pTrcAdminObjEvents(nullptr),
@@ -322,7 +312,6 @@ CDiagObj::~CDiagObj()
     m_pTrcAdminObjValidate = nullptr;
 
     //m_strObjName;
-    m_iObjId = 0;
     m_pDiagram = nullptr;
     m_pDiagTrace = nullptr;
     memset(m_arpDiagScale, 0x00, EScaleDirCount*sizeof(m_arpDiagScale[0]));
@@ -339,10 +328,6 @@ CDiagObj::~CDiagObj()
     m_bIsEditable = false;
     m_bPtEditSessionValid = false;
     //m_ptEditSession;
-    m_pDiagObjNext = nullptr;
-    m_pDiagObjPrev = nullptr;
-    m_pDiagObjPaintNext = nullptr;
-    m_pDiagObjPaintPrev = nullptr;
     m_pTrcAdminObj = nullptr;
     m_pTrcAdminObjUpdate = nullptr;
     m_pTrcAdminObjEvents = nullptr;
@@ -410,13 +395,6 @@ QString CDiagObj::getObjName() const
 //------------------------------------------------------------------------------
 {
     return m_strObjName;
-}
-
-//------------------------------------------------------------------------------
-int CDiagObj::getObjId() const
-//------------------------------------------------------------------------------
-{
-    return m_iObjId;
 }
 
 //------------------------------------------------------------------------------

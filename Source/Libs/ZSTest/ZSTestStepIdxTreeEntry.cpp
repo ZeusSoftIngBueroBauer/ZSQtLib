@@ -169,7 +169,7 @@ void CAbstractTestStepIdxTreeEntry::addDataRow(const QHash<QString, QVariant>& i
 }
 
 //------------------------------------------------------------------------------
-void CAbstractTestStepIdxTreeEntry::addDataRow(const QHash<QString, QVariant>&& i_dataRow)
+void CAbstractTestStepIdxTreeEntry::addDataRow(QHash<QString, QVariant>&& i_dataRow)
 //------------------------------------------------------------------------------
 {
     m_arDataRows.append(std::move(i_dataRow));

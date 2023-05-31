@@ -210,6 +210,13 @@ CTest::CTest() :
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Move Markers",
+        /* strOperation    */ "CDiagObjMarker::setVal()",
+        /* pTSGrpParent    */ pGrpSigGen,
+        /* szDoTestStepFct */ SLOT(doTestStepSigGenMoveMarkers(ZS::Test::CTestStep*)) );
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Single Shot Signal Generator",
         /* strOperation    */ "CDiagTrace::setValues()",
         /* pTSGrpParent    */ pGrpSigGen,
@@ -483,8 +490,7 @@ void CTest::doTestStepSigGenAddScales( ZS::Test::CTestStep* i_pTestStep )
         m_pDiagScaleY->setDivLineDistMinPix(EDivLineLayer::Main, 20);
 
         m_pWdgtDiagram->addDiagScale(m_pDiagScaleY);
-
-    } // if( m_pWdgtDiagram != nullptr )
+    }
 
     // Actual Result Values
     //---------------------
@@ -988,7 +994,7 @@ void CTest::doTestStepSigGenAddMarkers( ZS::Test::CTestStep* i_pTestStep )
         m_pDiagObjMarkerSigGen1->showElement(EDiagObjStateCount, CDiagObjMarker::EElementLineVer);
 
         CToolTipStyle* pToolTipStyle = new CToolTipStyle(
-            /* colFg         */ Qt::white,
+            /* colFg         */ Qt::black,
             /* colBg         */ col,
             /* fnt           */ QFont(),
             /* cxOffs        */ 8,
@@ -1036,7 +1042,7 @@ void CTest::doTestStepSigGenAddMarkers( ZS::Test::CTestStep* i_pTestStep )
         m_pDiagObjMarkerSigGen2->showElement(EDiagObjStateCount, CDiagObjMarker::EElementLineVer);
 
         CToolTipStyle* pToolTipStyle = new CToolTipStyle(
-            /* colFg         */ Qt::white,
+            /* colFg         */ Qt::black,
             /* colBg         */ col,
             /* fnt           */ QFont(),
             /* cxOffs        */ 8,
@@ -1081,6 +1087,58 @@ void CTest::doTestStepSigGenAddMarkers( ZS::Test::CTestStep* i_pTestStep )
     i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepSigGenAddMarkers
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepSigGenMoveMarkers( ZS::Test::CTestStep* i_pTestStep )
+//------------------------------------------------------------------------------
+{
+    QString     strExpectedValue;
+    QStringList strlstExpectedValues;
+    QString     strResultValue;
+    QStringList strlstResultValues;
+
+    // Expected Values
+    //---------------
+
+    strlstExpectedValues.append(strExpectedValue);
+
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Test Step
+    //----------
+
+    CPhysVal physValXMarkerSigGen1;
+    CPhysVal physValXMarkerSigGen2;
+
+    if (m_pDiagScaleX != nullptr)
+    {
+        physValXMarkerSigGen1 = m_pDiagScaleX->getScale().physValMin() + m_pDiagScaleX->getScale().physValRange() / 3.0;
+        physValXMarkerSigGen2 = m_pDiagScaleX->getScale().physValMin() + m_pDiagScaleX->getScale().physValRange() * (2.0/3.0);
+    }
+    if (m_pDiagObjMarkerSigGen1 != nullptr)
+    {
+        m_pDiagObjMarkerSigGen1->setVal(EScaleDirX, physValXMarkerSigGen1);
+    }
+    if (m_pDiagObjMarkerSigGen2 != nullptr)
+    {
+        m_pDiagObjMarkerSigGen2->setVal(EScaleDirX, physValXMarkerSigGen2);
+    }
+    if (m_pWdgtDiagram != nullptr)
+    {
+        m_pWdgtDiagram->update();
+    }
+
+    // Actual Result Values
+    //---------------------
+
+    // Please note that to finish a test step the list of actual values may not be empty.
+    if( strlstResultValues.size() == 0 )
+    {
+        strlstResultValues.append("Test Step not completely implemented");
+    }
+    i_pTestStep->setResultValues(strlstResultValues);
+
+} // doTestStepSigGenMoveMarkers
 
 //------------------------------------------------------------------------------
 void CTest::doTestStepSigGenRemoveMarkers( ZS::Test::CTestStep* i_pTestStep )

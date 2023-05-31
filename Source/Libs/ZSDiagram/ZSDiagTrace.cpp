@@ -66,8 +66,6 @@ CDiagTrace::CDiagTrace(
     //m_arphysValRes[EScaleDirCount]
     //m_arphysValArr[EScaleDirCount]
     m_uUpdateFlags(EUpdateData),
-    m_pDiagTraceNext(nullptr),
-    m_pDiagTracePrev(nullptr),
     m_pTrcAdminObj(nullptr),
     m_pTrcAdminObjUpdate(nullptr),
     m_pTrcAdminObjValidate(nullptr)
@@ -147,8 +145,6 @@ CDiagTrace::~CDiagTrace()
     //m_arphysValRes;
     //m_arphysValArr;
     m_uUpdateFlags = EUpdateNone;
-    m_pDiagTraceNext = nullptr;
-    m_pDiagTracePrev = nullptr;
     m_pTrcAdminObj = nullptr;
     m_pTrcAdminObjValidate = nullptr;
 
@@ -1165,8 +1161,8 @@ CDiagTrace* CDiagTrace::clone( CDataDiagram* i_pDiagramTrg ) const
         return nullptr;
     }
 
-    CDiagScale* pDiagScaleX = i_pDiagramTrg->getDiagScale( pDiagScaleXSrc->getObjName() );
-    CDiagScale* pDiagScaleY = i_pDiagramTrg->getDiagScale( pDiagScaleYSrc->getObjName() );
+    CDiagScale* pDiagScaleX = i_pDiagramTrg->findDiagScale(pDiagScaleXSrc->getObjName());
+    CDiagScale* pDiagScaleY = i_pDiagramTrg->findDiagScale(pDiagScaleYSrc->getObjName());
 
     if( pDiagScaleX == nullptr || pDiagScaleY == nullptr )
     {

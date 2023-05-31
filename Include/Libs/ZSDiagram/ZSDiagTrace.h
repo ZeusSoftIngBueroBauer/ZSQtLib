@@ -119,14 +119,13 @@ private: // assignment operator not allowed
 protected:  // class members
     static bool s_bClassInitialised;
 protected:  // instance members
-    QString                   m_strObjName;
-    CDataDiagram*             m_pDiagram;
-    CDiagScale*               m_arpDiagScale[EScaleDirCount];
-    PhysVal::CPhysVal         m_arphysValRes[EScaleDirCount];
-    PhysVal::CPhysValArr      m_arphysValArr[EScaleDirCount];
-    unsigned int              m_uUpdateFlags;
-    CDiagTrace*               m_pDiagTraceNext;
-    CDiagTrace*               m_pDiagTracePrev;
+    QString m_strObjName;
+    CDataDiagram* m_pDiagram;
+    CDiagScale* m_arpDiagScale[EScaleDirCount];
+    PhysVal::CPhysVal m_arphysValRes[EScaleDirCount];
+    PhysVal::CPhysValArr m_arphysValArr[EScaleDirCount];
+    unsigned int m_uUpdateFlags;
+protected:  // instance members
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjUpdate;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjValidate;

@@ -79,8 +79,6 @@ CDiagScale::CDiagScale(
     m_ararfDivLineVal(CEnumDivLineLayer::count(), QVector<double>()),
     m_ararfDivLinePix(CEnumDivLineLayer::count(), QVector<double>()),
     m_bDivLinesCalculated(false),
-    m_pDiagScaleNext(nullptr),
-    m_pDiagScalePrev(nullptr),
     m_iZoomCount(0),
     m_pZoomStackFirst(nullptr),
     m_pZoomStackLast(nullptr),
@@ -156,8 +154,6 @@ CDiagScale::~CDiagScale()
     m_pZoomStackFirst = nullptr; // passierte zwar schon in clearScaleStack, weiss aber lint nicht
     m_pZoomStackLast = nullptr;  // passierte zwar schon in clearScaleStack, weiss aber lint nicht
     m_pDiagram = nullptr;
-    m_pDiagScaleNext = nullptr;
-    m_pDiagScalePrev = nullptr;
 
     mthTracer.onAdminObjAboutToBeReleased();
 

@@ -248,8 +248,8 @@ CDiagObj* CDiagObjGrid::clone( CDataDiagram* i_pDiagramTrg ) const
         return nullptr;
     }
 
-    CDiagScale* pDiagScaleX = i_pDiagramTrg->getDiagScale( m_arpDiagScale[EScaleDirX]->getObjName() );
-    CDiagScale* pDiagScaleY = i_pDiagramTrg->getDiagScale( m_arpDiagScale[EScaleDirY]->getObjName() );
+    CDiagScale* pDiagScaleX = i_pDiagramTrg->findDiagScale(m_arpDiagScale[EScaleDirX]->getObjName());
+    CDiagScale* pDiagScaleY = i_pDiagramTrg->findDiagScale(m_arpDiagScale[EScaleDirY]->getObjName());
 
     if( pDiagScaleX == nullptr || pDiagScaleY == nullptr )
     {

@@ -233,6 +233,32 @@ EScaleDir CDiagObjMarker::getCursorMoveDir() const
 }
 
 //------------------------------------------------------------------------------
+void CDiagObjMarker::setVal( EScaleDir i_scaleDir, const CPhysVal& i_physVal )
+//------------------------------------------------------------------------------
+{
+    QString strTrcMsg;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
+    {
+        strTrcMsg += "ScaleDir=" + scaleDir2Str(i_scaleDir) + ", Val=" + i_physVal.toString();
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setVal",
+        /* strAddInfo   */ strTrcMsg );
+
+    if( i_scaleDir < EScaleDirMin || i_scaleDir > EScaleDirMax )
+    {
+        throw CException(__FILE__,__LINE__,EResultArgOutOfRange);
+    }
+
+    double fVal = i_physVal.getVal(m_arphysVal[i_scaleDir].unit());
+    setVal(i_scaleDir, fVal);
+}
+
+//------------------------------------------------------------------------------
 void CDiagObjMarker::setVal( EScaleDir i_scaleDir, double i_fVal, CUnit* i_pUnit )
 //------------------------------------------------------------------------------
 {
@@ -240,8 +266,7 @@ void CDiagObjMarker::setVal( EScaleDir i_scaleDir, double i_fVal, CUnit* i_pUnit
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
     {
-        strTrcMsg += "ScaleDir=" + scaleDir2Str(i_scaleDir) + ", ";
-        strTrcMsg += "XVal=" + QString::number(i_fVal);
+        strTrcMsg += "ScaleDir=" + scaleDir2Str(i_scaleDir) + ", Val=" + QString::number(i_fVal);
         if( i_pUnit != nullptr )
         {
             strTrcMsg += " [" + i_pUnit->symbol() + "]";
@@ -283,14 +308,14 @@ void CDiagObjMarker::setVal( EScaleDir i_scaleDir, double i_fVal, CUnit* i_pUnit
         // If the markers X position is changeable by the user ..
         if( m_scaleDirCursorMove == EScaleDirX && i_scaleDir == EScaleDirX )
         {
-            // .. the X value of the cursor will not be changed.
+            // .. the X value of the cursor has been set.
             // The resulting Y value need to be recalculated.
             m_arphysVal[EScaleDirY].setValidity(EValueValidity::Invalid);
         }
         // If the markers Y position is changeable by the user ..
         else if( m_scaleDirCursorMove == EScaleDirY && i_scaleDir == EScaleDirY )
         {
-            // .. the Y value of the cursor will not be changed.
+            // .. the Y value of the cursor has been set.
             // The resulting X value need to be recalculated.
             m_arphysVal[EScaleDirX].setValidity(EValueValidity::Invalid);
         }
@@ -1404,7 +1429,7 @@ CDiagObj* CDiagObjMarker::clone( CDataDiagram* i_pDiagramTrg ) const
         return nullptr;
     }
 
-    CDiagTrace* pDiagTrace = i_pDiagramTrg->getDiagTrace( m_pDiagTrace->getObjName() );
+    CDiagTrace* pDiagTrace = i_pDiagramTrg->findDiagTrace(m_pDiagTrace->getObjName());
 
     if( pDiagTrace == nullptr )
     {

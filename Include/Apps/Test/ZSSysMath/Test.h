@@ -49,14 +49,11 @@ public: // ctors and dtor
     CTest();
     ~CTest();
 public slots:
-    void doTestStepRound2Nearest( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepConvertAngles( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepRounding( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepMinMax( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepFirstSignificantDigit( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepCalculateDivLines4LinSpacing( ZS::Test::CTestStep* i_pTestStep );
-private: // instance auxiliary methods
-    void splitMethodCallOperation(
-        const QString& i_strOperation,
-        QString& o_strMth,
-        QStringList& o_strlstInArgs,
-        QString& o_strMthRet ) const;
 
 }; // class CTest
 

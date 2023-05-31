@@ -124,7 +124,7 @@ CDiagObj* CDiagObjRect::clone( CDataDiagram* i_pDiagramTrg ) const
         return nullptr;
     }
 
-    CDiagTrace* pDiagTrace = i_pDiagramTrg->getDiagTrace( m_pDiagTrace->getObjName() );
+    CDiagTrace* pDiagTrace = i_pDiagramTrg->findDiagTrace(m_pDiagTrace->getObjName());
 
     if( pDiagTrace == nullptr )
     {
