@@ -322,7 +322,8 @@ CDataDiagram* CPixmapDiagram::clone( EDiagramUpdateType i_diagramUpdateType ) co
         for (int idx = 0; idx < m_arpDiagObjs.size(); ++idx)
         {
             CDiagObj* pDiagObj = m_arpDiagObjs[idx]->clone(pPixmapDiagram);
-            pPixmapDiagram->m_hshpDiagObjs[m_arpDiagObjs[idx]->getObjName()] = pDiagObj;
+            QString strDiagObjKey = m_arpDiagObjs[idx]->className() + "::" + m_arpDiagObjs[idx]->getObjName();
+            pPixmapDiagram->m_hshpDiagObjs[strDiagObjKey] = pDiagObj;
         }
 
         // Pixmap Diagram

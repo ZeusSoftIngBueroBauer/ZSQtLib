@@ -87,13 +87,16 @@ public: // ctors and dtor
     //CWdgtDiagram( QWidget* i_pWdgtParent );
     CWdgtDiagram( const QString& i_strObjName, QWidget* i_pWdgtParent = nullptr );
     virtual ~CWdgtDiagram();
+public: // overridables
+    virtual QString className() { return ClassName(); }
 signals:
+    void aboutToBeDestroyed(const QString& i_strObjName);
     void diagScaleAdded(const QString& i_strObjName);
     void diagScaleRemoved(const QString& i_strObjName);
     void diagTraceAdded(const QString& i_strObjName);
     void diagTraceRemoved(const QString& i_strObjName);
-    void diagObjAdded(const QString& i_strObjName);
-    void diagObjRemoved(const QString& i_strObjName);
+    void diagObjAdded(const QString& i_strClassName, const QString& i_strObjName);
+    void diagObjRemoved(const QString& i_strClassName, const QString& i_strObjName);
 public: // copy ctor not allowed but diagrams may be cloned
     virtual CDataDiagram* clone( EDiagramUpdateType i_diagramUpdateType ) const;
 public: // instance methods
@@ -157,12 +160,13 @@ protected slots: // overridable instance methods
     virtual void popupMenuContextItemSaveActivated( void );
     virtual void popupMenuContextItemPrintActivated( void );
 protected: // overridables of base class CDataDiagram for emitting the signals
-    virtual void emit_diagScaleAdded(const QString& i_strObjName);
-    virtual void emit_diagScaleRemoved(const QString& i_strObjName);
-    virtual void emit_diagTraceAdded(const QString& i_strObjName);
-    virtual void emit_diagTraceRemoved(const QString& i_strObjName);
-    virtual void emit_diagObjAdded(const QString& i_strObjName);
-    virtual void emit_diagObjRemoved(const QString& i_strObjName);
+    void emit_aboutToBeDestroyed(const QString& i_strObjName) override;
+    void emit_diagScaleAdded(const QString& i_strObjName) override;
+    void emit_diagScaleRemoved(const QString& i_strObjName) override;
+    void emit_diagTraceAdded(const QString& i_strObjName) override;
+    void emit_diagTraceRemoved(const QString& i_strObjName) override;
+    void emit_diagObjAdded(const QString& i_strClassName, const QString& i_strObjName) override;
+    void emit_diagObjRemoved(const QString& i_strClassName, const QString& i_strObjName) override;
 private: // copy ctor not allowed
     CWdgtDiagram( const CWdgtDiagram& );
 private: // assignment operator not allowed

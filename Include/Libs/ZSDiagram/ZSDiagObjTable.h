@@ -47,6 +47,8 @@ class ZSDIAGRAMDLL_API CDiagObjTable : public ZS::Diagram::CDiagObj
 //******************************************************************************
 {
     Q_OBJECT
+public: // class methods
+    static QString ClassName() { return "CDiagObjTable"; }
 public: // type definitions and constants
     // Please note:
     // A cell may be of data type "ValueWithPhysUnit". But if the DisplayDataType
@@ -97,6 +99,8 @@ public: // ctors and dtor
         int            i_iClmCountMax,
         ELayoutPos     i_layoutPos );
     virtual ~CDiagObjTable();
+public: // must overridables of base class CDiagObj
+    virtual QString className() { return ClassName(); }
 public: // instance methods
     void showGridLines( EOrientation i_orientation = EOrientationCount );
     void hideGridLines( EOrientation i_orientation = EOrientationCount );

@@ -54,6 +54,8 @@ public: // ctors and dtor
         const QString&     i_strObjName,
         EDiagramUpdateType i_updateType = EDiagramUpdateTypeData );
     virtual ~CDataDiagram();
+public: // overridables
+    virtual QString className() { return ClassName(); }
 public: // copy ctor not allowed but diagrams may be cloned
     virtual CDataDiagram* clone( EDiagramUpdateType i_diagramUpdateType ) const;
 public: // instance methods
@@ -84,18 +86,18 @@ public: // instance methods to add and remove trace objects
 public: // instance methods to add and remove diagram objects
     void addDiagObj( CDiagObj* i_pDiagObj );
     void removeDiagObj( CDiagObj* i_pDiagObj );
-    CDiagObj* removeDiagObj( const QString& i_strObjName );
-    CDiagObj* findDiagObj( const QString& i_strObjName ) const;
+    CDiagObj* removeDiagObj( const QString& i_strClassName, const QString& i_strObjName );
+    CDiagObj* findDiagObj( const QString& i_strClassName, const QString& i_strObjName ) const;
     int getDiagObjsCount() const;
     CDiagObj* getDiagObj( int i_idx ) const;
 public: // instance methods to change diagram objects
-    void showDiagObj( const QString& i_strObjName ) const;
+    void showDiagObj( const QString& i_strClassName, const QString& i_strObjName ) const;
     void showDiagObj( int i_idx ) const;
-    void hideDiagObj( const QString& i_strObjName ) const;
+    void hideDiagObj( const QString& i_strClassName, const QString& i_strObjName ) const;
     void hideDiagObj( int i_idx ) const;
-    bool isDiagObjVisible( const QString& i_strObjName ) const;
+    bool isDiagObjVisible( const QString& i_strClassName, const QString& i_strObjName ) const;
     bool isDiagObjVisible( int i_idx ) const;
-    void moveDiagObjInPaintList( const QString& i_strObjName, EDiagObjMoveMode i_moveMode, int i_idxCount = 0 );
+    void moveDiagObjInPaintList( const QString& i_strClassName, const QString& i_strObjName, EDiagObjMoveMode i_moveMode, int i_idxCount = 0 );
     void moveDiagObjInPaintList( int i_idx, EDiagObjMoveMode i_moveMode, int i_idxCount = 0 );
     void moveDiagObjInPaintList( CDiagObj* i_pDiagObj, EDiagObjMoveMode i_moveMode, int i_idxCount = 0 );
 public: // overridables (callbacks from CDiagScale, CDiagTrace and CDiagObj)
@@ -105,12 +107,13 @@ protected: // overridables (auxiliary instance methods)
     virtual void updateLayout();
     virtual void updateData();
 protected: // CWdgtDiagram needs to overwrite the method for emitting the signals
+    virtual void emit_aboutToBeDestroyed(const QString& i_strObjName) {}
     virtual void emit_diagScaleAdded(const QString& i_strObjName) {}
     virtual void emit_diagScaleRemoved(const QString& i_strObjName) {}
     virtual void emit_diagTraceAdded(const QString& i_strObjName) {}
     virtual void emit_diagTraceRemoved(const QString& i_strObjName) {}
-    virtual void emit_diagObjAdded(const QString& i_strObjName) {}
-    virtual void emit_diagObjRemoved(const QString& i_strObjName) {}
+    virtual void emit_diagObjAdded(const QString& i_strClassName, const QString& i_strObjName) {}
+    virtual void emit_diagObjRemoved(const QString& i_strClassName, const QString& i_strObjName) {}
 private: // copy ctor not allowed
     CDataDiagram( const CDataDiagram& );
 private: // assignment operator not allowed
@@ -129,7 +132,7 @@ protected:  // instance members
     QVector<CDiagTrace*> m_arpDiagTraces;
     /*!< List with diagram objects. The diagram object at the lowest index will be painted first. */
     QVector<CDiagObj*> m_arpDiagObjs;
-    /*!< Hash with diagram objects. The key is the name of the object. */
+    /*!< Hash with diagram objects. The key is the class name and of the object name concatenated with "::". */
     QHash<QString, CDiagObj*> m_hshpDiagObjs;
 private:  // instance members
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;

@@ -119,6 +119,8 @@ signals:
     void valueXChanged( ZS::Diagram::CDiagObj* );
     void valueYChanged( ZS::Diagram::CDiagObj* );
     void visibilityChanged( ZS::Diagram::CDiagObj* );
+public: // must overridables
+    virtual QString className() = 0;
 public: // instance methods
     void setObjName( const QString& i_strObjName );
     QString getObjName() const;

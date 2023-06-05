@@ -24,10 +24,10 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjsWdgt.h"
-#include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjsTreeWdgt.h"
-#include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjsPropertiesWdgtStack.h"
-#include "ZSDraw/Drawing/ZSDrawingView.h"
+#include "ZSDiagramGUI/ZSDiagramObjsWdgt.h"
+#include "ZSDiagramGUI/ZSDiagramObjsTreeWdgt.h"
+#include "ZSDiagramGUI/ZSDiagramObjsPropertiesWdgtStack.h"
+#include "ZSDiagram/ZSDiagramProcWdgt.h"
 #include "ZSSysGUI/ZSSysIdxTreeModelEntry.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysException.h"
@@ -54,11 +54,12 @@ may result in using the software modules.
 
 using namespace ZS::System;
 using namespace ZS::System::GUI;
-using namespace ZS::Draw;
+using namespace ZS::Diagram;
+using namespace ZS::Diagram::GUI;
 
 
 /*******************************************************************************
-class CWdgtGraphObjs : public QWidget
+class CWdgtDiagramObjs : public QWidget
 *******************************************************************************/
 
 /*==============================================================================
@@ -66,20 +67,20 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CWdgtGraphObjs::CWdgtGraphObjs(
-    CDrawingView* i_pDrawingView,
+CWdgtDiagramObjs::CWdgtDiagramObjs(
+    CWdgtDiagram* i_pDiagram,
     QWidget* i_pWdgtParent,
     Qt::WindowFlags i_wflags ) :
 //------------------------------------------------------------------------------
     QWidget(i_pWdgtParent,i_wflags),
-    m_pDrawingView(i_pDrawingView),
-    m_pLytMain(nullptr),
+    m_pDiagram(i_pDiagram),
+    m_pLyt(nullptr),
     m_pSplitter(nullptr),
     m_pWdgtTreeView(nullptr),
-    m_pWdgtStackGraphObjsProperties(nullptr),
+    m_pWdgtStackObjsProperties(nullptr),
     m_pTrcAdminObj(nullptr)
 {
-    setObjectName(i_pDrawingView->objectName());
+    setObjectName(i_pDiagram->objectName());
 
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
 
@@ -87,60 +88,49 @@ CWdgtGraphObjs::CWdgtGraphObjs(
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strMthInArgs =  QString(i_pDrawingView->objectName());
+        strMthInArgs =  QString(i_pDiagram->objectName());
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ctor",
-        /* strAddInfo   */ "" );
+        /* strAddInfo   */ strMthInArgs );
 
-    m_pLytMain = new QVBoxLayout;
-    setLayout(m_pLytMain);
+    m_pLyt = new QVBoxLayout;
+    setLayout(m_pLyt);
 
     // Split View with Tree View and Node Content
     //===========================================
 
     m_pSplitter = new QSplitter(Qt::Horizontal);
-    m_pLytMain->addWidget(m_pSplitter, 1);
+    m_pLyt->addWidget(m_pSplitter, 1);
 
     // <TreeView>
     //-----------
 
-    m_pWdgtTreeView = new CWdgtGraphObjsTree(m_pDrawingView);
+    m_pWdgtTreeView = new CWdgtDiagramObjsTree(m_pDiagram);
     m_pWdgtTreeView->setMinimumWidth(180);
     m_pSplitter->addWidget(m_pWdgtTreeView);
     m_pSplitter->setChildrenCollapsible(false);
 
     QObject::connect(
-        m_pWdgtTreeView, &CWdgtGraphObjsTree::viewModeChanged,
-        this, &CWdgtGraphObjs::onWdgtTreeViewModeChanged );
-    QObject::connect(
-        m_pWdgtTreeView, &CWdgtGraphObjsTree::currentRowChanged,
-        this, &CWdgtGraphObjs::onWdgtTreeViewCurrentRowChanged );
+        m_pWdgtTreeView, &CWdgtDiagramObjsTree::currentRowChanged,
+        this, &CWdgtDiagramObjs::onWdgtTreeViewCurrentRowChanged );
 
     // <NodeContent>
     //--------------
 
-    m_pWdgtStackGraphObjsProperties = new CWdgtStackGraphObjsProperties(m_pDrawingView);
-    m_pWdgtStackGraphObjsProperties->setMinimumWidth(180);
-    m_pSplitter->addWidget(m_pWdgtStackGraphObjsProperties);
-
-    CWdgtGraphObjsTree::EViewMode viewMode = m_pWdgtTreeView->viewMode();
-
-    if( viewMode == CWdgtGraphObjsTree::EViewMode::NavPanelOnly ) {
-        m_pWdgtStackGraphObjsProperties->hide();
-    }
+    m_pWdgtStackObjsProperties = new CWdgtStackDiagramObjsProperties(m_pDiagram);
+    m_pWdgtStackObjsProperties->setMinimumWidth(180);
+    m_pSplitter->addWidget(m_pWdgtStackObjsProperties);
 
 } // ctor
 
 //------------------------------------------------------------------------------
-CWdgtGraphObjs::~CWdgtGraphObjs()
+CWdgtDiagramObjs::~CWdgtDiagramObjs()
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -151,11 +141,11 @@ CWdgtGraphObjs::~CWdgtGraphObjs()
 
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
 
-    m_pDrawingView = nullptr;
-    m_pLytMain = nullptr;
+    m_pDiagram = nullptr;
+    m_pLyt = nullptr;
     m_pSplitter = nullptr;
     m_pWdgtTreeView = nullptr;
-    m_pWdgtStackGraphObjsProperties = nullptr;
+    m_pWdgtStackObjsProperties = nullptr;
     m_pTrcAdminObj = nullptr;
 
 } // dtor
@@ -165,7 +155,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjs::saveState(QSettings& i_settings) const
+void CWdgtDiagramObjs::saveState(QSettings& i_settings) const
 //------------------------------------------------------------------------------
 {
     if( m_pSplitter != nullptr ) {
@@ -175,18 +165,12 @@ void CWdgtGraphObjs::saveState(QSettings& i_settings) const
                 ClassName() + "/" + objectName() + "/SplitterHeight" + QString::number(idx), listSizes[idx]);
         }
     }
-
-    m_pWdgtTreeView->saveState(i_settings);
-    m_pWdgtStackGraphObjsProperties->saveState(i_settings);
 }
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjs::restoreState(const QSettings& i_settings)
+void CWdgtDiagramObjs::restoreState(const QSettings& i_settings)
 //------------------------------------------------------------------------------
 {
-    m_pWdgtTreeView->restoreState(i_settings);
-    m_pWdgtStackGraphObjsProperties->restoreState(i_settings);
-
     if( m_pSplitter != nullptr ) {
         QList<int> listSizes = m_pSplitter->sizes();
         for( int idx = 0; idx < listSizes.count(); idx++ ) {
@@ -202,37 +186,7 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjs::onWdgtTreeViewModeChanged( const QString& i_strViewMode )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strMthInArgs = i_strViewMode;
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onWdgtTreeViewModeChanged",
-        /* strMthInArgs */ strMthInArgs );
-
-    CWdgtGraphObjsTree::EViewMode viewMode =
-        CWdgtGraphObjsTree::str2ViewMode(i_strViewMode);
-
-    if( viewMode == CWdgtGraphObjsTree::EViewMode::NavPanelAndNodeContent ) {
-        m_pWdgtTreeView->setMinimumWidth(180);
-        m_pWdgtStackGraphObjsProperties->show();
-    }
-    else {
-        m_pWdgtTreeView->setMinimumWidth(180);
-        m_pWdgtStackGraphObjsProperties->hide();
-    }
-}
-
-//------------------------------------------------------------------------------
-void CWdgtGraphObjs::onWdgtTreeViewCurrentRowChanged(
+void CWdgtDiagramObjs::onWdgtTreeViewCurrentRowChanged(
     const QModelIndex& i_modelIdxCurr,
     const QModelIndex& i_modelIdxPrev )
 //------------------------------------------------------------------------------
@@ -241,8 +195,8 @@ void CWdgtGraphObjs::onWdgtTreeViewCurrentRowChanged(
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strMthInArgs  = "Curr {" + CModelIdxTreeGraphObjs::modelIdx2Str(i_modelIdxCurr) + "}";
-        strMthInArgs += ", Prev {" + CModelIdxTreeGraphObjs::modelIdx2Str(i_modelIdxPrev) + "}";
+        strMthInArgs  = "Curr {" + CModelDiagramObjs::modelIdx2Str(i_modelIdxCurr) + "}";
+        strMthInArgs += ", Prev {" + CModelDiagramObjs::modelIdx2Str(i_modelIdxPrev) + "}";
     }
 
     CMethodTracer mthTracer(
@@ -253,14 +207,14 @@ void CWdgtGraphObjs::onWdgtTreeViewCurrentRowChanged(
 
     if( i_modelIdxCurr.isValid() )
     {
-        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdxCurr.internalPointer());
+        CModelDiagramObjsTreeItem* pItem =
+            static_cast<CModelDiagramObjsTreeItem*>(i_modelIdxCurr.internalPointer());
 
-        if( pModelTreeEntry != nullptr ) {
-            m_pWdgtStackGraphObjsProperties->setKeyInTree(pModelTreeEntry->keyInTree());
+        if( pItem != nullptr ) {
+            m_pWdgtStackObjsProperties->setCurrentDiagObj(pItem->className(), pItem->objectName());
         }
         else {
-            m_pWdgtStackGraphObjsProperties->setKeyInTree("");
+            m_pWdgtStackObjsProperties->setCurrentDiagObj("", "");
         }
     }
-
-} // onWdgtTreeViewCurrentRowChanged
+}

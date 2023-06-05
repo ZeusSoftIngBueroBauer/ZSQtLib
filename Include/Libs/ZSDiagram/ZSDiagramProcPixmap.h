@@ -59,6 +59,8 @@ public: // ctors and dtor
         const QString&     i_strObjName,
         EDiagramUpdateType i_updateType  = EDiagramUpdateTypePixmap );
     virtual ~CPixmapDiagram();
+public: // overridables
+    virtual QString className() { return ClassName(); }
 public: // copy ctor not allowed but diagrams may be cloned
     virtual CDataDiagram* clone( EDiagramUpdateType i_diagramUpdateType ) const;
 public: // instance methods

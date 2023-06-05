@@ -40,6 +40,8 @@ namespace Diagram
 class ZSDIAGRAMDLL_API CDiagObjAxisLabel : public CDiagObj
 //******************************************************************************
 {
+public: // class methods
+    static QString ClassName() { return "CDiagObjAxisLabel"; }
 public: // ctors and dtor
     CDiagObjAxisLabel(
         const QString& i_strObjName,
@@ -47,6 +49,8 @@ public: // ctors and dtor
         ELayoutPos     i_layoutPos,
         const QString& i_strAxisLabel = QString() );
     virtual ~CDiagObjAxisLabel();
+public: // must overridables of base class CDiagObj
+    virtual QString className() { return ClassName(); }
 public: // instance methods
     void setUnit( PhysVal::CUnit* i_pUnit ); // nullptr means "use best unit"
     PhysVal::CUnit* getUnit();

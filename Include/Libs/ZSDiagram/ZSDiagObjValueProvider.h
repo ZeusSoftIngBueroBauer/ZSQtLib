@@ -41,6 +41,8 @@ class ZSDIAGRAMDLL_API CDiagObjValueProvider : public CDiagObj
 //******************************************************************************
 {
     Q_OBJECT
+public: // class methods
+    static QString ClassName() { return "CDiagObjValueProvider"; }
 public: // type definitions and constants
     typedef enum {
         EMathOpMin            = 0,
@@ -59,6 +61,8 @@ public: // ctors and dtor
         CDiagObj*      i_pDiagObjOp2 = nullptr,
         EScaleDir      i_scaleDirOp2 = EScaleDirUndefined );
     virtual ~CDiagObjValueProvider();
+public: // must overridables of base class CDiagObj
+    virtual QString className() { return ClassName(); }
 public: // instance methods
     void setMathOp( EMathOp i_mathOp );
     EMathOp getMathOp() const;

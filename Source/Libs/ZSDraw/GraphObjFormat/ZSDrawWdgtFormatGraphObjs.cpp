@@ -63,14 +63,9 @@ CWdgtFormatGraphObjs::CWdgtFormatGraphObjs(
 {
     if( m_pGraphObj != nullptr )
     {
-        if( !QObject::connect(
-            /* pObjSender   */ m_pDrawingScene,
-            /* szSignal     */ SIGNAL(graphObjChanged(ZS::Draw::CDrawingScene*, ZS::Draw::CGraphObj*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onDrawingSceneGraphObjChanged(ZS::Draw::CDrawingScene*, ZS::Draw::CGraphObj*))) )
-        {
-            throw ZS::System::CException(__FILE__, __LINE__, EResultSignalSlotConnectionFailed);
-        }
+        QObject::connect(
+            /* pObjSender   */ m_pDrawingScene, &CDrawingScene::graphObjChanged,
+            /* pObjReceiver */ this, &CWdgtFormatGraphObjs::onDrawingSceneGraphObjChanged );
 
         m_pGraphicsItem = dynamic_cast<QGraphicsItem*>(m_pGraphObj);
 

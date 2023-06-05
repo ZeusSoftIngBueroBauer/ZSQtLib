@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -24,21 +24,25 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSApps_TestDiagram_WdgtTestOutput_h
-#define ZSApps_TestDiagram_WdgtTestOutput_h
+#ifndef ZDiagram_ObjsWdgt_h
+#define ZDiagram_ObjsWdgt_h
 
 #include <QtCore/qglobal.h>
 
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qwidget.h>
 #else
 #include <QtWidgets/qwidget.h>
 #endif
 
-class QFrame;
+#include "ZSDiagramGUI/ZSDiagramGUIDllMain.h"
+
+class QModelIndex;
 class QPushButton;
-class QVBoxLayout;
+class QSettings;
+class QSplitter;
 class QHBoxLayout;
+class QVBoxLayout;
 
 namespace ZS
 {
@@ -49,45 +53,46 @@ class CTrcAdminObj;
 namespace Diagram
 {
 class CWdgtDiagram;
-}
 
-namespace Apps
+namespace GUI
 {
-namespace Test
-{
-namespace Diagram
-{
+class CWdgtDiagramObjsTree;
+class CWdgtStackDiagramObjsProperties;
+
 //******************************************************************************
-class CWdgtTestOutput : public QWidget
+class ZSDIAGRAMGUIDLL_API CWdgtDiagramObjs : public QWidget
 //******************************************************************************
 {
     Q_OBJECT
+public: // class methods
+    static QString NameSpace() { return "ZS::Diagram::GUI"; }
+    static QString ClassName() { return "CWdgtDiagramObjs"; }
 public: // ctors and dtor
-    CWdgtTestOutput( QWidget* i_pWdgtParent = nullptr, Qt::WindowFlags i_wflags = Qt::WindowFlags());
-    ~CWdgtTestOutput();
+    CWdgtDiagramObjs(
+        CWdgtDiagram* i_pDiagram,
+        QWidget* i_pWdgtParent = nullptr,
+        Qt::WindowFlags i_wflags = Qt::WindowFlags() );
+    virtual ~CWdgtDiagramObjs();
 public: // instance methods
-    void setDiagram(ZS::Diagram::CWdgtDiagram* i_pDiagram);
-public: // overridables of base class QWidget
-    void resizeEvent( QResizeEvent* i_pEv ) override;
+    void saveState(QSettings& i_settings) const;
+    void restoreState(const QSettings& i_settings);
 protected slots:
-    void onBtnDiagramPropertiesClicked(bool i_bChecked = false);
-    void onDiagramDestroyed(QObject*);
+    void onWdgtTreeViewCurrentRowChanged( const QModelIndex& i_modelIdxCurr, const QModelIndex& i_modelIdxPrev );
 protected: // instance members
+    CWdgtDiagram* m_pDiagram;
     QVBoxLayout* m_pLyt;
-    QHBoxLayout* m_pLytLineHeader;
-    QPushButton* m_pBtnDiagramProperties;
-    QFrame* m_pFrameDiagram;
-    ZS::Diagram::CWdgtDiagram* m_pDiagram;
+    QSplitter* m_pSplitter;
+    CWdgtDiagramObjsTree* m_pWdgtTreeView;
+    CWdgtStackDiagramObjsProperties* m_pWdgtStackObjsProperties;
+    /*!< Trace admin object to control trace outputs of the class. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
-}; // class CWdgtTestOutput
+}; // class CWdgtGraphObjs
+
+} // namespace GUI
 
 } // namespace Diagram
 
-} // namespace Test
-
-} // namespace Apps
-
 } // namespace ZS
 
-#endif // #ifndef ZSApps_TestDiagram_WdgtTestOutput_h
+#endif // #ifndef ZDiagram_ObjsWdgt_h

@@ -167,15 +167,10 @@ QWidget* CDelegateGraphObjsTreeView::createEditor(
         {
             //pVThis->m_pEdtName->installEventFilter(pVThis);
 
-            pVThis->m_bEdtNameDestroyedSignalConnected = QObject::connect(
-                /* pObjSender   */ m_pEdtName,
-                /* szSignal     */ SIGNAL( destroyed(QObject*) ),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT( onEdtNameDestroyed(QObject*) ) );
-            if( !m_bEdtNameDestroyedSignalConnected )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-            }
+            QObject::connect(
+                m_pEdtName, &QLineEdit::destroyed,
+                this, &CDelegateGraphObjsTreeView::onEdtNameDestroyed );
+            pVThis->m_bEdtNameDestroyedSignalConnected = true;
         }
     } // if( i_modelIdx.column() == CModelIdxTree::EColumnTreeEntryName )
 
@@ -391,14 +386,9 @@ CTreeViewGraphObjs::CTreeViewGraphObjs(
     m_pActionGraphObjExpand = new QAction(pxmExpandAll, "Expand", this);
     m_pMenuGraphObjContext->addAction(m_pActionGraphObjExpand);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pActionGraphObjExpand,
-        /* szSignal     */ SIGNAL( triggered(bool) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onActionGraphObjExpandTriggered(bool) ) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pActionGraphObjExpand, &QAction::triggered,
+        this, &CTreeViewGraphObjs::onActionGraphObjExpandTriggered );
 
     QPixmap pxmCollapseAll(":/ZS/TreeView/TreeViewCollapseAll.bmp");
     pxmCollapseAll.setMask(pxmCollapseAll.createHeuristicMask());
@@ -406,70 +396,40 @@ CTreeViewGraphObjs::CTreeViewGraphObjs(
     m_pActionGraphObjCollapse = new QAction(pxmCollapseAll, "Collapse", this);
     m_pMenuGraphObjContext->addAction(m_pActionGraphObjCollapse);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pActionGraphObjCollapse,
-        /* szSignal     */ SIGNAL( triggered(bool) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onActionGraphObjCollapseTriggered(bool) ) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pActionGraphObjCollapse, &QAction::triggered,
+        this, &CTreeViewGraphObjs::onActionGraphObjCollapseTriggered );
 
     m_pMenuGraphObjContext->addSeparator();
 
     m_pActionGraphObjDelete = new QAction("Delete", this);
     m_pMenuGraphObjContext->addAction(m_pActionGraphObjDelete);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pActionGraphObjDelete,
-        /* szSignal     */ SIGNAL( triggered(bool) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onActionGraphObjDeleteTriggered(bool) ) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pActionGraphObjDelete, &QAction::triggered,
+        this, &CTreeViewGraphObjs::onActionGraphObjDeleteTriggered );
 
     m_pMenuGraphObjContext->addSeparator();
 
     // Connect to signals of the tree view
     //------------------------------------
 
-    if( !QObject::connect(
-        /* pObjSender   */ this,
-        /* szSignal     */ SIGNAL( collapsed(const QModelIndex&) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onCollapsed(const QModelIndex&) ) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ this,
-        /* szSignal     */ SIGNAL( expanded(const QModelIndex&) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onExpanded(const QModelIndex&) ) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    //if( !QObject::connect(
-    //    /* pObjSender   */ selectionModel(),
-    //    /* szSignal     */ SIGNAL( currentChanged(const QModelIndex&, const QModelIndex&) ),
-    //    /* pObjReceiver */ this,
-    //    /* szSlot       */ SLOT( onCurrentChanged(const QModelIndex&, const QModelIndex&) ) ) )
-    //{
-    //    throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    //}
+    QObject::connect(
+        this, &CTreeViewGraphObjs::collapsed,
+        this, &CTreeViewGraphObjs::onCollapsed );
+    QObject::connect(
+        this, &CTreeViewGraphObjs::expanded,
+        this, &CTreeViewGraphObjs::onExpanded );
+    //QObject::connect(
+    //    selectionModel(), currentChanged,
+    //    this, &CTreeViewGraphObjs::onCurrentChanged );
 
     // Connect to signals of the drawing scene
     //----------------------------------------
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pDrawingScene,
-        /* szSignal     */ SIGNAL(selectionChanged()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onDrawingSceneSelectionChanged()) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pDrawingScene, &CDrawingScene::selectionChanged,
+        this, &CTreeViewGraphObjs::onDrawingSceneSelectionChanged );
 
 } // ctor
 
@@ -912,10 +872,8 @@ void CTreeViewGraphObjs::onDrawingSceneSelectionChanged()
         /* strAddInfo   */ strMthInArgs );
 
     //QObject::disconnect(
-    //    /* pObjSender   */ selectionModel(),
-    //    /* szSignal     */ SIGNAL( currentChanged(const QModelIndex&, const QModelIndex&) ),
-    //    /* pObjReceiver */ this,
-    //    /* szSlot       */ SLOT( onCurrentChanged(const QModelIndex&, const QModelIndex&) ) );
+    //    selectionModel(), currentChanged,
+    //    this, &CTreeViewGraphObjs::onCurrentChanged );
 
     //clearSelection();
 
@@ -956,14 +914,9 @@ void CTreeViewGraphObjs::onDrawingSceneSelectionChanged()
     //    }
     //}
 
-    //if( !QObject::connect(
-    //    /* pObjSender   */ selectionModel(),
-    //    /* szSignal     */ SIGNAL( currentChanged(const QModelIndex&, const QModelIndex&) ),
-    //    /* pObjReceiver */ this,
-    //    /* szSlot       */ SLOT( onCurrentChanged(const QModelIndex&, const QModelIndex&) ) ) )
-    //{
-    //    throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    //}
+    //QObject::connect(
+    //    selectionModel(), currentChanged,
+    //    this, &CTreeViewGraphObjs::onCurrentChanged );
 
 } // onDrawingSceneSelectionChanged
 

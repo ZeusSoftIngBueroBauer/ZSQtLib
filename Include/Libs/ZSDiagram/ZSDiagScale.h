@@ -57,6 +57,8 @@ public: // ctors and dtor
         EScaleDir      i_scaleDir,
         const SScale&  i_scale );
     virtual ~CDiagScale();
+public: // overridables
+    virtual QString className() { return ClassName(); }
 signals:
     void scaleChanged( ZS::Diagram::CDiagScale* i_pDiagScale );
 public: // instance methods

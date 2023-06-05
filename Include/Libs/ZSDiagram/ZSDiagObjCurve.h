@@ -41,11 +41,15 @@ namespace Diagram
 class ZSDIAGRAMDLL_API CDiagObjCurve : public CDiagObj
 //******************************************************************************
 {
+public: // class methods
+    static QString ClassName() { return "CDiagObjCurve"; }
 public: // ctors and dtor
     CDiagObjCurve(
         const QString& i_strObjName,
         CDiagTrace*    i_pDiagTrace );
     virtual ~CDiagObjCurve();
+public: // must overridables of base class CDiagObj
+    virtual QString className() { return ClassName(); }
 public: // instance methods
     void setCol( const QColor&  i_col );
     QColor getCol() const;

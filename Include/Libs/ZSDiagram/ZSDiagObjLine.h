@@ -39,6 +39,8 @@ struct SLineStyle;
 class ZSDIAGRAMDLL_API CDiagObjLine : public CDiagObj
 //******************************************************************************
 {
+public: // class methods
+    static QString ClassName() { return "CDiagObjLine"; }
 public: // type definitions and constants
     enum ECoordinatesUnit
     {
@@ -52,6 +54,8 @@ public: // ctors and dtor
         CDiagScale*    i_pDiagScaleY,
         SLineStyle*    i_lineStyle );
     virtual ~CDiagObjLine();
+public: // must overridables of base class CDiagObj
+    virtual QString className() { return ClassName(); }
 public: // instance methods
     void setCol( const QColor& i_col );
     QColor getCol() const;

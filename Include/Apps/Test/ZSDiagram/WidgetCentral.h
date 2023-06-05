@@ -73,16 +73,16 @@ public: // ctors and dtor
 public: // instance methods
     CWdgtTestOutput* getTestOutputWidget() { return m_pWdgtTestOutput; }
 private: // class members
-    static CWidgetCentral*   s_pThis; // singleton class
+    static CWidgetCentral* s_pThis; // singleton class
 protected: // instance members
-    QVBoxLayout*                          m_pLyt;
-    QTabWidget*                           m_pTabWdgtMain;
-    ZS::PhysVal::GUI::CWdgtUnits*     m_pWdgtPhysSizes;
-    QSplitter*                            m_pSplitter;
+    QVBoxLayout* m_pLyt;
+    QTabWidget* m_pTabWdgtMain;
+    ZS::PhysVal::GUI::CWdgtUnits* m_pWdgtPhysSizes;
+    QSplitter* m_pSplitter;
     ZS::Test::GUI::CWdgtIdxTreeTestSteps* m_pWdgtTest;
-    QGroupBox*                            m_pGrpTestOutput;
-    QVBoxLayout*                          m_pLytGrpTestOutput;
-    CWdgtTestOutput*                      m_pWdgtTestOutput;
+    QGroupBox* m_pGrpTestOutput;
+    QVBoxLayout* m_pLytGrpTestOutput;
+    CWdgtTestOutput* m_pWdgtTestOutput;
 
 }; // class CWidgetCentral
 

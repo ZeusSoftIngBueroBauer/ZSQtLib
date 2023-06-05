@@ -88,7 +88,6 @@ private slots:
 private: // instance members
     QTimer*                                    m_pTmrTestStepTimeout;
     QTimer*                                    m_pTimerSigGen;
-    QFrame*                                    m_pFrameDiagram;
     ZS::Diagram::CWdgtDiagram*                 m_pWdgtDiagram;
     ZS::Diagram::CDiagScale*                   m_pDiagScaleX;
     ZS::Diagram::CDiagScale*                   m_pDiagScaleY;

@@ -79,9 +79,9 @@ public: // class methods
     static QString ClassName() { return "CWdgtDrawingViewProperties"; }
 public: // ctors and dtor
     CWdgtDrawingViewProperties(
-    CDrawingView* i_pDrawingView,
-    ZS::System::EMode i_mode = ZS::System::EMode::View,
-    QWidget* i_pWdgtParent = nullptr);
+        CDrawingView* i_pDrawingView,
+        ZS::System::EMode i_mode = ZS::System::EMode::View,
+        QWidget* i_pWdgtParent = nullptr);
     virtual ~CWdgtDrawingViewProperties();
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }

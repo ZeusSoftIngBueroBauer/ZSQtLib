@@ -42,11 +42,15 @@ class ZSDIAGRAMDLL_API CDiagObjProgressBar : public CDiagObj
 //******************************************************************************
 {
     Q_OBJECT
+public: // class methods
+    static QString ClassName() { return "CDiagObjProgressBar"; }
 public: // ctors and dtor
     CDiagObjProgressBar(
         const QString& i_strObjName,
         ELayoutPos     i_layoutPos );
     virtual ~CDiagObjProgressBar();
+public: // must overridables of base class CDiagObj
+    virtual QString className() { return ClassName(); }
 public: // instance methods
     void setValMin( double i_fVal );
     double getValMin() const;

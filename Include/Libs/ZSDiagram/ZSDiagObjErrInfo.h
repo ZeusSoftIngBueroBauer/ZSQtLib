@@ -43,11 +43,15 @@ class ZSDIAGRAMDLL_API CDiagObjErrInfo : public CDiagObj
 //******************************************************************************
 {
     Q_OBJECT
+public: // class methods
+    static QString ClassName() { return "CDiagObjErrInfo"; }
 public: // ctors and dtor
     CDiagObjErrInfo(
         const QString& i_strObjName,
         ELayoutPos     i_layoutPos );
     virtual ~CDiagObjErrInfo();
+public: // must overridables of base class CDiagObj
+    virtual QString className() { return ClassName(); }
 public: // instance methods
     void setErrResultInfo( const ZS::System::SErrResultInfo& i_errResultInfo );
     ZS::System::SErrResultInfo getErrResultInfo() const;

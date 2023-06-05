@@ -116,6 +116,8 @@ CWdgtDiagram::CWdgtDiagram(const QString& i_strObjName, QWidget* i_pWdgtParent) 
     m_pTrcAdminObjLayout(nullptr),
     m_pTrcAdminObjValidate(nullptr)
 {
+    setObjectName(i_strObjName);
+
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
         NameSpace(), ClassName(), m_strObjName);
     m_pTrcAdminObjUpdate = CTrcServer::GetTraceAdminObj(
@@ -161,6 +163,8 @@ CWdgtDiagram::~CWdgtDiagram()
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
+
+    emit_aboutToBeDestroyed(m_strObjName);
 
     try
     {
@@ -246,7 +250,8 @@ CDataDiagram* CWdgtDiagram::clone( EDiagramUpdateType i_diagramUpdateType ) cons
         for (int idx = 0; idx < m_arpDiagObjs.size(); ++idx)
         {
             CDiagObj* pDiagObj = m_arpDiagObjs[idx]->clone(pWdgtDiagram);
-            pWdgtDiagram->m_hshpDiagObjs[m_arpDiagObjs[idx]->getObjName()] = pDiagObj;
+            QString strDiagObjKey = m_arpDiagObjs[idx]->className() + "::" + m_arpDiagObjs[idx]->getObjName();
+            pWdgtDiagram->m_hshpDiagObjs[strDiagObjKey] = pDiagObj;
         }
 
         // Pixmap Diagram
@@ -2398,9 +2403,36 @@ protected: // overridables of base class CDataDiagram for emitting the signals
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+void CWdgtDiagram::emit_aboutToBeDestroyed(const QString& i_strObjName)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strObjName;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjUpdate,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "emit_aboutToBeDestroyed",
+        /* strAddInfo   */ strMthInArgs );
+
+    emit aboutToBeDestroyed(i_strObjName);
+}
+
+//------------------------------------------------------------------------------
 void CWdgtDiagram::emit_diagScaleAdded(const QString& i_strObjName)
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strObjName;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjUpdate,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "emit_diagScaleAdded",
+        /* strAddInfo   */ strMthInArgs );
+
     emit diagScaleAdded(i_strObjName);
 }
 
@@ -2408,6 +2440,16 @@ void CWdgtDiagram::emit_diagScaleAdded(const QString& i_strObjName)
 void CWdgtDiagram::emit_diagScaleRemoved(const QString& i_strObjName)
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strObjName;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjUpdate,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "emit_diagScaleRemoved",
+        /* strAddInfo   */ strMthInArgs );
+
     emit diagScaleRemoved(i_strObjName);
 }
 
@@ -2415,6 +2457,16 @@ void CWdgtDiagram::emit_diagScaleRemoved(const QString& i_strObjName)
 void CWdgtDiagram::emit_diagTraceAdded(const QString& i_strObjName)
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strObjName;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjUpdate,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "emit_diagTraceAdded",
+        /* strAddInfo   */ strMthInArgs );
+
     emit diagTraceAdded(i_strObjName);
 }
 
@@ -2422,19 +2474,49 @@ void CWdgtDiagram::emit_diagTraceAdded(const QString& i_strObjName)
 void CWdgtDiagram::emit_diagTraceRemoved(const QString& i_strObjName)
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strObjName;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjUpdate,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "emit_diagTraceRemoved",
+        /* strAddInfo   */ strMthInArgs );
+
     emit diagTraceRemoved(i_strObjName);
 }
 
 //------------------------------------------------------------------------------
-void CWdgtDiagram::emit_diagObjAdded(const QString& i_strObjName)
+void CWdgtDiagram::emit_diagObjAdded(const QString& i_strClassName, const QString& i_strObjName)
 //------------------------------------------------------------------------------
 {
-    emit diagObjAdded(i_strObjName);
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strClassName + "::" + i_strObjName;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjUpdate,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "emit_diagObjAdded",
+        /* strAddInfo   */ strMthInArgs );
+
+    emit diagObjAdded(i_strClassName, i_strObjName);
 }
 
 //------------------------------------------------------------------------------
-void CWdgtDiagram::emit_diagObjRemoved(const QString& i_strObjName)
+void CWdgtDiagram::emit_diagObjRemoved(const QString& i_strClassName, const QString& i_strObjName)
 //------------------------------------------------------------------------------
 {
-    emit diagObjRemoved(i_strObjName);
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strClassName + "::" + i_strObjName;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjUpdate,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "emit_diagObjRemoved",
+        /* strAddInfo   */ strMthInArgs );
+
+    emit diagObjRemoved(i_strClassName, i_strObjName);
 }

@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSDraw_GraphObjsTreeView_h
-#define ZSDraw_GraphObjsTreeView_h
+#ifndef ZSDiagram_ObjsTreeView_h
+#define ZSDiagram_ObjsTreeView_h
 
 #include <QtCore/qglobal.h>
 
@@ -37,7 +37,7 @@ may result in using the software modules.
 #include <QtWidgets/qtreeview.h>
 #endif
 
-#include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjsTreeModel.h"
+#include "ZSDiagramGUI/ZSDiagramObjsTreeModel.h"
 
 class QLineEdit;
 
@@ -47,22 +47,24 @@ namespace System
 {
 class CTrcAdminObj;
 }
-namespace Draw
-{
-class CGraphObj;
-class CModelIdxTreeGraphObjs;
 
+namespace Diagram
+{
+class CWdgtDiagram;
+
+namespace GUI
+{
 //******************************************************************************
-class ZSDRAWDLL_API CDelegateGraphObjsTreeView : public QStyledItemDelegate
+class ZSDIAGRAMGUIDLL_API CDelegateDiagramObjsTreeView : public QStyledItemDelegate
 //******************************************************************************
 {
     Q_OBJECT
 public: // class methods
-    static QString NameSpace() { return "ZS::Draw"; }
-    static QString ClassName() { return "CDelegateGraphObjsTreeView"; }
+    static QString NameSpace() { return "ZS::Diagram::GUI"; }
+    static QString ClassName() { return "CDelegateDiagramObjsTreeView"; }
 public: // ctors and dtor
-    CDelegateGraphObjsTreeView( QObject* i_pObjParent = nullptr );
-    virtual ~CDelegateGraphObjsTreeView();
+    CDelegateDiagramObjsTreeView( QObject* i_pObjParent = nullptr );
+    virtual ~CDelegateDiagramObjsTreeView();
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
     virtual QString className() const { return ClassName(); }
@@ -87,35 +89,30 @@ public: // overridables of base class QStyledItemDelegate
 protected slots:
     void onEdtNameDestroyed( QObject* i_pWdgtEditor );
 private: // copy ctor not implemented
-    CDelegateGraphObjsTreeView( const CDelegateGraphObjsTreeView& );
+    CDelegateDiagramObjsTreeView( const CDelegateDiagramObjsTreeView& );
 private: // assignment operator not implemented
-    CDelegateGraphObjsTreeView& operator = ( const CDelegateGraphObjsTreeView& );
+    CDelegateDiagramObjsTreeView& operator = ( const CDelegateDiagramObjsTreeView& );
 private: // instance members
     QLineEdit* m_pEdtName;
-    bool       m_bEdtNameDestroyedSignalConnected;
+    bool m_bEdtNameDestroyedSignalConnected;
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
-}; // class CDelegateGraphObjsTreeView
+}; // class CDelegateDiagramObjsTreeView
 
 //******************************************************************************
-class ZSDRAWDLL_API CTreeViewGraphObjs : public QTreeView
+class ZSDIAGRAMGUIDLL_API CTreeViewDiagramObjs : public QTreeView
 //******************************************************************************
 {
     Q_OBJECT
 public: // class methods
-    static QString NameSpace() { return "ZS::Draw"; }
-    static QString ClassName() { return "CTreeViewGraphObjs"; }
+    static QString NameSpace() { return "ZS::Diagram::GUI"; }
+    static QString ClassName() { return "CTreeViewDiagramObjs"; }
 public: // ctors and dtor
-    CTreeViewGraphObjs(
-        CDrawingScene* i_pDrawingScene,
-        QWidget*       i_pWdgtParent = nullptr );
-    virtual ~CTreeViewGraphObjs();
+    CTreeViewDiagramObjs(CWdgtDiagram* i_pDiagram, QWidget* i_pWdgtParent = nullptr );
+    virtual ~CTreeViewDiagramObjs();
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
     virtual QString className() const { return ClassName(); }
-public: // instance methods
-    void setSortOrder( ZS::System::GUI::EIdxTreeSortOrder i_sortOrder );
-    ZS::System::GUI::EIdxTreeSortOrder sortOrder() const;
 public: // instance methods
     void setSilentlyExecuteDeleteRequests( bool i_bExecuteSilently );
     bool silentlyExecuteDeleteRequests() const { return m_bSilentlyExecuteDeleteRequests; }
@@ -134,7 +131,7 @@ protected slots:
     void onCollapsed( const QModelIndex& i_modelIdx );
     void onExpanded( const QModelIndex& i_modelIdx );
 protected slots:
-    void onDrawingSceneSelectionChanged();
+    //void onDiagramSelectionChanged();
 protected: // overridables of base class QTreeView
     virtual bool event( QEvent* i_pEv ) override;
 protected: // overridables of base class QTreeView
@@ -147,28 +144,30 @@ protected: // overridables of base class QTreeView
 protected: // overridables of base class QTreeView
     virtual void selectionChanged( const QItemSelection& i_selected, const QItemSelection& i_deselected ) override;
 protected slots:
-    void onActionGraphObjExpandTriggered( bool i_bChecked );
-    void onActionGraphObjCollapseTriggered( bool i_bChecked );
-    void onActionGraphObjDeleteTriggered( bool i_bChecked );
+    void onActionDiagramObjExpandTriggered( bool i_bChecked );
+    void onActionDiagramObjCollapseTriggered( bool i_bChecked );
+    void onActionDiagramObjDeleteTriggered( bool i_bChecked );
 protected: // instance members
-    CDrawingScene* m_pDrawingScene;
-    CDelegateGraphObjsTreeView* m_pDelegate;
-    ZS::Draw::CModelIdxTreeGraphObjs* m_pModelIdxTreeGraphObjs;
-    QMenu* m_pMenuGraphObjContext;
-    QAction* m_pActionGraphObjTitle;
-    QAction* m_pActionGraphObjExpand;
-    QAction* m_pActionGraphObjCollapse;
-    QAction* m_pActionGraphObjDelete;
+    CWdgtDiagram* m_pDiagram;
+    CDelegateDiagramObjsTreeView* m_pDelegate;
+    CModelDiagramObjs* m_pModel;
+    QMenu* m_pMenuDiagramObjContext;
+    QAction* m_pActionDiagramObjTitle;
+    QAction* m_pActionDiagramObjExpand;
+    QAction* m_pActionDiagramObjCollapse;
+    QAction* m_pActionDiagramObjDelete;
     QModelIndex m_modelIdxSelectedOnMousePressEvent;
     QModelIndex m_modelIdxSelectedOnMouseReleaseEvent;
     bool m_bSilentlyExecuteDeleteRequests;
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjEvent;
 
-}; // class CTreeViewGraphObjs
+}; // class CTreeViewDiagramObjs
 
-} // namespace Draw
+} // namespace GUI
+
+} // namespace Diagram
 
 } // namespace ZS
 
-#endif // #ifndef ZSDraw_GraphObjsTreeView_h
+#endif // #ifndef ZSDiagram_ObjsTreeView_h

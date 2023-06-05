@@ -1425,14 +1425,9 @@ void CDrawingScene::setCurrentDrawingTool( CObjFactory* i_pObjFactory )
 
     if( m_pObjFactory != nullptr )
     {
-        if( !QObject::disconnect(
-            /* pObjSender   */ m_pObjFactory,
-            /* szSignal     */ SIGNAL(destroyed(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onGraphObjFactoryDestroyed(QObject*)) ) )
-        {
-            throw ZS::System::CException(__FILE__, __LINE__, EResultSignalSlotConnectionFailed);
-        }
+        QObject::disconnect(
+            m_pObjFactory, &CObjFactory::destroyed,
+            this, &CDrawingScene::onGraphObjFactoryDestroyed );
 
         iGraphObjTypePrev = m_pObjFactory->getGraphObjType();
     }
@@ -1443,15 +1438,9 @@ void CDrawingScene::setCurrentDrawingTool( CObjFactory* i_pObjFactory )
 
     if( m_pObjFactory != nullptr )
     {
-        if( !QObject::connect(
-            /* pObjSender   */ m_pObjFactory,
-            /* szSignal     */ SIGNAL(destroyed(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onGraphObjFactoryDestroyed(QObject*)) ) )
-        {
-            throw ZS::System::CException(__FILE__, __LINE__, EResultSignalSlotConnectionFailed);
-        }
-
+        QObject::connect(
+            m_pObjFactory, &CObjFactory::destroyed,
+            this, &CDrawingScene::onGraphObjFactoryDestroyed );
         iGraphObjTypeCurr = m_pObjFactory->getGraphObjType();
     }
     else

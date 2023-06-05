@@ -125,24 +125,24 @@ protected: // instance methods
     void hidePopups();
     void setWindowTitle();
 private: // instance members
-    CDrawingScene*                       m_pDrawingScene;
-    CGraphObj*                           m_pGraphObj;
-    QVBoxLayout*                         m_pLyt;
-    QHBoxLayout*                         m_pLytSettings;
-    QListWidget*                         m_pListWdgt;
-    QStackedWidget*                      m_pStackedWdgt;
+    CDrawingScene* m_pDrawingScene;
+    CGraphObj* m_pGraphObj;
+    QVBoxLayout* m_pLyt;
+    QHBoxLayout* m_pLytSettings;
+    QListWidget* m_pListWdgt;
+    QStackedWidget* m_pStackedWdgt;
     // Format Widgets
-    QHash<QString,QListWidgetItem*>      m_arpListWdgtItems;
+    QHash<QString,QListWidgetItem*> m_arpListWdgtItems;
     QHash<QString,CWdgtFormatGraphObjs*> m_arpWdgtsFormatGraphObjs;
     // Buttons
-    QHBoxLayout*                         m_pLytBtns;
-    QPushButton*                         m_pBtnOk;
-    QPushButton*                         m_pBtnAccept;
-    QPushButton*                         m_pBtnReset;
-    QPushButton*                         m_pBtnCancel;
-    QTimer*                              m_pTmrBtnsStateRefresh;
+    QHBoxLayout* m_pLytBtns;
+    QPushButton* m_pBtnOk;
+    QPushButton* m_pBtnAccept;
+    QPushButton* m_pBtnReset;
+    QPushButton* m_pBtnCancel;
+    QTimer* m_pTmrBtnsStateRefresh;
     // Trace
-    ZS::System::CTrcAdminObj*             m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CDlgFormatGraphObjs
 

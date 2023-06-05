@@ -45,6 +45,8 @@ class ZSDIAGRAMDLL_API CDiagObjMarker : public CDiagObj
 //******************************************************************************
 {
     Q_OBJECT
+public: // class methods
+    static QString ClassName() { return "CDiagObjMarker"; }
 public: // type definitions and constants
     typedef enum {
         EElementMin     = 0,
@@ -60,6 +62,8 @@ public: // type definitions and constants
 public: // ctors and dtor
     CDiagObjMarker( const QString& i_strObjName, CDiagTrace* i_pDiagTrace );
     virtual ~CDiagObjMarker();
+public: // must overridables of base class CDiagObj
+    virtual QString className() { return ClassName(); }
 signals:
     void posChanged( ZS::Diagram::CDiagObjMarker* );
 public: // overridables to get and set the cursor position

@@ -405,11 +405,11 @@ CDiagObj* CDiagObjValueProvider::clone( CDataDiagram* i_pDiagramTrg ) const
 
     if( m_pDiagObjOp1 != nullptr )
     {
-        pDiagObjOp1 = i_pDiagramTrg->findDiagObj(m_pDiagObjOp1->getObjName());
+        pDiagObjOp1 = i_pDiagramTrg->findDiagObj(m_pDiagObjOp1->ClassName(), m_pDiagObjOp1->getObjName());
     }
     if( m_pDiagObjOp2 != nullptr )
     {
-        pDiagObjOp2 = i_pDiagramTrg->findDiagObj(m_pDiagObjOp2->getObjName());
+        pDiagObjOp2 = i_pDiagramTrg->findDiagObj(m_pDiagObjOp2->ClassName(), m_pDiagObjOp2->getObjName());
     }
 
     CDiagObjValueProvider* pDiagObj = new CDiagObjValueProvider(

@@ -39,12 +39,16 @@ namespace Diagram
 class ZSDIAGRAMDLL_API CDiagObjGrid : public CDiagObj
 //******************************************************************************
 {
+public: // class methods
+    static QString ClassName() { return "CDiagObjGrid"; }
 public: // ctors and dtor
     CDiagObjGrid(
         const QString& i_strObjName,
         CDiagScale*    i_pDiagScaleX,
         CDiagScale*    i_pDiagScaleY );
     virtual ~CDiagObjGrid();
+public: // must overridables of base class CDiagObj
+    virtual QString className() { return ClassName(); }
 public: // instance methods
     void show( const CEnumDivLineLayer& i_eLayer );
     void hide( const CEnumDivLineLayer& i_eLayer );

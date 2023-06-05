@@ -120,9 +120,6 @@ CApplication::CApplication(
     // but isn't part of the windowTitle string. !! This is not desired !!
     //QGuiApplication::setApplicationDisplayName(i_strWindowTitle);
 
-    QString strAppDirPath = QCoreApplication::applicationDirPath();
-    QString strAppName = QCoreApplication::applicationName();
-
     QIcon iconApp;
 
     QPixmap pxmApp32x32(":/ZS/App/ZeusSoft_32x32.png");

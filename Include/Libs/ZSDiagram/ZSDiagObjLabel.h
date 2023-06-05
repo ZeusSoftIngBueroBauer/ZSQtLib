@@ -42,6 +42,8 @@ struct SFrameStyle;
 class ZSDIAGRAMDLL_API CDiagObjLabel : public CDiagObj
 //******************************************************************************
 {
+public: // class methods
+    static QString ClassName() { return "CDiagObjLabel"; }
 public: // ctors and dtor
     CDiagObjLabel(
         const QString& i_strObjName,
@@ -54,6 +56,8 @@ public: // ctors and dtor
         ELayoutPos     i_layoutPos,
         int            i_iStateCount = 1 );
     virtual ~CDiagObjLabel();
+public: // must overridables of base class CDiagObj
+    virtual QString className() { return ClassName(); }
 public: // instance methods
     void setState( int i_iState );
     int getState() const;

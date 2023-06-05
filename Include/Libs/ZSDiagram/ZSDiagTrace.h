@@ -63,6 +63,8 @@ public: // ctors and dtor
         CDiagScale*    i_pDiagScaleX,
         CDiagScale*    i_pDiagScaleY );
     virtual ~CDiagTrace();
+public: // overridables
+    virtual QString className() { return ClassName(); }
 signals:
     void traceChanged( ZS::Diagram::CDiagTrace* i_pDiagTrace );
 public: // instance methods

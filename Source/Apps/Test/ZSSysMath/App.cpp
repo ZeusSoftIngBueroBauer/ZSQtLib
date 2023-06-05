@@ -109,9 +109,6 @@ CApplication::CApplication(
 
     QApplication::setWindowIcon(iconApp);
 
-    ZS::Ipc::SServerHostSettings  trcServerHostSettingsDefault = m_trcServerHostSettings;
-    ZS::System::STrcServerSettings trcServerSettingsDefault = m_trcServerSettings;
-
     // Parse command arguments
     //------------------------
 
@@ -149,7 +146,8 @@ CApplication::CApplication(
     m_pTrcServer = ZS::Trace::CIpcTrcServer::CreateInstance();
 
     m_pTrcServer->setHostSettings(m_trcServerHostSettings);
-    m_pTrcServer->setTraceSettings(m_trcServerSettings);
+    // Don't overwrite current trace settings (as that would overwrite the paths for the files).
+    //m_pTrcServer->setTraceSettings(m_trcServerSettings);
     m_pTrcServer->recallAdminObjs();
     m_pTrcServer->startup();
 

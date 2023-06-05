@@ -53,10 +53,8 @@ may result in using the software modules.
 #include <QtCore/qtimer.h>
 
 #if QT_VERSION < 0x050000
-#include <QtGui/qframe.h>
 #include <QtGui/qlayout.h>
 #else
-#include <QtWidgets/qframe.h>
 #include <QtWidgets/qlayout.h>
 #endif
 
@@ -106,7 +104,6 @@ CTest::CTest() :
     ZS::Test::CTest("ZSDiagram"),
     m_pTmrTestStepTimeout(nullptr),
     m_pTimerSigGen(nullptr),
-    m_pFrameDiagram(nullptr),
     m_pWdgtDiagram(nullptr),
     m_pDiagScaleX(nullptr),
     m_pDiagScaleY(nullptr),
@@ -316,10 +313,6 @@ CTest::~CTest()
 
     m_pTmrTestStepTimeout = nullptr;
     m_pTimerSigGen = nullptr;
-    m_pFrameDiagram = nullptr;
-    m_pWdgtDiagram = nullptr;
-    m_pTimerSigGen = nullptr;
-    m_pFrameDiagram = nullptr;
     m_pWdgtDiagram = nullptr;
     m_pDiagScaleX = nullptr;
     m_pDiagScaleY = nullptr;
@@ -365,15 +358,7 @@ void CTest::doTestStepSigGenCreateDiagram( ZS::Test::CTestStep* i_pTestStep )
     // Test Step
     //----------
 
-    m_pFrameDiagram = new QFrame();
-    m_pFrameDiagram->setFrameShape(QFrame::Panel);
-    m_pFrameDiagram->setFrameShadow(QFrame::Raised);
-    QVBoxLayout* pLytFrameDiagram = new QVBoxLayout();
-    //pLytFrameDiagram->setContentsMargins(0,0,0,0); // left,tip,right,bottom
-    m_pFrameDiagram->setLayout(pLytFrameDiagram);
-    CWidgetCentral::GetInstance()->getTestOutputWidget()->layout()->addWidget(m_pFrameDiagram);
-
-    m_pWdgtDiagram = new CWdgtDiagram("Diagram", m_pFrameDiagram);
+    m_pWdgtDiagram = new CWdgtDiagram("Diagram");
     m_pWdgtDiagram->setMouseTracking(true);
     m_pWdgtDiagram->enableZooming();
     //m_pWdgtDiagram->setMarginTop(0);
@@ -396,7 +381,7 @@ void CTest::doTestStepSigGenCreateDiagram( ZS::Test::CTestStep* i_pTestStep )
     m_pWdgtDiagram->setMinimumWidth(400);
     m_pWdgtDiagram->setMinimumHeight(200);
 
-    m_pFrameDiagram->layout()->addWidget(m_pWdgtDiagram);
+    CWidgetCentral::GetInstance()->getTestOutputWidget()->setDiagram(m_pWdgtDiagram);
 
     // Actual Result Values
     //---------------
@@ -428,9 +413,6 @@ void CTest::doTestStepSigGenDestroyDiagram( ZS::Test::CTestStep* i_pTestStep )
 
     delete m_pWdgtDiagram;
     m_pWdgtDiagram = nullptr;
-
-    delete m_pFrameDiagram;
-    m_pFrameDiagram = nullptr;
 
     // Actual Result Values
     //---------------------
@@ -530,7 +512,7 @@ void CTest::doTestStepSigGenRemoveScales( ZS::Test::CTestStep* i_pTestStep )
         m_pDiagScaleX = nullptr;
     }
 
-    if( m_pDiagScaleX != nullptr )
+    if( m_pDiagScaleY != nullptr )
     {
         m_pWdgtDiagram->removeDiagScale(m_pDiagScaleY);
         delete m_pDiagScaleY;

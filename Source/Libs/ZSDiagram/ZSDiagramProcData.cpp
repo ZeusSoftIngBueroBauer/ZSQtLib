@@ -114,6 +114,11 @@ CDataDiagram::~CDataDiagram()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
+    // The derived classes are already destroyed and the virtual method table
+    // does not exist anymore. No sense to call a virtual method here as the
+    // overridden methods will not be called.
+    //emit_aboutToBeDestroyed(m_strObjName);
+
     for (int idx = 0; idx < m_arpDiagTraces.size(); ++idx)
     {
         try
@@ -206,7 +211,8 @@ CDataDiagram* CDataDiagram::clone( EDiagramUpdateType /*i_diagramUpdateType*/ ) 
     for (int idx = 0; idx < m_arpDiagObjs.size(); ++idx)
     {
         CDiagObj* pDiagObj = m_arpDiagObjs[idx]->clone(pDiagram);
-        pDiagram->m_hshpDiagObjs[m_arpDiagObjs[idx]->getObjName()] = pDiagObj;
+        QString strDiagObjKey = m_arpDiagObjs[idx]->className() + "::" + m_arpDiagObjs[idx]->getObjName();
+        pDiagram->m_hshpDiagObjs[strDiagObjKey] = pDiagObj;
     }
     return pDiagram;
 }
@@ -467,7 +473,7 @@ void CDataDiagram::setSpacing( EScaleDir i_scaleDir, ESpacing i_spacing )
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strTrcMsg  = "ScaleDir=";
         strTrcMsg += scaleDir2Str(i_scaleDir) + ", ";
@@ -518,7 +524,7 @@ void CDataDiagram::addDiagScale( CDiagScale* i_pDiagScale )
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strTrcMsg = i_pDiagScale->getObjName();
     }
@@ -549,7 +555,7 @@ void CDataDiagram::removeDiagScale( CDiagScale* i_pDiagScale )
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strTrcMsg = i_pDiagScale->getObjName();
     }
@@ -639,7 +645,7 @@ void CDataDiagram::addDiagTrace( CDiagTrace* i_pDiagTrace )
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strTrcMsg = i_pDiagTrace->getObjName();
     }
@@ -670,7 +676,7 @@ void CDataDiagram::removeDiagTrace( CDiagTrace* i_pDiagTrace )
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strTrcMsg = i_pDiagTrace->getObjName();
     }
@@ -752,7 +758,7 @@ void CDataDiagram::addDiagObj( CDiagObj* i_pDiagObj )
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strTrcMsg = i_pDiagObj->getObjName();
     }
@@ -763,18 +769,21 @@ void CDataDiagram::addDiagObj( CDiagObj* i_pDiagObj )
         /* strMethod    */ "addDiagObj",
         /* strAddInfo   */ strTrcMsg );
 
-    if (findDiagObj(i_pDiagObj->getObjName()) != nullptr)
+    if (findDiagObj(i_pDiagObj->className(), i_pDiagObj->getObjName()) != nullptr)
     {
         throw ZS::System::CException(__FILE__, __LINE__, EResultObjAlreadyInList);
     }
 
     m_arpDiagObjs.append(i_pDiagObj);
 
+    QString strDiagObjKey = i_pDiagObj->className() + "::" + i_pDiagObj->getObjName();
+    m_hshpDiagObjs[strDiagObjKey] = i_pDiagObj;
+
     // Initialize some instance members of the diagram object which can only be
     // set if the object has been added to the diagram.
     i_pDiagObj->m_pDiagram = this;
 
-    emit_diagObjAdded(i_pDiagObj->getObjName());
+    emit_diagObjAdded(i_pDiagObj->className(), i_pDiagObj->getObjName());
 
     invalidate(nullptr, EUpdateLayoutDataPixmapWidget);
 }
@@ -785,7 +794,7 @@ void CDataDiagram::removeDiagObj( CDiagObj* i_pDiagObj )
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strTrcMsg = i_pDiagObj->getObjName();
     }
@@ -799,27 +808,29 @@ void CDataDiagram::removeDiagObj( CDiagObj* i_pDiagObj )
     m_arpDiagObjs.removeOne(i_pDiagObj);
     i_pDiagObj->m_pDiagram = nullptr;
 
-    m_hshpDiagObjs.remove(i_pDiagObj->getObjName());
+    QString strDiagObjKey = i_pDiagObj->className() + "::" + i_pDiagObj->getObjName();
+    m_hshpDiagObjs.remove(strDiagObjKey);
 
-    emit_diagObjRemoved(i_pDiagObj->getObjName());
+    emit_diagObjRemoved(i_pDiagObj->className(), i_pDiagObj->getObjName());
 
     invalidate(nullptr, EUpdateLayoutDataPixmapWidget);
 }
 
 //------------------------------------------------------------------------------
-CDiagObj* CDataDiagram::removeDiagObj( const QString& i_strObjName )
+CDiagObj* CDataDiagram::removeDiagObj( const QString& i_strClassName, const QString& i_strObjName )
 //------------------------------------------------------------------------------
 {
-    CDiagObj* pDiagObj = findDiagObj(i_strObjName);
+    CDiagObj* pDiagObj = findDiagObj(i_strClassName, i_strObjName);
     removeDiagObj(pDiagObj);
     return pDiagObj;
 }
 
 //------------------------------------------------------------------------------
-CDiagObj* CDataDiagram::findDiagObj( const QString& i_strObjName ) const
+CDiagObj* CDataDiagram::findDiagObj( const QString& i_strClassName, const QString& i_strObjName ) const
 //------------------------------------------------------------------------------
 {
-    return m_hshpDiagObjs.value(i_strObjName, nullptr);
+    QString strDiagObjKey = i_strClassName + "::" + i_strObjName;
+    return m_hshpDiagObjs.value(strDiagObjKey, nullptr);
 }
 
 //------------------------------------------------------------------------------
@@ -841,16 +852,20 @@ public: // instance methods to change diagram objects
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDataDiagram::showDiagObj( const QString& i_strObjName ) const
+void CDataDiagram::showDiagObj( const QString& i_strClassName, const QString& i_strObjName ) const
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strClassName + "::" + i_strObjName;
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "showDiagObj",
-        /* strAddInfo   */ i_strObjName );
+        /* strAddInfo   */ strMthInArgs );
 
-    CDiagObj* pDiagObj = findDiagObj(i_strObjName);
+    CDiagObj* pDiagObj = findDiagObj(i_strClassName, i_strObjName);
 
     if( pDiagObj != nullptr )
     {
@@ -864,7 +879,7 @@ void CDataDiagram::showDiagObj( int i_idx ) const
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strTrcMsg = QString::number(i_idx);
     }
@@ -884,16 +899,20 @@ void CDataDiagram::showDiagObj( int i_idx ) const
 }
 
 //------------------------------------------------------------------------------
-void CDataDiagram::hideDiagObj( const QString& i_strObjName ) const
+void CDataDiagram::hideDiagObj( const QString& i_strClassName, const QString& i_strObjName ) const
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strClassName + "::" + i_strObjName;
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "hideDiagObj",
         /* strAddInfo   */ i_strObjName );
 
-    CDiagObj* pDiagObj = findDiagObj(i_strObjName);
+    CDiagObj* pDiagObj = findDiagObj(i_strClassName, i_strObjName);
 
     if( pDiagObj != nullptr )
     {
@@ -907,7 +926,7 @@ void CDataDiagram::hideDiagObj( int i_idx ) const
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strTrcMsg = QString::number(i_idx);
     }
@@ -927,10 +946,10 @@ void CDataDiagram::hideDiagObj( int i_idx ) const
 }
 
 //------------------------------------------------------------------------------
-bool CDataDiagram::isDiagObjVisible( const QString& i_strObjName ) const
+bool CDataDiagram::isDiagObjVisible( const QString& i_strClassName, const QString& i_strObjName ) const
 //------------------------------------------------------------------------------
 {
-    const CDiagObj* pDiagObj = findDiagObj(i_strObjName);
+    const CDiagObj* pDiagObj = findDiagObj(i_strClassName, i_strObjName);
 
     if( pDiagObj != nullptr )
     {
@@ -954,12 +973,24 @@ bool CDataDiagram::isDiagObjVisible( int i_idx ) const
 
 //------------------------------------------------------------------------------
 void CDataDiagram::moveDiagObjInPaintList(
+    const QString&   i_strClassName,
     const QString&   i_strObjName,
     EDiagObjMoveMode i_moveMode,
     int              i_idxCount )
 //------------------------------------------------------------------------------
 {
-    CDiagObj* pDiagObj = findDiagObj(i_strObjName);
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strClassName + "::" + i_strObjName
+                     + "," + moveMode2Str(i_moveMode) + ", " + QString::number(i_idxCount);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "moveDiagObjInUpdateList",
+        /* strAddInfo   */ strMthInArgs );
+
+    CDiagObj* pDiagObj = findDiagObj(i_strClassName, i_strObjName);
 
     if( pDiagObj != nullptr )
     {
@@ -974,6 +1005,17 @@ void CDataDiagram::moveDiagObjInPaintList(
     int              i_idxCount )
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString::number(i_idx)
+                     + "," + moveMode2Str(i_moveMode) + ", " + QString::number(i_idxCount);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "moveDiagObjInUpdateList",
+        /* strAddInfo   */ strMthInArgs );
+
     CDiagObj* pDiagObj = getDiagObj(i_idx);
 
     if( pDiagObj != nullptr )
@@ -989,18 +1031,16 @@ void CDataDiagram::moveDiagObjInPaintList(
     int              i_idxCount )
 //------------------------------------------------------------------------------
 {
-    QString strTrcMsg;
-
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
-    {
-        strTrcMsg = i_pDiagObj->getObjName() + "," + moveMode2Str(i_moveMode) + ", " + QString::number(i_idxCount);
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pDiagObj->className() + "::" + i_pDiagObj->getObjName()
+                     + "," + moveMode2Str(i_moveMode) + ", " + QString::number(i_idxCount);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "moveDiagObjInUpdateList",
-        /* strAddInfo   */ strTrcMsg );
+        /* strAddInfo   */ strMthInArgs );
 
     switch( i_moveMode )
     {
@@ -1066,7 +1106,7 @@ void CDataDiagram::scaleChanged( ZS::Diagram::CDiagScale* i_pDiagScale )
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strTrcMsg = i_pDiagScale->getObjName();
     }
@@ -1208,7 +1248,7 @@ void CDataDiagram::traceChanged( ZS::Diagram::CDiagTrace* i_pDiagTrace )
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strTrcMsg = i_pDiagTrace->getObjName();
     }
