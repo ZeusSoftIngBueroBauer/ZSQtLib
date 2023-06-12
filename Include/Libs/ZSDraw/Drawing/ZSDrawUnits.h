@@ -47,10 +47,10 @@ public: // ctors and dtor
     ~CUnitsLength();
 public: // instance methods (resolution of monitor, pixels per inches)
     void setPxpis( double i_fPxpiX, double i_fPxpiY );
-    double pxpi( ZS::System::EDirection i_direction ) const;
+    double pxpi( ZS::System::EOrientation i_orientation ) const;
 public: // instance methods (resolution of printer, dots per inches)
     void setDpis( double i_fDpiX, double i_fDpiY );
-    double dpi( ZS::System::EDirection i_direction ) const;
+    double dpi( ZS::System::EOrientation i_orientation ) const;
 public: // instance methods (distinguish between metric system and pixels or dots)
     bool isMetricUnit(const QString& i_strSymbolOrName) const;
 private: // instance methods

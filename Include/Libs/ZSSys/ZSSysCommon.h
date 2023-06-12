@@ -415,22 +415,21 @@ typedef CEnum<EIODir> CEnumIODir;
 
 
 //==============================================================================
-/*! Defines the alignment of a direction.
+/*! Orientation which could either be horizontal or vertical.
 
     @see ZS::System::SEnumEntry
     @see ZS::System::CEnum
     @see _GRP_BasicConcepts_Enumerations
 */
-enum class EDirection
+enum class EOrientation
 //==============================================================================
 {
     Horizontal = 0, /*!< Horizontally aligned. */
-    Vertical   = 1, /*!< Vertically aligned. */
-    Undefined  = 2  /*!< The direction is undefined. */
+    Vertical   = 1  /*!< Vertically aligned. */
 };
 
-template class ZSSYSDLL_API CEnum<EDirection>;
-typedef CEnum<EDirection> CEnumDirection;
+template class ZSSYSDLL_API CEnum<EOrientation>;
+typedef CEnum<EOrientation> CEnumOrientation;
 
 
 //==============================================================================

@@ -24,16 +24,30 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include "Units/Power.h"
-#include "ZSPhysVal/ZSPhysUnitsIdxTree.h"
+#include "ZSDiagramGUI/ZSDiagramObjPropertiesBaseWdgt.h"
+#include "ZSDiagram/ZSDiagramProcWdgt.h"
+#include "ZSSys/ZSSysTrcAdminObj.h"
+#include "ZSSys/ZSSysTrcMethod.h"
+#include "ZSSys/ZSSysTrcServer.h"
+
+#if QT_VERSION < 0x050000
+#include <QtGui/qlayout.h>
+#include <QtGui/qpushbutton.h>
+#else
+#include <QtWidgets/qlayout.h>
+#include <QtWidgets/qpushbutton.h>
+#endif
+
 #include "ZSSys/ZSSysMemLeakDump.h"
 
-using namespace ZS::PhysVal;
-using namespace ZS::Apps::Test::Diagram;
+
+using namespace ZS::System;
+using namespace ZS::Diagram;
+using namespace ZS::Diagram::GUI;
 
 
 /*******************************************************************************
-class CPhysSizePower : public CUnitsTreeEntryGrpPhysUnits
+class CWdgtDiagramObjPropertiesBase : public CWdgtDiagramItemPropertiesBase
 *******************************************************************************/
 
 /*==============================================================================
@@ -41,45 +55,36 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CPhysSizePower::CPhysSizePower( CIdxTreeEntry* i_pParentBranch ) :
+CWdgtDiagramObjPropertiesBase::CWdgtDiagramObjPropertiesBase(
+    const QString& i_strWdgtClassName,
+    CWdgtDiagram* i_pDiagram,
+    const QString& i_strDiagItemClassName,
+    EMode i_mode,
+    QWidget* i_pWdgtParent) :
 //------------------------------------------------------------------------------
-    CUnitsTreeEntryGrpPhysUnits(
-        /* pParentBranch    */ i_pParentBranch,
-        /* strName          */ "Power",
-        /* strSIUnitName    */ "Watt",
-        /* strSIUnitSymbol  */ "W",
-        /* strFormulaSymbol */ "P",
-        /* bIsPowerRelated  */ true ),
-    m_treeEntryWatt(
-        /* pPhysSize */ this,
-        /* strPrefix */ "" ),
-    m_treeEntrydBMilliWatt(
-        /* pPhysSize      */ this,
-        /* bIsLogarithmic */ true,
-        /* strName        */ "dBMilliWatt",
-        /* strSymbol      */ "dB" + QString(c_strPrefixMilli),
-        /* fRefVal        */ c_fFactorMilli ),
-    Watt(m_treeEntryWatt),
-    dBMilliWatt(m_treeEntrydBMilliWatt),
-    W(m_treeEntryWatt),
-    dBm(m_treeEntrydBMilliWatt)
+    CWdgtDiagramItemPropertiesBase(i_strWdgtClassName, i_pDiagram, i_strDiagItemClassName, i_mode, i_pWdgtParent)
 {
-    // Call function of base class CPhysSize to initialize the physical size together
-    // with its units (e.g. to create the field with internal conversion routines
-    // and to create the chained list of Lower/Higher units).
-    initialize(true);
-
-    // To allow "short" unit strings like "Power.mW" we add a shortcut to this phyiscal size.
-    i_pParentBranch->tree()->addShortcut(this, "Power");
-
-    // To allow "short" unit strings like "dBm" we add shortcuts to each unit.
-    i_pParentBranch->tree()->addShortcut(&m_treeEntryWatt, "W");
-    i_pParentBranch->tree()->addShortcut(&m_treeEntrydBMilliWatt, "dBm");
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strWdgtClassName + ", "+ i_pDiagram->objectName()
+                     + ", " + i_strDiagItemClassName + ", " + CEnumMode(i_mode).toString();
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "ctor",
+        /* strMethodInArgs    */ strMthInArgs );
 
 } // ctor
 
 //------------------------------------------------------------------------------
-CPhysSizePower::~CPhysSizePower()
+CWdgtDiagramObjPropertiesBase::~CWdgtDiagramObjPropertiesBase()
 //------------------------------------------------------------------------------
 {
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "dtor",
+        /* strMethodInArgs    */ "" );
+
 } // dtor

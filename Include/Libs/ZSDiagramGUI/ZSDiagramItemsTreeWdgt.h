@@ -24,10 +24,10 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSDiagram_ObjPropertiesAbstractWdgt_h
-#define ZSDiagram_ObjPropertiesAbstractWdgt_h
+#ifndef ZSDiagram_ItemsTreeWdgt_h
+#define ZSDiagram_ItemsTreeWdgt_h
 
-#include <QtCore/qglobal.h>
+#include "ZSDiagramGUI/ZSDiagramGUIDllMain.h"
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qwidget.h>
@@ -35,10 +35,11 @@ may result in using the software modules.
 #include <QtWidgets/qwidget.h>
 #endif
 
-#include "ZSDiagramGUI/ZSDiagramGUIDllMain.h"
-#include "ZSSys/ZSSysCommon.h"
+//#include "ZSDiagramGUI/ZSDiagramItemsTreeModel.h"
 
+class QModelIndex;
 class QPushButton;
+class QSettings;
 class QHBoxLayout;
 class QVBoxLayout;
 
@@ -48,67 +49,53 @@ namespace System
 {
 class CTrcAdminObj;
 }
-
 namespace Diagram
 {
 class CWdgtDiagram;
 
 namespace GUI
 {
+class CTreeViewDiagramItems;
+
 //******************************************************************************
-class ZSDIAGRAMGUIDLL_API CWdgtDiagramObjPropertiesAbstract : public QWidget
+class ZSDIAGRAMGUIDLL_API CWdgtDiagramItemsTree : public QWidget
 //******************************************************************************
 {
     Q_OBJECT
 public: // class methods
     static QString NameSpace() { return "ZS::Diagram::GUI"; }
-    static QString ClassName() { return "CWdgtDiagramObjPropertiesAbstract"; }
+    static QString ClassName() { return "CWdgtDiagramItemsTree"; }
 public: // ctors and dtor
-    CWdgtDiagramObjPropertiesAbstract(
-        CWdgtDiagram* i_pDiagram,
-        const QString& i_strDiagObjClassName,
-        ZS::System::EMode i_mode = ZS::System::EMode::View,
-        QWidget* i_pWdgtParent = nullptr);
-    virtual ~CWdgtDiagramObjPropertiesAbstract();
-public: // overridables
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
-public: // overridables
-    QString diagObjClassName() const { return m_strDiagObjClassName; };
-public: // overridables
-    virtual void setDiagObjName( const QString& i_strObjName );
-    QString diagObjName() const;
-public: // overridables
-    virtual bool hasChanges() const;
-    virtual void acceptChanges();
-    virtual void rejectChanges();
-protected: // instance methods
-    virtual void setMode(ZS::System::EMode i_mode);
-    ZS::System::EMode mode() const;
+    CWdgtDiagramItemsTree(
+        CWdgtDiagram* i_pDrawingView,
+        QWidget* i_pWdgtParent = nullptr,
+        Qt::WindowFlags i_wflags = Qt::WindowFlags() );
+    virtual ~CWdgtDiagramItemsTree();
+signals:
+    void currentRowChanged( const QModelIndex& i_modelIdxCurr, const QModelIndex& i_modelIdxPrev );
+public: // instance methods
+    CTreeViewDiagramItems* treeView() { return m_pTreeView; }
 protected slots:
-    virtual void onBtnEditClicked(bool i_bChecked = false);
+    void onBtnTreeViewResizeRowsAndColumnsToContentsClicked( bool i_bChecked );
+    void onBtnTreeViewExpandAllClicked( bool i_bChecked );
+    void onBtnTreeViewCollapseAllClicked( bool i_bChecked );
 protected slots:
-    virtual void onDiagramAboutToBeDestroyed(const QString& i_strObjName);
+    void onTreeViewCurrentRowChanged( const QModelIndex& i_modelIdxCurr, const QModelIndex& i_modelIdxPrev );
+private: // auxiliary methods (tracing)
+    void emit_currentRowChanged( const QModelIndex& i_modelIdxCurr, const QModelIndex& i_modelIdxPrev );
 protected: // instance members
     CWdgtDiagram* m_pDiagram;
-    ZS::System::EMode m_mode;
-    QString m_strDiagObjClassName;
-    QString m_strDiagObjName;
-    int m_cxLblWidthClm1;
-    int m_cxEdtWidthClm1;
-    int m_cxLblWidthClm2;
-    int m_cxEdtWidthClm2;
-    int m_cxClmSpacing;
-    // Edit Controls
+    QSize m_szBtns;
     QVBoxLayout* m_pLyt;
-    // Button Line
-    QWidget* m_pWdgtButtons;
-    QHBoxLayout* m_pLytWdgtButtons;
-    QPushButton* m_pBtnEdit;
+    QHBoxLayout* m_pLytHeadLine;
+    QPushButton* m_pBtnTreeViewResizeRowsAndColumnsToContents;
+    QPushButton* m_pBtnTreeViewExpandAll;
+    QPushButton* m_pBtnTreeViewCollapseAll;
+    CTreeViewDiagramItems* m_pTreeView;
     /*!< Trace admin object to control trace outputs of the class. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
-}; // class CWdgtDiagramObjPropertiesAbstract
+}; // class CWdgtDiagramItemsTree
 
 } // namespace GUI
 
@@ -116,4 +103,4 @@ protected: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZSDiagram_ObjPropertiesAbstractWdgt_h
+#endif // #ifndef ZSDiagram_ItemsTreeWdgt_h

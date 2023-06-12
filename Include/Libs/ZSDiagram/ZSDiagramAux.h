@@ -39,17 +39,6 @@ Type definitions and constants
 *******************************************************************************/
 
 typedef enum {
-    EOnOffStateMin = 0,
-    EOnOffStateOff = 0,
-    EOnOffStateOn  = 1,
-    EOnOffStateMax = 1,
-    EOnOffStateCount,
-    EOnOffStateUndefined
-}   EOnOffState;
-ZSDIAGRAMDLL_API QString onOffState2Str( int i_iState );
-ZSDIAGRAMDLL_API EOnOffState str2OnOffState( const QString& i_str );
-
-typedef enum {
     EMeasStateMin    = 0,
     EMeasStateOff    = 0,
     EMeasStateOn     = 1,
@@ -102,35 +91,36 @@ enum {
 };
 ZSDIAGRAMDLL_API QString updateFlags2Str( unsigned int i_uUpdateFlags );
 
-typedef enum {
-    EScaleDirMin = 0,
-    EScaleDirX   = 0,
-    EScaleDirY   = 1,
-    EScaleDirMax = 1,
-    EScaleDirCount,
-    EScaleDirUndefined
-}   EScaleDir;
-ZSDIAGRAMDLL_API QString scaleDir2Str( int i_iScaleDir );
+//==============================================================================
+/*! Scale orientations.
 
-typedef enum {
-    EOrientationMin        = 0,
-    EOrientationHorizontal = 0,
-    EOrientationVertical   = 1,
-    EOrientationMax        = 1,
-    EOrientationCount,
-    EOrientationUndefined
-}   EOrientation;
-ZSDIAGRAMDLL_API QString orientation2Str( int i_iOrientation );
+    @see ZS::System::SEnumEntry
+    @see ZS::System::CEnum
+    @see _GRP_BasicConcepts_Enumerations
+*/
+enum class EScaleDir {
+//==============================================================================
+    X,  /*!< X (usually horizontal) scale orientation. */
+    Y   /*!< Y (usually vertical ) scale orientation. */
+};
+template class ZSDIAGRAMDLL_API ZS::System::CEnum<EScaleDir>;
+typedef ZS::System::CEnum<EScaleDir> CEnumScaleDir;
 
-typedef enum {
-    ESpacingMin         = 0,
-    ESpacingLinear      = 0,
-    ESpacingLogarithmic = 1,
-    ESpacingMax         = 1,
-    ESpacingCount,
-    ESpacingUndefined
-}   ESpacing;
-ZSDIAGRAMDLL_API QString spacing2Str( int i_iSpacing );
+//==============================================================================
+/*! Spacing of diagram scales which could be either linear or logarithmic.
+
+    @see ZS::System::SEnumEntry
+    @see ZS::System::CEnum
+    @see _GRP_BasicConcepts_Enumerations
+*/
+enum class ESpacing {
+//==============================================================================
+    Linear,     /*!< Linear spacing (distance between division lines is equal). */
+    Logarithmic /*!< Loagrithmic spacing (distance between division lines is logarithimic). */
+};
+template class ZSDIAGRAMDLL_API ZS::System::CEnum<ESpacing>;
+typedef ZS::System::CEnum<ESpacing> CEnumSpacing;
+
 
 typedef enum {
     ELayoutPosMin       = 0,
@@ -191,15 +181,15 @@ template class ZSDIAGRAMDLL_API ZS::System::CEnum<EDivLineLabelsPart>;
 typedef ZS::System::CEnum<EDivLineLabelsPart> CEnumDivLineLabelsPart;
 
 typedef enum {
-    ETextDirectionMin        = 0,
-    ETextDirectionLeft2Right = 0,
-    ETextDirectionRight2Left = 1,
-    ETextDirectionBottom2Top = 2,
-    ETextDirectionTop2Bottom = 3,
-    ETextDirectionMax        = 3,
-    ETextDirectionCount
-}   ETextDirection;
-ZSDIAGRAMDLL_API QString textDirection2Str( int i_iTextDirection );
+    ETextOrientationMin        = 0,
+    ETextOrientationLeft2Right = 0,
+    ETextOrientationRight2Left = 1,
+    ETextOrientationBottom2Top = 2,
+    ETextOrientationTop2Bottom = 3,
+    ETextOrientationMax        = 3,
+    ETextOrientationCount
+}   ETextOrientation;
+ZSDIAGRAMDLL_API QString textOrientation2Str( int i_iTextOrientation );
 
 typedef enum {
     EDiagObjStateMin     = 0,

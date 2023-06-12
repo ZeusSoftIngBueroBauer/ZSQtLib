@@ -13,7 +13,7 @@ Content: This file is part of the ZSQtLib.
 
 *******************************************************************************/
 
-#include "ZSDiagramGUI/ZSDiagramObjsTreeModel.h"
+#include "ZSDiagramGUI/ZSDiagramItemsTreeModel.h"
 #include "ZSDiagram/ZSDiagramProcWdgt.h"
 #include "ZSDiagram/ZSDiagObj.h"
 #include "ZSDiagram/ZSDiagScale.h"
@@ -35,7 +35,7 @@ using namespace ZS::Diagram::GUI;
 
 
 /*******************************************************************************
-class CModelDiagramObjsTreeItem
+class CModelDiagramTreeItem
 *******************************************************************************/
 
 /*==============================================================================
@@ -43,10 +43,10 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CModelDiagramObjsTreeItem::CModelDiagramObjsTreeItem(
+CModelDiagramTreeItem::CModelDiagramTreeItem(
     const QString& i_strClassName,
     const QString& i_strObjName,
-    CModelDiagramObjsTreeItem* i_pParent) :
+    CModelDiagramTreeItem* i_pParent) :
 //------------------------------------------------------------------------------
     m_strClassName(i_strClassName),
     m_strObjName(i_strObjName),
@@ -59,7 +59,7 @@ CModelDiagramObjsTreeItem::CModelDiagramObjsTreeItem(
 }
 
 //------------------------------------------------------------------------------
-CModelDiagramObjsTreeItem::~CModelDiagramObjsTreeItem()
+CModelDiagramTreeItem::~CModelDiagramTreeItem()
 //------------------------------------------------------------------------------
 {
     if (m_arpChilds.size() > 0)
@@ -87,14 +87,14 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QString CModelDiagramObjsTreeItem::className() const
+QString CModelDiagramTreeItem::className() const
 //------------------------------------------------------------------------------
 {
     return m_strClassName;
 }
 
 //------------------------------------------------------------------------------
-QString CModelDiagramObjsTreeItem::objectName() const
+QString CModelDiagramTreeItem::objectName() const
 //------------------------------------------------------------------------------
 {
     return m_strObjName;
@@ -105,20 +105,20 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CModelDiagramObjsTreeItem* CModelDiagramObjsTreeItem::parent()
+CModelDiagramTreeItem* CModelDiagramTreeItem::parent()
 //------------------------------------------------------------------------------
 {
     return m_pParent;
 }
 
 //------------------------------------------------------------------------------
-int CModelDiagramObjsTreeItem::row() const
+int CModelDiagramTreeItem::row() const
 //------------------------------------------------------------------------------
 {
     int idxRow = 0;
     if (m_pParent != nullptr)
     {
-        idxRow = m_pParent->m_arpChilds.indexOf(const_cast<CModelDiagramObjsTreeItem*>(this));
+        idxRow = m_pParent->m_arpChilds.indexOf(const_cast<CModelDiagramTreeItem*>(this));
     }
     return idxRow;
 }
@@ -128,10 +128,10 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CModelDiagramObjsTreeItem* CModelDiagramObjsTreeItem::child(int i_idxRow)
+CModelDiagramTreeItem* CModelDiagramTreeItem::child(int i_idxRow)
 //------------------------------------------------------------------------------
 {
-    CModelDiagramObjsTreeItem* pChild = nullptr;
+    CModelDiagramTreeItem* pChild = nullptr;
     if (i_idxRow >= 0 && i_idxRow < m_arpChilds.size())
     {
         pChild = m_arpChilds[i_idxRow];
@@ -140,7 +140,7 @@ CModelDiagramObjsTreeItem* CModelDiagramObjsTreeItem::child(int i_idxRow)
 }
 
 //------------------------------------------------------------------------------
-int CModelDiagramObjsTreeItem::childsCount() const
+int CModelDiagramTreeItem::childsCount() const
 //------------------------------------------------------------------------------
 {
     return m_arpChilds.size();
@@ -148,7 +148,7 @@ int CModelDiagramObjsTreeItem::childsCount() const
 
 
 /*******************************************************************************
-class CModelDiagramObjs : public QAbstractItemModel
+class CModelDiagramItems : public QAbstractItemModel
 *******************************************************************************/
 
 /*==============================================================================
@@ -156,7 +156,7 @@ public: // class methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QString CModelDiagramObjs::modelIdx2Str(const QModelIndex& i_modelIdx)
+QString CModelDiagramItems::modelIdx2Str(const QModelIndex& i_modelIdx)
 //------------------------------------------------------------------------------
 {
     QString str;
@@ -165,8 +165,8 @@ QString CModelDiagramObjs::modelIdx2Str(const QModelIndex& i_modelIdx)
     }
     str += "Row: " + QString::number(i_modelIdx.row())
         + ", Column: " + QString::number(i_modelIdx.column());
-    CModelDiagramObjsTreeItem* pItem =
-            static_cast<CModelDiagramObjsTreeItem*>(i_modelIdx.internalPointer());
+    CModelDiagramTreeItem* pItem =
+            static_cast<CModelDiagramTreeItem*>(i_modelIdx.internalPointer());
     if (pItem == nullptr) {
         str += ", null";
     }
@@ -184,7 +184,7 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CModelDiagramObjs::CModelDiagramObjs(CWdgtDiagram* i_pDiagram, QObject* i_pObjParent) :
+CModelDiagramItems::CModelDiagramItems(CWdgtDiagram* i_pDiagram, QObject* i_pObjParent) :
 //------------------------------------------------------------------------------
     QAbstractItemModel(i_pObjParent),
     m_pDiagram(i_pDiagram),
@@ -212,50 +212,50 @@ CModelDiagramObjs::CModelDiagramObjs(CWdgtDiagram* i_pDiagram, QObject* i_pObjPa
         /* strAddInfo   */ strMthInArgs );
 
     if (m_pDiagram != nullptr) {
-        m_pRoot = new CModelDiagramObjsTreeItem(m_pDiagram->className(), m_pDiagram->objectName());
-        m_pScales = new CModelDiagramObjsTreeItem("Scales", "", m_pRoot);
-        m_pTraces = new CModelDiagramObjsTreeItem("Traces", "", m_pRoot);
-        m_pDiagObjs = new CModelDiagramObjsTreeItem("DiagObjs", "", m_pRoot);
+        m_pRoot = new CModelDiagramTreeItem(m_pDiagram->className(), m_pDiagram->objectName());
+        m_pScales = new CModelDiagramTreeItem("Scales", "", m_pRoot);
+        m_pTraces = new CModelDiagramTreeItem("Traces", "", m_pRoot);
+        m_pDiagObjs = new CModelDiagramTreeItem("DiagObjs", "", m_pRoot);
 
         for (int idx = 0; idx < m_pDiagram->getDiagScalesCount(); ++idx) {
             CDiagScale* pDiagScale = m_pDiagram->getDiagScale(idx);
-            new CModelDiagramObjsTreeItem(pDiagScale->className(), pDiagScale->objectName(), m_pScales);
+            new CModelDiagramTreeItem(pDiagScale->className(), pDiagScale->objectName(), m_pScales);
         }
         for (int idx = 0; idx < m_pDiagram->getDiagTracesCount(); ++idx) {
             CDiagTrace* pDiagTrace = m_pDiagram->getDiagTrace(idx);
-            new CModelDiagramObjsTreeItem(pDiagTrace->className(), pDiagTrace->objectName(), m_pTraces);
+            new CModelDiagramTreeItem(pDiagTrace->className(), pDiagTrace->objectName(), m_pTraces);
         }
         for (int idx = 0; idx < m_pDiagram->getDiagObjsCount(); ++idx) {
             CDiagObj* pDiagObj = m_pDiagram->getDiagObj(idx);
-            new CModelDiagramObjsTreeItem(pDiagObj->className(), pDiagObj->objectName(), m_pDiagObjs);
+            new CModelDiagramTreeItem(pDiagObj->className(), pDiagObj->objectName(), m_pDiagObjs);
         }
         QObject::connect(
             m_pDiagram, &CWdgtDiagram::aboutToBeDestroyed,
-            this, &CModelDiagramObjs::onDiagramAboutToBeDestroyed);
+            this, &CModelDiagramItems::onDiagramAboutToBeDestroyed);
         QObject::connect(
             m_pDiagram, &CWdgtDiagram::diagScaleAdded,
-            this, &CModelDiagramObjs::onDiagramScaleAdded);
+            this, &CModelDiagramItems::onDiagramScaleAdded);
         QObject::connect(
             m_pDiagram, &CWdgtDiagram::diagScaleRemoved,
-            this, &CModelDiagramObjs::onDiagramScaleRemoved);
+            this, &CModelDiagramItems::onDiagramScaleRemoved);
         QObject::connect(
             m_pDiagram, &CWdgtDiagram::diagTraceAdded,
-            this, &CModelDiagramObjs::onDiagramTraceAdded);
+            this, &CModelDiagramItems::onDiagramTraceAdded);
         QObject::connect(
             m_pDiagram, &CWdgtDiagram::diagTraceRemoved,
-            this, &CModelDiagramObjs::onDiagramTraceRemoved);
+            this, &CModelDiagramItems::onDiagramTraceRemoved);
         QObject::connect(
             m_pDiagram, &CWdgtDiagram::diagObjAdded,
-            this, &CModelDiagramObjs::onDiagramObjAdded);
+            this, &CModelDiagramItems::onDiagramObjAdded);
         QObject::connect(
             m_pDiagram, &CWdgtDiagram::diagObjRemoved,
-            this, &CModelDiagramObjs::onDiagramObjRemoved);
+            this, &CModelDiagramItems::onDiagramObjRemoved);
     }
 
 } // ctor
 
 //------------------------------------------------------------------------------
-CModelDiagramObjs::~CModelDiagramObjs()
+CModelDiagramItems::~CModelDiagramItems()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -290,7 +290,7 @@ public: // must overridables of base class QAbstractItemModel
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-int CModelDiagramObjs::rowCount( const QModelIndex& i_modelIdxParent ) const
+int CModelDiagramItems::rowCount( const QModelIndex& i_modelIdxParent ) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -306,8 +306,8 @@ int CModelDiagramObjs::rowCount( const QModelIndex& i_modelIdxParent ) const
     int iRowCount = 1;
 
     if (i_modelIdxParent.isValid()) {
-        CModelDiagramObjsTreeItem* pParent =
-            static_cast<CModelDiagramObjsTreeItem*>(i_modelIdxParent.internalPointer());
+        CModelDiagramTreeItem* pParent =
+            static_cast<CModelDiagramTreeItem*>(i_modelIdxParent.internalPointer());
         if (pParent == nullptr) {
             iRowCount = 0;
         }
@@ -323,7 +323,7 @@ int CModelDiagramObjs::rowCount( const QModelIndex& i_modelIdxParent ) const
 }
 
 //------------------------------------------------------------------------------
-int CModelDiagramObjs::columnCount( const QModelIndex& i_modelIdxParent ) const
+int CModelDiagramItems::columnCount( const QModelIndex& i_modelIdxParent ) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -345,7 +345,7 @@ int CModelDiagramObjs::columnCount( const QModelIndex& i_modelIdxParent ) const
 }
 
 //------------------------------------------------------------------------------
-QModelIndex CModelDiagramObjs::index( int i_iRow, int i_iCol, const QModelIndex& i_modelIdxParent ) const
+QModelIndex CModelDiagramItems::index( int i_iRow, int i_iCol, const QModelIndex& i_modelIdxParent ) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -364,14 +364,14 @@ QModelIndex CModelDiagramObjs::index( int i_iRow, int i_iCol, const QModelIndex&
 
     if (hasIndex(i_iRow, i_iCol, i_modelIdxParent))
     {
-        CModelDiagramObjsTreeItem* pItem = nullptr;
+        CModelDiagramTreeItem* pItem = nullptr;
         if (!i_modelIdxParent.isValid()) {
             modelIdx = createIndex(i_iRow, i_iCol, m_pRoot);
         }
         else {
-            CModelDiagramObjsTreeItem* pParent =
-                static_cast<CModelDiagramObjsTreeItem*>(i_modelIdxParent.internalPointer());
-            CModelDiagramObjsTreeItem* pChild = pParent->child(i_iRow);
+            CModelDiagramTreeItem* pParent =
+                static_cast<CModelDiagramTreeItem*>(i_modelIdxParent.internalPointer());
+            CModelDiagramTreeItem* pChild = pParent->child(i_iRow);
             if (pChild != nullptr) {
                 modelIdx = createIndex(i_iRow, i_iCol, pChild);
             }
@@ -385,7 +385,7 @@ QModelIndex CModelDiagramObjs::index( int i_iRow, int i_iCol, const QModelIndex&
 }
 
 //------------------------------------------------------------------------------
-QModelIndex CModelDiagramObjs::parent( const QModelIndex& i_modelIdx ) const
+QModelIndex CModelDiagramItems::parent( const QModelIndex& i_modelIdx ) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -402,10 +402,10 @@ QModelIndex CModelDiagramObjs::parent( const QModelIndex& i_modelIdx ) const
 
     if (i_modelIdx.isValid())
     {
-        CModelDiagramObjsTreeItem* pItem =
-            static_cast<CModelDiagramObjsTreeItem*>(i_modelIdx.internalPointer());
+        CModelDiagramTreeItem* pItem =
+            static_cast<CModelDiagramTreeItem*>(i_modelIdx.internalPointer());
         if (pItem != m_pRoot) {
-            CModelDiagramObjsTreeItem* pParent = pItem->parent();
+            CModelDiagramTreeItem* pParent = pItem->parent();
             modelIdxParent = createIndex(pParent->row(), 0, pParent);
         }
     }
@@ -417,7 +417,7 @@ QModelIndex CModelDiagramObjs::parent( const QModelIndex& i_modelIdx ) const
 }
 
 //------------------------------------------------------------------------------
-QVariant CModelDiagramObjs::data( const QModelIndex& i_modelIdx, int i_iRole ) const
+QVariant CModelDiagramItems::data( const QModelIndex& i_modelIdx, int i_iRole ) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -435,11 +435,11 @@ QVariant CModelDiagramObjs::data( const QModelIndex& i_modelIdx, int i_iRole ) c
 
     QVariant varData;
 
-    CModelDiagramObjsTreeItem* pItem = nullptr;
+    CModelDiagramTreeItem* pItem = nullptr;
 
     if (i_modelIdx.isValid())
     {
-        pItem = static_cast<CModelDiagramObjsTreeItem*>(i_modelIdx.internalPointer());
+        pItem = static_cast<CModelDiagramTreeItem*>(i_modelIdx.internalPointer());
     }
     if (pItem != nullptr)
     {
@@ -479,7 +479,7 @@ public: // overridables of base class QAbstractItemModel
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-Qt::ItemFlags CModelDiagramObjs::flags(const QModelIndex& i_modelIdx) const
+Qt::ItemFlags CModelDiagramItems::flags(const QModelIndex& i_modelIdx) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -504,7 +504,7 @@ Qt::ItemFlags CModelDiagramObjs::flags(const QModelIndex& i_modelIdx) const
 }
 
 //------------------------------------------------------------------------------
-QVariant CModelDiagramObjs::headerData(int i_iSection, Qt::Orientation i_orientation, int i_iRole) const
+QVariant CModelDiagramItems::headerData(int i_iSection, Qt::Orientation i_orientation, int i_iRole) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -559,7 +559,7 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CModelDiagramObjs::onDiagramAboutToBeDestroyed(const QString& i_strObjName)
+void CModelDiagramItems::onDiagramAboutToBeDestroyed(const QString& i_strObjName)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -585,7 +585,7 @@ void CModelDiagramObjs::onDiagramAboutToBeDestroyed(const QString& i_strObjName)
 }
 
 //------------------------------------------------------------------------------
-void CModelDiagramObjs::onDiagramScaleAdded(const QString& i_strObjName)
+void CModelDiagramItems::onDiagramScaleAdded(const QString& i_strObjName)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -599,15 +599,15 @@ void CModelDiagramObjs::onDiagramScaleAdded(const QString& i_strObjName)
         /* strMethodInArgs    */ strMthInArgs );
 
     CDiagScale* pDiagScale = m_pDiagram->findDiagScale(i_strObjName);
-    CModelDiagramObjsTreeItem* pItem =
-        new CModelDiagramObjsTreeItem(pDiagScale->className(), pDiagScale->objectName(), m_pScales);
+    CModelDiagramTreeItem* pItem =
+        new CModelDiagramTreeItem(pDiagScale->className(), pDiagScale->objectName(), m_pScales);
     QModelIndex modelIdxParent = createIndex(m_pScales->row(), 0, m_pScales);
     beginInsertRows(modelIdxParent, pItem->row(), pItem->row());
     endInsertRows();
 }
 
 //------------------------------------------------------------------------------
-void CModelDiagramObjs::onDiagramScaleRemoved(const QString& i_strObjName)
+void CModelDiagramItems::onDiagramScaleRemoved(const QString& i_strObjName)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -620,7 +620,7 @@ void CModelDiagramObjs::onDiagramScaleRemoved(const QString& i_strObjName)
         /* strMethod          */ "onDiagramScaleRemoved",
         /* strMethodInArgs    */ strMthInArgs );
 
-    CModelDiagramObjsTreeItem* pItem = findDiagScaleItem(i_strObjName);
+    CModelDiagramTreeItem* pItem = findDiagScaleItem(i_strObjName);
     QModelIndex modelIdxParent = createIndex(m_pScales->row(), 0, m_pScales);
     beginRemoveRows(modelIdxParent, pItem->row(), pItem->row());
     delete pItem;
@@ -629,7 +629,7 @@ void CModelDiagramObjs::onDiagramScaleRemoved(const QString& i_strObjName)
 }
 
 //------------------------------------------------------------------------------
-void CModelDiagramObjs::onDiagramTraceAdded(const QString& i_strObjName)
+void CModelDiagramItems::onDiagramTraceAdded(const QString& i_strObjName)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -643,15 +643,15 @@ void CModelDiagramObjs::onDiagramTraceAdded(const QString& i_strObjName)
         /* strMethodInArgs    */ strMthInArgs );
 
     CDiagTrace* pDiagTrace = m_pDiagram->findDiagTrace(i_strObjName);
-    CModelDiagramObjsTreeItem* pItem =
-        new CModelDiagramObjsTreeItem(pDiagTrace->className(), pDiagTrace->objectName(), m_pTraces);
+    CModelDiagramTreeItem* pItem =
+        new CModelDiagramTreeItem(pDiagTrace->className(), pDiagTrace->objectName(), m_pTraces);
     QModelIndex modelIdxParent = createIndex(m_pTraces->row(), 0, m_pTraces);
     beginInsertRows(modelIdxParent, pItem->row(), pItem->row());
     endInsertRows();
 }
 
 //------------------------------------------------------------------------------
-void CModelDiagramObjs::onDiagramTraceRemoved(const QString& i_strObjName)
+void CModelDiagramItems::onDiagramTraceRemoved(const QString& i_strObjName)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -664,7 +664,7 @@ void CModelDiagramObjs::onDiagramTraceRemoved(const QString& i_strObjName)
         /* strMethod          */ "onDiagramTraceRemoved",
         /* strMethodInArgs    */ strMthInArgs );
 
-    CModelDiagramObjsTreeItem* pItem = findDiagTraceItem(i_strObjName);
+    CModelDiagramTreeItem* pItem = findDiagTraceItem(i_strObjName);
     QModelIndex modelIdxParent = createIndex(m_pTraces->row(), 0, m_pTraces);
     beginRemoveRows(modelIdxParent, pItem->row(), pItem->row());
     delete pItem;
@@ -673,7 +673,7 @@ void CModelDiagramObjs::onDiagramTraceRemoved(const QString& i_strObjName)
 }
 
 //------------------------------------------------------------------------------
-void CModelDiagramObjs::onDiagramObjAdded(const QString& i_strClassName, const QString& i_strObjName)
+void CModelDiagramItems::onDiagramObjAdded(const QString& i_strClassName, const QString& i_strObjName)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -687,15 +687,15 @@ void CModelDiagramObjs::onDiagramObjAdded(const QString& i_strClassName, const Q
         /* strMethodInArgs    */ strMthInArgs );
 
     CDiagObj* pDiagObj = m_pDiagram->findDiagObj(i_strClassName, i_strObjName);
-    CModelDiagramObjsTreeItem* pItem =
-        new CModelDiagramObjsTreeItem(pDiagObj->className(), pDiagObj->objectName(), m_pDiagObjs);
+    CModelDiagramTreeItem* pItem =
+        new CModelDiagramTreeItem(pDiagObj->className(), pDiagObj->objectName(), m_pDiagObjs);
     QModelIndex modelIdxParent = createIndex(m_pDiagObjs->row(), 0, m_pDiagObjs);
     beginInsertRows(modelIdxParent, pItem->row(), pItem->row());
     endInsertRows();
 }
 
 //------------------------------------------------------------------------------
-void CModelDiagramObjs::onDiagramObjRemoved(const QString& i_strClassName, const QString& i_strObjName)
+void CModelDiagramItems::onDiagramObjRemoved(const QString& i_strClassName, const QString& i_strObjName)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -708,7 +708,7 @@ void CModelDiagramObjs::onDiagramObjRemoved(const QString& i_strClassName, const
         /* strMethod          */ "onDiagramObjRemoved",
         /* strMethodInArgs    */ strMthInArgs );
 
-    CModelDiagramObjsTreeItem* pItem = findDiagObjItem(i_strClassName, i_strObjName);
+    CModelDiagramTreeItem* pItem = findDiagObjItem(i_strClassName, i_strObjName);
     QModelIndex modelIdxParent = createIndex(m_pDiagObjs->row(), 0, m_pDiagObjs);
     beginRemoveRows(modelIdxParent, pItem->row(), pItem->row());
     delete pItem;
@@ -721,10 +721,10 @@ protected: // auxiliary instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CModelDiagramObjsTreeItem* CModelDiagramObjs::findDiagScaleItem(const QString& i_strObjName) const
+CModelDiagramTreeItem* CModelDiagramItems::findDiagScaleItem(const QString& i_strObjName) const
 //------------------------------------------------------------------------------
 {
-    CModelDiagramObjsTreeItem* pItem = nullptr;
+    CModelDiagramTreeItem* pItem = nullptr;
     if (m_pScales != nullptr) {
         for (int idx = 0; idx < m_pScales->childsCount(); ++idx) {
             if (m_pScales->child(idx)->objectName() == i_strObjName) {
@@ -737,10 +737,10 @@ CModelDiagramObjsTreeItem* CModelDiagramObjs::findDiagScaleItem(const QString& i
 }
 
 //------------------------------------------------------------------------------
-CModelDiagramObjsTreeItem* CModelDiagramObjs::findDiagTraceItem(const QString& i_strObjName) const
+CModelDiagramTreeItem* CModelDiagramItems::findDiagTraceItem(const QString& i_strObjName) const
 //------------------------------------------------------------------------------
 {
-    CModelDiagramObjsTreeItem* pItem = nullptr;
+    CModelDiagramTreeItem* pItem = nullptr;
     if (m_pTraces != nullptr) {
         for (int idx = 0; idx < m_pTraces->childsCount(); ++idx) {
             if (m_pTraces->child(idx)->objectName() == i_strObjName) {
@@ -753,11 +753,11 @@ CModelDiagramObjsTreeItem* CModelDiagramObjs::findDiagTraceItem(const QString& i
 }
 
 //------------------------------------------------------------------------------
-CModelDiagramObjsTreeItem* CModelDiagramObjs::findDiagObjItem(
+CModelDiagramTreeItem* CModelDiagramItems::findDiagObjItem(
     const QString& i_strClassName, const QString& i_strObjName) const
 //------------------------------------------------------------------------------
 {
-    CModelDiagramObjsTreeItem* pItem = nullptr;
+    CModelDiagramTreeItem* pItem = nullptr;
     if (m_pDiagObjs != nullptr) {
         for (int idx = 0; idx < m_pDiagObjs->childsCount(); ++idx) {
             if (m_pDiagObjs->child(idx)->className() == i_strClassName

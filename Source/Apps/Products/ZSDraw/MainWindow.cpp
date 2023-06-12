@@ -1989,7 +1989,7 @@ void CMainWindow::createStatusBar()
         /* strAddInfo   */ "" );
 
     //CPageSetup* pageSetup = m_pDrawingView->getPageSetup();
-    //CUnit unitWidth = pageSetup->unit(EDirection::Horizontal);
+    //CUnit unitWidth = pageSetup->unit(EOrientation::Horizontal);
 
     //m_pLblStatusBarDrawingSceneEditTool = new QLabel("Tool: -");
     //m_pLblStatusBarDrawingSceneEditTool->setMinimumWidth(80);
@@ -4260,7 +4260,7 @@ void CMainWindow::onDrawingSceneMousePosChanged( const QPointF& i_ptMousePos )
     if( m_pLblStatusBarDrawingSceneMouseCursorPos != nullptr ) {
         //CDrawingView* pDrawingView = m_pWdgtCentral->drawingView();
         //CPageSetup* pageSetup = pDrawingView->getPageSetup();
-        //CUnit unitWidth = pageSetup->unit(EDirection::Horizontal);
+        //CUnit unitWidth = pageSetup->unit(EOrientation::Horizontal);
         //QString strMouseCursorPos;
         //strMouseCursorPos += QString("ScenePos: ");
         //strMouseCursorPos += QString::number(i_ptMousePos.x());
@@ -4441,7 +4441,7 @@ void CMainWindow::onDrawingViewMousePosChanged( const QPointF& i_ptMousePos )
     {
         //CDrawingView* pDrawingView = m_pWdgtCentral->drawingView();
         //CPageSetup* pageSetup = pDrawingView->getPageSetup();
-        //CUnit unitWidth = pageSetup->unit(EDirection::Horizontal);
+        //CUnit unitWidth = pageSetup->unit(EOrientation::Horizontal);
 
         //QString strMouseCursorPos;
 
@@ -4617,7 +4617,7 @@ void CMainWindow::resizeEvent( QResizeEvent* i_pEv )
         //CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
 
         //CPageSetup* pageSetup = pDrawingView->getPageSetup();
-        //CUnit unitWidth = pageSetup->unit(EDirection::Horizontal);
+        //CUnit unitWidth = pageSetup->unit(EOrientation::Horizontal);
         //QRectF rect = pDrawingScene->sceneRect();
         //QPointF ptTL = pDrawingView->mapFromScene(rect.topLeft());
         //rect.moveTopLeft(ptTL);
@@ -4646,7 +4646,7 @@ void CMainWindow::showEvent( QShowEvent* i_pEv )
         //CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
 
         //CPageSetup* pageSetup = pDrawingView->getPageSetup();
-        //CUnit unitWidth = pageSetup->unit(EDirection::Horizontal);
+        //CUnit unitWidth = pageSetup->unit(EOrientation::Horizontal);
         //QRectF rect = pDrawingScene->sceneRect();
         //QPointF ptTL = pDrawingView->mapFromScene(rect.topLeft());
         //rect.moveTopLeft(ptTL);

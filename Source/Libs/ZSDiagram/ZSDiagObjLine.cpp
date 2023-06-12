@@ -58,10 +58,11 @@ CDiagObjLine::CDiagObjLine(
     SLineStyle*    i_lineStyle ) :
 //------------------------------------------------------------------------------
     CDiagObj(
-        /* strObjName  */ i_strObjName,
-        /* pDiagScaleX */ i_pDiagScaleX,
-        /* pDiagScaleY */ i_pDiagScaleY,
-        /* layoutPos   */ ELayoutPosCenter ),
+        /* strClassName */ CDiagObjLine::ClassName(),
+        /* strObjName   */ i_strObjName,
+        /* pDiagScaleX  */ i_pDiagScaleX,
+        /* pDiagScaleY  */ i_pDiagScaleY,
+        /* layoutPos    */ ELayoutPosCenter ),
     m_pLineStyle( i_lineStyle ),
     m_pt1( -1 , -1 ),
     m_pt2( -1 , -1 ),
@@ -144,11 +145,11 @@ double CDiagObjLine::getX1( ECoordinatesUnit i_pointType ) const
 {
     if( i_pointType == ECoordinatesUnitAxisScale && m_eX1 == ECoordinatesUnitAxisScale)
         return( m_fX1 );
-    else if( i_pointType == ECoordinatesUnitAxisScale && m_eX1 == ECoordinatesUnitPixel && m_arpDiagScale[EScaleDirX] )
-        return( m_arpDiagScale[EScaleDirX]->getVal( m_fX1 ) );
-    else if( i_pointType == ECoordinatesUnitPixel && m_eX1 == ECoordinatesUnitAxisScale && m_arpDiagScale[EScaleDirX] )
-        return( m_arpDiagScale[EScaleDirX]->getValPix( m_fX1 ) );
-    else if( i_pointType == ECoordinatesUnitPixel && m_eX1 == ECoordinatesUnitPixel && m_arpDiagScale[EScaleDirX] )
+    else if( i_pointType == ECoordinatesUnitAxisScale && m_eX1 == ECoordinatesUnitPixel && m_arpDiagScale[static_cast<int>(EScaleDir::X)] )
+        return( m_arpDiagScale[static_cast<int>(EScaleDir::X)]->getVal( m_fX1 ) );
+    else if( i_pointType == ECoordinatesUnitPixel && m_eX1 == ECoordinatesUnitAxisScale && m_arpDiagScale[static_cast<int>(EScaleDir::X)] )
+        return( m_arpDiagScale[static_cast<int>(EScaleDir::X)]->getValPix( m_fX1 ) );
+    else if( i_pointType == ECoordinatesUnitPixel && m_eX1 == ECoordinatesUnitPixel && m_arpDiagScale[static_cast<int>(EScaleDir::X)] )
         return( m_fX1 );
     else
         return( 0.0 );  // Jeder Zweig muss einen Rückgabewert haben
@@ -169,11 +170,11 @@ double CDiagObjLine::getY1( ECoordinatesUnit i_pointType ) const
 {
     if( i_pointType == ECoordinatesUnitAxisScale && m_eY1 == ECoordinatesUnitAxisScale)
         return( m_fY1 );
-    else if( i_pointType == ECoordinatesUnitAxisScale && m_eY1 == ECoordinatesUnitPixel && m_arpDiagScale[EScaleDirY] )
-        return( m_arpDiagScale[EScaleDirY]->getVal( m_fX1 ) );
-    else if( i_pointType == ECoordinatesUnitPixel && m_eY1 == ECoordinatesUnitAxisScale && m_arpDiagScale[EScaleDirY] )
-        return( m_arpDiagScale[EScaleDirY]->getValPix( m_fY1 ) );
-    else if( i_pointType == ECoordinatesUnitPixel && m_eY1 == ECoordinatesUnitPixel && m_arpDiagScale[EScaleDirY] )
+    else if( i_pointType == ECoordinatesUnitAxisScale && m_eY1 == ECoordinatesUnitPixel && m_arpDiagScale[static_cast<int>(EScaleDir::Y)] )
+        return( m_arpDiagScale[static_cast<int>(EScaleDir::Y)]->getVal( m_fX1 ) );
+    else if( i_pointType == ECoordinatesUnitPixel && m_eY1 == ECoordinatesUnitAxisScale && m_arpDiagScale[static_cast<int>(EScaleDir::Y)] )
+        return( m_arpDiagScale[static_cast<int>(EScaleDir::Y)]->getValPix( m_fY1 ) );
+    else if( i_pointType == ECoordinatesUnitPixel && m_eY1 == ECoordinatesUnitPixel && m_arpDiagScale[static_cast<int>(EScaleDir::Y)] )
         return( m_fY1 );
     else
         return( 0.0 );  // Jeder Zweig muss einen Rückgabewert haben
@@ -194,11 +195,11 @@ double CDiagObjLine::getX2( ECoordinatesUnit i_pointType ) const
 {
     if( i_pointType == ECoordinatesUnitAxisScale && m_eX2 == ECoordinatesUnitAxisScale)
         return( m_fX1 );
-    else if( i_pointType == ECoordinatesUnitAxisScale && m_eX2 == ECoordinatesUnitPixel && m_arpDiagScale[EScaleDirX] )
-        return( m_arpDiagScale[EScaleDirX]->getVal( m_fX2 ) );
-    else if( i_pointType == ECoordinatesUnitPixel && m_eX2 == ECoordinatesUnitAxisScale && m_arpDiagScale[EScaleDirX] )
-        return( m_arpDiagScale[EScaleDirX]->getValPix( m_fX2 ) );
-    else if( i_pointType == ECoordinatesUnitPixel && m_eX2 == ECoordinatesUnitPixel && m_arpDiagScale[EScaleDirX] )
+    else if( i_pointType == ECoordinatesUnitAxisScale && m_eX2 == ECoordinatesUnitPixel && m_arpDiagScale[static_cast<int>(EScaleDir::X)] )
+        return( m_arpDiagScale[static_cast<int>(EScaleDir::X)]->getVal( m_fX2 ) );
+    else if( i_pointType == ECoordinatesUnitPixel && m_eX2 == ECoordinatesUnitAxisScale && m_arpDiagScale[static_cast<int>(EScaleDir::X)] )
+        return( m_arpDiagScale[static_cast<int>(EScaleDir::X)]->getValPix( m_fX2 ) );
+    else if( i_pointType == ECoordinatesUnitPixel && m_eX2 == ECoordinatesUnitPixel && m_arpDiagScale[static_cast<int>(EScaleDir::X)] )
         return( m_fX2 );
     else
         return( 0.0 );  // Jeder Zweig muss einen Rückgabewert haben
@@ -219,11 +220,11 @@ double CDiagObjLine::getY2( ECoordinatesUnit i_pointType ) const
 {
     if( i_pointType == ECoordinatesUnitAxisScale && m_eY2 == ECoordinatesUnitAxisScale)
         return( m_fY2 );
-    else if( i_pointType == ECoordinatesUnitAxisScale && m_eY2 == ECoordinatesUnitPixel && m_arpDiagScale[EScaleDirY] )
-        return( m_arpDiagScale[EScaleDirY]->getVal( m_fX2 ) );
-    else if( i_pointType == ECoordinatesUnitPixel && m_eY2 == ECoordinatesUnitAxisScale && m_arpDiagScale[EScaleDirY] )
-        return( m_arpDiagScale[EScaleDirY]->getValPix( m_fY2 ) );
-    else if( i_pointType == ECoordinatesUnitPixel && m_eY2 == ECoordinatesUnitPixel && m_arpDiagScale[EScaleDirY] )
+    else if( i_pointType == ECoordinatesUnitAxisScale && m_eY2 == ECoordinatesUnitPixel && m_arpDiagScale[static_cast<int>(EScaleDir::Y)] )
+        return( m_arpDiagScale[static_cast<int>(EScaleDir::Y)]->getVal( m_fX2 ) );
+    else if( i_pointType == ECoordinatesUnitPixel && m_eY2 == ECoordinatesUnitAxisScale && m_arpDiagScale[static_cast<int>(EScaleDir::Y)] )
+        return( m_arpDiagScale[static_cast<int>(EScaleDir::Y)]->getValPix( m_fY2 ) );
+    else if( i_pointType == ECoordinatesUnitPixel && m_eY2 == ECoordinatesUnitPixel && m_arpDiagScale[static_cast<int>(EScaleDir::Y)] )
         return( m_fY2 );
     else
         return( 0.0 );  // Jeder Zweig muss einen Rückgabewert haben
@@ -237,13 +238,13 @@ CDiagObj* CDiagObjLine::clone( CDataDiagram* i_pDiagramTrg ) const
     {
         return nullptr;
     }
-    if( m_arpDiagScale[EScaleDirX] == nullptr || m_arpDiagScale[EScaleDirY] == nullptr )
+    if( m_arpDiagScale[static_cast<int>(EScaleDir::X)] == nullptr || m_arpDiagScale[static_cast<int>(EScaleDir::Y)] == nullptr )
     {
         return nullptr;
     }
 
-    CDiagScale* pDiagScaleX = i_pDiagramTrg->findDiagScale(m_arpDiagScale[EScaleDirX]->getObjName());
-    CDiagScale* pDiagScaleY = i_pDiagramTrg->findDiagScale(m_arpDiagScale[EScaleDirY]->getObjName());
+    CDiagScale* pDiagScaleX = i_pDiagramTrg->findDiagScale(m_arpDiagScale[static_cast<int>(EScaleDir::X)]->getObjName());
+    CDiagScale* pDiagScaleY = i_pDiagramTrg->findDiagScale(m_arpDiagScale[static_cast<int>(EScaleDir::Y)]->getObjName());
 
     if( pDiagScaleX == nullptr || pDiagScaleY == nullptr )
     {
@@ -284,7 +285,7 @@ void CDiagObjLine::update( unsigned int i_uUpdateFlags , QPaintDevice* i_pPaintD
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObjUpdate != nullptr && m_pTrcAdminObjUpdate->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjUpdate, EMethodTraceDetailLevel::ArgsNormal))
     {
         strTrcMsg = updateFlags2Str(i_uUpdateFlags);
     }
@@ -322,22 +323,22 @@ void CDiagObjLine::update( unsigned int i_uUpdateFlags , QPaintDevice* i_pPaintD
     {
         mthTracer.trace("Processing Data", ELogDetailLevel::Debug);
 
-        if( m_arpDiagScale[EScaleDirX] && m_arpDiagScale[EScaleDirY] )
+        if( m_arpDiagScale[static_cast<int>(EScaleDir::X)] && m_arpDiagScale[static_cast<int>(EScaleDir::Y)] )
         {
             if( m_eX1 == ECoordinatesUnitAxisScale )
-                m_pt1.setX( m_arpDiagScale[EScaleDirX]->getValPix( m_fX1 ) );
+                m_pt1.setX( m_arpDiagScale[static_cast<int>(EScaleDir::X)]->getValPix( m_fX1 ) );
             else if( m_eX1 == ECoordinatesUnitPixel )
                 m_pt1.setX( m_rectContent.left() + static_cast<int>(m_fX1) );
             if( m_eY1 == ECoordinatesUnitAxisScale )
-                m_pt1.setY( m_arpDiagScale[EScaleDirY]->getValPix( m_fY1 ) );
+                m_pt1.setY( m_arpDiagScale[static_cast<int>(EScaleDir::Y)]->getValPix( m_fY1 ) );
             else if( m_eY1 == ECoordinatesUnitPixel )
                 m_pt1.setY( m_rectContent.top() + static_cast<int>(m_fY1) );
             if( m_eX2 == ECoordinatesUnitAxisScale )
-                m_pt2.setX( m_arpDiagScale[EScaleDirX]->getValPix( m_fX2 ) );
+                m_pt2.setX( m_arpDiagScale[static_cast<int>(EScaleDir::X)]->getValPix( m_fX2 ) );
             else if( m_eX2 == ECoordinatesUnitPixel )
                 m_pt2.setX( m_rectContent.left() + static_cast<int>(m_fX2) );
             if( m_eY2 == ECoordinatesUnitAxisScale )
-                m_pt2.setY( m_arpDiagScale[EScaleDirY]->getValPix( m_fY2 ) );
+                m_pt2.setY( m_arpDiagScale[static_cast<int>(EScaleDir::Y)]->getValPix( m_fY2 ) );
             else if( m_eY2 == ECoordinatesUnitPixel )
                 m_pt2.setY( m_rectContent.top() + static_cast<int>(m_fY1) );
         }

@@ -454,7 +454,7 @@ void CTest::doTestStepSigGenAddScales( ZS::Test::CTestStep* i_pTestStep )
 
         m_pDiagScaleX = new CDiagScale(
             /* strObjName */ "DiagScaleX",
-            /* scaleDir   */ EScaleDirX,
+            /* scaleDir   */ EScaleDir::X,
             /* scale      */ scaleX );
         m_pDiagScaleX->setDivLineDistMinPix(EDivLineLayer::Main, 20);
 
@@ -467,7 +467,7 @@ void CTest::doTestStepSigGenAddScales( ZS::Test::CTestStep* i_pTestStep )
 
         m_pDiagScaleY = new CDiagScale(
             /* strObjName */ "DiagScaleY",
-            /* scaleDir   */ EScaleDirY,
+            /* scaleDir   */ EScaleDir::Y,
             /* scale      */ scaleY );
         m_pDiagScaleY->setDivLineDistMinPix(EDivLineLayer::Main, 20);
 
@@ -1099,11 +1099,11 @@ void CTest::doTestStepSigGenMoveMarkers( ZS::Test::CTestStep* i_pTestStep )
     }
     if (m_pDiagObjMarkerSigGen1 != nullptr)
     {
-        m_pDiagObjMarkerSigGen1->setVal(EScaleDirX, physValXMarkerSigGen1);
+        m_pDiagObjMarkerSigGen1->setVal(EScaleDir::X, physValXMarkerSigGen1);
     }
     if (m_pDiagObjMarkerSigGen2 != nullptr)
     {
-        m_pDiagObjMarkerSigGen2->setVal(EScaleDirX, physValXMarkerSigGen2);
+        m_pDiagObjMarkerSigGen2->setVal(EScaleDir::X, physValXMarkerSigGen2);
     }
     if (m_pWdgtDiagram != nullptr)
     {
@@ -1348,14 +1348,14 @@ void CTest::onTimerSigGenTimeout()
 
         if( m_pDiagTraceSigGen1 != nullptr )
         {
-            m_pDiagTraceSigGen1->setValues(EScaleDirX, s_arfXValuesTraces01);
-            m_pDiagTraceSigGen1->setValues(EScaleDirY, s_arfYValuesTrace0);
+            m_pDiagTraceSigGen1->setValues(EScaleDir::X, s_arfXValuesTraces01);
+            m_pDiagTraceSigGen1->setValues(EScaleDir::Y, s_arfYValuesTrace0);
         }
 
         if( m_pDiagTraceSigGen2 != nullptr )
         {
-            m_pDiagTraceSigGen2->setValues(EScaleDirX, s_arfXValuesTraces01);
-            m_pDiagTraceSigGen2->setValues(EScaleDirY, s_arfYValuesTrace1);
+            m_pDiagTraceSigGen2->setValues(EScaleDir::X, s_arfXValuesTraces01);
+            m_pDiagTraceSigGen2->setValues(EScaleDir::Y, s_arfYValuesTrace1);
         }
     } // if( m_pDiagScaleX != nullptr && m_pDiagScaleY != nullptr )
 

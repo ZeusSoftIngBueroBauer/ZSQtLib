@@ -176,7 +176,7 @@ double ZS::Diagram::getValRes(
         pUnitRes = pUnitVal;
     }
 
-    if( i_spacing == ESpacingLinear )
+    if( i_spacing == ESpacing::Linear )
     {
         fScaleRange = fabs(i_fScaleMaxVal-i_fScaleMinVal);
 
@@ -229,63 +229,6 @@ double ZS::Diagram::getValRes(
     return fRes;
 
 } // getValRes
-
-//------------------------------------------------------------------------------
-QString ZS::Diagram::onOffState2Str( int i_iState )
-//------------------------------------------------------------------------------
-{
-    static const char* s_arszOnOffState[EOnOffStateCount] = {
-        "Off",
-        "On"
-    };
-    if( i_iState >= 0 && i_iState < EOnOffStateCount )
-    {
-        return s_arszOnOffState[i_iState];
-    }
-    if( i_iState == EOnOffStateCount )
-    {
-        return "Count";
-    }
-    if( i_iState == EOnOffStateUndefined )
-    {
-        return "Undefined";
-    }
-    return "Out Of Range";
-}
-
-//------------------------------------------------------------------------------
-EOnOffState ZS::Diagram::str2OnOffState( const QString& i_str )
-//------------------------------------------------------------------------------
-{
-    static const char* s_arszOnOffState[EOnOffStateCount] = {
-        "Off",
-        "On"
-    };
-
-    EOnOffState onOffState = EOnOffStateUndefined;
-    int         idxState;
-
-    for( idxState = 0; idxState < EOnOffStateCount; idxState++ )
-    {
-        if( s_arszOnOffState[idxState] == i_str )
-        {
-            onOffState = static_cast<EOnOffState>(idxState);
-            break;
-        }
-    }
-    if( onOffState == EOnOffStateUndefined )
-    {
-        if( i_str == "0" )
-        {
-            onOffState = EOnOffStateOff;
-        }
-        else if( i_str == "1" )
-        {
-            onOffState = EOnOffStateOn;
-        }
-    }
-    return onOffState;
-}
 
 //------------------------------------------------------------------------------
 QString ZS::Diagram::measState2Str( int i_iMeasState )
@@ -390,77 +333,42 @@ QString ZS::Diagram::updateFlags2Str( unsigned int i_uUpdateFlags )
 
 } // updateFlags2Str
 
+
+/*==============================================================================
+Enum EScaleDir
+==============================================================================*/
+
+template<> QMutex ZS::System::CEnum<EScaleDir>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> ZS::System::CEnum<EScaleDir>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+
 //------------------------------------------------------------------------------
-QString ZS::Diagram::scaleDir2Str( int i_iScaleDir )
+template<> const QVector<SEnumEntry> ZS::System::CEnum<EScaleDir>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {
-    static const char* s_arszScaleDir[EScaleDirCount] = {
-        "X",
-        "Y"
-    };
-    if( i_iScaleDir >= 0 && i_iScaleDir < EScaleDirCount )
-    {
-        return s_arszScaleDir[i_iScaleDir];
-    }
-    if( i_iScaleDir == EScaleDirCount )
-    {
-        return "Count";
-    }
-    if( i_iScaleDir == EScaleDirUndefined )
-    {
-        return "Undefined";
-    }
-    return "Out Of Range";
+    /* 0 */ SEnumEntry( static_cast<int>(EScaleDir::X), "X" ),
+    /* 1 */ SEnumEntry( static_cast<int>(EScaleDir::Y), "Y" )
+};
 
-} // scaleDir2Str
+
+/*==============================================================================
+Enum ESpacing
+==============================================================================*/
+
+template<> QMutex ZS::System::CEnum<ESpacing>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> ZS::System::CEnum<ESpacing>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 //------------------------------------------------------------------------------
-QString ZS::Diagram::orientation2Str( int i_iOrientation )
+template<> const QVector<SEnumEntry> ZS::System::CEnum<ESpacing>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {
-    static const char* s_arszOrientation[EOrientationCount] = {
-        "Hor",
-        "Ver"
-    };
-    if( i_iOrientation >= 0 && i_iOrientation < EOrientationCount )
-    {
-        return s_arszOrientation[i_iOrientation];
-    }
-    if( i_iOrientation == EOrientationCount )
-    {
-        return "Count";
-    }
-    if( i_iOrientation == EOrientationUndefined )
-    {
-        return "Undefined";
-    }
-    return "Out Of Range";
+    /* 0 */ SEnumEntry( static_cast<int>(ESpacing::Linear), "Linear" ),
+    /* 1 */ SEnumEntry( static_cast<int>(ESpacing::Logarithmic), "Logarithmic" )
+};
 
-} // orientation2Str
 
-//------------------------------------------------------------------------------
-QString ZS::Diagram::spacing2Str( int i_iSpacing )
-//------------------------------------------------------------------------------
-{
-    static const char* s_arszSpacing[ESpacingCount] = {
-        "Linear",
-        "Logarithmic"
-    };
-    if( i_iSpacing >= 0 && i_iSpacing < ESpacingCount )
-    {
-        return s_arszSpacing[i_iSpacing];
-    }
-    if( i_iSpacing == ESpacingCount )
-    {
-        return "Count";
-    }
-    if( i_iSpacing == ESpacingUndefined )
-    {
-        return "Undefined";
-    }
-    return "Out Of Range";
-
-} // spacing2Str
+/*==============================================================================
+Enum ELayoutPos
+==============================================================================*/
 
 //------------------------------------------------------------------------------
 QString ZS::Diagram::layoutPos2Str( int i_iLayoutPos )
@@ -522,27 +430,27 @@ template<> const QVector<SEnumEntry> ZS::System::CEnum<EDivLineLabelsPart>::s_ar
 
 
 //------------------------------------------------------------------------------
-QString ZS::Diagram::textDirection2Str( int i_iTextDirection )
+QString ZS::Diagram::textOrientation2Str( int i_iTextOrientation )
 //------------------------------------------------------------------------------
 {
-    static const char* s_arszTextDirection[ETextDirectionCount] = {
+    static const char* s_arszTextOrientation[ETextOrientationCount] = {
         "Left2Right",
         "Right2Left",
         "Bottom2Top",
         "Top2Bottom"
     };
 
-    if( i_iTextDirection >= 0 && i_iTextDirection < ETextDirectionCount )
+    if( i_iTextOrientation >= 0 && i_iTextOrientation < ETextOrientationCount )
     {
-        return s_arszTextDirection[i_iTextDirection];
+        return s_arszTextOrientation[i_iTextOrientation];
     }
-    if( i_iTextDirection == ETextDirectionCount )
+    if( i_iTextOrientation == ETextOrientationCount )
     {
         return "Count";
     }
     return "Out Of Range";
 
-} // textDirection2Str
+} // textOrientation2Str
 
 //------------------------------------------------------------------------------
 QString ZS::Diagram::moveMode2Str( int i_iMoveMode )

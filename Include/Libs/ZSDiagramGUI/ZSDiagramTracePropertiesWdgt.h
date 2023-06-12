@@ -24,70 +24,42 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZDiagram_ObjsWdgt_h
-#define ZDiagram_ObjsWdgt_h
+#ifndef ZSDiagram_TracePropertiesWdgt_h
+#define ZSDiagram_TracePropertiesWdgt_h
 
-#include <QtCore/qglobal.h>
-
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#include <QtGui/qwidget.h>
-#else
-#include <QtWidgets/qwidget.h>
-#endif
-
-#include "ZSDiagramGUI/ZSDiagramGUIDllMain.h"
-
-class QModelIndex;
-class QPushButton;
-class QSettings;
-class QSplitter;
-class QHBoxLayout;
-class QVBoxLayout;
+#include "ZSDiagramGUI/ZSDiagramItemPropertiesBaseWdgt.h"
 
 namespace ZS
 {
-namespace System
-{
-class CTrcAdminObj;
-}
 namespace Diagram
 {
-class CWdgtDiagram;
+class CDiagTrace;
 
 namespace GUI
 {
-class CWdgtDiagramObjsTree;
-class CWdgtStackDiagramObjsProperties;
-
 //******************************************************************************
-class ZSDIAGRAMGUIDLL_API CWdgtDiagramObjs : public QWidget
+class ZSDIAGRAMGUIDLL_API CWdgtDiagramTraceProperties : public CWdgtDiagramItemPropertiesBase
 //******************************************************************************
 {
     Q_OBJECT
 public: // class methods
-    static QString NameSpace() { return "ZS::Diagram::GUI"; }
-    static QString ClassName() { return "CWdgtDiagramObjs"; }
+    static QString ClassName() { return "CWdgtDiagramTraceProperties"; }
 public: // ctors and dtor
-    CWdgtDiagramObjs(
+    CWdgtDiagramTraceProperties(
         CWdgtDiagram* i_pDiagram,
-        QWidget* i_pWdgtParent = nullptr,
-        Qt::WindowFlags i_wflags = Qt::WindowFlags() );
-    virtual ~CWdgtDiagramObjs();
-public: // instance methods
-    void saveState(QSettings& i_settings) const;
-    void restoreState(const QSettings& i_settings);
+        ZS::System::EMode i_mode = ZS::System::EMode::View,
+        QWidget* i_pWdgtParent = nullptr);
+    virtual ~CWdgtDiagramTraceProperties();
+protected: // overridable init methods of base class CWdgtDiagramItemPropertiesBase
+    void setMode(ZS::System::EMode i_mode) override;
+public: // overridables of base class CWdgtDiagramItemPropertiesBase
+    void setDiagItemObjName(const QString& i_strObjName) override;
 protected slots:
-    void onWdgtTreeViewCurrentRowChanged( const QModelIndex& i_modelIdxCurr, const QModelIndex& i_modelIdxPrev );
+    void onDiagTraceDestroyed(QObject* i_pObj);
 protected: // instance members
-    CWdgtDiagram* m_pDiagram;
-    QVBoxLayout* m_pLyt;
-    QSplitter* m_pSplitter;
-    CWdgtDiagramObjsTree* m_pWdgtTreeView;
-    CWdgtStackDiagramObjsProperties* m_pWdgtStackObjsProperties;
-    /*!< Trace admin object to control trace outputs of the class. */
-    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
+    CDiagTrace* m_pDiagTrace;
 
-}; // class CWdgtGraphObjs
+}; // class CWdgtDiagramTraceProperties
 
 } // namespace GUI
 
@@ -95,4 +67,4 @@ protected: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZDiagram_ObjsWdgt_h
+#endif // #ifndef ZSDiagram_TracePropertiesWdgt_h

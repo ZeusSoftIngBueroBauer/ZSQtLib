@@ -367,6 +367,10 @@ QString CPhysValRes::toString( EUnitFind i_unitFind, int i_iSubStrVisibility ) c
     TFormatResult formatResult;
     QString strVal;
     const CUnit* pUnit = &m_unit;
+    int iDigitsAccuracy = Math::getFirstSignificantDigit(m_fVal);
+    if (iDigitsAccuracy <= 1) {
+        iDigitsAccuracy = 2;
+    }
 
     if( i_unitFind == EUnitFind::Best )
     {
@@ -375,13 +379,13 @@ QString CPhysValRes::toString( EUnitFind i_unitFind, int i_iSubStrVisibility ) c
             /* pUnitVal                   */ &m_unit,
             /* iDigitsMantissaMax         */ -1,
             /* bDigitsAccuracyLimitsMant. */ true,
-            /* iDigitsAccuracy            */ 2,
+            /* iDigitsAccuracy            */ iDigitsAccuracy,
             /* iDigitsExponent            */ 0,
             /* bUseEngineeringFormat      */ false,
             /* pfVal                      */ nullptr,
             /* pstr                       */ &strVal,
             /* ppUnitVal                  */ &pUnit );
-        if( formatResult != FormatResult::Ok )
+        if( FormatResult::isErrorResult(formatResult))
         {
             strVal = "";
         }
@@ -394,12 +398,12 @@ QString CPhysValRes::toString( EUnitFind i_unitFind, int i_iSubStrVisibility ) c
             /* pUnitVal                   */ &m_unit,
             /* iDigitsMantissaMax         */ -1,
             /* bDigitsAccuracyLimitsMant. */ true,
-            /* iDigitsAccuracy            */ 2,
+            /* iDigitsAccuracy            */ iDigitsAccuracy,
             /* iDigitsExponent            */ 0,
             /* bUseEngineeringFormat      */ false,
             /* pfVal                      */ nullptr,
             /* pstrVal                    */ &strVal );
-        if( formatResult != FormatResult::Ok )
+        if( FormatResult::isErrorResult(formatResult))
         {
             strVal = "";
         }

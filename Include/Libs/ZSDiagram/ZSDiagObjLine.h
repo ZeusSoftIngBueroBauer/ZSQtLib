@@ -54,8 +54,6 @@ public: // ctors and dtor
         CDiagScale*    i_pDiagScaleY,
         SLineStyle*    i_lineStyle );
     virtual ~CDiagObjLine();
-public: // must overridables of base class CDiagObj
-    virtual QString className() { return ClassName(); }
 public: // instance methods
     void setCol( const QColor& i_col );
     QColor getCol() const;

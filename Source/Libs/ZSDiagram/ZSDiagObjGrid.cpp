@@ -57,10 +57,11 @@ CDiagObjGrid::CDiagObjGrid(
     CDiagScale*    i_pDiagScaleY ) :
 //------------------------------------------------------------------------------
     CDiagObj(
-        /* strObjName  */ i_strObjName,
-        /* pDiagScaleX */ i_pDiagScaleX,
-        /* pDiagScaleY */ i_pDiagScaleY,
-        /* layoutPos   */ ELayoutPosCenter ),
+        /* strClassName */ CDiagObjGrid::ClassName(),
+        /* strObjName   */ i_strObjName,
+        /* pDiagScaleX  */ i_pDiagScaleX,
+        /* pDiagScaleY  */ i_pDiagScaleY,
+        /* layoutPos    */ ELayoutPosCenter ),
     m_arcol(CEnumDivLineLayer::count()),
     m_arpenStyle(CEnumDivLineLayer::count()),
     m_arbShow(CEnumDivLineLayer::count()),
@@ -243,13 +244,13 @@ CDiagObj* CDiagObjGrid::clone( CDataDiagram* i_pDiagramTrg ) const
         return nullptr;
     }
 
-    if( m_arpDiagScale[EScaleDirX] == nullptr || m_arpDiagScale[EScaleDirY] == nullptr )
+    if( m_arpDiagScale[static_cast<int>(EScaleDir::X)] == nullptr || m_arpDiagScale[static_cast<int>(EScaleDir::Y)] == nullptr )
     {
         return nullptr;
     }
 
-    CDiagScale* pDiagScaleX = i_pDiagramTrg->findDiagScale(m_arpDiagScale[EScaleDirX]->getObjName());
-    CDiagScale* pDiagScaleY = i_pDiagramTrg->findDiagScale(m_arpDiagScale[EScaleDirY]->getObjName());
+    CDiagScale* pDiagScaleX = i_pDiagramTrg->findDiagScale(m_arpDiagScale[static_cast<int>(EScaleDir::X)]->getObjName());
+    CDiagScale* pDiagScaleY = i_pDiagramTrg->findDiagScale(m_arpDiagScale[static_cast<int>(EScaleDir::Y)]->getObjName());
 
     if( pDiagScaleX == nullptr || pDiagScaleY == nullptr )
     {
@@ -292,7 +293,7 @@ void CDiagObjGrid::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDe
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObjUpdate != nullptr && m_pTrcAdminObjUpdate->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjUpdate, EMethodTraceDetailLevel::ArgsNormal))
     {
         strTrcMsg = updateFlags2Str(i_uUpdateFlags);
     }
@@ -376,9 +377,9 @@ void CDiagObjGrid::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDe
                     // Vertical lines (from left to right)
                     yTop    = m_rectContent.top();
                     yBottom = m_rectContent.bottom();
-                    for( idxDivLine = 0; idxDivLine < m_arpDiagScale[EScaleDirX]->getDivLineCount(static_cast<EDivLineLayer>(iLayer)); idxDivLine++ )
+                    for( idxDivLine = 0; idxDivLine < m_arpDiagScale[static_cast<int>(EScaleDir::X)]->getDivLineCount(static_cast<EDivLineLayer>(iLayer)); idxDivLine++ )
                     {
-                        xDivLine = static_cast<int>(m_arpDiagScale[EScaleDirX]->getDivLinePix(static_cast<EDivLineLayer>(iLayer), idxDivLine) + 0.5);
+                        xDivLine = static_cast<int>(m_arpDiagScale[static_cast<int>(EScaleDir::X)]->getDivLinePix(static_cast<EDivLineLayer>(iLayer), idxDivLine) + 0.5);
                         if( xDivLine > m_rectContent.left()+1 && xDivLine < m_rectContent.right()-1 )
                         {
                             painter.drawLine(xDivLine,yTop,xDivLine,yBottom);
@@ -388,11 +389,11 @@ void CDiagObjGrid::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDe
                     // Horizontal lines (from bottom to top)
                     xLeft  = m_rectContent.left();
                     xRight = m_rectContent.right();
-                    for( idxDivLine = 0; idxDivLine < m_arpDiagScale[EScaleDirY]->getDivLineCount(static_cast<EDivLineLayer>(iLayer)); idxDivLine++ )
+                    for( idxDivLine = 0; idxDivLine < m_arpDiagScale[static_cast<int>(EScaleDir::Y)]->getDivLineCount(static_cast<EDivLineLayer>(iLayer)); idxDivLine++ )
                     {
                         // Remember: drawing from bottom to top: the pixel values of the lower (min)
                         // values are greater than the pixel values of the higher (max) scale values.
-                        yDivLine = static_cast<int>(m_arpDiagScale[EScaleDirY]->getDivLinePix(static_cast<EDivLineLayer>(iLayer), idxDivLine) + 0.5);
+                        yDivLine = static_cast<int>(m_arpDiagScale[static_cast<int>(EScaleDir::Y)]->getDivLinePix(static_cast<EDivLineLayer>(iLayer), idxDivLine) + 0.5);
                         if( yDivLine < m_rectContent.bottom()-1 && yDivLine > m_rectContent.top()+1 )
                         {
                             painter.drawLine(xLeft,yDivLine,xRight,yDivLine);

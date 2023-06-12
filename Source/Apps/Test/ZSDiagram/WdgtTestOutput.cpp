@@ -27,7 +27,7 @@ may result in using the software modules.
 #include "WdgtTestOutput.h"
 
 #include "ZSDiagram/ZSDiagramProcWdgt.h"
-#include "ZSDiagramGUI/ZSDiagramObjsDlg.h"
+#include "ZSDiagramGUI/ZSDiagramItemsDlg.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
@@ -218,9 +218,9 @@ void CWdgtTestOutput::onBtnDiagramPropertiesClicked(bool i_bChecked)
     if (m_pDiagram != nullptr)
     {
         QString strDlgTitle = ZS::System::GUI::getMainWindowTitle() + ": Diagram Objects";
-        CDlgDiagramObjs* pDlg = CDlgDiagramObjs::GetInstance(m_pDiagram);
+        CDlgDiagramItems* pDlg = CDlgDiagramItems::GetInstance(m_pDiagram);
         if( pDlg == nullptr ) {
-            pDlg = CDlgDiagramObjs::CreateInstance(strDlgTitle, m_pDiagram);
+            pDlg = CDlgDiagramItems::CreateInstance(strDlgTitle, m_pDiagram);
             pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
             pDlg->adjustSize();
             pDlg->show();

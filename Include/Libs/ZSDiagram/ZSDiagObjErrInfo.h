@@ -50,8 +50,6 @@ public: // ctors and dtor
         const QString& i_strObjName,
         ELayoutPos     i_layoutPos );
     virtual ~CDiagObjErrInfo();
-public: // must overridables of base class CDiagObj
-    virtual QString className() { return ClassName(); }
 public: // instance methods
     void setErrResultInfo( const ZS::System::SErrResultInfo& i_errResultInfo );
     ZS::System::SErrResultInfo getErrResultInfo() const;
@@ -69,8 +67,8 @@ public: // instance methods
     int getMarginLeft() const;
     void setMarginRight( int i_iMargin );
     int getMarginRight() const;
-    void setTextDirection( ETextDirection i_textDirection );
-    ETextDirection getTextDirection() const;
+    void setTextOrientation( ETextOrientation i_textOrientation );
+    ETextOrientation getTextOrientation() const;
     QString getText() const;
 public: // overridables of base class CDiagObj
     virtual QSize sizeHint();
@@ -88,18 +86,18 @@ private: // assignment operator not allowed
 protected:  // instance members
     ZS::System::SErrResultInfo m_errResultInfoCurr;
     ZS::System::SErrResultInfo m_errResultInfoPrev;
-    QTimer*        m_pTimer;
-    int            m_ariTimeout_ms[ZS::System::EResultSeverityCount];
-    QColor         m_arcolText[ZS::System::EResultSeverityCount];
-    QFont          m_arfntText[ZS::System::EResultSeverityCount];
-    int            m_iMarginTop;
-    int            m_iMarginBottom;
-    int            m_iMarginLeft;
-    int            m_iMarginRight;
-    ETextDirection m_textDirection;
-    QString        m_strText;
-    QRect          m_rectTextCurr;
-    QRect          m_rectTextPrev;
+    QTimer* m_pTimer;
+    int m_ariTimeout_ms[ZS::System::EResultSeverityCount];
+    QColor m_arcolText[ZS::System::EResultSeverityCount];
+    QFont m_arfntText[ZS::System::EResultSeverityCount];
+    int m_iMarginTop;
+    int m_iMarginBottom;
+    int m_iMarginLeft;
+    int m_iMarginRight;
+    ETextOrientation m_textOrientation;
+    QString m_strText;
+    QRect m_rectTextCurr;
+    QRect m_rectTextPrev;
 
 }; // class CDiagObjErrInfo
 

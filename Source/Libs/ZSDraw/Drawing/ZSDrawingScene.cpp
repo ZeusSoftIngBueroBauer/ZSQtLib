@@ -461,11 +461,11 @@ SErrResultInfo CDrawingScene::load( const QString& i_strFileName )
                                     }
                                 }
                                 if (!xmlStreamReader.hasError()) {
-                                    CEnumDirection direction = getDirection(
+                                    CEnumOrientation orientation = getOrientation(
                                         xmlStreamReader, xmlStreamAttrs, strElemName,
                                         c_strXmlAttrPaperOrientation, false);
-                                    if (!xmlStreamReader.hasError() && direction.isValid()) {
-                                        drawingSize.setNormedPaperOrientation(direction);
+                                    if (!xmlStreamReader.hasError() && orientation.isValid()) {
+                                        drawingSize.setNormedPaperOrientation(orientation);
                                     }
                                 }
                             }
@@ -6053,16 +6053,16 @@ CEnumNormedPaperSize CDrawingScene::getNormedPaperSize(
 }
 
 //------------------------------------------------------------------------------
-CEnumDirection CDrawingScene::getDirection(
+CEnumOrientation CDrawingScene::getOrientation(
     QXmlStreamReader& i_xmlStreamReader,
     QXmlStreamAttributes& i_xmlStreamAttrs,
     const QString& i_strElemName,
     const QString& i_strAttrName,
     bool i_bAttrIsMandatory,
-    const CEnumDirection& i_eDefaultVal ) const
+    const CEnumOrientation& i_eDefaultVal ) const
 //------------------------------------------------------------------------------
 {
-    CEnumDirection direction = i_eDefaultVal;
+    CEnumOrientation orientation = i_eDefaultVal;
     if( !i_xmlStreamAttrs.hasAttribute(i_strAttrName) ) {
         if (i_bAttrIsMandatory) {
             raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
@@ -6071,15 +6071,15 @@ CEnumDirection CDrawingScene::getDirection(
     else {
         QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
         bool bOk = true;
-        CEnumDirection eVal = CEnumDirection::fromString(strAttrVal, &bOk);
+        CEnumOrientation eVal = CEnumOrientation::fromString(strAttrVal, &bOk);
         if (bOk) {
-            direction = eVal;
+            orientation = eVal;
         } else {
             raiseErrorAttributeOutOfRange(
                 i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
         }
     }
-    return direction;
+    return orientation;
 }
 
 //------------------------------------------------------------------------------

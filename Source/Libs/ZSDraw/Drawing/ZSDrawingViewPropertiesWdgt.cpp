@@ -252,8 +252,8 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     // <Section> Resolution
     //-------------------------
 
-    double fXResolution_pxpi = Units.Length.pxpi(EDirection::Horizontal);
-    double fYResolution_pxpi = Units.Length.pxpi(EDirection::Vertical);
+    double fXResolution_pxpi = Units.Length.pxpi(EOrientation::Horizontal);
+    double fYResolution_pxpi = Units.Length.pxpi(EOrientation::Vertical);
     // (1 Inch = 2.54cm = 25.4 mm)
     double fXResolution_pxpmm = fXResolution_pxpi/25.4;
     double fYResolution_pxpmm = fYResolution_pxpi/25.4;
@@ -1832,18 +1832,15 @@ void CWdgtDrawingViewProperties::setNormedPaperSize( const CEnumNormedPaperSize&
             // Only updated for the sake of clarification. But we keep the current
             // setting for the orientation so that it can be restored when switching back
             // to a normed paper size.
-            CEnumDirection eDirection(EDirection::Undefined);
-            m_pCmbImageMetricNormedPaperOrientation->addItem(eDirection.toString(EEnumEntryAliasStrText));
+            m_pCmbImageMetricNormedPaperOrientation->addItem("-");
         }
         else {
-            for( CEnumDirection eDirection = 0; eDirection < CEnumDirection::count(); ++eDirection ) {
-                if( eDirection != EDirection::Undefined) {
-                    m_pCmbImageMetricNormedPaperOrientation->addItem(
-                        eDirection.toString(EEnumEntryAliasStrText));
-                }
+            for( CEnumOrientation eOrientation = 0; eOrientation < CEnumOrientation::count(); ++eOrientation ) {
+                m_pCmbImageMetricNormedPaperOrientation->addItem(
+                    eOrientation.toString(EEnumEntryAliasStrText));
             }
-            CEnumDirection eDirection = m_drawingSize.normedPaperOrientation();
-            m_pCmbImageMetricNormedPaperOrientation->setCurrentText(eDirection.toString());
+            CEnumOrientation eOrientation = m_drawingSize.normedPaperOrientation();
+            m_pCmbImageMetricNormedPaperOrientation->setCurrentText(eOrientation.toString());
             m_pEdtImageMetricWidth->setValue(m_drawingSize.metricImageWidth().getVal());
             m_pEdtImageMetricHeight->setValue(m_drawingSize.metricImageHeight().getVal());
             updateImageSizeInPixels();
@@ -1853,12 +1850,12 @@ void CWdgtDrawingViewProperties::setNormedPaperSize( const CEnumNormedPaperSize&
 }
 
 //------------------------------------------------------------------------------
-void CWdgtDrawingViewProperties::setNormedPaperOrientation( const CEnumDirection& i_eDirection )
+void CWdgtDrawingViewProperties::setNormedPaperOrientation( const CEnumOrientation& i_eOrientation )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
-        strMthInArgs = i_eDirection.toString();
+        strMthInArgs = i_eOrientation.toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -1866,9 +1863,9 @@ void CWdgtDrawingViewProperties::setNormedPaperOrientation( const CEnumDirection
         /* strMethod    */ "setNormedPaperOrientation",
         /* strAddInfo   */ strMthInArgs );
 
-    if( m_drawingSize.normedPaperOrientation() != i_eDirection ) {
+    if( m_drawingSize.normedPaperOrientation() != i_eOrientation ) {
         CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
-        m_drawingSize.setNormedPaperOrientation(i_eDirection);
+        m_drawingSize.setNormedPaperOrientation(i_eOrientation);
         // Setting values according to orientation makes only sense for normed paper sizes.
         // For user defined paper sizes there is no orientation. The width might be
         // greater than the height or vice versa. The orientation will be stored if later
@@ -2321,20 +2318,18 @@ void CWdgtDrawingViewProperties::updatePaperFormat()
     CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
 
     CEnumNormedPaperSize ePaperSize = m_drawingSize.normedPaperSize();
-    CEnumDirection eDirection = m_drawingSize.normedPaperOrientation();
+    CEnumOrientation eOrientation = m_drawingSize.normedPaperOrientation();
 
     if( ePaperSize != ENormedPaperSize::Undefined ) {
         m_pCmbImageMetricNormedPaperSizes->setCurrentText(ePaperSize.toString(EEnumEntryAliasStrSymbol));
         m_pLblImageMetricNormedPaperOrientation->setVisible(true);
         m_pCmbImageMetricNormedPaperOrientation->setVisible(true);
         m_pCmbImageMetricNormedPaperOrientation->clear();
-        for( CEnumDirection eDirection = 0; eDirection < CEnumDirection::count(); ++eDirection ) {
-            if( eDirection != EDirection::Undefined) {
-                m_pCmbImageMetricNormedPaperOrientation->addItem(
-                    eDirection.toString(EEnumEntryAliasStrText));
-            }
+        for( CEnumOrientation eOrientation = 0; eOrientation < CEnumOrientation::count(); ++eOrientation ) {
+            m_pCmbImageMetricNormedPaperOrientation->addItem(
+                eOrientation.toString(EEnumEntryAliasStrText));
         }
-        m_pCmbImageMetricNormedPaperOrientation->setCurrentText(eDirection.toString());
+        m_pCmbImageMetricNormedPaperOrientation->setCurrentText(eOrientation.toString());
     }
     else {
         m_pCmbImageMetricNormedPaperSizes->setCurrentText(ePaperSize.toString(EEnumEntryAliasStrText));

@@ -559,6 +559,9 @@ void CWdgtEditPhysVal::setResolution( double i_fVal )
             if( iPosDecimalPoint >= 0 ) {
                 iDecimals = strVal.length() - iPosDecimalPoint - 1;
             }
+            else {
+                iDecimals = 0;
+            }
         }
         fStep = m_physValRes.getVal();
     }

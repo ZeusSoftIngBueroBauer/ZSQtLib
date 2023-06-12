@@ -129,7 +129,7 @@ protected: // instance methods
     void setDimensionUnit( const CEnumDrawingDimensionUnit& i_eDimensionUnit );
     void setMetricUnit( const ZS::PhysVal::CUnit& i_metricUnit );
     void setNormedPaperSize( const CEnumNormedPaperSize& i_ePaperSize );
-    void setNormedPaperOrientation( const ZS::System::CEnumDirection& i_eDirection );
+    void setNormedPaperOrientation( const ZS::System::CEnumOrientation& i_eOrientation );
     void setScaleFactor( int i_iDividend, int i_iDivisor );
     void setImageSize( const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight );
 protected: // instance methods

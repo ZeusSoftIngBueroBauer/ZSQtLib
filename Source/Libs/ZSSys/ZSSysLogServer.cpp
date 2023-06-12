@@ -1836,15 +1836,10 @@ CLogger* CLogServer::getDefaultLogger()
     {
         m_pLogger = m_pLoggersIdxTree->getLogger(objectName());
 
-        if( !QObject::connect(
-            /* pObjSender   */ m_pLogger,
-            /* szSignal     */ SIGNAL( aboutToBeDestroyed(QObject*) ),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT( onDefaultLoggerAboutToBeDestroyed(QObject*) ),
-            /* cnctType     */ Qt::DirectConnection ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
+        QObject::connect(
+            m_pLogger, &CLogger::aboutToBeDestroyed,
+            this, &CLogServer::onDefaultLoggerAboutToBeDestroyed,
+            Qt::DirectConnection);
     }
     return m_pLogger;
 }

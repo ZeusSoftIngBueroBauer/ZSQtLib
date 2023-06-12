@@ -24,53 +24,44 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSDiagObjCurve_h
-#define ZSDiagObjCurve_h
+#ifndef ZSDiagram_PropertiesWdgt_h
+#define ZSDiagram_PropertiesWdgt_h
 
-#include "ZSDiagram/ZSDiagObj.h"
-
-#include <QtGui/qcolor.h>
-
-class QPolygon;
+#include "ZSDiagramGUI/ZSDiagramItemPropertiesBaseWdgt.h"
 
 namespace ZS
 {
 namespace Diagram
 {
+namespace GUI
+{
 //******************************************************************************
-class ZSDIAGRAMDLL_API CDiagObjCurve : public CDiagObj
+class ZSDIAGRAMGUIDLL_API CWdgtDiagramProperties : public CWdgtDiagramItemPropertiesBase
 //******************************************************************************
 {
+    Q_OBJECT
 public: // class methods
-    static QString ClassName() { return "CDiagObjCurve"; }
+    static QString ClassName() { return "CWdgtDiagramProperties"; }
 public: // ctors and dtor
-    CDiagObjCurve(
-        const QString& i_strObjName,
-        CDiagTrace*    i_pDiagTrace );
-    virtual ~CDiagObjCurve();
-public: // instance methods
-    void setCol( const QColor&  i_col );
-    QColor getCol() const;
-public: // must overridables of base class CDiagObj
-    virtual CDiagObj* clone( CDataDiagram* i_pDiagramTrg ) const;
-    virtual void update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDevice = nullptr );
-private: // copy ctor not allowed
-    CDiagObjCurve( const CDiagObjCurve& );
-private: // assignment operator not allowed
-    void operator=( const CDiagObjCurve& );
-protected:  // instance members
-    QColor m_col;
-    #if QT_VERSION >= 0x040100
-    QPolygon* m_pPtArr;
-    #else
-    QPointArray* m_pPtArr;
-    #endif
-    bool m_bUpdWidget;
+    CWdgtDiagramProperties(
+        CWdgtDiagram* i_pDiagram,
+        ZS::System::EMode i_mode = ZS::System::EMode::View,
+        QWidget* i_pWdgtParent = nullptr);
+    virtual ~CWdgtDiagramProperties();
+protected: // overridable init methods of base class CWdgtDiagramItemPropertiesBase
+    void setMode(ZS::System::EMode i_mode) override;
+public: // overridables of base class CWdgtDiagramItemPropertiesBase
+    void setDiagItemObjName(const QString& i_strObjName) override;
+protected slots: // overridables of base class CWdgtDiagramItemPropertiesBase
+    void onDiagramAboutToBeDestroyed(const QString& i_strObjName) override;
+protected: // instance members
 
-}; // class CDiagObjCurve
+}; // class CWdgtDiagramProperties
+
+} // namespace GUI
 
 } // namespace Diagram
 
 } // namespace ZS
 
-#endif // #ifndef ZSDiagObjCurve_h
+#endif // #ifndef ZSDiagram_PropertiesWdgt_h

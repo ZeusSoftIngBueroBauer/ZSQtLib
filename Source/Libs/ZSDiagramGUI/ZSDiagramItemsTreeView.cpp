@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include "ZSDiagramGUI/ZSDiagramObjsTreeView.h"
-#include "ZSDiagramGUI/ZSDiagramObjsTreeModel.h"
+#include "ZSDiagramGUI/ZSDiagramItemsTreeView.h"
+#include "ZSDiagramGUI/ZSDiagramItemsTreeModel.h"
 #include "ZSDiagram/ZSDiagramProcWdgt.h"
 #include "ZSSysGUI/ZSSysGUIAux.h"
 #include "ZSSysGUI/ZSSysErrDlg.h"
@@ -141,7 +141,7 @@ QWidget* CDelegateDiagramObjsTreeView::createEditor(
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strMthInArgs = "ModelIdx {" + CModelDiagramObjs::modelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelDiagramItems::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
@@ -154,7 +154,7 @@ QWidget* CDelegateDiagramObjsTreeView::createEditor(
 
     CDelegateDiagramObjsTreeView* pVThis = const_cast<CDelegateDiagramObjsTreeView*>(this);
 
-    if( i_modelIdx.column() == CModelDiagramObjs::EColumnDiagObjName )
+    if( i_modelIdx.column() == CModelDiagramItems::EColumnDiagObjName )
     {
         pWdgtEditor = QStyledItemDelegate::createEditor(i_pWdgtParent, i_option, i_modelIdx);
 
@@ -190,7 +190,7 @@ void CDelegateDiagramObjsTreeView::setEditorData(
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strMthInArgs = "ModelIdx {" + CModelDiagramObjs::modelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelDiagramItems::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
@@ -215,7 +215,7 @@ void CDelegateDiagramObjsTreeView::setModelData(
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "Model: " + QString(i_pModel == nullptr ? "nullptr" : i_pModel->objectName());
-        strMthInArgs += ", ModelIdx {" + CModelDiagramObjs::modelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs += ", ModelIdx {" + CModelDiagramItems::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
@@ -229,7 +229,7 @@ void CDelegateDiagramObjsTreeView::setModelData(
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange, "i_pModel == nullptr");
     }
 
-    if( i_modelIdx.column() == CModelDiagramObjs::EColumnDiagObjName )
+    if( i_modelIdx.column() == CModelDiagramItems::EColumnDiagObjName )
     {
         CDelegateDiagramObjsTreeView* pVThis = const_cast<CDelegateDiagramObjsTreeView*>(this);
 
@@ -239,7 +239,7 @@ void CDelegateDiagramObjsTreeView::setModelData(
         {
             //QString strName = pVThis->m_pEdtName->text();
 
-            //CModelDiagramObjs* pModel = dynamic_cast<CModelDiagramObjs*>(i_pModel);
+            //CModelDiagramItems* pModel = dynamic_cast<CModelDiagramItems*>(i_pModel);
 
             //SErrResultInfo errResultInfo = pModel->canSetData(i_modelIdx, strName, Qt::EditRole);
 
@@ -269,7 +269,7 @@ void CDelegateDiagramObjsTreeView::updateEditorGeometry(
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strMthInArgs = "ModelIdx {" + CModelDiagramObjs::modelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelDiagramItems::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
@@ -305,7 +305,7 @@ void CDelegateDiagramObjsTreeView::onEdtNameDestroyed( QObject* /*i_pWdgtEditor*
 
 
 /*******************************************************************************
-class CTreeViewDiagramObjs : public QTreeView
+class CTreeViewDiagramItems : public QTreeView
 *******************************************************************************/
 
 /*==============================================================================
@@ -313,7 +313,7 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CTreeViewDiagramObjs::CTreeViewDiagramObjs(CWdgtDiagram* i_pDiagram, QWidget* i_pWdgtParent) :
+CTreeViewDiagramItems::CTreeViewDiagramItems(CWdgtDiagram* i_pDiagram, QWidget* i_pWdgtParent) :
 //------------------------------------------------------------------------------
     QTreeView(i_pWdgtParent),
     m_pDiagram(i_pDiagram),
@@ -348,16 +348,16 @@ CTreeViewDiagramObjs::CTreeViewDiagramObjs(CWdgtDiagram* i_pDiagram, QWidget* i_
         /* strMethod          */ "ctor",
         /* strMethodInArgs    */ strMthInArgs );
 
-    m_pModel = new CModelDiagramObjs(m_pDiagram);
+    m_pModel = new CModelDiagramItems(m_pDiagram);
     setModel(m_pModel);
 
     //m_pDelegate = new CDelegateDiagramObjsTreeView(this);
 
     //setItemDelegate(m_pDelegate);
 
-    for( int idxClm = 0; idxClm < CModelDiagramObjs::EColumnCount; ++idxClm ) {
-        if (idxClm != CModelDiagramObjs::EColumnDiagObjClassName
-         && idxClm != CModelDiagramObjs::EColumnDiagObjName) {
+    for( int idxClm = 0; idxClm < CModelDiagramItems::EColumnCount; ++idxClm ) {
+        if (idxClm != CModelDiagramItems::EColumnDiagObjClassName
+         && idxClm != CModelDiagramItems::EColumnDiagObjName) {
             hideColumn(idxClm);
         }
     }
@@ -384,7 +384,7 @@ CTreeViewDiagramObjs::CTreeViewDiagramObjs(CWdgtDiagram* i_pDiagram, QWidget* i_
 
     QObject::connect(
         m_pActionDiagramObjExpand, &QAction::triggered,
-        this, &CTreeViewDiagramObjs::onActionDiagramObjExpandTriggered );
+        this, &CTreeViewDiagramItems::onActionDiagramObjExpandTriggered );
 
     QPixmap pxmCollapseAll(":/ZS/TreeView/TreeViewCollapseAll.bmp");
     pxmCollapseAll.setMask(pxmCollapseAll.createHeuristicMask());
@@ -394,7 +394,7 @@ CTreeViewDiagramObjs::CTreeViewDiagramObjs(CWdgtDiagram* i_pDiagram, QWidget* i_
 
     QObject::connect(
         m_pActionDiagramObjCollapse, &QAction::triggered,
-        this, &CTreeViewDiagramObjs::onActionDiagramObjCollapseTriggered );
+        this, &CTreeViewDiagramItems::onActionDiagramObjCollapseTriggered );
 
     m_pMenuDiagramObjContext->addSeparator();
 
@@ -403,7 +403,7 @@ CTreeViewDiagramObjs::CTreeViewDiagramObjs(CWdgtDiagram* i_pDiagram, QWidget* i_
 
     QObject::connect(
         m_pActionDiagramObjDelete, &QAction::triggered,
-        this, &CTreeViewDiagramObjs::onActionDiagramObjDeleteTriggered );
+        this, &CTreeViewDiagramItems::onActionDiagramObjDeleteTriggered );
 
     m_pMenuDiagramObjContext->addSeparator();
 
@@ -411,16 +411,16 @@ CTreeViewDiagramObjs::CTreeViewDiagramObjs(CWdgtDiagram* i_pDiagram, QWidget* i_
     //------------------------------------
 
     QObject::connect(
-        this, &CTreeViewDiagramObjs::collapsed,
-        this, &CTreeViewDiagramObjs::onCollapsed );
+        this, &CTreeViewDiagramItems::collapsed,
+        this, &CTreeViewDiagramItems::onCollapsed );
     QObject::connect(
-        this, &CTreeViewDiagramObjs::expanded,
-        this, &CTreeViewDiagramObjs::onExpanded );
+        this, &CTreeViewDiagramItems::expanded,
+        this, &CTreeViewDiagramItems::onExpanded );
 
 } // ctor
 
 //------------------------------------------------------------------------------
-CTreeViewDiagramObjs::~CTreeViewDiagramObjs()
+CTreeViewDiagramItems::~CTreeViewDiagramItems()
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -465,7 +465,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTreeViewDiagramObjs::setSilentlyExecuteDeleteRequests( bool i_bExecuteSilently )
+void CTreeViewDiagramItems::setSilentlyExecuteDeleteRequests( bool i_bExecuteSilently )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -490,7 +490,7 @@ public: // overridable slots of base class QTreeView
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTreeViewDiagramObjs::expandAll()
+void CTreeViewDiagramItems::expandAll()
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -512,7 +512,7 @@ void CTreeViewDiagramObjs::expandAll()
 } // expandAll
 
 //------------------------------------------------------------------------------
-void CTreeViewDiagramObjs::collapseAll()
+void CTreeViewDiagramItems::collapseAll()
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -536,14 +536,14 @@ public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTreeViewDiagramObjs::expandRecursive( const QModelIndex& i_modelIdx )
+void CTreeViewDiagramItems::expandRecursive( const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strMthInArgs = "ModelIdx {" + CModelDiagramObjs::modelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelDiagramItems::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
@@ -581,14 +581,14 @@ void CTreeViewDiagramObjs::expandRecursive( const QModelIndex& i_modelIdx )
 } // expandRecursive
 
 //------------------------------------------------------------------------------
-void CTreeViewDiagramObjs::collapseRecursive( const QModelIndex& i_modelIdx )
+void CTreeViewDiagramItems::collapseRecursive( const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strMthInArgs = "ModelIdx {" + CModelDiagramObjs::modelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelDiagramItems::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
@@ -629,14 +629,14 @@ public: // slots (hiding not overridable slots with same name in QTreeView)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTreeViewDiagramObjs::expand( const QModelIndex& i_modelIdx )
+void CTreeViewDiagramItems::expand( const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strMthInArgs = "ModelIdx {" + CModelDiagramObjs::modelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelDiagramItems::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
@@ -660,14 +660,14 @@ void CTreeViewDiagramObjs::expand( const QModelIndex& i_modelIdx )
 } // expand
 
 //------------------------------------------------------------------------------
-void CTreeViewDiagramObjs::collapse( const QModelIndex& i_modelIdx )
+void CTreeViewDiagramItems::collapse( const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strMthInArgs = "ModelIdx {" + CModelDiagramObjs::modelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelDiagramItems::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
@@ -695,14 +695,14 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTreeViewDiagramObjs::onCollapsed( const QModelIndex& i_modelIdx )
+void CTreeViewDiagramItems::onCollapsed( const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strMthInArgs = "ModelIdx {" + CModelDiagramObjs::modelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelDiagramItems::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
@@ -727,14 +727,14 @@ void CTreeViewDiagramObjs::onCollapsed( const QModelIndex& i_modelIdx )
 } // onCollapsed
 
 //------------------------------------------------------------------------------
-void CTreeViewDiagramObjs::onExpanded( const QModelIndex& i_modelIdx )
+void CTreeViewDiagramItems::onExpanded( const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strMthInArgs = "ModelIdx {" + CModelDiagramObjs::modelIdx2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + CModelDiagramItems::modelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
@@ -769,7 +769,7 @@ protected: // overridables of base class QObject
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool CTreeViewDiagramObjs::event( QEvent* i_pEv )
+bool CTreeViewDiagramItems::event( QEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -793,7 +793,7 @@ protected: // overridables of base class QTreeView
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTreeViewDiagramObjs::keyPressEvent( QKeyEvent* i_pEv )
+void CTreeViewDiagramItems::keyPressEvent( QKeyEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -900,7 +900,7 @@ protected: // overridables of base class QTreeView
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTreeViewDiagramObjs::mousePressEvent( QMouseEvent* i_pEv )
+void CTreeViewDiagramItems::mousePressEvent( QMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -979,7 +979,7 @@ void CTreeViewDiagramObjs::mousePressEvent( QMouseEvent* i_pEv )
 } // mousePressEvent
 
 //------------------------------------------------------------------------------
-void CTreeViewDiagramObjs::mouseReleaseEvent( QMouseEvent* i_pEv )
+void CTreeViewDiagramItems::mouseReleaseEvent( QMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1004,7 +1004,7 @@ void CTreeViewDiagramObjs::mouseReleaseEvent( QMouseEvent* i_pEv )
     {
         if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug ) )
         {
-            strAddTrcInfo = "ModelIdxReleased {" + CModelDiagramObjs::modelIdx2Str(m_modelIdxSelectedOnMouseReleaseEvent) + "}";
+            strAddTrcInfo = "ModelIdxReleased {" + CModelDiagramItems::modelIdx2Str(m_modelIdxSelectedOnMouseReleaseEvent) + "}";
             mthTracer.trace(strAddTrcInfo);
         }
     }
@@ -1017,7 +1017,7 @@ void CTreeViewDiagramObjs::mouseReleaseEvent( QMouseEvent* i_pEv )
 } // mouseReleaseEvent
 
 //------------------------------------------------------------------------------
-void CTreeViewDiagramObjs::mouseDoubleClickEvent( QMouseEvent* i_pEv )
+void CTreeViewDiagramItems::mouseDoubleClickEvent( QMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1104,7 +1104,7 @@ void CTreeViewDiagramObjs::mouseDoubleClickEvent( QMouseEvent* i_pEv )
 } // mouseDoubleClickEvent
 
 //------------------------------------------------------------------------------
-void CTreeViewDiagramObjs::mouseMoveEvent( QMouseEvent* i_pEv )
+void CTreeViewDiagramItems::mouseMoveEvent( QMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1133,7 +1133,7 @@ protected: // overridables of base class QTreeView
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTreeViewDiagramObjs::selectionChanged(
+void CTreeViewDiagramItems::selectionChanged(
     const QItemSelection& i_selected,
     const QItemSelection& i_deselected )
 //------------------------------------------------------------------------------
@@ -1149,7 +1149,7 @@ void CTreeViewDiagramObjs::selectionChanged(
             for( const auto& modelIdx : i_selected.indexes() )
             {
                 if( !strMthInArgs.endsWith("[") ) strMthInArgs += ", ";
-                strMthInArgs += CModelDiagramObjs::modelIdx2Str(modelIdx);
+                strMthInArgs += CModelDiagramItems::modelIdx2Str(modelIdx);
             }
             strMthInArgs += "]";
         }
@@ -1160,7 +1160,7 @@ void CTreeViewDiagramObjs::selectionChanged(
             for( const auto& modelIdx : i_deselected.indexes() )
             {
                 if( !strMthInArgs.endsWith("[") ) strMthInArgs += ", ";
-                strMthInArgs += CModelDiagramObjs::modelIdx2Str(modelIdx);
+                strMthInArgs += CModelDiagramItems::modelIdx2Str(modelIdx);
             }
             strMthInArgs += "]";
         }
@@ -1270,7 +1270,7 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTreeViewDiagramObjs::onActionDiagramObjExpandTriggered( bool i_bChecked )
+void CTreeViewDiagramItems::onActionDiagramObjExpandTriggered( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1290,7 +1290,7 @@ void CTreeViewDiagramObjs::onActionDiagramObjExpandTriggered( bool i_bChecked )
     {
         expandRecursive(m_modelIdxSelectedOnMousePressEvent);
 
-        for( int idxClm = 0; idxClm < CModelDiagramObjs::EColumnCount; idxClm++ )
+        for( int idxClm = 0; idxClm < CModelDiagramItems::EColumnCount; idxClm++ )
         {
             resizeColumnToContents(idxClm);
         }
@@ -1298,7 +1298,7 @@ void CTreeViewDiagramObjs::onActionDiagramObjExpandTriggered( bool i_bChecked )
 } // onActionDiagramObjExpandTriggered
 
 //------------------------------------------------------------------------------
-void CTreeViewDiagramObjs::onActionDiagramObjCollapseTriggered( bool i_bChecked )
+void CTreeViewDiagramItems::onActionDiagramObjCollapseTriggered( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1321,7 +1321,7 @@ void CTreeViewDiagramObjs::onActionDiagramObjCollapseTriggered( bool i_bChecked 
 } // onActionDiagramObjCollapseTriggered
 
 //------------------------------------------------------------------------------
-void CTreeViewDiagramObjs::onActionDiagramObjDeleteTriggered( bool i_bChecked )
+void CTreeViewDiagramItems::onActionDiagramObjDeleteTriggered( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1342,7 +1342,7 @@ void CTreeViewDiagramObjs::onActionDiagramObjDeleteTriggered( bool i_bChecked )
     //{
     //    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     //    {
-    //        strAddTrcInfo = "ModelIdxSelected {" + CModelDiagramObjs::modelIdx2Str(m_modelIdxSelectedOnMousePressEvent) + "}";
+    //        strAddTrcInfo = "ModelIdxSelected {" + CModelDiagramItems::modelIdx2Str(m_modelIdxSelectedOnMousePressEvent) + "}";
     //        mthTracer.trace(strAddTrcInfo);
     //    }
 

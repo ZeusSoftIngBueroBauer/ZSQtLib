@@ -24,18 +24,16 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSDiagram_ObjsPropertiesWdgtStack_h
-#define ZSDiagram_ObjsPropertiesWdgtStack_h
+#ifndef ZSDiagram_ItemsPropertiesWdgtStack_h
+#define ZSDiagram_ItemsPropertiesWdgtStack_h
 
-#include <QtCore/qglobal.h>
+#include "ZSDiagramGUI/ZSDiagramGUIDllMain.h"
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qwidget.h>
 #else
 #include <QtWidgets/qwidget.h>
 #endif
-
-#include "ZSDiagramGUI/ZSDiagramGUIDllMain.h"
 
 class QLineEdit;
 class QStackedWidget;
@@ -56,10 +54,10 @@ class CWdgtDiagram;
 
 namespace GUI
 {
-class CWdgtDiagramObjPropertiesAbstract;
+class CWdgtDiagramItemPropertiesBase;
 
 //******************************************************************************
-class ZSDIAGRAMGUIDLL_API CWdgtStackDiagramObjsProperties : public QWidget
+class ZSDIAGRAMGUIDLL_API CWdgtStackDiagramItemsProperties : public QWidget
 //******************************************************************************
 {
     Q_OBJECT
@@ -71,23 +69,25 @@ protected: // type definitions and constants
     }   EObjType;
 public: // class methods
     static QString NameSpace() { return "ZS::Diagram::GUI"; }
-    static QString ClassName() { return "CWdgtStackDiagramObjsProperties"; }
+    static QString ClassName() { return "CWdgtStackDiagramItemsProperties"; }
 public: // ctors and dtor
-    CWdgtStackDiagramObjsProperties(
+    CWdgtStackDiagramItemsProperties(
         CWdgtDiagram* i_pDiagram,
         QWidget* i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wflags = Qt::WindowFlags() );
-    virtual ~CWdgtStackDiagramObjsProperties();
+    virtual ~CWdgtStackDiagramItemsProperties();
 public: // instance methods
     void setCurrentDiagObj( const QString& i_strClassName, const QString& i_strObjName );
-    QString currentDiagObjClassName() const;
-    QString currentDiagObjName() const;
+    QString currentDiagItemClassName() const;
+    QString currentDiagItemObjName() const;
 protected slots: // overridables
     virtual void onDiagramAboutToBeDestroyed();
+protected: // auxiliary instance methods
+    void createDiagItemPropertiesWdgts();
 protected: // instance members
     CWdgtDiagram* m_pDiagram;
-    QString m_strCurrentDiagObjClassName;
-    QString m_strCurrentDiagObjName;
+    QString m_strCurrentDiagItemClassName;
+    QString m_strCurrentDiagItemObjName;
     QVBoxLayout* m_pLyt;
     QHBoxLayout* m_pLytHeadLine;
     QLineEdit* m_pEdtPath;
@@ -95,7 +95,7 @@ protected: // instance members
     /*!< Hash with widget pointers.
          Key is class name of diagram object. Class names don't just include the
          classes derived from CDiagObj but also CWdgtDiagram, CDiagScale and CDiagTrace. */
-    QHash<QString, CWdgtDiagramObjPropertiesAbstract*> m_hshpWdgtsObjProperties;
+    QHash<QString, CWdgtDiagramItemPropertiesBase*> m_hshpWdgtsObjProperties;
     /*!< Hash with index of properties widgets in stacked widget.
          Key is class name of diagram object. Class names don't just include the
          classes derived from CDiagObj but also CDiagScale and CDiagTrace. */
@@ -103,7 +103,7 @@ protected: // instance members
     /*!< Trace admin object to control trace outputs of the class. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
-}; // class ZSDiagram_ObjsPropertiesWdgtStack_h
+}; // class CWdgtStackDiagramItemsProperties
 
 } // namespace GUI
 
@@ -111,4 +111,4 @@ protected: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZSDraw_GraphObjsPropertiesWdgtStack_h
+#endif // #ifndef ZSDiagram_ItemsPropertiesWdgtStack_h

@@ -515,36 +515,34 @@ template<> const QVector<SEnumEntry> CEnum<EIODir>::s_arEnumEntries =
 
 
 /*==============================================================================
-Enum EDirection
+Enum EOrientation
 ==============================================================================*/
 
 /*! @cond */
-template<> QMutex ZS::System::CEnum<EDirection>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<EDirection>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex ZS::System::CEnum<EOrientation>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> ZS::System::CEnum<EOrientation>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<EDirection>::s_arEnumEntries;
+const QVector<SEnumEntry> CEnum<EOrientation>::s_arEnumEntries;
 //------------------------------------------------------------------------------
-class CInitEnumDirection
+class CInitEnumOrientation
 {
 public: // ctor
-    CInitEnumDirection() {
-        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnum<EDirection>::s_arEnumEntries);
-        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(EDirection::Horizontal), "Horizontal", "H", "Horizontal" ) );
-        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(EDirection::Vertical),   "Vertical",   "V", "Vertical"   ) );
-        pVEnumEntries->append( /* 2 */ SEnumEntry( static_cast<int>(EDirection::Undefined),  "Undefined",  "?", "---"        ) );
+    CInitEnumOrientation() {
+        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnum<EOrientation>::s_arEnumEntries);
+        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(EOrientation::Horizontal), "Horizontal", "H", "Horizontal" ) );
+        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(EOrientation::Vertical),   "Vertical",   "V", "Vertical"   ) );
     }
 };
-static CInitEnumDirection s_initEnumDirection;
+static CInitEnumOrientation s_initEnumOrientation;
 #else // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> CEnum<EDirection>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<EOrientation>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                       // Enumerator,                            Name,      Symbol, Text
-    /* 0 */ SEnumEntry( static_cast<int>(EDirection::Horizontal), "Horizontal", "H", "Horizontal" ),
-    /* 1 */ SEnumEntry( static_cast<int>(EDirection::Vertical),   "Vertical",   "V", "Vertical"   ),
-    /* 2 */ SEnumEntry( static_cast<int>(EDirection::Undefined),  "Undefined",  "?", "---"        )
+    /* 0 */ SEnumEntry( static_cast<int>(EOrientation::Horizontal), "Horizontal", "H", "Horizontal" ),
+    /* 1 */ SEnumEntry( static_cast<int>(EOrientation::Vertical),   "Vertical",   "V", "Vertical"   )
 };
 #endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 /*! @endcond */

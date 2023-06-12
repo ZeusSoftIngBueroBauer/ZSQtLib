@@ -99,11 +99,9 @@ public: // ctors and dtor
         int            i_iClmCountMax,
         ELayoutPos     i_layoutPos );
     virtual ~CDiagObjTable();
-public: // must overridables of base class CDiagObj
-    virtual QString className() { return ClassName(); }
 public: // instance methods
-    void showGridLines( EOrientation i_orientation = EOrientationCount );
-    void hideGridLines( EOrientation i_orientation = EOrientationCount );
+    void showGridLines( const ZS::System::CEnumOrientation& i_orientation = ZS::System::CEnumOrientation() );
+    void hideGridLines( const ZS::System::CEnumOrientation& i_orientation = ZS::System::CEnumOrientation() );
     void setGridLinesColor( const QColor& i_col );
     QColor getGridLinesColor() const;
     void setTextColor( const QColor& i_col );
@@ -201,7 +199,7 @@ private: // assignment operator not allowed
     void operator=( const CDiagObjTable& );
 protected:  // instance members
     // The following table and cell properties will be set:
-    bool                             m_arbShowGridLines[EOrientationCount];
+    QVector<bool>                    m_arbShowGridLines;
     QColor                           m_colGridLines;
     QColor                           m_colText;
     QFont                            m_fnt;

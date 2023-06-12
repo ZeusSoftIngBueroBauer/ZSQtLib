@@ -49,8 +49,6 @@ public: // ctors and dtor
         const QString& i_strObjName,
         ELayoutPos     i_layoutPos );
     virtual ~CDiagObjProgressBar();
-public: // must overridables of base class CDiagObj
-    virtual QString className() { return ClassName(); }
 public: // instance methods
     void setValMin( double i_fVal );
     double getValMin() const;

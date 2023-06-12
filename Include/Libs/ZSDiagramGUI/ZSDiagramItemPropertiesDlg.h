@@ -24,12 +24,13 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSDiagram_ObjsDlg_h
-#define ZSDiagram_ObjsDlg_h
+#ifndef ZSDiagram_ItemPropertiesDlg_h
+#define ZSDiagram_ItemPropertiesDlg_h
 
 #include "ZSDiagramGUI/ZSDiagramGUIDllMain.h"
 #include "ZSSysGUI/ZSSysDialog.h"
 
+class QPushButton;
 class QHBoxLayout;
 class QVBoxLayout;
 
@@ -37,14 +38,17 @@ namespace ZS
 {
 namespace Diagram
 {
+class CDiagObj;
+class CDiagScale;
+class CDiagTrace;
 class CWdgtDiagram;
 
 namespace GUI
 {
-class CWdgtDiagramObjs;
+class CWdgtDiagramItemPropertiesBase;
 
 //******************************************************************************
-class ZSDIAGRAMGUIDLL_API CDlgDiagramObjs : public ZS::System::GUI::CDialog
+class ZSDIAGRAMGUIDLL_API CDlgDiagramItemProperties : public ZS::System::GUI::CDialog
 //******************************************************************************
 {
     Q_OBJECT
@@ -52,22 +56,28 @@ public: // class methods
     /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Diagram::GUI"; }
     /*! Returns the class name. */
-    static QString ClassName() { return "CDlgDiagramObjs"; }
+    static QString ClassName() { return "CDlgDiagramItemProperties"; }
 public: // class methods
-    static CDlgDiagramObjs* CreateInstance(
+    static CDlgDiagramItemProperties* CreateInstance(
         const QString&  i_strDlgTitle,
         CWdgtDiagram*   i_pDiagram,
+        const QString&  i_strDiagItemClassName,
+        const QString&  i_strDiagItemObjName,
         QWidget*        i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wflags = Qt::WindowFlags());
-    static CDlgDiagramObjs* GetInstance( CWdgtDiagram* i_pDiagram );
+    static CDlgDiagramItemProperties* GetInstance(
+        const QString& i_strDiagItemClassName,
+        const QString& i_strDiagItemObjName);
 protected: // ctor
-    CDlgDiagramObjs(
+    CDlgDiagramItemProperties(
         const QString&  i_strDlgTitle,
         CWdgtDiagram*   i_pDiagram,
+        const QString&  i_strDiagItemClassName,
+        const QString&  i_strDiagItemObjName,
         QWidget*        i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wFlags = Qt::WindowFlags());
 public: // dtor
-    virtual ~CDlgDiagramObjs();
+    virtual ~CDlgDiagramItemProperties();
 public: // overridables
     /*! This virtual method returns the name space of the object's class.
         This method can be reimplemented in derived classes so when invoked for the
@@ -77,12 +87,31 @@ public: // overridables
         This method can be reimplemented in derived classes so when invoked for the
         polymorphic base type the method returns the name of the derived class. */
     virtual QString className() const { return ClassName(); }
+protected slots: // instance methods
+    void onBtnOkClicked(bool i_bChecked = false);
+    void onBtnApplyClicked(bool i_bChecked = false);
+    void onBtnResetClicked(bool i_bChecked = false);
+    void onBtnCancelClicked(bool i_bChecked = false);
+protected slots:
+    void onWdgtModeChanged();
+    void onWdgtDiagItemDestroyed(QObject* i_pObj);
+    void onWdgtDiagItemObjNameChanged();
+    void onWdgtDiagItemPropertyChanged();
+protected: // auxiliary instance methods
+    CWdgtDiagramItemPropertiesBase* createDiagItemPropertiesWdgt();
 private: // instance members
     CWdgtDiagram* m_pDiagram;
+    QString m_strDiagItemClassName;
+    QString m_strDiagItemObjName;
     QVBoxLayout* m_pLyt;
-    CWdgtDiagramObjs* m_pWdgtDiagramObjs;
+    CWdgtDiagramItemPropertiesBase* m_pWdgtDiagItemProperties;
+    QHBoxLayout* m_pLytLineBtns;
+    QPushButton* m_pBtnOk;
+    QPushButton* m_pBtnApply;
+    QPushButton* m_pBtnReset;
+    QPushButton* m_pBtnCancel;
 
-}; // CDlgDiagramObjs
+}; // CDlgDiagramItemProperties
 
 } // namespace GUI
 
@@ -90,4 +119,4 @@ private: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZSDiagram_ObjsDlg_h
+#endif // #ifndef ZSDiagram_ItemPropertiesDlg_h

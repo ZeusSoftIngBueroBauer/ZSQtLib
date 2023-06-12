@@ -49,4 +49,6 @@ may result in using the software modules.
     #define ZSDIAGRAMGUIDLL_API __API_IMPORT
 #endif
 
+#include <QtCore/qglobal.h>
+
 #endif // #ifndef ZSDiagramGUI_DllMain_h

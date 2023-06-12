@@ -49,8 +49,6 @@ public: // ctors and dtor
         ELayoutPos     i_layoutPos,
         const QString& i_strAxisLabel = QString() );
     virtual ~CDiagObjAxisLabel();
-public: // must overridables of base class CDiagObj
-    virtual QString className() { return ClassName(); }
 public: // instance methods
     void setUnit( PhysVal::CUnit* i_pUnit ); // nullptr means "use best unit"
     PhysVal::CUnit* getUnit();
@@ -102,14 +100,15 @@ protected: // instance methods
     void updateWidget();
     bool intersectsDivLineLabels(
         const QRect& i_rect,
-        const CEnumDivLineLayer& i_eLayer,
-        int i_idxDivLineLabelMin,
-        int i_idxDivLineLabelMax ) const;
+        const CEnumDivLineLayer& i_eLayer = CEnumDivLineLayer(),
+        int i_idxDivLineLabelMin = -1,
+        int i_idxDivLineLabelMax = -1) const;
 protected: // auxiliary instance methods
     QRect getDiagRect() const;
     PhysVal::CUnit getAxisLabelUnit() const;
     bool isAxisLabelVisible() const;
     QRect getAxisLabelBoundingRect() const;
+    std::tuple<double, double> getAbsMinMaxDivLineVals(double i_fScaleMinVal, double i_fScaleMaxVal) const;
     bool intersectsDivLineLabelsPhysUnit(const QRect& i_rect) const;
     QString formatValue( double i_fVal, PhysVal::CUnit* i_pUnit = nullptr ) const;
 private: // copy ctor not allowed

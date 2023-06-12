@@ -24,9 +24,10 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include "ZSDiagramGUI/ZSDiagramObjsWdgt.h"
-#include "ZSDiagramGUI/ZSDiagramObjsTreeWdgt.h"
-#include "ZSDiagramGUI/ZSDiagramObjsPropertiesWdgtStack.h"
+#include "ZSDiagramGUI/ZSDiagramItemsWdgt.h"
+#include "ZSDiagramGUI/ZSDiagramItemsTreeModel.h"
+#include "ZSDiagramGUI/ZSDiagramItemsTreeWdgt.h"
+#include "ZSDiagramGUI/ZSDiagramItemsPropertiesWdgtStack.h"
 #include "ZSDiagram/ZSDiagramProcWdgt.h"
 #include "ZSSysGUI/ZSSysIdxTreeModelEntry.h"
 #include "ZSSys/ZSSysAux.h"
@@ -59,7 +60,7 @@ using namespace ZS::Diagram::GUI;
 
 
 /*******************************************************************************
-class CWdgtDiagramObjs : public QWidget
+class CWdgtDiagramItems : public QWidget
 *******************************************************************************/
 
 /*==============================================================================
@@ -67,7 +68,7 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CWdgtDiagramObjs::CWdgtDiagramObjs(
+CWdgtDiagramItems::CWdgtDiagramItems(
     CWdgtDiagram* i_pDiagram,
     QWidget* i_pWdgtParent,
     Qt::WindowFlags i_wflags ) :
@@ -109,26 +110,26 @@ CWdgtDiagramObjs::CWdgtDiagramObjs(
     // <TreeView>
     //-----------
 
-    m_pWdgtTreeView = new CWdgtDiagramObjsTree(m_pDiagram);
+    m_pWdgtTreeView = new CWdgtDiagramItemsTree(m_pDiagram);
     m_pWdgtTreeView->setMinimumWidth(180);
     m_pSplitter->addWidget(m_pWdgtTreeView);
     m_pSplitter->setChildrenCollapsible(false);
 
     QObject::connect(
-        m_pWdgtTreeView, &CWdgtDiagramObjsTree::currentRowChanged,
-        this, &CWdgtDiagramObjs::onWdgtTreeViewCurrentRowChanged );
+        m_pWdgtTreeView, &CWdgtDiagramItemsTree::currentRowChanged,
+        this, &CWdgtDiagramItems::onWdgtTreeViewCurrentRowChanged );
 
     // <NodeContent>
     //--------------
 
-    m_pWdgtStackObjsProperties = new CWdgtStackDiagramObjsProperties(m_pDiagram);
+    m_pWdgtStackObjsProperties = new CWdgtStackDiagramItemsProperties(m_pDiagram);
     m_pWdgtStackObjsProperties->setMinimumWidth(180);
     m_pSplitter->addWidget(m_pWdgtStackObjsProperties);
 
 } // ctor
 
 //------------------------------------------------------------------------------
-CWdgtDiagramObjs::~CWdgtDiagramObjs()
+CWdgtDiagramItems::~CWdgtDiagramItems()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -155,7 +156,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtDiagramObjs::saveState(QSettings& i_settings) const
+void CWdgtDiagramItems::saveState(QSettings& i_settings) const
 //------------------------------------------------------------------------------
 {
     if( m_pSplitter != nullptr ) {
@@ -168,7 +169,7 @@ void CWdgtDiagramObjs::saveState(QSettings& i_settings) const
 }
 
 //------------------------------------------------------------------------------
-void CWdgtDiagramObjs::restoreState(const QSettings& i_settings)
+void CWdgtDiagramItems::restoreState(const QSettings& i_settings)
 //------------------------------------------------------------------------------
 {
     if( m_pSplitter != nullptr ) {
@@ -186,7 +187,7 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtDiagramObjs::onWdgtTreeViewCurrentRowChanged(
+void CWdgtDiagramItems::onWdgtTreeViewCurrentRowChanged(
     const QModelIndex& i_modelIdxCurr,
     const QModelIndex& i_modelIdxPrev )
 //------------------------------------------------------------------------------
@@ -195,8 +196,8 @@ void CWdgtDiagramObjs::onWdgtTreeViewCurrentRowChanged(
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strMthInArgs  = "Curr {" + CModelDiagramObjs::modelIdx2Str(i_modelIdxCurr) + "}";
-        strMthInArgs += ", Prev {" + CModelDiagramObjs::modelIdx2Str(i_modelIdxPrev) + "}";
+        strMthInArgs  = "Curr {" + CModelDiagramItems::modelIdx2Str(i_modelIdxCurr) + "}";
+        strMthInArgs += ", Prev {" + CModelDiagramItems::modelIdx2Str(i_modelIdxPrev) + "}";
     }
 
     CMethodTracer mthTracer(
@@ -207,8 +208,8 @@ void CWdgtDiagramObjs::onWdgtTreeViewCurrentRowChanged(
 
     if( i_modelIdxCurr.isValid() )
     {
-        CModelDiagramObjsTreeItem* pItem =
-            static_cast<CModelDiagramObjsTreeItem*>(i_modelIdxCurr.internalPointer());
+        CModelDiagramTreeItem* pItem =
+            static_cast<CModelDiagramTreeItem*>(i_modelIdxCurr.internalPointer());
 
         if( pItem != nullptr ) {
             m_pWdgtStackObjsProperties->setCurrentDiagObj(pItem->className(), pItem->objectName());

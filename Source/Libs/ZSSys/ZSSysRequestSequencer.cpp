@@ -606,14 +606,9 @@ void CRequestSequencer::start( CRequest* i_pReqParent )
             bParentIsBlocking = m_pReqParent->isBlockingRequest();
             iParentTimeout_ms = m_pReqParent->getTimeoutInMs();
 
-            if( !QObject::connect(
-                /* pObjSender   */ m_pReqParent,
-                /* szSignal     */ SIGNAL(destroyed(QObject*)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onParentRequestDestroyed(QObject*)) ) )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-            }
+            QObject::connect(
+                m_pReqParent, &QObject::destroyed,
+                this, QOverload<QObject*>::of(&CRequestSequencer::onParentRequestDestroyed));
 
             m_iReqIdParent = m_pReqParent->getId();
 
@@ -1214,15 +1209,10 @@ CRequest* CRequestSequencer::startRequest(
                 // Only connect the signal if the request was asynchronous.
                 // Synchronous requests may be deleted by the request queue of
                 // the executer sometimes later.
-                if( !QObject::connect(
-                    /* pObjSender   */ pReq,
-                    /* szSignal     */ SIGNAL(changed(ZS::System::SRequestDscr)),
-                    /* pObjReceiver */ this,
-                    /* szSlot       */ SLOT(onRequestChanged(ZS::System::SRequestDscr)) ) )
-                {
-                    throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-                }
-            } // if( isAsynchronousRequest(pReq) )
+                QObject::connect(
+                    pReq, &CRequest::changed,
+                    this, &CRequestSequencer::onRequestChanged);
+            }
 
             // Should be anyway the case ...
             if( iReqIdNew != i_iReqId )

@@ -54,24 +54,22 @@ public: // type definitions and constants
     }   EMathOp;
 public: // ctors and dtor
     CDiagObjValueProvider(
-        const QString& i_strObjName,
-        EMathOp        i_mathOp,
-        CDiagObj*      i_pDiagObjOp1,
-        EScaleDir      i_scaleDirOp1,
-        CDiagObj*      i_pDiagObjOp2 = nullptr,
-        EScaleDir      i_scaleDirOp2 = EScaleDirUndefined );
+        const QString&       i_strObjName,
+        EMathOp              i_mathOp,
+        CDiagObj*            i_pDiagObjOp1,
+        const CEnumScaleDir& i_scaleDirOp1,
+        CDiagObj*            i_pDiagObjOp2 = nullptr,
+        const CEnumScaleDir& i_scaleDirOp2 = CEnumScaleDir() );
     virtual ~CDiagObjValueProvider();
-public: // must overridables of base class CDiagObj
-    virtual QString className() { return ClassName(); }
 public: // instance methods
     void setMathOp( EMathOp i_mathOp );
     EMathOp getMathOp() const;
-    void setOp1( CDiagObj* i_pDiagObj, EScaleDir i_scaleDir );
+    void setOp1( CDiagObj* i_pDiagObj, const CEnumScaleDir& i_scaleDir );
     CDiagObj* getDiagObjOp1();
-    EScaleDir getScaleDirOp1() const;
-    void setOp2( CDiagObj* i_pDiagObj, EScaleDir i_scaleDir );
+    EScaleDir getScaleOrientationOp1() const;
+    void setOp2( CDiagObj* i_pDiagObj, const CEnumScaleDir& i_scaleDir );
     CDiagObj* getDiagObjOp2();
-    EScaleDir getScaleDirOp2() const;
+    EScaleDir getScaleOrientationOp2() const;
     void setValueFormatProvider( const PhysVal::SValueFormatProvider& i_valueFormat );
     PhysVal::SValueFormatProvider getValueFormatProvider() const;
 public: // overridables

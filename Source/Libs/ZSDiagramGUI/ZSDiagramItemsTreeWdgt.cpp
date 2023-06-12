@@ -24,8 +24,9 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include "ZSDiagramGUI/ZSDiagramObjsTreeWdgt.h"
-#include "ZSDiagramGUI/ZSDiagramObjsTreeView.h"
+#include "ZSDiagramGUI/ZSDiagramItemsTreeWdgt.h"
+#include "ZSDiagramGUI/ZSDiagramItemsTreeModel.h"
+#include "ZSDiagramGUI/ZSDiagramItemsTreeView.h"
 #include "ZSDiagram/ZSDiagramProcWdgt.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysEnumEntry.h"
@@ -53,7 +54,7 @@ using namespace ZS::Diagram::GUI;
 
 
 /*******************************************************************************
-class CWdgtDiagramObjsTree : public QWidget
+class CWdgtDiagramItemsTree : public QWidget
 *******************************************************************************/
 
 /*==============================================================================
@@ -61,7 +62,7 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CWdgtDiagramObjsTree::CWdgtDiagramObjsTree(
+CWdgtDiagramItemsTree::CWdgtDiagramItemsTree(
     CWdgtDiagram* i_pDiagram,
     QWidget* i_pWdgtParent,
     Qt::WindowFlags i_wflags ) :
@@ -118,7 +119,7 @@ CWdgtDiagramObjsTree::CWdgtDiagramObjsTree(
 
     QObject::connect(
         m_pBtnTreeViewResizeRowsAndColumnsToContents, &QPushButton::clicked,
-        this, &CWdgtDiagramObjsTree::onBtnTreeViewResizeRowsAndColumnsToContentsClicked );
+        this, &CWdgtDiagramItemsTree::onBtnTreeViewResizeRowsAndColumnsToContentsClicked );
 
     // <Button> Expand All
     //--------------------
@@ -134,7 +135,7 @@ CWdgtDiagramObjsTree::CWdgtDiagramObjsTree(
 
     QObject::connect(
         m_pBtnTreeViewExpandAll, &QPushButton::clicked,
-        this, &CWdgtDiagramObjsTree::onBtnTreeViewExpandAllClicked );
+        this, &CWdgtDiagramItemsTree::onBtnTreeViewExpandAllClicked );
 
     // <Button> Collapse All
     //----------------------
@@ -150,25 +151,25 @@ CWdgtDiagramObjsTree::CWdgtDiagramObjsTree(
 
     QObject::connect(
         m_pBtnTreeViewCollapseAll, &QPushButton::clicked,
-        this, &CWdgtDiagramObjsTree::onBtnTreeViewCollapseAllClicked );
+        this, &CWdgtDiagramItemsTree::onBtnTreeViewCollapseAllClicked );
 
     // <TreeView>
     //===========
 
-    m_pTreeView = new CTreeViewDiagramObjs(m_pDiagram);
+    m_pTreeView = new CTreeViewDiagramItems(m_pDiagram);
     m_pTreeView->setAlternatingRowColors(true);
     m_pLyt->addWidget(m_pTreeView, 1);
 
     QObject::connect(
         m_pTreeView->selectionModel(), &QItemSelectionModel::currentRowChanged,
-        this, &CWdgtDiagramObjsTree::onTreeViewCurrentRowChanged );
+        this, &CWdgtDiagramItemsTree::onTreeViewCurrentRowChanged );
 
-    m_pTreeView->resizeColumnToContents(CModelDiagramObjs::EColumnDiagObjName);
+    m_pTreeView->resizeColumnToContents(CModelDiagramItems::EColumnDiagObjName);
 
 } // ctor
 
 //------------------------------------------------------------------------------
-CWdgtDiagramObjsTree::~CWdgtDiagramObjsTree()
+CWdgtDiagramItemsTree::~CWdgtDiagramItemsTree()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -186,7 +187,7 @@ CWdgtDiagramObjsTree::~CWdgtDiagramObjsTree()
     // has been destroyed and will throw an exception. Not what we want ...
     QObject::disconnect(
         m_pTreeView->selectionModel(), &QItemSelectionModel::currentRowChanged,
-        this, &CWdgtDiagramObjsTree::onTreeViewCurrentRowChanged );
+        this, &CWdgtDiagramItemsTree::onTreeViewCurrentRowChanged );
 
     if( m_pTrcAdminObj != nullptr )
     {
@@ -211,7 +212,7 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtDiagramObjsTree::onBtnTreeViewResizeRowsAndColumnsToContentsClicked( bool i_bChecked )
+void CWdgtDiagramItemsTree::onBtnTreeViewResizeRowsAndColumnsToContentsClicked( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -226,14 +227,14 @@ void CWdgtDiagramObjsTree::onBtnTreeViewResizeRowsAndColumnsToContentsClicked( b
         /* strMethodInArgs    */ strMthInArgs );
 
     if( m_pTreeView != nullptr ) {
-        for( int idxClm = 0; idxClm < CModelDiagramObjs::EColumnCount; idxClm++ ) {
+        for( int idxClm = 0; idxClm < CModelDiagramItems::EColumnCount; idxClm++ ) {
             m_pTreeView->resizeColumnToContents(idxClm);
         }
     }
 }
 
 //------------------------------------------------------------------------------
-void CWdgtDiagramObjsTree::onBtnTreeViewExpandAllClicked( bool i_bChecked )
+void CWdgtDiagramItemsTree::onBtnTreeViewExpandAllClicked( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -249,14 +250,14 @@ void CWdgtDiagramObjsTree::onBtnTreeViewExpandAllClicked( bool i_bChecked )
 
     if( m_pTreeView != nullptr ) {
         m_pTreeView->expandAll();
-        for( int idxClm = 0; idxClm < CModelDiagramObjs::EColumnCount; idxClm++ ) {
+        for( int idxClm = 0; idxClm < CModelDiagramItems::EColumnCount; idxClm++ ) {
             m_pTreeView->resizeColumnToContents(idxClm);
         }
     }
 }
 
 //------------------------------------------------------------------------------
-void CWdgtDiagramObjsTree::onBtnTreeViewCollapseAllClicked( bool i_bChecked )
+void CWdgtDiagramItemsTree::onBtnTreeViewCollapseAllClicked( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -280,7 +281,7 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtDiagramObjsTree::onTreeViewCurrentRowChanged(
+void CWdgtDiagramItemsTree::onTreeViewCurrentRowChanged(
     const QModelIndex& i_modelIdxCurr,
     const QModelIndex& i_modelIdxPrev )
 //------------------------------------------------------------------------------
@@ -288,8 +289,8 @@ void CWdgtDiagramObjsTree::onTreeViewCurrentRowChanged(
     QString strMthInArgs;
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strMthInArgs  = "Curr {" + CModelDiagramObjs::modelIdx2Str(i_modelIdxCurr) + "}";
-        strMthInArgs += ", Prev {" + CModelDiagramObjs::modelIdx2Str(i_modelIdxPrev) + "}";
+        strMthInArgs  = "Curr {" + CModelDiagramItems::modelIdx2Str(i_modelIdxCurr) + "}";
+        strMthInArgs += ", Prev {" + CModelDiagramItems::modelIdx2Str(i_modelIdxPrev) + "}";
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
@@ -305,7 +306,7 @@ private: // auxiliary methods (tracing)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtDiagramObjsTree::emit_currentRowChanged(
+void CWdgtDiagramItemsTree::emit_currentRowChanged(
     const QModelIndex& i_modelIdxCurr,
     const QModelIndex& i_modelIdxPrev )
 //------------------------------------------------------------------------------
@@ -313,8 +314,8 @@ void CWdgtDiagramObjsTree::emit_currentRowChanged(
     QString strMthInArgs;
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strMthInArgs  = "Curr {" + CModelDiagramObjs::modelIdx2Str(i_modelIdxCurr) + "}";
-        strMthInArgs += ", Prev {" + CModelDiagramObjs::modelIdx2Str(i_modelIdxPrev) + "}";
+        strMthInArgs  = "Curr {" + CModelDiagramItems::modelIdx2Str(i_modelIdxCurr) + "}";
+        strMthInArgs += ", Prev {" + CModelDiagramItems::modelIdx2Str(i_modelIdxPrev) + "}";
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,

@@ -65,8 +65,8 @@ public: // instance methods
     ZS::PhysVal::CUnit metricUnit() const;
     void setNormedPaperSize( const CEnumNormedPaperSize& i_ePaperSize );
     CEnumNormedPaperSize normedPaperSize() const;
-    void setNormedPaperOrientation( const ZS::System::CEnumDirection& i_eDirection );
-    ZS::System::CEnumDirection normedPaperOrientation() const;
+    void setNormedPaperOrientation( const ZS::System::CEnumOrientation& i_eOrientation );
+    ZS::System::CEnumOrientation normedPaperOrientation() const;
     void setScaleFactor( int i_iDividend, int i_iDivisor );
     int scaleFactorDividend() const;
     int scaleFactorDivisor() const;
@@ -89,7 +89,7 @@ private: // instance members
     double m_fImageMetricWidth;
     double m_fImageMetricHeight;
     CEnumNormedPaperSize m_eNormedPaperSize;
-    ZS::System::CEnumDirection m_eNormedPaperOrientation;
+    ZS::System::CEnumOrientation m_eNormedPaperOrientation;
     int m_iMetricScaleFactorDividend;
     int m_iMetricScaleFactorDivisor;
     double m_fImageSizeWidth_px;

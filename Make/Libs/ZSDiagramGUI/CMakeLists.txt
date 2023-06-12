@@ -34,24 +34,36 @@ set(_ResourcesPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../Resources/Libs)
 list(APPEND _Headers
     ${_HeadersPath}/ZSSys/ZSSysVersion.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSDiagramGUIDllMain.h
-    ${_HeadersPath}/${PROJECT_NAME}/ZSDiagramObjsDlg.h
-    ${_HeadersPath}/${PROJECT_NAME}/ZSDiagramObjPropertiesAbstractWdgt.h
-    ${_HeadersPath}/${PROJECT_NAME}/ZSDiagramObjsPropertiesWdgtStack.h
-    ${_HeadersPath}/${PROJECT_NAME}/ZSDiagramObjsTreeModel.h
-    ${_HeadersPath}/${PROJECT_NAME}/ZSDiagramObjsTreeView.h
-    ${_HeadersPath}/${PROJECT_NAME}/ZSDiagramObjsTreeWdgt.h
-    ${_HeadersPath}/${PROJECT_NAME}/ZSDiagramObjsWdgt.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSDiagramItemPropertiesBaseWdgt.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSDiagramItemPropertiesDlg.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSDiagramItemsDlg.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSDiagramItemsPropertiesWdgtStack.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSDiagramItemsTreeModel.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSDiagramItemsTreeView.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSDiagramItemsTreeWdgt.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSDiagramItemsWdgt.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSDiagramObjAxisLabelPropertiesWdgt.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSDiagramObjPropertiesBaseWdgt.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSDiagramPropertiesWdgt.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSDiagramScalePropertiesWdgt.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSDiagramTracePropertiesWdgt.h
 )
 
 list(APPEND _Sources
     ${_SourcesPath}/${PROJECT_NAME}/ZSDiagramGUIDllMain.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/ZSDiagramObjsDlg.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/ZSDiagramObjPropertiesAbstractWdgt.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/ZSDiagramObjsPropertiesWdgtStack.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/ZSDiagramObjsTreeModel.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/ZSDiagramObjsTreeView.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/ZSDiagramObjsTreeWdgt.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/ZSDiagramObjsWdgt.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSDiagramItemPropertiesBaseWdgt.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSDiagramItemPropertiesDlg.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSDiagramItemsDlg.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSDiagramItemsPropertiesWdgtStack.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSDiagramItemsTreeModel.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSDiagramItemsTreeView.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSDiagramItemsTreeWdgt.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSDiagramItemsWdgt.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSDiagramObjAxisLabelPropertiesWdgt.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSDiagramObjPropertiesBaseWdgt.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSDiagramPropertiesWdgt.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSDiagramScalePropertiesWdgt.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSDiagramTracePropertiesWdgt.cpp
 )
 
 #list(APPEND _Resources

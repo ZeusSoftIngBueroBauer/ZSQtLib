@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSDiagram_ObjsTreeModel_h
-#define ZSDiagram_ObjsTreeModel_h
+#ifndef ZSDiagram_ItemsTreeModel_h
+#define ZSDiagram_ItemsTreeModel_h
 
 
 #include "ZSDiagramGUI/ZSDiagramGUIDllMain.h"
@@ -46,33 +46,33 @@ class CWdgtDiagram;
 namespace GUI
 {
 //******************************************************************************
-class ZSDIAGRAMGUIDLL_API CModelDiagramObjsTreeItem
+class ZSDIAGRAMGUIDLL_API CModelDiagramTreeItem
 //******************************************************************************
 {
 public: // ctors and dtor
-    CModelDiagramObjsTreeItem(
+    CModelDiagramTreeItem(
         const QString& i_strClassName,
         const QString& i_strObjName,
-        CModelDiagramObjsTreeItem* i_pParent = nullptr);
-    ~CModelDiagramObjsTreeItem();
+        CModelDiagramTreeItem* i_pParent = nullptr);
+    ~CModelDiagramTreeItem();
 public: // instance methods
     QString className() const;
     QString objectName() const;
 public: // instance methods
-    CModelDiagramObjsTreeItem* parent();
+    CModelDiagramTreeItem* parent();
     int row() const;
 public: // instance methods
-    CModelDiagramObjsTreeItem* child(int i_idxRow);
+    CModelDiagramTreeItem* child(int i_idxRow);
     int childsCount() const;
 private: // instance members
     QString m_strClassName;
     QString m_strObjName;
-    CModelDiagramObjsTreeItem* m_pParent;
-    QVector<CModelDiagramObjsTreeItem*> m_arpChilds;
+    CModelDiagramTreeItem* m_pParent;
+    QVector<CModelDiagramTreeItem*> m_arpChilds;
 };
 
 //******************************************************************************
-class ZSDIAGRAMGUIDLL_API CModelDiagramObjs : public QAbstractItemModel
+class ZSDIAGRAMGUIDLL_API CModelDiagramItems : public QAbstractItemModel
 //******************************************************************************
 {
     Q_OBJECT
@@ -80,7 +80,7 @@ public: // class methods
     /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Diagram::GUI"; }
     /*! Returns the class name. */
-    static QString ClassName() { return "CModelDiagramObjs"; }
+    static QString ClassName() { return "CModelDiagramItems"; }
 public: // type definitions and constants
     enum EColumn {
         EColumnDiagObjClassName = 0,
@@ -92,8 +92,8 @@ public: // type definitions and constants
 public: // class methods
     static QString modelIdx2Str(const QModelIndex& i_modelIdx);
 public: // ctors and dtor
-    CModelDiagramObjs( CWdgtDiagram* i_pDiagram, QObject* i_pObjParent = nullptr );
-    virtual ~CModelDiagramObjs();
+    CModelDiagramItems( CWdgtDiagram* i_pDiagram, QObject* i_pObjParent = nullptr );
+    virtual ~CModelDiagramItems();
 public: // overridables
     /*! This virtual method returns the name space of the object's class.
         This method can be reimplemented in derived classes so when invoked for the
@@ -123,19 +123,19 @@ protected slots:
     void onDiagramObjAdded(const QString& i_strClassName, const QString& i_strObjName);
     void onDiagramObjRemoved(const QString& i_strClassName, const QString& i_strObjName);
 protected: // auxiliary instance methods
-    CModelDiagramObjsTreeItem* findDiagScaleItem(const QString& i_strObjName) const;
-    CModelDiagramObjsTreeItem* findDiagTraceItem(const QString& i_strObjName) const;
-    CModelDiagramObjsTreeItem* findDiagObjItem(const QString& i_strClassName, const QString& i_strObjName) const;
+    CModelDiagramTreeItem* findDiagScaleItem(const QString& i_strObjName) const;
+    CModelDiagramTreeItem* findDiagTraceItem(const QString& i_strObjName) const;
+    CModelDiagramTreeItem* findDiagObjItem(const QString& i_strClassName, const QString& i_strObjName) const;
 protected: // instance members
     CWdgtDiagram* m_pDiagram;
-    CModelDiagramObjsTreeItem* m_pRoot;
-    CModelDiagramObjsTreeItem* m_pScales;
-    CModelDiagramObjsTreeItem* m_pTraces;
-    CModelDiagramObjsTreeItem* m_pDiagObjs;
+    CModelDiagramTreeItem* m_pRoot;
+    CModelDiagramTreeItem* m_pScales;
+    CModelDiagramTreeItem* m_pTraces;
+    CModelDiagramTreeItem* m_pDiagObjs;
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjNoisyMethods;
 
-}; // class CModelDiagramObjs
+}; // class CModelDiagramItems
 
 } // namespace GUI
 
@@ -143,4 +143,4 @@ protected: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZSDiagram_ObjsTreeModel_h
+#endif // #ifndef ZSDiagram_ItemsTreeModel_h

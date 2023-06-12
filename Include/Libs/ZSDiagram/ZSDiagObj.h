@@ -101,10 +101,12 @@ public: // class methods
     Q_OBJECT
 protected: // ctors
     CDiagObj(
+        const QString& i_strClassName,
         const QString& i_strObjName,
         CDiagTrace*    i_pDiagTrace,
         ELayoutPos     i_layoutPos );
     CDiagObj(
+        const QString& i_strClassName,
         const QString& i_strObjName,
         CDiagScale*    i_pDiagScaleX,
         CDiagScale*    i_pDiagScaleY,
@@ -119,13 +121,13 @@ signals:
     void valueXChanged( ZS::Diagram::CDiagObj* );
     void valueYChanged( ZS::Diagram::CDiagObj* );
     void visibilityChanged( ZS::Diagram::CDiagObj* );
-public: // must overridables
-    virtual QString className() = 0;
+public: // instance methods
+    QString className() const { return m_strClassName; }
 public: // instance methods
     void setObjName( const QString& i_strObjName );
     QString getObjName() const;
     CDataDiagram* getDiagram();
-    CDiagScale* getDiagScale( EScaleDir i_scaleDir );
+    CDiagScale* getDiagScale( const CEnumScaleDir& i_scaleDir );
     CDiagTrace* getDiagTrace();
     ELayoutPos getLayoutPos() const;
 public: // overridables
@@ -135,9 +137,9 @@ public: // overridables
     virtual void show( bool i_bInformDiagram = true );
     virtual void hide( bool i_bInformDiagram = true );
     virtual bool isVisible() const;
-    virtual double getValRes( EScaleDir i_scaleDir, PhysVal::CUnit* i_pUnit = nullptr ) const;
-    virtual double getValRes( EScaleDir i_scaleDir, double i_fVal, PhysVal::CUnit* i_pUnit = nullptr ) const;
-    virtual PhysVal::CPhysVal getVal( EScaleDir i_scaleDir ) const;
+    virtual double getValRes( const CEnumScaleDir& i_scaleDir, const PhysVal::CUnit* i_pUnit = nullptr ) const;
+    virtual double getValRes( const CEnumScaleDir& i_scaleDir, double i_fVal, const PhysVal::CUnit* i_pUnit = nullptr ) const;
+    virtual PhysVal::CPhysVal getVal( const CEnumScaleDir& i_scaleDir ) const;
     virtual void setIsFocusable( bool i_bFocusable );
     virtual bool isFocusable() const;
     virtual bool isFocused() const;
@@ -172,10 +174,11 @@ private: // copy ctor not allowed
 private: // assignment operator not allowed
     void operator=( const CDiagObj& );
 protected:  // instance members
+    QString m_strClassName;
     QString m_strObjName;
     CDataDiagram* m_pDiagram;
     CDiagTrace* m_pDiagTrace;
-    CDiagScale* m_arpDiagScale[EScaleDirCount];
+    QVector<CDiagScale*> m_arpDiagScale;
     unsigned int m_uUpdateFlags;
     ELayoutPos m_layoutPos;
     QRect m_rectContent;

@@ -235,7 +235,7 @@ CDataDiagram* CWdgtDiagram::clone( EDiagramUpdateType i_diagramUpdateType ) cons
         pWdgtDiagram->m_measMode = m_measMode;
         pWdgtDiagram->m_iMeasType = m_iMeasType;
 
-        for (int idx = 0; idx < EScaleDirCount; idx++)
+        for (int idx = 0; idx < CEnumScaleDir::count(); idx++)
         {
             pWdgtDiagram->m_arSpacing[idx] = m_arSpacing[idx];
         }
@@ -351,96 +351,81 @@ public: // instance methods to set optional attributes of the diagram
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtDiagram::enableZooming( EScaleDir i_scaleDir )
+void CWdgtDiagram::enableZooming( const CEnumScaleDir& i_scaleDir )
 //------------------------------------------------------------------------------
 {
-    switch( i_scaleDir )
+    switch( i_scaleDir.enumerator() )
     {
-        case EScaleDirX:
+        case EScaleDir::X:
         {
             m_bZoomingXScaleEnabled = true;
             break;
         }
-        case EScaleDirY:
+        case EScaleDir::Y:
         {
-            m_bZoomingYScaleEnabled = true;
-            break;
-        }
-        case EScaleDirCount:
-        {
-            m_bZoomingXScaleEnabled = true;
             m_bZoomingYScaleEnabled = true;
             break;
         }
         default:
         {
+            m_bZoomingXScaleEnabled = true;
+            m_bZoomingYScaleEnabled = true;
             break;
         }
     }
-
-} // enableZooming
+}
 
 //------------------------------------------------------------------------------
-void CWdgtDiagram::disableZooming( EScaleDir i_scaleDir )
+void CWdgtDiagram::disableZooming( const CEnumScaleDir& i_scaleDir )
 //------------------------------------------------------------------------------
 {
-    switch( i_scaleDir )
+    switch( i_scaleDir.enumerator() )
     {
-        case EScaleDirX:
+        case EScaleDir::X:
         {
             m_bZoomingXScaleEnabled = false;
             break;
         }
-        case EScaleDirY:
+        case EScaleDir::Y:
         {
-            m_bZoomingYScaleEnabled = false;
-            break;
-        }
-        case EScaleDirCount:
-        {
-            m_bZoomingXScaleEnabled = false;
             m_bZoomingYScaleEnabled = false;
             break;
         }
         default:
         {
+            m_bZoomingXScaleEnabled = false;
+            m_bZoomingYScaleEnabled = false;
             break;
         }
     }
-
-} // disableZooming
+}
 
 //------------------------------------------------------------------------------
-bool CWdgtDiagram::isZoomingEnabled( EScaleDir i_scaleDir ) const
+bool CWdgtDiagram::isZoomingEnabled( const CEnumScaleDir& i_scaleDir ) const
 //------------------------------------------------------------------------------
 {
     bool bZoomingEnabled = false;
 
-    switch( i_scaleDir )
+    switch( i_scaleDir.enumerator() )
     {
-        case EScaleDirX:
+        case EScaleDir::X:
         {
             bZoomingEnabled = m_bZoomingXScaleEnabled;
             break;
         }
-        case EScaleDirY:
+        case EScaleDir::Y:
         {
             bZoomingEnabled = m_bZoomingYScaleEnabled;
             break;
         }
-        case EScaleDirCount:
+        default:
         {
             bZoomingEnabled = (m_bZoomingXScaleEnabled || m_bZoomingYScaleEnabled);
             break;
         }
-        default:
-        {
-            break;
-        }
     }
     return bZoomingEnabled;
-
-} // isZoomingEnabled
+}
 
 //------------------------------------------------------------------------------
 void CWdgtDiagram::enableContextPopupMenu()
@@ -1159,7 +1144,7 @@ void CWdgtDiagram::keyPressEvent( QKeyEvent* i_pEv )
                                         fScaleMax = m_pMoveKeyAccelerationDiagScale->getScale().m_fMax;
                                         fScaleRange = fabs(fScaleMax-fScaleMin);
 
-                                        if( bValIsValid && m_pMoveKeyAccelerationDiagScale->getSpacing() == ESpacingLogarithmic )
+                                        if( bValIsValid && m_pMoveKeyAccelerationDiagScale->getSpacing() == ESpacing::Logarithmic )
                                         {
                                             fScaleMin = log10(fScaleMin);
                                             fScaleMax = log10(fScaleMax);
@@ -1270,7 +1255,7 @@ void CWdgtDiagram::keyReleaseEvent( QKeyEvent* i_pEv )
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObjEvents != nullptr && m_pTrcAdminObjEvents->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjEvents, EMethodTraceDetailLevel::ArgsNormal))
     {
         strTrcMsg = qKeyCode2Str(i_pEv->key());
     }
@@ -1445,12 +1430,12 @@ void CWdgtDiagram::mouseReleaseEvent( QMouseEvent* i_pEv )
 
             m_rectZoom = Math::calcRect(m_ptZoomStart,m_ptZoomEnd);
 
-            if( !isZoomingEnabled(EScaleDirX) )
+            if( !isZoomingEnabled(EScaleDir::X) )
             {
                 m_rectZoom.setLeft(m_rectPartCenter.left());
                 m_rectZoom.setWidth(m_rectPartCenter.width());
             }
-            else if( !isZoomingEnabled(EScaleDirY) )
+            else if( !isZoomingEnabled(EScaleDir::Y) )
             {
                 m_rectZoom.setTop(m_rectPartCenter.top());
                 m_rectZoom.setHeight(m_rectPartCenter.height());
@@ -1462,12 +1447,12 @@ void CWdgtDiagram::mouseReleaseEvent( QMouseEvent* i_pEv )
                 {
                     switch( pDiagScale->getScaleDir() )
                     {
-                        case EScaleDirX:
+                        case EScaleDir::X:
                         {
                             pDiagScale->zoomIn(m_rectZoom.left(),m_rectZoom.right());
                             break;
                         }
-                        case EScaleDirY:
+                        case EScaleDir::Y:
                         {
                             pDiagScale->zoomIn(m_rectZoom.bottom(),m_rectZoom.top());
                             break;
@@ -1553,7 +1538,7 @@ void CWdgtDiagram::mouseMoveEvent( QMouseEvent* i_pEv )
     // If an object has been selected by mouse click ...
     if( m_pDiagObjEditingByMouseEvent != nullptr )
     {
-        if( m_pTrcAdminObjEvents != nullptr && m_pTrcAdminObjEvents->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+        if (areMethodCallsActive(m_pTrcAdminObjEvents, EMethodTraceDetailLevel::ArgsNormal))
         {
             strTrcMsg  = "DiagObjEdited: ";
             strTrcMsg += m_pDiagObjEditingByMouseEvent->getObjName();
@@ -1583,7 +1568,7 @@ void CWdgtDiagram::mouseMoveEvent( QMouseEvent* i_pEv )
     // If the diagram will be zoomed ..
     else if( m_bIsZooming )
     {
-        if( m_pTrcAdminObjEvents != nullptr && m_pTrcAdminObjEvents->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+        if (areMethodCallsActive(m_pTrcAdminObjEvents, EMethodTraceDetailLevel::ArgsNormal))
         {
             strTrcMsg = "Zooming";
         }
@@ -1894,7 +1879,7 @@ bool CWdgtDiagram::processMoveKeyEvent( int i_iKey )
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObjEvents != nullptr && m_pTrcAdminObjEvents->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjEvents, EMethodTraceDetailLevel::ArgsNormal))
     {
         strTrcMsg = qKeyCode2Str(i_iKey);
     }
@@ -2399,6 +2384,44 @@ void CWdgtDiagram::popupMenuContextItemPrintActivated( void )
 } // popupMenuContextItemPrintActivated
 
 /*==============================================================================
+protected: // auxiliary instance methods (method tracing)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtDiagram::emit_diagItemAdded(const QString& i_strClassName, const QString& i_strObjName)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strClassName + "::" + i_strObjName;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjUpdate,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "emit_diagItemAdded",
+        /* strAddInfo   */ strMthInArgs );
+
+    emit diagItemAdded(i_strClassName, i_strObjName);
+}
+
+//------------------------------------------------------------------------------
+void CWdgtDiagram::emit_diagItemRemoved(const QString& i_strClassName, const QString& i_strObjName)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strClassName + "::" + i_strObjName;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjUpdate,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "emit_diagItemRemoved",
+        /* strAddInfo   */ strMthInArgs );
+
+    emit diagItemRemoved(i_strClassName, i_strObjName);
+}
+
+/*==============================================================================
 protected: // overridables of base class CDataDiagram for emitting the signals
 ==============================================================================*/
 
@@ -2434,6 +2457,7 @@ void CWdgtDiagram::emit_diagScaleAdded(const QString& i_strObjName)
         /* strAddInfo   */ strMthInArgs );
 
     emit diagScaleAdded(i_strObjName);
+    emit_diagItemAdded("CDiagScale", i_strObjName);
 }
 
 //------------------------------------------------------------------------------
@@ -2451,6 +2475,7 @@ void CWdgtDiagram::emit_diagScaleRemoved(const QString& i_strObjName)
         /* strAddInfo   */ strMthInArgs );
 
     emit diagScaleRemoved(i_strObjName);
+    emit_diagItemRemoved("CDiagScale", i_strObjName);
 }
 
 //------------------------------------------------------------------------------
@@ -2468,6 +2493,7 @@ void CWdgtDiagram::emit_diagTraceAdded(const QString& i_strObjName)
         /* strAddInfo   */ strMthInArgs );
 
     emit diagTraceAdded(i_strObjName);
+    emit_diagItemAdded("CDiagTrace", i_strObjName);
 }
 
 //------------------------------------------------------------------------------
@@ -2485,6 +2511,7 @@ void CWdgtDiagram::emit_diagTraceRemoved(const QString& i_strObjName)
         /* strAddInfo   */ strMthInArgs );
 
     emit diagTraceRemoved(i_strObjName);
+    emit_diagItemRemoved("CDiagTrace", i_strObjName);
 }
 
 //------------------------------------------------------------------------------
@@ -2502,6 +2529,7 @@ void CWdgtDiagram::emit_diagObjAdded(const QString& i_strClassName, const QStrin
         /* strAddInfo   */ strMthInArgs );
 
     emit diagObjAdded(i_strClassName, i_strObjName);
+    emit_diagItemAdded(i_strClassName, i_strObjName);
 }
 
 //------------------------------------------------------------------------------
@@ -2519,4 +2547,5 @@ void CWdgtDiagram::emit_diagObjRemoved(const QString& i_strClassName, const QStr
         /* strAddInfo   */ strMthInArgs );
 
     emit diagObjRemoved(i_strClassName, i_strObjName);
+    emit_diagItemRemoved(i_strClassName, i_strObjName);
 }

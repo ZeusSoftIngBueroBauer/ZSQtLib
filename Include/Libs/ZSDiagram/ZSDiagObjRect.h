@@ -48,8 +48,6 @@ public: // ctors and dtor
         const QString& i_strObjName,
         CDiagTrace*    i_pDiagTrace );
     virtual ~CDiagObjRect();
-public: // must overridables of base class CDiagObj
-    virtual QString className() { return ClassName(); }
 public: // instance methods
     void setPen( const QPen& i_pen );
     QPen getPen() const { return m_pen; }

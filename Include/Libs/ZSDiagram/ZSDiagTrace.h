@@ -70,45 +70,45 @@ signals:
 public: // instance methods
     QString getObjName() const;
     CDataDiagram* getDiagram();
-    CDiagScale* getDiagScale( EScaleDir i_scaleDir );
-    ESpacing getSpacing( EScaleDir i_scaleDir ) const;
-    bool isScaleValid( EScaleDir i_scaleDir ) const;
-    SScale getScale( EScaleDir i_scaleDir ) const;
-    int getScaleMinValPix( EScaleDir i_scaleDir ) const;
-    int getScaleMaxValPix( EScaleDir i_scaleDir ) const;
-    int getScaleRangePix( EScaleDir i_scaleDir ) const;
-    double getScaleRes( EScaleDir i_scaleDir, PhysVal::CUnit* i_pUnit = nullptr ) const;
-    double getScaleRes( EScaleDir i_scaleDir, double i_fVal, PhysVal::CUnit* i_pUnit = nullptr ) const;
-    double round2ScaleRes( EScaleDir i_scaleDir, double i_fVal, PhysVal::CUnit* i_pUnit = nullptr ) const;
-    double getValRes( EScaleDir i_scaleDir, PhysVal::CUnit* i_pUnit = nullptr ) const;
-    double getValRes( EScaleDir i_scaleDir, double i_fVal, PhysVal::CUnit* i_pUnit = nullptr ) const;
-    double round2ValRes( EScaleDir i_scaleDir, double i_fVal, PhysVal::CUnit* i_pUnit = nullptr ) const;
-    void setValues( EScaleDir i_scaleDir, const PhysVal::CPhysValArr& i_physValArr );
+    CDiagScale* getDiagScale( const CEnumScaleDir& i_scaleDir );
+    ESpacing getSpacing( const CEnumScaleDir& i_scaleDir ) const;
+    bool isScaleValid( const CEnumScaleDir& i_scaleDir ) const;
+    SScale getScale( const CEnumScaleDir& i_scaleDir ) const;
+    int getScaleMinValPix( const CEnumScaleDir& i_scaleDir ) const;
+    int getScaleMaxValPix( const CEnumScaleDir& i_scaleDir ) const;
+    int getScaleRangePix( const CEnumScaleDir& i_scaleDir ) const;
+    double getScaleResPerPx( const CEnumScaleDir& i_scaleDir, const PhysVal::CUnit* i_pUnit = nullptr ) const;
+    double getScaleResPerPx( const CEnumScaleDir& i_scaleDir, double i_fVal, const PhysVal::CUnit* i_pUnit = nullptr ) const;
+    double round2ScaleRes( const CEnumScaleDir& i_scaleDir, double i_fVal, const PhysVal::CUnit* i_pUnit = nullptr ) const;
+    double getValRes( const CEnumScaleDir& i_scaleDir, const PhysVal::CUnit* i_pUnit = nullptr ) const;
+    double getValRes( const CEnumScaleDir& i_scaleDir, double i_fVal, const PhysVal::CUnit* i_pUnit = nullptr ) const;
+    double round2ValRes( const CEnumScaleDir& i_scaleDir, double i_fVal, const PhysVal::CUnit* i_pUnit = nullptr ) const;
+    void setValues( const CEnumScaleDir& i_scaleDir, const PhysVal::CPhysValArr& i_physValArr );
     void setValues(
-        EScaleDir              i_scaleDir,
+        const CEnumScaleDir&   i_scaleDir,
         const QVector<double>& i_arfValues,
-        PhysVal::CUnit*        i_pUnitVal = nullptr,
+        const PhysVal::CUnit*  i_pUnitVal = nullptr,
         double                 i_fRes = 0.0,
         PhysVal::CUnit*        i_pUnitRes = nullptr );
-    bool areValuesValid( EScaleDir i_scaleDir ) const;
-    int getValCount( EScaleDir i_scaleDir ) const;
-    QVector<double> getValues( EScaleDir i_scaleDir ) const;
-    int getValPix( EScaleDir i_scaleDir, double i_fVal, PhysVal::CUnit* i_pUnit = nullptr ) const;
+    bool areValuesValid( const CEnumScaleDir& i_scaleDir ) const;
+    int getValCount( const CEnumScaleDir& i_scaleDir ) const;
+    QVector<double> getValues( const CEnumScaleDir& i_scaleDir ) const;
+    int getValPix( const CEnumScaleDir& i_scaleDir, double i_fVal, const PhysVal::CUnit* i_pUnit = nullptr ) const;
     QString getValString(
-        EScaleDir       i_scaleDir,
-        double          i_fVal,
-        PhysVal::CUnit* i_pUnit = nullptr,
-        int             i_iDigitsCountMax = 0,
-        bool            i_bUseEngineeringFormat = false ) const;
+        const CEnumScaleDir&  i_scaleDir,
+        double                i_fVal,
+        const PhysVal::CUnit* i_pUnit = nullptr,
+        int                   i_iDigitsCountMax = 0,
+        bool                  i_bUseEngineeringFormat = false ) const;
     ZS::System::EValueValidity getVal(
-        EScaleDir       i_scaleDirSrc,
-        double          i_fValSrc,
-        PhysVal::CUnit* i_pUnitSrc,
-        EScaleDir       i_scaleDirDst,
-        double*         o_pfValDst,
-        PhysVal::CUnit* i_pUnitDst = nullptr,
-        bool            i_bRound2Res = true ) const;
-    double getVal( EScaleDir i_scaleDir, double i_fPix, PhysVal::CUnit* i_pUnit = nullptr ) const;
+        const CEnumScaleDir&  i_scaleDirSrc,
+        double                i_fValSrc,
+        const PhysVal::CUnit* i_pUnitSrc,
+        const CEnumScaleDir&  i_scaleDirDst,
+        double*               o_pfValDst,
+        PhysVal::CUnit*       i_pUnitDst = nullptr,
+        bool                  i_bRound2Res = true ) const;
+    double getVal( const CEnumScaleDir& i_scaleDir, double i_fPix, const PhysVal::CUnit* i_pUnit = nullptr ) const;
     void invalidate( unsigned int i_uUpdateFlags );
     void validate( unsigned int i_uUpdateFlags );
     void update( unsigned int i_uUpdateFlags );
@@ -123,9 +123,9 @@ protected:  // class members
 protected:  // instance members
     QString m_strObjName;
     CDataDiagram* m_pDiagram;
-    CDiagScale* m_arpDiagScale[EScaleDirCount];
-    PhysVal::CPhysVal m_arphysValRes[EScaleDirCount];
-    PhysVal::CPhysValArr m_arphysValArr[EScaleDirCount];
+    QVector<CDiagScale*> m_arpDiagScale;
+    QVector<PhysVal::CPhysVal> m_arphysValRes;
+    QVector<PhysVal::CPhysValArr> m_arphysValArr;
     unsigned int m_uUpdateFlags;
 protected:  // instance members
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;

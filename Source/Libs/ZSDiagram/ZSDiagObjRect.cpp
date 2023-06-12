@@ -56,9 +56,10 @@ CDiagObjRect::CDiagObjRect(
     CDiagTrace*    i_pDiagTrace ) :
 //------------------------------------------------------------------------------
     CDiagObj(
-        /* strObjName */ i_strObjName,
-        /* pDiagTrace */ i_pDiagTrace,
-        /* layoutPos  */ ELayoutPosCenter ),
+        /* strClassName */ CDiagObjRect::ClassName(),
+        /* strObjName   */ i_strObjName,
+        /* pDiagTrace   */ i_pDiagTrace,
+        /* layoutPos    */ ELayoutPosCenter ),
     m_pen(Qt::white),
     m_brush(),
     m_rct(),
@@ -160,7 +161,7 @@ void CDiagObjRect::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDe
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObjUpdate != nullptr && m_pTrcAdminObjUpdate->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjUpdate, EMethodTraceDetailLevel::ArgsNormal))
     {
         strTrcMsg = updateFlags2Str(i_uUpdateFlags);
     }
@@ -205,8 +206,8 @@ void CDiagObjRect::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDe
     {
         if( m_pDiagTrace != nullptr )
         {
-            QVector<double> arfXValues = m_pDiagTrace->getValues(EScaleDirX);
-            QVector<double> arfYValues = m_pDiagTrace->getValues(EScaleDirY);
+            QVector<double> arfXValues = m_pDiagTrace->getValues(EScaleDir::X);
+            QVector<double> arfYValues = m_pDiagTrace->getValues(EScaleDir::Y);
 
             mthTracer.trace("Processing Data", ELogDetailLevel::Debug);
 
@@ -226,10 +227,10 @@ void CDiagObjRect::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDe
                 return;
             }
 
-            double fXMin = m_pDiagTrace->getScale(EScaleDirX).m_fMin;
-            double fXMax = m_pDiagTrace->getScale(EScaleDirX).m_fMax;
-            double fYMin = m_pDiagTrace->getScale(EScaleDirY).m_fMin;
-            double fYMax = m_pDiagTrace->getScale(EScaleDirY).m_fMax;
+            double fXMin = m_pDiagTrace->getScale(EScaleDir::X).m_fMin;
+            double fXMax = m_pDiagTrace->getScale(EScaleDir::X).m_fMax;
+            double fYMin = m_pDiagTrace->getScale(EScaleDir::Y).m_fMin;
+            double fYMax = m_pDiagTrace->getScale(EScaleDir::Y).m_fMax;
             int    x1, x2;
             int    y1, y2;
 
@@ -245,10 +246,10 @@ void CDiagObjRect::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDe
             if( fY1 > fYMax ) fY1 = fYMax;
 
             // Calculate the points between XScaleMin and XScaleMax ...
-            x1 = m_pDiagTrace->getValPix(EScaleDirX, fX1);
-            x2 = m_pDiagTrace->getValPix(EScaleDirX, fX2);
-            y1 = m_pDiagTrace->getValPix(EScaleDirY, fY1);
-            y2 = m_pDiagTrace->getValPix(EScaleDirY, fY2);
+            x1 = m_pDiagTrace->getValPix(EScaleDir::X, fX1);
+            x2 = m_pDiagTrace->getValPix(EScaleDir::X, fX2);
+            y1 = m_pDiagTrace->getValPix(EScaleDir::Y, fY1);
+            y2 = m_pDiagTrace->getValPix(EScaleDir::Y, fY2);
 
             if( x1 < x2 )
             {

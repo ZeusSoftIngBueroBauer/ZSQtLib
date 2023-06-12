@@ -107,7 +107,7 @@ public: // instance methods to set and get the attributes of the diagram
     SFrameStyle* getFrameStylePartCenter();
     QPixmap* getPixmap();
 public: // overridables of base class CDataDiagram
-    virtual void update( CDiagObj* i_pDiagObj, const QRect& i_rect );
+    virtual void update( CDiagObj* i_pDiagObj, const QRect& i_rect ) override;
     virtual void invalidate( CDiagObj* i_pDiagObj, unsigned int i_uUpdateFlags ) override;
 protected: // overridable auxiliary instance methods of base class CDataDiagram
     virtual void updateLayout() override;

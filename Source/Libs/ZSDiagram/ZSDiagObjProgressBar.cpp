@@ -56,9 +56,10 @@ CDiagObjProgressBar::CDiagObjProgressBar(
     ELayoutPos     i_layoutPos ) :
 //------------------------------------------------------------------------------
     CDiagObj(
-        /* strObjName */ i_strObjName,
-        /* pDiagTrace */ nullptr,
-        /* layoutPos  */ i_layoutPos ),
+        /* strClassName */ CDiagObjProgressBar::ClassName(),
+        /* strObjName   */ i_strObjName,
+        /* pDiagTrace   */ nullptr,
+        /* layoutPos    */ i_layoutPos ),
     m_fValMin(0.0),
     m_fValMax(100.0),
     m_fVal(0.0),
@@ -408,7 +409,7 @@ void CDiagObjProgressBar::update( unsigned int i_uUpdateFlags, QPaintDevice* i_p
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObjUpdate != nullptr && m_pTrcAdminObjUpdate->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjUpdate, EMethodTraceDetailLevel::ArgsNormal))
     {
         strTrcMsg = updateFlags2Str(i_uUpdateFlags);
     }

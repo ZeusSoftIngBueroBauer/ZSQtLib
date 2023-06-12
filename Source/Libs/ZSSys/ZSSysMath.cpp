@@ -635,9 +635,9 @@ double Math::round2Resolution( double i_fVal, double i_fRes )
     @return Value rounded to the lower decade.
 
     @examples
-        round2UpperDecade(0.01) = 0.01
+        round2LowerDecade(0.01) = 0.01
         round2LowerDecade(0.056734) = 0.01
-        round2UpperDecade(10.0) = 10.0
+        round2LowerDecade(10.0) = 10.0
         round2LowerDecade(56734.45) = 10000
 */
 double Math::round2LowerDecade( double i_fVal )
@@ -1021,7 +1021,7 @@ int Math::getFirstSignificantDigit( double i_fVal )
         int iMant = 0;
         int iExp  = 0;
         normalize(0.054734, &iSign, &iMant, &iExp);
-        -> iSign = 1; iMant = 5; iExp = -1
+        -> iSign = 1; iMant = 5; iExp = -2
 */
 void Math::normalize( double i_fVal, int* o_piSign, int* o_piMant, int* o_piExp )
 //------------------------------------------------------------------------------
@@ -1037,14 +1037,11 @@ void Math::normalize( double i_fVal, int* o_piSign, int* o_piMant, int* o_piExp 
     }
     else if( fValAbs < 1.0 && fValAbs > 0.0 )
     {
-        double fValTmp;
-        double fFractTmp;
-        double fIntTmp;
-
-        fValTmp = log10(fValAbs);
+        double fValTmp = log10(fValAbs);
         iValExp = static_cast<int>(fValTmp);
 
-        fFractTmp = modf(fValTmp,&fIntTmp);
+        double fIntTmp = 0.0;
+        double fFractTmp = modf(fValTmp, &fIntTmp);
         if( fFractTmp != 0.0 )
         {
             iValExp--;

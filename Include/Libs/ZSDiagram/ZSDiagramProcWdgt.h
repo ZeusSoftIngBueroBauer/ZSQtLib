@@ -91,6 +91,8 @@ public: // overridables
     virtual QString className() { return ClassName(); }
 signals:
     void aboutToBeDestroyed(const QString& i_strObjName);
+    void diagItemAdded(const QString& i_strClassName, const QString& i_strObjName);
+    void diagItemRemoved(const QString& i_strClassName, const QString& i_strObjName);
     void diagScaleAdded(const QString& i_strObjName);
     void diagScaleRemoved(const QString& i_strObjName);
     void diagTraceAdded(const QString& i_strObjName);
@@ -103,9 +105,9 @@ public: // instance methods
     CDiagObj* getDiagObjFocused();
     CDiagObj* getDiagObjEditing();
 public: // instance methods to set optional attributes of the diagram
-    void enableZooming( EScaleDir i_scaleDir = EScaleDirCount );
-    void disableZooming( EScaleDir i_scaleDir = EScaleDirCount );
-    bool isZoomingEnabled( EScaleDir i_scaleDir = EScaleDirCount ) const;
+    void enableZooming( const CEnumScaleDir& i_scaleDir = CEnumScaleDir() );
+    void disableZooming( const CEnumScaleDir& i_scaleDir = CEnumScaleDir() );
+    bool isZoomingEnabled( const CEnumScaleDir& i_scaleDir = CEnumScaleDir() ) const;
     void enableContextPopupMenu();
     void disableContextPopupMenu();
     bool isContextPopupMenuEnabled() const;
@@ -159,6 +161,9 @@ protected: // overridables
 protected slots: // overridable instance methods
     virtual void popupMenuContextItemSaveActivated( void );
     virtual void popupMenuContextItemPrintActivated( void );
+protected: // auxiliary instance methods (method tracing)
+    void emit_diagItemAdded(const QString& i_strClassName, const QString& i_strObjName);
+    void emit_diagItemRemoved(const QString& i_strClassName, const QString& i_strObjName);
 protected: // overridables of base class CDataDiagram for emitting the signals
     void emit_aboutToBeDestroyed(const QString& i_strObjName) override;
     void emit_diagScaleAdded(const QString& i_strObjName) override;

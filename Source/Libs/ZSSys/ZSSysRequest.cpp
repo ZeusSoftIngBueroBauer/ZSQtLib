@@ -649,15 +649,10 @@ CRequest::CRequest(
 
     if( m_dscr.m_pObjCreator != nullptr )
     {
-        if( !QObject::connect(
-            /* pObjSender   */ m_dscr.m_pObjCreator,
-            /* szSignal     */ SIGNAL(destroyed(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onCreatorDestroyed(QObject*)),
-            /* cnctType     */ Qt::DirectConnection ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
+        QObject::connect(
+            m_dscr.m_pObjCreator, &QObject::destroyed,
+            this, &CRequest::onCreatorDestroyed,
+            Qt::DirectConnection);
     }
 
     QString strObjName;
@@ -712,16 +707,11 @@ CRequest::CRequest(
             m_dscr.m_strThreadName = QString("Thread") + threadId2Str(QThread::currentThreadId());
         }
 
-        if( !QObject::connect(
-            /* pObjSender   */ m_dscr.m_pThread,
-            /* szSignal     */ SIGNAL(finished()),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onThreadFinished()),
-            /* cnctType     */ Qt::DirectConnection ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-    } // if( m_dscr.m_pThread != nullptr )
+        QObject::connect(
+            m_dscr.m_pThread, &QThread::finished,
+            this, &CRequest::onThreadFinished,
+            Qt::DirectConnection);
+    }
 
     m_dscr.m_objState = EObjState::Created;
 
@@ -783,15 +773,10 @@ CRequest::CRequest( const SRequestDscr& i_reqDscr ) :
 
     if( m_dscr.m_pObjCreator != nullptr )
     {
-        if( !QObject::connect(
-            /* pObjSender   */ m_dscr.m_pObjCreator,
-            /* szSignal     */ SIGNAL(destroyed(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onCreatorDestroyed(QObject*)),
-            /* cnctType     */ Qt::DirectConnection ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
+        QObject::connect(
+            m_dscr.m_pObjCreator, &QObject::destroyed,
+            this, &CRequest::onCreatorDestroyed,
+            Qt::DirectConnection);
     }
 
     QString strObjName;
@@ -845,17 +830,11 @@ CRequest::CRequest( const SRequestDscr& i_reqDscr ) :
         {
             m_dscr.m_strThreadName = QString("Thread") + threadId2Str(QThread::currentThreadId());
         }
-
-        if( !QObject::connect(
-            /* pObjSender   */ m_dscr.m_pThread,
-            /* szSignal     */ SIGNAL(finished()),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onThreadFinished()),
-            /* cnctType     */ Qt::DirectConnection ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-    } // if( m_dscr.m_pThread != nullptr )
+        QObject::connect(
+            m_dscr.m_pThread, &QThread::finished,
+            this, &CRequest::onThreadFinished,
+            Qt::DirectConnection);
+    }
 
     m_dscr.m_objState = EObjState::Created;
 

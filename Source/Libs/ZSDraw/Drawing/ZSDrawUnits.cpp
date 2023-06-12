@@ -205,19 +205,19 @@ void CUnitsLength::setPxpis( double i_fPxpiX, double i_fPxpiY )
 /*! Returns the logical resolution of a pixel on the screen for the specified
     direction in pixel/inch.
 
-    @param [in] i_direction
+    @param [in] i_orientation
         Direction (Vertical or Horizontal) for which the resolution is returned.
 
     @return
         Resolution in pixels per inch.
 */
-double CUnitsLength::pxpi( EDirection i_direction ) const
+double CUnitsLength::pxpi( EOrientation i_orientation ) const
 //------------------------------------------------------------------------------
 {
     QString strRefValName;
-    if( i_direction == EDirection::Horizontal ) {
+    if( i_orientation == EOrientation::Horizontal ) {
         strRefValName = "PxpiX";
-    } else if( i_direction == EDirection::Vertical ) {
+    } else if( i_orientation == EOrientation::Vertical ) {
         strRefValName = "PxpiY";
     }
     return getReferenceValue(strRefValName).getVal();
@@ -273,19 +273,19 @@ void CUnitsLength::setDpis( double i_fDpiX, double i_fDpiY )
 /*! Returns the resolution of a dot on the print device for the specified
     direction in dots/inch.
 
-    @param [in] i_direction
+    @param [in] i_orientation
         Direction (Vertical or Horizontal) for which the resolution is returned.
 
     @return
         Resolution in dots per inch.
 */
-double CUnitsLength::dpi( EDirection i_direction ) const
+double CUnitsLength::dpi( EOrientation i_orientation ) const
 //------------------------------------------------------------------------------
 {
     QString strRefValName;
-    if( i_direction == EDirection::Horizontal ) {
+    if( i_orientation == EOrientation::Horizontal ) {
         strRefValName = "DpiX";
-    } else if( i_direction == EDirection::Vertical ) {
+    } else if( i_orientation == EOrientation::Vertical ) {
         strRefValName = "DpiY";
     }
     return getReferenceValue(strRefValName).getVal();

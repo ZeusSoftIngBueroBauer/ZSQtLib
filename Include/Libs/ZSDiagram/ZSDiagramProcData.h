@@ -68,7 +68,7 @@ public: // overridables to update the content of the diagram
     virtual void invalidate( CDiagObj* i_pDiagObj, unsigned int i_uUpdateFlags );
     virtual void validate( unsigned int i_uUpdateFlags );
 public: // overridables to rescale the diagram or output new X/Y values
-    virtual void setSpacing( EScaleDir i_scaleDir, ESpacing i_spacing );
+    virtual void setSpacing( const CEnumScaleDir& i_scaleDir, const CEnumSpacing& i_spacing );
 public: // instance methods to add and remove scale objects
     void addDiagScale( CDiagScale* i_pDiagScale );
     void removeDiagScale( CDiagScale* i_pDiagScale );
@@ -125,7 +125,7 @@ protected:  // instance members
     EMeasState m_measState;
     EMeasMode m_measMode;
     int m_iMeasType;
-    ESpacing m_arSpacing[EScaleDirCount];
+    QVector<ESpacing> m_arSpacing;
     /*!< List with scale objects. */
     QVector<CDiagScale*> m_arpDiagScales;
     /*!< List with traces. */

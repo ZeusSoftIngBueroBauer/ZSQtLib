@@ -56,8 +56,6 @@ public: // ctors and dtor
         ELayoutPos     i_layoutPos,
         int            i_iStateCount = 1 );
     virtual ~CDiagObjLabel();
-public: // must overridables of base class CDiagObj
-    virtual QString className() { return ClassName(); }
 public: // instance methods
     void setState( int i_iState );
     int getState() const;
@@ -97,8 +95,8 @@ public: // instance methods
     QFont getFont() const;
     void setTextAlignmentFlags( int i_iAlignmentFlags );
     int getTextAlignmentFlags() const;
-    void setTextDirection( ETextDirection i_textDirection );
-    ETextDirection getTextDirection() const;
+    void setTextOrientation( ETextOrientation i_textOrientation );
+    ETextOrientation getTextOrientation() const;
     void setPixmap( const QPixmap& i_pxm, int i_iState = 0 );
     QPixmap getPixmap( int i_iState = 0 ) const;
     void setPixmapAlignmentFlags( int i_iAlignmentFlags );
@@ -135,7 +133,7 @@ protected:  // instance members
     QColor*         m_arcolText;
     QFont           m_fntText;
     int             m_iTextAlignmentFlags;
-    ETextDirection  m_textDirection;
+    ETextOrientation  m_textOrientation;
     QPixmap*        m_arpxm;
     int             m_iPixmapAlignmentFlags;
     QRect           m_rectOuterFrame;

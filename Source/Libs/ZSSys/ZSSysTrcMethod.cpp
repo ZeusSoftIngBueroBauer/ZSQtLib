@@ -78,20 +78,15 @@ CMethodTracer::CMethodTracer(
 {
     if( m_pTrcAdminObj != nullptr )
     {
-        if( !QObject::connect(
-            /* pObjSender   */ m_pTrcAdminObj,
-            /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onAdminObjAboutToBeDestroyed(QObject*)),
-            /* cnctType     */ Qt::DirectConnection ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
+        QObject::connect(
+            m_pTrcAdminObj, &CTrcAdminObj::aboutToBeDestroyed,
+            this, &CMethodTracer::onAdminObjAboutToBeDestroyed,
+            Qt::DirectConnection);
+
         if( m_pTrcAdminObj->areMethodCallsActive(m_eEnterLeaveFilterDetailLevel)
          && !m_pTrcAdminObj->isTraceDataSuppressedByFilter(i_strMethodInArgs) )
         {
             CTrcServer* pTrcServer = m_pTrcAdminObj->getTraceServer();
-
             if( pTrcServer != nullptr )
             {
                 pTrcServer->traceMethodEnter(
@@ -142,20 +137,15 @@ CMethodTracer::CMethodTracer(
 {
     if( m_pTrcAdminObj != nullptr )
     {
-        if( !QObject::connect(
-            /* pObjSender   */ m_pTrcAdminObj,
-            /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onAdminObjAboutToBeDestroyed(QObject*)),
-            /* cnctType     */ Qt::DirectConnection ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
+        QObject::connect(
+            m_pTrcAdminObj, &CTrcAdminObj::aboutToBeDestroyed,
+            this, &CMethodTracer::onAdminObjAboutToBeDestroyed,
+            Qt::DirectConnection);
+
         if( m_pTrcAdminObj->areMethodCallsActive(m_eEnterLeaveFilterDetailLevel)
          && !m_pTrcAdminObj->isTraceDataSuppressedByFilter(i_strMethodInArgs) )
         {
             CTrcServer* pTrcServer = m_pTrcAdminObj->getTraceServer();
-
             if( pTrcServer != nullptr )
             {
                 pTrcServer->traceMethodEnter(
@@ -223,7 +213,6 @@ CMethodTracer::CMethodTracer(
     if( m_pTrcMthFile != nullptr && m_eMethodCallsTrcDetailLevel >= m_eEnterLeaveFilterDetailLevel )
     {
         QString strMth = buildPathStr("::", m_strNameSpace, m_strClassName, m_strObjName);
-
         if( !strMth.isEmpty() && !m_strMethod.isEmpty() )
         {
             strMth += "." + m_strMethod;
@@ -291,20 +280,15 @@ CMethodTracer::CMethodTracer(
 {
     if( m_pTrcAdminObj != nullptr )
     {
-        if( !QObject::connect(
-            /* pObjSender   */ m_pTrcAdminObj,
-            /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onAdminObjAboutToBeDestroyed(QObject*)),
-            /* cnctType     */ Qt::DirectConnection ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
+        QObject::connect(
+            m_pTrcAdminObj, &CTrcAdminObj::aboutToBeDestroyed,
+            this, &CMethodTracer::onAdminObjAboutToBeDestroyed,
+            Qt::DirectConnection);
+
         if( m_pTrcAdminObj->areMethodCallsActive(m_eEnterLeaveFilterDetailLevel)
          && !m_pTrcAdminObj->isTraceDataSuppressedByFilter(i_strMethodInArgs) )
         {
             CTrcServer* pTrcServer = m_pTrcAdminObj->getTraceServer();
-
             if( pTrcServer != nullptr )
             {
                 pTrcServer->traceMethodEnter(
@@ -322,7 +306,6 @@ CMethodTracer::CMethodTracer(
         if( m_eMethodCallsTrcDetailLevel >= m_eEnterLeaveFilterDetailLevel )
         {
             QString strMth = buildPathStr("::", m_strNameSpace, m_strClassName, m_strObjName);
-
             if( !strMth.isEmpty() && !m_strMethod.isEmpty() )
             {
                 strMth += "." + m_strMethod;
@@ -358,7 +341,6 @@ CMethodTracer::~CMethodTracer()
         if( m_bEnterTraced )
         {
             QString strMth = buildPathStr("::", m_strNameSpace, m_strClassName, m_strObjName);
-
             if( !strMth.isEmpty() && !m_strMethod.isEmpty() )
             {
                 strMth += "." + m_strMethod;
@@ -399,15 +381,12 @@ void CMethodTracer::onAdminObjAboutToBeReleased()
     if( m_pTrcAdminObj != nullptr )
     {
         QObject::disconnect(
-            /* pObjSender   */ m_pTrcAdminObj,
-            /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onAdminObjAboutToBeDestroyed(QObject*)) );
+            m_pTrcAdminObj, &CTrcAdminObj::aboutToBeDestroyed,
+            this, &CMethodTracer::onAdminObjAboutToBeDestroyed);
 
         if( m_bEnterTraced )
         {
             CTrcServer* pTrcServer = m_pTrcAdminObj->getTraceServer();
-
             if( pTrcServer != nullptr )
             {
                 pTrcServer->traceMethodLeave(

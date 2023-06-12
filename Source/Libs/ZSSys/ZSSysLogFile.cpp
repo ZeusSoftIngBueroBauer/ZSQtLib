@@ -241,14 +241,10 @@ CLogFile::CLogFile() :
 
     m_pTimerAutoSave = new QTimer(this);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTimerAutoSave,
-        /* szSignal     */ SIGNAL(timeout()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTimeoutAutoSaveFile()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pTimerAutoSave, &QTimer::timeout,
+        this, &CLogFile::onTimeoutAutoSaveFile);
+
 } // ctor
 
 //------------------------------------------------------------------------------

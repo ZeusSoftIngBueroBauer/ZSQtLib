@@ -64,11 +64,12 @@ CDiagObjTable::CDiagObjTable(
     ELayoutPos     i_layoutPos ) :
 //------------------------------------------------------------------------------
     CDiagObj(
-        /* strObjName */ i_strObjName,
-        /* pDiagTrace */ nullptr,
-        /* layoutPos  */ i_layoutPos ),
+        /* strClassName */ CDiagObjTable::ClassName(),
+        /* strObjName   */ i_strObjName,
+        /* pDiagTrace   */ nullptr,
+        /* layoutPos    */ i_layoutPos ),
     // The following table and cell properties will be set:
-    //m_arbShowGridLines[EOrientationCount]
+    m_arbShowGridLines(CEnumOrientation::count(), false),
     m_colGridLines(Qt::lightGray),
     m_colText(Qt::black),
     m_fnt(),
@@ -121,10 +122,6 @@ CDiagObjTable::CDiagObjTable(
         /* strMethod    */ "ctor",
         /* strAddInfo   */ "" );
 
-    for( int idxOrientation = 0; idxOrientation < EOrientationCount; idxOrientation++ )
-    {
-        m_arbShowGridLines[idxOrientation] = false;
-    }
     if( m_iRowCountMax == 0 )
     {
         m_iRowCountMax = 1;
@@ -355,19 +352,18 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDiagObjTable::showGridLines( EOrientation i_orientation )
+void CDiagObjTable::showGridLines( const CEnumOrientation& i_orientation )
 //------------------------------------------------------------------------------
 {
-    int idxMin = i_orientation;
-    int idxMax = i_orientation;
-    int idxOrientation;
+    int idxMin = 0;
+    int idxMax = CEnumOrientation::count()-1;
 
-    if( i_orientation == EOrientationCount )
+    if( i_orientation.isValid() )
     {
-        idxMin = 0;
-        idxMax = EOrientationCount-1;
+        idxMin = i_orientation.enumeratorAsInt();
+        idxMax = i_orientation.enumeratorAsInt();
     }
-    for( idxOrientation = idxMin; idxOrientation <= idxMax; idxOrientation++ )
+    for( int idxOrientation = idxMin; idxOrientation <= idxMax; idxOrientation++ )
     {
         m_arbShowGridLines[idxOrientation] = true;
     }
@@ -377,19 +373,19 @@ void CDiagObjTable::showGridLines( EOrientation i_orientation )
 } // showGridLines
 
 //------------------------------------------------------------------------------
-void CDiagObjTable::hideGridLines( EOrientation i_orientation )
+void CDiagObjTable::hideGridLines( const CEnumOrientation& i_orientation )
 //------------------------------------------------------------------------------
 {
-    int idxMin = i_orientation;
-    int idxMax = i_orientation;
-    int idxOrientation;
+    int idxMin = 0;
+    int idxMax = CEnumOrientation::count()-1;
 
-    if( i_orientation == EOrientationCount )
+    if( i_orientation.isValid() )
     {
-        idxMin = 0;
-        idxMax = EOrientationCount-1;
+        idxMin = i_orientation.enumeratorAsInt();
+        idxMax = i_orientation.enumeratorAsInt();
     }
-    for( idxOrientation = idxMin; idxOrientation <= idxMax; idxOrientation++ )
+
+    for( int idxOrientation = idxMin; idxOrientation <= idxMax; idxOrientation++ )
     {
         m_arbShowGridLines[idxOrientation] = false;
     }
@@ -1895,7 +1891,7 @@ CDiagObj* CDiagObjTable::clone( CDataDiagram* i_pDiagramTrg ) const
     pDiagObj->m_bIsEditable = m_bIsEditable;
 
     // The following table and cell properties will be set:
-    for( idxOrientation = 0; idxOrientation < EOrientationCount; idxOrientation++ )
+    for( idxOrientation = 0; idxOrientation < CEnumOrientation::count(); idxOrientation++ )
     {
         pDiagObj->m_arbShowGridLines[idxOrientation] = m_arbShowGridLines[idxOrientation];
     }
@@ -2000,7 +1996,7 @@ void CDiagObjTable::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintD
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObjUpdate != nullptr && m_pTrcAdminObjUpdate->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjUpdate, EMethodTraceDetailLevel::ArgsNormal))
     {
         strTrcMsg = updateFlags2Str(i_uUpdateFlags);
     }
@@ -2426,7 +2422,7 @@ void CDiagObjTable::updatePixmap( QPaintDevice* i_pPaintDevice )
         // Horizontal grid lines
         //----------------------
 
-        if( m_arbShowGridLines[EOrientationHorizontal] )
+        if( m_arbShowGridLines[static_cast<int>(EOrientation::Horizontal)] )
         {
             painter.setPen(m_colGridLines);
 
@@ -2445,7 +2441,7 @@ void CDiagObjTable::updatePixmap( QPaintDevice* i_pPaintDevice )
         // Vertical grid lines
         //----------------------
 
-        if( m_arbShowGridLines[EOrientationVertical] )
+        if( m_arbShowGridLines[static_cast<int>(EOrientation::Vertical)] )
         {
             painter.setPen(m_colGridLines);
 
@@ -2468,7 +2464,8 @@ void CDiagObjTable::updatePixmap( QPaintDevice* i_pPaintDevice )
         {
             m_pFrameStyle->draw( &painter, rectTableFrame );
         }
-        else if( m_arbShowGridLines[EOrientationHorizontal] || m_arbShowGridLines[EOrientationVertical] )
+        else if( m_arbShowGridLines[static_cast<int>(EOrientation::Horizontal)]
+              || m_arbShowGridLines[static_cast<int>(EOrientation::Vertical)] )
         {
             painter.setPen(m_colGridLines);
             painter.drawRect(rectTableFrame);
@@ -2745,7 +2742,7 @@ void CDiagObjTable::clmValueChanged( CDiagObj* i_pDiagObjValSrc )
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::EnterLeave))
     {
         if( i_pDiagObjValSrc != nullptr )
         {
@@ -2787,7 +2784,7 @@ void CDiagObjTable::cellValueChanged( CDiagObj* i_pDiagObjValSrc )
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::EnterLeave))
     {
         if( i_pDiagObjValSrc != nullptr )
         {

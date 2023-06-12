@@ -307,7 +307,7 @@ CDataDiagram* CPixmapDiagram::clone( EDiagramUpdateType i_diagramUpdateType ) co
         pPixmapDiagram->m_measMode = m_measMode;
         pPixmapDiagram->m_iMeasType = m_iMeasType;
 
-        for (int idx = 0; idx < EScaleDirCount; idx++)
+        for (int idx = 0; idx < CEnumScaleDir::count(); idx++)
         {
             pPixmapDiagram->m_arSpacing[idx] = m_arSpacing[idx];
         }
@@ -1020,7 +1020,7 @@ void CPixmapDiagram::invalidate( CDiagObj* i_pDiagObj, unsigned int i_uUpdateFla
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObjValidate != nullptr && m_pTrcAdminObjValidate->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjValidate, EMethodTraceDetailLevel::ArgsNormal))
     {
         if( i_pDiagObj != nullptr )
         {
@@ -1111,7 +1111,7 @@ void CPixmapDiagram::update( CDiagObj* i_pDiagObj, const QRect& i_rect )
     QString strMthInArgs;
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjUpdate != nullptr && m_pTrcAdminObjUpdate->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjUpdate, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = QString(i_pDiagObj == nullptr ? "null" : i_pDiagObj->getObjName());
         strMthInArgs += ", " + qRect2Str(i_rect);
@@ -1280,19 +1280,19 @@ void CPixmapDiagram::updateLayout()
         // called invalidating the data of all objects linked to the changed scale.
         switch( pDiagScale->getScaleDir() )
         {
-            case EScaleDirX:
+            case EScaleDir::X:
             {
-                if( pDiagScale->getScaleMinValPix() != m_rectPartCenter.left()
-                 || pDiagScale->getScaleMaxValPix() != m_rectPartCenter.right() )
+                if( pDiagScale->getMinValPix() != m_rectPartCenter.left()
+                 || pDiagScale->getMaxValPix() != m_rectPartCenter.right() )
                 {
                     pDiagScale->setGeometry(m_rectPartCenter.left(),m_rectPartCenter.right());
                 }
                 break;
             }
-            case EScaleDirY:
+            case EScaleDir::Y:
             {
-                if( pDiagScale->getScaleMinValPix() != m_rectPartCenter.bottom()
-                 || pDiagScale->getScaleMaxValPix() != m_rectPartCenter.top() )
+                if( pDiagScale->getMinValPix() != m_rectPartCenter.bottom()
+                 || pDiagScale->getMaxValPix() != m_rectPartCenter.top() )
                 {
                     pDiagScale->setGeometry(m_rectPartCenter.bottom(),m_rectPartCenter.top());
                 }
@@ -1459,19 +1459,19 @@ void CPixmapDiagram::updateLayout()
             // called invalidating the data of all objects linked to the changed scale.
             switch( pDiagScale->getScaleDir() )
             {
-                case EScaleDirX:
+                case EScaleDir::X:
                 {
-                    if( pDiagScale->getScaleMinValPix() != m_rectPartCenter.left()
-                     || pDiagScale->getScaleMaxValPix() != m_rectPartCenter.right() )
+                    if( pDiagScale->getMinValPix() != m_rectPartCenter.left()
+                     || pDiagScale->getMaxValPix() != m_rectPartCenter.right() )
                     {
                         pDiagScale->setGeometry(m_rectPartCenter.left(),m_rectPartCenter.right());
                     }
                     break;
                 }
-                case EScaleDirY:
+                case EScaleDir::Y:
                 {
-                    if( pDiagScale->getScaleMinValPix() != m_rectPartCenter.bottom()
-                     || pDiagScale->getScaleMaxValPix() != m_rectPartCenter.top() )
+                    if( pDiagScale->getMinValPix() != m_rectPartCenter.bottom()
+                     || pDiagScale->getMaxValPix() != m_rectPartCenter.top() )
                     {
                         pDiagScale->setGeometry(m_rectPartCenter.bottom(),m_rectPartCenter.top());
                     }

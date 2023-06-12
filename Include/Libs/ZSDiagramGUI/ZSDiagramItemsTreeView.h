@@ -24,10 +24,10 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSDiagram_ObjsTreeView_h
-#define ZSDiagram_ObjsTreeView_h
+#ifndef ZSDiagram_ItemsTreeView_h
+#define ZSDiagram_ItemsTreeView_h
 
-#include <QtCore/qglobal.h>
+#include "ZSDiagramGUI/ZSDiagramGUIDllMain.h"
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qstyleditemdelegate.h>
@@ -36,8 +36,6 @@ may result in using the software modules.
 #include <QtWidgets/qstyleditemdelegate.h>
 #include <QtWidgets/qtreeview.h>
 #endif
-
-#include "ZSDiagramGUI/ZSDiagramObjsTreeModel.h"
 
 class QLineEdit;
 
@@ -54,6 +52,8 @@ class CWdgtDiagram;
 
 namespace GUI
 {
+class CModelDiagramItems;
+
 //******************************************************************************
 class ZSDIAGRAMGUIDLL_API CDelegateDiagramObjsTreeView : public QStyledItemDelegate
 //******************************************************************************
@@ -100,16 +100,16 @@ private: // instance members
 }; // class CDelegateDiagramObjsTreeView
 
 //******************************************************************************
-class ZSDIAGRAMGUIDLL_API CTreeViewDiagramObjs : public QTreeView
+class ZSDIAGRAMGUIDLL_API CTreeViewDiagramItems : public QTreeView
 //******************************************************************************
 {
     Q_OBJECT
 public: // class methods
     static QString NameSpace() { return "ZS::Diagram::GUI"; }
-    static QString ClassName() { return "CTreeViewDiagramObjs"; }
+    static QString ClassName() { return "CTreeViewDiagramItems"; }
 public: // ctors and dtor
-    CTreeViewDiagramObjs(CWdgtDiagram* i_pDiagram, QWidget* i_pWdgtParent = nullptr );
-    virtual ~CTreeViewDiagramObjs();
+    CTreeViewDiagramItems(CWdgtDiagram* i_pDiagram, QWidget* i_pWdgtParent = nullptr );
+    virtual ~CTreeViewDiagramItems();
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
     virtual QString className() const { return ClassName(); }
@@ -150,7 +150,7 @@ protected slots:
 protected: // instance members
     CWdgtDiagram* m_pDiagram;
     CDelegateDiagramObjsTreeView* m_pDelegate;
-    CModelDiagramObjs* m_pModel;
+    CModelDiagramItems* m_pModel;
     QMenu* m_pMenuDiagramObjContext;
     QAction* m_pActionDiagramObjTitle;
     QAction* m_pActionDiagramObjExpand;
@@ -162,7 +162,7 @@ protected: // instance members
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjEvent;
 
-}; // class CTreeViewDiagramObjs
+}; // class CTreeViewDiagramItems
 
 } // namespace GUI
 
@@ -170,4 +170,4 @@ protected: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZSDiagram_ObjsTreeView_h
+#endif // #ifndef ZSDiagram_ItemsTreeView_h

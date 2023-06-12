@@ -909,6 +909,58 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+QVector<CUnit> CUnit::getAllUnitsOfGroup() const
+//------------------------------------------------------------------------------
+{
+    QVector<CUnit> arUnits;
+    if( m_pTreeEntry != nullptr ) {
+        CUnitsTreeEntryGrpBase* pUnitGrp = CIdxTreeUnits::GetInstance()->findUnitGrp(m_strGrpPath);
+        if (pUnitGrp != nullptr) {
+            for (int idxUnit = 0; idxUnit < pUnitGrp->count(); ++idxUnit) {
+                CUnitsTreeEntryUnitBase* pUnitEntry =
+                    dynamic_cast<CUnitsTreeEntryUnitBase*>(pUnitGrp->at(idxUnit));
+                if (pUnitEntry != nullptr) {
+                    arUnits.append(pUnitEntry);
+                }
+            }
+        }
+    }
+    return arUnits;
+}
+
+//------------------------------------------------------------------------------
+CUnit CUnit::getLowestUnit() const
+//------------------------------------------------------------------------------
+{
+    CUnit unitLowest;
+    if( m_pTreeEntry != nullptr ) {
+        CUnitsTreeEntryUnitBase* pUnitEntry =
+            dynamic_cast<CUnitsTreeEntryUnitBase*>(m_pTreeEntry);
+        while (pUnitEntry != nullptr) {
+            unitLowest = pUnitEntry;
+            pUnitEntry = pUnitEntry->nextLowerUnit();
+        }
+    }
+    return unitLowest;
+}
+
+//------------------------------------------------------------------------------
+CUnit CUnit::getHighestUnit() const
+//------------------------------------------------------------------------------
+{
+    CUnit unitHighest;
+    if( m_pTreeEntry != nullptr ) {
+        CUnitsTreeEntryUnitBase* pUnitEntry =
+            dynamic_cast<CUnitsTreeEntryUnitBase*>(m_pTreeEntry);
+        while (pUnitEntry != nullptr) {
+            unitHighest = pUnitEntry;
+            pUnitEntry = pUnitEntry->nextHigherUnit();
+        }
+    }
+    return unitHighest;
+}
+
+//------------------------------------------------------------------------------
 CUnit CUnit::nextLowerUnit() const
 //------------------------------------------------------------------------------
 {

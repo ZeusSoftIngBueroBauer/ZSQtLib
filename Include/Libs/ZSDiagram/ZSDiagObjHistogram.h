@@ -48,8 +48,6 @@ public: // ctors and dtor
         const QString& i_strObjName,
         CDiagTrace*    i_pDiagTrace );
     virtual ~CDiagObjHistogram();
-public: // must overridables of base class CDiagObj
-    virtual QString className() { return ClassName(); }
 public: // instance methods
     void setCol( const QColor&  i_col );
     QColor getCol() const;

@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include "ZSDiagramGUI/ZSDiagramObjsDlg.h"
-#include "ZSDiagramGUI/ZSDiagramObjsWdgt.h"
+#include "ZSDiagramGUI/ZSDiagramItemsDlg.h"
+#include "ZSDiagramGUI/ZSDiagramItemsWdgt.h"
 #include "ZSDiagram/ZSDiagramProcWdgt.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
@@ -49,7 +49,7 @@ using namespace ZS::Diagram::GUI;
 
 
 /*******************************************************************************
-class CDlgDiagramObjs : public CDialog
+class CDlgDiagramItems : public CDialog
 *******************************************************************************/
 
 /*==============================================================================
@@ -57,7 +57,7 @@ public: // class methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CDlgDiagramObjs* CDlgDiagramObjs::CreateInstance(
+CDlgDiagramItems* CDlgDiagramItems::CreateInstance(
     const QString&  i_strDlgTitle,
     CWdgtDiagram*   i_pDiagram,
     QWidget*        i_pWdgtParent,
@@ -70,7 +70,7 @@ CDlgDiagramObjs* CDlgDiagramObjs::CreateInstance(
         throw CException(__FILE__, __LINE__, EResultSingletonClassAlreadyInstantiated, strKey);
     }
 
-    return new CDlgDiagramObjs(
+    return new CDlgDiagramItems(
         /* strDlgTitle  */ i_strDlgTitle,
         /* pWdgtDiagram */ i_pDiagram,
         /* pWdgtParent  */ i_pWdgtParent,
@@ -79,10 +79,10 @@ CDlgDiagramObjs* CDlgDiagramObjs::CreateInstance(
 } // CreateInstance
 
 //------------------------------------------------------------------------------
-CDlgDiagramObjs* CDlgDiagramObjs::GetInstance( CWdgtDiagram* i_pDiagram )
+CDlgDiagramItems* CDlgDiagramItems::GetInstance( CWdgtDiagram* i_pDiagram )
 //------------------------------------------------------------------------------
 {
-    return dynamic_cast<CDlgDiagramObjs*>(
+    return dynamic_cast<CDlgDiagramItems*>(
         CDialog::GetInstance(NameSpace(), ClassName(), i_pDiagram->objectName()));
 }
 
@@ -91,7 +91,7 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CDlgDiagramObjs::CDlgDiagramObjs(
+CDlgDiagramItems::CDlgDiagramItems(
     const QString&  i_strDlgTitle,
     CWdgtDiagram*   i_pDiagram,
     QWidget*        i_pWdgtParent,
@@ -120,28 +120,23 @@ CDlgDiagramObjs::CDlgDiagramObjs(
     QHBoxLayout* m_pLytSettings = new QHBoxLayout();
     m_pLyt->addLayout(m_pLytSettings);
 
-    m_pWdgtDiagramObjs = new CWdgtDiagramObjs(m_pDiagram);
+    m_pWdgtDiagramObjs = new CWdgtDiagramItems(m_pDiagram);
     m_pLyt->addWidget(m_pWdgtDiagramObjs);
-
-    // Dialog buttons
-    //================
-
-    // Geometry of dialog
-    //===================
 
     setMinimumHeight(360);
     setMinimumWidth(460);
 
-    // Restore Geometry
-    //-----------------
-
     QSettings settings;
     restoreGeometry( settings.value(objectName()+"/Geometry").toByteArray() );
+
+    QObject::connect(
+        m_pDiagram, &CWdgtDiagram::aboutToBeDestroyed,
+        this, &CDlgDiagramItems::onDiagramAboutToBeDestroyed);
 
 } // ctor
 
 //------------------------------------------------------------------------------
-CDlgDiagramObjs::~CDlgDiagramObjs()
+CDlgDiagramItems::~CDlgDiagramItems()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -159,3 +154,24 @@ CDlgDiagramObjs::~CDlgDiagramObjs()
 
 } // dtor
 
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CDlgDiagramItems::onDiagramAboutToBeDestroyed(const QString& /*i_strObjName*/)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "onDiagramAboutToBeDestroyed",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    m_pDiagram = nullptr;
+
+    QDialog::reject();
+}

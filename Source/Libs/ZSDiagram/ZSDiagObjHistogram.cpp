@@ -56,9 +56,10 @@ CDiagObjHistogram::CDiagObjHistogram(
     CDiagTrace*    i_pDiagTrace ) :
 //------------------------------------------------------------------------------
     CDiagObj(
-        /* strObjName */ i_strObjName,
-        /* pDiagTrace */ i_pDiagTrace,
-        /* layoutPos  */ ELayoutPosCenter ),
+        /* strClassName */ CDiagObjHistogram::ClassName(),
+        /* strObjName   */ i_strObjName,
+        /* pDiagTrace   */ i_pDiagTrace,
+        /* layoutPos    */ ELayoutPosCenter ),
     m_col(Qt::yellow),
     m_pPtArr(nullptr),
     m_bUpdWidget(true)
@@ -161,7 +162,7 @@ void CDiagObjHistogram::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPa
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObjUpdate != nullptr && m_pTrcAdminObjUpdate->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjUpdate, EMethodTraceDetailLevel::ArgsNormal))
     {
         strTrcMsg = updateFlags2Str(i_uUpdateFlags);
     }
@@ -211,8 +212,8 @@ void CDiagObjHistogram::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPa
     // If data processing is requested and necessary for this object ..
     if( i_uUpdateFlags & EUpdateData && m_uUpdateFlags & EUpdateData )
     {
-        QVector<double> arfXValues  = m_pDiagTrace->getValues(EScaleDirX);
-        QVector<double> arfYValues  = m_pDiagTrace->getValues(EScaleDirY);
+        QVector<double> arfXValues  = m_pDiagTrace->getValues(EScaleDir::X);
+        QVector<double> arfYValues  = m_pDiagTrace->getValues(EScaleDir::Y);
 
         mthTracer.trace("Processing Data", ELogDetailLevel::Debug);
 
@@ -240,8 +241,8 @@ void CDiagObjHistogram::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPa
         QPoint*       pPt;
         const double* pfX;
         const double* pfY;
-        double        fXMin = m_pDiagTrace->getScale(EScaleDirX).m_fMin;
-        double        fXMax = m_pDiagTrace->getScale(EScaleDirX).m_fMax;
+        double        fXMin = m_pDiagTrace->getScale(EScaleDir::X).m_fMin;
+        double        fXMax = m_pDiagTrace->getScale(EScaleDir::X).m_fMax;
         double        fx, fy;
         int           xPix, yPix;
 
@@ -318,11 +319,11 @@ void CDiagObjHistogram::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPa
             {
                 break;
             }
-            xPix = m_pDiagTrace->getValPix(EScaleDirX,fx);
+            xPix = m_pDiagTrace->getValPix(EScaleDir::X,fx);
             pPt->setX(xPix);
 
             fy = *pfY;
-            yPix = m_pDiagTrace->getValPix(EScaleDirY,fy);
+            yPix = m_pDiagTrace->getValPix(EScaleDir::Y,fy);
             pPt->setY(yPix);
         }
 
@@ -356,7 +357,7 @@ void CDiagObjHistogram::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPa
                 {
                     painter.drawLine(
                         /* x1 */ m_pPtArr->at(idxVal).x(),
-                        /* y1 */ m_pDiagTrace->getScaleMinValPix(EScaleDirY),
+                        /* y1 */ m_pDiagTrace->getScaleMinValPix(EScaleDir::Y),
                         /* x2 */ m_pPtArr->at(idxVal).x(),
                         /* y2 */ m_pPtArr->at(idxVal).y() );
                 }

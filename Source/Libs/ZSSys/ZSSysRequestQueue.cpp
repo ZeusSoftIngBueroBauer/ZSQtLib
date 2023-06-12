@@ -368,14 +368,9 @@ void CRequestQueue::setRequestInProgress( CRequest* i_pReq )
 
     m_pReqInProgress = i_pReq;
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pReqInProgress,
-        /* szSignal     */ SIGNAL(destroyed(QObject*)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onRequestDestroyed(QObject*)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pReqInProgress, &QObject::destroyed,
+        this, &CRequestQueue::onRequestDestroyed);
 
     if( m_pReqInProgress != nullptr )
     {
@@ -508,14 +503,9 @@ void CRequestQueue::addRequestInProgress( CRequest* i_pReq )
     }
     m_hshReqsInProgress[i_pReq->getId()] = i_pReq;
 
-    if( !QObject::connect(
-        /* pObjSender   */ i_pReq,
-        /* szSignal     */ SIGNAL(destroyed(QObject*)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onRequestDestroyed(QObject*)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        i_pReq, &QObject::destroyed,
+        this, &CRequestQueue::onRequestDestroyed);
 
 } // addRequestInProgress
 
@@ -925,15 +915,10 @@ void CRequestQueue::setSyncRequestToBeDeletedLater( CRequest* i_pReq )
     // E.g. if the request queue has not been created with the new operator.
     if( m_pReqSyncToBeDeletedLater != nullptr )
     {
-        if( !QObject::connect(
-            /* pObjSender   */ m_pReqSyncToBeDeletedLater,
-            /* szSignal     */ SIGNAL(destroyed(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onRequestDestroyed(QObject*)),
-            /* cnctType     */ Qt::DirectConnection ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
+        QObject::connect(
+            m_pReqSyncToBeDeletedLater, &QObject::destroyed,
+            this, &CRequestQueue::onRequestDestroyed,
+            Qt::DirectConnection);
 
         m_pReqSyncToBeDeletedLater->setObjState(EObjState::Detached);
         m_pReqSyncToBeDeletedLater->update();
@@ -960,14 +945,9 @@ EResult CRequestQueue::postponeRequest( CRequest* i_pReq )
 
     if( m_arpReqsPostponed.size() < m_iReqsPostponedMaxEntries )
     {
-        if( !QObject::connect(
-            /* pObjSender   */ i_pReq,
-            /* szSignal     */ SIGNAL(destroyed(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onRequestDestroyed(QObject*)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
+        QObject::connect(
+            i_pReq, &QObject::destroyed,
+            this, &CRequestQueue::onRequestDestroyed);
 
         m_arpReqsPostponed.append(i_pReq);
     }

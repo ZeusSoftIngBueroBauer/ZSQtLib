@@ -47,8 +47,6 @@ public: // ctors and dtor
         CDiagScale*    i_pDiagScaleX,
         CDiagScale*    i_pDiagScaleY );
     virtual ~CDiagObjGrid();
-public: // must overridables of base class CDiagObj
-    virtual QString className() { return ClassName(); }
 public: // instance methods
     void show( const CEnumDivLineLayer& i_eLayer );
     void hide( const CEnumDivLineLayer& i_eLayer );
