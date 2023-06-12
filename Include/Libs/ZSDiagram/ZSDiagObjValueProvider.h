@@ -66,10 +66,10 @@ public: // instance methods
     EMathOp getMathOp() const;
     void setOp1( CDiagObj* i_pDiagObj, const CEnumScaleDir& i_scaleDir );
     CDiagObj* getDiagObjOp1();
-    EScaleDir getScaleOrientationOp1() const;
+    EScaleDir getScaleDirOp1() const;
     void setOp2( CDiagObj* i_pDiagObj, const CEnumScaleDir& i_scaleDir );
     CDiagObj* getDiagObjOp2();
-    EScaleDir getScaleOrientationOp2() const;
+    EScaleDir getScaleDirOp2() const;
     void setValueFormatProvider( const PhysVal::SValueFormatProvider& i_valueFormat );
     PhysVal::SValueFormatProvider getValueFormatProvider() const;
 public: // overridables

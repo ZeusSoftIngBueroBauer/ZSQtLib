@@ -611,7 +611,7 @@ double CDiagObj::getValRes( const CEnumScaleDir& i_scaleDir, const CUnit* i_pUni
     }
     else if( m_arpDiagScale[i_scaleDir.enumeratorAsInt()] != nullptr )
     {
-        fRes = m_arpDiagScale[i_scaleDir.enumeratorAsInt()]->getScaleResPerPx(i_pUnit);
+        fRes = m_arpDiagScale[i_scaleDir.enumeratorAsInt()]->getScaleRes(i_pUnit);
     }
     return fRes;
 
@@ -629,7 +629,7 @@ double CDiagObj::getValRes( const CEnumScaleDir& i_scaleDir, double i_fVal, cons
     }
     else if( m_arpDiagScale[i_scaleDir.enumeratorAsInt()] != nullptr )
     {
-        fRes = m_arpDiagScale[i_scaleDir.enumeratorAsInt()]->getScaleResPerPx(i_fVal, i_pUnit);
+        fRes = m_arpDiagScale[i_scaleDir.enumeratorAsInt()]->getScaleRes(i_fVal, i_pUnit);
     }
     return fRes;
 

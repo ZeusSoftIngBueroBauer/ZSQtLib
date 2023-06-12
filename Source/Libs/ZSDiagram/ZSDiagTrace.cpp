@@ -267,7 +267,7 @@ int CDiagTrace::getScaleRangePix( const CEnumScaleDir& i_scaleDir ) const
 }
 
 //------------------------------------------------------------------------------
-double CDiagTrace::getScaleResPerPx( const CEnumScaleDir& i_scaleDir, const CUnit* i_pUnit ) const
+double CDiagTrace::getScaleRes( const CEnumScaleDir& i_scaleDir, const CUnit* i_pUnit ) const
 //------------------------------------------------------------------------------
 {
     if( m_arpDiagScale[i_scaleDir.enumeratorAsInt()] == nullptr )
@@ -276,11 +276,11 @@ double CDiagTrace::getScaleResPerPx( const CEnumScaleDir& i_scaleDir, const CUni
     }
 
     const CDiagScale* pDiagScale = m_arpDiagScale[i_scaleDir.enumeratorAsInt()];
-    return pDiagScale->getScaleResPerPx(i_pUnit);
+    return pDiagScale->getScaleRes(i_pUnit);
 }
 
 //------------------------------------------------------------------------------
-double CDiagTrace::getScaleResPerPx( const CEnumScaleDir& i_scaleDir, double i_fVal, const CUnit* i_pUnit ) const
+double CDiagTrace::getScaleRes( const CEnumScaleDir& i_scaleDir, double i_fVal, const CUnit* i_pUnit ) const
 //------------------------------------------------------------------------------
 {
     if( m_arpDiagScale[i_scaleDir.enumeratorAsInt()] == nullptr )
@@ -289,14 +289,14 @@ double CDiagTrace::getScaleResPerPx( const CEnumScaleDir& i_scaleDir, double i_f
     }
 
     const CDiagScale* pDiagScale = m_arpDiagScale[i_scaleDir.enumeratorAsInt()];
-    return pDiagScale->getScaleResPerPx(i_fVal, i_pUnit);
+    return pDiagScale->getScaleRes(i_fVal, i_pUnit);
 }
 
 //------------------------------------------------------------------------------
 double CDiagTrace::round2ScaleRes( const CEnumScaleDir& i_scaleDir, double i_fVal, const CUnit* i_pUnit ) const
 //------------------------------------------------------------------------------
 {
-    double fRes = getScaleResPerPx(i_scaleDir,i_fVal,i_pUnit);
+    double fRes = getScaleRes(i_scaleDir,i_fVal,i_pUnit);
     double fVal = Math::round2Resolution(i_fVal,fRes);
     return fVal;
 }
@@ -324,7 +324,7 @@ double CDiagTrace::getValRes( const CEnumScaleDir& i_scaleDir, const CUnit* i_pU
     }
     else
     {
-        fRes = pDiagScale->getScaleResPerPx(i_pUnit);
+        fRes = pDiagScale->getScaleRes(i_pUnit);
     }
     if( i_pUnit != nullptr && *i_pUnit != pDiagScale->getScale().m_unit )
     {
@@ -356,7 +356,7 @@ double CDiagTrace::getValRes( const CEnumScaleDir& i_scaleDir, double i_fVal, co
     }
     else
     {
-        fRes = pDiagScale->getScaleResPerPx(i_fVal,i_pUnit);
+        fRes = pDiagScale->getScaleRes(i_fVal,i_pUnit);
     }
     if( i_pUnit != nullptr && *i_pUnit != pDiagScale->getScale().m_unit )
     {

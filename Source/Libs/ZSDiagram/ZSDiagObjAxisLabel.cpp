@@ -1166,7 +1166,7 @@ void CDiagObjAxisLabel::updateLayout()
 
             // To take logarithmic scalings into account we get the resolution at the absolute
             // minimum value that should be indicated by the axis label.
-            double fScaleRes = m_pDiagScale->getScaleResPerPx(fDivLineValAbsMin, &m_unitLabels);
+            double fScaleRes = m_pDiagScale->getScaleRes(fDivLineValAbsMin, &m_unitLabels);
 
             // Calculate number of trailing and leading digits needed to indicate
             // the values with the calculated scale resolution.
@@ -1632,8 +1632,8 @@ void CDiagObjAxisLabel::updateLayout()
                     double fDivLineDist2 = strDivLineLabel2.toDouble() - strDivLineLabel1.toDouble();
 
                     // The distance between all labels must be equal ...
-                    if( fDivLineDist1 < fDivLineDist2 - m_pDiagScale->getScaleResPerPx(&m_unitLabels)
-                     || fDivLineDist1 > fDivLineDist2 + m_pDiagScale->getScaleResPerPx(&m_unitLabels) )
+                    if( fDivLineDist1 < fDivLineDist2 - m_pDiagScale->getScaleRes(&m_unitLabels)
+                     || fDivLineDist1 > fDivLineDist2 + m_pDiagScale->getScaleRes(&m_unitLabels) )
                     {
                         iPrecisionMin++;
                         break; // for( idxDivLine < uDivLineCount )

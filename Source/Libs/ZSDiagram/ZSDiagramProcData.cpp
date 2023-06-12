@@ -1136,12 +1136,12 @@ void CDataDiagram::scaleChanged( ZS::Diagram::CDiagScale* i_pDiagScale )
     // All objects linked to the changed scale will be invalidated.
     for (CDiagObj* pDiagObj : m_arpDiagObjs )
     {
-        for( int idxScaleOrientation = 0; idxScaleOrientation < CEnumScaleDir::count(); idxScaleOrientation++ )
+        for( int idxScaleDir = 0; idxScaleDir < CEnumScaleDir::count(); idxScaleDir++ )
         {
-            CDiagScale* pDiagScale = pDiagObj->m_arpDiagScale[idxScaleOrientation];
+            CDiagScale* pDiagScale = pDiagObj->m_arpDiagScale[idxScaleDir];
             if( pDiagScale == nullptr && pDiagObj->m_pDiagTrace != nullptr )
             {
-                pDiagScale = pDiagObj->m_pDiagTrace->getDiagScale(static_cast<EScaleDir>(idxScaleOrientation));
+                pDiagScale = pDiagObj->m_pDiagTrace->getDiagScale(static_cast<EScaleDir>(idxScaleDir));
             }
 
             // If the object is linked to the changed scale ..
@@ -1159,10 +1159,10 @@ void CDataDiagram::scaleChanged( ZS::Diagram::CDiagScale* i_pDiagScale )
     // All traces linked to the changed scale will be invalidated.
     for (CDiagTrace* pDiagTrace : m_arpDiagTraces)
     {
-        for( int idxScaleOrientation = 0; idxScaleOrientation < CEnumScaleDir::count(); idxScaleOrientation++ )
+        for( int idxScaleDir = 0; idxScaleDir < CEnumScaleDir::count(); idxScaleDir++ )
         {
             // If the trace is linked to the changed scale ..
-            if( pDiagTrace->m_arpDiagScale[idxScaleOrientation] == i_pDiagScale )
+            if( pDiagTrace->m_arpDiagScale[idxScaleDir] == i_pDiagScale )
             {
                 // Please note than on updating the diagram the diagram will call
                 // the update method of the trace object whereupon the "traceChanged"

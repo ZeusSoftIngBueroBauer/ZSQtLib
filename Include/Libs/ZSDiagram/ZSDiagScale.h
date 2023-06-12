@@ -62,7 +62,6 @@ public: // overridables
 signals:
     void spacingChanged( ESpacing i_spacing );
     void scaleChanged( const SScale& i_scale );
-    void scaleResChanged( double i_fRes );
     void geometryChanged( int i_iMinVal_px, int i_iMaxVal_px );
     void divLineDistMinPixChanged( EDivLineLayer i_layer, int i_iDivLineDistMin_px );
 public: // instance methods
@@ -81,10 +80,8 @@ public: // instance methods
     void setDivLineDistMinPix( const CEnumDivLineLayer& i_eLayer, int i_iDistMinPix );
     int getDivLineDistMinPix( const CEnumDivLineLayer& i_eLayer ) const;
     bool areDivLinesCalculated() const;
-    double getScaleResPerPx( bool i_bRoundedToLowerDecade = true ) const;
-    double getScaleResPerPx( const PhysVal::CUnit* i_pUnit, bool i_bRoundedToLowerDecade = true ) const;
-    double getScaleResPerPx( double i_fVal, bool i_bRoundedToLowerDecade = true ) const;
-    double getScaleResPerPx( double i_fVal, const PhysVal::CUnit* i_pUnit, bool i_bRoundedToLowerDecade = true ) const;
+    double getScaleRes( const PhysVal::CUnit* i_pUnit = nullptr ) const;
+    double getScaleRes( double i_fVal, const PhysVal::CUnit* i_pUnit = nullptr ) const;
     double round2ScaleRes( double i_fVal, const PhysVal::CUnit* i_pUnit = nullptr ) const;
     int getDivLineCount( const CEnumDivLineLayer& i_eLayer ) const;
     double getDivLineDistMin( const CEnumDivLineLayer& i_eLayer, const PhysVal::CUnit* i_pUnit = nullptr ) const;
@@ -122,7 +119,6 @@ protected:  // instance memthods
 protected: // instance methods (method tracing)
     void emit_spacingChanged( ESpacing i_spacing );
     void emit_scaleChanged( const SScale& i_scale );
-    void emit_scaleResChanged( double i_fRes );
     void emit_geometryChanged( int i_iMinVal_px, int i_iMaxVal_px );
     void emit_divLineDistMinPixChanged( EDivLineLayer i_layer, int i_iDivLineDistMin_px );
 protected:  // class members
@@ -134,8 +130,6 @@ protected:  // instance members
     EScaleDir m_scaleDir;
     ESpacing m_spacing;
     SScale m_scale;
-    double m_fScaleRes_perPx;
-    bool m_bResCalculated;
     int m_iMinVal_px;
     int m_iMaxVal_px;
     QVector<int> m_ariDivLineDistMin_px; //[EDivLineLayerCount];

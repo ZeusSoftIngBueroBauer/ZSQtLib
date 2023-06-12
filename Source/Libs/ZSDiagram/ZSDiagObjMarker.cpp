@@ -114,12 +114,12 @@ CDiagObjMarker::CDiagObjMarker(
     m_bIsFocusable = true;
     m_bIsEditable  = true;
 
-    for( int idxScaleOrientation = 0; idxScaleOrientation < CEnumScaleDir::count(); idxScaleOrientation++ )
+    for( int idxScaleDir = 0; idxScaleDir < CEnumScaleDir::count(); idxScaleDir++ )
     {
-        EScaleDir scaleDir = static_cast<EScaleDir>(idxScaleOrientation);
-        m_arphysValPrev[idxScaleOrientation].setUnit( i_pDiagTrace->getScale(scaleDir).m_unit );
-        m_arphysVal[idxScaleOrientation].setUnit( i_pDiagTrace->getScale(scaleDir).m_unit );
-        m_arpValueFormatToolTip[idxScaleOrientation] = nullptr;
+        EScaleDir scaleDir = static_cast<EScaleDir>(idxScaleDir);
+        m_arphysValPrev[idxScaleDir].setUnit( i_pDiagTrace->getScale(scaleDir).m_unit );
+        m_arphysVal[idxScaleDir].setUnit( i_pDiagTrace->getScale(scaleDir).m_unit );
+        m_arpValueFormatToolTip[idxScaleDir] = nullptr;
     }
     for( int idxObjState = 0; idxObjState < EDiagObjStateCount; idxObjState++ )
     {
@@ -158,16 +158,16 @@ CDiagObjMarker::~CDiagObjMarker()
     setImageStyleCursor(EDiagObjStateCount,nullptr);
     //lint +e1506, +e1551
 
-    for( int idxScaleOrientation = 0; idxScaleOrientation < CEnumScaleDir::count(); idxScaleOrientation++ )
+    for( int idxScaleDir = 0; idxScaleDir < CEnumScaleDir::count(); idxScaleDir++ )
     {
         try
         {
-            delete m_arpValueFormatToolTip[idxScaleOrientation];
+            delete m_arpValueFormatToolTip[idxScaleDir];
         }
         catch(...)
         {
         }
-        m_arpValueFormatToolTip[idxScaleOrientation] = nullptr;
+        m_arpValueFormatToolTip[idxScaleDir] = nullptr;
     }
 
     m_bVisiblePrev = false;
@@ -241,7 +241,7 @@ void CDiagObjMarker::setVal( const CEnumScaleDir& i_scaleDir, const CPhysVal& i_
 
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::EnterLeave))
     {
-        strTrcMsg += "ScaleOrientation=" + i_scaleDir.toString() + ", Val=" + i_physVal.toString();
+        strTrcMsg += "ScaleDir=" + i_scaleDir.toString() + ", Val=" + i_physVal.toString();
     }
 
     CMethodTracer mthTracer(
@@ -262,7 +262,7 @@ void CDiagObjMarker::setVal( const CEnumScaleDir& i_scaleDir, double i_fVal, CUn
 
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::EnterLeave))
     {
-        strTrcMsg += "ScaleOrientation=" + i_scaleDir.toString() + ", Val=" + QString::number(i_fVal);
+        strTrcMsg += "ScaleDir=" + i_scaleDir.toString() + ", Val=" + QString::number(i_fVal);
         if( i_pUnit != nullptr )
         {
             strTrcMsg += " [" + i_pUnit->symbol() + "]";
@@ -880,11 +880,11 @@ void CDiagObjMarker::setToolTipValueFormat( const CEnumScaleDir& i_scaleDir, SVa
 //------------------------------------------------------------------------------
 {
     int iUsedCount = 0;
-    int idxScaleOrientation;
+    int idxScaleDir;
 
-    for( idxScaleOrientation = 0; idxScaleOrientation < CEnumScaleDir::count(); idxScaleOrientation++ )
+    for( idxScaleDir = 0; idxScaleDir < CEnumScaleDir::count(); idxScaleDir++ )
     {
-        if( i_pValueFormat == m_arpValueFormatToolTip[idxScaleOrientation] )
+        if( i_pValueFormat == m_arpValueFormatToolTip[idxScaleDir] )
         {
             iUsedCount++;
         }
@@ -1416,7 +1416,7 @@ CDiagObj* CDiagObjMarker::clone( CDataDiagram* i_pDiagramTrg ) const
         /* strObjName */ m_strObjName,
         /* pDiagTrace */ pDiagTrace );
 
-    int idxScaleOrientation;
+    int idxScaleDir;
     int idxObjState;
     int idxElement;
 
@@ -1438,10 +1438,10 @@ CDiagObj* CDiagObjMarker::clone( CDataDiagram* i_pDiagramTrg ) const
     // Calculated cursor position
     pDiagObj->m_bCalculateCursorPos = m_bCalculateCursorPos;
     pDiagObj->m_scaleDirCursorMove = m_scaleDirCursorMove;
-    for( idxScaleOrientation = 0; idxScaleOrientation < CEnumScaleDir::count(); idxScaleOrientation++ )
+    for( idxScaleDir = 0; idxScaleDir < CEnumScaleDir::count(); idxScaleDir++ )
     {
-        //pDiagObj->m_arphysValPrev[idxScaleOrientation] = m_arphysVal[idxScaleOrientation];
-        pDiagObj->m_arphysVal[idxScaleOrientation] = m_arphysVal[idxScaleOrientation];
+        //pDiagObj->m_arphysValPrev[idxScaleDir] = m_arphysVal[idxScaleDir];
+        pDiagObj->m_arphysVal[idxScaleDir] = m_arphysVal[idxScaleDir];
     }
     //pDiagObj->m_ptPosPrev = m_ptPos;
     //pDiagObj->m_ptPos = m_ptPos;
@@ -1671,7 +1671,7 @@ void CDiagObjMarker::updateData()
     CPhysVal*          pPhysValDst          = nullptr;
     CUnit              unitDst;
     EScaleDir          scaleDirDst;
-    int                idxScaleOrientation;
+    int                idxScaleDir;
 
     if( m_scaleDirCursorMove == EScaleDir::X )
     {
@@ -1951,15 +1951,17 @@ void CDiagObjMarker::updateData()
 
             pToolTipStyle->setArrowHeadPos(m_ptPos);
 
-            for( idxScaleOrientation = 0; idxScaleOrientation < CEnumScaleDir::count(); idxScaleOrientation++ )
+            for( idxScaleDir = 0; idxScaleDir < CEnumScaleDir::count(); idxScaleDir++ )
             {
-                CPhysVal physVal = m_arphysVal[idxScaleOrientation];
-                physVal.setRes(
-                    getValRes(static_cast<EScaleDir>(idxScaleOrientation), physVal.getVal(), &physVal.unit()) );
-
-                if( m_arpValueFormatToolTip[idxScaleOrientation] == nullptr )
+                EScaleDir scaleDir = static_cast<EScaleDir>(idxScaleDir);
+                CPhysVal physVal = m_arphysVal[idxScaleDir];
+                if (physVal.isValid())
                 {
-                    arstrVal[idxScaleOrientation] = physVal.toString(
+                    physVal.setRes(getValRes(scaleDir, physVal.getVal(), &physVal.unit()));
+                }
+                if( m_arpValueFormatToolTip[idxScaleDir] == nullptr )
+                {
+                    arstrVal[idxScaleDir] = physVal.toString(
                         /* unitFindVal          */ EUnitFind::Best,
                         /* iValSubStrVisibility */ PhysValSubStr::Val|PhysValSubStr::UnitSymbol,
                         /* unitFindRes          */ EUnitFind::None,
@@ -1967,7 +1969,7 @@ void CDiagObjMarker::updateData()
                 }
                 else
                 {
-                    arstrVal[idxScaleOrientation] = physVal.toString(*m_arpValueFormatToolTip[idxScaleOrientation]);
+                    arstrVal[idxScaleDir] = physVal.toString(*m_arpValueFormatToolTip[idxScaleDir]);
                 }
             }
             strToolTip += arstrVal[static_cast<int>(EScaleDir::X)] + " / " + arstrVal[static_cast<int>(EScaleDir::Y)];
@@ -2127,17 +2129,17 @@ void CDiagObjMarker::updateData()
 
         bool bValueChanged = true;
 
-        for( idxScaleOrientation = 0; idxScaleOrientation < CEnumScaleDir::count(); idxScaleOrientation++ )
+        for( idxScaleDir = 0; idxScaleDir < CEnumScaleDir::count(); idxScaleDir++ )
         {
-            if( m_arphysVal[idxScaleOrientation] != m_arphysValPrev[idxScaleOrientation] )
+            if( m_arphysVal[idxScaleDir] != m_arphysValPrev[idxScaleDir] )
             {
-                m_arphysValPrev[idxScaleOrientation] = m_arphysVal[idxScaleOrientation];
-                emit valueChanged(static_cast<EScaleDir>(idxScaleOrientation),this);
-                if( idxScaleOrientation == static_cast<int>(EScaleDir::X) )
+                m_arphysValPrev[idxScaleDir] = m_arphysVal[idxScaleDir];
+                emit valueChanged(static_cast<EScaleDir>(idxScaleDir),this);
+                if( idxScaleDir == static_cast<int>(EScaleDir::X) )
                 {
                     emit valueXChanged(this);
                 }
-                else if( idxScaleOrientation == static_cast<int>(EScaleDir::Y) )
+                else if( idxScaleDir == static_cast<int>(EScaleDir::Y) )
                 {
                     emit valueYChanged(this);
                 }

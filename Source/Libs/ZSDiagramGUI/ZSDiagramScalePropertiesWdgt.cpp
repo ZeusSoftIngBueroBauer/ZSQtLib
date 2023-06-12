@@ -87,7 +87,6 @@ CWdgtDiagramScaleProperties::CWdgtDiagramScaleProperties(
     m_iMaxVal_px(0),
     m_ariDivLineDistMin_px(CEnumDivLineLayer::count(), 0),
     m_scale(),
-    m_fScaleRes_perPx(0.0),
     // Geometry
     m_pGrpGeometry(nullptr),
     m_pLytGrpGeometry(nullptr),
@@ -159,7 +158,7 @@ CWdgtDiagramScaleProperties::CWdgtDiagramScaleProperties(
     /* The scale direction cannot be changed during runtime
     QObject::connect(
         m_pCmbScaleDir, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
-        this, &CWdgtDiagramScaleProperties::onCmbScaleOrientationCurrentIndexChanged ); */
+        this, &CWdgtDiagramScaleProperties::onCmbScaleDirCurrentIndexChanged ); */
 
     m_pLblSpacing = new QLabel("Spacing:");
     m_pLblSpacing->setFixedWidth(m_cxLblWidthClm2);
@@ -298,7 +297,7 @@ CWdgtDiagramScaleProperties::CWdgtDiagramScaleProperties(
         m_pEdtScaleMaxVal, &CWdgtEditPhysVal::valueChanged,
         this, &CWdgtDiagramScaleProperties::onEdtScaleMaxValValueChanged);
 
-    m_pLblScaleRangeVal = new QLabel("Width:");
+    m_pLblScaleRangeVal = new QLabel("Range:");
     m_pLblScaleRangeVal->setFixedWidth(m_cxLblWidthClm3);
     m_pLytLineScaleRange->addWidget(m_pLblScaleRangeVal);
     m_pEdtScaleRangeVal = new CWdgtEditPhysVal();
@@ -346,7 +345,6 @@ CWdgtDiagramScaleProperties::~CWdgtDiagramScaleProperties()
     //m_ariDivLineDistMin_px.clear();
     m_spacing = static_cast<ESpacing>(0);
     //m_scale;
-    m_fScaleRes_perPx = 0.0;
     // Geometry
     m_pGrpGeometry = nullptr;
     m_pLytGrpGeometry = nullptr;
@@ -492,9 +490,6 @@ void CWdgtDiagramScaleProperties::setDiagItemObjName( const QString& i_strObjNam
                 m_pDiagScale, &CDiagScale::scaleChanged,
                 this, &CWdgtDiagramScaleProperties::onDiagItemScaleChanged);
             QObject::disconnect(
-                m_pDiagScale, &CDiagScale::scaleResChanged,
-                this, &CWdgtDiagramScaleProperties::onDiagItemScaleResChanged);
-            QObject::disconnect(
                 m_pDiagScale, &CDiagScale::geometryChanged,
                 this, &CWdgtDiagramScaleProperties::onDiagItemScaleGeometryChanged);
             QObject::disconnect(
@@ -586,9 +581,6 @@ void CWdgtDiagramScaleProperties::setDiagItemObjName( const QString& i_strObjNam
             QObject::connect(
                 m_pDiagScale, &CDiagScale::scaleChanged,
                 this, &CWdgtDiagramScaleProperties::onDiagItemScaleChanged);
-            QObject::connect(
-                m_pDiagScale, &CDiagScale::scaleResChanged,
-                this, &CWdgtDiagramScaleProperties::onDiagItemScaleResChanged);
             QObject::connect(
                 m_pDiagScale, &CDiagScale::geometryChanged,
                 this, &CWdgtDiagramScaleProperties::onDiagItemScaleGeometryChanged);
@@ -794,56 +786,21 @@ void CWdgtDiagramScaleProperties::onDiagItemScaleChanged(const SScale& i_scale)
         // We need to convert the scale values into the indicated unit.
         CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
         CUnit unitCurr = m_pCmbScaleUnit->currentText();
+        double fScaleRes = m_pDiagScale->getScaleRes(&unitCurr);
         m_scale = i_scale;
         m_scale.m_fMin = i_scale.m_unit.convertValue(i_scale.m_fMin, unitCurr);
         m_scale.m_fMax = i_scale.m_unit.convertValue(i_scale.m_fMax, unitCurr);
         m_scale.m_unit = unitCurr;
-        m_fScaleRes_perPx = m_pDiagScale->getScaleResPerPx(&unitCurr);
-        m_pEdtScaleRes->setText(QString::number(m_fScaleRes_perPx) + " " + unitCurr.symbol() + "/px");
+        m_pEdtScaleRes->setText(QString::number(fScaleRes) + " " + unitCurr.symbol());
         m_pEdtScaleMinVal->setUnit(m_scale.m_unit);
-        m_pEdtScaleMinVal->setResolution(m_fScaleRes_perPx);
+        m_pEdtScaleMinVal->setResolution(fScaleRes);
         m_pEdtScaleMinVal->setValue(m_scale.m_fMin);
         m_pEdtScaleMaxVal->setUnit(m_scale.m_unit);
-        m_pEdtScaleMaxVal->setResolution(m_fScaleRes_perPx);
+        m_pEdtScaleMaxVal->setResolution(fScaleRes);
         m_pEdtScaleMaxVal->setValue(m_scale.m_fMax);
         m_pEdtScaleRangeVal->setUnit(m_scale.m_unit);
-        m_pEdtScaleRangeVal->setResolution(m_fScaleRes_perPx);
-        m_pEdtScaleRangeVal->setValue(m_scale.physValRange().getVal());
-        emit_diagItemPropertyChanged();
-    }
-}
-
-//------------------------------------------------------------------------------
-void CWdgtDiagramScaleProperties::onDiagItemScaleResChanged(double i_fRes)
-//------------------------------------------------------------------------------
-{
-    if( m_iValueChangedSignalsBlocked > 0 ) {
-        return;
-    }
-
-    QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
-        strMthInArgs = QString::number(i_fRes);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onDiagItemScaleResChanged",
-        /* strAddInfo   */ strMthInArgs );
-
-    // The unit of the resolution is the unit of the scale object.
-    // The unit used to indicate the scale in the widget is set by the units combo box.
-    // We need to convert the resolution into the indicated unit.
-    CUnit unitOrig = m_pDiagScale->getScale().m_unit;
-    CUnit unitCurr = m_pCmbScaleUnit->currentText();
-    double fScaleRes = unitOrig.convertValue(i_fRes, unitCurr);
-
-    if (m_fScaleRes_perPx != fScaleRes) {
-        CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
-        m_pEdtScaleRes->setText(QString::number(m_fScaleRes_perPx) + " " + unitCurr.symbol() + "/px");
-        m_pEdtScaleMinVal->setResolution(fScaleRes);
-        m_pEdtScaleMaxVal->setResolution(fScaleRes);
         m_pEdtScaleRangeVal->setResolution(fScaleRes);
+        m_pEdtScaleRangeVal->setValue(m_scale.physValRange().getVal());
         emit_diagItemPropertyChanged();
     }
 }
@@ -952,19 +909,19 @@ void CWdgtDiagramScaleProperties::onCmbScaleUnitCurrentIndexChanged( int i_idx )
         // We need to convert the scale values into the indicated unit.
         CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
         CUnit unitPrev = m_scale.m_unit;
+        double fScaleRes = m_pDiagScale->getScaleRes(&unitCurr);
         m_scale.m_fMin = unitPrev.convertValue(m_scale.m_fMin, unitCurr);
         m_scale.m_fMax = unitPrev.convertValue(m_scale.m_fMax, unitCurr);
         m_scale.m_unit = unitCurr;
-        m_fScaleRes_perPx = unitPrev.convertValue(m_fScaleRes_perPx, unitCurr);
-        m_pEdtScaleRes->setText(QString::number(m_fScaleRes_perPx) + " " + unitCurr.symbol() + "/px");
+        m_pEdtScaleRes->setText(QString::number(fScaleRes) + " " + unitCurr.symbol());
         m_pEdtScaleMinVal->setUnit(m_scale.m_unit);
-        m_pEdtScaleMinVal->setResolution(m_fScaleRes_perPx);
+        m_pEdtScaleMinVal->setResolution(fScaleRes);
         m_pEdtScaleMinVal->setValue(m_scale.m_fMin);
         m_pEdtScaleMaxVal->setUnit(m_scale.m_unit);
-        m_pEdtScaleMaxVal->setResolution(m_fScaleRes_perPx);
+        m_pEdtScaleMaxVal->setResolution(fScaleRes);
         m_pEdtScaleMaxVal->setValue(m_scale.m_fMax);
         m_pEdtScaleRangeVal->setUnit(m_scale.m_unit);
-        m_pEdtScaleRangeVal->setResolution(m_fScaleRes_perPx);
+        m_pEdtScaleRangeVal->setResolution(fScaleRes);
         m_pEdtScaleRangeVal->setValue(m_scale.physValRange().getVal());
         emit_diagItemPropertyChanged();
     }
@@ -1079,16 +1036,13 @@ void CWdgtDiagramScaleProperties::setScaleDir( const CEnumScaleDir& i_scaleDir )
         m_scaleDir = i_scaleDir;
         m_pCmbScaleDir->setCurrentText(m_scaleDir.toString());
         if (m_scaleDir == EScaleDir::X) {
-            m_pLblRange_px->setText("Width");
-            m_pLblScaleRangeVal->setText("Width");
+            m_pLblRange_px->setText("Width:");
         }
         else if (m_scaleDir == EScaleDir::Y) {
-            m_pLblRange_px->setText("Height");
-            m_pLblScaleRangeVal->setText("Height");
+            m_pLblRange_px->setText("Height;");
         }
         else {
-            m_pLblRange_px->setText("Range");
-            m_pLblScaleRangeVal->setText("Range");
+            m_pLblRange_px->setText("Range:");
         }
     }
 }

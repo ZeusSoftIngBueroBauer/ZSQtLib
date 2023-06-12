@@ -50,6 +50,9 @@ CPhysSizePower::CPhysSizePower( CIdxTreeEntry* i_pParentBranch ) :
         /* strSIUnitSymbol  */ "W",
         /* strFormulaSymbol */ "P",
         /* bIsPowerRelated  */ true ),
+    m_treeEntryMilliWatt(
+        /* pPhysSize */ this,
+        /* strPrefix */ c_strPrefixMilli ),
     m_treeEntryWatt(
         /* pPhysSize */ this,
         /* strPrefix */ "" ),
@@ -59,6 +62,7 @@ CPhysSizePower::CPhysSizePower( CIdxTreeEntry* i_pParentBranch ) :
         /* strName        */ "dBMilliWatt",
         /* strSymbol      */ "dB" + QString(c_strPrefixMilli),
         /* fRefVal        */ c_fFactorMilli ),
+    MilliWatt(m_treeEntryMilliWatt),
     Watt(m_treeEntryWatt),
     dBMilliWatt(m_treeEntrydBMilliWatt),
     W(m_treeEntryWatt),
@@ -73,6 +77,7 @@ CPhysSizePower::CPhysSizePower( CIdxTreeEntry* i_pParentBranch ) :
     i_pParentBranch->tree()->addShortcut(this, "Power");
 
     // To allow "short" unit strings like "dBm" we add shortcuts to each unit.
+    i_pParentBranch->tree()->addShortcut(&m_treeEntryMilliWatt, "mW");
     i_pParentBranch->tree()->addShortcut(&m_treeEntryWatt, "W");
     i_pParentBranch->tree()->addShortcut(&m_treeEntrydBMilliWatt, "dBm");
 

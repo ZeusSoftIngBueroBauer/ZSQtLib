@@ -70,8 +70,6 @@ CDiagScale::CDiagScale(
     m_scaleDir(i_scaleDir),
     m_spacing(ESpacing::Linear),
     m_scale(i_scale),
-    m_fScaleRes_perPx(0.0),
-    m_bResCalculated(false),
     m_iMinVal_px(0),
     m_iMaxVal_px(0),
     m_ariDivLineDistMin_px(CEnumDivLineLayer::count(), 0),
@@ -101,7 +99,7 @@ CDiagScale::CDiagScale(
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = i_strObjName;
-        strMthInArgs += ", ScaleOrientation: " + CEnumScaleDir(i_scaleDir).toString();
+        strMthInArgs += ", ScaleDir: " + CEnumScaleDir(i_scaleDir).toString();
         strMthInArgs += ", Scale: " + i_scale.toString();
     }
 
@@ -157,8 +155,6 @@ CDiagScale::~CDiagScale()
     m_scaleDir = static_cast<EScaleDir>(0);
     m_spacing = static_cast<ESpacing>(0);
     //m_scale;
-    m_fScaleRes_perPx = 0.0;
-    m_bResCalculated = false;
     m_iMinVal_px = 0;
     m_iMaxVal_px = 0;
     //m_ariDivLineDistMin_px.clear();
@@ -221,13 +217,13 @@ void CDiagScale::setSpacing( const CEnumSpacing& i_spacing )
         /* strMethod    */ "setSpacing",
         /* strAddInfo   */ strMthInArgs );
 
-    if( m_spacing != i_spacing.enumerator() )
+    if (m_spacing != i_spacing.enumerator())
     {
         m_spacing = i_spacing.enumerator();
-        m_bResCalculated = false;
+
         m_bDivLinesCalculated = false;
 
-        if( m_pDiagram != nullptr )
+        if (m_pDiagram != nullptr)
         {
             m_pDiagram->scaleChanged(this);
         }
@@ -256,17 +252,17 @@ void CDiagScale::setScale( const SScale& i_scale )
         /* strMethod    */ "setScale",
         /* strAddInfo   */ strMthInArgs );
 
-    if( m_scale != i_scale ) //lint !e1702
+    if (m_scale != i_scale) //lint !e1702
     {
         m_scale = i_scale;
-        m_bResCalculated = false;
+
         m_bDivLinesCalculated = false;
 
-        if( m_pDiagram != nullptr )
+        if (m_pDiagram != nullptr)
         {
             m_pDiagram->scaleChanged(this);
         }
-        emit scaleChanged(m_scale);
+        emit_scaleChanged(m_scale);
     }
 }
 
@@ -305,34 +301,30 @@ bool CDiagScale::isScaleValid() const
 void CDiagScale::setGeometry( int i_iMinVal_px, int i_iMaxVal_px )
 //------------------------------------------------------------------------------
 {
-    QString strTrcMsg;
-
-    if (areMethodCallsActive(m_pTrcAdminObjLayout, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strTrcMsg = QString::number(i_iMinVal_px) + ", " + QString::number(i_iMaxVal_px);
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjLayout, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString::number(i_iMinVal_px) + ", " + QString::number(i_iMaxVal_px);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjLayout,
         /* iDatailLevel */ EMethodTraceDetailLevel::ArgsNormal,
         /* strMethod    */ "setGeometry",
-        /* strAddInfo   */ strTrcMsg );
+        /* strAddInfo   */ strMthInArgs );
 
-    if( m_iMinVal_px != i_iMinVal_px || m_iMaxVal_px != i_iMaxVal_px )
+    if ((m_iMinVal_px != i_iMinVal_px) || (m_iMaxVal_px != i_iMaxVal_px))
     {
         m_iMinVal_px = i_iMinVal_px;
         m_iMaxVal_px = i_iMaxVal_px;
-        m_bResCalculated = false;
+
         m_bDivLinesCalculated = false;
 
-        if( m_pDiagram != nullptr )
+        if (m_pDiagram != nullptr)
         {
             m_pDiagram->scaleChanged(this);
         }
         emit_geometryChanged(m_iMinVal_px, m_iMaxVal_px);
     }
-
-} // setGeometry
+}
 
 //------------------------------------------------------------------------------
 int CDiagScale::getMinValPix() const
@@ -412,25 +404,25 @@ bool CDiagScale::areDivLinesCalculated() const
 }
 
 //------------------------------------------------------------------------------
-double CDiagScale::getScaleResPerPx( bool i_bRoundedToLowerDecade ) const
-//------------------------------------------------------------------------------
-{
-    return getScaleResPerPx(&m_scale.m_unit, i_bRoundedToLowerDecade);
-}
+/*! @brief Returns the resolution of the scale.
 
-//------------------------------------------------------------------------------
-/*! @brief Returns the resolution per pixel.
+    The scale resolution depends on the one hand on the resolution per pixel
+    (pixel range / value range) and on the other hand the minumum and maximum value.
+    The absolute lowest value determines the scale resolution.
+
+    The resolution is rounded to the next lower decade.
+
+    @note The division line distance don't need to be taken into account
+          as the distance is always greater than one pixel and therefore
+          greater than (pixel range / value range).
 
     @param i_pUnit [in]
         Unit in which the resolution should be returned.
         If nullptr the resolution is returned in the unit defined for the scale.
-    @param i_bRoundedToLowerDecade [in]
-        true to found the resolution to the next lower decade.
-        false otherwise.
 
-    @return Resolution per pixel.
+    @return Resolution.
 */
-double CDiagScale::getScaleResPerPx( const CUnit* i_pUnit, bool i_bRoundedToLowerDecade ) const
+double CDiagScale::getScaleRes( const CUnit* i_pUnit ) const
 //------------------------------------------------------------------------------
 {
     CUnit unit = m_scale.m_unit;
@@ -441,50 +433,73 @@ double CDiagScale::getScaleResPerPx( const CUnit* i_pUnit, bool i_bRoundedToLowe
     }
     if (!areOfSameUnitGroup(m_scale.m_unit,unit))
     {
-        throw CException(__FILE__,__LINE__,EResultDifferentPhysSizes);
+        throw CException(__FILE__, __LINE__, EResultDifferentPhysSizes);
     }
 
-    double fScaleRes_perPx = m_fScaleRes_perPx;
+    double fScaleRes = 0.1;
 
-    if (m_spacing == ESpacing::Logarithmic)
+    if (isScaleValid())
     {
-        fScaleRes_perPx = pow(10.0, fScaleRes_perPx);
+        double fScaleRangePix = getRangePix();
+        double fScaleMin = m_scale.m_unit.convertValue(m_scale.m_fMin, unit);
+        double fScaleMax = m_scale.m_unit.convertValue(m_scale.m_fMax, unit);
+
+        if (m_spacing == ESpacing::Linear)
+        {
+            double fScaleRangeVal = fScaleMax - fScaleMin;
+            if (fScaleRangePix > 1.0) {
+                fScaleRes = fScaleRangeVal / (fScaleRangePix-1.0);
+            }
+            else {
+                fScaleRes = fScaleRangeVal / 1000.0;
+            }
+        }
+        else
+        {
+            double fScaleMinLog = log10(fScaleMin);
+            double fScaleMaxLog = log10(fScaleMax);
+            double fScaleRangeValLog = fScaleMaxLog - fScaleMinLog;
+            if (fScaleRangePix > 1.0) {
+                fScaleRes = fScaleRangeValLog / (fScaleRangePix-1.0);
+            }
+            else {
+                fScaleRes = fScaleRangeValLog / 1000.0;
+            }
+        }
+        if (fScaleMin != 0.0 && fScaleRes > fabs(fScaleMin)) {
+            fScaleRes = fabs(fScaleMin);
+        }
+        if (fScaleMax != 0.0 && fScaleRes > fabs(fScaleMax)) {
+            fScaleRes = fabs(fScaleMax);
+        }
     }
-    if (unit != m_scale.m_unit)
-    {
-        fScaleRes_perPx = m_scale.m_unit.convertValue(fScaleRes_perPx, unit);
-    }
-    if (i_bRoundedToLowerDecade)
-    {
-        fScaleRes_perPx = Math::round2LowerDecade(fScaleRes_perPx);
-    }
-    return fScaleRes_perPx;
+    return Math::round2LowerDecade(fScaleRes);
 }
 
 //------------------------------------------------------------------------------
-double CDiagScale::getScaleResPerPx( double i_fVal, bool i_bRoundedToLowerDecade ) const
-//------------------------------------------------------------------------------
-{
-    return getScaleResPerPx(i_fVal, &m_scale.m_unit, i_bRoundedToLowerDecade);
-}
+/*! @brief Returns the resolution of the scale.
 
-//------------------------------------------------------------------------------
-/*! @brief Returns the resolution per pixel.
+    The scale resolution depends on the one hand on the resolution per pixel
+    (pixel range / value range) and on the other hand the minumum and maximum value.
+    The absolute lowest value determines the scale resolution.
+
+    The resolution is rounded to the next lower decade.
+
+    @note The division line distance don't need to be taken into account
+          as the distance is always greater than one pixel and therefore
+          greater than (pixel range / value range).
+
+    @note In linear spacing the resolution is constant through the whole axis range.
+          In logarithmic spacing the resolution is not constant but decreases to higher values.
 
     @param i_fVal [in]
     @param i_pUnit [in]
         Unit in which the resolution should be returned.
         If nullptr the resolution is returned in the unit defined for the scale.
-    @param i_bRoundedToLowerDecade [in]
-        true to found the resolution to the next lower decade.
-        false otherwise.
 
-    @return Resolution per pixel.
-
-    @note In linear spacing the resolution is constant through the whole axis range.
-          In logarithmic spacing the resolution is not constant but decreases to higher values.
+    @return Resolution.
 */
-double CDiagScale::getScaleResPerPx( double i_fVal, const CUnit* i_pUnit, bool i_bRoundedToLowerDecade ) const
+double CDiagScale::getScaleRes( double i_fVal, const CUnit* i_pUnit ) const
 //------------------------------------------------------------------------------
 {
     CUnit unit = m_scale.m_unit;
@@ -503,36 +518,46 @@ double CDiagScale::getScaleResPerPx( double i_fVal, const CUnit* i_pUnit, bool i
     // higher values.
 
     double fVal = i_fVal;
-    double fScaleRes_perPx;
+    double fScaleRes = 0.1;
 
-    if( m_spacing == ESpacing::Linear )
+    if (isScaleValid())
     {
-        fScaleRes_perPx = m_fScaleRes_perPx;
-    }
-    else
-    {
-        if( unit != m_scale.m_unit )
+        double fScaleRangePix = getRangePix();
+        double fScaleMin = m_scale.m_unit.convertValue(m_scale.m_fMin, unit);
+        double fScaleMax = m_scale.m_unit.convertValue(m_scale.m_fMax, unit);
+
+        if( m_spacing == ESpacing::Linear )
         {
-            fVal = unit.convertValue(fVal, m_scale.m_unit);
+            double fScaleRangeVal = fScaleMax - fScaleMin;
+            if (fScaleRangePix > 1.0) {
+                fScaleRes = fScaleRangeVal / (fScaleRangePix-1.0);
+            }
+            else {
+                fScaleRes = fScaleRangeVal / 1000.0;
+            }
         }
-        fScaleRes_perPx = Math::logRes2LinRes(m_fScaleRes_perPx, fVal);
+        else
+        {
+            if( unit != m_scale.m_unit ) {
+                fVal = unit.convertValue(fVal, m_scale.m_unit);
+            }
+            fScaleRes = Math::logRes2LinRes(fScaleRes, fVal);
+        }
+        if (fScaleMin != 0.0 && fScaleRes > fabs(fScaleMin)) {
+            fScaleRes = fabs(fScaleMin);
+        }
+        if (fScaleMax != 0.0 && fScaleRes > fabs(fScaleMax)) {
+            fScaleRes = fabs(fScaleMax);
+        }
     }
-    if( unit != m_scale.m_unit )
-    {
-        fScaleRes_perPx = m_scale.m_unit.convertValue(fScaleRes_perPx, unit);
-    }
-    if (i_bRoundedToLowerDecade)
-    {
-        fScaleRes_perPx = Math::round2LowerDecade(fScaleRes_perPx);
-    }
-    return fScaleRes_perPx;
+    return Math::round2LowerDecade(fScaleRes);
 }
 
 //------------------------------------------------------------------------------
 double CDiagScale::round2ScaleRes( double i_fVal, const CUnit* i_pUnit ) const
 //------------------------------------------------------------------------------
 {
-    double fRes = getScaleResPerPx(i_fVal, i_pUnit);
+    double fRes = getScaleRes(i_fVal, i_pUnit);
     double fVal = Math::round2Resolution(i_fVal, fRes);
     return fVal;
 }
@@ -823,7 +848,7 @@ QString CDiagScale::getValString(
         int    iLeadingDigits = 1;
         int    iTrailingDigits = 1;
         int    iExponentDigits = 0;
-        double fScaleRes = getScaleResPerPx(i_fVal, &unit);
+        double fScaleRes = getScaleRes(i_fVal, &unit);
 
         if( fVal >= 10.0 )
         {
@@ -1019,9 +1044,9 @@ double CDiagScale::getVal( double i_fPix, const CUnit* i_pUnit ) const
         }
         else
         {
-            fPixRes = getScaleResPerPx(fVal);
+            fPixRes = getScaleRes(fVal);
         }
-        fVal = Math::round2Resolution(fVal,fPixRes);
+        fVal = Math::round2Resolution(fVal, fPixRes);
 
     } // if( isScaleValid() )
 
@@ -1167,38 +1192,25 @@ void CDiagScale::update()
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
-        QString strTrcMsg;
-        strTrcMsg  = "ScaleIsValid=";
-        strTrcMsg += QString::number(isScaleValid()) + ", ";
-        strTrcMsg += "DivLinesCalculated=";
-        strTrcMsg += QString::number(m_bDivLinesCalculated) + ", ";
-        strTrcMsg += "ScaleResCalculated=";
-        strTrcMsg += QString::number(m_bResCalculated);
-        mthTracer.trace(strTrcMsg);
+        QString strMthRuntimeInfo =
+            "ScaleIsValid: " + bool2Str(isScaleValid()) +
+            ", DivLinesCalculated: " + bool2Str(m_bDivLinesCalculated);
     }
-
-    if( m_bDivLinesCalculated && m_bResCalculated )
-    {
-        return;
-    }
-
-    int    iScaleRangePix = getRangePix();
-    double fScaleRangePix = iScaleRangePix;
-    double fScaleRangeVal = m_scale.m_fMax - m_scale.m_fMin;
-    int    iLayer;
 
     // Division lines:
     //----------------
 
     if( !m_bDivLinesCalculated )
     {
-        for( iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
+        for( int iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
         {
             m_ariDivLineCount[iLayer] = 0;
             m_ararfDivLineVal[iLayer].clear();
             m_ararfDivLine_px[iLayer].clear();
         }
         m_fDivDistMinVal = 0.0;
+
+        int iScaleRangePix = getRangePix();
 
         if( iScaleRangePix <= 1 || m_ariDivLineDistMin_px[static_cast<int>(EDivLineLayer::Main)] < 2 )
         {
@@ -1226,7 +1238,7 @@ void CDiagScale::update()
 
             QVector<int> ariDivLineCount(CEnumDivLineLayer::count());
 
-            for( iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
+            for( int iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
             {
                 ariDivLineCount[iLayer] = 0;
             }
@@ -1247,7 +1259,7 @@ void CDiagScale::update()
                 int    idxDivLine;
                 int    idxDivLineTmp;
 
-                for( iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
+                for( int iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
                 {
                     if (m_ariDivLineDistMin_px[iLayer] > 0)
                     {
@@ -1411,7 +1423,7 @@ void CDiagScale::update()
                 double fFacLin;
                 int    idxSection;
 
-                for( iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
+                for( int iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
                 {
                     ariDivLineCountMax[iLayer] = 0;
                     ariDivLineDistMinPix[iLayer] = 0;
@@ -1812,7 +1824,7 @@ void CDiagScale::update()
 
             } // if( m_spacing == ESpacingLogarithmic )
 
-            for( iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
+            for( int iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
             {
                 m_ariDivLineCount[iLayer] = ariDivLineCount[iLayer];
             }
@@ -1822,50 +1834,6 @@ void CDiagScale::update()
         m_bDivLinesCalculated = true;
 
     } // if( !m_bDivLinesCalculated )
-
-    // Resolution:
-    //------------
-
-    // The scale resolution depends on the scale range (pixel range / value range)
-
-    if( !m_bResCalculated )
-    {
-        double fValRes = fScaleRangeVal;
-
-        if( isScaleValid() )
-        {
-            if( m_spacing == ESpacing::Linear )
-            {
-                if( fScaleRangePix > 1.0 )
-                {
-                    fValRes = fScaleRangeVal / (fScaleRangePix-1.0);
-                }
-                else
-                {
-                    fValRes = fScaleRangeVal / 1000.0;
-                }
-            }
-            else
-            {
-                double fScaleRangeValLog = log10(m_scale.m_fMax) - log10(m_scale.m_fMin);
-
-                if( fScaleRangePix > 1.0 )
-                {
-                    fValRes = fScaleRangeValLog / (fScaleRangePix-1.0);
-                }
-                else
-                {
-                    fValRes = fScaleRangeValLog / 1000.0;
-                }
-            }
-            fValRes = Math::round2LowerDecade(fValRes);
-        }
-        m_fScaleRes_perPx = fValRes;
-        m_bResCalculated = true;
-
-        emit_scaleResChanged(m_fScaleRes_perPx);
-
-    } // if( !m_bResCalculated )
 
     if( m_pDiagram != nullptr )
     {
@@ -1900,11 +1868,8 @@ CDiagScale* CDiagScale::clone( CDataDiagram* i_pDiagramTrg ) const
     }
 
     pDiagScale->m_spacing = m_spacing;
-    //pDiagScale->m_fScaleRes = m_fScaleRes;
-    //pDiagScale->m_bResCalculated = m_bResCalculated;
     pDiagScale->m_iMinVal_px = m_iMinVal_px;
     pDiagScale->m_iMaxVal_px = m_iMaxVal_px;
-    //pDiagScale->m_fRes_px = m_fRes_px;
 
     for( iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
     {
@@ -1944,6 +1909,10 @@ CDiagScale* CDiagScale::clone( CDataDiagram* i_pDiagramTrg ) const
 } // clone
 
 /*==============================================================================
+protected: // auxiliary instance methods
+==============================================================================*/
+
+/*==============================================================================
 protected: // type definitions and constants
 ==============================================================================*/
 
@@ -1964,6 +1933,16 @@ protected:  // instance memthods
 void CDiagScale::pushScale( const SScale& i_scale )
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_scale.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDatailLevel */ EMethodTraceDetailLevel::ArgsNormal,
+        /* strMethod    */ "pushScale",
+        /* strAddInfo   */ strMthInArgs );
+
     SZoomStackEntry* pEntry = new SZoomStackEntry(i_scale);
 
     // First object ..
@@ -1986,13 +1965,18 @@ void CDiagScale::pushScale( const SScale& i_scale )
         m_pZoomStackLast = pEntry;
     }
     m_iZoomCount++;
-
-} // pushScale
+}
 
 //------------------------------------------------------------------------------
 SScale CDiagScale::popScale()
 //------------------------------------------------------------------------------
 {
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDatailLevel */ EMethodTraceDetailLevel::ArgsNormal,
+        /* strMethod    */ "popScale",
+        /* strAddInfo   */ "" );
+
     if( m_iZoomCount == 0 || m_pZoomStackFirst == nullptr || m_pZoomStackLast == nullptr )
     {
         throw CException(__FILE__,__LINE__,EResultListIsEmpty);
@@ -2017,14 +2001,22 @@ SScale CDiagScale::popScale()
     pEntry = nullptr;
     m_iZoomCount--;
 
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(scale.toString());
+    }
     return scale;
-
-} // popScale
+}
 
 //------------------------------------------------------------------------------
 SScale CDiagScale::clearScaleStack()
 //------------------------------------------------------------------------------
 {
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDatailLevel */ EMethodTraceDetailLevel::ArgsNormal,
+        /* strMethod    */ "clearScaleStack",
+        /* strAddInfo   */ "" );
+
     if( m_iZoomCount == 0 || m_pZoomStackFirst == nullptr || m_pZoomStackLast == nullptr )
     {
         throw CException(__FILE__,__LINE__,EResultListIsEmpty);
@@ -2086,23 +2078,6 @@ void CDiagScale::emit_scaleChanged( const SScale& i_scale )
         /* strAddInfo   */ strMthInArgs );
 
     emit scaleChanged(i_scale);
-}
-
-//------------------------------------------------------------------------------
-void CDiagScale::emit_scaleResChanged( double i_fRes )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString::number(i_fRes);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjUpdate,
-        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "emit_scaleResChanged",
-        /* strAddInfo   */ strMthInArgs );
-
-    emit scaleResChanged(i_fRes);
 }
 
 //------------------------------------------------------------------------------

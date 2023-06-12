@@ -266,7 +266,7 @@ CDiagObj* CDiagObjValueProvider::getDiagObjOp1()
 }
 
 //------------------------------------------------------------------------------
-EScaleDir CDiagObjValueProvider::getScaleOrientationOp1() const
+EScaleDir CDiagObjValueProvider::getScaleDirOp1() const
 //------------------------------------------------------------------------------
 {
     return m_scaleDirOp1;
@@ -349,7 +349,7 @@ CDiagObj* CDiagObjValueProvider::getDiagObjOp2()
 }
 
 //------------------------------------------------------------------------------
-EScaleDir CDiagObjValueProvider::getScaleOrientationOp2() const
+EScaleDir CDiagObjValueProvider::getScaleDirOp2() const
 //------------------------------------------------------------------------------
 {
     return m_scaleDirOp2;

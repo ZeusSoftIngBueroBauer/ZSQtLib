@@ -77,8 +77,8 @@ public: // instance methods
     int getScaleMinValPix( const CEnumScaleDir& i_scaleDir ) const;
     int getScaleMaxValPix( const CEnumScaleDir& i_scaleDir ) const;
     int getScaleRangePix( const CEnumScaleDir& i_scaleDir ) const;
-    double getScaleResPerPx( const CEnumScaleDir& i_scaleDir, const PhysVal::CUnit* i_pUnit = nullptr ) const;
-    double getScaleResPerPx( const CEnumScaleDir& i_scaleDir, double i_fVal, const PhysVal::CUnit* i_pUnit = nullptr ) const;
+    double getScaleRes( const CEnumScaleDir& i_scaleDir, const PhysVal::CUnit* i_pUnit = nullptr ) const;
+    double getScaleRes( const CEnumScaleDir& i_scaleDir, double i_fVal, const PhysVal::CUnit* i_pUnit = nullptr ) const;
     double round2ScaleRes( const CEnumScaleDir& i_scaleDir, double i_fVal, const PhysVal::CUnit* i_pUnit = nullptr ) const;
     double getValRes( const CEnumScaleDir& i_scaleDir, const PhysVal::CUnit* i_pUnit = nullptr ) const;
     double getValRes( const CEnumScaleDir& i_scaleDir, double i_fVal, const PhysVal::CUnit* i_pUnit = nullptr ) const;

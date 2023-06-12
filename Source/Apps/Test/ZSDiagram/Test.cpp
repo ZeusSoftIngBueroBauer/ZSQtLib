@@ -105,6 +105,8 @@ CTest::CTest() :
     m_pTmrTestStepTimeout(nullptr),
     m_pTimerSigGen(nullptr),
     m_pWdgtDiagram(nullptr),
+    m_scaleX(899.0e6, 901.0e6, Frequency.Hertz),
+    m_scaleY(0.0, 40.0, Power.dBm),
     m_pDiagScaleX(nullptr),
     m_pDiagScaleY(nullptr),
     m_pDiagObjGrid(nullptr),
@@ -314,6 +316,8 @@ CTest::~CTest()
     m_pTmrTestStepTimeout = nullptr;
     m_pTimerSigGen = nullptr;
     m_pWdgtDiagram = nullptr;
+    //m_scaleX;
+    //m_scaleY;
     m_pDiagScaleX = nullptr;
     m_pDiagScaleY = nullptr;
     m_pDiagObjGrid = nullptr;
@@ -447,30 +451,18 @@ void CTest::doTestStepSigGenAddScales( ZS::Test::CTestStep* i_pTestStep )
 
     if( m_pWdgtDiagram != nullptr )
     {
-        ZS::Diagram::SScale scaleX(
-            /* fMin  */ 899.0e6,
-            /* fMax  */ 901.0e6,
-            /* pUnit */ Frequency.Hertz );
-
         m_pDiagScaleX = new CDiagScale(
             /* strObjName */ "DiagScaleX",
             /* scaleDir   */ EScaleDir::X,
-            /* scale      */ scaleX );
+            /* scale      */ m_scaleX );
         m_pDiagScaleX->setDivLineDistMinPix(EDivLineLayer::Main, 20);
-
         m_pWdgtDiagram->addDiagScale(m_pDiagScaleX);
-
-        ZS::Diagram::SScale scaleY(
-            /* fMin      */ 0.0,
-            /* fMax      */ 40.0,
-            /* pPhysUnit */ Power.dBm );
 
         m_pDiagScaleY = new CDiagScale(
             /* strObjName */ "DiagScaleY",
             /* scaleDir   */ EScaleDir::Y,
-            /* scale      */ scaleY );
+            /* scale      */ m_scaleY );
         m_pDiagScaleY->setDivLineDistMinPix(EDivLineLayer::Main, 20);
-
         m_pWdgtDiagram->addDiagScale(m_pDiagScaleY);
     }
 
@@ -1311,11 +1303,8 @@ void CTest::onTimerSigGenTimeout()
 
     if( m_pDiagScaleX != nullptr && m_pDiagScaleY != nullptr )
     {
-        ZS::Diagram::SScale scaleX = m_pDiagScaleX->getScale();
-        ZS::Diagram::SScale scaleY = m_pDiagScaleY->getScale();
-
-        double fxRange = scaleX.m_fMax - scaleX.m_fMin;
-        double fyRange = fabs(scaleY.m_fMax - scaleY.m_fMin);
+        double fxRange = m_scaleX.physValRange().getVal();
+        double fyRange = fabs(m_scaleY.physValRange().getVal());
         double fT = 0.5 * fxRange;
         double fxStep = fxRange / (c_iValCount-1);
 
@@ -1328,11 +1317,11 @@ void CTest::onTimerSigGenTimeout()
 
         for( int idxVal = 0; idxVal < c_iValCount; idxVal++ )
         {
-            double fx = scaleX.m_fMin + idxVal*fxStep;
+            double fx = m_scaleX.m_fMin + idxVal*fxStep;
             s_arfXValuesTraces01[idxVal] = fx;
 
-            double fRad = s_fRadDrift + 2.0*Math::c_fPI*(fx - scaleX.m_fMin) / fT;
-            double fy = scaleY.m_fMin + fyRange/2.0 + sin(fRad)*fyRange/5.0;
+            double fRad = s_fRadDrift + 2.0*Math::c_fPI*(fx - m_scaleX.m_fMin) / fT;
+            double fy = m_scaleY.m_fMin + fyRange/2.0 + sin(fRad)*fyRange/5.0;
 
             // Simulate sinus with a little bit signal noise.
             // Random factor in the range of [-0.5 .. 0.5].
@@ -1348,14 +1337,14 @@ void CTest::onTimerSigGenTimeout()
 
         if( m_pDiagTraceSigGen1 != nullptr )
         {
-            m_pDiagTraceSigGen1->setValues(EScaleDir::X, s_arfXValuesTraces01);
-            m_pDiagTraceSigGen1->setValues(EScaleDir::Y, s_arfYValuesTrace0);
+            m_pDiagTraceSigGen1->setValues(EScaleDir::X, s_arfXValuesTraces01, &m_scaleX.m_unit);
+            m_pDiagTraceSigGen1->setValues(EScaleDir::Y, s_arfYValuesTrace0, &m_scaleY.m_unit);
         }
 
         if( m_pDiagTraceSigGen2 != nullptr )
         {
-            m_pDiagTraceSigGen2->setValues(EScaleDir::X, s_arfXValuesTraces01);
-            m_pDiagTraceSigGen2->setValues(EScaleDir::Y, s_arfYValuesTrace1);
+            m_pDiagTraceSigGen2->setValues(EScaleDir::X, s_arfXValuesTraces01, &m_scaleX.m_unit);
+            m_pDiagTraceSigGen2->setValues(EScaleDir::Y, s_arfYValuesTrace1, &m_scaleY.m_unit);
         }
     } // if( m_pDiagScaleX != nullptr && m_pDiagScaleY != nullptr )
 
@@ -1385,7 +1374,5 @@ void CTest::onTimerTestStepTimeout()
         strlstResultValues.append(strResultValue);
 
         pTestStep->setResultValues(strlstResultValues);
-
-    } // if( pTestStep != nullptr )
-
-} // onTimerTestStepTimeout()
+    }
+}

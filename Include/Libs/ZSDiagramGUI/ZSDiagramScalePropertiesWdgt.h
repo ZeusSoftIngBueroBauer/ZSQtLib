@@ -70,7 +70,6 @@ protected slots:
     void onDiagItemScaleGeometryChanged(int i_iMinVal_px, int i_iMaxVal_px);
     void onDiagItemScaleDivLineDistMinPixChanged(EDivLineLayer i_layer, int i_iDivLineDistMin_px);
     void onDiagItemScaleChanged(const SScale& i_scale);
-    void onDiagItemScaleResChanged(double i_fRes);
 protected slots:
     void onCmbSpacingCurrentIndexChanged(int i_idx);
     void onEdtDivLineDistMinMainLayerPixValueChanged(int i_iVal);
@@ -92,7 +91,6 @@ protected: // instance members
     int m_iMaxVal_px;
     QVector<int> m_ariDivLineDistMin_px; //[EDivLineLayerCount];
     SScale m_scale;
-    double m_fScaleRes_perPx;
     // Geometry
     QGroupBox* m_pGrpGeometry;
     QVBoxLayout* m_pLytGrpGeometry;
