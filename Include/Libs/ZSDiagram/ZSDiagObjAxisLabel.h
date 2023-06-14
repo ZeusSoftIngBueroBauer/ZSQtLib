@@ -108,7 +108,8 @@ protected: // auxiliary instance methods
     PhysVal::CUnit getAxisLabelUnit() const;
     bool isAxisLabelVisible() const;
     QRect getAxisLabelBoundingRect() const;
-    std::tuple<double, double> getAbsMinMaxDivLineVals(double i_fScaleMinVal, double i_fScaleMaxVal) const;
+    std::tuple<double, double> getAbsMinMaxDivLineVals() const;
+    QVector<double> getDivLineValsSorted() const;
     bool intersectsDivLineLabelsPhysUnit(const QRect& i_rect) const;
     QString formatValue( double i_fVal, PhysVal::CUnit* i_pUnit = nullptr ) const;
 private: // copy ctor not allowed

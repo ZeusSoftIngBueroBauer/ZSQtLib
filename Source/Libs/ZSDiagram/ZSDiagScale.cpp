@@ -1264,7 +1264,7 @@ void CDiagScale::update()
                     if (m_ariDivLineDistMin_px[iLayer] > 0)
                     {
                         // Calculate optimized distance between two grid lines:
-                        ariDivLineCountTmp[iLayer] = Math::calculateDivLines4LinSpacing(
+                        ariDivLineCountTmp[iLayer] = Math::getDivLines4LinSpacing(
                             /* fScaleMinVal          */ fDivLineDistValMin,
                             /* fScaleMaxVal          */ fDivLineDistValMax,
                             /* iScaleRangePix        */ iScaleRangePix,
@@ -1521,7 +1521,7 @@ void CDiagScale::update()
                     }
 
                     // Calculate optimized distance between two main grid lines:
-                    ariDivLineCount[iLayerMain] = Math::calculateDivLines4LinSpacing(
+                    ariDivLineCount[iLayerMain] = Math::getDivLines4LinSpacing(
                         /* fScaleMinVal          */ fScaleMinValLog,
                         /* fScaleMaxVal          */ fScaleMaxValLog,
                         /* iScaleRangePix        */ iScaleRangePix,
@@ -1565,7 +1565,7 @@ void CDiagScale::update()
                     // Calculate optimized distance between two sub grid lines:
                     if( m_ariDivLineDistMin_px[iLayerSub] > 1 && m_ariDivLineDistMin_px[iLayerMain] > 2*m_ariDivLineDistMin_px[iLayerSub] )
                     {
-                        ariDivLineCountTmp[iLayerSub] = Math::calculateDivLines4LinSpacing(
+                        ariDivLineCountTmp[iLayerSub] = Math::getDivLines4LinSpacing(
                             /* fScaleMinVal          */ arfDivLineFirstValLog[iLayerMain],
                             /* fScaleMaxVal          */ arfDivLineFirstValLog[iLayerMain]+arfDivLineDistValLog[iLayerMain],
                             /* iScaleRangePix        */ static_cast<int>(arfDivLineDistPix[iLayerMain]),

@@ -54,6 +54,8 @@ public slots:
     void doTestStepMinMax( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepFirstSignificantDigit( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepCalculateDivLines4LinSpacing( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepMergeArrays( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepPrecision2ShowUniqueNumbers( ZS::Test::CTestStep* i_pTestStep );
 
 }; // class CTest
 

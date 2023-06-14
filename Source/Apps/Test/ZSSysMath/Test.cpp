@@ -534,7 +534,7 @@ CTest::CTest() :
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "CalculateDivLines4LinSpacing",
-        /* strOperation    */ "calculateDivLines4LinSpacing",
+        /* strOperation    */ "getDivLines4LinSpacing",
         /* pGrpParent      */ pGrpDivLines,
         /* szDoTestStepFct */ SLOT(doTestStepCalculateDivLines4LinSpacing(ZS::Test::CTestStep*)) );
     pTestStep->addDataRow({
@@ -547,6 +547,136 @@ CTest::CTest() :
         {"DivLineDistMinVal", 10.0}, {"DivLineDistMinPix", 50}, {"UseDivLineDistValDecimalFactor25", false},
         {"DivLineFirstVal", 0.0}, {"DivLineDistFirstPix", 0.0}, {"DivLineDistVal", 10.0}, {"DivLineDistPix", 100},
         {"DivLinesCount", 11}});
+
+    // Merge Arrays
+    //---------------
+
+    ZS::Test::CTestStepGroup* pGrpMergeArrays = new ZS::Test::CTestStepGroup(
+        /* pTest      */ this,
+        /* strName    */ "Merge Arrays",
+        /* pGrpParent */ nullptr );
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Merge",
+        /* strOperation    */ "merge",
+        /* pGrpParent      */ pGrpMergeArrays,
+        /* szDoTestStepFct */ SLOT(doTestStepMergeArrays(ZS::Test::CTestStep*)) );
+    pTestStep->addDataRow({
+        {"ValCountArr1", 0},
+        {"ValCountArr2", 0},
+        {"ValCountArrMerged", 0}
+        });
+    pTestStep->addDataRow({
+        {"ValCountArr1", 1},
+            {"ValArr1[0]", 0.0},
+        {"ValCountArr2", 0},
+        {"ValCountArrMerged", 1},
+            {"ValArrMerged[0]", 0.0}
+        });
+    pTestStep->addDataRow({
+        {"ValCountArr1", 5},
+            {"ValArr1[0]", 0.0}, {"ValArr1[1]", 0.0}, {"ValArr1[2]", 0.0}, {"ValArr1[3]", 0.0}, {"ValArr1[4]", 0.0},
+        {"ValCountArr2", 0},
+        {"ValCountArrMerged", 1},
+            {"ValArrMerged[0]", 0.0}
+        });
+    pTestStep->addDataRow({
+        {"ValCountArr1", 5},
+            {"ValArr1[0]", 0.0}, {"ValArr1[1]", 0.5}, {"ValArr1[2]", 1.0}, {"ValArr1[3]", 1.5}, {"ValArr1[4]", 2.0},
+        {"ValCountArr2", 0},
+        {"ValCountArrMerged", 5},
+            {"ValArrMerged[0]", 0.0}, {"ValArrMerged[1]", 0.5}, {"ValArrMerged[2]", 1.0}, {"ValArrMerged[3]", 1.5}, {"ValArrMerged[4]", 2.0}
+        });
+    pTestStep->addDataRow({
+        {"ValCountArr1", 0},
+        {"ValCountArr2", 1},
+            {"VarArr2[0]", 0.0},
+        {"ValCountArrMerged", 1},
+            {"ValArrMerged[0]", 0.0}
+        });
+    pTestStep->addDataRow({
+        {"ValCountArr1", 0},
+        {"ValCountArr2", 5},
+            {"VarArr2[0]", 0.0}, {"VarArr2[1]", 0.0}, {"VarArr2[2]", 0.0}, {"VarArr2[3]", 0.0}, {"VarArr2[4]", 0.0},
+        {"ValCountArrMerged", 1},
+            {"ValArrMerged[0]", 0.0}
+        });
+    pTestStep->addDataRow({
+        {"ValCountArr1", 0},
+        {"ValCountArr2", 5},
+            {"VarArr2[0]", 0.0}, {"VarArr2[1]", 0.5}, {"VarArr2[2]", 1.0}, {"VarArr2[3]", 1.5}, {"VarArr2[4]", 2.0},
+        {"ValCountArrMerged", 1},
+            {"ValArrMerged[0]", 0.0}, {"ValArrMerged[1]", 0.5}, {"ValArrMerged[2]", 1.0}, {"ValArrMerged[3]", 1.5}, {"ValArrMerged[4]", 2.0}
+        });
+    pTestStep->addDataRow({
+        {"ValCountArr1", 1},
+            {"ValArr1[0]", 0.0},
+        {"ValCountArr2", 1},
+            {"VarArr2[0]", 0.0},
+        {"ValCountArrMerged", 1},
+            {"ValArrMerged[0]", 0.0}
+        });
+    pTestStep->addDataRow({
+        {"ValCountArr1", 1},
+            {"ValArr1[0]", 1.0},
+        {"ValCountArr2", 1},
+            {"VarArr2[0]", 0.5},
+        {"ValCountArrMerged", 2},
+            {"ValArrMerged[0]", 0.5}, {"ValArrMerged[1]", 1.0}
+        });
+    pTestStep->addDataRow({
+        {"ValCountArr1", 5},
+            {"ValArr1[0]", 0.0}, {"ValArr1[1]", 0.0}, {"ValArr1[2]", 0.0}, {"ValArr1[3]", 0.0}, {"ValArr1[4]", 0.0},
+        {"ValCountArr2", 5},
+            {"VarArr2[0]", 0.0}, {"VarArr2[1]", 0.0}, {"VarArr2[2]", 0.0}, {"VarArr2[3]", 0.0}, {"VarArr2[4]", 0.0},
+        {"ValCountArrMerged", 1},
+            {"ValArrMerged[0]", 0.0}
+        });
+    pTestStep->addDataRow({
+        {"ValCountArr1", 5},
+            {"ValArr1[0]", -2.0}, {"ValArr1[1]", -1.0}, {"ValArr1[2]", 0.0}, {"ValArr1[3]", 1.0}, {"ValArr1[4]", 2.0},
+        {"ValCountArr2", 30},
+            {"VarArr2[0]", -3.0}, {"VarArr2[1]", -2.8}, {"VarArr2[2]", -2.6}, {"VarArr2[3]", -2.4}, {"VarArr2[4]", -2.2},
+            {"VarArr2[5]", -2.0}, {"VarArr2[6]", -1.8}, {"VarArr2[7]", -1.6}, {"VarArr2[8]", -1.6}, {"VarArr2[9]", -1.2},
+            {"VarArr2[10]", -1.0}, {"VarArr2[11]", -0.8}, {"VarArr2[12]", -0.6}, {"VarArr2[13]", -0.6}, {"VarArr2[14]", -0.2},
+            {"VarArr2[15]", 0.0}, {"VarArr2[16]", 0.2}, {"VarArr2[17]", 0.4}, {"VarArr2[18]", 0.6}, {"VarArr2[19]", 0.8},
+            {"VarArr2[20]", 1.0}, {"VarArr2[21]", 1.2}, {"VarArr2[22]", 1.4}, {"VarArr2[23]", 1.6}, {"VarArr2[24]", 1.8},
+            {"VarArr2[25]", 2.0}, {"VarArr2[26]", 2.2}, {"VarArr2[27]", 2.4}, {"VarArr2[28]", 2.6}, {"VarArr2[29]", 2.8},
+        {"ValCountArrMerged", 30},
+            {"ValArrMerged[0]", -3.0}, {"ValArrMerged[1]", -2.8}, {"ValArrMerged[2]", -2.6}, {"ValArrMerged[3]", -2.4}, {"ValArrMerged[4]", -2.2},
+            {"ValArrMerged[5]", -2.0}, {"ValArrMerged[6]", -1.8}, {"ValArrMerged[7]", -1.6}, {"ValArrMerged[8]", -1.6}, {"ValArrMerged[9]", -1.2},
+            {"ValArrMerged[10]", -1.0}, {"ValArrMerged[11]", -0.8}, {"ValArrMerged[12]", -0.6}, {"ValArrMerged[13]", -0.6}, {"ValArrMerged[14]", -0.2},
+            {"ValArrMerged[15]", 0.0}, {"ValArrMerged[16]", 0.2}, {"ValArrMerged[17]", 0.4}, {"ValArrMerged[18]", 0.6}, {"ValArrMerged[19]", 0.8},
+            {"ValArrMerged[20]", 1.0}, {"ValArrMerged[21]", 1.2}, {"ValArrMerged[22]", 1.4}, {"ValArrMerged[23]", 1.6}, {"ValArrMerged[24]", 1.8},
+            {"ValArrMerged[25]", 2.0}, {"ValArrMerged[26]", 2.2}, {"ValArrMerged[27]", 2.4}, {"ValArrMerged[28]", 2.6}, {"ValArrMerged[29]", 2.8},
+        });
+
+    // Merge Arrays
+    //---------------
+
+    ZS::Test::CTestStepGroup* pGrpPrecision = new ZS::Test::CTestStepGroup(
+        /* pTest      */ this,
+        /* strName    */ "Precision",
+        /* pGrpParent */ nullptr );
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "GetPrecision2ShowUniqueNumbers",
+        /* strOperation    */ "getPrecision2ShowUniqueNumbers",
+        /* pGrpParent      */ pGrpPrecision,
+        /* szDoTestStepFct */ SLOT(doTestStepPrecision2ShowUniqueNumbers(ZS::Test::CTestStep*)) );
+    pTestStep->addDataRow({
+        {"ValCount", 0},
+        {"ExponentDigits", 0},
+        {"Precision", 1}
+        });
+    pTestStep->addDataRow({
+        {"ValCount", 5},
+            {"ValArr[0]", -2.11}, {"ValArr[1]", -1.0}, {"ValArr[2]", 2.11}, {"ValArr[3]", 2.111}, {"ValArr[4]", 2.1111},
+        {"ExponentDigits", 0},
+        {"Precision", 4}
+        });
 
     // Recall test step settings
     //--------------------------
@@ -943,7 +1073,7 @@ void CTest::doTestStepCalculateDivLines4LinSpacing( ZS::Test::CTestStep* i_pTest
         double fDivLineDistValResult = 0.0;
         double fDivLineDistPixResult = 0.0;
 
-        int iDivLineCountResult = Math::calculateDivLines4LinSpacing(
+        int iDivLineCountResult = Math::getDivLines4LinSpacing(
             /* fScaleMinVal          */ fScaleMinVal,
             /* fScaleMaxVal          */ fScaleMaxVal,
             /* iScaleRangePix        */ iScaleRangePix,
@@ -982,3 +1112,131 @@ void CTest::doTestStepCalculateDivLines4LinSpacing( ZS::Test::CTestStep* i_pTest
     i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepCalculateDivLines4LinSpacing
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepMergeArrays( ZS::Test::CTestStep* i_pTestStep )
+//------------------------------------------------------------------------------
+{
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
+
+    for (int idxRow = 0; idxRow < i_pTestStep->getDataRowCount(); ++idxRow)
+    {
+        QMap<QString, QString> mapExpectedValues;
+        QMap<QString, QString> mapResultValues;
+
+        QHash<QString, QVariant> dataRow = i_pTestStep->getDataRow(idxRow);
+
+        int iValCountArr1 = dataRow["ValCountArr1"].toInt();
+        int iValCountArr2 = dataRow["ValCountArr2"].toInt();
+        int iValCountArrMerged = dataRow["ValCountArrMerged"].toInt();
+
+        QVector<double> arfVals1(iValCountArr1, 0.0);
+        QVector<double> arfVals2(iValCountArr2, 0.0);
+
+        for (const QString& strKey : dataRow.keys())
+        {
+            if (strKey.startsWith("ValArr1")) {
+                QStringList strlst = strKey.split("[");
+                strlst[1] = strlst[1].mid(0, strlst[1].length()-1);
+                int idxVal = strlst[1].toInt();
+                arfVals1[idxVal] = dataRow[strKey].toDouble();
+            }
+            else if (strKey.startsWith("VarArr2")) {
+                QStringList strlst = strKey.split("[");
+                strlst[1] = strlst[1].mid(0, strlst[1].length()-1);
+                int idxVal = strlst[1].toInt();
+                arfVals2[idxVal] = dataRow[strKey].toDouble();
+            }
+            else if (strKey.startsWith("ValArrMerged")) {
+                mapExpectedValues[strKey] = dataRow[strKey].toString();
+            }
+        }
+
+        QVector<double> arfValsMerged = Math::merge(arfVals1, arfVals2);
+
+        for (int idxVal = 0; idxVal < arfValsMerged.size(); ++idxVal) {
+            QString strKey = "ValArrMerged[" + QString::number(idxVal) + "]";
+            mapResultValues[strKey] = QString::number(arfValsMerged[idxVal]);
+        }
+
+        QString strExpectedValues;
+        for (const QString& strKey : mapExpectedValues.keys())
+        {
+            if (!strExpectedValues.isEmpty()) strExpectedValues += ", ";
+            strExpectedValues += strKey + "=" + mapExpectedValues[strKey];
+        }
+        strlstExpectedValues.append(strExpectedValues);
+
+        QString strResultValues;
+        for (const QString& strKey : mapResultValues.keys())
+        {
+            if (!strResultValues.isEmpty()) strResultValues += ", ";
+            strResultValues += strKey + "=" + mapResultValues[strKey];
+        }
+        strlstResultValues.append(strResultValues);
+    }
+
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
+
+} // doTestStepMergeArrays
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepPrecision2ShowUniqueNumbers( ZS::Test::CTestStep* i_pTestStep )
+//------------------------------------------------------------------------------
+{
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
+
+    for (int idxRow = 0; idxRow < i_pTestStep->getDataRowCount(); ++idxRow)
+    {
+        QMap<QString, QString> mapExpectedValues;
+        QMap<QString, QString> mapResultValues;
+
+        QHash<QString, QVariant> dataRow = i_pTestStep->getDataRow(idxRow);
+
+        int iValCount = dataRow["ValCount"].toInt();
+        QVector<double> arfVals(iValCount, 0.0);
+        int iExponentDigits = 0;
+
+        for (const QString& strKey : dataRow.keys())
+        {
+            if (strKey.startsWith("ValArr")) {
+                QStringList strlst = strKey.split("[");
+                strlst[1] = strlst[1].mid(0, strlst[1].length()-1);
+                int idxVal = strlst[1].toInt();
+                arfVals[idxVal] = dataRow[strKey].toDouble();
+            }
+            else if (strKey.startsWith("ExponentDigits")) {
+                iExponentDigits = dataRow[strKey].toInt();
+            }
+            else if (strKey.startsWith("Precision")) {
+                mapExpectedValues[strKey] = dataRow[strKey].toString();
+            }
+        }
+
+        int iPrecision = Math::getPrecision2ShowUniqueNumbers(arfVals, iExponentDigits);
+        mapResultValues["Precision"] = QString::number(iPrecision);
+
+        QString strExpectedValues;
+        for (const QString& strKey : mapExpectedValues.keys())
+        {
+            if (!strExpectedValues.isEmpty()) strExpectedValues += ", ";
+            strExpectedValues += strKey + "=" + mapExpectedValues[strKey];
+        }
+        strlstExpectedValues.append(strExpectedValues);
+
+        QString strResultValues;
+        for (const QString& strKey : mapResultValues.keys())
+        {
+            if (!strResultValues.isEmpty()) strResultValues += ", ";
+            strResultValues += strKey + "=" + mapResultValues[strKey];
+        }
+        strlstResultValues.append(strResultValues);
+    }
+
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
+
+} // doTestStepPrecision2ShowUniqueNumbers

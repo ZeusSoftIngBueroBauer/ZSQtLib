@@ -1242,27 +1242,29 @@ QRect Math::calcRect( const QPoint& i_ptStart, const QPoint& i_ptEnd )
 //------------------------------------------------------------------------------
 /*! @brief Calculates division lines for the given scale values.
 
-    @param i_fScaleMinVal
+    @param i_fScaleMinVal [in]
         Minimum scale value in world coordinates (e.g. 0.0).
-    @param i_fScaleMaxVal
+    @param i_fScaleMaxVal [in]
         Maximum scale value in world coordinates (e.g. 100.0).
-    @param i_iScaleRangePix
+    @param i_iScaleRangePix [in]
         Number of pixels available for the scale (e.g. 1000).
-    @param i_fDivLineDistMinVal
+    @param i_fDivLineDistMinVal [in]
         Minimum distance between two division lines in world coordinates (e.g. 10.0).
-    @param i_iDivLineDistMinPix
+    @param i_iDivLineDistMinPix [in]
         Minimum distance between two division lines in pixels (e.g. 50).
-    @param i_bUseDivLineDistValDecimalFactor25
+    @param i_bUseDivLineDistValDecimalFactor25 [in]
         If false the division lines will be decimal factors at 10, 20, 50.
         If true also the decimall factor 25 is allowed.
-    @param o_pfDivLineFirstVal
+    @param o_pfDivLineFirstVal [out]
         If != nullptr contains the world coordinate of the first division line.
-    @param o_pfDivLineDistFirstPix
+    @param o_pfDivLineDistFirstPix [out]
         If != nullptr contains the pixel coordinate of the first division line.
-    @param o_pfDivLineDistVal
+    @param o_pfDivLineDistVal [out]
         If != nullptr contains the distance in world coordinate between two division lines.
-    @param o_pfDivLineDistPix
+    @param o_pfDivLineDistPix [out]
         If != nullptr contains the distance in pixels between two division lines.
+    @param i_pTrcAdminObj [in]
+        If != nullptr the admin object is used to trace the method call.
 
     @return Number of division lines for the given scale range.
 
@@ -1296,7 +1298,7 @@ QRect Math::calcRect( const QPoint& i_ptStart, const QPoint& i_ptEnd )
 
     Return: 11
 */
-int Math::calculateDivLines4LinSpacing(
+int Math::getDivLines4LinSpacing(
     double  i_fScaleMinVal,
     double  i_fScaleMaxVal,
     int     i_iScaleRangePix,
@@ -1322,7 +1324,7 @@ int Math::calculateDivLines4LinSpacing(
     CMethodTracer mthTracer(
         /* pAdminObj    */ i_pTrcAdminObj,
         /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "Math::calculateDivLines4LinSpacing",
+        /* strMethod    */ "Math::getDivLines4LinSpacing",
         /* strAddInfo   */ strMthInArgs );
 
     int iDivLineCount = 0;
@@ -1565,4 +1567,181 @@ int Math::calculateDivLines4LinSpacing(
         mthTracer.setMethodReturn(iDivLineCount);
     }
     return iDivLineCount;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Merges the given arrays into one array.
+
+    Each of the passed arrays must have already been sorted in ascending order
+    (lowest values first).
+
+    The resulting array is sorted in ascending order (lowest values first)
+    and duplicates are removed.
+
+    @param i_arfVals1 [in]
+        Array to be merged with i_arVals2. The values must be in ascending order.
+    @param i_arfVals2 [in]
+        Array to be merged with i_arVals1. The values must be in ascending order.
+
+    @return Merged and sorted array (duplicates removed).
+*/
+QVector<double> Math::merge(const QVector<double>& i_arfVals1, const QVector<double>& i_arfVals2)
+//------------------------------------------------------------------------------
+{
+    QVector<double> arfValsMerged;
+    if (i_arfVals1.size() > 0 && i_arfVals2.size() == 0) {
+        double fVal1 = i_arfVals1[0];
+        arfValsMerged.append(fVal1);
+        for (int idx1 = 0; idx1 < i_arfVals1.size()-1; ++idx1) {
+            fVal1 = i_arfVals1[idx1];
+            double fVal1Next = i_arfVals1[idx1+1];
+            if (fVal1Next > fVal1) {
+                arfValsMerged.append(fVal1Next);
+            }
+        }
+    }
+    else if (i_arfVals1.size() == 0 && i_arfVals2.size() > 0) {
+        double fVal2 = i_arfVals2[0];
+        arfValsMerged.append(fVal2);
+        for (int idx2 = 0; idx2 < i_arfVals2.size()-1; ++idx2) {
+            fVal2 = i_arfVals2[idx2];
+            double fVal2Next = i_arfVals2[idx2+1];
+            if (fVal2Next > fVal2) {
+                arfValsMerged.append(fVal2Next);
+            }
+        }
+    }
+    else if (i_arfVals1.size() > 0 && i_arfVals2.size() > 0)
+    {
+        // First add all values from array 2 which are less than the first value from array 1.
+        int idx2 = 0;
+        double fVal1 = i_arfVals1[0];
+        for (; idx2 < i_arfVals2.size(); ++idx2) {
+            double fVal2 = i_arfVals2[idx2];
+            if (fVal2 < fVal1) {
+                arfValsMerged.append(fVal2);
+            }
+            else {
+                break;
+            }
+        }
+        arfValsMerged.append(fVal1);
+
+        // Second add all values between first and last main value.
+        for (int idx1 = 0; idx1 < i_arfVals1.size()-1; ++idx1) {
+            fVal1 = i_arfVals1[idx1];
+            double fVal1Next = i_arfVals1[idx1+1];
+            for (; idx2 < i_arfVals2.size(); ++idx2) {
+                double fVal2 = i_arfVals2[idx2];
+                if (fVal2 >= fVal1Next) {
+                    break;
+                }
+                else if (fVal2 == fVal1) {
+                    // Duplicates will be ignored.
+                }
+                else {
+                    arfValsMerged.append(fVal2);
+                }
+            }
+            if (fVal1Next > fVal1) {
+                arfValsMerged.append(fVal1Next);
+            }
+        }
+
+        // Last add all values from array 2 which are greater than the last value from array 2.
+        fVal1 = i_arfVals1[i_arfVals1.size()-1];
+        for (; idx2 < i_arfVals2.size(); ++idx2) {
+            double fVal2 = i_arfVals2[idx2];
+            if (fVal2 > fVal1) {
+                arfValsMerged.append(fVal2);
+            }
+        }
+    }
+    return arfValsMerged;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Calculates the precision need to show each given value with a unique string.
+
+    @param i_arfVals [in]
+        Array of values which must be in sorted, ascending order (lowest value first).
+    @param i_iExponentDigits [in]
+        0 if the values should be indicated without exponent.
+        > 0 if the values should be indicated in engineering format with the number
+            of specified digits for the exponent.
+    @param i_iPrecisionMax [in]
+        Range [1..N]
+        Maximum allowed precision.
+    @param i_pTrcAdminObj [in]
+        If != nullptr the admin object is used to trace the method call.
+
+    @return Calculated precision.
+*/
+int ZSSYSDLL_API Math::getPrecision2ShowUniqueNumbers(
+    const QVector<double>& i_arfVals,
+    int i_iExponentDigits,
+    int i_iPrecisionMax,
+    CTrcAdminObj* i_pTrcAdminObj )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(i_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Vals [" + QString::number(i_arfVals.size()) + "]";
+        if (areMethodCallsActive(i_pTrcAdminObj, EMethodTraceDetailLevel::ArgsDetailed)) {
+            if (i_arfVals.size() > 0) {
+                strMthInArgs += "(";
+                for (int idxVal = 0; idxVal < i_arfVals.size(); ++idxVal) {
+                    if ((idxVal >= 5 && idxVal < i_arfVals.size() - 5) && !areMethodCallsActive(i_pTrcAdminObj, EMethodTraceDetailLevel::ArgsVerbose)) {
+                        idxVal = i_arfVals.size() - 5;
+                    }
+                    strMthInArgs += QString::number(i_arfVals[idxVal]);
+                }
+                strMthInArgs += ")";
+            }
+        }
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ i_pTrcAdminObj,
+        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "Math::getPrecision2ShowUniqueNumbers",
+        /* strAddInfo   */ strMthInArgs );
+
+    int iPrecision = 1;
+    int idx1 = 0;
+    while (idx1 < i_arfVals.size() && iPrecision < i_iPrecisionMax)
+    {
+        double fVal1 = i_arfVals[idx1];
+        QString strVal1;
+        if (i_iExponentDigits == 0) {
+            strVal1 = QString::number(fVal1, 'f', iPrecision);
+        }
+        else {
+            strVal1 = QString::number(fVal1, 'e', iPrecision);
+        }
+
+        for (int idx2 = idx1+1; idx2 < i_arfVals.size();  ++idx2)
+        {
+            double fVal2 = i_arfVals[idx2];
+            QString strVal2;
+            if (i_iExponentDigits == 0) {
+                strVal2 = QString::number(fVal2, 'f', iPrecision);
+            }
+            else {
+                strVal2 = QString::number(fVal2, 'e', iPrecision);
+            }
+            // Two successive labels may not be equal ...
+            if( strVal1 == strVal2 )
+            {
+                ++iPrecision;
+                idx1 = 0;
+                break;
+            }
+        }
+        ++idx1;
+    }
+
+    if (areMethodCallsActive(i_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(iPrecision);
+    }
+    return iPrecision;
 }

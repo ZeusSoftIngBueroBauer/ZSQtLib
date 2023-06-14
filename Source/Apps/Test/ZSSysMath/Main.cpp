@@ -53,8 +53,8 @@ int main( int argc, char* argv[] )
         /* argv                  */ argv,
         /* strOrganizationName   */ "ZeusSoft",
         /* strOrganizationDomain */ "ZeusSoft.de",
-        /* strAppName            */ "ZSAppTestTemplate",
-        /* strAppNameWindowTitle */ "ZSApp-Test-TestTemplate (" + ZS::System::c_strSysVersionNr + ")" );
+        /* strAppName            */ "ZSAppTestSysMath",
+        /* strAppNameWindowTitle */ "ZSApp-Test-Math (" + ZS::System::c_strSysVersionNr + ")" );
 
     iAppResult = pApp->exec();
 
@@ -68,5 +68,4 @@ int main( int argc, char* argv[] )
     #endif
 
     return iAppResult;
-
-} // main
+}

@@ -129,7 +129,7 @@ ZSSYSDLL_API double logRes2LinRes( double i_fResLog, double i_fValLin );
 
 ZSSYSDLL_API QRect calcRect( const QPoint& i_ptStart, const QPoint& i_ptEnd );
 
-int ZSSYSDLL_API calculateDivLines4LinSpacing(
+int ZSSYSDLL_API getDivLines4LinSpacing(
     double  i_fScaleMinVal,
     double  i_fScaleMaxVal,
     int     i_iScaleRangePix,
@@ -140,6 +140,14 @@ int ZSSYSDLL_API calculateDivLines4LinSpacing(
     double* o_pfDivLineDistFirstPix,
     double* o_pfDivLineDistVal,
     double* o_pfDivLineDistPix,
+    CTrcAdminObj* i_pTrcAdminObj = nullptr);
+
+QVector<double> ZSSYSDLL_API merge(const QVector<double>& i_arfVals1, const QVector<double>& i_arfVals2);
+
+int ZSSYSDLL_API getPrecision2ShowUniqueNumbers(
+    const QVector<double>& i_arfVals,
+    int i_iExponentDigits,
+    int i_iPrecisionMax = 10,
     CTrcAdminObj* i_pTrcAdminObj = nullptr);
 
 } // namespace Math

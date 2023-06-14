@@ -5845,14 +5845,14 @@ void CDrawingScene::drawGrid(QPainter* i_pPainter)
     double fDivLineDistPix = 0.0;
     int iDivLinesCount = 0;
 
-    #pragma message(__TODO__"calculateDivLines4LinSpacing only if gridSettings or drawingSize changed")
+    #pragma message(__TODO__"getDivLines4LinSpacing only if gridSettings or drawingSize changed")
 
     // X-Scale
     //--------
 
     if (m_drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels)
     {
-        iDivLinesCount = Math::calculateDivLines4LinSpacing(
+        iDivLinesCount = Math::getDivLines4LinSpacing(
             /* fScaleMinVal          */ 0.0,
             /* fScaleMaxVal          */ m_drawingSize.imageSizeInPixels().width(),
             /* iScaleRangePix        */ m_drawingSize.imageSizeInPixels().width(),
@@ -5867,7 +5867,7 @@ void CDrawingScene::drawGrid(QPainter* i_pPainter)
     }
     else
     {
-        iDivLinesCount = Math::calculateDivLines4LinSpacing(
+        iDivLinesCount = Math::getDivLines4LinSpacing(
             /* fScaleMinVal          */ 0.0,
             /* fScaleMaxVal          */ m_drawingSize.metricImageWidth().getVal(),
             /* iScaleRangePix        */ m_drawingSize.imageSizeInPixels().width(),
@@ -5898,7 +5898,7 @@ void CDrawingScene::drawGrid(QPainter* i_pPainter)
 
     if (m_drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels)
     {
-        iDivLinesCount = Math::calculateDivLines4LinSpacing(
+        iDivLinesCount = Math::getDivLines4LinSpacing(
             /* fScaleMinVal          */ 0.0,
             /* fScaleMaxVal          */ m_drawingSize.imageSizeInPixels().height(),
             /* iScaleRangePix        */ m_drawingSize.imageSizeInPixels().height(),
@@ -5913,7 +5913,7 @@ void CDrawingScene::drawGrid(QPainter* i_pPainter)
     }
     else
     {
-        iDivLinesCount = Math::calculateDivLines4LinSpacing(
+        iDivLinesCount = Math::getDivLines4LinSpacing(
             /* fScaleMinVal          */ 0.0,
             /* fScaleMaxVal          */ m_drawingSize.metricImageHeight().getVal(),
             /* iScaleRangePix        */ m_drawingSize.imageSizeInPixels().height(),
