@@ -273,7 +273,11 @@ function createInstaller {
 
     Write-Host ""
     Write-Host "$QTDIR\bin\windeployqt --compiler-runtime --debug $DeployDir"
-    & "$QTDIR\bin\windeployqt" --compiler-runtime $DeployDir
+    if($ConfigType -eq "Debug") {
+        & "$QTDIR\bin\windeployqt" --compiler-runtime --debug $DeployDir
+    else {
+        & "$QTDIR\bin\windeployqt" --compiler-runtime $DeployDir
+    }
     if($error.Count -ne 0)
     {
         Write-Host "Error: windeployqt failed";
