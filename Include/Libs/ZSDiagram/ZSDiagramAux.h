@@ -106,6 +106,10 @@ enum class EScaleDir {
 template class ZSDIAGRAMDLL_API ZS::System::CEnum<EScaleDir>;
 typedef ZS::System::CEnum<EScaleDir> CEnumScaleDir;
 
+// To make the code more readable:
+const int EScaleDirX = static_cast<int>(EScaleDir::X);
+const int EScaleDirY = static_cast<int>(EScaleDir::Y);
+
 //==============================================================================
 /*! Spacing of diagram scales which could be either linear or logarithmic.
 
@@ -153,6 +157,10 @@ enum class EDivLineLayer {
 };
 template class ZSDIAGRAMDLL_API ZS::System::CEnum<EDivLineLayer>;
 typedef ZS::System::CEnum<EDivLineLayer> CEnumDivLineLayer;
+
+// To make the code more readable:
+const int EDivLineLayerMain = static_cast<int>(EDivLineLayer::Main);
+const int EDivLineLayerSub = static_cast<int>(EDivLineLayer::Sub);
 
 //==============================================================================
 /*! Labeling axis lines is done in three different parts.
@@ -239,30 +247,6 @@ ZSDIAGRAMDLL_API double getValRes(
     PhysVal::CUnit* i_pUnitVal,    // use unit of scale if nullptr
     double          i_fVal,
     PhysVal::CUnit* i_pUnitRes );  // use unit of value if nullptr
-
-//******************************************************************************
-struct ZSDIAGRAMDLL_API SScale
-//******************************************************************************
-{
-public: // ctors
-    SScale();
-    SScale( const SScale& i_scaleOther );
-    SScale( double i_fMin, double i_fMax, const PhysVal::CUnit& i_unit );
-public: // instance methods
-    PhysVal::CPhysVal physValMin() const;
-    PhysVal::CPhysVal physValMax() const;
-    PhysVal::CPhysVal physValRange() const;
-public: // operators
-    bool operator == ( const SScale& i_scaleOther ) const;
-    bool operator != ( const SScale& i_scaleOther ) const;
-public: // instance methods
-    QString toString() const;
-public: // instance members
-    double         m_fMin;
-    double         m_fMax;
-    PhysVal::CUnit m_unit;
-
-}; // struct SScale
 
 } // namespace Diagram
 

@@ -948,6 +948,7 @@ std::tuple<double, double> Math::getAbsMinMax(const QVector<double>& i_arVals)
     @Examples
         - getFirstSignificantDigit(0.0): 0
         - getFirstSignificantDigit(2.0): 1
+        - getFirstSignificantDigit(10.0): 2
         - getFirstSignificantDigit(3452.78): 4
         - getFirstSignificantDigit(0.00056): -4
 
@@ -967,6 +968,7 @@ int Math::getFirstSignificantDigit( double i_fVal )
 //------------------------------------------------------------------------------
 {
     int iFirstDigit = 0;
+
     if (i_fVal != 0.0)
     {
         double fAbsVal = fabs(i_fVal);
@@ -975,7 +977,7 @@ int Math::getFirstSignificantDigit( double i_fVal )
         {
             iFirstDigit = 1;
         }
-        else
+        else // if (fAbsVal < 1.0 || fAbsVal >= 10.0)
         {
             double fLogInt = 0.0;
             double fLog = log10(fAbsVal);
@@ -983,17 +985,12 @@ int Math::getFirstSignificantDigit( double i_fVal )
 
             if (fAbsVal >= 10.0)
             {
-                iFirstDigit = static_cast<int>(fLog);
-                if (fLogFrac > 0.0)
-                {
-                    ++iFirstDigit;
-                }
+                iFirstDigit = static_cast<int>(fLogInt) + 1;
             }
-            else // if (fAbsVal < 10.0 && fAbsVal > 0.0)
+            else // if (fAbsVal < 1.0)
             {
-                iFirstDigit = static_cast<int>(fLog);
-                if (fLogFrac < 0.0)
-                {
+                iFirstDigit = static_cast<int>(fLogInt);
+                if (fLogFrac < 0.0) {
                     --iFirstDigit;
                 }
             }
@@ -1680,13 +1677,17 @@ QVector<double> Math::merge(const QVector<double>& i_arfVals1, const QVector<dou
 int ZSSYSDLL_API Math::getPrecision2ShowUniqueNumbers(
     const QVector<double>& i_arfVals,
     int i_iExponentDigits,
+    int i_iPrecisionMin,
     int i_iPrecisionMax,
     CTrcAdminObj* i_pTrcAdminObj )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(i_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Vals [" + QString::number(i_arfVals.size()) + "]";
+        strMthInArgs = "ExpDigits: " + QString::number(i_iExponentDigits) +
+                       ", PrecMin: " + QString::number(i_iPrecisionMin) +
+                       ", PrecMax: " + QString::number(i_iPrecisionMax) +
+                       ", Vals [" + QString::number(i_arfVals.size()) + "]";
         if (areMethodCallsActive(i_pTrcAdminObj, EMethodTraceDetailLevel::ArgsDetailed)) {
             if (i_arfVals.size() > 0) {
                 strMthInArgs += "(";
@@ -1706,7 +1707,7 @@ int ZSSYSDLL_API Math::getPrecision2ShowUniqueNumbers(
         /* strMethod    */ "Math::getPrecision2ShowUniqueNumbers",
         /* strAddInfo   */ strMthInArgs );
 
-    int iPrecision = 1;
+    int iPrecision = i_iPrecisionMin;
     int idx1 = 0;
     while (idx1 < i_arfVals.size() && iPrecision < i_iPrecisionMax)
     {

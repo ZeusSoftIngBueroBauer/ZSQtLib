@@ -520,7 +520,11 @@ CTest::CTest() :
         /* szDoTestStepFct */ SLOT(doTestStepFirstSignificantDigit(ZS::Test::CTestStep*)) );
     pTestStep->addDataRow({{"Val", 0.0}, {"Result", 0}});
     pTestStep->addDataRow({{"Val", 2.0}, {"Result", 1}});
+    pTestStep->addDataRow({{"Val", 10.0}, {"Result", 2}});
     pTestStep->addDataRow({{"Val", 3452.78}, {"Result", 4}});
+    pTestStep->addDataRow({{"Val", 0.1}, {"Result", -1}});
+    pTestStep->addDataRow({{"Val", 0.5}, {"Result", -1}});
+    pTestStep->addDataRow({{"Val", 0.02}, {"Result", -2}});
     pTestStep->addDataRow({{"Val", 0.00056}, {"Result", -4}});
 
     // Division Lines
@@ -669,12 +673,16 @@ CTest::CTest() :
     pTestStep->addDataRow({
         {"ValCount", 0},
         {"ExponentDigits", 0},
+        {"PrecisionMin", 1},
+        {"PrecisionMax", 10},
         {"Precision", 1}
         });
     pTestStep->addDataRow({
         {"ValCount", 5},
             {"ValArr[0]", -2.11}, {"ValArr[1]", -1.0}, {"ValArr[2]", 2.11}, {"ValArr[3]", 2.111}, {"ValArr[4]", 2.1111},
         {"ExponentDigits", 0},
+        {"PrecisionMin", 1},
+        {"PrecisionMax", 10},
         {"Precision", 4}
         });
 
@@ -1199,6 +1207,8 @@ void CTest::doTestStepPrecision2ShowUniqueNumbers( ZS::Test::CTestStep* i_pTestS
         int iValCount = dataRow["ValCount"].toInt();
         QVector<double> arfVals(iValCount, 0.0);
         int iExponentDigits = 0;
+        int iPrecisionMin = 1;
+        int iPrecisionMax = 10;
 
         for (const QString& strKey : dataRow.keys())
         {
@@ -1211,12 +1221,19 @@ void CTest::doTestStepPrecision2ShowUniqueNumbers( ZS::Test::CTestStep* i_pTestS
             else if (strKey.startsWith("ExponentDigits")) {
                 iExponentDigits = dataRow[strKey].toInt();
             }
+            else if (strKey.startsWith("PrecisionMin")) {
+                iPrecisionMin = dataRow[strKey].toInt();
+            }
+            else if (strKey.startsWith("PrecisionMax")) {
+                iPrecisionMax = dataRow[strKey].toInt();
+            }
             else if (strKey.startsWith("Precision")) {
                 mapExpectedValues[strKey] = dataRow[strKey].toString();
             }
         }
 
-        int iPrecision = Math::getPrecision2ShowUniqueNumbers(arfVals, iExponentDigits);
+        int iPrecision = Math::getPrecision2ShowUniqueNumbers(
+            arfVals, iExponentDigits, iPrecisionMin, iPrecisionMax);
         mapResultValues["Precision"] = QString::number(iPrecision);
 
         QString strExpectedValues;

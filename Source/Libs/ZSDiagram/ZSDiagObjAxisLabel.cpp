@@ -46,7 +46,7 @@ using namespace ZS::PhysVal;
 class CDiagObjAxisLabel : public CDiagObj
 *******************************************************************************/
 
-#ifdef LINUX
+#ifdef __linux__
 const int c_iMaxTextExtentAddHeight = 4; // unter Linux werden sonst die Labels abgeschnitten
 const int c_iMaxTextExtentAddWidth  = 0;
 #else
@@ -58,8 +58,6 @@ const int c_iMaxTextExtentAddWidth  = 0;
 const int EDivLineLabelsPartLines = static_cast<int>(EDivLineLabelsPart::Lines);
 const int EDivLineLabelsPartLabels = static_cast<int>(EDivLineLabelsPart::Labels);
 const int EDivLineLabelsPartAxisLabel = static_cast<int>(EDivLineLabelsPart::AxisLabel);
-const int EDivLineLayerMain = static_cast<int>(EDivLineLayer::Main);
-const int EDivLineLayerSub = EDivLineLayerSub;
 
 //lint -e834
 
@@ -82,7 +80,7 @@ CDiagObjAxisLabel::CDiagObjAxisLabel(
         /* layoutPos    */ i_layoutPos ),
     m_pDiagScale(i_pDiagScale),
     m_pUnit(nullptr), // as default: "use best unit"
-    m_unitLabels(i_pDiagScale->getScale().m_unit),
+    m_unitLabels(i_pDiagScale->getScale().unit()),
     m_strPhysUnitLabels(),
     m_iSpaceDiagPartCenter2DivLineLabels(4),
     m_iSpaceDivLineLabels2AxisLabel(2),
@@ -726,7 +724,7 @@ QSize CDiagObjAxisLabel::sizeHint()
                 {
                     if( m_iSpaceDiagPartCenter2DivLineLabels >= 0 )
                     {
-                        cyHeight += m_rectDivLineLabelsMaxTextExtent.height() + m_iSpaceDiagPartCenter2DivLineLabels + c_iMaxTextExtentAddHeight;
+                        cyHeight += m_rectDivLineLabelsMaxTextExtent.height() + m_iSpaceDiagPartCenter2DivLineLabels /*+ c_iMaxTextExtentAddHeight*/;
                     }
                 }
                 if( m_ararbShowPartsLayer[EDivLineLabelsPartLabels][EDivLineLayerMain]
@@ -744,7 +742,7 @@ QSize CDiagObjAxisLabel::sizeHint()
                 }
                 if( m_ararbShowPartsLayer[EDivLineLabelsPartAxisLabel][EDivLineLayerMain] || m_arbShowPartsUnit[EDivLineLabelsPartAxisLabel] )
                 {
-                    cyHeight += (m_rectAxisLabel.height() + c_iMaxTextExtentAddHeight + m_iSpaceDiagBorder2AxisLabel);
+                    cyHeight += (m_rectAxisLabel.height() /*+ c_iMaxTextExtentAddHeight*/ + m_iSpaceDiagBorder2AxisLabel);
                 }
             }
             else if( m_pDiagScale->getScaleDir() == EScaleDir::Y )
@@ -770,7 +768,7 @@ QSize CDiagObjAxisLabel::sizeHint()
                         {
                             cxWidth = m_rectDivLineLabelsPhysUnit.width();
                         }
-                        cxWidth += (m_iSpaceDiagPartCenter2DivLineLabels + c_iMaxTextExtentAddWidth);
+                        cxWidth += (m_iSpaceDiagPartCenter2DivLineLabels /*+ c_iMaxTextExtentAddWidth*/);
                     }
                 }
                 if( m_ararbShowPartsLayer[EDivLineLabelsPartLabels][EDivLineLayerMain]
@@ -788,7 +786,7 @@ QSize CDiagObjAxisLabel::sizeHint()
                 }
                 if( m_ararbShowPartsLayer[EDivLineLabelsPartAxisLabel][EDivLineLayerMain] || m_arbShowPartsUnit[EDivLineLabelsPartAxisLabel] )
                 {
-                    cxWidth += (m_rectAxisLabel.width() + m_iSpaceDiagBorder2AxisLabel + c_iMaxTextExtentAddWidth);
+                    cxWidth += (m_rectAxisLabel.width() + m_iSpaceDiagBorder2AxisLabel /*+ c_iMaxTextExtentAddWidth*/);
                 }
             }
         } // if( pPixmapDiagram != nullptr )
@@ -1029,10 +1027,8 @@ void CDiagObjAxisLabel::updateLayout()
     // Calculate width and height of the area for the division line labels
     //==========================================================================
 
-    double fScaleMinVal = m_pDiagScale->getScale().m_unit.convertValue(
-        m_pDiagScale->getScale().m_fMin, m_unitLabels);
-    double fScaleMaxVal = m_pDiagScale->getScale().m_unit.convertValue(
-        m_pDiagScale->getScale().m_fMax, m_unitLabels);
+    double fScaleMinVal = m_pDiagScale->getScale().minVal().getVal(m_unitLabels);
+    double fScaleMaxVal = m_pDiagScale->getScale().maxVal().getVal(m_unitLabels);
 
     // The scale object calculates the number of division lines and
     // the distance between the division lines for the grid.
@@ -1071,7 +1067,6 @@ void CDiagObjAxisLabel::updateLayout()
     // of the scales division lines. If the value is less than 1.0 at least
     // one leading digit will be shown.
     std::tuple<double, double> minMax = getAbsMinMaxDivLineVals();
-    double fDivLineValAbsMin = std::get<0>(minMax);
     double fDivLineValAbsMax = std::get<1>(minMax);
     int iDivLineLabelsLeadingDigits = 1;
     if (fDivLineValAbsMax > 1.0) {
@@ -1084,37 +1079,26 @@ void CDiagObjAxisLabel::updateLayout()
     m_iDivLineLabelsTrailingDigits = 1;
     double fDivLineDistMinVal = m_pDiagScale->getDivLineDistMin(CEnumDivLineLayer(), &m_unitLabels);
     if (fDivLineDistMinVal < 1.0) {
-        m_iDivLineLabelsTrailingDigits = Math::getFirstSignificantDigit(fDivLineValAbsMax);
+        m_iDivLineLabelsTrailingDigits = abs(Math::getFirstSignificantDigit(fDivLineDistMinVal));
     }
+
+    // The absolute minimum value of the division lines may be lower than
+    // the distance between two division lines.
+    double fDivLineValAbsMin = std::get<0>(minMax);
+    if (fDivLineValAbsMin < 1.0) {
+        int iDivLineLabelsTrailingDigits = abs(Math::getFirstSignificantDigit(fDivLineValAbsMin));
+        if (iDivLineLabelsTrailingDigits > m_iDivLineLabelsTrailingDigits) {
+            m_iDivLineLabelsTrailingDigits = iDivLineLabelsTrailingDigits;
+        }
+    }
+
+    // The absolute maximum value of the division lines may not be lower than
+    // the absolute minimum value. No need to take this value into account when
+    // calculating the number of trailing digits.
 
     // Calculate how many leading and trailing digits would be necessary to
     // indicate the absolute minimum and maximum values and decide, whether
     // an exponent is necessary to indicate the values.
-
-    //double fScaleMinVal = m_pDiagScale->getScale().m_unit.convertValue(
-    //    m_pDiagScale->getScale().m_fMin, m_unitLabels);
-    //double fScaleMaxVal = m_pDiagScale->getScale().m_unit.convertValue(
-    //    m_pDiagScale->getScale().m_fMax, m_unitLabels);
-
-    //int iFirstDigitValAbsMax = Math::getFirstSignificantDigit(fDivLineValAbsMax);
-    //int iDivLineLabelsLeadingDigits = (iFirstDigitValAbsMax > 0) ? iFirstDigitValAbsMax : 1;
-    //m_iDivLineLabelsTrailingDigits = (iFirstDigitValAbsMax < 0) ? abs(iFirstDigitValAbsMax) : 0;
-
-    //int iFirstDigitValAbsMin = Math::getFirstSignificantDigit(fDivLineValAbsMin);
-    //if (iFirstDigitValAbsMin > 0 && iFirstDigitValAbsMin > iDivLineLabelsLeadingDigits) {
-    //    iDivLineLabelsLeadingDigits = iFirstDigitValAbsMin;
-    //}
-    //if (iFirstDigitValAbsMin < 0 && abs(iFirstDigitValAbsMin) > m_iDivLineLabelsTrailingDigits) {
-    //    m_iDivLineLabelsTrailingDigits = abs(iFirstDigitValAbsMin);
-    //}
-
-    //int iFirstDigitScaleRes = Math::getFirstSignificantDigit(fDivLineDistMinVal);
-    //if (iFirstDigitScaleRes > 0 && iFirstDigitScaleRes > iDivLineLabelsLeadingDigits) {
-    //    iDivLineLabelsLeadingDigits = iFirstDigitScaleRes;
-    //}
-    //if (iFirstDigitScaleRes < 0 && abs(iFirstDigitScaleRes) > m_iDivLineLabelsTrailingDigits) {
-    //    m_iDivLineLabelsTrailingDigits = abs(iFirstDigitScaleRes);
-    //}
 
     // If engineering format is forced or if the number of leading and trailing digits
     // exceeds the maximum number of digits configured for the mantissa the labels must
@@ -1169,151 +1153,317 @@ void CDiagObjAxisLabel::updateLayout()
         mthTracer.trace(strMthRuntimeInfo);
     }
 
-    if (m_pDiagScale->isScaleValid())
+    // If at least two division lines are available ..
+    if (iDivLinesCount >= 2)
     {
-        // If at least two division lines are available ..
-        if (iDivLinesCount >= 2)
+        // Already mentioned above:
+        // If engineering format is forced or if the number of leading and trailing digits
+        // exceeds the maximum number of digits,
+        // but also if the scale uses logarithmic spacing ...
+        if (m_iDivLineLabelsExponentDigits > 0 || m_pDiagScale->getSpacing() == ESpacing::Logarithmic)
         {
-            // Already mentioned above:
-            // If engineering format is forced or if the number of leading and trailing digits
-            // exceeds the maximum number of digits ...
-            if (m_iDivLineLabelsExponentDigits > 0)
-            {
-                QVector<double> arfDivLineValsSorted = getDivLineValsSorted();
+            QVector<double> arfDivLineValsSorted = getDivLineValsSorted();
 
-                // The division lines are rounded to a whole number of a decimal power.
-                // To output the axis labels it is "just" necessary to ensure that the
-                // indicated values are different.
-                int iPrecisionMax = 10;
-                if (m_iDivLineLabelsDigitsCountMax > 0) {
-                    iPrecisionMax = m_iDivLineLabelsDigitsCountMax - iDivLineLabelsLeadingDigits;
-                }
-                m_iDivLineLabelsTrailingDigits = Math::getPrecision2ShowUniqueNumbers(
-                    arfDivLineValsSorted, m_iDivLineLabelsExponentDigits, iPrecisionMax, m_pTrcAdminObj);
+            // The division lines are rounded to a whole number of a decimal power.
+            // To output the axis labels it is "just" necessary to ensure that the
+            // indicated values are different.
+            int iPrecisionMax = 10;
+            if (m_iDivLineLabelsDigitsCountMax > 0) {
+                iPrecisionMax = m_iDivLineLabelsDigitsCountMax - iDivLineLabelsLeadingDigits;
             }
+            m_iDivLineLabelsTrailingDigits = Math::getPrecision2ShowUniqueNumbers(
+                arfDivLineValsSorted, m_iDivLineLabelsExponentDigits,
+                m_iDivLineLabelsTrailingDigits, iPrecisionMax, m_pTrcAdminObj);
+        }
+    }
+
+    // If just one or even no division line label is available ..
+    else // if (iDivLinesCount < 2)
+    {
+        // If less than one division line is visible we try to indicate the minimum and
+        // maximum scale values. This is a special case for formatting the values as the
+        // minimum and maximum values might be any not rounded value (in contrary to the
+        // division lines which are always rounded to a whole number of a decimal power).
+        // To output the number of digits for the minimum and maximum scale values the
+        // scale resolution is important. If the user enters the value 3.625362 it
+        // would not be good to limit the output to less than the entered digits. But we
+        // also don't want to indicate trailing zeros if the resolution exceeds the number
+        // of entered digits.
+
+        // To take logarithmic scalings into account we get the resolution at the absolute
+        // minimum value that should be indicated by the axis label.
+        double fScaleRes = m_pDiagScale->getScaleRes().getVal(m_unitLabels);
+
+        // Calculate number of trailing and leading digits needed to indicate
+        // the values with the calculated scale resolution.
+        int iTrailingDigitsTmp = 1;
+        int iLeadingDigitsTmp = 1;
+        int iPrecisionTmp = static_cast<int>(log10(fabs(fScaleRes)));
+        if( iPrecisionTmp < 0 )
+        {
+            iTrailingDigitsTmp = -iPrecisionTmp;
+        }
+        else if( iPrecisionTmp > 0 )
+        {
+            iLeadingDigitsTmp = iPrecisionTmp;
         }
 
-        // If just one or even no division line label is available ..
-        else // if (iDivLinesCount < 2)
+        // Calculate number of trailing and leading digits needed to indicate
+        // the absolute maximum value that should be indicated by the axis label
+        // and increase the number of trailing and leading digits if they exceed
+        // the number of digits necessary to indicate the values according to
+        // the scale resolution.
+        iPrecisionTmp = static_cast<int>(log10(fabs(fDivLineValAbsMax)));
+        if( iPrecisionTmp < 0 )
         {
-            // If less than one division line is visible we try to indicate the minimum and
-            // maximum scale values. This is a special case for formatting the values as the
-            // minimum and maximum values might be any not rounded value (in contrary to the
-            // division lines which are always rounded to a whole number of a decimal power).
-            // To output the number of digits for the minimum and maximum scale values the
-            // scale resolution is important. If the user enters the value 3.625362 it
-            // would not be good to limit the output to less than the entered digits. But we
-            // also don't want to indicate trailing zeros if the resolution exceeds the number
-            // of entered digits.
-
-            // To take logarithmic scalings into account we get the resolution at the absolute
-            // minimum value that should be indicated by the axis label.
-            double fScaleRes = m_pDiagScale->getScaleRes(fDivLineValAbsMin, &m_unitLabels);
-
-            // Calculate number of trailing and leading digits needed to indicate
-            // the values with the calculated scale resolution.
-            int iTrailingDigitsTmp = 1;
-            int iLeadingDigitsTmp = 1;
-            int iPrecisionTmp = static_cast<int>(log10(fabs(fScaleRes)));
-            if( iPrecisionTmp < 0 )
+            // If more trailing digits are needed than calculated for the scale resolution ...
+            if( -iPrecisionTmp > iTrailingDigitsTmp )
             {
                 iTrailingDigitsTmp = -iPrecisionTmp;
             }
-            else if( iPrecisionTmp > 0 )
+        }
+        else if( iPrecisionTmp > 0 )
+        {
+            // If more leading digits are needed than calculated for the scale resolution ...
+            if( iPrecisionTmp > iLeadingDigitsTmp )
             {
                 iLeadingDigitsTmp = iPrecisionTmp;
             }
+        }
 
-            // Calculate number of trailing and leading digits needed to indicate
-            // the absolute maximum value that should be indicated by the axis label
-            // and increase the number of trailing and leading digits if they exceed
-            // the number of digits necessary to indicate the values according to
-            // the scale resolution.
-            iPrecisionTmp = static_cast<int>(log10(fabs(fDivLineValAbsMax)));
-            if( iPrecisionTmp < 0 )
+        // Calculate number of trailing and leading digits needed to indicate
+        // the absolute minimum value that should be indicated by the axis label
+        // and increase the number of trailing and leading digits if they exceed
+        // the number of digits necessary to indicate the values according to
+        // the scale resolution or the absolute maximum value.
+        iPrecisionTmp = static_cast<int>(log10(fabs(fDivLineValAbsMin)));
+        if( iPrecisionTmp < 0 )
+        {
+            // If more trailing digits are needed than calculated for the scale resolution
+            // or the absolute maximum value ...
+            if( -iPrecisionTmp > iTrailingDigitsTmp )
             {
-                // If more trailing digits are needed than calculated for the scale resolution ...
-                if( -iPrecisionTmp > iTrailingDigitsTmp )
+                iTrailingDigitsTmp = -iPrecisionTmp;
+            }
+        }
+        else if( iPrecisionTmp > 0 )
+        {
+            // If more leading digits are needed than calculated for the scale resolution
+            // or the absolute maximum value ...
+            if( iPrecisionTmp > iLeadingDigitsTmp )
+            {
+                iLeadingDigitsTmp = iPrecisionTmp;
+            }
+        }
+
+        // Minimum number of digits needed to indicate the values according to the
+        // scale resolution, the absolute maximum and absolute minimum value.
+        int iPrecisionMin = iLeadingDigitsTmp + iTrailingDigitsTmp;
+
+        // Now get the values that should be indicated by the axis label.
+        // If no division line is available the minimum and maximum scale values will be indicated.
+        int iDivLineLabelsCountTmp = 2;
+        double fDivLineVal1 = fScaleMinVal;
+        double fDivLineVal2 = fScaleMaxVal;
+        double fDivLineVal3 = fScaleMinVal;
+
+        for( int iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
+        {
+            EDivLineLayer eLayer = static_cast<EDivLineLayer>(iLayer);
+
+            // If the division line is available ..
+            if( m_ariDivLinesCount[iLayer] == 1 )
+            {
+                // .. and if the division line is not at the scale minimum or scale maximum value ..
+                double fDivLineVal = m_pDiagScale->getDivLineVal(eLayer, 0, &m_unitLabels);
+                if( fDivLineVal > fScaleMinVal && fDivLineVal < fScaleMaxVal )
                 {
-                    iTrailingDigitsTmp = -iPrecisionTmp;
+                    // ... also the value of the main division line may be indicated.
+                    fDivLineVal3 = fDivLineVal;
+                    iDivLineLabelsCountTmp = 3;
                 }
             }
-            else if( iPrecisionTmp > 0 )
+        }
+
+        // Now format the values with the precision calculated according to the
+        // resolution and absolute maximum and minimum values and see if we can
+        // remove trailing zeros:
+
+        QString strDivLineLabel1;
+        QString strDivLineLabel2;
+        QString strDivLineLabel3;
+        int iLabel1ExponentDigits = 0;
+        int iLabel2ExponentDigits = 0;
+        int iLabel3ExponentDigits = 0;
+        int iLabel1TrailingZeroesCount = 0;
+        int iLabel2TrailingZeroesCount = 0;
+        int iLabel3TrailingZeroesCount = 0;
+
+        if( m_iDivLineLabelsExponentDigits > 0 )
+        {
+            strDivLineLabel1 = QString::number(
+                /* fVal       */ fDivLineVal1,
+                /* chFormat   */ 'e',
+                /* iPrecision */ iPrecisionMin );
+            #if QT_VERSION >= 0x040100
+            int idxChar = strDivLineLabel1.indexOf('e',Qt::CaseInsensitive );
+            #else
+            int idxChar = strDivLineLabel1.find('e',false);
+            #endif
+            if( idxChar >= 0 )
             {
-                // If more leading digits are needed than calculated for the scale resolution ...
-                if( iPrecisionTmp > iLeadingDigitsTmp )
+                iLabel1ExponentDigits = strDivLineLabel1.length()-idxChar;
+            }
+            strDivLineLabel2 = QString::number(
+                /* fVal       */ fDivLineVal2,
+                /* chFormat   */ 'e',
+                /* iPrecision */ iPrecisionMin );
+            #if QT_VERSION >= 0x040100
+            idxChar = strDivLineLabel2.indexOf('e',Qt::CaseInsensitive );
+            #else
+            idxChar = strDivLineLabel2.find('e',false);
+            #endif
+            if( idxChar >= 0 )
+            {
+                iLabel2ExponentDigits = strDivLineLabel2.length()-idxChar;
+            }
+            if( iDivLineLabelsCountTmp == 3 )
+            {
+                strDivLineLabel3 = QString::number(
+                    /* fVal       */ fDivLineVal3,
+                    /* chFormat   */ 'e',
+                    /* iPrecision */ iPrecisionMin ); //lint !e644 .. if fDivLineVal3 would not have been initialized uDivLineCountTmp would not be equal to 3
+                #if QT_VERSION >= 0x040100
+                idxChar = strDivLineLabel3.indexOf('e',Qt::CaseInsensitive );
+                #else
+                idxChar = strDivLineLabel3.find('e',false);
+                #endif
+                if( idxChar >= 0 )
                 {
-                    iLeadingDigitsTmp = iPrecisionTmp;
+                    iLabel3ExponentDigits = strDivLineLabel3.length()-idxChar;
                 }
             }
-
-            // Calculate number of trailing and leading digits needed to indicate
-            // the absolute minimum value that should be indicated by the axis label
-            // and increase the number of trailing and leading digits if they exceed
-            // the number of digits necessary to indicate the values according to
-            // the scale resolution or the absolute maximum value.
-            iPrecisionTmp = static_cast<int>(log10(fabs(fDivLineValAbsMin)));
-            if( iPrecisionTmp < 0 )
+        }
+        else
+        {
+            strDivLineLabel1 = QString::number(
+                /* fVal       */ fDivLineVal1,
+                /* chFormat   */ 'f',
+                /* iPrecision */ iPrecisionMin );
+            strDivLineLabel2 = QString::number(
+                /* fVal       */ fDivLineVal2,
+                /* chFormat   */ 'f',
+                /* iPrecision */ iPrecisionMin );
+            if( iDivLineLabelsCountTmp == 3 )
             {
-                // If more trailing digits are needed than calculated for the scale resolution
-                // or the absolute maximum value ...
-                if( -iPrecisionTmp > iTrailingDigitsTmp )
-                {
-                    iTrailingDigitsTmp = -iPrecisionTmp;
-                }
+                strDivLineLabel3 = QString::number(
+                    /* fVal       */ fDivLineVal3,
+                    /* chFormat   */ 'f',
+                    /* iPrecision */ iPrecisionMin );
             }
-            else if( iPrecisionTmp > 0 )
+        }
+        if( strDivLineLabel3.length() == 0 )
+        {
+            iLabel3TrailingZeroesCount = iPrecisionMin;
+        }
+        if( strDivLineLabel1.length() > 0 )
+        {
+            for( int idxChar = strDivLineLabel1.length()-iLabel1ExponentDigits-1; idxChar >= 0; idxChar-- )
             {
-                // If more leading digits are needed than calculated for the scale resolution
-                // or the absolute maximum value ...
-                if( iPrecisionTmp > iLeadingDigitsTmp )
+                #if QT_VERSION < 0x050000
+                if( strDivLineLabel1.toAscii()[idxChar] == '.' || strDivLineLabel1.toAscii()[idxChar] == ',' )
+                #else
+                if( strDivLineLabel1.toLatin1()[idxChar] == '.' || strDivLineLabel1.toLatin1()[idxChar] == ',' )
+                #endif
                 {
-                    iLeadingDigitsTmp = iPrecisionTmp;
+                    break;
                 }
+                #if QT_VERSION < 0x050000
+                else if( strDivLineLabel1.toAscii()[idxChar] != '0' )
+                #else
+                else if( strDivLineLabel1.toLatin1()[idxChar] != '0' )
+                #endif
+                {
+                    break;
+                }
+                iLabel1TrailingZeroesCount++;
             }
-
-            // Minimum number of digits needed to indicate the values according to the
-            // scale resolution, the absolute maximum and absolute minimum value.
-            int iPrecisionMin = iLeadingDigitsTmp + iTrailingDigitsTmp;
-
-            // Now get the values that should be indicated by the axis label.
-            // If no division line is available the minimum and maximum scale values will be indicated.
-            int iDivLineLabelsCountTmp = 2;
-            double fDivLineVal1 = fScaleMinVal;
-            double fDivLineVal2 = fScaleMaxVal;
-            double fDivLineVal3 = fScaleMinVal;
-
-            for( int iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
+        }
+        if( strDivLineLabel2.length() > 0 && iLabel1TrailingZeroesCount > 0 )
+        {
+            for( int idxChar = strDivLineLabel2.length()-iLabel2ExponentDigits-1; idxChar >= 0; idxChar-- )
             {
-                EDivLineLayer eLayer = static_cast<EDivLineLayer>(iLayer);
-
-                // If the division line is available ..
-                if( m_ariDivLinesCount[iLayer] == 1 )
+                #if QT_VERSION < 0x050000
+                if( strDivLineLabel2.toAscii()[idxChar] == '.' || strDivLineLabel2.toAscii()[idxChar] == ',' )
+                #else
+                if( strDivLineLabel2.toLatin1()[idxChar] == '.' || strDivLineLabel2.toLatin1()[idxChar] == ',' )
+                #endif
                 {
-                    // .. and if the division line is not at the scale minimum or scale maximum value ..
-                    double fDivLineVal = m_pDiagScale->getDivLineVal(eLayer, 0, &m_unitLabels);
-                    if( fDivLineVal > fScaleMinVal && fDivLineVal < fScaleMaxVal )
-                    {
-                        // ... also the value of the main division line may be indicated.
-                        fDivLineVal3 = fDivLineVal;
-                        iDivLineLabelsCountTmp = 3;
-                    }
+                    break;
                 }
+                #if QT_VERSION < 0x050000
+                else if( strDivLineLabel2.toAscii()[idxChar] != '0' )
+                #else
+                else if( strDivLineLabel2.toLatin1()[idxChar] != '0' )
+                #endif
+                {
+                    break;
+                }
+                iLabel2TrailingZeroesCount++;
             }
+        }
+        if( strDivLineLabel3.length() > 0 && iLabel2TrailingZeroesCount > 0 )
+        {
+            for( int idxChar = strDivLineLabel3.length()-iLabel3ExponentDigits-1; idxChar >= 0; idxChar-- )
+            {
+                #if QT_VERSION < 0x050000
+                if( strDivLineLabel3.toAscii()[idxChar] == '.' || strDivLineLabel3.toAscii()[idxChar] == ',' )
+                #else
+                if( strDivLineLabel3.toLatin1()[idxChar] == '.' || strDivLineLabel3.toLatin1()[idxChar] == ',' )
+                #endif
+                {
+                    break;
+                }
+                #if QT_VERSION < 0x050000
+                else if( strDivLineLabel3.toAscii()[idxChar] != '0' )
+                #else
+                else if( strDivLineLabel3.toLatin1()[idxChar] != '0' )
+                #endif
+                {
+                    break;
+                }
+                iLabel3TrailingZeroesCount++;
+            }
+        }
 
-            // Now format the values with the precision calculated according to the
-            // resolution and absolute maximum and minimum values and see if we can
-            // remove trailing zeros:
+        int iTrailingZeroes = 0;
+        if( iLabel1TrailingZeroesCount > 0 && iLabel2TrailingZeroesCount > 0 && iLabel3TrailingZeroesCount > 0 )
+        {
+            iTrailingZeroes = iLabel3TrailingZeroesCount;
+            if( iTrailingZeroes > iLabel2TrailingZeroesCount )
+            {
+                iTrailingZeroes = iLabel2TrailingZeroesCount;
+            }
+            if( iTrailingZeroes > iLabel1TrailingZeroesCount )
+            {
+                iTrailingZeroes = iLabel1TrailingZeroesCount;
+            }
+        }
 
-            QString strDivLineLabel1;
-            QString strDivLineLabel2;
-            QString strDivLineLabel3;
-            int iLabel1ExponentDigits = 0;
-            int iLabel2ExponentDigits = 0;
-            int iLabel3ExponentDigits = 0;
-            int iLabel1TrailingZeroesCount = 0;
-            int iLabel2TrailingZeroesCount = 0;
-            int iLabel3TrailingZeroesCount = 0;
+        iPrecisionMin -= iTrailingZeroes;
+        if( iPrecisionMin < 1 )
+        {
+            iPrecisionMin = 1;
+        }
+        int iPrecisionMinPrev = iPrecisionMin-1;
+
+        // At this point the values to be indicated have been formatted according to the
+        // scale resolution, the absolute minimum and maximum value and trailing zeros
+        // (if there have been any) have been removed. Now we need to ensure that each
+        // axis label is different.
+        while( iPrecisionMin != iPrecisionMinPrev )
+        {
+            iPrecisionMinPrev = iPrecisionMin;
 
             if( m_iDivLineLabelsExponentDigits > 0 )
             {
@@ -1321,43 +1471,16 @@ void CDiagObjAxisLabel::updateLayout()
                     /* fVal       */ fDivLineVal1,
                     /* chFormat   */ 'e',
                     /* iPrecision */ iPrecisionMin );
-                #if QT_VERSION >= 0x040100
-                int idxChar = strDivLineLabel1.indexOf('e',Qt::CaseInsensitive );
-                #else
-                int idxChar = strDivLineLabel1.find('e',false);
-                #endif
-                if( idxChar >= 0 )
-                {
-                    iLabel1ExponentDigits = strDivLineLabel1.length()-idxChar;
-                }
                 strDivLineLabel2 = QString::number(
                     /* fVal       */ fDivLineVal2,
                     /* chFormat   */ 'e',
                     /* iPrecision */ iPrecisionMin );
-                #if QT_VERSION >= 0x040100
-                idxChar = strDivLineLabel2.indexOf('e',Qt::CaseInsensitive );
-                #else
-                idxChar = strDivLineLabel2.find('e',false);
-                #endif
-                if( idxChar >= 0 )
-                {
-                    iLabel2ExponentDigits = strDivLineLabel2.length()-idxChar;
-                }
                 if( iDivLineLabelsCountTmp == 3 )
                 {
                     strDivLineLabel3 = QString::number(
                         /* fVal       */ fDivLineVal3,
                         /* chFormat   */ 'e',
-                        /* iPrecision */ iPrecisionMin ); //lint !e644 .. if fDivLineVal3 would not have been initialized uDivLineCountTmp would not be equal to 3
-                    #if QT_VERSION >= 0x040100
-                    idxChar = strDivLineLabel3.indexOf('e',Qt::CaseInsensitive );
-                    #else
-                    idxChar = strDivLineLabel3.find('e',false);
-                    #endif
-                    if( idxChar >= 0 )
-                    {
-                        iLabel3ExponentDigits = strDivLineLabel3.length()-idxChar;
-                    }
+                        /* iPrecision */ iPrecisionMin );
                 }
             }
             else
@@ -1378,167 +1501,27 @@ void CDiagObjAxisLabel::updateLayout()
                         /* iPrecision */ iPrecisionMin );
                 }
             }
-            if( strDivLineLabel3.length() == 0 )
-            {
-                iLabel3TrailingZeroesCount = iPrecisionMin;
-            }
-            if( strDivLineLabel1.length() > 0 )
-            {
-                for( int idxChar = strDivLineLabel1.length()-iLabel1ExponentDigits-1; idxChar >= 0; idxChar-- )
-                {
-                    #if QT_VERSION < 0x050000
-                    if( strDivLineLabel1.toAscii()[idxChar] == '.' || strDivLineLabel1.toAscii()[idxChar] == ',' )
-                    #else
-                    if( strDivLineLabel1.toLatin1()[idxChar] == '.' || strDivLineLabel1.toLatin1()[idxChar] == ',' )
-                    #endif
-                    {
-                        break;
-                    }
-                    #if QT_VERSION < 0x050000
-                    else if( strDivLineLabel1.toAscii()[idxChar] != '0' )
-                    #else
-                    else if( strDivLineLabel1.toLatin1()[idxChar] != '0' )
-                    #endif
-                    {
-                        break;
-                    }
-                    iLabel1TrailingZeroesCount++;
-                }
-            }
-            if( strDivLineLabel2.length() > 0 && iLabel1TrailingZeroesCount > 0 )
-            {
-                for( int idxChar = strDivLineLabel2.length()-iLabel2ExponentDigits-1; idxChar >= 0; idxChar-- )
-                {
-                    #if QT_VERSION < 0x050000
-                    if( strDivLineLabel2.toAscii()[idxChar] == '.' || strDivLineLabel2.toAscii()[idxChar] == ',' )
-                    #else
-                    if( strDivLineLabel2.toLatin1()[idxChar] == '.' || strDivLineLabel2.toLatin1()[idxChar] == ',' )
-                    #endif
-                    {
-                        break;
-                    }
-                    #if QT_VERSION < 0x050000
-                    else if( strDivLineLabel2.toAscii()[idxChar] != '0' )
-                    #else
-                    else if( strDivLineLabel2.toLatin1()[idxChar] != '0' )
-                    #endif
-                    {
-                        break;
-                    }
-                    iLabel2TrailingZeroesCount++;
-                }
-            }
-            if( strDivLineLabel3.length() > 0 && iLabel2TrailingZeroesCount > 0 )
-            {
-                for( int idxChar = strDivLineLabel3.length()-iLabel3ExponentDigits-1; idxChar >= 0; idxChar-- )
-                {
-                    #if QT_VERSION < 0x050000
-                    if( strDivLineLabel3.toAscii()[idxChar] == '.' || strDivLineLabel3.toAscii()[idxChar] == ',' )
-                    #else
-                    if( strDivLineLabel3.toLatin1()[idxChar] == '.' || strDivLineLabel3.toLatin1()[idxChar] == ',' )
-                    #endif
-                    {
-                        break;
-                    }
-                    #if QT_VERSION < 0x050000
-                    else if( strDivLineLabel3.toAscii()[idxChar] != '0' )
-                    #else
-                    else if( strDivLineLabel3.toLatin1()[idxChar] != '0' )
-                    #endif
-                    {
-                        break;
-                    }
-                    iLabel3TrailingZeroesCount++;
-                }
-            }
 
-            int iTrailingZeroes = 0;
-            if( iLabel1TrailingZeroesCount > 0 && iLabel2TrailingZeroesCount > 0 && iLabel3TrailingZeroesCount > 0 )
+            // All labels must be different ...
+            if( strDivLineLabel1 == strDivLineLabel2 )
             {
-                iTrailingZeroes = iLabel3TrailingZeroesCount;
-                if( iTrailingZeroes > iLabel2TrailingZeroesCount )
-                {
-                    iTrailingZeroes = iLabel2TrailingZeroesCount;
-                }
-                if( iTrailingZeroes > iLabel1TrailingZeroesCount )
-                {
-                    iTrailingZeroes = iLabel1TrailingZeroesCount;
-                }
+                iPrecisionMin++;
             }
-
-            iPrecisionMin -= iTrailingZeroes;
-            if( iPrecisionMin < 1 )
+            if( iDivLineLabelsCountTmp == 3 )
             {
-                iPrecisionMin = 1;
-            }
-            int iPrecisionMinPrev = iPrecisionMin-1;
-
-            // At this point the values to be indicated have been formatted according to the
-            // scale resolution, the absolute minimum and maximum value and trailing zeros
-            // (if there have been any) have been removed. Now we need to ensure that each
-            // axis label is different.
-            while( iPrecisionMin != iPrecisionMinPrev )
-            {
-                iPrecisionMinPrev = iPrecisionMin;
-
-                if( m_iDivLineLabelsExponentDigits > 0 )
-                {
-                    strDivLineLabel1 = QString::number(
-                        /* fVal       */ fDivLineVal1,
-                        /* chFormat   */ 'e',
-                        /* iPrecision */ iPrecisionMin );
-                    strDivLineLabel2 = QString::number(
-                        /* fVal       */ fDivLineVal2,
-                        /* chFormat   */ 'e',
-                        /* iPrecision */ iPrecisionMin );
-                    if( iDivLineLabelsCountTmp == 3 )
-                    {
-                        strDivLineLabel3 = QString::number(
-                            /* fVal       */ fDivLineVal3,
-                            /* chFormat   */ 'e',
-                            /* iPrecision */ iPrecisionMin );
-                    }
-                }
-                else
-                {
-                    strDivLineLabel1 = QString::number(
-                        /* fVal       */ fDivLineVal1,
-                        /* chFormat   */ 'f',
-                        /* iPrecision */ iPrecisionMin );
-                    strDivLineLabel2 = QString::number(
-                        /* fVal       */ fDivLineVal2,
-                        /* chFormat   */ 'f',
-                        /* iPrecision */ iPrecisionMin );
-                    if( iDivLineLabelsCountTmp == 3 )
-                    {
-                        strDivLineLabel3 = QString::number(
-                            /* fVal       */ fDivLineVal3,
-                            /* chFormat   */ 'f',
-                            /* iPrecision */ iPrecisionMin );
-                    }
-                }
-
-                // All labels must be different ...
-                if( strDivLineLabel1 == strDivLineLabel2 )
+                if( strDivLineLabel1 == strDivLineLabel3 || strDivLineLabel2 == strDivLineLabel3 )
                 {
                     iPrecisionMin++;
                 }
-                if( iDivLineLabelsCountTmp == 3 )
-                {
-                    if( strDivLineLabel1 == strDivLineLabel3 || strDivLineLabel2 == strDivLineLabel3 )
-                    {
-                        iPrecisionMin++;
-                    }
-                }
+            }
 
-                // Just to avoid an endless loop in any case ..
-                if( iPrecisionMin > 100 )
-                {
-                    break;
-                }
-            } // while( iPrecisionMin != iPrecisionMinPrev )
-        } // if (iDivLinesCount < 2)
-    } // if (m_pDiagScale->isScaleValid())
+            // Just to avoid an endless loop in any case ..
+            if( iPrecisionMin > 100 )
+            {
+                break;
+            }
+        } // while( iPrecisionMin != iPrecisionMinPrev )
+    } // if (iDivLinesCount < 2)
 
     //if( iPrecisionMin > m_iDivLineLabelsTrailingDigits )
     //{
@@ -1780,7 +1763,7 @@ void CDiagObjAxisLabel::updateLayout()
                 {
                     TFormatResult formatResult = PhysVal::formatValue(
                         /* fValue                */ fScaleMinVal,
-                        /* unitVal               */ m_pDiagScale->getScale().m_unit,
+                        /* unitVal               */ m_pDiagScale->getScale().unit(),
                         /* iDigitsMantissaMax    */ 6,
                         /* bAccuracyLimitsMant.  */ false,
                         /* iDigitsAccuracy       */ 0,
@@ -1801,7 +1784,7 @@ void CDiagObjAxisLabel::updateLayout()
                 {
                     TFormatResult formatResult = PhysVal::formatValue(
                         /* fVal                  */ fScaleMaxVal,
-                        /* unitVal               */ m_pDiagScale->getScale().m_unit,
+                        /* unitVal               */ m_pDiagScale->getScale().unit(),
                         /* iDigitsMantissaMax    */ 6,
                         /* bAccuracyLimitsMant.  */ false,
                         /* iDigitsAccuracy       */ 0,
@@ -1906,7 +1889,7 @@ void CDiagObjAxisLabel::updateLayout()
                 {
                     TFormatResult formatResult = PhysVal::formatValue(
                         /* fVal                  */ fScaleMinVal,
-                        /* unitVal               */ m_pDiagScale->getScale().m_unit,
+                        /* unitVal               */ m_pDiagScale->getScale().unit(),
                         /* iDigitsMantissaMax    */ 6,
                         /* bAccuracyLimitsMant.  */ false,
                         /* iDigitsAccuracy       */ 0,
@@ -1927,7 +1910,7 @@ void CDiagObjAxisLabel::updateLayout()
                 {
                     TFormatResult formatResult = PhysVal::formatValue(
                         /* fVal                  */ fScaleMaxVal,
-                        /* unitVal              */ m_pDiagScale->getScale().m_unit,
+                        /* unitVal              */ m_pDiagScale->getScale().unit(),
                         /* iDigitsMantissaMax    */ 6,
                         /* bAccuracyLimitsMant.  */ false,
                         /* iDigitsAccuracy       */ 0,
@@ -3545,14 +3528,14 @@ CUnit CDiagObjAxisLabel::getAxisLabelUnit() const
         int    iDigitsLeadingScaleMinVal;
         int    iDigitsTrailingScaleMinVal;
 
-        unit = m_pDiagScale->getScale().m_unit;
+        unit = m_pDiagScale->getScale().unit();
 
-        double fScaleMinVal = m_pDiagScale->getScale().m_fMin;
-        double fScaleMaxVal = m_pDiagScale->getScale().m_fMax;
+        double fScaleMinVal = m_pDiagScale->getScale().minVal().getVal();
+        double fScaleMaxVal = m_pDiagScale->getScale().maxVal().getVal();
 
         TFormatResult formatResult = PhysVal::formatValue(
             /* fValue                */ fScaleMinVal,
-            /* unitVal               */ m_pDiagScale->getScale().m_unit,
+            /* unitVal               */ unit,
             /* iDigitsMantissaMax    */ 0,
             /* bAccuracyLimitsMant.  */ false,
             /* iDigitsAccuracy       */ 0,
@@ -3573,7 +3556,7 @@ CUnit CDiagObjAxisLabel::getAxisLabelUnit() const
 
             formatResult = PhysVal::formatValue(
                 /* fValue                */ fScaleMaxVal,
-                /* unitVal               */ m_pDiagScale->getScale().m_unit,
+                /* unitVal               */ unit,
                 /* iDigitsMantissaMax    */ 0,
                 /* bAccuracyLimitsMant.  */ false,
                 /* iDigitsAccuracy       */ 0,

@@ -227,10 +227,10 @@ void CDiagObjRect::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDe
                 return;
             }
 
-            double fXMin = m_pDiagTrace->getScale(EScaleDir::X).m_fMin;
-            double fXMax = m_pDiagTrace->getScale(EScaleDir::X).m_fMax;
-            double fYMin = m_pDiagTrace->getScale(EScaleDir::Y).m_fMin;
-            double fYMax = m_pDiagTrace->getScale(EScaleDir::Y).m_fMax;
+            double fXMin = m_pDiagTrace->getScale(EScaleDir::X).minVal().getVal();
+            double fXMax = m_pDiagTrace->getScale(EScaleDir::X).maxVal().getVal();
+            double fYMin = m_pDiagTrace->getScale(EScaleDir::Y).minVal().getVal();
+            double fYMax = m_pDiagTrace->getScale(EScaleDir::Y).maxVal().getVal();
             int    x1, x2;
             int    y1, y2;
 

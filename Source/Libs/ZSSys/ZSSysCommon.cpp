@@ -942,7 +942,7 @@ int ZS::System::toArrayIndex( int i_idx, int i_iArrLen, bool i_bLimitToArrLen )
 } // toArrayIndex
 
 //------------------------------------------------------------------------------
-/*! Returns the minumum and maximul index values of the given section.
+/*! Returns the minimum and maximul index values of the given section.
 
     @ingroup _GRP_Namespace_ZS_System_AuxiliaryMethods
 
@@ -1003,7 +1003,7 @@ void ZS::System::getMinMaxArrayRange(
 } // getMinMaxArrayRange
 
 //------------------------------------------------------------------------------
-/*! Returns the minumum and maximul index values of the given section.
+/*! Returns the minimum and maximul index values of the given section.
 
     @ingroup _GRP_Namespace_ZS_System_AuxiliaryMethods
 
@@ -1071,7 +1071,7 @@ void ZS::System::getMinMaxArrayRange(
 } // getMinMaxArrayRange
 
 //------------------------------------------------------------------------------
-/*! Returns the minumum index value and the number of indices of the given section.
+/*! Returns the minimum index value and the number of indices of the given section.
 
     @ingroup _GRP_Namespace_ZS_System_AuxiliaryMethods
 
@@ -1108,7 +1108,7 @@ void ZS::System::getMinCountArrayRange(
 } // getMinCountArrayRange
 
 //------------------------------------------------------------------------------
-/*! Returns the minumum index value and the number of indices of the given section.
+/*! Returns the minimum index value and the number of indices of the given section.
 
     @ingroup _GRP_Namespace_ZS_System_AuxiliaryMethods
 

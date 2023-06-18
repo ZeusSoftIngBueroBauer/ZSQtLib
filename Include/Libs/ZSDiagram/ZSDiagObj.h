@@ -128,18 +128,18 @@ public: // instance methods
     QString getObjName() const;
     CDataDiagram* getDiagram();
     CDiagScale* getDiagScale( const CEnumScaleDir& i_scaleDir );
+    virtual void setDiagTrace( CDiagTrace* i_pDiagTrace );
     CDiagTrace* getDiagTrace();
     ELayoutPos getLayoutPos() const;
 public: // overridables
-    virtual void setDiagTrace( CDiagTrace* i_pDiagTrace );
+    virtual PhysVal::CPhysValRes getValRes( const CEnumScaleDir& i_scaleDir ) const;
+    virtual PhysVal::CPhysVal getVal( const CEnumScaleDir& i_scaleDir ) const;
+public: // overridables
     virtual void setAdjustContentRect2DiagPartCenter( bool i_bAdjust );
     virtual bool getAdjustContentRect2DiagPartCenter() const;
     virtual void show( bool i_bInformDiagram = true );
     virtual void hide( bool i_bInformDiagram = true );
     virtual bool isVisible() const;
-    virtual double getValRes( const CEnumScaleDir& i_scaleDir, const PhysVal::CUnit* i_pUnit = nullptr ) const;
-    virtual double getValRes( const CEnumScaleDir& i_scaleDir, double i_fVal, const PhysVal::CUnit* i_pUnit = nullptr ) const;
-    virtual PhysVal::CPhysVal getVal( const CEnumScaleDir& i_scaleDir ) const;
     virtual void setIsFocusable( bool i_bFocusable );
     virtual bool isFocusable() const;
     virtual bool isFocused() const;

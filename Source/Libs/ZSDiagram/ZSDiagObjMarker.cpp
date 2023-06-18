@@ -117,8 +117,8 @@ CDiagObjMarker::CDiagObjMarker(
     for( int idxScaleDir = 0; idxScaleDir < CEnumScaleDir::count(); idxScaleDir++ )
     {
         EScaleDir scaleDir = static_cast<EScaleDir>(idxScaleDir);
-        m_arphysValPrev[idxScaleDir].setUnit( i_pDiagTrace->getScale(scaleDir).m_unit );
-        m_arphysVal[idxScaleDir].setUnit( i_pDiagTrace->getScale(scaleDir).m_unit );
+        m_arphysValPrev[idxScaleDir].setUnit( i_pDiagTrace->getValuesUnit(scaleDir) );
+        m_arphysVal[idxScaleDir].setUnit( i_pDiagTrace->getValuesUnit(scaleDir) );
         m_arpValueFormatToolTip[idxScaleDir] = nullptr;
     }
     for( int idxObjState = 0; idxObjState < EDiagObjStateCount; idxObjState++ )
@@ -1018,7 +1018,7 @@ CPhysVal CDiagObjMarker::getVal( const CEnumScaleDir& i_scaleDir ) const
 
     if( m_pDiagTrace != nullptr && physVal.isValid() && !physVal.hasRes() )
     {
-        physVal.setRes( m_pDiagTrace->getValRes(i_scaleDir,physVal.getVal()) );
+        physVal.setRes(m_pDiagTrace->getValuesRes(i_scaleDir));
     }
     return physVal;
 }
@@ -1176,9 +1176,9 @@ void CDiagObjMarker::moveEvent( CDiagObjMoveEvent* i_pEv, bool i_bInformDiagram 
     bool bCalculateYVal = false;
 
     QPoint   pt         = m_ptPos;
-    CUnit    unitScale = m_pDiagTrace->getScale(m_scaleDirCursorMove).m_unit;
-    double   fScaleMin  = m_pDiagTrace->getScale(m_scaleDirCursorMove).m_fMin;
-    double   fScaleMax  = m_pDiagTrace->getScale(m_scaleDirCursorMove).m_fMax;
+    CUnit    unitScale = m_pDiagTrace->getScale(m_scaleDirCursorMove).unit();
+    double   fScaleMin  = m_pDiagTrace->getScale(m_scaleDirCursorMove).minVal().getVal();
+    double   fScaleMax  = m_pDiagTrace->getScale(m_scaleDirCursorMove).maxVal().getVal();
     CPhysVal physVal    = m_arphysVal[static_cast<int>(m_scaleDirCursorMove)];
     double   fValue;
     double   fRes;
@@ -1191,7 +1191,7 @@ void CDiagObjMarker::moveEvent( CDiagObjMoveEvent* i_pEv, bool i_bInformDiagram 
     {
         fValue = physVal.getVal();
     }
-    fRes = m_pDiagTrace->getValRes(m_scaleDirCursorMove,fValue);
+    fRes = m_pDiagTrace->getValuesRes(m_scaleDirCursorMove).getVal();
 
     // !! On moving the marker by the resolution the following need to be taken into account !!
     // The X or the Y value will be rounded to the value or scale resolution. On rounding
@@ -1655,79 +1655,64 @@ void CDiagObjMarker::updateData()
         return;
     }
 
-    const SLineStyle*  pLineStyleVer        = nullptr;
-    const SLineStyle*  pLineStyleHor        = nullptr;
-    const CLabelStyle* pLabelStyle          = nullptr;
-    int                iLabelAlignmentFlags = 0;
-    int                iLabelOffset_px      = 0;
-    CImageStyle*       pImageStyle          = nullptr;
-    CToolTipStyle*     pToolTipStyle        = nullptr;
-    CImageStyle*       pImageStyleCursor    = nullptr;
-    EDiagObjState      diagObjState         = EDiagObjStateNormal;
-    CUnit              unitScale            = m_pDiagTrace->getScale(m_scaleDirCursorMove).m_unit;
-    CPhysVal           physValScaleMinSrc   = m_pDiagTrace->getScale(m_scaleDirCursorMove).physValMin();
-    CPhysVal           physValScaleMaxSrc   = m_pDiagTrace->getScale(m_scaleDirCursorMove).physValMax();
-    CPhysVal*          pPhysValSrc          = &m_arphysVal[static_cast<int>(m_scaleDirCursorMove)];
-    CPhysVal*          pPhysValDst          = nullptr;
-    CUnit              unitDst;
-    EScaleDir          scaleDirDst;
-    int                idxScaleDir;
+    CUnit unitSrc = m_pDiagTrace->getScale(m_scaleDirCursorMove).unit();
+    CPhysVal* pPhysValSrc = &m_arphysVal[static_cast<int>(m_scaleDirCursorMove)];
+    if( pPhysValSrc->unit() != unitSrc ) {
+        pPhysValSrc->convertValue(unitSrc);
+    }
 
-    if( m_scaleDirCursorMove == EScaleDir::X )
-    {
+    EScaleDir scaleDirDst;
+    if( m_scaleDirCursorMove == EScaleDir::X ) {
         scaleDirDst = EScaleDir::Y;
     }
-    else
-    {
+    else {
         scaleDirDst = EScaleDir::X;
     }
-    unitDst = m_pDiagTrace->getScale(scaleDirDst).m_unit;
-
-    if( pPhysValSrc->unit() != unitScale )
-    {
-        pPhysValSrc->convertValue(unitScale);
-    }
-
-    pPhysValDst = &m_arphysVal[static_cast<int>(scaleDirDst)];
-
-    if( pPhysValDst->unit() != unitDst )
-    {
+    CUnit unitDst = m_pDiagTrace->getScale(scaleDirDst).unit();
+    CPhysVal* pPhysValDst = &m_arphysVal[static_cast<int>(scaleDirDst)];
+    if( pPhysValDst->unit() != unitDst ) {
         pPhysValDst->convertValue(unitDst);
     }
 
-    if( isEditing() )
-    {
+    EDiagObjState diagObjState = EDiagObjStateNormal;
+    if( isEditing() ) {
         diagObjState = EDiagObjStateEditing;
     }
-    else if( isFocused() )
-    {
+    else if( isFocused() ) {
         diagObjState = EDiagObjStateFocused;
     }
 
-    if( m_arbShowElement[diagObjState][EElementLineVer] )
-    {
+    const SLineStyle* pLineStyleVer = nullptr;
+    if( m_arbShowElement[diagObjState][EElementLineVer] ) {
         pLineStyleVer = m_arpLineStyleVer[diagObjState];
     }
-    if( m_arbShowElement[diagObjState][EElementLineHor] )
-    {
+
+    const SLineStyle* pLineStyleHor = nullptr;
+    if( m_arbShowElement[diagObjState][EElementLineHor] ) {
         pLineStyleHor = m_arpLineStyleHor[diagObjState];
     }
-    if( m_arbShowElement[diagObjState][EElementImage] )
-    {
+
+    CImageStyle* pImageStyle = nullptr;
+    if( m_arbShowElement[diagObjState][EElementImage] ) {
         pImageStyle = m_arpImageStyle[diagObjState];
     }
-    if( m_arbShowElement[diagObjState][EElementLabel] )
-    {
+
+    const CLabelStyle* pLabelStyle = nullptr;
+    int iLabelAlignmentFlags = 0;
+    int iLabelOffset_px = 0;
+    if( m_arbShowElement[diagObjState][EElementLabel] ) {
         pLabelStyle = m_arpLabelStyle[diagObjState];
         iLabelAlignmentFlags = m_ariLabelAligmentFlags[diagObjState];
         iLabelOffset_px = m_ariLabelOffset_px[diagObjState];
     }
-    if( m_arbShowElement[diagObjState][EElementToolTip] )
-    {
+
+    CToolTipStyle* pToolTipStyle = nullptr;
+    if( m_arbShowElement[diagObjState][EElementToolTip] ) {
         pToolTipStyle = m_arpToolTipStyle[diagObjState];
     }
-    if( m_arbShowElement[diagObjState][EElementCursor] )
-    {
+
+    CImageStyle* pImageStyleCursor = nullptr;
+    if( m_arbShowElement[diagObjState][EElementCursor] ) {
         pImageStyleCursor = m_arpImageStyleCursor[diagObjState];
     }
 
@@ -1748,10 +1733,12 @@ void CDiagObjMarker::updateData()
     // If the marker is visible ...
     else
     {
+        CPhysVal physValScaleMinSrc = m_pDiagTrace->getScale(m_scaleDirCursorMove).minVal();
+        CPhysVal physValScaleMaxSrc = m_pDiagTrace->getScale(m_scaleDirCursorMove).maxVal();
+
         // Starting (initial) point of the markers cursor position
         // is at the left bottom corner of the diagram.
-        if( !pPhysValSrc->isValid() )
-        {
+        if( !pPhysValSrc->isValid() ) {
             *pPhysValSrc = physValScaleMinSrc;
         }
         m_ptPos.setX(m_pDiagTrace->getScaleMinValPix(EScaleDir::X));
@@ -1761,45 +1748,32 @@ void CDiagObjMarker::updateData()
         if( m_bCalculateCursorPos )
         {
             // The marker should always be visible (focusable and editable by the user).
-            if( *pPhysValSrc < physValScaleMinSrc )
-            {
+            if( *pPhysValSrc < physValScaleMinSrc ) {
                 *pPhysValSrc = physValScaleMinSrc;
             }
-            else if( *pPhysValSrc > physValScaleMaxSrc )
-            {
+            else if( *pPhysValSrc > physValScaleMaxSrc ) {
                 *pPhysValSrc = physValScaleMaxSrc;
             }
+
             double fValDst = 0.0;
             EValueValidity valueValid = m_pDiagTrace->getVal(
                 m_scaleDirCursorMove, pPhysValSrc->getVal(), &pPhysValSrc->unit(),
                 scaleDirDst, &fValDst, &unitDst, false);
-            if (valueValid == EValueValidity::Valid)
-            {
-                if( unitDst.isValid() )
-                {
+            if (valueValid == EValueValidity::Valid) {
+                if( unitDst.isValid() ) {
                     pPhysValDst->setVal(fValDst, unitDst);
                 }
-                else
-                {
+                else {
                     pPhysValDst->setVal(fValDst);
                 }
             }
-            else
-            {
+            else {
                 pPhysValDst->setValidity(EValueValidity::Invalid);
             }
         } // if( m_bCalculateCursorPos )
 
         // Don't set resolution at the X/Y coordinates. Otherwise the marker is not set on the
         // the curve line as the curve does not round to the resolution on drawing the value array.
-        //if( pPhysValSrc->isValid() )
-        //{
-        //    pPhysValSrc->setRes( getValRes(m_scaleDirCursorMove,pPhysValSrc->getVal(),pPhysValSrc->getUnit()) );
-        //}
-        //if( pPhysValDst->isValid() )
-        //{
-        //    pPhysValDst->setRes( getValRes(scaleDirDst,pPhysValDst->getVal(),pPhysValDst->getUnit()) );
-        //}
 
         // Calculate the resulting point in the pixmap
         //--------------------------------------------
@@ -1813,22 +1787,18 @@ void CDiagObjMarker::updateData()
             xPix = m_pDiagTrace->getValPix(EScaleDir::X, pPhysValSrc->getVal(), &pPhysValSrc->unit());
 
             // If the marker is positioned between two valid values ...
-            if( pPhysValDst->isValid() )
-            {
+            if( pPhysValDst->isValid() ) {
                 yPix = m_pDiagTrace->getValPix(EScaleDir::Y, pPhysValDst->getVal(), &unitDst);
             }
-            if( xPix < m_rectContent.left() )
-            {
+            if( xPix < m_rectContent.left() ) {
                 xPix = m_rectContent.left();
             }
-            if( xPix > m_rectContent.right() )
-            {
+            if( xPix > m_rectContent.right() ) {
                 xPix = m_rectContent.right();
             }
-            if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-            {
-                strTrcMsg  = "X: " + pPhysValSrc->toString() + " (" + QString::number(xPix) + "px) / ";
-                strTrcMsg += "Y: " + pPhysValDst->toString() + " (" + QString::number(yPix) + "px)";
+            if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) ) {
+                strTrcMsg = "X: " + pPhysValSrc->toString() + " (" + QString::number(xPix) + "px) / " +
+                            "Y: " + pPhysValDst->toString() + " (" + QString::number(yPix) + "px)";
                 mthTracer.trace(strTrcMsg);
             }
         }
@@ -1839,24 +1809,18 @@ void CDiagObjMarker::updateData()
             yPix = m_pDiagTrace->getValPix(EScaleDir::Y, pPhysValSrc->getVal(), &pPhysValSrc->unit());
 
             // If the marker is positioned between two valid values ...
-            if( pPhysValDst->isValid() )
-            {
+            if( pPhysValDst->isValid() ) {
                 xPix = m_pDiagTrace->getValPix(EScaleDir::X, pPhysValDst->getVal(), &pPhysValDst->unit());
             }
-            if( yPix < m_rectContent.top() )
-            {
+            if( yPix < m_rectContent.top() ) {
                 yPix = m_rectContent.top();
             }
-            if( yPix > m_rectContent.bottom() )
-            {
+            if( yPix > m_rectContent.bottom() ) {
                 yPix = m_rectContent.bottom();
             }
-            if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-            {
-                strTrcMsg  = "X=";
-                strTrcMsg += pPhysValDst->toString() + " (" + QString::number(xPix) + " px) / ";
-                strTrcMsg += "Y=";
-                strTrcMsg += pPhysValSrc->toString() + " (" + QString::number(yPix) + " px)";
+            if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) ) {
+                strTrcMsg  = "X: " + pPhysValDst->toString() + " (" + QString::number(xPix) + " px) / " +
+                             "Y="  + pPhysValSrc->toString() + " (" + QString::number(yPix) + " px)";
                 mthTracer.trace(strTrcMsg);
             }
         }
@@ -1872,16 +1836,14 @@ void CDiagObjMarker::updateData()
         {
             pImageStyle->setPos(m_ptPos);
 
-            if( pPhysValSrc->isValid() && pPhysValDst->isValid() )
-            {
+            if( pPhysValSrc->isValid() && pPhysValDst->isValid() ) {
                 m_rectImageCurr = pImageStyle->boundingRect();
                 m_rectImageCurr.moveLeft(m_rectImageCurr.left()-1);
                 m_rectImageCurr.moveTop(m_rectImageCurr.top()-1);
                 m_rectImageCurr.setWidth(m_rectImageCurr.width()+2);
                 m_rectImageCurr.setHeight(m_rectImageCurr.height()+2);
             }
-            else
-            {
+            else {
                 m_rectImageCurr.setWidth(0);
                 m_rectImageCurr.setHeight(0);
             }
@@ -1903,38 +1865,30 @@ void CDiagObjMarker::updateData()
                 m_rectLabelCurr.setWidth( m_rectLabelCurr.width()+2 );
                 m_rectLabelCurr.setHeight( m_rectLabelCurr.height()+1 );
 
-                if( pLineStyleVer != nullptr )
-                {
+                if( pLineStyleVer != nullptr ) {
                     m_rectLabelCurr.moveLeft( m_ptPos.x() - m_rectLabelCurr.width()/2 - 1 ); //lint !e834 ... mein Gott Walter ..
                     m_rectLabelCurr.moveTop( m_pDiagTrace->getScaleMaxValPix(EScaleDir::Y)+iLabelOffset_px );
                 }
-                else if( pLineStyleHor != nullptr )
-                {
+                else if( pLineStyleHor != nullptr ) {
                     m_rectLabelCurr.moveTop( m_ptPos.y() - m_rectLabelCurr.height()/2 - 1 ); //lint !e834 ... mein Gott Walter ..
                     m_rectLabelCurr.moveLeft( m_pDiagTrace->getScaleMinValPix(EScaleDir::X)+iLabelOffset_px );
                 }
-                if( iLabelAlignmentFlags & Qt::AlignTop )
-                {
+                if( iLabelAlignmentFlags & Qt::AlignTop ) {
                     m_rectLabelCurr.moveTop( m_pDiagTrace->getScaleMaxValPix(EScaleDir::Y)+iLabelOffset_px );
                 }
-                else if( iLabelAlignmentFlags & Qt::AlignBottom )
-                {
+                else if( iLabelAlignmentFlags & Qt::AlignBottom ) {
                     m_rectLabelCurr.moveBottom( m_pDiagTrace->getScaleMaxValPix(EScaleDir::X)+iLabelOffset_px );
                 }
-                else if( iLabelAlignmentFlags & Qt::AlignVCenter )
-                {
+                else if( iLabelAlignmentFlags & Qt::AlignVCenter ) {
                     m_rectLabelCurr.moveTop( m_ptPos.y() - m_rectLabelCurr.height()/2 + iLabelOffset_px );
                 }
-                if( iLabelAlignmentFlags & Qt::AlignLeft )
-                {
+                if( iLabelAlignmentFlags & Qt::AlignLeft ) {
                     m_rectLabelCurr.moveLeft( m_pDiagTrace->getScaleMinValPix(EScaleDir::X)+iLabelOffset_px );
                 }
-                else if( iLabelAlignmentFlags & Qt::AlignRight )
-                {
+                else if( iLabelAlignmentFlags & Qt::AlignRight ) {
                     m_rectLabelCurr.moveRight( m_pDiagTrace->getScaleMaxValPix(EScaleDir::X)+iLabelOffset_px );
                 }
-                else if( iLabelAlignmentFlags & Qt::AlignHCenter )
-                {
+                else if( iLabelAlignmentFlags & Qt::AlignHCenter ) {
                     m_rectLabelCurr.moveLeft( m_ptPos.x() - m_rectLabelCurr.width()/2 + iLabelOffset_px );
                 }
             }
@@ -1951,13 +1905,12 @@ void CDiagObjMarker::updateData()
 
             pToolTipStyle->setArrowHeadPos(m_ptPos);
 
-            for( idxScaleDir = 0; idxScaleDir < CEnumScaleDir::count(); idxScaleDir++ )
+            for( int idxScaleDir = 0; idxScaleDir < CEnumScaleDir::count(); idxScaleDir++ )
             {
                 EScaleDir scaleDir = static_cast<EScaleDir>(idxScaleDir);
                 CPhysVal physVal = m_arphysVal[idxScaleDir];
-                if (physVal.isValid())
-                {
-                    physVal.setRes(getValRes(scaleDir, physVal.getVal(), &physVal.unit()));
+                if (physVal.isValid()) {
+                    physVal.setRes(getValRes(scaleDir));
                 }
                 if( m_arpValueFormatToolTip[idxScaleDir] == nullptr )
                 {
@@ -2084,12 +2037,10 @@ void CDiagObjMarker::updateData()
             if( m_scaleDirCursorMove == EScaleDir::X )
             {
                 xPix = m_ptPos.x();
-                if( m_bPtEditSessionValid )
-                {
+                if( m_bPtEditSessionValid ) {
                     yPix = m_ptEditSession.y();
                 }
-                else
-                {
+                else {
                     yPix = m_rectContent.top()+m_rectContent.height()/2;
                 }
             }
@@ -2097,12 +2048,10 @@ void CDiagObjMarker::updateData()
             else if( m_scaleDirCursorMove == EScaleDir::Y )
             {
                 yPix = m_ptPos.y();
-                if( m_bPtEditSessionValid )
-                {
+                if( m_bPtEditSessionValid ) {
                     xPix = m_ptEditSession.x();
                 }
-                else
-                {
+                else {
                     xPix = m_rectContent.left()+m_rectContent.width()/2;
                 }
             }
@@ -2129,18 +2078,16 @@ void CDiagObjMarker::updateData()
 
         bool bValueChanged = true;
 
-        for( idxScaleDir = 0; idxScaleDir < CEnumScaleDir::count(); idxScaleDir++ )
+        for( int idxScaleDir = 0; idxScaleDir < CEnumScaleDir::count(); idxScaleDir++ )
         {
             if( m_arphysVal[idxScaleDir] != m_arphysValPrev[idxScaleDir] )
             {
                 m_arphysValPrev[idxScaleDir] = m_arphysVal[idxScaleDir];
                 emit valueChanged(static_cast<EScaleDir>(idxScaleDir),this);
-                if( idxScaleDir == static_cast<int>(EScaleDir::X) )
-                {
+                if( idxScaleDir == static_cast<int>(EScaleDir::X) ) {
                     emit valueXChanged(this);
                 }
-                else if( idxScaleDir == static_cast<int>(EScaleDir::Y) )
-                {
+                else if( idxScaleDir == static_cast<int>(EScaleDir::Y) ) {
                     emit valueYChanged(this);
                 }
                 bValueChanged = true;

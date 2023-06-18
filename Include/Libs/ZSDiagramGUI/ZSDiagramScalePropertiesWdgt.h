@@ -28,7 +28,7 @@ may result in using the software modules.
 #define ZSDiagram_ScalePropertiesWdgt_h
 
 #include "ZSDiagramGUI/ZSDiagramItemPropertiesBaseWdgt.h"
-#include "ZSDiagram/ZSDiagramAux.h"
+#include "ZSDiagram/ZSDiagScale.h"
 
 class QComboBox;
 class QGroupBox;
@@ -69,7 +69,7 @@ protected slots:
     void onDiagItemScaleSpacingChanged(const CEnumSpacing& i_spacing);
     void onDiagItemScaleGeometryChanged(int i_iMinVal_px, int i_iMaxVal_px);
     void onDiagItemScaleDivLineDistMinPixChanged(EDivLineLayer i_layer, int i_iDivLineDistMin_px);
-    void onDiagItemScaleChanged(const SScale& i_scale);
+    void onDiagItemScaleChanged(const CScale& i_scale);
 protected slots:
     void onCmbSpacingCurrentIndexChanged(int i_idx);
     void onEdtDivLineDistMinMainLayerPixValueChanged(int i_iVal);
@@ -77,7 +77,7 @@ protected slots:
     void onCmbScaleUnitCurrentIndexChanged(int i_idx);
     void onEdtScaleMinValValueChanged(const ZS::PhysVal::CPhysVal& i_physVal);
     void onEdtScaleMaxValValueChanged(const ZS::PhysVal::CPhysVal& i_physVal);
-    void onEdtScaleWidthValValueChanged(const ZS::PhysVal::CPhysVal& i_physVal);
+    void onEdtScaleRangeValueChanged(const ZS::PhysVal::CPhysVal& i_physVal);
 protected: // instance methods
     void setScaleDir(const CEnumScaleDir& i_scaleDir);
 protected slots:
@@ -90,7 +90,7 @@ protected: // instance members
     int m_iMinVal_px;
     int m_iMaxVal_px;
     QVector<int> m_ariDivLineDistMin_px; //[EDivLineLayerCount];
-    SScale m_scale;
+    CScale m_scale;
     // Geometry
     QGroupBox* m_pGrpGeometry;
     QVBoxLayout* m_pLytGrpGeometry;

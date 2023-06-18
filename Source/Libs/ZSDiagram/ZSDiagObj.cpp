@@ -420,24 +420,6 @@ CDiagScale* CDiagObj::getDiagScale( const CEnumScaleDir& i_scaleDir )
 }
 
 //------------------------------------------------------------------------------
-CDiagTrace* CDiagObj::getDiagTrace()
-//------------------------------------------------------------------------------
-{
-    return m_pDiagTrace;
-}
-
-//------------------------------------------------------------------------------
-ELayoutPos CDiagObj::getLayoutPos() const
-//------------------------------------------------------------------------------
-{
-    return m_layoutPos;
-}
-
-/*==============================================================================
-public: // overridables
-==============================================================================*/
-
-//------------------------------------------------------------------------------
 void CDiagObj::setDiagTrace( CDiagTrace* i_pDiagTrace )
 //------------------------------------------------------------------------------
 {
@@ -484,6 +466,52 @@ void CDiagObj::setDiagTrace( CDiagTrace* i_pDiagTrace )
     invalidate(EUpdateDataPixmapWidget,true);
 
 } // setDiagTrace
+
+//------------------------------------------------------------------------------
+CDiagTrace* CDiagObj::getDiagTrace()
+//------------------------------------------------------------------------------
+{
+    return m_pDiagTrace;
+}
+
+//------------------------------------------------------------------------------
+ELayoutPos CDiagObj::getLayoutPos() const
+//------------------------------------------------------------------------------
+{
+    return m_layoutPos;
+}
+
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CPhysValRes CDiagObj::getValRes( const CEnumScaleDir& i_scaleDir ) const
+//------------------------------------------------------------------------------
+{
+    CPhysValRes physValRes;
+
+    if( m_pDiagTrace != nullptr )
+    {
+        physValRes = m_pDiagTrace->getValuesRes(i_scaleDir);
+    }
+    else if( m_arpDiagScale[i_scaleDir.enumeratorAsInt()] != nullptr )
+    {
+        physValRes = m_arpDiagScale[i_scaleDir.enumeratorAsInt()]->getScaleRes();
+    }
+    return physValRes;
+}
+
+//------------------------------------------------------------------------------
+CPhysVal CDiagObj::getVal( const CEnumScaleDir& /*i_scaleDir*/ ) const
+//------------------------------------------------------------------------------
+{
+    return CPhysVal();
+}
+
+/*==============================================================================
+public: // overridables
+==============================================================================*/
 
 //------------------------------------------------------------------------------
 void CDiagObj::setAdjustContentRect2DiagPartCenter( bool i_bAdjust )
@@ -597,49 +625,6 @@ bool CDiagObj::isVisible() const
 //------------------------------------------------------------------------------
 {
     return m_bVisible;
-}
-
-//------------------------------------------------------------------------------
-double CDiagObj::getValRes( const CEnumScaleDir& i_scaleDir, const CUnit* i_pUnit ) const
-//------------------------------------------------------------------------------
-{
-    double fRes = 0.0;
-
-    if( m_pDiagTrace != nullptr )
-    {
-        fRes = m_pDiagTrace->getValRes(i_scaleDir, i_pUnit);
-    }
-    else if( m_arpDiagScale[i_scaleDir.enumeratorAsInt()] != nullptr )
-    {
-        fRes = m_arpDiagScale[i_scaleDir.enumeratorAsInt()]->getScaleRes(i_pUnit);
-    }
-    return fRes;
-
-} // getValRes
-
-//------------------------------------------------------------------------------
-double CDiagObj::getValRes( const CEnumScaleDir& i_scaleDir, double i_fVal, const CUnit* i_pUnit ) const
-//------------------------------------------------------------------------------
-{
-    double fRes = 0.0;
-
-    if( m_pDiagTrace != nullptr )
-    {
-        fRes = m_pDiagTrace->getValRes(i_scaleDir,i_fVal,i_pUnit);
-    }
-    else if( m_arpDiagScale[i_scaleDir.enumeratorAsInt()] != nullptr )
-    {
-        fRes = m_arpDiagScale[i_scaleDir.enumeratorAsInt()]->getScaleRes(i_fVal, i_pUnit);
-    }
-    return fRes;
-
-} // getValRes
-
-//------------------------------------------------------------------------------
-CPhysVal CDiagObj::getVal( const CEnumScaleDir& /*i_scaleDir*/ ) const
-//------------------------------------------------------------------------------
-{
-    return CPhysVal();
 }
 
 //------------------------------------------------------------------------------

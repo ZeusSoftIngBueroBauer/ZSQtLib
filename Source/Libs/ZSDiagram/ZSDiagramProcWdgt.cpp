@@ -1134,14 +1134,14 @@ void CWdgtDiagram::keyPressEvent( QKeyEvent* i_pEv )
                                         if( bValIsValid )
                                         {
                                             fVal = m_pDiagObjEditing->getVal(scaleDir).getVal();
-                                            fRes = m_pDiagObjEditing->getValRes(scaleDir,fVal);
+                                            fRes = m_pDiagObjEditing->getValRes(scaleDir).getVal();
                                         }
                                         else
                                         {
-                                            fRes = m_pDiagObjEditing->getValRes(scaleDir);
+                                            fRes = m_pDiagObjEditing->getValRes(scaleDir).getVal();
                                         }
-                                        fScaleMin = m_pMoveKeyAccelerationDiagScale->getScale().m_fMin;
-                                        fScaleMax = m_pMoveKeyAccelerationDiagScale->getScale().m_fMax;
+                                        fScaleMin = m_pMoveKeyAccelerationDiagScale->getScale().minVal().getVal();
+                                        fScaleMax = m_pMoveKeyAccelerationDiagScale->getScale().maxVal().getVal();
                                         fScaleRange = fabs(fScaleMax-fScaleMin);
 
                                         if( bValIsValid && m_pMoveKeyAccelerationDiagScale->getSpacing() == ESpacing::Logarithmic )

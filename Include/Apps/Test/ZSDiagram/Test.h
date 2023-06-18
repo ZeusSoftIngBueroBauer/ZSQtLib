@@ -28,7 +28,7 @@ may result in using the software modules.
 #define ZSApps_TestDiagram_Test_h
 
 #include "ZSTest/ZSTest.h"
-#include "ZSDiagram/ZSDiagramAux.h"
+#include "ZSDiagram/ZSDiagScale.h"
 
 class QFrame;
 class QTimer;
@@ -89,8 +89,8 @@ private: // instance members
     QTimer*                                    m_pTmrTestStepTimeout;
     QTimer*                                    m_pTimerSigGen;
     ZS::Diagram::CWdgtDiagram*                 m_pWdgtDiagram;
-    ZS::Diagram::SScale                        m_scaleX;
-    ZS::Diagram::SScale                        m_scaleY;
+    ZS::Diagram::CScale                        m_scaleX;
+    ZS::Diagram::CScale                        m_scaleY;
     ZS::Diagram::CDiagScale*                   m_pDiagScaleX;
     ZS::Diagram::CDiagScale*                   m_pDiagScaleY;
     ZS::Diagram::CDiagObjGrid*                 m_pDiagObjGrid;

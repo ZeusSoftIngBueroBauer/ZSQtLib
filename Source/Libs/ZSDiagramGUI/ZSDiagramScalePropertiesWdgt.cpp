@@ -26,7 +26,6 @@ may result in using the software modules.
 
 #include "ZSDiagramGUI/ZSDiagramScalePropertiesWdgt.h"
 #include "ZSDiagram/ZSDiagramProcWdgt.h"
-#include "ZSDiagram/ZSDiagScale.h"
 #include "ZSPhysValGUI/ZSPhysValWdgtEditPhysVal.h"
 #include "ZSSysGUI/ZSSysSepLine.h"
 #include "ZSSys/ZSSysMath.h"
@@ -308,7 +307,7 @@ CWdgtDiagramScaleProperties::CWdgtDiagramScaleProperties(
     m_pLytLineScaleRange->addStretch();
     QObject::connect(
         m_pEdtScaleRangeVal, &CWdgtEditPhysVal::valueChanged,
-        this, &CWdgtDiagramScaleProperties::onEdtScaleWidthValValueChanged);
+        this, &CWdgtDiagramScaleProperties::onEdtScaleRangeValueChanged);
 
     // <Buttons>
     //==========
@@ -555,14 +554,14 @@ void CWdgtDiagramScaleProperties::setDiagItemObjName( const QString& i_strObjNam
                 m_pWdgtButtons->setVisible(m_mode == EMode::View);
             }
 
-            SScale scale = m_pDiagScale->getScale();
+            CScale scale = m_pDiagScale->getScale();
 
             m_pCmbScaleUnit->clear();
-            QVector<CUnit> arUnits = scale.m_unit.getAllUnitsOfGroup();
+            QVector<CUnit> arUnits = scale.unit().getAllUnitsOfGroup();
             for (const CUnit& unit : arUnits) {
                 m_pCmbScaleUnit->addItem(unit.symbol());
             }
-            m_pCmbScaleUnit->setCurrentText(scale.m_unit.symbol());
+            m_pCmbScaleUnit->setCurrentText(scale.unit().symbol());
 
             setScaleDir(m_pDiagScale->getScaleDir());
 
@@ -764,7 +763,7 @@ void CWdgtDiagramScaleProperties::onDiagItemScaleDivLineDistMinPixChanged(EDivLi
 }
 
 //------------------------------------------------------------------------------
-void CWdgtDiagramScaleProperties::onDiagItemScaleChanged(const SScale& i_scale)
+void CWdgtDiagramScaleProperties::onDiagItemScaleChanged(const CScale& i_scale)
 //------------------------------------------------------------------------------
 {
     if( m_iValueChangedSignalsBlocked > 0 ) {
@@ -786,21 +785,19 @@ void CWdgtDiagramScaleProperties::onDiagItemScaleChanged(const SScale& i_scale)
         // We need to convert the scale values into the indicated unit.
         CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
         CUnit unitCurr = m_pCmbScaleUnit->currentText();
-        double fScaleRes = m_pDiagScale->getScaleRes(&unitCurr);
+        double fScaleRes = m_pDiagScale->getScaleRes().getVal(unitCurr);
         m_scale = i_scale;
-        m_scale.m_fMin = i_scale.m_unit.convertValue(i_scale.m_fMin, unitCurr);
-        m_scale.m_fMax = i_scale.m_unit.convertValue(i_scale.m_fMax, unitCurr);
-        m_scale.m_unit = unitCurr;
+        m_scale.setUnit(unitCurr);
         m_pEdtScaleRes->setText(QString::number(fScaleRes) + " " + unitCurr.symbol());
-        m_pEdtScaleMinVal->setUnit(m_scale.m_unit);
+        m_pEdtScaleMinVal->setUnit(unitCurr);
         m_pEdtScaleMinVal->setResolution(fScaleRes);
-        m_pEdtScaleMinVal->setValue(m_scale.m_fMin);
-        m_pEdtScaleMaxVal->setUnit(m_scale.m_unit);
+        m_pEdtScaleMinVal->setValue(m_scale.minVal().getVal());
+        m_pEdtScaleMaxVal->setUnit(unitCurr);
         m_pEdtScaleMaxVal->setResolution(fScaleRes);
-        m_pEdtScaleMaxVal->setValue(m_scale.m_fMax);
-        m_pEdtScaleRangeVal->setUnit(m_scale.m_unit);
+        m_pEdtScaleMaxVal->setValue(m_scale.maxVal().getVal());
+        m_pEdtScaleRangeVal->setUnit(unitCurr);
         m_pEdtScaleRangeVal->setResolution(fScaleRes);
-        m_pEdtScaleRangeVal->setValue(m_scale.physValRange().getVal());
+        m_pEdtScaleRangeVal->setValue(m_scale.rangeVal().getVal());
         emit_diagItemPropertyChanged();
     }
 }
@@ -904,25 +901,23 @@ void CWdgtDiagramScaleProperties::onCmbScaleUnitCurrentIndexChanged( int i_idx )
 
     CUnit unitCurr = m_pCmbScaleUnit->currentText();
 
-    if( m_scale.m_unit != unitCurr ) {
+    if( m_scale.unit() != unitCurr ) {
         // The unit used to indicate the scale in the widget is set by the units combo box.
         // We need to convert the scale values into the indicated unit.
         CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
-        CUnit unitPrev = m_scale.m_unit;
-        double fScaleRes = m_pDiagScale->getScaleRes(&unitCurr);
-        m_scale.m_fMin = unitPrev.convertValue(m_scale.m_fMin, unitCurr);
-        m_scale.m_fMax = unitPrev.convertValue(m_scale.m_fMax, unitCurr);
-        m_scale.m_unit = unitCurr;
+        CUnit unitPrev = m_scale.unit();
+        double fScaleRes = m_pDiagScale->getScaleRes().getVal(unitCurr);
+        m_scale.setUnit(unitCurr);
         m_pEdtScaleRes->setText(QString::number(fScaleRes) + " " + unitCurr.symbol());
-        m_pEdtScaleMinVal->setUnit(m_scale.m_unit);
+        m_pEdtScaleMinVal->setUnit(unitCurr);
         m_pEdtScaleMinVal->setResolution(fScaleRes);
-        m_pEdtScaleMinVal->setValue(m_scale.m_fMin);
-        m_pEdtScaleMaxVal->setUnit(m_scale.m_unit);
+        m_pEdtScaleMinVal->setValue(m_scale.minVal().getVal());
+        m_pEdtScaleMaxVal->setUnit(unitCurr);
         m_pEdtScaleMaxVal->setResolution(fScaleRes);
-        m_pEdtScaleMaxVal->setValue(m_scale.m_fMax);
-        m_pEdtScaleRangeVal->setUnit(m_scale.m_unit);
+        m_pEdtScaleMaxVal->setValue(m_scale.maxVal().getVal());
+        m_pEdtScaleRangeVal->setUnit(unitCurr);
         m_pEdtScaleRangeVal->setResolution(fScaleRes);
-        m_pEdtScaleRangeVal->setValue(m_scale.physValRange().getVal());
+        m_pEdtScaleRangeVal->setValue(m_scale.rangeVal().getVal());
         emit_diagItemPropertyChanged();
     }
 }
@@ -945,13 +940,10 @@ void CWdgtDiagramScaleProperties::onEdtScaleMinValValueChanged(const CPhysVal& i
         /* strMethod    */ "onEdtScaleMinValValueChanged",
         /* strAddInfo   */ strMthInArgs );
 
-    SScale scale = m_scale;
-    scale.m_fMin = i_physVal.getVal();
-
-    if( m_scale != scale ) {
+    if( m_scale.minVal() != i_physVal ) {
         CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
-        m_scale = scale;
-        m_pEdtScaleRangeVal->setValue(m_scale.physValRange().getVal());
+        m_scale.setMinVal(i_physVal);
+        m_pEdtScaleRangeVal->setValue(m_scale.rangeVal().getVal());
         emit_diagItemPropertyChanged();
     }
 }
@@ -974,19 +966,16 @@ void CWdgtDiagramScaleProperties::onEdtScaleMaxValValueChanged(const CPhysVal& i
         /* strMethod    */ "onEdtScaleMaxValValueChanged",
         /* strAddInfo   */ strMthInArgs );
 
-    SScale scale = m_scale;
-    scale.m_fMax = i_physVal.getVal();
-
-    if( m_scale != scale ) {
+    if( m_scale.maxVal() != i_physVal ) {
         CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
-        m_scale = scale;
-        m_pEdtScaleRangeVal->setValue(m_scale.physValRange().getVal());
+        m_scale.setMaxVal(i_physVal);
+        m_pEdtScaleRangeVal->setValue(m_scale.rangeVal().getVal());
         emit_diagItemPropertyChanged();
     }
 }
 
 //------------------------------------------------------------------------------
-void CWdgtDiagramScaleProperties::onEdtScaleWidthValValueChanged(const CPhysVal& i_physVal)
+void CWdgtDiagramScaleProperties::onEdtScaleRangeValueChanged(const CPhysVal& i_physVal)
 //------------------------------------------------------------------------------
 {
     if( m_iValueChangedSignalsBlocked > 0 ) {
@@ -1000,16 +989,13 @@ void CWdgtDiagramScaleProperties::onEdtScaleWidthValValueChanged(const CPhysVal&
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onEdtScaleWidthValValueChanged",
+        /* strMethod    */ "onEdtScaleRangeValueChanged",
         /* strAddInfo   */ strMthInArgs );
 
-    SScale scale = m_scale;
-    scale.m_fMax = scale.m_fMin + i_physVal.getVal();
-
-    if( m_scale != scale ) {
+    if( m_scale.maxVal() != i_physVal ) {
         CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
-        m_scale = scale;
-        m_pEdtScaleMaxVal->setValue(m_scale.m_fMax);
+        m_scale.setRangeVal(i_physVal);
+        m_pEdtScaleMaxVal->setValue(m_scale.maxVal().getVal());
         emit_diagItemPropertyChanged();
     }
 }

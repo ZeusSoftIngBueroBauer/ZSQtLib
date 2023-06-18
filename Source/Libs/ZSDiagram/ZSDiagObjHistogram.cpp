@@ -241,8 +241,8 @@ void CDiagObjHistogram::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPa
         QPoint*       pPt;
         const double* pfX;
         const double* pfY;
-        double        fXMin = m_pDiagTrace->getScale(EScaleDir::X).m_fMin;
-        double        fXMax = m_pDiagTrace->getScale(EScaleDir::X).m_fMax;
+        double        fXMin = m_pDiagTrace->getScale(EScaleDir::X).minVal().getVal();
+        double        fXMax = m_pDiagTrace->getScale(EScaleDir::X).maxVal().getVal();
         double        fx, fy;
         int           xPix, yPix;
 

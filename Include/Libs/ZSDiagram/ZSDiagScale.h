@@ -41,6 +41,87 @@ class CTrcAdminObj;
 namespace Diagram
 {
 //******************************************************************************
+/*! @brief Class defining the scale values.
+
+    A scale is defined by the minimum and maximum value.
+    The scale values have a physical unit and a resolution.
+
+    The resolution defines the number of significant digits when converting
+    the minimum and maximum values to their string representations.
+*/
+class ZSDIAGRAMDLL_API CScale
+//******************************************************************************
+{
+public: // ctors
+    CScale();
+    CScale( const CScale& i_scaleOther );
+    CScale(
+        double i_fMin, double i_fMax, const PhysVal::CUnit& i_unit,
+        const PhysVal::CPhysValRes& i_physValRes);
+public: // instance methods
+    void setMinVal(const PhysVal::CPhysVal& i_physVal);
+    void setMinVal(double i_fVal, const PhysVal::CUnit& i_unit);
+    PhysVal::CPhysVal minVal() const;
+    void setMaxVal(const PhysVal::CPhysVal& i_physVal);
+    void setMaxVal(double i_fVal, const PhysVal::CUnit& i_unit);
+    PhysVal::CPhysVal maxVal() const;
+    void setRangeVal(const PhysVal::CPhysVal& i_physVal);
+    void setRangeVal(double i_fVal, const PhysVal::CUnit& i_unit);
+    PhysVal::CPhysVal rangeVal() const;
+    void setUnit(const PhysVal::CUnit& i_unit);
+    PhysVal::CUnit unit() const;
+    void setRes(const PhysVal::CPhysValRes& i_physValRes);
+    PhysVal::CPhysValRes res() const;
+public: // operators
+    bool operator == ( const CScale& i_scaleOther ) const;
+    bool operator != ( const CScale& i_scaleOther ) const;
+public: // instance methods
+    QString toString() const;
+private: // instance members
+    /*!< Minimum scale value. */
+    double m_fMin;
+    /*!< Maximum scale value. */
+    double m_fMax;
+    /*!< Unit of minimum and maximum scale values. */
+    PhysVal::CUnit m_unit;
+    /*!< Resolution of minimum and maximum scale values. */
+    PhysVal::CPhysValRes m_physValRes;
+
+}; // class CScale
+
+//******************************************************************************
+/*! @brief Scale object within a diagram.
+
+    Scale objects have a geometry defined by the number of pixels used to
+    indicate the scale in the diagrams pixmap.
+
+    Scale objects also have a physical minimum and a maximum value and a unit.
+    A scale also has a resolution defining the number of significant digits
+    when converting the minimum and maximum values to their string representations.
+
+    A scale object either defines the X or Y axis of the diagram.
+    The scale object also supports logarithmic spacing.
+
+    The scale object is responsible to calculate division lines.
+    The values of the calculated division lines are rounded to a whole number
+    of a decimal power.
+
+    To output the number of digits for the minimum and maximum scale values the
+    scale resolution is important. If the user enters the value 3.625362 it
+    would not be good to limit the output to less than the entered digits.
+
+    The scale object also supports zooming in and zooming out by maintaing
+    an internal zoom stack.
+
+    Please note that changing properties of the scale object don't trigger
+    recalculation of the internal scale data (e.g. new division line values).
+    To update the internal data you need to call the update method of the
+    diagram the scale belongs to as when changing the scale also all other
+    diagram linked to the scale object must be updated.
+    By explictitly triggering the recalculation of internal data via the
+    diagrams update method several properties may be set before triggering
+    the complex calculation of the diagrams internal data.
+*/
 class ZSDIAGRAMDLL_API CDiagScale : public QObject
 //******************************************************************************
 {
@@ -55,48 +136,62 @@ public: // ctors and dtor
     CDiagScale(
         const QString& i_strObjName,
         EScaleDir      i_scaleDir,
-        const SScale&  i_scale );
+        const CScale&  i_scale);
     virtual ~CDiagScale();
 public: // overridables
     virtual QString className() { return ClassName(); }
 signals:
     void spacingChanged( ESpacing i_spacing );
-    void scaleChanged( const SScale& i_scale );
+    void scaleChanged( const CScale& i_scale );
     void geometryChanged( int i_iMinVal_px, int i_iMaxVal_px );
     void divLineDistMinPixChanged( EDivLineLayer i_layer, int i_iDivLineDistMin_px );
-public: // instance methods
+public: // instance methods (common properties)
     QString getObjName() const;
     EScaleDir getScaleDir() const;
     CDataDiagram* getDiagram();
     void setSpacing( const CEnumSpacing& i_spacing );
     ESpacing getSpacing() const;
-    void setScale( const SScale& i_scale );
-    SScale getScale() const;
+public: // instance methods (scale values, unit and resolution)
     bool isScaleValid() const;
+    void setScale( const CScale& i_scale );
+    CScale getScale() const;
+    void setScaleMinVal( const PhysVal::CPhysVal& i_physVal );
+    void setScaleMinVal( double i_fMin, const PhysVal::CUnit& i_unit );
+    PhysVal::CPhysVal getScaleMinVal() const;
+    void setScaleMaxVal( const PhysVal::CPhysVal& i_physVal );
+    void setScaleMaxVal( double i_fMax, const PhysVal::CUnit& i_unit );
+    PhysVal::CPhysVal getScaleMaxVal() const;
+    void setScaleRangeVal( const PhysVal::CPhysVal& i_physVal );
+    void setScaleRangeVal( double i_fMin, const PhysVal::CUnit& i_unit );
+    PhysVal::CPhysVal getScaleRangeVal() const;
+    void setScaleUnit(const PhysVal::CUnit& i_unit);
+    PhysVal::CUnit getScaleUnit() const;
+    void setScaleRes( const PhysVal::CPhysValRes& i_physValRes );
+    PhysVal::CPhysValRes getScaleRes() const;
+public: // instance methods (geometry in pixels)
     void setGeometry( int i_iMinVal_px, int i_iMaxVal_px );
     int getMinValPix() const;
     int getMaxValPix() const;
     int getRangePix() const;
+public: // instance methods (calculation of division lines)
     void setDivLineDistMinPix( const CEnumDivLineLayer& i_eLayer, int i_iDistMinPix );
     int getDivLineDistMinPix( const CEnumDivLineLayer& i_eLayer ) const;
     bool areDivLinesCalculated() const;
-    double getScaleRes( const PhysVal::CUnit* i_pUnit = nullptr ) const;
-    double getScaleRes( double i_fVal, const PhysVal::CUnit* i_pUnit = nullptr ) const;
-    double round2ScaleRes( double i_fVal, const PhysVal::CUnit* i_pUnit = nullptr ) const;
     int getDivLineCount( const CEnumDivLineLayer& i_eLayer ) const;
     double getDivLineDistMin( const CEnumDivLineLayer& i_eLayer, const PhysVal::CUnit* i_pUnit = nullptr ) const;
     double getDivLineVal( const CEnumDivLineLayer& i_eLayer, int i_idxDivLine, const PhysVal::CUnit* i_pUnit = nullptr ) const;
     double getDivLinePix( const CEnumDivLineLayer& i_eLayer, int i_idxDivLine1 ) const;
     double getDivLineDist( const CEnumDivLineLayer& i_eLayer, int i_idxDivLine1, int i_idxDivLine2, const PhysVal::CUnit* i_pUnit = nullptr ) const;
     double getDivLineDistPix( const CEnumDivLineLayer& i_eLayer, int i_idxDivLine1, int i_idxDivLine2 ) const;
+public: // instance methods (converting values)
     int getValPix( double i_fVal, const PhysVal::CUnit* i_pUnit = nullptr ) const;
     QString getValString( double i_fVal, const PhysVal::CUnit* i_pUnit = nullptr, int i_iDigitsCountMax = 0, bool i_bUseEngineeringFormat = false ) const;
     double getVal( double i_fPix, const PhysVal::CUnit* i_pUnit = nullptr ) const;
-public: // instance methods
+public: // instance methods (zooming)
     void zoomIn( int i_iZoomRectMinValPix, int i_iZoomRectMaxValPix );
     void zoomIn( double i_fMinVal, double i_fMaxVal, PhysVal::CUnit* i_pUnit = nullptr );
     void zoomOut( bool i_bComplete = false );
-public: // overridables
+protected: // overridables
     virtual void update();
 protected: // overridables
     virtual CDiagScale* clone( CDataDiagram* i_pDiagramTrg ) const;
@@ -107,43 +202,68 @@ private: // assignment operator not allowed
 protected: // type definitions and constants
     struct SZoomStackEntry
     {
-        SZoomStackEntry( const SScale& i_scale );
-        SScale           m_scale;
+        SZoomStackEntry( const CScale& i_scale );
+        CScale           m_scale;
         SZoomStackEntry* m_pStackEntryNext;
         SZoomStackEntry* m_pStackEntryPrev;
     };
 protected:  // instance memthods
-    void pushScale( const SScale& i_scale );
-    SScale popScale();
-    SScale clearScaleStack();
+    void pushScale( const CScale& i_scale );
+    CScale popScale();
+    CScale clearScaleStack();
 protected: // instance methods (method tracing)
     void emit_spacingChanged( ESpacing i_spacing );
-    void emit_scaleChanged( const SScale& i_scale );
+    void emit_scaleChanged( const CScale& i_scale );
     void emit_geometryChanged( int i_iMinVal_px, int i_iMaxVal_px );
     void emit_divLineDistMinPixChanged( EDivLineLayer i_layer, int i_iDivLineDistMin_px );
 protected:  // class members
     static bool s_bClassInitialised;
     static double s_arfScaleRangeFacPixDivValLog[9];
 protected:  // instance members
+    /*!< Name of the scale (same as QObject::objectName).
+         The name will also be saved here for easier visualizing the name in debug sessions. */
     QString m_strObjName;
+    /*!< Reference to diagram the scale belongs to. */
     CDataDiagram* m_pDiagram;
+    /*!< Scale direction (X or Y). Set by the constructor. Not changeable during runtime. */
     EScaleDir m_scaleDir;
+    /*!< Spacing of the scale (either linear or logarithmic). */
     ESpacing m_spacing;
-    SScale m_scale;
+    /*!< Scale values (minimum, maximum, unit and resolution). */
+    CScale m_scale;
+    /*!< Minimum scale value in pixels. */
     int m_iMinVal_px;
+    /*!< Maximum scale value in pixels. */
     int m_iMaxVal_px;
-    QVector<int> m_ariDivLineDistMin_px; //[EDivLineLayerCount];
-    QVector<int> m_ariDivLineCount; //[EDivLineLayerCount];
+    /*!< Minimum distance between two successive division lines per layer in pixels
+         used to calculate the division lines in world coordinates (physical values). */
+    QVector<int> m_ariDivLineDistMin_px;
+    /*!< Number of calculated division lines per layer. */
+    QVector<int> m_ariDivLineCount;
+    /*!< Calculated minimum distance between two successive division lines per layer
+         in world coordinates (physical values). Always a whole number multiple of
+         a decimal power. */
     double m_fDivDistMinVal;
-    QVector<QVector<double>> m_ararfDivLineVal; //[EDivLineLayerCount];
-    QVector<QVector<double>> m_ararfDivLine_px; //[EDivLineLayerCount];
+    /*!< Calculated values of the division lines per layer in world coordinates (physical values).
+         Always a whole number multiple of a decimal power. */
+    QVector<QVector<double>> m_ararfDivLineVal;
+    /*!< Pixel coordinates of the division lines per layer. */
+    QVector<QVector<double>> m_ararfDivLine_px;
+    /*!< Flag to indicate whether the division lines need to be recalculated if 
+         the update method is processed. */
     bool m_bDivLinesCalculated;
+    /*!< Current number of scales pushed to the zoom stack. */
     int m_iZoomCount;
+    /*!< Pointer to first zoom stack entry. */
     SZoomStackEntry* m_pZoomStackFirst;
+    /*!< Pointer to last zoom stack entry. */
     SZoomStackEntry* m_pZoomStackLast;
 protected:  // instance members
+    /*!< Trace admin object for not often called methods. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
+    /*!< Trace admin object to control trace output of the update method. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObjUpdate;
+    /*!< Trace admin object to control trace output of the layout methods. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObjLayout;
 
 }; // class CDiagScale

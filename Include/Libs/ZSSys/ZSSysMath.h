@@ -147,6 +147,7 @@ QVector<double> ZSSYSDLL_API merge(const QVector<double>& i_arfVals1, const QVec
 int ZSSYSDLL_API getPrecision2ShowUniqueNumbers(
     const QVector<double>& i_arfVals,
     int i_iExponentDigits,
+    int i_iPrecisionMin = 1,
     int i_iPrecisionMax = 10,
     CTrcAdminObj* i_pTrcAdminObj = nullptr);
 
