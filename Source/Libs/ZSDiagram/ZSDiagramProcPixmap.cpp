@@ -289,11 +289,11 @@ public: // copy ctor not allowed but diagrams may be cloned
 CDataDiagram* CPixmapDiagram::clone( EDiagramUpdateType i_diagramUpdateType ) const
 //------------------------------------------------------------------------------
 {
-    CDataDiagram* pDiagram = nullptr;
+    CDataDiagram* pDiagramCloned = nullptr;
 
     if( i_diagramUpdateType < EDiagramUpdateTypePixmap )
     {
-        pDiagram = CDataDiagram::clone(i_diagramUpdateType);
+        pDiagramCloned = CDataDiagram::clone(i_diagramUpdateType);
     }
     else
     {
@@ -355,9 +355,9 @@ CDataDiagram* CPixmapDiagram::clone( EDiagramUpdateType i_diagramUpdateType ) co
         {
             pPixmapDiagram->m_pFrameStylePartCenter = new SFrameStyle(*m_pFrameStylePartCenter);
         }
-        pDiagram = pPixmapDiagram;
+        pDiagramCloned = pPixmapDiagram;
     }
-    return pDiagram;
+    return pDiagramCloned;
 
 } // clone
 

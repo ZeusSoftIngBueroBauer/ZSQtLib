@@ -370,10 +370,10 @@ void CTest::doTestStepSigGenCreateDiagram( ZS::Test::CTestStep* i_pTestStep )
     //m_pWdgtDiagram->setMarginBottom(0);
     //m_pWdgtDiagram->setMarginLeft(0);
     //m_pWdgtDiagram->setMarginRight(0);
-    m_pWdgtDiagram->setMinimumHeightPartTop(0);
-    m_pWdgtDiagram->setMinimumHeightPartBottom(0);
-    m_pWdgtDiagram->setMinimumWidthPartLeft(0);
-    m_pWdgtDiagram->setMinimumWidthPartRight(0);
+    m_pWdgtDiagram->setMinimumHeightPartTop(10);
+    m_pWdgtDiagram->setMinimumHeightPartBottom(10);
+    m_pWdgtDiagram->setMinimumWidthPartLeft(10);
+    m_pWdgtDiagram->setMinimumWidthPartRight(20);
 
     SFrameStyle3DSunken* pFrameStyleDiagram = new SFrameStyle3DSunken;
     m_pWdgtDiagram->setFrameStyle(pFrameStyleDiagram);
@@ -383,13 +383,13 @@ void CTest::doTestStepSigGenCreateDiagram( ZS::Test::CTestStep* i_pTestStep )
     //m_pWdgtDiagram->setFrameStylePartCenter(pFrameStyleDiagramPartCenter);
     //pFrameStyleDiagramPartCenter = nullptr;
 
-    m_pWdgtDiagram->setMinimumWidth(400);
-    m_pWdgtDiagram->setMinimumHeight(200);
+    m_pWdgtDiagram->setFixedWidth(1020);
+    m_pWdgtDiagram->setFixedHeight(330);
 
     CWidgetCentral::GetInstance()->getTestOutputWidget()->setDiagram(m_pWdgtDiagram);
 
     // Actual Result Values
-    //---------------
+    //---------------------
 
     // Please note that to finish a test step the list of actual values may not be empty.
     if( strlstResultValues.size() == 0 )

@@ -115,7 +115,7 @@ int    ZSSYSDLL_API maxVal( int i_iValCount, int    i_iVal1 ... );
 double ZSSYSDLL_API maxVal( int i_iValCount, double i_fVal1 ... );
 std::tuple<double, double> ZSSYSDLL_API getAbsMinMax( const QVector<double>& i_arVals );
 int ZSSYSDLL_API getFirstSignificantDigit( double i_fVal );
-void   ZSSYSDLL_API normalize( double i_fVal, int* o_piSign, int* o_piMant, int* o_piExp );
+void ZSSYSDLL_API normalize( double i_fVal, int* o_piSign, int* o_piMant, int* o_piExp );
 
 typedef double (*TFctFFTWindow)( double i_fVal, int i_iFFTSegementLen );
 
@@ -125,31 +125,11 @@ double ZSSYSDLL_API fctFFTWindowFlatTop( double i_fVal, int i_iFFTSegmentLen );
 double ZSSYSDLL_API fctFFTWindowBlackman( double i_fVal, int i_iFFTSegmentLen );
 double ZSSYSDLL_API fctFFTWindowWelch( double i_fVal, int i_iFFTSegmentLen );
 
-ZSSYSDLL_API double logRes2LinRes( double i_fResLog, double i_fValLin );
+double ZSSYSDLL_API logRes2LinRes( double i_fResLog, double i_fValLin );
 
-ZSSYSDLL_API QRect calcRect( const QPoint& i_ptStart, const QPoint& i_ptEnd );
-
-int ZSSYSDLL_API getDivLines4LinSpacing(
-    double  i_fScaleMinVal,
-    double  i_fScaleMaxVal,
-    int     i_iScaleRangePix,
-    double  i_fDivLineDistMinVal,
-    int     i_iDivLineDistMinPix,
-    bool    i_bUseDivLineDistValDecimalFactor25,
-    double* o_pfDivLineFirstVal,
-    double* o_pfDivLineDistFirstPix,
-    double* o_pfDivLineDistVal,
-    double* o_pfDivLineDistPix,
-    CTrcAdminObj* i_pTrcAdminObj = nullptr);
+QRect ZSSYSDLL_API calcRect( const QPoint& i_ptStart, const QPoint& i_ptEnd );
 
 QVector<double> ZSSYSDLL_API merge(const QVector<double>& i_arfVals1, const QVector<double>& i_arfVals2);
-
-int ZSSYSDLL_API getPrecision2ShowUniqueNumbers(
-    const QVector<double>& i_arfVals,
-    int i_iExponentDigits,
-    int i_iPrecisionMin = 1,
-    int i_iPrecisionMax = 10,
-    CTrcAdminObj* i_pTrcAdminObj = nullptr);
 
 } // namespace Math
 

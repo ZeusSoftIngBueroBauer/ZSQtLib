@@ -389,41 +389,41 @@ CDiagObj* CDiagObjErrInfo::clone( CDataDiagram* i_pDiagramTrg ) const
         return nullptr;
     }
 
-    CDiagObjErrInfo* pDiagObj = new CDiagObjErrInfo(
+    CDiagObjErrInfo* pDiagObjCloned = new CDiagObjErrInfo(
         /* strObjName */ m_strObjName,
         /* layoutPos  */ m_layoutPos );
 
     int idxSev;
 
     // Members from base class CDiagObj:
-    pDiagObj->m_rectContent = m_rectContent;
-    pDiagObj->m_bAdjustContentRect2DiagPartCenter = m_bAdjustContentRect2DiagPartCenter;
-    pDiagObj->m_bVisible = m_bVisible;
-    pDiagObj->m_state = m_state;
-    pDiagObj->m_bIsFocusable = m_bIsFocusable;
-    pDiagObj->m_bIsEditable = m_bIsEditable;
+    pDiagObjCloned->m_rectContent = m_rectContent;
+    pDiagObjCloned->m_bAdjustContentRect2DiagPartCenter = m_bAdjustContentRect2DiagPartCenter;
+    pDiagObjCloned->m_bVisible = m_bVisible;
+    pDiagObjCloned->m_state = m_state;
+    pDiagObjCloned->m_bIsFocusable = m_bIsFocusable;
+    pDiagObjCloned->m_bIsEditable = m_bIsEditable;
 
     // Members from this class:
-    pDiagObj->m_errResultInfoCurr = m_errResultInfoCurr;
-    pDiagObj->m_errResultInfoPrev = m_errResultInfoPrev;
+    pDiagObjCloned->m_errResultInfoCurr = m_errResultInfoCurr;
+    pDiagObjCloned->m_errResultInfoPrev = m_errResultInfoPrev;
 
     for( idxSev = 0; idxSev < EResultSeverityCount; idxSev++ )
     {
-        pDiagObj->m_ariTimeout_ms[idxSev] = m_ariTimeout_ms[idxSev];
-        pDiagObj->m_arcolText[idxSev] = m_arcolText[idxSev];
-        pDiagObj->m_arfntText[idxSev] = m_arfntText[idxSev];
+        pDiagObjCloned->m_ariTimeout_ms[idxSev] = m_ariTimeout_ms[idxSev];
+        pDiagObjCloned->m_arcolText[idxSev] = m_arcolText[idxSev];
+        pDiagObjCloned->m_arfntText[idxSev] = m_arfntText[idxSev];
     }
-    pDiagObj->m_iMarginTop = m_iMarginTop;
-    pDiagObj->m_iMarginBottom = m_iMarginBottom;
-    pDiagObj->m_iMarginLeft = m_iMarginLeft;
-    pDiagObj->m_iMarginRight = m_iMarginRight;
-    pDiagObj->m_textOrientation = m_textOrientation;
-    pDiagObj->m_rectTextCurr = m_rectTextCurr;
-    pDiagObj->m_rectTextPrev = m_rectTextPrev;
+    pDiagObjCloned->m_iMarginTop = m_iMarginTop;
+    pDiagObjCloned->m_iMarginBottom = m_iMarginBottom;
+    pDiagObjCloned->m_iMarginLeft = m_iMarginLeft;
+    pDiagObjCloned->m_iMarginRight = m_iMarginRight;
+    pDiagObjCloned->m_textOrientation = m_textOrientation;
+    pDiagObjCloned->m_rectTextCurr = m_rectTextCurr;
+    pDiagObjCloned->m_rectTextPrev = m_rectTextPrev;
 
-    i_pDiagramTrg->addDiagObj(pDiagObj);
+    i_pDiagramTrg->addDiagObj(pDiagObjCloned);
 
-    return pDiagObj;
+    return pDiagObjCloned;
 
 } // clone
 

@@ -254,6 +254,7 @@ enum class ECopyDepth
 template class ZSSYSDLL_API CEnum<ECopyDepth>;
 typedef CEnum<ECopyDepth> CEnumCopyDepth;
 
+
 //==============================================================================
 /*! Defines the different life cycle states of an object.
 
@@ -430,6 +431,66 @@ enum class EOrientation
 
 template class ZSSYSDLL_API CEnum<EOrientation>;
 typedef CEnum<EOrientation> CEnumOrientation;
+
+
+//==============================================================================
+/*! Scale orientations.
+
+    @see ZS::System::SEnumEntry
+    @see ZS::System::CEnum
+    @see _GRP_BasicConcepts_Enumerations
+*/
+enum class EScaleDir {
+//==============================================================================
+    X,  /*!< X (usually horizontal) scale orientation. */
+    Y   /*!< Y (usually vertical ) scale orientation. */
+};
+template class ZSSYSDLL_API CEnum<EScaleDir>;
+typedef CEnum<EScaleDir> CEnumScaleDir;
+
+// To make the code more readable:
+const int EScaleDirX = static_cast<int>(EScaleDir::X);
+const int EScaleDirY = static_cast<int>(EScaleDir::Y);
+
+
+//==============================================================================
+/*! Spacing of diagram scales which could be either linear or logarithmic.
+
+    @see ZS::System::SEnumEntry
+    @see ZS::System::CEnum
+    @see _GRP_BasicConcepts_Enumerations
+*/
+enum class ESpacing {
+//==============================================================================
+    Linear,     /*!< Linear spacing (distance between division lines is equal). */
+    Logarithmic /*!< Loagrithmic spacing (distance between division lines is logarithimic). */
+};
+template class ZSSYSDLL_API CEnum<ESpacing>;
+typedef CEnum<ESpacing> CEnumSpacing;
+
+
+//==============================================================================
+/*! For grids in diagrams main and sub division lines may be drawn.
+
+    Main division lines are usually more emphasized than sub division lines.
+    Some of the sub division lines don't need to be drawn as they overlay
+    main division lines.
+
+    @see ZS::System::SEnumEntry
+    @see ZS::System::CEnum
+    @see _GRP_BasicConcepts_Enumerations
+*/
+enum class EDivLineLayer {
+//==============================================================================
+    Main,       /*!< Main division lines. */
+    Sub,        /*!< Sub division lines which are less emphasized than the main lines. */
+};
+template class ZSSYSDLL_API CEnum<EDivLineLayer>;
+typedef CEnum<EDivLineLayer> CEnumDivLineLayer;
+
+// To make the code more readable:
+const int EDivLineLayerMain = static_cast<int>(EDivLineLayer::Main);
+const int EDivLineLayerSub = static_cast<int>(EDivLineLayer::Sub);
 
 
 //==============================================================================

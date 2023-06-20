@@ -413,7 +413,7 @@ CDiagObj* CDiagObjValueProvider::clone( CDataDiagram* i_pDiagramTrg ) const
         pDiagObjOp2 = i_pDiagramTrg->findDiagObj(m_pDiagObjOp2->ClassName(), m_pDiagObjOp2->getObjName());
     }
 
-    CDiagObjValueProvider* pDiagObj = new CDiagObjValueProvider(
+    CDiagObjValueProvider* pDiagObjCloned = new CDiagObjValueProvider(
         /* strObjName  */ m_strObjName,
         /* mathOp      */ m_mathOp,
         /* pDiagObjOp1 */ pDiagObjOp1,
@@ -422,22 +422,22 @@ CDiagObj* CDiagObjValueProvider::clone( CDataDiagram* i_pDiagramTrg ) const
         /* scaleDirOp2 */ m_scaleDirOp2 );
 
     // Members from base class CDiagObj:
-    pDiagObj->m_layoutPos = m_layoutPos;
-    pDiagObj->m_rectContent = m_rectContent;
-    pDiagObj->m_bAdjustContentRect2DiagPartCenter = m_bAdjustContentRect2DiagPartCenter;
-    pDiagObj->m_bVisible = m_bVisible;
-    pDiagObj->m_state = m_state;
-    pDiagObj->m_bIsFocusable = m_bIsFocusable;
-    pDiagObj->m_bIsEditable = m_bIsEditable;
+    pDiagObjCloned->m_layoutPos = m_layoutPos;
+    pDiagObjCloned->m_rectContent = m_rectContent;
+    pDiagObjCloned->m_bAdjustContentRect2DiagPartCenter = m_bAdjustContentRect2DiagPartCenter;
+    pDiagObjCloned->m_bVisible = m_bVisible;
+    pDiagObjCloned->m_state = m_state;
+    pDiagObjCloned->m_bIsFocusable = m_bIsFocusable;
+    pDiagObjCloned->m_bIsEditable = m_bIsEditable;
 
     // Members from this class:
-    pDiagObj->m_valueFormat = m_valueFormat;
-    pDiagObj->m_physVal = m_physVal;
-    pDiagObj->m_strVal = m_strVal;
+    pDiagObjCloned->m_valueFormat = m_valueFormat;
+    pDiagObjCloned->m_physVal = m_physVal;
+    pDiagObjCloned->m_strVal = m_strVal;
 
-    i_pDiagramTrg->addDiagObj(pDiagObj);
+    i_pDiagramTrg->addDiagObj(pDiagObjCloned);
 
-    return pDiagObj;
+    return pDiagObjCloned;
 
 } // clone
 

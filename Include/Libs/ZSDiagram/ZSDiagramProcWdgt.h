@@ -105,9 +105,9 @@ public: // instance methods
     CDiagObj* getDiagObjFocused();
     CDiagObj* getDiagObjEditing();
 public: // instance methods to set optional attributes of the diagram
-    void enableZooming( const CEnumScaleDir& i_scaleDir = CEnumScaleDir() );
-    void disableZooming( const CEnumScaleDir& i_scaleDir = CEnumScaleDir() );
-    bool isZoomingEnabled( const CEnumScaleDir& i_scaleDir = CEnumScaleDir() ) const;
+    void enableZooming( const ZS::System::CEnumScaleDir& i_scaleDir = ZS::System::CEnumScaleDir() );
+    void disableZooming( const ZS::System::CEnumScaleDir& i_scaleDir = ZS::System::CEnumScaleDir() );
+    bool isZoomingEnabled( const ZS::System::CEnumScaleDir& i_scaleDir = ZS::System::CEnumScaleDir() ) const;
     void enableContextPopupMenu();
     void disableContextPopupMenu();
     bool isContextPopupMenuEnabled() const;

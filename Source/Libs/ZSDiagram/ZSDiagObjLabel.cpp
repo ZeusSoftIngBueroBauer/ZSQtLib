@@ -900,12 +900,11 @@ CDiagObj* CDiagObjLabel::clone( CDataDiagram* i_pDiagramTrg ) const
         return nullptr;
     }
 
-    CDiagObjLabel* pDiagObj;
-    int            idxState;
+    CDiagObjLabel* pDiagObjCloned = nullptr;
 
     if( !m_arstrText[0].isEmpty() )
     {
-        pDiagObj = new CDiagObjLabel(
+        pDiagObjCloned = new CDiagObjLabel(
             /* strObjName */ m_strObjName,
             /* strLabel   */ m_arstrText[0],
             /* layoutPos  */ m_layoutPos,
@@ -913,7 +912,7 @@ CDiagObj* CDiagObjLabel::clone( CDataDiagram* i_pDiagramTrg ) const
     }
     else
     {
-        pDiagObj = new CDiagObjLabel(
+        pDiagObjCloned = new CDiagObjLabel(
             /* strObjName */ m_strObjName,
             /* pxm        */ m_arpxm[0],
             /* layoutPos  */ m_layoutPos,
@@ -921,56 +920,57 @@ CDiagObj* CDiagObjLabel::clone( CDataDiagram* i_pDiagramTrg ) const
     }
 
     // Members from base class CDiagObj:
-    pDiagObj->m_rectContent = m_rectContent;
-    pDiagObj->m_bAdjustContentRect2DiagPartCenter = m_bAdjustContentRect2DiagPartCenter;
-    pDiagObj->m_bVisible = m_bVisible;
-    pDiagObj->m_state = m_state;
-    pDiagObj->m_bIsFocusable = m_bIsFocusable;
-    pDiagObj->m_bIsEditable = m_bIsEditable;
+    pDiagObjCloned->m_rectContent = m_rectContent;
+    pDiagObjCloned->m_bAdjustContentRect2DiagPartCenter = m_bAdjustContentRect2DiagPartCenter;
+    pDiagObjCloned->m_bVisible = m_bVisible;
+    pDiagObjCloned->m_state = m_state;
+    pDiagObjCloned->m_bIsFocusable = m_bIsFocusable;
+    pDiagObjCloned->m_bIsEditable = m_bIsEditable;
 
     // Members from this class:
-    pDiagObj->m_iState = m_iState;
-    pDiagObj->m_cxMinimumWidth = m_cxMinimumWidth;
-    pDiagObj->m_cxMaximumWidth = m_cxMaximumWidth;
-    pDiagObj->m_cyMinimumHeight = m_cyMinimumHeight;
-    pDiagObj->m_cyMaximumHeight = m_cyMaximumHeight;
-    pDiagObj->m_iLayoutPosAlignmentFlags = m_iLayoutPosAlignmentFlags;
-    pDiagObj->m_cxLayoutPosOffs = m_cxLayoutPosOffs;
-    pDiagObj->m_cyLayoutPosOffs = m_cyLayoutPosOffs;
+    pDiagObjCloned->m_iState = m_iState;
+    pDiagObjCloned->m_cxMinimumWidth = m_cxMinimumWidth;
+    pDiagObjCloned->m_cxMaximumWidth = m_cxMaximumWidth;
+    pDiagObjCloned->m_cyMinimumHeight = m_cyMinimumHeight;
+    pDiagObjCloned->m_cyMaximumHeight = m_cyMaximumHeight;
+    pDiagObjCloned->m_iLayoutPosAlignmentFlags = m_iLayoutPosAlignmentFlags;
+    pDiagObjCloned->m_cxLayoutPosOffs = m_cxLayoutPosOffs;
+    pDiagObjCloned->m_cyLayoutPosOffs = m_cyLayoutPosOffs;
+
     if( m_pFrameStyle != nullptr )
     {
-        pDiagObj->m_pFrameStyle = new SFrameStyle(*m_pFrameStyle);
+        pDiagObjCloned->m_pFrameStyle = new SFrameStyle(*m_pFrameStyle);
     }
-    for( idxState = 0; idxState < m_iStateCount; idxState++ )
+    for( int idxState = 0; idxState < m_iStateCount; idxState++ )
     {
-        pDiagObj->m_arcolBg[idxState] = m_arcolBg[idxState];
-        pDiagObj->m_arbrushStyle[idxState] = m_arbrushStyle[idxState];
+        pDiagObjCloned->m_arcolBg[idxState] = m_arcolBg[idxState];
+        pDiagObjCloned->m_arbrushStyle[idxState] = m_arbrushStyle[idxState];
     }
-    pDiagObj->m_iMarginTop = m_iMarginTop;
-    pDiagObj->m_iMarginBottom = m_iMarginBottom;
-    pDiagObj->m_iMarginLeft = m_iMarginLeft;
-    pDiagObj->m_iMarginRight = m_iMarginRight;
-    for( idxState = 0; idxState < m_iStateCount; idxState++ )
+    pDiagObjCloned->m_iMarginTop = m_iMarginTop;
+    pDiagObjCloned->m_iMarginBottom = m_iMarginBottom;
+    pDiagObjCloned->m_iMarginLeft = m_iMarginLeft;
+    pDiagObjCloned->m_iMarginRight = m_iMarginRight;
+    for( int idxState = 0; idxState < m_iStateCount; idxState++ )
     {
-        pDiagObj->m_arstrText[idxState] = m_arstrText[idxState];
-        pDiagObj->m_arcolText[idxState] = m_arcolText[idxState];
+        pDiagObjCloned->m_arstrText[idxState] = m_arstrText[idxState];
+        pDiagObjCloned->m_arcolText[idxState] = m_arcolText[idxState];
     }
-    pDiagObj->m_fntText = m_fntText;
-    pDiagObj->m_iTextAlignmentFlags = m_iTextAlignmentFlags;
-    pDiagObj->m_textOrientation = m_textOrientation;
-    for( idxState = 0; idxState < m_iStateCount; idxState++ )
+    pDiagObjCloned->m_fntText = m_fntText;
+    pDiagObjCloned->m_iTextAlignmentFlags = m_iTextAlignmentFlags;
+    pDiagObjCloned->m_textOrientation = m_textOrientation;
+    for( int idxState = 0; idxState < m_iStateCount; idxState++ )
     {
-        pDiagObj->m_arpxm[idxState] = m_arpxm[idxState];
+        pDiagObjCloned->m_arpxm[idxState] = m_arpxm[idxState];
     }
-    pDiagObj->m_iPixmapAlignmentFlags = m_iPixmapAlignmentFlags;
-    pDiagObj->m_rectOuterFrame = m_rectOuterFrame;
-    pDiagObj->m_rectInnerFrame = m_rectInnerFrame;
-    pDiagObj->m_rectText = m_rectText;
-    pDiagObj->m_rectPixmap = m_rectPixmap;
+    pDiagObjCloned->m_iPixmapAlignmentFlags = m_iPixmapAlignmentFlags;
+    pDiagObjCloned->m_rectOuterFrame = m_rectOuterFrame;
+    pDiagObjCloned->m_rectInnerFrame = m_rectInnerFrame;
+    pDiagObjCloned->m_rectText = m_rectText;
+    pDiagObjCloned->m_rectPixmap = m_rectPixmap;
 
-    i_pDiagramTrg->addDiagObj(pDiagObj);
+    i_pDiagramTrg->addDiagObj(pDiagObjCloned);
 
-    return pDiagObj;
+    return pDiagObjCloned;
 
 } // clone
 

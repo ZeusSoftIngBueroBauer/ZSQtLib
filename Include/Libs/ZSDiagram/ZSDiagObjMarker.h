@@ -67,10 +67,10 @@ signals:
 public: // overridables to get and set the cursor position
     virtual void setCalculateCursorPos( bool i_bCalculate );
     virtual bool getCalculateCursorPos() const;
-    virtual void setCursorMoveDir( const CEnumScaleDir& i_scaleDir );
-    virtual EScaleDir getCursorMoveDir() const;
-    virtual void setVal( const CEnumScaleDir& i_scaleDir, const PhysVal::CPhysVal& i_physVal );
-    virtual void setVal( const CEnumScaleDir& i_scaleDir, double i_fXVal, PhysVal::CUnit* i_pUnit = nullptr );
+    virtual void setCursorMoveDir( const ZS::System::CEnumScaleDir& i_scaleDir );
+    virtual ZS::System::EScaleDir getCursorMoveDir() const;
+    virtual void setVal( const ZS::System::CEnumScaleDir& i_scaleDir, const PhysVal::CPhysVal& i_physVal );
+    virtual void setVal( const ZS::System::CEnumScaleDir& i_scaleDir, double i_fXVal, PhysVal::CUnit* i_pUnit = nullptr );
     virtual QPoint getPos() const;
 public: // overridables to modify the marker style
     virtual void showElement( EDiagObjState i_diagObjState, EElement i_element );
@@ -86,12 +86,12 @@ public: // overridables to modify the marker style
     virtual CLabelStyle* getLabelStyle( EDiagObjState i_diagObjState );
     virtual void setToolTipStyle( EDiagObjState i_diagObjState, CToolTipStyle* i_pToolTipStyle );
     virtual CToolTipStyle* getToolTipStyle( EDiagObjState i_diagObjState );
-    virtual void setToolTipValueFormat( const CEnumScaleDir& i_scaleDir, PhysVal::SValueFormatProvider* i_pValueFormat );
-    virtual PhysVal::SValueFormatProvider* getToolTipValueFormat( const CEnumScaleDir& i_scaleDir );
+    virtual void setToolTipValueFormat( const ZS::System::CEnumScaleDir& i_scaleDir, PhysVal::SValueFormatProvider* i_pValueFormat );
+    virtual PhysVal::SValueFormatProvider* getToolTipValueFormat( const ZS::System::CEnumScaleDir& i_scaleDir );
     virtual void setImageStyleCursor( EDiagObjState i_diagObjState, CImageStyle* i_pImageStyle );
     virtual CImageStyle* getImageStyleCursor( EDiagObjState i_diagObjState );
 public: // overridables of base class CDiagObj
-    virtual PhysVal::CPhysVal getVal( const CEnumScaleDir& i_scaleDir ) const;
+    virtual PhysVal::CPhysVal getVal( const ZS::System::CEnumScaleDir& i_scaleDir ) const;
     virtual bool isFocusable() const;
     virtual bool isEditable() const;
     virtual bool isHit( const QPoint& i_pt ) const;
@@ -116,7 +116,7 @@ protected:  // instance members
     EDiagObjState                  m_statePrev;
     // Calculated cursor position
     bool                           m_bCalculateCursorPos;
-    EScaleDir                      m_scaleDirCursorMove;
+    ZS::System::EScaleDir          m_scaleDirCursorMove;
     QVector<PhysVal::CPhysVal>     m_arphysValPrev;
     QVector<PhysVal::CPhysVal>     m_arphysVal;
     QPoint                         m_ptPosPrev;

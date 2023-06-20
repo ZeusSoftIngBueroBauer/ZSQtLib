@@ -231,38 +231,6 @@ QString ZS::Diagram::updateFlags2Str( unsigned int i_uUpdateFlags )
 
 
 /*==============================================================================
-Enum EScaleDir
-==============================================================================*/
-
-template<> QMutex ZS::System::CEnum<EScaleDir>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<EScaleDir>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
-
-//------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> ZS::System::CEnum<EScaleDir>::s_arEnumEntries =
-//------------------------------------------------------------------------------
-{
-    /* 0 */ SEnumEntry( static_cast<int>(EScaleDir::X), "X" ),
-    /* 1 */ SEnumEntry( static_cast<int>(EScaleDir::Y), "Y" )
-};
-
-
-/*==============================================================================
-Enum ESpacing
-==============================================================================*/
-
-template<> QMutex ZS::System::CEnum<ESpacing>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<ESpacing>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
-
-//------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> ZS::System::CEnum<ESpacing>::s_arEnumEntries =
-//------------------------------------------------------------------------------
-{
-    /* 0 */ SEnumEntry( static_cast<int>(ESpacing::Linear), "Linear" ),
-    /* 1 */ SEnumEntry( static_cast<int>(ESpacing::Logarithmic), "Logarithmic" )
-};
-
-
-/*==============================================================================
 Enum ELayoutPos
 ==============================================================================*/
 
@@ -290,22 +258,6 @@ QString ZS::Diagram::layoutPos2Str( int i_iLayoutPos )
     return "Out Of Range";
 
 } // layoutPos2Str
-
-
-/*==============================================================================
-Enum EDivLineLayer
-==============================================================================*/
-
-template<> QMutex ZS::System::CEnum<EDivLineLayer>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<EDivLineLayer>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
-
-//------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> ZS::System::CEnum<EDivLineLayer>::s_arEnumEntries =
-//------------------------------------------------------------------------------
-{
-    /* 0 */ SEnumEntry( static_cast<int>(EDivLineLayer::Main), "Main" ),
-    /* 1 */ SEnumEntry( static_cast<int>(EDivLineLayer::Sub), "Sub" )
-};
 
 
 /*==============================================================================

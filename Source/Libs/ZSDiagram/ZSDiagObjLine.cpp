@@ -251,31 +251,31 @@ CDiagObj* CDiagObjLine::clone( CDataDiagram* i_pDiagramTrg ) const
         return nullptr;
     }
 
-    CDiagObjLine* pDiagObj = new CDiagObjLine(
+    CDiagObjLine* pDiagObjCloned = new CDiagObjLine(
         /* strObjName  */ m_strObjName,
         /* pDiagScaleX */ pDiagScaleX,
         /* pDiagScaleY */ pDiagScaleY,
         /* SLineStyle */  m_pLineStyle );
 
     // Members from base class CDiagObj:
-    pDiagObj->m_layoutPos = m_layoutPos;
-    pDiagObj->m_rectContent = m_rectContent;
-    pDiagObj->m_bAdjustContentRect2DiagPartCenter = m_bAdjustContentRect2DiagPartCenter;
-    pDiagObj->m_bVisible = m_bVisible;
-    pDiagObj->m_state = m_state;
-    pDiagObj->m_bIsFocusable = m_bIsFocusable;
-    pDiagObj->m_bIsEditable = m_bIsEditable;
+    pDiagObjCloned->m_layoutPos = m_layoutPos;
+    pDiagObjCloned->m_rectContent = m_rectContent;
+    pDiagObjCloned->m_bAdjustContentRect2DiagPartCenter = m_bAdjustContentRect2DiagPartCenter;
+    pDiagObjCloned->m_bVisible = m_bVisible;
+    pDiagObjCloned->m_state = m_state;
+    pDiagObjCloned->m_bIsFocusable = m_bIsFocusable;
+    pDiagObjCloned->m_bIsEditable = m_bIsEditable;
 
     // Members from this class:
-    pDiagObj->m_strObjName = m_strObjName;
+    pDiagObjCloned->m_strObjName = m_strObjName;
     if( m_pLineStyle ) // wg. Lint
     {
-        pDiagObj->m_pLineStyle = new SLineStyle( *m_pLineStyle );
+        pDiagObjCloned->m_pLineStyle = new SLineStyle( *m_pLineStyle );
     }
 
-    i_pDiagramTrg->addDiagObj(pDiagObj);
+    i_pDiagramTrg->addDiagObj(pDiagObjCloned);
 
-    return pDiagObj;
+    return pDiagObjCloned;
 
 } // clone
 

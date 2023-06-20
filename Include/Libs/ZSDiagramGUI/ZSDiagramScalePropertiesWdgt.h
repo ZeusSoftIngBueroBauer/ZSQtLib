@@ -66,9 +66,9 @@ public: // overridables of base class CWdgtDiagramItemPropertiesBase
     void acceptChanges() override;
     void rejectChanges() override;
 protected slots:
-    void onDiagItemScaleSpacingChanged(const CEnumSpacing& i_spacing);
+    void onDiagItemScaleSpacingChanged(const ZS::System::CEnumSpacing& i_spacing);
     void onDiagItemScaleGeometryChanged(int i_iMinVal_px, int i_iMaxVal_px);
-    void onDiagItemScaleDivLineDistMinPixChanged(EDivLineLayer i_layer, int i_iDivLineDistMin_px);
+    void onDiagItemScaleDivLineDistMinPixChanged(ZS::System::EDivLineLayer i_layer, int i_iDivLineDistMin_px);
     void onDiagItemScaleChanged(const CScale& i_scale);
 protected slots:
     void onCmbSpacingCurrentIndexChanged(int i_idx);
@@ -79,14 +79,14 @@ protected slots:
     void onEdtScaleMaxValValueChanged(const ZS::PhysVal::CPhysVal& i_physVal);
     void onEdtScaleRangeValueChanged(const ZS::PhysVal::CPhysVal& i_physVal);
 protected: // instance methods
-    void setScaleDir(const CEnumScaleDir& i_scaleDir);
+    void setScaleDir(const ZS::System::CEnumScaleDir& i_scaleDir);
 protected slots:
     void onDiagScaleDestroyed(QObject* i_pObj);
 protected: // instance members
     CDiagScale* m_pDiagScale;
     // Caching values
-    CEnumScaleDir m_scaleDir;
-    CEnumSpacing m_spacing;
+    ZS::System::CEnumScaleDir m_scaleDir;
+    ZS::System::CEnumSpacing m_spacing;
     int m_iMinVal_px;
     int m_iMaxVal_px;
     QVector<int> m_ariDivLineDistMin_px; //[EDivLineLayerCount];

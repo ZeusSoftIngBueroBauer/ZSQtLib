@@ -217,11 +217,11 @@ public: // copy ctor not allowed but diagrams may be cloned
 CDataDiagram* CWdgtDiagram::clone( EDiagramUpdateType i_diagramUpdateType ) const
 //------------------------------------------------------------------------------
 {
-    CDataDiagram* pDiagram = nullptr;
+    CDataDiagram* pDiagramCloned = nullptr;
 
     if( i_diagramUpdateType < EDiagramUpdateTypeWidget )
     {
-        pDiagram = CPixmapDiagram::clone(i_diagramUpdateType);
+        pDiagramCloned = CPixmapDiagram::clone(i_diagramUpdateType);
     }
     else
     {
@@ -322,9 +322,9 @@ CDataDiagram* CWdgtDiagram::clone( EDiagramUpdateType i_diagramUpdateType ) cons
         //pWdgtDiagram->m_pDiagObjEditingByKeyEvent;
         //pWdgtDiagram->m_pDiagObjEditingByMouseEvent;
 
-        pDiagram = pWdgtDiagram;
+        pDiagramCloned = pWdgtDiagram;
     }
-    return pDiagram;
+    return pDiagramCloned;
 
 } // clone
 

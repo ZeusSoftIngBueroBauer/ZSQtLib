@@ -54,22 +54,22 @@ public: // type definitions and constants
     }   EMathOp;
 public: // ctors and dtor
     CDiagObjValueProvider(
-        const QString&       i_strObjName,
-        EMathOp              i_mathOp,
-        CDiagObj*            i_pDiagObjOp1,
-        const CEnumScaleDir& i_scaleDirOp1,
-        CDiagObj*            i_pDiagObjOp2 = nullptr,
-        const CEnumScaleDir& i_scaleDirOp2 = CEnumScaleDir() );
+        const QString& i_strObjName,
+        EMathOp i_mathOp,
+        CDiagObj* i_pDiagObjOp1,
+        const ZS::System::CEnumScaleDir& i_scaleDirOp1,
+        CDiagObj* i_pDiagObjOp2 = nullptr,
+        const ZS::System::CEnumScaleDir& i_scaleDirOp2 = ZS::System::CEnumScaleDir() );
     virtual ~CDiagObjValueProvider();
 public: // instance methods
     void setMathOp( EMathOp i_mathOp );
     EMathOp getMathOp() const;
-    void setOp1( CDiagObj* i_pDiagObj, const CEnumScaleDir& i_scaleDir );
+    void setOp1( CDiagObj* i_pDiagObj, const ZS::System::CEnumScaleDir& i_scaleDir );
     CDiagObj* getDiagObjOp1();
-    EScaleDir getScaleDirOp1() const;
-    void setOp2( CDiagObj* i_pDiagObj, const CEnumScaleDir& i_scaleDir );
+    ZS::System::EScaleDir getScaleDirOp1() const;
+    void setOp2( CDiagObj* i_pDiagObj, const ZS::System::CEnumScaleDir& i_scaleDir );
     CDiagObj* getDiagObjOp2();
-    EScaleDir getScaleDirOp2() const;
+    ZS::System::EScaleDir getScaleDirOp2() const;
     void setValueFormatProvider( const PhysVal::SValueFormatProvider& i_valueFormat );
     PhysVal::SValueFormatProvider getValueFormatProvider() const;
 public: // overridables
@@ -92,9 +92,9 @@ private: // assignment operator not allowed
 protected:  // instance members
     EMathOp                       m_mathOp;
     CDiagObj*                     m_pDiagObjOp1;
-    EScaleDir                     m_scaleDirOp1;
+    ZS::System::EScaleDir         m_scaleDirOp1;
     CDiagObj*                     m_pDiagObjOp2;
-    EScaleDir                     m_scaleDirOp2;
+    ZS::System::EScaleDir         m_scaleDirOp2;
     PhysVal::SValueFormatProvider m_valueFormat;
     PhysVal::CPhysVal             m_physVal;
     QString                       m_strVal;

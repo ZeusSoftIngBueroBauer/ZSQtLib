@@ -117,7 +117,7 @@ signals:
     // Please note that the following signals may only be thrown by the
     // derived classed after updating its internal data.
     void valueChanged( ZS::Diagram::CDiagObj* );
-    void valueChanged( EScaleDir, ZS::Diagram::CDiagObj* );
+    void valueChanged( ZS::System::EScaleDir, ZS::Diagram::CDiagObj* );
     void valueXChanged( ZS::Diagram::CDiagObj* );
     void valueYChanged( ZS::Diagram::CDiagObj* );
     void visibilityChanged( ZS::Diagram::CDiagObj* );
@@ -127,13 +127,13 @@ public: // instance methods
     void setObjName( const QString& i_strObjName );
     QString getObjName() const;
     CDataDiagram* getDiagram();
-    CDiagScale* getDiagScale( const CEnumScaleDir& i_scaleDir );
+    CDiagScale* getDiagScale( const ZS::System::CEnumScaleDir& i_scaleDir );
     virtual void setDiagTrace( CDiagTrace* i_pDiagTrace );
     CDiagTrace* getDiagTrace();
     ELayoutPos getLayoutPos() const;
 public: // overridables
-    virtual PhysVal::CPhysValRes getValRes( const CEnumScaleDir& i_scaleDir ) const;
-    virtual PhysVal::CPhysVal getVal( const CEnumScaleDir& i_scaleDir ) const;
+    virtual PhysVal::CPhysValRes getValRes( const ZS::System::CEnumScaleDir& i_scaleDir ) const;
+    virtual PhysVal::CPhysVal getVal( const ZS::System::CEnumScaleDir& i_scaleDir ) const;
 public: // overridables
     virtual void setAdjustContentRect2DiagPartCenter( bool i_bAdjust );
     virtual bool getAdjustContentRect2DiagPartCenter() const;
@@ -174,29 +174,65 @@ private: // copy ctor not allowed
 private: // assignment operator not allowed
     void operator=( const CDiagObj& );
 protected:  // instance members
+    /*!< Class name which will be set by the constructor.
+         When creating the trace admin object this class name is used. */
     QString m_strClassName;
+    /*!< Name of the diagram object (same as QObject::objectName).
+         The name will also be saved here for easier visualizing the name in debug sessions. */
     QString m_strObjName;
+    /*!< Reference to diagram the object belongs to. */
     CDataDiagram* m_pDiagram;
+    /*!< Reference to diagram trace instance if the object needs to access the values
+         for calculating the internal data. nullptr if object don't need to access
+         the values. */
     CDiagTrace* m_pDiagTrace;
+    /*!< Reference to diagram X and Y scale instance if the object needs to access the scales
+         for calculating the internal data. Either the X or Y scale elements (or both) may
+         be nullptr if object don't need to access a scales. */
     QVector<CDiagScale*> m_arpDiagScale;
+    /*!< Bitmap with flags from Diagram::EUpdate to indicate which process depth need to be recalculated. */
     unsigned int m_uUpdateFlags;
+    /*!< Layout position of the object within the diagram. */
     ELayoutPos m_layoutPos;
+    /*!< Rectangle used by the object to indicate the object within the diagram. */
     QRect m_rectContent;
+    /*!< To decide whether the object needs repainting the previous rectangle are is stored here. */
     QRect m_rectContentPrev;
+    /*!< Flag to indicate that the content rectangle should be adjusted to the center
+         of the diagrams output area. */
     bool m_bAdjustContentRect2DiagPartCenter;
+    /*!< True if the diagram object is visible, false otherwise. */
     bool m_bVisible;
+    /*!< Current state of the object (objects may be focused (highlighted) or their values
+         might be edited (e.g. when moving markers). */
     EDiagObjState m_state;
+    /*!< Flag to indicate whether the object is focusable (markers usually are). */
     bool m_bIsFocusable;
+    /*!< When selecting an object (putting the focus on it) the point the object was touched
+         is stored in "m_ptFocused". The Valid flag indicates whether the stored point is valid. */
     bool m_bPtFocusedValid;
+    /*!< When selecting an object (putting the focus on it) the point the object was touched
+         is stored in "m_ptFocused".  */
     QPoint m_ptFocused;
+    /*!< Flag to indicate whether the object is editable (markers usually are). */
     bool m_bIsEditable;
+    /*!< When selecting an object and starting an edit session (e.g. moving a marker)
+         the point the object was moved to is stored in "m_ptEditSession".
+         The Valid flag indicates whether the stored point is valid. */
     bool m_bPtEditSessionValid;
+    /*!< When starting the edit session (e.g. starting to move a marker) the point the
+         object was moved to is stored in "m_ptEditSession".  */
     QPoint m_ptEditSession;
 protected:  // instance members
+    /*!< Trace admin object for the most common (but not too often) called methods. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
+    /*!< Trace admin object to control trace output of the update method. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObjUpdate;
+    /*!< Trace admin object to control trace output for event methods. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObjEvents;
+    /*!< Trace admin object to control trace output of layout processing. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObjLayout;
+    /*!< Trace admin object to control trace output of the validate and invalidate methods. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObjValidate;
 
 }; // class CDiagObj

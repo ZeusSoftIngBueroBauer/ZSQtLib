@@ -257,7 +257,7 @@ CDiagObj* CDiagObjGrid::clone( CDataDiagram* i_pDiagramTrg ) const
         return nullptr;
     }
 
-    CDiagObjGrid* pDiagObj = new CDiagObjGrid(
+    CDiagObjGrid* pDiagObjCloned = new CDiagObjGrid(
         /* strObjName  */ m_strObjName,
         /* pDiagScaleX */ pDiagScaleX,
         /* pDiagScaleY */ pDiagScaleY );
@@ -265,25 +265,25 @@ CDiagObj* CDiagObjGrid::clone( CDataDiagram* i_pDiagramTrg ) const
     int iLayer;
 
     // Members from base class CDiagObj:
-    pDiagObj->m_layoutPos = m_layoutPos;
-    pDiagObj->m_rectContent = m_rectContent;
-    pDiagObj->m_bAdjustContentRect2DiagPartCenter = m_bAdjustContentRect2DiagPartCenter;
-    pDiagObj->m_bVisible = m_bVisible;
-    pDiagObj->m_state = m_state;
-    pDiagObj->m_bIsFocusable = m_bIsFocusable;
-    pDiagObj->m_bIsEditable = m_bIsEditable;
+    pDiagObjCloned->m_layoutPos = m_layoutPos;
+    pDiagObjCloned->m_rectContent = m_rectContent;
+    pDiagObjCloned->m_bAdjustContentRect2DiagPartCenter = m_bAdjustContentRect2DiagPartCenter;
+    pDiagObjCloned->m_bVisible = m_bVisible;
+    pDiagObjCloned->m_state = m_state;
+    pDiagObjCloned->m_bIsFocusable = m_bIsFocusable;
+    pDiagObjCloned->m_bIsEditable = m_bIsEditable;
 
     // Members from this class:
     for( iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
     {
-        pDiagObj->m_arcol[iLayer] = m_arcol[iLayer];
-        pDiagObj->m_arpenStyle[iLayer] = m_arpenStyle[iLayer];
-        pDiagObj->m_arbShow[iLayer] = m_arbShow[iLayer];
+        pDiagObjCloned->m_arcol[iLayer] = m_arcol[iLayer];
+        pDiagObjCloned->m_arpenStyle[iLayer] = m_arpenStyle[iLayer];
+        pDiagObjCloned->m_arbShow[iLayer] = m_arbShow[iLayer];
     }
 
-    i_pDiagramTrg->addDiagObj(pDiagObj);
+    i_pDiagramTrg->addDiagObj(pDiagObjCloned);
 
-    return pDiagObj;
+    return pDiagObjCloned;
 
 } // clone
 

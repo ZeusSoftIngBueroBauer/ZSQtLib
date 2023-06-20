@@ -54,6 +54,7 @@ list(APPEND _Headers
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysLoggerIdxTree.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysLogServer.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysMath.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysMathScaleDivLines.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysMemLeakDump.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysMsg.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysMsgProtocol.h
@@ -95,6 +96,7 @@ list(APPEND _Sources
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysLoggerIdxTree.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysLogServer.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysMath.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysMathScaleDivLines.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysMemLeakDump.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysMsg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysMsgProtocol.cpp

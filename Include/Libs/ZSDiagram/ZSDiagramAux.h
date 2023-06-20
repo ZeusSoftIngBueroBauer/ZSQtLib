@@ -70,7 +70,7 @@ typedef enum {
 }   EDiagramUpdateType;
 ZSDIAGRAMDLL_API QString diagramUpdateType2Str( int i_iUpdateType );
 
-enum {
+enum EUpdate {
     EUpdateNone                   = static_cast<unsigned int>(0x00), // 0000 0000
     EUpdateLayout                 = static_cast<unsigned int>(0x01), // 0000 0001
     EUpdateData                   = static_cast<unsigned int>(0x02), // 0000 0010
@@ -91,40 +91,6 @@ enum {
 };
 ZSDIAGRAMDLL_API QString updateFlags2Str( unsigned int i_uUpdateFlags );
 
-//==============================================================================
-/*! Scale orientations.
-
-    @see ZS::System::SEnumEntry
-    @see ZS::System::CEnum
-    @see _GRP_BasicConcepts_Enumerations
-*/
-enum class EScaleDir {
-//==============================================================================
-    X,  /*!< X (usually horizontal) scale orientation. */
-    Y   /*!< Y (usually vertical ) scale orientation. */
-};
-template class ZSDIAGRAMDLL_API ZS::System::CEnum<EScaleDir>;
-typedef ZS::System::CEnum<EScaleDir> CEnumScaleDir;
-
-// To make the code more readable:
-const int EScaleDirX = static_cast<int>(EScaleDir::X);
-const int EScaleDirY = static_cast<int>(EScaleDir::Y);
-
-//==============================================================================
-/*! Spacing of diagram scales which could be either linear or logarithmic.
-
-    @see ZS::System::SEnumEntry
-    @see ZS::System::CEnum
-    @see _GRP_BasicConcepts_Enumerations
-*/
-enum class ESpacing {
-//==============================================================================
-    Linear,     /*!< Linear spacing (distance between division lines is equal). */
-    Logarithmic /*!< Loagrithmic spacing (distance between division lines is logarithimic). */
-};
-template class ZSDIAGRAMDLL_API ZS::System::CEnum<ESpacing>;
-typedef ZS::System::CEnum<ESpacing> CEnumSpacing;
-
 
 typedef enum {
     ELayoutPosMin       = 0,
@@ -139,28 +105,6 @@ typedef enum {
 }   ELayoutPos;
 ZSDIAGRAMDLL_API QString layoutPos2Str( int i_iLayoutPos );
 
-//==============================================================================
-/*! For grids in diagrams main and sub division lines may be drawn.
-
-    Main division lines are usually more emphasized than sub division lines.
-    Some of the sub division lines don't need to be drawn as they overlay
-    main division lines.
-
-    @see ZS::System::SEnumEntry
-    @see ZS::System::CEnum
-    @see _GRP_BasicConcepts_Enumerations
-*/
-enum class EDivLineLayer {
-//==============================================================================
-    Main,       /*!< Main division lines. */
-    Sub,        /*!< Sub division lines which are less emphasized than the main lines. */
-};
-template class ZSDIAGRAMDLL_API ZS::System::CEnum<EDivLineLayer>;
-typedef ZS::System::CEnum<EDivLineLayer> CEnumDivLineLayer;
-
-// To make the code more readable:
-const int EDivLineLayerMain = static_cast<int>(EDivLineLayer::Main);
-const int EDivLineLayerSub = static_cast<int>(EDivLineLayer::Sub);
 
 //==============================================================================
 /*! Labeling axis lines is done in three different parts.
@@ -240,12 +184,12 @@ Exported auxiliary methods
 
 ZSDIAGRAMDLL_API double getValRes(
     PhysVal::CUnit* i_pUnitScale,
-    double          i_fScaleMinVal,
-    double          i_fScaleMaxVal,
-    int             i_iScaleRangePix, // zero is allowed
-    ESpacing        i_spacing,
+    double i_fScaleMinVal,
+    double i_fScaleMaxVal,
+    int i_iScaleRangePix, // zero is allowed
+    ZS::System::ESpacing i_spacing,
     PhysVal::CUnit* i_pUnitVal,    // use unit of scale if nullptr
-    double          i_fVal,
+    double i_fVal,
     PhysVal::CUnit* i_pUnitRes );  // use unit of value if nullptr
 
 } // namespace Diagram

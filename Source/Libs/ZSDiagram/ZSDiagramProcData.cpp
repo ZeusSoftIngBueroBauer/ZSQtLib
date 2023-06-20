@@ -185,32 +185,32 @@ public: // copy ctor not allowed but diagrams may be cloned
 CDataDiagram* CDataDiagram::clone( EDiagramUpdateType /*i_diagramUpdateType*/ ) const
 //------------------------------------------------------------------------------
 {
-    CDataDiagram* pDiagram = new CDataDiagram(m_strObjName);
+    CDataDiagram* pDiagramCloned = new CDataDiagram(m_strObjName);
 
-    pDiagram->m_uUpdateFlags = m_uUpdateFlags;
-    pDiagram->m_measState = m_measState;
-    pDiagram->m_measMode = m_measMode;
-    pDiagram->m_iMeasType = m_iMeasType;
+    pDiagramCloned->m_uUpdateFlags = m_uUpdateFlags;
+    pDiagramCloned->m_measState = m_measState;
+    pDiagramCloned->m_measMode = m_measMode;
+    pDiagramCloned->m_iMeasType = m_iMeasType;
 
     for (int idx = 0; idx < CEnumScaleDir::count(); idx++)
     {
-        pDiagram->m_arSpacing[idx] = m_arSpacing[idx];
+        pDiagramCloned->m_arSpacing[idx] = m_arSpacing[idx];
     }
     for (int idx = 0; idx < m_arpDiagScales.size(); ++idx)
     {
-        m_arpDiagScales[idx]->clone(pDiagram);
+        m_arpDiagScales[idx]->clone(pDiagramCloned);
     }
     for (int idx = 0; idx < m_arpDiagTraces.size(); ++idx)
     {
-        m_arpDiagTraces[idx]->clone(pDiagram);
+        m_arpDiagTraces[idx]->clone(pDiagramCloned);
     }
     for (int idx = 0; idx < m_arpDiagObjs.size(); ++idx)
     {
-        CDiagObj* pDiagObj = m_arpDiagObjs[idx]->clone(pDiagram);
+        CDiagObj* pDiagObj = m_arpDiagObjs[idx]->clone(pDiagramCloned);
         QString strDiagObjKey = m_arpDiagObjs[idx]->className() + "::" + m_arpDiagObjs[idx]->getObjName();
-        pDiagram->m_hshpDiagObjs[strDiagObjKey] = pDiagObj;
+        pDiagramCloned->m_hshpDiagObjs[strDiagObjKey] = pDiagObj;
     }
-    return pDiagram;
+    return pDiagramCloned;
 }
 
 /*==============================================================================

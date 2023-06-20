@@ -36,7 +36,7 @@ may result in using the software modules.
 #include "ZSDraw/Drawing/ZSDrawUnits.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysIdxTree.h"
-#include "ZSSys/ZSSysMath.h"
+#include "ZSSys/ZSSysMathScaleDivLines.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
 
@@ -5852,7 +5852,7 @@ void CDrawingScene::drawGrid(QPainter* i_pPainter)
 
     if (m_drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels)
     {
-        iDivLinesCount = Math::getDivLines4LinSpacing(
+        iDivLinesCount = Math::CScaleDivLines::getDivLines4LinSpacing(
             /* fScaleMinVal          */ 0.0,
             /* fScaleMaxVal          */ m_drawingSize.imageSizeInPixels().width(),
             /* iScaleRangePix        */ m_drawingSize.imageSizeInPixels().width(),
@@ -5867,7 +5867,7 @@ void CDrawingScene::drawGrid(QPainter* i_pPainter)
     }
     else
     {
-        iDivLinesCount = Math::getDivLines4LinSpacing(
+        iDivLinesCount = Math::CScaleDivLines::getDivLines4LinSpacing(
             /* fScaleMinVal          */ 0.0,
             /* fScaleMaxVal          */ m_drawingSize.metricImageWidth().getVal(),
             /* iScaleRangePix        */ m_drawingSize.imageSizeInPixels().width(),
@@ -5898,7 +5898,7 @@ void CDrawingScene::drawGrid(QPainter* i_pPainter)
 
     if (m_drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels)
     {
-        iDivLinesCount = Math::getDivLines4LinSpacing(
+        iDivLinesCount = Math::CScaleDivLines::getDivLines4LinSpacing(
             /* fScaleMinVal          */ 0.0,
             /* fScaleMaxVal          */ m_drawingSize.imageSizeInPixels().height(),
             /* iScaleRangePix        */ m_drawingSize.imageSizeInPixels().height(),
@@ -5913,7 +5913,7 @@ void CDrawingScene::drawGrid(QPainter* i_pPainter)
     }
     else
     {
-        iDivLinesCount = Math::getDivLines4LinSpacing(
+        iDivLinesCount = Math::CScaleDivLines::getDivLines4LinSpacing(
             /* fScaleMinVal          */ 0.0,
             /* fScaleMaxVal          */ m_drawingSize.metricImageHeight().getVal(),
             /* iScaleRangePix        */ m_drawingSize.imageSizeInPixels().height(),

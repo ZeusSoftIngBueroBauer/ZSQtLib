@@ -1253,7 +1253,7 @@ CDiagTrace* CDiagTrace::clone( CDataDiagram* i_pDiagramTrg ) const
         return nullptr;
     }
 
-    CDiagTrace* pDiagTrace = new CDiagTrace(
+    CDiagTrace* pDiagTraceCloned = new CDiagTrace(
         /* strObjName  */ m_strObjName,
         /* pDiagScaleX */ pDiagScaleX,
         /* pDiagScaleY */ pDiagScaleY,
@@ -1264,10 +1264,10 @@ CDiagTrace* CDiagTrace::clone( CDataDiagram* i_pDiagramTrg ) const
 
     for( idxScale = 0; idxScale < CEnumScaleDir::count(); idxScale++ )
     {
-        pDiagTrace->m_arphysValArr[idxScale] = m_arphysValArr[idxScale];
+        pDiagTraceCloned->m_arphysValArr[idxScale] = m_arphysValArr[idxScale];
     }
-    i_pDiagramTrg->addDiagTrace(pDiagTrace);
+    i_pDiagramTrg->addDiagTrace(pDiagTraceCloned);
 
-    return pDiagTrace;
+    return pDiagTraceCloned;
 
 } // clone

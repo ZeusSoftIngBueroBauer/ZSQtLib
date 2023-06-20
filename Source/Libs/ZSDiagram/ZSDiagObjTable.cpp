@@ -1869,7 +1869,7 @@ CDiagObj* CDiagObjTable::clone( CDataDiagram* i_pDiagramTrg ) const
         return nullptr;
     }
 
-    CDiagObjTable* pDiagObj = new CDiagObjTable(
+    CDiagObjTable* pDiagObjCloned = new CDiagObjTable(
         /* strObjName   */ m_strObjName,
         /* iRowCountMax */ m_iRowCountMax,
         /* iClmCountMax */ m_iClmCountMax,
@@ -1877,74 +1877,74 @@ CDiagObj* CDiagObjTable::clone( CDataDiagram* i_pDiagramTrg ) const
 
     CDiagObjValueProvider* pDiagObjValueProvider;
 
-    int idxOrientation;
-    int idxRow;
-    int idxClm;
-    int idxCell;
+    //int idxOrientation;
+    //int idxRow;
+    //int idxClm;
+    //int idxCell;
 
     // Members from base class CDiagObj:
-    pDiagObj->m_rectContent = m_rectContent;
-    pDiagObj->m_bAdjustContentRect2DiagPartCenter = m_bAdjustContentRect2DiagPartCenter;
-    pDiagObj->m_bVisible = m_bVisible;
-    pDiagObj->m_state = m_state;
-    pDiagObj->m_bIsFocusable = m_bIsFocusable;
-    pDiagObj->m_bIsEditable = m_bIsEditable;
+    pDiagObjCloned->m_rectContent = m_rectContent;
+    pDiagObjCloned->m_bAdjustContentRect2DiagPartCenter = m_bAdjustContentRect2DiagPartCenter;
+    pDiagObjCloned->m_bVisible = m_bVisible;
+    pDiagObjCloned->m_state = m_state;
+    pDiagObjCloned->m_bIsFocusable = m_bIsFocusable;
+    pDiagObjCloned->m_bIsEditable = m_bIsEditable;
 
     // The following table and cell properties will be set:
-    for( idxOrientation = 0; idxOrientation < CEnumOrientation::count(); idxOrientation++ )
+    for( int idxOrientation = 0; idxOrientation < CEnumOrientation::count(); idxOrientation++ )
     {
-        pDiagObj->m_arbShowGridLines[idxOrientation] = m_arbShowGridLines[idxOrientation];
+        pDiagObjCloned->m_arbShowGridLines[idxOrientation] = m_arbShowGridLines[idxOrientation];
     }
-    pDiagObj->m_colGridLines = m_colGridLines;
-    pDiagObj->m_colText = m_colText;
-    pDiagObj->m_fnt = m_fnt;
-    pDiagObj->m_iIndentTop = m_iIndentTop;
-    pDiagObj->m_iIndentBottom = m_iIndentBottom;
-    pDiagObj->m_iIndentLeft = m_iIndentLeft;
-    pDiagObj->m_iIndentRight = m_iIndentRight;
+    pDiagObjCloned->m_colGridLines = m_colGridLines;
+    pDiagObjCloned->m_colText = m_colText;
+    pDiagObjCloned->m_fnt = m_fnt;
+    pDiagObjCloned->m_iIndentTop = m_iIndentTop;
+    pDiagObjCloned->m_iIndentBottom = m_iIndentBottom;
+    pDiagObjCloned->m_iIndentLeft = m_iIndentLeft;
+    pDiagObjCloned->m_iIndentRight = m_iIndentRight;
     if( m_pFrameStyle != nullptr )
     {
-        pDiagObj->m_pFrameStyle = new SFrameStyle(*m_pFrameStyle);
+        pDiagObjCloned->m_pFrameStyle = new SFrameStyle(*m_pFrameStyle);
     }
-    pDiagObj->m_iMarginTop = m_iMarginTop;
-    pDiagObj->m_iMarginBottom = m_iMarginBottom;
-    pDiagObj->m_iMarginLeft = m_iMarginLeft;
-    pDiagObj->m_iMarginRight = m_iMarginRight;
-    pDiagObj->m_iRowCount = m_iRowCount;
-    pDiagObj->m_iClmCount = m_iClmCount;
-    pDiagObj->m_cxClmIndent = m_cxClmIndent;
+    pDiagObjCloned->m_iMarginTop = m_iMarginTop;
+    pDiagObjCloned->m_iMarginBottom = m_iMarginBottom;
+    pDiagObjCloned->m_iMarginLeft = m_iMarginLeft;
+    pDiagObjCloned->m_iMarginRight = m_iMarginRight;
+    pDiagObjCloned->m_iRowCount = m_iRowCount;
+    pDiagObjCloned->m_iClmCount = m_iClmCount;
+    pDiagObjCloned->m_cxClmIndent = m_cxClmIndent;
 
-    for( idxClm = 0; idxClm < m_iClmCount; idxClm++ )
+    for( int idxClm = 0; idxClm < m_iClmCount; idxClm++ )
     {
-        pDiagObj->m_ariClmAlignmentFlags[idxClm] = m_ariClmAlignmentFlags[idxClm];
-        pDiagObj->m_arcxClmFixedWidth[idxClm] = m_arcxClmFixedWidth[idxClm];
-        pDiagObj->m_arcxClmMinimumWidth[idxClm] = m_arcxClmMinimumWidth[idxClm];
-        pDiagObj->m_arcxClmMaximumWidth[idxClm] = m_arcxClmMaximumWidth[idxClm];
-        pDiagObj->m_arstrClmInvalidValue[idxClm] = m_arstrClmInvalidValue[idxClm];
+        pDiagObjCloned->m_ariClmAlignmentFlags[idxClm] = m_ariClmAlignmentFlags[idxClm];
+        pDiagObjCloned->m_arcxClmFixedWidth[idxClm] = m_arcxClmFixedWidth[idxClm];
+        pDiagObjCloned->m_arcxClmMinimumWidth[idxClm] = m_arcxClmMinimumWidth[idxClm];
+        pDiagObjCloned->m_arcxClmMaximumWidth[idxClm] = m_arcxClmMaximumWidth[idxClm];
+        pDiagObjCloned->m_arstrClmInvalidValue[idxClm] = m_arstrClmInvalidValue[idxClm];
         if( m_arpValueFormatClm[idxClm] != nullptr )
         {
-            pDiagObj->m_arpValueFormatClm[idxClm] = new SValueFormatProvider(*m_arpValueFormatClm[idxClm]);
+            pDiagObjCloned->m_arpValueFormatClm[idxClm] = new SValueFormatProvider(*m_arpValueFormatClm[idxClm]);
         }
-        pDiagObj->m_arcellStyleClm[idxClm] = m_arcellStyleClm[idxClm];
-        pDiagObj->m_ardataTypeClmVal[idxClm] = m_ardataTypeClmVal[idxClm];
-        pDiagObj->m_ardataTypeClmDpl[idxClm] = m_ardataTypeClmDpl[idxClm];
+        pDiagObjCloned->m_arcellStyleClm[idxClm] = m_arcellStyleClm[idxClm];
+        pDiagObjCloned->m_ardataTypeClmVal[idxClm] = m_ardataTypeClmVal[idxClm];
+        pDiagObjCloned->m_ardataTypeClmDpl[idxClm] = m_ardataTypeClmDpl[idxClm];
     }
 
     // The following table and cell properties (dimensions and coordinates)
     // will be calculated within the update method:
-    //pDiagObj->m_cyRowHeight = m_cyRowHeight;
-    //pDiagObj->m_arcxClmWidth = m_arcxClmWidth;
-    //pDiagObj->m_cyTableHeight = m_cyTableHeight;
-    //pDiagObj->m_rectTable = m_rectTable;
+    //pDiagObjCloned->m_cyRowHeight = m_cyRowHeight;
+    //pDiagObjCloned->m_arcxClmWidth = m_arcxClmWidth;
+    //pDiagObjCloned->m_cyTableHeight = m_cyTableHeight;
+    //pDiagObjCloned->m_rectTable = m_rectTable;
 
     // Cell states and data
-    for( idxRow = 0; idxRow < m_iRowCount; idxRow++ )
+    for( int idxRow = 0; idxRow < m_iRowCount; idxRow++ )
     {
-        for( idxClm = 0; idxClm < m_iClmCount; idxClm++ )
+        for( int idxClm = 0; idxClm < m_iClmCount; idxClm++ )
         {
-            idxCell = getCellIdx(idxRow,idxClm);
+            int idxCell = getCellIdx(idxRow,idxClm);
 
-            pDiagObj->m_arariCellAlignmentFlags[idxCell] = m_arariCellAlignmentFlags[idxCell];
+            pDiagObjCloned->m_arariCellAlignmentFlags[idxCell] = m_arariCellAlignmentFlags[idxCell];
 
             if( m_ararpDiagObjValueProvider[idxCell] != nullptr )
             {
@@ -1953,12 +1953,12 @@ CDiagObj* CDiagObjTable::clone( CDataDiagram* i_pDiagramTrg ) const
                 QString strObjName = pDiagObjValueProvider->getObjName();
                 pDiagObjValueProvider = dynamic_cast<CDiagObjValueProvider*>(
                     i_pDiagramTrg->findDiagObj(strClassName, strObjName));
-                pDiagObj->m_ararpDiagObjValueProvider[idxCell] = pDiagObjValueProvider;
+                pDiagObjCloned->m_ararpDiagObjValueProvider[idxCell] = pDiagObjValueProvider;
 
                 if( !QObject::connect(
                     /* pObjSender   */ pDiagObjValueProvider,
                     /* pcSignal     */ SIGNAL(valueChanged(ZS::Diagram::CDiagObj*)),
-                    /* pObjReceiver */ pDiagObj,
+                    /* pObjReceiver */ pDiagObjCloned,
                     /* pcMember     */ SLOT(cellValueChanged(ZS::Diagram::CDiagObj*)) ) )
                 {
                     throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
@@ -1966,27 +1966,27 @@ CDiagObj* CDiagObjTable::clone( CDataDiagram* i_pDiagramTrg ) const
             }
             if( m_ararpValueFormatCell[idxCell] != nullptr )
             {
-                pDiagObj->m_ararpValueFormatCell[idxCell] = new SValueFormatProvider(*m_ararpValueFormatCell[idxCell]);
+                pDiagObjCloned->m_ararpValueFormatCell[idxCell] = new SValueFormatProvider(*m_ararpValueFormatCell[idxCell]);
             }
-            pDiagObj->m_ararcellStyleCell[idxCell] = m_ararcellStyleCell[idxCell];
-            pDiagObj->m_arardataTypeCellVal[idxCell] = m_arardataTypeCellVal[idxCell];
-            pDiagObj->m_arardataTypeCellDpl[idxCell] = m_arardataTypeCellDpl[idxCell];
-            pDiagObj->m_ararvalidityCellData[idxCell] = m_ararvalidityCellData[idxCell];
-            pDiagObj->m_ararstrCellData[idxCell] = m_ararstrCellData[idxCell];
+            pDiagObjCloned->m_ararcellStyleCell[idxCell] = m_ararcellStyleCell[idxCell];
+            pDiagObjCloned->m_arardataTypeCellVal[idxCell] = m_arardataTypeCellVal[idxCell];
+            pDiagObjCloned->m_arardataTypeCellDpl[idxCell] = m_arardataTypeCellDpl[idxCell];
+            pDiagObjCloned->m_ararvalidityCellData[idxCell] = m_ararvalidityCellData[idxCell];
+            pDiagObjCloned->m_ararstrCellData[idxCell] = m_ararstrCellData[idxCell];
             if( m_ararpPxmCellData[idxCell] != nullptr )
             {
-                pDiagObj->m_ararpPxmCellData[idxCell] = new QPixmap(*m_ararpPxmCellData[idxCell]);
+                pDiagObjCloned->m_ararpPxmCellData[idxCell] = new QPixmap(*m_ararpPxmCellData[idxCell]);
             }
             if( m_ararpPhysValCellData[idxCell] != nullptr )
             {
-                pDiagObj->m_ararpPhysValCellData[idxCell] = new CPhysVal(*m_ararpPhysValCellData[idxCell]);
+                pDiagObjCloned->m_ararpPhysValCellData[idxCell] = new CPhysVal(*m_ararpPhysValCellData[idxCell]);
             }
         }
     }
 
-    i_pDiagramTrg->addDiagObj(pDiagObj);
+    i_pDiagramTrg->addDiagObj(pDiagObjCloned);
 
-    return pDiagObj;
+    return pDiagObjCloned;
 
 } // clone
 

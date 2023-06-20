@@ -48,12 +48,12 @@ public: // ctors and dtor
         CDiagScale*    i_pDiagScaleY );
     virtual ~CDiagObjGrid();
 public: // instance methods
-    void show( const CEnumDivLineLayer& i_eLayer );
-    void hide( const CEnumDivLineLayer& i_eLayer );
-    void setCol( const CEnumDivLineLayer& i_eLayer, const QColor& i_col );
-    QColor getCol( const CEnumDivLineLayer& i_eLayer ) const;
-    void setPenStyle( const CEnumDivLineLayer& i_eLayer, const Qt::PenStyle& i_penStyle );
-    Qt::PenStyle getPenStyle( const CEnumDivLineLayer& i_eLayer ) const;
+    void show( const ZS::System::CEnumDivLineLayer& i_eLayer );
+    void hide( const ZS::System::CEnumDivLineLayer& i_eLayer );
+    void setCol( const ZS::System::CEnumDivLineLayer& i_eLayer, const QColor& i_col );
+    QColor getCol( const ZS::System::CEnumDivLineLayer& i_eLayer ) const;
+    void setPenStyle( const ZS::System::CEnumDivLineLayer& i_eLayer, const Qt::PenStyle& i_penStyle );
+    Qt::PenStyle getPenStyle( const ZS::System::CEnumDivLineLayer& i_eLayer ) const;
 public: // overridables of base class CDiagObj
     virtual void show( bool i_bInformDiagram = true );
     virtual void hide( bool i_bInformDiagram = true );

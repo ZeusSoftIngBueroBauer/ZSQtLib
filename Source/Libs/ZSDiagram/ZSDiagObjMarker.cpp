@@ -1412,122 +1412,118 @@ CDiagObj* CDiagObjMarker::clone( CDataDiagram* i_pDiagramTrg ) const
         return nullptr;
     }
 
-    CDiagObjMarker* pDiagObj = new CDiagObjMarker(
+    CDiagObjMarker* pDiagObjCloned = new CDiagObjMarker(
         /* strObjName */ m_strObjName,
         /* pDiagTrace */ pDiagTrace );
 
-    int idxScaleDir;
-    int idxObjState;
-    int idxElement;
-
     // Members from base class CDiagObj:
-    pDiagObj->m_layoutPos = m_layoutPos;
-    pDiagObj->m_rectContent = m_rectContent;
-    pDiagObj->m_bAdjustContentRect2DiagPartCenter = m_bAdjustContentRect2DiagPartCenter;
-    pDiagObj->m_bVisible = m_bVisible;
-    pDiagObj->m_state = m_state;
-    pDiagObj->m_bIsFocusable = m_bIsFocusable;
-    pDiagObj->m_bIsEditable = m_bIsEditable;
+    pDiagObjCloned->m_layoutPos = m_layoutPos;
+    pDiagObjCloned->m_rectContent = m_rectContent;
+    pDiagObjCloned->m_bAdjustContentRect2DiagPartCenter = m_bAdjustContentRect2DiagPartCenter;
+    pDiagObjCloned->m_bVisible = m_bVisible;
+    pDiagObjCloned->m_state = m_state;
+    pDiagObjCloned->m_bIsFocusable = m_bIsFocusable;
+    pDiagObjCloned->m_bIsEditable = m_bIsEditable;
 
     // Members from this class:
 
     // Previous states (before data processing in "update" method)
-    //pDiagObj->m_bVisiblePrev = m_bVisiblePrev;
-    //pDiagObj->m_statePrev = m_statePrev;
+    //pDiagObjCloned->m_bVisiblePrev = m_bVisiblePrev;
+    //pDiagObjCloned->m_statePrev = m_statePrev;
 
     // Calculated cursor position
-    pDiagObj->m_bCalculateCursorPos = m_bCalculateCursorPos;
-    pDiagObj->m_scaleDirCursorMove = m_scaleDirCursorMove;
-    for( idxScaleDir = 0; idxScaleDir < CEnumScaleDir::count(); idxScaleDir++ )
+    pDiagObjCloned->m_bCalculateCursorPos = m_bCalculateCursorPos;
+    pDiagObjCloned->m_scaleDirCursorMove = m_scaleDirCursorMove;
+    for( int idxScaleDir = 0; idxScaleDir < CEnumScaleDir::count(); idxScaleDir++ )
     {
-        //pDiagObj->m_arphysValPrev[idxScaleDir] = m_arphysVal[idxScaleDir];
-        pDiagObj->m_arphysVal[idxScaleDir] = m_arphysVal[idxScaleDir];
+        //pDiagObjCloned->m_arphysValPrev[idxScaleDir] = m_arphysVal[idxScaleDir];
+        pDiagObjCloned->m_arphysVal[idxScaleDir] = m_arphysVal[idxScaleDir];
     }
-    //pDiagObj->m_ptPosPrev = m_ptPos;
-    //pDiagObj->m_ptPos = m_ptPos;
+    //pDiagObjCloned->m_ptPosPrev = m_ptPos;
+    //pDiagObjCloned->m_ptPos = m_ptPos;
 
     // Graphical elements of the marker:
-    for( idxObjState = 0; idxObjState < EDiagObjStateCount; idxObjState++ )
+    for( int idxObjState = 0; idxObjState < EDiagObjStateCount; idxObjState++ )
     {
-        for( idxElement = 0; idxElement < EElementCount; idxElement++ )
+        for( int idxElement = 0; idxElement < EElementCount; idxElement++ )
         {
-            pDiagObj->m_arbShowElement[idxObjState][idxElement] = m_arbShowElement[idxObjState][idxElement];
+            pDiagObjCloned->m_arbShowElement[idxObjState][idxElement] = m_arbShowElement[idxObjState][idxElement];
         }
     }
 
     // - value indication with vertical line
-    for( idxObjState = 0; idxObjState < EDiagObjStateCount; idxObjState++ )
+    for( int idxObjState = 0; idxObjState < EDiagObjStateCount; idxObjState++ )
     {
         if( m_arpLineStyleVer[idxObjState] != nullptr )
         {
-            pDiagObj->m_arpLineStyleVer[idxObjState] = new SLineStyle(*m_arpLineStyleVer[idxObjState]);
+            pDiagObjCloned->m_arpLineStyleVer[idxObjState] = new SLineStyle(*m_arpLineStyleVer[idxObjState]);
         }
     }
-    //pDiagObj->m_rectLineVerPrev = m_rectLineVerPrev;
+    //pDiagObjCloned->m_rectLineVerPrev = m_rectLineVerPrev;
 
     // - value indication with horizontal line
-    for( idxObjState = 0; idxObjState < EDiagObjStateCount; idxObjState++ )
+    for( int idxObjState = 0; idxObjState < EDiagObjStateCount; idxObjState++ )
     {
         if( m_arpLineStyleHor[idxObjState] != nullptr )
         {
-            pDiagObj->m_arpLineStyleHor[idxObjState] = new SLineStyle(*m_arpLineStyleHor[idxObjState]);
+            pDiagObjCloned->m_arpLineStyleHor[idxObjState] = new SLineStyle(*m_arpLineStyleHor[idxObjState]);
         }
     }
-    //pDiagObj->m_rectLineHorPrev = m_rectLineHorPrev;
+    //pDiagObjCloned->m_rectLineHorPrev = m_rectLineHorPrev;
 
     // - value indication with image
-    for( idxObjState = 0; idxObjState < EDiagObjStateCount; idxObjState++ )
+    for( int idxObjState = 0; idxObjState < EDiagObjStateCount; idxObjState++ )
     {
         if( m_arpImageStyle[idxObjState] != nullptr )
         {
-            pDiagObj->m_arpImageStyle[idxObjState] = m_arpImageStyle[idxObjState]->clone();
+            pDiagObjCloned->m_arpImageStyle[idxObjState] = m_arpImageStyle[idxObjState]->clone();
         }
     }
-    //pDiagObj->m_rectImageCurr = m_rectImageCurr;
-    //pDiagObj->m_rectImagePrev = m_rectImagePrev;
+    //pDiagObjCloned->m_rectImageCurr = m_rectImageCurr;
+    //pDiagObjCloned->m_rectImagePrev = m_rectImagePrev;
 
     // - marker label
-    for( idxObjState = 0; idxObjState < EDiagObjStateCount; idxObjState++ )
+    for( int idxObjState = 0; idxObjState < EDiagObjStateCount; idxObjState++ )
     {
         if( m_arpLabelStyle[idxObjState] != nullptr )
         {
-            pDiagObj->m_arpLabelStyle[idxObjState] = new CLabelStyle(*m_arpLabelStyle[idxObjState]);
+            pDiagObjCloned->m_arpLabelStyle[idxObjState] = new CLabelStyle(*m_arpLabelStyle[idxObjState]);
         }
-        pDiagObj->m_ariLabelAligmentFlags[idxObjState] = m_ariLabelAligmentFlags[idxObjState];
-        pDiagObj->m_ariLabelOffset_px[idxObjState] = m_ariLabelOffset_px[idxObjState];
+        pDiagObjCloned->m_ariLabelAligmentFlags[idxObjState] = m_ariLabelAligmentFlags[idxObjState];
+        pDiagObjCloned->m_ariLabelOffset_px[idxObjState] = m_ariLabelOffset_px[idxObjState];
     }
-    //pDiagObj->m_rectLabelCurr = m_rectLabelCurr;
-    //pDiagObj->m_rectLabelPrev = m_rectLabelPrev;
+    //pDiagObjCloned->m_rectLabelCurr = m_rectLabelCurr;
+    //pDiagObjCloned->m_rectLabelPrev = m_rectLabelPrev;
 
     // - value indication with tool tip
-    for( idxObjState = 0; idxObjState < EDiagObjStateCount; idxObjState++ )
+    for( int idxObjState = 0; idxObjState < EDiagObjStateCount; idxObjState++ )
     {
         if( m_arpToolTipStyle[idxObjState] != nullptr )
         {
-            pDiagObj->m_arpToolTipStyle[idxObjState] = new CToolTipStyle(*m_arpToolTipStyle[idxObjState]);
+            pDiagObjCloned->m_arpToolTipStyle[idxObjState] = new CToolTipStyle(*m_arpToolTipStyle[idxObjState]);
         }
     }
-    //pDiagObj->m_fXValToolTip = m_fXValToolTip;
-    //pDiagObj->m_fYValToolTip = m_fYValToolTip;
-    //pDiagObj->m_physUnitXValToolTip = m_physUnitXValToolTip;
-    //pDiagObj->m_physUnitYValToolTip = m_physUnitYValToolTip;
-    //pDiagObj->m_rectToolTipPrev = m_rectToolTipPrev;
-    //pDiagObj->m_rectToolTipArrowPrev = m_rectToolTipArrowPrev;
+    //pDiagObjCloned->m_fXValToolTip = m_fXValToolTip;
+    //pDiagObjCloned->m_fYValToolTip = m_fYValToolTip;
+    //pDiagObjCloned->m_physUnitXValToolTip = m_physUnitXValToolTip;
+    //pDiagObjCloned->m_physUnitYValToolTip = m_physUnitYValToolTip;
+    //pDiagObjCloned->m_rectToolTipPrev = m_rectToolTipPrev;
+    //pDiagObjCloned->m_rectToolTipArrowPrev = m_rectToolTipArrowPrev;
 
     // - indication of focus and editing cursor (StateNormal not used)
-    for( idxObjState = 0; idxObjState < EDiagObjStateCount; idxObjState++ )
+    for( int idxObjState = 0; idxObjState < EDiagObjStateCount; idxObjState++ )
     {
         if( m_arpImageStyleCursor[idxObjState] != nullptr )
         {
-            pDiagObj->m_arpImageStyleCursor[idxObjState] = m_arpImageStyleCursor[idxObjState]->clone();
+            pDiagObjCloned->m_arpImageStyleCursor[idxObjState] = m_arpImageStyleCursor[idxObjState]->clone();
         }
     }
-    //pDiagObj->m_rectImageCursorCurr = m_rectImageCursorCurr;
-    //pDiagObj->m_rectImageCursorPrev = m_rectImageCursorPrev;
+    //pDiagObjCloned->m_rectImageCursorCurr = m_rectImageCursorCurr;
+    //pDiagObjCloned->m_rectImageCursorPrev = m_rectImageCursorPrev;
 
-    i_pDiagramTrg->addDiagObj(pDiagObj);
+    i_pDiagramTrg->addDiagObj(pDiagObjCloned);
 
-    return pDiagObj;
+    return pDiagObjCloned;
 
 } // clone
 

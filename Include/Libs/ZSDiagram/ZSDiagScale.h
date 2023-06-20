@@ -28,6 +28,7 @@ may result in using the software modules.
 #define ZSDiagScale_h
 
 #include "ZSDiagram/ZSDiagramAux.h"
+#include "ZSSys/ZSSysMathScaleDivLines.h"
 
 #include <QtCore/qobject.h>
 
@@ -134,23 +135,23 @@ public: // class methods
     static QString ClassName() { return "CDiagScale"; }
 public: // ctors and dtor
     CDiagScale(
-        const QString& i_strObjName,
-        EScaleDir      i_scaleDir,
-        const CScale&  i_scale);
+        const QString&        i_strObjName,
+        ZS::System::EScaleDir i_scaleDir,
+        const CScale&         i_scale);
     virtual ~CDiagScale();
 public: // overridables
     virtual QString className() { return ClassName(); }
 signals:
-    void spacingChanged( ESpacing i_spacing );
+    void spacingChanged( ZS::System::ESpacing i_spacing );
     void scaleChanged( const CScale& i_scale );
     void geometryChanged( int i_iMinVal_px, int i_iMaxVal_px );
-    void divLineDistMinPixChanged( EDivLineLayer i_layer, int i_iDivLineDistMin_px );
+    void divLineDistMinPixChanged( ZS::System::EDivLineLayer i_layer, int i_iDivLineDistMin_px );
 public: // instance methods (common properties)
     QString getObjName() const;
-    EScaleDir getScaleDir() const;
+    ZS::System::EScaleDir getScaleDir() const;
     CDataDiagram* getDiagram();
-    void setSpacing( const CEnumSpacing& i_spacing );
-    ESpacing getSpacing() const;
+    void setSpacing( const ZS::System::CEnumSpacing& i_spacing );
+    ZS::System::ESpacing getSpacing() const;
 public: // instance methods (scale values, unit and resolution)
     bool isScaleValid() const;
     void setScale( const CScale& i_scale );
@@ -174,19 +175,19 @@ public: // instance methods (geometry in pixels)
     int getMaxValPix() const;
     int getRangePix() const;
 public: // instance methods (calculation of division lines)
-    void setDivLineDistMinPix( const CEnumDivLineLayer& i_eLayer, int i_iDistMinPix );
-    int getDivLineDistMinPix( const CEnumDivLineLayer& i_eLayer ) const;
+    void setDivLineDistMinPix( const ZS::System::CEnumDivLineLayer& i_eLayer, int i_iDistMinPix );
+    int getDivLineDistMinPix( const ZS::System::CEnumDivLineLayer& i_eLayer ) const;
     bool areDivLinesCalculated() const;
-    int getDivLineCount( const CEnumDivLineLayer& i_eLayer ) const;
-    double getDivLineDistMin( const CEnumDivLineLayer& i_eLayer, const PhysVal::CUnit* i_pUnit = nullptr ) const;
-    double getDivLineVal( const CEnumDivLineLayer& i_eLayer, int i_idxDivLine, const PhysVal::CUnit* i_pUnit = nullptr ) const;
-    double getDivLinePix( const CEnumDivLineLayer& i_eLayer, int i_idxDivLine1 ) const;
-    double getDivLineDist( const CEnumDivLineLayer& i_eLayer, int i_idxDivLine1, int i_idxDivLine2, const PhysVal::CUnit* i_pUnit = nullptr ) const;
-    double getDivLineDistPix( const CEnumDivLineLayer& i_eLayer, int i_idxDivLine1, int i_idxDivLine2 ) const;
+    int getDivLineCount( const ZS::System::CEnumDivLineLayer& i_eLayer ) const;
+    double getDivLineDistMin( const ZS::System::CEnumDivLineLayer& i_eLayer, const PhysVal::CUnit* i_pUnit = nullptr ) const;
+    double getDivLineVal( const ZS::System::CEnumDivLineLayer& i_eLayer, int i_idxDivLine, const PhysVal::CUnit* i_pUnit = nullptr ) const;
+    double getDivLinePix( const ZS::System::CEnumDivLineLayer& i_eLayer, int i_idxDivLine ) const;
+    double getDivLineDistVal( const ZS::System::CEnumDivLineLayer& i_eLayer, int i_idxDivLine1, int i_idxDivLine2, const PhysVal::CUnit* i_pUnit = nullptr ) const;
+    double getDivLineDistPix( const ZS::System::CEnumDivLineLayer& i_eLayer, int i_idxDivLine1, int i_idxDivLine2 ) const;
 public: // instance methods (converting values)
     int getValPix( double i_fVal, const PhysVal::CUnit* i_pUnit = nullptr ) const;
-    QString getValString( double i_fVal, const PhysVal::CUnit* i_pUnit = nullptr, int i_iDigitsCountMax = 0, bool i_bUseEngineeringFormat = false ) const;
     double getVal( double i_fPix, const PhysVal::CUnit* i_pUnit = nullptr ) const;
+    QString getValString( double i_fVal, const PhysVal::CUnit* i_pUnit = nullptr, int i_iDigitsCountMax = 0, bool i_bUseEngineeringFormat = false ) const;
 public: // instance methods (zooming)
     void zoomIn( int i_iZoomRectMinValPix, int i_iZoomRectMaxValPix );
     void zoomIn( double i_fMinVal, double i_fMaxVal, PhysVal::CUnit* i_pUnit = nullptr );
@@ -212,46 +213,20 @@ protected:  // instance memthods
     CScale popScale();
     CScale clearScaleStack();
 protected: // instance methods (method tracing)
-    void emit_spacingChanged( ESpacing i_spacing );
+    void emit_spacingChanged( ZS::System::ESpacing i_spacing );
     void emit_scaleChanged( const CScale& i_scale );
     void emit_geometryChanged( int i_iMinVal_px, int i_iMaxVal_px );
-    void emit_divLineDistMinPixChanged( EDivLineLayer i_layer, int i_iDivLineDistMin_px );
-protected:  // class members
-    static bool s_bClassInitialised;
-    static double s_arfScaleRangeFacPixDivValLog[9];
+    void emit_divLineDistMinPixChanged( ZS::System::EDivLineLayer i_layer, int i_iDivLineDistMin_px );
 protected:  // instance members
     /*!< Name of the scale (same as QObject::objectName).
          The name will also be saved here for easier visualizing the name in debug sessions. */
     QString m_strObjName;
     /*!< Reference to diagram the scale belongs to. */
     CDataDiagram* m_pDiagram;
-    /*!< Scale direction (X or Y). Set by the constructor. Not changeable during runtime. */
-    EScaleDir m_scaleDir;
-    /*!< Spacing of the scale (either linear or logarithmic). */
-    ESpacing m_spacing;
     /*!< Scale values (minimum, maximum, unit and resolution). */
     CScale m_scale;
-    /*!< Minimum scale value in pixels. */
-    int m_iMinVal_px;
-    /*!< Maximum scale value in pixels. */
-    int m_iMaxVal_px;
-    /*!< Minimum distance between two successive division lines per layer in pixels
-         used to calculate the division lines in world coordinates (physical values). */
-    QVector<int> m_ariDivLineDistMin_px;
-    /*!< Number of calculated division lines per layer. */
-    QVector<int> m_ariDivLineCount;
-    /*!< Calculated minimum distance between two successive division lines per layer
-         in world coordinates (physical values). Always a whole number multiple of
-         a decimal power. */
-    double m_fDivDistMinVal;
-    /*!< Calculated values of the division lines per layer in world coordinates (physical values).
-         Always a whole number multiple of a decimal power. */
-    QVector<QVector<double>> m_ararfDivLineVal;
-    /*!< Pixel coordinates of the division lines per layer. */
-    QVector<QVector<double>> m_ararfDivLine_px;
-    /*!< Flag to indicate whether the division lines need to be recalculated if 
-         the update method is processed. */
-    bool m_bDivLinesCalculated;
+    /*!< Calculates the division lines of the scale. */
+    ZS::System::Math::CScaleDivLines m_divLines;
     /*!< Current number of scales pushed to the zoom stack. */
     int m_iZoomCount;
     /*!< Pointer to first zoom stack entry. */
@@ -259,7 +234,7 @@ protected:  // instance members
     /*!< Pointer to last zoom stack entry. */
     SZoomStackEntry* m_pZoomStackLast;
 protected:  // instance members
-    /*!< Trace admin object for not often called methods. */
+    /*!< Trace admin object for the most common (but not too often) called methods. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
     /*!< Trace admin object to control trace output of the update method. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObjUpdate;

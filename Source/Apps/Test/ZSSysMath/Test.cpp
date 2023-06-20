@@ -36,6 +36,7 @@ may result in using the software modules.
 #include "ZSTest/ZSTestStepGroup.h"
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysMath.h"
+#include "ZSSys/ZSSysMathScaleDivLines.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 
@@ -1081,7 +1082,7 @@ void CTest::doTestStepCalculateDivLines4LinSpacing( ZS::Test::CTestStep* i_pTest
         double fDivLineDistValResult = 0.0;
         double fDivLineDistPixResult = 0.0;
 
-        int iDivLineCountResult = Math::getDivLines4LinSpacing(
+        int iDivLineCountResult = Math::CScaleDivLines::getDivLines4LinSpacing(
             /* fScaleMinVal          */ fScaleMinVal,
             /* fScaleMaxVal          */ fScaleMaxVal,
             /* iScaleRangePix        */ iScaleRangePix,
@@ -1232,7 +1233,7 @@ void CTest::doTestStepPrecision2ShowUniqueNumbers( ZS::Test::CTestStep* i_pTestS
             }
         }
 
-        int iPrecision = Math::getPrecision2ShowUniqueNumbers(
+        int iPrecision = Math::CScaleDivLines::getPrecision2ShowUniqueNumbers(
             arfVals, iExponentDigits, iPrecisionMin, iPrecisionMax);
         mapResultValues["Precision"] = QString::number(iPrecision);
 
