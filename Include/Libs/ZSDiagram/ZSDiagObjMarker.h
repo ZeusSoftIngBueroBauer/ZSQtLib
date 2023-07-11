@@ -91,14 +91,14 @@ public: // overridables to modify the marker style
     virtual void setImageStyleCursor( EDiagObjState i_diagObjState, CImageStyle* i_pImageStyle );
     virtual CImageStyle* getImageStyleCursor( EDiagObjState i_diagObjState );
 public: // overridables of base class CDiagObj
-    virtual PhysVal::CPhysVal getVal( const ZS::System::CEnumScaleDir& i_scaleDir ) const;
-    virtual bool isFocusable() const;
-    virtual bool isEditable() const;
-    virtual bool isHit( const QPoint& i_pt ) const;
-    virtual void moveEvent( CDiagObjMoveEvent* i_pEv, bool i_bInformDiagram = true );
+    virtual PhysVal::CPhysVal getVal( const ZS::System::CEnumScaleDir& i_scaleDir ) const override;
+    virtual bool isFocusable() const override;
+    virtual bool isEditable() const override;
+    virtual bool isHit( const QPoint& i_pt ) const override;
+    virtual void moveEvent( CDiagObjMoveEvent* i_pEv, bool i_bInformDiagram = true ) override;
 public: // must overridables of base class CDiagObj
-    virtual CDiagObj* clone( CDataDiagram* i_pDiagramTrg ) const;
-    virtual void update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDevice = nullptr );
+    virtual CDiagObj* clone( CDataDiagram* i_pDiagramTrg ) const override;
+    virtual void update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDevice = nullptr ) override;
 protected: // instance methods
     void updateLayout();
     void updateData();

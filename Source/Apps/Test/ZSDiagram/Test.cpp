@@ -816,6 +816,7 @@ void CTest::doTestStepSigGenAddAxisLabels( ZS::Test::CTestStep* i_pTestStep )
             /* strObjName  */ "X-AxisLabel",
             /* pDiagScaleX */ m_pDiagScaleX,
             /* layoutPos   */ ELayoutPosBottom );
+        m_pDiagObjAxisLabelX->setAxisLabel("Frequency");
         m_pWdgtDiagram->addDiagObj(m_pDiagObjAxisLabelX);
     }
 
@@ -825,6 +826,7 @@ void CTest::doTestStepSigGenAddAxisLabels( ZS::Test::CTestStep* i_pTestStep )
             /* strObjName  */ "Y-AxisLabel",
             /* pDiagScaleX */ m_pDiagScaleY,
             /* layoutPos   */ ELayoutPosLeft );
+        m_pDiagObjAxisLabelY->setAxisLabel("Power");
         m_pWdgtDiagram->addDiagObj(m_pDiagObjAxisLabelY);
     }
 

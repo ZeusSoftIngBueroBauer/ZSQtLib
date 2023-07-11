@@ -27,6 +27,7 @@ may result in using the software modules.
 #include "ZSPhysVal/ZSPhysVal.h"
 #include "ZSPhysVal/ZSPhysUnit.h"
 #include "ZSPhysVal/ZSPhysValExceptions.h"
+#include "ZSSys/ZSSysAux.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 

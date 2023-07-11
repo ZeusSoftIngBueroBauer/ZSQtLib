@@ -37,7 +37,8 @@ class CTrcAdminObj;
 
 namespace Math
 {
-/*! @brief Class which calculates division lines for a given scale.
+//******************************************************************************
+/*! @brief Class calculating division lines for a given scale.
 
     The division lines are rounded to a whole number of a decimal power.
 
@@ -70,6 +71,7 @@ namespace Math
         |<DistPix>|                                                                                         |
 */
 class ZSSYSDLL_API CScaleDivLines
+//******************************************************************************
 {
 public: // class methods
     static QString NameSpace() { return "ZS::System::Math"; }
@@ -95,7 +97,12 @@ public: // class methods
         CTrcAdminObj* i_pTrcAdminObj = nullptr);
 public: // ctors and dtor
     CScaleDivLines(const QString& i_strObjName, EScaleDir i_scaleDir);
+    CScaleDivLines(
+        const QString& i_strNameSpace, const QString& i_strClassName,
+        const QString& i_strObjName, EScaleDir i_scaleDir);
     ~CScaleDivLines();
+public: // operators
+    CScaleDivLines& operator = (const CScaleDivLines& i_other);
 public: // instance methods
     QString objectName() const;
 public: // instance methods (setting properties)
@@ -108,7 +115,7 @@ public: // instance methods (setting properties)
     bool setScaleMaxInPix(int i_iMax_px);
     bool setScaleRangeInPix(int i_iRange_px);
 public: // instance methods (setting properties)
-    bool setDivLineDistMinInPix(const CEnumDivLineLayer& i_eLayer, int i_iDist_px);
+    bool setDivLinesDistMinInPix(const CEnumDivLineLayer& i_eLayer, int i_iDist_px);
 public: // instance methods (getting properties)
     bool isValid() const;
     EScaleDir scaleDir() const;
@@ -121,28 +128,38 @@ public: // instance methods (getting properties)
     int scaleMaxInPix() const;
     int scaleRangeInPix() const;
 public: // instance methods (getting properties)
-    int divLineDistMinInPix(const CEnumDivLineLayer& i_eLayer) const;
+    int divLinesDistMinInPix(const CEnumDivLineLayer& i_eLayer) const;
 public: // overridables (to recalculate divsion lines after changing settings)
-    bool divLinesCalculated() const;
-    bool update();
+    virtual bool divLinesCalculated() const;
+    virtual bool update();
 public: // instance methods (returning calculated values)
-    int getDivLineCount(const CEnumDivLineLayer& i_eLayer) const;
-    double getDivLineDistMin(const CEnumDivLineLayer& i_eLayer) const;
+    int getDivLinesCount(const CEnumDivLineLayer& i_eLayer) const;
+    double getDivLinesDistMin(const CEnumDivLineLayer& i_eLayer) const;
     double getDivLineVal(const CEnumDivLineLayer& i_eLayer, int i_idxDivLine) const;
-    double getDivLineInPix(const CEnumDivLineLayer& i_eLayer, int i_idxDivLine) const;
+    int getDivLineInPix(const CEnumDivLineLayer& i_eLayer, int i_idxDivLine) const;
     double getDivLineDistVal(const CEnumDivLineLayer& i_eLayer, int i_idxDivLine1, int i_idxDivLine2) const;
-    double getDivLineDistInPix(const CEnumDivLineLayer& i_eLayer, int i_idxDivLine1, int i_idxDivLine2) const;
+    int getDivLineDistInPix(const CEnumDivLineLayer& i_eLayer, int i_idxDivLine1, int i_idxDivLine2) const;
 public: // instance methods (converting values)
     int getValInPix(double i_fVal) const;
     double getVal(double i_fPix) const;
-public: // instance methods (returning calculated format info)
-    //std::tuple<int, int, int> getFormatInfo() const;
+protected: // overridable auxiliary instance methods
+    virtual void invalidateResults();
 protected: // auxiliary instance methods (to recalculate divsion lines after changing settings)
     void updateLinearSpacing();
     void updateLogarithmicSpacing();
+protected: // auxiliary instance methods
+    void updateDivLinesValsSorted();
 protected:  // class members
     static QVector<double> s_arfScaleRangeFacPixDivValLog;
 protected: // instance members (config values)
+    /*!< If the class is inherited by another class (like CScaleDivLinesMetrics)
+         the name space of the derived class must be passed by the ctor and will
+         be stored here. */
+    QString m_strNameSpace;
+    /*!< If the class is inherited by another class (like CScaleDivLinesMetrics)
+         the class name of the derived class must be passed by the ctor and will
+         be stored here. */
+    QString m_strClassName;
     /*!< Name of the instance. */
     QString m_strObjName;
     /*!< Scale direction (X or Y). Set by the constructor. Not changeable during runtime. */
@@ -161,21 +178,24 @@ protected: // instance members (config values)
     int m_iMax_px;
     /*!< Minimum distance between two successive division lines per layer in pixels
          used to calculate the division lines in world coordinates (physical values). */
-    QVector<int> m_ariDivLineDistMin_px;
-protected: // instance members (calculated)
+    QVector<int> m_ariDivLinesDistMin_px;
+protected: // instance members (calculated results)
     /*!< Flag to indicate whether the calculated values are up to date. */
     bool m_bDivLinesCalculated;
     /*!< Number of calculated division lines per layer. */
-    QVector<int> m_ariDivLineCount;
+    QVector<int> m_ariDivLinesCount;
     /*!< Calculated minimum distance between two successive division lines per layer
          in world coordinates (physical values). Always a whole number multiple of
          a decimal power. */
-    QVector<double> m_arfDivDistMinVal;
+    QVector<double> m_arfDivLinesDistMinVal;
     /*!< Calculated values of the division lines per layer in world coordinates (physical values).
          Always a whole number multiple of a decimal power. */
-    QVector<QVector<double>> m_ararfDivLineVal;
+    QVector<QVector<double>> m_ararfDivLinesVals;
+    /*!< Merged array of main and sub division lines without duplicated (sub division lines
+         overlapping main division lines are not included) in ascending order (lowest values first). */
+    QVector<double> m_arfDivLinesValsSorted;
     /*!< Pixel coordinates of the division lines per layer. */
-    QVector<QVector<double>> m_ararfDivLine_px;
+    QVector<QVector<double>> m_ararfDivLines_px;
     /*!< Trace admin object to control method tracing. */
     CTrcAdminObj* m_pTrcAdminObj;
 

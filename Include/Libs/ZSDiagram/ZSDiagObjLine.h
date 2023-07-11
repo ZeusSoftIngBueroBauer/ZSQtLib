@@ -66,8 +66,8 @@ public: // instance methods
     void setY2( double i_Y2 , ECoordinatesUnit i_pointType = ECoordinatesUnitAxisScale );
     double getY2( ECoordinatesUnit i_pointType = ECoordinatesUnitAxisScale ) const;
 public: // overridables of base class CDiagObj
-    virtual CDiagObj* clone( CDataDiagram* i_pDiagramTrg ) const;
-    virtual void update( unsigned int i_uUpdateFlags , QPaintDevice* i_pPaintDevice = nullptr );
+    virtual CDiagObj* clone( CDataDiagram* i_pDiagramTrg ) const override;
+    virtual void update( unsigned int i_uUpdateFlags , QPaintDevice* i_pPaintDevice = nullptr ) override;
 private: // copy constructor not allowed
     CDiagObjLine( const CDiagObjLine& );
 private: // assignment operator not allowed

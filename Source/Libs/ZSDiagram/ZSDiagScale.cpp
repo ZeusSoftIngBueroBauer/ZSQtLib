@@ -441,7 +441,7 @@ CDiagScale::CDiagScale(
     m_divLines.setScale(
         m_scale.minVal().getVal(), m_scale.maxVal().getVal(),
         m_scale.res().getVal(), 0, 0);
-    m_divLines.setDivLineDistMinInPix(EDivLineLayer::Main, 50);
+    m_divLines.setDivLinesDistMinInPix(EDivLineLayer::Main, 50);
 
 } // ctor
 
@@ -1117,7 +1117,7 @@ void CDiagScale::setDivLineDistMinPix( const CEnumDivLineLayer& i_eLayer, int i_
         /* strMethod    */ "setDivLineDistMinPix",
         /* strAddInfo   */ strTrcMsg );
 
-    if( m_divLines.setDivLineDistMinInPix(i_eLayer, i_iDistMinPix))
+    if( m_divLines.setDivLinesDistMinInPix(i_eLayer, i_iDistMinPix))
     {
         if( m_pDiagram != nullptr )
         {
@@ -1142,7 +1142,7 @@ void CDiagScale::setDivLineDistMinPix( const CEnumDivLineLayer& i_eLayer, int i_
 int CDiagScale::getDivLineDistMinPix( const CEnumDivLineLayer& i_eLayer ) const
 //------------------------------------------------------------------------------
 {
-    return m_divLines.divLineDistMinInPix(i_eLayer);
+    return m_divLines.divLinesDistMinInPix(i_eLayer);
 }
 
 //------------------------------------------------------------------------------
@@ -1173,7 +1173,7 @@ bool CDiagScale::areDivLinesCalculated() const
 int CDiagScale::getDivLineCount( const CEnumDivLineLayer& i_eLayer ) const
 //------------------------------------------------------------------------------
 {
-    return m_divLines.getDivLineCount(i_eLayer);
+    return m_divLines.getDivLinesCount(i_eLayer);
 }
 
 //------------------------------------------------------------------------------
@@ -1203,7 +1203,7 @@ double CDiagScale::getDivLineDistMin(
     if( !areOfSameUnitGroup(m_scale.unit(), unit) ) {
         throw CException(__FILE__, __LINE__, EResultDifferentPhysSizes);
     }
-    double fDivLineDistMin = m_divLines.getDivLineDistMin(i_eLayer);
+    double fDivLineDistMin = m_divLines.getDivLinesDistMin(i_eLayer);
     return m_scale.unit().convertValue(fDivLineDistMin, unit);
 }
 
@@ -1308,6 +1308,28 @@ double CDiagScale::getDivLineDistPix(
 //------------------------------------------------------------------------------
 {
     return m_divLines.getDivLineDistInPix(i_eLayer, i_idxDivLine1, i_idxDivLine2);
+}
+
+/*==============================================================================
+public: // instance mehods (calculation of division lines)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Returns a reference to the internal division lines scaler instance.
+
+    The returned reference may not be changed by the caller as it contains
+    the internal data of the diagram scale object. But the referen may be
+    used to initialize scalers outside of the diagram scale object.
+    For example by the diagram axis label object to assign the current
+    division line calculation result for further data processing like
+    calculating the extent of the division line labels.
+
+    @return Reference to division line scaler.
+*/
+const ZS::System::Math::CScaleDivLines& CDiagScale::getDivLinesScaler() const
+//------------------------------------------------------------------------------
+{
+    return m_divLines;
 }
 
 /*==============================================================================
@@ -1666,6 +1688,13 @@ protected: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Clones the object and adds it to the target diagram.
+
+    @param i_pDiagramTrg [in]
+        Reference to target diagram the cloned object should be added to.
+
+    @return Pointer to cloned object.
+*/
 CDiagScale* CDiagScale::clone( CDataDiagram* i_pDiagramTrg ) const
 //------------------------------------------------------------------------------
 {

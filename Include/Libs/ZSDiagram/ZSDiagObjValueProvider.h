@@ -76,8 +76,8 @@ public: // overridables
     virtual PhysVal::CPhysVal getVal() const;
     virtual QString getValString() const;
 public: // must overridables of base class CDiagObj
-    virtual CDiagObj* clone( CDataDiagram* i_pDiagramTrg ) const;
-    virtual void update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDevice = nullptr );
+    virtual CDiagObj* clone( CDataDiagram* i_pDiagramTrg ) const override;
+    virtual void update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDevice = nullptr ) override;
 protected slots:
     void op1ValueXChanged( ZS::Diagram::CDiagObj* );
     void op1ValueYChanged( ZS::Diagram::CDiagObj* );

@@ -25,8 +25,8 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSPhysVal/ZSPhysValRes.h"
-//#include "ZSPhysVal/ZSPhysVal.h"
 #include "ZSPhysVal/ZSPhysValExceptions.h"
+#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysMath.h"
 #include "ZSSys/ZSSysErrResult.h"
 

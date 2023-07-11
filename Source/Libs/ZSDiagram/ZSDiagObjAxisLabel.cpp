@@ -46,26 +46,26 @@ using namespace ZS::PhysVal;
 class CDiagObjAxisLabel : public CDiagObj
 *******************************************************************************/
 
-#ifdef __linux__
-const int c_iMaxTextExtentAddHeight = 4; // unter Linux werden sonst die Labels abgeschnitten
-const int c_iMaxTextExtentAddWidth  = 0;
-#else
-const int c_iMaxTextExtentAddHeight = 0;
-const int c_iMaxTextExtentAddWidth  = 0;
-#endif
-
-// To make the code more readable:
-const int EDivLineLabelsPartLines = static_cast<int>(EDivLineLabelsPart::Lines);
-const int EDivLineLabelsPartLabels = static_cast<int>(EDivLineLabelsPart::Labels);
-const int EDivLineLabelsPartAxisLabel = static_cast<int>(EDivLineLabelsPart::AxisLabel);
-
-//lint -e834
-
 /*==============================================================================
 public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Creates an axis label instance.
+
+    @param i_strObjName [in]
+        Name of the diagram object. Objects of the same type (same class)
+        must have a unique name.
+    @param i_pDiagScale [in]
+        Reference to diagram scale object the axis label is bound to.
+    @param i_layoutPos [in]
+        Range [Top, Bottom, Left, Right, Center]
+        Defines the layout position of the axis label within the diagram.
+    @param i_strAxisLabel [in]
+        String for the axis label (e.g. "Frequency", "Power", "Time").
+        May be empty if no axis label should be indicated.
+        But the unit may be configured to be output in the axis label area.
+*/
 CDiagObjAxisLabel::CDiagObjAxisLabel(
     const QString& i_strObjName,
     CDiagScale*    i_pDiagScale,
@@ -78,37 +78,36 @@ CDiagObjAxisLabel::CDiagObjAxisLabel(
         /* pDiagScaleX  */ nullptr,
         /* pDiagScaleY  */ nullptr,
         /* layoutPos    */ i_layoutPos ),
+    // config values
     m_pDiagScale(i_pDiagScale),
+    m_iSpacingDiagPartCenter2DivLineLabels(0),
+    m_iSpacingDiagPartCenter2AxisLabel(0),
+    m_iSpacingDivLineLabels2AxisLabel(0),
+    m_arbShowDivLines(CEnumDivLineLayer::count(), false),
+    m_arcolDivLines(CEnumDivLineLayer::count(), Qt::black),
+    m_arpenStyleDivLines(CEnumDivLineLayer::count(), Qt::SolidLine),
+    m_arbShowDivLineLabels(CEnumDivLineLayer::count(), false),
+    m_arcolDivLineLabels(CEnumDivLineLayer::count(), Qt::black),
+    m_arfntDivLineLabels(CEnumDivLineLayer::count()),
+    m_strAxisLabel(i_strAxisLabel),
+    m_bShowAxisLabel(false),
+    m_colAxisLabel(Qt::black),
+    m_fntAxisLabel(),
     m_pUnit(nullptr), // as default: "use best unit"
     m_unitLabels(i_pDiagScale->getScale().unit()),
     m_strPhysUnitLabels(),
-    m_strAxisLabel(i_strAxisLabel),
-    m_iSpaceDiagPartCenter2DivLineLabels(0),
-    m_iSpaceDiagPartCenter2AxisLabel(0),
-    m_iSpaceDivLineLabels2AxisLabel(0),
-    m_ararbShowPartsLayer(CEnumDivLineLabelsPart::count(), QVector<bool>(CEnumDivLineLayer::count(), false)),
-    m_arbShowPartsUnit(CEnumDivLineLabelsPart::count(), false),
-    m_arcolPartsFg(CEnumDivLineLabelsPart::count(), Qt::black),
-    m_arpenStyleParts(CEnumDivLineLabelsPart::count(), Qt::SolidLine),
-    m_arcolPartsBg(CEnumDivLineLabelsPart::count(), Qt::gray),
-    m_arbrushStyleParts(CEnumDivLineLabelsPart::count(), Qt::NoBrush),
-    m_arfntParts(CEnumDivLineLabelsPart::count()),
-    m_iDivLineLabelsDigitsCountMax(-1),
-    m_bUseEngineeringFormat(false),
+    m_bShowUnitAtDivLines(true),
+    m_colUnitAtDivLines(Qt::black),
+    m_fntUnitAtDivLines(),
+    m_bShowUnitAtAxisLabel(false),
+    m_colUnitAtAxisLabel(Qt::black),
+    m_fntUnitAtAxisLabel(),
+    m_divLinesMetrics("DiagAxisLabel" + CEnumScaleDir(i_pDiagScale->getScaleDir()).toString() + i_strObjName, EScaleDir::X),
+    // calculated
+    m_sizeDivLineLabelsMaxTextExtent(),
     m_rectAxisLabel(),
-    m_iDivLineLabelsTrailingDigits(1),
-    m_iDivLineLabelsExponentDigits(0),
-    m_rectDivLineLabelsMaxTextExtent(),
-    m_cxDivLineLabelsSpace(8),
-    m_ariDivLinesCount(CEnumDivLineLayer::count(), 0),
-    m_arariDivLines_px(CEnumDivLineLayer::count(), QVector<int>(0)),
-    m_ararrectDivLineLabels(CEnumDivLineLayer::count(), QVector<QRect>(0)),
-    m_ararstrDivLineLabels(CEnumDivLineLayer::count(), QVector<QString>(0)),
-    m_ararbDivLineLabelsVisible(CEnumDivLineLayer::count(), QVector<bool>(0)),
     m_rectDivLineLabelsPhysUnit(),
     m_bDivLineLabelsPhysUnitVisible(false),
-    m_arstrScaleMinMaxVal(2),
-    m_arrectScaleMinMaxVal(2),
     m_arbScaleMinMaxValVisible(2, false)
 {
     CMethodTracer mthTracer(
@@ -144,50 +143,27 @@ CDiagObjAxisLabel::CDiagObjAxisLabel(
 
     // Overwrite some default values with more useful values.
     // As default all possible parts are shown for the main layer.
-    m_ararbShowPartsLayer[EDivLineLabelsPartLines][EDivLineLayerMain] = true;
-    m_ararbShowPartsLayer[EDivLineLabelsPartLabels][EDivLineLayerMain] = true;
-    if (!i_strAxisLabel.isEmpty()) {
-        m_ararbShowPartsLayer[EDivLineLabelsPartAxisLabel][EDivLineLayerMain] = true;
+    m_arbShowDivLines[EDivLineLayerMain] = true;
+    m_arbShowDivLineLabels[EDivLineLayerMain] = true;
+    m_bShowAxisLabel = !i_strAxisLabel.isEmpty();
+    m_bShowUnitAtDivLines = true;
+
+    if (i_layoutPos == ELayoutPosTop || i_layoutPos == ELayoutPosBottom) {
+        m_iSpacingDiagPartCenter2DivLineLabels = 6;
+        m_iSpacingDivLineLabels2AxisLabel = 4;
     }
-
-    // As default the unit string is output in the area of the axis label.
-    // If a valid label string is passed (e.g. "Frequency") the unit will be
-    // appended to this string and indicated together with the axis label.
-    m_arbShowPartsUnit[EDivLineLabelsPartAxisLabel] = true;
-
-    switch (i_layoutPos)
-    {
-        case ELayoutPosTop:
-        case ELayoutPosBottom:
-        {
-            m_iSpaceDiagPartCenter2DivLineLabels = 6;
-            m_iSpaceDiagPartCenter2AxisLabel = 6;
-            m_iSpaceDivLineLabels2AxisLabel = 4;
-            break;
-        }
-        case ELayoutPosLeft:
-        case ELayoutPosRight:
-        {
-            m_iSpaceDiagPartCenter2DivLineLabels = 4;
-            m_iSpaceDiagPartCenter2AxisLabel = 4;
-            m_iSpaceDivLineLabels2AxisLabel = 2;
-            break;
-        }
-        case ELayoutPosCenter:
-        {
-            m_iSpaceDiagPartCenter2DivLineLabels = 0;
-            m_iSpaceDiagPartCenter2AxisLabel = 0;
-            m_iSpaceDivLineLabels2AxisLabel = 0;
-            break;
-        }
-        default:
-        {
-            break;
-        }
+    else if (i_layoutPos == ELayoutPosLeft || i_layoutPos == ELayoutPosRight) {
+            m_iSpacingDiagPartCenter2DivLineLabels = 4;
+            m_iSpacingDivLineLabels2AxisLabel = 2;
     }
 } // ctor
 
 //------------------------------------------------------------------------------
+/*! @brief Destroys the axis label instance.
+
+    Before destroying the instance the instance must have been removed from
+    the diagram.
+*/
 CDiagObjAxisLabel::~CDiagObjAxisLabel()
 //------------------------------------------------------------------------------
 {
@@ -197,506 +173,1198 @@ CDiagObjAxisLabel::~CDiagObjAxisLabel()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
+    // config values
     m_pDiagScale = nullptr;
+    m_pUnit = nullptr;
+    m_iSpacingDiagPartCenter2DivLineLabels = 0;
+    m_iSpacingDiagPartCenter2AxisLabel = 0;
+    m_iSpacingDivLineLabels2AxisLabel = 0;
+    //m_arbShowDivLines;
+    //m_arcolDivLines;
+    //m_arpenStyleDivLines;
+    //m_arbShowDivLineLabels;
+    //m_arcolDivLineLabels;
+    //m_arfntDivLineLabels;
+    //m_strAxisLabel;
+    m_bShowAxisLabel = false;
+    //m_colAxisLabel;
+    //m_fntAxisLabel;
     m_pUnit = nullptr;
     //m_unitLabels;
     //m_strPhysUnitLabels;
-    //m_strAxisLabel;
-    m_iSpaceDiagPartCenter2DivLineLabels = 0;
-    m_iSpaceDiagPartCenter2AxisLabel = 0;
-    m_iSpaceDivLineLabels2AxisLabel = 0;
-    //m_ararbShowPartsLayer.clear();
-    //m_arbShowPartsUnit.clear();
-    //m_arcolPartsFg.clear();
-    //m_arpenStyleParts.clear();
-    //m_arcolPartsBg.clear();
-    //m_arbrushStyleParts.clear();
-    //m_arfntParts.clear();
-    m_iDivLineLabelsDigitsCountMax = 0;
-    m_bUseEngineeringFormat = false;
+    m_bShowUnitAtDivLines = false;
+    //m_colUnitAtDivLines;
+    //m_fntUnitAtDivLines;
+    m_bShowUnitAtAxisLabel = false;
+    //m_colUnitAtAxisLabel;
+    //m_fntUnitAtAxisLabel;
+    //m_divLinesMetrics;
+    // calculated
+    //m_sizeDivLineLabelsMaxTextExtent;
     //m_rectAxisLabel;
-    m_iDivLineLabelsTrailingDigits = 0;
-    m_iDivLineLabelsExponentDigits = 0;
-    //m_rectDivLineLabelsMaxTextExtent;
-    m_cxDivLineLabelsSpace = 0;
-    //m_ariDivLinesCount.clear();
-    //m_arariDivLines_px.clear();
-    //m_ararrectDivLineLabels.clear();
-    //m_ararstrDivLineLabels.clear();
-    //m_ararbDivLineLabelsVisible.clear();
     //m_rectDivLineLabelsPhysUnit;
     m_bDivLineLabelsPhysUnitVisible = false;
-    //m_arstrScaleMinMaxVal.clear();
-    //m_arrectScaleMinMaxVal.clear();
     //m_arbScaleMinMaxValVisible.clear();
 
 } // dtor
 
 /*==============================================================================
-public: // instance methods
+public: // instance methods (spacing between areas)
 ==============================================================================*/
 
-// Methods affecting the division lines, the labels at the division lines and the axis label
-//==============================================================================
-
 //------------------------------------------------------------------------------
-void CDiagObjAxisLabel::setUnit( CUnit* i_pUnit )
+/*! @brief Sets the space in pixels between the diagrams center part
+           and the division line labels.
+
+    @note For the changed setting to take effect and become visible in the
+          diagrams pixmap you must call the diagrams update method afterwards.
+
+    @param i_iSpacing_px [in]
+        Spacing in pixel to be used.
+*/
+void CDiagObjAxisLabel::setSpacingDiagPartCenter2DivLineLabels( int i_iSpacing_px )
 //------------------------------------------------------------------------------
 {
-    m_pUnit = i_pUnit;
-    invalidate(EUpdateLayoutDataPixmapWidget,true);
+    QString strMthInArgs;
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = QString::number(i_iSpacing_px);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setSpacingDiagPartCenter2DivLineLabels",
+        /* strMthInArgs */ strMthInArgs );
+
+    if (m_iSpacingDiagPartCenter2DivLineLabels != i_iSpacing_px)
+    {
+        m_iSpacingDiagPartCenter2DivLineLabels = i_iSpacing_px;
+        invalidate(EUpdateLayoutDataPixmapWidget, true);
+    }
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Returns the space in pixels between the diagrams center part
+           and the division line labels.
+
+    @return Spacing in pixels.
+*/
+int CDiagObjAxisLabel::spacingDiagPartCenter2DivLineLabels() const
+//------------------------------------------------------------------------------
+{
+    return m_iSpacingDiagPartCenter2DivLineLabels;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the space in pixels between the diagrams center part
+           and the axis label.
+
+    @note For the changed setting to take effect and become visible in the
+          diagrams pixmap you must call the diagrams update method afterwards.
+
+    @param i_iSpacing_px [in]
+        Spacing in pixel to be used.
+*/
+void CDiagObjAxisLabel::setSpacingDiagPartCenter2AxisLabel( int i_iSpacing_px )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = QString::number(i_iSpacing_px);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setSpacingDiagPartCenter2AxisLabel",
+        /* strMthInArgs */ strMthInArgs );
+
+    if (m_iSpacingDiagPartCenter2DivLineLabels != i_iSpacing_px)
+    {
+        m_iSpacingDiagPartCenter2AxisLabel = i_iSpacing_px;
+        invalidate(EUpdateLayoutDataPixmapWidget, true);
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the space in pixels between the diagrams center part
+           and the axis labels.
+
+    @return Spacing in pixels.
+*/
+int CDiagObjAxisLabel::spacingDiagPartCenter2AxisLabel() const
+//------------------------------------------------------------------------------
+{
+    return m_iSpacingDiagPartCenter2AxisLabel;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the space in pixels between the division line labels
+           and the axis label.
+
+    @note For the changed setting to take effect and become visible in the
+          diagrams pixmap you must call the diagrams update method afterwards.
+
+    @param i_iSpacing_px [in]
+        Spacing in pixel to be used.
+*/
+void CDiagObjAxisLabel::setSpacingDivLineLabels2AxisLabel( int i_iSpacing_px )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = QString::number(i_iSpacing_px);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setSpaceDivLineLabels2AxisLabel",
+        /* strMthInArgs */ strMthInArgs );
+
+    if (m_iSpacingDivLineLabels2AxisLabel != i_iSpacing_px)
+    {
+        m_iSpacingDivLineLabels2AxisLabel = i_iSpacing_px;
+        invalidate(EUpdateLayoutDataPixmapWidget, true);
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the space in pixels between the division line labels
+           and the axis label.
+
+    @return Spacing in pixels.
+*/
+int CDiagObjAxisLabel::spacingDivLineLabels2AxisLabel() const
+//------------------------------------------------------------------------------
+{
+    return m_iSpacingDivLineLabels2AxisLabel;
+}
+
+/*==============================================================================
+public: // instance methods (division lines)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Sets visibility of the division lines to false in the given layer.
+
+    @note For the changed setting to take effect and become visible in the
+          diagrams pixmap you must call the diagrams update method afterwards.
+
+    @param i_eLayer [in]
+        Range [Main, Sub]
+        By passing an invalid enum value all layers are affected.
+*/
+void CDiagObjAxisLabel::showDivLines(const CEnumDivLineLayer& i_eLayer)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = QString(i_eLayer.isValid() ? "AllLayers" : i_eLayer.toString());
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "showDivLines",
+        /* strMthInArgs */ strMthInArgs );
+
+    int idxLayerMin = 0;
+    int idxLayerMax = CEnumDivLineLayer::count()-1;
+    if (i_eLayer.isValid()) {
+        idxLayerMin = i_eLayer.enumeratorAsInt();
+        idxLayerMax = i_eLayer.enumeratorAsInt();
+    }
+
+    bool bChanged = false;
+    for (int idxLayer = idxLayerMin; idxLayer <= idxLayerMax; idxLayer++)  {
+        if (!m_arbShowDivLines[idxLayer]) {
+            m_arbShowDivLines[idxLayer] = true;
+            bChanged = true;
+        }
+    }
+    if (bChanged) {
+        invalidate(EUpdateLayoutDataPixmapWidget, true);
+    }
+} // showDivLines
+
+//------------------------------------------------------------------------------
+/*! @brief Sets visibility of the division lines to false in the given layer.
+
+    @note For the changed setting to take effect and become visible in the
+          diagrams pixmap you must call the diagrams update method afterwards.
+
+    @param i_eLayer [in]
+        Range [Main, Sub]
+        By passing an invalid enum value all layers are affected.
+*/
+void CDiagObjAxisLabel::hideDivLines(const CEnumDivLineLayer& i_eLayer)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = QString(i_eLayer.isValid() ? "AllLayers" : i_eLayer.toString());
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "hideDivLines",
+        /* strMthInArgs */ strMthInArgs );
+
+    int idxLayerMin = 0;
+    int idxLayerMax = CEnumDivLineLayer::count()-1;
+    if (i_eLayer.isValid()) {
+        idxLayerMin = i_eLayer.enumeratorAsInt();
+        idxLayerMax = i_eLayer.enumeratorAsInt();
+    }
+
+    bool bChanged = false;
+    for (int idxLayer = idxLayerMin; idxLayer <= idxLayerMax; idxLayer++) {
+        if (m_arbShowDivLines[idxLayer]) {
+            m_arbShowDivLines[idxLayer] = false;
+            bChanged = true;
+        }
+    }
+    if (bChanged) {
+        invalidate(EUpdateLayoutDataPixmapWidget, true);
+    }
+} // hideDivLines
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the foreground color to paint the division lines in the given layer.
+
+    @note For the changed setting to take effect and become visible in the
+          diagrams pixmap you must call the diagrams update method afterwards.
+
+    @param i_color [in]
+        Color to be used.
+    @param i_eLayer [in]
+        Range [Main, Sub]
+        By passing an invalid enum value all layers are affected.
+*/
+void CDiagObjAxisLabel::setDivLinesForegroundColor(
+    const QColor& i_color, const ZS::System::CEnumDivLineLayer& i_eLayer)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = i_color.name() + ", " + QString(i_eLayer.isValid() ? "AllLayers" : i_eLayer.toString());
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setDivLinesForegroundColor",
+        /* strMthInArgs */ strMthInArgs );
+
+    int idxLayerMin = 0;
+    int idxLayerMax = CEnumDivLineLayer::count()-1;
+    if (i_eLayer.isValid()) {
+        idxLayerMin = i_eLayer.enumeratorAsInt();
+        idxLayerMax = i_eLayer.enumeratorAsInt();
+    }
+
+    bool bChanged = false;
+    for (int idxLayer = idxLayerMin; idxLayer <= idxLayerMax; idxLayer++) {
+        if (m_arcolDivLineLabels[idxLayer] != i_color) {
+            m_arcolDivLineLabels[idxLayer] = i_color;
+            bChanged = true;
+        }
+    }
+    if (bChanged) {
+        invalidate(EUpdateLayoutDataPixmapWidget, true);
+    }
+} // setDivLinesForegroundColor
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the foreground color used to paint the division lines in the given layer.
+
+    @param i_eLayer [in]
+        Range [Main, Sub]
+
+    @return Used color.
+*/
+QColor CDiagObjAxisLabel::divLinesForegroundColor(const CEnumDivLineLayer& i_eLayer) const
+//------------------------------------------------------------------------------
+{
+    return m_arcolDivLineLabels[i_eLayer.enumeratorAsInt()];
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the pen style to paint the division lines in the given layer.
+
+    @note For the changed setting to take effect and become visible in the
+          diagrams pixmap you must call the diagrams update method afterwards.
+
+    @param i_penStyle [in]
+        Pen style to be used.
+    @param i_eLayer [in]
+        Range [Main, Sub]
+        By passing an invalid enum value all layers are affected.
+*/
+void CDiagObjAxisLabel::setDivLinesPenStyle(
+    const Qt::PenStyle& i_penStyle, const CEnumDivLineLayer& i_eLayer)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = qPenStyle2Str(i_penStyle) + ", " + QString(i_eLayer.isValid() ? "AllLayers" : i_eLayer.toString());
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setDivLinesPenStyle",
+        /* strMthInArgs */ strMthInArgs );
+
+    int idxLayerMin = 0;
+    int idxLayerMax = CEnumDivLineLayer::count()-1;
+    if (i_eLayer.isValid()) {
+        idxLayerMin = i_eLayer.enumeratorAsInt();
+        idxLayerMax = i_eLayer.enumeratorAsInt();
+    }
+
+    bool bChanged = false;
+    for (int idxLayer = idxLayerMin; idxLayer <= idxLayerMax; idxLayer++) {
+        if (m_arpenStyleDivLines[idxLayer] != i_penStyle) {
+            m_arpenStyleDivLines[idxLayer] = i_penStyle;
+            bChanged = true;
+        }
+    }
+    if (bChanged) {
+        invalidate(EUpdateLayoutDataPixmapWidget, true);
+    }
+} // setDivLinesPenStyle
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the pen style used to paint the division lines in the given layer.
+
+    For the Lines part this will be the line color.
+    For the (division line) Labels and AxisLabel parts this method call makes not much sense.
+
+    @param i_eLayer [in]
+        Range [Main, Sub]
+
+    @return Used color.
+*/
+Qt::PenStyle CDiagObjAxisLabel::divLinesPenStyle(const CEnumDivLineLayer& i_eLayer) const
+//------------------------------------------------------------------------------
+{
+    return m_arpenStyleDivLines[i_eLayer.enumeratorAsInt()];
+}
+
+/*==============================================================================
+public: // instance methods (division line labels)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Sets visibility of the division line labels to true in the given layer.
+
+    @note For the changed setting to take effect and become visible in the
+          diagrams pixmap you must call the diagrams update method afterwards.
+
+    @param i_eLayer [in]
+        Range [Main, Sub]
+        By passing an invalid enum value all layers are affected.
+*/
+void CDiagObjAxisLabel::showDivLineLabels(const CEnumDivLineLayer& i_eLayer)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = QString(i_eLayer.isValid() ? "AllLayers" : i_eLayer.toString());
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "showDivLineLabels",
+        /* strMthInArgs */ strMthInArgs );
+
+    int idxLayerMin = 0;
+    int idxLayerMax = CEnumDivLineLayer::count()-1;
+    if (i_eLayer.isValid()) {
+        idxLayerMin = i_eLayer.enumeratorAsInt();
+        idxLayerMax = i_eLayer.enumeratorAsInt();
+    }
+
+    bool bChanged = false;
+    for (int idxLayer = idxLayerMin; idxLayer <= idxLayerMax; idxLayer++)  {
+        if (!m_arbShowDivLineLabels[idxLayer]) {
+            m_arbShowDivLineLabels[idxLayer] = true;
+            bChanged = true;
+        }
+    }
+    if (bChanged) {
+        invalidate(EUpdateLayoutDataPixmapWidget, true);
+    }
+} // showDivLineLabels
+
+//------------------------------------------------------------------------------
+/*! @brief Sets visibility of the division line labels to false in the given layer.
+
+    @note For the changed setting to take effect and become visible in the
+          diagrams pixmap you must call the diagrams update method afterwards.
+
+    @param i_eLayer [in]
+        Range [Main, Sub]
+        By passing an invalid enum value all layers are affected.
+*/
+void CDiagObjAxisLabel::hideDivLineLabels(const CEnumDivLineLayer& i_eLayer)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = QString(i_eLayer.isValid() ? "AllLayers" : i_eLayer.toString());
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "hideDivLineLabels",
+        /* strMthInArgs */ strMthInArgs );
+
+    int idxLayerMin = 0;
+    int idxLayerMax = CEnumDivLineLayer::count()-1;
+    if (i_eLayer.isValid()) {
+        idxLayerMin = i_eLayer.enumeratorAsInt();
+        idxLayerMax = i_eLayer.enumeratorAsInt();
+    }
+
+    bool bChanged = false;
+    for (int idxLayer = idxLayerMin; idxLayer <= idxLayerMax; idxLayer++) {
+        if (m_arbShowDivLineLabels[idxLayer]) {
+            m_arbShowDivLineLabels[idxLayer] = false;
+            bChanged = true;
+        }
+    }
+    if (bChanged) {
+        invalidate(EUpdateLayoutDataPixmapWidget, true);
+    }
+} // hideDivLineLabels
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the foreground color to output the division line labels in the given layer.
+
+    @note For the changed setting to take effect and become visible in the
+          diagrams pixmap you must call the diagrams update method afterwards.
+
+    @param i_color [in]
+        Color to be used.
+    @param i_eLayer [in]
+        Range [Main, Sub]
+        By passing an invalid enum value all layers are affected.
+*/
+void CDiagObjAxisLabel::setDivLineLabelsColor(
+    const QColor& i_color, const ZS::System::CEnumDivLineLayer& i_eLayer)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = i_color.name() + ", " + QString(i_eLayer.isValid() ? "AllLayers" : i_eLayer.toString());
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setDivLineLabelsColor",
+        /* strMthInArgs */ strMthInArgs );
+
+    int idxLayerMin = 0;
+    int idxLayerMax = CEnumDivLineLayer::count()-1;
+    if (i_eLayer.isValid()) {
+        idxLayerMin = i_eLayer.enumeratorAsInt();
+        idxLayerMax = i_eLayer.enumeratorAsInt();
+    }
+
+    bool bChanged = false;
+    for (int idxLayer = idxLayerMin; idxLayer <= idxLayerMax; idxLayer++) {
+        if (m_arcolDivLineLabels[idxLayer] != i_color) {
+            m_arcolDivLineLabels[idxLayer] = i_color;
+            bChanged = true;
+        }
+    }
+    if (bChanged) {
+        invalidate(EUpdateLayoutDataPixmapWidget, true);
+    }
+} // setDivLineLabelsColor
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the foreground color used to output the division line labels in the given layer.
+
+    @param i_eLayer [in]
+        Range [Main, Sub]
+
+    @return Used color.
+*/
+QColor CDiagObjAxisLabel::divLineLabelsColor(const CEnumDivLineLayer& i_eLayer) const
+//------------------------------------------------------------------------------
+{
+    return m_arcolDivLineLabels[i_eLayer.enumeratorAsInt()];
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the font to output the division line labels in the given layer.
+
+    @note For the changed setting to take effect and become visible in the
+          diagrams pixmap you must call the diagrams update method afterwards.
+
+    @param i_font [in]
+        Font to be used.
+    @param i_eLayer [in]
+        Range [Main, Sub]
+        By passing an invalid enum value all layers are affected.
+*/
+void CDiagObjAxisLabel::setDivLineLabelsFont(
+    const QFont& i_font, const CEnumDivLineLayer& i_eLayer)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = i_font.family() + ", " + QString(i_eLayer.isValid() ? "AllLayers" : i_eLayer.toString());
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setDivLineLabelsFont",
+        /* strMthInArgs */ strMthInArgs );
+
+    int idxLayerMin = 0;
+    int idxLayerMax = CEnumDivLineLayer::count()-1;
+    if (i_eLayer.isValid()) {
+        idxLayerMin = i_eLayer.enumeratorAsInt();
+        idxLayerMax = i_eLayer.enumeratorAsInt();
+    }
+
+    bool bChanged = false;
+    for (int idxLayer = idxLayerMin; idxLayer <= idxLayerMax; idxLayer++) {
+        if (m_arfntDivLineLabels[idxLayer] != i_font) {
+            m_arfntDivLineLabels[idxLayer] = i_font;
+            bChanged = true;
+        }
+    }
+    if (bChanged) {
+        invalidate(EUpdateLayoutDataPixmapWidget, true);
+    }
+} // setDivLineLabelsFont
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the font used to output the division line labels in the given layer.
+
+    For the Lines part this will be the line color.
+    For the (division line) Labels and AxisLabel parts this method call makes not much sense.
+
+    @param i_eLayer [in]
+        Range [Main, Sub]
+
+    @return Used color.
+*/
+QFont CDiagObjAxisLabel::divLineLabelsFont(const CEnumDivLineLayer& i_eLayer) const
+//------------------------------------------------------------------------------
+{
+    return m_arfntDivLineLabels[i_eLayer.enumeratorAsInt()];
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the maximum number of digits to indicate the values of the division lines.
+
+    @note For the changed setting to take effect and become visible in the
+          diagrams pixmap you must call the diagrams update method afterwards.
+
+    @param i_iDigitsCountMax [in]
+        Maximum number of allowed digits to label the division lines.
+*/
+void CDiagObjAxisLabel::setDigitsCountMax( int i_iDigitsCountMax )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = QString::number(i_iDigitsCountMax);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setDigitsCountMax",
+        /* strMthInArgs */ strMthInArgs );
+
+    bool bChanged = m_divLinesMetrics.setDigitsCountMax(i_iDigitsCountMax);
+    if (bChanged) {
+        invalidate(EUpdateLayoutDataPixmapWidget, true);
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the maximum number of digits.
+
+    @Return Maximum number of digits.
+*/
+int CDiagObjAxisLabel::digitsCountMax() const
+//------------------------------------------------------------------------------
+{
+    return m_divLinesMetrics.digitsCountMax();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets whether engineering format should be used to output the values
+           at the division lines.
+
+    @note For the changed setting to take effect and become visible in the
+          diagrams pixmap you must call the diagrams update method afterwards.
+
+    @param i_bUseEngineeringFormat [in]
+        true, if engineering format should be used, false otherwise.
+*/
+void CDiagObjAxisLabel::setUseEngineeringFormat( bool i_bUseEngineeringFormat )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = bool2Str(i_bUseEngineeringFormat);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setUseEngineeringFormat",
+        /* strMthInArgs */ strMthInArgs );
+
+    bool bChanged = m_divLinesMetrics.setUseEngineeringFormat(i_bUseEngineeringFormat);
+    if (bChanged) {
+        invalidate(EUpdateLayoutDataPixmapWidget, true);
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns whether engineering format should be used.
+
+    @Return true, if engineering format should be used, false otherwise.
+*/
+bool CDiagObjAxisLabel::useEngineeringFormat() const
+//------------------------------------------------------------------------------
+{
+    return m_divLinesMetrics.useEngineeringFormat();
+}
+
+/*==============================================================================
+public: // instance methods (axis label)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the axis label (e.g. "Frequency").
+
+    The flag to indicate the axis label is automatically updated depending
+    on whether an empty string is passed.
+
+    @note For the changed setting to take effect and become visible in the
+          diagrams pixmap you must call the diagrams update method afterwards.
+
+    @param i_strLabel [in]
+        String used to label the axis.
+*/
+void CDiagObjAxisLabel::setAxisLabel(const QString& i_strLabel)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = i_strLabel;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setAxisLabel",
+        /* strMthInArgs */ strMthInArgs );
+
+    if (m_strAxisLabel != i_strLabel) {
+        m_strAxisLabel = i_strLabel;
+        if (m_strAxisLabel.isEmpty()) {
+            hideAxisLabel();
+        }
+        else {
+            showAxisLabel();
+        }
+        invalidate(EUpdateLayoutDataPixmapWidget, true);
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the axis label (e.g. "Frequency").
+
+    @Return String used to label the axis.
+*/
+QString CDiagObjAxisLabel::axisLabel() const
+//------------------------------------------------------------------------------
+{
+    return m_strAxisLabel;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets visibility of the axis label to true.
+
+    @note For the changed setting to take effect and become visible in the
+          diagrams pixmap you must call the diagrams update method afterwards.
+*/
+void CDiagObjAxisLabel::showAxisLabel()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "showAxisLabel",
+        /* strMthInArgs */ "" );
+
+    bool bChanged = false;
+    if (!m_bShowAxisLabel) {
+        m_bShowAxisLabel = true;
+        bChanged = true;
+    }
+    if (bChanged) {
+        invalidate(EUpdateLayoutDataPixmapWidget, true);
+    }
+} // showAxisLabel
+
+//------------------------------------------------------------------------------
+/*! @brief Sets visibility of the axis label to false.
+
+    @note For the changed setting to take effect and become visible in the
+          diagrams pixmap you must call the diagrams update method afterwards.
+*/
+void CDiagObjAxisLabel::hideAxisLabel()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "hideAxisLabel",
+        /* strMthInArgs */ "" );
+
+    bool bChanged = false;
+    if (m_bShowAxisLabel) {
+        m_bShowAxisLabel = false;
+        bChanged = true;
+    }
+    if (bChanged) {
+        invalidate(EUpdateLayoutDataPixmapWidget, true);
+    }
+} // hideAxisLabel
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the text color to output the axis label.
+
+    @note For the changed setting to take effect and become visible in the
+          diagrams pixmap you must call the diagrams update method afterwards.
+
+    @param i_color [in]
+        Color to be used.
+*/
+void CDiagObjAxisLabel::setAxisLabelColor(const QColor& i_color)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = i_color.name();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setAxisLabelColor",
+        /* strMthInArgs */ strMthInArgs );
+
+    bool bChanged = false;
+    if (m_colAxisLabel != i_color) {
+        m_colAxisLabel = i_color;
+        bChanged = true;
+    }
+    if (bChanged) {
+        invalidate(EUpdateLayoutDataPixmapWidget, true);
+    }
+} // setAxisLabelColor
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the text color used to output the axis label.
+
+    @return Used color.
+*/
+QColor CDiagObjAxisLabel::axisLabelColor() const
+//------------------------------------------------------------------------------
+{
+    return m_colAxisLabel;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the font to output the axis label.
+
+    @note For the changed setting to take effect and become visible in the
+          diagrams pixmap you must call the diagrams update method afterwards.
+
+    @param i_font [in]
+        Font to be used.
+*/
+void CDiagObjAxisLabel::setAxisLabelFont(const QFont& i_font)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = i_font.family();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setAxisLabelFont",
+        /* strMthInArgs */ strMthInArgs );
+
+    bool bChanged = false;
+    if (m_fntAxisLabel != i_font) {
+        m_fntAxisLabel = i_font;
+        bChanged = true;
+    }
+    if (bChanged) {
+        invalidate(EUpdateLayoutDataPixmapWidget, true);
+    }
+} // setAxisLabelFont
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the font used to output the division line labels in the given layer.
+
+    @return Used color.
+*/
+QFont CDiagObjAxisLabel::axisLabelFont() const
+//------------------------------------------------------------------------------
+{
+    return m_fntAxisLabel;
+}
+
+/*==============================================================================
+public: // instance methods (unit)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the unit to be used for indicating the division line labels.
+
+    @note For the changed setting to take effect and become visible in the
+          diagrams pixmap you must call the diagrams update method afterwards.
+
+    @param i_pUnit [in]
+        If nullptr the axis label uses the "best unit" for human readability
+        to indicate the values (at maximum 3 leading digits).
+        Otherwise the axis labels are indicated in the specified unit.
+*/
+void CDiagObjAxisLabel::setUnit( CUnit* i_pUnit )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = QString(i_pUnit == nullptr ? "null" : i_pUnit->symbol());
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setUnit",
+        /* strMthInArgs */ strMthInArgs );
+
+    if (m_pUnit != i_pUnit) {
+        m_pUnit = i_pUnit;
+        invalidate(EUpdateLayoutDataPixmapWidget, true);
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the configured unit used to indicate the division line labels.
+
+    @return nullptr if the axis label uses the "best unit" for human readability
+            or valid reference to configured unit.
+*/
 CUnit* CDiagObjAxisLabel::getUnit()
 //------------------------------------------------------------------------------
 {
     return m_pUnit;
 }
 
-// Methods for adjusting and reading properties of (almost) all parts
-//==============================================================================
+/*==============================================================================
+public: // instance methods (unit at max scale value)
+==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDiagObjAxisLabel::show(
-    const CEnumDivLineLabelsPart& i_ePart, const CEnumDivLineLayer& i_eLayer )
-//------------------------------------------------------------------------------
-{
-    int iPartMin = i_ePart.enumeratorAsInt();
-    int iPartMax = i_ePart.enumeratorAsInt();
-    int iLayerMin = i_eLayer.enumeratorAsInt();
-    int iLayerMax = i_eLayer.enumeratorAsInt();
+/*! @brief Sets visibility of the axis label to true.
 
-    if( i_ePart.enumeratorAsInt() == CEnumDivLineLabelsPart::count() )
-    {
-        iPartMin = 0;
-        iPartMax = CEnumDivLineLabelsPart::count()-1;
-    }
-    if( i_eLayer.enumeratorAsInt() == CEnumDivLineLayer::count() )
-    {
-        iLayerMin = 0;
-        iLayerMax = CEnumDivLineLayer::count()-1;
-    }
-
-    for( int iPart = iPartMin; iPart <= iPartMax; iPart++ )
-    {
-        for( int iLayer = iLayerMin; iLayer <= iLayerMax; iLayer++ )
-        {
-            if( !m_ararbShowPartsLayer[iPart][iLayer] )
-            {
-                m_ararbShowPartsLayer[iPart][iLayer] = true;
-                invalidate(EUpdateLayoutDataPixmapWidget,true);
-            }
-        }
-    }
-} // show
-
-//------------------------------------------------------------------------------
-void CDiagObjAxisLabel::hide(
-    const CEnumDivLineLabelsPart& i_ePart, const CEnumDivLineLayer& i_eLayer )
+    @note For the changed setting to take effect and become visible in the
+          diagrams pixmap you must call the diagrams update method afterwards.
+*/
+void CDiagObjAxisLabel::showUnitAtDivLines()
 //------------------------------------------------------------------------------
 {
-    int iPartMin = i_ePart.enumeratorAsInt();
-    int iPartMax = i_ePart.enumeratorAsInt();
-    int iLayerMin = i_eLayer.enumeratorAsInt();
-    int iLayerMax = i_eLayer.enumeratorAsInt();
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "showUnitAtDivLines",
+        /* strMthInArgs */ "" );
 
-    if( i_ePart.enumeratorAsInt() == CEnumDivLineLabelsPart::count() )
-    {
-        iPartMin = 0;
-        iPartMax = CEnumDivLineLabelsPart::count()-1;
+    bool bChanged = false;
+    if (!m_bShowUnitAtDivLines) {
+        m_bShowUnitAtDivLines = true;
+        bChanged = true;
     }
-    if( i_eLayer.enumeratorAsInt() == CEnumDivLineLayer::count() )
-    {
-        iLayerMin = 0;
-        iLayerMax = CEnumDivLineLayer::count()-1;
+    if (bChanged) {
+        invalidate(EUpdateLayoutDataPixmapWidget, true);
     }
-
-    for( int iPart = iPartMin; iPart <= iPartMax; iPart++ )
-    {
-        for( int iLayer = iLayerMin; iLayer <= iLayerMax; iLayer++ )
-        {
-            if( m_ararbShowPartsLayer[iPart][iLayer] )
-            {
-                m_ararbShowPartsLayer[iPart][iLayer] = false;
-                invalidate(EUpdateLayoutDataPixmapWidget,true);
-            }
-        }
-    }
-} // hide
+} // showUnitAtDivLines
 
 //------------------------------------------------------------------------------
-void CDiagObjAxisLabel::showUnit( const CEnumDivLineLabelsPart& i_ePart )
+/*! @brief Sets visibility of the axis label to false.
+
+    @note For the changed setting to take effect and become visible in the
+          diagrams pixmap you must call the diagrams update method afterwards.
+*/
+void CDiagObjAxisLabel::hideUnitAtDivLines()
 //------------------------------------------------------------------------------
 {
-    int iPartMin = i_ePart.enumeratorAsInt();
-    int iPartMax = i_ePart.enumeratorAsInt();
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "hideUnitAtDivLines",
+        /* strMthInArgs */ "" );
 
-    if( i_ePart.enumeratorAsInt() == CEnumDivLineLabelsPart::count() )
-    {
-        iPartMin = 0;
-        iPartMax = CEnumDivLineLabelsPart::count()-1;
+    bool bChanged = false;
+    if (m_bShowUnitAtDivLines) {
+        m_bShowUnitAtDivLines = false;
+        bChanged = true;
     }
-
-    for( int iPart = iPartMin; iPart <= iPartMax; iPart++ )
-    {
-        if( !m_arbShowPartsUnit[iPart] )
-        {
-            m_arbShowPartsUnit[iPart] = true;
-            invalidate(EUpdateLayoutDataPixmapWidget,true);
-        }
+    if (bChanged) {
+        invalidate(EUpdateLayoutDataPixmapWidget, true);
     }
-} // showUnit
+} // hideUnitAtDivLines
 
 //------------------------------------------------------------------------------
-void CDiagObjAxisLabel::hideUnit( const CEnumDivLineLabelsPart& i_ePart )
-//------------------------------------------------------------------------------
-{
-    int iPartMin = i_ePart.enumeratorAsInt();
-    int iPartMax = i_ePart.enumeratorAsInt();
+/*! @brief Sets the text color to output the unit at the maximum scale value.
 
-    if( i_ePart.enumeratorAsInt() == CEnumDivLineLabelsPart::count() )
-    {
-        iPartMin = 0;
-        iPartMax = CEnumDivLineLabelsPart::count()-1;
-    }
+    @note For the changed setting to take effect and become visible in the
+          diagrams pixmap you must call the diagrams update method afterwards.
 
-    for( int iPart = iPartMin; iPart <= iPartMax; iPart++ )
-    {
-        if( m_arbShowPartsUnit[iPart] )
-        {
-            m_arbShowPartsUnit[iPart] = false;
-            invalidate(EUpdateLayoutDataPixmapWidget,true);
-        }
-    }
-} // hideUnit
-
-//------------------------------------------------------------------------------
-void CDiagObjAxisLabel::setColFg( const CEnumDivLineLabelsPart& i_ePart, const QColor& i_col )
+    @param i_color [in]
+        Color to be used.
+*/
+void CDiagObjAxisLabel::setUnitColorAtDivLines(const QColor& i_color)
 //------------------------------------------------------------------------------
 {
-    int iPartMin = i_ePart.enumeratorAsInt();
-    int iPartMax = i_ePart.enumeratorAsInt();
-
-    if( i_ePart.enumeratorAsInt() == CEnumDivLineLabelsPart::count() )
-    {
-        iPartMin = 0;
-        iPartMax = CEnumDivLineLabelsPart::count()-1;
+    QString strMthInArgs;
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = i_color.name();
     }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setUnitColorAtDivLines",
+        /* strMthInArgs */ strMthInArgs );
 
-    for( int iPart = iPartMin; iPart <= iPartMax; iPart++ )
-    {
-        if( m_arcolPartsFg[iPart] != i_col )
-        {
-            m_arcolPartsFg[iPart] = i_col;
-            invalidate(EUpdatePixmapWidget,true);
-        }
+    bool bChanged = false;
+    if (m_colUnitAtDivLines != i_color) {
+        m_colUnitAtDivLines = i_color;
+        bChanged = true;
     }
-} // setCol
+    if (bChanged) {
+        invalidate(EUpdateLayoutDataPixmapWidget, true);
+    }
+} // setUnitColorAtDivLines
 
 //------------------------------------------------------------------------------
-QColor CDiagObjAxisLabel::getColFg( const CEnumDivLineLabelsPart& i_ePart ) const
+/*! @brief Returns the text color used to output the unit at the maximum scale value.
+
+    @return Used color.
+*/
+QColor CDiagObjAxisLabel::unitColorAtDivLines() const
 //------------------------------------------------------------------------------
 {
-    return m_arcolPartsFg[i_ePart.enumeratorAsInt()];
+    return m_colUnitAtDivLines;
 }
 
 //------------------------------------------------------------------------------
-void CDiagObjAxisLabel::setPenStyle( const CEnumDivLineLabelsPart& i_ePart, const Qt::PenStyle& i_penStyle )
+/*! @brief Sets the font to output the unit at the maximum scale value.
+
+    @note For the changed setting to take effect and become visible in the
+          diagrams pixmap you must call the diagrams update method afterwards.
+
+    @param i_font [in]
+        Font to be used.
+*/
+void CDiagObjAxisLabel::setUnitFontAtDivLines(const QFont& i_font)
 //------------------------------------------------------------------------------
 {
-    int iPartMin = i_ePart.enumeratorAsInt();
-    int iPartMax = i_ePart.enumeratorAsInt();
-
-    if( i_ePart.enumeratorAsInt() == CEnumDivLineLabelsPart::count() )
-    {
-        iPartMin = 0;
-        iPartMax = CEnumDivLineLabelsPart::count()-1;
+    QString strMthInArgs;
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = i_font.family();
     }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setUnitFontAtDivLines",
+        /* strMthInArgs */ strMthInArgs );
 
-    for( int iPart = iPartMin; iPart <= iPartMax; iPart++ )
-    {
-        if( m_arpenStyleParts[iPart] != i_penStyle )
-        {
-            m_arpenStyleParts[iPart] = i_penStyle;
-            invalidate(EUpdatePixmapWidget,true);
-        }
+    bool bChanged = false;
+    if (m_fntUnitAtDivLines != i_font) {
+        m_fntUnitAtDivLines = i_font;
+        bChanged = true;
     }
-} // setPenStyle
-
-//------------------------------------------------------------------------------
-Qt::PenStyle CDiagObjAxisLabel::getPenStyle( const CEnumDivLineLabelsPart& i_ePart ) const
-//------------------------------------------------------------------------------
-{
-    return m_arpenStyleParts[i_ePart.enumeratorAsInt()];
-}
-
-//------------------------------------------------------------------------------
-void CDiagObjAxisLabel::setColBg( const CEnumDivLineLabelsPart& i_ePart, const QColor& i_col )
-//------------------------------------------------------------------------------
-{
-    int iPartMin = i_ePart.enumeratorAsInt();
-    int iPartMax = i_ePart.enumeratorAsInt();
-
-    if( i_ePart.enumeratorAsInt() == CEnumDivLineLabelsPart::count() )
-    {
-        iPartMin = 0;
-        iPartMax = CEnumDivLineLabelsPart::count()-1;
+    if (bChanged) {
+        invalidate(EUpdateLayoutDataPixmapWidget, true);
     }
+} // setUnitFontAtDivLines
 
-    for( int iPart = iPartMin; iPart <= iPartMax; iPart++ )
-    {
-        if( m_arcolPartsBg[iPart] != i_col )
-        {
-            m_arcolPartsBg[iPart] = i_col;
-            invalidate(EUpdatePixmapWidget,true);
-        }
+//------------------------------------------------------------------------------
+/*! @brief Returns the font used to output the unit at the maximum scale value.
+
+    @return Used color.
+*/
+QFont CDiagObjAxisLabel::unitFontAtDivLines() const
+//------------------------------------------------------------------------------
+{
+    return m_fntUnitAtDivLines;
+}
+
+/*==============================================================================
+public: // instance methods (unit at axis label)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Sets visibility of the axis label to true.
+
+    @note For the changed setting to take effect and become visible in the
+          diagrams pixmap you must call the diagrams update method afterwards.
+*/
+void CDiagObjAxisLabel::showUnitAtAxisLabel()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "showUnitAtAxisLabel",
+        /* strMthInArgs */ "" );
+
+    bool bChanged = false;
+    if (!m_bShowUnitAtAxisLabel) {
+        m_bShowUnitAtAxisLabel = true;
+        bChanged = true;
     }
-} // setColBg
-
-//------------------------------------------------------------------------------
-QColor CDiagObjAxisLabel::getColBg( const CEnumDivLineLabelsPart& i_ePart ) const
-//------------------------------------------------------------------------------
-{
-    return m_arcolPartsBg[i_ePart.enumeratorAsInt()];
-}
-
-//------------------------------------------------------------------------------
-void CDiagObjAxisLabel::setBrushStyle( const CEnumDivLineLabelsPart& i_ePart, const Qt::BrushStyle& i_brushStyle )
-//------------------------------------------------------------------------------
-{
-    int iPartMin = i_ePart.enumeratorAsInt();
-    int iPartMax = i_ePart.enumeratorAsInt();
-
-    if( i_ePart.enumeratorAsInt() == CEnumDivLineLabelsPart::count() )
-    {
-        iPartMin = 0;
-        iPartMax = CEnumDivLineLabelsPart::count()-1;
+    if (bChanged) {
+        invalidate(EUpdateLayoutDataPixmapWidget, true);
     }
+} // showUnitAtAxisLabel
 
-    for( int iPart = iPartMin; iPart <= iPartMax; iPart++ )
-    {
-        if( m_arbrushStyleParts[iPart] != i_brushStyle )
-        {
-            m_arbrushStyleParts[iPart] = i_brushStyle;
-            invalidate(EUpdatePixmapWidget,true);
-        }
+//------------------------------------------------------------------------------
+/*! @brief Sets visibility of the axis label to false.
+
+    @note For the changed setting to take effect and become visible in the
+          diagrams pixmap you must call the diagrams update method afterwards.
+*/
+void CDiagObjAxisLabel::hideUnitAtAxisLabel()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "hideUnitAtAxisLabel",
+        /* strMthInArgs */ "" );
+
+    bool bChanged = false;
+    if (m_bShowUnitAtAxisLabel) {
+        m_bShowUnitAtAxisLabel = false;
+        bChanged = true;
     }
-} // setBrushStyle
-
-//------------------------------------------------------------------------------
-Qt::BrushStyle CDiagObjAxisLabel::getBrushStyle( const CEnumDivLineLabelsPart& i_ePart ) const
-//------------------------------------------------------------------------------
-{
-    return m_arbrushStyleParts[i_ePart.enumeratorAsInt()];
-}
-
-//------------------------------------------------------------------------------
-void CDiagObjAxisLabel::setFont( const CEnumDivLineLabelsPart& i_ePart, const QFont& i_fnt )
-//------------------------------------------------------------------------------
-{
-    int iPartMin = i_ePart.enumeratorAsInt();
-    int iPartMax = i_ePart.enumeratorAsInt();
-
-    if( i_ePart.enumeratorAsInt() == CEnumDivLineLabelsPart::count() )
-    {
-        iPartMin = 0;
-        iPartMax = CEnumDivLineLabelsPart::count()-1;
+    if (bChanged) {
+        invalidate(EUpdateLayoutDataPixmapWidget, true);
     }
+} // hideUnitAtAxisLabel
 
-    for( int iPart = iPartMin; iPart <= iPartMax; iPart++ )
-    {
-        m_arfntParts[iPart] = i_fnt;
-        invalidate(EUpdateLayoutDataPixmapWidget,true);
+//------------------------------------------------------------------------------
+/*! @brief Sets the text color to output the unit at the axis label.
+
+    @note For the changed setting to take effect and become visible in the
+          diagrams pixmap you must call the diagrams update method afterwards.
+
+    @param i_color [in]
+        Color to be used.
+*/
+void CDiagObjAxisLabel::setUnitColorAtAxisLabel(const QColor& i_color)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = i_color.name();
     }
-} // setFont
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setUnitColorAtAxisLabel",
+        /* strMthInArgs */ strMthInArgs );
+
+    bool bChanged = false;
+    if (m_colUnitAtAxisLabel != i_color) {
+        m_colUnitAtAxisLabel = i_color;
+        bChanged = true;
+    }
+    if (bChanged) {
+        invalidate(EUpdateLayoutDataPixmapWidget, true);
+    }
+} // setUnitColorAtAxisLabel
 
 //------------------------------------------------------------------------------
-QFont CDiagObjAxisLabel::getFont( const CEnumDivLineLabelsPart& i_ePart ) const
+/*! @brief Returns the text color used to output the unit at the axis label.
+
+    @return Used color.
+*/
+QColor CDiagObjAxisLabel::unitColorAtAxisLabel() const
 //------------------------------------------------------------------------------
 {
-    return m_arfntParts[i_ePart.enumeratorAsInt()];
-}
-
-// Methods affecting the labels at the division lines
-//==============================================================================
-
-//------------------------------------------------------------------------------
-void CDiagObjAxisLabel::setDigitsCountMax( int i_iDigitsCountMax )
-//------------------------------------------------------------------------------
-{
-    m_iDivLineLabelsDigitsCountMax = i_iDigitsCountMax;
-    invalidate(EUpdateLayoutDataPixmapWidget,true);
-}
-
-//------------------------------------------------------------------------------
-int CDiagObjAxisLabel::getDigitsCountMax() const
-//------------------------------------------------------------------------------
-{
-    return m_iDivLineLabelsDigitsCountMax;
-}
-
-//------------------------------------------------------------------------------
-void CDiagObjAxisLabel::setUseEngineeringFormat( bool i_bUseEngineeringFormat )
-//------------------------------------------------------------------------------
-{
-    m_bUseEngineeringFormat = i_bUseEngineeringFormat;
-    invalidate(EUpdateLayoutDataPixmapWidget,true);
+    return m_colUnitAtAxisLabel;
 }
 
 //------------------------------------------------------------------------------
-bool CDiagObjAxisLabel::getUseEngineeringFormat() const
+/*! @brief Sets the font to output the unit at the axis label.
+
+    @note For the changed setting to take effect and become visible in the
+          diagrams pixmap you must call the diagrams update method afterwards.
+
+    @param i_font [in]
+        Font to be used.
+*/
+void CDiagObjAxisLabel::setUnitFontAtAxisLabel(const QFont& i_font)
 //------------------------------------------------------------------------------
 {
-    return m_bUseEngineeringFormat;
-}
+    QString strMthInArgs;
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = i_font.family();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setUnitFontAtAxisLabel",
+        /* strMthInArgs */ strMthInArgs );
 
-// String to be shown at the axis label
-//==============================================================================
+    bool bChanged = false;
+    if (m_fntUnitAtAxisLabel != i_font) {
+        m_fntUnitAtAxisLabel = i_font;
+        bChanged = true;
+    }
+    if (bChanged) {
+        invalidate(EUpdateLayoutDataPixmapWidget, true);
+    }
+} // setUnitFontAtAxisLabel
 
 //------------------------------------------------------------------------------
-void CDiagObjAxisLabel::setAxisLabel( const QString& i_strLabel )
+/*! @brief Returns the font used to output the unit at the axis label.
+
+    @return Used color.
+*/
+QFont CDiagObjAxisLabel::unitFontAtAxisLabel() const
 //------------------------------------------------------------------------------
 {
-    m_strAxisLabel = i_strLabel;
-    invalidate(EUpdateLayoutDataPixmapWidget,true);
+    return m_fntUnitAtAxisLabel;
 }
-
-//------------------------------------------------------------------------------
-QString CDiagObjAxisLabel::getAxisLabel() const
-//------------------------------------------------------------------------------
-{
-    return m_strAxisLabel;
-}
-
-// Space between the diagrams center part and the division line labels
-//==============================================================================
-
-//------------------------------------------------------------------------------
-void CDiagObjAxisLabel::setSpaceDiagPartCenter2DivLineLabels( int i_iSpace )
-//------------------------------------------------------------------------------
-{
-    m_iSpaceDiagPartCenter2DivLineLabels = i_iSpace;
-    invalidate(EUpdateLayoutDataPixmapWidget,true);
-}
-
-//------------------------------------------------------------------------------
-int CDiagObjAxisLabel::getSpaceDiagPartCenter2DivLineLabels() const
-//------------------------------------------------------------------------------
-{
-    return m_iSpaceDiagPartCenter2DivLineLabels;
-}
-
-// Space between the diagrams center part and the axis label
-//==============================================================================
-
-//------------------------------------------------------------------------------
-void CDiagObjAxisLabel::setSpaceDiagPartCenter2AxisLabel( int i_iSpace )
-//------------------------------------------------------------------------------
-{
-    m_iSpaceDiagPartCenter2AxisLabel = i_iSpace;
-    invalidate(EUpdateLayoutDataPixmapWidget,true);
-}
-
-//------------------------------------------------------------------------------
-int CDiagObjAxisLabel::getSpaceDiagPartCenter2AxisLabel() const
-//------------------------------------------------------------------------------
-{
-    return m_iSpaceDiagPartCenter2AxisLabel;
-}
-
-// Space between the division line labels and the axis label
-//==============================================================================
-
-//------------------------------------------------------------------------------
-void CDiagObjAxisLabel::setSpaceDivLineLabels2AxisLabel( int i_iSpace )
-//------------------------------------------------------------------------------
-{
-    m_iSpaceDivLineLabels2AxisLabel = i_iSpace;
-    invalidate(EUpdateLayoutDataPixmapWidget,true);
-}
-
-//------------------------------------------------------------------------------
-int CDiagObjAxisLabel::getSpaceDivLineLabels2AxisLabel() const
-//------------------------------------------------------------------------------
-{
-    return m_iSpaceDivLineLabels2AxisLabel;
-}
-
-////------------------------------------------------------------------------------
-//void CDiagObjAxisLabel::addAxisLabelToBeConsidered( CDiagObjAxisLabel* i_pDiagObjAxisLabel )
-////------------------------------------------------------------------------------
-//{
-//    if( m_arpAxisLabelsToBeConsidered == nullptr )
-//    {
-//        m_iAxisLabelsToBeConsideredListSize = 2;
-//        m_iAxisLabelsToBeConsidered = 0;
-//        m_arpAxisLabelsToBeConsidered = new CDiagObjAxisLabel*[m_iAxisLabelsToBeConsideredListSize];
-//
-//        for( int idxAxisLabel = 0; idxAxisLabel < m_iAxisLabelsToBeConsideredListSize; idxAxisLabel++ )
-//        {
-//            m_arpAxisLabelsToBeConsidered[idxAxisLabel] = nullptr;
-//        }
-//    }
-//    else if( m_iAxisLabelsToBeConsidered == m_iAxisLabelsToBeConsideredListSize )
-//    {
-//        CDiagObjAxisLabel** arpAxisLabelsToBeConsidered = m_arpAxisLabelsToBeConsidered;
-//        int iAxisLabelsToBeConsideredListSize = m_iAxisLabelsToBeConsideredListSize;
-//
-//        m_iAxisLabelsToBeConsideredListSize += 2;
-//        m_arpAxisLabelsToBeConsidered = new CDiagObjAxisLabel*[m_iAxisLabelsToBeConsideredListSize];
-//
-//        int idxAxisLabel = 0;
-//        for( ; idxAxisLabel < iAxisLabelsToBeConsideredListSize; idxAxisLabel++ )
-//        {
-//            m_arpAxisLabelsToBeConsidered[idxAxisLabel] = arpAxisLabelsToBeConsidered[idxAxisLabel];
-//        }
-//        for( ; idxAxisLabel < m_iAxisLabelsToBeConsideredListSize; idxAxisLabel++ )
-//        {
-//            m_arpAxisLabelsToBeConsidered[idxAxisLabel] = nullptr;
-//        }
-//        delete arpAxisLabelsToBeConsidered;
-//        arpAxisLabelsToBeConsidered = nullptr;
-//    }
-//    m_arpAxisLabelsToBeConsidered[m_iAxisLabelsToBeConsidered] = i_pDiagObjAxisLabel;
-//    m_iAxisLabelsToBeConsidered++;
-//
-//} // addAxisLabelToBeConsidered
-//
-////------------------------------------------------------------------------------
-//void CDiagObjAxisLabel::removeAxisLabelToBeConsidered( const CDiagObjAxisLabel* i_pDiagObjAxisLabel )
-////------------------------------------------------------------------------------
-//{
-//    if( m_arpAxisLabelsToBeConsidered == nullptr )
-//    {
-//        return;
-//    }
-//
-//    int idxAxisLabel;
-//
-//    for( idxAxisLabel = 0; idxAxisLabel < m_iAxisLabelsToBeConsidered; idxAxisLabel++ )
-//    {
-//        if( m_arpAxisLabelsToBeConsidered[idxAxisLabel] == i_pDiagObjAxisLabel )
-//        {
-//            break;
-//        }
-//    }
-//    if( idxAxisLabel < m_iAxisLabelsToBeConsidered )
-//    {
-//        for( ; idxAxisLabel < m_iAxisLabelsToBeConsidered-1; idxAxisLabel++ )
-//        {
-//            m_arpAxisLabelsToBeConsidered[idxAxisLabel] = m_arpAxisLabelsToBeConsidered[idxAxisLabel+1];
-//        }
-//        m_iAxisLabelsToBeConsidered--;
-//    }
-//
-//} // removeAxisLabelToBeConsidered
 
 /*==============================================================================
 public: // overridables of base class CDiagObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Overrides CDiagObj::show.
+
+    Sets the visibility of the axis label to true.
+
+    @note For the changed setting to take effect and become visible in the
+          diagrams pixmap you must call the diagrams update method afterwards.
+
+    @param i_bInformDiagram [in]
+        true if the diagram should be informed that the objects data has been changed,
+        false otherwise.
+*/
 void CDiagObjAxisLabel::show( bool i_bInformDiagram )
 //------------------------------------------------------------------------------
 {
@@ -704,6 +1372,17 @@ void CDiagObjAxisLabel::show( bool i_bInformDiagram )
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Overrides CDiagObj::hide.
+
+    Sets the visibility of the axis label to false.
+
+    @note For the changed setting to take effect and become visible in the
+          diagrams pixmap you must call the diagrams update method afterwards.
+
+    @param i_bInformDiagram [in]
+        true if the diagram should be informed that the objects data has been changed,
+        false otherwise.
+*/
 void CDiagObjAxisLabel::hide( bool i_bInformDiagram )
 //------------------------------------------------------------------------------
 {
@@ -711,11 +1390,25 @@ void CDiagObjAxisLabel::hide( bool i_bInformDiagram )
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Overrides CDiagObj::sizeHint to return the width and height of the object.
+
+    This method is used for layout processing in the diagram.
+
+    Depending on the internally calculated data during layout processing the
+    desired width and height is returned.
+
+    For the axis label the area for the division lines, the strings to indicate
+    the values at the division lines, the axis label, the unit string and the
+    minimum and maximum scale value may have to be taken into account together
+    with the used spacings between the different areas.
+
+    The fonts used for the labels must also be taken into account.
+
+    @return Desired size of the object.
+*/
 QSize CDiagObjAxisLabel::sizeHint()
 //------------------------------------------------------------------------------
 {
-    QString strTrcMsg;
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjLayout,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -725,108 +1418,148 @@ QSize CDiagObjAxisLabel::sizeHint()
     int cxWidth  = 0;
     int cyHeight = 0;
 
-    if( m_pDiagram == nullptr )
+    if (m_pDiagram == nullptr)
     {
         return QSize(0,0);
     }
 
-    if( isVisible() )
+    if (isVisible())
     {
         const CPixmapDiagram* pPixmapDiagram = nullptr;
 
         // As a matter of fact there is no sense in adding an axis label object to
         // a diagram just designed to analyze data.
-        if( m_pDiagram->getUpdateType() >= EDiagramUpdateTypePixmap )
+        if (m_pDiagram->getUpdateType() >= EDiagramUpdateTypePixmap)
         {
             pPixmapDiagram = dynamic_cast<const CPixmapDiagram*>(m_pDiagram);
         }
-        if( pPixmapDiagram != nullptr )
+        if (pPixmapDiagram != nullptr)
         {
-            if( m_pDiagScale->getScaleDir() == EScaleDir::X )
+            bool bShowDivLineLabels = m_arbShowDivLineLabels[EDivLineLayerMain];
+
+            if (m_pDiagScale->getScaleDir() == EScaleDir::X)
             {
-                cxWidth  = pPixmapDiagram->getWidth();
+                // The axis label coveres the whole horizontal extent of the diagram.
+                cxWidth = pPixmapDiagram->getWidth();
+
+                // The height need to be calculated.
                 cyHeight = 0;
 
-                if( m_ararbShowPartsLayer[EDivLineLabelsPartLabels][EDivLineLayerMain] )
+                // The configured space between the diagrams center part and the axis label
+                // is not taken into account if a spacing between the division line labels
+                // and the axis label is set and both parts are visible.
+                // The space between the diagrams center part and the division line labels
+                // as well as the space between the division line label and the axis label
+                // don't need to be taken into account if a space between the diagrams center
+                // part and the axis label is configured.
+
+                /*
+                     +---------|---------|---------|---------|---------|---------|
+                         m_iSpacingDiagPartCenter2DivLineLabels          |
+                    0.0  LabelsMaxTextExtent.height        40.0        |
+                         m_iSpacingDivLineLabels2AxisLabel        m_iSpacingDiagPartCenter2AxisLabel
+                                      Frequency/MHz
+                */
+
+                // If axis label is indicated ...
+                if (m_bShowAxisLabel || m_bShowUnitAtAxisLabel)
                 {
-                    if( m_iSpaceDiagPartCenter2DivLineLabels >= 0 )
-                    {
-                        cyHeight += m_rectDivLineLabelsMaxTextExtent.height() + m_iSpaceDiagPartCenter2DivLineLabels /*+ c_iMaxTextExtentAddHeight*/;
+                    if (m_iSpacingDiagPartCenter2AxisLabel > 0) {
+                        cyHeight += m_iSpacingDiagPartCenter2AxisLabel;
                     }
+                    else if (bShowDivLineLabels) {
+                        cyHeight +=
+                            (m_iSpacingDiagPartCenter2DivLineLabels
+                            + m_sizeDivLineLabelsMaxTextExtent.height()
+                            + m_iSpacingDivLineLabels2AxisLabel);
+                    }
+                    cyHeight += m_rectAxisLabel.height();
                 }
-                if( m_ararbShowPartsLayer[EDivLineLabelsPartLabels][EDivLineLayerMain]
-                    && ( m_ararbShowPartsLayer[EDivLineLabelsPartAxisLabel][EDivLineLayerMain]
-                      || m_arbShowPartsUnit[EDivLineLabelsPartAxisLabel] ) )
+                // If only the division line labels are indicated ...
+                else if (bShowDivLineLabels)
                 {
-                    if( m_iSpaceDiagPartCenter2DivLineLabels >= 0 )
-                    {
-                        cyHeight += m_iSpaceDivLineLabels2AxisLabel;
-                    }
-                    else
-                    {
-                        cyHeight += (m_iSpaceDiagPartCenter2DivLineLabels - m_iSpaceDivLineLabels2AxisLabel);
-                    }
-                }
-                if( m_ararbShowPartsLayer[EDivLineLabelsPartAxisLabel][EDivLineLayerMain] || m_arbShowPartsUnit[EDivLineLabelsPartAxisLabel] )
-                {
-                    cyHeight += (m_rectAxisLabel.height() /*+ c_iMaxTextExtentAddHeight*/ + m_iSpaceDiagPartCenter2AxisLabel);
+                    cyHeight +=
+                        (m_iSpacingDiagPartCenter2DivLineLabels
+                        + m_sizeDivLineLabelsMaxTextExtent.height());
                 }
             }
-            else if( m_pDiagScale->getScaleDir() == EScaleDir::Y )
+            else if (m_pDiagScale->getScaleDir() == EScaleDir::Y)
             {
+                // The axis label coveres the whole vertical extent of the diagram.
                 cyHeight = pPixmapDiagram->getHeight();
-                cxWidth  = 0;
 
-                if( m_ararbShowPartsLayer[EDivLineLabelsPartLabels][EDivLineLayerMain] )
-                {
-                    if( m_iSpaceDiagPartCenter2DivLineLabels >= 0 )
-                    {
-                        cxWidth = m_rectDivLineLabelsMaxTextExtent.width();
+                // The width need to be calculated.
+                cxWidth = 0;
 
-                        if( m_arrectScaleMinMaxVal[0].width() > cxWidth )
-                        {
-                            cxWidth = m_arrectScaleMinMaxVal[0].width();
-                        }
-                        if( m_arrectScaleMinMaxVal[1].width() > cxWidth )
-                        {
-                            cxWidth = m_arrectScaleMinMaxVal[1].width();
-                        }
-                        if( m_rectDivLineLabelsPhysUnit.width() > cxWidth )
-                        {
-                            cxWidth = m_rectDivLineLabelsPhysUnit.width();
-                        }
-                        cxWidth += (m_iSpaceDiagPartCenter2DivLineLabels /*+ c_iMaxTextExtentAddWidth*/);
-                    }
-                }
-                if( m_ararbShowPartsLayer[EDivLineLabelsPartLabels][EDivLineLayerMain]
-                    && ( m_ararbShowPartsLayer[EDivLineLabelsPartAxisLabel][EDivLineLayerMain]
-                      || m_arbShowPartsUnit[EDivLineLabelsPartAxisLabel] ) )
+                // Similar to horizontal orientation the configured space between the diagrams
+                // center part and the axis label is not taken into account if a spacing between
+                // the division line labels and the axis label is set and both parts are visible.
+                // The space between the diagrams center part and the division line labels
+                // as well as the space between the division line label and the axis label
+                // don't need to be taken into account if a space between the diagrams center
+                // part and the axis label is configured.
+
+                // For vertical spacing also the text extent of the minimum and maximum scale
+                // value in the divsion line labels area must be considered if they are indicated
+                // not as part of the division lines but separately if less than two division lines
+                // are visible.
+
+                /*      0.0 +
+                    P       |
+                    o  40.0 +
+                    w       |
+                    e  30.0 +
+                    r       |
+                    /  20.0 +
+                    d       |
+                    B  10.0 +
+                    b       |
+                        0.0 +
+                */
+
+                // If axis label is indicated ...
+                if (m_bShowAxisLabel || m_bShowUnitAtAxisLabel)
                 {
-                    if( m_iSpaceDiagPartCenter2DivLineLabels >= 0 )
-                    {
-                        cxWidth += m_iSpaceDivLineLabels2AxisLabel;
+                    if (m_iSpacingDiagPartCenter2AxisLabel > 0) {
+                        cxWidth += m_iSpacingDiagPartCenter2AxisLabel;
                     }
-                    else
-                    {
-                        cxWidth += (m_iSpaceDiagPartCenter2DivLineLabels-m_iSpaceDivLineLabels2AxisLabel);
+                    else if (bShowDivLineLabels) {
+                        cxWidth +=
+                            (m_iSpacingDiagPartCenter2DivLineLabels
+                            + m_sizeDivLineLabelsMaxTextExtent.width()
+                            + m_iSpacingDivLineLabels2AxisLabel);
                     }
+                    cxWidth += m_rectAxisLabel.width();
                 }
-                if( m_ararbShowPartsLayer[EDivLineLabelsPartAxisLabel][EDivLineLayerMain] || m_arbShowPartsUnit[EDivLineLabelsPartAxisLabel] )
+                // If only the division line labels are indicated ...
+                else if (bShowDivLineLabels)
                 {
-                    cxWidth += (m_rectAxisLabel.width() + m_iSpaceDiagPartCenter2AxisLabel /*+ c_iMaxTextExtentAddWidth*/);
+                    cxWidth +=
+                        (m_iSpacingDiagPartCenter2DivLineLabels
+                        + m_sizeDivLineLabelsMaxTextExtent.width());
+                }
+                if (m_divLinesMetrics.getScaleMinValBoundingRect().width() > cxWidth)
+                {
+                    cxWidth = m_divLinesMetrics.getScaleMinValBoundingRect().width();
+                }
+                if (m_divLinesMetrics.getScaleMaxValBoundingRect().width() > cxWidth)
+                {
+                    cxWidth = m_divLinesMetrics.getScaleMaxValBoundingRect().width();
+                }
+                if (m_rectDivLineLabelsPhysUnit.width() > cxWidth)
+                {
+                    cxWidth = m_rectDivLineLabelsPhysUnit.width();
                 }
             }
         } // if( pPixmapDiagram != nullptr )
     } // if( isVisible() )
 
+    QSize size(cxWidth, cyHeight);
     if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strTrcMsg  = "Size[w,h]=";
-        strTrcMsg += QString::number(cxWidth) + ",";
-        strTrcMsg += QString::number(cyHeight);
-        mthTracer.setMethodReturn(strTrcMsg);
+        mthTracer.setMethodReturn(qSize2Str(size));
     }
-    return QSize(cxWidth,cyHeight);
+    return size;
 
 } // sizeHint
 
@@ -835,6 +1568,16 @@ public: // must overridables of base class CDiagObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Clones the object and adds it to the target diagram.
+
+    To clone the object a scale object with the same name as bound to
+    the current object must already in exist in the target diagram.
+
+    @param i_pDiagramTrg [in]
+        Reference to target diagram the cloned object should be added to.
+
+    @return Pointer to cloned object.
+*/
 CDiagObj* CDiagObjAxisLabel::clone( CDataDiagram* i_pDiagramTrg ) const
 //------------------------------------------------------------------------------
 {
@@ -860,65 +1603,34 @@ CDiagObj* CDiagObjAxisLabel::clone( CDataDiagram* i_pDiagramTrg ) const
     pDiagObjCloned->m_bIsEditable = m_bIsEditable;
 
     // Members from this class:
+    pDiagObjCloned->m_iSpacingDiagPartCenter2DivLineLabels = m_iSpacingDiagPartCenter2DivLineLabels;
+    pDiagObjCloned->m_iSpacingDiagPartCenter2AxisLabel = m_iSpacingDiagPartCenter2AxisLabel;
+    pDiagObjCloned->m_iSpacingDivLineLabels2AxisLabel = m_iSpacingDivLineLabels2AxisLabel;
+    pDiagObjCloned->m_arbShowDivLines = m_arbShowDivLines;
+    pDiagObjCloned->m_arcolDivLines = m_arcolDivLines;
+    pDiagObjCloned->m_arpenStyleDivLines = m_arpenStyleDivLines;
+    pDiagObjCloned->m_arbShowDivLineLabels = m_arbShowDivLineLabels;
+    pDiagObjCloned->m_arcolDivLineLabels = m_arcolDivLineLabels;
+    pDiagObjCloned->m_arfntDivLineLabels = m_arfntDivLineLabels;
+    pDiagObjCloned->m_strAxisLabel = m_strAxisLabel;
+    pDiagObjCloned->m_bShowAxisLabel = m_bShowAxisLabel;
+    pDiagObjCloned->m_colAxisLabel = m_colAxisLabel;
+    pDiagObjCloned->m_fntAxisLabel = m_fntAxisLabel;
     pDiagObjCloned->m_pUnit = m_pUnit;
     pDiagObjCloned->m_unitLabels = m_unitLabels;
     pDiagObjCloned->m_strPhysUnitLabels = m_strPhysUnitLabels;
-    pDiagObjCloned->m_iSpaceDiagPartCenter2DivLineLabels = m_iSpaceDiagPartCenter2DivLineLabels;
-    pDiagObjCloned->m_iSpaceDiagPartCenter2AxisLabel = m_iSpaceDiagPartCenter2AxisLabel;
-    pDiagObjCloned->m_iSpaceDivLineLabels2AxisLabel = m_iSpaceDivLineLabels2AxisLabel;
-
-    for( int idxPart = 0; idxPart < CEnumDivLineLabelsPart::count(); idxPart++ )
-    {
-        for( int iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
-        {
-            pDiagObjCloned->m_ararbShowPartsLayer[idxPart][iLayer] = m_ararbShowPartsLayer[idxPart][iLayer];
-        }
-        pDiagObjCloned->m_arbShowPartsUnit[idxPart] = m_arbShowPartsUnit[idxPart];
-        pDiagObjCloned->m_arcolPartsFg[idxPart] = m_arcolPartsFg[idxPart];
-        pDiagObjCloned->m_arpenStyleParts[idxPart] = m_arpenStyleParts[idxPart];
-        pDiagObjCloned->m_arcolPartsBg[idxPart] = m_arcolPartsBg[idxPart];
-        pDiagObjCloned->m_arbrushStyleParts[idxPart] = m_arbrushStyleParts[idxPart];
-        pDiagObjCloned->m_arfntParts[idxPart] = m_arfntParts[idxPart];
-    }
-    pDiagObjCloned->m_iDivLineLabelsDigitsCountMax = m_iDivLineLabelsDigitsCountMax;
-    pDiagObjCloned->m_bUseEngineeringFormat = m_bUseEngineeringFormat;
-    pDiagObjCloned->m_strAxisLabel = m_strAxisLabel;
+    pDiagObjCloned->m_bShowUnitAtDivLines = m_bShowUnitAtDivLines;
+    pDiagObjCloned->m_colUnitAtDivLines = m_colUnitAtDivLines;
+    pDiagObjCloned->m_fntUnitAtDivLines = m_fntUnitAtDivLines;
+    pDiagObjCloned->m_bShowUnitAtAxisLabel = m_bShowUnitAtAxisLabel;
+    pDiagObjCloned->m_colUnitAtAxisLabel = m_colUnitAtAxisLabel;
+    pDiagObjCloned->m_fntUnitAtAxisLabel = m_fntUnitAtAxisLabel;
+    pDiagObjCloned->m_divLinesMetrics = m_divLinesMetrics;
+    pDiagObjCloned->m_sizeDivLineLabelsMaxTextExtent = m_sizeDivLineLabelsMaxTextExtent;
     pDiagObjCloned->m_rectAxisLabel = m_rectAxisLabel;
-    pDiagObjCloned->m_iDivLineLabelsTrailingDigits = m_iDivLineLabelsTrailingDigits;
-    pDiagObjCloned->m_iDivLineLabelsExponentDigits = m_iDivLineLabelsExponentDigits;
-    pDiagObjCloned->m_rectDivLineLabelsMaxTextExtent = m_rectDivLineLabelsMaxTextExtent;
-    pDiagObjCloned->m_cxDivLineLabelsSpace = m_cxDivLineLabelsSpace;
-
-    for( int iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
-    {
-        pDiagObjCloned->m_ariDivLinesCount[iLayer] = m_ariDivLinesCount[iLayer];
-
-        if( m_ariDivLinesCount[iLayer] > 0 )
-        {
-            pDiagObjCloned->m_arariDivLines_px[iLayer].resize(m_ariDivLinesCount[iLayer]);
-            pDiagObjCloned->m_ararrectDivLineLabels[iLayer].resize(m_ariDivLinesCount[iLayer]);
-            pDiagObjCloned->m_ararstrDivLineLabels[iLayer].resize(m_ariDivLinesCount[iLayer]);
-            pDiagObjCloned->m_ararbDivLineLabelsVisible[iLayer].resize(m_ariDivLinesCount[iLayer]);
-
-            for( int idxDivLine = 0; idxDivLine < pDiagObjCloned->m_ariDivLinesCount[iLayer]; idxDivLine++ )
-            {
-                pDiagObjCloned->m_arariDivLines_px[iLayer][idxDivLine] = m_arariDivLines_px[iLayer][idxDivLine];
-                pDiagObjCloned->m_ararrectDivLineLabels[iLayer][idxDivLine] = m_ararrectDivLineLabels[iLayer][idxDivLine];
-                pDiagObjCloned->m_ararstrDivLineLabels[iLayer][idxDivLine] = m_ararstrDivLineLabels[iLayer][idxDivLine];
-                pDiagObjCloned->m_ararbDivLineLabelsVisible[iLayer][idxDivLine] = m_ararbDivLineLabelsVisible[iLayer][idxDivLine];
-            }
-        }
-    }
-
     pDiagObjCloned->m_rectDivLineLabelsPhysUnit = m_rectDivLineLabelsPhysUnit;
     pDiagObjCloned->m_bDivLineLabelsPhysUnitVisible = m_bDivLineLabelsPhysUnitVisible;
-
-    for( int idxDivLine = 0; idxDivLine < 2; idxDivLine++ )
-    {
-        pDiagObjCloned->m_arstrScaleMinMaxVal[idxDivLine] = m_arstrScaleMinMaxVal[idxDivLine];
-        pDiagObjCloned->m_arrectScaleMinMaxVal[idxDivLine] = m_arrectScaleMinMaxVal[idxDivLine];
-        pDiagObjCloned->m_arbScaleMinMaxValVisible[idxDivLine] = m_arbScaleMinMaxValVisible[idxDivLine];
-    }
+    pDiagObjCloned->m_arbScaleMinMaxValVisible = m_arbScaleMinMaxValVisible;
 
     i_pDiagramTrg->addDiagObj(pDiagObjCloned);
 
@@ -927,6 +1639,31 @@ CDiagObj* CDiagObjAxisLabel::clone( CDataDiagram* i_pDiagramTrg ) const
 } // clone
 
 //------------------------------------------------------------------------------
+/*! @brief Updates the internal data of the object.
+
+    The axis label has to do the following depending on the process depths:
+
+    - Layout
+      Calculate the extent in width if bound to a Y-scale or the height if
+      bound to a X-scale object.
+    - Data
+      Calculate the final position of the division lines, the division line
+      labels, the axis label and the unit string.
+    - Pixmap
+      Draw the object into the paint device.
+    - Widget
+      Invalidate the previous and the new rectangle widget areas covered by the object.
+
+    @param i_uUpdateFlags [in]
+        Bitmap with dirty flags specifying for which process depth
+        (Layout, Data, Pixmap, Widget) the internal data should be recalculated.
+        The passed flags will be compared with the internal update flags.
+        If the internal dirty flag is not set the method does nothing.
+        If the internal dirty flag is set the method calculates the process depth
+        and resets the dirty flag.
+    @param i_pPaintDevice [in]
+        Only used for pixmap processing to draw the content of the object.
+*/
 void CDiagObjAxisLabel::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDevice )
 //------------------------------------------------------------------------------
 {
@@ -1002,6 +1739,15 @@ protected: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Internal auxiliary method to do calculation for layout processing.
+
+    Calculates the sizes in width and height of the axis label,
+    the minimum and maximum scale values and divison line labels.
+
+    Layout processing must provide all data necessary for the "sizeHint" call
+    of the diagram so that the diagram is able to calculate the width and
+    height of the top, bottom, left and right areas.
+*/
 void CDiagObjAxisLabel::updateLayout()
 //------------------------------------------------------------------------------
 {
@@ -1011,593 +1757,69 @@ void CDiagObjAxisLabel::updateLayout()
         /* strMethod    */ "updateLayout",
         /* strAddInfo   */ "" );
 
-    if( m_pDiagram == nullptr || m_pDiagScale == nullptr || !isVisible() )
+    if (m_pDiagram == nullptr || m_pDiagScale == nullptr || !isVisible())
     {
         return;
     }
 
-    // Please note that the axis label rectangle need to be calculated before
-    // calculating the rectangle for the division lines as the position for
-    // the division lines may depend on the size of the axis label rectangle.
-
     // As a matter of fact there is no sense in adding an axis label object to
     // a diagram just designed to analyze data.
-    if( m_pDiagram->getUpdateType() >= EDiagramUpdateTypePixmap )
+    if (m_pDiagram->getUpdateType() >= EDiagramUpdateTypePixmap)
     {
         const CPixmapDiagram* pPixmapDiagram = dynamic_cast<const CPixmapDiagram*>(m_pDiagram);
-        if( pPixmapDiagram == nullptr )
+        if (pPixmapDiagram == nullptr)
         {
             return;
         }
     }
 
-    QRect rectDiag = getDiagRect();
-
-    // Calculate string to indicate the physical unit at the maximum scale value
-    //--------------------------------------------------------------------------
-
+    // Calculate string to indicate the physical unit
     m_unitLabels = getAxisLabelUnit();
-
-    if( m_unitLabels.isValid() ) {
+    if (m_unitLabels.isValid()) {
         m_strPhysUnitLabels = m_unitLabels.symbol();
     }
     else {
         m_strPhysUnitLabels = "";
     }
 
-    // Please note that after layout processing only the size of the
-    // axis label rectangle is up to date which is necessary for the
-    // following "sizeHint" call. The label will be moved to its final
-    // position during data processing.
-    m_rectAxisLabel = getAxisLabelBoundingRect();
+    // Calculate size in width and height for the axis label.
+    // The axis label may also include the unit string.
+    QSize sizeAxisLabel = getAxisLabelTextExtent();
+    // The sizeHint method uses width and height of the axis label
+    // rectangle for layout processing of the diagram areas.
+    m_rectAxisLabel = QRect(0, 0, sizeAxisLabel.width(), sizeAxisLabel.height());
 
-    // Calculate width and height of the area for the division line labels
-    //==========================================================================
+    // Initialize division lines metrics calculator with results
+    // from division lines calculator of the diagram scale object.
+    // This will take over the already calculated values and pixel
+    // position of the division lines.
+    m_divLinesMetrics = m_pDiagScale->getDivLinesScaler();
 
-    double fScaleMinVal = m_pDiagScale->getScale().minVal().getVal(m_unitLabels);
-    double fScaleMaxVal = m_pDiagScale->getScale().maxVal().getVal(m_unitLabels);
+    // If the unit string should be indicated in the area of the division line labels
+    // the maximum text extent of the division lines may have to be adjusted.
+    QSize sizeDivLineLabelsPhysUnit = getDivLineLabelsUnitTextExtent();
+    m_divLinesMetrics.setDivLineLabelsMinTextExtent(sizeDivLineLabelsPhysUnit);
 
-    // The scale object calculates the number of division lines and
-    // the distance between the division lines for the grid.
-    // The labels are linked to those calculated division lines.
-    // To discover overlapping division line labels the rectangle extents of the
-    // division line labels are stored in arrays.
-    for( int iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
-    {
-        m_arariDivLines_px[iLayer].clear();
-        m_ararrectDivLineLabels[iLayer].clear();
-        m_ararstrDivLineLabels[iLayer].clear();
-        m_ararbDivLineLabelsVisible[iLayer].clear();
-        m_ariDivLinesCount[iLayer] = 0;
-    }
+    // Calculate bounding rectangles of the division line labels and their
+    // visibilities (they labels must not overlap each other).
+    m_divLinesMetrics.update();
 
-    int iDivLinesCount = 0;
-    for( int iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
-    {
-        EDivLineLayer eLayer = static_cast<EDivLineLayer>(iLayer);
-        m_ariDivLinesCount[iLayer] = m_pDiagScale->getDivLineCount(eLayer);
-        iDivLinesCount += m_ariDivLinesCount[iLayer];
-    }
-
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        QString strMthRuntimeInfo =
-            "MainDivLineLabels: " + QString::number(m_ariDivLinesCount[EDivLineLayerMain]) +
-            ", SubDivLineLabels: " + QString::number(m_ariDivLinesCount[EDivLineLayerSub]);
-        mthTracer.trace(strMthRuntimeInfo);
-    }
-
-    // Calculate format of division line labels:
-    //-------------------------------------------
-
-    QVector<double> arfDivLineValsSorted = getDivLineValsSorted();
-
-    // The number of leading digits is defined by the absolute maximum value
-    // of the scales division lines. If the value is less than 1.0 at least
-    // one leading digit will be shown.
-    std::tuple<double, double> minMax = Math::getAbsMinMax(arfDivLineValsSorted);
-    double fDivLineValAbsMax = std::get<1>(minMax);
-    int iDivLineLabelsLeadingDigits = 1;
-    if (fDivLineValAbsMax > 1.0) {
-        iDivLineLabelsLeadingDigits = Math::getFirstSignificantDigit(fDivLineValAbsMax);
-    }
-
-    // The number of trailing digits is defined by the mimimum distance between two
-    // division lines to indicate unique values. If the distance is greater than 1.0
-    // at least one trailing digit will be shown.
-    m_iDivLineLabelsTrailingDigits = 1;
-    double fDivLineDistMinVal = m_pDiagScale->getDivLineDistMin(CEnumDivLineLayer(), &m_unitLabels);
-    if (fDivLineDistMinVal < 1.0) {
-        m_iDivLineLabelsTrailingDigits = abs(Math::getFirstSignificantDigit(fDivLineDistMinVal));
-    }
-
-    // The absolute minimum value of the division lines may be lower than
-    // the distance between two division lines.
-    double fDivLineValAbsMin = std::get<0>(minMax);
-    if (fDivLineValAbsMin < 1.0) {
-        int iDivLineLabelsTrailingDigits = abs(Math::getFirstSignificantDigit(fDivLineValAbsMin));
-        if (iDivLineLabelsTrailingDigits > m_iDivLineLabelsTrailingDigits) {
-            m_iDivLineLabelsTrailingDigits = iDivLineLabelsTrailingDigits;
+    // If the unit string should be indicated in the area of the division line labels
+    // the maximum text extent of the division line labels calculated by the division
+    // lines metrics calculator may have to be adjusted.
+    m_sizeDivLineLabelsMaxTextExtent = m_divLinesMetrics.getDivLineLabelsMaxTextExtent();
+    if (sizeDivLineLabelsPhysUnit.isValid()) {
+        if (m_layoutPos == ELayoutPosTop || m_layoutPos == ELayoutPosBottom) {
+            if (sizeDivLineLabelsPhysUnit.height() > m_sizeDivLineLabelsMaxTextExtent.height()) {
+                m_sizeDivLineLabelsMaxTextExtent.setHeight(sizeDivLineLabelsPhysUnit.height());
+            }
+        }
+        else if (m_layoutPos == ELayoutPosLeft || m_layoutPos == ELayoutPosRight) {
+            if (sizeDivLineLabelsPhysUnit.width() > m_sizeDivLineLabelsMaxTextExtent.width()) {
+                m_sizeDivLineLabelsMaxTextExtent.setWidth(sizeDivLineLabelsPhysUnit.width());
+            }
         }
     }
-
-    // The absolute maximum value of the division lines may not be lower than
-    // the absolute minimum value. No need to take this value into account when
-    // calculating the number of trailing digits.
-
-    // Calculate how many leading and trailing digits would be necessary to
-    // indicate the absolute minimum and maximum values and decide, whether
-    // an exponent is necessary to indicate the values.
-
-    // If engineering format is forced or if the number of leading and trailing digits
-    // exceeds the maximum number of digits configured for the mantissa the labels must
-    // be indicated in engineering format.
-    // In case the labels got to be shown in engineering format the number of trailing
-    // digits are no longer defined by the distance of the division lines. The necessary
-    // precision to indicate unique labels is calculated further below by converting each
-    // division line value into its string representation using a precision, compare all
-    // the strings and increase the precision until the strings are unique.
-    // If engineering format is chosen because the number of digits for the mantissa is
-    // limited it may happen that the labels become ambiguous.
-
-    m_iDivLineLabelsExponentDigits = 0;
-
-    // If engineering format is forced ...
-    if (m_bUseEngineeringFormat)
-    {
-        m_iDivLineLabelsExponentDigits = static_cast<int>(log10(static_cast<double>(iDivLineLabelsLeadingDigits)))+1;
-        int iTmp = static_cast<int>(log10(static_cast<double>(m_iDivLineLabelsTrailingDigits)))+1;
-        if( iTmp > m_iDivLineLabelsExponentDigits )
-        {
-            m_iDivLineLabelsExponentDigits = iTmp;
-        }
-        iDivLineLabelsLeadingDigits = 1;
-        m_iDivLineLabelsTrailingDigits = 1;
-    }
-    // If the maximum number of digits is set ...
-    else if (m_iDivLineLabelsDigitsCountMax > 0)
-    {
-        // Engineering format (x.y) has to be used if the number of digits necessary to
-        // indicate the value is greater than the maximum number of digits set.
-        if ((iDivLineLabelsLeadingDigits + m_iDivLineLabelsTrailingDigits) > m_iDivLineLabelsDigitsCountMax)
-        {
-            m_iDivLineLabelsExponentDigits = static_cast<int>(log10(static_cast<double>(iDivLineLabelsLeadingDigits)))+1;
-            int iTmp = static_cast<int>(log10(static_cast<double>(m_iDivLineLabelsTrailingDigits)))+1;
-            if (iTmp > m_iDivLineLabelsExponentDigits)
-            {
-                m_iDivLineLabelsExponentDigits = iTmp;
-            }
-            iDivLineLabelsLeadingDigits = 1;
-            m_iDivLineLabelsTrailingDigits = 1;
-        }
-    }
-
-    // Already mentioned above:
-    // If engineering format is forced or if the number of leading and trailing digits
-    // exceeds the maximum number of digits,
-    // but also if the scale uses logarithmic spacing ...
-    if (m_iDivLineLabelsExponentDigits > 0 || m_pDiagScale->getSpacing() == ESpacing::Logarithmic)
-    {
-        // The division lines are rounded to a whole number of a decimal power.
-        // To output the axis labels it is "just" necessary to ensure that the
-        // indicated values are different.
-        int iPrecisionMax = 10;
-        if (m_iDivLineLabelsDigitsCountMax > 0) {
-            iPrecisionMax = m_iDivLineLabelsDigitsCountMax - iDivLineLabelsLeadingDigits;
-        }
-        m_iDivLineLabelsTrailingDigits = Math::CScaleDivLines::getPrecision2ShowUniqueNumbers(
-            arfDivLineValsSorted, m_iDivLineLabelsExponentDigits,
-            m_iDivLineLabelsTrailingDigits, iPrecisionMax, m_pTrcAdminObj);
-    }
-
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        QString strMthRuntimeInfo =
-            QString("Digits needed for DivLineValAbsMin and DivLineValAbsMax: ") +
-            "Leading: " + QString::number(iDivLineLabelsLeadingDigits) +
-            ", Trailing: " + QString::number(m_iDivLineLabelsTrailingDigits) +
-            ", Exponent: " + QString::number(m_iDivLineLabelsExponentDigits);
-        mthTracer.trace(strMthRuntimeInfo);
-    }
-
-    // Calculate extent of division line labels:
-    //-------------------------------------------
-
-    // Build string with maximum count of necessary digits and calculate
-    // the maximum extent of the division line labels:
-    QString strDivLineLabel("+");
-    for( int idx = 0; idx < iDivLineLabelsLeadingDigits; idx++ )
-    {
-        strDivLineLabel += "0";
-    }
-    if( m_iDivLineLabelsTrailingDigits > 0 )
-    {
-        strDivLineLabel += ".";
-        for( int idx = 0; idx < m_iDivLineLabelsTrailingDigits; idx++ )
-        {
-            strDivLineLabel += "0";
-        }
-    }
-    if( m_iDivLineLabelsExponentDigits > 0 )
-    {
-        strDivLineLabel += "e+";
-        for( int idx = 0; idx < m_iDivLineLabelsExponentDigits; idx++ )
-        {
-            strDivLineLabel += "0";
-        }
-    }
-
-    // I'm not sure if "0" is the most "wide" character ...
-    strDivLineLabel += "0"; // .. so we add one additional character.
-    QFontMetrics fntmtr(m_arfntParts[EDivLineLabelsPartLabels]);
-    m_rectDivLineLabelsMaxTextExtent = fntmtr.boundingRect(strDivLineLabel);
-    m_rectDivLineLabelsMaxTextExtent.setHeight(m_rectDivLineLabelsMaxTextExtent.height() + c_iMaxTextExtentAddHeight);
-    m_rectDivLineLabelsMaxTextExtent.setWidth(m_rectDivLineLabelsMaxTextExtent.width() + c_iMaxTextExtentAddWidth);
-
-    // There must be a distance (space) between two successive division line labels on the
-    // horizontal (X) axis. One and a half of the width of the character '0' is a good choice:
-    m_cxDivLineLabelsSpace  = fntmtr.boundingRect("0").width();
-    m_cxDivLineLabelsSpace += m_cxDivLineLabelsSpace/2;
-
-    // Calculate extent of string to indicate the physical unit:
-    //-------------------------------------------------------------
-
-    if( m_arbShowPartsUnit[EDivLineLabelsPartLabels] )
-    {
-        m_rectDivLineLabelsPhysUnit = fntmtr.boundingRect(m_strPhysUnitLabels);
-        m_rectDivLineLabelsPhysUnit.setHeight(m_rectDivLineLabelsPhysUnit.height() + 2);
-        m_rectDivLineLabelsPhysUnit.setWidth(m_rectDivLineLabelsPhysUnit.width() + 2);
-
-        switch( m_layoutPos )
-        {
-            // X-Axis (vertical division lines)
-            case ELayoutPosTop:
-            case ELayoutPosBottom:
-            {
-                double xDivLine = m_pDiagScale->getMaxValPix();
-                m_rectDivLineLabelsPhysUnit.moveLeft( xDivLine - m_rectDivLineLabelsPhysUnit.width()/2 );
-
-                if( m_bAdjustContentRect2DiagPartCenter )
-                {
-                    if( m_rectDivLineLabelsPhysUnit.right() >= m_pDiagScale->getMaxValPix() )
-                    {
-                        int cxOffset = m_rectDivLineLabelsPhysUnit.right()-m_pDiagScale->getMaxValPix()+1;
-                        m_rectDivLineLabelsPhysUnit.moveRight( m_rectDivLineLabelsPhysUnit.right()-cxOffset );
-                    }
-                }
-                else
-                {
-                    if( m_rectDivLineLabelsPhysUnit.right() >= rectDiag.right() )
-                    {
-                        int cxOffset = m_rectDivLineLabelsPhysUnit.right()-rectDiag.right()+1;
-                        m_rectDivLineLabelsPhysUnit.moveRight( m_rectDivLineLabelsPhysUnit.right()-cxOffset );
-                    }
-                }
-                break;
-            }
-
-            // Y-Axis (horizontal division lines)
-            case ELayoutPosLeft:
-            case ELayoutPosRight:
-            {
-                // As for the Y-axis the physical unit string should be adjusted to the division line labels
-                // the extent (width) of the physical unit string depends on the division line labels.
-                if( m_rectDivLineLabelsPhysUnit.width() < m_rectDivLineLabelsMaxTextExtent.width() )
-                {
-                    m_rectDivLineLabelsPhysUnit.setWidth(m_rectDivLineLabelsMaxTextExtent.width());
-                }
-                else if( m_rectDivLineLabelsPhysUnit.width() > m_rectDivLineLabelsMaxTextExtent.width() )
-                {
-                    m_rectDivLineLabelsMaxTextExtent.setWidth(m_rectDivLineLabelsPhysUnit.width());
-                }
-
-                double yDivLine = m_pDiagScale->getMaxValPix();
-                m_rectDivLineLabelsPhysUnit.moveTop( yDivLine - m_rectDivLineLabelsPhysUnit.height()/2 );
-
-                if( m_bAdjustContentRect2DiagPartCenter )
-                {
-                    if( m_rectDivLineLabelsPhysUnit.top() <= m_pDiagScale->getMaxValPix() )
-                    {
-                        int cyOffset = m_pDiagScale->getMaxValPix()-m_rectDivLineLabelsPhysUnit.top()+1;
-                        m_rectDivLineLabelsPhysUnit.moveTop( m_rectDivLineLabelsPhysUnit.top()+cyOffset );
-                    }
-                }
-                else
-                {
-                    if( m_rectDivLineLabelsPhysUnit.top() <= rectDiag.top() )
-                    {
-                        int cyOffset = rectDiag.top()-m_rectDivLineLabelsPhysUnit.top()+1;
-                        m_rectDivLineLabelsPhysUnit.moveTop( m_rectDivLineLabelsPhysUnit.top()+cyOffset );
-                    }
-                }
-                break;
-            }
-            default:
-            {
-                break;
-            }
-
-        } // switch( m_layoutPos )
-
-    } // if( m_arbShowPartsUnit[EDivLineLabelsPartLabels] )
-
-    // Calculate extent of division line labels
-    //-----------------------------------------
-
-    m_bDivLineLabelsPhysUnitVisible = false;
-
-    for( int iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
-    {
-        if( m_ariDivLinesCount[iLayer] > 0 )
-        {
-            m_arariDivLines_px[iLayer] = QVector<int>(m_ariDivLinesCount[iLayer], 0);
-            m_ararrectDivLineLabels[iLayer] = QVector<QRect>(m_ariDivLinesCount[iLayer]);
-            m_ararstrDivLineLabels[iLayer] = QVector<QString>(m_ariDivLinesCount[iLayer]);
-            m_ararbDivLineLabelsVisible[iLayer] = QVector<bool>(m_ariDivLinesCount[iLayer], false);
-        }
-    }
-    for( int idx = 0; idx < 2; idx++ )
-    {
-        m_arbScaleMinMaxValVisible[idx] = false;
-    }
-
-    switch( m_layoutPos )
-    {
-        // X-Axis (vertical division lines)
-        case ELayoutPosTop:
-        case ELayoutPosBottom:
-        {
-            // Division lines
-            //---------------
-
-            // Please note that we need the coordinates of the division lines also if they
-            // will not be shown later on during pixmap processing.
-            for( int iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
-            {
-                EDivLineLayer eLayer = static_cast<EDivLineLayer>(iLayer);
-                for( int idxDivLine = 0; idxDivLine < m_ariDivLinesCount[iLayer]; idxDivLine++ )
-                {
-                    int xDivLine = static_cast<int>(m_pDiagScale->getDivLinePix(eLayer, idxDivLine) + 0.5);
-                    m_arariDivLines_px[iLayer][idxDivLine] = xDivLine;
-                }
-            }
-
-            // Division line labels
-            //---------------------
-
-            for( int iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
-            {
-                EDivLineLayer eLayer = static_cast<EDivLineLayer>(iLayer);
-                QRect rectDivLineLabel;
-
-                rectDivLineLabel.setHeight(m_rectDivLineLabelsMaxTextExtent.height());
-
-                for( int idxDivLine = 0; idxDivLine < m_ariDivLinesCount[iLayer]; idxDivLine++ )
-                {
-                    int xDivLine = static_cast<int>(m_pDiagScale->getDivLinePix(eLayer, idxDivLine) + 0.5);
-                    strDivLineLabel = formatValue(m_pDiagScale->getDivLineVal(eLayer, idxDivLine, &m_unitLabels));
-
-                    // At the horizontal (X) axis the labels will be output centered below the division lines
-                    // and we can remove trailing zeros:
-                    removeTrailingZeros(&strDivLineLabel);
-                    rectDivLineLabel = fntmtr.boundingRect(strDivLineLabel);
-                    rectDivLineLabel.setWidth( rectDivLineLabel.width() + m_cxDivLineLabelsSpace );
-                    rectDivLineLabel.moveLeft( xDivLine - rectDivLineLabel.width()/2 );
-
-                    // To discover overlapping division line labels the rectangle extents of the
-                    // division line labels will be stored in an array.
-                    m_ararrectDivLineLabels[iLayer][idxDivLine] = rectDivLineLabel;
-                    m_ararstrDivLineLabels[iLayer][idxDivLine] = strDivLineLabel;
-                }
-            } // for( iLayer < CEnumDivLineLayer::count() )
-
-            // Minimum and maximum scale value
-            //---------------------------------
-
-            // Additionally try to show the minimum and/or maximum scale values if
-            // not enough division lines are visible ..
-            for( int idx = 0; idx < 2; idx++ )
-            {
-                m_arstrScaleMinMaxVal[idx] = "";
-                m_arrectScaleMinMaxVal[idx].setWidth(0);
-                m_arrectScaleMinMaxVal[idx].setHeight(0);
-
-                int xDivLine = 0;
-
-                if( idx == 0 )
-                {
-                    TFormatResult formatResult = PhysVal::formatValue(
-                        /* fValue                */ fScaleMinVal,
-                        /* unitVal               */ m_pDiagScale->getScale().unit(),
-                        /* iDigitsMantissaMax    */ 6,
-                        /* bAccuracyLimitsMant.  */ false,
-                        /* iDigitsAccuracy       */ 0,
-                        /* iDigitsExponent       */ 0,
-                        /* bUseEngineeringFormat */ false,
-                        /* pfVal                 */ nullptr,
-                        /* pstr                  */ &strDivLineLabel,
-                        /* ppUnit                */ nullptr,
-                        /* piDigitsLeading       */ nullptr,
-                        /* piDigitsTrailing      */ nullptr );
-                    if( !(formatResult & FormatResult::Error) ) //lint !e655
-                    {
-                        m_arstrScaleMinMaxVal[idx] = strDivLineLabel;
-                    }
-                    xDivLine = m_pDiagScale->getMinValPix();
-                }
-                else
-                {
-                    TFormatResult formatResult = PhysVal::formatValue(
-                        /* fVal                  */ fScaleMaxVal,
-                        /* unitVal               */ m_pDiagScale->getScale().unit(),
-                        /* iDigitsMantissaMax    */ 6,
-                        /* bAccuracyLimitsMant.  */ false,
-                        /* iDigitsAccuracy       */ 0,
-                        /* iDigitsExponent       */ 0,
-                        /* bUseEngineeringFormat */ false,
-                        /* pfVal                 */ nullptr,
-                        /* pstr                  */ &strDivLineLabel,
-                        /* ppUnit                */ nullptr,
-                        /* piDigitsLeading       */ nullptr,
-                        /* piDigitsTrailing      */ nullptr );
-                    if( !(formatResult & FormatResult::Error) ) //lint !e655
-                    {
-                        m_arstrScaleMinMaxVal[idx] = strDivLineLabel;
-                    }
-                    xDivLine = m_pDiagScale->getMaxValPix();
-                }
-                m_arrectScaleMinMaxVal[idx] = fntmtr.boundingRect(m_arstrScaleMinMaxVal[idx]);
-                m_arrectScaleMinMaxVal[idx].setWidth( m_arrectScaleMinMaxVal[idx].width() + 2 );
-                m_arrectScaleMinMaxVal[idx].setHeight( m_arrectScaleMinMaxVal[idx].height() + 2 );
-                m_arrectScaleMinMaxVal[idx].moveLeft( xDivLine - m_arrectScaleMinMaxVal[idx].width()/2 );
-
-                if( m_arrectScaleMinMaxVal[idx].left() <= rectDiag.left() )
-                {
-                    int cxOffset = rectDiag.left()-m_arrectScaleMinMaxVal[idx].left()+1;
-                    m_arrectScaleMinMaxVal[idx].moveLeft( m_arrectScaleMinMaxVal[idx].left()+cxOffset );
-                }
-                else if( m_arrectScaleMinMaxVal[idx].right() >= rectDiag.right() )
-                {
-                    int cxOffset = m_arrectScaleMinMaxVal[idx].right()-rectDiag.right()+1;
-                    m_arrectScaleMinMaxVal[idx].moveRight( m_arrectScaleMinMaxVal[idx].right()-cxOffset );
-                }
-            }
-            break;
-
-        } // case( PosTop || PosBottom )
-
-        // Y-Axis (horizontal division lines)
-        case ELayoutPosLeft:
-        case ELayoutPosRight:
-        {
-            // Division lines
-            //---------------
-
-            for( int iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
-            {
-                EDivLineLayer eLayer = static_cast<EDivLineLayer>(iLayer);
-                // Division lines at the main grid:
-                for( int idxDivLine = 0; idxDivLine < m_ariDivLinesCount[iLayer]; idxDivLine++ )
-                {
-                    int yDivLine = static_cast<int>(m_pDiagScale->getDivLinePix(eLayer, idxDivLine) + 0.5);
-                    m_arariDivLines_px[iLayer][idxDivLine] = yDivLine;
-                }
-            }
-
-            // Division line labels
-            //---------------------
-
-            for( int iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
-            {
-                EDivLineLayer eLayer = static_cast<EDivLineLayer>(iLayer);
-                QRect rectDivLineLabel;
-
-                rectDivLineLabel.setWidth(m_rectDivLineLabelsMaxTextExtent.width());
-                rectDivLineLabel.setHeight(m_rectDivLineLabelsMaxTextExtent.height());
-
-                // Division lines at the main grid:
-                for( int idxDivLine = 0; idxDivLine < m_ariDivLinesCount[iLayer]; idxDivLine++ )
-                {
-                    int yDivLine = static_cast<int>(m_pDiagScale->getDivLinePix(static_cast<EDivLineLayer>(iLayer), idxDivLine) + 0.5);
-                    strDivLineLabel = formatValue( m_pDiagScale->getDivLineVal(static_cast<EDivLineLayer>(iLayer), idxDivLine, &m_unitLabels) );
-                    rectDivLineLabel.moveTop( yDivLine - m_rectDivLineLabelsMaxTextExtent.height()/2 );
-
-                    // To discover overlapping division line labels the rectangle extents of the
-                    // division line labels will be stored in an array.
-                    m_ararrectDivLineLabels[iLayer][idxDivLine] = rectDivLineLabel;
-                    m_ararstrDivLineLabels[iLayer][idxDivLine] = strDivLineLabel;
-                }
-            } // for( iLayer < CEnumDivLineLayer::count() )
-
-            // Minimum and maximum scale value
-            //---------------------------------
-
-            // Additionally try to show the minimum and/or maximum scale values if
-            // not enough division lines are visible ..
-            for( int idx = 0; idx < 2; idx++ )
-            {
-                m_arstrScaleMinMaxVal[idx] = "";
-
-                // Please note that the vertical (Y) axis labels are either left or right
-                // adjusted. For this the text areas for all labels need to have the same width.
-                // But what if the labels at the minimum and maximum need more space than
-                // the already visible division line labels? In that case we would have to adjust
-                // the size of the already calculated division lines labels ... We don't do that
-                // as the minimum and maximum scale values will only be indicated if just one or
-                // even no division line label is visible and the scaling is anyway not straight ...
-                m_arrectScaleMinMaxVal[idx].setWidth(0);
-                m_arrectScaleMinMaxVal[idx].setHeight(0);
-
-                int yDivLine = 0;
-
-                if( idx == 0 )
-                {
-                    TFormatResult formatResult = PhysVal::formatValue(
-                        /* fVal                  */ fScaleMinVal,
-                        /* unitVal               */ m_pDiagScale->getScale().unit(),
-                        /* iDigitsMantissaMax    */ 6,
-                        /* bAccuracyLimitsMant.  */ false,
-                        /* iDigitsAccuracy       */ 0,
-                        /* iDigitsExponent       */ 0,
-                        /* bUseEngineeringFormat */ false,
-                        /* pfVal                 */ nullptr,
-                        /* pstr                  */ &strDivLineLabel,
-                        /* ppUnit                */ nullptr,
-                        /* piDigitsLeading       */ nullptr,
-                        /* piDigitsTrailing      */ nullptr );
-                    if( !(formatResult & FormatResult::Error) ) //lint !e655
-                    {
-                        m_arstrScaleMinMaxVal[idx] = strDivLineLabel;
-                    }
-                    yDivLine = m_pDiagScale->getMinValPix();
-                }
-                else
-                {
-                    TFormatResult formatResult = PhysVal::formatValue(
-                        /* fVal                  */ fScaleMaxVal,
-                        /* unitVal              */ m_pDiagScale->getScale().unit(),
-                        /* iDigitsMantissaMax    */ 6,
-                        /* bAccuracyLimitsMant.  */ false,
-                        /* iDigitsAccuracy       */ 0,
-                        /* iDigitsExponent       */ 0,
-                        /* bUseEngineeringFormat */ false,
-                        /* pfVal                 */ nullptr,
-                        /* pstr                  */ &strDivLineLabel,
-                        /* ppUnit                */ nullptr,
-                        /* piDigitsLeading       */ nullptr,
-                        /* piDigitsTrailing      */ nullptr );
-                    if( !(formatResult & FormatResult::Error) ) //lint !e655
-                    {
-                        m_arstrScaleMinMaxVal[idx] = strDivLineLabel;
-                    }
-                    yDivLine = m_pDiagScale->getMaxValPix();
-                }
-                m_arrectScaleMinMaxVal[idx] = fntmtr.boundingRect(m_arstrScaleMinMaxVal[idx]);
-                m_arrectScaleMinMaxVal[idx].setWidth( m_arrectScaleMinMaxVal[idx].width() + 2 );
-                m_arrectScaleMinMaxVal[idx].setHeight( m_arrectScaleMinMaxVal[idx].height() + 2 );
-                m_arrectScaleMinMaxVal[idx].moveTop( yDivLine - m_arrectScaleMinMaxVal[idx].height()/2 );
-
-                if( m_arrectScaleMinMaxVal[idx].bottom() >= rectDiag.bottom() )
-                {
-                    int cyOffset = m_arrectScaleMinMaxVal[idx].bottom()-rectDiag.bottom()+1;
-                    m_arrectScaleMinMaxVal[idx].moveBottom( m_arrectScaleMinMaxVal[idx].bottom()-cyOffset );
-                }
-                else if( m_arrectScaleMinMaxVal[idx].top() <= rectDiag.top() )
-                {
-                    int cyOffset = rectDiag.top()-m_arrectScaleMinMaxVal[idx].top()+1;
-                    m_arrectScaleMinMaxVal[idx].moveTop( m_arrectScaleMinMaxVal[idx].top()+cyOffset );
-                }
-            }
-            break;
-
-        } // case( PosLeft || PosRight )
-
-        default:
-        {
-            break;
-        }
-
-    } // switch( m_layoutPos )
 
     // Mark current process depth as executed (reset bit)
     //---------------------------------------------------
@@ -1607,18 +1829,20 @@ void CDiagObjAxisLabel::updateLayout()
 } // updateLayout
 
 //------------------------------------------------------------------------------
+/*! @brief Internal auxiliary method to do calculation for data processing.
+
+    The diagrams layout processing is finished and the area of
+    axis label is now known. The axis label, the unit and the
+    division line labels may now be moved to their final positions.
+*/
 void CDiagObjAxisLabel::updateData()
 //------------------------------------------------------------------------------
 {
-    QString strTrcMsg;
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjUpdate,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "updateData",
         /* strAddInfo   */ "" );
-
-    QRect rectDiag(0,0,1,1);
 
     const CPixmapDiagram* pPixmapDiagram = nullptr;
 
@@ -1633,14 +1857,15 @@ void CDiagObjAxisLabel::updateData()
         return;
     }
 
-    rectDiag.setLeft( pPixmapDiagram->getMarginLeft() );
-    rectDiag.setWidth( pPixmapDiagram->getWidth()-pPixmapDiagram->getMarginLeft()-pPixmapDiagram->getMarginRight() );
-    rectDiag.setTop( pPixmapDiagram->getMarginTop() );
-    rectDiag.setHeight( pPixmapDiagram->getHeight()-pPixmapDiagram->getMarginTop()-pPixmapDiagram->getMarginBottom() );
+    QRect rectDiag = getDiagRect();
 
     // Please note that the axis label rectangle need to be calculated before
     // calculating the rectangle for the division lines as the position for
     // the division lines may depend on the size of the axis label rectangle.
+
+    m_rectAxisLabel = getAxisLabelBoundingRect();
+
+#if 0
 
     // Calculate position of the axis label rectangle
     //==========================================================================
@@ -1648,9 +1873,13 @@ void CDiagObjAxisLabel::updateData()
     QRect rectDivLineLabel;
     QRect rectAxisLabel;
 
-    if( m_ararbShowPartsLayer[EDivLineLabelsPartAxisLabel][EDivLineLayerMain] || m_arbShowPartsUnit[EDivLineLabelsPartAxisLabel] )
+    bool bShowDivLineLabels = m_ararbShowPartsLayer[EDivLineLabelsPartLabels][EDivLineLayerMain];
+    bool m_bShowAxisLabel = m_bShowAxisLabel;
+    bool m_bShowUnitAtAxisLabel = m_bShowUnitAtAxisLabel;
+
+    if( m_bShowAxisLabel || m_bShowUnitAtAxisLabel )
     {
-        if( m_ararbShowPartsLayer[EDivLineLabelsPartLabels][EDivLineLayerMain] )
+        if( bShowDivLineLabels )
         {
             rectDivLineLabel = m_rectDivLineLabelsMaxTextExtent;
         }
@@ -1660,64 +1889,53 @@ void CDiagObjAxisLabel::updateData()
         int cxWidth  = rectAxisLabel.width();
         int cyHeight = rectAxisLabel.height();
 
-        switch( m_layoutPos )
+        if (m_layoutPos == ELayoutPosTop)
         {
-            case ELayoutPosTop:
+            if( rectDivLineLabel.isValid() && m_iSpacingDiagPartCenter2AxisLabel < rectDivLineLabel.height() )
             {
-                if( rectDivLineLabel.isValid() && m_iSpaceDiagPartCenter2AxisLabel < rectDivLineLabel.height() )
-                {
-                    rectAxisLabel.moveBottom( m_rectContent.bottom() - rectDivLineLabel.height() - m_iSpaceDiagPartCenter2AxisLabel );
-                }
-                else
-                {
-                    rectAxisLabel.moveBottom( m_rectContent.bottom() - m_iSpaceDiagPartCenter2AxisLabel );
-                }
-                rectAxisLabel.moveLeft( m_rectContent.width()/2 - cxWidth/2 );
-                break;
+                rectAxisLabel.moveBottom( m_rectContent.bottom() - rectDivLineLabel.height() - m_iSpacingDiagPartCenter2AxisLabel );
             }
-            case ELayoutPosBottom:
+            else
             {
-                if( rectDivLineLabel.isValid() && m_iSpaceDiagPartCenter2AxisLabel < rectDivLineLabel.height() )
-                {
-                    rectAxisLabel.moveTop( m_rectContent.top() + rectDivLineLabel.height() + m_iSpaceDiagPartCenter2AxisLabel );
-                }
-                else
-                {
-                    rectAxisLabel.moveTop( m_rectContent.top() + m_iSpaceDiagPartCenter2AxisLabel );
-                }
-                rectAxisLabel.moveLeft( m_rectContent.width()/2 - cxWidth/2 );
-                break;
+                rectAxisLabel.moveBottom( m_rectContent.bottom() - m_iSpacingDiagPartCenter2AxisLabel );
             }
-            case ELayoutPosLeft:
+            rectAxisLabel.moveLeft( m_rectContent.width()/2 - cxWidth/2 );
+        }
+        else if (m_layoutPos == ELayoutPosBottom)
+        {
+            if( rectDivLineLabel.isValid() && m_iSpacingDiagPartCenter2AxisLabel < rectDivLineLabel.height() )
             {
-                if( rectDivLineLabel.isValid() && m_iSpaceDiagPartCenter2AxisLabel < rectDivLineLabel.width() )
-                {
-                    rectAxisLabel.moveRight( m_rectContent.right() - rectDivLineLabel.width() - m_iSpaceDiagPartCenter2AxisLabel );
-                }
-                else
-                {
-                    rectAxisLabel.moveRight( m_rectContent.right() - m_iSpaceDiagPartCenter2AxisLabel );
-                }
-                rectAxisLabel.moveTop( m_rectContent.top() + m_rectContent.height()/2 - cyHeight/2 );
-                break;
+                rectAxisLabel.moveTop( m_rectContent.top() + rectDivLineLabel.height() + m_iSpacingDiagPartCenter2AxisLabel );
             }
-            case ELayoutPosRight:
+            else
             {
-                if( rectDivLineLabel.isValid() && m_iSpaceDiagPartCenter2AxisLabel < rectDivLineLabel.width() )
-                {
-                    rectAxisLabel.moveLeft( m_rectContent.left() + rectDivLineLabel.width() + m_iSpaceDiagPartCenter2AxisLabel );
-                }
-                else
-                {
-                    rectAxisLabel.moveLeft( m_rectContent.left() + m_iSpaceDiagPartCenter2AxisLabel );
-                }
-                rectAxisLabel.moveTop( m_rectContent.top() + m_rectContent.height()/2 - cyHeight/2 );
-                break;
+                rectAxisLabel.moveTop( m_rectContent.top() + m_iSpacingDiagPartCenter2AxisLabel );
             }
-            default:
+            rectAxisLabel.moveLeft( m_rectContent.width()/2 - cxWidth/2 );
+        }
+        else if (m_layoutPos == ELayoutPosLeft)
+        {
+            if( rectDivLineLabel.isValid() && m_iSpacingDiagPartCenter2AxisLabel < rectDivLineLabel.width() )
             {
-                break;
+                rectAxisLabel.moveRight( m_rectContent.right() - rectDivLineLabel.width() - m_iSpacingDiagPartCenter2AxisLabel );
             }
+            else
+            {
+                rectAxisLabel.moveRight( m_rectContent.right() - m_iSpacingDiagPartCenter2AxisLabel );
+            }
+            rectAxisLabel.moveTop( m_rectContent.top() + m_rectContent.height()/2 - cyHeight/2 );
+        }
+        else if (m_layoutPos == ELayoutPosRight)
+        {
+            if( rectDivLineLabel.isValid() && m_iSpacingDiagPartCenter2AxisLabel < rectDivLineLabel.width() )
+            {
+                rectAxisLabel.moveLeft( m_rectContent.left() + rectDivLineLabel.width() + m_iSpacingDiagPartCenter2AxisLabel );
+            }
+            else
+            {
+                rectAxisLabel.moveLeft( m_rectContent.left() + m_iSpacingDiagPartCenter2AxisLabel );
+            }
+            rectAxisLabel.moveTop( m_rectContent.top() + m_rectContent.height()/2 - cyHeight/2 );
         }
     }
     m_rectAxisLabel = rectAxisLabel;
@@ -1739,137 +1957,124 @@ void CDiagObjAxisLabel::updateData()
 
     // As for the Y-axis the physical unit string should be adjusted to the division line labels
     // the extent (width) of the physical unit string depends on the division line labels.
-    if( m_arbShowPartsUnit[EDivLineLabelsPartLabels] )
+    if( m_bShowUnitAtDivLines )
     {
-        switch( m_layoutPos )
+        if (m_layoutPos == ELayoutPosTop || m_layoutPos == ELayoutPosBottom)
         {
             // X-Axis (vertical division lines)
-            case ELayoutPosTop:
-            case ELayoutPosBottom:
+            xDivLine = m_pDiagScale->getMaxValPix();
+            m_rectDivLineLabelsPhysUnit.moveLeft( xDivLine - m_rectDivLineLabelsPhysUnit.width()/2 );
+
+            // Now we need to adjust the horizontal position of the unit label.
+            // The unit should always be indicated.and the division line labels may not overlap
+            // the unit string. The unit string will be moved to fit in the diagram window or
+            // - if the axis label should be adjusted to the center area - to fit in the
+            // diagrams center part.
+            if( m_bAdjustContentRect2DiagPartCenter )
             {
-                xDivLine = m_pDiagScale->getMaxValPix();
-                m_rectDivLineLabelsPhysUnit.moveLeft( xDivLine - m_rectDivLineLabelsPhysUnit.width()/2 );
-
-                // Now we need to adjust the horizontal position of the unit label.
-                // The unit should always be indicated.and the division line labels may not overlap
-                // the unit string. The unit string will be moved to fit in the diagram window or
-                // - if the axis label should be adjusted to the center area - to fit in the
-                // diagrams center part.
-                if( m_bAdjustContentRect2DiagPartCenter )
+                if( m_rectDivLineLabelsPhysUnit.right() >= pPixmapDiagram->getRectPartCenter().right() )
                 {
-                    if( m_rectDivLineLabelsPhysUnit.right() >= pPixmapDiagram->getRectPartCenter().right() )
-                    {
-                        cxOffset = m_rectDivLineLabelsPhysUnit.right()-pPixmapDiagram->getRectPartCenter().right()+1;
-                        m_rectDivLineLabelsPhysUnit.moveRight( m_rectDivLineLabelsPhysUnit.right()-cxOffset );
-                    }
+                    cxOffset = m_rectDivLineLabelsPhysUnit.right()-pPixmapDiagram->getRectPartCenter().right()+1;
+                    m_rectDivLineLabelsPhysUnit.moveRight( m_rectDivLineLabelsPhysUnit.right()-cxOffset );
                 }
-                else
+            }
+            else
+            {
+                if( m_rectDivLineLabelsPhysUnit.right() >= rectDiag.right() )
                 {
-                    if( m_rectDivLineLabelsPhysUnit.right() >= rectDiag.right() )
-                    {
-                        cxOffset = m_rectDivLineLabelsPhysUnit.right()-rectDiag.right()+1;
-                        m_rectDivLineLabelsPhysUnit.moveRight( m_rectDivLineLabelsPhysUnit.right()-cxOffset );
-                    }
+                    cxOffset = m_rectDivLineLabelsPhysUnit.right()-rectDiag.right()+1;
+                    m_rectDivLineLabelsPhysUnit.moveRight( m_rectDivLineLabelsPhysUnit.right()-cxOffset );
                 }
-
-                // Now we need to adjust the vertical position of the unit label.
-                // For this we need to access the diagrams center part.
-                if( m_layoutPos == ELayoutPosTop )
-                {
-                    // Above the diagrams center part ..
-                    if( m_iSpaceDiagPartCenter2DivLineLabels >= 0 )
-                    {
-                        m_rectDivLineLabelsPhysUnit.moveBottom( pPixmapDiagram->getRectPartCenter().top() - m_iSpaceDiagPartCenter2DivLineLabels );
-                    }
-                    // Within the diagrams center part ..
-                    else
-                    {
-                        m_rectDivLineLabelsPhysUnit.moveTop( pPixmapDiagram->getRectPartCenter().top() - m_iSpaceDiagPartCenter2DivLineLabels );
-                    }
-                }
-                else
-                {
-                    // Below the diagrams center part ..
-                    if( m_iSpaceDiagPartCenter2DivLineLabels >= 0 )
-                    {
-                        m_rectDivLineLabelsPhysUnit.moveTop( pPixmapDiagram->getRectPartCenter().bottom() + m_iSpaceDiagPartCenter2DivLineLabels );
-                    }
-                    // Within the diagrams center part ..
-                    else
-                    {
-                        m_rectDivLineLabelsPhysUnit.moveBottom( pPixmapDiagram->getRectPartCenter().bottom() + m_iSpaceDiagPartCenter2DivLineLabels );
-                    }
-                }
-                break;
             }
 
+            // Now we need to adjust the vertical position of the unit label.
+            // For this we need to access the diagrams center part.
+            if( m_layoutPos == ELayoutPosTop )
+            {
+                // Above the diagrams center part ..
+                if( m_iSpacingDiagPartCenter2DivLineLabels >= 0 )
+                {
+                    m_rectDivLineLabelsPhysUnit.moveBottom( pPixmapDiagram->getRectPartCenter().top() - m_iSpacingDiagPartCenter2DivLineLabels );
+                }
+                // Within the diagrams center part ..
+                else
+                {
+                    m_rectDivLineLabelsPhysUnit.moveTop( pPixmapDiagram->getRectPartCenter().top() - m_iSpacingDiagPartCenter2DivLineLabels );
+                }
+            }
+            else
+            {
+                // Below the diagrams center part ..
+                if( m_iSpacingDiagPartCenter2DivLineLabels >= 0 )
+                {
+                    m_rectDivLineLabelsPhysUnit.moveTop( pPixmapDiagram->getRectPartCenter().bottom() + m_iSpacingDiagPartCenter2DivLineLabels );
+                }
+                // Within the diagrams center part ..
+                else
+                {
+                    m_rectDivLineLabelsPhysUnit.moveBottom( pPixmapDiagram->getRectPartCenter().bottom() + m_iSpacingDiagPartCenter2DivLineLabels );
+                }
+            }
+        } // if (m_layoutPos == ELayoutPosTop || m_layoutPos == ELayoutPosBottom)
+
+        else if (m_layoutPos == ELayoutPosLeft || m_layoutPos == ELayoutPosRight)
+        {
             // Y-Axis (horizontal division lines)
-            case ELayoutPosLeft:
-            case ELayoutPosRight:
+            yDivLine = m_pDiagScale->getMaxValPix();
+            m_rectDivLineLabelsPhysUnit.moveTop( yDivLine - m_rectDivLineLabelsPhysUnit.height()/2 );
+
+            // Now we need to adjust the vertical position of the unit label.
+            // The unit should always be indicated.and the division line labels may not overlap
+            // the unit string. The unit string will be moved to fit in the diagram window or
+            // - if the axis label should be adjusted to the center area - to fit in the
+            // diagrams center part.
+            if( m_bAdjustContentRect2DiagPartCenter )
             {
-                yDivLine = m_pDiagScale->getMaxValPix();
-                m_rectDivLineLabelsPhysUnit.moveTop( yDivLine - m_rectDivLineLabelsPhysUnit.height()/2 );
-
-                // Now we need to adjust the vertical position of the unit label.
-                // The unit should always be indicated.and the division line labels may not overlap
-                // the unit string. The unit string will be moved to fit in the diagram window or
-                // - if the axis label should be adjusted to the center area - to fit in the
-                // diagrams center part.
-                if( m_bAdjustContentRect2DiagPartCenter )
+                if( m_rectDivLineLabelsPhysUnit.top() <= pPixmapDiagram->getRectPartCenter().top() )
                 {
-                    if( m_rectDivLineLabelsPhysUnit.top() <= pPixmapDiagram->getRectPartCenter().top() )
-                    {
-                        cyOffset = pPixmapDiagram->getRectPartCenter().top()-m_rectDivLineLabelsPhysUnit.top()+1;
-                        m_rectDivLineLabelsPhysUnit.moveTop( m_rectDivLineLabelsPhysUnit.top()+cyOffset );
-                    }
+                    cyOffset = pPixmapDiagram->getRectPartCenter().top()-m_rectDivLineLabelsPhysUnit.top()+1;
+                    m_rectDivLineLabelsPhysUnit.moveTop( m_rectDivLineLabelsPhysUnit.top()+cyOffset );
                 }
-                else
-                {
-                    if( m_rectDivLineLabelsPhysUnit.top() <= rectDiag.top() )
-                    {
-                        cyOffset = rectDiag.top()-m_rectDivLineLabelsPhysUnit.top()+1;
-                        m_rectDivLineLabelsPhysUnit.moveTop( m_rectDivLineLabelsPhysUnit.top()+cyOffset );
-                    }
-                }
-
-                // Now we need to adjust the horizontal position of the unit label.
-                // For this we need to access the diagrams center part.
-                if( m_layoutPos == ELayoutPosLeft )
-                {
-                    // Left of the diagrams center part ..
-                    if( m_iSpaceDiagPartCenter2DivLineLabels >= 0 )
-                    {
-                        m_rectDivLineLabelsPhysUnit.moveRight( pPixmapDiagram->getRectPartCenter().left() - m_iSpaceDiagPartCenter2DivLineLabels );
-                    }
-                    // Within the diagrams center part ..
-                    else
-                    {
-                        m_rectDivLineLabelsPhysUnit.moveLeft( pPixmapDiagram->getRectPartCenter().left() - m_iSpaceDiagPartCenter2DivLineLabels );
-                    }
-                }
-                else
-                {
-                    // Right of the diagrams center part ..
-                    if( m_iSpaceDiagPartCenter2DivLineLabels >= 0 )
-                    {
-                        m_rectDivLineLabelsPhysUnit.moveLeft( pPixmapDiagram->getRectPartCenter().right() + m_iSpaceDiagPartCenter2DivLineLabels );
-                    }
-                    // Within the diagrams center part ..
-                    else
-                    {
-                        m_rectDivLineLabelsPhysUnit.moveRight( pPixmapDiagram->getRectPartCenter().right() + m_iSpaceDiagPartCenter2DivLineLabels );
-                    }
-                }
-                break;
             }
-            default:
+            else
             {
-                break;
+                if( m_rectDivLineLabelsPhysUnit.top() <= rectDiag.top() )
+                {
+                    cyOffset = rectDiag.top()-m_rectDivLineLabelsPhysUnit.top()+1;
+                    m_rectDivLineLabelsPhysUnit.moveTop( m_rectDivLineLabelsPhysUnit.top()+cyOffset );
+                }
             }
 
-        } // switch( m_layoutPos )
-
-    } // if( m_arbShowPartsUnit[EDivLineLabelsPartLabels] )
+            // Now we need to adjust the horizontal position of the unit label.
+            // For this we need to access the diagrams center part.
+            if( m_layoutPos == ELayoutPosLeft )
+            {
+                // Left of the diagrams center part ..
+                if( m_iSpacingDiagPartCenter2DivLineLabels >= 0 )
+                {
+                    m_rectDivLineLabelsPhysUnit.moveRight( pPixmapDiagram->getRectPartCenter().left() - m_iSpacingDiagPartCenter2DivLineLabels );
+                }
+                // Within the diagrams center part ..
+                else
+                {
+                    m_rectDivLineLabelsPhysUnit.moveLeft( pPixmapDiagram->getRectPartCenter().left() - m_iSpacingDiagPartCenter2DivLineLabels );
+                }
+            }
+            else
+            {
+                // Right of the diagrams center part ..
+                if( m_iSpacingDiagPartCenter2DivLineLabels >= 0 )
+                {
+                    m_rectDivLineLabelsPhysUnit.moveLeft( pPixmapDiagram->getRectPartCenter().right() + m_iSpacingDiagPartCenter2DivLineLabels );
+                }
+                // Within the diagrams center part ..
+                else
+                {
+                    m_rectDivLineLabelsPhysUnit.moveRight( pPixmapDiagram->getRectPartCenter().right() + m_iSpacingDiagPartCenter2DivLineLabels );
+                }
+            }
+        } // if (m_layoutPos == ELayoutPosLeft || m_layoutPos == ELayoutPosRight)
+    } // if( m_bShowUnitAtDivLines )
 
     // Calculate the division line labels
     //-----------------------------------
@@ -1878,240 +2083,226 @@ void CDiagObjAxisLabel::updateData()
     int idxDivLine;
     int idx;
 
-    switch( m_layoutPos )
+    if (m_layoutPos == ELayoutPosTop || m_layoutPos == ELayoutPosBottom)
     {
         // X-Axis (vertical division lines)
-        case ELayoutPosTop:
-        case ELayoutPosBottom:
+
+        // Division lines
+        //---------------
+
+        for( iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
         {
-            // Division lines
-            //---------------
-
-            for( iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
+            for( idxDivLine = 0; idxDivLine < m_ariDivLinesCount[iLayer]; idxDivLine++ )
             {
-                for( idxDivLine = 0; idxDivLine < m_ariDivLinesCount[iLayer]; idxDivLine++ )
-                {
-                    xDivLine = static_cast<int>(m_pDiagScale->getDivLinePix(static_cast<EDivLineLayer>(iLayer), idxDivLine) + 0.5);
-                    m_arariDivLines_px[iLayer][idxDivLine] = xDivLine;
-                }
+                xDivLine = static_cast<int>(m_pDiagScale->getDivLinePix(static_cast<EDivLineLayer>(iLayer), idxDivLine) + 0.5);
+                m_arariDivLines_px[iLayer][idxDivLine] = xDivLine;
             }
+        }
 
-            // Division line labels
-            //---------------------
+        // Division line labels
+        //---------------------
 
-            for( iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
-            {
-                // The labels on the horizontal (X) axis will be output center aligned to
-                // the division lines. The rectangles of the division line labels and the
-                // rectangle for the unit string don't need to be of same size.
-                for( idxDivLine = 0; idxDivLine < m_ariDivLinesCount[iLayer]; idxDivLine++ )
-                {
-                    rectDivLineLabel = m_ararrectDivLineLabels[iLayer][idxDivLine];
-                    xDivLine = static_cast<int>(m_pDiagScale->getDivLinePix(static_cast<EDivLineLayer>(iLayer), idxDivLine) + 0.5);
-                    rectDivLineLabel.moveLeft( xDivLine - rectDivLineLabel.width()/2 );
-
-                    if( m_layoutPos == ELayoutPosTop )
-                    {
-                        // Above of the diagrams center part ..
-                        if( m_iSpaceDiagPartCenter2DivLineLabels >= 0 )
-                        {
-                            rectDivLineLabel.moveBottom( pPixmapDiagram->getRectPartCenter().top() - m_iSpaceDiagPartCenter2DivLineLabels );
-                        }
-                        // Within the diagrams center part ..
-                        else
-                        {
-                            rectDivLineLabel.moveTop( pPixmapDiagram->getRectPartCenter().top() - m_iSpaceDiagPartCenter2DivLineLabels );
-                        }
-                    }
-                    else
-                    {
-                        // Below of the diagrams center part ..
-                        if( m_iSpaceDiagPartCenter2DivLineLabels >= 0 )
-                        {
-                            rectDivLineLabel.moveTop( pPixmapDiagram->getRectPartCenter().bottom() + m_iSpaceDiagPartCenter2DivLineLabels );
-                        }
-                        // Within the diagrams center part ..
-                        else
-                        {
-                            rectDivLineLabel.moveBottom( pPixmapDiagram->getRectPartCenter().bottom() + m_iSpaceDiagPartCenter2DivLineLabels );
-                        }
-                    }
-                    m_ararrectDivLineLabels[iLayer][idxDivLine] = rectDivLineLabel;
-                }
-            } // for( iLayer < CEnumDivLineLayer::count() )
-
-            // Minimum and maximum scale value
-            //---------------------------------
-
-            for( idx = 0; idx < 2; idx++ )
-            {
-                if( !m_arstrScaleMinMaxVal[idx].isEmpty() && m_arrectScaleMinMaxVal[idx].isValid() )
-                {
-                    rectDivLineLabel.setWidth(m_arrectScaleMinMaxVal[idx].width());
-                    rectDivLineLabel.setHeight(m_arrectScaleMinMaxVal[idx].height());
-
-                    if( m_layoutPos == ELayoutPosTop )
-                    {
-                        // Above of the diagrams center part ..
-                        if( m_iSpaceDiagPartCenter2DivLineLabels >= 0 )
-                        {
-                            rectDivLineLabel.moveBottom( pPixmapDiagram->getRectPartCenter().top() - m_iSpaceDiagPartCenter2DivLineLabels );
-                        }
-                        // Within the diagrams center part ..
-                        else
-                        {
-                            rectDivLineLabel.moveTop( pPixmapDiagram->getRectPartCenter().top() - m_iSpaceDiagPartCenter2DivLineLabels );
-                        }
-                    }
-                    else
-                    {
-                        // Below of the diagrams center part ..
-                        if( m_iSpaceDiagPartCenter2DivLineLabels >= 0 )
-                        {
-                            rectDivLineLabel.moveTop( pPixmapDiagram->getRectPartCenter().bottom() + m_iSpaceDiagPartCenter2DivLineLabels );
-                        }
-                        // Within the diagrams center part ..
-                        else
-                        {
-                            rectDivLineLabel.moveBottom( pPixmapDiagram->getRectPartCenter().bottom() + m_iSpaceDiagPartCenter2DivLineLabels );
-                        }
-                    }
-                    if( idx == 0 )
-                    {
-                        xDivLine = m_pDiagScale->getMinValPix();
-                    }
-                    else
-                    {
-                        xDivLine = m_pDiagScale->getMaxValPix();
-                    }
-                    rectDivLineLabel.moveLeft( xDivLine - rectDivLineLabel.width()/2 );
-                    m_arrectScaleMinMaxVal[idx] = rectDivLineLabel;
-                }
-            }
-            break;
-
-        } // case( PosTop || PosBottom )
-
-        // Y-Axis (horizontal division lines)
-        case ELayoutPosLeft:
-        case ELayoutPosRight:
+        for( iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
         {
-            // Division lines
-            //---------------
-
-            for( iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
+            // The labels on the horizontal (X) axis will be output center aligned to
+            // the division lines. The rectangles of the division line labels and the
+            // rectangle for the unit string don't need to be of same size.
+            for( idxDivLine = 0; idxDivLine < m_ariDivLinesCount[iLayer]; idxDivLine++ )
             {
-                // Division lines at the main grid:
-                for( idxDivLine = 0; idxDivLine < m_ariDivLinesCount[iLayer]; idxDivLine++ )
+                rectDivLineLabel = m_ararrectDivLineLabels[iLayer][idxDivLine];
+                xDivLine = static_cast<int>(m_pDiagScale->getDivLinePix(static_cast<EDivLineLayer>(iLayer), idxDivLine) + 0.5);
+                rectDivLineLabel.moveLeft( xDivLine - rectDivLineLabel.width()/2 );
+
+                if( m_layoutPos == ELayoutPosTop )
                 {
-                    yDivLine = static_cast<int>(m_pDiagScale->getDivLinePix(static_cast<EDivLineLayer>(iLayer), idxDivLine) + 0.5);
-                    m_arariDivLines_px[iLayer][idxDivLine] = yDivLine;
-                }
-            }
-
-            // Division line labels
-            //---------------------
-
-            for( iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
-            {
-                // At the vertical (Y) axis the labels are either left or right adjusted.
-                // Each of the rectangles for the division lines and the rectangle for the
-                // unit string must be of same width to allow the adjustment.
-                rectDivLineLabel.setWidth(m_rectDivLineLabelsMaxTextExtent.width());
-                rectDivLineLabel.setHeight(m_rectDivLineLabelsMaxTextExtent.height());
-
-                if( m_layoutPos == ELayoutPosLeft )
-                {
-                    // Left of the diagrams center part ..
-                    if( m_iSpaceDiagPartCenter2DivLineLabels >= 0 )
+                    // Above of the diagrams center part ..
+                    if( m_iSpacingDiagPartCenter2DivLineLabels >= 0 )
                     {
-                        rectDivLineLabel.moveRight( pPixmapDiagram->getRectPartCenter().left() - m_iSpaceDiagPartCenter2DivLineLabels );
+                        rectDivLineLabel.moveBottom( pPixmapDiagram->getRectPartCenter().top() - m_iSpacingDiagPartCenter2DivLineLabels );
                     }
                     // Within the diagrams center part ..
                     else
                     {
-                        rectDivLineLabel.moveLeft( pPixmapDiagram->getRectPartCenter().left() - m_iSpaceDiagPartCenter2DivLineLabels );
+                        rectDivLineLabel.moveTop( pPixmapDiagram->getRectPartCenter().top() - m_iSpacingDiagPartCenter2DivLineLabels );
+                    }
+                }
+                else
+                {
+                    // Below of the diagrams center part ..
+                    if( m_iSpacingDiagPartCenter2DivLineLabels >= 0 )
+                    {
+                        rectDivLineLabel.moveTop( pPixmapDiagram->getRectPartCenter().bottom() + m_iSpacingDiagPartCenter2DivLineLabels );
+                    }
+                    // Within the diagrams center part ..
+                    else
+                    {
+                        rectDivLineLabel.moveBottom( pPixmapDiagram->getRectPartCenter().bottom() + m_iSpacingDiagPartCenter2DivLineLabels );
+                    }
+                }
+                m_ararrectDivLineLabels[iLayer][idxDivLine] = rectDivLineLabel;
+            }
+        } // for( iLayer < CEnumDivLineLayer::count() )
+
+        // Minimum and maximum scale value
+        //---------------------------------
+
+        for( idx = 0; idx < 2; idx++ )
+        {
+            if( !m_arstrScaleMinMaxVal[idx].isEmpty() && m_arrectScaleMinMaxVal[idx].isValid() )
+            {
+                rectDivLineLabel.setWidth(m_arrectScaleMinMaxVal[idx].width());
+                rectDivLineLabel.setHeight(m_arrectScaleMinMaxVal[idx].height());
+
+                if( m_layoutPos == ELayoutPosTop )
+                {
+                    // Above of the diagrams center part ..
+                    if( m_iSpacingDiagPartCenter2DivLineLabels >= 0 )
+                    {
+                        rectDivLineLabel.moveBottom( pPixmapDiagram->getRectPartCenter().top() - m_iSpacingDiagPartCenter2DivLineLabels );
+                    }
+                    // Within the diagrams center part ..
+                    else
+                    {
+                        rectDivLineLabel.moveTop( pPixmapDiagram->getRectPartCenter().top() - m_iSpacingDiagPartCenter2DivLineLabels );
+                    }
+                }
+                else
+                {
+                    // Below of the diagrams center part ..
+                    if( m_iSpacingDiagPartCenter2DivLineLabels >= 0 )
+                    {
+                        rectDivLineLabel.moveTop( pPixmapDiagram->getRectPartCenter().bottom() + m_iSpacingDiagPartCenter2DivLineLabels );
+                    }
+                    // Within the diagrams center part ..
+                    else
+                    {
+                        rectDivLineLabel.moveBottom( pPixmapDiagram->getRectPartCenter().bottom() + m_iSpacingDiagPartCenter2DivLineLabels );
+                    }
+                }
+                if( idx == 0 )
+                {
+                    xDivLine = m_pDiagScale->getMinValPix();
+                }
+                else
+                {
+                    xDivLine = m_pDiagScale->getMaxValPix();
+                }
+                rectDivLineLabel.moveLeft( xDivLine - rectDivLineLabel.width()/2 );
+                m_arrectScaleMinMaxVal[idx] = rectDivLineLabel;
+            }
+        }
+    }
+    else if (m_layoutPos == ELayoutPosLeft || m_layoutPos == ELayoutPosRight)
+    {
+        // Division lines
+        //---------------
+
+        for( iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
+        {
+            // Division lines at the main grid:
+            for( idxDivLine = 0; idxDivLine < m_ariDivLinesCount[iLayer]; idxDivLine++ )
+            {
+                yDivLine = static_cast<int>(m_pDiagScale->getDivLinePix(static_cast<EDivLineLayer>(iLayer), idxDivLine) + 0.5);
+                m_arariDivLines_px[iLayer][idxDivLine] = yDivLine;
+            }
+        }
+
+        // Division line labels
+        //---------------------
+
+        for( iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
+        {
+            // At the vertical (Y) axis the labels are either left or right adjusted.
+            // Each of the rectangles for the division lines and the rectangle for the
+            // unit string must be of same width to allow the adjustment.
+            rectDivLineLabel.setWidth(m_rectDivLineLabelsMaxTextExtent.width());
+            rectDivLineLabel.setHeight(m_rectDivLineLabelsMaxTextExtent.height());
+
+            if( m_layoutPos == ELayoutPosLeft )
+            {
+                // Left of the diagrams center part ..
+                if( m_iSpacingDiagPartCenter2DivLineLabels >= 0 )
+                {
+                    rectDivLineLabel.moveRight( pPixmapDiagram->getRectPartCenter().left() - m_iSpacingDiagPartCenter2DivLineLabels );
+                }
+                // Within the diagrams center part ..
+                else
+                {
+                    rectDivLineLabel.moveLeft( pPixmapDiagram->getRectPartCenter().left() - m_iSpacingDiagPartCenter2DivLineLabels );
+                }
+            }
+            else
+            {
+                // Right of the diagrams center part ..
+                if( m_iSpacingDiagPartCenter2DivLineLabels >= 0 )
+                {
+                    rectDivLineLabel.moveLeft( pPixmapDiagram->getRectPartCenter().right() + m_iSpacingDiagPartCenter2DivLineLabels );
+                }
+                // Within the diagrams center part ..
+                else
+                {
+                    rectDivLineLabel.moveRight( pPixmapDiagram->getRectPartCenter().right() + m_iSpacingDiagPartCenter2DivLineLabels );
+                }
+            }
+            for( idxDivLine = 0; idxDivLine < m_ariDivLinesCount[iLayer]; idxDivLine++ )
+            {
+                yDivLine = static_cast<int>(m_pDiagScale->getDivLinePix(static_cast<EDivLineLayer>(iLayer), idxDivLine) + 0.5);
+                rectDivLineLabel.moveTop( yDivLine - m_rectDivLineLabelsMaxTextExtent.height()/2 );
+                m_ararrectDivLineLabels[iLayer][idxDivLine] = rectDivLineLabel;
+            }
+        } // for( iLayer < CEnumDivLineLayer::count() )
+
+        // Minimum and maximum scale value
+        //---------------------------------
+
+        for( idx = 0; idx < 2; idx++ )
+        {
+            if( !m_arstrScaleMinMaxVal[idx].isEmpty() && m_arrectScaleMinMaxVal[idx].isValid() )
+            {
+                rectDivLineLabel.setWidth(m_arrectScaleMinMaxVal[idx].width());
+                rectDivLineLabel.setHeight(m_arrectScaleMinMaxVal[idx].height());
+
+                if( m_layoutPos == ELayoutPosLeft )
+                {
+                    // Left of the diagrams center part ..
+                    if( m_iSpacingDiagPartCenter2DivLineLabels >= 0 )
+                    {
+                        rectDivLineLabel.moveRight( pPixmapDiagram->getRectPartCenter().left() - m_iSpacingDiagPartCenter2DivLineLabels );
+                    }
+                    // Within the diagrams center part ..
+                    else
+                    {
+                        rectDivLineLabel.moveLeft( pPixmapDiagram->getRectPartCenter().left() - m_iSpacingDiagPartCenter2DivLineLabels );
                     }
                 }
                 else
                 {
                     // Right of the diagrams center part ..
-                    if( m_iSpaceDiagPartCenter2DivLineLabels >= 0 )
+                    if( m_iSpacingDiagPartCenter2DivLineLabels >= 0 )
                     {
-                        rectDivLineLabel.moveLeft( pPixmapDiagram->getRectPartCenter().right() + m_iSpaceDiagPartCenter2DivLineLabels );
+                        rectDivLineLabel.moveLeft( pPixmapDiagram->getRectPartCenter().right() + m_iSpacingDiagPartCenter2DivLineLabels );
                     }
                     // Within the diagrams center part ..
                     else
                     {
-                        rectDivLineLabel.moveRight( pPixmapDiagram->getRectPartCenter().right() + m_iSpaceDiagPartCenter2DivLineLabels );
+                        rectDivLineLabel.moveRight( pPixmapDiagram->getRectPartCenter().right() + m_iSpacingDiagPartCenter2DivLineLabels );
                     }
                 }
-                for( idxDivLine = 0; idxDivLine < m_ariDivLinesCount[iLayer]; idxDivLine++ )
+                if( idx == 0 )
                 {
-                    yDivLine = static_cast<int>(m_pDiagScale->getDivLinePix(static_cast<EDivLineLayer>(iLayer), idxDivLine) + 0.5);
-                    rectDivLineLabel.moveTop( yDivLine - m_rectDivLineLabelsMaxTextExtent.height()/2 );
-                    m_ararrectDivLineLabels[iLayer][idxDivLine] = rectDivLineLabel;
+                    yDivLine = m_pDiagScale->getMinValPix();
                 }
-            } // for( iLayer < CEnumDivLineLayer::count() )
-
-            // Minimum and maximum scale value
-            //---------------------------------
-
-            for( idx = 0; idx < 2; idx++ )
-            {
-                if( !m_arstrScaleMinMaxVal[idx].isEmpty() && m_arrectScaleMinMaxVal[idx].isValid() )
+                else
                 {
-                    rectDivLineLabel.setWidth(m_arrectScaleMinMaxVal[idx].width());
-                    rectDivLineLabel.setHeight(m_arrectScaleMinMaxVal[idx].height());
-
-                    if( m_layoutPos == ELayoutPosLeft )
-                    {
-                        // Left of the diagrams center part ..
-                        if( m_iSpaceDiagPartCenter2DivLineLabels >= 0 )
-                        {
-                            rectDivLineLabel.moveRight( pPixmapDiagram->getRectPartCenter().left() - m_iSpaceDiagPartCenter2DivLineLabels );
-                        }
-                        // Within the diagrams center part ..
-                        else
-                        {
-                            rectDivLineLabel.moveLeft( pPixmapDiagram->getRectPartCenter().left() - m_iSpaceDiagPartCenter2DivLineLabels );
-                        }
-                    }
-                    else
-                    {
-                        // Right of the diagrams center part ..
-                        if( m_iSpaceDiagPartCenter2DivLineLabels >= 0 )
-                        {
-                            rectDivLineLabel.moveLeft( pPixmapDiagram->getRectPartCenter().right() + m_iSpaceDiagPartCenter2DivLineLabels );
-                        }
-                        // Within the diagrams center part ..
-                        else
-                        {
-                            rectDivLineLabel.moveRight( pPixmapDiagram->getRectPartCenter().right() + m_iSpaceDiagPartCenter2DivLineLabels );
-                        }
-                    }
-                    if( idx == 0 )
-                    {
-                        yDivLine = m_pDiagScale->getMinValPix();
-                    }
-                    else
-                    {
-                        yDivLine = m_pDiagScale->getMaxValPix();
-                    }
-                    rectDivLineLabel.moveTop( yDivLine - rectDivLineLabel.height()/2 );
-                    m_arrectScaleMinMaxVal[idx] = rectDivLineLabel;
+                    yDivLine = m_pDiagScale->getMaxValPix();
                 }
+                rectDivLineLabel.moveTop( yDivLine - rectDivLineLabel.height()/2 );
+                m_arrectScaleMinMaxVal[idx] = rectDivLineLabel;
             }
-            break;
-
-        } // case( PosLeft || PosRight )
-
-        default:
-        {
-            break;
         }
+    } // if (m_layoutPos == ELayoutPosLeft || m_layoutPos == ELayoutPosRight)
 
-    } // switch( m_layoutPos )
+#endif
 
     // Mark current process depth as executed (reset bit)
     //---------------------------------------------------
@@ -2124,15 +2315,11 @@ void CDiagObjAxisLabel::updateData()
 void CDiagObjAxisLabel::updatePixmap( QPaintDevice* i_pPaintDevice )
 //------------------------------------------------------------------------------
 {
-    QString strTrcMsg;
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjUpdate,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "updatePixmap",
         /* strAddInfo   */ "" );
-
-    QRect rectDiag(0,0,1,1);
 
     const CPixmapDiagram* pPixmapDiagram = nullptr;
 
@@ -2147,356 +2334,288 @@ void CDiagObjAxisLabel::updatePixmap( QPaintDevice* i_pPaintDevice )
         return;
     }
 
-    rectDiag.setLeft( pPixmapDiagram->getMarginLeft() );
-    rectDiag.setWidth( pPixmapDiagram->getWidth()-pPixmapDiagram->getMarginLeft()-pPixmapDiagram->getMarginRight() );
-    rectDiag.setTop( pPixmapDiagram->getMarginTop() );
-    rectDiag.setHeight( pPixmapDiagram->getHeight()-pPixmapDiagram->getMarginTop()-pPixmapDiagram->getMarginBottom() );
+    QRect rectDiag = getDiagRect();
 
-    QPainter      painter(i_pPaintDevice);
-    int           iLayer;
-    QRect         rectDivLineLabel;
-    QString       strDivLineLabel;
-    int           idxDivLine;
-    int           idx;
-    QFontMetrics  fntmtr(m_arfntParts[EDivLineLabelsPartAxisLabel]);
-    QRect         rectAxisLabel;
-    QString       strAxisLabel;
+    //QPainter      painter(i_pPaintDevice);
+    //int           iLayer;
+    //QRect         rectDivLineLabel;
+    //QString       strDivLineLabel;
+    //int           idxDivLine;
+    //int           idx;
+    //QFontMetrics  fntmtr(m_arfntParts[EDivLineLabelsPartAxisLabel]);
+    //QRect         rectAxisLabel;
 
-    if( m_ararbShowPartsLayer[EDivLineLabelsPartAxisLabel][EDivLineLayerMain] || m_arbShowPartsUnit[EDivLineLabelsPartAxisLabel] )
-    {
-        strAxisLabel = m_strAxisLabel;
-
-        if( m_arbShowPartsUnit[EDivLineLabelsPartAxisLabel] )
-        {
-            if( !strAxisLabel.isEmpty() )
-            {
-                strAxisLabel += " / ";
-            }
-            strAxisLabel += m_strPhysUnitLabels;
-        }
-    }
+    paintAxisLabel(i_pPaintDevice);
 
     // Label the axis at the grid lines
     //---------------------------------
 
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strTrcMsg  = "Labeling axis at ";
-        strTrcMsg += layoutPos2Str(m_layoutPos) + ":";
-        mthTracer.trace(strTrcMsg);
-    }
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    strTrcMsg  = "Labeling axis at ";
+    //    strTrcMsg += layoutPos2Str(m_layoutPos) + ":";
+    //    mthTracer.trace(strTrcMsg);
+    //}
 
-    switch( m_layoutPos )
+#if 0
+    if (m_layoutPos == ELayoutPosTop || m_layoutPos == ELayoutPosBottom)
     {
         // X-Axis (vertical lines from diagrams center area border to axis labels)
-        case ELayoutPosTop:
-        case ELayoutPosBottom:
+        int iDivLineLabelsVisibleCount = 0;
+        int idxDivLineLabelLastVisible = -1;
+        int iLayerOfDivLineLabelLastVisible = -1;
+        int xDivLine;
+        int cxOffset;
+
+        // Division lines
+        //---------------
+
+        for( iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
         {
-            int iDivLineLabelsVisibleCount = 0;
-            int idxDivLineLabelLastVisible = -1;
-            int iLayerOfDivLineLabelLastVisible = -1;
-            int xDivLine;
-            int cxOffset;
-
-            // Division lines
-            //---------------
-
-            for( iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
+            if( m_ararbShowPartsLayer[EDivLineLabelsPartLines][iLayer] )
             {
-                if( m_ararbShowPartsLayer[EDivLineLabelsPartLines][iLayer] )
-                {
-                    painter.setPen(m_arcolPartsFg[EDivLineLabelsPartLines]);
+                painter.setPen(m_arcolPartsFg[EDivLineLabelsPartLines]);
 
-                    for( idxDivLine = 0; idxDivLine < m_ariDivLinesCount[iLayer]; idxDivLine++ )
+                for( idxDivLine = 0; idxDivLine < m_ariDivLinesCount[iLayer]; idxDivLine++ )
+                {
+                    xDivLine = m_arariDivLines_px[iLayer][idxDivLine];
+
+                    if( m_layoutPos == ELayoutPosTop )
                     {
-                        xDivLine = m_arariDivLines_px[iLayer][idxDivLine];
-
-                        if( m_layoutPos == ELayoutPosTop )
-                        {
-                            painter.drawLine(xDivLine, m_rectContent.bottom()-m_iSpaceDiagPartCenter2DivLineLabels+2, xDivLine, m_rectContent.bottom());
-                        }
-                        else
-                        {
-                            painter.drawLine(xDivLine, m_rectContent.top(), xDivLine, m_rectContent.top()+m_iSpaceDiagPartCenter2DivLineLabels-2);
-                        }
+                        painter.drawLine(xDivLine, m_rectContent.bottom()-m_iSpacingDiagPartCenter2DivLineLabels+2, xDivLine, m_rectContent.bottom());
                     }
-                } // if( m_bShowDivLines || m_bShowSubDivLines )
-            } // for( iLayer < CEnumDivLineLayer::count() )
+                    else
+                    {
+                        painter.drawLine(xDivLine, m_rectContent.top(), xDivLine, m_rectContent.top()+m_iSpacingDiagPartCenter2DivLineLabels-2);
+                    }
+                }
+            } // if( m_bShowDivLines || m_bShowSubDivLines )
+        } // for( iLayer < CEnumDivLineLayer::count() )
 
-            // Physical unit at the maximum scale value
-            //-----------------------------------------
+        // Physical unit at the maximum scale value
+        //-----------------------------------------
 
-            painter.setFont(m_arfntParts[EDivLineLabelsPartLabels]);
-            painter.setPen(m_arcolPartsFg[EDivLineLabelsPartLabels]);
+        painter.setFont(m_arfntParts[EDivLineLabelsPartLabels]);
+        painter.setPen(m_arcolPartsFg[EDivLineLabelsPartLabels]);
 
-            // Please note that we don't draw the text for the physical unit yet.
-            // If it is necessary to indicate the maximum scale value as only
-            // one or even no division line label is visible the physical unit should
-            // not be indicated at the right border of the diagrams center area but
-            // the maximum scale value should be drawn there. In this case the physical
-            // unit should be moved to the left. A good choice would be:
-            // - behind the minimum scale value label
-            // - behind the last visible division line label.
-            if( m_arbShowPartsUnit[EDivLineLabelsPartLabels] )
+        // Please note that we don't draw the text for the physical unit yet.
+        // If it is necessary to indicate the maximum scale value as only
+        // one or even no division line label is visible the physical unit should
+        // not be indicated at the right border of the diagrams center area but
+        // the maximum scale value should be drawn there. In this case the physical
+        // unit should be moved to the left. A good choice would be:
+        // - behind the minimum scale value label
+        // - behind the last visible division line label.
+        if( m_bShowUnitAtDivLines )
+        {
+            // But the division line labels should not be placed where the unit
+            // string may be indicated ... (see method "intersectsDivLineLabels").
+            m_bDivLineLabelsPhysUnitVisible = true;
+        }
+
+        // Labels at the division lines
+        //------------------------------
+
+        // We start with the highest layer (the main grid lines) as they are
+        // "more important" than the sub division lines.
+        for( iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
+        {
+            if( m_ararbShowPartsLayer[EDivLineLabelsPartLabels][iLayer] )
             {
-                // But the division line labels should not be placed where the unit
-                // string may be indicated ... (see method "intersectsDivLineLabels").
-                m_bDivLineLabelsPhysUnitVisible = true;
-            }
-
-            // Labels at the division lines
-            //------------------------------
-
-            // We start with the highest layer (the main grid lines) as they are
-            // "more important" than the sub division lines.
-            for( iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
-            {
-                if( m_ararbShowPartsLayer[EDivLineLabelsPartLabels][iLayer] )
+                if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
                 {
+                    strTrcMsg = "Division lines:";
+                    mthTracer.trace(strTrcMsg);
+                }
+
+                for( idxDivLine = 0; idxDivLine < m_ariDivLinesCount[iLayer]; idxDivLine++ )
+                {
+                    strDivLineLabel = m_ararstrDivLineLabels[iLayer][idxDivLine];
+                    rectDivLineLabel = m_ararrectDivLineLabels[iLayer][idxDivLine];
+
                     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
                     {
-                        strTrcMsg = "Division lines:";
+                        strTrcMsg  = "[";
+                        strTrcMsg += QString::number(idxDivLine);
+                        strTrcMsg += "]: ";
+                        strTrcMsg += strDivLineLabel + "; ";
+                        strTrcMsg += "T=" + QString::number(rectDivLineLabel.top()) + ",";
+                        strTrcMsg += "B=" + QString::number(rectDivLineLabel.bottom()) + ",";
+                        strTrcMsg += "L=" + QString::number(rectDivLineLabel.left()) + ",";
+                        strTrcMsg += "R=" + QString::number(rectDivLineLabel.right());
                         mthTracer.trace(strTrcMsg);
                     }
 
-                    for( idxDivLine = 0; idxDivLine < m_ariDivLinesCount[iLayer]; idxDivLine++ )
+                    // To discover overlapping division line labels the rectangle extents
+                    // of the division line labels have been stored in an array:
+                    if( m_bAdjustContentRect2DiagPartCenter )
                     {
-                        strDivLineLabel = m_ararstrDivLineLabels[iLayer][idxDivLine];
-                        rectDivLineLabel = m_ararrectDivLineLabels[iLayer][idxDivLine];
-
-                        if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
+                        if( rectDivLineLabel.left() > pPixmapDiagram->getRectPartCenter().left()
+                            && rectDivLineLabel.right() < pPixmapDiagram->getRectPartCenter().right() )
                         {
-                            strTrcMsg  = "[";
-                            strTrcMsg += QString::number(idxDivLine);
-                            strTrcMsg += "]: ";
-                            strTrcMsg += strDivLineLabel + "; ";
-                            strTrcMsg += "T=" + QString::number(rectDivLineLabel.top()) + ",";
-                            strTrcMsg += "B=" + QString::number(rectDivLineLabel.bottom()) + ",";
-                            strTrcMsg += "L=" + QString::number(rectDivLineLabel.left()) + ",";
-                            strTrcMsg += "R=" + QString::number(rectDivLineLabel.right());
-                            mthTracer.trace(strTrcMsg);
-                        }
-
-                        // To discover overlapping division line labels the rectangle extents
-                        // of the division line labels have been stored in an array:
-                        if( m_bAdjustContentRect2DiagPartCenter )
-                        {
-                            if( rectDivLineLabel.left() > pPixmapDiagram->getRectPartCenter().left()
-                             && rectDivLineLabel.right() < pPixmapDiagram->getRectPartCenter().right() )
-                            {
-                                bool bIntersectsWithExistingDivLineLabel = false;
-                                if (idxDivLine > 0) {
-                                    bIntersectsWithExistingDivLineLabel =
-                                        intersectsDivLineLabels(rectDivLineLabel, iLayer, 0, idxDivLine-1);
-                                }
-                                if (!bIntersectsWithExistingDivLineLabel)
-                                {
-                                    m_ararbDivLineLabelsVisible[iLayer][idxDivLine] = true;
-                                    idxDivLineLabelLastVisible = idxDivLine;
-                                    iLayerOfDivLineLabelLastVisible = iLayer;
-                                    iDivLineLabelsVisibleCount++;
-
-                                    if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
-                                    {
-                                        QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
-                                        painter.fillRect( rectDivLineLabel, brush );
-                                    }
-                                    painter.drawText(rectDivLineLabel,Qt::AlignHCenter|Qt::AlignVCenter,strDivLineLabel); //lint !e655
-                                }
+                            bool bIntersectsWithExistingDivLineLabel = false;
+                            if (idxDivLine > 0) {
+                                bIntersectsWithExistingDivLineLabel =
+                                    intersectsDivLineLabels(rectDivLineLabel, iLayer, 0, idxDivLine-1);
                             }
-                        }
-                        else
-                        {
-                            if( rectDivLineLabel.left() >= rectDiag.left()
-                             && rectDivLineLabel.right() <= rectDiag.right()
-                             && rectDivLineLabel.top() >= rectDiag.top()
-                             && rectDivLineLabel.bottom() <= rectDiag.bottom() )
+                            if (!bIntersectsWithExistingDivLineLabel)
                             {
-                                bool bIntersectsWithExistingDivLineLabel = false;
-                                if (idxDivLine > 0) {
-                                    bIntersectsWithExistingDivLineLabel =
-                                        intersectsDivLineLabels(rectDivLineLabel, iLayer, 0, idxDivLine-1);
-                                }
-                                if (!bIntersectsWithExistingDivLineLabel)
-                                {
-                                    m_ararbDivLineLabelsVisible[iLayer][idxDivLine] = true;
-                                    idxDivLineLabelLastVisible = idxDivLine;
-                                    iLayerOfDivLineLabelLastVisible = iLayer;
-                                    iDivLineLabelsVisibleCount++;
+                                m_ararbDivLineLabelsVisible[iLayer][idxDivLine] = true;
+                                idxDivLineLabelLastVisible = idxDivLine;
+                                iLayerOfDivLineLabelLastVisible = iLayer;
+                                iDivLineLabelsVisibleCount++;
 
-                                    if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
-                                    {
-                                        QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
-                                        painter.fillRect( rectDivLineLabel, brush );
-                                    }
-                                    painter.drawText(rectDivLineLabel,Qt::AlignHCenter|Qt::AlignVCenter,strDivLineLabel); //lint !e655
+                                if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
+                                {
+                                    QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
+                                    painter.fillRect( rectDivLineLabel, brush );
                                 }
+                                painter.drawText(rectDivLineLabel,Qt::AlignHCenter|Qt::AlignVCenter,strDivLineLabel); //lint !e655
                             }
                         }
                     }
-                } // if( m_bShowDivLineLabels || m_bShowSubDivLineLabels )
-            } // for( iLayer < CEnumDivLineLayer::count() )
-
-            // The unit string may have to be moved.
-            // But the division line labels should not be placed where the unit
-            // string may be indicated ... (see method "intersectsDivLineLabels").
-            // Reset the flag again (has been set before drawing the division lines).
-            m_bDivLineLabelsPhysUnitVisible = false;
-
-            // Minimum and maximum scale value
-            //---------------------------------
-
-            if( iDivLineLabelsVisibleCount < 2 )
-            {
-                // Please see note above why the text for the physical unit has not yet been drawn.
-
-                // First calculate the position of the minimum and maximum scale values
-                // not yet taking the unit string into account.
-                for( idx = 0; idx < 2; idx++ )
-                {
-                    if( !m_arstrScaleMinMaxVal[idx].isEmpty() && m_arrectScaleMinMaxVal[idx].isValid() )
+                    else
                     {
-                        strDivLineLabel = m_arstrScaleMinMaxVal[idx];
-                        rectDivLineLabel = m_arrectScaleMinMaxVal[idx];
-
-                        if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
+                        if( rectDivLineLabel.left() >= rectDiag.left()
+                            && rectDivLineLabel.right() <= rectDiag.right()
+                            && rectDivLineLabel.top() >= rectDiag.top()
+                            && rectDivLineLabel.bottom() <= rectDiag.bottom() )
                         {
-                            if( idx == 0 )
-                            {
-                                strTrcMsg  = "ScaleMin: ";
+                            bool bIntersectsWithExistingDivLineLabel = false;
+                            if (idxDivLine > 0) {
+                                bIntersectsWithExistingDivLineLabel =
+                                    intersectsDivLineLabels(rectDivLineLabel, iLayer, 0, idxDivLine-1);
                             }
-                            else
+                            if (!bIntersectsWithExistingDivLineLabel)
                             {
-                                strTrcMsg  = "ScaleMax: ";
+                                m_ararbDivLineLabelsVisible[iLayer][idxDivLine] = true;
+                                idxDivLineLabelLastVisible = idxDivLine;
+                                iLayerOfDivLineLabelLastVisible = iLayer;
+                                iDivLineLabelsVisibleCount++;
+
+                                if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
+                                {
+                                    QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
+                                    painter.fillRect( rectDivLineLabel, brush );
+                                }
+                                painter.drawText(rectDivLineLabel,Qt::AlignHCenter|Qt::AlignVCenter,strDivLineLabel); //lint !e655
                             }
-                            strTrcMsg += strDivLineLabel + "; ";
-                            strTrcMsg += "T=" + QString::number(rectDivLineLabel.top()) + ",";
-                            strTrcMsg += "B=" + QString::number(rectDivLineLabel.bottom()) + ",";
-                            strTrcMsg += "L=" + QString::number(rectDivLineLabel.left()) + ",";
-                            strTrcMsg += "R=" + QString::number(rectDivLineLabel.right());
-                            mthTracer.trace(strTrcMsg);
                         }
+                    }
+                }
+            } // if( m_bShowDivLineLabels || m_bShowSubDivLineLabels )
+        } // for( iLayer < CEnumDivLineLayer::count() )
 
-                        // To discover overlapping division line labels the rectangle extents
-                        // of the division line labels have been stored in an array:
-                        if( m_bAdjustContentRect2DiagPartCenter )
+        // The unit string may have to be moved.
+        // But the division line labels should not be placed where the unit
+        // string may be indicated ... (see method "intersectsDivLineLabels").
+        // Reset the flag again (has been set before drawing the division lines).
+        m_bDivLineLabelsPhysUnitVisible = false;
+
+        // Minimum and maximum scale value
+        //---------------------------------
+
+        if( iDivLineLabelsVisibleCount < 2 )
+        {
+            // Please see note above why the text for the physical unit has not yet been drawn.
+
+            // First calculate the position of the minimum and maximum scale values
+            // not yet taking the unit string into account.
+            for( idx = 0; idx < 2; idx++ )
+            {
+                if( !m_arstrScaleMinMaxVal[idx].isEmpty() && m_arrectScaleMinMaxVal[idx].isValid() )
+                {
+                    strDivLineLabel = m_arstrScaleMinMaxVal[idx];
+                    rectDivLineLabel = m_arrectScaleMinMaxVal[idx];
+
+                    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
+                    {
+                        if( idx == 0 )
                         {
-                            if( idx == 0 && rectDivLineLabel.left() < pPixmapDiagram->getRectPartCenter().left() )
-                            {
-                                cxOffset = pPixmapDiagram->getRectPartCenter().left()-rectDivLineLabel.left()+1;
-                                rectDivLineLabel.moveLeft( rectDivLineLabel.left()+cxOffset );
-                            }
-                            else if( idx == 1 && rectDivLineLabel.right() > pPixmapDiagram->getRectPartCenter().right() )
-                            {
-                                cxOffset = rectDivLineLabel.right()-pPixmapDiagram->getRectPartCenter().right()+1;
-                                rectDivLineLabel.moveRight( rectDivLineLabel.right()-cxOffset );
-                            }
+                            strTrcMsg  = "ScaleMin: ";
+                        }
+                        else
+                        {
+                            strTrcMsg  = "ScaleMax: ";
+                        }
+                        strTrcMsg += strDivLineLabel + "; ";
+                        strTrcMsg += "T=" + QString::number(rectDivLineLabel.top()) + ",";
+                        strTrcMsg += "B=" + QString::number(rectDivLineLabel.bottom()) + ",";
+                        strTrcMsg += "L=" + QString::number(rectDivLineLabel.left()) + ",";
+                        strTrcMsg += "R=" + QString::number(rectDivLineLabel.right());
+                        mthTracer.trace(strTrcMsg);
+                    }
+
+                    // To discover overlapping division line labels the rectangle extents
+                    // of the division line labels have been stored in an array:
+                    if( m_bAdjustContentRect2DiagPartCenter )
+                    {
+                        if( idx == 0 && rectDivLineLabel.left() < pPixmapDiagram->getRectPartCenter().left() )
+                        {
+                            cxOffset = pPixmapDiagram->getRectPartCenter().left()-rectDivLineLabel.left()+1;
+                            rectDivLineLabel.moveLeft( rectDivLineLabel.left()+cxOffset );
+                        }
+                        else if( idx == 1 && rectDivLineLabel.right() > pPixmapDiagram->getRectPartCenter().right() )
+                        {
+                            cxOffset = rectDivLineLabel.right()-pPixmapDiagram->getRectPartCenter().right()+1;
+                            rectDivLineLabel.moveRight( rectDivLineLabel.right()-cxOffset );
+                        }
+                        if( !intersectsDivLineLabels(rectDivLineLabel) )
+                        {
+                            m_arbScaleMinMaxValVisible[idx] = true;
+                            m_arrectScaleMinMaxVal[idx] = rectDivLineLabel;
+                        }
+                    }
+                    else
+                    {
+                        if( rectDivLineLabel.left() >= rectDiag.left()
+                            && rectDivLineLabel.right() <= rectDiag.right()
+                            && rectDivLineLabel.top() >= rectDiag.top()
+                            && rectDivLineLabel.bottom() <= rectDiag.bottom() )
+                        {
                             if( !intersectsDivLineLabels(rectDivLineLabel) )
                             {
                                 m_arbScaleMinMaxValVisible[idx] = true;
                                 m_arrectScaleMinMaxVal[idx] = rectDivLineLabel;
                             }
                         }
-                        else
-                        {
-                            if( rectDivLineLabel.left() >= rectDiag.left()
-                             && rectDivLineLabel.right() <= rectDiag.right()
-                             && rectDivLineLabel.top() >= rectDiag.top()
-                             && rectDivLineLabel.bottom() <= rectDiag.bottom() )
-                            {
-                                if( !intersectsDivLineLabels(rectDivLineLabel) )
-                                {
-                                    m_arbScaleMinMaxValVisible[idx] = true;
-                                    m_arrectScaleMinMaxVal[idx] = rectDivLineLabel;
-                                }
-                            }
-                        } // if( !m_bAdjustContentRect2DiagPartCenter )
-                    } // if( !m_arstrScaleMinMaxVal[idx].isEmpty() && m_arrectScaleMinMaxVal[idx].isValid() )
-                } // for( idx < 2 )
+                    } // if( !m_bAdjustContentRect2DiagPartCenter )
+                } // if( !m_arstrScaleMinMaxVal[idx].isEmpty() && m_arrectScaleMinMaxVal[idx].isValid() )
+            } // for( idx < 2 )
 
-                // The maximum scale value should be indicated at the right border of the
-                // diagrams center area together with the unit string.
+            // The maximum scale value should be indicated at the right border of the
+            // diagrams center area together with the unit string.
 
-                int cxSpace = 2;
+            int cxSpace = 2;
 
-                if( m_arbShowPartsUnit[EDivLineLabelsPartLabels] )
+            if( m_bShowUnitAtDivLines )
+            {
+                // First try to append the unit at the maximum scale value.
+                idx = 1;
+                if( m_arbScaleMinMaxValVisible[idx] )
                 {
-                    // First try to append the unit at the maximum scale value.
-                    idx = 1;
-                    if( m_arbScaleMinMaxValVisible[idx] )
+                    rectDivLineLabel = m_arrectScaleMinMaxVal[idx];
+                    rectDivLineLabel.moveLeft(rectDivLineLabel.left()-m_rectDivLineLabelsPhysUnit.width()-cxSpace);
+                    rectDivLineLabel.setWidth(rectDivLineLabel.width()+m_rectDivLineLabelsPhysUnit.width()+cxSpace);
+
+                    if( !intersectsDivLineLabels(rectDivLineLabel) )
                     {
-                        rectDivLineLabel = m_arrectScaleMinMaxVal[idx];
-                        rectDivLineLabel.moveLeft(rectDivLineLabel.left()-m_rectDivLineLabelsPhysUnit.width()-cxSpace);
-                        rectDivLineLabel.setWidth(rectDivLineLabel.width()+m_rectDivLineLabelsPhysUnit.width()+cxSpace);
-
-                        if( !intersectsDivLineLabels(rectDivLineLabel) )
+                        rectDivLineLabel.setWidth(m_arrectScaleMinMaxVal[idx].width()+cxSpace);
+                        if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
                         {
-                            rectDivLineLabel.setWidth(m_arrectScaleMinMaxVal[idx].width()+cxSpace);
-                            if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
-                            {
-                                QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
-                                painter.fillRect( rectDivLineLabel, brush );
-                            }
-                            painter.drawText(rectDivLineLabel,Qt::AlignHCenter|Qt::AlignVCenter,m_arstrScaleMinMaxVal[idx]); //lint !e655
-
-                            m_bDivLineLabelsPhysUnitVisible = true;
-                            rectDivLineLabel.moveLeft(m_rectDivLineLabelsPhysUnit.left());
-                            rectDivLineLabel.setWidth(m_rectDivLineLabelsPhysUnit.width());
-                            if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
-                            {
-                                QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
-                                painter.fillRect( rectDivLineLabel, brush );
-                            }
-                            painter.drawText(rectDivLineLabel,Qt::AlignHCenter|Qt::AlignVCenter,m_strPhysUnitLabels); //lint !e655
+                            QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
+                            painter.fillRect( rectDivLineLabel, brush );
                         }
-                        else
+                        painter.drawText(rectDivLineLabel,Qt::AlignHCenter|Qt::AlignVCenter,m_arstrScaleMinMaxVal[idx]); //lint !e655
+
+                        m_bDivLineLabelsPhysUnitVisible = true;
+                        rectDivLineLabel.moveLeft(m_rectDivLineLabelsPhysUnit.left());
+                        rectDivLineLabel.setWidth(m_rectDivLineLabelsPhysUnit.width());
+                        if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
                         {
-                            if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
-                            {
-                                QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
-                                painter.fillRect( m_arrectScaleMinMaxVal[idx], brush );
-                            }
-                            painter.drawText(m_arrectScaleMinMaxVal[idx],Qt::AlignHCenter|Qt::AlignVCenter,m_arstrScaleMinMaxVal[idx]); //lint !e655
+                            QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
+                            painter.fillRect( rectDivLineLabel, brush );
                         }
-
-                    } // if( m_arbScaleMinMaxValVisible[1] )
-
-                    // Second try to append the unit at the minimum scale value.
-                    idx = 0;
-                    if( m_arbScaleMinMaxValVisible[idx] && !m_bDivLineLabelsPhysUnitVisible )
-                    {
-                        rectDivLineLabel = m_arrectScaleMinMaxVal[idx];
-                        rectDivLineLabel.setWidth(rectDivLineLabel.width()+m_rectDivLineLabelsPhysUnit.width()+cxSpace);
-
-                        if( !intersectsDivLineLabels(rectDivLineLabel) )
-                        {
-                            rectDivLineLabel.setWidth(m_arrectScaleMinMaxVal[idx].width()+cxSpace);
-                            if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
-                            {
-                                QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
-                                painter.fillRect( rectDivLineLabel, brush );
-                            }
-                            painter.drawText(rectDivLineLabel,Qt::AlignHCenter|Qt::AlignVCenter,m_arstrScaleMinMaxVal[idx]); //lint !e655
-
-                            m_bDivLineLabelsPhysUnitVisible = true;
-                            rectDivLineLabel.moveLeft(m_arrectScaleMinMaxVal[idx].right()+cxSpace);
-                            rectDivLineLabel.setWidth(m_rectDivLineLabelsPhysUnit.width());
-                            if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
-                            {
-                                QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
-                                painter.fillRect( rectDivLineLabel, brush );
-                            }
-                            painter.drawText(rectDivLineLabel,Qt::AlignHCenter|Qt::AlignVCenter,m_strPhysUnitLabels); //lint !e655
-                        }
-                        else
-                        {
-                            if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
-                            {
-                                QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
-                                painter.fillRect( m_arrectScaleMinMaxVal[idx], brush );
-                            }
-                            painter.drawText(m_arrectScaleMinMaxVal[idx],Qt::AlignHCenter|Qt::AlignVCenter,m_arstrScaleMinMaxVal[idx]); //lint !e655
-                        }
+                        painter.drawText(rectDivLineLabel,Qt::AlignHCenter|Qt::AlignVCenter,m_strPhysUnitLabels); //lint !e655
                     }
                     else
                     {
@@ -2508,144 +2627,186 @@ void CDiagObjAxisLabel::updatePixmap( QPaintDevice* i_pPaintDevice )
                         painter.drawText(m_arrectScaleMinMaxVal[idx],Qt::AlignHCenter|Qt::AlignVCenter,m_arstrScaleMinMaxVal[idx]); //lint !e655
                     }
 
-                    // Third try to append the unit at the last visible division line label.
-                    // There should be at maximum one visible division line at this point.
-                    // Otherwise there was no need to indicate the maximum scale value.
-                    if( !m_bDivLineLabelsPhysUnitVisible && iLayerOfDivLineLabelLastVisible >= 0 && idxDivLineLabelLastVisible >= 0 )
-                    {
-                        rectDivLineLabel = m_ararrectDivLineLabels[iLayerOfDivLineLabelLastVisible][idxDivLineLabelLastVisible];
-                        rectDivLineLabel.setWidth( rectDivLineLabel.width() + m_rectDivLineLabelsPhysUnit.width() );
+                } // if( m_arbScaleMinMaxValVisible[1] )
 
-                        m_ararbDivLineLabelsVisible[iLayerOfDivLineLabelLastVisible][idxDivLineLabelLastVisible] = false;
-                        if( !intersectsDivLineLabels(rectDivLineLabel) )
+                // Second try to append the unit at the minimum scale value.
+                idx = 0;
+                if( m_arbScaleMinMaxValVisible[idx] && !m_bDivLineLabelsPhysUnitVisible )
+                {
+                    rectDivLineLabel = m_arrectScaleMinMaxVal[idx];
+                    rectDivLineLabel.setWidth(rectDivLineLabel.width()+m_rectDivLineLabelsPhysUnit.width()+cxSpace);
+
+                    if( !intersectsDivLineLabels(rectDivLineLabel) )
+                    {
+                        rectDivLineLabel.setWidth(m_arrectScaleMinMaxVal[idx].width()+cxSpace);
+                        if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
                         {
-                            m_bDivLineLabelsPhysUnitVisible = true;
-                            rectDivLineLabel.moveLeft(m_ararrectDivLineLabels[iLayerOfDivLineLabelLastVisible][idxDivLineLabelLastVisible].right()+cxSpace);
-                            rectDivLineLabel.setWidth(m_arrectScaleMinMaxVal[1].width()+cxSpace);
-                            if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
-                            {
-                                QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
-                                painter.fillRect( rectDivLineLabel, brush );
-                            }
-                            painter.drawText(rectDivLineLabel,Qt::AlignHCenter|Qt::AlignVCenter,m_strPhysUnitLabels); //lint !e655
+                            QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
+                            painter.fillRect( rectDivLineLabel, brush );
                         }
-                        m_ararbDivLineLabelsVisible[iLayerOfDivLineLabelLastVisible][idxDivLineLabelLastVisible] = true;
+                        painter.drawText(rectDivLineLabel,Qt::AlignHCenter|Qt::AlignVCenter,m_arstrScaleMinMaxVal[idx]); //lint !e655
+
+                        m_bDivLineLabelsPhysUnitVisible = true;
+                        rectDivLineLabel.moveLeft(m_arrectScaleMinMaxVal[idx].right()+cxSpace);
+                        rectDivLineLabel.setWidth(m_rectDivLineLabelsPhysUnit.width());
+                        if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
+                        {
+                            QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
+                            painter.fillRect( rectDivLineLabel, brush );
+                        }
+                        painter.drawText(rectDivLineLabel,Qt::AlignHCenter|Qt::AlignVCenter,m_strPhysUnitLabels); //lint !e655
+                    }
+                    else
+                    {
+                        if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
+                        {
+                            QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
+                            painter.fillRect( m_arrectScaleMinMaxVal[idx], brush );
+                        }
+                        painter.drawText(m_arrectScaleMinMaxVal[idx],Qt::AlignHCenter|Qt::AlignVCenter,m_arstrScaleMinMaxVal[idx]); //lint !e655
                     }
                 }
-                else // if( !m_arbShowPartsUnit[EDivLineLabelsPartLabels] )
+                else
                 {
-                    for( idx = 0; idx < 2; idx++ )
+                    if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
                     {
-                        if( m_arbScaleMinMaxValVisible[idx] )
+                        QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
+                        painter.fillRect( m_arrectScaleMinMaxVal[idx], brush );
+                    }
+                    painter.drawText(m_arrectScaleMinMaxVal[idx],Qt::AlignHCenter|Qt::AlignVCenter,m_arstrScaleMinMaxVal[idx]); //lint !e655
+                }
+
+                // Third try to append the unit at the last visible division line label.
+                // There should be at maximum one visible division line at this point.
+                // Otherwise there was no need to indicate the maximum scale value.
+                if( !m_bDivLineLabelsPhysUnitVisible && iLayerOfDivLineLabelLastVisible >= 0 && idxDivLineLabelLastVisible >= 0 )
+                {
+                    rectDivLineLabel = m_ararrectDivLineLabels[iLayerOfDivLineLabelLastVisible][idxDivLineLabelLastVisible];
+                    rectDivLineLabel.setWidth( rectDivLineLabel.width() + m_rectDivLineLabelsPhysUnit.width() );
+
+                    m_ararbDivLineLabelsVisible[iLayerOfDivLineLabelLastVisible][idxDivLineLabelLastVisible] = false;
+                    if( !intersectsDivLineLabels(rectDivLineLabel) )
+                    {
+                        m_bDivLineLabelsPhysUnitVisible = true;
+                        rectDivLineLabel.moveLeft(m_ararrectDivLineLabels[iLayerOfDivLineLabelLastVisible][idxDivLineLabelLastVisible].right()+cxSpace);
+                        rectDivLineLabel.setWidth(m_arrectScaleMinMaxVal[1].width()+cxSpace);
+                        if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
                         {
-                            painter.setFont(m_arfntParts[EDivLineLabelsPartLabels]);
-                            painter.setPen(m_arcolPartsFg[EDivLineLabelsPartLabels]);
-
-                            strDivLineLabel = m_arstrScaleMinMaxVal[idx];
-                            rectDivLineLabel = m_arrectScaleMinMaxVal[idx];
-
-                            if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
-                            {
-                                QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
-                                painter.fillRect( rectDivLineLabel, brush );
-                            }
-                            painter.drawText(rectDivLineLabel,Qt::AlignHCenter|Qt::AlignVCenter,strDivLineLabel); //lint !e655
-
-                        } // if( m_arbScaleMinMaxValVisible[idx] )
-                    } // for( idx < 2 )
-                } // if( !m_arbShowPartsUnit[EDivLineLabelsPartLabels] )
-            } // if( iDivLineLabelsVisibleCount < 2 )
-
-            // Physical unit at the maximum scale value
-            //-----------------------------------------
-
-            // Please see note above why the text for the physical unit may not have been drawn yet.
-            if( m_arbShowPartsUnit[EDivLineLabelsPartLabels] && !m_bDivLineLabelsPhysUnitVisible )
+                            QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
+                            painter.fillRect( rectDivLineLabel, brush );
+                        }
+                        painter.drawText(rectDivLineLabel,Qt::AlignHCenter|Qt::AlignVCenter,m_strPhysUnitLabels); //lint !e655
+                    }
+                    m_ararbDivLineLabelsVisible[iLayerOfDivLineLabelLastVisible][idxDivLineLabelLastVisible] = true;
+                }
+            }
+            else // if( !m_bShowUnitAtDivLines )
             {
-                painter.setFont(m_arfntParts[EDivLineLabelsPartLabels]);
-                painter.setPen(m_arcolPartsFg[EDivLineLabelsPartLabels]);
+                for( idx = 0; idx < 2; idx++ )
+                {
+                    if( m_arbScaleMinMaxValVisible[idx] )
+                    {
+                        painter.setFont(m_arfntParts[EDivLineLabelsPartLabels]);
+                        painter.setPen(m_arcolPartsFg[EDivLineLabelsPartLabels]);
 
-                m_bDivLineLabelsPhysUnitVisible = true;
+                        strDivLineLabel = m_arstrScaleMinMaxVal[idx];
+                        rectDivLineLabel = m_arrectScaleMinMaxVal[idx];
 
+                        if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
+                        {
+                            QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
+                            painter.fillRect( rectDivLineLabel, brush );
+                        }
+                        painter.drawText(rectDivLineLabel,Qt::AlignHCenter|Qt::AlignVCenter,strDivLineLabel); //lint !e655
+
+                    } // if( m_arbScaleMinMaxValVisible[idx] )
+                } // for( idx < 2 )
+            } // if( !m_bShowUnitAtDivLines )
+        } // if( iDivLineLabelsVisibleCount < 2 )
+
+        // Physical unit at the maximum scale value
+        //-----------------------------------------
+
+        // Please see note above why the text for the physical unit may not have been drawn yet.
+        if( m_bShowUnitAtDivLines && !m_bDivLineLabelsPhysUnitVisible )
+        {
+            painter.setFont(m_arfntParts[EDivLineLabelsPartLabels]);
+            painter.setPen(m_arcolPartsFg[EDivLineLabelsPartLabels]);
+
+            m_bDivLineLabelsPhysUnitVisible = true;
+
+            if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
+            {
+                QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
+                painter.fillRect( m_rectDivLineLabelsPhysUnit, brush );
+            }
+            painter.drawText(m_rectDivLineLabelsPhysUnit,Qt::AlignHCenter|Qt::AlignVCenter,m_strPhysUnitLabels); //lint !e655
+        }
+    } // if (m_layoutPos == ELayoutPosTop || m_layoutPos == ELayoutPosBottom)
+
+    else if (m_layoutPos == ELayoutPosLeft || m_layoutPos == ELayoutPosRight)
+    {
+        // Y-Axis (horizontal division lines from diagrams center area border to axis labels)
+        int iDivLineLabelsVisibleCount = 0;
+        int yDivLine;
+        int cyOffset;
+
+        // Division lines
+        //---------------
+
+        for( iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
+        {
+            if( m_ararbShowPartsLayer[EDivLineLabelsPartLines][iLayer] )
+            {
+                painter.setPen(m_arcolPartsFg[EDivLineLabelsPartLines]);
+
+                for( idxDivLine = 0; idxDivLine < m_ariDivLinesCount[iLayer]; idxDivLine++ )
+                {
+                    yDivLine = m_arariDivLines_px[iLayer][idxDivLine];
+
+                    if( m_layoutPos == ELayoutPosLeft )
+                    {
+                        painter.drawLine(m_rectContent.right()-m_iSpacingDiagPartCenter2DivLineLabels+2,yDivLine,m_rectContent.right(),yDivLine);
+                    }
+                    else
+                    {
+                        painter.drawLine(m_rectContent.left(),yDivLine,m_rectContent.left()+m_iSpacingDiagPartCenter2DivLineLabels-2,yDivLine);
+                    }
+                }
+            }
+        } // for( iLayer < CEnumDivLineLayer::count() )
+
+        // Physical unit at the maximum scale value
+        //-----------------------------------------
+
+        painter.setFont(m_arfntParts[EDivLineLabelsPartLabels]);
+        painter.setPen(m_arcolPartsFg[EDivLineLabelsPartLabels]);
+
+        if( m_bShowUnitAtDivLines )
+        {
+            m_bDivLineLabelsPhysUnitVisible = true;
+
+            if( m_layoutPos == ELayoutPosLeft )
+            {
                 if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
                 {
                     QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
                     painter.fillRect( m_rectDivLineLabelsPhysUnit, brush );
                 }
-                painter.drawText(m_rectDivLineLabelsPhysUnit,Qt::AlignHCenter|Qt::AlignVCenter,m_strPhysUnitLabels); //lint !e655
+                painter.drawText(m_rectDivLineLabelsPhysUnit,Qt::AlignRight|Qt::AlignVCenter,m_strPhysUnitLabels); //lint !e655
             }
-
-            // Axis Label
-            //-----------
-
-            if( (m_ararbShowPartsLayer[EDivLineLabelsPartAxisLabel][EDivLineLayerMain] || m_arbShowPartsUnit[EDivLineLabelsPartAxisLabel]) && !strAxisLabel.isEmpty() )
+            else
             {
-                painter.setFont(m_arfntParts[EDivLineLabelsPartAxisLabel]);
-                painter.setPen(m_arcolPartsFg[EDivLineLabelsPartAxisLabel]);
-
-                if( m_arbrushStyleParts[EDivLineLabelsPartAxisLabel] != Qt::NoBrush )
+                if( m_iSpacingDiagPartCenter2DivLineLabels >= 0 )
                 {
-                    QBrush brush(m_arcolPartsBg[EDivLineLabelsPartAxisLabel],m_arbrushStyleParts[EDivLineLabelsPartAxisLabel]);
-                    painter.fillRect(m_rectAxisLabel,brush);
-                }
-                if( m_layoutPos == ELayoutPosTop )
-                {
-                    painter.drawText(m_rectAxisLabel,Qt::AlignVCenter|Qt::AlignHCenter,strAxisLabel); //lint !e655
-                }
-                else if( m_layoutPos == ELayoutPosBottom )
-                {
-                    painter.drawText(m_rectAxisLabel,Qt::AlignVCenter|Qt::AlignHCenter,strAxisLabel); //lint !e655
-                }
-            } // if( m_ararbShowPartsLayer[EDivLineLabelsPartAxisLabel][EDivLineLayerMain] )
-
-            break;
-
-        } // case( PosTop || PosBottom )
-
-        // Y-Axis (horizontal division lines from diagrams center area border to axis labels)
-        case ELayoutPosLeft:
-        case ELayoutPosRight:
-        {
-            int iDivLineLabelsVisibleCount = 0;
-            int yDivLine;
-            int cyOffset;
-
-            // Division lines
-            //---------------
-
-            for( iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
-            {
-                if( m_ararbShowPartsLayer[EDivLineLabelsPartLines][iLayer] )
-                {
-                    painter.setPen(m_arcolPartsFg[EDivLineLabelsPartLines]);
-
-                    for( idxDivLine = 0; idxDivLine < m_ariDivLinesCount[iLayer]; idxDivLine++ )
+                    if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
                     {
-                        yDivLine = m_arariDivLines_px[iLayer][idxDivLine];
-
-                        if( m_layoutPos == ELayoutPosLeft )
-                        {
-                            painter.drawLine(m_rectContent.right()-m_iSpaceDiagPartCenter2DivLineLabels+2,yDivLine,m_rectContent.right(),yDivLine);
-                        }
-                        else
-                        {
-                            painter.drawLine(m_rectContent.left(),yDivLine,m_rectContent.left()+m_iSpaceDiagPartCenter2DivLineLabels-2,yDivLine);
-                        }
+                        QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
+                        painter.fillRect( m_rectDivLineLabelsPhysUnit, brush );
                     }
+                    painter.drawText(m_rectDivLineLabelsPhysUnit,Qt::AlignLeft|Qt::AlignVCenter,m_strPhysUnitLabels); //lint !e655
                 }
-            } // for( iLayer < CEnumDivLineLayer::count() )
-
-            // Physical unit at the maximum scale value
-            //-----------------------------------------
-
-            painter.setFont(m_arfntParts[EDivLineLabelsPartLabels]);
-            painter.setPen(m_arcolPartsFg[EDivLineLabelsPartLabels]);
-
-            if( m_arbShowPartsUnit[EDivLineLabelsPartLabels] )
-            {
-                m_bDivLineLabelsPhysUnitVisible = true;
-
-                if( m_layoutPos == ELayoutPosLeft )
+                else
                 {
                     if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
                     {
@@ -2654,249 +2815,58 @@ void CDiagObjAxisLabel::updatePixmap( QPaintDevice* i_pPaintDevice )
                     }
                     painter.drawText(m_rectDivLineLabelsPhysUnit,Qt::AlignRight|Qt::AlignVCenter,m_strPhysUnitLabels); //lint !e655
                 }
-                else
-                {
-                    if( m_iSpaceDiagPartCenter2DivLineLabels >= 0 )
-                    {
-                        if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
-                        {
-                            QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
-                            painter.fillRect( m_rectDivLineLabelsPhysUnit, brush );
-                        }
-                        painter.drawText(m_rectDivLineLabelsPhysUnit,Qt::AlignLeft|Qt::AlignVCenter,m_strPhysUnitLabels); //lint !e655
-                    }
-                    else
-                    {
-                        if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
-                        {
-                            QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
-                            painter.fillRect( m_rectDivLineLabelsPhysUnit, brush );
-                        }
-                        painter.drawText(m_rectDivLineLabelsPhysUnit,Qt::AlignRight|Qt::AlignVCenter,m_strPhysUnitLabels); //lint !e655
-                    }
-                }
             }
+        }
 
-            // Labels at the division lines
-            //-----------------------------
+        // Labels at the division lines
+        //-----------------------------
 
-            for( iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
+        for( iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
+        {
+            if( m_ararbShowPartsLayer[EDivLineLabelsPartLabels][iLayer] )
             {
-                if( m_ararbShowPartsLayer[EDivLineLabelsPartLabels][iLayer] )
+                if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
                 {
+                    strTrcMsg = "Division lines:";
+                    mthTracer.trace(strTrcMsg);
+                }
+
+                for( idxDivLine = 0; idxDivLine < m_ariDivLinesCount[iLayer]; idxDivLine++ )
+                {
+                    strDivLineLabel = m_ararstrDivLineLabels[iLayer][idxDivLine];
+                    rectDivLineLabel = m_ararrectDivLineLabels[iLayer][idxDivLine];
+
                     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
                     {
-                        strTrcMsg = "Division lines:";
+                        strTrcMsg  = "[";
+                        strTrcMsg += QString::number(idxDivLine);
+                        strTrcMsg += "]: ";
+                        strTrcMsg += strDivLineLabel + "; ";
+                        strTrcMsg += "T=" + QString::number(rectDivLineLabel.top()) + ",";
+                        strTrcMsg += "B=" + QString::number(rectDivLineLabel.bottom()) + ",";
+                        strTrcMsg += "L=" + QString::number(rectDivLineLabel.left()) + ",";
+                        strTrcMsg += "R=" + QString::number(rectDivLineLabel.right());
                         mthTracer.trace(strTrcMsg);
                     }
 
-                    for( idxDivLine = 0; idxDivLine < m_ariDivLinesCount[iLayer]; idxDivLine++ )
+                    if( m_layoutPos == ELayoutPosLeft )
                     {
-                        strDivLineLabel = m_ararstrDivLineLabels[iLayer][idxDivLine];
-                        rectDivLineLabel = m_ararrectDivLineLabels[iLayer][idxDivLine];
-
-                        if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-                        {
-                            strTrcMsg  = "[";
-                            strTrcMsg += QString::number(idxDivLine);
-                            strTrcMsg += "]: ";
-                            strTrcMsg += strDivLineLabel + "; ";
-                            strTrcMsg += "T=" + QString::number(rectDivLineLabel.top()) + ",";
-                            strTrcMsg += "B=" + QString::number(rectDivLineLabel.bottom()) + ",";
-                            strTrcMsg += "L=" + QString::number(rectDivLineLabel.left()) + ",";
-                            strTrcMsg += "R=" + QString::number(rectDivLineLabel.right());
-                            mthTracer.trace(strTrcMsg);
-                        }
-
-                        if( m_layoutPos == ELayoutPosLeft )
-                        {
-                            // To discover overlapping division line labels the rectangle extents
-                            // of the division line labels have been stored in an array:
-                            if( m_bAdjustContentRect2DiagPartCenter )
-                            {
-                                if( rectDivLineLabel.top() > pPixmapDiagram->getRectPartCenter().top()
-                                 && rectDivLineLabel.bottom() < pPixmapDiagram->getRectPartCenter().bottom() )
-                                {
-                                    bool bIntersectsWithExistingDivLineLabel = false;
-                                    if (idxDivLine > 0) {
-                                        bIntersectsWithExistingDivLineLabel =
-                                            intersectsDivLineLabels(rectDivLineLabel, iLayer, 0, idxDivLine-1);
-                                    }
-                                    if (!bIntersectsWithExistingDivLineLabel)
-                                    {
-                                        m_ararbDivLineLabelsVisible[iLayer][idxDivLine] = true;
-                                        iDivLineLabelsVisibleCount++;
-
-                                        if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
-                                        {
-                                            QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
-                                            painter.fillRect( rectDivLineLabel, brush );
-                                        }
-                                        painter.drawText(rectDivLineLabel,Qt::AlignRight|Qt::AlignVCenter,strDivLineLabel); //lint !e655
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                if( rectDivLineLabel.left() >= rectDiag.left()
-                                 && rectDivLineLabel.right() <= rectDiag.right()
-                                 && rectDivLineLabel.top() >= rectDiag.top()
-                                 && rectDivLineLabel.bottom() <= rectDiag.bottom() )
-                                {
-                                    bool bIntersectsWithExistingDivLineLabel = false;
-                                    if (idxDivLine > 0) {
-                                        bIntersectsWithExistingDivLineLabel = intersectsDivLineLabels(rectDivLineLabel, iLayer, 0, idxDivLine-1);
-                                    }
-                                    if (!bIntersectsWithExistingDivLineLabel)
-                                    {
-                                        m_ararbDivLineLabelsVisible[iLayer][idxDivLine] = true;
-                                        iDivLineLabelsVisibleCount++;
-
-                                        if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
-                                        {
-                                            QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
-                                            painter.fillRect( rectDivLineLabel, brush );
-                                        }
-                                        painter.drawText(rectDivLineLabel,Qt::AlignRight|Qt::AlignVCenter,strDivLineLabel); //lint !e655
-                                    }
-                                }
-                            }
-                        }
-                        else // if( m_layoutPos == ELayoutPosRight )
-                        {
-                            // To discover overlapping division line labels the rectangle extents
-                            // of the division line labels have been stored in an array:
-                            if( m_bAdjustContentRect2DiagPartCenter )
-                            {
-                                if( rectDivLineLabel.top() > pPixmapDiagram->getRectPartCenter().top()
-                                 && rectDivLineLabel.bottom() < pPixmapDiagram->getRectPartCenter().bottom() )
-                                {
-                                    bool bIntersectsWithExistingDivLineLabel = false;
-                                    if (idxDivLine > 0) {
-                                        bIntersectsWithExistingDivLineLabel =
-                                            intersectsDivLineLabels(rectDivLineLabel, iLayer, 0, idxDivLine-1);
-                                    }
-                                    if (!bIntersectsWithExistingDivLineLabel)
-                                    {
-                                        m_ararbDivLineLabelsVisible[iLayer][idxDivLine] = true;
-                                        iDivLineLabelsVisibleCount++;
-
-                                        if( m_iSpaceDiagPartCenter2DivLineLabels >= 0 )
-                                        {
-                                            if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
-                                            {
-                                                QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
-                                                painter.fillRect( rectDivLineLabel, brush );
-                                            }
-                                            painter.drawText(rectDivLineLabel,Qt::AlignLeft|Qt::AlignVCenter,strDivLineLabel); //lint !e655
-                                        }
-                                        else
-                                        {
-                                            if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
-                                            {
-                                                QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
-                                                painter.fillRect( rectDivLineLabel, brush );
-                                            }
-                                            painter.drawText(rectDivLineLabel,Qt::AlignRight|Qt::AlignVCenter,strDivLineLabel); //lint !e655
-                                        }
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                if( rectDivLineLabel.left() >= rectDiag.left()
-                                 && rectDivLineLabel.right() <= rectDiag.right()
-                                 && rectDivLineLabel.top() >= rectDiag.top()
-                                 && rectDivLineLabel.bottom() <= rectDiag.bottom() )
-                                {
-                                    bool bIntersectsWithExistingDivLineLabel = false;
-                                    if (idxDivLine > 0) {
-                                        bIntersectsWithExistingDivLineLabel =
-                                            intersectsDivLineLabels(rectDivLineLabel, iLayer, 0, idxDivLine-1);
-                                    }
-                                    if (!bIntersectsWithExistingDivLineLabel)
-                                    {
-                                        m_ararbDivLineLabelsVisible[iLayer][idxDivLine] = true;
-                                        iDivLineLabelsVisibleCount++;
-
-                                        if( m_iSpaceDiagPartCenter2DivLineLabels >= 0 )
-                                        {
-                                            if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
-                                            {
-                                                QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
-                                                painter.fillRect( rectDivLineLabel, brush );
-                                            }
-                                            painter.drawText(rectDivLineLabel,Qt::AlignLeft|Qt::AlignVCenter,strDivLineLabel); //lint !e655
-                                        }
-                                        else
-                                        {
-                                            if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
-                                            {
-                                                QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
-                                                painter.fillRect( rectDivLineLabel, brush );
-                                            }
-                                            painter.drawText(rectDivLineLabel,Qt::AlignRight|Qt::AlignVCenter,strDivLineLabel); //lint !e655
-                                        }
-                                    }
-                                }
-                            } // else if( m_bAdjustContentRect2DiagPartCenter )
-                        } // if( m_layoutPos == ELayoutPosRight )
-                    } // for( idxDivLine < m_uDivLineLabelsCount[iLayer] )
-                } // if( m_bShowDivLineLabels || m_bShowSubDivLineLabels )
-            } // for( iLayer < CEnumDivLineLayer::count() )
-
-            // Minimum and maximum scale value
-            //---------------------------------
-
-            if( iDivLineLabelsVisibleCount < 2 )
-            {
-                for( idx = 0; idx < 2; idx++ )
-                {
-                    if( !m_arstrScaleMinMaxVal[idx].isEmpty() && m_arrectScaleMinMaxVal[idx].isValid() )
-                    {
-                        strDivLineLabel = m_arstrScaleMinMaxVal[idx];
-                        rectDivLineLabel = m_arrectScaleMinMaxVal[idx];
-
-                        if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-                        {
-                            if( idx == 0 )
-                            {
-                                strTrcMsg  = "ScaleMin: ";
-                            }
-                            else
-                            {
-                                strTrcMsg  = "ScaleMax: ";
-                            }
-                            strTrcMsg += strDivLineLabel + "; ";
-                            strTrcMsg += "T=" + QString::number(rectDivLineLabel.top()) + ",";
-                            strTrcMsg += "B=" + QString::number(rectDivLineLabel.bottom()) + ",";
-                            strTrcMsg += "L=" + QString::number(rectDivLineLabel.left()) + ",";
-                            strTrcMsg += "R=" + QString::number(rectDivLineLabel.right());
-                            mthTracer.trace(strTrcMsg);
-                        }
-
                         // To discover overlapping division line labels the rectangle extents
                         // of the division line labels have been stored in an array:
-                        if( m_layoutPos == ELayoutPosLeft )
+                        if( m_bAdjustContentRect2DiagPartCenter )
                         {
-                            // To discover overlapping division line labels the rectangle extents
-                            // of the division line labels have been stored in an array:
-                            if( m_bAdjustContentRect2DiagPartCenter )
+                            if( rectDivLineLabel.top() > pPixmapDiagram->getRectPartCenter().top()
+                                && rectDivLineLabel.bottom() < pPixmapDiagram->getRectPartCenter().bottom() )
                             {
-                                if( idx == 0 && rectDivLineLabel.top() < pPixmapDiagram->getRectPartCenter().top() )
-                                {
-                                    cyOffset = pPixmapDiagram->getRectPartCenter().top()-rectDivLineLabel.top()+1;
-                                    rectDivLineLabel.moveTop( rectDivLineLabel.top()+cyOffset );
+                                bool bIntersectsWithExistingDivLineLabel = false;
+                                if (idxDivLine > 0) {
+                                    bIntersectsWithExistingDivLineLabel =
+                                        intersectsDivLineLabels(rectDivLineLabel, iLayer, 0, idxDivLine-1);
                                 }
-                                else if( idx == 1 && rectDivLineLabel.bottom() > pPixmapDiagram->getRectPartCenter().bottom() )
+                                if (!bIntersectsWithExistingDivLineLabel)
                                 {
-                                    cyOffset = rectDivLineLabel.bottom()-pPixmapDiagram->getRectPartCenter().bottom()+1;
-                                    rectDivLineLabel.moveBottom( rectDivLineLabel.bottom()-cyOffset );
-                                }
-                                if( !intersectsDivLineLabels(rectDivLineLabel) )
-                                {
-                                    m_arbScaleMinMaxValVisible[idx] = true;
-                                    m_arrectScaleMinMaxVal[idx] = rectDivLineLabel;
+                                    m_ararbDivLineLabelsVisible[iLayer][idxDivLine] = true;
+                                    iDivLineLabelsVisibleCount++;
 
                                     if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
                                     {
@@ -2906,50 +2876,53 @@ void CDiagObjAxisLabel::updatePixmap( QPaintDevice* i_pPaintDevice )
                                     painter.drawText(rectDivLineLabel,Qt::AlignRight|Qt::AlignVCenter,strDivLineLabel); //lint !e655
                                 }
                             }
-                            else
+                        }
+                        else
+                        {
+                            if( rectDivLineLabel.left() >= rectDiag.left()
+                                && rectDivLineLabel.right() <= rectDiag.right()
+                                && rectDivLineLabel.top() >= rectDiag.top()
+                                && rectDivLineLabel.bottom() <= rectDiag.bottom() )
                             {
-                                if( rectDivLineLabel.left() >= rectDiag.left()
-                                 && rectDivLineLabel.right() <= rectDiag.right()
-                                 && rectDivLineLabel.top() >= rectDiag.top()
-                                 && rectDivLineLabel.bottom() <= rectDiag.bottom() )
+                                bool bIntersectsWithExistingDivLineLabel = false;
+                                if (idxDivLine > 0) {
+                                    bIntersectsWithExistingDivLineLabel = intersectsDivLineLabels(rectDivLineLabel, iLayer, 0, idxDivLine-1);
+                                }
+                                if (!bIntersectsWithExistingDivLineLabel)
                                 {
-                                    if( !intersectsDivLineLabels(rectDivLineLabel) )
-                                    {
-                                        m_arbScaleMinMaxValVisible[idx] = true;
-                                        m_arrectScaleMinMaxVal[idx] = rectDivLineLabel;
+                                    m_ararbDivLineLabelsVisible[iLayer][idxDivLine] = true;
+                                    iDivLineLabelsVisibleCount++;
 
-                                        if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
-                                        {
-                                            QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
-                                            painter.fillRect( rectDivLineLabel, brush );
-                                        }
-                                        painter.drawText(rectDivLineLabel,Qt::AlignRight|Qt::AlignVCenter,strDivLineLabel); //lint !e655
+                                    if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
+                                    {
+                                        QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
+                                        painter.fillRect( rectDivLineLabel, brush );
                                     }
+                                    painter.drawText(rectDivLineLabel,Qt::AlignRight|Qt::AlignVCenter,strDivLineLabel); //lint !e655
                                 }
                             }
                         }
-                        else // if( m_layoutPos == ELayoutPosRight )
+                    }
+                    else // if( m_layoutPos == ELayoutPosRight )
+                    {
+                        // To discover overlapping division line labels the rectangle extents
+                        // of the division line labels have been stored in an array:
+                        if( m_bAdjustContentRect2DiagPartCenter )
                         {
-                            // To discover overlapping division line labels the rectangle extents
-                            // of the division line labels have been stored in an array:
-                            if( m_bAdjustContentRect2DiagPartCenter )
+                            if( rectDivLineLabel.top() > pPixmapDiagram->getRectPartCenter().top()
+                                && rectDivLineLabel.bottom() < pPixmapDiagram->getRectPartCenter().bottom() )
                             {
-                                if( idx == 0 && rectDivLineLabel.top() < pPixmapDiagram->getRectPartCenter().top() )
-                                {
-                                    cyOffset = pPixmapDiagram->getRectPartCenter().top()-rectDivLineLabel.top()+1;
-                                    m_rectDivLineLabelsPhysUnit.moveTop( m_rectDivLineLabelsPhysUnit.top()+cyOffset );
+                                bool bIntersectsWithExistingDivLineLabel = false;
+                                if (idxDivLine > 0) {
+                                    bIntersectsWithExistingDivLineLabel =
+                                        intersectsDivLineLabels(rectDivLineLabel, iLayer, 0, idxDivLine-1);
                                 }
-                                else if( idx == 1 && rectDivLineLabel.bottom() > pPixmapDiagram->getRectPartCenter().bottom() )
+                                if (!bIntersectsWithExistingDivLineLabel)
                                 {
-                                    cyOffset = rectDivLineLabel.bottom()-pPixmapDiagram->getRectPartCenter().bottom()+1;
-                                    m_rectDivLineLabelsPhysUnit.moveBottom( m_rectDivLineLabelsPhysUnit.bottom()-cyOffset );
-                                }
-                                if( !intersectsDivLineLabels(rectDivLineLabel) )
-                                {
-                                    m_arbScaleMinMaxValVisible[idx] = true;
-                                    m_arrectScaleMinMaxVal[idx] = rectDivLineLabel;
+                                    m_ararbDivLineLabelsVisible[iLayer][idxDivLine] = true;
+                                    iDivLineLabelsVisibleCount++;
 
-                                    if( m_iSpaceDiagPartCenter2DivLineLabels >= 0 )
+                                    if( m_iSpacingDiagPartCenter2DivLineLabels >= 0 )
                                     {
                                         if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
                                         {
@@ -2969,98 +2942,213 @@ void CDiagObjAxisLabel::updatePixmap( QPaintDevice* i_pPaintDevice )
                                     }
                                 }
                             }
-                            else
+                        }
+                        else
+                        {
+                            if( rectDivLineLabel.left() >= rectDiag.left()
+                                && rectDivLineLabel.right() <= rectDiag.right()
+                                && rectDivLineLabel.top() >= rectDiag.top()
+                                && rectDivLineLabel.bottom() <= rectDiag.bottom() )
                             {
-                                if( rectDivLineLabel.left() >= rectDiag.left()
-                                 && rectDivLineLabel.right() <= rectDiag.right()
-                                 && rectDivLineLabel.top() >= rectDiag.top()
-                                 && rectDivLineLabel.bottom() <= rectDiag.bottom() )
+                                bool bIntersectsWithExistingDivLineLabel = false;
+                                if (idxDivLine > 0) {
+                                    bIntersectsWithExistingDivLineLabel =
+                                        intersectsDivLineLabels(rectDivLineLabel, iLayer, 0, idxDivLine-1);
+                                }
+                                if (!bIntersectsWithExistingDivLineLabel)
                                 {
-                                    if( !intersectsDivLineLabels(rectDivLineLabel) )
-                                    {
-                                        m_arbScaleMinMaxValVisible[idx] = true;
-                                        m_arrectScaleMinMaxVal[idx] = rectDivLineLabel;
+                                    m_ararbDivLineLabelsVisible[iLayer][idxDivLine] = true;
+                                    iDivLineLabelsVisibleCount++;
 
-                                        if( m_iSpaceDiagPartCenter2DivLineLabels >= 0 )
+                                    if( m_iSpacingDiagPartCenter2DivLineLabels >= 0 )
+                                    {
+                                        if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
                                         {
-                                            if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
-                                            {
-                                                QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
-                                                painter.fillRect( rectDivLineLabel, brush );
-                                            }
-                                            painter.drawText(rectDivLineLabel,Qt::AlignLeft|Qt::AlignVCenter,strDivLineLabel); //lint !e655
+                                            QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
+                                            painter.fillRect( rectDivLineLabel, brush );
                                         }
-                                        else
+                                        painter.drawText(rectDivLineLabel,Qt::AlignLeft|Qt::AlignVCenter,strDivLineLabel); //lint !e655
+                                    }
+                                    else
+                                    {
+                                        if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
                                         {
-                                            if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
-                                            {
-                                                QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
-                                                painter.fillRect( rectDivLineLabel, brush );
-                                            }
-                                            painter.drawText(rectDivLineLabel,Qt::AlignRight|Qt::AlignVCenter,strDivLineLabel); //lint !e655
+                                            QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
+                                            painter.fillRect( rectDivLineLabel, brush );
                                         }
+                                        painter.drawText(rectDivLineLabel,Qt::AlignRight|Qt::AlignVCenter,strDivLineLabel); //lint !e655
                                     }
                                 }
-                            } // else if( m_bAdjustContentRect2DiagPartCenter )
-                        } // if( m_layoutPos == ELayoutPosRight )
-                    }
-                }
-            } // if( iDivLineLabelsVisibleCount < 2 )
+                            }
+                        } // else if( m_bAdjustContentRect2DiagPartCenter )
+                    } // if( m_layoutPos == ELayoutPosRight )
+                } // for( idxDivLine < m_uDivLineLabelsCount[iLayer] )
+            } // if( m_bShowDivLineLabels || m_bShowSubDivLineLabels )
+        } // for( iLayer < CEnumDivLineLayer::count() )
 
-            // Axis Label
-            //-----------
+        // Minimum and maximum scale value
+        //---------------------------------
 
-            if( (m_ararbShowPartsLayer[EDivLineLabelsPartAxisLabel][EDivLineLayerMain] || m_arbShowPartsUnit[EDivLineLabelsPartAxisLabel]) && !strAxisLabel.isEmpty() )
-            {
-                // Calculate extent of axis label:
-                rectAxisLabel = fntmtr.boundingRect(strAxisLabel);
-                if( rectAxisLabel.width() > m_rectAxisLabel.width() )
-                {
-                    // As the label will be rotated by 90 degrees, the width will become the height:
-                    m_rectAxisLabel.setHeight( rectAxisLabel.width() );
-                }
-
-                m_rectAxisLabel.moveTop( pPixmapDiagram->getRectPartCenter().center().y() - m_rectAxisLabel.height()/2 );
-
-                #if QT_VERSION < 0x050000
-                QMatrix matrix;
-                #else
-                QTransform matrix;
-                #endif
-                painter.save();
-                matrix.translate( static_cast<double>(m_rectAxisLabel.center().x()), static_cast<double>(m_rectAxisLabel.center().y()) );
-                matrix.rotate(-90.0);
-                #if QT_VERSION < 0x050000
-                painter.setWorldMatrix(matrix);
-                #else
-                painter.setWorldTransform(matrix);
-                #endif
-                //painter.setWorldTransform(matrix);
-                painter.setFont(m_arfntParts[EDivLineLabelsPartAxisLabel]);
-                painter.setPen(m_arcolPartsFg[EDivLineLabelsPartAxisLabel]);
-                if( m_arbrushStyleParts[EDivLineLabelsPartAxisLabel] != Qt::NoBrush )
-                {
-                    QBrush brush(m_arcolPartsBg[EDivLineLabelsPartAxisLabel],m_arbrushStyleParts[EDivLineLabelsPartAxisLabel]);
-                    painter.fillRect(m_rectAxisLabel,brush);
-                }
-                painter.drawText(
-                    /* x   */ -m_rectAxisLabel.height()/2,
-                    /* y   */ m_rectAxisLabel.width()/2,
-                    /* str */ strAxisLabel );
-                painter.restore();
-
-            } // if( m_ararbShowPartsLayer[EDivLineLabelsPartAxisLabel][EDivLineLayerMain] )
-
-            break;
-
-        } // case( PosLeft || PosRight )
-
-        default:
+        if( iDivLineLabelsVisibleCount < 2 )
         {
-            break;
-        }
+            for( idx = 0; idx < 2; idx++ )
+            {
+                if( !m_arstrScaleMinMaxVal[idx].isEmpty() && m_arrectScaleMinMaxVal[idx].isValid() )
+                {
+                    strDivLineLabel = m_arstrScaleMinMaxVal[idx];
+                    rectDivLineLabel = m_arrectScaleMinMaxVal[idx];
 
-    } // switch( m_layoutPos )
+                    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
+                    {
+                        if( idx == 0 )
+                        {
+                            strTrcMsg  = "ScaleMin: ";
+                        }
+                        else
+                        {
+                            strTrcMsg  = "ScaleMax: ";
+                        }
+                        strTrcMsg += strDivLineLabel + "; ";
+                        strTrcMsg += "T=" + QString::number(rectDivLineLabel.top()) + ",";
+                        strTrcMsg += "B=" + QString::number(rectDivLineLabel.bottom()) + ",";
+                        strTrcMsg += "L=" + QString::number(rectDivLineLabel.left()) + ",";
+                        strTrcMsg += "R=" + QString::number(rectDivLineLabel.right());
+                        mthTracer.trace(strTrcMsg);
+                    }
+
+                    // To discover overlapping division line labels the rectangle extents
+                    // of the division line labels have been stored in an array:
+                    if( m_layoutPos == ELayoutPosLeft )
+                    {
+                        // To discover overlapping division line labels the rectangle extents
+                        // of the division line labels have been stored in an array:
+                        if( m_bAdjustContentRect2DiagPartCenter )
+                        {
+                            if( idx == 0 && rectDivLineLabel.top() < pPixmapDiagram->getRectPartCenter().top() )
+                            {
+                                cyOffset = pPixmapDiagram->getRectPartCenter().top()-rectDivLineLabel.top()+1;
+                                rectDivLineLabel.moveTop( rectDivLineLabel.top()+cyOffset );
+                            }
+                            else if( idx == 1 && rectDivLineLabel.bottom() > pPixmapDiagram->getRectPartCenter().bottom() )
+                            {
+                                cyOffset = rectDivLineLabel.bottom()-pPixmapDiagram->getRectPartCenter().bottom()+1;
+                                rectDivLineLabel.moveBottom( rectDivLineLabel.bottom()-cyOffset );
+                            }
+                            if( !intersectsDivLineLabels(rectDivLineLabel) )
+                            {
+                                m_arbScaleMinMaxValVisible[idx] = true;
+                                m_arrectScaleMinMaxVal[idx] = rectDivLineLabel;
+
+                                if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
+                                {
+                                    QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
+                                    painter.fillRect( rectDivLineLabel, brush );
+                                }
+                                painter.drawText(rectDivLineLabel,Qt::AlignRight|Qt::AlignVCenter,strDivLineLabel); //lint !e655
+                            }
+                        }
+                        else
+                        {
+                            if( rectDivLineLabel.left() >= rectDiag.left()
+                                && rectDivLineLabel.right() <= rectDiag.right()
+                                && rectDivLineLabel.top() >= rectDiag.top()
+                                && rectDivLineLabel.bottom() <= rectDiag.bottom() )
+                            {
+                                if( !intersectsDivLineLabels(rectDivLineLabel) )
+                                {
+                                    m_arbScaleMinMaxValVisible[idx] = true;
+                                    m_arrectScaleMinMaxVal[idx] = rectDivLineLabel;
+
+                                    if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
+                                    {
+                                        QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
+                                        painter.fillRect( rectDivLineLabel, brush );
+                                    }
+                                    painter.drawText(rectDivLineLabel,Qt::AlignRight|Qt::AlignVCenter,strDivLineLabel); //lint !e655
+                                }
+                            }
+                        }
+                    }
+                    else // if( m_layoutPos == ELayoutPosRight )
+                    {
+                        // To discover overlapping division line labels the rectangle extents
+                        // of the division line labels have been stored in an array:
+                        if( m_bAdjustContentRect2DiagPartCenter )
+                        {
+                            if( idx == 0 && rectDivLineLabel.top() < pPixmapDiagram->getRectPartCenter().top() )
+                            {
+                                cyOffset = pPixmapDiagram->getRectPartCenter().top()-rectDivLineLabel.top()+1;
+                                m_rectDivLineLabelsPhysUnit.moveTop( m_rectDivLineLabelsPhysUnit.top()+cyOffset );
+                            }
+                            else if( idx == 1 && rectDivLineLabel.bottom() > pPixmapDiagram->getRectPartCenter().bottom() )
+                            {
+                                cyOffset = rectDivLineLabel.bottom()-pPixmapDiagram->getRectPartCenter().bottom()+1;
+                                m_rectDivLineLabelsPhysUnit.moveBottom( m_rectDivLineLabelsPhysUnit.bottom()-cyOffset );
+                            }
+                            if( !intersectsDivLineLabels(rectDivLineLabel) )
+                            {
+                                m_arbScaleMinMaxValVisible[idx] = true;
+                                m_arrectScaleMinMaxVal[idx] = rectDivLineLabel;
+
+                                if( m_iSpacingDiagPartCenter2DivLineLabels >= 0 )
+                                {
+                                    if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
+                                    {
+                                        QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
+                                        painter.fillRect( rectDivLineLabel, brush );
+                                    }
+                                    painter.drawText(rectDivLineLabel,Qt::AlignLeft|Qt::AlignVCenter,strDivLineLabel); //lint !e655
+                                }
+                                else
+                                {
+                                    if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
+                                    {
+                                        QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
+                                        painter.fillRect( rectDivLineLabel, brush );
+                                    }
+                                    painter.drawText(rectDivLineLabel,Qt::AlignRight|Qt::AlignVCenter,strDivLineLabel); //lint !e655
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if( rectDivLineLabel.left() >= rectDiag.left()
+                                && rectDivLineLabel.right() <= rectDiag.right()
+                                && rectDivLineLabel.top() >= rectDiag.top()
+                                && rectDivLineLabel.bottom() <= rectDiag.bottom() )
+                            {
+                                if( !intersectsDivLineLabels(rectDivLineLabel) )
+                                {
+                                    m_arbScaleMinMaxValVisible[idx] = true;
+                                    m_arrectScaleMinMaxVal[idx] = rectDivLineLabel;
+
+                                    if( m_iSpacingDiagPartCenter2DivLineLabels >= 0 )
+                                    {
+                                        if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
+                                        {
+                                            QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
+                                            painter.fillRect( rectDivLineLabel, brush );
+                                        }
+                                        painter.drawText(rectDivLineLabel,Qt::AlignLeft|Qt::AlignVCenter,strDivLineLabel); //lint !e655
+                                    }
+                                    else
+                                    {
+                                        if( m_arbrushStyleParts[EDivLineLabelsPartLabels] != Qt::NoBrush )
+                                        {
+                                            QBrush brush(m_arcolPartsBg[EDivLineLabelsPartLabels],m_arbrushStyleParts[EDivLineLabelsPartLabels]);
+                                            painter.fillRect( rectDivLineLabel, brush );
+                                        }
+                                        painter.drawText(rectDivLineLabel,Qt::AlignRight|Qt::AlignVCenter,strDivLineLabel); //lint !e655
+                                    }
+                                }
+                            }
+                        } // else if( m_bAdjustContentRect2DiagPartCenter )
+                    } // if( m_layoutPos == ELayoutPosRight )
+                }
+            }
+        } // if( iDivLineLabelsVisibleCount < 2 )
+    } // if (m_layoutPos == ELayoutPosLeft || m_layoutPos == ELayoutPosRight)
+#endif
 
     // Mark current process depth as executed (reset bit)
     //---------------------------------------------------
@@ -3134,6 +3222,7 @@ QRect CDiagObjAxisLabel::getDiagRect() const
                          - pPixmapDiagram->getMarginTop()
                          - pPixmapDiagram->getMarginBottom());
     }
+
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("{" + qRect2Str(rectDiag) + "}");
     }
@@ -3215,12 +3304,12 @@ CUnit CDiagObjAxisLabel::getAxisLabelUnit() const
 
             if( !(formatResult & FormatResult::Error) ) //lint !e655
             {
-                // If the best unit for the scale minimum and scale maximum value is the same ...
+                // If the best unit for the scale minimum and maximum scale value is the same ...
                 if( unitScaleMinValTmp == unitScaleMaxValTmp )
                 {
                     unit = unitScaleMinValTmp;
                 }
-                // If the best unit for the scale minimum and scale maximum value is different ...
+                // If the best unit for the scale minimum and maximum scale value is different ...
                 else
                 {
                     // ... we need to decide which of both is the best unit to indicate the
@@ -3288,9 +3377,9 @@ CUnit CDiagObjAxisLabel::getAxisLabelUnit() const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Checks wheter the axis label is visible.
+/*! @brief Checks whether the axis label is visible.
 
-    The axis label indicates the physical size and the unit.
+    The unit may also be indicated together with the axis label (or instead).
 
     @return true if the axis label should be indicated.
 */
@@ -3302,9 +3391,7 @@ bool CDiagObjAxisLabel::isAxisLabelVisible() const
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "isAxisLabelVisible",
         /* strAddInfo   */ "" );
-
-    bool bVisible = (m_ararbShowPartsLayer[EDivLineLabelsPartAxisLabel][EDivLineLayerMain]
-                  || m_arbShowPartsUnit[EDivLineLabelsPartAxisLabel]);
+    bool bVisible = (m_bShowAxisLabel || m_bShowUnitAtAxisLabel);
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(bVisible);
     }
@@ -3312,9 +3399,162 @@ bool CDiagObjAxisLabel::isAxisLabelVisible() const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the bounding rectangle of the axis label.
+/*! @brief Calculates the size (width and height) of the bounding rectangle
+           for the unit string using metrics of the font to be used if the
+           unit string should be indicated in the area of the division lines.
+
+    If the axis label is positioned on the left or right layout position
+    of the diagram the bounding rectangle is rotated by 90 degrees
+    (width becomes height and height becomes width).
+
+    @return Bounding rectangle of the unit string.
+*/
+QSize CDiagObjAxisLabel::getDivLineLabelsUnitTextExtent() const
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjLayout,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "getDivLineLabelsUnitTextExtent",
+        /* strAddInfo   */ "" );
+
+    QSize size;
+
+    // If the unit string should be indicated in the area of the division line labels
+    // the maximum text extent of the division lines may have to be adjusted.
+    if (m_bShowUnitAtDivLines)
+    {
+        QFontMetrics fntmtr(m_fntUnitAtDivLines);
+        size = fntmtr.boundingRect(m_strPhysUnitLabels).size();
+        size.setHeight(size.height() + 2);
+        size.setWidth(size.width() + 2);
+
+        if (m_layoutPos == ELayoutPosLeft || m_layoutPos == ELayoutPosRight) {
+            // The label will be drawn rotated by 90 degrees.
+            // The width becomes the height.
+            int cyHeight = size.height();
+            size.setHeight(size.width());
+            size.setWidth(cyHeight);
+        }
+    }
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("{" + qSize2Str(size) + "}");
+    }
+    return size;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Calculates the bounding rectangle for the unit string using metrics
+           of the font to be used if the unit string should be indicated in the
+           area of the division lines.
+
+    If the axis label is positioned on the left or right layout position
+    of the diagram the bounding rectangle is rotated by 90 degrees
+    (width becomes height and height becomes width).
+
+    @return Bounding rectangle of the unit string.
+*/
+QRect CDiagObjAxisLabel::getDivLineLabelsUnitBoundingRect() const
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjLayout,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "getDivLineLabelsUnitBoundingRect",
+        /* strAddInfo   */ "" );
+
+    QRect rect;
+
+    // If the unit string should be indicated in the area of the division line labels
+    // the maximum text extent of the division lines may have to be adjusted.
+    // If the unit string should be indicated in the area of the division line labels
+    if (m_bShowUnitAtDivLines)
+    {
+        QFontMetrics fntmtr(m_fntUnitAtDivLines);
+        rect = fntmtr.boundingRect(m_strPhysUnitLabels);
+        rect.setHeight(rect.height() + 2);
+        rect.setWidth(rect.width() + 2);
+
+        if (m_layoutPos == ELayoutPosLeft || m_layoutPos == ELayoutPosRight) {
+            // The label will be drawn rotated by 90 degrees.
+            // The width becomes the height.
+            int cyHeight = rect.height();
+            rect.setHeight(rect.width());
+            rect.setWidth(cyHeight);
+        }
+    }
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("{" + qRect2Str(rect) + "}");
+    }
+    return rect;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Method used for layout processing to calculate the size (width and height)
+           of the bounding rectangle for the axis label using metrics of the font to be used.
+
+    The bounding rectangles size may also include the unit string if the unit
+    string should be indicated together with the axis label.
+
+    If the axis label is positioned on the left or right layout position
+    of the diagram the bounding rectangle is rotated by 90 degrees
+    (width becomes height and height becomes width).
 
     @return Bounding rectangle of the axis label.
+*/
+QSize CDiagObjAxisLabel::getAxisLabelTextExtent() const
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjLayout,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "getAxisLabelTextExtent",
+        /* strAddInfo   */ "" );
+
+    QSize size;
+
+    if (isAxisLabelVisible())
+    {
+        QFontMetrics fntmtr(m_fntAxisLabel);
+        QString strAxisLabel = m_strAxisLabel;
+
+        if (m_bShowUnitAtAxisLabel) {
+            if (!strAxisLabel.isEmpty()) {
+                strAxisLabel += " / ";
+            }
+            strAxisLabel += m_strPhysUnitLabels;
+        }
+        size = fntmtr.boundingRect(strAxisLabel).size();
+        size.setHeight(size.height() + 2);
+        size.setWidth(size.width() + 2);
+
+        if (m_layoutPos == ELayoutPosLeft || m_layoutPos == ELayoutPosRight) {
+            // The label will be drawn rotated by 90 degrees.
+            // The width becomes the height.
+            int cyHeight = size.height();
+            size.setHeight(size.width());
+            size.setWidth(cyHeight);
+        }
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("{" + qSize2Str(size) + "}");
+    }
+    return size;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Method used for data processing to calculate the final position
+           of the bounding rectangle for the axis label.
+
+    The size (width and height) of the axis labels bounding rectangle must
+    have already been calculated during layout processing.
+
+    The diagram updates the geometry of the object in x/y position and width and height
+    (content rectangle) before invoking the update method for data processing.
+
+    @return Bounding rectangle of the axis label at the final position.
 */
 QRect CDiagObjAxisLabel::getAxisLabelBoundingRect() const
 //------------------------------------------------------------------------------
@@ -3325,75 +3565,177 @@ QRect CDiagObjAxisLabel::getAxisLabelBoundingRect() const
         /* strMethod    */ "getAxisLabelBoundingRect",
         /* strAddInfo   */ "" );
 
-    QRect rectAxisLabel;
+    QRect rect;
 
     if (isAxisLabelVisible())
     {
-        // Calculate extent of axis label:
-        QFontMetrics fntmtr(m_arfntParts[EDivLineLabelsPartAxisLabel]);
-        QString strAxisLabel = m_strAxisLabel;
+        rect = m_rectAxisLabel;
 
-        if( m_arbShowPartsUnit[EDivLineLabelsPartAxisLabel] )
+        if (m_layoutPos == ELayoutPosTop || m_layoutPos == ELayoutPosBottom)
         {
-            if( !strAxisLabel.isEmpty() )
-            {
-                strAxisLabel += " / ";
+            int cyOffset = m_iSpacingDiagPartCenter2DivLineLabels
+                         + m_sizeDivLineLabelsMaxTextExtent.height()
+                         + m_iSpacingDivLineLabels2AxisLabel;
+            if (cyOffset < m_iSpacingDiagPartCenter2AxisLabel) {
+                cyOffset = m_iSpacingDiagPartCenter2AxisLabel;
             }
-            strAxisLabel += m_strPhysUnitLabels;
+            rect.moveLeft(m_rectContent.left() + m_rectContent.width()/2 - m_rectAxisLabel.width()/2);
+
+            if (m_layoutPos == ELayoutPosTop) {
+                rect.moveBottom(m_rectContent.bottom() - cyOffset);
+            }
+            else {
+                rect.moveBottom(m_rectContent.top() + cyOffset);
+            }
         }
-        rectAxisLabel = fntmtr.boundingRect(strAxisLabel);
-        rectAxisLabel.setHeight(rectAxisLabel.height() + 2);
-        rectAxisLabel.setWidth(rectAxisLabel.width() + 2);
-
-        int cxWidth  = rectAxisLabel.width();
-        int cyHeight = rectAxisLabel.height();
-
-        // Please note that we need to access the diagrams geometry as the
-        // "calculateAxisLabelRect" method might have been invoked to get the
-        // sizeHint for the content rectangle and the content rectangle will
-        // be changed by the diagram later on.
-        switch (m_layoutPos)
+        else if (m_layoutPos == ELayoutPosLeft || m_layoutPos == ELayoutPosRight)
         {
-            case ELayoutPosLeft:
-            case ELayoutPosRight:
-            {
-                // The label will be drawn rotated by 90 degrees.
-                // The width becomes the height.
-                rectAxisLabel.setHeight(cxWidth);
-                rectAxisLabel.setWidth(cyHeight);
-                break;
+            int cxOffset = m_iSpacingDiagPartCenter2DivLineLabels
+                         + m_sizeDivLineLabelsMaxTextExtent.width()
+                         + m_iSpacingDivLineLabels2AxisLabel;
+            if (cxOffset < m_iSpacingDiagPartCenter2AxisLabel) {
+                cxOffset = m_iSpacingDiagPartCenter2AxisLabel;
             }
-            case ELayoutPosTop:
-            case ELayoutPosBottom:
-            default:
-            {
-                break;
+            rect.moveTop(m_rectContent.top() + m_rectContent.height()/2 - m_rectAxisLabel.height()/2);
+
+            if (m_layoutPos == ELayoutPosLeft) {
+                rect.moveLeft(m_rectContent.right() - cxOffset);
             }
+            else {
+                rect.moveLeft(m_rectContent.left() + cxOffset);
+            }
+        }
+    } // if (isAxisLabelVisible())
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("{" + qRect2Str(rect) + "}");
+    }
+    return rect;
+}
+
+////------------------------------------------------------------------------------
+///*! @brief Adjusts - if necessary - the maximum text extent in width or height
+//           of the division line labels if the unit string and/or the minimum
+//           and mayimum scale values should be indicated in the area of the
+//           division line labels.
+//*/
+//void CDiagObjAxisLabel::adjustDivLineLabelsMaxTextExtent()
+////------------------------------------------------------------------------------
+//{
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjLayout,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strMethod    */ "adjustDivLineLabelsMaxTextExtent",
+//        /* strAddInfo   */ "" );
+//
+//    QRect rectDiag = getDiagRect();
+//
+//    m_sizeDivLineLabelsMaxTextExtent = m_divLinesMetrics.getDivLineLabelsMaxTextExtent();
+//
+//    // If the unit string should be indicated in the area of the division line labels
+//    if (m_bShowUnitAtDivLines)
+//    {
+//        // Calculate extent of string to indicate the physical unit
+//        QFontMetrics fntmtr(m_arfntParts[EDivLineLabelsPartLabels]);
+//        m_rectDivLineLabelsPhysUnit = fntmtr.boundingRect(m_strPhysUnitLabels);
+//        m_rectDivLineLabelsPhysUnit.setHeight(m_rectDivLineLabelsPhysUnit.height() + 2);
+//        m_rectDivLineLabelsPhysUnit.setWidth(m_rectDivLineLabelsPhysUnit.width() + 2);
+//
+//        if (m_layoutPos == ELayoutPosTop || m_layoutPos == ELayoutPosBottom)
+//        {
+//            // X-Axis (vertical division lines)
+//            double xDivLine = m_pDiagScale->getMaxValPix();
+//            m_rectDivLineLabelsPhysUnit.moveLeft(xDivLine - m_rectDivLineLabelsPhysUnit.width()/2);
+//
+//            if (m_bAdjustContentRect2DiagPartCenter)
+//            {
+//                if (m_rectDivLineLabelsPhysUnit.right() >= m_pDiagScale->getMaxValPix())
+//                {
+//                    int cxOffset = m_rectDivLineLabelsPhysUnit.right()-m_pDiagScale->getMaxValPix()+1;
+//                    m_rectDivLineLabelsPhysUnit.moveRight( m_rectDivLineLabelsPhysUnit.right()-cxOffset );
+//                }
+//            }
+//            else
+//            {
+//                if (m_rectDivLineLabelsPhysUnit.right() >= rectDiag.right())
+//                {
+//                    int cxOffset = m_rectDivLineLabelsPhysUnit.right()-rectDiag.right()+1;
+//                    m_rectDivLineLabelsPhysUnit.moveRight( m_rectDivLineLabelsPhysUnit.right()-cxOffset );
+//                }
+//            }
+//        }
+//        else if (m_layoutPos == ELayoutPosLeft || m_layoutPos == ELayoutPosRight)
+//        {
+//            // Y-Axis (horizontal division lines)
+//            // As for the Y-axis the physical unit string should be adjusted to the division line labels
+//            // the extent (width) of the physical unit string depends on the division line labels.
+//            if (m_rectDivLineLabelsPhysUnit.width() < m_sizeDivLineLabelsMaxTextExtent.width())
+//            {
+//                m_rectDivLineLabelsPhysUnit.setWidth(m_sizeDivLineLabelsMaxTextExtent.width());
+//            }
+//            else if (m_rectDivLineLabelsPhysUnit.width() > m_sizeDivLineLabelsMaxTextExtent.width())
+//            {
+//                m_sizeDivLineLabelsMaxTextExtent.setWidth(m_rectDivLineLabelsPhysUnit.width());
+//            }
+//
+//            double yDivLine = m_pDiagScale->getMaxValPix();
+//            m_rectDivLineLabelsPhysUnit.moveTop(yDivLine - m_rectDivLineLabelsPhysUnit.height()/2);
+//
+//            if (m_bAdjustContentRect2DiagPartCenter)
+//            {
+//                if (m_rectDivLineLabelsPhysUnit.top() <= m_pDiagScale->getMaxValPix())
+//                {
+//                    int cyOffset = m_pDiagScale->getMaxValPix() - m_rectDivLineLabelsPhysUnit.top() + 1;
+//                    m_rectDivLineLabelsPhysUnit.moveTop(m_rectDivLineLabelsPhysUnit.top() + cyOffset);
+//                }
+//            }
+//            else
+//            {
+//                if (m_rectDivLineLabelsPhysUnit.top() <= rectDiag.top())
+//                {
+//                    int cyOffset = rectDiag.top() - m_rectDivLineLabelsPhysUnit.top() + 1;
+//                    m_rectDivLineLabelsPhysUnit.moveTop(m_rectDivLineLabelsPhysUnit.top() + cyOffset);
+//                }
+//            }
+//        } // if (m_layoutPos == ELayoutPosLeft || m_layoutPos == ELayoutPosRight)
+//    } // if( m_bShowUnitAtDivLines )
+//} // adjustDivLineLabelsMaxTextExtent
+
+//------------------------------------------------------------------------------
+/*! @brief Checks whether the given rectangle intersects the label showing the
+           unit of the axis.
+
+    @param i_rect [in]
+        Rectangle to be checked whether it intersects any of the existing label rectangles.
+
+    @return true if the passed rectangle intersects the unit label, false otherwise.
+*/
+bool CDiagObjAxisLabel::intersectsDivLineLabelsPhysUnit(const QRect& i_rect) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjUpdate, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = qRect2Str(i_rect);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjLayout,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "intersectsDivLineLabelsPhysUnit",
+        /* strAddInfo   */ strMthInArgs );
+
+    bool bIntersect = false;
+
+    if( m_bShowUnitAtDivLines && m_bDivLineLabelsPhysUnitVisible )
+    {
+        if( i_rect.intersects(m_rectDivLineLabelsPhysUnit) )
+        {
+            bIntersect = true;
         }
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("{" + qRect2Str(rectAxisLabel) + "}");
+        mthTracer.setMethodReturn(bIntersect);
     }
-    return rectAxisLabel;
-}
-
-//------------------------------------------------------------------------------
-QVector<double> CDiagObjAxisLabel::getDivLineValsSorted() const
-//------------------------------------------------------------------------------
-{
-    QVector<double> arfValsMain;
-    int iValCountMain = m_pDiagScale->getDivLineCount(EDivLineLayerMain);
-    for (int idxVal = 0; idxVal < iValCountMain; ++idxVal) {
-        double fVal = m_pDiagScale->getDivLineVal(EDivLineLayerMain, idxVal, &m_unitLabels);
-        arfValsMain.append(fVal);
-    }
-    QVector<double> arfValsSub;
-    int iValCountSub = m_pDiagScale->getDivLineCount(EDivLineLayerSub);
-    for (int idxVal = 0; idxVal < iValCountSub; ++idxVal) {
-        double fVal = m_pDiagScale->getDivLineVal(EDivLineLayerSub, idxVal, &m_unitLabels);
-        arfValsSub.append(fVal);
-    }
-    return Math::merge(arfValsMain, arfValsSub);
+    return bIntersect;
 }
 
 //------------------------------------------------------------------------------
@@ -3420,9 +3762,9 @@ bool CDiagObjAxisLabel::intersectsDivLineLabels(
     int i_idxDivLineLabelMax ) const
 //------------------------------------------------------------------------------
 {
-    QString strTrcMthInArgs;
+    QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjUpdate, EMethodTraceDetailLevel::ArgsNormal)) {
-        strTrcMthInArgs = "Rect {" + qRect2Str(i_rect) + "}"
+        strMthInArgs = "Rect {" + qRect2Str(i_rect) + "}"
             + ", Layer: " + QString(i_eDivLineLayer.isValid() ? i_eDivLineLayer.toString() : "Undefined")
             + ", IdxMin: " + QString::number(i_idxDivLineLabelMin)
             + ", IdxMax: " + QString::number(i_idxDivLineLabelMax);
@@ -3431,9 +3773,11 @@ bool CDiagObjAxisLabel::intersectsDivLineLabels(
         /* pAdminObj    */ m_pTrcAdminObjLayout,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "intersectsDivLineLabels",
-        /* strAddInfo   */ strTrcMthInArgs );
+        /* strAddInfo   */ strMthInArgs );
 
     bool bIntersect = intersectsDivLineLabelsPhysUnit(i_rect);
+
+#if 0
 
     int iLayerMax = CEnumDivLineLayer::count()-1;
 
@@ -3531,6 +3875,8 @@ bool CDiagObjAxisLabel::intersectsDivLineLabels(
         }
     } // if( !bIntersect )
 
+#endif
+
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(bIntersect);
     }
@@ -3539,76 +3885,91 @@ bool CDiagObjAxisLabel::intersectsDivLineLabels(
 } // intersectsDivLineLabels
 
 //------------------------------------------------------------------------------
-/*! @brief Checks whether the given rectangle intersects the label showing the
-           unit of the axis.
-
-    @param i_rect [in]
-        Rectangle to be checked whether it intersects any of the existing label rectangles.
-
-    @return true if the passed rectangle intersects the unit label, false otherwise.
-*/
-bool CDiagObjAxisLabel::intersectsDivLineLabelsPhysUnit(const QRect& i_rect) const
+QString CDiagObjAxisLabel::formatValue( double i_fVal, CUnit* i_pUnit ) const
 //------------------------------------------------------------------------------
 {
-    QString strTrcMthInArgs;
+    QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjUpdate, EMethodTraceDetailLevel::ArgsNormal)) {
-        strTrcMthInArgs = qRect2Str(i_rect);
+        strMthInArgs = QString::number(i_fVal) + QString(i_pUnit == nullptr ? "" : " " + i_pUnit->symbol());
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjLayout,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "intersectsDivLineLabelsPhysUnit",
-        /* strAddInfo   */ strTrcMthInArgs );
+        /* strMethod    */ "formatValue",
+        /* strAddInfo   */ strMthInArgs );
 
-    bool bIntersect = false;
-
-    if( m_arbShowPartsUnit[EDivLineLabelsPartLabels] && m_bDivLineLabelsPhysUnitVisible )
-    {
-        if( i_rect.intersects(m_rectDivLineLabelsPhysUnit) )
-        {
-            bIntersect = true;
-        }
-    }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(bIntersect);
-    }
-    return bIntersect;
-}
-
-//------------------------------------------------------------------------------
-QString CDiagObjAxisLabel::formatValue( double i_fVal, CUnit* i_pUnit ) const
-//------------------------------------------------------------------------------
-{
     // Formats the value in the given unit into a string according to the internally
     // calculated number of leading and trailing digits and the internally calculated
     // physical unit used to indicate the labels at the division lines.
 
-    QString strVal;
-    double  fVal = i_fVal;
-    CUnit   unit = m_unitLabels;
+    double fVal = i_fVal;
+    CUnit unit = m_unitLabels;
 
-    if( i_pUnit != nullptr )
-    {
+    if (i_pUnit != nullptr) {
         unit = *i_pUnit;
     }
-    if( unit != m_unitLabels )
-    {
+    if (unit != m_unitLabels) {
         fVal = unit.convertValue(fVal, m_unitLabels);
     }
-    if( m_iDivLineLabelsExponentDigits <= 0 )
-    {
-        strVal = QString::number(
-            /* fVal       */ fVal,
-            /* chFormat   */ 'f',
-            /* iPrecision */ m_iDivLineLabelsTrailingDigits );
-    }
-    else
-    {
-        strVal = QString::number(
-            /* fVal       */ fVal,
-            /* chFormat   */ 'e',
-            /* iPrecision */ m_iDivLineLabelsTrailingDigits );
+    QString strVal = m_divLinesMetrics.formatValue(i_fVal);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(strVal);
     }
     return strVal;
 
 } // formatValue
+
+/*==============================================================================
+protected: // auxiliary instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CDiagObjAxisLabel::paintAxisLabel(QPaintDevice* i_pPaintDevice)
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjLayout,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "paintAxisLabel",
+        /* strAddInfo   */ "" );
+
+    QString strAxisLabel;
+    if (isAxisLabelVisible()) {
+        strAxisLabel = m_strAxisLabel;
+        if (m_bShowUnitAtAxisLabel) {
+            if (!strAxisLabel.isEmpty()) {
+                strAxisLabel += " / ";
+            }
+            strAxisLabel += m_strPhysUnitLabels;
+        }
+    }
+
+    if (!strAxisLabel.isEmpty()) {
+        QPainter painter(i_pPaintDevice);
+        painter.setFont(m_fntAxisLabel);
+        painter.setPen(m_colAxisLabel);
+        if (m_layoutPos == ELayoutPosTop || m_layoutPos == ELayoutPosBottom) {
+            painter.drawText(m_rectAxisLabel, Qt::AlignVCenter|Qt::AlignHCenter, strAxisLabel);
+        }
+        else if (m_layoutPos == ELayoutPosLeft || m_layoutPos == ELayoutPosRight) {
+            #if QT_VERSION < 0x050000
+            QMatrix matrix;
+            #else
+            QTransform matrix;
+            #endif
+            matrix.translate(
+                static_cast<double>(m_rectAxisLabel.center().x()),
+                static_cast<double>(m_rectAxisLabel.center().y()));
+            matrix.rotate(-90.0);
+            #if QT_VERSION < 0x050000
+            painter.setWorldMatrix(matrix);
+            #else
+            painter.setWorldTransform(matrix);
+            #endif
+            painter.drawText(
+                /* x   */ -m_rectAxisLabel.height()/2,
+                /* y   */ m_rectAxisLabel.width()/2,
+                /* str */ strAxisLabel );
+        }
+    }
+}

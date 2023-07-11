@@ -46,6 +46,7 @@ list(APPEND _Headers
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysGUIApp.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysGUIAux.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysGUIDllMain.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysGUIMathScaleDivLinesMetrics.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysIdxTreeModel.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysIdxTreeModelBranchContent.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysIdxTreeModelEntry.h
@@ -90,6 +91,7 @@ list(APPEND _Sources
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysGUIApp.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysGUIAux.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysGUIDllMain.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysGUIMathScaleDivLinesMetrics.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysIdxTreeModel.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysIdxTreeModelBranchContent.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysIdxTreeModelEntry.cpp

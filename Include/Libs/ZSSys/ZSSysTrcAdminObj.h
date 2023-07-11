@@ -48,6 +48,7 @@ class CTrcServer;
 //******************************************************************************
 
 ZSSYSDLL_API bool areMethodCallsActive(CTrcAdminObj* i_pTrcAdminObj, EMethodTraceDetailLevel i_filterDetailLevel );
+ZSSYSDLL_API bool isRuntimeInfoActive(CTrcAdminObj* i_pTrcAdminObj, ELogDetailLevel i_filterDetailLevel );
 
 
 //******************************************************************************

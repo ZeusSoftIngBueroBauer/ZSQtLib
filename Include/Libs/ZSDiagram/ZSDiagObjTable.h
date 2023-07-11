@@ -180,10 +180,10 @@ public: // instance methods
     PhysVal::CUnit getCellDataUnit( int i_idxRow, int i_idxClm ) const;
     PhysVal::CPhysVal getCellDataPhysVal( int i_idxRow, int i_idxClm ) const;
 public: // overridables of base class CDiagObj
-    virtual QSize sizeHint();
+    virtual QSize sizeHint() override;
 public: // must overridables of base class CDiagObj
-    virtual CDiagObj* clone( CDataDiagram* i_pDiagramTrg ) const;
-    virtual void update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDevice = nullptr );
+    virtual CDiagObj* clone( CDataDiagram* i_pDiagramTrg ) const override;
+    virtual void update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDevice = nullptr ) override;
 protected: // instance methods
     void updateLayout();
     void updateData();

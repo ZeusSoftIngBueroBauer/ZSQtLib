@@ -261,21 +261,8 @@ QString ZS::Diagram::layoutPos2Str( int i_iLayoutPos )
 
 
 /*==============================================================================
-Enum EDivLineLabelPart
+Enum ETextOrientation
 ==============================================================================*/
-
-template<> QMutex ZS::System::CEnum<EDivLineLabelsPart>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<EDivLineLabelsPart>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
-
-//------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> ZS::System::CEnum<EDivLineLabelsPart>::s_arEnumEntries =
-//------------------------------------------------------------------------------
-{
-    /* 0 */ SEnumEntry( static_cast<int>(EDivLineLabelsPart::Lines), "Lines" ),
-    /* 1 */ SEnumEntry( static_cast<int>(EDivLineLabelsPart::Labels), "Labels" ),
-    /* 2 */ SEnumEntry( static_cast<int>(EDivLineLabelsPart::AxisLabel), "AxisLabel" )
-};
-
 
 //------------------------------------------------------------------------------
 QString ZS::Diagram::textOrientation2Str( int i_iTextOrientation )
@@ -299,6 +286,10 @@ QString ZS::Diagram::textOrientation2Str( int i_iTextOrientation )
     return "Out Of Range";
 
 } // textOrientation2Str
+
+/*==============================================================================
+Enum EDiagObjMoveMode
+==============================================================================*/
 
 //------------------------------------------------------------------------------
 QString ZS::Diagram::moveMode2Str( int i_iMoveMode )
@@ -324,6 +315,10 @@ QString ZS::Diagram::moveMode2Str( int i_iMoveMode )
     return "Out Of Range";
 
 } // moveMode2Str
+
+/*==============================================================================
+Enum EDiagObjState
+==============================================================================*/
 
 //------------------------------------------------------------------------------
 QString ZS::Diagram::diagObjState2Str( int i_iDiagObjState )

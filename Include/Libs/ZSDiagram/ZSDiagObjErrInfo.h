@@ -71,10 +71,10 @@ public: // instance methods
     ETextOrientation getTextOrientation() const;
     QString getText() const;
 public: // overridables of base class CDiagObj
-    virtual QSize sizeHint();
+    virtual QSize sizeHint() override;
 public: // must overridables of base class CDiagObj
-    virtual CDiagObj* clone( CDataDiagram* i_pDiagramTrg ) const;
-    virtual void update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDevice = nullptr );
+    virtual CDiagObj* clone( CDataDiagram* i_pDiagramTrg ) const override;
+    virtual void update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDevice = nullptr ) override;
 //protected: // overridables of base class CDiagObj
 //    virtual void onReceivedError( ZS::System::CMsgErr* i_pMsgErr ) override;
 protected slots:

@@ -442,8 +442,8 @@ typedef CEnum<EOrientation> CEnumOrientation;
 */
 enum class EScaleDir {
 //==============================================================================
-    X,  /*!< X (usually horizontal) scale orientation. */
-    Y   /*!< Y (usually vertical ) scale orientation. */
+    X,  /*!< X (horizontal) scale orientation. */
+    Y   /*!< Y (vertical ) scale orientation. */
 };
 template class ZSSYSDLL_API CEnum<EScaleDir>;
 typedef CEnum<EScaleDir> CEnumScaleDir;

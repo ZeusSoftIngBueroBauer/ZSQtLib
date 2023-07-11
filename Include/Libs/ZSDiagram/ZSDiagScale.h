@@ -93,6 +93,13 @@ private: // instance members
 //******************************************************************************
 /*! @brief Scale object within a diagram.
 
+    Diagram objects may be linked to the scale object to calculate their
+    internal data. E.g. the grid uses both the X and Y scale objects.
+    A diagram axis label is either linked to a X or Y scale object.
+    Before the internal data of those diagram objects can be calculated
+    the diagram will trigger the scale object for updating its internal data
+    (position of division lines).
+
     Scale objects have a geometry defined by the number of pixels used to
     indicate the scale in the diagrams pixmap.
 
@@ -184,6 +191,8 @@ public: // instance methods (calculation of division lines)
     double getDivLinePix( const ZS::System::CEnumDivLineLayer& i_eLayer, int i_idxDivLine ) const;
     double getDivLineDistVal( const ZS::System::CEnumDivLineLayer& i_eLayer, int i_idxDivLine1, int i_idxDivLine2, const PhysVal::CUnit* i_pUnit = nullptr ) const;
     double getDivLineDistPix( const ZS::System::CEnumDivLineLayer& i_eLayer, int i_idxDivLine1, int i_idxDivLine2 ) const;
+public: // instance mehods (calculation of division lines)
+    const ZS::System::Math::CScaleDivLines& getDivLinesScaler() const;
 public: // instance methods (converting values)
     int getValPix( double i_fVal, const PhysVal::CUnit* i_pUnit = nullptr ) const;
     double getVal( double i_fPix, const PhysVal::CUnit* i_pUnit = nullptr ) const;

@@ -52,8 +52,8 @@ public: // instance methods
     void setCol( const QColor&  i_col );
     QColor getCol() const;
 public: // must overridables of base class CDiagObj
-    virtual CDiagObj* clone( CDataDiagram* i_pDiagramTrg ) const;
-    virtual void update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDevice = nullptr );
+    virtual CDiagObj* clone( CDataDiagram* i_pDiagramTrg ) const override;
+    virtual void update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDevice = nullptr ) override;
 private: // copy ctor not allowed
     CDiagObjHistogram( const CDiagObjHistogram& );
 private: // assignment operator not allowed

@@ -69,13 +69,13 @@ static CInitModuleSysTrcAdminObj s_initModule;
            the current trace admin objects detail level and trace output should
            be created.
 
-    This method has mainly been introduced to make the code more readable.
+    This method has been mainly introduced to make the code more readable.
 
         if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
 
     The code line above is simply shorter than:
 
-        if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+        if (m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
 
     @param [in] i_pTrcAdminObj
         Pointer to trace admin object. May also be nullptr.
@@ -89,11 +89,35 @@ bool ZS::System::areMethodCallsActive(
     CTrcAdminObj* i_pTrcAdminObj, EMethodTraceDetailLevel i_filterDetailLevel )
 //------------------------------------------------------------------------------
 {
-    if( i_pTrcAdminObj != nullptr && i_pTrcAdminObj->areMethodCallsActive(i_filterDetailLevel) )
-    {
-        return true;
-    }
-    return false;
+    return (i_pTrcAdminObj != nullptr) && i_pTrcAdminObj->areMethodCallsActive(i_filterDetailLevel);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Checks whether the given filter detail level is equal or greater than
+           the current trace admin objects detail level and trace output should
+           be created.
+
+    This method has been mainly introduced to make the code more readable.
+
+        if( isRuntimeInfoActive(m_pTrcAdminObj, ELogDetailLevel::Debug) )
+
+    The code line above is simply shorter than:
+
+        if (m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isRuntimeInfoActive(ELogDetailLevel::Debug))
+
+    @param [in] i_pTrcAdminObj
+        Pointer to trace admin object. May also be nullptr.
+    @param [in] i_filterDetailLevel
+        Filter detail level which should be checked.
+
+    @return true if tracing method calls is active for the given filter detail level,
+            false otherwise.
+*/
+bool ZS::System::isRuntimeInfoActive(
+    CTrcAdminObj* i_pTrcAdminObj, ELogDetailLevel i_filterDetailLevel )
+//------------------------------------------------------------------------------
+{
+    return (i_pTrcAdminObj != nullptr) && i_pTrcAdminObj->isRuntimeInfoActive(i_filterDetailLevel);
 }
 
 

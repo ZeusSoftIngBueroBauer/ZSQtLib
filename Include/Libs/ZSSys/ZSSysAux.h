@@ -159,14 +159,15 @@ ZSSYSDLL_API QString qThreadPriority2Str( QThread::Priority i_priority, EEnumEnt
 
 ZSSYSDLL_API QString qXmlStreamTokenType2Str( int i_iVal, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName );
 
+ZSSYSDLL_API QString qBrushStyle2Str( const Qt::BrushStyle& i_brushStyle );
 ZSSYSDLL_API QString qCheckState2Str( int i_iVal );
 ZSSYSDLL_API QString qCursorShape2Str( int i_iVal );
 ZSSYSDLL_API QString qDropActions2Str( int i_actions );
 ZSSYSDLL_API QString qEvent2Str( QEvent* i_pEv, int i_iDetailLevel = 0 );
 ZSSYSDLL_API QString qEventType2Str( int i_iVal, bool i_bShort = true );
+ZSSYSDLL_API QString qFocusReason2Str( int i_iVal );
 ZSSYSDLL_API QString qItemDataRole2Str( int i_iVal );
 ZSSYSDLL_API QString qItemFlags2Str( quint32 i_flags );
-ZSSYSDLL_API QString qModelIndex2Str( const QModelIndex& i_modelIdx );
 
 ZSSYSDLL_API QString qKeyCode2Str( int i_iVal, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName );
 ZSSYSDLL_API int char2QKeyCode( const QChar& i_ch );    // e.g. "o", "1", "Z", " ", "?", ..
@@ -174,19 +175,19 @@ ZSSYSDLL_API int str2QKeyCode( const QString& i_str );  // e.g. "F1", "Enter", "
 ZSSYSDLL_API QString qKeyboardModifiers2Str( quint32 i_modifiers );
 ZSSYSDLL_API Qt::KeyboardModifiers char2QKeyboardModifiers( const QChar& i_ch );
 
-ZSSYSDLL_API QString qMouseButton2Str( int i_iBtn, bool i_bShort = true );
-ZSSYSDLL_API QString qMouseButtons2Str( int i_iBtns, bool i_bShort = true );
-ZSSYSDLL_API QString qPoint2Str( const QPoint& i_pt, bool i_bShort = true );
-ZSSYSDLL_API QString qPoint2Str( const QPointF& i_pt, bool i_bShort = true );
-ZSSYSDLL_API QString qSize2Str( const QSize& i_size, bool i_bShort = true );
-ZSSYSDLL_API QString qSize2Str( const QSizeF& i_size, bool i_bShort = true );
-ZSSYSDLL_API QString qRect2Str( const QRect& i_rct, bool i_bShort = true );
-ZSSYSDLL_API QString qRect2Str( const QRectF& i_rct, bool i_bShort = true );
 ZSSYSDLL_API QString qMargins2Str( const QMargins& i_margins, bool i_bShort = true );
 ZSSYSDLL_API QString qMimeData2Str( const QMimeData* i_pMimeData, int i_iDetailLevel = 0 );
+ZSSYSDLL_API QString qModelIndex2Str( const QModelIndex& i_modelIdx );
+ZSSYSDLL_API QString qMouseButton2Str( int i_iBtn, bool i_bShort = true );
+ZSSYSDLL_API QString qMouseButtons2Str( int i_iBtns, bool i_bShort = true );
+ZSSYSDLL_API QString qPenStyle2Str( const Qt::PenStyle& i_penStyle );
+ZSSYSDLL_API QString qPoint2Str( const QPoint& i_pt, bool i_bShort = true );
+ZSSYSDLL_API QString qPoint2Str( const QPointF& i_pt, bool i_bShort = true );
+ZSSYSDLL_API QString qRect2Str( const QRect& i_rct, bool i_bShort = true );
+ZSSYSDLL_API QString qRect2Str( const QRectF& i_rct, bool i_bShort = true );
+ZSSYSDLL_API QString qSize2Str( const QSize& i_size, bool i_bShort = true );
+ZSSYSDLL_API QString qSize2Str( const QSizeF& i_size, bool i_bShort = true );
 ZSSYSDLL_API QString qVariantType2Str( int i_iVal );
-
-ZSSYSDLL_API QString qFocusReason2Str( int i_iVal );
 
 
 /*******************************************************************************
@@ -239,6 +240,24 @@ ZSSYSDLL_API bool isDecimalPoint( const QChar& i_ch );
 ZSSYSDLL_API bool isDivisionPoint( const QChar& i_ch );
 ZSSYSDLL_API bool isExponentChar( const QChar& i_ch );
 ZSSYSDLL_API bool isNumChar( const QChar& i_ch );
+
+ZSSYSDLL_API void insertDelimiter(
+    int            i_iDigitsPerDigitGroup,
+    const QString& i_strDelimiter,
+    QString*       io_pstrValue,
+    int            i_iDigitsLeading,
+    int            i_iDigitsTrailing );
+ZSSYSDLL_API void removeTrailingZeros(
+    QString* io_pstrValue,
+    int      i_iDigitsTrailingMin = 1,
+    QChar    i_charDecPoint = '.' );
+ZSSYSDLL_API void removeLeadingZerosFromExponent( QString* io_pstrValue );
+ZSSYSDLL_API void formatString(
+    const QString& i_strValue,
+    int*           o_piDigitsLeading,
+    int*           o_piDigitsTrailing,
+    int*           o_piDigitsExponent );
+
 
 } // namespace System
 

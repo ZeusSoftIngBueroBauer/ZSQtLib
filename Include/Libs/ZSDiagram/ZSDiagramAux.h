@@ -106,32 +106,6 @@ typedef enum {
 ZSDIAGRAMDLL_API QString layoutPos2Str( int i_iLayoutPos );
 
 
-//==============================================================================
-/*! Labeling axis lines is done in three different parts.
-
-    -|-----|-----|-----|-----|    <- Lines
-    0.0   1.0   2.0   3.0   Freq/MHz
-    Labels                  AxisLabel
-
-    - The Lines are used to indicate at which position the axis is divided.
-      If also grid is shown the Lines of the axis may be superfluous.
-    - Labels are shown at the Lines to indicate the corresponding value.
-    - The AxisLabel is used to indicate the physical size (Frequency)
-      together with the physical unit.
-
-    @see ZS::System::SEnumEntry
-    @see ZS::System::CEnum
-    @see _GRP_BasicConcepts_Enumerations
-*/
-enum class EDivLineLabelsPart {
-//==============================================================================
-    Lines,      /*!< Lines to divide the axis into sections. */
-    Labels,     /*!< Labels at the lines to indicate their values. */
-    AxisLabel   /*!< Indicates the physical size and unit. */
-};
-template class ZSDIAGRAMDLL_API ZS::System::CEnum<EDivLineLabelsPart>;
-typedef ZS::System::CEnum<EDivLineLabelsPart> CEnumDivLineLabelsPart;
-
 typedef enum {
     ETextOrientationMin        = 0,
     ETextOrientationLeft2Right = 0,

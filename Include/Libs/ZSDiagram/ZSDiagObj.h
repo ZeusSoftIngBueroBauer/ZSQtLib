@@ -89,6 +89,8 @@ protected: // instance members
 
 
 //******************************************************************************
+/*! @brief Base class for all diagram objects.
+*/
 class ZSDIAGRAMDLL_API CDiagObj : public QObject
 //******************************************************************************
 {

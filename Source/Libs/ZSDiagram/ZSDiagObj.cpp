@@ -347,12 +347,9 @@ void CDiagObj::setObjName( const QString& i_strObjName )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
         strMthInArgs = i_strObjName;
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,

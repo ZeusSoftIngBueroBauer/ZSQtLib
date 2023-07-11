@@ -30,11 +30,6 @@ may result in using the software modules.
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
-//
-//#include <stdarg.h>
-//#include <stdio.h>
-//#include <stdlib.h>
-//#include <string.h>
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -454,9 +449,40 @@ public: // ctors and dtor
 
     @param i_strObjName [in]
         Name of the object.
+    @param i_scaleDir [in]
+        Direction of the scale which could be either X or Y.
+        3 dimensional scales with scaleDir = Z are not supported.
+        Please note that the scale direction cannot be changed during runtime.
 */
 CScaleDivLines::CScaleDivLines(const QString& i_strObjName, EScaleDir i_scaleDir) :
 //------------------------------------------------------------------------------
+    CScaleDivLines(ClassName(), NameSpace(), i_strObjName, i_scaleDir)
+{
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Creates an instance of the class.
+
+    This constructor should be used by classes derived from this class to adjust
+    the name space and class name of the trace admin object correspondingly.
+
+    @param i_strNameSpace [in]
+        Name space of the derived class.
+    @param i_strClassName [in]
+        Class name of the derived class.
+    @param i_strObjName [in]
+        Name of the object.
+    @param i_scaleDir [in]
+        Direction of the scale which could be either X or Y.
+        3 dimensional scales with scaleDir = Z are not supported.
+        Please note that the scale direction cannot be changed during runtime.
+*/
+CScaleDivLines::CScaleDivLines(
+    const QString& i_strNameSpace, const QString& i_strClassName,
+    const QString& i_strObjName, EScaleDir i_scaleDir) :
+//------------------------------------------------------------------------------
+    m_strNameSpace(i_strNameSpace),
+    m_strClassName(i_strClassName),
     m_strObjName(i_strObjName),
     m_scaleDir(i_scaleDir),
     m_spacing(ESpacing::Linear),
@@ -465,12 +491,13 @@ CScaleDivLines::CScaleDivLines(const QString& i_strObjName, EScaleDir i_scaleDir
     m_fScaleRes(0.0),
     m_iMin_px(0),
     m_iMax_px(0),
-    m_ariDivLineDistMin_px(CEnumDivLineLayer::count(), 0),
+    m_ariDivLinesDistMin_px(CEnumDivLineLayer::count(), 0),
     m_bDivLinesCalculated(false),
-    m_ariDivLineCount(CEnumDivLineLayer::count(), 0),
-    m_arfDivDistMinVal(CEnumDivLineLayer::count(), 0.0),
-    m_ararfDivLineVal(CEnumDivLineLayer::count(), QVector<double>()),
-    m_ararfDivLine_px(CEnumDivLineLayer::count(), QVector<double>()),
+    m_ariDivLinesCount(CEnumDivLineLayer::count(), 0),
+    m_arfDivLinesDistMinVal(CEnumDivLineLayer::count(), 0.0),
+    m_ararfDivLinesVals(CEnumDivLineLayer::count(), QVector<double>()),
+    m_arfDivLinesValsSorted(),
+    m_ararfDivLines_px(CEnumDivLineLayer::count(), QVector<double>()),
     m_pTrcAdminObj(nullptr)
 {
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
@@ -486,7 +513,7 @@ CScaleDivLines::CScaleDivLines(const QString& i_strObjName, EScaleDir i_scaleDir
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
 
-    m_ariDivLineDistMin_px[EDivLineLayerMain] = 50;
+    m_ariDivLinesDistMin_px[EDivLineLayerMain] = 50;
 
     if (s_arfScaleRangeFacPixDivValLog.size() == 0)
     {
@@ -525,12 +552,13 @@ CScaleDivLines::~CScaleDivLines()
     m_fScaleRes = 0.0;
     m_iMin_px = 0;
     m_iMax_px = 0;
-    //m_ariDivLineDistMin_px.clear();
+    //m_ariDivLinesDistMin_px.clear();
     m_bDivLinesCalculated = false;
-    //m_ariDivLineCount.clear();
-    //m_arfDivDistMinVal.clear();
-    //m_ararfDivLineVal.clear();
-    //m_ararfDivLine_px.clear();
+    //m_ariDivLinesCount.clear();
+    //m_arfDivLinesDistMinVal.clear();
+    //m_ararfDivLinesVals.clear();
+    //m_arfDivLinesValsSorted.clear();
+    //m_ararfDivLines_px.clear();
 
     mthTracer.onAdminObjAboutToBeReleased();
 
@@ -539,6 +567,42 @@ CScaleDivLines::~CScaleDivLines()
 
 } // dtor
 
+/*==============================================================================
+public: // operators
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Assignment operator.
+
+    @param i_other [in]
+        Reference to instance whose current internal data should be taken over.
+*/
+CScaleDivLines& CScaleDivLines::operator = (const CScaleDivLines& i_other)
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "=",
+        /* strAddInfo   */ i_other.NameSpace() + "::" + i_other.ClassName() + "::" + i_other.objectName() );
+
+    m_scaleDir = i_other.m_scaleDir;
+    m_spacing = i_other.m_spacing;
+    m_fScaleMin = i_other.m_fScaleMin;
+    m_fScaleMax = i_other.m_fScaleMax;
+    m_fScaleRes = i_other.m_fScaleRes;
+    m_iMin_px = i_other.m_iMin_px;
+    m_iMax_px = i_other.m_iMax_px;
+    m_ariDivLinesDistMin_px = i_other.m_ariDivLinesDistMin_px;
+    m_bDivLinesCalculated = i_other.m_bDivLinesCalculated;
+    m_ariDivLinesCount = i_other.m_ariDivLinesCount;
+    m_arfDivLinesDistMinVal = i_other.m_arfDivLinesDistMinVal;
+    m_ararfDivLinesVals = i_other.m_ararfDivLinesVals;
+    m_arfDivLinesValsSorted = i_other.m_arfDivLinesValsSorted;
+    m_ararfDivLines_px = i_other.m_ararfDivLines_px;
+
+    return *this;
+}
 
 /*==============================================================================
 public: // instance methods
@@ -918,7 +982,7 @@ public: // instance methods (setting properties)
     @return true if the value has been changed and the division lines need to
             be recalculated, false otherwise.
 */
-bool CScaleDivLines::setDivLineDistMinInPix(const CEnumDivLineLayer& i_eLayer, int i_iDist_px)
+bool CScaleDivLines::setDivLinesDistMinInPix(const CEnumDivLineLayer& i_eLayer, int i_iDist_px)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -928,13 +992,13 @@ bool CScaleDivLines::setDivLineDistMinInPix(const CEnumDivLineLayer& i_eLayer, i
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setDivLineDistMinInPix",
+        /* strMethod    */ "setDivLinesDistMinInPix",
         /* strAddInfo   */ strMthInArgs );
 
     bool bChanged = false;
-    if( m_ariDivLineDistMin_px[i_eLayer.enumeratorAsInt()] != i_iDist_px )
+    if( m_ariDivLinesDistMin_px[i_eLayer.enumeratorAsInt()] != i_iDist_px )
     {
-        m_ariDivLineDistMin_px[i_eLayer.enumeratorAsInt()] = i_iDist_px;
+        m_ariDivLinesDistMin_px[i_eLayer.enumeratorAsInt()] = i_iDist_px;
         bChanged = true;
         m_bDivLinesCalculated = false;
     }
@@ -1109,10 +1173,10 @@ public: // instance methods (getting properties)
     @return Minimum distance between two division lines in pixels.
 
 */
-int CScaleDivLines::divLineDistMinInPix(const CEnumDivLineLayer& i_eLayer) const
+int CScaleDivLines::divLinesDistMinInPix(const CEnumDivLineLayer& i_eLayer) const
 //------------------------------------------------------------------------------
 {
-    return m_ariDivLineDistMin_px[i_eLayer.enumeratorAsInt()];
+    return m_ariDivLinesDistMin_px[i_eLayer.enumeratorAsInt()];
 }
 
 /*==============================================================================
@@ -1155,31 +1219,25 @@ bool CScaleDivLines::update()
         // Reset internal data
         //--------------------
 
-        for( int iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
-        {
-            m_ariDivLineCount[iLayer] = 0;
-            m_arfDivDistMinVal[iLayer] = 0.0;
-            m_ararfDivLineVal[iLayer].clear();
-            m_ararfDivLine_px[iLayer].clear();
-        }
+        invalidateResults();
 
         // Calculate main and sub division lines
         //--------------------------------------
 
         int iRange_px = scaleRangeInPix();
 
-        if( iRange_px <= 1 || m_ariDivLineDistMin_px[EDivLineLayerMain] < 2 )
+        if( iRange_px <= 1 || m_ariDivLinesDistMin_px[EDivLineLayerMain] < 2 )
         {
         }
         else if( !isValid() )
         {
-            m_ariDivLineCount[EDivLineLayerMain] = 2;
-            m_ararfDivLineVal[EDivLineLayerMain].resize(m_ariDivLineCount[EDivLineLayerMain]);
-            m_ararfDivLineVal[EDivLineLayerMain][0] = m_fScaleMin;
-            m_ararfDivLineVal[EDivLineLayerMain][1] = m_fScaleMax;
-            m_ararfDivLine_px[EDivLineLayerMain].resize(m_ariDivLineCount[EDivLineLayerMain]);
-            m_ararfDivLine_px[EDivLineLayerMain][0] = 0;
-            m_ararfDivLine_px[EDivLineLayerMain][1] = iRange_px - 1;
+            m_ariDivLinesCount[EDivLineLayerMain] = 2;
+            m_ararfDivLinesVals[EDivLineLayerMain].resize(m_ariDivLinesCount[EDivLineLayerMain]);
+            m_ararfDivLinesVals[EDivLineLayerMain][0] = m_fScaleMin;
+            m_ararfDivLinesVals[EDivLineLayerMain][1] = m_fScaleMax;
+            m_ararfDivLines_px[EDivLineLayerMain].resize(m_ariDivLinesCount[EDivLineLayerMain]);
+            m_ararfDivLines_px[EDivLineLayerMain][0] = 0;
+            m_ararfDivLines_px[EDivLineLayerMain][1] = iRange_px - 1;
         }
         else
         {
@@ -1191,16 +1249,19 @@ bool CScaleDivLines::update()
             }
         }
 
+        // Update sorted division lines.
+        updateDivLinesValsSorted();
+
         // Minimum distance between two division lines
         //--------------------------------------------
 
         for (int idxLayer = 0; idxLayer < CEnumDivLineLayer::count(); ++idxLayer)
         {
             double fDivLineDistMin = scaleRange();
-            for (int idxDivLine = 1; idxDivLine < m_ariDivLineCount[idxLayer]; ++idxDivLine)
+            for (int idxDivLine = 1; idxDivLine < m_ariDivLinesCount[idxLayer]; ++idxDivLine)
             {
-                double fDivLineValPrev = m_ararfDivLineVal[idxLayer][idxDivLine-1];
-                double fDivLineValCurr = m_ararfDivLineVal[idxLayer][idxDivLine];
+                double fDivLineValPrev = m_ararfDivLinesVals[idxLayer][idxDivLine-1];
+                double fDivLineValCurr = m_ararfDivLinesVals[idxLayer][idxDivLine];
                 if ((fDivLineValCurr - fDivLineValPrev) < fDivLineDistMin)
                 {
                     fDivLineDistMin = fDivLineValCurr - fDivLineValPrev;
@@ -1209,8 +1270,9 @@ bool CScaleDivLines::update()
                     }
                 }
             }
-            m_arfDivDistMinVal[idxLayer] = fDivLineDistMin;
+            m_arfDivLinesDistMinVal[idxLayer] = fDivLineDistMin;
         }
+
         m_bDivLinesCalculated = true;
         bChanged = true;
     }
@@ -1233,10 +1295,10 @@ public: // instance methods (returning calculated values)
 
     @return Number of division lines.
 */
-int CScaleDivLines::getDivLineCount(const CEnumDivLineLayer& i_eLayer) const
+int CScaleDivLines::getDivLinesCount(const CEnumDivLineLayer& i_eLayer) const
 //------------------------------------------------------------------------------
 {
-    return m_ariDivLineCount[i_eLayer.enumeratorAsInt()];
+    return m_ariDivLinesCount[i_eLayer.enumeratorAsInt()];
 }
 
 //------------------------------------------------------------------------------
@@ -1253,7 +1315,7 @@ int CScaleDivLines::getDivLineCount(const CEnumDivLineLayer& i_eLayer) const
 
     @return Number of division lines.
 */
-double CScaleDivLines::getDivLineDistMin(const CEnumDivLineLayer& i_eLayer) const
+double CScaleDivLines::getDivLinesDistMin(const CEnumDivLineLayer& i_eLayer) const
 //------------------------------------------------------------------------------
 {
     double fDistMin = scaleRange();
@@ -1264,8 +1326,8 @@ double CScaleDivLines::getDivLineDistMin(const CEnumDivLineLayer& i_eLayer) cons
         idxLayerMax = i_eLayer.enumeratorAsInt();
     }
     for (int idxLayer = idxLayerMin; idxLayer <= idxLayerMax; ++idxLayer) {
-        if (m_arfDivDistMinVal[idxLayer] < fDistMin) {
-            fDistMin = m_arfDivDistMinVal[idxLayer];
+        if (m_arfDivLinesDistMinVal[idxLayer] < fDistMin) {
+            fDistMin = m_arfDivLinesDistMinVal[idxLayer];
         }
     }
     return fDistMin;
@@ -1287,11 +1349,13 @@ double CScaleDivLines::getDivLineVal(
     const CEnumDivLineLayer& i_eLayer, int i_idxDivLine) const
 //------------------------------------------------------------------------------
 {
-    return m_ararfDivLineVal[i_eLayer.enumeratorAsInt()][i_idxDivLine];
+    return m_ararfDivLinesVals[i_eLayer.enumeratorAsInt()][i_idxDivLine];
 }
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the value in pixels at the specified division line.
+
+    The returned value is rounded to the nearest integer value.
 
     @param i_eLayer [in]
         Range [Main, Sub]
@@ -1302,11 +1366,11 @@ double CScaleDivLines::getDivLineVal(
 
     @return Value in pixel coordinates of the division line.
 */
-double CScaleDivLines::getDivLineInPix(
+int CScaleDivLines::getDivLineInPix(
     const CEnumDivLineLayer& i_eLayer, int i_idxDivLine) const
 //------------------------------------------------------------------------------
 {
-    return m_ararfDivLine_px[i_eLayer.enumeratorAsInt()][i_idxDivLine];
+    return Math::round2Nearest(m_ararfDivLines_px[i_eLayer.enumeratorAsInt()][i_idxDivLine], 0);
 }
 
 //------------------------------------------------------------------------------
@@ -1329,12 +1393,14 @@ double CScaleDivLines::getDivLineDistVal(
     const CEnumDivLineLayer& i_eLayer, int i_idxDivLine1, int i_idxDivLine2) const
 //------------------------------------------------------------------------------
 {
-    return m_ararfDivLineVal[i_eLayer.enumeratorAsInt()][i_idxDivLine2]
-         - m_ararfDivLineVal[i_eLayer.enumeratorAsInt()][i_idxDivLine1];
+    return m_ararfDivLinesVals[i_eLayer.enumeratorAsInt()][i_idxDivLine2]
+         - m_ararfDivLinesVals[i_eLayer.enumeratorAsInt()][i_idxDivLine1];
 }
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the distance in pixels between the specified division lines.
+
+    The returned value is rounded to the nearest integer value.
 
     @param i_eLayer [in]
         Range [Main, Sub]
@@ -1348,12 +1414,14 @@ double CScaleDivLines::getDivLineDistVal(
 
     @return Distance in pixel coordinates between the two division lines.
 */
-double CScaleDivLines::getDivLineDistInPix(
+int CScaleDivLines::getDivLineDistInPix(
     const CEnumDivLineLayer& i_eLayer, int i_idxDivLine1, int i_idxDivLine2) const
 //------------------------------------------------------------------------------
 {
-    return m_ararfDivLine_px[i_eLayer.enumeratorAsInt()][i_idxDivLine2]
-         - m_ararfDivLine_px[i_eLayer.enumeratorAsInt()][i_idxDivLine1];
+    double fValDist_px = 
+        m_ararfDivLines_px[i_eLayer.enumeratorAsInt()][i_idxDivLine2]
+      - m_ararfDivLines_px[i_eLayer.enumeratorAsInt()][i_idxDivLine1];
+    return Math::round2Nearest(fValDist_px);
 }
 
 /*==============================================================================
@@ -1410,22 +1478,22 @@ int CScaleDivLines::getValInPix(double i_fVal) const
             // Get the nearest division line.
             for( int iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
             {
-                if( m_ariDivLineCount[iLayer] > 1 )
+                if( m_ariDivLinesCount[iLayer] > 1 )
                 {
-                    for( int idxDivLine = 0; idxDivLine < m_ariDivLineCount[iLayer]-1; idxDivLine++ )
+                    for( int idxDivLine = 0; idxDivLine < m_ariDivLinesCount[iLayer]-1; idxDivLine++ )
                     {
-                        double fDivLineVal1 = m_ararfDivLineVal[iLayer][idxDivLine];
-                        double fDivLineVal2 = m_ararfDivLineVal[iLayer][idxDivLine+1];
+                        double fDivLineVal1 = m_ararfDivLinesVals[iLayer][idxDivLine];
+                        double fDivLineVal2 = m_ararfDivLinesVals[iLayer][idxDivLine+1];
 
                         if( fVal >= (fDivLineVal1-DBL_EPSILON) && fVal <= (fDivLineVal1+DBL_EPSILON) )
                         {
-                            fPix = static_cast<int>(m_ararfDivLine_px[iLayer][idxDivLine]);
+                            fPix = static_cast<int>(m_ararfDivLines_px[iLayer][idxDivLine]);
                             bDivLineHit = true;
                             break;
                         }
                         else if( fVal >= (fDivLineVal2-DBL_EPSILON) && fVal <= (fDivLineVal2+DBL_EPSILON) )
                         {
-                            fPix = static_cast<int>(m_ararfDivLine_px[iLayer][idxDivLine+1]);
+                            fPix = static_cast<int>(m_ararfDivLines_px[iLayer][idxDivLine+1]);
                             bDivLineHit = true;
                             break;
                         }
@@ -1435,13 +1503,13 @@ int CScaleDivLines::getValInPix(double i_fVal) const
                         }
                     }
                 }
-                else if( m_ariDivLineCount[iLayer] == 1 )
+                else if( m_ariDivLinesCount[iLayer] == 1 )
                 {
-                    double fDivLineVal1 = m_ararfDivLineVal[iLayer][0];
+                    double fDivLineVal1 = m_ararfDivLinesVals[iLayer][0];
 
                     if( fVal == fDivLineVal1 )
                     {
-                        fPix = static_cast<int>(m_ararfDivLine_px[iLayer][0]);
+                        fPix = static_cast<int>(m_ararfDivLines_px[iLayer][0]);
                         bDivLineHit = true;
                     }
                 }
@@ -1533,22 +1601,22 @@ double CScaleDivLines::getVal(double i_fPix) const
             // at a grid line if the mouse cursor is positioned on a grid line.
             for( int iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
             {
-                if( m_ariDivLineCount[iLayer] > 1 )
+                if( m_ariDivLinesCount[iLayer] > 1 )
                 {
-                    for( int idxDivLine = 0; idxDivLine < m_ariDivLineCount[iLayer]-1; idxDivLine++ )
+                    for( int idxDivLine = 0; idxDivLine < m_ariDivLinesCount[iLayer]-1; idxDivLine++ )
                     {
-                        double fDivLinePix1 = m_ararfDivLine_px[iLayer][idxDivLine];
-                        double fDivLinePix2 = m_ararfDivLine_px[iLayer][idxDivLine+1];
+                        double fDivLinePix1 = m_ararfDivLines_px[iLayer][idxDivLine];
+                        double fDivLinePix2 = m_ararfDivLines_px[iLayer][idxDivLine+1];
 
                         if( i_fPix >= (fDivLinePix1-DBL_EPSILON) && i_fPix <= (fDivLinePix1+DBL_EPSILON) )
                         {
-                            fVal = m_ararfDivLineVal[iLayer][idxDivLine];
+                            fVal = m_ararfDivLinesVals[iLayer][idxDivLine];
                             bDivLineHit = true;
                             break;
                         }
                         else if( i_fPix >= (fDivLinePix2-DBL_EPSILON) && i_fPix <= (fDivLinePix2+DBL_EPSILON) )
                         {
-                            fVal = m_ararfDivLineVal[iLayer][idxDivLine+1];
+                            fVal = m_ararfDivLinesVals[iLayer][idxDivLine+1];
                             bDivLineHit = true;
                             break;
                         }
@@ -1558,13 +1626,13 @@ double CScaleDivLines::getVal(double i_fPix) const
                         }
                     }
                 }
-                else if( m_ariDivLineCount[iLayer] == 1 )
+                else if( m_ariDivLinesCount[iLayer] == 1 )
                 {
-                    double fDivLinePix1 = m_ararfDivLine_px[iLayer][0];
+                    double fDivLinePix1 = m_ararfDivLines_px[iLayer][0];
 
                     if( i_fPix == fDivLinePix1 )
                     {
-                        fVal = static_cast<int>(m_ararfDivLineVal[iLayer][0]);
+                        fVal = static_cast<int>(m_ararfDivLinesVals[iLayer][0]);
                         bDivLineHit = true;
                     }
                 }
@@ -1614,84 +1682,31 @@ double CScaleDivLines::getVal(double i_fPix) const
 }
 
 /*==============================================================================
-public: // instance methods (returning calculated format info)
+protected: // overridable auxiliary instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Examines all values from the passed array and returns format information.
+/*! @brief Invalidates the result member variables.
 
-    @return tuple with three values
-        std::get<0>: LeadingDigits
-        std::get<1>: TrailingDigits
-        std::get<<2> ExponentDigits
+    Called before calculating the results in update method.
 */
-#if 0
-std::tuple<int, int, int> CScaleDivLines::getFormatInfo() const
+void CScaleDivLines::invalidateResults()
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(i_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs =
-            //"ExpDigits: " + QString::number(i_iExponentDigits) +
-            //", PrecMin: " + QString::number(i_iPrecisionMin) +
-            //", PrecMax: " + QString::number(i_iPrecisionMax) +
-            ", Vals [" + QString::number(i_arfVals.size()) + "]";
-        if (areMethodCallsActive(i_pTrcAdminObj, EMethodTraceDetailLevel::ArgsDetailed)) {
-            if (i_arfVals.size() > 0) {
-                strMthInArgs += "(";
-                for (int idxVal = 0; idxVal < i_arfVals.size(); ++idxVal) {
-                    if ((idxVal >= 5 && idxVal < i_arfVals.size() - 5) && !areMethodCallsActive(i_pTrcAdminObj, EMethodTraceDetailLevel::ArgsVerbose)) {
-                        idxVal = i_arfVals.size() - 5;
-                    }
-                    strMthInArgs += QString::number(i_arfVals[idxVal]);
-                }
-                strMthInArgs += ")";
-            }
-        }
-    }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ i_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObj,
         /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "Math::getFormatInfo",
-        /* strAddInfo   */ strMthInArgs );
+        /* strMethod    */ "invalidateResults",
+        /* strAddInfo   */ "" );
 
-    int iLeadingDigits = 1;
-    int iTrailingDigits = 1;
-    int iExponentDigits = 0;
-
-    // The number of leading digits is defined by the absolute maximum value.
-    // If the value is less than 1.0 at least one leading digit will be shown.
-    std::tuple<double, double> minMax = Math::getAbsMinMax(i_arfVals);
-    double fValAbsMax = std::get<1>(minMax);
-    if (fValAbsMax > 1.0) {
-        iLeadingDigits = Math::getFirstSignificantDigit(fValAbsMax);
-    }
-    double fValAbsMin = std::get<0>(minMax);
-    if (fValAbsMin < 1.0) {
-        iTrailingDigits = abs(Math::getFirstSignificantDigit(fValAbsMin));
-    }
-
-    // The number of trailing digits is defined by the mimimum distance between two
-    // division lines to indicate unique values. If the distance is greater than 1.0
-    // at least one trailing digit will be shown.
-
-    if (o_piLeadingDigits != nullptr) {
-        *o_piLeadingDigits = iLeadingDigits;
-    }
-    if (o_piTrailingDigits != nullptr) {
-        *o_piTrailingDigits = iTrailingDigits;
-    }
-    if (o_piExponentDigits != nullptr) {
-        *o_piExponentDigits = iExponentDigits;
-    }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutInArgs =
-            "Leading: " + QString::number(iLeadingDigits) +
-            ", Trailing: " + QString::number(iTrailingDigits) +
-            ", Exponent: " + QString::number(iExponentDigits);
+    for (int iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++) {
+        m_ariDivLinesCount[iLayer] = 0;
+        m_arfDivLinesDistMinVal[iLayer] = 0.0;
+        m_ararfDivLinesVals[iLayer].clear();
+        m_arfDivLinesValsSorted.clear();
+        m_ararfDivLines_px[iLayer].clear();
     }
 }
-#endif
 
 /*==============================================================================
 protected: // auxiliary instance methods (to recalculate divsion lines after changing settings)
@@ -1704,7 +1719,13 @@ protected: // auxiliary instance methods (to recalculate divsion lines after cha
 void CScaleDivLines::updateLinearSpacing()
 //------------------------------------------------------------------------------
 {
-    m_arfDivDistMinVal[EDivLineLayerMain] = scaleRange();
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "updateLinearSpacing",
+        /* strAddInfo   */ "" );
+
+    m_arfDivLinesDistMinVal[EDivLineLayerMain] = scaleRange();
 
     double fDivLineDistValMin = m_fScaleMin;
     double fDivLineDistValMax = m_fScaleMax;
@@ -1720,7 +1741,7 @@ void CScaleDivLines::updateLinearSpacing()
 
     for( int iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
     {
-        if (m_ariDivLineDistMin_px[iLayer] > 0)
+        if (m_ariDivLinesDistMin_px[iLayer] > 0)
         {
             // Calculate optimized distance between two grid lines:
             ariDivLineCountTmp[iLayer] = getDivLines4LinSpacing(
@@ -1728,7 +1749,7 @@ void CScaleDivLines::updateLinearSpacing()
                 /* fScaleMaxVal          */ fDivLineDistValMax,
                 /* iScaleRangePix        */ iRange_px,
                 /* fDivLineDistMinVal    */ 0.0,
-                /* iDivLineDistMinPix    */ m_ariDivLineDistMin_px[iLayer],
+                /* iDivLineDistMinPix    */ m_ariDivLinesDistMin_px[iLayer],
                 /* bUseDivLineDecFac25   */ true,
                 /* pfDivLineFirstVal     */ &arfDivLineFirstVal[iLayer],
                 /* pfDivLineDistFirstPix */ &arfDivLineDistFirstPix[iLayer],
@@ -1736,9 +1757,9 @@ void CScaleDivLines::updateLinearSpacing()
                 /* pfDivLineDistPix      */ &arfDivLineDistPix[iLayer],
                 /* pTrcAdminObj          */ m_pTrcAdminObj);
 
-            if (m_arfDivDistMinVal[iLayer] > arfDivLineDistVal[iLayer] )
+            if (m_arfDivLinesDistMinVal[iLayer] > arfDivLineDistVal[iLayer] )
             {
-                m_arfDivDistMinVal[iLayer] = arfDivLineDistVal[iLayer];
+                m_arfDivLinesDistMinVal[iLayer] = arfDivLineDistVal[iLayer];
             }
 
             // Store the calculated results:
@@ -1749,8 +1770,8 @@ void CScaleDivLines::updateLinearSpacing()
                     // Count visible division lines for the main grid lines:
                     ariDivLineCount[iLayer] = ariDivLineCountTmp[iLayer];
 
-                    m_ararfDivLineVal[iLayer].resize(ariDivLineCount[iLayer]);
-                    m_ararfDivLine_px[iLayer].resize(ariDivLineCount[iLayer]);
+                    m_ararfDivLinesVals[iLayer].resize(ariDivLineCount[iLayer]);
+                    m_ararfDivLines_px[iLayer].resize(ariDivLineCount[iLayer]);
 
                     // Calculate pixel values and store the calculated results of the main grid lines:
                     for( int idxDivLine = 0; idxDivLine < ariDivLineCount[iLayer]; idxDivLine++ )
@@ -1760,8 +1781,8 @@ void CScaleDivLines::updateLinearSpacing()
                         {
                             fVal = 0.0;
                         }
-                        m_ararfDivLineVal[iLayer][idxDivLine] = fVal;
-                        m_ararfDivLine_px[iLayer][idxDivLine] = getValInPix(fVal);
+                        m_ararfDivLinesVals[iLayer][idxDivLine] = fVal;
+                        m_ararfDivLines_px[iLayer][idxDivLine] = getValInPix(fVal);
                     }
                 }
                 else // if (iLayer != 0)
@@ -1791,8 +1812,8 @@ void CScaleDivLines::updateLinearSpacing()
                     // Calculate pixel values and store the calculated results of the sub grid lines:
                     if( ariDivLineCount[iLayer] > 0 )
                     {
-                        m_ararfDivLineVal[iLayer].resize(ariDivLineCount[iLayer]);
-                        m_ararfDivLine_px[iLayer].resize(ariDivLineCount[iLayer]);
+                        m_ararfDivLinesVals[iLayer].resize(ariDivLineCount[iLayer]);
+                        m_ararfDivLines_px[iLayer].resize(ariDivLineCount[iLayer]);
 
                         modf(m_fScaleMin/arfDivLineDistVal[iLayer-1], &fPrevLayerDivLineVal);
                         fPrevLayerDivLineVal *= arfDivLineDistVal[iLayer-1];
@@ -1811,8 +1832,8 @@ void CScaleDivLines::updateLinearSpacing()
                                 {
                                     if( idxDivLine < ariDivLineCount[iLayer] )
                                     {
-                                        m_ararfDivLineVal[iLayer][idxDivLine] = fCurrLayerDivLineVal;
-                                        m_ararfDivLine_px[iLayer][idxDivLine] = getValInPix(fCurrLayerDivLineVal);
+                                        m_ararfDivLinesVals[iLayer][idxDivLine] = fCurrLayerDivLineVal;
+                                        m_ararfDivLines_px[iLayer][idxDivLine] = getValInPix(fCurrLayerDivLineVal);
                                         idxDivLine++;
                                     }
                                 }
@@ -1826,7 +1847,7 @@ void CScaleDivLines::updateLinearSpacing()
             // If there is a next layer ...
             if( iLayer < CEnumDivLineLayer::count()-1 )
             {
-                if( m_ariDivLineDistMin_px[iLayer+1] > 1 && m_ariDivLineDistMin_px[iLayer] > 2*m_ariDivLineDistMin_px[iLayer+1] )
+                if( m_ariDivLinesDistMin_px[iLayer+1] > 1 && m_ariDivLinesDistMin_px[iLayer] > 2*m_ariDivLinesDistMin_px[iLayer+1] )
                 {
                     fDivLineDistValMin = 0.0;
                     fDivLineDistValMax = arfDivLineDistVal[iLayer];
@@ -1837,12 +1858,12 @@ void CScaleDivLines::updateLinearSpacing()
                     break;
                 }
             }
-        } // if (m_ariDivLineDistMin_px[iLayer] > 0)
+        } // if (m_ariDivLinesDistMin_px[iLayer] > 0)
     } // for( iLayer < CEnumDivLineLayer::count() )
 
     for( int iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
     {
-        m_ariDivLineCount[iLayer] = ariDivLineCount[iLayer];
+        m_ariDivLinesCount[iLayer] = ariDivLineCount[iLayer];
     }
 } // updateLinearSpacing
 
@@ -1853,7 +1874,13 @@ void CScaleDivLines::updateLinearSpacing()
 void CScaleDivLines::updateLogarithmicSpacing()
 //------------------------------------------------------------------------------
 {
-    m_arfDivDistMinVal[EDivLineLayerMain] = scaleRange();
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "updateLogarithmicSpacing",
+        /* strAddInfo   */ "" );
+
+    m_arfDivLinesDistMinVal[EDivLineLayerMain] = scaleRange();
 
     // Sub grid (non equidistant) within main grid (equidistant) NOT including "left" and
     // "right" main grid lines. Please note that in a logarithmic scale one decade comprises
@@ -1949,9 +1976,9 @@ void CScaleDivLines::updateLogarithmicSpacing()
         // (the lowest possible value for main grid lines).
         ariDivLineDistMinPix[EDivLineLayerMain] = static_cast<int>(static_cast<double>(iRange_px) / fScaleRangeValLog);
         // If the distance of 1.0 between the main grid lines is too small ..
-        if( ariDivLineDistMinPix[EDivLineLayerMain] < m_ariDivLineDistMin_px[EDivLineLayerMain] )
+        if( ariDivLineDistMinPix[EDivLineLayerMain] < m_ariDivLinesDistMin_px[EDivLineLayerMain] )
         {
-            ariDivLineDistMinPix[EDivLineLayerMain] = m_ariDivLineDistMin_px[EDivLineLayerMain];
+            ariDivLineDistMinPix[EDivLineLayerMain] = m_ariDivLinesDistMin_px[EDivLineLayerMain];
         }
         // If the distance of 1.0 between the main grid lines is too big ..
         else if( ariDivLineDistMinPix[EDivLineLayerMain] > iRange_px / 2 )
@@ -1977,15 +2004,15 @@ void CScaleDivLines::updateLogarithmicSpacing()
     // Store the calculated results:
     if( ariDivLineCount[EDivLineLayerMain] > 0 )
     {
-        m_ararfDivLineVal[EDivLineLayerMain].resize(ariDivLineCount[EDivLineLayerMain]);
-        m_ararfDivLine_px[EDivLineLayerMain].resize(ariDivLineCount[EDivLineLayerMain]);
+        m_ararfDivLinesVals[EDivLineLayerMain].resize(ariDivLineCount[EDivLineLayerMain]);
+        m_ararfDivLines_px[EDivLineLayerMain].resize(ariDivLineCount[EDivLineLayerMain]);
 
         for( int idxDivLine = 0; idxDivLine < ariDivLineCount[EDivLineLayerMain]; idxDivLine++ )
         {
             arfDivLineValLog[EDivLineLayerMain] = arfDivLineFirstValLog[EDivLineLayerMain] + idxDivLine*arfDivLineDistValLog[EDivLineLayerMain];
             arfDivLineValLin[EDivLineLayerMain] = pow(10.0,arfDivLineValLog[EDivLineLayerMain]);
-            m_ararfDivLineVal[EDivLineLayerMain][idxDivLine] = arfDivLineValLin[EDivLineLayerMain];
-            m_ararfDivLine_px[EDivLineLayerMain][idxDivLine] = getValInPix(arfDivLineValLin[EDivLineLayerMain]);
+            m_ararfDivLinesVals[EDivLineLayerMain][idxDivLine] = arfDivLineValLin[EDivLineLayerMain];
+            m_ararfDivLines_px[EDivLineLayerMain][idxDivLine] = getValInPix(arfDivLineValLin[EDivLineLayerMain]);
         }
     }
 
@@ -2002,14 +2029,14 @@ void CScaleDivLines::updateLogarithmicSpacing()
         // become the sub division lines (equidistant grid).
 
         // Calculate optimized distance between two sub grid lines:
-        if( m_ariDivLineDistMin_px[EDivLineLayerSub] > 1 && m_ariDivLineDistMin_px[EDivLineLayerMain] > 2*m_ariDivLineDistMin_px[EDivLineLayerSub] )
+        if( m_ariDivLinesDistMin_px[EDivLineLayerSub] > 1 && m_ariDivLinesDistMin_px[EDivLineLayerMain] > 2*m_ariDivLinesDistMin_px[EDivLineLayerSub] )
         {
             ariDivLineCountTmp[EDivLineLayerSub] = getDivLines4LinSpacing(
                 /* fScaleMinVal          */ arfDivLineFirstValLog[EDivLineLayerMain],
                 /* fScaleMaxVal          */ arfDivLineFirstValLog[EDivLineLayerMain]+arfDivLineDistValLog[EDivLineLayerMain],
                 /* iScaleRangePix        */ static_cast<int>(arfDivLineDistPix[EDivLineLayerMain]),
                 /* fDivLineDistMinVal    */ 1.0,
-                /* iDivLineDistMinPix    */ m_ariDivLineDistMin_px[EDivLineLayerSub],
+                /* iDivLineDistMinPix    */ m_ariDivLinesDistMin_px[EDivLineLayerSub],
                 /* bUseDivLineDecFac25   */ false,
                 /* pfDivLineFirstVal     */ &arfDivLineFirstValLog[EDivLineLayerSub],
                 /* pfDivLineDistFirstPix */ &arfDivLineDistFirstPix[EDivLineLayerSub],
@@ -2045,8 +2072,8 @@ void CScaleDivLines::updateLogarithmicSpacing()
                 // Calculate pixel values and store the calculated results of the sub grid lines:
                 if( ariDivLineCount[EDivLineLayerSub] > 0 )
                 {
-                    m_ararfDivLineVal[EDivLineLayerSub].resize(ariDivLineCount[EDivLineLayerSub]);
-                    m_ararfDivLine_px[EDivLineLayerSub].resize(ariDivLineCount[EDivLineLayerSub]);
+                    m_ararfDivLinesVals[EDivLineLayerSub].resize(ariDivLineCount[EDivLineLayerSub]);
+                    m_ararfDivLines_px[EDivLineLayerSub].resize(ariDivLineCount[EDivLineLayerSub]);
 
                     arfDivLineValLog[EDivLineLayerMain] = arfDivLineFirstValLog[EDivLineLayerMain];
                     if( arfDivLineValLog[EDivLineLayerMain] > fScaleMinValLog )
@@ -2066,8 +2093,8 @@ void CScaleDivLines::updateLogarithmicSpacing()
                             {
                                 if( idxDivLineTmp < ariDivLineCount[EDivLineLayerSub] )
                                 {
-                                    m_ararfDivLineVal[EDivLineLayerSub][idxDivLine] = arfDivLineValLin[EDivLineLayerSub];
-                                    m_ararfDivLine_px[EDivLineLayerSub][idxDivLine] = getValInPix(arfDivLineValLin[EDivLineLayerSub]);
+                                    m_ararfDivLinesVals[EDivLineLayerSub][idxDivLine] = arfDivLineValLin[EDivLineLayerSub];
+                                    m_ararfDivLines_px[EDivLineLayerSub][idxDivLine] = getValInPix(arfDivLineValLin[EDivLineLayerSub]);
                                     idxDivLine++;
                                 }
                             }
@@ -2119,7 +2146,7 @@ void CScaleDivLines::updateLogarithmicSpacing()
         // So we are just drawing all or none of the sub division lines:
 
         // If there is enough space for sub division lines ...
-        if( m_ariDivLineDistMin_px[EDivLineLayerSub] > 1 && s_arfScaleRangeFacPixDivValLog[2] * fScaleRangePixDec >= m_ariDivLineDistMin_px[EDivLineLayerSub] )
+        if( m_ariDivLinesDistMin_px[EDivLineLayerSub] > 1 && s_arfScaleRangeFacPixDivValLog[2] * fScaleRangePixDec >= m_ariDivLinesDistMin_px[EDivLineLayerSub] )
         {
             // Count the visible sub division lines
             // (not including main grid line at start and end of section):
@@ -2147,8 +2174,8 @@ void CScaleDivLines::updateLogarithmicSpacing()
             // Calculate pixel values and store the calculated results of the sub grid lines:
             if( ariDivLineCount[EDivLineLayerSub] > 0 )
             {
-                m_ararfDivLineVal[EDivLineLayerSub].resize(ariDivLineCount[EDivLineLayerSub]);
-                m_ararfDivLine_px[EDivLineLayerSub].resize(ariDivLineCount[EDivLineLayerSub]);
+                m_ararfDivLinesVals[EDivLineLayerSub].resize(ariDivLineCount[EDivLineLayerSub]);
+                m_ararfDivLines_px[EDivLineLayerSub].resize(ariDivLineCount[EDivLineLayerSub]);
 
                 fScaleMinValLinDec = fScaleMinValLinExt;
                 arfDivLineValLin[EDivLineLayerSub] = fScaleMinValLinDec;
@@ -2165,8 +2192,8 @@ void CScaleDivLines::updateLogarithmicSpacing()
                         {
                             if( idxDivLine < ariDivLineCount[EDivLineLayerSub] )
                             {
-                                m_ararfDivLineVal[EDivLineLayerSub][idxDivLine] = arfDivLineValLin[EDivLineLayerSub];
-                                m_ararfDivLine_px[EDivLineLayerSub][idxDivLine] = getValInPix(arfDivLineValLin[EDivLineLayerSub]);
+                                m_ararfDivLinesVals[EDivLineLayerSub][idxDivLine] = arfDivLineValLin[EDivLineLayerSub];
+                                m_ararfDivLines_px[EDivLineLayerSub][idxDivLine] = getValInPix(arfDivLineValLin[EDivLineLayerSub]);
                                 idxDivLine++;
                             }
                         }
@@ -2267,7 +2294,37 @@ void CScaleDivLines::updateLogarithmicSpacing()
 
     for( int iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
     {
-        m_ariDivLineCount[iLayer] = ariDivLineCount[iLayer];
+        m_ariDivLinesCount[iLayer] = ariDivLineCount[iLayer];
     }
 } // updateLogarithmicSpacing
 
+//------------------------------------------------------------------------------
+/*! @brief Merges the main and sub division lines.
+
+    Duplicates are removed (sub division lines overlapping main division lines
+    are not added to the resulting array).
+    The division lines are sorted in ascending order (lowest values first).
+*/
+void CScaleDivLines::updateDivLinesValsSorted()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "updateDivLinesValsSorted",
+        /* strAddInfo   */ "" );
+
+    QVector<double> arfValsMain;
+    int iValCountMain = m_ariDivLinesCount[EDivLineLayerMain];
+    for (int idxVal = 0; idxVal < iValCountMain; ++idxVal) {
+        double fVal = m_ararfDivLinesVals[EDivLineLayerMain][idxVal];
+        arfValsMain.append(fVal);
+    }
+    QVector<double> arfValsSub;
+    int iValCountSub = m_ariDivLinesCount[EDivLineLayerSub];
+    for (int idxVal = 0; idxVal < iValCountSub; ++idxVal) {
+        double fVal = m_ararfDivLinesVals[EDivLineLayerSub][idxVal];
+        arfValsSub.append(fVal);
+    }
+    m_arfDivLinesValsSorted = Math::merge(arfValsMain, arfValsSub);
+}
