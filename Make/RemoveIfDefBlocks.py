@@ -29,8 +29,10 @@ Usage Example:
 --------------
 
 This script walks through the directory passed with argument '--directory',
-searches for all '*.cpp' and '*.h' files and removes the code blocks starting
-with '#ifdef <directive>' to the next line containing '#endif'.
+searches for all '*.cpp', '*.h' and '*.qml' files and removes the code blocks starting
+with '#ifdef <directive>' to the next line containing either '#else' or '#endif'.
+If an '#else' is found after the '#ifdef <directive>' the lines between '#else'
+end the next '#endif' are kept.
 
     python RemoveIfDefBlocks.py --directory='SourcePath' --directive='USE_ZS_IPCTRACE_DLL_IF'
 '''
@@ -60,56 +62,83 @@ def main():
         for filename in files:
             sourceFile = ''
             filepath = os.path.join(root, filename)
-            if fnmatch.fnmatch(filename, '*.cpp'):
+            if fnmatch.fnmatch(filename, '*.qml'):
+                sourceFile = filepath
+            elif fnmatch.fnmatch(filename, '*.cpp'):
                 sourceFile = filepath
             elif fnmatch.fnmatch(filename, '*.h'):
                 sourceFile = filepath
             if len(sourceFile) > 0:
-                print('Processing File: ', sourceFile)
+                print('Checking File: ', sourceFile)
+                directiveInFile = False
                 with open(sourceFile, 'r', newline='') as f:
-                    lines = f.readlines()
-                blockLeft = False
-                inBlock = False
-                newLines = []
-                prevLine = ''
-                nextLine = ''
-                line = ''
-                lineBeforeBlock = ''
-                lineAfterBlock = ''
-                for idxLine in range(len(lines)):
-                    if idxLine > 0:
-                        prevLine = line
-                    if idxLine < len(lines) - 1:
-                        nextLine = lines[idxLine+1]
-                    line = lines[idxLine]
-                    if directive in nextLine:
-                        lineBeforeBlock = line
-                        if len(line) > 1:
-                            newLines.append(line)
-                    elif directive in line:
-                        inBlock = True
-                    elif inBlock and '#endif' in line:
-                        inBlock = False
-                        blockLeft = True
+                    try:
+                        lines = f.readlines()
+                        for idxLine in range(len(lines)):
+                            line = lines[idxLine]
+                            if directive in line:
+                                directiveInFile = True
+                                break
+                    except:
+                        print('Cannot read: ', sourceFile)
+                if not directiveInFile:
+                    print('Ignoring File: ', sourceFile)
+                else:
+                    print('Processing File: ', sourceFile)
+                    newLines = []
+                    inIfBlock = False
+                    inElseBlock = False
+                    blockLeft = False
+                    for idxLine in range(len(lines)):
+                        prevLine = ''
+                        nextLine = ''
+                        newLine = ''
+                        if idxLine > 0:
+                            prevLine = line
                         if idxLine < len(lines) - 1:
-                            lineAfterBlock = lines[idxLine+1]
-                    elif not inBlock:
-                        if blockLeft:
-                            if len(line) > 1:
-                                newLines.append(line)
-                            elif len(lineBeforeBlock) <= 1:
-                                # Newly added block may start and end with an empty line.
-                                # Not both lines will be removed but only the empty line
-                                # before the block starts.
-                                newLines.append(line)
+                            nextLine = lines[idxLine+1]
+                        line = lines[idxLine]
+                        isSpaceLine = line.isspace()
+                        #print('-----------------------------')
+                        #print('Line: ', idxLine)
+                        #print('Line     [{}]: {}'.format(len(line), line))
+                        #print('PrevLine [{}]: {}'.format(len(prevLine), prevLine))
+                        #print('NextLine [{}]: {}'.format(len(nextLine), nextLine))
+                        #print('-> isSpaceLine:     ', isSpaceLine)
+                        #print('-> inIfBlock:       ', inIfBlock)
+                        #print('-> inElseBlock:     ', inElseBlock)
+                        #print('-> blockLeft:       ', blockLeft)
+                        if directive in line:
+                            inIfBlock = True
                             blockLeft = False
-                        else:
+                        elif inIfBlock and '#else' in line:
+                            inElseBlock = True
+                            blockLeft = False
+                        elif inIfBlock and '#endif' in line:
+                            inIfBlock = False
+                            inElseBlock = False
+                            blockLeft = True
+                        elif inElseBlock:
+                            newLine = line
+                            blockLeft = False
+                        elif not inIfBlock:
+                            if isSpaceLine:
+                                if not blockLeft: # or directive in nextLine):
+                                    newLine = line
+                            else:
+                                newLine = line
+                            blockLeft = False
+                        #print('')
+                        #print('<- inIfBlock:       ', inIfBlock)
+                        #print('<- inElseBlock:     ', inElseBlock)
+                        #print('<- blockLeft:       ', blockLeft)
+                        #print('newLine [{}]: {}'.format(len(newLine), newLine))
+                        if len(newLine) > 0:
                             newLines.append(line)
-                        lineBeforeBlock = ''
-                        lineAfterBlock = ''
-                with open(sourceFile, 'w', newline='') as f:
-                    for line in newLines:
-                        f.write(line)
+                    targetFile = sourceFile # + '.tst'
+                    with open(targetFile, 'w', newline='') as f:
+                        for line in newLines:
+                            f.write(line)
 
 if __name__ == '__main__':
     main()
