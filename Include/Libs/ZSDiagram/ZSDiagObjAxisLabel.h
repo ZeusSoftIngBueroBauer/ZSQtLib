@@ -115,23 +115,23 @@ public: // instance methods (spacing between areas)
 public: // instance methods (division lines)
     void showDivLines(const ZS::System::CEnumDivLineLayer& i_eLayer);
     void hideDivLines(const ZS::System::CEnumDivLineLayer& i_eLayer);
-    void setDivLinesForegroundColor(const QColor& i_color, const ZS::System::CEnumDivLineLayer& i_eLayer);
-    QColor divLinesForegroundColor(const ZS::System::CEnumDivLineLayer& i_eLayer) const;
-    void setDivLinesPenStyle(const Qt::PenStyle& i_penStyle, const ZS::System::CEnumDivLineLayer& i_eLayer);
-    Qt::PenStyle divLinesPenStyle(const ZS::System::CEnumDivLineLayer& i_eLayer) const;
+    void setDivLinesColor(const QColor& i_color, const ZS::System::CEnumDivLineLayer& i_eLayer = ZS::System::EDivLineLayerMain);
+    QColor divLinesColor(const ZS::System::CEnumDivLineLayer& i_eLayer = ZS::System::EDivLineLayerMain) const;
+    void setDivLinesPenStyle(const Qt::PenStyle& i_penStyle, const ZS::System::CEnumDivLineLayer& i_eLayer = ZS::System::EDivLineLayerMain);
+    Qt::PenStyle divLinesPenStyle(const ZS::System::CEnumDivLineLayer& i_eLayer = ZS::System::EDivLineLayerMain) const;
 public: // instance methods (division line labels)
-    void showDivLineLabels(const ZS::System::CEnumDivLineLayer& i_eLayer);
-    void hideDivLineLabels(const ZS::System::CEnumDivLineLayer& i_eLayer);
-    void setDivLineLabelsColor(const QColor& i_color, const ZS::System::CEnumDivLineLayer& i_eLayer);
-    QColor divLineLabelsColor(const ZS::System::CEnumDivLineLayer& i_eLayer) const;
-    void setDivLineLabelsFont(const QFont& i_fnt, const ZS::System::CEnumDivLineLayer& i_eLayer);
-    QFont divLineLabelsFont(const ZS::System::CEnumDivLineLayer& i_eLayer) const;
-    void setDigitsCountMax( int i_iDigitsCountMax );
+    void showDivLineLabels(const ZS::System::CEnumDivLineLayer& i_eLayer = ZS::System::EDivLineLayerMain);
+    void hideDivLineLabels(const ZS::System::CEnumDivLineLayer& i_eLayer = ZS::System::EDivLineLayerMain);
+    void setDivLineLabelsColor(const QColor& i_color, const ZS::System::CEnumDivLineLayer& i_eLayer = ZS::System::EDivLineLayerMain);
+    QColor divLineLabelsColor(const ZS::System::CEnumDivLineLayer& i_eLayer = ZS::System::EDivLineLayerMain) const;
+    void setDivLineLabelsFont(const QFont& i_fnt, const ZS::System::CEnumDivLineLayer& i_eLayer = ZS::System::EDivLineLayerMain);
+    QFont divLineLabelsFont(const ZS::System::CEnumDivLineLayer& i_eLayer = ZS::System::EDivLineLayerMain) const;
+    void setDigitsCountMax(int i_iDigitsCountMax);
     int digitsCountMax() const;
-    void setUseEngineeringFormat( bool i_bUseEngineeringFormat );
+    void setUseEngineeringFormat(bool i_bUseEngineeringFormat);
     bool useEngineeringFormat() const;
 public: // instance methods (axis label)
-    void setAxisLabel( const QString& i_strLabel );
+    void setAxisLabel(const QString& i_strLabel);
     QString axisLabel() const;
     void showAxisLabel();
     void hideAxisLabel();
@@ -140,7 +140,7 @@ public: // instance methods (axis label)
     void setAxisLabelFont(const QFont& i_fnt);
     QFont axisLabelFont() const;
 public: // instance methods (unit)
-    void setUnit( PhysVal::CUnit* i_pUnit ); // nullptr means "use best unit"
+    void setUnit(PhysVal::CUnit* i_pUnit); // nullptr means "use best unit"
     PhysVal::CUnit* getUnit();
 public: // instance methods (unit at max scale value)
     void showUnitAtDivLines();
@@ -152,10 +152,6 @@ public: // instance methods (unit at max scale value)
 public: // instance methods (unit at axis label)
     void showUnitAtAxisLabel();
     void hideUnitAtAxisLabel();
-    void setUnitColorAtAxisLabel(const QColor& i_color);
-    QColor unitColorAtAxisLabel() const;
-    void setUnitFontAtAxisLabel(const QFont& i_fnt);
-    QFont unitFontAtAxisLabel() const;
 public: // overridables of base class CDiagObj
     virtual void show( bool i_bInformDiagram = true ) override;
     virtual void hide( bool i_bInformDiagram = true ) override;
@@ -178,13 +174,10 @@ protected: // auxiliary instance methods
     QRect getAxisLabelBoundingRect() const;
     //void adjustDivLineLabelsMaxTextExtent();
     bool intersectsDivLineLabelsPhysUnit(const QRect& i_rect) const;
-    bool intersectsDivLineLabels(
-        const QRect& i_rect,
-        const ZS::System::CEnumDivLineLayer& i_eLayer = ZS::System::CEnumDivLineLayer(),
-        int i_idxDivLineLabelMin = -1,
-        int i_idxDivLineLabelMax = -1) const;
     QString formatValue(double i_fVal, PhysVal::CUnit* i_pUnit = nullptr) const;
 protected: // auxiliary instance methods
+    void paintDivisionLines(QPaintDevice* i_pPaintDevice);
+    void paintDivisionLineLabels(QPaintDevice* i_pPaintDevice);
     void paintAxisLabel(QPaintDevice* i_pPaintDevice);
 private: // copy ctor not allowed
     CDiagObjAxisLabel( const CDiagObjAxisLabel& );
@@ -244,12 +237,10 @@ protected: // Unit
     QColor m_colUnitAtDivLines;
     /*!< Font used to output the unit at the maximum scale value. */
     QFont m_fntUnitAtDivLines;
-    /*!< Defines whether the unit should be output together with the axis label. */
+    /*!< Defines whether the unit should be output together with the axis label.
+         To output the unit at the axis label the font and text color of the
+         axis label is used. */
     bool m_bShowUnitAtAxisLabel;
-    /*!< Text color to output the unit together with the axis label. */
-    QColor m_colUnitAtAxisLabel;
-    /*!< Font used to output the unit together with the axis label. */
-    QFont m_fntUnitAtAxisLabel;
 protected: // Division lines calculator
     /*!< Scale division lines instance to calculate the metrics of the axis labels. */
     ZS::System::GUI::Math::CScaleDivLinesMetrics m_divLinesMetrics;

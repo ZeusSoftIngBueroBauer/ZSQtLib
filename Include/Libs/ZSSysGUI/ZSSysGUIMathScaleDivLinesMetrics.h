@@ -73,6 +73,8 @@ public: // instance methods (returning calculated values)
     int getExponentDigits() const;
     QSize getDivLineLabelsMaxTextExtent() const;
     int getDivLineLabelsSpacingInPix() const;
+    QString getDivLineLabelText(const CEnumDivLineLayer& i_eLayer, int i_idxDivLine) const;
+    QRect getDivLineLabelBoundingRect(const CEnumDivLineLayer& i_eLayer, int i_idxDivLine) const;
     QRect getScaleMinValBoundingRect() const;
     QRect getScaleMaxValBoundingRect() const;
     QString formatValue(double i_fVal) const;
@@ -83,6 +85,10 @@ protected: // auxiliary instance methods
     void updateMaxTextExtentAndSpacing(int i_iLeadingDigits);
     void updateDivLineLabelsBoundingRects();
     void updateScaleMinMaxBoundingRects();
+protected: // auxiliary instance methods
+    bool intersectsWithDivLineLabelsRects(
+        const QRect& i_rect, const CEnumDivLineLayer& i_eLayer,
+        int i_idxDivLineMin = -1, int i_idxDivLineMax = -1);
 protected: // instance members (config values)
     /*!< Font to be used. */
     QFont m_fnt;

@@ -426,8 +426,8 @@ bool CScaleDivLinesMetrics::update()
     // also font changes etc. need to be taken into account.
     if (!m_bDivLinesCalculated)
     {
-        // The base class calculates the values of the division lines
-        // as a whole number multiple of ten.
+        // The base class calculates the pixel position of the division lines
+        // so that the values are a whole number multiple of ten.
         CScaleDivLines::update();
 
         // Calculate number formatting (needed leading, trailing and exponent digits)
@@ -450,7 +450,8 @@ bool CScaleDivLinesMetrics::update()
         mthTracer.setMethodReturn(m_bDivLinesCalculated);
     }
     return m_bDivLinesCalculated;
-}
+
+} // update
 
 /*==============================================================================
 public: // instance methods (returning calculated values)
@@ -498,6 +499,44 @@ int CScaleDivLinesMetrics::getDivLineLabelsSpacingInPix() const
 //------------------------------------------------------------------------------
 {
     return m_iSpacing_px;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the formatted text to label the specified division line.
+
+    @param i_eLayer [in]
+        Range [Main, Sub]
+        Layer for which the value should be returned.
+    @param i_idxDivLine [in]
+        Range [0..DivLineCount-1]
+        Index of the division line the value should be returned.
+
+    @return String to label the division line.
+*/
+QString CScaleDivLinesMetrics::getDivLineLabelText(
+    const CEnumDivLineLayer& i_eLayer, int i_idxDivLine) const
+//------------------------------------------------------------------------------
+{
+    return m_ararstrLabels[i_eLayer.enumeratorAsInt()][i_idxDivLine];
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the bounding rectangle for the text to label the specified division line.
+
+    @param i_eLayer [in]
+        Range [Main, Sub]
+        Layer for which the value should be returned.
+    @param i_idxDivLine [in]
+        Range [0..DivLineCount-1]
+        Index of the division line the value should be returned.
+
+    @return Bounding rectangle of the label text.
+*/
+QRect CScaleDivLinesMetrics::getDivLineLabelBoundingRect(
+    const CEnumDivLineLayer& i_eLayer, int i_idxDivLine) const
+//------------------------------------------------------------------------------
+{
+    return m_ararrectLabels[i_eLayer.enumeratorAsInt()][i_idxDivLine];
 }
 
 //------------------------------------------------------------------------------
@@ -555,7 +594,8 @@ QString CScaleDivLinesMetrics::formatValue(double i_fVal) const
         mthTracer.setMethodReturn(strVal);
     }
     return strVal;
-}
+
+} // formatValue
 
 /*==============================================================================
 protected: // overridable auxiliary instance methods of base class
@@ -591,7 +631,7 @@ void CScaleDivLinesMetrics::invalidateResults()
         m_arstrScaleMinMaxVal[idxMinMax].clear();
         m_arrectScaleMinMaxVal[idxMinMax] = QRect();
     }
-}
+} // invalidateResults
 
 /*==============================================================================
 protected: // auxiliary instance methods
@@ -719,7 +759,8 @@ int CScaleDivLinesMetrics::updateNumberFormatting()
         mthTracer.setMethodOutArgs(strMthOutArgs);
     }
     return iLeadingDigits;
-}
+
+} // updateNumberFormatting
 
 //------------------------------------------------------------------------------
 /*! @brief Internal auxiliary method to calculate the maximum extent of
@@ -769,12 +810,6 @@ void CScaleDivLinesMetrics::updateMaxTextExtentAndSpacing(int i_iLeadingDigits)
     strDivLineLabel += "0"; // .. so we add one additional character.
     QFontMetrics fntmtr(m_fnt);
     m_sizeMaxTextExtent = fntmtr.boundingRect(strDivLineLabel).size();
-    if (m_scaleDir == EScaleDir::Y) {
-        // The label will be drawn rotated by 90 degrees. The width becomes the height.
-        int cyHeight = m_sizeMaxTextExtent.height();
-        m_sizeMaxTextExtent.setHeight(m_sizeMaxTextExtent.width());
-        m_sizeMaxTextExtent.setWidth(cyHeight);
-    }
     if (m_sizeMaxTextExtent.width() < m_sizeMinTextExtent.width()) {
         m_sizeMaxTextExtent.setWidth(m_sizeMinTextExtent.width());
     }
@@ -793,7 +828,7 @@ void CScaleDivLinesMetrics::updateMaxTextExtentAndSpacing(int i_iLeadingDigits)
             ", Spacing: " + QString::number(m_iSpacing_px);
         mthTracer.setMethodOutArgs(strMthOutArgs);
     }
-}
+} // updateMaxTextExtentAndSpacing
 
 //------------------------------------------------------------------------------
 /*! @brief Internal auxiliary method to calculate the bounding rectangles of
@@ -869,7 +904,7 @@ void CScaleDivLinesMetrics::updateDivLineLabelsBoundingRects()
             }
         }
     }
-}
+} // updateDivLineLabelsBoundingRects
 
 //------------------------------------------------------------------------------
 /*! @brief Internal auxiliary method to calculate the bounding rectangles of
@@ -959,4 +994,137 @@ void CScaleDivLinesMetrics::updateScaleMinMaxBoundingRects()
             }
         }
     }
-}
+} // updateScaleMinMaxBoundingRects
+
+//------------------------------------------------------------------------------
+/*! @brief Checks whether the given rectangle intersects with any of the existing
+           rectangles used to label the axis.
+
+    @param i_rect [in]
+        Rectangle to be checked whether it intersects any of the existing label rectangles.
+    @param i_eLayer [in]
+        Div line layer to be checked.
+        Invalild enumerator to check all layers.
+    @param i_idxDivLineMin [in]
+        Index of first division line to be checked.
+        -1 to start with the first division line.
+    @param i_idxDivLineMax [in]
+        Index of last division line to be checked.
+        -1 to end with the last division line.
+
+    @return true if the passed rectangle intersects any of the existing div line labels,
+            false otherwise.
+*/
+bool CScaleDivLinesMetrics::intersectsWithDivLineLabelsRects(
+    const QRect& i_rect, const CEnumDivLineLayer& i_eLayer,
+    int i_idxDivLineMin, int i_idxDivLineMax)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Rect {" + qRect2Str(i_rect) + "}"
+            + ", Layer: " + QString(i_eLayer.isValid() ? i_eLayer.toString() : "AllLayers")
+            + ", IdxMin: " + QString::number(i_idxDivLineMin)
+            + ", IdxMax: " + QString::number(i_idxDivLineMax);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "intersectsWithDivLineLabelsRects",
+        /* strAddInfo   */ strMthInArgs );
+
+    bool bIntersects = false;
+
+    int idxLayerMin = 0;
+    int idxLayerMax = CEnumDivLineLayer::count()-1;
+    if (i_eLayer.isValid()) {
+        idxLayerMin = i_eLayer.enumeratorAsInt();
+        idxLayerMax = i_eLayer.enumeratorAsInt();
+    }
+
+    int idxDivLineMin = 0;
+    int idxDivLineMax = 0;
+
+    // If the sub layer should be checked check whether the given
+    // rectangle intersects with a rectangle in the "main" layer.
+    if (idxLayerMax > 0)
+    {
+        for (int iLayer = 0; iLayer < idxLayerMax; iLayer++)
+        {
+            if (m_ariDivLinesCount[iLayer] == 0)
+            {
+                bIntersects = false;
+            }
+            else
+            {
+                idxDivLineMin = 0;
+                idxDivLineMax = m_ariDivLinesCount[iLayer]-1;
+
+                for (int idxDivLine = idxDivLineMin; idxDivLine <= idxDivLineMax; idxDivLine++)
+                {
+                    if (m_ararbLabelsVisible[iLayer][idxDivLine])
+                    {
+                        if (i_rect.intersects(m_ararrectLabels[iLayer][idxDivLine]))
+                        {
+                            bIntersects = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (bIntersects)
+            {
+                break;
+            }
+        }
+    }
+
+    // Check the specified "highest" layer ...
+    if (!bIntersects && i_idxDivLineMin <= i_idxDivLineMax)
+    {
+        const int iLayer = idxLayerMax;
+
+        if (m_ariDivLinesCount[iLayer] == 0)
+        {
+            bIntersects = false;
+        }
+        else
+        {
+            if (i_idxDivLineMin < 0) {
+                idxDivLineMin = 0;
+            }
+            else {
+                idxDivLineMin = i_idxDivLineMin;
+            }
+            if (i_idxDivLineMax < 0) {
+                idxDivLineMax = m_ariDivLinesCount[iLayer]-1;
+            }
+            else {
+                idxDivLineMax = i_idxDivLineMax;
+            }
+            if( idxDivLineMin >= m_ariDivLinesCount[iLayer]) {
+                idxDivLineMin = m_ariDivLinesCount[iLayer]-1;
+            }
+            if (idxDivLineMax >= m_ariDivLinesCount[iLayer]) {
+                idxDivLineMax = m_ariDivLinesCount[iLayer]-1;
+            }
+            for (int idxDivLine = idxDivLineMin; idxDivLine <= idxDivLineMax; idxDivLine++)
+            {
+                if (m_ararbLabelsVisible[iLayer][idxDivLine])
+                {
+                    if (i_rect.intersects(m_ararrectLabels[iLayer][idxDivLine]))
+                    {
+                        bIntersects = true;
+                        break;
+                    }
+                }
+            }
+        }
+    } // if( !bIntersect )
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(bIntersects);
+    }
+    return bIntersects;
+
+} // intersectsWithDivLineLabelsRects

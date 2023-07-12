@@ -816,7 +816,13 @@ void CTest::doTestStepSigGenAddAxisLabels( ZS::Test::CTestStep* i_pTestStep )
             /* strObjName  */ "X-AxisLabel",
             /* pDiagScaleX */ m_pDiagScaleX,
             /* layoutPos   */ ELayoutPosBottom );
+        m_pDiagObjAxisLabelX->setSpacingDiagPartCenter2DivLineLabels(10);
+        m_pDiagObjAxisLabelX->setSpacingDivLineLabels2AxisLabel(10);
+        m_pDiagObjAxisLabelX->setDivLinesColor(Qt::red);
+        m_pDiagObjAxisLabelX->setDivLinesPenStyle(Qt::SolidLine);
         m_pDiagObjAxisLabelX->setAxisLabel("Frequency");
+        m_pDiagObjAxisLabelX->showUnitAtDivLines();
+        m_pDiagObjAxisLabelX->showUnitAtAxisLabel();
         m_pWdgtDiagram->addDiagObj(m_pDiagObjAxisLabelX);
     }
 
@@ -826,7 +832,13 @@ void CTest::doTestStepSigGenAddAxisLabels( ZS::Test::CTestStep* i_pTestStep )
             /* strObjName  */ "Y-AxisLabel",
             /* pDiagScaleX */ m_pDiagScaleY,
             /* layoutPos   */ ELayoutPosLeft );
+        m_pDiagObjAxisLabelY->setSpacingDiagPartCenter2DivLineLabels(10);
+        m_pDiagObjAxisLabelY->setSpacingDivLineLabels2AxisLabel(10);
+        m_pDiagObjAxisLabelY->setDivLinesColor(Qt::red);
+        m_pDiagObjAxisLabelY->setDivLinesPenStyle(Qt::SolidLine);
         m_pDiagObjAxisLabelY->setAxisLabel("Power");
+        m_pDiagObjAxisLabelY->showUnitAtDivLines();
+        m_pDiagObjAxisLabelY->showUnitAtAxisLabel();
         m_pWdgtDiagram->addDiagObj(m_pDiagObjAxisLabelY);
     }
 
