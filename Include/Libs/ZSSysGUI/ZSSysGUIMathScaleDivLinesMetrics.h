@@ -43,6 +43,19 @@ namespace Math
 //******************************************************************************
 /*! @brief Class calculating metric informations about division lines for a given scale.
 
+    The following picture shows an X-Scale with division lines for a main and a sub layer.
+    The labels of the division lines for the sub layer are not all indicated. The labels
+    for 0.0, 10.0, .. 60.0 are not shown but belong to the sub layer. But they are the
+    same as divison lines in the main layer and are not shown for better readability of
+    the graphic.
+
+    For division line labels which would overlap each other a visibility flag is calculated.
+    This visibility flag can be read by method "isDivLineLabelVisible".
+
+     0123456789012345678901234567890123456789012345678901234567890
+     +----+----+----+----+----+----+----+----+----+----+----+----+  ("+" Sub Layer division lines)
+     |   5.0   |  15.0   |  25.0   |  35.0   |  45.0   |  55.0   |  ("|" Main Layer division lines)
+    0.0      10.0      20.0      30.0      40.0      50.0      60.0
 */
 class ZSSYSGUIDLL_API CScaleDivLinesMetrics : public ZS::System::Math::CScaleDivLines
 //******************************************************************************
@@ -66,13 +79,14 @@ public: // instance methods (getting properties)
     int digitsCountMax() const;
     bool useEngineeringFormat() const;
     QSize divLineLabelsMinTextExtent() const;
-public: // overridables of base class CScaleDivLines (to recalculate divsion lines after changing settings)
+public: // overridables of base class CScaleDivLines (to recalculate division lines after changing settings)
     virtual bool update() override;
 public: // instance methods (returning calculated values)
     int getTrailingDigits() const;
     int getExponentDigits() const;
     QSize getDivLineLabelsMaxTextExtent() const;
     int getDivLineLabelsSpacingInPix() const;
+    bool isDivLineLabelVisible(const CEnumDivLineLayer& i_eLayer, int i_idxDivLine) const;
     QString getDivLineLabelText(const CEnumDivLineLayer& i_eLayer, int i_idxDivLine) const;
     QRect getDivLineLabelBoundingRect(const CEnumDivLineLayer& i_eLayer, int i_idxDivLine) const;
     QRect getScaleMinValBoundingRect() const;
@@ -84,11 +98,12 @@ protected: // auxiliary instance methods
     int updateNumberFormatting();
     void updateMaxTextExtentAndSpacing(int i_iLeadingDigits);
     void updateDivLineLabelsBoundingRects();
+    void updateDivLineLabelsVisibilities();
     void updateScaleMinMaxBoundingRects();
 protected: // auxiliary instance methods
     bool intersectsWithDivLineLabelsRects(
         const QRect& i_rect, const CEnumDivLineLayer& i_eLayer,
-        int i_idxDivLineMin = -1, int i_idxDivLineMax = -1);
+        int i_idxDivLineStart, const CEnumSearchDirection& i_eSearchDirection = ESearchDirection::Descending);
 protected: // instance members (config values)
     /*!< Font to be used. */
     QFont m_fnt;

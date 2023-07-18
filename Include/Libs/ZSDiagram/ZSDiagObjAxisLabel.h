@@ -172,12 +172,13 @@ protected: // auxiliary instance methods
     QRect getDivLineLabelsUnitBoundingRect() const;
     QSize getAxisLabelTextExtent() const;
     QRect getAxisLabelBoundingRect() const;
-    //void adjustDivLineLabelsMaxTextExtent();
     bool intersectsDivLineLabelsPhysUnit(const QRect& i_rect) const;
     QString formatValue(double i_fVal, PhysVal::CUnit* i_pUnit = nullptr) const;
 protected: // auxiliary instance methods
     void paintDivisionLines(QPaintDevice* i_pPaintDevice);
     void paintDivisionLineLabels(QPaintDevice* i_pPaintDevice);
+    void paintDivisionLineLabelsUnit(QPaintDevice* i_pPaintDevice);
+    void paintScaleMinMaxVals(QPaintDevice* i_pPaintDevice);
     void paintAxisLabel(QPaintDevice* i_pPaintDevice);
 private: // copy ctor not allowed
     CDiagObjAxisLabel( const CDiagObjAxisLabel& );

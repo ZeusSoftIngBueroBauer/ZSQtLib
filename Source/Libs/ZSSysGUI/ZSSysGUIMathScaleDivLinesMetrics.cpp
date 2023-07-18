@@ -401,7 +401,7 @@ QSize CScaleDivLinesMetrics::divLineLabelsMinTextExtent() const
 }
 
 /*==============================================================================
-public: // overridables of base class CScaleDivLines (to recalculate divsion lines after changing settings)
+public: // overridables of base class CScaleDivLines (to recalculate division lines after changing settings)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -441,6 +441,9 @@ bool CScaleDivLinesMetrics::update()
 
         // Calculate bounding rectangles of minimum and maximum scale values
         updateScaleMinMaxBoundingRects();
+
+        // Hide those division line labels which would overlap other division line labels.
+        updateDivLineLabelsVisibilities();
 
         m_bDivLinesCalculated = true;
 
@@ -499,6 +502,24 @@ int CScaleDivLinesMetrics::getDivLineLabelsSpacingInPix() const
 //------------------------------------------------------------------------------
 {
     return m_iSpacing_px;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the visibility flag for the division line label.
+
+    @param i_eLayer [in]
+        Range [Main, Sub]
+        Layer for which the value should be returned.
+    @param i_idxDivLine [in]
+        Range [0..DivLineCount-1]
+        Index of the division line the value should be returned.
+
+    @return String to label the division line.
+*/
+bool CScaleDivLinesMetrics::isDivLineLabelVisible(const CEnumDivLineLayer& i_eLayer, int i_idxDivLine) const
+//------------------------------------------------------------------------------
+{
+    return m_ararbLabelsVisible[i_eLayer.enumeratorAsInt()][i_idxDivLine];
 }
 
 //------------------------------------------------------------------------------
@@ -847,7 +868,6 @@ void CScaleDivLinesMetrics::updateDivLineLabelsBoundingRects()
         if (m_ariDivLinesCount[iLayer] > 0) {
             m_ararrectLabels[iLayer] = QVector<QRect>(m_ariDivLinesCount[iLayer]);
             m_ararstrLabels[iLayer] = QVector<QString>(m_ariDivLinesCount[iLayer]);
-            m_ararbLabelsVisible[iLayer] = QVector<bool>(m_ariDivLinesCount[iLayer], false);
         }
     }
 
@@ -907,6 +927,88 @@ void CScaleDivLinesMetrics::updateDivLineLabelsBoundingRects()
 } // updateDivLineLabelsBoundingRects
 
 //------------------------------------------------------------------------------
+/*! @brief Internal auxiliary method to set the visibility flag to false for
+           those division line labels which would overlap other division line labels.
+
+    The following picture shows an X-Scale with division lines for a main and a sub layer.
+    The labels of the division lines for the sub layer are not all indicated. The labels
+    for 0.0, 10.0, .., 60.0 are not shown but belong to the sub layer. But they are the
+    same as divison lines in the main layer and are not shown for better readability of
+    the graphic.
+
+    For division line labels which would overlap each other a visibility flag is calculated.
+    This visibility flag can be read by method "isDivLineLabelVisible".
+
+     0123456789012345678901234567890123456789012345678901234567890
+     +----+----+----+----+----+----+----+----+----+----+----+----+  ("+" Sub Layer division lines)
+     |   5.0   |  15.0   |  25.0   |  35.0   |  45.0   |  55.0   |  ("|" Main Layer division lines)
+    0.0      10.0      20.0      30.0      40.0      50.0      60.0
+
+    If sub division lines should be indicated the labels at the sub division lines
+    may not overlap labels at main division line labels. The visibility flag
+    for the values 0.0, 10.0, .., 60.0 is therefore set to false for the sub layer.
+
+*/
+void CScaleDivLinesMetrics::updateDivLineLabelsVisibilities()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "updateDivLineLabelsVisibilities",
+        /* strAddInfo   */ "" );
+    
+    for (int iLayer = 0; iLayer < CEnumDivLineLayer::count(); ++iLayer) {
+        if (m_ariDivLinesCount[iLayer] > 0) {
+            m_ararbLabelsVisible[iLayer] = QVector<bool>(m_ariDivLinesCount[iLayer], true);
+        }
+    }
+
+    // First hide all sub division line labels which would overlap main division line labels.
+    for (int idxDivLine = 0; idxDivLine < m_ariDivLinesCount[EDivLineLayerSub]; ++idxDivLine) {
+        QRect rect = m_ararrectLabels[EDivLineLayerSub][idxDivLine];
+        if (intersectsWithDivLineLabelsRects(rect, EDivLineLayerMain, 0, ESearchDirection::Ascending)) {
+            m_ararbLabelsVisible[EDivLineLayerSub][idxDivLine] = false;
+        }
+    }
+
+    // Next hide sub division line labels which would overlap other labels in the sub layer.
+    for (int idxDivLine = 0; idxDivLine < m_ariDivLinesCount[EDivLineLayerSub]; ++idxDivLine) {
+        QRect rect = m_ararrectLabels[EDivLineLayerSub][idxDivLine];
+        if (intersectsWithDivLineLabelsRects(rect, EDivLineLayerSub, idxDivLine-1, ESearchDirection::Descending)) {
+            m_ararbLabelsVisible[EDivLineLayerSub][idxDivLine] = false;
+        }
+    }
+
+    // Next hide main division line labels which would overlap other labels in the main layer.
+    // The first division line label is always visible. The following division line labels are
+    // visible if they do not overlap any of the previous visible labels.
+    for (int idxDivLine = 0; idxDivLine < m_ariDivLinesCount[EDivLineLayerMain]; ++idxDivLine) {
+        QRect rect = m_ararrectLabels[EDivLineLayerMain][idxDivLine];
+        if (intersectsWithDivLineLabelsRects(rect, EDivLineLayerMain, idxDivLine-1, ESearchDirection::Descending)) {
+            m_ararbLabelsVisible[EDivLineLayerMain][idxDivLine] = false;
+        }
+    }
+
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        for( int iLayer = 0; iLayer < CEnumDivLineLayer::count(); ++iLayer) {
+            QString strMthAddInfo =
+                "LabelsVisible[" + CEnumDivLineLayer(iLayer).toString() + "][" +
+                QString::number(m_ararbLabelsVisible[iLayer].size()) + "]";
+            if (m_ararbLabelsVisible[iLayer].size() > 0) {
+                strMthAddInfo += "(";
+                for (int idxDivLine = 0; idxDivLine < m_ararbLabelsVisible[iLayer].size(); ++idxDivLine) {
+                    if (strMthAddInfo.endsWith("(")) strMthAddInfo += ", ";
+                    strMthAddInfo += QString(m_ararbLabelsVisible[iLayer][idxDivLine] ? "1" : "0");
+                }
+                strMthAddInfo += ")";
+            }
+            mthTracer.trace(strMthAddInfo);
+        }
+    }
+} // updateDivLineLabelsVisibilities
+
+//------------------------------------------------------------------------------
 /*! @brief Internal auxiliary method to calculate the bounding rectangles of
            the minimum and maximum scale values.
 */
@@ -960,8 +1062,6 @@ void CScaleDivLinesMetrics::updateScaleMinMaxBoundingRects()
     }
     else // if (m_scaleDir == EScaleDir::Y)
     {
-        // Additionally try to show the minimum and/or maximum scale values if
-        // not enough division lines are visible ..
         for (int idxMinMax = 0; idxMinMax < 2; ++idxMinMax)
         {
             m_arstrScaleMinMaxVal[idxMinMax] = "";
@@ -1000,130 +1100,53 @@ void CScaleDivLinesMetrics::updateScaleMinMaxBoundingRects()
 /*! @brief Checks whether the given rectangle intersects with any of the existing
            rectangles used to label the axis.
 
+    Only those division line labels are taken into account whose visibility flag
+    is not already set to false.
+
     @param i_rect [in]
         Rectangle to be checked whether it intersects any of the existing label rectangles.
     @param i_eLayer [in]
         Div line layer to be checked.
-        Invalild enumerator to check all layers.
-    @param i_idxDivLineMin [in]
-        Index of first division line to be checked.
-        -1 to start with the first division line.
-    @param i_idxDivLineMax [in]
-        Index of last division line to be checked.
-        -1 to end with the last division line.
+        Range [Main, Sub]
+    @param i_idxDivLineStart [in]
+        Index of the division line to be checked.
+    @param i_eSearchDirection [in]
+        Search list upwards (Ascending) or downwards (descending).
 
-    @return true if the passed rectangle intersects any of the existing div line labels,
+    @return true if the passed rectangle intersects any of the visible div line labels,
             false otherwise.
 */
 bool CScaleDivLinesMetrics::intersectsWithDivLineLabelsRects(
     const QRect& i_rect, const CEnumDivLineLayer& i_eLayer,
-    int i_idxDivLineMin, int i_idxDivLineMax)
+    int i_idxDivLineStart, const CEnumSearchDirection& i_eSearchDirection)
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Rect {" + qRect2Str(i_rect) + "}"
-            + ", Layer: " + QString(i_eLayer.isValid() ? i_eLayer.toString() : "AllLayers")
-            + ", IdxMin: " + QString::number(i_idxDivLineMin)
-            + ", IdxMax: " + QString::number(i_idxDivLineMax);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "intersectsWithDivLineLabelsRects",
-        /* strAddInfo   */ strMthInArgs );
-
     bool bIntersects = false;
 
-    int idxLayerMin = 0;
-    int idxLayerMax = CEnumDivLineLayer::count()-1;
-    if (i_eLayer.isValid()) {
-        idxLayerMin = i_eLayer.enumeratorAsInt();
-        idxLayerMax = i_eLayer.enumeratorAsInt();
+    int iLayer = i_eLayer.enumeratorAsInt();
+
+    if (m_ariDivLinesCount[iLayer] == 0) {
+        bIntersects = false;
     }
-
-    int idxDivLineMin = 0;
-    int idxDivLineMax = 0;
-
-    // If the sub layer should be checked check whether the given
-    // rectangle intersects with a rectangle in the "main" layer.
-    if (idxLayerMax > 0)
-    {
-        for (int iLayer = 0; iLayer < idxLayerMax; iLayer++)
-        {
-            if (m_ariDivLinesCount[iLayer] == 0)
-            {
-                bIntersects = false;
-            }
-            else
-            {
-                idxDivLineMin = 0;
-                idxDivLineMax = m_ariDivLinesCount[iLayer]-1;
-
-                for (int idxDivLine = idxDivLineMin; idxDivLine <= idxDivLineMax; idxDivLine++)
-                {
-                    if (m_ararbLabelsVisible[iLayer][idxDivLine])
-                    {
-                        if (i_rect.intersects(m_ararrectLabels[iLayer][idxDivLine]))
-                        {
-                            bIntersects = true;
-                            break;
-                        }
-                    }
+    else {
+        int idxDivLine = i_idxDivLineStart;
+        while (idxDivLine >= 0 && idxDivLine < m_ariDivLinesCount[iLayer]) {
+            if (m_ararbLabelsVisible[iLayer][idxDivLine]) {
+                // If the label is visible and the rectangle overlaps the rectangle
+                // no need to check other rectangles. Same applies if it does not
+                // overlap the visible rectangle as than the rectangle does not overlap
+                // any other rectangle in the search direction.
+                if (i_rect.intersects(m_ararrectLabels[iLayer][idxDivLine])) {
+                    bIntersects = true;
                 }
-            }
-            if (bIntersects)
-            {
                 break;
             }
-        }
-    }
-
-    // Check the specified "highest" layer ...
-    if (!bIntersects && i_idxDivLineMin <= i_idxDivLineMax)
-    {
-        const int iLayer = idxLayerMax;
-
-        if (m_ariDivLinesCount[iLayer] == 0)
-        {
-            bIntersects = false;
-        }
-        else
-        {
-            if (i_idxDivLineMin < 0) {
-                idxDivLineMin = 0;
-            }
-            else {
-                idxDivLineMin = i_idxDivLineMin;
-            }
-            if (i_idxDivLineMax < 0) {
-                idxDivLineMax = m_ariDivLinesCount[iLayer]-1;
-            }
-            else {
-                idxDivLineMax = i_idxDivLineMax;
-            }
-            if( idxDivLineMin >= m_ariDivLinesCount[iLayer]) {
-                idxDivLineMin = m_ariDivLinesCount[iLayer]-1;
-            }
-            if (idxDivLineMax >= m_ariDivLinesCount[iLayer]) {
-                idxDivLineMax = m_ariDivLinesCount[iLayer]-1;
-            }
-            for (int idxDivLine = idxDivLineMin; idxDivLine <= idxDivLineMax; idxDivLine++)
-            {
-                if (m_ararbLabelsVisible[iLayer][idxDivLine])
-                {
-                    if (i_rect.intersects(m_ararrectLabels[iLayer][idxDivLine]))
-                    {
-                        bIntersects = true;
-                        break;
-                    }
-                }
+            if (i_eSearchDirection == ESearchDirection::Ascending) {
+                ++idxDivLine;
+            } else {
+                --idxDivLine;
             }
         }
-    } // if( !bIntersect )
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(bIntersects);
     }
     return bIntersects;
 

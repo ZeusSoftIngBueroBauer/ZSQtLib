@@ -405,6 +405,40 @@ template<> const QVector<SEnumEntry> CEnum<EContentToStrFormat>::s_arEnumEntries
 
 
 /*==============================================================================
+Enum ESearchDirection
+==============================================================================*/
+
+/*! @cond */
+template<> QMutex ZS::System::CEnum<ESearchDirection>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> ZS::System::CEnum<ESearchDirection>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+//------------------------------------------------------------------------------
+const QVector<SEnumEntry> CEnum<ESearchDirection>::s_arEnumEntries;
+//------------------------------------------------------------------------------
+class CInitEnumSearchDirection
+{
+public: // ctor
+    CInitEnumSearchDirection() {
+        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnum<ESearchDirection>::s_arEnumEntries);
+        pVEnumEntries->append( /* 0 */ SEnumEntry(static_cast<int>(ESearchDirection::Ascending),  "Ascending",  "A"));
+        pVEnumEntries->append( /* 1 */ SEnumEntry(static_cast<int>(ESearchDirection::Descending), "Descending", "D"));
+    }
+};
+static CInitEnumSearchDirection s_initEnumSearchDirection;
+#else // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+//------------------------------------------------------------------------------
+template<> const QVector<SEnumEntry> CEnum<ESearchDirection>::s_arEnumEntries =
+//------------------------------------------------------------------------------
+{
+    /* 0 */ SEnumEntry(static_cast<int>(ESearchDirection::Ascending),  "Ascending",  "A"),
+    /* 1 */ SEnumEntry(static_cast<int>(ESearchDirection::Descending), "Descending", "D")
+};
+#endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+/*! @endcond */
+
+
+/*==============================================================================
 Enum EMethodDir
 ==============================================================================*/
 

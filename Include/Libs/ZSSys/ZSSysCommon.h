@@ -345,6 +345,24 @@ typedef CEnum<EContentToStrFormat> CEnumContentToStrFormat;
 
 
 //==============================================================================
+/*! This enum defines two different search directions.
+
+    @see ZS::System::SEnumEntry
+    @see ZS::System::CEnum
+    @see _GRP_BasicConcepts_Enumerations
+*/
+enum class ESearchDirection
+//==============================================================================
+{
+    Ascending  = 0,  /*!< Search upwards. */
+    Descending = 1   /*!< Search downwards. */
+};
+
+template class ZSSYSDLL_API CEnum<ESearchDirection>;
+typedef CEnum<ESearchDirection> CEnumSearchDirection;
+
+
+//==============================================================================
 /*! This enum is mainly used to define for what purpose trace outputs should
     be generated.
 

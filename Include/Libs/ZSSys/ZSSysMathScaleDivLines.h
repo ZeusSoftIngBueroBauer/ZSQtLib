@@ -129,7 +129,7 @@ public: // instance methods (getting properties)
     int scaleRangeInPix() const;
 public: // instance methods (getting properties)
     int divLinesDistMinInPix(const CEnumDivLineLayer& i_eLayer) const;
-public: // overridables (to recalculate divsion lines after changing settings)
+public: // overridables (to recalculate division lines after changing settings)
     virtual bool divLinesCalculated() const;
     virtual bool update();
 public: // instance methods (returning calculated values)
@@ -144,7 +144,7 @@ public: // instance methods (converting values)
     double getVal(double i_fPix) const;
 protected: // overridable auxiliary instance methods
     virtual void invalidateResults();
-protected: // auxiliary instance methods (to recalculate divsion lines after changing settings)
+protected: // auxiliary instance methods (to recalculate division lines after changing settings)
     void updateLinearSpacing();
     void updateLogarithmicSpacing();
 protected: // auxiliary instance methods

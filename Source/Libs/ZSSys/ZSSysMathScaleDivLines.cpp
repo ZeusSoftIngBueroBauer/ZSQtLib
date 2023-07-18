@@ -1180,7 +1180,7 @@ int CScaleDivLines::divLinesDistMinInPix(const CEnumDivLineLayer& i_eLayer) cons
 }
 
 /*==============================================================================
-public: // overridables (to recalculate divsion lines after changing settings)
+public: // overridables (to recalculate division lines after changing settings)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -1709,7 +1709,7 @@ void CScaleDivLines::invalidateResults()
 }
 
 /*==============================================================================
-protected: // auxiliary instance methods (to recalculate divsion lines after changing settings)
+protected: // auxiliary instance methods (to recalculate division lines after changing settings)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
