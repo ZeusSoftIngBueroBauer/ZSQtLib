@@ -78,8 +78,7 @@ enum class ENormedPaperSize {
     DinA7, /*!< 74 x 105 mm. */
     DinA8, /*!< 52 x 74 mm. */
     DinA9, /*!< 37 x 52 mm. */
-    DinA10, /*!< 26 x 37 mm. */
-    Undefined
+    DinA10 /*!< 26 x 37 mm. */
 };
 
 template class ZSDRAWDLL_API ZS::System::CEnum<ENormedPaperSize>;

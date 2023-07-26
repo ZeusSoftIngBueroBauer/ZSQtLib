@@ -72,6 +72,8 @@ public: // instance methods
     int scaleFactorDivisor() const;
     void setImageSize( const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight );
     QSize imageSizeInPixels() const;
+    int imageWidthInPixels() const;
+    int imageHeightInPixels() const;
     ZS::PhysVal::CPhysVal metricImageWidth() const;
     ZS::PhysVal::CPhysVal metricImageHeight() const;
 protected: // instance methods
@@ -83,16 +85,30 @@ public: // instance methods
 protected: // instance methods (method tracing)
     void traceValues(ZS::System::CMethodTracer& i_mthTracer, ZS::System::EMethodDir i_methodDir);
 private: // instance members
+    /*!< Name of the instance. */
     QString m_strName;
+    /*!< Either Pixels or Metric System (e.g. mm, cm, m, etc.). */
     CEnumDrawingDimensionUnit m_eDimensionUnit;
+    /*!< If m_eDimensionUnit is Metric the unit (mm, cm, m, etc.) is defined here. */
     ZS::PhysVal::CUnit m_metricUnit;
+    /*!< Width of the image in metric unit. */
     double m_fImageMetricWidth;
+    /*!< Height of the image in metric unit. */
     double m_fImageMetricHeight;
+    /*!< One of the normed paper sizes (DINA4 etc.) or invalid. */
     CEnumNormedPaperSize m_eNormedPaperSize;
+    /*!< If a normed paper size is used the paper may be orientated vertical or horizontal.
+         If no normed paper size is used the orientation is an invalid value. */
     ZS::System::CEnumOrientation m_eNormedPaperOrientation;
+    /*!< For metric system the scale factor is defined by Dividend/Divisor. */
     int m_iMetricScaleFactorDividend;
+    /*!< For metric system the scale factor is defined by Dividend/Divisor. */
     int m_iMetricScaleFactorDivisor;
+    /*!< Width of the image in pixels. Either set for Dimension unit Pixels or calculated
+         by the metric width, the scale factor and the screen resolution in dots per inch. */
     double m_fImageSizeWidth_px;
+    /*!< Height of the image in pixels. Either set for Dimension unit Pixels or calculated
+         by the metric height, the scale factor and the screen resolution in dots per inch. */
     double m_fImageSizeHeight_px;
     /*!< Trace admin object for method tracing. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;

@@ -80,7 +80,7 @@ public: // class methods
     static int getDivLines4LinSpacing(
         double  i_fScaleMinVal,
         double  i_fScaleMaxVal,
-        int     i_iScaleRangePix,
+        double  i_fScaleRangePix,
         double  i_fDivLineDistMinVal,
         int     i_iDivLineDistMinPix,
         bool    i_bUseDivLineDistValDecimalFactor25,
@@ -107,13 +107,13 @@ public: // instance methods
     QString objectName() const;
 public: // instance methods (setting properties)
     bool setSpacing(const CEnumSpacing& i_eSpacing);
-    bool setScale(double i_fMin, double i_fMax, double i_fRes, int i_iMin_px, int i_iMax_px);
+    bool setScale(double i_fMin, double i_fMax, double i_fRes, double i_fMin_px, double i_fMax_px);
     bool setScaleMin(double i_fMin);
     bool setScaleMax(double i_fMax);
     bool setScaleRes(double i_fRes);
-    bool setScaleMinInPix(int i_iMin_px);
-    bool setScaleMaxInPix(int i_iMax_px);
-    bool setScaleRangeInPix(int i_iRange_px);
+    bool setScaleMinInPix(double i_fMin_px);
+    bool setScaleMaxInPix(double i_fMax_px);
+    bool setScaleRangeInPix(double i_fRange_px);
 public: // instance methods (setting properties)
     bool setDivLinesDistMinInPix(const CEnumDivLineLayer& i_eLayer, int i_iDist_px);
 public: // instance methods (getting properties)
@@ -124,9 +124,9 @@ public: // instance methods (getting properties)
     double scaleMax() const;
     double scaleRange() const;
     double scaleRes() const;
-    int scaleMinInPix() const;
-    int scaleMaxInPix() const;
-    int scaleRangeInPix() const;
+    double scaleMinInPix() const;
+    double scaleMaxInPix() const;
+    double scaleRangeInPix() const;
 public: // instance methods (getting properties)
     int divLinesDistMinInPix(const CEnumDivLineLayer& i_eLayer) const;
 public: // overridables (to recalculate division lines after changing settings)
@@ -136,11 +136,11 @@ public: // instance methods (returning calculated values)
     int getDivLinesCount(const CEnumDivLineLayer& i_eLayer) const;
     double getDivLinesDistMin(const CEnumDivLineLayer& i_eLayer) const;
     double getDivLineVal(const CEnumDivLineLayer& i_eLayer, int i_idxDivLine) const;
-    int getDivLineInPix(const CEnumDivLineLayer& i_eLayer, int i_idxDivLine) const;
+    double getDivLineInPix(const CEnumDivLineLayer& i_eLayer, int i_idxDivLine) const;
     double getDivLineDistVal(const CEnumDivLineLayer& i_eLayer, int i_idxDivLine1, int i_idxDivLine2) const;
-    int getDivLineDistInPix(const CEnumDivLineLayer& i_eLayer, int i_idxDivLine1, int i_idxDivLine2) const;
+    double getDivLineDistInPix(const CEnumDivLineLayer& i_eLayer, int i_idxDivLine1, int i_idxDivLine2) const;
 public: // instance methods (converting values)
-    int getValInPix(double i_fVal) const;
+    double getValInPix(double i_fVal) const;
     double getVal(double i_fPix) const;
 protected: // overridable auxiliary instance methods
     virtual void invalidateResults();
@@ -173,9 +173,9 @@ protected: // instance members (config values)
     /*!< Resolution of minimum and maximum scale values. */
     double m_fScaleRes;
     /*!< Minimum scale value in pixels. */
-    int m_iMin_px;
+    double m_fMin_px;
     /*!< Maximum scale value in pixels. */
-    int m_iMax_px;
+    double m_fMax_px;
     /*!< Minimum distance between two successive division lines per layer in pixels
          used to calculate the division lines in world coordinates (physical values). */
     QVector<int> m_ariDivLinesDistMin_px;

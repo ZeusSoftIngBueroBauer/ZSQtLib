@@ -47,6 +47,8 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 /*! Creates an instance of the class.
+
+    @param i_strName [in] Name of the instance.
 */
 CDrawingSize::CDrawingSize(const QString& i_strName) :
 //------------------------------------------------------------------------------
@@ -75,6 +77,9 @@ CDrawingSize::CDrawingSize(const QString& i_strName) :
 
 //------------------------------------------------------------------------------
 /*! Creates an instance of the class.
+
+    @param i_strName [in] Name of the instance.
+    @param i_size [in] Width and height in pixels.
 */
 CDrawingSize::CDrawingSize(const QString& i_strName, const QSize& i_size) :
 //------------------------------------------------------------------------------
@@ -321,9 +326,7 @@ void CDrawingSize::setNormedPaperSize( const CEnumNormedPaperSize& i_ePaperSize 
 
     if( m_eNormedPaperSize != i_ePaperSize ) {
         m_eNormedPaperSize = i_ePaperSize;
-        if( m_eNormedPaperSize == ENormedPaperSize::Undefined ) {
-        }
-        else {
+        if (m_eNormedPaperSize.isValid()) {
             if( !m_eNormedPaperOrientation.isValid() ) {
                 m_eNormedPaperOrientation = EOrientation::Horizontal;
             }
@@ -374,7 +377,7 @@ void CDrawingSize::setNormedPaperOrientation( const CEnumOrientation& i_orientat
         // For user defined paper sizes there is no orientation. The width might be
         // greater than the height or vice versa. The orientation will be stored if later
         // on a normed paper size is set but for now the values will not be adjusted.
-        if( m_eNormedPaperSize != ENormedPaperSize::Undefined ) {
+        if (m_eNormedPaperSize.isValid()) {
             QVariant varPaperSize = m_eNormedPaperSize.toValue();
             if( varPaperSize.type() == QVariant::SizeF ) {
                 QSizeF sizeF = varPaperSize.toSizeF();
@@ -524,6 +527,20 @@ QSize CDrawingSize::imageSizeInPixels() const
 }
 
 //------------------------------------------------------------------------------
+int CDrawingSize::imageWidthInPixels() const
+//------------------------------------------------------------------------------
+{
+    return m_fImageSizeWidth_px;
+}
+
+//------------------------------------------------------------------------------
+int CDrawingSize::imageHeightInPixels() const
+//------------------------------------------------------------------------------
+{
+    return m_fImageSizeHeight_px;
+}
+
+//------------------------------------------------------------------------------
 CPhysVal CDrawingSize::metricImageWidth() const
 //------------------------------------------------------------------------------
 {
@@ -609,15 +626,15 @@ void CDrawingSize::updatePaperFormat()
         traceValues(mthTracer, EMethodDir::Enter);
     }
 
-    bool bDirectionFound = false;
+    bool bNormedPaperSizeFound = false;
     CPhysVal physValWidth(m_fImageMetricWidth, m_metricUnit);
     CPhysVal physValHeight(m_fImageMetricHeight, m_metricUnit);
     physValWidth.convertValue(Units.Length.mm);
     physValHeight.convertValue(Units.Length.mm);
     QSizeF sizePaper(physValWidth.getVal(), physValHeight.getVal());
-    m_eNormedPaperSize = CEnumNormedPaperSize::fromValue(sizePaper, &bDirectionFound);
+    m_eNormedPaperSize = CEnumNormedPaperSize::fromValue(sizePaper, &bNormedPaperSizeFound);
     // If found the orientation is vertical.
-    if( bDirectionFound ) {
+    if( bNormedPaperSizeFound ) {
         m_eNormedPaperOrientation = EOrientation::Vertical;
     }
     // If not found try also the other orientation:
@@ -626,12 +643,12 @@ void CDrawingSize::updatePaperFormat()
         physValHeight.setVal(m_fImageMetricWidth);
         sizePaper.setWidth(physValWidth.getVal());
         sizePaper.setHeight(physValHeight.getVal());
-        m_eNormedPaperSize = CEnumNormedPaperSize::fromValue(sizePaper, &bDirectionFound);
-        if( bDirectionFound ) {
+        m_eNormedPaperSize = CEnumNormedPaperSize::fromValue(sizePaper, &bNormedPaperSizeFound);
+        if( bNormedPaperSizeFound ) {
             m_eNormedPaperOrientation = EOrientation::Horizontal;
         }
         else {
-            m_eNormedPaperSize = ENormedPaperSize::Undefined;
+            m_eNormedPaperSize = CEnumNormedPaperSize();
             m_eNormedPaperOrientation = CEnumOrientation();
         }
     }
@@ -651,8 +668,8 @@ QString CDrawingSize::toString() const
 {
     QString str = m_strName
         +  ", " + m_eDimensionUnit.toString()
-        + ", Paper (" + m_eNormedPaperSize.toString()
-            + ", " + m_eNormedPaperOrientation.toString() + ")"
+        + ", NormedPaperSize: " + QString(m_eNormedPaperSize.isValid() ? m_eNormedPaperSize.toString() : "Invalid")
+        + ", Orientation: " + QString(m_eNormedPaperOrientation.isValid() ? m_eNormedPaperOrientation.toString() : "Invalid")
         + ", Scale (" + QString::number(m_iMetricScaleFactorDividend)
             + "/" + QString::number(m_iMetricScaleFactorDivisor) + ")"
         + ", Size (" + QString::number(m_fImageMetricWidth) + " " + m_metricUnit.symbol()
@@ -672,8 +689,8 @@ void CDrawingSize::traceValues(CMethodTracer& mthTracer, EMethodDir i_methodDir)
 {
     QString strMthLog = QString(i_methodDir == EMethodDir::Enter ? "-+ " : "+- ")
         +  m_eDimensionUnit.toString()
-        + ", Paper (" + m_eNormedPaperSize.toString()
-            + ", " + m_eNormedPaperOrientation.toString() + ")"
+        + ", NormedPaperSize: " + QString(m_eNormedPaperSize.isValid() ? m_eNormedPaperSize.toString() : "---")
+        + ", NormedOrientation: " + QString(m_eNormedPaperOrientation.isValid() ? m_eNormedPaperOrientation.toString() : "---")
         + ", Scale (" + QString::number(m_iMetricScaleFactorDividend)
             + "/" + QString::number(m_iMetricScaleFactorDivisor) + ")"
         + ", Size (" + QString::number(m_fImageMetricWidth) + " " + m_metricUnit.symbol()

@@ -42,6 +42,7 @@ may result in using the software modules.
 #include "ZSDraw/Drawing/ZSDrawingSize.h"
 #include "ZSDraw/Drawing/ZSDrawUnits.h"
 #include "ZSSys/ZSSysCommon.h"
+#include "ZSSysGUI/ZSSysGUIMathScaleDivLinesMetrics.h"
 
 class QXmlStreamWriter;
 class QXmlStreamAttributes;
@@ -128,6 +129,9 @@ public: // instance methods
 public: // instance methods
     void setGridSettings( const CDrawGridSettings& i_settings);
     CDrawGridSettings gridSettings() const;
+public: // instance methods
+    const ZS::System::GUI::Math::CScaleDivLinesMetrics& divLinesMetricsX() const { return m_divLinesMetricsX; }
+    const ZS::System::GUI::Math::CScaleDivLinesMetrics& divLinesMetricsY() const { return m_divLinesMetricsY; }
 public: // instance methods
     ZS::System::CIdxTree* getGraphObjsIdxTree() { return m_pGraphObjsIdxTree; }
 public: // instance methods
@@ -267,13 +271,14 @@ protected slots:
     void onGraphObjsIdxTreeEntryMoved( const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree, const QString& i_strKeyInTreeOfTargetBranch );
     void onGraphObjsIdxTreeEntryRenamed( const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree, const QString& i_strOrigName );
 protected: // auxiliary methods
-    void drawGrid(QPainter* i_pPainter);
+    void paintGrid(QPainter* i_pPainter);
+    //void paintLabels(QPainter* i_pPainter);
 protected: // auxiliary methods
     void raiseErrorAttributeNotDefined(QXmlStreamReader& i_xmlStreamReader, const QString& i_strElemName, const QString& i_strAttrName) const;
     void raiseErrorAttributeOutOfRange(QXmlStreamReader& i_xmlStreamReader, const QString& i_strElemName, const QString& i_strAttrName, const QString& i_strAttrVal) const;
 protected: // auxiliary methods
     CEnumDrawingDimensionUnit getDimensionUnit(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, const CEnumDrawingDimensionUnit& i_eDefaultVal = EDrawingDimensionUnit::Pixels) const;
-    CEnumNormedPaperSize getNormedPaperSize(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, const CEnumNormedPaperSize& i_eDefaultVal = ENormedPaperSize::Undefined) const;
+    CEnumNormedPaperSize getNormedPaperSize(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, const CEnumNormedPaperSize& i_eDefaultVal = CEnumNormedPaperSize()) const;
     ZS::System::CEnumOrientation getOrientation(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, const ZS::System::CEnumOrientation& i_eDefaultVal = ZS::System::CEnumOrientation()) const;
     CEnumLineStyle getLineStyle(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, const CEnumLineStyle& i_eDefaultVal = ELineStyle::SolidLine) const;
     ETextSize getTextSize(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, ETextSize i_eDefaultVal = ETextSize11) const;
@@ -286,6 +291,7 @@ protected: // auxiliary methods
     bool getBoolVal(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, bool i_bDefaultVal = false) const;
     int getIntVal(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, int iValDefault = 0) const;
     std::pair<int, int> getIntPair(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, const QString& i_strDelimiter = ":", bool i_bAttrIsMandatory = true, const std::pair<int, int>& i_valDefault = std::make_pair(0, 0)) const;
+    double getDoubleVal(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, double fValDefault = 0.0) const;
 protected: // auxiliary methods (trace emitting signals)
     void emit_drawingSizeChanged( const ZS::Draw::CDrawingSize& i_size );
     void emit_gridSettingsChanged( const ZS::Draw::CDrawGridSettings& i_settings );
@@ -306,6 +312,8 @@ protected: // auxiliary methods (trace emitting signals)
 protected: // instance members
     CDrawingSize m_drawingSize;
     CDrawGridSettings m_gridSettings;
+    ZS::System::GUI::Math::CScaleDivLinesMetrics m_divLinesMetricsX;
+    ZS::System::GUI::Math::CScaleDivLinesMetrics m_divLinesMetricsY;
     CDrawSettings m_drawSettings;
     ZS::System::CEnumMode m_mode;
     CEnumEditTool m_editTool;

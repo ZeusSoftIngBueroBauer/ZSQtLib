@@ -92,15 +92,17 @@ public: // instance methods (drawing area)
     //void setViewportMargins( int i_iLeft, int i_iTop, int i_iRight, int i_iBottom );
     //void setViewportMargins( const QMargins& i_margins );
 public: // overridables of base class QWidget
-    virtual void mousePressEvent( QMouseEvent* i_pEv );
-    virtual void mouseMoveEvent( QMouseEvent* i_pEv );
-    virtual void mouseReleaseEvent( QMouseEvent* i_pEv );
-    virtual void mouseDoubleClickEvent( QMouseEvent* i_pEv );
+    virtual void mousePressEvent( QMouseEvent* i_pEv ) override;
+    virtual void mouseMoveEvent( QMouseEvent* i_pEv ) override;
+    virtual void mouseReleaseEvent( QMouseEvent* i_pEv ) override;
+    virtual void mouseDoubleClickEvent( QMouseEvent* i_pEv ) override;
 public: // overridables of base class QWidget
-    virtual void keyPressEvent( QKeyEvent* i_pEv );
-    virtual void keyReleaseEvent( QKeyEvent* i_pEv );
+    virtual void keyPressEvent( QKeyEvent* i_pEv ) override;
+    virtual void keyReleaseEvent( QKeyEvent* i_pEv ) override;
 protected: // overridables of base class QGraphicsView
-    virtual void paintEvent( QPaintEvent* i_pEv );
+    virtual void paintEvent( QPaintEvent* i_pEv ) override;
+protected: // auxiliary methods
+    void paintLabels(QPainter* i_pPainter);
 protected slots:
     void onSceneDrawingSizeChanged( const ZS::Draw::CDrawingSize& i_size );
     void onSceneGridSettingsChanged( const ZS::Draw::CDrawGridSettings& i_settings );

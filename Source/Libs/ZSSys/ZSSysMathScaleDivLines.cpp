@@ -147,8 +147,8 @@ int CScaleDivLines::getPrecision2ShowUniqueNumbers(
         Minimum scale value in world coordinates (e.g. 0.0).
     @param i_fScaleMaxVal [in]
         Maximum scale value in world coordinates (e.g. 100.0).
-    @param i_iScaleRangePix [in]
-        Number of pixels available for the scale (e.g. 1000).
+    @param i_fScaleRangePix [in]
+        Number of pixels available for the scale (e.g. 1000.0).
     @param i_fDivLineDistMinVal [in]
         Minimum distance between two division lines in world coordinates (e.g. 10.0).
     @param i_iDivLineDistMinPix [in]
@@ -172,7 +172,7 @@ int CScaleDivLines::getPrecision2ShowUniqueNumbers(
 int CScaleDivLines::getDivLines4LinSpacing(
     double  i_fScaleMinVal,
     double  i_fScaleMaxVal,
-    int     i_iScaleRangePix,
+    double  i_fScaleRangePix,
     double  i_fDivLineDistMinVal,
     int     i_iDivLineDistMinPix,
     bool    i_bUseDivLineDistValDecimalFactor25,
@@ -187,7 +187,7 @@ int CScaleDivLines::getDivLines4LinSpacing(
     if (areMethodCallsActive(i_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Scale {Min: " + QString::number(i_fScaleMinVal)
                      + ", Max: " + QString::number(i_fScaleMaxVal)
-                     + ", RangePix: " + QString::number(i_iScaleRangePix) + "}"
+                     + ", RangePix: " + QString::number(i_fScaleRangePix) + "}"
                      + ", DivLineDist {MinVal: " + QString::number(i_fDivLineDistMinVal)
                      + ", MinPix: " + QString::number(i_iDivLineDistMinPix)
                      + ", UseDecFactor25: " + bool2Str(i_bUseDivLineDistValDecimalFactor25) + "}";
@@ -214,17 +214,17 @@ int CScaleDivLines::getDivLines4LinSpacing(
     }
     if (o_pfDivLineDistPix != nullptr)
     {
-        *o_pfDivLineDistPix = i_iScaleRangePix;
+        *o_pfDivLineDistPix = i_fScaleRangePix;
     }
 
     double fScaleRangeVal = i_fScaleMaxVal - i_fScaleMinVal;
 
-    if (fScaleRangeVal > 0.0 && i_iScaleRangePix > 1 && i_iDivLineDistMinPix > 1)
+    if (fScaleRangeVal > 0.0 && i_fScaleRangePix > 1.0 && i_iDivLineDistMinPix > 1)
     {
-        double fScaleRangeFacPixDivVal = i_iScaleRangePix/fScaleRangeVal;
+        double fScaleRangeFacPixDivVal = i_fScaleRangePix/fScaleRangeVal;
 
         // Maximum possible count of grid lines:
-        int iDivLineCountMax = static_cast<int>(static_cast<double>(i_iScaleRangePix)/static_cast<double>(i_iDivLineDistMinPix)) + 1;
+        int iDivLineCountMax = static_cast<int>(i_fScaleRangePix/static_cast<double>(i_iDivLineDistMinPix)) + 1;
 
         // On dividing the pixel range by the maximum possible count of grid lines the
         // distance between two grid lines would be:
@@ -285,7 +285,7 @@ int CScaleDivLines::getDivLines4LinSpacing(
 
         // Range between first and last grid line:
         double fDivLineRangeVal = fDivLineLastVal - fDivLineFirstVal;
-        double fDivLineRangePix = i_iScaleRangePix - fDivLineDistFirstPix - fDivLineDistLastPix; //lint !e834
+        double fDivLineRangePix = i_fScaleRangePix - fDivLineDistFirstPix - fDivLineDistLastPix; //lint !e834
         iDivLineCount = static_cast<int>(fDivLineRangeVal/fDivLineDistVal) + 1;
 
         double fDivLineDistPix = 0.0;
@@ -376,15 +376,11 @@ int CScaleDivLines::getDivLines4LinSpacing(
         if( i_fScaleMinVal < 0.0 && i_fScaleMaxVal > 0.0 )
         {
             // ... there should be always a line at 0.0 ...
-            int    iDivLineCountBelowZero;
-            double fDivLineOffsetVal;
-            double fDivLineOffsetPix;
-
-            iDivLineCountBelowZero = static_cast<int>(-i_fScaleMinVal/fDivLineDistVal);
-            fDivLineOffsetVal      = -(i_fScaleMinVal + iDivLineCountBelowZero*fDivLineDistVal);
-            fDivLineOffsetPix      = fScaleRangeFacPixDivVal*fDivLineOffsetVal;
-            fDivLineFirstVal       = i_fScaleMinVal + fDivLineOffsetVal;
-            fDivLineDistFirstPix   = fDivLineOffsetPix;
+            int iDivLineCountBelowZero = static_cast<int>(-i_fScaleMinVal/fDivLineDistVal);
+            double fDivLineOffsetVal = -(i_fScaleMinVal + iDivLineCountBelowZero*fDivLineDistVal);
+            double fDivLineOffsetPix = fScaleRangeFacPixDivVal*fDivLineOffsetVal;
+            fDivLineFirstVal = i_fScaleMinVal + fDivLineOffsetVal;
+            fDivLineDistFirstPix = fDivLineOffsetPix;
         }
 
         iDivLineCount = 0;
@@ -489,8 +485,8 @@ CScaleDivLines::CScaleDivLines(
     m_fScaleMin(0.0),
     m_fScaleMax(0.0),
     m_fScaleRes(0.0),
-    m_iMin_px(0),
-    m_iMax_px(0),
+    m_fMin_px(0.0),
+    m_fMax_px(0.0),
     m_ariDivLinesDistMin_px(CEnumDivLineLayer::count(), 0),
     m_bDivLinesCalculated(false),
     m_ariDivLinesCount(CEnumDivLineLayer::count(), 0),
@@ -550,8 +546,8 @@ CScaleDivLines::~CScaleDivLines()
     m_fScaleMin = 0.0;
     m_fScaleMax = 0.0;
     m_fScaleRes = 0.0;
-    m_iMin_px = 0;
-    m_iMax_px = 0;
+    m_fMin_px = 0.0;
+    m_fMax_px = 0.0;
     //m_ariDivLinesDistMin_px.clear();
     m_bDivLinesCalculated = false;
     //m_ariDivLinesCount.clear();
@@ -591,8 +587,8 @@ CScaleDivLines& CScaleDivLines::operator = (const CScaleDivLines& i_other)
     m_fScaleMin = i_other.m_fScaleMin;
     m_fScaleMax = i_other.m_fScaleMax;
     m_fScaleRes = i_other.m_fScaleRes;
-    m_iMin_px = i_other.m_iMin_px;
-    m_iMax_px = i_other.m_iMax_px;
+    m_fMin_px = i_other.m_fMin_px;
+    m_fMax_px = i_other.m_fMax_px;
     m_ariDivLinesDistMin_px = i_other.m_ariDivLinesDistMin_px;
     m_bDivLinesCalculated = i_other.m_bDivLinesCalculated;
     m_ariDivLinesCount = i_other.m_ariDivLinesCount;
@@ -680,15 +676,15 @@ bool CScaleDivLines::setSpacing(const CEnumSpacing& i_eSpacing)
           and the trailing digits to 3.
         - A resolution of 10.0 sets the number of leading digits to 2
           and the trailing digits to 1.
-    @param i_iMin_px [in]
+    @param i_fMin_px [in]
         Minimum of the scale in pixels.
-    @param i_iMax_px [in]
+    @param i_fMax_px [in]
         Maximum of the scale in pixels.
 
     @return true if the value has been changed and the division lines need to
             be recalculated, false otherwise.
 */
-bool CScaleDivLines::setScale(double i_fMin, double i_fMax, double i_fRes, int i_iMin_px, int i_iMax_px)
+bool CScaleDivLines::setScale(double i_fMin, double i_fMax, double i_fRes, double i_fMin_px, double i_fMax_px)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -696,8 +692,8 @@ bool CScaleDivLines::setScale(double i_fMin, double i_fMax, double i_fRes, int i
         strMthInArgs = "Min: " + QString::number(i_fMin) +
                      ", Max: " + QString::number(i_fMax) +
                      ", Res: " + QString::number(i_fRes) +
-                     ", Min: " + QString::number(i_iMin_px) + " px";
-                     ", Max: " + QString::number(i_iMax_px) + " px";
+                     ", Min: " + QString::number(i_fMin_px) + " px";
+                     ", Max: " + QString::number(i_fMax_px) + " px";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -707,13 +703,13 @@ bool CScaleDivLines::setScale(double i_fMin, double i_fMax, double i_fRes, int i
 
     bool bChanged = false;
     if (m_fScaleMin != i_fMin || m_fScaleMax != i_fMax || m_fScaleRes != i_fRes
-     || m_iMax_px != i_iMax_px|| m_iMin_px != i_iMin_px)
+     || m_fMax_px != i_fMax_px|| m_fMin_px != i_fMin_px)
     {
         m_fScaleMin = i_fMin;
         m_fScaleMax = i_fMax;
         m_fScaleRes = i_fRes;
-        m_iMax_px = i_iMax_px;
-        m_iMin_px = i_iMin_px;
+        m_fMax_px = i_fMax_px;
+        m_fMin_px = i_fMin_px;
         bChanged = true;
         m_bDivLinesCalculated = false;
     }
@@ -768,7 +764,7 @@ bool CScaleDivLines::setScaleMin(double i_fMin)
     if the value changed and the update method need to be called afterwards
     to recalculate the division lines.
 
-    @param i_fMin [in]
+    @param i_fMax [in]
         Maximum scale value.
 
     @return true if the value has been changed and the division lines need to
@@ -850,18 +846,18 @@ bool CScaleDivLines::setScaleRes(double i_fRes)
     if the value changed and the update method need to be called afterwards
     to recalculate the division lines.
 
-    @param i_iMin_px [in]
+    @param i_fMin_px [in]
         Minimum scale in pixels.
 
     @return true if the value has been changed and the division lines need to
             be recalculated, false otherwise.
 */
-bool CScaleDivLines::setScaleMinInPix(int i_iMin_px)
+bool CScaleDivLines::setScaleMinInPix(double i_fMin_px)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString::number(i_iMin_px);
+        strMthInArgs = QString::number(i_fMin_px);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -870,8 +866,8 @@ bool CScaleDivLines::setScaleMinInPix(int i_iMin_px)
         /* strAddInfo   */ strMthInArgs );
 
     bool bChanged = false;
-    if (m_iMin_px != i_iMin_px) {
-        m_iMin_px = i_iMin_px;
+    if (m_fMin_px != i_fMin_px) {
+        m_fMin_px = i_fMin_px;
         bChanged = true;
         m_bDivLinesCalculated = false;
     }
@@ -888,18 +884,18 @@ bool CScaleDivLines::setScaleMinInPix(int i_iMin_px)
     if the value changed and the update method need to be called afterwards
     to recalculate the division lines.
 
-    @param i_iMax_px [in]
+    @param i_fMax_px [in]
         Maximum scale in pixels.
 
     @return true if the value has been changed and the division lines need to
             be recalculated, false otherwise.
 */
-bool CScaleDivLines::setScaleMaxInPix(int i_iMax_px)
+bool CScaleDivLines::setScaleMaxInPix(double i_fMax_px)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString::number(i_iMax_px);
+        strMthInArgs = QString::number(i_fMax_px);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -908,8 +904,8 @@ bool CScaleDivLines::setScaleMaxInPix(int i_iMax_px)
         /* strAddInfo   */ strMthInArgs );
 
     bool bChanged = false;
-    if (m_iMax_px != i_iMax_px) {
-        m_iMax_px = i_iMax_px;
+    if (m_fMax_px != i_fMax_px) {
+        m_fMax_px = i_fMax_px;
         bChanged = true;
         m_bDivLinesCalculated = false;
     }
@@ -927,18 +923,18 @@ bool CScaleDivLines::setScaleMaxInPix(int i_iMax_px)
     if the value changed and the update method need to be called afterwards
     to recalculate the division lines.
 
-    @param i_iRange_px [in]
+    @param i_fRange_px [in]
         Range of the scale in pixels.
 
     @return true if the value has been changed and the division lines need to
             be recalculated, false otherwise.
 */
-bool CScaleDivLines::setScaleRangeInPix(int i_iRange_px)
+bool CScaleDivLines::setScaleRangeInPix(double i_fRange_px)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString::number(i_iRange_px);
+        strMthInArgs = QString::number(i_fRange_px);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -947,9 +943,9 @@ bool CScaleDivLines::setScaleRangeInPix(int i_iRange_px)
         /* strAddInfo   */ strMthInArgs );
 
     bool bChanged = false;
-    int iRangePrev_px = scaleRangeInPix();
-    if (iRangePrev_px != i_iRange_px) {
-        m_iMax_px = m_iMin_px + i_iRange_px + 1;
+    double fRangePrev_px = scaleRangeInPix();
+    if (fRangePrev_px != i_fRange_px) {
+        m_fMax_px = m_fMin_px + i_fRange_px;
         bChanged = true;
         m_bDivLinesCalculated = false;
     }
@@ -1036,7 +1032,7 @@ bool CScaleDivLines::isValid() const
     {
         bScaleValid = false;
     }
-    else if( m_fScaleRes <= 0.0 )
+    else if( m_fScaleRes < 0.0 )
     {
         bScaleValid = false;
     }
@@ -1128,10 +1124,10 @@ double CScaleDivLines::scaleRes() const
 
     @Return Minimum scale in pixels.
 */
-int CScaleDivLines::scaleMinInPix() const
+double CScaleDivLines::scaleMinInPix() const
 //------------------------------------------------------------------------------
 {
-    return m_iMin_px;
+    return m_fMin_px;
 }
 
 //------------------------------------------------------------------------------
@@ -1139,10 +1135,10 @@ int CScaleDivLines::scaleMinInPix() const
 
     @Return Maximum scale in pixels.
 */
-int CScaleDivLines::scaleMaxInPix() const
+double CScaleDivLines::scaleMaxInPix() const
 //------------------------------------------------------------------------------
 {
-    return m_iMax_px;
+    return m_fMax_px;
 }
 
 //------------------------------------------------------------------------------
@@ -1150,10 +1146,10 @@ int CScaleDivLines::scaleMaxInPix() const
 
     @Return Range in pixels.
 */
-int CScaleDivLines::scaleRangeInPix() const
+double CScaleDivLines::scaleRangeInPix() const
 //------------------------------------------------------------------------------
 {
-    return abs(m_iMax_px - m_iMin_px) + 1;
+    return abs(m_fMax_px - m_fMin_px);
 }
 
 /*==============================================================================
@@ -1224,9 +1220,9 @@ bool CScaleDivLines::update()
         // Calculate main and sub division lines
         //--------------------------------------
 
-        int iRange_px = scaleRangeInPix();
+        double fRange_px = scaleRangeInPix();
 
-        if( iRange_px <= 1 || m_ariDivLinesDistMin_px[EDivLineLayerMain] < 2 )
+        if( fRange_px <= 1.0 || m_ariDivLinesDistMin_px[EDivLineLayerMain] < 2 )
         {
         }
         else if( !isValid() )
@@ -1237,7 +1233,7 @@ bool CScaleDivLines::update()
             m_ararfDivLinesVals[EDivLineLayerMain][1] = m_fScaleMax;
             m_ararfDivLines_px[EDivLineLayerMain].resize(m_ariDivLinesCount[EDivLineLayerMain]);
             m_ararfDivLines_px[EDivLineLayerMain][0] = 0;
-            m_ararfDivLines_px[EDivLineLayerMain][1] = iRange_px - 1;
+            m_ararfDivLines_px[EDivLineLayerMain][1] = fRange_px;
         }
         else
         {
@@ -1366,7 +1362,7 @@ double CScaleDivLines::getDivLineVal(
 
     @return Value in pixel coordinates of the division line.
 */
-int CScaleDivLines::getDivLineInPix(
+double CScaleDivLines::getDivLineInPix(
     const CEnumDivLineLayer& i_eLayer, int i_idxDivLine) const
 //------------------------------------------------------------------------------
 {
@@ -1414,14 +1410,14 @@ double CScaleDivLines::getDivLineDistVal(
 
     @return Distance in pixel coordinates between the two division lines.
 */
-int CScaleDivLines::getDivLineDistInPix(
+double CScaleDivLines::getDivLineDistInPix(
     const CEnumDivLineLayer& i_eLayer, int i_idxDivLine1, int i_idxDivLine2) const
 //------------------------------------------------------------------------------
 {
     double fValDist_px = 
         m_ararfDivLines_px[i_eLayer.enumeratorAsInt()][i_idxDivLine2]
       - m_ararfDivLines_px[i_eLayer.enumeratorAsInt()][i_idxDivLine1];
-    return Math::round2Nearest(fValDist_px);
+    return Math::round2Nearest(fValDist_px, 0);
 }
 
 /*==============================================================================
@@ -1436,26 +1432,26 @@ public: // instance methods (converting values)
 
     @return Value in pixel coordinates of the given value.
 */
-int CScaleDivLines::getValInPix(double i_fVal) const
+double CScaleDivLines::getValInPix(double i_fVal) const
 //------------------------------------------------------------------------------
 {
-    double fPix = static_cast<double>(m_iMin_px);
+    double fPix = m_fMin_px;
 
     if (isValid())
     {
         double fVal = i_fVal;
 
-        int iRange_px = scaleRangeInPix();
+        double fRange_px = scaleRangeInPix();
 
         // At the minimum scale value ..
         if (fVal == m_fScaleMin)
         {
-            fPix = static_cast<double>(m_iMin_px);
+            fPix = m_fMin_px;
         }
         // At the maximum scale value ..
         else if( fVal == m_fScaleMax )
         {
-            fPix = static_cast<double>(m_iMax_px);
+            fPix = m_fMax_px;
         }
         // Somewhere between minimum and maximum scale ..
         else
@@ -1471,7 +1467,7 @@ int CScaleDivLines::getValInPix(double i_fVal) const
             }
 
             double fScaleValRange = fabs(fScaleValMax-fScaleValMin);
-            double fPixRes = (iRange_px-1) / fScaleValRange;
+            double fPixRes = fRange_px / fScaleValRange;
 
             bool bDivLineHit = false;
 
@@ -1487,13 +1483,13 @@ int CScaleDivLines::getValInPix(double i_fVal) const
 
                         if( fVal >= (fDivLineVal1-DBL_EPSILON) && fVal <= (fDivLineVal1+DBL_EPSILON) )
                         {
-                            fPix = static_cast<int>(m_ararfDivLines_px[iLayer][idxDivLine]);
+                            fPix = m_ararfDivLines_px[iLayer][idxDivLine];
                             bDivLineHit = true;
                             break;
                         }
                         else if( fVal >= (fDivLineVal2-DBL_EPSILON) && fVal <= (fDivLineVal2+DBL_EPSILON) )
                         {
-                            fPix = static_cast<int>(m_ararfDivLines_px[iLayer][idxDivLine+1]);
+                            fPix = m_ararfDivLines_px[iLayer][idxDivLine+1];
                             bDivLineHit = true;
                             break;
                         }
@@ -1509,7 +1505,7 @@ int CScaleDivLines::getValInPix(double i_fVal) const
 
                     if( fVal == fDivLineVal1 )
                     {
-                        fPix = static_cast<int>(m_ararfDivLines_px[iLayer][0]);
+                        fPix = m_ararfDivLines_px[iLayer][0];
                         bDivLineHit = true;
                     }
                 }
@@ -1531,12 +1527,28 @@ int CScaleDivLines::getValInPix(double i_fVal) const
                 {
                     case EScaleDir::X:
                     {
-                        fPix = static_cast<double>(m_iMin_px) + fPixRes*(fVal-fScaleValMin); //lint !e834
+                        fPix = m_fMin_px + fPixRes*(fVal-fScaleValMin);
                         break;
                     }
                     case EScaleDir::Y:
                     {
-                        fPix = static_cast<double>(m_iMin_px) - fPixRes*(fVal-fScaleValMin); //lint !e834
+                        if (m_fMin_px < m_fMax_px) {
+                            // Orientation from top to bottom like in pixel drawing:
+                            // The origin is at the top left corner.
+                            // XScaleMin = XMin_px, XScaleMax = XMax_px
+                            // YScaleMin = XMin_px, YScaleMax = XMax_px
+                            // The greater the value, the greater the pixel coordinate on the screen.
+                            fPix = m_fMin_px + fPixRes*(fVal-fScaleValMin);
+                        }
+                        else {
+                            // Orientation from bottom to top like in diagrams or in drawings
+                            // based on metric units:
+                            // The origin is at the bottom left corner.
+                            // XScaleMin = XMin_px, XScaleMax = XMax_px
+                            // YScaleMin = XMax_px, YScaleMax = XMin_px
+                            // The greater the value, the less the pixel coordinate on the screen.
+                            fPix = m_fMin_px - fPixRes*(fVal-fScaleValMin);
+                        }
                         break;
                     }
                     default:
@@ -1578,9 +1590,9 @@ double CScaleDivLines::getVal(double i_fPix) const
             fScaleValMax = log10(fScaleValMax);
         }
 
-        int iRange_px = scaleRangeInPix();
+        double fRange_px = scaleRangeInPix();
         double fScaleValRange = fabs(fScaleValMax-fScaleValMin);
-        double fPixRes = fScaleValRange / iRange_px;
+        double fPixRes = fScaleValRange / fRange_px;
 
         // At the minimum scale value ..
         if( i_fPix == 0.0 )
@@ -1588,7 +1600,7 @@ double CScaleDivLines::getVal(double i_fPix) const
             fVal = fScaleValMin;
         }
         // At the maximum scale value ..
-        else if( i_fPix == static_cast<double>(m_iMax_px) )
+        else if( i_fPix == m_fMax_px )
         {
             fVal = fScaleValMax;
         }
@@ -1632,7 +1644,7 @@ double CScaleDivLines::getVal(double i_fPix) const
 
                     if( i_fPix == fDivLinePix1 )
                     {
-                        fVal = static_cast<int>(m_ararfDivLinesVals[iLayer][0]);
+                        fVal = m_ararfDivLinesVals[iLayer][0];
                         bDivLineHit = true;
                     }
                 }
@@ -1650,12 +1662,12 @@ double CScaleDivLines::getVal(double i_fPix) const
                 {
                     case EScaleDir::X:
                     {
-                        fVal = fScaleValMin + fPixRes*(i_fPix-static_cast<double>(m_iMin_px)+1);
+                        fVal = fScaleValMin + fPixRes*(i_fPix-m_fMin_px);
                         break;
                     }
                     case EScaleDir::Y:
                     {
-                        fVal = fScaleValMin + fPixRes*(static_cast<double>(m_iMin_px)-i_fPix+1);
+                        fVal = fScaleValMin + fPixRes*(m_fMin_px-i_fPix);
                         break;
                     }
                     default:
@@ -1737,7 +1749,7 @@ void CScaleDivLines::updateLinearSpacing()
     QVector<double> arfDivLineDistVal(CEnumDivLineLayer::count(), 0.0);
     QVector<double> arfDivLineDistPix(CEnumDivLineLayer::count(), 0.0);
 
-    int iRange_px = scaleRangeInPix();
+    double fRange_px = scaleRangeInPix();
 
     for( int iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
     {
@@ -1747,7 +1759,7 @@ void CScaleDivLines::updateLinearSpacing()
             ariDivLineCountTmp[iLayer] = getDivLines4LinSpacing(
                 /* fScaleMinVal          */ fDivLineDistValMin,
                 /* fScaleMaxVal          */ fDivLineDistValMax,
-                /* iScaleRangePix        */ iRange_px,
+                /* fScaleRangePix        */ fRange_px,
                 /* fDivLineDistMinVal    */ 0.0,
                 /* iDivLineDistMinPix    */ m_ariDivLinesDistMin_px[iLayer],
                 /* bUseDivLineDecFac25   */ true,
@@ -1966,7 +1978,7 @@ void CScaleDivLines::updateLogarithmicSpacing()
         ariDivLineCountMax[EDivLineLayerMain]--;
     }
 
-    int iRange_px = scaleRangeInPix();
+    double fRange_px = scaleRangeInPix();
 
     // If at least one main grid line is visible ...
     if( ariDivLineCountMax[EDivLineLayerMain] > 0 )
@@ -1974,23 +1986,23 @@ void CScaleDivLines::updateLogarithmicSpacing()
         // Prepare logarithmic scale values for linear spacing:
         // First assume that the value distance between the main grid lines is 1.0
         // (the lowest possible value for main grid lines).
-        ariDivLineDistMinPix[EDivLineLayerMain] = static_cast<int>(static_cast<double>(iRange_px) / fScaleRangeValLog);
+        ariDivLineDistMinPix[EDivLineLayerMain] = static_cast<int>(fRange_px / fScaleRangeValLog);
         // If the distance of 1.0 between the main grid lines is too small ..
         if( ariDivLineDistMinPix[EDivLineLayerMain] < m_ariDivLinesDistMin_px[EDivLineLayerMain] )
         {
             ariDivLineDistMinPix[EDivLineLayerMain] = m_ariDivLinesDistMin_px[EDivLineLayerMain];
         }
         // If the distance of 1.0 between the main grid lines is too big ..
-        else if( ariDivLineDistMinPix[EDivLineLayerMain] > iRange_px / 2 )
+        else if( ariDivLineDistMinPix[EDivLineLayerMain] > fRange_px / 2.0 )
         {
-            ariDivLineDistMinPix[EDivLineLayerMain] = iRange_px / 2;
+            ariDivLineDistMinPix[EDivLineLayerMain] = fRange_px / 2.0;
         }
 
         // Calculate optimized distance between two main grid lines:
         ariDivLineCount[EDivLineLayerMain] = getDivLines4LinSpacing(
             /* fScaleMinVal          */ fScaleMinValLog,
             /* fScaleMaxVal          */ fScaleMaxValLog,
-            /* iScaleRangePix        */ iRange_px,
+            /* iScaleRangePix        */ fRange_px,
             /* fDivLineDistMinVal    */ 1.0,
             /* iDivLineDistMinPix    */ ariDivLineDistMinPix[EDivLineLayerMain],
             /* bUseDivLineDecFac25   */ false,
@@ -2034,7 +2046,7 @@ void CScaleDivLines::updateLogarithmicSpacing()
             ariDivLineCountTmp[EDivLineLayerSub] = getDivLines4LinSpacing(
                 /* fScaleMinVal          */ arfDivLineFirstValLog[EDivLineLayerMain],
                 /* fScaleMaxVal          */ arfDivLineFirstValLog[EDivLineLayerMain]+arfDivLineDistValLog[EDivLineLayerMain],
-                /* iScaleRangePix        */ static_cast<int>(arfDivLineDistPix[EDivLineLayerMain]),
+                /* fScaleRangePix        */ arfDivLineDistPix[EDivLineLayerMain],
                 /* fDivLineDistMinVal    */ 1.0,
                 /* iDivLineDistMinPix    */ m_ariDivLinesDistMin_px[EDivLineLayerSub],
                 /* bUseDivLineDecFac25   */ false,
@@ -2131,7 +2143,7 @@ void CScaleDivLines::updateLogarithmicSpacing()
             // one decade.
 
             // Get the extended range:
-            fScaleRangePixDec = iRange_px / fScaleRangeValLog;
+            fScaleRangePixDec = fRange_px / fScaleRangeValLog;
         }
 
         // Please note that we cannot be sure that if we would just draw part of

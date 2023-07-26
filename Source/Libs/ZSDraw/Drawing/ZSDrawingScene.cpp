@@ -132,6 +132,8 @@ CDrawingScene::CDrawingScene( QObject* i_pObjParent ) :
     QGraphicsScene(i_pObjParent),
     m_drawingSize("DrawingScene"),
     m_gridSettings("DrawingScene"),
+    m_divLinesMetricsX("DrawingScene", EScaleDir::X),
+    m_divLinesMetricsY("DrawingScene", EScaleDir::Y),
     m_drawSettings(),
     m_mode(EMode::Undefined),
     m_editTool(EEditTool::None),
@@ -252,7 +254,11 @@ CDrawingScene::~CDrawingScene()
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjMouseMoveEvent);
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjPaintEvent);
 
-    //m_drawingScene;
+    //m_drawingSize;
+    //m_gridSettings;
+    //m_divLinesMetricsX;
+    //m_divLinesMetricsY;
+    //m_drawSettings;
     m_mode = static_cast<ZS::System::EMode>(0);
     m_editTool = static_cast<EEditTool>(0);
     m_editMode = static_cast<EEditMode>(0);
@@ -296,11 +302,39 @@ void CDrawingScene::setDrawingSize( const CDrawingSize& i_size)
         /* strMethod    */ "setDrawingSize",
         /* strAddInfo   */ strMthInArgs );
 
-    if( m_drawingSize != i_size )
+    if (m_drawingSize != i_size)
     {
         m_drawingSize = i_size;
         QRectF rect(QPointF(0.0, 0.0), m_drawingSize.imageSizeInPixels());
         setSceneRect(rect);
+        if (m_drawingSize.dimensionUnit() == EDrawingDimensionUnit::Metric) {
+            // Metric units: the origin is at the bottom left corner.
+            // XScaleMin = XMin_px, XScaleMax = XMax_px
+            // YScaleMin = XMax_px, YScaleMax = XMin_px
+            // The greater the value, the less the pixel coordinate on the screen.
+            m_divLinesMetricsX.setScale(
+                0.0, m_drawingSize.metricImageWidth().getVal(), 0.0,
+                0, m_drawingSize.imageWidthInPixels());
+            // The Y scale direction is from bottom to top.
+            m_divLinesMetricsY.setScale(
+                0.0, m_drawingSize.metricImageHeight().getVal(), 0.0,
+                m_drawingSize.imageHeightInPixels(), 0);
+        }
+        else {
+            // Pixel drawing: the origin is at the top left corner:
+            // XScaleMin = XMin_px, XScaleMax = XMax_px
+            // YScaleMin = XMin_px, YScaleMax = XMax_px
+            // The greater the value, the greater the pixel coordinate on the screen.
+            m_divLinesMetricsX.setScale(
+                0.0, m_drawingSize.imageWidthInPixels(), 0.0,
+                0, m_drawingSize.imageWidthInPixels());
+            // The Y scale direction is from top to bottom.
+            m_divLinesMetricsY.setScale(
+                0.0, m_drawingSize.imageHeightInPixels(), 0.0,
+                0, m_drawingSize.imageHeightInPixels());
+        }
+        m_divLinesMetricsX.update();
+        m_divLinesMetricsY.update();
         update();
         emit_drawingSizeChanged(m_drawingSize);
     }
@@ -334,7 +368,23 @@ void CDrawingScene::setGridSettings( const CDrawGridSettings& i_settings)
     if( m_gridSettings != i_settings )
     {
         m_gridSettings = i_settings;
+
+        m_divLinesMetricsX.setDivLinesDistMinInPix(EDivLineLayer::Main, 10);
+        m_divLinesMetricsX.setFont(m_gridSettings.labelsFont());
+        //m_divLinesMetricsX.setDigitsCountMax(0);
+        //m_divLinesMetricsX.setUseEngineeringFormat(false);
+        //m_divLinesMetricsX.setDivLineLabelsMinTextExtent(QSize(0, 0));
+        m_divLinesMetricsX.update();
+
+        m_divLinesMetricsY.setDivLinesDistMinInPix(EDivLineLayer::Main, 10);
+        m_divLinesMetricsY.setFont(m_gridSettings.labelsFont());
+        //m_divLinesMetricsY.setDigitsCountMax(0);
+        //m_divLinesMetricsY.setUseEngineeringFormat(false);
+        //m_divLinesMetricsY.setDivLineLabelsMinTextExtent(QSize(0, 0));
+        m_divLinesMetricsY.update();
+
         update();
+
         emit_gridSettingsChanged(m_gridSettings);
     }
 }
@@ -421,9 +471,9 @@ SErrResultInfo CDrawingScene::load( const QString& i_strFileName )
                         if (!xmlStreamReader.hasError()) {
                             drawingSize.setDimensionUnit(dimensionUnit);
                             if (dimensionUnit == EDrawingDimensionUnit::Pixels) {
-                                int cxWidth_px = getIntVal(
+                                double cxWidth_px = getDoubleVal(
                                     xmlStreamReader, xmlStreamAttrs, strElemName, c_strXmlAttrWidth);
-                                int cyHeight_px = getIntVal(
+                                double cyHeight_px = getDoubleVal(
                                     xmlStreamReader, xmlStreamAttrs, strElemName, c_strXmlAttrHeight);
                                 if (!xmlStreamReader.hasError()) {
                                     drawingSize.setImageSize(
@@ -473,14 +523,14 @@ SErrResultInfo CDrawingScene::load( const QString& i_strFileName )
                         if (!xmlStreamReader.hasError()) {
                             bool bGridLinesVisible = getBoolVal(
                                 xmlStreamReader, xmlStreamAttrs, strElemName,
-                                c_strXmlAttrGridLinesVisible, false);
+                                c_strXmlAttrGridLinesVisible, false, false);
                             if (!xmlStreamReader.hasError()) {
                                 gridSettings.setLinesVisible(bGridLinesVisible);
                             }
                             if (!xmlStreamReader.hasError()) {
                                 CEnumLineStyle eLineStyle = getLineStyle(
                                     xmlStreamReader, xmlStreamAttrs, strElemName,
-                                    c_strXmlAttrGridLinesStyle, bGridLinesVisible);
+                                    c_strXmlAttrGridLinesStyle, false, ELineStyle::SolidLine);
                                 if (!xmlStreamReader.hasError() && eLineStyle.isValid()) {
                                     gridSettings.setLinesStyle(eLineStyle);
                                 }
@@ -488,7 +538,7 @@ SErrResultInfo CDrawingScene::load( const QString& i_strFileName )
                             if (!xmlStreamReader.hasError()) {
                                 int iPenWidth = getIntVal(
                                     xmlStreamReader, xmlStreamAttrs, strElemName,
-                                    c_strXmlAttrGridLinesWidth, bGridLinesVisible, 1);
+                                    c_strXmlAttrGridLinesWidth, false, 1);
                                 if (!xmlStreamReader.hasError()) {
                                     gridSettings.setLinesWidth(iPenWidth);
                                 }
@@ -496,7 +546,7 @@ SErrResultInfo CDrawingScene::load( const QString& i_strFileName )
                             if (!xmlStreamReader.hasError()) {
                                 QColor clrPen = getColor(
                                     xmlStreamReader, xmlStreamAttrs, strElemName,
-                                    c_strXmlAttrGridLinesColor, bGridLinesVisible);
+                                    c_strXmlAttrGridLinesColor, false, Qt::black);
                                 if (!xmlStreamReader.hasError()) {
                                     gridSettings.setLinesColor(clrPen);
                                 }
@@ -505,7 +555,7 @@ SErrResultInfo CDrawingScene::load( const QString& i_strFileName )
                             if (!xmlStreamReader.hasError()) {
                                 bGridLabelsVisible = getBoolVal(
                                     xmlStreamReader, xmlStreamAttrs, strElemName,
-                                    c_strXmlAttrGridLabelsVisible, bGridLinesVisible);
+                                    c_strXmlAttrGridLabelsVisible, false, bGridLinesVisible);
                                 if (!xmlStreamReader.hasError()) {
                                     gridSettings.setLabelsVisible(bGridLabelsVisible);
                                 }
@@ -513,7 +563,7 @@ SErrResultInfo CDrawingScene::load( const QString& i_strFileName )
                             if (!xmlStreamReader.hasError()) {
                                 QFont fnt = getFont(
                                     xmlStreamReader, xmlStreamAttrs, strElemName,
-                                    c_strXmlAttrGridLabelsFont, bGridLabelsVisible);
+                                    c_strXmlAttrGridLabelsFont, false, QFont());
                                 if (!xmlStreamReader.hasError()) {
                                     gridSettings.setLabelsFont(fnt);
                                 }
@@ -521,7 +571,7 @@ SErrResultInfo CDrawingScene::load( const QString& i_strFileName )
                             if (!xmlStreamReader.hasError()) {
                                 ETextSize eTextSize = getTextSize(
                                     xmlStreamReader, xmlStreamAttrs, strElemName,
-                                    c_strXmlAttrGridLabelsTextSize, bGridLabelsVisible);
+                                    c_strXmlAttrGridLabelsTextSize, false, ETextSize8);
                                 if (!xmlStreamReader.hasError()) {
                                     gridSettings.setLabelsTextSize(eTextSize);
                                 }
@@ -529,7 +579,7 @@ SErrResultInfo CDrawingScene::load( const QString& i_strFileName )
                             if (!xmlStreamReader.hasError()) {
                                 QColor clrText = getColor(
                                     xmlStreamReader, xmlStreamAttrs, strElemName,
-                                    c_strXmlAttrGridLabelsTextColor, bGridLabelsVisible);
+                                    c_strXmlAttrGridLabelsTextColor, false, Qt::black);
                                 if (!xmlStreamReader.hasError()) {
                                     gridSettings.setLabelsTextColor(clrText);
                                 }
@@ -537,7 +587,7 @@ SErrResultInfo CDrawingScene::load( const QString& i_strFileName )
                             if (!xmlStreamReader.hasError()) {
                                 CEnumTextStyle eTextStyle = getTextStyle(
                                     xmlStreamReader, xmlStreamAttrs, strElemName,
-                                    c_strXmlAttrGridLabelsTextStyle, bGridLabelsVisible);
+                                    c_strXmlAttrGridLabelsTextStyle, false, ETextStyle::Normal);
                                 if (!xmlStreamReader.hasError()) {
                                     gridSettings.setLabelsTextStyle(eTextStyle);
                                 }
@@ -545,7 +595,7 @@ SErrResultInfo CDrawingScene::load( const QString& i_strFileName )
                             if (!xmlStreamReader.hasError()) {
                                 CEnumTextEffect eTextEffect = getTextEffect(
                                     xmlStreamReader, xmlStreamAttrs, strElemName,
-                                    c_strXmlAttrGridLabelsTextEffect, bGridLabelsVisible);
+                                    c_strXmlAttrGridLabelsTextEffect, false, ETextEffect::None);
                                 if (!xmlStreamReader.hasError()) {
                                     gridSettings.setLabelsTextEffect(eTextEffect);
                                 }
@@ -694,22 +744,23 @@ SErrResultInfo CDrawingScene::save( const QString& i_strFileName )
             xmlStreamWriter.writeAttribute(c_strXmlAttrScaleFactor,
                 QString::number(m_drawingSize.scaleFactorDividend()) +
                 ":" + QString::number(m_drawingSize.scaleFactorDivisor()));
-            if (m_drawingSize.normedPaperSize() != ENormedPaperSize::Undefined)
-            {
+            if (m_drawingSize.normedPaperSize().isValid()) {
                 xmlStreamWriter.writeAttribute(c_strXmlAttrPaperSize, m_drawingSize.normedPaperSize().toString());
+            }
+            if (m_drawingSize.normedPaperOrientation().isValid()) {
                 xmlStreamWriter.writeAttribute(c_strXmlAttrPaperOrientation, m_drawingSize.normedPaperOrientation().toString());
             }
-            xmlStreamWriter.writeAttribute(c_strXmlAttrGridLinesVisible, bool2Str(m_gridSettings.areLinesVisible()));
-            xmlStreamWriter.writeAttribute(c_strXmlAttrGridLinesStyle, CEnumLineStyle(m_gridSettings.linesStyle()).toString());
-            xmlStreamWriter.writeAttribute(c_strXmlAttrGridLinesWidth, QString::number(m_gridSettings.linesWidth()));
-            xmlStreamWriter.writeAttribute(c_strXmlAttrGridLinesColor, m_gridSettings.linesColor().name());
-            xmlStreamWriter.writeAttribute(c_strXmlAttrGridLabelsVisible, bool2Str(m_gridSettings.areLabelsVisible()));
-            xmlStreamWriter.writeAttribute(c_strXmlAttrGridLabelsFont, m_gridSettings.labelsFont().family());
-            xmlStreamWriter.writeAttribute(c_strXmlAttrGridLabelsTextSize, QString::number(m_gridSettings.labelsTextSize()));
-            xmlStreamWriter.writeAttribute(c_strXmlAttrGridLabelsTextColor, m_gridSettings.labelsTextColor().name());
-            xmlStreamWriter.writeAttribute(c_strXmlAttrGridLabelsTextStyle, CEnumTextStyle(m_gridSettings.labelsTextStyle()).toString());
-            xmlStreamWriter.writeAttribute(c_strXmlAttrGridLabelsTextEffect, CEnumTextEffect(m_gridSettings.labelsTextEffect()).toString());
         }
+        xmlStreamWriter.writeAttribute(c_strXmlAttrGridLinesVisible, bool2Str(m_gridSettings.areLinesVisible()));
+        xmlStreamWriter.writeAttribute(c_strXmlAttrGridLinesStyle, CEnumLineStyle(m_gridSettings.linesStyle()).toString());
+        xmlStreamWriter.writeAttribute(c_strXmlAttrGridLinesWidth, QString::number(m_gridSettings.linesWidth()));
+        xmlStreamWriter.writeAttribute(c_strXmlAttrGridLinesColor, m_gridSettings.linesColor().name());
+        xmlStreamWriter.writeAttribute(c_strXmlAttrGridLabelsVisible, bool2Str(m_gridSettings.areLabelsVisible()));
+        xmlStreamWriter.writeAttribute(c_strXmlAttrGridLabelsFont, m_gridSettings.labelsFont().family());
+        xmlStreamWriter.writeAttribute(c_strXmlAttrGridLabelsTextSize, QString::number(m_gridSettings.labelsTextSize()));
+        xmlStreamWriter.writeAttribute(c_strXmlAttrGridLabelsTextColor, m_gridSettings.labelsTextColor().name());
+        xmlStreamWriter.writeAttribute(c_strXmlAttrGridLabelsTextStyle, CEnumTextStyle(m_gridSettings.labelsTextStyle()).toString());
+        xmlStreamWriter.writeAttribute(c_strXmlAttrGridLabelsTextEffect, CEnumTextEffect(m_gridSettings.labelsTextEffect()).toString());
 
         QGraphicsItem* pGraphicsItem;
         CGraphObj*     pGraphObj;
@@ -5602,9 +5653,12 @@ void CDrawingScene::drawBackground( QPainter* i_pPainter, const QRectF& i_rect )
     i_pPainter->setBrush(Qt::white);
     i_pPainter->drawRect(rctScene);
 
-    if (m_gridSettings.areLinesVisible())
-    {
-        drawGrid(i_pPainter);
+    if (m_gridSettings.areLinesVisible() || m_gridSettings.areLabelsVisible()) {
+        //m_divLinesMetricsX.update();
+        //m_divLinesMetricsY.update();
+        if (m_gridSettings.areLinesVisible()) {
+            paintGrid(i_pPainter);
+        }
     }
     i_pPainter->restore();
 }
@@ -5635,7 +5689,7 @@ void CDrawingScene::drawForeground( QPainter* i_pPainter, const QRectF& i_rect )
         mthTracer.trace(strAddTrcInfo);
     }
 
-    i_pPainter->setClipRect(i_rect);
+    //i_pPainter->setClipRect(i_rect);
 
     QGraphicsScene::drawForeground(i_pPainter, i_rect);
 }
@@ -5824,122 +5878,115 @@ protected: // auxiliary methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDrawingScene::drawGrid(QPainter* i_pPainter)
+void CDrawingScene::paintGrid(QPainter* i_pPainter)
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjPaintEvent,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "drawGrid",
+        /* strMethod    */ "paintGrid",
         /* strAddInfo   */ "" );
 
     #pragma message(__TODO__"m_gridSettings.linesDistMinXInPixels()")
     #pragma message(__TODO__"m_gridSettings.linesDistMinYInPixels()")
     #pragma message(__TODO__"m_gridSettings.useDivLineDistValDecimalFactor25()")
 
+    i_pPainter->save();
+
     QRectF rctScene = sceneRect();
 
-    double fDivLineFirstVal = 0.0;
-    double fDivLineDistFirstPix = 0.0;
-    double fDivLineDistVal = 0.0;
-    double fDivLineDistPix = 0.0;
-    int iDivLinesCount = 0;
-
-    #pragma message(__TODO__"getDivLines4LinSpacing only if gridSettings or drawingSize changed")
-
-    // X-Scale
-    //--------
-
-    if (m_drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels)
-    {
-        iDivLinesCount = Math::CScaleDivLines::getDivLines4LinSpacing(
-            /* fScaleMinVal          */ 0.0,
-            /* fScaleMaxVal          */ m_drawingSize.imageSizeInPixels().width(),
-            /* iScaleRangePix        */ m_drawingSize.imageSizeInPixels().width(),
-            /* fDivLineDistMinVal    */ 10.0, //m_gridSettings.linesDistMinXInPixels(),
-            /* iDivLineDistMinPix    */ 10, //m_gridSettings.linesDistMinXInPixels(),
-            /* bUseDivLineFactor25   */ false, //m_gridSettings.useDivLineDistValDecimalFactor25(),
-            /* pfDivLineFirstVal     */ &fDivLineFirstVal,
-            /* pfDivLineDistFirstPix */ &fDivLineDistFirstPix,
-            /* pfDivLineDistVal      */ &fDivLineDistVal,
-            /* pfDivLineDistPix      */ &fDivLineDistPix,
-            /* pTrcAdminObj          */ m_pTrcAdminObjPaintEvent);
-    }
-    else
-    {
-        iDivLinesCount = Math::CScaleDivLines::getDivLines4LinSpacing(
-            /* fScaleMinVal          */ 0.0,
-            /* fScaleMaxVal          */ m_drawingSize.metricImageWidth().getVal(),
-            /* iScaleRangePix        */ m_drawingSize.imageSizeInPixels().width(),
-            /* fDivLineDistMinVal    */ 10.0, //m_gridSettings.linesDistMinVal(),
-            /* iDivLineDistMinPix    */ 10, //m_gridSettings.linesDistMinXInPixels(),
-            /* bUseDivLineFactor25   */ false, //m_gridSettings.useDivLineDistValDecimalFactor25(),
-            /* pfDivLineFirstVal     */ &fDivLineFirstVal,
-            /* pfDivLineDistFirstPix */ &fDivLineDistFirstPix,
-            /* pfDivLineDistVal      */ &fDivLineDistVal,
-            /* pfDivLineDistPix      */ &fDivLineDistPix,
-            /* pTrcAdminObj          */ m_pTrcAdminObjPaintEvent);
-    }
-    if (iDivLinesCount > 0)
+    if (m_divLinesMetricsX.getDivLinesCount(EDivLineLayer::Main) > 0)
     {
         QPen pen(m_gridSettings.linesColor());
         pen.setStyle(lineStyle2QtPenStyle(m_gridSettings.linesStyle().enumerator()));
         pen.setWidth(m_gridSettings.linesWidth());
         i_pPainter->setPen(pen);
 
-        for (int idxLine = 0; idxLine < iDivLinesCount; ++idxLine ) {
-            int x = fDivLineDistFirstPix + idxLine * fDivLineDistPix;
+        for (int idxLine = 0; idxLine < m_divLinesMetricsX.getDivLinesCount(EDivLineLayer::Main); ++idxLine ) {
+            int x = m_divLinesMetricsX.getDivLineInPix(EDivLineLayer::Main, idxLine);
             i_pPainter->drawLine(x, rctScene.top(), x, rctScene.bottom());
         }
     }
 
-    // Y-Scale
-    //--------
-
-    if (m_drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels)
-    {
-        iDivLinesCount = Math::CScaleDivLines::getDivLines4LinSpacing(
-            /* fScaleMinVal          */ 0.0,
-            /* fScaleMaxVal          */ m_drawingSize.imageSizeInPixels().height(),
-            /* iScaleRangePix        */ m_drawingSize.imageSizeInPixels().height(),
-            /* fDivLineDistMinVal    */ 10.0, //m_gridSettings.linesDistMinYInPixels(),
-            /* iDivLineDistMinPix    */ 10, //m_gridSettings.linesDistMinYInPixels(),
-            /* bUseDivLineFactor25   */ false, //m_gridSettings.useDivLineDistValDecimalFactor25(),
-            /* pfDivLineFirstVal     */ &fDivLineFirstVal,
-            /* pfDivLineDistFirstPix */ &fDivLineDistFirstPix,
-            /* pfDivLineDistVal      */ &fDivLineDistVal,
-            /* pfDivLineDistPix      */ &fDivLineDistPix,
-            /* pTrcAdminObj          */ m_pTrcAdminObjPaintEvent);
-    }
-    else
-    {
-        iDivLinesCount = Math::CScaleDivLines::getDivLines4LinSpacing(
-            /* fScaleMinVal          */ 0.0,
-            /* fScaleMaxVal          */ m_drawingSize.metricImageHeight().getVal(),
-            /* iScaleRangePix        */ m_drawingSize.imageSizeInPixels().height(),
-            /* fDivLineDistMinVal    */ 10.0, //m_gridSettings.linesDistMinVal(),
-            /* iDivLineDistMinPix    */ 10, //m_gridSettings.linesDistMinYInPixels(),
-            /* bUseDivLineFactor25   */ false, //m_gridSettings.useDivLineDistValDecimalFactor25(),
-            /* pfDivLineFirstVal     */ &fDivLineFirstVal,
-            /* pfDivLineDistFirstPix */ &fDivLineDistFirstPix,
-            /* pfDivLineDistVal      */ &fDivLineDistVal,
-            /* pfDivLineDistPix      */ &fDivLineDistPix,
-            /* pTrcAdminObj          */ m_pTrcAdminObjPaintEvent);
-    }
-
-    if (iDivLinesCount > 0)
+    if (m_divLinesMetricsY.getDivLinesCount(EDivLineLayer::Main) > 0)
     {
         QPen pen(m_gridSettings.linesColor());
         pen.setStyle(lineStyle2QtPenStyle(m_gridSettings.linesStyle().enumerator()));
         pen.setWidth(m_gridSettings.linesWidth());
         i_pPainter->setPen(pen);
 
-        for (int idxLine = 0; idxLine < iDivLinesCount; ++idxLine ) {
-            int y = fDivLineDistFirstPix + idxLine * fDivLineDistPix;
+        for (int idxLine = 0; idxLine < m_divLinesMetricsY.getDivLinesCount(EDivLineLayer::Main); ++idxLine ) {
+            int y = m_divLinesMetricsY.getDivLineInPix(EDivLineLayer::Main, idxLine);
             i_pPainter->drawLine(rctScene.left(), y, rctScene.right(), y);
         }
     }
-}
+
+    i_pPainter->restore();
+
+} // paintGrid
+
+////------------------------------------------------------------------------------
+//void CDrawingScene::paintLabels(QPainter* i_pPainter)
+////------------------------------------------------------------------------------
+//{
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjPaintEvent,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strMethod    */ "paintLabels",
+//        /* strAddInfo   */ "" );
+//
+//    i_pPainter->save();
+//
+//    QRectF rectScene = sceneRect();
+//
+//    QFontMetrics fntmtr(m_gridSettings.labelsFont());
+//    QSize sizeUnitString;
+//    if (m_drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels) {
+//        sizeUnitString = fntmtr.boundingRect(Units.Length.pxX.symbol()).size();
+//    }
+//    else {
+//        sizeUnitString = fntmtr.boundingRect(m_drawingSize.metricUnit().symbol()).size();
+//     }
+//    sizeUnitString.setHeight(sizeUnitString.height() + 2);
+//    sizeUnitString.setWidth(sizeUnitString.width() + 2);
+//
+//    //m_rectDivLineLabelsPhysUnit = QRect(
+//    //    0, 0, sizeUnitString.width(), sizeUnitString.height());
+//
+//    i_pPainter->setPen(m_gridSettings.labelsTextColor());
+//    i_pPainter->setFont(m_gridSettings.labelsFont());
+//
+//    EDivLineLayer eLayer = EDivLineLayer::Main;
+//
+//    QPen pen(m_gridSettings.linesColor());
+//    pen.setStyle(lineStyle2QtPenStyle(m_gridSettings.linesStyle().enumerator()));
+//    pen.setWidth(m_gridSettings.linesWidth());
+//    i_pPainter->setPen(pen);
+//
+//    for (int idxLine = 0; idxLine < m_divLinesMetricsX.getDivLinesCount(EDivLineLayer::Main); ++idxLine ) {
+//        int x = m_divLinesMetricsX.getDivLineInPix(EDivLineLayer::Main, idxLine);
+//        i_pPainter->drawLine(x, rectScene.top(), x, rectScene.top() - 4);
+//    }
+//
+//    for (int idxDivLine = 0; idxDivLine < m_divLinesMetricsX.getDivLinesCount(eLayer); idxDivLine++)
+//    {
+//        if (m_divLinesMetricsX.isDivLineLabelVisible(eLayer, idxDivLine))
+//        {
+//            QString strDivLineLabel = m_divLinesMetricsX.getDivLineLabelText(eLayer, idxDivLine);
+//            QRect rectDivLineLabel = m_divLinesMetricsX.getDivLineLabelBoundingRect(eLayer, idxDivLine);
+//            QRect rect;
+//
+//            rect.setLeft(rectDivLineLabel.left());
+//            rect.setRight(rect.left() + rectDivLineLabel.width());
+//            rect.setTop(rectScene.top() - rectDivLineLabel.height() - 5);
+//            rect.setBottom(rectScene.top());
+//
+//            i_pPainter->drawText(rect, Qt::AlignVCenter|Qt::AlignHCenter, strDivLineLabel);
+//        }
+//    }
+//    i_pPainter->restore();
+//
+//} // paintLabels
 
 /*==============================================================================
 protected: // auxiliary methods
@@ -6411,6 +6458,36 @@ std::pair<int, int> CDrawingScene::getIntPair(
         }
     }
     return iPair;
+}
+
+//------------------------------------------------------------------------------
+double CDrawingScene::getDoubleVal(
+    QXmlStreamReader& i_xmlStreamReader,
+    QXmlStreamAttributes& i_xmlStreamAttrs,
+    const QString& i_strElemName,
+    const QString& i_strAttrName,
+    bool i_bAttrIsMandatory,
+    double i_fValDefault ) const
+//------------------------------------------------------------------------------
+{
+    double fVal = i_fValDefault;
+    if (!i_xmlStreamAttrs.hasAttribute(i_strAttrName)) {
+        if (i_bAttrIsMandatory) {
+            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
+        }
+    }
+    else {
+        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
+        bool bOk = true;
+        double fValTmp = strAttrVal.toDouble(&bOk);
+        if (bOk) {
+            fVal = fValTmp;
+        } else {
+            raiseErrorAttributeOutOfRange(
+                i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
+        }
+    }
+    return fVal;
 }
 
 /*==============================================================================

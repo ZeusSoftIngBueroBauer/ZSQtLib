@@ -973,7 +973,7 @@ void CScaleDivLinesMetrics::updateDivLineLabelsVisibilities()
     }
 
     // Next hide sub division line labels which would overlap other labels in the sub layer.
-    for (int idxDivLine = 0; idxDivLine < m_ariDivLinesCount[EDivLineLayerSub]; ++idxDivLine) {
+    for (int idxDivLine = 1; idxDivLine < m_ariDivLinesCount[EDivLineLayerSub]; ++idxDivLine) {
         QRect rect = m_ararrectLabels[EDivLineLayerSub][idxDivLine];
         if (intersectsWithDivLineLabelsRects(rect, EDivLineLayerSub, idxDivLine-1, ESearchDirection::Descending)) {
             m_ararbLabelsVisible[EDivLineLayerSub][idxDivLine] = false;
@@ -991,7 +991,7 @@ void CScaleDivLinesMetrics::updateDivLineLabelsVisibilities()
     }
 
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        for( int iLayer = 0; iLayer < CEnumDivLineLayer::count(); ++iLayer) {
+        for( int iLayer = 1; iLayer < CEnumDivLineLayer::count(); ++iLayer) {
             QString strMthAddInfo =
                 "LabelsVisible[" + CEnumDivLineLayer(iLayer).toString() + "][" +
                 QString::number(m_ararbLabelsVisible[iLayer].size()) + "]";
@@ -1050,12 +1050,12 @@ void CScaleDivLinesMetrics::updateScaleMinMaxBoundingRects()
             m_arrectScaleMinMaxVal[idxMinMax].setHeight(m_arrectScaleMinMaxVal[idxMinMax].height() + 2);
             m_arrectScaleMinMaxVal[idxMinMax].moveLeft(xDivLine - m_arrectScaleMinMaxVal[idxMinMax].width()/2);
 
-            if (m_arrectScaleMinMaxVal[idxMinMax].left() <= m_iMin_px) {
-                int cxOffset = m_iMin_px - m_arrectScaleMinMaxVal[idxMinMax].left() + 1;
+            if (m_arrectScaleMinMaxVal[idxMinMax].left() <= m_fMin_px) {
+                int cxOffset = m_fMin_px - m_arrectScaleMinMaxVal[idxMinMax].left() + 1;
                 m_arrectScaleMinMaxVal[idxMinMax].moveLeft(m_arrectScaleMinMaxVal[idxMinMax].left() + cxOffset);
             }
-            else if (m_arrectScaleMinMaxVal[idxMinMax].right() >= m_iMax_px) {
-                int cxOffset = m_arrectScaleMinMaxVal[idxMinMax].right() - m_iMax_px + 1;
+            else if (m_arrectScaleMinMaxVal[idxMinMax].right() >= m_fMax_px) {
+                int cxOffset = m_arrectScaleMinMaxVal[idxMinMax].right() - m_fMax_px + 1;
                 m_arrectScaleMinMaxVal[idxMinMax].moveRight(m_arrectScaleMinMaxVal[idxMinMax].right() - cxOffset);
             }
         }
@@ -1082,14 +1082,14 @@ void CScaleDivLinesMetrics::updateScaleMinMaxBoundingRects()
             m_arrectScaleMinMaxVal[idxMinMax].setHeight(m_arrectScaleMinMaxVal[idxMinMax].height() + 2);
             m_arrectScaleMinMaxVal[idxMinMax].moveTop(yDivLine - m_arrectScaleMinMaxVal[idxMinMax].height()/2);
 
-            if (m_arrectScaleMinMaxVal[idxMinMax].bottom() <= m_iMin_px)
+            if (m_arrectScaleMinMaxVal[idxMinMax].bottom() <= m_fMin_px)
             {
-                int cyOffset = m_arrectScaleMinMaxVal[idxMinMax].bottom() - m_iMin_px + 1;
+                int cyOffset = m_arrectScaleMinMaxVal[idxMinMax].bottom() - m_fMin_px + 1;
                 m_arrectScaleMinMaxVal[idxMinMax].moveBottom(m_arrectScaleMinMaxVal[idxMinMax].bottom() - cyOffset);
             }
-            else if (m_arrectScaleMinMaxVal[idxMinMax].top() >= m_iMax_px)
+            else if (m_arrectScaleMinMaxVal[idxMinMax].top() >= m_fMax_px)
             {
-                int cyOffset = m_iMax_px - m_arrectScaleMinMaxVal[idxMinMax].top() + 1;
+                int cyOffset = m_fMax_px - m_arrectScaleMinMaxVal[idxMinMax].top() + 1;
                 m_arrectScaleMinMaxVal[idxMinMax].moveTop(m_arrectScaleMinMaxVal[idxMinMax].top() + cyOffset);
             }
         }

@@ -85,8 +85,6 @@ template<> const QVector<SEnumEntry> ZS::System::CEnum<ENormedPaperSize>::s_arEn
     SEnumEntry( static_cast<int>(ENormedPaperSize::DinA9),  "DinA9",  "A9",  "DIN A9",
         QSizeF(c_fNormedPaperSizeWidthDinA9_mm, c_fNormedPaperSizeHeightDinA9_mm) ),
     SEnumEntry( static_cast<int>(ENormedPaperSize::DinA10), "DinA10", "A10", "DIN A10",
-        QSizeF(c_fNormedPaperSizeWidthDinA10_mm, c_fNormedPaperSizeHeightDinA10_mm) ),
-    SEnumEntry( static_cast<int>(ENormedPaperSize::Undefined), "Undefined", "?", "---",
         QSizeF(c_fNormedPaperSizeWidthDinA10_mm, c_fNormedPaperSizeHeightDinA10_mm) )
 };
 

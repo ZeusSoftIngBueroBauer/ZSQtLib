@@ -393,22 +393,16 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pLytLineImageMetricNormedPaper->addWidget(m_pCmbImageMetricNormedPaperSizes);
     m_pLytLineImageMetricNormedPaper->addSpacing(m_cxClmSpacing);
     for( CEnumNormedPaperSize ePaperSize = 0; ePaperSize < CEnumNormedPaperSize::count(); ++ePaperSize ) {
-        if( ePaperSize == ENormedPaperSize::Undefined) {
-            m_pCmbImageMetricNormedPaperSizes->addItem(
-                ePaperSize.toString(EEnumEntryAliasStrText), ePaperSize.toValue());
-        }
-        else {
-            m_pCmbImageMetricNormedPaperSizes->addItem(
-                ePaperSize.toString(EEnumEntryAliasStrSymbol), ePaperSize.toValue());
-        }
+        m_pCmbImageMetricNormedPaperSizes->addItem(
+            ePaperSize.toString(EEnumEntryAliasStrSymbol), ePaperSize.toValue());
     }
-    if( m_drawingSize.normedPaperSize() == ENormedPaperSize::Undefined) {
-        m_pCmbImageMetricNormedPaperSizes->setCurrentText(
-            m_drawingSize.normedPaperSize().toString(EEnumEntryAliasStrText));
-    }
-    else {
+    m_pCmbImageMetricNormedPaperSizes->addItem("---");
+    if (m_drawingSize.normedPaperSize().isValid()) {
         m_pCmbImageMetricNormedPaperSizes->setCurrentText(
             m_drawingSize.normedPaperSize().toString(EEnumEntryAliasStrSymbol));
+    }
+    else {
+        m_pCmbImageMetricNormedPaperSizes->setCurrentText("---");
     }
     QObject::connect(
         m_pCmbImageMetricNormedPaperSizes, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
@@ -426,7 +420,13 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pCmbImageMetricNormedPaperOrientation->setEnabled(false);
     m_pLytLineImageMetricNormedPaper->addWidget(m_pCmbImageMetricNormedPaperOrientation);
     m_pLytLineImageMetricNormedPaper->addStretch();
-    m_pCmbImageMetricNormedPaperOrientation->addItem(m_drawingSize.normedPaperOrientation().toString());
+    for (CEnumOrientation eOrientation = 0; eOrientation < CEnumOrientation::count(); ++eOrientation ) {
+        m_pCmbImageMetricNormedPaperOrientation->addItem(eOrientation.toString(EEnumEntryAliasStrText));
+    }
+    if (m_drawingSize.normedPaperOrientation().isValid()) {
+        m_pCmbImageMetricNormedPaperOrientation->setCurrentText(
+            m_drawingSize.normedPaperOrientation().toString(EEnumEntryAliasStrText));
+    }
     m_pCmbImageMetricNormedPaperOrientation->setVisible(false);
     QObject::connect(
         m_pCmbImageMetricNormedPaperOrientation, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
@@ -1824,23 +1824,12 @@ void CWdgtDrawingViewProperties::setNormedPaperSize( const CEnumNormedPaperSize&
     if( m_drawingSize.normedPaperSize() != i_ePaperSize ) {
         CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
         m_drawingSize.setNormedPaperSize(i_ePaperSize);
-        m_pLblImageMetricNormedPaperOrientation->setVisible(i_ePaperSize != ENormedPaperSize::Undefined);
-        m_pCmbImageMetricNormedPaperOrientation->setVisible(i_ePaperSize != ENormedPaperSize::Undefined);
-        m_pCmbImageMetricNormedPaperOrientation->clear();
-        if( i_ePaperSize == ENormedPaperSize::Undefined ) {
-            // The combo box is hidden. Not really needed to update the items.
-            // Only updated for the sake of clarification. But we keep the current
-            // setting for the orientation so that it can be restored when switching back
-            // to a normed paper size.
-            m_pCmbImageMetricNormedPaperOrientation->addItem("-");
-        }
-        else {
-            for( CEnumOrientation eOrientation = 0; eOrientation < CEnumOrientation::count(); ++eOrientation ) {
-                m_pCmbImageMetricNormedPaperOrientation->addItem(
-                    eOrientation.toString(EEnumEntryAliasStrText));
-            }
-            CEnumOrientation eOrientation = m_drawingSize.normedPaperOrientation();
-            m_pCmbImageMetricNormedPaperOrientation->setCurrentText(eOrientation.toString());
+        m_pLblImageMetricNormedPaperOrientation->setVisible(i_ePaperSize.isValid());
+        m_pCmbImageMetricNormedPaperOrientation->setVisible(i_ePaperSize.isValid());
+        CEnumOrientation eOrientation = m_drawingSize.normedPaperOrientation();
+        if (i_ePaperSize.isValid() && eOrientation.isValid()) {
+            m_pCmbImageMetricNormedPaperOrientation->setCurrentText(
+                eOrientation.toString(EEnumEntryAliasStrText));
             m_pEdtImageMetricWidth->setValue(m_drawingSize.metricImageWidth().getVal());
             m_pEdtImageMetricHeight->setValue(m_drawingSize.metricImageHeight().getVal());
             updateImageSizeInPixels();
@@ -1871,7 +1860,7 @@ void CWdgtDrawingViewProperties::setNormedPaperOrientation( const CEnumOrientati
         // greater than the height or vice versa. The orientation will be stored if later
         // on a normed paper size is set but for now the values will not be adjusted.
         CEnumNormedPaperSize ePaperSize = m_drawingSize.normedPaperSize();
-        if( ePaperSize != ENormedPaperSize::Undefined ) {
+        if (ePaperSize.isValid()) {
             m_pEdtImageMetricWidth->setValue(m_drawingSize.metricImageWidth().getVal());
             m_pEdtImageMetricHeight->setValue(m_drawingSize.metricImageHeight().getVal());
             updateImageSizeInPixels();
@@ -2320,19 +2309,17 @@ void CWdgtDrawingViewProperties::updatePaperFormat()
     CEnumNormedPaperSize ePaperSize = m_drawingSize.normedPaperSize();
     CEnumOrientation eOrientation = m_drawingSize.normedPaperOrientation();
 
-    if( ePaperSize != ENormedPaperSize::Undefined ) {
+    if (ePaperSize.isValid()) {
         m_pCmbImageMetricNormedPaperSizes->setCurrentText(ePaperSize.toString(EEnumEntryAliasStrSymbol));
         m_pLblImageMetricNormedPaperOrientation->setVisible(true);
         m_pCmbImageMetricNormedPaperOrientation->setVisible(true);
-        m_pCmbImageMetricNormedPaperOrientation->clear();
-        for( CEnumOrientation eOrientation = 0; eOrientation < CEnumOrientation::count(); ++eOrientation ) {
-            m_pCmbImageMetricNormedPaperOrientation->addItem(
+        if (eOrientation.isValid()) {
+            m_pCmbImageMetricNormedPaperOrientation->setCurrentText(
                 eOrientation.toString(EEnumEntryAliasStrText));
         }
-        m_pCmbImageMetricNormedPaperOrientation->setCurrentText(eOrientation.toString());
     }
     else {
-        m_pCmbImageMetricNormedPaperSizes->setCurrentText(ePaperSize.toString(EEnumEntryAliasStrText));
+        m_pCmbImageMetricNormedPaperSizes->setCurrentText("---");
         m_pLblImageMetricNormedPaperOrientation->setVisible(false);
         m_pCmbImageMetricNormedPaperOrientation->setVisible(false);
     }

@@ -73,14 +73,13 @@ CDrawingView::CDrawingView( CDrawingScene* i_pDrawingScene, QWidget* i_pWdgtPare
         /* strAddInfo   */ "" );
 
     m_pTrcAdminObjMouseMoveEvent = CTrcServer::GetTraceAdminObj(
-        NameSpace(), ClassName(), objectName() + "-MouseMoveEvent");;
+        NameSpace(), ClassName() + "::MouseMoveEvent", objectName());
     m_pTrcAdminObjPaintEvent = CTrcServer::GetTraceAdminObj(
-        NameSpace(), ClassName(), objectName() + "-PaintEvent");;
+        NameSpace(), ClassName() + "::PaintEvent", objectName());
 
     Units.Length.setPxpis(logicalDpiX(), logicalDpiY());
 
-    m_pDrawingScene->setDrawingSize(
-        CDrawingSize("DrawingScene", QSize(1024, 768)));
+    m_pDrawingScene->setDrawingSize(CDrawingSize("DrawingScene", QSize(1024, 768)));
 
     setViewportMargins(10.0, 10.0, 10.0, 10.0);
 
@@ -611,11 +610,123 @@ void CDrawingView::paintEvent( QPaintEvent* i_pEv )
     painter.setBrush(colBackground);
     painter.setPen(Qt::NoPen);
     painter.drawRect(rect);
+
+    CDrawGridSettings gridSettings = m_pDrawingScene->gridSettings();
+
+    if (gridSettings.areLabelsVisible()) {
+        paintLabels(&painter);
+    }
     painter.end();
 
     QGraphicsView::paintEvent(i_pEv);
 
 } // paintEvent
+
+/*==============================================================================
+protected: // auxiliary methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CDrawingView::paintLabels(QPainter* i_pPainter)
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjPaintEvent,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "paintLabels",
+        /* strAddInfo   */ "" );
+
+    i_pPainter->save();
+
+    QRectF rectScene = mapFromScene(sceneRect()).boundingRect();
+
+    CDrawingSize drawingSize = m_pDrawingScene->drawingSize();
+    CDrawGridSettings gridSettings = m_pDrawingScene->gridSettings();
+    const GUI::Math::CScaleDivLinesMetrics& divLinesMetricsX = m_pDrawingScene->divLinesMetricsX();
+    const GUI::Math::CScaleDivLinesMetrics& divLinesMetricsY = m_pDrawingScene->divLinesMetricsY();
+
+    QFontMetrics fntmtr(gridSettings.labelsFont());
+    QSize sizeUnitString;
+    if (drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels) {
+        sizeUnitString = fntmtr.boundingRect(Units.Length.pxX.symbol()).size();
+    }
+    else {
+        sizeUnitString = fntmtr.boundingRect(drawingSize.metricUnit().symbol()).size();
+     }
+    sizeUnitString.setHeight(sizeUnitString.height() + 2);
+    sizeUnitString.setWidth(sizeUnitString.width() + 2);
+
+    //m_rectDivLineLabelsPhysUnit = QRect(
+    //    0, 0, sizeUnitString.width(), sizeUnitString.height());
+
+    i_pPainter->setPen(gridSettings.labelsTextColor());
+    i_pPainter->setFont(gridSettings.labelsFont());
+
+    EDivLineLayer eLayer = EDivLineLayer::Main;
+
+    QPen pen(gridSettings.linesColor());
+    pen.setStyle(lineStyle2QtPenStyle(gridSettings.linesStyle().enumerator()));
+    pen.setWidth(gridSettings.linesWidth());
+    i_pPainter->setPen(pen);
+
+    for (int idxLine = 0; idxLine < divLinesMetricsX.getDivLinesCount(EDivLineLayer::Main); ++idxLine ) {
+        int x = rectScene.left() + divLinesMetricsX.getDivLineInPix(EDivLineLayer::Main, idxLine);
+        if (drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels) {
+            i_pPainter->drawLine(x, rectScene.top(), x, rectScene.top() - 5);
+        }
+        else {
+            i_pPainter->drawLine(x, rectScene.bottom(), x, rectScene.bottom() + 5);
+        }
+    }
+
+    for (int idxDivLine = 0; idxDivLine < divLinesMetricsX.getDivLinesCount(eLayer); idxDivLine++)
+    {
+        if (divLinesMetricsX.isDivLineLabelVisible(eLayer, idxDivLine))
+        {
+            QString strDivLineLabel = divLinesMetricsX.getDivLineLabelText(eLayer, idxDivLine);
+            QRect rectDivLineLabel = divLinesMetricsX.getDivLineLabelBoundingRect(eLayer, idxDivLine);
+            QRect rect;
+
+            rect.setLeft(rectScene.left() + rectDivLineLabel.left());
+            rect.setRight(rect.left() + rectDivLineLabel.width());
+
+            if (drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels) {
+                rect.setTop(rectScene.top() - rectDivLineLabel.height() - 5);
+                rect.setBottom(rectScene.top());
+            }
+            else {
+                rect.setTop(rectScene.bottom() + 5);
+                rect.setBottom(rect.top() + rectDivLineLabel.height());
+            }
+            i_pPainter->drawText(rect, Qt::AlignVCenter|Qt::AlignHCenter, strDivLineLabel);
+        }
+    }
+
+    for (int idxLine = 0; idxLine < divLinesMetricsY.getDivLinesCount(EDivLineLayer::Main); ++idxLine ) {
+        int y = rectScene.top() + divLinesMetricsY.getDivLineInPix(EDivLineLayer::Main, idxLine);
+        i_pPainter->drawLine(rectScene.left(), y, rectScene.left() - 5, y);
+    }
+
+    for (int idxDivLine = 0; idxDivLine < divLinesMetricsY.getDivLinesCount(eLayer); idxDivLine++)
+    {
+        if (divLinesMetricsY.isDivLineLabelVisible(eLayer, idxDivLine))
+        {
+            QString strDivLineLabel = divLinesMetricsY.getDivLineLabelText(eLayer, idxDivLine);
+            QRect rectDivLineLabel = divLinesMetricsY.getDivLineLabelBoundingRect(eLayer, idxDivLine);
+            QRect rect;
+
+            rect.setLeft(rectScene.left() - rectDivLineLabel.width() - 7);
+            rect.setRight(rect.left() + rectDivLineLabel.width());
+            rect.setTop(rectScene.top() + rectDivLineLabel.top());
+            rect.setBottom(rect.top() + rectDivLineLabel.height());
+
+            i_pPainter->drawText(rect, Qt::AlignVCenter|Qt::AlignRight, strDivLineLabel);
+        }
+    }
+
+    i_pPainter->restore();
+
+} // paintLabels
 
 /*==============================================================================
 protected slots:
@@ -635,6 +746,8 @@ void CDrawingView::onSceneDrawingSizeChanged( const CDrawingSize& i_size )
         /* strMethod    */ "onSceneDrawingSizeChanged",
         /* strAddInfo   */ strMthInArgs );
 
+    viewport()->update();
+
     emit_drawingSizeChanged(i_size);
 }
 
@@ -651,6 +764,8 @@ void CDrawingView::onSceneGridSettingsChanged( const CDrawGridSettings& i_settin
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onSceneGridSettingsChanged",
         /* strAddInfo   */ strMthInArgs );
+
+    viewport()->update();
 
     emit_gridSettingsChanged(i_settings);
 }
