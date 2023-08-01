@@ -89,6 +89,8 @@ public: // instance methods (returning calculated values)
     bool isDivLineLabelVisible(const CEnumDivLineLayer& i_eLayer, int i_idxDivLine) const;
     QString getDivLineLabelText(const CEnumDivLineLayer& i_eLayer, int i_idxDivLine) const;
     QRect getDivLineLabelBoundingRect(const CEnumDivLineLayer& i_eLayer, int i_idxDivLine) const;
+    QString getScaleMinValText() const;
+    QString getScaleMaxValText() const;
     QRect getScaleMinValBoundingRect() const;
     QRect getScaleMaxValBoundingRect() const;
     QString formatValue(double i_fVal) const;

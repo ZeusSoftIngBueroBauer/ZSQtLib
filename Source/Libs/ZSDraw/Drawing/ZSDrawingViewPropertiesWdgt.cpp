@@ -155,8 +155,10 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     // Grid Lines
     m_pLblGridLines(nullptr),
     m_pChkGridLinesVisible(nullptr),
+    m_pLblGridLinesDistMin(nullptr),
+    m_pEdtGridLinesDistMin(nullptr),
     m_pCmbGridLinesStyle(nullptr),
-    m_pModelGridLineStyles(nullptr),
+    m_pModelGridLinesStyles(nullptr),
     m_pEdtGridLinesWidth(nullptr),
     m_pPxmBtnGridLinesColor(nullptr),
     m_rctBtnGridLinesColor(0, 12, 16, 4),
@@ -569,12 +571,22 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     // <Line> Grid Lines
     //------------------
 
+    // Row 0:
     const int iClmLineHeadLines = 0;
     const int iClmChkVisible = 1;
+    const int iClmLblLinesDistMin = 2;
+    const int iClmEdtLinesDistMin = 3;
+    const int iClmCmbLinesStyle = 4;
+    const int iClmEdtLinesWidth = 5;
+    const int iClmBtnLinesColor = 6;
+
+    // Row 1:
     const int iClmCmbFont = 2;
     const int iClmSpanCmbFont = 3;
     const int iClmCmbFontSize = 5;
     const int iClmBtnTextColor = 6;
+
+    // Row 2:
     const int iClmBtnFontStyleBold = 2;
     const int iClmBtnFontStyleItalic = 3;
     const int iClmBtnFontEffectUnderline = 4;
@@ -597,11 +609,26 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
         m_pChkGridLinesVisible, &QCheckBox::stateChanged,
         this, &CWdgtDrawingViewProperties::onChkGridLinesVisibleStateChanged);
 
-    m_pModelGridLineStyles = new QStandardItemModel();
+    iClm = iClmLblLinesDistMin;
+    m_pLblGridLinesDistMin = new QLabel("Min Distance:");
+    m_pLytGridSettings->addWidget(m_pLblGridLinesDistMin, iRow, iClm);
+
+    iClm = iClmEdtLinesDistMin;
+    m_pEdtGridLinesDistMin = new QSpinBox();
+    m_pEdtGridLinesDistMin->setMinimum(1);
+    m_pEdtGridLinesDistMin->setMaximum(9999);
+    m_pEdtGridLinesDistMin->setSuffix(" px");
+    m_pEdtGridLinesDistMin->setValue(m_gridSettings.linesDistMin());
+    m_pLytGridSettings->addWidget(m_pEdtGridLinesDistMin, iRow, iClm);
+    QObject::connect(
+        m_pEdtGridLinesDistMin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+        this, &CWdgtDrawingViewProperties::onEdtGridLinesDistMinValueChanged);
+
+    iClm = iClmCmbLinesStyle;
+    m_pModelGridLinesStyles = new QStandardItemModel();
     QSize iconSize = fillGridLineStylesModel();
-    iClm = iClmCmbFont;
     m_pCmbGridLinesStyle = new QComboBox();
-    m_pCmbGridLinesStyle->setModel(m_pModelGridLineStyles);
+    m_pCmbGridLinesStyle->setModel(m_pModelGridLinesStyles);
     m_pCmbGridLinesStyle->setIconSize(iconSize);
     m_pLytGridSettings->addWidget(m_pCmbGridLinesStyle, iRow, iClm);
     int idx = m_pCmbGridLinesStyle->findData(m_gridSettings.linesStyle().enumeratorAsInt());
@@ -617,7 +644,7 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     // will be above the list view in the widget hierarchy and the list view will
     // be overlapped by those and is partly invisible.
 
-    iClm = iClmCmbFontSize;
+    iClm = iClmEdtLinesWidth;
     m_pEdtGridLinesWidth = new QSpinBox();
     m_pEdtGridLinesWidth->setMinimum(1);
     m_pEdtGridLinesWidth->setMaximum(9999);
@@ -628,7 +655,7 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
         m_pEdtGridLinesWidth, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
         this, &CWdgtDrawingViewProperties::onEdtGridLinesWidthValueChanged);
 
-    iClm = iClmBtnTextColor;
+    iClm = iClmBtnLinesColor;
     m_pPxmBtnGridLinesColor = new QPixmap(":/ZS/Draw/DrawToolPen16x16.bmp");
     m_pPxmBtnGridLinesColor->setMask(m_pPxmBtnGridLinesColor->createHeuristicMask());
     m_pBtnGridLinesColor = new QPushButton();
@@ -784,7 +811,7 @@ CWdgtDrawingViewProperties::~CWdgtDrawingViewProperties()
         /* strAddInfo   */ "" );
 
     try {
-        delete m_pModelGridLineStyles;
+        delete m_pModelGridLinesStyles;
     }
     catch(...) {
     }
@@ -866,7 +893,7 @@ CWdgtDrawingViewProperties::~CWdgtDrawingViewProperties()
     m_pLblGridLines = nullptr;
     m_pChkGridLinesVisible = nullptr;
     m_pCmbGridLinesStyle = nullptr;
-    m_pModelGridLineStyles = nullptr;
+    m_pModelGridLinesStyles = nullptr;
     m_pEdtGridLinesWidth = nullptr;
     m_pPxmBtnGridLinesColor = nullptr;
     //m_rctBtnGridLinesColor;
@@ -877,6 +904,8 @@ CWdgtDrawingViewProperties::~CWdgtDrawingViewProperties()
     // Grid Scale Labels
     m_pLblGridScaleLabels = nullptr;
     m_pChkGridScaleLabelsVisible = nullptr;
+    m_pLblGridLinesDistMin = nullptr;
+    m_pEdtGridLinesDistMin = nullptr;
     m_pCmbGridScaleLabelsFont = nullptr;
     m_pCmbGridScaleLabelsFontSize = nullptr;
     m_pPxmBtnGridScaleLabelsTextColor = nullptr;
@@ -982,10 +1011,12 @@ void CWdgtDrawingViewProperties::setMode(EMode i_mode)
             //m_pEdtImageSizeHeight_px->setReadOnly(eDimensionUnit != EDrawingDimensionUnit::Pixels);
 
             m_pChkGridLinesVisible->setEnabled(true);
+            m_pEdtGridLinesDistMin->setEnabled(true);
+            //m_pEdtGridLinesDistMin->setReadOnly(false);
             m_pCmbGridLinesStyle->setEnabled(true);
-            m_pBtnGridLinesColor->setEnabled(true);
             m_pEdtGridLinesWidth->setEnabled(true);
             //m_pEdtGridLinesWidth->setReadOnly(false);
+            m_pBtnGridLinesColor->setEnabled(true);
             m_pChkGridScaleLabelsVisible->setEnabled(true);
             m_pCmbGridScaleLabelsFont->setEnabled(true);
             m_pCmbGridScaleLabelsFontSize->setEnabled(true);
@@ -1018,10 +1049,12 @@ void CWdgtDrawingViewProperties::setMode(EMode i_mode)
             m_pEdtImageSizeHeight_px->setReadOnly(true);
 
             m_pChkGridLinesVisible->setEnabled(false);
+            m_pEdtGridLinesDistMin->setEnabled(false);
+            //m_pEdtGridLinesDistMin->setReadOnly(true);
             m_pCmbGridLinesStyle->setEnabled(false);
-            m_pBtnGridLinesColor->setEnabled(false);
             m_pEdtGridLinesWidth->setEnabled(false);
             //m_pEdtGridLinesWidth->setReadOnly(true);
+            m_pBtnGridLinesColor->setEnabled(false);
             m_pChkGridScaleLabelsVisible->setEnabled(false);
             m_pCmbGridScaleLabelsFont->setEnabled(false);
             m_pCmbGridScaleLabelsFontSize->setEnabled(false);
@@ -1425,6 +1458,27 @@ void CWdgtDrawingViewProperties::onChkGridLinesVisibleStateChanged(int i_iState)
         /* strAddInfo   */ strMthInArgs );
 
     setGridLinesVisible(i_iState == Qt::Checked);
+}
+
+//------------------------------------------------------------------------------
+void CWdgtDrawingViewProperties::onEdtGridLinesDistMinValueChanged(int i_iVal)
+//------------------------------------------------------------------------------
+{
+    if( m_iValueChangedSignalsBlocked > 0 ) {
+        return;
+    }
+
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString::number(i_iVal);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onEdtGridLinesDistMinValueChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    setGridLinesDistMin(i_iVal);
 }
 
 //------------------------------------------------------------------------------
@@ -1985,6 +2039,27 @@ void CWdgtDrawingViewProperties::setGridLinesVisible(bool i_bVisible)
 }
 
 //------------------------------------------------------------------------------
+void CWdgtDrawingViewProperties::setGridLinesDistMin(int i_iDistMin_px)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = QString::number(i_iDistMin_px);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setGridLinesDistMin",
+        /* strAddInfo   */ strMthInArgs );
+
+    if( m_gridSettings.linesDistMin() != i_iDistMin_px) {
+        CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
+        m_gridSettings.setLinesDistMin(i_iDistMin_px);
+        emit_gridSettingsChanged(m_gridSettings);
+    }
+}
+
+//------------------------------------------------------------------------------
 void CWdgtDrawingViewProperties::setGridLinesStyle(ELineStyle i_lineStyle)
 //------------------------------------------------------------------------------
 {
@@ -2044,7 +2119,6 @@ void CWdgtDrawingViewProperties::setGridLinesWidth(int i_iWidth_px)
     if( m_gridSettings.linesWidth() != i_iWidth_px) {
         CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
         m_gridSettings.setLinesWidth(i_iWidth_px);
-        updateGridLinesColorButtonIcon();
         emit_gridSettingsChanged(m_gridSettings);
     }
 }
@@ -2346,6 +2420,7 @@ void CWdgtDrawingViewProperties::updateGridSettings()
     CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
 
     m_pChkGridLinesVisible->setChecked(m_gridSettings.areLinesVisible());
+    m_pEdtGridLinesDistMin->setValue(m_gridSettings.linesDistMin());
     m_pEdtGridLinesWidth->setValue(m_gridSettings.linesWidth());
     m_pChkGridScaleLabelsVisible->setChecked(m_gridSettings.areLabelsVisible());
     int idx = m_pCmbGridLinesStyle->findData(m_gridSettings.linesStyle().enumeratorAsInt());
@@ -2398,7 +2473,7 @@ QSize CWdgtDrawingViewProperties::fillGridLineStylesModel()
             QStandardItem* pLineStyleItem = new QStandardItem();
             pLineStyleItem->setData(pxmLineStyle, Qt::DecorationRole);
             pLineStyleItem->setData(static_cast<int>(lineStyle.enumerator()), Qt::UserRole);
-            m_pModelGridLineStyles->appendRow(pLineStyleItem);
+            m_pModelGridLinesStyles->appendRow(pLineStyleItem);
         }
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))

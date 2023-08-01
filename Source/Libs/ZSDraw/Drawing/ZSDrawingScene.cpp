@@ -307,6 +307,10 @@ void CDrawingScene::setDrawingSize( const CDrawingSize& i_size)
         m_drawingSize = i_size;
         QRectF rect(QPointF(0.0, 0.0), m_drawingSize.imageSizeInPixels());
         setSceneRect(rect);
+        // Just a small note about pixel range and min and max values:
+        // If you don't use a metric system like in drawings and define
+        // a 500 pixel range, min is at 0, max is at 499. To have min
+        // and max set to 0 and 500 a range of 501 pixels must be defined.
         if (m_drawingSize.dimensionUnit() == EDrawingDimensionUnit::Metric) {
             // Metric units: the origin is at the bottom left corner.
             // XScaleMin = XMin_px, XScaleMax = XMax_px
@@ -314,11 +318,11 @@ void CDrawingScene::setDrawingSize( const CDrawingSize& i_size)
             // The greater the value, the less the pixel coordinate on the screen.
             m_divLinesMetricsX.setScale(
                 0.0, m_drawingSize.metricImageWidth().getVal(), 0.0,
-                0, m_drawingSize.imageWidthInPixels());
+                0, m_drawingSize.imageWidthInPixels()-1);
             // The Y scale direction is from bottom to top.
             m_divLinesMetricsY.setScale(
-                0.0, m_drawingSize.metricImageHeight().getVal(), 0.0,
-                m_drawingSize.imageHeightInPixels(), 0);
+                0.0, m_drawingSize.metricImageHeight().getVal()-1, 0.0,
+                m_drawingSize.imageHeightInPixels()-1, 0);
         }
         else {
             // Pixel drawing: the origin is at the top left corner:
@@ -326,12 +330,12 @@ void CDrawingScene::setDrawingSize( const CDrawingSize& i_size)
             // YScaleMin = XMin_px, YScaleMax = XMax_px
             // The greater the value, the greater the pixel coordinate on the screen.
             m_divLinesMetricsX.setScale(
-                0.0, m_drawingSize.imageWidthInPixels(), 0.0,
-                0, m_drawingSize.imageWidthInPixels());
+                0.0, m_drawingSize.imageWidthInPixels()-1, 0.0,
+                0, m_drawingSize.imageWidthInPixels()-1);
             // The Y scale direction is from top to bottom.
             m_divLinesMetricsY.setScale(
-                0.0, m_drawingSize.imageHeightInPixels(), 0.0,
-                0, m_drawingSize.imageHeightInPixels());
+                0.0, m_drawingSize.imageHeightInPixels()-1, 0.0,
+                0, m_drawingSize.imageHeightInPixels()-1);
         }
         m_divLinesMetricsX.update();
         m_divLinesMetricsY.update();
@@ -369,14 +373,14 @@ void CDrawingScene::setGridSettings( const CDrawGridSettings& i_settings)
     {
         m_gridSettings = i_settings;
 
-        m_divLinesMetricsX.setDivLinesDistMinInPix(EDivLineLayer::Main, 10);
+        m_divLinesMetricsX.setDivLinesDistMinInPix(EDivLineLayer::Main, m_gridSettings.linesDistMin());
         m_divLinesMetricsX.setFont(m_gridSettings.labelsFont());
         //m_divLinesMetricsX.setDigitsCountMax(0);
         //m_divLinesMetricsX.setUseEngineeringFormat(false);
         //m_divLinesMetricsX.setDivLineLabelsMinTextExtent(QSize(0, 0));
         m_divLinesMetricsX.update();
 
-        m_divLinesMetricsY.setDivLinesDistMinInPix(EDivLineLayer::Main, 10);
+        m_divLinesMetricsY.setDivLinesDistMinInPix(EDivLineLayer::Main, m_gridSettings.linesDistMin());
         m_divLinesMetricsY.setFont(m_gridSettings.labelsFont());
         //m_divLinesMetricsY.setDigitsCountMax(0);
         //m_divLinesMetricsY.setUseEngineeringFormat(false);

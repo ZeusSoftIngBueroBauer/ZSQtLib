@@ -62,6 +62,8 @@ public: // operators
 public: // instance methods
     void setLinesVisible(bool i_bVisible);
     bool areLinesVisible() const;
+    void setLinesDistMin(int i_iDistMin_px);
+    int linesDistMin() const;
     void setLinesStyle(const CEnumLineStyle& i_eLineStyle);
     CEnumLineStyle linesStyle() const;
     void setLinesWidth(int i_iWidth_px);
@@ -86,6 +88,7 @@ public: // instance methods
 protected: // instance members
     QString m_strName;
     bool m_bLinesVisible;
+    int m_iLinesDistMin_px;
     CEnumLineStyle m_eLinesStyle;
     int m_iLinesWidth_px;
     QColor m_colorLines;

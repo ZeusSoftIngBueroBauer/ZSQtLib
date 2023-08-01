@@ -113,6 +113,7 @@ protected slots:
     void onEdtImageSizeWidthPxValueChanged(int i_cxWidth_px);
     void onEdtImageSizeHeightPxValueChanged(int i_cyHeight_px);
     void onChkGridLinesVisibleStateChanged(int i_iState);
+    void onEdtGridLinesDistMinValueChanged(int i_iVal);
     void onCmbGridLinesStyleCurrentIndexChanged(int i_idx);
     void onEdtGridLinesWidthValueChanged(int i_iVal);
     void onBtnGridLinesColorClicked(bool i_bChecked);
@@ -134,6 +135,7 @@ protected: // instance methods
     void setImageSize( const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight );
 protected: // instance methods
     void setGridLinesVisible(bool i_bVisible);
+    void setGridLinesDistMin(int i_iDistMin_px);
     void setGridLinesStyle(ELineStyle i_lineStyle);
     void setGridLinesColor(const QColor& i_color);
     void setGridLinesWidth(int i_iWidth_px);
@@ -226,8 +228,10 @@ protected: // instance members
     QGridLayout* m_pLytGridSettings;
     QLabel* m_pLblGridLines;
     QCheckBox* m_pChkGridLinesVisible;
+    QLabel* m_pLblGridLinesDistMin;
+    QSpinBox* m_pEdtGridLinesDistMin;
     QComboBox* m_pCmbGridLinesStyle;
-    QStandardItemModel* m_pModelGridLineStyles;
+    QStandardItemModel* m_pModelGridLinesStyles;
     QSpinBox* m_pEdtGridLinesWidth;
     QPixmap* m_pPxmBtnGridLinesColor;
     QRect m_rctBtnGridLinesColor;

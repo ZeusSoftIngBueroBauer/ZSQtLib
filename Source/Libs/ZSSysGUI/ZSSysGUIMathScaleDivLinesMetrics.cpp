@@ -561,6 +561,28 @@ QRect CScaleDivLinesMetrics::getDivLineLabelBoundingRect(
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Returns the calculated string the minimum scale value.
+
+    @return Minimum scale value as string.
+*/
+//------------------------------------------------------------------------------
+QString CScaleDivLinesMetrics::getScaleMinValText() const
+{
+    return m_arstrScaleMinMaxVal[0];
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the calculated string the maximum scale value.
+
+    @return Maximum scale value as string.
+*/
+//------------------------------------------------------------------------------
+QString CScaleDivLinesMetrics::getScaleMaxValText() const
+{
+    return m_arstrScaleMinMaxVal[1];
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Returns the calculated bounding rectangles of the minimum scale value.
 
     @return Bounding rectangle of the minimum scale value.
@@ -1050,14 +1072,14 @@ void CScaleDivLinesMetrics::updateScaleMinMaxBoundingRects()
             m_arrectScaleMinMaxVal[idxMinMax].setHeight(m_arrectScaleMinMaxVal[idxMinMax].height() + 2);
             m_arrectScaleMinMaxVal[idxMinMax].moveLeft(xDivLine - m_arrectScaleMinMaxVal[idxMinMax].width()/2);
 
-            if (m_arrectScaleMinMaxVal[idxMinMax].left() <= m_fMin_px) {
-                int cxOffset = m_fMin_px - m_arrectScaleMinMaxVal[idxMinMax].left() + 1;
-                m_arrectScaleMinMaxVal[idxMinMax].moveLeft(m_arrectScaleMinMaxVal[idxMinMax].left() + cxOffset);
-            }
-            else if (m_arrectScaleMinMaxVal[idxMinMax].right() >= m_fMax_px) {
-                int cxOffset = m_arrectScaleMinMaxVal[idxMinMax].right() - m_fMax_px + 1;
-                m_arrectScaleMinMaxVal[idxMinMax].moveRight(m_arrectScaleMinMaxVal[idxMinMax].right() - cxOffset);
-            }
+            //if (m_arrectScaleMinMaxVal[idxMinMax].left() <= m_fMin_px) {
+            //    int cxOffset = m_fMin_px - m_arrectScaleMinMaxVal[idxMinMax].left() + 1;
+            //    m_arrectScaleMinMaxVal[idxMinMax].moveLeft(m_arrectScaleMinMaxVal[idxMinMax].left() + cxOffset);
+            //}
+            //else if (m_arrectScaleMinMaxVal[idxMinMax].right() >= m_fMax_px) {
+            //    int cxOffset = m_arrectScaleMinMaxVal[idxMinMax].right() - m_fMax_px + 1;
+            //    m_arrectScaleMinMaxVal[idxMinMax].moveRight(m_arrectScaleMinMaxVal[idxMinMax].right() - cxOffset);
+            //}
         }
     }
     else // if (m_scaleDir == EScaleDir::Y)
@@ -1082,16 +1104,16 @@ void CScaleDivLinesMetrics::updateScaleMinMaxBoundingRects()
             m_arrectScaleMinMaxVal[idxMinMax].setHeight(m_arrectScaleMinMaxVal[idxMinMax].height() + 2);
             m_arrectScaleMinMaxVal[idxMinMax].moveTop(yDivLine - m_arrectScaleMinMaxVal[idxMinMax].height()/2);
 
-            if (m_arrectScaleMinMaxVal[idxMinMax].bottom() <= m_fMin_px)
-            {
-                int cyOffset = m_arrectScaleMinMaxVal[idxMinMax].bottom() - m_fMin_px + 1;
-                m_arrectScaleMinMaxVal[idxMinMax].moveBottom(m_arrectScaleMinMaxVal[idxMinMax].bottom() - cyOffset);
-            }
-            else if (m_arrectScaleMinMaxVal[idxMinMax].top() >= m_fMax_px)
-            {
-                int cyOffset = m_fMax_px - m_arrectScaleMinMaxVal[idxMinMax].top() + 1;
-                m_arrectScaleMinMaxVal[idxMinMax].moveTop(m_arrectScaleMinMaxVal[idxMinMax].top() + cyOffset);
-            }
+            //if (m_arrectScaleMinMaxVal[idxMinMax].bottom() <= m_fMin_px)
+            //{
+            //    int cyOffset = m_arrectScaleMinMaxVal[idxMinMax].bottom() - m_fMin_px + 1;
+            //    m_arrectScaleMinMaxVal[idxMinMax].moveBottom(m_arrectScaleMinMaxVal[idxMinMax].bottom() - cyOffset);
+            //}
+            //else if (m_arrectScaleMinMaxVal[idxMinMax].top() >= m_fMax_px)
+            //{
+            //    int cyOffset = m_fMax_px - m_arrectScaleMinMaxVal[idxMinMax].top() + 1;
+            //    m_arrectScaleMinMaxVal[idxMinMax].moveTop(m_arrectScaleMinMaxVal[idxMinMax].top() + cyOffset);
+            //}
         }
     }
 } // updateScaleMinMaxBoundingRects

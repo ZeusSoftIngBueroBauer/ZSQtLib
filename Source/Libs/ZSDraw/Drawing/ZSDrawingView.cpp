@@ -642,35 +642,23 @@ void CDrawingView::paintLabels(QPainter* i_pPainter)
 
     CDrawingSize drawingSize = m_pDrawingScene->drawingSize();
     CDrawGridSettings gridSettings = m_pDrawingScene->gridSettings();
+
     const GUI::Math::CScaleDivLinesMetrics& divLinesMetricsX = m_pDrawingScene->divLinesMetricsX();
     const GUI::Math::CScaleDivLinesMetrics& divLinesMetricsY = m_pDrawingScene->divLinesMetricsY();
 
-    QFontMetrics fntmtr(gridSettings.labelsFont());
-    QSize sizeUnitString;
-    if (drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels) {
-        sizeUnitString = fntmtr.boundingRect(Units.Length.pxX.symbol()).size();
-    }
-    else {
-        sizeUnitString = fntmtr.boundingRect(drawingSize.metricUnit().symbol()).size();
-     }
-    sizeUnitString.setHeight(sizeUnitString.height() + 2);
-    sizeUnitString.setWidth(sizeUnitString.width() + 2);
-
-    //m_rectDivLineLabelsPhysUnit = QRect(
-    //    0, 0, sizeUnitString.width(), sizeUnitString.height());
-
-    i_pPainter->setPen(gridSettings.labelsTextColor());
-    i_pPainter->setFont(gridSettings.labelsFont());
-
     EDivLineLayer eLayer = EDivLineLayer::Main;
+
+    // Lines from drawing scene to labels
+    // ----------------------------------
 
     QPen pen(gridSettings.linesColor());
     pen.setStyle(lineStyle2QtPenStyle(gridSettings.linesStyle().enumerator()));
     pen.setWidth(gridSettings.linesWidth());
     i_pPainter->setPen(pen);
 
-    for (int idxLine = 0; idxLine < divLinesMetricsX.getDivLinesCount(EDivLineLayer::Main); ++idxLine ) {
-        int x = rectScene.left() + divLinesMetricsX.getDivLineInPix(EDivLineLayer::Main, idxLine);
+    // X Axis
+    for (int idxDivLine = 0; idxDivLine < divLinesMetricsX.getDivLinesCount(EDivLineLayer::Main); ++idxDivLine ) {
+        int x = rectScene.left() + divLinesMetricsX.getDivLineInPix(EDivLineLayer::Main, idxDivLine);
         if (drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels) {
             i_pPainter->drawLine(x, rectScene.top(), x, rectScene.top() - 5);
         }
@@ -679,48 +667,105 @@ void CDrawingView::paintLabels(QPainter* i_pPainter)
         }
     }
 
+    // Y Axis
+    for (int idxDivLine = 0; idxDivLine < divLinesMetricsY.getDivLinesCount(EDivLineLayer::Main); ++idxDivLine ) {
+        int y = rectScene.top() + divLinesMetricsY.getDivLineInPix(EDivLineLayer::Main, idxDivLine);
+        i_pPainter->drawLine(rectScene.left(), y, rectScene.left() - 5, y);
+    }
+
+    // Labels and unit string
+    // ----------------------
+
+    i_pPainter->setPen(gridSettings.labelsTextColor());
+    i_pPainter->setFont(gridSettings.labelsFont());
+
+    QFontMetrics fntmtr(gridSettings.labelsFont());
+    QSize sizeUnitString;
+    QString strUnit;
+    if (drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels) {
+        strUnit = "Px";
+    }
+    else {
+        strUnit = drawingSize.metricUnit().symbol();
+     }
+    sizeUnitString = fntmtr.boundingRect(strUnit).size();
+    sizeUnitString.setHeight(sizeUnitString.height() + 2);
+    sizeUnitString.setWidth(sizeUnitString.width() + 2);
+
+    QRect rectDivLineLabelsPhysUnit = QRect(
+        0, 0, sizeUnitString.width(), sizeUnitString.height());
+
+    // X Axis
+    QRect rectXScaleMax = divLinesMetricsX.getScaleMaxValBoundingRect();
+    rectXScaleMax.moveLeft(rectScene.left() + rectXScaleMax.left());
+    if (drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels) {
+        rectXScaleMax.moveTop(rectScene.top() - rectXScaleMax.height() - 5);
+    }
+    else {
+        rectXScaleMax.moveTop(rectScene.bottom() + 5);
+    }
+    QPoint ptCenterXScaleMax = rectXScaleMax.center();
+    rectXScaleMax.setWidth(sizeUnitString.width());
+    rectXScaleMax.setHeight(sizeUnitString.height());
+    rectXScaleMax.moveCenter(ptCenterXScaleMax);
+    //i_pPainter->drawRect(rectXScaleMax);
+    i_pPainter->drawText(rectXScaleMax, Qt::AlignVCenter|Qt::AlignHCenter, strUnit);
+
     for (int idxDivLine = 0; idxDivLine < divLinesMetricsX.getDivLinesCount(eLayer); idxDivLine++)
     {
         if (divLinesMetricsX.isDivLineLabelVisible(eLayer, idxDivLine))
         {
-            QString strDivLineLabel = divLinesMetricsX.getDivLineLabelText(eLayer, idxDivLine);
-            QRect rectDivLineLabel = divLinesMetricsX.getDivLineLabelBoundingRect(eLayer, idxDivLine);
-            QRect rect;
-
-            rect.setLeft(rectScene.left() + rectDivLineLabel.left());
-            rect.setRight(rect.left() + rectDivLineLabel.width());
-
+            QString strDivLineLabel;
             if (drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels) {
-                rect.setTop(rectScene.top() - rectDivLineLabel.height() - 5);
-                rect.setBottom(rectScene.top());
+                int x = divLinesMetricsX.getDivLineInPix(EDivLineLayer::Main, idxDivLine);
+                strDivLineLabel = QString::number(x);
             }
             else {
-                rect.setTop(rectScene.bottom() + 5);
-                rect.setBottom(rect.top() + rectDivLineLabel.height());
+                strDivLineLabel = divLinesMetricsX.getDivLineLabelText(eLayer, idxDivLine);
             }
-            i_pPainter->drawText(rect, Qt::AlignVCenter|Qt::AlignHCenter, strDivLineLabel);
+            QRect rectDivLineLabel = divLinesMetricsX.getDivLineLabelBoundingRect(eLayer, idxDivLine);
+            QRect rect = rectDivLineLabel;
+            rect.moveLeft(rectScene.left() + rectDivLineLabel.left());
+            if (drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels) {
+                rect.moveTop(rectScene.top() - rectDivLineLabel.height() - 5);
+            }
+            else {
+                rect.moveTop(rectScene.bottom() + 5);
+            }
+            if (!rect.intersects(rectXScaleMax)) {
+                i_pPainter->drawText(rect, Qt::AlignVCenter|Qt::AlignHCenter, strDivLineLabel);
+            }
         }
     }
 
-    for (int idxLine = 0; idxLine < divLinesMetricsY.getDivLinesCount(EDivLineLayer::Main); ++idxLine ) {
-        int y = rectScene.top() + divLinesMetricsY.getDivLineInPix(EDivLineLayer::Main, idxLine);
-        i_pPainter->drawLine(rectScene.left(), y, rectScene.left() - 5, y);
-    }
+    // Y Axis
+    QRect rectYScaleMax = divLinesMetricsY.getScaleMaxValBoundingRect();
+    rectYScaleMax.setWidth(sizeUnitString.width());
+    rectYScaleMax.setHeight(sizeUnitString.height());
+    rectYScaleMax.moveRight(rectScene.left() - 7);
+    rectYScaleMax.moveTop(rectScene.top() + rectYScaleMax.top());
+    //i_pPainter->drawRect(rectYScaleMax);
+    i_pPainter->drawText(rectYScaleMax, Qt::AlignVCenter|Qt::AlignRight, strUnit);
 
     for (int idxDivLine = 0; idxDivLine < divLinesMetricsY.getDivLinesCount(eLayer); idxDivLine++)
     {
         if (divLinesMetricsY.isDivLineLabelVisible(eLayer, idxDivLine))
         {
-            QString strDivLineLabel = divLinesMetricsY.getDivLineLabelText(eLayer, idxDivLine);
+            QString strDivLineLabel;
+            if (drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels) {
+                int y = divLinesMetricsY.getDivLineInPix(EDivLineLayer::Main, idxDivLine);
+                strDivLineLabel = QString::number(y);
+            }
+            else {
+                strDivLineLabel = divLinesMetricsY.getDivLineLabelText(eLayer, idxDivLine);
+            }
             QRect rectDivLineLabel = divLinesMetricsY.getDivLineLabelBoundingRect(eLayer, idxDivLine);
-            QRect rect;
-
-            rect.setLeft(rectScene.left() - rectDivLineLabel.width() - 7);
-            rect.setRight(rect.left() + rectDivLineLabel.width());
-            rect.setTop(rectScene.top() + rectDivLineLabel.top());
-            rect.setBottom(rect.top() + rectDivLineLabel.height());
-
-            i_pPainter->drawText(rect, Qt::AlignVCenter|Qt::AlignRight, strDivLineLabel);
+            QRect rect = rectDivLineLabel;
+            rect.moveLeft(rectScene.left() - rectDivLineLabel.width() - 7);
+            rect.moveTop(rectScene.top() + rectDivLineLabel.top());
+            if (!rect.intersects(rectYScaleMax)) {
+                i_pPainter->drawText(rect, Qt::AlignVCenter|Qt::AlignRight, strDivLineLabel);
+            }
         }
     }
 

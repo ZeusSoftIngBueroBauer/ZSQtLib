@@ -48,6 +48,7 @@ CDrawGridSettings::CDrawGridSettings(const QString& i_strName) :
 //------------------------------------------------------------------------------
     m_strName(i_strName),
     m_bLinesVisible(false),
+    m_iLinesDistMin_px(20),
     m_eLinesStyle(ELineStyle::SolidLine),
     m_iLinesWidth_px(1),
     m_colorLines(Qt::black),
@@ -65,6 +66,7 @@ CDrawGridSettings::CDrawGridSettings(const CDrawGridSettings& i_other) :
 //------------------------------------------------------------------------------
     m_strName(i_other.m_strName),
     m_bLinesVisible(i_other.m_bLinesVisible),
+    m_iLinesDistMin_px(i_other.m_iLinesDistMin_px),
     m_eLinesStyle(i_other.m_eLinesStyle),
     m_iLinesWidth_px(i_other.m_iLinesWidth_px),
     m_colorLines(i_other.m_colorLines),
@@ -83,6 +85,7 @@ CDrawGridSettings::~CDrawGridSettings()
 {
     //m_strName;
     m_bLinesVisible = false;
+    m_iLinesDistMin_px = 0;
     m_eLinesStyle = static_cast<ELineStyle>(0);
     m_iLinesWidth_px = 0;
     //m_colorLines;
@@ -104,6 +107,9 @@ bool CDrawGridSettings::operator == (const CDrawGridSettings& i_other) const
 {
     bool bEqual = true;
     if (m_bLinesVisible != i_other.m_bLinesVisible) {
+        bEqual = false;
+    }
+    else if (m_iLinesDistMin_px != i_other.m_iLinesDistMin_px) {
         bEqual = false;
     }
     else if (m_eLinesStyle != i_other.m_eLinesStyle) {
@@ -159,6 +165,20 @@ bool CDrawGridSettings::areLinesVisible() const
 //------------------------------------------------------------------------------
 {
     return m_bLinesVisible;
+}
+
+//------------------------------------------------------------------------------
+void CDrawGridSettings::setLinesDistMin(int i_iDistMin_px)
+//------------------------------------------------------------------------------
+{
+    m_iLinesDistMin_px = i_iDistMin_px;
+}
+
+//------------------------------------------------------------------------------
+int CDrawGridSettings::linesDistMin() const
+//------------------------------------------------------------------------------
+{
+    return m_iLinesDistMin_px;
 }
 
 //------------------------------------------------------------------------------

@@ -1777,7 +1777,7 @@ void CScaleDivLines::updateLinearSpacing()
             // Store the calculated results:
             if( ariDivLineCountTmp[iLayer] > 0 )
             {
-                if( iLayer == 0 )
+                if( iLayer == EDivLineLayerMain )
                 {
                     // Count visible division lines for the main grid lines:
                     ariDivLineCount[iLayer] = ariDivLineCountTmp[iLayer];
@@ -1797,7 +1797,7 @@ void CScaleDivLines::updateLinearSpacing()
                         m_ararfDivLines_px[iLayer][idxDivLine] = getValInPix(fVal);
                     }
                 }
-                else // if (iLayer != 0)
+                else // if (iLayer == EDivLineLayerSub)
                 {
                     // Count visible sub division lines:
                     double fPrevLayerDivLineVal = 0.0;
