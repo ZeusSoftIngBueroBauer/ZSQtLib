@@ -84,7 +84,7 @@ CGraphObjLabel::CGraphObjLabel(
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
         /* type                */ EGraphObjTypeLabel,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeLabel),
-        /* strObjName          */ i_pGraphObjParent->path() + ".Label." + i_strKey,
+        /* strObjName          */ /*i_pGraphObjParent->path() + ".Label." +*/ i_strKey,
         /* drawSettings        */ CDrawSettings(),
         /* idxTreeEntryType    */ EEntryType::Leave ),
     QGraphicsSimpleTextItem(i_strText),

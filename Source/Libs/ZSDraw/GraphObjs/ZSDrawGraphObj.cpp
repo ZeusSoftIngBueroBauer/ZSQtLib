@@ -470,9 +470,38 @@ CGraphObj::~CGraphObj()
         }
     }
 
-    destroyLabels(m_arpNameLabels);
-    destroyLabels(m_arpPosLabels);
-    destroyLabels(m_arpDimLineLabels);
+    // Please note that the dynamic cast to QGraphicsItem returns nullptr if the
+    // dtor of QGraphicsItem has already been executed. The desctructor of the
+    // derived classes is called before the destructor of the base classes.
+    // The base classes are CGraphObj and QGraphicsItem. The order the dtors
+    // of inherited classes are called depend on the order the classes
+    // appear in the list of the inherited classes on defining the
+    // class implementation. So we can't call "removeItem" here as the
+    // the destructor of QGraphicsItem may have already been called. The
+    // graphics item must be removed from the drawing scene's item list before
+    // the dtor of class QGraphicsItem is called. And this is only always
+    // the case in the dtor of the class derived from QGraphicsItem.
+    //
+    // Inheritance Graph:
+    //
+    //  +---------------+     +----------------+
+    //  | CIdxTreeEntry |     | QGraphicsItem  |
+    //  +---------------+     +----------------+
+    //          +                      +
+    //          |                      |
+    //  +---------------+    +-------------------+
+    //  |   CGraphObj   |    | QGraphicsLineItem |
+    //  +---------------+    +-------------------+
+    //             +             +
+    //              \           /
+    //           +-----------------+
+    //           |  CGraphObjLine  |
+    //           +-----------------+
+
+    // Must be called in derived classes:
+    //destroyLabels(m_arpNameLabels);
+    //destroyLabels(m_arpPosLabels);
+    //destroyLabels(m_arpDimLineLabels);
 
     //if( m_pDrawingScene != nullptr )
     //{
@@ -492,15 +521,6 @@ CGraphObj::~CGraphObj()
     //    }
     //    else
     //    {
-    //        // Please note that the dynamic cast to QGraphicsItem returns nullptr if the
-    //        // dtor of QGraphicsItem has already been executed. The order the dtors
-    //        // of QGraphicsItem has already been executed. The order the dtors
-    //        // of inherited classes are called depend on the order the classes
-    //        // appear in the list of the inherited classes on defining the
-    //        // class implementation. So we can't call "removeItem" here but must
-    //        // remove the graphics item from the drawing scene's item list before
-    //        // the dtor of class QGraphicsItem is called. And this is only always
-    //        // the case in the dtor of the class derived from QGraphicsItem.
     //        //QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
     //        //m_pDrawingScene->removeItem(pGraphicsItem);
     //    }
@@ -5644,11 +5664,6 @@ void CGraphObj::showLabel(
         ptLabelTmp.setY( ptLabelTmp.y() - pGraphObjLabel->getHeight() );
     }
 
-/*==============================================================================
-protected: // overridables
-==============================================================================*/
-
-//------------------------------------------------------------------------------
     bool bUniquePos = false;
 
     while( !bUniquePos )

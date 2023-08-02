@@ -1865,6 +1865,13 @@ void CWdgtFormatGraphObjsLabelVisibilities::fillComboAnchorSelPt( QComboBox* i_p
         i_pCmb->setCurrentText( eSelPt.toString(EEnumEntryAliasStrText) );
         i_pCmb->setEnabled(false);
     }
+    else if( graphObjType == EGraphObjTypeLine )
+    {
+        CEnumSelectionPoint eSelPt = ESelectionPoint::Center;
+        i_pCmb->addItem(eSelPt.toString(EEnumEntryAliasStrText), eSelPt.enumeratorAsInt());
+        i_pCmb->setCurrentText( eSelPt.toString(EEnumEntryAliasStrText) );
+        i_pCmb->setEnabled(false);
+    }
     else if( graphObjType == EGraphObjTypeGroup )
     {
         CEnumSelectionPoint eSelPt;
