@@ -69,6 +69,7 @@ CObjFactoryVoltageSource::CObjFactoryVoltageSource( const QPixmap& i_pxmToolIcon
 //------------------------------------------------------------------------------
     CObjFactory(
         /* strGroupName    */ CGraphObjElectricity::c_strFactoryGroupName,
+        /* strClassName    */ ClassName(),
         /* iGraphObjType   */ EGraphObjTypeUserDefined,
         /* strGraphObjType */ "VoltageSource",
         /* toolIcon        */ i_pxmToolIcon )

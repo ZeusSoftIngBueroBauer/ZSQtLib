@@ -68,6 +68,7 @@ CObjFactoryWdgtLabel::CObjFactoryWdgtLabel( const QPixmap& i_pxmToolIcon ) :
 //------------------------------------------------------------------------------
     CObjFactory(
         /* strGroupName    */ CGraphObjWdgt::c_strFactoryGroupName,
+        /* strClassName    */ ClassName(),
         /* iGraphObjType   */ EGraphObjTypeUserDefined,
         /* strGraphObjType */ "Label",
         /* toolIcon        */ i_pxmToolIcon )

@@ -60,6 +60,7 @@ CObjFactoryGroup::CObjFactoryGroup( const QPixmap& i_pxmToolIcon ) :
 //------------------------------------------------------------------------------
     CObjFactory(
         /* strGroupName    */ c_strGroupNameStandardShapes,
+        /* strClassName    */ ClassName(),
         /* iGraphObjType   */ EGraphObjTypeGroup,
         /* strGraphObjType */ ZS::Draw::graphObjType2Str(EGraphObjTypeGroup),
         /* toolIcon        */ i_pxmToolIcon )

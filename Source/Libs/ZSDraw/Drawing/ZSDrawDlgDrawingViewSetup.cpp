@@ -114,7 +114,7 @@ CDlgDrawingViewSetup::CDlgDrawingViewSetup(
 //------------------------------------------------------------------------------
     CDialog(
         /* strDlgTitle  */ i_strDlgTitle,
-        /* strNameSpace */ NameSpace(),
+        /* strNameSpace */ NameSpace() + "::Drawing",
         /* strClassName */ ClassName(),
         /* strObjName   */ i_pDrawingView->objectName(),
         /* pWdgtParent  */ i_pWdgtParent,
@@ -205,7 +205,7 @@ CDlgDrawingViewSetup::CDlgDrawingViewSetup(
     // <Widget> Drawing Scene
     //-----------------------
 
-    m_pWdgtDrawingViewProperties = new CWdgtDrawingViewProperties(m_pDrawingView, EMode::Edit);
+    m_pWdgtDrawingViewProperties = new CWdgtDrawingViewProperties(m_pDrawingView, "DialogPageSetup", EMode::Edit);
     m_pLyt->addWidget(m_pWdgtDrawingViewProperties);
 
     QObject::connect(
@@ -384,7 +384,7 @@ void CDlgDrawingViewSetup::onWdgtDrawingViewPropertiesDrawingSizeChanged(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_size.toString();
     }
     CMethodTracer mthTracer(
@@ -411,7 +411,7 @@ void CDlgDrawingViewSetup::onWdgtDrawingViewPropertiesGridSettingsChanged(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_settings.toString();
     }
     CMethodTracer mthTracer(

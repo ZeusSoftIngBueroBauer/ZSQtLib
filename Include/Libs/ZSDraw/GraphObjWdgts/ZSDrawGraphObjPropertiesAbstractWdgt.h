@@ -37,18 +37,32 @@ may result in using the software modules.
 
 #include "ZSDraw/Common/ZSDrawCommon.h"
 
+class QCheckBox;
+class QComboBox;
+class QFontComboBox;
+class QGroupBox;
+class QLabel;
+class QLineEdit;
+class QListView;
+class QPushButton;
 class QSettings;
+class QSpinBox;
+class QStandardItemModel;
+class QGridLayout;
+class QHBoxLayout;
+class QVBoxLayout;
 
 namespace ZS
 {
 namespace System
 {
-class CIdxTree;
+class CTrcAdminObj;
 }
 
 namespace Draw
 {
 class CDrawingScene;
+class CGraphObj;
 
 //******************************************************************************
 class ZSDRAWDLL_API CWdgtGraphObjPropertiesAbstract : public QWidget
@@ -61,30 +75,52 @@ public: // class methods
 public: // ctors and dtor
     CWdgtGraphObjPropertiesAbstract(
         CDrawingScene* i_pDrawingScene,
+        const QString& i_strClassName,
+        const QString& i_strObjName,
+        ZS::System::EMode i_mode = ZS::System::EMode::View,
         QWidget* i_pWdgtParent = nullptr);
     virtual ~CWdgtGraphObjPropertiesAbstract();
+protected: // ctor auxiliary methods
+    QWidget* createButtonsLineWidget();
 public: // overridables
     virtual QString nameSpace() const { return CWdgtGraphObjPropertiesAbstract::NameSpace(); }
     virtual QString className() const { return CWdgtGraphObjPropertiesAbstract::ClassName(); }
+public: // overridables of base class CWdgtGraphObjPropertiesAbstract
+    virtual bool hasChanges() const;
+    virtual void acceptChanges();
+    virtual void rejectChanges();
 public: // overridables
-    virtual void saveState(QSettings& i_settings) const;
-    virtual void restoreState(const QSettings& i_settings);
+    virtual void setMode(ZS::System::EMode i_mode);
+    ZS::System::EMode mode() const;
 public: // overridables
-    virtual void setKeyInTree( const QString& i_strKeyInTree );
+    virtual void setKeyInTree(const QString& i_strKeyInTree);
     QString getKeyInTree() const;
-public: // overridables
-    virtual void resizeToContents();
-protected slots:
-    void onIdxTreeAboutToBeDestroyed();
+protected slots: // overridables
+    virtual void onBtnEditClicked(bool i_bChecked = false);
+protected: // overridables
+    virtual void onGraphObjChanged();
+private slots:
+    void onDrawingSceneGraphObjChanged(const QString& i_strKeyInTree);
 protected: // instance members
     CDrawingScene* m_pDrawingScene;
-    ZS::System::CIdxTree* m_pIdxTree;
+    ZS::System::EMode m_mode;
     QString m_strKeyInTree;
+    CGraphObj* m_pGraphObj;
     int m_cxLblWidthClm1;
     int m_cxEdtWidthClm1;
     int m_cxLblWidthClm2;
     int m_cxEdtWidthClm2;
     int m_cxClmSpacing;
+    /*!< Blocking signals counter. */
+    int m_iValueChangedSignalsBlocked;
+    // Edit Controls
+    QVBoxLayout* m_pLyt;
+    // Button Line
+    QWidget* m_pWdgtButtons;
+    QHBoxLayout* m_pLytWdgtButtons;
+    QPushButton* m_pBtnEdit;
+    /*!< Trace admin object for method tracing. */
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CWdgtGraphObjPropertiesAbstract
 

@@ -58,8 +58,10 @@ public: // class methods
 public: // ctors and dtor
     CWdgtFormatGraphObjs(
         CDrawingScene* i_pDrawingScene,
-        CGraphObj*     i_pGraphObj = nullptr,  // if nullptr the draw settings of the drawing scene are edited, if != nullptr the attributes of the grapic item are edited
-        QWidget*       i_pWdgtParent = nullptr );
+        const QString& i_strClassName,
+        const QString& i_strObjName,
+        CGraphObj* i_pGraphObj = nullptr,  // if nullptr the draw settings of the drawing scene are edited, if != nullptr the attributes of the grapic item are edited
+        QWidget* i_pWdgtParent = nullptr );
     virtual ~CWdgtFormatGraphObjs();
 public: // overridables
     /*! This virtual method returns the name space of the object's class.
@@ -79,18 +81,19 @@ public: // overridables
 protected: // must overridables
     virtual void onGraphObjChanged() = 0;
 private slots:
-    void onDrawingSceneGraphObjChanged( ZS::Draw::CDrawingScene* i_pDrawingScene, ZS::Draw::CGraphObj* i_pGraphObj );
+    void onDrawingSceneGraphObjChanged(const QString& i_strKeyInTree);
 protected: // instance members
-    CDrawingScene*  m_pDrawingScene;
-    CGraphObj*      m_pGraphObj;
-    QGraphicsItem*  m_pGraphicsItem;
-    CDrawSettings   m_drawSettings;
-    // List of popup widgets which have to be closed on activating other widgets
+    CDrawingScene* m_pDrawingScene;
+    CGraphObj* m_pGraphObj;
+    QGraphicsItem* m_pGraphicsItem;
+    CDrawSettings m_drawSettings;
+    /*!< List of popup widgets which have to be closed on activating other widgets. */
     QList<QWidget*> m_arpWdgtsPopup;
-    bool            m_bApplyingChanges; /*!< Flag to indicate the changes will be applied to the graphical object.
-                                             This flag has to be set at the beginning of "applyChanges" and reset
-                                             if all changes have been set. Afterwards "onGraphObjChanged" has to
-                                             be explicitely called at the end of "applyChanges". */
+    /*!< Flag to indicate the changes will be applied to the graphical object.
+         This flag has to be set at the beginning of "applyChanges" and reset
+         if all changes have been set. Afterwards "onGraphObjChanged" has to
+         be explicitely called at the end of "applyChanges". */
+    bool m_bApplyingChanges; 
 
 }; // class CWdgtFormatGraphObjs
 

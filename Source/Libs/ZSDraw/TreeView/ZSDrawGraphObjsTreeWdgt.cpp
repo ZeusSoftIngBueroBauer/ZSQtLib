@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjsTreeWdgt.h"
-#include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjsTreeView.h"
+#include "ZSDraw/TreeView/ZSDrawGraphObjsTreeWdgt.h"
+#include "ZSDraw/TreeView/ZSDrawGraphObjsTreeView.h"
 #include "ZSDraw/Drawing/ZSDrawingView.h"
 #include "ZSSysGUI/ZSSysIdxTreeModelEntry.h"
 #include "ZSSys/ZSSysAux.h"
@@ -130,7 +130,8 @@ CWdgtGraphObjsTree::CWdgtGraphObjsTree(
 {
     setObjectName(i_pDrawingView->objectName());
 
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
+        NameSpace() + "::TreeView", ClassName(), objectName());
 
     QString strMthInArgs;
 

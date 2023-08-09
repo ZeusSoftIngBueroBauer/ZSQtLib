@@ -56,6 +56,15 @@ namespace Electricity
 class CWdgtFormatGraphObjsTransistor : public CWdgtFormatGraphObjs
 //******************************************************************************
 {
+public: // class methods
+    /*! Returns the namespace the class belongs to.
+        Please note that the static class functions name must be different
+        from the non static virtual member function "nameSpace" */
+    static QString NameSpace() { return "ZS::Draw::Electricity"; }
+    /*! Returns the class name.
+        Please note that the static class functions name must be different
+        from the non static virtual member function "nameSpace" */
+    static QString ClassName() { return "CWdgtFormatGraphObjsTransistor"; }
 public: // ctors and dtor
     CWdgtFormatGraphObjsTransistor(
         CDrawingScene* i_pDrawingScene,

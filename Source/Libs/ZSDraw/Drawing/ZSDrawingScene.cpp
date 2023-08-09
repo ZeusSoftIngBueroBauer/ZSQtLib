@@ -158,14 +158,19 @@ CDrawingScene::CDrawingScene( QObject* i_pObjParent ) :
     m_pTrcAdminObjMouseMoveEvent(nullptr),
     m_pTrcAdminObjPaintEvent(nullptr)
 {
-    setObjectName("Drawing");
+    setObjectName("theInst");
 
     //if( m_strGraphObjNameSeparator.isEmpty() )
     //{
     //    m_strGraphObjNameSeparator = "/";
     //}
 
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
+        NameSpace() + "::Drawing", ClassName(), objectName());
+    m_pTrcAdminObjMouseMoveEvent = CTrcServer::GetTraceAdminObj(
+        NameSpace() + "::Drawing", ClassName() + "::MouseMoveEvent", objectName());
+    m_pTrcAdminObjPaintEvent = CTrcServer::GetTraceAdminObj(
+        NameSpace() + "::Drawing", ClassName() + "::PaintEvent", objectName());
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -202,8 +207,6 @@ CDrawingScene::CDrawingScene( QObject* i_pObjParent ) :
 
     //setItemIndexMethod(NoIndex);
 
-    m_pTrcAdminObjMouseMoveEvent = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName() + "-MouseMoveEvent");;
-    m_pTrcAdminObjPaintEvent = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName() + "-PaintEvent");;
 
     // To update the mode labels:
     setMode( EMode::Edit/*, m_editTool, m_editMode, m_editResizeMode*/ );
@@ -293,7 +296,7 @@ void CDrawingScene::setDrawingSize( const CDrawingSize& i_size)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_size.toString();
     }
     CMethodTracer mthTracer(
@@ -360,7 +363,7 @@ void CDrawingScene::setGridSettings( const CDrawGridSettings& i_settings)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_settings.toString();
     }
     CMethodTracer mthTracer(
@@ -409,7 +412,7 @@ SErrResultInfo CDrawingScene::load( const QString& i_strFileName )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "FileName:" + i_strFileName;
     }
     CMethodTracer mthTracer(
@@ -5743,18 +5746,15 @@ protected slots:
 /*! Slot connected to the treeEntryAdded signal of the index tree containing the
     graphical objects in the drawing scene.
 
-    The drawing scene just forwards this signal by emitting the graphObjChanged signal.
+    The drawing scene just forwards this signal by emitting the graphObjAdded signal.
 
-    @param i_pIdxTree [in]
-        Pointer to the index tree of the drawing scene.
-    @param i_pTreeEntry [in]
-        Pointer to the tree entry which has been newly added.
+    @param i_strKeyInTree [in] Unique key of the object.
 */
-void CDrawingScene::onGraphObjsIdxTreeEntryAdded( const QString& i_strKeyInTree )
+void CDrawingScene::onGraphObjsIdxTreeEntryAdded(const QString& i_strKeyInTree)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_strKeyInTree;
     }
     CMethodTracer mthTracer(
@@ -5762,12 +5762,8 @@ void CDrawingScene::onGraphObjsIdxTreeEntryAdded( const QString& i_strKeyInTree 
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onGraphObjsIdxTreeEntryAdded",
         /* strAddInfo   */ strMthInArgs );
-    CIdxTreeEntry* pTreeEntry = m_pGraphObjsIdxTree->findEntry(i_strKeyInTree);
-    CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pTreeEntry);
-    if( pGraphObj == nullptr ) {
-        throw(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObj == nullptr");
-    }
-    emit_graphObjChanged(this, pGraphObj);
+
+    emit_graphObjAdded(i_strKeyInTree);
 }
 
 //------------------------------------------------------------------------------
@@ -5776,16 +5772,13 @@ void CDrawingScene::onGraphObjsIdxTreeEntryAdded( const QString& i_strKeyInTree 
 
     The drawing scene just forwards this signal by emitting the graphObjChanged signal.
 
-    @param i_pIdxTree [in]
-        Pointer to the index tree of the drawing scene.
-    @param i_pTreeEntry [in]
-        Pointer to the tree entry for which properties have been changed.
+    @param i_strKeyInTree [in] Unique key of the object.
 */
-void CDrawingScene::onGraphObjsIdxTreeEntryChanged( const QString& i_strKeyInTree )
+void CDrawingScene::onGraphObjsIdxTreeEntryChanged(const QString& i_strKeyInTree)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_strKeyInTree;
     }
     CMethodTracer mthTracer(
@@ -5793,26 +5786,23 @@ void CDrawingScene::onGraphObjsIdxTreeEntryChanged( const QString& i_strKeyInTre
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onGraphObjsIdxTreeEntryChanged",
         /* strAddInfo   */ strMthInArgs );
-    CIdxTreeEntry* pTreeEntry = m_pGraphObjsIdxTree->findEntry(i_strKeyInTree);
-    CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pTreeEntry);
-    if( pGraphObj == nullptr ) {
-        throw(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObj == nullptr");
-    }
-    emit_graphObjChanged(this, pGraphObj);
+
+    emit_graphObjChanged(i_strKeyInTree);
 }
 
 //------------------------------------------------------------------------------
 /*! Slot connected to the treeEntryMoved signal of the index tree containing the
     graphical objects in the drawing scene.
 
-    The drawing scene just forwards this signal by emitting the graphObjChanged signal.
+    The drawing scene just forwards this signal by emitting the graphObjMoved signal.
 
     @param i_strNewKeyInTree [in]
         Key of the moved entry on the new position.
     @param i_strOrigKeyInTree [in]
         Key of the moved entry on the previous position.
     @param i_strKeyInTreeOfTargetBranch [in]
-        Key of the parent branch the entry is moved to.
+        Name of the object in the new target branch after moving the object.
+        Provided for conveninience as this is the last section of i_strNewKeyInTree.
 */
 void CDrawingScene::onGraphObjsIdxTreeEntryMoved(
     const QString& i_strNewKeyInTree,
@@ -5821,7 +5811,7 @@ void CDrawingScene::onGraphObjsIdxTreeEntryMoved(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "NewKey: " + i_strNewKeyInTree;
         strMthInArgs += ", OrigKey: " + i_strOrigKeyInTree;
         strMthInArgs += ", TargetBranch: " + i_strKeyInTreeOfTargetBranch;
@@ -5831,26 +5821,23 @@ void CDrawingScene::onGraphObjsIdxTreeEntryMoved(
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onGraphObjsIdxTreeEntryMoved",
         /* strAddInfo   */ strMthInArgs );
-    CIdxTreeEntry* pTreeEntry = m_pGraphObjsIdxTree->findEntry(i_strNewKeyInTree);
-    CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pTreeEntry);
-    if( pGraphObj == nullptr ) {
-        throw(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObj == nullptr");
-    }
-    emit_graphObjChanged(this, pGraphObj);
+
+    emit_graphObjMoved(i_strNewKeyInTree, i_strOrigKeyInTree, i_strKeyInTreeOfTargetBranch);
 }
 
 //------------------------------------------------------------------------------
 /*! Slot connected to the treeEntryRenamed signal of the index tree containing the
     graphical objects in the drawing scene.
 
-    The drawing scene just forwards this signal by emitting the graphObjChanged signal.
+    The drawing scene just forwards this signal by emitting the graphObjRenamed signal.
 
     @param i_strNewKeyInTree [in]
         Key of the moved entry on the new position.
     @param i_strOrigKeyInTree [in]
         Key of the moved entry on the previous position.
     @param i_strOrigName [in]
-        Pervious name of the entry.
+        Original name of the entry.
+        Provided for convenience as this is the last section of i_strOrigKeyInTree.
 */
 void CDrawingScene::onGraphObjsIdxTreeEntryRenamed(
     const QString& i_strNewKeyInTree,
@@ -5859,7 +5846,7 @@ void CDrawingScene::onGraphObjsIdxTreeEntryRenamed(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "NewKey: " + i_strNewKeyInTree;
         strMthInArgs += ", OrigKey: " + i_strOrigKeyInTree;
         strMthInArgs += ", OrigName: " + i_strOrigName;
@@ -5869,12 +5856,8 @@ void CDrawingScene::onGraphObjsIdxTreeEntryRenamed(
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onGraphObjsIdxTreeEntryRenamed",
         /* strAddInfo   */ strMthInArgs );
-    CIdxTreeEntry* pTreeEntry = m_pGraphObjsIdxTree->findEntry(i_strNewKeyInTree);
-    CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pTreeEntry);
-    if( pGraphObj == nullptr ) {
-        throw(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObj == nullptr");
-    }
-    emit_graphObjChanged(this, pGraphObj);
+
+    emit_graphObjRenamed(i_strNewKeyInTree, i_strOrigKeyInTree, i_strOrigName);
 }
 
 /*==============================================================================
@@ -6004,7 +5987,7 @@ void CDrawingScene::raiseErrorAttributeNotDefined(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_strElemName + ", " + i_strAttrName;
     }
     CMethodTracer mthTracer(
@@ -6026,7 +6009,7 @@ void CDrawingScene::raiseErrorAttributeOutOfRange(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_strElemName + ", " + i_strAttrName + " = " + i_strAttrVal;
     }
     CMethodTracer mthTracer(
@@ -6503,7 +6486,7 @@ void CDrawingScene::emit_drawingSizeChanged( const CDrawingSize& i_size )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_size.toString();
     }
     CMethodTracer mthTracer(
@@ -6520,7 +6503,7 @@ void CDrawingScene::emit_gridSettingsChanged( const CDrawGridSettings& i_setting
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_settings.toString();
     }
     CMethodTracer mthTracer(
@@ -6545,6 +6528,7 @@ void CDrawingScene::emit_mousePosChanged( const QPointF& i_ptMousePos )
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "emit_mousePosChanged",
         /* strAddInfo   */ strMthInArgs );
+
     emit mousePosChanged(i_ptMousePos);
 }
 
@@ -6557,6 +6541,7 @@ void CDrawingScene::emit_modeChanged()
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "emit_modeChanged",
         /* strAddInfo   */ "" );
+
     emit modeChanged();
 }
 
@@ -6565,7 +6550,7 @@ void CDrawingScene::emit_drawSettingsChanged( const ZS::Draw::CDrawSettings& i_d
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         //strMthInArgs = i_drawSettings.toString();
     }
     CMethodTracer mthTracer(
@@ -6573,104 +6558,100 @@ void CDrawingScene::emit_drawSettingsChanged( const ZS::Draw::CDrawSettings& i_d
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "emit_drawSettingsChanged",
         /* strAddInfo   */ strMthInArgs );
+
     emit drawSettingsChanged(i_drawSettings);
 }
 
 //------------------------------------------------------------------------------
-void CDrawingScene::emit_graphObjChanged(CDrawingScene* i_pDrawingScene, CGraphObj* i_pGraphObj )
+void CDrawingScene::emit_graphObjAdded(const QString& i_strKeyInTree)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
-        strMthInArgs = QString(i_pGraphObj == nullptr ? "null" : i_pGraphObj->keyInTree());
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strKeyInTree;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "emit_graphObjCreated",
+        /* strAddInfo   */ strMthInArgs );
+
+    emit graphObjAdded(i_strKeyInTree);
+}
+
+//------------------------------------------------------------------------------
+void CDrawingScene::emit_graphObjChanged(const QString& i_strKeyInTree)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strKeyInTree;
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "emit_graphObjChanged",
         /* strAddInfo   */ strMthInArgs );
-    emit graphObjChanged(i_pDrawingScene, i_pGraphObj);
+    emit graphObjChanged(i_strKeyInTree);
 }
 
 //------------------------------------------------------------------------------
-//void CDrawingScene::emit_graphObjCreated( ZS::Draw::CGraphObj* i_pGraphObj )
+void CDrawingScene::emit_graphObjMoved(
+    const QString& i_strNewKeyInTree,
+    const QString& i_strOrigKeyInTree,
+    const QString& i_strKeyInTreeOfTargetBranch)
 //------------------------------------------------------------------------------
-//{
-//    QString strMthInArgs;
-//    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
-//        strMthInArgs = QString(i_pGraphObj == nullptr ? "null" : i_pGraphObj->keyInTree());
-//    }
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObj,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strMethod    */ "emit_graphObjCreated",
-//        /* strAddInfo   */ strMthInArgs );
-//    emit graphObjCreated(i_pGraphObj);
-//}
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "NewKey: " + i_strNewKeyInTree +
+            ", OrigKey: " + i_strOrigKeyInTree +
+            ", NewName: " + i_strKeyInTreeOfTargetBranch;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "emit_graphObjMoved",
+        /* strAddInfo   */ strMthInArgs );
+
+    emit graphObjMoved(i_strNewKeyInTree, i_strOrigKeyInTree, i_strKeyInTreeOfTargetBranch);
+}
 
 //------------------------------------------------------------------------------
-//void CDrawingScene::emit_graphObjDestroying( const QString& i_strObjId )
+void CDrawingScene::emit_graphObjRenamed(
+    const QString& i_strNewKeyInTree,
+    const QString& i_strOrigKeyInTree,
+    const QString& i_strOrigName)
 //------------------------------------------------------------------------------
-//{
-//    QString strMthInArgs;
-//    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
-//        strMthInArgs = i_strObjId;
-//    }
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObj,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strMethod    */ "emit_graphObjDestroying",
-//        /* strAddInfo   */ strMthInArgs );
-//    emit graphObjDestroying(i_strObjId);
-//}
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "NewKey: " + i_strNewKeyInTree +
+            ", OrigKey: " + i_strOrigKeyInTree +
+            ", OrigName: " + i_strOrigName;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "emit_graphObjRenamed",
+        /* strAddInfo   */ strMthInArgs );
+
+    emit graphObjRenamed(i_strNewKeyInTree, i_strOrigKeyInTree, i_strOrigName);
+}
 
 //------------------------------------------------------------------------------
-//void CDrawingScene::emit_graphObjDestroyed( const QString& i_strObjId )
+void CDrawingScene::emit_graphObjDestroyed(const QString& i_strKeyInTree)
 //------------------------------------------------------------------------------
-//{
-//    QString strMthInArgs;
-//    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
-//        strMthInArgs = i_strObjId;
-//    }
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObj,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strMethod    */ "emit_graphObjDestroyed",
-//        /* strAddInfo   */ strMthInArgs );
-//    emit graphObjDestroyed(i_strObjId);
-//}
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strKeyInTree;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "emit_graphObjDestroyed",
+        /* strAddInfo   */ strMthInArgs );
 
-//------------------------------------------------------------------------------
-//void CDrawingScene::emit_graphObjIdChanged(
-//  const QString& i_strObjIdOld, const QString& i_strObjIdNew )
-//------------------------------------------------------------------------------
-//{
-//    QString strMthInArgs;
-//    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
-//        strMthInArgs = i_strObjIdOld;
-//        strMthInArgs += ", " + i_strObjIdNew;
-//    }
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObj,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strMethod    */ "emit_graphObjIdChanged",
-//        /* strAddInfo   */ strMthInArgs );
-//    emit graphObjIdChanged(i_strObjIdOld, i_strObjIdNew);
-//}
-
-//------------------------------------------------------------------------------
-//void CDrawingScene::emit_graphObjNameChanged(
-//  const QString& i_strObjId, const QString& i_strObjNameOld, const QString& i_strObjNameNew )
-//------------------------------------------------------------------------------
-//{
-//    QString strMthInArgs;
-//    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
-//        strMthInArgs = qPoint2Str(i_ptMousePos);
-//    }
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObj,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strMethod    */ "emit_graphObjNameChanged",
-//        /* strAddInfo   */ strMthInArgs );
-//    emit graphObjNameChanged(i_strObjId, i_strObjNameOld, i_strObjNameNew);
-//}
+    emit graphObjDestroyed(i_strKeyInTree);
+}

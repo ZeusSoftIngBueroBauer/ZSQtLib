@@ -423,14 +423,11 @@ CGraphObj::~CGraphObj()
 
     m_bDtorInProgress = true;
 
-    CGraphObjSelectionPoint* pGraphObjSelPt;
-    int                      idxSelPt;
-
     if( m_arpSelPtsBoundingRect.size() > 0 )
     {
-        for( idxSelPt = m_arpSelPtsBoundingRect.size()-1; idxSelPt >= 0; idxSelPt-- )
+        for( int idxSelPt = m_arpSelPtsBoundingRect.size()-1; idxSelPt >= 0; idxSelPt-- )
         {
-            pGraphObjSelPt = m_arpSelPtsBoundingRect[idxSelPt];
+            CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsBoundingRect[idxSelPt];
 
             if( pGraphObjSelPt != nullptr )
             {
@@ -450,9 +447,9 @@ CGraphObj::~CGraphObj()
 
     if( m_arpSelPtsPolygon.size() > 0 )
     {
-        for( idxSelPt = m_arpSelPtsPolygon.size()-1; idxSelPt >= 0; idxSelPt-- )
+        for( int idxSelPt = m_arpSelPtsPolygon.size()-1; idxSelPt >= 0; idxSelPt-- )
         {
-            pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
+            CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
 
             if( pGraphObjSelPt != nullptr )
             {
@@ -5770,23 +5767,23 @@ void CGraphObj::createTrcAdminObjs(
 //------------------------------------------------------------------------------
 {
     m_pTrcAdminObjCtorsAndDtor = CTrcServer::GetTraceAdminObj(
-        i_strNameSpace, i_strClassName + "::CtorsAndDtor", i_strObjName);
+        i_strNameSpace + "::GraphObjs", i_strClassName + "::CtorsAndDtor", i_strObjName);
     m_pTrcAdminObjItemChange = CTrcServer::GetTraceAdminObj(
-        i_strNameSpace, i_strClassName + "::ItemChange", i_strObjName);
+        i_strNameSpace + "::GraphObjs", i_strClassName + "::ItemChange", i_strObjName);
     m_pTrcAdminObjBoundingRect = CTrcServer::GetTraceAdminObj(
-        i_strNameSpace, i_strClassName + "::BoundingRect", i_strObjName);
+        i_strNameSpace + "::GraphObjs", i_strClassName + "::BoundingRect", i_strObjName);
     m_pTrcAdminObjPaint = CTrcServer::GetTraceAdminObj(
-        i_strNameSpace, i_strClassName + "::Paint", i_strObjName);
+        i_strNameSpace + "::GraphObjs", i_strClassName + "::Paint", i_strObjName);
     m_pTrcAdminObjSceneEvent = CTrcServer::GetTraceAdminObj(
-        i_strNameSpace, i_strClassName + "::SceneEvent", i_strObjName);
+        i_strNameSpace + "::GraphObjs", i_strClassName + "::SceneEvent", i_strObjName);
     m_pTrcAdminObjSceneEventFilter = CTrcServer::GetTraceAdminObj(
-        i_strNameSpace, i_strClassName + "::SceneEventFilter", i_strObjName);
+        i_strNameSpace + "::GraphObjs", i_strClassName + "::SceneEventFilter", i_strObjName);
     m_pTrcAdminObjHoverEvents = CTrcServer::GetTraceAdminObj(
-        i_strNameSpace, i_strClassName + "::HoverEvents", i_strObjName);
+        i_strNameSpace + "::GraphObjs", i_strClassName + "::HoverEvents", i_strObjName);
     m_pTrcAdminObjMouseEvents = CTrcServer::GetTraceAdminObj(
-        i_strNameSpace, i_strClassName + "::MouseEvents", i_strObjName);
+        i_strNameSpace + "::GraphObjs", i_strClassName + "::MouseEvents", i_strObjName);
     m_pTrcAdminObjKeyEvents = CTrcServer::GetTraceAdminObj(
-        i_strNameSpace, i_strClassName + "::KeyEvents", i_strObjName);
+        i_strNameSpace + "::GraphObjs", i_strClassName + "::KeyEvents", i_strObjName);
 }
 
 //------------------------------------------------------------------------------

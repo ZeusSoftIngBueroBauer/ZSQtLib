@@ -65,7 +65,8 @@ CDrawingSize::CDrawingSize(const QString& i_strName) :
     m_fImageSizeHeight_px(0.0),
     m_pTrcAdminObj(nullptr)
 {
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), m_strName);
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
+        NameSpace() + "::Drawing", ClassName(), m_strName);
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -96,7 +97,8 @@ CDrawingSize::CDrawingSize(const QString& i_strName, const QSize& i_size) :
     m_fImageSizeHeight_px(i_size.height()),
     m_pTrcAdminObj(nullptr)
 {
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), m_strName);
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
+        NameSpace() + "::Drawing", ClassName(), m_strName);
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -127,7 +129,8 @@ CDrawingSize::CDrawingSize(const CDrawingSize& i_other) :
     m_fImageSizeHeight_px(i_other.m_fImageSizeHeight_px),
     m_pTrcAdminObj(nullptr)
 {
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), m_strName);
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
+        NameSpace() + "::Drawing", ClassName(), m_strName);
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -173,7 +176,7 @@ CDrawingSize& CDrawingSize::operator = (const CDrawingSize& i_other)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_other.toString();
     }
 
@@ -256,7 +259,7 @@ void CDrawingSize::setDimensionUnit( const CEnumDrawingDimensionUnit& i_eDimensi
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_eDimensionUnit.toString() + " (Prev: " + m_eDimensionUnit.toString() + ")";
     }
     CMethodTracer mthTracer(
@@ -280,7 +283,7 @@ void CDrawingSize::setMetricUnit( const CUnit& i_unit )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_unit.symbol() + " (Prev: " + m_metricUnit.symbol() + ")";
     }
     CMethodTracer mthTracer(
@@ -315,7 +318,7 @@ void CDrawingSize::setNormedPaperSize( const CEnumNormedPaperSize& i_ePaperSize 
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_ePaperSize.toString() + " (Prev: " + m_eNormedPaperSize.toString() + ")";
     }
     CMethodTracer mthTracer(
@@ -362,7 +365,7 @@ void CDrawingSize::setNormedPaperOrientation( const CEnumOrientation& i_orientat
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_orientation.toString() + " (Prev: " + m_eNormedPaperOrientation.toString() + ")";
     }
     CMethodTracer mthTracer(
@@ -410,7 +413,7 @@ void CDrawingSize::setScaleFactor( int i_iDividend, int i_iDivisor )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString::number(i_iDividend) + "/" + QString::number(i_iDivisor)
                      + " (Prev: " + QString::number(m_iMetricScaleFactorDividend)
                      + "/" + QString::number(m_iMetricScaleFactorDivisor) + ")";
@@ -461,7 +464,7 @@ void CDrawingSize::setImageSize( const CPhysVal& i_physValWidth, const CPhysVal&
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_physValWidth.toString() + ", " + i_physValHeight.toString()
                     + " (Prev: " + CPhysVal(m_fImageSizeWidth_px, Units.Length.pxX).toString()
                     + ", " + CPhysVal(m_fImageSizeHeight_px, Units.Length.pxY).toString() + ")"

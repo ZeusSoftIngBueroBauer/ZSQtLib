@@ -61,21 +61,20 @@ CDrawingView::CDrawingView( CDrawingScene* i_pDrawingScene, QWidget* i_pWdgtPare
     m_pTrcAdminObjMouseMoveEvent(nullptr),
     m_pTrcAdminObjPaintEvent(nullptr)
 {
-    setObjectName("Drawing");
+    setObjectName("theInst");
 
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
-        NameSpace(), ClassName(), objectName());
+        NameSpace() + "::Drawing", ClassName(), objectName());
+    m_pTrcAdminObjMouseMoveEvent = CTrcServer::GetTraceAdminObj(
+        NameSpace() + "::Drawing", ClassName() + "::MouseMoveEvent", objectName());
+    m_pTrcAdminObjPaintEvent = CTrcServer::GetTraceAdminObj(
+        NameSpace() + "::Drawing", ClassName() + "::PaintEvent", objectName());
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ "" );
-
-    m_pTrcAdminObjMouseMoveEvent = CTrcServer::GetTraceAdminObj(
-        NameSpace(), ClassName() + "::MouseMoveEvent", objectName());
-    m_pTrcAdminObjPaintEvent = CTrcServer::GetTraceAdminObj(
-        NameSpace(), ClassName() + "::PaintEvent", objectName());
 
     Units.Length.setPxpis(logicalDpiX(), logicalDpiY());
 
@@ -130,7 +129,7 @@ void CDrawingView::setDrawingSize( const CDrawingSize& i_size )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_size.toString();
     }
     CMethodTracer mthTracer(
@@ -160,7 +159,7 @@ void CDrawingView::setGridSettings( const CDrawGridSettings& i_settings )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_settings.toString();
     }
     CMethodTracer mthTracer(
@@ -782,7 +781,7 @@ void CDrawingView::onSceneDrawingSizeChanged( const CDrawingSize& i_size )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_size.toString();
     }
     CMethodTracer mthTracer(
@@ -801,7 +800,7 @@ void CDrawingView::onSceneGridSettingsChanged( const CDrawGridSettings& i_settin
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_settings.toString();
     }
     CMethodTracer mthTracer(
@@ -824,7 +823,7 @@ void CDrawingView::emit_drawingSizeChanged( const ZS::Draw::CDrawingSize& i_size
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_size.toString();
     }
     CMethodTracer mthTracer(
@@ -841,7 +840,7 @@ void CDrawingView::emit_gridSettingsChanged( const ZS::Draw::CDrawGridSettings& 
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_settings.toString();
     }
     CMethodTracer mthTracer(

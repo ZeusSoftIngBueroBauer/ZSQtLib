@@ -68,6 +68,7 @@ CObjFactoryWdgtLineEdit::CObjFactoryWdgtLineEdit( const QPixmap& i_pxmToolIcon )
 //------------------------------------------------------------------------------
     CObjFactory(
         /* strGroupName    */ CGraphObjWdgt::c_strFactoryGroupName,
+        /* strClassName    */ ClassName(),
         /* iGraphObjType   */ EGraphObjTypeUserDefined,
         /* strGraphObjType */ "LineEdit",
         /* toolIcon        */ i_pxmToolIcon )

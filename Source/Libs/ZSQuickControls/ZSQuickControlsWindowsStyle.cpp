@@ -610,7 +610,7 @@ SErrResultInfo CWindowsStyle::recall(const QString& i_strTheme)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_strTheme;
     }
     CMethodTracer mthTracer(
@@ -860,7 +860,7 @@ void CWindowsStyle::setToDefault(const QString& i_strTheme)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_strTheme;
     }
     CMethodTracer mthTracer(
@@ -921,7 +921,7 @@ void CWindowsStyle::setCurrentTheme( const QString& i_strTheme )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_strTheme;
     }
     CMethodTracer mthTracer(
@@ -1021,7 +1021,7 @@ void CWindowsStyle::setBaseColor(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = GUI::qColor2Str(i_color);
         strMthInArgs += ", " + QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
     }
@@ -1082,7 +1082,7 @@ void CWindowsStyle::setBaseColorToDefault(const QString& i_strTheme)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
     }
     CMethodTracer mthTracer(
@@ -1145,7 +1145,7 @@ void CWindowsStyle::setPopupWindowColor(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = GUI::qColor2Str(i_color);
         strMthInArgs += ", " + QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
     }
@@ -1206,7 +1206,7 @@ void CWindowsStyle::setPopupWindowColorToDefault(const QString& i_strTheme)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
     }
     CMethodTracer mthTracer(
@@ -1269,7 +1269,7 @@ void CWindowsStyle::setBackgroundStartColor(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = GUI::qColor2Str(i_color);
         strMthInArgs += ", " + QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
     }
@@ -1330,7 +1330,7 @@ void CWindowsStyle::setBackgroundStartColorToDefault(const QString& i_strTheme)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
     }
     CMethodTracer mthTracer(
@@ -1394,7 +1394,7 @@ void CWindowsStyle::setBackgroundStopColor(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = GUI::qColor2Str(i_color);
         strMthInArgs += ", " + QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
     }
@@ -1455,7 +1455,7 @@ void CWindowsStyle::setBackgroundStopColorToDefault(const QString& i_strTheme)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
     }
     CMethodTracer mthTracer(
@@ -1640,7 +1640,7 @@ void CWindowsStyle::setButtonColor(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = GUI::qColor2Str(i_color);
         strMthInArgs += ", " + QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
     }
@@ -1701,7 +1701,7 @@ void CWindowsStyle::setButtonColorToDefault(const QString& i_strTheme)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
     }
     CMethodTracer mthTracer(
@@ -1871,7 +1871,7 @@ void CWindowsStyle::setShadowColor(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = GUI::qColor2Str(i_color);
         strMthInArgs += ", " + QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
     }
@@ -1932,7 +1932,7 @@ void CWindowsStyle::setShadowColorToDefault(const QString& i_strTheme)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
     }
     CMethodTracer mthTracer(
@@ -1995,7 +1995,7 @@ void CWindowsStyle::setTopShadowColor(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = GUI::qColor2Str(i_color);
         strMthInArgs += ", " + QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
     }
@@ -2056,7 +2056,7 @@ void CWindowsStyle::setTopShadowColorToDefault(const QString& i_strTheme)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
     }
     CMethodTracer mthTracer(
@@ -2119,7 +2119,7 @@ void CWindowsStyle::setInnerContrastLineColor(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = GUI::qColor2Str(i_color);
         strMthInArgs += ", " + QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
     }
@@ -2180,7 +2180,7 @@ void CWindowsStyle::setInnerContrastLineColorToDefault(const QString& i_strTheme
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
     }
     CMethodTracer mthTracer(
@@ -2243,7 +2243,7 @@ void CWindowsStyle::setHighlightColor(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = GUI::qColor2Str(i_color);
         strMthInArgs += ", " + QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
     }
@@ -2304,7 +2304,7 @@ void CWindowsStyle::setHighlightColorToDefault(const QString& i_strTheme)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
     }
     CMethodTracer mthTracer(
@@ -2367,7 +2367,7 @@ void CWindowsStyle::setHighlightedTextColor(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = GUI::qColor2Str(i_color);
         strMthInArgs += ", " + QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
     }
@@ -2428,7 +2428,7 @@ void CWindowsStyle::setHighlightedTextColorToDefault(const QString& i_strTheme)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
     }
     CMethodTracer mthTracer(
@@ -2491,7 +2491,7 @@ void CWindowsStyle::setOutlineColor(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = GUI::qColor2Str(i_color);
         strMthInArgs += ", " + QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
     }
@@ -2552,7 +2552,7 @@ void CWindowsStyle::setOutlineColorToDefault(const QString& i_strTheme)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
     }
     CMethodTracer mthTracer(
@@ -2615,7 +2615,7 @@ void CWindowsStyle::setHighlightedOutlineColor(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = GUI::qColor2Str(i_color);
         strMthInArgs += ", " + QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
     }
@@ -2676,7 +2676,7 @@ void CWindowsStyle::setHighlightedOutlineColorToDefault(const QString& i_strThem
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
     }
     CMethodTracer mthTracer(
@@ -2773,7 +2773,7 @@ void CWindowsStyle::setTextColor( const QColor& i_color, const QString& i_strThe
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = GUI::qColor2Str(i_color);
         strMthInArgs += ", " + QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
     }
@@ -2834,7 +2834,7 @@ void CWindowsStyle::setTextColorToDefault(const QString& i_strTheme)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
     }
     CMethodTracer mthTracer(
@@ -2895,7 +2895,7 @@ void CWindowsStyle::setWindowTextColor( const QColor& i_color, const QString& i_
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = GUI::qColor2Str(i_color);
         strMthInArgs += ", " + QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
     }
@@ -2956,7 +2956,7 @@ void CWindowsStyle::setWindowTextColorToDefault(const QString& i_strTheme)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
     }
     CMethodTracer mthTracer(
@@ -3017,7 +3017,7 @@ void CWindowsStyle::setLinkColor( const QColor& i_color, const QString& i_strThe
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = GUI::qColor2Str(i_color);
         strMthInArgs += ", " + QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
     }
@@ -3078,7 +3078,7 @@ void CWindowsStyle::setLinkColorToDefault(const QString& i_strTheme)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
     }
     CMethodTracer mthTracer(
@@ -3139,7 +3139,7 @@ void CWindowsStyle::setButtonTextColor( const QColor& i_color, const QString& i_
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = GUI::qColor2Str(i_color);
         strMthInArgs += ", " + QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
     }
@@ -3200,7 +3200,7 @@ void CWindowsStyle::setButtonTextColorToDefault(const QString& i_strTheme)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString(i_strTheme.isEmpty() ? "CurrTheme: " + m_strCurrentTheme : i_strTheme);
     }
     CMethodTracer mthTracer(
@@ -3273,7 +3273,7 @@ void CWindowsStyle::onCurrentThemeChanged(const QString& i_strTheme)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_strTheme;
     }
     CMethodTracer mthTracer(
@@ -3327,7 +3327,7 @@ void CWindowsStyle::emit_currentThemeChanged(const QString& i_strTheme)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_strTheme;
     }
     CMethodTracer mthTracer(
@@ -3344,7 +3344,7 @@ void CWindowsStyle::emit_baseColorChanged(const QColor& i_color, const QString& 
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = GUI::qColor2Str(i_color) + ", " + i_strTheme;
     }
     CMethodTracer mthTracer(
@@ -3361,7 +3361,7 @@ void CWindowsStyle::emit_popupWindowColorChanged(const QColor& i_color, const QS
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = GUI::qColor2Str(i_color) + ", " + i_strTheme;
     }
     CMethodTracer mthTracer(
@@ -3378,7 +3378,7 @@ void CWindowsStyle::emit_backgroundStartColorChanged(const QColor& i_color, cons
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = GUI::qColor2Str(i_color) + ", " + i_strTheme;
     }
     CMethodTracer mthTracer(
@@ -3395,7 +3395,7 @@ void CWindowsStyle::emit_backgroundStopColorChanged(const QColor& i_color, const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = GUI::qColor2Str(i_color) + ", " + i_strTheme;
     }
     CMethodTracer mthTracer(
@@ -3412,7 +3412,7 @@ void CWindowsStyle::emit_buttonColorChanged(const QColor& i_color, const QString
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = GUI::qColor2Str(i_color) + ", " + i_strTheme;
     }
     CMethodTracer mthTracer(
@@ -3429,7 +3429,7 @@ void CWindowsStyle::emit_shadowColorChanged(const QColor& i_color, const QString
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = GUI::qColor2Str(i_color) + ", " + i_strTheme;
     }
     CMethodTracer mthTracer(
@@ -3446,7 +3446,7 @@ void CWindowsStyle::emit_topShadowColorChanged(const QColor& i_color, const QStr
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = GUI::qColor2Str(i_color) + ", " + i_strTheme;
     }
     CMethodTracer mthTracer(
@@ -3463,7 +3463,7 @@ void CWindowsStyle::emit_innerContrastLineColorChanged(const QColor& i_color, co
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = GUI::qColor2Str(i_color) + ", " + i_strTheme;
     }
     CMethodTracer mthTracer(
@@ -3480,7 +3480,7 @@ void CWindowsStyle::emit_highlightColorChanged(const QColor& i_color, const QStr
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = GUI::qColor2Str(i_color) + ", " + i_strTheme;
     }
     CMethodTracer mthTracer(
@@ -3497,7 +3497,7 @@ void CWindowsStyle::emit_highlightedTextColorChanged(const QColor& i_color, cons
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = GUI::qColor2Str(i_color) + ", " + i_strTheme;
     }
     CMethodTracer mthTracer(
@@ -3514,7 +3514,7 @@ void CWindowsStyle::emit_outlineColorChanged(const QColor& i_color, const QStrin
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = GUI::qColor2Str(i_color) + ", " + i_strTheme;
     }
     CMethodTracer mthTracer(
@@ -3531,7 +3531,7 @@ void CWindowsStyle::emit_highlightedOutlineColorChanged(const QColor& i_color, c
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = GUI::qColor2Str(i_color) + ", " + i_strTheme;
     }
     CMethodTracer mthTracer(
@@ -3548,7 +3548,7 @@ void CWindowsStyle::emit_textColorChanged(const QColor& i_color, const QString& 
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = GUI::qColor2Str(i_color) + ", " + i_strTheme;
     }
     CMethodTracer mthTracer(
@@ -3565,7 +3565,7 @@ void CWindowsStyle::emit_windowTextColorChanged(const QColor& i_color, const QSt
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = GUI::qColor2Str(i_color) + ", " + i_strTheme;
     }
     CMethodTracer mthTracer(
@@ -3582,7 +3582,7 @@ void CWindowsStyle::emit_linkColorChanged(const QColor& i_color, const QString& 
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = GUI::qColor2Str(i_color) + ", " + i_strTheme;
     }
     CMethodTracer mthTracer(
@@ -3599,7 +3599,7 @@ void CWindowsStyle::emit_buttonTextColorChanged(const QColor& i_color, const QSt
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = GUI::qColor2Str(i_color) + ", " + i_strTheme;
     }
     CMethodTracer mthTracer(

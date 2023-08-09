@@ -40,6 +40,14 @@ namespace QtWidgets
 class CObjFactoryWdgtCheckBox : public CObjFactory
 //******************************************************************************
 {
+    /*! Returns the namespace the class belongs to.
+        Please note that the static class functions name must be different
+        from the non static virtual member function "nameSpace" */
+    static QString NameSpace() { return "ZS::Draw::QtWidgets"; }
+    /*! Returns the class name.
+        Please note that the static class functions name must be different
+        from the non static virtual member function "nameSpace" */
+    static QString ClassName() { return "CObjFactoryWdgtCheckBox"; }
 public: // ctors and dtor
     CObjFactoryWdgtCheckBox( const QPixmap& i_pxmToolIcon = QPixmap() );
     virtual ~CObjFactoryWdgtCheckBox();

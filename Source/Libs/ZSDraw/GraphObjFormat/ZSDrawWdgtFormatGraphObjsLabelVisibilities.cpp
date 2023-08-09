@@ -75,7 +75,7 @@ CWdgtFormatGraphObjsLabelVisibilities::CWdgtFormatGraphObjsLabelVisibilities(
     CGraphObj*     i_pGraphObj,
     QWidget*       i_pWdgtParent ) :
 //------------------------------------------------------------------------------
-    CWdgtFormatGraphObjs(i_pDrawingScene,i_pGraphObj,i_pWdgtParent),
+    CWdgtFormatGraphObjs(i_pDrawingScene, "CWdgtFormatGraphObjsLabels", "", i_pGraphObj, i_pWdgtParent),
     m_pLyt(nullptr),
     m_pLblHeadLine(nullptr),
     m_pWdgtNameLabelVisibilities(nullptr),
@@ -152,10 +152,11 @@ CWdgtFormatGraphObjsLabelVisibilities::CWdgtFormatGraphObjsLabelVisibilities(
 {
     setObjectName("WdgtFormatGraphObjsGeometry");
 
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
+        NameSpace() + "::GraphObjFormat", ClassName(), objectName());
 
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->path());
     }
     CMethodTracer mthTracer(

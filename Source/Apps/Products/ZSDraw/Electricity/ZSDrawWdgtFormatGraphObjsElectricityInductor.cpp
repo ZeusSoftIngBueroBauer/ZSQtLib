@@ -77,7 +77,7 @@ CWdgtFormatGraphObjsInductor::CWdgtFormatGraphObjsInductor(
     CGraphObj*     i_pGraphObj,
     QWidget*       i_pWdgtParent ) :
 //------------------------------------------------------------------------------
-    CWdgtFormatGraphObjs(i_pDrawingScene,i_pGraphObj,i_pWdgtParent),
+    CWdgtFormatGraphObjs(i_pDrawingScene, "CWdgtFormatGraphObjsInductor", "", i_pGraphObj, i_pWdgtParent),
     m_pLyt(nullptr),
     m_pLblHeadLine(nullptr),
     m_pLytInductance(nullptr),

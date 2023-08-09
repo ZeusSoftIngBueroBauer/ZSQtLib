@@ -68,6 +68,7 @@ CObjFactoryWdgtCheckBox::CObjFactoryWdgtCheckBox( const QPixmap& i_pxmToolIcon )
 //------------------------------------------------------------------------------
     CObjFactory(
         /* strGroupName    */ CGraphObjWdgt::c_strFactoryGroupName,
+        /* strClassName    */ ClassName(),
         /* iGraphObjType   */ EGraphObjTypeUserDefined,
         /* strGraphObjType */ "CheckBox",
         /* toolIcon        */ i_pxmToolIcon )

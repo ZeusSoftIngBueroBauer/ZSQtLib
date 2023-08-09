@@ -24,33 +24,33 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include <QtCore/qglobal.h>
-#include <QtCore/qtimer.h>
-#include <QtGui/qbitmap.h>
-#include <QtGui/qpainter.h>
+#include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjPropertiesLabelsWdgt.h"
+#include "ZSDraw/GraphObjs/ZSDrawGraphObj.h"
+//#include "ZSDraw/Drawing/ZSDrawingScene.h"
+//#include "ZSSys/ZSSysErrResult.h"
+//#include "ZSSys/ZSSysException.h"
+#include "ZSSys/ZSSysTrcAdminObj.h"
+#include "ZSSys/ZSSysTrcMethod.h"
+#include "ZSSys/ZSSysTrcServer.h"
+
+//#include <QtCore/qglobal.h>
+//#include <QtCore/qtimer.h>
+//#include <QtGui/qbitmap.h>
+//#include <QtGui/qpainter.h>
 
 #if QT_VERSION < 0x050000
-#include <QtGui/qapplication.h>
-#include <QtGui/qcheckbox.h>
+//#include <QtGui/qapplication.h>
+//#include <QtGui/qcheckbox.h>
 #include <QtGui/qlabel.h>
 #include <QtGui/qlayout.h>
 #include <QtGui/qlineedit.h>
 #else
-#include <QtWidgets/qapplication.h>
-#include <QtWidgets/qcheckbox.h>
+//#include <QtWidgets/qapplication.h>
+//#include <QtWidgets/qcheckbox.h>
 #include <QtWidgets/qlabel.h>
 #include <QtWidgets/qlayout.h>
 #include <QtWidgets/qlineedit.h>
 #endif
-
-#include "ZSDraw/GraphObjFormat/ZSDrawWdgtFormatGraphObjsLabels.h"
-#include "ZSDraw/GraphObjs/ZSDrawGraphObj.h"
-#include "ZSDraw/Drawing/ZSDrawingScene.h"
-#include "ZSSys/ZSSysErrResult.h"
-#include "ZSSys/ZSSysException.h"
-#include "ZSSys/ZSSysTrcAdminObj.h"
-#include "ZSSys/ZSSysTrcMethod.h"
-#include "ZSSys/ZSSysTrcServer.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -60,7 +60,7 @@ using namespace ZS::Draw;
 
 
 /*******************************************************************************
-class CWdgtFormatGraphObjsLabels : public CWdgtFormatGraphObjs
+class CWdgtGraphObjPropertiesLabels : public CWdgtFormatGraphObjs
 *******************************************************************************/
 
 /*==============================================================================
@@ -68,13 +68,14 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CWdgtFormatGraphObjsLabels::CWdgtFormatGraphObjsLabels(
+CWdgtGraphObjPropertiesLabels::CWdgtGraphObjPropertiesLabels(
     CDrawingScene* i_pDrawingScene,
-    CGraphObj*     i_pGraphObj,
-    QWidget*       i_pWdgtParent ) :
+    const QString& i_strParentClassName,
+    const QString& i_strObjName,
+    EMode i_mode,
+    QWidget* i_pWdgtParent) :
 //------------------------------------------------------------------------------
-    CWdgtFormatGraphObjs(i_pDrawingScene, "CWdgtFormatGraphObjsLabels", "", i_pGraphObj, i_pWdgtParent),
-    m_pLyt(nullptr),
+    CWdgtGraphObjPropertiesAbstract(i_pDrawingScene, i_strParentClassName + "::" + ClassName(), i_strObjName, i_mode, i_pWdgtParent),
     m_pLblHeadLine(nullptr),
     m_pLytName(nullptr),
     m_pLblName(nullptr),
@@ -88,26 +89,15 @@ CWdgtFormatGraphObjsLabels::CWdgtFormatGraphObjsLabels(
     // Trace
     m_pTrcAdminObj(nullptr)
 {
-    setObjectName("WdgtFormatGraphObjsObjName");
-
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
-        NameSpace() + "::GraphObjFormat", ClassName(), objectName());
-
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strMthInArgs = QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->path());
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = CEnumMode(i_mode).toString();
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
-
-    QVBoxLayout* m_pLyt = new QVBoxLayout();
-    setLayout(m_pLyt);
 
     int cxLblWidth = 60;
     //int cxEdtWidth = 80;
@@ -167,27 +157,15 @@ CWdgtFormatGraphObjsLabels::CWdgtFormatGraphObjsLabels(
     m_pEdtDescription = new QLineEdit();
     m_pLytDescription->addWidget(m_pEdtDescription);
 
-    // Set settings at GUI controls
-    //-----------------------------
+    // Set Mode
+    //---------
 
-    if( m_pGraphObj == nullptr )
-    {
-        m_pEdtName->setEnabled(false);
-    }
-    else
-    {
-        onGraphObjChanged();
-    }
-
-    // <Stretch> at bottom of Widget
-    //==============================
-
-    m_pLyt->addStretch();
+    setMode(i_mode);
 
 } // ctor
 
 //------------------------------------------------------------------------------
-CWdgtFormatGraphObjsLabels::~CWdgtFormatGraphObjsLabels()
+CWdgtGraphObjPropertiesLabels::~CWdgtGraphObjPropertiesLabels()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -196,12 +174,6 @@ CWdgtFormatGraphObjsLabels::~CWdgtFormatGraphObjsLabels()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
-    mthTracer.onAdminObjAboutToBeReleased();
-
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
-    m_pTrcAdminObj = nullptr;
-
-    m_pLyt = nullptr;
     m_pLblHeadLine = nullptr;
     m_pLytName = nullptr;
     m_pLblName = nullptr;
@@ -213,114 +185,25 @@ CWdgtFormatGraphObjsLabels::~CWdgtFormatGraphObjsLabels()
     m_pLblDescription = nullptr;
     m_pEdtDescription = nullptr;
 
-    // Trace
-    m_pTrcAdminObj = nullptr;
-
 } // dtor
 
 /*==============================================================================
-public: // must overridables of base class CWdgtFormatGraphObjs
+public: // overridables of base class CWdgtGraphObjPropertiesAbstract
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtFormatGraphObjsLabels::applyChanges()
+bool CWdgtGraphObjPropertiesLabels::hasChanges() const
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "applyChanges",
-        /* strAddInfo   */ strMthInArgs );
-
-    // On changing a setting of the graphical object "onGraphObjChanged" will be called as reentry.
-    // "onGraphObjChanged" will modify the states of the GUI controls. E.g. if the name and
-    // the description should be changed on calling "rename" as reenty "onGraphObjChanged"
-    // is immediately called resetting the description.
-    // To avoid this undesired correction the "onGraphObjChanged" method must be disabled while applying
-    // changes but will be called after all changes have been applied. For this the flag "m_bApplyingChanges"
-    // of the base class "CWdgtFormatGraphObjs" is set at the beginning, reset at the end of "applyChanges"
-    // and afterwards "onGraphObjChanged" is explicitly called.
-
-    m_bApplyingChanges = true;
-
-    if( m_pGraphObj != nullptr )
-    {
-        if( m_pEdtName->text() != m_pGraphObj->name() )
-        {
-            m_pGraphObj->rename(m_pEdtName->text());
-        }
-        if( m_pEdtDescription->text() != m_pGraphObj->getDescription() )
-        {
-            m_pGraphObj->setDescription(m_pEdtDescription->text());
-        }
-    }
-
-    // At the end update the user controls with the last changes from the graphical object.
-    //=====================================================================================
-
-    // This might be necessary if on setting one property the graphical object itself
-    // internally corrects other settings.
-
-    m_bApplyingChanges = false;
-
-    onGraphObjChanged();
-
-} // applyChanges
-
-//------------------------------------------------------------------------------
-void CWdgtFormatGraphObjsLabels::resetChanges()
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "resetChanges",
-        /* strAddInfo   */ strMthInArgs );
-
-    if( m_pGraphObj == nullptr )
-    {
-        m_pEdtName->setText("");
-        m_pEdtPath->setText("");
-        m_pEdtDescription->setText("");
-    }
-    else // if( m_pGraphObj != nullptr )
-    {
-        onGraphObjChanged();
-    }
-
-} // resetChanges
-
-//------------------------------------------------------------------------------
-bool CWdgtFormatGraphObjsLabels::hasChanges() const
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-    }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "hasChanges",
-        /* strAddInfo   */ strMthInArgs );
+        /* strAddInfo   */ "" );
 
     bool bHasChanges = false;
 
-    if( m_pGraphObj != nullptr )
+    if (m_pGraphObj != nullptr)
     {
         if( m_pGraphObj->name() != m_pEdtName->text() )
         {
@@ -335,22 +218,115 @@ bool CWdgtFormatGraphObjsLabels::hasChanges() const
             bHasChanges = true;
         }
     }
-
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(bHasChanges);
     }
-
     return bHasChanges;
+}
 
-} // hasChanges
+//------------------------------------------------------------------------------
+void CWdgtGraphObjPropertiesLabels::acceptChanges()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "acceptChanges",
+        /* strAddInfo   */ "" );
+
+    if (m_pGraphObj != nullptr)
+    {
+        if( m_pEdtName->text() != m_pGraphObj->name() )
+        {
+            m_pGraphObj->rename(m_pEdtName->text());
+        }
+        if( m_pEdtDescription->text() != m_pGraphObj->getDescription() )
+        {
+            m_pGraphObj->setDescription(m_pEdtDescription->text());
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjPropertiesLabels::rejectChanges()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "rejectChanges",
+        /* strAddInfo   */ "" );
+
+    if (m_pGraphObj != nullptr)
+    {
+        m_pEdtName->setText("");
+        m_pEdtPath->setText("");
+        m_pEdtDescription->setText("");
+    }
+}
+
+/*==============================================================================
+public: // overridables of base class CWdgtGraphObjPropertiesAbstract
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjPropertiesLabels::setMode(EMode i_mode)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = CEnumMode(i_mode).toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setMode",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (m_mode != i_mode)
+    {
+        // Don't take over mode to member as base class method is also called and also needs
+        // to check whether the mode has been changed to modify the edit button widget.
+        if (i_mode == EMode::Edit)
+        {
+        }
+        else // if (i_mode == EMode::View)
+        {
+        }
+    }
+
+    CWdgtGraphObjPropertiesAbstract::setMode(i_mode);
+}
+
+/*==============================================================================
+public: // overridables of base class CWdgtGraphObjPropertiesAbstract
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjPropertiesLabels::setKeyInTree(const QString& i_strKeyInTree)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strKeyInTree;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setKeyInTree",
+        /* strAddInfo   */ strMthInArgs );
+
+    CWdgtGraphObjPropertiesAbstract::setKeyInTree(i_strKeyInTree);
+
+    onGraphObjChanged();
+}
 
 /*==============================================================================
 protected: // must overridables of base class CWdgtFormatGraphObjs
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtFormatGraphObjsLabels::onGraphObjChanged()
+void CWdgtGraphObjPropertiesLabels::onGraphObjChanged()
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -365,16 +341,16 @@ void CWdgtFormatGraphObjsLabels::onGraphObjChanged()
         /* strMethod    */ "onGraphObjChanged",
         /* strAddInfo   */ strMthInArgs );
 
-    if( m_pEdtName->text() != m_pGraphObj->name() )
+    if (m_pGraphObj == nullptr)
+    {
+        m_pEdtName->setText("");
+        m_pEdtPath->setText("");
+        m_pEdtDescription->setText("");
+    }
+    else
     {
         m_pEdtName->setText(m_pGraphObj->name());
-    }
-    if( m_pEdtPath->text() != m_pGraphObj->path() )
-    {
         m_pEdtPath->setText(m_pGraphObj->path());
-    }
-    if( m_pEdtDescription->text() != m_pGraphObj->getDescription() )
-    {
         m_pEdtDescription->setText(m_pGraphObj->getDescription());
     }
-} // onGraphObjChanged
+}

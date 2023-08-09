@@ -37,7 +37,6 @@ may result in using the software modules.
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
 
-#include <QtCore/qmetaobject.h>
 #include <QtCore/qcoreapplication.h>
 #include <QtGui/qstandarditemmodel.h>
 
@@ -87,18 +86,14 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
-    CDrawingView* i_pDrawingView, EMode i_mode, QWidget* i_pWdgtParent) :
+    CDrawingView* i_pDrawingView, const QString& i_strObjName, EMode i_mode, QWidget* i_pWdgtParent) :
 //------------------------------------------------------------------------------
-    CWdgtGraphObjPropertiesAbstract(i_pDrawingView->drawingScene(), i_pWdgtParent),
+    CWdgtGraphObjPropertiesAbstract(i_pDrawingView->drawingScene(), "Drawing::" + ClassName(), i_strObjName, i_mode, i_pWdgtParent),
     m_pDrawingView(i_pDrawingView),
-    m_mode(EMode::Edit),
     // Caching values
-    m_drawingSize("DrawingViewPropertiesWdgt"),
-    m_gridSettings("DrawingViewPropertiesWdgt"),
-    // Blocking signals counter
-    m_iValueChangedSignalsBlocked(0),
+    m_drawingSize("DrawingViewPropertiesWdgt" + CEnumMode(i_mode).toString()),
+    m_gridSettings("DrawingViewPropertiesWdgt" + CEnumMode(i_mode).toString()),
     // Edit Controls
-    m_pLyt(nullptr),
     // Geometry
     m_pGrpGeometry(nullptr),
     m_pLytGrpGeometry(nullptr),
@@ -177,18 +172,8 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pBtnGridScaleLabelsFontStyleBold(nullptr),
     m_pBtnGridScaleLabelsFontStyleItalic(nullptr),
     m_pBtnGridScaleLabelsTextEffectUnderline(nullptr),
-    m_pBtnGridScaleLabelsTextEffectStrikeout(nullptr),
-    // Button Line
-    m_pWdgtButtons(nullptr),
-    m_pLytWdgtButtons(nullptr),
-    m_pBtnEdit(nullptr),
-    // Trace admin object for method tracing
-    m_pTrcAdminObj(nullptr)
+    m_pBtnGridScaleLabelsTextEffectStrikeout(nullptr)
 {
-    setObjectName(CEnumMode(i_mode).toString() + i_pDrawingView->objectName());
-
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
-
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
@@ -199,9 +184,6 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
-
-    m_pLyt = new QVBoxLayout;
-    setLayout(m_pLyt);
 
     QObject::connect(
         m_pDrawingView, &CDrawingView::drawingSizeChanged,
@@ -221,7 +203,7 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pLytGrpGeometry = new QVBoxLayout();
     m_pGrpGeometry->setLayout(m_pLytGrpGeometry);
 
-    // <Section> Dimension Unit
+    // <Section> Dimension Unitk
     //-------------------------
 
     m_pLytLineDimensionUnit = new QHBoxLayout();
@@ -763,29 +745,12 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
         m_pBtnGridScaleLabelsTextEffectStrikeout, &QPushButton::toggled,
         this, &CWdgtDrawingViewProperties::onBtnGridScaleLabelsTextEffectStrikeoutToggled);
 
-    // <Stretch> to buttons line
-    //==========================
-
-    m_pLyt->addStretch();
-
     // <Buttons>
     //==========
 
-    m_pWdgtButtons = new QWidget();
-    m_pLytWdgtButtons = new QHBoxLayout();
-    m_pWdgtButtons->setLayout(m_pLytWdgtButtons);
-    m_pLytWdgtButtons->setContentsMargins(0, 0, 0, 0);
+    m_pLyt->addStretch(); // Add stretch to buttons line
+    createButtonsLineWidget();
     m_pLyt->addWidget(m_pWdgtButtons);
-
-    m_pBtnEdit = new QPushButton("Edit");
-    m_pBtnEdit->setEnabled(false);
-    m_pLytWdgtButtons->addWidget(m_pBtnEdit);
-    QObject::connect(
-        m_pBtnEdit, &QPushButton::clicked,
-        this, &CWdgtDrawingViewProperties::onBtnEditClicked);
-
-    m_pLytWdgtButtons->addStretch();
-
     m_pWdgtButtons->hide();
 
     // Update metrics
@@ -826,18 +791,11 @@ CWdgtDrawingViewProperties::~CWdgtDrawingViewProperties()
     catch(...) {
     }
 
-    mthTracer.onAdminObjAboutToBeReleased();
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
-
     m_pDrawingView = nullptr;
-    m_mode = static_cast<EMode>(0);
     // Caching values
     //m_drawingSize;
     //m_gridSettings;
-    // Blocking signals counter
-    m_iValueChangedSignalsBlocked = 0;
     // Edit Controls
-    m_pLyt = nullptr;
     m_pGrpGeometry = nullptr;
     m_pLytGrpGeometry = nullptr;
     m_pLytLineDimensionUnit = nullptr;
@@ -915,26 +873,29 @@ CWdgtDrawingViewProperties::~CWdgtDrawingViewProperties()
     m_pBtnGridScaleLabelsFontStyleItalic = nullptr;
     m_pBtnGridScaleLabelsTextEffectUnderline = nullptr;
     m_pBtnGridScaleLabelsTextEffectStrikeout = nullptr;
-    // Button Line
-    m_pWdgtButtons = nullptr;
-    m_pLytWdgtButtons = nullptr;
-    m_pBtnEdit = nullptr;
-    // Trace admin object for method tracing
-    m_pTrcAdminObj = nullptr;
 
 } // dtor
 
 /*==============================================================================
-public: // instance methods
+public: // overridables of base class CWdgtGraphObjPropertiesAbstract
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
 bool CWdgtDrawingViewProperties::hasChanges() const
 //------------------------------------------------------------------------------
 {
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "hasChanges",
+        /* strAddInfo   */ "" );
+
     bool bHasChanges = (m_drawingSize != m_pDrawingView->drawingSize());
     if (!bHasChanges) {
         bHasChanges = (m_gridSettings != m_pDrawingView->gridSettings());
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(bHasChanges);
     }
     return bHasChanges;
 }
@@ -968,7 +929,7 @@ void CWdgtDrawingViewProperties::rejectChanges()
 }
 
 /*==============================================================================
-protected: // instance methods
+public: // overridables of base class CWdgtGraphObjPropertiesAbstract
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -976,7 +937,7 @@ void CWdgtDrawingViewProperties::setMode(EMode i_mode)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = CEnumMode(i_mode).toString();
     }
     CMethodTracer mthTracer(
@@ -987,9 +948,9 @@ void CWdgtDrawingViewProperties::setMode(EMode i_mode)
 
     if (m_mode != i_mode)
     {
-        m_mode = i_mode;
-
-        if (m_mode == EMode::Edit)
+        // Don't take over mode to member as base class method is also called and also needs
+        // to check whether the mode has been changed to modify the edit button widget.
+        if (i_mode == EMode::Edit)
         {
             CEnumDrawingDimensionUnit eDimensionUnit = m_drawingSize.dimensionUnit();
 
@@ -1025,11 +986,8 @@ void CWdgtDrawingViewProperties::setMode(EMode i_mode)
             m_pBtnGridScaleLabelsTextEffectUnderline->setEnabled(true);
             m_pBtnGridScaleLabelsTextEffectStrikeout->setEnabled(true);
             m_pBtnGridScaleLabelsTextColor->setEnabled(true);
-
-            m_pWdgtButtons->show();
-            m_pBtnEdit->setEnabled(false);
         }
-        else // if (m_mode == EMode::View)
+        else // if (i_mode == EMode::View)
         {
             m_pCmbDimensionUnit->setEnabled(false);
             //m_pEdtResolution_pxpi->setEnabled(false);
@@ -1063,18 +1021,10 @@ void CWdgtDrawingViewProperties::setMode(EMode i_mode)
             m_pBtnGridScaleLabelsTextEffectUnderline->setEnabled(false);
             m_pBtnGridScaleLabelsTextEffectStrikeout->setEnabled(false);
             m_pBtnGridScaleLabelsTextColor->setEnabled(false);
-
-            m_pWdgtButtons->show();
-            m_pBtnEdit->setEnabled(true);
         }
     }
-}
 
-//------------------------------------------------------------------------------
-EMode CWdgtDrawingViewProperties::mode() const
-//------------------------------------------------------------------------------
-{
-    return m_mode;
+    CWdgtGraphObjPropertiesAbstract::setMode(i_mode);
 }
 
 /*==============================================================================
@@ -1090,7 +1040,7 @@ void CWdgtDrawingViewProperties::onDrawingViewDrawingSizeChanged(const CDrawingS
     }
 
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_size.toString();
     }
     CMethodTracer mthTracer(
@@ -1116,7 +1066,7 @@ void CWdgtDrawingViewProperties::onDrawingViewGridSettingsChanged(const CDrawGri
     }
 
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_settings.toString();
     }
     CMethodTracer mthTracer(
@@ -1146,7 +1096,7 @@ void CWdgtDrawingViewProperties::onCmbDimensionUnitCurrentIndexChanged( int i_id
     }
 
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString::number(i_idx);
     }
     CMethodTracer mthTracer(
@@ -1167,7 +1117,7 @@ void CWdgtDrawingViewProperties::onCmbImageMetricUnitCurrentIndexChanged( int i_
     }
 
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString::number(i_idx);
     }
     CMethodTracer mthTracer(
@@ -1188,7 +1138,7 @@ void CWdgtDrawingViewProperties::onEdtImageMetricWidthValueChanged(const CPhysVa
     }
 
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_physValWidth.toString();
     }
     CMethodTracer mthTracer(
@@ -1212,7 +1162,7 @@ void CWdgtDrawingViewProperties::onEdtImageMetricHeightValueChanged(const CPhysV
     }
 
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_physValHeight.toString();
     }
     CMethodTracer mthTracer(
@@ -1236,7 +1186,7 @@ void CWdgtDrawingViewProperties::onCmbImageMetricNormedPaperSizesCurrentIndexCha
     }
 
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString::number(i_idx);
     }
     CMethodTracer mthTracer(
@@ -1257,7 +1207,7 @@ void CWdgtDrawingViewProperties::onCmbImageMetricNormedPaperOrientationCurrentIn
     }
 
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString::number(i_idx);
     }
     CMethodTracer mthTracer(
@@ -1278,7 +1228,7 @@ void CWdgtDrawingViewProperties::onCmbImageMetricScaleFactorDividendCurrentTextC
     }
 
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_strDividend;
     }
     CMethodTracer mthTracer(
@@ -1308,7 +1258,7 @@ void CWdgtDrawingViewProperties::onCmbImageMetricScaleFactorDividendEditTextChan
     }
 
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_strDividend;
     }
     CMethodTracer mthTracer(
@@ -1338,7 +1288,7 @@ void CWdgtDrawingViewProperties::onCmbImageMetricScaleFactorDivisorCurrentTextCh
     }
 
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_strDivisor;
     }
     CMethodTracer mthTracer(
@@ -1368,7 +1318,7 @@ void CWdgtDrawingViewProperties::onCmbImageMetricScaleFactorDivisorEditTextChang
     }
 
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_strDivisor;
     }
     CMethodTracer mthTracer(
@@ -1398,7 +1348,7 @@ void CWdgtDrawingViewProperties::onEdtImageSizeWidthPxValueChanged(int i_cxWidth
     }
 
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString::number(i_cxWidth_px);
     }
     CMethodTracer mthTracer(
@@ -1423,7 +1373,7 @@ void CWdgtDrawingViewProperties::onEdtImageSizeHeightPxValueChanged(int i_cyHeig
     }
 
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString::number(i_cyHeight_px);
     }
     CMethodTracer mthTracer(
@@ -1783,6 +1733,10 @@ void CWdgtDrawingViewProperties::onBtnGridScaleLabelsTextEffectStrikeoutToggled(
     setGridLabelsTextEffect(textEffect.enumerator());
 }
 
+/*==============================================================================
+protected: // overridable slots of base class CWdgtGraphObjPropertiesAbstract
+==============================================================================*/
+
 //------------------------------------------------------------------------------
 void CWdgtDrawingViewProperties::onBtnEditClicked(bool /*i_bChecked*/)
 //------------------------------------------------------------------------------
@@ -1819,7 +1773,7 @@ void CWdgtDrawingViewProperties::setDimensionUnit( const CEnumDrawingDimensionUn
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_eDimensionUnit.toString();
     }
     CMethodTracer mthTracer(
@@ -1841,7 +1795,7 @@ void CWdgtDrawingViewProperties::setMetricUnit( const CUnit& i_metricUnit )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_metricUnit.symbol();
     }
     CMethodTracer mthTracer(
@@ -1866,7 +1820,7 @@ void CWdgtDrawingViewProperties::setNormedPaperSize( const CEnumNormedPaperSize&
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_ePaperSize.toString();
     }
     CMethodTracer mthTracer(
@@ -1897,7 +1851,7 @@ void CWdgtDrawingViewProperties::setNormedPaperOrientation( const CEnumOrientati
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_eOrientation.toString();
     }
     CMethodTracer mthTracer(
@@ -1928,7 +1882,7 @@ void CWdgtDrawingViewProperties::setScaleFactor( int i_iDividend, int i_iDivisor
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString::number(i_iDividend) + "/" + QString::number(i_iDivisor);
     }
     CMethodTracer mthTracer(
@@ -1965,7 +1919,7 @@ void CWdgtDrawingViewProperties::setImageSize(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_physValWidth.toString() + ", " + i_physValHeight.toString();
     }
     CMethodTracer mthTracer(
@@ -2022,7 +1976,7 @@ void CWdgtDrawingViewProperties::setGridLinesVisible(bool i_bVisible)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = bool2Str(i_bVisible);
     }
     CMethodTracer mthTracer(
@@ -2043,7 +1997,7 @@ void CWdgtDrawingViewProperties::setGridLinesDistMin(int i_iDistMin_px)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString::number(i_iDistMin_px);
     }
     CMethodTracer mthTracer(
@@ -2064,7 +2018,7 @@ void CWdgtDrawingViewProperties::setGridLinesStyle(ELineStyle i_lineStyle)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = CEnumLineStyle(i_lineStyle).toString();
     }
     CMethodTracer mthTracer(
@@ -2085,7 +2039,7 @@ void CWdgtDrawingViewProperties::setGridLinesColor(const QColor& i_color)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_color.name();
     }
     CMethodTracer mthTracer(
@@ -2107,7 +2061,7 @@ void CWdgtDrawingViewProperties::setGridLinesWidth(int i_iWidth_px)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString::number(i_iWidth_px);
     }
     CMethodTracer mthTracer(
@@ -2128,7 +2082,7 @@ void CWdgtDrawingViewProperties::setGridLabelsVisible(bool i_bVisible)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = bool2Str(i_bVisible);
     }
     CMethodTracer mthTracer(
@@ -2149,7 +2103,7 @@ void CWdgtDrawingViewProperties::setGridLabelsFont(const QFont& i_fnt)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_fnt.family();
     }
     CMethodTracer mthTracer(
@@ -2170,7 +2124,7 @@ void CWdgtDrawingViewProperties::setGridLabelsTextSize(ETextSize i_textSize)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = textSize2Str(i_textSize);
     }
     CMethodTracer mthTracer(
@@ -2191,7 +2145,7 @@ void CWdgtDrawingViewProperties::setGridLabelsTextColor(const QColor& i_color)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_color.name();
     }
     CMethodTracer mthTracer(
@@ -2213,7 +2167,7 @@ void CWdgtDrawingViewProperties::setGridLabelsTextStyle(ETextStyle i_textStyle)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = CEnumTextStyle(i_textStyle).toString();
     }
     CMethodTracer mthTracer(
@@ -2236,7 +2190,7 @@ void CWdgtDrawingViewProperties::setGridLabelsTextEffect(const ETextEffect i_tex
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = CEnumTextEffect(i_textEffect).toString();
     }
     CMethodTracer mthTracer(
@@ -2621,7 +2575,7 @@ void CWdgtDrawingViewProperties::emit_drawingSizeChanged(const ZS::Draw::CDrawin
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_size.toString();
     }
     CMethodTracer mthTracer(
@@ -2638,7 +2592,7 @@ void CWdgtDrawingViewProperties::emit_gridSettingsChanged(const ZS::Draw::CDrawG
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_settings.toString();
     }
     CMethodTracer mthTracer(

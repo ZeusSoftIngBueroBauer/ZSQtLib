@@ -389,7 +389,7 @@ void CWdgtDiagramScaleProperties::setMode(EMode i_mode)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = CEnumMode(i_mode).toString();
     }
     CMethodTracer mthTracer(
@@ -685,7 +685,7 @@ void CWdgtDiagramScaleProperties::onDiagItemScaleSpacingChanged(const CEnumSpaci
     }
 
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_spacing.toString();
     }
     CMethodTracer mthTracer(
@@ -711,7 +711,7 @@ void CWdgtDiagramScaleProperties::onDiagItemScaleGeometryChanged(int i_iMinVal_p
     }
 
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString::number(i_iMinVal_px) + ", " + QString::number(i_iMaxVal_px);
     }
     CMethodTracer mthTracer(
@@ -740,7 +740,7 @@ void CWdgtDiagramScaleProperties::onDiagItemScaleDivLineDistMinPixChanged(EDivLi
     }
 
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = CEnumDivLineLayer(i_layer).toString() + "," + QString::number(i_iDivLineDistMin_px);
     }
     CMethodTracer mthTracer(
@@ -771,7 +771,7 @@ void CWdgtDiagramScaleProperties::onDiagItemScaleChanged(const CScale& i_scale)
     }
 
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_scale.toString();
     }
     CMethodTracer mthTracer(
@@ -815,7 +815,7 @@ void CWdgtDiagramScaleProperties::onCmbSpacingCurrentIndexChanged( int i_idx )
     }
 
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString::number(i_idx);
     }
     CMethodTracer mthTracer(
@@ -840,7 +840,7 @@ void CWdgtDiagramScaleProperties::onEdtDivLineDistMinMainLayerPixValueChanged(in
     }
 
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString::number(i_iVal);
     }
     CMethodTracer mthTracer(
@@ -865,7 +865,7 @@ void CWdgtDiagramScaleProperties::onEdtDivLineDistMinSubLayerPixValueChanged(int
     }
 
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString::number(i_iVal);
     }
     CMethodTracer mthTracer(
@@ -890,7 +890,7 @@ void CWdgtDiagramScaleProperties::onCmbScaleUnitCurrentIndexChanged( int i_idx )
     }
 
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString::number(i_idx);
     }
     CMethodTracer mthTracer(
@@ -931,7 +931,7 @@ void CWdgtDiagramScaleProperties::onEdtScaleMinValValueChanged(const CPhysVal& i
     }
 
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_physVal.toString();
     }
     CMethodTracer mthTracer(
@@ -957,7 +957,7 @@ void CWdgtDiagramScaleProperties::onEdtScaleMaxValValueChanged(const CPhysVal& i
     }
 
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_physVal.toString();
     }
     CMethodTracer mthTracer(
@@ -983,7 +983,7 @@ void CWdgtDiagramScaleProperties::onEdtScaleRangeValueChanged(const CPhysVal& i_
     }
 
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_physVal.toString();
     }
     CMethodTracer mthTracer(
@@ -1008,7 +1008,7 @@ void CWdgtDiagramScaleProperties::setScaleDir( const CEnumScaleDir& i_scaleDir )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_scaleDir.toString();
     }
     CMethodTracer mthTracer(
@@ -1042,7 +1042,7 @@ void CWdgtDiagramScaleProperties::onDiagScaleDestroyed(QObject* i_pObj)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,

@@ -252,7 +252,7 @@ void CModelPhysUnitsGrp::setViewMode( EViewMode i_viewMode )
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = viewMode2Str(i_viewMode);
     }
     CMethodTracer mthTracer(

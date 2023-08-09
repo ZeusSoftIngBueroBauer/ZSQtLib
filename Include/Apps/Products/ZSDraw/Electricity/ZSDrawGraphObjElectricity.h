@@ -48,10 +48,14 @@ class CGraphObjElectricity : public CGraphObjGroup
 //******************************************************************************
 {
 public: // class methods
-    /*! Returns the namespace the class belongs to. */
-    static QString NameSpace() { return "ZS::Draw::Electricity"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
-    /*! Returns the class name. */
-    static QString ClassName() { return "CGraphObjElectricity"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
+    /*! Returns the namespace the class belongs to.
+        Please note that the static class functions name must be different
+        from the non static virtual member function "nameSpace" */
+    static QString NameSpace() { return "ZS::Draw::Electricity"; }
+    /*! Returns the class name.
+        Please note that the static class functions name must be different
+        from the non static virtual member function "nameSpace" */
+    static QString ClassName() { return "CGraphObjElectricity"; }
 public: // class members
     /*! Group name of the factories to create the standard shapes (Line, Point, Rect, etc).
         The group name together with the type as string of the graphical objects must be unique

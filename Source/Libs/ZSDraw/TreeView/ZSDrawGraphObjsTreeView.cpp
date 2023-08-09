@@ -38,8 +38,8 @@ may result in using the software modules.
 #include <QtWidgets/qmessagebox.h>
 #endif
 
-#include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjsTreeView.h"
-#include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjsTreeModel.h"
+#include "ZSDraw/TreeView/ZSDrawGraphObjsTreeView.h"
+#include "ZSDraw/TreeView/ZSDrawGraphObjsTreeModel.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSDraw/GraphObjFormat/ZSDrawDlgFormatGraphObjs.h"
 #include "ZSDraw/GraphObjs/ZSDrawGraphObjSelectionPoint.h"
@@ -80,7 +80,8 @@ CDelegateGraphObjsTreeView::CDelegateGraphObjsTreeView( QObject* i_pObjParent ) 
 
     QString strMthInArgs;
 
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
+        NameSpace() + "::TreeView", ClassName(), objectName());
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -337,8 +338,10 @@ CTreeViewGraphObjs::CTreeViewGraphObjs(
 {
     setObjectName( QString(i_pDrawingScene == nullptr ? "Drawing" : i_pDrawingScene->objectName()) );
 
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
-    m_pTrcAdminObjEvent = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName() + "-Event");
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
+        NameSpace() + "::TreeView", ClassName(), objectName());
+    m_pTrcAdminObjEvent = CTrcServer::GetTraceAdminObj(
+        NameSpace() + "::TreeView", ClassName() + "::Event", objectName());
 
     QString strMthInArgs;
 

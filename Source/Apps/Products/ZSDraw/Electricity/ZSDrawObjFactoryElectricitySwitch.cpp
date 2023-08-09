@@ -69,6 +69,7 @@ CObjFactorySwitch::CObjFactorySwitch( const QPixmap& i_pxmToolIcon ) :
 //------------------------------------------------------------------------------
     CObjFactory(
         /* strGroupName    */ CGraphObjElectricity::c_strFactoryGroupName,
+        /* strClassName    */ ClassName(),
         /* iGraphObjType   */ EGraphObjTypeUserDefined,
         /* strGraphObjType */ "Switch",
         /* toolIcon        */ i_pxmToolIcon )

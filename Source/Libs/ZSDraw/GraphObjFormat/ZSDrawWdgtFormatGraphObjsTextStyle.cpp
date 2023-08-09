@@ -84,7 +84,7 @@ CWdgtFormatGraphObjsTextStyle::CWdgtFormatGraphObjsTextStyle(
     CGraphObj*     i_pGraphObj,
     QWidget*       i_pWdgtParent ) :
 //------------------------------------------------------------------------------
-    CWdgtFormatGraphObjs(i_pDrawingScene,i_pGraphObj,i_pWdgtParent),
+    CWdgtFormatGraphObjs(i_pDrawingScene, "CWdgtFormatGraphObjsLineStyle", "", i_pGraphObj, i_pWdgtParent),
     m_pLyt(nullptr),
     m_pLblHeadLine(nullptr),
     m_pLytTextColor(nullptr),
@@ -122,7 +122,8 @@ CWdgtFormatGraphObjsTextStyle::CWdgtFormatGraphObjsTextStyle(
 {
     setObjectName("WdgtFormatGraphObjsTextStyle");
 
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
+        NameSpace() + "::GraphObjFormat", ClassName(), objectName());
 
     QString strMthInArgs;
 

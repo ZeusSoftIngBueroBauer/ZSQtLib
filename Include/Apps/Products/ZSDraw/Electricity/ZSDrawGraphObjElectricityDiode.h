@@ -51,10 +51,14 @@ CnctPt1  Body     CnctPt2
 *******************************************************************************/
 {
 public: // class methods
-    /*! Returns the namespace the class belongs to. */
-    static QString NameSpace() { return "ZS::Draw::Electricity"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
-    /*! Returns the class name. */
-    static QString ClassName() { return "CGraphObjDiode"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
+    /*! Returns the namespace the class belongs to.
+        Please note that the static class functions name must be different
+        from the non static virtual member function "nameSpace" */
+    static QString NameSpace() { return "ZS::Draw::Electricity"; }
+    /*! Returns the class name.
+        Please note that the static class functions name must be different
+        from the non static virtual member function "nameSpace" */
+    static QString ClassName() { return "CGraphObjDiode"; }
 public: // type definitions and constants
     static const QSize c_sizInitial;
 public: // ctors and dtor

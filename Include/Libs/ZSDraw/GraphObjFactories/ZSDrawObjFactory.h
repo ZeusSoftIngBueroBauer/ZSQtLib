@@ -92,7 +92,8 @@ public: // class methods
 protected: // ctor
     CObjFactory(
         const QString& i_strGroupName,
-        int            i_iGraphObjType,
+        const QString& i_strClassName,
+        int i_iGraphObjType,
         const QString& i_strGraphObjType,
         const QPixmap& i_pxmToolIcon = QPixmap() );
 public: // dtor
@@ -142,15 +143,21 @@ protected: // overridables
     virtual ZS::System::SErrResultInfo saveGraphObjLabels( const QHash<QString, CGraphObjLabel*>& i_arpLabels, QXmlStreamWriter& i_xmlStreamWriter );
     virtual QHash<QString, CGraphObjLabel*> loadGraphObjLabels( QXmlStreamReader& i_xmlStreamReader, ZS::System::SErrResultInfo& io_errResultInfo );
 protected: // class members
-    static int                   s_iInstCount;
+    static int s_iInstCount;
     static ZS::System::CIdxTree* s_pIdxTree;
 protected: // instance members
-    QString                  m_strGroupName;            /*!< To group the factory in index tree (e.g. "Draw::Standard Shapes", "Draw::Widgets", "Draw::Electricity") */
-    int                      m_iGraphObjType;           /*!< Type as int of the graphic items created by this factory. */
-    QPixmap                  m_pxmToolIcon;             /*!< Pixmap for icon to indicate the graphic items created by this factory in the index tree. */
-    QString                  m_strFileDir;              /*!< The file's path (which may be absolute or relative). This doesn't include the file name. */
-    QString                  m_strFileName;             /*!< Name of the file, excluding the path. */
-    ZS::System::CTrcAdminObj* m_pTrcAdminObj;            /*!< Trace admin object. */
+    /*!< To group the factory in index tree (e.g. "Draw::Standard Shapes", "Draw::Widgets", "Draw::Electricity") */
+    QString m_strGroupName;
+    /*!< Type as int of the graphic items created by this factory. */
+    int m_iGraphObjType;
+    /*!< Pixmap for icon to indicate the graphic items created by this factory in the index tree. */
+    QPixmap m_pxmToolIcon;
+    /*!< The file's path (which may be absolute or relative). This doesn't include the file name. */
+    QString m_strFileDir;
+    /*!< Name of the file, excluding the path. */
+    QString m_strFileName;
+    /*!< Trace admin object. */
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CObjFactory
 

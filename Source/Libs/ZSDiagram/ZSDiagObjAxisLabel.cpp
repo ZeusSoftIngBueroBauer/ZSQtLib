@@ -222,7 +222,7 @@ void CDiagObjAxisLabel::setSpacingDiagPartCenter2DivLineLabels( int i_iSpacing_p
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString::number(i_iSpacing_px);
     }
     CMethodTracer mthTracer(
@@ -264,7 +264,7 @@ void CDiagObjAxisLabel::setSpacingDiagPartCenter2AxisLabel( int i_iSpacing_px )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString::number(i_iSpacing_px);
     }
     CMethodTracer mthTracer(
@@ -306,7 +306,7 @@ void CDiagObjAxisLabel::setSpacingDivLineLabels2AxisLabel( int i_iSpacing_px )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString::number(i_iSpacing_px);
     }
     CMethodTracer mthTracer(
@@ -352,7 +352,7 @@ void CDiagObjAxisLabel::showDivLines(const CEnumDivLineLayer& i_eLayer)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString(i_eLayer.isValid() ? i_eLayer.toString() : "AllLayers");
     }
     CMethodTracer mthTracer(
@@ -394,7 +394,7 @@ void CDiagObjAxisLabel::hideDivLines(const CEnumDivLineLayer& i_eLayer)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString(i_eLayer.isValid() ? i_eLayer.toString() : "AllLayers");
     }
     CMethodTracer mthTracer(
@@ -439,7 +439,7 @@ void CDiagObjAxisLabel::setDivLinesColor(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_color.name() + ", " + QString(i_eLayer.isValid() ? i_eLayer.toString() : "AllLayers");
     }
     CMethodTracer mthTracer(
@@ -498,7 +498,7 @@ void CDiagObjAxisLabel::setDivLinesPenStyle(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = qPenStyle2Str(i_penStyle) + ", " + QString(i_eLayer.isValid() ? i_eLayer.toString() : "AllLayers");
     }
     CMethodTracer mthTracer(
@@ -561,7 +561,7 @@ void CDiagObjAxisLabel::showDivLineLabels(const CEnumDivLineLayer& i_eLayer)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString(i_eLayer.isValid() ? i_eLayer.toString() : "AllLayers");
     }
     CMethodTracer mthTracer(
@@ -603,7 +603,7 @@ void CDiagObjAxisLabel::hideDivLineLabels(const CEnumDivLineLayer& i_eLayer)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString(i_eLayer.isValid() ? i_eLayer.toString() : "AllLayers");
     }
     CMethodTracer mthTracer(
@@ -648,7 +648,7 @@ void CDiagObjAxisLabel::setDivLineLabelsColor(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_color.name() + ", " + QString(i_eLayer.isValid() ? i_eLayer.toString() : "AllLayers");
     }
     CMethodTracer mthTracer(
@@ -707,7 +707,7 @@ void CDiagObjAxisLabel::setDivLineLabelsFont(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_font.family() + ", " + QString(i_eLayer.isValid() ? i_eLayer.toString() : "AllLayers");
     }
     CMethodTracer mthTracer(
@@ -765,7 +765,7 @@ void CDiagObjAxisLabel::setDigitsCountMax( int i_iDigitsCountMax )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString::number(i_iDigitsCountMax);
     }
     CMethodTracer mthTracer(
@@ -805,7 +805,7 @@ void CDiagObjAxisLabel::setUseEngineeringFormat( bool i_bUseEngineeringFormat )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = bool2Str(i_bUseEngineeringFormat);
     }
     CMethodTracer mthTracer(
@@ -851,7 +851,7 @@ void CDiagObjAxisLabel::setAxisLabel(const QString& i_strLabel)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_strLabel;
     }
     CMethodTracer mthTracer(
@@ -946,7 +946,7 @@ void CDiagObjAxisLabel::setAxisLabelColor(const QColor& i_color)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_color.name();
     }
     CMethodTracer mthTracer(
@@ -989,7 +989,7 @@ void CDiagObjAxisLabel::setAxisLabelFont(const QFont& i_font)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_font.family();
     }
     CMethodTracer mthTracer(
@@ -1038,7 +1038,7 @@ void CDiagObjAxisLabel::setUnit( CUnit* i_pUnit )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString(i_pUnit == nullptr ? "null" : i_pUnit->symbol());
     }
     CMethodTracer mthTracer(
@@ -1132,7 +1132,7 @@ void CDiagObjAxisLabel::setUnitColorAtDivLines(const QColor& i_color)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_color.name();
     }
     CMethodTracer mthTracer(
@@ -1175,7 +1175,7 @@ void CDiagObjAxisLabel::setUnitFontAtDivLines(const QFont& i_font)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_font.family();
     }
     CMethodTracer mthTracer(

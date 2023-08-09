@@ -110,7 +110,7 @@ void CWdgtDiagramProperties::setMode(EMode i_mode)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = CEnumMode(i_mode).toString();
     }
     CMethodTracer mthTracer(
@@ -195,7 +195,7 @@ void CWdgtDiagramProperties::onDiagramAboutToBeDestroyed(const QString& i_strObj
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,

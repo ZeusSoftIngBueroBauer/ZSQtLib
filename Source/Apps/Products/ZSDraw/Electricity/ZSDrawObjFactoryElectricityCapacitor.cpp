@@ -69,6 +69,7 @@ CObjFactoryCapacitor::CObjFactoryCapacitor( const QPixmap& i_pxmToolIcon ) :
 //------------------------------------------------------------------------------
     CObjFactory(
         /* strGroupName    */ CGraphObjElectricity::c_strFactoryGroupName,
+        /* strClassName    */ ClassName(),
         /* iGraphObjType   */ EGraphObjTypeUserDefined,
         /* strGraphObjType */ "Capacitor",
         /* toolIcon        */ i_pxmToolIcon )

@@ -69,6 +69,7 @@ CObjFactoryInductor::CObjFactoryInductor( const QPixmap& i_pxmToolIcon ) :
 //------------------------------------------------------------------------------
     CObjFactory(
         /* strGroupName    */ CGraphObjElectricity::c_strFactoryGroupName,
+        /* strClassName    */ ClassName(),
         /* iGraphObjType   */ EGraphObjTypeUserDefined,
         /* strGraphObjType */ "Inductor",
         /* toolIcon        */ i_pxmToolIcon )

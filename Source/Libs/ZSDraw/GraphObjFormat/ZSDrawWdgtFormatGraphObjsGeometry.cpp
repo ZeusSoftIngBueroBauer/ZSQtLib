@@ -101,7 +101,7 @@ CWdgtFormatGraphObjsGeometry::CWdgtFormatGraphObjsGeometry(
     CGraphObj*     i_pGraphObj,
     QWidget*       i_pWdgtParent ) :
 //------------------------------------------------------------------------------
-    CWdgtFormatGraphObjs(i_pDrawingScene, i_pGraphObj, i_pWdgtParent),
+    CWdgtFormatGraphObjs(i_pDrawingScene, "CWdgtFormatGraphObjsGeometry", "", i_pGraphObj, i_pWdgtParent),
     m_ptPos(0.0,0.0),
     m_size(0.0,0.0),
     m_plg(),
@@ -162,10 +162,11 @@ CWdgtFormatGraphObjsGeometry::CWdgtFormatGraphObjsGeometry(
 {
     setObjectName("WdgtFormatGraphObjsGeometry");
 
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
+        NameSpace() + "::GraphObjFormat", ClassName(), objectName());
 
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->path());
     }
     CMethodTracer mthTracer(

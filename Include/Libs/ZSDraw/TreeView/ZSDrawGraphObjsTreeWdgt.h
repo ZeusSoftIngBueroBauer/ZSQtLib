@@ -35,7 +35,7 @@ may result in using the software modules.
 #include <QtWidgets/qwidget.h>
 #endif
 
-#include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjsTreeModel.h"
+#include "ZSDraw/TreeView/ZSDrawGraphObjsTreeModel.h"
 #include "ZSSysGUI/ZSSysIdxTreeModel.h"
 
 class QModelIndex;

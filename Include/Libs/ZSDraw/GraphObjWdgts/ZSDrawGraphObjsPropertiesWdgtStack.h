@@ -35,7 +35,7 @@ may result in using the software modules.
 #include <QtWidgets/qwidget.h>
 #endif
 
-#include "ZSDraw/Common/ZSDrawDllMain.h"
+#include "ZSDraw/Common/ZSDrawCommon.h"
 
 class QLineEdit;
 class QStackedWidget;
@@ -48,6 +48,7 @@ namespace ZS
 namespace System
 {
 class CIdxTree;
+class CTrcAdminObj;
 }
 
 namespace Draw
@@ -60,12 +61,6 @@ class ZSDRAWDLL_API CWdgtStackGraphObjsProperties : public QWidget
 //******************************************************************************
 {
     Q_OBJECT
-protected: // type definitions and constants
-    typedef enum {
-        EGraphObjTypeUndefined = 0,
-        EGraphObjTypeDrawing   = 1,
-        EGraphObjTypeCount
-    }   EGraphObjType;
 public: // class methods
     static QString NameSpace() { return "ZS::Draw"; }
     static QString ClassName() { return "CWdgtStackGraphObjsProperties"; }
@@ -76,11 +71,10 @@ public: // ctors and dtor
         Qt::WindowFlags i_wflags = Qt::WindowFlags() );
     virtual ~CWdgtStackGraphObjsProperties();
 public: // instance methods
-    void saveState(QSettings& i_settings) const;
-    void restoreState(const QSettings& i_settings);
-public: // instance methods
     void setKeyInTree( const QString& i_strKeyInTree );
     QString getKeyInTree() const;
+protected: // instance methods
+    int graphObjType2StackWdgtIndex(const QString& i_strGraphObjType) const;
 protected slots: // overridables
     virtual void onIdxTreeAboutToBeDestroyed();
 protected: // instance members
@@ -91,7 +85,9 @@ protected: // instance members
     QHBoxLayout* m_pLytHeadLine;
     QLineEdit* m_pEdtPath;
     QStackedWidget* m_pStackedWdgtGraphObjsProperties;
-    QVector<CWdgtGraphObjPropertiesAbstract*> m_arpWdgtsGraphObjProperties;
+    QHash<QString, int> m_hshGraphObjType2StackWdgtIndex;
+    /*!< Trace admin object for method tracing. */
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CWdgtStackGraphObjsProperties
 

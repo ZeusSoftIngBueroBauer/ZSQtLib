@@ -106,23 +106,52 @@ public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
     virtual QString className() const { return ClassName(); }
 signals:
+    /*! Signal emitted if the drawing size has been changed.
+        @param i_size [in] Contains the new drawing size (pixel dimension, metric, etc.). */
     void drawingSizeChanged( const ZS::Draw::CDrawingSize& i_size );
+    /*! Signal emitted if the grid settings has been changed.
+        @param i_settings [in] Contains the new grid settings (visibilities of lines, labels, etc.). */
     void gridSettingsChanged( const ZS::Draw::CDrawGridSettings& i_settings );
+    /*! Signal emitted if the mouse positions has been changed.
+        @param i_ptMousePos [in] Current mouse position in pixels. */
     void mousePosChanged( const QPointF& i_ptMousePos );
+    /*! Signal emitted if the mode has been changed.
+        The signal is emitted if the mode changes between Edit and View mode (see enum ZS::System:EMode) or
+        if the selected edit tool changed (see enum ZS::Draw::EEditTool) or
+        if the edit mode changed (see enum ZS::Draw::EEditMode) or
+        if the resize mode changed (see enum ZS::Draw::EEditResizeMode).
+        See also method CDrawingScene::setMode. */
     void modeChanged();
+    /*! Signal emitted if the draw set has been changed.
+        @param i_drawSettings [in] Contains the new draw settings (pen style, line color, font, etc.). */
     void drawSettingsChanged( const ZS::Draw::CDrawSettings& i_drawSettings );
-    /*! Signal which will be emitted if a graphical object has been added, changed, is going to be removed,
-        has been moved or renamed. The drawing scene connects to those signals, combines them to one signal
-        and forwards them by emitting the graphObjChanged signal.
-        @param i_pIdxTree [in] Pointer to index tree.
-        @param i_pTreeEntry [in] Pointer to tree entry which has been changed. */
-    void graphObjChanged( ZS::Draw::CDrawingScene* i_pDrawingScene, ZS::Draw::CGraphObj* i_pGraphObj );
-signals:
-    //void graphObjCreated( ZS::Draw::CGraphObj* i_pGraphObj );
-    //void graphObjDestroying( const QString& i_strObjId );
-    //void graphObjDestroyed( const QString& i_strObjId );
-    //void graphObjIdChanged( const QString& i_strObjIdOld, const QString& i_strObjIdNew );
-    //void graphObjNameChanged( const QString& i_strObjId, const QString& i_strObjNameOld, const QString& i_strObjNameNew );
+    /*! Signal emitted if an object has been added.
+        @param i_strKeyInTree [in] Unique key of the graphical object. */
+    void graphObjAdded(const QString& i_strKeyInTree);
+    /*! Signal emitted if a property (labels, geometry, drawing settings, etc.) of a
+        graphical object has been changed.
+        Please note that this signal is not emitted if the object is renamed or moved to another parent.
+        @param i_strKeyInTree [in] Unique key of the graphical object. */
+    void graphObjChanged(const QString& i_strKeyInTree);
+    /*! Signal emitted if a graphical object has been renamed.
+        @param i_strNewKeyInTree [in] Unique key after moving the object.
+        @param i_strOrigKeyInTree [in] Unique key before moving the object.
+        @param i_strKeyInTreeOfTargetBranch [in]
+            Name of the object in the new target branch after moving the object.
+            Provided for convenience as this is the last section of i_strNewKeyInTree. */
+    void graphObjMoved(const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree, const QString& i_strKeyInTreeOfTargetBranch);
+    /*! Signal emitted if a graphical object has been renamed.
+        @param i_strNewKeyInTree [in] Unique key after renaming the object.
+        @param i_strOrigKeyInTree [in] Unique key before renaming the object.
+        @param i_strOrigName [in]
+            Name before renaming the object.
+            Provided for convenience as this is the last section of i_strOrigKeyInTree. */
+    void graphObjRenamed(const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree, const QString& i_strOrigName);
+    /*! Signal emitted if an object has been destroyed.
+        Please note that if the signal is emitted you can no longer access the properties of the
+        object and dynamic casts to CGraphObj or to QGraphicsItem cannot be used anymore.
+        @param i_strKeyInTree [in] Unique key of the graphical object. */
+    void graphObjDestroyed(const QString& i_strKeyInTree);
 public: // instance methods
     void setDrawingSize( const CDrawingSize& i_size);
     CDrawingSize drawingSize() const;
@@ -298,17 +327,11 @@ protected: // auxiliary methods (trace emitting signals)
     void emit_mousePosChanged( const QPointF& i_ptMousePos );
     void emit_modeChanged();
     void emit_drawSettingsChanged( const ZS::Draw::CDrawSettings& i_drawSettings );
-    /*! Signal which will be emitted if a graphical object has been added, changed, is going to be removed,
-        has been moved or renamed. The drawing scene connects to those signals, combines them to one signal
-        and forwards them by emitting the graphObjChanged signal.
-        @param i_pIdxTree [in] Pointer to index tree.
-        @param i_pTreeEntry [in] Pointer to tree entry which has been changed. */
-    void emit_graphObjChanged( ZS::Draw::CDrawingScene* i_pDrawingScene, ZS::Draw::CGraphObj* i_pGraphObj );
-    //void emit_graphObjCreated( ZS::Draw::CGraphObj* i_pGraphObj );
-    //void emit_graphObjDestroying( const QString& i_strObjId );
-    //void emit_graphObjDestroyed( const QString& i_strObjId );
-    //void emit_graphObjIdChanged( const QString& i_strObjIdOld, const QString& i_strObjIdNew );
-    //void emit_graphObjNameChanged( const QString& i_strObjId, const QString& i_strObjNameOld, const QString& i_strObjNameNew );
+    void emit_graphObjAdded(const QString& i_strKeyInTree);
+    void emit_graphObjChanged(const QString& i_strKeyInTree);
+    void emit_graphObjMoved(const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree, const QString& i_strKeyInTreeOfTargetBranch);
+    void emit_graphObjRenamed(const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree, const QString& i_strOrigName);
+    void emit_graphObjDestroyed(const QString& i_strKeyInTree);
 protected: // instance members
     CDrawingSize m_drawingSize;
     CDrawGridSettings m_gridSettings;

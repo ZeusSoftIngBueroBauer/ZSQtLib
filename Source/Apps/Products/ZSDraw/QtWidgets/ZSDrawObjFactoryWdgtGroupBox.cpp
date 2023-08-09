@@ -68,6 +68,7 @@ CObjFactoryWdgtGroupBox::CObjFactoryWdgtGroupBox( const QPixmap& i_pxmToolIcon )
 //------------------------------------------------------------------------------
     CObjFactory(
         /* strGroupName    */ CGraphObjWdgt::c_strFactoryGroupName,
+        /* strClassName    */ ClassName(),
         /* iGraphObjType   */ EGraphObjTypeUserDefined,
         /* strGraphObjType */ "GroupBox",
         /* toolIcon        */ i_pxmToolIcon )

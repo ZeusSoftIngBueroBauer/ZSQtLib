@@ -170,7 +170,8 @@ protected: // ctor
 */
 CObjFactory::CObjFactory(
     const QString& i_strGroupName,
-    int            i_iGraphObjType,
+    const QString& i_strClassName,
+    int i_iGraphObjType,
     const QString& i_strGraphObjType,
     const QPixmap& i_pxmToolIcon ) :
 //------------------------------------------------------------------------------
@@ -194,7 +195,8 @@ CObjFactory::CObjFactory(
             /* strNodeSeparator */ "::" );
     }
 
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace() + c_strGroupSeparater + i_strGroupName, ClassName(), m_strName);
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
+        NameSpace() + "::ObjFactories::" + i_strGroupName, i_strClassName);
 
     QString strMthInArgs;
 

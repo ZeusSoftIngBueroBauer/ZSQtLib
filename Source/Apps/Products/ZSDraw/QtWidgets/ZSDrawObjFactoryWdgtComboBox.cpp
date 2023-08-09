@@ -68,6 +68,7 @@ CObjFactoryWdgtComboBox::CObjFactoryWdgtComboBox( const QPixmap& i_pxmToolIcon )
 //------------------------------------------------------------------------------
     CObjFactory(
         /* strGroupName    */ CGraphObjWdgt::c_strFactoryGroupName,
+        /* strClassName    */ ClassName(),
         /* iGraphObjType   */ EGraphObjTypeUserDefined,
         /* strGraphObjType */ "ComboBox",
         /* toolIcon        */ i_pxmToolIcon )

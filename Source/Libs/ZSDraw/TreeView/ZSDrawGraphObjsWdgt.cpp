@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjsWdgt.h"
-#include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjsTreeWdgt.h"
+#include "ZSDraw/TreeView/ZSDrawGraphObjsWdgt.h"
+#include "ZSDraw/TreeView/ZSDrawGraphObjsTreeWdgt.h"
 #include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjsPropertiesWdgtStack.h"
 #include "ZSDraw/Drawing/ZSDrawingView.h"
 #include "ZSSysGUI/ZSSysIdxTreeModelEntry.h"
@@ -81,7 +81,8 @@ CWdgtGraphObjs::CWdgtGraphObjs(
 {
     setObjectName(i_pDrawingView->objectName());
 
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
+        NameSpace() + "::TreeView", ClassName(), objectName());
 
     QString strMthInArgs;
 
@@ -177,7 +178,6 @@ void CWdgtGraphObjs::saveState(QSettings& i_settings) const
     }
 
     m_pWdgtTreeView->saveState(i_settings);
-    m_pWdgtStackGraphObjsProperties->saveState(i_settings);
 }
 
 //------------------------------------------------------------------------------
@@ -185,7 +185,6 @@ void CWdgtGraphObjs::restoreState(const QSettings& i_settings)
 //------------------------------------------------------------------------------
 {
     m_pWdgtTreeView->restoreState(i_settings);
-    m_pWdgtStackGraphObjsProperties->restoreState(i_settings);
 
     if( m_pSplitter != nullptr ) {
         QList<int> listSizes = m_pSplitter->sizes();

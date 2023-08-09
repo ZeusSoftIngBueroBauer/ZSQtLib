@@ -61,6 +61,7 @@ CObjFactoryPolygon::CObjFactoryPolygon( const QPixmap& i_pxmToolIcon ) :
 //------------------------------------------------------------------------------
     CObjFactory(
         /* strGroupName    */ c_strGroupNameStandardShapes,
+        /* strClassName    */ ClassName(),
         /* iGraphObjType   */ EGraphObjTypePolygon,
         /* strGraphObjType */ ZS::Draw::graphObjType2Str(EGraphObjTypePolygon),
         /* toolIcon        */ i_pxmToolIcon )

@@ -45,10 +45,14 @@ class CGraphObjWdgtCheckBox : public CGraphObjWdgt
 //******************************************************************************
 {
 public: // class methods
-    /*! Returns the namespace the class belongs to. */
-    static QString NameSpace() { return "ZS::Draw::QtWidgets"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
-    /*! Returns the class name. */
-    static QString ClassName() { return "CGraphObjWdgtCheckBox"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
+    /*! Returns the namespace the class belongs to.
+        Please note that the static class functions name must be different
+        from the non static virtual member function "nameSpace" */
+    static QString NameSpace() { return "ZS::Draw::QtWidgets"; }
+    /*! Returns the class name.
+        Please note that the static class functions name must be different
+        from the non static virtual member function "nameSpace" */
+    static QString ClassName() { return "CGraphObjWdgtCheckBox"; }
 public: // ctors and dtor
     CGraphObjWdgtCheckBox(
         CDrawingScene*       i_pDrawingScene,

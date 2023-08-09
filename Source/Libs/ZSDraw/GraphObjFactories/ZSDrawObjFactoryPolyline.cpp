@@ -61,6 +61,7 @@ CObjFactoryPolyline::CObjFactoryPolyline( const QPixmap& i_pxmToolIcon ) :
 //------------------------------------------------------------------------------
     CObjFactory(
         /* strGroupName    */ c_strGroupNameStandardShapes,
+        /* strClassName    */ ClassName(),
         /* iGraphObjType   */ EGraphObjTypePolyline,
         /* strGraphObjType */ ZS::Draw::graphObjType2Str(EGraphObjTypePolyline),
         /* toolIcon        */ i_pxmToolIcon )

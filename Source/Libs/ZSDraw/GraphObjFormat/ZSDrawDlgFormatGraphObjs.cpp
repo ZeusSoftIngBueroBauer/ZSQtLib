@@ -121,7 +121,8 @@ CDlgFormatGraphObjs::CDlgFormatGraphObjs(
 
     setObjectName("DlgFormatGraphObjs");
 
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
+        NameSpace() + "::GraphObjFormat", ClassName(), objectName());
 
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {

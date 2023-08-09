@@ -48,7 +48,6 @@ may result in using the software modules.
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSDraw/Drawing/ZSDrawingView.h"
 #include "ZSDraw/GraphObjs/ZSDrawGraphObj.h"
-#include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjsWdgt.h"
 #include "ZSDraw/GraphObjFactories/ZSDrawObjFactoriesModel.h"
 #include "ZSDraw/GraphObjFactories/ZSDrawObjFactoryConnectionLine.h"
 #include "ZSDraw/GraphObjFactories/ZSDrawObjFactoryConnectionPoint.h"
@@ -61,6 +60,7 @@ may result in using the software modules.
 #include "ZSDraw/GraphObjFactories/ZSDrawObjFactoryPolyline.h"
 #include "ZSDraw/GraphObjFactories/ZSDrawObjFactoryRect.h"
 #include "ZSDraw/GraphObjFactories/ZSDrawObjFactoryText.h"
+#include "ZSDraw/TreeView/ZSDrawGraphObjsWdgt.h"
 #include "ZSPhysValGUI/ZSPhysUnitsDlg.h"
 #include "ZSPhysValGUI/ZSPhysValDlgEditPhysVal.h"
 #include "ZSIpcTraceGUI/ZSIpcTrcServerDlg.h"
@@ -4257,7 +4257,7 @@ void CMainWindow::onDrawingSceneMousePosChanged( const QPointF& i_ptMousePos )
         /* strMethod    */ "onDrawingSceneMousePosChanged",
         /* strAddInfo   */ strMthInArgs );
 
-    if( m_pLblStatusBarDrawingSceneMouseCursorPos != nullptr ) {
+    if (m_pLblStatusBarDrawingSceneMouseCursorPos != nullptr && m_pWdgtCentral != nullptr) {
         //CDrawingView* pDrawingView = m_pWdgtCentral->drawingView();
         //CPageSetup* pageSetup = pDrawingView->getPageSetup();
         //CUnit unitWidth = pageSetup->unit(EOrientation::Horizontal);
@@ -4306,18 +4306,19 @@ void CMainWindow::onDrawingSceneModeChanged()
         /* strMethod    */ "onDrawingSceneModeChanged",
         /* strAddInfo   */ strMthInArgs );
 
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
-        int iObjFactoryType = pDrawingScene->getCurrentDrawingToolGraphObjType();
-        CGraphObj* pGraphObjCreating = pDrawingScene->getGraphObjCreating();
-
-        strAddTrcInfo  = "Mode:" + pDrawingScene->getMode().toString();
-        strAddTrcInfo += ", EditTool:" + pDrawingScene->getEditTool().toString();
-        strAddTrcInfo += ", EditMode:" + pDrawingScene->getEditMode().toString();
-        strAddTrcInfo += ", ResizeMode:" + pDrawingScene->getEditResizeMode().toString();
-        strAddTrcInfo += ", ObjFactory:" + graphObjType2Str(iObjFactoryType);
-        strAddTrcInfo += ", GraphObjCreating: " + QString(pGraphObjCreating == nullptr ? "nullptr" : pGraphObjCreating->name());
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        if (m_pWdgtCentral != nullptr) {
+            CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
+            int iObjFactoryType = pDrawingScene->getCurrentDrawingToolGraphObjType();
+            CGraphObj* pGraphObjCreating = pDrawingScene->getGraphObjCreating();
+            strAddTrcInfo  = "Mode:" + pDrawingScene->getMode().toString();
+            strAddTrcInfo += ", EditTool:" + pDrawingScene->getEditTool().toString();
+            strAddTrcInfo += ", EditMode:" + pDrawingScene->getEditMode().toString();
+            strAddTrcInfo += ", ResizeMode:" + pDrawingScene->getEditResizeMode().toString();
+            strAddTrcInfo += ", ObjFactory:" + graphObjType2Str(iObjFactoryType);
+            strAddTrcInfo += ", GraphObjCreating: " + QString(pGraphObjCreating == nullptr ? "nullptr" : pGraphObjCreating->name());
+            mthTracer.trace(strAddTrcInfo);
+        }
     }
 
     updateWindowTitle();
@@ -4437,7 +4438,7 @@ void CMainWindow::onDrawingViewMousePosChanged( const QPointF& i_ptMousePos )
         /* strMethod    */ "onDrawingViewMousePosChanged",
         /* strAddInfo   */ strMthInArgs );
 
-    if( m_pLblStatusBarDrawingViewMouseCursorPos != nullptr )
+    if (m_pLblStatusBarDrawingViewMouseCursorPos != nullptr && m_pWdgtCentral != nullptr)
     {
         //CDrawingView* pDrawingView = m_pWdgtCentral->drawingView();
         //CPageSetup* pageSetup = pDrawingView->getPageSetup();
@@ -4611,7 +4612,7 @@ void CMainWindow::resizeEvent( QResizeEvent* i_pEv )
 
     QMainWindow::resizeEvent(i_pEv);
 
-    if( m_pLblStatusBarDrawingSceneRect != nullptr )
+    if (m_pLblStatusBarDrawingSceneRect != nullptr && m_pWdgtCentral != nullptr)
     {
         //CDrawingView* pDrawingView = m_pWdgtCentral->drawingView();
         //CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
@@ -4641,7 +4642,7 @@ void CMainWindow::showEvent( QShowEvent* i_pEv )
 
     QMainWindow::showEvent(i_pEv);
 
-    if( m_pLblStatusBarDrawingSceneRect != nullptr ) {
+    if (m_pLblStatusBarDrawingSceneRect != nullptr && m_pWdgtCentral != nullptr) {
         //CDrawingView* pDrawingView = m_pWdgtCentral->drawingView();
         //CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
 
@@ -4669,68 +4670,79 @@ void CMainWindow::updateStatusBar()
         /* strMethod    */ "updateStatusBar",
         /* strAddInfo   */ "" );
 
-    CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
+    if (m_pWdgtCentral != nullptr)
+    {
+        CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
 
-    if( m_pLblStatusBarDrawingSceneEditTool != nullptr ) {
-        QString strEditInfo = "Tool: ";
-        CEnumEditTool editTool = pDrawingScene->getEditTool();
-        if( editTool == EEditTool::CreateObjects ) {
-            int     iGraphObjType = pDrawingScene->getCurrentDrawingToolGraphObjType();
-            QString strObjFactory = graphObjType2Str(iGraphObjType);
-            strEditInfo += "Create " + strObjFactory;
-        }
-        else if( editTool != EEditTool::None ) {
-            strEditInfo += editTool.toString();
-        }
-        m_pLblStatusBarDrawingSceneEditTool->setText(strEditInfo);
-    }
-
-    if( m_pLblStatusBarDrawingSceneEditMode != nullptr || m_pLblStatusBarDrawingSceneGraphObjEditInfo != nullptr ) {
-        QString strEditModeInfo;
-        QString strGraphObjEditInfo;
-
-        CEnumEditMode       editMode       = pDrawingScene->getEditMode();
-        CEnumEditResizeMode editResizeMode = pDrawingScene->getEditResizeMode();
-
-        QList<QGraphicsItem*> arGraphicsItemSelected = pDrawingScene->selectedItems();
-        QGraphicsItem*        pGraphicsItemCreating  = pDrawingScene->getGraphicsItemCreating();
-        QGraphicsItem*        pGraphicsItem = nullptr;
-        CGraphObj*            pGraphObj = nullptr;
-
-        if( editMode != EEditMode::None )
-        {
-            if( arGraphicsItemSelected.size() > 0 )
-            {
-                pGraphicsItem = arGraphicsItemSelected[0];
+        if( m_pLblStatusBarDrawingSceneEditTool != nullptr ) {
+            QString strEditInfo = "Tool: ";
+            CEnumEditTool editTool = pDrawingScene->getEditTool();
+            if( editTool == EEditTool::CreateObjects ) {
+                int     iGraphObjType = pDrawingScene->getCurrentDrawingToolGraphObjType();
+                QString strObjFactory = graphObjType2Str(iGraphObjType);
+                strEditInfo += "Create " + strObjFactory;
             }
-            else if( pGraphicsItemCreating != nullptr )
-            {
-                pGraphicsItem = pGraphicsItemCreating;
+            else if( editTool != EEditTool::None ) {
+                strEditInfo += editTool.toString();
             }
+            m_pLblStatusBarDrawingSceneEditTool->setText(strEditInfo);
+        }
 
-            if( pGraphicsItem != nullptr )
+        if( m_pLblStatusBarDrawingSceneEditMode != nullptr || m_pLblStatusBarDrawingSceneGraphObjEditInfo != nullptr ) {
+            QString strEditModeInfo;
+            QString strGraphObjEditInfo;
+
+            CEnumEditMode       editMode       = pDrawingScene->getEditMode();
+            CEnumEditResizeMode editResizeMode = pDrawingScene->getEditResizeMode();
+
+            QList<QGraphicsItem*> arGraphicsItemSelected = pDrawingScene->selectedItems();
+            QGraphicsItem*        pGraphicsItemCreating  = pDrawingScene->getGraphicsItemCreating();
+            QGraphicsItem*        pGraphicsItem = nullptr;
+            CGraphObj*            pGraphObj = nullptr;
+
+            if( editMode != EEditMode::None )
             {
-                pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
-
-                if( pGraphObj == nullptr )
+                if( arGraphicsItemSelected.size() > 0 )
                 {
-                    throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObj == nullptr" );
+                    pGraphicsItem = arGraphicsItemSelected[0];
                 }
-                strEditModeInfo += pGraphObj->name();
-                strGraphObjEditInfo += pGraphObj->name() + ": " + pGraphObj->getEditInfo();
-            }
-
-            if( editMode == EEditMode::Resize )
-            {
-                if( editResizeMode >= 0 && editResizeMode < CEnumEditResizeMode::count() )
+                else if( pGraphicsItemCreating != nullptr )
                 {
-                    if( !strEditModeInfo.isEmpty() )
+                    pGraphicsItem = pGraphicsItemCreating;
+                }
+
+                if( pGraphicsItem != nullptr )
+                {
+                    pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+
+                    if( pGraphObj == nullptr )
                     {
-                        strEditModeInfo += ".";
+                        throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObj == nullptr" );
                     }
-                    strEditModeInfo += editResizeMode.toString();
+                    strEditModeInfo += pGraphObj->name();
+                    strGraphObjEditInfo += pGraphObj->name() + ": " + pGraphObj->getEditInfo();
                 }
-                else if( editMode != EEditMode::None )
+
+                if( editMode == EEditMode::Resize )
+                {
+                    if( editResizeMode >= 0 && editResizeMode < CEnumEditResizeMode::count() )
+                    {
+                        if( !strEditModeInfo.isEmpty() )
+                        {
+                            strEditModeInfo += ".";
+                        }
+                        strEditModeInfo += editResizeMode.toString();
+                    }
+                    else if( editMode != EEditMode::None )
+                    {
+                        if( !strEditModeInfo.isEmpty() )
+                        {
+                            strEditModeInfo += ".";
+                        }
+                        strEditModeInfo += editMode.toString();
+                    }
+                }
+                else
                 {
                     if( !strEditModeInfo.isEmpty() )
                     {
@@ -4738,27 +4750,19 @@ void CMainWindow::updateStatusBar()
                     }
                     strEditModeInfo += editMode.toString();
                 }
-            }
-            else
+            } // if( m_editMode != EEditMode::None )
+
+            if( m_pLblStatusBarDrawingSceneEditMode != nullptr )
             {
-                if( !strEditModeInfo.isEmpty() )
-                {
-                    strEditModeInfo += ".";
-                }
-                strEditModeInfo += editMode.toString();
+                m_pLblStatusBarDrawingSceneEditMode->setText("Mode: " + strEditModeInfo);
             }
-        } // if( m_editMode != EEditMode::None )
 
-        if( m_pLblStatusBarDrawingSceneEditMode != nullptr )
-        {
-            m_pLblStatusBarDrawingSceneEditMode->setText("Mode: " + strEditModeInfo);
-        }
-
-        if( m_pLblStatusBarDrawingSceneGraphObjEditInfo != nullptr )
-        {
-            m_pLblStatusBarDrawingSceneGraphObjEditInfo->setText("Info: " + strGraphObjEditInfo);
-        }
-    } // if( m_pLblStatusBarDrawingSceneEditMode != nullptr )
+            if( m_pLblStatusBarDrawingSceneGraphObjEditInfo != nullptr )
+            {
+                m_pLblStatusBarDrawingSceneGraphObjEditInfo->setText("Info: " + strGraphObjEditInfo);
+            }
+        } // if( m_pLblStatusBarDrawingSceneEditMode != nullptr )
+    } // if (m_pWdgtCentral != nullptr)
 } // updateStatusBar
 
 //------------------------------------------------------------------------------
@@ -4771,112 +4775,89 @@ void CMainWindow::updateActions()
         /* strMethod    */ "updateActions",
         /* strAddInfo   */ "" );
 
-    CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
-
-    CEnumMode mode = pDrawingScene->getMode();
-
-    QList<QGraphicsItem*> arpGraphicItemsSelected = pDrawingScene->selectedItems();
-    QGraphicsItem*        pGraphicsItem;
-
-    // Menu - File
-    //------------
-
-    //if( m_pActFileNew != nullptr )
-    //{
-    //    m_pActFileNew;
-    //}
-    //if( m_pActFileOpen != nullptr )
-    //{
-    //    m_pActFileOpen;
-    //}
-    //if( m_pActFileSave != nullptr )
-    //{
-    //    m_pActFileSave;
-    //}
-    //if( m_pActFileSaveAs != nullptr )
-    //{
-    //    m_pActFileSaveAs;
-    //}
-    //if( m_pActFileQuit != nullptr )
-    //{
-    //    m_pActFileQuit;
-    //}
-    //if( m_pActFileQuit != nullptr )
-    //{
-    //    m_pActFileQuit;
-    //}
-
-    // Menu - Mode
-    //------------
-
-    if( m_pActModeEdit != nullptr )
+    if (m_pWdgtCentral != nullptr )
     {
-        m_pActModeEdit->setChecked( mode == EMode::Edit );
-    }
-    if( m_pActModeView != nullptr )
-    {
-        m_pActModeView->setChecked( mode == EMode::View );
-    }
+        CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
 
-    // Menu - Edit - Select
-    //---------------------
+        CEnumMode mode = pDrawingScene->getMode();
 
-    if( m_pActEditSelect != nullptr )
-    {
-        if( mode == EMode::View )
+        QList<QGraphicsItem*> arpGraphicItemsSelected = pDrawingScene->selectedItems();
+        QGraphicsItem*        pGraphicsItem;
+
+        // Menu - File
+        //------------
+
+        //if( m_pActFileNew != nullptr )
+        //{
+        //    m_pActFileNew;
+        //}
+        //if( m_pActFileOpen != nullptr )
+        //{
+        //    m_pActFileOpen;
+        //}
+        //if( m_pActFileSave != nullptr )
+        //{
+        //    m_pActFileSave;
+        //}
+        //if( m_pActFileSaveAs != nullptr )
+        //{
+        //    m_pActFileSaveAs;
+        //}
+        //if( m_pActFileQuit != nullptr )
+        //{
+        //    m_pActFileQuit;
+        //}
+        //if( m_pActFileQuit != nullptr )
+        //{
+        //    m_pActFileQuit;
+        //}
+
+        // Menu - Mode
+        //------------
+
+        if( m_pActModeEdit != nullptr )
         {
-            m_pActEditSelect->setEnabled(false);
+            m_pActModeEdit->setChecked( mode == EMode::Edit );
         }
-        else
+        if( m_pActModeView != nullptr )
         {
-            if( pDrawingScene->items().size() == 0 )
+            m_pActModeView->setChecked( mode == EMode::View );
+        }
+
+        // Menu - Edit - Select
+        //---------------------
+
+        if( m_pActEditSelect != nullptr )
+        {
+            if( mode == EMode::View )
             {
                 m_pActEditSelect->setEnabled(false);
             }
-            else // if( m_pDrawingScene->items().size() > 0 )
+            else
             {
-                m_pActEditSelect->setEnabled(true);
-            }
-            if( pDrawingScene->getEditTool() != EEditTool::Select )
-            {
-                m_pActEditSelect->setChecked(false);
-            }
-            else // if( pDrawingScene->getEditTool() == EEditTool::Select )
-            {
-                m_pActEditSelect->setChecked(true);
+                if( pDrawingScene->items().size() == 0 )
+                {
+                    m_pActEditSelect->setEnabled(false);
+                }
+                else // if( m_pDrawingScene->items().size() > 0 )
+                {
+                    m_pActEditSelect->setEnabled(true);
+                }
+                if( pDrawingScene->getEditTool() != EEditTool::Select )
+                {
+                    m_pActEditSelect->setChecked(false);
+                }
+                else // if( pDrawingScene->getEditTool() == EEditTool::Select )
+                {
+                    m_pActEditSelect->setChecked(true);
+                }
             }
         }
-    }
 
-    // Menu - Edit - Rotate and Mirror
-    //--------------------------------
+        // Menu - Edit - Rotate and Mirror
+        //--------------------------------
 
-    if( mode == EMode::View )
-    {
-        if( m_pActEditRotateLeft != nullptr )
-        {
-            m_pActEditRotateLeft->setEnabled(false);
-        }
-        if( m_pActEditRotateRight != nullptr )
-        {
-            m_pActEditRotateRight->setEnabled(false);
-        }
-        if( m_pEdtEditRotateAngle != nullptr )
-        {
-            m_pEdtEditRotateAngle->setEnabled(false);
-        }
-        if( m_pActEditMirrorVertical != nullptr )
-        {
-            m_pActEditMirrorVertical->setEnabled(false);
-        }
-        if( m_pActEditMirrorHorizontal != nullptr )
-        {
-            m_pActEditMirrorHorizontal->setEnabled(false);
-        }
-    }
-    else // if( mode == EMode::Edit )
-    {
-        if( arpGraphicItemsSelected.size() == 0 )
+        if( mode == EMode::View )
         {
             if( m_pActEditRotateLeft != nullptr )
             {
@@ -4898,51 +4879,63 @@ void CMainWindow::updateActions()
             {
                 m_pActEditMirrorHorizontal->setEnabled(false);
             }
-        }// if( arpGraphicItemsSelected.size() == 0 )
-
-        else // if( arpGraphicItemsSelected.size() > 0 )
-        {
-            if( m_pActEditRotateLeft != nullptr )
-            {
-                m_pActEditRotateLeft->setEnabled(true);
-            }
-            if( m_pActEditRotateRight != nullptr )
-            {
-                m_pActEditRotateRight->setEnabled(true);
-            }
-            if( m_pEdtEditRotateAngle != nullptr )
-            {
-                m_pEdtEditRotateAngle->setEnabled(true);
-            }
-            if( m_pActEditMirrorVertical != nullptr )
-            {
-                //m_pActEditMirrorVertical->setEnabled(true); not yet supported
-            }
-            if( m_pActEditMirrorHorizontal != nullptr )
-            {
-                //m_pActEditMirrorHorizontal->setEnabled(true); not yet supported
-            }
-        } // if( arpGraphicItemsSelected.size() > 0 )
-
-    } // if( mode == EMode::Edit )
-
-    // Menu - Edit - Group
-    //---------------------
-
-    if( mode == EMode::View )
-    {
-        if( m_pActEditGroup != nullptr )
-        {
-            m_pActEditGroup->setEnabled(false);
         }
-        if( m_pActEditUngroup != nullptr )
+        else // if( mode == EMode::Edit )
         {
-            m_pActEditUngroup->setEnabled(false);
-        }
-    }
-    else
-    {
-        if( arpGraphicItemsSelected.size() == 0 )
+            if( arpGraphicItemsSelected.size() == 0 )
+            {
+                if( m_pActEditRotateLeft != nullptr )
+                {
+                    m_pActEditRotateLeft->setEnabled(false);
+                }
+                if( m_pActEditRotateRight != nullptr )
+                {
+                    m_pActEditRotateRight->setEnabled(false);
+                }
+                if( m_pEdtEditRotateAngle != nullptr )
+                {
+                    m_pEdtEditRotateAngle->setEnabled(false);
+                }
+                if( m_pActEditMirrorVertical != nullptr )
+                {
+                    m_pActEditMirrorVertical->setEnabled(false);
+                }
+                if( m_pActEditMirrorHorizontal != nullptr )
+                {
+                    m_pActEditMirrorHorizontal->setEnabled(false);
+                }
+            }// if( arpGraphicItemsSelected.size() == 0 )
+
+            else // if( arpGraphicItemsSelected.size() > 0 )
+            {
+                if( m_pActEditRotateLeft != nullptr )
+                {
+                    m_pActEditRotateLeft->setEnabled(true);
+                }
+                if( m_pActEditRotateRight != nullptr )
+                {
+                    m_pActEditRotateRight->setEnabled(true);
+                }
+                if( m_pEdtEditRotateAngle != nullptr )
+                {
+                    m_pEdtEditRotateAngle->setEnabled(true);
+                }
+                if( m_pActEditMirrorVertical != nullptr )
+                {
+                    //m_pActEditMirrorVertical->setEnabled(true); not yet supported
+                }
+                if( m_pActEditMirrorHorizontal != nullptr )
+                {
+                    //m_pActEditMirrorHorizontal->setEnabled(true); not yet supported
+                }
+            } // if( arpGraphicItemsSelected.size() > 0 )
+
+        } // if( mode == EMode::Edit )
+
+        // Menu - Edit - Group
+        //---------------------
+
+        if( mode == EMode::View )
         {
             if( m_pActEditGroup != nullptr )
             {
@@ -4952,365 +4945,379 @@ void CMainWindow::updateActions()
             {
                 m_pActEditUngroup->setEnabled(false);
             }
-        } // if( arpGraphicItemsSelected.size() == 0 )
-
-        else if( arpGraphicItemsSelected.size() == 1 )
+        }
+        else
         {
-            if( m_pActEditGroup != nullptr )
+            if( arpGraphicItemsSelected.size() == 0 )
             {
-                m_pActEditGroup->setEnabled(false);
-            }
-
-            pGraphicsItem = arpGraphicItemsSelected[0];
-
-            if( pGraphicsItem->type() == EGraphObjTypeGroup )
-            {
-                if( m_pActEditUngroup != nullptr )
+                if( m_pActEditGroup != nullptr )
                 {
-                    m_pActEditUngroup->setEnabled(true);
+                    m_pActEditGroup->setEnabled(false);
                 }
-            }
-            else
-            {
                 if( m_pActEditUngroup != nullptr )
                 {
                     m_pActEditUngroup->setEnabled(false);
                 }
-            }
+            } // if( arpGraphicItemsSelected.size() == 0 )
 
-        } // if( arpGraphicItemsSelected.size() == 1 )
-
-        else // if( arpGraphicItemsSelected.size() > 1 )
-        {
-            if( m_pActEditGroup != nullptr )
+            else if( arpGraphicItemsSelected.size() == 1 )
             {
-                m_pActEditGroup->setEnabled(true);
-            }
-            if( m_pActEditUngroup != nullptr )
+                if( m_pActEditGroup != nullptr )
+                {
+                    m_pActEditGroup->setEnabled(false);
+                }
+
+                pGraphicsItem = arpGraphicItemsSelected[0];
+
+                if( pGraphicsItem->type() == EGraphObjTypeGroup )
+                {
+                    if( m_pActEditUngroup != nullptr )
+                    {
+                        m_pActEditUngroup->setEnabled(true);
+                    }
+                }
+                else
+                {
+                    if( m_pActEditUngroup != nullptr )
+                    {
+                        m_pActEditUngroup->setEnabled(false);
+                    }
+                }
+
+            } // if( arpGraphicItemsSelected.size() == 1 )
+
+            else // if( arpGraphicItemsSelected.size() > 1 )
             {
-                m_pActEditUngroup->setEnabled(false);
-            }
+                if( m_pActEditGroup != nullptr )
+                {
+                    m_pActEditGroup->setEnabled(true);
+                }
+                if( m_pActEditUngroup != nullptr )
+                {
+                    m_pActEditUngroup->setEnabled(false);
+                }
 
-        } // if( arpGraphicItemsSelected.size() > 1 )
+            } // if( arpGraphicItemsSelected.size() > 1 )
 
-    } // if( mode == EMode::Edit )
+        } // if( mode == EMode::Edit )
 
-    // Menu - Draw
-    //---------------------
+        // Menu - Draw
+        //---------------------
 
-    //if( m_pActDrawChecked != nullptr )
-    //{
-    //    m_pActDrawChecked;
-    //}
+        //if( m_pActDrawChecked != nullptr )
+        //{
+        //    m_pActDrawChecked;
+        //}
 
-    // Menu - Draw - Settings
-    //-----------------------
+        // Menu - Draw - Settings
+        //-----------------------
 
-    if( m_pActDrawSettingsLine != nullptr )
-    {
-        if( mode == EMode::View )
+        if( m_pActDrawSettingsLine != nullptr )
         {
-            m_pActDrawSettingsLine->setEnabled(false);
-        }
-        else
-        {
-            m_pActDrawSettingsLine->setEnabled(true);
-        }
-    }
-
-    if( m_pActDrawSettingsFill != nullptr )
-    {
-        if( mode == EMode::View )
-        {
-            m_pActDrawSettingsFill->setEnabled(false);
-        }
-        else
-        {
-            m_pActDrawSettingsFill->setEnabled(true);
-        }
-    }
-
-    if( m_pActDrawSettingsText != nullptr )
-    {
-        if( mode == EMode::View )
-        {
-            m_pActDrawSettingsText->setEnabled(false);
-        }
-        else
-        {
-            m_pActDrawSettingsText->setEnabled(true);
-        }
-    }
-
-    // Menu - Draw - Standard Shapes
-    //------------------------------
-
-    if( m_pActDrawStandardShapePoint != nullptr )
-    {
-        if( mode == EMode::View )
-        {
-            m_pActDrawStandardShapePoint->setEnabled(false);
-            m_pActDrawStandardShapePoint->setChecked(false);
-        }
-        else
-        {
-            m_pActDrawStandardShapePoint->setEnabled(true);
-
-            if( pDrawingScene->getCurrentDrawingTool() == m_pObjFactoryPoint )
+            if( mode == EMode::View )
             {
-                m_pActDrawStandardShapePoint->setChecked(true);
+                m_pActDrawSettingsLine->setEnabled(false);
             }
             else
             {
+                m_pActDrawSettingsLine->setEnabled(true);
+            }
+        }
+
+        if( m_pActDrawSettingsFill != nullptr )
+        {
+            if( mode == EMode::View )
+            {
+                m_pActDrawSettingsFill->setEnabled(false);
+            }
+            else
+            {
+                m_pActDrawSettingsFill->setEnabled(true);
+            }
+        }
+
+        if( m_pActDrawSettingsText != nullptr )
+        {
+            if( mode == EMode::View )
+            {
+                m_pActDrawSettingsText->setEnabled(false);
+            }
+            else
+            {
+                m_pActDrawSettingsText->setEnabled(true);
+            }
+        }
+
+        // Menu - Draw - Standard Shapes
+        //------------------------------
+
+        if( m_pActDrawStandardShapePoint != nullptr )
+        {
+            if( mode == EMode::View )
+            {
+                m_pActDrawStandardShapePoint->setEnabled(false);
                 m_pActDrawStandardShapePoint->setChecked(false);
             }
-        }
-    }
-
-    if( m_pActDrawStandardShapeLine != nullptr )
-    {
-        if( mode == EMode::View )
-        {
-            m_pActDrawStandardShapeLine->setEnabled(false);
-            m_pActDrawStandardShapeLine->setChecked(false);
-        }
-        else
-        {
-            m_pActDrawStandardShapeLine->setEnabled(true);
-
-            if( pDrawingScene->getCurrentDrawingTool() == m_pObjFactoryLine )
-            {
-                m_pActDrawStandardShapeLine->setChecked(true);
-            }
             else
             {
+                m_pActDrawStandardShapePoint->setEnabled(true);
+
+                if( pDrawingScene->getCurrentDrawingTool() == m_pObjFactoryPoint )
+                {
+                    m_pActDrawStandardShapePoint->setChecked(true);
+                }
+                else
+                {
+                    m_pActDrawStandardShapePoint->setChecked(false);
+                }
+            }
+        }
+
+        if( m_pActDrawStandardShapeLine != nullptr )
+        {
+            if( mode == EMode::View )
+            {
+                m_pActDrawStandardShapeLine->setEnabled(false);
                 m_pActDrawStandardShapeLine->setChecked(false);
             }
-        }
-    }
-
-    if( m_pActDrawStandardShapeRect != nullptr )
-    {
-        if( mode == EMode::View )
-        {
-            m_pActDrawStandardShapeRect->setEnabled(false);
-            m_pActDrawStandardShapeRect->setChecked(false);
-        }
-        else
-        {
-            m_pActDrawStandardShapeRect->setEnabled(true);
-
-            if( pDrawingScene->getCurrentDrawingTool() == m_pObjFactoryRect )
-            {
-                m_pActDrawStandardShapeRect->setChecked(true);
-            }
             else
             {
+                m_pActDrawStandardShapeLine->setEnabled(true);
+
+                if( pDrawingScene->getCurrentDrawingTool() == m_pObjFactoryLine )
+                {
+                    m_pActDrawStandardShapeLine->setChecked(true);
+                }
+                else
+                {
+                    m_pActDrawStandardShapeLine->setChecked(false);
+                }
+            }
+        }
+
+        if( m_pActDrawStandardShapeRect != nullptr )
+        {
+            if( mode == EMode::View )
+            {
+                m_pActDrawStandardShapeRect->setEnabled(false);
                 m_pActDrawStandardShapeRect->setChecked(false);
             }
-        }
-    }
-
-    if( m_pActDrawStandardShapeEllipse != nullptr )
-    {
-        if( mode == EMode::View )
-        {
-            m_pActDrawStandardShapeEllipse->setEnabled(false);
-            m_pActDrawStandardShapeEllipse->setChecked(false);
-        }
-        else
-        {
-            m_pActDrawStandardShapeEllipse->setEnabled(true);
-
-            if( pDrawingScene->getCurrentDrawingTool() == m_pObjFactoryEllipse )
-            {
-                m_pActDrawStandardShapeEllipse->setChecked(true);
-            }
             else
             {
+                m_pActDrawStandardShapeRect->setEnabled(true);
+
+                if( pDrawingScene->getCurrentDrawingTool() == m_pObjFactoryRect )
+                {
+                    m_pActDrawStandardShapeRect->setChecked(true);
+                }
+                else
+                {
+                    m_pActDrawStandardShapeRect->setChecked(false);
+                }
+            }
+        }
+
+        if( m_pActDrawStandardShapeEllipse != nullptr )
+        {
+            if( mode == EMode::View )
+            {
+                m_pActDrawStandardShapeEllipse->setEnabled(false);
                 m_pActDrawStandardShapeEllipse->setChecked(false);
             }
-        }
-    }
-
-    if( m_pActDrawStandardShapePolyline != nullptr )
-    {
-        if( mode == EMode::View )
-        {
-            m_pActDrawStandardShapePolyline->setEnabled(false);
-            m_pActDrawStandardShapePolyline->setChecked(false);
-        }
-        else
-        {
-            m_pActDrawStandardShapePolyline->setEnabled(true);
-
-            if( pDrawingScene->getCurrentDrawingTool() == m_pObjFactoryPolyline )
-            {
-                m_pActDrawStandardShapePolyline->setChecked(true);
-            }
             else
             {
+                m_pActDrawStandardShapeEllipse->setEnabled(true);
+
+                if( pDrawingScene->getCurrentDrawingTool() == m_pObjFactoryEllipse )
+                {
+                    m_pActDrawStandardShapeEllipse->setChecked(true);
+                }
+                else
+                {
+                    m_pActDrawStandardShapeEllipse->setChecked(false);
+                }
+            }
+        }
+
+        if( m_pActDrawStandardShapePolyline != nullptr )
+        {
+            if( mode == EMode::View )
+            {
+                m_pActDrawStandardShapePolyline->setEnabled(false);
                 m_pActDrawStandardShapePolyline->setChecked(false);
             }
-        }
-    }
-
-    if( m_pActDrawStandardShapePolygon != nullptr )
-    {
-        if( mode == EMode::View )
-        {
-            m_pActDrawStandardShapePolygon->setEnabled(false);
-            m_pActDrawStandardShapePolygon->setChecked(false);
-        }
-        else
-        {
-            m_pActDrawStandardShapePolygon->setEnabled(true);
-
-            if( pDrawingScene->getCurrentDrawingTool() == m_pObjFactoryPolygon )
-            {
-                m_pActDrawStandardShapePolygon->setChecked(true);
-            }
             else
             {
+                m_pActDrawStandardShapePolyline->setEnabled(true);
+
+                if( pDrawingScene->getCurrentDrawingTool() == m_pObjFactoryPolyline )
+                {
+                    m_pActDrawStandardShapePolyline->setChecked(true);
+                }
+                else
+                {
+                    m_pActDrawStandardShapePolyline->setChecked(false);
+                }
+            }
+        }
+
+        if( m_pActDrawStandardShapePolygon != nullptr )
+        {
+            if( mode == EMode::View )
+            {
+                m_pActDrawStandardShapePolygon->setEnabled(false);
                 m_pActDrawStandardShapePolygon->setChecked(false);
             }
-        }
-    }
-
-    if( m_pActDrawStandardShapeText != nullptr )
-    {
-        if( mode == EMode::View )
-        {
-            m_pActDrawStandardShapeText->setEnabled(false);
-            m_pActDrawStandardShapeText->setChecked(false);
-        }
-        else
-        {
-            m_pActDrawStandardShapeText->setEnabled(true);
-
-            if( pDrawingScene->getCurrentDrawingTool() == m_pObjFactoryText )
-            {
-                m_pActDrawStandardShapeText->setChecked(true);
-            }
             else
             {
+                m_pActDrawStandardShapePolygon->setEnabled(true);
+
+                if( pDrawingScene->getCurrentDrawingTool() == m_pObjFactoryPolygon )
+                {
+                    m_pActDrawStandardShapePolygon->setChecked(true);
+                }
+                else
+                {
+                    m_pActDrawStandardShapePolygon->setChecked(false);
+                }
+            }
+        }
+
+        if( m_pActDrawStandardShapeText != nullptr )
+        {
+            if( mode == EMode::View )
+            {
+                m_pActDrawStandardShapeText->setEnabled(false);
                 m_pActDrawStandardShapeText->setChecked(false);
             }
-        }
-    }
-
-    // Menu - Draw - Graphics
-    //-----------------------
-
-    if( m_pActDrawGraphicsImage != nullptr )
-    {
-        if( mode == EMode::View )
-        {
-            m_pActDrawGraphicsImage->setEnabled(false);
-        }
-        else
-        {
-            m_pActDrawGraphicsImage->setEnabled(true);
-        }
-    }
-
-    // Menu - Draw - Connections
-    //--------------------------
-
-    if( m_pActDrawConnectionPoint != nullptr )
-    {
-        if( mode == EMode::View )
-        {
-            m_pActDrawConnectionPoint->setEnabled(false);
-            m_pActDrawConnectionPoint->setChecked(false);
-        }
-        else
-        {
-            m_pActDrawConnectionPoint->setEnabled(true);
-
-            if( pDrawingScene->getCurrentDrawingTool() == m_pObjFactoryConnectionPoint )
+            else
             {
-                m_pActDrawConnectionPoint->setChecked(true);
+                m_pActDrawStandardShapeText->setEnabled(true);
+
+                if( pDrawingScene->getCurrentDrawingTool() == m_pObjFactoryText )
+                {
+                    m_pActDrawStandardShapeText->setChecked(true);
+                }
+                else
+                {
+                    m_pActDrawStandardShapeText->setChecked(false);
+                }
+            }
+        }
+
+        // Menu - Draw - Graphics
+        //-----------------------
+
+        if( m_pActDrawGraphicsImage != nullptr )
+        {
+            if( mode == EMode::View )
+            {
+                m_pActDrawGraphicsImage->setEnabled(false);
             }
             else
             {
+                m_pActDrawGraphicsImage->setEnabled(true);
+            }
+        }
+
+        // Menu - Draw - Connections
+        //--------------------------
+
+        if( m_pActDrawConnectionPoint != nullptr )
+        {
+            if( mode == EMode::View )
+            {
+                m_pActDrawConnectionPoint->setEnabled(false);
                 m_pActDrawConnectionPoint->setChecked(false);
             }
-        }
-    }
-
-    if( m_pActDrawConnectionLine != nullptr )
-    {
-        if( mode == EMode::View )
-        {
-            m_pActDrawConnectionLine->setEnabled(false);
-            m_pActDrawConnectionLine->setChecked(false);
-        }
-        else
-        {
-            m_pActDrawConnectionLine->setEnabled(true);
-
-            if( pDrawingScene->getCurrentDrawingTool() == m_pObjFactoryConnectionLine )
+            else
             {
-                m_pActDrawConnectionLine->setChecked(true);
+                m_pActDrawConnectionPoint->setEnabled(true);
+
+                if( pDrawingScene->getCurrentDrawingTool() == m_pObjFactoryConnectionPoint )
+                {
+                    m_pActDrawConnectionPoint->setChecked(true);
+                }
+                else
+                {
+                    m_pActDrawConnectionPoint->setChecked(false);
+                }
+            }
+        }
+
+        if( m_pActDrawConnectionLine != nullptr )
+        {
+            if( mode == EMode::View )
+            {
+                m_pActDrawConnectionLine->setEnabled(false);
+                m_pActDrawConnectionLine->setChecked(false);
             }
             else
             {
-                m_pActDrawConnectionLine->setChecked(false);
+                m_pActDrawConnectionLine->setEnabled(true);
+
+                if( pDrawingScene->getCurrentDrawingTool() == m_pObjFactoryConnectionLine )
+                {
+                    m_pActDrawConnectionLine->setChecked(true);
+                }
+                else
+                {
+                    m_pActDrawConnectionLine->setChecked(false);
+                }
             }
         }
-    }
 
-    // Menu - Trace
-    //---------------------
+        // Menu - Trace
+        //---------------------
 
-    //if( m_pActDebugErrLog != nullptr )
-    //{
-    //    m_pActDebugErrLog;
-    //}
-    //if( m_pActDebugTraceServer != nullptr )
-    //{
-    //    m_pActDebugTraceServer;
-    //}
-    //if( m_pActDebugTraceAdminObjs != nullptr )
-    //{
-    //    m_pActDebugTraceAdminObjs;
-    //}
-    //if( m_pActionDebugTest != nullptr )
-    //{
-    //    m_pActionDebugTest;
-    //}
+        //if( m_pActDebugErrLog != nullptr )
+        //{
+        //    m_pActDebugErrLog;
+        //}
+        //if( m_pActDebugTraceServer != nullptr )
+        //{
+        //    m_pActDebugTraceServer;
+        //}
+        //if( m_pActDebugTraceAdminObjs != nullptr )
+        //{
+        //    m_pActDebugTraceAdminObjs;
+        //}
+        //if( m_pActionDebugTest != nullptr )
+        //{
+        //    m_pActionDebugTest;
+        //}
 
-    // Dock Widgets
-    //--------------
+        // Dock Widgets
+        //--------------
 
-    // Dock Widget - Object Factories
-    //--------------------------------
+        // Dock Widget - Object Factories
+        //--------------------------------
 
-    if( m_pDockWdgtObjFactories != nullptr )
-    {
+        if( m_pDockWdgtObjFactories != nullptr )
+        {
+            if( mode == EMode::View )
+            {
+                m_pDockWdgtObjFactories->hide();
+            }
+            else
+            {
+                m_pDockWdgtObjFactories->show();
+            }
+        }
+
         if( mode == EMode::View )
         {
-            m_pDockWdgtObjFactories->hide();
+            selectTreeViewObjFactoryNode(nullptr);
         }
-        else
+        else if( pDrawingScene->getCurrentDrawingTool() != nullptr )
         {
-            m_pDockWdgtObjFactories->show();
+            selectTreeViewObjFactoryNode(nullptr);
         }
-    }
 
-    if( mode == EMode::View )
-    {
-        selectTreeViewObjFactoryNode(nullptr);
-    }
-    else if( pDrawingScene->getCurrentDrawingTool() != nullptr )
-    {
-        selectTreeViewObjFactoryNode(nullptr);
-    }
+        // Dock Widget - Graphics Items
+        //-----------------------------
 
-    // Dock Widget - Graphics Items
-    //-----------------------------
-
+    } // if (m_pWdgtCentral != nullptr)
 } // updateActions
 
 //------------------------------------------------------------------------------

@@ -190,7 +190,7 @@ void CWdgtDiagramItemPropertiesBase::setMode(EMode i_mode)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = CEnumMode(i_mode).toString();
     }
     CMethodTracer mthTracer(

@@ -118,7 +118,7 @@ void CWdgtDiagramObjAxisLabelProperties::setMode(EMode i_mode)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = CEnumMode(i_mode).toString();
     }
     CMethodTracer mthTracer(
@@ -217,7 +217,7 @@ void CWdgtDiagramObjAxisLabelProperties::onDiagObjDestroyed(QObject* i_pObj)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,

@@ -166,12 +166,12 @@ public: // type definitions and constants
     static const QString c_strKeyLabelDescription;
 protected: // ctor
     CGraphObj(
-        CDrawingScene*                i_pDrawingScene,
-        const QString&                i_strFactoryGroupName,
-        EGraphObjType                 i_type,
-        const QString&                i_strType,
-        const QString&                i_strObjName,
-        const CDrawSettings&          i_drawSettings,
+        CDrawingScene* i_pDrawingScene,
+        const QString& i_strFactoryGroupName,
+        EGraphObjType i_type,
+        const QString& i_strType,
+        const QString& i_strObjName,
+        const CDrawSettings& i_drawSettings,
         ZS::System::CIdxTreeEntry::EEntryType i_idxTreeEntryType = ZS::System::CIdxTreeEntry::EEntryType::Branch );
 public: // dtor
     virtual ~CGraphObj();

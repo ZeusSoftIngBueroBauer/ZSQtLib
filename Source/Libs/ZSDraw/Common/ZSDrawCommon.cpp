@@ -159,6 +159,10 @@ QString ZS::Draw::graphObjType2Str( int i_graphObjType )
     {
         str = "Label";
     }
+    else if( i_graphObjType == EGraphObjTypeUndefined )
+    {
+        str = "Undefined";
+    }
     else if ( i_graphObjType >= EGraphObjTypeMin && i_graphObjType <= EGraphObjTypeMax )
     {
         str = SEnumEntry::enumerator2Str(s_arEnumStrGraphObjType, _ZSArrLen(s_arEnumStrGraphObjType), i_graphObjType-EGraphObjTypeMin);

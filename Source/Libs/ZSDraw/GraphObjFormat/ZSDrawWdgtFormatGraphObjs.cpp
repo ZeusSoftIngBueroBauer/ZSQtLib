@@ -49,8 +49,10 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CWdgtFormatGraphObjs::CWdgtFormatGraphObjs(
     CDrawingScene* i_pDrawingScene,
-    CGraphObj*     i_pGraphObj,
-    QWidget*       i_pWdgtParent ) :
+    const QString& i_strClassName,
+    const QString& i_strObjName,
+    CGraphObj* i_pGraphObj,
+    QWidget* i_pWdgtParent ) :
 //------------------------------------------------------------------------------
     QWidget(i_pWdgtParent),
     m_pDrawingScene(i_pDrawingScene),
@@ -213,19 +215,13 @@ private slots:
     and invokes the pure virtual method onGraphObjChanged.
     For all other objects the slot will be ignored.
 
-    @param i_pDrawingScene [in]
-        Drawing scene hosting the graphical object which was changed.
-    @param i_pGraphObj [in]
-        Changed graphical object. This may be any graphical object of the
-        drawing scene. The slot checks whether the changed object is the
-        object shown by the widget.
+    @param i_strKeyInTree [in]
+        Unique key of the changed object.
 */
-void CWdgtFormatGraphObjs::onDrawingSceneGraphObjChanged(
-    CDrawingScene* i_pDrawingScene,
-    CGraphObj*     i_pGraphObj )
+void CWdgtFormatGraphObjs::onDrawingSceneGraphObjChanged(const QString& i_strKeyInTree)
 //------------------------------------------------------------------------------
 {
-    if( m_pDrawingScene == i_pDrawingScene && i_pGraphObj == m_pGraphObj )
+    if (m_pGraphObj != nullptr && m_pGraphObj->keyInTree() == i_strKeyInTree)
     {
         /*! On changing a setting of the graphical object "onGraphObjChanged" will be called as reentry.
             "onGraphObjChanged" will modify the states of the GUI controls. E.g. if the "NameLabelVisible" and

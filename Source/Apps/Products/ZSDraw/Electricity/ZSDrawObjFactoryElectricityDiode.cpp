@@ -69,6 +69,7 @@ CObjFactoryDiode::CObjFactoryDiode( const QPixmap& i_pxmToolIcon ) :
 //------------------------------------------------------------------------------
     CObjFactory(
         /* strGroupName    */ CGraphObjElectricity::c_strFactoryGroupName,
+        /* strClassName    */ ClassName(),
         /* iGraphObjType   */ EGraphObjTypeUserDefined,
         /* strGraphObjType */ "Diode",
         /* toolIcon        */ i_pxmToolIcon )

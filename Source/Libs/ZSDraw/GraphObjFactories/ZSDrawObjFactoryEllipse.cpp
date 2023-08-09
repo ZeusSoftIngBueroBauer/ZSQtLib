@@ -61,6 +61,7 @@ CObjFactoryEllipse::CObjFactoryEllipse( const QPixmap& i_pxmToolIcon ) :
 //------------------------------------------------------------------------------
     CObjFactory(
         /* strGroupName    */ c_strGroupNameStandardShapes,
+        /* strClassName    */ ClassName(),
         /* iGraphObjType   */ EGraphObjTypeEllipse,
         /* strGraphObjType */ ZS::Draw::graphObjType2Str(EGraphObjTypeEllipse),
         /* toolIcon        */ i_pxmToolIcon )

@@ -16,7 +16,7 @@ Content: This file is part of the ZSQtLib.
 #include <QtGui/QBitmap>
 #include <QtGui/QPainter>
 
-#include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjsTreeModel.h"
+#include "ZSDraw/TreeView/ZSDrawGraphObjsTreeModel.h"
 #include "ZSDraw/GraphObjs/ZSDrawGraphObj.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSDraw/GraphObjFactories/ZSDrawObjFactory.h"

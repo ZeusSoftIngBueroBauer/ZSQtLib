@@ -31,26 +31,10 @@ may result in using the software modules.
 #include "ZSDraw/Drawing/ZSDrawGridSettings.h"
 #include "ZSDraw/Drawing/ZSDrawingSize.h"
 
-class QCheckBox;
-class QComboBox;
-class QFontComboBox;
-class QGroupBox;
-class QLabel;
-class QLineEdit;
-class QListView;
-class QPushButton;
-class QSpinBox;
-class QStandardItemModel;
-class QGridLayout;
-class QHBoxLayout;
-class QVBoxLayout;
-
 namespace ZS
 {
 namespace System
 {
-class CTrcAdminObj;
-
 namespace GUI
 {
 class CSepLine;
@@ -80,6 +64,7 @@ public: // class methods
 public: // ctors and dtor
     CWdgtDrawingViewProperties(
         CDrawingView* i_pDrawingView,
+        const QString& i_strObjName,
         ZS::System::EMode i_mode = ZS::System::EMode::View,
         QWidget* i_pWdgtParent = nullptr);
     virtual ~CWdgtDrawingViewProperties();
@@ -89,13 +74,12 @@ public: // overridables
 signals:
     void drawingSizeChanged(const ZS::Draw::CDrawingSize& i_size);
     void gridSettingsChanged(const ZS::Draw::CDrawGridSettings& i_settings);
-public: // instance methods
-    bool hasChanges() const;
-    void acceptChanges();
-    void rejectChanges();
-protected: // instance methods
-    void setMode(ZS::System::EMode i_mode);
-    ZS::System::EMode mode() const;
+public: // overridables of base class CWdgtGraphObjPropertiesAbstract
+    bool hasChanges() const override;
+    void acceptChanges() override;
+    void rejectChanges() override;
+public: // overridables of base class CWdgtGraphObjPropertiesAbstract
+    void setMode(ZS::System::EMode i_mode) override;
 protected slots:
     void onDrawingViewDrawingSizeChanged(const ZS::Draw::CDrawingSize& i_size);
     void onDrawingViewGridSettingsChanged(const ZS::Draw::CDrawGridSettings& i_settings);
@@ -125,6 +109,7 @@ protected slots:
     void onBtnGridScaleLabelsFontStyleItalicToggled(int i_iState);
     void onBtnGridScaleLabelsTextEffectUnderlineToggled(int i_iState);
     void onBtnGridScaleLabelsTextEffectStrikeoutToggled(int i_iState);
+protected: // overridable slots of base class CWdgtGraphObjPropertiesAbstract
     void onBtnEditClicked(bool i_bChecked = false);
 protected: // instance methods
     void setDimensionUnit( const CEnumDrawingDimensionUnit& i_eDimensionUnit );
@@ -165,14 +150,9 @@ protected: // instance methods (method tracing)
     void traceValues(ZS::System::CMethodTracer& i_mthTracer, ZS::System::EMethodDir i_methodDir);
 protected: // instance members
     CDrawingView* m_pDrawingView;
-    ZS::System::EMode m_mode;
     // Caching values
     CDrawingSize m_drawingSize;
     CDrawGridSettings m_gridSettings;
-    /*!< Blocking signals counter. */
-    int m_iValueChangedSignalsBlocked;
-    // Edit Controls
-    QVBoxLayout* m_pLyt;
     // Geometry
     QGroupBox* m_pGrpGeometry;
     QVBoxLayout* m_pLytGrpGeometry;
@@ -252,12 +232,6 @@ protected: // instance members
     QPushButton* m_pBtnGridScaleLabelsFontStyleItalic;
     QPushButton* m_pBtnGridScaleLabelsTextEffectUnderline;
     QPushButton* m_pBtnGridScaleLabelsTextEffectStrikeout;
-    // Button Line
-    QWidget* m_pWdgtButtons;
-    QHBoxLayout* m_pLytWdgtButtons;
-    QPushButton* m_pBtnEdit;
-    /*!< Trace admin object for method tracing. */
-    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CWdgtDrawingViewProperties
 

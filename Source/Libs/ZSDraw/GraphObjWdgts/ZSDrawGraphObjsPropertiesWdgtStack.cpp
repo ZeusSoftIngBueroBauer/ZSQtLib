@@ -25,10 +25,13 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjsPropertiesWdgtStack.h"
-#include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjPropertiesAbstractWdgt.h"
+#include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjLinePropertiesWdgt.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSDraw/Drawing/ZSDrawingViewPropertiesWdgt.h"
 #include "ZSDraw/Drawing/ZSDrawingView.h"
+#include "ZSDraw/GraphObjs/ZSDrawGraphObj.h"
+#include "ZSSys/ZSSysTrcMethod.h"
+#include "ZSSys/ZSSysTrcServer.h"
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qlayout.h>
@@ -71,9 +74,18 @@ CWdgtStackGraphObjsProperties::CWdgtStackGraphObjsProperties(
     m_pLytHeadLine(nullptr),
     m_pEdtPath(nullptr),
     m_pStackedWdgtGraphObjsProperties(nullptr),
-    m_arpWdgtsGraphObjProperties(EGraphObjTypeCount, nullptr)
+    m_hshGraphObjType2StackWdgtIndex()
 {
-    setObjectName(m_pIdxTree->objectName());
+    setObjectName(i_pDrawingView->objectName());
+
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
+        NameSpace() + "::GraphObjWdgts", ClassName(), objectName());
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "ctor",
+        /* strAddInfo   */ "" );
 
     QObject::connect(
         m_pIdxTree, &CIdxTree::aboutToBeDestroyed,
@@ -98,19 +110,28 @@ CWdgtStackGraphObjsProperties::CWdgtStackGraphObjsProperties(
     m_pStackedWdgtGraphObjsProperties = new QStackedWidget();
     m_pLytMain->addWidget(m_pStackedWdgtGraphObjsProperties, 1);
 
-    m_arpWdgtsGraphObjProperties[EGraphObjTypeUndefined] =
-        new CWdgtGraphObjPropertiesAbstract(m_pDrawingView->drawingScene());
-    m_arpWdgtsGraphObjProperties[EGraphObjTypeDrawing] =
-        new CWdgtDrawingViewProperties(m_pDrawingView);
+    EGraphObjType graphObjType = EGraphObjTypeUndefined;
+    int idxWdgt = m_pStackedWdgtGraphObjsProperties->addWidget(
+        new CWdgtGraphObjPropertiesAbstract(
+            m_pDrawingView->drawingScene(),
+            "Empty::CWdgtGraphObjPropertiesAbstract",
+            "WdgtStackGraphObjProperties"));
+    m_hshGraphObjType2StackWdgtIndex.insert(graphObjType2Str(graphObjType), idxWdgt);
 
-    for( int idxGraphObjType = 0; idxGraphObjType < EGraphObjTypeCount; idxGraphObjType++ )
-    {
-        if( m_arpWdgtsGraphObjProperties[idxGraphObjType] != nullptr )
-        {
-            m_pStackedWdgtGraphObjsProperties->addWidget(m_arpWdgtsGraphObjProperties[idxGraphObjType]);
-        }
-    }
-    m_pStackedWdgtGraphObjsProperties->setCurrentIndex(EGraphObjTypeUndefined);
+    idxWdgt = m_pStackedWdgtGraphObjsProperties->addWidget(
+        new CWdgtDrawingViewProperties(
+            m_pDrawingView,
+            "WdgtStackGraphObjProperties"));
+    m_hshGraphObjType2StackWdgtIndex.insert("DrawingView", idxWdgt);
+
+    graphObjType = EGraphObjTypeLine;
+    idxWdgt = m_pStackedWdgtGraphObjsProperties->addWidget(
+        new CWdgtGraphObjLineProperties(
+            m_pDrawingView->drawingScene(),
+            "WdgtStackGraphObjProperties"));
+    m_hshGraphObjType2StackWdgtIndex.insert(graphObjType2Str(graphObjType), idxWdgt);
+
+    m_pStackedWdgtGraphObjsProperties->setCurrentIndex(0);
 
 } // ctor
 
@@ -118,6 +139,17 @@ CWdgtStackGraphObjsProperties::CWdgtStackGraphObjsProperties(
 CWdgtStackGraphObjsProperties::~CWdgtStackGraphObjsProperties()
 //------------------------------------------------------------------------------
 {
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "CWdgtGraphObjPropertiesAbstract::dtor",
+        /* strAddInfo   */ "" );
+
+    mthTracer.onAdminObjAboutToBeReleased();
+
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
+    m_pTrcAdminObj = nullptr;
+
     m_pDrawingView = nullptr;
     m_pIdxTree = nullptr;
     //m_strKeyInTree;
@@ -125,25 +157,9 @@ CWdgtStackGraphObjsProperties::~CWdgtStackGraphObjsProperties()
     m_pLytHeadLine = nullptr;
     m_pEdtPath = nullptr;
     m_pStackedWdgtGraphObjsProperties = nullptr;
-    //m_arpWdgtsGraphObjProperties.clear();
+    //m_hshGraphObjType2StackWdgtIndex.clear();
 
 } // dtor
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CWdgtStackGraphObjsProperties::saveState(QSettings& i_settings) const
-//------------------------------------------------------------------------------
-{
-}
-
-//------------------------------------------------------------------------------
-void CWdgtStackGraphObjsProperties::restoreState(const QSettings& i_settings)
-//------------------------------------------------------------------------------
-{
-}
 
 /*==============================================================================
 public: // instance methods
@@ -153,47 +169,46 @@ public: // instance methods
 void CWdgtStackGraphObjsProperties::setKeyInTree( const QString& i_strKeyInTree )
 //------------------------------------------------------------------------------
 {
-    if( m_strKeyInTree != i_strKeyInTree )
-    {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strKeyInTree;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setKeyInTree",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (m_strKeyInTree != i_strKeyInTree) {
         m_strKeyInTree = i_strKeyInTree;
-
-        EGraphObjType graphObjType = EGraphObjTypeUndefined;
-        QString       strEntryPath;
-
-        if( m_pIdxTree != nullptr )
-        {
+        if (m_pIdxTree != nullptr) {
+            int idxStackWdgt = 0;
+            QString strEntryPath;
             CIdxTreeEntry* pTreeEntry = m_pIdxTree->findEntry(i_strKeyInTree);
-
-            if( pTreeEntry != nullptr )
-            {
-                if( pTreeEntry->isRoot() )
-                {
-                    graphObjType = EGraphObjTypeDrawing;
+            if (pTreeEntry != nullptr) {
+                QString strGraphObjType;
+                strEntryPath = pTreeEntry->path();
+                if (pTreeEntry->isRoot()) {
+                    strGraphObjType = "DrawingView";
                 }
-                else if( pTreeEntry->isBranch() )
-                {
+                else {
+                    CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pTreeEntry);
+                    if (pGraphObj != nullptr) {
+                        strGraphObjType = pGraphObj->typeAsString();
+                    }
                 }
-                else if( pTreeEntry->isLeave() )
-                {
-                }
-                strEntryPath += pTreeEntry->path();
-
-            } // if( pTreeEntry != nullptr )
-        } // if( m_pIdxTree != nullptr )
-
-        m_pEdtPath->setText(strEntryPath);
-
-        for( int idxGraphObjType = 0; idxGraphObjType < EGraphObjTypeCount; idxGraphObjType++ )
-        {
-            if( m_arpWdgtsGraphObjProperties[idxGraphObjType] != nullptr )
-            {
-                m_arpWdgtsGraphObjProperties[idxGraphObjType]->setKeyInTree(m_strKeyInTree);
+                idxStackWdgt = graphObjType2StackWdgtIndex(strGraphObjType);
+            }
+            m_pEdtPath->setText(strEntryPath);
+            m_pStackedWdgtGraphObjsProperties->setCurrentIndex(idxStackWdgt);
+            CWdgtGraphObjPropertiesAbstract* pWdgtProperties =
+                dynamic_cast<CWdgtGraphObjPropertiesAbstract*>(
+                    m_pStackedWdgtGraphObjsProperties->widget(idxStackWdgt));
+            if (pWdgtProperties != nullptr) {
+                pWdgtProperties->setKeyInTree(m_strKeyInTree);
             }
         }
-
-        m_pStackedWdgtGraphObjsProperties->setCurrentIndex(graphObjType);
-
-    } // if( m_strKeyInTree != i_strKeyInTree )
+    }
 } // setKeyInTree
 
 //------------------------------------------------------------------------------
@@ -204,6 +219,17 @@ QString CWdgtStackGraphObjsProperties::getKeyInTree() const
 }
 
 /*==============================================================================
+protected: // class methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+int CWdgtStackGraphObjsProperties::graphObjType2StackWdgtIndex(const QString& i_strGraphObjType) const
+//------------------------------------------------------------------------------
+{
+    return m_hshGraphObjType2StackWdgtIndex.value(i_strGraphObjType, 0);
+}
+
+/*==============================================================================
 protected slots:
 ==============================================================================*/
 
@@ -211,5 +237,11 @@ protected slots:
 void CWdgtStackGraphObjsProperties::onIdxTreeAboutToBeDestroyed()
 //------------------------------------------------------------------------------
 {
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onIdxTreeAboutToBeDestroyed",
+        /* strAddInfo   */ "" );
+
     m_pIdxTree = nullptr;
 }
