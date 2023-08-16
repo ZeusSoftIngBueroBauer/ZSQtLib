@@ -88,9 +88,6 @@ protected slots:
 private: // instance members
     CDrawingView* m_pDrawingView;
     QVBoxLayout* m_pLyt;
-    //QHBoxLayout* m_pLytSettings;
-    //QListWidget* m_pListWdgt;
-    //QStackedWidget* m_pStackedWdgt;
     CWdgtDrawingViewProperties* m_pWdgtDrawingViewProperties;
     QHBoxLayout* m_pLytLineBtns;
     QPushButton* m_pBtnOk;

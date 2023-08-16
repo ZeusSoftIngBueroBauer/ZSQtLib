@@ -27,46 +27,20 @@ may result in using the software modules.
 #include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjLinePropertiesWdgt.h"
 #include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjPropertiesLabelsWdgt.h"
 #include "ZSDraw/GraphObjs/ZSDrawGraphObjLine.h"
-//#include "ZSDraw/Common/ZSDrawCommon.h"
-//#include "ZSDraw/Drawing/ZSDrawDlgDrawingViewSetup.h"
-//#include "ZSDraw/Drawing/ZSDrawUnits.h"
 #include "ZSDraw/Drawing/ZSDrawingView.h"
-//#include "ZSPhysValGUI/ZSPhysValWdgtEditPhysVal.h"
-//#include "ZSSysGUI/ZSSysSepLine.h"
-//#include "ZSSys/ZSSysAux.h"
-//#include "ZSSys/ZSSysMath.h"
+#include "ZSSysGUI/ZSSysGUIDllMain.h"
 #include "ZSSys/ZSSysRefCountGuard.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
 
-//#include <QtCore/qmetaobject.h>
-//#include <QtCore/qcoreapplication.h>
-//#include <QtGui/qstandarditemmodel.h>
-
 #if QT_VERSION < 0x050000
-//#include <QtGui/qcheckbox.h>
-//#include <QtGui/qcolordialog.h>
-//#include <QtGui/qcombobox.h>
-//#include <QtGui/qfontcombobox.h>
-//#include <QtGui/qgroupbox.h>
-//#include <QtGui/qlabel.h>
 #include <QtGui/qlayout.h>
-//#include <QtGui/qlineedit.h>
-//#include <QtGui/qlistview.h>
+#include <QtGui/qmessagebox.h>
 #include <QtGui/qpushbutton.h>
-//#include <QtGui/qspinbox.h>
 #else
-//#include <QtWidgets/qcheckbox.h>
-//#include <QtWidgets/qcolordialog.h>
-//#include <QtWidgets/qcombobox.h>
-//#include <QtWidgets/qfontcombobox.h>
-//#include <QtWidgets/qgroupbox.h>
-//#include <QtWidgets/qlabel.h>
 #include <QtWidgets/qlayout.h>
-//#include <QtWidgets/qlineedit.h>
-//#include <QtWidgets/qlistview.h>
+#include <QtWidgets/qmessagebox.h>
 #include <QtWidgets/qpushbutton.h>
-//#include <QtWidgets/qspinbox.h>
 #endif
 
 #include "ZSSys/ZSSysMemLeakDump.h"
@@ -86,38 +60,32 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CWdgtGraphObjLineProperties::CWdgtGraphObjLineProperties(
-    CDrawingScene* i_pDrawingScene, const QString& i_strObjName, EMode i_mode, QWidget* i_pWdgtParent) :
+    CDrawingScene* i_pDrawingScene, const QString& i_strObjName, QWidget* i_pWdgtParent) :
 //------------------------------------------------------------------------------
-    CWdgtGraphObjPropertiesAbstract(i_pDrawingScene, "StandardShapes::" + ClassName(), i_strObjName, i_mode, i_pWdgtParent),
+    CWdgtGraphObjPropertiesAbstract(i_pDrawingScene, "StandardShapes::" + ClassName(), i_strObjName, i_pWdgtParent),
     m_pGraphObjLine(nullptr),
     m_pWdgtLabels(nullptr)
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = CEnumMode(i_mode).toString();
-    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ctor",
-        /* strAddInfo   */ strMthInArgs );
+        /* strAddInfo   */ "" );
 
     m_pWdgtLabels = new CWdgtGraphObjPropertiesLabels(
-        i_pDrawingScene, "StandardShapes::" + ClassName(), i_strObjName, i_mode);
+        i_pDrawingScene, "StandardShapes::" + ClassName(), i_strObjName);
     m_pLyt->addWidget(m_pWdgtLabels);
+
+    QObject::connect(
+        m_pWdgtLabels, &CWdgtGraphObjPropertiesLabels::propertyChanged,
+        this, &CWdgtGraphObjLineProperties::onWdgtLabelsPropertyChanged);
 
     // <Buttons>
     //==========
 
-    m_pLyt->addStretch(); // Add stretch to buttons line
     createButtonsLineWidget();
     m_pLyt->addWidget(m_pWdgtButtons);
-    m_pWdgtButtons->hide();
-
-    // Set Mode
-    //---------
-
-    setMode(i_mode);
+    m_pLyt->addStretch();
 
 } // ctor
 
@@ -133,12 +101,72 @@ CWdgtGraphObjLineProperties::~CWdgtGraphObjLineProperties()
 
     m_pGraphObjLine = nullptr;
     m_pWdgtLabels = nullptr;
-
-} // dtor
+}
 
 /*==============================================================================
 public: // overridables of base class CWdgtGraphObjPropertiesAbstract
 ==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjLineProperties::setKeyInTree(const QString& i_strKeyInTree)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strKeyInTree;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setKeyInTree",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (m_strKeyInTree != i_strKeyInTree)
+    {
+        CWdgtGraphObjPropertiesAbstract::setKeyInTree(i_strKeyInTree);
+
+        if (m_pGraphObj != nullptr && m_pGraphObj->type() == EGraphObjTypeLine)
+        {
+            m_pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_pGraphObj);
+
+            if (m_pWdgtLabels != nullptr) {
+                m_pWdgtLabels->setKeyInTree(i_strKeyInTree);
+            }
+        }
+        else
+        {
+            m_pGraphObjLine = nullptr;
+
+            if (m_pWdgtLabels != nullptr) {
+                m_pWdgtLabels->setKeyInTree("");
+            }
+        }
+    }
+}
+
+/*==============================================================================
+public: // overridables of base class CWdgtGraphObjPropertiesAbstract
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+bool CWdgtGraphObjLineProperties::hasErrors() const
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "hasErrors",
+        /* strAddInfo   */ "" );
+
+    bool bHasErrors = false;
+    if (m_pWdgtLabels != nullptr) {
+        bHasErrors = m_pWdgtLabels->hasErrors();
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(bHasErrors);
+    }
+    return bHasErrors;
+}
 
 //------------------------------------------------------------------------------
 bool CWdgtGraphObjLineProperties::hasChanges() const
@@ -170,8 +198,19 @@ void CWdgtGraphObjLineProperties::acceptChanges()
         /* strMethod    */ "acceptChanges",
         /* strAddInfo   */ "" );
 
-    if (m_pWdgtLabels != nullptr) {
-        m_pWdgtLabels->acceptChanges();
+    if (hasErrors()) {
+        // Not really necessary as the apply button should be disabled if an
+        // input control has an erronous value. But kept as an example how
+        // the user could be informed that he should correct the values.
+        QMessageBox::critical(
+            this, ZS::System::GUI::getMainWindowTitle() + ": Cannot save changes",
+            "Some input is erroneous. Please correct the relevant input first.");
+    }
+    else {
+        if (m_pWdgtLabels != nullptr) {
+            m_pWdgtLabels->acceptChanges();
+        }
+        updateButtonsEnabled();
     }
 }
 
@@ -188,94 +227,22 @@ void CWdgtGraphObjLineProperties::rejectChanges()
     if (m_pWdgtLabels != nullptr) {
         m_pWdgtLabels->rejectChanges();
     }
+    updateButtonsEnabled();
 }
 
 /*==============================================================================
-public: // overridables of base class CWdgtGraphObjPropertiesAbstract
+protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjLineProperties::setMode(EMode i_mode)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = CEnumMode(i_mode).toString();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setMode",
-        /* strAddInfo   */ strMthInArgs );
-
-    if (m_mode != i_mode)
-    {
-        if (m_pWdgtLabels != nullptr) {
-            m_pWdgtLabels->setMode(i_mode);
-        }
-
-        // Don't take over mode to member as base class method is also called and also needs
-        // to check whether the mode has been changed to modify the edit button widget.
-        if (i_mode == EMode::Edit)
-        {
-        }
-        else // if (i_mode == EMode::View)
-        {
-        }
-    }
-
-    CWdgtGraphObjPropertiesAbstract::setMode(i_mode);
-}
-
-/*==============================================================================
-public: // overridables of base class CWdgtGraphObjPropertiesAbstract
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CWdgtGraphObjLineProperties::setKeyInTree(const QString& i_strKeyInTree)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_strKeyInTree;
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setKeyInTree",
-        /* strAddInfo   */ strMthInArgs );
-
-    CWdgtGraphObjPropertiesAbstract::setKeyInTree(i_strKeyInTree);
-
-    if (m_pGraphObj != nullptr && m_pGraphObj->type() == EGraphObjTypeLine)
-    {
-        m_pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_pGraphObj);
-
-        if (m_pWdgtLabels != nullptr) {
-            m_pWdgtLabels->setKeyInTree(i_strKeyInTree);
-        }
-    }
-    else
-    {
-        m_pGraphObjLine = nullptr;
-
-        if (m_pWdgtLabels != nullptr) {
-            m_pWdgtLabels->setKeyInTree("");
-        }
-    }
-}
-
-/*==============================================================================
-protected: // must overridables of base class CWdgtFormatGraphObjs
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CWdgtGraphObjLineProperties::onGraphObjChanged()
+void CWdgtGraphObjLineProperties::onWdgtLabelsPropertyChanged()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onGraphObjChanged",
+        /* strMethod    */ "onWdgtLabelsPropertyChanged",
         /* strAddInfo   */ "" );
+
+    updateButtonsEnabled();
 }

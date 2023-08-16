@@ -71,7 +71,7 @@ public: // ctors and dtor
         Qt::WindowFlags i_wflags = Qt::WindowFlags() );
     virtual ~CWdgtStackGraphObjsProperties();
 public: // instance methods
-    void setKeyInTree( const QString& i_strKeyInTree );
+    bool setKeyInTree( const QString& i_strKeyInTree );
     QString getKeyInTree() const;
 protected: // instance methods
     int graphObjType2StackWdgtIndex(const QString& i_strGraphObjType) const;

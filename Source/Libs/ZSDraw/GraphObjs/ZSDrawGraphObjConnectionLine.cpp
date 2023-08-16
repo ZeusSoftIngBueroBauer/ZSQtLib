@@ -182,7 +182,7 @@ CGraphObjConnectionLine::~CGraphObjConnectionLine()
                     // Cannot be called from within dtor of "CGraphObj" as the dtor
                     // of class "QGraphicsItem" may have already been processed and
                     // models and Views may still try to access the graphical object.
-                    m_pDrawingScene->onGraphObjDestroying(m_strKeyInTree);
+                    m_pDrawingScene->onGraphObjAboutToBeDestroyed(m_strKeyInTree);
                 }
                 catch(...)
                 {

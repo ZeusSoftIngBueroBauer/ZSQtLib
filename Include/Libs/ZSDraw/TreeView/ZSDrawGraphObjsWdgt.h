@@ -27,7 +27,7 @@ may result in using the software modules.
 #ifndef ZDraw_GraphObjsWdgt_h
 #define ZDraw_GraphObjsWdgt_h
 
-#include <QtCore/qglobal.h>
+#include <QtCore/qabstractitemmodel.h>
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qwidget.h>
@@ -74,13 +74,15 @@ public: // instance methods
     void saveState(QSettings& i_settings) const;
     void restoreState(const QSettings& i_settings);
 protected slots:
-    void onWdgtTreeViewModeChanged( const QString& i_strViewMode );
-    void onWdgtTreeViewCurrentRowChanged( const QModelIndex& i_modelIdxCurr, const QModelIndex& i_modelIdxPrev );
+    void onWdgtTreeViewModeChanged(const QString& i_strViewMode);
+    void onWdgtTreeViewCurrentRowChanged(const QModelIndex& i_modelIdxCurr, const QModelIndex& i_modelIdxPrev);
+    void selectModelIdxPrev();
 protected: // instance members
     CDrawingView* m_pDrawingView;
     QVBoxLayout* m_pLytMain;
     QSplitter* m_pSplitter;
     CWdgtGraphObjsTree* m_pWdgtTreeView;
+    QModelIndex m_modelIdxPrev;
     CWdgtStackGraphObjsProperties* m_pWdgtStackGraphObjsProperties;
     /*!< Trace admin object to control trace outputs of the class. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;

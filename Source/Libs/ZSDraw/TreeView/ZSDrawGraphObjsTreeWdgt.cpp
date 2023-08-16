@@ -240,7 +240,7 @@ CWdgtGraphObjsTree::CWdgtGraphObjsTree(
     //===========
 
     m_pTreeView = new CTreeViewGraphObjs(m_pDrawingView->drawingScene());
-    m_pTreeView->setAlternatingRowColors(true);
+    //m_pTreeView->setAlternatingRowColors(true);
     m_pLytMain->addWidget(m_pTreeView, 1);
 
     //QObject::connect(

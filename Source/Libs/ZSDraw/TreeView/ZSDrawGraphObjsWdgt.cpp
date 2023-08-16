@@ -25,6 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDraw/TreeView/ZSDrawGraphObjsWdgt.h"
+#include "ZSDraw/TreeView/ZSDrawGraphObjsTreeView.h"
 #include "ZSDraw/TreeView/ZSDrawGraphObjsTreeWdgt.h"
 #include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjsPropertiesWdgtStack.h"
 #include "ZSDraw/Drawing/ZSDrawingView.h"
@@ -36,6 +37,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysTrcServer.h"
 
 #include <QtCore/qsettings.h>
+#include <QtCore/qtimer.h>
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qlayout.h>
@@ -76,6 +78,7 @@ CWdgtGraphObjs::CWdgtGraphObjs(
     m_pLytMain(nullptr),
     m_pSplitter(nullptr),
     m_pWdgtTreeView(nullptr),
+    m_modelIdxPrev(),
     m_pWdgtStackGraphObjsProperties(nullptr),
     m_pTrcAdminObj(nullptr)
 {
@@ -156,6 +159,7 @@ CWdgtGraphObjs::~CWdgtGraphObjs()
     m_pLytMain = nullptr;
     m_pSplitter = nullptr;
     m_pWdgtTreeView = nullptr;
+    //m_modelIdxPrev;
     m_pWdgtStackGraphObjsProperties = nullptr;
     m_pTrcAdminObj = nullptr;
 
@@ -237,13 +241,10 @@ void CWdgtGraphObjs::onWdgtTreeViewCurrentRowChanged(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strMthInArgs  = "Curr {" + CModelIdxTreeGraphObjs::modelIdx2Str(i_modelIdxCurr) + "}";
-        strMthInArgs += ", Prev {" + CModelIdxTreeGraphObjs::modelIdx2Str(i_modelIdxPrev) + "}";
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = "Curr {" + CModelIdxTreeGraphObjs::modelIdx2Str(i_modelIdxCurr) + "}" +
+                       ", Prev {" + CModelIdxTreeGraphObjs::modelIdx2Str(i_modelIdxPrev) + "}";
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -252,14 +253,38 @@ void CWdgtGraphObjs::onWdgtTreeViewCurrentRowChanged(
 
     if( i_modelIdxCurr.isValid() )
     {
-        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdxCurr.internalPointer());
-
-        if( pModelTreeEntry != nullptr ) {
-            m_pWdgtStackGraphObjsProperties->setKeyInTree(pModelTreeEntry->keyInTree());
+        CModelIdxTreeEntry* pModelTreeEntryCurr = static_cast<CModelIdxTreeEntry*>(i_modelIdxCurr.internalPointer());
+        CModelIdxTreeEntry* pModelTreeEntryPrev = static_cast<CModelIdxTreeEntry*>(i_modelIdxPrev.internalPointer());
+        bool bObjectChanged = false;
+        if( pModelTreeEntryCurr != nullptr ) {
+            bObjectChanged = m_pWdgtStackGraphObjsProperties->setKeyInTree(pModelTreeEntryCurr->keyInTree());
         }
         else {
-            m_pWdgtStackGraphObjsProperties->setKeyInTree("");
+            bObjectChanged = m_pWdgtStackGraphObjsProperties->setKeyInTree("");
+        }
+        if (!bObjectChanged) {
+            // Bug in Qt or just impossible to change the current index recursively while
+            // processing the signal here. Resetting the model index to the previously
+            // selected index works using a queued event with a single shot timer.
+            //m_pWdgtTreeView->treeView()->setCurrentIndex(i_modelIdxPrev);
+            m_modelIdxPrev = i_modelIdxPrev;
+            QTimer::singleShot(0, this, SLOT(selectModelIdxPrev()));
         }
     }
+}
 
-} // onWdgtTreeViewCurrentRowChanged
+//------------------------------------------------------------------------------
+void CWdgtGraphObjs::selectModelIdxPrev()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "selectModelIdxPrev",
+        /* strMthInArgs */ "" );
+    if (m_modelIdxPrev.isValid())
+    {
+        m_pWdgtTreeView->treeView()->setCurrentIndex(m_modelIdxPrev);
+    }
+    m_modelIdxPrev = QModelIndex();
+}

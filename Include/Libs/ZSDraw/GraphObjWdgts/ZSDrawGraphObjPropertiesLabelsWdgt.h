@@ -48,31 +48,35 @@ public: // ctors and dtor
         CDrawingScene* i_pDrawingScene,
         const QString& i_strParentClassName,
         const QString& i_strObjName,
-        ZS::System::EMode i_mode = ZS::System::EMode::View,
         QWidget* i_pWdgtParent = nullptr);
     virtual ~CWdgtGraphObjPropertiesLabels();
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
     virtual QString className() const { return ClassName(); }
 public: // overridables of base class CWdgtGraphObjPropertiesAbstract
+    virtual void setKeyInTree(const QString& i_strKeyInTree) override;
+public: // overridables of base class CWdgtGraphObjPropertiesAbstract
+    bool hasErrors() const override;
     bool hasChanges() const override;
     void acceptChanges() override;
     void rejectChanges() override;
-public: // overridables of base class CWdgtGraphObjPropertiesAbstract
-    void setMode(ZS::System::EMode i_mode) override;
-public: // overridables of base class CWdgtGraphObjPropertiesAbstract
-    virtual void setKeyInTree(const QString& i_strKeyInTree) override;
+protected slots:
+    void onEdtNameTextChanged(const QString& i_strText);
+    void onEdtDescriptionTextChanged(const QString& i_strText);
+protected: // auxiliary instance methods
+    bool changedNameIsUnique() const;
 protected: // overridables of base class CWdgtGraphObjPropertiesAbstract
     virtual void onGraphObjChanged() override;
+    virtual void onGraphObjMoved() override;
+    virtual void onGraphObjRenamed() override;
+    virtual void onGraphObjAboutToDestroyed() override;
 private: // instance members
     QLabel* m_pLblHeadLine;
-    QHBoxLayout* m_pLytName;
+    QHBoxLayout* m_pLytLineName;
     QLabel* m_pLblName;
     QLineEdit* m_pEdtName;
-    QHBoxLayout* m_pLytPath;
-    QLabel* m_pLblPath;
-    QLineEdit* m_pEdtPath;
-    QHBoxLayout* m_pLytDescription;
+    QLabel* m_pLblNameError;
+    QHBoxLayout* m_pLytLineDescription;
     QLabel* m_pLblDescription;
     QLineEdit* m_pEdtDescription;
     // Trace

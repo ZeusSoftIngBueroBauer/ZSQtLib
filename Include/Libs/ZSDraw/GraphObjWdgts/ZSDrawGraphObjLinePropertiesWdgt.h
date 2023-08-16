@@ -49,22 +49,20 @@ public: // ctors and dtor
     CWdgtGraphObjLineProperties(
         CDrawingScene* i_pDrawingScene,
         const QString& i_strObjName,
-        ZS::System::EMode i_mode = ZS::System::EMode::View,
         QWidget* i_pWdgtParent = nullptr);
     virtual ~CWdgtGraphObjLineProperties();
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
     virtual QString className() const { return ClassName(); }
 public: // overridables of base class CWdgtGraphObjPropertiesAbstract
+    virtual void setKeyInTree(const QString& i_strKeyInTree) override;
+public: // overridables of base class CWdgtGraphObjPropertiesAbstract
+    bool hasErrors() const override;
     bool hasChanges() const override;
     void acceptChanges() override;
     void rejectChanges() override;
-public: // overridables of base class CWdgtGraphObjPropertiesAbstract
-    void setMode(ZS::System::EMode i_mode) override;
-public: // overridables of base class CWdgtGraphObjPropertiesAbstract
-    virtual void setKeyInTree(const QString& i_strKeyInTree) override;
-protected: // overridables of base class CWdgtGraphObjPropertiesAbstract
-    virtual void onGraphObjChanged();
+protected slots:
+    void onWdgtLabelsPropertyChanged();
 protected: // instance members
     CGraphObjLine* m_pGraphObjLine;
     CWdgtGraphObjPropertiesLabels* m_pWdgtLabels;

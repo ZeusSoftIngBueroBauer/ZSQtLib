@@ -65,7 +65,7 @@ public: // ctors and dtor
     CWdgtDrawingViewProperties(
         CDrawingView* i_pDrawingView,
         const QString& i_strObjName,
-        ZS::System::EMode i_mode = ZS::System::EMode::View,
+        bool i_bCreateButtonsWidget = true,
         QWidget* i_pWdgtParent = nullptr);
     virtual ~CWdgtDrawingViewProperties();
 public: // overridables
@@ -78,8 +78,6 @@ public: // overridables of base class CWdgtGraphObjPropertiesAbstract
     bool hasChanges() const override;
     void acceptChanges() override;
     void rejectChanges() override;
-public: // overridables of base class CWdgtGraphObjPropertiesAbstract
-    void setMode(ZS::System::EMode i_mode) override;
 protected slots:
     void onDrawingViewDrawingSizeChanged(const ZS::Draw::CDrawingSize& i_size);
     void onDrawingViewGridSettingsChanged(const ZS::Draw::CDrawGridSettings& i_settings);
@@ -109,8 +107,6 @@ protected slots:
     void onBtnGridScaleLabelsFontStyleItalicToggled(int i_iState);
     void onBtnGridScaleLabelsTextEffectUnderlineToggled(int i_iState);
     void onBtnGridScaleLabelsTextEffectStrikeoutToggled(int i_iState);
-protected: // overridable slots of base class CWdgtGraphObjPropertiesAbstract
-    void onBtnEditClicked(bool i_bChecked = false);
 protected: // instance methods
     void setDimensionUnit( const CEnumDrawingDimensionUnit& i_eDimensionUnit );
     void setMetricUnit( const ZS::PhysVal::CUnit& i_metricUnit );

@@ -36,11 +36,13 @@ may result in using the software modules.
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qlayout.h>
 #include <QtGui/qlineedit.h>
+#include <QtGui/qmessagebox.h>
 #include <QtGui/qsplitter.h>
 #include <QtGui/qstackedwidget.h>
 #else
 #include <QtWidgets/qlayout.h>
 #include <QtWidgets/qlineedit.h>
+#include <QtWidgets/qmessagebox.h>
 #include <QtWidgets/qsplitter.h>
 #include <QtWidgets/qstackedwidget.h>
 #endif
@@ -166,7 +168,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtStackGraphObjsProperties::setKeyInTree( const QString& i_strKeyInTree )
+bool CWdgtStackGraphObjsProperties::setKeyInTree( const QString& i_strKeyInTree )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -179,36 +181,90 @@ void CWdgtStackGraphObjsProperties::setKeyInTree( const QString& i_strKeyInTree 
         /* strMethod    */ "setKeyInTree",
         /* strAddInfo   */ strMthInArgs );
 
+    bool bObjectChanged = true;
+
     if (m_strKeyInTree != i_strKeyInTree) {
-        m_strKeyInTree = i_strKeyInTree;
-        if (m_pIdxTree != nullptr) {
-            int idxStackWdgt = 0;
-            QString strEntryPath;
-            CIdxTreeEntry* pTreeEntry = m_pIdxTree->findEntry(i_strKeyInTree);
-            if (pTreeEntry != nullptr) {
+        CWdgtGraphObjPropertiesAbstract* pWdgtProperties =
+            dynamic_cast<CWdgtGraphObjPropertiesAbstract*>(
+                m_pStackedWdgtGraphObjsProperties->currentWidget());
+        if (pWdgtProperties != nullptr) {
+            CIdxTreeEntry* pTreeEntry = m_pIdxTree->findEntry(m_strKeyInTree);
+            if (pWdgtProperties->hasChanges()) {
                 QString strGraphObjType;
-                strEntryPath = pTreeEntry->path();
-                if (pTreeEntry->isRoot()) {
-                    strGraphObjType = "DrawingView";
-                }
-                else {
-                    CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pTreeEntry);
-                    if (pGraphObj != nullptr) {
-                        strGraphObjType = pGraphObj->typeAsString();
+                QString strGraphObjName;
+                if (pTreeEntry != nullptr) {
+                    if (pTreeEntry->isRoot()) {
+                        strGraphObjType = "DrawingView";
+                    }
+                    else {
+                        CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pTreeEntry);
+                        if (pGraphObj != nullptr) {
+                            strGraphObjType = pGraphObj->typeAsString();
+                            strGraphObjName = pGraphObj->name();
+                        }
                     }
                 }
-                idxStackWdgt = graphObjType2StackWdgtIndex(strGraphObjType);
+                int iRes = QMessageBox::Apply;
+                if (pWdgtProperties->hasErrors()) {
+                    iRes = QMessageBox::question(
+                        this, ZS::System::GUI::getMainWindowTitle() + ": Unsaved changes",
+                        "You made erroneous changes to " + strGraphObjType + " " + strGraphObjName + ".\n"
+                        "Do you want to resume (Retry) the edit session or Discard the changes?",
+                        QMessageBox::Retry | QMessageBox::Discard);
+                }
+                else {
+                    iRes = QMessageBox::question(
+                        this, ZS::System::GUI::getMainWindowTitle() + ": Unsaved changes",
+                        "You made changes to " + strGraphObjType + " " + strGraphObjName + ".\n"
+                        "Do you want to resume (Retry) the edit session, Apply or Discard the changes?",
+                        QMessageBox::Retry | QMessageBox::Discard | QMessageBox::Apply);
+                }
+                if (iRes == QMessageBox::Apply) {
+                    pWdgtProperties->acceptChanges();
+                }
+                else if (iRes == QMessageBox::Discard) {
+                    pWdgtProperties->rejectChanges();
+                }
+                else if (iRes == QMessageBox::Retry) {
+                    bObjectChanged = false;
+                }
             }
-            m_pEdtPath->setText(strEntryPath);
-            m_pStackedWdgtGraphObjsProperties->setCurrentIndex(idxStackWdgt);
-            CWdgtGraphObjPropertiesAbstract* pWdgtProperties =
-                dynamic_cast<CWdgtGraphObjPropertiesAbstract*>(
+        }
+        if (bObjectChanged) {
+            m_strKeyInTree = i_strKeyInTree;
+            if (m_pIdxTree != nullptr) {
+                int idxStackWdgt = 0;
+                QString strEntryPath;
+                CIdxTreeEntry* pTreeEntry = m_pIdxTree->findEntry(i_strKeyInTree);
+                if (pTreeEntry != nullptr) {
+                    QString strGraphObjType;
+                    strEntryPath = pTreeEntry->path();
+                    if (pTreeEntry->isRoot()) {
+                        strGraphObjType = "DrawingView";
+                    }
+                    else {
+                        CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pTreeEntry);
+                        if (pGraphObj != nullptr) {
+                            strGraphObjType = pGraphObj->typeAsString();
+                        }
+                    }
+                    idxStackWdgt = graphObjType2StackWdgtIndex(strGraphObjType);
+                }
+                m_pEdtPath->setText(strEntryPath);
+                m_pStackedWdgtGraphObjsProperties->setCurrentIndex(idxStackWdgt);
+                pWdgtProperties = dynamic_cast<CWdgtGraphObjPropertiesAbstract*>(
                     m_pStackedWdgtGraphObjsProperties->widget(idxStackWdgt));
-            if (pWdgtProperties != nullptr) {
-                pWdgtProperties->setKeyInTree(m_strKeyInTree);
+                if (pWdgtProperties != nullptr) {
+                    pWdgtProperties->setKeyInTree(m_strKeyInTree);
+                }
             }
         }
     }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(bObjectChanged);
+    }
+    return bObjectChanged;
+
 } // setKeyInTree
 
 //------------------------------------------------------------------------------

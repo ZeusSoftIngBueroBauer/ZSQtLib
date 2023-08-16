@@ -86,13 +86,16 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
-    CDrawingView* i_pDrawingView, const QString& i_strObjName, EMode i_mode, QWidget* i_pWdgtParent) :
+    CDrawingView* i_pDrawingView,
+    const QString& i_strObjName,
+    bool i_bCreateButtonsWidget,
+    QWidget* i_pWdgtParent) :
 //------------------------------------------------------------------------------
-    CWdgtGraphObjPropertiesAbstract(i_pDrawingView->drawingScene(), "Drawing::" + ClassName(), i_strObjName, i_mode, i_pWdgtParent),
+    CWdgtGraphObjPropertiesAbstract(i_pDrawingView->drawingScene(), "Drawing::" + ClassName(), i_strObjName, i_pWdgtParent),
     m_pDrawingView(i_pDrawingView),
     // Caching values
-    m_drawingSize("DrawingViewPropertiesWdgt" + CEnumMode(i_mode).toString()),
-    m_gridSettings("DrawingViewPropertiesWdgt" + CEnumMode(i_mode).toString()),
+    m_drawingSize(i_strObjName),
+    m_gridSettings(i_strObjName),
     // Edit Controls
     // Geometry
     m_pGrpGeometry(nullptr),
@@ -175,9 +178,8 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pBtnGridScaleLabelsTextEffectStrikeout(nullptr)
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strMthInArgs = CEnumMode(i_mode).toString();
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "CreateButtonsWidget: " + bool2Str(i_bCreateButtonsWidget);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -203,7 +205,7 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pLytGrpGeometry = new QVBoxLayout();
     m_pGrpGeometry->setLayout(m_pLytGrpGeometry);
 
-    // <Section> Dimension Unitk
+    // <Section> Dimension Unit
     //-------------------------
 
     m_pLytLineDimensionUnit = new QHBoxLayout();
@@ -748,20 +750,16 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     // <Buttons>
     //==========
 
-    m_pLyt->addStretch(); // Add stretch to buttons line
-    createButtonsLineWidget();
-    m_pLyt->addWidget(m_pWdgtButtons);
-    m_pWdgtButtons->hide();
+    if (i_bCreateButtonsWidget) {
+        createButtonsLineWidget();
+        m_pLyt->addWidget(m_pWdgtButtons);
+    }
+    m_pLyt->addStretch();
 
     // Update metrics
     //---------------
 
     updateDimensionUnit();
-
-    // Set Mode
-    //---------
-
-    setMode(i_mode);
 
 } // ctor
 
@@ -912,6 +910,8 @@ void CWdgtDrawingViewProperties::acceptChanges()
 
     m_pDrawingView->setDrawingSize(m_drawingSize);
     m_pDrawingView->setGridSettings(m_gridSettings);
+
+    updateButtonsEnabled();
 }
 
 //------------------------------------------------------------------------------
@@ -926,105 +926,8 @@ void CWdgtDrawingViewProperties::rejectChanges()
 
     onDrawingViewDrawingSizeChanged(m_pDrawingView->drawingSize());
     onDrawingViewGridSettingsChanged(m_pDrawingView->gridSettings());
-}
 
-/*==============================================================================
-public: // overridables of base class CWdgtGraphObjPropertiesAbstract
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CWdgtDrawingViewProperties::setMode(EMode i_mode)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = CEnumMode(i_mode).toString();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setMode",
-        /* strAddInfo   */ strMthInArgs );
-
-    if (m_mode != i_mode)
-    {
-        // Don't take over mode to member as base class method is also called and also needs
-        // to check whether the mode has been changed to modify the edit button widget.
-        if (i_mode == EMode::Edit)
-        {
-            CEnumDrawingDimensionUnit eDimensionUnit = m_drawingSize.dimensionUnit();
-
-            m_pCmbDimensionUnit->setEnabled(true);
-            //m_pEdtResolution_pxpi->setEnabled(true);
-            //m_pEdtResolution_pxpmm->setEnabled(true);
-            m_pCmbImageMetricUnit->setEnabled(eDimensionUnit == EDrawingDimensionUnit::Metric);
-            m_pEdtImageMetricWidth->setEnabled(eDimensionUnit == EDrawingDimensionUnit::Metric);
-            //m_pEdtImageMetricWidth->setReadOnly(eDimensionUnit != EDrawingDimensionUnit::Metric);
-            m_pEdtImageMetricHeight->setEnabled(eDimensionUnit == EDrawingDimensionUnit::Metric);
-            //m_pEdtImageMetricHeight->setReadOnly(eDimensionUnit != EDrawingDimensionUnit::Metric);
-            m_pCmbImageMetricNormedPaperSizes->setEnabled(eDimensionUnit == EDrawingDimensionUnit::Metric);
-            m_pCmbImageMetricNormedPaperOrientation->setEnabled(eDimensionUnit == EDrawingDimensionUnit::Metric);
-            m_pCmbImageMetricScaleFactorDividend->setEnabled(eDimensionUnit == EDrawingDimensionUnit::Metric);
-            m_pCmbImageMetricScaleFactorDivisor->setEnabled(eDimensionUnit == EDrawingDimensionUnit::Metric);
-            m_pEdtImageSizeWidth_px->setEnabled(eDimensionUnit == EDrawingDimensionUnit::Pixels);
-            //m_pEdtImageSizeWidth_px->setReadOnly(eDimensionUnit != EDrawingDimensionUnit::Pixels);
-            m_pEdtImageSizeHeight_px->setEnabled(eDimensionUnit == EDrawingDimensionUnit::Pixels);
-            //m_pEdtImageSizeHeight_px->setReadOnly(eDimensionUnit != EDrawingDimensionUnit::Pixels);
-
-            m_pChkGridLinesVisible->setEnabled(true);
-            m_pEdtGridLinesDistMin->setEnabled(true);
-            //m_pEdtGridLinesDistMin->setReadOnly(false);
-            m_pCmbGridLinesStyle->setEnabled(true);
-            m_pEdtGridLinesWidth->setEnabled(true);
-            //m_pEdtGridLinesWidth->setReadOnly(false);
-            m_pBtnGridLinesColor->setEnabled(true);
-            m_pChkGridScaleLabelsVisible->setEnabled(true);
-            m_pCmbGridScaleLabelsFont->setEnabled(true);
-            m_pCmbGridScaleLabelsFontSize->setEnabled(true);
-            m_pBtnGridScaleLabelsFontStyleBold->setEnabled(true);
-            m_pBtnGridScaleLabelsFontStyleItalic->setEnabled(true);
-            m_pBtnGridScaleLabelsTextEffectUnderline->setEnabled(true);
-            m_pBtnGridScaleLabelsTextEffectStrikeout->setEnabled(true);
-            m_pBtnGridScaleLabelsTextColor->setEnabled(true);
-        }
-        else // if (i_mode == EMode::View)
-        {
-            m_pCmbDimensionUnit->setEnabled(false);
-            //m_pEdtResolution_pxpi->setEnabled(false);
-            //m_pEdtResolution_pxpmm->setEnabled(false);
-            m_pCmbImageMetricUnit->setEnabled(false);
-            m_pEdtImageMetricWidth->setEnabled(false);
-            //m_pEdtImageMetricWidth->setReadOnly(true);
-            m_pEdtImageMetricHeight->setEnabled(false);
-            //m_pEdtImageMetricHeight->setReadOnly(true);
-            m_pCmbImageMetricNormedPaperSizes->setEnabled(false);
-            m_pCmbImageMetricNormedPaperOrientation->setEnabled(false);
-            m_pCmbImageMetricScaleFactorDividend->setEnabled(false);
-            m_pCmbImageMetricScaleFactorDivisor->setEnabled(false);
-            m_pEdtImageSizeWidth_px->setEnabled(false);
-            m_pEdtImageSizeWidth_px->setReadOnly(true);
-            m_pEdtImageSizeHeight_px->setEnabled(false);
-            m_pEdtImageSizeHeight_px->setReadOnly(true);
-
-            m_pChkGridLinesVisible->setEnabled(false);
-            m_pEdtGridLinesDistMin->setEnabled(false);
-            //m_pEdtGridLinesDistMin->setReadOnly(true);
-            m_pCmbGridLinesStyle->setEnabled(false);
-            m_pEdtGridLinesWidth->setEnabled(false);
-            //m_pEdtGridLinesWidth->setReadOnly(true);
-            m_pBtnGridLinesColor->setEnabled(false);
-            m_pChkGridScaleLabelsVisible->setEnabled(false);
-            m_pCmbGridScaleLabelsFont->setEnabled(false);
-            m_pCmbGridScaleLabelsFontSize->setEnabled(false);
-            m_pBtnGridScaleLabelsFontStyleBold->setEnabled(false);
-            m_pBtnGridScaleLabelsFontStyleItalic->setEnabled(false);
-            m_pBtnGridScaleLabelsTextEffectUnderline->setEnabled(false);
-            m_pBtnGridScaleLabelsTextEffectStrikeout->setEnabled(false);
-            m_pBtnGridScaleLabelsTextColor->setEnabled(false);
-        }
-    }
-
-    CWdgtGraphObjPropertiesAbstract::setMode(i_mode);
+    updateButtonsEnabled();
 }
 
 /*==============================================================================
@@ -1053,6 +956,7 @@ void CWdgtDrawingViewProperties::onDrawingViewDrawingSizeChanged(const CDrawingS
         m_drawingSize = i_size;
         CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
         updateDimensionUnit();
+        updateButtonsEnabled();
         emit_drawingSizeChanged(m_drawingSize);
     }
 }
@@ -1079,6 +983,7 @@ void CWdgtDrawingViewProperties::onDrawingViewGridSettingsChanged(const CDrawGri
         m_gridSettings = i_settings;
         CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
         updateGridSettings();
+        updateButtonsEnabled();
         emit_gridSettingsChanged(m_gridSettings);
     }
 }
@@ -1734,37 +1639,6 @@ void CWdgtDrawingViewProperties::onBtnGridScaleLabelsTextEffectStrikeoutToggled(
 }
 
 /*==============================================================================
-protected: // overridable slots of base class CWdgtGraphObjPropertiesAbstract
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CWdgtDrawingViewProperties::onBtnEditClicked(bool /*i_bChecked*/)
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onBtnEditClicked",
-        /* strAddInfo   */ "" );
-
-    QString strDlgTitle = QCoreApplication::applicationName() + ": Page Setup";
-    CDlgDrawingViewSetup* pDlg = CDlgDrawingViewSetup::GetInstance(m_pDrawingView);
-    if( pDlg == nullptr ) {
-        pDlg = CDlgDrawingViewSetup::CreateInstance(strDlgTitle, m_pDrawingView);
-        pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
-        pDlg->adjustSize();
-        pDlg->show();
-    }
-    else {
-        if( pDlg->isHidden() ) {
-            pDlg->show();
-        }
-        pDlg->raise();
-        pDlg->activateWindow();
-    }
-}
-
-/*==============================================================================
 protected: // instance methods
 ==============================================================================*/
 
@@ -1786,6 +1660,7 @@ void CWdgtDrawingViewProperties::setDimensionUnit( const CEnumDrawingDimensionUn
         CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
         m_drawingSize.setDimensionUnit(i_eDimensionUnit);
         updateDimensionUnit();
+        updateButtonsEnabled();
         emit_drawingSizeChanged(m_drawingSize);
     }
 }
@@ -1811,6 +1686,7 @@ void CWdgtDrawingViewProperties::setMetricUnit( const CUnit& i_metricUnit )
         // are indicated will be changed.
         m_drawingSize.setMetricUnit(i_metricUnit);
         updateImageSizeMetrics();
+        updateButtonsEnabled();
         emit_drawingSizeChanged(m_drawingSize);
     }
 }
@@ -1842,6 +1718,7 @@ void CWdgtDrawingViewProperties::setNormedPaperSize( const CEnumNormedPaperSize&
             m_pEdtImageMetricHeight->setValue(m_drawingSize.metricImageHeight().getVal());
             updateImageSizeInPixels();
         }
+        updateButtonsEnabled();
         emit_drawingSizeChanged(m_drawingSize);
     }
 }
@@ -1873,6 +1750,7 @@ void CWdgtDrawingViewProperties::setNormedPaperOrientation( const CEnumOrientati
             m_pEdtImageMetricHeight->setValue(m_drawingSize.metricImageHeight().getVal());
             updateImageSizeInPixels();
         }
+        updateButtonsEnabled();
         emit_drawingSizeChanged(m_drawingSize);
     }
 }
@@ -1909,6 +1787,7 @@ void CWdgtDrawingViewProperties::setScaleFactor( int i_iDividend, int i_iDivisor
         CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
         m_drawingSize.setScaleFactor(i_iDividend, i_iDivisor);
         updateImageSizeInPixels();
+        updateButtonsEnabled();
         emit_drawingSizeChanged(m_drawingSize);
     }
 }
@@ -1963,6 +1842,7 @@ void CWdgtDrawingViewProperties::setImageSize(
             updateImageSizeInPixels();
         }
         updatePaperFormat();
+        updateButtonsEnabled();
         emit_drawingSizeChanged(m_drawingSize);
     }
 }
@@ -1988,6 +1868,7 @@ void CWdgtDrawingViewProperties::setGridLinesVisible(bool i_bVisible)
     if( m_gridSettings.areLinesVisible() != i_bVisible) {
         CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
         m_gridSettings.setLinesVisible(i_bVisible);
+        updateButtonsEnabled();
         emit_gridSettingsChanged(m_gridSettings);
     }
 }
@@ -2009,6 +1890,7 @@ void CWdgtDrawingViewProperties::setGridLinesDistMin(int i_iDistMin_px)
     if( m_gridSettings.linesDistMin() != i_iDistMin_px) {
         CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
         m_gridSettings.setLinesDistMin(i_iDistMin_px);
+        updateButtonsEnabled();
         emit_gridSettingsChanged(m_gridSettings);
     }
 }
@@ -2030,6 +1912,7 @@ void CWdgtDrawingViewProperties::setGridLinesStyle(ELineStyle i_lineStyle)
     if( m_gridSettings.linesStyle() != i_lineStyle) {
         CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
         m_gridSettings.setLinesStyle(i_lineStyle);
+        updateButtonsEnabled();
         emit_gridSettingsChanged(m_gridSettings);
     }
 }
@@ -2052,6 +1935,7 @@ void CWdgtDrawingViewProperties::setGridLinesColor(const QColor& i_color)
         CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
         m_gridSettings.setLinesColor(i_color);
         updateGridLinesColorButtonIcon();
+        updateButtonsEnabled();
         emit_gridSettingsChanged(m_gridSettings);
     }
 }
@@ -2073,6 +1957,7 @@ void CWdgtDrawingViewProperties::setGridLinesWidth(int i_iWidth_px)
     if( m_gridSettings.linesWidth() != i_iWidth_px) {
         CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
         m_gridSettings.setLinesWidth(i_iWidth_px);
+        updateButtonsEnabled();
         emit_gridSettingsChanged(m_gridSettings);
     }
 }
@@ -2094,6 +1979,7 @@ void CWdgtDrawingViewProperties::setGridLabelsVisible(bool i_bVisible)
     if( m_gridSettings.areLabelsVisible() != i_bVisible) {
         CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
         m_gridSettings.setLabelsVisible(i_bVisible);
+        updateButtonsEnabled();
         emit_gridSettingsChanged(m_gridSettings);
     }
 }
@@ -2115,6 +2001,7 @@ void CWdgtDrawingViewProperties::setGridLabelsFont(const QFont& i_fnt)
     if( m_gridSettings.labelsFont() != i_fnt) {
         CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
         m_gridSettings.setLabelsFont(i_fnt);
+        updateButtonsEnabled();
         emit_gridSettingsChanged(m_gridSettings);
     }
 }
@@ -2136,6 +2023,7 @@ void CWdgtDrawingViewProperties::setGridLabelsTextSize(ETextSize i_textSize)
     if( m_gridSettings.labelsTextSize() != i_textSize) {
         CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
         m_gridSettings.setLabelsTextSize(i_textSize);
+        updateButtonsEnabled();
         emit_gridSettingsChanged(m_gridSettings);
     }
 }
@@ -2158,6 +2046,7 @@ void CWdgtDrawingViewProperties::setGridLabelsTextColor(const QColor& i_color)
         CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
         m_gridSettings.setLabelsTextColor(i_color);
         updateGridLabelsTextColorButtonIcon();
+        updateButtonsEnabled();
         emit_gridSettingsChanged(m_gridSettings);
     }
 }
@@ -2181,6 +2070,7 @@ void CWdgtDrawingViewProperties::setGridLabelsTextStyle(ETextStyle i_textStyle)
         m_gridSettings.setLabelsTextStyle(i_textStyle);
         updateGridLabelsTextStyleBoldButton();
         updateGridLabelsTextStyleItalicButton();
+        updateButtonsEnabled();
         emit_gridSettingsChanged(m_gridSettings);
     }
 }
@@ -2204,6 +2094,7 @@ void CWdgtDrawingViewProperties::setGridLabelsTextEffect(const ETextEffect i_tex
         m_gridSettings.setLabelsTextEffect(i_textEffect);
         updateGridLabelsTextEffectUnderlineButton();
         updateGridLabelsTextEffectStrikeoutButton();
+        updateButtonsEnabled();
         emit_gridSettingsChanged(m_gridSettings);
     }
 }
@@ -2232,29 +2123,21 @@ void CWdgtDrawingViewProperties::updateDimensionUnit()
 
     m_pCmbDimensionUnit->setCurrentIndex(eDimensionUnit.enumeratorAsInt());
     m_pWdgtMetric->setVisible(eDimensionUnit == EDrawingDimensionUnit::Metric);
-    m_pCmbImageMetricUnit->setEnabled(
-        m_mode == EMode::Edit && eDimensionUnit == EDrawingDimensionUnit::Metric);
-    m_pEdtImageMetricWidth->setReadOnly(
-        m_mode != EMode::Edit || eDimensionUnit != EDrawingDimensionUnit::Metric);
-    m_pEdtImageMetricHeight->setReadOnly(
-        m_mode != EMode::Edit || eDimensionUnit != EDrawingDimensionUnit::Metric);
-    m_pCmbImageMetricNormedPaperSizes->setEnabled(
-        m_mode == EMode::Edit && eDimensionUnit == EDrawingDimensionUnit::Metric);
-    m_pCmbImageMetricNormedPaperOrientation->setEnabled(
-        m_mode == EMode::Edit && eDimensionUnit == EDrawingDimensionUnit::Metric);
-    m_pCmbImageMetricScaleFactorDividend->setEnabled(
-        m_mode == EMode::Edit && eDimensionUnit == EDrawingDimensionUnit::Metric);
-    m_pCmbImageMetricScaleFactorDivisor->setEnabled(
-        m_mode == EMode::Edit && eDimensionUnit == EDrawingDimensionUnit::Metric);
-    m_pEdtImageSizeWidth_px->setReadOnly(
-        m_mode != EMode::Edit || eDimensionUnit != EDrawingDimensionUnit::Pixels);
-    m_pEdtImageSizeHeight_px->setReadOnly(
-        m_mode != EMode::Edit || eDimensionUnit != EDrawingDimensionUnit::Pixels);
+    m_pCmbImageMetricUnit->setEnabled(eDimensionUnit == EDrawingDimensionUnit::Metric);
+    m_pEdtImageMetricWidth->setReadOnly(eDimensionUnit != EDrawingDimensionUnit::Metric);
+    m_pEdtImageMetricHeight->setReadOnly(eDimensionUnit != EDrawingDimensionUnit::Metric);
+    m_pCmbImageMetricNormedPaperSizes->setEnabled(eDimensionUnit == EDrawingDimensionUnit::Metric);
+    m_pCmbImageMetricNormedPaperOrientation->setEnabled(eDimensionUnit == EDrawingDimensionUnit::Metric);
+    m_pCmbImageMetricScaleFactorDividend->setEnabled(eDimensionUnit == EDrawingDimensionUnit::Metric);
+    m_pCmbImageMetricScaleFactorDivisor->setEnabled(eDimensionUnit == EDrawingDimensionUnit::Metric);
+    m_pEdtImageSizeWidth_px->setReadOnly(eDimensionUnit != EDrawingDimensionUnit::Pixels);
+    m_pEdtImageSizeHeight_px->setReadOnly(eDimensionUnit != EDrawingDimensionUnit::Pixels);
 
     updateImageSizeMetrics();
     updateImageSizeInPixels();
     updatePaperFormat();
-}
+
+} // updateDimensionUnit
 
 //------------------------------------------------------------------------------
 void CWdgtDrawingViewProperties::updateImageSizeInPixels()
@@ -2618,6 +2501,7 @@ void CWdgtDrawingViewProperties::traceValues(CMethodTracer& mthTracer, EMethodDi
             + " * " + m_pEdtImageMetricHeight->value().toString() + ")"
         + ", Size (" + QString::number(m_pEdtImageSizeWidth_px->value())
             + " * " + QString::number(m_pEdtImageSizeHeight_px->value()) + " px)"
-        + ", ButtonsEnabled (Edit: " + bool2Str(m_pBtnEdit->isEnabled()) + ")";
+        + ", ButtonsEnabled (Apply: " + bool2Str(m_pBtnApply->isEnabled())
+            + ", Reset: " + bool2Str(m_pBtnReset->isEnabled()) + ")";
     mthTracer.trace(strMthLog);
 }

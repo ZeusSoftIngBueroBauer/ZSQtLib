@@ -502,7 +502,7 @@ CGraphObj::~CGraphObj()
 
     //if( m_pDrawingScene != nullptr )
     //{
-    //    // Please note that "onGraphObjDestroyed" is used to remove the graphical object from
+    //    // Please note that "onGraphObjAboutToDestroyed" is used to remove the graphical object from
     //    // the dictionary, the index list, and the sorted object pools of the drawing scene.
     //    // But selection points have just been added to the drawing scene's item list and
     //    // therefore don't have valid object ids.
@@ -510,7 +510,7 @@ CGraphObj::~CGraphObj()
     //    {
     //        try
     //        {
-    //            m_pDrawingScene->onGraphObjDestroyed(m_strKeyInTree);
+    //            m_pDrawingScene->onGraphObjAboutToDestroyed(m_strKeyInTree);
     //        }
     //        catch(...)
     //        {

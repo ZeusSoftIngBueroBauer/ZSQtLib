@@ -98,7 +98,7 @@ public: // type definitions and constants
 public: // class methods
     //static QString FindUniqueGraphObjId(
     //    const QMap<QString,CGraphObj*>& i_dctpGraphObjs,
-    //    const QString&                  i_strObjIdCurr );
+    //    const QString&                  i_strKeyInTreeCurr );
 public: // ctors and dtor
     CDrawingScene( QObject* i_pObjParent = nullptr );
     ~CDrawingScene();
@@ -151,7 +151,7 @@ signals:
         Please note that if the signal is emitted you can no longer access the properties of the
         object and dynamic casts to CGraphObj or to QGraphicsItem cannot be used anymore.
         @param i_strKeyInTree [in] Unique key of the graphical object. */
-    void graphObjDestroyed(const QString& i_strKeyInTree);
+    void graphObjAboutToBeDestroyed(const QString& i_strKeyInTree);
 public: // instance methods
     void setDrawingSize( const CDrawingSize& i_size);
     CDrawingSize drawingSize() const;
@@ -212,16 +212,16 @@ public: // to be called by graphical objects (as graphical objects are not deriv
     void onGraphObjAddingShapePointsFinished( CGraphObj* i_pGraphObj );
 public: // to be called by graphical objects (as graphical objects are not derived from QObject and cannot emit signals)
     void onGraphObjCreationFinished( CGraphObj* i_pGraphObj );
-    void onGraphObjDestroying( const QString& i_strObjId );
-    //void onGraphObjDestroyed( const QString& i_strObjId );
-    //void onGraphObjIdChanged( const QString& i_strObjIdOld, const QString& i_strObjIdNew );
+    void onGraphObjAboutToBeDestroyed( const QString& i_strKeyInTree );
+    //void onGraphObjDestroyed( const QString& i_strKeyInTree );
+    //void onGraphObjIdChanged( const QString& i_strKeyInTreeOld, const QString& i_strKeyInTreeNew );
     //void onGraphObjNameChanged(
-    //    const QString& i_strObjId,
+    //    const QString& i_strKeyInTree,
     //    const QString& i_strObjNameOld,     // !!! NOT including name of parents !!!
     //    const QString& i_strObjNameNew );   // !!! NOT including name of parents !!!
 public: // instance methods
-    QGraphicsItem* findGraphicsItem( const QString& i_strObjId );
-    CGraphObj* findGraphObj( const QString& i_strObjId );
+    QGraphicsItem* findGraphicsItem( const QString& i_strKeyInTree );
+    CGraphObj* findGraphObj( const QString& i_strKeyInTree );
 public: // instance methods
     QString findUniqueGraphObjName( CGraphObj* i_pGraphObj );
 public: // instance methods
@@ -331,7 +331,7 @@ protected: // auxiliary methods (trace emitting signals)
     void emit_graphObjChanged(const QString& i_strKeyInTree);
     void emit_graphObjMoved(const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree, const QString& i_strKeyInTreeOfTargetBranch);
     void emit_graphObjRenamed(const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree, const QString& i_strOrigName);
-    void emit_graphObjDestroyed(const QString& i_strKeyInTree);
+    void emit_graphObjAboutToBeDestroyed(const QString& i_strKeyInTree);
 protected: // instance members
     CDrawingSize m_drawingSize;
     CDrawGridSettings m_gridSettings;

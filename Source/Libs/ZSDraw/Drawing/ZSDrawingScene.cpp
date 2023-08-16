@@ -84,20 +84,20 @@ public: // class methods
 ////------------------------------------------------------------------------------
 //QString CDrawingScene::FindUniqueGraphObjId(
 //    const QMap<QString,CGraphObj*>& i_dctpGraphObjs,
-//    const QString&                  i_strObjIdCurr )
+//    const QString&                  i_strKeyInTreeCurr )
 ////------------------------------------------------------------------------------
 //{
-//    QString strObjId = i_strObjIdCurr;
+//    QString strKeyInTree = i_strKeyInTreeCurr;
 //    int     iObjNr   = 1;
 //    QString strObjNr;
 //
 //    // Remove trailing number (if any).
-//    if( strObjId.length() > 0 && isDigitChar(strObjId[strObjId.length()-1]) )
+//    if( strKeyInTree.length() > 0 && isDigitChar(strKeyInTree[strKeyInTree.length()-1]) )
 //    {
-//        while( isDigitChar(strObjId[strObjId.length()-1]) )
+//        while( isDigitChar(strKeyInTree[strKeyInTree.length()-1]) )
 //        {
-//            strObjNr.insert( 0, strObjId[strObjId.length()-1] );
-//            strObjId.remove( strObjId.length()-1, 1 );
+//            strObjNr.insert( 0, strKeyInTree[strKeyInTree.length()-1] );
+//            strKeyInTree.remove( strKeyInTree.length()-1, 1 );
 //        }
 //        iObjNr = strObjNr.toInt();
 //        iObjNr++;
@@ -107,18 +107,18 @@ public: // class methods
 //        strObjNr = QString::number(iObjNr);
 //    }
 //
-//    QString strObjBaseName = strObjId;
+//    QString strObjBaseName = strKeyInTree;
 //
-//    strObjId = strObjBaseName + strObjNr;
+//    strKeyInTree = strObjBaseName + strObjNr;
 //
-//    while( i_dctpGraphObjs.contains(strObjId) )
+//    while( i_dctpGraphObjs.contains(strKeyInTree) )
 //    {
 //        iObjNr++;
 //        strObjNr = QString::number(iObjNr);
-//        strObjId = strObjBaseName + strObjNr;
+//        strKeyInTree = strObjBaseName + strObjNr;
 //    }
 //
-//    return strObjId;
+//    return strKeyInTree;
 //
 //} // FindUniqueGraphObjId
 
@@ -623,7 +623,7 @@ SErrResultInfo CDrawingScene::load( const QString& i_strFileName )
                         QString strClassName;
                         QString strGraphObjType;
                         QString strObjName;
-                        QString strObjId;
+                        QString strKeyInTree;
 
                         QXmlStreamAttributes xmlStreamAttrs = xmlStreamReader.attributes();
 
@@ -649,7 +649,7 @@ SErrResultInfo CDrawingScene::load( const QString& i_strFileName )
                         }
                         if( xmlStreamAttrs.hasAttribute("ObjectId") )
                         {
-                            strObjId = xmlStreamAttrs.value("ObjectId").toString();;
+                            strKeyInTree = xmlStreamAttrs.value("ObjectId").toString();;
                         }
 
                         CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strFactoryGrpName, strGraphObjType);
@@ -660,7 +660,7 @@ SErrResultInfo CDrawingScene::load( const QString& i_strFileName )
                                 /* pDrawingScene   */ this,
                                 /* pGraphObjGroup  */ nullptr,
                                 /* strObjName      */ strObjName,
-                                /* strObjId        */ strObjId,
+                                /* strKeyInTree    */ strKeyInTree,
                                 /* xmlStreamReader */ xmlStreamReader,
                                 /* errResultInfo   */ errResultInfo );
                         }
@@ -872,7 +872,7 @@ SErrResultInfo CDrawingScene::save( CGraphObj* i_pGraphObj, QXmlStreamWriter& i_
     QString strClassName    = i_pGraphObj->className();
     QString strGraphObjType = i_pGraphObj->typeAsString();
     QString strObjName      = i_pGraphObj->name();
-    QString strObjId        = i_pGraphObj->keyInTree();
+    QString strKeyInTree    = i_pGraphObj->keyInTree();
 
     CObjFactory* pObjFactory = CObjFactory::FindObjFactory(i_pGraphObj->getFactoryGroupName(), strGraphObjType);
 
@@ -889,7 +889,7 @@ SErrResultInfo CDrawingScene::save( CGraphObj* i_pGraphObj, QXmlStreamWriter& i_
         i_xmlStreamWriter.writeAttribute( "ClassName", strClassName );
         i_xmlStreamWriter.writeAttribute( "ObjectType", strGraphObjType );
         i_xmlStreamWriter.writeAttribute( "ObjectName", strObjName );
-        i_xmlStreamWriter.writeAttribute( "ObjectId", strObjId );
+        i_xmlStreamWriter.writeAttribute( "ObjectId", strKeyInTree );
 
         errResultInfo = pObjFactory->saveGraphObj(i_pGraphObj,i_xmlStreamWriter);
 
@@ -2252,21 +2252,19 @@ void CDrawingScene::onGraphObjCreationFinished( CGraphObj* i_pGraphObj )
 } // onGraphObjCreationFinished
 
 //------------------------------------------------------------------------------
-void CDrawingScene::onGraphObjDestroying( const QString& i_strObjId )
+void CDrawingScene::onGraphObjAboutToBeDestroyed( const QString& i_strKeyInTree )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     QString strAddTrcInfo;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strMthInArgs = "GraphObjId:" + i_strObjId;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "GraphObjId:" + i_strKeyInTree;
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onGraphObjDestroying",
+        /* strMethod    */ "onGraphObjAboutToBeDestroyed",
         /* strAddInfo   */ strMthInArgs );
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
@@ -2278,6 +2276,8 @@ void CDrawingScene::onGraphObjDestroying( const QString& i_strObjId )
         strAddTrcInfo += ", ObjFactory:" + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
         mthTracer.trace(strAddTrcInfo);
     }
+
+    emit_graphObjAboutToBeDestroyed(i_strKeyInTree);
 
     // Please note that the dynamic cast to QGraphicsItem returns nullptr if the
     // dtor of QGraphicsItem has already been executed. The order the dtors
@@ -2291,25 +2291,25 @@ void CDrawingScene::onGraphObjDestroying( const QString& i_strObjId )
     //QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
     //removeItem(pGraphicsItem);
 
-    //if( m_dctpGraphObjs.contains(i_strObjId) )
+    //if( m_dctpGraphObjs.contains(i_strKeyInTree) )
     //{
-    //    //emit_graphObjDestroying(i_strObjId);
+    //    //emit_graphObjDestroying(i_strKeyInTree);
     //
-    //    m_dctpGraphObjs.remove(i_strObjId);
+    //    m_dctpGraphObjs.remove(i_strKeyInTree);
     //
-    //    if( m_dctpGraphObjsClipboard.contains(i_strObjId) )
+    //    if( m_dctpGraphObjsClipboard.contains(i_strKeyInTree) )
     //    {
-    //        m_dctpGraphObjs.remove(i_strObjId);
+    //        m_dctpGraphObjs.remove(i_strKeyInTree);
     //    }
     //}
 
-    if( m_pGraphObjCreating != nullptr && m_pGraphObjCreating->keyInTree() == i_strObjId )
+    if( m_pGraphObjCreating != nullptr && m_pGraphObjCreating->keyInTree() == i_strKeyInTree )
     {
         m_pGraphicsItemCreating = nullptr;
         m_pGraphObjCreating = nullptr;
     }
 
-    if( m_pGraphObjAddingShapePoints != nullptr && m_pGraphObjAddingShapePoints->keyInTree() == i_strObjId )
+    if( m_pGraphObjAddingShapePoints != nullptr && m_pGraphObjAddingShapePoints->keyInTree() == i_strKeyInTree )
     {
         m_pGraphicsItemAddingShapePoints = nullptr;
         m_pGraphObjAddingShapePoints = nullptr;
@@ -2317,16 +2317,12 @@ void CDrawingScene::onGraphObjDestroying( const QString& i_strObjId )
 
     if( m_arpGraphicsItemsAcceptingHoverEvents.size() > 0 )
     {
-        QGraphicsItem* pGraphicsItem;
-        CGraphObj*     pGraphObj;
-        int            idxGraphObj;
-
-        for( idxGraphObj = m_arpGraphicsItemsAcceptingHoverEvents.size()-1; idxGraphObj >= 0; idxGraphObj-- )
+        for( int idxGraphObj = m_arpGraphicsItemsAcceptingHoverEvents.size()-1; idxGraphObj >= 0; idxGraphObj-- )
         {
-            pGraphicsItem = m_arpGraphicsItemsAcceptingHoverEvents[idxGraphObj];
-            pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+            QGraphicsItem*  pGraphicsItem = m_arpGraphicsItemsAcceptingHoverEvents[idxGraphObj];
+            CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
 
-            if( pGraphObj != nullptr && pGraphObj->keyInTree() == i_strObjId )
+            if( pGraphObj != nullptr && pGraphObj->keyInTree() == i_strKeyInTree )
             {
                 m_arpGraphicsItemsAcceptingHoverEvents.removeAt(idxGraphObj);
             }
@@ -2337,7 +2333,7 @@ void CDrawingScene::onGraphObjDestroying( const QString& i_strObjId )
 } // onGraphObjDestroying
 
 ////------------------------------------------------------------------------------
-//void CDrawingScene::onGraphObjDestroyed( const QString& i_strObjId )
+//void CDrawingScene::onGraphObjDestroyed( const QString& i_strKeyInTree )
 ////------------------------------------------------------------------------------
 //{
 //    QString strMthInArgs;
@@ -2345,7 +2341,7 @@ void CDrawingScene::onGraphObjDestroying( const QString& i_strObjId )
 //
 //    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
 //    {
-//        strMthInArgs  = "GraphObjId:" + i_strObjId;
+//        strMthInArgs  = "GraphObjId:" + i_strKeyInTree;
 //    }
 //
 //    CMethodTracer mthTracer(
@@ -2376,12 +2372,12 @@ void CDrawingScene::onGraphObjDestroying( const QString& i_strObjId )
 //    //QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
 //    //removeItem(pGraphicsItem);
 //
-//    //emit_graphObjDestroyed(i_strObjId);
+//    //emit_graphObjDestroyed(i_strKeyInTree);
 //
 //} // onGraphObjDestroyed
 
 ////------------------------------------------------------------------------------
-//void CDrawingScene::onGraphObjIdChanged( const QString& i_strObjIdOld, const QString& i_strObjIdNew )
+//void CDrawingScene::onGraphObjIdChanged( const QString& i_strKeyInTreeOld, const QString& i_strKeyInTreeNew )
 ////------------------------------------------------------------------------------
 //{
 //    QString strMthInArgs;
@@ -2389,8 +2385,8 @@ void CDrawingScene::onGraphObjDestroying( const QString& i_strObjId )
 //
 //    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
 //    {
-//        strMthInArgs  = "GraphObjIdOld:" + i_strObjIdOld;
-//        strMthInArgs += ", GraphObjIdNew:" + i_strObjIdNew;
+//        strMthInArgs  = "GraphObjIdOld:" + i_strKeyInTreeOld;
+//        strMthInArgs += ", GraphObjIdNew:" + i_strKeyInTreeNew;
 //    }
 //
 //    CMethodTracer mthTracer(
@@ -2409,13 +2405,13 @@ void CDrawingScene::onGraphObjDestroying( const QString& i_strObjId )
 //        mthTracer.trace(strAddTrcInfo);
 //    }
 //
-//    //emit_graphObjIdChanged(i_strObjIdOld, i_strObjIdNew);
+//    //emit_graphObjIdChanged(i_strKeyInTreeOld, i_strKeyInTreeNew);
 //
 //} // onGraphObjIdChanged
 
 ////------------------------------------------------------------------------------
 //void CDrawingScene::onGraphObjNameChanged(
-//    const QString& i_strObjId,          // !!! Contains the OLD object id   !!!
+//    const QString& i_strKeyInTree,      // !!! Contains the OLD object id   !!!
 //    const QString& i_strObjNameOld,     // !!! NOT including name of parents !!!
 //    const QString& i_strObjNameNew )    // !!! NOT including name of parents !!!
 ////------------------------------------------------------------------------------
@@ -2425,7 +2421,7 @@ void CDrawingScene::onGraphObjDestroying( const QString& i_strObjId )
 //
 //    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
 //    {
-//        strMthInArgs  = "GraphObjId:" + i_strObjId;
+//        strMthInArgs  = "GraphObjId:" + i_strKeyInTree;
 //        strMthInArgs += ", GraphObjNameOld:" + i_strObjNameOld;
 //        strMthInArgs += ", GraphObjNameNew:" + i_strObjNameNew;
 //    }
@@ -2446,7 +2442,7 @@ void CDrawingScene::onGraphObjDestroying( const QString& i_strObjId )
 //        mthTracer.trace(strAddTrcInfo);
 //    }
 //
-//    //emit_graphObjNameChanged(i_strObjId, i_strObjNameOld, i_strObjNameNew);
+//    //emit_graphObjNameChanged(i_strKeyInTree, i_strObjNameOld, i_strObjNameNew);
 //
 //} // onGraphObjNameChanged
 
@@ -2455,11 +2451,11 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QGraphicsItem* CDrawingScene::findGraphicsItem( const QString& i_strObjId )
+QGraphicsItem* CDrawingScene::findGraphicsItem( const QString& i_strKeyInTree )
 //------------------------------------------------------------------------------
 {
     QGraphicsItem* pGraphicsItem = nullptr;
-    CIdxTreeEntry* pTreeEntry = m_pGraphObjsIdxTree->findEntry(i_strObjId);
+    CIdxTreeEntry* pTreeEntry = m_pGraphObjsIdxTree->findEntry(i_strKeyInTree);
     if( pTreeEntry != nullptr )
     {
         pGraphicsItem = dynamic_cast<QGraphicsItem*>(pTreeEntry);
@@ -2468,11 +2464,11 @@ QGraphicsItem* CDrawingScene::findGraphicsItem( const QString& i_strObjId )
 }
 
 //------------------------------------------------------------------------------
-CGraphObj* CDrawingScene::findGraphObj( const QString& i_strObjId )
+CGraphObj* CDrawingScene::findGraphObj( const QString& i_strKeyInTree )
 //------------------------------------------------------------------------------
 {
     CGraphObj* pGraphObj = nullptr;
-    CIdxTreeEntry* pTreeEntry = m_pGraphObjsIdxTree->findEntry(i_strObjId);
+    CIdxTreeEntry* pTreeEntry = m_pGraphObjsIdxTree->findEntry(i_strKeyInTree);
     if( pTreeEntry != nullptr )
     {
         pGraphObj = dynamic_cast<CGraphObj*>(pTreeEntry);
@@ -6640,7 +6636,7 @@ void CDrawingScene::emit_graphObjRenamed(
 }
 
 //------------------------------------------------------------------------------
-void CDrawingScene::emit_graphObjDestroyed(const QString& i_strKeyInTree)
+void CDrawingScene::emit_graphObjAboutToBeDestroyed(const QString& i_strKeyInTree)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -6650,8 +6646,8 @@ void CDrawingScene::emit_graphObjDestroyed(const QString& i_strKeyInTree)
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "emit_graphObjDestroyed",
+        /* strMethod    */ "emit_graphObjAboutToBeDestroyed",
         /* strAddInfo   */ strMthInArgs );
 
-    emit graphObjDestroyed(i_strKeyInTree);
+    emit graphObjAboutToBeDestroyed(i_strKeyInTree);
 }

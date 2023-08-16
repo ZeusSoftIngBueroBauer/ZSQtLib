@@ -1486,30 +1486,26 @@ void CModelIdxTree::setIsSelected(
         /* strMethodInArgs    */ strMthInArgs );
     #endif
 
-    if( i_pModelTreeEntry == nullptr )
+    if (i_pModelTreeEntry == nullptr)
     {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange, "i_pModelTreeEntry == nullptr");
     }
 
-    CModelIdxTreeEntry* pModelTreeEntry;
-    int                 idxModelTreeEntry;
-
-    if( i_bRecursive )
+    if (i_bRecursive)
     {
         if( i_pModelTreeEntry->isRoot() || i_pModelTreeEntry->isBranch() )
         {
             CModelIdxTreeEntry* pModelBranch = i_pModelTreeEntry;
 
-            for( idxModelTreeEntry = 0; idxModelTreeEntry < pModelBranch->count(); ++idxModelTreeEntry )
+            for( int idxModelTreeEntry = 0; idxModelTreeEntry < pModelBranch->count(); ++idxModelTreeEntry )
             {
-                pModelTreeEntry = pModelBranch->at(idxModelTreeEntry);
-
+                CModelIdxTreeEntry* pModelTreeEntry = pModelBranch->at(idxModelTreeEntry);
                 setIsSelected(pModelTreeEntry, i_bIsSelected, i_bRecursive);
             }
         }
-    } // if( i_bRecursive )
+    }
 
-    if( i_pModelTreeEntry->isSelected() != i_bIsSelected )
+    if (i_pModelTreeEntry->isSelected() != i_bIsSelected)
     {
         i_pModelTreeEntry->setIsSelected(i_bIsSelected);
 

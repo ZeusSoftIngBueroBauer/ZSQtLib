@@ -26,27 +26,18 @@ may result in using the software modules.
 
 #include "ZSDraw/GraphObjWdgts/ZSDrawGraphObjPropertiesLabelsWdgt.h"
 #include "ZSDraw/GraphObjs/ZSDrawGraphObj.h"
-//#include "ZSDraw/Drawing/ZSDrawingScene.h"
-//#include "ZSSys/ZSSysErrResult.h"
-//#include "ZSSys/ZSSysException.h"
+#include "ZSDraw/Drawing/ZSDrawingScene.h"
+#include "ZSSysGUI/ZSSysGUIDllMain.h"
+#include "ZSSys/ZSSysRefCountGuard.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
 
-//#include <QtCore/qglobal.h>
-//#include <QtCore/qtimer.h>
-//#include <QtGui/qbitmap.h>
-//#include <QtGui/qpainter.h>
-
 #if QT_VERSION < 0x050000
-//#include <QtGui/qapplication.h>
-//#include <QtGui/qcheckbox.h>
 #include <QtGui/qlabel.h>
 #include <QtGui/qlayout.h>
 #include <QtGui/qlineedit.h>
 #else
-//#include <QtWidgets/qapplication.h>
-//#include <QtWidgets/qcheckbox.h>
 #include <QtWidgets/qlabel.h>
 #include <QtWidgets/qlayout.h>
 #include <QtWidgets/qlineedit.h>
@@ -72,35 +63,27 @@ CWdgtGraphObjPropertiesLabels::CWdgtGraphObjPropertiesLabels(
     CDrawingScene* i_pDrawingScene,
     const QString& i_strParentClassName,
     const QString& i_strObjName,
-    EMode i_mode,
     QWidget* i_pWdgtParent) :
 //------------------------------------------------------------------------------
-    CWdgtGraphObjPropertiesAbstract(i_pDrawingScene, i_strParentClassName + "::" + ClassName(), i_strObjName, i_mode, i_pWdgtParent),
+    CWdgtGraphObjPropertiesAbstract(i_pDrawingScene, i_strParentClassName + "::" + ClassName(), i_strObjName, i_pWdgtParent),
     m_pLblHeadLine(nullptr),
-    m_pLytName(nullptr),
+    m_pLytLineName(nullptr),
     m_pLblName(nullptr),
     m_pEdtName(nullptr),
-    m_pLytPath(nullptr),
-    m_pLblPath(nullptr),
-    m_pEdtPath(nullptr),
-    m_pLytDescription(nullptr),
+    m_pLblNameError(nullptr),
+    m_pLytLineDescription(nullptr),
     m_pLblDescription(nullptr),
     m_pEdtDescription(nullptr),
     // Trace
     m_pTrcAdminObj(nullptr)
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = CEnumMode(i_mode).toString();
-    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ctor",
-        /* strAddInfo   */ strMthInArgs );
+        /* strAddInfo   */ "" );
 
     int cxLblWidth = 60;
-    //int cxEdtWidth = 80;
 
     QFont fntHeadLine;
 
@@ -114,53 +97,46 @@ CWdgtGraphObjPropertiesLabels::CWdgtGraphObjPropertiesLabels(
     // <Line> Name
     //============
 
-    m_pLytName = new QHBoxLayout();
-    m_pLyt->addLayout(m_pLytName);
+    m_pLytLineName = new QHBoxLayout();
+    m_pLyt->addLayout(m_pLytLineName);
 
     // <LineEdit> Name
     //----------------
 
     m_pLblName = new QLabel("Name:");
     m_pLblName->setFixedWidth(cxLblWidth);
-    m_pLytName->addWidget(m_pLblName);
+    m_pLytLineName->addWidget(m_pLblName);
     m_pEdtName = new QLineEdit();
-    m_pLytName->addWidget(m_pEdtName);
+    m_pLytLineName->addWidget(m_pEdtName, 1);
+    m_pLblNameError = new QLabel();
+    m_pLblNameError->setToolTip("Name is not unique.");
+    QPixmap pxmErr = ZS::System::GUI::getErrPixmap(EResultSeverityError, QSize(20,20));
+    m_pLblNameError->setPixmap(pxmErr);
+    m_pLblNameError->hide();
+    m_pLytLineName->addWidget(m_pLblNameError);
 
-    // <Line> Path
-    //============
-
-    m_pLytPath = new QHBoxLayout();
-    m_pLyt->addLayout(m_pLytPath);
-
-    // <LineEdit> Path
-    //----------------
-
-    m_pLblPath = new QLabel("Path:");
-    m_pLblPath->setFixedWidth(cxLblWidth);
-    m_pLytPath->addWidget(m_pLblPath);
-    m_pEdtPath = new QLineEdit();
-    m_pEdtPath->setEnabled(false);
-    m_pLytPath->addWidget(m_pEdtPath);
+    QObject::connect(
+        m_pEdtName, &QLineEdit::textChanged,
+        this, &CWdgtGraphObjPropertiesLabels::onEdtNameTextChanged);
 
     // <Line> Description
     //===================
 
-    m_pLytDescription = new QHBoxLayout();
-    m_pLyt->addLayout(m_pLytDescription);
+    m_pLytLineDescription = new QHBoxLayout();
+    m_pLyt->addLayout(m_pLytLineDescription);
 
     // <LineEdit> Path
     //----------------
 
     m_pLblDescription = new QLabel("Description:");
     m_pLblDescription->setFixedWidth(cxLblWidth);
-    m_pLytDescription->addWidget(m_pLblDescription);
+    m_pLytLineDescription->addWidget(m_pLblDescription);
     m_pEdtDescription = new QLineEdit();
-    m_pLytDescription->addWidget(m_pEdtDescription);
+    m_pLytLineDescription->addWidget(m_pEdtDescription);
 
-    // Set Mode
-    //---------
-
-    setMode(i_mode);
+    QObject::connect(
+        m_pEdtDescription, &QLineEdit::textChanged,
+        this, &CWdgtGraphObjPropertiesLabels::onEdtDescriptionTextChanged);
 
 } // ctor
 
@@ -175,127 +151,13 @@ CWdgtGraphObjPropertiesLabels::~CWdgtGraphObjPropertiesLabels()
         /* strAddInfo   */ "" );
 
     m_pLblHeadLine = nullptr;
-    m_pLytName = nullptr;
+    m_pLytLineName = nullptr;
     m_pLblName = nullptr;
     m_pEdtName = nullptr;
-    m_pLytPath = nullptr;
-    m_pLblPath = nullptr;
-    m_pEdtPath = nullptr;
-    m_pLytDescription = nullptr;
+    m_pLblNameError = nullptr;
+    m_pLytLineDescription = nullptr;
     m_pLblDescription = nullptr;
     m_pEdtDescription = nullptr;
-
-} // dtor
-
-/*==============================================================================
-public: // overridables of base class CWdgtGraphObjPropertiesAbstract
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-bool CWdgtGraphObjPropertiesLabels::hasChanges() const
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "hasChanges",
-        /* strAddInfo   */ "" );
-
-    bool bHasChanges = false;
-
-    if (m_pGraphObj != nullptr)
-    {
-        if( m_pGraphObj->name() != m_pEdtName->text() )
-        {
-            bHasChanges = true;
-        }
-        else if( m_pGraphObj->path() != m_pEdtPath->text() )
-        {
-            bHasChanges = true;
-        }
-        else if( m_pGraphObj->getDescription() != m_pEdtDescription->text() )
-        {
-            bHasChanges = true;
-        }
-    }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(bHasChanges);
-    }
-    return bHasChanges;
-}
-
-//------------------------------------------------------------------------------
-void CWdgtGraphObjPropertiesLabels::acceptChanges()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "acceptChanges",
-        /* strAddInfo   */ "" );
-
-    if (m_pGraphObj != nullptr)
-    {
-        if( m_pEdtName->text() != m_pGraphObj->name() )
-        {
-            m_pGraphObj->rename(m_pEdtName->text());
-        }
-        if( m_pEdtDescription->text() != m_pGraphObj->getDescription() )
-        {
-            m_pGraphObj->setDescription(m_pEdtDescription->text());
-        }
-    }
-}
-
-//------------------------------------------------------------------------------
-void CWdgtGraphObjPropertiesLabels::rejectChanges()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "rejectChanges",
-        /* strAddInfo   */ "" );
-
-    if (m_pGraphObj != nullptr)
-    {
-        m_pEdtName->setText("");
-        m_pEdtPath->setText("");
-        m_pEdtDescription->setText("");
-    }
-}
-
-/*==============================================================================
-public: // overridables of base class CWdgtGraphObjPropertiesAbstract
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CWdgtGraphObjPropertiesLabels::setMode(EMode i_mode)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = CEnumMode(i_mode).toString();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setMode",
-        /* strAddInfo   */ strMthInArgs );
-
-    if (m_mode != i_mode)
-    {
-        // Don't take over mode to member as base class method is also called and also needs
-        // to check whether the mode has been changed to modify the edit button widget.
-        if (i_mode == EMode::Edit)
-        {
-        }
-        else // if (i_mode == EMode::View)
-        {
-        }
-    }
-
-    CWdgtGraphObjPropertiesAbstract::setMode(i_mode);
 }
 
 /*==============================================================================
@@ -316,9 +178,187 @@ void CWdgtGraphObjPropertiesLabels::setKeyInTree(const QString& i_strKeyInTree)
         /* strMethod    */ "setKeyInTree",
         /* strAddInfo   */ strMthInArgs );
 
-    CWdgtGraphObjPropertiesAbstract::setKeyInTree(i_strKeyInTree);
+    if (m_strKeyInTree != i_strKeyInTree)
+    {
+        CWdgtGraphObjPropertiesAbstract::setKeyInTree(i_strKeyInTree);
 
-    onGraphObjChanged();
+        if (m_pGraphObj == nullptr)
+        {
+            m_pEdtName->setText("");
+            m_pEdtDescription->setText("");
+        }
+        else
+        {
+            m_pEdtName->setText(m_pGraphObj->name());
+            m_pEdtDescription->setText(m_pGraphObj->getDescription());
+        }
+    }
+}
+
+/*==============================================================================
+public: // overridables of base class CWdgtGraphObjPropertiesAbstract
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+bool CWdgtGraphObjPropertiesLabels::hasErrors() const
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "hasErrors",
+        /* strAddInfo   */ "" );
+
+    bool bHasErrors = false;
+    if (!changedNameIsUnique()) {
+        bHasErrors = true;
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(bHasErrors);
+    }
+    return bHasErrors;
+}
+
+//------------------------------------------------------------------------------
+bool CWdgtGraphObjPropertiesLabels::hasChanges() const
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "hasChanges",
+        /* strAddInfo   */ "" );
+
+    bool bHasChanges = false;
+
+    if (m_pGraphObj != nullptr) {
+        if (m_pGraphObj->name() != m_pEdtName->text()) {
+            bHasChanges = true;
+        }
+        else if (m_pGraphObj->getDescription() != m_pEdtDescription->text()) {
+            bHasChanges = true;
+        }
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(bHasChanges);
+    }
+    return bHasChanges;
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjPropertiesLabels::acceptChanges()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "acceptChanges",
+        /* strAddInfo   */ "" );
+
+    CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
+
+    if (m_pGraphObj != nullptr && !hasErrors())
+    {
+        m_pGraphObj->rename(m_pEdtName->text());
+        m_pGraphObj->setDescription(m_pEdtDescription->text());
+    }
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjPropertiesLabels::rejectChanges()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "rejectChanges",
+        /* strAddInfo   */ "" );
+
+    if (m_pGraphObj == nullptr)
+    {
+        m_pEdtName->setText("");
+        m_pEdtDescription->setText("");
+    }
+    else
+    {
+        m_pEdtName->setText(m_pGraphObj->name());
+        m_pEdtDescription->setText(m_pGraphObj->getDescription());
+    }
+}
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjPropertiesLabels::onEdtNameTextChanged(const QString& i_strText)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strText;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onEdtNameTextChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (changedNameIsUnique()) {
+        m_pLblNameError->hide();
+    }
+    else {
+        m_pLblNameError->show();
+    }
+    emit_propertyChanged();
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjPropertiesLabels::onEdtDescriptionTextChanged(const QString& i_strText)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strText;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onEdtDescriptionTextChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    emit_propertyChanged();
+}
+
+/*==============================================================================
+protected: // auxiliary instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+bool CWdgtGraphObjPropertiesLabels::changedNameIsUnique() const
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "changedNameIsUnique",
+        /* strAddInfo   */ "" );
+
+    bool bIsUnique = true;
+
+    if (m_pGraphObj != nullptr) {
+        QString strParentBranchPath = m_pGraphObj->parentBranchPath();
+        QString strNewKeyInTree = m_pDrawingScene->getGraphObjsIdxTree()->buildKeyInTreeStr(
+            m_pGraphObj->entryTypeSymbol(), strParentBranchPath, m_pEdtName->text());
+        if (strNewKeyInTree != m_strKeyInTree) {
+            bIsUnique = (m_pDrawingScene->findGraphObj(strNewKeyInTree) == nullptr);
+        }
+    }
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(bIsUnique);
+    }
+    return bIsUnique;
 }
 
 /*==============================================================================
@@ -329,28 +369,44 @@ protected: // must overridables of base class CWdgtFormatGraphObjs
 void CWdgtGraphObjPropertiesLabels::onGraphObjChanged()
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-    }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onGraphObjChanged",
-        /* strAddInfo   */ strMthInArgs );
+        /* strAddInfo   */ "" );
+}
 
-    if (m_pGraphObj == nullptr)
-    {
-        m_pEdtName->setText("");
-        m_pEdtPath->setText("");
-        m_pEdtDescription->setText("");
-    }
-    else
-    {
-        m_pEdtName->setText(m_pGraphObj->name());
-        m_pEdtPath->setText(m_pGraphObj->path());
-        m_pEdtDescription->setText(m_pGraphObj->getDescription());
-    }
+//------------------------------------------------------------------------------
+void CWdgtGraphObjPropertiesLabels::onGraphObjMoved()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onGraphObjMoved",
+        /* strAddInfo   */ "" );
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjPropertiesLabels::onGraphObjRenamed()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onGraphObjRenamed",
+        /* strAddInfo   */ "" );
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjPropertiesLabels::onGraphObjAboutToDestroyed()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onGraphObjDestroyed",
+        /* strAddInfo   */ "" );
+
+    m_pGraphObj = nullptr;
 }

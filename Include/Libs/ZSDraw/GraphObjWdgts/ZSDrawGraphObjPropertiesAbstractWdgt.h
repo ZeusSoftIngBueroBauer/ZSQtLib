@@ -77,7 +77,6 @@ public: // ctors and dtor
         CDrawingScene* i_pDrawingScene,
         const QString& i_strClassName,
         const QString& i_strObjName,
-        ZS::System::EMode i_mode = ZS::System::EMode::View,
         QWidget* i_pWdgtParent = nullptr);
     virtual ~CWdgtGraphObjPropertiesAbstract();
 protected: // ctor auxiliary methods
@@ -85,25 +84,35 @@ protected: // ctor auxiliary methods
 public: // overridables
     virtual QString nameSpace() const { return CWdgtGraphObjPropertiesAbstract::NameSpace(); }
     virtual QString className() const { return CWdgtGraphObjPropertiesAbstract::ClassName(); }
-public: // overridables of base class CWdgtGraphObjPropertiesAbstract
-    virtual bool hasChanges() const;
-    virtual void acceptChanges();
-    virtual void rejectChanges();
-public: // overridables
-    virtual void setMode(ZS::System::EMode i_mode);
-    ZS::System::EMode mode() const;
+signals:
+    void propertyChanged();
 public: // overridables
     virtual void setKeyInTree(const QString& i_strKeyInTree);
     QString getKeyInTree() const;
+public: // overridables of base class CWdgtGraphObjPropertiesAbstract
+    virtual bool hasErrors() const;
+    virtual bool hasChanges() const;
+    virtual void acceptChanges();
+    virtual void rejectChanges();
 protected slots: // overridables
-    virtual void onBtnEditClicked(bool i_bChecked = false);
+    virtual void onBtnApplyClicked(bool i_bChecked = false);
+    virtual void onBtnResetClicked(bool i_bChecked = false);
+protected: // overridables
+    virtual void updateButtonsEnabled();
 protected: // overridables
     virtual void onGraphObjChanged();
+    virtual void onGraphObjMoved();
+    virtual void onGraphObjRenamed();
+    virtual void onGraphObjAboutToDestroyed();
 private slots:
     void onDrawingSceneGraphObjChanged(const QString& i_strKeyInTree);
+    void onDrawingSceneGraphObjMoved(const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree, const QString& i_strKeyInTreeOfTargetBranch);
+    void onDrawingSceneGraphObjRenamed(const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree, const QString& i_strOrigName);
+    void onDrawingSceneGraphObjAboutToBeDestroyed(const QString& i_strKeyInTree);
+protected: // instance methods (tracing emitting signals)
+    void emit_propertyChanged();
 protected: // instance members
     CDrawingScene* m_pDrawingScene;
-    ZS::System::EMode m_mode;
     QString m_strKeyInTree;
     CGraphObj* m_pGraphObj;
     int m_cxLblWidthClm1;
@@ -118,7 +127,8 @@ protected: // instance members
     // Button Line
     QWidget* m_pWdgtButtons;
     QHBoxLayout* m_pLytWdgtButtons;
-    QPushButton* m_pBtnEdit;
+    QPushButton* m_pBtnApply;
+    QPushButton* m_pBtnReset;
     /*!< Trace admin object for method tracing. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
