@@ -117,7 +117,7 @@ QString CPushButton::text() const
 }
 
 //------------------------------------------------------------------------------
-void CPushButton::setPixmap( const QPixmap& i_pxm )
+void CPushButton::setPixmap(const QPixmap& i_pxm)
 //------------------------------------------------------------------------------
 {
     m_pLabel->setPixmap(i_pxm);
@@ -135,14 +135,14 @@ QPixmap CPushButton::pixmap() const
 }
 
 //------------------------------------------------------------------------------
-void CPushButton::setScaledContents ( bool i_bScaled )
+void CPushButton::setScaledContents(bool i_bScaled)
 //------------------------------------------------------------------------------
 {
     m_pLabel->setScaledContents(i_bScaled);
 }
 
 //------------------------------------------------------------------------------
-bool CPushButton::hasScaledContents () const
+bool CPushButton::hasScaledContents() const
 //------------------------------------------------------------------------------
 {
     return m_pLabel->hasScaledContents();
@@ -156,27 +156,21 @@ public: // overridables of base class QWidget
 QSize CPushButton::sizeHint() const
 //------------------------------------------------------------------------------
 {
-    QSize size;
-    int   iLeft;
-    int   iTop;
-    int   iRight;
-    int   iBottom;
-
-    size = m_pLabel->sizeHint();
+    QSize size = m_pLabel->sizeHint();
 
     #if QT_VERSION >= 0x040600
     QMargins margins = contentsMargins();
-    iLeft = margins.left();
-    iTop = margins.top();
-    iRight = margins.right();
-    iBottom = margins.bottom();
+    int iLeft = margins.left();
+    int iTop = margins.top();
+    int iRight = margins.right();
+    int iBottom = margins.bottom();
     #else
+    int iLeft, iTop, iRight, iBottom;
     layout()->getContentsMargins(&iLeft,&iTop,&iRight,&iBottom);
     #endif
 
-    size.setWidth( size.width() + iLeft + iRight );
-    size.setHeight( size.height() + iTop + iBottom );
+    size.setWidth(size.width() + iLeft + iRight);
+    size.setHeight(size.height() + iTop + iBottom);
 
     return size;
-
-} // sizeHint
+}

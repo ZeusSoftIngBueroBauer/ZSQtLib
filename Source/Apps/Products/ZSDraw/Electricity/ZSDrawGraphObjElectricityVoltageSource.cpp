@@ -383,7 +383,7 @@ void CGraphObjVoltageSource::setVoltage( double i_fVoltage_V )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = "Voltage:" + QString::number(i_fVoltage_V) + " V";
     }
@@ -399,7 +399,7 @@ void CGraphObjVoltageSource::setVoltage( double i_fVoltage_V )
     {
         m_fVoltage_V = i_fVoltage_V;
 
-        setDescription(QString::number(m_fVoltage_V) + " V");
+        //setDescription(QString::number(m_fVoltage_V) + " V");
     }
 } // setVoltage
 
@@ -411,21 +411,21 @@ public: // instance methods
 void CGraphObjVoltageSource::showVoltage( ESelectionPoint i_selPtPos )
 //------------------------------------------------------------------------------
 {
-    showDescriptionLabel(i_selPtPos);
+    //showDescriptionLabel(i_selPtPos);
 }
 
 //------------------------------------------------------------------------------
 void CGraphObjVoltageSource::hideVoltage()
 //------------------------------------------------------------------------------
 {
-    hideDescriptionLabel();
+    //hideDescriptionLabel();
 }
 
 //------------------------------------------------------------------------------
 bool CGraphObjVoltageSource::isVoltageVisible( ESelectionPoint i_selPtPos ) const
 //------------------------------------------------------------------------------
 {
-    return isDescriptionLabelVisible(i_selPtPos);
+    return false; //isDescriptionLabelVisible(i_selPtPos);
 }
 
 /*==============================================================================
@@ -494,7 +494,7 @@ void CGraphObjVoltageSource::onDrawSettingsChanged()
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
     }
 

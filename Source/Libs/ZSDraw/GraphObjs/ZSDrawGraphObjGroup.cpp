@@ -384,7 +384,7 @@ void CGraphObjGroup::setWidth( double i_fWidth )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "Width:" + QString::number(i_fWidth);
     }
@@ -406,7 +406,7 @@ void CGraphObjGroup::setHeight( double i_fHeight )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "Height:" + QString::number(i_fHeight);
     }
@@ -428,7 +428,7 @@ void CGraphObjGroup::setSize( double i_fWidth, double i_fHeight )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs  = "Width:" + QString::number(i_fWidth);
         strMthInArgs += ", Height:" + QString::number(i_fHeight);
@@ -506,7 +506,7 @@ void CGraphObjGroup::setSize( const QSizeF& i_size )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs  = "Width:" + QString::number(i_size.width());
         strMthInArgs += ", Height:" + QString::number(i_size.height());
@@ -534,7 +534,7 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
     QString strMthInArgs;
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
     }
 
@@ -2590,7 +2590,7 @@ void CGraphObjGroup::setIsHit( bool i_bHit )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "Hit:" + bool2Str(i_bHit);
     }
@@ -2724,7 +2724,7 @@ void CGraphObjGroup::setCursor( const QCursor& i_cursor )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = qCursorShape2Str(i_cursor.shape());
     }
@@ -2750,7 +2750,7 @@ void CGraphObjGroup::showSelectionPoints( unsigned char i_selPts )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = selectionPoints2Str(i_selPts);
     }
@@ -2774,7 +2774,7 @@ void CGraphObjGroup::updateSelectionPoints( unsigned char i_selPts )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = selectionPoints2Str(i_selPts);
     }
@@ -2803,7 +2803,7 @@ void CGraphObjGroup::onParentItemCoorsHasChanged( CGraphObj* i_pGraphObjParent )
     QString strMthInArgs;
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = QString(i_pGraphObjParent == nullptr ? "nullptr" : i_pGraphObjParent->path());
     }
@@ -3965,7 +3965,7 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
     QString strAddTrcInfo;
     QString strMthReturn;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "Changed:" + qGraphicsItemChange2Str(i_change);
 

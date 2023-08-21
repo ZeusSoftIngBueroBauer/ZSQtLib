@@ -541,7 +541,7 @@ void CGraphObjTransistor::setDopingType( EDopingType i_type )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = "Type:" + DopingType2Str(i_type);
     }
@@ -585,7 +585,7 @@ void CGraphObjTransistor::setDopingType( EDopingType i_type )
         m_pLinBaseUp->setDrawSettings(drawSettingsLineBaseUp);
         m_pLinBaseDn->setDrawSettings(drawSettingsLineBaseDn);
 
-        setDescription( DopingType2Str(m_dopingType) );
+        //setDescription( DopingType2Str(m_dopingType) );
 
     } // if( m_dopingType != i_type )
 
@@ -599,21 +599,21 @@ public: // instance methods
 void CGraphObjTransistor::showDopingType( ESelectionPoint i_selPtPos )
 //------------------------------------------------------------------------------
 {
-    showDescriptionLabel(i_selPtPos);
+    //showDescriptionLabel(i_selPtPos);
 }
 
 //------------------------------------------------------------------------------
 void CGraphObjTransistor::hideDopingType()
 //------------------------------------------------------------------------------
 {
-    hideDescriptionLabel();
+    //hideDescriptionLabel();
 }
 
 //------------------------------------------------------------------------------
 bool CGraphObjTransistor::isDopingTypeVisible( ESelectionPoint i_selPtPos ) const
 //------------------------------------------------------------------------------
 {
-    return isDescriptionLabelVisible(i_selPtPos);
+    return false; //isDescriptionLabelVisible(i_selPtPos);
 }
 
 /*==============================================================================
@@ -682,7 +682,7 @@ void CGraphObjTransistor::onDrawSettingsChanged()
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
     }
 

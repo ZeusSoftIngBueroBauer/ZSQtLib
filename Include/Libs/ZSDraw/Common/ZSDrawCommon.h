@@ -355,31 +355,33 @@ enum class ESelectionPoint
 //==============================================================================
 {
     None          =  0,
-    TopLeft       =  1, // =  RectMin = CornerMin
-    RectMin       = TopLeft,
-    CornerMin     = TopLeft,
+    TopLeft       =  1, /*!< Also used to select the StartPoint of a line. */
     TopRight      =  2,
-    BottomRight   =  3,
-    BottomLeft    =  4, // = CornerMax
-    CornerMax     = BottomLeft,
-    TopCenter     =  5, // = LineCenterMin
-    LineCenterMin = TopCenter,
+    BottomRight   =  3, /*!< Also used to select the EndPoint of a line. */
+    BottomLeft    =  4,
+    TopCenter     =  5,
     RightCenter   =  6,
     BottomCenter  =  7,
-    LeftCenter    =  8, // = RectMax = LineCenterMax
-    RectMax       = LeftCenter,
-    LineCenterMax = LeftCenter,
+    LeftCenter    =  8,
     Center        =  9,
-    RotateTop     = 10, // = RotateMin
-    RotateMin     = RotateTop,
-    RotateBottom  = 11, // = RotateMax
-    RotateMax     = RotateBottom,
-    All           = 12,
-    Any           = 13
+    RotateTop     = 10,
+    RotateBottom  = 11,
+    PolygonPoint  = 12,
+    All           = 13,
+    Any           = 14
 };
 
 template class ZSDRAWDLL_API ZS::System::CEnum<ESelectionPoint>;
 typedef ZS::System::CEnum<ESelectionPoint> CEnumSelectionPoint;
+
+const int ESelectionPointRectMin = static_cast<int>(ESelectionPoint::TopLeft);
+const int ESelectionPointCornerMin = static_cast<int>(ESelectionPoint::TopLeft);
+const int ESelectionPointCornerMax = static_cast<int>(ESelectionPoint::BottomLeft);
+const int ESelectionPointLineCenterMin = static_cast<int>(ESelectionPoint::TopCenter);
+const int ESelectionPointRectMax = static_cast<int>(ESelectionPoint::LeftCenter);
+const int ESelectionPointLineCenterMax = static_cast<int>(ESelectionPoint::LeftCenter);
+const int ESelectionPointRotateMin = static_cast<int>(ESelectionPoint::RotateTop);
+const int ESelectionPointRotateMax = static_cast<int>(ESelectionPoint::RotateBottom);
 
 ZSDRAWDLL_API void setSelectionPointRotateDistance( double i_fDist_px );
 ZSDRAWDLL_API double getSelectionPointRotateDistance();

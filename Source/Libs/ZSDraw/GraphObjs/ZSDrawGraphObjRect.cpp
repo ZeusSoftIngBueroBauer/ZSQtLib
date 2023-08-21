@@ -233,7 +233,7 @@ void CGraphObjRect::setRect( const QRectF& i_rct )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = "Rect:" + rect2Str(i_rct);
     }
@@ -353,7 +353,7 @@ void CGraphObjRect::setWidth( double i_fWidth )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = "Width:" + QString::number(i_fWidth);
     }
@@ -375,7 +375,7 @@ void CGraphObjRect::setHeight( double i_fHeight )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = "Height:" + QString::number(i_fHeight);
     }
@@ -397,7 +397,7 @@ void CGraphObjRect::setSize( double i_fWidth, double i_fHeight )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo  = "Width:" + QString::number(i_fWidth);
         strAddTrcInfo += ", Height:" + QString::number(i_fHeight);
@@ -463,7 +463,7 @@ void CGraphObjRect::setSize( const QSizeF& i_size )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo  = "Width:" + QString::number(i_size.width());
         strAddTrcInfo += ", Height:" + QString::number(i_size.height());
@@ -490,7 +490,7 @@ void CGraphObjRect::setIsHit( bool i_bHit )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = "Hit:" + bool2Str(i_bHit);
     }
@@ -619,7 +619,7 @@ void CGraphObjRect::setCursor( const QCursor& i_cursor )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = qCursorShape2Str(i_cursor.shape());
     }
@@ -645,7 +645,7 @@ void CGraphObjRect::showSelectionPoints( unsigned char i_selPts )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = "SelectionPoints:" + selectionPoints2Str(i_selPts);
     }
@@ -669,7 +669,7 @@ void CGraphObjRect::updateSelectionPoints( unsigned char i_selPts )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = "SelectionPoints:" + selectionPoints2Str(i_selPts);
     }
@@ -1635,7 +1635,7 @@ QVariant CGraphObjRect::itemChange( GraphicsItemChange i_change, const QVariant&
 
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = "Changed:" + qGraphicsItemChange2Str(i_change);
 

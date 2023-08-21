@@ -240,7 +240,7 @@ void CGraphObjText::setHtml( const QString& i_strText )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = i_strText;
     }
@@ -271,7 +271,7 @@ void CGraphObjText::setPlainText( const QString& i_strText )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = i_strText;
     }
@@ -385,7 +385,7 @@ void CGraphObjText::setIsHit( bool i_bHit )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = "Hit:" + bool2Str(i_bHit);
     }
@@ -533,7 +533,7 @@ void CGraphObjText::setCursor( const QCursor& i_cursor )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = qCursorShape2Str(i_cursor.shape());
     }
@@ -559,7 +559,7 @@ void CGraphObjText::showSelectionPoints( unsigned char i_selPts )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = "SelectionPoints:" + selectionPoints2Str(i_selPts);
     }
@@ -585,7 +585,7 @@ void CGraphObjText::updateSelectionPoints( unsigned char i_selPts )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = "SelectionPoints:" + selectionPoints2Str(i_selPts);
     }
@@ -1696,7 +1696,7 @@ QVariant CGraphObjText::itemChange( GraphicsItemChange i_change, const QVariant&
 
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = "Changed:" + qGraphicsItemChange2Str(i_change);
 

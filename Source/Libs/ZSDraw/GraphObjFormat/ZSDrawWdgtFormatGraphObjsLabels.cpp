@@ -79,12 +79,6 @@ CWdgtFormatGraphObjsLabels::CWdgtFormatGraphObjsLabels(
     m_pLytName(nullptr),
     m_pLblName(nullptr),
     m_pEdtName(nullptr),
-    m_pLytPath(nullptr),
-    m_pLblPath(nullptr),
-    m_pEdtPath(nullptr),
-    m_pLytDescription(nullptr),
-    m_pLblDescription(nullptr),
-    m_pEdtDescription(nullptr),
     // Trace
     m_pTrcAdminObj(nullptr)
 {
@@ -136,37 +130,6 @@ CWdgtFormatGraphObjsLabels::CWdgtFormatGraphObjsLabels(
     m_pEdtName = new QLineEdit();
     m_pLytName->addWidget(m_pEdtName);
 
-    // <Line> Path
-    //============
-
-    m_pLytPath = new QHBoxLayout();
-    m_pLyt->addLayout(m_pLytPath);
-
-    // <LineEdit> Path
-    //----------------
-
-    m_pLblPath = new QLabel("Path:");
-    m_pLblPath->setFixedWidth(cxLblWidth);
-    m_pLytPath->addWidget(m_pLblPath);
-    m_pEdtPath = new QLineEdit();
-    m_pEdtPath->setEnabled(false);
-    m_pLytPath->addWidget(m_pEdtPath);
-
-    // <Line> Description
-    //===================
-
-    m_pLytDescription = new QHBoxLayout();
-    m_pLyt->addLayout(m_pLytDescription);
-
-    // <LineEdit> Path
-    //----------------
-
-    m_pLblDescription = new QLabel("Description:");
-    m_pLblDescription->setFixedWidth(cxLblWidth);
-    m_pLytDescription->addWidget(m_pLblDescription);
-    m_pEdtDescription = new QLineEdit();
-    m_pLytDescription->addWidget(m_pEdtDescription);
-
     // Set settings at GUI controls
     //-----------------------------
 
@@ -206,12 +169,6 @@ CWdgtFormatGraphObjsLabels::~CWdgtFormatGraphObjsLabels()
     m_pLytName = nullptr;
     m_pLblName = nullptr;
     m_pEdtName = nullptr;
-    m_pLytPath = nullptr;
-    m_pLblPath = nullptr;
-    m_pEdtPath = nullptr;
-    m_pLytDescription = nullptr;
-    m_pLblDescription = nullptr;
-    m_pEdtDescription = nullptr;
 
     // Trace
     m_pTrcAdminObj = nullptr;
@@ -255,10 +212,6 @@ void CWdgtFormatGraphObjsLabels::applyChanges()
         {
             m_pGraphObj->rename(m_pEdtName->text());
         }
-        if( m_pEdtDescription->text() != m_pGraphObj->getDescription() )
-        {
-            m_pGraphObj->setDescription(m_pEdtDescription->text());
-        }
     }
 
     // At the end update the user controls with the last changes from the graphical object.
@@ -292,8 +245,6 @@ void CWdgtFormatGraphObjsLabels::resetChanges()
     if( m_pGraphObj == nullptr )
     {
         m_pEdtName->setText("");
-        m_pEdtPath->setText("");
-        m_pEdtDescription->setText("");
     }
     else // if( m_pGraphObj != nullptr )
     {
@@ -323,14 +274,6 @@ bool CWdgtFormatGraphObjsLabels::hasChanges() const
     if( m_pGraphObj != nullptr )
     {
         if( m_pGraphObj->name() != m_pEdtName->text() )
-        {
-            bHasChanges = true;
-        }
-        else if( m_pGraphObj->path() != m_pEdtPath->text() )
-        {
-            bHasChanges = true;
-        }
-        else if( m_pGraphObj->getDescription() != m_pEdtDescription->text() )
         {
             bHasChanges = true;
         }
@@ -368,13 +311,5 @@ void CWdgtFormatGraphObjsLabels::onGraphObjChanged()
     if( m_pEdtName->text() != m_pGraphObj->name() )
     {
         m_pEdtName->setText(m_pGraphObj->name());
-    }
-    if( m_pEdtPath->text() != m_pGraphObj->path() )
-    {
-        m_pEdtPath->setText(m_pGraphObj->path());
-    }
-    if( m_pEdtDescription->text() != m_pGraphObj->getDescription() )
-    {
-        m_pEdtDescription->setText(m_pGraphObj->getDescription());
     }
 } // onGraphObjChanged

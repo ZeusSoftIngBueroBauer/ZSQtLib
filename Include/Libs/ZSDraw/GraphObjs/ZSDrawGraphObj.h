@@ -63,9 +63,9 @@ public: // struct methods
     bool isPolygonShapePointHit() const;
     bool isLineSegmentHit() const;
 public: // struct methods
-    void setCursor( double i_fGraphObjRotAngle_rad ); // calculated depending on editMode, editResizeMode and selected point (which must have been set before)
+    void setCursor(double i_fGraphObjRotAngle_rad);
 public: // struct members
-    CEnumEditMode       m_editMode;
+    CEnumEditMode m_editMode;
     CEnumEditResizeMode m_editResizeMode;
     CEnumSelectionPoint m_selPtBoundingRect;
     int                 m_idxPolygonShapePoint;
@@ -88,11 +88,7 @@ public: // ctor
         m_fVal(0.0)
     {
     }
-    SGraphObjAlignment(
-        EAlignmentRef i_refChild,
-        EAlignmentRef i_refParent,
-        bool          i_bAbsolute,
-        double        i_fVal = 0.0 ) :
+    SGraphObjAlignment(EAlignmentRef i_refChild, EAlignmentRef i_refParent, bool i_bAbsolute, double i_fVal = 0.0) :
         m_alignmentRefChild(i_refChild),
         m_alignmentRefParent(i_refParent),
         m_bAlignAbsolute(i_bAbsolute),
@@ -104,54 +100,93 @@ public: // struct methods
 public: // struct members
     CEnumAlignmentRef m_alignmentRefChild;
     CEnumAlignmentRef m_alignmentRefParent;
-    bool              m_bAlignAbsolute;
-    double            m_fVal; // if aligned absolute value in pixels, if aligned relative scale factor to width or height of parent (usually ranging from 0..1)
+    bool m_bAlignAbsolute;
+    /*!< If aligned absolute: value in pixels.
+         If aligned relative: scale factor to width or height of parent (usually ranging from 0..1) */
+    double m_fVal;
 
 }; // struct SGraphObjAlignment
 
 
-////==============================================================================
-//struct ZSDRAWDLL_API SGraphObjLabel
-////==============================================================================
-//{
-//public: // ctors
-//    SGraphObjLabel() :
-//        m_strKey(),
-//        m_strText(),
-//        m_selPt(ESelectionPoint::None),
-//        m_sizDist(),
-//        m_bDistValid(false),
-//        m_bVisible(false),
-//        m_bAnchorLineVisible(false),
-//        m_pGraphObjLabel(nullptr)
-//    {
-//    }
-//    SGraphObjLabel( const QString& i_strKey, const QString& i_strText, ESelectionPoint i_selPt = ESelectionPoint::TopCenter ) :
-//        m_strKey(i_strKey),
-//        m_strText(i_strText),
-//        m_selPt(i_selPt),
-//        m_sizDist(),
-//        m_bDistValid(false),
-//        m_bVisible(false),
-//        m_bAnchorLineVisible(false),
-//        m_pGraphObjLabel(nullptr)
-//    {
-//    }
-//public: // struct members
-//    QString             m_strKey;
-//    QString             m_strText;
-//    CEnumSelectionPoint m_selPt;        // Selection point of the parent item the label is aligned to.
-//    QSizeF              m_sizDist;      // Distance between the scene position of the label and selection point of parent item.
-//    bool                m_bDistValid;   // If the graphic item is created for the first time the distance will be calculated and stored for following show events.
-//    bool                m_bVisible;
-//    bool                m_bAnchorLineVisible;
-//    CGraphObjLabel*     m_pGraphObjLabel;
-//
-//}; // struct SGraphObjLabel
-
-
 //******************************************************************************
-class ZSDRAWDLL_API CGraphObj : public ZS::System::CIdxTreeEntry
+/*! @brief Abstract base class for all graphical objects within ZS::Draw.
+
+    Please note that this class is not derived from QGraphicsItem to avoid double
+    inheritance from QGraphicsItem as the specialized classes like CGraphObjLine
+    are derived from specialized QGraphicsItem classes like QQGraphicsLineItem
+    which are already derived from QGraphicsItem.
+
+    Example Inheritance Graph for CGraphObjLine:
+
+      +---------------+     +----------------+
+      | CIdxTreeEntry |     | QGraphicsItem  |
+      +---------------+     +----------------+
+              +                      +
+              |                      |
+      +---------------+    +-------------------+
+      |   CGraphObj   |    | QGraphicsLineItem |
+      +---------------+    +-------------------+
+                 +             +
+                  \           /
+               +-----------------+
+               |  CGraphObjLine  |
+               +-----------------+
+
+    As CGraphObj is derived from CIdxTreeEntry each graphical object can be added
+    to an index tree and can be shown and accessed through a tree view.
+
+    Several labels may be assigned to a graphical object. The labels may be shown
+    within the drawing view. The labels may be anchored to different points of
+    the graphical labels and may be shown within the drawing view. To which points
+    the labels can be anchored depend on the type of the graphical object. For lines
+    for example the labels may be anchored to the start and end point or to the center
+    point of the line. Anchor lines drawn between the labels and the anchor points may
+    also be shown for each label separately. The name of the graphical object is treated
+    as a special label as - in contrary to the other labels - each graphical object
+    must contain a unique name. All other labels are optional.
+
+    Example for CGraphObjLine:
+
+    - Name label "Horizontal Line" anchored to the center point.
+    - Optionally added label "Start" anchored to the start point.
+    - Optionally added label "Stop" anchored to the stop point.
+
+      Start      Horizontal Line    Stop
+        |             |              |
+        ------------------------------
+
+    It is also possible to show the geometry information for the graphical objects
+    within the drawing view.
+
+
+    The following pure virtual methods must be overriden by derived classes:
+
+    - CGraphObj* clone();
+
+    - void setWidth(double i_fWidth);
+
+    - void setHeight(double i_fHeight);
+
+    - void setSize(double i_fWidth, double i_fHeight);
+
+    - void setSize(const QSizeF& i_size);
+
+    - bool hasBoundingRect() const;
+
+    - bool hasLineShapePoints() const;
+
+    - bool hasRotationSelectionPoints() const;
+
+    - void setIsHit(bool i_bHit);
+      To indicate that object is hit by mouse cursor by either showing selection points
+      or a dotted bounding rectangle or ...
+
+    - void showSelectionPoints(unsigned char i_selPts = ESelectionPointsAll);
+      Also creates the selection points if not yet created.
+
+    - void updateSelectionPoints(unsigned char i_selPts = ESelectionPointsAll);
+*/
+ class ZSDRAWDLL_API CGraphObj : public ZS::System::CIdxTreeEntry
 //******************************************************************************
 {
 friend class CGraphObjLabel;
@@ -160,10 +195,6 @@ public: // class methods
     static QString NameSpace() { return "ZS::Draw"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObj"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
-public: // type definitions and constants
-    static const QString c_strKeyLabelName;
-    static const QString c_strKeyLabelPath;
-    static const QString c_strKeyLabelDescription;
 protected: // ctor
     CGraphObj(
         CDrawingScene* i_pDrawingScene,
@@ -201,8 +232,6 @@ public: // instance methods
     CDrawingScene* getDrawingScene() { return m_pDrawingScene; }
 public: // overridables
     virtual void rename( const QString& i_strNameNew );
-    virtual void setDescription( const QString& i_strDescription );
-    virtual QString getDescription() const;
 protected: // overridables of base class CIdxTreeEntry
     virtual void setName( const QString& i_strName ) override;
     virtual void setKeyInTree( const QString& i_strKey ) override;
@@ -220,11 +249,11 @@ public: // instance methods
 public: // instance methods
     CGraphObj* parentGraphObj();
 public: // overridables
-    virtual void onCreateAndExecDlgFormatGraphObjs(); // must be overridden to create a user defined dialog
+    virtual void onCreateAndExecDlgFormatGraphObjs();
 public: // overridables
     virtual void setDrawSettings( const CDrawSettings& i_drawSettings );
     virtual CDrawSettings getDrawSettings() const { return m_drawSettings; }
-    virtual void onDrawSettingsChanged(); // must be overridden to apply the draw settings at the graphics item in derived classes
+    virtual void onDrawSettingsChanged();
 public: // overridables (you must call those methods (instead of e.g. "QGrahicsLineItem::setPen") to keep the settings synchronized with QGraphicsItem attributes)
     virtual void setPenColor( const QColor& i_clr, bool i_bImmediatelyApplySetting = true );
     virtual QColor getPenColor() const { return m_drawSettings.getPenColor(); }
@@ -294,8 +323,6 @@ public: // overridables
     virtual bool hasFixedSize() const;
     virtual QSize getFixedSize() const;
 public: // overridables
-    // The alignments will be adjusted in the order they are added. The order takes effect on the result.
-    // Usually the size should be adjusted before the positions to get relative adjustments working as expected.
     virtual int addAlignment( const SGraphObjAlignment& i_alignment );
     virtual int getAlignmentCount() const;
     virtual SGraphObjAlignment getAlignment( int i_idx ) const;
@@ -326,13 +353,13 @@ public: // overridables
     virtual void setEditResizeMode( EEditResizeMode i_editResizeMode );
 public: // overridables
 public: // must overridables
-    virtual void setIsHit( bool i_bHit ) = 0; // to indicate that object is hit by mouse cursor by either showing selection points or a dotted bounding rectangle or ...
+    virtual void setIsHit( bool i_bHit ) = 0;
 public: // overridables
     virtual bool isHit() const { return m_bIsHit; }
     virtual bool isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) const;
 public: // overridables
-    virtual double bringToFront();                          // returns the new ZValue
-    virtual void setStackingOrderValue( double i_fZValue ); // you must call this method instead of setZValue of QGraphicsItem
+    virtual double bringToFront();
+    virtual void setStackingOrderValue( double i_fZValue );
     double getStackingOrderValue() { return m_fZValue; }
 public: // overridables
     virtual void showBoundingRect();
@@ -342,48 +369,45 @@ public: // overridables
     virtual bool isBoundingRectSelectionPointHit( const QPointF& i_pt, int i_iSelPtsCount, const ESelectionPoint* i_pSelPts, SGraphObjHitInfo* o_pHitInfo ) const;
     virtual bool isPolygonSelectionPointHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) const;
 public: // overridables
-    virtual QPointF getSelectionPointCoors( ESelectionPoint i_selPt ) const; // returns coordinates of selection point in item's coordinate system
+    virtual QPointF getSelectionPointCoors( ESelectionPoint i_selPt ) const;
 protected: // must overridables
-    virtual void showSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) = 0; // also creates the selection points if not yet created
+    virtual void showSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) = 0;
     virtual void updateSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) = 0;
 protected: // overridables
-    virtual void hideSelectionPoints( ESelectionPoints i_selPts = ESelectionPointsAll ); // not just hides but also destroys the selection points
+    virtual void hideSelectionPoints( ESelectionPoints i_selPts = ESelectionPointsAll );
     virtual void bringSelectionPointsToFront( ESelectionPoints i_selPts = ESelectionPointsAll );
 protected: // overridables
-    virtual void showSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned char i_selPts = ESelectionPointsBoundingRectAll );    // creates the selection points if not yet created
+    virtual void showSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned char i_selPts = ESelectionPointsBoundingRectAll );
     virtual void updateSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned char i_selPts = ESelectionPointsBoundingRectAll );
-    virtual void showSelectionPointsOfPolygon( const QPolygonF& i_plg );                                                                // creates the selection points if not yet created
+    virtual void showSelectionPointsOfPolygon( const QPolygonF& i_plg );
     virtual void updateSelectionPointsOfPolygon( const QPolygonF& i_plg );
 public: // overridables
-    virtual void showNameLabel( ESelectionPoint i_selPt = ESelectionPoint::TopCenter );
+    virtual QList<ESelectionPoint> getPossibleLabelAnchorPoints() const;
+public: // overridables
+    virtual void showNameLabel(ESelectionPoint i_selPt = ESelectionPoint::TopCenter);
     virtual void hideNameLabel();
-    virtual bool isNameLabelVisible( ESelectionPoint i_selPt = ESelectionPoint::Any ) const;
+    virtual bool isNameLabelVisible() const;
+    virtual ESelectionPoint nameLabelAnchorPoint() const;
     virtual void showNameLabelAnchorLine();
     virtual void hideNameLabelAnchorLine();
     virtual bool isNameLabelAnchorLineVisible() const;
 public: // overridables
-    virtual void showPathLabel( ESelectionPoint i_selPt = ESelectionPoint::TopCenter );
-    virtual void hidePathLabel();
-    virtual bool isPathLabelVisible( ESelectionPoint i_selPt = ESelectionPoint::Any ) const;
-    virtual void showPathLabelAnchorLine();
-    virtual void hidePathLabelAnchorLine();
-    virtual bool isPathLabelAnchorLineVisible() const;
-public: // overridables
-    virtual void showDescriptionLabel( ESelectionPoint i_selPt = ESelectionPoint::TopCenter );
-    virtual void hideDescriptionLabel();
-    virtual bool isDescriptionLabelVisible( ESelectionPoint i_selPt = ESelectionPoint::Any ) const;
-    virtual void showDescriptionLabelAnchorLine();
-    virtual void hideDescriptionLabelAnchorLine();
-    virtual bool isDescriptionLabelAnchorLineVisible() const;
+    virtual int showLabel(const QString& i_strLabel, ESelectionPoint i_selPt = ESelectionPoint::TopCenter);
+    virtual void hideLabel(int i_idxLabel);
+    virtual bool isLabelVisible(int i_idxLabel) const;
+    virtual ESelectionPoint labelAnchorPoint(int i_idxLabel) const;
+    virtual void showLabelAnchorLine(int i_idxLabel);
+    virtual void hideLabelAnchorLine(int i_idxLabel);
+    virtual bool isLabelAnchorLineVisible(int i_idxLabel) const;
 public: // overridables (KeyLabel = "Position<SelPt>")
-    virtual void showPositionLabel( ESelectionPoint i_selPt = ESelectionPoint::TopLeft );
-    virtual void hidePositionLabel( ESelectionPoint i_selPt = ESelectionPoint::TopLeft );
-    virtual bool isPositionLabelVisible( ESelectionPoint i_selPt = ESelectionPoint::TopLeft ) const;
-    virtual void showPositionLabelAnchorLine( ESelectionPoint i_selPt = ESelectionPoint::TopLeft );
-    virtual void hidePositionLabelAnchorLine( ESelectionPoint i_selPt = ESelectionPoint::TopLeft );
-    virtual bool isPositionLabelAnchorLineVisible( ESelectionPoint i_selPt = ESelectionPoint::TopLeft ) const;
+    virtual void showPositionLabel(ESelectionPoint i_selPt = ESelectionPoint::TopLeft);
+    virtual void hidePositionLabel(ESelectionPoint i_selPt = ESelectionPoint::TopLeft);
+    virtual bool isPositionLabelVisible(ESelectionPoint i_selPt = ESelectionPoint::TopLeft) const;
+    virtual void showPositionLabelAnchorLine(ESelectionPoint i_selPt = ESelectionPoint::TopLeft);
+    virtual void hidePositionLabelAnchorLine(ESelectionPoint i_selPt = ESelectionPoint::TopLeft);
+    virtual bool isPositionLabelAnchorLineVisible(ESelectionPoint i_selPt = ESelectionPoint::TopLeft) const;
 protected: // overridables
-    virtual void updateLabelDistance( CGraphObjLabel* i_pGraphObjLabel );
+    virtual void updateLabelDistance(CGraphObjLabel* i_pGraphObjLabel);
 //public: // overridables
 //    virtual void showLabels(); // also creates the labels if not yet created
 //    virtual void hideLabels(); // not just hides but also destroys the labels
@@ -395,7 +419,7 @@ protected: // overridables
 public: // overridables
     virtual void onParentItemCoorsHasChanged( CGraphObj* /*i_pGraphObjParent*/ ) {}
     virtual void onSelectionPointDestroying( CGraphObjSelectionPoint* i_pSelectionPoint );
-    virtual void onLabelDestroying( CGraphObjLabel* i_pLabel );
+    virtual void onLabelAboutToBeDestroyed( CGraphObjLabel* i_pLabel );
 public: // instance methods (simulation methods)
     void addMousePressEventFunction( TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr );
     void removeMousePressEventFunction( TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr );
@@ -415,70 +439,123 @@ protected: // overridables
     virtual void updateEditInfo();
     virtual void updateLabelPositionsAndContents();
 protected: // overridables
-    virtual void updateLabelPositions( QHash<QString, CGraphObjLabel*>& i_arpLabels );
+    virtual void updateLabelPositions(QList<CGraphObjLabel*>& i_arpLabels);
+    virtual void updateLabelPositions(QHash<QString, CGraphObjLabel*>& i_arpLabels);
     virtual void updatePositionLabelsContent();
-protected: // overridables
-    virtual void showLabel( QHash<QString, CGraphObjLabel*>& i_arpLabels, const QString& i_strKey, const QString& i_strText, ESelectionPoint i_selPt );
-    virtual void hideLabel( QHash<QString, CGraphObjLabel*>& i_arpLabels, const QString& i_strKey );
-    virtual void destroyLabels( QHash<QString, CGraphObjLabel*>& i_arpLabels );
+protected: // auxiliary instance methods
+    void showLabel(QHash<QString, CGraphObjLabel*>& i_arpLabels, const QString& i_strKey, const QString& i_strText, ESelectionPoint i_selPt);
+    void hideLabel(QHash<QString, CGraphObjLabel*>& i_arpLabels, const QString& i_strKey);
+    void destroyLabels();
 protected: // instance methods (trace admin objects for method tracing)
     void createTrcAdminObjs(const QString i_strNameSpace, const QString& i_strClassName, const QString& i_strObjName);
     void releaseTrcAdminObjs();
     void renameTrcAdminObjs(const QString& i_strObjName);
 protected: // instance members
-    bool                              m_bDtorInProgress;
-    CDrawingScene*                    m_pDrawingScene;
-    QString                           m_strFactoryGroupName;
-    EGraphObjType                     m_type;
-    QString                           m_strType;
-    QString                           m_strDescription;
-    CDrawSettings                     m_drawSettings;     // Set by ctor or setSettings. Changed also by graphics items methods "setPen", "setBrush", etc.. Call "updateSettings" before accessing settings to keep this struct up to date with graphics item settings.
-    QSize                             m_sizMinimum;
-    QSize                             m_sizMaximum;
-    QSize                             m_sizFixed;
-    QList<SGraphObjAlignment>         m_arAlignments;
-    bool                              m_bIsHit;
-    CEnumEditMode                     m_editMode;
-    CEnumEditResizeMode               m_editResizeMode;
-    double                            m_fZValue;
-    bool                              m_bBoundRectVisible;
-    int                               m_idxSelPtSelectedPolygon;
-    QList<CGraphObjSelectionPoint*>   m_arpSelPtsPolygon;
-    CEnumSelectionPoint               m_selPtSelectedBoundingRect;
+    /*!< Flag to indicate that the destructor has been called. */
+    bool m_bDtorInProgress;
+    /*!< Pointer to drawing scene the graphical object belongs to. */
+    CDrawingScene* m_pDrawingScene;
+    /*!< Graphical objects are called via factories which must be registered at the drawing scene.
+         Using registered factories allows to also create user defined graphical objects.
+         The name of the factories group name is stored here. */
+    QString m_strFactoryGroupName;
+    /*!< Type of the graphical object. */
+    EGraphObjType m_type;
+    /*!< Type of the graphical object. */
+    QString m_strType;
+    //QString m_strDescription;
+    /*!< Draw settings like pen and brush used to draw the graphical object.
+         Set by ctor or setSettings. Changed also by graphics items methods "setPen", "setBrush", etc..
+         Call "updateSettings" before accessing settings to keep this struct up to date with graphics
+         item settings. */
+    CDrawSettings m_drawSettings;
+    /*!< If valid defines the minimum size of the graphical object. */
+    QSize m_sizMinimum;
+    /*!< If valid defines the maximum size of the graphical object. */
+    QSize m_sizMaximum;
+    /*!< If valid defines the fixed size of the graphical object. */
+    QSize m_sizFixed;
+    /*!< Alignments of the graphical object to the parent group.. */
+    QList<SGraphObjAlignment> m_arAlignments;
+    /*!< Flag indicating whether the graphical object is hit by the mouse cursor. */
+    bool m_bIsHit;
+    /*!< Current edit mode. The current edit mode defines how the graphical object handels
+         incoming events like moving the mouse cursor. */
+    CEnumEditMode m_editMode;
+    /*!< If the graphical object is currently being resized this member defines how the object
+         will be resized. */
+    CEnumEditResizeMode m_editResizeMode;
+    /*!< Defines the Z-Value which again defines the drawing order within the list
+         of graphics item of the drawing scene. */
+    double m_fZValue;
+    /*!< Flag indicating whether the bounding rectangle is drawn and visible. */
+    bool m_bBoundRectVisible;
+    /*!< Currently selected selection point of the items polygon. */
+    int m_idxSelPtSelectedPolygon;
+    /*!< List of selections points. Selection points are used to resize the graphical object
+         using the mouse. The number and type of selection poionts depend on the type of the
+         graphical object. A line only has two selection points at the start and end  point.
+         A rectangle has at least four selection points - one at each corner. */
+    QList<CGraphObjSelectionPoint*> m_arpSelPtsPolygon;
+    /*!< Currently selected selection point at the bounding rectangle. */
+    CEnumSelectionPoint m_selPtSelectedBoundingRect;
+    /*!< List of selection points at the bounding rectangle. */
     QVector<CGraphObjSelectionPoint*> m_arpSelPtsBoundingRect;
-    QHash<QString, CGraphObjLabel*>   m_arpNameLabels;          // Keys: c_strKeyLabelName, c_strKeyLabelPath, c_strKeyLabelDescription
-    QHash<QString, CGraphObjLabel*>   m_arpPosLabels;           // Keys: <SelPt>
-    QHash<QString, CGraphObjLabel*>   m_arpDimLineLabels;       // Keys: <SelPt>
-    QString                           m_strToolTip;
-    QString                           m_strEditInfo;
-    // Current item coordinates and transform values:
-    QRectF                            m_rctCurr;              // in item's coordinate system (during mouse resize events topLeft may not be at 0.0/0.0)
-    double                            m_fRotAngleCurr_deg;    // concerning range see "Draw::getAngleRad" (Q1: 0..90°, Q2: 90..180°, Q3: -90°..-180°, Q4: 0..-90°)
-    QPointF                           m_ptRotOriginCurr;      // in item's coordinate system
-    // Original item coordinates and transform values:
-    // - after initially creating the item
-    // - changing position, size and rotation angle of objects with no parents
-    // - on adding items to groups
-    // - explicitly calling method "acceptCurrentAsOriginalCoors"
-    bool                              m_bHasValidOrigCoors;
-    QPointF                           m_ptPosOrig;            // in parent's coordinate system
-    QSizeF                            m_sizOrig;
-    double                            m_fRotAngleOrig_deg;    // concerning range see "Draw::getAngleRad" (Q1: 0..90°, Q2: 90..180°, Q3: -90°..-180°, Q4: 0..-90°)
-    QPointF                           m_ptRotOriginOrig;      // in item's coordinate system
-    // Coordinates stored on mouse press events:
-    QPointF                           m_ptScenePosOnMousePressEvent;          // in scene's coordinate system (for moving by my mouse move events)
-    QPointF                           m_ptMouseEvScenePosOnMousePressEvent;   // in scene's coordinate system (for moving by my mouse move events)
-    QRectF                            m_rctOnMousePressEvent;                 // in item's coordinate system (for resizing by mouse move events)
-    QPointF                           m_ptRotOriginOnMousePressEvent;         // in scene's coordinate system (for rotation by mouse move events)
-    // Simulation Functions:
-    QList<SGraphObjMouseEventFct>     m_arMousePressEventFunctions;
-    QList<SGraphObjMouseEventFct>     m_arMouseReleaseEventFunctions;
-    QList<SGraphObjMouseEventFct>     m_arMouseDoubleClickEventFunctions;
-    QList<SGraphObjMouseEventFct>     m_arMouseMoveEventFunctions;
-    QList<SGraphObjKeyEventFct>       m_arKeyPressEventFunctions;
-    QList<SGraphObjKeyEventFct>       m_arKeyReleaseEventFunctions;
-    // Method Tracing (trace admin objects have to be created in ctor of "final" class)
-    // by calling "createTrcAdminObjs".
+    /*!< The name label is created if the name got to be shown in the drawing view. */
+    CGraphObjLabel* m_pNameLabel;
+    /*!< List of additional labels which may be assigned to the graphical object.
+         Please note that the key assigned to the label is the index of the label in the
+         list of labels. */
+    QList<CGraphObjLabel*> m_arpLabels;
+    /*!< Hash with position labels which may be indicated. As positions may be indicated for
+         each possible selection point the key into the hash is the name of the selection point. */
+    QHash<QString, CGraphObjLabel*> m_arpPosLabels;
+    /*!< Hash with dimension line labels which may be indicated. As dimension lines are drawn between
+         selection points the key into the hash is the name of one of the selection points. */
+    QHash<QString, CGraphObjLabel*> m_arpDimLineLabels;
+    /*!< The tool tip contains various interesting information about the graphical object like the name,
+         the position and the dimension. But also other information which depends on the type of the object. */
+    QString m_strToolTip;
+    /*!< Current edit info. */
+    QString m_strEditInfo;
+    /*!< Current item coordinates and transform values:
+         In item's coordinate system (during mouse resize events topLeft may not be at 0.0/0.0). */
+    QRectF m_rctCurr;
+    /*!< Concerning range see "Draw::getAngleRad" (Q1: 0..90°, Q2: 90..180°, Q3: -90°..-180°, Q4: 0..-90°) */
+    double m_fRotAngleCurr_deg;
+    /*!< In item's coordinate system. */
+    QPointF m_ptRotOriginCurr;
+    /*!< Original item coordinates and transform values:
+        - after initially creating the item
+        - changing position, size and rotation angle of objects with no parents
+        - on adding items to groups
+        - explicitly calling method "acceptCurrentAsOriginalCoors" */
+    bool m_bHasValidOrigCoors;
+    /*!< In parent's coordinate system. */
+    QPointF m_ptPosOrig;
+    QSizeF m_sizOrig;
+    /*!< Concerning range see "Draw::getAngleRad" (Q1: 0..90°, Q2: 90..180°, Q3: -90°..-180°, Q4: 0..-90°) */
+    double m_fRotAngleOrig_deg;
+    /*!< In item's coordinate system. */
+    QPointF m_ptRotOriginOrig;
+    /*!< Coordinates stored on mouse press events:
+         In scene's coordinate system (for moving by my mouse move events). */
+    QPointF m_ptScenePosOnMousePressEvent;
+    /*!< In scene's coordinate system (for moving by my mouse move events). */
+    QPointF m_ptMouseEvScenePosOnMousePressEvent;
+    /*!< In item's coordinate system (for resizing by mouse move events). */
+    QRectF m_rctOnMousePressEvent;
+    /*!< In scene's coordinate system (for rotation by mouse move events). */
+    QPointF m_ptRotOriginOnMousePressEvent;
+    /*!< Simulation Functions. */
+    QList<SGraphObjMouseEventFct> m_arMousePressEventFunctions;
+    QList<SGraphObjMouseEventFct> m_arMouseReleaseEventFunctions;
+    QList<SGraphObjMouseEventFct> m_arMouseDoubleClickEventFunctions;
+    QList<SGraphObjMouseEventFct> m_arMouseMoveEventFunctions;
+    QList<SGraphObjKeyEventFct> m_arKeyPressEventFunctions;
+    QList<SGraphObjKeyEventFct> m_arKeyReleaseEventFunctions;
+    /*!< Method Tracing (trace admin objects have to be created in ctor of "final" class)
+         by calling "createTrcAdminObjs". */
     ZS::System::CTrcAdminObj* m_pTrcAdminObjCtorsAndDtor;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjItemChange;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjBoundingRect;

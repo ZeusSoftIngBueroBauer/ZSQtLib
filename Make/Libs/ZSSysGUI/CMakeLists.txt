@@ -151,6 +151,8 @@ list(APPEND _AppImages
 )
 
 list(APPEND _ButtonImages
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonArrowDown.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonArrowUp.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonAdd16x16.bmp
     ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonAdd24x24.bmp
     ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonClose16x16.bmp

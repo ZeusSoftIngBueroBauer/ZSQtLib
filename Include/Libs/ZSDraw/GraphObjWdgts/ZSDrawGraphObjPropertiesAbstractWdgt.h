@@ -57,6 +57,11 @@ namespace ZS
 namespace System
 {
 class CTrcAdminObj;
+
+namespace GUI
+{
+class CSepLine; // as often used forward declaration here in base widget
+}
 }
 
 namespace Draw

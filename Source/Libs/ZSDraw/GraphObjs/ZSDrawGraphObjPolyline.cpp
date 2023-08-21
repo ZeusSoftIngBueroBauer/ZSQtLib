@@ -272,7 +272,7 @@ void CGraphObjPolyline::setPolygon( const QPolygonF& i_plg )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = "Polygon:" + polygon2Str(i_plg);
     }
@@ -399,7 +399,7 @@ void CGraphObjPolyline::setWidth( double i_fWidth )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = "Width:" + QString::number(i_fWidth);
     }
@@ -421,7 +421,7 @@ void CGraphObjPolyline::setHeight( double i_fHeight )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = "Height:" + QString::number(i_fHeight);
     }
@@ -443,7 +443,7 @@ void CGraphObjPolyline::setSize( double i_fWidth, double i_fHeight )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo  = "Width:" + QString::number(i_fWidth);
         strAddTrcInfo += ", Height:" + QString::number(i_fHeight);
@@ -541,7 +541,7 @@ void CGraphObjPolyline::setSize( const QSizeF& i_size )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo  = "Width:" + QString::number(i_size.width());
         strAddTrcInfo += ", Height:" + QString::number(i_size.height());
@@ -568,7 +568,7 @@ void CGraphObjPolyline::setIsHit( bool i_bHit )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = "Hit:" + bool2Str(i_bHit);
     }
@@ -702,7 +702,7 @@ void CGraphObjPolyline::setCursor( const QCursor& i_cursor )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = qCursorShape2Str(i_cursor.shape());
     }
@@ -728,7 +728,7 @@ void CGraphObjPolyline::showSelectionPoints( unsigned char i_selPts )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = "SelectionPoints:" + selectionPoints2Str(i_selPts);
     }
@@ -764,7 +764,7 @@ void CGraphObjPolyline::updateSelectionPoints( unsigned char i_selPts )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = "SelectionPoints:" + selectionPoints2Str(i_selPts);
     }
@@ -2177,7 +2177,7 @@ QVariant CGraphObjPolyline::itemChange( GraphicsItemChange i_change, const QVari
 
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = "Changed:" + qGraphicsItemChange2Str(i_change);
 
@@ -2407,7 +2407,7 @@ void CGraphObjPolyline::normalize()
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
         strAddTrcInfo += ", EditMode:" + m_editMode.toString();
@@ -2446,7 +2446,7 @@ void CGraphObjPolyline::updateLineEndPolygonCoors()
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
         strAddTrcInfo += ", EditMode:" + m_editMode.toString();

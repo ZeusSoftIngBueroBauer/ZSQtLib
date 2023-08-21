@@ -135,20 +135,25 @@ protected: // class members
     /*!< Needed to set an initial unique name when creating a new instance. */
     static qint64 s_iInstCount;
 protected: // instance members
-    QString         m_strKey;              /*!< Key of the label within the list of labels of the graphical objects. */
-    CGraphObj*      m_pGraphObjParent;     /*!< Graphical parent object this label belongs to. */
-    QGraphicsItem*  m_pGraphicsItemParent; /*!< Graphical parent object this label belongs to.
-                                                Same as m_pGraphObjParent but stored to avoid unnecessary
-                                                dynamic casts during runtime. */
-    ESelectionPoint m_selPtLinked;         /*!< Selection point of parent item the label is linked and aligned to. */
-    QSizeF          m_sizeLinkedSelPtDist; /*!< Distance to the selection point the label is aligned to.
-                                                Calculated as:
-                                                    width = this.x - LinkedSelPt.x
-                                                    height = this.y - LinkedSelPt.y
-                                                This means if the label is right of the parent items selection point the width is positive.
-                                                If the label is above of the parent items selection point the height is positive. */
-    bool            m_bShowAnchorLine;     /*! Flag to indicate whether the anchor line (line from label to parent's selection point the
-                                               labe is linked to) should always be visible. */
+    /*!< Key of the label within the list of labels of the graphical objects. */
+    QString m_strKey;
+    /*!< Graphical parent object this label belongs to. */
+    CGraphObj* m_pGraphObjParent;
+    /*!< Graphical parent object this label belongs to. Same as m_pGraphObjParent
+         but stored to avoid unnecessary dynamic casts during runtime. */
+    QGraphicsItem* m_pGraphicsItemParent;
+    /*!< Selection point of parent item the label is linked and aligned to. */
+    ESelectionPoint m_selPtLinked;
+    /*!< Distance to the selection point the label is aligned to.
+         Calculated as:
+         - width = this.x - LinkedSelPt.x
+         - height = this.y - LinkedSelPt.y
+         This means if the label is right of the parent items selection point the width is positive.
+         If the label is above of the parent items selection point the height is positive. */
+    QSizeF m_sizeLinkedSelPtDist;
+    /*! Flag to indicate whether the anchor line (line from label to parent's selection point the
+        label is linked to) should always be visible. */
+    bool m_bShowAnchorLine;
 
 }; // class CGraphObjLabel
 

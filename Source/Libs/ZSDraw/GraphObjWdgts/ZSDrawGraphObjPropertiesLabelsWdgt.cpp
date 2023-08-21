@@ -28,25 +28,34 @@ may result in using the software modules.
 #include "ZSDraw/GraphObjs/ZSDrawGraphObj.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSSysGUI/ZSSysGUIDllMain.h"
+#include "ZSSysGUI/ZSSysSepLine.h"
+#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysRefCountGuard.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
 
 #if QT_VERSION < 0x050000
+#include <QtGui/qcheckbox.h>
+#include <QtGui/qcombobox.h>
 #include <QtGui/qlabel.h>
 #include <QtGui/qlayout.h>
 #include <QtGui/qlineedit.h>
+#include <QtGui/qpushbutton.h>
 #else
+#include <QtWidgets/qcheckbox.h>
+#include <QtWidgets/qcombobox.h>
 #include <QtWidgets/qlabel.h>
 #include <QtWidgets/qlayout.h>
 #include <QtWidgets/qlineedit.h>
+#include <QtWidgets/qpushbutton.h>
 #endif
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 
 using namespace ZS::System;
+using namespace ZS::System::GUI;
 using namespace ZS::Draw;
 
 
@@ -66,16 +75,26 @@ CWdgtGraphObjPropertiesLabels::CWdgtGraphObjPropertiesLabels(
     QWidget* i_pWdgtParent) :
 //------------------------------------------------------------------------------
     CWdgtGraphObjPropertiesAbstract(i_pDrawingScene, i_strParentClassName + "::" + ClassName(), i_strObjName, i_pWdgtParent),
-    m_pLblHeadLine(nullptr),
+    m_pWdgtHeadline(nullptr),
+    m_pLytWdgtHeadline(nullptr),
+    m_pxmBtnDown(":/ZS/Button/ButtonArrowDown.png"),
+    m_pxmBtnUp(":/ZS/Button/ButtonArrowUp.png"),
+    m_pBtnOpenClose(nullptr),
+    m_pLblHeadline(nullptr),
+    m_pSepHeadline(nullptr),
+    m_pWdgtLabels(nullptr),
+    m_pLytWdgtLabels(nullptr),
     m_pLytLineName(nullptr),
     m_pLblName(nullptr),
     m_pEdtName(nullptr),
     m_pLblNameError(nullptr),
-    m_pLytLineDescription(nullptr),
-    m_pLblDescription(nullptr),
-    m_pEdtDescription(nullptr),
-    // Trace
-    m_pTrcAdminObj(nullptr)
+    m_pLytLineNameVisibilities(nullptr),
+    m_pLblNameVisible(nullptr),
+    m_pChkNameLabelVisible(nullptr),
+    m_pLblNameLabelAnchorSelPt(nullptr),
+    m_pCmbNameLabelAnchorSelPt(nullptr),
+    m_pLblNameLabelAnchorLineVisible(nullptr),
+    m_pChkNameLabelAnchorLineVisible(nullptr)
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -85,28 +104,54 @@ CWdgtGraphObjPropertiesLabels::CWdgtGraphObjPropertiesLabels(
 
     int cxLblWidth = 60;
 
-    QFont fntHeadLine;
+    // <Widget> Headline
+    //==================
 
-    m_pLblHeadLine = new QLabel("Object Name");
-    fntHeadLine = m_pLblHeadLine->font();
-    fntHeadLine.setPointSize(fntHeadLine.pointSize()+4);
-    m_pLblHeadLine->setFont(fntHeadLine);
-    m_pLyt->addWidget(m_pLblHeadLine);
-    m_pLyt->addSpacing(4);
+    m_pWdgtHeadline = new QWidget();
+    m_pLytWdgtHeadline = new QHBoxLayout();
+    m_pLytWdgtHeadline->setContentsMargins(0, 0, 0, 0);
+    m_pWdgtHeadline->setLayout(m_pLytWdgtHeadline);
+    m_pLyt->addWidget(m_pWdgtHeadline);
+
+    m_pBtnOpenClose = new QPushButton();
+    m_pBtnOpenClose->setIcon(m_pxmBtnDown);
+    m_pLytWdgtHeadline->addWidget(m_pBtnOpenClose);
+
+    QObject::connect(
+        m_pBtnOpenClose, &QPushButton::clicked,
+        this, &CWdgtGraphObjPropertiesLabels::onBtnOpenCloseClicked);
+
+    m_pLblHeadline = new QLabel("Labels");
+    QFont fntHeadline = m_pLblHeadline->font();
+    fntHeadline.setPointSize(fntHeadline.pointSize()+4);
+    m_pLblHeadline->setFont(fntHeadline);
+    m_pLytWdgtHeadline->addWidget(m_pLblHeadline);
+
+    m_pSepHeadline = new CSepLine();
+    m_pLytWdgtHeadline->addWidget(m_pSepHeadline, 1);
+
+    m_pLytWdgtHeadline->addStretch();
+
+    // <Widget> Labels
+    //================
+
+    m_pWdgtLabels = new QWidget();
+    m_pLytWdgtLabels = new QVBoxLayout();
+    m_pLytWdgtLabels->setContentsMargins(0, 0, 0, 0);
+    m_pWdgtLabels->setLayout(m_pLytWdgtLabels);
+    m_pLyt->addWidget(m_pWdgtLabels);
 
     // <Line> Name
-    //============
+    //------------
 
     m_pLytLineName = new QHBoxLayout();
-    m_pLyt->addLayout(m_pLytLineName);
-
-    // <LineEdit> Name
-    //----------------
+    m_pLytWdgtLabels->addLayout(m_pLytLineName);
 
     m_pLblName = new QLabel("Name:");
     m_pLblName->setFixedWidth(cxLblWidth);
     m_pLytLineName->addWidget(m_pLblName);
     m_pEdtName = new QLineEdit();
+    m_pEdtName->setEnabled(false);
     m_pLytLineName->addWidget(m_pEdtName, 1);
     m_pLblNameError = new QLabel();
     m_pLblNameError->setToolTip("Name is not unique.");
@@ -119,24 +164,44 @@ CWdgtGraphObjPropertiesLabels::CWdgtGraphObjPropertiesLabels(
         m_pEdtName, &QLineEdit::textChanged,
         this, &CWdgtGraphObjPropertiesLabels::onEdtNameTextChanged);
 
-    // <Line> Description
-    //===================
+    // <Line> Name Visibilities
+    //-------------------------
 
-    m_pLytLineDescription = new QHBoxLayout();
-    m_pLyt->addLayout(m_pLytLineDescription);
+    m_pLytLineNameVisibilities = new QHBoxLayout();
+    m_pLytWdgtLabels->addLayout(m_pLytLineNameVisibilities);
 
-    // <LineEdit> Path
-    //----------------
-
-    m_pLblDescription = new QLabel("Description:");
-    m_pLblDescription->setFixedWidth(cxLblWidth);
-    m_pLytLineDescription->addWidget(m_pLblDescription);
-    m_pEdtDescription = new QLineEdit();
-    m_pLytLineDescription->addWidget(m_pEdtDescription);
+    m_pLblNameVisible = new QLabel("Show Name:");
+    m_pLblNameVisible->setFixedWidth(cxLblWidth);
+    m_pLytLineNameVisibilities->addWidget(m_pLblNameVisible);
+    m_pChkNameLabelVisible = new QCheckBox();
+    m_pChkNameLabelVisible->setEnabled(false);
+    m_pLytLineNameVisibilities->addWidget(m_pChkNameLabelVisible);
 
     QObject::connect(
-        m_pEdtDescription, &QLineEdit::textChanged,
-        this, &CWdgtGraphObjPropertiesLabels::onEdtDescriptionTextChanged);
+        m_pChkNameLabelVisible, &QCheckBox::stateChanged,
+        this, &CWdgtGraphObjPropertiesLabels::onChkNameLabelVisibleStateChanged);
+
+    m_pLblNameLabelAnchorSelPt = new QLabel("Anchored To:");
+    m_pLytLineNameVisibilities->addWidget(m_pLblNameLabelAnchorSelPt);
+    m_pCmbNameLabelAnchorSelPt = new QComboBox();
+    m_pCmbNameLabelAnchorSelPt->setEnabled(false);
+    m_pLytLineNameVisibilities->addWidget(m_pCmbNameLabelAnchorSelPt);
+
+    QObject::connect(
+        m_pCmbNameLabelAnchorSelPt, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+        this, &CWdgtGraphObjPropertiesLabels::onCmbNameLabelAnchorSelPtCurrentIndexChanged);
+
+    m_pLblNameLabelAnchorLineVisible = new QLabel("Show Anchor Line:");
+    m_pLytLineNameVisibilities->addWidget(m_pLblNameLabelAnchorLineVisible);
+    m_pChkNameLabelAnchorLineVisible = new QCheckBox();
+    m_pChkNameLabelAnchorLineVisible->setEnabled(false);
+    m_pLytLineNameVisibilities->addWidget(m_pChkNameLabelAnchorLineVisible);
+
+    QObject::connect(
+        m_pChkNameLabelAnchorLineVisible, &QCheckBox::stateChanged,
+        this, &CWdgtGraphObjPropertiesLabels::onChkNameLabelAnchorLineVisibleStateChanged);
+
+    m_pWdgtLabels->hide();
 
 } // ctor
 
@@ -150,14 +215,26 @@ CWdgtGraphObjPropertiesLabels::~CWdgtGraphObjPropertiesLabels()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
-    m_pLblHeadLine = nullptr;
+    m_pWdgtHeadline = nullptr;
+    m_pLytWdgtHeadline = nullptr;
+    //m_pxmBtnDown;
+    //m_pxmBtnUp;
+    m_pBtnOpenClose = nullptr;
+    m_pLblHeadline = nullptr;
+    m_pSepHeadline = nullptr;
+    m_pWdgtLabels = nullptr;
+    m_pLytWdgtLabels = nullptr;
     m_pLytLineName = nullptr;
     m_pLblName = nullptr;
     m_pEdtName = nullptr;
     m_pLblNameError = nullptr;
-    m_pLytLineDescription = nullptr;
-    m_pLblDescription = nullptr;
-    m_pEdtDescription = nullptr;
+    m_pLytLineNameVisibilities = nullptr;
+    m_pLblNameVisible = nullptr;
+    m_pChkNameLabelVisible = nullptr;
+    m_pLblNameLabelAnchorSelPt = nullptr;
+    m_pCmbNameLabelAnchorSelPt = nullptr;
+    m_pLblNameLabelAnchorLineVisible = nullptr;
+    m_pChkNameLabelAnchorLineVisible = nullptr;
 }
 
 /*==============================================================================
@@ -182,15 +259,34 @@ void CWdgtGraphObjPropertiesLabels::setKeyInTree(const QString& i_strKeyInTree)
     {
         CWdgtGraphObjPropertiesAbstract::setKeyInTree(i_strKeyInTree);
 
+        onGraphObjChanged();
         if (m_pGraphObj == nullptr)
         {
             m_pEdtName->setText("");
-            m_pEdtDescription->setText("");
+            m_pEdtName->setEnabled(false);
+            m_pLblNameError->hide();
+            m_pChkNameLabelVisible->setEnabled(false);
+            m_pChkNameLabelVisible->setCheckState(Qt::Unchecked);
+            m_pCmbNameLabelAnchorSelPt->setEnabled(false);
+            m_pCmbNameLabelAnchorSelPt->clear();
+            m_pChkNameLabelAnchorLineVisible->setEnabled(false);
+            m_pChkNameLabelAnchorLineVisible->setCheckState(Qt::Unchecked);
         }
         else
         {
             m_pEdtName->setText(m_pGraphObj->name());
-            m_pEdtDescription->setText(m_pGraphObj->getDescription());
+            m_pEdtName->setEnabled(true);
+            m_pChkNameLabelVisible->setEnabled(true);
+            m_pChkNameLabelVisible->setCheckState(
+                m_pGraphObj->isNameLabelVisible() ? Qt::Checked : Qt::Unchecked);
+            m_pCmbNameLabelAnchorSelPt->setEnabled(true);
+            fillComboNameLabelAnchorSelPt();
+            CEnumSelectionPoint selPt = m_pGraphObj->nameLabelAnchorPoint();
+            int idxCmb = m_pCmbNameLabelAnchorSelPt->findData(selPt.enumeratorAsInt());
+            m_pCmbNameLabelAnchorSelPt->setCurrentIndex(idxCmb); // -1 is ok showing an empty string (None)
+            m_pChkNameLabelAnchorLineVisible->setEnabled(true);
+            m_pChkNameLabelAnchorLineVisible->setCheckState(
+                m_pGraphObj->isNameLabelAnchorLineVisible() ? Qt::Checked : Qt::Unchecked);
         }
     }
 }
@@ -235,8 +331,23 @@ bool CWdgtGraphObjPropertiesLabels::hasChanges() const
         if (m_pGraphObj->name() != m_pEdtName->text()) {
             bHasChanges = true;
         }
-        else if (m_pGraphObj->getDescription() != m_pEdtDescription->text()) {
-            bHasChanges = true;
+        if (!bHasChanges) {
+            if (m_pGraphObj->isNameLabelVisible() != (m_pChkNameLabelVisible->checkState() == Qt::Checked)) {
+                bHasChanges = true;
+            }
+        }
+        if (!bHasChanges && m_pChkNameLabelVisible->checkState() == Qt::Checked) {
+            CEnumSelectionPoint eSelPtGraphObj = CEnumSelectionPoint(m_pGraphObj->nameLabelAnchorPoint());
+            int idxCmb = m_pCmbNameLabelAnchorSelPt->currentIndex();
+            CEnumSelectionPoint eSelPtCmb = CEnumSelectionPoint(m_pCmbNameLabelAnchorSelPt->itemData(idxCmb).toInt());
+            if (eSelPtGraphObj != eSelPtCmb) {
+                bHasChanges = true;
+            }
+            if (!bHasChanges) {
+                if (m_pGraphObj->isNameLabelAnchorLineVisible() != (m_pChkNameLabelAnchorLineVisible->checkState() == Qt::Checked)) {
+                    bHasChanges = true;
+                }
+            }
         }
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -255,12 +366,30 @@ void CWdgtGraphObjPropertiesLabels::acceptChanges()
         /* strMethod    */ "acceptChanges",
         /* strAddInfo   */ "" );
 
-    CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
-
     if (m_pGraphObj != nullptr && !hasErrors())
     {
+        CRefCountGuard refCountGard(&m_iValueChangedSignalsBlocked);
+
         m_pGraphObj->rename(m_pEdtName->text());
-        m_pGraphObj->setDescription(m_pEdtDescription->text());
+        if (m_pChkNameLabelVisible->checkState() == Qt::Checked) {
+            int idxCmb = m_pCmbNameLabelAnchorSelPt->currentIndex();
+            if (idxCmb < 0) {
+                idxCmb = 0; // Set to most commonly used anchor point.
+                m_pCmbNameLabelAnchorSelPt->setCurrentIndex(idxCmb);
+            }
+            CEnumSelectionPoint eSelPtCmb = CEnumSelectionPoint(m_pCmbNameLabelAnchorSelPt->itemData(idxCmb).toInt());
+            m_pGraphObj->showNameLabel(eSelPtCmb.enumerator());
+            if (m_pChkNameLabelAnchorLineVisible->checkState() == Qt::Checked) {
+                m_pGraphObj->showNameLabelAnchorLine();
+            }
+            else {
+                m_pGraphObj->hideNameLabelAnchorLine();
+            }
+        }
+        else {
+            m_pGraphObj->hideNameLabel();
+            m_pGraphObj->hideNameLabelAnchorLine();
+        }
     }
 }
 
@@ -274,21 +403,47 @@ void CWdgtGraphObjPropertiesLabels::rejectChanges()
         /* strMethod    */ "rejectChanges",
         /* strAddInfo   */ "" );
 
-    if (m_pGraphObj == nullptr)
-    {
-        m_pEdtName->setText("");
-        m_pEdtDescription->setText("");
-    }
-    else
-    {
+    if (m_pGraphObj != nullptr) {
+        CRefCountGuard refCountGard(&m_iValueChangedSignalsBlocked);
+
         m_pEdtName->setText(m_pGraphObj->name());
-        m_pEdtDescription->setText(m_pGraphObj->getDescription());
+        m_pEdtName->setEnabled(true);
+        m_pChkNameLabelVisible->setEnabled(true);
+        m_pChkNameLabelVisible->setCheckState(
+            m_pGraphObj->isNameLabelVisible() ? Qt::Checked : Qt::Unchecked);
+        m_pCmbNameLabelAnchorSelPt->setEnabled(true);
+        CEnumSelectionPoint selPt = m_pGraphObj->nameLabelAnchorPoint();
+        int idxCmb = m_pCmbNameLabelAnchorSelPt->findData(selPt.enumeratorAsInt());
+        m_pCmbNameLabelAnchorSelPt->setCurrentIndex(idxCmb); // -1 is ok showing an empty string (None)
+        m_pChkNameLabelAnchorLineVisible->setEnabled(true);
+        m_pChkNameLabelAnchorLineVisible->setCheckState(
+            m_pGraphObj->isNameLabelAnchorLineVisible() ? Qt::Checked : Qt::Unchecked);
     }
 }
 
 /*==============================================================================
 protected slots:
 ==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjPropertiesLabels::onBtnOpenCloseClicked(bool /*i_bChecked*/)
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onBtnOpenCloseClicked",
+        /* strAddInfo   */ "" );
+
+    if (m_pWdgtLabels->isHidden()) {
+        m_pBtnOpenClose->setIcon(m_pxmBtnUp);
+        m_pWdgtLabels->show();
+    }
+    else {
+        m_pBtnOpenClose->setIcon(m_pxmBtnDown);
+        m_pWdgtLabels->hide();
+    }
+}
 
 //------------------------------------------------------------------------------
 void CWdgtGraphObjPropertiesLabels::onEdtNameTextChanged(const QString& i_strText)
@@ -304,30 +459,72 @@ void CWdgtGraphObjPropertiesLabels::onEdtNameTextChanged(const QString& i_strTex
         /* strMethod    */ "onEdtNameTextChanged",
         /* strAddInfo   */ strMthInArgs );
 
-    if (changedNameIsUnique()) {
-        m_pLblNameError->hide();
+    if (m_iValueChangedSignalsBlocked == 0) {
+        if (changedNameIsUnique()) {
+            m_pLblNameError->hide();
+        }
+        else {
+            m_pLblNameError->show();
+        }
+        emit_propertyChanged();
     }
-    else {
-        m_pLblNameError->show();
-    }
-    emit_propertyChanged();
 }
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjPropertiesLabels::onEdtDescriptionTextChanged(const QString& i_strText)
+void CWdgtGraphObjPropertiesLabels::onChkNameLabelVisibleStateChanged(int i_iState)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_strText;
+        strMthInArgs = qCheckState2Str(i_iState);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onEdtDescriptionTextChanged",
+        /* strMethod    */ "onChkNameLabelVisibleStateChanged",
         /* strAddInfo   */ strMthInArgs );
 
-    emit_propertyChanged();
+    if (m_iValueChangedSignalsBlocked == 0) {
+        emit_propertyChanged();
+    }
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjPropertiesLabels::onCmbNameLabelAnchorSelPtCurrentIndexChanged(int i_idx)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString::number(i_idx);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onCmbNameLabelAnchorSelPtCurrentIndexChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (m_iValueChangedSignalsBlocked == 0) {
+        emit_propertyChanged();
+    }
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjPropertiesLabels::onChkNameLabelAnchorLineVisibleStateChanged(int i_iState)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = qCheckState2Str(i_iState);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onChkNameLabelAnchorLineVisibleStateChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (m_iValueChangedSignalsBlocked == 0) {
+        emit_propertyChanged();
+    }
 }
 
 /*==============================================================================
@@ -409,4 +606,43 @@ void CWdgtGraphObjPropertiesLabels::onGraphObjAboutToDestroyed()
         /* strAddInfo   */ "" );
 
     m_pGraphObj = nullptr;
+}
+
+/*==============================================================================
+private: // auxiliary instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjPropertiesLabels::fillComboNameLabelAnchorSelPt()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "fillComboNameLabelAnchorSelPt",
+        /* strAddInfo   */ "" );
+
+    if (m_pGraphObj == nullptr)
+    {
+        m_pCmbNameLabelAnchorSelPt->clear();
+    }
+    else
+    {
+        for (ESelectionPoint selPt : m_pGraphObj->getPossibleLabelAnchorPoints()) {
+            if (m_pGraphObj->type() == EGraphObjTypeLine) {
+                if (selPt == ESelectionPoint::TopLeft) {
+                    m_pCmbNameLabelAnchorSelPt->addItem("Line Start", static_cast<int>(selPt));
+                }
+                else if (selPt == ESelectionPoint::BottomRight) {
+                    m_pCmbNameLabelAnchorSelPt->addItem("Line End", static_cast<int>(selPt));
+                }
+                else {
+                    m_pCmbNameLabelAnchorSelPt->addItem(CEnumSelectionPoint(selPt).toString(), static_cast<int>(selPt));
+                }
+            }
+            else {
+                m_pCmbNameLabelAnchorSelPt->addItem(CEnumSelectionPoint(selPt).toString(), static_cast<int>(selPt));
+            }
+        }
+    }
 }

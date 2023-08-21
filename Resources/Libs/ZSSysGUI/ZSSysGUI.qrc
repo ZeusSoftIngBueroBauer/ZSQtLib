@@ -21,6 +21,8 @@
         <file alias="Thermometer32x32.bmp">Images/Thermometer32x32.bmp</file>
     </qresource>
     <qresource prefix="/ZS/Button">
+        <file alias="ButtonArrowDown.png">Images/ButtonArrowDown.png</file>
+        <file alias="ButtonArrowUp.png">Images/ButtonArrowUp.png</file>
         <file alias="ButtonAdd16x16.bmp">Images/ButtonAdd16x16.bmp</file>
         <file alias="ButtonAdd24x24.bmp">Images/ButtonAdd24x24.bmp</file>
         <file alias="ButtonClose16x16.bmp">Images/ButtonClose16x16.bmp</file>

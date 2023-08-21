@@ -264,7 +264,7 @@ bool CGraphObjConnectionPoint::appendConnectionLine( CGraphObjConnectionLine* i_
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         if( i_pGraphObjCnctLine == nullptr )
         {
@@ -312,7 +312,7 @@ void CGraphObjConnectionPoint::removeConnectionLine( CGraphObjConnectionLine* i_
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         if( i_pGraphObjCnctLine == nullptr )
         {
@@ -402,7 +402,7 @@ void CGraphObjConnectionPoint::setRect( const QRectF& i_rct )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = "Rect:" + rect2Str(i_rct);
     }
@@ -451,7 +451,7 @@ void CGraphObjConnectionPoint::setInnerCircleWidthInPerCent( double i_fWidth_per
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo  = "Width:" + QString::number(i_fWidth_perCent) + "%";
         strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
@@ -479,7 +479,7 @@ void CGraphObjConnectionPoint::setInnerCircleWidthInPx( double i_fWidth_px )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo  = "Width:" + QString::number(i_fWidth_px);
         strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
@@ -588,7 +588,7 @@ void CGraphObjConnectionPoint::setWidth( double i_fWidth )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = "Width:" + QString::number(i_fWidth);
     }
@@ -611,7 +611,7 @@ void CGraphObjConnectionPoint::setHeight( double i_fHeight )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = "Height:" + QString::number(i_fHeight);
     }
@@ -634,7 +634,7 @@ void CGraphObjConnectionPoint::setSize( double i_fWidth, double i_fHeight )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo  = "Width:" + QString::number(i_fWidth);
         strAddTrcInfo += ", Height:" + QString::number(i_fHeight);
@@ -709,7 +709,7 @@ void CGraphObjConnectionPoint::setSize( const QSizeF& i_size )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo  = "Width:" + QString::number(i_size.width());
         strAddTrcInfo += ", Height:" + QString::number(i_size.height());
@@ -736,7 +736,7 @@ void CGraphObjConnectionPoint::setIsHit( bool i_bHit )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = "Hit:" + bool2Str(i_bHit);
     }
@@ -837,7 +837,7 @@ void CGraphObjConnectionPoint::setCursor( const QCursor& i_cursor )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = qCursorShape2Str(i_cursor.shape());
     }
@@ -874,7 +874,7 @@ void CGraphObjConnectionPoint::onParentItemCoorsHasChanged( CGraphObj* i_pGraphO
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo  = "Parent:" + i_pGraphObjParent->name();
         strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
@@ -1810,7 +1810,7 @@ QVariant CGraphObjConnectionPoint::itemChange( GraphicsItemChange i_change, cons
 
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = "Changed:" + qGraphicsItemChange2Str(i_change);
 

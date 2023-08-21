@@ -361,7 +361,9 @@ void CWdgtGraphObjPropertiesAbstract::onGraphObjChanged()
         /* strMethod    */ "CWdgtGraphObjPropertiesAbstract::onGraphObjChanged",
         /* strAddInfo   */ "" );
 
-    updateButtonsEnabled();
+    if (m_iValueChangedSignalsBlocked == 0) {
+        updateButtonsEnabled();
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -374,7 +376,9 @@ void CWdgtGraphObjPropertiesAbstract::onGraphObjMoved()
         /* strMethod    */ "CWdgtGraphObjPropertiesAbstract::onGraphObjMoved",
         /* strAddInfo   */ "" );
 
-    updateButtonsEnabled();
+    if (m_iValueChangedSignalsBlocked == 0) {
+        updateButtonsEnabled();
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -387,7 +391,9 @@ void CWdgtGraphObjPropertiesAbstract::onGraphObjRenamed()
         /* strMethod    */ "CWdgtGraphObjPropertiesAbstract::onGraphObjRenamed",
         /* strAddInfo   */ "" );
 
-    updateButtonsEnabled();
+    if (m_iValueChangedSignalsBlocked == 0) {
+        updateButtonsEnabled();
+    }
 }
 
 //------------------------------------------------------------------------------

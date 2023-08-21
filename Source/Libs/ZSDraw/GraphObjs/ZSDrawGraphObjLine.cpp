@@ -150,10 +150,6 @@ CGraphObjLine::~CGraphObjLine()
     // graphics scene by the base class but must be destroyed by the derived
     // class which is derived both from CGraphObj and QGraphicsItem.
 
-    destroyLabels(m_arpNameLabels);
-    destroyLabels(m_arpPosLabels);
-    destroyLabels(m_arpDimLineLabels);
-
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
 
     if( pGraphicsItem != nullptr )
@@ -235,7 +231,7 @@ void CGraphObjLine::setLine( const QLineF& i_lin )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = "Line:" + line2Str(i_lin);
     }
@@ -340,7 +336,7 @@ void CGraphObjLine::setWidth( double i_fWidth )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = "Width:" + QString::number(i_fWidth);
     }
@@ -362,7 +358,7 @@ void CGraphObjLine::setHeight( double i_fHeight )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = "Height:" + QString::number(i_fHeight);
     }
@@ -384,7 +380,7 @@ void CGraphObjLine::setSize( double i_fWidth, double i_fHeight )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo  = "Width:" + QString::number(i_fWidth);
         strAddTrcInfo += ", Height:" + QString::number(i_fHeight);
@@ -459,7 +455,7 @@ void CGraphObjLine::setSize( const QSizeF& i_size )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo  = "Width:" + QString::number(i_size.width());
         strAddTrcInfo += ", Height:" + QString::number(i_size.height());
@@ -486,7 +482,7 @@ void CGraphObjLine::setIsHit( bool i_bHit )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = "Hit:" + bool2Str(i_bHit);
     }
@@ -611,7 +607,7 @@ void CGraphObjLine::setCursor( const QCursor& i_cursor )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = qCursorShape2Str(i_cursor.shape());
     }
@@ -632,6 +628,8 @@ public: // overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Returns coordinates of selection point in item's coordinate system.
+*/
 QPointF CGraphObjLine::getSelectionPointCoors( ESelectionPoint i_selPt ) const
 //------------------------------------------------------------------------------
 {
@@ -652,12 +650,9 @@ void CGraphObjLine::showSelectionPoints( unsigned char i_selPts )
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
-
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
-    {
+        if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
         strAddTrcInfo = "SelectionPoints:" + selectionPoints2Str(i_selPts);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -668,29 +663,25 @@ void CGraphObjLine::showSelectionPoints( unsigned char i_selPts )
     if( parentItem() == nullptr )
     {
         QPolygonF plg;
-        QLineF    lineF = line();
+        QLineF lineF = line();
 
         plg.append(lineF.p1());
         plg.append(lineF.p2());
 
-        if( i_selPts & ESelectionPointsPolygonShapePoints )
-        {
+        if (i_selPts & ESelectionPointsPolygonShapePoints) {
             showSelectionPointsOfPolygon(plg);
         }
     }
-} // showSelectionPoints
+}
 
 //------------------------------------------------------------------------------
 void CGraphObjLine::updateSelectionPoints( unsigned char i_selPts )
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
-
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
         strAddTrcInfo = "SelectionPoints:" + selectionPoints2Str(i_selPts);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -698,17 +689,47 @@ void CGraphObjLine::updateSelectionPoints( unsigned char i_selPts )
         /* strMethod    */ "updateSelectionPoints",
         /* strAddInfo   */ strAddTrcInfo );
 
-    if( parentItem() == nullptr )
+    if (parentItem() == nullptr)
     {
         QPolygonF plg;
-        QLineF    lineF = line();
+        QLineF lineF = line();
 
         plg.append(lineF.p1());
         plg.append(lineF.p2());
 
         updateSelectionPointsOfPolygon(plg);
     }
-} // updateSelectionPoints
+}
+
+/*==============================================================================
+public: // overridables of base class CGraphObj
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the list of the possible selection points the labels may be  anchored to.
+
+    For a line the labels may be anchored to the start and end point of the line
+    but also to the center of the line.
+    As there is no StartLine or EndLine definition available in the enumeration
+    of selection points, TopLeft is used to specify the StartPoint of the line and
+    BottomRight is used to specify the EndPoint of the line.
+
+    Please note that the most common used selection points should be at the
+    beginning of the list so that combo boxes to select the selection point
+    start with those.
+
+    @return List of possbile selection points.
+*/
+QList<ESelectionPoint> CGraphObjLine::getPossibleLabelAnchorPoints() const
+//------------------------------------------------------------------------------
+{
+    QList<ESelectionPoint> arSelPts = {
+        ESelectionPoint::Center,
+        ESelectionPoint::TopLeft,       // Start point of the line
+        ESelectionPoint::BottomRight    // End point of the line
+    };
+    return arSelPts;
+}
 
 /*==============================================================================
 public: // overridables of base class QGraphicsPolygonItem
@@ -1655,7 +1676,7 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
 
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = "Changed:" + qGraphicsItemChange2Str(i_change);
 
@@ -1870,7 +1891,7 @@ void CGraphObjLine::updateLineEndPolygonCoors()
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
         strAddTrcInfo += ", EditMode:" + m_editMode.toString();

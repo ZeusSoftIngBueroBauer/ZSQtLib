@@ -350,7 +350,7 @@ void CGraphObjDiode::setCutOffVoltage( double i_fCutOffVoltage_V )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = "CutOffVoltage:" + QString::number(i_fCutOffVoltage_V) + " V";
     }
@@ -366,7 +366,7 @@ void CGraphObjDiode::setCutOffVoltage( double i_fCutOffVoltage_V )
     {
         m_fCutOffVoltage_V = i_fCutOffVoltage_V;
 
-        setDescription(QString::number(m_fCutOffVoltage_V) + " V");
+        //setDescription(QString::number(m_fCutOffVoltage_V) + " V");
     }
 } // setCutOffVoltage
 
@@ -378,21 +378,21 @@ public: // instance methods
 void CGraphObjDiode::showCutOffVoltage( ESelectionPoint i_selPtPos )
 //------------------------------------------------------------------------------
 {
-    showDescriptionLabel(i_selPtPos);
+    //showDescriptionLabel(i_selPtPos);
 }
 
 //------------------------------------------------------------------------------
 void CGraphObjDiode::hideCutOffVoltage()
 //------------------------------------------------------------------------------
 {
-    hideDescriptionLabel();
+    //hideDescriptionLabel();
 }
 
 //------------------------------------------------------------------------------
 bool CGraphObjDiode::isCutOffVoltageVisible( ESelectionPoint i_selPtPos ) const
 //------------------------------------------------------------------------------
 {
-    return isDescriptionLabelVisible(i_selPtPos);
+    return false; //isDescriptionLabelVisible(i_selPtPos);
 }
 
 /*==============================================================================
@@ -461,7 +461,7 @@ void CGraphObjDiode::onDrawSettingsChanged()
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
     }
 

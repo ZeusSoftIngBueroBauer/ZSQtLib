@@ -61,8 +61,11 @@ public: // overridables of base class CWdgtGraphObjPropertiesAbstract
     void acceptChanges() override;
     void rejectChanges() override;
 protected slots:
+    void onBtnOpenCloseClicked(bool i_bChecked = false);
     void onEdtNameTextChanged(const QString& i_strText);
-    void onEdtDescriptionTextChanged(const QString& i_strText);
+    void onChkNameLabelVisibleStateChanged(int i_iState);
+    void onCmbNameLabelAnchorSelPtCurrentIndexChanged(int i_idx);
+    void onChkNameLabelAnchorLineVisibleStateChanged(int i_iState);
 protected: // auxiliary instance methods
     bool changedNameIsUnique() const;
 protected: // overridables of base class CWdgtGraphObjPropertiesAbstract
@@ -70,17 +73,29 @@ protected: // overridables of base class CWdgtGraphObjPropertiesAbstract
     virtual void onGraphObjMoved() override;
     virtual void onGraphObjRenamed() override;
     virtual void onGraphObjAboutToDestroyed() override;
+private: // auxiliary instance methods
+    void fillComboNameLabelAnchorSelPt();
 private: // instance members
-    QLabel* m_pLblHeadLine;
+    QWidget* m_pWdgtHeadline;
+    QHBoxLayout* m_pLytWdgtHeadline;
+    QPixmap m_pxmBtnDown;
+    QPixmap m_pxmBtnUp;
+    QPushButton* m_pBtnOpenClose;
+    QLabel* m_pLblHeadline;
+    ZS::System::GUI::CSepLine* m_pSepHeadline;
+    QWidget* m_pWdgtLabels;
+    QVBoxLayout* m_pLytWdgtLabels;
     QHBoxLayout* m_pLytLineName;
     QLabel* m_pLblName;
     QLineEdit* m_pEdtName;
     QLabel* m_pLblNameError;
-    QHBoxLayout* m_pLytLineDescription;
-    QLabel* m_pLblDescription;
-    QLineEdit* m_pEdtDescription;
-    // Trace
-    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
+    QHBoxLayout* m_pLytLineNameVisibilities;
+    QLabel* m_pLblNameVisible;
+    QCheckBox* m_pChkNameLabelVisible;
+    QLabel* m_pLblNameLabelAnchorSelPt;
+    QComboBox* m_pCmbNameLabelAnchorSelPt;
+    QLabel* m_pLblNameLabelAnchorLineVisible;
+    QCheckBox* m_pChkNameLabelAnchorLineVisible;
 
 }; // class CWdgtFormatGraphObjsLabels
 

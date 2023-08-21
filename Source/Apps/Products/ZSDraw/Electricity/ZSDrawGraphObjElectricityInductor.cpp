@@ -298,7 +298,7 @@ void CGraphObjInductor::setInductance( double i_fInductance_H )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = "Inductance:" + QString::number(i_fInductance_H) + " H";
     }
@@ -314,7 +314,7 @@ void CGraphObjInductor::setInductance( double i_fInductance_H )
     {
         m_fInductance_H = i_fInductance_H;
 
-        setDescription( QString::number(m_fInductance_H) + " H" );
+        //setDescription( QString::number(m_fInductance_H) + " H" );
     }
 } // setInductance
 
@@ -326,21 +326,21 @@ public: // instance methods
 void CGraphObjInductor::showInductance( ESelectionPoint i_selPtPos )
 //------------------------------------------------------------------------------
 {
-    showDescriptionLabel(i_selPtPos);
+    //showDescriptionLabel(i_selPtPos);
 }
 
 //------------------------------------------------------------------------------
 void CGraphObjInductor::hideInductance()
 //------------------------------------------------------------------------------
 {
-    hideDescriptionLabel();
+    //hideDescriptionLabel();
 }
 
 //------------------------------------------------------------------------------
 bool CGraphObjInductor::isInductanceVisible( ESelectionPoint i_selPtPos ) const
 //------------------------------------------------------------------------------
 {
-    return isDescriptionLabelVisible(i_selPtPos);
+    return false; //isDescriptionLabelVisible(i_selPtPos);
 }
 
 /*==============================================================================
@@ -409,7 +409,7 @@ void CGraphObjInductor::onDrawSettingsChanged()
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
     }
 

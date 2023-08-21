@@ -400,7 +400,7 @@ static double s_fSelectionPointRotateDistance_px = 20.0;
 //------------------------------------------------------------------------------
 template<> const QVector<SEnumEntry> ZS::System::CEnum<ESelectionPoint>::s_arEnumEntries =
 //------------------------------------------------------------------------------
-{                       // Enumerator,                                    Name,          Symbol, Text,          SCIPShort, SCPILong, Value
+{
     /*  0 */ SEnumEntry( static_cast<int>(ESelectionPoint::None),         "None",         "-",   "None"          ),
     /*  1 */ SEnumEntry( static_cast<int>(ESelectionPoint::TopLeft),      "TopLeft",      "TL",  "Top Left"      ),
     /*  2 */ SEnumEntry( static_cast<int>(ESelectionPoint::TopRight),     "TopRight",     "TR",  "Top Right"     ),
@@ -413,8 +413,9 @@ template<> const QVector<SEnumEntry> ZS::System::CEnum<ESelectionPoint>::s_arEnu
     /*  9 */ SEnumEntry( static_cast<int>(ESelectionPoint::Center),       "Center",       "C",   "Center"        ),
     /* 10 */ SEnumEntry( static_cast<int>(ESelectionPoint::RotateTop),    "RotateTop",    "OT",  "Rotate Top"    ),
     /* 11 */ SEnumEntry( static_cast<int>(ESelectionPoint::RotateBottom), "RotateBottom", "OB",  "Rotate Bottom" ),
-    /* 12 */ SEnumEntry( static_cast<int>(ESelectionPoint::All),          "All",          "All", "All"           ),
-    /* 13 */ SEnumEntry( static_cast<int>(ESelectionPoint::Any),          "Any",          "Any", "Any"           )
+    /* 12 */ SEnumEntry( static_cast<int>(ESelectionPoint::PolygonPoint), "PolygonPoint", "PP",  "Polygon Point" ),
+    /* 13 */ SEnumEntry( static_cast<int>(ESelectionPoint::All),          "All",          "All", "All"           ),
+    /* 14 */ SEnumEntry( static_cast<int>(ESelectionPoint::Any),          "Any",          "Any", "Any"           )
 };
 
 //------------------------------------------------------------------------------

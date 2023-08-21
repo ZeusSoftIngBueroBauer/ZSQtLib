@@ -376,7 +376,7 @@ void CGraphObjCapacitor::setCapacitance( double i_fCapacitance_F )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = "Capacitance:" + QString::number(i_fCapacitance_F) + " F";
     }
@@ -392,7 +392,7 @@ void CGraphObjCapacitor::setCapacitance( double i_fCapacitance_F )
     {
         m_fCapacitance_F = i_fCapacitance_F;
 
-        setDescription(QString::number(m_fCapacitance_F) + " F");
+        //setDescription(QString::number(m_fCapacitance_F) + " F");
     }
 } // setCapacitance
 
@@ -404,21 +404,21 @@ public: // instance methods
 void CGraphObjCapacitor::showCapacitance( ESelectionPoint i_selPtPos )
 //------------------------------------------------------------------------------
 {
-    showDescriptionLabel(i_selPtPos);
+    //showDescriptionLabel(i_selPtPos);
 }
 
 //------------------------------------------------------------------------------
 void CGraphObjCapacitor::hideCapacitance()
 //------------------------------------------------------------------------------
 {
-    hideDescriptionLabel();
+    //hideDescriptionLabel();
 }
 
 //------------------------------------------------------------------------------
 bool CGraphObjCapacitor::isCapacitanceVisible( ESelectionPoint i_selPtPos ) const
 //------------------------------------------------------------------------------
 {
-    return isDescriptionLabelVisible(i_selPtPos);
+    return false; //isDescriptionLabelVisible(i_selPtPos);
 }
 
 /*==============================================================================
@@ -487,7 +487,7 @@ void CGraphObjCapacitor::onDrawSettingsChanged()
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
     }
 

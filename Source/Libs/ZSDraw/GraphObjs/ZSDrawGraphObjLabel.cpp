@@ -142,9 +142,8 @@ CGraphObjLabel::~CGraphObjLabel()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
-    if( m_pGraphObjParent != nullptr )
-    {
-        m_pGraphObjParent->onLabelDestroying(this);
+    if (m_pGraphObjParent != nullptr) {
+        m_pGraphObjParent->onLabelAboutToBeDestroyed(this);
     }
 
     // Please note that the dynamic cast to QGraphicsItem returns nullptr if the
@@ -240,7 +239,7 @@ void CGraphObjLabel::setText( const QString& i_strText )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = i_strText;
     }
@@ -282,7 +281,7 @@ void CGraphObjLabel::showAnchorLine()
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
     }
 
@@ -310,7 +309,7 @@ void CGraphObjLabel::hideAnchorLine()
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
     }
 
@@ -447,7 +446,7 @@ void CGraphObjLabel::setIsHit( bool i_bHit )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "Hit:" + bool2Str(i_bHit);
     }
@@ -574,7 +573,7 @@ void CGraphObjLabel::setCursor( const QCursor& i_cursor )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = qCursorShape2Str(i_cursor.shape());
     }
@@ -1181,7 +1180,7 @@ QVariant CGraphObjLabel::itemChange( GraphicsItemChange i_change, const QVariant
     QString strAddTrcInfo;
     QString strMthReturn;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "Changed:" + qGraphicsItemChange2Str(i_change);
 

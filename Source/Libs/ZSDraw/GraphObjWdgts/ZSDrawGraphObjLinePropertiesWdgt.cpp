@@ -34,10 +34,12 @@ may result in using the software modules.
 #include "ZSSys/ZSSysTrcServer.h"
 
 #if QT_VERSION < 0x050000
+#include <QtGui/qlabel.h>
 #include <QtGui/qlayout.h>
 #include <QtGui/qmessagebox.h>
 #include <QtGui/qpushbutton.h>
 #else
+#include <QtWidgets/qlabel.h>
 #include <QtWidgets/qlayout.h>
 #include <QtWidgets/qmessagebox.h>
 #include <QtWidgets/qpushbutton.h>
@@ -47,6 +49,7 @@ may result in using the software modules.
 
 
 using namespace ZS::System;
+using namespace ZS::System::GUI;
 using namespace ZS::Draw;
 
 
@@ -179,11 +182,18 @@ bool CWdgtGraphObjLineProperties::hasChanges() const
         /* strAddInfo   */ "" );
 
     bool bHasChanges = false;
-    if (m_pWdgtLabels != nullptr) {
-        bHasChanges = m_pWdgtLabels->hasChanges();
-    }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(bHasChanges);
+    // If the graphical object is about to be destroyed, "onGraphObjChanged" is called
+    // to update the content of the widget. But the child property widgets may not
+    // have been informed yet that the graphical object is about to be destroyed as
+    // here we are in the call stack of the "onGraphObjAboutToDestroyed" of this widget.
+    // The child widgets slot may be called sometimes afterwards.
+    if (m_pGraphObj != nullptr) {
+        if (m_pWdgtLabels != nullptr) {
+            bHasChanges = m_pWdgtLabels->hasChanges();
+        }
+        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+            mthTracer.setMethodReturn(bHasChanges);
+        }
     }
     return bHasChanges;
 }
@@ -207,6 +217,7 @@ void CWdgtGraphObjLineProperties::acceptChanges()
             "Some input is erroneous. Please correct the relevant input first.");
     }
     else {
+        CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
         if (m_pWdgtLabels != nullptr) {
             m_pWdgtLabels->acceptChanges();
         }

@@ -327,7 +327,7 @@ void CGraphObjResistor::setResistance( double i_fResistance_Ohm )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = "Resistance:" + QString::number(i_fResistance_Ohm) + " Ohm";
     }
@@ -343,7 +343,7 @@ void CGraphObjResistor::setResistance( double i_fResistance_Ohm )
     {
         m_fResistance_Ohm = i_fResistance_Ohm;
 
-        setDescription( QString::number(m_fResistance_Ohm) + " Ohm" );
+        //setDescription( QString::number(m_fResistance_Ohm) + " Ohm" );
     }
 } // setResistance
 
@@ -355,21 +355,21 @@ public: // instance methods
 void CGraphObjResistor::showResistance( ESelectionPoint i_selPtPos )
 //------------------------------------------------------------------------------
 {
-    showDescriptionLabel(i_selPtPos);
+    //showDescriptionLabel(i_selPtPos);
 }
 
 //------------------------------------------------------------------------------
 void CGraphObjResistor::hideResistance()
 //------------------------------------------------------------------------------
 {
-    hideDescriptionLabel();
+    //hideDescriptionLabel();
 }
 
 //------------------------------------------------------------------------------
 bool CGraphObjResistor::isResistanceVisible( ESelectionPoint i_selPtPos ) const
 //------------------------------------------------------------------------------
 {
-    return isDescriptionLabelVisible(i_selPtPos);
+    return false; //isDescriptionLabelVisible(i_selPtPos);
 }
 
 /*==============================================================================
@@ -438,7 +438,7 @@ void CGraphObjResistor::onDrawSettingsChanged()
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
     }
 

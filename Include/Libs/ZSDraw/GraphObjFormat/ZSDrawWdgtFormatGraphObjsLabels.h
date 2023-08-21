@@ -82,17 +82,11 @@ public: // must overridables of base class CWdgtFormatGraphObjs
 protected: // must overridables of base class CWdgtFormatGraphObjs
     virtual void onGraphObjChanged() override;
 private: // instance members
-    QVBoxLayout*             m_pLyt;
-    QLabel*                  m_pLblHeadLine;
-    QHBoxLayout*             m_pLytName;
-    QLabel*                  m_pLblName;
-    QLineEdit*               m_pEdtName;
-    QHBoxLayout*             m_pLytPath;
-    QLabel*                  m_pLblPath;
-    QLineEdit*               m_pEdtPath;
-    QHBoxLayout*             m_pLytDescription;
-    QLabel*                  m_pLblDescription;
-    QLineEdit*               m_pEdtDescription;
+    QVBoxLayout* m_pLyt;
+    QLabel* m_pLblHeadLine;
+    QHBoxLayout* m_pLytName;
+    QLabel* m_pLblName;
+    QLineEdit* m_pEdtName;
     // Trace
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
