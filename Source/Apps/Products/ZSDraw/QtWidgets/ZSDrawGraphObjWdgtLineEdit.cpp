@@ -95,12 +95,10 @@ CGraphObjWdgtLineEdit::CGraphObjWdgtLineEdit(
 
     QString strAddTrcInfo;
 
-    createTrcAdminObjs(NameSpace(), ClassName(), i_strObjName);
+    createTraceAdminObjs("QtWidgets::" + ClassName());
 
-    if( m_pTrcAdminObjCtorsAndDtor != nullptr && m_pTrcAdminObjCtorsAndDtor->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -187,7 +185,7 @@ CGraphObj* CGraphObjWdgtLineEdit::clone()
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObjCtorsAndDtor != nullptr && m_pTrcAdminObjCtorsAndDtor->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal))
     {
     }
 

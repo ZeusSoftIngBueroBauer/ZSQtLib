@@ -62,7 +62,7 @@ public: // overridables of base class CWdgtGraphObjPropertiesAbstract
     void acceptChanges() override;
     void rejectChanges() override;
 protected slots:
-    void onWdgtLabelsPropertyChanged();
+    void onWdgtLabelsContentChanged();
 protected: // instance members
     CGraphObjLine* m_pGraphObjLine;
     CWdgtGraphObjPropertiesLabels* m_pWdgtLabels;

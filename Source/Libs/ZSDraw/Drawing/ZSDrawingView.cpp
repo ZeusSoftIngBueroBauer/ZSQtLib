@@ -320,7 +320,7 @@ void CDrawingView::mouseMoveEvent( QMouseEvent* i_pEv )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObjMouseMoveEvent != nullptr && m_pTrcAdminObjMouseMoveEvent->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjMouseMoveEvent, EMethodTraceDetailLevel::ArgsNormal))
     {
         #if QT_VERSION < 0x050000
         strMthInArgs = "Pos:(" + QString::number(i_pEv->posF().x()) + "," + QString::number(i_pEv->posF().y()) + ")";

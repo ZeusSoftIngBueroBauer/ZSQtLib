@@ -90,7 +90,9 @@ public: // overridables
     virtual QString nameSpace() const { return CWdgtGraphObjPropertiesAbstract::NameSpace(); }
     virtual QString className() const { return CWdgtGraphObjPropertiesAbstract::ClassName(); }
 signals:
-    void propertyChanged();
+    /*! This signal is emitted if any property of the graphical object is changed
+        by an edit control of the widget. */
+    void contentChanged();
 public: // overridables
     virtual void setKeyInTree(const QString& i_strKeyInTree);
     QString getKeyInTree() const;
@@ -103,7 +105,9 @@ protected slots: // overridables
     virtual void onBtnApplyClicked(bool i_bChecked = false);
     virtual void onBtnResetClicked(bool i_bChecked = false);
 protected: // overridables
+    virtual void fillEditControls();
     virtual void updateButtonsEnabled();
+    virtual void applySettings();
 protected: // overridables
     virtual void onGraphObjChanged();
     virtual void onGraphObjMoved();
@@ -115,18 +119,41 @@ private slots:
     void onDrawingSceneGraphObjRenamed(const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree, const QString& i_strOrigName);
     void onDrawingSceneGraphObjAboutToBeDestroyed(const QString& i_strKeyInTree);
 protected: // instance methods (tracing emitting signals)
-    void emit_propertyChanged();
+    void emit_contentChanged();
 protected: // instance members
+    /*!< Pointer to drawing scene. */
     CDrawingScene* m_pDrawingScene;
+    /*!< Unique key of the graphical to be edited. */
     QString m_strKeyInTree;
+    /*!< If the unique key is set the drawing scene is queried to get the pointer to
+         graphical object which should be edited. */
     CGraphObj* m_pGraphObj;
+    /*!< Current graphical object type of the edited object. This member together with
+         m_graphObjTypePrev may be used by derived classed to decide whether the current
+         object type has also been changed when the object to be edited is changed.
+         Not all of the edit controls need to be filled with new settings if the type does
+         not change. E.g. the combo box with the different possible anchor types for labels
+         don't need to refilled with new items if the type does not changed. */
+    EGraphObjType m_graphObjTypeCurr;
+    /*!< This member together with m_graphObjTypeCurr may be used by derived classed to
+         decide whether the current object type has also been changed when the object to be
+         edited is changed. After fillEditControls has been called the member
+         m_graphObjTypePrev is set to m_graphObjTypeCurr. */
+    EGraphObjType m_graphObjTypePrev;
     int m_cxLblWidthClm1;
     int m_cxEdtWidthClm1;
     int m_cxLblWidthClm2;
     int m_cxEdtWidthClm2;
     int m_cxClmSpacing;
-    /*!< Blocking signals counter. */
-    int m_iValueChangedSignalsBlocked;
+    /*!< Counts how ofter the "contentChanged" signal has been blocked. A value greater than 0
+         for the counter means that the signal "contentChanged" should not be emitted. Instead
+         the flag m_bContentChanged should be set to true.
+         If the counter is decremented and reaches 0 the flag "m_bContentChanged" is checked and
+         the signal "contentChanged" is emitted if the flag is set. */
+    int m_iContentChangedSignalBlockedCounter;
+    /*!< Flag to indicate that the content of an edit control has been changed while the "contentChanged"
+         signal was blocked by the "contentChanged" counter. */
+    bool m_bContentChanged;
     // Edit Controls
     QVBoxLayout* m_pLyt;
     // Button Line

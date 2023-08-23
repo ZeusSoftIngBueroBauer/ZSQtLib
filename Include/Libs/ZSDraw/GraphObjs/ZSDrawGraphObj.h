@@ -64,14 +64,16 @@ public: // struct methods
     bool isLineSegmentHit() const;
 public: // struct methods
     void setCursor(double i_fGraphObjRotAngle_rad);
+public: // struct methods
+    QString toString() const;
 public: // struct members
     CEnumEditMode m_editMode;
     CEnumEditResizeMode m_editResizeMode;
     CEnumSelectionPoint m_selPtBoundingRect;
-    int                 m_idxPolygonShapePoint;
-    int                 m_idxLineSegment;
-    QPointF             m_ptSelected;
-    QCursor             m_cursor;
+    int m_idxPolygonShapePoint;
+    int m_idxLineSegment;
+    QPointF m_ptSelected;
+    QCursor m_cursor;
 
 }; // struct SGraphObjHitInfo
 
@@ -206,6 +208,9 @@ protected: // ctor
         ZS::System::CIdxTreeEntry::EEntryType i_idxTreeEntryType = ZS::System::CIdxTreeEntry::EEntryType::Branch );
 public: // dtor
     virtual ~CGraphObj();
+protected: // instance methods (trace admin objects for method tracing)
+    void createTraceAdminObjs(const QString& i_strClassName);
+    void releaseTraceAdminObjs();
 public: // must overridables
     virtual CGraphObj* clone() = 0;
 public: // overridables
@@ -356,7 +361,7 @@ public: // must overridables
     virtual void setIsHit( bool i_bHit ) = 0;
 public: // overridables
     virtual bool isHit() const { return m_bIsHit; }
-    virtual bool isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) const;
+    virtual bool isHit(const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo = nullptr) const;
 public: // overridables
     virtual double bringToFront();
     virtual void setStackingOrderValue( double i_fZValue );
@@ -446,10 +451,6 @@ protected: // auxiliary instance methods
     void showLabel(QHash<QString, CGraphObjLabel*>& i_arpLabels, const QString& i_strKey, const QString& i_strText, ESelectionPoint i_selPt);
     void hideLabel(QHash<QString, CGraphObjLabel*>& i_arpLabels, const QString& i_strKey);
     void destroyLabels();
-protected: // instance methods (trace admin objects for method tracing)
-    void createTrcAdminObjs(const QString i_strNameSpace, const QString& i_strClassName, const QString& i_strObjName);
-    void releaseTrcAdminObjs();
-    void renameTrcAdminObjs(const QString& i_strObjName);
 protected: // instance members
     /*!< Flag to indicate that the destructor has been called. */
     bool m_bDtorInProgress;
@@ -555,10 +556,11 @@ protected: // instance members
     QList<SGraphObjKeyEventFct> m_arKeyPressEventFunctions;
     QList<SGraphObjKeyEventFct> m_arKeyReleaseEventFunctions;
     /*!< Method Tracing (trace admin objects have to be created in ctor of "final" class)
-         by calling "createTrcAdminObjs". */
+         by calling "createTraceAdminObjs". */
     ZS::System::CTrcAdminObj* m_pTrcAdminObjCtorsAndDtor;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjItemChange;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjBoundingRect;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjIsHit;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjPaint;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjSceneEvent;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjSceneEventFilter;

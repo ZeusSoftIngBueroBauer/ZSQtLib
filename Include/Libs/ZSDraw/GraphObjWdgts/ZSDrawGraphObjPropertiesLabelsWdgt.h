@@ -58,29 +58,25 @@ public: // overridables of base class CWdgtGraphObjPropertiesAbstract
 public: // overridables of base class CWdgtGraphObjPropertiesAbstract
     bool hasErrors() const override;
     bool hasChanges() const override;
-    void acceptChanges() override;
-    void rejectChanges() override;
 protected slots:
-    void onBtnOpenCloseClicked(bool i_bChecked = false);
+    void onBtnCollapseClicked(bool i_bChecked = false);
+protected slots:
     void onEdtNameTextChanged(const QString& i_strText);
     void onChkNameLabelVisibleStateChanged(int i_iState);
     void onCmbNameLabelAnchorSelPtCurrentIndexChanged(int i_idx);
     void onChkNameLabelAnchorLineVisibleStateChanged(int i_iState);
-protected: // auxiliary instance methods
-    bool changedNameIsUnique() const;
 protected: // overridables of base class CWdgtGraphObjPropertiesAbstract
-    virtual void onGraphObjChanged() override;
-    virtual void onGraphObjMoved() override;
-    virtual void onGraphObjRenamed() override;
-    virtual void onGraphObjAboutToDestroyed() override;
+    void fillEditControls() override;
+    void applySettings() override;
 private: // auxiliary instance methods
+    bool changedNameIsUnique() const;
     void fillComboNameLabelAnchorSelPt();
 private: // instance members
     QWidget* m_pWdgtHeadline;
     QHBoxLayout* m_pLytWdgtHeadline;
     QPixmap m_pxmBtnDown;
     QPixmap m_pxmBtnUp;
-    QPushButton* m_pBtnOpenClose;
+    QPushButton* m_pBtnCollapse;
     QLabel* m_pLblHeadline;
     ZS::System::GUI::CSepLine* m_pSepHeadline;
     QWidget* m_pWdgtLabels;

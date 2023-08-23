@@ -79,7 +79,7 @@ CWdgtGraphObjPropertiesLabels::CWdgtGraphObjPropertiesLabels(
     m_pLytWdgtHeadline(nullptr),
     m_pxmBtnDown(":/ZS/Button/ButtonArrowDown.png"),
     m_pxmBtnUp(":/ZS/Button/ButtonArrowUp.png"),
-    m_pBtnOpenClose(nullptr),
+    m_pBtnCollapse(nullptr),
     m_pLblHeadline(nullptr),
     m_pSepHeadline(nullptr),
     m_pWdgtLabels(nullptr),
@@ -113,13 +113,13 @@ CWdgtGraphObjPropertiesLabels::CWdgtGraphObjPropertiesLabels(
     m_pWdgtHeadline->setLayout(m_pLytWdgtHeadline);
     m_pLyt->addWidget(m_pWdgtHeadline);
 
-    m_pBtnOpenClose = new QPushButton();
-    m_pBtnOpenClose->setIcon(m_pxmBtnDown);
-    m_pLytWdgtHeadline->addWidget(m_pBtnOpenClose);
+    m_pBtnCollapse = new QPushButton();
+    m_pBtnCollapse->setIcon(m_pxmBtnDown);
+    m_pLytWdgtHeadline->addWidget(m_pBtnCollapse);
 
     QObject::connect(
-        m_pBtnOpenClose, &QPushButton::clicked,
-        this, &CWdgtGraphObjPropertiesLabels::onBtnOpenCloseClicked);
+        m_pBtnCollapse, &QPushButton::clicked,
+        this, &CWdgtGraphObjPropertiesLabels::onBtnCollapseClicked);
 
     m_pLblHeadline = new QLabel("Labels");
     QFont fntHeadline = m_pLblHeadline->font();
@@ -219,7 +219,7 @@ CWdgtGraphObjPropertiesLabels::~CWdgtGraphObjPropertiesLabels()
     m_pLytWdgtHeadline = nullptr;
     //m_pxmBtnDown;
     //m_pxmBtnUp;
-    m_pBtnOpenClose = nullptr;
+    m_pBtnCollapse = nullptr;
     m_pLblHeadline = nullptr;
     m_pSepHeadline = nullptr;
     m_pWdgtLabels = nullptr;
@@ -258,36 +258,6 @@ void CWdgtGraphObjPropertiesLabels::setKeyInTree(const QString& i_strKeyInTree)
     if (m_strKeyInTree != i_strKeyInTree)
     {
         CWdgtGraphObjPropertiesAbstract::setKeyInTree(i_strKeyInTree);
-
-        onGraphObjChanged();
-        if (m_pGraphObj == nullptr)
-        {
-            m_pEdtName->setText("");
-            m_pEdtName->setEnabled(false);
-            m_pLblNameError->hide();
-            m_pChkNameLabelVisible->setEnabled(false);
-            m_pChkNameLabelVisible->setCheckState(Qt::Unchecked);
-            m_pCmbNameLabelAnchorSelPt->setEnabled(false);
-            m_pCmbNameLabelAnchorSelPt->clear();
-            m_pChkNameLabelAnchorLineVisible->setEnabled(false);
-            m_pChkNameLabelAnchorLineVisible->setCheckState(Qt::Unchecked);
-        }
-        else
-        {
-            m_pEdtName->setText(m_pGraphObj->name());
-            m_pEdtName->setEnabled(true);
-            m_pChkNameLabelVisible->setEnabled(true);
-            m_pChkNameLabelVisible->setCheckState(
-                m_pGraphObj->isNameLabelVisible() ? Qt::Checked : Qt::Unchecked);
-            m_pCmbNameLabelAnchorSelPt->setEnabled(true);
-            fillComboNameLabelAnchorSelPt();
-            CEnumSelectionPoint selPt = m_pGraphObj->nameLabelAnchorPoint();
-            int idxCmb = m_pCmbNameLabelAnchorSelPt->findData(selPt.enumeratorAsInt());
-            m_pCmbNameLabelAnchorSelPt->setCurrentIndex(idxCmb); // -1 is ok showing an empty string (None)
-            m_pChkNameLabelAnchorLineVisible->setEnabled(true);
-            m_pChkNameLabelAnchorLineVisible->setCheckState(
-                m_pGraphObj->isNameLabelAnchorLineVisible() ? Qt::Checked : Qt::Unchecked);
-        }
     }
 }
 
@@ -356,94 +326,33 @@ bool CWdgtGraphObjPropertiesLabels::hasChanges() const
     return bHasChanges;
 }
 
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
 //------------------------------------------------------------------------------
-void CWdgtGraphObjPropertiesLabels::acceptChanges()
+void CWdgtGraphObjPropertiesLabels::onBtnCollapseClicked(bool /*i_bChecked*/)
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "acceptChanges",
+        /* strMethod    */ "onBtnCollapseClicked",
         /* strAddInfo   */ "" );
 
-    if (m_pGraphObj != nullptr && !hasErrors())
-    {
-        CRefCountGuard refCountGard(&m_iValueChangedSignalsBlocked);
-
-        m_pGraphObj->rename(m_pEdtName->text());
-        if (m_pChkNameLabelVisible->checkState() == Qt::Checked) {
-            int idxCmb = m_pCmbNameLabelAnchorSelPt->currentIndex();
-            if (idxCmb < 0) {
-                idxCmb = 0; // Set to most commonly used anchor point.
-                m_pCmbNameLabelAnchorSelPt->setCurrentIndex(idxCmb);
-            }
-            CEnumSelectionPoint eSelPtCmb = CEnumSelectionPoint(m_pCmbNameLabelAnchorSelPt->itemData(idxCmb).toInt());
-            m_pGraphObj->showNameLabel(eSelPtCmb.enumerator());
-            if (m_pChkNameLabelAnchorLineVisible->checkState() == Qt::Checked) {
-                m_pGraphObj->showNameLabelAnchorLine();
-            }
-            else {
-                m_pGraphObj->hideNameLabelAnchorLine();
-            }
-        }
-        else {
-            m_pGraphObj->hideNameLabel();
-            m_pGraphObj->hideNameLabelAnchorLine();
-        }
+    if (m_pWdgtLabels->isHidden()) {
+        m_pBtnCollapse->setIcon(m_pxmBtnUp);
+        m_pWdgtLabels->show();
     }
-}
-
-//------------------------------------------------------------------------------
-void CWdgtGraphObjPropertiesLabels::rejectChanges()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "rejectChanges",
-        /* strAddInfo   */ "" );
-
-    if (m_pGraphObj != nullptr) {
-        CRefCountGuard refCountGard(&m_iValueChangedSignalsBlocked);
-
-        m_pEdtName->setText(m_pGraphObj->name());
-        m_pEdtName->setEnabled(true);
-        m_pChkNameLabelVisible->setEnabled(true);
-        m_pChkNameLabelVisible->setCheckState(
-            m_pGraphObj->isNameLabelVisible() ? Qt::Checked : Qt::Unchecked);
-        m_pCmbNameLabelAnchorSelPt->setEnabled(true);
-        CEnumSelectionPoint selPt = m_pGraphObj->nameLabelAnchorPoint();
-        int idxCmb = m_pCmbNameLabelAnchorSelPt->findData(selPt.enumeratorAsInt());
-        m_pCmbNameLabelAnchorSelPt->setCurrentIndex(idxCmb); // -1 is ok showing an empty string (None)
-        m_pChkNameLabelAnchorLineVisible->setEnabled(true);
-        m_pChkNameLabelAnchorLineVisible->setCheckState(
-            m_pGraphObj->isNameLabelAnchorLineVisible() ? Qt::Checked : Qt::Unchecked);
+    else {
+        m_pBtnCollapse->setIcon(m_pxmBtnDown);
+        m_pWdgtLabels->hide();
     }
 }
 
 /*==============================================================================
 protected slots:
 ==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CWdgtGraphObjPropertiesLabels::onBtnOpenCloseClicked(bool /*i_bChecked*/)
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onBtnOpenCloseClicked",
-        /* strAddInfo   */ "" );
-
-    if (m_pWdgtLabels->isHidden()) {
-        m_pBtnOpenClose->setIcon(m_pxmBtnUp);
-        m_pWdgtLabels->show();
-    }
-    else {
-        m_pBtnOpenClose->setIcon(m_pxmBtnDown);
-        m_pWdgtLabels->hide();
-    }
-}
 
 //------------------------------------------------------------------------------
 void CWdgtGraphObjPropertiesLabels::onEdtNameTextChanged(const QString& i_strText)
@@ -459,14 +368,17 @@ void CWdgtGraphObjPropertiesLabels::onEdtNameTextChanged(const QString& i_strTex
         /* strMethod    */ "onEdtNameTextChanged",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_iValueChangedSignalsBlocked == 0) {
-        if (changedNameIsUnique()) {
-            m_pLblNameError->hide();
-        }
-        else {
-            m_pLblNameError->show();
-        }
-        emit_propertyChanged();
+    if (changedNameIsUnique()) {
+        m_pLblNameError->hide();
+    }
+    else {
+        m_pLblNameError->show();
+    }
+    if (m_iContentChangedSignalBlockedCounter > 0) {
+        m_bContentChanged = true;
+    }
+    else {
+        emit_contentChanged();
     }
 }
 
@@ -484,8 +396,11 @@ void CWdgtGraphObjPropertiesLabels::onChkNameLabelVisibleStateChanged(int i_iSta
         /* strMethod    */ "onChkNameLabelVisibleStateChanged",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_iValueChangedSignalsBlocked == 0) {
-        emit_propertyChanged();
+    if (m_iContentChangedSignalBlockedCounter > 0) {
+        m_bContentChanged = true;
+    }
+    else {
+        emit_contentChanged();
     }
 }
 
@@ -503,8 +418,11 @@ void CWdgtGraphObjPropertiesLabels::onCmbNameLabelAnchorSelPtCurrentIndexChanged
         /* strMethod    */ "onCmbNameLabelAnchorSelPtCurrentIndexChanged",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_iValueChangedSignalsBlocked == 0) {
-        emit_propertyChanged();
+    if (m_iContentChangedSignalBlockedCounter > 0) {
+        m_bContentChanged = true;
+    }
+    else {
+        emit_contentChanged();
     }
 }
 
@@ -522,13 +440,99 @@ void CWdgtGraphObjPropertiesLabels::onChkNameLabelAnchorLineVisibleStateChanged(
         /* strMethod    */ "onChkNameLabelAnchorLineVisibleStateChanged",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_iValueChangedSignalsBlocked == 0) {
-        emit_propertyChanged();
+    if (m_iContentChangedSignalBlockedCounter > 0) {
+        m_bContentChanged = true;
+    }
+    else {
+        emit_contentChanged();
     }
 }
 
 /*==============================================================================
-protected: // auxiliary instance methods
+protected: // overridables of base class CWdgtGraphObjPropertiesAbstract
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjPropertiesLabels::fillEditControls()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "fillEditControls",
+        /* strAddInfo   */ "" );
+
+    if (m_pGraphObj == nullptr)
+    {
+        m_pEdtName->setText("");
+        m_pEdtName->setEnabled(false);
+        m_pLblNameError->hide();
+        m_pChkNameLabelVisible->setEnabled(false);
+        m_pChkNameLabelVisible->setCheckState(Qt::Unchecked);
+        m_pCmbNameLabelAnchorSelPt->setEnabled(false);
+        m_pCmbNameLabelAnchorSelPt->clear();
+        m_pChkNameLabelAnchorLineVisible->setEnabled(false);
+        m_pChkNameLabelAnchorLineVisible->setCheckState(Qt::Unchecked);
+    }
+    else
+    {
+        // Depending on the type of graphical object, fill the combo box
+        // with possible anchor points.
+        m_pEdtName->setText(m_pGraphObj->name());
+        m_pEdtName->setEnabled(true);
+        m_pChkNameLabelVisible->setEnabled(true);
+        m_pChkNameLabelVisible->setCheckState(
+            m_pGraphObj->isNameLabelVisible() ? Qt::Checked : Qt::Unchecked);
+        fillComboNameLabelAnchorSelPt();
+        m_pCmbNameLabelAnchorSelPt->setEnabled(true);
+        CEnumSelectionPoint selPt = m_pGraphObj->nameLabelAnchorPoint();
+        int idxCmb = m_pCmbNameLabelAnchorSelPt->findData(selPt.enumeratorAsInt());
+        m_pCmbNameLabelAnchorSelPt->setCurrentIndex(idxCmb); // -1 is ok showing an empty string (None)
+        m_pChkNameLabelAnchorLineVisible->setEnabled(true);
+        m_pChkNameLabelAnchorLineVisible->setCheckState(
+            m_pGraphObj->isNameLabelAnchorLineVisible() ? Qt::Checked : Qt::Unchecked);
+    }
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjPropertiesLabels::applySettings()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "applySettings",
+        /* strAddInfo   */ "" );
+
+    if (m_pGraphObj != nullptr && !hasErrors())
+    {
+        m_pGraphObj->rename(m_pEdtName->text());
+
+        if (m_pChkNameLabelVisible->checkState() == Qt::Checked) {
+            int idxCmb = m_pCmbNameLabelAnchorSelPt->currentIndex();
+            if (idxCmb < 0) {
+                idxCmb = 0; // Set to most commonly used anchor point.
+                m_pCmbNameLabelAnchorSelPt->setCurrentIndex(idxCmb);
+            }
+            CEnumSelectionPoint eSelPtCmb = CEnumSelectionPoint(m_pCmbNameLabelAnchorSelPt->itemData(idxCmb).toInt());
+            m_pGraphObj->showNameLabel(eSelPtCmb.enumerator());
+
+            if (m_pChkNameLabelAnchorLineVisible->checkState() == Qt::Checked) {
+                m_pGraphObj->showNameLabelAnchorLine();
+            }
+            else {
+                m_pGraphObj->hideNameLabelAnchorLine();
+            }
+        }
+        else {
+            m_pGraphObj->hideNameLabel();
+            m_pGraphObj->hideNameLabelAnchorLine();
+        }
+    }
+}
+
+/*==============================================================================
+private: // auxiliary instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -558,60 +562,6 @@ bool CWdgtGraphObjPropertiesLabels::changedNameIsUnique() const
     return bIsUnique;
 }
 
-/*==============================================================================
-protected: // must overridables of base class CWdgtFormatGraphObjs
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CWdgtGraphObjPropertiesLabels::onGraphObjChanged()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onGraphObjChanged",
-        /* strAddInfo   */ "" );
-}
-
-//------------------------------------------------------------------------------
-void CWdgtGraphObjPropertiesLabels::onGraphObjMoved()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onGraphObjMoved",
-        /* strAddInfo   */ "" );
-}
-
-//------------------------------------------------------------------------------
-void CWdgtGraphObjPropertiesLabels::onGraphObjRenamed()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onGraphObjRenamed",
-        /* strAddInfo   */ "" );
-}
-
-//------------------------------------------------------------------------------
-void CWdgtGraphObjPropertiesLabels::onGraphObjAboutToDestroyed()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onGraphObjDestroyed",
-        /* strAddInfo   */ "" );
-
-    m_pGraphObj = nullptr;
-}
-
-/*==============================================================================
-private: // auxiliary instance methods
-==============================================================================*/
-
 //------------------------------------------------------------------------------
 void CWdgtGraphObjPropertiesLabels::fillComboNameLabelAnchorSelPt()
 //------------------------------------------------------------------------------
@@ -622,26 +572,24 @@ void CWdgtGraphObjPropertiesLabels::fillComboNameLabelAnchorSelPt()
         /* strMethod    */ "fillComboNameLabelAnchorSelPt",
         /* strAddInfo   */ "" );
 
-    if (m_pGraphObj == nullptr)
-    {
+    if (m_graphObjTypeCurr != m_graphObjTypePrev) {
         m_pCmbNameLabelAnchorSelPt->clear();
-    }
-    else
-    {
-        for (ESelectionPoint selPt : m_pGraphObj->getPossibleLabelAnchorPoints()) {
-            if (m_pGraphObj->type() == EGraphObjTypeLine) {
-                if (selPt == ESelectionPoint::TopLeft) {
-                    m_pCmbNameLabelAnchorSelPt->addItem("Line Start", static_cast<int>(selPt));
-                }
-                else if (selPt == ESelectionPoint::BottomRight) {
-                    m_pCmbNameLabelAnchorSelPt->addItem("Line End", static_cast<int>(selPt));
+        if (m_pGraphObj != nullptr) {
+            for (ESelectionPoint selPt : m_pGraphObj->getPossibleLabelAnchorPoints()) {
+                if (m_pGraphObj->type() == EGraphObjTypeLine) {
+                    if (selPt == ESelectionPoint::TopLeft) {
+                        m_pCmbNameLabelAnchorSelPt->addItem("Line Start", static_cast<int>(selPt));
+                    }
+                    else if (selPt == ESelectionPoint::BottomRight) {
+                        m_pCmbNameLabelAnchorSelPt->addItem("Line End", static_cast<int>(selPt));
+                    }
+                    else {
+                        m_pCmbNameLabelAnchorSelPt->addItem(CEnumSelectionPoint(selPt).toString(), static_cast<int>(selPt));
+                    }
                 }
                 else {
                     m_pCmbNameLabelAnchorSelPt->addItem(CEnumSelectionPoint(selPt).toString(), static_cast<int>(selPt));
                 }
-            }
-            else {
-                m_pCmbNameLabelAnchorSelPt->addItem(CEnumSelectionPoint(selPt).toString(), static_cast<int>(selPt));
             }
         }
     }

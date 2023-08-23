@@ -63,7 +63,7 @@ template<> QVector<QHash<QString, int>> ZS::System::CEnum<ENormedPaperSize>::s_a
 //------------------------------------------------------------------------------
 template<> const QVector<SEnumEntry> ZS::System::CEnum<ENormedPaperSize>::s_arEnumEntries =
 //------------------------------------------------------------------------------
-{                                                         // Name,   Symbol, Text
+{
     SEnumEntry( static_cast<int>(ENormedPaperSize::DinA0),  "DinA0",  "A0",  "DIN A0",
         QSizeF(c_fNormedPaperSizeWidthDinA0_mm, c_fNormedPaperSizeHeightDinA0_mm) ),
     SEnumEntry( static_cast<int>(ENormedPaperSize::DinA1),  "DinA1",  "A1",  "DIN A1",
@@ -99,7 +99,7 @@ template<> QVector<QHash<QString, int>> ZS::System::CEnum<EPrinterPaperSource>::
 //------------------------------------------------------------------------------
 template<> const QVector<SEnumEntry> ZS::System::CEnum<EPrinterPaperSource>::s_arEnumEntries =
 //------------------------------------------------------------------------------
-{                       // Enumerator,                                      Name,      Symbol, Text,  SCIPShort, SCPILong, Value
+{
     /* 0 */ SEnumEntry( static_cast<int>(EPrinterPaperSource::AutoSelect), "Auto Select" ),
     /* 1 */ SEnumEntry( static_cast<int>(EPrinterPaperSource::ManualFeed), "Manual Feed" ),
     /* 2 */ SEnumEntry( static_cast<int>(EPrinterPaperSource::Tray1),      "Tray 1"      ),
@@ -114,7 +114,7 @@ Enum EGraphObjType
 //------------------------------------------------------------------------------
 const SEnumEntry s_arEnumStrGraphObjType[EGraphObjTypeCount] =
 //------------------------------------------------------------------------------
-{                       // Enumerator,                 Name,              Symbol, Text,  SCIPShort, SCPILong, Value
+{
     /* 65536 */ SEnumEntry( EGraphObjTypePoint,           "Point",           "Point"            ),
     /* 65537 */ SEnumEntry( EGraphObjTypeLine,            "Line",            "Line"             ),
     /* 65538 */ SEnumEntry( EGraphObjTypeRect,            "Rect",            "Rectangle"        ),
@@ -256,7 +256,7 @@ template<> QVector<QHash<QString, int>> ZS::System::CEnum<EEditTool>::s_armapsSt
 //------------------------------------------------------------------------------
 template<> const QVector<SEnumEntry> ZS::System::CEnum<EEditTool>::s_arEnumEntries =
 //------------------------------------------------------------------------------
-{                       // Enumerator,                              Name,           Symbol, Text,  SCIPShort, SCPILong, Value
+{
     /* 0 */ SEnumEntry( static_cast<int>(EEditTool::None),          "None",          "-" ),
     /* 1 */ SEnumEntry( static_cast<int>(EEditTool::Select),        "Select",        "S" ),
     /* 2 */ SEnumEntry( static_cast<int>(EEditTool::CreateObjects), "CreateObjects", "C" ),
@@ -274,9 +274,9 @@ template<> QVector<QHash<QString, int>> ZS::System::CEnum<ECoordinatesVersion>::
 //------------------------------------------------------------------------------
 template<> const QVector<SEnumEntry> ZS::System::CEnum<ECoordinatesVersion>::s_arEnumEntries =
 //------------------------------------------------------------------------------
-{                       // Enumerator,                                    Name,      Symbol, Text,  SCIPShort, SCPILong, Value
-    /* 0 */ SEnumEntry( static_cast<int>(ECoordinatesVersion::Original),  "Original"  ),
-    /* 1 */ SEnumEntry( static_cast<int>(ECoordinatesVersion::Current),   "Current"   )
+{
+    /* 0 */ SEnumEntry( static_cast<int>(ECoordinatesVersion::Original), "Original" ),
+    /* 1 */ SEnumEntry( static_cast<int>(ECoordinatesVersion::Current),  "Current"  )
 };
 
 
@@ -290,7 +290,7 @@ template<> QVector<QHash<QString, int>> ZS::System::CEnum<EEditMode>::s_armapsSt
 //------------------------------------------------------------------------------
 template<> const QVector<SEnumEntry> ZS::System::CEnum<EEditMode>::s_arEnumEntries =
 //------------------------------------------------------------------------------
-{                       // Enumerator,                                Name,            Symbol, Text,  SCIPShort, SCPILong, Value
+{
     /* 0 */ SEnumEntry( static_cast<int>(EEditMode::None),           "None",           "-" ),
     /* 1 */ SEnumEntry( static_cast<int>(EEditMode::Creating),       "Creating",       "C" ),
     /* 2 */ SEnumEntry( static_cast<int>(EEditMode::Move),           "Move",           "M" ),
@@ -312,12 +312,12 @@ template<> QVector<QHash<QString, int>> ZS::System::CEnum<EEditResizeMode>::s_ar
 //------------------------------------------------------------------------------
 template<> const QVector<SEnumEntry> ZS::System::CEnum<EEditResizeMode>::s_arEnumEntries =
 //------------------------------------------------------------------------------
-{                       // Enumerator,                                Name,       Symbol, Text,  SCIPShort, SCPILong, Value
-    /* 0 */ SEnumEntry( static_cast<int>(EEditResizeMode::None),      "None"      "-" ),
-    /* 1 */ SEnumEntry( static_cast<int>(EEditResizeMode::ResizeAll), "ResizeAll" "A" ),
-    /* 2 */ SEnumEntry( static_cast<int>(EEditResizeMode::ResizeHor), "ResizeHor" "H" ),
-    /* 3 */ SEnumEntry( static_cast<int>(EEditResizeMode::ResizeVer), "ResizeVer" "V" ),
-    /* 4 */ SEnumEntry( static_cast<int>(EEditResizeMode::Ignore),    "Ignore"    "I" )
+{
+    /* 0 */ SEnumEntry( static_cast<int>(EEditResizeMode::None),      "None",      "-" ),
+    /* 1 */ SEnumEntry( static_cast<int>(EEditResizeMode::ResizeAll), "ResizeAll", "A" ),
+    /* 2 */ SEnumEntry( static_cast<int>(EEditResizeMode::ResizeHor), "ResizeHor", "H" ),
+    /* 3 */ SEnumEntry( static_cast<int>(EEditResizeMode::ResizeVer), "ResizeVer", "V" ),
+    /* 4 */ SEnumEntry( static_cast<int>(EEditResizeMode::Ignore),    "Ignore",    "I" )
 };
 
 
@@ -722,7 +722,7 @@ template<> QVector<QHash<QString, int>> ZS::System::CEnum<ELinePoint>::s_armapsS
 //------------------------------------------------------------------------------
 template<> const QVector<SEnumEntry> ZS::System::CEnum<ELinePoint>::s_arEnumEntries =
 //------------------------------------------------------------------------------
-{                       // Enumerator,                       Name,    Symbol, Text,  SCIPShort, SCPILong, Value
+{
     /* 0 */ SEnumEntry( static_cast<int>(ELinePoint::None),  "None",  "-"     ),
     /* 1 */ SEnumEntry( static_cast<int>(ELinePoint::Start), "Start", "Start" ),
     /* 2 */ SEnumEntry( static_cast<int>(ELinePoint::End),   "End",   "End"   )
@@ -739,7 +739,7 @@ template<> QVector<QHash<QString, int>> ZS::System::CEnum<ETextStyle>::s_armapsS
 //------------------------------------------------------------------------------
 template<> const QVector<SEnumEntry> ZS::System::CEnum<ETextStyle>::s_arEnumEntries =
 //------------------------------------------------------------------------------
-{                       // Enumerator,                            Name,         Symbol, Text,  SCIPShort, SCPILong, Value
+{
     /* 0 */ SEnumEntry( static_cast<int>(ETextStyle::Normal),     "Normal",     "Normal"      ),
     /* 1 */ SEnumEntry( static_cast<int>(ETextStyle::Italic),     "Italic",     "Italic"      ),
     /* 2 */ SEnumEntry( static_cast<int>(ETextStyle::Bold),       "Bold",       "Bold"        ),
@@ -799,7 +799,7 @@ const int s_ariTextSizes_px[] =
 //------------------------------------------------------------------------------
 const ZS::System::SEnumEntry s_arEnumStrTextSize[] =
 //------------------------------------------------------------------------------
-{                       // Enumerator,                                  Name,      Symbol, Text,  SCIPShort, SCPILong, Value
+{
     /*  0 */ SEnumEntry( ETextSize6,   "6" ),
     /*  1 */ SEnumEntry( ETextSize7,   "7" ),
     /*  2 */ SEnumEntry( ETextSize8,   "8" ),
@@ -879,7 +879,7 @@ template<> QVector<QHash<QString, int>> ZS::System::CEnum<ETextEffect>::s_armaps
 //------------------------------------------------------------------------------
 template<> const QVector<SEnumEntry> ZS::System::CEnum<ETextEffect>::s_arEnumEntries =
 //------------------------------------------------------------------------------
-{                       // Enumerator,                                     Name,      Symbol, Text,  SCIPShort, SCPILong, Value
+{
     /* 0 */ SEnumEntry( static_cast<int>(ETextEffect::None),               "None",               "None"               ),
     /* 1 */ SEnumEntry( static_cast<int>(ETextEffect::Strikeout),          "Strikeout",          "Strikeout"          ),
     /* 2 */ SEnumEntry( static_cast<int>(ETextEffect::Underline),          "Underline",          "Underline"          ),
@@ -941,7 +941,7 @@ const Qt::BrushStyle s_arFillStyles2QtBrushStyles[] =
 //------------------------------------------------------------------------------
 template<> const QVector<SEnumEntry> ZS::System::CEnum<EFillStyle>::s_arEnumEntries =
 //------------------------------------------------------------------------------
-{                       // Enumerator,                                  Name,      Symbol, Text,  SCIPShort, SCPILong, Value
+{
     /*  0 */ SEnumEntry( static_cast<int>(EFillStyle::NoFill),                 "NoFill",                  "No Fill"                ),
     /*  1 */ SEnumEntry( static_cast<int>(EFillStyle::SolidPattern),           "SolidPattern",            "Solid Pattern"          ),
     /*  2 */ SEnumEntry( static_cast<int>(EFillStyle::Dense1Pattern),          "Dense1Pattern",           "Dense1Pattern"          ),
@@ -1014,7 +1014,7 @@ const Qt::PenStyle s_arLineStyles2QtPenStyles[] =
 //------------------------------------------------------------------------------
 template<> const QVector<SEnumEntry> ZS::System::CEnum<ELineStyle>::s_arEnumEntries =
 //------------------------------------------------------------------------------
-{                       // Enumerator,                                Name,      Symbol, Text,  SCIPShort, SCPILong, Value
+{
     /* 0 */ SEnumEntry( static_cast<int>(ELineStyle::NoLine),         "NoLine",         "No Line"                   ),
     /* 1 */ SEnumEntry( static_cast<int>(ELineStyle::SolidLine),      "SolidLine",      "Solid Line"                ),
     /* 2 */ SEnumEntry( static_cast<int>(ELineStyle::DashLine),       "DashLine",       "Dashed Line"               ),
@@ -1048,7 +1048,7 @@ template<> QVector<QHash<QString, int>> ZS::System::CEnum<ELineRecordType>::s_ar
 //------------------------------------------------------------------------------
 template<> const QVector<SEnumEntry> ZS::System::CEnum<ELineRecordType>::s_arEnumEntries =
 //------------------------------------------------------------------------------
-{                       // Enumerator,                             Name,      Symbol, Text,  SCIPShort, SCPILong, Value
+{
     /* 0 */ SEnumEntry( static_cast<int>(ELineRecordType::Normal), "Normal", "Normal" ),
     /* 1 */ SEnumEntry( static_cast<int>(ELineRecordType::Double), "Double", "Double" ),
     /* 2 */ SEnumEntry( static_cast<int>(ELineRecordType::Triple), "Triple", "Triple" )
@@ -1087,7 +1087,7 @@ const Qt::BrushStyle s_arLineEndFillStyles2QtBrushStyles[] =
 //------------------------------------------------------------------------------
 template<> const QVector<SEnumEntry> ZS::System::CEnum<ELineEndFillStyle>::s_arEnumEntries =
 //------------------------------------------------------------------------------
-{                       // Enumerator,                             Name,      Symbol, Text,  SCIPShort, SCPILong, Value
+{
     SEnumEntry( static_cast<int>(ELineEndFillStyle::NoFill),       "NoFill",       "No Fill"       ),
     SEnumEntry( static_cast<int>(ELineEndFillStyle::SolidPattern), "SolidPattern", "Solid Pattern" )
 };
@@ -1117,7 +1117,7 @@ template<> QVector<QHash<QString, int>> ZS::System::CEnum<ELineEndBaseLineType>:
 //------------------------------------------------------------------------------
 template<> const QVector<SEnumEntry> ZS::System::CEnum<ELineEndBaseLineType>::s_arEnumEntries =
 //------------------------------------------------------------------------------
-{                       // Enumerator,                            Name,      Symbol, Text,  SCIPShort, SCPILong, Value
+{
     SEnumEntry( static_cast<int>(ELineEndBaseLineType::NoLine),   "NoLine",   "No Line"  ),
     SEnumEntry( static_cast<int>(ELineEndBaseLineType::Normal),   "Normal",   "Normal"   ),
     SEnumEntry( static_cast<int>(ELineEndBaseLineType::Indented), "Indented", "Indented" )
@@ -1141,7 +1141,7 @@ const double s_arfLineEndWidths[] =
 //------------------------------------------------------------------------------
 template<> const QVector<SEnumEntry> ZS::System::CEnum<ELineEndWidth>::s_arEnumEntries =
 //------------------------------------------------------------------------------
-{                       // Enumerator,                           Name,      Symbol, Text,  SCIPShort, SCPILong, Value
+{
     /* 0 */ SEnumEntry( static_cast<int>(ELineEndWidth::Thin),   "Thin",   "Thin"   ),
     /* 1 */ SEnumEntry( static_cast<int>(ELineEndWidth::Medium), "Medium", "Medium" ),
     /* 2 */ SEnumEntry( static_cast<int>(ELineEndWidth::Wide),   "Wide",   "Wide"   )
@@ -1179,7 +1179,7 @@ const double s_arfLineEndLengths[] =
 //------------------------------------------------------------------------------
 template<> const QVector<SEnumEntry> ZS::System::CEnum<ELineEndLength>::s_arEnumEntries =
 //------------------------------------------------------------------------------
-{                       // Enumerator,                            Name,      Symbol, Text,  SCIPShort, SCPILong, Value
+{
     /* 0 */ SEnumEntry( static_cast<int>(ELineEndLength::Short),  "Short",  "Short"  ),
     /* 1 */ SEnumEntry( static_cast<int>(ELineEndLength::Medium), "Medium", "Medium" ),
     /* 2 */ SEnumEntry( static_cast<int>(ELineEndLength::Long),   "Long",   "Long"   )
@@ -1210,7 +1210,7 @@ template<> QVector<QHash<QString, int>> ZS::System::CEnum<EAlignmentRef>::s_arma
 //------------------------------------------------------------------------------
 template<> const QVector<SEnumEntry> ZS::System::CEnum<EAlignmentRef>::s_arEnumEntries =
 //------------------------------------------------------------------------------
-{                       // Enumerator,                              Name,      Symbol, Text,  SCIPShort, SCPILong, Value
+{
     /* 0 */ SEnumEntry( static_cast<int>(EAlignmentRef::None),      "None",    "-"  ),
     /* 1 */ SEnumEntry( static_cast<int>(EAlignmentRef::Left),      "Left",    "L"  ),
     /* 2 */ SEnumEntry( static_cast<int>(EAlignmentRef::HCenter),   "HCenter", "HC" ),

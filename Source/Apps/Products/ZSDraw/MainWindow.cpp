@@ -4427,7 +4427,7 @@ void CMainWindow::onDrawingViewMousePosChanged( const QPointF& i_ptMousePos )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObjMouseEvents != nullptr && m_pTrcAdminObjMouseEvents->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjMouseEvents, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "Pos:" + point2Str(i_ptMousePos);
     }

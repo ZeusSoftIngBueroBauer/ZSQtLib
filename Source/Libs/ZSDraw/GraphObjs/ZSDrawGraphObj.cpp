@@ -258,6 +258,25 @@ void SGraphObjHitInfo::setCursor(double i_fGraphObjRotAngle_rad)
     } // if( bSetResizeCursor )
 } // setCursor
 
+/* public: // struct methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief 
+
+*/
+QString SGraphObjHitInfo::toString() const
+//------------------------------------------------------------------------------
+{
+    QString str = "EditMode:" + m_editMode.toString() +
+        ", ResizeMode:" + m_editResizeMode.toString() +
+        ", SelPtBoundingRect:" + m_selPtBoundingRect.toString() +
+        ", PolygonShapePoint:" + QString::number(m_idxPolygonShapePoint) +
+        ", LineSegment:" + QString::number(m_idxLineSegment) +
+        ", PointSelected:" + point2Str(m_ptSelected) +
+        ", Cursor:" + qCursorShape2Str(m_cursor.shape());
+    return str;
+}
 
 /*==============================================================================
 struct SGraphObjAlignment
@@ -372,6 +391,7 @@ CGraphObj::CGraphObj(
     m_pTrcAdminObjCtorsAndDtor(nullptr),
     m_pTrcAdminObjItemChange(nullptr),
     m_pTrcAdminObjBoundingRect(nullptr),
+    m_pTrcAdminObjIsHit(nullptr),
     m_pTrcAdminObjPaint(nullptr),
     m_pTrcAdminObjSceneEvent(nullptr),
     m_pTrcAdminObjSceneEventFilter(nullptr),
@@ -401,7 +421,7 @@ CGraphObj::~CGraphObj()
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "dtor",
+        /* strMethod    */ "CGraphObj::dtor",
         /* strAddInfo   */ "" );
 
     m_bDtorInProgress = true;
@@ -506,7 +526,7 @@ CGraphObj::~CGraphObj()
 
     mthTracer.onAdminObjAboutToBeReleased();
 
-    releaseTrcAdminObjs();
+    releaseTraceAdminObjs();
 
     m_bDtorInProgress = false;
     m_pDrawingScene = nullptr;
@@ -559,6 +579,7 @@ CGraphObj::~CGraphObj()
     m_pTrcAdminObjCtorsAndDtor = nullptr;
     m_pTrcAdminObjItemChange = nullptr;
     m_pTrcAdminObjBoundingRect = nullptr;
+    m_pTrcAdminObjIsHit = nullptr;
     m_pTrcAdminObjPaint = nullptr;
     m_pTrcAdminObjSceneEvent = nullptr;
     m_pTrcAdminObjSceneEventFilter = nullptr;
@@ -567,6 +588,83 @@ CGraphObj::~CGraphObj()
     m_pTrcAdminObjKeyEvents = nullptr;
 
 } // dtor
+
+/*==============================================================================
+protected: // instance methods (trace admin objects have to be created in ctor of "final" class)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Creates the trace admin objects for method tracing.
+
+    This method has to be called in the constructor of the "final" class.
+
+    Please note that the counterpart "releaseTraceAdminObjs" is called by the
+    destructor of the base class CGraphObj. !! Don't call "releaseTraceAdminObjs"
+    in the destructor of the derived class. !!
+
+    @param [in] i_strClassName
+        Class name of the derived class. The class name may be preceded with
+        a group name like "StandardShapes", "Electricity" or "QtWidget" followed
+        by a double colon like "createTraceAdminObjs("StandardShapes::" + ClassName)".
+*/
+void CGraphObj::createTraceAdminObjs(const QString& i_strClassName)
+//------------------------------------------------------------------------------
+{
+    m_pTrcAdminObjCtorsAndDtor = CTrcServer::GetTraceAdminObj(
+        NameSpace() + "::GraphObjs", i_strClassName + "::CtorsAndDtor");
+    m_pTrcAdminObjItemChange = CTrcServer::GetTraceAdminObj(
+        NameSpace() + "::GraphObjs", i_strClassName + "::ItemChange");
+    m_pTrcAdminObjBoundingRect = CTrcServer::GetTraceAdminObj(
+        NameSpace() + "::GraphObjs", i_strClassName + "::BoundingRect");
+    m_pTrcAdminObjIsHit = CTrcServer::GetTraceAdminObj(
+        NameSpace() + "::GraphObjs", i_strClassName + "::IsHit");
+    m_pTrcAdminObjPaint = CTrcServer::GetTraceAdminObj(
+        NameSpace() + "::GraphObjs", i_strClassName + "::Paint");
+    m_pTrcAdminObjSceneEvent = CTrcServer::GetTraceAdminObj(
+        NameSpace() + "::GraphObjs", i_strClassName + "::SceneEvent");
+    m_pTrcAdminObjSceneEventFilter = CTrcServer::GetTraceAdminObj(
+        NameSpace() + "::GraphObjs", i_strClassName + "::SceneEventFilter");
+    m_pTrcAdminObjHoverEvents = CTrcServer::GetTraceAdminObj(
+        NameSpace() + "::GraphObjs", i_strClassName + "::HoverEvents");
+    m_pTrcAdminObjMouseEvents = CTrcServer::GetTraceAdminObj(
+        NameSpace() + "::GraphObjs", i_strClassName + "::MouseEvents");
+    m_pTrcAdminObjKeyEvents = CTrcServer::GetTraceAdminObj(
+        NameSpace() + "::GraphObjs", i_strClassName + "::KeyEvents");
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Releases the trace admin objects for method tracing.
+
+    This method is called by the destructor of the base class CGraphObj and
+    therefore ! MUST NOT ! be called by the destructor of the derived class.
+
+    Please note that the counterpart "createTraceAdminObjs" !MUST BE! called
+    by the constructor of the derived class.
+*/
+void CGraphObj::releaseTraceAdminObjs()
+//------------------------------------------------------------------------------
+{
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjCtorsAndDtor);
+    m_pTrcAdminObjCtorsAndDtor = nullptr;
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjItemChange);
+    m_pTrcAdminObjItemChange = nullptr;
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjBoundingRect);
+    m_pTrcAdminObjBoundingRect = nullptr;
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjIsHit);
+    m_pTrcAdminObjIsHit = nullptr;
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjPaint);
+    m_pTrcAdminObjPaint = nullptr;
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjSceneEvent);
+    m_pTrcAdminObjSceneEvent = nullptr;
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjSceneEventFilter);
+    m_pTrcAdminObjSceneEventFilter = nullptr;
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjHoverEvents);
+    m_pTrcAdminObjHoverEvents = nullptr;
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjMouseEvents);
+    m_pTrcAdminObjMouseEvents = nullptr;
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjKeyEvents);
+    m_pTrcAdminObjKeyEvents = nullptr;
+}
 
 /*==============================================================================
 public: // instance methods
@@ -605,7 +703,7 @@ void CGraphObj::rename( const QString& i_strNameNew )
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "rename",
+        /* strMethod    */ "CGraphObj::rename",
         /* strAddInfo   */ strMthInArgs );
 
     if( m_pTree == nullptr )
@@ -654,12 +752,11 @@ void CGraphObj::setName( const QString& i_strName )
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "setName",
+        /* strMethod    */ "CGraphObj::setName",
         /* strAddInfo   */ strMthInArgs );
 
     if (m_strName != i_strName)
     {
-        renameTrcAdminObjs(i_strName);
         CIdxTreeEntry::setName(i_strName);
         if (m_pNameLabel != nullptr) {
             m_pNameLabel->setText(name());
@@ -691,7 +788,7 @@ void CGraphObj::setKeyInTree( const QString& i_strKey )
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "setKeyInTree",
+        /* strMethod    */ "CGraphObj::setKeyInTree",
         /* strAddInfo   */ strMthInArgs );
 
     if (m_strKeyInTree != i_strKey)
@@ -758,7 +855,7 @@ void CGraphObj::onCreateAndExecDlgFormatGraphObjs()
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "onCreateAndExecDlgFormatGraphObjs",
+        /* strMethod    */ "CGraphObj::onCreateAndExecDlgFormatGraphObjs",
         /* strAddInfo   */ strMthInArgs );
 
     CDlgFormatGraphObjs* pDlgFormatGraphObjs = new CDlgFormatGraphObjs(m_pDrawingScene,this);
@@ -790,7 +887,7 @@ void CGraphObj::setDrawSettings( const CDrawSettings& i_drawSettings )
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "setDrawSettings",
+        /* strMethod    */ "CGraphObj::setDrawSettings",
         /* strAddInfo   */ strMthInArgs );
 
     if( m_drawSettings != i_drawSettings )
@@ -823,7 +920,7 @@ void CGraphObj::onDrawSettingsChanged()
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "onDrawSettingsChanged",
+        /* strMethod    */ "CGraphObj::onDrawSettingsChanged",
         /* strAddInfo   */ strMthInArgs );
 
     /* Template for copy and paste in inherited classes:
@@ -899,7 +996,7 @@ void CGraphObj::setPenColor( const QColor& i_clr, bool i_bImmediatelyApplySettin
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "setPenColor",
+        /* strMethod    */ "CGraphObj::setPenColor",
         /* strAddInfo   */ strMthInArgs );
 
     if( m_drawSettings.getPenColor() != i_clr )
@@ -932,7 +1029,7 @@ void CGraphObj::setPenWidth( int i_iLineWidth, bool i_bImmediatelyApplySetting )
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "setPenWidth",
+        /* strMethod    */ "CGraphObj::setPenWidth",
         /* strAddInfo   */ strMthInArgs );
 
     if( m_drawSettings.getPenWidth() != i_iLineWidth )
@@ -969,7 +1066,7 @@ void CGraphObj::setLineStyle( ELineStyle i_lineStyle, bool i_bImmediatelyApplySe
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "setLineStyle",
+        /* strMethod    */ "CGraphObj::setLineStyle",
         /* strAddInfo   */ strMthInArgs );
 
     if( m_drawSettings.getLineStyle() != i_lineStyle )
@@ -1006,7 +1103,7 @@ void CGraphObj::setFillColor( const QColor& i_clr, bool i_bImmediatelyApplySetti
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "setFillColor",
+        /* strMethod    */ "CGraphObj::setFillColor",
         /* strAddInfo   */ strMthInArgs );
 
     if( m_drawSettings.getFillColor() != i_clr )
@@ -1039,7 +1136,7 @@ void CGraphObj::setFillStyle( EFillStyle i_fillStyle, bool i_bImmediatelyApplySe
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "setFillStyle",
+        /* strMethod    */ "CGraphObj::setFillStyle",
         /* strAddInfo   */ strMthInArgs );
 
     if( m_drawSettings.getFillStyle() != i_fillStyle )
@@ -1076,7 +1173,7 @@ void CGraphObj::setLineRecordType( ELineRecordType i_lineRecordType, bool i_bImm
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "setLineRecordType",
+        /* strMethod    */ "CGraphObj::setLineRecordType",
         /* strAddInfo   */ strMthInArgs );
 
     if( m_drawSettings.getLineRecordType() != i_lineRecordType )
@@ -1109,7 +1206,7 @@ void CGraphObj::setLineExtent( int i_iLineExtent, bool i_bImmediatelyApplySettin
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "setLineExtent",
+        /* strMethod    */ "CGraphObj::setLineExtent",
         /* strAddInfo   */ strMthInArgs );
 
     if( m_drawSettings.getLineExtent() != i_iLineExtent )
@@ -1147,7 +1244,7 @@ void CGraphObj::setLineEndStyle( ELinePoint i_linePoint, ELineEndStyle i_endStyl
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "setLineEndStyle",
+        /* strMethod    */ "CGraphObj::setLineEndStyle",
         /* strAddInfo   */ strMthInArgs );
 
     if( m_drawSettings.getLineEndStyle(i_linePoint) != i_endStyle )
@@ -1181,7 +1278,7 @@ void CGraphObj::setLineEndBaseLineType( ELinePoint i_linePoint, ELineEndBaseLine
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "setLineEndBaseLineType",
+        /* strMethod    */ "CGraphObj::setLineEndBaseLineType",
         /* strAddInfo   */ strMthInArgs );
 
     if( m_drawSettings.getLineEndBaseLineType(i_linePoint) != i_baseLineType )
@@ -1215,7 +1312,7 @@ void CGraphObj::setLineEndFillStyle( ELinePoint i_linePoint, ELineEndFillStyle i
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "setLineEndFillStyle",
+        /* strMethod    */ "CGraphObj::setLineEndFillStyle",
         /* strAddInfo   */ strMthInArgs );
 
     if( m_drawSettings.getLineEndFillStyle(i_linePoint) != i_fillStyle )
@@ -1249,7 +1346,7 @@ void CGraphObj::setLineEndWidth( ELinePoint i_linePoint, ELineEndWidth i_width, 
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "setLineEndWidth",
+        /* strMethod    */ "CGraphObj::setLineEndWidth",
         /* strAddInfo   */ strMthInArgs );
 
     if( m_drawSettings.getLineEndWidth(i_linePoint) != i_width )
@@ -1283,7 +1380,7 @@ void CGraphObj::setLineEndLength( ELinePoint i_linePoint, ELineEndLength i_lengt
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "setLineEndLength",
+        /* strMethod    */ "CGraphObj::setLineEndLength",
         /* strAddInfo   */ strMthInArgs );
 
     if( m_drawSettings.getLineEndLength(i_linePoint) != i_length )
@@ -1320,7 +1417,7 @@ void CGraphObj::setTextColor( const QColor& i_clr, bool i_bImmediatelyApplySetti
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "setTextColor",
+        /* strMethod    */ "CGraphObj::setTextColor",
         /* strAddInfo   */ strMthInArgs );
 
     if( m_drawSettings.getTextColor() != i_clr )
@@ -1353,7 +1450,7 @@ void CGraphObj::setTextFont( const QFont& i_fnt, bool i_bImmediatelyApplySetting
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "setTextFont",
+        /* strMethod    */ "CGraphObj::setTextFont",
         /* strAddInfo   */ strMthInArgs );
 
     if( m_drawSettings.getTextFont() != i_fnt )
@@ -1386,7 +1483,7 @@ void CGraphObj::setTextSize( ETextSize i_size, bool i_bImmediatelyApplySetting )
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "setTextSize",
+        /* strMethod    */ "CGraphObj::setTextSize",
         /* strAddInfo   */ strMthInArgs );
 
     if( m_drawSettings.getTextSize() != i_size )
@@ -1419,7 +1516,7 @@ void CGraphObj::setTextStyle( ETextStyle i_style, bool i_bImmediatelyApplySettin
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "setTextStyle",
+        /* strMethod    */ "CGraphObj::setTextStyle",
         /* strAddInfo   */ strMthInArgs );
 
     if( m_drawSettings.getTextStyle() != i_style )
@@ -1452,7 +1549,7 @@ void CGraphObj::setTextEffect( ETextEffect i_effect, bool i_bImmediatelyApplySet
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "setTextEffect",
+        /* strMethod    */ "CGraphObj::setTextEffect",
         /* strAddInfo   */ strMthInArgs );
 
     if( m_drawSettings.getTextEffect() != i_effect )
@@ -1489,7 +1586,7 @@ void CGraphObj::setMinimumWidth( double i_fWidth )
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "setMinimumWidth",
+        /* strMethod    */ "CGraphObj::setMinimumWidth",
         /* strAddInfo   */ strMthInArgs );
 
     m_sizMinimum.setWidth(i_fWidth);
@@ -1559,7 +1656,7 @@ void CGraphObj::setMinimumHeight( double i_fHeight )
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "setMinimumHeight",
+        /* strMethod    */ "CGraphObj::setMinimumHeight",
         /* strAddInfo   */ strMthInArgs );
 
     m_sizMinimum.setHeight(i_fHeight);
@@ -1629,7 +1726,7 @@ void CGraphObj::setMinimumSize( const QSize& i_siz )
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "setMinimumSize",
+        /* strMethod    */ "CGraphObj::setMinimumSize",
         /* strAddInfo   */ strMthInArgs );
 
     m_sizMinimum = i_siz;
@@ -1705,7 +1802,7 @@ void CGraphObj::setMaximumWidth( double i_fWidth )
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "setMaximumWidth",
+        /* strMethod    */ "CGraphObj::setMaximumWidth",
         /* strAddInfo   */ strMthInArgs );
 
     m_sizMaximum.setWidth(i_fWidth);
@@ -1775,7 +1872,7 @@ void CGraphObj::setMaximumHeight( double i_fHeight )
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "setMaximumHeight",
+        /* strMethod    */ "CGraphObj::setMaximumHeight",
         /* strAddInfo   */ strMthInArgs );
 
     m_sizMaximum.setHeight(i_fHeight);
@@ -1845,7 +1942,7 @@ void CGraphObj::setMaximumSize( const QSize& i_siz )
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "setMaximumSize",
+        /* strMethod    */ "CGraphObj::setMaximumSize",
         /* strAddInfo   */ strMthInArgs );
 
     m_sizMaximum = i_siz;
@@ -1921,7 +2018,7 @@ void CGraphObj::setFixedWidth( double i_fWidth )
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "setFixedWidth",
+        /* strMethod    */ "CGraphObj::setFixedWidth",
         /* strAddInfo   */ strMthInArgs );
 
     m_sizFixed.setWidth(i_fWidth);
@@ -1991,7 +2088,7 @@ void CGraphObj::setFixedHeight( double i_fHeight )
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "setFixedHeight",
+        /* strMethod    */ "CGraphObj::setFixedHeight",
         /* strAddInfo   */ strMthInArgs );
 
     m_sizFixed.setHeight(i_fHeight);
@@ -2061,7 +2158,7 @@ void CGraphObj::setFixedSize( const QSize& i_siz )
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "setFixedSize",
+        /* strMethod    */ "CGraphObj::setFixedSize",
         /* strAddInfo   */ strMthInArgs );
 
     m_sizFixed = i_siz;
@@ -2153,7 +2250,7 @@ int CGraphObj::addAlignment( const SGraphObjAlignment& i_alignment )
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "addAlignment",
+        /* strMethod    */ "CGraphObj::addAlignment",
         /* strAddInfo   */ strMthInArgs );
 
     int idx = m_arAlignments.size();
@@ -2200,7 +2297,7 @@ void CGraphObj::setAlignment( int i_idx, const SGraphObjAlignment& i_alignment )
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "setAlignment",
+        /* strMethod    */ "CGraphObj::setAlignment",
         /* strAddInfo   */ strMthInArgs );
 
     if( i_idx < 0 || i_idx >= m_arAlignments.size() )
@@ -2231,7 +2328,7 @@ void CGraphObj::removeAlignment( int i_idx )
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "removeAlignment",
+        /* strMethod    */ "CGraphObj::removeAlignment",
         /* strAddInfo   */ strMthInArgs );
 
     if( i_idx < 0 || i_idx >= m_arAlignments.size() )
@@ -2261,7 +2358,7 @@ void CGraphObj::clearAlignments()
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "clearAlignments",
+        /* strMethod    */ "CGraphObj::clearAlignments",
         /* strAddInfo   */ strMthInArgs );
 
     m_arAlignments.clear();
@@ -2309,7 +2406,7 @@ void CGraphObj::acceptCurrentAsOriginalCoors()
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "acceptCurrentAsOriginalCoors",
+        /* strMethod    */ "CGraphObj::acceptCurrentAsOriginalCoors",
         /* strAddInfo   */ strMthInArgs );
 
     const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
@@ -2454,7 +2551,7 @@ void CGraphObj::setRotationAngleInDegree( double i_fRotAngle_deg )
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "setRotationAngleInDegree",
+        /* strMethod    */ "CGraphObj::setRotationAngleInDegree",
         /* strAddInfo   */ strMthInArgs );
 
     m_fRotAngleCurr_deg = i_fRotAngle_deg;
@@ -2571,7 +2668,7 @@ void CGraphObj::setEditMode( EEditMode i_editMode )
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "setEditMode",
+        /* strMethod    */ "CGraphObj::setEditMode",
         /* strAddInfo   */ strMthInArgs );
 
     m_editMode = i_editMode;
@@ -2592,7 +2689,7 @@ void CGraphObj::setEditResizeMode( EEditResizeMode i_editResizeMode )
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "setEditResizeMode",
+        /* strMethod    */ "CGraphObj::setEditResizeMode",
         /* strAddInfo   */ strMthInArgs );
 
     m_editResizeMode = i_editResizeMode;
@@ -2606,35 +2703,45 @@ public: // overridables
 bool CGraphObj::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) const
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjIsHit, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Point:" + point2Str(i_pt) +
+            ", HitInfo, " + QString(o_pHitInfo == nullptr ? "null" : pointer2Str(o_pHitInfo));
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjIsHit,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "isHit",
+        /* strAddInfo   */ strMthInArgs );
+
     bool bIsHit = false;
 
     const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
 
-    if( pGraphicsItem != nullptr )
+    if (pGraphicsItem != nullptr)
     {
-        if( pGraphicsItem->isSelected() )
+        if (pGraphicsItem->isSelected())
         {
             bIsHit = isPolygonSelectionPointHit(i_pt,o_pHitInfo);
 
-            if( !bIsHit )
+            if (!bIsHit)
             {
                 bIsHit = isBoundingRectSelectionPointHit(
                     /* pt               */ i_pt,
                     /* iSelPtsCount     */ -1,
                     /* pSelPts          */ nullptr,
                     /* pGraphObjHitInfo */ o_pHitInfo );
+            }
+        }
 
-            } // if( !bIsHit )
-
-        } // if( isSelected() )
-
-        if( !bIsHit )
+        if (!bIsHit)
         {
-            if( pGraphicsItem->isSelected() || m_drawSettings.getFillStyle() == EFillStyle::SolidPattern )
+            if (pGraphicsItem->isSelected() || m_drawSettings.getFillStyle() == EFillStyle::SolidPattern)
             {
                 bIsHit = pGraphicsItem->contains(i_pt);
 
-                if( o_pHitInfo != nullptr )
+                if (o_pHitInfo != nullptr)
                 {
                     o_pHitInfo->m_editMode = EEditMode::Move;
                     o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
@@ -2651,6 +2758,15 @@ bool CGraphObj::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) const
             o_pHitInfo->setCursor( Math::deg2Rad(m_fRotAngleCurr_deg) );
         }
     } // if( pGraphicsItem != nullptr )
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        QString strMthOutArgs;
+        if (o_pHitInfo != nullptr) {
+            strMthOutArgs = "HitInfo {" + o_pHitInfo->toString() + "}";
+            mthTracer.setMethodOutArgs(strMthOutArgs);
+        }
+        mthTracer.setMethodReturn(bIsHit);
+    }
 
     return bIsHit;
 
@@ -2678,7 +2794,7 @@ double CGraphObj::bringToFront()
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "bringToFront",
+        /* strMethod    */ "CGraphObj::bringToFront",
         /* strAddInfo   */ strMthInArgs );
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
@@ -2722,7 +2838,7 @@ void CGraphObj::setStackingOrderValue( double i_fZValue )
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "setStackingOrderValue",
+        /* strMethod    */ "CGraphObj::setStackingOrderValue",
         /* strAddInfo   */ strMthInArgs );
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
@@ -2942,7 +3058,7 @@ void CGraphObj::hideSelectionPoints( ESelectionPoints i_selPts )
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "hideSelectionPoints",
+        /* strMethod    */ "CGraphObj::hideSelectionPoints",
         /* strAddInfo   */ strMthInArgs );
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
@@ -3045,7 +3161,7 @@ void CGraphObj::bringSelectionPointsToFront( ESelectionPoints i_selPts )
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "bringSelectionPointsToFront",
+        /* strMethod    */ "CGraphObj::bringSelectionPointsToFront",
         /* strAddInfo   */ strMthInArgs );
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
@@ -3150,7 +3266,7 @@ void CGraphObj::showSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "showSelectionPointsOfBoundingRect",
+        /* strMethod    */ "CGraphObj::showSelectionPointsOfBoundingRect",
         /* strAddInfo   */ strMthInArgs );
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
@@ -3265,7 +3381,7 @@ void CGraphObj::updateSelectionPointsOfBoundingRect( const QRectF& i_rct, unsign
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "updateSelectionPointsOfBoundingRect",
+        /* strMethod    */ "CGraphObj::updateSelectionPointsOfBoundingRect",
         /* strAddInfo   */ strMthInArgs );
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
@@ -3365,7 +3481,7 @@ void CGraphObj::showSelectionPointsOfPolygon( const QPolygonF& i_plg )
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "showSelectionPointsOfPolygon",
+        /* strMethod    */ "CGraphObj::showSelectionPointsOfPolygon",
         /* strAddInfo   */ strMthInArgs );
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
@@ -3452,7 +3568,7 @@ void CGraphObj::updateSelectionPointsOfPolygon( const QPolygonF& i_plg )
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "updateSelectionPointsOfPolygon",
+        /* strMethod    */ "CGraphObj::updateSelectionPointsOfPolygon",
         /* strAddInfo   */ strMthInArgs );
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
@@ -3535,7 +3651,7 @@ void CGraphObj::showNameLabel( ESelectionPoint i_selPt )
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "showNameLabel",
+        /* strMethod    */ "CGraphObj::showNameLabel",
         /* strAddInfo   */ strMthInArgs );
 
     if (m_pNameLabel == nullptr || m_pNameLabel->getLinkedSelectionPoint() != i_selPt)
@@ -3588,7 +3704,7 @@ void CGraphObj::hideNameLabel()
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "hideNameLabel",
+        /* strMethod    */ "CGraphObj::hideNameLabel",
         /* strAddInfo   */ strMthInArgs );
 
     // the dtor of the label removes itself from the drawing scene
@@ -3644,7 +3760,7 @@ void CGraphObj::showNameLabelAnchorLine()
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "showNameLabelAnchorLine",
+        /* strMethod    */ "CGraphObj::showNameLabelAnchorLine",
         /* strAddInfo   */ "" );
 
     if (m_pNameLabel != nullptr) {
@@ -3667,7 +3783,7 @@ void CGraphObj::hideNameLabelAnchorLine()
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "hideNameLabelAnchorLine",
+        /* strMethod    */ "CGraphObj::hideNameLabelAnchorLine",
         /* strAddInfo   */ "" );
 
     if (m_pNameLabel != nullptr) {
@@ -3719,7 +3835,7 @@ int CGraphObj::showLabel(const QString& i_strLabel, ESelectionPoint i_selPt)
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "showLabel",
+        /* strMethod    */ "CGraphObj::showLabel",
         /* strAddInfo   */ strMthInArgs );
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
@@ -3792,7 +3908,7 @@ void CGraphObj::hideLabel(int i_idxLabel)
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "hideLabel",
+        /* strMethod    */ "CGraphObj::hideLabel",
         /* strAddInfo   */ strMthInArgs );
 
     CGraphObjLabel* pGraphObjLabel = m_arpLabels[i_idxLabel];
@@ -3861,7 +3977,7 @@ void CGraphObj::showLabelAnchorLine(int i_idxLabel)
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "showLabelAnchorLine",
+        /* strMethod    */ "CGraphObj::showLabelAnchorLine",
         /* strAddInfo   */ strMthInArgs );
 
     m_arpLabels[i_idxLabel]->showAnchorLine();
@@ -3889,7 +4005,7 @@ void CGraphObj::hideLabelAnchorLine(int i_idxLabel)
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "hideLabelAnchorLine",
+        /* strMethod    */ "CGraphObj::hideLabelAnchorLine",
         /* strAddInfo   */ strMthInArgs );
 
     m_arpLabels[i_idxLabel]->hideAnchorLine();
@@ -3940,7 +4056,7 @@ void CGraphObj::showPositionLabel( ESelectionPoint i_selPt )
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "showPositionLabel",
+        /* strMethod    */ "CGraphObj::showPositionLabel",
         /* strAddInfo   */ strMthInArgs );
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
@@ -3998,7 +4114,7 @@ void CGraphObj::hidePositionLabel( ESelectionPoint i_selPt )
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "hidePositionLabel",
+        /* strMethod    */ "CGraphObj::hidePositionLabel",
         /* strAddInfo   */ strMthInArgs );
 
     if( i_selPt == ESelectionPoint::All )
@@ -4109,7 +4225,7 @@ void CGraphObj::showPositionLabelAnchorLine( ESelectionPoint i_selPt )
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "showPositionLabelAnchorLine",
+        /* strMethod    */ "CGraphObj::showPositionLabelAnchorLine",
         /* strAddInfo   */ strMthInArgs );
 
     if( i_selPt == ESelectionPoint::All )
@@ -4172,7 +4288,7 @@ void CGraphObj::hidePositionLabelAnchorLine( ESelectionPoint i_selPt )
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "hidePositionLabelAnchorLine",
+        /* strMethod    */ "CGraphObj::hidePositionLabelAnchorLine",
         /* strAddInfo   */ strMthInArgs );
 
     if( i_selPt == ESelectionPoint::All )
@@ -4291,7 +4407,7 @@ void CGraphObj::updateLabelDistance(CGraphObjLabel* i_pGraphObjLabel)
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "updateLabelDistance",
+        /* strMethod    */ "CGraphObj::updateLabelDistance",
         /* strAddInfo   */ strMthInArgs );
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
@@ -4323,7 +4439,7 @@ public: // overridables
 //        /* pAdminObj    */ m_pTrcAdminObjItemChange,
 //        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
 //        /* strObjName   */ m_strName,
-//        /* strMethod    */ "showLabels",
+//        /* strMethod    */ "CGraphObj::showLabels",
 //        /* strAddInfo   */ strMthInArgs );
 //
 //    QHashIterator<QString, CGraphObjLabel*> itLabels(m_arpLabels);
@@ -4357,7 +4473,7 @@ public: // overridables
 //        /* pAdminObj    */ m_pTrcAdminObjItemChange,
 //        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
 //        /* strObjName   */ m_strName,
-//        /* strMethod    */ "hideLabels",
+//        /* strMethod    */ "CGraphObj::hideLabels",
 //        /* strAddInfo   */ strMthInArgs );
 //
 //    QHashIterator<QString, CGraphObjLabel*> itLabels(m_arpLabels);
@@ -4416,7 +4532,7 @@ public: // instance methods
 //        /* pAdminObj    */ m_pTrcAdminObjItemChange,
 //        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
 //        /* strObjName   */ m_strName,
-//        /* strMethod    */ "addLabels",
+//        /* strMethod    */ "CGraphObj::addLabels",
 //        /* strAddInfo   */ strMthInArgs );
 //
 //    QHashIterator<QString, CGraphObjLabel*> itLabels(i_arpLabels);
@@ -4491,7 +4607,7 @@ void CGraphObj::onSelectionPointDestroying( CGraphObjSelectionPoint* i_pSelectio
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "onSelectionPointDestroying",
+        /* strMethod    */ "CGraphObj::onSelectionPointDestroying",
         /* strAddInfo   */ strMthInArgs );
 
     CGraphObjSelectionPoint* pGraphObjSelPt;
@@ -4547,7 +4663,7 @@ void CGraphObj::onLabelAboutToBeDestroyed(CGraphObjLabel* i_pLabel)
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "onLabelAboutToBeDestroyed",
+        /* strMethod    */ "CGraphObj::onLabelAboutToBeDestroyed",
         /* strAddInfo   */ strMthInArgs );
 
     bool bLabelFound = false;
@@ -4581,7 +4697,7 @@ void CGraphObj::addMousePressEventFunction( TFctMouseEvent i_pFct, void* i_pvThi
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "addMousePressEventFunction",
+        /* strMethod    */ "CGraphObj::addMousePressEventFunction",
         /* strAddInfo   */ strMthInArgs );
 
     SGraphObjMouseEventFct fctEntry;
@@ -4615,7 +4731,7 @@ void CGraphObj::removeMousePressEventFunction( TFctMouseEvent i_pFct, void* i_pv
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "removeMousePressEventFunction",
+        /* strMethod    */ "CGraphObj::removeMousePressEventFunction",
         /* strAddInfo   */ strMthInArgs );
 
     SGraphObjMouseEventFct fctEntry;
@@ -4653,7 +4769,7 @@ void CGraphObj::addMouseReleaseEventFunction( TFctMouseEvent i_pFct, void* i_pvT
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "addMouseReleaseEventFunction",
+        /* strMethod    */ "CGraphObj::addMouseReleaseEventFunction",
         /* strAddInfo   */ strMthInArgs );
 
     SGraphObjMouseEventFct fctEntry;
@@ -4687,7 +4803,7 @@ void CGraphObj::removeMouseReleaseEventFunction( TFctMouseEvent i_pFct, void* i_
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "removeMouseReleaseEventFunction",
+        /* strMethod    */ "CGraphObj::removeMouseReleaseEventFunction",
         /* strAddInfo   */ strMthInArgs );
 
     SGraphObjMouseEventFct fctEntry;
@@ -4725,7 +4841,7 @@ void CGraphObj::addMouseDoubleClickEventFunction( TFctMouseEvent i_pFct, void* i
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "addMouseDoubleClickEventFunction",
+        /* strMethod    */ "CGraphObj::addMouseDoubleClickEventFunction",
         /* strAddInfo   */ strMthInArgs );
 
     SGraphObjMouseEventFct fctEntry;
@@ -4759,7 +4875,7 @@ void CGraphObj::removeMouseDoubleClickEventFunction( TFctMouseEvent i_pFct, void
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "removeMouseDoubleClickEventFunction",
+        /* strMethod    */ "CGraphObj::removeMouseDoubleClickEventFunction",
         /* strAddInfo   */ strMthInArgs );
 
     SGraphObjMouseEventFct fctEntry;
@@ -4797,7 +4913,7 @@ void CGraphObj::addMouseMoveEventFunction( TFctMouseEvent i_pFct, void* i_pvThis
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "addMouseMoveEventFunction",
+        /* strMethod    */ "CGraphObj::addMouseMoveEventFunction",
         /* strAddInfo   */ strMthInArgs );
 
     SGraphObjMouseEventFct fctEntry;
@@ -4831,7 +4947,7 @@ void CGraphObj::removeMouseMoveEventFunction( TFctMouseEvent i_pFct, void* i_pvT
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "removeMouseMoveEventFunction",
+        /* strMethod    */ "CGraphObj::removeMouseMoveEventFunction",
         /* strAddInfo   */ strMthInArgs );
 
     SGraphObjMouseEventFct fctEntry;
@@ -4869,7 +4985,7 @@ void CGraphObj::addKeyPressEventFunction( TFctKeyEvent i_pFct, void* i_pvThis, v
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "addKeyPressEventFunction",
+        /* strMethod    */ "CGraphObj::addKeyPressEventFunction",
         /* strAddInfo   */ strMthInArgs );
 
     SGraphObjKeyEventFct fctEntry;
@@ -4903,7 +5019,7 @@ void CGraphObj::removeKeyPressEventFunction( TFctKeyEvent i_pFct, void* i_pvThis
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "removeKeyPressEventFunction",
+        /* strMethod    */ "CGraphObj::removeKeyPressEventFunction",
         /* strAddInfo   */ strMthInArgs );
 
     SGraphObjKeyEventFct fctEntry;
@@ -4941,7 +5057,7 @@ void CGraphObj::addKeyReleaseEventFunction( TFctKeyEvent i_pFct, void* i_pvThis,
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "addKeyReleaseEventFunction",
+        /* strMethod    */ "CGraphObj::addKeyReleaseEventFunction",
         /* strAddInfo   */ strMthInArgs );
 
     SGraphObjKeyEventFct fctEntry;
@@ -4975,7 +5091,7 @@ void CGraphObj::removeKeyReleaseEventFunction( TFctKeyEvent i_pFct, void* i_pvTh
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "removeKeyReleaseEventFunction",
+        /* strMethod    */ "CGraphObj::removeKeyReleaseEventFunction",
         /* strAddInfo   */ strMthInArgs );
 
     SGraphObjKeyEventFct fctEntry;
@@ -5017,7 +5133,7 @@ void CGraphObj::updateTransform()
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "updateTransform",
+        /* strMethod    */ "CGraphObj::updateTransform",
         /* strAddInfo   */ strMthInArgs );
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
@@ -5053,7 +5169,7 @@ void CGraphObj::updateToolTip()
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "updateToolTip",
+        /* strMethod    */ "CGraphObj::updateToolTip",
         /* strAddInfo   */ strMthInArgs );
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
@@ -5107,7 +5223,7 @@ void CGraphObj::updateEditInfo()
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "updateEditInfo",
+        /* strMethod    */ "CGraphObj::updateEditInfo",
         /* strAddInfo   */ strMthInArgs );
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
@@ -5132,7 +5248,7 @@ void CGraphObj::updateLabelPositionsAndContents()
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "updateLabelPositionsAndContents",
+        /* strMethod    */ "CGraphObj::updateLabelPositionsAndContents",
         /* strAddInfo   */ "" );
 
     updateLabelPositions(m_arpLabels);
@@ -5158,7 +5274,7 @@ void CGraphObj::updateLabelPositions( QList<CGraphObjLabel*>& i_arpLabels )
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "updateLabelPositions",
+        /* strMethod    */ "CGraphObj::updateLabelPositions",
         /* strAddInfo   */ strMthInArgs );
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
@@ -5192,7 +5308,7 @@ void CGraphObj::updateLabelPositions( QHash<QString, CGraphObjLabel*>& i_arpLabe
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "updateLabelPositions",
+        /* strMethod    */ "CGraphObj::updateLabelPositions",
         /* strAddInfo   */ strMthInArgs );
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
@@ -5241,7 +5357,7 @@ void CGraphObj::updatePositionLabelsContent()
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "updatePositionLabelsContent",
+        /* strMethod    */ "CGraphObj::updatePositionLabelsContent",
         /* strAddInfo   */ strMthInArgs );
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
@@ -5420,102 +5536,3 @@ void CGraphObj::destroyLabels()
     arpDimLineLabels.clear();
 
 } // destroyLabels
-
-/*==============================================================================
-protected: // instance methods (trace admin objects have to be created in ctor of "final" class)
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! @brief Creates the trace admin objects for method tracing.
-
-    This method has to be called in the constructor of the "final" class.
-
-    @param [in] i_strNameSpace
-    @param [in] i_strClassName
-    @param [in] i_strObjName
-*/
-void CGraphObj::createTrcAdminObjs(
-    const QString i_strNameSpace,
-    const QString& i_strClassName,
-    const QString& i_strObjName)
-//------------------------------------------------------------------------------
-{
-    m_pTrcAdminObjCtorsAndDtor = CTrcServer::GetTraceAdminObj(
-        i_strNameSpace + "::GraphObjs", i_strClassName + "::CtorsAndDtor", i_strObjName);
-    m_pTrcAdminObjItemChange = CTrcServer::GetTraceAdminObj(
-        i_strNameSpace + "::GraphObjs", i_strClassName + "::ItemChange", i_strObjName);
-    m_pTrcAdminObjBoundingRect = CTrcServer::GetTraceAdminObj(
-        i_strNameSpace + "::GraphObjs", i_strClassName + "::BoundingRect", i_strObjName);
-    m_pTrcAdminObjPaint = CTrcServer::GetTraceAdminObj(
-        i_strNameSpace + "::GraphObjs", i_strClassName + "::Paint", i_strObjName);
-    m_pTrcAdminObjSceneEvent = CTrcServer::GetTraceAdminObj(
-        i_strNameSpace + "::GraphObjs", i_strClassName + "::SceneEvent", i_strObjName);
-    m_pTrcAdminObjSceneEventFilter = CTrcServer::GetTraceAdminObj(
-        i_strNameSpace + "::GraphObjs", i_strClassName + "::SceneEventFilter", i_strObjName);
-    m_pTrcAdminObjHoverEvents = CTrcServer::GetTraceAdminObj(
-        i_strNameSpace + "::GraphObjs", i_strClassName + "::HoverEvents", i_strObjName);
-    m_pTrcAdminObjMouseEvents = CTrcServer::GetTraceAdminObj(
-        i_strNameSpace + "::GraphObjs", i_strClassName + "::MouseEvents", i_strObjName);
-    m_pTrcAdminObjKeyEvents = CTrcServer::GetTraceAdminObj(
-        i_strNameSpace + "::GraphObjs", i_strClassName + "::KeyEvents", i_strObjName);
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Releases the trace admin objects for method tracing.
-
-    This method is called by the destructor of the base class CGraphObj and
-    therefore don't need to be called by the destructor of the "final" class.
-*/
-void CGraphObj::releaseTrcAdminObjs()
-//------------------------------------------------------------------------------
-{
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjCtorsAndDtor);
-    m_pTrcAdminObjCtorsAndDtor = nullptr;
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjItemChange);
-    m_pTrcAdminObjItemChange = nullptr;
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjBoundingRect);
-    m_pTrcAdminObjBoundingRect = nullptr;
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjPaint);
-    m_pTrcAdminObjPaint = nullptr;
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjSceneEvent);
-    m_pTrcAdminObjSceneEvent = nullptr;
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjSceneEventFilter);
-    m_pTrcAdminObjSceneEventFilter = nullptr;
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjHoverEvents);
-    m_pTrcAdminObjHoverEvents = nullptr;
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjMouseEvents);
-    m_pTrcAdminObjMouseEvents = nullptr;
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjKeyEvents);
-    m_pTrcAdminObjKeyEvents = nullptr;
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Renames the trace admin objects for method tracing.
-
-    This method has to be called if the object is renamed and is called by
-    the "setName" method of the base class CGraphObj.
-
-    @param [in] i_strObjName
-*/
-void CGraphObj::renameTrcAdminObjs( const QString& i_strObjName )
-//------------------------------------------------------------------------------
-{
-    m_pTrcAdminObjCtorsAndDtor =
-        CTrcServer::RenameTraceAdminObj(m_pTrcAdminObjCtorsAndDtor, i_strObjName);
-    m_pTrcAdminObjItemChange =
-        CTrcServer::RenameTraceAdminObj(m_pTrcAdminObjItemChange, i_strObjName);
-    m_pTrcAdminObjBoundingRect =
-        CTrcServer::RenameTraceAdminObj(m_pTrcAdminObjBoundingRect, i_strObjName);
-    m_pTrcAdminObjPaint =
-        CTrcServer::RenameTraceAdminObj(m_pTrcAdminObjPaint, i_strObjName);
-    m_pTrcAdminObjSceneEvent =
-        CTrcServer::RenameTraceAdminObj(m_pTrcAdminObjSceneEvent, i_strObjName);
-    m_pTrcAdminObjSceneEventFilter =
-        CTrcServer::RenameTraceAdminObj(m_pTrcAdminObjSceneEventFilter, i_strObjName);
-    m_pTrcAdminObjHoverEvents =
-        CTrcServer::RenameTraceAdminObj(m_pTrcAdminObjHoverEvents, i_strObjName);
-    m_pTrcAdminObjMouseEvents =
-        CTrcServer::RenameTraceAdminObj(m_pTrcAdminObjMouseEvents, i_strObjName);
-    m_pTrcAdminObjKeyEvents =
-        CTrcServer::RenameTraceAdminObj(m_pTrcAdminObjKeyEvents, i_strObjName);
-}

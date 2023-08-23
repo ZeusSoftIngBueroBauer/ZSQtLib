@@ -80,8 +80,8 @@ CWdgtGraphObjLineProperties::CWdgtGraphObjLineProperties(
     m_pLyt->addWidget(m_pWdgtLabels);
 
     QObject::connect(
-        m_pWdgtLabels, &CWdgtGraphObjPropertiesLabels::propertyChanged,
-        this, &CWdgtGraphObjLineProperties::onWdgtLabelsPropertyChanged);
+        m_pWdgtLabels, &CWdgtGraphObjPropertiesLabels::contentChanged,
+        this, &CWdgtGraphObjLineProperties::onWdgtLabelsContentChanged);
 
     // <Buttons>
     //==========
@@ -144,6 +144,10 @@ void CWdgtGraphObjLineProperties::setKeyInTree(const QString& i_strKeyInTree)
                 m_pWdgtLabels->setKeyInTree("");
             }
         }
+
+        // Fill the content of the edit controls. But the line widget itself
+        // does not have any edit controls but hosts other property widgets.
+        //fillEditControls();
     }
 }
 
@@ -181,12 +185,13 @@ bool CWdgtGraphObjLineProperties::hasChanges() const
         /* strMethod    */ "hasChanges",
         /* strAddInfo   */ "" );
 
-    bool bHasChanges = false;
     // If the graphical object is about to be destroyed, "onGraphObjChanged" is called
     // to update the content of the widget. But the child property widgets may not
     // have been informed yet that the graphical object is about to be destroyed as
     // here we are in the call stack of the "onGraphObjAboutToDestroyed" of this widget.
     // The child widgets slot may be called sometimes afterwards.
+
+    bool bHasChanges = false;
     if (m_pGraphObj != nullptr) {
         if (m_pWdgtLabels != nullptr) {
             bHasChanges = m_pWdgtLabels->hasChanges();
@@ -208,20 +213,34 @@ void CWdgtGraphObjLineProperties::acceptChanges()
         /* strMethod    */ "acceptChanges",
         /* strAddInfo   */ "" );
 
-    if (hasErrors()) {
-        // Not really necessary as the apply button should be disabled if an
-        // input control has an erronous value. But kept as an example how
-        // the user could be informed that he should correct the values.
-        QMessageBox::critical(
-            this, ZS::System::GUI::getMainWindowTitle() + ": Cannot save changes",
-            "Some input is erroneous. Please correct the relevant input first.");
-    }
-    else {
-        CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
-        if (m_pWdgtLabels != nullptr) {
-            m_pWdgtLabels->acceptChanges();
+    if (m_pGraphObj != nullptr)
+    {
+        if (hasErrors()) {
+            // Not really necessary as the apply button should be disabled if an
+            // input control has an erronous value. But kept as an example how
+            // the user could be informed that he should correct the values.
+            QMessageBox::critical(
+                this, ZS::System::GUI::getMainWindowTitle() + ": Cannot save changes",
+                "Some input is erroneous. Please correct the relevant input first.");
         }
-        updateButtonsEnabled();
+        else {
+            {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
+
+                // When applying changes onGraphObjChanged is called.
+                // If the ContentChangedSignalBlockedCounter would not be incremented
+                // the abstract base class would call fillEditControls of the base class.
+                // This is not a problem as the method does nothing. But the method is not
+                // expected to be called so we avoid it for the sake of clarification
+                // (and to have a clear method trace output where the unexpected call is not listed).
+                if (m_pWdgtLabels != nullptr) {
+                    m_pWdgtLabels->acceptChanges();
+                }
+            }
+
+            // After the changes have been applied the enabled state of the Apply and
+            // Reset buttons got to be updated.
+            updateButtonsEnabled();
+        }
     }
 }
 
@@ -246,13 +265,13 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjLineProperties::onWdgtLabelsPropertyChanged()
+void CWdgtGraphObjLineProperties::onWdgtLabelsContentChanged()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onWdgtLabelsPropertyChanged",
+        /* strMethod    */ "onWdgtLabelsContentChanged",
         /* strAddInfo   */ "" );
 
     updateButtonsEnabled();

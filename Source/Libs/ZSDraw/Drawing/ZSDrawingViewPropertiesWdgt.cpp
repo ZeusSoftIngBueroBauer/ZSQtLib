@@ -938,7 +938,7 @@ protected slots:
 void CWdgtDrawingViewProperties::onDrawingViewDrawingSizeChanged(const CDrawingSize& i_size)
 //------------------------------------------------------------------------------
 {
-    if( m_iValueChangedSignalsBlocked > 0 ) {
+    if( m_iContentChangedSignalBlockedCounter > 0 ) {
         return;
     }
 
@@ -954,7 +954,7 @@ void CWdgtDrawingViewProperties::onDrawingViewDrawingSizeChanged(const CDrawingS
 
     if( m_drawingSize != i_size ) {
         m_drawingSize = i_size;
-        CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
+        CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
         updateDimensionUnit();
         updateButtonsEnabled();
         emit_drawingSizeChanged(m_drawingSize);
@@ -965,7 +965,7 @@ void CWdgtDrawingViewProperties::onDrawingViewDrawingSizeChanged(const CDrawingS
 void CWdgtDrawingViewProperties::onDrawingViewGridSettingsChanged(const CDrawGridSettings& i_settings)
 //------------------------------------------------------------------------------
 {
-    if( m_iValueChangedSignalsBlocked > 0 ) {
+    if( m_iContentChangedSignalBlockedCounter > 0 ) {
         return;
     }
 
@@ -981,7 +981,7 @@ void CWdgtDrawingViewProperties::onDrawingViewGridSettingsChanged(const CDrawGri
 
     if( m_gridSettings != i_settings ) {
         m_gridSettings = i_settings;
-        CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
+        CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
         updateGridSettings();
         updateButtonsEnabled();
         emit_gridSettingsChanged(m_gridSettings);
@@ -996,7 +996,7 @@ protected slots:
 void CWdgtDrawingViewProperties::onCmbDimensionUnitCurrentIndexChanged( int i_idx )
 //------------------------------------------------------------------------------
 {
-    if( m_iValueChangedSignalsBlocked > 0 ) {
+    if( m_iContentChangedSignalBlockedCounter > 0 ) {
         return;
     }
 
@@ -1017,7 +1017,7 @@ void CWdgtDrawingViewProperties::onCmbDimensionUnitCurrentIndexChanged( int i_id
 void CWdgtDrawingViewProperties::onCmbImageMetricUnitCurrentIndexChanged( int i_idx )
 //------------------------------------------------------------------------------
 {
-    if( m_iValueChangedSignalsBlocked > 0 ) {
+    if( m_iContentChangedSignalBlockedCounter > 0 ) {
         return;
     }
 
@@ -1038,7 +1038,7 @@ void CWdgtDrawingViewProperties::onCmbImageMetricUnitCurrentIndexChanged( int i_
 void CWdgtDrawingViewProperties::onEdtImageMetricWidthValueChanged(const CPhysVal& i_physValWidth)
 //------------------------------------------------------------------------------
 {
-    if( m_iValueChangedSignalsBlocked > 0 ) {
+    if( m_iContentChangedSignalBlockedCounter > 0 ) {
         return;
     }
 
@@ -1062,7 +1062,7 @@ void CWdgtDrawingViewProperties::onEdtImageMetricWidthValueChanged(const CPhysVa
 void CWdgtDrawingViewProperties::onEdtImageMetricHeightValueChanged(const CPhysVal& i_physValHeight)
 //------------------------------------------------------------------------------
 {
-    if( m_iValueChangedSignalsBlocked > 0 ) {
+    if( m_iContentChangedSignalBlockedCounter > 0 ) {
         return;
     }
 
@@ -1086,7 +1086,7 @@ void CWdgtDrawingViewProperties::onEdtImageMetricHeightValueChanged(const CPhysV
 void CWdgtDrawingViewProperties::onCmbImageMetricNormedPaperSizesCurrentIndexChanged(int i_idx)
 //------------------------------------------------------------------------------
 {
-    if( m_iValueChangedSignalsBlocked > 0 ) {
+    if( m_iContentChangedSignalBlockedCounter > 0 ) {
         return;
     }
 
@@ -1107,7 +1107,7 @@ void CWdgtDrawingViewProperties::onCmbImageMetricNormedPaperSizesCurrentIndexCha
 void CWdgtDrawingViewProperties::onCmbImageMetricNormedPaperOrientationCurrentIndexChanged(int i_idx)
 //------------------------------------------------------------------------------
 {
-    if( m_iValueChangedSignalsBlocked > 0 ) {
+    if( m_iContentChangedSignalBlockedCounter > 0 ) {
         return;
     }
 
@@ -1128,7 +1128,7 @@ void CWdgtDrawingViewProperties::onCmbImageMetricNormedPaperOrientationCurrentIn
 void CWdgtDrawingViewProperties::onCmbImageMetricScaleFactorDividendCurrentTextChanged(const QString& i_strDividend)
 //------------------------------------------------------------------------------
 {
-    if( m_iValueChangedSignalsBlocked > 0 ) {
+    if( m_iContentChangedSignalBlockedCounter > 0 ) {
         return;
     }
 
@@ -1158,7 +1158,7 @@ void CWdgtDrawingViewProperties::onCmbImageMetricScaleFactorDividendCurrentTextC
 void CWdgtDrawingViewProperties::onCmbImageMetricScaleFactorDividendEditTextChanged(const QString& i_strDividend)
 //------------------------------------------------------------------------------
 {
-    if( m_iValueChangedSignalsBlocked > 0 ) {
+    if( m_iContentChangedSignalBlockedCounter > 0 ) {
         return;
     }
 
@@ -1188,7 +1188,7 @@ void CWdgtDrawingViewProperties::onCmbImageMetricScaleFactorDividendEditTextChan
 void CWdgtDrawingViewProperties::onCmbImageMetricScaleFactorDivisorCurrentTextChanged(const QString& i_strDivisor)
 //------------------------------------------------------------------------------
 {
-    if( m_iValueChangedSignalsBlocked > 0 ) {
+    if( m_iContentChangedSignalBlockedCounter > 0 ) {
         return;
     }
 
@@ -1218,7 +1218,7 @@ void CWdgtDrawingViewProperties::onCmbImageMetricScaleFactorDivisorCurrentTextCh
 void CWdgtDrawingViewProperties::onCmbImageMetricScaleFactorDivisorEditTextChanged(const QString& i_strDivisor)
 //------------------------------------------------------------------------------
 {
-    if( m_iValueChangedSignalsBlocked > 0 ) {
+    if( m_iContentChangedSignalBlockedCounter > 0 ) {
         return;
     }
 
@@ -1248,7 +1248,7 @@ void CWdgtDrawingViewProperties::onCmbImageMetricScaleFactorDivisorEditTextChang
 void CWdgtDrawingViewProperties::onEdtImageSizeWidthPxValueChanged(int i_cxWidth_px)
 //------------------------------------------------------------------------------
 {
-    if( m_iValueChangedSignalsBlocked > 0 ) {
+    if( m_iContentChangedSignalBlockedCounter > 0 ) {
         return;
     }
 
@@ -1273,7 +1273,7 @@ void CWdgtDrawingViewProperties::onEdtImageSizeWidthPxValueChanged(int i_cxWidth
 void CWdgtDrawingViewProperties::onEdtImageSizeHeightPxValueChanged(int i_cyHeight_px)
 //------------------------------------------------------------------------------
 {
-    if( m_iValueChangedSignalsBlocked > 0 ) {
+    if( m_iContentChangedSignalBlockedCounter > 0 ) {
         return;
     }
 
@@ -1298,7 +1298,7 @@ void CWdgtDrawingViewProperties::onEdtImageSizeHeightPxValueChanged(int i_cyHeig
 void CWdgtDrawingViewProperties::onChkGridLinesVisibleStateChanged(int i_iState)
 //------------------------------------------------------------------------------
 {
-    if( m_iValueChangedSignalsBlocked > 0 ) {
+    if( m_iContentChangedSignalBlockedCounter > 0 ) {
         return;
     }
 
@@ -1319,7 +1319,7 @@ void CWdgtDrawingViewProperties::onChkGridLinesVisibleStateChanged(int i_iState)
 void CWdgtDrawingViewProperties::onEdtGridLinesDistMinValueChanged(int i_iVal)
 //------------------------------------------------------------------------------
 {
-    if( m_iValueChangedSignalsBlocked > 0 ) {
+    if( m_iContentChangedSignalBlockedCounter > 0 ) {
         return;
     }
 
@@ -1340,7 +1340,7 @@ void CWdgtDrawingViewProperties::onEdtGridLinesDistMinValueChanged(int i_iVal)
 void CWdgtDrawingViewProperties::onCmbGridLinesStyleCurrentIndexChanged(int i_idx)
 //------------------------------------------------------------------------------
 {
-    if( m_iValueChangedSignalsBlocked > 0 ) {
+    if( m_iContentChangedSignalBlockedCounter > 0 ) {
         return;
     }
 
@@ -1366,7 +1366,7 @@ void CWdgtDrawingViewProperties::onCmbGridLinesStyleCurrentIndexChanged(int i_id
 void CWdgtDrawingViewProperties::onEdtGridLinesWidthValueChanged(int i_iVal)
 //------------------------------------------------------------------------------
 {
-    if( m_iValueChangedSignalsBlocked > 0 ) {
+    if( m_iContentChangedSignalBlockedCounter > 0 ) {
         return;
     }
 
@@ -1413,7 +1413,7 @@ void CWdgtDrawingViewProperties::onBtnGridLinesColorClicked(bool i_bChecked)
 void CWdgtDrawingViewProperties::onChkGridScaleLabelsVisibleStateChanged(int i_iState)
 //------------------------------------------------------------------------------
 {
-    if( m_iValueChangedSignalsBlocked > 0 ) {
+    if( m_iContentChangedSignalBlockedCounter > 0 ) {
         return;
     }
 
@@ -1434,7 +1434,7 @@ void CWdgtDrawingViewProperties::onChkGridScaleLabelsVisibleStateChanged(int i_i
 void CWdgtDrawingViewProperties::onCmbGridScaleLabelsCurrentFontChanged(const QFont& i_fnt)
 //------------------------------------------------------------------------------
 {
-    if( m_iValueChangedSignalsBlocked > 0 ) {
+    if( m_iContentChangedSignalBlockedCounter > 0 ) {
         return;
     }
 
@@ -1455,7 +1455,7 @@ void CWdgtDrawingViewProperties::onCmbGridScaleLabelsCurrentFontChanged(const QF
 void CWdgtDrawingViewProperties::onCmbGridScaleLabelsFontSizeCurrentIndexChanged(int i_iCurrentIndex)
 //------------------------------------------------------------------------------
 {
-    if( m_iValueChangedSignalsBlocked > 0 ) {
+    if( m_iContentChangedSignalBlockedCounter > 0 ) {
         return;
     }
 
@@ -1502,7 +1502,7 @@ void CWdgtDrawingViewProperties::onBtnGridScaleLabelsTextColorClicked(bool i_bCh
 void CWdgtDrawingViewProperties::onBtnGridScaleLabelsFontStyleBoldToggled(int i_iState)
 //------------------------------------------------------------------------------
 {
-    if( m_iValueChangedSignalsBlocked > 0 ) {
+    if( m_iContentChangedSignalBlockedCounter > 0 ) {
         return;
     }
 
@@ -1537,7 +1537,7 @@ void CWdgtDrawingViewProperties::onBtnGridScaleLabelsFontStyleBoldToggled(int i_
 void CWdgtDrawingViewProperties::onBtnGridScaleLabelsFontStyleItalicToggled(int i_iState)
 //------------------------------------------------------------------------------
 {
-    if( m_iValueChangedSignalsBlocked > 0 ) {
+    if( m_iContentChangedSignalBlockedCounter > 0 ) {
         return;
     }
 
@@ -1572,7 +1572,7 @@ void CWdgtDrawingViewProperties::onBtnGridScaleLabelsFontStyleItalicToggled(int 
 void CWdgtDrawingViewProperties::onBtnGridScaleLabelsTextEffectUnderlineToggled(int i_iState)
 //------------------------------------------------------------------------------
 {
-    if( m_iValueChangedSignalsBlocked > 0 ) {
+    if( m_iContentChangedSignalBlockedCounter > 0 ) {
         return;
     }
 
@@ -1607,7 +1607,7 @@ void CWdgtDrawingViewProperties::onBtnGridScaleLabelsTextEffectUnderlineToggled(
 void CWdgtDrawingViewProperties::onBtnGridScaleLabelsTextEffectStrikeoutToggled(int i_iState)
 //------------------------------------------------------------------------------
 {
-    if( m_iValueChangedSignalsBlocked > 0 ) {
+    if( m_iContentChangedSignalBlockedCounter > 0 ) {
         return;
     }
 
@@ -1657,7 +1657,7 @@ void CWdgtDrawingViewProperties::setDimensionUnit( const CEnumDrawingDimensionUn
         /* strAddInfo   */ strMthInArgs );
 
     if( m_drawingSize.dimensionUnit() != i_eDimensionUnit ) {
-        CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
+        CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
         m_drawingSize.setDimensionUnit(i_eDimensionUnit);
         updateDimensionUnit();
         updateButtonsEnabled();
@@ -1680,7 +1680,7 @@ void CWdgtDrawingViewProperties::setMetricUnit( const CUnit& i_metricUnit )
         /* strAddInfo   */ strMthInArgs );
 
     if( m_drawingSize.metricUnit() != i_metricUnit ) {
-        CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
+        CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
         // If changing the unit the metrics width and height and also the
         // size in pixels remain the same. Only the unit in which the values
         // are indicated will be changed.
@@ -1706,7 +1706,7 @@ void CWdgtDrawingViewProperties::setNormedPaperSize( const CEnumNormedPaperSize&
         /* strAddInfo   */ strMthInArgs );
 
     if( m_drawingSize.normedPaperSize() != i_ePaperSize ) {
-        CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
+        CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
         m_drawingSize.setNormedPaperSize(i_ePaperSize);
         m_pLblImageMetricNormedPaperOrientation->setVisible(i_ePaperSize.isValid());
         m_pCmbImageMetricNormedPaperOrientation->setVisible(i_ePaperSize.isValid());
@@ -1738,7 +1738,7 @@ void CWdgtDrawingViewProperties::setNormedPaperOrientation( const CEnumOrientati
         /* strAddInfo   */ strMthInArgs );
 
     if( m_drawingSize.normedPaperOrientation() != i_eOrientation ) {
-        CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
+        CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
         m_drawingSize.setNormedPaperOrientation(i_eOrientation);
         // Setting values according to orientation makes only sense for normed paper sizes.
         // For user defined paper sizes there is no orientation. The width might be
@@ -1784,7 +1784,7 @@ void CWdgtDrawingViewProperties::setScaleFactor( int i_iDividend, int i_iDivisor
                 + "!Divisor <= 0!");
     }
     if( m_drawingSize.scaleFactorDividend() != i_iDividend || m_drawingSize.scaleFactorDivisor() != i_iDivisor ) {
-        CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
+        CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
         m_drawingSize.setScaleFactor(i_iDividend, i_iDivisor);
         updateImageSizeInPixels();
         updateButtonsEnabled();
@@ -1834,7 +1834,7 @@ void CWdgtDrawingViewProperties::setImageSize(
     m_drawingSize.setImageSize(i_physValWidth, i_physValHeight);
     QSize sizeCurr_px = m_drawingSize.imageSizeInPixels();
     if( sizePrev_px != sizeCurr_px ) {
-        CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
+        CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
         if( i_physValWidth.unit() == Units.Length.pxX ) {
             updateImageSizeMetrics();
         }
@@ -1866,7 +1866,7 @@ void CWdgtDrawingViewProperties::setGridLinesVisible(bool i_bVisible)
         /* strAddInfo   */ strMthInArgs );
 
     if( m_gridSettings.areLinesVisible() != i_bVisible) {
-        CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
+        CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
         m_gridSettings.setLinesVisible(i_bVisible);
         updateButtonsEnabled();
         emit_gridSettingsChanged(m_gridSettings);
@@ -1888,7 +1888,7 @@ void CWdgtDrawingViewProperties::setGridLinesDistMin(int i_iDistMin_px)
         /* strAddInfo   */ strMthInArgs );
 
     if( m_gridSettings.linesDistMin() != i_iDistMin_px) {
-        CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
+        CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
         m_gridSettings.setLinesDistMin(i_iDistMin_px);
         updateButtonsEnabled();
         emit_gridSettingsChanged(m_gridSettings);
@@ -1910,7 +1910,7 @@ void CWdgtDrawingViewProperties::setGridLinesStyle(ELineStyle i_lineStyle)
         /* strAddInfo   */ strMthInArgs );
 
     if( m_gridSettings.linesStyle() != i_lineStyle) {
-        CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
+        CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
         m_gridSettings.setLinesStyle(i_lineStyle);
         updateButtonsEnabled();
         emit_gridSettingsChanged(m_gridSettings);
@@ -1932,7 +1932,7 @@ void CWdgtDrawingViewProperties::setGridLinesColor(const QColor& i_color)
         /* strAddInfo   */ strMthInArgs );
 
     if( m_gridSettings.linesColor() != i_color) {
-        CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
+        CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
         m_gridSettings.setLinesColor(i_color);
         updateGridLinesColorButtonIcon();
         updateButtonsEnabled();
@@ -1955,7 +1955,7 @@ void CWdgtDrawingViewProperties::setGridLinesWidth(int i_iWidth_px)
         /* strAddInfo   */ strMthInArgs );
 
     if( m_gridSettings.linesWidth() != i_iWidth_px) {
-        CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
+        CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
         m_gridSettings.setLinesWidth(i_iWidth_px);
         updateButtonsEnabled();
         emit_gridSettingsChanged(m_gridSettings);
@@ -1977,7 +1977,7 @@ void CWdgtDrawingViewProperties::setGridLabelsVisible(bool i_bVisible)
         /* strAddInfo   */ strMthInArgs );
 
     if( m_gridSettings.areLabelsVisible() != i_bVisible) {
-        CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
+        CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
         m_gridSettings.setLabelsVisible(i_bVisible);
         updateButtonsEnabled();
         emit_gridSettingsChanged(m_gridSettings);
@@ -1999,7 +1999,7 @@ void CWdgtDrawingViewProperties::setGridLabelsFont(const QFont& i_fnt)
         /* strAddInfo   */ strMthInArgs );
 
     if( m_gridSettings.labelsFont() != i_fnt) {
-        CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
+        CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
         m_gridSettings.setLabelsFont(i_fnt);
         updateButtonsEnabled();
         emit_gridSettingsChanged(m_gridSettings);
@@ -2021,7 +2021,7 @@ void CWdgtDrawingViewProperties::setGridLabelsTextSize(ETextSize i_textSize)
         /* strAddInfo   */ strMthInArgs );
 
     if( m_gridSettings.labelsTextSize() != i_textSize) {
-        CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
+        CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
         m_gridSettings.setLabelsTextSize(i_textSize);
         updateButtonsEnabled();
         emit_gridSettingsChanged(m_gridSettings);
@@ -2043,7 +2043,7 @@ void CWdgtDrawingViewProperties::setGridLabelsTextColor(const QColor& i_color)
         /* strAddInfo   */ strMthInArgs );
 
     if( m_gridSettings.labelsTextColor() != i_color) {
-        CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
+        CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
         m_gridSettings.setLabelsTextColor(i_color);
         updateGridLabelsTextColorButtonIcon();
         updateButtonsEnabled();
@@ -2066,7 +2066,7 @@ void CWdgtDrawingViewProperties::setGridLabelsTextStyle(ETextStyle i_textStyle)
         /* strAddInfo   */ strMthInArgs );
 
     if( m_gridSettings.labelsTextStyle() != i_textStyle) {
-        CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
+        CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
         m_gridSettings.setLabelsTextStyle(i_textStyle);
         updateGridLabelsTextStyleBoldButton();
         updateGridLabelsTextStyleItalicButton();
@@ -2090,7 +2090,7 @@ void CWdgtDrawingViewProperties::setGridLabelsTextEffect(const ETextEffect i_tex
         /* strAddInfo   */ strMthInArgs );
 
     if( m_gridSettings.labelsTextEffect() != i_textEffect) {
-        CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
+        CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
         m_gridSettings.setLabelsTextEffect(i_textEffect);
         updateGridLabelsTextEffectUnderlineButton();
         updateGridLabelsTextEffectStrikeoutButton();
@@ -2117,7 +2117,7 @@ void CWdgtDrawingViewProperties::updateDimensionUnit()
         traceValues(mthTracer, EMethodDir::Enter);
     }
 
-    CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
+    CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
 
     CEnumDrawingDimensionUnit eDimensionUnit = m_drawingSize.dimensionUnit();
 
@@ -2152,7 +2152,7 @@ void CWdgtDrawingViewProperties::updateImageSizeInPixels()
         traceValues(mthTracer, EMethodDir::Enter);
     }
 
-    CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
+    CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
     QSize size_px = m_drawingSize.imageSizeInPixels();
     m_pEdtImageSizeWidth_px->setValue(size_px.width());
     m_pEdtImageSizeHeight_px->setValue(size_px.height());
@@ -2175,7 +2175,7 @@ void CWdgtDrawingViewProperties::updateImageSizeMetrics()
         traceValues(mthTracer, EMethodDir::Enter);
     }
 
-    CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
+    CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
 
     m_pCmbImageMetricUnit->setCurrentText(m_drawingSize.metricUnit().symbol());
 
@@ -2215,7 +2215,7 @@ void CWdgtDrawingViewProperties::updatePaperFormat()
         traceValues(mthTracer, EMethodDir::Enter);
     }
 
-    CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
+    CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
 
     CEnumNormedPaperSize ePaperSize = m_drawingSize.normedPaperSize();
     CEnumOrientation eOrientation = m_drawingSize.normedPaperOrientation();
@@ -2254,7 +2254,7 @@ void CWdgtDrawingViewProperties::updateGridSettings()
         /* strMethod    */ "updateGridSettings",
         /* strAddInfo   */ "" );
 
-    CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
+    CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
 
     m_pChkGridLinesVisible->setChecked(m_gridSettings.areLinesVisible());
     m_pEdtGridLinesDistMin->setValue(m_gridSettings.linesDistMin());
