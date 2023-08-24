@@ -25,53 +25,104 @@ may result in using the software modules.
 '''
 
 '''
-Usage Example:
---------------
+Description
+-----------
 
-This script walks through the directory passed with argument '--directory',
+This script walks through the directory passed with argument '--gitRepoDir',
 searches for all '*.cpp', '*.h' and '*.qml' files and removes the code blocks starting
-with '#ifdef <directive>' to the next line containing either '#else' or '#endif'.
+with '#ifdef <directive>' (in qml files with '//#ifdef <directive>') to the next line
+containing either '#else' or '#endif' (in qml either '//#else' or '//#endif').
 If an '#else' is found after the '#ifdef <directive>' the lines between '#else'
 end the next '#endif' are kept.
 
-    python RemoveIfDefBlocks.py --directory='SourcePath' --directive='USE_ZS_IPCTRACE_DLL_IF'
+In addition all files in which the '#ifdef <directive>' has been found are added to zip
+archives including path information:
+
+- A zip file containing the unmodified files (still including '#ifdef <directive>') and
+- a zip file containing the modified files (without the '#ifdef <directive>' blocks).
+
+@param gitRepoDir
+    Directory to be recursively scanned for files with extension '.cpp', '.h' and '.qml'.
+    Pass this argument by inserting -- at the beginning.
+
+@param gitChangesSinceCommit
+    Pass this argument to not just include files including the directive but also all
+    changed files since the defined git commit hash.
+
+@param directive
+    Directive for the #ifdef blocks to be removed. You may omit '#ifdef'.
+    Pass this argument by inserting -- at the beginning.
+
+@param zipOutDir
+    Directory in which the zip archives have to be created. If omitted the current directory
+    (the directory from which this python script is called) is used.
+    Pass this argument by inserting -- at the beginning.
+
+Usage Examples
+--------------
+
+python RemoveIfDefBlocks.py --gitRepoDir='SourcePath' --directive='USE_ZS_IPCTRACE_DLL_IF' --zipOutDir='OutputPath'
+python RemoveIfDefBlocks.py --gitRepoDir='/home/devel/display_application' --gitChangesSinceCommit='fac5073c' --directive='USE_ZS_QTLIBS' --zipOutDir='/home/devel/display_application.bak/ITS-5437-DeleteCodingData'
 '''
 
-import fnmatch, getopt, os, sys
+import fnmatch, getopt, os, sys, subprocess, zipfile
 
-def main():
-    directory = ''
-    directive = '#ifdef USE_ZS_IPCTRACE_DLL_IF'
-    try:
-        opts, args = getopt.getopt(sys.argv[1:], '', ['directory=', 'directive='])
-    except getopt.GetoptError:
-        print('Invalid usage')
-        print('RemoveIfDefBlocks.py -directory=<directory> -directive=<directive>')
-        sys.exit(2)
-    for opt, arg in opts:
-        if opt in ('-dir', '--directory'):
-            directory = arg
-        elif opt in ('-directive', '--directive'):
-            directive = arg
-    directory = os.path.abspath(directory)
-    print('directory = ' + directory)
-    if not '#ifdef' in directive:
-        directive = '#ifdef ' + directive
-    print('directive = ' + directive)
-    for root, subdirs, files in os.walk(directory):
-        for filename in files:
-            sourceFile = ''
-            filepath = os.path.join(root, filename)
-            if fnmatch.fnmatch(filename, '*.qml'):
-                sourceFile = filepath
-            elif fnmatch.fnmatch(filename, '*.cpp'):
-                sourceFile = filepath
-            elif fnmatch.fnmatch(filename, '*.h'):
-                sourceFile = filepath
-            if len(sourceFile) > 0:
-                print('Checking File: ', sourceFile)
+def getGitRevisionHash(repoRootDir) -> str:
+    print('')
+    print('-> getGitRevisionHash(' + repoRootDir + ')')
+    currDir = os.getcwd()
+    os.chdir(repoRootDir)
+    hash = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('ascii').strip()
+    os.chdir(currDir)
+    print('<- getGitRevisionHash: ' + hash)
+    print('')
+    return hash
+
+def getGitRevisionShortHash(repoRootDir) -> str:
+    print('')
+    print('-> getGitRevisionShortHash: ' + repoRootDir)
+    currDir = os.getcwd()
+    os.chdir(repoRootDir)
+    currDir = os.getcwd()
+    hash = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).decode('ascii').strip()
+    os.chdir(currDir)
+    print('<- getGitRevisionShortHash: ' + hash)
+    print('')
+    return hash
+
+def getFilePathsOfChangedFilesSinceCommit(repoRootDir, gitHash) -> []:
+    print('')
+    print('-> getFilePathsOfChangedFilesSinceCommit(' + repoRootDir + ', ' + gitHash + ')')
+    filePaths = []
+    currDir = os.getcwd()
+    os.chdir(repoRootDir)
+    currDir = os.getcwd()
+    filePaths = subprocess.check_output(['git', 'diff', '--name-only', gitHash]).decode('ascii').split()
+    os.chdir(currDir)
+    for sourceFilePath in filePaths:
+        print('  ' + sourceFilePath)
+    print('<- getFilePathsOfChangedFilesSinceCommit')
+    print('')
+    return filePaths
+
+def getFilePathsWithDirective(repoRootDir, directive) -> []:
+    print('')
+    print('-> getFilePathsWithDirective(' + repoRootDir + ', ' + directive + ')')
+    filePathsWithDirective = []
+    for dirPath, dirNames, fileNames in os.walk(repoRootDir):
+        for fileName in fileNames:
+            sourceFilePath = ''
+            filePath = os.path.join(dirPath, fileName)
+            if fnmatch.fnmatch(fileName, '*.qml'):
+                sourceFilePath = filePath
+            elif fnmatch.fnmatch(fileName, '*.cpp'):
+                sourceFilePath = filePath
+            elif fnmatch.fnmatch(fileName, '*.h'):
+                sourceFilePath = filePath
+            if len(sourceFilePath) > 0:
+                #print('Checking File: ', sourceFilePath)
                 directiveInFile = False
-                with open(sourceFile, 'r', newline='') as f:
+                with open(sourceFilePath, 'r', newline='') as f:
                     try:
                         lines = f.readlines()
                         for idxLine in range(len(lines)):
@@ -80,65 +131,176 @@ def main():
                                 directiveInFile = True
                                 break
                     except:
-                        print('Cannot read: ', sourceFile)
-                if not directiveInFile:
-                    print('Ignoring File: ', sourceFile)
-                else:
-                    print('Processing File: ', sourceFile)
-                    newLines = []
+                        print('Cannot read: ', sourceFilePath)
+                if directiveInFile:
+                    #print('Processing File: ', sourceFilePath)
+                    filePathsWithDirective.append(sourceFilePath)
+                #else:
+                #    print('Ignoring File: ', sourceFilePath)
+    print('<- getFilePathsWithDirective')
+    print('')
+    return filePathsWithDirective
+
+def getFilePathsOfRemovedFiles(filePaths) -> []:
+    print('')
+    print('-> getFilePathsOfRemovedFiles')
+    filePathsOfRemovedFiles = []
+    for sourceFilePath in filePaths:
+        if not os.path.exists(sourceFilePath):
+            filePathsOfRemovedFiles.append(sourceFilePath)
+    for sourceFilePath in filePathsOfRemovedFiles:
+        print('  ' + sourceFilePath)
+    print('<- getFilePathsOfRemovedFiles')
+    print('')
+    return filePathsOfRemovedFiles
+
+def addToArchive(zipOutDir, zipFileName, filePaths):
+    print('')
+    print('-> addToArchive(' + zipOutDir + ', ' + zipFileName + ')')
+    if not os.path.exists(zipOutDir):
+        os.makedirs(zipOutDir)
+    zipFilePath = os.path.join(zipOutDir, zipFileName)
+    zipFile = zipfile.ZipFile(zipFilePath, "w" )
+    for sourceFilePath in filePaths:
+        if os.path.exists(sourceFilePath):
+            print('  Archiving File "', sourceFilePath, '" in "', zipFilePath, '"')
+            zipFile.write(sourceFilePath, compress_type=zipfile.ZIP_DEFLATED)
+        else:
+            print('  Ignoring Not Existing File "', sourceFilePath, '"')
+    print('<- addToArchive')
+    print('')
+
+def writeFilePathsToFile(zipOutDir, fileName, filePaths):
+    print('')
+    print('-> writeFilePathsToFile(' + zipOutDir + ', ' + fileName + ')')
+    if not os.path.exists(zipOutDir):
+        os.makedirs(zipOutDir)
+    filePath = os.path.join(zipOutDir, fileName)
+    with open(filePath, 'w') as f:
+        for sourceFilePath in filePaths:
+            print('  ' + sourceFilePath)
+            f.write(sourceFilePath)
+            f.write('\n')
+    print('<- writeFilePathsToFile')
+    print('')
+
+def removeDirectiveFromFiles(filePaths, directive):
+    print('')
+    print('-> removeDirectiveFromFiles(' + directive + ')')
+    for sourceFilePath in filePaths:
+        print('  Processing File: ', sourceFilePath)
+        lines = []
+        try:
+            with open(sourceFilePath, 'r', newline='') as f:
+                try:
+                    lines = f.readlines()
+                except:
+                    print('    Cannot read: ', sourceFilePath)
+        except:
+            print('    Cannot open: ', sourceFilePath)
+        if len(lines) > 0:
+            newLines = []
+            inIfBlock = False
+            inElseBlock = False
+            blockLeft = False
+            for idxLine in range(len(lines)):
+                prevLine = ''
+                nextLine = ''
+                newLine = ''
+                if idxLine > 0:
+                    prevLine = line
+                if idxLine < len(lines) - 1:
+                    nextLine = lines[idxLine+1]
+                line = lines[idxLine]
+                isSpaceLine = line.isspace()
+                #print('-----------------------------')
+                #print('Line: ', idxLine)
+                #print('Line     [{}]: {}'.format(len(line), line))
+                #print('PrevLine [{}]: {}'.format(len(prevLine), prevLine))
+                #print('NextLine [{}]: {}'.format(len(nextLine), nextLine))
+                #print('-> isSpaceLine:     ', isSpaceLine)
+                #print('-> inIfBlock:       ', inIfBlock)
+                #print('-> inElseBlock:     ', inElseBlock)
+                #print('-> blockLeft:       ', blockLeft)
+                if directive in line:
+                    inIfBlock = True
+                    blockLeft = False
+                elif inIfBlock and '#else' in line:
+                    inElseBlock = True
+                    blockLeft = False
+                elif inIfBlock and '#endif' in line:
                     inIfBlock = False
                     inElseBlock = False
+                    blockLeft = True
+                elif inElseBlock:
+                    newLine = line
                     blockLeft = False
-                    for idxLine in range(len(lines)):
-                        prevLine = ''
-                        nextLine = ''
-                        newLine = ''
-                        if idxLine > 0:
-                            prevLine = line
-                        if idxLine < len(lines) - 1:
-                            nextLine = lines[idxLine+1]
-                        line = lines[idxLine]
-                        isSpaceLine = line.isspace()
-                        #print('-----------------------------')
-                        #print('Line: ', idxLine)
-                        #print('Line     [{}]: {}'.format(len(line), line))
-                        #print('PrevLine [{}]: {}'.format(len(prevLine), prevLine))
-                        #print('NextLine [{}]: {}'.format(len(nextLine), nextLine))
-                        #print('-> isSpaceLine:     ', isSpaceLine)
-                        #print('-> inIfBlock:       ', inIfBlock)
-                        #print('-> inElseBlock:     ', inElseBlock)
-                        #print('-> blockLeft:       ', blockLeft)
-                        if directive in line:
-                            inIfBlock = True
-                            blockLeft = False
-                        elif inIfBlock and '#else' in line:
-                            inElseBlock = True
-                            blockLeft = False
-                        elif inIfBlock and '#endif' in line:
-                            inIfBlock = False
-                            inElseBlock = False
-                            blockLeft = True
-                        elif inElseBlock:
+                elif not inIfBlock:
+                    if isSpaceLine:
+                        if not blockLeft: # or directive in nextLine):
                             newLine = line
-                            blockLeft = False
-                        elif not inIfBlock:
-                            if isSpaceLine:
-                                if not blockLeft: # or directive in nextLine):
-                                    newLine = line
-                            else:
-                                newLine = line
-                            blockLeft = False
-                        #print('')
-                        #print('<- inIfBlock:       ', inIfBlock)
-                        #print('<- inElseBlock:     ', inElseBlock)
-                        #print('<- blockLeft:       ', blockLeft)
-                        #print('newLine [{}]: {}'.format(len(newLine), newLine))
-                        if len(newLine) > 0:
-                            newLines.append(line)
-                    targetFile = sourceFile # + '.tst'
-                    with open(targetFile, 'w', newline='') as f:
-                        for line in newLines:
-                            f.write(line)
+                    else:
+                        newLine = line
+                    blockLeft = False
+                #print('')
+                #print('<- inIfBlock:       ', inIfBlock)
+                #print('<- inElseBlock:     ', inElseBlock)
+                #print('<- blockLeft:       ', blockLeft)
+                #print('newLine [{}]: {}'.format(len(newLine), newLine))
+                if len(newLine) > 0:
+                    newLines.append(line)
+            targetFile = sourceFilePath # + '.tst'
+            with open(targetFile, 'w', newline='') as f:
+                for line in newLines:
+                    f.write(line)
+
+def main():
+    gitRepoDir = ''
+    gitHashBase = ''
+    directive = '#ifdef USE_ZS_IPCTRACE_DLL_IF'
+    zipOutDir = ''
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], '', ['gitRepoDir=', 'gitChangesSinceCommit=', 'directive=', 'zipOutDir='])
+    except getopt.GetoptError:
+        print('Invalid usage')
+        print('RemoveIfDefBlocks.py --gitRepoDir=<directory> --gitChangesSinceCommit=<hash> --directive=<directive>')
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt in ('-gitRepoDir', '--gitRepoDir'):
+            gitRepoDir = arg
+        elif opt in ('-gitChangesSinceCommit', '--gitChangesSinceCommit'):
+            gitHashBase = arg
+        elif opt in ('-directive', '--directive'):
+            directive = arg
+        elif opt in ('-zipOutDir', '--zipOutDir'):
+            zipOutDir = arg
+    zipOutDir = os.path.abspath(zipOutDir)
+    gitHashCurrent = getGitRevisionShortHash(gitRepoDir)
+    print('gitRepoDir = ' + gitRepoDir)
+    print('zipOutDir = ' + zipOutDir)
+    if not '#ifdef' in directive:
+        directive = '#ifdef ' + directive
+    print('directive = ' + directive)
+    print('gitHashBase = ' + gitHashBase)
+    print('gitHashCurrent = ' + gitHashCurrent)
+    print('')
+
+    filePathsChangedSinceCommit = getFilePathsOfChangedFilesSinceCommit(gitRepoDir, gitHashBase)
+    filePathsRemovedSinceCommit = getFilePathsOfRemovedFiles(filePathsChangedSinceCommit)
+
+    zipFileName = 'ChangedFiles-' + gitHashCurrent + '-' + gitHashBase
+    addToArchive(zipOutDir, zipFileName, filePathsChangedSinceCommit)
+
+    fileName = 'RemovedFiles-' + gitHashCurrent + '-' + gitHashBase
+    writeFilePathsToFile(zipOutDir, fileName, filePathsRemovedSinceCommit)
+
+    #filePathsWithDirective = getFilePathsWithDirective(gitRepoDir, directive)
+
+    removeDirectiveFromFiles(filePathsChangedSinceCommit, directive)
+
+    zipFileName = 'ChangedFiles-' + gitHashCurrent + '-' + gitHashBase + '-Without' + directive
+    zipFileName = zipFileName.replace('#ifdef ', '')
+    addToArchive(zipOutDir, zipFileName, filePathsChangedSinceCommit)
 
 if __name__ == '__main__':
     main()
