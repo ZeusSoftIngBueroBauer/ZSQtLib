@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -60,32 +60,31 @@ public: // class methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+CDlgTrcServer* CDlgTrcServer::GetInstance()
+//------------------------------------------------------------------------------
+{
+    QString strObjName = CTrcServer::GetInstance()->objectName();
+    return dynamic_cast<CDlgTrcServer*>(CDialog::GetInstance(NameSpace(), ClassName(), strObjName));
+}
+
+//------------------------------------------------------------------------------
 CDlgTrcServer* CDlgTrcServer::CreateInstance(
     const QString&  i_strDlgTitle,
-    const QString&  i_strObjName,
     QWidget*        i_pWdgtParent,
     Qt::WindowFlags i_wFlags )
 //------------------------------------------------------------------------------
 {
-    if( CDialog::GetInstance(NameSpace(), ClassName(), i_strObjName) != nullptr )
+    if( GetInstance() != nullptr )
     {
-        QString strKey = buildPathStr("::", NameSpace(), ClassName(), i_strObjName);
+        QString strObjName = CTrcServer::GetInstance()->objectName();
+        QString strKey = buildPathStr("::", NameSpace(), ClassName(), strObjName);
         throw CException(__FILE__, __LINE__, EResultObjAlreadyInList, strKey);
     }
 
     return new CDlgTrcServer(
         /* strDlgTitle  */ i_strDlgTitle,
-        /* strObjName   */ i_strObjName,
         /* pWdgtParent  */ i_pWdgtParent,
         /* wFlags       */ i_wFlags );
-
-} // CreateInstance
-
-//------------------------------------------------------------------------------
-CDlgTrcServer* CDlgTrcServer::GetInstance( const QString& i_strObjName )
-//------------------------------------------------------------------------------
-{
-    return dynamic_cast<CDlgTrcServer*>(CDialog::GetInstance(NameSpace(), ClassName(), i_strObjName));
 }
 
 /*==============================================================================
@@ -95,7 +94,6 @@ protected: // ctor
 //------------------------------------------------------------------------------
 CDlgTrcServer::CDlgTrcServer(
     const QString&  i_strDlgTitle,
-    const QString&  i_strObjName,
     QWidget*        i_pWdgtParent,
     Qt::WindowFlags i_wFlags ) :
 //------------------------------------------------------------------------------
@@ -103,7 +101,7 @@ CDlgTrcServer::CDlgTrcServer(
         /* strDlgTitle  */ i_strDlgTitle,
         /* strNameSpace */ NameSpace(),
         /* strClassName */ ClassName(),
-        /* strObjName   */ i_strObjName,
+        /* strObjName   */ CTrcServer::GetInstance()->objectName(),
         /* pWdgtParent  */ i_pWdgtParent,
         /* wFlags       */ i_wFlags ),
     m_pIpcTrcServer(nullptr),
@@ -129,7 +127,8 @@ CDlgTrcServer::CDlgTrcServer(
     // IPC Connection Settings
     //------------------------
 
-    m_pWdgtIpcServer = new ZS::Ipc::GUI::CWdgtIpcServer(i_strObjName);
+    m_pWdgtIpcServer = new ZS::Ipc::GUI::CWdgtIpcServer(
+        CTrcServer::GetInstance()->objectName());
     m_pTabWidget->addTab(m_pWdgtIpcServer, "Connection Settings");
 
     if( !QObject::connect(
@@ -226,7 +225,7 @@ void CDlgTrcServer::setServer( CIpcTrcServer* i_pTrcServer )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Server: " + QString( i_pTrcServer == nullptr ? "nullptr" : i_pTrcServer->objectName() );
     }
@@ -314,7 +313,7 @@ void CDlgTrcServer::onWdgtIpcServerDetailsVisibilityChanged( bool i_bDetailsVisi
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = bool2Str(i_bDetailsVisible);
     }

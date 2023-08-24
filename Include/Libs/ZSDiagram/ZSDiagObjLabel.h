@@ -42,6 +42,8 @@ struct SFrameStyle;
 class ZSDIAGRAMDLL_API CDiagObjLabel : public CDiagObj
 //******************************************************************************
 {
+public: // class methods
+    static QString ClassName() { return "CDiagObjLabel"; }
 public: // ctors and dtor
     CDiagObjLabel(
         const QString& i_strObjName,
@@ -93,17 +95,17 @@ public: // instance methods
     QFont getFont() const;
     void setTextAlignmentFlags( int i_iAlignmentFlags );
     int getTextAlignmentFlags() const;
-    void setTextDirection( ETextDirection i_textDirection );
-    ETextDirection getTextDirection() const;
+    void setTextOrientation( ETextOrientation i_textOrientation );
+    ETextOrientation getTextOrientation() const;
     void setPixmap( const QPixmap& i_pxm, int i_iState = 0 );
     QPixmap getPixmap( int i_iState = 0 ) const;
     void setPixmapAlignmentFlags( int i_iAlignmentFlags );
     int getPixmapAlignmentFlags() const;
 public: // overridables of base class CDiagObj
-    virtual QSize sizeHint();
+    virtual QSize sizeHint() override;
 public: // must overridables of base class CDiagObj
-    virtual CDiagObj* clone( CDataDiagram* i_pDiagramTrg ) const;
-    virtual void update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDevice = nullptr );
+    virtual CDiagObj* clone( CDataDiagram* i_pDiagramTrg ) const override;
+    virtual void update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDevice = nullptr ) override;
 protected: // overridables of base class CDiagObj
     //virtual ZS::System::SErrResultInfo onReceivedReqSetValue( CMsgReqSetValue* i_pMsgReq ) override;
 private: // copy ctor not allowed
@@ -131,7 +133,7 @@ protected:  // instance members
     QColor*         m_arcolText;
     QFont           m_fntText;
     int             m_iTextAlignmentFlags;
-    ETextDirection  m_textDirection;
+    ETextOrientation  m_textOrientation;
     QPixmap*        m_arpxm;
     int             m_iPixmapAlignmentFlags;
     QRect           m_rectOuterFrame;

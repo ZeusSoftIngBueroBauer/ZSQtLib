@@ -57,13 +57,14 @@ CDiagObjGrid::CDiagObjGrid(
     CDiagScale*    i_pDiagScaleY ) :
 //------------------------------------------------------------------------------
     CDiagObj(
-        /* strObjName  */ i_strObjName,
-        /* pDiagScaleX */ i_pDiagScaleX,
-        /* pDiagScaleY */ i_pDiagScaleY,
-        /* layoutPos   */ ELayoutPosCenter ),
-    //m_arcol[EDivLineLayerCount]
-    //m_arpenStyle[EDivLineLayerCount]
-    //m_arbShow[EDivLineLayerCount]
+        /* strClassName */ CDiagObjGrid::ClassName(),
+        /* strObjName   */ i_strObjName,
+        /* pDiagScaleX  */ i_pDiagScaleX,
+        /* pDiagScaleY  */ i_pDiagScaleY,
+        /* layoutPos    */ ELayoutPosCenter ),
+    m_arcol(CEnumDivLineLayer::count()),
+    m_arpenStyle(CEnumDivLineLayer::count()),
+    m_arbShow(CEnumDivLineLayer::count()),
     m_bUpdWidget(true)
 {
     CMethodTracer mthTracer(
@@ -77,15 +78,15 @@ CDiagObjGrid::CDiagObjGrid(
 
     int iLayer;
 
-    for( iLayer = 0; iLayer < EDivLineLayerCount; iLayer++ )
+    for( iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
     {
         m_arbShow[iLayer] = true;
         m_arcol[iLayer] = Qt::darkGray;
         m_arpenStyle[iLayer] = Qt::SolidLine;
     }
 
-    m_arbShow[EDivLineLayerSub] = false;
-    m_arcol[EDivLineLayerSub] = Qt::lightGray;
+    m_arbShow[static_cast<int>(EDivLineLayer::Sub)] = false;
+    m_arcol[static_cast<int>(EDivLineLayer::Sub)] = Qt::lightGray;
 
 } // ctor
 
@@ -99,9 +100,9 @@ CDiagObjGrid::~CDiagObjGrid()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
-    memset(m_arcol, 0x00, EDivLineLayerCount*sizeof(m_arcol[0]));
-    memset(m_arpenStyle, 0x00, EDivLineLayerCount*sizeof(m_arpenStyle[0]));
-    memset(m_arbShow, 0x00, EDivLineLayerCount*sizeof(m_arbShow[0]));
+    //m_arcol.clear();
+    //m_arpenStyle.clear();
+    //m_arbShow.clear();
     m_bUpdWidget = false;
 
 } // dtor
@@ -111,23 +112,18 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDiagObjGrid::show( EDivLineLayer i_layer )
+void CDiagObjGrid::show( const CEnumDivLineLayer& i_eLayer )
 //------------------------------------------------------------------------------
 {
-    int iLayer;
-    int iLayerMin = i_layer;
-    int iLayerMax = i_layer;
+    int iLayerMin = 0;
+    int iLayerMax = CEnumDivLineLayer::count() - 1;
 
-    if( i_layer != EDivLineLayerCount && (i_layer < EDivLineLayerMin || i_layer > EDivLineLayerMax) )
+    if( i_eLayer.isValid() )
     {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultArgOutOfRange);
+        iLayerMin = i_eLayer.enumeratorAsInt();
+        iLayerMax = i_eLayer.enumeratorAsInt();
     }
-    if( i_layer == EDivLineLayerCount )
-    {
-        iLayerMin = 0;
-        iLayerMax = EDivLineLayerCount-1;
-    }
-    for( iLayer = iLayerMin; iLayer <= iLayerMax; iLayer++ )
+    for( int iLayer = iLayerMin; iLayer <= iLayerMax; iLayer++ )
     {
         if( !m_arbShow[iLayer] )
         {
@@ -136,27 +132,21 @@ void CDiagObjGrid::show( EDivLineLayer i_layer )
             invalidate(EUpdatePixmapWidget,true);
         }
     }
-
-} // show
+}
 
 //------------------------------------------------------------------------------
-void CDiagObjGrid::hide( EDivLineLayer i_layer )
+void CDiagObjGrid::hide( const CEnumDivLineLayer& i_eLayer )
 //------------------------------------------------------------------------------
 {
-    int iLayer;
-    int iLayerMin = i_layer;
-    int iLayerMax = i_layer;
+    int iLayerMin = 0;
+    int iLayerMax = CEnumDivLineLayer::count() - 1;
 
-    if( i_layer != EDivLineLayerCount && (i_layer < EDivLineLayerMin || i_layer > EDivLineLayerMax) )
+    if( i_eLayer.isValid() )
     {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultArgOutOfRange);
+        iLayerMin = i_eLayer.enumeratorAsInt();
+        iLayerMax = i_eLayer.enumeratorAsInt();
     }
-    if( i_layer == EDivLineLayerCount )
-    {
-        iLayerMin = 0;
-        iLayerMax = EDivLineLayerCount-1;
-    }
-    for( iLayer = iLayerMin; iLayer <= iLayerMax; iLayer++ )
+    for( int iLayer = iLayerMin; iLayer <= iLayerMax; iLayer++ )
     {
         if( m_arbShow[iLayer] )
         {
@@ -165,84 +155,61 @@ void CDiagObjGrid::hide( EDivLineLayer i_layer )
             invalidate(EUpdatePixmapWidget,true);
         }
     }
-
-} // hide
+}
 
 //------------------------------------------------------------------------------
-void CDiagObjGrid::setCol( EDivLineLayer i_layer, const QColor& i_col )
+void CDiagObjGrid::setCol( const CEnumDivLineLayer& i_eLayer, const QColor& i_col )
 //------------------------------------------------------------------------------
 {
-    int iLayer;
-    int iLayerMin = i_layer;
-    int iLayerMax = i_layer;
+    int iLayerMin = 0;
+    int iLayerMax = CEnumDivLineLayer::count() - 1;
 
-    if( i_layer != EDivLineLayerCount && (i_layer < EDivLineLayerMin || i_layer > EDivLineLayerMax) )
+    if( i_eLayer.isValid() )
     {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultArgOutOfRange);
+        iLayerMin = i_eLayer.enumeratorAsInt();
+        iLayerMax = i_eLayer.enumeratorAsInt();
     }
-    if( i_layer == EDivLineLayerCount )
-    {
-        iLayerMin = 0;
-        iLayerMax = EDivLineLayerCount-1;
-    }
-    for( iLayer = iLayerMin; iLayer <= iLayerMax; iLayer++ )
+    for( int iLayer = iLayerMin; iLayer <= iLayerMax; iLayer++ )
     {
         m_arcol[iLayer] = i_col;
         m_bUpdWidget = true;
         invalidate(EUpdatePixmapWidget,true);
     }
-
-} // setCol
-
-//------------------------------------------------------------------------------
-QColor CDiagObjGrid::getCol( EDivLineLayer i_layer ) const
-//------------------------------------------------------------------------------
-{
-    if( i_layer < EDivLineLayerMin || i_layer > EDivLineLayerMax )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultArgOutOfRange);
-    }
-    return m_arcol[i_layer];
-
-} // getCol
+}
 
 //------------------------------------------------------------------------------
-void CDiagObjGrid::setPenStyle( EDivLineLayer i_layer, const Qt::PenStyle& i_penStyle )
+QColor CDiagObjGrid::getCol( const CEnumDivLineLayer& i_eLayer ) const
 //------------------------------------------------------------------------------
 {
-    int iLayer;
-    int iLayerMin = i_layer;
-    int iLayerMax = i_layer;
+    return m_arcol[i_eLayer.enumeratorAsInt()];
+}
 
-    if( i_layer != EDivLineLayerCount && (i_layer < EDivLineLayerMin || i_layer > EDivLineLayerMax) )
+//------------------------------------------------------------------------------
+void CDiagObjGrid::setPenStyle( const CEnumDivLineLayer& i_eLayer, const Qt::PenStyle& i_penStyle )
+//------------------------------------------------------------------------------
+{
+    int iLayerMin = 0;
+    int iLayerMax = CEnumDivLineLayer::count() - 1;
+
+    if( i_eLayer.isValid() )
     {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultArgOutOfRange);
+        iLayerMin = i_eLayer.enumeratorAsInt();
+        iLayerMax = i_eLayer.enumeratorAsInt();
     }
-    if( i_layer == EDivLineLayerCount )
-    {
-        iLayerMin = 0;
-        iLayerMax = EDivLineLayerCount-1;
-    }
-    for( iLayer = iLayerMin; iLayer <= iLayerMax; iLayer++ )
+    for( int iLayer = iLayerMin; iLayer <= iLayerMax; iLayer++ )
     {
         m_arpenStyle[iLayer] = i_penStyle;
         m_bUpdWidget = true;
         invalidate(EUpdatePixmapWidget);
     }
-
-} // setPenStyle
+}
 
 //------------------------------------------------------------------------------
-Qt::PenStyle CDiagObjGrid::getPenStyle( EDivLineLayer i_layer ) const
+Qt::PenStyle CDiagObjGrid::getPenStyle( const CEnumDivLineLayer& i_eLayer ) const
 //------------------------------------------------------------------------------
 {
-    if( i_layer < EDivLineLayerMin || i_layer > EDivLineLayerMax )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultArgOutOfRange);
-    }
-    return m_arpenStyle[i_layer];
-
-} // getPenStyle
+    return m_arpenStyle[i_eLayer.enumeratorAsInt()];
+}
 
 /*==============================================================================
 public: // overridables of base class CDiagObj
@@ -277,20 +244,20 @@ CDiagObj* CDiagObjGrid::clone( CDataDiagram* i_pDiagramTrg ) const
         return nullptr;
     }
 
-    if( m_arpDiagScale[EScaleDirX] == nullptr || m_arpDiagScale[EScaleDirY] == nullptr )
+    if( m_arpDiagScale[static_cast<int>(EScaleDir::X)] == nullptr || m_arpDiagScale[static_cast<int>(EScaleDir::Y)] == nullptr )
     {
         return nullptr;
     }
 
-    CDiagScale* pDiagScaleX = i_pDiagramTrg->getDiagScale( m_arpDiagScale[EScaleDirX]->getObjName() );
-    CDiagScale* pDiagScaleY = i_pDiagramTrg->getDiagScale( m_arpDiagScale[EScaleDirY]->getObjName() );
+    CDiagScale* pDiagScaleX = i_pDiagramTrg->findDiagScale(m_arpDiagScale[static_cast<int>(EScaleDir::X)]->getObjName());
+    CDiagScale* pDiagScaleY = i_pDiagramTrg->findDiagScale(m_arpDiagScale[static_cast<int>(EScaleDir::Y)]->getObjName());
 
     if( pDiagScaleX == nullptr || pDiagScaleY == nullptr )
     {
         return nullptr;
     }
 
-    CDiagObjGrid* pDiagObj = new CDiagObjGrid(
+    CDiagObjGrid* pDiagObjCloned = new CDiagObjGrid(
         /* strObjName  */ m_strObjName,
         /* pDiagScaleX */ pDiagScaleX,
         /* pDiagScaleY */ pDiagScaleY );
@@ -298,25 +265,25 @@ CDiagObj* CDiagObjGrid::clone( CDataDiagram* i_pDiagramTrg ) const
     int iLayer;
 
     // Members from base class CDiagObj:
-    pDiagObj->m_layoutPos = m_layoutPos;
-    pDiagObj->m_rectContent = m_rectContent;
-    pDiagObj->m_bAdjustContentRect2DiagPartCenter = m_bAdjustContentRect2DiagPartCenter;
-    pDiagObj->m_bVisible = m_bVisible;
-    pDiagObj->m_state = m_state;
-    pDiagObj->m_bIsFocusable = m_bIsFocusable;
-    pDiagObj->m_bIsEditable = m_bIsEditable;
+    pDiagObjCloned->m_layoutPos = m_layoutPos;
+    pDiagObjCloned->m_rectContent = m_rectContent;
+    pDiagObjCloned->m_bAdjustContentRect2DiagPartCenter = m_bAdjustContentRect2DiagPartCenter;
+    pDiagObjCloned->m_bVisible = m_bVisible;
+    pDiagObjCloned->m_state = m_state;
+    pDiagObjCloned->m_bIsFocusable = m_bIsFocusable;
+    pDiagObjCloned->m_bIsEditable = m_bIsEditable;
 
     // Members from this class:
-    for( iLayer = 0; iLayer < EDivLineLayerCount; iLayer++ )
+    for( iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
     {
-        pDiagObj->m_arcol[iLayer] = m_arcol[iLayer];
-        pDiagObj->m_arpenStyle[iLayer] = m_arpenStyle[iLayer];
-        pDiagObj->m_arbShow[iLayer] = m_arbShow[iLayer];
+        pDiagObjCloned->m_arcol[iLayer] = m_arcol[iLayer];
+        pDiagObjCloned->m_arpenStyle[iLayer] = m_arpenStyle[iLayer];
+        pDiagObjCloned->m_arbShow[iLayer] = m_arbShow[iLayer];
     }
 
-    i_pDiagramTrg->addDiagObj(pDiagObj);
+    i_pDiagramTrg->addDiagObj(pDiagObjCloned);
 
-    return pDiagObj;
+    return pDiagObjCloned;
 
 } // clone
 
@@ -326,7 +293,7 @@ void CDiagObjGrid::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDe
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObjUpdate != nullptr && m_pTrcAdminObjUpdate->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjUpdate, EMethodTraceDetailLevel::ArgsNormal))
     {
         strTrcMsg = updateFlags2Str(i_uUpdateFlags);
     }
@@ -395,13 +362,12 @@ void CDiagObjGrid::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDe
             int      xDivLine;
             int      yDivLine;
             int      xLeft, xRight, yTop, yBottom;
-            int      iLayer;
             int      idxDivLine;
 
             // We are going to draw the grid lines starting with the lowest layer so
             // that main grid lines will not be covered by sub grid lines.
 
-            for( iLayer = EDivLineLayerCount-1; iLayer >= 0; iLayer-- )
+            for( int iLayer = CEnumDivLineLayer::count()-1; iLayer >= 0; iLayer-- )
             {
                 if( m_arbShow[iLayer] )
                 {
@@ -411,9 +377,9 @@ void CDiagObjGrid::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDe
                     // Vertical lines (from left to right)
                     yTop    = m_rectContent.top();
                     yBottom = m_rectContent.bottom();
-                    for( idxDivLine = 0; idxDivLine < m_arpDiagScale[EScaleDirX]->getDivLineCount(iLayer); idxDivLine++ )
+                    for( idxDivLine = 0; idxDivLine < m_arpDiagScale[static_cast<int>(EScaleDir::X)]->getDivLineCount(static_cast<EDivLineLayer>(iLayer)); idxDivLine++ )
                     {
-                        xDivLine = static_cast<int>(m_arpDiagScale[EScaleDirX]->getDivLinePix(iLayer,idxDivLine)+0.5);
+                        xDivLine = static_cast<int>(m_arpDiagScale[static_cast<int>(EScaleDir::X)]->getDivLinePix(static_cast<EDivLineLayer>(iLayer), idxDivLine) + 0.5);
                         if( xDivLine > m_rectContent.left()+1 && xDivLine < m_rectContent.right()-1 )
                         {
                             painter.drawLine(xDivLine,yTop,xDivLine,yBottom);
@@ -423,11 +389,11 @@ void CDiagObjGrid::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDe
                     // Horizontal lines (from bottom to top)
                     xLeft  = m_rectContent.left();
                     xRight = m_rectContent.right();
-                    for( idxDivLine = 0; idxDivLine < m_arpDiagScale[EScaleDirY]->getDivLineCount(iLayer); idxDivLine++ )
+                    for( idxDivLine = 0; idxDivLine < m_arpDiagScale[static_cast<int>(EScaleDir::Y)]->getDivLineCount(static_cast<EDivLineLayer>(iLayer)); idxDivLine++ )
                     {
                         // Remember: drawing from bottom to top: the pixel values of the lower (min)
                         // values are greater than the pixel values of the higher (max) scale values.
-                        yDivLine = static_cast<int>(m_arpDiagScale[EScaleDirY]->getDivLinePix(iLayer,idxDivLine)+0.5);
+                        yDivLine = static_cast<int>(m_arpDiagScale[static_cast<int>(EScaleDir::Y)]->getDivLinePix(static_cast<EDivLineLayer>(iLayer), idxDivLine) + 0.5);
                         if( yDivLine < m_rectContent.bottom()-1 && yDivLine > m_rectContent.top()+1 )
                         {
                             painter.drawLine(xLeft,yDivLine,xRight,yDivLine);

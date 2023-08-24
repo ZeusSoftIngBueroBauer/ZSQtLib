@@ -45,6 +45,8 @@ class ZSDIAGRAMDLL_API CDiagObjMarker : public CDiagObj
 //******************************************************************************
 {
     Q_OBJECT
+public: // class methods
+    static QString ClassName() { return "CDiagObjMarker"; }
 public: // type definitions and constants
     typedef enum {
         EElementMin     = 0,
@@ -65,9 +67,10 @@ signals:
 public: // overridables to get and set the cursor position
     virtual void setCalculateCursorPos( bool i_bCalculate );
     virtual bool getCalculateCursorPos() const;
-    virtual void setCursorMoveDir( EScaleDir i_moveDir );
-    virtual EScaleDir getCursorMoveDir() const;
-    virtual void setVal( EScaleDir i_scaleDir, double i_fXVal, PhysVal::CUnit* i_pUnit = nullptr );
+    virtual void setCursorMoveDir( const ZS::System::CEnumScaleDir& i_scaleDir );
+    virtual ZS::System::EScaleDir getCursorMoveDir() const;
+    virtual void setVal( const ZS::System::CEnumScaleDir& i_scaleDir, const PhysVal::CPhysVal& i_physVal );
+    virtual void setVal( const ZS::System::CEnumScaleDir& i_scaleDir, double i_fXVal, PhysVal::CUnit* i_pUnit = nullptr );
     virtual QPoint getPos() const;
 public: // overridables to modify the marker style
     virtual void showElement( EDiagObjState i_diagObjState, EElement i_element );
@@ -83,19 +86,19 @@ public: // overridables to modify the marker style
     virtual CLabelStyle* getLabelStyle( EDiagObjState i_diagObjState );
     virtual void setToolTipStyle( EDiagObjState i_diagObjState, CToolTipStyle* i_pToolTipStyle );
     virtual CToolTipStyle* getToolTipStyle( EDiagObjState i_diagObjState );
-    virtual void setToolTipValueFormat( EScaleDir i_scaleDir, PhysVal::SValueFormatProvider* i_pValueFormat );
-    virtual PhysVal::SValueFormatProvider* getToolTipValueFormat( EScaleDir i_scaleDir );
+    virtual void setToolTipValueFormat( const ZS::System::CEnumScaleDir& i_scaleDir, PhysVal::SValueFormatProvider* i_pValueFormat );
+    virtual PhysVal::SValueFormatProvider* getToolTipValueFormat( const ZS::System::CEnumScaleDir& i_scaleDir );
     virtual void setImageStyleCursor( EDiagObjState i_diagObjState, CImageStyle* i_pImageStyle );
     virtual CImageStyle* getImageStyleCursor( EDiagObjState i_diagObjState );
 public: // overridables of base class CDiagObj
-    virtual PhysVal::CPhysVal getVal( EScaleDir i_scaleDir ) const;
-    virtual bool isFocusable() const;
-    virtual bool isEditable() const;
-    virtual bool isHit( const QPoint& i_pt ) const;
-    virtual void moveEvent( CDiagObjMoveEvent* i_pEv, bool i_bInformDiagram = true );
+    virtual PhysVal::CPhysVal getVal( const ZS::System::CEnumScaleDir& i_scaleDir ) const override;
+    virtual bool isFocusable() const override;
+    virtual bool isEditable() const override;
+    virtual bool isHit( const QPoint& i_pt ) const override;
+    virtual void moveEvent( CDiagObjMoveEvent* i_pEv, bool i_bInformDiagram = true ) override;
 public: // must overridables of base class CDiagObj
-    virtual CDiagObj* clone( CDataDiagram* i_pDiagramTrg ) const;
-    virtual void update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDevice = nullptr );
+    virtual CDiagObj* clone( CDataDiagram* i_pDiagramTrg ) const override;
+    virtual void update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDevice = nullptr ) override;
 protected: // instance methods
     void updateLayout();
     void updateData();
@@ -113,9 +116,9 @@ protected:  // instance members
     EDiagObjState                  m_statePrev;
     // Calculated cursor position
     bool                           m_bCalculateCursorPos;
-    EScaleDir                      m_scaleDirCursorMove;
-    PhysVal::CPhysVal              m_arphysValPrev[EScaleDirCount];
-    PhysVal::CPhysVal              m_arphysVal[EScaleDirCount];
+    ZS::System::EScaleDir          m_scaleDirCursorMove;
+    QVector<PhysVal::CPhysVal>     m_arphysValPrev;
+    QVector<PhysVal::CPhysVal>     m_arphysVal;
     QPoint                         m_ptPosPrev;
     QPoint                         m_ptPos;
     // Graphical elements of the marker:
@@ -138,7 +141,7 @@ protected:  // instance members
     QRect                          m_rectLabelPrev;
     // - value indication with tool tip
     CToolTipStyle*                 m_arpToolTipStyle[EDiagObjStateCount];
-    PhysVal::SValueFormatProvider* m_arpValueFormatToolTip[EScaleDirCount];
+    QVector<PhysVal::SValueFormatProvider*> m_arpValueFormatToolTip;
     QRect                          m_rectToolTipPrev;
     QRect                          m_rectToolTipArrowPrev;
     // - indication of focus and editing cursor (StateNormal not used)

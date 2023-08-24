@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -61,6 +61,67 @@ static CInitModuleSysTrcAdminObj s_initModule;
 
 
 /*******************************************************************************
+// Global methods
+/*******************************************************************************
+
+//------------------------------------------------------------------------------
+/*! @brief Checks whether the given filter detail level is equal or greater than
+           the current trace admin objects detail level and trace output should
+           be created.
+
+    This method has been mainly introduced to make the code more readable.
+
+        if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+
+    The code line above is simply shorter than:
+
+        if (m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
+
+    @param [in] i_pTrcAdminObj
+        Pointer to trace admin object. May also be nullptr.
+    @param [in] i_filterDetailLevel
+        Filter detail level which should be checked.
+
+    @return true if tracing method calls is active for the given filter detail level,
+            false otherwise.
+*/
+bool ZS::System::areMethodCallsActive(
+    CTrcAdminObj* i_pTrcAdminObj, EMethodTraceDetailLevel i_filterDetailLevel )
+//------------------------------------------------------------------------------
+{
+    return (i_pTrcAdminObj != nullptr) && i_pTrcAdminObj->areMethodCallsActive(i_filterDetailLevel);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Checks whether the given filter detail level is equal or greater than
+           the current trace admin objects detail level and trace output should
+           be created.
+
+    This method has been mainly introduced to make the code more readable.
+
+        if( isRuntimeInfoActive(m_pTrcAdminObj, ELogDetailLevel::Debug) )
+
+    The code line above is simply shorter than:
+
+        if (m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isRuntimeInfoActive(ELogDetailLevel::Debug))
+
+    @param [in] i_pTrcAdminObj
+        Pointer to trace admin object. May also be nullptr.
+    @param [in] i_filterDetailLevel
+        Filter detail level which should be checked.
+
+    @return true if tracing method calls is active for the given filter detail level,
+            false otherwise.
+*/
+bool ZS::System::isRuntimeInfoActive(
+    CTrcAdminObj* i_pTrcAdminObj, ELogDetailLevel i_filterDetailLevel )
+//------------------------------------------------------------------------------
+{
+    return (i_pTrcAdminObj != nullptr) && i_pTrcAdminObj->isRuntimeInfoActive(i_filterDetailLevel);
+}
+
+
+/*******************************************************************************
 class CTrcAdminObj : public QObject, public CIdxTreeEntry
 *******************************************************************************/
 
@@ -80,7 +141,7 @@ protected: // ctors and dtor (trace admin objects may only be created by the tra
 CTrcAdminObj::CTrcAdminObj() :
 //------------------------------------------------------------------------------
     QObject(),
-    CIdxTreeEntry(EIdxTreeEntryType::Leave, ""),
+    CIdxTreeEntry(EEntryType::Leave, ""),
     m_iBlockTreeEntryChangedSignalCounter(0),
     m_strNameSpace(),
     m_strClassName(),
@@ -170,7 +231,7 @@ CTrcAdminObj::CTrcAdminObj(
     const QString& i_strTreeEntryName ) :
 //------------------------------------------------------------------------------
     QObject(),
-    CIdxTreeEntry(EIdxTreeEntryType::Leave, i_strTreeEntryName),
+    CIdxTreeEntry(EEntryType::Leave, i_strTreeEntryName),
     m_iBlockTreeEntryChangedSignalCounter(0),
     m_strNameSpace(i_strNameSpace),
     m_strClassName(i_strClassName),

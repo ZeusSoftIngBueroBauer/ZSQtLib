@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -49,9 +49,9 @@ public: // ctors and dtor
     virtual ~CTestStepGroup();
 protected: // ctor for class CTestGroupRoot
     CTestStepGroup(
-        CTest*                        i_pTest,
-        ZS::System::EIdxTreeEntryType i_entryType,
-        const QString&                i_strName );
+        CTest* i_pTest,
+        ZS::System::CIdxTreeEntry::EEntryType i_entryType,
+        const QString& i_strName );
 public: // overridables
     virtual QString nameSpace() const { return CTestStepGroup::NameSpace(); }
     virtual QString className() const { return CTestStepGroup::ClassName(); }

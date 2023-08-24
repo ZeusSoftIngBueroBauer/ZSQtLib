@@ -39,6 +39,11 @@ list(APPEND _Headers
     ${_HeadersPath}/ZSTemplate/Test.h
 )
 
+configure_file(
+    ${_HeadersPath}/ZSTemplate/TestConfig.h.in
+    ${_HeadersPath}/ZSTemplate/TestConfig.h)
+set(_HeadersCommon ${_HeadersCommon} ${_HeadersPath}/ZSTemplate/TestConfig.h)
+
 list(APPEND _Sources
     ${_SourcesPath}/ZSTemplate/Main.cpp
     ${_SourcesPath}/ZSTemplate/App.cpp

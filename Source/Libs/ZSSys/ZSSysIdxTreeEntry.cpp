@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -46,8 +46,6 @@ class CInitModuleSysIdxTreeEntry
 public: // ctor
     CInitModuleSysIdxTreeEntry()
     {
-        qRegisterMetaType<EIdxTreeEntryType>("EIdxTreeEntryType");
-        qRegisterMetaType<ZS::System::EIdxTreeEntryType>("ZS::System::EIdxTreeEntryType");
     }
 };
 
@@ -60,87 +58,51 @@ Type definitions and constants
 /* enum class EIdxTreeEntryType
 ==============================================================================*/
 
-static const SEnumEntry s_arEnumStrIdxTreeEntryTypes[] = {           // IdxName,     Symbol
-    /*  0 */ SEnumEntry( static_cast<int>(EIdxTreeEntryType::Root),      "Root",      "R" ),
-    /*  1 */ SEnumEntry( static_cast<int>(EIdxTreeEntryType::Branch),    "Branch",    "B" ),
-    /*  2 */ SEnumEntry( static_cast<int>(EIdxTreeEntryType::Leave),     "Leave",     "L" ),
-    /*  3 */ SEnumEntry( static_cast<int>(EIdxTreeEntryType::Count),     "Count",     "*" ),
-    /*  4 */ SEnumEntry( static_cast<int>(EIdxTreeEntryType::Undefined), "Undefined", "?" )
+static const SEnumEntry s_arEnumStrIdxTreeEntryTypes[] = {
+    /*  0 */ SEnumEntry( static_cast<int>(CIdxTreeEntry::EEntryType::Root),      "Root",      "R" ),
+    /*  1 */ SEnumEntry( static_cast<int>(CIdxTreeEntry::EEntryType::Branch),    "Branch",    "B" ),
+    /*  2 */ SEnumEntry( static_cast<int>(CIdxTreeEntry::EEntryType::Leave),     "Leave",     "L" ),
+    /*  3 */ SEnumEntry( static_cast<int>(CIdxTreeEntry::EEntryType::Count),     "Count",     "*" ),
+    /*  4 */ SEnumEntry( static_cast<int>(CIdxTreeEntry::EEntryType::Undefined), "Undefined", "?" )
 };
-
-//------------------------------------------------------------------------------
-/*! Converts the given tree entry type into a string.
-
-    @ingroup _GRP_Namespace_ZS_System_Enumerations_Enumerations
-
-    @param i_eVal [in] Enumerator to be converted.
-    @param i_alias [in] Range [IdxName, Symbol].
-                        Selects one of the available strings.
-
-    @return String representation of the given tree entry type.
-
-    @note Throws an Exception
-          - with Result = IdxOutOutOfRange if the enumerator is out of range or
-          - with Result = ArgOutOfRange if the alias is out of range.
-*/
-QString ZS::System::idxTreeEntryType2Str( EIdxTreeEntryType i_eVal, int i_alias )
-//------------------------------------------------------------------------------
-{
-    return SEnumEntry::enumerator2Str(s_arEnumStrIdxTreeEntryTypes, _ZSArrLen(s_arEnumStrIdxTreeEntryTypes), static_cast<int>(i_eVal), i_alias);
-}
-
-//------------------------------------------------------------------------------
-/*! Converts the given tree entry type into a string.
-
-    @ingroup _GRP_Namespace_ZS_System_Enumerations_Enumerations
-
-    @param i_iVal [in] Enumerator to be converted.
-    @param i_alias [in] Range [IdxName, Symbol].
-                        Selects one of the available strings.
-
-    @return String representation of the given tree entry type.
-
-    @note Throws an Exception
-          - with Result = IdxOutOutOfRange if the enumerator is out of range or
-          - with Result = ArgOutOfRange if the alias is out of range.
-*/
-QString ZS::System::idxTreeEntryType2Str( int i_iVal, int i_alias )
-//------------------------------------------------------------------------------
-{
-    return SEnumEntry::enumerator2Str(s_arEnumStrIdxTreeEntryTypes, _ZSArrLen(s_arEnumStrIdxTreeEntryTypes), i_iVal, i_alias);
-}
-
-//------------------------------------------------------------------------------
-/*! Converts the string into the corresponding tree entry type.
-
-    @ingroup _GRP_Namespace_ZS_System_Enumerations_Enumerations
-
-    @param i_str [in] String to be converted into the enumerator.
-    @param i_alias [in] Range [IdxName, Symbol].
-                        Selects one of the available strings.
-                        If Undefined is used the string will be compared with all possible strings.
-                        If a valid index is used the passed string will only be compared with this alias string only.
-
-    @return Enumerator corresponding to the given string. Undefined if the conversion failed.
-*/
-EIdxTreeEntryType ZS::System::str2IdxTreeEntryType( const QString& i_str, int i_alias )
-//------------------------------------------------------------------------------
-{
-    EIdxTreeEntryType entryType = EIdxTreeEntryType::Undefined;
-
-    int iVal = SEnumEntry::str2Enumerator(s_arEnumStrIdxTreeEntryTypes, _ZSArrLen(s_arEnumStrIdxTreeEntryTypes), i_str, i_alias, Qt::CaseInsensitive);
-
-    if( iVal >= 0 && iVal < static_cast<int>(EIdxTreeEntryType::Count) )
-    {
-        entryType = static_cast<EIdxTreeEntryType>(iVal);
-    }
-    return entryType;
-}
 
 
 /******************************************************************************
 class CIdxTreeEntry
 ******************************************************************************/
+
+/*=============================================================================
+public: // class methods
+=============================================================================*/
+
+//-----------------------------------------------------------------------------
+/*! @brief Converts the base entry type into its string representation.
+*/
+QString CIdxTreeEntry::entryType2Str( EEntryType i_entryType, int i_alias )
+//-----------------------------------------------------------------------------
+{
+    return SEnumEntry::enumerator2Str(
+        s_arEnumStrIdxTreeEntryTypes,
+        _ZSArrLen(s_arEnumStrIdxTreeEntryTypes),
+        static_cast<int>(i_entryType), i_alias);
+}
+
+//-----------------------------------------------------------------------------
+/*! @brief Converts the string into the enumerator.
+*/
+CIdxTreeEntry::EEntryType CIdxTreeEntry::str2EntryType(const QString& i_strEntryType, int i_alias)
+//-----------------------------------------------------------------------------
+{
+    EEntryType entryType = EEntryType::Undefined;
+    int iEntryType = SEnumEntry::str2Enumerator(
+        s_arEnumStrIdxTreeEntryTypes,
+        _ZSArrLen(s_arEnumStrIdxTreeEntryTypes),
+        i_strEntryType, i_alias);
+    if (iEntryType >= 0 && iEntryType < static_cast<int>(EEntryType::Count)) {
+        entryType = static_cast<EEntryType>(iEntryType);
+    }
+    return entryType;
+}
 
 /*=============================================================================
 public: // ctors
@@ -152,12 +114,12 @@ public: // ctors
     After creation the entry has to be added to the index tree stating the
     desired target parent entry.
 
-    @param i_entryType [in] Tree entry type.
+    @param i_entryType [in] Basic tree entry type.
+        Either Leave, which may not contain child nodes or
+        Branch, which may contain child.
     @param i_strName [in] Name of the entry.
 */
-CIdxTreeEntry::CIdxTreeEntry(
-    EIdxTreeEntryType i_entryType,
-    const QString&    i_strName ) :
+CIdxTreeEntry::CIdxTreeEntry( EEntryType i_entryType, const QString& i_strName ) :
 //-----------------------------------------------------------------------------
     m_entryType(i_entryType),
     m_strName(i_strName),
@@ -224,7 +186,7 @@ CIdxTreeEntry::~CIdxTreeEntry()
 
     clear();
 
-    m_entryType = static_cast<EIdxTreeEntryType>(0);
+    m_entryType = static_cast<EEntryType>(0);
     //m_strName.clear();
     m_pMtx = nullptr;
     m_pTree = nullptr;
@@ -332,21 +294,24 @@ public: // instance methods
 QString CIdxTreeEntry::entryTypeSymbol() const
 //-----------------------------------------------------------------------------
 {
-    return ZS::System::idxTreeEntryType2Str(static_cast<int>(m_entryType), EEnumEntryAliasStrSymbol);
+    return entryType2Str(EEnumEntryAliasStrSymbol);
 }
 
 //-----------------------------------------------------------------------------
 /*! Returns the string representation of the entry type.
 
     @param i_alias [in] Range [IdxName, Symbol]
-                        Selects one of the configured enumeration alias strings.
+        Selects one of the configured enumeration alias strings.
 
     @return String representation of the entry type depending on the desired alias.
 */
 QString CIdxTreeEntry::entryType2Str( int i_alias ) const
 //-----------------------------------------------------------------------------
 {
-    return ZS::System::idxTreeEntryType2Str(static_cast<int>(m_entryType), i_alias);
+    return SEnumEntry::enumerator2Str(
+        s_arEnumStrIdxTreeEntryTypes,
+        _ZSArrLen(s_arEnumStrIdxTreeEntryTypes),
+        static_cast<int>(m_entryType), i_alias);
 }
 
 //-----------------------------------------------------------------------------
@@ -412,10 +377,10 @@ QString CIdxTreeEntry::keyInTree() const
 {
     QMutexLocker mtxLocker(m_pMtx);
     QString strKeyInTree;
-    if( m_entryType == EIdxTreeEntryType::Root ) {
+    if( isRoot() ) {
         // Just to have something to write into the log file.
         // The root does not really have a key in the tree.
-        strKeyInTree = idxTreeEntryType2Str(m_entryType,EEnumEntryAliasStrSymbol) + ":" + m_strName;
+        strKeyInTree = entryTypeSymbol() + ":" + m_strName;
     }
     else {
         strKeyInTree = m_strKeyInTree;
@@ -439,7 +404,7 @@ QString CIdxTreeEntry::parentBranchName() const
 {
     QMutexLocker mtxLocker(m_pMtx);
     QString strName;
-    if( m_pParentBranch != nullptr && m_pParentBranch->entryType() != EIdxTreeEntryType::Root ) {
+    if( m_pParentBranch != nullptr && !m_pParentBranch->isRoot() ) {
         strName = m_pParentBranch->name();
     }
     return strName;
@@ -457,7 +422,7 @@ QString CIdxTreeEntry::parentBranchPath() const
 {
     QMutexLocker mtxLocker(m_pMtx);
     QString strPath;
-    if( m_pParentBranch != nullptr && m_pParentBranch->entryType() != EIdxTreeEntryType::Root ) {
+    if( m_pParentBranch != nullptr && !m_pParentBranch->isRoot() ) {
         strPath = m_pParentBranch->path();
     }
     return strPath;
@@ -728,7 +693,7 @@ int CIdxTreeEntry::indexOf( const QString& i_strKeyInParentBranch ) const
 //-----------------------------------------------------------------------------
 /*! Returns the index of the given child tree entry in the branch.
 
-    @param i_entryType [in] Type of the child entry.
+    @param i_strEntryTypeSymbol [in] Type of the child entry.
     @param i_strName [in] Name of the child entry in the branch (e.g. "Customers").
 
     @return Index of the given child entry in the branch.
@@ -744,15 +709,14 @@ int CIdxTreeEntry::indexOf( const QString& i_strKeyInParentBranch ) const
           - with Result = IdxOutOfRange if the child's index in the parent branch
                           is not correct.
 */
-int CIdxTreeEntry::indexOf( EIdxTreeEntryType i_entryType, const QString& i_strName ) const
+int CIdxTreeEntry::indexOf( const QString& i_strEntryTypeSymbol, const QString& i_strName ) const
 //-----------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
 
     int idxInParentBranch = -1;
 
-    QString strEntryType = idxTreeEntryType2Str(i_entryType, EEnumEntryAliasStrSymbol);
-    QString strKeyInParentBranch = strEntryType + ":" + i_strName;
+    QString strKeyInParentBranch = i_strEntryTypeSymbol + ":" + i_strName;
     CIdxTreeEntry* pTreeEntry = m_mappTreeEntries.value(strKeyInParentBranch, nullptr);
 
     if( pTreeEntry != nullptr )
@@ -805,12 +769,11 @@ CIdxTreeEntry* CIdxTreeEntry::find( const QString& i_strKeyInParentBranch ) cons
     @return Pointer to child entry if an entry with the given type and name exists.
             nullptr otherwise.
 */
-CIdxTreeEntry* CIdxTreeEntry::find( EIdxTreeEntryType i_entryType, const QString& i_strName ) const
+CIdxTreeEntry* CIdxTreeEntry::find( const QString& i_strEntryTypeSymbol, const QString& i_strName ) const
 //-----------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
-    QString strEntryType = idxTreeEntryType2Str(i_entryType, EEnumEntryAliasStrSymbol);
-    QString strKeyInParentBranch = strEntryType + ":" + i_strName;
+    QString strKeyInParentBranch = i_strEntryTypeSymbol + ":" + i_strName;
     return m_mappTreeEntries.value(strKeyInParentBranch, nullptr);
 }
 
@@ -833,7 +796,7 @@ int CIdxTreeEntry::indexOfChildInListWithSameEntryTypes( const CIdxTreeEntry* i_
 
     int idxInParentBranch = -1;
 
-    EIdxTreeEntryType entryTypeFilter = i_pChildTreeEntry->entryType();
+    QString strEntryTypeFilter = i_pChildTreeEntry->entryTypeSymbol();
 
     CIdxTreeEntry* pTreeEntryTmp;
     int            idxTmp;
@@ -842,7 +805,7 @@ int CIdxTreeEntry::indexOfChildInListWithSameEntryTypes( const CIdxTreeEntry* i_
     {
         pTreeEntryTmp = m_arpTreeEntries[idxTmp];
 
-        if( pTreeEntryTmp->entryType() == entryTypeFilter )
+        if( pTreeEntryTmp->entryTypeSymbol() == strEntryTypeFilter )
         {
             ++idxInParentBranch;
         }

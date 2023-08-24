@@ -28,6 +28,7 @@ may result in using the software modules.
 #define ZSDiagObjAxisLabel_h
 
 #include "ZSDiagram/ZSDiagObj.h"
+#include "ZSSysGUI/ZSSysGUIMathScaleDivLinesMetrics.h"
 
 #include <QtGui/qcolor.h>
 #include <QtGui/qfont.h>
@@ -37,19 +38,66 @@ namespace ZS
 namespace Diagram
 {
 //******************************************************************************
+/*! @brief Class for axis labels.
+
+    Axis labels are used to label the axis scales at the division lines.
+
+    Also the unit or a axis label may be indicated.
+
+    The position of the division lines is calculated by the scale object
+    to be always at a whole number multiple of a decimal power.
+    The axis label uses the scale division line labels instance for
+    formatting the division line labels.
+
+    The axis label is divided into three different parts:
+
+    - Lines
+      Lines to divide the axis into sections.
+      The Lines are used to indicate at which position the axis is divided.
+      If also a grid is shown the Lines of the axis may be superfluous.
+      If the scale bound to the axis label is configured to calculate main
+      and sub division lines also the axis label instance may show main and
+      sub division lines.
+    - DivLineLabels
+      The division line labels are shown close to the division lines to indicate
+      the corresponding value.
+      If the scale bound to the axis label is configured to calculate main
+      and sub division lines also the division line labels may be output at the
+      main and sub division lines.
+    - AxisLabel
+      The axis label is used to indicate the physical size (Frequency).
+    - Unit
+      The unit may be positioned in the area of the division line labels at the
+      scale max value labels or may be appended to the axis label.
+
+    Example for an axis label bound to a X-Scale:
+
+     +---------|---------|---------|---------|---------|---------|
+    0.0       10.0      20.0      30.0      40.0      50.0      MHz
+                      Frequency/MHz
+
+    Example for an axis label bound to a Y-Scale:
+
+               50.0 +
+            P       |
+            o  40.0 +
+            w       |
+            e  30.0 +
+            r       |
+            /  20.0 +
+            d       |
+            B  10.0 +
+            b       |
+                0.0 +
+
+    The division line labels for the scale minimum and maximum value may
+    be omitted depending on the area provided for the axis label.
+*/
 class ZSDIAGRAMDLL_API CDiagObjAxisLabel : public CDiagObj
 //******************************************************************************
 {
-public: // type definitions and constants
-    typedef enum {
-        EPartMin           = 0,
-        EPartDivLines      = 0,
-        EPartDivLineLabels = 1,
-        EPartAxisLabel     = 2,
-        EPartMax           = 2,
-        EPartCount,
-        EPartUndefined
-    }   EPart;
+public: // class methods
+    static QString ClassName() { return "CDiagObjAxisLabel"; }
 public: // ctors and dtor
     CDiagObjAxisLabel(
         const QString& i_strObjName,
@@ -57,102 +105,160 @@ public: // ctors and dtor
         ELayoutPos     i_layoutPos,
         const QString& i_strAxisLabel = QString() );
     virtual ~CDiagObjAxisLabel();
-public: // instance methods
-    void setUnit( PhysVal::CUnit* i_pUnit ); // nullptr means "use best unit"
+public: // instance methods (spacing between areas)
+    void setSpacingDiagPartCenter2DivLineLabels( int i_iSpacing_px );
+    int spacingDiagPartCenter2DivLineLabels() const;
+    void setSpacingDiagPartCenter2AxisLabel( int i_iSpacing_px );
+    int spacingDiagPartCenter2AxisLabel() const;
+    void setSpacingDivLineLabels2AxisLabel( int i_iSpacing_px );
+    int spacingDivLineLabels2AxisLabel() const;
+public: // instance methods (division lines)
+    void showDivLines(const ZS::System::CEnumDivLineLayer& i_eLayer);
+    void hideDivLines(const ZS::System::CEnumDivLineLayer& i_eLayer);
+    void setDivLinesColor(const QColor& i_color, const ZS::System::CEnumDivLineLayer& i_eLayer = ZS::System::EDivLineLayerMain);
+    QColor divLinesColor(const ZS::System::CEnumDivLineLayer& i_eLayer = ZS::System::EDivLineLayerMain) const;
+    void setDivLinesPenStyle(const Qt::PenStyle& i_penStyle, const ZS::System::CEnumDivLineLayer& i_eLayer = ZS::System::EDivLineLayerMain);
+    Qt::PenStyle divLinesPenStyle(const ZS::System::CEnumDivLineLayer& i_eLayer = ZS::System::EDivLineLayerMain) const;
+public: // instance methods (division line labels)
+    void showDivLineLabels(const ZS::System::CEnumDivLineLayer& i_eLayer = ZS::System::EDivLineLayerMain);
+    void hideDivLineLabels(const ZS::System::CEnumDivLineLayer& i_eLayer = ZS::System::EDivLineLayerMain);
+    void setDivLineLabelsColor(const QColor& i_color, const ZS::System::CEnumDivLineLayer& i_eLayer = ZS::System::EDivLineLayerMain);
+    QColor divLineLabelsColor(const ZS::System::CEnumDivLineLayer& i_eLayer = ZS::System::EDivLineLayerMain) const;
+    void setDivLineLabelsFont(const QFont& i_fnt, const ZS::System::CEnumDivLineLayer& i_eLayer = ZS::System::EDivLineLayerMain);
+    QFont divLineLabelsFont(const ZS::System::CEnumDivLineLayer& i_eLayer = ZS::System::EDivLineLayerMain) const;
+    void setDigitsCountMax(int i_iDigitsCountMax);
+    int digitsCountMax() const;
+    void setUseEngineeringFormat(bool i_bUseEngineeringFormat);
+    bool useEngineeringFormat() const;
+public: // instance methods (axis label)
+    void setAxisLabel(const QString& i_strLabel);
+    QString axisLabel() const;
+    void showAxisLabel();
+    void hideAxisLabel();
+    void setAxisLabelColor(const QColor& i_color);
+    QColor axisLabelColor() const;
+    void setAxisLabelFont(const QFont& i_fnt);
+    QFont axisLabelFont() const;
+public: // instance methods (unit)
+    void setUnit(PhysVal::CUnit* i_pUnit); // nullptr means "use best unit"
     PhysVal::CUnit* getUnit();
-    // Methods for adjusting and reading properties of (almost) all parts
-    void show( EPart i_part, EDivLineLayer i_layer );
-    void hide( EPart i_part, EDivLineLayer i_layer );
-    void showUnit( EPart i_part );
-    void hideUnit( EPart i_part );
-    void setColFg( EPart i_part, const QColor& i_col );
-    QColor getColFg( EPart i_part ) const;
-    void setPenStyle( EPart i_part, const Qt::PenStyle& i_penStyle );
-    Qt::PenStyle getPenStyle( EPart i_part ) const;
-    void setColBg( EPart i_part, const QColor& i_col );
-    QColor getColBg( EPart i_part ) const;
-    void setBrushStyle( EPart i_part, const Qt::BrushStyle& i_brushStyle );
-    Qt::BrushStyle getBrushStyle( EPart i_part ) const;
-    void setFont( EPart i_part, const QFont& i_fnt );
-    QFont getFont( EPart i_part ) const;
-    // Methods affecting the labels at the division lines
-    void setDigitsCountMax( int i_iDigitsCountMax );
-    int getDigitsCountMax() const;
-    void setUseEngineeringFormat( bool i_bUseEngineeringFormat );
-    bool getUseEngineeringFormat() const;
-    // String to be shown at the axis label
-    void setAxisLabel( const QString& i_strLabel );
-    QString getAxisLabel() const;
-    // Space between the diagrams center part and the division line labels
-    void setSpaceDiagPartCenter2DivLineLabels( int i_iSpace );
-    int getSpaceDiagPartCenter2DivLineLabels() const;
-    // Space between the division line labels and the axis label
-    void setSpaceDivLineLabels2AxisLabel( int i_iSpace );
-    int getSpaceDivLineLabels2AxisLabel() const;
-    // Space between the axis label and the diagram border
-    void setSpaceDiagBorder2AxisLabel( int i_iSpace );
-    int getSpaceDiagBorder2AxisLabel() const;
-    void addAxisLabelToBeConsidered( CDiagObjAxisLabel* i_pDiagObjAxisLabel );
-    void removeAxisLabelToBeConsidered( const CDiagObjAxisLabel* i_pDiagObjAxisLabel );
+public: // instance methods (unit at max scale value)
+    void showUnitAtDivLines();
+    void hideUnitAtDivLines();
+    void setUnitColorAtDivLines(const QColor& i_color);
+    QColor unitColorAtDivLines() const;
+    void setUnitFontAtDivLines(const QFont& i_fnt);
+    QFont unitFontAtDivLines() const;
+public: // instance methods (unit at axis label)
+    void showUnitAtAxisLabel();
+    void hideUnitAtAxisLabel();
 public: // overridables of base class CDiagObj
-    virtual void show( bool i_bInformDiagram = true );
-    virtual void hide( bool i_bInformDiagram = true );
-    virtual QSize sizeHint();
+    virtual void show( bool i_bInformDiagram = true ) override;
+    virtual void hide( bool i_bInformDiagram = true ) override;
+    virtual QSize sizeHint() override;
 public: // must overridables of base class CDiagObj
-    virtual CDiagObj* clone( CDataDiagram* i_pDiagramTrg ) const;
-    virtual void update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDevice = nullptr );
+    virtual CDiagObj* clone( CDataDiagram* i_pDiagramTrg ) const override;
+    virtual void update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDevice = nullptr ) override;
 protected: // instance methods
     void updateLayout();
     void updateData();
     void updatePixmap( QPaintDevice* i_pPaintDevice );
     void updateWidget();
-    bool intersectsDivLineLabels(
-        const QRect& i_rectDivLineLabel,
-        int          i_iDivLineLayer,
-        bool         i_bCheckAxisLabelsToBeConsidered,
-        int          i_idxDivLineLabelMin = -1,
-        int          i_idxDivLineLabelMax = -1 ) const;
-    QString formatValue( double i_fVal, PhysVal::CUnit* i_pUnit = nullptr ) const;
+protected: // auxiliary instance methods
+    QRect getDiagRect() const;
+    PhysVal::CUnit getAxisLabelUnit() const;
+    bool isAxisLabelVisible() const;
+    QSize getDivLineLabelsUnitTextExtent() const;
+    QRect getDivLineLabelsUnitBoundingRect() const;
+    QSize getAxisLabelTextExtent() const;
+    QRect getAxisLabelBoundingRect() const;
+    bool intersectsDivLineLabelsPhysUnit(const QRect& i_rect) const;
+    QString formatValue(double i_fVal, PhysVal::CUnit* i_pUnit = nullptr) const;
+protected: // auxiliary instance methods
+    void paintDivisionLines(QPaintDevice* i_pPaintDevice);
+    void paintDivisionLineLabels(QPaintDevice* i_pPaintDevice);
+    void paintDivisionLineLabelsUnit(QPaintDevice* i_pPaintDevice);
+    void paintScaleMinMaxVals(QPaintDevice* i_pPaintDevice);
+    void paintAxisLabel(QPaintDevice* i_pPaintDevice);
 private: // copy ctor not allowed
     CDiagObjAxisLabel( const CDiagObjAxisLabel& );
 private: // assignment operator not allowed
     void operator=( const CDiagObjAxisLabel& );
-protected:  // instance members
-    CDiagScale*                 m_pDiagScale;
-    PhysVal::CUnit*             m_pUnit;      // nullptr means "use best unit"
-    PhysVal::CUnit              m_unitLabels; // Used to indicate the values (may differ from "m_pUnit")
-    QString                     m_strPhysUnitLabels;
-    int                         m_iSpaceDiagPartCenter2DivLineLabels;
-    int                         m_iSpaceDivLineLabels2AxisLabel;
-    int                         m_iSpaceDiagBorder2AxisLabel;
-    bool                        m_ararbShow[EPartCount][EDivLineLayerCount];
-    bool                        m_arbShowUnit[EPartCount];
-    QColor                      m_arcolFg[EPartCount];
-    Qt::PenStyle                m_arpenStyle[EPartCount];
-    QColor                      m_arcolBg[EPartCount];
-    Qt::BrushStyle              m_arbrushStyle[EPartCount];
-    QFont                       m_arfnt[EPartCount];
-    int                         m_iDivLineLabelsDigitsCountMax;
-    bool                        m_bUseEngineeringFormat;
-    QString                     m_strAxisLabel;
-    QRect                       m_rectAxisLabel;
-    int                         m_iDivLineLabelsTrailingDigits;
-    int                         m_iDivLineLabelsExponentDigits;
-    QRect                       m_rectDivLineLabelsMaxTextExtent;
-    int                         m_cxDivLineLabelsSpace;
-    int                         m_ariDivLinesCount[EDivLineLayerCount];
-    int*                        m_arpiDivLines[EDivLineLayerCount];
-    QRect*                      m_arpRectDivLineLabels[EDivLineLayerCount];
-    QString*                    m_arpStrDivLineLabels[EDivLineLayerCount];
-    bool*                       m_arpbDivLineLabelsVisible[EDivLineLayerCount];
-    QRect                       m_rectDivLineLabelsPhysUnit;
-    bool                        m_bDivLineLabelsPhysUnitVisible;
-    QString                     m_arstrScaleMinMaxVal[2];
-    QRect                       m_arrectScaleMinMaxVal[2];
-    bool                        m_arbScaleMinMaxValVisible[2];
-    int                         m_iAxisLabelsToBeConsideredListSize;
-    int                         m_iAxisLabelsToBeConsidered;
-    CDiagObjAxisLabel**         m_arpAxisLabelsToBeConsidered;
+protected:  // instance members (config values)
+    /*!< Axis labels may only be bound to one scale object.
+         The scale object is passed with the constructor and stored here.
+         Please note that the referenced scale object is also store in the
+         base class CDiagObj in member "m_arpDiagScale". But keeping a reference
+         also in the axis label class simplifies the code. */
+    CDiagScale* m_pDiagScale;
+    /*!< Defines the space in pixels between the diagrams center area and the division line labels. */
+    int m_iSpacingDiagPartCenter2DivLineLabels;
+    /*!< Defines the space in pixels between the diagrams center area and the axis label.
+         Usually equal to m_iSpaceDiagPartCenter2DivLineLabels. */
+    int m_iSpacingDiagPartCenter2AxisLabel;
+    /*!< Defines the space in pixels between the label at the division line nearest to
+         the axis label and the axis label. */
+    int m_iSpacingDivLineLabels2AxisLabel;
+protected: // Division lines
+    /*!< Defines the visibility of the division lines for each layer (Main/Sub).*/
+    QVector<bool> m_arbShowDivLines;
+    /*!< Foreground color used to paint the division lines. */
+    QVector<QColor> m_arcolDivLines;
+    /*!< Pen style used to paint the division lines. */
+    QVector<Qt::PenStyle> m_arpenStyleDivLines;
+protected: // Division line labels
+    /*!< Defines the visibility of the division line labels for each layer (Main/Sub).*/
+    QVector<bool> m_arbShowDivLineLabels;
+    /*!< Foreground color used to paint the division lines. */
+    QVector<QColor> m_arcolDivLineLabels;
+    /*!< Fonts used to output the division lines labes for each layer (Main/Sub). */
+    QVector<QFont> m_arfntDivLineLabels;
+protected: // Axis label
+    /*!< Axis label to be output (e.g. "Frequency"). */
+    QString m_strAxisLabel;
+    /*!< Defines whether the axis label should be indicated. */
+    bool m_bShowAxisLabel;
+    /*!< Text color for the axis label. */
+    QColor m_colAxisLabel;
+    /*!< Font used to output the axis label. */
+    QFont m_fntAxisLabel;
+protected: // Unit
+    /*!< The unit to indicate the values may be explicitly set.
+         If explicitly set the reference to the unit is stored here.
+         If not explicitly set the "best unit" is used to indicate the values. */
+    PhysVal::CUnit* m_pUnit;
+    /*!< Calculated unit used to indicate the values. This may be either the "best unit"
+         to indicate the values or the explicityl set unit from "m_pUnit" above. */
+    PhysVal::CUnit m_unitLabels;
+    /*!< Calculated unit string. Used to calculate the extent of the axis labels. */
+    QString m_strPhysUnitLabels;
+    /*!< Defines whether the unit should be output at the maximum scale value in the area of the division line labels. */
+    bool m_bShowUnitAtDivLines;
+    /*!< Text color for the unit at the maximum scale value. */
+    QColor m_colUnitAtDivLines;
+    /*!< Font used to output the unit at the maximum scale value. */
+    QFont m_fntUnitAtDivLines;
+    /*!< Defines whether the unit should be output together with the axis label.
+         To output the unit at the axis label the font and text color of the
+         axis label is used. */
+    bool m_bShowUnitAtAxisLabel;
+protected: // Division lines calculator
+    /*!< Scale division lines instance to calculate the metrics of the axis labels. */
+    ZS::System::GUI::Math::CScaleDivLinesMetrics m_divLinesMetrics;
+protected: // instance members (calculated)
+    /*!< If the unit string should be indicated in the area of the division line labels
+         or if the minimum and maximum scale values have to be shown the maximum text
+         extent may have to be adjusted. */
+    QSize m_sizeDivLineLabelsMaxTextExtent;
+    /*!< Calculated rectangle area in which the axis label will be output. */
+    QRect m_rectAxisLabel;
+    /*!< Calculated rectangle area needed to output the unit string if the unit
+         string should be output in the division line labels part. */
+    QRect m_rectDivLineLabelsPhysUnit;
+    /*!< Flag to indicate during runtime whether the physical unit has already been output. */
+    bool m_bDivLineLabelsPhysUnitVisible;
+    /*!< Flags to indicate whether the scales minimum and/or maximum value should be output. */
+    QVector<bool> m_arbScaleMinMaxValVisible;
 
 }; // class CDiagObjAxisLabel
 

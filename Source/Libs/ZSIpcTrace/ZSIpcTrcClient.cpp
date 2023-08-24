@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -1294,11 +1294,11 @@ void CIpcTrcClient::resetTrcAdminRefCounters( ZS::System::CIdxTreeEntry* i_pBran
 
         if( pTreeEntry != nullptr )
         {
-            if( pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+            if( pTreeEntry->isBranch() )
             {
                 resetTrcAdminRefCounters(pTreeEntry);
             }
-            else if( pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+            else if( pTreeEntry->isLeave() )
             {
                 CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
 

@@ -42,7 +42,7 @@ class QVBoxLayout;
 namespace ZS {
 namespace PhysVal {
 namespace GUI {
-class CWdgtPhysSizes;
+class CWdgtUnits;
 }
 }
 namespace Test {
@@ -70,7 +70,7 @@ protected: // class members
 protected: // instance members
     QVBoxLayout* m_pLyt;
     QTabWidget* m_pTabWdgtMain;
-    ZS::PhysVal::GUI::CWdgtPhysSizes* m_pWdgtPhysSizes;
+    ZS::PhysVal::GUI::CWdgtUnits* m_pWdgtPhysSizes;
     ZS::Test::GUI::CWdgtIdxTreeTestSteps* m_pWdgtTest;
 
 }; // class CWidgetCentral

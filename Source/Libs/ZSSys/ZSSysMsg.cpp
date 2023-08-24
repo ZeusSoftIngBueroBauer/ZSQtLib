@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -227,28 +227,18 @@ CMsgSndRcvDestroyedHandler::CMsgSndRcvDestroyedHandler( CMsg* i_pMsg ) :
 {
     if( m_pObjSender != nullptr )
     {
-        if( !QObject::connect(
-            /* pObjSender   */ m_pObjSender,
-            /* szSignal     */ SIGNAL(destroyed(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onSenderDestroyed(QObject*)),
-            /* cnctType     */ Qt::DirectConnection ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
+        QObject::connect(
+            m_pObjSender, &QObject::destroyed,
+            this, &CMsgSndRcvDestroyedHandler::onSenderDestroyed,
+            Qt::DirectConnection);
     }
 
     if( m_pObjReceiver != nullptr )
     {
-        if( !QObject::connect(
-            /* pObjSender   */ m_pObjReceiver,
-            /* szSignal     */ SIGNAL(destroyed(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onReceiverDestroyed(QObject*)),
-            /* cnctType     */ Qt::DirectConnection ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
+        QObject::connect(
+            m_pObjReceiver, &QObject::destroyed,
+            this, &CMsgSndRcvDestroyedHandler::onReceiverDestroyed,
+            Qt::DirectConnection);
     }
 
 } // ctor
@@ -284,15 +274,10 @@ void CMsgSndRcvDestroyedHandler::onMsgSenderChanged()
 
     if( m_pObjSender != nullptr )
     {
-        if( !QObject::connect(
-            /* pObjSender   */ m_pObjSender,
-            /* szSignal     */ SIGNAL(destroyed(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onSenderDestroyed(QObject*)),
-            /* cnctType     */ Qt::DirectConnection ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
+        QObject::connect(
+            m_pObjSender, &QObject::destroyed,
+            this, &CMsgSndRcvDestroyedHandler::onSenderDestroyed,
+            Qt::DirectConnection);
     }
 } // onMsgSenderChanged
 
@@ -313,15 +298,10 @@ void CMsgSndRcvDestroyedHandler::onMsgReceiverChanged()
 
     if( m_pObjReceiver != nullptr )
     {
-        if( !QObject::connect(
-            /* pObjSender   */ m_pObjReceiver,
-            /* szSignal     */ SIGNAL(destroyed(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onReceiverDestroyed(QObject*)),
-            /* cnctType     */ Qt::DirectConnection ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
+        QObject::connect(
+            m_pObjReceiver, &QObject::destroyed,
+            this, &CMsgSndRcvDestroyedHandler::onReceiverDestroyed,
+            Qt::DirectConnection);
     }
 } // onMsgReceiverChanged
 

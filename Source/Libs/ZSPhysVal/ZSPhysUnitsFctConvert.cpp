@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -39,7 +39,7 @@ using namespace ZS::PhysVal;
 
 
 /*******************************************************************************
-class CFctConvert
+struct SFctConvert
 *******************************************************************************/
 
 /*==============================================================================
@@ -47,7 +47,7 @@ public: // class methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QString CFctConvert::FormatM( double i_fM )
+QString SFctConvert::FormatM( double i_fM )
 //------------------------------------------------------------------------------
 {
     QString strM;
@@ -66,7 +66,7 @@ QString CFctConvert::FormatM( double i_fM )
 }
 
 //------------------------------------------------------------------------------
-QString CFctConvert::FormatT( double i_fT )
+QString SFctConvert::FormatT( double i_fT )
 //------------------------------------------------------------------------------
 {
     QString strT;
@@ -86,7 +86,7 @@ QString CFctConvert::FormatT( double i_fT )
 }
 
 //------------------------------------------------------------------------------
-QString CFctConvert::FormatOperand( double i_fOp )
+QString SFctConvert::FormatOperand( double i_fOp )
 //------------------------------------------------------------------------------
 {
     QString strOp;
@@ -139,82 +139,92 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CFctConvert::CFctConvert() :
+SFctConvert::SFctConvert() :
 //------------------------------------------------------------------------------
     m_pPhysUnitSrc(nullptr),
     m_pPhysUnitDst(nullptr),
-    m_pPhysUnitRef(nullptr),
     m_fctConvertType(EFctConvert_Undefined),
     m_strFctConvertName("---"),
-    m_fM(1.0),
-    m_fT(0.0),
-    m_fK(0.0)
+    m_physValM(),
+    m_physValT(),
+    m_physValK()
 {
 } // default ctor
 
 //------------------------------------------------------------------------------
-CFctConvert::CFctConvert(CFctConvert& i_other) :
+SFctConvert::SFctConvert(
+    EFctConvert i_fctConvertType,
+    CUnitsTreeEntryPhysUnit* i_pPhysUnitSrc,
+    CUnitsTreeEntryPhysUnit* i_pPhysUnitDst,
+    const CPhysVal& i_physValM,
+    const CPhysVal& i_physValT,
+    const CPhysVal& i_physValK ) :
+//------------------------------------------------------------------------------
+    m_pPhysUnitSrc(i_pPhysUnitSrc),
+    m_pPhysUnitDst(i_pPhysUnitDst),
+    m_fctConvertType(i_fctConvertType),
+    m_strFctConvertName(),
+    m_physValM(i_physValM),
+    m_physValT(i_physValT),
+    m_physValK(i_physValK)
+{
+}
+
+//------------------------------------------------------------------------------
+SFctConvert::SFctConvert(SFctConvert& i_other) :
 //------------------------------------------------------------------------------
     m_pPhysUnitSrc(i_other.m_pPhysUnitSrc),
     m_pPhysUnitDst(i_other.m_pPhysUnitDst),
-    m_pPhysUnitRef(i_other.m_pPhysUnitRef),
     m_fctConvertType(i_other.m_fctConvertType),
     m_strFctConvertName(i_other.m_strFctConvertName),
-    m_fM(i_other.m_fM),
-    m_fT(i_other.m_fT),
-    m_fK(i_other.m_fK)
+    m_physValM(i_other.m_physValM),
+    m_physValT(i_other.m_physValT),
+    m_physValK(i_other.m_physValK)
 {
 } // copy ctor
 
 //------------------------------------------------------------------------------
-CFctConvert::CFctConvert(const CFctConvert& i_other) :
+SFctConvert::SFctConvert(const SFctConvert& i_other) :
 //------------------------------------------------------------------------------
     m_pPhysUnitSrc(i_other.m_pPhysUnitSrc),
     m_pPhysUnitDst(i_other.m_pPhysUnitDst),
-    m_pPhysUnitRef(i_other.m_pPhysUnitRef),
     m_fctConvertType(i_other.m_fctConvertType),
     m_strFctConvertName(i_other.m_strFctConvertName),
-    m_fM(i_other.m_fM),
-    m_fT(i_other.m_fT),
-    m_fK(i_other.m_fK)
+    m_physValM(i_other.m_physValM),
+    m_physValT(i_other.m_physValT),
+    m_physValK(i_other.m_physValK)
 {
 } // copy ctor
 
 //------------------------------------------------------------------------------
-CFctConvert::CFctConvert(CFctConvert&& i_other) :
+SFctConvert::SFctConvert(SFctConvert&& i_other) :
 //------------------------------------------------------------------------------
     m_pPhysUnitSrc(i_other.m_pPhysUnitSrc),
     m_pPhysUnitDst(i_other.m_pPhysUnitDst),
-    m_pPhysUnitRef(i_other.m_pPhysUnitRef),
     m_fctConvertType(i_other.m_fctConvertType),
     m_strFctConvertName(i_other.m_strFctConvertName),
-    m_fM(i_other.m_fM),
-    m_fT(i_other.m_fT),
-    m_fK(i_other.m_fK)
+    m_physValM(i_other.m_physValM),
+    m_physValT(i_other.m_physValT),
+    m_physValK(i_other.m_physValK)
 {
     i_other.m_pPhysUnitSrc = nullptr;
     i_other.m_pPhysUnitDst = nullptr;
-    i_other.m_pPhysUnitRef = nullptr;
     i_other.m_fctConvertType = static_cast<EFctConvert>(0);
     //i_other.m_strFctConvertName;
-    i_other.m_fM = 0.0;
-    i_other.m_fT = 0.0;
-    i_other.m_fK = 0.0;
 
 } // move ctor
 
 //------------------------------------------------------------------------------
-CFctConvert::~CFctConvert()
+SFctConvert::~SFctConvert()
 //------------------------------------------------------------------------------
 {
     m_pPhysUnitSrc = nullptr;
     m_pPhysUnitDst = nullptr;
-    m_pPhysUnitRef = nullptr;
     m_fctConvertType = static_cast<EFctConvert>(0);
     //m_strFctConvertName;
-    m_fM = 0.0;
-    m_fT = 0.0;
-    m_fK = 0.0;
+    //m_physValM;
+    //m_physValT;
+    //m_physValK;
 
 } // dtor
 
@@ -223,58 +233,51 @@ public: // operators
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CFctConvert& CFctConvert::operator=(CFctConvert& i_other)
+SFctConvert& SFctConvert::operator=(SFctConvert& i_other)
 //------------------------------------------------------------------------------
 {
     m_pPhysUnitSrc = i_other.m_pPhysUnitSrc;
     m_pPhysUnitDst = i_other.m_pPhysUnitDst;
-    m_pPhysUnitRef = i_other.m_pPhysUnitRef;
     m_fctConvertType = i_other.m_fctConvertType;
     m_strFctConvertName = i_other.m_strFctConvertName;
-    m_fM = i_other.m_fM;
-    m_fT = i_other.m_fT;
-    m_fK = i_other.m_fK;
+    m_physValM = i_other.m_physValM;
+    m_physValT = i_other.m_physValT;
+    m_physValK = i_other.m_physValK;
 
     return *this;
 }
 
 //------------------------------------------------------------------------------
-CFctConvert& CFctConvert::operator=(const CFctConvert& i_other)
+SFctConvert& SFctConvert::operator=(const SFctConvert& i_other)
 //------------------------------------------------------------------------------
 {
     m_pPhysUnitSrc = i_other.m_pPhysUnitSrc;
     m_pPhysUnitDst = i_other.m_pPhysUnitDst;
-    m_pPhysUnitRef = i_other.m_pPhysUnitRef;
     m_fctConvertType = i_other.m_fctConvertType;
     m_strFctConvertName = i_other.m_strFctConvertName;
-    m_fM = i_other.m_fM;
-    m_fT = i_other.m_fT;
-    m_fK = i_other.m_fK;
+    m_physValM = i_other.m_physValM;
+    m_physValT = i_other.m_physValT;
+    m_physValK = i_other.m_physValK;
 
     return *this;
 }
 
 //------------------------------------------------------------------------------
-CFctConvert& CFctConvert::operator=(CFctConvert&& i_other)
+SFctConvert& SFctConvert::operator=(SFctConvert&& i_other)
 //------------------------------------------------------------------------------
 {
     m_pPhysUnitSrc = i_other.m_pPhysUnitSrc;
     m_pPhysUnitDst = i_other.m_pPhysUnitDst;
-    m_pPhysUnitRef = i_other.m_pPhysUnitRef;
     m_fctConvertType = i_other.m_fctConvertType;
     m_strFctConvertName = i_other.m_strFctConvertName;
-    m_fM = i_other.m_fM;
-    m_fT = i_other.m_fT;
-    m_fK = i_other.m_fK;
+    m_physValM = i_other.m_physValM;
+    m_physValT = i_other.m_physValT;
+    m_physValK = i_other.m_physValK;
 
     i_other.m_pPhysUnitSrc = nullptr;
     i_other.m_pPhysUnitDst = nullptr;
-    i_other.m_pPhysUnitRef = nullptr;
     i_other.m_fctConvertType = static_cast<EFctConvert>(0);
     //i_other.m_strFctConvertName;
-    i_other.m_fM = 0.0;
-    i_other.m_fT = 0.0;
-    i_other.m_fK = 0.0;
 
     return *this;
 
@@ -285,7 +288,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CFctConvert::buildFctConvertName()
+void SFctConvert::buildFctConvertName()
 //------------------------------------------------------------------------------
 {
     QString strM;
@@ -293,249 +296,213 @@ void CFctConvert::buildFctConvertName()
     QString strK;
     QString strFctConvertName;
 
-    if( m_pPhysUnitDst == nullptr )
-    {
-        strFctConvertName = "nullptr = ...";
-        return;
+    CUnitsTreeEntryGrpPhysUnits* pPhysSizeDst = nullptr;
+    QString strFormulaSymbolDst = "?";
+    QString strUnitSymbolDst = "?";
+
+    if( m_pPhysUnitDst != nullptr ) {
+        strUnitSymbolDst = m_pPhysUnitDst->symbol();
+        pPhysSizeDst = m_pPhysUnitDst->physSize();
+        if( pPhysSizeDst != nullptr ) {
+            strFormulaSymbolDst = pPhysSizeDst->getFormulaSymbol();
+        }
     }
 
-    CUnitsTreeEntryGrpPhysUnits* pPhysSizeDst = m_pPhysUnitDst->physSize();
+    strFctConvertName = strFormulaSymbolDst + "/" + strUnitSymbolDst + " = ";
 
-    strFctConvertName = pPhysSizeDst->getFormulaSymbol() + "/" + m_pPhysUnitDst->symbol() + " = ";
+    CUnitsTreeEntryGrpPhysUnits* pPhysSizeSrc = nullptr;
+    QString strFormulaSymbolSrc = "?";
+    QString strUnitSymbolSrc = "?";
 
-    if( m_pPhysUnitSrc == nullptr )
+    if( m_pPhysUnitSrc != nullptr )
     {
-        strFctConvertName += "nullptr";
-        return;
+        strUnitSymbolSrc = m_pPhysUnitSrc->symbol();
+        pPhysSizeSrc = m_pPhysUnitSrc->physSize();
+        if( pPhysSizeSrc != nullptr ) {
+            strFormulaSymbolSrc = pPhysSizeSrc->getFormulaSymbol();
+        }
     }
 
-    CUnitsTreeEntryGrpPhysUnits* pPhysSizeSrc = m_pPhysUnitSrc->physSize();
+    double fM = m_physValM.getVal();
+    double fT = m_physValT.getVal();
+    double fK = m_physValK.getVal();
 
     switch( m_fctConvertType )
     {
         case EFctConvert_mMULxADDt:
         {
-            strM = FormatM(m_fM);
-            strT = FormatT(fabs(m_fT));
+            strM = FormatM(fM);
+            strT = FormatT(fT);
 
-            if( !strM.isEmpty() ) // if( m_fM != 1.0 )
-            {
-                strFctConvertName += strM + " * ";
+            if( !strM.isEmpty() ) { // if( fM != 1.0 )
+                strFctConvertName += strM;
+                if( m_physValM.unit().isValid() ) {
+                    strFctConvertName += " " + m_physValM.unit().symbol();
+                }
+                strFctConvertName += " * ";
             }
-            strFctConvertName += pPhysSizeSrc->getFormulaSymbol() + "/" + m_pPhysUnitSrc->symbol();
+            strFctConvertName += strFormulaSymbolSrc + "/" + strUnitSymbolSrc;
 
-            if( !strT.isEmpty() ) // if( m_fT == 0.0 )
-            {
-                if( m_fT < 0.0 )
-                {
+            if( !strT.isEmpty() ) { // if( fT != 0.0 )
+                if( fT < 0.0 ) {
                     strFctConvertName += " - ";
                 }
-                else // if( m_fT > 0.0 )
-                {
+                else {
                     strFctConvertName += " + ";
                 }
                 strFctConvertName += strT;
+                if( m_physValT.unit().isValid() ) {
+                    strFctConvertName += " " + m_physValT.unit().symbol();
+                }
             }
             break;
         }
         case EFctConvert_mLOGxADDt:
         {
-            strM = FormatOperand(m_fM);
-            strT = FormatT(fabs(m_fT));
+            strM = FormatOperand(fM);
+            strT = FormatT(fabs(fT));
 
-            if( !strM.isEmpty() ) // if( m_fM != 1.0 )
-            {
-                strFctConvertName += strM + "*";
+            if( !strM.isEmpty() ) { // if( fM != 1.0 )
+                strFctConvertName += strM;
+                if( m_physValM.unit().isValid() ) {
+                    strFctConvertName += " " + m_physValM.unit().symbol();
+                }
+                strFctConvertName += " * ";
             }
-            strFctConvertName += "log10(" + pPhysSizeSrc->getFormulaSymbol() + "/" + m_pPhysUnitSrc->symbol() + ")";
+            strFctConvertName += "log10(" + strFormulaSymbolSrc + "/" + strUnitSymbolSrc + ")";
 
-            if( !strT.isEmpty() ) // if( m_fT != 0.0 )
-            {
-                if( m_fT < 0.0 )
-                {
+            if( !strT.isEmpty() ) { // if( fT != 0.0 )
+                if( fT < 0.0 ) {
                     strFctConvertName += " - ";
                 }
-                else // if( m_fT > 0.0 )
-                {
+                else {
                     strFctConvertName += " + ";
                 }
                 strFctConvertName += strT;
+                if( m_physValT.unit().isValid() ) {
+                    strFctConvertName += " " + m_physValT.unit().symbol();
+                }
             }
             break;
         }
         case EFctConvert_EXP__xADDt_DIVm_:
         {
-            strM = FormatOperand(m_fM);
-            strT = FormatT(fabs(m_fT));
+            strM = FormatOperand(fM);
+            strT = FormatT(fabs(fT));
 
             strFctConvertName += "10exp(";
 
-            if( !strT.isEmpty() ) // if( m_fT != 0.0 )
-            {
+            if( !strT.isEmpty() ) { // if( fT != 0.0 )
                 strFctConvertName += "(";
             }
-            strFctConvertName += pPhysSizeSrc->getFormulaSymbol() + "/" + m_pPhysUnitSrc->symbol();
+            strFctConvertName += strFormulaSymbolSrc + "/" + strUnitSymbolSrc;
 
-            if( !strT.isEmpty() ) // if( m_fT != 0.0 )
-            {
-                if( m_fT < 0.0 )
-                {
+            if( !strT.isEmpty() ) { // if( fT != 0.0 )
+                if( fT < 0.0 ) {
                     strFctConvertName += " - ";
                 }
-                else // if( m_fT > 0.0 )
-                {
+                else {
                     strFctConvertName += " + ";
                 }
-                strFctConvertName += strT + ")";
+                strFctConvertName += strT;
+                if( m_physValT.unit().isValid() ) {
+                    strFctConvertName += " " + m_physValT.unit().symbol();
+                }
+                strFctConvertName += ")";
             }
-            if( !strM.isEmpty() ) // if( m_fM != 1.0 )
-            {
+            if( !strM.isEmpty() ) { // if( fM != 1.0 )
                 strFctConvertName += " / " + strM;
+                if( m_physValM.unit().isValid() ) {
+                    strFctConvertName += " " + m_physValM.unit().symbol();
+                }
             }
             strFctConvertName += ")";
             break;
         }
-        case EFctConvert_xMULr:
-        {
-            if( m_pPhysUnitRef == nullptr )
-            {
-                strFctConvertName = "(PhysUnitRef = nullptr)";
-            }
-            else
-            {
-                CUnitsTreeEntryGrpPhysUnits* pPhysSizeRef = m_pPhysUnitRef->physSize();
-                strFctConvertName +=
-                    "(" + pPhysSizeSrc->getFormulaSymbol() + "/" + m_pPhysUnitSrc->symbol() + ") "
-                    "* (" + pPhysSizeRef->getFormulaSymbol() + "/" + m_pPhysUnitRef->symbol() + ")";
-            }
-            break;
-        }
-        case EFctConvert_xDIVr:
-        {
-            if( m_pPhysUnitRef == nullptr )
-            {
-                strFctConvertName = "(PhysUnitRef = nullptr)";
-            }
-            else
-            {
-                CUnitsTreeEntryGrpPhysUnits* pPhysSizeRef = m_pPhysUnitRef->physSize();
-                strFctConvertName +=
-                    "(" + pPhysSizeSrc->getFormulaSymbol() + "/" + m_pPhysUnitSrc->symbol() + ") "
-                    "/ (" + pPhysSizeRef->getFormulaSymbol() + "/" + m_pPhysUnitRef->symbol() + ")";
-            }
-            break;
-        }
-        case EFctConvert_SQRxDIVr:
-        {
-            if( m_pPhysUnitRef == nullptr )
-            {
-                strFctConvertName = "(PhysUnitRef = nullptr)";
-            }
-            else
-            {
-                CUnitsTreeEntryGrpPhysUnits* pPhysSizeRef = m_pPhysUnitRef->physSize();
-                strFctConvertName +=
-                    "(" + pPhysSizeSrc->getFormulaSymbol() + "/" + m_pPhysUnitSrc->symbol() + ")� "
-                    "/ (" + pPhysSizeRef->getFormulaSymbol() + "/" + m_pPhysUnitRef->symbol() + ")";
-            }
-            break;
-        }
-        case EFctConvert_SQRT_xMULr_:
-        {
-            if( m_pPhysUnitRef == nullptr )
-            {
-                strFctConvertName = "(PhysUnitRef = nullptr)";
-            }
-            else
-            {
-                CUnitsTreeEntryGrpPhysUnits* pPhysSizeRef = m_pPhysUnitRef->physSize();
-                strFctConvertName +=
-                    c_strSymbolSquareRoot + "( (" + pPhysSizeSrc->getFormulaSymbol() + "/" + m_pPhysUnitSrc->symbol() + ") "
-                    "* (" + pPhysSizeRef->getFormulaSymbol() + "/" + m_pPhysUnitRef->symbol() + ") )";
-            }
-            break;
-        }
-        case EFctConvert_SQRxMULr:
-        {
-            if( m_pPhysUnitRef == nullptr )
-            {
-                strFctConvertName = "(PhysUnitRef = nullptr)";
-            }
-            else
-            {
-                CUnitsTreeEntryGrpPhysUnits* pPhysSizeRef = m_pPhysUnitRef->physSize();
-                strFctConvertName +=
-                    "(" + pPhysSizeSrc->getFormulaSymbol() + "/" + m_pPhysUnitSrc->symbol() + ")� "
-                    "* (" + pPhysSizeRef->getFormulaSymbol() + "/" + m_pPhysUnitRef->symbol() + ")";
-            }
-            break;
-        }
-        case EFctConvert_SQRT_xDIVr_:
-        {
-            if( m_pPhysUnitRef == nullptr )
-            {
-                strFctConvertName = "(PhysUnitRef = nullptr)";
-            }
-            else
-            {
-                CUnitsTreeEntryGrpPhysUnits* pPhysSizeRef = m_pPhysUnitRef->physSize();
-                strFctConvertName +=
-                    c_strSymbolSquareRoot + "( (" + pPhysSizeSrc->getFormulaSymbol() + "/" + m_pPhysUnitSrc->symbol() + ") "
-                    "/ (" + pPhysSizeRef->getFormulaSymbol() + "/" + m_pPhysUnitRef->symbol() + ") )";
-            }
-            break;
-        }
-        case EFctConvert_mMULxADDtADDkLOGr:
-        {
-            if( m_pPhysUnitRef == nullptr )
-            {
-                strFctConvertName = "(PhysUnitRef = nullptr)";
-            }
-            else
-            {
-                CUnitsTreeEntryGrpPhysUnits* pPhysSizeRef = m_pPhysUnitRef->physSize();
+        //case EFctConvert_xMULr:
+        //{
+        //    strFctConvertName +=
+        //        "(" + strFormulaSymbolSrc + "/" + strUnitSymbolSrc + ") "
+        //        "* (" + strFormulaSymbolRef + "/" + strUnitSymbolRef + ")";
+        //    break;
+        //}
+        //case EFctConvert_xDIVr:
+        //{
+        //    strFctConvertName +=
+        //        "(" + strFormulaSymbolSrc + "/" + strUnitSymbolSrc + ") "
+        //        "/ (" + strFormulaSymbolRef + "/" + strUnitSymbolRef + ")";
+        //    break;
+        //}
+        //case EFctConvert_SQRxDIVr:
+        //{
+        //    strFctConvertName +=
+        //        "(" + strFormulaSymbolSrc + "/" + strUnitSymbolSrc + ")� "
+        //        "/ (" + strFormulaSymbolRef + "/" + strUnitSymbolRef + ")";
+        //    break;
+        //}
+        //case EFctConvert_SQRT_xMULr_:
+        //{
+        //    strFctConvertName +=
+        //        c_strSymbolSquareRoot + "( (" + strFormulaSymbolSrc + "/" + strUnitSymbolSrc + ") "
+        //        "* (" + strFormulaSymbolRef + "/" + strUnitSymbolRef + ") )";
+        //    break;
+        //}
+        //case EFctConvert_SQRxMULr:
+        //{
+        //    strFctConvertName +=
+        //        "(" + strFormulaSymbolSrc + "/" + strUnitSymbolSrc + ")� "
+        //        "* (" + strFormulaSymbolRef + "/" + strUnitSymbolRef + ")";
+        //    break;
+        //}
+        //case EFctConvert_SQRT_xDIVr_:
+        //{
+        //    strFctConvertName +=
+        //        c_strSymbolSquareRoot + "( (" + strFormulaSymbolSrc + "/" + strUnitSymbolSrc + ") "
+        //        "/ (" + strFormulaSymbolRef + "/" + strUnitSymbolRef + ") )";
+        //    break;
+        //}
+        //case EFctConvert_mMULxADDtADDkLOGr:
+        //{
+        //    strM = FormatM(m_fM);
+        //    strT = FormatT(fabs(m_fT));
+        //    strK = FormatOperand(fabs(m_fK));
 
-                strM = FormatM(m_fM);
-                strT = FormatT(fabs(m_fT));
-                strK = FormatOperand(fabs(m_fK));
+        //    if( !strM.isEmpty() ) // if( m_fM != 1.0 )
+        //    {
+        //        strFctConvertName += strM + " * ";
+        //    }
+        //    strFctConvertName += strFormulaSymbolSrc + "/" + strUnitSymbolSrc;
 
-                if( !strM.isEmpty() ) // if( m_fM != 1.0 )
-                {
-                    strFctConvertName += strM + " * ";
-                }
-                strFctConvertName += pPhysSizeSrc->getFormulaSymbol() + "/" + m_pPhysUnitSrc->symbol();
-
-                if( !strT.isEmpty() ) // if( m_fT != 0.0 )
-                {
-                    if( m_fT < 0.0 )
-                    {
-                        strFctConvertName += " - ";
-                    }
-                    else // if( m_fT > 0.0 )
-                    {
-                        strFctConvertName += " + ";
-                    }
-                    strFctConvertName += strT;
-                }
-                if( !strK.isEmpty() ) // if( m_fK != 0.0 )
-                {
-                    if( m_fK < 0.0 )
-                    {
-                        strFctConvertName += " - ";
-                    }
-                    else // if( m_fK > 0.0 )
-                    {
-                        strFctConvertName += " + ";
-                    }
-                    strFctConvertName += strK + " * log10(" + pPhysSizeRef->getFormulaSymbol() + "/" + m_pPhysUnitRef->symbol() + ")";
-                }
-            }
-            break;
-        }
+        //    if( !strT.isEmpty() ) // if( m_fT != 0.0 )
+        //    {
+        //        if( m_fT < 0.0 )
+        //        {
+        //            strFctConvertName += " - ";
+        //        }
+        //        else // if( m_fT > 0.0 )
+        //        {
+        //            strFctConvertName += " + ";
+        //        }
+        //        strFctConvertName += strT;
+        //    }
+        //    if( !strK.isEmpty() ) // if( m_fK != 0.0 )
+        //    {
+        //        if( m_fK < 0.0 )
+        //        {
+        //            strFctConvertName += " - ";
+        //        }
+        //        else // if( m_fK > 0.0 )
+        //        {
+        //            strFctConvertName += " + ";
+        //        }
+        //        strFctConvertName += strK + " * log10(" + strFormulaSymbolRef + "/" + strUnitSymbolRef + ")";
+        //    }
+        //    break;
+        //}
         case EFctConvert_Undefined:
         default:
         {
-            strFctConvertName = "Undefined";
+            strFctConvertName += "? " + strFormulaSymbolSrc + "/" + strUnitSymbolSrc;
             break;
         }
     }
@@ -544,7 +511,7 @@ void CFctConvert::buildFctConvertName()
 } // buildFctConvertName
 
 //------------------------------------------------------------------------------
-bool CFctConvert::isValid() const
+bool SFctConvert::isValid() const
 //------------------------------------------------------------------------------
 {
     bool bValid = false;

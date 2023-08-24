@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -52,6 +52,11 @@ public: // ctors and dtor
         CUnitsTreeEntryGrpPhysUnits* i_pPhysSize,
         bool i_bIsLogarithmic,
         const QString& i_strName,
+        const QString& i_strSymbol );
+    CUnitsTreeEntryPhysUnit(
+        CUnitsTreeEntryGrpPhysUnits* i_pPhysSize,
+        bool i_bIsLogarithmic,
+        const QString& i_strName,
         const QString& i_strSymbol,
         const double i_fMFromBaseOrRefVal );
     virtual ~CUnitsTreeEntryPhysUnit();
@@ -61,51 +66,53 @@ public: // operators
 public: // instance methods
     CUnitsTreeEntryGrpPhysUnits* physSize() const;
     CUnitsTreeEntryPhysUnit* getSIUnit() const { return m_pPhysUnitSI; }
-public: // instance methods
-    double getFactorConvertFromSIUnit() const { return m_fctConvertFromSIUnit.m_fM; }
-    void setFactorConvertFromSIUnit( double i_fFactor );
 public: // overridables of base class CUnitsTreeEntryUnitBase (converting values)
-    virtual bool isConvertible( const CUnitsTreeEntryUnitBase* i_pUnitDst, double i_fVal = 1.0 ) const;
-    virtual double convertValue( double i_fVal, const CUnitsTreeEntryUnitBase* i_pUnitDst ) const;
+    virtual bool isConvertible( const CUnitsTreeEntryUnitBase* i_pUnitDst, double i_fVal = 1.0 ) const override;
+    virtual double convertValue( double i_fVal, const CUnitsTreeEntryUnitBase* i_pUnitDst ) const override;
 public: // instance methods (converting values)
     double convertFromSIUnit( double i_fVal ) const;
     double convertIntoSIUnit( double i_fVal ) const;
-    double convertValue(
-        double i_fVal, const CUnitsTreeEntryPhysUnit* i_pUnitDst,
-        double i_fValRef, const CUnitsTreeEntryPhysUnit* i_pUnitRef ) const;
+    //double convertValue(
+    //    double i_fVal, const CUnitsTreeEntryPhysUnit* i_pUnitDst,
+    //    double i_fValRef, const CUnitsTreeEntryPhysUnit* i_pUnitRef ) const;
 public: // instance methods (conversion routine into SI unit)
-    const CFctConvert& getFctConvertFromSIUnit() const { return m_fctConvertIntoSIUnit; }
+    void setFctConvertFromSIUnit(const SFctConvert& i_fctConvert);
+    double getFactorConvertFromSIUnit() const;
+    const SFctConvert& getFctConvertFromSIUnit() const { return m_fctConvertIntoSIUnit; }
     QString getFctConvertFromSIUnitName() const { return m_fctConvertFromSIUnit.m_strFctConvertName; }
-    const CFctConvert& getFctConvertIntoSIUnit() const { return m_fctConvertIntoSIUnit; }
+public: // instance methods (conversion routines from SI unit)
+    // Inverse functions of convert from SI unit. Calculated when setting convertFromSI unit function.
+    double getFactorConvertIntoSIUnit() const;
+    const SFctConvert& getFctConvertIntoSIUnit() const { return m_fctConvertIntoSIUnit; }
     QString getFctConvertIntoSIUnitName() const { return m_fctConvertIntoSIUnit.m_strFctConvertName; }
 public: // instance methods (conversion routines to convert into units of same quantity)
     int getFctConvertsInternalCount() const { return m_arFctConvertsInternal.size(); }
     int findFctConvertInternalIdx( const CUnitsTreeEntryPhysUnit* i_pPhysUnitDst ) const;
-    CFctConvert* getFctConvertInternal( int i_idx ) const;
-    CFctConvert* findFctConvertInternal( const CUnitsTreeEntryPhysUnit* i_pPhysUnitDst ) const;
+    SFctConvert* getFctConvertInternal( int i_idx ) const;
+    SFctConvert* findFctConvertInternal( const CUnitsTreeEntryPhysUnit* i_pPhysUnitDst ) const;
     QString findFctConvertInternalName( const CUnitsTreeEntryPhysUnit* i_pPhysUnitDst ) const;
     QString getFctConvertInternalName( int i_idx ) const;
 public: // instance methods (conversion routines to convert into units of other quantities)
-    void addFctConvertExternal(
-        CUnitsTreeEntryPhysUnit* i_pPhysUnitDst,
-        CUnitsTreeEntryPhysUnit* i_pPhysUnitRef,
-        EFctConvert         i_fctConvert );
+    //void addFctConvertExternal(
+    //    CUnitsTreeEntryPhysUnit* i_pPhysUnitDst,
+    //    CUnitsTreeEntryPhysUnit* i_pPhysUnitRef,
+    //    EFctConvert         i_fctConvert );
     int getFctConvertsExternalCount() const { return m_arFctConvertsExternal.size(); }
     int findFctConvertExternalIdx( const CUnitsTreeEntryPhysUnit* i_pPhysUnitDst ) const;
-    CFctConvert* getFctConvertExternal( int i_idx ) const;
-    CFctConvert* findFctConvertExternal( const CUnitsTreeEntryPhysUnit* i_pPhysUnitDst ) const;
+    SFctConvert* getFctConvertExternal( int i_idx ) const;
+    SFctConvert* findFctConvertExternal( const CUnitsTreeEntryPhysUnit* i_pPhysUnitDst ) const;
     QString findFctConvertExternalName( const CUnitsTreeEntryPhysUnit* i_pPhysUnitDst ) const;
     QString getFctConvertExternalName( int i_idx ) const;
 protected: // instance members
     CUnitsTreeEntryPhysUnit* m_pPhysUnitSI;
     bool m_bInitialized;
     //int m_iPhysSizeRowIdx;
-    CFctConvert m_fctConvertFromSIUnit;
-    CFctConvert m_fctConvertIntoSIUnit;
+    SFctConvert m_fctConvertFromSIUnit;
+    SFctConvert m_fctConvertIntoSIUnit;
     // Array of direct conversion routines into units of same quantity
-    QVector<CFctConvert> m_arFctConvertsInternal;
+    QVector<SFctConvert> m_arFctConvertsInternal;
     // Array of direct conversion routines into units of other quantities
-    QVector<CFctConvert> m_arFctConvertsExternal;
+    QVector<SFctConvert> m_arFctConvertsExternal;
 
 }; // class CUnitsTreeEntryPhysUnit
 

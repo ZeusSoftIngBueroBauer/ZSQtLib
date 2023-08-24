@@ -158,16 +158,17 @@ protected: // ctors
 
 //------------------------------------------------------------------------------
 CDiagObj::CDiagObj(
+    const QString& i_strClassName,
     const QString& i_strObjName,
     CDiagTrace*    i_pDiagTrace,
     ELayoutPos     i_layoutPos ) :
 //------------------------------------------------------------------------------
     QObject(),
+    m_strClassName(i_strClassName),
     m_strObjName(i_strObjName),
-    m_iObjId(-1),
     m_pDiagram(nullptr),
     m_pDiagTrace(i_pDiagTrace),
-    //m_arpDiagScale[EScaleDirCount]
+    m_arpDiagScale(CEnumScaleDir::count(), nullptr),
     m_uUpdateFlags(EUpdateAll),
     m_layoutPos(i_layoutPos),
     m_rectContent(),
@@ -181,35 +182,28 @@ CDiagObj::CDiagObj(
     m_bIsEditable(false),
     m_bPtEditSessionValid(false),
     m_ptEditSession(),
-    m_pDiagObjNext(nullptr),
-    m_pDiagObjPrev(nullptr),
-    m_pDiagObjPaintNext(nullptr),
-    m_pDiagObjPaintPrev(nullptr),
     m_pTrcAdminObj(nullptr),
     m_pTrcAdminObjUpdate(nullptr),
     m_pTrcAdminObjEvents(nullptr),
     m_pTrcAdminObjLayout(nullptr),
     m_pTrcAdminObjValidate(nullptr)
 {
-    m_arpDiagScale[EScaleDirX] = nullptr;
-    m_arpDiagScale[EScaleDirY] = nullptr;
-
     setObjectName(i_strObjName);
 
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
-        NameSpace(), ClassName(), objectName());
+        NameSpace(), m_strClassName, objectName());
     m_pTrcAdminObjUpdate = CTrcServer::GetTraceAdminObj(
-        NameSpace(), ClassName() + "::Update", objectName());
+        NameSpace(), m_strClassName + "::Update", objectName());
     m_pTrcAdminObjEvents = CTrcServer::GetTraceAdminObj(
-        NameSpace(), ClassName() + "::Events", objectName());
+        NameSpace(), m_strClassName + "::Events", objectName());
     m_pTrcAdminObjLayout = CTrcServer::GetTraceAdminObj(
-        NameSpace(), ClassName() + "::Layout", objectName());
+        NameSpace(), m_strClassName + "::Layout", objectName());
     m_pTrcAdminObjValidate = CTrcServer::GetTraceAdminObj(
-        NameSpace(), ClassName() + "::Validate", objectName());
+        NameSpace(), m_strClassName + "::Validate", objectName());
 
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = i_strObjName;
         strMthInArgs += ", Trace: " + QString(i_pDiagTrace == nullptr ? "nullptr" : i_pDiagTrace->objectName());
@@ -226,17 +220,18 @@ CDiagObj::CDiagObj(
 
 //------------------------------------------------------------------------------
 CDiagObj::CDiagObj(
+    const QString& i_strClassName,
     const QString& i_strObjName,
     CDiagScale*    i_pDiagScaleX,
     CDiagScale*    i_pDiagScaleY,
     ELayoutPos     i_layoutPos ) :
 //------------------------------------------------------------------------------
     QObject(),
+    m_strClassName(i_strClassName),
     m_strObjName(i_strObjName),
-    m_iObjId(-1),
     m_pDiagram(nullptr),
     m_pDiagTrace(nullptr),
-    //m_arpDiagScale[EScaleDirCount]
+    m_arpDiagScale(CEnumScaleDir::count(), nullptr),
     m_uUpdateFlags(EUpdateAll),
     m_layoutPos(i_layoutPos),
     m_rectContent(),
@@ -250,35 +245,31 @@ CDiagObj::CDiagObj(
     m_bIsEditable(false),
     m_bPtEditSessionValid(false),
     m_ptEditSession(),
-    m_pDiagObjNext(nullptr),
-    m_pDiagObjPrev(nullptr),
-    m_pDiagObjPaintNext(nullptr),
-    m_pDiagObjPaintPrev(nullptr),
     m_pTrcAdminObj(nullptr),
     m_pTrcAdminObjUpdate(nullptr),
     m_pTrcAdminObjEvents(nullptr),
     m_pTrcAdminObjLayout(nullptr),
     m_pTrcAdminObjValidate(nullptr)
 {
-    m_arpDiagScale[EScaleDirX] = i_pDiagScaleX;
-    m_arpDiagScale[EScaleDirY] = i_pDiagScaleY;
+    m_arpDiagScale[static_cast<int>(EScaleDir::X)] = i_pDiagScaleX;
+    m_arpDiagScale[static_cast<int>(EScaleDir::Y)] = i_pDiagScaleY;
 
     setObjectName(i_strObjName);
 
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
-        NameSpace(), ClassName(), objectName());
+        NameSpace(), m_strClassName, objectName());
     m_pTrcAdminObjUpdate = CTrcServer::GetTraceAdminObj(
-        NameSpace(), ClassName() + "::Update", objectName());
+        NameSpace(), m_strClassName + "::Update", objectName());
     m_pTrcAdminObjEvents = CTrcServer::GetTraceAdminObj(
-        NameSpace(), ClassName() + "::Events", objectName());
+        NameSpace(), m_strClassName + "::Events", objectName());
     m_pTrcAdminObjLayout = CTrcServer::GetTraceAdminObj(
-        NameSpace(), ClassName() + "::Layout", objectName());
+        NameSpace(), m_strClassName + "::Layout", objectName());
     m_pTrcAdminObjValidate = CTrcServer::GetTraceAdminObj(
-        NameSpace(), ClassName() + "::Validate", objectName());
+        NameSpace(), m_strClassName + "::Validate", objectName());
 
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = i_strObjName;
         strMthInArgs += ", ScaleX: " + QString(i_pDiagScaleX == nullptr ? "nullptr" : i_pDiagScaleX->objectName());
@@ -321,11 +312,11 @@ CDiagObj::~CDiagObj()
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjValidate);
     m_pTrcAdminObjValidate = nullptr;
 
+    //m_strClassName;
     //m_strObjName;
-    m_iObjId = 0;
     m_pDiagram = nullptr;
     m_pDiagTrace = nullptr;
-    memset(m_arpDiagScale, 0x00, EScaleDirCount*sizeof(m_arpDiagScale[0]));
+    //m_arpDiagScale.clear();
     m_uUpdateFlags = 0;
     m_layoutPos = static_cast<ELayoutPos>(0);
     //m_rectContent;
@@ -339,10 +330,6 @@ CDiagObj::~CDiagObj()
     m_bIsEditable = false;
     m_bPtEditSessionValid = false;
     //m_ptEditSession;
-    m_pDiagObjNext = nullptr;
-    m_pDiagObjPrev = nullptr;
-    m_pDiagObjPaintNext = nullptr;
-    m_pDiagObjPaintPrev = nullptr;
     m_pTrcAdminObj = nullptr;
     m_pTrcAdminObjUpdate = nullptr;
     m_pTrcAdminObjEvents = nullptr;
@@ -360,12 +347,9 @@ void CDiagObj::setObjName( const QString& i_strObjName )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_strObjName;
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -413,13 +397,6 @@ QString CDiagObj::getObjName() const
 }
 
 //------------------------------------------------------------------------------
-int CDiagObj::getObjId() const
-//------------------------------------------------------------------------------
-{
-    return m_iObjId;
-}
-
-//------------------------------------------------------------------------------
 CDataDiagram* CDiagObj::getDiagram()
 //------------------------------------------------------------------------------
 {
@@ -427,10 +404,10 @@ CDataDiagram* CDiagObj::getDiagram()
 }
 
 //------------------------------------------------------------------------------
-CDiagScale* CDiagObj::getDiagScale( EScaleDir i_scaleDir )
+CDiagScale* CDiagObj::getDiagScale( const CEnumScaleDir& i_scaleDir )
 //------------------------------------------------------------------------------
 {
-    CDiagScale* pDiagScale = m_arpDiagScale[i_scaleDir];
+    CDiagScale* pDiagScale = m_arpDiagScale[i_scaleDir.enumeratorAsInt()];
 
     if( pDiagScale == nullptr && m_pDiagTrace != nullptr )
     {
@@ -440,30 +417,12 @@ CDiagScale* CDiagObj::getDiagScale( EScaleDir i_scaleDir )
 }
 
 //------------------------------------------------------------------------------
-CDiagTrace* CDiagObj::getDiagTrace()
-//------------------------------------------------------------------------------
-{
-    return m_pDiagTrace;
-}
-
-//------------------------------------------------------------------------------
-ELayoutPos CDiagObj::getLayoutPos() const
-//------------------------------------------------------------------------------
-{
-    return m_layoutPos;
-}
-
-/*==============================================================================
-public: // overridables
-==============================================================================*/
-
-//------------------------------------------------------------------------------
 void CDiagObj::setDiagTrace( CDiagTrace* i_pDiagTrace )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = QString(i_pDiagTrace == nullptr ? "null" : i_pDiagTrace->objectName());
     }
@@ -506,12 +465,58 @@ void CDiagObj::setDiagTrace( CDiagTrace* i_pDiagTrace )
 } // setDiagTrace
 
 //------------------------------------------------------------------------------
+CDiagTrace* CDiagObj::getDiagTrace()
+//------------------------------------------------------------------------------
+{
+    return m_pDiagTrace;
+}
+
+//------------------------------------------------------------------------------
+ELayoutPos CDiagObj::getLayoutPos() const
+//------------------------------------------------------------------------------
+{
+    return m_layoutPos;
+}
+
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CPhysValRes CDiagObj::getValRes( const CEnumScaleDir& i_scaleDir ) const
+//------------------------------------------------------------------------------
+{
+    CPhysValRes physValRes;
+
+    if( m_pDiagTrace != nullptr )
+    {
+        physValRes = m_pDiagTrace->getValuesRes(i_scaleDir);
+    }
+    else if( m_arpDiagScale[i_scaleDir.enumeratorAsInt()] != nullptr )
+    {
+        physValRes = m_arpDiagScale[i_scaleDir.enumeratorAsInt()]->getScaleRes();
+    }
+    return physValRes;
+}
+
+//------------------------------------------------------------------------------
+CPhysVal CDiagObj::getVal( const CEnumScaleDir& /*i_scaleDir*/ ) const
+//------------------------------------------------------------------------------
+{
+    return CPhysVal();
+}
+
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
 void CDiagObj::setAdjustContentRect2DiagPartCenter( bool i_bAdjust )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = bool2Str(i_bAdjust);
     }
@@ -539,7 +544,7 @@ void CDiagObj::show( bool i_bInformDiagram )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = bool2Str(i_bInformDiagram);
     }
@@ -579,7 +584,7 @@ void CDiagObj::hide( bool i_bInformDiagram )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = bool2Str(i_bInformDiagram);
     }
@@ -620,65 +625,12 @@ bool CDiagObj::isVisible() const
 }
 
 //------------------------------------------------------------------------------
-double CDiagObj::getValRes( EScaleDir i_scaleDir, CUnit* i_pUnit ) const
-//------------------------------------------------------------------------------
-{
-    if( i_scaleDir < EScaleDirMin || i_scaleDir > EScaleDirMax )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultArgOutOfRange);
-    }
-
-    double fRes = 0.0;
-
-    if( m_pDiagTrace != nullptr )
-    {
-        fRes = m_pDiagTrace->getValRes(i_scaleDir,i_pUnit);
-    }
-    else if( m_arpDiagScale[i_scaleDir] != nullptr )
-    {
-        fRes = m_arpDiagScale[i_scaleDir]->getScaleRes(i_pUnit);
-    }
-    return fRes;
-
-} // getValRes
-
-//------------------------------------------------------------------------------
-double CDiagObj::getValRes( EScaleDir i_scaleDir, double i_fVal, CUnit* i_pUnit ) const
-//------------------------------------------------------------------------------
-{
-    if( i_scaleDir < EScaleDirMin || i_scaleDir > EScaleDirMax )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultArgOutOfRange);
-    }
-
-    double fRes = 0.0;
-
-    if( m_pDiagTrace != nullptr )
-    {
-        fRes = m_pDiagTrace->getValRes(i_scaleDir,i_fVal,i_pUnit);
-    }
-    else if( m_arpDiagScale[i_scaleDir] != nullptr )
-    {
-        fRes = m_arpDiagScale[i_scaleDir]->getScaleRes(i_fVal,i_pUnit);
-    }
-    return fRes;
-
-} // getValRes
-
-//------------------------------------------------------------------------------
-CPhysVal CDiagObj::getVal( EScaleDir /*i_scaleDir*/ ) const
-//------------------------------------------------------------------------------
-{
-    return CPhysVal();
-}
-
-//------------------------------------------------------------------------------
 void CDiagObj::setIsFocusable( bool i_bFocusable )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = bool2Str(i_bFocusable);
     }
@@ -718,7 +670,7 @@ void CDiagObj::setFocus( bool i_bInformDiagram )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObjEvents != nullptr && m_pTrcAdminObjEvents->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjEvents, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = bool2Str(i_bInformDiagram);
     }
@@ -752,7 +704,7 @@ void CDiagObj::setFocus( const QPoint& i_pt, bool i_bInformDiagram )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObjEvents != nullptr && m_pTrcAdminObjEvents->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjEvents, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = qPoint2Str(i_pt);
         strMthInArgs += ", " + bool2Str(i_bInformDiagram);
@@ -788,7 +740,7 @@ void CDiagObj::unsetFocus( bool i_bInformDiagram )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObjEvents != nullptr && m_pTrcAdminObjEvents->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjEvents, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = bool2Str(i_bInformDiagram);
     }
@@ -823,7 +775,7 @@ void CDiagObj::setIsEditable( bool i_bEditable )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObjEvents != nullptr && m_pTrcAdminObjEvents->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjEvents, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = bool2Str(i_bEditable);
     }
@@ -857,7 +809,7 @@ void CDiagObj::startEditSession( bool i_bInformDiagram )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObjEvents != nullptr && m_pTrcAdminObjEvents->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjEvents, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = bool2Str(i_bInformDiagram);
     }
@@ -891,7 +843,7 @@ void CDiagObj::startEditSession( const QPoint& i_pt, bool i_bInformDiagram )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObjEvents != nullptr && m_pTrcAdminObjEvents->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjEvents, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = qPoint2Str(i_pt);
         strMthInArgs += ", " + bool2Str(i_bInformDiagram);
@@ -928,7 +880,7 @@ void CDiagObj::stopEditSession( bool i_bInformDiagram )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObjEvents != nullptr && m_pTrcAdminObjEvents->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjEvents, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = bool2Str(i_bInformDiagram);
     }
@@ -980,7 +932,7 @@ void CDiagObj::setGeometry( const QRect& i_rect, bool i_bInformDiagram )
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObjLayout != nullptr && m_pTrcAdminObjLayout->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjLayout, EMethodTraceDetailLevel::ArgsNormal))
     {
         strTrcMsg  = qRect2Str(i_rect);
         strTrcMsg += ", " + bool2Str(i_bInformDiagram);
@@ -1065,7 +1017,7 @@ void CDiagObj::invalidate( unsigned int i_uUpdateFlags, bool i_bInformDiagram )
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObjValidate != nullptr && m_pTrcAdminObjValidate->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjValidate, EMethodTraceDetailLevel::ArgsNormal))
     {
         strTrcMsg = updateFlags2Str(i_uUpdateFlags);
         strTrcMsg += ", InformDiagram: " + bool2Str(i_bInformDiagram);
@@ -1141,7 +1093,7 @@ void CDiagObj::validate( unsigned int i_uUpdateFlags )
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObjValidate != nullptr && m_pTrcAdminObjValidate->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjValidate, EMethodTraceDetailLevel::ArgsNormal))
     {
         strTrcMsg = updateFlags2Str(i_uUpdateFlags);
     }

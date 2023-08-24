@@ -47,6 +47,8 @@ class ZSDIAGRAMDLL_API CDiagObjTable : public ZS::Diagram::CDiagObj
 //******************************************************************************
 {
     Q_OBJECT
+public: // class methods
+    static QString ClassName() { return "CDiagObjTable"; }
 public: // type definitions and constants
     // Please note:
     // A cell may be of data type "ValueWithPhysUnit". But if the DisplayDataType
@@ -98,8 +100,8 @@ public: // ctors and dtor
         ELayoutPos     i_layoutPos );
     virtual ~CDiagObjTable();
 public: // instance methods
-    void showGridLines( EOrientation i_orientation = EOrientationCount );
-    void hideGridLines( EOrientation i_orientation = EOrientationCount );
+    void showGridLines( const ZS::System::CEnumOrientation& i_orientation = ZS::System::CEnumOrientation() );
+    void hideGridLines( const ZS::System::CEnumOrientation& i_orientation = ZS::System::CEnumOrientation() );
     void setGridLinesColor( const QColor& i_col );
     QColor getGridLinesColor() const;
     void setTextColor( const QColor& i_col );
@@ -178,10 +180,10 @@ public: // instance methods
     PhysVal::CUnit getCellDataUnit( int i_idxRow, int i_idxClm ) const;
     PhysVal::CPhysVal getCellDataPhysVal( int i_idxRow, int i_idxClm ) const;
 public: // overridables of base class CDiagObj
-    virtual QSize sizeHint();
+    virtual QSize sizeHint() override;
 public: // must overridables of base class CDiagObj
-    virtual CDiagObj* clone( CDataDiagram* i_pDiagramTrg ) const;
-    virtual void update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDevice = nullptr );
+    virtual CDiagObj* clone( CDataDiagram* i_pDiagramTrg ) const override;
+    virtual void update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDevice = nullptr ) override;
 protected: // instance methods
     void updateLayout();
     void updateData();
@@ -197,7 +199,7 @@ private: // assignment operator not allowed
     void operator=( const CDiagObjTable& );
 protected:  // instance members
     // The following table and cell properties will be set:
-    bool                             m_arbShowGridLines[EOrientationCount];
+    QVector<bool>                    m_arbShowGridLines;
     QColor                           m_colGridLines;
     QColor                           m_colText;
     QFont                            m_fnt;

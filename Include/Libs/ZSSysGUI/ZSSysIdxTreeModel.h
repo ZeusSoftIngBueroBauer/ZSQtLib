@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -142,8 +142,8 @@ public: // class methods
     static int column2Role(EColumn i_clm);
     Q_INVOKABLE static QString modelIdx2Str( const QModelIndex& i_modelIdx, int i_iRole = -1, bool i_bIncludeId = false );
 public: // class methods
-    static QString getImageUrl( EIdxTreeEntryType i_entryType );
-    static QIcon getIcon( EIdxTreeEntryType i_entryType );
+    static QString getImageUrl( const QString& i_strEntryType );
+    static QIcon getIcon( const QString& i_strEntryType );
 protected: // class methods
     static bool areIconsCreated();
 public: // ctors and dtor
@@ -211,7 +211,7 @@ protected slots:
 protected slots: // overridables
     virtual void onIdxTreeEntryAdded( const QString& i_strKeyInTree );
     virtual void onIdxTreeEntryChanged( const QString& i_strKeyInTree );
-    virtual void onIdxTreeEntryAboutToBeRemoved( ZS::System::EIdxTreeEntryType i_entryType, const QString& i_strKeyInTree, int i_idxInTree );
+    virtual void onIdxTreeEntryAboutToBeRemoved( const QString& i_strKeyInTree, int i_idxInTree );
     virtual void onIdxTreeEntryMoved( const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree, const QString& i_strKeyInTreeOfTargetBranch );
     virtual void onIdxTreeEntryKeyInTreeChanged( const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree );
 protected: // instance methods

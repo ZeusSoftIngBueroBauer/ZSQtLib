@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -57,11 +57,11 @@ public: // overridables
 public: // instance methods
     CIdxTreeEntry* getIdxTreeEntry();
 public: // instance methods
-    EIdxTreeEntryType entryType() const;
-    QString entryType2Str( int i_alias = ZS::System::EEnumEntryAliasStrName ) const;
     bool isRoot() const;
     bool isBranch() const;
     bool isLeave() const;
+    QString entryTypeSymbol() const;
+    QString entryType2Str( int i_alias = ZS::System::EEnumEntryAliasStrName ) const;
 public: // instance methods
     void setKeyInTree( const QString& i_strNewKeyInTree );
     QString keyInTree() const;
@@ -97,14 +97,14 @@ public: // instance methods
 public: // instance methods
     int indexOf( CModelIdxTreeEntry* i_pModelTreeEntry ) const;
     int indexOf( const QString& i_strKeyInParentBranch ) const;
-    int indexOf( EIdxTreeEntryType i_entryType, const QString& i_strName ) const;
+    int indexOf( const QString& i_strEntryType, const QString& i_strName ) const;
 public: // instance methods (applying filter)
     int indexOfChildInListWithSameEntryTypes( const CModelIdxTreeEntry* i_pModelTreeEntry ) const;
 public: // instance methods
     CModelIdxTreeEntry* findBranch( const QString& i_strName ) const;
     CModelIdxTreeEntry* findLeave( const QString& i_strName ) const;
     CModelIdxTreeEntry* findEntry( const QString& i_strKeyInParentBranch ) const;
-    CModelIdxTreeEntry* findEntry( EIdxTreeEntryType i_entryType, const QString& i_strName ) const;
+    CModelIdxTreeEntry* findEntry( const QString& i_strEntryTypeSymbol, const QString& i_strName ) const;
 public: // instance methods
     int add( CModelIdxTreeEntry* i_pModelTreeEntry );
     void remove( CModelIdxTreeEntry* i_pModelTreeEntry );
@@ -115,20 +115,24 @@ public: // instance methods
     void setIsExpanded( bool i_bIsExpanded );
     bool isExpanded() const { return m_bIsExpanded; }
 protected: // instance methods (index tree entry properties)
-    CIdxTree*           m_pIdxTree;
-    EIdxTreeEntryType   m_entryType;
-    QString             m_strKeyInTree;
-    int                 m_idxInTree;
+    CIdxTree* m_pIdxTree;
+    CIdxTreeEntry::EEntryType m_entryType;
+    QString m_strKeyInTree;
+    int m_idxInTree;
 protected: // instance methods (model entry properties)
     CModelIdxTreeEntry* m_pParentBranch;
-    int                 m_idxInParentBranch;      // Index of this entry in this parent branch's vector of child entries ("local branch index").
-    bool                m_bIsSelected;
+    /*!< Index of this entry in this parent branch's vector
+         of child entries ("local branch index"). */
+    int m_idxInParentBranch;
+    bool m_bIsSelected;
 protected: // instance members
-    bool                               m_bExcludeLeaves;
-    EIdxTreeSortOrder                  m_sortOrder;
-    QMap<QString, CModelIdxTreeEntry*> m_mappModelTreeEntries;   // Key is KeyInParentBranch: <EntryTypeSymbol>:<Name> (e.g. "B:A0::B2::C3", "L:A0::B2::o1")
-    QVector<CModelIdxTreeEntry*>       m_arpTreeEntries;
-    bool                               m_bIsExpanded;
+    bool m_bExcludeLeaves;
+    EIdxTreeSortOrder m_sortOrder;
+    /*!< Key is KeyInParentBranch: <EntryTypeSymbol>:<Name>
+         (e.g. "B:A0::B2::C3", "L:A0::B2::o1") */
+    QMap<QString, CModelIdxTreeEntry*> m_mappModelTreeEntries;
+    QVector<CModelIdxTreeEntry*> m_arpTreeEntries;
+    bool m_bIsExpanded;
 
 }; // class CModelIdxTreeEntry
 

@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -54,14 +54,11 @@ public: // class methods
     static QString NameSpace() { return "ZS::PhysVal::GUI"; }
     static QString ClassName() { return "CWdgtAbstractTreeEntry"; }
 public: // ctors and dtor
-    CWdgtAbstractTreeEntry( CIdxTreeUnits* i_pIdxTree, QWidget* i_pWdgtParent = nullptr );
+    CWdgtAbstractTreeEntry(QWidget* i_pWdgtParent = nullptr);
     virtual ~CWdgtAbstractTreeEntry();
 public: // overridables
     virtual QString nameSpace() const { return CWdgtAbstractTreeEntry::NameSpace(); }
     virtual QString className() const { return CWdgtAbstractTreeEntry::ClassName(); }
-public: // instance methods
-    virtual void setIdxTree(CIdxTreeUnits* i_pIdxTree);
-    CIdxTreeUnits* idxTree() { return m_pIdxTree; }
 public: // overridables
     virtual void setKeyInTreeOfRootEntry( const QString& i_strKeyInTree );
     QString getKeyInTreeOfRootEntry() const;
@@ -72,9 +69,8 @@ protected slots:
 protected: // instance members
     CIdxTreeUnits* m_pIdxTree;
     QString m_strKeyInTreeOfRootEntry;
-    int m_cxLblMinWidth;
-    int m_cxEdtMinWidth;
-    int m_cxEdtMaxWidth;
+    int m_cxLblWidth;
+    int m_cxEdtWidth;
 
 }; // class CWdgtAbstractTreeEntry
 

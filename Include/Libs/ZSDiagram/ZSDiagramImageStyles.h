@@ -45,7 +45,7 @@ class ZSDIAGRAMDLL_API CImageStyle
 {
 public: // type definitions and constants
     // Please note that it depends on the image style if a hot spot position is
-    // meaningful or not. E.g. on using a triangle with top direction up a hot
+    // meaningful or not. E.g. on using a triangle with top orientation up a hot
     // spot position "LeftCenter" would not really be useful. Thats why the
     // derived image style classes may sometimes implicitly set the hot spot
     // position according to their needs.

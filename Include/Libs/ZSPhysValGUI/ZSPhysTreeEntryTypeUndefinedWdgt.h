@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -47,7 +47,7 @@ public: // class methods
     static QString NameSpace() { return "ZS::PhysVal::GUI"; }
     static QString ClassName() { return "CWdgtEntryTypeUndefined"; }
 public: // ctors and dtor
-    CWdgtEntryTypeUndefined( CIdxTreeUnits* i_pIdxTree, QWidget* i_pWdgtParent = nullptr );
+    CWdgtEntryTypeUndefined(QWidget* i_pWdgtParent = nullptr);
     virtual ~CWdgtEntryTypeUndefined();
 public: // overridables
     virtual QString nameSpace() const { return CWdgtEntryTypeUndefined::NameSpace(); }

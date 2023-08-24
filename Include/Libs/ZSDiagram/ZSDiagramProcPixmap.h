@@ -59,6 +59,8 @@ public: // ctors and dtor
         const QString&     i_strObjName,
         EDiagramUpdateType i_updateType  = EDiagramUpdateTypePixmap );
     virtual ~CPixmapDiagram();
+public: // overridables
+    virtual QString className() { return ClassName(); }
 public: // copy ctor not allowed but diagrams may be cloned
     virtual CDataDiagram* clone( EDiagramUpdateType i_diagramUpdateType ) const;
 public: // instance methods
@@ -105,7 +107,7 @@ public: // instance methods to set and get the attributes of the diagram
     SFrameStyle* getFrameStylePartCenter();
     QPixmap* getPixmap();
 public: // overridables of base class CDataDiagram
-    virtual void update( CDiagObj* i_pDiagObj, const QRect& i_rect );
+    virtual void update( CDiagObj* i_pDiagObj, const QRect& i_rect ) override;
     virtual void invalidate( CDiagObj* i_pDiagObj, unsigned int i_uUpdateFlags ) override;
 protected: // overridable auxiliary instance methods of base class CDataDiagram
     virtual void updateLayout() override;

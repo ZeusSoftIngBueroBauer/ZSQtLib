@@ -35,11 +35,20 @@ may result in using the software modules.
 #include <QtWidgets/qwidget.h>
 #endif
 
+class QFrame;
+class QPushButton;
+class QVBoxLayout;
+class QHBoxLayout;
+
 namespace ZS
 {
 namespace System
 {
 class CTrcAdminObj;
+}
+namespace Diagram
+{
+class CWdgtDiagram;
 }
 
 namespace Apps
@@ -56,12 +65,20 @@ class CWdgtTestOutput : public QWidget
 public: // ctors and dtor
     CWdgtTestOutput( QWidget* i_pWdgtParent = nullptr, Qt::WindowFlags i_wflags = Qt::WindowFlags());
     ~CWdgtTestOutput();
+public: // instance methods
+    void setDiagram(ZS::Diagram::CWdgtDiagram* i_pDiagram);
 public: // overridables of base class QWidget
-    virtual void resizeEvent( QResizeEvent* i_pEv );
+    void resizeEvent( QResizeEvent* i_pEv ) override;
 protected slots:
-    //virtual void timeoutSigGen();
+    void onBtnDiagramPropertiesClicked(bool i_bChecked = false);
+    void onDiagramDestroyed(QObject*);
 protected: // instance members
-    ZS::System::CTrcAdminObj*  m_pTrcAdminObj;
+    QVBoxLayout* m_pLyt;
+    QHBoxLayout* m_pLytLineHeader;
+    QPushButton* m_pBtnDiagramProperties;
+    QFrame* m_pFrameDiagram;
+    ZS::Diagram::CWdgtDiagram* m_pDiagram;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CWdgtTestOutput
 

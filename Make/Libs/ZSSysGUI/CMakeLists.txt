@@ -46,6 +46,7 @@ list(APPEND _Headers
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysGUIApp.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysGUIAux.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysGUIDllMain.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysGUIMathScaleDivLinesMetrics.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysIdxTreeModel.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysIdxTreeModelBranchContent.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysIdxTreeModelEntry.h
@@ -54,6 +55,8 @@ list(APPEND _Headers
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysIdxTreeView.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysIdxTreeViewWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysIdxTreeWdgt.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysLastUsedFileDlg.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysLastUsedFileTreeWdgtItem.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysLoggerIdxTreeDlg.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysLoggerIdxTreeModel.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysLoggerIdxTreeView.h
@@ -88,6 +91,7 @@ list(APPEND _Sources
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysGUIApp.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysGUIAux.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysGUIDllMain.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysGUIMathScaleDivLinesMetrics.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysIdxTreeModel.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysIdxTreeModelBranchContent.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysIdxTreeModelEntry.cpp
@@ -96,6 +100,8 @@ list(APPEND _Sources
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysIdxTreeView.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysIdxTreeViewWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysIdxTreeWdgt.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysLastUsedFileTreeWdgtItem.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysLastUsedFileDlg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysLoggerIdxTreeDlg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysLoggerIdxTreeModel.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysLoggerIdxTreeView.cpp
@@ -123,12 +129,13 @@ list(APPEND _Resources
 )
 
 list(APPEND _AppImages
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/Checkmark.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/ModeEdit16x16.bmp
     ${_ResourcesPath}/${PROJECT_NAME}/Images/ModeEdit24x24.bmp
     ${_ResourcesPath}/${PROJECT_NAME}/Images/ModeEdit32x32.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ModeSimulation16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ModeSimulation24x24.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ModeSimulation32x32.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ModeView16x16.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ModeView24x24.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ModeView32x32.bmp
     ${_ResourcesPath}/${PROJECT_NAME}/Images/RSIcon16x16.bmp
     ${_ResourcesPath}/${PROJECT_NAME}/Images/RSIcon32x32.bmp
     ${_ResourcesPath}/${PROJECT_NAME}/Images/ZeusSoft_32x32.png
@@ -144,6 +151,8 @@ list(APPEND _AppImages
 )
 
 list(APPEND _ButtonImages
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonArrowDown.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonArrowUp.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonAdd16x16.bmp
     ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonAdd24x24.bmp
     ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonClose16x16.bmp
@@ -189,10 +198,10 @@ list(APPEND _CnctStateImages
 list(APPEND _MenuImages
     ${_ResourcesPath}/${PROJECT_NAME}/Images/MenuFileAdd16x16.bmp
     ${_ResourcesPath}/${PROJECT_NAME}/Images/MenuFileEdit16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/MenuFileNew16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/MenuFileOpen16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/MenuFileSave16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/MenuFileSaveAs16x16.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/MenuFileNew16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/MenuFileOpen16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/MenuFileSave16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/MenuFileSaveAs16x16.png
 )
 
 list(APPEND _TreeViewImages

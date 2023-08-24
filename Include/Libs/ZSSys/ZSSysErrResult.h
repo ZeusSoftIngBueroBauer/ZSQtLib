@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -436,7 +436,7 @@ protected: // instance members
     @endcode
 */
 //------------------------------------------------------------------------------
-#define ErrResultInfoError(_strMth, _result, _strAddErrInfo) ZS::System::SErrResultInfo(nameSpace(), className(), objectName(), _strMth, _result, ZS::System::EResultSeverityWarning, _strAddErrInfo)
+#define ErrResultInfoError(_strMth, _result, _strAddErrInfo) ZS::System::SErrResultInfo(nameSpace(), className(), objectName(), _strMth, _result, ZS::System::EResultSeverityError, _strAddErrInfo)
 
 //------------------------------------------------------------------------------
 /*! Macro to initialise an error result info structure indicating and error

@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -347,7 +347,7 @@ CIdxTree::CIdxTree(
 
     if( m_pRoot == nullptr )
     {
-        m_pRoot = new CIdxTreeEntry(EIdxTreeEntryType::Root, i_strObjName);
+        m_pRoot = new CIdxTreeEntry(CIdxTreeEntry::EEntryType::Root, i_strObjName);
     }
 
     // The root entry will neither be added to the list nor to the map of tree entries.
@@ -552,7 +552,8 @@ public: // instance methods
     @param i_str1 [in] String 1.
     @param i_str3 [in] String 2.
 */
-QString CIdxTree::buildPathStr( const QString& i_str1, const QString& i_str2 ) const
+QString CIdxTree::buildPathStr(
+    const QString& i_str1, const QString& i_str2 ) const
 //------------------------------------------------------------------------------
 {
     return ZS::System::buildPathStr(m_strNodeSeparator, i_str1, i_str2);
@@ -570,7 +571,8 @@ QString CIdxTree::buildPathStr( const QString& i_str1, const QString& i_str2 ) c
     @param i_str2 [in] String 2.
     @param i_str3 [in] String 3.
 */
-QString CIdxTree::buildPathStr( const QString& i_str1, const QString& i_str2, const QString& i_str3 ) const
+QString CIdxTree::buildPathStr(
+    const QString& i_str1, const QString& i_str2, const QString& i_str3 ) const
 //------------------------------------------------------------------------------
 {
     return ZS::System::buildPathStr(m_strNodeSeparator, i_str1, i_str2, i_str3);
@@ -589,7 +591,9 @@ QString CIdxTree::buildPathStr( const QString& i_str1, const QString& i_str2, co
     @param i_str3 [in] String 3.
     @param i_str4 [in] String 4.
 */
-QString CIdxTree::buildPathStr( const QString& i_str1, const QString& i_str2, const QString& i_str3, const QString& i_str4 ) const
+QString CIdxTree::buildPathStr(
+    const QString& i_str1, const QString& i_str2,
+    const QString& i_str3, const QString& i_str4 ) const
 //------------------------------------------------------------------------------
 {
     return ZS::System::buildPathStr(m_strNodeSeparator, i_str1, i_str2, i_str3, i_str4);
@@ -609,7 +613,10 @@ QString CIdxTree::buildPathStr( const QString& i_str1, const QString& i_str2, co
     @param i_str4 [in] String 4.
     @param i_str5 [in] String 5.
 */
-QString CIdxTree::buildPathStr( const QString& i_str1, const QString& i_str2, const QString& i_str3, const QString& i_str4, const QString& i_str5 ) const
+QString CIdxTree::buildPathStr(
+    const QString& i_str1, const QString& i_str2,
+    const QString& i_str3, const QString& i_str4,
+    const QString& i_str5 ) const
 //------------------------------------------------------------------------------
 {
     return ZS::System::buildPathStr(m_strNodeSeparator, i_str1, i_str2, i_str3, i_str4, i_str5);
@@ -620,16 +627,17 @@ QString CIdxTree::buildPathStr( const QString& i_str1, const QString& i_str2, co
 
     Example:
 
-        QString strKey = buildKeyInTreeStr(EIdxTreeEntryType::Leave, "User");
+        QString strKey = buildKeyInTreeStr("L", "User");
         // strKey = "L:User".
 
-    @param i_entryType [in] Node type (Leave or Branch or Root).
+    @param i_strEntryTypeSymbol [in] Symbol of the entry type ("L", "B" or "R").
     @param i_str1 [in] String 1.
 */
-QString CIdxTree::buildKeyInTreeStr( EIdxTreeEntryType i_entryType, const QString& i_str1 ) const
+QString CIdxTree::buildKeyInTreeStr(
+    const QString& i_strEntryTypeSymbol, const QString& i_str1 ) const
 //------------------------------------------------------------------------------
 {
-    return idxTreeEntryType2Str(i_entryType,EEnumEntryAliasStrSymbol) + ":" + i_str1;
+    return i_strEntryTypeSymbol + ":" + i_str1;
 }
 
 //------------------------------------------------------------------------------
@@ -637,17 +645,19 @@ QString CIdxTree::buildKeyInTreeStr( EIdxTreeEntryType i_entryType, const QStrin
 
     Example:
 
-        QString strKey = buildKeyInTreeStr(EIdxTreeEntryType::Leave, "User", "Data");
+        QString strKey = buildKeyInTreeStr("L", "User", "Data");
         // strKey = "L:User/Data".
 
-    @param i_entryType [in] Node type (Leave or Branch or Root).
+    @param i_strEntryTypeSymbol [in] Symbol of the entry type ("L", "B" or "R").
     @param i_str1 [in] String 1.
     @param i_str2 [in] String 2.
 */
-QString CIdxTree::buildKeyInTreeStr( EIdxTreeEntryType i_entryType, const QString& i_str1, const QString& i_str2 ) const
+QString CIdxTree::buildKeyInTreeStr(
+    const QString& i_strEntryTypeSymbol,
+    const QString& i_str1, const QString& i_str2 ) const
 //------------------------------------------------------------------------------
 {
-    return idxTreeEntryType2Str(i_entryType,EEnumEntryAliasStrSymbol) + ":" + ZS::System::buildPathStr(m_strNodeSeparator, i_str1, i_str2);
+    return i_strEntryTypeSymbol + ":" + ZS::System::buildPathStr(m_strNodeSeparator, i_str1, i_str2);
 }
 
 //------------------------------------------------------------------------------
@@ -655,18 +665,20 @@ QString CIdxTree::buildKeyInTreeStr( EIdxTreeEntryType i_entryType, const QStrin
 
     Example:
 
-        QString strKey = buildKeyInTreeStr(EIdxTreeEntryType::Leave, "User", "Data", "My");
+        QString strKey = buildKeyInTreeStr("L", "User", "Data", "My");
         // strKey = "L:User/Data/My".
 
-    @param i_entryType [in] Node type (Leave or Branch or Root).
+    @param i_strEntryTypeSymbol [in] Symbol of the entry type ("L", "B" or "R").
     @param i_str1 [in] String 1.
     @param i_str2 [in] String 2.
     @param i_str3 [in] String 3.
 */
-QString CIdxTree::buildKeyInTreeStr( EIdxTreeEntryType i_entryType, const QString& i_str1, const QString& i_str2, const QString& i_str3 ) const
+QString CIdxTree::buildKeyInTreeStr(
+    const QString& i_strEntryTypeSymbol,
+    const QString& i_str1, const QString& i_str2, const QString& i_str3 ) const
 //------------------------------------------------------------------------------
 {
-    return idxTreeEntryType2Str(i_entryType,EEnumEntryAliasStrSymbol) + ":" + ZS::System::buildPathStr(m_strNodeSeparator, i_str1, i_str2, i_str3);
+    return i_strEntryTypeSymbol + ":" + ZS::System::buildPathStr(m_strNodeSeparator, i_str1, i_str2, i_str3);
 }
 
 //------------------------------------------------------------------------------
@@ -674,19 +686,22 @@ QString CIdxTree::buildKeyInTreeStr( EIdxTreeEntryType i_entryType, const QStrin
 
     Example:
 
-        QString strKey = buildKeyInTreeStr(EIdxTreeEntryType::Leave, "User", "Data", "My", "Special");
+        QString strKey = buildKeyInTreeStr("L", "User", "Data", "My", "Special");
         // strKey = "L:User/Data/My/Special";
 
-    @param i_entryType [in] Node type (Leave or Branch or Root).
+    @param i_strEntryTypeSymbol [in] Symbol of the entry type ("L", "B" or "R").
     @param i_str1 [in] String 1.
     @param i_str2 [in] String 2.
     @param i_str3 [in] String 3.
     @param i_str4 [in] String 4.
 */
-QString CIdxTree::buildKeyInTreeStr( EIdxTreeEntryType i_entryType, const QString& i_str1, const QString& i_str2, const QString& i_str3, const QString& i_str4 ) const
+QString CIdxTree::buildKeyInTreeStr(
+    const QString& i_strEntryTypeSymbol,
+    const QString& i_str1, const QString& i_str2,
+    const QString& i_str3, const QString& i_str4 ) const
 //------------------------------------------------------------------------------
 {
-    return idxTreeEntryType2Str(i_entryType,EEnumEntryAliasStrSymbol) + ":" + ZS::System::buildPathStr(m_strNodeSeparator, i_str1, i_str2, i_str3, i_str4);
+    return i_strEntryTypeSymbol + ":" + ZS::System::buildPathStr(m_strNodeSeparator, i_str1, i_str2, i_str3, i_str4);
 }
 
 //------------------------------------------------------------------------------
@@ -694,20 +709,24 @@ QString CIdxTree::buildKeyInTreeStr( EIdxTreeEntryType i_entryType, const QStrin
 
     Example:
 
-        QString strKey = buildKeyInTreeStr(EIdxTreeEntryType::Leave, "User", "Data", "My", "Special", "Work");
+        QString strKey = buildKeyInTreeStr("L", "User", "Data", "My", "Special", "Work");
         // strKey = "L:User/Data/My/Special/Work"
 
-    @param i_entryType [in] Node type (Leave or Branch or Root).
+    @param i_strEntryTypeSymbol [in] Symbol of the entry type ("L", "B" or "R").
     @param i_str1 [in] String 1.
     @param i_str2 [in] String 2.
     @param i_str3 [in] String 3.
     @param i_str4 [in] String 4.
     @param i_str5 [in] String 5.
 */
-QString CIdxTree::buildKeyInTreeStr( EIdxTreeEntryType i_entryType, const QString& i_str1, const QString& i_str2, const QString& i_str3, const QString& i_str4, const QString& i_str5 ) const
+QString CIdxTree::buildKeyInTreeStr(
+    const QString& i_strEntryTypeSymbol,
+    const QString& i_str1, const QString& i_str2,
+    const QString& i_str3, const QString& i_str4,
+    const QString& i_str5 ) const
 //------------------------------------------------------------------------------
 {
-    return idxTreeEntryType2Str(i_entryType,EEnumEntryAliasStrSymbol) + ":" + ZS::System::buildPathStr(m_strNodeSeparator, i_str1, i_str2, i_str3, i_str4, i_str5);
+    return i_strEntryTypeSymbol + ":" + ZS::System::buildPathStr(m_strNodeSeparator, i_str1, i_str2, i_str3, i_str4, i_str5);
 }
 
 //------------------------------------------------------------------------------
@@ -728,22 +747,22 @@ QString CIdxTree::buildKeyInTreeStr( EIdxTreeEntryType i_entryType, const QStrin
     @param o_pstrBranchPath [out] If not equal to nullptr, the path is returned here without the last substring.
     @param o_pstrName [out] If not equal to nullptpr the name of the node is returned here.
 
-    @return Undefined or valid node type if the path contained the node type.
+    @return Empty string or valid node type if the path contained the node type.
 */
-EIdxTreeEntryType CIdxTree::splitPathStr( const QString& i_strPath, QString* o_pstrBranchPath, QString* o_pstrName ) const
+QString CIdxTree::splitPathStr(
+    const QString& i_strPath, QString* o_pstrBranchPath, QString* o_pstrName ) const
 //------------------------------------------------------------------------------
 {
-    EIdxTreeEntryType entrType = EIdxTreeEntryType::Undefined;
-
     QStringList strlst;
     QString     strPath = i_strPath;
     QString     strEntryType;
     QString     strName;
     QString     strBranchPath;
 
-    for( auto iEntryType = 0; iEntryType < static_cast<int>(EIdxTreeEntryType::Count); ++iEntryType )
+    for( int iEntryType = 0; iEntryType < static_cast<int>(CIdxTreeEntry::EEntryType::Count); ++iEntryType )
     {
-        strEntryType = idxTreeEntryType2Str(iEntryType, EEnumEntryAliasStrSymbol);
+        CIdxTreeEntry::EEntryType entryType = static_cast<CIdxTreeEntry::EEntryType>(iEntryType);
+        strEntryType = CIdxTreeEntry::entryType2Str(entryType, EEnumEntryAliasStrSymbol);
 
         if( strPath.startsWith(strEntryType+":",Qt::CaseInsensitive) )
         {
@@ -774,11 +793,7 @@ EIdxTreeEntryType CIdxTree::splitPathStr( const QString& i_strPath, QString* o_p
         *o_pstrBranchPath = strBranchPath;
     }
 
-    if( !strEntryType.isEmpty() )
-    {
-        entrType = str2IdxTreeEntryType(strEntryType, EEnumEntryAliasStrSymbol);
-    }
-    return entrType;
+    return strEntryType;
 
 } // splitPathStr
 
@@ -819,7 +834,7 @@ CIdxTreeEntry* CIdxTree::createBranch( const QString& i_strName ) const
 
     CMutexLocker mtxLocker(m_pMtx);
 
-    CIdxTreeEntry* pBranch = new CIdxTreeEntry(EIdxTreeEntryType::Branch, i_strName);
+    CIdxTreeEntry* pBranch = new CIdxTreeEntry(CIdxTreeEntry::EEntryType::Branch, i_strName);
 
     if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
@@ -863,7 +878,7 @@ CIdxTreeEntry* CIdxTree::createLeave( const QString& i_strName ) const
 
     CMutexLocker mtxLocker(m_pMtx);
 
-    CIdxTreeEntry* pLeave = new CIdxTreeEntry(EIdxTreeEntryType::Leave, i_strName);
+    CIdxTreeEntry* pLeave = new CIdxTreeEntry(CIdxTreeEntry::EEntryType::Leave, i_strName);
 
     if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
@@ -873,74 +888,6 @@ CIdxTreeEntry* CIdxTree::createLeave( const QString& i_strName ) const
     return pLeave;
 
 } // createLeave
-
-//------------------------------------------------------------------------------
-/*! Generic method which either invokes the generic method to create a brach or
-    a leave node depending on the given node type.
-
-    Usually it will not be necessary to overwrite the "createTreeEntry" method,
-    but the "createBranchEntry" and "createLeaveEntry" methods that are called
-    by this method.
-
-    @param i_entryType [in] Type of the node to be created.
-    @param i_strName [in] Name of the node to be created.
-
-    @return Newly created node.
-*/
-CIdxTreeEntry* CIdxTree::createTreeEntry( EIdxTreeEntryType i_entryType, const QString& i_strName ) const
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
-        strMthInArgs  = "Type: " + idxTreeEntryType2Str(i_entryType);
-        strMthInArgs += ", Name: " + i_strName;
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcAdminObj       */ m_pTrcAdminObj,
-        /* pTrcMthFile        */ m_pTrcMthFile,
-        /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "createTreeEntry",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    CMutexLocker mtxLocker(m_pMtx);
-
-    CIdxTreeEntry* pTreeEntry = nullptr;
-
-    if( i_entryType == EIdxTreeEntryType::Root )
-    {
-        QString strMth = "createTreeEntry";
-
-        SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
-
-        errResultInfo.setSeverity(EResultSeverityError);
-        errResultInfo.setResult(EResultArgOutOfRange);
-        errResultInfo.setAddErrInfoDscr("Root entries cannot be created by this method");
-        throw CException(__FILE__, __LINE__, errResultInfo);
-    }
-    else if( i_entryType == EIdxTreeEntryType::Branch )
-    {
-        pTreeEntry = createBranch(i_strName);
-    }
-    else if( i_entryType == EIdxTreeEntryType::Leave )
-    {
-        pTreeEntry = createLeave(i_strName);
-    }
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
-        mthTracer.setMethodReturn(pTreeEntry == nullptr ? "null" : pTreeEntry->name());
-    }
-
-    return pTreeEntry;
-
-} // createTreeEntry
 
 /*==============================================================================
 public: // instance methods
@@ -1043,7 +990,8 @@ CIdxTreeEntry* CIdxTree::findBranch( const QString& i_strPath ) const
         /* strMethod          */ "findBranch",
         /* strMethodInArgs    */ "" );
 
-    QString strEntryType = idxTreeEntryType2Str(EIdxTreeEntryType::Branch, EEnumEntryAliasStrSymbol);
+    QString strEntryType =
+        CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
     QString strPath;
     QString strKeyInTree;
 
@@ -1131,7 +1079,8 @@ CIdxTreeEntry* CIdxTree::findBranch( const QString& i_strParentPath, const QStri
         /* strMethod          */ "findBranch",
         /* strMethodInArgs    */ "" );
 
-    QString strEntryType = idxTreeEntryType2Str(EIdxTreeEntryType::Branch, EEnumEntryAliasStrSymbol);
+    QString strEntryType =
+        CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
     QString strPath;
     QString strKeyInTree;
 
@@ -1223,7 +1172,8 @@ CIdxTreeEntry* CIdxTree::findLeave( const QString& i_strPath ) const
         /* strMethod          */ "findLeave",
         /* strMethodInArgs    */ "" );
 
-    QString strEntryType = idxTreeEntryType2Str(EIdxTreeEntryType::Leave, EEnumEntryAliasStrSymbol);
+    QString strEntryType =
+        CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Leave, EEnumEntryAliasStrSymbol);
     QString strPath;
     QString strKeyInTree;
 
@@ -1311,7 +1261,8 @@ CIdxTreeEntry* CIdxTree::findLeave( const QString& i_strParentPath, const QStrin
         /* strMethod          */ "findLeave",
         /* strMethodInArgs    */ "" );
 
-    QString strEntryType = idxTreeEntryType2Str(EIdxTreeEntryType::Leave, EEnumEntryAliasStrSymbol);
+    QString strEntryType =
+        CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Leave, EEnumEntryAliasStrSymbol);
     QString strPath;
     QString strKeyInTree;
 
@@ -1413,17 +1364,30 @@ CIdxTreeEntry* CIdxTree::findEntry( const QString& i_strKeyInTree ) const
         {
             pTreeEntry = m_pRoot;
         }
-        else
-        {
-            QString strEntryType = idxTreeEntryType2Str(EIdxTreeEntryType::Leave, EEnumEntryAliasStrSymbol);
-            QString strPath = i_strKeyInTree;
+    }
+    if( pTreeEntry == nullptr )
+    {
+        QString strEntryType =
+            CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Leave, EEnumEntryAliasStrSymbol);
+        QString strPath = i_strKeyInTree;
 
-            if( i_strKeyInTree.startsWith(strEntryType + ":") )
-            {
-                strPath = i_strKeyInTree.mid(strEntryType.length() + 1);
-            }
-            pTreeEntry = m_mappShortcutTreeEntries.value(strPath, nullptr);
+        if( i_strKeyInTree.startsWith(strEntryType + ":") )
+        {
+            strPath = i_strKeyInTree.mid(strEntryType.length() + 1);
         }
+        pTreeEntry = m_mappShortcutTreeEntries.value(strPath, nullptr);
+    }
+    if( pTreeEntry == nullptr )
+    {
+        QString strEntryType =
+            CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
+        QString strPath = i_strKeyInTree;
+
+        if( i_strKeyInTree.startsWith(strEntryType + ":") )
+        {
+            strPath = i_strKeyInTree.mid(strEntryType.length() + 1);
+        }
+        pTreeEntry = m_mappShortcutTreeEntries.value(strPath, nullptr);
     }
     return pTreeEntry;
 }
@@ -2612,12 +2576,12 @@ void CIdxTree::remove( CIdxTreeEntry* i_pTreeEntry )
 
     CMutexLocker mtxLocker(m_pMtx);
 
-    emit_treeEntryAboutToBeRemoved(i_pTreeEntry->entryType(), i_pTreeEntry->keyInTree(), i_pTreeEntry->indexInTree());
+    emit_treeEntryAboutToBeRemoved(i_pTreeEntry->keyInTree(), i_pTreeEntry->indexInTree());
 
     QString strKeyInTree = i_pTreeEntry->keyInTree();
     int     idxInTree    = i_pTreeEntry->indexInTree();
 
-    if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Root || i_pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+    if( i_pTreeEntry->isRoot() || i_pTreeEntry->isBranch() )
     {
         // dynamic_cast may not work if the remove method has been called by
         // the dtor of the branch entry. But if the dynamic_cast returns nullptr
@@ -2633,14 +2597,14 @@ void CIdxTree::remove( CIdxTreeEntry* i_pTreeEntry )
                 remove(pTreeEntry);
             }
         }
-    } // if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Root || i_pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+    }
 
     if( i_pTreeEntry == m_pRoot )
     {
         m_pRoot = nullptr;
         i_pTreeEntry->setTree(nullptr);
     }
-    else // if( i_pTreeEntry != m_pRoot )
+    else
     {
         if( !m_mappTreeEntries.contains(strKeyInTree) )
         {
@@ -2694,7 +2658,7 @@ void CIdxTree::remove( CIdxTreeEntry* i_pTreeEntry )
 
     } // if( i_pTreeEntry != m_pRoot )
 
-    emit_treeEntryRemoved(i_pTreeEntry->entryType(), i_pTreeEntry->keyInTree(), i_pTreeEntry->indexInTree());
+    emit_treeEntryRemoved(i_pTreeEntry->keyInTree(), i_pTreeEntry->indexInTree());
 
 } // remove
 
@@ -3959,14 +3923,14 @@ int CIdxTree::copy(
 
     QString strName = i_pTreeEntry->name();
 
-    if( pTargetBranch->indexOf(i_pTreeEntry->entryType(), strName) >= 0 )
+    if( pTargetBranch->indexOf(i_pTreeEntry->entryTypeSymbol(), strName) >= 0 )
     {
         QString strUniqueName = strName + " Copy";
         int     iCopies = 1;
 
         while( true )
         {
-            if( pTargetBranch->indexOf(i_pTreeEntry->entryType(), strUniqueName) >= 0 )
+            if( pTargetBranch->indexOf(i_pTreeEntry->entryTypeSymbol(), strUniqueName) >= 0 )
             {
                 strUniqueName = strName + " Copy " + QString::number(++iCopies);
             }
@@ -3976,14 +3940,20 @@ int CIdxTree::copy(
             }
         }
         strName = strUniqueName;
+    }
 
-    } // if( pTargetBranch->indexOf(i_pTreeEntry->entryType(), strName) >= 0 )
+    CIdxTreeEntry* pTreeEntryTrg = nullptr;
 
-    CIdxTreeEntry* pTreeEntryTrg = createTreeEntry(i_pTreeEntry->entryType(), strName);
+    if( i_pTreeEntry->isBranch() ) {
+        pTreeEntryTrg = createBranch(strName);
+    }
+    else if( i_pTreeEntry->isLeave() ) {
+        pTreeEntryTrg = createLeave(strName);
+    }
 
     int idxInTree = insert(pTreeEntryTrg, pTargetBranch, i_idxInTargetBranch, i_idxInTree);
 
-    if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+    if( i_pTreeEntry->isBranch() )
     {
         CIdxTreeEntry* pBranch = i_pTreeEntry;
         CIdxTreeEntry* pTargetBranch = pTreeEntryTrg;
@@ -4134,7 +4104,8 @@ SErrResultInfo CIdxTree::canRename( CIdxTreeEntry* i_pTreeEntry, const QString& 
 
     if( pParentBranch != nullptr )
     {
-        int idxInParentBranch = pParentBranch->indexOf(i_pTreeEntry->entryType(), i_strNameNew);
+        int idxInParentBranch =
+            pParentBranch->indexOf(i_pTreeEntry->entryTypeSymbol(), i_strNameNew);
 
         if( idxInParentBranch >= 0 )
         {
@@ -4576,7 +4547,7 @@ void CIdxTree::updateKeyInTree( CIdxTreeEntry* i_pTreeEntry )
 
     emit_treeEntryKeyInTreeChanged(strKeyInTree, strKeyInTreePrev);
 
-    if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+    if( i_pTreeEntry->isBranch() )
     {
         CIdxTreeEntry* pBranch = i_pTreeEntry;
 
@@ -4586,8 +4557,7 @@ void CIdxTree::updateKeyInTree( CIdxTreeEntry* i_pTreeEntry )
 
             updateKeyInTree(pTreeEntry);
         }
-    } // if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
-
+    }
 } // updateKeyInTree
 
 /*==============================================================================
@@ -4631,7 +4601,7 @@ void CIdxTree::clear( CIdxTreeEntry* i_pBranch )
     {
         CIdxTreeEntry* pTreeEntry = i_pBranch->at(idxEntry);
 
-        if( pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        if( pTreeEntry->isBranch() )
         {
             clear(pTreeEntry);
         }
@@ -4825,12 +4795,10 @@ void CIdxTree::emit_treeEntryChanged( const QString& i_strKeyInTree )
 /*! Auxiliary method which has been invented to create method trace outputs
     whenever the index tree emits the "treeEntryAboutToBeRemoved" signal.
 
-    @param i_entryType [in] Entry type.
     @param i_strKeyInTree [in] Unique key of the entry which will be removed from the tree.
     @param i_idxInTree [in] Index of the entry which will be removed from the tree.
 */
 void CIdxTree::emit_treeEntryAboutToBeRemoved(
-    ZS::System::EIdxTreeEntryType i_entryType,
     const QString& i_strKeyInTree,
     int i_idxInTree )
 //------------------------------------------------------------------------------
@@ -4839,8 +4807,7 @@ void CIdxTree::emit_treeEntryAboutToBeRemoved(
 
     if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "Type: " + idxTreeEntryType2Str(i_entryType);
-        strMthInArgs += ", Key: " + i_strKeyInTree;
+        strMthInArgs = "Key: " + i_strKeyInTree;
         strMthInArgs += ", Idx: " + QString::number(i_idxInTree);
     }
 
@@ -4855,30 +4822,24 @@ void CIdxTree::emit_treeEntryAboutToBeRemoved(
         /* strMethod          */ "emit_treeEntryAboutToBeRemoved",
         /* strMethodInArgs    */ strMthInArgs );
 
-    emit treeEntryAboutToBeRemoved(i_entryType, i_strKeyInTree, i_idxInTree);
+    emit treeEntryAboutToBeRemoved(i_strKeyInTree, i_idxInTree);
 }
 
 //------------------------------------------------------------------------------
 /*! Auxiliary method which has been invented to create method trace outputs
     whenever the index tree emits the "treeEntryRemoved" signal.
 
-    @param i_pIdxTree [in] Pointer to index tree.
-    @param i_pTreeEntry [in] Pointer to tree entry which has been removed.
     @param i_strKeyInTree [in] Unique key of the entry valid before the entry was removed from the tree.
     @param i_idxInTree [in] Index of the entry valid before the entry was removed from the tree.
 */
-void CIdxTree::emit_treeEntryRemoved(
-    ZS::System::EIdxTreeEntryType i_entryType,
-    const QString& i_strKeyInTree,
-    int i_idxInTree )
+void CIdxTree::emit_treeEntryRemoved( const QString& i_strKeyInTree, int i_idxInTree )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
 
     if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs = "Type: " + idxTreeEntryType2Str(i_entryType);
-        strMthInArgs += ", Key: " + i_strKeyInTree;
+        strMthInArgs = "Key: " + i_strKeyInTree;
         strMthInArgs += ", Idx: " + QString::number(i_idxInTree);
     }
 
@@ -4893,7 +4854,7 @@ void CIdxTree::emit_treeEntryRemoved(
         /* strMethod          */ "emit_treeEntryRemoved",
         /* strMethodInArgs    */ strMthInArgs );
 
-    emit treeEntryRemoved(i_entryType, i_strKeyInTree, i_idxInTree);
+    emit treeEntryRemoved(i_strKeyInTree, i_idxInTree);
 }
 
 //------------------------------------------------------------------------------

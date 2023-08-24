@@ -30,7 +30,7 @@ may result in using the software modules.
 #include "WdgtTestOutput.h"
 #include "Units/Units.h"
 
-#include "ZSPhysValGUI/ZSPhysSizesWdgt.h"
+#include "ZSPhysValGUI/ZSPhysUnitsWdgt.h"
 #include "ZSPhysVal/ZSPhysUnitsIdxTree.h"
 #include "ZSTestGUI/ZSTestStepIdxTreeWdgt.h"
 
@@ -137,7 +137,7 @@ CWidgetCentral::CWidgetCentral(
     // <GroupBox> Test
     //---------------------------
 
-    m_pGrpTestOutput = new QGroupBox("Test");
+    m_pGrpTestOutput = new QGroupBox("Diagram");
     m_pLytGrpTestOutput = new QVBoxLayout();
     m_pGrpTestOutput->setLayout(m_pLytGrpTestOutput);
     m_pSplitter->addWidget(m_pGrpTestOutput);
@@ -148,7 +148,7 @@ CWidgetCentral::CWidgetCentral(
     // <Tab> Units
     //-------------
 
-    m_pWdgtPhysSizes = new CWdgtPhysSizes(&IdxTreeUnits);
+    m_pWdgtPhysSizes = new CWdgtUnits();
     m_pTabWdgtMain->addTab(m_pWdgtPhysSizes,"Units");
 
     // Restore geometry of widget

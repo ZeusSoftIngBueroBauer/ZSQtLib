@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -60,10 +60,10 @@ public: // ctors and dtor
     @param i_pTSGrpParent [in] Parent test group or nullptr, if the entry does not have a parent.
 */
 CAbstractTestStepIdxTreeEntry::CAbstractTestStepIdxTreeEntry(
-    CTest*            i_pTest,
-    EIdxTreeEntryType i_entryType,
-    const QString&    i_strName,
-    CTestStepGroup*   i_pTSGrpParent ) :
+    CTest* i_pTest,
+    CIdxTreeEntry::EEntryType i_entryType,
+    const QString& i_strName,
+    CTestStepGroup* i_pTSGrpParent ) :
 //------------------------------------------------------------------------------
     QObject(),
     CIdxTreeEntry(i_entryType, i_strName),
@@ -75,7 +75,7 @@ CAbstractTestStepIdxTreeEntry::CAbstractTestStepIdxTreeEntry(
     m_pTree = i_pTest->getTestStepIdxTree();
 
     // The root entry will neither be added to the list nor to the map of tree entries.
-    if( m_entryType != EIdxTreeEntryType::Root )
+    if( m_entryType != CIdxTreeEntry::EEntryType::Root )
     {
         m_pTree->add(this, i_pTSGrpParent);
     }
@@ -87,7 +87,7 @@ CAbstractTestStepIdxTreeEntry::~CAbstractTestStepIdxTreeEntry()
 //------------------------------------------------------------------------------
 {
     // The root entry will neither be added to the list nor to the map of tree entries.
-    if( m_entryType != EIdxTreeEntryType::Root )
+    if( m_entryType != CIdxTreeEntry::EEntryType::Root )
     {
         m_pTree->remove(this);
     }
@@ -107,7 +107,7 @@ public: // must overridables of base class CAbstractTestStepIdxTreeEntry
 bool CAbstractTestStepIdxTreeEntry::isGroup() const
 //------------------------------------------------------------------------------
 {
-    return (m_entryType == EIdxTreeEntryType::Branch);
+    return (m_entryType == CIdxTreeEntry::EEntryType::Branch);
 }
 
 //------------------------------------------------------------------------------
@@ -155,6 +155,31 @@ void CAbstractTestStepIdxTreeEntry::setToolTip( const QString& i_strToolTip )
         m_strToolTip = i_strToolTip;
         emit_changed();
     }
+}
+
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CAbstractTestStepIdxTreeEntry::addDataRow(const QHash<QString, QVariant>& i_dataRow)
+//------------------------------------------------------------------------------
+{
+    m_arDataRows.append(i_dataRow);
+}
+
+//------------------------------------------------------------------------------
+void CAbstractTestStepIdxTreeEntry::addDataRow(QHash<QString, QVariant>&& i_dataRow)
+//------------------------------------------------------------------------------
+{
+    m_arDataRows.append(std::move(i_dataRow));
+}
+
+//------------------------------------------------------------------------------
+QHash<QString, QVariant> CAbstractTestStepIdxTreeEntry::getDataRow(int i_idxRow) const
+//------------------------------------------------------------------------------
+{
+    return m_arDataRows[i_idxRow];
 }
 
 /*==============================================================================

@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -105,9 +105,6 @@ enum class EMode
 //==============================================================================
 {
     Edit       = 0, /*!< Indicates that the control is in Edit mode. */
-    Design     = 0, /*!< Indicates that the control is in Design mode (alias for Edit mode). */
-    Simulation = 1, /*!< Indicates that the control is in Simulation mode. */
-    Run        = 1, /*!< Indicates that the control is in Run mode (alias for Simulation mode). */
     View       = 1, /*!< Indicates that the control is in View mode (alias for Simulation mode). */
     Undefined  = 2, /*!< Indicates that the control is in Undefined mode. */
     Ignore     = 2  /*!< Indicates that the Mode parameter should be ignored (alias for Undefined mode). */
@@ -399,6 +396,24 @@ typedef CEnum<EContentToStrFormat> CEnumContentToStrFormat;
 namespace ZS {
 namespace System {
 //==============================================================================
+/*! This enum defines two different search directions.
+
+    @see ZS::System::SEnumEntry
+    @see ZS::System::CEnum
+    @see _GRP_BasicConcepts_Enumerations
+*/
+enum class ESearchDirection
+//==============================================================================
+{
+    Ascending  = 0,  /*!< Search upwards. */
+    Descending = 1   /*!< Search downwards. */
+};
+
+template class ZSSYSDLL_API CEnum<ESearchDirection>;
+typedef CEnum<ESearchDirection> CEnumSearchDirection;
+
+
+//==============================================================================
 /*! This enum is mainly used to define for what purpose trace outputs should
     be generated.
 
@@ -485,25 +500,105 @@ typedef CEnum<EIODir> CEnumIODir;
 namespace ZS {
 namespace System {
 //==============================================================================
-/*! Defines the alignment of a direction.
+/*! Orientation which could either be horizontal or vertical.
 
     @see ZS::System::SEnumEntry
     @see ZS::System::CEnum
     @see _GRP_BasicConcepts_Enumerations
 */
-enum class EDirection
+enum class EOrientation
 //==============================================================================
 {
-    Vertical   = 0, /*!< Vertically aligned. */
-    Horizontal = 1, /*!< Horizontally aligned. */
-    Undefined  = 2  /*!< The direction is undefined. */
+    Horizontal = 0, /*!< Horizontally aligned. */
+    Vertical   = 1  /*!< Vertically aligned. */
 };
 } }
 
-template class ZSSYSDLL_API CEnum<ZS::System::EDirection>;
+template class ZSSYSDLL_API CEnum<ZS::System::EOrientation>;
 namespace ZS {
 namespace System {
-typedef CEnum<EDirection> CEnumDirection;
+typedef CEnum<EOrientation> CEnumOrientation;
+} }
+
+
+namespace ZS {
+namespace System {
+//==============================================================================
+/*! Scale orientations.
+
+    @see ZS::System::SEnumEntry
+    @see ZS::System::CEnum
+    @see _GRP_BasicConcepts_Enumerations
+*/
+enum class EScaleDir {
+//==============================================================================
+    X,  /*!< X (horizontal) scale orientation. */
+    Y   /*!< Y (vertical ) scale orientation. */
+};
+} }
+
+template class ZSSYSDLL_API CEnum<ZS::System::EScaleDir>;
+namespace ZS {
+namespace System {
+typedef CEnum<EScaleDir> CEnumScaleDir;
+
+// To make the code more readable:
+const int EScaleDirX = static_cast<int>(EScaleDir::X);
+const int EScaleDirY = static_cast<int>(EScaleDir::Y);
+} }
+
+
+namespace ZS {
+namespace System {
+//==============================================================================
+/*! Spacing of diagram scales which could be either linear or logarithmic.
+
+    @see ZS::System::SEnumEntry
+    @see ZS::System::CEnum
+    @see _GRP_BasicConcepts_Enumerations
+*/
+enum class ESpacing {
+//==============================================================================
+    Linear,     /*!< Linear spacing (distance between division lines is equal). */
+    Logarithmic /*!< Loagrithmic spacing (distance between division lines is logarithimic). */
+};
+} }
+
+template class ZSSYSDLL_API CEnum<ZS::System::ESpacing>;
+namespace ZS {
+namespace System {
+typedef CEnum<ESpacing> CEnumSpacing;
+} }
+
+
+namespace ZS {
+namespace System {
+//==============================================================================
+/*! For grids in diagrams main and sub division lines may be drawn.
+
+    Main division lines are usually more emphasized than sub division lines.
+    Some of the sub division lines don't need to be drawn as they overlay
+    main division lines.
+
+    @see ZS::System::SEnumEntry
+    @see ZS::System::CEnum
+    @see _GRP_BasicConcepts_Enumerations
+*/
+enum class EDivLineLayer {
+//==============================================================================
+    Main,       /*!< Main division lines. */
+    Sub,        /*!< Sub division lines which are less emphasized than the main lines. */
+};
+} }
+
+template class ZSSYSDLL_API CEnum<ZS::System::EDivLineLayer>;
+namespace ZS {
+namespace System {
+typedef CEnum<EDivLineLayer> CEnumDivLineLayer;
+
+// To make the code more readable:
+const int EDivLineLayerMain = static_cast<int>(EDivLineLayer::Main);
+const int EDivLineLayerSub = static_cast<int>(EDivLineLayer::Sub);
 } }
 
 namespace ZS {

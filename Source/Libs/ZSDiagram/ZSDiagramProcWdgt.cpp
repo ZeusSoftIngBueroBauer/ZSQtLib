@@ -30,6 +30,7 @@ may result in using the software modules.
 #include "ZSDiagram/ZSDiagTrace.h"
 #include "ZSDiagram/ZSDiagramFrameStyles.h"
 #include "ZSSys/ZSSysAux.h"
+#include "ZSSys/ZSSysMath.h"
 #include "ZSSys/ZSSysTime.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
@@ -117,6 +118,8 @@ CWdgtDiagram::CWdgtDiagram(const QString& i_strObjName, QWidget* i_pWdgtParent) 
     m_pTrcAdminObjLayout(nullptr),
     m_pTrcAdminObjValidate(nullptr)
 {
+    setObjectName(i_strObjName);
+
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
         NameSpace(), ClassName(), m_strObjName);
     m_pTrcAdminObjUpdate = CTrcServer::GetTraceAdminObj(
@@ -130,7 +133,7 @@ CWdgtDiagram::CWdgtDiagram(const QString& i_strObjName, QWidget* i_pWdgtParent) 
 
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = i_strObjName;
     }
@@ -162,6 +165,8 @@ CWdgtDiagram::~CWdgtDiagram()
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
+
+    emit_aboutToBeDestroyed(m_strObjName);
 
     try
     {
@@ -214,20 +219,15 @@ public: // copy ctor not allowed but diagrams may be cloned
 CDataDiagram* CWdgtDiagram::clone( EDiagramUpdateType i_diagramUpdateType ) const
 //------------------------------------------------------------------------------
 {
-    CDataDiagram* pDiagram = nullptr;
+    CDataDiagram* pDiagramCloned = nullptr;
 
     if( i_diagramUpdateType < EDiagramUpdateTypeWidget )
     {
-        pDiagram = CPixmapDiagram::clone(i_diagramUpdateType);
+        pDiagramCloned = CPixmapDiagram::clone(i_diagramUpdateType);
     }
     else
     {
-        CWdgtDiagram*     pWdgtDiagram = new CWdgtDiagram(m_strObjName);
-        int               idxScaleDir;
-        const CDiagScale* pDiagScale;
-        const CDiagTrace* pDiagTrace;
-        const CDiagObj*   pDiagObj;
-        CDiagObj*         pDiagObjCloned;
+        CWdgtDiagram* pWdgtDiagram = new CWdgtDiagram(m_strObjName);
 
         // Data Diagram
         //-------------
@@ -237,53 +237,23 @@ CDataDiagram* CWdgtDiagram::clone( EDiagramUpdateType i_diagramUpdateType ) cons
         pWdgtDiagram->m_measMode = m_measMode;
         pWdgtDiagram->m_iMeasType = m_iMeasType;
 
-        for( idxScaleDir = 0; idxScaleDir < EScaleDirCount; idxScaleDir++ )
+        for (int idx = 0; idx < CEnumScaleDir::count(); idx++)
         {
-            pWdgtDiagram->m_arSpacing[idxScaleDir] = m_arSpacing[idxScaleDir];
+            pWdgtDiagram->m_arSpacing[idx] = m_arSpacing[idx];
         }
-
-        pDiagScale = m_pDiagScaleFirst;
-        while( pDiagScale != nullptr )
+        for (int idx = 0; idx < m_arpDiagScales.size(); ++idx)
         {
-            pDiagScale->clone(pWdgtDiagram);
-            pDiagScale = pDiagScale->m_pDiagScaleNext;
+            m_arpDiagScales[idx]->clone(pWdgtDiagram);
         }
-
-        pDiagTrace = m_pDiagTraceFirst;
-        while( pDiagTrace != nullptr )
+        for (int idx = 0; idx < m_arpDiagTraces.size(); ++idx)
         {
-            pDiagTrace->clone(pWdgtDiagram);
-            pDiagTrace = pDiagTrace->m_pDiagTraceNext;
+            m_arpDiagTraces[idx]->clone(pWdgtDiagram);
         }
-
-        pDiagObj = m_pDiagObjFirst;
-        while( pDiagObj != nullptr )
+        for (int idx = 0; idx < m_arpDiagObjs.size(); ++idx)
         {
-            pDiagObj->clone(pWdgtDiagram);
-            pDiagObj = pDiagObj->m_pDiagObjNext;
-        }
-
-        if( m_pDiagObjPaintFirst != nullptr && m_pDiagObjPaintLast != nullptr )
-        {
-            pDiagObj = m_pDiagObjPaintFirst;
-            while( pDiagObj != nullptr )
-            {
-                pDiagObjCloned = pWdgtDiagram->getDiagObj( pDiagObj->getObjId() );
-
-                if( pDiagObjCloned == nullptr )
-                {
-                    throw ZS::System::CException(__FILE__,__LINE__,EResultInternalProgramError);
-                }
-
-                if( pDiagObj->m_pDiagObjPaintPrev != nullptr && pDiagObj->m_pDiagObjPaintNext != nullptr )
-                {
-                    pDiagObjCloned->m_pDiagObjPaintPrev = pWdgtDiagram->getDiagObj( pDiagObj->m_pDiagObjPaintPrev->getObjId() ); //lint !e613
-                    pDiagObjCloned->m_pDiagObjPaintNext = pWdgtDiagram->getDiagObj( pDiagObj->m_pDiagObjPaintNext->getObjId() ); //lint !e613
-                }
-                pDiagObj = pDiagObj->m_pDiagObjPaintNext;
-            }
-            pWdgtDiagram->m_pDiagObjPaintFirst = pWdgtDiagram->getDiagObj( m_pDiagObjPaintFirst->getObjId() );
-            pWdgtDiagram->m_pDiagObjPaintLast  = pWdgtDiagram->getDiagObj( m_pDiagObjPaintLast->getObjId() );
+            CDiagObj* pDiagObj = m_arpDiagObjs[idx]->clone(pWdgtDiagram);
+            QString strDiagObjKey = m_arpDiagObjs[idx]->className() + "::" + m_arpDiagObjs[idx]->getObjName();
+            pWdgtDiagram->m_hshpDiagObjs[strDiagObjKey] = pDiagObj;
         }
 
         // Pixmap Diagram
@@ -354,9 +324,9 @@ CDataDiagram* CWdgtDiagram::clone( EDiagramUpdateType i_diagramUpdateType ) cons
         //pWdgtDiagram->m_pDiagObjEditingByKeyEvent;
         //pWdgtDiagram->m_pDiagObjEditingByMouseEvent;
 
-        pDiagram = pWdgtDiagram;
+        pDiagramCloned = pWdgtDiagram;
     }
-    return pDiagram;
+    return pDiagramCloned;
 
 } // clone
 
@@ -383,96 +353,81 @@ public: // instance methods to set optional attributes of the diagram
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtDiagram::enableZooming( EScaleDir i_scaleDir )
+void CWdgtDiagram::enableZooming( const CEnumScaleDir& i_scaleDir )
 //------------------------------------------------------------------------------
 {
-    switch( i_scaleDir )
+    switch( i_scaleDir.enumerator() )
     {
-        case EScaleDirX:
+        case EScaleDir::X:
         {
             m_bZoomingXScaleEnabled = true;
             break;
         }
-        case EScaleDirY:
+        case EScaleDir::Y:
         {
-            m_bZoomingYScaleEnabled = true;
-            break;
-        }
-        case EScaleDirCount:
-        {
-            m_bZoomingXScaleEnabled = true;
             m_bZoomingYScaleEnabled = true;
             break;
         }
         default:
         {
+            m_bZoomingXScaleEnabled = true;
+            m_bZoomingYScaleEnabled = true;
             break;
         }
     }
-
-} // enableZooming
+}
 
 //------------------------------------------------------------------------------
-void CWdgtDiagram::disableZooming( EScaleDir i_scaleDir )
+void CWdgtDiagram::disableZooming( const CEnumScaleDir& i_scaleDir )
 //------------------------------------------------------------------------------
 {
-    switch( i_scaleDir )
+    switch( i_scaleDir.enumerator() )
     {
-        case EScaleDirX:
+        case EScaleDir::X:
         {
             m_bZoomingXScaleEnabled = false;
             break;
         }
-        case EScaleDirY:
+        case EScaleDir::Y:
         {
-            m_bZoomingYScaleEnabled = false;
-            break;
-        }
-        case EScaleDirCount:
-        {
-            m_bZoomingXScaleEnabled = false;
             m_bZoomingYScaleEnabled = false;
             break;
         }
         default:
         {
+            m_bZoomingXScaleEnabled = false;
+            m_bZoomingYScaleEnabled = false;
             break;
         }
     }
-
-} // disableZooming
+}
 
 //------------------------------------------------------------------------------
-bool CWdgtDiagram::isZoomingEnabled( EScaleDir i_scaleDir ) const
+bool CWdgtDiagram::isZoomingEnabled( const CEnumScaleDir& i_scaleDir ) const
 //------------------------------------------------------------------------------
 {
     bool bZoomingEnabled = false;
 
-    switch( i_scaleDir )
+    switch( i_scaleDir.enumerator() )
     {
-        case EScaleDirX:
+        case EScaleDir::X:
         {
             bZoomingEnabled = m_bZoomingXScaleEnabled;
             break;
         }
-        case EScaleDirY:
+        case EScaleDir::Y:
         {
             bZoomingEnabled = m_bZoomingYScaleEnabled;
             break;
         }
-        case EScaleDirCount:
+        default:
         {
             bZoomingEnabled = (m_bZoomingXScaleEnabled || m_bZoomingYScaleEnabled);
             break;
         }
-        default:
-        {
-            break;
-        }
     }
     return bZoomingEnabled;
-
-} // isZoomingEnabled
+}
 
 //------------------------------------------------------------------------------
 void CWdgtDiagram::enableContextPopupMenu()
@@ -848,7 +803,7 @@ void CWdgtDiagram::keyPressEvent( QKeyEvent* i_pEv )
 
     if( m_pTrcAdminObjEvents != nullptr && m_pTrcAdminObjEvents->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
     {
-        strTrcMsg = qtKey2Str(i_pEv->key());
+        strTrcMsg = qKeyCode2Str(i_pEv->key());
     }
 
     CMethodTracer mthTracer(
@@ -856,8 +811,6 @@ void CWdgtDiagram::keyPressEvent( QKeyEvent* i_pEv )
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "keyPressEvent",
         /* strAddInfo   */ strTrcMsg );
-
-    CDiagObj* pDiagObj;
 
     // As default we ignore the event ..
     i_pEv->ignore();
@@ -978,15 +931,13 @@ void CWdgtDiagram::keyPressEvent( QKeyEvent* i_pEv )
                 else
                 {
                     // Check if any object is focusable. If - set the focus on the first found object.
-                    pDiagObj = m_pDiagObjFirst;
-                    while( pDiagObj != nullptr )
+                    for (CDiagObj* pDiagObj : m_arpDiagObjs)
                     {
                         if( pDiagObj->isFocusable() && pDiagObj->isEditable() )
                         {
                             m_pDiagObjFocused = pDiagObj;
                             break;
                         }
-                        pDiagObj = pDiagObj->m_pDiagObjNext;
                     }
                 }
 
@@ -1185,17 +1136,17 @@ void CWdgtDiagram::keyPressEvent( QKeyEvent* i_pEv )
                                         if( bValIsValid )
                                         {
                                             fVal = m_pDiagObjEditing->getVal(scaleDir).getVal();
-                                            fRes = m_pDiagObjEditing->getValRes(scaleDir,fVal);
+                                            fRes = m_pDiagObjEditing->getValRes(scaleDir).getVal();
                                         }
                                         else
                                         {
-                                            fRes = m_pDiagObjEditing->getValRes(scaleDir);
+                                            fRes = m_pDiagObjEditing->getValRes(scaleDir).getVal();
                                         }
-                                        fScaleMin = m_pMoveKeyAccelerationDiagScale->getScale().m_fMin;
-                                        fScaleMax = m_pMoveKeyAccelerationDiagScale->getScale().m_fMax;
+                                        fScaleMin = m_pMoveKeyAccelerationDiagScale->getScale().minVal().getVal();
+                                        fScaleMax = m_pMoveKeyAccelerationDiagScale->getScale().maxVal().getVal();
                                         fScaleRange = fabs(fScaleMax-fScaleMin);
 
-                                        if( bValIsValid && m_pMoveKeyAccelerationDiagScale->getSpacing() == ESpacingLogarithmic )
+                                        if( bValIsValid && m_pMoveKeyAccelerationDiagScale->getSpacing() == ESpacing::Logarithmic )
                                         {
                                             fScaleMin = log10(fScaleMin);
                                             fScaleMax = log10(fScaleMax);
@@ -1306,9 +1257,9 @@ void CWdgtDiagram::keyReleaseEvent( QKeyEvent* i_pEv )
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObjEvents != nullptr && m_pTrcAdminObjEvents->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjEvents, EMethodTraceDetailLevel::ArgsNormal))
     {
-        strTrcMsg = qtKey2Str(i_pEv->key());
+        strTrcMsg = qKeyCode2Str(i_pEv->key());
     }
 
     CMethodTracer mthTracer(
@@ -1331,8 +1282,6 @@ void CWdgtDiagram::mousePressEvent( QMouseEvent* i_pEv )
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mousePressEvent",
         /* strAddInfo   */ "" );
-
-    CDiagObj* pDiagObj;
 
     // Maybe also parents are interested in the mouse event ...
     i_pEv->ignore();
@@ -1369,30 +1318,32 @@ void CWdgtDiagram::mousePressEvent( QMouseEvent* i_pEv )
         }
 
         // Check if any object has been hit. If - start editing the object.
-        pDiagObj = m_pDiagObjPaintLast;
-        while( pDiagObj != nullptr )
+        if (m_arpDiagObjs.size() > 0)
         {
-            if( pDiagObj->isFocusable() && pDiagObj->isEditable() && pDiagObj->isHit(i_pEv->pos()) )
+            for (int idx = m_arpDiagObjs.size()-1; idx >= 0; --idx)
             {
-                // Store the focused object:
-                m_pDiagObjFocused = pDiagObj;
-                m_pDiagObjFocusedByMouseEvent = pDiagObj;
-                m_pDiagObjFocusedRecently = pDiagObj;
+                CDiagObj* pDiagObj = m_arpDiagObjs[idx];
+                if( pDiagObj->isFocusable() && pDiagObj->isEditable() && pDiagObj->isHit(i_pEv->pos()) )
+                {
+                    // Store the focused object:
+                    m_pDiagObjFocused = pDiagObj;
+                    m_pDiagObjFocusedByMouseEvent = pDiagObj;
+                    m_pDiagObjFocusedRecently = pDiagObj;
 
-                // Store the edited object:
-                m_pDiagObjEditing = pDiagObj;
-                m_pDiagObjEditingByMouseEvent = pDiagObj;
+                    // Store the edited object:
+                    m_pDiagObjEditing = pDiagObj;
+                    m_pDiagObjEditingByMouseEvent = pDiagObj;
 
-                // The focused object need to be updated at last so that no other
-                // object overwrites the graphic output of the focused object:
-                moveDiagObjInPaintList(m_pDiagObjFocused,EDiagObjMoveModeToTop);
+                    // The focused object need to be updated at last so that no other
+                    // object overwrites the graphic output of the focused object:
+                    moveDiagObjInPaintList(m_pDiagObjFocused,EDiagObjMoveModeToTop);
 
-                // If the graphical output of the object changes the corresponding
-                // update flags will be invalidated (the bits will be set).
-                m_pDiagObjFocused->startEditSession(i_pEv->pos()); // implicitly sets the focus on this object
-                break;
+                    // If the graphical output of the object changes the corresponding
+                    // update flags will be invalidated (the bits will be set).
+                    m_pDiagObjFocused->startEditSession(i_pEv->pos()); // implicitly sets the focus on this object
+                    break;
+                }
             }
-            pDiagObj = pDiagObj->m_pDiagObjPaintPrev;
         }
 
         // If none of the diagram objects has been hit and if zooming is enabled ...
@@ -1403,7 +1354,7 @@ void CWdgtDiagram::mousePressEvent( QMouseEvent* i_pEv )
                 m_bIsZooming = true;
                 m_ptZoomStart = i_pEv->pos();
                 m_ptZoomEnd = i_pEv->pos();
-                m_rectZoom = calcRect(m_ptZoomStart,m_ptZoomEnd);
+                m_rectZoom = Math::calcRect(m_ptZoomStart,m_ptZoomEnd);
             }
         }
 
@@ -1459,8 +1410,7 @@ void CWdgtDiagram::mouseReleaseEvent( QMouseEvent* i_pEv )
 
         if( m_bIsZooming )
         {
-            CDiagScale* pDiagScale;
-            QPoint      ptZoomEnd = i_pEv->pos();
+            QPoint ptZoomEnd = i_pEv->pos();
 
             if( ptZoomEnd.x() < m_rectPartCenter.left() )
             {
@@ -1480,14 +1430,14 @@ void CWdgtDiagram::mouseReleaseEvent( QMouseEvent* i_pEv )
             }
             m_ptZoomEnd = ptZoomEnd;
 
-            m_rectZoom = calcRect(m_ptZoomStart,m_ptZoomEnd);
+            m_rectZoom = Math::calcRect(m_ptZoomStart,m_ptZoomEnd);
 
-            if( !isZoomingEnabled(EScaleDirX) )
+            if( !isZoomingEnabled(EScaleDir::X) )
             {
                 m_rectZoom.setLeft(m_rectPartCenter.left());
                 m_rectZoom.setWidth(m_rectPartCenter.width());
             }
-            else if( !isZoomingEnabled(EScaleDirY) )
+            else if( !isZoomingEnabled(EScaleDir::Y) )
             {
                 m_rectZoom.setTop(m_rectPartCenter.top());
                 m_rectZoom.setHeight(m_rectPartCenter.height());
@@ -1495,17 +1445,16 @@ void CWdgtDiagram::mouseReleaseEvent( QMouseEvent* i_pEv )
 
             if( m_rectZoom.width() >= 2 && m_rectZoom.height() >= 2 )
             {
-                pDiagScale = m_pDiagScaleFirst;
-                while( pDiagScale != nullptr )
+                for (CDiagScale* pDiagScale : m_arpDiagScales)
                 {
                     switch( pDiagScale->getScaleDir() )
                     {
-                        case EScaleDirX:
+                        case EScaleDir::X:
                         {
                             pDiagScale->zoomIn(m_rectZoom.left(),m_rectZoom.right());
                             break;
                         }
-                        case EScaleDirY:
+                        case EScaleDir::Y:
                         {
                             pDiagScale->zoomIn(m_rectZoom.bottom(),m_rectZoom.top());
                             break;
@@ -1515,7 +1464,6 @@ void CWdgtDiagram::mouseReleaseEvent( QMouseEvent* i_pEv )
                             break;
                         }
                     }
-                    pDiagScale = pDiagScale->m_pDiagScaleNext;
                 }
                 m_iZoomCount++;
             }
@@ -1563,14 +1511,9 @@ void CWdgtDiagram::mouseDoubleClickEvent( QMouseEvent* i_pEv )
 
     if( m_iZoomCount > 0 )
     {
-        CDiagScale* pDiagScale;
-        SScale      scale;
-
-        pDiagScale = m_pDiagScaleFirst;
-        while( pDiagScale != nullptr )
+        for (CDiagScale* pDiagScale : m_arpDiagScales)
         {
             pDiagScale->zoomOut();
-            pDiagScale = pDiagScale->m_pDiagScaleNext;
         }
         m_iZoomCount--;
 
@@ -1597,7 +1540,7 @@ void CWdgtDiagram::mouseMoveEvent( QMouseEvent* i_pEv )
     // If an object has been selected by mouse click ...
     if( m_pDiagObjEditingByMouseEvent != nullptr )
     {
-        if( m_pTrcAdminObjEvents != nullptr && m_pTrcAdminObjEvents->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+        if (areMethodCallsActive(m_pTrcAdminObjEvents, EMethodTraceDetailLevel::ArgsNormal))
         {
             strTrcMsg  = "DiagObjEdited: ";
             strTrcMsg += m_pDiagObjEditingByMouseEvent->getObjName();
@@ -1627,7 +1570,7 @@ void CWdgtDiagram::mouseMoveEvent( QMouseEvent* i_pEv )
     // If the diagram will be zoomed ..
     else if( m_bIsZooming )
     {
-        if( m_pTrcAdminObjEvents != nullptr && m_pTrcAdminObjEvents->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+        if (areMethodCallsActive(m_pTrcAdminObjEvents, EMethodTraceDetailLevel::ArgsNormal))
         {
             strTrcMsg = "Zooming";
         }
@@ -1642,7 +1585,7 @@ void CWdgtDiagram::mouseMoveEvent( QMouseEvent* i_pEv )
 
         // Calculate new output region of zooming rectangle.
         m_ptZoomEnd = i_pEv->pos();
-        m_rectZoom = calcRect(m_ptZoomStart,m_ptZoomEnd);
+        m_rectZoom = Math::calcRect(m_ptZoomStart,m_ptZoomEnd);
 
         // The objects and the diagram need to redraw the pixmap. Widget processing
         // will be realized by invalidating the zooming rectangle border lines below.
@@ -1681,15 +1624,13 @@ void CWdgtDiagram::mouseMoveEvent( QMouseEvent* i_pEv )
             m_pDiagObjFocusedByMouseEvent = nullptr;
         }
 
-        CDiagObj* pDiagObj = m_pDiagObjFirst;
-        while( pDiagObj != nullptr )
+        for (CDiagObj* pDiagObj : m_arpDiagObjs)
         {
             if( pDiagObj->isFocusable() && pDiagObj->isEditable() && pDiagObj->isHit(i_pEv->pos()) )
             {
                 m_pDiagObjFocusedByMouseEvent = pDiagObj;
                 break;
             }
-            pDiagObj = pDiagObj->m_pDiagObjNext;
         }
         if( m_pDiagObjFocusedByMouseEvent != nullptr )
         {
@@ -1745,11 +1686,9 @@ void CWdgtDiagram::paintEvent( QPaintEvent* i_pEv )
     // We are going to clear the update widget flags of the objects as the paint
     // event might have been triggered on the resize event and for better
     // performance the resize event has just executed the layout processing.
-    CDiagObj* pDiagObj = m_pDiagObjFirst;
-    while( pDiagObj != nullptr )
+    for (CDiagObj* pDiagObj : m_arpDiagObjs)
     {
         pDiagObj->validate(EUpdateWidget);
-        pDiagObj = pDiagObj->m_pDiagObjNext;
     }
 
     QPainter painter(this);
@@ -1942,9 +1881,9 @@ bool CWdgtDiagram::processMoveKeyEvent( int i_iKey )
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObjEvents != nullptr && m_pTrcAdminObjEvents->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjEvents, EMethodTraceDetailLevel::ArgsNormal))
     {
-        strTrcMsg = qtKey2Str(i_iKey);
+        strTrcMsg = qKeyCode2Str(i_iKey);
     }
 
     CMethodTracer mthTracer(
@@ -2000,13 +1939,16 @@ bool CWdgtDiagram::processMoveKeyEvent( int i_iKey )
                     mthTracer.trace(strTrcMsgMoveKey);
                 }
 
-                CDiagObj* pDiagObj;
-
                 // ... set focus on previous object.
-                pDiagObj = m_pDiagObjFocused->m_pDiagObjPrev;
-                if( pDiagObj == nullptr )
+                CDiagObj* pDiagObj = nullptr;
+                int idx = m_arpDiagObjs.indexOf(m_pDiagObjFocused);
+                if (idx == 0)
                 {
-                    pDiagObj = m_pDiagObjLast;
+                    pDiagObj = m_arpDiagObjs.last();
+                }
+                else
+                {
+                    pDiagObj = m_arpDiagObjs[idx-1];
                 }
                 while( pDiagObj != nullptr && pDiagObj != m_pDiagObjFocused )
                 {
@@ -2025,7 +1967,7 @@ bool CWdgtDiagram::processMoveKeyEvent( int i_iKey )
 
                         // The focused object need to be updated at last so that no other
                         // object overwrites the graphic output of the focused object:
-                        moveDiagObjInPaintList(m_pDiagObjFocused,EDiagObjMoveModeToTop);
+                        moveDiagObjInPaintList(m_pDiagObjFocused, EDiagObjMoveModeToTop);
 
                         // If the graphical output of the object changes the corresponding
                         // update flags will be invalidated (the bits will be set), data
@@ -2043,13 +1985,14 @@ bool CWdgtDiagram::processMoveKeyEvent( int i_iKey )
                         update();
                         break;
                     }
-                    if( pDiagObj == m_pDiagObjFirst )
+                    idx = m_arpDiagObjs.indexOf(pDiagObj);
+                    if (idx == 0)
                     {
-                        pDiagObj = m_pDiagObjLast;
+                        pDiagObj = m_arpDiagObjs.last();
                     }
                     else
                     {
-                        pDiagObj = pDiagObj->m_pDiagObjPrev;
+                        pDiagObj = m_arpDiagObjs[idx-1];
                     }
                 }
                 bHandled = true;
@@ -2098,13 +2041,16 @@ bool CWdgtDiagram::processMoveKeyEvent( int i_iKey )
                     mthTracer.trace(strTrcMsgMoveKey);
                 }
 
-                CDiagObj* pDiagObj;
-
                 // ... set focus on next object.
-                pDiagObj = m_pDiagObjFocused->m_pDiagObjNext;
-                if( pDiagObj == nullptr )
+                CDiagObj* pDiagObj = nullptr;
+                int idx = m_arpDiagObjs.indexOf(m_pDiagObjFocused);
+                if (idx == m_arpDiagObjs.size()-1)
                 {
-                    pDiagObj = m_pDiagObjFirst;
+                    pDiagObj = m_arpDiagObjs.first();
+                }
+                else
+                {
+                    pDiagObj = m_arpDiagObjs[idx+1];
                 }
                 while( pDiagObj != nullptr && pDiagObj != m_pDiagObjFocused )
                 {
@@ -2139,13 +2085,14 @@ bool CWdgtDiagram::processMoveKeyEvent( int i_iKey )
                         update();
                         break;
                     }
-                    if( pDiagObj == m_pDiagObjLast )
+                    idx = m_arpDiagObjs.indexOf(pDiagObj);
+                    if (idx == m_arpDiagObjs.size()-1)
                     {
-                        pDiagObj = m_pDiagObjFirst;
+                        pDiagObj = m_arpDiagObjs.first();
                     }
                     else
                     {
-                        pDiagObj = pDiagObj->m_pDiagObjNext;
+                        pDiagObj = m_arpDiagObjs[idx+1];
                     }
                 }
                 bHandled = true;
@@ -2437,3 +2384,170 @@ void CWdgtDiagram::popupMenuContextItemPrintActivated( void )
     }
 
 } // popupMenuContextItemPrintActivated
+
+/*==============================================================================
+protected: // auxiliary instance methods (method tracing)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtDiagram::emit_diagItemAdded(const QString& i_strClassName, const QString& i_strObjName)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strClassName + "::" + i_strObjName;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjUpdate,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "emit_diagItemAdded",
+        /* strAddInfo   */ strMthInArgs );
+
+    emit diagItemAdded(i_strClassName, i_strObjName);
+}
+
+//------------------------------------------------------------------------------
+void CWdgtDiagram::emit_diagItemRemoved(const QString& i_strClassName, const QString& i_strObjName)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strClassName + "::" + i_strObjName;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjUpdate,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "emit_diagItemRemoved",
+        /* strAddInfo   */ strMthInArgs );
+
+    emit diagItemRemoved(i_strClassName, i_strObjName);
+}
+
+/*==============================================================================
+protected: // overridables of base class CDataDiagram for emitting the signals
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtDiagram::emit_aboutToBeDestroyed(const QString& i_strObjName)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strObjName;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjUpdate,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "emit_aboutToBeDestroyed",
+        /* strAddInfo   */ strMthInArgs );
+
+    emit aboutToBeDestroyed(i_strObjName);
+}
+
+//------------------------------------------------------------------------------
+void CWdgtDiagram::emit_diagScaleAdded(const QString& i_strObjName)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strObjName;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjUpdate,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "emit_diagScaleAdded",
+        /* strAddInfo   */ strMthInArgs );
+
+    emit diagScaleAdded(i_strObjName);
+    emit_diagItemAdded("CDiagScale", i_strObjName);
+}
+
+//------------------------------------------------------------------------------
+void CWdgtDiagram::emit_diagScaleRemoved(const QString& i_strObjName)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strObjName;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjUpdate,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "emit_diagScaleRemoved",
+        /* strAddInfo   */ strMthInArgs );
+
+    emit diagScaleRemoved(i_strObjName);
+    emit_diagItemRemoved("CDiagScale", i_strObjName);
+}
+
+//------------------------------------------------------------------------------
+void CWdgtDiagram::emit_diagTraceAdded(const QString& i_strObjName)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strObjName;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjUpdate,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "emit_diagTraceAdded",
+        /* strAddInfo   */ strMthInArgs );
+
+    emit diagTraceAdded(i_strObjName);
+    emit_diagItemAdded("CDiagTrace", i_strObjName);
+}
+
+//------------------------------------------------------------------------------
+void CWdgtDiagram::emit_diagTraceRemoved(const QString& i_strObjName)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strObjName;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjUpdate,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "emit_diagTraceRemoved",
+        /* strAddInfo   */ strMthInArgs );
+
+    emit diagTraceRemoved(i_strObjName);
+    emit_diagItemRemoved("CDiagTrace", i_strObjName);
+}
+
+//------------------------------------------------------------------------------
+void CWdgtDiagram::emit_diagObjAdded(const QString& i_strClassName, const QString& i_strObjName)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strClassName + "::" + i_strObjName;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjUpdate,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "emit_diagObjAdded",
+        /* strAddInfo   */ strMthInArgs );
+
+    emit diagObjAdded(i_strClassName, i_strObjName);
+    emit_diagItemAdded(i_strClassName, i_strObjName);
+}
+
+//------------------------------------------------------------------------------
+void CWdgtDiagram::emit_diagObjRemoved(const QString& i_strClassName, const QString& i_strObjName)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strClassName + "::" + i_strObjName;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjUpdate,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "emit_diagObjRemoved",
+        /* strAddInfo   */ strMthInArgs );
+
+    emit diagObjRemoved(i_strClassName, i_strObjName);
+    emit_diagItemRemoved(i_strClassName, i_strObjName);
+}

@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -49,6 +49,14 @@ namespace GUI
 class CDoubleSpinBox;
 
 //******************************************************************************
+/*! @brief Wrapper around a double spin box to edit a physical value indicating
+           the symbol of the unit as a suffix.
+
+    @Note Setting the minimum value may change the maximum value and the resolution
+          and may correct the value to fit the currently set constraints. Same
+          applies when changing the maximum value or the resolution value whereupon
+          the other properties constraining the value to be edited may be adjusted.
+*/
 class ZSPHYSVALGUIDLL_API CWdgtEditPhysVal : public QWidget
 //******************************************************************************
 {
@@ -62,36 +70,61 @@ public: // ctors and dtor
 signals:
     void editingFinished();
     void valueChanged( const ZS::PhysVal::CPhysVal& i_val );
-    void valueChanged( const QString& i_strVal );
+    void textChanged( const QString& i_strVal );
 public: // instance methods
     void clear();
 public: // instance methods
+    void setEnabled(bool i_bEnabled);
+    bool isEnabled() const;
+    void setReadOnly(bool i_bReadOnly);
+    bool isReadOnly() const;
+public: // instance methods
     void setUnit( const CUnit& i_unit );
-    CUnit unit() const { return m_unit; }
+    CUnit unit() const;
 public: // instance methods
-    void setValue( const CPhysVal& i_physVal );
+    void setMinimum( double i_fVal );
+    CPhysVal minimum() const;
+    void setMaximum( double i_fVal );
+    CPhysVal maximum() const;
+    void setResolution( double i_fVal );
+    CPhysValRes resolution() const;
+    void setDecimals( int i_iPrecision );
+    int decimals() const;
+    void setSingleStep( double i_fVal );
+    double singleStep() const;
+public: // instance methods
+    void setValue( double i_fVal );
     CPhysVal value() const;
-public: // instance methods
-    void setMinimum( const CPhysVal& i_physValMin );
-    CPhysVal minimum() const { return m_physValMin; }
-public: // instance methods
-    void setMaximum( const CPhysVal& i_physValMax );
-    CPhysVal maximum() const { return m_physValMax; }
-public: // instance methods
-    void setResolution( const CPhysValRes& i_physValRes );
-    CPhysValRes resolution() const { return m_physValRes; }
 protected slots:
     void onEdtEditingFinished();
     void onEdtValueChanged( double i_fVal );
-    void onEdtValueChanged( const QString& i_strVal );
+    void onEdtTextChanged( const QString& i_strText );
 private: // instance members
-    QHBoxLayout*    m_pLyt;
+    /*!< The layout of the widget. */
+    QHBoxLayout* m_pLyt;
+    /*!< The value is edited by the double spin box.
+         The suffix is set to the symbol of the unit to be used. */
     CDoubleSpinBox* m_pEdt;
-    CUnit           m_unit;
-    CPhysVal        m_physValOld;
-    CPhysVal        m_physValMin;
-    CPhysVal        m_physValMax;
-    CPhysValRes     m_physValRes;
+    /*!< The cached current value. */
+    CPhysVal m_physVal;
+    /*!< The cached mimimum value. */
+    CPhysVal m_physValMin;
+    /*!< The cached maximum value. */
+    CPhysVal m_physValMax;
+    /*!< The cached resolution used. */
+    CPhysValRes m_physValRes;
+    /*!< When changing the unit, the minimum, the maximum or the resolution
+         the value may be corrected by the aggregated double spin box
+         several times to fit the constraints. To avoid that the "valueChanged"
+         and the "textChanged" signals are emitted several times and with
+         intermediate values which will be corrected afterwards the flag blocks
+         the signals while adjusting the edit field to the new constraints.
+         In addition the flag blocks adjusting the cached value if the signals
+         are emitted by the aggregated spin box and will be adjusted after
+         everything is setup correctly.
+         As the methods may be recursively called the flag is realized as
+         a counter counting the number of blocks. */
+    int m_iValueChangedSignalsBlocked;
 
 }; // class CWdgtEditPhysVal
 

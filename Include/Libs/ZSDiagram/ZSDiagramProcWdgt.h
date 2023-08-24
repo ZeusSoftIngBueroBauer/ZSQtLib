@@ -87,15 +87,27 @@ public: // ctors and dtor
     //CWdgtDiagram( QWidget* i_pWdgtParent );
     CWdgtDiagram( const QString& i_strObjName, QWidget* i_pWdgtParent = nullptr );
     virtual ~CWdgtDiagram();
+public: // overridables
+    virtual QString className() { return ClassName(); }
+signals:
+    void aboutToBeDestroyed(const QString& i_strObjName);
+    void diagItemAdded(const QString& i_strClassName, const QString& i_strObjName);
+    void diagItemRemoved(const QString& i_strClassName, const QString& i_strObjName);
+    void diagScaleAdded(const QString& i_strObjName);
+    void diagScaleRemoved(const QString& i_strObjName);
+    void diagTraceAdded(const QString& i_strObjName);
+    void diagTraceRemoved(const QString& i_strObjName);
+    void diagObjAdded(const QString& i_strClassName, const QString& i_strObjName);
+    void diagObjRemoved(const QString& i_strClassName, const QString& i_strObjName);
 public: // copy ctor not allowed but diagrams may be cloned
     virtual CDataDiagram* clone( EDiagramUpdateType i_diagramUpdateType ) const;
 public: // instance methods
     CDiagObj* getDiagObjFocused();
     CDiagObj* getDiagObjEditing();
 public: // instance methods to set optional attributes of the diagram
-    void enableZooming( EScaleDir i_scaleDir = EScaleDirCount );
-    void disableZooming( EScaleDir i_scaleDir = EScaleDirCount );
-    bool isZoomingEnabled( EScaleDir i_scaleDir = EScaleDirCount ) const;
+    void enableZooming( const ZS::System::CEnumScaleDir& i_scaleDir = ZS::System::CEnumScaleDir() );
+    void disableZooming( const ZS::System::CEnumScaleDir& i_scaleDir = ZS::System::CEnumScaleDir() );
+    bool isZoomingEnabled( const ZS::System::CEnumScaleDir& i_scaleDir = ZS::System::CEnumScaleDir() ) const;
     void enableContextPopupMenu();
     void disableContextPopupMenu();
     bool isContextPopupMenuEnabled() const;
@@ -149,6 +161,17 @@ protected: // overridables
 protected slots: // overridable instance methods
     virtual void popupMenuContextItemSaveActivated( void );
     virtual void popupMenuContextItemPrintActivated( void );
+protected: // auxiliary instance methods (method tracing)
+    void emit_diagItemAdded(const QString& i_strClassName, const QString& i_strObjName);
+    void emit_diagItemRemoved(const QString& i_strClassName, const QString& i_strObjName);
+protected: // overridables of base class CDataDiagram for emitting the signals
+    void emit_aboutToBeDestroyed(const QString& i_strObjName) override;
+    void emit_diagScaleAdded(const QString& i_strObjName) override;
+    void emit_diagScaleRemoved(const QString& i_strObjName) override;
+    void emit_diagTraceAdded(const QString& i_strObjName) override;
+    void emit_diagTraceRemoved(const QString& i_strObjName) override;
+    void emit_diagObjAdded(const QString& i_strClassName, const QString& i_strObjName) override;
+    void emit_diagObjRemoved(const QString& i_strClassName, const QString& i_strObjName) override;
 private: // copy ctor not allowed
     CWdgtDiagram( const CWdgtDiagram& );
 private: // assignment operator not allowed

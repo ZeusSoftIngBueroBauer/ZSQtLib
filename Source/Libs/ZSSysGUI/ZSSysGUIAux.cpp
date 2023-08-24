@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -120,7 +120,60 @@ static const ZS::System::SEnumEntry s_arEnumStrQItemViewCursorAction[] =
 QString ZS::System::GUI::qItemViewCursorAction2Str( int i_iVal, EEnumEntryAliasStr i_alias )
 //------------------------------------------------------------------------------
 {
-    return SEnumEntry::enumerator2Str( s_arEnumStrQItemViewCursorAction, _ZSArrLen(s_arEnumStrQItemViewCursorAction), i_iVal, i_alias );
+    return SEnumEntry::enumerator2Str(
+        s_arEnumStrQItemViewCursorAction, _ZSArrLen(s_arEnumStrQItemViewCursorAction), i_iVal, i_alias );
+}
+
+/*==============================================================================
+Enum Qt::DockWidgetArea
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QString ZS::System::GUI::qDockWidgetArea2Str( Qt::DockWidgetAreas i_areas, EEnumEntryAliasStr /*i_alias*/ )
+//------------------------------------------------------------------------------
+{
+    QString str;
+    if(i_areas == Qt::NoDockWidgetArea) {
+        str = "None";
+    }
+    else {
+        if(i_areas & Qt::LeftDockWidgetArea) {
+            str += "Left";
+        }
+        if(i_areas & Qt::RightDockWidgetArea) {
+            if( !str.isEmpty() ) str += "|";
+            str += "Right";
+        }
+        if(i_areas & Qt::TopDockWidgetArea) {
+            if( !str.isEmpty() ) str += "|";
+            str += "Top";
+        }
+        if(i_areas & Qt::BottomDockWidgetArea) {
+            if( !str.isEmpty() ) str += "|";
+            str += "Bottom";
+        }
+    }
+    return str;
+}
+
+//------------------------------------------------------------------------------
+Qt::DockWidgetArea ZS::System::GUI::str2QDockWidgetArea( const QString& i_str )
+//------------------------------------------------------------------------------
+{
+    Qt::DockWidgetArea area = Qt::NoDockWidgetArea;
+    if( i_str.compare("Left", Qt::CaseInsensitive) == 0 ) {
+        area = Qt::LeftDockWidgetArea;
+    }
+    else if( i_str.compare("Right", Qt::CaseInsensitive) == 0 ) {
+        area = Qt::LeftDockWidgetArea;
+    }
+    else if( i_str.compare("Top", Qt::CaseInsensitive) == 0 ) {
+        area = Qt::LeftDockWidgetArea;
+    }
+    else if( i_str.compare("Bottom", Qt::CaseInsensitive) == 0 ) {
+        area = Qt::LeftDockWidgetArea;
+    }
+    return area;
 }
 
 /*==============================================================================
@@ -170,12 +223,12 @@ QKeyEvent* ZS::System::GUI::str2QKeyEvent( const QString& i_str, QEvent::Type i_
 {
     QKeyEvent* pEv = nullptr;
 
-    int                   iKey = -1;
+    int iKey = -1;
     Qt::KeyboardModifiers keyboardModifiers = Qt::NoModifier;
 
     if( i_str.length() == 1 )
     {
-        iKey              = char2QKeyCode(i_str[0]);
+        iKey = char2QKeyCode(i_str[0]);
         keyboardModifiers = char2QKeyboardModifiers(i_str[0]);
 
         pEv = new QKeyEvent(
@@ -188,7 +241,7 @@ QKeyEvent* ZS::System::GUI::str2QKeyEvent( const QString& i_str, QEvent::Type i_
     }
     else if( i_str.compare("ctrl-c",Qt::CaseInsensitive) == 0 )
     {
-        iKey              = str2QKeyCode("c");
+        iKey = str2QKeyCode("c");
         keyboardModifiers = Qt::ControlModifier;
 
         pEv = new QKeyEvent(
@@ -201,7 +254,7 @@ QKeyEvent* ZS::System::GUI::str2QKeyEvent( const QString& i_str, QEvent::Type i_
     }
     else if( i_str.compare("ctrl-x",Qt::CaseInsensitive) == 0 )
     {
-        iKey              = str2QKeyCode("x");
+        iKey = str2QKeyCode("x");
         keyboardModifiers = Qt::ControlModifier;
 
         pEv = new QKeyEvent(
@@ -214,7 +267,7 @@ QKeyEvent* ZS::System::GUI::str2QKeyEvent( const QString& i_str, QEvent::Type i_
     }
     else if( i_str.compare("ctrl-v",Qt::CaseInsensitive) == 0 )
     {
-        iKey              = str2QKeyCode("v");
+        iKey = str2QKeyCode("v");
         keyboardModifiers = Qt::ControlModifier;
 
         pEv = new QKeyEvent(

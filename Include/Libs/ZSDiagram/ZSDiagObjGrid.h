@@ -39,6 +39,8 @@ namespace Diagram
 class ZSDIAGRAMDLL_API CDiagObjGrid : public CDiagObj
 //******************************************************************************
 {
+public: // class methods
+    static QString ClassName() { return "CDiagObjGrid"; }
 public: // ctors and dtor
     CDiagObjGrid(
         const QString& i_strObjName,
@@ -46,27 +48,27 @@ public: // ctors and dtor
         CDiagScale*    i_pDiagScaleY );
     virtual ~CDiagObjGrid();
 public: // instance methods
-    void show( EDivLineLayer i_layer );
-    void hide( EDivLineLayer i_layer );
-    void setCol( EDivLineLayer i_layer, const QColor& i_col );
-    QColor getCol( EDivLineLayer i_layer ) const;
-    void setPenStyle( EDivLineLayer i_layer, const Qt::PenStyle& i_penStyle );
-    Qt::PenStyle getPenStyle( EDivLineLayer i_layer ) const;
+    void show( const ZS::System::CEnumDivLineLayer& i_eLayer );
+    void hide( const ZS::System::CEnumDivLineLayer& i_eLayer );
+    void setCol( const ZS::System::CEnumDivLineLayer& i_eLayer, const QColor& i_col );
+    QColor getCol( const ZS::System::CEnumDivLineLayer& i_eLayer ) const;
+    void setPenStyle( const ZS::System::CEnumDivLineLayer& i_eLayer, const Qt::PenStyle& i_penStyle );
+    Qt::PenStyle getPenStyle( const ZS::System::CEnumDivLineLayer& i_eLayer ) const;
 public: // overridables of base class CDiagObj
-    virtual void show( bool i_bInformDiagram = true );
-    virtual void hide( bool i_bInformDiagram = true );
+    virtual void show( bool i_bInformDiagram = true ) override;
+    virtual void hide( bool i_bInformDiagram = true ) override;
 public: // must overridables of base class CDiagObj
-    virtual CDiagObj* clone( CDataDiagram* i_pDiagramTrg ) const;
-    virtual void update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDevice = nullptr );
+    virtual CDiagObj* clone( CDataDiagram* i_pDiagramTrg ) const override;
+    virtual void update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDevice = nullptr ) override;
 private: // copy ctor not allowed
     CDiagObjGrid( const CDiagObjGrid& );
 private: // assignment operator not allowed
     void operator=( const CDiagObjGrid& );
 protected:  // instance members
-    QColor       m_arcol[EDivLineLayerCount];
-    Qt::PenStyle m_arpenStyle[EDivLineLayerCount];
-    bool         m_arbShow[EDivLineLayerCount];
-    bool         m_bUpdWidget;
+    QVector<QColor> m_arcol; //[EDivLineLayerCount];
+    QVector<Qt::PenStyle> m_arpenStyle; //[EDivLineLayerCount];
+    QVector<bool> m_arbShow; //[EDivLineLayerCount];
+    bool m_bUpdWidget;
 
 }; // class CDiagObjGrid
 

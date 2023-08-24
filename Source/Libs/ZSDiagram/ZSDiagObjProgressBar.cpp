@@ -56,9 +56,10 @@ CDiagObjProgressBar::CDiagObjProgressBar(
     ELayoutPos     i_layoutPos ) :
 //------------------------------------------------------------------------------
     CDiagObj(
-        /* strObjName */ i_strObjName,
-        /* pDiagTrace */ nullptr,
-        /* layoutPos  */ i_layoutPos ),
+        /* strClassName */ CDiagObjProgressBar::ClassName(),
+        /* strObjName   */ i_strObjName,
+        /* pDiagTrace   */ nullptr,
+        /* layoutPos    */ i_layoutPos ),
     m_fValMin(0.0),
     m_fValMax(100.0),
     m_fVal(0.0),
@@ -364,41 +365,41 @@ CDiagObj* CDiagObjProgressBar::clone( CDataDiagram* i_pDiagramTrg ) const
         return nullptr;
     }
 
-    CDiagObjProgressBar* pDiagObj = new CDiagObjProgressBar(
+    CDiagObjProgressBar* pDiagObjCloned = new CDiagObjProgressBar(
         /* strObjName */ m_strObjName,
         /* layoutPos  */ m_layoutPos );
 
     // Members from base class CDiagObj:
-    pDiagObj->m_rectContent = m_rectContent;
-    pDiagObj->m_bAdjustContentRect2DiagPartCenter = m_bAdjustContentRect2DiagPartCenter;
-    pDiagObj->m_bVisible = m_bVisible;
-    pDiagObj->m_state = m_state;
-    pDiagObj->m_bIsFocusable = m_bIsFocusable;
-    pDiagObj->m_bIsEditable = m_bIsEditable;
+    pDiagObjCloned->m_rectContent = m_rectContent;
+    pDiagObjCloned->m_bAdjustContentRect2DiagPartCenter = m_bAdjustContentRect2DiagPartCenter;
+    pDiagObjCloned->m_bVisible = m_bVisible;
+    pDiagObjCloned->m_state = m_state;
+    pDiagObjCloned->m_bIsFocusable = m_bIsFocusable;
+    pDiagObjCloned->m_bIsEditable = m_bIsEditable;
 
     // Members from this class:
-    pDiagObj->m_fValMin = m_fValMin;
-    pDiagObj->m_fValMax = m_fValMax;
-    //pDiagObj->m_fVal = m_fVal;
-    pDiagObj->m_colFg = m_colFg;
-    pDiagObj->m_colBg = m_colBg;
-    pDiagObj->m_iIndentTop = m_iIndentTop;
-    pDiagObj->m_iIndentBottom = m_iIndentBottom;
-    pDiagObj->m_iIndentLeft = m_iIndentLeft;
-    pDiagObj->m_iIndentRight = m_iIndentRight;
+    pDiagObjCloned->m_fValMin = m_fValMin;
+    pDiagObjCloned->m_fValMax = m_fValMax;
+    //pDiagObjCloned->m_fVal = m_fVal;
+    pDiagObjCloned->m_colFg = m_colFg;
+    pDiagObjCloned->m_colBg = m_colBg;
+    pDiagObjCloned->m_iIndentTop = m_iIndentTop;
+    pDiagObjCloned->m_iIndentBottom = m_iIndentBottom;
+    pDiagObjCloned->m_iIndentLeft = m_iIndentLeft;
+    pDiagObjCloned->m_iIndentRight = m_iIndentRight;
     if( m_pFrameStyle != nullptr )
     {
-        pDiagObj->m_pFrameStyle = new SFrameStyle(*m_pFrameStyle);
+        pDiagObjCloned->m_pFrameStyle = new SFrameStyle(*m_pFrameStyle);
     }
-    pDiagObj->m_iWidth = m_iWidth;
-    pDiagObj->m_rectBarContent = m_rectBarContent;
-    pDiagObj->m_rectBarFrame = m_rectBarFrame;
-    //pDiagObj->m_rectBarInFrameContent = m_rectBarInFrameContent;
-    //pDiagObj->m_rectBarInFrameValue = m_rectBarInFrameValue;
+    pDiagObjCloned->m_iWidth = m_iWidth;
+    pDiagObjCloned->m_rectBarContent = m_rectBarContent;
+    pDiagObjCloned->m_rectBarFrame = m_rectBarFrame;
+    //pDiagObjCloned->m_rectBarInFrameContent = m_rectBarInFrameContent;
+    //pDiagObjCloned->m_rectBarInFrameValue = m_rectBarInFrameValue;
 
-    i_pDiagramTrg->addDiagObj(pDiagObj);
+    i_pDiagramTrg->addDiagObj(pDiagObjCloned);
 
-    return pDiagObj;
+    return pDiagObjCloned;
 
 } // clone
 
@@ -408,7 +409,7 @@ void CDiagObjProgressBar::update( unsigned int i_uUpdateFlags, QPaintDevice* i_p
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObjUpdate != nullptr && m_pTrcAdminObjUpdate->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjUpdate, EMethodTraceDetailLevel::ArgsNormal))
     {
         strTrcMsg = updateFlags2Str(i_uUpdateFlags);
     }

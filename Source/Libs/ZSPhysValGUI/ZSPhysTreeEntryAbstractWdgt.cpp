@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -44,22 +44,20 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CWdgtAbstractTreeEntry::CWdgtAbstractTreeEntry(
-    CIdxTreeUnits* i_pIdxTree, QWidget* i_pWdgtParent ) :
+CWdgtAbstractTreeEntry::CWdgtAbstractTreeEntry(QWidget* i_pWdgtParent) :
 //------------------------------------------------------------------------------
     QWidget(i_pWdgtParent),
-    m_pIdxTree(nullptr),
+    m_pIdxTree(CIdxTreeUnits::GetInstance()),
     m_strKeyInTreeOfRootEntry(),
-    m_cxLblMinWidth(140),
-    m_cxEdtMinWidth(160),
-    m_cxEdtMaxWidth(240)
+    m_cxLblWidth(140),
+    m_cxEdtWidth(200)
 {
-    setObjectName( QString(i_pIdxTree == nullptr ? "IdxTree" : i_pIdxTree->objectName()) );
+    setObjectName(m_pIdxTree->objectName());
 
-    if( i_pIdxTree != nullptr )
-    {
-        setIdxTree(i_pIdxTree);
-    }
+    QObject::connect(
+        m_pIdxTree, &CIdxTreeUnits::aboutToBeDestroyed,
+        this, &CWdgtAbstractTreeEntry::onIdxTreeAboutToBeDestroyed);
+
 } // ctor
 
 //------------------------------------------------------------------------------
@@ -68,40 +66,10 @@ CWdgtAbstractTreeEntry::~CWdgtAbstractTreeEntry()
 {
     m_pIdxTree = nullptr;
     //m_strKeyInTreeOfRootEntry;
-    m_cxLblMinWidth = 0;
-    m_cxEdtMinWidth = 0;
-    m_cxEdtMaxWidth = 0;
+    m_cxLblWidth = 0;
+    m_cxEdtWidth = 0;
 
 } // dtor
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CWdgtAbstractTreeEntry::setIdxTree( CIdxTreeUnits* i_pIdxTree )
-//------------------------------------------------------------------------------
-{
-    if( m_pIdxTree != i_pIdxTree )
-    {
-        if( m_pIdxTree != nullptr )
-        {
-            QObject::disconnect(
-                m_pIdxTree, &CIdxTreeUnits::aboutToBeDestroyed,
-                this, &CWdgtAbstractTreeEntry::onIdxTreeAboutToBeDestroyed);
-        }
-
-        m_pIdxTree = i_pIdxTree;
-        m_strKeyInTreeOfRootEntry = "";
-
-        if( m_pIdxTree != nullptr )
-        {
-            QObject::connect(
-                m_pIdxTree, &CIdxTreeUnits::aboutToBeDestroyed,
-                this, &CWdgtAbstractTreeEntry::onIdxTreeAboutToBeDestroyed);
-        }
-    }
-}
 
 /*==============================================================================
 public: // overridables

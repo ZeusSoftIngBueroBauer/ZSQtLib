@@ -26,6 +26,7 @@ may result in using the software modules.
 
 #include "ZSDiagram/ZSDiagScale.h"
 #include "ZSDiagram/ZSDiagramProcData.h"
+#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysMath.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
@@ -39,322 +40,373 @@ using namespace ZS::PhysVal;
 
 
 /*******************************************************************************
-class CDiagScale
+class CScale
 *******************************************************************************/
 
 /*==============================================================================
-protected: // class members
+public: // ctors
 ==============================================================================*/
 
-bool   CDiagScale::s_bClassInitialised = false;
-double CDiagScale::s_arfScaleRangeFacPixDivValLog[9];
+//------------------------------------------------------------------------------
+/*! @brief Default constructor creating a scale instance with invalid values.
+*/
+CScale::CScale() :
+//------------------------------------------------------------------------------
+    m_fMin(0.0),
+    m_fMax(0.0),
+    m_unit(),
+    m_physValRes()
+{
+} // default ctor
+
+//------------------------------------------------------------------------------
+/*! @brief Copy constructor.
+
+    @param i_scaleOther [in]
+        Scale object to be copied.
+*/
+CScale::CScale( const CScale& i_scaleOther ) :
+//------------------------------------------------------------------------------
+    m_fMin(i_scaleOther.m_fMin),
+    m_fMax(i_scaleOther.m_fMax),
+    m_unit(i_scaleOther.m_unit),
+    m_physValRes(i_scaleOther.m_physValRes)
+{
+} // copy ctor
+
+//------------------------------------------------------------------------------
+/*! @brief Creates a scale instance.
+
+    @param i_fMin [in]
+        Minimum scale value.
+    @param i_fMax [in]
+        Maximum scale value.
+    @param i_unit [in]
+        Unit of minimum and maximum scale value.
+    @param i_physValRes [in]
+        Resolution of the minimum and maximum scale values.
+*/
+CScale::CScale(double i_fMin, double i_fMax, const CUnit& i_unit, const CPhysValRes& i_physValRes) :
+//------------------------------------------------------------------------------
+    m_fMin(i_fMin),
+    m_fMax(i_fMax),
+    m_unit(i_unit),
+    m_physValRes(i_physValRes)
+{
+}
 
 /*==============================================================================
-public: // class methods
+public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-int CDiagScale::CalculateDivLines4LinSpacing(
-    double  i_fScaleMinVal,
-    double  i_fScaleMaxVal,
-    int     i_iScaleRangePix,
-    double  i_fDivLineDistMinVal,
-    int     i_iDivLineDistMinPix,
-    bool    i_bUseDivLineDistValDecimalFactor25,
-    double* o_pfDivLineFirstVal,
-    double* o_pfDivLineDistFirstPix,
-    double* o_pfDivLineDistVal,
-    double* o_pfDivLineDistPix )
+/*! @brief Sets the scale's minimum value.
+
+    The given value will be converted into the unit of the scale.
+    If the value cannot be converted a CUnitConversionException is thrown.
+
+    @param i_physVal [in]
+        Minimum value.
+*/
+void CScale::setMinVal(const CPhysVal& i_physVal)
 //------------------------------------------------------------------------------
 {
-    double fScaleRangeVal;
-    double fScaleRangeFacPixDivVal;
-    double fDivLineDistMinVal;
-    double fDivLineDistVal;
-    double fDivLineDistPix;
-    double fDivLineVal;
-    double fAbortVal;
-    double fDivLineFirstVal;
-    double fDivLineDistFirstPix;
-    double fDivLineLastVal;
-    double fDivLineDistLastPix;
-    double fDivLineRangeVal;
-    double fDivLineRangePix;
-    int    iDivLineCountMax;
-    int    iDivLineCount;
-    int    iDivLineDistValDecimalFactor;
-    double fDivLineDistValDecimalFactor;
-    double fDivLineDistValBeforeCorr;
-    double fDivLineDistPixBeforeCorr;
+    m_fMin = i_physVal.getVal(m_unit);
+}
 
-    if( o_pfDivLineFirstVal != nullptr )
-    {
-        *o_pfDivLineFirstVal = i_fScaleMinVal;
-    }
-    if( o_pfDivLineDistFirstPix != nullptr )
-    {
-        *o_pfDivLineDistFirstPix = 0.0;
-    }
-    if( o_pfDivLineDistVal != nullptr )
-    {
-        *o_pfDivLineDistVal = i_fScaleMaxVal - i_fScaleMinVal;
-    }
-    if( o_pfDivLineDistPix != nullptr )
-    {
-        *o_pfDivLineDistPix = i_iScaleRangePix;
-    }
+//------------------------------------------------------------------------------
+/*! @brief Sets the scale's minimum value.
 
-    fScaleRangeVal = i_fScaleMaxVal - i_fScaleMinVal;
+    The given value will be converted into the unit of the scale.
+    If the value cannot be converted a CUnitConversionException is thrown.
 
-    if( fScaleRangeVal <= 0.0 )
-    {
-        return 0;
+    @param i_fVal [in]
+        Minimum value in the unit as passed in argument i_unit.
+    @param i_unit [in]
+        Unit of the given value.
+*/
+void CScale::setMinVal(double i_fVal, const CUnit& i_unit)
+//------------------------------------------------------------------------------
+{
+    if (i_unit == m_unit) {
+        m_fMin = i_fVal;
     }
-    if( i_iScaleRangePix <= 1 )
-    {
-        return 0;
+    else {
+        m_fMin = i_unit.convertValue(i_fVal, m_unit);
     }
-    if( i_iDivLineDistMinPix <= 1 )
-    {
-        return 0;
-    }
+}
 
-    fScaleRangeFacPixDivVal = i_iScaleRangePix/fScaleRangeVal;
+//------------------------------------------------------------------------------
+/*! @brief Returns the minimum value of the scale including the scale's resolution.
 
-    // Maximum possible count of grid lines:
-    iDivLineCountMax = static_cast<int>(static_cast<double>(i_iScaleRangePix)/static_cast<double>(i_iDivLineDistMinPix)) + 1;
+    @return Minimum value.
+*/
+CPhysVal CScale::minVal() const
+//------------------------------------------------------------------------------
+{
+    return CPhysVal(m_fMin, m_unit, m_physValRes);
+}
 
-    // On dividing the pixel range by the maximum possible count of grid lines the
-    // distance between two grid lines would be:
-    if( i_fDivLineDistMinVal > 0.0 )
-    {
-        fDivLineDistMinVal = i_fDivLineDistMinVal;
+//------------------------------------------------------------------------------
+/*! @brief Sets the scale's maximum value.
+
+    The given value will be converted into the unit of the scale.
+    If the value cannot be converted a CUnitConversionException is thrown.
+
+    @param i_physVal [in]
+        Maximum value.
+*/
+void CScale::setMaxVal(const CPhysVal& i_physVal)
+//------------------------------------------------------------------------------
+{
+    m_fMax = i_physVal.getVal(m_unit);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the scale's maximum value.
+
+    The given value will be converted into the unit of the scale.
+    If the value cannot be converted a CUnitConversionException is thrown.
+
+    @param i_fVal [in]
+        Maximum value in the unit as passed in argument i_unit.
+    @param i_unit [in]
+        Unit of the given value.
+*/
+void CScale::setMaxVal(double i_fVal, const CUnit& i_unit)
+//------------------------------------------------------------------------------
+{
+    if (i_unit == m_unit) {
+        m_fMax = i_fVal;
     }
-    else
-    {
-        fDivLineDistMinVal = fScaleRangeVal / iDivLineCountMax;
+    else {
+        m_fMax = i_unit.convertValue(i_fVal, m_unit);
     }
+}
 
-    // But DivLineDistMinVal might have a fractional part. And thats not what we want.
-    // We need to set the grid lines to "human readable" values like 0.1 .. 0.2 .. 0.3 or
-    // 10.0 .. 20.0 ..30.0 or 1.25 .. 1.50 .. 1.75 and so on.
+//------------------------------------------------------------------------------
+/*! @brief Returns the maximum value of the scale including the scale's resolution.
 
-    // For this we are going to calculate "DivLineDistVal" which is less or equal to the distance
-    // between two grid lines if the pixel range would be divided by the maximum possible count
-    // of grid lines and with the first valid digit "1" (e.g. 100.0, 1.0, 0.001, etc.).
-    fDivLineDistVal = 1.0;
-    if( fDivLineDistMinVal > 1.0 )
-    {
-        fAbortVal = fDivLineDistMinVal/10.0;
-        while( fDivLineDistVal <= fAbortVal )
-        {
-            fDivLineDistVal *= 10.0;
-        }
+    @return Maximum value.
+*/
+CPhysVal CScale::maxVal() const
+//------------------------------------------------------------------------------
+{
+    return CPhysVal(m_fMax, m_unit, m_physValRes);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the scale's range by adjusting the maximum value.
+
+    The minimum value remains the same.
+
+    The given range value will be converted into the unit of the scale.
+    If the value cannot be converted a CUnitConversionException is thrown.
+
+    @param i_physVal [in]
+        Range value.
+*/
+void CScale::setRangeVal(const CPhysVal& i_physVal)
+//------------------------------------------------------------------------------
+{
+    double fValRange = i_physVal.getVal(m_unit);
+    m_fMax = m_fMin + fValRange;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the scale's range by adjusting the maximum value.
+
+    The minimum value remains the same.
+
+    The given range value will be converted into the unit of the scale.
+    If the value cannot be converted a CUnitConversionException is thrown.
+
+    @param i_fVal [in]
+        Range value in the unit as passed in argument i_unit.
+    @param i_unit [in]
+        Unit of the given value.
+*/
+void CScale::setRangeVal(double i_fVal, const CUnit& i_unit)
+//------------------------------------------------------------------------------
+{
+    double fValRange = i_unit.convertValue(i_fVal, m_unit);
+    m_fMax = m_fMin + fValRange;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the range of the scale including the scale's resolution.
+
+    @return Range value.
+*/
+CPhysVal CScale::rangeVal() const
+//------------------------------------------------------------------------------
+{
+    double fRange = fabs(m_fMax - m_fMin);
+    return CPhysVal(fRange, m_unit, m_physValRes);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the scale unit.
+
+    The minimum and maximum values are converted into the new unit.
+    Also the resolution will be converted into the new unit.
+    If the values cannot be converted a CUnitConversionException is thrown.
+
+    @param i_unit [in]
+        Unit to be set.
+*/
+void CScale::setUnit(const CUnit& i_unit)
+//------------------------------------------------------------------------------
+{
+    m_fMin = m_unit.convertValue(m_fMin, i_unit);
+    m_fMax = m_unit.convertValue(m_fMax, i_unit);
+    m_unit = i_unit;
+    m_physValRes.convertValue(i_unit);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the unit of the scale.
+
+    @return Unit of the scale.
+*/
+CUnit CScale::unit() const
+//------------------------------------------------------------------------------
+{
+    return m_unit;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the scale's resolution.
+
+    The given resolution will be converted into the scales unit.
+    If the value cannot be converted a CUnitConversionException is thrown.
+
+    @param i_physValRes [in]
+        Resolution of the scale values.
+*/
+void CScale::setRes(const CPhysValRes& i_physValRes)
+//------------------------------------------------------------------------------
+{
+    if (i_physValRes.unit() != m_unit) {
+        CPhysValRes physValRes = i_physValRes;
+        physValRes.convertValue(m_unit);
+        m_physValRes = physValRes; // only set if value is convertible
     }
-    else if( fDivLineDistMinVal < 1.0 )
-    {
-        fAbortVal = fDivLineDistMinVal;
-        while( fDivLineDistVal >= fAbortVal )
-        {
-            fDivLineDistVal /= 10.0;
-        }
+    else {
+        m_physValRes = i_physValRes;
     }
+}
 
-    // Now calculate the distance between grid lines if the current "DivLineDistVal"
-    // would be used. For this we calculate the values and pixel positions of the
-    // first and last grid lines, calculate the resulting count of grid lines and the
-    // resulting distance in pixels between two grid lines.
+//------------------------------------------------------------------------------
+/*! @brief Returns the range of the scale including the scale's resolution.
 
-    // The values of the first and last grid lines must be a whole number multiple of
-    // the distance between two grid lines:
-    modf(i_fScaleMinVal/fDivLineDistVal,&fDivLineFirstVal);
-    fDivLineFirstVal *= fDivLineDistVal;
-    if( fDivLineFirstVal < i_fScaleMinVal-DBL_EPSILON )
+    @return Range value.
+*/
+CPhysValRes CScale::res() const
+//------------------------------------------------------------------------------
+{
+    return m_physValRes;
+}
+
+/*==============================================================================
+public: // operators
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Equal to operator comparing this value with given second operand.
+
+    @param i_scaleOther [in]
+        Second operator.
+
+    @return true, if this is equal to the second operand, false otherwise.
+*/
+bool CScale::operator == ( const CScale& i_scaleOther ) const
+//------------------------------------------------------------------------------
+{
+    //lint -e777
+    bool bEqual = false;
+    if( m_unit == i_scaleOther.m_unit
+     && m_fMin == i_scaleOther.m_fMin
+     && m_fMax == i_scaleOther.m_fMax
+     && m_physValRes == i_scaleOther.m_physValRes )
     {
-        fDivLineFirstVal += fDivLineDistVal;
+        bEqual = true;
     }
-    fDivLineDistFirstPix = fScaleRangeFacPixDivVal*(fDivLineFirstVal-i_fScaleMinVal);
-    modf(i_fScaleMaxVal/fDivLineDistVal,&fDivLineLastVal);
-    fDivLineLastVal *= fDivLineDistVal;
-    if( fDivLineLastVal > i_fScaleMaxVal+DBL_EPSILON )
-    {
-        fDivLineLastVal -= fDivLineDistVal;
-    }
-    fDivLineDistLastPix = fScaleRangeFacPixDivVal*(i_fScaleMaxVal-fDivLineLastVal);
+    return bEqual;
+    //lint +e777
+}
 
-    // Range between first and last grid line:
-    fDivLineRangeVal = fDivLineLastVal - fDivLineFirstVal;
-    fDivLineRangePix = i_iScaleRangePix - fDivLineDistFirstPix - fDivLineDistLastPix; //lint !e834
-    iDivLineCount = static_cast<int>(fDivLineRangeVal/fDivLineDistVal) + 1;
+//------------------------------------------------------------------------------
+/*! @brief Not equal to operator comparing this value with given second operand.
 
-    // Distance between two grid lines between the first and last grid line:
-    if( iDivLineCount < 2 )
-    {
-        fDivLineDistPix = 0.0;
-    }
-    else
-    {
-        fDivLineDistPix = fDivLineRangePix/(iDivLineCount-1);
+    @param i_scaleOther [in]
+        Second operator.
 
-        // Please note that at this point of execution "DivLineDistVal" is always less or equal
-        // to the distance between two grid lines if the pixel range would be divided by the
-        // maximum possible count of grid lines and its first valid digit is always 1
-        // (e.g. 100.0, 1.0, 0.001, etc.). So definitely "DivLineDistPix" is less or equal to
-        // "DistMinPix" (the user setting for the minimum distance in pixels between two grid lines).
+    @return true, if this is not equal to the second operand, false otherwise.
+*/
+bool CScale::operator != ( const CScale& i_scaleOther ) const
+//------------------------------------------------------------------------------
+{
+    return !(*this == i_scaleOther); //lint !e1702
+}
 
-        // In the following loop we are going to optimize "DivLineDistVal" by increasing the value
-        // and the distance between by the factor of 2, 2.5, 4.0, and 5.0 until the "best human readable"
-        // division of the axis has been reached.
-        iDivLineDistValDecimalFactor = 10;
-        fDivLineDistValDecimalFactor = 1.0;
-        fDivLineDistValBeforeCorr = fDivLineDistVal;
-        fDivLineDistPixBeforeCorr = fDivLineDistPix;
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
 
-        // As long as the grid lines are too close to each other ...
-        while( fDivLineDistPix < i_iDivLineDistMinPix )
-        {
-            switch( iDivLineDistValDecimalFactor )
-            {
-                case 10:
-                {
-                    iDivLineDistValDecimalFactor = 20;
-                    fDivLineDistValDecimalFactor *= (20.0/10.0);
-                    break;
-                }
-                case 20:
-                {
-                    if( i_bUseDivLineDistValDecimalFactor25 )
-                    {
-                        iDivLineDistValDecimalFactor = 25;
-                        fDivLineDistValDecimalFactor *= (25.0/20.0);
-                    }
-                    else
-                    {
-                        iDivLineDistValDecimalFactor = 50;
-                        fDivLineDistValDecimalFactor *= (50.0/25.0);
-                    }
-                    break;
-                }
-                case 25:
-                {
-                    iDivLineDistValDecimalFactor = 50;
-                    fDivLineDistValDecimalFactor *= (50.0/25.0);
-                    break;
-                }
-                case 50:
-                {
-                    iDivLineDistValDecimalFactor = 10;
-                    fDivLineDistValDecimalFactor *= (100.0/50.0);
-                    break;
-                }
-                default:
-                {
-                    break;
-                }
-            }
-            fDivLineDistVal = fDivLineDistValDecimalFactor * fDivLineDistValBeforeCorr;
-            fDivLineDistPix = fDivLineDistValDecimalFactor * fDivLineDistPixBeforeCorr;
-        }
-    }
+//------------------------------------------------------------------------------
+/*! @brief Converts the scale to a string representation.
 
-    // The value of the first grid line must be a whole number multiple of the distance
-    // between two grid lines:
-    modf(i_fScaleMinVal/fDivLineDistVal,&fDivLineFirstVal);
-    fDivLineFirstVal *= fDivLineDistVal;
-    if( fDivLineFirstVal < i_fScaleMinVal-DBL_EPSILON )
-    {
-        fDivLineFirstVal += fDivLineDistVal;
-    }
-    fDivLineDistFirstPix = fScaleRangeFacPixDivVal*(fDivLineFirstVal-i_fScaleMinVal);
+    Mainly used for debugging and logging purposes.
 
-    // Calculate number of division lines. Algorithm could be optimized ...
+    @return String representation of the scale.
+*/
+QString CScale::toString() const
+//------------------------------------------------------------------------------
+{
+    QString str =
+        "Min: " + QString::number(m_fMin) +
+        ", Max: " + QString::number(m_fMax) +
+        ", Unit: " + m_unit.symbol() +
+        ", Res: " + m_physValRes.toString();
+    return str;
+}
 
-    // If the value 0.0 is included ...
-    if( i_fScaleMinVal < 0.0 && i_fScaleMaxVal > 0.0 )
-    {
-        // ... there should be always a line at 0.0 ...
-        int    iDivLineCountBelowZero;
-        double fDivLineOffsetVal;
-        double fDivLineOffsetPix;
 
-        iDivLineCountBelowZero = static_cast<int>(-i_fScaleMinVal/fDivLineDistVal);
-        fDivLineOffsetVal      = -(i_fScaleMinVal + iDivLineCountBelowZero*fDivLineDistVal);
-        fDivLineOffsetPix      = fScaleRangeFacPixDivVal*fDivLineOffsetVal;
-        fDivLineFirstVal       = i_fScaleMinVal + fDivLineOffsetVal;
-        fDivLineDistFirstPix   = fDivLineOffsetPix;
-    }
-
-    iDivLineCount = 0;
-    fDivLineVal = fDivLineFirstVal; // please note that the first digit of "DivLineFirstVal" is "1".
-    if( fDivLineVal >= i_fScaleMinVal )
-    {
-        iDivLineCount++;
-    }
-    while( fDivLineVal <= i_fScaleMaxVal )
-    {
-        iDivLineCount++;
-        fDivLineVal += fDivLineDistVal;
-
-        // If DivLineDistVal is very small (but still greater than DBL_EPSILON),
-        // adding fDivLineDistVal to fDivLineVal may not change the value of fDivLineVal
-        // (maybe bug in floating point library?). To avoid an endless loop ...
-        if( fDivLineFirstVal + iDivLineCount*fDivLineDistVal > i_fScaleMaxVal )
-        {
-            break;
-        }
-    }
-    if( fDivLineVal > i_fScaleMaxVal )
-    {
-        iDivLineCount--;
-    }
-    if( o_pfDivLineFirstVal != nullptr )
-    {
-        *o_pfDivLineFirstVal = fDivLineFirstVal;
-    }
-    if( o_pfDivLineDistFirstPix != nullptr )
-    {
-        *o_pfDivLineDistFirstPix = fDivLineDistFirstPix;
-    }
-    if( o_pfDivLineDistVal != nullptr )
-    {
-        *o_pfDivLineDistVal = fDivLineDistVal;
-    }
-    if( o_pfDivLineDistPix != nullptr )
-    {
-        *o_pfDivLineDistPix = fDivLineDistPix;
-    }
-    return iDivLineCount;
-
-} // CalculateDivLines4LinSpacing
+/*******************************************************************************
+class CDiagScale
+*******************************************************************************/
 
 /*==============================================================================
 public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Creates an instance of the class.
+
+    @param i_strObjName [in]
+        Name of the object.
+        Each scale object belonging to the same diagram must have a unique name.
+    @param i_scaleDir [in]
+        Direction of the scale which could be either X or Y.
+        3 dimensional scales with scaleDir = Z are not supported.
+        Please note that the scale direction cannot be changed during runtime.
+    @param i_scale [in]
+        Minimum, maximum values and unit of the scale.
+        The scale also contains the resolution of the scale which defines the
+        number of significant digits when converting the minimum and maximum
+        value to their string representations.
+*/
 CDiagScale::CDiagScale(
     const QString& i_strObjName,
     EScaleDir      i_scaleDir,
-    const SScale&  i_scale ) :
+    const CScale&  i_scale ) :
 //------------------------------------------------------------------------------
     QObject(),
     m_strObjName(i_strObjName),
     m_pDiagram(nullptr),
-    m_scaleDir(i_scaleDir),
-    m_spacing(ESpacingLinear),
     m_scale(i_scale),
-    m_fScaleRes(0.0),
-    m_bScaleResCalculated(false),
-    m_iScaleMinValPix(0),
-    m_iScaleMaxValPix(0),
-    m_fPixRes(0.0),
-    //m_ariDivLineDistMinPix[EDivLineLayerCount],
-    //m_ariDivLineCount[EDivLineLayerCount],
-    //m_ararfDivLineVal[EDivLineLayerCount],
-    //m_ararfDivLinePix[EDivLineLayerCount],
-    m_bDivLinesCalculated(false),
-    m_pDiagScaleNext(nullptr),
-    m_pDiagScalePrev(nullptr),
+    m_divLines("DiagScale"+ i_strObjName, i_scaleDir),
     m_iZoomCount(0),
     m_pZoomStackFirst(nullptr),
     m_pZoomStackLast(nullptr),
@@ -373,10 +425,10 @@ CDiagScale::CDiagScale(
 
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = i_strObjName;
-        strMthInArgs += ", ScaleDir: " + scaleDir2Str(i_scaleDir);
+        strMthInArgs += ", ScaleDir: " + CEnumScaleDir(i_scaleDir).toString();
         strMthInArgs += ", Scale: " + i_scale.toString();
     }
 
@@ -386,37 +438,16 @@ CDiagScale::CDiagScale(
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
 
-    int iLayer;
-
-    for( iLayer = 0; iLayer < EDivLineLayerCount; iLayer++ )
-    {
-        m_ariDivLineDistMinPix[iLayer] = 0;
-        m_ariDivLineCount[iLayer] = 0;
-        m_ararfDivLineVal[iLayer] = nullptr;
-        m_ararfDivLinePix[iLayer] = nullptr;
-    }
-    m_ariDivLineDistMinPix[EDivLineLayerMain] = 50;
-
-    if( !s_bClassInitialised )
-    {
-        int    idxSection;
-        double fFacLin;
-
-        // In logarithmic scale each decade may be divided into 9 sections indicating
-        // the values 1.0*10^x, 2.0*10^x, .... , 9.0*10^x, 10.0*10^x with x as an
-        // signed integer value. The width of the sections is decreasing from beginning
-        // of the first value of the decade to the last value of the decade (non
-        // equidistant grid). The portion of each sector is the same for all visible decades.
-        for( idxSection = 0, fFacLin = 2.0; idxSection < 9; idxSection++, fFacLin += 1.0 )
-        {
-            s_arfScaleRangeFacPixDivValLog[idxSection] = log10(fFacLin) - log10(fFacLin-1.0);
-        }
-        s_bClassInitialised = true;
-    }
+    m_divLines.setScale(
+        m_scale.minVal().getVal(), m_scale.maxVal().getVal(),
+        m_scale.res().getVal(), 0, 0);
+    m_divLines.setDivLinesDistMinInPix(EDivLineLayer::Main, 50);
 
 } // ctor
 
 //------------------------------------------------------------------------------
+/*! @brief Destructor.
+*/
 CDiagScale::~CDiagScale()
 //------------------------------------------------------------------------------
 {
@@ -425,16 +456,6 @@ CDiagScale::~CDiagScale()
         /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
-
-    int iLayer;
-
-    for( iLayer = 0; iLayer < EDivLineLayerCount; iLayer++ )
-    {
-        delete [] m_ararfDivLineVal[iLayer];
-        m_ararfDivLineVal[iLayer] = nullptr;
-        delete [] m_ararfDivLinePix[iLayer];
-        m_ararfDivLinePix[iLayer] = nullptr;
-    }
 
     if( m_iZoomCount > 0 )
     {
@@ -446,11 +467,14 @@ CDiagScale::~CDiagScale()
         {
         }
     }
-    m_pZoomStackFirst = nullptr; // passierte zwar schon in clearScaleStack, weiss aber lint nicht
-    m_pZoomStackLast = nullptr;  // passierte zwar schon in clearScaleStack, weiss aber lint nicht
+
+    //m_strObjName;
     m_pDiagram = nullptr;
-    m_pDiagScaleNext = nullptr;
-    m_pDiagScalePrev = nullptr;
+    //m_scale;
+    //m_divLines;
+    m_iZoomCount = 0;
+    m_pZoomStackFirst = nullptr;
+    m_pZoomStackLast = nullptr;
 
     mthTracer.onAdminObjAboutToBeReleased();
 
@@ -464,10 +488,14 @@ CDiagScale::~CDiagScale()
 } // dtor
 
 /*==============================================================================
-public: // instance methods
+public: // instance methods (common properties)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Returns the name of the object.
+
+    @return Name of the object.
+*/
 QString CDiagScale::getObjName() const
 //------------------------------------------------------------------------------
 {
@@ -475,13 +503,21 @@ QString CDiagScale::getObjName() const
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Returns the direction of the scale (X or Y).
+
+    @return Scale direction.
+*/
 EScaleDir CDiagScale::getScaleDir() const
 //------------------------------------------------------------------------------
 {
-    return m_scaleDir;
+    return m_divLines.scaleDir();
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Returns the diagram the scale object belongs to.
+
+    @return Diagram the scale belongs to.
+*/
 CDataDiagram* CDiagScale::getDiagram()
 //------------------------------------------------------------------------------
 {
@@ -489,115 +525,589 @@ CDataDiagram* CDiagScale::getDiagram()
 }
 
 //------------------------------------------------------------------------------
-void CDiagScale::setSpacing( ESpacing i_spacing )
+/*! @brief Sets the spacing of the scale.
+
+    @note For the changed setting to take effect and become visible in the
+          diagrams pixmap you must call the diagrams update method afterwards.
+
+    @param i_spacing [in]
+        Range [Linear, Logarithmic]
+*/
+void CDiagScale::setSpacing( const CEnumSpacing& i_spacing )
 //------------------------------------------------------------------------------
 {
-    QString strTrcMsg;
-
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
-    {
-        strTrcMsg = spacing2Str(i_spacing);
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::EnterLeave)) {
+        strMthInArgs = i_spacing.toString();
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setSpacing",
-        /* strAddInfo   */ strTrcMsg );
+        /* strAddInfo   */ strMthInArgs );
 
-    if( m_spacing != i_spacing )
+    if (m_divLines.setSpacing(i_spacing))
     {
-        m_spacing = i_spacing;
-        m_bScaleResCalculated = false;
-        m_bDivLinesCalculated = false;
-
-        if( m_pDiagram != nullptr )
+        if (m_pDiagram != nullptr)
         {
             m_pDiagram->scaleChanged(this);
         }
+        emit_spacingChanged(m_divLines.spacing());
     }
-
-} // setSpacing
-
-//------------------------------------------------------------------------------
-ESpacing CDiagScale::getSpacing() const
-//------------------------------------------------------------------------------
-{
-    return m_spacing;
 }
 
 //------------------------------------------------------------------------------
-void CDiagScale::setScale( const SScale& i_scale )
+/*! @brief Returns the spacing of the scale which could be either Linear or Logarithmic.
+
+    @return Spacing of the scale.
+*/
+ESpacing CDiagScale::getSpacing() const
 //------------------------------------------------------------------------------
 {
-    if( m_scale != i_scale ) //lint !e1702
+    return m_divLines.spacing();
+}
+
+/*==============================================================================
+public: // instance methods (scale values, unit and resolution)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Checks whether the scale is valid.
+
+    A scale is valid if the geometries range in pixels is greater than 0 and the
+    physical minimum value is lower than the maximum value.
+
+    For logarithmic scales both the physical minimum and maximum values must be
+    greater than 0.
+
+    @return true, if the scale values are valid, false otherwise.
+*/
+bool CDiagScale::isScaleValid() const
+//------------------------------------------------------------------------------
+{
+    bool bScaleValid = true;
+
+    if( getRangePix() <= 0 )
     {
-        QString strTrcMsg;
-
-        if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
+        bScaleValid = false;
+    }
+    else if( m_scale.maxVal() <= m_scale.minVal() )
+    {
+        bScaleValid = false;
+    }
+    else if( m_divLines.spacing() == ESpacing::Logarithmic )
+    {
+        if( m_scale.minVal().getVal() <= 0.0 || m_scale.maxVal().getVal() <= 0.0 )
         {
-            strTrcMsg = i_scale.toString();
+            bScaleValid = false;
         }
+    }
+    return bScaleValid;
+}
 
-        CMethodTracer mthTracer(
-            /* pAdminObj    */ m_pTrcAdminObj,
-            /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-            /* strMethod    */ "setScale",
-            /* strAddInfo   */ strTrcMsg );
+//------------------------------------------------------------------------------
+/*! @brief Sets the world coordinates (phyiscal values) of the scale object.
 
+    @note For the changed setting to take effect and become visible in the
+          diagrams pixmap you must call the diagrams update method afterwards.
+
+    @param i_scale [in]
+        Scaling including the physical minimum and maximum values and their unit.
+        The scaling also includes the resolution of the scale (number of significant
+        digits to indicate the minimum and maximum values).
+*/
+void CDiagScale::setScale( const CScale& i_scale )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::EnterLeave)) {
+        strMthInArgs = i_scale.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setScale",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (m_scale != i_scale) //lint !e1702
+    {
         m_scale = i_scale;
-        m_bScaleResCalculated = false;
-        m_bDivLinesCalculated = false;
 
-        if( m_pDiagram != nullptr )
+        m_divLines.setScaleMin(m_scale.minVal().getVal());
+        m_divLines.setScaleMax(m_scale.maxVal().getVal());
+        m_divLines.setScaleRes(m_scale.res().getVal());
+
+        if (m_pDiagram != nullptr)
         {
             m_pDiagram->scaleChanged(this);
         }
+        emit_scaleChanged(m_scale);
     }
-
-} // setScale
+}
 
 //------------------------------------------------------------------------------
-SScale CDiagScale::getScale() const
+/*! @brief Returns the physical values (world coordinates) of the scale.
+
+    @return Physical values of the scale.
+*/
+CScale CDiagScale::getScale() const
 //------------------------------------------------------------------------------
 {
     return m_scale;
 }
 
 //------------------------------------------------------------------------------
-bool CDiagScale::isScaleValid() const
+/*! @brief Sets the minimum value of the scale in world coordinates (phyiscal value).
+
+    @note For the changed setting to take effect and become visible in the
+          diagrams pixmap you must call the diagrams update method afterwards.
+
+    @param i_physVal [in]
+        Minimum scale value in world coordinates.
+        The value will be converted into the scales unit.
+        If the conversion fails the exception CUnitConversionException is thrown.
+*/
+void CDiagScale::setScaleMinVal( const CPhysVal& i_physVal )
 //------------------------------------------------------------------------------
 {
-    bool bScaleValid = true;
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::EnterLeave)) {
+        strMthInArgs = i_physVal.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setScaleMinVal",
+        /* strAddInfo   */ strMthInArgs );
 
-    if( getScaleRangePix() < 0 )
+    if (m_scale.minVal() != i_physVal)
     {
-        bScaleValid = false;
-    }
-    else if( m_scale.m_fMax <= m_scale.m_fMin )
-    {
-        bScaleValid = false;
-    }
-    else if( m_spacing == ESpacingLogarithmic )
-    {
-        if( m_scale.m_fMin <= 0.0 || m_scale.m_fMax <= 0.0 )
+        m_scale.setMinVal(i_physVal);
+
+        m_divLines.setScaleMin(m_scale.minVal().getVal());
+
+        if (m_pDiagram != nullptr)
         {
-            bScaleValid = false;
+            m_pDiagram->scaleChanged(this);
         }
+        emit_scaleChanged(m_scale);
     }
-    return bScaleValid;
-
-} // isScaleValid
+}
 
 //------------------------------------------------------------------------------
-void CDiagScale::setDivLineDistMinPix( int i_iLayer, int i_iDistMinPix )
+/*! @brief Sets the minimum value of the scale in world coordinates (phyiscal value).
+
+    @note For the changed setting to take effect and become visible in the
+          diagrams pixmap you must call the diagrams update method afterwards.
+
+    @param i_fVal [in]
+        Minimum scale value in world coordinates.
+        The value will be converted into the scales unit.
+        If the conversion fails the exception CUnitConversionException is thrown.
+    @param i_unit [in]
+        Unit of the value in world coordinates.
+*/
+void CDiagScale::setScaleMinVal( double i_fVal, const CUnit& i_unit )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::EnterLeave)) {
+        strMthInArgs = QString::number(i_fVal) + " " + i_unit.symbol();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setScaleMinVal",
+        /* strAddInfo   */ strMthInArgs );
+
+    setScaleMinVal(CPhysVal(i_fVal, i_unit));
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the minimum scale value (world coordinates).
+
+    @return Minimum scale value.
+*/
+CPhysVal CDiagScale::getScaleMinVal() const
+//------------------------------------------------------------------------------
+{
+    return m_scale.minVal();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the maximum value of the scale in world coordinates (phyiscal value).
+
+    @note For the changed setting to take effect and become visible in the
+          diagrams pixmap you must call the diagrams update method afterwards.
+
+    @param i_physVal [in]
+        Maximum scale value in world coordinates.
+        The value will be converted into the scales unit.
+        If the conversion fails the exception CUnitConversionException is thrown.
+*/
+void CDiagScale::setScaleMaxVal( const CPhysVal& i_physVal )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::EnterLeave)) {
+        strMthInArgs = i_physVal.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setScaleMaxVal",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (m_scale.maxVal() != i_physVal)
+    {
+        m_scale.setMaxVal(i_physVal);
+
+        m_divLines.setScaleMax(m_scale.maxVal().getVal());
+
+        if (m_pDiagram != nullptr)
+        {
+            m_pDiagram->scaleChanged(this);
+        }
+        emit_scaleChanged(m_scale);
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the minimum value of the scale in world coordinates (phyiscal value).
+
+    @note For the changed setting to take effect and become visible in the
+          diagrams pixmap you must call the diagrams update method afterwards.
+
+    @param i_fVal [in]
+        Minimum scale value in world coordinates.
+        The value will be converted into the scales unit.
+        If the conversion fails the exception CUnitConversionException is thrown.
+    @param i_unit [in]
+        Unit of the value in world coordinates.
+*/
+void CDiagScale::setScaleMaxVal( double i_fVal, const CUnit& i_unit )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::EnterLeave)) {
+        strMthInArgs = QString::number(i_fVal) + " " + i_unit.symbol();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setScaleMaxVal",
+        /* strAddInfo   */ strMthInArgs );
+
+    setScaleMaxVal(CPhysVal(i_fVal, i_unit));
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the maximum scale value (world coordinates).
+
+    @return Maximum scale value.
+*/
+CPhysVal CDiagScale::getScaleMaxVal() const
+//------------------------------------------------------------------------------
+{
+    return m_scale.maxVal();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the scale's range in world coordinates (phyiscal value) by
+           adjusting the maximum value.
+
+    The minimum value remains the same.
+
+    The given range value will be converted into the unit of the scale.
+    If the value cannot be converted a CUnitConversionException is thrown.
+
+    @note For the changed setting to take effect and become visible in the
+          diagrams pixmap you must call the diagrams update method afterwards.
+
+    @param i_physVal [in]
+        Range value in world coordinates.
+        The value will be converted into the scales unit.
+        If the conversion fails the exception CUnitConversionException is thrown.
+*/
+void CDiagScale::setScaleRangeVal( const CPhysVal& i_physVal )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::EnterLeave)) {
+        strMthInArgs = i_physVal.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setScaleRangeVal",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (m_scale.rangeVal() != i_physVal)
+    {
+        m_scale.setRangeVal(i_physVal);
+
+        m_divLines.setScaleMax(m_scale.maxVal().getVal());
+
+        if (m_pDiagram != nullptr)
+        {
+            m_pDiagram->scaleChanged(this);
+        }
+        emit_scaleChanged(m_scale);
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the scale's range in world coordinates (phyiscal value) by
+           adjusting the maximum value.
+
+    The minimum value remains the same.
+
+    The given range value will be converted into the unit of the scale.
+    If the value cannot be converted a CUnitConversionException is thrown.
+
+    @note For the changed setting to take effect and become visible in the
+          diagrams pixmap you must call the diagrams update method afterwards.
+
+    @param i_fVal [in]
+        Range value in world coordinates.
+        The value will be converted into the scales unit.
+        If the conversion fails the exception CUnitConversionException is thrown.
+    @param i_unit [in]
+        Unit of the value in world coordinates.
+*/
+void CDiagScale::setScaleRangeVal( double i_fVal, const CUnit& i_unit )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::EnterLeave)) {
+        strMthInArgs = QString::number(i_fVal) + " " + i_unit.symbol();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setScaleRangeVal",
+        /* strAddInfo   */ strMthInArgs );
+
+    setScaleRangeVal(CPhysVal(i_fVal, i_unit));
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the range of the scale (world coordinates).
+
+    @return Range of scale (maxVal - minVal).
+*/
+CPhysVal CDiagScale::getScaleRangeVal() const
+//------------------------------------------------------------------------------
+{
+    return m_scale.rangeVal();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the scale unit.
+
+    The minimum and maximum values are converted into the new unit.
+    Also the resolution will be converted into the new unit.
+    If the values cannot be converted a CUnitConversionException is thrown.
+
+    @note For the changed setting to take effect and become visible in the
+          diagrams pixmap you must call the diagrams update method afterwards.
+
+    @param i_unit [in]
+        Unit to be set.
+*/
+void CDiagScale::setScaleUnit(const CUnit& i_unit)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::EnterLeave)) {
+        strMthInArgs = i_unit.symbol();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setScaleUnit",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (m_scale.unit() != i_unit)
+    {
+        m_scale.setUnit(i_unit);
+
+        m_divLines.setScaleMin(m_scale.minVal().getVal());
+        m_divLines.setScaleMax(m_scale.maxVal().getVal());
+        m_divLines.setScaleRes(m_scale.res().getVal());
+
+        if (m_pDiagram != nullptr)
+        {
+            m_pDiagram->scaleChanged(this);
+        }
+        emit_scaleChanged(m_scale);
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the unit of the scale.
+
+    @return Unit of the scale.
+*/
+CUnit CDiagScale::getScaleUnit() const
+//------------------------------------------------------------------------------
+{
+    return m_scale.unit();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the scale's resolution.
+
+    The given resolution will be converted into the scales unit.
+    If the value cannot be converted a CUnitConversionException is thrown.
+
+    @note For the changed setting to take effect and become visible in the
+          diagrams pixmap you must call the diagrams update method afterwards.
+
+    @param i_physValRes [in]
+        Resolution of the minimum and maximum scale value.
+
+    @return Resolution.
+*/
+void CDiagScale::setScaleRes( const CPhysValRes& i_physValRes )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::EnterLeave)) {
+        strMthInArgs = i_physValRes.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setScaleRes",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (m_scale.res() != i_physValRes)
+    {
+        m_scale.setRes(i_physValRes);
+
+        m_divLines.setScaleRes(m_scale.res().getVal());
+
+        if (m_pDiagram != nullptr)
+        {
+            m_pDiagram->scaleChanged(this);
+        }
+        emit_scaleChanged(m_scale);
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the resolution of the scale.
+
+    @return Resolution.
+*/
+CPhysValRes CDiagScale::getScaleRes() const
+//------------------------------------------------------------------------------
+{
+    return m_scale.res();
+}
+
+/*==============================================================================
+public: // instance methods (geometry in pixels)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the geometry of the scale (pixel range).
+
+    @note For the changed setting to take effect and become visible in the
+          diagrams pixmap you must call the diagrams update method afterwards.
+
+    @param i_iMinVal_px [in]
+        Minimum value in pixels.
+    @param i_iMaxVal_px [in]
+        Maximum value in pixels.
+*/
+void CDiagScale::setGeometry( int i_iMinVal_px, int i_iMaxVal_px )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjLayout, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString::number(i_iMinVal_px) + ", " + QString::number(i_iMaxVal_px);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjLayout,
+        /* iDatailLevel */ EMethodTraceDetailLevel::ArgsNormal,
+        /* strMethod    */ "setGeometry",
+        /* strAddInfo   */ strMthInArgs );
+
+    if ((m_divLines.scaleMinInPix() != i_iMinVal_px) || (m_divLines.scaleMaxInPix() != i_iMaxVal_px))
+    {
+        m_divLines.setScaleMinInPix(i_iMinVal_px);
+        m_divLines.setScaleMaxInPix(i_iMaxVal_px);
+
+        if (m_pDiagram != nullptr)
+        {
+            m_pDiagram->scaleChanged(this);
+        }
+        emit_geometryChanged(m_divLines.scaleMaxInPix(), m_divLines.scaleMaxInPix());
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the minimum geometry value in pixels.
+
+    @Return Minimum value in pixels.
+*/
+int CDiagScale::getMinValPix() const
+//------------------------------------------------------------------------------
+{
+    return m_divLines.scaleMinInPix();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the maximum geometry value in pixels.
+
+    @Return Maximum value in pixels.
+*/
+int CDiagScale::getMaxValPix() const
+//------------------------------------------------------------------------------
+{
+    return m_divLines.scaleMaxInPix();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the range in pixels.
+
+    @Return Range in pixels.
+*/
+int CDiagScale::getRangePix() const
+//------------------------------------------------------------------------------
+{
+    return m_divLines.scaleRangeInPix();
+}
+
+/*==============================================================================
+public: // instance methods (calculation of division lines)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the minimum distance between two division lines in pixels.
+
+    The final distance between two division lines is calculated based on this value
+    so that the division line values become a whole number of a decimal power.
+
+    @note For the changed setting to take effect and become visible in the
+          diagrams pixmap you must call the diagrams update method afterwards.
+
+    @param i_eLayer [in]
+        Range [Main, Sub]
+        Layer for which the value should be applied.
+    @param i_iDistMinPix [in]
+        Minimum value in pixels.
+*/
+void CDiagScale::setDivLineDistMinPix( const CEnumDivLineLayer& i_eLayer, int i_iDistMinPix )
 //------------------------------------------------------------------------------
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::EnterLeave))
     {
-        strTrcMsg = "Layer: " + divLineLayer2Str(i_iLayer);
+        strTrcMsg = "Layer: " + i_eLayer.toString();
         strTrcMsg += ", DistMinPix: " + QString::number(i_iDistMinPix);
     }
 
@@ -607,550 +1117,318 @@ void CDiagScale::setDivLineDistMinPix( int i_iLayer, int i_iDistMinPix )
         /* strMethod    */ "setDivLineDistMinPix",
         /* strAddInfo   */ strTrcMsg );
 
-    if( i_iLayer >= 0 && i_iLayer < EDivLineLayerCount )
+    if( m_divLines.setDivLinesDistMinInPix(i_eLayer, i_iDistMinPix))
     {
-        if( m_ariDivLineDistMinPix[i_iLayer] != i_iDistMinPix )
-        {
-            m_ariDivLineDistMinPix[i_iLayer] = i_iDistMinPix;
-
-            m_bDivLinesCalculated = false;
-
-            if( m_pDiagram != nullptr )
-            {
-                m_pDiagram->scaleChanged(this);
-            }
-        }
-    }
-
-} // setMainDivLineDistMinPix
-
-//------------------------------------------------------------------------------
-int CDiagScale::getDivLineDistMinPix( int i_iLayer ) const
-//------------------------------------------------------------------------------
-{
-    int iDivLineDistMinPix = 0;
-
-    if( i_iLayer >= 0 && i_iLayer < EDivLineLayerCount )
-    {
-        iDivLineDistMinPix = m_ariDivLineDistMinPix[i_iLayer];
-    }
-    return iDivLineDistMinPix;
-}
-
-//------------------------------------------------------------------------------
-void CDiagScale::zoomIn( int i_iZoomRectMinValPix, int i_iZoomRectMaxValPix )
-//------------------------------------------------------------------------------
-{
-    SScale scaleZoom = m_scale;
-    scaleZoom.m_fMin = getVal(static_cast<double>(i_iZoomRectMinValPix));
-    scaleZoom.m_fMax = getVal(static_cast<double>(i_iZoomRectMaxValPix));
-    pushScale(m_scale);
-    setScale(scaleZoom); // sets the flag calculated to false and calls "scaleChanged" of diagram
-
-} // zoomIn
-
-//------------------------------------------------------------------------------
-void CDiagScale::zoomIn( double i_fMinVal, double i_fMaxVal, CUnit* i_pUnit )
-//------------------------------------------------------------------------------
-{
-    CUnit unit = m_scale.m_unit;
-
-    if( i_pUnit != nullptr )
-    {
-        unit = *i_pUnit;
-    }
-
-    if( !areOfSameUnitGroup(m_scale.m_unit, unit) )
-    {
-        throw CException(__FILE__,__LINE__,EResultDifferentPhysSizes);
-    }
-
-    bool bConvertible = true;
-
-    if( unit != m_scale.m_unit )
-    {
-        // I want to see if the physical unit is convertible before pushing
-        // the new scale onto the stack. Otherwise the "unit not convertible"
-        // exception would be thrown on poping the scale from the stack.
-        // And thats too late to find the cause and source of the exception.
-        bConvertible = unit.isConvertible(m_scale.m_unit, 0.0);
-    }
-    if( bConvertible )
-    {
-        SScale scaleZoom = m_scale;
-
-        scaleZoom.m_fMin  = i_fMinVal;
-        scaleZoom.m_fMax  = i_fMaxVal;
-        scaleZoom.m_unit = unit;
-
-        pushScale(m_scale);
-        setScale(scaleZoom); // sets the flag calculated to false and calls "scaleChanged" of diagram
-    }
-
-} // zoomIn
-
-//------------------------------------------------------------------------------
-void CDiagScale::zoomOut( bool i_bComplete )
-//------------------------------------------------------------------------------
-{
-    SScale scale = m_scale;
-
-    if( i_bComplete )
-    {
-        if( m_iZoomCount > 0 && m_pZoomStackFirst != nullptr )
-        {
-            scale = m_pZoomStackFirst->m_scale;
-
-            try
-            {
-                clearScaleStack();
-            }
-            catch(...)
-            {
-            }
-        }
-        m_pZoomStackFirst = nullptr; // passierte zwar schon in clearScaleStack, weiss aber lint nicht
-        m_pZoomStackLast = nullptr;  // passierte zwar schon in clearScaleStack, weiss aber lint nicht
-    }
-    else if( m_iZoomCount > 0 )
-    {
-        scale = popScale();
-    }
-    if( scale != m_scale )
-    {
-        setScale(scale); // sets the flag calculated to false and calls "scaleChanged" of diagram
-    }
-
-} // zoomOut
-
-//------------------------------------------------------------------------------
-void CDiagScale::setGeometry( int i_iScaleMinValPix, int i_iScaleMaxValPix )
-//------------------------------------------------------------------------------
-{
-    QString strTrcMsg;
-
-    if( m_pTrcAdminObjLayout != nullptr && m_pTrcAdminObjLayout->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strTrcMsg  = "MinValPix: " + QString::number(i_iScaleMinValPix);
-        strTrcMsg += ", MaxValPix: " + QString::number(i_iScaleMaxValPix);
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjLayout,
-        /* iDatailLevel */ EMethodTraceDetailLevel::ArgsNormal,
-        /* strMethod    */ "setGeometry",
-        /* strAddInfo   */ strTrcMsg );
-
-    if( m_iScaleMinValPix != i_iScaleMinValPix || m_iScaleMaxValPix != i_iScaleMaxValPix )
-    {
-        m_iScaleMinValPix = i_iScaleMinValPix;
-        m_iScaleMaxValPix = i_iScaleMaxValPix;
-        m_bScaleResCalculated = false;
-        m_bDivLinesCalculated = false;
-
         if( m_pDiagram != nullptr )
         {
             m_pDiagram->scaleChanged(this);
         }
+        emit_divLineDistMinPixChanged(i_eLayer.enumerator(), i_iDistMinPix);
     }
-
-} // setGeometry
-
-//------------------------------------------------------------------------------
-bool CDiagScale::areDivLinesCalculated() const
-//------------------------------------------------------------------------------
-{
-    return m_bDivLinesCalculated;
 }
 
 //------------------------------------------------------------------------------
-double CDiagScale::getPixRes( CUnit* i_pUnit ) const
+/*! @brief Returns the minimum distance between two division lines in pixels.
+
+    The final distance between two division lines is calculated based on this value
+    so that the division line values become a whole number of a decimal power.
+
+    @param i_eLayer [in]
+        Range [Main, Sub]
+        Layer for which the value should be applied.
+
+    @return Minimum distance between two division lines in pixels.
+*/
+int CDiagScale::getDivLineDistMinPix( const CEnumDivLineLayer& i_eLayer ) const
 //------------------------------------------------------------------------------
 {
-    CUnit unit = m_scale.m_unit;
+    return m_divLines.divLinesDistMinInPix(i_eLayer);
+}
 
-    if( i_pUnit != nullptr )
-    {
+//------------------------------------------------------------------------------
+/*! @brief Returns whether the division line values have been calculated.
+
+    Usually there should be no need to call this method explicitly.
+    The flag is internally set to false if properties are changed and
+    set to true if the division line values have been recalculated by
+    the update method.
+
+    @return true, if calculated, false otherwise.
+*/
+bool CDiagScale::areDivLinesCalculated() const
+//------------------------------------------------------------------------------
+{
+    return m_divLines.divLinesCalculated();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the number of calculated division lines for the given layer.
+
+    @param i_eLayer [in]
+        Range [Main, Sub]
+        Layer for which the value should be returned.
+
+    @return Number of division lines.
+*/
+int CDiagScale::getDivLineCount( const CEnumDivLineLayer& i_eLayer ) const
+//------------------------------------------------------------------------------
+{
+    return m_divLines.getDivLinesCount(i_eLayer);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the calculated distance between two division lines for the
+           given layer.
+
+    For linear spaced scales the distance between two successive division lines
+    is the same. For logarithmic scales the minimum value is returned.
+
+    @param i_eLayer [in]
+        Range [Main, Sub, Invalid]
+        Layer for which the value should be returned.
+        You may pass an invalid enum value if you want to consider all layers.
+    @param i_pUnit [in]
+        You may pass a pointer to a unit if you want to convert the value.
+
+    @return Number of division lines.
+*/
+double CDiagScale::getDivLineDistMin(
+    const CEnumDivLineLayer& i_eLayer, const PhysVal::CUnit* i_pUnit ) const
+//------------------------------------------------------------------------------
+{
+    CUnit unit = m_scale.unit();
+    if( i_pUnit != nullptr ) {
         unit = *i_pUnit;
     }
-    if( !areOfSameUnitGroup(m_scale.m_unit,unit) )
-    {
+    if( !areOfSameUnitGroup(m_scale.unit(), unit) ) {
+        throw CException(__FILE__, __LINE__, EResultDifferentPhysSizes);
+    }
+    double fDivLineDistMin = m_divLines.getDivLinesDistMin(i_eLayer);
+    return m_scale.unit().convertValue(fDivLineDistMin, unit);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the value at the specified division line.
+
+    @param i_eLayer [in]
+        Range [Main, Sub]
+        Layer for which the value should be returned.
+    @param i_idxDivLine [in]
+        Range [0..DivLineCount-1]
+        Index of the division line the value should be returned.
+    @param i_pUnit [in]
+        You may pass a pointer to a unit if you want to convert the value.
+
+    @return Value in world coordinates of the division line.
+*/
+double CDiagScale::getDivLineVal(
+    const CEnumDivLineLayer& i_eLayer, int i_idxDivLine, const CUnit* i_pUnit ) const
+//------------------------------------------------------------------------------
+{
+    CUnit unit = m_scale.unit();
+    if( i_pUnit != nullptr ) {
+        unit = *i_pUnit;
+    }
+    if( !areOfSameUnitGroup(m_scale.unit(), unit) ) {
+        throw CException(__FILE__, __LINE__, EResultDifferentPhysSizes);
+    }
+    double fDivLineVal = m_divLines.getDivLineVal(i_eLayer, i_idxDivLine);
+    return m_scale.unit().convertValue(fDivLineVal, unit);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the value in pixels at the specified division line.
+
+    @param i_eLayer [in]
+        Range [Main, Sub]
+        Layer for which the value should be returned.
+    @param i_idxDivLine [in]
+        Range [0..DivLineCount-1]
+        Index of the division line the value should be returned.
+
+    @return Value in pixel coordinates of the division line.
+*/
+double CDiagScale::getDivLinePix( const CEnumDivLineLayer& i_eLayer, int i_idxDivLine ) const
+//------------------------------------------------------------------------------
+{
+    return m_divLines.getDivLineInPix(i_eLayer, i_idxDivLine);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the distance in world coordinates (physical values)
+           between the specified division lines.
+
+    @param i_eLayer [in]
+        Range [Main, Sub]
+        Layer for which the value should be returned.
+    @param i_idxDivLine1 [in]
+        Range [0..DivLineCount-1]
+        Index of the first division line to be used.
+    @param i_idxDivLine2 [in]
+        Range [0..DivLineCount-1]
+        Index of the second division line to be used.
+    @param i_pUnit [in]
+        You may pass a pointer to a unit if you want to convert the value.
+
+    @return Distance in world coordinates between the two division lines.
+*/
+double CDiagScale::getDivLineDistVal(
+    const CEnumDivLineLayer& i_eLayer, int i_idxDivLine1, int i_idxDivLine2,
+    const PhysVal::CUnit* i_pUnit) const
+//------------------------------------------------------------------------------
+{
+    CUnit unit = m_scale.unit();
+    if( i_pUnit != nullptr ) {
+        unit = *i_pUnit;
+    }
+    if( !areOfSameUnitGroup(m_scale.unit(), unit) ) {
+        throw CException(__FILE__, __LINE__, EResultDifferentPhysSizes);
+    }
+    double fDivLineDist = m_divLines.getDivLineDistVal(i_eLayer, i_idxDivLine1, i_idxDivLine2);
+    return m_scale.unit().convertValue(fDivLineDist, unit);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the distance in pixels between the specified division lines.
+
+    @param i_eLayer [in]
+        Range [Main, Sub]
+        Layer for which the value should be returned.
+    @param i_idxDivLine1 [in]
+        Range [0..DivLineCount-1]
+        Index of the first division line to be used.
+    @param i_idxDivLine2 [in]
+        Range [0..DivLineCount-1]
+        Index of the second division line to be used.
+
+    @return Distance in pixel coordinates between the two division lines.
+*/
+double CDiagScale::getDivLineDistPix(
+    const CEnumDivLineLayer& i_eLayer, int i_idxDivLine1, int i_idxDivLine2 ) const
+//------------------------------------------------------------------------------
+{
+    return m_divLines.getDivLineDistInPix(i_eLayer, i_idxDivLine1, i_idxDivLine2);
+}
+
+/*==============================================================================
+public: // instance mehods (calculation of division lines)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Returns a reference to the internal division lines scaler instance.
+
+    The returned reference may not be changed by the caller as it contains
+    the internal data of the diagram scale object. But the referen may be
+    used to initialize scalers outside of the diagram scale object.
+    For example by the diagram axis label object to assign the current
+    division line calculation result for further data processing like
+    calculating the extent of the division line labels.
+
+    @return Reference to division line scaler.
+*/
+const ZS::System::Math::CScaleDivLines& CDiagScale::getDivLinesScaler() const
+//------------------------------------------------------------------------------
+{
+    return m_divLines;
+}
+
+/*==============================================================================
+public: // instance methods (converting values)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the value in pixels for the given value.
+
+    @param i_fVal [in]
+        Value in world coordinates (physical value)
+    @param i_pUnit [in]
+        You may pass a pointer to a unit if the passed value is different
+        from the scale unit.
+
+    @return Value in pixel coordinates of the given value.
+*/
+int CDiagScale::getValPix( double i_fVal, const CUnit* i_pUnit ) const
+//------------------------------------------------------------------------------
+{
+    CUnit unit = m_scale.unit();
+    if( i_pUnit != nullptr ) {
+        unit = *i_pUnit;
+    }
+    if( !areOfSameUnitGroup(m_scale.unit(), unit) ) {
         throw CException(__FILE__,__LINE__,EResultDifferentPhysSizes);
     }
 
-    double fPixRes = m_fPixRes;
+    double fPix = static_cast<double>(m_divLines.scaleMinInPix());
 
-    if( unit != m_scale.m_unit )
+    if( getRangePix() > 1 && isScaleValid() )
     {
-        fPixRes = m_scale.m_unit.convertValue(fPixRes, unit);
+        double fVal = unit.convertValue(i_fVal, m_scale.unit());
+        fPix = m_divLines.getValInPix(fVal);
     }
-    return fPixRes;
-
-} // getPixRes
+    return static_cast<int>(fPix);
+}
 
 //------------------------------------------------------------------------------
-double CDiagScale::getScaleRes( CUnit* i_pUnit ) const
+/*! @brief Returns the value in world coordinates (physical value) for the
+           given position in pixels.
+
+    @param i_fPix [in]
+        Value in pixel coordinates.
+    @param i_pUnit [in]
+        You may pass a pointer to a unit if the returned value should be
+        converted into another unit than the current scale unit.
+
+    @return Value in world coordinates.
+*/
+double CDiagScale::getVal( double i_fPix, const CUnit* i_pUnit ) const
 //------------------------------------------------------------------------------
 {
-    CUnit unit = m_scale.m_unit;
-
-    if( i_pUnit != nullptr )
-    {
+    CUnit unit = m_scale.unit();
+    if( i_pUnit != nullptr ) {
         unit = *i_pUnit;
     }
-    if( !areOfSameUnitGroup(m_scale.m_unit,unit) )
-    {
-        throw CException(__FILE__,__LINE__,EResultDifferentPhysSizes);
+    if( !areOfSameUnitGroup(m_scale.unit(), unit) ) {
+        throw CException(__FILE__, __LINE__, EResultDifferentPhysSizes);
     }
 
-    double fRes;
+    double fVal = m_scale.minVal().getVal(unit);
 
-    if( m_spacing == ESpacingLinear )
+    if( getRangePix() > 1 && isScaleValid() )
     {
-        fRes = m_fScaleRes;
+        fVal = m_divLines.getVal(i_fPix);
+        fVal = m_scale.unit().convertValue(fVal, unit);
     }
-    else
-    {
-        fRes = pow(10.0,m_fScaleRes);
-    }
-    if( unit != m_scale.m_unit )
-    {
-        fRes = m_scale.m_unit.convertValue(fRes, unit);
-    }
-    return fRes;
-
-} // getScaleRes
-
-//------------------------------------------------------------------------------
-double CDiagScale::getScaleRes( double i_fVal, CUnit* i_pUnit ) const
-//------------------------------------------------------------------------------
-{
-    CUnit unit = m_scale.m_unit;
-
-    if( i_pUnit != nullptr )
-    {
-        unit = *i_pUnit;
-    }
-    if( !areOfSameUnitGroup(m_scale.m_unit,unit) )
-    {
-        throw CException(__FILE__,__LINE__,EResultDifferentPhysSizes);
-    }
-
-    // In linear spacing the resolution is constant through the whole axis range.
-    // In logarithmic spacing the resolution is not constant but decreases to
-    // higher values.
-
-    double fVal = i_fVal;
-    double fRes;
-
-    if( m_spacing == ESpacingLinear )
-    {
-        fRes = m_fScaleRes;
-    }
-    else
-    {
-        if( unit != m_scale.m_unit )
-        {
-            fVal = unit.convertValue(fVal, m_scale.m_unit);
-        }
-        fRes = logRes2LinRes(m_fScaleRes, fVal);
-    }
-    if( unit != m_scale.m_unit )
-    {
-        fRes = m_scale.m_unit.convertValue(fRes, unit);
-    }
-    return fRes;
-
-} // getScaleRes
-
-//------------------------------------------------------------------------------
-double CDiagScale::round2ScaleRes( double i_fVal, CUnit* i_pUnit ) const
-//------------------------------------------------------------------------------
-{
-    double fRes = getScaleRes(i_fVal, i_pUnit);
-    double fVal = Math::round2Res(i_fVal, fRes);
     return fVal;
 }
 
 //------------------------------------------------------------------------------
-int CDiagScale::getScaleMinValPix() const
-//------------------------------------------------------------------------------
-{
-    return m_iScaleMinValPix;
-}
+/*! @brief Returns the given value into its string representation.
 
-//------------------------------------------------------------------------------
-int CDiagScale::getScaleMaxValPix() const
-//------------------------------------------------------------------------------
-{
-    return m_iScaleMaxValPix;
-}
+    @param i_fVal [in]
+        Value in world coordinates (physical value)
+    @param i_pUnit [in]
+        You may pass a pointer to a unit if the passed value is different
+        from the scale unit.
+    @param i_iDigitsCountMax [in]
+        Maximum number of digits used for the output string.
+    @param i_bUseEngineeringFormat [in]
+        true if the value should be converted using engineering format,
+        false otherwise.
 
-//------------------------------------------------------------------------------
-int CDiagScale::getScaleRangePix() const
-//------------------------------------------------------------------------------
-{
-    int iScaleRangePix = 0;
-
-    if( m_iScaleMaxValPix > m_iScaleMinValPix )
-    {
-        iScaleRangePix = m_iScaleMaxValPix - m_iScaleMinValPix + 1; //lint !e834
-    }
-    else if( m_iScaleMinValPix > m_iScaleMaxValPix )
-    {
-        iScaleRangePix = m_iScaleMinValPix - m_iScaleMaxValPix + 1; //lint !e834
-    }
-    return iScaleRangePix;
-}
-
-//------------------------------------------------------------------------------
-int CDiagScale::getDivLineCount( int i_iLayer ) const
-//------------------------------------------------------------------------------
-{
-    int iDivLineCount = 0;
-
-    if( i_iLayer >= 0 && i_iLayer < EDivLineLayerCount )
-    {
-        if( getScaleRangePix() > 1 && isScaleValid() && areDivLinesCalculated() )
-        {
-            iDivLineCount = m_ariDivLineCount[i_iLayer];
-        }
-    }
-    return iDivLineCount;
-}
-
-//------------------------------------------------------------------------------
-double CDiagScale::getDivLineVal( int i_iLayer, int i_idxDivLine, CUnit* i_pUnit ) const
-//------------------------------------------------------------------------------
-{
-    CUnit unit = m_scale.m_unit;
-
-    if( i_pUnit != nullptr )
-    {
-        unit = *i_pUnit;
-    }
-    if( !areOfSameUnitGroup(m_scale.m_unit,unit) )
-    {
-        throw CException(__FILE__,__LINE__,EResultDifferentPhysSizes);
-    }
-
-    double fDivLineVal = 0.0;
-
-    if( i_iLayer >= 0 && i_iLayer < EDivLineLayerCount )
-    {
-        if( getScaleRangePix() > 1 && isScaleValid() && areDivLinesCalculated() )
-        {
-            if( i_idxDivLine < m_ariDivLineCount[i_iLayer] && m_ararfDivLineVal[i_iLayer] != nullptr )
-            {
-                fDivLineVal = m_ararfDivLineVal[i_iLayer][i_idxDivLine];
-            }
-            if( unit != m_scale.m_unit )
-            {
-                fDivLineVal = m_scale.m_unit.convertValue(fDivLineVal, unit);
-            }
-        }
-    }
-    return fDivLineVal;
-
-} // getDivLineVal
-
-//------------------------------------------------------------------------------
-double CDiagScale::getDivLinePix( int i_iLayer, int i_idxDivLine ) const
-//------------------------------------------------------------------------------
-{
-    double fDivLinePix = 0.0;
-
-    if( i_iLayer >= 0 && i_iLayer < EDivLineLayerCount )
-    {
-        if( getScaleRangePix() > 1 && isScaleValid() && areDivLinesCalculated() )
-        {
-            if( i_idxDivLine < m_ariDivLineCount[i_iLayer] && m_ararfDivLinePix[i_iLayer] != nullptr )
-            {
-                fDivLinePix = m_ararfDivLinePix[i_iLayer][i_idxDivLine];
-            }
-        }
-    }
-    return fDivLinePix;
-}
-
-//------------------------------------------------------------------------------
-double CDiagScale::getDivLineDistPix( int i_iLayer, int i_idxDivLine1, int i_idxDivLine2 ) const
-//------------------------------------------------------------------------------
-{
-    double fDivLineDistPix = 0.0;
-
-    if( i_iLayer >= 0 && i_iLayer < EDivLineLayerCount )
-    {
-        if( i_idxDivLine1 < m_ariDivLineCount[i_iLayer]
-         && i_idxDivLine2 < m_ariDivLineCount[i_iLayer]
-         && m_ararfDivLinePix[i_iLayer] != nullptr )
-        {
-            fDivLineDistPix = m_ararfDivLinePix[i_idxDivLine2] - m_ararfDivLinePix[i_idxDivLine1];
-        }
-    }
-    return fDivLineDistPix;
-}
-
-//------------------------------------------------------------------------------
-int CDiagScale::getValPix( double i_fVal, CUnit* i_pUnit ) const
-//------------------------------------------------------------------------------
-{
-    CUnit unit = m_scale.m_unit;
-
-    if( i_pUnit != nullptr )
-    {
-        unit = *i_pUnit;
-    }
-    if( !areOfSameUnitGroup(m_scale.m_unit,unit) )
-    {
-        throw CException(__FILE__,__LINE__,EResultDifferentPhysSizes);
-    }
-
-    double fPix = m_iScaleMinValPix;
-
-    if( getScaleRangePix() > 1 && isScaleValid() )
-    {
-        double fVal = i_fVal;
-        double fScalePixMin   = static_cast<double>(m_iScaleMinValPix);
-        double fScalePixMax   = static_cast<double>(m_iScaleMaxValPix);
-        double fScalePixRange  = static_cast<double>(getScaleRangePix());
-        double fScaleValMin   = m_scale.m_fMin;
-        double fScaleValMax   = m_scale.m_fMax;
-        double fScaleValRange = fabs(fScaleValMax-fScaleValMin);
-        double fPixRes;
-        bool   bDivLineHit = false;
-        double fDivLineVal1;
-        double fDivLineVal2;
-        int    iLayer;
-        int    idxDivLine;
-
-        // Calculate range and resolution of one pixel:
-        if( m_spacing == ESpacingLogarithmic )
-        {
-            fScaleValMin = log10(fScaleValMin);
-            fScaleValMax = log10(fScaleValMax);
-        }
-        fScaleValRange = fabs(fScaleValMax-fScaleValMin);
-        fScalePixRange = fabs(fScalePixMax-fScalePixMin)+1;
-        fPixRes        = (fScalePixRange-1) / fScaleValRange;
-
-        // Convert value into unit of division line values.
-        if( unit != m_scale.m_unit )
-        {
-            fVal = unit.convertValue(i_fVal, m_scale.m_unit);
-        }
-
-        // At the minimum scale value ..
-        if( fVal == m_scale.m_fMin )
-        {
-            fPix = m_iScaleMinValPix;
-        }
-        // At the maximum scale value ..
-        else if( fVal == m_scale.m_fMax )
-        {
-            fPix = m_iScaleMaxValPix;
-        }
-
-        // Somewhere between minimum and maximum scale ..
-        else
-        {
-            // Get the nearest division line.
-            for( iLayer = 0; iLayer < EDivLineLayerCount; iLayer++ )
-            {
-                if( m_ararfDivLinePix[iLayer] != nullptr && m_ararfDivLineVal[iLayer] != nullptr )
-                {
-                    if( m_ariDivLineCount[iLayer] > 1 )
-                    {
-                        for( idxDivLine = 0; idxDivLine < m_ariDivLineCount[iLayer]-1; idxDivLine++ )
-                        {
-                            fDivLineVal1 = m_ararfDivLineVal[iLayer][idxDivLine];
-                            fDivLineVal2 = m_ararfDivLineVal[iLayer][idxDivLine+1];
-
-                            if( fVal >= (fDivLineVal1-DBL_EPSILON) && fVal <= (fDivLineVal1+DBL_EPSILON) )
-                            {
-                                fPix = static_cast<int>(m_ararfDivLinePix[iLayer][idxDivLine]);
-                                bDivLineHit = true;
-                                break;
-                            }
-                            else if( fVal >= (fDivLineVal2-DBL_EPSILON) && fVal <= (fDivLineVal2+DBL_EPSILON) )
-                            {
-                                fPix = static_cast<int>(m_ararfDivLinePix[iLayer][idxDivLine+1]);
-                                bDivLineHit = true;
-                                break;
-                            }
-                            else if( fVal > fDivLineVal1 && fVal < fDivLineVal2 )
-                            {
-                                break;
-                            }
-                        }
-                    }
-                    else if( m_ariDivLineCount[iLayer] == 1 )
-                    {
-                        fDivLineVal1 = m_ararfDivLineVal[iLayer][0];
-
-                        if( fVal == fDivLineVal1 )
-                        {
-                            fPix = static_cast<int>(m_ararfDivLinePix[iLayer][0]);
-                            bDivLineHit = true;
-                        }
-                    }
-                } // if( m_ararfDivLinePix[iLayer] != nullptr && m_ararfDivLineVal[iLayer] != nullptr )
-
-                if( bDivLineHit )
-                {
-                    break;
-                }
-            } // for( iLayer < EDivLineLayerCount )
-
-            // Did not hit a division line ..
-            if( !bDivLineHit )
-            {
-                if( m_spacing == ESpacingLogarithmic )
-                {
-                    fVal = log10(fVal);
-                }
-
-                // Calculate value as distance to left grid line:
-                switch( m_scaleDir )
-                {
-                    case EScaleDirX:
-                    {
-                        fPix = fScalePixMin + fPixRes*(fVal-fScaleValMin); //lint !e834
-                        break;
-                    }
-                    case EScaleDirY:
-                    {
-                        fPix = fScalePixMin - fPixRes*(fVal-fScaleValMin); //lint !e834
-                        break;
-                    }
-                    default:
-                    {
-                        break;
-                    }
-                }
-            } // Neither hit a main nor a sub division line ..
-        } // Somewhere between minimum and maximum scale ..
-    } // if( isScaleValid() )
-
-    return static_cast<int>(fPix);
-
-} // getValPix
-
-//------------------------------------------------------------------------------
+    @return Value converted to string.
+*/
 QString CDiagScale::getValString(
-    double i_fVal,
-    CUnit* i_pUnit,
-    int    i_iDigitsCountMax,
-    bool   i_bUseEngineeringFormat ) const
+    double i_fVal, const CUnit* i_pUnit,
+    int i_iDigitsCountMax, bool i_bUseEngineeringFormat ) const
 //------------------------------------------------------------------------------
 {
-    CUnit unit = m_scale.m_unit;
+    CUnit unit = m_scale.unit();
 
     if( i_pUnit != nullptr )
     {
         unit = *i_pUnit;
     }
-    if( !areOfSameUnitGroup(m_scale.m_unit,unit) )
+    if( !areOfSameUnitGroup(m_scale.unit(), unit) )
     {
         throw CException(__FILE__,__LINE__,EResultDifferentPhysSizes);
     }
@@ -1165,7 +1443,7 @@ QString CDiagScale::getValString(
         int    iLeadingDigits = 1;
         int    iTrailingDigits = 1;
         int    iExponentDigits = 0;
-        double fScaleRes = getScaleRes(i_fVal, &unit);
+        double fScaleRes = getScaleRes().getVal(unit);
 
         if( fVal >= 10.0 )
         {
@@ -1222,169 +1500,162 @@ QString CDiagScale::getValString(
 
 } // getValString
 
+/*==============================================================================
+public: // instance methods (zooming)
+==============================================================================*/
+
 //------------------------------------------------------------------------------
-double CDiagScale::getVal( double i_fPix, CUnit* i_pUnit ) const
+/*! @brief Sets the scale to the new zoom geometry and pushes the current
+           scale on the zoom stack.
+
+    @param i_iZoomRectMinValPix [in]
+        Minimum value in pixels to which the current scale should be zoomed in.
+        The new scale minimum value will be set to the value at this given
+        pixel coordinate.
+    @param i_iZoomRectMaxValPix [in]
+        Maximum value in pixels to which the current scale should be zoomed in.
+        The new scale maximum value will be set to the value at this given
+        pixel coordinate.
+*/
+void CDiagScale::zoomIn( int i_iZoomRectMinValPix, int i_iZoomRectMaxValPix )
 //------------------------------------------------------------------------------
 {
-    CUnit unit = m_scale.m_unit;
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString::number(i_iZoomRectMinValPix) + ", " + QString::number(i_iZoomRectMaxValPix);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjUpdate,
+        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "zoomIn",
+        /* strAddInfo   */ strMthInArgs );
+
+    CScale scaleZoom = m_scale;
+    scaleZoom.setMinVal(getVal(static_cast<double>(i_iZoomRectMinValPix)));
+    scaleZoom.setMaxVal(getVal(static_cast<double>(i_iZoomRectMaxValPix)));
+    pushScale(m_scale);
+    setScale(scaleZoom); // sets the flag calculated to false and calls "scaleChanged" of diagram
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets new scale values and pushes the current scale onto the zoom stack.
+
+    @param i_fMinVal [in]
+        New minimum scale value in world coordinates (physical value).
+    @param i_fMaxVal [in]
+        New maximum scale value in world coordinates (physical value).
+    @param i_pUnit [in]
+        You may pass a pointer to a unit if the given minimum and maximum value
+        are not in the scales current unit.
+*/
+void CDiagScale::zoomIn( double i_fMinVal, double i_fMaxVal, CUnit* i_pUnit )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString::number(i_fMinVal) + ", " + QString::number(i_fMaxVal);
+        if (i_pUnit != nullptr ) strMthInArgs += ", " + i_pUnit->symbol();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjUpdate,
+        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "zoomIn",
+        /* strAddInfo   */ strMthInArgs );
+
+    CUnit unit = m_scale.unit();
 
     if( i_pUnit != nullptr )
     {
         unit = *i_pUnit;
     }
-    if( !areOfSameUnitGroup(m_scale.m_unit,unit) )
+
+    if( !areOfSameUnitGroup(m_scale.unit(), unit) )
     {
         throw CException(__FILE__,__LINE__,EResultDifferentPhysSizes);
     }
 
-    double fVal = m_scale.m_fMin;
+    bool bConvertible = true;
 
-    if( getScaleRangePix() <= 1 )
+    if( unit != m_scale.unit() )
     {
-        return m_scale.m_fMin;
+        // I want to see if the physical unit is convertible before pushing
+        // the new scale onto the stack. Otherwise the "unit not convertible"
+        // exception would be thrown on poping the scale from the stack.
+        // And thats too late to find the cause and source of the exception.
+        bConvertible = unit.isConvertible(m_scale.unit(), 0.0);
     }
-    if( isScaleValid() )
+    if( bConvertible )
     {
-        double fScalePixMin   = static_cast<double>(m_iScaleMinValPix);
-        double fScalePixMax   = static_cast<double>(m_iScaleMaxValPix);
-        double fScalePixRange = static_cast<double>(getScaleRangePix());
-        double fScaleValMin   = m_scale.m_fMin;
-        double fScaleValMax   = m_scale.m_fMax;
-        double fScaleValRange = fabs(fScaleValMax-fScaleValMin);
-        double fPixRes;
-        bool   bDivLineHit = false;
-        double fDivLinePix1;
-        double fDivLinePix2;
-        int    iLayer;
-        int    idxDivLine;
+        CScale scaleZoom = m_scale;
 
-        // Calculate range and resolution of one pixel:
-        if( m_spacing == ESpacingLogarithmic )
-        {
-            fScaleValMin = log10(fScaleValMin);
-            fScaleValMax = log10(fScaleValMax);
-        }
-        fScaleValRange = fabs(fScaleValMax-fScaleValMin);
-        fScalePixRange = fabs(fScalePixMax-fScalePixMin)+1;
-        fPixRes        = fScaleValRange / fScalePixRange;
+        scaleZoom.setMinVal(i_fMinVal);
+        scaleZoom.setMaxVal(i_fMaxVal);
+        scaleZoom.setUnit(unit);
 
-        // At the minimum scale value ..
-        if( i_fPix == m_iScaleMinValPix )
-        {
-            fVal = m_scale.m_fMin;
-        }
-        // At the maximum scale value ..
-        else if( i_fPix == m_iScaleMaxValPix )
-        {
-            fVal = m_scale.m_fMax;
-        }
-
-        // Somewhere between minimum and maximum scale ..
-        else
-        {
-            // Get the nearest division line. This is necessary to exactly return the value
-            // at a grid line if the mouse cursor is positioned on a grid line.
-            for( iLayer = 0; iLayer < EDivLineLayerCount; iLayer++ )
-            {
-                if( m_ararfDivLinePix[iLayer] != nullptr && m_ararfDivLineVal[iLayer] != nullptr )
-                {
-                    if( m_ariDivLineCount[iLayer] > 1 )
-                    {
-                        for( idxDivLine = 0; idxDivLine < m_ariDivLineCount[iLayer]-1; idxDivLine++ )
-                        {
-                            fDivLinePix1 = m_ararfDivLinePix[iLayer][idxDivLine];
-                            fDivLinePix2 = m_ararfDivLinePix[iLayer][idxDivLine+1];
-
-                            if( i_fPix >= (fDivLinePix1-DBL_EPSILON) && i_fPix <= (fDivLinePix1+DBL_EPSILON) )
-                            {
-                                fVal = m_ararfDivLineVal[iLayer][idxDivLine];
-                                bDivLineHit = true;
-                                break;
-                            }
-                            else if( i_fPix >= (fDivLinePix2-DBL_EPSILON) && i_fPix <= (fDivLinePix2+DBL_EPSILON) )
-                            {
-                                fVal = m_ararfDivLineVal[iLayer][idxDivLine+1];
-                                bDivLineHit = true;
-                                break;
-                            }
-                            else if( i_fPix > fDivLinePix1 && i_fPix < fDivLinePix2 )
-                            {
-                                break;
-                            }
-                        }
-                    }
-                    else if( m_ariDivLineCount[iLayer] == 1 )
-                    {
-                        fDivLinePix1 = m_ararfDivLinePix[iLayer][0];
-
-                        if( i_fPix == fDivLinePix1 )
-                        {
-                            fVal = static_cast<int>(m_ararfDivLineVal[iLayer][0]);
-                            bDivLineHit = true;
-                        }
-                    }
-                } // if( m_ararfDivLinePix[iLayer] != nullptr && m_ararfDivLineVal[iLayer] != nullptr )
-
-                if( bDivLineHit )
-                {
-                    break;
-                }
-            } // for( iLayer < EDivLineLayerCount )
-
-            // Did not hit a division line ..
-            if( !bDivLineHit )
-            {
-                // Calculate value as distance to left grid line:
-                switch( m_scaleDir )
-                {
-                    case EScaleDirX:
-                    {
-                        fVal = fScaleValMin + fPixRes*(i_fPix-fScalePixMin+1); //lint !e834
-                        break;
-                    }
-                    case EScaleDirY:
-                    {
-                        fVal = fScaleValMin + fPixRes*(fScalePixMin-i_fPix+1); //lint !e834
-                        break;
-                    }
-                    default:
-                    {
-                        break;
-                    }
-                }
-                if( m_spacing == ESpacingLogarithmic )
-                {
-                    fVal = pow(10.0,fVal);
-                }
-            } // Neither hit a main nor a sub division line ..
-
-        } // Somewhere between minimum and maximum scale ..
-
-        if( m_spacing == ESpacingLinear )
-        {
-            fPixRes = Math::round2LowerDecade(fPixRes);
-        }
-        else
-        {
-            fPixRes = getScaleRes(fVal);
-        }
-        fVal = Math::round2Res(fVal,fPixRes);
-
-    } // if( isScaleValid() )
-
-    if( unit != m_scale.m_unit )
-    {
-        fVal = m_scale.m_unit.convertValue(fVal, unit);
+        pushScale(m_scale);
+        setScale(scaleZoom); // sets the flag calculated to false and calls "scaleChanged" of diagram
     }
-    return fVal;
+}
 
-} // getVal
+//------------------------------------------------------------------------------
+/*! @brief Sets the scaling to the last scale scale values of the zoom stack or
+           to the first scale value of the zoom stack, if i_bComplete is set to true.
+
+    Depending on the passed i_bComplete flag either just the most recently poped
+    value of the zoom stack is removed or the wholde zoom stack is cleared.
+
+    @param i_bComplete [in]
+        Set to true if the first scale values should be restored from zoom stack.
+*/
+void CDiagScale::zoomOut( bool i_bComplete )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Complete: " + bool2Str(i_bComplete);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjUpdate,
+        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "zoomOut",
+        /* strAddInfo   */ strMthInArgs );
+
+    CScale scale = m_scale;
+
+    if( i_bComplete )
+    {
+        if( m_iZoomCount > 0 && m_pZoomStackFirst != nullptr )
+        {
+            scale = m_pZoomStackFirst->m_scale;
+
+            try
+            {
+                clearScaleStack();
+            }
+            catch(...)
+            {
+            }
+        }
+        m_pZoomStackFirst = nullptr;
+        m_pZoomStackLast = nullptr;
+    }
+    else if( m_iZoomCount > 0 )
+    {
+        scale = popScale();
+    }
+    if( scale != m_scale )
+    {
+        setScale(scale); // sets the flag calculated to false and calls "scaleChanged" of diagram
+    }
+}
 
 /*==============================================================================
-public: // overridables
+protected: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Updates the internal data of the scale object.
+*/
 void CDiagScale::update()
 //------------------------------------------------------------------------------
 {
@@ -1396,709 +1667,34 @@ void CDiagScale::update()
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
-        QString strTrcMsg;
-        strTrcMsg  = "ScaleIsValid=";
-        strTrcMsg += QString::number(isScaleValid()) + ", ";
-        strTrcMsg += "DivLinesCalculated=";
-        strTrcMsg += QString::number(m_bDivLinesCalculated) + ", ";
-        strTrcMsg += "ScaleResCalculated=";
-        strTrcMsg += QString::number(m_bScaleResCalculated);
-        mthTracer.trace(strTrcMsg);
+        QString strMthRuntimeInfo =
+            "ScaleIsValid: " + bool2Str(isScaleValid()) +
+            ", DivLinesCalculated: " + bool2Str(m_divLines.divLinesCalculated());
     }
 
-    if( m_bDivLinesCalculated && m_bScaleResCalculated )
+    if (!m_divLines.divLinesCalculated())
     {
-        return;
+        m_divLines.update();
+
+        if( m_pDiagram != nullptr )
+        {
+            m_pDiagram->scaleChanged(this);
+        }
     }
-
-    int    iScaleRangePix = getScaleRangePix();
-    double fScaleRangePix = iScaleRangePix;
-    double fScaleRangeVal = m_scale.m_fMax - m_scale.m_fMin;
-    int    iLayer;
-
-    // Division lines:
-    //----------------
-
-    if( !m_bDivLinesCalculated )
-    {
-        for( iLayer = 0; iLayer < EDivLineLayerCount; iLayer++ )
-        {
-            m_ariDivLineCount[iLayer] = 0;
-            delete [] m_ararfDivLineVal[iLayer];
-            m_ararfDivLineVal[iLayer] = nullptr;
-            delete [] m_ararfDivLinePix[iLayer];
-            m_ararfDivLinePix[iLayer] = nullptr;
-        }
-        if( iScaleRangePix <= 1 || m_ariDivLineDistMinPix[EDivLineLayerMain] < 2 )
-        {
-            m_fPixRes = m_scale.m_fMax - m_scale.m_fMin;
-        }
-        else if( !isScaleValid() )
-        {
-            m_fPixRes = m_scale.m_fMax - m_scale.m_fMin;
-            m_ariDivLineCount[EDivLineLayerMain] = 2;
-            m_ararfDivLineVal[EDivLineLayerMain] = new double[m_ariDivLineCount[EDivLineLayerMain]];
-            m_ararfDivLinePix[EDivLineLayerMain] = new double[m_ariDivLineCount[EDivLineLayerMain]];
-            m_ararfDivLineVal[EDivLineLayerMain][0] = m_scale.m_fMin;
-            m_ararfDivLineVal[EDivLineLayerMain][1] = m_scale.m_fMax;
-            m_ararfDivLinePix[EDivLineLayerMain][0] = m_iScaleMinValPix;
-            m_ararfDivLinePix[EDivLineLayerMain][1] = m_iScaleMaxValPix;
-        }
-
-        // Calculate main and sub division lines
-        //--------------------------------------
-
-        else
-        {
-            // Calculate division lines for linear spacing
-            //--------------------------------------------
-
-            int ariDivLineCount[EDivLineLayerCount];
-
-            for( iLayer = 0; iLayer < EDivLineLayerCount; iLayer++ )
-            {
-                ariDivLineCount[iLayer] = 0;
-            }
-
-            if( m_spacing == ESpacingLinear )
-            {
-                double fDivLineDistValMin = m_scale.m_fMin;
-                double fDivLineDistValMax = m_scale.m_fMax;
-                int    ariDivLineCountTmp[EDivLineLayerCount];
-                double arfDivLineFirstVal[EDivLineLayerCount];
-                double arfDivLineDistFirstPix[EDivLineLayerCount];
-                double arfDivLineDistVal[EDivLineLayerCount];
-                double arfDivLineDistPix[EDivLineLayerCount];
-                double fPrevLayerDivLineVal;
-                double fCurrLayerDivLineVal;
-                int    idxDivLine;
-                int    idxDivLineTmp;
-
-                m_fPixRes = fScaleRangeVal / (fScaleRangePix-1.0);
-
-                for( iLayer = 0; iLayer < EDivLineLayerCount; iLayer++ )
-                {
-                    // Calculate optimized distance between two grid lines:
-                    ariDivLineCountTmp[iLayer] = CalculateDivLines4LinSpacing(
-                        /* fScaleMinVal          */ fDivLineDistValMin,
-                        /* fScaleMaxVal          */ fDivLineDistValMax,
-                        /* iScaleRangePix        */ iScaleRangePix,
-                        /* fDivLineDistMinVal    */ 0.0,
-                        /* iDivLineDistMinPix    */ m_ariDivLineDistMinPix[iLayer],
-                        /* bUseDivLineDecFac25   */ true,
-                        /* pfDivLineFirstVal     */ &arfDivLineFirstVal[iLayer],
-                        /* pfDivLineDistFirstPix */ &arfDivLineDistFirstPix[iLayer],
-                        /* pfDivLineDistVal      */ &arfDivLineDistVal[iLayer],
-                        /* pfDivLineDistPix      */ &arfDivLineDistPix[iLayer] );
-
-                    // Store the calculated results:
-                    if( ariDivLineCountTmp[iLayer] > 0 )
-                    {
-                        if( iLayer == 0 )
-                        {
-                            // Count visible sub division lines (thats eays for the main grid lines):
-                            ariDivLineCount[iLayer] = ariDivLineCountTmp[iLayer];
-
-                            m_ararfDivLineVal[iLayer] = new double[ariDivLineCount[iLayer]];
-                            m_ararfDivLinePix[iLayer] = new double[ariDivLineCount[iLayer]];
-
-                            // Calculate pixel values and store the calculated results of the main grid lines:
-                            for( idxDivLine = 0; idxDivLine < ariDivLineCount[iLayer]; idxDivLine++ )
-                            {
-                                double fVal = arfDivLineFirstVal[iLayer] + idxDivLine*arfDivLineDistVal[iLayer];
-                                if( fabs(fVal) < DBL_EPSILON )
-                                {
-                                    fVal = 0.0;
-                                }
-                                m_ararfDivLineVal[iLayer][idxDivLine] = fVal;
-                                m_ararfDivLinePix[iLayer][idxDivLine] = getValPix(fVal);
-                            }
-                        }
-                        else
-                        {
-                            // Count visible sub division lines:
-                            modf(m_scale.m_fMin/arfDivLineDistVal[iLayer-1],&fPrevLayerDivLineVal);
-                            fPrevLayerDivLineVal *= arfDivLineDistVal[iLayer-1];
-                            fCurrLayerDivLineVal = fPrevLayerDivLineVal;
-                            while( fCurrLayerDivLineVal <= m_scale.m_fMax )
-                            {
-                                for( idxDivLineTmp = 1; idxDivLineTmp < ariDivLineCountTmp[iLayer]-1; idxDivLineTmp++ )
-                                {
-                                    fCurrLayerDivLineVal = fPrevLayerDivLineVal + idxDivLineTmp*arfDivLineDistVal[iLayer];
-                                    if( fabs(fCurrLayerDivLineVal) < DBL_EPSILON )
-                                    {
-                                        fCurrLayerDivLineVal = 0.0;
-                                    }
-                                    if( fCurrLayerDivLineVal >= m_scale.m_fMin && fCurrLayerDivLineVal <= m_scale.m_fMax )
-                                    {
-                                        ariDivLineCount[iLayer]++;
-                                    }
-                                }
-                                fPrevLayerDivLineVal += arfDivLineDistVal[iLayer-1];
-                            }
-
-                            // Calculate pixel values and store the calculated results of the sub grid lines:
-                            if( ariDivLineCount[iLayer] > 0 )
-                            {
-                                m_ararfDivLineVal[iLayer] = new double[ariDivLineCount[iLayer]];
-                                m_ararfDivLinePix[iLayer] = new double[ariDivLineCount[iLayer]];
-
-                                modf(m_scale.m_fMin/arfDivLineDistVal[iLayer-1],&fPrevLayerDivLineVal);
-                                fPrevLayerDivLineVal *= arfDivLineDistVal[iLayer-1];
-                                fCurrLayerDivLineVal = fPrevLayerDivLineVal;
-                                idxDivLine = 0;
-                                while( fCurrLayerDivLineVal <= m_scale.m_fMax )
-                                {
-                                    for( idxDivLineTmp = 1; idxDivLineTmp < ariDivLineCountTmp[iLayer]-1; idxDivLineTmp++ )
-                                    {
-                                        fCurrLayerDivLineVal = fPrevLayerDivLineVal + idxDivLineTmp*arfDivLineDistVal[iLayer];
-                                        if( fabs(fCurrLayerDivLineVal) < DBL_EPSILON )
-                                        {
-                                            fCurrLayerDivLineVal = 0.0;
-                                        }
-                                        if( fCurrLayerDivLineVal >= m_scale.m_fMin && fCurrLayerDivLineVal <= m_scale.m_fMax )
-                                        {
-                                            if( idxDivLine < ariDivLineCount[iLayer] )
-                                            {
-                                                m_ararfDivLineVal[iLayer][idxDivLine] = fCurrLayerDivLineVal;
-                                                m_ararfDivLinePix[iLayer][idxDivLine] = getValPix(fCurrLayerDivLineVal);
-                                                idxDivLine++;
-                                            }
-                                        }
-                                    }
-                                    fPrevLayerDivLineVal += arfDivLineDistVal[iLayer-1];
-                                }
-                            }
-                        } // if( iLayer > 0 )
-                    } // if( ariDivLineCount[iLayer] > 0 )
-
-                    // If there is a next layer ...
-                    if( iLayer < EDivLineLayerCount-1 )
-                    {
-                        if( m_ariDivLineDistMinPix[iLayer+1] > 1 && m_ariDivLineDistMinPix[iLayer] > 2*m_ariDivLineDistMinPix[iLayer+1] )
-                        {
-                            fDivLineDistValMin = 0.0;
-                            fDivLineDistValMax = arfDivLineDistVal[iLayer];
-                        }
-                        else
-                        {
-                            // Next layer is empty ...
-                            break;
-                        }
-                    }
-
-                } // for( iLayer < EDivLineLayerCount )
-            } // if( m_spacing == ESpacingLinear )
-
-            // Calculate division lines for logarithmic spacing
-            //-------------------------------------------------
-
-            else // if( m_spacing == ESpacingLogarithmic )
-            {
-                // Sub grid (non equidistant) within main grid (equidistant) NOT including "left" and
-                // "right" main grid lines. Please note that in a logarithmic scale one decade comprises
-                // 8 sub grid lines, e.g. 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0 (the values 1.0 and
-                // 10.0 belong to the main grid):
-
-                double fScaleMinValLinNorm;
-                double fScaleMinValLinNormLeading;
-                double fScaleMinValLinNormFract;
-                int    iScaleMinValLinNormExp;
-                double fScaleMinValLinExt;
-                double fScaleMinValLinDec;
-                double fScaleMinValLog;
-                double fScaleMinValLogExt;
-                double fScaleMaxValLinNorm;
-                double fScaleMaxValLinNormLeading;
-                double fScaleMaxValLinNormFract;
-                int    iScaleMaxValLinNormExp;
-                double fScaleMaxValLog;
-                double fScaleMaxValLogExt;
-                double fScaleRangeValLog;
-                double fScaleRangePixDec;
-                int    ariDivLineCountMax[EDivLineLayerCount];
-                int    ariDivLineDistMinPix[EDivLineLayerCount];
-                double arfDivLineFirstValLog[EDivLineLayerCount];
-                double arfDivLineDistFirstPix[EDivLineLayerCount];
-                double arfDivLineDistValLog[EDivLineLayerCount];
-                double arfDivLineDistPix[EDivLineLayerCount];
-                double arfDivLineValLin[EDivLineLayerCount];
-                double arfDivLineValLog[EDivLineLayerCount];
-                int    idxDivLine;
-                int    idxDivLineTmp;
-                int    ariDivLineCountTmp[EDivLineLayerCount];
-                int    iLayerMain = EDivLineLayerMain;
-                int    iLayerSub = EDivLineLayerSub;
-                double fFacLin;
-                int    idxSection;
-
-                for( iLayer = 0; iLayer < EDivLineLayerCount; iLayer++ )
-                {
-                    ariDivLineCountMax[iLayer] = 0;
-                    ariDivLineDistMinPix[iLayer] = 0;
-                    arfDivLineFirstValLog[iLayer] = 0.0;
-                    arfDivLineDistFirstPix[iLayer] = 0.0;
-                    arfDivLineDistValLog[iLayer] = 0.0;
-                    arfDivLineDistPix[iLayer] = 0.0;
-                    arfDivLineValLin[iLayer] = 0.0;
-                    arfDivLineValLog[iLayer] = 0.0;
-                    ariDivLineCountTmp[iLayer] = 0;
-                }
-
-                fScaleMinValLog = log10(m_scale.m_fMin);
-                fScaleMaxValLog = log10(m_scale.m_fMax);
-                fScaleRangeValLog = fScaleMaxValLog - fScaleMinValLog;
-
-                m_fPixRes = fScaleRangeValLog / (fScaleRangePix-1.0);
-
-                // Normalize the axis range to engineering format (e.g. 4.234e9):
-                iScaleMinValLinNormExp = static_cast<int>(fScaleMinValLog);
-                fScaleMinValLinNorm = m_scale.m_fMin/pow(10.0,iScaleMinValLinNormExp);
-                while( fScaleMinValLinNorm < 1.0 )
-                {
-                    iScaleMinValLinNormExp--;
-                    fScaleMinValLinNorm *= 10.0;
-                }
-                while( fScaleMinValLinNorm >= 10.0 )
-                {
-                    iScaleMinValLinNormExp++;
-                    fScaleMinValLinNorm /= 10.0;
-                }
-                fScaleMinValLinNormFract = modf(fScaleMinValLinNorm,&fScaleMinValLinNormLeading);
-
-                iScaleMaxValLinNormExp = static_cast<int>(fScaleMaxValLog);
-                fScaleMaxValLinNorm = m_scale.m_fMax/pow(10.0,iScaleMaxValLinNormExp);
-                while( fScaleMaxValLinNorm < 1.0 )
-                {
-                    iScaleMaxValLinNormExp--;
-                    fScaleMaxValLinNorm *= 10.0;
-                }
-                while( fScaleMaxValLinNorm >= 10.0 )
-                {
-                    iScaleMaxValLinNormExp++;
-                    fScaleMaxValLinNorm /= 10.0;
-                }
-                fScaleMaxValLinNormFract = modf(fScaleMaxValLinNorm,&fScaleMaxValLinNormLeading);
-
-                // Extend the axis range by rounding down the scale minimum value and rounding up the
-                // scale maximum value so that the following applies:
-                // - log(ScaleMinVal) MOD 1 = 0
-                // - log(ScaleMaxVal) MOD 1 = 0
-
-                // Round down minimum scale value:
-                fScaleMinValLogExt = iScaleMinValLinNormExp;
-                fScaleMinValLinExt = pow(10.0,fScaleMinValLogExt);
-
-                // Round up maximum scale value:
-                fScaleMaxValLogExt = iScaleMaxValLinNormExp;
-                if( fScaleMaxValLinNorm > 1.0 || fScaleMaxValLinNormFract > 0.0 || fScaleMaxValLogExt == fScaleMinValLogExt ) //lint !e777
-                {
-                    fScaleMaxValLogExt += 1.0;
-                }
-
-                // Get extended range:
-                //fScaleMinPixExt = m_iScaleMinValPix - (fScaleMinValLog-fScaleMinValLogExt) * (iScaleRangePix/fScaleRangeValLog);
-
-                // Calculate "main" division lines.
-                //---------------------------------
-
-                // For the values of the main division lines the following constraint must apply:
-                // - log(MainDivLineVal) MOD 1 = 0
-                // The distances between the main division lines are the same (equidistant grid).
-
-                // Calculate maximum number of visible main grid lines:
-                ariDivLineCountMax[iLayerMain] = static_cast<unsigned int>(iScaleMaxValLinNormExp-iScaleMinValLinNormExp)+1;
-                if( ariDivLineCountMax[iLayerMain] > 0 && (fScaleMinValLinNorm > 1.0 || fScaleMinValLinNormFract >= DBL_EPSILON) )
-                {
-                    ariDivLineCountMax[iLayerMain]--;
-                }
-
-                // If at least one main grid line is visible ...
-                if( ariDivLineCountMax[iLayerMain] > 0 )
-                {
-                    // Prepare logarithmic scale values for linear spacing:
-                    // First assume that the value distance between the main grid lines is 1.0
-                    // (the lowest possible value for main grid lines).
-                    ariDivLineDistMinPix[iLayerMain] = static_cast<int>(static_cast<double>(iScaleRangePix) / fScaleRangeValLog);
-                    // If the distance of 1.0 between the main grid lines is too small ..
-                    if( ariDivLineDistMinPix[iLayerMain] < m_ariDivLineDistMinPix[iLayerMain] )
-                    {
-                        ariDivLineDistMinPix[iLayerMain] = m_ariDivLineDistMinPix[iLayerMain];
-                    }
-                    // If the distance of 1.0 between the main grid lines is too big ..
-                    else if( ariDivLineDistMinPix[iLayerMain] > iScaleRangePix / 2 )
-                    {
-                        ariDivLineDistMinPix[iLayerMain] = iScaleRangePix / 2;
-                    }
-
-                    // Calculate optimized distance between two main grid lines:
-                    ariDivLineCount[iLayerMain] = CalculateDivLines4LinSpacing(
-                        /* fScaleMinVal          */ fScaleMinValLog,
-                        /* fScaleMaxVal          */ fScaleMaxValLog,
-                        /* iScaleRangePix        */ iScaleRangePix,
-                        /* fDivLineDistMinVal    */ 1.0,
-                        /* iDivLineDistMinPix    */ ariDivLineDistMinPix[iLayerMain],
-                        /* bUseDivLineDecFac25   */ false,
-                        /* pfDivLineFirstVal     */ &arfDivLineFirstValLog[iLayerMain],
-                        /* pfDivLineDistFirstPix */ &arfDivLineDistFirstPix[iLayerMain],
-                        /* pfDivLineDistVal      */ &arfDivLineDistValLog[iLayerMain],
-                        /* pfDivLineDistPix      */ &arfDivLineDistPix[iLayerMain] );
-                }
-
-                // Store the calculated results:
-                if( ariDivLineCount[iLayerMain] > 0 )
-                {
-                    m_ararfDivLineVal[iLayerMain] = new double[ariDivLineCount[iLayerMain]];
-                    m_ararfDivLinePix[iLayerMain] = new double[ariDivLineCount[iLayerMain]];
-
-                    for( idxDivLine = 0; idxDivLine < ariDivLineCount[iLayerMain]; idxDivLine++ )
-                    {
-                        arfDivLineValLog[iLayerMain] = arfDivLineFirstValLog[iLayerMain] + idxDivLine*arfDivLineDistValLog[iLayerMain];
-                        arfDivLineValLin[iLayerMain] = pow(10.0,arfDivLineValLog[iLayerMain]);
-                        m_ararfDivLineVal[iLayerMain][idxDivLine] = arfDivLineValLin[iLayerMain];
-                        m_ararfDivLinePix[iLayerMain][idxDivLine] = getValPix(arfDivLineValLin[iLayerMain]);
-                    }
-                }
-
-                // Calculate "sub" division lines.
-                //---------------------------------
-
-                // If not each main division line is visible (e.g. if the scale range enclosed
-                // a huge range (many decades) and not each main grid line may be drawn because
-                // the distance between two main grid lines would be below the minimum distance
-                // between the main grid lines) ..
-                if( ariDivLineCount[iLayerMain] < ariDivLineCountMax[iLayerMain] )
-                {
-                    // .. some (or all) of the not yet visible main division lines
-                    // become the sub division lines (equidistant grid).
-
-                    // Calculate optimized distance between two sub grid lines:
-                    if( m_ariDivLineDistMinPix[iLayerSub] > 1 && m_ariDivLineDistMinPix[iLayerMain] > 2*m_ariDivLineDistMinPix[iLayerSub] )
-                    {
-                        ariDivLineCountTmp[iLayerSub] = CalculateDivLines4LinSpacing(
-                            /* fScaleMinVal          */ arfDivLineFirstValLog[iLayerMain],
-                            /* fScaleMaxVal          */ arfDivLineFirstValLog[iLayerMain]+arfDivLineDistValLog[iLayerMain],
-                            /* iScaleRangePix        */ static_cast<int>(arfDivLineDistPix[iLayerMain]),
-                            /* fDivLineDistMinVal    */ 1.0,
-                            /* iDivLineDistMinPix    */ m_ariDivLineDistMinPix[iLayerSub],
-                            /* bUseDivLineDecFac25   */ false,
-                            /* pfDivLineFirstVal     */ &arfDivLineFirstValLog[iLayerSub],
-                            /* pfDivLineDistFirstPix */ &arfDivLineDistFirstPix[iLayerSub],
-                            /* pfDivLineDistVal      */ &arfDivLineDistValLog[iLayerSub],
-                            /* pfDivLineDistPix      */ nullptr );
-
-                        // Store the calculated results:
-                        if( ariDivLineCountTmp[iLayerSub] > 2 )
-                        {
-                            // Count visible sub division lines:
-                            arfDivLineValLog[iLayerMain] = arfDivLineFirstValLog[iLayerMain];
-                            if( arfDivLineValLog[iLayerMain] > fScaleMinValLog )
-                            {
-                                arfDivLineValLog[iLayerMain] -= arfDivLineDistValLog[iLayerMain];
-                            }
-                            arfDivLineValLog[iLayerSub] = arfDivLineValLog[iLayerMain];
-                            arfDivLineValLin[iLayerSub] = pow(10.0,arfDivLineValLog[iLayerSub]);
-                            while( arfDivLineValLin[iLayerSub] <= m_scale.m_fMax )
-                            {
-                                for( idxDivLineTmp = 1; idxDivLineTmp < ariDivLineCountTmp[iLayerSub]-1; idxDivLineTmp++ )
-                                {
-                                    arfDivLineValLog[iLayerSub] = arfDivLineValLog[iLayerMain] + idxDivLineTmp*arfDivLineDistValLog[iLayerSub];
-                                    arfDivLineValLin[iLayerSub] = pow(10.0,arfDivLineValLog[iLayerSub]);
-                                    if( arfDivLineValLin[iLayerSub] >= m_scale.m_fMin && arfDivLineValLin[iLayerSub] <= m_scale.m_fMax )
-                                    {
-                                        ariDivLineCount[iLayerSub]++;
-                                    }
-                                }
-                                arfDivLineValLog[iLayerMain] += arfDivLineDistValLog[iLayerMain];
-                            }
-
-                            // Calculate pixel values and store the calculated results of the sub grid lines:
-                            if( ariDivLineCount[iLayerSub] > 0 )
-                            {
-                                m_ararfDivLineVal[iLayerSub] = new double[ariDivLineCount[iLayerSub]];
-                                m_ararfDivLinePix[iLayerSub] = new double[ariDivLineCount[iLayerSub]];
-
-                                arfDivLineValLog[iLayerMain] = arfDivLineFirstValLog[iLayerMain];
-                                if( arfDivLineValLog[iLayerMain] > fScaleMinValLog )
-                                {
-                                    arfDivLineValLog[iLayerMain] -= arfDivLineDistValLog[iLayerMain];
-                                }
-                                arfDivLineValLog[iLayerSub] = arfDivLineValLog[iLayerMain];
-                                arfDivLineValLin[iLayerSub] = pow(10.0,arfDivLineValLog[iLayerSub]);
-                                idxDivLine = 0;
-                                while( arfDivLineValLin[iLayerSub] <= m_scale.m_fMax )
-                                {
-                                    for( idxDivLineTmp = 1; idxDivLineTmp < ariDivLineCountTmp[iLayerSub]-1; idxDivLineTmp++ )
-                                    {
-                                        arfDivLineValLog[iLayerSub] = arfDivLineValLog[iLayerMain] + idxDivLineTmp*arfDivLineDistValLog[iLayerSub];
-                                        arfDivLineValLin[iLayerSub] = pow(10.0,arfDivLineValLog[iLayerSub]);
-                                        if( arfDivLineValLin[iLayerSub] >= m_scale.m_fMin && arfDivLineValLin[iLayerSub] <= m_scale.m_fMax )
-                                        {
-                                            if( idxDivLineTmp < ariDivLineCount[iLayerSub] )
-                                            {
-                                                m_ararfDivLineVal[iLayerSub][idxDivLine] = arfDivLineValLin[iLayerSub];
-                                                m_ararfDivLinePix[iLayerSub][idxDivLine] = getValPix(arfDivLineValLin[iLayerSub]);
-                                                idxDivLine++;
-                                            }
-                                        }
-                                    }
-                                    arfDivLineValLog[iLayerMain] += arfDivLineDistValLog[iLayerMain];
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // If all main division lines are visible ...
-                else
-                {
-                    //   the decade between the main division lines will be divided into
-                    // sub division lines (non equidistant grid).
-
-                    // It at least two main division lines are visible ...
-                    if( ariDivLineCount[iLayerMain] > 1 )
-                    {
-                        fScaleRangePixDec = arfDivLineDistPix[iLayerMain] / arfDivLineDistValLog[iLayerMain];
-                    }
-                    // If no or just one main division line is visible ...
-                    else // if( ariDivLineCount[iLayerMain] == 0 )
-                    {
-                        // If one main division line is visible it could be that more than one
-                        // decade is visible (e.g ranging from 4.0 e9 to 6.0 e10 with one grid
-                        // line at 1.0 e10) but it could also be that less than one decade is
-                        // visible (e.g. ranging from 6.0 e9 to 4.0 e10 with one grid line at 1.0 e10).
-
-                        // If no division line is visible the axis range is definitely less than
-                        // one decade.
-
-                        // Get the extended range:
-                        fScaleRangePixDec = iScaleRangePix / fScaleRangeValLog;
-                    }
-
-                    // Please note that we cannot be sure that if we would just draw part of
-                    // the sub division lines that each of the sub division line will be labeled.
-                    // Even worse we don't know which (if any) division line will be labeled.
-                    // We could assume that the user agrees in that the division lines will be drawn
-                    // as long as the distance between the sub division lines is wide enough and
-                    // that always the last division lines will not be drawn. But in this case it could
-                    // happen that the distance between the last visible sub division line and the
-                    // following main grid line is wider than between the last visible sub division line
-                    // and the previous sub division line. And this would look strange ...
-                    // So we are just drawing all or none of the sub division lines:
-
-                    // If there is enough space for sub division lines ...
-                    if( m_ariDivLineDistMinPix[iLayerSub] > 1 && s_arfScaleRangeFacPixDivValLog[2] * fScaleRangePixDec >= m_ariDivLineDistMinPix[iLayerSub] )
-                    {
-                        // Count the visible sub division lines
-                        // (not including main grid line at start and end of section):
-                        fScaleMinValLinDec = fScaleMinValLinExt;
-                        arfDivLineValLin[iLayerSub] = fScaleMinValLinDec;
-                        while( arfDivLineValLin[iLayerSub] <= m_scale.m_fMax )
-                        {
-                            // Not including main grid line at start and end of section:
-                            for( idxSection = 0, fFacLin = 2.0; idxSection < 8; idxSection++, fFacLin += 1.0 )
-                            {
-                                arfDivLineValLin[iLayerSub] = fFacLin*fScaleMinValLinDec;
-                                if( arfDivLineValLin[iLayerSub] >= m_scale.m_fMin && arfDivLineValLin[iLayerSub] <= m_scale.m_fMax )
-                                {
-                                    ariDivLineCount[iLayerSub]++;
-                                }
-                                if( arfDivLineValLin[iLayerSub] > m_scale.m_fMax )
-                                {
-                                    break;
-                                }
-                            }
-                            fScaleMinValLinDec *= 10.0;
-                        }
-
-                        // Calculate pixel values and store the calculated results of the sub grid lines:
-                        if( ariDivLineCount[iLayerSub] > 0 )
-                        {
-                            m_ararfDivLineVal[iLayerSub] = new double[ariDivLineCount[iLayerSub]];
-                            m_ararfDivLinePix[iLayerSub] = new double[ariDivLineCount[iLayerSub]];
-
-                            fScaleMinValLinDec = fScaleMinValLinExt;
-                            arfDivLineValLin[iLayerSub] = fScaleMinValLinDec;
-                            //fScaleMinPixDec = fScaleMinPixExt;
-                            idxDivLine = 0;
-                            while( arfDivLineValLin[iLayerSub] <= m_scale.m_fMax )
-                            {
-                                // Not including main grid line at start and end of section:
-                                for( idxSection = 0, fFacLin = 2.0; idxSection < 8; idxSection++, fFacLin += 1.0 )
-                                {
-                                    arfDivLineValLin[iLayerSub] = fFacLin*fScaleMinValLinDec;
-                                    if( arfDivLineValLin[iLayerSub] >= m_scale.m_fMin && arfDivLineValLin[iLayerSub] <= m_scale.m_fMax )
-                                    {
-                                        if( idxDivLine < ariDivLineCount[iLayerSub] )
-                                        {
-                                            m_ararfDivLineVal[iLayerSub][idxDivLine] = arfDivLineValLin[iLayerSub];
-                                            m_ararfDivLinePix[iLayerSub][idxDivLine] = getValPix(arfDivLineValLin[iLayerSub]);
-                                            idxDivLine++;
-                                        }
-                                    }
-                                    if( arfDivLineValLin[iLayerSub] > m_scale.m_fMax )
-                                    {
-                                        break;
-                                    }
-                                }
-                                fScaleMinValLinDec *= 10.0;
-                                //fScaleMinPixDec += fScaleRangePixDec;
-                            }
-                        }
-                    } // If there is enough space for sub division lines ...
-                } // If all main division lines are visible ..
-
-
-                //    // In logarithmic scale each decade may be divided into 1, 2, 4, 5, 10, 20, 40, 50, .. section(s).
-                //    // The following algorithm assumes an equidistant division of the decade. As a
-                //    // result the distance between the first division lines will be greater than
-                //    // SubDivLineDistMinPix and the distance between the last division lines will
-                //    // be less than SubDivLineDistMinPix.
-                //    iSectionCount = 1;
-                //    iSectionCountTmp = 1;
-                //    iSectionCountNorm = 1;
-                //    iSectionCountNormTmp = 1;
-                //    iSectionCountNormExp = 0;
-                //    iSectionCountNormExpTmp = 0;
-                //    while( static_cast<int>(fScaleRangePixDec/iSectionCountTmp) > m_uSubDivLineDistMinPix )
-                //    {
-                //        iSectionCount = iSectionCountTmp;
-                //        iSectionCountNorm = iSectionCountNormTmp;
-                //        iSectionCountNormExp = iSectionCountNormExpTmp;
-
-                //        switch( iSectionCountNorm )
-                //        {
-                //            case 1:
-                //            {
-                //                iSectionCountNormTmp = 2;
-                //                break;
-                //            }
-                //            case 2:
-                //            {
-                //                iSectionCountNormTmp = 4;
-                //                break;
-                //            }
-                //            case 4:
-                //            {
-                //                iSectionCountNormTmp = 5;
-                //                break;
-                //            }
-                //            case 5:
-                //            {
-                //                iSectionCountNormExpTmp++;
-                //                iSectionCountNormTmp = 1;
-                //                break;
-                //            }
-                //        }
-                //        iSectionCountTmp = iSectionCountNormTmp * pow(10.0,static_cast<int>(iSectionCountNormExpTmp));
-                //    }
-
-                //    // Count the visible sub division lines:
-
-                //} // If all main division lines are visible ..
-
-                //fSubDivLineDistValLinFact = 1.0 / (iSectionCountNorm*pow(10.0,static_cast<int>(iSectionCountNormExp)));
-
-                //// Calculate count of visible sub division lines:
-                //fSubDivLineValLinDecFirst = fScaleMinValLinExt;
-                //fSubDivLineValLin = fSubDivLineValLinDecFirst + fSubDivLineDistValLinFact*fSubDivLineValLinDecFirst;
-                //while( fSubDivLineValLin < m_scale.m_fMax )
-                //{
-                //    fSubDivLineValLin = 
-                //}
-
-                //// Calculate pixel values and store the calculated results of the sub grid lines:
-                //if( uSubDivLineCount > 0 )
-                //{
-                //    m_arfSubDivLineVal = new double[uSubDivLineCount];
-                //    m_arfSubDivLinePix = new double[uSubDivLineCount];
-
-                    //udxSubDivLine = 0;
-                    //fSubDivLineValLog = static_cast<int>(fScaleMinValLog/fSubDivLineDistValLog)*fSubDivLineDistValLog;
-                    //while( fSubDivLineValLog <= fScaleMaxValLog )
-                    //{
-                    //    fSubDivLineValLin = pow(10.0,fSubDivLineValLog);
-                    //    if( fSubDivLineValLin >= m_scale.m_fMin && fSubDivLineValLin <= m_scale.m_fMax )
-                    //    {
-                    //        if( udxSubDivLine < uSubDivLineCount )
-                    //        {
-                    //            m_arfSubDivLineVal[udxSubDivLine] = fSubDivLineValLin;
-                    //            m_arfSubDivLinePix[udxSubDivLine] = fSubDivLineDistValLog;
-                    //            udxSubDivLine++;
-                    //        }
-                    //    }
-                    //    fSubDivLineValLog += fSubDivLineDistValLog;
-                    //}
-                //}
-
-            } // if( m_spacing == ESpacingLogarithmic )
-
-            for( iLayer = 0; iLayer < EDivLineLayerCount; iLayer++ )
-            {
-                m_ariDivLineCount[iLayer] = ariDivLineCount[iLayer];
-            }
-
-        } // if( validScale() && ScaleRangePix > 0 )
-
-        m_bDivLinesCalculated = true;
-
-    } // if( !m_bDivLinesCalculated )
-
-    // Resolution:
-    //------------
-
-    // The scale resolution depends on the scale range (pixel range / value range)
-
-    if( !m_bScaleResCalculated )
-    {
-        double fValRes = fScaleRangeVal;
-
-        if( isScaleValid() )
-        {
-            if( m_spacing == ESpacingLinear )
-            {
-                if( fScaleRangePix > 1.0 )
-                {
-                    fValRes = fScaleRangeVal / (fScaleRangePix-1.0);
-                }
-                else
-                {
-                    fValRes = fScaleRangeVal / 1000.0;
-                }
-            }
-            else
-            {
-                double fScaleRangeValLog = log10(m_scale.m_fMax) - log10(m_scale.m_fMin);
-
-                if( fScaleRangePix > 1.0 )
-                {
-                    fValRes = fScaleRangeValLog / (fScaleRangePix-1.0);
-                }
-                else
-                {
-                    fValRes = fScaleRangeValLog / 1000.0;
-                }
-            }
-            fValRes = Math::round2LowerDecade(fValRes);
-        }
-        m_fScaleRes = fValRes;
-        m_bScaleResCalculated = true;
-
-    } // if( !m_bScaleResCalculated )
-
-    if( m_pDiagram != nullptr )
-    {
-        m_pDiagram->scaleChanged(this);
-    }
-    emit scaleChanged(this);
-
-} // update
+}
 
 /*==============================================================================
 protected: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Clones the object and adds it to the target diagram.
+
+    @param i_pDiagramTrg [in]
+        Reference to target diagram the cloned object should be added to.
+
+    @return Pointer to cloned object.
+*/
 CDiagScale* CDiagScale::clone( CDataDiagram* i_pDiagramTrg ) const
 //------------------------------------------------------------------------------
 {
@@ -2107,59 +1703,52 @@ CDiagScale* CDiagScale::clone( CDataDiagram* i_pDiagramTrg ) const
         return nullptr;
     }
 
-    int iLayer;
-
-    CDiagScale* pDiagScale = new CDiagScale(
+    CDiagScale* pDiagScaleCloned = new CDiagScale(
         /* strObjName */ m_strObjName,
-        /* scaleDir   */ m_scaleDir,
+        /* scaleDir   */ m_divLines.scaleDir(),
         /* scale      */ m_scale );
 
     if( m_pZoomStackFirst != nullptr )
     {
-        pDiagScale->m_scale = m_pZoomStackFirst->m_scale;
+        pDiagScaleCloned->m_scale = m_pZoomStackFirst->m_scale;
     }
 
-    pDiagScale->m_spacing = m_spacing;
-    //pDiagScale->m_fScaleRes = m_fScaleRes;
-    //pDiagScale->m_bScaleResCalculated = m_bScaleResCalculated;
-    pDiagScale->m_iScaleMinValPix = m_iScaleMinValPix;
-    pDiagScale->m_iScaleMaxValPix = m_iScaleMaxValPix;
-    //pDiagScale->m_fPixRes = m_fPixRes;
+    pDiagScaleCloned->m_divLines = m_divLines;
 
-    for( iLayer = 0; iLayer < EDivLineLayerCount; iLayer++ )
-    {
-        pDiagScale->m_ariDivLineDistMinPix[iLayer] = m_ariDivLineDistMinPix[iLayer];
-    }
-
-    //pDiagScale->m_uMainDivLineCount = m_uMainDivLineCount;
-    //if( pDiagScale->m_uMainDivLineCount > 0 )
+    //for( int iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
     //{
-    //    pDiagScale->m_arfMainDivLineVal = new double[pDiagScale->m_uMainDivLineCount];
-    //    pDiagScale->m_arfMainDivLinePix = new double[pDiagScale->m_uMainDivLineCount];
+    //    pDiagScaleCloned->m_ariDivLineDistMin_px[iLayer] = m_ariDivLineDistMin_px[iLayer];
+    //}
 
-    //    for( idxDivLine = 0; idxDivLine < pDiagScale->m_uMainDivLineCount; idxDivLine++ )
+    //pDiagScaleCloned->m_uMainDivLineCount = m_uMainDivLineCount;
+    //if( pDiagScaleCloned->m_uMainDivLineCount > 0 )
+    //{
+    //    pDiagScaleCloned->m_arfMainDivLineVal = new double[pDiagScaleCloned->m_uMainDivLineCount];
+    //    pDiagScaleCloned->m_arfMainDivLinePix = new double[pDiagScaleCloned->m_uMainDivLineCount];
+
+    //    for( idxDivLine = 0; idxDivLine < pDiagScaleCloned->m_uMainDivLineCount; idxDivLine++ )
     //    {
-    //        pDiagScale->m_arfMainDivLineVal[idxDivLine] = m_arfMainDivLineVal[idxDivLine];
-    //        pDiagScale->m_arfMainDivLinePix[idxDivLine] = m_arfMainDivLinePix[idxDivLine];
+    //        pDiagScaleCloned->m_arfMainDivLineVal[idxDivLine] = m_arfMainDivLineVal[idxDivLine];
+    //        pDiagScaleCloned->m_arfMainDivLinePix[idxDivLine] = m_arfMainDivLinePix[idxDivLine];
     //    }
     //}
 
-    //pDiagScale->m_uSubDivLineCount = m_uSubDivLineCount;
-    //if( pDiagScale->m_uSubDivLineCount > 0 )
+    //pDiagScaleCloned->m_uSubDivLineCount = m_uSubDivLineCount;
+    //if( pDiagScaleCloned->m_uSubDivLineCount > 0 )
     //{
-    //    pDiagScale->m_arfSubDivLineVal = new double[pDiagScale->m_uSubDivLineCount];
-    //    pDiagScale->m_arfSubDivLinePix = new double[pDiagScale->m_uSubDivLineCount];
+    //    pDiagScaleCloned->m_arfSubDivLineVal = new double[pDiagScaleCloned->m_uSubDivLineCount];
+    //    pDiagScaleCloned->m_arfSubDivLinePix = new double[pDiagScaleCloned->m_uSubDivLineCount];
 
-    //    for( idxDivLine = 0; idxDivLine < pDiagScale->m_uSubDivLineCount; idxDivLine++ )
+    //    for( idxDivLine = 0; idxDivLine < pDiagScaleCloned->m_uSubDivLineCount; idxDivLine++ )
     //    {
-    //        pDiagScale->m_arfSubDivLineVal[idxDivLine] = m_arfSubDivLineVal[idxDivLine];
-    //        pDiagScale->m_arfSubDivLinePix[idxDivLine] = m_arfSubDivLinePix[idxDivLine];
+    //        pDiagScaleCloned->m_arfSubDivLineVal[idxDivLine] = m_arfSubDivLineVal[idxDivLine];
+    //        pDiagScaleCloned->m_arfSubDivLinePix[idxDivLine] = m_arfSubDivLinePix[idxDivLine];
     //    }
     //}
 
-    i_pDiagramTrg->addDiagScale(pDiagScale);
+    i_pDiagramTrg->addDiagScale(pDiagScaleCloned);
 
-    return pDiagScale;
+    return pDiagScaleCloned;
 
 } // clone
 
@@ -2168,7 +1757,11 @@ protected: // type definitions and constants
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CDiagScale::SZoomStackEntry::SZoomStackEntry( const SScale& i_scale ) :
+/*! @brief Constructor for an entry of the internal zoom stack.
+
+    @param i_scale Scaling values.
+*/
+CDiagScale::SZoomStackEntry::SZoomStackEntry( const CScale& i_scale ) :
 //------------------------------------------------------------------------------
     m_scale(i_scale),
     m_pStackEntryNext(nullptr),
@@ -2181,9 +1774,24 @@ protected:  // instance memthods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDiagScale::pushScale( const SScale& i_scale )
+/*! @brief Internal auxiliary method to push the given scale onto the zoom stack.
+
+    @param i_scale [in]
+        Scale to be pushed.
+*/
+void CDiagScale::pushScale( const CScale& i_scale )
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_scale.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDatailLevel */ EMethodTraceDetailLevel::ArgsNormal,
+        /* strMethod    */ "pushScale",
+        /* strAddInfo   */ strMthInArgs );
+
     SZoomStackEntry* pEntry = new SZoomStackEntry(i_scale);
 
     // First object ..
@@ -2206,20 +1814,29 @@ void CDiagScale::pushScale( const SScale& i_scale )
         m_pZoomStackLast = pEntry;
     }
     m_iZoomCount++;
-
-} // pushScale
+}
 
 //------------------------------------------------------------------------------
-SScale CDiagScale::popScale()
+/*! @brief Internal auxiliary method to pop the last scale from the zoom stack.
+
+    @return Scale poped from stack.
+*/
+CScale CDiagScale::popScale()
 //------------------------------------------------------------------------------
 {
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDatailLevel */ EMethodTraceDetailLevel::ArgsNormal,
+        /* strMethod    */ "popScale",
+        /* strAddInfo   */ "" );
+
     if( m_iZoomCount == 0 || m_pZoomStackFirst == nullptr || m_pZoomStackLast == nullptr )
     {
         throw CException(__FILE__,__LINE__,EResultListIsEmpty);
     }
 
     SZoomStackEntry* pEntry = m_pZoomStackLast;
-    SScale           scale = pEntry->m_scale;
+    CScale scale = pEntry->m_scale;
 
     // Just one object on stack ...
     if( m_pZoomStackFirst == m_pZoomStackLast )
@@ -2237,22 +1854,34 @@ SScale CDiagScale::popScale()
     pEntry = nullptr;
     m_iZoomCount--;
 
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(scale.toString());
+    }
     return scale;
-
-} // popScale
+}
 
 //------------------------------------------------------------------------------
-SScale CDiagScale::clearScaleStack()
+/*! @brief Internal auxiliary method to clear the zoom stack.
+
+    @return Top most scale entry of zoom stack.
+*/
+CScale CDiagScale::clearScaleStack()
 //------------------------------------------------------------------------------
 {
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDatailLevel */ EMethodTraceDetailLevel::ArgsNormal,
+        /* strMethod    */ "clearScaleStack",
+        /* strAddInfo   */ "" );
+
     if( m_iZoomCount == 0 || m_pZoomStackFirst == nullptr || m_pZoomStackLast == nullptr )
     {
         throw CException(__FILE__,__LINE__,EResultListIsEmpty);
     }
 
-    SZoomStackEntry* pEntry     = m_pZoomStackFirst;
+    SZoomStackEntry* pEntry = m_pZoomStackFirst;
     SZoomStackEntry* pEntryPrev = nullptr;
-    SScale           scale = pEntry->m_scale;
+    CScale scale = pEntry->m_scale;
 
     pEntry = m_pZoomStackLast;
     while( pEntry != nullptr )
@@ -2266,6 +1895,88 @@ SScale CDiagScale::clearScaleStack()
     m_pZoomStackLast  = nullptr;
     m_iZoomCount = 0;
 
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(scale.toString());
+    }
     return scale;
+}
 
-} // clearScaleStack
+/*==============================================================================
+protected: // instance methods (method tracing)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Internal method trace emitting the signal.
+*/
+void CDiagScale::emit_spacingChanged( ESpacing i_spacing )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = CEnumSpacing(i_spacing).toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjUpdate,
+        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "emit_spacingChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    emit spacingChanged(i_spacing);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Internal method trace emitting the signal.
+*/
+void CDiagScale::emit_scaleChanged( const CScale& i_scale )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_scale.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjUpdate,
+        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "emit_scaleChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    emit scaleChanged(i_scale);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Internal method trace emitting the signal.
+*/
+void CDiagScale::emit_geometryChanged( int i_iMinVal_px, int i_iMaxVal_px )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString::number(i_iMinVal_px) + ", " + QString::number(i_iMaxVal_px);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjUpdate,
+        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "emit_geometryChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    emit geometryChanged(i_iMinVal_px, i_iMaxVal_px);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Internal method trace emitting the signal.
+*/
+void CDiagScale::emit_divLineDistMinPixChanged( EDivLineLayer i_layer, int i_iDivLineDistMin_px )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = CEnumDivLineLayer(i_layer).toString() + ", " + QString::number(i_iDivLineDistMin_px);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjUpdate,
+        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "emit_divLineDistMinPixChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    emit divLineDistMinPixChanged(i_layer, i_iDivLineDistMin_px);
+}

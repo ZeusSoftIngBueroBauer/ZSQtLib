@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -234,7 +234,7 @@ SErrResultInfo CTestStepIdxTree::save( const QString& i_strAbsFilePath ) const
 
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "AbsFilePath: " + i_strAbsFilePath;
     }
@@ -327,7 +327,7 @@ SErrResultInfo CTestStepIdxTree::recall( const QString& i_strAbsFilePath )
 
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "AbsFilePath: " + i_strAbsFilePath;
     }
@@ -613,7 +613,7 @@ void CTestStepIdxTree::save(
     CIdxTreeEntry* pTreeEntry;
     int            idxEntry;
 
-    if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+    if( i_pTreeEntry->isLeave() )
     {
         CTestStep* pTestStep = dynamic_cast<CTestStep*>(i_pTreeEntry);
 
@@ -627,7 +627,7 @@ void CTestStepIdxTree::save(
         }
         i_xmlStreamWriter.writeEndElement(/*"TestStep"*/);
     }
-    else if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+    else if( i_pTreeEntry->isBranch() )
     {
         CTestStepGroup* pTestStepGroup = dynamic_cast<CTestStepGroup*>(i_pTreeEntry);
 

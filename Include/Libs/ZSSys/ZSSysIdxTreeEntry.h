@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -42,19 +42,6 @@ namespace System
 {
 class CIdxTree;
 
-enum class EIdxTreeEntryType
-{
-    Root    = 0,    /*! The root entry may have childrens but does not have a parent. */
-    Branch  = 1,    /*! Branches may have childrens. */
-    Leave   = 2,    /*! Leaves may not have childrens. */
-    Count,
-    Undefined
-};
-ZSSYSDLL_API QString idxTreeEntryType2Str( EIdxTreeEntryType i_eVal, int i_alias = EEnumEntryAliasStrName );
-ZSSYSDLL_API QString idxTreeEntryType2Str( int i_iVal, int i_alias = EEnumEntryAliasStrName );
-ZSSYSDLL_API EIdxTreeEntryType str2IdxTreeEntryType( const QString& i_str, int i_alias = EEnumEntryAliasStrName );
-
-
 //******************************************************************************
 /*! @brief Base class for all entries in the index tree.
 
@@ -81,8 +68,19 @@ public: // class methods
     static QString NameSpace() { return "ZS::System"; }
     /*! Returns the class name. */
     static QString ClassName() { return "CIdxTreeEntry"; }
+public: // type definitions and constants
+    enum class EEntryType
+    {
+        Root    = 0,    /*! The root entry may have childrens but does not have a parent. */
+        Branch  = 1,    /*! Branches may have childrens. */
+        Leave   = 2,    /*! Leaves may not have childrens. */
+        Count,
+        Undefined
+    };
+    static QString entryType2Str( EEntryType i_entryType, int i_alias = EEnumEntryAliasStrName );
+    static EEntryType str2EntryType( const QString& i_strEntryType, int i_alias = EEnumEntryAliasStrUndefined );
 public: // ctors and dtor
-    CIdxTreeEntry( EIdxTreeEntryType i_entryType, const QString& i_strName );
+    CIdxTreeEntry( EEntryType i_entryType, const QString& i_strName );
     CIdxTreeEntry( const CIdxTreeEntry& i_other );
     virtual ~CIdxTreeEntry();
 protected: // destructor
@@ -101,26 +99,44 @@ public: // overridable instance methods
         create an instance of the derived class. */
     virtual CIdxTreeEntry* clone() const;
 public: // instance methods
-    /*! Returns the entry type of the index tree entry. */
-    EIdxTreeEntryType entryType() const { return m_entryType; }
     /*! Returns true if entry is the root entry, false otherwise. */
-    bool isRoot() const { return (m_entryType == EIdxTreeEntryType::Root); }
-    /*! Returns true if entry is a branch entry, false otherwise. */
-    bool isBranch() const { return (m_entryType == EIdxTreeEntryType::Branch); }
-    /*! Returns true if entry is a leave entry, false otherwise. */
-    bool isLeave() const { return (m_entryType == EIdxTreeEntryType::Leave); }
-    QString entryTypeSymbol() const;
-    /*! Returns the entry type's string representation. */
-    QString entryType2Str( int i_alias = EEnumEntryAliasStrName ) const;
-    /*! Returns the name of the index tree entry (e.g. "Volt". */
+    virtual bool isRoot() const { return (m_entryType == EEntryType::Root); }
+    /*! Returns true if entry is a branch entry, false otherwise.
+        Must be overrided by derived class if more than just on branch
+        type should be supported and the entry type is something different
+        than EEntryType::Branch. */
+    virtual bool isBranch() const { return (m_entryType == EEntryType::Branch); }
+    /*! Returns true if entry is a leave entry, false otherwise.
+        Must be overrided by derived class if more than just on leave
+        type should be supported and the entry type is something different
+        than EEntryType::Leave. */
+    virtual bool isLeave() const { return (m_entryType == EEntryType::Leave); }
+    /*! Returns the entry type's string representation as a short symbol.
+        Must be overrided by derived class if more than just on branch or
+        leave type should be supported and the entry type is something different
+        than EEntryType::Branch or EEntryType::Leave. */
+    virtual QString entryTypeSymbol() const;
+    /*! Returns the entry type's string representation.
+        Must be overrided by derived class if more than just on branch or
+        leave type should be supported and the entry type is something different
+        than EEntryType::Branch or EEntryType::Leave. */
+    virtual QString entryType2Str( int i_alias = EEnumEntryAliasStrName ) const;
+public: // instance methods
+    /*! Returns the name of the tree entry (e.g. "Volt". */
     QString name() const { return m_strName; }
+    /*! Returns the path (incl. name, excluding the name of the root entry)
+        of the tree entry (e.g. "Voltage::Volt)". */
     QString path() const;
 public: // instance methods
     /*! Returns the index tree of the entry. */
     CIdxTree* tree() const { return m_pTree; }
+    /*! Returns the node separator of the index tree (e.g. ".", "::", "/", etc.). */
     QString nodeSeparator() const;
+    /*! Returns the unique key of the tree entry.
+        This includes the Entry type followed by ":" and the path of the entry.
+        E.g. "L:Voltage.Volt". */
     QString keyInTree() const;
-    /*! Returns the index of the entry within the index trees vector of entries. */
+    /*! Returns the index of the entry within vector of tree entries. */
     int indexInTree() const { return m_idxInTree; }
 public: // instance methods
     /*! Returns the parent branch of the entry. */
@@ -161,9 +177,9 @@ public: // instance methods (for branch entries)
 public: // instance methods (for branch entries)
     int indexOf( const CIdxTreeEntry* i_pChildTreeEntry ) const;
     int indexOf( const QString& i_strKeyInParentBranch ) const;
-    int indexOf( EIdxTreeEntryType i_entryType, const QString& i_strName ) const;
+    int indexOf( const QString& i_strEntryTypeSymbol, const QString& i_strName ) const;
     CIdxTreeEntry* find( const QString& i_strKeyInParentBranch ) const;
-    CIdxTreeEntry* find( EIdxTreeEntryType i_entryType, const QString& i_strName ) const;
+    CIdxTreeEntry* find( const QString& i_strEntryTypeSymbol, const QString& i_strName ) const;
 public: // instance methods  (for branch entries) (applying filter)
     int indexOfChildInListWithSameEntryTypes( const CIdxTreeEntry* i_pChildTreeEntry ) const;
 protected: // overridables (for branch entries)
@@ -188,7 +204,7 @@ protected: // instance members
     /*!< The type may be either Root, Branch or Leave.
          Leave entries may not have children.
          A root entry may not have a parent. */
-    EIdxTreeEntryType m_entryType;
+    EEntryType m_entryType;
     /*!< Name of node. */
     QString m_strName;
     /*!< Mutex to protect the instance if several threads may access it

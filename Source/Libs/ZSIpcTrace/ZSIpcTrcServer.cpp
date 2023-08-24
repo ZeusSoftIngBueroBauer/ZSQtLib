@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -1962,7 +1962,7 @@ void CIpcTrcServer::sendBranch(
 
     if( isConnected() && i_pBranch != nullptr )
     {
-        if( i_pBranch->entryType() != EIdxTreeEntryType::Root )
+        if( !i_pBranch->isRoot() )
         {
             QString strMsg;
             QString strBranchName = i_pBranch->name();
@@ -1985,7 +1985,7 @@ void CIpcTrcServer::sendBranch(
 
             sendData( i_iSocketId, str2ByteArr(strMsg) );
 
-        } // if( i_pBranch->entryType() != EIdxTreeEntryType::Root )
+        } // if( !i_pBranch->isRoot() )
 
         CIdxTreeEntry* pTreeEntry;
         int            idxEntry;
@@ -1996,8 +1996,7 @@ void CIpcTrcServer::sendBranch(
 
             if( pTreeEntry != nullptr )
             {
-                if( pTreeEntry->entryType() == EIdxTreeEntryType::Root
-                 || pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+                if( pTreeEntry->isRoot() || pTreeEntry->isBranch() )
                 {
                     sendBranch(
                         /* iSocketId     */ i_iSocketId,
@@ -2005,7 +2004,7 @@ void CIpcTrcServer::sendBranch(
                         /* cmd           */ i_cmd,
                         /* pBranch       */ pTreeEntry );
                 }
-                else if( pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+                else if( pTreeEntry->isLeave() )
                 {
                     sendAdminObj(
                         /* iSocketId     */ i_iSocketId,
@@ -2855,8 +2854,7 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                         {
                             xmlStreamReader.raiseError("An Object with Id " + QString::number(iObjId) + " for \"" + strElemName + "\" is not existing");
                         }
-                        else if( pTreeEntry->entryType() != EIdxTreeEntryType::Root
-                              && pTreeEntry->entryType() != EIdxTreeEntryType::Branch )
+                        else if( !pTreeEntry->isRoot() && !pTreeEntry->isBranch() )
                         {
                             xmlStreamReader.raiseError("The Object with Id " + QString::number(iObjId) + " for \"" + strElemName + "\" is not a name space node");
                         }
@@ -2962,9 +2960,7 @@ void CIpcTrcServer::onTrcAdminObjIdxTreeEntryAdded( const QString& i_strKeyInTre
 
 //------------------------------------------------------------------------------
 void CIpcTrcServer::onTrcAdminObjIdxTreeEntryAboutToBeRemoved(
-    EIdxTreeEntryType i_entryType,
-    const QString&    i_strKeyInTree,
-    int               i_idxInTree )
+    const QString& i_strKeyInTree, int i_idxInTree )
 //------------------------------------------------------------------------------
 {
     // The trace admin object index tree will be locked so it will not be changed
@@ -2975,9 +2971,8 @@ void CIpcTrcServer::onTrcAdminObjIdxTreeEntryAboutToBeRemoved(
 
     if( m_pTrcMthFile != nullptr && m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs  = "EntryType: " + idxTreeEntryType2Str(i_entryType);
-        strMthInArgs += ", TreeEntry: " + i_strKeyInTree;
-        strMthInArgs += ", TreeEntryIdx: " + QString::number(i_idxInTree);
+        strMthInArgs = "Key: " + i_strKeyInTree;
+        strMthInArgs += ", Idx: " + QString::number(i_idxInTree);
     }
 
     CMethodTracer mthTracer(
@@ -3002,9 +2997,9 @@ void CIpcTrcServer::onTrcAdminObjIdxTreeEntryAboutToBeRemoved(
         // Could have already been removed and may no longer exist.
         CIdxTreeEntry* pTreeEntry = m_pTrcAdminObjIdxTree->findEntry(i_strKeyInTree);
 
-        if( i_entryType == EIdxTreeEntryType::Branch )
+        if( pTreeEntry != nullptr )
         {
-            if( pTreeEntry != nullptr )
+            if( pTreeEntry->isBranch() )
             {
                 sendBranch(
                     /* iSocketId     */ ESocketIdAllSockets,
@@ -3012,15 +3007,15 @@ void CIpcTrcServer::onTrcAdminObjIdxTreeEntryAboutToBeRemoved(
                     /* cmd           */ MsgProtocol::ECommandDelete,
                     /* pBranch       */ pTreeEntry );
             }
-        }
-        else if( i_entryType == EIdxTreeEntryType::Leave )
-        {
-            sendAdminObj(
-                /* iSocketId     */ ESocketIdAllSockets,
-                /* systemMsgType */ MsgProtocol::ESystemMsgTypeInd,
-                /* cmd           */ MsgProtocol::ECommandDelete,
-                /* strKeyInTree  */ i_strKeyInTree,
-                /* idxInTree     */ i_idxInTree );
+            else if( pTreeEntry->isLeave() )
+            {
+                sendAdminObj(
+                    /* iSocketId     */ ESocketIdAllSockets,
+                    /* systemMsgType */ MsgProtocol::ESystemMsgTypeInd,
+                    /* cmd           */ MsgProtocol::ECommandDelete,
+                    /* strKeyInTree  */ i_strKeyInTree,
+                    /* idxInTree     */ i_idxInTree );
+            }
         }
     }
 } // onTrcAdminObjIdxTreeEntryAboutToBeRemoved

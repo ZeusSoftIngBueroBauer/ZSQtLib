@@ -41,6 +41,8 @@ namespace Diagram
 class ZSDIAGRAMDLL_API CDiagObjRect : public CDiagObj
 //******************************************************************************
 {
+public: // class methods
+    static QString ClassName() { return "CDiagObjRect"; }
 public: // ctors and dtor
     CDiagObjRect(
         const QString& i_strObjName,
@@ -52,8 +54,8 @@ public: // instance methods
     void setBrush( const QBrush& i_brush );
     QBrush getBrush() const { return m_brush; }
 public: // must overridables of base class CDiagObj
-    virtual CDiagObj* clone( CDataDiagram* i_pDiagramTrg ) const;
-    virtual void update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDevice = nullptr );
+    virtual CDiagObj* clone( CDataDiagram* i_pDiagramTrg ) const override;
+    virtual void update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDevice = nullptr ) override;
 private: // copy ctor not allowed
     CDiagObjRect( const CDiagObjRect& );
 private: // assignment operator not allowed

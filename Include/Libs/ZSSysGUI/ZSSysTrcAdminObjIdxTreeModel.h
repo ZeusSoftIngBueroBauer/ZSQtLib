@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -62,7 +62,7 @@ public: // type definitions and constants
         EColumnCount
     };
 public: // class methods
-    static QIcon GetIcon( ZS::System::EIdxTreeEntryType i_entryType );
+    static QIcon GetIcon( const QString& i_strEntryType );
 public: // ctors and dtor
     CModelIdxTreeTrcAdminObjs(
         CIdxTreeTrcAdminObjs* i_pIdxTree = nullptr,

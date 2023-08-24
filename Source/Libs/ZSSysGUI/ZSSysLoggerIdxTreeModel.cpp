@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -68,7 +68,7 @@ public: // class methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QIcon CModelIdxTreeLoggers::GetIcon( EIdxTreeEntryType i_entryType )
+QIcon CModelIdxTreeLoggers::GetIcon( const QString& i_strEntryType )
 //------------------------------------------------------------------------------
 {
     QIcon icon;
@@ -115,28 +115,25 @@ QIcon CModelIdxTreeLoggers::GetIcon( EIdxTreeEntryType i_entryType )
         s_bIconsCreated = true;
     }
 
-    switch( i_entryType )
+    if( i_strEntryType.startsWith("R") )
     {
-        case EIdxTreeEntryType::Root:
-        case EIdxTreeEntryType::Branch:
+        if( s_pIconRoot != nullptr )
         {
-            if( s_pIconBranch != nullptr )
-            {
-                icon = *s_pIconBranch;
-            }
-            break;
+            icon = *s_pIconBranch;
         }
-        case EIdxTreeEntryType::Leave:
+    }
+    else if( i_strEntryType.startsWith("B") )
+    {
+        if( s_pIconBranch != nullptr )
         {
-            if( s_pIconLeave != nullptr )
-            {
-                icon = *s_pIconLeave;
-            }
-            break;
+            icon = *s_pIconBranch;
         }
-        default:
+    }
+    else if( i_strEntryType.startsWith("L") )
+    {
+        if( s_pIconLeave != nullptr )
         {
-            break;
+            icon = *s_pIconLeave;
         }
     }
 
@@ -428,7 +425,7 @@ QVariant CModelIdxTreeLoggers::data( const QModelIndex& i_modelIdx, int i_iRole 
                 }
                 else if( i_iRole == Qt::DecorationRole )
                 {
-                    varData = GetIcon(pModelTreeEntry->entryType());
+                    varData = GetIcon(pModelTreeEntry->entryTypeSymbol());
                 }
                 break;
             }

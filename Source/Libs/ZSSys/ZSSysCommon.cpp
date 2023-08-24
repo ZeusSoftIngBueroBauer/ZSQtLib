@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -52,10 +52,9 @@ class CInitEnumMode
 public: // ctor
     CInitEnumMode() {
         QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnum<EMode>::s_arEnumEntries);
-                                                     // Enumerator,                       Name,      Symbol, Text,  SCIPShort, SCPILong, Alias6, Alias7
-        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(EMode::Edit),       "Edit",       "E", "Edit",       "", "", "Design",     "Edit"      ) );
-        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(EMode::Simulation), "Simulation", "S", "Simulation", "", "", "Simulation", "View"      ) );
-        pVEnumEntries->append( /* 3 */ SEnumEntry( static_cast<int>(EMode::Undefined),  "Undefined",  "?", "Undefined",  "", "", "Undefined",  "Undefined" ) );
+        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(EMode::Edit),      "Edit",      "E", "Edit"      ) );
+        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(EMode::View),      "View",      "V", "View"      ) );
+        pVEnumEntries->append( /* 3 */ SEnumEntry( static_cast<int>(EMode::Undefined), "Undefined", "?", "Undefined" ) );
     }
 };
 static CInitEnumMode s_initEnumMode;
@@ -64,9 +63,9 @@ static CInitEnumMode s_initEnumMode;
 template<> const QVector<SEnumEntry> CEnum<EMode>::s_arEnumEntries(
 //------------------------------------------------------------------------------
 {
-    /* 0 */ SEnumEntry( static_cast<int>(EMode::Edit),       "Edit",       "E", "Edit",       "", "", "Design",     "Edit"      ),
-    /* 1 */ SEnumEntry( static_cast<int>(EMode::Simulation), "Simulation", "S", "Simulation", "", "", "Simulation", "View"      ),
-    /* 3 */ SEnumEntry( static_cast<int>(EMode::Undefined),  "Undefined",  "?", "Undefined",  "", "", "Undefined",  "Undefined" )
+    /* 0 */ SEnumEntry( static_cast<int>(EMode::Edit),      "Edit",      "E", "Edit"      ),
+    /* 1 */ SEnumEntry( static_cast<int>(EMode::View),      "View",      "V", "View"      ),
+    /* 2 */ SEnumEntry( static_cast<int>(EMode::Undefined), "Undefined", "?", "Undefined" )
 });
 #endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 /*! @endcond */
@@ -171,7 +170,7 @@ static CInitEnumStateOnOff s_initEnumStateOnOff;
 //------------------------------------------------------------------------------
 template<> const QVector<SEnumEntry> CEnum<EStateOnOff>::s_arEnumEntries =
 //------------------------------------------------------------------------------
-{                        // Enumerator,                             Name
+{
     /*  0 */ SEnumEntry( static_cast<int>(EStateOnOff::Off),        "Off"       ),
     /*  1 */ SEnumEntry( static_cast<int>(EStateOnOff::On),         "On"        ),
     /*  2 */ SEnumEntry( static_cast<int>(EStateOnOff::Undefined),  "Undefined" )
@@ -207,7 +206,7 @@ static CInitEnumEnabled s_initEnumEnabled;
 //------------------------------------------------------------------------------
 template<> const QVector<SEnumEntry> CEnum<EEnabled>::s_arEnumEntries =
 //------------------------------------------------------------------------------
-{                        // Enumerator,                         Name
+{
     /*  0 */ SEnumEntry( static_cast<int>(EEnabled::No),        "No"  ),
     /*  1 */ SEnumEntry( static_cast<int>(EEnabled::Yes),       "Yes" ),
     /*  2 */ SEnumEntry( static_cast<int>(EEnabled::Undefined), "Undefined" )
@@ -242,7 +241,7 @@ static CInitEnumCopyDepth s_initEnumCopyDepth;
 //------------------------------------------------------------------------------
 template<> const QVector<SEnumEntry> CEnum<ECopyDepth>::s_arEnumEntries =
 //------------------------------------------------------------------------------
-{                        // Enumerator,                                       Name,                    Symbol
+{
     /*  0 */ SEnumEntry( static_cast<int>(ECopyDepth::FlatKeepOwnership),     "FlatKeepOwnership",     "FKO" ),
     /*  1 */ SEnumEntry( static_cast<int>(ECopyDepth::FlatReleaseOwnwership), "FlatReleaseOwnwership", "FRO" ),
     /*  2 */ SEnumEntry( static_cast<int>(ECopyDepth::Deep),                  "Deep",                  "DEE" )
@@ -281,7 +280,7 @@ static CInitEnumObjState s_initEnumObjState;
 //------------------------------------------------------------------------------
 template<> const QVector<SEnumEntry> CEnum<EObjState>::s_arEnumEntries =
 //------------------------------------------------------------------------------
-{                        // Enumerator,                           Name
+{
     /*  0 */ SEnumEntry( static_cast<int>(EObjState::Detached),   "Detached"   ),
     /*  1 */ SEnumEntry( static_cast<int>(EObjState::Creating),   "Creating"   ),
     /*  2 */ SEnumEntry( static_cast<int>(EObjState::Created),    "Created"    ),
@@ -396,10 +395,44 @@ static CInitEnumContentToStrFormat s_initEnumContentToStrFormat;
 //------------------------------------------------------------------------------
 template<> const QVector<SEnumEntry> CEnum<EContentToStrFormat>::s_arEnumEntries =
 //------------------------------------------------------------------------------
-{                       // Enumerator,                                    Name
+{
     /* 0 */ SEnumEntry( static_cast<int>(EContentToStrFormat::PlainText), "PlainText" ),
     /* 1 */ SEnumEntry( static_cast<int>(EContentToStrFormat::HtmlText),  "HtmlText"  ),
     /* 2 */ SEnumEntry( static_cast<int>(EContentToStrFormat::Undefined), "Undefined" )
+};
+#endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+/*! @endcond */
+
+
+/*==============================================================================
+Enum ESearchDirection
+==============================================================================*/
+
+/*! @cond */
+template<> QMutex CEnum<ESearchDirection>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<ESearchDirection>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+//------------------------------------------------------------------------------
+const QVector<SEnumEntry> CEnum<ESearchDirection>::s_arEnumEntries;
+//------------------------------------------------------------------------------
+class CInitEnumSearchDirection
+{
+public: // ctor
+    CInitEnumSearchDirection() {
+        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnum<ESearchDirection>::s_arEnumEntries);
+        pVEnumEntries->append( /* 0 */ SEnumEntry(static_cast<int>(ESearchDirection::Ascending),  "Ascending",  "A"));
+        pVEnumEntries->append( /* 1 */ SEnumEntry(static_cast<int>(ESearchDirection::Descending), "Descending", "D"));
+    }
+};
+static CInitEnumSearchDirection s_initEnumSearchDirection;
+#else // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+//------------------------------------------------------------------------------
+template<> const QVector<SEnumEntry> CEnum<ESearchDirection>::s_arEnumEntries =
+//------------------------------------------------------------------------------
+{
+    /* 0 */ SEnumEntry(static_cast<int>(ESearchDirection::Ascending),  "Ascending",  "A"),
+    /* 1 */ SEnumEntry(static_cast<int>(ESearchDirection::Descending), "Descending", "D")
 };
 #endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 /*! @endcond */
@@ -433,7 +466,7 @@ static CInitEnumMethodDir s_initEnumMethodDir;
 //------------------------------------------------------------------------------
 template<> const QVector<SEnumEntry> CEnum<EMethodDir>::s_arEnumEntries =
 //------------------------------------------------------------------------------
-{                       // Enumerator,                           Name,       Symbol
+{
     /* 0 */ SEnumEntry( static_cast<int>(EMethodDir::Enter),     "Enter",     "E" ),
     /* 1 */ SEnumEntry( static_cast<int>(EMethodDir::Leave),     "Leave",     "L" ),
     /* 2 */ SEnumEntry( static_cast<int>(EMethodDir::None),      "None",      "N" ),
@@ -470,7 +503,7 @@ static CInitEnumTransmitDir s_initEnumTransmitDir;
 //------------------------------------------------------------------------------
 template<> const QVector<SEnumEntry> CEnum<ETransmitDir>::s_arEnumEntries =
 //------------------------------------------------------------------------------
-{                       // Enumerator,                             Name,        Symbol
+{
     /* 0 */ SEnumEntry( static_cast<int>(ETransmitDir::Receive),   "Receive",   "RCV",  "In",  "I", "Read",  "R" ),
     /* 1 */ SEnumEntry( static_cast<int>(ETransmitDir::Send),      "Send",      "SND",  "Out", "O", "Write", "W" ),
     /* 2 */ SEnumEntry( static_cast<int>(ETransmitDir::Undefined), "Undefined", "?",    "",    "",  "",      ""  )
@@ -516,39 +549,85 @@ template<> const QVector<SEnumEntry> CEnum<EIODir>::s_arEnumEntries =
 
 
 /*==============================================================================
-Enum EDirection
+Enum EOrientation
 ==============================================================================*/
 
 /*! @cond */
-template<> QMutex CEnum<EDirection>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> CEnum<EDirection>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<EOrientation>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<EOrientation>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<EDirection>::s_arEnumEntries;
+const QVector<SEnumEntry> CEnum<EOrientation>::s_arEnumEntries;
 //------------------------------------------------------------------------------
-class CInitEnumDirection
+class CInitEnumOrientation
 {
 public: // ctor
-    CInitEnumDirection() {
-        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnum<EDirection>::s_arEnumEntries);
-        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(EDirection::Vertical),   "Vertical",   "Ver"  ) );
-        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(EDirection::Horizontal), "Horizontal", "Hor"  ) );
-        pVEnumEntries->append( /* 3 */ SEnumEntry( static_cast<int>(EDirection::Undefined),  "Undefined",  "?"    ) );
+    CInitEnumOrientation() {
+        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnum<EOrientation>::s_arEnumEntries);
+        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(EOrientation::Horizontal), "Horizontal", "H", "Horizontal" ) );
+        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(EOrientation::Vertical),   "Vertical",   "V", "Vertical"   ) );
     }
 };
-static CInitEnumDirection s_initEnumDirection;
+static CInitEnumOrientation s_initEnumOrientation;
 #else // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> CEnum<EDirection>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<EOrientation>::s_arEnumEntries =
 //------------------------------------------------------------------------------
-{                       // Enumerator,                            Name,         Symbol
-    /* 0 */ SEnumEntry( static_cast<int>(EDirection::Vertical),   "Vertical",   "Ver"  ),
-    /* 1 */ SEnumEntry( static_cast<int>(EDirection::Horizontal), "Horizontal", "Hor"  ),
-    /* 3 */ SEnumEntry( static_cast<int>(EDirection::Undefined),  "Undefined",  "?"    )
+{
+    /* 0 */ SEnumEntry( static_cast<int>(EOrientation::Horizontal), "Horizontal", "H", "Horizontal" ),
+    /* 1 */ SEnumEntry( static_cast<int>(EOrientation::Vertical),   "Vertical",   "V", "Vertical"   )
 };
 #endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 /*! @endcond */
+
+
+/*==============================================================================
+Enum EScaleDir
+==============================================================================*/
+
+template<> QMutex CEnum<EScaleDir>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<EScaleDir>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+
+//------------------------------------------------------------------------------
+template<> const QVector<SEnumEntry> CEnum<EScaleDir>::s_arEnumEntries =
+//------------------------------------------------------------------------------
+{
+    /* 0 */ SEnumEntry( static_cast<int>(EScaleDir::X), "X" ),
+    /* 1 */ SEnumEntry( static_cast<int>(EScaleDir::Y), "Y" )
+};
+
+
+/*==============================================================================
+Enum ESpacing
+==============================================================================*/
+
+template<> QMutex CEnum<ESpacing>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<ESpacing>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+
+//------------------------------------------------------------------------------
+template<> const QVector<SEnumEntry> CEnum<ESpacing>::s_arEnumEntries =
+//------------------------------------------------------------------------------
+{
+    /* 0 */ SEnumEntry( static_cast<int>(ESpacing::Linear), "Linear" ),
+    /* 1 */ SEnumEntry( static_cast<int>(ESpacing::Logarithmic), "Logarithmic" )
+};
+
+
+/*==============================================================================
+Enum EDivLineLayer
+==============================================================================*/
+
+template<> QMutex CEnum<EDivLineLayer>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<EDivLineLayer>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+
+//------------------------------------------------------------------------------
+template<> const QVector<SEnumEntry> CEnum<EDivLineLayer>::s_arEnumEntries =
+//------------------------------------------------------------------------------
+{
+    /* 0 */ SEnumEntry( static_cast<int>(EDivLineLayer::Main), "Main" ),
+    /* 1 */ SEnumEntry( static_cast<int>(EDivLineLayer::Sub), "Sub" )
+};
 
 
 /*==============================================================================
@@ -578,7 +657,7 @@ static CInitEnumComparisonOperator s_initEnumComparisonOperator;
 //------------------------------------------------------------------------------
 template<> const QVector<SEnumEntry> CEnum<EComparisonOperator>::s_arEnumEntries =
 //------------------------------------------------------------------------------
-{                       // Enumerator,                                    Name,      Symbol
+{
     /* 0 */ SEnumEntry( static_cast<int>(EComparisonOperator::Equal),     "Equal",     "==" ),
     /* 1 */ SEnumEntry( static_cast<int>(EComparisonOperator::Unequal),   "Unequal",   "!=" ),
     /* 2 */ SEnumEntry( static_cast<int>(EComparisonOperator::Undefined), "Undefined", "?"  )
@@ -945,7 +1024,7 @@ int ZS::System::toArrayIndex( int i_idx, int i_iArrLen, bool i_bLimitToArrLen )
 } // toArrayIndex
 
 //------------------------------------------------------------------------------
-/*! Returns the minumum and maximul index values of the given section.
+/*! Returns the minimum and maximul index values of the given section.
 
     @ingroup _GRP_Namespace_ZS_System_AuxiliaryMethods
 
@@ -1006,7 +1085,7 @@ void ZS::System::getMinMaxArrayRange(
 } // getMinMaxArrayRange
 
 //------------------------------------------------------------------------------
-/*! Returns the minumum and maximul index values of the given section.
+/*! Returns the minimum and maximul index values of the given section.
 
     @ingroup _GRP_Namespace_ZS_System_AuxiliaryMethods
 
@@ -1074,7 +1153,7 @@ void ZS::System::getMinMaxArrayRange(
 } // getMinMaxArrayRange
 
 //------------------------------------------------------------------------------
-/*! Returns the minumum index value and the number of indices of the given section.
+/*! Returns the minimum index value and the number of indices of the given section.
 
     @ingroup _GRP_Namespace_ZS_System_AuxiliaryMethods
 
@@ -1111,7 +1190,7 @@ void ZS::System::getMinCountArrayRange(
 } // getMinCountArrayRange
 
 //------------------------------------------------------------------------------
-/*! Returns the minumum index value and the number of indices of the given section.
+/*! Returns the minimum index value and the number of indices of the given section.
 
     @ingroup _GRP_Namespace_ZS_System_AuxiliaryMethods
 

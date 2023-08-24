@@ -118,7 +118,7 @@ source_group("Resource Files" FILES ${_Resources})
 target_include_directories(${PROJECT_NAME}
     PRIVATE ${CMAKE_SOURCE_DIR}/../Include/Apps/Test/ZSDiagram)
 
-set(_Libs ZSTestGUI ZSDiagram)
+set(_Libs ZSTestGUI ZSDiagramGUI)
 
 target_link_libraries(${PROJECT_NAME} ${_Libs})
 

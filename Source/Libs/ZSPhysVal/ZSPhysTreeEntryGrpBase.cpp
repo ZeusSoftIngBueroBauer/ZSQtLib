@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -61,10 +61,13 @@ CUnitsTreeEntryGrpBase::CUnitsTreeEntryGrpBase(
     EUnitClassType i_classType,
     const QString& i_strName ) :
 //------------------------------------------------------------------------------
-    CIdxTreeEntry(EIdxTreeEntryType::Branch, i_strName),
+    CIdxTreeEntry(EEntryType::Branch, i_strName),
     m_classType(EUnitClassType::Undefined),
     m_hshpUnitsBySymbol(),
-    m_hshpUnitsByPrefix()
+    m_hshpUnitsByPrefix(),
+    m_arRefVals(),
+    m_hshRefValIdxsByName(),
+    m_hshRefValNamesByIdx()
 {
     i_pIdxTree->add(this);
 }
@@ -86,10 +89,13 @@ CUnitsTreeEntryGrpBase::CUnitsTreeEntryGrpBase(
     EUnitClassType i_classType,
     const QString& i_strName ) :
 //------------------------------------------------------------------------------
-    CIdxTreeEntry(EIdxTreeEntryType::Branch, i_strName),
+    CIdxTreeEntry(CIdxTreeEntry::EEntryType::Branch, i_strName),
     m_classType(i_classType),
     m_hshpUnitsBySymbol(),
-    m_hshpUnitsByPrefix()
+    m_hshpUnitsByPrefix(),
+    m_arRefVals(),
+    m_hshRefValIdxsByName(),
+    m_hshRefValNamesByIdx()
 {
     i_pParentBranch->tree()->add(this, i_pParentBranch);
 }
@@ -108,6 +114,9 @@ CUnitsTreeEntryGrpBase::~CUnitsTreeEntryGrpBase()
     m_classType = static_cast<EUnitClassType>(0);
     //m_hshpUnitsBySymbol.clear();
     //m_hshpUnitsByPrefix.clear();
+    //m_arRefVals.clear();
+    //m_hshRefValIdxsByName.clear();
+    //m_hshRefValNamesByIdx.clear();
 
 } // dtor
 
@@ -211,7 +220,9 @@ CUnitsTreeEntryUnitBase* CUnitsTreeEntryGrpBase::findUnit( const QString& i_strS
 CUnitsTreeEntryUnitBase* CUnitsTreeEntryGrpBase::findUnitByName( const QString& i_strName ) const
 //------------------------------------------------------------------------------
 {
-    return dynamic_cast<CUnitsTreeEntryUnitBase*>(find(EIdxTreeEntryType::Leave, i_strName));
+    QString strEntryTypeSymbol =
+        CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Leave, EEnumEntryAliasStrSymbol);
+    return dynamic_cast<CUnitsTreeEntryUnitBase*>(find(strEntryTypeSymbol, i_strName));
 }
 
 //------------------------------------------------------------------------------
@@ -226,4 +237,86 @@ CUnitsTreeEntryUnitBase* CUnitsTreeEntryGrpBase::findUnitByFactorPrefix( const Q
 //------------------------------------------------------------------------------
 {
     return m_hshpUnitsByPrefix.value(i_strPrefix, nullptr);
+}
+
+/*=============================================================================
+public: // overidables
+=============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Sets a reference value with the given name to the group.
+
+    If a reference value with the same name is already existing the existing
+    reference value will be replaced by the content of the given value.
+
+    Reference values can be used for different purposes.
+    - For example as reference values for external unit conversion functions
+      (conversions to units of other physical sizes).
+    - Or just to store a value and retrieve them if needed by its name.
+
+    Reference values may be indicating in the corrsponding unit widgets for
+    debugging and visualization purposes.
+
+    @param [in] i_strName
+        Name of the reference value. The name must be unique within this group.
+    @param [in] i_physVal
+        Reference value to be set.
+
+    @return Index of the value in the list of the reference values.
+*/
+int CUnitsTreeEntryGrpBase::setReferenceValue(
+    const QString& i_strName, const CPhysVal& i_physVal )
+//------------------------------------------------------------------------------
+{
+    int idx = m_hshRefValIdxsByName.value(i_strName, -1);
+    bool bChanged = false;
+    if( idx < 0 ) {
+        // New Reference value
+        idx = m_arRefVals.size();
+        m_hshRefValIdxsByName[i_strName] = idx;
+        m_hshRefValNamesByIdx[idx] = i_strName;
+        m_arRefVals.append(i_physVal);
+        bChanged = true;
+    }
+    else if( m_arRefVals[idx] != i_physVal ) {
+        // Replace existing
+        m_arRefVals[idx] = i_physVal;
+        bChanged = true;
+    }
+    if( bChanged ) {
+        m_pTree->onTreeEntryChanged(this);
+    }
+    return idx;
+}
+
+//------------------------------------------------------------------------------
+int CUnitsTreeEntryGrpBase::getReferenceValuesCount() const
+//------------------------------------------------------------------------------
+{
+    return m_arRefVals.size();
+}
+
+//------------------------------------------------------------------------------
+CPhysVal CUnitsTreeEntryGrpBase::getReferenceValue( int i_idx ) const
+//------------------------------------------------------------------------------
+{
+    return m_arRefVals[i_idx];
+}
+
+//------------------------------------------------------------------------------
+QString CUnitsTreeEntryGrpBase::getReferenceValueName( int i_idx ) const
+//------------------------------------------------------------------------------
+{
+    return m_hshRefValNamesByIdx[i_idx];
+}
+
+//------------------------------------------------------------------------------
+CPhysVal CUnitsTreeEntryGrpBase::getReferenceValue( const QString& i_strName ) const
+//------------------------------------------------------------------------------
+{
+    if( !m_hshRefValIdxsByName.contains(i_strName) ) {
+        throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
+    }
+    int idx = m_hshRefValIdxsByName[i_strName];
+    return m_arRefVals[idx];
 }

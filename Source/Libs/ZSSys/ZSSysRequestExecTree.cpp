@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -191,14 +191,9 @@ CRequestExecTree::CRequestExecTree( QObject* i_pObjParent ) :
         m_pTmrGarbageCollector->start( static_cast<int>(m_fTmrGarbageCollecterInterval_s*1000) );
     }
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTmrGarbageCollector,
-        /* szSignal     */ SIGNAL(timeout()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTmrGarbageCollectorTimeout()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pTmrGarbageCollector, &QTimer::timeout,
+        this, &CRequestExecTree::onTmrGarbageCollectorTimeout);
 
     #ifdef _WINDOWS
     #pragma warning( default : 4005 )

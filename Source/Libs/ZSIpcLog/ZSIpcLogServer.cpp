@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -1057,7 +1057,7 @@ void CIpcLogServer::sendBranch(
 {
     if( isConnected() && i_pBranch != nullptr )
     {
-        if( i_pBranch->entryType() != EIdxTreeEntryType::Root )
+        if( !i_pBranch->isRoot() )
         {
             QString strMsg;
             QString strBranchName = i_pBranch->name();
@@ -1078,7 +1078,7 @@ void CIpcLogServer::sendBranch(
 
             sendData( i_iSocketId, str2ByteArr(strMsg) );
 
-        } // if( i_pBranch->entryType() != EIdxTreeEntryType::Root )
+        } // if( !i_pBranch->isRoot() )
 
         CIdxTreeEntry* pTreeEntry;
         int            idxEntry;
@@ -1089,8 +1089,7 @@ void CIpcLogServer::sendBranch(
 
             if( pTreeEntry != nullptr )
             {
-                if( pTreeEntry->entryType() == EIdxTreeEntryType::Root
-                 || pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+                if( pTreeEntry->isRoot() || pTreeEntry->isBranch() )
                 {
                     sendBranch(
                         /* iSocketId     */ i_iSocketId,
@@ -1098,7 +1097,7 @@ void CIpcLogServer::sendBranch(
                         /* cmd           */ i_cmd,
                         /* pBranch       */ pTreeEntry );
                 }
-                else if( pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+                else if( pTreeEntry->isLeave() )
                 {
                     sendLeave(
                         /* iSocketId     */ i_iSocketId,
@@ -1794,8 +1793,7 @@ void CIpcLogServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                         {
                             xmlStreamReader.raiseError("An Object with Id " + QString::number(iObjId) + " for \"" + strElemName + "\" is not existing");
                         }
-                        else if( pTreeEntry->entryType() != EIdxTreeEntryType::Root
-                              && pTreeEntry->entryType() != EIdxTreeEntryType::Branch )
+                        else if( !pTreeEntry->isRoot() && !pTreeEntry->isBranch() )
                         {
                             xmlStreamReader.raiseError("The Object with Id " + QString::number(iObjId) + " for \"" + strElemName + "\" is not a name space node");
                         }
@@ -1882,7 +1880,7 @@ void CIpcLogServer::onLoggersIdxTreeEntryAdded( const QString& i_strKeyInTree )
 
 //------------------------------------------------------------------------------
 void CIpcLogServer::onLoggersIdxTreeEntryAboutToBeRemoved(
-    EIdxTreeEntryType i_entryType, const QString& i_strKeyInTree, int i_idxInTree )
+    const QString& i_strKeyInTree, int i_idxInTree )
 //------------------------------------------------------------------------------
 {
     // The index tree will be locked so it will not be changed when accessing it here.
@@ -1900,9 +1898,9 @@ void CIpcLogServer::onLoggersIdxTreeEntryAboutToBeRemoved(
         // Could have already been removed and may no longer exist.
         CIdxTreeEntry* pTreeEntry = m_pLoggersIdxTree->findEntry(i_strKeyInTree);
 
-        if( i_entryType == EIdxTreeEntryType::Branch )
+        if( pTreeEntry != nullptr )
         {
-            if( pTreeEntry != nullptr )
+            if( pTreeEntry->isBranch() )
             {
                 sendBranch(
                     /* iSocketId     */ ESocketIdAllSockets,
@@ -1910,15 +1908,15 @@ void CIpcLogServer::onLoggersIdxTreeEntryAboutToBeRemoved(
                     /* cmd           */ MsgProtocol::ECommandDelete,
                     /* pBranch       */ pTreeEntry );
             }
-        }
-        else if( i_entryType == EIdxTreeEntryType::Leave )
-        {
-            sendLeave(
-                /* iSocketId     */ ESocketIdAllSockets,
-                /* systemMsgType */ MsgProtocol::ESystemMsgTypeInd,
-                /* cmd           */ MsgProtocol::ECommandDelete,
-                /* strKeyInTree  */ i_strKeyInTree,
-                /* idxInTree     */ i_idxInTree );
+            else if( pTreeEntry->isLeave() )
+            {
+                sendLeave(
+                    /* iSocketId     */ ESocketIdAllSockets,
+                    /* systemMsgType */ MsgProtocol::ESystemMsgTypeInd,
+                    /* cmd           */ MsgProtocol::ECommandDelete,
+                    /* strKeyInTree  */ i_strKeyInTree,
+                    /* idxInTree     */ i_idxInTree );
+            }
         }
     }
 }

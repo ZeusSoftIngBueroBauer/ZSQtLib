@@ -28,7 +28,7 @@ may result in using the software modules.
 #define ZSApps_TestDiagram_Test_h
 
 #include "ZSTest/ZSTest.h"
-#include "ZSDiagram/ZSDiagramAux.h"
+#include "ZSDiagram/ZSDiagScale.h"
 
 class QFrame;
 class QTimer;
@@ -76,6 +76,7 @@ private slots: // test step methods (Signal Generators)
     void doTestStepSigGenAddCurves( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepSigGenRemoveCurves( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepSigGenAddMarkers( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepSigGenMoveMarkers( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepSigGenRemoveMarkers( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepSigGenSingleShot( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepSigGenStart( ZS::Test::CTestStep* i_pTestStep );
@@ -87,8 +88,9 @@ private slots:
 private: // instance members
     QTimer*                                    m_pTmrTestStepTimeout;
     QTimer*                                    m_pTimerSigGen;
-    QFrame*                                    m_pFrameDiagram;
     ZS::Diagram::CWdgtDiagram*                 m_pWdgtDiagram;
+    ZS::Diagram::CScale                        m_scaleX;
+    ZS::Diagram::CScale                        m_scaleY;
     ZS::Diagram::CDiagScale*                   m_pDiagScaleX;
     ZS::Diagram::CDiagScale*                   m_pDiagScaleY;
     ZS::Diagram::CDiagObjGrid*                 m_pDiagObjGrid;

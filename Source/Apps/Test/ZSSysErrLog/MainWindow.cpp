@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer, Germany
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer, Germany
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -125,7 +125,7 @@ CMainWindow::CMainWindow(
 
     QIcon iconFileOpen;
 
-    QPixmap pxmFileOpen16x16(":/ZS/Menu/MenuFileOpen16x16.bmp");
+    QPixmap pxmFileOpen16x16(":/ZS/Menu/MenuFileOpen16x16.png");
 
     pxmFileOpen16x16.setMask(pxmFileOpen16x16.createHeuristicMask());
 
@@ -153,7 +153,7 @@ CMainWindow::CMainWindow(
 
     QIcon iconFileSave;
 
-    QPixmap pxmFileSave16x16(":/ZS/Menu/MenuFileSave16x16.bmp");
+    QPixmap pxmFileSave16x16(":/ZS/Menu/MenuFileSave16x16.png");
 
     pxmFileSave16x16.setMask(pxmFileSave16x16.createHeuristicMask());
 
@@ -547,7 +547,7 @@ void CMainWindow::onActDebugErrLogTriggered()
         pDlg->adjustSize();
         pDlg->show();
     }
-    else // if( pReqSeq != nullptr )
+    else
     {
         if( pDlg->isHidden() )
         {
@@ -555,9 +555,7 @@ void CMainWindow::onActDebugErrLogTriggered()
         }
         pDlg->raise();
         pDlg->activateWindow();
-
-    } // if( pDlg != nullptr )
-
+    }
 } // onActDebugErrLogTriggered
 
 /*==============================================================================

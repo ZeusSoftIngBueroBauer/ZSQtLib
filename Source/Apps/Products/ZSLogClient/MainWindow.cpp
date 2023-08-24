@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer, Germany
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer, Germany
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -750,12 +750,9 @@ protected slots:
 void CMainWindow::onActSettingsLogClientTriggered()
 //------------------------------------------------------------------------------
 {
-    QString strDlgTitle = getMainWindowTitle() + ": Log Client";
-
+    QString strDlgTitle = ZS::System::GUI::getMainWindowTitle() + ": Log Client";
     CDlgLogClient* pDlg = CDlgLogClient::GetInstance(CApplication::GetInstance()->getLogClient()->objectName());
-
-    if( pDlg == nullptr )
-    {
+    if( pDlg == nullptr ) {
         pDlg = CDlgLogClient::CreateInstance(
             /* strDlgTitle */ strDlgTitle,
             /* strObjName  */ CApplication::GetInstance()->getLogClient()->objectName(),
@@ -765,27 +762,22 @@ void CMainWindow::onActSettingsLogClientTriggered()
         pDlg->adjustSize();
         pDlg->show();
     }
-    else
-    {
-        if( pDlg->isHidden() )
-        {
+    else {
+        if( pDlg->isHidden() ) {
             pDlg->show();
         }
         pDlg->raise();
         pDlg->activateWindow();
     }
-} // onActSettingsLogClientTriggered
+}
 
 //------------------------------------------------------------------------------
 void CMainWindow::onActSettingsLoggersIdxTreeTriggered()
 //------------------------------------------------------------------------------
 {
-    QString strDlgTitle = getMainWindowTitle() + ": Loggers";
-
+    QString strDlgTitle = ZS::System::GUI::getMainWindowTitle() + ": Loggers";
     CDlgIdxTreeLoggers* pDlg = CDlgIdxTreeLoggers::GetInstance(m_pLogClient->getLoggersIdxTree()->objectName());
-
-    if( pDlg == nullptr )
-    {
+    if( pDlg == nullptr ) {
         pDlg = CDlgIdxTreeLoggers::CreateInstance(
             /* strDlgTitle    */ strDlgTitle,
             /* pTrcAdmIdxTree */ m_pLogClient->getLoggersIdxTree() );
@@ -793,16 +785,14 @@ void CMainWindow::onActSettingsLoggersIdxTreeTriggered()
         pDlg->adjustSize();
         pDlg->show();
     }
-    else
-    {
-        if( pDlg->isHidden() )
-        {
+    else {
+        if( pDlg->isHidden() ) {
             pDlg->show();
         }
         pDlg->raise();
         pDlg->activateWindow();
     }
-} // onActSettingsLoggersIdxTreeTriggered
+}
 
 /*==============================================================================
 protected slots:
@@ -813,52 +803,42 @@ void CMainWindow::onActDebugErrLogTriggered()
 //------------------------------------------------------------------------------
 {
     QString strDlgTitle = QCoreApplication::applicationName() + ": Error Log";
-
     CDlgErrLog* pDlg = dynamic_cast<CDlgErrLog*>(CDlgErrLog::GetInstance());
-
-    if( pDlg == nullptr )
-    {
+    if( pDlg == nullptr ) {
         pDlg = CDlgErrLog::CreateInstance(strDlgTitle);
         pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
         pDlg->adjustSize();
         pDlg->show();
     }
-    else
-    {
-        if( pDlg->isHidden() )
-        {
+    else {
+        if( pDlg->isHidden() ) {
             pDlg->show();
         }
         pDlg->raise();
         pDlg->activateWindow();
     }
-} // onActDebugErrLogTriggered
+}
 
 //------------------------------------------------------------------------------
 void CMainWindow::onActDebugRequestExecTreeTriggered()
 //------------------------------------------------------------------------------
 {
     QString strDlgTitle = QCoreApplication::applicationName() + ": Requests Execution Tree";
-
     CDlgRequestExecTree* pDlg = dynamic_cast<CDlgRequestExecTree*>(CDlgRequestExecTree::GetInstance("ReqExecTree"));
-
-    if( pDlg == nullptr )
-    {
+    if( pDlg == nullptr ) {
         pDlg = CDlgRequestExecTree::CreateInstance(strDlgTitle, "ReqExecTree");
         pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
         pDlg->adjustSize();
         pDlg->show();
     }
-    else
-    {
-        if( pDlg->isHidden() )
-        {
+    else {
+        if( pDlg->isHidden() ) {
             pDlg->show();
         }
         pDlg->raise();
         pDlg->activateWindow();
     }
-} // onActDebugRequestExecTreeTriggered
+}
 
 /*==============================================================================
 protected slots:

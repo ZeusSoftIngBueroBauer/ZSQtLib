@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -431,260 +431,6 @@ Auxiliary methods
 *******************************************************************************/
 
 //------------------------------------------------------------------------------
-void ZS::PhysVal::insertDelimiter(
-    int            i_iDigitsPerDigitGroup,
-    const QString& i_strDelimiter,
-    QString*       io_pstrValue,
-    int            i_iDigitsLeading,
-    int            i_iDigitsTrailing )
-//------------------------------------------------------------------------------
-{
-    int iDelimiterCount;
-    int idxLeadingDelimiterPos;
-    int idxTrailingDelimiterPos;
-    int idx;
-
-    if( i_iDigitsPerDigitGroup > 0 )
-    {
-        idxLeadingDelimiterPos  = i_iDigitsLeading-i_iDigitsPerDigitGroup;
-        idxTrailingDelimiterPos = i_iDigitsLeading+i_iDigitsPerDigitGroup+1;
-
-        // There might be a "-" or "+" sign at the beginning of the string ...
-        if( i_iDigitsLeading > 0 )
-        {
-            idx = 0;
-            while( ((*io_pstrValue)[idx] < '0' || (*io_pstrValue)[idx] > '9') && (idx < static_cast<int>(io_pstrValue->length())) )
-            {
-                idx++;
-                idxLeadingDelimiterPos++;
-                idxTrailingDelimiterPos++;
-            }
-        }
-
-        // Insert delimiters into leading part:
-        if( i_iDigitsLeading > i_iDigitsPerDigitGroup )
-        {
-            iDelimiterCount = (i_iDigitsLeading-1)/i_iDigitsPerDigitGroup;
-            for( idx = 0; idx < iDelimiterCount; idx++ )
-            {
-                io_pstrValue->insert(idxLeadingDelimiterPos,i_strDelimiter);
-                idxTrailingDelimiterPos++;
-                idxLeadingDelimiterPos -= i_iDigitsPerDigitGroup;
-            }
-        }
-
-        // Insert delimiters into trailing part:
-        if( i_iDigitsTrailing > i_iDigitsPerDigitGroup )
-        {
-            iDelimiterCount = (i_iDigitsTrailing-1)/i_iDigitsPerDigitGroup;
-            for( idx = 0; idx < iDelimiterCount; idx++ )
-            {
-                io_pstrValue->insert(idxTrailingDelimiterPos,i_strDelimiter);
-                idxTrailingDelimiterPos++;
-                idxTrailingDelimiterPos += i_iDigitsPerDigitGroup;
-            }
-        }
-    }
-
-} // insertDelimiter
-
-//------------------------------------------------------------------------------
-void ZS::PhysVal::removeTrailingZeros(
-    QString* io_pstrValue,
-    int      i_iDigitsTrailingMin,
-    QChar    i_charDecPoint )
-//------------------------------------------------------------------------------
-{
-    // String:               "123.45600e-12"
-    // idxChar:               0123456789012
-    // idxCharExp          =  9
-    // idxCharDecPt        =  3
-    // uStrLen             = 13
-    // iMantissaSubStrLen  =  9
-    // iExponentSubStrLen  =  4
-    // uTrailingSubStrLen  =  5
-    // uLeadingSubStrLen   =  3
-    // iTrailingZeros      =  2
-
-    QString strValue = *io_pstrValue;
-    int     idxChar;
-    int     idxCharDecPt;
-    int     iMantissaSubStrLen = 0;
-    int     iExponentSubStrLen = 0;
-    int     iTrailingZeros = 0;
-
-    if( strValue.length() > 0 )
-    {
-        idxCharDecPt = strValue.indexOf(i_charDecPoint,0,Qt::CaseInsensitive);
-
-        if( idxCharDecPt >= 0 )
-        {
-            idxChar = strValue.indexOf('e',-1,Qt::CaseInsensitive);
-            if( idxChar >= 0 )
-            {
-                iExponentSubStrLen = strValue.length()-idxChar;
-            }
-            iMantissaSubStrLen = strValue.length() - iExponentSubStrLen;
-
-            if( iMantissaSubStrLen > 0 )
-            {
-                for( idxChar = iMantissaSubStrLen-1; idxChar >= 0; idxChar-- )
-                {
-                    if( strValue[idxChar] == i_charDecPoint )
-                    {
-                        if( i_iDigitsTrailingMin > 0 && idxChar + i_iDigitsTrailingMin < iMantissaSubStrLen )
-                        {
-                            idxChar += i_iDigitsTrailingMin;
-                        }
-                        break;
-                    }
-                    #if QT_VERSION < 0x050000
-                    else if( strValue.toAscii()[idxChar] != '0' )
-                    #else
-                    else if( strValue.toLatin1()[idxChar] != '0' )
-                    #endif
-                    {
-                        break;
-                    }
-                    iTrailingZeros++;
-                }
-                if( idxChar < static_cast<int>(iMantissaSubStrLen-1) )
-                {
-                    strValue.remove(idxChar+1,iTrailingZeros);
-                }
-            }
-            *io_pstrValue = strValue;
-        }
-    }
-
-} // removeTrailingZeros
-
-//------------------------------------------------------------------------------
-void ZS::PhysVal::removeLeadingZerosFromExponent( QString* io_pstrValue )
-//------------------------------------------------------------------------------
-{
-    // String:               "123.45600e-02"
-    // idxChar:               0123456789012
-    // idxCharExp          =  9
-    // idxCharDecPt        =  3
-    // uStrLen             = 13
-    // iMantissaSubStrLen  =  9
-    // iExponentSubStrLen  =  4
-    // uTrailingSubStrLen  =  5
-    // uLeadingSubStrLen   =  3
-    // iTrailingZeros      =  2
-
-    QString      strValue = *io_pstrValue;
-    int          idxChar;
-    int          idxCharExp;
-    int          idxCharFirstZero = -1;
-    int          idxCharFirstDigit = -1;
-
-    if( strValue.length() > 0 )
-    {
-        idxCharExp = strValue.indexOf("e",0,Qt::CaseInsensitive);
-
-        if( idxCharExp > 0 )
-        {
-            for( idxChar = idxCharExp+1; idxChar < strValue.length(); idxChar++ )
-            {
-                if( idxCharFirstZero < 0 && strValue[idxChar] == '0' )
-                {
-                    idxCharFirstZero = idxChar;
-                }
-                if( idxCharFirstDigit < 0 && isDigitChar(strValue[idxChar]) && strValue[idxChar] != '0' )
-                {
-                    idxCharFirstDigit = idxChar;
-                }
-            }
-            if( idxCharFirstZero < idxCharFirstDigit )
-            {
-                strValue.remove(idxCharFirstZero,idxCharFirstDigit-idxCharFirstZero);
-                *io_pstrValue = strValue;
-            }
-        }
-    }
-
-} // removeLeadingZerosFromExponent
-
-//------------------------------------------------------------------------------
-TFormatResult ZS::PhysVal::formatString(
-    const QString& i_strValue,
-    int*           o_piDigitsLeading,
-    int*           o_piDigitsTrailing,
-    int*           o_piDigitsExponent )
-//------------------------------------------------------------------------------
-{
-    int  iDigitsLeading = 0;
-    int  iDigitsTrailing = 0;
-    int  iDigitsExponent = 0;
-    bool bLeadingSection = true;
-    bool bTrailingSection = false;
-    bool bExponentSection = false;
-
-    for( int idx = 0; idx < i_strValue.length(); idx++ )
-    {
-        if( bLeadingSection )
-        {
-            if( i_strValue.at(idx) == QChar('-') )
-            {
-            }
-            else if( i_strValue.at(idx) == QChar('+') )
-            {
-            }
-            else if( i_strValue.at(idx) >= QChar('0') && i_strValue.at(idx) <= QChar('9') )
-            {
-                iDigitsLeading++;
-            }
-            else if( i_strValue.at(idx) == QChar('.') )
-            {
-                bLeadingSection = false;
-                bTrailingSection = true;
-            }
-        }
-        else if( bTrailingSection )
-        {
-            if( i_strValue.at(idx) >= QChar('0') && i_strValue.at(idx) <= QChar('9') )
-            {
-                iDigitsTrailing++;
-            }
-            else if( i_strValue.at(idx) == QChar('e') || i_strValue.at(idx) == QChar('E') )
-            {
-                bTrailingSection = false;
-                bExponentSection = true;
-            }
-        }
-        else if( bExponentSection )
-        {
-            if( i_strValue.at(idx) == QChar('-') )
-            {
-            }
-            else if( i_strValue.at(idx) == QChar('+') )
-            {
-            }
-            else if( i_strValue.at(idx) >= QChar('0') && i_strValue.at(idx) <= QChar('9') )
-            {
-                iDigitsExponent++;
-            }
-        }
-    }
-    if( o_piDigitsLeading != nullptr )
-    {
-        *o_piDigitsLeading = iDigitsLeading;
-    }
-    if( o_piDigitsTrailing != nullptr )
-    {
-        *o_piDigitsTrailing = iDigitsTrailing;
-    }
-    if( o_piDigitsExponent != nullptr )
-    {
-        *o_piDigitsExponent = iDigitsExponent;
-    }
-    return FormatResult::Ok;
-
-} // formatString
-
-//------------------------------------------------------------------------------
 /*! @brief Converts a physical value into its string representation and/or into
     its numerical format according to several format specifications.
 
@@ -694,92 +440,62 @@ TFormatResult ZS::PhysVal::formatString(
     and the value is defined as 36726372541.3 Hz, the value would be "best"
     output as 36.7264 GHz.
 
-    @param i_fVal: Range [DOUBLE_MIN .. DOUBLE_MAX]
-       Value which got to be formatted.
-
-    @param i_unitVal
-       Physical unit of the value to be formatted.
-
-    @param i_fRes:     Range [DOUBLE_MIN .. DOUBLE_MAX]
-       Resolution (accuracy) of the value to be formatted.
-
-    @param i_unitRes
+    @param  i_fVal [in]
+        Range [DOUBLE_MIN .. DOUBLE_MAX]
+        Value which got to be formatted.
+    @param i_unitVal [in]
+        Physical unit of the value to be formatted.
+    @param i_fRes [in]
+        Range [DOUBLE_MIN .. DOUBLE_MAX]
+        Resolution (accuracy) of the value to be formatted.
+    @param i_unitRes [in]
        Physical unit of the resolution.
        If invalid it is assumed that the unit of the resolution is
        the same as the unit of the value to be formatted.
-
-    @param i_resType
-
-    @param i_iDigitsMantissa:   Range [-1, 1..N]
-        If this value is set by the callee to a value greater than 0 this parameter
-        defines the maximum number of mantissa digits (leading and trailing part of
-        the string representation) to be used for formatting the value.
-        Please note that "DigitsMantissa" determines the maximum allowed number of digits
-        used to limit the length of the resulting string.
-
-    @param i_iDigitsExponent:  Range IN  [-1, 0..N]
-        If this value is set by the callee to a value greater or equal to 0 this parameter
-        defines the maximum number of exponent digits to be used for formatting the value.
-
-    @param i_bUseEngineeringFormat:    Range [false, true]
+    @param i_resType [in]
+        Range [Resolution, Accuracy]
+        Defines the type of the resolution.
+    @param i_iDigitsMantissa [in]
+        Range [-1, 1..N]
+        If set to a value greater than 0 defines the maximum number of digits
+        for the mantissa (leading and trailing part of the string representation)
+        to be used for formatting the value.
+    @param i_iDigitsExponent [in]
+        Range IN  [-1, 0..N]
+        If this value is set to a value greater or equal to 0 this parameter defines
+        the maximum number of exponent digits to be used for formatting the value.
+    @param i_bUseEngineeringFormat [in]
         Optional parameter which may be set to true if the value should be formatted with
         exactly one valid leading digit.
-
-    @param o_pfVal:      Range IN  [nullptr, valid address]
-                               OUT [DOUBLE_MIN .. DOUBLE_MAX]
-        Optional parameter which may be used if the callee is interested in the numerical
-        representation of the converted value.
-
-    @param o_pstrValue:    Range IN  [nullptr, valid address]
-                                 OUT [string representation of the converted value]
-        Optional parameter which may be used if the value may be converted into its
-        string representation returing the converted value as its string representation.
-
-    @param o_pUnitVal:   Range IN  [nullptr, valid address]
-                               OUT [IdEUnitMin ... IdEUnitMax]
-        Optional parameter which may be used if the value may be converted into its
-        string representation using the best fitting unit returning the physical unit
-        into which the value has been converted.
+    @param o_pfVal [out]
+        If not set to nullptr the numerical representation of the converted value is returned.
+    @param o_pstrVal [out]
+        If not set to nullptr the value converted into the string representation is returned.
+    @param o_pUnitVal [out]
+        If not set to nullptr the value is converted into its string representation using
+        the best fitting unit and the best fitting unit is returned here.
+        The best unit is the unit in which the values are displayed with at least one but
+        no more than three digits before the decimal point.
         If this parameter is set to nullptr the value will be converted without finding
         the best fitting unit.
+    @param o_piDigitsLeading [out]
+        If not set to nullptr the number of leading digits used to format the value is returned.
+    @param o_piDigitsTrailing [out]
+        If not set to nullptr the number of trailing digits used to format the value is returned.
+    @param  o_piDigitsExponent [out]
+        If not set to nullptr the number of exponent digits used to format the value is returned.
 
-    @param o_piDigitsLeading:      Range IN  [nullptr, valid address]
-                                         OUT [1..N] (always at least on leading digit will be used)
-        Optional parameter which may be used if the callee is interested in how
-        the value has been converted into its string representation returning
-        the number of leading digits used to format the value.
-
-    @param o_piDigitsTrailing:     Range IN  [nullptr, valid address]
-                                         OUT [0..N]
-        Optional parameter which may be used if the callee is interested in how
-        the value has been converted into its string representation returning
-        the number of trailing digits used to format the value.
-
-    @param o_piDigitsExponent:     Range IN  [nullptr, valid address]
-                                         OUT [0..N]
-        Optional parameter which may be used if the callee is interested in how
-        the value has been converted into its string representation returning
-        the number of exponent digits used to format the value.
-
-    @returnExamine the result value to get information if the conversion was successfull.
-        FormatResult::Ok .... The value has been successfully converted.
-        TFormatResult<..> ... Any other format result as "Ok" indicates that it
-                              was not possible to convert the value according to the
-                              defined format specifications. Some of the results
-                              indicate an error, some others are used as warnings.
-                              Please note that the bit number number 8 (0x80) of the
-                              format result indicates an error. If this bit is not set
-                              the result is either Ok or is just a warning.
-            AccuracyOverflow ... Warning: the value has been converted but is indicated
-                                            with too many digits.
-            AccuracyUnderflow .. Warning: the value has been converted but is indicated
-                                            with too less digits.
-            UnitConversionFailed Error:   it was not possible to convert the resolution
-                                            into the unit of the value
-            ValueOverflow ...... Error:   the value has not been converted. An invalid
-                                            string "---" will be returned.
-            ValueUnderflow ..... Error:   the value has not been converted. But the
-                                            value "0" is returned.
+    @return Result of the formatting.
+        FormatResult::Ok ... The value has been successfully converted.
+        Any other format result as "Ok" indicates that it was not possible to convert the value
+        according to the defined format specifications.
+        Some of the results indicate an error, some others are used as warnings.
+        Please note that the bit number number 8 (0x80) of the format result indicates an error.
+        If this bit is not set the result is either Ok or is just a warning.
+            AccuracyOverflow ... Warning: the value has been converted but is indicated with too many digits.
+            AccuracyUnderflow .. Warning: the value has been converted but is indicated with too less digits.
+            ValueOverflow ...... Error:   the value has not been converted. An invalid string "---" will be returned.
+            ValueUnderflow ..... Error:   the value has not been converted. But the value "0" is returned.
 */
 TFormatResult ZS::PhysVal::formatValue(
     double       i_fVal,
@@ -878,7 +594,7 @@ TFormatResult ZS::PhysVal::formatValue(
             }
             else if( i_resType == EResType::Resolution )
             {
-                fValAbs = Math::round2Res(fValAbs, fResAbs);
+                fValAbs = Math::round2Resolution(fValAbs, fResAbs);
             }
 
             // If the value was greater than the resolution ...
@@ -947,32 +663,85 @@ TFormatResult ZS::PhysVal::formatValue(
     In addition digits may be grouped into digit groups delimited with a user
     defined group delimiter.
 
-    @param      i_iDigitsPerDigitGroup:     Range [0, 1..N]
-                If set to a value greater than 0 this parameter defines the number of digits
-                per digit group. The digit group will be delimited by the "DigitsGroupDelimiter"
-                string as defined by the next input parameter. The leading and trailing part
-                of the value will be treated separately.
+    @param  i_fVal [in]
+        Range [DOUBLE_MIN .. DOUBLE_MAX]
+        Value which got to be formatted.
+    @param i_unitVal [in]
+        Physical unit of the value to be formatted.
+    @param i_fRes [in]
+        Range [DOUBLE_MIN .. DOUBLE_MAX]
+        Resolution (accuracy) of the value to be formatted.
+    @param i_unitRes [in]
+       Physical unit of the resolution.
+       If invalid it is assumed that the unit of the resolution is
+       the same as the unit of the value to be formatted.
+    @param i_resType [in]
+        Range [Resolution, Accuracy]
+        Defines the type of the resolution.
+    @param i_iDigitsMantissa [in]
+        Range [-1, 1..N]
+        If set to a value greater than 0 defines the maximum number of digits
+        for the mantissa (leading and trailing part of the string representation)
+        to be used for formatting the value.
+    @param i_iDigitsExponent [in]
+        Range IN  [-1, 0..N]
+        If this value is set to a value greater or equal to 0 this parameter defines
+        the maximum number of exponent digits to be used for formatting the value.
+    @param i_iDigitsPerDigitGroup [in]
+        Range [0, 1..N]
+        If set to a value greater than 0 this parameter defines the number of digits
+        per digit group. The digit group will be delimited by the "DigitsGroupDelimiter"
+        string as defined by the next input parameter. The leading and trailing part
+        of the value will be treated separately.
+    @param i_pstrDigitsGroupDelimiter [in]
+        If not set to nullptr and if "DigitsPerDigitGroup" is greater than 0 this
+        parameter defines the character (or characters) which will be inserted between
+        each digit group. If the digits should be grouped ("DigitsPerDigitGroup" is set
+        to a value greater than 0) and if a nullptr pointer is provided for the group
+        delimiter spaces will be inserted between each group.
+        Examples for the value = 1234567.8901234:
+            - DigitsPerDigitGroup = 3
+                DigitsGroupDelimiter = nullptr
+                strVal = "1 234 567.890 123 4"
+            - DigitsPerDigitGroup = 3
+                DigitsGroupDelimiter = "#"
+                strVal = "1#234#567.890#123#4"
+    @param i_pstrDecimalPoint [in]
+        The default character for the decimal point is the dot ".".
+        On transferring a valid QString reference this default character may
+        be changed e.g. into a comma ",".
+    @param i_bUseEngineeringFormat [in]
+        true to format the value in engineering format with exactly one valid leading digit.
+        false otherwise.
+    @param o_pfVal [out]
+        If not set to nullptr the numerical representation of the converted value is returned.
+    @param o_pstrVal [out]
+        If not set to nullptr the value converted into the string representation is returned.
+    @param o_pUnitVal [out]
+        If not set to nullptr the value is converted into its string representation using
+        the best fitting unit and the best fitting unit is returned here.
+        The best unit is the unit in which the values are displayed with at least one but
+        no more than three digits before the decimal point.
+        If this parameter is set to nullptr the value will be converted without finding
+        the best fitting unit.
+    @param o_piDigitsLeading [out]
+        If not set to nullptr the number of leading digits used to format the value is returned.
+    @param o_piDigitsTrailing [out]
+        If not set to nullptr the number of trailing digits used to format the value is returned.
+    @param  o_piDigitsExponent [out]
+        If not set to nullptr the number of exponent digits used to format the value is returned.
 
-    @param      i_pstrDigitsGroupDelimiter: Range [nullptr, valid address]
-                If set to a valid address and if "DigitsPerDigitGroup" is greater than 0 this
-                parameter defines the character (or characters) which will be inserted between
-                each digit group. If the digits should be grouped ("DigitsPerDigitGroup" is set
-                to a value greater than 0) and if a nullptr pointer is provided for the group
-                delimiter string blanks will be inserted between each group.
-                Examples for the value = 1234567.8901234:
-                    - DigitsPerDigitGroup = 3
-                        DigitsGroupDelimiter = nullptr
-                        strVal = "1 234 567.890 123 4"
-                    - DigitsPerDigitGroup = 3
-                        DigitsGroupDelimiter = "#"
-                        strVal = "1#234#567.890#123#4"
-
-    @param      i_pstrDecimalPoint: Range [nullptr, valid address]
-                The default character for the decimal point is the dot ".".
-                On transferring a valid QString reference this default character may
-                be changed e.g. into a comma ",".
-
-    @return     see "formatValue" method above
+    @return Result of the formatting.
+        FormatResult::Ok ... The value has been successfully converted.
+        Any other format result as "Ok" indicates that it was not possible to convert the value
+        according to the defined format specifications.
+        Some of the results indicate an error, some others are used as warnings.
+        Please note that the bit number number 8 (0x80) of the format result indicates an error.
+        If this bit is not set the result is either Ok or is just a warning.
+            AccuracyOverflow ... Warning: the value has been converted but is indicated with too many digits.
+            AccuracyUnderflow .. Warning: the value has been converted but is indicated with too less digits.
+            ValueOverflow ...... Error:   the value has not been converted. An invalid string "---" will be returned.
+            ValueUnderflow ..... Error:   the value has not been converted. But the value "0" is returned.
 */
 TFormatResult ZS::PhysVal::formatValue(
     double         i_fVal,
@@ -994,12 +763,10 @@ TFormatResult ZS::PhysVal::formatValue(
     int*           o_piDigitsExponent )
 //------------------------------------------------------------------------------
 {
-    TFormatResult formatResult;
-    int           iDigitsLeading;
-    int           iDigitsTrailing;
-    QString       strDelimiter = " ";
+    int iDigitsLeading = 0;
+    int iDigitsTrailing = 0;
 
-    formatResult = formatValue(
+    TFormatResult formatResult = formatValue(
         /* fVal                  */ i_fVal,
         /* unitVal               */ i_unitVal,
         /* fRes                  */ i_fRes,
@@ -1019,6 +786,7 @@ TFormatResult ZS::PhysVal::formatValue(
     {
         if( i_iDigitsPerDigitGroup > 0 )
         {
+            QString strDelimiter = " ";
             if( i_pstrDigitsGroupDelimiter != nullptr )
             {
                 strDelimiter = *i_pstrDigitsGroupDelimiter;
@@ -1051,107 +819,73 @@ TFormatResult ZS::PhysVal::formatValue(
 /*! @brief Converts a physical value into its string representation and/or into
     its numerical format according to several format specifications.
 
-    This is an overloaded function and behaves essentially like the 
+    This is an overloaded function and behaves essentially like the
     "formatValue" functions above.
     But whereas the "formatValue" functions above are using a resolution value
     to find the correct number of accuracy digits this function may be used
     to format the value with a predefined number of accuracy digits either
     defined for the whole mantissa or just for the number of trailing digits.
 
-    @param      i_physSize:     Range [EPhysSizeMin ... EPhysSizeMax]
-                Physical size of the values.
+    @param  i_fVal [in]
+        Range [DOUBLE_MIN .. DOUBLE_MAX]
+        Value which got to be formatted.
+    @param i_unitVal [in]
+        Physical unit of the value to be formatted.
+    @param i_iDigitsMantissaMax [in]
+        Range [-1, 1..N]
+        If set to a value greater than 0 defines the maximum number of digits
+        for the mantissa (leading and trailing part of the string representation)
+        to be used for formatting the value.
+    @param i_bDigitsAccuracyLimitsMantissa [in]
+        Specifies how the following input parameter "DigitsAccuracy" will be treated.
+        false ... "DigitsAccuracy" is used to define the number of valid trailing digits.
+        true .... "DigitsAccuracy" is used to define the number of valid digits for the
+                    whole mantissa.
+    @param i_iDigitsAccuracy [in]
+        Range [-1, 1..N]
+        If this value is set to a value greater than 0 this parameter defines either
+        the number of valid trailing or the number of valid digits for the whole mantissa.
+        Please note that leading zeroes are not "valid" digits and will not be taken
+        into account. E.g. if a value should always be indicated with at least 5 valid
+        digits for the mantissa the value 0.0003456789 will be converted into "0.00034567".
+        The input parameter "DigitsMantissaMax" has priority over "DigitsAccuracy" and
+        may still limit the length of the resulting string.
+    @param i_iDigitsExponent [in]
+        Range IN  [-1, 0..N]
+        If this value is set to a value greater or equal to 0 this parameter defines
+        the maximum number of exponent digits to be used for formatting the value.
+    @param i_bUseEngineeringFormat [in]
+        true to format the value in engineering format with exactly one valid leading digit.
+        false otherwise.
+    @param o_pfVal [out]
+        If not set to nullptr the numerical representation of the converted value is returned.
+    @param o_pstrVal [out]
+        If not set to nullptr the value converted into the string representation is returned.
+    @param o_pUnitVal [out]
+        If not set to nullptr the value is converted into its string representation using
+        the best fitting unit and the best fitting unit is returned here.
+        The best unit is the unit in which the values are displayed with at least one but
+        no more than three digits before the decimal point.
+        If this parameter is set to nullptr the value will be converted without finding
+        the best fitting unit.
+    @param o_piDigitsLeading [out]
+        If not set to nullptr the number of leading digits used to format the value is returned.
+    @param o_piDigitsTrailing [out]
+        If not set to nullptr the number of trailing digits used to format the value is returned.
+    @param  o_piDigitsExponent [out]
+        If not set to nullptr the number of exponent digits used to format the value is returned.
 
-    @param      i_physUnit:     Range [IdEUnitMin ... IdEUnitMax]
-                Physical unit of the value to be formatted.
-                Must be one of the values of enum IdEUnit defined in "IdCommon.h".
-
-    @param      i_fValue:       Range [DOUBLE_MIN .. DOUBLE_MAX]
-                Value which got to be formatted.
-
-    @param      i_iDigitsMantissaMax:   Range [-1, 1..N]
-                If this value is set by the callee to a value greater than 0 this parameter
-                defines the maximum number of mantissa digits (leading and trailing part of
-                the string representation) to be used for formatting the value.
-                Please note that "DigitsMantissaMax" determines the maximum allowed number of digits
-                used to limit the length of the resulting string.
-
-    @param      i_bDigitsAccuracyLimitsMantissa:    Range [true, false]
-                Specifies how the following input parameter "DigitsAccuracy" will be treated.
-                false ... "DigitsAccuracy" is used to define the number of valid trailing digits.
-                true .... "DigitsAccuracy" is used to define the number of valid digits for the
-                            whole mantissa.
-
-    @param      i_iDigitsAccuracy:  Range [-1, 1..N]
-                If this value is set by the callee to a value greater than 0 this parameter
-                defines either the number of valid trailing or the number of valid digits
-                for the whole mantissa.
-                Please note that leading zeroes are not "valid" digits and will not be taken
-                into account. E.g. if a value should always be indicated with at least 5 valid
-                digits for the mantissa the value 0.0003456789 will be converted into "0.00034567".
-                The input parameter "DigitsMantissaMax" has priority over "DigitsAccuracy" and
-                may still limit the length of the resulting string.
-
-    @param      i_iDigitsExponent:  Range IN  [-1, 0..N]
-                If this value is set by the callee to a value greater or equal to 0 this parameter
-                defines the maximum number of exponent digits to be used for formatting the value.
-
-    @param      i_bUseEngineeringFormat:    Range [false, true]
-                Optional parameter which may be set to true if the value should be formatted with
-                exactly one valid leading digit.
-
-    @param      o_pPhysUnit:    Range IN  [nullptr, valid address]
-                                            OUT [IdEUnitMin ... IdEUnitMax]
-                Optional parameter which may be used if the value may be converted into its
-                string representation using the best fitting unit returning the physical unit
-                into which the value has been converted.
-                If this parameter is set to nullptr the value will be converted without finding
-                the best fitting unit.
-
-    @param      o_pfValue:      Range IN  [nullptr, valid address]
-                                        OUT [DOUBLE_MIN .. DOUBLE_MAX]
-                Optional parameter which may be used if the callee is interested in the numerical
-                representation of the converted value.
-
-    @param      o_pstrValue:    Range IN  [nullptr, valid address]
-                                        OUT [string representation of the converted value]
-                Optional parameter which may be used if the value may be converted into its
-                string representation returing the converted value as its string representation.
-
-    @param      o_piDigitsLeading:      Range IN  [nullptr, valid address]
-                                                OUT [1..N] (always at least on leading digit will be used)
-                Optional parameter which may be used if the callee is interested in how
-                the value has been converted into its string representation returning
-                the number of leading digits used to format the value.
-
-    @param      o_piDigitsTrailing:     Range IN  [nullptr, valid address]
-                                                OUT [0..N]
-                Optional parameter which may be used if the callee is interested in how
-                the value has been converted into its string representation returning
-                the number of trailing digits used to format the value.
-
-    @param      o_piDigitsExponent:     Range IN  [nullptr, valid address]
-                                                OUT [0..N]
-                Optional parameter which may be used if the callee is interested in how
-                the value has been converted into its string representation returning
-                the number of exponent digits used to format the value.
-
-    @return     Examine the result value to get information if the conversion was successfull.
-                FormatResult::Ok .... The value has been successfully converted.
-                TFormatResult<..> .. Any other format result as "Ok" indicates that it
-                                        was not possible to convert the value according to the
-                                        defined format specifications. Some of the results
-                                        indicate an error, some others are used as warnings.
-                                        Please note that the bit number number 8 (0x80) of the
-                                        format result indicates an error. If this bit is not set
-                                        the result is either Ok or is just a warning.
-                    AccuracyOverflow ... Warning: the value has been converted but is indicated
-                                                    with too many digits.
-                    AccuracyUnderflow .. Warning: the value has been converted but is indicated
-                                                    with too less digits.
-                    ValueOverflow ...... Error:   the value has not been converted. An invalid
-                                                    string "---" will be returned.
-                    ValueUnderflow ..... Error:   the value has not been converted. But the
-                                                    value "0" is returned.
+    @return Result of the formatting.
+        FormatResult::Ok ... The value has been successfully converted.
+        Any other format result as "Ok" indicates that it was not possible to convert the value
+        according to the defined format specifications.
+        Some of the results indicate an error, some others are used as warnings.
+        Please note that the bit number number 8 (0x80) of the format result indicates an error.
+        If this bit is not set the result is either Ok or is just a warning.
+            AccuracyOverflow ... Warning: the value has been converted but is indicated with too many digits.
+            AccuracyUnderflow .. Warning: the value has been converted but is indicated with too less digits.
+            ValueOverflow ...... Error:   the value has not been converted. An invalid string "---" will be returned.
+            ValueUnderflow ..... Error:   the value has not been converted. But the value "0" is returned.
 */
 TFormatResult ZS::PhysVal::formatValue(
     double       i_fVal,
@@ -1521,23 +1255,20 @@ TFormatResult ZS::PhysVal::formatValue(
             if( iDigitsTrailing > 1 )
             {
                 int iDigitsLeadingTmp, iDigitsTrailingTmp, iDigitsExponentTmp;
-                formatResult = formatString(
+                formatString(
                     /* strVal           */ strVal,
                     /* piDigitsLeading  */ &iDigitsLeadingTmp,
                     /* piDigitsTrailing */ &iDigitsTrailingTmp,
                     /* piDigitsExponent */ &iDigitsExponentTmp );
-                if( formatResult == FormatResult::Ok )
+                if( iDigitsLeadingTmp + iDigitsTrailingTmp > iDigitsLeading + iDigitsTrailing )
                 {
-                    if( iDigitsLeadingTmp + iDigitsTrailingTmp > iDigitsLeading + iDigitsTrailing )
+                    if( iDigitsExponent > 0 )
                     {
-                        if( iDigitsExponent > 0 )
-                        {
-                            strVal = QString::number(fValSign*fValAbs, 'e', iDigitsTrailing-1);
-                        }
-                        else
-                        {
-                            strVal = QString::number(fValSign*fValAbs, 'f', iDigitsTrailing-1);
-                        }
+                        strVal = QString::number(fValSign*fValAbs, 'e', iDigitsTrailing-1);
+                    }
+                    else
+                    {
+                        strVal = QString::number(fValSign*fValAbs, 'f', iDigitsTrailing-1);
                     }
                 }
             }
@@ -1585,32 +1316,89 @@ TFormatResult ZS::PhysVal::formatValue(
     In addition digits may be grouped into digit groups delimited with a user
     defined group delimiter.
 
-    @param      i_iDigitsPerDigitGroup:     Range [0, 1..N]
-                If set to a value greater than 0 this parameter defines the number of digits
-                per digit group. The digit group will be delimited by the "DigitsGroupDelimiter"
-                string as defined by the next input parameter. The leading and trailing part
-                of the value will be treated separately.
+    @param  i_fVal [in]
+        Range [DOUBLE_MIN .. DOUBLE_MAX]
+        Value which got to be formatted.
+    @param i_unitVal [in]
+        Physical unit of the value to be formatted.
+    @param i_iDigitsMantissaMax [in]
+        Range [-1, 1..N]
+        If set to a value greater than 0 defines the maximum number of digits
+        for the mantissa (leading and trailing part of the string representation)
+        to be used for formatting the value.
+    @param i_bDigitsAccuracyLimitsMantissa [in]
+        Specifies how the following input parameter "DigitsAccuracy" will be treated.
+        false ... "DigitsAccuracy" is used to define the number of valid trailing digits.
+        true .... "DigitsAccuracy" is used to define the number of valid digits for the
+                    whole mantissa.
+    @param i_iDigitsAccuracy [in]
+        Range [-1, 1..N]
+        If this value is set to a value greater than 0 this parameter defines either
+        the number of valid trailing or the number of valid digits for the whole mantissa.
+        Please note that leading zeroes are not "valid" digits and will not be taken
+        into account. E.g. if a value should always be indicated with at least 5 valid
+        digits for the mantissa the value 0.0003456789 will be converted into "0.00034567".
+        The input parameter "DigitsMantissaMax" has priority over "DigitsAccuracy" and
+        may still limit the length of the resulting string.
+    @param i_iDigitsExponent [in]
+        Range IN  [-1, 0..N]
+        If this value is set to a value greater or equal to 0 this parameter defines
+        the maximum number of exponent digits to be used for formatting the value.
+    @param i_iDigitsPerDigitGroup [in]
+        Range [0, 1..N]
+        If set to a value greater than 0 this parameter defines the number of digits
+        per digit group. The digit group will be delimited by the "DigitsGroupDelimiter"
+        string as defined by the next input parameter. The leading and trailing part
+        of the value will be treated separately.
+    @param i_pstrDigitsGroupDelimiter [in]
+        If set to a valid address and if "DigitsPerDigitGroup" is greater than 0 this
+        parameter defines the character (or characters) which will be inserted between
+        each digit group. If the digits should be grouped ("DigitsPerDigitGroup" is set
+        to a value greater than 0) and if a nullptr pointer is provided for the group
+        spaces will be inserted between each group.
+        Examples for the value = 1234567.8901234:
+            - DigitsPerDigitGroup = 3
+                DigitsGroupDelimiter = nullptr
+                strVal = "1 234 567.890 123 4"
+            - DigitsPerDigitGroup = 3
+                DigitsGroupDelimiter = "#"
+                strVal = "1#234#567.890#123#4"
+    @param i_pstrDecimalPoint [in]
+        The default character for the decimal point is the dot ".".
+        On transferring a valid QString reference this default character may
+        be changed e.g. into a comma ",".
+    @param i_bUseEngineeringFormat [in]
+        true to format the value in engineering format with exactly one valid leading digit.
+        false otherwise.
+    @param o_pfVal [out]
+        If not set to nullptr the numerical representation of the converted value is returned.
+    @param o_pstrVal [out]
+        If not set to nullptr the value converted into the string representation is returned.
+    @param o_pUnitVal [out]
+        If not set to nullptr the value is converted into its string representation using
+        the best fitting unit and the best fitting unit is returned here.
+        The best unit is the unit in which the values are displayed with at least one but
+        no more than three digits before the decimal point.
+        If this parameter is set to nullptr the value will be converted without finding
+        the best fitting unit.
+    @param o_piDigitsLeading [out]
+        If not set to nullptr the number of leading digits used to format the value is returned.
+    @param o_piDigitsTrailing [out]
+        If not set to nullptr the number of trailing digits used to format the value is returned.
+    @param  o_piDigitsExponent [out]
+        If not set to nullptr the number of exponent digits used to format the value is returned.
 
-    @param      i_pstrDigitsGroupDelimiter: Range [nullptr, valid address]
-                If set to a valid address and if "DigitsPerDigitGroup" is greater than 0 this
-                parameter defines the character (or characters) which will be inserted between
-                each digit group. If the digits should be grouped ("DigitsPerDigitGroup" is set
-                to a value greater than 0) and if a nullptr pointer is provided for the group
-                delimiter string blanks will be inserted between each group.
-                Examples for the value = 1234567.8901234:
-                    - DigitsPerDigitGroup = 3
-                        DigitsGroupDelimiter = nullptr
-                        strVal = "1 234 567.890 123 4"
-                    - DigitsPerDigitGroup = 3
-                        DigitsGroupDelimiter = "#"
-                        strVal = "1#234#567.890#123#4"
-
-    @param      i_pstrDecimalPoint: Range [nullptr, valid address]
-                The default character for the decimal point is the dot ".".
-                On transferring a valid QString reference this default character may
-                be changed e.g. into a comma ",".
-
-    @return     see "formatValue" method above
+    @return Result of the formatting.
+        FormatResult::Ok ... The value has been successfully converted.
+        Any other format result as "Ok" indicates that it was not possible to convert the value
+        according to the defined format specifications.
+        Some of the results indicate an error, some others are used as warnings.
+        Please note that the bit number number 8 (0x80) of the format result indicates an error.
+        If this bit is not set the result is either Ok or is just a warning.
+            AccuracyOverflow ... Warning: the value has been converted but is indicated with too many digits.
+            AccuracyUnderflow .. Warning: the value has been converted but is indicated with too less digits.
+            ValueOverflow ...... Error:   the value has not been converted. An invalid string "---" will be returned.
+            ValueUnderflow ..... Error:   the value has not been converted. But the value "0" is returned.
 */
 TFormatResult ZS::PhysVal::formatValue(
     double         i_fVal,

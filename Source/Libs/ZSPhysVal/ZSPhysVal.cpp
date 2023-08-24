@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -27,6 +27,7 @@ may result in using the software modules.
 #include "ZSPhysVal/ZSPhysVal.h"
 #include "ZSPhysVal/ZSPhysUnit.h"
 #include "ZSPhysVal/ZSPhysValExceptions.h"
+#include "ZSSys/ZSSysAux.h"
 
 #include <math.h>
 

@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -170,7 +170,7 @@ signals:
         @param i_entryType [in] Entry type.
         @param i_strKeyInTree [in] Unique key of the entry which will be removed from the tree.
         @param i_idxInTree [in] Index of the entry which will be removed from the tree. */
-    void treeEntryAboutToBeRemoved( ZS::System::EIdxTreeEntryType i_entryType, const QString& i_strKeyInTree, int i_idxInTree );
+    void treeEntryAboutToBeRemoved( const QString& i_strKeyInTree, int i_idxInTree );
     /*! Signal which will be emitted if a tree entry has been removed from the index tree.
         If this signal is emitted the entry no longer belongs to the index tree and the keys and indices returned
         by the entry are invalid. For this the unique key and the index of the entry in the index valid before
@@ -178,7 +178,7 @@ signals:
         @param i_entryType [in] Entry type.
         @param i_strKeyInTree [in] Unique key of the entry valid before the entry was removed from the tree.
         @param i_idxInTree [in] Index of the entry valid before the entry was removed from the tree. */
-    void treeEntryRemoved( ZS::System::EIdxTreeEntryType i_entryType, const QString& i_strKeyInTree, int i_idxInTree );
+    void treeEntryRemoved( const QString& i_strKeyInTree, int i_idxInTree );
     /*! Signal which will be emitted if a tree entry is going to be moved within the index tree.
         If this signal is emitted the entry is still a child of it's current branch and does not belong yet
         to the target parent branch.
@@ -239,16 +239,15 @@ public: // instance methods
     QString buildPathStr( const QString& i_str1, const QString& i_str2, const QString& i_str3 ) const;
     QString buildPathStr( const QString& i_str1, const QString& i_str2, const QString& i_str3, const QString& i_str4 ) const;
     QString buildPathStr( const QString& i_str1, const QString& i_str2, const QString& i_str3, const QString& i_str4, const QString& i_str5 ) const;
-    QString buildKeyInTreeStr( EIdxTreeEntryType i_entryType, const QString& i_str1 ) const;
-    QString buildKeyInTreeStr( EIdxTreeEntryType i_entryType, const QString& i_str1, const QString& i_str2 ) const;
-    QString buildKeyInTreeStr( EIdxTreeEntryType i_entryType, const QString& i_str1, const QString& i_str2, const QString& i_str3 ) const;
-    QString buildKeyInTreeStr( EIdxTreeEntryType i_entryType, const QString& i_str1, const QString& i_str2, const QString& i_str3, const QString& i_str4 ) const;
-    QString buildKeyInTreeStr( EIdxTreeEntryType i_entryType, const QString& i_str1, const QString& i_str2, const QString& i_str3, const QString& i_str4, const QString& i_str5 ) const;
-    EIdxTreeEntryType splitPathStr( const QString& i_strPath, QString* o_pstrBranchPath, QString* o_pstrName ) const;
+    QString buildKeyInTreeStr( const QString& i_strEntryTypeSymbol, const QString& i_str1 ) const;
+    QString buildKeyInTreeStr( const QString& i_strEntryTypeSymbol, const QString& i_str1, const QString& i_str2 ) const;
+    QString buildKeyInTreeStr( const QString& i_strEntryTypeSymbol, const QString& i_str1, const QString& i_str2, const QString& i_str3 ) const;
+    QString buildKeyInTreeStr( const QString& i_strEntryTypeSymbol, const QString& i_str1, const QString& i_str2, const QString& i_str3, const QString& i_str4 ) const;
+    QString buildKeyInTreeStr( const QString& i_strEntryTypeSymbol, const QString& i_str1, const QString& i_str2, const QString& i_str3, const QString& i_str4, const QString& i_str5 ) const;
+    QString splitPathStr( const QString& i_strPath, QString* o_pstrBranchPath, QString* o_pstrName ) const;
 public: // overridables (createBranch and createLeave must be overridden to create entries using a generic tree view)
     virtual CIdxTreeEntry* createBranch( const QString& i_strName ) const;
     virtual CIdxTreeEntry* createLeave( const QString& i_strName ) const;
-    virtual CIdxTreeEntry* createTreeEntry( EIdxTreeEntryType i_entryType, const QString& i_strName ) const;
 public: // instance methods
     int treeEntriesVectorSize() const; // the number of used entries might be less
     CIdxTreeEntry* getEntry( int i_idxInTree ) const; // may return nullptr as some vector entries may have been freed
@@ -330,8 +329,8 @@ public: // overridable instance methods (used by friend class CIdxTreeEntry and 
 protected: // instance methods (tracing of signals)
     void emit_treeEntryAdded( const QString& i_strKeyInTree );
     void emit_treeEntryChanged( const QString& i_strKeyInTree );
-    void emit_treeEntryAboutToBeRemoved( ZS::System::EIdxTreeEntryType i_entryType, const QString& i_strKeyInTree, int i_idxInTree );
-    void emit_treeEntryRemoved( ZS::System::EIdxTreeEntryType i_entryType, const QString& i_strKeyInTree, int i_idxInTree );
+    void emit_treeEntryAboutToBeRemoved( const QString& i_strKeyInTree, int i_idxInTree );
+    void emit_treeEntryRemoved( const QString& i_strKeyInTree, int i_idxInTree );
     void emit_treeEntryAboutToBeMoved( const QString& i_strOrigKeyInTree, const QString& i_strKeyInTreeOfTargetBranch );
     void emit_treeEntryMoved( const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree, const QString& i_strKeyInTreeOfTargetBranch );
     void emit_treeEntryAboutToBeRenamed( const QString& i_strOrigKeyInTree, const QString& i_strNewName );

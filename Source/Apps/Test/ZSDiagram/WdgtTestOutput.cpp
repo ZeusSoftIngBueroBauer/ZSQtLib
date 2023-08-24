@@ -26,6 +26,8 @@ may result in using the software modules.
 
 #include "WdgtTestOutput.h"
 
+#include "ZSDiagram/ZSDiagramProcWdgt.h"
+#include "ZSDiagramGUI/ZSDiagramItemsDlg.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
@@ -33,14 +35,20 @@ may result in using the software modules.
 #include <QtGui/qevent.h>
 
 #if QT_VERSION < 0x050000
+#include <QtGui/qframe.h>
 #include <QtGui/qlayout.h>
+#include <QtGui/qpushbutton.h>
 #else
+#include <QtWidgets/qframe.h>
 #include <QtWidgets/qlayout.h>
+#include <QtWidgets/qpushbutton.h>
 #endif
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 using namespace ZS::System;
+using namespace ZS::Diagram;
+using namespace ZS::Diagram::GUI;
 using namespace ZS::Apps::Test::Diagram;
 
 
@@ -56,6 +64,10 @@ public: // ctors and dtor
 CWdgtTestOutput::CWdgtTestOutput( QWidget* i_pWdgtParent, Qt::WindowFlags  i_wflags ) :
 //------------------------------------------------------------------------------
     QWidget(i_pWdgtParent,i_wflags),
+    m_pLyt(nullptr),
+    m_pLytLineHeader(nullptr),
+    m_pBtnDiagramProperties(nullptr),
+    m_pDiagram(nullptr),
     m_pTrcAdminObj(nullptr)
 {
     setObjectName("TestOutput");
@@ -74,9 +86,29 @@ CWdgtTestOutput::CWdgtTestOutput( QWidget* i_pWdgtParent, Qt::WindowFlags  i_wfl
     setPalette(paletteWdgtCentral);
     setAutoFillBackground(true);
 
-    QVBoxLayout* pLytMain = new QVBoxLayout();
+    m_pLyt = new QVBoxLayout();
     //pLytMain->setContentsMargins(0,0,0,0); // left,tip,right,bottom
-    setLayout(pLytMain);
+    setLayout(m_pLyt);
+
+    m_pLytLineHeader = new QHBoxLayout();
+    m_pLyt->addLayout(m_pLytLineHeader);
+
+    m_pBtnDiagramProperties = new QPushButton("Edit");
+    m_pBtnDiagramProperties->setEnabled(false);
+    m_pLytLineHeader->addWidget(m_pBtnDiagramProperties);
+    m_pLytLineHeader->addStretch();
+
+    QObject::connect(
+        m_pBtnDiagramProperties, &QPushButton::clicked,
+        this, &CWdgtTestOutput::onBtnDiagramPropertiesClicked);
+
+    m_pFrameDiagram = new QFrame();
+    m_pFrameDiagram->setFrameShape(QFrame::Panel);
+    m_pFrameDiagram->setFrameShadow(QFrame::Raised);
+    QVBoxLayout* pLytFrameDiagram = new QVBoxLayout();
+    //pLytFrameDiagram->setContentsMargins(0,0,0,0); // left,tip,right,bottom
+    m_pFrameDiagram->setLayout(pLytFrameDiagram);
+    m_pLyt->addWidget(m_pFrameDiagram);
 
 } // ctor
 
@@ -91,9 +123,46 @@ CWdgtTestOutput::~CWdgtTestOutput()
         /* strAddInfo   */ "" );
 
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
+
+    QObject::disconnect(
+        m_pDiagram, &QObject::destroyed,
+        this, &CWdgtTestOutput::onDiagramDestroyed);
+
+    m_pLyt = nullptr;
+    m_pLytLineHeader = nullptr;
+    m_pBtnDiagramProperties = nullptr;
+    m_pFrameDiagram = nullptr;
+    m_pDiagram = nullptr;
     m_pTrcAdminObj = nullptr;
 
 } // dtor
+
+/*==============================================================================
+public: // overridables of base class QWidget
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtTestOutput::setDiagram( CWdgtDiagram* i_pDiagram )
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setDiagram",
+        /* strAddInfo   */ i_pDiagram->objectName() );
+
+    if (m_pDiagram == nullptr && m_pDiagram != i_pDiagram)
+    {
+        m_pDiagram = i_pDiagram;
+
+        m_pFrameDiagram->layout()->addWidget(i_pDiagram);
+        m_pBtnDiagramProperties->setEnabled(true);
+
+        QObject::connect(
+            i_pDiagram, &QObject::destroyed,
+            this, &CWdgtTestOutput::onDiagramDestroyed);
+    }
+}
 
 /*==============================================================================
 public: // overridables of base class QWidget
@@ -131,3 +200,51 @@ void CWdgtTestOutput::resizeEvent( QResizeEvent* i_pEv )
     }
 
 } // resizeEvent
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtTestOutput::onBtnDiagramPropertiesClicked(bool i_bChecked)
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onBtnDiagramPropertiesClicked",
+        /* strAddInfo   */ "" );
+
+    if (m_pDiagram != nullptr)
+    {
+        QString strDlgTitle = ZS::System::GUI::getMainWindowTitle() + ": Diagram Objects";
+        CDlgDiagramItems* pDlg = CDlgDiagramItems::GetInstance(m_pDiagram);
+        if( pDlg == nullptr ) {
+            pDlg = CDlgDiagramItems::CreateInstance(strDlgTitle, m_pDiagram);
+            pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
+            pDlg->adjustSize();
+            pDlg->show();
+        }
+        else {
+            if( pDlg->isHidden() ) {
+                pDlg->show();
+            }
+            pDlg->raise();
+            pDlg->activateWindow();
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+void CWdgtTestOutput::onDiagramDestroyed(QObject* )
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onDiagramDestroyed",
+        /* strAddInfo   */ "" );
+
+    m_pDiagram = nullptr;
+    m_pBtnDiagramProperties->setEnabled(false);
+}

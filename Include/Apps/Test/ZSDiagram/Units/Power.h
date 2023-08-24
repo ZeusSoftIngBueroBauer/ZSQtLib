@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -47,11 +47,14 @@ public: // ctors and dtor
     CPhysSizePower(ZS::System::CIdxTreeEntry* i_pParentBranch);
     virtual ~CPhysSizePower();
 private: // instance members
+    ZS::PhysVal::CUnitsTreeEntryPhysUnit m_treeEntryMilliWatt;
     ZS::PhysVal::CUnitsTreeEntryPhysUnit m_treeEntryWatt;
     ZS::PhysVal::CUnitsTreeEntryPhysUnit m_treeEntrydBMilliWatt;
 public: // instance members
+    ZS::PhysVal::CUnit MilliWatt;
     ZS::PhysVal::CUnit Watt;
     ZS::PhysVal::CUnit dBMilliWatt;
+    ZS::PhysVal::CUnit mW;
     ZS::PhysVal::CUnit W;
     ZS::PhysVal::CUnit dBm;
 

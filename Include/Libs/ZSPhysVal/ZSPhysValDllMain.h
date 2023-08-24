@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -317,26 +317,6 @@ ZSPHYSVALDLL_API QString getFactorPrefixFromSymbol( const QString& i_strSymbol, 
 /*******************************************************************************
 Auxiliary methods
 *******************************************************************************/
-
-ZSPHYSVALDLL_API void insertDelimiter(
-    int            i_iDigitsPerDigitGroup,
-    const QString& i_strDelimiter,
-    QString*       io_pstrValue,
-    int            i_iDigitsLeading,
-    int            i_iDigitsTrailing );
-
-ZSPHYSVALDLL_API void removeTrailingZeros(
-    QString* io_pstrValue,
-    int      i_iDigitsTrailingMin = 1,
-    QChar    i_charDecPoint = '.' );
-
-ZSPHYSVALDLL_API void removeLeadingZerosFromExponent( QString* io_pstrValue );
-
-ZSPHYSVALDLL_API TFormatResult formatString(
-    const QString& i_strValue,
-    int*           o_piDigitsLeading,
-    int*           o_piDigitsTrailing,
-    int*           o_piDigitsExponent );
 
 ZSPHYSVALDLL_API TFormatResult formatValue(
     double       i_fVal,

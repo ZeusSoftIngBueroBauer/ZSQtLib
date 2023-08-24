@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -46,30 +46,16 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CModelUnitFctConvertInternal::CModelUnitFctConvertInternal( QObject* i_pObjParent ) :
 //------------------------------------------------------------------------------
-    CModelUnitFctConvertInternal(nullptr, i_pObjParent)
-{
-} // ctor
-
-//------------------------------------------------------------------------------
-CModelUnitFctConvertInternal::CModelUnitFctConvertInternal(
-    CIdxTreeUnits* i_pIdxTree, QObject* i_pObjParent ) :
-//------------------------------------------------------------------------------
     QAbstractTableModel(i_pObjParent),
-    m_pIdxTree(nullptr),
     m_strKeyInTreeOfRootEntry(),
     m_pPhysUnit(nullptr)
 {
-    if( i_pIdxTree != nullptr )
-    {
-        setIdxTree(i_pIdxTree);
-    }
 } // ctor
 
 //------------------------------------------------------------------------------
 CModelUnitFctConvertInternal::~CModelUnitFctConvertInternal()
 //------------------------------------------------------------------------------
 {
-    m_pIdxTree = nullptr;
     //m_strKeyInTreeOfRootEntry;
     m_pPhysUnit = nullptr;
 
@@ -78,26 +64,6 @@ CModelUnitFctConvertInternal::~CModelUnitFctConvertInternal()
 /*==============================================================================
 public: // instance methods
 ==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CModelUnitFctConvertInternal::setIdxTree( QObject* i_pIdxTree )
-//------------------------------------------------------------------------------
-{
-    if( m_pIdxTree != i_pIdxTree )
-    {
-        if( m_pIdxTree != nullptr )
-        {
-        }
-
-        m_pIdxTree = dynamic_cast<CIdxTreeUnits*>(i_pIdxTree);
-
-        if( m_pIdxTree != nullptr )
-        {
-        }
-
-        setKeyInTreeOfRootEntry("");
-    }
-} // setIdxTree
 
 //------------------------------------------------------------------------------
 void CModelUnitFctConvertInternal::setKeyInTreeOfRootEntry( const QString& i_strKeyInTree )
@@ -113,7 +79,7 @@ void CModelUnitFctConvertInternal::setKeyInTreeOfRootEntry( const QString& i_str
 
         m_pPhysUnit = nullptr;
 
-        CIdxTreeEntry* pTreeEntry = m_pIdxTree->findEntry(i_strKeyInTree);
+        CIdxTreeEntry* pTreeEntry = CIdxTreeUnits::GetInstance()->findEntry(i_strKeyInTree);
 
         if( pTreeEntry != nullptr && pTreeEntry->isLeave() )
         {
@@ -160,7 +126,7 @@ QVariant CModelUnitFctConvertInternal::data( const QModelIndex& i_modelIdx, int 
 
     int iRow = i_modelIdx.row();
     int iCol = i_modelIdx.column();
-    CFctConvert* pfctConvert = nullptr;
+    SFctConvert* pfctConvert = nullptr;
     CUnitsTreeEntryPhysUnit* pPhysUnitDst = nullptr;
 
     if( !i_modelIdx.isValid() )

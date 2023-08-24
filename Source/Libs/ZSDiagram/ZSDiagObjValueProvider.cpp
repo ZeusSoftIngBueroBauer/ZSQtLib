@@ -51,22 +51,23 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CDiagObjValueProvider::CDiagObjValueProvider(
-    const QString& i_strObjName,
-    EMathOp        i_mathOp,
-    CDiagObj*      i_pDiagObjOp1,
-    EScaleDir      i_scaleDirOp1,
-    CDiagObj*      i_pDiagObjOp2,
-    EScaleDir      i_scaleDirOp2 ) :
+    const QString&       i_strObjName,
+    EMathOp              i_mathOp,
+    CDiagObj*            i_pDiagObjOp1,
+    const CEnumScaleDir& i_scaleDirOp1,
+    CDiagObj*            i_pDiagObjOp2,
+    const CEnumScaleDir& i_scaleDirOp2 ) :
 //------------------------------------------------------------------------------
     CDiagObj(
-        /* strObjName */ i_strObjName,
-        /* pDiagTrace */ nullptr,
-        /* layoutPos  */ ELayoutPosUndefined ),
+        /* strClassName */ CDiagObjValueProvider::ClassName(),
+        /* strObjName   */ i_strObjName,
+        /* pDiagTrace   */ nullptr,
+        /* layoutPos    */ ELayoutPosUndefined ),
     m_mathOp(i_mathOp),
     m_pDiagObjOp1(i_pDiagObjOp1),
-    m_scaleDirOp1(i_scaleDirOp1),
+    m_scaleDirOp1(i_scaleDirOp1.enumerator()),
     m_pDiagObjOp2(i_pDiagObjOp2),
-    m_scaleDirOp2(i_scaleDirOp2),
+    m_scaleDirOp2(i_scaleDirOp2.enumerator()),
     m_valueFormat(),
     m_physVal(),
     m_strVal("---")
@@ -79,7 +80,7 @@ CDiagObjValueProvider::CDiagObjValueProvider(
 
     if( m_pDiagObjOp1 != nullptr )
     {
-        if( m_scaleDirOp1 == EScaleDirX )
+        if( m_scaleDirOp1 == EScaleDir::X )
         {
             if( !QObject::connect(
                 /* pObjSender   */ m_pDiagObjOp1,
@@ -90,7 +91,7 @@ CDiagObjValueProvider::CDiagObjValueProvider(
                 throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
             }
         }
-        else if( m_scaleDirOp1 == EScaleDirY )
+        else if( m_scaleDirOp1 == EScaleDir::Y )
         {
             if( !QObject::connect(
                 /* pObjSender   */ m_pDiagObjOp1,
@@ -112,7 +113,7 @@ CDiagObjValueProvider::CDiagObjValueProvider(
     }
     if( m_pDiagObjOp2 != nullptr )
     {
-        if( m_scaleDirOp2 == EScaleDirX )
+        if( m_scaleDirOp2 == EScaleDir::X )
         {
             if( !QObject::connect(
                 /* pObjSender   */ m_pDiagObjOp2,
@@ -123,7 +124,7 @@ CDiagObjValueProvider::CDiagObjValueProvider(
                 throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
             }
         }
-        else if( m_scaleDirOp2 == EScaleDirY )
+        else if( m_scaleDirOp2 == EScaleDir::Y )
         {
             if( !QObject::connect(
                 /* pObjSender   */ m_pDiagObjOp2,
@@ -158,9 +159,9 @@ CDiagObjValueProvider::~CDiagObjValueProvider()
 
     m_mathOp = EMathOpNone;
     m_pDiagObjOp1 = nullptr;
-    m_scaleDirOp1 = EScaleDirUndefined;
+    m_scaleDirOp1 = static_cast<EScaleDir>(0);
     m_pDiagObjOp2 = nullptr;
-    m_scaleDirOp2 = EScaleDirUndefined;
+    m_scaleDirOp2 = static_cast<EScaleDir>(0);
     //m_valueFormat;
     //m_physVal;
     //m_strVal;
@@ -189,12 +190,12 @@ CDiagObjValueProvider::EMathOp CDiagObjValueProvider::getMathOp() const
 }
 
 //------------------------------------------------------------------------------
-void CDiagObjValueProvider::setOp1( CDiagObj* i_pDiagObj, EScaleDir i_scaleDir )
+void CDiagObjValueProvider::setOp1( CDiagObj* i_pDiagObj, const CEnumScaleDir& i_scaleDir )
 //------------------------------------------------------------------------------
 {
     if( m_pDiagObjOp1 != nullptr )
     {
-        if( m_scaleDirOp1 == EScaleDirX )
+        if( m_scaleDirOp1 == EScaleDir::X )
         {
             QObject::disconnect(
                 /* pObjSender   */ m_pDiagObjOp1,
@@ -202,7 +203,7 @@ void CDiagObjValueProvider::setOp1( CDiagObj* i_pDiagObj, EScaleDir i_scaleDir )
                 /* pObjReceiver */ this,
                 /* pcMember     */ SLOT(op1ValueXChanged(ZS::Diagram::CDiagObj*)) );
         }
-        else if( m_scaleDirOp1 == EScaleDirY )
+        else if( m_scaleDirOp1 == EScaleDir::Y )
         {
             QObject::disconnect(
                 /* pObjSender   */ m_pDiagObjOp1,
@@ -217,11 +218,11 @@ void CDiagObjValueProvider::setOp1( CDiagObj* i_pDiagObj, EScaleDir i_scaleDir )
             /* pcMember     */ SLOT(op1VisibilityChanged(ZS::Diagram::CDiagObj*)) );
     }
     m_pDiagObjOp1 = i_pDiagObj;
-    m_scaleDirOp1 = i_scaleDir;
+    m_scaleDirOp1 = i_scaleDir.enumerator();
 
     if( m_pDiagObjOp1 != nullptr )
     {
-        if( m_scaleDirOp1 == EScaleDirX )
+        if( m_scaleDirOp1 == EScaleDir::X )
         {
             if( !QObject::connect(
                 /* pObjSender   */ m_pDiagObjOp1,
@@ -232,7 +233,7 @@ void CDiagObjValueProvider::setOp1( CDiagObj* i_pDiagObj, EScaleDir i_scaleDir )
                 throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
             }
         }
-        else if( m_scaleDirOp1 == EScaleDirY )
+        else if( m_scaleDirOp1 == EScaleDir::Y )
         {
             if( !QObject::connect(
                 /* pObjSender   */ m_pDiagObjOp1,
@@ -272,12 +273,12 @@ EScaleDir CDiagObjValueProvider::getScaleDirOp1() const
 }
 
 //------------------------------------------------------------------------------
-void CDiagObjValueProvider::setOp2( CDiagObj* i_pDiagObj, EScaleDir i_scaleDir )
+void CDiagObjValueProvider::setOp2( CDiagObj* i_pDiagObj, const CEnumScaleDir& i_scaleDir )
 //------------------------------------------------------------------------------
 {
     if( m_pDiagObjOp2 != nullptr )
     {
-        if( m_scaleDirOp2 == EScaleDirX )
+        if( m_scaleDirOp2 == EScaleDir::X )
         {
             QObject::disconnect(
                 /* pObjSender   */ m_pDiagObjOp2,
@@ -285,7 +286,7 @@ void CDiagObjValueProvider::setOp2( CDiagObj* i_pDiagObj, EScaleDir i_scaleDir )
                 /* pObjReceiver */ this,
                 /* pcMember     */ SLOT(op2ValueXChanged(ZS::Diagram::CDiagObj*)) );
         }
-        else if( m_scaleDirOp1 == EScaleDirY )
+        else if( m_scaleDirOp1 == EScaleDir::Y )
         {
             QObject::disconnect(
                 /* pObjSender   */ m_pDiagObjOp2,
@@ -300,11 +301,11 @@ void CDiagObjValueProvider::setOp2( CDiagObj* i_pDiagObj, EScaleDir i_scaleDir )
             /* pcMember     */ SLOT(op2VisibilityChanged(ZS::Diagram::CDiagObj*)) );
     }
     m_pDiagObjOp2 = i_pDiagObj;
-    m_scaleDirOp2 = i_scaleDir;
+    m_scaleDirOp2 = i_scaleDir.enumerator();
 
     if( m_pDiagObjOp2 != nullptr )
     {
-        if( m_scaleDirOp2 == EScaleDirX )
+        if( m_scaleDirOp2 == EScaleDir::X )
         {
             if( !QObject::connect(
                 /* pObjSender   */ m_pDiagObjOp2,
@@ -315,7 +316,7 @@ void CDiagObjValueProvider::setOp2( CDiagObj* i_pDiagObj, EScaleDir i_scaleDir )
                 throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
             }
         }
-        else if( m_scaleDirOp1 == EScaleDirY )
+        else if( m_scaleDirOp1 == EScaleDir::Y )
         {
             if( !QObject::connect(
                 /* pObjSender   */ m_pDiagObjOp2,
@@ -405,14 +406,14 @@ CDiagObj* CDiagObjValueProvider::clone( CDataDiagram* i_pDiagramTrg ) const
 
     if( m_pDiagObjOp1 != nullptr )
     {
-        pDiagObjOp1 = i_pDiagramTrg->getDiagObj( m_pDiagObjOp1->getObjId() );
+        pDiagObjOp1 = i_pDiagramTrg->findDiagObj(m_pDiagObjOp1->ClassName(), m_pDiagObjOp1->getObjName());
     }
     if( m_pDiagObjOp2 != nullptr )
     {
-        pDiagObjOp2 = i_pDiagramTrg->getDiagObj( m_pDiagObjOp2->getObjId() );
+        pDiagObjOp2 = i_pDiagramTrg->findDiagObj(m_pDiagObjOp2->ClassName(), m_pDiagObjOp2->getObjName());
     }
 
-    CDiagObjValueProvider* pDiagObj = new CDiagObjValueProvider(
+    CDiagObjValueProvider* pDiagObjCloned = new CDiagObjValueProvider(
         /* strObjName  */ m_strObjName,
         /* mathOp      */ m_mathOp,
         /* pDiagObjOp1 */ pDiagObjOp1,
@@ -421,22 +422,22 @@ CDiagObj* CDiagObjValueProvider::clone( CDataDiagram* i_pDiagramTrg ) const
         /* scaleDirOp2 */ m_scaleDirOp2 );
 
     // Members from base class CDiagObj:
-    pDiagObj->m_layoutPos = m_layoutPos;
-    pDiagObj->m_rectContent = m_rectContent;
-    pDiagObj->m_bAdjustContentRect2DiagPartCenter = m_bAdjustContentRect2DiagPartCenter;
-    pDiagObj->m_bVisible = m_bVisible;
-    pDiagObj->m_state = m_state;
-    pDiagObj->m_bIsFocusable = m_bIsFocusable;
-    pDiagObj->m_bIsEditable = m_bIsEditable;
+    pDiagObjCloned->m_layoutPos = m_layoutPos;
+    pDiagObjCloned->m_rectContent = m_rectContent;
+    pDiagObjCloned->m_bAdjustContentRect2DiagPartCenter = m_bAdjustContentRect2DiagPartCenter;
+    pDiagObjCloned->m_bVisible = m_bVisible;
+    pDiagObjCloned->m_state = m_state;
+    pDiagObjCloned->m_bIsFocusable = m_bIsFocusable;
+    pDiagObjCloned->m_bIsEditable = m_bIsEditable;
 
     // Members from this class:
-    pDiagObj->m_valueFormat = m_valueFormat;
-    pDiagObj->m_physVal = m_physVal;
-    pDiagObj->m_strVal = m_strVal;
+    pDiagObjCloned->m_valueFormat = m_valueFormat;
+    pDiagObjCloned->m_physVal = m_physVal;
+    pDiagObjCloned->m_strVal = m_strVal;
 
-    i_pDiagramTrg->addDiagObj(pDiagObj);
+    i_pDiagramTrg->addDiagObj(pDiagObjCloned);
 
-    return pDiagObj;
+    return pDiagObjCloned;
 
 } // clone
 
@@ -446,7 +447,7 @@ void CDiagObjValueProvider::update( unsigned int i_uUpdateFlags, QPaintDevice* i
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObjUpdate != nullptr && m_pTrcAdminObjUpdate->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjUpdate, EMethodTraceDetailLevel::ArgsNormal))
     {
         strTrcMsg = updateFlags2Str(i_uUpdateFlags);
     }
@@ -486,17 +487,9 @@ void CDiagObjValueProvider::update( unsigned int i_uUpdateFlags, QPaintDevice* i
         {
             throw CException(__FILE__,__LINE__,EResultArgOutOfRange);
         }
-        if( m_scaleDirOp1 < EScaleDirMin || m_scaleDirOp1 > EScaleDirMax )
-        {
-            throw CException(__FILE__,__LINE__,EResultArgOutOfRange);
-        }
         if( m_mathOp != EMathOpNone )
         {
             if( m_pDiagObjOp2 == nullptr )
-            {
-                throw CException(__FILE__,__LINE__,EResultArgOutOfRange);
-            }
-            if( m_scaleDirOp2 < EScaleDirMin || m_scaleDirOp2 > EScaleDirMax )
             {
                 throw CException(__FILE__,__LINE__,EResultArgOutOfRange);
             }
@@ -630,7 +623,7 @@ void CDiagObjValueProvider::op1ValueXChanged( ZS::Diagram::CDiagObj* i_pDiagObjO
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::EnterLeave))
     {
         if( i_pDiagObjOp1 != nullptr )
         {
@@ -656,7 +649,7 @@ void CDiagObjValueProvider::op1ValueYChanged( ZS::Diagram::CDiagObj* i_pDiagObjO
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::EnterLeave))
     {
         if( i_pDiagObjOp1 != nullptr )
         {
@@ -682,7 +675,7 @@ void CDiagObjValueProvider::op2ValueXChanged( ZS::Diagram::CDiagObj* i_pDiagObjO
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::EnterLeave))
     {
         if( i_pDiagObjOp2 != nullptr )
         {
@@ -708,7 +701,7 @@ void CDiagObjValueProvider::op2ValueYChanged( ZS::Diagram::CDiagObj* i_pDiagObjO
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::EnterLeave))
     {
         if( i_pDiagObjOp2 != nullptr )
         {
@@ -734,7 +727,7 @@ void CDiagObjValueProvider::op1VisibilityChanged( ZS::Diagram::CDiagObj* i_pDiag
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::EnterLeave))
     {
         if( i_pDiagObjOp1 != nullptr )
         {
@@ -760,7 +753,7 @@ void CDiagObjValueProvider::op2VisibilityChanged( ZS::Diagram::CDiagObj* i_pDiag
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::EnterLeave))
     {
         if( i_pDiagObjOp2 != nullptr )
         {

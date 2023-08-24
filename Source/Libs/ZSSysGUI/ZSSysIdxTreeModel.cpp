@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -401,15 +401,14 @@ public: // class methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QString CModelIdxTree::getImageUrl( EIdxTreeEntryType i_entryType )
+QString CModelIdxTree::getImageUrl( const QString& i_strEntryType )
 //------------------------------------------------------------------------------
 {
-    QString strType = ZS::System::idxTreeEntryType2Str(i_entryType);
-    return ":/ZS/TreeView/TreeView" + strType + "Entry.png";
+    return ":/ZS/TreeView/TreeView" + i_strEntryType + "Entry.png";
 }
 
 //------------------------------------------------------------------------------
-QIcon CModelIdxTree::getIcon( EIdxTreeEntryType i_entryType )
+QIcon CModelIdxTree::getIcon( const QString& i_strEntryType )
 //------------------------------------------------------------------------------
 {
     QIcon icon;
@@ -431,35 +430,25 @@ QIcon CModelIdxTree::getIcon( EIdxTreeEntryType i_entryType )
         s_bIconsCreated = true;
     }
 
-    switch( i_entryType )
+    if( i_strEntryType.startsWith("R") )
     {
-        case EIdxTreeEntryType::Root:
+        if( s_pIconRoot != nullptr )
         {
-            if( s_pIconRoot != nullptr )
-            {
-                icon = *s_pIconRoot;
-            }
-            break;
+            icon = *s_pIconRoot;
         }
-        case EIdxTreeEntryType::Branch:
+    }
+    else if( i_strEntryType.startsWith("B") )
+    {
+        if( s_pIconBranch != nullptr )
         {
-            if( s_pIconBranch != nullptr )
-            {
-                icon = *s_pIconBranch;
-            }
-            break;
+            icon = *s_pIconBranch;
         }
-        case EIdxTreeEntryType::Leave:
+    }
+    else if( i_strEntryType.startsWith("L") )
+    {
+        if( s_pIconLeave != nullptr )
         {
-            if( s_pIconLeave != nullptr )
-            {
-                icon = *s_pIconLeave;
-            }
-            break;
-        }
-        default:
-        {
-            break;
+            icon = *s_pIconLeave;
         }
     }
 
@@ -520,7 +509,7 @@ CModelIdxTree::CModelIdxTree(
     m_pTrcAdminObjNoisyMethods = CTrcServer::GetTraceAdminObj(
         NameSpace(), ClassName() + "::NoisyMethods", objectName());
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "IdxTree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName());
         strMthInArgs += ", NamesAreEditable: " + bool2Str(i_bNamesAreEditable);
@@ -648,7 +637,7 @@ void CModelIdxTree::setIdxTree( QObject* i_pIdxTree )
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         if( m_pIdxTree == nullptr ) {
             strMthInArgs = "IdxTree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName());
         }
@@ -819,7 +808,7 @@ void CModelIdxTree::setExcludeLeaves( bool i_bExcludeLeaves )
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = bool2Str(i_bExcludeLeaves);
     }
@@ -859,7 +848,7 @@ void CModelIdxTree::setSortOrder( EIdxTreeSortOrder i_sortOrder )
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = idxTreeSortOrder2Str(i_sortOrder);
     }
@@ -889,7 +878,7 @@ void CModelIdxTree::setSortOrder( const QString& i_strSortOrder )
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = i_strSortOrder;
     }
@@ -942,7 +931,7 @@ void CModelIdxTree::setExcludeLeaves(
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Branch: " + QString(i_pModelBranch == nullptr ? "nullptr" : i_pModelBranch->keyInTree());
         strMthInArgs += ", ExludeLeaves: " + bool2Str(i_bExcludeLeaves);
@@ -964,7 +953,7 @@ void CModelIdxTree::setExcludeLeaves(
         for( int idxTreeEntryChild = i_pModelBranch->count()-1; idxTreeEntryChild >= 0; --idxTreeEntryChild )
         {
             CModelIdxTreeEntry* pModelTreeEntryChild = i_pModelBranch->at(idxTreeEntryChild);
-            if( pModelTreeEntryChild->entryType() == EIdxTreeEntryType::Branch )
+            if( pModelTreeEntryChild->isBranch() )
             {
                 setExcludeLeaves(pModelTreeEntryChild, i_bExcludeLeaves, i_bRecursive);
             }
@@ -1002,7 +991,7 @@ void CModelIdxTree::setExcludeLeaves(
             {
                 mappTreeEntriesNew.insert(strKeyInParentBranch, pTreeEntryChild);
             }
-            else if( pTreeEntryChild->entryType() != EIdxTreeEntryType::Leave )
+            else if( !pTreeEntryChild->isLeave() )
             {
                 mappTreeEntriesNew.insert(strKeyInParentBranch, pTreeEntryChild);
             }
@@ -1024,7 +1013,7 @@ void CModelIdxTree::setExcludeLeaves(
             {
                 mappTreeEntriesNew.insert(strKeyInParentBranch, pTreeEntryChild);
             }
-            else if( pTreeEntryChild->entryType() != EIdxTreeEntryType::Leave )
+            else if( !pTreeEntryChild->isLeave() )
             {
                 mappTreeEntriesNew.insert(strKeyInParentBranch, pTreeEntryChild);
             }
@@ -1051,7 +1040,7 @@ void CModelIdxTree::setExcludeLeaves(
                 arpTreeEntriesNew << pTreeEntryChild;
                 mappTreeEntriesNew.insert(strKeyInParentBranch, pTreeEntryChild);
             }
-            else if( pTreeEntryChild->entryType() != EIdxTreeEntryType::Leave )
+            else if( !pTreeEntryChild->isLeave() )
             {
                 arpTreeEntriesNew << pTreeEntryChild;
                 mappTreeEntriesNew.insert(strKeyInParentBranch, pTreeEntryChild);
@@ -1117,13 +1106,13 @@ void CModelIdxTree::setExcludeLeaves(
         {
             CModelIdxTreeEntry* pModelTreeEntryChild = nullptr;
 
-            if( pTreeEntryChild->entryType() == EIdxTreeEntryType::Branch )
+            if( pTreeEntryChild->isBranch() )
             {
                 pModelTreeEntryChild = new CModelIdxTreeEntry(pTreeEntryChild);
                 pModelTreeEntryChild->setSortOrder(i_pModelBranch->sortOrder());
                 pModelTreeEntryChild->setExcludeLeaves(i_bExcludeLeaves);
             }
-            else if( pTreeEntryChild->entryType() == EIdxTreeEntryType::Leave )
+            else if( pTreeEntryChild->isLeave() )
             {
                 pModelTreeEntryChild = new CModelIdxTreeEntry(pTreeEntryChild);
             }
@@ -1157,7 +1146,7 @@ void CModelIdxTree::setSortOrder(
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Branch: " + QString(i_pModelBranch == nullptr ? "nullptr" : i_pModelBranch->keyInTree());
         strMthInArgs += ", SortOrder: " + idxTreeSortOrder2Str(i_sortOrder);
@@ -1189,7 +1178,7 @@ void CModelIdxTree::setSortOrder(
             for( int idxTreeEntryChild = i_pModelBranch->count()-1; idxTreeEntryChild >= 0; --idxTreeEntryChild )
             {
                 CModelIdxTreeEntry* pModelTreeEntryChild = i_pModelBranch->at(idxTreeEntryChild);
-                if( pModelTreeEntryChild->entryType() == EIdxTreeEntryType::Branch )
+                if( pModelTreeEntryChild->isBranch() )
                 {
                     setSortOrder(pModelTreeEntryChild, i_sortOrder, i_bRecursive);
                 }
@@ -1268,7 +1257,7 @@ public: // instance methods
 QString CModelIdxTree::getTreeEntryTypeAsString( const QModelIndex& i_modelIdx ) const
 //------------------------------------------------------------------------------
 {
-    QString strEntryType;
+    QString strEntryType = "?";
     CModelIdxTreeEntry* pModelTreeEntry = nullptr;
     if( i_modelIdx.isValid() )
     {
@@ -1277,10 +1266,6 @@ QString CModelIdxTree::getTreeEntryTypeAsString( const QModelIndex& i_modelIdx )
     if( pModelTreeEntry != nullptr )
     {
         strEntryType = pModelTreeEntry->entryType2Str();
-    }
-    else
-    {
-        strEntryType = idxTreeEntryType2Str(EIdxTreeEntryType::Undefined);
     }
     return strEntryType;
 }
@@ -1331,7 +1316,7 @@ QString CModelIdxTree::getTreeEntryAbsoluteNodePath( const QModelIndex& i_modelI
     }
     if( pModelTreeEntry != nullptr )
     {
-        if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root )
+        if( pModelTreeEntry->isRoot() )
         {
             strEntryPath = pModelTreeEntry->name();
         }
@@ -1428,7 +1413,7 @@ void CModelIdxTree::setIsExpanded( CModelIdxTreeEntry* i_pModelBranch, bool i_bI
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Branch: " + QString(i_pModelBranch == nullptr ? "nullptr" : i_pModelBranch->keyInTree());
         strMthInArgs += ", IsExpanded: " + bool2Str(i_bIsExpanded);
@@ -1488,7 +1473,7 @@ void CModelIdxTree::setIsSelected(
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "TreeEntry: " + QString(i_pModelTreeEntry == nullptr ? "nullptr" : i_pModelTreeEntry->keyInTree());
         strMthInArgs += ", IsSelected: " + bool2Str(i_bIsSelected);
@@ -1501,30 +1486,26 @@ void CModelIdxTree::setIsSelected(
         /* strMethodInArgs    */ strMthInArgs );
     #endif
 
-    if( i_pModelTreeEntry == nullptr )
+    if (i_pModelTreeEntry == nullptr)
     {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange, "i_pModelTreeEntry == nullptr");
     }
 
-    CModelIdxTreeEntry* pModelTreeEntry;
-    int                 idxModelTreeEntry;
-
-    if( i_bRecursive )
+    if (i_bRecursive)
     {
-        if( i_pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || i_pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        if( i_pModelTreeEntry->isRoot() || i_pModelTreeEntry->isBranch() )
         {
             CModelIdxTreeEntry* pModelBranch = i_pModelTreeEntry;
 
-            for( idxModelTreeEntry = 0; idxModelTreeEntry < pModelBranch->count(); ++idxModelTreeEntry )
+            for( int idxModelTreeEntry = 0; idxModelTreeEntry < pModelBranch->count(); ++idxModelTreeEntry )
             {
-                pModelTreeEntry = pModelBranch->at(idxModelTreeEntry);
-
+                CModelIdxTreeEntry* pModelTreeEntry = pModelBranch->at(idxModelTreeEntry);
                 setIsSelected(pModelTreeEntry, i_bIsSelected, i_bRecursive);
             }
         }
-    } // if( i_bRecursive )
+    }
 
-    if( i_pModelTreeEntry->isSelected() != i_bIsSelected )
+    if (i_pModelTreeEntry->isSelected() != i_bIsSelected)
     {
         i_pModelTreeEntry->setIsSelected(i_bIsSelected);
 
@@ -1564,7 +1545,7 @@ QModelIndex CModelIdxTree::index( const QString& i_strKeyInTree, int i_iClm ) co
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "KeyInTree: " + i_strKeyInTree;
     }
@@ -1686,7 +1667,7 @@ void CModelIdxTree::onIdxTreeEntryAdded( const QString& i_strKeyInTree )
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = i_strKeyInTree;
     }
@@ -1764,7 +1745,7 @@ void CModelIdxTree::onIdxTreeEntryChanged( const QString& i_strKeyInTree )
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = i_strKeyInTree;
     }
@@ -1787,17 +1768,14 @@ void CModelIdxTree::onIdxTreeEntryChanged( const QString& i_strKeyInTree )
 
 //------------------------------------------------------------------------------
 void CModelIdxTree::onIdxTreeEntryAboutToBeRemoved(
-    EIdxTreeEntryType i_entryType,
-    const QString&    i_strKeyInTree,
-    int               i_idxInTree )
+    const QString& i_strKeyInTree, int i_idxInTree )
 //------------------------------------------------------------------------------
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strMthInArgs = "Type: " + idxTreeEntryType2Str(i_entryType);
-        strMthInArgs += ", Key: " + i_strKeyInTree;
+        strMthInArgs = "Key: " + i_strKeyInTree;
         strMthInArgs += ", Idx: " + QString::number(i_idxInTree);
     }
     CMethodTracer mthTracer(
@@ -1837,7 +1815,7 @@ void CModelIdxTree::onIdxTreeEntryMoved(
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = ", NewKey: " + i_strNewKeyInTree;
         strMthInArgs += ", OrigKey: " + i_strOrigKeyInTree;
@@ -1893,7 +1871,7 @@ void CModelIdxTree::onIdxTreeEntryKeyInTreeChanged(
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "NewKey: " + i_strNewKeyInTree;
         strMthInArgs += ", OrigKey: " + i_strOrigKeyInTree;
@@ -1991,7 +1969,7 @@ void CModelIdxTree::clear( CModelIdxTreeEntry* i_pModelBranch, bool i_bDestroyTr
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "Branch: " + QString(i_pModelBranch == nullptr ? "nullptr" : i_pModelBranch->keyInTree());
         strMthInArgs += ", DestroyEntries: " + bool2Str(i_bDestroyTreeEntries);
@@ -2033,7 +2011,7 @@ void CModelIdxTree::remove( CModelIdxTreeEntry* i_pModelTreeEntry )
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "TreeEntry: " + QString(i_pModelTreeEntry == nullptr ? "nullptr" : i_pModelTreeEntry->keyInTree());
     }
@@ -2077,13 +2055,14 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-int CModelIdxTree::columnWidthByColumn(int i_iClm, int i_iFontPixelSize, const QModelIndex& i_modelIdxParent)
+int CModelIdxTree::columnWidthByColumn(
+    int i_iClm, int i_iFontPixelSize, const QModelIndex& i_modelIdxParent)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
 
     #ifdef ZS_TRACE_GUI_MODELS
-    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObjNoisyMethods, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Clm: " + column2Str(static_cast<EColumn>(i_iClm));
         strMthInArgs += ", FontPixelSize: " + QString::number(i_iFontPixelSize);
@@ -2185,7 +2164,7 @@ int CModelIdxTree::columnWidthByRole(const QByteArray& i_byteArrRole, int i_iFon
     QString strMthInArgs;
 
     #ifdef ZS_TRACE_GUI_MODELS
-    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObjNoisyMethods, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Role: " + i_byteArrRole;
         strMthInArgs += ", FontPixelSize: " + QString::number(i_iFontPixelSize);
@@ -2235,7 +2214,7 @@ int CModelIdxTree::rowCount( const QModelIndex& i_modelIdxParent ) const
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObjNoisyMethods, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "ModelIdxParent {" + modelIdx2Str(i_modelIdxParent, 0) + "}";
     }
@@ -2289,7 +2268,7 @@ int CModelIdxTree::columnCount( const QModelIndex& i_modelIdxParent ) const
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObjNoisyMethods, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "ModelIdxParent {" + modelIdx2Str(i_modelIdxParent) + "}";
     }
@@ -2313,7 +2292,7 @@ QModelIndex CModelIdxTree::index( int i_iRow, int i_iCol, const QModelIndex& i_m
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObjNoisyMethods, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "Row: " + QString::number(i_iRow);
         strMthInArgs += ", Clm: " + QString::number(i_iCol);
@@ -2336,7 +2315,7 @@ QModelIndex CModelIdxTree::index( int i_iRow, int i_iCol, const QModelIndex& i_m
         {
             pModelTreeEntry = m_pModelRootEntry;
         }
-        else // if( i_modelIdxParent.isValid() )
+        else
         {
             CModelIdxTreeEntry* pModelParentTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdxParent.internalPointer());
 
@@ -2345,8 +2324,7 @@ QModelIndex CModelIdxTree::index( int i_iRow, int i_iCol, const QModelIndex& i_m
                 throw CException(__FILE__, __LINE__, EResultInternalProgramError);
             }
 
-            if( pModelParentTreeEntry->entryType() != EIdxTreeEntryType::Root
-             && pModelParentTreeEntry->entryType() != EIdxTreeEntryType::Branch )
+            if( !pModelParentTreeEntry->isRoot() && !pModelParentTreeEntry->isBranch() )
             {
                 throw CException(__FILE__, __LINE__, EResultInternalProgramError);
             }
@@ -2357,7 +2335,7 @@ QModelIndex CModelIdxTree::index( int i_iRow, int i_iCol, const QModelIndex& i_m
             {
                 pModelTreeEntry = pModelParentBranch->at(i_iRow);
             }
-        } // if( i_modelIdxParent.isValid() )
+        }
 
         if( pModelTreeEntry != nullptr )
         {
@@ -2382,7 +2360,7 @@ QModelIndex CModelIdxTree::parent( const QModelIndex& i_modelIdx ) const
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObjNoisyMethods, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "ModelIdx {" + modelIdx2Str(i_modelIdx) + "}";
     }
@@ -2435,7 +2413,7 @@ QVariant CModelIdxTree::headerData(
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObjNoisyMethods, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "Section: " + QString::number(i_iSection);
         strMthInArgs += ", Orientation: " + qOrientation2Str(i_orientation);
@@ -2605,7 +2583,7 @@ Qt::ItemFlags CModelIdxTree::flags( const QModelIndex& i_modelIdx ) const
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObjNoisyMethods, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "ModelIdx {" + modelIdx2Str(i_modelIdx) + "}";
     }
@@ -2629,15 +2607,15 @@ Qt::ItemFlags CModelIdxTree::flags( const QModelIndex& i_modelIdx ) const
     {
         if( m_supportedDropActions & (Qt::CopyAction | Qt::MoveAction))
         {
-            if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root )
+            if( pModelTreeEntry->isRoot() )
             {
                 uFlags = uFlags | Qt::ItemIsDropEnabled;
             }
-            else if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+            else if( pModelTreeEntry->isBranch() )
             {
                 uFlags = uFlags | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
             }
-            else if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+            else if( pModelTreeEntry->isLeave() )
             {
                 uFlags = uFlags | Qt::ItemIsDragEnabled;
             }
@@ -2700,7 +2678,7 @@ QVariant CModelIdxTree::data( const QModelIndex& i_modelIdx, int i_iRole ) const
 
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObjNoisyMethods, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "ModelIdx {" + modelIdx2Str(i_modelIdx, i_iRole) + "}";
         strMthInArgs += ", Role: " + QString::number(i_iRole) + " (" + role2Str(i_iRole) + ")";
@@ -2764,7 +2742,7 @@ QVariant CModelIdxTree::data( const QModelIndex& i_modelIdx, int i_iRole ) const
                 }
                 else if( iRole == Qt::DecorationRole )
                 {
-                    varData = getIcon(pModelTreeEntry->entryType());
+                    varData = getIcon(pModelTreeEntry->entryTypeSymbol());
                 }
                 break;
             }
@@ -2776,7 +2754,7 @@ QVariant CModelIdxTree::data( const QModelIndex& i_modelIdx, int i_iRole ) const
                 }
                 else if( iRole == Qt::DisplayRole || iRole == Qt::DecorationRole )
                 {
-                    QString strUrl = getImageUrl(pModelTreeEntry->entryType());
+                    QString strUrl = getImageUrl(pModelTreeEntry->entryTypeSymbol());
                     if( strUrl.startsWith(":") ) {
                         strUrl.insert(0, "qrc");
                     }
@@ -2795,7 +2773,7 @@ QVariant CModelIdxTree::data( const QModelIndex& i_modelIdx, int i_iRole ) const
                 }
                 else if( iRole == Qt::DisplayRole || iRole == Qt::DecorationRole )
                 {
-                    QString strUrl = getImageUrl(pModelTreeEntry->entryType());
+                    QString strUrl = getImageUrl(pModelTreeEntry->entryTypeSymbol());
                     if( strUrl.startsWith(":") ) {
                         strUrl.insert(0, "qrc");
                     }
@@ -2817,7 +2795,7 @@ QVariant CModelIdxTree::data( const QModelIndex& i_modelIdx, int i_iRole ) const
                 }
                 else if( i_iRole == Qt::DecorationRole )
                 {
-                    varData = getIcon(pModelTreeEntry->entryType());
+                    varData = getIcon(pModelTreeEntry->entryTypeSymbol());
                 }
                 break;
             }
@@ -2929,7 +2907,7 @@ bool CModelIdxTree::setData(
 
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "ModelIdx {" + modelIdx2Str(i_modelIdx, i_iRole) + "}";
         strMthInArgs += ", Data: " + i_varData.toString();
@@ -3080,7 +3058,7 @@ QMimeData* CModelIdxTree::mimeData( const QModelIndexList& i_arModelIdxs ) const
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "ModelIdxs [" + QString::number(i_arModelIdxs.count()) + "]";
         if( i_arModelIdxs.count() > 0 )
@@ -3141,7 +3119,7 @@ bool CModelIdxTree::canDropMimeData(
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "MimeData {" + qMimeData2Str(i_pMimeData) + "}";
         strMthInArgs += ", DropAction: " + qDropActions2Str(i_dropAction);
@@ -3259,7 +3237,7 @@ bool CModelIdxTree::dropMimeData(
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "MimeData {" + qMimeData2Str(i_pMimeData) + "}";
         strMthInArgs += ", DropAction: " + qDropActions2Str(i_dropAction);
@@ -3375,7 +3353,7 @@ SErrResultInfo CModelIdxTree::canSetData(
 
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "ModelIdx {" + modelIdx2Str(i_modelIdx, i_iRole) + "}";
         strMthInArgs += ", Data: " + i_varData.toString();
@@ -3795,7 +3773,7 @@ void CModelIdxTree::emit_dataChanged( const QModelIndex& i_modelIdxTL, const QMo
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "TL {" + modelIdx2Str(i_modelIdxTL) + "}";
         strMthInArgs += ", BR {" + modelIdx2Str(i_modelIdxBR) + "}";
@@ -3817,7 +3795,7 @@ void CModelIdxTree::emit_headerDataChanged( Qt::Orientation i_orientation, int i
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "Orientation: " + qOrientation2Str(i_orientation);
         strMthInArgs += ", First: " + QString::number(i_iFirstSection);
@@ -3839,7 +3817,7 @@ void CModelIdxTree::emit_layoutChanged( const QList<QPersistentModelIndex>& i_ar
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "ModelIdxsParents [" + QString::number(i_arModelIdxsParents.size()) + "]";
         strMthInArgs += ", Hint: " + QString::number(i_hint);
@@ -3860,7 +3838,7 @@ void CModelIdxTree::emit_layoutAboutToBeChanged( const QList<QPersistentModelInd
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "ModelIdxsParents [" + QString::number(i_arModelIdxsParents.size()) + "]";
         strMthInArgs += ", Hint: " + QString::number(i_hint);
@@ -3881,7 +3859,7 @@ void CModelIdxTree::emit_sortOrderChanged(const QString& i_strSortOrder)
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = i_strSortOrder;
     }
@@ -3901,7 +3879,7 @@ void CModelIdxTree::emit_sortOrderChanged(EIdxTreeSortOrder i_sortOrder)
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = idxTreeSortOrder2Str(i_sortOrder);
     }
@@ -3921,7 +3899,7 @@ void CModelIdxTree::emit_excludeLeavesChanged(bool i_bExcludeLeaves)
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = bool2Str(i_bExcludeLeaves);
     }
@@ -3946,7 +3924,7 @@ inline QModelIndex CModelIdxTree::_createIndex( int i_iRow, int i_iCol, void* i_
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
     QString strMthRet;
-    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObjNoisyMethods, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "Row: " + QString::number(i_iRow);
         strMthInArgs += ", Col: " + QString::number(i_iCol);
@@ -3979,7 +3957,7 @@ inline QModelIndex CModelIdxTree::_createIndex( int i_iRow, int i_iCol, quintptr
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
     QString strMthRet;
-    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObjNoisyMethods, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "Row: " + QString::number(i_iRow);
         strMthInArgs += ", Col: " + QString::number(i_iCol);
@@ -4011,7 +3989,7 @@ void CModelIdxTree::_beginInsertRows( const QModelIndex& i_modelIdxParent, int i
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "Parent {" + modelIdx2Str(i_modelIdxParent) + "}";
         strMthInArgs += ", First: " + QString::number(i_iFirstRow);
@@ -4048,7 +4026,7 @@ void CModelIdxTree::_beginRemoveRows( const QModelIndex &i_modelIdxParent, int i
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "Parent {" + modelIdx2Str(i_modelIdxParent) + "}";
         strMthInArgs += ", First: " + QString::number(i_iFirstRow);
@@ -4085,7 +4063,7 @@ bool CModelIdxTree::_beginMoveRows( const QModelIndex& i_modelIdxSourceParent, i
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "SourceParent {" + modelIdx2Str(i_modelIdxSourceParent) + "}";
         strMthInArgs += ", SourceStart: " + QString::number(i_iRowSourceStart);
@@ -4133,7 +4111,7 @@ void CModelIdxTree::_beginInsertColumns( const QModelIndex& i_modelIdxParent, in
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "Parent {" + modelIdx2Str(i_modelIdxParent) + "}";
         strMthInArgs += ", First: " + QString::number(i_iFirstCol);
@@ -4170,7 +4148,7 @@ void CModelIdxTree::_beginRemoveColumns( const QModelIndex& i_modelIdxParent, in
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "Parent {" + modelIdx2Str(i_modelIdxParent) + "}";
         strMthInArgs += ", First: " + QString::number(i_iFirstCol);
@@ -4207,7 +4185,7 @@ bool CModelIdxTree::_beginMoveColumns( const QModelIndex& i_modelIdxSourceParent
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs  = "SourceParent {" + modelIdx2Str(i_modelIdxSourceParent) + "}";
         strMthInArgs += ", SourceStart: " + QString::number(i_iColSourceStart);

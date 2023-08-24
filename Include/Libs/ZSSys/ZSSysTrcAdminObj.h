@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -40,7 +40,16 @@ namespace ZS
 namespace System
 {
 class CIdxTreeTrcAdminObjs;
+class CTrcAdminObj;
 class CTrcServer;
+
+//******************************************************************************
+// Global methods
+//******************************************************************************
+
+ZSSYSDLL_API bool areMethodCallsActive(CTrcAdminObj* i_pTrcAdminObj, EMethodTraceDetailLevel i_filterDetailLevel );
+ZSSYSDLL_API bool isRuntimeInfoActive(CTrcAdminObj* i_pTrcAdminObj, ELogDetailLevel i_filterDetailLevel );
+
 
 //******************************************************************************
 /*! @brief Instances of this class are used to filter method tracing.

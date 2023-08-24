@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -28,6 +28,7 @@ may result in using the software modules.
 #define ZSSysGUI_Aux_h
 
 #include <QtCore/qglobal.h>
+#include <QtCore/qnamespace.h>
 #include <QtGui/qevent.h>
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
@@ -66,6 +67,9 @@ ZSSYSGUIDLL_API QAbstractItemView::DragDropMode str2QItemViewDragDropMode( const
 ZSSYSGUIDLL_API QString qDropAction2Str( int i_iVal, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName );
 
 ZSSYSGUIDLL_API QString qItemViewCursorAction2Str( int i_iVal, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName );
+
+ZSSYSGUIDLL_API QString qDockWidgetArea2Str( Qt::DockWidgetAreas i_areas, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName );
+ZSSYSGUIDLL_API Qt::DockWidgetArea str2QDockWidgetArea( const QString& i_str );
 
 ZSSYSGUIDLL_API QKeyEvent* str2QKeyEvent( const QString& i_str, QEvent::Type i_type ); // type must be either QEvent::KeyPress or QEvent::KeyRelease
 

@@ -58,9 +58,10 @@ CDiagObjLabel::CDiagObjLabel(
     int            i_iStateCount ) :
 //------------------------------------------------------------------------------
     CDiagObj(
-        /* strObjName  */ i_strObjName,
-        /* pDiagTrace  */ nullptr,
-        /* layoutPos   */ i_layoutPos ),
+        /* strClassName */ CDiagObjLabel::ClassName(),
+        /* strObjName   */ i_strObjName,
+        /* pDiagTrace   */ nullptr,
+        /* layoutPos    */ i_layoutPos ),
     m_iState(0),
     m_iStateCount(i_iStateCount),
     m_cxMinimumWidth(0),
@@ -81,7 +82,7 @@ CDiagObjLabel::CDiagObjLabel(
     m_arcolText(nullptr),
     m_fntText(),
     m_iTextAlignmentFlags(Qt::AlignVCenter|Qt::AlignHCenter), //lint !e655
-    m_textDirection(ETextDirectionLeft2Right),
+    m_textOrientation(ETextOrientationLeft2Right),
     m_arpxm(nullptr),
     m_iPixmapAlignmentFlags(Qt::AlignVCenter|Qt::AlignHCenter), //lint !e655
     m_rectOuterFrame(),
@@ -132,9 +133,10 @@ CDiagObjLabel::CDiagObjLabel(
     int            i_iStateCount ) :
 //------------------------------------------------------------------------------
     CDiagObj(
-        /* strObjName  */ i_strObjName,
-        /* pDiagTrace  */ nullptr,
-        /* layoutPos   */ i_layoutPos ),
+        /* strClassName */ CDiagObjLabel::ClassName(),
+        /* strObjName   */ i_strObjName,
+        /* pDiagTrace   */ nullptr,
+        /* layoutPos    */ i_layoutPos ),
     m_iState(0),
     m_iStateCount(i_iStateCount),
     m_cxMinimumWidth(0),
@@ -155,7 +157,7 @@ CDiagObjLabel::CDiagObjLabel(
     m_arcolText(nullptr),
     m_fntText(),
     m_iTextAlignmentFlags(Qt::AlignVCenter|Qt::AlignHCenter), //lint !e655
-    m_textDirection(ETextDirectionLeft2Right),
+    m_textOrientation(ETextOrientationLeft2Right),
     m_arpxm(nullptr),
     m_iPixmapAlignmentFlags(Qt::AlignVCenter|Qt::AlignHCenter), //lint !e655
     m_rectOuterFrame(),
@@ -266,7 +268,7 @@ CDiagObjLabel::~CDiagObjLabel()
     //m_arcolText;
     //m_fntText;
     m_iTextAlignmentFlags = 0;
-    m_textDirection = static_cast<ETextDirection>(0);
+    m_textOrientation = static_cast<ETextOrientation>(0);
     //m_arpxm;
     m_iPixmapAlignmentFlags = 0;
     //m_rectOuterFrame;
@@ -629,18 +631,18 @@ int CDiagObjLabel::getTextAlignmentFlags() const
 }
 
 //------------------------------------------------------------------------------
-void CDiagObjLabel::setTextDirection( ETextDirection i_textDirection )
+void CDiagObjLabel::setTextOrientation( ETextOrientation i_textOrientation )
 //------------------------------------------------------------------------------
 {
-    m_textDirection = i_textDirection;
+    m_textOrientation = i_textOrientation;
     invalidate(EUpdateLayoutDataPixmapWidget,true);
 }
 
 //------------------------------------------------------------------------------
-ETextDirection CDiagObjLabel::getTextDirection() const
+ETextOrientation CDiagObjLabel::getTextOrientation() const
 //------------------------------------------------------------------------------
 {
-    return m_textDirection;
+    return m_textOrientation;
 }
 
 //------------------------------------------------------------------------------
@@ -724,17 +726,17 @@ QSize CDiagObjLabel::sizeHint()
             sizeText.setWidth( rectText.width() );
             sizeText.setHeight( rectText.height() );
 
-            switch( m_textDirection )
+            switch( m_textOrientation )
             {
-                case ETextDirectionBottom2Top:
-                case ETextDirectionTop2Bottom:
+                case ETextOrientationBottom2Top:
+                case ETextOrientationTop2Bottom:
                 {
                     sizeText.setWidth( rectText.height() );
                     sizeText.setHeight( rectText.width() );
                     break;
                 }
-                case ETextDirectionLeft2Right:
-                case ETextDirectionRight2Left:
+                case ETextOrientationLeft2Right:
+                case ETextOrientationRight2Left:
                 default:
                 {
                     break;
@@ -761,10 +763,10 @@ QSize CDiagObjLabel::sizeHint()
         // If both a text and a pixmap has to be shown ...
         else if( !m_arstrText[m_iState].isEmpty() && bShowPixmap )
         {
-            switch( m_textDirection )
+            switch( m_textOrientation )
             {
-                case ETextDirectionBottom2Top:
-                case ETextDirectionTop2Bottom:
+                case ETextOrientationBottom2Top:
+                case ETextOrientationTop2Bottom:
                 {
                     if( ((m_iTextAlignmentFlags & Qt::AlignTop) && (m_iPixmapAlignmentFlags & Qt::AlignBottom))
                      || ((m_iTextAlignmentFlags & Qt::AlignBottom) && (m_iPixmapAlignmentFlags & Qt::AlignTop)) )
@@ -800,8 +802,8 @@ QSize CDiagObjLabel::sizeHint()
                     }
                     break;
                 }
-                case ETextDirectionLeft2Right:
-                case ETextDirectionRight2Left:
+                case ETextOrientationLeft2Right:
+                case ETextOrientationRight2Left:
                 default:
                 {
                     if( ((m_iTextAlignmentFlags & Qt::AlignLeft) && (m_iPixmapAlignmentFlags & Qt::AlignRight))
@@ -898,12 +900,11 @@ CDiagObj* CDiagObjLabel::clone( CDataDiagram* i_pDiagramTrg ) const
         return nullptr;
     }
 
-    CDiagObjLabel* pDiagObj;
-    int            idxState;
+    CDiagObjLabel* pDiagObjCloned = nullptr;
 
     if( !m_arstrText[0].isEmpty() )
     {
-        pDiagObj = new CDiagObjLabel(
+        pDiagObjCloned = new CDiagObjLabel(
             /* strObjName */ m_strObjName,
             /* strLabel   */ m_arstrText[0],
             /* layoutPos  */ m_layoutPos,
@@ -911,7 +912,7 @@ CDiagObj* CDiagObjLabel::clone( CDataDiagram* i_pDiagramTrg ) const
     }
     else
     {
-        pDiagObj = new CDiagObjLabel(
+        pDiagObjCloned = new CDiagObjLabel(
             /* strObjName */ m_strObjName,
             /* pxm        */ m_arpxm[0],
             /* layoutPos  */ m_layoutPos,
@@ -919,56 +920,57 @@ CDiagObj* CDiagObjLabel::clone( CDataDiagram* i_pDiagramTrg ) const
     }
 
     // Members from base class CDiagObj:
-    pDiagObj->m_rectContent = m_rectContent;
-    pDiagObj->m_bAdjustContentRect2DiagPartCenter = m_bAdjustContentRect2DiagPartCenter;
-    pDiagObj->m_bVisible = m_bVisible;
-    pDiagObj->m_state = m_state;
-    pDiagObj->m_bIsFocusable = m_bIsFocusable;
-    pDiagObj->m_bIsEditable = m_bIsEditable;
+    pDiagObjCloned->m_rectContent = m_rectContent;
+    pDiagObjCloned->m_bAdjustContentRect2DiagPartCenter = m_bAdjustContentRect2DiagPartCenter;
+    pDiagObjCloned->m_bVisible = m_bVisible;
+    pDiagObjCloned->m_state = m_state;
+    pDiagObjCloned->m_bIsFocusable = m_bIsFocusable;
+    pDiagObjCloned->m_bIsEditable = m_bIsEditable;
 
     // Members from this class:
-    pDiagObj->m_iState = m_iState;
-    pDiagObj->m_cxMinimumWidth = m_cxMinimumWidth;
-    pDiagObj->m_cxMaximumWidth = m_cxMaximumWidth;
-    pDiagObj->m_cyMinimumHeight = m_cyMinimumHeight;
-    pDiagObj->m_cyMaximumHeight = m_cyMaximumHeight;
-    pDiagObj->m_iLayoutPosAlignmentFlags = m_iLayoutPosAlignmentFlags;
-    pDiagObj->m_cxLayoutPosOffs = m_cxLayoutPosOffs;
-    pDiagObj->m_cyLayoutPosOffs = m_cyLayoutPosOffs;
+    pDiagObjCloned->m_iState = m_iState;
+    pDiagObjCloned->m_cxMinimumWidth = m_cxMinimumWidth;
+    pDiagObjCloned->m_cxMaximumWidth = m_cxMaximumWidth;
+    pDiagObjCloned->m_cyMinimumHeight = m_cyMinimumHeight;
+    pDiagObjCloned->m_cyMaximumHeight = m_cyMaximumHeight;
+    pDiagObjCloned->m_iLayoutPosAlignmentFlags = m_iLayoutPosAlignmentFlags;
+    pDiagObjCloned->m_cxLayoutPosOffs = m_cxLayoutPosOffs;
+    pDiagObjCloned->m_cyLayoutPosOffs = m_cyLayoutPosOffs;
+
     if( m_pFrameStyle != nullptr )
     {
-        pDiagObj->m_pFrameStyle = new SFrameStyle(*m_pFrameStyle);
+        pDiagObjCloned->m_pFrameStyle = new SFrameStyle(*m_pFrameStyle);
     }
-    for( idxState = 0; idxState < m_iStateCount; idxState++ )
+    for( int idxState = 0; idxState < m_iStateCount; idxState++ )
     {
-        pDiagObj->m_arcolBg[idxState] = m_arcolBg[idxState];
-        pDiagObj->m_arbrushStyle[idxState] = m_arbrushStyle[idxState];
+        pDiagObjCloned->m_arcolBg[idxState] = m_arcolBg[idxState];
+        pDiagObjCloned->m_arbrushStyle[idxState] = m_arbrushStyle[idxState];
     }
-    pDiagObj->m_iMarginTop = m_iMarginTop;
-    pDiagObj->m_iMarginBottom = m_iMarginBottom;
-    pDiagObj->m_iMarginLeft = m_iMarginLeft;
-    pDiagObj->m_iMarginRight = m_iMarginRight;
-    for( idxState = 0; idxState < m_iStateCount; idxState++ )
+    pDiagObjCloned->m_iMarginTop = m_iMarginTop;
+    pDiagObjCloned->m_iMarginBottom = m_iMarginBottom;
+    pDiagObjCloned->m_iMarginLeft = m_iMarginLeft;
+    pDiagObjCloned->m_iMarginRight = m_iMarginRight;
+    for( int idxState = 0; idxState < m_iStateCount; idxState++ )
     {
-        pDiagObj->m_arstrText[idxState] = m_arstrText[idxState];
-        pDiagObj->m_arcolText[idxState] = m_arcolText[idxState];
+        pDiagObjCloned->m_arstrText[idxState] = m_arstrText[idxState];
+        pDiagObjCloned->m_arcolText[idxState] = m_arcolText[idxState];
     }
-    pDiagObj->m_fntText = m_fntText;
-    pDiagObj->m_iTextAlignmentFlags = m_iTextAlignmentFlags;
-    pDiagObj->m_textDirection = m_textDirection;
-    for( idxState = 0; idxState < m_iStateCount; idxState++ )
+    pDiagObjCloned->m_fntText = m_fntText;
+    pDiagObjCloned->m_iTextAlignmentFlags = m_iTextAlignmentFlags;
+    pDiagObjCloned->m_textOrientation = m_textOrientation;
+    for( int idxState = 0; idxState < m_iStateCount; idxState++ )
     {
-        pDiagObj->m_arpxm[idxState] = m_arpxm[idxState];
+        pDiagObjCloned->m_arpxm[idxState] = m_arpxm[idxState];
     }
-    pDiagObj->m_iPixmapAlignmentFlags = m_iPixmapAlignmentFlags;
-    pDiagObj->m_rectOuterFrame = m_rectOuterFrame;
-    pDiagObj->m_rectInnerFrame = m_rectInnerFrame;
-    pDiagObj->m_rectText = m_rectText;
-    pDiagObj->m_rectPixmap = m_rectPixmap;
+    pDiagObjCloned->m_iPixmapAlignmentFlags = m_iPixmapAlignmentFlags;
+    pDiagObjCloned->m_rectOuterFrame = m_rectOuterFrame;
+    pDiagObjCloned->m_rectInnerFrame = m_rectInnerFrame;
+    pDiagObjCloned->m_rectText = m_rectText;
+    pDiagObjCloned->m_rectPixmap = m_rectPixmap;
 
-    i_pDiagramTrg->addDiagObj(pDiagObj);
+    i_pDiagramTrg->addDiagObj(pDiagObjCloned);
 
-    return pDiagObj;
+    return pDiagObjCloned;
 
 } // clone
 
@@ -978,7 +980,7 @@ void CDiagObjLabel::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintD
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObjUpdate != nullptr && m_pTrcAdminObjUpdate->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjUpdate, EMethodTraceDetailLevel::ArgsNormal))
     {
         strTrcMsg = updateFlags2Str(i_uUpdateFlags);
     }
@@ -1058,22 +1060,22 @@ void CDiagObjLabel::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintD
                 sizeText.setWidth( m_rectText.width() );
                 sizeText.setHeight( m_rectText.height() );
 
-                switch( m_textDirection )
+                switch( m_textOrientation )
                 {
-                    case ETextDirectionBottom2Top:
-                    case ETextDirectionTop2Bottom:
+                    case ETextOrientationBottom2Top:
+                    case ETextOrientationTop2Bottom:
                     {
                         sizeText.setWidth( m_rectText.height() );
                         sizeText.setHeight( m_rectText.width() );
                         break;
                     }
-                    case ETextDirectionLeft2Right:
-                    case ETextDirectionRight2Left:
+                    case ETextOrientationLeft2Right:
+                    case ETextOrientationRight2Left:
                     default:
                     {
                         break;
                     }
-                } // switch( m_textDirection )
+                } // switch( m_textOrientation )
 
                 m_rectText.setSize(sizeText);
 
@@ -1098,10 +1100,10 @@ void CDiagObjLabel::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintD
             // If both a text and a pixmap has to be shown ...
             else if( !m_arstrText[m_iState].isEmpty() && bShowPixmap )
             {
-                switch( m_textDirection )
+                switch( m_textOrientation )
                 {
-                    case ETextDirectionBottom2Top:
-                    case ETextDirectionTop2Bottom:
+                    case ETextOrientationBottom2Top:
+                    case ETextOrientationTop2Bottom:
                     {
                         if( ((m_iTextAlignmentFlags & Qt::AlignTop) && (m_iPixmapAlignmentFlags & Qt::AlignBottom))
                          || ((m_iTextAlignmentFlags & Qt::AlignBottom) && (m_iPixmapAlignmentFlags & Qt::AlignTop)) )
@@ -1137,8 +1139,8 @@ void CDiagObjLabel::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintD
                         }
                         break;
                     }
-                    case ETextDirectionLeft2Right:
-                    case ETextDirectionRight2Left:
+                    case ETextOrientationLeft2Right:
+                    case ETextOrientationRight2Left:
                     default:
                     {
                         if( ((m_iTextAlignmentFlags & Qt::AlignLeft) && (m_iPixmapAlignmentFlags & Qt::AlignRight))
@@ -1359,15 +1361,15 @@ void CDiagObjLabel::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintD
                 painter.setFont(m_fntText);
                 painter.setPen(m_arcolText[m_iState]); //lint !e661 ... manchmal ist lint wirklich blind
 
-                switch( m_textDirection )
+                switch( m_textOrientation )
                 {
-                    case ETextDirectionLeft2Right:
-                    case ETextDirectionRight2Left:
+                    case ETextOrientationLeft2Right:
+                    case ETextOrientationRight2Left:
                     {
                         painter.drawText( m_rectText, m_iTextAlignmentFlags, m_arstrText[m_iState] ); //lint !e655 !e661 ... manchmal ist lint wirklich blind
                         break;
                     }
-                    case ETextDirectionBottom2Top:
+                    case ETextOrientationBottom2Top:
                     {
                         #if QT_VERSION < 0x050000
                         QMatrix matrix;
@@ -1389,7 +1391,7 @@ void CDiagObjLabel::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintD
                         painter.restore();
                         break;
                     }
-                    case ETextDirectionTop2Bottom:
+                    case ETextOrientationTop2Bottom:
                     {
                         #if QT_VERSION < 0x050000
                         QMatrix matrix;
@@ -1416,7 +1418,7 @@ void CDiagObjLabel::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintD
                         break;
                     }
 
-                } // switch( m_textDirection )
+                } // switch( m_textOrientation )
             } // if( !m_arstrText[m_iState].isEmpty() )
 
         } // if( isVisible() )

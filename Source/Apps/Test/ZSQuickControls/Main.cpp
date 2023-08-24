@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer, Germany
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer, Germany
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
     // The usage of OpenGLES should therefore be disabled by program argument.
     // Setting to OpenGL is also a workaround for a deadlock on restarting the
     // application on a secondary screen.
-    QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
+    //QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
 
     int iAppResult = 0;
 

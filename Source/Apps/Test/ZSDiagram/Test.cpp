@@ -31,7 +31,6 @@ may result in using the software modules.
 #include "Units/Units.h"
 
 #include "ZSDiagram/ZSDiagramProcWdgt.h"
-#include "ZSDiagram/ZSDiagScale.h"
 #include "ZSDiagram/ZSDiagTrace.h"
 #include "ZSDiagram/ZSDiagObjAxisLabel.h"
 #include "ZSDiagram/ZSDiagObjCurve.h"
@@ -106,8 +105,9 @@ CTest::CTest() :
     ZS::Test::CTest("ZSDiagram"),
     m_pTmrTestStepTimeout(nullptr),
     m_pTimerSigGen(nullptr),
-    m_pFrameDiagram(nullptr),
     m_pWdgtDiagram(nullptr),
+    m_scaleX(899.0e6, 901.0e6, Frequency.Hertz, CPhysValRes(0.1, Frequency.Hertz)),
+    m_scaleY(0.0, 40.0, Power.dBm, CPhysValRes(0.1, Power.dBm)),
     m_pDiagScaleX(nullptr),
     m_pDiagScaleY(nullptr),
     m_pDiagObjGrid(nullptr),
@@ -210,6 +210,13 @@ CTest::CTest() :
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Move Markers",
+        /* strOperation    */ "CDiagObjMarker::setVal()",
+        /* pTSGrpParent    */ pGrpSigGen,
+        /* szDoTestStepFct */ SLOT(doTestStepSigGenMoveMarkers(ZS::Test::CTestStep*)) );
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Single Shot Signal Generator",
         /* strOperation    */ "CDiagTrace::setValues()",
         /* pTSGrpParent    */ pGrpSigGen,
@@ -309,11 +316,9 @@ CTest::~CTest()
 
     m_pTmrTestStepTimeout = nullptr;
     m_pTimerSigGen = nullptr;
-    m_pFrameDiagram = nullptr;
     m_pWdgtDiagram = nullptr;
-    m_pTimerSigGen = nullptr;
-    m_pFrameDiagram = nullptr;
-    m_pWdgtDiagram = nullptr;
+    //m_scaleX;
+    //m_scaleY;
     m_pDiagScaleX = nullptr;
     m_pDiagScaleY = nullptr;
     m_pDiagObjGrid = nullptr;
@@ -352,31 +357,23 @@ void CTest::doTestStepSigGenCreateDiagram( ZS::Test::CTestStep* i_pTestStep )
     // Expected Values
     //---------------
 
-    strlstExpectedValues.append("Diagram Window Visible");
+    strlstExpectedValues.append("Diagram added to test output widget");
     i_pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Test Step
     //----------
 
-    m_pFrameDiagram = new QFrame();
-    m_pFrameDiagram->setFrameShape(QFrame::Panel);
-    m_pFrameDiagram->setFrameShadow(QFrame::Raised);
-    QVBoxLayout* pLytFrameDiagram = new QVBoxLayout();
-    //pLytFrameDiagram->setContentsMargins(0,0,0,0); // left,tip,right,bottom
-    m_pFrameDiagram->setLayout(pLytFrameDiagram);
-    CWidgetCentral::GetInstance()->getTestOutputWidget()->layout()->addWidget(m_pFrameDiagram);
-
-    m_pWdgtDiagram = new CWdgtDiagram("Diagram", m_pFrameDiagram);
+    m_pWdgtDiagram = new CWdgtDiagram("Diagram");
     m_pWdgtDiagram->setMouseTracking(true);
     m_pWdgtDiagram->enableZooming();
     //m_pWdgtDiagram->setMarginTop(0);
     //m_pWdgtDiagram->setMarginBottom(0);
     //m_pWdgtDiagram->setMarginLeft(0);
     //m_pWdgtDiagram->setMarginRight(0);
-    m_pWdgtDiagram->setMinimumHeightPartTop(0);
-    m_pWdgtDiagram->setMinimumHeightPartBottom(0);
-    m_pWdgtDiagram->setMinimumWidthPartLeft(0);
-    m_pWdgtDiagram->setMinimumWidthPartRight(0);
+    m_pWdgtDiagram->setMinimumHeightPartTop(10);
+    m_pWdgtDiagram->setMinimumHeightPartBottom(10);
+    m_pWdgtDiagram->setMinimumWidthPartLeft(10);
+    m_pWdgtDiagram->setMinimumWidthPartRight(20);
 
     SFrameStyle3DSunken* pFrameStyleDiagram = new SFrameStyle3DSunken;
     m_pWdgtDiagram->setFrameStyle(pFrameStyleDiagram);
@@ -386,18 +383,32 @@ void CTest::doTestStepSigGenCreateDiagram( ZS::Test::CTestStep* i_pTestStep )
     //m_pWdgtDiagram->setFrameStylePartCenter(pFrameStyleDiagramPartCenter);
     //pFrameStyleDiagramPartCenter = nullptr;
 
-    m_pWdgtDiagram->setMinimumWidth(400);
-    m_pWdgtDiagram->setMinimumHeight(200);
+    m_pWdgtDiagram->setFixedWidth(1020);
+    m_pWdgtDiagram->setFixedHeight(330);
 
-    m_pFrameDiagram->layout()->addWidget(m_pWdgtDiagram);
+    CWidgetCentral::GetInstance()->getTestOutputWidget()->setDiagram(m_pWdgtDiagram);
 
     // Actual Result Values
-    //---------------
+    //---------------------
 
     // Please note that to finish a test step the list of actual values may not be empty.
     if( strlstResultValues.size() == 0 )
     {
-        strlstResultValues.append("Test Step not completely implemented");
+        QString strResultValue = "Diagram not added to test output widget";
+        QWidget* pChildWidget = CWidgetCentral::GetInstance()->getTestOutputWidget()->childAt(QPoint(50, 50));
+        if (pChildWidget != nullptr) {
+            QFrame* pChildFrame = dynamic_cast<QFrame*>(pChildWidget);
+            if (pChildFrame != nullptr) {
+                QLayout* pLyt = pChildFrame->layout();
+                if (pLyt != nullptr) {
+                    int idxDiagram = pLyt->indexOf(m_pWdgtDiagram);
+                    if (idxDiagram >= 0) {
+                        strResultValue = "Diagram added to test output widget";
+                    }
+                }
+            }
+        }
+        strlstResultValues.append(strResultValue);
     }
     i_pTestStep->setResultValues(strlstResultValues);
 
@@ -413,7 +424,7 @@ void CTest::doTestStepSigGenDestroyDiagram( ZS::Test::CTestStep* i_pTestStep )
     // Expected Values
     //---------------
 
-    strlstExpectedValues.append("Diagram Window Destroyed");
+    strlstExpectedValues.append("Diagram removed from test output widget");
     i_pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Test Step
@@ -422,16 +433,27 @@ void CTest::doTestStepSigGenDestroyDiagram( ZS::Test::CTestStep* i_pTestStep )
     delete m_pWdgtDiagram;
     m_pWdgtDiagram = nullptr;
 
-    delete m_pFrameDiagram;
-    m_pFrameDiagram = nullptr;
-
     // Actual Result Values
     //---------------------
 
     // Please note that to finish a test step the list of actual values may not be empty.
     if( strlstResultValues.size() == 0 )
     {
-        strlstResultValues.append("Test Step not completely implemented");
+        QString strResultValue = "Diagram not removed from test output widget";
+        QWidget* pChildWidget = CWidgetCentral::GetInstance()->getTestOutputWidget()->childAt(QPoint(50, 50));
+        if (pChildWidget != nullptr) {
+            QFrame* pChildFrame = dynamic_cast<QFrame*>(pChildWidget);
+            if (pChildFrame != nullptr) {
+                QLayout* pLyt = pChildFrame->layout();
+                if (pLyt != nullptr) {
+                    int idxDiagram = pLyt->indexOf(m_pWdgtDiagram);
+                    if (idxDiagram < 0) {
+                        strResultValue = "Diagram removed from test output widget";
+                    }
+                }
+            }
+        }
+        strlstResultValues.append(strResultValue);
     }
     i_pTestStep->setResultValues(strlstResultValues);
 
@@ -441,15 +463,14 @@ void CTest::doTestStepSigGenDestroyDiagram( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepSigGenAddScales( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strExpectedValue;
     QStringList strlstExpectedValues;
-    QString     strResultValue;
     QStringList strlstResultValues;
 
     // Expected Values
     //---------------
 
-    strlstExpectedValues.append(strExpectedValue);
+    strlstExpectedValues.append("X-Scale added to diagram");
+    strlstExpectedValues.append("Y-Scale added to diagram");
 
     i_pTestStep->setExpectedValues(strlstExpectedValues);
 
@@ -458,33 +479,20 @@ void CTest::doTestStepSigGenAddScales( ZS::Test::CTestStep* i_pTestStep )
 
     if( m_pWdgtDiagram != nullptr )
     {
-        ZS::Diagram::SScale scaleX(
-            /* fMin  */ 899.0e6,
-            /* fMax  */ 901.0e6,
-            /* pUnit */ Frequency.Hertz );
-
         m_pDiagScaleX = new CDiagScale(
-            /* strObjName */ "DiagScaleX",
-            /* scaleDir   */ EScaleDirX,
-            /* scale      */ scaleX );
-        m_pDiagScaleX->setDivLineDistMinPix(EDivLineLayerMain, 20);
-
+            /* strObjName */ "X",
+            /* scaleDir   */ EScaleDir::X,
+            /* scale      */ m_scaleX );
+        m_pDiagScaleX->setDivLineDistMinPix(EDivLineLayer::Main, 20);
         m_pWdgtDiagram->addDiagScale(m_pDiagScaleX);
 
-        ZS::Diagram::SScale scaleY(
-            /* fMin      */ 0.0,
-            /* fMax      */ 40.0,
-            /* pPhysUnit */ Power.dBm );
-
         m_pDiagScaleY = new CDiagScale(
-            /* strObjName */ "DiagScaleY",
-            /* scaleDir   */ EScaleDirY,
-            /* scale      */ scaleY );
-        m_pDiagScaleY->setDivLineDistMinPix(EDivLineLayerMain, 20);
-
+            /* strObjName */ "Y",
+            /* scaleDir   */ EScaleDir::Y,
+            /* scale      */ m_scaleY );
+        m_pDiagScaleY->setDivLineDistMinPix(EDivLineLayer::Main, 20);
         m_pWdgtDiagram->addDiagScale(m_pDiagScaleY);
-
-    } // if( m_pWdgtDiagram != nullptr )
+    }
 
     // Actual Result Values
     //---------------------
@@ -492,7 +500,20 @@ void CTest::doTestStepSigGenAddScales( ZS::Test::CTestStep* i_pTestStep )
     // Please note that to finish a test step the list of actual values may not be empty.
     if( strlstResultValues.size() == 0 )
     {
-        strlstResultValues.append("Test Step not completely implemented");
+        QString strResultValueXScale = "X-Scale not added to diagram";
+        QString strResultValueYScale = "Y-Scale not added to diagram";
+        if (m_pWdgtDiagram != nullptr) {
+            CDiagScale* pDiagScaleX = m_pWdgtDiagram->findDiagScale("X");
+            if (pDiagScaleX != nullptr) {
+                strResultValueXScale = "X-Scale added to diagram";
+            }
+            CDiagScale* pDiagScaleY = m_pWdgtDiagram->findDiagScale("Y");
+            if (pDiagScaleY != nullptr) {
+                strResultValueYScale = "Y-Scale added to diagram";
+            }
+        }
+        strlstResultValues.append(strResultValueXScale);
+        strlstResultValues.append(strResultValueYScale);
     }
     i_pTestStep->setResultValues(strlstResultValues);
 
@@ -502,15 +523,14 @@ void CTest::doTestStepSigGenAddScales( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepSigGenRemoveScales( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strExpectedValue;
     QStringList strlstExpectedValues;
-    QString     strResultValue;
     QStringList strlstResultValues;
 
     // Expected Values
     //---------------
 
-    strlstExpectedValues.append(strExpectedValue);
+    strlstExpectedValues.append("X-Scale removed from diagram");
+    strlstExpectedValues.append("Y-Scale removed from diagram");
 
     i_pTestStep->setExpectedValues(strlstExpectedValues);
 
@@ -524,7 +544,7 @@ void CTest::doTestStepSigGenRemoveScales( ZS::Test::CTestStep* i_pTestStep )
         m_pDiagScaleX = nullptr;
     }
 
-    if( m_pDiagScaleX != nullptr )
+    if( m_pDiagScaleY != nullptr )
     {
         m_pWdgtDiagram->removeDiagScale(m_pDiagScaleY);
         delete m_pDiagScaleY;
@@ -537,7 +557,20 @@ void CTest::doTestStepSigGenRemoveScales( ZS::Test::CTestStep* i_pTestStep )
     // Please note that to finish a test step the list of actual values may not be empty.
     if( strlstResultValues.size() == 0 )
     {
-        strlstResultValues.append("Test Step not completely implemented");
+        QString strResultValueXScale = "X-Scale not removed from diagram";
+        QString strResultValueYScale = "Y-Scale not removed from diagram";
+        if (m_pWdgtDiagram != nullptr) {
+            CDiagScale* pDiagScaleX = m_pWdgtDiagram->findDiagScale("X");
+            if (pDiagScaleX == nullptr) {
+                strResultValueXScale = "X-Scale removed from diagram";
+            }
+            CDiagScale* pDiagScaleY = m_pWdgtDiagram->findDiagScale("Y");
+            if (pDiagScaleY == nullptr) {
+                strResultValueYScale = "Y-Scale removed from diagram";
+            }
+        }
+        strlstResultValues.append(strResultValueXScale);
+        strlstResultValues.append(strResultValueYScale);
     }
     i_pTestStep->setResultValues(strlstResultValues);
 
@@ -547,15 +580,14 @@ void CTest::doTestStepSigGenRemoveScales( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepSigGenAddTraces( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strExpectedValue;
     QStringList strlstExpectedValues;
-    QString     strResultValue;
     QStringList strlstResultValues;
 
     // Expected Values
     //---------------
 
-    strlstExpectedValues.append(strExpectedValue);
+    strlstExpectedValues.append("SigGen1-Trace added to diagram");
+    strlstExpectedValues.append("SigGen2-Trace added to diagram");
 
     i_pTestStep->setExpectedValues(strlstExpectedValues);
 
@@ -565,15 +597,19 @@ void CTest::doTestStepSigGenAddTraces( ZS::Test::CTestStep* i_pTestStep )
     if( m_pWdgtDiagram != nullptr && m_pDiagScaleX != nullptr && m_pDiagScaleY != nullptr )
     {
         m_pDiagTraceSigGen1 = new CDiagTrace(
-            /* strObjName  */ "DiagTraceSigGen1",
+            /* strObjName  */ "SigGen1",
             /* pDiagScaleX */ m_pDiagScaleX,
-            /* pDiagScaleY */ m_pDiagScaleY );
+            /* pDiagScaleY */ m_pDiagScaleY,
+            /* physValResX */ m_pDiagScaleX->getScaleRes(),
+            /* physValResY */ m_pDiagScaleY->getScaleRes());
         m_pWdgtDiagram->addDiagTrace(m_pDiagTraceSigGen1);
 
         m_pDiagTraceSigGen2 = new CDiagTrace(
-            /* strObjName  */ "DiagTraceSigGen2",
+            /* strObjName  */ "SigGen2",
             /* pDiagScaleX */ m_pDiagScaleX,
-            /* pDiagScaleY */ m_pDiagScaleY );
+            /* pDiagScaleY */ m_pDiagScaleY,
+            /* physValResX */ m_pDiagScaleX->getScaleRes(),
+            /* physValResY */ m_pDiagScaleY->getScaleRes());
         m_pWdgtDiagram->addDiagTrace(m_pDiagTraceSigGen2);
 
     } // if( m_pWdgtDiagram != nullptr && m_pDiagScaleX != nullptr && m_pDiagScaleY != nullptr )
@@ -584,7 +620,20 @@ void CTest::doTestStepSigGenAddTraces( ZS::Test::CTestStep* i_pTestStep )
     // Please note that to finish a test step the list of actual values may not be empty.
     if( strlstResultValues.size() == 0 )
     {
-        strlstResultValues.append("Test Step not completely implemented");
+        QString strResultValueSigGen1 = "SigGen1-Trace not added to diagram";
+        QString strResultValueSigGen2 = "SigGen2-Trace not added to diagram";
+        if (m_pWdgtDiagram != nullptr) {
+            CDiagTrace* pDiagTraceSigGen1 = m_pWdgtDiagram->findDiagTrace("SigGen1");
+            if (pDiagTraceSigGen1 != nullptr) {
+                strResultValueSigGen1 = "SigGen1-Trace added to diagram";
+            }
+            CDiagTrace* pDiagTraceSigGen2 = m_pWdgtDiagram->findDiagTrace("SigGen2");
+            if (pDiagTraceSigGen2 != nullptr) {
+                strResultValueSigGen2 = "SigGen2-Trace added to diagram";
+            }
+        }
+        strlstResultValues.append(strResultValueSigGen1);
+        strlstResultValues.append(strResultValueSigGen2);
     }
     i_pTestStep->setResultValues(strlstResultValues);
 
@@ -594,15 +643,14 @@ void CTest::doTestStepSigGenAddTraces( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepSigGenRemoveTraces( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strExpectedValue;
     QStringList strlstExpectedValues;
-    QString     strResultValue;
     QStringList strlstResultValues;
 
     // Expected Values
     //---------------
 
-    strlstExpectedValues.append(strExpectedValue);
+    strlstExpectedValues.append("SigGen1-Trace removed from diagram");
+    strlstExpectedValues.append("SigGen2-Trace removed from diagram");
 
     i_pTestStep->setExpectedValues(strlstExpectedValues);
 
@@ -629,7 +677,20 @@ void CTest::doTestStepSigGenRemoveTraces( ZS::Test::CTestStep* i_pTestStep )
     // Please note that to finish a test step the list of actual values may not be empty.
     if( strlstResultValues.size() == 0 )
     {
-        strlstResultValues.append("Test Step not completely implemented");
+        QString strResultValueSigGen1 = "SigGen1-Trace not removed from diagram";
+        QString strResultValueSigGen2 = "SigGen2-Trace not removed from diagram";
+        if (m_pWdgtDiagram != nullptr) {
+            CDiagTrace* pDiagTraceSigGen1 = m_pWdgtDiagram->findDiagTrace("SigGen1");
+            if (pDiagTraceSigGen1 == nullptr) {
+                strResultValueSigGen1 = "SigGen1-Trace removed from diagram";
+            }
+            CDiagTrace* pDiagTraceSigGen2 = m_pWdgtDiagram->findDiagTrace("SigGen2");
+            if (pDiagTraceSigGen2 == nullptr) {
+                strResultValueSigGen2 = "SigGen2-Trace removed from diagram";
+            }
+        }
+        strlstResultValues.append(strResultValueSigGen1);
+        strlstResultValues.append(strResultValueSigGen2);
     }
     i_pTestStep->setResultValues(strlstResultValues);
 
@@ -639,15 +700,13 @@ void CTest::doTestStepSigGenRemoveTraces( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepSigGenAddGrid( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strExpectedValue;
     QStringList strlstExpectedValues;
-    QString     strResultValue;
     QStringList strlstResultValues;
 
     // Expected Values
     //---------------
 
-    strlstExpectedValues.append(strExpectedValue);
+    strlstExpectedValues.append("Grid added to diagram");
 
     i_pTestStep->setExpectedValues(strlstExpectedValues);
 
@@ -657,7 +716,7 @@ void CTest::doTestStepSigGenAddGrid( ZS::Test::CTestStep* i_pTestStep )
     if( m_pWdgtDiagram != nullptr && m_pDiagScaleX != nullptr && m_pDiagScaleY != nullptr )
     {
         m_pDiagObjGrid = new CDiagObjGrid(
-            /* strObjName  */ "DiagObjGrid",
+            /* strObjName  */ "Grid",
             /* pDiagScaleX */ m_pDiagScaleX,
             /* pDiagScaleY */ m_pDiagScaleY );
         m_pWdgtDiagram->addDiagObj(m_pDiagObjGrid);
@@ -672,7 +731,14 @@ void CTest::doTestStepSigGenAddGrid( ZS::Test::CTestStep* i_pTestStep )
     // Please note that to finish a test step the list of actual values may not be empty.
     if( strlstResultValues.size() == 0 )
     {
-        strlstResultValues.append("Test Step not completely implemented");
+        QString strResultValue = "Grid not added to diagram";
+        if (m_pWdgtDiagram != nullptr) {
+            CDiagObjGrid* pDiagObjGrid = dynamic_cast<CDiagObjGrid*>(m_pWdgtDiagram->findDiagObj(CDiagObjGrid::ClassName(), "Grid"));
+            if (pDiagObjGrid != nullptr) {
+                strResultValue = "Grid added to diagram";
+            }
+        }
+        strlstResultValues.append(strResultValue);
     }
     i_pTestStep->setResultValues(strlstResultValues);
 
@@ -682,15 +748,13 @@ void CTest::doTestStepSigGenAddGrid( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepSigGenRemoveGrid( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strExpectedValue;
     QStringList strlstExpectedValues;
-    QString     strResultValue;
     QStringList strlstResultValues;
 
     // Expected Values
     //---------------
 
-    strlstExpectedValues.append(strExpectedValue);
+    strlstExpectedValues.append("Grid removed from diagram");
 
     i_pTestStep->setExpectedValues(strlstExpectedValues);
 
@@ -715,7 +779,14 @@ void CTest::doTestStepSigGenRemoveGrid( ZS::Test::CTestStep* i_pTestStep )
     // Please note that to finish a test step the list of actual values may not be empty.
     if( strlstResultValues.size() == 0 )
     {
-        strlstResultValues.append("Test Step not completely implemented");
+        QString strResultValue = "Grid not removed from to diagram";
+        if (m_pWdgtDiagram != nullptr) {
+            CDiagObj* pDiagObjGrid = m_pWdgtDiagram->findDiagObj(CDiagObjGrid::ClassName(), "Grid");
+            if (pDiagObjGrid == nullptr) {
+                strResultValue = "Grid removed from diagram";
+            }
+        }
+        strlstResultValues.append(strResultValue);
     }
     i_pTestStep->setResultValues(strlstResultValues);
 
@@ -725,15 +796,14 @@ void CTest::doTestStepSigGenRemoveGrid( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepSigGenAddAxisLabels( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strExpectedValue;
     QStringList strlstExpectedValues;
-    QString     strResultValue;
     QStringList strlstResultValues;
 
     // Expected Values
     //---------------
 
-    strlstExpectedValues.append(strExpectedValue);
+    strlstExpectedValues.append("X-AxisLabel added to diagram");
+    strlstExpectedValues.append("Y-AxisLabel added to diagram");
 
     i_pTestStep->setExpectedValues(strlstExpectedValues);
 
@@ -743,18 +813,32 @@ void CTest::doTestStepSigGenAddAxisLabels( ZS::Test::CTestStep* i_pTestStep )
     if( m_pWdgtDiagram != nullptr && m_pDiagScaleX != nullptr )
     {
         m_pDiagObjAxisLabelX = new CDiagObjAxisLabel(
-            /* strObjName  */ "DiagObjAxisLabelX",
+            /* strObjName  */ "X-AxisLabel",
             /* pDiagScaleX */ m_pDiagScaleX,
             /* layoutPos   */ ELayoutPosBottom );
+        m_pDiagObjAxisLabelX->setSpacingDiagPartCenter2DivLineLabels(10);
+        m_pDiagObjAxisLabelX->setSpacingDivLineLabels2AxisLabel(10);
+        m_pDiagObjAxisLabelX->setDivLinesColor(Qt::red);
+        m_pDiagObjAxisLabelX->setDivLinesPenStyle(Qt::SolidLine);
+        m_pDiagObjAxisLabelX->setAxisLabel("Frequency");
+        m_pDiagObjAxisLabelX->showUnitAtDivLines();
+        m_pDiagObjAxisLabelX->showUnitAtAxisLabel();
         m_pWdgtDiagram->addDiagObj(m_pDiagObjAxisLabelX);
     }
 
     if( m_pWdgtDiagram != nullptr && m_pDiagScaleY != nullptr )
     {
         m_pDiagObjAxisLabelY = new CDiagObjAxisLabel(
-            /* strObjName  */ "DiagObjAxisLabelY",
+            /* strObjName  */ "Y-AxisLabel",
             /* pDiagScaleX */ m_pDiagScaleY,
             /* layoutPos   */ ELayoutPosLeft );
+        m_pDiagObjAxisLabelY->setSpacingDiagPartCenter2DivLineLabels(10);
+        m_pDiagObjAxisLabelY->setSpacingDivLineLabels2AxisLabel(10);
+        m_pDiagObjAxisLabelY->setDivLinesColor(Qt::red);
+        m_pDiagObjAxisLabelY->setDivLinesPenStyle(Qt::SolidLine);
+        m_pDiagObjAxisLabelY->setAxisLabel("Power");
+        m_pDiagObjAxisLabelY->showUnitAtDivLines();
+        m_pDiagObjAxisLabelY->showUnitAtAxisLabel();
         m_pWdgtDiagram->addDiagObj(m_pDiagObjAxisLabelY);
     }
 
@@ -769,7 +853,20 @@ void CTest::doTestStepSigGenAddAxisLabels( ZS::Test::CTestStep* i_pTestStep )
     // Please note that to finish a test step the list of actual values may not be empty.
     if( strlstResultValues.size() == 0 )
     {
-        strlstResultValues.append("Test Step not completely implemented");
+        QString strResultValueXAxisLabel = "X-AxisLabel not added to diagram";
+        QString strResultValueYAxisLabel = "Y-AxisLabel not added to diagram";
+        if (m_pWdgtDiagram != nullptr) {
+            CDiagObjAxisLabel* pDiagObjAxisLabelX = dynamic_cast<CDiagObjAxisLabel*>(m_pWdgtDiagram->findDiagObj(CDiagObjAxisLabel::ClassName(), "X-AxisLabel"));
+            if (pDiagObjAxisLabelX != nullptr) {
+                strResultValueXAxisLabel = "X-AxisLabel added to diagram";
+            }
+            CDiagObjAxisLabel* pDiagObjAxisLabelY = dynamic_cast<CDiagObjAxisLabel*>(m_pWdgtDiagram->findDiagObj(CDiagObjAxisLabel::ClassName(), "Y-AxisLabel"));
+            if (pDiagObjAxisLabelY != nullptr) {
+                strResultValueYAxisLabel = "Y-AxisLabel added to diagram";
+            }
+        }
+        strlstResultValues.append(strResultValueXAxisLabel);
+        strlstResultValues.append(strResultValueYAxisLabel);
     }
     i_pTestStep->setResultValues(strlstResultValues);
 
@@ -779,15 +876,14 @@ void CTest::doTestStepSigGenAddAxisLabels( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepSigGenRemoveAxisLabels( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strExpectedValue;
     QStringList strlstExpectedValues;
-    QString     strResultValue;
     QStringList strlstResultValues;
 
     // Expected Values
     //---------------
 
-    strlstExpectedValues.append(strExpectedValue);
+    strlstExpectedValues.append("X-AxisLabel removed from diagram");
+    strlstExpectedValues.append("Y-AxisLabel removed from diagram");
 
     i_pTestStep->setExpectedValues(strlstExpectedValues);
 
@@ -819,7 +915,20 @@ void CTest::doTestStepSigGenRemoveAxisLabels( ZS::Test::CTestStep* i_pTestStep )
     // Please note that to finish a test step the list of actual values may not be empty.
     if( strlstResultValues.size() == 0 )
     {
-        strlstResultValues.append("Test Step not completely implemented");
+        QString strResultValueXAxisLabel = "X-AxisLabel not removed from diagram";
+        QString strResultValueYAxisLabel = "Y-AxisLabel not removed from diagram";
+        if (m_pWdgtDiagram != nullptr) {
+            CDiagObj* pDiagObjAxisLabelX = m_pWdgtDiagram->findDiagObj(CDiagObjAxisLabel::ClassName(), "X-AxisLabel");
+            if (pDiagObjAxisLabelX == nullptr) {
+                strResultValueXAxisLabel = "X-AxisLabel removed from diagram";
+            }
+            CDiagObj* pDiagObjAxisLabelY = m_pWdgtDiagram->findDiagObj(CDiagObjAxisLabel::ClassName(), "Y-AxisLabel");
+            if (pDiagObjAxisLabelY == nullptr) {
+                strResultValueYAxisLabel = "Y-AxisLabel removed from diagram";
+            }
+        }
+        strlstResultValues.append(strResultValueXAxisLabel);
+        strlstResultValues.append(strResultValueYAxisLabel);
     }
     i_pTestStep->setResultValues(strlstResultValues);
 
@@ -829,15 +938,14 @@ void CTest::doTestStepSigGenRemoveAxisLabels( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepSigGenAddCurves( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strExpectedValue;
     QStringList strlstExpectedValues;
-    QString     strResultValue;
     QStringList strlstResultValues;
 
     // Expected Values
     //---------------
 
-    strlstExpectedValues.append(strExpectedValue);
+    strlstExpectedValues.append("Curve-SigGen1 added to diagram");
+    strlstExpectedValues.append("Curve-SigGen2 added to diagram");
 
     i_pTestStep->setExpectedValues(strlstExpectedValues);
 
@@ -868,7 +976,7 @@ void CTest::doTestStepSigGenAddCurves( ZS::Test::CTestStep* i_pTestStep )
     if( m_pWdgtDiagram != nullptr && m_pDiagTraceSigGen1 != nullptr )
     {
         m_pDiagObjCurveSigGen1 = new CDiagObjCurve(
-            /* strObjName */ "DiagObjCurve0",
+            /* strObjName */ "Curve-SigGen1",
             /* pDiagTrace */ m_pDiagTraceSigGen1 );
         m_pDiagObjCurveSigGen1->setCol(c_colYellow);
         m_pWdgtDiagram->addDiagObj(m_pDiagObjCurveSigGen1);
@@ -877,7 +985,7 @@ void CTest::doTestStepSigGenAddCurves( ZS::Test::CTestStep* i_pTestStep )
     if( m_pWdgtDiagram != nullptr && m_pDiagTraceSigGen2 != nullptr )
     {
         m_pDiagObjCurveSigGen2 = new CDiagObjCurve(
-            /* strObjName */ "DiagObjCurve1",
+            /* strObjName */ "Curve-SigGen2",
             /* pDiagTrace */ m_pDiagTraceSigGen2 );
         m_pDiagObjCurveSigGen2->setCol(c_colPastelGreen);
         m_pWdgtDiagram->addDiagObj(m_pDiagObjCurveSigGen2);
@@ -894,7 +1002,20 @@ void CTest::doTestStepSigGenAddCurves( ZS::Test::CTestStep* i_pTestStep )
     // Please note that to finish a test step the list of actual values may not be empty.
     if( strlstResultValues.size() == 0 )
     {
-        strlstResultValues.append("Test Step not completely implemented");
+        QString strResultValueSigGen1 = "Curve-SigGen1 not added to diagram";
+        QString strResultValueSigGen2 = "Curve-SigGen2 not added to diagram";
+        if (m_pWdgtDiagram != nullptr) {
+            CDiagObjCurve* pDiagObjCurveSigGen1 = dynamic_cast<CDiagObjCurve*>(m_pWdgtDiagram->findDiagObj(CDiagObjCurve::ClassName(), "Curve-SigGen1"));
+            if (pDiagObjCurveSigGen1 != nullptr) {
+                strResultValueSigGen1 = "Curve-SigGen1 added to diagram";
+            }
+            CDiagObjCurve* pDiagObjCurveSigGen2 = dynamic_cast<CDiagObjCurve*>(m_pWdgtDiagram->findDiagObj(CDiagObjCurve::ClassName(), "Curve-SigGen2"));
+            if (pDiagObjCurveSigGen2 != nullptr) {
+                strResultValueSigGen2 = "Curve-SigGen2 added to diagram";
+            }
+        }
+        strlstResultValues.append(strResultValueSigGen1);
+        strlstResultValues.append(strResultValueSigGen2);
     }
     i_pTestStep->setResultValues(strlstResultValues);
 
@@ -904,15 +1025,14 @@ void CTest::doTestStepSigGenAddCurves( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepSigGenRemoveCurves( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strExpectedValue;
     QStringList strlstExpectedValues;
-    QString     strResultValue;
     QStringList strlstResultValues;
 
     // Expected Values
     //---------------
 
-    strlstExpectedValues.append(strExpectedValue);
+    strlstExpectedValues.append("Curve-SigGen1 removed from diagram");
+    strlstExpectedValues.append("Curve-SigGen2 removed from diagram");
 
     i_pTestStep->setExpectedValues(strlstExpectedValues);
 
@@ -944,7 +1064,20 @@ void CTest::doTestStepSigGenRemoveCurves( ZS::Test::CTestStep* i_pTestStep )
     // Please note that to finish a test step the list of actual values may not be empty.
     if( strlstResultValues.size() == 0 )
     {
-        strlstResultValues.append("Test Step not completely implemented");
+        QString strResultValueSigGen1 = "Curve-SigGen1 not removed from diagram";
+        QString strResultValueSigGen2 = "Curve-SigGen2 not removed from diagram";
+        if (m_pWdgtDiagram != nullptr) {
+            CDiagObj* pDiagObjCurveSigGen1 = m_pWdgtDiagram->findDiagObj(CDiagObjCurve::ClassName(), "Curve-SigGen1");
+            if (pDiagObjCurveSigGen1 == nullptr) {
+                strResultValueSigGen1 = "Curve-SigGen1 removed from diagram";
+            }
+            CDiagObj* pDiagObjCurveSigGen2 = m_pWdgtDiagram->findDiagObj(CDiagObjCurve::ClassName(), "Curve-SigGen2");
+            if (pDiagObjCurveSigGen2 == nullptr) {
+                strResultValueSigGen2 = "Curve-SigGen2 removed from diagram";
+            }
+        }
+        strlstResultValues.append(strResultValueSigGen1);
+        strlstResultValues.append(strResultValueSigGen2);
     }
     i_pTestStep->setResultValues(strlstResultValues);
 
@@ -954,15 +1087,14 @@ void CTest::doTestStepSigGenRemoveCurves( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepSigGenAddMarkers( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strExpectedValue;
     QStringList strlstExpectedValues;
-    QString     strResultValue;
     QStringList strlstResultValues;
 
     // Expected Values
     //---------------
 
-    strlstExpectedValues.append(strExpectedValue);
+    strlstExpectedValues.append("Marker-SigGen1 added to diagram");
+    strlstExpectedValues.append("Marker-SigGen2 added to diagram");
 
     i_pTestStep->setExpectedValues(strlstExpectedValues);
 
@@ -979,7 +1111,7 @@ void CTest::doTestStepSigGenAddMarkers( ZS::Test::CTestStep* i_pTestStep )
         }
 
         m_pDiagObjMarkerSigGen1 = new CDiagObjMarker(
-            /* strObjName */ "DiagObjMarker0",
+            /* strObjName */ "Marker-SigGen1",
             /* pDiagTrace */ m_pDiagTraceSigGen1 );
 
         SLineStyle* pLineStyle = new SLineStyle(col, Qt::DotLine, 1);
@@ -988,7 +1120,7 @@ void CTest::doTestStepSigGenAddMarkers( ZS::Test::CTestStep* i_pTestStep )
         m_pDiagObjMarkerSigGen1->showElement(EDiagObjStateCount, CDiagObjMarker::EElementLineVer);
 
         CToolTipStyle* pToolTipStyle = new CToolTipStyle(
-            /* colFg         */ Qt::white,
+            /* colFg         */ Qt::black,
             /* colBg         */ col,
             /* fnt           */ QFont(),
             /* cxOffs        */ 8,
@@ -1027,7 +1159,7 @@ void CTest::doTestStepSigGenAddMarkers( ZS::Test::CTestStep* i_pTestStep )
         }
 
         m_pDiagObjMarkerSigGen2 = new CDiagObjMarker(
-            /* strObjName */ "DiagObjMarker1",
+            /* strObjName */ "Marker-SigGen2",
             /* pDiagTrace */ m_pDiagTraceSigGen2 );
 
         SLineStyle* pLineStyle = new SLineStyle(col, Qt::DotLine, 1);
@@ -1036,7 +1168,7 @@ void CTest::doTestStepSigGenAddMarkers( ZS::Test::CTestStep* i_pTestStep )
         m_pDiagObjMarkerSigGen2->showElement(EDiagObjStateCount, CDiagObjMarker::EElementLineVer);
 
         CToolTipStyle* pToolTipStyle = new CToolTipStyle(
-            /* colFg         */ Qt::white,
+            /* colFg         */ Qt::black,
             /* colBg         */ col,
             /* fnt           */ QFont(),
             /* cxOffs        */ 8,
@@ -1076,25 +1208,101 @@ void CTest::doTestStepSigGenAddMarkers( ZS::Test::CTestStep* i_pTestStep )
     // Please note that to finish a test step the list of actual values may not be empty.
     if( strlstResultValues.size() == 0 )
     {
-        strlstResultValues.append("Test Step not completely implemented");
+        QString strResultValueSigGen1 = "Marker-SigGen1 not added to diagram";
+        QString strResultValueSigGen2 = "Marker-SigGen2 not added to diagram";
+        if (m_pWdgtDiagram != nullptr) {
+            CDiagObjMarker* pDiagObjMarkerSigGen1 = dynamic_cast<CDiagObjMarker*>(m_pWdgtDiagram->findDiagObj(CDiagObjMarker::ClassName(), "Marker-SigGen1"));
+            if (pDiagObjMarkerSigGen1 != nullptr) {
+                strResultValueSigGen1 = "Marker-SigGen1 added to diagram";
+            }
+            CDiagObjMarker* pDiagObjMarkerSigGen2 = dynamic_cast<CDiagObjMarker*>(m_pWdgtDiagram->findDiagObj(CDiagObjMarker::ClassName(), "Marker-SigGen2"));
+            if (pDiagObjMarkerSigGen2 != nullptr) {
+                strResultValueSigGen2 = "Marker-SigGen2 added to diagram";
+            }
+        }
+        strlstResultValues.append(strResultValueSigGen1);
+        strlstResultValues.append(strResultValueSigGen2);
     }
     i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepSigGenAddMarkers
 
 //------------------------------------------------------------------------------
-void CTest::doTestStepSigGenRemoveMarkers( ZS::Test::CTestStep* i_pTestStep )
+void CTest::doTestStepSigGenMoveMarkers( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strExpectedValue;
     QStringList strlstExpectedValues;
-    QString     strResultValue;
     QStringList strlstResultValues;
 
     // Expected Values
     //---------------
 
-    strlstExpectedValues.append(strExpectedValue);
+    CPhysVal physValXMarkerSigGen1;
+    CPhysVal physValXMarkerSigGen2;
+
+    if (m_pDiagScaleX != nullptr)
+    {
+        physValXMarkerSigGen1 = m_pDiagScaleX->getScale().minVal() + m_pDiagScaleX->getScale().rangeVal() / 4.0;
+        physValXMarkerSigGen2 = m_pDiagScaleX->getScale().minVal() + m_pDiagScaleX->getScale().rangeVal() * (3.0/4.0);
+    }
+
+    strlstExpectedValues.append(physValXMarkerSigGen1.toString());
+    strlstExpectedValues.append(physValXMarkerSigGen2.toString());
+
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Test Step
+    //----------
+
+    if (m_pDiagObjMarkerSigGen1 != nullptr)
+    {
+        m_pDiagObjMarkerSigGen1->setVal(EScaleDir::X, physValXMarkerSigGen1);
+    }
+    if (m_pDiagObjMarkerSigGen2 != nullptr)
+    {
+        m_pDiagObjMarkerSigGen2->setVal(EScaleDir::X, physValXMarkerSigGen2);
+    }
+    if (m_pWdgtDiagram != nullptr)
+    {
+        m_pWdgtDiagram->update();
+    }
+
+    // Actual Result Values
+    //---------------------
+
+    // Please note that to finish a test step the list of actual values may not be empty.
+    if( strlstResultValues.size() == 0 )
+    {
+        physValXMarkerSigGen1 = CPhysVal();
+        physValXMarkerSigGen2 = CPhysVal();
+
+        if (m_pDiagObjMarkerSigGen1 != nullptr)
+        {
+            physValXMarkerSigGen1 = m_pDiagObjMarkerSigGen1->getVal(EScaleDir::X);
+        }
+        if (m_pDiagObjMarkerSigGen2 != nullptr)
+        {
+            physValXMarkerSigGen2 = m_pDiagObjMarkerSigGen2->getVal(EScaleDir::X);
+        }
+        strlstResultValues.append(physValXMarkerSigGen1.toString());
+        strlstResultValues.append(physValXMarkerSigGen2.toString());
+    }
+    i_pTestStep->setResultValues(strlstResultValues);
+
+} // doTestStepSigGenMoveMarkers
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepSigGenRemoveMarkers( ZS::Test::CTestStep* i_pTestStep )
+//------------------------------------------------------------------------------
+{
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
+
+    // Expected Values
+    //---------------
+
+    strlstExpectedValues.append("Marker-SigGen1 removed from diagram");
+    strlstExpectedValues.append("Marker-SigGen2 removed from diagram");
 
     i_pTestStep->setExpectedValues(strlstExpectedValues);
 
@@ -1126,7 +1334,20 @@ void CTest::doTestStepSigGenRemoveMarkers( ZS::Test::CTestStep* i_pTestStep )
     // Please note that to finish a test step the list of actual values may not be empty.
     if( strlstResultValues.size() == 0 )
     {
-        strlstResultValues.append("Test Step not implemented");
+        QString strResultValueSigGen1 = "Marker-SigGen1 not removed from diagram";
+        QString strResultValueSigGen2 = "Marker-SigGen2 not removed from diagram";
+        if (m_pWdgtDiagram != nullptr) {
+            CDiagObj* pDiagObjMarkerSigGen1 = m_pWdgtDiagram->findDiagObj(CDiagObjMarker::ClassName(), "Marker-SigGen1");
+            if (pDiagObjMarkerSigGen1 == nullptr) {
+                strResultValueSigGen1 = "Marker-SigGen1 removed from diagram";
+            }
+            CDiagObj* pDiagObjMarkerSigGen2 = m_pWdgtDiagram->findDiagObj(CDiagObjMarker::ClassName(), "Marker-SigGen2");
+            if (pDiagObjMarkerSigGen2 == nullptr) {
+                strResultValueSigGen2 = "Marker-SigGen2 removed from diagram";
+            }
+        }
+        strlstResultValues.append(strResultValueSigGen1);
+        strlstResultValues.append(strResultValueSigGen2);
     }
     i_pTestStep->setResultValues(strlstResultValues);
 
@@ -1136,16 +1357,13 @@ void CTest::doTestStepSigGenRemoveMarkers( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepSigGenSingleShot( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strExpectedValue;
     QStringList strlstExpectedValues;
-    QString     strResultValue;
     QStringList strlstResultValues;
 
     // Expected Values
     //---------------
 
-    strlstExpectedValues.append(strExpectedValue);
-
+    strlstExpectedValues.append("Test Step not completely implemented");
     i_pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Test Step
@@ -1159,7 +1377,7 @@ void CTest::doTestStepSigGenSingleShot( ZS::Test::CTestStep* i_pTestStep )
     // Please note that to finish a test step the list of actual values may not be empty.
     if( strlstResultValues.size() == 0 )
     {
-        strlstResultValues.append("Test Step not implemented");
+        strlstResultValues.append("Test Step not completely implemented");
     }
     i_pTestStep->setResultValues(strlstResultValues);
 
@@ -1169,16 +1387,13 @@ void CTest::doTestStepSigGenSingleShot( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepSigGenStart( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strExpectedValue;
     QStringList strlstExpectedValues;
-    QString     strResultValue;
     QStringList strlstResultValues;
 
     // Expected Values
     //---------------
 
-    strlstExpectedValues.append(strExpectedValue);
-
+    strlstExpectedValues.append("Test Step not completely implemented");
     i_pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Test Step
@@ -1202,7 +1417,7 @@ void CTest::doTestStepSigGenStart( ZS::Test::CTestStep* i_pTestStep )
     // Please note that to finish a test step the list of actual values may not be empty.
     if( strlstResultValues.size() == 0 )
     {
-        strlstResultValues.append("Test Step not implemented");
+        strlstResultValues.append("Test Step not completely implemented");
     }
     i_pTestStep->setResultValues(strlstResultValues);
 
@@ -1212,16 +1427,13 @@ void CTest::doTestStepSigGenStart( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepSigGenStop( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strExpectedValue;
     QStringList strlstExpectedValues;
-    QString     strResultValue;
     QStringList strlstResultValues;
 
     // Expected Values
     //---------------
 
-    strlstExpectedValues.append(strExpectedValue);
-
+    strlstExpectedValues.append("Test Step not completely implemented");
     i_pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Test Step
@@ -1247,7 +1459,7 @@ void CTest::doTestStepSigGenStop( ZS::Test::CTestStep* i_pTestStep )
     // Please note that to finish a test step the list of actual values may not be empty.
     if( strlstResultValues.size() == 0 )
     {
-        strlstResultValues.append("Test Step not implemented");
+        strlstResultValues.append("Test Step not completely implemented");
     }
     i_pTestStep->setResultValues(strlstResultValues);
 
@@ -1261,6 +1473,8 @@ private slots:
 void CTest::onTimerSigGenTimeout()
 //------------------------------------------------------------------------------
 {
+    #if 1
+
     const  double c_fRadDrift = Math::c_fPI/100.0;
     static double s_fRadDrift = 0.0;
     const  int    c_iValCount = 1001;
@@ -1271,11 +1485,8 @@ void CTest::onTimerSigGenTimeout()
 
     if( m_pDiagScaleX != nullptr && m_pDiagScaleY != nullptr )
     {
-        ZS::Diagram::SScale scaleX = m_pDiagScaleX->getScale();
-        ZS::Diagram::SScale scaleY = m_pDiagScaleY->getScale();
-
-        double fxRange = scaleX.m_fMax - scaleX.m_fMin;
-        double fyRange = fabs(scaleY.m_fMax - scaleY.m_fMin);
+        double fxRange = m_scaleX.rangeVal().getVal();
+        double fyRange = fabs(m_scaleY.rangeVal().getVal());
         double fT = 0.5 * fxRange;
         double fxStep = fxRange / (c_iValCount-1);
 
@@ -1288,11 +1499,11 @@ void CTest::onTimerSigGenTimeout()
 
         for( int idxVal = 0; idxVal < c_iValCount; idxVal++ )
         {
-            double fx = scaleX.m_fMin + idxVal*fxStep;
+            double fx = m_scaleX.minVal().getVal() + idxVal*fxStep;
             s_arfXValuesTraces01[idxVal] = fx;
 
-            double fRad = s_fRadDrift + 2.0*Math::c_fPI*(fx - scaleX.m_fMin) / fT;
-            double fy = scaleY.m_fMin + fyRange/2.0 + sin(fRad)*fyRange/5.0;
+            double fRad = s_fRadDrift + 2.0*Math::c_fPI*(fx - m_scaleX.minVal().getVal()) / fT;
+            double fy = m_scaleY.minVal().getVal() + fyRange/2.0 + sin(fRad)*fyRange/5.0;
 
             // Simulate sinus with a little bit signal noise.
             // Random factor in the range of [-0.5 .. 0.5].
@@ -1308,16 +1519,48 @@ void CTest::onTimerSigGenTimeout()
 
         if( m_pDiagTraceSigGen1 != nullptr )
         {
-            m_pDiagTraceSigGen1->setValues(EScaleDirX, s_arfXValuesTraces01);
-            m_pDiagTraceSigGen1->setValues(EScaleDirY, s_arfYValuesTrace0);
+            m_pDiagTraceSigGen1->setValues(EScaleDir::X, s_arfXValuesTraces01, &m_scaleX.unit());
+            m_pDiagTraceSigGen1->setValues(EScaleDir::Y, s_arfYValuesTrace0, &m_scaleY.unit());
         }
 
         if( m_pDiagTraceSigGen2 != nullptr )
         {
-            m_pDiagTraceSigGen2->setValues(EScaleDirX, s_arfXValuesTraces01);
-            m_pDiagTraceSigGen2->setValues(EScaleDirY, s_arfYValuesTrace1);
+            m_pDiagTraceSigGen2->setValues(EScaleDir::X, s_arfXValuesTraces01, &m_scaleX.unit());
+            m_pDiagTraceSigGen2->setValues(EScaleDir::Y, s_arfYValuesTrace1, &m_scaleY.unit());
         }
     } // if( m_pDiagScaleX != nullptr && m_pDiagScaleY != nullptr )
+
+    #else
+
+    const int c_iValCount = 2;
+
+    static QVector<double> s_arfXValuesTraces01(c_iValCount);
+    static QVector<double> s_arfYValuesTrace0(c_iValCount);
+
+    if( m_pDiagScaleX != nullptr && m_pDiagScaleY != nullptr )
+    {
+        double fxRange = m_scaleX.rangeVal().getVal();
+        double fyRange = fabs(m_scaleY.rangeVal().getVal());
+
+        double fx;
+        double fy;
+
+        fx = m_scaleX.minVal().getVal() + fxRange/5.0;
+        s_arfXValuesTraces01[0] = fx;
+        fx = m_scaleX.minVal().getVal() + 4.0*fxRange/5.0;
+        s_arfXValuesTraces01[1] = fx;
+
+        fy = m_scaleY.minVal().getVal() + fyRange/2.0;
+        s_arfYValuesTrace0[0] = fy;
+        s_arfYValuesTrace0[1] = fy;
+
+        if( m_pDiagTraceSigGen1 != nullptr )
+        {
+            m_pDiagTraceSigGen1->setValues(EScaleDir::X, s_arfXValuesTraces01, &m_scaleX.unit());
+            m_pDiagTraceSigGen1->setValues(EScaleDir::Y, s_arfYValuesTrace0, &m_scaleY.unit());
+        }
+    }
+    #endif
 
     if( m_pWdgtDiagram != nullptr )
     {
@@ -1345,7 +1588,5 @@ void CTest::onTimerTestStepTimeout()
         strlstResultValues.append(strResultValue);
 
         pTestStep->setResultValues(strlstResultValues);
-
-    } // if( pTestStep != nullptr )
-
-} // onTimerTestStepTimeout()
+    }
+}

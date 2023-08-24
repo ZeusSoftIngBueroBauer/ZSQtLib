@@ -42,6 +42,8 @@ class ZSDIAGRAMDLL_API CDiagObjProgressBar : public CDiagObj
 //******************************************************************************
 {
     Q_OBJECT
+public: // class methods
+    static QString ClassName() { return "CDiagObjProgressBar"; }
 public: // ctors and dtor
     CDiagObjProgressBar(
         const QString& i_strObjName,
@@ -71,12 +73,12 @@ public: // instance methods
     void setWidth( int i_iWidth );  // Inside the frame: corresponds to width if LayoutLeft or Right, height if LayoutTop or Bottom
     int getWidth() const;
 public: // overridables of base class CDiagObj
-    virtual QSize sizeHint();
+    virtual QSize sizeHint() override;
 public: // must overridables of base class CDiagObj
-    virtual CDiagObj* clone( CDataDiagram* i_pDiagramTrg ) const;
-    virtual void update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDevice = nullptr );
+    virtual CDiagObj* clone( CDataDiagram* i_pDiagramTrg ) const override;
+    virtual void update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDevice = nullptr ) override;
 protected: // overridables of base class QObject
-    virtual bool event( QEvent* i_pEv );
+    virtual bool event( QEvent* i_pEv ) override;
 private: // copy ctor not allowed
     CDiagObjProgressBar( const CDiagObjProgressBar& );
 private: // assignment operator not allowed

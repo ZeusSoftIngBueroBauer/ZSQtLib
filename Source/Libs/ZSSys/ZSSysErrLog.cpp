@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -505,6 +505,10 @@ void CErrLog::QtMsgHandler( QtMsgType i_msgType, const QMessageLogContext& i_con
                     strDummy = "Set breakpoint here if desired";
                 }
                 else if( i_strMsg.startsWith("Retrying to obtain clipboard",Qt::CaseInsensitive) )
+                {
+                    strDummy = "Set breakpoint here if desired";
+                }
+                else if( i_strMsg.contains("QWindowsWindow::setGeometry: Unable to set geometry",Qt::CaseInsensitive) )
                 {
                     strDummy = "Set breakpoint here if desired";
                 }

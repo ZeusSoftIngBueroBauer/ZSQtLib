@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -65,10 +65,10 @@ CPhysSizeGraphDevice::CPhysSizeGraphDevice( CUnitsTreeEntryGrpScienceField* i_pP
     // Just one unit and therefore nothing to chain.
 
     // To allow "short" unit strings like "GraphDevice.px" we add a shortcut to this phyiscal size.
-    i_pParentBranch->tree()->addShortcut(this, "GraphDevice");
+    m_pTree->addShortcut(this, "GraphDevice");
 
     // To allow "short" unit strings like "px" we add shortcuts to each unit.
-    i_pParentBranch->tree()->addShortcut(&m_treeEntryPixel, "px");
+    m_pTree->addShortcut(&m_treeEntryPixel, "px");
 
 } // ctor
 

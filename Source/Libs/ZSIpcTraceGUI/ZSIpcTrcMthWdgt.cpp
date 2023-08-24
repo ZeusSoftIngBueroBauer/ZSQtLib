@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -912,7 +912,7 @@ public: // instance methods
 void CWdgtTrcMthList::findText()
 //------------------------------------------------------------------------------
 {
-    QString strDlgTitle = getMainWindowTitle() + ": Find Text";
+    QString strDlgTitle = ZS::System::GUI::getMainWindowTitle() + ": Find Text";
 
     CDlgFindText* pDlg = dynamic_cast<CDlgFindText*>(CDlgFindText::GetInstance("FindText"));
 
@@ -1054,7 +1054,7 @@ void CWdgtTrcMthList::onChkServerUseIpcServerToggled( bool i_bChecked )
 void CWdgtTrcMthList::onBtnTrcAdminObjIdxTreeClicked( bool /*i_bChecked*/ )
 //------------------------------------------------------------------------------
 {
-    QString strDlgTitle = getMainWindowTitle() + ": Trace Admin Objects";
+    QString strDlgTitle = ZS::System::GUI::getMainWindowTitle() + ": Trace Admin Objects";
 
     CDlgIdxTreeTrcAdminObjs* pDlg = CDlgIdxTreeTrcAdminObjs::GetInstance(m_pTrcClient->getTraceAdminObjIdxTree()->objectName());
 
@@ -1065,7 +1065,7 @@ void CWdgtTrcMthList::onBtnTrcAdminObjIdxTreeClicked( bool /*i_bChecked*/ )
         pDlg->adjustSize();
         pDlg->show();
     }
-    else // if( pReqSeq != nullptr )
+    else
     {
         if( pDlg->isHidden() )
         {
@@ -1073,8 +1073,7 @@ void CWdgtTrcMthList::onBtnTrcAdminObjIdxTreeClicked( bool /*i_bChecked*/ )
         }
         pDlg->raise();
         pDlg->activateWindow();
-
-    } // if( pDlg != nullptr )
+    }
 } // onBtnTrcAdminObjIdxTreeClicked
 
 //------------------------------------------------------------------------------
@@ -1856,7 +1855,7 @@ void CWdgtTrcMthList::showAndCheckDataRates()
 
                     QMessageBox* msgBox = new QMessageBox();
                     msgBox->setIcon(QMessageBox::Critical);
-                    msgBox->setWindowTitle(getMainWindowTitle() + ": Too much data");
+                    msgBox->setWindowTitle(ZS::System::GUI::getMainWindowTitle() + ": Too much data");
                     msgBox->setText(strText);
                     msgBox->setAttribute(Qt::WA_DeleteOnClose);
                     msgBox->setModal(false);

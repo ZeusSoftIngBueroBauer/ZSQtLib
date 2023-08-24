@@ -41,6 +41,8 @@ class ZSDIAGRAMDLL_API CDiagObjValueProvider : public CDiagObj
 //******************************************************************************
 {
     Q_OBJECT
+public: // class methods
+    static QString ClassName() { return "CDiagObjValueProvider"; }
 public: // type definitions and constants
     typedef enum {
         EMathOpMin            = 0,
@@ -53,29 +55,29 @@ public: // type definitions and constants
 public: // ctors and dtor
     CDiagObjValueProvider(
         const QString& i_strObjName,
-        EMathOp        i_mathOp,
-        CDiagObj*      i_pDiagObjOp1,
-        EScaleDir      i_scaleDirOp1,
-        CDiagObj*      i_pDiagObjOp2 = nullptr,
-        EScaleDir      i_scaleDirOp2 = EScaleDirUndefined );
+        EMathOp i_mathOp,
+        CDiagObj* i_pDiagObjOp1,
+        const ZS::System::CEnumScaleDir& i_scaleDirOp1,
+        CDiagObj* i_pDiagObjOp2 = nullptr,
+        const ZS::System::CEnumScaleDir& i_scaleDirOp2 = ZS::System::CEnumScaleDir() );
     virtual ~CDiagObjValueProvider();
 public: // instance methods
     void setMathOp( EMathOp i_mathOp );
     EMathOp getMathOp() const;
-    void setOp1( CDiagObj* i_pDiagObj, EScaleDir i_scaleDir );
+    void setOp1( CDiagObj* i_pDiagObj, const ZS::System::CEnumScaleDir& i_scaleDir );
     CDiagObj* getDiagObjOp1();
-    EScaleDir getScaleDirOp1() const;
-    void setOp2( CDiagObj* i_pDiagObj, EScaleDir i_scaleDir );
+    ZS::System::EScaleDir getScaleDirOp1() const;
+    void setOp2( CDiagObj* i_pDiagObj, const ZS::System::CEnumScaleDir& i_scaleDir );
     CDiagObj* getDiagObjOp2();
-    EScaleDir getScaleDirOp2() const;
+    ZS::System::EScaleDir getScaleDirOp2() const;
     void setValueFormatProvider( const PhysVal::SValueFormatProvider& i_valueFormat );
     PhysVal::SValueFormatProvider getValueFormatProvider() const;
 public: // overridables
     virtual PhysVal::CPhysVal getVal() const;
     virtual QString getValString() const;
 public: // must overridables of base class CDiagObj
-    virtual CDiagObj* clone( CDataDiagram* i_pDiagramTrg ) const;
-    virtual void update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDevice = nullptr );
+    virtual CDiagObj* clone( CDataDiagram* i_pDiagramTrg ) const override;
+    virtual void update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDevice = nullptr ) override;
 protected slots:
     void op1ValueXChanged( ZS::Diagram::CDiagObj* );
     void op1ValueYChanged( ZS::Diagram::CDiagObj* );
@@ -90,9 +92,9 @@ private: // assignment operator not allowed
 protected:  // instance members
     EMathOp                       m_mathOp;
     CDiagObj*                     m_pDiagObjOp1;
-    EScaleDir                     m_scaleDirOp1;
+    ZS::System::EScaleDir         m_scaleDirOp1;
     CDiagObj*                     m_pDiagObjOp2;
-    EScaleDir                     m_scaleDirOp2;
+    ZS::System::EScaleDir         m_scaleDirOp2;
     PhysVal::SValueFormatProvider m_valueFormat;
     PhysVal::CPhysVal             m_physVal;
     QString                       m_strVal;

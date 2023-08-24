@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer, Germany
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer, Germany
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -123,6 +123,10 @@ CApplication::CApplication(
     setOrganizationDomain(i_strOrganizationDomain);
     setApplicationName(i_strAppName);
     setApplicationVersion(i_strAppVersion);
+    // On some desktop platforms (including Windows and Unix), the application name
+    // (from QGuiApplication::applicationDisplayName) is added at the end of the
+    // window title, if set. This is done by the QPA plugin, so it is shown to the user,
+    // but isn't part of the windowTitle string. !! This is not really desired !!
     setApplicationDisplayName(i_strWindowTitle);
 
     CErrLog::CreateInstance();

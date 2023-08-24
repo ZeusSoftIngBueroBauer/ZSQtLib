@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -1446,6 +1446,47 @@ QString ZS::System::qXmlStreamTokenType2Str( int i_iVal, EEnumEntryAliasStr i_al
 
 
 /*==============================================================================
+Enum Qt::BrushStyle
+==============================================================================*/
+
+static const SEnumEntry s_arEnumStrQtBrushStyle[] = {
+    /*  0 */ SEnumEntry( Qt::NoBrush, "NoBrush" ),
+    /*  1 */ SEnumEntry( Qt::SolidPattern, "SolidPattern" ),
+    /*  2 */ SEnumEntry( Qt::Dense1Pattern, "Dense1Pattern" ),
+    /*  3 */ SEnumEntry( Qt::Dense2Pattern, "Dense2Pattern" ),
+    /*  4 */ SEnumEntry( Qt::Dense3Pattern, "Dense3Pattern" ),
+    /*  5 */ SEnumEntry( Qt::Dense4Pattern, "Dense4Pattern" ),
+    /*  6 */ SEnumEntry( Qt::Dense5Pattern, "Dense5Pattern" ),
+    /*  7 */ SEnumEntry( Qt::Dense6Pattern, "Dense6Pattern" ),
+    /*  8 */ SEnumEntry( Qt::Dense7Pattern, "Dense7Pattern" ),
+    /*  9 */ SEnumEntry( Qt::HorPattern, "HorPattern" ),
+    /* 10 */ SEnumEntry( Qt::VerPattern, "VerPattern" ),
+    /* 11 */ SEnumEntry( Qt::CrossPattern, "CrossPattern" ),
+    /* 12 */ SEnumEntry( Qt::BDiagPattern, "BDiagPattern" ),
+    /* 13 */ SEnumEntry( Qt::FDiagPattern, "FDiagPattern" ),
+    /* 14 */ SEnumEntry( Qt::DiagCrossPattern, "DiagCrossPattern" ),
+    /* 15 */ SEnumEntry( Qt::LinearGradientPattern, "LinearGradientPattern" ),
+    /* 16 */ SEnumEntry( Qt::RadialGradientPattern, "RadialGradientPattern" ),
+    /* 17 */ SEnumEntry( Qt::ConicalGradientPattern, "ConicalGradientPattern" )
+};
+
+//------------------------------------------------------------------------------
+QString ZS::System::qBrushStyle2Str( const Qt::BrushStyle& i_brushStyle )
+//------------------------------------------------------------------------------
+{
+    if( i_brushStyle >= 0 && i_brushStyle < _ZSArrLen(s_arEnumStrQtBrushStyle)) {
+        return SEnumEntry::enumerator2Str(s_arEnumStrQtBrushStyle, _ZSArrLen(s_arEnumStrQtBrushStyle), i_brushStyle);
+    }
+    else if( i_brushStyle == Qt::TexturePattern) {
+        return "TexturePattern";
+    }
+    else {
+        return "? (" + QString::number(i_brushStyle) + ")";
+    }
+}
+
+
+/*==============================================================================
 Enum Qt::CheckState
 ==============================================================================*/
 
@@ -1901,6 +1942,36 @@ QString ZS::System::qEventType2Str( int i_type, bool i_bShort )
 
 } // qEventType2Str
 
+/*==============================================================================
+Enum Qt::FocusReasong
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+static const ZS::System::SEnumEntry s_arEnumStrFocusReasons[] =
+//------------------------------------------------------------------------------
+{
+    /* 0 */ SEnumEntry( static_cast<int>(Qt::MouseFocusReason), "MouseFocusReason" ),
+    /* 1 */ SEnumEntry( static_cast<int>(Qt::TabFocusReason), "TabFocusReason" ),
+    /* 2 */ SEnumEntry( static_cast<int>(Qt::BacktabFocusReason), "BacktabFocusReason" ),
+    /* 3 */ SEnumEntry( static_cast<int>(Qt::ActiveWindowFocusReason), "ActiveWindowFocusReason" ),
+    /* 4 */ SEnumEntry( static_cast<int>(Qt::PopupFocusReason), "PopupFocusReason" ),
+    /* 5 */ SEnumEntry( static_cast<int>(Qt::ShortcutFocusReason), "ShortcutFocusReason" ),
+    /* 6 */ SEnumEntry( static_cast<int>(Qt::MenuBarFocusReason), "MenuBarFocusReason" ),
+    /* 7 */ SEnumEntry( static_cast<int>(Qt::OtherFocusReason), "OtherFocusReason" ),
+    /* 8 */ SEnumEntry( static_cast<int>(Qt::NoFocusReason), "NoFocusReason" )
+};
+
+//------------------------------------------------------------------------------
+QString ZS::System::qFocusReason2Str( int i_iVal )
+//------------------------------------------------------------------------------
+{
+    if( i_iVal >= 0 && i_iVal < _ZSArrLen(s_arEnumStrFocusReasons) )
+    {
+        return SEnumEntry::enumerator2Str( s_arEnumStrFocusReasons, _ZSArrLen(s_arEnumStrFocusReasons), i_iVal );
+    }
+    return "? (" + QString::number(i_iVal) + ")";
+}
+
 
 /*==============================================================================
 Enum Qt::ItemDataRole
@@ -2047,42 +2118,13 @@ QString ZS::System::qItemFlags2Str( quint32 i_flags )
 } // qItemFlags2Str
 
 /*==============================================================================
-QModelIndex
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-QString ZS::System::qModelIndex2Str( const QModelIndex& i_modelIdx )
-//------------------------------------------------------------------------------
-{
-    QString str;
-    if( !i_modelIdx.isValid() )
-    {
-        str = "Invalid";
-    }
-    else
-    {
-        str = "Row: " + QString::number(i_modelIdx.row());
-        str += ", Clm: " + QString::number(i_modelIdx.column());
-
-        // Endless recursion if called by ::data method.
-        //if( i_modelIdx.data().canConvert(QVariant::String) )
-        //{
-        //    str += ", Data: " + i_modelIdx.data().toString();
-        //}
-    }
-    return str;
-
-} // qModelIndex2Str
-
-/*==============================================================================
 Enum Qt::Key
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
 static const ZS::System::SEnumEntry s_arEnumStrQKeyCode[] =
 //------------------------------------------------------------------------------
-{                                           // IdxName, Symbol, Text
-
+{
     /* 000: 0x00000020 (     032) */ SEnumEntry( Qt::Key_Space, "Key_Space", " ", " " ),
     /* 001: 0x00000021 (     033) */ SEnumEntry( Qt::Key_Exclam, "Key_Exclam", "?", "?" ),
     /* 002: 0x00000022 (     034) */ SEnumEntry( Qt::Key_QuoteDbl, "Key_QuoteDbl", "\"", "\"" ),
@@ -2616,44 +2658,29 @@ int ZS::System::str2QKeyCode( const QString& i_str )
     static bool s_bHshKeysInit = false;
     static QHash<QString,int> s_hshKeys;
 
-    if( !s_bHshKeysInit )
-    {
-        int     idx;
-        QString strHshCode;
-
-        for( idx = 0; idx < _ZSArrLen(s_arEnumStrQKeyCode); idx++ )
-        {
+    if( !s_bHshKeysInit ) {
+        for( int idx = 0; idx < _ZSArrLen(s_arEnumStrQKeyCode); idx++ ) {
             // Not the variant value has been initialized with the key code but the enum index.
             //uHshCode  = static_cast<quint32>(s_arEnumStrQKeyCode[idx].m_val.toULongLong());
-            if( s_arEnumStrQKeyCode[idx].m_strlstNames.size() > EEnumEntryAliasStrText )
-            {
-                if( !s_arEnumStrQKeyCode[idx].m_strlstNames[EEnumEntryAliasStrText].isEmpty() )
-                {
-                    strHshCode = s_arEnumStrQKeyCode[idx].m_strlstNames[EEnumEntryAliasStrText];
-
-                    if( !s_hshKeys.contains(strHshCode) )
-                    {
+            if( s_arEnumStrQKeyCode[idx].m_strlstNames.size() > EEnumEntryAliasStrText ) {
+                if( !s_arEnumStrQKeyCode[idx].m_strlstNames[EEnumEntryAliasStrText].isEmpty() ) {
+                    QString strHshCode = s_arEnumStrQKeyCode[idx].m_strlstNames[EEnumEntryAliasStrText];
+                    if( !s_hshKeys.contains(strHshCode) ) {
                         s_hshKeys[strHshCode] = idx;
                     }
                 }
             }
         }
-
         s_bHshKeysInit = true;
-
-    } // if( !s_bHshKeysInit )
+    }
 
     int iKeyCode = Qt::Key_unknown;
-
-    if( s_hshKeys.contains(i_str) )
-    {
+    if( s_hshKeys.contains(i_str) ) {
         int idx = s_hshKeys[i_str];
         iKeyCode = s_arEnumStrQKeyCode[idx].m_iEnumerator;
     }
-
     return iKeyCode;
-
-} // str2QKeyCode
+}
 
 /*==============================================================================
 Bitfield KeyboardModifier
@@ -2730,9 +2757,150 @@ Qt::KeyboardModifiers ZS::System::char2QKeyboardModifiers( const QChar& i_ch )
 
 } // char2QKeyboardModifiers
 
-/*==============================================================================
-Enum QVariant::Type
-==============================================================================*/
+//------------------------------------------------------------------------------
+QString ZS::System::qMargins2Str( const QMargins& i_margins, bool i_bShort )
+//------------------------------------------------------------------------------
+{
+    QString str;
+
+    if( i_bShort )
+    {
+        str  = QString::number(i_margins.left()) + ", " + QString::number(i_margins.top());
+        str += ", " + QString::number(i_margins.right()) + ", " + QString::number(i_margins.bottom());
+    }
+    else
+    {
+        str  = "Left: " + QString::number(i_margins.left());
+        str += ", Top: " + QString::number(i_margins.top());
+        str += ", Right: " + QString::number(i_margins.right());
+        str += ", Bottom: " + QString::number(i_margins.bottom());
+    }
+    return str;
+
+} // qMargins2Str
+
+//------------------------------------------------------------------------------
+QString ZS::System::qMimeData2Str( const QMimeData* i_pMimeData, int i_iDetailLevel )
+//------------------------------------------------------------------------------
+{
+    QString str;
+
+    if( i_pMimeData == nullptr )
+    {
+        str = "nullptr";
+    }
+    else // if( i_pMimeData != nullptr )
+    {
+        int idx;
+
+        QStringList strlstFormats = i_pMimeData->formats();
+
+        str = "Formats [" + QString::number(strlstFormats.size()) + "]";
+
+        if( strlstFormats.size() > 0 )
+        {
+            str += "(";
+
+            for( idx = 0; idx < strlstFormats.size(); idx++ )
+            {
+                if( idx > 0 )
+                {
+                    str += ", " + strlstFormats[idx];
+                }
+                else
+                {
+                    str += strlstFormats[idx];
+                }
+                if( i_iDetailLevel > 0 )
+                {
+                    str += " {";
+
+                    QByteArray  byteArr = i_pMimeData->data(strlstFormats[idx]);
+                    QDataStream stream(&byteArr, QIODevice::ReadOnly);
+                    QStringList strlstItems;
+
+                    while( !stream.atEnd() )
+                    {
+                        QString strItem;
+                        stream >> strItem;
+                        strlstItems << strItem;
+                    }
+                    str += strlstItems.join(", ");
+                    str += "}";
+                }
+            } // for( idx = 0; idx < strlstFormats.size(); idx++ )
+
+            str += ")";
+
+        } // if( strlstFormats.size() > 0 )
+
+        if( i_pMimeData->hasUrls() )
+        {
+            str += ", Urls [" + QString::number(i_pMimeData->urls().size()) + "]";
+ 
+            if( i_pMimeData->urls().size() > 0 )
+            {
+                str += "(";
+                for( idx = 0; idx < i_pMimeData->urls().size(); idx++ )
+                {
+                    if( idx > 0 )
+                    {
+                        str += ", ";
+                    }
+                    str += i_pMimeData->urls()[idx].toString();
+                }
+                str += ")";
+            }
+        }
+
+        if( i_pMimeData->hasText() )
+        {
+            str += ", Text: " + i_pMimeData->text();
+        }
+
+        if( i_pMimeData->hasHtml() )
+        {
+            str += ", Html: " + i_pMimeData->html();
+        }
+
+        if( i_pMimeData->hasImage() )
+        {
+            //QVariant i_pMimeData->imageData();
+        }
+
+        if( i_pMimeData->hasColor() )
+        {
+            //QVariant i_pMimeData->colorData();
+        }
+    } // if( i_pMimeData != nullptr )
+
+    return str;
+
+} // qMimeData2Str
+
+//------------------------------------------------------------------------------
+QString ZS::System::qModelIndex2Str( const QModelIndex& i_modelIdx )
+//------------------------------------------------------------------------------
+{
+    QString str;
+    if( !i_modelIdx.isValid() )
+    {
+        str = "Invalid";
+    }
+    else
+    {
+        str = "Row: " + QString::number(i_modelIdx.row());
+        str += ", Clm: " + QString::number(i_modelIdx.column());
+
+        // Endless recursion if called by ::data method.
+        //if( i_modelIdx.data().canConvert(QVariant::String) )
+        //{
+        //    str += ", Data: " + i_modelIdx.data().toString();
+        //}
+    }
+    return str;
+
+} // qModelIndex2Str
 
 //------------------------------------------------------------------------------
 QString ZS::System::qMouseButton2Str( int i_iBtn, bool /*i_bShort*/ )
@@ -2886,10 +3054,6 @@ QString ZS::System::qMouseButton2Str( int i_iBtn, bool /*i_bShort*/ )
     return str;
 
 } // qMouseButton2Str
-
-/*==============================================================================
-Bitfield MouseButtons
-==============================================================================*/
 
 //------------------------------------------------------------------------------
 QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
@@ -3180,9 +3344,30 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
 
 } // qMouseButtons2Str
 
-/*==============================================================================
-class QPoint
-==============================================================================*/
+//------------------------------------------------------------------------------
+QString ZS::System::qPenStyle2Str( const Qt::PenStyle& i_penStyle )
+//------------------------------------------------------------------------------
+{
+    QString str;
+    if( i_penStyle == Qt::NoPen ) {
+        str = "NoPen";
+    } else if( i_penStyle == Qt::SolidLine ) {
+        str = "Solid";
+    } else if( i_penStyle == Qt::DashLine ) {
+        str = "Dash";
+    } else if( i_penStyle == Qt::DotLine ) {
+        str = "Dot";
+    } else if( i_penStyle == Qt::DashDotLine ) {
+        str = "DashDot";
+    } else if( i_penStyle == Qt::DashDotDotLine ) {
+        str = "DashDotDot";
+    } else if( i_penStyle == Qt::CustomDashLine ) {
+        str = "CustomDash";
+    } else {
+        str = "? (" + QString::number(i_penStyle) + ")";
+    }
+    return str;
+}
 
 //------------------------------------------------------------------------------
 QString ZS::System::qPoint2Str( const QPoint& i_pt, bool i_bShort )
@@ -3190,35 +3375,29 @@ QString ZS::System::qPoint2Str( const QPoint& i_pt, bool i_bShort )
 {
     QString str;
     if( i_bShort ) {
-        str  = QString::number(i_pt.x()) + ", " + QString::number(i_pt.y());
+        str = QString::number(i_pt.x())
+            + ", " + QString::number(i_pt.y());
     } else {
-        str  = "x: " + QString::number(i_pt.x());
-        str += ", y: " + QString::number(i_pt.y());
+        str = "x: " + QString::number(i_pt.x())
+            + ", y: " + QString::number(i_pt.y());
     }
     return str;
 }
 
-/*==============================================================================
-class QSize
-==============================================================================*/
-
 //------------------------------------------------------------------------------
-QString ZS::System::qSize2Str( const QSize& i_size, bool i_bShort )
+QString ZS::System::qPoint2Str( const QPointF& i_pt, bool i_bShort )
 //------------------------------------------------------------------------------
 {
     QString str;
     if( i_bShort ) {
-        str  = QString::number(i_size.width()) + ", " + QString::number(i_size.height());
+        str = QString::number(i_pt.x(),'f',1)
+            + ", " + QString::number(i_pt.y(),'f',1);
     } else {
-        str  = "w: " + QString::number(i_size.width());
-        str += ", h: " + QString::number(i_size.height());
+        str = "x: " + QString::number(i_pt.x(),'f',1)
+            + ", y: " + QString::number(i_pt.y(),'f',1);
     }
     return str;
 }
-
-/*==============================================================================
-class QRect
-==============================================================================*/
 
 //------------------------------------------------------------------------------
 QString ZS::System::qRect2Str( const QRect& i_rct, bool i_bShort )
@@ -3226,42 +3405,67 @@ QString ZS::System::qRect2Str( const QRect& i_rct, bool i_bShort )
 {
     QString str;
     if( i_bShort ) {
-        str  = QString::number(i_rct.x()) + ", " + QString::number(i_rct.y());
-        str += ", " + QString::number(i_rct.width()) + ", " + QString::number(i_rct.height());
+        str  = QString::number(i_rct.x())
+             + ", " + QString::number(i_rct.y())
+             + ", " + QString::number(i_rct.width())
+             + ", " + QString::number(i_rct.height());
     } else {
-        str  = "x: " + QString::number(i_rct.x());
-        str += ", y: " + QString::number(i_rct.y());
-        str += ", w: " + QString::number(i_rct.width());
-        str += ", h: " + QString::number(i_rct.height());
+        str  = "x: " + QString::number(i_rct.x())
+             + ", y: " + QString::number(i_rct.y())
+             + ", w: " + QString::number(i_rct.width())
+             + ", h: " + QString::number(i_rct.height());
     }
     return str;
 }
 
-/*==============================================================================
-class QMargins
-==============================================================================*/
-
 //------------------------------------------------------------------------------
-QString ZS::System::qMargins2Str( const QMargins& i_margins, bool i_bShort )
+QString ZS::System::qRect2Str( const QRectF& i_rct, bool i_bShort )
 //------------------------------------------------------------------------------
 {
     QString str;
-
-    if( i_bShort )
-    {
-        str  = QString::number(i_margins.left()) + ", " + QString::number(i_margins.top());
-        str += ", " + QString::number(i_margins.right()) + ", " + QString::number(i_margins.bottom());
-    }
-    else
-    {
-        str  = "Left: " + QString::number(i_margins.left());
-        str += ", Top: " + QString::number(i_margins.top());
-        str += ", Right: " + QString::number(i_margins.right());
-        str += ", Bottom: " + QString::number(i_margins.bottom());
+    if( i_bShort ) {
+        str = QString::number(i_rct.x(),'f',1)
+            + ", " + QString::number(i_rct.y(),'f',1)
+            + ", " + QString::number(i_rct.width(),'f',1)
+            + ", " + QString::number(i_rct.height(),'f',1);
+    } else {
+        str = "x: " + QString::number(i_rct.x(),'f',1)
+            + ", y: " + QString::number(i_rct.y(),'f',1)
+            + ", w: " + QString::number(i_rct.width(),'f',1)
+            + ", h: " + QString::number(i_rct.height(),'f',1);
     }
     return str;
+}
 
-} // qMargins2Str
+//------------------------------------------------------------------------------
+QString ZS::System::qSize2Str( const QSize& i_size, bool i_bShort )
+//------------------------------------------------------------------------------
+{
+    QString str;
+    if( i_bShort ) {
+        str = QString::number(i_size.width())
+            + ", " + QString::number(i_size.height());
+    } else {
+        str = "w: " + QString::number(i_size.width())
+            + ", h: " + QString::number(i_size.height());
+    }
+    return str;
+}
+
+//------------------------------------------------------------------------------
+QString ZS::System::qSize2Str( const QSizeF& i_size, bool i_bShort )
+//------------------------------------------------------------------------------
+{
+    QString str;
+    if( i_bShort ) {
+        str = QString::number(i_size.width(),'f',1)
+            + ", " + QString::number(i_size.height(),'f',1);
+    } else {
+        str = "w: " + QString::number(i_size.width(),'f',1)
+            + ", h: " + QString::number(i_size.height(),'f',1);
+    }
+    return str;
+}
 
 /*==============================================================================
 Enum QVariant::Type
@@ -3340,139 +3544,6 @@ QString ZS::System::qVariantType2Str( int i_type )
     if( str.isEmpty() ) str = "? (=" + QString::number(i_type) + ")";
     return str;
 }
-
-/*==============================================================================
-Enum Qt::FocusReasong
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-static const ZS::System::SEnumEntry s_arEnumStrFocusReasons[] =
-//------------------------------------------------------------------------------
-{
-    /* 0 */ SEnumEntry( static_cast<int>(Qt::MouseFocusReason), "MouseFocusReason" ),
-    /* 1 */ SEnumEntry( static_cast<int>(Qt::TabFocusReason), "TabFocusReason" ),
-    /* 2 */ SEnumEntry( static_cast<int>(Qt::BacktabFocusReason), "BacktabFocusReason" ),
-    /* 3 */ SEnumEntry( static_cast<int>(Qt::ActiveWindowFocusReason), "ActiveWindowFocusReason" ),
-    /* 4 */ SEnumEntry( static_cast<int>(Qt::PopupFocusReason), "PopupFocusReason" ),
-    /* 5 */ SEnumEntry( static_cast<int>(Qt::ShortcutFocusReason), "ShortcutFocusReason" ),
-    /* 6 */ SEnumEntry( static_cast<int>(Qt::MenuBarFocusReason), "MenuBarFocusReason" ),
-    /* 7 */ SEnumEntry( static_cast<int>(Qt::OtherFocusReason), "OtherFocusReason" ),
-    /* 8 */ SEnumEntry( static_cast<int>(Qt::NoFocusReason), "NoFocusReason" )
-};
-
-//------------------------------------------------------------------------------
-QString ZS::System::qFocusReason2Str( int i_iVal )
-//------------------------------------------------------------------------------
-{
-    if( i_iVal >= 0 && i_iVal < _ZSArrLen(s_arEnumStrFocusReasons) )
-    {
-        return SEnumEntry::enumerator2Str( s_arEnumStrFocusReasons, _ZSArrLen(s_arEnumStrFocusReasons), i_iVal );
-    }
-    return "? (" + QString::number(i_iVal) + ")";
-}
-
-/*==============================================================================
-class QMimeData
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-QString ZS::System::qMimeData2Str( const QMimeData* i_pMimeData, int i_iDetailLevel )
-//------------------------------------------------------------------------------
-{
-    QString str;
-
-    if( i_pMimeData == nullptr )
-    {
-        str = "nullptr";
-    }
-    else // if( i_pMimeData != nullptr )
-    {
-        int idx;
-
-        QStringList strlstFormats = i_pMimeData->formats();
-
-        str = "Formats [" + QString::number(strlstFormats.size()) + "]";
-
-        if( strlstFormats.size() > 0 )
-        {
-            str += "(";
-
-            for( idx = 0; idx < strlstFormats.size(); idx++ )
-            {
-                if( idx > 0 )
-                {
-                    str += ", " + strlstFormats[idx];
-                }
-                else
-                {
-                    str += strlstFormats[idx];
-                }
-                if( i_iDetailLevel > 0 )
-                {
-                    str += " {";
-
-                    QByteArray  byteArr = i_pMimeData->data(strlstFormats[idx]);
-                    QDataStream stream(&byteArr, QIODevice::ReadOnly);
-                    QStringList strlstItems;
-
-                    while( !stream.atEnd() )
-                    {
-                        QString strItem;
-                        stream >> strItem;
-                        strlstItems << strItem;
-                    }
-                    str += strlstItems.join(", ");
-                    str += "}";
-                }
-            } // for( idx = 0; idx < strlstFormats.size(); idx++ )
-
-            str += ")";
-
-        } // if( strlstFormats.size() > 0 )
-
-        if( i_pMimeData->hasUrls() )
-        {
-            str += ", Urls [" + QString::number(i_pMimeData->urls().size()) + "]";
- 
-            if( i_pMimeData->urls().size() > 0 )
-            {
-                str += "(";
-                for( idx = 0; idx < i_pMimeData->urls().size(); idx++ )
-                {
-                    if( idx > 0 )
-                    {
-                        str += ", ";
-                    }
-                    str += i_pMimeData->urls()[idx].toString();
-                }
-                str += ")";
-            }
-        }
-
-        if( i_pMimeData->hasText() )
-        {
-            str += ", Text: " + i_pMimeData->text();
-        }
-
-        if( i_pMimeData->hasHtml() )
-        {
-            str += ", Html: " + i_pMimeData->html();
-        }
-
-        if( i_pMimeData->hasImage() )
-        {
-            //QVariant i_pMimeData->imageData();
-        }
-
-        if( i_pMimeData->hasColor() )
-        {
-            //QVariant i_pMimeData->colorData();
-        }
-    } // if( i_pMimeData != nullptr )
-
-    return str;
-
-} // qMimeData2Str
 
 
 /*******************************************************************************
@@ -3760,3 +3831,253 @@ bool ZS::System::isNumChar( const QChar& i_ch )
     return false;
 
 } // isNumChar
+
+//------------------------------------------------------------------------------
+void ZS::System::insertDelimiter(
+    int            i_iDigitsPerDigitGroup,
+    const QString& i_strDelimiter,
+    QString*       io_pstrValue,
+    int            i_iDigitsLeading,
+    int            i_iDigitsTrailing )
+//------------------------------------------------------------------------------
+{
+    int iDelimiterCount;
+    int idxLeadingDelimiterPos;
+    int idxTrailingDelimiterPos;
+    int idx;
+
+    if( i_iDigitsPerDigitGroup > 0 )
+    {
+        idxLeadingDelimiterPos  = i_iDigitsLeading-i_iDigitsPerDigitGroup;
+        idxTrailingDelimiterPos = i_iDigitsLeading+i_iDigitsPerDigitGroup+1;
+
+        // There might be a "-" or "+" sign at the beginning of the string ...
+        if( i_iDigitsLeading > 0 )
+        {
+            idx = 0;
+            while( ((*io_pstrValue)[idx] < '0' || (*io_pstrValue)[idx] > '9') && (idx < static_cast<int>(io_pstrValue->length())) )
+            {
+                idx++;
+                idxLeadingDelimiterPos++;
+                idxTrailingDelimiterPos++;
+            }
+        }
+
+        // Insert delimiters into leading part:
+        if( i_iDigitsLeading > i_iDigitsPerDigitGroup )
+        {
+            iDelimiterCount = (i_iDigitsLeading-1)/i_iDigitsPerDigitGroup;
+            for( idx = 0; idx < iDelimiterCount; idx++ )
+            {
+                io_pstrValue->insert(idxLeadingDelimiterPos,i_strDelimiter);
+                idxTrailingDelimiterPos++;
+                idxLeadingDelimiterPos -= i_iDigitsPerDigitGroup;
+            }
+        }
+
+        // Insert delimiters into trailing part:
+        if( i_iDigitsTrailing > i_iDigitsPerDigitGroup )
+        {
+            iDelimiterCount = (i_iDigitsTrailing-1)/i_iDigitsPerDigitGroup;
+            for( idx = 0; idx < iDelimiterCount; idx++ )
+            {
+                io_pstrValue->insert(idxTrailingDelimiterPos,i_strDelimiter);
+                idxTrailingDelimiterPos++;
+                idxTrailingDelimiterPos += i_iDigitsPerDigitGroup;
+            }
+        }
+    }
+} // insertDelimiter
+
+//------------------------------------------------------------------------------
+void ZS::System::removeTrailingZeros(
+    QString* io_pstrValue,
+    int      i_iDigitsTrailingMin,
+    QChar    i_charDecPoint )
+//------------------------------------------------------------------------------
+{
+    // String:               "123.45600e-12"
+    // idxChar:               0123456789012
+    // idxCharExp          =  9
+    // idxCharDecPt        =  3
+    // uStrLen             = 13
+    // iMantissaSubStrLen  =  9
+    // iExponentSubStrLen  =  4
+    // uTrailingSubStrLen  =  5
+    // uLeadingSubStrLen   =  3
+    // iTrailingZeros      =  2
+
+    QString strValue = *io_pstrValue;
+    int     idxChar;
+    int     idxCharDecPt;
+    int     iMantissaSubStrLen = 0;
+    int     iExponentSubStrLen = 0;
+    int     iTrailingZeros = 0;
+
+    if( strValue.length() > 0 )
+    {
+        idxCharDecPt = strValue.indexOf(i_charDecPoint,0,Qt::CaseInsensitive);
+
+        if( idxCharDecPt >= 0 )
+        {
+            idxChar = strValue.indexOf('e',-1,Qt::CaseInsensitive);
+            if( idxChar >= 0 )
+            {
+                iExponentSubStrLen = strValue.length()-idxChar;
+            }
+            iMantissaSubStrLen = strValue.length() - iExponentSubStrLen;
+
+            if( iMantissaSubStrLen > 0 )
+            {
+                for( idxChar = iMantissaSubStrLen-1; idxChar >= 0; idxChar-- )
+                {
+                    if( strValue[idxChar] == i_charDecPoint )
+                    {
+                        if( i_iDigitsTrailingMin > 0 && idxChar + i_iDigitsTrailingMin < iMantissaSubStrLen )
+                        {
+                            idxChar += i_iDigitsTrailingMin;
+                        }
+                        break;
+                    }
+                    #if QT_VERSION < 0x050000
+                    else if( strValue.toAscii()[idxChar] != '0' )
+                    #else
+                    else if( strValue.toLatin1()[idxChar] != '0' )
+                    #endif
+                    {
+                        break;
+                    }
+                    iTrailingZeros++;
+                }
+                if( idxChar < static_cast<int>(iMantissaSubStrLen-1) )
+                {
+                    strValue.remove(idxChar+1,iTrailingZeros);
+                }
+            }
+            *io_pstrValue = strValue;
+        }
+    }
+} // removeTrailingZeros
+
+//------------------------------------------------------------------------------
+void ZS::System::removeLeadingZerosFromExponent( QString* io_pstrValue )
+//------------------------------------------------------------------------------
+{
+    // String:               "123.45600e-02"
+    // idxChar:               0123456789012
+    // idxCharExp          =  9
+    // idxCharDecPt        =  3
+    // uStrLen             = 13
+    // iMantissaSubStrLen  =  9
+    // iExponentSubStrLen  =  4
+    // uTrailingSubStrLen  =  5
+    // uLeadingSubStrLen   =  3
+    // iTrailingZeros      =  2
+
+    QString      strValue = *io_pstrValue;
+    int          idxChar;
+    int          idxCharExp;
+    int          idxCharFirstZero = -1;
+    int          idxCharFirstDigit = -1;
+
+    if( strValue.length() > 0 )
+    {
+        idxCharExp = strValue.indexOf("e",0,Qt::CaseInsensitive);
+
+        if( idxCharExp > 0 )
+        {
+            for( idxChar = idxCharExp+1; idxChar < strValue.length(); idxChar++ )
+            {
+                if( idxCharFirstZero < 0 && strValue[idxChar] == '0' )
+                {
+                    idxCharFirstZero = idxChar;
+                }
+                if( idxCharFirstDigit < 0 && isDigitChar(strValue[idxChar]) && strValue[idxChar] != '0' )
+                {
+                    idxCharFirstDigit = idxChar;
+                }
+            }
+            if( idxCharFirstZero < idxCharFirstDigit )
+            {
+                strValue.remove(idxCharFirstZero,idxCharFirstDigit-idxCharFirstZero);
+                *io_pstrValue = strValue;
+            }
+        }
+    }
+
+} // removeLeadingZerosFromExponent
+
+//------------------------------------------------------------------------------
+void ZS::System::formatString(
+    const QString& i_strValue,
+    int*           o_piDigitsLeading,
+    int*           o_piDigitsTrailing,
+    int*           o_piDigitsExponent )
+//------------------------------------------------------------------------------
+{
+    int  iDigitsLeading = 0;
+    int  iDigitsTrailing = 0;
+    int  iDigitsExponent = 0;
+    bool bLeadingSection = true;
+    bool bTrailingSection = false;
+    bool bExponentSection = false;
+
+    for( int idx = 0; idx < i_strValue.length(); idx++ )
+    {
+        if( bLeadingSection )
+        {
+            if( i_strValue.at(idx) == QChar('-') )
+            {
+            }
+            else if( i_strValue.at(idx) == QChar('+') )
+            {
+            }
+            else if( i_strValue.at(idx) >= QChar('0') && i_strValue.at(idx) <= QChar('9') )
+            {
+                iDigitsLeading++;
+            }
+            else if( i_strValue.at(idx) == QChar('.') )
+            {
+                bLeadingSection = false;
+                bTrailingSection = true;
+            }
+        }
+        else if( bTrailingSection )
+        {
+            if( i_strValue.at(idx) >= QChar('0') && i_strValue.at(idx) <= QChar('9') )
+            {
+                iDigitsTrailing++;
+            }
+            else if( i_strValue.at(idx) == QChar('e') || i_strValue.at(idx) == QChar('E') )
+            {
+                bTrailingSection = false;
+                bExponentSection = true;
+            }
+        }
+        else if( bExponentSection )
+        {
+            if( i_strValue.at(idx) == QChar('-') )
+            {
+            }
+            else if( i_strValue.at(idx) == QChar('+') )
+            {
+            }
+            else if( i_strValue.at(idx) >= QChar('0') && i_strValue.at(idx) <= QChar('9') )
+            {
+                iDigitsExponent++;
+            }
+        }
+    }
+    if( o_piDigitsLeading != nullptr )
+    {
+        *o_piDigitsLeading = iDigitsLeading;
+    }
+    if( o_piDigitsTrailing != nullptr )
+    {
+        *o_piDigitsTrailing = iDigitsTrailing;
+    }
+    if( o_piDigitsExponent != nullptr )
+    {
+        *o_piDigitsExponent = iDigitsExponent;
+    }
+}

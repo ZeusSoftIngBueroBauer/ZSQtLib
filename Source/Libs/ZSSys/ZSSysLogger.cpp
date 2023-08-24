@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -78,7 +78,7 @@ protected: // ctors and dtor
 CLogger::CLogger( const QString& i_strLeaveName ) :
 //------------------------------------------------------------------------------
     QObject(),
-    CIdxTreeEntry(EIdxTreeEntryType::Leave, i_strLeaveName),
+    CIdxTreeEntry(EEntryType::Leave, i_strLeaveName),
     m_iBlockTreeEntryChangedSignalCounter(0),
     m_bAddThreadName(false),
     m_bAddDateTime(false),

@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -383,11 +383,11 @@ void CIdxTreeLoggers::setEnabled( int i_iIdxInTree, EEnabled i_enabled )
 
     if( pTreeEntry != nullptr )
     {
-        if( pTreeEntry->entryType() == EIdxTreeEntryType::Root || pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        if( pTreeEntry->isRoot() || pTreeEntry->isBranch() )
         {
             setEnabled(pTreeEntry, i_enabled);
         }
-        else if( pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+        else if( pTreeEntry->isLeave() )
         {
             CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
 
@@ -410,11 +410,11 @@ void CIdxTreeLoggers::setDetailLevel(
 
     if( pTreeEntry != nullptr )
     {
-        if( pTreeEntry->entryType() == EIdxTreeEntryType::Root || pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        if( pTreeEntry->isRoot() || pTreeEntry->isBranch() )
         {
             setDetailLevel(pTreeEntry, i_eDetailLevel);
         }
-        else if( pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+        else if( pTreeEntry->isLeave() )
         {
             CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
 
@@ -437,11 +437,11 @@ void CIdxTreeLoggers::setDataFilter(
 
     if( pTreeEntry != nullptr )
     {
-        if( pTreeEntry->entryType() == EIdxTreeEntryType::Root || pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        if( pTreeEntry->isRoot() || pTreeEntry->isBranch() )
         {
             setDataFilter(pTreeEntry, i_strDataFilter);
         }
-        else if( pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+        else if( pTreeEntry->isLeave() )
         {
             CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
 
@@ -475,7 +475,7 @@ void CIdxTreeLoggers::setEnabled( CIdxTreeEntry* i_pBranch, EEnabled i_enabled )
 
             if( pTreeEntry != nullptr )
             {
-                if( pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+                if( pTreeEntry->isLeave() )
                 {
                     pLogger = dynamic_cast<CLogger*>(pTreeEntry);
 
@@ -515,7 +515,7 @@ void CIdxTreeLoggers::setDetailLevel(
 
             if( pTreeEntry != nullptr )
             {
-                if( pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+                if( pTreeEntry->isLeave() )
                 {
                     pLogger = dynamic_cast<CLogger*>(pTreeEntry);
 
@@ -555,7 +555,7 @@ void CIdxTreeLoggers::setDataFilter(
 
             if( pTreeEntry != nullptr )
             {
-                if( pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+                if( pTreeEntry->isLeave() )
                 {
                     pLogger = dynamic_cast<CLogger*>(pTreeEntry);
 
@@ -875,7 +875,7 @@ void CIdxTreeLoggers::save(
     CLogger*       pLogger;
     int            idxEntry;
 
-    if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+    if( i_pTreeEntry->isLeave() )
     {
         pLogger = dynamic_cast<CLogger*>(i_pTreeEntry);
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -241,14 +241,10 @@ CLogFile::CLogFile() :
 
     m_pTimerAutoSave = new QTimer(this);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTimerAutoSave,
-        /* szSignal     */ SIGNAL(timeout()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTimeoutAutoSaveFile()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pTimerAutoSave, &QTimer::timeout,
+        this, &CLogFile::onTimeoutAutoSaveFile);
+
 } // ctor
 
 //------------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -63,7 +63,8 @@ CTestStepGroup::CTestStepGroup(
     const QString&  i_strName,
     CTestStepGroup* i_pTSGrpParent ) :
 //------------------------------------------------------------------------------
-    CAbstractTestStepIdxTreeEntry(i_pTest, EIdxTreeEntryType::Branch, i_strName, i_pTSGrpParent)
+    CAbstractTestStepIdxTreeEntry(
+        i_pTest, CIdxTreeEntry::EEntryType::Branch, i_strName, i_pTSGrpParent)
 {
 } // ctor
 
@@ -87,9 +88,9 @@ protected: // ctor for class CTestGroupRoot
     @param i_pTSGrpParent [in] Parent test group or nullptr, if the entry does not have a parent.
 */
 CTestStepGroup::CTestStepGroup(
-    CTest*            i_pTest,
-    EIdxTreeEntryType i_entryType,
-    const QString&    i_strName ) :
+    CTest* i_pTest,
+    CIdxTreeEntry::EEntryType i_entryType,
+    const QString& i_strName ) :
 //------------------------------------------------------------------------------
     CAbstractTestStepIdxTreeEntry(i_pTest, i_entryType, i_strName, nullptr)
 {

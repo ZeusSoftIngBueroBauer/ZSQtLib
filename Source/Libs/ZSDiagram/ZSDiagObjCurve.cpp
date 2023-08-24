@@ -56,16 +56,17 @@ CDiagObjCurve::CDiagObjCurve(
     CDiagTrace*    i_pDiagTrace ) :
 //------------------------------------------------------------------------------
     CDiagObj(
-        /* strObjName */ i_strObjName,
-        /* pDiagTrace */ i_pDiagTrace,
-        /* layoutPos  */ ELayoutPosCenter ),
+        /* strClassName */ CDiagObjCurve::ClassName(),
+        /* strObjName   */ i_strObjName,
+        /* pDiagTrace   */ i_pDiagTrace,
+        /* layoutPos    */ ELayoutPosCenter ),
     m_col(Qt::yellow),
     m_pPtArr(nullptr),
     m_bUpdWidget(true)
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = i_strObjName;
         strMthInArgs += ", Trace: " + QString(i_pDiagTrace == nullptr ? "nullptr" : i_pDiagTrace->objectName());
@@ -133,32 +134,32 @@ CDiagObj* CDiagObjCurve::clone( CDataDiagram* i_pDiagramTrg ) const
         return nullptr;
     }
 
-    CDiagTrace* pDiagTrace = i_pDiagramTrg->getDiagTrace( m_pDiagTrace->getObjName() );
+    CDiagTrace* pDiagTrace = i_pDiagramTrg->findDiagTrace(m_pDiagTrace->getObjName());
 
     if( pDiagTrace == nullptr )
     {
         return nullptr;
     }
 
-    CDiagObjCurve* pDiagObj = new CDiagObjCurve(
+    CDiagObjCurve* pDiagObjCloned = new CDiagObjCurve(
         /* strObjName */ m_strObjName,
         /* pDiagTrace */ pDiagTrace );
 
     // Members from base class CDiagObj:
-    pDiagObj->m_layoutPos = m_layoutPos;
-    pDiagObj->m_rectContent = m_rectContent;
-    pDiagObj->m_bAdjustContentRect2DiagPartCenter = m_bAdjustContentRect2DiagPartCenter;
-    pDiagObj->m_bVisible = m_bVisible;
-    pDiagObj->m_state = m_state;
-    pDiagObj->m_bIsFocusable = m_bIsFocusable;
-    pDiagObj->m_bIsEditable = m_bIsEditable;
+    pDiagObjCloned->m_layoutPos = m_layoutPos;
+    pDiagObjCloned->m_rectContent = m_rectContent;
+    pDiagObjCloned->m_bAdjustContentRect2DiagPartCenter = m_bAdjustContentRect2DiagPartCenter;
+    pDiagObjCloned->m_bVisible = m_bVisible;
+    pDiagObjCloned->m_state = m_state;
+    pDiagObjCloned->m_bIsFocusable = m_bIsFocusable;
+    pDiagObjCloned->m_bIsEditable = m_bIsEditable;
 
     // Members from this class:
-    pDiagObj->m_col = m_col;
+    pDiagObjCloned->m_col = m_col;
 
-    i_pDiagramTrg->addDiagObj(pDiagObj);
+    i_pDiagramTrg->addDiagObj(pDiagObjCloned);
 
-    return pDiagObj;
+    return pDiagObjCloned;
 
 } // clone
 
@@ -168,7 +169,7 @@ void CDiagObjCurve::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintD
 {
     QString strTrcMsg;
 
-    if( m_pTrcAdminObjUpdate != nullptr && m_pTrcAdminObjUpdate->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjUpdate, EMethodTraceDetailLevel::ArgsNormal))
     {
         strTrcMsg = updateFlags2Str(i_uUpdateFlags);
     }
@@ -212,8 +213,8 @@ void CDiagObjCurve::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintD
     // If the internal data structures need to be updated ..
     if( i_uUpdateFlags & EUpdateData && m_uUpdateFlags & EUpdateData )
     {
-        QVector<double> arfXValues = m_pDiagTrace->getValues(EScaleDirX);
-        QVector<double> arfYValues = m_pDiagTrace->getValues(EScaleDirY);
+        QVector<double> arfXValues = m_pDiagTrace->getValues(EScaleDir::X);
+        QVector<double> arfYValues = m_pDiagTrace->getValues(EScaleDir::Y);
 
         mthTracer.trace("Processing Data", ELogDetailLevel::Debug);
 
@@ -241,8 +242,8 @@ void CDiagObjCurve::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintD
         QPoint*       pPt;
         const double* pfX;
         const double* pfY;
-        double        fXMin = m_pDiagTrace->getScale(EScaleDirX).m_fMin;
-        double        fXMax = m_pDiagTrace->getScale(EScaleDirX).m_fMax;
+        double        fXMin = m_pDiagTrace->getScale(EScaleDir::X).minVal().getVal();
+        double        fXMax = m_pDiagTrace->getScale(EScaleDir::X).maxVal().getVal();
         double        fx, fy;
         int           xPix, yPix;
         bool          bAddXMin = false;
@@ -338,16 +339,16 @@ void CDiagObjCurve::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintD
         // If the point at XScaleMin should be added ..
         if( bAddXMin )
         {
-            xPix = m_pDiagTrace->getValPix(EScaleDirX,fXMin);
+            xPix = m_pDiagTrace->getValPix(EScaleDir::X, fXMin);
             pPt->setX(xPix);
 
             m_pDiagTrace->getVal(
-                /* scaleDirSrc */ EScaleDirX,
+                /* scaleDirSrc */ EScaleDir::X,
                 /* fValSrc     */ fXMin,
                 /* pUnitSrc    */ nullptr,
-                /* scaleDirDst */ EScaleDirY,
+                /* scaleDirDst */ EScaleDir::Y,
                 /* pfValDst    */ &fy );
-            yPix = m_pDiagTrace->getValPix(EScaleDirY,fy);
+            yPix = m_pDiagTrace->getValPix(EScaleDir::Y, fy);
             pPt->setY(yPix);
 
             pPt++;
@@ -363,27 +364,27 @@ void CDiagObjCurve::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintD
             {
                 break;
             }
-            xPix = m_pDiagTrace->getValPix(EScaleDirX,fx);
+            xPix = m_pDiagTrace->getValPix(EScaleDir::X, fx);
             pPt->setX(xPix);
 
             fy = *pfY;
-            yPix = m_pDiagTrace->getValPix(EScaleDirY,fy);
+            yPix = m_pDiagTrace->getValPix(EScaleDir::Y, fy);
             pPt->setY(yPix);
         }
 
         // If the point at XScaleMax should be added ..
         if( bAddXMax )
         {
-            xPix = m_pDiagTrace->getValPix(EScaleDirX,fXMax);
+            xPix = m_pDiagTrace->getValPix(EScaleDir::X, fXMax);
             pPt->setX(xPix);
 
             m_pDiagTrace->getVal(
-                /* scaleDirSrc */ EScaleDirX,
+                /* scaleDirSrc */ EScaleDir::X,
                 /* fValSrc     */ fXMax,
                 /* pUnitSrc    */ nullptr,
-                /* scaleDirDst */ EScaleDirY,
+                /* scaleDirDst */ EScaleDir::Y,
                 /* pfValDst    */ &fy );
-            yPix = m_pDiagTrace->getValPix(EScaleDirY,fy);
+            yPix = m_pDiagTrace->getValPix(EScaleDir::Y,fy);
             pPt->setY(yPix);
 
             pPt++;

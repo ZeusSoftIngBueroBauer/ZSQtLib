@@ -64,8 +64,8 @@ public: // ctors and dtor
 */
 CIdxTreeUnitsPhysValTest::CIdxTreeUnitsPhysValTest() :
 //------------------------------------------------------------------------------
-    CIdxTreeUnits(new CIdxTreeEntry(EIdxTreeEntryType::Root, "Units")),
-    m_treeEntryScienceFields(EIdxTreeEntryType::Branch, "Science Fields")
+    CIdxTreeUnits(new CIdxTreeEntry(CIdxTreeEntry::EEntryType::Root, "Units")),
+    m_treeEntryScienceFields(CIdxTreeEntry::EEntryType::Branch, "Science Fields")
 {
     add(&m_treeEntryScienceFields);
 }

@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -126,7 +126,7 @@ protected slots:
 protected slots:
     void onIdxTreeEntryAdded( const QString& i_strKeyInTree );
     void onIdxTreeEntryChanged( const QString& i_strKeyInTree );
-    void onIdxTreeEntryAboutToBeRemoved( ZS::System::EIdxTreeEntryType i_entryType, const QString& i_strKeyInTree, int i_idxInTree );
+    void onIdxTreeEntryAboutToBeRemoved( const QString& i_strKeyInTree, int i_idxInTree );
     void onIdxTreeEntryMoved( const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree, const QString& i_strKeyInTreeOfTargetBranch );
     void onIdxTreeEntryKeyInTreeChanged( const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree );
 protected: // instance methods

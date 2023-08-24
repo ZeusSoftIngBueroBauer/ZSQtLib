@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -1422,7 +1422,7 @@ void CTest::doTestStepLogClientConnect( ZS::Test::CTestStep* i_pTestStep )
 
         for( auto& pTreeEntry : arpTreeEntriesServer )
         {
-            if( pTreeEntry != nullptr && pTreeEntry->entryType() == EIdxTreeEntryType::Leave)
+            if( pTreeEntry != nullptr && pTreeEntry->isLeave() )
             {
                 CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
 
@@ -1833,7 +1833,7 @@ void CTest::doTestStepModifyLogger( ZS::Test::CTestStep* i_pTestStep )
 
         for( auto& pTreeEntry : arpTreeEntriesServer )
         {
-            if( pTreeEntry != nullptr && pTreeEntry->entryType() == EIdxTreeEntryType::Leave)
+            if( pTreeEntry != nullptr && pTreeEntry->isLeave() )
             {
                 CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
 
@@ -2032,7 +2032,7 @@ void CTest::doTestStepModifyLogServerLoggerFile( ZS::Test::CTestStep* i_pTestSte
 
     for( auto& pTreeEntry : arpTreeEntriesServerSaved )
     {
-        if( pTreeEntry != nullptr && pTreeEntry->entryType() == EIdxTreeEntryType::Leave)
+        if( pTreeEntry != nullptr && pTreeEntry->isLeave() )
         {
             CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
             strExpectedValue = pLogger->keyInTree() + ": ";
@@ -2059,7 +2059,7 @@ void CTest::doTestStepModifyLogServerLoggerFile( ZS::Test::CTestStep* i_pTestSte
 
     for( auto& pTreeEntry : arpTreeEntriesServerRecalled )
     {
-        if( pTreeEntry != nullptr && pTreeEntry->entryType() == EIdxTreeEntryType::Leave)
+        if( pTreeEntry != nullptr && pTreeEntry->isLeave() )
         {
             CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
             strResultValue = pLogger->keyInTree() + ": ";
@@ -2683,7 +2683,7 @@ void CTest::onLogClientLoggerInserted( QObject* /*i_pLogClient*/, const QString&
 
                     for( auto& pTreeEntry : arpTreeEntriesClient )
                     {
-                        if( pTreeEntry != nullptr && pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+                        if( pTreeEntry != nullptr && pTreeEntry->isLeave() )
                         {
                             CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
 
@@ -2794,7 +2794,7 @@ void CTest::onLogClientLoggerChanged( QObject* /*i_pLogClient*/, const QString& 
 
             for( auto& pTreeEntry : arpTreeEntriesClient )
             {
-                if( pTreeEntry != nullptr && pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+                if( pTreeEntry != nullptr && pTreeEntry->isLeave() )
                 {
                     CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
 

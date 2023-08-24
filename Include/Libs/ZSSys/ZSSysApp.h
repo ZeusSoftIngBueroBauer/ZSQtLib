@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -27,9 +27,12 @@ may result in using the software modules.
 #ifndef ZSSys_App_h
 #define ZSSys_App_h
 
-#include <QtCore/qcoreapplication.h>
-
 #include "ZSSys/ZSSysDllMain.h"
+
+#include <QtCore/qcoreapplication.h>
+#include <QtCore/qdatetime.h>
+
+class QSettings;
 
 namespace ZS
 {
@@ -51,6 +54,29 @@ ZSSYSDLL_API QString getAppConfigDir( const QString& i_strIniFileScope, bool i_b
 ZSSYSDLL_API QString getAppLogDir( const QString& i_strIniFileScope, bool i_bCreateDirIfNotExisting = true );
 ZSSYSDLL_API QString getAppDataDir( const QString& i_strIniFileScope, bool i_bCreateDirIfNotExisting = true );
 
+struct ZSSYSDLL_API SLastUsedFile {
+    SLastUsedFile() :
+        m_strAbsFilePath(""),
+        m_dtLastUsed()
+    {
+    }
+    SLastUsedFile(const SLastUsedFile& i_other) :
+        m_strAbsFilePath(i_other.m_strAbsFilePath),
+        m_dtLastUsed(i_other.m_dtLastUsed)
+    {
+    }
+    SLastUsedFile(const QString& i_strAbsFilePath, const QDateTime& i_dt) :
+        m_strAbsFilePath(i_strAbsFilePath),
+        m_dtLastUsed(i_dt)
+    {
+    }
+    QString m_strAbsFilePath;
+    QDateTime m_dtLastUsed;
+};
+
+ZSSYSDLL_API QList<SLastUsedFile> readLastUsedFiles(const QSettings& i_settings, const QString& i_strKey = "LastUsedFiles");
+ZSSYSDLL_API void writeLastUsedFiles(const QList<SLastUsedFile>& i_arLastUsedFiles, QSettings& i_settings, const QString& i_strKey = "LastUsedFiles");
+ZSSYSDLL_API void sortLastUsedFiles(QList<SLastUsedFile>& i_arLastUsedFiles);
 
 //******************************************************************************
 class ZSSYSDLL_API CCoreApp : public QCoreApplication

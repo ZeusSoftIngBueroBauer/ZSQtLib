@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer, Germany
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer, Germany
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -608,7 +608,7 @@ void CMainWindow::onActDebugLogServerTriggered()
             pDlg->adjustSize();
             pDlg->show();
         }
-        else // if( pDlg != nullptr )
+        else
         {
             if( pDlg->isHidden() )
             {
@@ -643,7 +643,7 @@ void CMainWindow::onActDebugLogServerLoggersIdxTreeTriggered()
             pDlg->adjustSize();
             pDlg->show();
         }
-        else // if( pDlg != nullptr )
+        else
         {
             if( pDlg->isHidden() )
             {
@@ -659,7 +659,7 @@ void CMainWindow::onActDebugLogServerLoggersIdxTreeTriggered()
 void CMainWindow::onActDebugLogClientTriggered()
 //------------------------------------------------------------------------------
 {
-    QString strDlgTitle = getMainWindowTitle() + ": Log Client";
+    QString strDlgTitle = ZS::System::GUI::getMainWindowTitle() + ": Log Client";
 
     CIpcLogClient* pLogClient = CApplication::GetInstance()->getLogClient();
 
@@ -675,7 +675,7 @@ void CMainWindow::onActDebugLogClientTriggered()
             pDlg->adjustSize();
             pDlg->show();
         }
-        else // if( pDlg != nullptr )
+        else
         {
             if( pDlg->isHidden() )
             {
@@ -710,7 +710,7 @@ void CMainWindow::onActDebugLogClientLoggersIdxTreeTriggered()
             pDlg->adjustSize();
             pDlg->show();
         }
-        else // if( pDlg != nullptr )
+        else
         {
             if( pDlg->isHidden() )
             {
@@ -737,7 +737,7 @@ void CMainWindow::onActDebugErrLogTriggered()
         pDlg->adjustSize();
         pDlg->show();
     }
-    else // if( pReqSeq != nullptr )
+    else
     {
         if( pDlg->isHidden() )
         {
@@ -745,9 +745,7 @@ void CMainWindow::onActDebugErrLogTriggered()
         }
         pDlg->raise();
         pDlg->activateWindow();
-
-    } // if( pDlg != nullptr )
-
+    }
 } // onActDebugErrLogTriggered
 
 //------------------------------------------------------------------------------
@@ -765,7 +763,7 @@ void CMainWindow::onActDebugRequestExecTreeTriggered()
         pDlg->adjustSize();
         pDlg->show();
     }
-    else // if( pReqSeq != nullptr )
+    else
     {
         if( pDlg->isHidden() )
         {
@@ -773,9 +771,7 @@ void CMainWindow::onActDebugRequestExecTreeTriggered()
         }
         pDlg->raise();
         pDlg->activateWindow();
-
-    } // if( pDlg != nullptr )
-
+    }
 } // onActDebugRequestExecTreeTriggered
 
 /*==============================================================================

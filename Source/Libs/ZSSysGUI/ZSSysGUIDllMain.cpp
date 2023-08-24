@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -143,13 +143,10 @@ QMainWindow* ZS::System::GUI::getMainWindowOfApp()
 //------------------------------------------------------------------------------
 {
     QMainWindow* pMainWindow = nullptr;
-
     QApplication* pApp = dynamic_cast<QApplication*>(QApplication::instance());
-
     foreach( QWidget* pWdgt, pApp->topLevelWidgets() )
     {
         QMainWindow* pMainWindowTmp = dynamic_cast<QMainWindow*>(pWdgt);
-
         if( pMainWindowTmp != nullptr )
         {
             pMainWindow = pMainWindowTmp;
@@ -157,24 +154,28 @@ QMainWindow* ZS::System::GUI::getMainWindowOfApp()
         }
     }
     return pMainWindow;
-
-} // getMainWindowOfApp
+}
 
 //------------------------------------------------------------------------------
 QString ZS::System::GUI::getMainWindowTitle()
 //------------------------------------------------------------------------------
 {
-    QString strTitle = QCoreApplication::applicationName();
-
+    QString strTitle;
     QMainWindow* pMainWindow = getMainWindowOfApp();
-
-    if( pMainWindow != nullptr )
+    if (pMainWindow != nullptr )
     {
         strTitle = pMainWindow->windowTitle();
     }
+    if (strTitle.isEmpty())
+    {
+        strTitle = QGuiApplication::applicationDisplayName();
+    }
+    if (strTitle.isEmpty())
+    {
+        strTitle = QCoreApplication::applicationName();
+    }
     return strTitle;
-
-} // getMainWindowTitle
+}
 
 /*==============================================================================
 Error Pixmaps
@@ -310,9 +311,9 @@ QPixmap ZS::System::GUI::mode2Pixmap( int i_iMode, int i_iSize )
         pxm = QPixmap( ":/ZS/App/ModeEdit" + strSize + ".bmp" );
         pxm.setMask(pxm.createHeuristicMask());
     }
-    else if( i_iMode == static_cast<int>(EMode::Simulation) )
+    else if( i_iMode == static_cast<int>(EMode::View) )
     {
-        pxm = QPixmap( ":/ZS/App/ModeSimulation" + strSize + ".bmp" );
+        pxm = QPixmap( ":/ZS/App/ModeView" + strSize + ".bmp" );
         pxm.setMask(pxm.createHeuristicMask());
     }
     return pxm;

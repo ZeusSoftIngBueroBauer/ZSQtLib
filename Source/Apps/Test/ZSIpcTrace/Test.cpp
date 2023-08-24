@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -1270,7 +1270,7 @@ void CTest::doTestStepTraceClientConnect( ZS::Test::CTestStep* i_pTestStep )
 
         for( auto& pTreeEntry : arpTreeEntriesServer )
         {
-            if( pTreeEntry != nullptr && pTreeEntry->entryType() == EIdxTreeEntryType::Leave)
+            if( pTreeEntry != nullptr && pTreeEntry->isLeave() )
             {
                 CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
 
@@ -2809,7 +2809,7 @@ void CTest::onZSTraceClientTraceAdminObjInserted( QObject* /*i_pTrcClient*/, con
 
                     for( auto& pTreeEntry : arpTreeEntriesClient )
                     {
-                        if( pTreeEntry != nullptr && pTreeEntry->entryType() == EIdxTreeEntryType::Leave)
+                        if( pTreeEntry != nullptr && pTreeEntry->isLeave() )
                         {
                             CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
 

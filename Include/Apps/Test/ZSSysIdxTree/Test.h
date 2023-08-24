@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -65,13 +65,14 @@ public: // operators
 public: // instance methods
     QString toString( bool i_bWithKeyInTree = false, bool i_bWithIdxInParentBranch = false, bool i_bWithKeyInParentBranch = false ) const;
 public: // instance members
-    ZS::System::EIdxTreeEntryType m_entryType;
-    QString                       m_strName;
-    QString                       m_strKeyInTree;           // Key is: <EntryTypeSymbol>:<ParentPath>/<Name> (e.g. "L:ZS::Data::CDataTable::FDAC::RF1In")
-    int                           m_idxInTree;              // Index of this entry in the tree's vector of entries ("global tree index").
-    QString                       m_strParentBranchPath;
-    QString                       m_strKeyInParentBranch;   // Key is: <EntryTypeSymbol>:<Name> (e.g. "L:RF1In")
-    int                           m_idxInParentBranch;      // Index of this entry in this parent branch's vector of child entries ("local branch index").
+    QString  m_strEntryType;
+    QString  m_strEntryTypeSymbol;
+    QString  m_strName;
+    QString  m_strKeyInTree;           // Key is: <EntryTypeSymbol>:<ParentPath>/<Name> (e.g. "L:ZS::Data::CDataTable::FDAC::RF1In")
+    int      m_idxInTree;              // Index of this entry in the tree's vector of entries ("global tree index").
+    QString  m_strParentBranchPath;
+    QString  m_strKeyInParentBranch;   // Key is: <EntryTypeSymbol>:<Name> (e.g. "L:RF1In")
+    int      m_idxInParentBranch;      // Index of this entry in this parent branch's vector of child entries ("local branch index").
 };
 
 //******************************************************************************
@@ -106,50 +107,50 @@ public slots: // test step methods
     void doTestStepDeleteTree( ZS::Test::CTestStep* i_pTestStep );
 public: // auxiliary methods
     STreeEntryDscr toTreeEntryDscr( const ZS::System::CIdxTreeEntry* i_pTreeEntry ) const;
-    QVector<STreeEntryDscr> toTreeEntryDscrs( const QVector<ZS::System::CIdxTreeEntry*>& i_arpTreeEntries ) const;
+    QList<STreeEntryDscr> toTreeEntryDscrs( const QVector<ZS::System::CIdxTreeEntry*>& i_arpTreeEntries ) const;
 public: // auxiliary methods
     int indexOf(
-        const QString&                 i_strKeyInTree,
-        const QVector<STreeEntryDscr>& i_arTreeEntries ) const;
+        const QString&               i_strKeyInTree,
+        const QList<STreeEntryDscr>& i_arTreeEntries ) const;
     void swap(
         int                      i_idxInTree1,
         int                      i_idxInTree2,
-        QVector<STreeEntryDscr>& i_arTreeEntries ) const;
+        QList<STreeEntryDscr>&   i_arTreeEntries ) const;
     int addEntry(
         const ZS::System::CIdxTree& i_idxTree,
         const QString&              i_strKeyInTree,
         const QString&              i_strNameSpace,
         const QString&              i_strClassName,
         const QString&              i_strObjName,
-        QVector<STreeEntryDscr>&    i_arTreeEntries,
+        QList<STreeEntryDscr>&      i_arTreeEntries,
         QMap<int, int>&             i_mapFreeIdxs ) const;
     void removeEntry(
         const ZS::System::CIdxTree& i_idxTree,
         const STreeEntryDscr&       i_treeEntry,
-        QVector<STreeEntryDscr>&    i_arTreeEntries,
+        QList<STreeEntryDscr>&      i_arTreeEntries,
         QMap<int, int>&             i_mapFreeIdxs ) const;
     void renameEntry(
         const ZS::System::CIdxTree& i_idxTree,
         const QString&              i_strNameNew,
         STreeEntryDscr&             i_treeEntry,
-        QVector<STreeEntryDscr>&    i_arTreeEntries ) const;
+        QList<STreeEntryDscr>&      i_arTreeEntries ) const;
     void moveEntry(
         const ZS::System::CIdxTree& i_idxTree,
         const STreeEntryDscr&       i_treeEntryTrg,
         STreeEntryDscr&             i_treeEntrySrc,
-        QVector<STreeEntryDscr>&    i_arTreeEntries ) const;
+        QList<STreeEntryDscr>&      i_arTreeEntries ) const;
     void copyEntry(
         const ZS::System::CIdxTree& i_idxTree,
         const STreeEntryDscr&       i_treeEntryTrg,
         STreeEntryDscr&             i_treeEntrySrc,
-        QVector<STreeEntryDscr>&    i_arTreeEntries,
+        QList<STreeEntryDscr>&      i_arTreeEntries,
         QMap<int, int>&             i_mapFreeIdxs ) const;
     void onParentBranchRenamed(
         const ZS::System::CIdxTree& i_idxTree,
         const QString&              i_strParentBranchPathNew,
         const QString&              i_strParentBranchPathPrev,
         STreeEntryDscr&             i_treeEntry,
-        QVector<STreeEntryDscr>&    i_arTreeEntries ) const;
+        QList<STreeEntryDscr>&      i_arTreeEntries ) const;
 public: // auxiliary methods
     void splitKey(
         const ZS::System::CIdxTree& i_idxTree,
@@ -166,10 +167,10 @@ public: // auxiliary methods
         QStringList&                o_strlstClassNamesDefined,
         QStringList&                o_strlstObjNamesDefined ) const;
     void compare(
-        QVector<STreeEntryDscr>&       i_arTreeEntriesDesired,
-        const QVector<STreeEntryDscr>& i_arTreeEntriesActual,
-        QStringList&                   io_strlstDesiredValues,          // Compare results will be added
-        QStringList&                   io_strlstActualValues ) const;   // Compare results will be added
+        QList<STreeEntryDscr>&       i_arTreeEntriesDesired,
+        const QList<STreeEntryDscr>& i_arTreeEntriesActual,
+        QStringList&                 io_strlstDesiredValues,          // Compare results will be added
+        QStringList&                 io_strlstActualValues ) const;   // Compare results will be added
     void compare(
         const QMap<int, int>& i_mapFreeIdxsDesired,
         const QMap<int, int>& i_mapFreeIdxsActual,

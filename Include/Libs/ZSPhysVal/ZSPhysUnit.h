@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -119,6 +119,9 @@ public: // overridables (converting values)
     bool isConvertible( const CUnit& i_unitDst, double i_fVal = 1.0 ) const;
     double convertValue( double i_fVal, const CUnit& i_unitDst ) const;
 public: // overridables (findBestUnit)
+    virtual QVector<CUnit> getAllUnitsOfGroup() const;
+    virtual CUnit getLowestUnit() const;
+    virtual CUnit getHighestUnit() const;
     virtual CUnit nextLowerUnit() const;
     virtual CUnit nextHigherUnit() const;
     virtual CUnit findBestUnit(
