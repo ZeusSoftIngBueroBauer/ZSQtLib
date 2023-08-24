@@ -832,23 +832,20 @@ QPainterPath CGraphObjLine::shape() const
 
 //------------------------------------------------------------------------------
 void CGraphObjLine::paint(
-    QPainter*                       i_pPainter,
+    QPainter* i_pPainter,
     const QStyleOptionGraphicsItem* /*i_pStyleOption*/,
-    QWidget*                        /*i_pWdgt*/ )
+    QWidget* /*i_pWdgt*/ )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObjPaint, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strMthInArgs  = "Selected:" + bool2Str(isSelected());
-        strMthInArgs += ", EditMode:" + m_editMode.toString();
-        strMthInArgs += ", ResizeMode:" + m_editResizeMode.toString();
-        strMthInArgs += ", SelectedPoint:" + QString::number(m_idxSelPtSelectedPolygon);
-        strMthInArgs += ", LineStartPos:(" + QString::number(line().p1().x()) + "," + QString::number(line().p1().y()) + ")";
-        strMthInArgs += ", LineEndPos:(" + QString::number(line().p2().x()) + "," + QString::number(line().p2().y()) + ")";
+    if (areMethodCallsActive(m_pTrcAdminObjPaint, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Selected: " + bool2Str(isSelected()) +
+            ", EditMode: " + m_editMode.toString() +
+            ", ResizeMode: " + m_editResizeMode.toString() +
+            ", SelectedPoint: " + QString::number(m_idxSelPtSelectedPolygon) +
+            ", StartPos {" + qPoint2Str(line().p1()) + "}" +
+            ", EndPos {" + qPoint2Str(line().p2()) + "}";
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjPaint,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,

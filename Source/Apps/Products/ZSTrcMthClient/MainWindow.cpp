@@ -941,108 +941,73 @@ void CMainWindow::updateErrorsStatus()
     CErrLog* pErrLog = CErrLog::GetInstance();
 
     EResultSeverity severityMax = EResultSeveritySuccess;
-    QString         strToolTip;
-    int             iErrorsCount = 0;
+    QString strToolTip;
+    int iErrorsCount = 0;
 
     if( pErrLog != nullptr )
     {
         CErrLogLocker errLogLocker(pErrLog);
-
-        QVector<int> ariErrorsCount(EResultSeverityCount);
-
-        for( int iSeverity = 0; iSeverity < ariErrorsCount.count(); ++iSeverity )
-        {
+        QVector<int> ariErrorsCount(EResultSeverityCount, 0);
+        for (int iSeverity = 0; iSeverity < ariErrorsCount.count(); ++iSeverity) {
             EResultSeverity severity = static_cast<EResultSeverity>(iSeverity);
-
-            ariErrorsCount[iSeverity] = pErrLog->getEntryCount(severity);
-            iErrorsCount += ariErrorsCount[iSeverity];
-
-            if( severity > severityMax )
-            {
-                severityMax = severity;
+            int iEntryCount = pErrLog->getEntryCount(severity);
+            if (iEntryCount > 0) {
+                ariErrorsCount[iSeverity] = iEntryCount;
+                iErrorsCount += iEntryCount;
+                if (severity > severityMax) {
+                    severityMax = severity;
+                }
             }
         }
-
-        if( iErrorsCount == 0 )
-        {
+        if (iErrorsCount == 0) {
             strToolTip = "There is no Info, no Warning, no Error and no Critical Error message pending";
         }
-        else if( iErrorsCount > 0 )
-        {
-            int iErrorsCountTmp = 0;
-            int iSeverityTmp;
-
-            if( iErrorsCount == 1 )
-            {
+        else if (iErrorsCount > 0) {
+            if (iErrorsCount == 1) {
                 strToolTip = "There is ";
-            }
-            else
-            {
+            } else {
                 strToolTip = "There are ";
             }
-
-            for( int iSeverity = 0; iSeverity < ariErrorsCount.count(); ++iSeverity )
-            {
+            int iErrorsCountTmp = 0;
+            for (int iSeverity = 0; iSeverity < ariErrorsCount.count(); ++iSeverity) {
                 EResultSeverity severity = static_cast<EResultSeverity>(iSeverity);
-
-                if( ariErrorsCount[iSeverity] > 0 )
-                {
+                if (ariErrorsCount[iSeverity] > 0) {
                     strToolTip += QString::number(ariErrorsCount[iSeverity]) + " " + resultSeverity2Str(severity);
-
-                    if( severity == EResultSeverityInfo || severity == EResultSeverityWarning || severity == EResultSeverityError )
-                    {
-                        if( ariErrorsCount[iSeverity] > 1 )
-                        {
+                    if (severity == EResultSeverityInfo || severity == EResultSeverityWarning || severity == EResultSeverityError) {
+                        if (ariErrorsCount[iSeverity] > 1) {
                             strToolTip += "s";
                         }
                     }
-                    else if( severity == EResultSeverityCritical )
-                    {
-                        if( ariErrorsCount[iSeverity] == 1 )
-                        {
+                    else if (severity == EResultSeverityCritical) {
+                        if (ariErrorsCount[iSeverity] == 1) {
                             strToolTip += " Critical Error";
-                        }
-                        else
-                        {
+                        } else {
                             strToolTip += " Critical Errors";
                         }
                     }
-
                     iErrorsCountTmp += ariErrorsCount[iSeverity];
-
-                    if( iErrorsCountTmp < iErrorsCount )
-                    {
+                    if (iErrorsCountTmp < iErrorsCount) {
                         int iSeveritiesWithErrorsFollow = 0;
-
-                        for( iSeverityTmp = iSeverity+1; iSeverityTmp < EResultSeverityCount; iSeverityTmp++ )
-                        {
-                            if( ariErrorsCount[iSeverityTmp] > 0 )
-                            {
+                        for (int iSeverityTmp = iSeverity+1; iSeverityTmp < EResultSeverityCount; iSeverityTmp++) {
+                            if (ariErrorsCount[iSeverityTmp] > 0) {
                                 iSeveritiesWithErrorsFollow++;
                             }
                         }
-                        if( iSeveritiesWithErrorsFollow >= 2 )
-                        {
+                        if (iSeveritiesWithErrorsFollow >= 2) {
                             strToolTip += ", ";
-                        }
-                        else if( iSeveritiesWithErrorsFollow >= 1 )
-                        {
+                        } else if (iSeveritiesWithErrorsFollow >= 1) {
                             strToolTip += " and ";
                         }
                     }
                 }
             }
-        } // if( iErrorsCount > 0 )
-
+        }
         strToolTip += ".";
+    }
 
-    } // if( pErrLog != nullptr )
-
-    if( m_pLblErrors != nullptr )
-    {
+    if (m_pLblErrors != nullptr) {
         m_pLblErrors->setPixmap( getErrPixmap(severityMax) );
         m_pLblErrors->setToolTip(strToolTip);
-
         if( iErrorsCount > 0 ) {
             m_pLblErrors->show();
         } else {

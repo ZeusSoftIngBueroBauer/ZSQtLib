@@ -299,13 +299,13 @@ protected slots:
     void onGraphObjsIdxTreeEntryChanged( const QString& i_strKeyInTree );
     void onGraphObjsIdxTreeEntryMoved( const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree, const QString& i_strKeyInTreeOfTargetBranch );
     void onGraphObjsIdxTreeEntryRenamed( const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree, const QString& i_strOrigName );
-protected: // auxiliary methods
+protected: // auxiliary instance methods
     void paintGrid(QPainter* i_pPainter);
     //void paintLabels(QPainter* i_pPainter);
-protected: // auxiliary methods
+protected: // auxiliary instance methods
     void raiseErrorAttributeNotDefined(QXmlStreamReader& i_xmlStreamReader, const QString& i_strElemName, const QString& i_strAttrName) const;
     void raiseErrorAttributeOutOfRange(QXmlStreamReader& i_xmlStreamReader, const QString& i_strElemName, const QString& i_strAttrName, const QString& i_strAttrVal) const;
-protected: // auxiliary methods
+protected: // auxiliary instance methods
     CEnumDrawingDimensionUnit getDimensionUnit(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, const CEnumDrawingDimensionUnit& i_eDefaultVal = EDrawingDimensionUnit::Pixels) const;
     CEnumNormedPaperSize getNormedPaperSize(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, const CEnumNormedPaperSize& i_eDefaultVal = CEnumNormedPaperSize()) const;
     ZS::System::CEnumOrientation getOrientation(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, const ZS::System::CEnumOrientation& i_eDefaultVal = ZS::System::CEnumOrientation()) const;
@@ -321,7 +321,7 @@ protected: // auxiliary methods
     int getIntVal(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, int iValDefault = 0) const;
     std::pair<int, int> getIntPair(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, const QString& i_strDelimiter = ":", bool i_bAttrIsMandatory = true, const std::pair<int, int>& i_valDefault = std::make_pair(0, 0)) const;
     double getDoubleVal(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, double fValDefault = 0.0) const;
-protected: // auxiliary methods (trace emitting signals)
+protected: // auxiliary instance methods (trace emitting signals)
     void emit_drawingSizeChanged( const ZS::Draw::CDrawingSize& i_size );
     void emit_gridSettingsChanged( const ZS::Draw::CDrawGridSettings& i_settings );
     void emit_mousePosChanged( const QPointF& i_ptMousePos );
@@ -332,6 +332,8 @@ protected: // auxiliary methods (trace emitting signals)
     void emit_graphObjMoved(const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree, const QString& i_strKeyInTreeOfTargetBranch);
     void emit_graphObjRenamed(const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree, const QString& i_strOrigName);
     void emit_graphObjAboutToBeDestroyed(const QString& i_strKeyInTree);
+protected: // auxiliary instance methods (method tracing)
+    void traceInternalStates(ZS::System::CMethodTracer& i_mthTracer, ZS::System::EMethodDir i_mthDir, ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug);
 protected: // instance members
     CDrawingSize m_drawingSize;
     CDrawGridSettings m_gridSettings;

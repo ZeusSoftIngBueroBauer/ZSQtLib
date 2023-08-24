@@ -588,7 +588,7 @@ void CDrawingView::paintEvent( QPaintEvent* i_pEv )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObjPaintEvent != nullptr && m_pTrcAdminObjPaintEvent->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObjPaintEvent, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs  = "Rect: " + rect2Str(i_pEv->rect());
         //strMthInArgs += ", Region: " + region2Str(i_pEv->region());

@@ -1324,108 +1324,81 @@ void CDrawingScene::setMode(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    QString strAddTrcInfo;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strMthInArgs  = "Mode:" + i_mode.toString();
-        strMthInArgs += ", EditTool:" + i_editTool.toString();
-        strMthInArgs += ", EditMode:" + i_editMode.toString();
-        strMthInArgs += ", ResizeMode:" + i_editResizeMode.toString();
-        strMthInArgs += ", ObjFactoryChanged:" + bool2Str(i_bObjFactoryTypeChanged);
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Mode:" + i_mode.toString() +
+            ", EditTool:" + i_editTool.toString() +
+            ", EditMode:" + i_editMode.toString() +
+            ", ResizeMode:" + i_editResizeMode.toString() +
+            ", ObjFactoryChanged:" + bool2Str(i_bObjFactoryTypeChanged);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setMode",
         /* strAddInfo   */ strMthInArgs );
 
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Enter);
+    }
+
     bool bModeChanged = false;
 
-    if( i_mode != EMode::Ignore && m_mode != i_mode )
-    {
+    if (i_mode != EMode::Ignore && m_mode != i_mode) {
         bModeChanged = true;
-
         m_mode = i_mode;
-
-        if( m_mode == EMode::View )
-        {
-            if( i_editTool == EEditTool::Ignore )
-            {
+        if (m_mode == EMode::View) {
+            if (i_editTool == EEditTool::Ignore) {
                 m_editTool = EEditTool::None;
             }
-            if( i_editMode == EEditMode::Ignore )
-            {
+            if (i_editMode == EEditMode::Ignore) {
                 m_editMode = EEditMode::None;
             }
-            if( i_editResizeMode == EEditResizeMode::Ignore )
-            {
+            if (i_editResizeMode == EEditResizeMode::Ignore) {
                 m_editResizeMode = EEditResizeMode::None;
             }
         }
-
         clearSelection();
     }
 
-    if( i_editTool != EEditTool::Ignore && m_editTool != i_editTool )
-    {
+    if (i_editTool != EEditTool::Ignore && m_editTool != i_editTool) {
         bModeChanged = true;
-
         m_editTool = i_editTool;
-
         clearSelection();
     }
 
     QString strObjFactory;
 
-    if( m_pObjFactory != nullptr )
-    {
+    if (m_pObjFactory != nullptr) {
         strObjFactory = m_pObjFactory->getGraphObjTypeAsString();
     }
-    else
-    {
+    else {
         m_pGraphicsItemCreating = nullptr;
         m_pGraphObjCreating = nullptr;
     }
 
-    if( m_editTool != EEditTool::CreateObjects )
-    {
+    if (m_editTool != EEditTool::CreateObjects) {
         m_pGraphicsItemCreating = nullptr;
         m_pGraphObjCreating = nullptr;
     }
 
-    if( i_editMode != EEditMode::Ignore && m_editMode != i_editMode )
-    {
+    if (i_editMode != EEditMode::Ignore && m_editMode != i_editMode) {
         bModeChanged = true;
-
         m_editMode = i_editMode;
     }
 
-    if( i_editResizeMode != EEditResizeMode::Ignore && m_editResizeMode != i_editResizeMode )
-    {
+    if (i_editResizeMode != EEditResizeMode::Ignore && m_editResizeMode != i_editResizeMode) {
         bModeChanged = true;
-
         m_editResizeMode = i_editResizeMode;
     }
 
-    if( bModeChanged || i_bObjFactoryTypeChanged )
-    {
+    if (bModeChanged || i_bObjFactoryTypeChanged) {
         update();
-
         emit_modeChanged();
     }
 
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strAddTrcInfo  = "Mode:" + m_mode.toString();
-        strAddTrcInfo += ", EditTool:" + m_editTool.toString();
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", GraphObjCreating: " + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->path());
-        mthTracer.trace(strAddTrcInfo);
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Leave);
     }
-
 } // setMode
 
 /*==============================================================================
@@ -1452,41 +1425,29 @@ void CDrawingScene::setCurrentDrawingTool( CObjFactory* i_pObjFactory )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    QString strAddTrcInfo;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString(i_pObjFactory == nullptr ? "nullptr" : i_pObjFactory->path());
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setCurrentDrawingTool",
         /* strAddInfo   */ strMthInArgs );
 
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strAddTrcInfo  = "Mode:" + m_mode.toString();
-        strAddTrcInfo += ", EditTool:" + m_editTool.toString();
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", EditResizeMode:" + m_editResizeMode.toString();
-        mthTracer.trace(strAddTrcInfo);
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Enter);
     }
 
-    if( m_mode != EMode::Edit )
-    {
+    if (m_mode != EMode::Edit) {
         throw ZS::System::CException(__FILE__, __LINE__, EResultInvalidMethodCall, "m_mode != EMode::Edit");
     }
 
     int iGraphObjTypePrev = static_cast<int>(EGraphObjTypeUndefined);
 
-    if( m_pObjFactory != nullptr )
-    {
+    if (m_pObjFactory != nullptr) {
         QObject::disconnect(
             m_pObjFactory, &CObjFactory::destroyed,
             this, &CDrawingScene::onGraphObjFactoryDestroyed );
-
         iGraphObjTypePrev = m_pObjFactory->getGraphObjType();
     }
 
@@ -1494,42 +1455,32 @@ void CDrawingScene::setCurrentDrawingTool( CObjFactory* i_pObjFactory )
 
     m_pObjFactory = i_pObjFactory;
 
-    if( m_pObjFactory != nullptr )
-    {
+    if (m_pObjFactory != nullptr) {
         QObject::connect(
             m_pObjFactory, &CObjFactory::destroyed,
             this, &CDrawingScene::onGraphObjFactoryDestroyed );
         iGraphObjTypeCurr = m_pObjFactory->getGraphObjType();
     }
-    else
-    {
+    else {
         iGraphObjTypeCurr = static_cast<int>(EGraphObjTypeUndefined);
     }
 
-    if( iGraphObjTypePrev != iGraphObjTypeCurr )
-    {
-        if( iGraphObjTypeCurr == static_cast<int>(EGraphObjTypeUndefined) )
-        {
+    if (iGraphObjTypePrev != iGraphObjTypeCurr) {
+        if (iGraphObjTypeCurr == static_cast<int>(EGraphObjTypeUndefined)) {
             CEnumEditTool editTool = m_editTool;
-
-            if( m_editTool != EEditTool::Select )
-            {
-                editTool = EEditTool::None;
+            if (m_editTool != EEditTool::Select) {
+                editTool = EEditTool::Select;
             }
             setMode(EMode::Ignore, editTool, EEditMode::None, EEditResizeMode::None, true);
         }
-        else
-        {
+        else {
             setMode(EMode::Ignore, EEditTool::CreateObjects, EEditMode::None, EEditResizeMode::None, true);
         }
     }
 
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strAddTrcInfo = QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
-        mthTracer.trace(strAddTrcInfo);
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Leave);
     }
-
 } // setCurrentDrawingTool
 
 //------------------------------------------------------------------------------
@@ -1556,34 +1507,26 @@ void CDrawingScene::setCurrentDrawingTool(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    QString strAddTrcInfo;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_strFactoryGrpName + "::" + i_strGraphObjType;
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setCurrentDrawingTool",
         /* strAddInfo   */ strMthInArgs );
 
-    if( m_mode != EMode::Edit )
-    {
+    if (m_mode != EMode::Edit) {
         throw ZS::System::CException(__FILE__, __LINE__, EResultInvalidMethodCall, "m_mode != EMode::Edit");
     }
 
     CObjFactory* pObjFactory = CObjFactory::FindObjFactory(i_strFactoryGrpName, i_strGraphObjType);
-
-    if( pObjFactory == nullptr )
-    {
+    if (pObjFactory == nullptr) {
         throw ZS::System::CException(__FILE__, __LINE__, EResultObjNotRegistered, "pObjFactory == nullptr");
     }
 
     setCurrentDrawingTool(pObjFactory);
-
-} // setCurrentDrawingTool
+}
 
 //------------------------------------------------------------------------------
 /*! Returns the type of the currently selected drawing tool as an integer value.
@@ -1594,14 +1537,11 @@ int CDrawingScene::getCurrentDrawingToolGraphObjType() const
 //------------------------------------------------------------------------------
 {
     int iObjFactoryType = static_cast<int>(EGraphObjTypeUndefined);
-
-    if( m_pObjFactory != nullptr )
-    {
+    if (m_pObjFactory != nullptr) {
         iObjFactoryType = m_pObjFactory->getGraphObjType();
     }
     return iObjFactoryType;
-
-} // getCurrentDrawingToolGraphObjType
+}
 
 /*==============================================================================
 public: // instance methods
@@ -1659,30 +1599,14 @@ QCursor CDrawingScene::getProposedCursor( const QPointF& i_ptPos ) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    QString strAddTrcInfo;
-
-    if (areMethodCallsActive(m_pTrcAdminObjMouseMoveEvent, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (areMethodCallsActive(m_pTrcAdminObjMouseMoveEvent, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Pos:" + point2Str(i_ptPos);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseMoveEvent,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "getProposedCursor",
         /* strAddInfo   */ strMthInArgs );
-
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strAddTrcInfo = "Mode:" + m_mode.toString();
-        strAddTrcInfo += ", EditTool:" + m_editTool.toString();
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", ObjFactory:" + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
-        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->name());
-        strAddTrcInfo += ", GraphObjAddingShapePoints:" + QString(m_pGraphObjAddingShapePoints == nullptr ? "nullptr" : m_pGraphObjAddingShapePoints->name());
-        mthTracer.trace(strAddTrcInfo);
-    }
 
     int iObjFactoryType = getCurrentDrawingToolGraphObjType();
 
@@ -2072,29 +1996,17 @@ void CDrawingScene::onGraphObjAddingShapePointsStarted( CGraphObj* i_pGraphObj )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    QString strAddTrcInfo;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->keyInTree());
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onGraphObjAddingShapePointsStarted",
         /* strAddInfo   */ strMthInArgs );
 
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strAddTrcInfo = "Mode:" + m_mode.toString();
-        strAddTrcInfo += ", EditTool:" + m_editTool.toString();
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", ObjFactory:" + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
-        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->name());
-        strAddTrcInfo += ", GraphObjAddingShapePoints:" + QString(m_pGraphObjAddingShapePoints == nullptr ? "nullptr" : m_pGraphObjAddingShapePoints->name());
-        mthTracer.trace(strAddTrcInfo);
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Enter);
     }
 
     if( i_pGraphObj == nullptr )
@@ -2115,6 +2027,9 @@ void CDrawingScene::onGraphObjAddingShapePointsStarted( CGraphObj* i_pGraphObj )
         throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItemAddingShapePoints == nullptr" );
     }
 
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Leave);
+    }
 } // onGraphObjAddingShapePointsStarted
 
 //------------------------------------------------------------------------------
@@ -2131,29 +2046,17 @@ void CDrawingScene::onGraphObjAddingShapePointsFinished( CGraphObj* i_pGraphObj 
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    QString strAddTrcInfo;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->keyInTree());
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onGraphObjAddingShapePointsFinished",
         /* strAddInfo   */ strMthInArgs );
 
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strAddTrcInfo = "Mode:" + m_mode.toString();
-        strAddTrcInfo += ", EditTool:" + m_editTool.toString();
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", ObjFactory:" + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
-        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->keyInTree());
-        strAddTrcInfo += ", GraphObjAddingShapePoints:" + QString(m_pGraphObjAddingShapePoints == nullptr ? "nullptr" : m_pGraphObjAddingShapePoints->keyInTree());
-        mthTracer.trace(strAddTrcInfo);
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Enter);
     }
 
     if( i_pGraphObj == nullptr )
@@ -2169,6 +2072,9 @@ void CDrawingScene::onGraphObjAddingShapePointsFinished( CGraphObj* i_pGraphObj 
     m_pGraphObjAddingShapePoints = nullptr;
     m_pGraphicsItemAddingShapePoints = nullptr;
 
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Leave);
+    }
 } // onGraphObjAddingShapePointsFinished
 
 /*==============================================================================
@@ -2188,29 +2094,17 @@ void CDrawingScene::onGraphObjCreationFinished( CGraphObj* i_pGraphObj )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    QString strAddTrcInfo;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->keyInTree());
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onGraphObjCreationFinished",
         /* strAddInfo   */ strMthInArgs );
 
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strAddTrcInfo = "Mode:" + m_mode.toString();
-        strAddTrcInfo += ", EditTool:" + m_editTool.toString();
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", ObjFactory:" + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
-        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->name());
-        strAddTrcInfo += ", GraphObjAddingShapePoints:" + QString(m_pGraphObjAddingShapePoints == nullptr ? "nullptr" : m_pGraphObjAddingShapePoints->name());
-        mthTracer.trace(strAddTrcInfo);
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Enter);
     }
 
     if( i_pGraphObj == nullptr )
@@ -2243,12 +2137,9 @@ void CDrawingScene::onGraphObjCreationFinished( CGraphObj* i_pGraphObj )
 
     //emit_graphObjCreated(i_pGraphObj);
 
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        QString strAddTrcInfo = "GraphObjId:" + i_pGraphObj->keyInTree();
-        mthTracer.trace(strAddTrcInfo);
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Leave);
     }
-
 } // onGraphObjCreationFinished
 
 //------------------------------------------------------------------------------
@@ -2256,8 +2147,6 @@ void CDrawingScene::onGraphObjAboutToBeDestroyed( const QString& i_strKeyInTree 
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    QString strAddTrcInfo;
-
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "GraphObjId:" + i_strKeyInTree;
     }
@@ -2267,14 +2156,8 @@ void CDrawingScene::onGraphObjAboutToBeDestroyed( const QString& i_strKeyInTree 
         /* strMethod    */ "onGraphObjAboutToBeDestroyed",
         /* strAddInfo   */ strMthInArgs );
 
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strAddTrcInfo = "Mode:" + m_mode.toString();
-        strAddTrcInfo += ", EditTool:" + m_editTool.toString();
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", ObjFactory:" + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
-        mthTracer.trace(strAddTrcInfo);
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Enter);
     }
 
     emit_graphObjAboutToBeDestroyed(i_strKeyInTree);
@@ -2330,14 +2213,16 @@ void CDrawingScene::onGraphObjAboutToBeDestroyed( const QString& i_strKeyInTree 
 
     } // if( m_arpGraphicsItemsAcceptingHoverEvents.size() > 0 )
 
-} // onGraphObjDestroying
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Leave);
+    }
+} // onGraphObjAboutToBeDestroyed
 
 ////------------------------------------------------------------------------------
 //void CDrawingScene::onGraphObjDestroyed( const QString& i_strKeyInTree )
 ////------------------------------------------------------------------------------
 //{
 //    QString strMthInArgs;
-//    QString strAddTrcInfo;
 //
 //    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
 //    {
@@ -2381,7 +2266,6 @@ void CDrawingScene::onGraphObjAboutToBeDestroyed( const QString& i_strKeyInTree 
 ////------------------------------------------------------------------------------
 //{
 //    QString strMthInArgs;
-//    QString strAddTrcInfo;
 //
 //    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
 //    {
@@ -2417,7 +2301,6 @@ void CDrawingScene::onGraphObjAboutToBeDestroyed( const QString& i_strKeyInTree 
 ////------------------------------------------------------------------------------
 //{
 //    QString strMthInArgs;
-//    QString strAddTrcInfo;
 //
 //    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
 //    {
@@ -2589,28 +2472,14 @@ public: // instance methods
 int CDrawingScene::groupGraphObjsSelected()
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    QString strAddTrcInfo;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-    }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "groupGraphObjsSelected",
-        /* strAddInfo   */ strMthInArgs );
+        /* strAddInfo   */ "" );
 
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strAddTrcInfo = "Mode:" + m_mode.toString();
-        strAddTrcInfo += ", EditTool:" + m_editTool.toString();
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", ObjFactory:" + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
-        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->name());
-        mthTracer.trace(strAddTrcInfo);
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Enter);
     }
 
     int iObjsGroupedCount = 0;
@@ -2667,11 +2536,11 @@ int CDrawingScene::groupGraphObjsSelected()
             // On adding the object to a parent group object they will be positioned
             // relative to the top left corner of the group's bounding rectangle.
 
-            QRectF         rctGroupSceneCoors;
-            double         fXLeftMin   = INT_MAX;
-            double         fYTopMin    = INT_MAX;
-            double         fXRightMax  = INT_MIN;
-            double         fYBottomMax = INT_MIN;
+            QRectF rctGroupSceneCoors;
+            double fXLeftMin   = INT_MAX;
+            double fYTopMin    = INT_MAX;
+            double fXRightMax  = INT_MIN;
+            double fYBottomMax = INT_MIN;
 
             //SGraphObjAlignment alignmentWidth(
             //    /* refChild  */ EAlignmentRef::Width,
@@ -2851,6 +2720,13 @@ int CDrawingScene::groupGraphObjsSelected()
         } // if( pObjFactoryGroup != nullptr )
     } // if( arpGraphicsItemsSelected.size() > 1 )
 
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Enter);
+    }
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(iObjsGroupedCount);
+    }
     return iObjsGroupedCount;
 
 } // groupGraphObjsSelected
@@ -2865,28 +2741,14 @@ int CDrawingScene::groupGraphObjsSelected()
 int CDrawingScene::ungroupGraphObjsSelected()
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    QString strAddTrcInfo;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-    }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ungroupGraphObjsSelected",
-        /* strAddInfo   */ strMthInArgs );
+        /* strAddInfo   */ "" );
 
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strAddTrcInfo = "Mode:" + m_mode.toString();
-        strAddTrcInfo += ", EditTool:" + m_editTool.toString();
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", ObjFactory:" + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
-        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->name());
-        mthTracer.trace(strAddTrcInfo);
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Enter);
     }
 
     int iObjsUngroupedCount = 0;
@@ -2946,6 +2808,12 @@ int CDrawingScene::ungroupGraphObjsSelected()
         } // if( pGraphObjSelected->getType() == EGraphObjTypeGroup )
     } // for( auto* pGraphicsItemSelected : arpGraphicsItemsSelected )
 
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Enter);
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(iObjsUngroupedCount);
+    }
     return iObjsUngroupedCount;
 
 } // ungroupGraphObjsSelected
@@ -3462,37 +3330,23 @@ void CDrawingScene::dragEnterEvent( QGraphicsSceneDragDropEvent* i_pEv )
     QString strMimeData = pMimeData->text();
 
     QString strMthInArgs;
-    QString strAddTrcInfo;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strMthInArgs  = "EvItemPos:(" + QString::number(i_pEv->pos().x()) + "," + QString::number(i_pEv->pos().y()) + ")";
-        strMthInArgs += ", EvScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
-        strMthInArgs += ", EvScreenPos:(" + QString::number(i_pEv->screenPos().x()) + "," + QString::number(i_pEv->screenPos().y()) + ")";
-        strMthInArgs += ", EvPossibleActions:" + qDropActions2Str(i_pEv->possibleActions());
-        strMthInArgs += ", EvProposedAction:" + qDropActions2Str(i_pEv->proposedAction());
-        strMthInArgs += ", EvDropAction:" + qDropActions2Str(i_pEv->dropAction());
-        strMthInArgs += ", MimeDataText:" + strMimeData;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "EvItemPos {" + qPoint2Str(i_pEv->pos()) + "}" +
+            ", EvScenePos {" + qPoint2Str(i_pEv->scenePos()) + "}" +
+            ", EvScreenPos:(" + qPoint2Str(i_pEv->screenPos()) + ")" +
+            ", EvPossibleActions:" + qDropActions2Str(i_pEv->possibleActions()) +
+            ", EvProposedAction:" + qDropActions2Str(i_pEv->proposedAction()) +
+            ", EvDropAction:" + qDropActions2Str(i_pEv->dropAction()) +
+            ", MimeDataText:" + strMimeData;
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "dragEnterEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strAddTrcInfo = "Mode:" + m_mode.toString();
-        strAddTrcInfo += ", EditTool:" + m_editTool.toString();
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", ObjFactory:" + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
-        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->name());
-        strAddTrcInfo += ", GraphObjAddingShapePoints:" + QString(m_pGraphObjAddingShapePoints == nullptr ? "nullptr" : m_pGraphObjAddingShapePoints->name());
-        strAddTrcInfo += ", SceneRect(x,y,w,h):(" + QString::number(sceneRect().x()) + "," + QString::number(sceneRect().y());
-        strAddTrcInfo += "," + QString::number(sceneRect().width()) + "," + QString::number(sceneRect().height()) + ")";
-        mthTracer.trace(strAddTrcInfo);
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Enter);
     }
 
     if( pMimeData->hasText() )
@@ -3514,6 +3368,9 @@ void CDrawingScene::dragEnterEvent( QGraphicsSceneDragDropEvent* i_pEv )
 
     //QGraphicsScene::dragEnterEvent(i_pEv);
 
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Leave);
+    }
 } // dragEnterEvent
 
 //------------------------------------------------------------------------------
@@ -3524,34 +3381,24 @@ void CDrawingScene::dragMoveEvent( QGraphicsSceneDragDropEvent* i_pEv )
     QString strMimeData = pMimeData->text();
 
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strMthInArgs  = "EvItemPos:(" + QString::number(i_pEv->pos().x()) + "," + QString::number(i_pEv->pos().y()) + ")";
-        strMthInArgs += ", EvScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
-        strMthInArgs += ", EvScreenPos:(" + QString::number(i_pEv->screenPos().x()) + "," + QString::number(i_pEv->screenPos().y()) + ")";
-        strMthInArgs += ", EvPossibleActions:" + qDropActions2Str(i_pEv->possibleActions());
-        strMthInArgs += ", EvProposedAction:" + qDropActions2Str(i_pEv->proposedAction());
-        strMthInArgs += ", EvDropAction:" + qDropActions2Str(i_pEv->dropAction());
-        strMthInArgs += ", MimeDataText:" + strMimeData;
-
-        strMthInArgs += ", Mode:" + m_mode.toString();
-        strMthInArgs += ", EditTool:" + m_editTool.toString();
-        strMthInArgs += ", EditMode:" + m_editMode.toString();
-        strMthInArgs += ", EditResizeMode:" + m_editResizeMode.toString();
-
-        strMthInArgs += ", ObjFactory:" + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
-        strMthInArgs += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->path());
-
-        strMthInArgs += ", SceneRect(x,y,w,h):(" + QString::number(sceneRect().x()) + "," + QString::number(sceneRect().y());
-        strMthInArgs += "," + QString::number(sceneRect().width()) + "," + QString::number(sceneRect().height()) + ")";
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "EvItemPos {" + qPoint2Str(i_pEv->pos()) + "}" +
+            ", EvScenePos {" + qPoint2Str(i_pEv->scenePos()) + "}" +
+            ", EvScreenPos:(" + qPoint2Str(i_pEv->screenPos()) + ")" +
+            ", EvPossibleActions:" + qDropActions2Str(i_pEv->possibleActions()) +
+            ", EvProposedAction:" + qDropActions2Str(i_pEv->proposedAction()) +
+            ", EvDropAction:" + qDropActions2Str(i_pEv->dropAction()) +
+            ", MimeDataText:" + strMimeData;
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "dragMoveEvent",
         /* strAddInfo   */ strMthInArgs );
+
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Enter);
+    }
 
     if( pMimeData->hasText() )
     {
@@ -3572,6 +3419,9 @@ void CDrawingScene::dragMoveEvent( QGraphicsSceneDragDropEvent* i_pEv )
 
     //QGraphicsScene::dragMoveEvent(i_pEv);
 
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Leave);
+    }
 } // dragMoveEvent
 
 //------------------------------------------------------------------------------
@@ -3582,27 +3432,14 @@ void CDrawingScene::dragLeaveEvent( QGraphicsSceneDragDropEvent* i_pEv )
     QString strMimeData = pMimeData->text();
 
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strMthInArgs  = "EvItemPos:(" + QString::number(i_pEv->pos().x()) + "," + QString::number(i_pEv->pos().y()) + ")";
-        strMthInArgs += ", EvScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
-        strMthInArgs += ", EvScreenPos:(" + QString::number(i_pEv->screenPos().x()) + "," + QString::number(i_pEv->screenPos().y()) + ")";
-        strMthInArgs += ", EvPossibleActions:" + qDropActions2Str(i_pEv->possibleActions());
-        strMthInArgs += ", EvProposedAction:" + qDropActions2Str(i_pEv->proposedAction());
-        strMthInArgs += ", EvDropAction:" + qDropActions2Str(i_pEv->dropAction());
-        strMthInArgs += ", MimeDataText:" + strMimeData;
-
-        strMthInArgs += ", Mode:" + m_mode.toString();
-        strMthInArgs += ", EditTool:" + m_editTool.toString();
-        strMthInArgs += ", EditMode:" + m_editMode.toString();
-        strMthInArgs += ", EditResizeMode:" + m_editResizeMode.toString();
-
-        strMthInArgs += ", ObjFactory:" + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
-        strMthInArgs += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->path());
-
-        strMthInArgs += ", SceneRect(x,y,w,h):(" + QString::number(sceneRect().x()) + "," + QString::number(sceneRect().y());
-        strMthInArgs += "," + QString::number(sceneRect().width()) + "," + QString::number(sceneRect().height()) + ")";
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "EvItemPos {" + qPoint2Str(i_pEv->pos()) + "}" +
+            ", EvScenePos {" + qPoint2Str(i_pEv->scenePos()) + "}" +
+            ", EvScreenPos:(" + qPoint2Str(i_pEv->screenPos()) + ")" +
+            ", EvPossibleActions:" + qDropActions2Str(i_pEv->possibleActions()) +
+            ", EvProposedAction:" + qDropActions2Str(i_pEv->proposedAction()) +
+            ", EvDropAction:" + qDropActions2Str(i_pEv->dropAction()) +
+            ", MimeDataText:" + strMimeData;
     }
 
     CMethodTracer mthTracer(
@@ -3610,6 +3447,10 @@ void CDrawingScene::dragLeaveEvent( QGraphicsSceneDragDropEvent* i_pEv )
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "dragLeaveEvent",
         /* strAddInfo   */ strMthInArgs );
+
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Enter);
+    }
 
     if( sceneRect().contains(i_pEv->scenePos()) )
     {
@@ -3636,8 +3477,9 @@ void CDrawingScene::dragLeaveEvent( QGraphicsSceneDragDropEvent* i_pEv )
         i_pEv->ignore();
     }
 
-    //QGraphicsScene::dragLeaveEvent(i_pEv);
-
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Leave);
+    }
 } // dragLeaveEvent
 
 //------------------------------------------------------------------------------
@@ -3647,40 +3489,29 @@ void CDrawingScene::dropEvent( QGraphicsSceneDragDropEvent* i_pEv )
     const QMimeData* pMimeData = i_pEv->mimeData();
     QString strMimeData;
 
-    if( pMimeData != nullptr )
-    {
+    if (pMimeData != nullptr) {
         strMimeData = pMimeData->text();
     }
 
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strMthInArgs  = "EvItemPos:(" + QString::number(i_pEv->pos().x()) + "," + QString::number(i_pEv->pos().y()) + ")";
-        strMthInArgs += ", EvScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
-        strMthInArgs += ", EvScreenPos:(" + QString::number(i_pEv->screenPos().x()) + "," + QString::number(i_pEv->screenPos().y()) + ")";
-        strMthInArgs += ", EvPossibleActions:" + qDropActions2Str(i_pEv->possibleActions());
-        strMthInArgs += ", EvProposedAction:" + qDropActions2Str(i_pEv->proposedAction());
-        strMthInArgs += ", EvDropAction:" + qDropActions2Str(i_pEv->dropAction());
-        strMthInArgs += ", MimeDataText:" + strMimeData;
-
-        strMthInArgs += ", Mode:" + m_mode.toString();
-        strMthInArgs += ", EditTool:" + m_editTool.toString();
-        strMthInArgs += ", EditMode:" + m_editMode.toString();
-        strMthInArgs += ", EditResizeMode:" + m_editResizeMode.toString();
-
-        strMthInArgs += ", ObjFactory:" + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
-        strMthInArgs += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->path());
-
-        strMthInArgs += ", SceneRect(x,y,w,h):(" + QString::number(sceneRect().x()) + "," + QString::number(sceneRect().y());
-        strMthInArgs += "," + QString::number(sceneRect().width()) + "," + QString::number(sceneRect().height()) + ")";
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "EvItemPos {" + qPoint2Str(i_pEv->pos()) + "}" +
+            ", EvScenePos {" + qPoint2Str(i_pEv->scenePos()) + "}" +
+            ", EvScreenPos:(" + qPoint2Str(i_pEv->screenPos()) + ")" +
+            ", EvPossibleActions:" + qDropActions2Str(i_pEv->possibleActions()) +
+            ", EvProposedAction:" + qDropActions2Str(i_pEv->proposedAction()) +
+            ", EvDropAction:" + qDropActions2Str(i_pEv->dropAction()) +
+            ", MimeDataText:" + strMimeData;
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "dropEvent",
         /* strAddInfo   */ strMthInArgs );
+
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Enter);
+    }
 
     bool bAccepted = false;
 
@@ -3798,6 +3629,10 @@ void CDrawingScene::dropEvent( QGraphicsSceneDragDropEvent* i_pEv )
 
     //QGraphicsScene::dropEvent(i_pEv);
 
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Leave);
+    }
+
 } // dropEvent
 
 /*==============================================================================
@@ -3809,32 +3644,19 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    QString strAddTrcInfo;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strMthInArgs  = "EvItemPos:(" + QString::number(i_pEv->pos().x()) + "," + QString::number(i_pEv->pos().y()) + ")";
-        strMthInArgs += ", EvScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
-        strMthInArgs += ", EvScreenPos:(" + QString::number(i_pEv->screenPos().x()) + "," + QString::number(i_pEv->screenPos().y()) + ")";
+    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = "EvItemPos {" + qPoint2Str(i_pEv->pos()) + "}" +
+            ", EvScenePos {" + qPoint2Str(i_pEv->scenePos()) + "}" +
+            ", EvScreenPos {" + qPoint2Str(i_pEv->screenPos())+ "}";
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mousePressEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strAddTrcInfo = "Mode:" + m_mode.toString();
-        strAddTrcInfo += ", EditTool:" + m_editTool.toString();
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", ObjFactory:" + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
-        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->name());
-        strAddTrcInfo += ", SceneRect(x,y,w,h):(" + QString::number(sceneRect().x()) + "," + QString::number(sceneRect().y());
-        strAddTrcInfo += "," + QString::number(sceneRect().width()) + "," + QString::number(sceneRect().height()) + ")";
-        mthTracer.trace(strAddTrcInfo);
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Enter);
     }
 
     bool bEventHandled = false;
@@ -3846,89 +3668,61 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
     emit_mousePosChanged(m_ptMouseEvScenePosOnMousePressEvent);
 
     int iObjFactoryType = static_cast<int>(EGraphObjTypeUndefined);
-
-    if( m_pObjFactory != nullptr )
-    {
+    if (m_pObjFactory != nullptr) {
         iObjFactoryType = m_pObjFactory->getGraphObjType();
     }
 
-    if( m_mode != EMode::Edit )
-    {
-        if( m_pGraphObjCreating != nullptr || iObjFactoryType != static_cast<int>(EGraphObjTypeUndefined) )
-        {
+    if (m_mode != EMode::Edit) {
+        if (m_pGraphObjCreating != nullptr || iObjFactoryType != static_cast<int>(EGraphObjTypeUndefined)) {
             throw ZS::System::CException(__FILE__, __LINE__, EResultInternalProgramError);
         }
     }
 
-    if( m_mode == EMode::Edit )
+    if (m_mode == EMode::Edit)
     {
         // If currently an object is "under construction" ...
-        if( m_pGraphObjCreating != nullptr )
+        if (m_pGraphObjCreating != nullptr || m_pGraphObjAddingShapePoints != nullptr)
         {
             // ... dispatch mouse event to object "under construction".
             QGraphicsSceneMouseEvent evMouse(QEvent::GraphicsSceneMousePress);
 
-            QPointF ptMouseItemPos = m_pGraphicsItemCreating->mapFromScene(i_pEv->scenePos());
-            QPointF ptMouseItemPosLast = m_pGraphicsItemCreating->mapFromScene(i_pEv->lastScenePos());
+            QPointF ptMouseItemPos;
+            QPointF ptMouseItemPosLast;
+
+            if (m_pGraphicsItemCreating != nullptr) {
+                ptMouseItemPos = m_pGraphicsItemCreating->mapFromScene(i_pEv->scenePos());
+                ptMouseItemPosLast = m_pGraphicsItemCreating->mapFromScene(i_pEv->lastScenePos());
+            } else {
+                ptMouseItemPos = m_pGraphicsItemAddingShapePoints->mapFromScene(i_pEv->scenePos());
+                ptMouseItemPosLast = m_pGraphicsItemAddingShapePoints->mapFromScene(i_pEv->lastScenePos());
+            }
 
             evMouse.setWidget(i_pEv->widget());
-
             evMouse.setPos(ptMouseItemPos);
             evMouse.setLastPos(ptMouseItemPosLast);
-
             evMouse.setScenePos(i_pEv->scenePos());
             evMouse.setLastScenePos(i_pEv->lastScenePos());
-
             evMouse.setScreenPos(i_pEv->screenPos());
             evMouse.setLastScreenPos(i_pEv->lastScreenPos());
-
             evMouse.setButton(i_pEv->button());
             evMouse.setButtons(i_pEv->buttons());
             evMouse.setModifiers(i_pEv->modifiers());
 
-            sendEvent(m_pGraphicsItemCreating, &evMouse);
-
+            if (m_pGraphicsItemCreating != nullptr) {
+                sendEvent(m_pGraphicsItemCreating, &evMouse);
+            } else {
+                sendEvent(m_pGraphicsItemAddingShapePoints, &evMouse);
+            }
             bEventHandled = true;
-
-        } // if( m_pGraphObjCreating != nullptr )
-
-        // If currently an object is "under construction" ...
-        else if( m_pGraphObjAddingShapePoints != nullptr )
-        {
-            // ... dispatch mouse event to object "under construction".
-            QGraphicsSceneMouseEvent evMouse(QEvent::GraphicsSceneMousePress);
-
-            QPointF ptMouseItemPos = m_pGraphicsItemAddingShapePoints->mapFromScene(i_pEv->scenePos());
-            QPointF ptMouseItemPosLast = m_pGraphicsItemAddingShapePoints->mapFromScene(i_pEv->lastScenePos());
-
-            evMouse.setWidget(i_pEv->widget());
-
-            evMouse.setPos(ptMouseItemPos);
-            evMouse.setLastPos(ptMouseItemPosLast);
-
-            evMouse.setScenePos(i_pEv->scenePos());
-            evMouse.setLastScenePos(i_pEv->lastScenePos());
-
-            evMouse.setScreenPos(i_pEv->screenPos());
-            evMouse.setLastScreenPos(i_pEv->lastScreenPos());
-
-            evMouse.setButton(i_pEv->button());
-            evMouse.setButtons(i_pEv->buttons());
-            evMouse.setModifiers(i_pEv->modifiers());
-
-            sendEvent(m_pGraphicsItemAddingShapePoints, &evMouse);
-
-            bEventHandled = true;
-
-        } // if( m_pGraphObjAddingShapePoints != nullptr )
+        }
 
         // If currently no object is "under construction" ...
-        else // if( m_pGraphObjCreating == nullptr && m_pGraphObjAddingShapePoints == nullptr )
+        else // if (m_pGraphObjCreating == nullptr && m_pGraphObjAddingShapePoints == nullptr)
         {
-            if( m_editTool == EEditTool::CreateObjects )
+            if (m_editTool == EEditTool::CreateObjects)
             {
                 // Any drawing tool selected?
-                if( m_pObjFactory != nullptr )
+                if (m_pObjFactory != nullptr)
                 {
                     bool bCreateObj = true;
 
@@ -3939,22 +3733,21 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                     // Connection lines may only be created on connection points. So a
                     // graphical object (a connection point) must have been hit to create
                     // connection lines.
-                    if( iObjFactoryType == static_cast<int>(EGraphObjTypeConnectionLine) )
+                    if (iObjFactoryType == static_cast<int>(EGraphObjTypeConnectionLine))
                     {
                         // Check whether a connection point has been hit.
                         pGraphObjCnctPtHit = getConnectionPoint(m_ptMouseEvScenePosOnMousePressEvent);
 
-                        if( pGraphObjCnctPtHit == nullptr )
-                        {
+                        if (pGraphObjCnctPtHit == nullptr) {
                             bCreateObj = false;
                         }
                     }
 
-                    if( bCreateObj )
+                    if (bCreateObj)
                     {
                         clearSelection();
 
-                        // Graphical objects must always created at their transformation origin points.
+                        // Graphical objects must always be created at their transformation origin points.
                         // Otherwise mapping coordinates to group coordinates does not work correctly.
                         // In special this applies to connection points and circles.
                         m_pGraphObjCreating = m_pObjFactory->createGraphObj(
@@ -3962,12 +3755,11 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                             /* ptItemPos     */ QPointF(0.0,0.0),
                             /* drawSettings  */ m_drawSettings );
 
-                        if( m_pGraphObjCreating != nullptr )
+                        if (m_pGraphObjCreating != nullptr)
                         {
                             m_pGraphicsItemCreating = dynamic_cast<QGraphicsItem*>(m_pGraphObjCreating);
 
-                            if( m_pGraphicsItemCreating == nullptr )
-                            {
+                            if (m_pGraphicsItemCreating == nullptr) {
                                 throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItem == nullptr" );
                             }
 
@@ -3975,48 +3767,44 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 
                             m_pGraphObjCreating->setEditMode(EEditMode::Creating);
 
-                            if( iObjFactoryType == static_cast<int>(EGraphObjTypeConnectionLine)
-                             && m_pGraphicsItemCreating->type() == static_cast<int>(EGraphObjTypeConnectionLine) )
+                            if (iObjFactoryType == static_cast<int>(EGraphObjTypeConnectionLine)
+                             && m_pGraphicsItemCreating->type() == static_cast<int>(EGraphObjTypeConnectionLine))
                             {
                                 pGraphObjCnctLineCreating = dynamic_cast<CGraphObjConnectionLine*>(m_pGraphObjCreating);
                             }
-                            else if( iObjFactoryType == static_cast<int>(EGraphObjTypeConnectionPoint)
-                                  && m_pGraphicsItemCreating->type() == static_cast<int>(EGraphObjTypeConnectionPoint) )
+                            else if (iObjFactoryType == static_cast<int>(EGraphObjTypeConnectionPoint)
+                                  && m_pGraphicsItemCreating->type() == static_cast<int>(EGraphObjTypeConnectionPoint))
                             {
                                 pGraphObjCnctPtCreating = dynamic_cast<CGraphObjConnectionPoint*>(m_pGraphObjCreating);
                             }
 
-                            if( pGraphObjCnctPtCreating != nullptr )
-                            {
+                            if (pGraphObjCnctPtCreating != nullptr) {
                                 // Need to set left top position of connection points as transformation origin point.
                                 // Otherwise mapping coordinates to group coordinates does not work correctly.
-                                QRectF  rctGraphObjCnctPt = pGraphObjCnctPtCreating->rect();
+                                QRectF rctGraphObjCnctPt = pGraphObjCnctPtCreating->rect();
                                 QPointF ptPosGraphObjCnctPt = QPointF(
                                     m_ptMouseEvScenePosOnMousePressEvent.x() - rctGraphObjCnctPt.width()/2.0,
                                     m_ptMouseEvScenePosOnMousePressEvent.y() - rctGraphObjCnctPt.height()/2.0 );
                                 pGraphObjCnctPtCreating->setPos(ptPosGraphObjCnctPt);
                             }
-                            else
-                            {
+                            else {
                                 m_pGraphicsItemCreating->setPos(m_ptMouseEvScenePosOnMousePressEvent);
                             }
 
                             m_pGraphicsItemCreating->setSelected(true);
                             m_pGraphicsItemCreating->setAcceptHoverEvents(true);
 
-                            if( pGraphObjCnctLineCreating != nullptr && pGraphObjCnctPtHit != nullptr )
-                            {
+                            if (pGraphObjCnctLineCreating != nullptr && pGraphObjCnctPtHit != nullptr) {
                                 pGraphObjCnctLineCreating->setConnectionPoint(ELinePoint::Start,pGraphObjCnctPtHit);
                             }
 
                             emit_modeChanged();
-
-                        } // if( m_pGraphObjCreating != nullptr )
-                    } // if( bCreateObj )
-                } // if( m_pObjFactory != nullptr )
+                        }
+                    }
+                } // if (m_pObjFactory != nullptr)
 
                 // If an object has been newly created and is still under construction ...
-                if( m_pGraphObjCreating != nullptr )
+                if (m_pGraphObjCreating != nullptr)
                 {
                     // ... dispatch mouse event to object "under construction".
                     QGraphicsSceneMouseEvent evMouse(QEvent::GraphicsSceneMousePress);
@@ -4025,16 +3813,12 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                     QPointF ptMouseItemPosLast = m_pGraphicsItemCreating->mapFromScene(i_pEv->lastScenePos());
 
                     evMouse.setWidget(i_pEv->widget());
-
                     evMouse.setPos(ptMouseItemPos);
                     evMouse.setLastPos(ptMouseItemPosLast);
-
                     evMouse.setScenePos(i_pEv->scenePos());
                     evMouse.setLastScenePos(i_pEv->lastScenePos());
-
                     evMouse.setScreenPos(i_pEv->screenPos());
                     evMouse.setLastScreenPos(i_pEv->lastScreenPos());
-
                     evMouse.setButton(i_pEv->button());
                     evMouse.setButtons(i_pEv->buttons());
                     evMouse.setModifiers(i_pEv->modifiers());
@@ -4042,13 +3826,12 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                     sendEvent(m_pGraphicsItemCreating, &evMouse);
 
                     bEventHandled = true;
+                }
+            } // if (m_editTool == EEditTool::CreateObjects)
+        } // if (m_pGraphObjCreating == nullptr && m_pGraphObjAddingShapePoints == nullptr)
+    } // if (m_mode == EMode::Edit)
 
-                } // if( m_pGraphObjCreating != nullptr )
-            } // if( m_editTool == EEditTool::CreateObjects )
-        } // if( m_pGraphObjCreating == nullptr && m_pGraphObjAddingShapePoints == nullptr )
-    } // if( m_mode == EMode::Edit )
-
-    if( !bEventHandled )
+    if (!bEventHandled)
     {
         // Dispatch mouse move events to objects under mouse cursor. Some items may completely overlap (encircle)
         // other objects (a big rectangle may completely enclose a smaller rectangle or the bounding rectangle of
@@ -4060,40 +3843,32 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         // And if you consider polylines which are never "filled" objects the inner objects should always be selectable
         // by mouse clicks. The polyline as the outer object should only be selected if one of its line segments would be hit.
 
-        QList<QGraphicsItem*> arpGraphicsItemsIntersected = items( i_pEv->scenePos(), Qt::IntersectsItemShape, Qt::AscendingOrder );
+        QList<QGraphicsItem*> arpGraphicsItemsIntersected =
+            items(i_pEv->scenePos(), Qt::IntersectsItemShape, Qt::AscendingOrder);
         QList<QGraphicsItem*> arpGraphicsItemsHit;
-        QStringList           strlstKeysInTreeGraphicsItemsBroughtToFront;
-        QPointF               ptMouseItemPos;
-        SGraphObjHitInfo      graphObjHitInfo;
-        QGraphicsItem*        pGraphicsItem;
-        CGraphObj*            pGraphObj;
-        int                   idxGraphObj;
-        bool                  bGraphObjHit;
+        QStringList strlstKeysInTreeGraphicsItemsBroughtToFront;
 
-        if( arpGraphicsItemsIntersected.size() > 0 )
+        if (arpGraphicsItemsIntersected.size() > 0)
         {
-            for( idxGraphObj = 0; idxGraphObj < arpGraphicsItemsIntersected.size(); idxGraphObj++ )
+            for (int idxGraphObj = 0; idxGraphObj < arpGraphicsItemsIntersected.size(); idxGraphObj++)
             {
-                pGraphicsItem = arpGraphicsItemsIntersected[idxGraphObj];
-                pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+                QGraphicsItem* pGraphicsItem = arpGraphicsItemsIntersected[idxGraphObj];
+                CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
 
-                if( pGraphicsItem != nullptr && pGraphObj != nullptr )
-                {
-                    ptMouseItemPos = pGraphicsItem->mapFromScene(ptMouseScenePos);
+                if (pGraphicsItem != nullptr && pGraphObj != nullptr) {
+                    QPointF ptMouseItemPos = pGraphicsItem->mapFromScene(ptMouseScenePos);
 
                     // Selected graphic items are considered as being hit if it has been clicked
                     // inside their bounding rectangle. But if selected items overlap other items
                     // whose shape edge points or bounding rectangles have been clicked the mouse
                     // events should be passed through to those objects.
-                    bGraphObjHit = pGraphObj->isHit(ptMouseItemPos,&graphObjHitInfo);
-
-                    if( bGraphObjHit )
-                    {
+                    bool bGraphObjHit = pGraphObj->isHit(ptMouseItemPos, nullptr);
+                    if (bGraphObjHit) {
                         arpGraphicsItemsHit.append(pGraphicsItem);
                     }
                 }
             }
-        } // if( arpGraphicsItemsIntersected.size() > 0 )
+        }
 
         // Temporarily bring all objects to front which have been hit so that
         // Qt dispatches the mouse press events to those objects. We use several
@@ -4127,30 +3902,26 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         const int c_iGroups             = 4;
         const int c_iInnerLoopCount     = 5;
 
-        if( arpGraphicsItemsHit.size() > 0 )
+        if (arpGraphicsItemsHit.size() > 0)
         {
-            int  idxObjType;
-            int  idxSel;
-            bool bBringToFront;
-
-            for( idxSel = 0; idxSel < c_iOuterLoopCount; idxSel++ )
+            for (int idxSel = 0; idxSel < c_iOuterLoopCount; idxSel++)
             {
-                for( idxObjType = 0; idxObjType < c_iInnerLoopCount; idxObjType++ )
+                for (int idxObjType = 0; idxObjType < c_iInnerLoopCount; idxObjType++)
                 {
-                    for( idxGraphObj = arpGraphicsItemsHit.size()-1; idxGraphObj >= 0; idxGraphObj-- )
+                    for (int idxGraphObj = arpGraphicsItemsHit.size()-1; idxGraphObj >= 0; idxGraphObj--)
                     {
-                        bBringToFront = false;
+                        bool bBringToFront = false;
 
-                        pGraphicsItem = arpGraphicsItemsHit[idxGraphObj];
-                        pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+                        QGraphicsItem* pGraphicsItem = arpGraphicsItemsHit[idxGraphObj];
+                        CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
 
-                        if( pGraphicsItem != nullptr && pGraphObj != nullptr )
+                        if (pGraphicsItem != nullptr && pGraphObj != nullptr)
                         {
-                            if( idxSel == c_iNotSelectedObjects )
+                            if (idxSel == c_iNotSelectedObjects)
                             {
-                                if( !pGraphicsItem->isSelected() )
+                                if (!pGraphicsItem->isSelected())
                                 {
-                                    if( idxObjType == c_iGraphicsItems )
+                                    if (idxObjType == c_iGraphicsItems)
                                     {
                                         if( pGraphicsItem->type() != static_cast<int>(EGraphObjTypeSelectionPoint)
                                          && pGraphicsItem->type() != static_cast<int>(EGraphObjTypeLabel)
@@ -4160,44 +3931,36 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                                             bBringToFront = true;
                                         }
                                     }
-                                    else if( idxObjType == c_iSelectionPoints )
-                                    {
-                                        if( pGraphicsItem->type() == static_cast<int>(EGraphObjTypeSelectionPoint) )
-                                        {
+                                    else if (idxObjType == c_iSelectionPoints) {
+                                        if (pGraphicsItem->type() == static_cast<int>(EGraphObjTypeSelectionPoint)) {
                                             bBringToFront = true;
                                         }
                                     }
-                                    else if( idxObjType == c_iLabels )
-                                    {
-                                        if( pGraphicsItem->type() == static_cast<int>(EGraphObjTypeLabel) )
-                                        {
+                                    else if (idxObjType == c_iLabels) {
+                                        if (pGraphicsItem->type() == static_cast<int>(EGraphObjTypeLabel)) {
                                             bBringToFront = true;
                                         }
                                     }
-                                    else if( idxObjType == c_iConnectionPoints )
-                                    {
-                                        if( pGraphicsItem->type() == static_cast<int>(EGraphObjTypeConnectionPoint) )
-                                        {
+                                    else if (idxObjType == c_iConnectionPoints) {
+                                        if (pGraphicsItem->type() == static_cast<int>(EGraphObjTypeConnectionPoint)) {
                                             bBringToFront = true;
                                         }
                                     }
-                                    else if( idxObjType == c_iGroups )
-                                    {
-                                        if( pGraphicsItem->type() == static_cast<int>(EGraphObjTypeGroup) )
-                                        {
+                                    else if (idxObjType == c_iGroups) {
+                                        if (pGraphicsItem->type() == static_cast<int>(EGraphObjTypeGroup)) {
                                             bBringToFront = true;
                                         }
                                     }
                                 }
-                            }
-                            else if( idxSel == c_iSelectedObjects )
+                            } // if (idxSel == c_iNotSelectedObjects)
+                            else if (idxSel == c_iSelectedObjects)
                             {
                                 // As mentioned above: the second outer loop for selected objects will be
                                 // executed also in view mode even if unnecessary as in view
                                 // mode there will be no selected objects.
-                                if( pGraphicsItem->isSelected() )
+                                if (pGraphicsItem->isSelected())
                                 {
-                                    if( idxObjType == c_iGraphicsItems )
+                                    if (idxObjType == c_iGraphicsItems)
                                     {
                                         if( pGraphicsItem->type() != static_cast<int>(EGraphObjTypeSelectionPoint)
                                          && pGraphicsItem->type() != static_cast<int>(EGraphObjTypeLabel)
@@ -4207,47 +3970,39 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                                             bBringToFront = true;
                                         }
                                     }
-                                    else if( idxObjType == c_iSelectionPoints )
-                                    {
-                                        if( pGraphicsItem->type() == static_cast<int>(EGraphObjTypeSelectionPoint) )
-                                        {
+                                    else if (idxObjType == c_iSelectionPoints) {
+                                        if (pGraphicsItem->type() == static_cast<int>(EGraphObjTypeSelectionPoint)) {
                                             bBringToFront = true;
                                         }
                                     }
-                                    else if( idxObjType == c_iLabels )
-                                    {
-                                        if( pGraphicsItem->type() == static_cast<int>(EGraphObjTypeLabel) )
-                                        {
+                                    else if (idxObjType == c_iLabels) {
+                                        if (pGraphicsItem->type() == static_cast<int>(EGraphObjTypeLabel)) {
                                             bBringToFront = true;
                                         }
                                     }
-                                    else if( idxObjType == c_iConnectionPoints )
-                                    {
-                                        if( pGraphicsItem->type() == static_cast<int>(EGraphObjTypeConnectionPoint) )
-                                        {
+                                    else if (idxObjType == c_iConnectionPoints) {
+                                        if (pGraphicsItem->type() == static_cast<int>(EGraphObjTypeConnectionPoint)) {
                                             bBringToFront = true;
                                         }
                                     }
-                                    else if( idxObjType == c_iGroups )
-                                    {
-                                        if( pGraphicsItem->type() == static_cast<int>(EGraphObjTypeGroup) )
-                                        {
+                                    else if (idxObjType == c_iGroups) {
+                                        if (pGraphicsItem->type() == static_cast<int>(EGraphObjTypeGroup)) {
                                             bBringToFront = true;
                                         }
                                     }
                                 }
                             }
 
-                            if( bBringToFront )
+                            if (bBringToFront)
                             {
                                 bringToFront( pGraphicsItem, arpGraphicsItemsIntersected );
                                 pGraphicsItem->setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton|Qt::MiddleButton|Qt::XButton1|Qt::XButton2);
                                 strlstKeysInTreeGraphicsItemsBroughtToFront.append(pGraphObj->keyInTree());
                             }
                         }
-                    }
-                }
-            }
+                    } // for (int idxGraphObj = arpGraphicsItemsHit.size()-1; idxGraphObj >= 0; idxGraphObj--)
+                } // for (int idxObjType = 0; idxObjType < c_iInnerLoopCount; idxObjType++)
+            } // for (int idxSel = 0; idxSel < c_iOuterLoopCount; idxSel++)
         } // if( arpGraphicsItemsHit.size() > 0 )
 
         // Dispatch mouse press event to objects which have been hit.
@@ -4257,24 +4012,22 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         // Because while dispatching the mouse press event to the graphics scene objects some of the object may have been destroyed
         // (e.g. selection points or labels) not the pointer to the objects but their keys (object ids) have been stored.
         // The dtor of CGraphObj will remove themselves from the index tree and they cannot be found anymore.
-        for( const auto& strKeyInTree : strlstKeysInTreeGraphicsItemsBroughtToFront )
+        for (const auto& strKeyInTree : strlstKeysInTreeGraphicsItemsBroughtToFront)
         {
-            pGraphObj = findGraphObj(strKeyInTree);
-
-            if( pGraphObj != nullptr )
-            {
-                pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
-                pGraphicsItem->setZValue( pGraphObj->getStackingOrderValue() );
+            CGraphObj* pGraphObj = findGraphObj(strKeyInTree);
+            if (pGraphObj != nullptr) {
+                QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
+                pGraphicsItem->setZValue(pGraphObj->getStackingOrderValue());
             }
         }
 
         // In edit mode ..
-        if( m_mode == EMode::Edit )
+        if (m_mode == EMode::Edit)
         {
             // If no item has been hit ...
-            if( selectedItems().size() == 0 )
+            if (selectedItems().size() == 0)
             {
-                setMode( EMode::Ignore, EEditTool::Ignore, EEditMode::None, EEditResizeMode::None, false );
+                setMode(EMode::Ignore, EEditTool::Ignore, EEditMode::None, EEditResizeMode::None, false);
 
                 QRectF rctSelectionArea(
                     /* x      */ m_ptMouseEvScenePosOnMousePressEvent.x(),
@@ -4282,7 +4035,7 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                     /* width  */ 1,
                     /* height */ 1 );
 
-                if( m_pGraphicsItemSelectionArea == nullptr )
+                if (m_pGraphicsItemSelectionArea == nullptr)
                 {
                     QPen penSelectionArea(Qt::DotLine);
                     penSelectionArea.setColor(Qt::black);
@@ -4292,7 +4045,7 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                     int iSat   =  63; // 0..255
                     int iVal   = 127; // 0..255
                     int iAlpha =  63; // 0..255
-                    brsSelectionArea.setColor( QColor::fromHsv(iHue,iSat,iVal,iAlpha) );
+                    brsSelectionArea.setColor(QColor::fromHsv(iHue, iSat, iVal, iAlpha));
 
                     m_pGraphicsItemSelectionArea = addRect(
                         /* rect   */ rctSelectionArea,
@@ -4300,53 +4053,38 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                         /* brush  */ brsSelectionArea );
                 }
             }
-
-        } // if( m_mode == EMode::Edit )
-
+        }
     } // if( !bEventHandled )
 
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strAddTrcInfo  = "Mode:" + m_mode.toString();
-        strAddTrcInfo += ", EditTool:" + m_editTool.toString();
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", EditResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", ObjFactory:" + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
-        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->name());
-        strAddTrcInfo += ", SceneRect(x,y,w,h):(" + QString::number(sceneRect().x()) + "," + QString::number(sceneRect().y());
-        strAddTrcInfo += "," + QString::number(sceneRect().width()) + "," + QString::number(sceneRect().height()) + ")";
-        mthTracer.trace(strAddTrcInfo);
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Leave);
     }
-
 } // mousePressEvent
 
 //------------------------------------------------------------------------------
 void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
+    int iMouseButtonState = i_pEv->buttons() & Qt::MouseButtonMask;
+    CTrcAdminObj* pTrcAdminObj = m_pTrcAdminObjMouseMoveEvent;
+    if (iMouseButtonState != Qt::NoButton) {
+        pTrcAdminObj = m_pTrcAdminObj;
+    }
     QString strMthInArgs;
-    QString strAddTrcInfo;
-    if (areMethodCallsActive(m_pTrcAdminObjMouseMoveEvent, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "EvItemPos {" + qPoint2Str(i_pEv->pos()) + "}" +
             ", EvScenePos {" + qPoint2Str(i_pEv->scenePos()) + "}" +
             ", EvScreenPos {" + qPoint2Str(i_pEv->screenPos()) + "}";
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjMouseMoveEvent,
+        /* pAdminObj    */ pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mouseMoveEvent",
         /* strAddInfo   */ strMthInArgs );
 
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        strAddTrcInfo = "Mode:" + m_mode.toString() +
-            ", EditTool:" + m_editTool.toString() + ", EditMode:" + m_editMode.toString() +
-            ", ResizeMode:" + m_editResizeMode.toString() +
-            ", ObjFactory:" + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path()) +
-            ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->name());
-        mthTracer.trace(strAddTrcInfo);
+        traceInternalStates(mthTracer, EMethodDir::Enter);
     }
-
-    int iMouseButtonState = i_pEv->buttons() & Qt::MouseButtonMask;
 
     QPointF ptMouseScenePos = i_pEv->scenePos();
 
@@ -4380,13 +4118,21 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
     if (m_mode == EMode::Edit)
     {
         // If currently an object is "under construction" ...
-        if (m_pGraphObjCreating != nullptr)
+        if (m_pGraphObjCreating != nullptr || m_pGraphObjAddingShapePoints != nullptr)
         {
             // ... dispatch mouse event to object "under construction".
             QGraphicsSceneMouseEvent evMouse(QEvent::GraphicsSceneMouseMove);
 
-            QPointF ptMouseItemPos = m_pGraphicsItemCreating->mapFromScene(i_pEv->scenePos());
-            QPointF ptMouseItemPosLast = m_pGraphicsItemCreating->mapFromScene(i_pEv->lastScenePos());
+            QPointF ptMouseItemPos;
+            QPointF ptMouseItemPosLast;
+
+            if (m_pGraphicsItemCreating != nullptr) {
+                ptMouseItemPos = m_pGraphicsItemCreating->mapFromScene(i_pEv->scenePos());
+                ptMouseItemPosLast = m_pGraphicsItemCreating->mapFromScene(i_pEv->lastScenePos());
+            } else {
+                ptMouseItemPos = m_pGraphicsItemAddingShapePoints->mapFromScene(i_pEv->scenePos());
+                ptMouseItemPosLast = m_pGraphicsItemAddingShapePoints->mapFromScene(i_pEv->lastScenePos());
+            }
 
             evMouse.setWidget(i_pEv->widget());
             evMouse.setPos(ptMouseItemPos);
@@ -4395,34 +4141,15 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
             evMouse.setLastScenePos(i_pEv->lastScenePos());
             evMouse.setScreenPos(i_pEv->screenPos());
             evMouse.setLastScreenPos(i_pEv->lastScreenPos());
+            evMouse.setButton(i_pEv->button());
             evMouse.setButtons(i_pEv->buttons());
             evMouse.setModifiers(i_pEv->modifiers());
-            evMouse.setAccepted(i_pEv->isAccepted());
 
-            sendEvent(m_pGraphicsItemCreating, &evMouse);
-        }
-
-        // If currently an object is "under construction" ...
-        else if (m_pGraphObjAddingShapePoints != nullptr)
-        {
-            // ... dispatch mouse event to object "under construction".
-            QGraphicsSceneMouseEvent evMouse(QEvent::GraphicsSceneMouseMove);
-
-            QPointF ptMouseItemPos = m_pGraphicsItemAddingShapePoints->mapFromScene(i_pEv->scenePos());
-            QPointF ptMouseItemPosLast = m_pGraphicsItemAddingShapePoints->mapFromScene(i_pEv->lastScenePos());
-
-            evMouse.setWidget(i_pEv->widget());
-            evMouse.setPos(ptMouseItemPos);
-            evMouse.setLastPos(ptMouseItemPosLast);
-            evMouse.setScenePos(i_pEv->scenePos());
-            evMouse.setLastScenePos(i_pEv->lastScenePos());
-            evMouse.setScreenPos(i_pEv->screenPos());
-            evMouse.setLastScreenPos(i_pEv->lastScreenPos());
-            evMouse.setButtons(i_pEv->buttons());
-            evMouse.setModifiers(i_pEv->modifiers());
-            evMouse.setAccepted(i_pEv->isAccepted());
-
-            sendEvent(m_pGraphicsItemAddingShapePoints, &evMouse);
+            if (m_pGraphicsItemCreating != nullptr) {
+                sendEvent(m_pGraphicsItemCreating, &evMouse);
+            } else {
+                sendEvent(m_pGraphicsItemAddingShapePoints, &evMouse);
+            }
         }
 
         // If currently no object is "under construction" ...
@@ -4434,7 +4161,7 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
             if (m_editTool == EEditTool::CreateObjects)
             {
                 // If the left mouse button is pressed ...
-                if( iMouseButtonState & Qt::LeftButton )
+                if (iMouseButtonState & Qt::LeftButton)
                 {
                     // If the drawing tool "Point" is selected ...
                     if (m_pObjFactory != nullptr && iObjFactoryType == static_cast<int>(EGraphObjTypePoint))
@@ -4468,7 +4195,7 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
                     }
                 }
                 // If no mouse button is pressed ...
-                else if( iMouseButtonState == Qt::NoButton )
+                else if (iMouseButtonState == Qt::NoButton)
                 {
                     // If the drawing tool "ConnectionLine" is selected ...
                     if (m_pObjFactory != nullptr && iObjFactoryType == static_cast<int>(EGraphObjTypeConnectionLine))
@@ -4654,16 +4381,8 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         QGraphicsScene::mouseMoveEvent(i_pEv);
     }
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug))
-    {
-        strAddTrcInfo  = "Mode:" + m_mode.toString() +
-            ", EditTool: " + m_editTool.toString() +
-            ", EditMode: " + m_editMode.toString() +
-            ", EditResizeMode: " + m_editResizeMode.toString() +
-            ", ObjFactory: " + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path()) +
-            ", GraphObjCreating: " + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->name()) +
-            ", SceneRect(x,y,w,h) {" + qRect2Str(sceneRect()) + "}";
-        mthTracer.trace(strAddTrcInfo);
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Leave);
     }
 } // mouseMoveEvent
 
@@ -4672,45 +4391,28 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    QString strAddTrcInfo;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strMthInArgs  = "EvItemPos:(" + QString::number(i_pEv->pos().x()) + "," + QString::number(i_pEv->pos().x()) + ")";
-        strMthInArgs += ", EvScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().x()) + ")";
-        strMthInArgs += ", EvScreenPos:(" + QString::number(i_pEv->screenPos().x()) + "," + QString::number(i_pEv->screenPos().x()) + ")";
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "EvItemPos {" + qPoint2Str(i_pEv->pos()) + "}" +
+            ", EvScenePos {" + qPoint2Str(i_pEv->scenePos()) + "}" +
+            ", EvScreenPos {" + qPoint2Str(i_pEv->screenPos()) + "}";
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mouseReleaseEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strAddTrcInfo = "Mode:" + m_mode.toString();
-        strAddTrcInfo += ", EditTool:" + m_editTool.toString();
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", ObjFactory:" + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
-        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->name());
-        strAddTrcInfo += ", SceneRect(x,y,w,h):(" + QString::number(sceneRect().x()) + "," + QString::number(sceneRect().y());
-        strAddTrcInfo += "," + QString::number(sceneRect().width()) + "," + QString::number(sceneRect().height()) + ")";
-        mthTracer.trace(strAddTrcInfo);
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Enter);
     }
 
     int iObjFactoryType = static_cast<int>(EGraphObjTypeUndefined);
-
-    if( m_pObjFactory != nullptr )
-    {
+    if (m_pObjFactory != nullptr) {
         iObjFactoryType = m_pObjFactory->getGraphObjType();
     }
 
-    if( m_mode != EMode::Edit )
-    {
-        if( m_pGraphObjCreating != nullptr || iObjFactoryType != static_cast<int>(EGraphObjTypeUndefined) )
-        {
+    if (m_mode != EMode::Edit) {
+        if (m_pGraphObjCreating != nullptr || iObjFactoryType != static_cast<int>(EGraphObjTypeUndefined)) {
             throw ZS::System::CException(__FILE__, __LINE__, EResultInternalProgramError);
         }
     }
@@ -4719,55 +4421,44 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     emit_mousePosChanged(ptScenePosMouseEvent);
 
-    if( m_mode == EMode::Edit )
+    if (m_mode == EMode::Edit)
     {
         // If currently an object is "under construction" ...
-        if( m_pGraphObjCreating != nullptr )
+        if (m_pGraphObjCreating != nullptr || m_pGraphObjAddingShapePoints != nullptr)
         {
             // ... dispatch mouse event to object "under construction".
-            QGraphicsSceneMouseEvent* pEv = new QGraphicsSceneMouseEvent(QEvent::GraphicsSceneMouseRelease);
+            QGraphicsSceneMouseEvent evMouse(QEvent::GraphicsSceneMouseRelease);
+
             QPointF ptItemPos = i_pEv->pos();
             QPointF ptScenePos = ptScenePosMouseEvent;
             QPoint  ptScreenPos = i_pEv->screenPos();
-            ptItemPos = m_pGraphicsItemCreating->mapFromScene(ptScenePos);
-            pEv->setButtons(i_pEv->buttons());
-            pEv->setModifiers(i_pEv->modifiers());
-            pEv->setPos(ptItemPos);
-            pEv->setScenePos(ptScenePos);
-            pEv->setScreenPos(ptScreenPos);
-            sendEvent(m_pGraphicsItemCreating, pEv);
-            delete pEv;
-            pEv = nullptr;
 
-        } // if( m_pGraphObjCreating != nullptr )
+            if (m_pGraphicsItemCreating != nullptr) {
+                ptItemPos = m_pGraphicsItemCreating->mapFromScene(i_pEv->scenePos());
+            } else {
+                ptItemPos = m_pGraphicsItemAddingShapePoints->mapFromScene(i_pEv->scenePos());
+            }
 
-        // If currently an object is "under construction" ...
-        else if( m_pGraphObjAddingShapePoints != nullptr )
-        {
-            // ... dispatch mouse event to object "under construction".
-            QGraphicsSceneMouseEvent* pEv = new QGraphicsSceneMouseEvent(QEvent::GraphicsSceneMouseRelease);
-            QPointF ptItemPos = i_pEv->pos();
-            QPointF ptScenePos = ptScenePosMouseEvent;
-            QPoint  ptScreenPos = i_pEv->screenPos();
-            ptItemPos = m_pGraphicsItemAddingShapePoints->mapFromScene(ptScenePos);
-            pEv->setButtons(i_pEv->buttons());
-            pEv->setModifiers(i_pEv->modifiers());
-            pEv->setPos(ptItemPos);
-            pEv->setScenePos(ptScenePos);
-            pEv->setScreenPos(ptScreenPos);
-            sendEvent(m_pGraphicsItemAddingShapePoints, pEv);
-            delete pEv;
-            pEv = nullptr;
+            evMouse.setButtons(i_pEv->buttons());
+            evMouse.setModifiers(i_pEv->modifiers());
+            evMouse.setPos(ptItemPos);
+            evMouse.setScenePos(ptScenePos);
+            evMouse.setScreenPos(ptScreenPos);
 
-        } // if( m_pGraphObjAddingShapePoints != nullptr )
+            if (m_pGraphicsItemCreating != nullptr) {
+                sendEvent(m_pGraphicsItemCreating, &evMouse);
+            } else {
+                sendEvent(m_pGraphicsItemAddingShapePoints, &evMouse);
+            }
+        }
 
         // If currently no object is "under construction" ...
-        else // if( m_pGraphObjCreating == nullptr && m_pGraphObjAddingShapePoints == nullptr )
+        else // if (m_pGraphObjCreating == nullptr && m_pGraphObjAddingShapePoints == nullptr)
         {
             // ... dispatch mouse press event to objects "under cursor".
             QGraphicsScene::mouseReleaseEvent(i_pEv);
 
-            if( m_pGraphicsItemSelectionArea != nullptr )
+            if (m_pGraphicsItemSelectionArea != nullptr)
             {
                 removeItem(m_pGraphicsItemSelectionArea);
 
@@ -4781,41 +4472,26 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
                     /* height */ ptScenePosMouseEvent.y() - m_ptMouseEvScenePosOnMousePressEvent.y() + 1 );
 
                 QPainterPath path;
-                QTransform   trs;
-
                 path.addRect(rctSelectionArea);
+                setSelectionArea(path, Qt::ContainsItemShape);
+            }
 
-                setSelectionArea(path,Qt::ContainsItemShape);
-
-            } // if( m_pGraphicsItemSelectionArea != nullptr )
-
-            //else // if( m_pGraphicsItemSelectionArea == nullptr )
-            //{
+            //else if (m_pGraphicsItemSelectionArea == nullptr) {
             //    // ... dispatch mouse press event to objects "under cursor".
             //    QGraphicsScene::mouseReleaseEvent(i_pEv);
             //}
-        } // if( m_pGraphObjCreating == nullptr && m_pGraphObjAddingShapePoints == nullptr )
+        } // if (m_pGraphObjCreating == nullptr && m_pGraphObjAddingShapePoints == nullptr)
     } // if( m_mode == EMode::Edit )
 
-    else if( m_mode == EMode::View )
+    else if (m_mode == EMode::View)
     {
         // ... dispatch mouse event to objects "under cursor".
         QGraphicsScene::mouseReleaseEvent(i_pEv);
     }
 
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strAddTrcInfo  = "Mode:" + m_mode.toString();
-        strAddTrcInfo += ", EditTool:" + m_editTool.toString();
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", EditResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", ObjFactory:" + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
-        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->name());
-        strAddTrcInfo += ", SceneRect(x,y,w,h):(" + QString::number(sceneRect().x()) + "," + QString::number(sceneRect().y());
-        strAddTrcInfo += "," + QString::number(sceneRect().width()) + "," + QString::number(sceneRect().height()) + ")";
-        mthTracer.trace(strAddTrcInfo);
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Leave);
     }
-
 } // mouseReleaseEvent
 
 //------------------------------------------------------------------------------
@@ -4823,32 +4499,19 @@ void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    QString strAddTrcInfo;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strMthInArgs  = "EvItemPos:(" + QString::number(i_pEv->pos().x()) + "," + QString::number(i_pEv->pos().x()) + ")";
-        strMthInArgs += ", EvScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().x()) + ")";
-        strMthInArgs += ", EvScreenPos:(" + QString::number(i_pEv->screenPos().x()) + "," + QString::number(i_pEv->screenPos().x()) + ")";
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "EvItemPos {" + qPoint2Str(i_pEv->pos()) + "}" +
+            ", EvScenePos {" + qPoint2Str(i_pEv->scenePos()) + "}" +
+            ", EvScreenPos {" + qPoint2Str(i_pEv->screenPos()) + "}";
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mouseDoubleClickEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strAddTrcInfo = "Mode:" + m_mode.toString();
-        strAddTrcInfo += ", EditTool:" + m_editTool.toString();
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", ObjFactory:" + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
-        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->name());
-        strAddTrcInfo += ", SceneRect(x,y,w,h):(" + QString::number(sceneRect().x()) + "," + QString::number(sceneRect().y());
-        strAddTrcInfo += "," + QString::number(sceneRect().width()) + "," + QString::number(sceneRect().height()) + ")";
-        mthTracer.trace(strAddTrcInfo);
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Enter);
     }
 
     // Not a nice hack: mouse double click events will not be dispatched to the graphical objects
@@ -4859,16 +4522,12 @@ void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
     m_bMouseDoubleClickEventInProcess = true;
 
     int iObjFactoryType = static_cast<int>(EGraphObjTypeUndefined);
-
-    if( m_pObjFactory != nullptr )
-    {
+    if (m_pObjFactory != nullptr) {
         iObjFactoryType = m_pObjFactory->getGraphObjType();
     }
 
-    if( m_mode != EMode::Edit )
-    {
-        if( m_pGraphObjCreating != nullptr || iObjFactoryType != static_cast<int>(EGraphObjTypeUndefined) )
-        {
+    if (m_mode != EMode::Edit) {
+        if (m_pGraphObjCreating != nullptr || iObjFactoryType != static_cast<int>(EGraphObjTypeUndefined)) {
             throw ZS::System::CException(__FILE__, __LINE__, EResultInternalProgramError);
         }
     }
@@ -4877,38 +4536,31 @@ void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     emit_mousePosChanged(ptScenePosMouseEvent);
 
-    if( m_mode == EMode::Edit )
+    if (m_mode == EMode::Edit)
     {
         // If currently an object is "under construction" ...
-        if( m_pGraphObjCreating != nullptr )
+        if (m_pGraphObjCreating != nullptr)
         {
             // If currently a connection line is "under construction" ...
-            if( m_pGraphicsItemCreating->type() == static_cast<int>(EGraphObjTypeConnectionLine) )
+            if (m_pGraphicsItemCreating->type() == static_cast<int>(EGraphObjTypeConnectionLine))
             {
                 bool bIsValidEndPoint = true;
 
-                CGraphObjConnectionPoint* pGraphObjCnctPt   = nullptr;
-                CGraphObjConnectionLine*  pGraphObjCnctLine = nullptr;
+                CGraphObjConnectionPoint* pGraphObjCnctPt = nullptr;
+                CGraphObjConnectionLine* pGraphObjCnctLine = dynamic_cast<CGraphObjConnectionLine*>(m_pGraphObjCreating);
 
-                pGraphObjCnctLine = dynamic_cast<CGraphObjConnectionLine*>(m_pGraphObjCreating);
-
-                if( pGraphObjCnctLine != nullptr )
-                {
+                if (pGraphObjCnctLine != nullptr) {
                     pGraphObjCnctPt = getConnectionPoint(i_pEv->scenePos());
-
-                    if( pGraphObjCnctPt != nullptr )
-                    {
+                    if (pGraphObjCnctPt != nullptr) {
                         bIsValidEndPoint = true;
                     }
                 }
 
-                if( bIsValidEndPoint )
-                {
-                    bIsValidEndPoint = pGraphObjCnctLine->setConnectionPoint(ELinePoint::End,pGraphObjCnctPt);
+                if (bIsValidEndPoint) {
+                    bIsValidEndPoint = pGraphObjCnctLine->setConnectionPoint(ELinePoint::End, pGraphObjCnctPt);
                 }
 
-                if( !bIsValidEndPoint )
-                {
+                if (!bIsValidEndPoint) {
                     delete m_pGraphicsItemCreating;
                     m_pGraphicsItemCreating = nullptr;
                     m_pGraphObjCreating = nullptr;
@@ -4916,57 +4568,51 @@ void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
                     m_pGraphObjAddingShapePoints = nullptr;
                     pGraphObjCnctLine = nullptr;
                 }
-            } // if( m_pGraphicsItemCreating->type() == EGraphObjTypeConnectionLine )
+            }
 
             // ... dispatch mouse event to object "under construction".
-            if( m_pGraphObjCreating != nullptr )
+            if (m_pGraphObjCreating != nullptr)
             {
-                QGraphicsSceneMouseEvent* pEv = new QGraphicsSceneMouseEvent(QEvent::GraphicsSceneMouseDoubleClick);
+                QGraphicsSceneMouseEvent evMouse(QEvent::GraphicsSceneMouseDoubleClick);
                 QPointF ptItemPos = i_pEv->pos();
                 QPointF ptScenePos = i_pEv->scenePos();
                 QPoint  ptScreenPos = i_pEv->screenPos();
                 ptItemPos = m_pGraphicsItemCreating->mapFromScene(ptScenePos);
-                pEv->setButtons(i_pEv->buttons());
-                pEv->setModifiers(i_pEv->modifiers());
-                pEv->setPos(ptItemPos);
-                pEv->setScenePos(ptScenePos);
-                pEv->setScreenPos(ptScreenPos);
-                sendEvent(m_pGraphicsItemCreating, pEv);
-                delete pEv;
-                pEv = nullptr;
+                evMouse.setButtons(i_pEv->buttons());
+                evMouse.setModifiers(i_pEv->modifiers());
+                evMouse.setPos(ptItemPos);
+                evMouse.setScenePos(ptScenePos);
+                evMouse.setScreenPos(ptScreenPos);
+                sendEvent(m_pGraphicsItemCreating, &evMouse);
             }
-        } // if( m_pGraphObjCreating != nullptr )
+        }
 
         // If currently an object is "under construction" ...
-        else if( m_pGraphObjAddingShapePoints != nullptr )
+        else if (m_pGraphObjAddingShapePoints != nullptr)
         {
             // ... dispatch mouse event to object "under construction".
-            QGraphicsSceneMouseEvent* pEv = new QGraphicsSceneMouseEvent(QEvent::GraphicsSceneMouseDoubleClick);
+            QGraphicsSceneMouseEvent evMouse(QEvent::GraphicsSceneMouseDoubleClick);
             QPointF ptItemPos = i_pEv->pos();
             QPointF ptScenePos = i_pEv->scenePos();
             QPoint  ptScreenPos = i_pEv->screenPos();
             ptItemPos = m_pGraphicsItemAddingShapePoints->mapFromScene(ptScenePos);
-            pEv->setButtons(i_pEv->buttons());
-            pEv->setModifiers(i_pEv->modifiers());
-            pEv->setPos(ptItemPos);
-            pEv->setScenePos(ptScenePos);
-            pEv->setScreenPos(ptScreenPos);
-            sendEvent(m_pGraphicsItemAddingShapePoints, pEv);
-            delete pEv;
-            pEv = nullptr;
-
-        } // if( m_pGraphObjAddingShapePoints != nullptr )
+            evMouse.setButtons(i_pEv->buttons());
+            evMouse.setModifiers(i_pEv->modifiers());
+            evMouse.setPos(ptItemPos);
+            evMouse.setScenePos(ptScenePos);
+            evMouse.setScreenPos(ptScreenPos);
+            sendEvent(m_pGraphicsItemAddingShapePoints, &evMouse);
+        }
 
         // If currently no object is "under construction" ...
-        else // if( m_pGraphObjCreating == nullptr && m_pGraphObjAddingShapePoints == nullptr )
+        else // if (m_pGraphObjCreating == nullptr && m_pGraphObjAddingShapePoints == nullptr)
         {
             // ... dispatch mouse event to objects "under cursor".
             QGraphicsScene::mouseDoubleClickEvent(i_pEv);
         }
+    } // if (m_mode == EMode::Edit)
 
-    } // if( m_mode == EMode::Edit )
-
-    else if( m_mode == EMode::View )
+    else if (m_mode == EMode::View)
     {
         // ... dispatch mouse event to objects "under cursor".
         QGraphicsScene::mouseDoubleClickEvent(i_pEv);
@@ -4974,17 +4620,8 @@ void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     m_bMouseDoubleClickEventInProcess = false;
 
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strAddTrcInfo  = "Mode:" + m_mode.toString();
-        strAddTrcInfo += ", EditTool:" + m_editTool.toString();
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", EditResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", ObjFactory:" + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
-        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->name());
-        strAddTrcInfo += ", SceneRect(x,y,w,h):(" + QString::number(sceneRect().x()) + "," + QString::number(sceneRect().y());
-        strAddTrcInfo += "," + QString::number(sceneRect().width()) + "," + QString::number(sceneRect().height()) + ")";
-        mthTracer.trace(strAddTrcInfo);
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Leave);
     }
 } // mouseDoubleClickEvent
 
@@ -4997,33 +4634,20 @@ void CDrawingScene::keyPressEvent( QKeyEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    QString strAddTrcInfo;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs  = "Key:" + qKeyCode2Str(i_pEv->key()) + " (" + i_pEv->text() + ")";
         strMthInArgs += ", Count:" + QString::number(i_pEv->count());
         strMthInArgs += ", IsAutoRepeat:" + QString::number(i_pEv->count());
         strMthInArgs += ", Modifiers:" + qKeyboardModifiers2Str(i_pEv->modifiers());
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "keyPressEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strAddTrcInfo = "Mode:" + m_mode.toString();
-        strAddTrcInfo += ", EditTool:" + m_editTool.toString();
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", ObjFactory:" + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
-        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->name());
-        strAddTrcInfo += ", SceneRect(x,y,w,h):(" + QString::number(sceneRect().x()) + "," + QString::number(sceneRect().y());
-        strAddTrcInfo += "," + QString::number(sceneRect().width()) + "," + QString::number(sceneRect().height()) + ")";
-        mthTracer.trace(strAddTrcInfo);
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Enter);
     }
 
     QGraphicsScene::keyPressEvent(i_pEv);
@@ -5518,6 +5142,9 @@ void CDrawingScene::keyPressEvent( QKeyEvent* i_pEv )
         } // if( i_pEv->key() == Qt::Key_V )
     } // if( !i_pEv->isAccepted() )
 
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Leave);
+    }
 } // keyPressEvent
 
 //------------------------------------------------------------------------------
@@ -5525,39 +5152,29 @@ void CDrawingScene::keyReleaseEvent( QKeyEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    QString strAddTrcInfo;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs  = "Key:" + qKeyCode2Str(i_pEv->key()) + " (" + i_pEv->text() + ")";
         strMthInArgs += ", Count:" + QString::number(i_pEv->count());
         strMthInArgs += ", IsAutoRepeat:" + QString::number(i_pEv->count());
         strMthInArgs += ", Modifiers:" + qKeyboardModifiers2Str(i_pEv->modifiers());
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "keyReleaseEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strAddTrcInfo = "Mode:" + m_mode.toString();
-        strAddTrcInfo += ", EditTool:" + m_editTool.toString();
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", ObjFactory:" + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
-        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->name());
-        strAddTrcInfo += ", SceneRect(x,y,w,h):(" + QString::number(sceneRect().x()) + "," + QString::number(sceneRect().y());
-        strAddTrcInfo += "," + QString::number(sceneRect().width()) + "," + QString::number(sceneRect().height()) + ")";
-        mthTracer.trace(strAddTrcInfo);
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Enter);
     }
 
     QGraphicsScene::keyReleaseEvent(i_pEv);
 
     m_iEvKeyModifiers = 0;
 
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Leave);
+    }
 } // keyReleaseEvent
 
 /*==============================================================================
@@ -5569,9 +5186,7 @@ void CDrawingScene::drawBackground( QPainter* i_pPainter, const QRectF& i_rect )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    QString strAddTrcInfo;
-    if( areMethodCallsActive(m_pTrcAdminObjPaintEvent, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObjPaintEvent, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs  = "Rect(x,y,w,h):(" + QString::number(i_rect.x()) + "," + QString::number(i_rect.y());
         strMthInArgs += "," + QString::number(i_rect.width()) + "," + QString::number(i_rect.height()) + ")";
     }
@@ -5580,13 +5195,6 @@ void CDrawingScene::drawBackground( QPainter* i_pPainter, const QRectF& i_rect )
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "drawBackground",
         /* strAddInfo   */ strMthInArgs );
-
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strAddTrcInfo  = "SceneRect(x,y,w,h):(" + QString::number(sceneRect().x()) + "," + QString::number(sceneRect().y());
-        strAddTrcInfo += "," + QString::number(sceneRect().width()) + "," + QString::number(sceneRect().height()) + ")";
-        mthTracer.trace(strAddTrcInfo);
-    }
 
     QGraphicsScene::drawBackground(i_pPainter, i_rect);
 
@@ -5615,26 +5223,15 @@ void CDrawingScene::drawForeground( QPainter* i_pPainter, const QRectF& i_rect )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    QString strAddTrcInfo;
-
-    if( m_pTrcAdminObjPaintEvent != nullptr && m_pTrcAdminObjPaintEvent->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObjPaintEvent, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs  = "Rect(x,y,w,h):(" + QString::number(i_rect.x()) + "," + QString::number(i_rect.y());
         strMthInArgs += "," + QString::number(i_rect.width()) + "," + QString::number(i_rect.height()) + ")";
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjPaintEvent,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "drawForeground",
         /* strAddInfo   */ strMthInArgs );
-
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strAddTrcInfo  = "SceneRect(x,y,w,h):(" + QString::number(sceneRect().x()) + "," + QString::number(sceneRect().y());
-        strAddTrcInfo += "," + QString::number(sceneRect().width()) + "," + QString::number(sceneRect().height()) + ")";
-        mthTracer.trace(strAddTrcInfo);
-    }
 
     //i_pPainter->setClipRect(i_rect);
 
@@ -5659,13 +5256,9 @@ void CDrawingScene::onGraphObjFactoryDestroyed( QObject* i_pObjFactory )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    QString strAddTrcInfo;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString(i_pObjFactory == nullptr ? "nullptr" : i_pObjFactory->objectName());
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -6594,4 +6187,32 @@ void CDrawingScene::emit_graphObjAboutToBeDestroyed(const QString& i_strKeyInTre
         /* strAddInfo   */ strMthInArgs );
 
     emit graphObjAboutToBeDestroyed(i_strKeyInTree);
+}
+
+/*==============================================================================
+protected: // auxiliary instance methods (method tracing)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CDrawingScene::traceInternalStates(
+    CMethodTracer& i_mthTracer, EMethodDir i_mthDir, ELogDetailLevel i_detailLevel)
+//------------------------------------------------------------------------------
+{
+    if (i_mthTracer.isRuntimeInfoActive(i_detailLevel))
+    {
+        QString strAddTrcInfo;
+        if (i_mthDir == EMethodDir::Enter) {
+            strAddTrcInfo = "-+ ";
+        } else if (i_mthDir == EMethodDir::Leave) {
+            strAddTrcInfo = "+- ";
+        }
+        strAddTrcInfo += "Mode: " + m_mode.toString() +
+            ", EditTool: " + m_editTool.toString() +
+            ", EditMode: " + m_editMode.toString() +
+            ", ResizeMode: " + m_editResizeMode.toString() +
+            ", ObjFactory: " + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path()) +
+            ", GraphObjCreating: " + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->name()) +
+            ", SceneRect {" + qRect2Str(sceneRect()) + "}";
+        i_mthTracer.trace(strAddTrcInfo);
+    }
 }
