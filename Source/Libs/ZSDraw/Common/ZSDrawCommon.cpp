@@ -42,11 +42,11 @@ global type definitions and constants
 Enum EDrawingDimensionUnit
 ==============================================================================*/
 
-template<> QMutex ZS::System::CEnum<EDrawingDimensionUnit>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<EDrawingDimensionUnit>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<EDrawingDimensionUnit>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<EDrawingDimensionUnit>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 //------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> ZS::System::CEnum<EDrawingDimensionUnit>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<EDrawingDimensionUnit>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {
     /* 0 */ SEnumEntry( static_cast<int>(EDrawingDimensionUnit::Pixels), "Pixels" ),
@@ -57,11 +57,11 @@ template<> const QVector<SEnumEntry> ZS::System::CEnum<EDrawingDimensionUnit>::s
 Enum ENormedPaperSizes
 ==============================================================================*/
 
-template<> QMutex ZS::System::CEnum<ENormedPaperSize>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<ENormedPaperSize>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<ENormedPaperSize>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<ENormedPaperSize>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 //------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> ZS::System::CEnum<ENormedPaperSize>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<ENormedPaperSize>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {
     SEnumEntry( static_cast<int>(ENormedPaperSize::DinA0),  "DinA0",  "A0",  "DIN A0",
@@ -93,11 +93,11 @@ template<> const QVector<SEnumEntry> ZS::System::CEnum<ENormedPaperSize>::s_arEn
 Enum EPrinterPaperSource
 ==============================================================================*/
 
-template<> QMutex ZS::System::CEnum<EPrinterPaperSource>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<EPrinterPaperSource>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<EPrinterPaperSource>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<EPrinterPaperSource>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 //------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> ZS::System::CEnum<EPrinterPaperSource>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<EPrinterPaperSource>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {
     /* 0 */ SEnumEntry( static_cast<int>(EPrinterPaperSource::AutoSelect), "Auto Select" ),
@@ -250,11 +250,11 @@ EGraphObjType ZS::Draw::className2GraphObjType( const QString& i_str )
 Enum EEditTool
 ==============================================================================*/
 
-template<> QMutex ZS::System::CEnum<EEditTool>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<EEditTool>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<EEditTool>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<EEditTool>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 //------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> ZS::System::CEnum<EEditTool>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<EEditTool>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {
     /* 0 */ SEnumEntry( static_cast<int>(EEditTool::None),          "None",          "-" ),
@@ -268,11 +268,11 @@ template<> const QVector<SEnumEntry> ZS::System::CEnum<EEditTool>::s_arEnumEntri
 Enum ECoordinatesVersion
 ==============================================================================*/
 
-template<> QMutex ZS::System::CEnum<ECoordinatesVersion>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<ECoordinatesVersion>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<ECoordinatesVersion>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<ECoordinatesVersion>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 //------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> ZS::System::CEnum<ECoordinatesVersion>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<ECoordinatesVersion>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {
     /* 0 */ SEnumEntry( static_cast<int>(ECoordinatesVersion::Original), "Original" ),
@@ -284,11 +284,11 @@ template<> const QVector<SEnumEntry> ZS::System::CEnum<ECoordinatesVersion>::s_a
 Enum EEditMode
 ==============================================================================*/
 
-template<> QMutex ZS::System::CEnum<EEditMode>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<EEditMode>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<EEditMode>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<EEditMode>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 //------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> ZS::System::CEnum<EEditMode>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<EEditMode>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {
     /* 0 */ SEnumEntry( static_cast<int>(EEditMode::None),           "None",           "-" ),
@@ -306,11 +306,11 @@ template<> const QVector<SEnumEntry> ZS::System::CEnum<EEditMode>::s_arEnumEntri
 Enum EEditResizeMode
 ==============================================================================*/
 
-template<> QMutex ZS::System::CEnum<EEditResizeMode>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<EEditResizeMode>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<EEditResizeMode>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<EEditResizeMode>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 //------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> ZS::System::CEnum<EEditResizeMode>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<EEditResizeMode>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {
     /* 0 */ SEnumEntry( static_cast<int>(EEditResizeMode::None),      "None",      "-" ),
@@ -325,11 +325,11 @@ template<> const QVector<SEnumEntry> ZS::System::CEnum<EEditResizeMode>::s_arEnu
 Enum ESelectionPointType
 ==============================================================================*/
 
-template<> QMutex ZS::System::CEnum<ESelectionPointType>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<ESelectionPointType>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<ESelectionPointType>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<ESelectionPointType>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 //------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> ZS::System::CEnum<ESelectionPointType>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<ESelectionPointType>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                       // Enumerator,                                            Name,      Symbol, Text,  SCIPShort, SCPILong, Value
     /* 0 */ SEnumEntry( static_cast<int>(ESelectionPointType::BoundingRectangle), "BoundingRect"      ),
@@ -392,13 +392,13 @@ QString ZS::Draw::selectionPoints2Str( int i_selPts )
 Enum ESelectionPoint
 ==============================================================================*/
 
-template<> QMutex ZS::System::CEnum<ESelectionPoint>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<ESelectionPoint>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<ESelectionPoint>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<ESelectionPoint>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 static double s_fSelectionPointRotateDistance_px = 20.0;
 
 //------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> ZS::System::CEnum<ESelectionPoint>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<ESelectionPoint>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {
     /*  0 */ SEnumEntry( static_cast<int>(ESelectionPoint::None),         "None",         "-",   "None"          ),
@@ -716,11 +716,11 @@ Qt::CursorShape ZS::Draw::selectionPoint2CursorShape( ESelectionPoint i_selPt )
 Enum ELinePoint
 ==============================================================================*/
 
-template<> QMutex ZS::System::CEnum<ELinePoint>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<ELinePoint>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<ELinePoint>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<ELinePoint>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 //------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> ZS::System::CEnum<ELinePoint>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<ELinePoint>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {
     /* 0 */ SEnumEntry( static_cast<int>(ELinePoint::None),  "None",  "-"     ),
@@ -733,11 +733,11 @@ template<> const QVector<SEnumEntry> ZS::System::CEnum<ELinePoint>::s_arEnumEntr
 Enum ETextStyle
 ==============================================================================*/
 
-template<> QMutex ZS::System::CEnum<ETextStyle>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<ETextStyle>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<ETextStyle>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<ETextStyle>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 //------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> ZS::System::CEnum<ETextStyle>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<ETextStyle>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {
     /* 0 */ SEnumEntry( static_cast<int>(ETextStyle::Normal),     "Normal",     "Normal"      ),
@@ -873,11 +873,11 @@ ETextSize ZS::Draw::str2TextSize( const QString& i_str, bool* o_pbConverted )
 Enum ETextEffect
 ==============================================================================*/
 
-template<> QMutex ZS::System::CEnum<ETextEffect>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<ETextEffect>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<ETextEffect>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<ETextEffect>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 //------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> ZS::System::CEnum<ETextEffect>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<ETextEffect>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {
     /* 0 */ SEnumEntry( static_cast<int>(ETextEffect::None),               "None",               "None"               ),
@@ -912,8 +912,8 @@ bool ZS::Draw::isTextEffectUnderline(ETextEffect i_textEffect)
 Enum EFillStyle
 ==============================================================================*/
 
-template<> QMutex ZS::System::CEnum<EFillStyle>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<EFillStyle>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<EFillStyle>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<EFillStyle>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 const Qt::BrushStyle s_arFillStyles2QtBrushStyles[] =
 {
@@ -939,7 +939,7 @@ const Qt::BrushStyle s_arFillStyles2QtBrushStyles[] =
 };
 
 //------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> ZS::System::CEnum<EFillStyle>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<EFillStyle>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {
     /*  0 */ SEnumEntry( static_cast<int>(EFillStyle::NoFill),                 "NoFill",                  "No Fill"                ),
@@ -998,8 +998,8 @@ bool ZS::Draw::isFillStyleGradientPattern( EFillStyle i_fillStyle )
 Enum ELineStyle
 ==============================================================================*/
 
-template<> QMutex ZS::System::CEnum<ELineStyle>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<ELineStyle>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<ELineStyle>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<ELineStyle>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 const Qt::PenStyle s_arLineStyles2QtPenStyles[] =
 {
@@ -1012,7 +1012,7 @@ const Qt::PenStyle s_arLineStyles2QtPenStyles[] =
 };
 
 //------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> ZS::System::CEnum<ELineStyle>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<ELineStyle>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {
     /* 0 */ SEnumEntry( static_cast<int>(ELineStyle::NoLine),         "NoLine",         "No Line"                   ),
@@ -1042,11 +1042,11 @@ Qt::PenStyle ZS::Draw::lineStyle2QtPenStyle( ELineStyle i_lineStyle )
 Enum ELineRecordType
 ==============================================================================*/
 
-template<> QMutex ZS::System::CEnum<ELineRecordType>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<ELineRecordType>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<ELineRecordType>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<ELineRecordType>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 //------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> ZS::System::CEnum<ELineRecordType>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<ELineRecordType>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {
     /* 0 */ SEnumEntry( static_cast<int>(ELineRecordType::Normal), "Normal", "Normal" ),
@@ -1059,11 +1059,11 @@ template<> const QVector<SEnumEntry> ZS::System::CEnum<ELineRecordType>::s_arEnu
 Enum ELineEndStyle
 ==============================================================================*/
 
-template<> QMutex ZS::System::CEnum<ELineEndStyle>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<ELineEndStyle>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<ELineEndStyle>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<ELineEndStyle>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 //------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> ZS::System::CEnum<ELineEndStyle>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<ELineEndStyle>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {
     /* 0 */ SEnumEntry( static_cast<int>(ELineEndStyle::Normal),    "Normal",    "Normal"     ),
@@ -1075,8 +1075,8 @@ template<> const QVector<SEnumEntry> ZS::System::CEnum<ELineEndStyle>::s_arEnumE
 Enum ELineEndFillStyle
 ==============================================================================*/
 
-template<> QMutex ZS::System::CEnum<ELineEndFillStyle>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<ELineEndFillStyle>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<ELineEndFillStyle>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<ELineEndFillStyle>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 const Qt::BrushStyle s_arLineEndFillStyles2QtBrushStyles[] =
 {
@@ -1085,7 +1085,7 @@ const Qt::BrushStyle s_arLineEndFillStyles2QtBrushStyles[] =
 };
 
 //------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> ZS::System::CEnum<ELineEndFillStyle>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<ELineEndFillStyle>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {
     SEnumEntry( static_cast<int>(ELineEndFillStyle::NoFill),       "NoFill",       "No Fill"       ),
@@ -1111,11 +1111,11 @@ Qt::BrushStyle ZS::Draw::lineEndFillStyle2QtBrushStyle( ELineEndFillStyle i_fill
 Enum ELineEndBaseLineType
 ==============================================================================*/
 
-template<> QMutex ZS::System::CEnum<ELineEndBaseLineType>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<ELineEndBaseLineType>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<ELineEndBaseLineType>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<ELineEndBaseLineType>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 //------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> ZS::System::CEnum<ELineEndBaseLineType>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<ELineEndBaseLineType>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {
     SEnumEntry( static_cast<int>(ELineEndBaseLineType::NoLine),   "NoLine",   "No Line"  ),
@@ -1128,8 +1128,8 @@ template<> const QVector<SEnumEntry> ZS::System::CEnum<ELineEndBaseLineType>::s_
 Enum ELineEndWidth
 ==============================================================================*/
 
-template<> QMutex ZS::System::CEnum<ELineEndWidth>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<ELineEndWidth>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<ELineEndWidth>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<ELineEndWidth>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 const double s_arfLineEndWidths[] =
 {
@@ -1139,7 +1139,7 @@ const double s_arfLineEndWidths[] =
 };
 
 //------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> ZS::System::CEnum<ELineEndWidth>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<ELineEndWidth>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {
     /* 0 */ SEnumEntry( static_cast<int>(ELineEndWidth::Thin),   "Thin",   "Thin"   ),
@@ -1166,8 +1166,8 @@ double ZS::Draw::lineEndWidth2dy( ELineEndWidth i_lineEndWidth )
 Enum ELineEndLength
 ==============================================================================*/
 
-template<> QMutex ZS::System::CEnum<ELineEndLength>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<ELineEndLength>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<ELineEndLength>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<ELineEndLength>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 const double s_arfLineEndLengths[] =
 {
@@ -1177,7 +1177,7 @@ const double s_arfLineEndLengths[] =
 };
 
 //------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> ZS::System::CEnum<ELineEndLength>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<ELineEndLength>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {
     /* 0 */ SEnumEntry( static_cast<int>(ELineEndLength::Short),  "Short",  "Short"  ),
@@ -1204,11 +1204,11 @@ double ZS::Draw::lineEndLength2dx( ELineEndLength i_lineEndLength )
 Enum EAlignmentRef
 ==============================================================================*/
 
-template<> QMutex ZS::System::CEnum<EAlignmentRef>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<EAlignmentRef>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<EAlignmentRef>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<EAlignmentRef>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 //------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> ZS::System::CEnum<EAlignmentRef>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<EAlignmentRef>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {
     /* 0 */ SEnumEntry( static_cast<int>(EAlignmentRef::None),      "None",    "-"  ),

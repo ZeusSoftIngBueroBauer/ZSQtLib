@@ -200,9 +200,6 @@ protected: // instance methods
     void removeShortcut( const QString& i_strUniqueName );
     QStringList shortcuts() const { return m_strlstShortcuts; }
     void setTree( CIdxTree* i_pTree );
-public: // class methods
-    /*! Converts the base entry type into its string representation. */
-    static QString entryType2Str( EEntryType i_entryType, int i_alias = EEnumEntryAliasStrName );
 protected: // instance members
     /*!< The type may be either Root, Branch or Leave.
          Leave entries may not have children.

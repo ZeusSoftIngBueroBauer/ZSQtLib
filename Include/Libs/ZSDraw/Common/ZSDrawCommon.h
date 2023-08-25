@@ -60,8 +60,8 @@ enum class EDrawingDimensionUnit {
                  on the screen resolution given in Dots/Inch or Pixels/Inch. */
 };
 
-template class ZSDRAWDLL_API ZS::System::CEnum<EDrawingDimensionUnit>;
-typedef ZS::System::CEnum<EDrawingDimensionUnit> CEnumDrawingDimensionUnit;
+template class ZSDRAWDLL_API ::CEnum<ZS::Draw::EDrawingDimensionUnit>;
+typedef ::CEnum<EDrawingDimensionUnit> CEnumDrawingDimensionUnit;
 
 //==============================================================================
 /*! Normed paper sizes.
@@ -81,8 +81,8 @@ enum class ENormedPaperSize {
     DinA10 /*!< 26 x 37 mm. */
 };
 
-template class ZSDRAWDLL_API ZS::System::CEnum<ENormedPaperSize>;
-typedef ZS::System::CEnum<ENormedPaperSize> CEnumNormedPaperSize;
+template class ZSDRAWDLL_API ::CEnum<ENormedPaperSize>;
+typedef ::CEnum<ENormedPaperSize> CEnumNormedPaperSize;
 
 const double c_fNormedPaperSizeWidthDinA0_mm  = 841.0;
 const double c_fNormedPaperSizeHeightDinA0_mm = 1189.0;
@@ -210,8 +210,8 @@ enum class EPrinterPaperSource
     Tray2      = 3
 };
 
-template class ZSDRAWDLL_API ZS::System::CEnum<EPrinterPaperSource>;
-typedef ZS::System::CEnum<EPrinterPaperSource> CEnumPrinterPaperSource;
+template class ZSDRAWDLL_API ::CEnum<EPrinterPaperSource>;
+typedef ::CEnum<EPrinterPaperSource> CEnumPrinterPaperSource;
 
 
 //==============================================================================
@@ -260,8 +260,8 @@ enum class EEditTool
     Ignore        = 3  /*! May be passed to methods to indicate that the argument should be ignored. */
 };
 
-template class ZSDRAWDLL_API ZS::System::CEnum<EEditTool>;
-typedef ZS::System::CEnum<EEditTool> CEnumEditTool;
+template class ZSDRAWDLL_API ::CEnum<EEditTool>;
+typedef ::CEnum<EEditTool> CEnumEditTool;
 
 
 //==============================================================================
@@ -274,8 +274,8 @@ enum class ECoordinatesVersion
     Current   = 1
 };
 
-template class ZSDRAWDLL_API ZS::System::CEnum<ECoordinatesVersion>;
-typedef ZS::System::CEnum<ECoordinatesVersion> CEnum;
+template class ZSDRAWDLL_API ::CEnum<ECoordinatesVersion>;
+typedef ::CEnum<ECoordinatesVersion> CEnumCoordinatesVersion;
 
 
 //==============================================================================
@@ -294,8 +294,8 @@ enum class EEditMode
     Ignore         = 7  // May be passed to methods to indicate that the argument should be ignored.
 };
 
-template class ZSDRAWDLL_API ZS::System::CEnum<EEditMode>;
-typedef ZS::System::CEnum<EEditMode> CEnumEditMode;
+template class ZSDRAWDLL_API ::CEnum<EEditMode>;
+typedef ::CEnum<EEditMode> CEnumEditMode;
 
 
 //==============================================================================
@@ -311,8 +311,8 @@ enum class EEditResizeMode
     Ignore    = 4, // May be passed to methods to indicate that the argument should be ignored.
 };
 
-template class ZSDRAWDLL_API ZS::System::CEnum<EEditResizeMode>;
-typedef ZS::System::CEnum<EEditResizeMode> CEnumEditResizeMode;
+template class ZSDRAWDLL_API ::CEnum<EEditResizeMode>;
+typedef ::CEnum<EEditResizeMode> CEnumEditResizeMode;
 
 
 //==============================================================================
@@ -325,8 +325,8 @@ enum class ESelectionPointType
     PolygonShapePoint = 1
 };
 
-template class ZSDRAWDLL_API ZS::System::CEnum<ESelectionPointType>;
-typedef ZS::System::CEnum<ESelectionPointType> CEnumSelectionPointType;
+template class ZSDRAWDLL_API ::CEnum<ESelectionPointType>;
+typedef ::CEnum<ESelectionPointType> CEnumSelectionPointType;
 
 
 //==============================================================================
@@ -371,8 +371,8 @@ enum class ESelectionPoint
     Any           = 14
 };
 
-template class ZSDRAWDLL_API ZS::System::CEnum<ESelectionPoint>;
-typedef ZS::System::CEnum<ESelectionPoint> CEnumSelectionPoint;
+template class ZSDRAWDLL_API ::CEnum<ESelectionPoint>;
+typedef ::CEnum<ESelectionPoint> CEnumSelectionPoint;
 
 const int ESelectionPointRectMin = static_cast<int>(ESelectionPoint::TopLeft);
 const int ESelectionPointCornerMin = static_cast<int>(ESelectionPoint::TopLeft);
@@ -405,8 +405,8 @@ enum class ELinePoint
     End   = 2
 };
 
-template class ZSDRAWDLL_API ZS::System::CEnum<ELinePoint>;
-typedef ZS::System::CEnum<ELinePoint> CEnumLinePoint;
+template class ZSDRAWDLL_API ::CEnum<ELinePoint>;
+typedef ::CEnum<ELinePoint> CEnumLinePoint;
 
 
 //==============================================================================
@@ -421,8 +421,8 @@ enum class ETextStyle
    BoldItalic = 3  // Italic|Bold
 };
 
-template class ZSDRAWDLL_API ZS::System::CEnum<ETextStyle>;
-typedef ZS::System::CEnum<ETextStyle> CEnumTextStyle;
+template class ZSDRAWDLL_API ::CEnum<ETextStyle>;
+typedef ::CEnum<ETextStyle> CEnumTextStyle;
 
 ZSDRAWDLL_API bool isTextStyleBold(ETextStyle i_style);
 ZSDRAWDLL_API bool isTextStyleItalic(ETextStyle i_style);
@@ -475,8 +475,8 @@ enum class ETextEffect
     StrikeoutUnderline = 3, // Strikeout|Underline
 };
 
-template class ZSDRAWDLL_API ZS::System::CEnum<ETextEffect>;
-typedef ZS::System::CEnum<ETextEffect> CEnumTextEffect;
+template class ZSDRAWDLL_API ::CEnum<ETextEffect>;
+typedef ::CEnum<ETextEffect> CEnumTextEffect;
 
 ZSDRAWDLL_API bool isTextEffectStrikeout(ETextEffect i_textEffect);
 ZSDRAWDLL_API bool isTextEffectUnderline(ETextEffect i_textEffect);
@@ -509,8 +509,8 @@ enum class EFillStyle
     TexturePattern         = 18
 } ;
 
-template class ZSDRAWDLL_API ZS::System::CEnum<EFillStyle>;
-typedef ZS::System::CEnum<EFillStyle> CEnumFillStyle;
+template class ZSDRAWDLL_API ::CEnum<EFillStyle>;
+typedef ::CEnum<EFillStyle> CEnumFillStyle;
 
 ZSDRAWDLL_API Qt::BrushStyle fillStyle2QtBrushStyle( EFillStyle i_fillStyle );
 ZSDRAWDLL_API bool isFillStyleGradientPattern( EFillStyle i_fillStyle );
@@ -530,8 +530,8 @@ enum class ELineStyle
     DashDotDotLine = 5
 };
 
-template class ZSDRAWDLL_API ZS::System::CEnum<ELineStyle>;
-typedef ZS::System::CEnum<ELineStyle> CEnumLineStyle;
+template class ZSDRAWDLL_API ::CEnum<ELineStyle>;
+typedef ::CEnum<ELineStyle> CEnumLineStyle;
 
 ZSDRAWDLL_API Qt::PenStyle lineStyle2QtPenStyle( ELineStyle i_lineStyle );
 
@@ -547,8 +547,8 @@ enum class ELineRecordType
     Triple = 2
 };
 
-template class ZSDRAWDLL_API ZS::System::CEnum<ELineRecordType>;
-typedef ZS::System::CEnum<ELineRecordType> CEnumLineRecordType;
+template class ZSDRAWDLL_API ::CEnum<ELineRecordType>;
+typedef ::CEnum<ELineRecordType> CEnumLineRecordType;
 
 
 //==============================================================================
@@ -561,8 +561,8 @@ enum class ELineEndStyle
     ArrowHead = 1
 };
 
-template class ZSDRAWDLL_API ZS::System::CEnum<ELineEndStyle>;
-typedef ZS::System::CEnum<ELineEndStyle> CEnumLineEndStyle;
+template class ZSDRAWDLL_API ::CEnum<ELineEndStyle>;
+typedef ::CEnum<ELineEndStyle> CEnumLineEndStyle;
 
 
 //==============================================================================
@@ -575,8 +575,8 @@ enum class ELineEndFillStyle
     SolidPattern = 1
 };
 
-template class ZSDRAWDLL_API ZS::System::CEnum<ELineEndFillStyle>;
-typedef ZS::System::CEnum<ELineEndFillStyle> CEnumLineEndFillStyle;
+template class ZSDRAWDLL_API ::CEnum<ELineEndFillStyle>;
+typedef ::CEnum<ELineEndFillStyle> CEnumLineEndFillStyle;
 
 ZSDRAWDLL_API Qt::BrushStyle lineEndFillStyle2QtBrushStyle( ELineEndFillStyle i_fillStyle );
 
@@ -592,8 +592,8 @@ enum class ELineEndBaseLineType
     Indented = 2
 };
 
-template class ZSDRAWDLL_API ZS::System::CEnum<ELineEndBaseLineType>;
-typedef ZS::System::CEnum<ELineEndBaseLineType> CEnumLineEndBaseLineType;
+template class ZSDRAWDLL_API ::CEnum<ELineEndBaseLineType>;
+typedef ::CEnum<ELineEndBaseLineType> CEnumLineEndBaseLineType;
 
 
 //==============================================================================
@@ -607,8 +607,8 @@ enum class ELineEndWidth
     Wide   = 2     // 19 Pixel
 };
 
-template class ZSDRAWDLL_API ZS::System::CEnum<ELineEndWidth>;
-typedef ZS::System::CEnum<ELineEndWidth> CEnumLineEndWidth;
+template class ZSDRAWDLL_API ::CEnum<ELineEndWidth>;
+typedef ::CEnum<ELineEndWidth> CEnumLineEndWidth;
 
 ZSDRAWDLL_API double lineEndWidth2dy( ELineEndWidth i_lineEndWidth );
 
@@ -624,8 +624,8 @@ enum class ELineEndLength
     Long   = 2    // 13 Pixel
 };
 
-template class ZSDRAWDLL_API ZS::System::CEnum<ELineEndLength>;
-typedef ZS::System::CEnum<ELineEndLength> CEnumLineEndLength;
+template class ZSDRAWDLL_API ::CEnum<ELineEndLength>;
+typedef ::CEnum<ELineEndLength> CEnumLineEndLength;
 
 ZSDRAWDLL_API double lineEndLength2dx( ELineEndLength i_lineEndLength );
 
@@ -647,8 +647,8 @@ enum class EAlignmentRef
     Height    = 8
 };
 
-template class ZSDRAWDLL_API ZS::System::CEnum<EAlignmentRef>;
-typedef ZS::System::CEnum<EAlignmentRef> CEnumAlignmentRef;
+template class ZSDRAWDLL_API ::CEnum<EAlignmentRef>;
+typedef ::CEnum<EAlignmentRef> CEnumAlignmentRef;
 
 } // namespace Draw
 

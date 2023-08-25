@@ -1280,20 +1280,3 @@ void CIdxTreeEntry::setTree( CIdxTree* i_pTree )
 {
     m_pTree = i_pTree;
 }
-
-/*=============================================================================
-protected: // class methods
-=============================================================================*/
-
-//-----------------------------------------------------------------------------
-/*! @brief Converts the base entry type into its string representation.
-*/
-//-----------------------------------------------------------------------------
-QString CIdxTreeEntry::entryType2Str( EEntryType i_entryType, int i_alias )
-//-----------------------------------------------------------------------------
-{
-    return SEnumEntry::enumerator2Str(
-        s_arEnumStrIdxTreeEntryTypes,
-        _ZSArrLen(s_arEnumStrIdxTreeEntryTypes),
-        static_cast<int>(i_entryType), i_alias);
-}
