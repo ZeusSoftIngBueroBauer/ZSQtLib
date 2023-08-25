@@ -72,6 +72,39 @@ class CIdxTreeEntry
 ******************************************************************************/
 
 /*=============================================================================
+public: // class methods
+=============================================================================*/
+
+//-----------------------------------------------------------------------------
+/*! @brief Converts the base entry type into its string representation.
+*/
+QString CIdxTreeEntry::entryType2Str( EEntryType i_entryType, int i_alias )
+//-----------------------------------------------------------------------------
+{
+    return SEnumEntry::enumerator2Str(
+        s_arEnumStrIdxTreeEntryTypes,
+        _ZSArrLen(s_arEnumStrIdxTreeEntryTypes),
+        static_cast<int>(i_entryType), i_alias);
+}
+
+//-----------------------------------------------------------------------------
+/*! @brief Converts the string into the enumerator.
+*/
+CIdxTreeEntry::EEntryType CIdxTreeEntry::str2EntryType(const QString& i_strEntryType, int i_alias)
+//-----------------------------------------------------------------------------
+{
+    EEntryType entryType = EEntryType::Undefined;
+    int iEntryType = SEnumEntry::str2Enumerator(
+        s_arEnumStrIdxTreeEntryTypes,
+        _ZSArrLen(s_arEnumStrIdxTreeEntryTypes),
+        i_strEntryType, i_alias);
+    if (iEntryType >= 0 && iEntryType < static_cast<int>(EEntryType::Count)) {
+        entryType = static_cast<EEntryType>(iEntryType);
+    }
+    return entryType;
+}
+
+/*=============================================================================
 public: // ctors
 =============================================================================*/
 

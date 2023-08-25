@@ -27,7 +27,6 @@ may result in using the software modules.
 #ifndef ZSSys_EnumEntry_h
 #define ZSSys_EnumEntry_h
 
-//#include <QtCore/qhash.h>
 #include <QtCore/qstring.h>
 #include <QtCore/qstringlist.h>
 #include <QtCore/qvariant.h>

@@ -66,6 +66,72 @@ may result in using the software modules.
 global type definitions and constants
 *******************************************************************************/
 
+namespace ZS {
+namespace PhysVal {
+enum class EUnitClassType {
+    Undefined = 0,
+    Ratio     = 1,
+    Quantity  = 2,
+    PhysSize  = 3
+};
+} }
+
+template class ZSPHYSVALDLL_API CEnum<ZS::PhysVal::EUnitClassType>;
+namespace ZS {
+namespace PhysVal {
+typedef CEnum<EUnitClassType> CEnumUnitClassType;
+} }
+
+namespace ZS {
+namespace PhysVal {
+enum class EPhysScienceField {
+    Undefined      = 0,
+    Geometry       = 1,
+    Kinematics     = 2,
+    Mechanics      = 3,
+    Electricity    = 4,
+    ThermoDynamics = 5,
+    Atomics        = 6,
+    Nucleonics     = 7,
+    Photometry     = 8
+};
+} }
+
+template class ZSPHYSVALDLL_API CEnum<ZS::PhysVal::EPhysScienceField>;
+namespace ZS {
+namespace PhysVal {
+typedef CEnum<EPhysScienceField> CEnumPhysScienceField;
+} }
+
+namespace ZS {
+namespace PhysVal {
+enum class EUnitFind {
+    None = 0,
+    Best = 1
+};
+} }
+
+template class ZSPHYSVALDLL_API CEnum<ZS::PhysVal::EUnitFind>;
+namespace ZS {
+namespace PhysVal {
+typedef CEnum<EUnitFind> CEnumUnitFind;
+} }
+
+namespace ZS {
+namespace PhysVal {
+enum class EResType {
+    Undefined  = 0,
+    Resolution = 1,
+    Accuracy   = 2
+};
+} }
+
+template class ZSPHYSVALDLL_API CEnum<ZS::PhysVal::EResType>;
+namespace ZS {
+namespace PhysVal {
+typedef CEnum<EResType> CEnumResType;
+} }
+
 namespace ZS
 {
 namespace PhysVal
@@ -91,46 +157,6 @@ namespace FormatResult {
     ZSPHYSVALDLL_API bool isErrorResult( TFormatResult i_formatResult );
     ZSPHYSVALDLL_API QString result2Str( TFormatResult i_formatResult );
 }
-
-enum class EUnitClassType
-{
-    Undefined = 0,
-    Ratio     = 1,
-    Quantity  = 2,
-    PhysSize  = 3
-};
-template class ZSPHYSVALDLL_API ZS::System::CEnum<EUnitClassType>;
-typedef ZS::System::CEnum<EUnitClassType> CEnumUnitClassType;
-
-enum class EPhysScienceField {
-    Undefined      = 0,
-    Geometry       = 1,
-    Kinematics     = 2,
-    Mechanics      = 3,
-    Electricity    = 4,
-    ThermoDynamics = 5,
-    Atomics        = 6,
-    Nucleonics     = 7,
-    Photometry     = 8
-};
-template class ZSPHYSVALDLL_API ZS::System::CEnum<EPhysScienceField>;
-typedef ZS::System::CEnum<EPhysScienceField> CEnumPhysScienceField;
-
-enum class EUnitFind {
-    None = 0,
-    Best = 1
-};
-template class ZSPHYSVALDLL_API ZS::System::CEnum<EUnitFind>;
-typedef ZS::System::CEnum<EUnitFind> CEnumUnitFind;
-
-enum class EResType {
-    Undefined  = 0,
-    Resolution = 1,
-    Accuracy   = 2
-};
-
-template class ZSPHYSVALDLL_API ZS::System::CEnum<EResType>;
-typedef ZS::System::CEnum<EResType> CEnumResType;
 
 typedef quint16 TPhysValSubStr;
 namespace PhysValSubStr {

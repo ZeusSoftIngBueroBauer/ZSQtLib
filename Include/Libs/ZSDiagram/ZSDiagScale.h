@@ -41,6 +41,8 @@ class CTrcAdminObj;
 
 namespace Diagram
 {
+class CDataDiagram;
+
 //******************************************************************************
 /*! @brief Class defining the scale values.
 

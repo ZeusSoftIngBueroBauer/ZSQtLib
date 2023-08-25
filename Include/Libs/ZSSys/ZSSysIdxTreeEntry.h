@@ -77,6 +77,8 @@ public: // type definitions and constants
         Count,
         Undefined
     };
+    static QString entryType2Str( EEntryType i_entryType, int i_alias = EEnumEntryAliasStrName );
+    static EEntryType str2EntryType( const QString& i_strEntryType, int i_alias = EEnumEntryAliasStrUndefined );
 public: // ctors and dtor
     CIdxTreeEntry( EEntryType i_entryType, const QString& i_strName );
     CIdxTreeEntry( const CIdxTreeEntry& i_other );

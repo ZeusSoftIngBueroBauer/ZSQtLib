@@ -116,7 +116,7 @@ target_include_directories(${PROJECT_NAME}
 
 set(_Libs ZSIpcGUI ZSTestGUI)
 
-target_link_libraries(${PROJECT_NAME} ${_Libs})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${_Libs})
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     target_link_libraries(${PROJECT_NAME} PRIVATE ${CMAKE_DL_LIBS})

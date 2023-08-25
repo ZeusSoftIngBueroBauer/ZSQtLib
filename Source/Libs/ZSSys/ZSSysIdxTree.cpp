@@ -627,7 +627,7 @@ QString CIdxTree::buildPathStr(
 
     Example:
 
-        QString strKey = buildKeyInTreeStr(EIdxTreeEntryType::Leave, "User");
+        QString strKey = buildKeyInTreeStr("L", "User");
         // strKey = "L:User".
 
     @param i_strEntryTypeSymbol [in] Symbol of the entry type ("L", "B" or "R").
@@ -645,7 +645,7 @@ QString CIdxTree::buildKeyInTreeStr(
 
     Example:
 
-        QString strKey = buildKeyInTreeStr(EIdxTreeEntryType::Leave, "User", "Data");
+        QString strKey = buildKeyInTreeStr("L", "User", "Data");
         // strKey = "L:User/Data".
 
     @param i_strEntryTypeSymbol [in] Symbol of the entry type ("L", "B" or "R").
@@ -665,7 +665,7 @@ QString CIdxTree::buildKeyInTreeStr(
 
     Example:
 
-        QString strKey = buildKeyInTreeStr(EIdxTreeEntryType::Leave, "User", "Data", "My");
+        QString strKey = buildKeyInTreeStr("L", "User", "Data", "My");
         // strKey = "L:User/Data/My".
 
     @param i_strEntryTypeSymbol [in] Symbol of the entry type ("L", "B" or "R").
@@ -686,7 +686,7 @@ QString CIdxTree::buildKeyInTreeStr(
 
     Example:
 
-        QString strKey = buildKeyInTreeStr(EIdxTreeEntryType::Leave, "User", "Data", "My", "Special");
+        QString strKey = buildKeyInTreeStr("L", "User", "Data", "My", "Special");
         // strKey = "L:User/Data/My/Special";
 
     @param i_strEntryTypeSymbol [in] Symbol of the entry type ("L", "B" or "R").
@@ -709,7 +709,7 @@ QString CIdxTree::buildKeyInTreeStr(
 
     Example:
 
-        QString strKey = buildKeyInTreeStr(EIdxTreeEntryType::Leave, "User", "Data", "My", "Special", "Work");
+        QString strKey = buildKeyInTreeStr("L", "User", "Data", "My", "Special", "Work");
         // strKey = "L:User/Data/My/Special/Work"
 
     @param i_strEntryTypeSymbol [in] Symbol of the entry type ("L", "B" or "R").
@@ -3945,10 +3945,10 @@ int CIdxTree::copy(
     CIdxTreeEntry* pTreeEntryTrg = nullptr;
 
     if( i_pTreeEntry->isBranch() ) {
-        createBranch(strName);
+        pTreeEntryTrg = createBranch(strName);
     }
     else if( i_pTreeEntry->isLeave() ) {
-        createLeave(strName);
+        pTreeEntryTrg = createLeave(strName);
     }
 
     int idxInTree = insert(pTreeEntryTrg, pTargetBranch, i_idxInTargetBranch, i_idxInTree);

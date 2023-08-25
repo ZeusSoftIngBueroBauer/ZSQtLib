@@ -186,7 +186,7 @@ QString CModelIdxTreeEntry::entryTypeSymbol() const
 QString CModelIdxTreeEntry::entryType2Str( int i_alias ) const
 //-----------------------------------------------------------------------------
 {
-    return CIdxTreeEntry::entryType2Str(m_entryType, EEnumEntryAliasStrName);
+    return CIdxTreeEntry::entryType2Str(m_entryType, i_alias);
 }
 
 
@@ -571,48 +571,44 @@ int CModelIdxTreeEntry::add( CModelIdxTreeEntry* i_pModelTreeEntry )
 
         CIdxTreeEntry* pTreeEntry = i_pModelTreeEntry->getIdxTreeEntry();
 
-        if( !m_bExcludeLeaves )
+        if (!(m_bExcludeLeaves && i_pModelTreeEntry->isLeave()))
         {
             idxInParentBranch = pTreeEntry->indexInParentBranch();
-        }
-        else if( i_pModelTreeEntry->isLeave() )
-        {
-            idxInParentBranch = pTreeEntry->indexInParentBranchsChildListWithSameEntryTypes();
-        }
 
-        if( idxInParentBranch < 0 || idxInParentBranch > m_arpTreeEntries.size() )
-        {
-            QString strAddErrInfo;
-            strAddErrInfo  = "IdxInParentBranch (=" + QString::number(idxInParentBranch) + ") is out of range";
-            strAddErrInfo += " [0 .. " + QString::number(m_arpTreeEntries.size()) + "]";
-            SErrResultInfo errResultInfo(
-                /* errSource  */ NameSpace(), ClassName(), keyInTree(), "add(" + i_pModelTreeEntry->keyInTree() + ")",
-                /* result     */ EResultInternalProgramError,
-                /* severity   */ EResultSeverityCritical,
-                /* strAddInfo */ strAddErrInfo );
-            throw CException(__FILE__, __LINE__, errResultInfo);
-        }
-
-        m_mappModelTreeEntries.insert(strKeyInParentBranch, i_pModelTreeEntry);
-
-        // If appended at the end ..
-        if( idxInParentBranch == m_arpTreeEntries.size() )
-        {
-            m_arpTreeEntries.append(i_pModelTreeEntry);
-        }
-        // If inserted before an existing entry ..
-        else // if( idxInParentBranch < m_arpTreeEntries.size() )
-        {
-            m_arpTreeEntries.append(nullptr);
-
-            // Move all following entries one index backwards.
-            for( int idxEntry = m_arpTreeEntries.size()-2; idxEntry >= idxInParentBranch; --idxEntry )
+            if( idxInParentBranch < 0 || idxInParentBranch > m_arpTreeEntries.size() )
             {
-                CModelIdxTreeEntry* pModelTreeEntry = m_arpTreeEntries[idxEntry];
-                m_arpTreeEntries[idxEntry+1] = pModelTreeEntry;
-                pModelTreeEntry->setIndexInParentBranch(idxEntry+1);
+                QString strAddErrInfo;
+                strAddErrInfo  = "IdxInParentBranch (=" + QString::number(idxInParentBranch) + ") is out of range";
+                strAddErrInfo += " [0 .. " + QString::number(m_arpTreeEntries.size()) + "]";
+                SErrResultInfo errResultInfo(
+                    /* errSource  */ NameSpace(), ClassName(), keyInTree(), "add(" + i_pModelTreeEntry->keyInTree() + ")",
+                    /* result     */ EResultInternalProgramError,
+                    /* severity   */ EResultSeverityCritical,
+                    /* strAddInfo */ strAddErrInfo );
+                throw CException(__FILE__, __LINE__, errResultInfo);
             }
-            m_arpTreeEntries[idxInParentBranch] = i_pModelTreeEntry;
+
+            m_mappModelTreeEntries.insert(strKeyInParentBranch, i_pModelTreeEntry);
+
+            // If appended at the end ..
+            if( idxInParentBranch == m_arpTreeEntries.size() )
+            {
+                m_arpTreeEntries.append(i_pModelTreeEntry);
+            }
+            // If inserted before an existing entry ..
+            else // if( idxInParentBranch < m_arpTreeEntries.size() )
+            {
+                m_arpTreeEntries.append(nullptr);
+
+                // Move all following entries one index backwards.
+                for( int idxEntry = m_arpTreeEntries.size()-2; idxEntry >= idxInParentBranch; --idxEntry )
+                {
+                    CModelIdxTreeEntry* pModelTreeEntry = m_arpTreeEntries[idxEntry];
+                    m_arpTreeEntries[idxEntry+1] = pModelTreeEntry;
+                    pModelTreeEntry->setIndexInParentBranch(idxEntry+1);
+                }
+                m_arpTreeEntries[idxInParentBranch] = i_pModelTreeEntry;
+            }
         }
     }
 

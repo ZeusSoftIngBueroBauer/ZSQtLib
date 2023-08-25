@@ -1025,7 +1025,11 @@ int CModelIdxTreeBranchContent::columnWidthByColumn(int i_iClm, int i_iFontPixel
             QFontMetrics fntMetrics = QFontMetrics(fnt);
 
             QString strClmHeader = headerData(i_iClm, Qt::Horizontal).toString();
+            #if QT_VERSION >= QT_VERSION_CHECK(5, 11, 0)
             iClmWidth = fntMetrics.horizontalAdvance(strClmHeader);
+            #else
+            iClmWidth = fntMetrics.boundingRect(strClmHeader).width();
+            #endif
 
             for( int iRowIdx = 0; iRowIdx < rowCount(); ++iRowIdx )
             {
@@ -1041,7 +1045,11 @@ int CModelIdxTreeBranchContent::columnWidthByColumn(int i_iClm, int i_iFontPixel
                     if( varData.canConvert(QVariant::String) )
                     {
                         QString strCellData = varData.toString();
+                        #if QT_VERSION >= QT_VERSION_CHECK(5, 11, 0)
                         iClmWidth = qMax(iClmWidth, fntMetrics.horizontalAdvance(strCellData));
+                        #else
+                        iClmWidth = qMax(iClmWidth, fntMetrics.boundingRect(strCellData).width());
+                        #endif
                     }
                 }
                 else if( strType == "imageUrl" || strType == "icon" )

@@ -431,7 +431,12 @@ void CDelegateIdxTreeTrcAdminObjs::setEditorData(
                         if (idx >= 0) {
                             pWdgtEditor->setCurrentIndex(idx);
                         }
-                        pWdgtEditor->showPopup();
+                        // Don't show popup immedetialy after setting the data.
+                        // The popup will be closed immediately afterwards again by ?
+                        // It is better to first select the field, show the combo box
+                        // and click again to select a value. Double click to show
+                        // the pulldown list is not so bad.
+                        //pWdgtEditor->showPopup();
                         bHandled = true;
                     }
                 }

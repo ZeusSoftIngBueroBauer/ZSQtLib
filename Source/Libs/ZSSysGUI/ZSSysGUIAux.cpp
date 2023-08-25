@@ -223,12 +223,12 @@ QKeyEvent* ZS::System::GUI::str2QKeyEvent( const QString& i_str, QEvent::Type i_
 {
     QKeyEvent* pEv = nullptr;
 
-    int                   iKey = -1;
+    int iKey = -1;
     Qt::KeyboardModifiers keyboardModifiers = Qt::NoModifier;
 
     if( i_str.length() == 1 )
     {
-        iKey              = char2QKeyCode(i_str[0]);
+        iKey = char2QKeyCode(i_str[0]);
         keyboardModifiers = char2QKeyboardModifiers(i_str[0]);
 
         pEv = new QKeyEvent(
@@ -241,7 +241,7 @@ QKeyEvent* ZS::System::GUI::str2QKeyEvent( const QString& i_str, QEvent::Type i_
     }
     else if( i_str.compare("ctrl-c",Qt::CaseInsensitive) == 0 )
     {
-        iKey              = str2QKeyCode("c");
+        iKey = str2QKeyCode("c");
         keyboardModifiers = Qt::ControlModifier;
 
         pEv = new QKeyEvent(
@@ -254,7 +254,7 @@ QKeyEvent* ZS::System::GUI::str2QKeyEvent( const QString& i_str, QEvent::Type i_
     }
     else if( i_str.compare("ctrl-x",Qt::CaseInsensitive) == 0 )
     {
-        iKey              = str2QKeyCode("x");
+        iKey = str2QKeyCode("x");
         keyboardModifiers = Qt::ControlModifier;
 
         pEv = new QKeyEvent(
@@ -267,7 +267,7 @@ QKeyEvent* ZS::System::GUI::str2QKeyEvent( const QString& i_str, QEvent::Type i_
     }
     else if( i_str.compare("ctrl-v",Qt::CaseInsensitive) == 0 )
     {
-        iKey              = str2QKeyCode("v");
+        iKey = str2QKeyCode("v");
         keyboardModifiers = Qt::ControlModifier;
 
         pEv = new QKeyEvent(

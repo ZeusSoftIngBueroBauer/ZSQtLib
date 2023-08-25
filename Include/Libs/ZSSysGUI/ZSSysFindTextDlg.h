@@ -72,14 +72,17 @@ public: // instance methods
     void setTextEdit( QTextEdit* i_pEdt );
 public: // instance methods
     void findNext();
+    void findPrev();
 protected slots:
     void onBtnFindNextClicked( bool i_bChecked );
+    void onBtnFindPrevClicked( bool i_bChecked );
 protected: // instance members
     QTextEdit*   m_pEdt;
     QVBoxLayout* m_pLyt;
     QHBoxLayout* m_pLytFindText;
     QLineEdit*   m_pEdtFindText;
     QPushButton* m_pBtnFindNext;
+    QPushButton* m_pBtnFindPrev;
     QHBoxLayout* m_pLytFindTextResult;
     QLabel*      m_pLblFindTextResult;
 

@@ -2658,44 +2658,29 @@ int ZS::System::str2QKeyCode( const QString& i_str )
     static bool s_bHshKeysInit = false;
     static QHash<QString,int> s_hshKeys;
 
-    if( !s_bHshKeysInit )
-    {
-        int     idx;
-        QString strHshCode;
-
-        for( idx = 0; idx < _ZSArrLen(s_arEnumStrQKeyCode); idx++ )
-        {
+    if( !s_bHshKeysInit ) {
+        for( int idx = 0; idx < _ZSArrLen(s_arEnumStrQKeyCode); idx++ ) {
             // Not the variant value has been initialized with the key code but the enum index.
             //uHshCode  = static_cast<quint32>(s_arEnumStrQKeyCode[idx].m_val.toULongLong());
-            if( s_arEnumStrQKeyCode[idx].m_strlstNames.size() > EEnumEntryAliasStrText )
-            {
-                if( !s_arEnumStrQKeyCode[idx].m_strlstNames[EEnumEntryAliasStrText].isEmpty() )
-                {
-                    strHshCode = s_arEnumStrQKeyCode[idx].m_strlstNames[EEnumEntryAliasStrText];
-
-                    if( !s_hshKeys.contains(strHshCode) )
-                    {
+            if( s_arEnumStrQKeyCode[idx].m_strlstNames.size() > EEnumEntryAliasStrText ) {
+                if( !s_arEnumStrQKeyCode[idx].m_strlstNames[EEnumEntryAliasStrText].isEmpty() ) {
+                    QString strHshCode = s_arEnumStrQKeyCode[idx].m_strlstNames[EEnumEntryAliasStrText];
+                    if( !s_hshKeys.contains(strHshCode) ) {
                         s_hshKeys[strHshCode] = idx;
                     }
                 }
             }
         }
-
         s_bHshKeysInit = true;
-
-    } // if( !s_bHshKeysInit )
+    }
 
     int iKeyCode = Qt::Key_unknown;
-
-    if( s_hshKeys.contains(i_str) )
-    {
+    if( s_hshKeys.contains(i_str) ) {
         int idx = s_hshKeys[i_str];
         iKeyCode = s_arEnumStrQKeyCode[idx].m_iEnumerator;
     }
-
     return iKeyCode;
-
-} // str2QKeyCode
+}
 
 /*==============================================================================
 Bitfield KeyboardModifier

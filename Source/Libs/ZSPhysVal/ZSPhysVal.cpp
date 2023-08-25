@@ -29,6 +29,8 @@ may result in using the software modules.
 #include "ZSPhysVal/ZSPhysValExceptions.h"
 #include "ZSSys/ZSSysAux.h"
 
+#include <math.h>
+
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 using namespace ZS::System;
@@ -1490,11 +1492,12 @@ QString CPhysVal::toString( const SValueFormatProvider& i_valueFormat ) const
         {
             if( physValRes.isValid() )
             {
+                CUnit unitPhysValRes = physValRes.unit();
                 formatResult = formatValue(
                     /* fVal                  */ fVal,
                     /* unitVal               */ unitVal,
                     /* fRes                  */ physValRes.getVal(),
-                    /* pUnitRes              */ &physValRes.unit(),
+                    /* pUnitRes              */ &unitPhysValRes,
                     /* resType               */ physValRes.type(),
                     /* iDigitsMantissa       */ i_valueFormat.m_iDigitsMantissa,
                     /* iDigitsExponent       */ i_valueFormat.m_iDigitsExponent,
@@ -1528,11 +1531,12 @@ QString CPhysVal::toString( const SValueFormatProvider& i_valueFormat ) const
         {
             if( physValRes.isValid() )
             {
+                CUnit unitPhysValRes = physValRes.unit();
                 formatResult = formatValue(
                     /* fVal                  */ fVal,
                     /* unitVal               */ unitVal,
                     /* fRes                  */ physValRes.getVal(),
-                    /* pUnitRes              */ &physValRes.unit(),
+                    /* pUnitRes              */ &unitPhysValRes,
                     /* resType               */ physValRes.type(),
                     /* iDigitsMantissa       */ i_valueFormat.m_iDigitsMantissa,
                     /* iDigitsExponent       */ i_valueFormat.m_iDigitsExponent,

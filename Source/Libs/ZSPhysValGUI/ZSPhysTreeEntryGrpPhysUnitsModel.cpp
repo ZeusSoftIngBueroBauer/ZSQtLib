@@ -124,7 +124,7 @@ QString CModelPhysUnitsGrp::column2Str(EColumn i_clm)
 //------------------------------------------------------------------------------
 {
     QString str;
-    if( i_clm < CModelIdxTreeBranchContent::EColumnCount ) {
+    if( i_clm < static_cast<EColumn>(CModelIdxTreeBranchContent::EColumnCount) ) {
         str = CModelIdxTreeBranchContent::column2Str(static_cast<CModelIdxTreeBranchContent::EColumn>(i_clm));
     }
     else {
@@ -572,14 +572,14 @@ QVariant CModelPhysUnitsGrp::data( const QModelIndex& i_modelIdx, int i_iRole ) 
 
         if( m_viewMode == EViewModeNormal )
         {
-            if( clm == CModelIdxTreeBranchContent::EColumnTreeEntryName )
+            if( clm == static_cast<EColumn>(CModelIdxTreeBranchContent::EColumnTreeEntryName) )
             {
                 if( iRole == Qt::DisplayRole || iRole == Qt::EditRole )
                 {
                     varData = pUnit->name();
                 }
             }
-            else if( clm < CModelIdxTreeBranchContent::EColumnCount )
+            else if( clm < static_cast<EColumn>(CModelIdxTreeBranchContent::EColumnCount) )
             {
                 varData = CModelIdxTreeBranchContent::data(i_modelIdx, i_iRole);
             }

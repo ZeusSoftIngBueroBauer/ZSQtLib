@@ -45,10 +45,10 @@ may result in using the software modules.
 #endif
 
 
-namespace ZS
-{
-namespace System
-{
+//namespace ZS
+//{
+//namespace System
+//{
 const int EInvalidEnumerator = -1;
 
 //******************************************************************************
@@ -59,7 +59,7 @@ const int EInvalidEnumerator = -1;
     The structure ZS::System::SEnumEntry already helps here. If this structure is
     used, all conversion routines look very similar.
 
-    The template class ZS::System::CEnum has been implemented to save paperwork and
+    The template class CEnum has been implemented to save paperwork and
     to offer even more convenient uses with enumerations.
 
     This template class relieves you of writing the conversion routines.
@@ -148,7 +148,7 @@ class /*ZSSYSDLL_API*/ CEnum
 //******************************************************************************
 {
 public: // class methods
-    static QString toString( E i_enumerator, int i_idxAlias = EEnumEntryAliasStrName );
+    static QString toString( E i_enumerator, int i_idxAlias = ZS::System::EEnumEntryAliasStrName );
     static E toEnumerator( const QString& i_strName, bool* o_pbOk = nullptr );
     static E toEnumerator( const QString& i_strName, int i_idxAlias, bool* o_pbOk = nullptr );
     static E toEnumerator( const QString& i_strName, int i_idxAlias, Qt::CaseSensitivity i_caseSensitivity, bool* o_pbOk = nullptr );
@@ -173,8 +173,8 @@ public: // ctors
     CEnum();
     CEnum( E i_enumerator );
     CEnum( int i_iEnumerator );
-    CEnum( const char* i_szName, int i_idxAlias = EEnumEntryAliasStrUndefined, Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive );
-    CEnum( const QString& i_strName, int i_idxAlias = EEnumEntryAliasStrUndefined, Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive );
+    CEnum( const char* i_szName, int i_idxAlias = ZS::System::EEnumEntryAliasStrUndefined, Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive );
+    CEnum( const QString& i_strName, int i_idxAlias = ZS::System::EEnumEntryAliasStrUndefined, Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive );
     CEnum( const CEnum& i_other );
 public: // assignment operators
     CEnum& operator = ( E i_enumerator );
@@ -226,12 +226,12 @@ public: // instance methods
     E enumerator() const;
     int enumeratorAsInt() const;
     bool isValid() const;
-    QString toString( int i_idxAlias = EEnumEntryAliasStrName ) const;
+    QString toString( int i_idxAlias = ZS::System::EEnumEntryAliasStrName ) const;
     QVariant toValue( QVariant::Type i_type = QVariant::Invalid, bool* o_pbOk = nullptr ) const;
 private: // auxiliary class methods
-    static void throwExceptionIfEnumeratorIsInvalid( EResult i_result, int i_iEnumerator, const QString& i_strMth );
+    static void throwExceptionIfEnumeratorIsInvalid( ZS::System::EResult i_result, int i_iEnumerator, const QString& i_strMth );
 public: // class members
-    static const QVector<SEnumEntry> s_arEnumEntries;               /*!< Array with enum entries. One for each enumerator. Must be defined for each concrete Enum Template instanziation. */
+    static const QVector<ZS::System::SEnumEntry> s_arEnumEntries;               /*!< Array with enum entries. One for each enumerator. Must be defined for each concrete Enum Template instanziation. */
     static QMutex s_mtxArMapsStr2Enumerators;                       /*!< Mutex to protect the string conversion hashes as long the initialization routine is in progress. */
     static QVector<QHash<QString, int>> s_armapsStr2Enumerators;    /*!< String hash tables to speed up string to enumerator conversions. */
 private: // instance members
@@ -258,12 +258,12 @@ public: // class methods
           - with Result = ArgOutOfRange if the alias is out of range.
 */
 template <typename E>
-QString ZS::System::CEnum<E>::toString(E i_enumerator, int i_idxAlias)
+QString CEnum<E>::toString(E i_enumerator, int i_idxAlias)
 //------------------------------------------------------------------------------
 {
     QString strMth = "toString(E " + QString::number(static_cast<int>(i_enumerator)) + ")";
-    throwExceptionIfEnumeratorIsInvalid(EResultIdxOutOfRange, static_cast<int>(i_enumerator), strMth);
-    return SEnumEntry::enumerator2Str(s_arEnumEntries.data(), s_arEnumEntries.count(), static_cast<int>(i_enumerator), i_idxAlias);
+    throwExceptionIfEnumeratorIsInvalid(ZS::System::EResultIdxOutOfRange, static_cast<int>(i_enumerator), strMth);
+    return ZS::System::SEnumEntry::enumerator2Str(s_arEnumEntries.data(), s_arEnumEntries.count(), static_cast<int>(i_enumerator), i_idxAlias);
 }
 
 //------------------------------------------------------------------------------
@@ -278,10 +278,10 @@ QString ZS::System::CEnum<E>::toString(E i_enumerator, int i_idxAlias)
     @return Enumerator corresponding to the given string. Undefined if the conversion failed.
 */
 template <typename E>
-E ZS::System::CEnum<E>::toEnumerator( const QString& i_strName, bool* o_pbOk )
+E CEnum<E>::toEnumerator( const QString& i_strName, bool* o_pbOk )
 //------------------------------------------------------------------------------
 {
-    return toEnumerator(i_strName, EEnumEntryAliasStrUndefined, Qt::CaseSensitive, o_pbOk);
+    return toEnumerator(i_strName, ZS::System::EEnumEntryAliasStrUndefined, Qt::CaseSensitive, o_pbOk);
 }
 
 //------------------------------------------------------------------------------
@@ -331,11 +331,11 @@ E CEnum<E>::toEnumerator( const QString& i_strName, int i_idxAlias, Qt::CaseSens
 {
     if( s_armapsStr2Enumerators.size() == 0 ) // Use mutex only if maps are not yet initialized.
     {
-        SEnumEntry::initStr2EnumeratorMaps(s_arEnumEntries.data(), s_arEnumEntries.count(), s_armapsStr2Enumerators, &s_mtxArMapsStr2Enumerators);
+        ZS::System::SEnumEntry::initStr2EnumeratorMaps(s_arEnumEntries.data(), s_arEnumEntries.count(), s_armapsStr2Enumerators, &s_mtxArMapsStr2Enumerators);
     }
     E enumerator = static_cast<E>(EInvalidEnumerator);
     bool bOk = false;
-    int iEnumerator = SEnumEntry::str2Enumerator(s_armapsStr2Enumerators, i_strName, i_idxAlias, i_caseSensitivity, &bOk);
+    int iEnumerator = ZS::System::SEnumEntry::str2Enumerator(s_armapsStr2Enumerators, i_strName, i_idxAlias, i_caseSensitivity, &bOk);
     if( bOk )
     {
         enumerator = static_cast<E>(iEnumerator);
@@ -361,7 +361,7 @@ E CEnum<E>::toEnumerator( const QVariant& i_val, bool* o_pbOk )
 {
     E enumerator = static_cast<E>(EInvalidEnumerator);
     bool bOk = false;
-    int iEnumerator = SEnumEntry::val2Enumerator(s_arEnumEntries.data(), s_arEnumEntries.count(), i_val, &bOk);
+    int iEnumerator = ZS::System::SEnumEntry::val2Enumerator(s_arEnumEntries.data(), s_arEnumEntries.count(), i_val, &bOk);
     if( bOk )
     {
         enumerator = static_cast<E>(iEnumerator);
@@ -409,8 +409,8 @@ QVariant CEnum<E>::toValue( E i_enumerator, QVariant::Type i_type, bool* o_pbOk 
 //------------------------------------------------------------------------------
 {
     QString strMth = "toValue(E " + QString::number(static_cast<int>(i_enumerator)) + ")";
-    throwExceptionIfEnumeratorIsInvalid(EResultIdxOutOfRange, static_cast<int>(i_enumerator), strMth);
-    return SEnumEntry::enumerator2Val(s_arEnumEntries.data(), s_arEnumEntries.count(), static_cast<int>(i_enumerator), i_type, o_pbOk);
+    throwExceptionIfEnumeratorIsInvalid(ZS::System::EResultIdxOutOfRange, static_cast<int>(i_enumerator), strMth);
+    return ZS::System::SEnumEntry::enumerator2Val(s_arEnumEntries.data(), s_arEnumEntries.count(), static_cast<int>(i_enumerator), i_type, o_pbOk);
 }
 
 //------------------------------------------------------------------------------
@@ -428,7 +428,7 @@ template <typename E>
 QVariant CEnum<E>::toValue( const QString& i_strName, bool* o_pbOk )
 //------------------------------------------------------------------------------
 {
-    return toValue(i_strName, QVariant::Invalid, EEnumEntryAliasStrUndefined, Qt::CaseSensitive, o_pbOk);
+    return toValue(i_strName, QVariant::Invalid, ZS::System::EEnumEntryAliasStrUndefined, Qt::CaseSensitive, o_pbOk);
 }
 
 //------------------------------------------------------------------------------
@@ -448,7 +448,7 @@ template <typename E>
 QVariant CEnum<E>::toValue( const QString& i_strName, QVariant::Type i_type, bool* o_pbOk )
 //------------------------------------------------------------------------------
 {
-    return toValue(i_strName, i_type, EEnumEntryAliasStrUndefined, Qt::CaseSensitive, o_pbOk);
+    return toValue(i_strName, i_type, ZS::System::EEnumEntryAliasStrUndefined, Qt::CaseSensitive, o_pbOk);
 }
 
 //------------------------------------------------------------------------------
@@ -491,7 +491,7 @@ template <typename E>
 QVariant CEnum<E>::toValue( const QString& i_strName, Qt::CaseSensitivity i_caseSensitivity, bool* o_pbOk )
 //------------------------------------------------------------------------------
 {
-    return toValue(i_strName, QVariant::Invalid, EEnumEntryAliasStrUndefined, i_caseSensitivity, o_pbOk);
+    return toValue(i_strName, QVariant::Invalid, ZS::System::EEnumEntryAliasStrUndefined, i_caseSensitivity, o_pbOk);
 }
 
 //------------------------------------------------------------------------------
@@ -536,7 +536,7 @@ template <typename E>
 QVariant CEnum<E>::toValue( const QString& i_strName, QVariant::Type i_type, Qt::CaseSensitivity i_caseSensitivity, bool* o_pbOk )
 //------------------------------------------------------------------------------
 {
-    return toValue(i_strName, i_type, EEnumEntryAliasStrUndefined, i_caseSensitivity, o_pbOk);
+    return toValue(i_strName, i_type, ZS::System::EEnumEntryAliasStrUndefined, i_caseSensitivity, o_pbOk);
 }
 
 //------------------------------------------------------------------------------
@@ -564,10 +564,10 @@ QVariant CEnum<E>::toValue( const QString& i_strName, QVariant::Type i_type, int
 {
     if( s_armapsStr2Enumerators.size() == 0 ) // Use mutex only if maps are not yet initialized.
     {
-        SEnumEntry::initStr2EnumeratorMaps(s_arEnumEntries.data(), s_arEnumEntries.count(), s_armapsStr2Enumerators, &s_mtxArMapsStr2Enumerators);
+        ZS::System::SEnumEntry::initStr2EnumeratorMaps(s_arEnumEntries.data(), s_arEnumEntries.count(), s_armapsStr2Enumerators, &s_mtxArMapsStr2Enumerators);
     }
     bool bOk = false;
-    QVariant val = SEnumEntry::str2Val(s_armapsStr2Enumerators, s_arEnumEntries.data(), s_arEnumEntries.count(), i_strName, i_type, i_idxAlias, i_caseSensitivity, &bOk);
+    QVariant val = ZS::System::SEnumEntry::str2Val(s_armapsStr2Enumerators, s_arEnumEntries.data(), s_arEnumEntries.count(), i_strName, i_type, i_idxAlias, i_caseSensitivity, &bOk);
     if( o_pbOk != nullptr )
     {
         *o_pbOk = bOk;
@@ -591,10 +591,10 @@ public: // class methods
     @return Enumeration instance with the enumerator set to the given string. Invalid if the conversion failed.
 */
 template <typename E>
-CEnum<E> ZS::System::CEnum<E>::fromString( const QString& i_strName, bool* o_pbOk )
+CEnum<E> CEnum<E>::fromString( const QString& i_strName, bool* o_pbOk )
 //------------------------------------------------------------------------------
 {
-    return fromString(i_strName, EEnumEntryAliasStrUndefined, Qt::CaseSensitive, o_pbOk);
+    return fromString(i_strName, ZS::System::EEnumEntryAliasStrUndefined, Qt::CaseSensitive, o_pbOk);
 }
 
 //------------------------------------------------------------------------------
@@ -615,7 +615,7 @@ CEnum<E> ZS::System::CEnum<E>::fromString( const QString& i_strName, bool* o_pbO
           - with Result = ArgOutOfRange if the alias is out of range.
 */
 template <typename E>
-CEnum<E> ZS::System::CEnum<E>::fromString( const QString& i_strName, int i_idxAlias, bool* o_pbOk )
+CEnum<E> CEnum<E>::fromString( const QString& i_strName, int i_idxAlias, bool* o_pbOk )
 //------------------------------------------------------------------------------
 {
     return fromString(i_strName, i_idxAlias, Qt::CaseSensitive, o_pbOk);
@@ -639,16 +639,16 @@ CEnum<E> ZS::System::CEnum<E>::fromString( const QString& i_strName, int i_idxAl
           - with Result = ArgOutOfRange if the alias is out of range.
 */
 template <typename E>
-CEnum<E> ZS::System::CEnum<E>::fromString( const QString& i_strName, int i_idxAlias, Qt::CaseSensitivity i_caseSensitivity, bool* o_pbOk )
+CEnum<E> CEnum<E>::fromString( const QString& i_strName, int i_idxAlias, Qt::CaseSensitivity i_caseSensitivity, bool* o_pbOk )
 //------------------------------------------------------------------------------
 {
     if( s_armapsStr2Enumerators.size() == 0 ) // Use mutex only if maps are not yet initialized.
     {
-        SEnumEntry::initStr2EnumeratorMaps(s_arEnumEntries.data(), s_arEnumEntries.count(), s_armapsStr2Enumerators, &s_mtxArMapsStr2Enumerators);
+        ZS::System::SEnumEntry::initStr2EnumeratorMaps(s_arEnumEntries.data(), s_arEnumEntries.count(), s_armapsStr2Enumerators, &s_mtxArMapsStr2Enumerators);
     }
     CEnum enumVal;
     bool bOk = false;
-    int iEnumerator = SEnumEntry::str2Enumerator(s_armapsStr2Enumerators, i_strName, i_idxAlias, i_caseSensitivity, &bOk);
+    int iEnumerator = ZS::System::SEnumEntry::str2Enumerator(s_armapsStr2Enumerators, i_strName, i_idxAlias, i_caseSensitivity, &bOk);
     if( bOk )
     {
         enumVal.m_enumerator = static_cast<E>(iEnumerator);
@@ -669,12 +669,12 @@ CEnum<E> ZS::System::CEnum<E>::fromString( const QString& i_strName, int i_idxAl
     @return Enumeration instance with the enumerator corresonding to  the given real value. Invalid if the conversion failed.
 */
 template <typename E>
-CEnum<E> ZS::System::CEnum<E>::fromValue( const QVariant& i_val, bool* o_pbOk )
+CEnum<E> CEnum<E>::fromValue( const QVariant& i_val, bool* o_pbOk )
 //------------------------------------------------------------------------------
 {
     CEnum enumVal;
     bool bOk = false;
-    int iEnumerator = SEnumEntry::val2Enumerator(s_arEnumEntries.data(), s_arEnumEntries.count(), i_val, &bOk);
+    int iEnumerator = ZS::System::SEnumEntry::val2Enumerator(s_arEnumEntries.data(), s_arEnumEntries.count(), i_val, &bOk);
     if( bOk )
     {
         enumVal.m_enumerator = static_cast<E>(iEnumerator);
@@ -696,7 +696,7 @@ public: // class methods
     This corresponds to the number of defined enum entries.
 */
 template <typename E>
-int ZS::System::CEnum<E>::count()
+int CEnum<E>::count()
 //------------------------------------------------------------------------------
 {
     return s_arEnumEntries.count();
@@ -730,7 +730,7 @@ CEnum<E>::CEnum( E i_enumerator ) :
     m_enumerator(static_cast<E>(EInvalidEnumerator))
 {
     QString strMth = "ctor(E " + QString::number(static_cast<int>(i_enumerator)) + ")";
-    throwExceptionIfEnumeratorIsInvalid(EResultIdxOutOfRange, static_cast<int>(i_enumerator), strMth);
+    throwExceptionIfEnumeratorIsInvalid(ZS::System::EResultIdxOutOfRange, static_cast<int>(i_enumerator), strMth);
     m_enumerator = i_enumerator;
 }
 
@@ -748,7 +748,7 @@ CEnum<E>::CEnum( int i_iEnumerator ) :
     m_enumerator(static_cast<E>(EInvalidEnumerator))
 {
     QString strMth = "ctor(E " + QString::number(i_iEnumerator) + ")";
-    throwExceptionIfEnumeratorIsInvalid(EResultIdxOutOfRange, i_iEnumerator, strMth);
+    throwExceptionIfEnumeratorIsInvalid(ZS::System::EResultIdxOutOfRange, i_iEnumerator, strMth);
     m_enumerator = static_cast<E>(i_iEnumerator);
 }
 
@@ -775,10 +775,10 @@ CEnum<E>::CEnum( const char* i_szName, int i_idxAlias, Qt::CaseSensitivity i_cas
 {
     if( s_armapsStr2Enumerators.size() == 0 ) // Use mutex only if maps are not yet initialized.
     {
-        SEnumEntry::initStr2EnumeratorMaps(s_arEnumEntries.data(), s_arEnumEntries.count(), s_armapsStr2Enumerators, &s_mtxArMapsStr2Enumerators);
+        ZS::System::SEnumEntry::initStr2EnumeratorMaps(s_arEnumEntries.data(), s_arEnumEntries.count(), s_armapsStr2Enumerators, &s_mtxArMapsStr2Enumerators);
     }
     bool bOk = false;
-    int iEnumerator = SEnumEntry::str2Enumerator(s_armapsStr2Enumerators, i_szName, i_idxAlias, i_caseSensitivity, &bOk);
+    int iEnumerator = ZS::System::SEnumEntry::str2Enumerator(s_armapsStr2Enumerators, i_szName, i_idxAlias, i_caseSensitivity, &bOk);
     if( bOk )
     {
         m_enumerator = static_cast<E>(iEnumerator);
@@ -808,10 +808,10 @@ CEnum<E>::CEnum( const QString& i_strName, int i_idxAlias, Qt::CaseSensitivity i
 {
     if( s_armapsStr2Enumerators.size() == 0 ) // Use mutex only if maps are not yet initialized.
     {
-        SEnumEntry::initStr2EnumeratorMaps(s_arEnumEntries.data(), s_arEnumEntries.count(), s_armapsStr2Enumerators, &s_mtxArMapsStr2Enumerators);
+        ZS::System::SEnumEntry::initStr2EnumeratorMaps(s_arEnumEntries.data(), s_arEnumEntries.count(), s_armapsStr2Enumerators, &s_mtxArMapsStr2Enumerators);
     }
     bool bOk = false;
-    int iEnumerator = SEnumEntry::str2Enumerator(s_armapsStr2Enumerators, i_strName, i_idxAlias, i_caseSensitivity, &bOk);
+    int iEnumerator = ZS::System::SEnumEntry::str2Enumerator(s_armapsStr2Enumerators, i_strName, i_idxAlias, i_caseSensitivity, &bOk);
     if( bOk )
     {
         m_enumerator = static_cast<E>(iEnumerator);
@@ -841,11 +841,11 @@ public: // assignment operators
           - with Result = IdxOutOutOfRange if the enumerator is out of range
 */
 template <typename E>
-CEnum<E>& ZS::System::CEnum<E>::operator = ( E i_enumerator )
+CEnum<E>& CEnum<E>::operator = ( E i_enumerator )
 //------------------------------------------------------------------------------
 {
     QString strMth = QString::number(static_cast<int>(m_enumerator)) + " = E " + QString::number(static_cast<int>(i_enumerator));
-    throwExceptionIfEnumeratorIsInvalid(EResultIdxOutOfRange, static_cast<int>(i_enumerator), strMth);
+    throwExceptionIfEnumeratorIsInvalid(ZS::System::EResultIdxOutOfRange, static_cast<int>(i_enumerator), strMth);
     m_enumerator = i_enumerator;
     return *this;
 }
@@ -859,11 +859,11 @@ CEnum<E>& ZS::System::CEnum<E>::operator = ( E i_enumerator )
           - with Result = IdxOutOutOfRange if the enumerator is out of range
 */
 template <typename E>
-CEnum<E>& ZS::System::CEnum<E>::operator = ( int i_iEnumerator )
+CEnum<E>& CEnum<E>::operator = ( int i_iEnumerator )
 //------------------------------------------------------------------------------
 {
     QString strMth = QString::number(static_cast<int>(m_enumerator)) + " = E " + QString::number(i_iEnumerator);
-    throwExceptionIfEnumeratorIsInvalid(EResultIdxOutOfRange, i_iEnumerator, strMth);
+    throwExceptionIfEnumeratorIsInvalid(ZS::System::EResultIdxOutOfRange, i_iEnumerator, strMth);
     m_enumerator = static_cast<E>(i_iEnumerator);
     return *this;
 }
@@ -883,15 +883,15 @@ CEnum<E>& ZS::System::CEnum<E>::operator = ( int i_iEnumerator )
           - with Result = IdxOutOutOfRange if the enumerator is out of range
 */
 template <typename E>
-CEnum<E>& ZS::System::CEnum<E>::operator = ( const char* i_szName )
+CEnum<E>& CEnum<E>::operator = ( const char* i_szName )
 //------------------------------------------------------------------------------
 {
     if( s_armapsStr2Enumerators.size() == 0 ) // Use mutex only if maps are not yet initialized.
     {
-        SEnumEntry::initStr2EnumeratorMaps(s_arEnumEntries.data(), s_arEnumEntries.count(), s_armapsStr2Enumerators, &s_mtxArMapsStr2Enumerators);
+        ZS::System::SEnumEntry::initStr2EnumeratorMaps(s_arEnumEntries.data(), s_arEnumEntries.count(), s_armapsStr2Enumerators, &s_mtxArMapsStr2Enumerators);
     }
     bool bOk = false;
-    int iEnumerator = SEnumEntry::str2Enumerator(s_armapsStr2Enumerators, i_szName, EEnumEntryAliasStrUndefined, Qt::CaseSensitive, &bOk);
+    int iEnumerator = ZS::System::SEnumEntry::str2Enumerator(s_armapsStr2Enumerators, i_szName, ZS::System::EEnumEntryAliasStrUndefined, Qt::CaseSensitive, &bOk);
     if( bOk )
     {
         m_enumerator = static_cast<E>(iEnumerator);
@@ -918,15 +918,15 @@ CEnum<E>& ZS::System::CEnum<E>::operator = ( const char* i_szName )
           - with Result = IdxOutOutOfRange if the enumerator is out of range
 */
 template <typename E>
-CEnum<E>& ZS::System::CEnum<E>::operator = ( const QString& i_strName )
+CEnum<E>& CEnum<E>::operator = ( const QString& i_strName )
 //------------------------------------------------------------------------------
 {
     if( s_armapsStr2Enumerators.size() == 0 ) // Use mutex only if maps are not yet initialized.
     {
-        SEnumEntry::initStr2EnumeratorMaps(s_arEnumEntries.data(), s_arEnumEntries.count(), s_armapsStr2Enumerators, &s_mtxArMapsStr2Enumerators);
+        ZS::System::SEnumEntry::initStr2EnumeratorMaps(s_arEnumEntries.data(), s_arEnumEntries.count(), s_armapsStr2Enumerators, &s_mtxArMapsStr2Enumerators);
     }
     bool bOk = false;
-    int iEnumerator = SEnumEntry::str2Enumerator(s_armapsStr2Enumerators, i_strName, EEnumEntryAliasStrUndefined, Qt::CaseSensitive, &bOk);
+    int iEnumerator = ZS::System::SEnumEntry::str2Enumerator(s_armapsStr2Enumerators, i_strName, ZS::System::EEnumEntryAliasStrUndefined, Qt::CaseSensitive, &bOk);
     if( bOk )
     {
         m_enumerator = static_cast<E>(iEnumerator);
@@ -942,7 +942,7 @@ CEnum<E>& ZS::System::CEnum<E>::operator = ( const QString& i_strName )
 /*! Assigns other to this enum instance and return a reference to this enum instance.
 */
 template <typename E>
-CEnum<E>& ZS::System::CEnum<E>::operator = ( const CEnum& i_other )
+CEnum<E>& CEnum<E>::operator = ( const CEnum& i_other )
 //------------------------------------------------------------------------------
 {
     m_enumerator = i_other.m_enumerator;
@@ -988,8 +988,8 @@ bool CEnum<E>::operator < ( E i_enumerator ) const
 //------------------------------------------------------------------------------
 {
     QString strMth = "operator < E " + QString::number(static_cast<int>(i_enumerator));
-    throwExceptionIfEnumeratorIsInvalid(EResultInvalidMethodCall, static_cast<int>(m_enumerator), strMth);
-    throwExceptionIfEnumeratorIsInvalid(EResultIdxOutOfRange, static_cast<int>(i_enumerator), strMth);
+    throwExceptionIfEnumeratorIsInvalid(ZS::System::EResultInvalidMethodCall, static_cast<int>(m_enumerator), strMth);
+    throwExceptionIfEnumeratorIsInvalid(ZS::System::EResultIdxOutOfRange, static_cast<int>(i_enumerator), strMth);
     return( m_enumerator < i_enumerator );
 }
 
@@ -1006,8 +1006,8 @@ bool CEnum<E>::operator > ( E i_enumerator ) const
 //------------------------------------------------------------------------------
 {
     QString strMth = "operator > E " + QString::number(static_cast<int>(i_enumerator));
-    throwExceptionIfEnumeratorIsInvalid(EResultInvalidMethodCall, static_cast<int>(m_enumerator), strMth);
-    throwExceptionIfEnumeratorIsInvalid(EResultIdxOutOfRange, static_cast<int>(i_enumerator), strMth);
+    throwExceptionIfEnumeratorIsInvalid(ZS::System::EResultInvalidMethodCall, static_cast<int>(m_enumerator), strMth);
+    throwExceptionIfEnumeratorIsInvalid(ZS::System::EResultIdxOutOfRange, static_cast<int>(i_enumerator), strMth);
     return( m_enumerator > i_enumerator );
 }
 
@@ -1024,8 +1024,8 @@ bool CEnum<E>::operator <= ( E i_enumerator ) const
 //------------------------------------------------------------------------------
 {
     QString strMth = "operator <= E " + QString::number(static_cast<int>(i_enumerator));
-    throwExceptionIfEnumeratorIsInvalid(EResultInvalidMethodCall, static_cast<int>(m_enumerator), strMth);
-    throwExceptionIfEnumeratorIsInvalid(EResultIdxOutOfRange, static_cast<int>(i_enumerator), strMth);
+    throwExceptionIfEnumeratorIsInvalid(ZS::System::EResultInvalidMethodCall, static_cast<int>(m_enumerator), strMth);
+    throwExceptionIfEnumeratorIsInvalid(ZS::System::EResultIdxOutOfRange, static_cast<int>(i_enumerator), strMth);
     return( m_enumerator <= i_enumerator );
 }
 
@@ -1042,8 +1042,8 @@ bool CEnum<E>::operator >= ( E i_enumerator ) const
 //------------------------------------------------------------------------------
 {
     QString strMth = "operator >= E " + QString::number(static_cast<int>(i_enumerator));
-    throwExceptionIfEnumeratorIsInvalid(EResultInvalidMethodCall, static_cast<int>(m_enumerator), strMth);
-    throwExceptionIfEnumeratorIsInvalid(EResultIdxOutOfRange, static_cast<int>(i_enumerator), strMth);
+    throwExceptionIfEnumeratorIsInvalid(ZS::System::EResultInvalidMethodCall, static_cast<int>(m_enumerator), strMth);
+    throwExceptionIfEnumeratorIsInvalid(ZS::System::EResultIdxOutOfRange, static_cast<int>(i_enumerator), strMth);
     return( m_enumerator >= i_enumerator );
 }
 
@@ -1186,11 +1186,11 @@ bool CEnum<E>::operator == ( const char* i_szName ) const
 {
     if( s_armapsStr2Enumerators.size() == 0 ) // Use mutex only if maps are not yet initialized.
     {
-        SEnumEntry::initStr2EnumeratorMaps(s_arEnumEntries.data(), s_arEnumEntries.count(), s_armapsStr2Enumerators, &s_mtxArMapsStr2Enumerators);
+        ZS::System::SEnumEntry::initStr2EnumeratorMaps(s_arEnumEntries.data(), s_arEnumEntries.count(), s_armapsStr2Enumerators, &s_mtxArMapsStr2Enumerators);
     }
     bool bResult = false;
     bool bOk = false;
-    int iEnumerator = SEnumEntry::str2Enumerator(s_armapsStr2Enumerators, i_szName, EEnumEntryAliasStrUndefined, Qt::CaseSensitive, &bOk);
+    int iEnumerator = ZS::System::SEnumEntry::str2Enumerator(s_armapsStr2Enumerators, i_szName, ZS::System::EEnumEntryAliasStrUndefined, Qt::CaseSensitive, &bOk);
     if( bOk )
     {
         bResult = (static_cast<int>(m_enumerator) == iEnumerator);
@@ -1230,11 +1230,11 @@ bool CEnum<E>::operator < ( const char* i_szName ) const
 {
     if( s_armapsStr2Enumerators.size() == 0 ) // Use mutex only if maps are not yet initialized.
     {
-        SEnumEntry::initStr2EnumeratorMaps(s_arEnumEntries.data(), s_arEnumEntries.count(), s_armapsStr2Enumerators, &s_mtxArMapsStr2Enumerators);
+        ZS::System::SEnumEntry::initStr2EnumeratorMaps(s_arEnumEntries.data(), s_arEnumEntries.count(), s_armapsStr2Enumerators, &s_mtxArMapsStr2Enumerators);
     }
     bool bResult = false;
     bool bOk = false;
-    int iEnumerator = SEnumEntry::str2Enumerator(s_armapsStr2Enumerators, i_szName, EEnumEntryAliasStrUndefined, Qt::CaseSensitive, &bOk);
+    int iEnumerator = ZS::System::SEnumEntry::str2Enumerator(s_armapsStr2Enumerators, i_szName, ZS::System::EEnumEntryAliasStrUndefined, Qt::CaseSensitive, &bOk);
     if( bOk && static_cast<int>(m_enumerator) >= 0 && iEnumerator >= 0 )
     {
         bResult = static_cast<int>(m_enumerator) < iEnumerator;
@@ -1260,11 +1260,11 @@ bool CEnum<E>::operator > ( const char* i_szName ) const
 {
     if( s_armapsStr2Enumerators.size() == 0 ) // Use mutex only if maps are not yet initialized.
     {
-        SEnumEntry::initStr2EnumeratorMaps(s_arEnumEntries.data(), s_arEnumEntries.count(), s_armapsStr2Enumerators, &s_mtxArMapsStr2Enumerators);
+        ZS::System::SEnumEntry::initStr2EnumeratorMaps(s_arEnumEntries.data(), s_arEnumEntries.count(), s_armapsStr2Enumerators, &s_mtxArMapsStr2Enumerators);
     }
     bool bResult = false;
     bool bOk = false;
-    int iEnumerator = SEnumEntry::str2Enumerator(s_armapsStr2Enumerators, i_szName, EEnumEntryAliasStrUndefined, Qt::CaseSensitive, &bOk);
+    int iEnumerator = ZS::System::SEnumEntry::str2Enumerator(s_armapsStr2Enumerators, i_szName, ZS::System::EEnumEntryAliasStrUndefined, Qt::CaseSensitive, &bOk);
     if( bOk && static_cast<int>(m_enumerator) >= 0 && iEnumerator >= 0 )
     {
         bResult = static_cast<int>(m_enumerator) > iEnumerator;
@@ -1290,11 +1290,11 @@ bool CEnum<E>::operator <= ( const char* i_szName ) const
 {
     if( s_armapsStr2Enumerators.size() == 0 ) // Use mutex only if maps are not yet initialized.
     {
-        SEnumEntry::initStr2EnumeratorMaps(s_arEnumEntries.data(), s_arEnumEntries.count(), s_armapsStr2Enumerators, &s_mtxArMapsStr2Enumerators);
+        ZS::System::SEnumEntry::initStr2EnumeratorMaps(s_arEnumEntries.data(), s_arEnumEntries.count(), s_armapsStr2Enumerators, &s_mtxArMapsStr2Enumerators);
     }
     bool bResult = false;
     bool bOk = false;
-    int iEnumerator = SEnumEntry::str2Enumerator(s_armapsStr2Enumerators, i_szName, EEnumEntryAliasStrUndefined, Qt::CaseSensitive, &bOk);
+    int iEnumerator = ZS::System::SEnumEntry::str2Enumerator(s_armapsStr2Enumerators, i_szName, ZS::System::EEnumEntryAliasStrUndefined, Qt::CaseSensitive, &bOk);
     if( bOk && static_cast<int>(m_enumerator) >= 0 && iEnumerator >= 0 )
     {
         bResult = static_cast<int>(m_enumerator) <= iEnumerator;
@@ -1320,11 +1320,11 @@ bool CEnum<E>::operator >= ( const char* i_szName ) const
 {
     if( s_armapsStr2Enumerators.size() == 0 ) // Use mutex only if maps are not yet initialized.
     {
-        SEnumEntry::initStr2EnumeratorMaps(s_arEnumEntries.data(), s_arEnumEntries.count(), s_armapsStr2Enumerators, &s_mtxArMapsStr2Enumerators);
+        ZS::System::SEnumEntry::initStr2EnumeratorMaps(s_arEnumEntries.data(), s_arEnumEntries.count(), s_armapsStr2Enumerators, &s_mtxArMapsStr2Enumerators);
     }
     bool bResult = false;
     bool bOk = false;
-    int iEnumerator = SEnumEntry::str2Enumerator(s_armapsStr2Enumerators, i_szName, EEnumEntryAliasStrUndefined, Qt::CaseSensitive, &bOk);
+    int iEnumerator = ZS::System::SEnumEntry::str2Enumerator(s_armapsStr2Enumerators, i_szName, ZS::System::EEnumEntryAliasStrUndefined, Qt::CaseSensitive, &bOk);
     if( bOk && static_cast<int>(m_enumerator) >= 0 && iEnumerator >= 0 )
     {
         bResult = static_cast<int>(m_enumerator) >= iEnumerator;
@@ -1349,11 +1349,11 @@ bool CEnum<E>::operator == ( const QString& i_strName ) const
 {
     if( s_armapsStr2Enumerators.size() == 0 ) // Use mutex only if maps are not yet initialized.
     {
-        SEnumEntry::initStr2EnumeratorMaps(s_arEnumEntries.data(), s_arEnumEntries.count(), s_armapsStr2Enumerators, &s_mtxArMapsStr2Enumerators);
+        ZS::System::SEnumEntry::initStr2EnumeratorMaps(s_arEnumEntries.data(), s_arEnumEntries.count(), s_armapsStr2Enumerators, &s_mtxArMapsStr2Enumerators);
     }
     bool bResult = false;
     bool bOk = false;
-    int iEnumerator = SEnumEntry::str2Enumerator(s_armapsStr2Enumerators, i_strName, EEnumEntryAliasStrUndefined, Qt::CaseSensitive, &bOk);
+    int iEnumerator = ZS::System::SEnumEntry::str2Enumerator(s_armapsStr2Enumerators, i_strName, ZS::System::EEnumEntryAliasStrUndefined, Qt::CaseSensitive, &bOk);
     if( bOk )
     {
         bResult = (static_cast<int>(m_enumerator) == iEnumerator);
@@ -1393,11 +1393,11 @@ bool CEnum<E>::operator < ( const QString& i_strName ) const
 {
     if( s_armapsStr2Enumerators.size() == 0 ) // Use mutex only if maps are not yet initialized.
     {
-        SEnumEntry::initStr2EnumeratorMaps(s_arEnumEntries.data(), s_arEnumEntries.count(), s_armapsStr2Enumerators, &s_mtxArMapsStr2Enumerators);
+        ZS::System::SEnumEntry::initStr2EnumeratorMaps(s_arEnumEntries.data(), s_arEnumEntries.count(), s_armapsStr2Enumerators, &s_mtxArMapsStr2Enumerators);
     }
     bool bResult = false;
     bool bOk = false;
-    int iEnumerator = SEnumEntry::str2Enumerator(s_armapsStr2Enumerators, i_strName, EEnumEntryAliasStrUndefined, Qt::CaseSensitive, &bOk);
+    int iEnumerator = ZS::System::SEnumEntry::str2Enumerator(s_armapsStr2Enumerators, i_strName, ZS::System::EEnumEntryAliasStrUndefined, Qt::CaseSensitive, &bOk);
     if( bOk && static_cast<int>(m_enumerator) >= 0 && iEnumerator >= 0 )
     {
         bResult = static_cast<int>(m_enumerator) < iEnumerator;
@@ -1423,11 +1423,11 @@ bool CEnum<E>::operator > ( const QString& i_strName ) const
 {
     if( s_armapsStr2Enumerators.size() == 0 ) // Use mutex only if maps are not yet initialized.
     {
-        SEnumEntry::initStr2EnumeratorMaps(s_arEnumEntries.data(), s_arEnumEntries.count(), s_armapsStr2Enumerators, &s_mtxArMapsStr2Enumerators);
+        ZS::System::SEnumEntry::initStr2EnumeratorMaps(s_arEnumEntries.data(), s_arEnumEntries.count(), s_armapsStr2Enumerators, &s_mtxArMapsStr2Enumerators);
     }
     bool bResult = false;
     bool bOk = false;
-    int iEnumerator = SEnumEntry::str2Enumerator(s_armapsStr2Enumerators, i_strName, EEnumEntryAliasStrUndefined, Qt::CaseSensitive, &bOk);
+    int iEnumerator = ZS::System::SEnumEntry::str2Enumerator(s_armapsStr2Enumerators, i_strName, ZS::System::EEnumEntryAliasStrUndefined, Qt::CaseSensitive, &bOk);
     if( bOk && static_cast<int>(m_enumerator) >= 0 && iEnumerator >= 0 )
     {
         bResult = static_cast<int>(m_enumerator) > iEnumerator;
@@ -1453,11 +1453,11 @@ bool CEnum<E>::operator <= ( const QString& i_strName ) const
 {
     if( s_armapsStr2Enumerators.size() == 0 ) // Use mutex only if maps are not yet initialized.
     {
-        SEnumEntry::initStr2EnumeratorMaps(s_arEnumEntries.data(), s_arEnumEntries.count(), s_armapsStr2Enumerators, &s_mtxArMapsStr2Enumerators);
+        ZS::System::SEnumEntry::initStr2EnumeratorMaps(s_arEnumEntries.data(), s_arEnumEntries.count(), s_armapsStr2Enumerators, &s_mtxArMapsStr2Enumerators);
     }
     bool bResult = false;
     bool bOk = false;
-    int iEnumerator = SEnumEntry::str2Enumerator(s_armapsStr2Enumerators, i_strName, EEnumEntryAliasStrUndefined, Qt::CaseSensitive, &bOk);
+    int iEnumerator = ZS::System::SEnumEntry::str2Enumerator(s_armapsStr2Enumerators, i_strName, ZS::System::EEnumEntryAliasStrUndefined, Qt::CaseSensitive, &bOk);
     if( bOk && static_cast<int>(m_enumerator) >= 0 && iEnumerator >= 0 )
     {
         bResult = static_cast<int>(m_enumerator) <= iEnumerator;
@@ -1483,11 +1483,11 @@ bool CEnum<E>::operator >= ( const QString& i_strName ) const
 {
     if( s_armapsStr2Enumerators.size() == 0 ) // Use mutex only if maps are not yet initialized.
     {
-        SEnumEntry::initStr2EnumeratorMaps(s_arEnumEntries.data(), s_arEnumEntries.count(), s_armapsStr2Enumerators, &s_mtxArMapsStr2Enumerators);
+        ZS::System::SEnumEntry::initStr2EnumeratorMaps(s_arEnumEntries.data(), s_arEnumEntries.count(), s_armapsStr2Enumerators, &s_mtxArMapsStr2Enumerators);
     }
     bool bResult = false;
     bool bOk = false;
-    int iEnumerator = SEnumEntry::str2Enumerator(s_armapsStr2Enumerators, i_strName, EEnumEntryAliasStrUndefined, Qt::CaseSensitive, &bOk);
+    int iEnumerator = ZS::System::SEnumEntry::str2Enumerator(s_armapsStr2Enumerators, i_strName, ZS::System::EEnumEntryAliasStrUndefined, Qt::CaseSensitive, &bOk);
     if( bOk && static_cast<int>(m_enumerator) >= 0 && iEnumerator >= 0 )
     {
         bResult = static_cast<int>(m_enumerator) >= iEnumerator;
@@ -1534,8 +1534,8 @@ bool CEnum<E>::operator < ( const CEnum& i_other ) const
 //------------------------------------------------------------------------------
 {
     QString strMth = QString::number(static_cast<int>(m_enumerator)) + " < Other(" + QString::number(static_cast<int>(i_other.m_enumerator)) + ")";
-    throwExceptionIfEnumeratorIsInvalid(EResultInvalidMethodCall, static_cast<int>(m_enumerator), strMth);
-    throwExceptionIfEnumeratorIsInvalid(EResultIdxOutOfRange, static_cast<int>(i_other.m_enumerator), strMth);
+    throwExceptionIfEnumeratorIsInvalid(ZS::System::EResultInvalidMethodCall, static_cast<int>(m_enumerator), strMth);
+    throwExceptionIfEnumeratorIsInvalid(ZS::System::EResultIdxOutOfRange, static_cast<int>(i_other.m_enumerator), strMth);
     return m_enumerator < i_other.m_enumerator;
 }
 
@@ -1552,8 +1552,8 @@ bool CEnum<E>::operator > ( const CEnum& i_other ) const
 //------------------------------------------------------------------------------
 {
     QString strMth = QString::number(static_cast<int>(m_enumerator)) + " > Other(" + QString::number(static_cast<int>(i_other.m_enumerator)) + ")";
-    throwExceptionIfEnumeratorIsInvalid(EResultInvalidMethodCall, static_cast<int>(m_enumerator), strMth);
-    throwExceptionIfEnumeratorIsInvalid(EResultIdxOutOfRange, static_cast<int>(i_other.m_enumerator), strMth);
+    throwExceptionIfEnumeratorIsInvalid(ZS::System::EResultInvalidMethodCall, static_cast<int>(m_enumerator), strMth);
+    throwExceptionIfEnumeratorIsInvalid(ZS::System::EResultIdxOutOfRange, static_cast<int>(i_other.m_enumerator), strMth);
     return m_enumerator > i_other.m_enumerator;
 }
 
@@ -1570,8 +1570,8 @@ bool CEnum<E>::operator <= ( const CEnum& i_other ) const
 //------------------------------------------------------------------------------
 {
     QString strMth = QString::number(static_cast<int>(m_enumerator)) + " <= Other(" + QString::number(static_cast<int>(i_other.m_enumerator)) + ")";
-    throwExceptionIfEnumeratorIsInvalid(EResultInvalidMethodCall, static_cast<int>(m_enumerator), strMth);
-    throwExceptionIfEnumeratorIsInvalid(EResultIdxOutOfRange, static_cast<int>(i_other.m_enumerator), strMth);
+    throwExceptionIfEnumeratorIsInvalid(ZS::System::EResultInvalidMethodCall, static_cast<int>(m_enumerator), strMth);
+    throwExceptionIfEnumeratorIsInvalid(ZS::System::EResultIdxOutOfRange, static_cast<int>(i_other.m_enumerator), strMth);
     return m_enumerator <= i_other.m_enumerator;
 }
 
@@ -1588,8 +1588,8 @@ bool CEnum<E>::operator >= ( const CEnum& i_other ) const
 //------------------------------------------------------------------------------
 {
     QString strMth = QString::number(static_cast<int>(m_enumerator)) + " >= Other(" + QString::number(static_cast<int>(i_other.m_enumerator)) + ")";
-    throwExceptionIfEnumeratorIsInvalid(EResultInvalidMethodCall, static_cast<int>(m_enumerator), strMth);
-    throwExceptionIfEnumeratorIsInvalid(EResultIdxOutOfRange, static_cast<int>(i_other.m_enumerator), strMth);
+    throwExceptionIfEnumeratorIsInvalid(ZS::System::EResultInvalidMethodCall, static_cast<int>(m_enumerator), strMth);
+    throwExceptionIfEnumeratorIsInvalid(ZS::System::EResultIdxOutOfRange, static_cast<int>(i_other.m_enumerator), strMth);
     return m_enumerator >= i_other.m_enumerator;
 }
 
@@ -1611,11 +1611,11 @@ public: // increment/decrement operators
           - with Result = InvalidMethodCall if the enumerator of this enum instance is out of range
 */
 template <typename E>
-CEnum<E>& ZS::System::CEnum<E>::operator ++ ()
+CEnum<E>& CEnum<E>::operator ++ ()
 //------------------------------------------------------------------------------
 {
     QString strMth = QString::number(static_cast<int>(m_enumerator)) + "++";
-    throwExceptionIfEnumeratorIsInvalid(EResultInvalidMethodCall, static_cast<int>(m_enumerator), strMth);
+    throwExceptionIfEnumeratorIsInvalid(ZS::System::EResultInvalidMethodCall, static_cast<int>(m_enumerator), strMth);
     int iEnumerator = static_cast<int>(m_enumerator);
     ++iEnumerator;
     m_enumerator = static_cast<E>(iEnumerator);
@@ -1636,11 +1636,11 @@ CEnum<E>& ZS::System::CEnum<E>::operator ++ ()
           - with Result = InvalidMethodCall if the enumerator of this enum instance is out of range
 */
 template <typename E>
-CEnum<E>& ZS::System::CEnum<E>::operator ++ (int)
+CEnum<E>& CEnum<E>::operator ++ (int)
 //------------------------------------------------------------------------------
 {
     QString strMth = QString::number(static_cast<int>(m_enumerator)) + "++";
-    throwExceptionIfEnumeratorIsInvalid(EResultInvalidMethodCall, static_cast<int>(m_enumerator), strMth);
+    throwExceptionIfEnumeratorIsInvalid(ZS::System::EResultInvalidMethodCall, static_cast<int>(m_enumerator), strMth);
     int iEnumerator = static_cast<int>(m_enumerator);
     iEnumerator++;
     m_enumerator = static_cast<E>(iEnumerator);
@@ -1661,11 +1661,11 @@ CEnum<E>& ZS::System::CEnum<E>::operator ++ (int)
           - with Result = InvalidMethodCall if the enumerator of this enum instance is out of range
 */
 template <typename E>
-CEnum<E>& ZS::System::CEnum<E>::operator -- ()
+CEnum<E>& CEnum<E>::operator -- ()
 //------------------------------------------------------------------------------
 {
     QString strMth = QString::number(static_cast<int>(m_enumerator)) + "--";
-    throwExceptionIfEnumeratorIsInvalid(EResultInvalidMethodCall, static_cast<int>(m_enumerator), strMth);
+    throwExceptionIfEnumeratorIsInvalid(ZS::System::EResultInvalidMethodCall, static_cast<int>(m_enumerator), strMth);
     int iEnumerator = static_cast<int>(m_enumerator);
     --iEnumerator;
     m_enumerator = static_cast<E>(iEnumerator);
@@ -1686,11 +1686,11 @@ CEnum<E>& ZS::System::CEnum<E>::operator -- ()
           - with Result = InvalidMethodCall if the enumerator of this enum instance is out of range
 */
 template <typename E>
-CEnum<E>& ZS::System::CEnum<E>::operator -- (int)
+CEnum<E>& CEnum<E>::operator -- (int)
 //------------------------------------------------------------------------------
 {
     QString strMth = QString::number(static_cast<int>(m_enumerator)) + "--";
-    throwExceptionIfEnumeratorIsInvalid(EResultInvalidMethodCall, static_cast<int>(m_enumerator), strMth);
+    throwExceptionIfEnumeratorIsInvalid(ZS::System::EResultInvalidMethodCall, static_cast<int>(m_enumerator), strMth);
     int iEnumerator = static_cast<int>(m_enumerator);
     iEnumerator--;
     m_enumerator = static_cast<E>(iEnumerator);
@@ -1752,8 +1752,8 @@ QString CEnum<E>::toString( int i_idxAlias ) const
 //------------------------------------------------------------------------------
 {
     QString strMth = QString::number(static_cast<int>(m_enumerator)) + ".toString";
-    throwExceptionIfEnumeratorIsInvalid(EResultInvalidMethodCall, static_cast<int>(m_enumerator), strMth);
-    return SEnumEntry::enumerator2Str(s_arEnumEntries.data(), s_arEnumEntries.count(), static_cast<int>(m_enumerator), i_idxAlias);
+    throwExceptionIfEnumeratorIsInvalid(ZS::System::EResultInvalidMethodCall, static_cast<int>(m_enumerator), strMth);
+    return ZS::System::SEnumEntry::enumerator2Str(s_arEnumEntries.data(), s_arEnumEntries.count(), static_cast<int>(m_enumerator), i_idxAlias);
 }
 
 //------------------------------------------------------------------------------
@@ -1771,8 +1771,8 @@ QVariant CEnum<E>::toValue( QVariant::Type i_type, bool* o_pbOk ) const
 //------------------------------------------------------------------------------
 {
     QString strMth = QString::number(static_cast<int>(m_enumerator)) + ".toString";
-    throwExceptionIfEnumeratorIsInvalid(EResultInvalidMethodCall, static_cast<int>(m_enumerator), strMth);
-    return SEnumEntry::enumerator2Val(s_arEnumEntries.data(), s_arEnumEntries.count(), static_cast<int>(m_enumerator), i_type, o_pbOk);
+    throwExceptionIfEnumeratorIsInvalid(ZS::System::EResultInvalidMethodCall, static_cast<int>(m_enumerator), strMth);
+    return ZS::System::SEnumEntry::enumerator2Val(s_arEnumEntries.data(), s_arEnumEntries.count(), static_cast<int>(m_enumerator), i_type, o_pbOk);
 }
 
 /*==============================================================================
@@ -1791,7 +1791,7 @@ private: // auxiliary instance methods
     @param i_strMth [in] The method name of the error source will be set to this method name.
 */
 template <typename E>
-void CEnum<E>::throwExceptionIfEnumeratorIsInvalid( EResult i_result, int i_iEnumerator, const QString& i_strMth )
+void CEnum<E>::throwExceptionIfEnumeratorIsInvalid( ZS::System::EResult i_result, int i_iEnumerator, const QString& i_strMth )
 //------------------------------------------------------------------------------
 {
     if( i_iEnumerator < 0 || i_iEnumerator >= s_arEnumEntries.count() )
@@ -1806,18 +1806,18 @@ void CEnum<E>::throwExceptionIfEnumeratorIsInvalid( EResult i_result, int i_iEnu
             if( s_arEnumEntries[s_arEnumEntries.count()-1].m_strlstNames.size() > 0 ) strAddErrInfo += ".." + s_arEnumEntries[s_arEnumEntries.count()-1].m_strlstNames[0];
             strAddErrInfo += "]";
         }
-        SErrResultInfo errResultInfo(
+        ZS::System::SErrResultInfo errResultInfo(
             /* errSource  */ "ZS::System", "CEnum", "", i_strMth,
             /* result     */ i_result,
-            /* severity   */ EResultSeverityCritical,
+            /* severity   */ ZS::System::EResultSeverityCritical,
             /* strAddInfo */ strAddErrInfo );
-        throw CException(__FILE__, __LINE__, errResultInfo);
+        throw ZS::System::CException(__FILE__, __LINE__, errResultInfo);
     }
 }
 
-} // namespace System
+//} // namespace System
 
-} // namespace ZS
+//} // namespace ZS
 
 #ifdef _WINDOWS
 #pragma warning( pop )

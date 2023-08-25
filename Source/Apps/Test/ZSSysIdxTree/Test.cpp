@@ -997,6 +997,19 @@ CTest::CTest() :
         /* pTSGrpParent    */ pGrpTreeViewKeyboardInputsMoveLA0B2o3toA0B2C3,
         /* szDoTestStepFct */ SLOT(doTestStepKeyboardInputs(ZS::Test::CTestStep*)) );
 
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Press Rigth",
+        /* strOperation    */ "TreeViewIdxTree.keyEvent(Press Right)",
+        /* pTSGrpParent    */ pGrpTreeViewKeyboardInputsMoveLA0B2o3toA0B2C3,
+        /* szDoTestStepFct */ SLOT(doTestStepKeyboardInputs(ZS::Test::CTestStep*)) );
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Release Right",
+        /* strOperation    */ "TreeViewIdxTree.keyEvent(Release Right)",
+        /* pTSGrpParent    */ pGrpTreeViewKeyboardInputsMoveLA0B2o3toA0B2C3,
+        /* szDoTestStepFct */ SLOT(doTestStepKeyboardInputs(ZS::Test::CTestStep*)) );
+
     // Sub-Group: Delete L:A0::B2::C3::o3
     //-----------------------------------
 
@@ -1007,7 +1020,7 @@ CTest::CTest() :
 
     idxStep = 0;
 
-    for( int idxKeyDown = 0; idxKeyDown < 4; ++idxKeyDown )
+    for( int idxKeyDown = 0; idxKeyDown < 3; ++idxKeyDown )
     {
         new ZS::Test::CTestStep(
             /* pTest           */ this,
@@ -2286,9 +2299,7 @@ void CTest::doTestStepAddEntry( ZS::Test::CTestStep* i_pTestStep )
         // Get current list of tree entries and map of free indices
         //---------------------------------------------------------
 
-        QVector<CIdxTreeEntry*> arpTreeEntriesExpected = m_pIdxTree->treeEntriesVec();
-
-        QVector<STreeEntryDscr> arTreeEntryDscrsExpected = toTreeEntryDscrs(arpTreeEntriesExpected);
+        QList<STreeEntryDscr> arTreeEntryDscrsExpected = toTreeEntryDscrs(m_pIdxTree->treeEntriesVec());
 
         QMap<int, int> mapFreeIdxsExpected = m_pIdxTree->freeIdxsMap();
 
@@ -2358,9 +2369,7 @@ void CTest::doTestStepAddEntry( ZS::Test::CTestStep* i_pTestStep )
         CTreeViewIdxTree* pTreeViewIdxTree = pWdgtIdxTree->treeView();
         CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(pTreeViewIdxTree->model());
 
-        QVector<CIdxTreeEntry*> arpTreeEntriesResult = m_pIdxTree->treeEntriesVec();
-
-        QVector<STreeEntryDscr> arTreeEntryDscrsResult = toTreeEntryDscrs(arpTreeEntriesResult);
+        QList<STreeEntryDscr> arTreeEntryDscrsResult = toTreeEntryDscrs(m_pIdxTree->treeEntriesVec());
 
         QMap<int, int> mapFreeIdxsResult = m_pIdxTree->freeIdxsMap();
 
@@ -2419,9 +2428,7 @@ void CTest::doTestStepRemoveEntry( ZS::Test::CTestStep* i_pTestStep )
         // Get current list of tree entries and map of free indices
         //---------------------------------------------------------
 
-        QVector<CIdxTreeEntry*> arpTreeEntriesExpected = m_pIdxTree->treeEntriesVec();
-
-        QVector<STreeEntryDscr> arTreeEntryDscrsExpected = toTreeEntryDscrs(arpTreeEntriesExpected);
+        QList<STreeEntryDscr> arTreeEntryDscrsExpected = toTreeEntryDscrs(m_pIdxTree->treeEntriesVec());
 
         QMap<int, int> mapFreeIdxsExpected = m_pIdxTree->freeIdxsMap();
 
@@ -2468,9 +2475,7 @@ void CTest::doTestStepRemoveEntry( ZS::Test::CTestStep* i_pTestStep )
         CTreeViewIdxTree* pTreeViewIdxTree = pWdgtIdxTree->treeView();
         CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(pTreeViewIdxTree->model());
 
-        QVector<CIdxTreeEntry*> arpTreeEntriesResult = m_pIdxTree->treeEntriesVec();
-
-        QVector<STreeEntryDscr> arTreeEntryDscrsResult = toTreeEntryDscrs(arpTreeEntriesResult);
+        QList<STreeEntryDscr> arTreeEntryDscrsResult = toTreeEntryDscrs(m_pIdxTree->treeEntriesVec());
 
         QMap<int, int> mapFreeIdxsResult = m_pIdxTree->freeIdxsMap();
 
@@ -2552,9 +2557,7 @@ void CTest::doTestStepMoveEntry( ZS::Test::CTestStep* i_pTestStep )
             // Get current list of tree entries and map of free indices
             //---------------------------------------------------------
 
-            QVector<CIdxTreeEntry*> arpTreeEntriesExpected = m_pIdxTree->treeEntriesVec();
-
-            QVector<STreeEntryDscr> arTreeEntryDscrsExpected = toTreeEntryDscrs(arpTreeEntriesExpected);
+            QList<STreeEntryDscr> arTreeEntryDscrsExpected = toTreeEntryDscrs(m_pIdxTree->treeEntriesVec());
 
             QMap<int, int> mapFreeIdxsExpected = m_pIdxTree->freeIdxsMap();
 
@@ -2582,9 +2585,7 @@ void CTest::doTestStepMoveEntry( ZS::Test::CTestStep* i_pTestStep )
             CTreeViewIdxTree* pTreeViewIdxTree = pWdgtIdxTree->treeView();
             CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(pTreeViewIdxTree->model());
 
-            QVector<CIdxTreeEntry*> arpTreeEntriesResult = m_pIdxTree->treeEntriesVec();
-
-            QVector<STreeEntryDscr> arTreeEntryDscrsResult = toTreeEntryDscrs(arpTreeEntriesResult);
+            QList<STreeEntryDscr> arTreeEntryDscrsResult = toTreeEntryDscrs(m_pIdxTree->treeEntriesVec());
 
             QMap<int, int> mapFreeIdxsResult = m_pIdxTree->freeIdxsMap();
 
@@ -2673,9 +2674,7 @@ void CTest::doTestStepCopyEntry( ZS::Test::CTestStep* i_pTestStep )
             // Get current list of tree entries and map of free indices
             //---------------------------------------------------------
 
-            QVector<CIdxTreeEntry*> arpTreeEntriesExpected = m_pIdxTree->treeEntriesVec();
-
-            QVector<STreeEntryDscr> arTreeEntryDscrsExpected = toTreeEntryDscrs(arpTreeEntriesExpected);
+            QList<STreeEntryDscr> arTreeEntryDscrsExpected = toTreeEntryDscrs(m_pIdxTree->treeEntriesVec());
 
             QMap<int, int> mapFreeIdxsExpected = m_pIdxTree->freeIdxsMap();
 
@@ -2706,9 +2705,7 @@ void CTest::doTestStepCopyEntry( ZS::Test::CTestStep* i_pTestStep )
             CTreeViewIdxTree* pTreeViewIdxTree = pWdgtIdxTree->treeView();
             CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(pTreeViewIdxTree->model());
 
-            QVector<CIdxTreeEntry*> arpTreeEntriesResult = m_pIdxTree->treeEntriesVec();
-
-            QVector<STreeEntryDscr> arTreeEntryDscrsResult = toTreeEntryDscrs(arpTreeEntriesResult);
+            QList<STreeEntryDscr> arTreeEntryDscrsResult = toTreeEntryDscrs(m_pIdxTree->treeEntriesVec());
 
             QMap<int, int> mapFreeIdxsResult = m_pIdxTree->freeIdxsMap();
 
@@ -2784,9 +2781,7 @@ void CTest::doTestStepRenameEntry( ZS::Test::CTestStep* i_pTestStep )
             // Get current list of tree entries and map of free indices
             //---------------------------------------------------------
 
-            QVector<CIdxTreeEntry*> arpTreeEntriesExpected = m_pIdxTree->treeEntriesVec();
-
-            QVector<STreeEntryDscr> arTreeEntryDscrsExpected = toTreeEntryDscrs(arpTreeEntriesExpected);
+            QList<STreeEntryDscr> arTreeEntryDscrsExpected = toTreeEntryDscrs(m_pIdxTree->treeEntriesVec());
 
             QMap<int, int> mapFreeIdxsExpected = m_pIdxTree->freeIdxsMap();
 
@@ -2819,9 +2814,7 @@ void CTest::doTestStepRenameEntry( ZS::Test::CTestStep* i_pTestStep )
             CTreeViewIdxTree* pTreeViewIdxTree = pWdgtIdxTree->treeView();
             CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(pTreeViewIdxTree->model());
 
-            QVector<CIdxTreeEntry*> arpTreeEntriesResult = m_pIdxTree->treeEntriesVec();
-
-            QVector<STreeEntryDscr> arTreeEntryDscrsResult = toTreeEntryDscrs(arpTreeEntriesResult);
+            QList<STreeEntryDscr> arTreeEntryDscrsResult = toTreeEntryDscrs(m_pIdxTree->treeEntriesVec());
 
             QMap<int, int> mapFreeIdxsResult = m_pIdxTree->freeIdxsMap();
 
@@ -3366,9 +3359,7 @@ void CTest::doTestStepKeyboardInputs( ZS::Test::CTestStep* i_pTestStep )
         strKeyInTreeToBeSelected.remove(")");
 
         strOperation = "TreeViewIdxTree.select";
-
-    } // if( strOperation.contains("TreeViewIdxTree.select") )
-
+    }
     else if( strOperation.contains("TreeViewIdxTree.keyEvent") )
     {
         QString strTmp = strOperation;
@@ -3389,8 +3380,7 @@ void CTest::doTestStepKeyboardInputs( ZS::Test::CTestStep* i_pTestStep )
         strKey = strTmp.trimmed();
 
         strOperation = "TreeViewIdxTree.keyEvent";
-
-    } // if( strOperation.contains("TreeViewIdxTree.keyEvent") )
+    }
 
     strlstExpectedValues << strExpectedValue;
 
@@ -4252,18 +4242,17 @@ STreeEntryDscr CTest::toTreeEntryDscr( const CIdxTreeEntry* i_pTreeEntry ) const
 }
 
 //------------------------------------------------------------------------------
-QVector<STreeEntryDscr> CTest::toTreeEntryDscrs( const QVector<CIdxTreeEntry*>& i_arpTreeEntries ) const
+QList<STreeEntryDscr> CTest::toTreeEntryDscrs( const QVector<CIdxTreeEntry*>& i_arpTreeEntries ) const
 //------------------------------------------------------------------------------
 {
-    QVector<STreeEntryDscr> arDscrs;
+    QList<STreeEntryDscr> arDscrs;
 
     for( auto& pTreeEntry : i_arpTreeEntries )
     {
         arDscrs.append( toTreeEntryDscr(pTreeEntry) );
     }
     return arDscrs;
-
-} // toTreeEntryDscrs
+}
 
 /*==============================================================================
 public: // auxiliary methods
@@ -4271,8 +4260,8 @@ public: // auxiliary methods
 
 //------------------------------------------------------------------------------
 int CTest::indexOf(
-    const QString&                 i_strKeyInTree,
-    const QVector<STreeEntryDscr>& i_arTreeEntries ) const
+    const QString&               i_strKeyInTree,
+    const QList<STreeEntryDscr>& i_arTreeEntries ) const
 //------------------------------------------------------------------------------
 {
     int idxInTree = -1;
@@ -4292,9 +4281,9 @@ int CTest::indexOf(
 
 //------------------------------------------------------------------------------
 void CTest::swap(
-    int                      i_idxInTree1,
-    int                      i_idxInTree2,
-    QVector<STreeEntryDscr>& i_arTreeEntries ) const
+    int                    i_idxInTree1,
+    int                    i_idxInTree2,
+    QList<STreeEntryDscr>& i_arTreeEntries ) const
 //------------------------------------------------------------------------------
 {
     STreeEntryDscr treeEntryDscr1(i_arTreeEntries[i_idxInTree1]);
@@ -4310,13 +4299,13 @@ void CTest::swap(
 
 //------------------------------------------------------------------------------
 int CTest::addEntry(
-    const CIdxTree&          i_idxTree,
-    const QString&           i_strKeyInTree,
-    const QString&           i_strNameSpace,
-    const QString&           i_strClassName,
-    const QString&           i_strObjName,
-    QVector<STreeEntryDscr>& i_arTreeEntries,
-    QMap<int, int>&          i_mapFreeIdxs ) const
+    const CIdxTree&        i_idxTree,
+    const QString&         i_strKeyInTree,
+    const QString&         i_strNameSpace,
+    const QString&         i_strClassName,
+    const QString&         i_strObjName,
+    QList<STreeEntryDscr>& i_arTreeEntries,
+    QMap<int, int>&        i_mapFreeIdxs ) const
 //------------------------------------------------------------------------------
 {
     int idxInTree = -1;
@@ -4327,7 +4316,9 @@ int CTest::addEntry(
 
         STreeEntryDscr treeEntryDscr;
 
-        treeEntryDscr.m_strEntryType         = strEntryTypeSrc;
+        CIdxTreeEntry::EEntryType entryType = CIdxTreeEntry::str2EntryType(strEntryTypeSrc);
+
+        treeEntryDscr.m_strEntryType         = CIdxTreeEntry::entryType2Str(entryType, EEnumEntryAliasStrName);
         treeEntryDscr.m_strEntryTypeSymbol   = strEntryTypeSrc;
         treeEntryDscr.m_strName              = i_strObjName;
         treeEntryDscr.m_strKeyInTree         = i_strKeyInTree;
@@ -4385,10 +4376,10 @@ int CTest::addEntry(
 
 //------------------------------------------------------------------------------
 void CTest::removeEntry(
-    const CIdxTree&          i_idxTree,
-    const STreeEntryDscr&    i_treeEntry,
-    QVector<STreeEntryDscr>& i_arTreeEntries,
-    QMap<int, int>&          i_mapFreeIdxs ) const
+    const CIdxTree&        i_idxTree,
+    const STreeEntryDscr&  i_treeEntry,
+    QList<STreeEntryDscr>& i_arTreeEntries,
+    QMap<int, int>&        i_mapFreeIdxs ) const
 //------------------------------------------------------------------------------
 {
     int idxInTree;
@@ -4398,7 +4389,16 @@ void CTest::removeEntry(
         QString strParentPath = i_idxTree.buildPathStr(i_treeEntry.m_strParentBranchPath, i_treeEntry.m_strName);
 
         // First remove all child entries.
+        QList<STreeEntryDscr> arEntriesToBeRemoved;
         for( auto& treeEntryDscrTmp : i_arTreeEntries )
+        {
+            // Child of the tree entry to be removed ...
+            if( treeEntryDscrTmp.m_strParentBranchPath == strParentPath )
+            {
+                arEntriesToBeRemoved.append(treeEntryDscrTmp);
+            }
+        }
+        for( auto& treeEntryDscrTmp : arEntriesToBeRemoved )
         {
             // Child of the tree entry to be removed ...
             if( treeEntryDscrTmp.m_strParentBranchPath == strParentPath )
@@ -4482,10 +4482,10 @@ void CTest::removeEntry(
 
 //------------------------------------------------------------------------------
 void CTest::renameEntry(
-    const ZS::System::CIdxTree& i_idxTree,
-    const QString&              i_strNameNew,
-    STreeEntryDscr&             i_treeEntry,
-    QVector<STreeEntryDscr>&    i_arTreeEntries ) const
+    const CIdxTree&        i_idxTree,
+    const QString&         i_strNameNew,
+    STreeEntryDscr&        i_treeEntry,
+    QList<STreeEntryDscr>& i_arTreeEntries ) const
 //------------------------------------------------------------------------------
 {
     // The "indexOf" function requires the value type to have an implementation of operator==()
@@ -4535,10 +4535,10 @@ void CTest::renameEntry(
 
 //------------------------------------------------------------------------------
 void CTest::moveEntry(
-    const CIdxTree&          i_idxTree,
-    const STreeEntryDscr&    i_treeEntryTrg,
-    STreeEntryDscr&          i_treeEntrySrc,
-    QVector<STreeEntryDscr>& i_arTreeEntries ) const
+    const CIdxTree&        i_idxTree,
+    const STreeEntryDscr&  i_treeEntryTrg,
+    STreeEntryDscr&        i_treeEntrySrc,
+    QList<STreeEntryDscr>& i_arTreeEntries ) const
 //------------------------------------------------------------------------------
 {
     if( i_treeEntryTrg.m_strEntryTypeSymbol == "B" )
@@ -4606,11 +4606,11 @@ void CTest::moveEntry(
 
 //------------------------------------------------------------------------------
 void CTest::copyEntry(
-    const CIdxTree&          i_idxTree,
-    const STreeEntryDscr&    i_treeEntryTrg,
-    STreeEntryDscr&          i_treeEntrySrc,
-    QVector<STreeEntryDscr>& i_arTreeEntries,
-    QMap<int, int>&          i_mapFreeIdxs ) const
+    const CIdxTree&        i_idxTree,
+    const STreeEntryDscr&  i_treeEntryTrg,
+    STreeEntryDscr&        i_treeEntrySrc,
+    QList<STreeEntryDscr>& i_arTreeEntries,
+    QMap<int, int>&        i_mapFreeIdxs ) const
 //------------------------------------------------------------------------------
 {
     if( i_treeEntryTrg.m_strEntryTypeSymbol == "B" )
@@ -4668,11 +4668,11 @@ void CTest::copyEntry(
 
 //------------------------------------------------------------------------------
 void CTest::onParentBranchRenamed(
-    const ZS::System::CIdxTree& i_idxTree,
-    const QString&              i_strParentBranchPathNew,
-    const QString&              i_strParentBranchPathPrev,
-    STreeEntryDscr&             i_treeEntry,
-    QVector<STreeEntryDscr>&    i_arTreeEntries ) const
+    const CIdxTree&        i_idxTree,
+    const QString&         i_strParentBranchPathNew,
+    const QString&         i_strParentBranchPathPrev,
+    STreeEntryDscr&        i_treeEntry,
+    QList<STreeEntryDscr>& i_arTreeEntries ) const
 //------------------------------------------------------------------------------
 {
     // !! Attention !! The passed tree entry descriptors might be references to the
@@ -4892,10 +4892,10 @@ void CTest::splitKey(
 
 //------------------------------------------------------------------------------
 void CTest::compare(
-    QVector<STreeEntryDscr>&       i_arTreeEntriesExpected,
-    const QVector<STreeEntryDscr>& i_arTreeEntriesResult,
-    QStringList&                   io_strlstExpectedValues,
-    QStringList&                   io_strlstResultValues ) const
+    QList<STreeEntryDscr>&       i_arTreeEntriesExpected,
+    const QList<STreeEntryDscr>& i_arTreeEntriesResult,
+    QStringList&                 io_strlstExpectedValues,
+    QStringList&                 io_strlstResultValues ) const
 //------------------------------------------------------------------------------
 {
     QString strExpectedValue;

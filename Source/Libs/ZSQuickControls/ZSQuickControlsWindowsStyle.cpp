@@ -366,7 +366,6 @@ CWindowsStyle::CWindowsStyle(
         QString strAbsoluteFilePath = fi.absoluteFilePath();
         QString strAbsolutePath = fi.absolutePath();
         QString strBaseName = fi.baseName();
-        QString strBirthTime = fi.birthTime().toString("dd.MM.yyyy hh:mm:ss.zzz");
         QString strBundleName = fi.bundleName();
         QString strCanonicalFilePath = fi.canonicalFilePath();
         QString strCanonicalPath = fi.canonicalPath();
@@ -384,7 +383,6 @@ CWindowsStyle::CWindowsStyle(
         QString strIsWritable = QString(fi.isWritable() ? "Writable" : "");
         QString strLastModified = fi.lastModified().toString("dd.MM.yyyy hh:mm:ss.zzz");
         QString strLastRead = fi.lastRead().toString("dd.MM.yyyy hh:mm:ss.zzz");
-        QString strMetadataChangeTime = fi.metadataChangeTime().toString("dd.MM.yyyy hh:mm:ss.zzz");
         QString strPath = fi.path();
         QString strSize_bytes = QString::number(fi.size()) + " Bytes";
         QString strSuffix = fi.suffix();

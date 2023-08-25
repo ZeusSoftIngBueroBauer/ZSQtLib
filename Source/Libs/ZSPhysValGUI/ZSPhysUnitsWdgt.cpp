@@ -47,6 +47,7 @@ may result in using the software modules.
 
 using namespace ZS::System;
 using namespace ZS::System::GUI;
+using namespace ZS::PhysVal;
 using namespace ZS::PhysVal::GUI;
 
 
