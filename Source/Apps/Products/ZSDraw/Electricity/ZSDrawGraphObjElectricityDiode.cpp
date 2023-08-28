@@ -188,9 +188,8 @@ CGraphObjDiode::CGraphObjDiode(
     //----------------
 
     m_pLinCnct = new CGraphObjLine(
-        /* pDrawingScene */ m_pDrawingScene,
-        /* drawSettings  */ drawSettingsLine,
-        /* strObjName    */ "CnctLine" );
+        m_pDrawingScene, drawSettingsLine, "CnctLine",
+        QPointF(0.0,0.0), QPointF(0.0,0.0));
 
     m_pLinCnct->setLine( QLineF( QPointF(0.0,0.0), QPointF(rctBounding.right(),0.0) ) );
     m_pDrawingScene->addGraphObj(m_pLinCnct);
@@ -237,9 +236,8 @@ CGraphObjDiode::CGraphObjDiode(
     //m_pPlgBody->addAlignment(alignment);
 
     m_pLinBody = new CGraphObjLine(
-        /* pDrawingScene */ m_pDrawingScene,
-        /* drawSettings  */ drawSettingsLine,
-        /* strObjName    */ "BodyLine" );
+        m_pDrawingScene, drawSettingsLine, "BodyLine",
+        QPointF(0.0,0.0), QPointF(0.0,0.0));
 
     m_pLinBody->setLine(linBody);
     m_pDrawingScene->addGraphObj(m_pLinBody);

@@ -208,9 +208,7 @@ CGraphObj* CObjFactoryVoltageSource::loadGraphObj(
     CDrawingScene*    i_pDrawingScene,
     CGraphObjGroup*   i_pGraphObjGroup,
     const QString&    i_strObjName,
-    const QString&    i_strObjId,
-    QXmlStreamReader& i_xmlStreamReader,
-    SErrResultInfo&   io_errResultInfo )
+    QXmlStreamReader& i_xmlStreamReader )
 //------------------------------------------------------------------------------
 {
     if( i_pDrawingScene == nullptr )
@@ -228,188 +226,182 @@ CGraphObj* CObjFactoryVoltageSource::loadGraphObj(
 
     CGraphObjVoltageSource* pGraphObj = nullptr;
 
-    if( i_pDrawingScene->findGraphObj(i_strObjId) == nullptr )
+    QString                          strElemName;
+    QString                          strElemText;
+    bool                             bConverted;
+    CDrawSettings                    drawSettings(EGraphObjTypeText);
+    double                           fVoltage_V = 1.0;
+    QPointF                          ptPos;
+    QSizeF                           siz;
+    bool                             bPosValid = false;
+    bool                             bSizeValid = false;
+    double                           fRotAngle_deg = 0.0;
+    double                           fZValue = 0.0;
+    QHash<QString, CGraphObjLabel*>  arpLabels;
+
+    while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
     {
-        QString                          strElemName;
-        QString                          strElemText;
-        bool                             bConverted;
-        CDrawSettings                    drawSettings(EGraphObjTypeText);
-        double                           fVoltage_V = 1.0;
-        QPointF                          ptPos;
-        QSizeF                           siz;
-        bool                             bPosValid = false;
-        bool                             bSizeValid = false;
-        double                           fRotAngle_deg = 0.0;
-        double                           fZValue = 0.0;
-        QHash<QString, CGraphObjLabel*>  arpLabels;
+        strElemName = i_xmlStreamReader.name().toString();
 
-        while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
+        if( i_xmlStreamReader.isStartElement() )
         {
-            strElemName = i_xmlStreamReader.name().toString();
-
-            if( i_xmlStreamReader.isStartElement() )
+            if( strElemName == "ElectricalParameters" )
             {
-                if( strElemName == "ElectricalParameters" )
-                {
-                }
-
-                else if( strElemName == "Voltage" )
-                {
-                    strElemText = i_xmlStreamReader.readElementText();
-
-                    double fValTmp = strElemText.toDouble(&bConverted);
-
-                    if( bConverted )
-                    {
-                        fVoltage_V = fValTmp;
-                    }
-                }
-
-                else if( strElemName == "DrawSettings" )
-                {
-                    drawSettings.load(i_xmlStreamReader);
-                }
-
-                else if( strElemName == "Geometry" )
-                {
-                }
-
-                else if( strElemName == "Pos" )
-                {
-                    strElemText = i_xmlStreamReader.readElementText();
-
-                    QPointF ptTmp = str2PointF(strElemText,&bConverted);
-
-                    if( bConverted )
-                    {
-                        ptPos = ptTmp;
-                        bPosValid = true;
-                    }
-
-                } // if( strElemName == "Pos" )
-
-                else if( strElemName == "Size" )
-                {
-                    strElemText = i_xmlStreamReader.readElementText();
-
-                    QSizeF sizTmp = str2SizeF(strElemText,&bConverted);
-
-                    if( bConverted )
-                    {
-                        siz = sizTmp;
-                        bSizeValid = true;
-                    }
-
-                } // if( strElemName == "Size" )
-
-                else if( strElemName == "RotAngleDeg" )
-                {
-                    strElemText = i_xmlStreamReader.readElementText();
-
-                    double fValTmp = strElemText.toDouble(&bConverted);
-
-                    if( bConverted )
-                    {
-                        fRotAngle_deg = fValTmp;
-                    }
-
-                } // if( strElemName == "RotAngleDeg" )
-
-                else if( strElemName == "ZValue" )
-                {
-                    strElemText = i_xmlStreamReader.readElementText();
-
-                    double fTmp = strElemText.toDouble(&bConverted);
-
-                    if( bConverted )
-                    {
-                        fZValue = fTmp;
-                    }
-
-                } // if( strElemName == "ZValue" )
-
-                else if( strElemName == "Labels" )
-                {
-                    SErrResultInfo errResultInfo;
-                    arpLabels = loadGraphObjLabels(i_xmlStreamReader,errResultInfo);
-
-                } // if( strElemName == "Labels" )
-
-            } // if( xmlStreamReader.isStartElement() )
-
-            else if( i_xmlStreamReader.isEndElement() )
-            {
-                if( strElemName == "GraphObj" )
-                {
-                    break;
-                }
-
-            } // if( i_xmlStreamReader.isEndElement() )
-
-        } // while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
-
-        if( bPosValid && bSizeValid )
-        {
-            pGraphObj = new CGraphObjVoltageSource(
-                /* pDrawingScene */ i_pDrawingScene,
-                /* drawSettings  */ drawSettings,
-                /* strObjName    */ i_strObjName );
-
-            i_pDrawingScene->addGraphObj(pGraphObj);
-
-            pGraphObj->setVoltage(fVoltage_V);
-
-            pGraphObj->setPos(ptPos);
-            pGraphObj->setSize(siz);
-            pGraphObj->setRotationAngleInDegree(fRotAngle_deg);
-            pGraphObj->setStackingOrderValue(fZValue);
-
-            // Before calling "onGraphObjCreationFinished" the object must have been added
-            // to its parent group. Otherwise the drawing scene is not able to retrieve
-            // the unique object id and add the object to the hash.
-            if( i_pGraphObjGroup != nullptr )
-            {
-                throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
-                //i_pGraphObjGroup->addGraphObj(pGraphObj);
             }
 
-            i_pDrawingScene->onGraphObjCreationFinished(pGraphObj);
-
-            #pragma message(__TODO__"The methods onGraphObjCreationFinished and acceptCurrentAsOriginalCoors should become protected and it should not be necessary to explicitly call them")
-            pGraphObj->acceptCurrentAsOriginalCoors();
-
-            //if( arpLabels.size() > 0 )
-            //{
-            //    pGraphObj->addLabels(arpLabels);
-            //}
-        } // if( !strText.isEmpty() && bPosValid )
-
-        if( arpLabels.size() > 0 )
-        {
-            QHashIterator<QString, CGraphObjLabel*> itLabels(arpLabels);
-            CGraphObjLabel* pGraphObjLabel;
-
-            while( itLabels.hasNext() )
+            else if( strElemName == "Voltage" )
             {
-                itLabels.next();
+                strElemText = i_xmlStreamReader.readElementText();
 
-                pGraphObjLabel = itLabels.value();
+                double fValTmp = strElemText.toDouble(&bConverted);
 
-                arpLabels.remove(pGraphObjLabel->getKey());
-
-                delete pGraphObjLabel;
-                pGraphObjLabel = nullptr;
+                if( bConverted )
+                {
+                    fVoltage_V = fValTmp;
+                }
             }
+
+            else if( strElemName == "DrawSettings" )
+            {
+                drawSettings.load(i_xmlStreamReader);
+            }
+
+            else if( strElemName == "Geometry" )
+            {
+            }
+
+            else if( strElemName == "Pos" )
+            {
+                strElemText = i_xmlStreamReader.readElementText();
+
+                QPointF ptTmp = str2PointF(strElemText,&bConverted);
+
+                if( bConverted )
+                {
+                    ptPos = ptTmp;
+                    bPosValid = true;
+                }
+
+            } // if( strElemName == "Pos" )
+
+            else if( strElemName == "Size" )
+            {
+                strElemText = i_xmlStreamReader.readElementText();
+
+                QSizeF sizTmp = str2SizeF(strElemText,&bConverted);
+
+                if( bConverted )
+                {
+                    siz = sizTmp;
+                    bSizeValid = true;
+                }
+
+            } // if( strElemName == "Size" )
+
+            else if( strElemName == "RotAngleDeg" )
+            {
+                strElemText = i_xmlStreamReader.readElementText();
+
+                double fValTmp = strElemText.toDouble(&bConverted);
+
+                if( bConverted )
+                {
+                    fRotAngle_deg = fValTmp;
+                }
+
+            } // if( strElemName == "RotAngleDeg" )
+
+            else if( strElemName == "ZValue" )
+            {
+                strElemText = i_xmlStreamReader.readElementText();
+
+                double fTmp = strElemText.toDouble(&bConverted);
+
+                if( bConverted )
+                {
+                    fZValue = fTmp;
+                }
+
+            } // if( strElemName == "ZValue" )
+
+            else if( strElemName == "Labels" )
+            {
+                arpLabels = loadGraphObjLabels(i_xmlStreamReader);
+
+            } // if( strElemName == "Labels" )
+
+        } // if( xmlStreamReader.isStartElement() )
+
+        else if( i_xmlStreamReader.isEndElement() )
+        {
+            if( strElemName == "GraphObj" )
+            {
+                break;
+            }
+
+        } // if( i_xmlStreamReader.isEndElement() )
+
+    } // while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
+
+    if( bPosValid && bSizeValid )
+    {
+        pGraphObj = new CGraphObjVoltageSource(
+            /* pDrawingScene */ i_pDrawingScene,
+            /* drawSettings  */ drawSettings,
+            /* strObjName    */ i_strObjName );
+
+        i_pDrawingScene->addGraphObj(pGraphObj);
+
+        pGraphObj->setVoltage(fVoltage_V);
+
+        pGraphObj->setPos(ptPos);
+        pGraphObj->setSize(siz);
+        pGraphObj->setRotationAngleInDegree(fRotAngle_deg);
+        pGraphObj->setStackingOrderValue(fZValue);
+
+        // Before calling "onGraphObjCreationFinished" the object must have been added
+        // to its parent group. Otherwise the drawing scene is not able to retrieve
+        // the unique object id and add the object to the hash.
+        if( i_pGraphObjGroup != nullptr )
+        {
+            throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
+            //i_pGraphObjGroup->addGraphObj(pGraphObj);
         }
 
-    } // if( i_pDrawingScene->findGraphObj(i_strObjId) == nullptr )
+        i_pDrawingScene->onGraphObjCreationFinished(pGraphObj);
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+        #pragma message(__TODO__"The methods onGraphObjCreationFinished and acceptCurrentAsOriginalCoors should become protected and it should not be necessary to explicitly call them")
+        pGraphObj->acceptCurrentAsOriginalCoors();
+
+        //if( arpLabels.size() > 0 )
+        //{
+        //    pGraphObj->addLabels(arpLabels);
+        //}
+    } // if( !strText.isEmpty() && bPosValid )
+
+    if( arpLabels.size() > 0 )
     {
-        strAddTrcInfo = "ErrResultInfo {" + io_errResultInfo.toString() + "}";
-        mthTracer.setMethodOutArgs(strAddTrcInfo);
+        QHashIterator<QString, CGraphObjLabel*> itLabels(arpLabels);
+        CGraphObjLabel* pGraphObjLabel;
+
+        while( itLabels.hasNext() )
+        {
+            itLabels.next();
+
+            pGraphObjLabel = itLabels.value();
+
+            arpLabels.remove(pGraphObjLabel->getKey());
+
+            delete pGraphObjLabel;
+            pGraphObjLabel = nullptr;
+        }
     }
 
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs(i_xmlStreamReader.errorString());
+        QString strMthRet = QString(pGraphObj == nullptr ? "null" : pGraphObj->path());
+        mthTracer.setMethodReturn(strMthRet);
+    }
     return pGraphObj;
 
 } // loadGraphObj

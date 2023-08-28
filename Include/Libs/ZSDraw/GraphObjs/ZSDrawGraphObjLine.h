@@ -63,7 +63,9 @@ public: // ctors and dtor
     CGraphObjLine(
         CDrawingScene*       i_pDrawingScene,
         const CDrawSettings& i_drawSettings,
-        const QString&       i_strObjName = "" );
+        const QString&       i_strObjName,
+        const QPointF&       i_pt1,
+        const QPointF&       i_pt2 );
     virtual ~CGraphObjLine();
 public: // overridables of base class QGraphicsItem
     virtual int type() const override { return EGraphObjTypeLine; }
@@ -122,12 +124,18 @@ protected: // instance methods
     virtual void updateLineEndPolygonCoors();
 protected: // overridables of base class CGraphObj
     virtual void updateToolTip() override;
+protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
+    void traceInternalStates(
+        ZS::System::CMethodTracer& i_mthTracer,
+        ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
+        ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const override;
 protected: // class members
     /*!< Needed to set an initial unique name when creating a new instance. */
     static qint64 s_iInstCount;
 protected: // instance members
-    bool      m_bCoorsDirty; // Start and end point and polygons for arrow heads
+    /*!< Start point and polygon points for arrow heads */
     QPolygonF m_plgLineStart;
+    /*!< End point and polygon points for arrow heads */
     QPolygonF m_plgLineEnd;
 
 }; // class CGraphObjLine

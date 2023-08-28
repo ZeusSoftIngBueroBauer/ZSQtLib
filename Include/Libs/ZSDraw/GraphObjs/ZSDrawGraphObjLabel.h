@@ -85,6 +85,7 @@ public: // replacing methods of QGraphicsSimpleTextItem
     void setText( const QString& i_strText );
     QString getText() const;
 public: // overridables
+    virtual void setLinkedSelectionPoint(ESelectionPoint i_selPt);
     virtual ESelectionPoint getLinkedSelectionPoint() const { return m_selPtLinked; }
     QSizeF getLinkedSelectionPointDistance() const { return m_sizeLinkedSelPtDist; }
 public: // overridables
@@ -115,8 +116,8 @@ public: // overridables of base class CGraphObj
 public: // reimplementing methods of base class QGraphicItem
     void setCursor( const QCursor& cursor );
 protected: // must overridables of base class CGraphObj
-    virtual void showSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) { i_selPts = i_selPts; }
-    virtual void updateSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) { i_selPts = i_selPts; }
+    virtual void showSelectionPoints( unsigned char i_selPts = ESelectionPointsAll );
+    virtual void updateSelectionPoints( unsigned char i_selPts = ESelectionPointsAll );
 public: // must overridables of base class QGraphicsItem
     virtual QRectF boundingRect() const;
     virtual void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr );

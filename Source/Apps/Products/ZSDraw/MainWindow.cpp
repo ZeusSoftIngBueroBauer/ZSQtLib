@@ -379,6 +379,7 @@ CMainWindow::CMainWindow(
     // Dialogs
     m_pDlgTest(nullptr),
     // Status Bar
+    m_pLblStatusBarMainWindowSize(nullptr),
     m_pLblStatusBarDrawingSceneEditTool(nullptr),
     m_pLblStatusBarDrawingSceneEditMode(nullptr),
     m_pLblStatusBarDrawingSceneGraphObjEditInfo(nullptr),
@@ -690,6 +691,12 @@ CMainWindow::~CMainWindow()
     m_pObjFactoryElectricityVoltageSource = nullptr;
 
     // Remove status bar section.
+    if( m_pLblStatusBarMainWindowSize != nullptr ) {
+        statusBar()->removeWidget(m_pLblStatusBarMainWindowSize);
+        delete m_pLblStatusBarMainWindowSize;
+        m_pLblStatusBarMainWindowSize = nullptr;
+    }
+    // Remove status bar section.
     if( m_pLblStatusBarDrawingSceneEditTool != nullptr ) {
         statusBar()->removeWidget(m_pLblStatusBarDrawingSceneEditTool);
         delete m_pLblStatusBarDrawingSceneEditTool;
@@ -850,6 +857,7 @@ CMainWindow::~CMainWindow()
     // Dialogs
     m_pDlgTest = nullptr;
     // Status Bar
+    m_pLblStatusBarMainWindowSize = nullptr;
     m_pLblStatusBarDrawingSceneEditTool = nullptr;
     m_pLblStatusBarDrawingSceneEditMode = nullptr;
     m_pLblStatusBarDrawingSceneRect = nullptr;
@@ -1991,6 +1999,10 @@ void CMainWindow::createStatusBar()
     //CPageSetup* pageSetup = m_pDrawingView->getPageSetup();
     //CUnit unitWidth = pageSetup->unit(EOrientation::Horizontal);
 
+    m_pLblStatusBarMainWindowSize = new QLabel("MainWindow: -");
+    m_pLblStatusBarMainWindowSize->setMinimumWidth(80);
+    statusBar()->addPermanentWidget(m_pLblStatusBarMainWindowSize);
+
     //m_pLblStatusBarDrawingSceneEditTool = new QLabel("Tool: -");
     //m_pLblStatusBarDrawingSceneEditTool->setMinimumWidth(80);
     //statusBar()->addPermanentWidget(m_pLblStatusBarDrawingSceneEditTool);
@@ -2375,57 +2387,45 @@ void CMainWindow::setCurrentUsedFile( const QString& i_strAbsFilePath )
         /* strMethod    */ "setCurrentUsedFile",
         /* strAddInfo   */ strMthInArgs );
 
-    if( !i_strAbsFilePath.isEmpty() )
-    {
+    if (!i_strAbsFilePath.isEmpty()) {
         SErrResultInfo errResultInfo;
-
         QFileInfo fileInfo(i_strAbsFilePath);
 
-        if (!fileInfo.isFile() || !fileInfo.exists())
-        {
+        if (!fileInfo.isFile() || !fileInfo.exists()) {
             errResultInfo = ErrResultInfoError("setCurrentUsedFile", EResultFileNotFound, i_strAbsFilePath);
         }
-        else
-        {
+        else {
             CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
             // Clear drawing on opening a new file.
             pDrawingScene->clear();
             errResultInfo = pDrawingScene->load(i_strAbsFilePath);
         }
-        if( !errResultInfo.isErrorResult() )
-        {
+
+        if (!errResultInfo.isErrorResult()) {
             updateCurrentUsedFile(i_strAbsFilePath);
         }
-        else
-        {
+        else {
             QMessageBox::StandardButtons msgBoxBtns = QMessageBox::Ok;
             QString strMsg;
             strMsg  = "Error on reading file \"" + i_strAbsFilePath + "\"";
             strMsg += "\n\nErrorCode:\t" + errResultInfo.getResultStr();
-            if (errResultInfo.getAddErrInfoDscr() != i_strAbsFilePath)
-            {
+            if (errResultInfo.getAddErrInfoDscr() != i_strAbsFilePath) {
                 strMsg += "\n\n" + errResultInfo.getAddErrInfoDscr();
             }
-            if (errResultInfo.getResult() == EResultFileNotFound)
-            {
+            if (errResultInfo.getResult() == EResultFileNotFound) {
                 strMsg += "\n\nDo you want to remove the file from list of last open files?";
                 msgBoxBtns = QMessageBox::Yes | QMessageBox::No;
             }
             QMessageBox::StandardButton msgBoxBtnPressed;
-            if( errResultInfo.getSeverity() == EResultSeverityCritical )
-            {
+            if (errResultInfo.getSeverity() == EResultSeverityCritical) {
                 msgBoxBtnPressed = QMessageBox::critical(this, windowTitle(), strMsg, msgBoxBtns);
             }
-            else
-            {
+            else {
                 msgBoxBtnPressed = QMessageBox::warning(this, windowTitle(), strMsg, msgBoxBtns);
             }
-            if( msgBoxBtnPressed == QMessageBox::Yes )
-            {
-                for (int idxFile = 0; idxFile < m_arLastUsedFiles.size(); ++idxFile)
-                {
-                    if (m_arLastUsedFiles[idxFile].m_strAbsFilePath == i_strAbsFilePath)
-                    {
+            if (msgBoxBtnPressed == QMessageBox::Yes) {
+                for (int idxFile = 0; idxFile < m_arLastUsedFiles.size(); ++idxFile) {
+                    if (m_arLastUsedFiles[idxFile].m_strAbsFilePath == i_strAbsFilePath) {
                         m_arLastUsedFiles.removeAt(idxFile);
                         break;
                     }
@@ -2860,8 +2860,7 @@ void CMainWindow::onActionFileOpenTriggered(bool i_bChecked)
         /* strDir      */ dir.absolutePath(),
         /* strFilter   */ "Drawings (*.xml)" );
 
-    if( !strAbsFilePath.isEmpty() )
-    {
+    if (!strAbsFilePath.isEmpty()) {
         setCurrentUsedFile(strAbsFilePath);
     }
 }
@@ -4100,11 +4099,7 @@ void CMainWindow::onActionDebugTestTriggered(bool i_bChecked)
         /* strAddInfo   */ strMthInArgs );
 
     if( m_pDlgTest == nullptr ) {
-        m_pDlgTest = new ZS::Test::GUI::CDlgTest(
-            /* strObjName  */ "Test",
-            /* pTest       */ m_pTest );
-            ///* pWdgtParent */ nullptr,
-            ///* wFlags      */ Qt::WindowMinMaxButtonsHint );
+        m_pDlgTest = new ZS::Test::GUI::CDlgTest("Test", m_pTest);
     }
 
     m_pDlgTest->show();
@@ -4597,13 +4592,10 @@ void CMainWindow::resizeEvent( QResizeEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs  = "Size: " + size2Str(i_pEv->size());
         strMthInArgs += ", OldSize: " + size2Str(i_pEv->oldSize());
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -4611,6 +4603,10 @@ void CMainWindow::resizeEvent( QResizeEvent* i_pEv )
         /* strAddInfo   */ strMthInArgs );
 
     QMainWindow::resizeEvent(i_pEv);
+
+    if (m_pLblStatusBarMainWindowSize != nullptr) {
+        m_pLblStatusBarMainWindowSize->setText("MainWindow {" + qSize2Str(size()) + "}");
+    }
 
     if (m_pLblStatusBarDrawingSceneRect != nullptr && m_pWdgtCentral != nullptr)
     {

@@ -800,12 +800,9 @@ void CGraphObjConnectionLine::showSelectionPoints( unsigned char i_selPts )
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
-
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strAddTrcInfo = "SelectionPoints:" + selectionPoints2Str(i_selPts);
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strAddTrcInfo = selectionPoints2Str(i_selPts);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -827,12 +824,9 @@ void CGraphObjConnectionLine::updateSelectionPoints( unsigned char i_selPts )
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
-
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strAddTrcInfo = "SelectionPoints:" + selectionPoints2Str(i_selPts);
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strAddTrcInfo = selectionPoints2Str(i_selPts);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -840,11 +834,10 @@ void CGraphObjConnectionLine::updateSelectionPoints( unsigned char i_selPts )
         /* strMethod    */ "updateSelectionPoints",
         /* strAddInfo   */ strAddTrcInfo );
 
-    if( parentItem() == nullptr )
-    {
+    if( parentItem() == nullptr ) {
         updateSelectionPointsOfPolygon( polygon() );
     }
-} // updateSelectionPoints
+}
 
 /*==============================================================================
 public: // overridables of base class CGraphObj

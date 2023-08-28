@@ -263,9 +263,8 @@ CGraphObjSwitch::CGraphObjSwitch(
     }
 
     m_pLinSwitch = new CGraphObjLine(
-        /* pDrawingScene */ m_pDrawingScene,
-        /* drawSettings  */ drawSettingsLine,
-        /* strObjName    */ "SwitchLine" );
+        m_pDrawingScene, drawSettingsLine, "SwitchLine",
+        QPointF(0.0,0.0), QPointF(0.0,0.0));
 
     m_pLinSwitch->setLine(lnSwitch);
     m_pDrawingScene->addGraphObj(m_pLinSwitch);

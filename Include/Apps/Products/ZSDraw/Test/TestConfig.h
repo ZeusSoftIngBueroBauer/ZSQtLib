@@ -33,11 +33,12 @@ namespace Apps
 {
 namespace Test
 {
-namespace IpcLog
+namespace Draw
 {
-const QString c_strExpectedResultsAbsDirPath = "C:/Projekte/ZeusSoft/ZSQtLib/physValAndDraw/Make/Apps/Products/ZSDraw/../../../../Source/Apps/Products/ZSDraw/ExpectedResults";
+const QString c_strTestInputFilesAbsDirPath = "C:/Projekte/ZeusSoft/ZSQtLib/physValAndDraw/Make/Apps/Products/ZSDraw/../../../../Resources/Apps/Products/ZSDraw/Test/InputFiles";
+const QString c_strTestExpectedResultFilesAbsDirPath = "C:/Projekte/ZeusSoft/ZSQtLib/physValAndDraw/Make/Apps/Products/ZSDraw/../../../../Resources/Apps/Products/ZSDraw/Test/ExpectedResultFiles";
 
-} // namespace IpcLog
+} // namespace Draw
 
 } // namespace Test
 

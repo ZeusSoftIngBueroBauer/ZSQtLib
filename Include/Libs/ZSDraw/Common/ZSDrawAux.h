@@ -29,17 +29,14 @@ may result in using the software modules.
 
 #include "ZSDraw/Common/ZSDrawDllMain.h"
 
-//#include <QtCore/qabstractitemmodel.h>
 #include <QtCore/qstring.h>
 #include <QtCore/qrect.h>
 
-//#include <QtGui/qcursor.h>
-
-//#if QT_VERSION < 0x050000
-//#include <QtGui/qgraphicsitem.h>
-//#else
-//#include <QtWidgets/qgraphicsitem.h>
-//#endif
+#if QT_VERSION < 0x050000
+#include <QtGui/qgraphicssceneevent.h>
+#else
+#include "QtWidgets/qgraphicssceneevent.h"
+#endif
 
 #include "ZSDraw/Common/ZSDrawCommon.h"
 
@@ -66,27 +63,13 @@ class CDrawSettings;
 struct SGraphObjHitInfo;
 
 
-/*==============================================================================
-QPainterPath::ElementType
-==============================================================================*/
-
 ZSDRAWDLL_API QString qPainterPathElemType2Str( int i_type );
 ZSDRAWDLL_API QString qPainterPath2Str( QGraphicsItem* i_pGraphObj, const QPainterPath& i_painterPath );
-
-
-/*==============================================================================
-QTransform
-==============================================================================*/
-
 ZSDRAWDLL_API QString qTransformationType2Str( int i_type );
 ZSDRAWDLL_API QStringList qTransformation2StrList( const QTransform& i_transform );
-
-
-/*==============================================================================
-QGraphicsItem::GraphicsItemChange
-==============================================================================*/
-
 ZSDRAWDLL_API QString qGraphicsItemChange2Str( int i_change );
+ZSDRAWDLL_API QString qGraphicsSceneHoverEvent2Str( QGraphicsSceneHoverEvent* i_pEv );
+ZSDRAWDLL_API QString qGraphicsSceneMouseEvent2Str( QGraphicsSceneMouseEvent* i_pEv );
 
 
 /*******************************************************************************

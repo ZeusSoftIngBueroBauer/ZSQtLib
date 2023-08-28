@@ -195,9 +195,8 @@ CGraphObjVoltageSource::CGraphObjVoltageSource(
     //----------------
 
     m_pLinCnct = new CGraphObjLine(
-        /* pDrawingScene */ m_pDrawingScene,
-        /* drawSettings  */ drawSettingsLine,
-        /* strObjName    */ "CnctLine" );
+        m_pDrawingScene, drawSettingsLine, "CnctLine",
+        QPointF(0.0,0.0), QPointF(0.0,0.0));
 
     m_pLinCnct->setLine( QLineF( QPointF(0.0,0.0), QPointF(rctBounding.right(),0.0) ) );
     m_pDrawingScene->addGraphObj(m_pLinCnct);
@@ -241,9 +240,8 @@ CGraphObjVoltageSource::CGraphObjVoltageSource(
     //----------------
 
     m_pLinSignMinus = new CGraphObjLine(
-        /* pDrawingScene */ m_pDrawingScene,
-        /* drawSettings  */ drawSettingsLine,
-        /* strObjName    */ "SignMinus" );
+        m_pDrawingScene, drawSettingsLine, "SignMinus",
+        QPointF(0.0,0.0), QPointF(0.0,0.0));
 
     m_pLinSignMinus->setLine(linSignMinus);
     m_pDrawingScene->addGraphObj(m_pLinSignMinus);
@@ -256,9 +254,8 @@ CGraphObjVoltageSource::CGraphObjVoltageSource(
     //----------------
 
     m_pLinSignPlusHor = new CGraphObjLine(
-        /* pDrawingScene */ m_pDrawingScene,
-        /* drawSettings  */ drawSettingsLine,
-        /* strObjName    */ "SignPlusLineHor" );
+        m_pDrawingScene, drawSettingsLine, "SignPlusLineHor",
+        QPointF(0.0,0.0), QPointF(0.0,0.0));
 
     m_pLinSignPlusHor->setLine(linSignPlusHor);
     m_pDrawingScene->addGraphObj(m_pLinSignPlusHor);
@@ -268,9 +265,8 @@ CGraphObjVoltageSource::CGraphObjVoltageSource(
     //addGraphObj(m_pLinSignPlusHor);
 
     m_pLinSignPlusVer = new CGraphObjLine(
-        /* pDrawingScene */ m_pDrawingScene,
-        /* drawSettings  */ drawSettingsLine,
-        /* strObjName    */ "SignPlusLineVer" );
+        m_pDrawingScene, drawSettingsLine, "SignPlusLineVer",
+        QPointF(0.0,0.0), QPointF(0.0,0.0));
 
     m_pLinSignPlusVer->setLine(linSignPlusVer);
     m_pDrawingScene->addGraphObj(m_pLinSignPlusVer);

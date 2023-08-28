@@ -76,25 +76,36 @@ public: // class methods
     /*! Returns the class name. */
     static QString ClassName() { return "CDrawingScene"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
 public: // type definitions and constants
-    const QString c_strXmlElemNameDrawing = "Drawing";
+    static const QString c_strXmlElemNameDrawing;
+    static const QString c_strXmlElemNameGraphObj;
+    static const QString c_strXmlElemNameDrawSettings;
+    static const QString c_strXmlElemNameGeometry;
+    static const QString c_strXmlElemNameShapePoints;
+    static const QString c_strXmlElemNameShapePointP1;
+    static const QString c_strXmlElemNameShapePointP2;
+    static const QString c_strXmlElemNameZValue;
+    static const QString c_strXmlElemNameLabels;
 public: // type definitions and constants
-    const QString c_strXmlAttrDimensionUnit = "DimensionUnit";
-    const QString c_strXmlAttrUnit = "Unit";
-    const QString c_strXmlAttrWidth = "Width";
-    const QString c_strXmlAttrHeight = "Height";
-    const QString c_strXmlAttrScaleFactor = "ScaleFactor";
-    const QString c_strXmlAttrPaperSize = "PaperSize";
-    const QString c_strXmlAttrPaperOrientation = "PaperOrientation";
-    const QString c_strXmlAttrGridLinesVisible = "GridLinesVisible";
-    const QString c_strXmlAttrGridLinesStyle = "GridLinesStyle";
-    const QString c_strXmlAttrGridLinesWidth = "GridLinesWidth";
-    const QString c_strXmlAttrGridLinesColor = "GridLinesColor";
-    const QString c_strXmlAttrGridLabelsVisible = "GridLabelsVisible";
-    const QString c_strXmlAttrGridLabelsFont = "GridLabelsFont";
-    const QString c_strXmlAttrGridLabelsTextSize = "GridLabelsTextSize";
-    const QString c_strXmlAttrGridLabelsTextColor = "GridLabelsTextColor";
-    const QString c_strXmlAttrGridLabelsTextStyle = "GridLabelsTextStyle";
-    const QString c_strXmlAttrGridLabelsTextEffect = "GridLabelsTextEffect";
+    static const QString c_strXmlAttrDimensionUnit;
+    static const QString c_strXmlAttrUnit;
+    static const QString c_strXmlAttrWidth;
+    static const QString c_strXmlAttrHeight;
+    static const QString c_strXmlAttrScaleFactor;
+    static const QString c_strXmlAttrPaperSize;
+    static const QString c_strXmlAttrPaperOrientation;
+    static const QString c_strXmlAttrGridLinesVisible;
+    static const QString c_strXmlAttrGridLinesStyle;
+    static const QString c_strXmlAttrGridLinesWidth;
+    static const QString c_strXmlAttrGridLinesColor;
+    static const QString c_strXmlAttrGridLabelsVisible;
+    static const QString c_strXmlAttrGridLabelsFont;
+    static const QString c_strXmlAttrGridLabelsTextSize;
+    static const QString c_strXmlAttrGridLabelsTextColor;
+    static const QString c_strXmlAttrGridLabelsTextStyle;
+    static const QString c_strXmlAttrGridLabelsTextEffect;
+    static const QString c_strXmlAttrGraphObjFactoryGroupName;
+    static const QString c_strXmlAttrGraphObjType;
+    static const QString c_strXmlAttrGraphObjName;
 public: // class methods
     //static QString FindUniqueGraphObjId(
     //    const QMap<QString,CGraphObj*>& i_dctpGraphObjs,

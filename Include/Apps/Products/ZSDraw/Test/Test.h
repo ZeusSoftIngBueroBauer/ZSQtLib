@@ -71,18 +71,22 @@ public: // ctors and dtor
 public: // instance methods
     void setMainWindow( CMainWindow* i_pMainWindow );
 protected: // instance methods
-    //void createTestGroupAndroidWallpaperTemplate( int& io_idxGroup );
+    void createTestGroupDrawStandardShapes(int& io_idxGroup);
+    void createTestGroupDrawStandardShapesLines(ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
+protected: // instance methods
+    //void createTestGroupMouseEventsStandardShapes( ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup );
+protected: // instance methods
+    //void createTestGroupMouseEventsStandardShapesPoints( ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup );
 protected slots:
-    //void doTestStepAndroidWallpaperTemplatePageSetup( ZS::Test::CTestStep* i_pTestStep );
-    //void doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep* i_pTestStep );
-    //void doTestStepAndroidWallpaperTemplateSaveAsWallpaperPng( ZS::Test::CTestStep* i_pTestStep );
-protected: // instance methods
-    //void createTestGroupMouseEvents( int& io_idxGroup );
-protected: // instance methods
-    //void createTestGroupMouseEventsStandardShapes( ZS::Test::CTestStepGroup* i_pTestGroupParent, int& io_idxGroup );
-protected: // instance methods
-    //void createTestGroupMouseEventsStandardShapesPoints( ZS::Test::CTestStepGroup* i_pTestGroupParent, int& io_idxGroup );
-protected slots:
+    void doTestStepMainWindowSetGeometry( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepClearDrawingScene( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepLoadFile( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepSaveFile( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepSetCurrentDrawingTool( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepUnsetCurrentDrawingTool( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepMousePressEvent( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepMouseMoveEvent( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepMouseReleaseEvent( ZS::Test::CTestStep* i_pTestStep );
     //void doTestStepMouseEventsStandardShapesPointsClearDrawingScene( ZS::Test::CTestStep* i_pTestStep );
     //void doTestStepMouseEventsStandardShapesPointsActivateDrawingTool( ZS::Test::CTestStep* i_pTestStep );
     //void doTestStepMouseEventsStandardShapesPointsActivateEditSelect( ZS::Test::CTestStep* i_pTestStep );

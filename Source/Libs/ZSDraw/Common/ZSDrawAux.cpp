@@ -345,6 +345,29 @@ QString ZS::Draw::qGraphicsItemChange2Str( int i_change )
     return SEnumEntry::enumerator2Str( s_arEnumStrGraphicsItemChange, _ZSArrLen(s_arEnumStrGraphicsItemChange), i_change );
 }
 
+/*==============================================================================
+QGraphicsItem::QGraphicsSceneEvents
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QString ZS::Draw::qGraphicsSceneHoverEvent2Str( QGraphicsSceneHoverEvent* i_pEv )
+//------------------------------------------------------------------------------
+{
+    QString str = "Pos {" + point2Str(i_pEv->pos()) + "}" +
+        ", ScenePos {" + point2Str(i_pEv->scenePos()) + "}" +
+        ", ScreenPos {" + point2Str(i_pEv->screenPos()) + "}";
+    return str;
+}
+
+//------------------------------------------------------------------------------
+QString ZS::Draw::qGraphicsSceneMouseEvent2Str( QGraphicsSceneMouseEvent* i_pEv )
+//------------------------------------------------------------------------------
+{
+    QString str = "Pos {" + point2Str(i_pEv->pos()) + "}" +
+        ", ScenePos {" + point2Str(i_pEv->scenePos()) + "}" +
+        ", ScreenPos {" + point2Str(i_pEv->screenPos()) + "}";
+    return str;
+}
 
 /*******************************************************************************
 exported methods implementation

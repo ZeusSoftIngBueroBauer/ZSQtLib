@@ -73,9 +73,44 @@ using namespace ZS::PhysVal;
 class CDrawingScene : public QGraphicsScene
 *******************************************************************************/
 
-static const QString c_strGraphObjIdName4ListByIndex   = "arpGraphObjs";
-static const QString c_strGraphObjIdName4PoolByParents = "graphIdxTreeByParents";
-static const QString c_strGraphObjIdName4PoolByTypes   = "graphIdxTreeByTypes";
+/*==============================================================================
+public: // type definitions and constants
+==============================================================================*/
+
+const QString CDrawingScene::c_strXmlElemNameDrawing = "Drawing";
+const QString CDrawingScene::c_strXmlElemNameGraphObj = "GraphObj";
+const QString CDrawingScene::c_strXmlElemNameDrawSettings = "DrawSettings";
+const QString CDrawingScene::c_strXmlElemNameGeometry = "Geometry";
+const QString CDrawingScene::c_strXmlElemNameShapePoints = "ShapePoints";
+const QString CDrawingScene::c_strXmlElemNameShapePointP1 = "P1";
+const QString CDrawingScene::c_strXmlElemNameShapePointP2 = "P2";
+const QString CDrawingScene::c_strXmlElemNameZValue = "ZValue";
+const QString CDrawingScene::c_strXmlElemNameLabels = "Labels";
+
+/*==============================================================================
+public: // type definitions and constants
+==============================================================================*/
+
+const QString CDrawingScene::c_strXmlAttrDimensionUnit = "DimensionUnit";
+const QString CDrawingScene::c_strXmlAttrUnit = "Unit";
+const QString CDrawingScene::c_strXmlAttrWidth = "Width";
+const QString CDrawingScene::c_strXmlAttrHeight = "Height";
+const QString CDrawingScene::c_strXmlAttrScaleFactor = "ScaleFactor";
+const QString CDrawingScene::c_strXmlAttrPaperSize = "PaperSize";
+const QString CDrawingScene::c_strXmlAttrPaperOrientation = "PaperOrientation";
+const QString CDrawingScene::c_strXmlAttrGridLinesVisible = "GridLinesVisible";
+const QString CDrawingScene::c_strXmlAttrGridLinesStyle = "GridLinesStyle";
+const QString CDrawingScene::c_strXmlAttrGridLinesWidth = "GridLinesWidth";
+const QString CDrawingScene::c_strXmlAttrGridLinesColor = "GridLinesColor";
+const QString CDrawingScene::c_strXmlAttrGridLabelsVisible = "GridLabelsVisible";
+const QString CDrawingScene::c_strXmlAttrGridLabelsFont = "GridLabelsFont";
+const QString CDrawingScene::c_strXmlAttrGridLabelsTextSize = "GridLabelsTextSize";
+const QString CDrawingScene::c_strXmlAttrGridLabelsTextColor = "GridLabelsTextColor";
+const QString CDrawingScene::c_strXmlAttrGridLabelsTextStyle = "GridLabelsTextStyle";
+const QString CDrawingScene::c_strXmlAttrGridLabelsTextEffect = "GridLabelsTextEffect";
+const QString CDrawingScene::c_strXmlAttrGraphObjFactoryGroupName = "FactoryGroupName";
+const QString CDrawingScene::c_strXmlAttrGraphObjType = "ObjectType";
+const QString CDrawingScene::c_strXmlAttrGraphObjName = "ObjectName";
 
 /*==============================================================================
 public: // class methods
@@ -425,47 +460,32 @@ SErrResultInfo CDrawingScene::load( const QString& i_strFileName )
 
     QFile fileXML;
 
-    if( i_strFileName.isEmpty() )
-    {
+    if (i_strFileName.isEmpty()) {
         errResultInfo = ErrResultInfoError("load", EResultInvalidFileName, "File name is empty");
     }
-    else
-    {
+    else {
         fileXML.setFileName(i_strFileName);
-
-        if (!fileXML.exists())
-        {
+        if (!fileXML.exists()) {
             errResultInfo = ErrResultInfoError("load", EResultFileNotFound, i_strFileName);
         }
-        else if (!fileXML.open(QIODevice::ReadOnly))
-        {
+        else if (!fileXML.open(QIODevice::ReadOnly)) {
             errResultInfo = ErrResultInfoError("load", EResultFileOpenForRead, i_strFileName);
         }
     }
 
-    if( !errResultInfo.isErrorResult() )
-    {
+    if (!errResultInfo.isErrorResult()) {
         QXmlStreamReader xmlStreamReader(&fileXML);
-
         QXmlStreamReader::TokenType xmlStreamTokenType = xmlStreamReader.readNext();
-
-        if( xmlStreamTokenType != QXmlStreamReader::StartDocument )
-        {
+        if (xmlStreamTokenType != QXmlStreamReader::StartDocument) {
             xmlStreamReader.raiseError("Invalid XML document");
         }
-
-        while( !xmlStreamReader.hasError() && !xmlStreamReader.atEnd() )
-        {
+        while (!xmlStreamReader.hasError() && !xmlStreamReader.atEnd()) {
             xmlStreamTokenType = xmlStreamReader.readNext();
-
-            if( xmlStreamReader.isStartElement() || xmlStreamReader.isEndElement() )
-            {
+            if (xmlStreamReader.isStartElement() || xmlStreamReader.isEndElement()) {
                 QString strElemName = xmlStreamReader.name().toString();
-
-                if( xmlStreamReader.isStartElement() )
-                {
+                if (xmlStreamReader.isStartElement()) {
                     //--------------------------------
-                    if( strElemName == c_strXmlElemNameDrawing )
+                    if (strElemName == c_strXmlElemNameDrawing)
                     //--------------------------------
                     {
                         QXmlStreamAttributes xmlStreamAttrs = xmlStreamReader.attributes();
@@ -612,82 +632,75 @@ SErrResultInfo CDrawingScene::load( const QString& i_strFileName )
                             setDrawingSize(drawingSize);
                             setGridSettings(gridSettings);
                         }
-                    } // if( (strElemName == "Drawing") )
+                    } // if (strElemName == c_strXmlElemNameDrawing)
 
                     //--------------------------------
-                    else if( strElemName == "GraphObj" )
+                    else if (strElemName == c_strXmlElemNameGraphObj)
                     //--------------------------------
                     {
-                        QString strFactoryGrpName;
-                        QString strNameSpace;
-                        QString strClassName;
+                        QString strFactoryGroupName;
                         QString strGraphObjType;
                         QString strObjName;
-                        QString strKeyInTree;
 
                         QXmlStreamAttributes xmlStreamAttrs = xmlStreamReader.attributes();
 
-                        if( xmlStreamAttrs.hasAttribute("FactoryGroupName") )
-                        {
-                            strFactoryGrpName = xmlStreamAttrs.value("FactoryGroupName").toString();;
+                        if (xmlStreamAttrs.hasAttribute(c_strXmlAttrGraphObjFactoryGroupName)) {
+                            strFactoryGroupName = xmlStreamAttrs.value(c_strXmlAttrGraphObjFactoryGroupName).toString();
                         }
-                        if( xmlStreamAttrs.hasAttribute("NameSpace") )
-                        {
-                            strNameSpace = xmlStreamAttrs.value("NameSpace").toString();;
+                        else {
+                            raiseErrorAttributeNotDefined(
+                                xmlStreamReader, strElemName, c_strXmlAttrGraphObjFactoryGroupName);
                         }
-                        if( xmlStreamAttrs.hasAttribute("ClassName") )
-                        {
-                            strClassName = xmlStreamAttrs.value("ClassName").toString();;
+                        if (!xmlStreamReader.hasError()) {
+                            if (xmlStreamAttrs.hasAttribute(c_strXmlAttrGraphObjType)) {
+                                strGraphObjType = xmlStreamAttrs.value(c_strXmlAttrGraphObjType).toString();
+                            }
+                            else {
+                                raiseErrorAttributeNotDefined(
+                                    xmlStreamReader, strElemName, c_strXmlAttrGraphObjType);
+                            }
                         }
-                        if( xmlStreamAttrs.hasAttribute("ObjectType") )
-                        {
-                            strGraphObjType = xmlStreamAttrs.value("ObjectType").toString();
-                        }
-                        if( xmlStreamAttrs.hasAttribute("ObjectName") )
-                        {
-                            strObjName = xmlStreamAttrs.value("ObjectName").toString();;
-                        }
-                        if( xmlStreamAttrs.hasAttribute("ObjectId") )
-                        {
-                            strKeyInTree = xmlStreamAttrs.value("ObjectId").toString();;
+                        if (!xmlStreamReader.hasError()) {
+                            if (xmlStreamAttrs.hasAttribute(c_strXmlAttrGraphObjName)) {
+                                strObjName = xmlStreamAttrs.value(c_strXmlAttrGraphObjName).toString();
+                            }
+                            else {
+                                raiseErrorAttributeNotDefined(
+                                    xmlStreamReader, strElemName, c_strXmlAttrGraphObjName);
+                            }
                         }
 
-                        CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strFactoryGrpName, strGraphObjType);
-
-                        if( pObjFactory != nullptr )
-                        {
-                            pObjFactory->loadGraphObj(
-                                /* pDrawingScene   */ this,
-                                /* pGraphObjGroup  */ nullptr,
-                                /* strObjName      */ strObjName,
-                                /* strKeyInTree    */ strKeyInTree,
-                                /* xmlStreamReader */ xmlStreamReader,
-                                /* errResultInfo   */ errResultInfo );
+                        if (!xmlStreamReader.hasError()) {
+                            CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
+                            if (pObjFactory == nullptr) {
+                                xmlStreamReader.raiseError(
+                                    "ObjectFactory \"" + strFactoryGroupName + "::" + strGraphObjType + "\" for element \"" + strElemName + "\" not found");
+                            }
+                            else {
+                                pObjFactory->loadGraphObj(
+                                    /* pDrawingScene   */ this,
+                                    /* pGraphObjGroup  */ nullptr,
+                                    /* strObjName      */ strObjName,
+                                    /* xmlStreamReader */ xmlStreamReader );
+                            }
                         }
-                    } // if( strElemName == "GraphObj" )
-                } // if( xmlStreamReader.isStartElement() )
+                    } // if (strElemName == c_strXmlElemNameGraphObj)
+                } // if (xmlStreamReader.isStartElement())
+            } // if (xmlStreamReader.isStartElement() || xmlStreamReader.isEndElement())
+        } // while (!xmlStreamReader.hasError() && !xmlStreamReader.atEnd())
 
-                else // if( xmlStreamReader.isEndElement() )
-                {
-                }
-            } // if( xmlStreamReader.isStartElement() || xmlStreamReader.isEndElement() )
-        } // while( !xmlStreamReader.hasError() && !xmlStreamReader.atEnd() )
-
-        if( xmlStreamReader.hasError() )
-        {
+        if (xmlStreamReader.hasError()) {
             QString strAddErrInfo;
             strAddErrInfo += xmlStreamReader.errorString() + " on reading \"" + i_strFileName + "\" ";
             strAddErrInfo += "(Line:" + QString::number(xmlStreamReader.lineNumber());
             strAddErrInfo += ", Column:" + QString::number(xmlStreamReader.columnNumber()) + ")";
             errResultInfo = ErrResultInfoError("load", EResultFileReadContent, strAddErrInfo);
         }
-    } // if( !errResultInfo.isErrorResult() )
+    } // if (!errResultInfo.isErrorResult())
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(errResultInfo);
     }
-
     return errResultInfo;
 
 } // load
@@ -697,12 +710,9 @@ SErrResultInfo CDrawingScene::save( const QString& i_strFileName )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "FileName:" + i_strFileName;
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -713,38 +723,27 @@ SErrResultInfo CDrawingScene::save( const QString& i_strFileName )
 
     QFile fileXML;
 
-    if( i_strFileName.isEmpty() )
-    {
+    if (i_strFileName.isEmpty()) {
         errResultInfo = ErrResultInfoError("save", EResultInvalidFileName, "File name is empty");
     }
-    else
-    {
+    else {
         fileXML.setFileName(i_strFileName);
-
-        if( !fileXML.open(QIODevice::WriteOnly) )
-        {
+        if (!fileXML.open(QIODevice::WriteOnly)) {
             errResultInfo = ErrResultInfoError("save", EResultFileOpenForWrite, i_strFileName);
         }
     }
 
-    if( !errResultInfo.isErrorResult() )
-    {
+    if (!errResultInfo.isErrorResult()) {
         QXmlStreamWriter xmlStreamWriter(&fileXML);
-
         xmlStreamWriter.setAutoFormatting(true);
-
         xmlStreamWriter.writeStartDocument();
-
         xmlStreamWriter.writeStartElement(c_strXmlElemNameDrawing);
-
         xmlStreamWriter.writeAttribute(c_strXmlAttrDimensionUnit, m_drawingSize.dimensionUnit().toString());
-        if (m_drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels)
-        {
+        if (m_drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels) {
             xmlStreamWriter.writeAttribute(c_strXmlAttrWidth, QString::number(m_drawingSize.imageSizeInPixels().width()));
             xmlStreamWriter.writeAttribute(c_strXmlAttrHeight, QString::number(m_drawingSize.imageSizeInPixels().height()));
         }
-        else // if (m_drawingSize.dimensionUnit() == EDrawingDimensionUnit::Metric)
-        {
+        else /*if (m_drawingSize.dimensionUnit() == EDrawingDimensionUnit::Metric)*/ {
             xmlStreamWriter.writeAttribute(c_strXmlAttrUnit, m_drawingSize.metricUnit().symbol());
             xmlStreamWriter.writeAttribute(c_strXmlAttrWidth, m_drawingSize.metricImageWidth().toString());
             xmlStreamWriter.writeAttribute(c_strXmlAttrHeight, m_drawingSize.metricImageHeight().toString());
@@ -769,54 +768,38 @@ SErrResultInfo CDrawingScene::save( const QString& i_strFileName )
         xmlStreamWriter.writeAttribute(c_strXmlAttrGridLabelsTextStyle, CEnumTextStyle(m_gridSettings.labelsTextStyle()).toString());
         xmlStreamWriter.writeAttribute(c_strXmlAttrGridLabelsTextEffect, CEnumTextEffect(m_gridSettings.labelsTextEffect()).toString());
 
-        QGraphicsItem* pGraphicsItem;
-        CGraphObj*     pGraphObj;
-        int            idxGraphObj;
-
         // Connection points need to be recalled before the connection lines as on
         // creating the connection lines their connection points must already exist.
         // For this the connection lines will be saved at the end of the XML file.
-        for( idxGraphObj = 0; idxGraphObj < items().size(); idxGraphObj++ )
-        {
-            pGraphicsItem = items()[idxGraphObj];
-            pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+        for (int idxGraphObj = 0; idxGraphObj < items().size(); idxGraphObj++) {
+            QGraphicsItem* pGraphicsItem = items()[idxGraphObj];
+            CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
 
-            if( pGraphicsItem->type() != static_cast<int>(EGraphObjTypeSelectionPoint)
+            if (pGraphicsItem->type() != static_cast<int>(EGraphObjTypeSelectionPoint)
              && pGraphicsItem->type() != static_cast<int>(EGraphObjTypeLabel)
-             && pGraphicsItem->type() != static_cast<int>(EGraphObjTypeConnectionLine) )
-            {
+             && pGraphicsItem->type() != static_cast<int>(EGraphObjTypeConnectionLine)) {
                 // Group members will be saved as child items of the groups.
-                if( pGraphicsItem->parentItem() == nullptr )
-                {
-                    errResultInfo = save(pGraphObj,xmlStreamWriter);
-
-                    if( errResultInfo.isErrorResult() )
-                    {
+                if (pGraphicsItem->parentItem() == nullptr) {
+                    errResultInfo = save(pGraphObj, xmlStreamWriter);
+                    if (errResultInfo.isErrorResult()) {
                         break;
                     }
                 }
             }
         }
 
-        if( !errResultInfo.isErrorResult() )
-        {
-            for( idxGraphObj = 0; idxGraphObj < items().size(); idxGraphObj++ )
-            {
-                pGraphicsItem = items()[idxGraphObj];
+        if (!errResultInfo.isErrorResult()) {
+            for (int idxGraphObj = 0; idxGraphObj < items().size(); idxGraphObj++) {
+                QGraphicsItem* pGraphicsItem = items()[idxGraphObj];
 
-                if( pGraphicsItem->type() != static_cast<int>(EGraphObjTypeSelectionPoint)
+                if (pGraphicsItem->type() != static_cast<int>(EGraphObjTypeSelectionPoint)
                  && pGraphicsItem->type() != static_cast<int>(EGraphObjTypeLabel)
-                 && pGraphicsItem->type() == static_cast<int>(EGraphObjTypeConnectionLine) )
-                {
+                 && pGraphicsItem->type() == static_cast<int>(EGraphObjTypeConnectionLine)) {
                     // Group members will be saved as child items of the groups.
-                    if( pGraphicsItem->parentItem() == nullptr )
-                    {
-                        pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
-
-                        errResultInfo = save(pGraphObj,xmlStreamWriter);
-
-                        if( errResultInfo.isErrorResult() )
-                        {
+                    if (pGraphicsItem->parentItem() == nullptr) {
+                        CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+                        errResultInfo = save(pGraphObj, xmlStreamWriter);
+                        if (errResultInfo.isErrorResult()) {
                             break;
                         }
                     }
@@ -825,13 +808,11 @@ SErrResultInfo CDrawingScene::save( const QString& i_strFileName )
         }
 
         xmlStreamWriter.writeEndElement();  // Drawing
-
         xmlStreamWriter.writeEndDocument();
 
     } // if( !errResultInfo.isErrorResult() )
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(errResultInfo);
     }
     return errResultInfo;
@@ -846,20 +827,14 @@ protected: // instance methods
 SErrResultInfo CDrawingScene::save( CGraphObj* i_pGraphObj, QXmlStreamWriter& i_xmlStreamWriter )
 //------------------------------------------------------------------------------
 {
-    if( i_pGraphObj == nullptr )
-    {
+    if (i_pGraphObj == nullptr) {
         throw ZS::System::CException( __FILE__, __LINE__, EResultArgOutOfRange, "pGraphObj == nullptr" );
     }
 
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strMthInArgs  = "GraphObj:" + i_pGraphObj->nameSpace();
-        strMthInArgs += "::" + i_pGraphObj->className();
-        strMthInArgs += "::" + i_pGraphObj->name();
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "GraphObj: " + i_pGraphObj->path();
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -868,39 +843,28 @@ SErrResultInfo CDrawingScene::save( CGraphObj* i_pGraphObj, QXmlStreamWriter& i_
 
     SErrResultInfo errResultInfo;
 
-    QString strNameSpace    = i_pGraphObj->nameSpace();
-    QString strClassName    = i_pGraphObj->className();
+    QString strFactoryGroupName = i_pGraphObj->getFactoryGroupName();
     QString strGraphObjType = i_pGraphObj->typeAsString();
-    QString strObjName      = i_pGraphObj->name();
-    QString strKeyInTree    = i_pGraphObj->keyInTree();
+    QString strObjName = i_pGraphObj->name();
 
-    CObjFactory* pObjFactory = CObjFactory::FindObjFactory(i_pGraphObj->getFactoryGroupName(), strGraphObjType);
+    CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
 
-    if( pObjFactory == nullptr )
-    {
-        QString strAddErrInfo = strNameSpace + "::" + strClassName + " (" + strGraphObjType + ")";
+    if (pObjFactory == nullptr) {
+        QString strAddErrInfo = strFactoryGroupName + "::" + strGraphObjType;
         errResultInfo = ErrResultInfoError("save", EResultObjFactoryNotFound, strAddErrInfo);
     }
-    else
-    {
-        i_xmlStreamWriter.writeStartElement("GraphObj");
-
-        i_xmlStreamWriter.writeAttribute( "NameSpace", strNameSpace );
-        i_xmlStreamWriter.writeAttribute( "ClassName", strClassName );
-        i_xmlStreamWriter.writeAttribute( "ObjectType", strGraphObjType );
-        i_xmlStreamWriter.writeAttribute( "ObjectName", strObjName );
-        i_xmlStreamWriter.writeAttribute( "ObjectId", strKeyInTree );
-
-        errResultInfo = pObjFactory->saveGraphObj(i_pGraphObj,i_xmlStreamWriter);
-
+    else {
+        i_xmlStreamWriter.writeStartElement(c_strXmlElemNameGraphObj);
+        i_xmlStreamWriter.writeAttribute(c_strXmlAttrGraphObjFactoryGroupName, strFactoryGroupName);
+        i_xmlStreamWriter.writeAttribute(c_strXmlAttrGraphObjType, strGraphObjType);
+        i_xmlStreamWriter.writeAttribute(c_strXmlAttrGraphObjName, strObjName);
+        errResultInfo = pObjFactory->saveGraphObj(i_pGraphObj, i_xmlStreamWriter);
         i_xmlStreamWriter.writeEndElement();
     }
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(errResultInfo);
     }
-
     return errResultInfo;
 
 } // save
@@ -974,13 +938,11 @@ void CDrawingScene::addGraphObj( CGraphObj* i_pGraphObj, CGraphObj* i_pGraphObjP
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strMthInArgs = QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->path());
-        strMthInArgs += ", Parent: " + QString(i_pGraphObjParent == nullptr ? "nullptr" : i_pGraphObjParent->path());
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs =
+            QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->path()) +
+            ", Parent: " + QString(i_pGraphObjParent == nullptr ? "nullptr" : i_pGraphObjParent->path());
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -988,9 +950,7 @@ void CDrawingScene::addGraphObj( CGraphObj* i_pGraphObj, CGraphObj* i_pGraphObjP
         /* strAddInfo   */ strMthInArgs );
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(i_pGraphObj);
-
-    if( pGraphicsItem == nullptr )
-    {
+    if (pGraphicsItem == nullptr) {
         throw ZS::System::CException(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "dynamic_cast<QGraphicsItem*>(i_pGraphObj)");
     }
 
@@ -1000,15 +960,10 @@ void CDrawingScene::addGraphObj( CGraphObj* i_pGraphObj, CGraphObj* i_pGraphObjP
     // labels should appear as childs in the index tree of the drawing scene.
 
     QGraphicsItem* pGraphicsItemParent = nullptr;
-
-    if( !i_pGraphObj->isSelectionPoint() && !i_pGraphObj->isLabel() )
-    {
-        if( i_pGraphObjParent != nullptr )
-        {
+    if (!i_pGraphObj->isSelectionPoint() && !i_pGraphObj->isLabel()) {
+        if (i_pGraphObjParent != nullptr) {
             pGraphicsItemParent = dynamic_cast<QGraphicsItem*>(i_pGraphObjParent);
-
-            if( pGraphicsItemParent == nullptr )
-            {
+            if (pGraphicsItemParent == nullptr) {
                 throw ZS::System::CException(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "dynamic_cast<QGraphicsItem*>(i_pGraphObjParent)");
             }
         }
@@ -1025,12 +980,9 @@ void CDrawingScene::removeGraphObj( CGraphObj* i_pGraphObj )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->path());
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -1038,12 +990,9 @@ void CDrawingScene::removeGraphObj( CGraphObj* i_pGraphObj )
         /* strAddInfo   */ strMthInArgs );
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(i_pGraphObj);
-
-    if( pGraphicsItem != nullptr )
-    {
+    if (pGraphicsItem != nullptr) {
         removeItem(pGraphicsItem);
     }
-
 } // removeGraphObj
 
 /*==============================================================================
@@ -2500,7 +2449,7 @@ int CDrawingScene::groupGraphObjsSelected()
 
             m_pGraphObjCreating = pObjFactoryGroup->createGraphObj(
                 /* pDrawingScene */ this,
-                /* ptItemPos     */ QPointF(0.0,0.0),
+                /* ptItemPos     */ QPointF(0.0, 0.0),
                 /* drawSettings  */ m_drawSettings );
 
             m_pGraphicsItemCreating = dynamic_cast<QGraphicsItem*>(m_pGraphObjCreating);
@@ -3556,7 +3505,7 @@ void CDrawingScene::dropEvent( QGraphicsSceneDragDropEvent* i_pEv )
                             {
                                 pGraphObj = pObjFactory->createGraphObj(
                                     /* pDrawingScene */ this,
-                                    /* ptItemPos     */ QPointF(0.0,0.0),
+                                    /* ptItemPos     */ i_pEv->scenePos(),
                                     /* drawSettings  */ m_drawSettings );
 
                                 pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
@@ -3568,12 +3517,12 @@ void CDrawingScene::dropEvent( QGraphicsSceneDragDropEvent* i_pEv )
 
                                 addGraphObj(pGraphObj);
 
-                                pGraphicsItem->setPos( i_pEv->scenePos() );
+                                //pGraphicsItem->setPos( i_pEv->scenePos() );
                                 pGraphicsItem->setSelected(true);
 
-                                onGraphObjCreationFinished(pGraphObj);
+                                //onGraphObjCreationFinished(pGraphObj);
 
-                                setMode( EMode::Ignore, EEditTool::Select, EEditMode::Move, EEditResizeMode::None, false );
+                                setMode(EMode::Ignore, EEditTool::Select, EEditMode::Move, EEditResizeMode::None, false);
                             }
                         } // if( strType.compare("ObjFactory",Qt::CaseInsensitive) == 0 )
                     } // if( strlstObjPath.size() > 1 ) // must contain type and object path
@@ -3752,7 +3701,7 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                         // In special this applies to connection points and circles.
                         m_pGraphObjCreating = m_pObjFactory->createGraphObj(
                             /* pDrawingScene */ this,
-                            /* ptItemPos     */ QPointF(0.0,0.0),
+                            /* ptItemPos     */ m_ptMouseEvScenePosOnMousePressEvent,
                             /* drawSettings  */ m_drawSettings );
 
                         if (m_pGraphObjCreating != nullptr)
@@ -3778,6 +3727,7 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                                 pGraphObjCnctPtCreating = dynamic_cast<CGraphObjConnectionPoint*>(m_pGraphObjCreating);
                             }
 
+                            #pragma message(__TODO__)
                             if (pGraphObjCnctPtCreating != nullptr) {
                                 // Need to set left top position of connection points as transformation origin point.
                                 // Otherwise mapping coordinates to group coordinates does not work correctly.
@@ -3788,7 +3738,7 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                                 pGraphObjCnctPtCreating->setPos(ptPosGraphObjCnctPt);
                             }
                             else {
-                                m_pGraphicsItemCreating->setPos(m_ptMouseEvScenePosOnMousePressEvent);
+                                //m_pGraphicsItemCreating->setPos(m_ptMouseEvScenePosOnMousePressEvent);
                             }
 
                             m_pGraphicsItemCreating->setSelected(true);
@@ -4169,7 +4119,7 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
                         // .. we are going to create further points at the current mouse position.
                         m_pGraphObjCreating = m_pObjFactory->createGraphObj(
                             /* pDrawingScene */ this,
-                            /* ptItemPos     */ QPointF(0.0,0.0),
+                            /* ptItemPos     */ ptMouseScenePos,
                             /* drawSettings  */ m_drawSettings );
 
                         m_pGraphicsItemCreating = dynamic_cast<QGraphicsItem*>(m_pGraphObjCreating);
@@ -4183,7 +4133,7 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 
                         m_pGraphObjCreating->setEditMode(EEditMode::Creating);
 
-                        m_pGraphicsItemCreating->setPos(ptMouseScenePos);
+                        //m_pGraphicsItemCreating->setPos(ptMouseScenePos);
                         m_pGraphicsItemCreating->setSelected(true);
 
                         // The current "mouseMove" event is not dispatched to the newly created object but to the

@@ -69,7 +69,7 @@ int main( int i_argc, char* i_argv[] )
         {
             bTest = true;
         }
-        if( strArg.compare("DemoQtWidgets",Qt::CaseInsensitive) == 0 )
+        else if( strArg.compare("DemoQtWidgets",Qt::CaseInsensitive) == 0 )
         {
             strlstObjFactories << ZS::Apps::Products::Draw::CMainWindow::c_strObjFactoryQtWidgets;
         }

@@ -260,6 +260,8 @@ public: // instance methods
     ETextSize getTextSize() const;
     void setTextEffect( const ETextEffect );
     ETextEffect getTextEffect() const;
+public: // instance methods
+    QString toString() const;
 protected: // instance members
     EGraphObjType  m_graphObjType;
     int            m_idxGraphObjType;

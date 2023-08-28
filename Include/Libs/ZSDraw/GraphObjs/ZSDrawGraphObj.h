@@ -39,6 +39,7 @@ namespace ZS
 namespace System
 {
 class CTrcAdminObj;
+class CMethodTracer;
 }
 
 namespace Draw
@@ -356,7 +357,6 @@ public: // overridables
 public: // overridables
     virtual void setEditMode( EEditMode i_editMode );
     virtual void setEditResizeMode( EEditResizeMode i_editResizeMode );
-public: // overridables
 public: // must overridables
     virtual void setIsHit( bool i_bHit ) = 0;
 public: // overridables
@@ -451,6 +451,11 @@ protected: // auxiliary instance methods
     void showLabel(QHash<QString, CGraphObjLabel*>& i_arpLabels, const QString& i_strKey, const QString& i_strText, ESelectionPoint i_selPt);
     void hideLabel(QHash<QString, CGraphObjLabel*>& i_arpLabels, const QString& i_strKey);
     void destroyLabels();
+protected: // overridable auxiliary instance methods (method tracing)
+    virtual void traceInternalStates(
+        ZS::System::CMethodTracer& i_mthTracer,
+        ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
+        ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const;
 protected: // instance members
     /*!< Flag to indicate that the destructor has been called. */
     bool m_bDtorInProgress;
@@ -470,6 +475,8 @@ protected: // instance members
          Call "updateSettings" before accessing settings to keep this struct up to date with graphics
          item settings. */
     CDrawSettings m_drawSettings;
+    /*!< Flag to indicate that the coordinates need to be updated. */
+    bool m_bCoorsDirty;
     /*!< If valid defines the minimum size of the graphical object. */
     QSize m_sizMinimum;
     /*!< If valid defines the maximum size of the graphical object. */

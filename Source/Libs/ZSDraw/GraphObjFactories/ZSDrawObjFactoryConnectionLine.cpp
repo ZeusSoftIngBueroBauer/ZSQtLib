@@ -232,9 +232,7 @@ CGraphObj* CObjFactoryConnectionLine::loadGraphObj(
     CDrawingScene*    i_pDrawingScene,
     CGraphObjGroup*   /*i_pGraphObjGroup*/, // Connection lines never belong to groups.
     const QString&    i_strObjName,
-    const QString&    i_strObjId,
-    QXmlStreamReader& i_xmlStreamReader,
-    SErrResultInfo&   io_errResultInfo )
+    QXmlStreamReader& i_xmlStreamReader )
 //------------------------------------------------------------------------------
 {
     if( i_pDrawingScene == nullptr )
@@ -252,150 +250,145 @@ CGraphObj* CObjFactoryConnectionLine::loadGraphObj(
 
     CGraphObjConnectionLine*  pGraphObj = nullptr;
 
-    if( i_pDrawingScene->findGraphObj(i_strObjId) == nullptr )
+    CGraphObjConnectionPoint*      pCnctPtStart = nullptr;
+    CGraphObjConnectionPoint*      pCnctPtEnd   = nullptr;
+    QXmlStreamAttributes           xmlStreamAttrs;
+    QString                        strElemName;
+    QString                        strElemText;
+    QString                        strAttr;
+    bool                           bConverted;
+    CDrawSettings                  drawSettings(EGraphObjTypeConnectionLine);
+    QPolygonF                      plg;
+    double                         fZValue = 0.0;
+    QHash<QString,CGraphObjLabel*> arpLabels;
+
+    while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
     {
-        CGraphObjConnectionPoint*      pCnctPtStart = nullptr;
-        CGraphObjConnectionPoint*      pCnctPtEnd   = nullptr;
-        QXmlStreamAttributes           xmlStreamAttrs;
-        QString                        strElemName;
-        QString                        strElemText;
-        QString                        strAttr;
-        bool                           bConverted;
-        CDrawSettings                  drawSettings(EGraphObjTypeConnectionLine);
-        QPolygonF                      plg;
-        double                         fZValue = 0.0;
-        QHash<QString,CGraphObjLabel*> arpLabels;
+        //xmlStreamTokenType = i_xmlStreamReader.readNext();
+        strElemName = i_xmlStreamReader.name().toString();
 
-        while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
+        if( i_xmlStreamReader.isStartElement() )
         {
-            //xmlStreamTokenType = i_xmlStreamReader.readNext();
-            strElemName = i_xmlStreamReader.name().toString();
-
-            if( i_xmlStreamReader.isStartElement() )
+            if( strElemName == "ObjIdCnctPtStart" )
             {
-                if( strElemName == "ObjIdCnctPtStart" )
-                {
-                    QString strObjId = i_xmlStreamReader.readElementText();
-                    CGraphObj* pGraphObjTmp = i_pDrawingScene->findGraphObj(strObjId);
-                    pCnctPtStart = dynamic_cast<CGraphObjConnectionPoint*>(pGraphObjTmp);
-                }
-                else if( strElemName == "ObjIdCnctPtEnd" )
-                {
-                    QString strObjId = i_xmlStreamReader.readElementText();
-                    CGraphObj* pGraphObjTmp = i_pDrawingScene->findGraphObj(strObjId);
-                    pCnctPtEnd = dynamic_cast<CGraphObjConnectionPoint*>(pGraphObjTmp);
-                }
-                else if( strElemName == "DrawSettings" )
-                {
-                    drawSettings.load(i_xmlStreamReader);
-                }
-                else if( strElemName == "Geometry" )
-                {
-                }
-                else if( strElemName.contains("Pt",Qt::CaseInsensitive) )
-                {
-                    QString strIdxPtTmp = strElemName.right(strElemName.size()-2);
+                QString strObjId = i_xmlStreamReader.readElementText();
+                CGraphObj* pGraphObjTmp = i_pDrawingScene->findGraphObj(strObjId);
+                pCnctPtStart = dynamic_cast<CGraphObjConnectionPoint*>(pGraphObjTmp);
+            }
+            else if( strElemName == "ObjIdCnctPtEnd" )
+            {
+                QString strObjId = i_xmlStreamReader.readElementText();
+                CGraphObj* pGraphObjTmp = i_pDrawingScene->findGraphObj(strObjId);
+                pCnctPtEnd = dynamic_cast<CGraphObjConnectionPoint*>(pGraphObjTmp);
+            }
+            else if( strElemName == "DrawSettings" )
+            {
+                drawSettings.load(i_xmlStreamReader);
+            }
+            else if( strElemName == "Geometry" )
+            {
+            }
+            else if( strElemName.contains("Pt",Qt::CaseInsensitive) )
+            {
+                QString strIdxPtTmp = strElemName.right(strElemName.size()-2);
 
-                    int idxPtTmp = strIdxPtTmp.toInt(&bConverted);
+                int idxPtTmp = strIdxPtTmp.toInt(&bConverted);
 
-                    if( bConverted && idxPtTmp < 10000 )
-                    {
-                        strElemText = i_xmlStreamReader.readElementText();
-
-                        QPointF ptTmp = str2PointF(strElemText,&bConverted);
-
-                        if( bConverted )
-                        {
-                            if( plg.size() < idxPtTmp+1 )
-                            {
-                                plg.resize(idxPtTmp+1);
-                            }
-                            plg[idxPtTmp] = ptTmp;
-                        }
-                    }
-                } // if( strElemName == "Pt" )
-
-                else if( strElemName == "ZValue" )
+                if( bConverted && idxPtTmp < 10000 )
                 {
                     strElemText = i_xmlStreamReader.readElementText();
 
-                    double fTmp = strElemText.toDouble(&bConverted);
+                    QPointF ptTmp = str2PointF(strElemText,&bConverted);
 
                     if( bConverted )
                     {
-                        fZValue = fTmp;
+                        if( plg.size() < idxPtTmp+1 )
+                        {
+                            plg.resize(idxPtTmp+1);
+                        }
+                        plg[idxPtTmp] = ptTmp;
                     }
-                } // if( strElemName == "ZValue" )
-
-                else if( strElemName == "Labels" )
-                {
-                    SErrResultInfo errResultInfo;
-                    arpLabels = loadGraphObjLabels(i_xmlStreamReader,errResultInfo);
                 }
-            } // if( xmlStreamReader.isStartElement() )
+            } // if( strElemName == "Pt" )
 
-            else if( i_xmlStreamReader.isEndElement() )
+            else if( strElemName == "ZValue" )
             {
-                if( strElemName == "GraphObj" )
+                strElemText = i_xmlStreamReader.readElementText();
+
+                double fTmp = strElemText.toDouble(&bConverted);
+
+                if( bConverted )
                 {
-                    break;
+                    fZValue = fTmp;
                 }
-            } // if( i_xmlStreamReader.isEndElement() )
-        } // while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
+            } // if( strElemName == "ZValue" )
 
-        if( pCnctPtStart != nullptr && pCnctPtEnd != nullptr && plg.size() > 1 )
-        {
-            pGraphObj = new CGraphObjConnectionLine(
-                /* pDrawingScene */ i_pDrawingScene,
-                /* drawSettings  */ drawSettings,
-                /* strObjName    */ i_strObjName );
-
-            i_pDrawingScene->addGraphObj(pGraphObj);
-
-            pGraphObj->setConnectionPoint( ELinePoint::Start, pCnctPtStart );
-            pGraphObj->setConnectionPoint( ELinePoint::End, pCnctPtEnd );
-
-            plg = pGraphObj->mapFromScene(plg);
-
-            pGraphObj->setPolygon(plg);
-
-            pGraphObj->setStackingOrderValue(fZValue);
-
-            i_pDrawingScene->onGraphObjCreationFinished(pGraphObj);
-
-            pGraphObj->acceptCurrentAsOriginalCoors();
-
-            //if( arpLabels.size() > 0 )
-            //{
-            //    pGraphObj->addLabels(arpLabels);
-            //}
-        } // if( pCnctPtStart != nullptr && pCnctPtEnd != nullptr && plg.size() > 1 )
-
-        if( arpLabels.size() > 0 )
-        {
-            QHashIterator<QString,CGraphObjLabel*> itLabels(arpLabels);
-            CGraphObjLabel*                        pGraphObjLabel;
-
-            while( itLabels.hasNext() )
+            else if( strElemName == "Labels" )
             {
-                itLabels.next();
-
-                pGraphObjLabel = itLabels.value();
-
-                arpLabels.remove(pGraphObjLabel->getKey());
-
-                delete pGraphObjLabel;
-                pGraphObjLabel = nullptr;
+                arpLabels = loadGraphObjLabels(i_xmlStreamReader);
             }
-        }
+        } // if( xmlStreamReader.isStartElement() )
 
-    } // if( i_pDrawingScene->findGraphObj(i_strObjId) == nullptr )
+        else if( i_xmlStreamReader.isEndElement() )
+        {
+            if( strElemName == "GraphObj" )
+            {
+                break;
+            }
+        } // if( i_xmlStreamReader.isEndElement() )
+    } // while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if( pCnctPtStart != nullptr && pCnctPtEnd != nullptr && plg.size() > 1 )
     {
-        mthTracer.setMethodReturn(io_errResultInfo);
+        pGraphObj = new CGraphObjConnectionLine(
+            /* pDrawingScene */ i_pDrawingScene,
+            /* drawSettings  */ drawSettings,
+            /* strObjName    */ i_strObjName );
+
+        i_pDrawingScene->addGraphObj(pGraphObj);
+
+        pGraphObj->setConnectionPoint( ELinePoint::Start, pCnctPtStart );
+        pGraphObj->setConnectionPoint( ELinePoint::End, pCnctPtEnd );
+
+        plg = pGraphObj->mapFromScene(plg);
+
+        pGraphObj->setPolygon(plg);
+
+        pGraphObj->setStackingOrderValue(fZValue);
+
+        i_pDrawingScene->onGraphObjCreationFinished(pGraphObj);
+
+        pGraphObj->acceptCurrentAsOriginalCoors();
+
+        //if( arpLabels.size() > 0 )
+        //{
+        //    pGraphObj->addLabels(arpLabels);
+        //}
+    } // if( pCnctPtStart != nullptr && pCnctPtEnd != nullptr && plg.size() > 1 )
+
+    if( arpLabels.size() > 0 )
+    {
+        QHashIterator<QString,CGraphObjLabel*> itLabels(arpLabels);
+        CGraphObjLabel*                        pGraphObjLabel;
+
+        while( itLabels.hasNext() )
+        {
+            itLabels.next();
+
+            pGraphObjLabel = itLabels.value();
+
+            arpLabels.remove(pGraphObjLabel->getKey());
+
+            delete pGraphObjLabel;
+            pGraphObjLabel = nullptr;
+        }
     }
 
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs(i_xmlStreamReader.errorString());
+        QString strMthRet = QString(pGraphObj == nullptr ? "null" : pGraphObj->path());
+        mthTracer.setMethodReturn(strMthRet);
+    }
     return pGraphObj;
 
 } // loadGraphObj

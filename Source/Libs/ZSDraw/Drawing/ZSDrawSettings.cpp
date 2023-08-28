@@ -1920,3 +1920,19 @@ ETextEffect CDrawSettings::getTextEffect() const
 {
     return static_cast<ETextEffect>(m_arAttributes[EDrawAttributeTextEffect].m_val.toInt());
 }
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QString CDrawSettings::toString() const
+//------------------------------------------------------------------------------
+{
+    QString str;
+    for (int iAttribute = 0; iAttribute < EDrawAttributeCount; ++iAttribute) {
+        if (iAttribute > 0) str += ", ";
+        str += drawAttribute2Str(iAttribute) + ": " + attributeValue2Str(iAttribute);
+    }
+    return str;
+}

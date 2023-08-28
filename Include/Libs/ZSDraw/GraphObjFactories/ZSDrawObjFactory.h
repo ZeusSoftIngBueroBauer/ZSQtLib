@@ -109,19 +109,17 @@ public: // overridables
     virtual QString className() const { return ClassName(); }
 public: // interface methods
     virtual CGraphObj* createGraphObj(
-        CDrawingScene*       i_pDrawingScene,
-        const QPointF&       i_ptItemPos, // usually QPointF(0.0,0.0)
+        CDrawingScene* i_pDrawingScene,
+        const QPointF& i_ptItemPos, // usually QPointF(0.0, 0.0)
         const CDrawSettings& i_drawSettings ) = 0;
     virtual ZS::System::SErrResultInfo saveGraphObj(
-        CGraphObj*        i_pGraphObj,
+        CGraphObj* i_pGraphObj,
         QXmlStreamWriter& i_xmlStreamWriter ) = 0;
     virtual CGraphObj* loadGraphObj(
-        CDrawingScene*    i_pDrawingScene,
-        CGraphObjGroup*   i_pGraphObjGroup,
-        const QString&    i_strObjName,
-        const QString&    i_strObjId,
-        QXmlStreamReader& i_xmlStreamReader,
-        ZS::System::SErrResultInfo&   io_errResultInfo ) = 0;
+        CDrawingScene* i_pDrawingScene,
+        CGraphObjGroup* i_pGraphObjGroup,
+        const QString& i_strObjName,
+        QXmlStreamReader& i_xmlStreamReader ) = 0;
 public: // instance methods
     QString getGroupName() const { return m_strGroupName; }
     int getGraphObjType() const { return m_iGraphObjType; }
@@ -141,7 +139,7 @@ public: // overridables
     virtual QSizeF getInitialSize() const { return QSizeF(); }
 protected: // overridables
     virtual ZS::System::SErrResultInfo saveGraphObjLabels( const QHash<QString, CGraphObjLabel*>& i_arpLabels, QXmlStreamWriter& i_xmlStreamWriter );
-    virtual QHash<QString, CGraphObjLabel*> loadGraphObjLabels( QXmlStreamReader& i_xmlStreamReader, ZS::System::SErrResultInfo& io_errResultInfo );
+    virtual QHash<QString, CGraphObjLabel*> loadGraphObjLabels( QXmlStreamReader& i_xmlStreamReader );
 protected: // class members
     static int s_iInstCount;
     static ZS::System::CIdxTree* s_pIdxTree;

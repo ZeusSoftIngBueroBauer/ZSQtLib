@@ -33,11 +33,12 @@ namespace Apps
 {
 namespace Test
 {
-namespace IpcLog
+namespace Draw
 {
-const QString c_strExpectedResultsAbsDirPath = "@_SourcesPath@/ZSDraw/ExpectedResults";
+const QString c_strTestInputFilesAbsDirPath = "@_ResourcesPath@/ZSDraw/Test/InputFiles";
+const QString c_strTestExpectedResultFilesAbsDirPath = "@_ResourcesPath@/ZSDraw/Test/ExpectedResultFiles";
 
-} // namespace IpcLog
+} // namespace Draw
 
 } // namespace Test
 

@@ -70,7 +70,7 @@ const QString CObjFactory::c_strGroupNameSelectionPoints = "Selection Points";
 protected: // class members
 ==============================================================================*/
 
-int       CObjFactory::s_iInstCount = 0;
+int CObjFactory::s_iInstCount = 0;
 CIdxTree* CObjFactory::s_pIdxTree = nullptr;
 
 /*==============================================================================
@@ -89,14 +89,11 @@ CObjFactory* CObjFactory::GetObjFactory( int i_idx )
 //------------------------------------------------------------------------------
 {
     CObjFactory* pObjFactory = nullptr;
-
-    if( s_pIdxTree != nullptr && i_idx >= 0 && i_idx < s_pIdxTree->treeEntriesVectorSize() )
-    {
+    if (s_pIdxTree != nullptr && i_idx >= 0 && i_idx < s_pIdxTree->treeEntriesVectorSize()) {
         pObjFactory = dynamic_cast<CObjFactory*>(s_pIdxTree->getEntry(i_idx));
     }
     return pObjFactory;
-
-} // GetObjFactory
+}
 
 //------------------------------------------------------------------------------
 CObjFactory* CObjFactory::FindObjFactory( const QString& i_strGraphObjPath )
@@ -112,7 +109,6 @@ CObjFactory* CObjFactory::FindObjFactory( const QString& i_strGraphObjPath )
 ////------------------------------------------------------------------------------
 //{
 //    CObjFactory* pObjFactory = nullptr;
-//
 //    if( s_pIdxTree != nullptr )
 //    {
 //        QString strPath = s_pIdxTree->buildPathStr(i_strFactoryGroupName, graphObjType2Str(i_iGraphObjType));
@@ -120,8 +116,7 @@ CObjFactory* CObjFactory::FindObjFactory( const QString& i_strGraphObjPath )
 //        pObjFactory = dynamic_cast<CObjFactory*>(pTreeEntry);
 //    }
 //    return pObjFactory;
-//
-//} // FindObjFactory
+//}
 
 //------------------------------------------------------------------------------
 CObjFactory* CObjFactory::FindObjFactory(
@@ -130,16 +125,13 @@ CObjFactory* CObjFactory::FindObjFactory(
 //------------------------------------------------------------------------------
 {
     CObjFactory* pObjFactory = nullptr;
-
-    if( s_pIdxTree != nullptr )
-    {
+    if (s_pIdxTree != nullptr) {
         QString strPath = s_pIdxTree->buildPathStr(i_strFactoryGroupName, i_strGraphObjType);
         CIdxTreeEntry* pTreeEntry = s_pIdxTree->findLeave(strPath);
         pObjFactory = dynamic_cast<CObjFactory*>(pTreeEntry);
     }
     return pObjFactory;
-
-} // FindObjFactory
+}
 
 /*==============================================================================
 protected: // ctor
@@ -187,8 +179,7 @@ CObjFactory::CObjFactory(
 
     s_iInstCount++;
 
-    if( s_pIdxTree == nullptr )
-    {
+    if (s_pIdxTree == nullptr) {
         s_pIdxTree = new CIdxTree(
             /* strObjName       */ "DrawObjectFactories",
             /* pRootTreeEntry   */ nullptr,
@@ -199,27 +190,22 @@ CObjFactory::CObjFactory(
         NameSpace() + "::ObjFactories::" + i_strGroupName, i_strClassName);
 
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Group: " + i_strGroupName;
         strMthInArgs += "ObjType: " + i_strGraphObjType + "(" + QString::number(i_iGraphObjType) + ")";
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
 
-    if( FindObjFactory(m_strGroupName, m_strName) != nullptr )
-    {
+    if (FindObjFactory(m_strGroupName, m_strName) != nullptr) {
         throw ZS::System::CException(__FILE__, __LINE__, EResultObjAlreadyRegistered);
     }
-
     s_pIdxTree->add(this, m_strGroupName);
 
-} // default ctor
+} // ctor
 
 /*==============================================================================
 public: // dtor
@@ -239,20 +225,16 @@ CObjFactory::~CObjFactory()
 
     s_iInstCount--;
 
-    if( s_iInstCount == 0 )
-    {
-        try
-        {
+    if (s_iInstCount == 0) {
+        try {
             delete s_pIdxTree;
         }
-        catch(...)
-        {
+        catch (...) {
         }
         s_pIdxTree = nullptr;
     }
 
     mthTracer.onAdminObjAboutToBeReleased();
-
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
 
     //m_strGroupName;
@@ -273,11 +255,8 @@ void CObjFactory::setToolIconPixmap( const QPixmap& i_pxm )
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -285,8 +264,7 @@ void CObjFactory::setToolIconPixmap( const QPixmap& i_pxm )
         /* strAddInfo   */ strAddTrcInfo );
 
     m_pxmToolIcon = i_pxm;
-
-} // setToolIconPixmap
+}
 
 /*==============================================================================
 public: // instance methods
@@ -297,12 +275,9 @@ void CObjFactory::setFileDir( const QString& i_strFileDir )
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strAddTrcInfo = "FileDir:" + i_strFileDir;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strAddTrcInfo = i_strFileDir;
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -310,20 +285,16 @@ void CObjFactory::setFileDir( const QString& i_strFileDir )
         /* strAddInfo   */ strAddTrcInfo );
 
     m_strFileDir = i_strFileDir;
-
-} // setFileDir
+}
 
 //------------------------------------------------------------------------------
 void CObjFactory::setFileName( const QString& i_strFileName )
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strAddTrcInfo = "FileName:" + i_strFileName;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strAddTrcInfo = i_strFileName;
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -331,30 +302,23 @@ void CObjFactory::setFileName( const QString& i_strFileName )
         /* strAddInfo   */ strAddTrcInfo );
 
     QFileInfo fileInfo(i_strFileName);
-
-    if( fileInfo.fileName() == i_strFileName )
-    {
+    if (fileInfo.fileName() == i_strFileName) {
         m_strFileName = i_strFileName;
     }
-    else
-    {
+    else {
         m_strFileDir = fileInfo.path();
         m_strFileName = fileInfo.fileName();
     }
-
-} // setFileName
+}
 
 //------------------------------------------------------------------------------
 void CObjFactory::setFilePath( const QString& i_strFilePath )
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strAddTrcInfo = "FilePath:" + i_strFilePath;
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -362,33 +326,23 @@ void CObjFactory::setFilePath( const QString& i_strFilePath )
         /* strAddInfo   */ strAddTrcInfo );
 
     QFileInfo fileInfo(i_strFilePath);
-
-    if( fileInfo.fileName() == i_strFilePath )
-    {
+    if (fileInfo.fileName() == i_strFilePath) {
         m_strFileDir = fileInfo.path();
         m_strFileName = fileInfo.fileName();
     }
-
-} // setFilePath
+}
 
 //------------------------------------------------------------------------------
 QString CObjFactory::getFilePath() const
 //------------------------------------------------------------------------------
 {
     QString strFileDir = m_strFileDir;
-
-    if( strFileDir.isEmpty() )
-    {
+    if (strFileDir.isEmpty()) {
         strFileDir = QCoreApplication::applicationDirPath();
     }
-
-    QFileInfo fileInfo( strFileDir + QDir::separator() + m_strFileName );
-
-    QString strFilePath = fileInfo.filePath();
-
-    return strFilePath;
-
-} // getFilePath
+    QFileInfo fileInfo(strFileDir + QDir::separator() + m_strFileName);
+    return fileInfo.filePath();
+}
 
 /*==============================================================================
 protected: // overridables
@@ -397,15 +351,12 @@ protected: // overridables
 //------------------------------------------------------------------------------
 SErrResultInfo CObjFactory::saveGraphObjLabels(
     const QHash<QString, CGraphObjLabel*>& i_arpLabels,
-    QXmlStreamWriter&                      i_xmlStreamWriter )
+    QXmlStreamWriter& i_xmlStreamWriter )
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -415,14 +366,9 @@ SErrResultInfo CObjFactory::saveGraphObjLabels(
     SErrResultInfo errResultInfo;
 
     QHashIterator<QString, CGraphObjLabel*> itLabels(i_arpLabels);
-    CGraphObjLabel* pGraphObjLabel;
-
-    while( itLabels.hasNext() )
-    {
+    while (itLabels.hasNext()) {
         itLabels.next();
-
-        pGraphObjLabel = itLabels.value();
-
+        CGraphObjLabel* pGraphObjLabel = itLabels.value();
         i_xmlStreamWriter.writeStartElement("Label");
 
         // To keep the XML file as short as possible the properties of
@@ -436,31 +382,25 @@ SErrResultInfo CObjFactory::saveGraphObjLabels(
         i_xmlStreamWriter.writeEndElement();
     }
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(errResultInfo);
     }
-
     return errResultInfo;
 
 } // saveGraphObjLabels
 
 //------------------------------------------------------------------------------
 QHash<QString, CGraphObjLabel*> CObjFactory::loadGraphObjLabels(
-    QXmlStreamReader& i_xmlStreamReader,
-    SErrResultInfo&   io_errResultInfo )
+    QXmlStreamReader& i_xmlStreamReader )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "loadGraphObjLabels",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ "" );
 
     QHash<QString, CGraphObjLabel*> arpLabels;
-
     QXmlStreamAttributes xmlStreamAttrs;
 
     QString         strElemName;
@@ -468,14 +408,14 @@ QHash<QString, CGraphObjLabel*> CObjFactory::loadGraphObjLabels(
     bool            bConverted;
     CGraphObjLabel* pGraphObjLabel = nullptr;
 
-    while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
+    while (!i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd())
     {
         //xmlStreamTokenType = i_xmlStreamReader.readNext();
-        strElemName = i_xmlStreamReader.name().toString();
+        QString strElemName = i_xmlStreamReader.name().toString();
 
-        if( i_xmlStreamReader.isStartElement() )
+        if (i_xmlStreamReader.isStartElement())
         {
-            if( strElemName == "Label" )
+            if (strElemName == "Label")
             {
                 QString         strKey;
                 QString         strText;
@@ -489,44 +429,35 @@ QHash<QString, CGraphObjLabel*> CObjFactory::loadGraphObjLabels(
 
                 xmlStreamAttrs = i_xmlStreamReader.attributes();
 
-                if( xmlStreamAttrs.hasAttribute("Key") )
-                {
+                if (xmlStreamAttrs.hasAttribute("Key")) {
                     strKey = xmlStreamAttrs.value("Key").toString();
                 }
-
-                if( xmlStreamAttrs.hasAttribute("Text") )
-                {
+                if (xmlStreamAttrs.hasAttribute("Text")) {
                     strText = xmlStreamAttrs.value("Text").toString();
                 }
-
-                if( xmlStreamAttrs.hasAttribute("SelectionPoint") )
-                {
+                if (xmlStreamAttrs.hasAttribute("SelectionPoint")) {
                     strAttr = xmlStreamAttrs.value("SelectionPoint").toString();
                     CEnumSelectionPoint selPtTmp = CEnumSelectionPoint::fromString(strAttr, &bConverted);
-                    if( bConverted ) selPt = selPtTmp.enumerator();
+                    if (bConverted) {
+                        selPt = selPtTmp.enumerator();
+                    }
                 }
-
-                if( xmlStreamAttrs.hasAttribute("Distance") )
-                {
+                if (xmlStreamAttrs.hasAttribute("Distance")) {
                     strAttr = xmlStreamAttrs.value("Distance").toString();
                     QSizeF sizTmp = str2SizeF(strAttr,&bConverted);
-                    if( bConverted )
-                    {
+                    if (bConverted) {
                         sizDist = sizTmp;
                         bDistValid = true;
                     }
                 }
-
-                if( xmlStreamAttrs.hasAttribute("Visible") )
-                {
+                if (xmlStreamAttrs.hasAttribute("Visible")) {
                     strAttr = xmlStreamAttrs.value("Visible").toString();
                     bVisible = str2Bool(strAttr);
                 }
 
-                if( !strKey.isEmpty() && !strText.isEmpty() && !arpLabels.contains(strKey) && selPt != ESelectionPoint::None && bDistValid )
+                if (!strKey.isEmpty() && !strText.isEmpty() && !arpLabels.contains(strKey) && selPt != ESelectionPoint::None && bDistValid)
                 {
-                    if( pGraphObjLabel != nullptr )
-                    {
+                    if (pGraphObjLabel != nullptr) {
                         //if( arpLabels.contains(pGraphObjLabel->m_strKey) )
                         //{
                         //    arpLabels.remove(pGraphObjLabel->m_strKey);
@@ -544,27 +475,23 @@ QHash<QString, CGraphObjLabel*> CObjFactory::loadGraphObjLabels(
             } // if( strElemName == "Label" )
         } // if( i_xmlStreamReader.isStartElement() )
 
-        else if( i_xmlStreamReader.isEndElement() )
-        {
-            if( strElemName == "Label" )
-            {
+        else if (i_xmlStreamReader.isEndElement()) {
+            if( strElemName == "Label" ) {
                 //if( pGraphObjLabel != nullptr && !pGraphObjLabel->m_strKey.isEmpty() && !arpLabels.contains(pGraphObjLabel->m_strKey) )
                 //{
                 //    arpLabels.insert( pGraphObjLabel->m_strKey, pGraphObjLabel );
                 //    pGraphObjLabel = nullptr;
                 //}
             }
-            else if( strElemName == "Labels" )
-            {
+            else if (strElemName == "Labels") {
                 break;
             }
-
         } // if( i_xmlStreamReader.isEndElement() )
-    } // while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
+    } // while (!i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd())
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        mthTracer.setMethodReturn(io_errResultInfo);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs(i_xmlStreamReader.errorString());
+        mthTracer.setMethodReturn(QString::number(arpLabels.size()));
     }
 
     return arpLabels;

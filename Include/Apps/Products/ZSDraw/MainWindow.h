@@ -476,6 +476,7 @@ protected: // instance members
     // Dialogs
     ZS::Test::GUI::CDlgTest* m_pDlgTest;
     // Status Bar
+    QLabel* m_pLblStatusBarMainWindowSize;
     QLabel* m_pLblStatusBarDrawingSceneEditTool;
     QLabel* m_pLblStatusBarDrawingSceneEditMode;
     QLabel* m_pLblStatusBarDrawingSceneGraphObjEditInfo;

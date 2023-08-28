@@ -184,9 +184,8 @@ CGraphObjResistor::CGraphObjResistor(
     //----------------
 
     m_pLinCnct = new CGraphObjLine(
-        /* pDrawingScene */ m_pDrawingScene,
-        /* drawSettings  */ drawSettingsLine,
-        /* strObjName    */ "CnctLine" );
+        m_pDrawingScene, drawSettingsLine, "CnctLine",
+        QPointF(0.0,0.0), QPointF(0.0,0.0));
 
     m_pLinCnct->setLine( QLineF( QPointF(0.0,0.0), QPointF(rctBounding.right(),0.0) ) );
     m_pDrawingScene->addGraphObj(m_pLinCnct);

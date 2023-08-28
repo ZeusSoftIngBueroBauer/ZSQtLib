@@ -162,9 +162,7 @@ CGraphObj* CObjFactoryWdgtComboBox::loadGraphObj(
     CDrawingScene*    i_pDrawingScene,
     CGraphObjGroup*   /*i_pGraphObjGroup*/,
     const QString&    /*i_strObjName*/,
-    const QString&    /*i_strObjId*/,
-    QXmlStreamReader& /*i_xmlStreamReader*/,
-    SErrResultInfo&   io_errResultInfo )
+    QXmlStreamReader& i_xmlStreamReader )
 //------------------------------------------------------------------------------
 {
     if( i_pDrawingScene == nullptr )
@@ -182,12 +180,11 @@ CGraphObj* CObjFactoryWdgtComboBox::loadGraphObj(
 
     CGraphObjWdgtComboBox* pGraphObj = nullptr;
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strAddTrcInfo = "ErrResultInfo {" + io_errResultInfo.toString() + "}";
-        mthTracer.setMethodOutArgs(strAddTrcInfo);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs(i_xmlStreamReader.errorString());
+        QString strMthRet = QString(pGraphObj == nullptr ? "null" : pGraphObj->path());
+        mthTracer.setMethodReturn(strMthRet);
     }
-
     return pGraphObj;
 
 } // loadGraphObj

@@ -187,9 +187,8 @@ CGraphObjCapacitor::CGraphObjCapacitor(
     //----------------
 
     m_pLinCnct = new CGraphObjLine(
-        /* pDrawingScene */ m_pDrawingScene,
-        /* drawSettings  */ drawSettingsLine,
-        /* strObjName    */ "CnctLine" );
+        m_pDrawingScene, drawSettingsLine, "CnctLine",
+        QPointF(0.0,0.0), QPointF(0.0,0.0));
 
     m_pLinCnct->setLine( QLineF( QPointF(0.0,0.0), QPointF(rctBounding.right(),0.0) ) );
     m_pDrawingScene->addGraphObj(m_pLinCnct);
@@ -233,9 +232,8 @@ CGraphObjCapacitor::CGraphObjCapacitor(
     //----------------
 
     m_pLinPlate1 = new CGraphObjLine(
-        /* pDrawingScene */ m_pDrawingScene,
-        /* drawSettings  */ drawSettingsLine,
-        /* strObjName    */ "Plate1" );
+        m_pDrawingScene, drawSettingsLine, "Plate1",
+        QPointF(0.0,0.0), QPointF(0.0,0.0));
 
     m_pLinPlate1->setLine( QLineF( QPointF(0.0, 0.0), QPointF(0.0,rctBody.height()) ) );
     m_pDrawingScene->addGraphObj(m_pLinPlate1);
@@ -255,9 +253,8 @@ CGraphObjCapacitor::CGraphObjCapacitor(
     //------------------
 
     m_pLinPlate2 = new CGraphObjLine(
-        /* pDrawingScene */ m_pDrawingScene,
-        /* drawSettings  */ drawSettingsLine,
-        /* strObjName    */ "Plate2" );
+        m_pDrawingScene, drawSettingsLine, "Plate2",
+        QPointF(0.0,0.0), QPointF(0.0,0.0));
 
     m_pLinPlate2->setLine( QLineF( QPointF(0.0, 0.0), QPointF(0.0,rctBody.height()) ) );
     m_pDrawingScene->addGraphObj(m_pLinPlate2);

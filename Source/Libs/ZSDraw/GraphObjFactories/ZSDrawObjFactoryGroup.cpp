@@ -286,9 +286,7 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
     CDrawingScene*    i_pDrawingScene,
     CGraphObjGroup*   i_pGraphObjGroup,
     const QString&    i_strObjName,
-    const QString&    i_strObjId,
-    QXmlStreamReader& i_xmlStreamReader,
-    SErrResultInfo&   io_errResultInfo )
+    QXmlStreamReader& i_xmlStreamReader )
 //------------------------------------------------------------------------------
 {
     if( i_pDrawingScene == nullptr )
@@ -306,300 +304,293 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
 
     CGraphObjGroup* pGraphObjGroup = nullptr;
 
-    if( i_pDrawingScene->findGraphObj(i_strObjId) == nullptr )
+    QXmlStreamAttributes            xmlStreamAttrs;
+    QString                         strElemName;
+    QString                         strElemText;
+    bool                            bConverted;
+    CDrawSettings                   drawSettings(EGraphObjTypeGroup);
+    QPointF                         ptPos;
+    bool                            bPosValid = false;
+    double                          fRotAngle_deg = 0.0;
+    double                          fZValue = 0.0;
+    QHash<QString, CGraphObjLabel*> arpLabels;
+
+    pGraphObjGroup = new CGraphObjGroup(
+        /* pDrawingScene */ i_pDrawingScene,
+        /* drawSettings  */ drawSettings,
+        /* strObjName    */ i_strObjName );
+
+    // Start creation of group.
+    pGraphObjGroup->setEditMode(EEditMode::Creating);
+
+    while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
     {
-        QXmlStreamAttributes            xmlStreamAttrs;
-        QString                         strElemName;
-        QString                         strElemText;
-        bool                            bConverted;
-        CDrawSettings                   drawSettings(EGraphObjTypeGroup);
-        QPointF                         ptPos;
-        bool                            bPosValid = false;
-        double                          fRotAngle_deg = 0.0;
-        double                          fZValue = 0.0;
-        QHash<QString, CGraphObjLabel*> arpLabels;
+        //xmlStreamTokenType = i_xmlStreamReader.readNext();
+        strElemName = i_xmlStreamReader.name().toString();
 
-        pGraphObjGroup = new CGraphObjGroup(
-            /* pDrawingScene */ i_pDrawingScene,
-            /* drawSettings  */ drawSettings,
-            /* strObjName    */ i_strObjName );
-
-        // Start creation of group.
-        pGraphObjGroup->setEditMode(EEditMode::Creating);
-
-        while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
+        if( i_xmlStreamReader.isStartElement() )
         {
-            //xmlStreamTokenType = i_xmlStreamReader.readNext();
-            strElemName = i_xmlStreamReader.name().toString();
-
-            if( i_xmlStreamReader.isStartElement() )
+            if( strElemName == "DrawSettings" )
             {
-                if( strElemName == "DrawSettings" )
-                {
-                    drawSettings.load(i_xmlStreamReader);
-                }
-
-                else if( strElemName == "Geometry" )
-                {
-                }
-
-                else if( strElemName == "Pos" )
-                {
-                    strElemText = i_xmlStreamReader.readElementText();
-
-                    QPointF ptTmp = str2PointF(strElemText,&bConverted);
-
-                    if( bConverted )
-                    {
-                        ptPos = ptTmp;
-                        bPosValid = true;
-                    }
-
-                } // if( strElemName == "Pos" )
-
-                else if( strElemName == "RotAngleDeg" )
-                {
-                    strElemText = i_xmlStreamReader.readElementText();
-
-                    double fValTmp = strElemText.toDouble(&bConverted);
-
-                    if( bConverted )
-                    {
-                        fRotAngle_deg = fValTmp;
-                    }
-
-                } // if( strElemName == "RotAngleDeg" )
-
-                else if( strElemName == "ZValue" )
-                {
-                    strElemText = i_xmlStreamReader.readElementText();
-
-                    double fTmp = strElemText.toDouble(&bConverted);
-
-                    if( bConverted )
-                    {
-                        fZValue = fTmp;
-                    }
-
-                } // if( strElemName == "ZValue" )
-
-                else if( strElemName == "Labels" )
-                {
-                    SErrResultInfo errResultInfo;
-                    arpLabels = loadGraphObjLabels(i_xmlStreamReader,errResultInfo);
-
-                } // if( strElemName == "Labels" )
-
-                //--------------------------------
-                else if( strElemName == "GraphObj" )
-                //--------------------------------
-                {
-                    QString strFactoryGroupNameChild;
-                    QString strNameSpaceChild;
-                    QString strClassNameChild;
-                    QString strObjTypeChild;
-                    QString strObjNameChild;
-                    QString strObjIdChild;
-
-                    xmlStreamAttrs = i_xmlStreamReader.attributes();
-
-                    if( xmlStreamAttrs.hasAttribute("FactoryGroupName") )
-                    {
-                        strFactoryGroupNameChild = xmlStreamAttrs.value("FactoryGroupName").toString();;
-                    }
-                    if( xmlStreamAttrs.hasAttribute("NameSpace") )
-                    {
-                        strNameSpaceChild = xmlStreamAttrs.value("NameSpace").toString();;
-                    }
-                    if( xmlStreamAttrs.hasAttribute("ClassName") )
-                    {
-                        strClassNameChild = xmlStreamAttrs.value("ClassName").toString();;
-                    }
-                    if( xmlStreamAttrs.hasAttribute("ObjectType") )
-                    {
-                        strObjTypeChild = xmlStreamAttrs.value("ObjectType").toString();
-                    }
-                    if( xmlStreamAttrs.hasAttribute("ObjectName") )
-                    {
-                        strObjNameChild = xmlStreamAttrs.value("ObjectName").toString();;
-                    }
-                    if( xmlStreamAttrs.hasAttribute("ObjectId") )
-                    {
-                        strObjIdChild = xmlStreamAttrs.value("ObjectId").toString();;
-                    }
-
-                    CObjFactory* pObjFactoryChild = CObjFactory::FindObjFactory(strFactoryGroupNameChild, strObjTypeChild);
-
-                    if( pObjFactoryChild != nullptr )
-                    {
-                        pObjFactoryChild->loadGraphObj(
-                            /* pDrawingScene   */ i_pDrawingScene,
-                            /* pGraphObjGroup  */ pGraphObjGroup,
-                            /* strObjName      */ strObjNameChild,
-                            /* strObjId        */ strObjIdChild,
-                            /* xmlStreamReader */ i_xmlStreamReader,
-                            /* errResultInfo   */ io_errResultInfo );
-                    }
-
-                } // if( strElemName == "GraphObj" )
-
-            } // if( xmlStreamReader.isStartElement() )
-
-            else if( i_xmlStreamReader.isEndElement() )
-            {
-                if( strElemName == "GraphObj" )
-                {
-                    break;
-                }
-
-            } // if( i_xmlStreamReader.isEndElement() )
-
-        } // while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
-
-        if( bPosValid )
-        {
-            QList<QGraphicsItem*> arpGraphicsItems = pGraphObjGroup->childItems();
-
-            QGraphicsItem* pGraphicsItem;
-            CGraphObj*     pGraphObj;
-            int            idxGraphObj;
-            QPointF        posItem;
-            QSizeF         sizItem;
-            QRectF         rctItem;
-            QRectF         rctGroup;
-            double         fXLeftMin   = INT_MAX;
-            double         fYTopMin    = INT_MAX;
-            double         fXRightMax  = INT_MIN;
-            double         fYBottomMax = INT_MIN;
-
-            // Calculate resulting size of group (without selection rectangle and selection points).
-            for( idxGraphObj = 0; idxGraphObj < arpGraphicsItems.size(); idxGraphObj++ )
-            {
-                pGraphicsItem = arpGraphicsItems[idxGraphObj];
-                pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
-
-                if( pGraphicsItem->type() != EGraphObjTypeConnectionLine )
-                {
-                    posItem = pGraphObj->getPos();
-                    sizItem = pGraphObj->getSize();
-                    rctItem = QRectF(posItem,sizItem);
-
-                    if( rctItem.width() >= 0.0 )
-                    {
-                        if( rctItem.left() < fXLeftMin )
-                        {
-                            fXLeftMin = rctItem.left();
-                        }
-                        if( rctItem.right() > fXRightMax )
-                        {
-                            fXRightMax = rctItem.right();
-                        }
-                    }
-                    else
-                    {
-                        if( rctItem.right() < fXLeftMin )
-                        {
-                            fXLeftMin = rctItem.right();
-                        }
-                        if( rctItem.left() > fXRightMax )
-                        {
-                            fXRightMax = rctItem.left();
-                        }
-                    }
-
-                    if( rctItem.height() >= 0.0 )
-                    {
-                        if( rctItem.top() < fYTopMin )
-                        {
-                            fYTopMin = rctItem.top();
-                        }
-                        if( rctItem.bottom() > fYBottomMax )
-                        {
-                            fYBottomMax = rctItem.bottom();
-                        }
-                    }
-                    else
-                    {
-                        if( rctItem.bottom() < fYTopMin )
-                        {
-                            fYTopMin = rctItem.bottom();
-                        }
-                        if( rctItem.top() > fYBottomMax )
-                        {
-                            fYBottomMax = rctItem.top();
-                        }
-                    }
-                }
+                drawSettings.load(i_xmlStreamReader);
             }
 
-            // TopLeft should be at (0.0/0.0). Otherwise the child object
-            // coordinates where not correctly stored in the XML file.
-            rctGroup.setLeft(fXLeftMin);
-            rctGroup.setTop(fYTopMin);
-            rctGroup.setRight(fXRightMax);
-            rctGroup.setBottom(fYBottomMax);
-
-            pGraphObjGroup->setDrawSettings(drawSettings);
-
-            i_pDrawingScene->addGraphObj(pGraphObjGroup);
-
-            pGraphObjGroup->setPos(ptPos);
-            pGraphObjGroup->setSize(rctGroup.size());
-            pGraphObjGroup->setRotationAngleInDegree(fRotAngle_deg);
-            pGraphObjGroup->setStackingOrderValue(fZValue);
-
-            // Before calling "onGraphObjCreationFinished" the object must have been added
-            // to its parent group. Otherwise the drawing scene is not able to retrieve
-            // the unique object id and add the object to the hash.
-            if( i_pGraphObjGroup != nullptr )
+            else if( strElemName == "Geometry" )
             {
-                throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
-                //i_pGraphObjGroup->addGraphObj(pGraphObjGroup);
             }
 
-            i_pDrawingScene->onGraphObjCreationFinished(pGraphObjGroup);
-
-            pGraphObjGroup->acceptCurrentAsOriginalCoors();
-            pGraphObjGroup->setEditMode(EEditMode::None);
-            pGraphObjGroup->setEditResizeMode(EEditResizeMode::None);
-
-            //if( arpLabels.size() > 0 )
-            //{
-            //    pGraphObjGroup->addLabels(arpLabels);
-            //}
-        } // if( bPosValid )
-
-        else
-        {
-            delete pGraphObjGroup;
-            pGraphObjGroup = nullptr;
-        }
-
-        if( arpLabels.size() > 0 )
-        {
-            QHashIterator<QString, CGraphObjLabel*> itLabels(arpLabels);
-            CGraphObjLabel* pGraphObjLabel;
-
-            while( itLabels.hasNext() )
+            else if( strElemName == "Pos" )
             {
-                itLabels.next();
+                strElemText = i_xmlStreamReader.readElementText();
 
-                pGraphObjLabel = itLabels.value();
+                QPointF ptTmp = str2PointF(strElemText,&bConverted);
 
-                arpLabels.remove(pGraphObjLabel->getKey());
+                if( bConverted )
+                {
+                    ptPos = ptTmp;
+                    bPosValid = true;
+                }
 
-                delete pGraphObjLabel;
-                pGraphObjLabel = nullptr;
+            } // if( strElemName == "Pos" )
+
+            else if( strElemName == "RotAngleDeg" )
+            {
+                strElemText = i_xmlStreamReader.readElementText();
+
+                double fValTmp = strElemText.toDouble(&bConverted);
+
+                if( bConverted )
+                {
+                    fRotAngle_deg = fValTmp;
+                }
+
+            } // if( strElemName == "RotAngleDeg" )
+
+            else if( strElemName == "ZValue" )
+            {
+                strElemText = i_xmlStreamReader.readElementText();
+
+                double fTmp = strElemText.toDouble(&bConverted);
+
+                if( bConverted )
+                {
+                    fZValue = fTmp;
+                }
+
+            } // if( strElemName == "ZValue" )
+
+            else if( strElemName == "Labels" )
+            {
+                arpLabels = loadGraphObjLabels(i_xmlStreamReader);
+
+            } // if( strElemName == "Labels" )
+
+            //--------------------------------
+            else if( strElemName == "GraphObj" )
+            //--------------------------------
+            {
+                QString strFactoryGroupNameChild;
+                QString strNameSpaceChild;
+                QString strClassNameChild;
+                QString strObjTypeChild;
+                QString strObjNameChild;
+                QString strObjIdChild;
+
+                xmlStreamAttrs = i_xmlStreamReader.attributes();
+
+                if( xmlStreamAttrs.hasAttribute("FactoryGroupName") )
+                {
+                    strFactoryGroupNameChild = xmlStreamAttrs.value("FactoryGroupName").toString();;
+                }
+                if( xmlStreamAttrs.hasAttribute("NameSpace") )
+                {
+                    strNameSpaceChild = xmlStreamAttrs.value("NameSpace").toString();;
+                }
+                if( xmlStreamAttrs.hasAttribute("ClassName") )
+                {
+                    strClassNameChild = xmlStreamAttrs.value("ClassName").toString();;
+                }
+                if( xmlStreamAttrs.hasAttribute("ObjectType") )
+                {
+                    strObjTypeChild = xmlStreamAttrs.value("ObjectType").toString();
+                }
+                if( xmlStreamAttrs.hasAttribute("ObjectName") )
+                {
+                    strObjNameChild = xmlStreamAttrs.value("ObjectName").toString();;
+                }
+                if( xmlStreamAttrs.hasAttribute("ObjectId") )
+                {
+                    strObjIdChild = xmlStreamAttrs.value("ObjectId").toString();;
+                }
+
+                CObjFactory* pObjFactoryChild = CObjFactory::FindObjFactory(strFactoryGroupNameChild, strObjTypeChild);
+
+                if( pObjFactoryChild != nullptr )
+                {
+                    pObjFactoryChild->loadGraphObj(
+                        /* pDrawingScene   */ i_pDrawingScene,
+                        /* pGraphObjGroup  */ pGraphObjGroup,
+                        /* strObjName      */ strObjNameChild,
+                        /* xmlStreamReader */ i_xmlStreamReader );
+                }
+
+            } // if( strElemName == "GraphObj" )
+
+        } // if( xmlStreamReader.isStartElement() )
+
+        else if( i_xmlStreamReader.isEndElement() )
+        {
+            if( strElemName == "GraphObj" )
+            {
+                break;
+            }
+
+        } // if( i_xmlStreamReader.isEndElement() )
+
+    } // while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
+
+    if( bPosValid )
+    {
+        QList<QGraphicsItem*> arpGraphicsItems = pGraphObjGroup->childItems();
+
+        QGraphicsItem* pGraphicsItem;
+        CGraphObj*     pGraphObj;
+        int            idxGraphObj;
+        QPointF        posItem;
+        QSizeF         sizItem;
+        QRectF         rctItem;
+        QRectF         rctGroup;
+        double         fXLeftMin   = INT_MAX;
+        double         fYTopMin    = INT_MAX;
+        double         fXRightMax  = INT_MIN;
+        double         fYBottomMax = INT_MIN;
+
+        // Calculate resulting size of group (without selection rectangle and selection points).
+        for( idxGraphObj = 0; idxGraphObj < arpGraphicsItems.size(); idxGraphObj++ )
+        {
+            pGraphicsItem = arpGraphicsItems[idxGraphObj];
+            pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+
+            if( pGraphicsItem->type() != EGraphObjTypeConnectionLine )
+            {
+                posItem = pGraphObj->getPos();
+                sizItem = pGraphObj->getSize();
+                rctItem = QRectF(posItem,sizItem);
+
+                if( rctItem.width() >= 0.0 )
+                {
+                    if( rctItem.left() < fXLeftMin )
+                    {
+                        fXLeftMin = rctItem.left();
+                    }
+                    if( rctItem.right() > fXRightMax )
+                    {
+                        fXRightMax = rctItem.right();
+                    }
+                }
+                else
+                {
+                    if( rctItem.right() < fXLeftMin )
+                    {
+                        fXLeftMin = rctItem.right();
+                    }
+                    if( rctItem.left() > fXRightMax )
+                    {
+                        fXRightMax = rctItem.left();
+                    }
+                }
+
+                if( rctItem.height() >= 0.0 )
+                {
+                    if( rctItem.top() < fYTopMin )
+                    {
+                        fYTopMin = rctItem.top();
+                    }
+                    if( rctItem.bottom() > fYBottomMax )
+                    {
+                        fYBottomMax = rctItem.bottom();
+                    }
+                }
+                else
+                {
+                    if( rctItem.bottom() < fYTopMin )
+                    {
+                        fYTopMin = rctItem.bottom();
+                    }
+                    if( rctItem.top() > fYBottomMax )
+                    {
+                        fYBottomMax = rctItem.top();
+                    }
+                }
             }
         }
 
-    } // if( i_pDrawingScene->findGraphObj(i_strObjId) == nullptr )
+        // TopLeft should be at (0.0/0.0). Otherwise the child object
+        // coordinates where not correctly stored in the XML file.
+        rctGroup.setLeft(fXLeftMin);
+        rctGroup.setTop(fYTopMin);
+        rctGroup.setRight(fXRightMax);
+        rctGroup.setBottom(fYBottomMax);
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+        pGraphObjGroup->setDrawSettings(drawSettings);
+
+        i_pDrawingScene->addGraphObj(pGraphObjGroup);
+
+        pGraphObjGroup->setPos(ptPos);
+        pGraphObjGroup->setSize(rctGroup.size());
+        pGraphObjGroup->setRotationAngleInDegree(fRotAngle_deg);
+        pGraphObjGroup->setStackingOrderValue(fZValue);
+
+        // Before calling "onGraphObjCreationFinished" the object must have been added
+        // to its parent group. Otherwise the drawing scene is not able to retrieve
+        // the unique object id and add the object to the hash.
+        if( i_pGraphObjGroup != nullptr )
+        {
+            throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
+            //i_pGraphObjGroup->addGraphObj(pGraphObjGroup);
+        }
+
+        i_pDrawingScene->onGraphObjCreationFinished(pGraphObjGroup);
+
+        pGraphObjGroup->acceptCurrentAsOriginalCoors();
+        pGraphObjGroup->setEditMode(EEditMode::None);
+        pGraphObjGroup->setEditResizeMode(EEditResizeMode::None);
+
+        //if( arpLabels.size() > 0 )
+        //{
+        //    pGraphObjGroup->addLabels(arpLabels);
+        //}
+    } // if( bPosValid )
+
+    else
     {
-        mthTracer.setMethodReturn(io_errResultInfo);
+        delete pGraphObjGroup;
+        pGraphObjGroup = nullptr;
     }
 
+    if( arpLabels.size() > 0 )
+    {
+        QHashIterator<QString, CGraphObjLabel*> itLabels(arpLabels);
+        CGraphObjLabel* pGraphObjLabel;
+
+        while( itLabels.hasNext() )
+        {
+            itLabels.next();
+
+            pGraphObjLabel = itLabels.value();
+
+            arpLabels.remove(pGraphObjLabel->getKey());
+
+            delete pGraphObjLabel;
+            pGraphObjLabel = nullptr;
+        }
+    }
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs(i_xmlStreamReader.errorString());
+        QString strMthRet = QString(pGraphObjGroup == nullptr ? "null" : pGraphObjGroup->path());
+        mthTracer.setMethodReturn(strMthRet);
+    }
     return pGraphObjGroup;
 
 } // loadGraphObj

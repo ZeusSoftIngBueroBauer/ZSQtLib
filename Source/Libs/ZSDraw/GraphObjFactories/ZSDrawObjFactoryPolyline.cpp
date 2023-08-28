@@ -205,13 +205,10 @@ CGraphObj* CObjFactoryPolyline::loadGraphObj(
     CDrawingScene*    i_pDrawingScene,
     CGraphObjGroup*   i_pGraphObjGroup,
     const QString&    i_strObjName,
-    const QString&    i_strObjId,
-    QXmlStreamReader& i_xmlStreamReader,
-    SErrResultInfo&   io_errResultInfo )
+    QXmlStreamReader& i_xmlStreamReader )
 //------------------------------------------------------------------------------
 {
-    if( i_pDrawingScene == nullptr )
-    {
+    if (i_pDrawingScene == nullptr) {
         throw ZS::System::CException( __FILE__, __LINE__, EResultArgOutOfRange, "pDrawingScene == nullptr" );
     }
 
@@ -225,35 +222,53 @@ CGraphObj* CObjFactoryPolyline::loadGraphObj(
 
     CGraphObjPolyline* pGraphObj = nullptr;
 
-    if( i_pDrawingScene->findGraphObj(i_strObjId) == nullptr )
+    QString                         strElemName;
+    QString                         strElemText;
+    bool                            bConverted;
+    CDrawSettings                   drawSettings(EGraphObjTypePolyline);
+    QPolygonF                       plg;
+    QPointF                         ptPos;
+    bool                            bPosValid = false;
+    double                          fRotAngle_deg = 0.0;
+    double                          fZValue = 0.0;
+    QHash<QString, CGraphObjLabel*> arpLabels;
+
+    while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
     {
-        QString                         strElemName;
-        QString                         strElemText;
-        bool                            bConverted;
-        CDrawSettings                   drawSettings(EGraphObjTypePolyline);
-        QPolygonF                       plg;
-        QPointF                         ptPos;
-        bool                            bPosValid = false;
-        double                          fRotAngle_deg = 0.0;
-        double                          fZValue = 0.0;
-        QHash<QString, CGraphObjLabel*> arpLabels;
+        strElemName = i_xmlStreamReader.name().toString();
 
-        while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
+        if( i_xmlStreamReader.isStartElement() )
         {
-            strElemName = i_xmlStreamReader.name().toString();
-
-            if( i_xmlStreamReader.isStartElement() )
+            if( strElemName == "DrawSettings" )
             {
-                if( strElemName == "DrawSettings" )
+                drawSettings.load(i_xmlStreamReader);
+            }
+
+            else if( strElemName == "Geometry" )
+            {
+            }
+
+            else if( strElemName == "Pos" )
+            {
+                strElemText = i_xmlStreamReader.readElementText();
+
+                QPointF ptTmp = str2PointF(strElemText,&bConverted);
+
+                if( bConverted )
                 {
-                    drawSettings.load(i_xmlStreamReader);
+                    ptPos = ptTmp;
+                    bPosValid = true;
                 }
 
-                else if( strElemName == "Geometry" )
-                {
-                }
+            } // if( strElemName == "Pos" )
 
-                else if( strElemName == "Pos" )
+            else if( strElemName.contains("Pt",Qt::CaseInsensitive) )
+            {
+                QString strIdxPtTmp = strElemName.right(strElemName.size()-2);
+
+                int idxPtTmp = strIdxPtTmp.toInt(&bConverted);
+
+                if( bConverted && idxPtTmp < 10000 )
                 {
                     strElemText = i_xmlStreamReader.readElementText();
 
@@ -261,141 +276,118 @@ CGraphObj* CObjFactoryPolyline::loadGraphObj(
 
                     if( bConverted )
                     {
-                        ptPos = ptTmp;
-                        bPosValid = true;
-                    }
-
-                } // if( strElemName == "Pos" )
-
-                else if( strElemName.contains("Pt",Qt::CaseInsensitive) )
-                {
-                    QString strIdxPtTmp = strElemName.right(strElemName.size()-2);
-
-                    int idxPtTmp = strIdxPtTmp.toInt(&bConverted);
-
-                    if( bConverted && idxPtTmp < 10000 )
-                    {
-                        strElemText = i_xmlStreamReader.readElementText();
-
-                        QPointF ptTmp = str2PointF(strElemText,&bConverted);
-
-                        if( bConverted )
+                        if( plg.size() < idxPtTmp+1 )
                         {
-                            if( plg.size() < idxPtTmp+1 )
-                            {
-                                plg.resize(idxPtTmp+1);
-                            }
-                            plg[idxPtTmp] = ptTmp;
+                            plg.resize(idxPtTmp+1);
                         }
+                        plg[idxPtTmp] = ptTmp;
                     }
-
-                } // if( strElemName == "Pt" )
-
-                else if( strElemName == "RotAngleDeg" )
-                {
-                    strElemText = i_xmlStreamReader.readElementText();
-
-                    double fValTmp = strElemText.toDouble(&bConverted);
-
-                    if( bConverted )
-                    {
-                        fRotAngle_deg = fValTmp;
-                    }
-
-                } // if( strElemName == "RotAngleDeg" )
-
-                else if( strElemName == "ZValue" )
-                {
-                    strElemText = i_xmlStreamReader.readElementText();
-
-                    double fTmp = strElemText.toDouble(&bConverted);
-
-                    if( bConverted )
-                    {
-                        fZValue = fTmp;
-                    }
-
-                } // if( strElemName == "ZValue" )
-
-                else if( strElemName == "Labels" )
-                {
-                    SErrResultInfo errResultInfo;
-                    arpLabels = loadGraphObjLabels(i_xmlStreamReader,errResultInfo);
-
-                } // if( strElemName == "Labels" )
-
-            } // if( xmlStreamReader.isStartElement() )
-
-            else if( i_xmlStreamReader.isEndElement() )
-            {
-                if( strElemName == "GraphObj" )
-                {
-                    break;
                 }
 
-            } // if( i_xmlStreamReader.isEndElement() )
+            } // if( strElemName == "Pt" )
 
-        } // while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
-
-        if( bPosValid && plg.size() > 1 )
-        {
-            pGraphObj = new CGraphObjPolyline(
-                /* pDrawingScene */ i_pDrawingScene,
-                /* drawSettings  */ drawSettings,
-                /* strObjName    */ i_strObjName );
-
-            pGraphObj->setPolygon(plg);
-
-            i_pDrawingScene->addGraphObj(pGraphObj);
-
-            pGraphObj->setPos(ptPos);
-            pGraphObj->setRotationAngleInDegree(fRotAngle_deg);
-            pGraphObj->setStackingOrderValue(fZValue);
-
-            // Before calling "onGraphObjCreationFinished" the object must have been added
-            // to its parent group. Otherwise the drawing scene is not able to retrieve
-            // the unique object id and add the object to the hash.
-            if( i_pGraphObjGroup != nullptr )
+            else if( strElemName == "RotAngleDeg" )
             {
-                throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
-                //i_pGraphObjGroup->addGraphObj(pGraphObj);
+                strElemText = i_xmlStreamReader.readElementText();
+
+                double fValTmp = strElemText.toDouble(&bConverted);
+
+                if( bConverted )
+                {
+                    fRotAngle_deg = fValTmp;
+                }
+
+            } // if( strElemName == "RotAngleDeg" )
+
+            else if( strElemName == "ZValue" )
+            {
+                strElemText = i_xmlStreamReader.readElementText();
+
+                double fTmp = strElemText.toDouble(&bConverted);
+
+                if( bConverted )
+                {
+                    fZValue = fTmp;
+                }
+
+            } // if( strElemName == "ZValue" )
+
+            else if( strElemName == "Labels" )
+            {
+                arpLabels = loadGraphObjLabels(i_xmlStreamReader);
+
+            } // if( strElemName == "Labels" )
+
+        } // if( xmlStreamReader.isStartElement() )
+
+        else if( i_xmlStreamReader.isEndElement() )
+        {
+            if( strElemName == "GraphObj" )
+            {
+                break;
             }
 
-            i_pDrawingScene->onGraphObjCreationFinished(pGraphObj);
+        } // if( i_xmlStreamReader.isEndElement() )
 
-            pGraphObj->acceptCurrentAsOriginalCoors();
+    } // while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
 
-            //if( arpLabels.size() > 0 )
-            //{
-            //    pGraphObj->addLabels(arpLabels);
-            //}
-        } // if( bPosValid && plg.size() > 1 )
+    if( bPosValid && plg.size() > 1 )
+    {
+        pGraphObj = new CGraphObjPolyline(
+            /* pDrawingScene */ i_pDrawingScene,
+            /* drawSettings  */ drawSettings,
+            /* strObjName    */ i_strObjName );
 
-        if( arpLabels.size() > 0 )
+        pGraphObj->setPolygon(plg);
+
+        i_pDrawingScene->addGraphObj(pGraphObj);
+
+        pGraphObj->setPos(ptPos);
+        pGraphObj->setRotationAngleInDegree(fRotAngle_deg);
+        pGraphObj->setStackingOrderValue(fZValue);
+
+        // Before calling "onGraphObjCreationFinished" the object must have been added
+        // to its parent group. Otherwise the drawing scene is not able to retrieve
+        // the unique object id and add the object to the hash.
+        if( i_pGraphObjGroup != nullptr )
         {
-            QHashIterator<QString, CGraphObjLabel*> itLabels(arpLabels);
-            CGraphObjLabel* pGraphObjLabel;
-
-            while( itLabels.hasNext() )
-            {
-                itLabels.next();
-
-                pGraphObjLabel = itLabels.value();
-
-                arpLabels.remove(pGraphObjLabel->getKey());
-
-                delete pGraphObjLabel;
-                pGraphObjLabel = nullptr;
-            }
+            throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
+            //i_pGraphObjGroup->addGraphObj(pGraphObj);
         }
 
-    } // if( i_pDrawingScene->findGraphObj(i_strObjId) == nullptr )
+        i_pDrawingScene->onGraphObjCreationFinished(pGraphObj);
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+        pGraphObj->acceptCurrentAsOriginalCoors();
+
+        //if( arpLabels.size() > 0 )
+        //{
+        //    pGraphObj->addLabels(arpLabels);
+        //}
+    } // if( bPosValid && plg.size() > 1 )
+
+    if( arpLabels.size() > 0 )
     {
-        mthTracer.setMethodReturn(io_errResultInfo);
+        QHashIterator<QString, CGraphObjLabel*> itLabels(arpLabels);
+        CGraphObjLabel* pGraphObjLabel;
+
+        while( itLabels.hasNext() )
+        {
+            itLabels.next();
+
+            pGraphObjLabel = itLabels.value();
+
+            arpLabels.remove(pGraphObjLabel->getKey());
+
+            delete pGraphObjLabel;
+            pGraphObjLabel = nullptr;
+        }
     }
 
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs(i_xmlStreamReader.errorString());
+        QString strMthRet = QString(pGraphObj == nullptr ? "null" : pGraphObj->path());
+        mthTracer.setMethodReturn(strMthRet);
+    }
     return pGraphObj;
 
 } // loadGraphObj

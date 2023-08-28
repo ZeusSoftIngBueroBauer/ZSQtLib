@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Drawing DimensionUnit="Pixels" Width="600" Height="400" GridLinesVisible="true" GridLinesStyle="DotLine" GridLinesWidth="1" GridLinesColor="#e1e1e1" GridLabelsVisible="true" GridLabelsFont="MS Shell Dlg 2" GridLabelsTextSize="2" GridLabelsTextColor="#000000" GridLabelsTextStyle="Normal" GridLabelsTextEffect="None">
+    <GraphObj FactoryGroupName="Standard Shapes" ObjectType="Line" ObjectName="Line0">
+        <DrawSettings/>
+        <Geometry>
+            <ShapePoints>
+                <P1>100.0/100.0</P1>
+                <P2>200.0/200.0</P2>
+            </ShapePoints>
+        </Geometry>
+        <ZValue>0</ZValue>
+    </GraphObj>
+</Drawing>

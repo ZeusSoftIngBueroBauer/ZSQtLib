@@ -285,9 +285,8 @@ CGraphObjTransistor::CGraphObjTransistor(
     QLineF  linBaseCenter( QPointF(0.0,0.0), QPointF(0.0,rctBody.height()-fBodyDiameter/2.0) );
 
     m_pLinBase = new CGraphObjLine(
-        /* pDrawingScene */ m_pDrawingScene,
-        /* drawSettings  */ drawSettingsLine,
-        /* strObjName    */ "BaseLine" );
+        m_pDrawingScene, drawSettingsLine, "BaseLine",
+        QPointF(0.0,0.0), QPointF(0.0,0.0));
 
     m_pLinBase->setLine(linBaseCenter);
     m_pDrawingScene->addGraphObj(m_pLinBase);
@@ -304,9 +303,8 @@ CGraphObjTransistor::CGraphObjTransistor(
     QLineF  linBaseUp( QPointF(0.0,0.0), QPointF(ptLinBaseUpEnd.x()-ptLinBaseUpStart.x(),ptLinBaseUpEnd.y()-ptLinBaseUpStart.y()) );
 
     m_pLinBaseUp = new CGraphObjLine(
-        /* pDrawingScene */ m_pDrawingScene,
-        /* drawSettings  */ drawSettingsLineBaseUp,
-        /* strObjName    */ "BaseLineUp" );
+        m_pDrawingScene, drawSettingsLine, "BaseLineUp",
+        QPointF(0.0,0.0), QPointF(0.0,0.0));
 
     m_pLinBaseUp->setLine(linBaseUp);
     m_pDrawingScene->addGraphObj(m_pLinBaseUp);
@@ -332,9 +330,8 @@ CGraphObjTransistor::CGraphObjTransistor(
     QLineF  linBaseDn( QPointF(0.0,0.0), QPointF(ptLinBaseDnEnd.x()-ptLinBaseDnStart.x(),ptLinBaseDnEnd.y()-ptLinBaseDnStart.y()) );
 
     m_pLinBaseDn = new CGraphObjLine(
-        /* pDrawingScene */ m_pDrawingScene,
-        /* drawSettings  */ drawSettingsLineBaseDn,
-        /* strObjName    */ "BaseLineDn" );
+        m_pDrawingScene, drawSettingsLine, "BaseLineDn",
+        QPointF(0.0,0.0), QPointF(0.0,0.0));
 
     m_pLinBaseDn->setLine(linBaseDn);
     m_pDrawingScene->addGraphObj(m_pLinBaseDn);
@@ -356,9 +353,8 @@ CGraphObjTransistor::CGraphObjTransistor(
     //-------------------------------
 
     m_pLinCnctPt1 = new CGraphObjLine(
-        /* pDrawingScene */ m_pDrawingScene,
-        /* drawSettings  */ drawSettingsLine,
-        /* strObjName    */ "CnctLine1" );
+        m_pDrawingScene, drawSettingsLine, "CnctLine1",
+        QPointF(0.0,0.0), QPointF(0.0,0.0));
 
     m_pLinCnctPt1->setLine( QLineF( QPointF(0.0,0.0), QPointF(ptLinBaseCenter.x()-rctCnctPt1.left(),ptLinBaseCenter.y()-rctCnctPt1.center().y()) ) );
     m_pDrawingScene->addGraphObj(m_pLinCnctPt1);
@@ -371,9 +367,8 @@ CGraphObjTransistor::CGraphObjTransistor(
     //------------------------------------
 
     m_pLinCnctPt2 = new CGraphObjLine(
-        /* pDrawingScene */ m_pDrawingScene,
-        /* drawSettings  */ drawSettingsLine,
-        /* strObjName    */ "CnctLine2" );
+        m_pDrawingScene, drawSettingsLine, "CnctLine2",
+        QPointF(0.0,0.0), QPointF(0.0,0.0));
 
     m_pLinCnctPt2->setLine( QLineF( QPointF(0.0,0.0), QPointF(rctCnctPt2.center().x()-ptLinBaseUpEnd.x(),rctCnctPt2.bottom()-ptLinBaseUpEnd.y()) ) );
     m_pDrawingScene->addGraphObj(m_pLinCnctPt2);
@@ -393,9 +388,8 @@ CGraphObjTransistor::CGraphObjTransistor(
     //--------------------------------------
 
     m_pLinCnctPt3 = new CGraphObjLine(
-        /* pDrawingScene */ m_pDrawingScene,
-        /* drawSettings  */ drawSettingsLine,
-        /* strObjName    */ "CnctLine3" );
+        m_pDrawingScene, drawSettingsLine, "CnctLine3",
+        QPointF(0.0,0.0), QPointF(0.0,0.0));
 
     m_pLinCnctPt3->setLine( QLineF( QPointF(0.0,0.0), QPointF(rctCnctPt3.center().x()-ptLinBaseDnEnd.x(),rctCnctPt3.top()-ptLinBaseDnEnd.y()) ) );
     m_pDrawingScene->addGraphObj(m_pLinCnctPt3);

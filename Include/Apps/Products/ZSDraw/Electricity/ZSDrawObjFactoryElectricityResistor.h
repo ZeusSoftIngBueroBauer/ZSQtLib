@@ -54,19 +54,17 @@ public: // ctors and dtor
     virtual ~CObjFactoryResistor();
 public: // interface methods of base class CObjFactory
     virtual CGraphObj* createGraphObj(
-        CDrawingScene*       i_pDrawingScene,
-        const QPointF&       i_ptItemPos, // usually QPointF(0.0,0.0)
-        const CDrawSettings& i_drawSettings );
+        CDrawingScene* i_pDrawingScene,
+        const QPointF& i_ptItemPos,
+        const CDrawSettings& i_drawSettings ) override;
     virtual ZS::System::SErrResultInfo saveGraphObj(
-        CGraphObj*        i_pGraphObj,
-        QXmlStreamWriter& i_xmlStreamWriter );
+        CGraphObj* i_pGraphObj,
+        QXmlStreamWriter& i_xmlStreamWriter ) override;
     virtual CGraphObj* loadGraphObj(
-        CDrawingScene*              i_pDrawingScene,
-        CGraphObjGroup*             i_pGraphObjGroup,
-        const QString&              i_strObjName,
-        const QString&              i_strObjId,
-        QXmlStreamReader&           i_xmlStreamReader,
-        ZS::System::SErrResultInfo& io_errResultInfo );
+        CDrawingScene* i_pDrawingScene,
+        CGraphObjGroup* i_pGraphObjGroup,
+        const QString& i_strObjName,
+        QXmlStreamReader& i_xmlStreamReader ) override;
 
 }; // class CObjFactoryResistor
 
