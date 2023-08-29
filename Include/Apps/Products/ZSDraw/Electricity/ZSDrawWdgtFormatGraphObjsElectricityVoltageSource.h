@@ -30,7 +30,7 @@ may result in using the software modules.
 #include <QtCore/qglobal.h>
 
 #include "ZSDraw/Common/ZSDrawDllMain.h"
-#include "ZSDraw/GraphObjFormat/ZSDrawWdgtFormatGraphObjs.h"
+#include "ZSDraw/Widgets/GraphObjFormat/ZSDrawWdgtFormatGraphObjs.h"
 
 class QCheckBox;
 class QDoubleSpinBox;

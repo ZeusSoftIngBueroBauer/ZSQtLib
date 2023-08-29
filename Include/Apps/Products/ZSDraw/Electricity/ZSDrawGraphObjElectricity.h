@@ -35,7 +35,7 @@ may result in using the software modules.
 #include <QtWidgets/QGraphicsRectItem>
 #endif
 
-#include "ZSDraw/GraphObjs/ZSDrawGraphObjGroup.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjGroup.h"
 
 namespace ZS
 {

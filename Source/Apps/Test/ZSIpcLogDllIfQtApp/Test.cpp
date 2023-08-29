@@ -65,7 +65,7 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CTest::CTest() :
 //------------------------------------------------------------------------------
-    ZS::Test::CTest("ZSIpcLogDllIfQtApp"),
+    ZS::Test::CTest(NameSpace(), "theInst"),
     m_pDlgTestStep(nullptr),
     m_pTmrTestStepTimeout(nullptr),
     m_logSettings(),

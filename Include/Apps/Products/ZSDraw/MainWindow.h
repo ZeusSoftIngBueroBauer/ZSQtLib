@@ -481,6 +481,7 @@ protected: // instance members
     QLabel* m_pLblStatusBarDrawingSceneEditMode;
     QLabel* m_pLblStatusBarDrawingSceneGraphObjEditInfo;
     QLabel* m_pLblStatusBarDrawingSceneRect;
+    QPointF m_ptDrawingSceneMouseCursorPos;
     QLabel* m_pLblStatusBarDrawingSceneMouseCursorPos;
     QLabel* m_pLblStatusBarDrawingViewMouseCursorPos;
     QLabel* m_pLblErrors;

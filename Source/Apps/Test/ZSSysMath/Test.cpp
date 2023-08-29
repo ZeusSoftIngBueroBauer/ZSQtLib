@@ -44,7 +44,7 @@ may result in using the software modules.
 
 
 using namespace ZS::System;
-using namespace ZS::Apps::Test::Template;
+using namespace ZS::Apps::Test::Math;
 
 
 /*******************************************************************************
@@ -58,7 +58,7 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CTest::CTest() :
 //------------------------------------------------------------------------------
-    ZS::Test::CTest("ZSSysMath")
+    ZS::Test::CTest(NameSpace(), "theInst")
 {
     ZS::Test::CTestStep* pTestStep;
 
@@ -78,54 +78,54 @@ CTest::CTest() :
         /* szDoTestStepFct */ SLOT(doTestStepConvertAngles(ZS::Test::CTestStep*)) );
     /*  1 */ pTestStep->addDataRow({{"Val", 0.0}, {"Normalize", true}, {"Angle_deg", 0.0}});
     /*  2 */ pTestStep->addDataRow({{"Val", 0.0}, {"Normalize", false}, {"Angle_deg", 0.0}});
-    /*  3 */ pTestStep->addDataRow({{"Val", Math::c_f45Degrees_rad}, {"Normalize", true}, {"Angle_deg", 45.0}});
-    /*  4 */ pTestStep->addDataRow({{"Val", Math::c_f45Degrees_rad}, {"Normalize", false}, {"Angle_deg", 45.0}});
-    /*  5 */ pTestStep->addDataRow({{"Val", -Math::c_f45Degrees_rad}, {"Normalize", true}, {"Angle_deg", 315.0}});
-    /*  6 */ pTestStep->addDataRow({{"Val", -Math::c_f45Degrees_rad}, {"Normalize", false}, {"Angle_deg", -45.0}});
-    /*  7 */ pTestStep->addDataRow({{"Val", Math::c_f90Degrees_rad}, {"Normalize", true}, {"Angle_deg", 90.0}});
-    /*  8 */ pTestStep->addDataRow({{"Val", Math::c_f90Degrees_rad}, {"Normalize", false}, {"Angle_deg", 90.0}});
-    /*  9 */ pTestStep->addDataRow({{"Val", -Math::c_f90Degrees_rad}, {"Normalize", true}, {"Angle_deg", 270.0}});
-    /* 10 */ pTestStep->addDataRow({{"Val", -Math::c_f90Degrees_rad}, {"Normalize", false}, {"Angle_deg", -90.0}});
-    /* 11 */ pTestStep->addDataRow({{"Val", Math::c_f135Degrees_rad}, {"Normalize", true}, {"Angle_deg", 135.0}});
-    /* 12 */ pTestStep->addDataRow({{"Val", Math::c_f135Degrees_rad}, {"Normalize", false}, {"Angle_deg", 135.0}});
-    /* 13 */ pTestStep->addDataRow({{"Val", -Math::c_f135Degrees_rad}, {"Normalize", true}, {"Angle_deg", 225.0}});
-    /* 14 */ pTestStep->addDataRow({{"Val", -Math::c_f135Degrees_rad}, {"Normalize", false}, {"Angle_deg", -135.0}});
-    /* 15 */ pTestStep->addDataRow({{"Val", Math::c_fPI}, {"Normalize", true}, {"Angle_deg", 180.0}});
-    /* 16 */ pTestStep->addDataRow({{"Val", Math::c_fPI}, {"Normalize", false}, {"Angle_deg", 180.0}});
-    /* 17 */ pTestStep->addDataRow({{"Val", -Math::c_fPI}, {"Normalize", true}, {"Angle_deg", 180.0}});
-    /* 18 */ pTestStep->addDataRow({{"Val", -Math::c_fPI}, {"Normalize", false}, {"Angle_deg", -180.0}});
-    /* 19 */ pTestStep->addDataRow({{"Val", Math::c_f225Degrees_rad}, {"Normalize", true}, {"Angle_deg", 225.0}});
-    /* 20 */ pTestStep->addDataRow({{"Val", Math::c_f225Degrees_rad}, {"Normalize", false}, {"Angle_deg", 225.0}});
-    /* 21 */ pTestStep->addDataRow({{"Val", -Math::c_f225Degrees_rad}, {"Normalize", true}, {"Angle_deg", 135.0}});
-    /* 22 */ pTestStep->addDataRow({{"Val", -Math::c_f225Degrees_rad}, {"Normalize", false}, {"Angle_deg", -225.0}});
-    /* 23 */ pTestStep->addDataRow({{"Val", Math::c_f270Degrees_rad}, {"Normalize", true}, {"Angle_deg", 270.0}});
-    /* 24 */ pTestStep->addDataRow({{"Val", Math::c_f270Degrees_rad}, {"Normalize", false}, {"Angle_deg", 270.0}});
-    /* 25 */ pTestStep->addDataRow({{"Val", -Math::c_f270Degrees_rad}, {"Normalize", true}, {"Angle_deg", 90.0}});
-    /* 26 */ pTestStep->addDataRow({{"Val", -Math::c_f270Degrees_rad}, {"Normalize", false}, {"Angle_deg", -270.0}});
-    /* 27 */ pTestStep->addDataRow({{"Val", Math::c_f315Degrees_rad}, {"Normalize", true}, {"Angle_deg", 315.0}});
-    /* 28 */ pTestStep->addDataRow({{"Val", Math::c_f315Degrees_rad}, {"Normalize", false}, {"Angle_deg", 315.0}});
-    /* 29 */ pTestStep->addDataRow({{"Val", -Math::c_f315Degrees_rad}, {"Normalize", true}, {"Angle_deg", 45.0}});
-    /* 30 */ pTestStep->addDataRow({{"Val", -Math::c_f315Degrees_rad}, {"Normalize", false}, {"Angle_deg", -315.0}});
-    /* 31 */ pTestStep->addDataRow({{"Val", Math::c_f2PI}, {"Normalize", true}, {"Angle_deg", 0.0}});
-    /* 32 */ pTestStep->addDataRow({{"Val", Math::c_f2PI}, {"Normalize", false}, {"Angle_deg", 360.0}});
-    /* 33 */ pTestStep->addDataRow({{"Val", -Math::c_f2PI}, {"Normalize", true}, {"Angle_deg", 0.0}});
-    /* 34 */ pTestStep->addDataRow({{"Val", -Math::c_f2PI}, {"Normalize", false}, {"Angle_deg", -360.0}});
-    /* 35 */ pTestStep->addDataRow({{"Val", 9*Math::c_f45Degrees_rad}, {"Normalize", true}, {"Angle_deg", 45.0}});
-    /* 36 */ pTestStep->addDataRow({{"Val", 9*Math::c_f45Degrees_rad}, {"Normalize", false}, {"Angle_deg", 405.0}});
-    /* 37 */ pTestStep->addDataRow({{"Val", -9*Math::c_f45Degrees_rad}, {"Normalize", true}, {"Angle_deg", 315.0}});
-    /* 38 */ pTestStep->addDataRow({{"Val", -9*Math::c_f45Degrees_rad}, {"Normalize", false}, {"Angle_deg", -405.0}});
-    /* 39 */ pTestStep->addDataRow({{"Val", 5*Math::c_f90Degrees_rad}, {"Normalize", true}, {"Angle_deg", 90.0}});
-    /* 40 */ pTestStep->addDataRow({{"Val", 5*Math::c_f90Degrees_rad}, {"Normalize", false}, {"Angle_deg", 450.0}});
-    /* 41 */ pTestStep->addDataRow({{"Val", -5*Math::c_f90Degrees_rad}, {"Normalize", true}, {"Angle_deg", 270.0}});
-    /* 42 */ pTestStep->addDataRow({{"Val", -5*Math::c_f90Degrees_rad}, {"Normalize", false}, {"Angle_deg", -450.0}});
-    /* 43 */ pTestStep->addDataRow({{"Val", 11*Math::c_f45Degrees_rad}, {"Normalize", true}, {"Angle_deg", 135.0}});
-    /* 44 */ pTestStep->addDataRow({{"Val", 11*Math::c_f45Degrees_rad}, {"Normalize", false}, {"Angle_deg", 495.0}});
-    /* 45 */ pTestStep->addDataRow({{"Val", -11*Math::c_f45Degrees_rad}, {"Normalize", true}, {"Angle_deg", 225.0}});
-    /* 46 */ pTestStep->addDataRow({{"Val", -11*Math::c_f45Degrees_rad}, {"Normalize", false}, {"Angle_deg", -495.0}});
-    /* 47 */ pTestStep->addDataRow({{"Val", Math::c_f3PI}, {"Normalize", true}, {"Angle_deg", 180.0}});
-    /* 48 */ pTestStep->addDataRow({{"Val", Math::c_f3PI}, {"Normalize", false}, {"Angle_deg", 540.0}});
-    /* 49 */ pTestStep->addDataRow({{"Val", -Math::c_f3PI}, {"Normalize", true}, {"Angle_deg", 180.0}});
-    /* 50 */ pTestStep->addDataRow({{"Val", -Math::c_f3PI}, {"Normalize", false}, {"Angle_deg", -540.0}});
+    /*  3 */ pTestStep->addDataRow({{"Val", ZS::System::Math::c_f45Degrees_rad}, {"Normalize", true}, {"Angle_deg", 45.0}});
+    /*  4 */ pTestStep->addDataRow({{"Val", ZS::System::Math::c_f45Degrees_rad}, {"Normalize", false}, {"Angle_deg", 45.0}});
+    /*  5 */ pTestStep->addDataRow({{"Val", -ZS::System::Math::c_f45Degrees_rad}, {"Normalize", true}, {"Angle_deg", 315.0}});
+    /*  6 */ pTestStep->addDataRow({{"Val", -ZS::System::Math::c_f45Degrees_rad}, {"Normalize", false}, {"Angle_deg", -45.0}});
+    /*  7 */ pTestStep->addDataRow({{"Val", ZS::System::Math::c_f90Degrees_rad}, {"Normalize", true}, {"Angle_deg", 90.0}});
+    /*  8 */ pTestStep->addDataRow({{"Val", ZS::System::Math::c_f90Degrees_rad}, {"Normalize", false}, {"Angle_deg", 90.0}});
+    /*  9 */ pTestStep->addDataRow({{"Val", -ZS::System::Math::c_f90Degrees_rad}, {"Normalize", true}, {"Angle_deg", 270.0}});
+    /* 10 */ pTestStep->addDataRow({{"Val", -ZS::System::Math::c_f90Degrees_rad}, {"Normalize", false}, {"Angle_deg", -90.0}});
+    /* 11 */ pTestStep->addDataRow({{"Val", ZS::System::Math::c_f135Degrees_rad}, {"Normalize", true}, {"Angle_deg", 135.0}});
+    /* 12 */ pTestStep->addDataRow({{"Val", ZS::System::Math::c_f135Degrees_rad}, {"Normalize", false}, {"Angle_deg", 135.0}});
+    /* 13 */ pTestStep->addDataRow({{"Val", -ZS::System::Math::c_f135Degrees_rad}, {"Normalize", true}, {"Angle_deg", 225.0}});
+    /* 14 */ pTestStep->addDataRow({{"Val", -ZS::System::Math::c_f135Degrees_rad}, {"Normalize", false}, {"Angle_deg", -135.0}});
+    /* 15 */ pTestStep->addDataRow({{"Val", ZS::System::Math::c_fPI}, {"Normalize", true}, {"Angle_deg", 180.0}});
+    /* 16 */ pTestStep->addDataRow({{"Val", ZS::System::Math::c_fPI}, {"Normalize", false}, {"Angle_deg", 180.0}});
+    /* 17 */ pTestStep->addDataRow({{"Val", -ZS::System::Math::c_fPI}, {"Normalize", true}, {"Angle_deg", 180.0}});
+    /* 18 */ pTestStep->addDataRow({{"Val", -ZS::System::Math::c_fPI}, {"Normalize", false}, {"Angle_deg", -180.0}});
+    /* 19 */ pTestStep->addDataRow({{"Val", ZS::System::Math::c_f225Degrees_rad}, {"Normalize", true}, {"Angle_deg", 225.0}});
+    /* 20 */ pTestStep->addDataRow({{"Val", ZS::System::Math::c_f225Degrees_rad}, {"Normalize", false}, {"Angle_deg", 225.0}});
+    /* 21 */ pTestStep->addDataRow({{"Val", -ZS::System::Math::c_f225Degrees_rad}, {"Normalize", true}, {"Angle_deg", 135.0}});
+    /* 22 */ pTestStep->addDataRow({{"Val", -ZS::System::Math::c_f225Degrees_rad}, {"Normalize", false}, {"Angle_deg", -225.0}});
+    /* 23 */ pTestStep->addDataRow({{"Val", ZS::System::Math::c_f270Degrees_rad}, {"Normalize", true}, {"Angle_deg", 270.0}});
+    /* 24 */ pTestStep->addDataRow({{"Val", ZS::System::Math::c_f270Degrees_rad}, {"Normalize", false}, {"Angle_deg", 270.0}});
+    /* 25 */ pTestStep->addDataRow({{"Val", -ZS::System::Math::c_f270Degrees_rad}, {"Normalize", true}, {"Angle_deg", 90.0}});
+    /* 26 */ pTestStep->addDataRow({{"Val", -ZS::System::Math::c_f270Degrees_rad}, {"Normalize", false}, {"Angle_deg", -270.0}});
+    /* 27 */ pTestStep->addDataRow({{"Val", ZS::System::Math::c_f315Degrees_rad}, {"Normalize", true}, {"Angle_deg", 315.0}});
+    /* 28 */ pTestStep->addDataRow({{"Val", ZS::System::Math::c_f315Degrees_rad}, {"Normalize", false}, {"Angle_deg", 315.0}});
+    /* 29 */ pTestStep->addDataRow({{"Val", -ZS::System::Math::c_f315Degrees_rad}, {"Normalize", true}, {"Angle_deg", 45.0}});
+    /* 30 */ pTestStep->addDataRow({{"Val", -ZS::System::Math::c_f315Degrees_rad}, {"Normalize", false}, {"Angle_deg", -315.0}});
+    /* 31 */ pTestStep->addDataRow({{"Val", ZS::System::Math::c_f2PI}, {"Normalize", true}, {"Angle_deg", 0.0}});
+    /* 32 */ pTestStep->addDataRow({{"Val", ZS::System::Math::c_f2PI}, {"Normalize", false}, {"Angle_deg", 360.0}});
+    /* 33 */ pTestStep->addDataRow({{"Val", -ZS::System::Math::c_f2PI}, {"Normalize", true}, {"Angle_deg", 0.0}});
+    /* 34 */ pTestStep->addDataRow({{"Val", -ZS::System::Math::c_f2PI}, {"Normalize", false}, {"Angle_deg", -360.0}});
+    /* 35 */ pTestStep->addDataRow({{"Val", 9*ZS::System::Math::c_f45Degrees_rad}, {"Normalize", true}, {"Angle_deg", 45.0}});
+    /* 36 */ pTestStep->addDataRow({{"Val", 9*ZS::System::Math::c_f45Degrees_rad}, {"Normalize", false}, {"Angle_deg", 405.0}});
+    /* 37 */ pTestStep->addDataRow({{"Val", -9*ZS::System::Math::c_f45Degrees_rad}, {"Normalize", true}, {"Angle_deg", 315.0}});
+    /* 38 */ pTestStep->addDataRow({{"Val", -9*ZS::System::Math::c_f45Degrees_rad}, {"Normalize", false}, {"Angle_deg", -405.0}});
+    /* 39 */ pTestStep->addDataRow({{"Val", 5*ZS::System::Math::c_f90Degrees_rad}, {"Normalize", true}, {"Angle_deg", 90.0}});
+    /* 40 */ pTestStep->addDataRow({{"Val", 5*ZS::System::Math::c_f90Degrees_rad}, {"Normalize", false}, {"Angle_deg", 450.0}});
+    /* 41 */ pTestStep->addDataRow({{"Val", -5*ZS::System::Math::c_f90Degrees_rad}, {"Normalize", true}, {"Angle_deg", 270.0}});
+    /* 42 */ pTestStep->addDataRow({{"Val", -5*ZS::System::Math::c_f90Degrees_rad}, {"Normalize", false}, {"Angle_deg", -450.0}});
+    /* 43 */ pTestStep->addDataRow({{"Val", 11*ZS::System::Math::c_f45Degrees_rad}, {"Normalize", true}, {"Angle_deg", 135.0}});
+    /* 44 */ pTestStep->addDataRow({{"Val", 11*ZS::System::Math::c_f45Degrees_rad}, {"Normalize", false}, {"Angle_deg", 495.0}});
+    /* 45 */ pTestStep->addDataRow({{"Val", -11*ZS::System::Math::c_f45Degrees_rad}, {"Normalize", true}, {"Angle_deg", 225.0}});
+    /* 46 */ pTestStep->addDataRow({{"Val", -11*ZS::System::Math::c_f45Degrees_rad}, {"Normalize", false}, {"Angle_deg", -495.0}});
+    /* 47 */ pTestStep->addDataRow({{"Val", ZS::System::Math::c_f3PI}, {"Normalize", true}, {"Angle_deg", 180.0}});
+    /* 48 */ pTestStep->addDataRow({{"Val", ZS::System::Math::c_f3PI}, {"Normalize", false}, {"Angle_deg", 540.0}});
+    /* 49 */ pTestStep->addDataRow({{"Val", -ZS::System::Math::c_f3PI}, {"Normalize", true}, {"Angle_deg", 180.0}});
+    /* 50 */ pTestStep->addDataRow({{"Val", -ZS::System::Math::c_f3PI}, {"Normalize", false}, {"Angle_deg", -540.0}});
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -135,54 +135,54 @@ CTest::CTest() :
         /* szDoTestStepFct */ SLOT(doTestStepConvertAngles(ZS::Test::CTestStep*)) );
     /*  1 */ pTestStep->addDataRow({{"Val", 0.0}, {"Normalize", true}, {"Angle_rad", 0.0}});
     /*  2 */ pTestStep->addDataRow({{"Val", 0.0}, {"Normalize", false}, {"Angle_rad", 0.0}});
-    /*  3 */ pTestStep->addDataRow({{"Val", 45.0}, {"Normalize", true}, {"Angle_rad", Math::c_f45Degrees_rad}});
-    /*  4 */ pTestStep->addDataRow({{"Val", 45.0}, {"Normalize", false}, {"Angle_rad", Math::c_f45Degrees_rad}});
-    /*  5 */ pTestStep->addDataRow({{"Val", -45.0}, {"Normalize", true}, {"Angle_rad", Math::c_f315Degrees_rad}});
-    /*  6 */ pTestStep->addDataRow({{"Val", -45.0}, {"Normalize", false}, {"Angle_rad", -Math::c_f45Degrees_rad}});
-    /*  7 */ pTestStep->addDataRow({{"Val", 90.0}, {"Normalize", true}, {"Angle_rad", Math::c_f90Degrees_rad}});
-    /*  8 */ pTestStep->addDataRow({{"Val", 90.0}, {"Normalize", false}, {"Angle_rad", Math::c_f90Degrees_rad}});
-    /*  9 */ pTestStep->addDataRow({{"Val", -90.0}, {"Normalize", true}, {"Angle_rad", Math::c_f270Degrees_rad}});
-    /* 10 */ pTestStep->addDataRow({{"Val", -90.0}, {"Normalize", false}, {"Angle_rad", -Math::c_f90Degrees_rad}});
-    /* 11 */ pTestStep->addDataRow({{"Val", 135.0}, {"Normalize", true}, {"Angle_rad", Math::c_f135Degrees_rad}});
-    /* 12 */ pTestStep->addDataRow({{"Val", 135.0}, {"Normalize", false}, {"Angle_rad", Math::c_f135Degrees_rad}});
-    /* 13 */ pTestStep->addDataRow({{"Val", -135.0}, {"Normalize", true}, {"Angle_rad", Math::c_f225Degrees_rad}});
-    /* 14 */ pTestStep->addDataRow({{"Val", -135.0}, {"Normalize", false}, {"Angle_rad", -Math::c_f135Degrees_rad}});
-    /* 15 */ pTestStep->addDataRow({{"Val", 180.0}, {"Normalize", true}, {"Angle_rad", Math::c_fPI}});
-    /* 16 */ pTestStep->addDataRow({{"Val", 180.0}, {"Normalize", false}, {"Angle_rad", Math::c_fPI}});
-    /* 17 */ pTestStep->addDataRow({{"Val", -180.0}, {"Normalize", true}, {"Angle_rad", Math::c_fPI}});
-    /* 18 */ pTestStep->addDataRow({{"Val", -180.0}, {"Normalize", false}, {"Angle_rad", -Math::c_fPI}});
-    /* 19 */ pTestStep->addDataRow({{"Val", 225.0}, {"Normalize", true}, {"Angle_rad", Math::c_f225Degrees_rad}});
-    /* 20 */ pTestStep->addDataRow({{"Val", 225.0}, {"Normalize", false}, {"Angle_rad", Math::c_f225Degrees_rad}});
-    /* 21 */ pTestStep->addDataRow({{"Val", -225.0}, {"Normalize", true}, {"Angle_rad", Math::c_f135Degrees_rad}});
-    /* 22 */ pTestStep->addDataRow({{"Val", -225.0}, {"Normalize", false}, {"Angle_rad", -Math::c_f225Degrees_rad}});
-    /* 23 */ pTestStep->addDataRow({{"Val", 270.0}, {"Normalize", true}, {"Angle_rad", Math::c_f270Degrees_rad}});
-    /* 24 */ pTestStep->addDataRow({{"Val", 270.0}, {"Normalize", false}, {"Angle_rad", Math::c_f270Degrees_rad}});
-    /* 25 */ pTestStep->addDataRow({{"Val", -270.0}, {"Normalize", true}, {"Angle_rad", Math::c_f90Degrees_rad}});
-    /* 26 */ pTestStep->addDataRow({{"Val", -270.0}, {"Normalize", false}, {"Angle_rad", -Math::c_f270Degrees_rad}});
-    /* 27 */ pTestStep->addDataRow({{"Val", 315.0}, {"Normalize", true}, {"Angle_rad", Math::c_f315Degrees_rad}});
-    /* 28 */ pTestStep->addDataRow({{"Val", 315.0}, {"Normalize", false}, {"Angle_rad", Math::c_f315Degrees_rad}});
-    /* 29 */ pTestStep->addDataRow({{"Val", -315.0}, {"Normalize", true}, {"Angle_rad", Math::c_f45Degrees_rad}});
-    /* 30 */ pTestStep->addDataRow({{"Val", -315.0}, {"Normalize", false}, {"Angle_rad", -Math::c_f315Degrees_rad}});
+    /*  3 */ pTestStep->addDataRow({{"Val", 45.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_f45Degrees_rad}});
+    /*  4 */ pTestStep->addDataRow({{"Val", 45.0}, {"Normalize", false}, {"Angle_rad", ZS::System::Math::c_f45Degrees_rad}});
+    /*  5 */ pTestStep->addDataRow({{"Val", -45.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_f315Degrees_rad}});
+    /*  6 */ pTestStep->addDataRow({{"Val", -45.0}, {"Normalize", false}, {"Angle_rad", -ZS::System::Math::c_f45Degrees_rad}});
+    /*  7 */ pTestStep->addDataRow({{"Val", 90.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_f90Degrees_rad}});
+    /*  8 */ pTestStep->addDataRow({{"Val", 90.0}, {"Normalize", false}, {"Angle_rad", ZS::System::Math::c_f90Degrees_rad}});
+    /*  9 */ pTestStep->addDataRow({{"Val", -90.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_f270Degrees_rad}});
+    /* 10 */ pTestStep->addDataRow({{"Val", -90.0}, {"Normalize", false}, {"Angle_rad", -ZS::System::Math::c_f90Degrees_rad}});
+    /* 11 */ pTestStep->addDataRow({{"Val", 135.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_f135Degrees_rad}});
+    /* 12 */ pTestStep->addDataRow({{"Val", 135.0}, {"Normalize", false}, {"Angle_rad", ZS::System::Math::c_f135Degrees_rad}});
+    /* 13 */ pTestStep->addDataRow({{"Val", -135.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_f225Degrees_rad}});
+    /* 14 */ pTestStep->addDataRow({{"Val", -135.0}, {"Normalize", false}, {"Angle_rad", -ZS::System::Math::c_f135Degrees_rad}});
+    /* 15 */ pTestStep->addDataRow({{"Val", 180.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_fPI}});
+    /* 16 */ pTestStep->addDataRow({{"Val", 180.0}, {"Normalize", false}, {"Angle_rad", ZS::System::Math::c_fPI}});
+    /* 17 */ pTestStep->addDataRow({{"Val", -180.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_fPI}});
+    /* 18 */ pTestStep->addDataRow({{"Val", -180.0}, {"Normalize", false}, {"Angle_rad", -ZS::System::Math::c_fPI}});
+    /* 19 */ pTestStep->addDataRow({{"Val", 225.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_f225Degrees_rad}});
+    /* 20 */ pTestStep->addDataRow({{"Val", 225.0}, {"Normalize", false}, {"Angle_rad", ZS::System::Math::c_f225Degrees_rad}});
+    /* 21 */ pTestStep->addDataRow({{"Val", -225.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_f135Degrees_rad}});
+    /* 22 */ pTestStep->addDataRow({{"Val", -225.0}, {"Normalize", false}, {"Angle_rad", -ZS::System::Math::c_f225Degrees_rad}});
+    /* 23 */ pTestStep->addDataRow({{"Val", 270.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_f270Degrees_rad}});
+    /* 24 */ pTestStep->addDataRow({{"Val", 270.0}, {"Normalize", false}, {"Angle_rad", ZS::System::Math::c_f270Degrees_rad}});
+    /* 25 */ pTestStep->addDataRow({{"Val", -270.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_f90Degrees_rad}});
+    /* 26 */ pTestStep->addDataRow({{"Val", -270.0}, {"Normalize", false}, {"Angle_rad", -ZS::System::Math::c_f270Degrees_rad}});
+    /* 27 */ pTestStep->addDataRow({{"Val", 315.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_f315Degrees_rad}});
+    /* 28 */ pTestStep->addDataRow({{"Val", 315.0}, {"Normalize", false}, {"Angle_rad", ZS::System::Math::c_f315Degrees_rad}});
+    /* 29 */ pTestStep->addDataRow({{"Val", -315.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_f45Degrees_rad}});
+    /* 30 */ pTestStep->addDataRow({{"Val", -315.0}, {"Normalize", false}, {"Angle_rad", -ZS::System::Math::c_f315Degrees_rad}});
     /* 31 */ pTestStep->addDataRow({{"Val", 360.0}, {"Normalize", true}, {"Angle_rad", 0.0}});
-    /* 32 */ pTestStep->addDataRow({{"Val", 360.0}, {"Normalize", false}, {"Angle_rad", Math::c_f2PI}});
+    /* 32 */ pTestStep->addDataRow({{"Val", 360.0}, {"Normalize", false}, {"Angle_rad", ZS::System::Math::c_f2PI}});
     /* 33 */ pTestStep->addDataRow({{"Val", -360.0}, {"Normalize", true}, {"Angle_rad", 0.0}});
-    /* 34 */ pTestStep->addDataRow({{"Val", -360.0}, {"Normalize", false}, {"Angle_rad", -Math::c_f2PI}});
-    /* 35 */ pTestStep->addDataRow({{"Val", 405.0}, {"Normalize", true}, {"Angle_rad", Math::c_f45Degrees_rad}});
-    /* 36 */ pTestStep->addDataRow({{"Val", 405.0}, {"Normalize", false}, {"Angle_rad", 9.0*Math::c_fPI/4.0}});
-    /* 37 */ pTestStep->addDataRow({{"Val", -405.0}, {"Normalize", true}, {"Angle_rad", Math::c_f315Degrees_rad}});
-    /* 38 */ pTestStep->addDataRow({{"Val", -405.0}, {"Normalize", false}, {"Angle_rad", -9.0*Math::c_fPI/4.0}});
-    /* 39 */ pTestStep->addDataRow({{"Val", 450.0}, {"Normalize", true}, {"Angle_rad", Math::c_f90Degrees_rad}});
-    /* 40 */ pTestStep->addDataRow({{"Val", 450.0}, {"Normalize", false}, {"Angle_rad", 5.0*Math::c_fPI/2.0}});
-    /* 41 */ pTestStep->addDataRow({{"Val", -450.0}, {"Normalize", true}, {"Angle_rad", Math::c_f270Degrees_rad}});
-    /* 42 */ pTestStep->addDataRow({{"Val", -450.0}, {"Normalize", false}, {"Angle_rad", -5.0*Math::c_fPI/2.0}});
-    /* 43 */ pTestStep->addDataRow({{"Val", 495.0}, {"Normalize", true}, {"Angle_rad", Math::c_f135Degrees_rad}});
-    /* 44 */ pTestStep->addDataRow({{"Val", 495.0}, {"Normalize", false}, {"Angle_rad", 11.0*Math::c_fPI/4.0}});
-    /* 45 */ pTestStep->addDataRow({{"Val", -495.0}, {"Normalize", true}, {"Angle_rad", Math::c_f225Degrees_rad}});
-    /* 46 */ pTestStep->addDataRow({{"Val", -495.0}, {"Normalize", false}, {"Angle_rad", -11.0*Math::c_fPI/4.0}});
-    /* 47 */ pTestStep->addDataRow({{"Val", 540.0}, {"Normalize", true}, {"Angle_rad", Math::c_fPI}});
-    /* 48 */ pTestStep->addDataRow({{"Val", 540.0}, {"Normalize", false}, {"Angle_rad", Math::c_f3PI}});
-    /* 49 */ pTestStep->addDataRow({{"Val", -540.0}, {"Normalize", true}, {"Angle_rad", Math::c_fPI}});
-    /* 50 */ pTestStep->addDataRow({{"Val", -540.0}, {"Normalize", false}, {"Angle_rad", -Math::c_f3PI}});
+    /* 34 */ pTestStep->addDataRow({{"Val", -360.0}, {"Normalize", false}, {"Angle_rad", -ZS::System::Math::c_f2PI}});
+    /* 35 */ pTestStep->addDataRow({{"Val", 405.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_f45Degrees_rad}});
+    /* 36 */ pTestStep->addDataRow({{"Val", 405.0}, {"Normalize", false}, {"Angle_rad", 9.0*ZS::System::Math::c_fPI/4.0}});
+    /* 37 */ pTestStep->addDataRow({{"Val", -405.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_f315Degrees_rad}});
+    /* 38 */ pTestStep->addDataRow({{"Val", -405.0}, {"Normalize", false}, {"Angle_rad", -9.0*ZS::System::Math::c_fPI/4.0}});
+    /* 39 */ pTestStep->addDataRow({{"Val", 450.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_f90Degrees_rad}});
+    /* 40 */ pTestStep->addDataRow({{"Val", 450.0}, {"Normalize", false}, {"Angle_rad", 5.0*ZS::System::Math::c_fPI/2.0}});
+    /* 41 */ pTestStep->addDataRow({{"Val", -450.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_f270Degrees_rad}});
+    /* 42 */ pTestStep->addDataRow({{"Val", -450.0}, {"Normalize", false}, {"Angle_rad", -5.0*ZS::System::Math::c_fPI/2.0}});
+    /* 43 */ pTestStep->addDataRow({{"Val", 495.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_f135Degrees_rad}});
+    /* 44 */ pTestStep->addDataRow({{"Val", 495.0}, {"Normalize", false}, {"Angle_rad", 11.0*ZS::System::Math::c_fPI/4.0}});
+    /* 45 */ pTestStep->addDataRow({{"Val", -495.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_f225Degrees_rad}});
+    /* 46 */ pTestStep->addDataRow({{"Val", -495.0}, {"Normalize", false}, {"Angle_rad", -11.0*ZS::System::Math::c_fPI/4.0}});
+    /* 47 */ pTestStep->addDataRow({{"Val", 540.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_fPI}});
+    /* 48 */ pTestStep->addDataRow({{"Val", 540.0}, {"Normalize", false}, {"Angle_rad", ZS::System::Math::c_f3PI}});
+    /* 49 */ pTestStep->addDataRow({{"Val", -540.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_fPI}});
+    /* 50 */ pTestStep->addDataRow({{"Val", -540.0}, {"Normalize", false}, {"Angle_rad", -ZS::System::Math::c_f3PI}});
 
     // Rounding
     //----------
@@ -754,12 +754,12 @@ void CTest::doTestStepConvertAngles( ZS::Test::CTestStep* i_pTestStep )
 
         if( strOperation.compare("rad2Deg") == 0)
         {
-            fResult = Math::rad2Deg(fVal, bNormalize);
+            fResult = ZS::System::Math::rad2Deg(fVal, bNormalize);
             mapResultValues["Angle_deg"] = QString::number(fResult);
         }
         else if( strOperation.compare("deg2Rad") == 0)
         {
-            fResult = Math::deg2Rad(fVal, bNormalize);
+            fResult = ZS::System::Math::deg2Rad(fVal, bNormalize);
             mapResultValues["Angle_rad"] = QString::number(fResult);
         }
 
@@ -825,42 +825,42 @@ void CTest::doTestStepRounding( ZS::Test::CTestStep* i_pTestStep )
 
         if (strOperation.compare("round2Nearest") == 0)
         {
-            fResult = Math::round2Nearest(fVal, iTrailingDigits);
+            fResult = ZS::System::Math::round2Nearest(fVal, iTrailingDigits);
             mapResultValues["Result"] = QString::number(fResult);
         }
         else if (strOperation.compare("round2Lower") == 0)
         {
-            fResult = Math::round2Lower(fVal, iTrailingDigits);
+            fResult = ZS::System::Math::round2Lower(fVal, iTrailingDigits);
             mapResultValues["Result"] = QString::number(fResult);
         }
         else if (strOperation.compare("round2Upper") == 0)
         {
-            fResult = Math::round2Upper(fVal, iTrailingDigits);
+            fResult = ZS::System::Math::round2Upper(fVal, iTrailingDigits);
             mapResultValues["Result"] = QString::number(fResult);
         }
         else if (strOperation.compare("round2Resolution") == 0)
         {
-            fResult = Math::round2Resolution(fVal, fResolution);
+            fResult = ZS::System::Math::round2Resolution(fVal, fResolution);
             mapResultValues["Result"] = QString::number(fResult);
         }
         else if (strOperation.compare("round2LowerDecade") == 0)
         {
-            fResult = Math::round2LowerDecade(fVal);
+            fResult = ZS::System::Math::round2LowerDecade(fVal);
             mapResultValues["Result"] = QString::number(fResult);
         }
         else if (strOperation.compare("round2UpperDecade") == 0)
         {
-            fResult = Math::round2UpperDecade(fVal);
+            fResult = ZS::System::Math::round2UpperDecade(fVal);
             mapResultValues["Result"] = QString::number(fResult);
         }
         else if (strOperation.compare("round2LowerIntMultOfTen") == 0)
         {
-            fResult = Math::round2LowerIntMultOfTen(fVal);
+            fResult = ZS::System::Math::round2LowerIntMultOfTen(fVal);
             mapResultValues["Result"] = QString::number(fResult);
         }
         else if (strOperation.compare("round2UpperIntMultOfTen") == 0)
         {
-            fResult = Math::round2UpperIntMultOfTen(fVal);
+            fResult = ZS::System::Math::round2UpperIntMultOfTen(fVal);
             mapResultValues["Result"] = QString::number(fResult);
         }
 
@@ -924,7 +924,7 @@ void CTest::doTestStepMinMax( ZS::Test::CTestStep* i_pTestStep )
 
         if (strOperation.compare("getAbsMinMax") == 0)
         {
-            std::tuple<double, double> minMax = Math::getAbsMinMax(arfVals);
+            std::tuple<double, double> minMax = ZS::System::Math::getAbsMinMax(arfVals);
             mapResultValues["Min"] = QString::number(std::get<0>(minMax));
             mapResultValues["Max"] = QString::number(std::get<1>(minMax));
         }
@@ -983,7 +983,7 @@ void CTest::doTestStepFirstSignificantDigit( ZS::Test::CTestStep* i_pTestStep )
 
         if (strOperation.compare("getFirstSignificantDigit") == 0)
         {
-            iDigit = Math::getFirstSignificantDigit(fVal);
+            iDigit = ZS::System::Math::getFirstSignificantDigit(fVal);
             mapResultValues["Result"] = QString::number(iDigit);
         }
 
@@ -1082,7 +1082,7 @@ void CTest::doTestStepCalculateDivLines4LinSpacing( ZS::Test::CTestStep* i_pTest
         double fDivLineDistValResult = 0.0;
         double fDivLineDistPixResult = 0.0;
 
-        int iDivLineCountResult = Math::CScaleDivLines::getDivLines4LinSpacing(
+        int iDivLineCountResult = ZS::System::Math::CScaleDivLines::getDivLines4LinSpacing(
             /* fScaleMinVal          */ fScaleMinVal,
             /* fScaleMaxVal          */ fScaleMaxVal,
             /* iScaleRangePix        */ iScaleRangePix,
@@ -1162,7 +1162,7 @@ void CTest::doTestStepMergeArrays( ZS::Test::CTestStep* i_pTestStep )
             }
         }
 
-        QVector<double> arfValsMerged = Math::merge(arfVals1, arfVals2);
+        QVector<double> arfValsMerged = ZS::System::Math::merge(arfVals1, arfVals2);
 
         for (int idxVal = 0; idxVal < arfValsMerged.size(); ++idxVal) {
             QString strKey = "ValArrMerged[" + QString::number(idxVal) + "]";
@@ -1233,7 +1233,7 @@ void CTest::doTestStepPrecision2ShowUniqueNumbers( ZS::Test::CTestStep* i_pTestS
             }
         }
 
-        int iPrecision = Math::CScaleDivLines::getPrecision2ShowUniqueNumbers(
+        int iPrecision = ZS::System::Math::CScaleDivLines::getPrecision2ShowUniqueNumbers(
             arfVals, iExponentDigits, iPrecisionMin, iPrecisionMax);
         mapResultValues["Precision"] = QString::number(iPrecision);
 

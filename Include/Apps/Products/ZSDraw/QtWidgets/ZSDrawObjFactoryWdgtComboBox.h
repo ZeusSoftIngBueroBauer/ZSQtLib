@@ -28,7 +28,7 @@ may result in using the software modules.
 #define ZSDraw_ObjFactoryWdgtComboBox_h
 
 #include "ZSDraw/Common/ZSDrawDllMain.h"
-#include "ZSDraw/GraphObjFactories/ZSDrawObjFactory.h"
+#include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactory.h"
 
 namespace ZS
 {

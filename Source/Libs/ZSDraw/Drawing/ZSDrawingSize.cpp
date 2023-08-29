@@ -25,7 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDraw/Drawing/ZSDrawingSize.h"
-#include "ZSDraw/Drawing/ZSDrawUnits.h"
+#include "ZSDraw/Common/ZSDrawUnits.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
@@ -56,13 +56,17 @@ CDrawingSize::CDrawingSize(const QString& i_strName) :
     m_eDimensionUnit(EDrawingDimensionUnit::Pixels),
     m_metricUnit(Units.Length.mm),
     m_fImageMetricWidth(0.0),
+    m_fImageMetricWidthRes(Units.Length.physValResPerPx(EOrientation::Horizontal, m_metricUnit).getVal()),
     m_fImageMetricHeight(0.0),
+    m_fImageMetricHeightRes(Units.Length.physValResPerPx(EOrientation::Vertical, m_metricUnit).getVal()),
     m_eNormedPaperSize(),
     m_eNormedPaperOrientation(),
     m_iMetricScaleFactorDividend(1),
     m_iMetricScaleFactorDivisor(1),
     m_fImageSizeWidth_px(0.0),
+    m_fImageSizeWidthRes_px(Units.Length.physValResPerPx(EOrientation::Horizontal, Units.Length.pxX).getVal()),
     m_fImageSizeHeight_px(0.0),
+    m_fImageSizeHeightRes_px(Units.Length.physValResPerPx(EOrientation::Vertical, Units.Length.pxY).getVal()),
     m_pTrcAdminObj(nullptr)
 {
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
@@ -88,12 +92,16 @@ CDrawingSize::CDrawingSize(const QString& i_strName, const QSize& i_size) :
     m_eDimensionUnit(EDrawingDimensionUnit::Pixels),
     m_metricUnit(Units.Length.mm),
     m_fImageMetricWidth(0.0),
+    m_fImageMetricWidthRes(Units.Length.physValResPerPx(EOrientation::Horizontal, m_metricUnit).getVal()),
     m_fImageMetricHeight(0.0),
+    m_fImageMetricHeightRes(Units.Length.physValResPerPx(EOrientation::Vertical, m_metricUnit).getVal()),
     m_eNormedPaperSize(),
     m_eNormedPaperOrientation(),
     m_iMetricScaleFactorDividend(1),
     m_iMetricScaleFactorDivisor(1),
+    m_fImageSizeWidthRes_px(Units.Length.physValResPerPx(EOrientation::Horizontal, Units.Length.pxX).getVal()),
     m_fImageSizeWidth_px(i_size.width()),
+    m_fImageSizeHeightRes_px(Units.Length.physValResPerPx(EOrientation::Vertical, Units.Length.pxY).getVal()),
     m_fImageSizeHeight_px(i_size.height()),
     m_pTrcAdminObj(nullptr)
 {
@@ -120,13 +128,17 @@ CDrawingSize::CDrawingSize(const CDrawingSize& i_other) :
     m_eDimensionUnit(i_other.m_eDimensionUnit),
     m_metricUnit(i_other.m_metricUnit),
     m_fImageMetricWidth(i_other.m_fImageMetricWidth),
+    m_fImageMetricWidthRes(i_other.m_fImageMetricWidthRes),
     m_fImageMetricHeight(i_other.m_fImageMetricHeight),
+    m_fImageMetricHeightRes(i_other.m_fImageMetricHeightRes),
     m_eNormedPaperSize(i_other.m_eNormedPaperSize),
     m_eNormedPaperOrientation(i_other.m_eNormedPaperOrientation),
     m_iMetricScaleFactorDividend(i_other.m_iMetricScaleFactorDividend),
     m_iMetricScaleFactorDivisor(i_other.m_iMetricScaleFactorDivisor),
     m_fImageSizeWidth_px(i_other.m_fImageSizeWidth_px),
+    m_fImageSizeWidthRes_px(i_other.m_fImageSizeWidthRes_px),
     m_fImageSizeHeight_px(i_other.m_fImageSizeHeight_px),
+    m_fImageSizeHeightRes_px(i_other.m_fImageSizeHeightRes_px),
     m_pTrcAdminObj(nullptr)
 {
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
@@ -156,13 +168,17 @@ CDrawingSize::~CDrawingSize()
     //m_eDimensionUnit = static_cast<EDrawingDimensionUnit>(0);
     //m_metricUnit;
     m_fImageMetricWidth = 0.0;
+    m_fImageMetricWidthRes = 0.0;
     m_fImageMetricHeight = 0.0;
+    m_fImageMetricHeightRes = 0.0;
     //m_eNormedPaperSize = static_cast<ENormedPaperSize>(0);
     //m_eNormedPaperOrientation = static_cast<EOrientation>(0);
     m_iMetricScaleFactorDividend = 0;
     m_iMetricScaleFactorDivisor = 0;
     m_fImageSizeWidth_px = 0.0;
+    m_fImageSizeWidthRes_px = 0.0;
     m_fImageSizeHeight_px = 0.0;
+    m_fImageSizeHeightRes_px = 0.0;
     m_pTrcAdminObj = nullptr;
 
 } // dtor
@@ -190,13 +206,17 @@ CDrawingSize& CDrawingSize::operator = (const CDrawingSize& i_other)
     m_eDimensionUnit = i_other.m_eDimensionUnit;
     m_metricUnit = i_other.m_metricUnit;
     m_fImageMetricWidth = i_other.m_fImageMetricWidth;
+    m_fImageMetricWidthRes = i_other.m_fImageMetricWidthRes;
     m_fImageMetricHeight = i_other.m_fImageMetricHeight;
+    m_fImageMetricHeightRes = i_other.m_fImageMetricHeightRes;
     m_eNormedPaperSize = i_other.m_eNormedPaperSize;
     m_eNormedPaperOrientation = i_other.m_eNormedPaperOrientation;
     m_iMetricScaleFactorDividend = i_other.m_iMetricScaleFactorDividend;
     m_iMetricScaleFactorDivisor = i_other.m_iMetricScaleFactorDivisor;
     m_fImageSizeWidth_px = i_other.m_fImageSizeWidth_px;
+    m_fImageSizeWidthRes_px = i_other.m_fImageSizeWidthRes_px;
     m_fImageSizeHeight_px = i_other.m_fImageSizeHeight_px;
+    m_fImageSizeHeightRes_px = i_other.m_fImageSizeHeightRes_px;
 
     return *this;
 }
@@ -219,7 +239,13 @@ bool CDrawingSize::operator == ( const CDrawingSize& i_other ) const
     else if( m_fImageMetricWidth != i_other.m_fImageMetricWidth ) {
         bEqual = false;
     }
+    else if( m_fImageMetricWidthRes != i_other.m_fImageMetricWidthRes ) {
+        bEqual = false;
+    }
     else if( m_fImageMetricHeight != i_other.m_fImageMetricHeight ) {
+        bEqual = false;
+    }
+    else if( m_fImageMetricHeightRes != i_other.m_fImageMetricHeightRes ) {
         bEqual = false;
     }
     else if( m_eNormedPaperSize != i_other.m_eNormedPaperSize ) {
@@ -237,7 +263,13 @@ bool CDrawingSize::operator == ( const CDrawingSize& i_other ) const
     else if( m_fImageSizeWidth_px != i_other.m_fImageSizeWidth_px ) {
         bEqual = false;
     }
+    else if( m_fImageSizeWidthRes_px != i_other.m_fImageSizeWidthRes_px ) {
+        bEqual = false;
+    }
     else if( m_fImageSizeHeight_px != i_other.m_fImageSizeHeight_px ) {
+        bEqual = false;
+    }
+    else if( m_fImageSizeHeightRes_px != i_other.m_fImageSizeHeightRes_px ) {
         bEqual = false;
     }
     return bEqual;
@@ -547,14 +579,117 @@ int CDrawingSize::imageHeightInPixels() const
 CPhysVal CDrawingSize::metricImageWidth() const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_fImageMetricWidth, m_metricUnit);
+    return CPhysVal(m_fImageMetricWidth, m_metricUnit, m_fImageMetricWidthRes);
 }
 
 //------------------------------------------------------------------------------
 CPhysVal CDrawingSize::metricImageHeight() const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_fImageMetricHeight, m_metricUnit);
+    return CPhysVal(m_fImageMetricHeight, m_metricUnit, m_fImageMetricHeightRes);
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Converts the given X coordinate in pixels into world coordinate in metric unit.
+
+    As a precondition the drawing must have been setup to use metric coordinate system.
+    If not the returned value is the same as the passed coordinate just converted into
+    a physical value in unit pxX.
+
+    @return Converted value.
+*/
+CPhysVal CDrawingSize::toMetricXCoor(double i_fXCoor_px) const
+//------------------------------------------------------------------------------
+{
+    CPhysVal physVal;
+    if (m_eDimensionUnit == EDrawingDimensionUnit::Pixels) {
+        physVal = CPhysVal(i_fXCoor_px, Units.Length.pxX, m_fImageSizeWidthRes_px);
+    }
+    else /*if (m_eDimensionUnit == EDrawingDimensionUnit::Metric)*/ {
+        double fVal = (i_fXCoor_px * m_fImageMetricWidth) / m_fImageSizeWidth_px;
+        physVal = CPhysVal(fVal, m_metricUnit, m_fImageMetricWidthRes);
+    }
+    return physVal;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Converts the given Y coordinate in pixels into world coordinate in metric unit.
+
+    As a precondition the drawing must have been setup to use metric coordinate system.
+    If not the returned value is the same as the passed coordinate just converted into
+    a physical value in unit pxY.
+
+    @return Converted value.
+*/
+CPhysVal CDrawingSize::toMetricYCoor(double i_fYCoor_px) const
+//------------------------------------------------------------------------------
+{
+    CPhysVal physVal;
+    if (m_eDimensionUnit == EDrawingDimensionUnit::Pixels) {
+        physVal = CPhysVal(i_fYCoor_px, Units.Length.pxY, m_fImageSizeHeightRes_px);
+    }
+    else /*if (m_eDimensionUnit == EDrawingDimensionUnit::Metric)*/ {
+        // The metric coordinate system is from bottom to top.
+        double fVal = m_fImageMetricHeight - (i_fYCoor_px * m_fImageMetricHeight) / m_fImageSizeHeight_px;
+        physVal = CPhysVal(fVal, m_metricUnit, m_fImageMetricHeightRes);
+    }
+    return physVal;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Converts the given X coordinate in metric unit into the pixel coordinate.
+
+    As a precondition the drawing must have been setup to use metric coordinate system.
+    If not the conversion uses the screen resolution in pixels/mm to return a value in
+    pixel coordinates.
+
+    @return Converted value.
+*/
+double CDrawingSize::toPixelXCoor(const CPhysVal& i_physValXCoor) const
+//------------------------------------------------------------------------------
+{
+    double fCoor_px = 0.0;
+    if (i_physValXCoor.unit() == Units.Length.pxX) {
+        fCoor_px = i_physValXCoor.getVal();
+    }
+    else if (m_eDimensionUnit == EDrawingDimensionUnit::Pixels) {
+        fCoor_px = i_physValXCoor.getVal(Units.Length.pxX);
+    }
+    else /*if (m_eDimensionUnit == EDrawingDimensionUnit::Metric)*/ {
+        double fVal = i_physValXCoor.getVal(m_metricUnit);
+        fCoor_px = (fVal * m_fImageSizeWidth_px) / m_fImageMetricWidth;
+    }
+    return fCoor_px;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Converts the given Y coordinate in metric unit into the pixel coordinate.
+
+    As a precondition the drawing must have been setup to use metric coordinate system.
+    If not the conversion uses the screen resolution in pixels/mm to return a value in
+    pixel coordinates.
+
+    @return Converted value.
+*/
+double CDrawingSize::toPixelYCoor(const CPhysVal& i_physValYCoor) const
+//------------------------------------------------------------------------------
+{
+    double fCoor_px = 0.0;
+    if (i_physValYCoor.unit() == Units.Length.pxX) {
+        fCoor_px = i_physValYCoor.getVal();
+    }
+    else if (m_eDimensionUnit == EDrawingDimensionUnit::Pixels) {
+        fCoor_px = i_physValYCoor.getVal(Units.Length.pxY);
+    }
+    else /*if (m_eDimensionUnit == EDrawingDimensionUnit::Metric)*/ {
+        double fVal = i_physValYCoor.getVal(m_metricUnit);
+        fCoor_px = (fVal * m_fImageSizeHeight_px) / m_fImageMetricHeight;
+    }
+    return fCoor_px;
 }
 
 /*==============================================================================
@@ -675,10 +810,10 @@ QString CDrawingSize::toString() const
         + ", Orientation: " + QString(m_eNormedPaperOrientation.isValid() ? m_eNormedPaperOrientation.toString() : "Invalid")
         + ", Scale (" + QString::number(m_iMetricScaleFactorDividend)
             + "/" + QString::number(m_iMetricScaleFactorDivisor) + ")"
-        + ", Size (" + QString::number(m_fImageMetricWidth) + " " + m_metricUnit.symbol()
-            + " * " + QString::number(m_fImageMetricHeight) + " " + m_metricUnit.symbol() + ")"
-        + ", Size (" + QString::number(m_fImageSizeWidth_px)
-            + " * " + QString::number(m_fImageSizeHeight_px) + " px)";
+        + ", Size (" + CPhysVal(m_fImageMetricWidth, m_metricUnit, m_fImageMetricWidthRes).toString()
+            + " * " + CPhysVal(m_fImageMetricHeight, m_metricUnit, m_fImageMetricHeightRes).toString() + ")"
+        + ", Size (" + CPhysVal(m_fImageSizeWidth_px, Units.Length.pxX, m_fImageSizeWidthRes_px).toString()
+            + " * " + CPhysVal(m_fImageSizeHeight_px, Units.Length.pxY, m_fImageSizeHeightRes_px).toString() + ")";
     return str;
 }
 
@@ -696,9 +831,9 @@ void CDrawingSize::traceValues(CMethodTracer& mthTracer, EMethodDir i_methodDir)
         + ", NormedOrientation: " + QString(m_eNormedPaperOrientation.isValid() ? m_eNormedPaperOrientation.toString() : "---")
         + ", Scale (" + QString::number(m_iMetricScaleFactorDividend)
             + "/" + QString::number(m_iMetricScaleFactorDivisor) + ")"
-        + ", Size (" + QString::number(m_fImageMetricWidth) + " " + m_metricUnit.symbol()
-            + " * " + QString::number(m_fImageMetricHeight) + " " + m_metricUnit.symbol() + ")"
-        + ", Size (" + QString::number(m_fImageSizeWidth_px)
-            + " * " + QString::number(m_fImageSizeHeight_px) + " px)";
+        + ", Size (" + CPhysVal(m_fImageMetricWidth, m_metricUnit, m_fImageMetricWidthRes).toString()
+            + " * " + CPhysVal(m_fImageMetricHeight, m_metricUnit, m_fImageMetricHeightRes).toString() + ")"
+        + ", Size (" + CPhysVal(m_fImageSizeWidth_px, Units.Length.pxX, m_fImageSizeWidthRes_px).toString()
+            + " * " + CPhysVal(m_fImageSizeHeight_px, Units.Length.pxY, m_fImageSizeHeightRes_px).toString() + ")";
     mthTracer.trace(strMthLog);
 }

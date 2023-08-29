@@ -76,7 +76,7 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CTest::CTest() :
 //------------------------------------------------------------------------------
-    ZS::Test::CTest("ZSIpcTrace"),
+    ZS::Test::CTest(NameSpace(), "theInst"),
     m_pTmrTestStepTimeout(nullptr),
     m_pTmrTestStepTrcMthListWdgtTimeout(nullptr),
     m_hshReqsInProgress(),

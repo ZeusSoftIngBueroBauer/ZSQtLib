@@ -26,14 +26,14 @@ may result in using the software modules.
 
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSDraw/Common/ZSDrawAux.h"
-#include "ZSDraw/GraphObjFactories/ZSDrawObjFactory.h"
-#include "ZSDraw/GraphObjs/ZSDrawGraphObj.h"
-#include "ZSDraw/GraphObjFactories/ZSDrawObjFactoryGroup.h"
-#include "ZSDraw/GraphObjs/ZSDrawGraphObjConnectionLine.h"
-#include "ZSDraw/GraphObjs/ZSDrawGraphObjConnectionPoint.h"
-#include "ZSDraw/GraphObjs/ZSDrawGraphObjGroup.h"
-#include "ZSDraw/GraphObjs/ZSDrawGraphObjImage.h"
-#include "ZSDraw/Drawing/ZSDrawUnits.h"
+#include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactory.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
+#include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactoryGroup.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjConnectionLine.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjConnectionPoint.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjGroup.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjImage.h"
+#include "ZSDraw/Common/ZSDrawUnits.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysIdxTree.h"
 #include "ZSSys/ZSSysMathScaleDivLines.h"
@@ -387,6 +387,70 @@ CDrawingSize CDrawingScene::drawingSize() const
 //------------------------------------------------------------------------------
 {
     return m_drawingSize;
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Converts the given X coordinate in pixels into world coordinate in metric unit.
+
+    As a precondition the drawing must have been setup to use metric coordinate system.
+    If not the returned value is the same as the passed coordinate just converted into
+    a physical value in unit pxX.
+
+    @return Converted value.
+*/
+CPhysVal CDrawingScene::toMetricXCoor(double i_fXCoor_px) const
+//------------------------------------------------------------------------------
+{
+    return m_drawingSize.toMetricXCoor(i_fXCoor_px);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Converts the given Y coordinate in pixels into world coordinate in metric unit.
+
+    As a precondition the drawing must have been setup to use metric coordinate system.
+    If not the returned value is the same as the passed coordinate just converted into
+    a physical value in unit pxY.
+
+    @return Converted value.
+*/
+CPhysVal CDrawingScene::toMetricYCoor(double i_fYCoor_px) const
+//------------------------------------------------------------------------------
+{
+    return m_drawingSize.toMetricYCoor(i_fYCoor_px);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Converts the given X coordinate in metric unit into the pixel coordinate.
+
+    As a precondition the drawing must have been setup to use metric coordinate system.
+    If not the conversion uses the screen resolution in pixels/mm to return a value in
+    pixel coordinates.
+
+    @return Converted value.
+*/
+double CDrawingScene::toPixelXCoor(const CPhysVal& i_physValXCoor) const
+//------------------------------------------------------------------------------
+{
+    return m_drawingSize.toPixelXCoor(i_physValXCoor);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Converts the given Y coordinate in metric unit into the pixel coordinate.
+
+    As a precondition the drawing must have been setup to use metric coordinate system.
+    If not the conversion uses the screen resolution in pixels/mm to return a value in
+    pixel coordinates.
+
+    @return Converted value.
+*/
+double CDrawingScene::toPixelYCoor(const CPhysVal& i_physValYCoor) const
+//------------------------------------------------------------------------------
+{
+    return m_drawingSize.toPixelYCoor(i_physValYCoor);
 }
 
 /*==============================================================================
@@ -1022,42 +1086,33 @@ void CDrawingScene::addItem( QGraphicsItem* i_pGraphicsItem, QGraphicsItem* i_pG
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
         CGraphObj* pGraphObjParent = dynamic_cast<CGraphObj*>(i_pGraphicsItemParent);
         strMthInArgs = QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->path());
         strMthInArgs += ", Parent: " + QString(pGraphObjParent == nullptr ? "nullptr" : pGraphObjParent->path());
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "addItem",
         /* strAddInfo   */ strMthInArgs );
 
-    if( i_pGraphicsItemParent != nullptr )
-    {
+    if (i_pGraphicsItemParent != nullptr) {
         i_pGraphicsItem->setParentItem(i_pGraphicsItemParent);
     }
-
     QGraphicsScene::addItem(i_pGraphicsItem);
-
-} // addItem
+}
 
 //------------------------------------------------------------------------------
 void CDrawingScene::removeItem( QGraphicsItem* i_pGraphicsItem )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
         strMthInArgs = QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->path());
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -1065,8 +1120,7 @@ void CDrawingScene::removeItem( QGraphicsItem* i_pGraphicsItem )
         /* strAddInfo   */ strMthInArgs );
 
     QGraphicsScene::removeItem(i_pGraphicsItem);
-
-} // removeItem
+}
 
 /*==============================================================================
 protected: // instance methods
@@ -1077,13 +1131,10 @@ void CDrawingScene::deleteItem( QGraphicsItem* i_pGraphicsItem )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
         strMthInArgs = QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->path());
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -1091,45 +1142,32 @@ void CDrawingScene::deleteItem( QGraphicsItem* i_pGraphicsItem )
         /* strAddInfo   */ strMthInArgs );
 
     CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
-
-    if( pGraphObj != nullptr )
-    {
+    if (pGraphObj != nullptr){
         deleteItem(pGraphObj);
         pGraphObj = nullptr;
         i_pGraphicsItem = nullptr;
     }
-
-} // deleteItem
+}
 
 //------------------------------------------------------------------------------
 void CDrawingScene::deleteItem( CGraphObj* i_pGraphObj )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->path());
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "deleteItem",
         /* strAddInfo   */ strMthInArgs );
 
-    if( i_pGraphObj != nullptr )
-    {
+    if (i_pGraphObj != nullptr) {
         QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(i_pGraphObj);
-
-        if( pGraphicsItem != nullptr )
-        {
+        if (pGraphicsItem != nullptr) {
             QList<QGraphicsItem*> arpGraphicsItemsChilds = pGraphicsItem->childItems();
-            QStringList           strlstGraphObjIdsChilds;
-            QGraphicsItem*        pGraphicsItemChild;
-            CGraphObj*            pGraphObjChild;
-            QString               strGraphObjIdChild;
-            int                   idxGraphObjChild;
+            QStringList strlstGraphObjIdsChilds;
 
             // On deleting a graphical object the object may destroy other graphical objects
             // (e.g. connection points may delete connection lines) and the list of selected
@@ -1137,37 +1175,25 @@ void CDrawingScene::deleteItem( CGraphObj* i_pGraphObj )
             // references but a list with object ids and check whether the object still belong
             // to the drawing scene before deleting the object.
 
-            for( idxGraphObjChild = 0; idxGraphObjChild < arpGraphicsItemsChilds.size(); idxGraphObjChild++ )
-            {
-                pGraphicsItemChild = arpGraphicsItemsChilds[idxGraphObjChild];
-
-                pGraphObjChild = dynamic_cast<CGraphObj*>(pGraphicsItemChild);
-
-                if( pGraphObjChild != nullptr )
-                {
-                    strGraphObjIdChild = pGraphObjChild->keyInTree();
-                    strlstGraphObjIdsChilds.append(strGraphObjIdChild);
+            for (int idxChild = 0; idxChild < arpGraphicsItemsChilds.size(); idxChild++) {
+                QGraphicsItem* pGraphicsItemChild = arpGraphicsItemsChilds[idxChild];
+                CGraphObj* pGraphObjChild = dynamic_cast<CGraphObj*>(pGraphicsItemChild);
+                if (pGraphObjChild != nullptr) {
+                    strlstGraphObjIdsChilds.append(pGraphObjChild->keyInTree());
                 }
             }
-
-            for( idxGraphObjChild = 0; idxGraphObjChild < strlstGraphObjIdsChilds.size(); idxGraphObjChild++ )
-            {
-                strGraphObjIdChild = strlstGraphObjIdsChilds[idxGraphObjChild];
-
-                pGraphObjChild = findGraphObj(strGraphObjIdChild);
-
-                if( pGraphObjChild != nullptr )
-                {
+            for (int idxChild = 0; idxChild < strlstGraphObjIdsChilds.size(); idxChild++) {
+                QString strGraphObjIdChild = strlstGraphObjIdsChilds[idxChild];
+                CGraphObj* pGraphObjChild = findGraphObj(strGraphObjIdChild);
+                if (pGraphObjChild != nullptr) {
                     deleteItem(pGraphObjChild);
                     pGraphObjChild = nullptr;
                 }
             }
-
             delete i_pGraphObj;
             i_pGraphObj = nullptr;
         }
-    } // if( i_pGraphObj != nullptr )
-
+    }
 } // deleteItem
 
 /*==============================================================================
@@ -5162,7 +5188,7 @@ void CDrawingScene::drawBackground( QPainter* i_pPainter, const QRectF& i_rect )
         //m_divLinesMetricsX.update();
         //m_divLinesMetricsY.update();
         if (m_gridSettings.areLinesVisible()) {
-            paintGrid(i_pPainter);
+            paintGridLines(i_pPainter);
         }
     }
     i_pPainter->restore();
@@ -5348,13 +5374,13 @@ protected: // auxiliary methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDrawingScene::paintGrid(QPainter* i_pPainter)
+void CDrawingScene::paintGridLines(QPainter* i_pPainter)
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjPaintEvent,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "paintGrid",
+        /* strMethod    */ "paintGridLines",
         /* strAddInfo   */ "" );
 
     #pragma message(__TODO__"m_gridSettings.linesDistMinXInPixels()")
@@ -5393,16 +5419,16 @@ void CDrawingScene::paintGrid(QPainter* i_pPainter)
 
     i_pPainter->restore();
 
-} // paintGrid
+} // paintGridLines
 
 ////------------------------------------------------------------------------------
-//void CDrawingScene::paintLabels(QPainter* i_pPainter)
+//void CDrawingScene::paintGridLabels(QPainter* i_pPainter)
 ////------------------------------------------------------------------------------
 //{
 //    CMethodTracer mthTracer(
 //        /* pAdminObj    */ m_pTrcAdminObjPaintEvent,
 //        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strMethod    */ "paintLabels",
+//        /* strMethod    */ "paintGridLabels",
 //        /* strAddInfo   */ "" );
 //
 //    i_pPainter->save();
@@ -5456,7 +5482,7 @@ void CDrawingScene::paintGrid(QPainter* i_pPainter)
 //    }
 //    i_pPainter->restore();
 //
-//} // paintLabels
+//} // paintGridLabels
 
 /*==============================================================================
 protected: // auxiliary methods

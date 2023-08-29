@@ -25,8 +25,8 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDraw/Common/ZSDrawAux.h"
-#include "ZSDraw/Drawing/ZSDrawSettings.h"
-#include "ZSDraw/GraphObjs/ZSDrawGraphObj.h"
+#include "ZSDraw/Common/ZSDrawSettings.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
 #include "ZSPhysVal/ZSPhysVal.h"
 #include "ZSSys/ZSSysMath.h"
 
@@ -66,40 +66,21 @@ QString ZS::Draw::qPainterPath2Str( QGraphicsItem* i_pGraphObj, const QPainterPa
 //------------------------------------------------------------------------------
 {
     QString str;
-
     QPainterPath painterPatherSimplified = i_painterPath.simplified();
-
-    if( painterPatherSimplified.elementCount() > 0 )
-    {
-        QPainterPath::Element elem;
-        QPointF               ptElem;
-        QString               strElem;
-        QString               strElemPrev;
-        int                   idx;
-
-        str = "ElemCount:" + QString::number(painterPatherSimplified.elementCount());
-
-        for( idx = 0; idx < painterPatherSimplified.elementCount(); idx++ )
-        {
-            elem = painterPatherSimplified.elementAt(idx);
-
-            ptElem = QPointF(elem.x,elem.y);
-
-            ptElem = i_pGraphObj->mapToScene(ptElem);
-
-            strElem = qPainterPathElemType2Str(elem.type) + ":" + point2Str(ptElem);
-
-            if( strElem != strElemPrev )
-            {
-                str += ", " +QString::number(idx) + ":" + strElem;
-            }
-            strElemPrev = strElem;
+    str = "[" + QString::number(painterPatherSimplified.elementCount()) + "]";
+    if (painterPatherSimplified.elementCount() > 0) {
+        str += "(";
+        for (int idx = 0; idx < painterPatherSimplified.elementCount(); idx++) {
+            if (idx > 0) str += ", ";
+            QPainterPath::Element elem = painterPatherSimplified.elementAt(idx);
+            QPointF ptElem = i_pGraphObj->mapToScene(QPointF(elem.x, elem.y));
+            QString strElem = qPainterPathElemType2Str(elem.type) + " {" + point2Str(ptElem) + "}";
+            str += "[" + QString::number(idx) + "] {" + strElem + "}";
         }
+        str += ")";
     }
-
     return str;
-
-} // qPainterPath2Str
+}
 
 
 /*==============================================================================

@@ -397,7 +397,7 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CTest::CTest() :
 //------------------------------------------------------------------------------
-    ZS::Test::CTest("ZS::System::IdxTree"),
+    ZS::Test::CTest(NameSpace(), "theInst"),
     m_pIdxTree(nullptr)
 {
     // Sub-Group: CreateIdxTree

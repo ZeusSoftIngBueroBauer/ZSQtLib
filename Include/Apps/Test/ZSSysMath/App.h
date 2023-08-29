@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSApps_TestTemplate_App_h
-#define ZSApps_TestTemplate_App_h
+#ifndef ZSApps_TestMath_App_h
+#define ZSApps_TestMath_App_h
 
 #include <QtCore/qglobal.h>
 
@@ -45,7 +45,7 @@ namespace Apps
 {
 namespace Test
 {
-namespace Template
+namespace Math
 {
 class CMainWindow;
 
@@ -81,7 +81,7 @@ private: // instance members
 
 }; // class CApplication
 
-} // namespace Template
+} // namespace Math
 
 } // namespace Test
 
@@ -89,4 +89,4 @@ private: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZSApps_TestTemplate_App_h
+#endif // #ifndef ZSApps_TestMath_App_h

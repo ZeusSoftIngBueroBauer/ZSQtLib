@@ -35,7 +35,7 @@ may result in using the software modules.
 #include <QtWidgets/QGraphicsProxyWidget>
 #endif
 
-#include "ZSDraw/GraphObjs/ZSDrawGraphObj.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
 
 class QCheckBox;
 

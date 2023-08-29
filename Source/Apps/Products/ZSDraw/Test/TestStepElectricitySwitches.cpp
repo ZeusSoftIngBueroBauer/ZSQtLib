@@ -45,8 +45,8 @@ may result in using the software modules.
 #include "ZSDrawGraphObjElectricitySwitch.h"
 
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
-#include "ZSDraw/Drawing/ZSDrawingView.h"
-#include "ZSDraw/GraphObjFactories/ZSDrawObjFactory.h"
+#include "ZSDraw/Widgets/Drawing/ZSDrawingView.h"
+#include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactory.h"
 #include "ZSTest/ZSTestStep.h"
 #include "ZSTest/ZSTestStepGroup.h"
 #include "ZSSys/ZSSysMath.h"

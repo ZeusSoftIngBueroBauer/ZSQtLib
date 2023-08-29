@@ -102,7 +102,7 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CTest::CTest() :
 //------------------------------------------------------------------------------
-    ZS::Test::CTest("ZSDiagram"),
+    ZS::Test::CTest(NameSpace(), "theInst"),
     m_pTmrTestStepTimeout(nullptr),
     m_pTimerSigGen(nullptr),
     m_pWdgtDiagram(nullptr),

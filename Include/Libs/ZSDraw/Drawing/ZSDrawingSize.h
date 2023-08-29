@@ -76,6 +76,11 @@ public: // instance methods
     int imageHeightInPixels() const;
     ZS::PhysVal::CPhysVal metricImageWidth() const;
     ZS::PhysVal::CPhysVal metricImageHeight() const;
+public: // instance methods
+    ZS::PhysVal::CPhysVal toMetricXCoor(double i_fXCoor_px) const;
+    ZS::PhysVal::CPhysVal toMetricYCoor(double i_fYCoor_px) const;
+    double toPixelXCoor(const ZS::PhysVal::CPhysVal& i_physValXCoor) const;
+    double toPixelYCoor(const ZS::PhysVal::CPhysVal& i_physValYCoor) const;
 protected: // instance methods
     void updateImageSizeInPixels();
     void updateImageSizeMetrics();
@@ -93,8 +98,12 @@ private: // instance members
     ZS::PhysVal::CUnit m_metricUnit;
     /*!< Width of the image in metric unit. */
     double m_fImageMetricWidth;
+    /*!< Resolution of the image width in metric unit. */
+    double m_fImageMetricWidthRes;
     /*!< Height of the image in metric unit. */
     double m_fImageMetricHeight;
+    /*!< Resolution of the image Height in metric unit. */
+    double m_fImageMetricHeightRes;
     /*!< One of the normed paper sizes (DINA4 etc.) or invalid. */
     CEnumNormedPaperSize m_eNormedPaperSize;
     /*!< If a normed paper size is used the paper may be orientated vertical or horizontal.
@@ -105,11 +114,15 @@ private: // instance members
     /*!< For metric system the scale factor is defined by Dividend/Divisor. */
     int m_iMetricScaleFactorDivisor;
     /*!< Width of the image in pixels. Either set for Dimension unit Pixels or calculated
-         by the metric width, the scale factor and the screen resolution in dots per inch. */
+         by the metric width, the scale factor and the screen resolution in pixels per mm. */
     double m_fImageSizeWidth_px;
+    /*!< Resolution of the image width in pixels. As default the resolution is 1 pixel. */
+    double m_fImageSizeWidthRes_px;
     /*!< Height of the image in pixels. Either set for Dimension unit Pixels or calculated
-         by the metric height, the scale factor and the screen resolution in dots per inch. */
+         by the metric height, the scale factor and the screen resolution in pixels per mm. */
     double m_fImageSizeHeight_px;
+    /*!< Resolution of the image height in pixels. As default the resolution is 1 pixel. */
+    double m_fImageSizeHeightRes_px;
     /*!< Trace admin object for method tracing. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 

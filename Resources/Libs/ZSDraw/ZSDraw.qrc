@@ -6,7 +6,7 @@
         <file alias="CursorRotateFree16x16.bmp">Images/CursorRotateFree16x16.bmp</file>
         <file alias="CursorSelect16x16.bmp">Images/CursorSelect16x16.bmp</file>
         <file alias="DrawToolBrush16x16.bmp">Images/DrawToolBrush16x16.bmp</file>
-        <file alias="DrawToolGeometry16x16.bmp">Images/DrawToolGeometry16x16.bmp</file>
+        <file alias="DrawToolGeometry16x16.png">Images/DrawToolGeometry16x16.png</file>
         <file alias="DrawToolLine16x16.bmp">Images/DrawToolLine16x16.bmp</file>
         <file alias="DrawToolPen16x16.bmp">Images/DrawToolPen16x16.bmp</file>
         <file alias="DrawToolText16x16.bmp">Images/DrawToolText16x16.bmp</file>
@@ -29,7 +29,7 @@
         <file alias="EditGroup16x16.bmp">Images/EditGroup16x16.bmp</file>
         <file alias="EditUngroup16x16.bmp">Images/EditUngroup16x16.bmp</file>
         <file alias="FilePageSetup16x16.bmp">Images/FilePageSetup16x16.bmp</file>
-        <file alias="Key16x16.bmp">Images/Key16x16.bmp</file>
+        <file alias="Key16x16.png">Images/Key16x16.png</file>
         <file alias="Refresh16x16.bmp">Images/Refresh16x16.bmp</file>
         <file alias="Refresh24x24.bmp">Images/Refresh24x24.bmp</file>
         <file alias="Refresh32x32.bmp">Images/Refresh32x32.bmp</file>

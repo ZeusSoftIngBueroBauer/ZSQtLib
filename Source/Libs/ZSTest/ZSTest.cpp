@@ -84,7 +84,8 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CTest::CTest(
-    const QString& i_strName,
+    const QString& i_strNameSpace,
+    const QString& i_strObjName,
     const QString& i_strTestStepsAbsFilePath,
     const QString& i_strNodeSeparator,
     int            i_iTestStepInterval_ms,
@@ -102,21 +103,19 @@ CTest::CTest(
     m_bDoTestStepPending(false),
     m_pTrcAdminObj(nullptr)
 {
-    setObjectName(i_strName);
+    setObjectName(i_strObjName);
 
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(i_strNameSpace, ClassName(), objectName());
 
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strMthInArgs = "Name: " + i_strName;
-        strMthInArgs += ", TestStepsFile: " + i_strTestStepsAbsFilePath;
-        strMthInArgs += ", NodeSep: " + i_strNodeSeparator;
-        strMthInArgs += ", Interval: " + QString::number(i_iTestStepInterval_ms) + " ms";
-        strMthInArgs += ", ResultsFile: " + i_strTestResultsAbsFilePath;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "NameSpace: " + i_strNameSpace +
+            ", ObjName: " + i_strObjName +
+            ", TestStepsFile: " + i_strTestStepsAbsFilePath +
+            ", NodeSep: " + i_strNodeSeparator +
+            ", Interval: " + QString::number(i_iTestStepInterval_ms) + " ms" +
+            ", ResultsFile: " + i_strTestResultsAbsFilePath;
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -137,7 +136,7 @@ CTest::CTest(
     // Should be called by derived class if desired.
     //m_pIdxTree->recall();
 
-} // default ctor
+} // ctor
 
 //------------------------------------------------------------------------------
 CTest::~CTest()
@@ -161,7 +160,6 @@ CTest::~CTest()
     }
 
     mthTracer.onAdminObjAboutToBeReleased();
-
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
 
     m_pIdxTree = nullptr;

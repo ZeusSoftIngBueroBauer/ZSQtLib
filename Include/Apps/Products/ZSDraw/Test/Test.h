@@ -65,6 +65,8 @@ class CTest : public ZS::Test::CTest
 //******************************************************************************
 {
     Q_OBJECT
+public: // class methods
+    static QString NameSpace() { return "ZS::Apps::Products::Draw"; }
 public: // ctors and dtor
     CTest();
     ~CTest();
@@ -121,7 +123,7 @@ protected slots:
     //void doTestStepElectricityTransistors( ZS::Test::CTestStep* i_pTestStep );
     //void doTestStepElectricitySwitches( ZS::Test::CTestStep* i_pTestStep );
 public: // instance members
-    CMainWindow*             m_pMainWindow;
+    CMainWindow* m_pMainWindow;
     ZS::Draw::CDrawingView*  m_pDrawingView;
     ZS::Draw::CDrawingScene* m_pDrawingScene;
     //QPoint                   m_ptDrawingSceneMousePos;
@@ -157,7 +159,6 @@ public: // instance members
     //int                      m_iWdgtLabelsCount;
     //int                      m_iWdgtLineEditsCount;
     //int                      m_iWdgtPushButtonsCount;
-    ZS::System::CTrcAdminObj*   m_pTrcAdminObj;
 
 }; // class CTest
 

@@ -37,9 +37,9 @@ may result in using the software modules.
 
 #include "QtWidgets/ZSDrawGraphObjWdgt.h"
 
-#include "ZSDraw/GraphObjs/ZSDrawGraphObjSelectionPoint.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjSelectionPoint.h"
 #include "ZSDraw/Common/ZSDrawAux.h"
-#include "ZSDraw/GraphObjFormat/ZSDrawDlgFormatGraphObjs.h"
+#include "ZSDraw/Widgets/GraphObjFormat/ZSDrawDlgFormatGraphObjs.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSSys/ZSSysErrCode.h"
 #include "ZSSys/ZSSysException.h"

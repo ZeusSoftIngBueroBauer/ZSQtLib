@@ -41,7 +41,7 @@ may result in using the software modules.
 #include "QtWidgets/ZSDrawObjFactoryWdgtGroupBox.h"
 #include "QtWidgets/ZSDrawGraphObjWdgtGroupBox.h"
 
-#include "ZSDraw/GraphObjs/ZSDrawGraphObjGroup.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjGroup.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"

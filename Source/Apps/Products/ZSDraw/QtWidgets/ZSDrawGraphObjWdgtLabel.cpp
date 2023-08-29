@@ -40,11 +40,11 @@ may result in using the software modules.
 
 #include "QtWidgets/ZSDrawGraphObjWdgtLabel.h"
 
-#include "ZSDraw/GraphObjs/ZSDrawGraphObjGroup.h"
-#include "ZSDraw/GraphObjs/ZSDrawGraphObjSelectionPoint.h"
-#include "ZSDraw/GraphObjFormat/ZSDrawDlgFormatGraphObjs.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjGroup.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjSelectionPoint.h"
+#include "ZSDraw/Widgets/GraphObjFormat/ZSDrawDlgFormatGraphObjs.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
-#include "ZSDraw/GraphObjFactories/ZSDrawObjFactory.h"
+#include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactory.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrCode.h"
 #include "ZSSys/ZSSysException.h"

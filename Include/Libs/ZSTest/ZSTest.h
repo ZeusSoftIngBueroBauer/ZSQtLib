@@ -59,7 +59,8 @@ public: // class methods to get default file paths
     static QString GetDefaultTestResultsAbsFilePath( const QString& i_strIniFileScope = "System" );
 public: // ctors and dtor
     CTest(
-        const QString& i_strName,
+        const QString& i_strNameSpace,
+        const QString& i_strObjName,
         const QString& i_strTestStepsAbsFilePath = "",
         const QString& i_strNodeSeparator = "\\",
         int            i_iTestStepInterval_ms = 0,
@@ -132,16 +133,26 @@ protected: // overridables
 protected: // overridables of inherited class QObject (state machine)
     virtual bool event( QEvent* i_pMsg );
 protected: // instance members
-    CTestStepIdxTree*         m_pIdxTree; /*!< Index tree containing the test steps. */
-    QString                   m_strTestStepsAbsFilePath; /*!< Absolute path of the file from which the settings of the test steps are saved and recalled. */
-    QString                   m_strTestResultsAbsFilePath; /*!< Absolute path of the file in which the test step results are saved.*/
-    CTestStep*                m_pTestStepCurr;   /*!< Pointer to current test step to be executed. */
-    int                       m_iTestStepInterval_ms;    /*!< Time interval between two test steps. */
-    int                       m_iNumberOfTestRuns; /*!< Number of times the test is executed. */
-    CEnumTestState            m_state;   /*!< Current state of the test. */
-    ZS::System::CEnumRunMode  m_runMode; /*!< Run mode the test is executed with. */
-    bool                      m_bDoTestStepPending;  /*!< true if a test step is started. */
-    ZS::System::CTrcAdminObj* m_pTrcAdminObj;    /*!< Pointer to trace admin object. */
+    /*!< Index tree containing the test steps. */
+    CTestStepIdxTree* m_pIdxTree;
+    /*!< Absolute path of the file from which the settings of the test steps are saved and recalled. */
+    QString m_strTestStepsAbsFilePath;
+    /*!< Absolute path of the file in which the test step results are saved.*/
+    QString m_strTestResultsAbsFilePath;
+    /*!< Pointer to current test step to be executed. */
+    CTestStep* m_pTestStepCurr;
+    /*!< Time interval between two test steps. */
+    int m_iTestStepInterval_ms;
+    /*!< Number of times the test is executed. */
+    int m_iNumberOfTestRuns;
+    /*!< Current state of the test. */
+    CEnumTestState m_state;
+    /*!< Run mode the test is executed with. */
+    ZS::System::CEnumRunMode  m_runMode;
+    /*!< true if a test step is started. */
+    bool m_bDoTestStepPending; 
+    /*!< Pointer to trace admin object. */
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CTest
 

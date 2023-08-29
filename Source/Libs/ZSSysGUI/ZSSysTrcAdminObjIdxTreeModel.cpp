@@ -95,6 +95,13 @@ QIcon CModelIdxTreeTrcAdminObjs::GetIcon( const QString& i_strEntryType )
         s_pPxmLeaveEntrySelectedOff = new QPixmap(":/ZS/TreeView/TrcAdminObjs/TreeViewTrcAdminObjsLeaveEntrySelectedOff.bmp");
         s_pPxmLeaveEntrySelectedOff->setMask(s_pPxmLeaveEntrySelectedOff->createHeuristicMask());
 
+        s_pIconRoot = new QIcon();
+
+        s_pIconRoot->addPixmap(*s_pPxmBranchEntryNormalOff,   QIcon::Normal,   QIcon::Off);
+        s_pIconRoot->addPixmap(*s_pPxmBranchEntrySelectedOff, QIcon::Selected, QIcon::Off);
+        s_pIconRoot->addPixmap(*s_pPxmBranchEntryNormalOff,   QIcon::Normal,   QIcon::On);
+        s_pIconRoot->addPixmap(*s_pPxmBranchEntrySelectedOff, QIcon::Selected, QIcon::On);
+
         s_pIconBranch = new QIcon();
 
         s_pIconBranch->addPixmap(*s_pPxmBranchEntryNormalOff,   QIcon::Normal,   QIcon::Off);

@@ -37,10 +37,10 @@ may result in using the software modules.
 
 #include "ZSDraw/Common/ZSDrawDllMain.h"
 #include "ZSDraw/Common/ZSDrawCommon.h"
+#include "ZSDraw/Common/ZSDrawSettings.h"
+#include "ZSDraw/Common/ZSDrawUnits.h"
 #include "ZSDraw/Drawing/ZSDrawGridSettings.h"
-#include "ZSDraw/Drawing/ZSDrawSettings.h"
 #include "ZSDraw/Drawing/ZSDrawingSize.h"
-#include "ZSDraw/Drawing/ZSDrawUnits.h"
 #include "ZSSys/ZSSysCommon.h"
 #include "ZSSysGUI/ZSSysGUIMathScaleDivLinesMetrics.h"
 
@@ -166,6 +166,11 @@ signals:
 public: // instance methods
     void setDrawingSize( const CDrawingSize& i_size);
     CDrawingSize drawingSize() const;
+public: // instance methods
+    ZS::PhysVal::CPhysVal toMetricXCoor(double i_fXCoor_px) const;
+    ZS::PhysVal::CPhysVal toMetricYCoor(double i_fYCoor_px) const;
+    double toPixelXCoor(const ZS::PhysVal::CPhysVal& i_physValXCoor) const;
+    double toPixelYCoor(const ZS::PhysVal::CPhysVal& i_physValYCoor) const;
 public: // instance methods
     void setGridSettings( const CDrawGridSettings& i_settings);
     CDrawGridSettings gridSettings() const;
@@ -311,8 +316,8 @@ protected slots:
     void onGraphObjsIdxTreeEntryMoved( const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree, const QString& i_strKeyInTreeOfTargetBranch );
     void onGraphObjsIdxTreeEntryRenamed( const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree, const QString& i_strOrigName );
 protected: // auxiliary instance methods
-    void paintGrid(QPainter* i_pPainter);
-    //void paintLabels(QPainter* i_pPainter);
+    void paintGridLines(QPainter* i_pPainter);
+    //void paintGridLabels(QPainter* i_pPainter);
 protected: // auxiliary instance methods
     void raiseErrorAttributeNotDefined(QXmlStreamReader& i_xmlStreamReader, const QString& i_strElemName, const QString& i_strAttrName) const;
     void raiseErrorAttributeOutOfRange(QXmlStreamReader& i_xmlStreamReader, const QString& i_strElemName, const QString& i_strAttrName, const QString& i_strAttrVal) const;

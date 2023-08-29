@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSApps_TestTemplate_Test_h
-#define ZSApps_TestTemplate_Test_h
+#ifndef ZSApps_TestMath_Test_h
+#define ZSApps_TestMath_Test_h
 
 #include "ZSTest/ZSTest.h"
 #include "ZSTest/ZSTestStepIdxTreeEntry.h"
@@ -38,13 +38,15 @@ namespace Apps
 {
 namespace Test
 {
-namespace Template
+namespace Math
 {
 //******************************************************************************
 class CTest : public ZS::Test::CTest
 //******************************************************************************
 {
     Q_OBJECT
+public: // class methods
+    static QString NameSpace() { return "ZS::Apps::Test::Math"; }
 public: // ctors and dtor
     CTest();
     ~CTest();
@@ -59,7 +61,7 @@ public slots:
 
 }; // class CTest
 
-} // namespace Template
+} // namespace Math
 
 } // namespace Test
 
@@ -67,4 +69,4 @@ public slots:
 
 } // namespace ZS
 
-#endif // #ifndef ZSApps_TestTemplate_Test_h
+#endif // #ifndef ZSApps_TestMath_Test_h

@@ -35,175 +35,195 @@ list(APPEND _HeadersCommon
     ${_HeadersPath}/${PROJECT_NAME}/Common/ZSDrawAux.h
     ${_HeadersPath}/${PROJECT_NAME}/Common/ZSDrawCommon.h
     ${_HeadersPath}/${PROJECT_NAME}/Common/ZSDrawDllMain.h
+    ${_HeadersPath}/${PROJECT_NAME}/Common/ZSDrawSettings.h
+    ${_HeadersPath}/${PROJECT_NAME}/Common/ZSDrawUnits.h
 )
 
 list(APPEND _HeadersDrawing
-    ${_HeadersPath}/${PROJECT_NAME}/Drawing/ZSDrawDlgDrawingViewSetup.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/ZSDrawGridSettings.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/ZSDrawingScene.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/ZSDrawingSize.h
-    ${_HeadersPath}/${PROJECT_NAME}/Drawing/ZSDrawingView.h
-    ${_HeadersPath}/${PROJECT_NAME}/Drawing/ZSDrawingViewPropertiesWdgt.h
-    ${_HeadersPath}/${PROJECT_NAME}/Drawing/ZSDrawSettings.h
-    ${_HeadersPath}/${PROJECT_NAME}/Drawing/ZSDrawUnits.h
 )
 
-list(APPEND _HeadersGraphObjFactories
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjFactories/ZSDrawObjFactoriesModel.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjFactories/ZSDrawObjFactory.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjFactories/ZSDrawObjFactoryConnectionLine.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjFactories/ZSDrawObjFactoryConnectionPoint.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjFactories/ZSDrawObjFactoryEllipse.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjFactories/ZSDrawObjFactoryGroup.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjFactories/ZSDrawObjFactoryImage.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjFactories/ZSDrawObjFactoryLine.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjFactories/ZSDrawObjFactoryPoint.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjFactories/ZSDrawObjFactoryPolygon.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjFactories/ZSDrawObjFactoryPolyline.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjFactories/ZSDrawObjFactoryRect.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjFactories/ZSDrawObjFactoryText.h
+list(APPEND _HeadersDrawingGraphObjs
+    ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObj.h
+    ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjConnectionLine.h
+    ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjConnectionPoint.h
+    ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjEllipse.h
+    ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjEventFct.h
+    ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjGroup.h
+    ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjImage.h
+    ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjLabel.h
+    ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjLine.h
+    ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjPoint.h
+    ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjPolygon.h
+    ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjPolyline.h
+    ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjRect.h
+    ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjSelectionPoint.h
+    ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjText.h
 )
 
-list(APPEND _HeadersGraphObjFormat
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjFormat/ZSDrawDlgFormatGraphObjs.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjFormat/ZSDrawWdgtFormatGraphObjs.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjFormat/ZSDrawWdgtFormatGraphObjsFillStyle.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjFormat/ZSDrawWdgtFormatGraphObjsGeometry.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjFormat/ZSDrawWdgtFormatGraphObjsLineStyle.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjFormat/ZSDrawWdgtFormatGraphObjsLabels.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjFormat/ZSDrawWdgtFormatGraphObjsLabelVisibilities.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjFormat/ZSDrawWdgtFormatGraphObjsText.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjFormat/ZSDrawWdgtFormatGraphObjsTextStyle.h
+list(APPEND _HeadersDrawingObjFactories
+    ${_HeadersPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactory.h
+    ${_HeadersPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryConnectionLine.h
+    ${_HeadersPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryConnectionPoint.h
+    ${_HeadersPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryEllipse.h
+    ${_HeadersPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryGroup.h
+    ${_HeadersPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryImage.h
+    ${_HeadersPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryLine.h
+    ${_HeadersPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryPoint.h
+    ${_HeadersPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryPolygon.h
+    ${_HeadersPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryPolyline.h
+    ${_HeadersPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryRect.h
+    ${_HeadersPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryText.h
 )
 
-list(APPEND _HeadersGraphObjs
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObj.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjConnectionLine.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjConnectionPoint.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjEllipse.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjEventFct.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjGroup.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjImage.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjLabel.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjLine.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjPoint.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjPolygon.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjPolyline.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjRect.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjSelectionPoint.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjText.h
+list(APPEND _HeadersWidgetsDrawing
+    ${_HeadersPath}/${PROJECT_NAME}/Widgets/Drawing/ZSDrawDlgDrawingViewSetup.h
+    ${_HeadersPath}/${PROJECT_NAME}/Widgets/Drawing/ZSDrawingView.h
+    ${_HeadersPath}/${PROJECT_NAME}/Widgets/Drawing/ZSDrawingViewPropertiesWdgt.h
 )
 
-list(APPEND _HeadersGraphObjWdgts
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjWdgts/ZSDrawGraphObjLinePropertiesWdgt.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjWdgts/ZSDrawGraphObjPropertiesAbstractWdgt.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjWdgts/ZSDrawGraphObjPropertiesLabelsWdgt.h
-    ${_HeadersPath}/${PROJECT_NAME}/GraphObjWdgts/ZSDrawGraphObjsPropertiesWdgtStack.h
+list(APPEND _HeadersWidgetsGraphObjFormat
+    ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjFormat/ZSDrawDlgFormatGraphObjs.h
+    ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjFormat/ZSDrawWdgtFormatGraphObjs.h
+    ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjFormat/ZSDrawWdgtFormatGraphObjsFillStyle.h
+    ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjFormat/ZSDrawWdgtFormatGraphObjsGeometry.h
+    ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjFormat/ZSDrawWdgtFormatGraphObjsLineStyle.h
+    ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjFormat/ZSDrawWdgtFormatGraphObjsLabels.h
+    ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjFormat/ZSDrawWdgtFormatGraphObjsLabelVisibilities.h
+    ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjFormat/ZSDrawWdgtFormatGraphObjsText.h
+    ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjFormat/ZSDrawWdgtFormatGraphObjsTextStyle.h
 )
 
-list(APPEND _HeadersTreeView
-    ${_HeadersPath}/${PROJECT_NAME}/TreeView/ZSDrawGraphObjModelEntry.h
-    ${_HeadersPath}/${PROJECT_NAME}/TreeView/ZSDrawGraphObjsTreeModel.h
-    ${_HeadersPath}/${PROJECT_NAME}/TreeView/ZSDrawGraphObjsTreeView.h
-    ${_HeadersPath}/${PROJECT_NAME}/TreeView/ZSDrawGraphObjsTreeWdgt.h
-    ${_HeadersPath}/${PROJECT_NAME}/TreeView/ZSDrawGraphObjsWdgt.h
+list(APPEND _HeadersWidgetsGraphObjs
+    ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLinePropertiesWdgt.h
+    ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjPropertiesAbstractWdgt.h
+    ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjPropertiesGeometryWdgt.h
+    ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjPropertiesLabelsWdgt.h
+    ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjsPropertiesWdgtStack.h
+)
+
+list(APPEND _HeadersWidgetsObjFactories
+    ${_HeadersPath}/${PROJECT_NAME}/Widgets/ObjFactories/ZSDrawObjFactoriesModel.h
+)
+
+list(APPEND _HeadersWidgetsTreeView
+    ${_HeadersPath}/${PROJECT_NAME}/Widgets/TreeView/ZSDrawGraphicsItemsModel.h
+    ${_HeadersPath}/${PROJECT_NAME}/Widgets/TreeView/ZSDrawGraphObjModelEntry.h
+    ${_HeadersPath}/${PROJECT_NAME}/Widgets/TreeView/ZSDrawGraphObjsTreeModel.h
+    ${_HeadersPath}/${PROJECT_NAME}/Widgets/TreeView/ZSDrawGraphObjsTreeView.h
+    ${_HeadersPath}/${PROJECT_NAME}/Widgets/TreeView/ZSDrawGraphObjsTreeWdgt.h
+    ${_HeadersPath}/${PROJECT_NAME}/Widgets/TreeView/ZSDrawGraphObjsWdgt.h
 )
 
 list(APPEND _Headers
     ${_HeadersCommon}
     ${_HeadersDrawing}
-    ${_HeadersGraphObjFactories}
-    ${_HeadersGraphObjFormat}
-    ${_HeadersGraphObjs}
-    ${_HeadersGraphObjWdgts}
-    ${_HeadersTreeView}
+    ${_HeadersDrawingGraphObjs}
+    ${_HeadersDrawingObjFactories}
+    ${_HeadersWidgetsDrawing}
+    ${_HeadersWidgetsGraphObjFormat}
+    ${_HeadersWidgetsGraphObjs}
+    ${_HeadersWidgetsObjFactories}
+    ${_HeadersWidgetsTreeView}
 )
 
 list(APPEND _SourcesCommon
     ${_SourcesPath}/${PROJECT_NAME}/Common/ZSDrawAux.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Common/ZSDrawCommon.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Common/ZSDrawDllMain.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Common/ZSDrawSettings.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Common/ZSDrawUnits.cpp
+)
+
+list(APPEND _SourcesDrawingGraphObjs
+    ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObj.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjConnectionLine.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjConnectionPoint.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjEllipse.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjGroup.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjImage.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjLabel.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjLine.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjPoint.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjPolygon.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjPolyline.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjRect.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjSelectionPoint.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjText.cpp
+)
+
+list(APPEND _SourcesDrawingObjFactories
+    ${_SourcesPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactory.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryConnectionLine.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryConnectionPoint.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryEllipse.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryGroup.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryImage.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryLine.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryPoint.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryPolygon.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryPolyline.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryRect.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryText.cpp
 )
 
 list(APPEND _SourcesDrawing
-    ${_SourcesPath}/${PROJECT_NAME}/Drawing/ZSDrawDlgDrawingViewSetup.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/ZSDrawGridSettings.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/ZSDrawingScene.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/ZSDrawingSize.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/Drawing/ZSDrawingView.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/Drawing/ZSDrawingViewPropertiesWdgt.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/Drawing/ZSDrawSettings.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/Drawing/ZSDrawUnits.cpp
 )
 
-list(APPEND _SourcesGraphObjFactories
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjFactories/ZSDrawObjFactoriesModel.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjFactories/ZSDrawObjFactory.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjFactories/ZSDrawObjFactoryConnectionLine.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjFactories/ZSDrawObjFactoryConnectionPoint.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjFactories/ZSDrawObjFactoryEllipse.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjFactories/ZSDrawObjFactoryGroup.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjFactories/ZSDrawObjFactoryImage.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjFactories/ZSDrawObjFactoryLine.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjFactories/ZSDrawObjFactoryPoint.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjFactories/ZSDrawObjFactoryPolygon.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjFactories/ZSDrawObjFactoryPolyline.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjFactories/ZSDrawObjFactoryRect.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjFactories/ZSDrawObjFactoryText.cpp
+list(APPEND _SourcesWidgetsDrawing
+    ${_SourcesPath}/${PROJECT_NAME}/Widgets/Drawing/ZSDrawDlgDrawingViewSetup.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Widgets/Drawing/ZSDrawingView.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Widgets/Drawing/ZSDrawingViewPropertiesWdgt.cpp
 )
 
-list(APPEND _SourcesGraphObjFormat
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjFormat/ZSDrawDlgFormatGraphObjs.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjFormat/ZSDrawWdgtFormatGraphObjs.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjFormat/ZSDrawWdgtFormatGraphObjsFillStyle.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjFormat/ZSDrawWdgtFormatGraphObjsGeometry.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjFormat/ZSDrawWdgtFormatGraphObjsLineStyle.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjFormat/ZSDrawWdgtFormatGraphObjsLabels.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjFormat/ZSDrawWdgtFormatGraphObjsLabelVisibilities.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjFormat/ZSDrawWdgtFormatGraphObjsText.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjFormat/ZSDrawWdgtFormatGraphObjsTextStyle.cpp
+list(APPEND _SourcesWidgetsGraphObjFormat
+    ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjFormat/ZSDrawDlgFormatGraphObjs.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjFormat/ZSDrawWdgtFormatGraphObjs.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjFormat/ZSDrawWdgtFormatGraphObjsFillStyle.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjFormat/ZSDrawWdgtFormatGraphObjsGeometry.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjFormat/ZSDrawWdgtFormatGraphObjsLineStyle.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjFormat/ZSDrawWdgtFormatGraphObjsLabels.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjFormat/ZSDrawWdgtFormatGraphObjsLabelVisibilities.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjFormat/ZSDrawWdgtFormatGraphObjsText.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjFormat/ZSDrawWdgtFormatGraphObjsTextStyle.cpp
 )
 
-list(APPEND _SourcesGraphObjs
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObj.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjConnectionLine.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjConnectionPoint.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjEllipse.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjGroup.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjImage.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjLabel.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjLine.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjPoint.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjPolygon.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjPolyline.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjRect.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjSelectionPoint.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjs/ZSDrawGraphObjText.cpp
+list(APPEND _SourcesWidgetsGraphObjs
+    ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLinePropertiesWdgt.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjPropertiesAbstractWdgt.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjPropertiesGeometryWdgt.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjPropertiesLabelsWdgt.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjsPropertiesWdgtStack.cpp
 )
 
-list(APPEND _SourcesGraphObjWdgts
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjWdgts/ZSDrawGraphObjLinePropertiesWdgt.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjWdgts/ZSDrawGraphObjPropertiesAbstractWdgt.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjWdgts/ZSDrawGraphObjPropertiesLabelsWdgt.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/GraphObjWdgts/ZSDrawGraphObjsPropertiesWdgtStack.cpp
+list(APPEND _SourcesWidgetsObjFactories
+    ${_SourcesPath}/${PROJECT_NAME}/Widgets/ObjFactories/ZSDrawObjFactoriesModel.cpp
 )
 
-list(APPEND _SourcesTreeView
-    ${_SourcesPath}/${PROJECT_NAME}/TreeView/ZSDrawGraphObjModelEntry.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/TreeView/ZSDrawGraphObjsTreeModel.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/TreeView/ZSDrawGraphObjsTreeView.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/TreeView/ZSDrawGraphObjsTreeWdgt.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/TreeView/ZSDrawGraphObjsWdgt.cpp
+list(APPEND _SourcesWidgetsTreeView
+    ${_SourcesPath}/${PROJECT_NAME}/Widgets/TreeView/ZSDrawGraphicsItemsModel.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Widgets/TreeView/ZSDrawGraphObjModelEntry.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Widgets/TreeView/ZSDrawGraphObjsTreeModel.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Widgets/TreeView/ZSDrawGraphObjsTreeView.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Widgets/TreeView/ZSDrawGraphObjsTreeWdgt.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Widgets/TreeView/ZSDrawGraphObjsWdgt.cpp
 )
 
 list(APPEND _Sources
     ${_SourcesCommon}
     ${_SourcesDrawing}
-    ${_SourcesGraphObjFactories}
-    ${_SourcesGraphObjFormat}
-    ${_SourcesGraphObjs}
-    ${_SourcesGraphObjWdgts}
-    ${_SourcesTreeView}
+    ${_SourcesDrawingGraphObjs}
+    ${_SourcesDrawingObjFactories}
+    ${_SourcesWidgetsDrawing}
+    ${_SourcesWidgetsGraphObjFormat}
+    ${_SourcesWidgetsGraphObjs}
+    ${_SourcesWidgetsObjFactories}
+    ${_SourcesWidgetsTreeView}
 )
 
 list(APPEND _Resources
@@ -228,7 +248,7 @@ list(APPEND _Images
     ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawSelectionPoint16x16.bmp
     ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawText16x16.bmp
     ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawToolBrush16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawToolGeometry16x16.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawToolGeometry16x16.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawToolLine16x16.bmp
     ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawToolMirrorHorizontal16x16.bmp
     ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawToolMirrorVertical16x16.bmp
@@ -239,7 +259,7 @@ list(APPEND _Images
     ${_ResourcesPath}/${PROJECT_NAME}/Images/EditGroup16x16.bmp
     ${_ResourcesPath}/${PROJECT_NAME}/Images/EditUngroup16x16.bmp
     ${_ResourcesPath}/${PROJECT_NAME}/Images/FilePageSetup16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/Key16x16.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/Key16x16.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/Refresh16x16.bmp
     ${_ResourcesPath}/${PROJECT_NAME}/Images/Refresh24x24.bmp
     ${_ResourcesPath}/${PROJECT_NAME}/Images/Refresh32x32.bmp
@@ -266,19 +286,23 @@ set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${TargetOutputName}
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER Libs)
 
 source_group("Header Files/Common" FILES ${_HeadersCommon})
+source_group("Header Files/Drawing/GraphObjs" FILES ${_HeadersDrawingGraphObjs})
+source_group("Header Files/Drawing/ObjFactories" FILES ${_HeadersDrawingObjFactories})
 source_group("Header Files/Drawing" FILES ${_HeadersDrawing})
-source_group("Header Files/GraphObjFactories" FILES ${_HeadersGraphObjFactories})
-source_group("Header Files/GraphObjFormat" FILES ${_HeadersGraphObjFormat})
-source_group("Header Files/GraphObjs" FILES ${_HeadersGraphObjs})
-source_group("Header Files/GraphObjWdgts" FILES ${_HeadersGraphObjWdgts})
-source_group("Header Files/TreeView" FILES ${_HeadersTreeView})
+source_group("Header Files/Widgets/Drawing" FILES ${_HeadersWidgetsDrawing})
+source_group("Header Files/Widgets/GraphObjFormat" FILES ${_HeadersWidgetsGraphObjFormat})
+source_group("Header Files/Widgets/GraphObjs" FILES ${_HeadersWidgetsGraphObjs})
+source_group("Header Files/Widgets/ObjFactories" FILES ${_HeadersWidgetsObjFactories})
+source_group("Header Files/Widgets/TreeView" FILES ${_HeadersWidgetsTreeView})
 source_group("Source Files/Common" FILES ${_SourcesCommon})
+source_group("Source Files/Drawing/GraphObjs" FILES ${_SourcesDrawingGraphObjs})
+source_group("Source Files/Drawing/ObjFactories" FILES ${_SourcesDrawingObjFactories})
 source_group("Source Files/Drawing" FILES ${_SourcesDrawing})
-source_group("Source Files/GraphObjFactories" FILES ${_SourcesGraphObjFactories})
-source_group("Source Files/GraphObjFormat" FILES ${_SourcesGraphObjFormat})
-source_group("Source Files/GraphObjs" FILES ${_SourcesGraphObjs})
-source_group("Source Files/GraphObjWdgts" FILES ${_SourcesGraphObjWdgts})
-source_group("Source Files/TreeView" FILES ${_SourcesTreeView})
+source_group("Source Files/Widgets/Drawing" FILES ${_SourcesWidgetsDrawing})
+source_group("Source Files/Widgets/GraphObjFormat" FILES ${_SourcesWidgetsGraphObjFormat})
+source_group("Source Files/Widgets/GraphObjs" FILES ${_SourcesWidgetsGraphObjs})
+source_group("Source Files/Widgets/ObjFactories" FILES ${_SourcesWidgetsObjFactories})
+source_group("Source Files/Widgets/TreeView" FILES ${_SourcesWidgetsTreeView})
 source_group("Resource Files" FILES ${_Resources})
 source_group("Image Files" FILES ${_Images})
 

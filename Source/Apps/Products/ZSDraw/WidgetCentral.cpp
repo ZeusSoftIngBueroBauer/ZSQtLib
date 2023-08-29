@@ -27,7 +27,7 @@ may result in using the software modules.
 #include "WidgetCentral.h"
 
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
-#include "ZSDraw/Drawing/ZSDrawingView.h"
+#include "ZSDraw/Widgets/Drawing/ZSDrawingView.h"
 
 //#include <QtCore/qsettings.h>
 //#include <QtCore/qtimer.h>
@@ -128,6 +128,14 @@ CWidgetCentral::CWidgetCentral(
 
     m_pLyt = new QVBoxLayout();
     setLayout(m_pLyt);
+
+    // The drawing size instance created by the drawing scene accesses the
+    // the unit to get the screen resolution. To get the screen resolution
+    // the screen resolution must be set before. Setting it in the drawing
+    // views constructor would be too late. It must be done by the creator
+    // of the drawing view.
+    Units.Length.setPxpis(logicalDpiX(), logicalDpiY());
+    Units.Length.setDpis(physicalDpiX(), physicalDpiY());
 
     m_pDrawingScene = new CDrawingScene(/*this*/);
     //m_pDrawingScene->setBackgroundBrush(Qt::blue);

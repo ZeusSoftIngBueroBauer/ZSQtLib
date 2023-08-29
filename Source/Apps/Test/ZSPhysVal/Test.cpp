@@ -54,7 +54,7 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CTest::CTest() :
 //------------------------------------------------------------------------------
-    ZS::Test::CTest("ZSPhysVal")
+    ZS::Test::CTest(NameSpace(), "theInst")
 {
     ZS::Test::CTestStep* pTestStep;
     QString              strResultValue;

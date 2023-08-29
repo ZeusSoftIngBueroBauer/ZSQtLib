@@ -64,7 +64,7 @@ using namespace ZS::System::GUI;
 using namespace ZS::Trace;
 using namespace ZS::Trace::GUI;
 using namespace ZS::Test;
-using namespace ZS::Apps::Test::Template;
+using namespace ZS::Apps::Test::Math;
 
 
 /*******************************************************************************

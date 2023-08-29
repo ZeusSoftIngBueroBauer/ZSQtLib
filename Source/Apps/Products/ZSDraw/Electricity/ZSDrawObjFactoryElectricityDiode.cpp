@@ -42,8 +42,8 @@ may result in using the software modules.
 #include "Electricity/ZSDrawGraphObjElectricityDiode.h"
 
 #include "ZSDraw/Common/ZSDrawAux.h"
-#include "ZSDraw/GraphObjs/ZSDrawGraphObjGroup.h"
-#include "ZSDraw/GraphObjs/ZSDrawGraphObjLabel.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjGroup.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabel.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"

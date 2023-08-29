@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSApps_TestTemplate_WidgetCentral_h
-#define ZSApps_TestTemplate_WidgetCentral_h
+#ifndef ZSApps_TestMath_WidgetCentral_h
+#define ZSApps_TestMath_WidgetCentral_h
 
 #include "ZSSys/ZSSysDllMain.h"
 
@@ -52,7 +52,7 @@ namespace Apps
 {
 namespace Test
 {
-namespace Template
+namespace Math
 {
 //******************************************************************************
 class CWidgetCentral : public QWidget
@@ -73,7 +73,7 @@ protected: // instance members
 
 }; // class CWidgetCentral
 
-} // namespace Template
+} // namespace Math
 
 } // namespace Test
 
@@ -81,4 +81,4 @@ protected: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZSApps_TestTemplate_WidgetCentral_h
+#endif // #ifndef ZSApps_TestMath_WidgetCentral_h
