@@ -27,15 +27,13 @@ may result in using the software modules.
 #ifndef ZSDraw_GraphObjPropertiesAbstractWdgt_h
 #define ZSDraw_GraphObjPropertiesAbstractWdgt_h
 
-#include <QtCore/qglobal.h>
+#include "ZSDraw/Drawing/ZSDrawingSize.h"
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qwidget.h>
 #else
 #include <QtWidgets/qwidget.h>
 #endif
-
-#include "ZSDraw/Common/ZSDrawCommon.h"
 
 class QCheckBox;
 class QComboBox;
@@ -52,17 +50,19 @@ class QGridLayout;
 class QHBoxLayout;
 class QVBoxLayout;
 
-namespace ZS
-{
-namespace System
-{
+namespace ZS {
+namespace System {
 class CTrcAdminObj;
 
-namespace GUI
-{
+namespace GUI {
 class CSepLine; // as often used forward declaration here in base widget
-}
-}
+} } // System::GUI
+
+namespace PhysVal {
+class CPhysVal;
+namespace GUI {
+class CWdgtEditPhysVal;
+} } // PhysVal::GUI
 
 namespace Draw
 {
@@ -86,9 +86,6 @@ public: // ctors and dtor
     virtual ~CWdgtGraphObjPropertiesAbstract();
 protected: // ctor auxiliary methods
     QWidget* createButtonsLineWidget();
-public: // overridables
-    virtual QString nameSpace() const { return CWdgtGraphObjPropertiesAbstract::NameSpace(); }
-    virtual QString className() const { return CWdgtGraphObjPropertiesAbstract::ClassName(); }
 signals:
     /*! This signal is emitted if any property of the graphical object is changed
         by an edit control of the widget. */
@@ -108,21 +105,26 @@ protected: // overridables
     virtual void fillEditControls();
     virtual void updateButtonsEnabled();
     virtual void applySettings();
-protected: // overridables
-    virtual void onGraphObjChanged();
-    virtual void onGraphObjMoved();
-    virtual void onGraphObjRenamed();
+protected slots: // overridables
+    virtual void onDrawingSceneDrawingSizeChanged(const CDrawingSize& i_drawingSize);
+protected slots: // overridables
+    virtual void onGraphObjSelectedChanged();
+    virtual void onGraphObjGeometryChanged();
+    //virtual void onGraphObjMoved();
+    //virtual void onGraphObjRenamed();
     virtual void onGraphObjAboutToDestroyed();
 private slots:
-    void onDrawingSceneGraphObjChanged(const QString& i_strKeyInTree);
-    void onDrawingSceneGraphObjMoved(const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree, const QString& i_strKeyInTreeOfTargetBranch);
-    void onDrawingSceneGraphObjRenamed(const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree, const QString& i_strOrigName);
-    void onDrawingSceneGraphObjAboutToBeDestroyed(const QString& i_strKeyInTree);
+    //void onDrawingSceneGraphObjChanged(const QString& i_strKeyInTree);
+    //void onDrawingSceneGraphObjMoved(const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree, const QString& i_strKeyInTreeOfTargetBranch);
+    //void onDrawingSceneGraphObjRenamed(const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree, const QString& i_strOrigName);
+    //void onDrawingSceneGraphObjAboutToBeDestroyed(const QString& i_strKeyInTree);
 protected: // instance methods (tracing emitting signals)
     void emit_contentChanged();
 protected: // instance members
     /*!< Pointer to drawing scene. */
     CDrawingScene* m_pDrawingScene;
+    // Caching values
+    CDrawingSize m_drawingSize;
     /*!< Unique key of the graphical to be edited. */
     QString m_strKeyInTree;
     /*!< If the unique key is set the drawing scene is queried to get the pointer to
@@ -140,20 +142,25 @@ protected: // instance members
          edited is changed. After fillEditControls has been called the member
          m_graphObjTypePrev is set to m_graphObjTypeCurr. */
     EGraphObjType m_graphObjTypePrev;
-    //int m_cxLblWidthClm1;
-    //int m_cxEdtWidthClm1;
-    //int m_cxLblWidthClm2;
-    //int m_cxEdtWidthClm2;
-    //int m_cxClmSpacing;
+    /*!< Flag to filter the indicated properties to the selected state of the graphical object.
+         This flag is set to false as default. If the property widget has to react on
+         "selectedChanged" signal the flag has to be set in the constructor of the derived class.
+         If set to true the widget connects to the "selectedChanged" signal of the graphical object. */
+    bool m_bContentUpdateOnSelectedChanged;
+    /*!< Flag to filter the indicated properties to the geometry of the graphical object.
+         This flag is set to false as default. If the property widget has to react on
+         "selectedChanged" signal the flag has to be set in the constructor of the derived class.
+         If set to true the widget connects to the "geometryChanged" signal of the graphical object. */
+    bool m_bContentUpdateOnGeometryChanged;
+    /*!< Flag to indicate that the content of an edit control has been changed while the "contentChanged"
+         signal was blocked by the "contentChanged" counter. */
+    bool m_bContentChanged;
     /*!< Counts how ofter the "contentChanged" signal has been blocked. A value greater than 0
          for the counter means that the signal "contentChanged" should not be emitted. Instead
          the flag m_bContentChanged should be set to true.
          If the counter is decremented and reaches 0 the flag "m_bContentChanged" is checked and
          the signal "contentChanged" is emitted if the flag is set. */
     int m_iContentChangedSignalBlockedCounter;
-    /*!< Flag to indicate that the content of an edit control has been changed while the "contentChanged"
-         signal was blocked by the "contentChanged" counter. */
-    bool m_bContentChanged;
     // Edit Controls
     QVBoxLayout* m_pLyt;
     // Button Line

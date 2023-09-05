@@ -82,6 +82,8 @@ protected: // instance methods
 protected slots:
     void doTestStepMainWindowSetGeometry( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepClearDrawingScene( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepSetDrawingSize( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepSetGridSettings( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepLoadFile( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepSaveFile( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepSetCurrentDrawingTool( ZS::Test::CTestStep* i_pTestStep );

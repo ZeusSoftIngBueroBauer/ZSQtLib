@@ -189,14 +189,14 @@ public: // must overridables of base class CGraphObj
 void CGraphObjWdgt::setWidth( double i_fWidth )
 //------------------------------------------------------------------------------
 {
-    setSize( i_fWidth, m_rctCurr.height() );
+    setSize( i_fWidth, getHeight() );
 }
 
 //------------------------------------------------------------------------------
 void CGraphObjWdgt::setHeight( double i_fHeight )
 //------------------------------------------------------------------------------
 {
-    setSize( m_rctCurr.width(), i_fHeight );
+    setSize( getWidth(), i_fHeight );
 }
 
 //------------------------------------------------------------------------------
@@ -238,6 +238,7 @@ void CGraphObjWdgt::setSize( double i_fWidth, double i_fHeight )
         }
     }
 
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
     if( fWidth != m_rctCurr.width() || fHeight != m_rctCurr.height() )
     {
         m_rctCurr.setWidth(fWidth);
@@ -249,6 +250,7 @@ void CGraphObjWdgt::setSize( double i_fWidth, double i_fHeight )
 
         updateSelectionPointsOfBoundingRect(m_rctCurr);
     }
+#endif
 
 } // setSize
 
@@ -353,10 +355,8 @@ protected: // must overridables of base class CGraphObj
 void CGraphObjWdgt::showSelectionPoints( unsigned char i_selPts )
 //------------------------------------------------------------------------------
 {
-    if( parentItem() == nullptr )
-    {
+    if (parentItem() == nullptr) {
         QRectF rct = QGraphicsProxyWidget::boundingRect();
-
         showSelectionPointsOfBoundingRect(rct,i_selPts);
     }
 }
@@ -365,10 +365,8 @@ void CGraphObjWdgt::showSelectionPoints( unsigned char i_selPts )
 void CGraphObjWdgt::updateSelectionPoints( unsigned char i_selPts )
 //------------------------------------------------------------------------------
 {
-    if( parent() == nullptr )
-    {
+    if (parentItem() == nullptr) {
         QRectF rct = QGraphicsProxyWidget::boundingRect();
-
         updateSelectionPointsOfBoundingRect(rct,i_selPts);
     }
 }
@@ -651,8 +649,9 @@ void CGraphObjWdgt::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                 m_editResizeMode            = hitInfo.m_editResizeMode;
                 m_selPtSelectedBoundingRect = hitInfo.m_selPtBoundingRect;
 
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
                 m_ptRotOriginCurr = rect().center();
-
+#endif
                 for( selPt = 0; selPt < CEnumSelectionPoint::count(); selPt++ )
                 {
                     pGraphObjSelPt = m_arpSelPtsBoundingRect[selPt.enumeratorAsInt()];
@@ -701,6 +700,7 @@ void CGraphObjWdgt::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         }
         else if( m_editMode == EEditMode::Resize )
         {
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
             QRectF  rctItemOld = geometry();
             QRectF  rctItemNew = rctItemOld;
             QPointF ptPosOld = pos(); // relative to the parent (which might be the drawing scene)
@@ -753,7 +753,7 @@ void CGraphObjWdgt::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 
             updateEditInfo();
             updateToolTip();
-
+#endif
         } // if( m_editMode == EEditMode::Resize )
 
         else if( m_editMode == EEditMode::Rotate )

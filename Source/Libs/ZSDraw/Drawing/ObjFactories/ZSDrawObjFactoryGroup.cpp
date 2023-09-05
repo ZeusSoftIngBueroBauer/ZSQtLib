@@ -473,9 +473,9 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
 
             if( pGraphicsItem->type() != EGraphObjTypeConnectionLine )
             {
-                posItem = pGraphObj->getPos();
-                sizItem = pGraphObj->getSize();
-                rctItem = QRectF(posItem,sizItem);
+                posItem = pGraphObj->getPos().toQPointF();
+                sizItem = pGraphObj->getSize().toQSizeF();
+                rctItem = QRectF(posItem, sizItem);
 
                 if( rctItem.width() >= 0.0 )
                 {
@@ -552,7 +552,9 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
 
         i_pDrawingScene->onGraphObjCreationFinished(pGraphObjGroup);
 
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
         pGraphObjGroup->acceptCurrentAsOriginalCoors();
+#endif
         pGraphObjGroup->setEditMode(EEditMode::None);
         pGraphObjGroup->setEditResizeMode(EEditResizeMode::None);
 

@@ -162,7 +162,7 @@ SErrResultInfo CObjFactoryImage::saveGraphObj(
     // "pos" returns the position of the item in parent coordinates.
     // If the item has no parent, its position is given in scene coordinates.
     QPointF ptPos         = pGraphObj->pos();
-    QSizeF  siz           = pGraphObj->getSize();
+    QSizeF  siz           = pGraphObj->getSize().toQSizeF();
     double  fRotAngle_deg = pGraphObj->getRotationAngleInDegree();
 
     i_xmlStreamWriter.writeStartElement("Geometry");
@@ -357,7 +357,9 @@ CGraphObj* CObjFactoryImage::loadGraphObj(
 
         i_pDrawingScene->onGraphObjCreationFinished(pGraphObj);
 
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
         pGraphObj->acceptCurrentAsOriginalCoors();
+#endif
 
         //if( arpLabels.size() > 0 )
         //{

@@ -327,12 +327,12 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDrawingScene::setDrawingSize( const CDrawingSize& i_size)
+void CDrawingScene::setDrawingSize( const CDrawingSize& i_drawingSize)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_size.toString();
+        strMthInArgs = i_drawingSize.toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -340,9 +340,9 @@ void CDrawingScene::setDrawingSize( const CDrawingSize& i_size)
         /* strMethod    */ "setDrawingSize",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_drawingSize != i_size)
+    if (m_drawingSize != i_drawingSize)
     {
-        m_drawingSize = i_size;
+        m_drawingSize = i_drawingSize;
         QRectF rect(QPointF(0.0, 0.0), m_drawingSize.imageSizeInPixels());
         setSceneRect(rect);
         // Just a small note about pixel range and min and max values:
@@ -359,7 +359,7 @@ void CDrawingScene::setDrawingSize( const CDrawingSize& i_size)
                 0, m_drawingSize.imageWidthInPixels()-1);
             // The Y scale direction is from bottom to top.
             m_divLinesMetricsY.setScale(
-                0.0, m_drawingSize.metricImageHeight().getVal()-1, 0.0,
+                0.0, m_drawingSize.metricImageHeight().getVal(), 0.0,
                 m_drawingSize.imageHeightInPixels()-1, 0);
         }
         else {
@@ -383,7 +383,7 @@ void CDrawingScene::setDrawingSize( const CDrawingSize& i_size)
 }
 
 //------------------------------------------------------------------------------
-CDrawingSize CDrawingScene::drawingSize() const
+const CDrawingSize& CDrawingScene::drawingSize() const
 //------------------------------------------------------------------------------
 {
     return m_drawingSize;
@@ -458,12 +458,12 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDrawingScene::setGridSettings( const CDrawGridSettings& i_settings)
+void CDrawingScene::setGridSettings( const CDrawGridSettings& i_gridSettings)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_settings.toString();
+        strMthInArgs = i_gridSettings.toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -471,9 +471,9 @@ void CDrawingScene::setGridSettings( const CDrawGridSettings& i_settings)
         /* strMethod    */ "setGridSettings",
         /* strAddInfo   */ strMthInArgs );
 
-    if( m_gridSettings != i_settings )
+    if( m_gridSettings != i_gridSettings )
     {
-        m_gridSettings = i_settings;
+        m_gridSettings = i_gridSettings;
 
         m_divLinesMetricsX.setDivLinesDistMinInPix(EDivLineLayer::Main, m_gridSettings.linesDistMin());
         m_divLinesMetricsX.setFont(m_gridSettings.labelsFont());
@@ -496,7 +496,7 @@ void CDrawingScene::setGridSettings( const CDrawGridSettings& i_settings)
 }
 
 //------------------------------------------------------------------------------
-CDrawGridSettings CDrawingScene::gridSettings() const
+const CDrawGridSettings& CDrawingScene::gridSettings() const
 //------------------------------------------------------------------------------
 {
     return m_gridSettings;
@@ -568,8 +568,8 @@ SErrResultInfo CDrawingScene::load( const QString& i_strFileName )
                                     xmlStreamReader, xmlStreamAttrs, strElemName, c_strXmlAttrHeight);
                                 if (!xmlStreamReader.hasError()) {
                                     drawingSize.setImageSize(
-                                        CPhysVal(cxWidth_px, Units.Length.pxX),
-                                        CPhysVal(cyHeight_px, Units.Length.pxY));
+                                        CPhysVal(cxWidth_px, Units.Length.px),
+                                        CPhysVal(cyHeight_px, Units.Length.px));
                                 }
                             }
                             else if (dimensionUnit == EDrawingDimensionUnit::Metric) {
@@ -1206,7 +1206,7 @@ protected: // instance methods
 //{
 //    QString strMthInArgs;
 //
-//    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+//    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
 //    {
 //        CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
 //        strMthInArgs = QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->path());
@@ -1769,7 +1769,7 @@ double CDrawingScene::bringToFront( QGraphicsItem* i_pGraphicsItem, const QPoint
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
         strMthInArgs = QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->path());
@@ -1794,7 +1794,7 @@ double CDrawingScene::sendToBack( QGraphicsItem* i_pGraphicsItem, const QPointF&
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
         strMthInArgs = QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->path());
@@ -1838,7 +1838,7 @@ double CDrawingScene::bringToFront( QGraphicsItem* i_pGraphicsItem, const QList<
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
         strMthInArgs = QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->keyInTree());
@@ -1906,7 +1906,7 @@ double CDrawingScene::sendToBack( QGraphicsItem* i_pGraphicsItem, const QList<QG
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
         strMthInArgs = QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->keyInTree());
@@ -2199,7 +2199,7 @@ void CDrawingScene::onGraphObjAboutToBeDestroyed( const QString& i_strKeyInTree 
 //{
 //    QString strMthInArgs;
 //
-//    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+//    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
 //    {
 //        strMthInArgs  = "GraphObjId:" + i_strKeyInTree;
 //    }
@@ -2242,7 +2242,7 @@ void CDrawingScene::onGraphObjAboutToBeDestroyed( const QString& i_strKeyInTree 
 //{
 //    QString strMthInArgs;
 //
-//    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+//    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
 //    {
 //        strMthInArgs  = "GraphObjIdOld:" + i_strKeyInTreeOld;
 //        strMthInArgs += ", GraphObjIdNew:" + i_strKeyInTreeNew;
@@ -2277,7 +2277,7 @@ void CDrawingScene::onGraphObjAboutToBeDestroyed( const QString& i_strKeyInTree 
 //{
 //    QString strMthInArgs;
 //
-//    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+//    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
 //    {
 //        strMthInArgs  = "GraphObjId:" + i_strKeyInTree;
 //        strMthInArgs += ", GraphObjNameOld:" + i_strObjNameOld;
@@ -2564,8 +2564,8 @@ int CDrawingScene::groupGraphObjsSelected()
 
                 if( !pGraphObjSelected->isConnectionLine() )
                 {
-                    QPointF posItem = pGraphObjSelected->getPos();
-                    QSizeF  sizItem = pGraphObjSelected->getSize();
+                    QPointF posItem = toPixelPoint(pGraphObjSelected->getPos());
+                    QSizeF  sizItem = toPixelSize(pGraphObjSelected->getSize());
                     QRectF  rctItem = QRectF(posItem, sizItem);
 
                     if( rctItem.width() >= 0.0 )
@@ -2630,17 +2630,20 @@ int CDrawingScene::groupGraphObjsSelected()
 
                 if( !pGraphObjSelected->isConnectionLine() )
                 {
-                    QPointF posItem = pGraphObjSelected->getPos(); // for debugging purposes also called here before adding the item to the group
-                    QSizeF  sizItem = pGraphObjSelected->getSize();
+                    // for debugging purposes also called here before adding the item to the group
+                    QPointF posItem = toPixelPoint(pGraphObjSelected->getPos());
+                    QSizeF  sizItem = toPixelSize(pGraphObjSelected->getSize());
 
                     pGraphicsItemGroup->addToGroup(pGraphicsItemSelected);
 
-                    posItem = pGraphObjSelected->getPos();
-                    sizItem = pGraphObjSelected->getSize();
+                    posItem = toPixelPoint(pGraphObjSelected->getPos());
+                    sizItem = toPixelSize(pGraphObjSelected->getSize());
 
                     m_pGraphObjsIdxTree->move(pGraphObjSelected, pGraphObjGroup);
 
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
                     pGraphObjSelected->acceptCurrentAsOriginalCoors();
+#endif
 
                     // Unselect object to destroy selection points.
                     pGraphicsItemSelected->setSelected(false);
@@ -2681,8 +2684,10 @@ int CDrawingScene::groupGraphObjsSelected()
             } // for( auto* pGraphicsItem : arpGraphicsItemsSelected )
 
             // Finish creation of group.
-            pGraphObjGroup->setSize( rctGroupSceneCoors.size() );
+            pGraphObjGroup->setSize( toMetricSize(rctGroupSceneCoors.size()) );
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
             pGraphObjGroup->acceptCurrentAsOriginalCoors();
+#endif
             pGraphObjGroup->setEditMode(EEditMode::None);
             pGraphObjGroup->setEditResizeMode(EEditResizeMode::None);
 
@@ -2764,13 +2769,14 @@ int CDrawingScene::ungroupGraphObjsSelected()
                     throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjChild == nullptr" );
                 }
 
-                QPointF posItem = pGraphObjSelected->getPos(); // for debugging purposes also called here before removing the item from the group
-                QSizeF  sizItem = pGraphObjSelected->getSize();
+                // for debugging purposes also called here before removing the item from the group
+                QPointF posItem = toPixelPoint(pGraphObjSelected->getPos());
+                QSizeF  sizItem = toPixelSize(pGraphObjSelected->getSize());
 
                 pGraphicsItemGroupSelected->removeFromGroup(pGraphicsItemChild);
 
-                posItem = pGraphObjSelected->getPos();
-                sizItem = pGraphObjSelected->getSize();
+                posItem = toPixelPoint(pGraphObjSelected->getPos());
+                sizItem = toPixelSize(pGraphObjSelected->getSize());
 
                 m_pGraphObjsIdxTree->move(pGraphObjChild, nullptr);
             }
@@ -2802,25 +2808,20 @@ void CDrawingScene::setDrawSettings( const CDrawSettings& i_settings )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_settings.toString();
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setDrawSettings",
         /* strAddInfo   */ strMthInArgs );
 
-    if( i_settings != m_drawSettings )
-    {
+    if (i_settings != m_drawSettings) {
         m_drawSettings = i_settings;
-
         emit_drawSettingsChanged(m_drawSettings);
     }
-
-} // setDrawSettings
+}
 
 /*==============================================================================
 public: // instance methods
@@ -2831,52 +2832,40 @@ void CDrawingScene::setPenColor( const QColor& i_clr )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_clr.name();
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setPenColor",
         /* strAddInfo   */ strMthInArgs );
 
-    if( i_clr != m_drawSettings.getPenColor() )
-    {
+    if (i_clr != m_drawSettings.getPenColor()) {
         m_drawSettings.setPenColor(i_clr);
-
         emit_drawSettingsChanged(m_drawSettings);
     }
-
-} // setPenColor
+}
 
 //------------------------------------------------------------------------------
 void CDrawingScene::setPenWidth( int i_iPenWidth )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString::number(i_iPenWidth);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setPenWidth",
         /* strAddInfo   */ strMthInArgs );
 
-    if( i_iPenWidth != m_drawSettings.getPenWidth() )
-    {
+    if (i_iPenWidth != m_drawSettings.getPenWidth()) {
         m_drawSettings.setPenWidth(i_iPenWidth);
-
         emit_drawSettingsChanged(m_drawSettings);
     }
-
-} // setPenWidth
+}
 
 /*==============================================================================
 public: // instance methods
@@ -2887,26 +2876,20 @@ void CDrawingScene::setLineStyle( ELineStyle i_lineStyle )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = CEnumLineStyle(i_lineStyle).toString();
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setLineStyle",
         /* strAddInfo   */ strMthInArgs );
 
-    if( i_lineStyle != m_drawSettings.getLineStyle() )
-    {
+    if (i_lineStyle != m_drawSettings.getLineStyle()) {
         m_drawSettings.setLineStyle(i_lineStyle);
-
         emit_drawSettingsChanged(m_drawSettings);
     }
-
-} // setLineStyle
+}
 
 /*==============================================================================
 public: // instance methods
@@ -2917,52 +2900,40 @@ void CDrawingScene::setFillColor( const QColor& i_clr )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_clr.name();
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setFillColor",
         /* strAddInfo   */ strMthInArgs );
 
-    if( i_clr != m_drawSettings.getFillColor() )
-    {
+    if (i_clr != m_drawSettings.getFillColor()) {
         m_drawSettings.setFillColor(i_clr);
-
         emit_drawSettingsChanged(m_drawSettings);
     }
-
-} // setFillColor
+}
 
 //------------------------------------------------------------------------------
 void CDrawingScene::setFillStyle( EFillStyle i_fillStyle )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = CEnumFillStyle(i_fillStyle).toString();
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setFillStyle",
         /* strAddInfo   */ strMthInArgs );
 
-    if( i_fillStyle != m_drawSettings.getFillStyle() )
-    {
+    if (i_fillStyle != m_drawSettings.getFillStyle()) {
         m_drawSettings.setFillStyle(i_fillStyle);
-
         emit_drawSettingsChanged(m_drawSettings);
     }
-
-} // setFillStyle
+}
 
 /*==============================================================================
 public: // instance methods
@@ -2973,52 +2944,40 @@ void CDrawingScene::setLineRecordType( ELineRecordType i_lineRecordType )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = CEnumLineRecordType(i_lineRecordType).toString();
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setLineRecordType",
         /* strAddInfo   */ strMthInArgs );
 
-    if( i_lineRecordType != m_drawSettings.getLineRecordType() )
-    {
+    if (i_lineRecordType != m_drawSettings.getLineRecordType()) {
         m_drawSettings.setLineRecordType(i_lineRecordType);
-
         emit_drawSettingsChanged(m_drawSettings);
     }
-
-} // setLineRecordType
+}
 
 //------------------------------------------------------------------------------
 void CDrawingScene::setLineExtent( int i_iLineExtent )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString::number(i_iLineExtent);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setLineExtent",
         /* strAddInfo   */ strMthInArgs );
 
-    if( i_iLineExtent != m_drawSettings.getLineExtent() )
-    {
+    if (i_iLineExtent != m_drawSettings.getLineExtent()) {
         m_drawSettings.setLineExtent(i_iLineExtent);
-
         emit_drawSettingsChanged(m_drawSettings);
     }
-
-} // setLineExtent
+}
 
 /*==============================================================================
 public: // instance methods
@@ -3029,135 +2988,105 @@ void CDrawingScene::setLineEndStyle( ELinePoint i_linePoint, ELineEndStyle i_end
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = CEnumLinePoint(i_linePoint).toString();
         strMthInArgs += ", " + CEnumLineEndStyle(i_endStyle).toString();
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setLineEndStyle",
         /* strAddInfo   */ strMthInArgs );
 
-    if( i_endStyle != m_drawSettings.getLineEndStyle(i_linePoint) )
-    {
+    if (i_endStyle != m_drawSettings.getLineEndStyle(i_linePoint)) {
         m_drawSettings.setLineEndStyle(i_linePoint,i_endStyle);
-
         emit_drawSettingsChanged(m_drawSettings);
     }
-
-} // setLineEndStyle
+}
 
 //------------------------------------------------------------------------------
 void CDrawingScene::setLineEndBaseLineType( ELinePoint i_linePoint, ELineEndBaseLineType i_baseLineType )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = CEnumLinePoint(i_linePoint).toString();
         strMthInArgs += ", " + CEnumLineEndBaseLineType(i_baseLineType).toString();
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setLineEndBaseLineType",
         /* strAddInfo   */ strMthInArgs );
 
-    if( i_baseLineType != m_drawSettings.getLineEndBaseLineType(i_linePoint) )
-    {
+    if (i_baseLineType != m_drawSettings.getLineEndBaseLineType(i_linePoint)) {
         m_drawSettings.setLineEndBaseLineType(i_linePoint,i_baseLineType);
-
         emit_drawSettingsChanged(m_drawSettings);
     }
-
-} // setLineEndBaseLineType
+}
 
 //------------------------------------------------------------------------------
 void CDrawingScene::setLineEndFillStyle( ELinePoint i_linePoint, ELineEndFillStyle i_fillStyle )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = CEnumLinePoint(i_linePoint).toString();
         strMthInArgs += ", " + CEnumLineEndFillStyle(i_fillStyle).toString();
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setLineEndFillStyle",
         /* strAddInfo   */ strMthInArgs );
 
-    if( i_fillStyle != m_drawSettings.getLineEndFillStyle(i_linePoint) )
-    {
+    if (i_fillStyle != m_drawSettings.getLineEndFillStyle(i_linePoint)) {
         m_drawSettings.setLineEndFillStyle(i_linePoint,i_fillStyle);
-
         emit_drawSettingsChanged(m_drawSettings);
     }
-
-} // setLineEndFillStyle
+}
 
 //------------------------------------------------------------------------------
 void CDrawingScene::setLineEndWidth( ELinePoint i_linePoint, ELineEndWidth i_width )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = CEnumLinePoint(i_linePoint).toString();
         strMthInArgs += ", " + CEnumLineEndWidth(i_width).toString();
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setLineEndWidth",
         /* strAddInfo   */ strMthInArgs );
 
-    if( i_width != m_drawSettings.getLineEndWidth(i_linePoint) )
-    {
+    if (i_width != m_drawSettings.getLineEndWidth(i_linePoint)) {
         m_drawSettings.setLineEndWidth(i_linePoint,i_width);
-
         emit_drawSettingsChanged(m_drawSettings);
     }
-
-} // setLineEndWidth
+}
 
 //------------------------------------------------------------------------------
 void CDrawingScene::setLineEndLength( ELinePoint i_linePoint, ELineEndLength i_length )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = CEnumLinePoint(i_linePoint).toString();
         strMthInArgs += ", " + CEnumLineEndLength(i_length).toString();
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setLineEndLength",
         /* strAddInfo   */ strMthInArgs );
 
-    if( i_length != m_drawSettings.getLineEndLength(i_linePoint) )
-    {
+    if (i_length != m_drawSettings.getLineEndLength(i_linePoint)) {
         m_drawSettings.setLineEndLength(i_linePoint,i_length);
-
         emit_drawSettingsChanged(m_drawSettings);
     }
-
-} // setLineEndLength
+}
 
 /*==============================================================================
 public: // instance methods
@@ -3168,130 +3097,100 @@ void CDrawingScene::setTextColor( const QColor& i_clr )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_clr.name();
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setTextColor",
         /* strAddInfo   */ strMthInArgs );
 
-    if( i_clr != m_drawSettings.getTextColor() )
-    {
+    if (i_clr != m_drawSettings.getTextColor()) {
         m_drawSettings.setTextColor(i_clr);
-
         emit_drawSettingsChanged(m_drawSettings);
     }
-
-} // setTextColor
+}
 
 //------------------------------------------------------------------------------
 void CDrawingScene::setTextFont( const QFont& i_fnt )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_fnt.family();
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setTextFont",
         /* strAddInfo   */ strMthInArgs );
 
-    if( i_fnt != m_drawSettings.getTextFont() )
-    {
+    if (i_fnt != m_drawSettings.getTextFont()) {
         m_drawSettings.setTextFont(i_fnt);
-
         emit_drawSettingsChanged(m_drawSettings);
     }
-
-} // setTextFont
+}
 
 //------------------------------------------------------------------------------
 void CDrawingScene::setTextSize( ETextSize i_size )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = textSize2Str(i_size);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setTextSize",
         /* strAddInfo   */ strMthInArgs );
 
-    if( i_size != m_drawSettings.getTextSize() )
-    {
+    if (i_size != m_drawSettings.getTextSize()) {
         m_drawSettings.setTextSize(i_size);
-
         emit_drawSettingsChanged(m_drawSettings);
     }
-
-} // setTextSize
+}
 
 //------------------------------------------------------------------------------
 void CDrawingScene::setTextStyle( ETextStyle i_style )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = CEnumTextStyle(i_style).toString();
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setTextStyle",
         /* strAddInfo   */ strMthInArgs );
 
-    if( i_style != m_drawSettings.getTextStyle() )
-    {
+    if (i_style != m_drawSettings.getTextStyle()) {
         m_drawSettings.setTextStyle(i_style);
-
         emit_drawSettingsChanged(m_drawSettings);
     }
-
-} // setTextStyle
+}
 
 //------------------------------------------------------------------------------
 void CDrawingScene::setTextEffect( ETextEffect i_effect )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = CEnumTextEffect(i_effect).toString();
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setTextEffect",
         /* strAddInfo   */ strMthInArgs );
 
-    if( i_effect != m_drawSettings.getTextEffect() )
-    {
+    if (i_effect != m_drawSettings.getTextEffect()) {
         m_drawSettings.setTextEffect(i_effect);
-
         emit_drawSettingsChanged(m_drawSettings);
     }
-
-} // setTextEffect
+}
 
 /*==============================================================================
 public: // overridables of base class QGraphicsScene
@@ -3619,7 +3518,7 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "EvItemPos {" + qPoint2Str(i_pEv->pos()) + "}" +
             ", EvScenePos {" + qPoint2Str(i_pEv->scenePos()) + "}" +
             ", EvScreenPos {" + qPoint2Str(i_pEv->screenPos())+ "}";
@@ -3636,11 +3535,9 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     bool bEventHandled = false;
 
-    QPointF ptMouseScenePos = i_pEv->scenePos();
+    m_ptMouseEvScenePosOnMousePressEvent = i_pEv->scenePos();
 
-    m_ptMouseEvScenePosOnMousePressEvent = ptMouseScenePos;
-
-    emit_mousePosChanged(m_ptMouseEvScenePosOnMousePressEvent);
+    emit_mousePosChanged(i_pEv->scenePos());
 
     int iObjFactoryType = static_cast<int>(EGraphObjTypeUndefined);
     if (m_pObjFactory != nullptr) {
@@ -3705,15 +3602,20 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                     CGraphObjConnectionPoint* pGraphObjCnctPtCreating = nullptr;
                     CGraphObjConnectionPoint* pGraphObjCnctPtHit = nullptr;
 
-                    // Connection lines may only be created on connection points. So a
-                    // graphical object (a connection point) must have been hit to create
-                    // connection lines.
-                    if (iObjFactoryType == static_cast<int>(EGraphObjTypeConnectionLine))
-                    {
+                    // Connection lines may only be created on connection points. So a connection point
+                    // must have been hit to create connection lines.
+                    if (iObjFactoryType == static_cast<int>(EGraphObjTypeConnectionLine)) {
                         // Check whether a connection point has been hit.
-                        pGraphObjCnctPtHit = getConnectionPoint(m_ptMouseEvScenePosOnMousePressEvent);
-
+                        pGraphObjCnctPtHit = getConnectionPoint(i_pEv->scenePos());
                         if (pGraphObjCnctPtHit == nullptr) {
+                            bCreateObj = false;
+                        }
+                    }
+
+                    // Check if mouse press was inside the scene rectangle and don't start
+                    // creating objects if mouse press was outside the scene rectangle.
+                    if (bCreateObj) {
+                        if (!sceneRect().contains(i_pEv->scenePos())) {
                             bCreateObj = false;
                         }
                     }
@@ -3727,7 +3629,7 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                         // In special this applies to connection points and circles.
                         m_pGraphObjCreating = m_pObjFactory->createGraphObj(
                             /* pDrawingScene */ this,
-                            /* ptItemPos     */ m_ptMouseEvScenePosOnMousePressEvent,
+                            /* ptItemPos     */ i_pEv->scenePos(),
                             /* drawSettings  */ m_drawSettings );
 
                         if (m_pGraphObjCreating != nullptr)
@@ -3759,12 +3661,12 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                                 // Otherwise mapping coordinates to group coordinates does not work correctly.
                                 QRectF rctGraphObjCnctPt = pGraphObjCnctPtCreating->rect();
                                 QPointF ptPosGraphObjCnctPt = QPointF(
-                                    m_ptMouseEvScenePosOnMousePressEvent.x() - rctGraphObjCnctPt.width()/2.0,
-                                    m_ptMouseEvScenePosOnMousePressEvent.y() - rctGraphObjCnctPt.height()/2.0 );
+                                    i_pEv->scenePos().x() - rctGraphObjCnctPt.width()/2.0,
+                                    i_pEv->scenePos().y() - rctGraphObjCnctPt.height()/2.0 );
                                 pGraphObjCnctPtCreating->setPos(ptPosGraphObjCnctPt);
                             }
                             else {
-                                //m_pGraphicsItemCreating->setPos(m_ptMouseEvScenePosOnMousePressEvent);
+                                //m_pGraphicsItemCreating->setPos(i_pEv->scenePos());
                             }
 
                             m_pGraphicsItemCreating->setSelected(true);
@@ -3780,29 +3682,29 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                 } // if (m_pObjFactory != nullptr)
 
                 // If an object has been newly created and is still under construction ...
-                if (m_pGraphObjCreating != nullptr)
-                {
-                    // ... dispatch mouse event to object "under construction".
-                    QGraphicsSceneMouseEvent evMouse(QEvent::GraphicsSceneMousePress);
+                //if (m_pGraphObjCreating != nullptr)
+                //{
+                //    // ... dispatch mouse event to object "under construction".
+                //    QGraphicsSceneMouseEvent evMouse(QEvent::GraphicsSceneMousePress);
 
-                    QPointF ptMouseItemPos = m_pGraphicsItemCreating->mapFromScene(i_pEv->scenePos());
-                    QPointF ptMouseItemPosLast = m_pGraphicsItemCreating->mapFromScene(i_pEv->lastScenePos());
+                //    QPointF ptMouseItemPos = m_pGraphicsItemCreating->mapFromScene(i_pEv->scenePos());
+                //    QPointF ptMouseItemPosLast = m_pGraphicsItemCreating->mapFromScene(i_pEv->lastScenePos());
 
-                    evMouse.setWidget(i_pEv->widget());
-                    evMouse.setPos(ptMouseItemPos);
-                    evMouse.setLastPos(ptMouseItemPosLast);
-                    evMouse.setScenePos(i_pEv->scenePos());
-                    evMouse.setLastScenePos(i_pEv->lastScenePos());
-                    evMouse.setScreenPos(i_pEv->screenPos());
-                    evMouse.setLastScreenPos(i_pEv->lastScreenPos());
-                    evMouse.setButton(i_pEv->button());
-                    evMouse.setButtons(i_pEv->buttons());
-                    evMouse.setModifiers(i_pEv->modifiers());
+                //    evMouse.setWidget(i_pEv->widget());
+                //    evMouse.setPos(ptMouseItemPos);
+                //    evMouse.setLastPos(ptMouseItemPosLast);
+                //    evMouse.setScenePos(i_pEv->scenePos());
+                //    evMouse.setLastScenePos(i_pEv->lastScenePos());
+                //    evMouse.setScreenPos(i_pEv->screenPos());
+                //    evMouse.setLastScreenPos(i_pEv->lastScreenPos());
+                //    evMouse.setButton(i_pEv->button());
+                //    evMouse.setButtons(i_pEv->buttons());
+                //    evMouse.setModifiers(i_pEv->modifiers());
 
-                    sendEvent(m_pGraphicsItemCreating, &evMouse);
+                //    sendEvent(m_pGraphicsItemCreating, &evMouse);
 
-                    bEventHandled = true;
-                }
+                //    bEventHandled = true;
+                //}
             } // if (m_editTool == EEditTool::CreateObjects)
         } // if (m_pGraphObjCreating == nullptr && m_pGraphObjAddingShapePoints == nullptr)
     } // if (m_mode == EMode::Edit)
@@ -3832,7 +3734,7 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                 CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
 
                 if (pGraphicsItem != nullptr && pGraphObj != nullptr) {
-                    QPointF ptMouseItemPos = pGraphicsItem->mapFromScene(ptMouseScenePos);
+                    QPointF ptMouseItemPos = pGraphicsItem->mapFromScene(i_pEv->scenePos());
 
                     // Selected graphic items are considered as being hit if it has been clicked
                     // inside their bounding rectangle. But if selected items overlap other items
@@ -4006,8 +3908,8 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                 setMode(EMode::Ignore, EEditTool::Ignore, EEditMode::None, EEditResizeMode::None, false);
 
                 QRectF rctSelectionArea(
-                    /* x      */ m_ptMouseEvScenePosOnMousePressEvent.x(),
-                    /* y      */ m_ptMouseEvScenePosOnMousePressEvent.y(),
+                    /* x      */ i_pEv->scenePos().x(),
+                    /* y      */ i_pEv->scenePos().y(),
                     /* width  */ 1,
                     /* height */ 1 );
 
@@ -4062,9 +3964,7 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         traceInternalStates(mthTracer, EMethodDir::Enter);
     }
 
-    QPointF ptMouseScenePos = i_pEv->scenePos();
-
-    emit_mousePosChanged(ptMouseScenePos);
+    emit_mousePosChanged(i_pEv->scenePos());
 
     int iObjFactoryType = static_cast<int>(EGraphObjTypeUndefined);
     if (m_pObjFactory != nullptr) {
@@ -4145,7 +4045,7 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
                         // .. we are going to create further points at the current mouse position.
                         m_pGraphObjCreating = m_pObjFactory->createGraphObj(
                             /* pDrawingScene */ this,
-                            /* ptItemPos     */ ptMouseScenePos,
+                            /* ptItemPos     */ i_pEv->scenePos(),
                             /* drawSettings  */ m_drawSettings );
 
                         m_pGraphicsItemCreating = dynamic_cast<QGraphicsItem*>(m_pGraphObjCreating);
@@ -4159,7 +4059,7 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 
                         m_pGraphObjCreating->setEditMode(EEditMode::Creating);
 
-                        //m_pGraphicsItemCreating->setPos(ptMouseScenePos);
+                        //m_pGraphicsItemCreating->setPos(i_pEv->scenePos());
                         m_pGraphicsItemCreating->setSelected(true);
 
                         // The current "mouseMove" event is not dispatched to the newly created object but to the
@@ -4191,8 +4091,8 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
                         QRectF rctSelectionArea(
                             /* x      */ m_ptMouseEvScenePosOnMousePressEvent.x(),
                             /* y      */ m_ptMouseEvScenePosOnMousePressEvent.y(),
-                            /* width  */ ptMouseScenePos.x() - m_ptMouseEvScenePosOnMousePressEvent.x() + 1,
-                            /* height */ ptMouseScenePos.y() - m_ptMouseEvScenePosOnMousePressEvent.y() + 1 );
+                            /* width  */ i_pEv->scenePos().x() - m_ptMouseEvScenePosOnMousePressEvent.x() + 1,
+                            /* height */ i_pEv->scenePos().y() - m_ptMouseEvScenePosOnMousePressEvent.y() + 1 );
                         m_pGraphicsItemSelectionArea->setRect(rctSelectionArea);
                     }
                     else
@@ -4253,7 +4153,7 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
                                 }
                             }
                             if (bCheckIsHit) {
-                                QPointF ptMouseItemPos = pGraphicsItem->mapFromScene(ptMouseScenePos);
+                                QPointF ptMouseItemPos = pGraphicsItem->mapFromScene(i_pEv->scenePos());
                                 bool bGraphObjHit = pGraphObj->isHit(ptMouseItemPos, nullptr);
                                 if (bGraphObjHit) {
                                     arpGraphicsItemsHit.append(pGraphicsItem);
@@ -6181,14 +6081,24 @@ void CDrawingScene::traceInternalStates(
             strAddTrcInfo = "-+ ";
         } else if (i_mthDir == EMethodDir::Leave) {
             strAddTrcInfo = "+- ";
+        } else {
+            strAddTrcInfo = "   ";
+        }
+        strAddTrcInfo = "SceneRect {" + qRect2Str(sceneRect()) + "}";
+        i_mthTracer.trace(strAddTrcInfo);
+        if (i_mthDir == EMethodDir::Enter) {
+            strAddTrcInfo = "-+ ";
+        } else if (i_mthDir == EMethodDir::Leave) {
+            strAddTrcInfo = "+- ";
+        } else {
+            strAddTrcInfo = "   ";
         }
         strAddTrcInfo += "Mode: " + m_mode.toString() +
             ", EditTool: " + m_editTool.toString() +
             ", EditMode: " + m_editMode.toString() +
             ", ResizeMode: " + m_editResizeMode.toString() +
             ", ObjFactory: " + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path()) +
-            ", GraphObjCreating: " + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->name()) +
-            ", SceneRect {" + qRect2Str(sceneRect()) + "}";
+            ", GraphObjCreating: " + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->name());
         i_mthTracer.trace(strAddTrcInfo);
     }
 }

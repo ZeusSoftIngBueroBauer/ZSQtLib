@@ -276,7 +276,7 @@ template<> const QVector<SEnumEntry> CEnum<ECoordinatesVersion>::s_arEnumEntries
 //------------------------------------------------------------------------------
 {
     /* 0 */ SEnumEntry( static_cast<int>(ECoordinatesVersion::Original), "Original" ),
-    /* 1 */ SEnumEntry( static_cast<int>(ECoordinatesVersion::Current),  "Current"  )
+    /* 1 */ SEnumEntry( static_cast<int>(ECoordinatesVersion::Transformed),  "Current"  )
 };
 
 

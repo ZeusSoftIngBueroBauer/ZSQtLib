@@ -50,11 +50,6 @@ public: // ctors and dtor
         const QString& i_strObjName,
         QWidget* i_pWdgtParent = nullptr);
     virtual ~CWdgtGraphObjPropertiesLabels();
-public: // overridables
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
-public: // overridables of base class CWdgtGraphObjPropertiesAbstract
-    virtual void setKeyInTree(const QString& i_strKeyInTree) override;
 public: // overridables of base class CWdgtGraphObjPropertiesAbstract
     bool hasErrors() const override;
     bool hasChanges() const override;

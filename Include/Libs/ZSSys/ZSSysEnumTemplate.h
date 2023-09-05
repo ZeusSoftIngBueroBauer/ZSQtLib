@@ -231,7 +231,7 @@ public: // instance methods
 private: // auxiliary class methods
     static void throwExceptionIfEnumeratorIsInvalid( ZS::System::EResult i_result, int i_iEnumerator, const QString& i_strMth );
 public: // class members
-    static const QVector<ZS::System::SEnumEntry> s_arEnumEntries;               /*!< Array with enum entries. One for each enumerator. Must be defined for each concrete Enum Template instanziation. */
+    static const QVector<ZS::System::SEnumEntry> s_arEnumEntries;   /*!< Array with enum entries. One for each enumerator. Must be defined for each concrete Enum Template instanziation. */
     static QMutex s_mtxArMapsStr2Enumerators;                       /*!< Mutex to protect the string conversion hashes as long the initialization routine is in progress. */
     static QVector<QHash<QString, int>> s_armapsStr2Enumerators;    /*!< String hash tables to speed up string to enumerator conversions. */
 private: // instance members

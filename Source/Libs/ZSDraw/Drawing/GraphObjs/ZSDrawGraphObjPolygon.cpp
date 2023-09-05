@@ -24,18 +24,6 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include <QtGui/QBitmap>
-#include <QtGui/qevent.h>
-#include <QtGui/QPainter>
-
-#if QT_VERSION < 0x050000
-#include <QtGui/QGraphicsSceneEvent>
-#include <QtGui/QStyleOption>
-#else
-#include <QtWidgets/QGraphicsSceneEvent>
-#include <QtWidgets/QStyleOption>
-#endif
-
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjPolygon.h"
 #include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabel.h"
@@ -49,6 +37,18 @@ may result in using the software modules.
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
+
+#include <QtGui/QBitmap>
+#include <QtGui/qevent.h>
+#include <QtGui/QPainter>
+
+#if QT_VERSION < 0x050000
+#include <QtGui/QGraphicsSceneEvent>
+#include <QtGui/QStyleOption>
+#else
+#include <QtWidgets/QGraphicsSceneEvent>
+#include <QtWidgets/QStyleOption>
+#endif
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -106,7 +106,9 @@ CGraphObjPolygon::CGraphObjPolygon(
     QPolygonF plg = polygon();
     QRectF    rctBounding = plg.boundingRect();
 
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
     m_ptRotOriginCurr = rctBounding.center();
+#endif
 
     setFlags( QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges );
 
@@ -159,9 +161,11 @@ CGraphObj* CGraphObjPolygon::clone()
     pGraphObj->setName(m_strName);
     pGraphObj->setPolygon( polygon() );
     pGraphObj->setPos( pos() );
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
     pGraphObj->setRotationAngleInDegree(m_fRotAngleCurr_deg);
     //pGraphObj->setScaleFactors(m_fScaleFacXCurr,m_fScaleFacYCurr);
     pGraphObj->acceptCurrentAsOriginalCoors();
+#endif
 
     return pGraphObj;
 
@@ -286,10 +290,12 @@ bool CGraphObjPolygon::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo 
             }
         }
 
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
         if( bIsHit && o_pHitInfo != nullptr )
         {
             o_pHitInfo->setCursor( Math::deg2Rad(m_fRotAngleCurr_deg) );
         }
+#endif
 
     } // if( pGraphicsItem != nullptr )
 

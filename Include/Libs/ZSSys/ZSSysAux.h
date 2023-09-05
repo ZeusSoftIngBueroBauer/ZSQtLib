@@ -163,7 +163,7 @@ ZSSYSDLL_API QString qBrushStyle2Str( const Qt::BrushStyle& i_brushStyle );
 ZSSYSDLL_API QString qCheckState2Str( int i_iVal );
 ZSSYSDLL_API QString qCursorShape2Str( int i_iVal );
 ZSSYSDLL_API QString qDropActions2Str( int i_actions );
-ZSSYSDLL_API QString qEvent2Str( QEvent* i_pEv, int i_iDetailLevel = 0 );
+ZSSYSDLL_API QString qEvent2Str( QEvent* i_pEv );
 ZSSYSDLL_API QString qEventType2Str( int i_iVal, bool i_bShort = true );
 ZSSYSDLL_API QString qFocusReason2Str( int i_iVal );
 ZSSYSDLL_API QString qItemDataRole2Str( int i_iVal );

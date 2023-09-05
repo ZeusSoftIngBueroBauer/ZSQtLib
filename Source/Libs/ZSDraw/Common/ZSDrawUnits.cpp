@@ -25,9 +25,11 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDraw/Common/ZSDrawUnits.h"
-#include "ZSSys/ZSSysMemLeakDump.h"
+#include "ZSSys/ZSSysMath.h"
 
 #include <QtGui/qpaintdevice.h>
+
+#include "ZSSys/ZSSysMemLeakDump.h"
 
 using namespace ZS::System;
 using namespace ZS::Draw;
@@ -84,26 +86,16 @@ CUnitsLength::CUnitsLength(CIdxTreeEntry* i_pParentBranch) :
         /* strName        */ "Inch",
         /* strSymbol      */ "in",
         /* fMFromSI       */ 1.0/0.0254 ),
-    m_treeEntryPixelX(
+    m_treeEntryPixel(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ false,
-        /* strName        */ "PixelX",
-        /* strSymbol      */ "pxX" ),
-    m_treeEntryPixelY(
+        /* strName        */ "Pixel",
+        /* strSymbol      */ "px" ),
+    m_treeEntryDots(
         /* pPhysSize      */ this,
         /* bIsLogarithmic */ false,
-        /* strName        */ "PixelY",
-        /* strSymbol      */ "pxY" ),
-    m_treeEntryDotsX(
-        /* pPhysSize      */ this,
-        /* bIsLogarithmic */ false,
-        /* strName        */ "DotsX",
-        /* strSymbol      */ "dotsX" ),
-    m_treeEntryDotsY(
-        /* pPhysSize      */ this,
-        /* bIsLogarithmic */ false,
-        /* strName        */ "DotsY",
-        /* strSymbol      */ "dotsY" ),
+        /* strName        */ "Dots",
+        /* strSymbol      */ "dots" ),
     um(m_treeEntryMicroMeter),
     mm(m_treeEntryMilliMeter),
     cm(m_treeEntryCentiMeter),
@@ -111,16 +103,14 @@ CUnitsLength::CUnitsLength(CIdxTreeEntry* i_pParentBranch) :
     m(m_treeEntryMeter),
     km(m_treeEntryKiloMeter),
     in(m_treeEntryInch),
-    pxX(m_treeEntryPixelX),
-    pxY(m_treeEntryPixelY),
-    dotsX(m_treeEntryDotsX),
-    dotsY(m_treeEntryDotsY)
+    px(m_treeEntryPixel),
+    dots(m_treeEntryDots)
 {
     // Call function of base class CPhysSize to initialize the physical size together
     // with its units (e.g. to create the field with internal conversion routines).
     // Here we don't let the physical size create the chained list of Lower/Higher units
     // for the "findBestUnit" functionality as "Inch", "Feet", "DeziMeter", "CentiMeter"
-    // etc. don't belong to those chained list.
+    // etc. don't belong to the chained list.
     initialize(false);
 
     // Link the units to a chained list for the "findBestUnit" functionality:
@@ -139,10 +129,8 @@ CUnitsLength::CUnitsLength(CIdxTreeEntry* i_pParentBranch) :
     m_pTree->addShortcut(&m_treeEntryMeter, "m");
     m_pTree->addShortcut(&m_treeEntryKiloMeter, "km");
     m_pTree->addShortcut(&m_treeEntryInch, "in");
-    m_pTree->addShortcut(&m_treeEntryPixelX, "pxX");
-    m_pTree->addShortcut(&m_treeEntryPixelY, "pxY");
-    m_pTree->addShortcut(&m_treeEntryDotsX, "dotsX");
-    m_pTree->addShortcut(&m_treeEntryDotsY, "dotsY");
+    m_pTree->addShortcut(&m_treeEntryPixel, "px");
+    m_pTree->addShortcut(&m_treeEntryDots, "dots");
 
 } // ctor
 
@@ -161,19 +149,18 @@ public: // instance methods (resolution of monitor, pixels per inches)
 
 //------------------------------------------------------------------------------
 /*! @brief Sets the logical resolution of a pixel on the screen in pixel/inch
-           for both directions (horizontal X, vertical Y) as reference values with
-           the names "PxpiX" and "PxpiY" to the unit group.
+           as reference value with the name "Pxpi" to the unit group.
 
-    @param [in] i_fPxpiX
-        Resolution of a screen pixel in pixels/inches for horizonal direction.
-    @param [in] i_fPxpiY
-        Resolution of a screen pixel in pixels/inches for vertical direction.
+    Different resolutions for horizontal and vertical directions are not supported.
+    Anyway very often several monitors are used whose resolution may be different.
+
+    @param [in] i_fPxpi
+        Resolution of a screen pixel in pixels/inches.
 */
-void CUnitsLength::setPxpis( double i_fPxpiX, double i_fPxpiY )
+void CUnitsLength::setPxpi( double i_fPxpi )
 //------------------------------------------------------------------------------
 {
-    setReferenceValue("PxpiX", i_fPxpiX);
-    setReferenceValue("PxpiY", i_fPxpiY);
+    setReferenceValue("Pxpi", i_fPxpi);
 
     // 1 Inch = 2.54 cm
     // Factor to convert inches into mm: 25.4
@@ -183,44 +170,27 @@ void CUnitsLength::setPxpis( double i_fPxpiX, double i_fPxpiY )
     double fipm = m_treeEntryInch.getFactorConvertFromSIUnit();
 
     // Factor to convert Px/inch to Px/m: 1/0.0254
-    double fpxmX = fipm * i_fPxpiX;
-    double fpxmY = fipm * i_fPxpiY;
+    double fpxm = fipm * i_fPxpi;
 
-    SFctConvert fctConvertPxXFromMeter(
+    SFctConvert fctConvertPxFromMeter(
         /* fctConvertType */ EFctConvert_mMULxADDt,
         /* pPhysUnitSrc   */ &m_treeEntryMeter,
-        /* pPhysUnitDst   */ &m_treeEntryPixelX,
-        /* physValM       */ fpxmX );
-    SFctConvert fctConvertPxYFromMeter(
-        /* fctConvertType */ EFctConvert_mMULxADDt,
-        /* pPhysUnitSrc   */ &m_treeEntryMeter,
-        /* pPhysUnitDst   */ &m_treeEntryPixelY,
-        /* physValM       */ fpxmY );
+        /* pPhysUnitDst   */ &m_treeEntryPixel,
+        /* physValM       */ fpxm );
 
-    m_treeEntryPixelX.setFctConvertFromSIUnit(fctConvertPxXFromMeter);
-    m_treeEntryPixelY.setFctConvertFromSIUnit(fctConvertPxYFromMeter);
+    m_treeEntryPixel.setFctConvertFromSIUnit(fctConvertPxFromMeter);
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the logical resolution of a pixel on the screen for the specified
-           direction in pixel/inch.
-
-    @param [in] i_orientation
-        Direction (Vertical or Horizontal) for which the resolution is returned.
+/*! @brief Returns the logical resolution of a pixel on the screen.
 
     @return
         Resolution in pixels per inch.
 */
-double CUnitsLength::pxpi( EOrientation i_orientation ) const
+double CUnitsLength::pxpi() const
 //------------------------------------------------------------------------------
 {
-    QString strRefValName;
-    if( i_orientation == EOrientation::Horizontal ) {
-        strRefValName = "PxpiX";
-    } else if( i_orientation == EOrientation::Vertical ) {
-        strRefValName = "PxpiY";
-    }
-    return getReferenceValue(strRefValName).getVal();
+    return getReferenceValue("Pxpi").getVal();
 }
 
 /*==============================================================================
@@ -228,20 +198,18 @@ public: // instance methods (resolution of printer, dots per inches)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Sets the resolution of a dot on the print device in Dots/inch for both
-           directions (horizontal X, vertical Y) as reference values with the
-           names "DpiX" and "DpiY" to the unit group.
+/*! @brief Sets the resolution of a dot on the print device in Dots/inch as
+           reference value with the names "Dpi" to the unit group.
 
-    @param [in] i_fDpiX
-        Resolution of a dot in Dots/inch for horizonal direction.
-    @param [in] i_fDpiY
-        Resolution of a dot in Dots/inch for vertical direction.
+    Different resolutions for horizontal and vertical directions are not supported.
+
+    @param [in] i_fDpi
+        Resolution of a dot in Dots/inch.
 */
-void CUnitsLength::setDpis( double i_fDpiX, double i_fDpiY )
+void CUnitsLength::setDpi( double i_fDpi )
 //------------------------------------------------------------------------------
 {
-    setReferenceValue("DpiX", i_fDpiX);
-    setReferenceValue("DpiY", i_fDpiY);
+    setReferenceValue("Dpi", i_fDpi);
 
     // 1 Inch = 2.54 cm
     // Factor to convert inches into mm: 25.4
@@ -251,44 +219,27 @@ void CUnitsLength::setDpis( double i_fDpiX, double i_fDpiY )
     double fipm = m_treeEntryInch.getFactorConvertFromSIUnit();
 
     // Factor to convert Dots/inch to Dots/m: 1/0.0254
-    double fdmX = fipm * i_fDpiX;
-    double fdmY = fipm * i_fDpiY;
+    double fdm = fipm * i_fDpi;
 
-    SFctConvert fctConvertDotsXFromMeter(
+    SFctConvert fctConvertDotsFromMeter(
         /* fctConvertType */ EFctConvert_mMULxADDt,
         /* pPhysUnitSrc   */ &m_treeEntryMeter,
-        /* pPhysUnitDst   */ &m_treeEntryDotsX,
-        /* physValM       */ fdmX );
-    SFctConvert fctConvertDotsYFromMeter(
-        /* fctConvertType */ EFctConvert_mMULxADDt,
-        /* pPhysUnitSrc   */ &m_treeEntryMeter,
-        /* pPhysUnitDst   */ &m_treeEntryDotsY,
-        /* physValM       */ fdmY );
+        /* pPhysUnitDst   */ &m_treeEntryDots,
+        /* physValM       */ fdm );
 
-    m_treeEntryDotsX.setFctConvertFromSIUnit(fctConvertDotsXFromMeter);
-    m_treeEntryDotsY.setFctConvertFromSIUnit(fctConvertDotsYFromMeter);
+    m_treeEntryDots.setFctConvertFromSIUnit(fctConvertDotsFromMeter);
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the resolution of a dot on the print device for the specified
-           direction in dots/inch.
-
-    @param [in] i_orientation
-        Direction (Vertical or Horizontal) for which the resolution is returned.
+/*! @brief Returns the resolution of a dot on the print device in dots/inch.
 
     @return
         Resolution in dots per inch.
 */
-double CUnitsLength::dpi( EOrientation i_orientation ) const
+double CUnitsLength::dpi() const
 //------------------------------------------------------------------------------
 {
-    QString strRefValName;
-    if( i_orientation == EOrientation::Horizontal ) {
-        strRefValName = "DpiX";
-    } else if( i_orientation == EOrientation::Vertical ) {
-        strRefValName = "DpiY";
-    }
-    return getReferenceValue(strRefValName).getVal();
+    return getReferenceValue("Dpi").getVal();
 }
 
 /*==============================================================================
@@ -296,8 +247,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the screen resolution of a pixel for the specified direction
-           in the given unit.
+/*! @brief Returns the screen resolution of a pixel in the given unit.
 
     The screen resolution is usually defined in pixels per inch or pixels per mm.
     To format values correctly with the number of significant digits the resolution
@@ -305,8 +255,6 @@ public: // instance methods
     per mm, the number of trailing digits to indicate a value in mm would be 1 and
     e.g. 7 pixels would have to be rounded to 0.7 mm.
 
-    @param [in] i_orientation
-        Direction (Vertical or Horizontal) for which the resolution is returned.
     @param [in] i_unit (default mm)
         Unit in which the resolution has to be returned.
         Please note that it does not make sense to pass pixels or dots as the
@@ -315,16 +263,16 @@ public: // instance methods
 
     @return Screen resolution normed to the given metric unit.
 */
-CPhysValRes CUnitsLength::physValResPerPx(EOrientation i_orientation, const CUnit& i_unit) const
+CPhysValRes CUnitsLength::physValResPerPx(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     double fResVal = 0.1;
-    if (i_unit == pxX || i_unit == pxY || i_unit == dotsX || i_unit == dotsY) {
+    if (i_unit == px || i_unit == dots) {
         fResVal = 1.0;
     }
     else {
         // Resolution in inches:
-        fResVal = 1.0 / pxpi(i_orientation);
+        fResVal = 1.0 / pxpi();
         if (i_unit != in) {
             fResVal = in.convertValue(fResVal, i_unit);
         }
@@ -333,8 +281,7 @@ CPhysValRes CUnitsLength::physValResPerPx(EOrientation i_orientation, const CUni
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the resolution of a dot on the print device for the specified
-           direction in the given unit.
+/*! @brief Returns the resolution of a dot on the print device in the given unit.
 
     The print device resolution is usually defined in dots per inch or dots per mm.
     To format values correctly with the number of significant digits the resolution
@@ -342,8 +289,6 @@ CPhysValRes CUnitsLength::physValResPerPx(EOrientation i_orientation, const CUni
     per mm, the number of trailing digits to indicate a value in mm would be 1 and
     e.g. 7 dots would have to be rounded to 0.7 mm.
 
-    @param [in] i_orientation
-        Direction (Vertical or Horizontal) for which the resolution is returned.
     @param [in] i_unit (default mm)
         Unit in which the resolution has to be returned.
         Please note that it does not make sense to pass pixels or dots as the
@@ -352,16 +297,16 @@ CPhysValRes CUnitsLength::physValResPerPx(EOrientation i_orientation, const CUni
 
     @return Screen resolution normed to the given metric unit.
 */
-CPhysValRes CUnitsLength::physValResPerDot(EOrientation i_orientation, const CUnit& i_unit) const
+CPhysValRes CUnitsLength::physValResPerDot(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     double fResVal = 0.1;
-    if (i_unit == pxX || i_unit == pxY || i_unit == dotsX || i_unit == dotsY) {
+    if (i_unit == px || i_unit == dots) {
         fResVal = 1.0;
     }
     else {
         // Resolution in inches:
-        fResVal = 1.0 / dpi(i_orientation);
+        fResVal = 1.0 / dpi();
         if (i_unit != in) {
             fResVal = in.convertValue(fResVal, i_unit);
         }
@@ -382,20 +327,71 @@ bool CUnitsLength::isMetricUnit(const QString& i_strSymbolOrName) const
 //------------------------------------------------------------------------------
 {
     bool bIsMetricUnit = true;
-    if( i_strSymbolOrName == pxX.symbol() || i_strSymbolOrName == pxX.unitName() ) {
+    if (i_strSymbolOrName == px.symbol() || i_strSymbolOrName == px.unitName()) {
         bIsMetricUnit = false;
     }
-    else if( i_strSymbolOrName == pxY.symbol() || i_strSymbolOrName == pxY.unitName() ) {
-        bIsMetricUnit = false;
-    }
-    if( i_strSymbolOrName == dotsX.symbol() || i_strSymbolOrName == dotsX.unitName() ) {
-        bIsMetricUnit = false;
-    }
-    else if( i_strSymbolOrName == dotsY.symbol() || i_strSymbolOrName == dotsY.unitName() ) {
+    else if (i_strSymbolOrName == dots.symbol() || i_strSymbolOrName == dots.unitName()) {
         bIsMetricUnit = false;
     }
     return bIsMetricUnit;
 }
+
+
+/*******************************************************************************
+class CUnitsAngle : public CUnitsTreeEntryGrpPhysUnits
+*******************************************************************************/
+
+/*==============================================================================
+public: // class members
+
+==============================================================================*/
+
+const QString CUnitsAngle::c_strSymbolPhi(QChar(0x03C6));
+
+/*==============================================================================
+public: // ctors and dtor
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CUnitsAngle::CUnitsAngle( CIdxTreeEntry* i_pParentBranch ) :
+//------------------------------------------------------------------------------
+    CUnitsTreeEntryGrpPhysUnits(
+        /* pParentBranch    */ i_pParentBranch,
+        /* strName          */ "Angle",
+        /* strSIUnitName    */ "Radiant",
+        /* strSIUnitSymbol  */ "rad",
+        /* strFormulaSymbol */ QString(QChar(0x03C6)),
+        /* bIsPowerRelated  */ false ),
+    m_treeEntryRad(
+        /* pPhysSize      */ this,
+        /* bIsLogarithmic */ false,
+        /* strName        */ "Radiant",
+        /* strSymbol      */ "rad",
+        /* fMFromSI       */ 1.0 ),
+    m_treeEntryDegree(
+      /* pPhysSize      */ this,
+      /* bIsLogarithmic */ false,
+      /* strName        */ "Degree",
+      /* strSymbol      */ QString::fromLatin1("°"),
+      /* fMFromSI       */ 180.0/Math::c_fPI ),
+    Rad(m_treeEntryRad),
+    Degree(m_treeEntryDegree)
+{
+    // Call function of base class CPhysSize to initialize the physical size together
+    // with its units (e.g. to create the field with internal conversion routines
+    // and to create the chained list of Lower/Higher units).
+    initialize(false);
+
+    // To allow "short" unit strings like "°" we add shortcuts to each unit.
+    m_pTree->addShortcut(&m_treeEntryDegree, QString::fromLatin1("°"));
+
+} // ctor
+
+//------------------------------------------------------------------------------
+CUnitsAngle::~CUnitsAngle()
+//------------------------------------------------------------------------------
+{
+} // dtor
 
 
 /*******************************************************************************
@@ -418,7 +414,8 @@ public: // ctors and dtor
 CUnits::CUnits() :
 //------------------------------------------------------------------------------
     CIdxTreeUnits(new CIdxTreeEntry(CIdxTreeEntry::EEntryType::Root, "Units")),
-    Length(root())
+    Length(root()),
+    Angle(root())
 {
 } // ctor
 

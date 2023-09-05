@@ -137,11 +137,8 @@ CDlgDrawingViewSetup::CDlgDrawingViewSetup(
     m_pLyt->addWidget(m_pWdgtDrawingViewProperties);
 
     QObject::connect(
-        m_pWdgtDrawingViewProperties, &CWdgtDrawingViewProperties::drawingSizeChanged,
-        this, &CDlgDrawingViewSetup::onWdgtDrawingViewPropertiesDrawingSizeChanged);
-    QObject::connect(
-        m_pWdgtDrawingViewProperties, &CWdgtDrawingViewProperties::gridSettingsChanged,
-        this, &CDlgDrawingViewSetup::onWdgtDrawingViewPropertiesGridSettingsChanged);
+        m_pWdgtDrawingViewProperties, &CWdgtDrawingViewProperties::contentChanged,
+        this, &CDlgDrawingViewSetup::onWdgtDrawingViewPropertiesContentChanged);
 
     // Dialog buttons
     //---------------
@@ -297,46 +294,14 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDlgDrawingViewSetup::onWdgtDrawingViewPropertiesDrawingSizeChanged(
-    const CDrawingSize& i_size)
+void CDlgDrawingViewSetup::onWdgtDrawingViewPropertiesContentChanged()
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_size.toString();
-    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onWdgtDrawingViewPropertiesDrawingSizeChanged",
-        /* strAddInfo   */ strMthInArgs );
-
-    if( m_pWdgtDrawingViewProperties->hasChanges() )
-    {
-        m_pBtnApply->setEnabled(true);
-        m_pBtnReset->setEnabled(true);
-    }
-    else
-    {
-        m_pBtnApply->setEnabled(false);
-        m_pBtnReset->setEnabled(false);
-    }
-}
-
-//------------------------------------------------------------------------------
-void CDlgDrawingViewSetup::onWdgtDrawingViewPropertiesGridSettingsChanged(
-    const CDrawGridSettings& i_settings)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_settings.toString();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onWdgtDrawingViewPropertiesGridSettingsChanged",
-        /* strAddInfo   */ strMthInArgs );
+        /* strAddInfo   */ "" );
 
     if( m_pWdgtDrawingViewProperties->hasChanges() )
     {

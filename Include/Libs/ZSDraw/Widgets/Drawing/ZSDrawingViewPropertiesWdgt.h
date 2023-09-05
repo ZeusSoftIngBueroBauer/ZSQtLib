@@ -29,26 +29,9 @@ may result in using the software modules.
 
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPropertiesAbstractWdgt.h"
 #include "ZSDraw/Drawing/ZSDrawGridSettings.h"
-#include "ZSDraw/Drawing/ZSDrawingSize.h"
 
 namespace ZS
 {
-namespace System
-{
-namespace GUI
-{
-class CSepLine;
-}
-}
-namespace PhysVal
-{
-class CPhysVal;
-
-namespace GUI
-{
-class CWdgtEditPhysVal;
-}
-}
 namespace Draw
 {
 class CDrawingView;
@@ -71,16 +54,14 @@ public: // ctors and dtor
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
     virtual QString className() const { return ClassName(); }
-signals:
-    void drawingSizeChanged(const ZS::Draw::CDrawingSize& i_size);
-    void gridSettingsChanged(const ZS::Draw::CDrawGridSettings& i_settings);
 public: // overridables of base class CWdgtGraphObjPropertiesAbstract
     bool hasChanges() const override;
     void acceptChanges() override;
     void rejectChanges() override;
+protected slots: // overridables of base class CWdgtGraphObjPropertiesAbstract
+    void onDrawingSceneDrawingSizeChanged(const CDrawingSize& i_drawingSize) override;
 protected slots:
-    void onDrawingViewDrawingSizeChanged(const ZS::Draw::CDrawingSize& i_size);
-    void onDrawingViewGridSettingsChanged(const ZS::Draw::CDrawGridSettings& i_settings);
+    void onDrawingViewGridSettingsChanged(const CDrawGridSettings& i_gridSettings);
 protected slots:
     void onCmbDimensionUnitCurrentIndexChanged(int i_idx);
     void onCmbImageMetricUnitCurrentIndexChanged(int i_idx);
@@ -141,13 +122,10 @@ protected: // instance methods
     void updateGridLabelsTextEffectUnderlineButton();
     void updateGridLabelsTextEffectStrikeoutButton();
 protected: // instance methods (method tracing)
-    void emit_drawingSizeChanged(const ZS::Draw::CDrawingSize& i_size);
-    void emit_gridSettingsChanged(const ZS::Draw::CDrawGridSettings& i_settings);
     void traceValues(ZS::System::CMethodTracer& i_mthTracer, ZS::System::EMethodDir i_methodDir);
 protected: // instance members
     CDrawingView* m_pDrawingView;
     // Caching values
-    CDrawingSize m_drawingSize;
     CDrawGridSettings m_gridSettings;
     // Geometry
     QGroupBox* m_pGrpGeometry;

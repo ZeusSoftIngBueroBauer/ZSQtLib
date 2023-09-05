@@ -249,30 +249,6 @@ public: // overridables of base class CWdgtGraphObjPropertiesAbstract
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjPropertiesLabels::setKeyInTree(const QString& i_strKeyInTree)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_strKeyInTree;
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setKeyInTree",
-        /* strAddInfo   */ strMthInArgs );
-
-    if (m_strKeyInTree != i_strKeyInTree)
-    {
-        CWdgtGraphObjPropertiesAbstract::setKeyInTree(i_strKeyInTree);
-    }
-}
-
-/*==============================================================================
-public: // overridables of base class CWdgtGraphObjPropertiesAbstract
-==============================================================================*/
-
-//------------------------------------------------------------------------------
 bool CWdgtGraphObjPropertiesLabels::hasErrors() const
 //------------------------------------------------------------------------------
 {

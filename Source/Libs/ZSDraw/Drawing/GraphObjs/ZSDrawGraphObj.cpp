@@ -30,7 +30,6 @@ may result in using the software modules.
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjSelectionPoint.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSDraw/Widgets/GraphObjFormat/ZSDrawDlgFormatGraphObjs.h"
-#include "ZSPhysVal/ZSPhysValDllMain.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysIdxTree.h"
 #include "ZSSys/ZSSysMath.h"
@@ -44,6 +43,7 @@ may result in using the software modules.
 
 
 using namespace ZS::System;
+using namespace ZS::PhysVal;
 using namespace ZS::Draw;
 
 
@@ -347,10 +347,9 @@ CGraphObj::CGraphObj(
     m_strType(i_strType),
     //m_strDescription(),
     m_drawSettings(i_type),
-    m_bCoorsDirty(true),
-    m_sizMinimum(),
-    m_sizMaximum(),
-    m_sizFixed(),
+    m_physValSizeMinimum(),
+    m_physValSizeMaximum(),
+    m_physValSizeFixed(),
     m_arAlignments(),
     m_bIsHit(false),
     m_editMode(EEditMode::None),
@@ -367,7 +366,8 @@ CGraphObj::CGraphObj(
     m_arpDimLineLabels(),
     m_strToolTip(),
     m_strEditInfo(),
-    // Current item coordinates and transform values:
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
+    m_bCoorsDirty(true),
     m_rctCurr(),
     m_fRotAngleCurr_deg(0.0),
     m_ptRotOriginCurr(),
@@ -377,6 +377,7 @@ CGraphObj::CGraphObj(
     m_sizOrig(),
     m_fRotAngleOrig_deg(0.0),
     m_ptRotOriginOrig(),
+#endif
     // Coordinates stored on mouse press events:
     m_ptScenePosOnMousePressEvent(),
     m_ptMouseEvScenePosOnMousePressEvent(),
@@ -519,10 +520,9 @@ CGraphObj::~CGraphObj()
     //m_strType;
     //m_strDescription;
     //m_drawSettings;
-    m_bCoorsDirty = false;
-    //m_sizMinimum;
-    //m_sizMaximum;
-    //m_sizFixed;
+    //m_physValSizeMinimum;
+    //m_physValSizeMaximum;
+    //m_physValSizeFixed;
     //m_arAlignments;
     m_bIsHit = false;
     m_editMode = static_cast<EEditMode>(0);
@@ -538,7 +538,8 @@ CGraphObj::~CGraphObj()
     //m_arpDimLineLabels;
     //m_strToolTip;
     //m_strEditInfo;
-    // Current item coordinates and transform values:
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
+    m_bCoorsDirty = false;
     //m_rctCurr;
     m_fRotAngleCurr_deg = 0.0;
     //m_ptRotOriginCurr;
@@ -548,6 +549,7 @@ CGraphObj::~CGraphObj()
     //m_sizOrig;
     m_fRotAngleOrig_deg = 0.0;
     //m_ptRotOriginOrig;
+#endif
     // Coordinates stored on mouse press events:
     //m_ptScenePosOnMousePressEvent;
     //m_ptMouseEvScenePosOnMousePressEvent;
@@ -649,6 +651,158 @@ void CGraphObj::releaseTraceAdminObjs()
     m_pTrcAdminObjMouseEvents = nullptr;
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjKeyEvents);
     m_pTrcAdminObjKeyEvents = nullptr;
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the object type.
+*/
+EGraphObjType CGraphObj::type() const
+//------------------------------------------------------------------------------
+{
+    return m_type;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the object type as a string.
+*/
+QString CGraphObj::typeAsString() const
+//------------------------------------------------------------------------------
+{
+    return m_strType;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Convenience method to returning true if this object is a point.
+*/
+bool CGraphObj::isPoint() const
+//------------------------------------------------------------------------------
+{
+    return m_type == EGraphObjTypePoint;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Convenience method to returning true if this object is a line.
+*/
+bool CGraphObj::isLine() const
+//------------------------------------------------------------------------------
+{
+    return m_type == EGraphObjTypeLine;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Convenience method to returning true if this object is a rectangle.
+*/
+bool CGraphObj::isRect() const
+//------------------------------------------------------------------------------
+{
+    return m_type == EGraphObjTypeRect;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Convenience method to returning true if this object is an ellipse.
+*/
+bool CGraphObj::isEllipse() const
+//------------------------------------------------------------------------------
+{
+    return m_type == EGraphObjTypeEllipse;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Convenience method to returning true if this object is a polygon.
+*/
+bool CGraphObj::isPolygon() const
+//------------------------------------------------------------------------------
+{
+    return m_type == EGraphObjTypePolygon;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Convenience method to returning true if this object is a polyline.
+*/
+bool CGraphObj::isPolyline() const
+//------------------------------------------------------------------------------
+{
+    return m_type == EGraphObjTypePolyline;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Convenience method to returning true if this object is a text.
+*/
+bool CGraphObj::isText() const
+//------------------------------------------------------------------------------
+{
+    return m_type == EGraphObjTypeText;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Convenience method to returning true if this object is an image.
+*/
+bool CGraphObj::isImage() const
+//------------------------------------------------------------------------------
+{
+    return m_type == EGraphObjTypeImage;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Convenience method to returning true if this object is a connection point.
+*/
+bool CGraphObj::isConnectionPoint() const
+//------------------------------------------------------------------------------
+{
+    return m_type == EGraphObjTypeConnectionPoint;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Convenience method to returning true if this object is a connection line.
+*/
+bool CGraphObj::isConnectionLine() const
+//------------------------------------------------------------------------------
+{
+    return m_type == EGraphObjTypeConnectionLine;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Convenience method to returning true if this object is a group.
+*/
+bool CGraphObj::isGroup() const
+//------------------------------------------------------------------------------
+{
+    return m_type == EGraphObjTypeGroup;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Convenience method to returning true if this object is a selection point.
+*/
+bool CGraphObj::isSelectionPoint() const
+//------------------------------------------------------------------------------
+{
+    return m_type == EGraphObjTypeSelectionPoint;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Convenience method to returning true if this object is a label.
+*/
+bool CGraphObj::isLabel() const
+//------------------------------------------------------------------------------
+{
+    return m_type == EGraphObjTypeLabel;
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the drawing scene the object belongs to.
+*/
+CDrawingScene* CGraphObj::getDrawingScene()
+//------------------------------------------------------------------------------
+{
+    return m_pDrawingScene;
 }
 
 /*==============================================================================
@@ -785,17 +939,118 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Returns the group name of the class factory used to create objects.
+
+    The factory group name and the type of the object uniquely define the object factory.
+*/
+QString CGraphObj::getFactoryGroupName() const
+//------------------------------------------------------------------------------
+{
+    return m_strFactoryGroupName;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the current edit mode of the object.
+
+    The edit mode defines how mouse and key events are handled.
+*/
+CEnumEditMode CGraphObj::getEditMode() const
+//------------------------------------------------------------------------------
+{
+    return m_editMode;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the current edit mode of the object.
+
+    If the object is currently being resized (editMode == Resize) the resize mode
+    defines how the object will be resized.
+*/
+CEnumEditResizeMode CGraphObj::getEditResizeMode() const
+//------------------------------------------------------------------------------
+{
+    return m_editResizeMode;
+}
+
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Returns a human readable string containing the coordinates of all
+           shape points of the object.
+
+    This method is mainly used for debugging and test purposes.
+*/
+QString CGraphObj::getScenePolygonShapePointsString() const
+//------------------------------------------------------------------------------
+{
+    return "";
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the currently selected index of the polygons shape point
+           if the form of the object is modified by moving a polygon shape point.
+*/
+int CGraphObj::getSelectedPolygonShapePointIndex() const
+//------------------------------------------------------------------------------
+{
+    return m_idxSelPtSelectedPolygon;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the currently selected point at the bounding rectangle if
+           if the form of the object is modified by moving a selection point
+           at the bounding rectangle.
+
+     PolygonPoint is returned if a polygon point is selected.
+*/
+CEnumSelectionPoint CGraphObj::getSelectedBoundingRectPoint() const
+//------------------------------------------------------------------------------
+{
+    return m_selPtSelectedBoundingRect;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns a human readable tool tip string.
+*/
+QString CGraphObj::getToolTip() const
+//------------------------------------------------------------------------------
+{
+    return m_strToolTip;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns a human readable string with information about the current editing mode.
+*/
+QString CGraphObj::getEditInfo() const
+//------------------------------------------------------------------------------
+{
+    return m_strEditInfo;
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the parent object or nullptr, if the object is does not have a parent.
+
+    Please note that selection points and labels should not belong as child to the
+    graphics items. Otherwise the "boundingRect" call of groups (which implicitly calls
+    childrenBoundingRect) does not work as the childs bounding rectangles would be
+    included. But the selection points and labels should appear as childs in the
+    index tree of the drawing scene.
+*/
 CGraphObj* CGraphObj::parentGraphObj()
 //------------------------------------------------------------------------------
 {
     CGraphObj* pGraphObjParent = dynamic_cast<CGraphObj*>(parentBranch());
-
-    // Please note that selection points and labels should not belong as child to the graphics items.
-    // Otherwise the "boundingRect" call of groups (which implicitly calls childrenBoundingRect) does
-    // not work as the childs bounding rectangles would be included. But the selection points and
-    // labels should appear as childs in the index tree of the drawing scene.
-    if (m_type != EGraphObjTypeSelectionPoint && m_type != EGraphObjTypeLabel)
-    {
+    if (m_type != EGraphObjTypeSelectionPoint && m_type != EGraphObjTypeLabel) {
         QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
         QGraphicsItem* pGraphicsItemParent = pGraphicsItemThis->parentItem();
         CGraphObj* pGraphObjParentTmp = dynamic_cast<CGraphObj*>(pGraphicsItemParent);
@@ -837,6 +1092,9 @@ public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Sets the draw settings like pen color, pen style, brush style etc.
+           used to paint the object.
+*/
 void CGraphObj::setDrawSettings( const CDrawSettings& i_drawSettings )
 //------------------------------------------------------------------------------
 {
@@ -861,6 +1119,16 @@ void CGraphObj::setDrawSettings( const CDrawSettings& i_drawSettings )
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Returns the currently used draw settings like pen color, pen style,
+           brush style etc. used to paint the object.
+*/
+CDrawSettings CGraphObj::getDrawSettings() const
+//------------------------------------------------------------------------------
+{
+    return m_drawSettings;
+}
+
+//------------------------------------------------------------------------------
 /*! @brief
 
     Must be overridden to apply the draw settings at the graphics item in derived classes.
@@ -878,48 +1146,37 @@ void CGraphObj::onDrawSettingsChanged()
     /* Template for copy and paste in inherited classes:
 
     const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
-
-    if (pGraphicsItem != nullptr)
-    {
-        if (m_drawSettings.isLineUsed())
-        {
-            if (m_drawSettings.getLineStyle() != ELineStyle::NoLine)
-            {
+    if (pGraphicsItem != nullptr) {
+        if (m_drawSettings.isLineUsed()) {
+            if (m_drawSettings.getLineStyle() != ELineStyle::NoLine) {
                 QPen pen;
                 pen.setColor( m_drawSettings.getPenColor() );
                 pen.setWidth( m_drawSettings.getPenWidth() );
                 pen.setStyle( lineStyle2QtPenStyle(m_drawSettings.getLineStyle()) );
                 setPen(pen);
             }
-            else
-            {
+            else {
                 setPen(Qt::NoPen);
             }
         }
-        else
-        {
+        else {
             setPen(Qt::NoPen);
         }
 
-        if (m_drawSettings.isFillUsed())
-        {
-            if (m_drawSettings.getFillStyle() != EFillStyle::NoFill)
-            {
+        if (m_drawSettings.isFillUsed()) {
+            if (m_drawSettings.getFillStyle() != EFillStyle::NoFill) {
                 QBrush brsh;
                 brsh.setColor( m_drawSettings.getFillColor() );
                 brsh.setStyle( fillStyle2QtBrushStyle(m_drawSettings.getFillStyle()) );
                 pGraphicsItem->setBrush(brsh);
             }
-            else
-            {
+            else {
                 setBrush(Qt::NoBrush);
             }
         }
-        else
-        {
+        else {
             setBrush(Qt::NoBrush);
         }
-
     }
     */
 } // onDrawSettingsChanged
@@ -929,6 +1186,11 @@ public: // overridables (you must call those methods (instead of e.g. "QGrahicsL
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Sets the pen color used to paint the object.
+
+    If further set specific draw settings call will follow the flag
+    i_bImmediatelyApplySetting may be set to false to avoid unnecessary paint events.
+*/
 void CGraphObj::setPenColor( const QColor& i_clr, bool i_bImmediatelyApplySetting )
 //------------------------------------------------------------------------------
 {
@@ -955,6 +1217,20 @@ void CGraphObj::setPenColor( const QColor& i_clr, bool i_bImmediatelyApplySettin
 }
 
 //------------------------------------------------------------------------------
+/*! @brief 
+*/
+QColor CGraphObj::getPenColor() const
+//------------------------------------------------------------------------------
+{
+    return m_drawSettings.getPenColor();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the pen width used to paint the object.
+
+    If further set specific draw settings call will follow the flag
+    i_bImmediatelyApplySetting may be set to false to avoid unnecessary paint events.
+*/
 void CGraphObj::setPenWidth( int i_iLineWidth, bool i_bImmediatelyApplySetting )
 //------------------------------------------------------------------------------
 {
@@ -980,11 +1256,25 @@ void CGraphObj::setPenWidth( int i_iLineWidth, bool i_bImmediatelyApplySetting )
     }
 }
 
+//------------------------------------------------------------------------------
+/*! @brief 
+*/
+int CGraphObj::getPenWidth() const
+//------------------------------------------------------------------------------
+{
+    return m_drawSettings.getPenWidth();
+}
+
 /*==============================================================================
 public: // overridables (you must call those methods (instead of e.g. "QGrahicsLineItem::setPen") ..
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Sets the line style used to paint the object.
+
+    If further set specific draw settings call will follow the flag
+    i_bImmediatelyApplySetting may be set to false to avoid unnecessary paint events.
+*/
 void CGraphObj::setLineStyle( ELineStyle i_lineStyle, bool i_bImmediatelyApplySetting )
 //------------------------------------------------------------------------------
 {
@@ -1010,11 +1300,25 @@ void CGraphObj::setLineStyle( ELineStyle i_lineStyle, bool i_bImmediatelyApplySe
     }
 } // setLineStyle
 
+//------------------------------------------------------------------------------
+/*! @brief 
+*/
+ELineStyle CGraphObj::getLineStyle() const
+//------------------------------------------------------------------------------
+{
+    return m_drawSettings.getLineStyle();
+}
+
 /*==============================================================================
 public: // overridables (you must call those methods (instead of e.g. "QGrahicsLineItem::setPen") ..
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Sets the fill color width used to paint the object.
+
+    If further set specific draw settings call will follow the flag
+    i_bImmediatelyApplySetting may be set to false to avoid unnecessary paint events.
+*/
 void CGraphObj::setFillColor( const QColor& i_clr, bool i_bImmediatelyApplySetting )
 //------------------------------------------------------------------------------
 {
@@ -1041,6 +1345,20 @@ void CGraphObj::setFillColor( const QColor& i_clr, bool i_bImmediatelyApplySetti
 } // setFillColor
 
 //------------------------------------------------------------------------------
+/*! @brief 
+*/
+QColor CGraphObj::getFillColor() const
+//------------------------------------------------------------------------------
+{
+    return m_drawSettings.getFillColor();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the fill style used to paint the object.
+
+    If further set specific draw settings call will follow the flag
+    i_bImmediatelyApplySetting may be set to false to avoid unnecessary paint events.
+*/
 void CGraphObj::setFillStyle( EFillStyle i_fillStyle, bool i_bImmediatelyApplySetting )
 //------------------------------------------------------------------------------
 {
@@ -1066,11 +1384,25 @@ void CGraphObj::setFillStyle( EFillStyle i_fillStyle, bool i_bImmediatelyApplySe
     }
 } // setFillStyle
 
+//------------------------------------------------------------------------------
+/*! @brief 
+*/
+EFillStyle CGraphObj::getFillStyle() const
+//------------------------------------------------------------------------------
+{
+    return m_drawSettings.getFillStyle();
+}
+
 /*==============================================================================
 public: // overridables (you must call those methods (instead of e.g. "QGrahicsLineItem::setPen") ..
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Sets the line record type used to paint the object.
+
+    If further set specific draw settings call will follow the flag
+    i_bImmediatelyApplySetting may be set to false to avoid unnecessary paint events.
+*/
 void CGraphObj::setLineRecordType( ELineRecordType i_lineRecordType, bool i_bImmediatelyApplySetting )
 //------------------------------------------------------------------------------
 {
@@ -1097,6 +1429,20 @@ void CGraphObj::setLineRecordType( ELineRecordType i_lineRecordType, bool i_bImm
 } // setLineRecordType
 
 //------------------------------------------------------------------------------
+/*! @brief 
+*/
+ELineRecordType CGraphObj::getLineRecordType() const
+//------------------------------------------------------------------------------
+{
+    return m_drawSettings.getLineRecordType();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the line extent used to paint the object.
+
+    If further set specific draw settings call will follow the flag
+    i_bImmediatelyApplySetting may be set to false to avoid unnecessary paint events.
+*/
 void CGraphObj::setLineExtent( int i_iLineExtent, bool i_bImmediatelyApplySetting )
 //------------------------------------------------------------------------------
 {
@@ -1122,11 +1468,25 @@ void CGraphObj::setLineExtent( int i_iLineExtent, bool i_bImmediatelyApplySettin
     }
 } // setLineExtent
 
+//------------------------------------------------------------------------------
+/*! @brief 
+*/
+int CGraphObj::getLineExtent() const
+//------------------------------------------------------------------------------
+{
+    return m_drawSettings.getLineExtent();
+}
+
 /*==============================================================================
 public: // overridables (you must call those methods (instead of e.g. "QGrahicsLineItem::setPen") ..
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Sets the line end style used to paint the object.
+
+    If further set specific draw settings call will follow the flag
+    i_bImmediatelyApplySetting may be set to false to avoid unnecessary paint events.
+*/
 void CGraphObj::setLineEndStyle( ELinePoint i_linePoint, ELineEndStyle i_endStyle, bool i_bImmediatelyApplySetting )
 //------------------------------------------------------------------------------
 {
@@ -1155,6 +1515,20 @@ void CGraphObj::setLineEndStyle( ELinePoint i_linePoint, ELineEndStyle i_endStyl
 } // setLineEndStyle
 
 //------------------------------------------------------------------------------
+/*! @brief 
+*/
+ELineEndStyle CGraphObj::getLineEndStyle(ELinePoint i_linePoint) const
+//------------------------------------------------------------------------------
+{
+    return m_drawSettings.getLineEndStyle(i_linePoint);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the line end base line type used to paint the object.
+
+    If further set specific draw settings call will follow the flag
+    i_bImmediatelyApplySetting may be set to false to avoid unnecessary paint events.
+*/
 void CGraphObj::setLineEndBaseLineType( ELinePoint i_linePoint, ELineEndBaseLineType i_baseLineType, bool i_bImmediatelyApplySetting )
 //------------------------------------------------------------------------------
 {
@@ -1183,6 +1557,20 @@ void CGraphObj::setLineEndBaseLineType( ELinePoint i_linePoint, ELineEndBaseLine
 } // setLineEndBaseLineType
 
 //------------------------------------------------------------------------------
+/*! @brief 
+*/
+ELineEndBaseLineType CGraphObj::getLineEndBaseLineType( ELinePoint i_linePoint) const
+//------------------------------------------------------------------------------
+{
+    return m_drawSettings.getLineEndBaseLineType(i_linePoint);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the line end fill style used to paint the object.
+
+    If further set specific draw settings call will follow the flag
+    i_bImmediatelyApplySetting may be set to false to avoid unnecessary paint events.
+*/
 void CGraphObj::setLineEndFillStyle( ELinePoint i_linePoint, ELineEndFillStyle i_fillStyle, bool i_bImmediatelyApplySetting )
 //------------------------------------------------------------------------------
 {
@@ -1211,6 +1599,20 @@ void CGraphObj::setLineEndFillStyle( ELinePoint i_linePoint, ELineEndFillStyle i
 } // setLineEndFillStyle
 
 //------------------------------------------------------------------------------
+/*! @brief 
+*/
+ELineEndFillStyle CGraphObj::getLineEndFillStyle(ELinePoint i_linePoint) const
+//------------------------------------------------------------------------------
+{
+    return m_drawSettings.getLineEndFillStyle(i_linePoint);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the line end width used to paint the object.
+
+    If further set specific draw settings call will follow the flag
+    i_bImmediatelyApplySetting may be set to false to avoid unnecessary paint events.
+*/
 void CGraphObj::setLineEndWidth( ELinePoint i_linePoint, ELineEndWidth i_width, bool i_bImmediatelyApplySetting )
 //------------------------------------------------------------------------------
 {
@@ -1239,6 +1641,20 @@ void CGraphObj::setLineEndWidth( ELinePoint i_linePoint, ELineEndWidth i_width, 
 } // setLineEndWidth
 
 //------------------------------------------------------------------------------
+/*! @brief 
+*/
+ELineEndWidth CGraphObj::getLineEndWidth(ELinePoint i_linePoint) const
+//------------------------------------------------------------------------------
+{
+    return m_drawSettings.getLineEndWidth(i_linePoint);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the line end length used to paint the object.
+
+    If further set specific draw settings call will follow the flag
+    i_bImmediatelyApplySetting may be set to false to avoid unnecessary paint events.
+*/
 void CGraphObj::setLineEndLength( ELinePoint i_linePoint, ELineEndLength i_length, bool i_bImmediatelyApplySetting )
 //------------------------------------------------------------------------------
 {
@@ -1266,11 +1682,25 @@ void CGraphObj::setLineEndLength( ELinePoint i_linePoint, ELineEndLength i_lengt
     }
 } // setLineEndLength
 
+//------------------------------------------------------------------------------
+/*! @brief 
+*/
+ELineEndLength CGraphObj::getLineEndLength( ELinePoint i_linePoint ) const
+//------------------------------------------------------------------------------
+{
+    return m_drawSettings.getLineEndLength(i_linePoint);
+}
+
 /*==============================================================================
 public: // overridables (you must call those methods (instead of e.g. "QGrahicsLineItem::setPen") ..
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Sets the text color used to paint the object.
+
+    If further set specific draw settings call will follow the flag
+    i_bImmediatelyApplySetting may be set to false to avoid unnecessary paint events.
+*/
 void CGraphObj::setTextColor( const QColor& i_clr, bool i_bImmediatelyApplySetting )
 //------------------------------------------------------------------------------
 {
@@ -1297,6 +1727,20 @@ void CGraphObj::setTextColor( const QColor& i_clr, bool i_bImmediatelyApplySetti
 } // setTextColor
 
 //------------------------------------------------------------------------------
+/*! @brief 
+*/
+QColor CGraphObj::getTextColor() const
+//------------------------------------------------------------------------------
+{
+    return m_drawSettings.getTextColor();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the font used to paint the object.
+
+    If further set specific draw settings call will follow the flag
+    i_bImmediatelyApplySetting may be set to false to avoid unnecessary paint events.
+*/
 void CGraphObj::setTextFont( const QFont& i_fnt, bool i_bImmediatelyApplySetting )
 //------------------------------------------------------------------------------
 {
@@ -1323,6 +1767,20 @@ void CGraphObj::setTextFont( const QFont& i_fnt, bool i_bImmediatelyApplySetting
 } // setTextFont
 
 //------------------------------------------------------------------------------
+/*! @brief 
+*/
+QFont CGraphObj::getTextFont() const
+//------------------------------------------------------------------------------
+{
+    return m_drawSettings.getTextFont();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the text size used to paint the object.
+
+    If further set specific draw settings call will follow the flag
+    i_bImmediatelyApplySetting may be set to false to avoid unnecessary paint events.
+*/
 void CGraphObj::setTextSize( ETextSize i_size, bool i_bImmediatelyApplySetting )
 //------------------------------------------------------------------------------
 {
@@ -1349,6 +1807,20 @@ void CGraphObj::setTextSize( ETextSize i_size, bool i_bImmediatelyApplySetting )
 } // setTextSize
 
 //------------------------------------------------------------------------------
+/*! @brief 
+*/
+ETextSize CGraphObj::getTextSize() const
+//------------------------------------------------------------------------------
+{
+    return m_drawSettings.getTextSize();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the text style used to paint the object.
+
+    If further set specific draw settings call will follow the flag
+    i_bImmediatelyApplySetting may be set to false to avoid unnecessary paint events.
+*/
 void CGraphObj::setTextStyle( ETextStyle i_style, bool i_bImmediatelyApplySetting )
 //------------------------------------------------------------------------------
 {
@@ -1375,6 +1847,20 @@ void CGraphObj::setTextStyle( ETextStyle i_style, bool i_bImmediatelyApplySettin
 } // setTextStyle
 
 //------------------------------------------------------------------------------
+/*! @brief 
+*/
+ETextStyle CGraphObj::getTextStyle() const
+//------------------------------------------------------------------------------
+{
+    return m_drawSettings.getTextStyle();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the text effect used to paint the object.
+
+    If further set specific draw settings call will follow the flag
+    i_bImmediatelyApplySetting may be set to false to avoid unnecessary paint events.
+*/
 void CGraphObj::setTextEffect( ETextEffect i_effect, bool i_bImmediatelyApplySetting )
 //------------------------------------------------------------------------------
 {
@@ -1400,17 +1886,26 @@ void CGraphObj::setTextEffect( ETextEffect i_effect, bool i_bImmediatelyApplySet
     }
 } // setTextEffect
 
+//------------------------------------------------------------------------------
+/*! @brief 
+*/
+ETextEffect CGraphObj::getTextEffect() const
+//------------------------------------------------------------------------------
+{
+    return m_drawSettings.getTextEffect();
+}
+
 /*==============================================================================
 public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObj::setMinimumWidth( double i_fWidth )
+void CGraphObj::setMinimumWidth( const CPhysVal& i_physValWidth )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString::number(i_fWidth, 'f', 1);
+        strMthInArgs = i_physValWidth.toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -1419,52 +1914,53 @@ void CGraphObj::setMinimumWidth( double i_fWidth )
         /* strMethod    */ "CGraphObj::setMinimumWidth",
         /* strAddInfo   */ strMthInArgs );
 
-    m_sizMinimum.setWidth(i_fWidth);
+    m_physValSizeMinimum.setWidth(i_physValWidth);
 
-    if (m_sizMinimum.width() > 0.0) {
-        QSizeF sizCurr = getSize();
-        if (sizCurr.width() < m_sizMinimum.width()) {
-            sizCurr.setWidth(m_sizMinimum.width());
-            setSize(sizCurr);
+    if (m_physValSizeMinimum.width() > 0.0) {
+        CPhysValSize physValSize = getSize();
+        if (physValSize.width() < m_physValSizeMinimum.width()) {
+            physValSize.setWidth(m_physValSizeMinimum.width());
+            setSize(physValSize);
         }
     }
-} // setMinimumWidth
+}
 
 //------------------------------------------------------------------------------
 bool CGraphObj::hasMinimumWidth() const
 //------------------------------------------------------------------------------
 {
     bool bHas = false;
-    if (m_sizFixed.width() > 0.0) {
+    if (m_physValSizeFixed.width() > 0.0) {
         bHas = true;
     }
-    else if (m_sizMinimum.width() > 0.0) {
+    else if (m_physValSizeMinimum.width() > 0.0) {
         bHas = true;
     }
     return bHas;
 }
 
 //------------------------------------------------------------------------------
-double CGraphObj::getMinimumWidth() const
+CPhysVal CGraphObj::getMinimumWidth() const
 //------------------------------------------------------------------------------
 {
-    double fWidth = 0.0;
-    if (m_sizFixed.width() > 0.0) {
-        fWidth = m_sizFixed.width();
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    CPhysVal physValWidth(0.0, drawingSize.unit(), drawingSize.resolution());
+    if (m_physValSizeFixed.width() > 0.0) {
+        physValWidth = m_physValSizeFixed.width();
     }
-    else if (m_sizMinimum.width() > 0.0) {
-        fWidth = m_sizMinimum.width();
+    else if (m_physValSizeMinimum.width() > 0.0) {
+        physValWidth = m_physValSizeMinimum.width();
     }
-    return fWidth;
+    return physValWidth;
 }
 
 //------------------------------------------------------------------------------
-void CGraphObj::setMinimumHeight( double i_fHeight )
+void CGraphObj::setMinimumHeight( const CPhysVal& i_physValHeight )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString::number(i_fHeight, 'f', 1);
+        strMthInArgs = i_physValHeight.toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -1473,52 +1969,53 @@ void CGraphObj::setMinimumHeight( double i_fHeight )
         /* strMethod    */ "CGraphObj::setMinimumHeight",
         /* strAddInfo   */ strMthInArgs );
 
-    m_sizMinimum.setHeight(i_fHeight);
+    m_physValSizeMinimum.setHeight(i_physValHeight);
 
-    if (m_sizMinimum.height() > 0.0) {
-        QSizeF sizCurr = getSize();
-        if (sizCurr.height() < m_sizMinimum.height()) {
-            sizCurr.setHeight(m_sizMinimum.height());
-            setSize(sizCurr);
+    if (m_physValSizeMinimum.height() > 0.0) {
+        CPhysValSize physValSize = getSize();
+        if (physValSize.height() < m_physValSizeMinimum.height()) {
+            physValSize.setHeight(m_physValSizeMinimum.height());
+            setSize(physValSize);
         }
     }
-} // setMinimumHeight
+}
 
 //------------------------------------------------------------------------------
 bool CGraphObj::hasMinimumHeight() const
 //------------------------------------------------------------------------------
 {
     bool bHas = false;
-    if (m_sizFixed.height() > 0.0) {
+    if (m_physValSizeFixed.height() > 0.0) {
         bHas = true;
     }
-    else if (m_sizMinimum.height() > 0.0) {
+    else if (m_physValSizeMinimum.height() > 0.0) {
         bHas = true;
     }
     return bHas;
 }
 
 //------------------------------------------------------------------------------
-double CGraphObj::getMinimumHeight() const
+CPhysVal CGraphObj::getMinimumHeight() const
 //------------------------------------------------------------------------------
 {
-    double fHeight = 0.0;
-    if (m_sizFixed.height() > 0.0) {
-        fHeight = m_sizFixed.height();
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    CPhysVal physValHeight(0.0, drawingSize.unit(), drawingSize.resolution());
+    if (m_physValSizeFixed.height() > 0.0) {
+        physValHeight = m_physValSizeFixed.height();
     }
-    else if (m_sizMinimum.height() > 0.0) {
-        fHeight = m_sizMinimum.height();
+    else if (m_physValSizeMinimum.height() > 0.0) {
+        physValHeight = m_physValSizeMinimum.height();
     }
-    return fHeight;
+    return physValHeight;
 }
 
 //------------------------------------------------------------------------------
-void CGraphObj::setMinimumSize( const QSize& i_siz )
+void CGraphObj::setMinimumSize( const CPhysValSize& i_physValSize )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = size2Str(i_siz);
+        strMthInArgs = i_physValSize.toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -1527,57 +2024,57 @@ void CGraphObj::setMinimumSize( const QSize& i_siz )
         /* strMethod    */ "CGraphObj::setMinimumSize",
         /* strAddInfo   */ strMthInArgs );
 
-    m_sizMinimum = i_siz;
+    m_physValSizeMinimum = i_physValSize;
 
-    if (m_sizMinimum.isValid()) {
-        QSizeF sizCurr = getSize();
-        if (sizCurr.width() < m_sizMinimum.width() || sizCurr.height() < m_sizMinimum.height()) {
-            if (sizCurr.width() < m_sizMinimum.width()) {
-                sizCurr.setWidth( m_sizMinimum.width() );
+    if (m_physValSizeMinimum.isValid()) {
+        CPhysValSize physValSize = getSize();
+        if (physValSize.width() < m_physValSizeMinimum.width() || physValSize.height() < m_physValSizeMinimum.height()) {
+            if (physValSize.width() < m_physValSizeMinimum.width()) {
+                physValSize.setWidth( m_physValSizeMinimum.width() );
             }
-            if (sizCurr.height() < m_sizMinimum.height()) {
-                sizCurr.setHeight( m_sizMinimum.height() );
+            if (physValSize.height() < m_physValSizeMinimum.height()) {
+                physValSize.setHeight( m_physValSizeMinimum.height() );
             }
-            setSize(sizCurr);
+            setSize(physValSize);
         }
     }
-} // setMinimumSize
+}
 
 //------------------------------------------------------------------------------
 bool CGraphObj::hasMinimumSize() const
 //------------------------------------------------------------------------------
 {
     bool bHas = false;
-    if (m_sizFixed.isValid() ) {
+    if (m_physValSizeFixed.isValid() ) {
         bHas = true;
     }
-    else if (m_sizMinimum.isValid()) {
+    else if (m_physValSizeMinimum.isValid()) {
         bHas = true;
     }
     return bHas;
 }
 
 //------------------------------------------------------------------------------
-QSize CGraphObj::getMinimumSize() const
+CPhysValSize CGraphObj::getMinimumSize() const
 //------------------------------------------------------------------------------
 {
-    QSize siz;
-    if (m_sizFixed.isValid()) {
-        siz = m_sizFixed;
+    CPhysValSize physValSize;
+    if (m_physValSizeFixed.isValid()) {
+        physValSize = m_physValSizeFixed;
     }
-    else if (m_sizMinimum.isValid()) {
-        siz = m_sizMinimum;
+    else if (m_physValSizeMinimum.isValid()) {
+        physValSize = m_physValSizeMinimum;
     }
-    return siz;
+    return physValSize;
 }
 
 //------------------------------------------------------------------------------
-void CGraphObj::setMaximumWidth( double i_fWidth )
+void CGraphObj::setMaximumWidth( const CPhysVal& i_physValWidth )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString::number(i_fWidth, 'f', 1);
+        strMthInArgs = i_physValWidth.toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -1586,52 +2083,53 @@ void CGraphObj::setMaximumWidth( double i_fWidth )
         /* strMethod    */ "CGraphObj::setMaximumWidth",
         /* strAddInfo   */ strMthInArgs );
 
-    m_sizMaximum.setWidth(i_fWidth);
+    m_physValSizeMaximum.setWidth(i_physValWidth);
 
-    if (m_sizMaximum.width() > 0.0) {
-        QSizeF sizCurr = getSize();
-        if (sizCurr.width() > m_sizMaximum.width()) {
-            sizCurr.setWidth( m_sizMaximum.width() );
-            setSize(sizCurr);
+    if (m_physValSizeMaximum.width() > 0.0) {
+        CPhysValSize physValSize = getSize();
+        if (physValSize.width() > m_physValSizeMaximum.width()) {
+            physValSize.setWidth( m_physValSizeMaximum.width() );
+            setSize(physValSize);
         }
     }
-} // setMaximumWidth
+}
 
 //------------------------------------------------------------------------------
 bool CGraphObj::hasMaximumWidth() const
 //------------------------------------------------------------------------------
 {
     bool bHas = false;
-    if (m_sizFixed.width() > 0.0) {
+    if (m_physValSizeFixed.width() > 0.0) {
         bHas = true;
     }
-    else if (m_sizMaximum.width() > 0.0) {
+    else if (m_physValSizeMaximum.width() > 0.0) {
         bHas = true;
     }
     return bHas;
 }
 
 //------------------------------------------------------------------------------
-double CGraphObj::getMaximumWidth() const
+CPhysVal CGraphObj::getMaximumWidth() const
 //------------------------------------------------------------------------------
 {
-    double fWidth = 0.0;
-    if (m_sizFixed.width() > 0.0) {
-        fWidth = m_sizFixed.width();
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    CPhysVal physValWidth(0.0, drawingSize.unit(), drawingSize.resolution());
+    if (m_physValSizeFixed.width() > 0.0) {
+        physValWidth = m_physValSizeFixed.width();
     }
-    else if (m_sizMaximum.width() > 0.0) {
-        fWidth = m_sizMaximum.width();
+    else if (m_physValSizeMaximum.width() > 0.0) {
+        physValWidth = m_physValSizeMaximum.width();
     }
-    return fWidth;
+    return physValWidth;
 }
 
 //------------------------------------------------------------------------------
-void CGraphObj::setMaximumHeight( double i_fHeight )
+void CGraphObj::setMaximumHeight( const CPhysVal& i_physValHeight )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString::number(i_fHeight);
+        strMthInArgs = i_physValHeight.toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -1640,52 +2138,53 @@ void CGraphObj::setMaximumHeight( double i_fHeight )
         /* strMethod    */ "CGraphObj::setMaximumHeight",
         /* strAddInfo   */ strMthInArgs );
 
-    m_sizMaximum.setHeight(i_fHeight);
+    m_physValSizeMaximum.setHeight(i_physValHeight);
 
-    if (m_sizMaximum.height() > 0.0) {
-        QSizeF sizCurr = getSize();
-        if (sizCurr.height() > m_sizMaximum.height()) {
-            sizCurr.setHeight( m_sizMaximum.height() );
-            setSize(sizCurr);
+    if (m_physValSizeMaximum.height() > 0.0) {
+        CPhysValSize physValSize = getSize();
+        if (physValSize.height() > m_physValSizeMaximum.height()) {
+            physValSize.setHeight( m_physValSizeMaximum.height() );
+            setSize(physValSize);
         }
     }
-} // setMaximumHeight
+}
 
 //------------------------------------------------------------------------------
 bool CGraphObj::hasMaximumHeight() const
 //------------------------------------------------------------------------------
 {
     bool bHas = false;
-    if (m_sizFixed.height() > 0.0) {
+    if (m_physValSizeFixed.height() > 0.0) {
         bHas = true;
     }
-    else if (m_sizMaximum.height() > 0.0) {
+    else if (m_physValSizeMaximum.height() > 0.0) {
         bHas = true;
     }
     return bHas;
 }
 
 //------------------------------------------------------------------------------
-double CGraphObj::getMaximumHeight() const
+CPhysVal CGraphObj::getMaximumHeight() const
 //------------------------------------------------------------------------------
 {
-    double fHeight = 0.0;
-    if (m_sizFixed.height() > 0.0) {
-        fHeight = m_sizFixed.height();
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    CPhysVal physValHeight(0.0, drawingSize.unit(), drawingSize.resolution());
+    if (m_physValSizeFixed.height() > 0.0) {
+        physValHeight = m_physValSizeFixed.height();
     }
-    else if (m_sizMaximum.height() > 0.0) {
-        fHeight = m_sizMaximum.height();
+    else if (m_physValSizeMaximum.height() > 0.0) {
+        physValHeight = m_physValSizeMaximum.height();
     }
-    return fHeight;
+    return physValHeight;
 }
 
 //------------------------------------------------------------------------------
-void CGraphObj::setMaximumSize( const QSize& i_siz )
+void CGraphObj::setMaximumSize( const CPhysValSize& i_physValSize )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = size2Str(i_siz);
+        strMthInArgs = i_physValSize.toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -1694,57 +2193,58 @@ void CGraphObj::setMaximumSize( const QSize& i_siz )
         /* strMethod    */ "CGraphObj::setMaximumSize",
         /* strAddInfo   */ strMthInArgs );
 
-    m_sizMaximum = i_siz;
+    m_physValSizeMaximum = i_physValSize;
 
-    if (m_sizMaximum.isValid()) {
-        QSizeF sizCurr = getSize();
-        if (sizCurr.width() > m_sizMaximum.width() || sizCurr.height() > m_sizMaximum.height()) {
-            if (sizCurr.width() > m_sizMaximum.width()) {
-                sizCurr.setWidth( m_sizMaximum.width() );
+    if (m_physValSizeMaximum.isValid()) {
+        CPhysValSize physValSize = getSize();
+        if (physValSize.width() > m_physValSizeMaximum.width()
+         || physValSize.height() > m_physValSizeMaximum.height()) {
+            if (physValSize.width() > m_physValSizeMaximum.width()) {
+                physValSize.setWidth( m_physValSizeMaximum.width() );
             }
-            if (sizCurr.height() > m_sizMaximum.height()) {
-                sizCurr.setHeight( m_sizMaximum.height() );
+            if (physValSize.height() > m_physValSizeMaximum.height()) {
+                physValSize.setHeight( m_physValSizeMaximum.height() );
             }
-            setSize(sizCurr);
+            setSize(physValSize);
         }
     }
-} // setMaximumSize
+}
 
 //------------------------------------------------------------------------------
 bool CGraphObj::hasMaximumSize() const
 //------------------------------------------------------------------------------
 {
     bool bHas = false;
-    if (m_sizFixed.isValid()) {
+    if (m_physValSizeFixed.isValid()) {
         bHas = true;
     }
-    else if (m_sizMaximum.isValid()) {
+    else if (m_physValSizeMaximum.isValid()) {
         bHas = true;
     }
     return bHas;
 }
 
 //------------------------------------------------------------------------------
-QSize CGraphObj::getMaximumSize() const
+CPhysValSize CGraphObj::getMaximumSize() const
 //------------------------------------------------------------------------------
 {
-    QSize siz;
-    if (m_sizFixed.isValid()) {
-        siz = m_sizFixed;
+    CPhysValSize physValSize;
+    if (m_physValSizeFixed.isValid()) {
+        physValSize = m_physValSizeFixed;
     }
-    else if (m_sizMaximum.isValid()) {
-        siz = m_sizMaximum;
+    else if (m_physValSizeMaximum.isValid()) {
+        physValSize = m_physValSizeMaximum;
     }
-    return siz;
+    return physValSize;
 }
 
 //------------------------------------------------------------------------------
-void CGraphObj::setFixedWidth( double i_fWidth )
+void CGraphObj::setFixedWidth( const CPhysVal& i_physValWidth )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString::number(i_fWidth, 'f', 1);
+        strMthInArgs = i_physValWidth.toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -1753,52 +2253,55 @@ void CGraphObj::setFixedWidth( double i_fWidth )
         /* strMethod    */ "CGraphObj::setFixedWidth",
         /* strAddInfo   */ strMthInArgs );
 
-    m_sizFixed.setWidth(i_fWidth);
+    m_physValSizeFixed.setWidth(i_physValWidth);
 
-    if (m_sizFixed.width() > 0.0) {
-        QSizeF sizCurr = getSize();
-        if (sizCurr.width() != m_sizFixed.width()) {
-            sizCurr.setWidth( m_sizFixed.width() );
-            setSize(sizCurr);
+    if (m_physValSizeFixed.width() > 0.0) {
+        CPhysValSize physValSize = getSize();
+        if (physValSize.width() != m_physValSizeFixed.width()) {
+            physValSize.setWidth( m_physValSizeFixed.width() );
+            setSize(physValSize);
         }
     }
-} // setFixedWidth
+}
 
 //------------------------------------------------------------------------------
 bool CGraphObj::hasFixedWidth() const
 //------------------------------------------------------------------------------
 {
     bool bHas = false;
-    if (m_sizFixed.width() > 0.0) {
+    if (m_physValSizeFixed.width() > 0.0) {
         bHas = true;
     }
-    else if ((m_sizMinimum.width() > 0.0) && (m_sizMinimum.width() == m_sizMaximum.width())) {
+    else if ((m_physValSizeMinimum.width() > 0.0)
+          && (m_physValSizeMinimum.width() == m_physValSizeMaximum.width())) {
         bHas = true;
     }
     return bHas;
 }
 
 //------------------------------------------------------------------------------
-double CGraphObj::getFixedWidth() const
+CPhysVal CGraphObj::getFixedWidth() const
 //------------------------------------------------------------------------------
 {
-    double fWidth = 0.0;
-    if (m_sizFixed.width() > 0.0) {
-        fWidth = m_sizFixed.width();
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    CPhysVal physValWidth(0.0, drawingSize.unit(), drawingSize.resolution());
+    if (m_physValSizeFixed.width() > 0.0) {
+        physValWidth = m_physValSizeFixed.width();
     }
-    else if ((m_sizMinimum.width() > 0.0) && (m_sizMinimum.width() == m_sizMaximum.width())) {
-        fWidth = m_sizMinimum.width();
+    else if ((m_physValSizeMinimum.width() > 0.0)
+          && (m_physValSizeMinimum.width() == m_physValSizeMaximum.width())) {
+        physValWidth = m_physValSizeMinimum.width();
     }
-    return fWidth;
+    return physValWidth;
 }
 
 //------------------------------------------------------------------------------
-void CGraphObj::setFixedHeight( double i_fHeight )
+void CGraphObj::setFixedHeight( const CPhysVal& i_physValHeight )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString::number(i_fHeight, 'f', 1);
+        strMthInArgs = i_physValHeight.toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -1807,52 +2310,55 @@ void CGraphObj::setFixedHeight( double i_fHeight )
         /* strMethod    */ "CGraphObj::setFixedHeight",
         /* strAddInfo   */ strMthInArgs );
 
-    m_sizFixed.setHeight(i_fHeight);
+    m_physValSizeFixed.setHeight(i_physValHeight);
 
-    if (m_sizFixed.height() > 0.0) {
-        QSizeF sizCurr = getSize();
-        if (sizCurr.height() != m_sizFixed.height()) {
-            sizCurr.setHeight( m_sizFixed.height() );
-            setSize(sizCurr);
+    if (m_physValSizeFixed.height() > 0.0) {
+        CPhysValSize physValSize = getSize();
+        if (physValSize.height() != m_physValSizeFixed.height()) {
+            physValSize.setHeight( m_physValSizeFixed.height() );
+            setSize(physValSize);
         }
     }
-} // setFixedHeight
+}
 
 //------------------------------------------------------------------------------
 bool CGraphObj::hasFixedHeight() const
 //------------------------------------------------------------------------------
 {
     bool bHas = false;
-    if (m_sizFixed.height() > 0.0) {
+    if (m_physValSizeFixed.height() > 0.0) {
         bHas = true;
     }
-    else if ((m_sizMinimum.height() > 0.0) && (m_sizMinimum.height() == m_sizMaximum.height())) {
+    else if ((m_physValSizeMinimum.height() > 0.0)
+          && (m_physValSizeMinimum.height() == m_physValSizeMaximum.height())) {
         bHas = true;
     }
     return bHas;
 }
 
 //------------------------------------------------------------------------------
-double CGraphObj::getFixedHeight() const
+CPhysVal CGraphObj::getFixedHeight() const
 //------------------------------------------------------------------------------
 {
-    double fHeight = 0.0;
-    if (m_sizFixed.height() > 0.0) {
-        fHeight = m_sizFixed.height();
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    CPhysVal physValHeight(0.0, drawingSize.unit(), drawingSize.resolution());
+    if (m_physValSizeFixed.height() > 0.0) {
+        physValHeight = m_physValSizeFixed.height();
     }
-    else if ((m_sizMinimum.height() > 0.0) && (m_sizMinimum.height() == m_sizMaximum.height())) {
-        fHeight = m_sizMinimum.height();
+    else if ((m_physValSizeMinimum.height() > 0.0)
+          && (m_physValSizeMinimum.height() == m_physValSizeMaximum.height())) {
+        physValHeight = m_physValSizeMinimum.height();
     }
-    return fHeight;
+    return physValHeight;
 }
 
 //------------------------------------------------------------------------------
-void CGraphObj::setFixedSize( const QSize& i_siz )
+void CGraphObj::setFixedSize( const CPhysValSize& i_physValSize )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = size2Str(i_siz);
+        strMthInArgs = i_physValSize.toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -1861,33 +2367,34 @@ void CGraphObj::setFixedSize( const QSize& i_siz )
         /* strMethod    */ "CGraphObj::setFixedSize",
         /* strAddInfo   */ strMthInArgs );
 
-    m_sizFixed = i_siz;
+    m_physValSizeFixed = i_physValSize;
 
-    if (m_sizFixed.isValid()) {
-        QSizeF sizCurr = getSize();
-
-        if (sizCurr.width() != m_sizFixed.width() || sizCurr.height() != m_sizFixed.height()) {
-            if (sizCurr.width() != m_sizFixed.width()) {
-                sizCurr.setWidth( m_sizFixed.width() );
+    if (m_physValSizeFixed.isValid()) {
+        CPhysValSize physValSize = getSize();
+        if (physValSize.width() != m_physValSizeFixed.width()
+         || physValSize.height() != m_physValSizeFixed.height()) {
+            if (physValSize.width() != m_physValSizeFixed.width()) {
+                physValSize.setWidth( m_physValSizeFixed.width() );
             }
-            if (sizCurr.height() != m_sizFixed.height()) {
-                sizCurr.setHeight( m_sizFixed.height() );
+            if (physValSize.height() != m_physValSizeFixed.height()) {
+                physValSize.setHeight( m_physValSizeFixed.height() );
             }
-            setSize(sizCurr);
+            setSize(physValSize);
         }
     }
-} // setFixedSize
+}
 
 //------------------------------------------------------------------------------
 bool CGraphObj::hasFixedSize() const
 //------------------------------------------------------------------------------
 {
     bool bHas = false;
-    if (m_sizFixed.isValid()) {
+    if (m_physValSizeFixed.isValid()) {
         bHas = true;
     }
-    else if (m_sizMinimum.isValid() && m_sizMaximum.isValid()) {
-        if ((m_sizMinimum.width() == m_sizMaximum.width()) && (m_sizMinimum.height() == m_sizMaximum.height())) {
+    else if (m_physValSizeMinimum.isValid() && m_physValSizeMaximum.isValid()) {
+        if ((m_physValSizeMinimum.width() == m_physValSizeMaximum.width())
+         && (m_physValSizeMinimum.height() == m_physValSizeMaximum.height())) {
             bHas = true;
         }
     }
@@ -1895,19 +2402,20 @@ bool CGraphObj::hasFixedSize() const
 }
 
 //------------------------------------------------------------------------------
-QSize CGraphObj::getFixedSize() const
+CPhysValSize CGraphObj::getFixedSize() const
 //------------------------------------------------------------------------------
 {
-    QSize siz;
-    if (m_sizFixed.isValid()) {
-        siz = m_sizFixed;
+    CPhysValSize physValSize;
+    if (m_physValSizeFixed.isValid()) {
+        physValSize = m_physValSizeFixed;
     }
-    else if (m_sizMinimum.isValid() && m_sizMaximum.isValid()) {
-        if ((m_sizMinimum.width() == m_sizMaximum.width()) && (m_sizMinimum.height() == m_sizMaximum.height())) {
-            siz = m_sizMinimum;
+    else if (m_physValSizeMinimum.isValid() && m_physValSizeMaximum.isValid()) {
+        if ((m_physValSizeMinimum.width() == m_physValSizeMaximum.width())
+         && (m_physValSizeMinimum.height() == m_physValSizeMaximum.height())) {
+            physValSize = m_physValSizeMinimum;
         }
     }
-    return siz;
+    return physValSize;
 }
 
 /*==============================================================================
@@ -2033,6 +2541,7 @@ void CGraphObj::clearAlignments()
 public: // overridables
 ==============================================================================*/
 
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
 //------------------------------------------------------------------------------
 /*! Accepts the current coordindates of the graphic item as the original coordinates.
 
@@ -2082,6 +2591,39 @@ void CGraphObj::acceptCurrentAsOriginalCoors()
         m_pTree->onTreeEntryChanged(this);
     }
 } // acceptCurrentAsOriginalCoors
+#endif
+
+/*==============================================================================
+public: // must overridables
+==============================================================================*/
+
+/*------------------------------------------------------------------------------
+void CGraphObj::setWidth( const CPhysVal& i_physValWidth )
+------------------------------------------------------------------------------*/
+
+/*------------------------------------------------------------------------------
+void CGraphObj::setHeight( const CPhysVal& i_physValHeight )
+------------------------------------------------------------------------------*/
+
+/*------------------------------------------------------------------------------
+void CGraphObj::setSize( const CPhysVal& i_physValWidth, const CPhysVal& i_physValHeight )
+------------------------------------------------------------------------------*/
+
+/*------------------------------------------------------------------------------
+void CGraphObj::setSize( const CPhysValSize& i_physValSize )
+------------------------------------------------------------------------------*/
+
+/*------------------------------------------------------------------------------
+bool CGraphObj::hasBoundingRect() const
+------------------------------------------------------------------------------*/
+
+/*------------------------------------------------------------------------------
+bool CGraphObj::hasLineShapePoints() const
+------------------------------------------------------------------------------*/
+
+/*------------------------------------------------------------------------------
+bool CGraphObj::hasRotationSelectionPoints() const
+------------------------------------------------------------------------------*/
 
 /*==============================================================================
 public: // overridables
@@ -2108,62 +2650,83 @@ public: // overridables
 
     @return Position of the item in parent coordinates.
 */
-QPointF CGraphObj::getPos( ECoordinatesVersion i_version ) const
+CPhysValPoint CGraphObj::getPos( ECoordinatesVersion i_version ) const
 //------------------------------------------------------------------------------
 {
-    QPointF ptPos;
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    CPhysValPoint physValPoint(drawingSize.unit(), drawingSize.resolution().getVal());
     if (i_version == ECoordinatesVersion::Original) {
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
         ptPos = m_ptPosOrig;
+#endif
     }
     else {
         const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
         if (pGraphicsItem != nullptr) {
-            ptPos = pGraphicsItem->pos();
+            physValPoint = pGraphicsItem->pos();
         }
     }
-    return ptPos;
+    return physValPoint;
 }
 
 //------------------------------------------------------------------------------
-double CGraphObj::getWidth( ECoordinatesVersion i_version ) const
+CPhysVal CGraphObj::getWidth( ECoordinatesVersion i_version ) const
 //------------------------------------------------------------------------------
 {
-    double fWidth = 0.0;
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    CPhysVal physValWidth(0.0, drawingSize.unit(), drawingSize.resolution().getVal());
     if (i_version == ECoordinatesVersion::Original) {
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
         fWidth = m_sizOrig.width();
+#endif
     }
     else {
-        fWidth = m_rctCurr.width();
+        const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
+        if (pGraphicsItem != nullptr) {
+            physValWidth = pGraphicsItem->boundingRect().width();
+        }
     }
-    return fWidth;
+    return physValWidth;
 }
 
 //------------------------------------------------------------------------------
-double CGraphObj::getHeight( ECoordinatesVersion i_version ) const
+CPhysVal CGraphObj::getHeight( ECoordinatesVersion i_version ) const
 //------------------------------------------------------------------------------
 {
-    double fHeight = 0.0;
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    CPhysVal physValHeight(0.0, drawingSize.unit(), drawingSize.resolution().getVal());
     if (i_version == ECoordinatesVersion::Original) {
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
         fHeight = m_sizOrig.height();
+#endif
     }
     else {
-        fHeight = m_rctCurr.height();
+        const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
+        if (pGraphicsItem != nullptr) {
+            physValHeight = pGraphicsItem->boundingRect().height();
+        }
     }
-    return fHeight;
+    return physValHeight;
 }
 
 //------------------------------------------------------------------------------
-QSizeF CGraphObj::getSize( ECoordinatesVersion i_version ) const
+CPhysValSize CGraphObj::getSize( ECoordinatesVersion i_version ) const
 //------------------------------------------------------------------------------
 {
-    QSizeF siz;
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    CPhysValSize physValSize(drawingSize.unit(), drawingSize.resolution().getVal());
     if (i_version == ECoordinatesVersion::Original) {
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
         siz = m_sizOrig;
+#endif
     }
     else {
-        siz = m_rctCurr.size();
+        const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
+        if (pGraphicsItem != nullptr) {
+            physValSize = pGraphicsItem->boundingRect().size();
+        }
     }
-    return siz;
+    return physValSize;
 }
 
 /*==============================================================================
@@ -2185,7 +2748,9 @@ void CGraphObj::setRotationAngleInDegree( double i_fRotAngle_deg )
         /* strMethod    */ "CGraphObj::setRotationAngleInDegree",
         /* strAddInfo   */ strMthInArgs );
 
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
     m_fRotAngleCurr_deg = i_fRotAngle_deg;
+#endif
 
     updateTransform();
 }
@@ -2195,12 +2760,14 @@ double CGraphObj::getRotationAngleInDegree( ECoordinatesVersion i_version )
 //------------------------------------------------------------------------------
 {
     double fRotAngle_deg = 0.0;
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
     if (i_version == ECoordinatesVersion::Original) {
         fRotAngle_deg = m_fRotAngleOrig_deg;
     }
     else {
         fRotAngle_deg = m_fRotAngleCurr_deg;
     }
+#endif
     return fRotAngle_deg;
 }
 
@@ -2316,8 +2883,23 @@ void CGraphObj::setEditResizeMode( EEditResizeMode i_editResizeMode )
 }
 
 /*==============================================================================
+public: // must overridables
+==============================================================================*/
+
+/*------------------------------------------------------------------------------
+bool CGraphObj::setIsHit()
+------------------------------------------------------------------------------*/
+
+/*==============================================================================
 public: // overridables
 ==============================================================================*/
+
+//------------------------------------------------------------------------------
+bool CGraphObj::isHit() const
+//------------------------------------------------------------------------------
+{
+    return m_bIsHit;
+}
 
 //------------------------------------------------------------------------------
 bool CGraphObj::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) const
@@ -2363,7 +2945,9 @@ bool CGraphObj::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) const
             }
         }
         if (bIsHit && o_pHitInfo != nullptr) {
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
             o_pHitInfo->setCursor( Math::deg2Rad(m_fRotAngleCurr_deg) );
+#endif
         }
     }
 
@@ -2439,6 +3023,13 @@ void CGraphObj::setStackingOrderValue( double i_fZValue )
     }
 }
 
+//------------------------------------------------------------------------------
+double CGraphObj::getStackingOrderValue() const
+//------------------------------------------------------------------------------
+{
+    return m_fZValue;
+}
+
 /*==============================================================================
 public: // overridables
 ==============================================================================*/
@@ -2479,6 +3070,13 @@ void CGraphObj::hideBoundingRect()
             m_pTree->onTreeEntryChanged(this);
         }
     }
+}
+
+//------------------------------------------------------------------------------
+bool CGraphObj::isBoundingRectVisible() const
+//------------------------------------------------------------------------------
+{
+    return m_bBoundRectVisible;
 }
 
 /*==============================================================================
@@ -2587,9 +3185,29 @@ public: // overridables
 QPointF CGraphObj::getSelectionPointCoors( ESelectionPoint i_selPt ) const
 //------------------------------------------------------------------------------
 {
-    QRectF rct( QPointF(0.0, 0.0), getSize() );
-    return ZS::Draw::getSelectionPointCoors(rct, i_selPt);
+    QPointF pt;
+    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
+    if (pGraphicsItem != nullptr) {
+        pt = ZS::Draw::getSelectionPointCoors(pGraphicsItem->boundingRect(), i_selPt);
+    }
+    return pt;
 }
+
+/*==============================================================================
+protected: // must overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief
+
+void CGraphObj::showSelectionPoints( unsigned char i_selPts )
+------------------------------------------------------------------------------*/
+
+//------------------------------------------------------------------------------
+/*! @brief
+
+void CGraphObj::updateSelectionPoints( unsigned char i_selPts )
+------------------------------------------------------------------------------*/
 
 /*==============================================================================
 protected: // overridables
@@ -3269,7 +3887,7 @@ int CGraphObj::showLabel(const QString& i_strLabel, ESelectionPoint i_selPt)
         i_selPt != ESelectionPoint::BottomLeft &&
         i_selPt != ESelectionPoint::BottomCenter )
     {
-        ptLabelTmp.setY(ptLabelTmp.y() - pGraphObjLabel->getHeight());
+        ptLabelTmp.setY(ptLabelTmp.y() - pGraphicsItem->boundingRect().height());
     }
 
     bool bUniquePos = false;
@@ -3278,8 +3896,9 @@ int CGraphObj::showLabel(const QString& i_strLabel, ESelectionPoint i_selPt)
         for (CGraphObjLabel* pGraphObjLabelTmp : m_arpLabels) {
             if (pGraphObjLabelTmp != pGraphObjLabel) {
                 if (pGraphObjLabelTmp->scenePos() == ptLabelTmp) {
+                    QGraphicsItem* pGraphicsItemTmp = dynamic_cast<QGraphicsItem*>(pGraphObjLabelTmp);
                     bUniquePos = false;
-                    ptLabelTmp.setX( pGraphObjLabelTmp->scenePos().x() + pGraphObjLabelTmp->getWidth() + 4 );
+                    ptLabelTmp.setX(pGraphObjLabelTmp->scenePos().x() + pGraphicsItemTmp->boundingRect().width() + 4);
                     break;
                 }
             }
@@ -3942,6 +4561,16 @@ public: // instance methods
 public: // overridables
 ==============================================================================*/
 
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObj::onParentItemCoorsHasChanged( CGraphObj* /*i_pGraphObjParent*/ )
+//------------------------------------------------------------------------------
+{
+}
+
 //------------------------------------------------------------------------------
 /*! Informs the grapical object that a selection point is going to be destroyed.
 
@@ -4352,11 +4981,12 @@ void CGraphObj::updateTransform()
     if (pGraphicsItem != nullptr)
     {
         QTransform trs;
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
         trs.translate( m_ptRotOriginCurr.x(), m_ptRotOriginCurr.y() );
         trs.rotate(-m_fRotAngleCurr_deg);
         trs.translate( -m_ptRotOriginCurr.x(), -m_ptRotOriginCurr.y() );
         //trsNew.scale( m_fScaleFacXCurr, m_fScaleFacYCurr );
-
+#endif
         pGraphicsItem->resetTransform();
         pGraphicsItem->setTransform(trs);
     }
@@ -4400,8 +5030,10 @@ void CGraphObj::updateToolTip()
             m_strToolTip += "\nPos:\t\t" + point2Str(ptPos);
         }
 
-        m_strToolTip += "\nSize:\t\t" + size2Str(getSize());
-        m_strToolTip += "\nRotation:\t" + QString::number(m_fRotAngleCurr_deg,'f',1) + " " + ZS::PhysVal::c_strSymbolDegree;
+        m_strToolTip += "\nSize:\t\t" + getSize().toString();
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
+        m_strToolTip += "\nRotation:\t" + QString::number(m_fRotAngleCurr_deg,'f',1) + " " + c_strSymbolDegree;
+#endif
         m_strToolTip += "\nZValue:\t\t" + QString::number(pGraphicsItem->zValue());
 
         pGraphicsItem->setToolTip(m_strToolTip);
@@ -4423,10 +5055,12 @@ void CGraphObj::updateEditInfo()
     if (pGraphicsItem != nullptr)
     {
         QString strAngleSymbol = QString(QChar(8738));
-        m_strEditInfo  = "C:" + point2Str( pGraphicsItem->mapToScene(m_rctCurr.center()) );
-        m_strEditInfo += ", W:" + QString::number(m_rctCurr.width(),'f',1);
-        m_strEditInfo += ", H:" + QString::number(m_rctCurr.height(),'f',1);
-        m_strEditInfo += ", " + strAngleSymbol + ":" + QString::number(m_fRotAngleCurr_deg,'f',1) + " " + ZS::PhysVal::c_strSymbolDegree;
+        m_strEditInfo  = "C:" + point2Str( pGraphicsItem->mapToScene(pGraphicsItem->boundingRect().center()) );
+        m_strEditInfo += ", W:" + QString::number(pGraphicsItem->boundingRect().width(),'f',1);
+        m_strEditInfo += ", H:" + QString::number(pGraphicsItem->boundingRect().height(),'f',1);
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
+        m_strEditInfo += ", " + strAngleSymbol + ":" + QString::number(m_fRotAngleCurr_deg,'f',1) + " " + c_strSymbolDegree;
+#endif
     }
 }
 
@@ -4588,7 +5222,7 @@ void CGraphObj::showLabel(
         i_selPt != ESelectionPoint::BottomLeft &&
         i_selPt != ESelectionPoint::BottomCenter)
     {
-        ptLabelTmp.setY( ptLabelTmp.y() - pGraphObjLabel->getHeight() );
+        ptLabelTmp.setY(ptLabelTmp.y() - pGraphicsItem->boundingRect().height());
     }
 
     bool bUniquePos = false;
@@ -4610,7 +5244,7 @@ void CGraphObj::showLabel(
                 if( pGraphObjLabelTmp->scenePos() == ptLabelTmp )
                 {
                     bUniquePos = false;
-                    ptLabelTmp.setX( pGraphObjLabelTmp->scenePos().x() + pGraphObjLabelTmp->getWidth() + 4 );
+                    ptLabelTmp.setX(pGraphObjLabelTmp->scenePos().x() + pGraphicsItem->boundingRect().width() + 4);
                     break;
                 }
             }
@@ -4706,92 +5340,133 @@ protected: // auxiliary instance methods (method tracing)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+void CGraphObj::emit_selectedChanged()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "CGraphObj::emit_selectedChanged",
+        /* strAddInfo   */ "" );
+
+    emit selectedChanged();
+}
+
+//------------------------------------------------------------------------------
+void CGraphObj::emit_geometryChanged()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "CGraphObj::emit_geometryChanged",
+        /* strAddInfo   */ "" );
+
+    emit geometryChanged();
+}
+
+/*==============================================================================
+protected: // overridable auxiliary instance methods (method tracing)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
 void CGraphObj::traceInternalStates(
     CMethodTracer& i_mthTracer, EMethodDir i_mthDir, ELogDetailLevel i_detailLevel) const
 //------------------------------------------------------------------------------
 {
     if (i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
-        QString strAddTrcInfo;
-        if (i_mthDir == EMethodDir::Enter) strAddTrcInfo = "-+ ";
-        else if (i_mthDir == EMethodDir::Leave) strAddTrcInfo = "+- ";
-        else strAddTrcInfo = "";
-        strAddTrcInfo +=
+        QRectF rctBounding;
+        const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
+        if (pGraphicsItem != nullptr) {
+            rctBounding = pGraphicsItem->boundingRect();
+        }
+        QString strMthInArgs;
+        if (i_mthDir == EMethodDir::Enter) strMthInArgs = "-+ ";
+        else if (i_mthDir == EMethodDir::Leave) strMthInArgs = "+- ";
+        else strMthInArgs = "";
+        strMthInArgs +=
             "IsHit: " + bool2Str(m_bIsHit) +
             ", EditMode: " + m_editMode.toString() +
             ", ResizeMode: " + m_editResizeMode.toString() +
             ", BoundRectVisible: " + bool2Str(m_bBoundRectVisible);
-        i_mthTracer.trace(strAddTrcInfo);
+        i_mthTracer.trace(strMthInArgs);
 
-        if (i_mthDir == EMethodDir::Enter) strAddTrcInfo = "-+ ";
-        else if (i_mthDir == EMethodDir::Leave) strAddTrcInfo = "+- ";
-        else strAddTrcInfo = "";
-        strAddTrcInfo +=
+        if (i_mthDir == EMethodDir::Enter) strMthInArgs = "-+ ";
+        else if (i_mthDir == EMethodDir::Leave) strMthInArgs = "+- ";
+        else strMthInArgs = "";
+        strMthInArgs +=
             "SelPtPolygon: " + QString::number(m_idxSelPtSelectedPolygon) +
             ", SelPts [" + QString::number(m_arpSelPtsPolygon.size()) + "]";
         //if (m_arpSelPtsPolygon.size() > 0 && i_detailLevel > ELogDetailLevel::Debug) {
-        //    strAddTrcInfo += "(";
+        //    strMthInArgs += "(";
         //    for (int idx = 0; idx < m_arpSelPtsPolygon.size(); ++idx) {
-        //        if (idx > 0) strAddTrcInfo += ", ";
-        //        strAddTrcInfo += "[" + QString::number(idx) + "] " +
+        //        if (idx > 0) strMthInArgs += ", ";
+        //        strMthInArgs += "[" + QString::number(idx) + "] " +
         //            m_arpSelPtsPolygon[idx]->toolTip();
         //    }
-        //    strAddTrcInfo += ")";
+        //    strMthInArgs += ")";
         //}
-        i_mthTracer.trace(strAddTrcInfo);
+        i_mthTracer.trace(strMthInArgs);
 
-        if (i_mthDir == EMethodDir::Enter) strAddTrcInfo = "-+ ";
-        else if (i_mthDir == EMethodDir::Leave) strAddTrcInfo = "+- ";
-        else strAddTrcInfo = "";
-        strAddTrcInfo +=
+        if (i_mthDir == EMethodDir::Enter) strMthInArgs = "-+ ";
+        else if (i_mthDir == EMethodDir::Leave) strMthInArgs = "+- ";
+        else strMthInArgs = "";
+        strMthInArgs +=
             "SelPtBoundingRect: " + QString(m_selPtSelectedBoundingRect.isValid() ? m_selPtSelectedBoundingRect.toString() : "None") +
             ", SelPts [" + QString::number(m_arpSelPtsBoundingRect.size()) + "]";
         //if (m_arpSelPtsBoundingRect.size() > 0 && i_detailLevel > ELogDetailLevel::Debug) {
-        //    strAddTrcInfo += "(";
+        //    strMthInArgs += "(";
         //    for (int idx = 0; idx < m_arpSelPtsBoundingRect.size(); ++idx) {
-        //        if (idx > 0) strAddTrcInfo += ", ";
-        //        strAddTrcInfo += "[" + QString::number(idx) + "] " +
+        //        if (idx > 0) strMthInArgs += ", ";
+        //        strMthInArgs += "[" + QString::number(idx) + "] " +
         //            m_arpSelPtsBoundingRect[idx]->toolTip();
         //    }
-        //    strAddTrcInfo += ")";
+        //    strMthInArgs += ")";
         //}
-        i_mthTracer.trace(strAddTrcInfo);
+        i_mthTracer.trace(strMthInArgs);
 
-        if (i_mthDir == EMethodDir::Enter) strAddTrcInfo = "-+ ";
-        else if (i_mthDir == EMethodDir::Leave) strAddTrcInfo = "+- ";
-        else strAddTrcInfo = "";
-        strAddTrcInfo +=
+        if (i_mthDir == EMethodDir::Enter) strMthInArgs = "-+ ";
+        else if (i_mthDir == EMethodDir::Leave) strMthInArgs = "+- ";
+        else strMthInArgs = "";
+        strMthInArgs +=
             QString("CurrCoors {") +
-                "Rect {" + qRect2Str(m_rctCurr) + "}" +
-                ", RotAngle: " + QString::number(m_fRotAngleCurr_deg) + "°}" +
-                ", RotPos {" + point2Str(m_ptRotOriginCurr) + "}" +
+                "Rect {" + qRect2Str(rctBounding) + "}" +
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
+                ", RotAngle: " + QString::number(m_fRotAngleCurr_deg) + QString::fromLatin1("°") + "}" +
+#endif
+                ", RotPos {" + point2Str(rctBounding.center()) + "}" +
             "}";
-        i_mthTracer.trace(strAddTrcInfo);
+        i_mthTracer.trace(strMthInArgs);
 
-        if (i_mthDir == EMethodDir::Enter) strAddTrcInfo = "-+ ";
-        else if (i_mthDir == EMethodDir::Leave) strAddTrcInfo = "+- ";
-        else strAddTrcInfo = "";
-        strAddTrcInfo += "HasValidOrigCoors: " + bool2Str(m_bHasValidOrigCoors);
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
+        if (i_mthDir == EMethodDir::Enter) strMthInArgs = "-+ ";
+        else if (i_mthDir == EMethodDir::Leave) strMthInArgs = "+- ";
+        else strMthInArgs = "";
+        strMthInArgs += "HasValidOrigCoors: " + bool2Str(m_bHasValidOrigCoors);
         if (m_bHasValidOrigCoors ) {
-            strAddTrcInfo +=
+            strMthInArgs +=
                 QString(", OrigCoors {") +
                     "PtPos {" + qPoint2Str(m_ptPosOrig) + "}" +
                     ", Size {" + qSize2Str(m_sizOrig) + "}" +
-                    ", RotAngle: " + QString::number(m_fRotAngleOrig_deg) + "°}" +
+                    ", RotAngle: " + QString::number(m_fRotAngleOrig_deg) + QString::fromLatin1("°") + "}" +
                     ", RotPos {" + qPoint2Str(m_ptRotOriginOrig) + "}" +
                 "}";
         }
-        i_mthTracer.trace(strAddTrcInfo);
+        i_mthTracer.trace(strMthInArgs);
+#endif
 
-        if (i_mthDir == EMethodDir::Enter) strAddTrcInfo = "-+ ";
-        else if (i_mthDir == EMethodDir::Leave) strAddTrcInfo = "+- ";
-        else strAddTrcInfo = "";
-        strAddTrcInfo +=
+        if (i_mthDir == EMethodDir::Enter) strMthInArgs = "-+ ";
+        else if (i_mthDir == EMethodDir::Leave) strMthInArgs = "+- ";
+        else strMthInArgs = "";
+        strMthInArgs +=
             QString("MousePressEvents {") +
                 "ScenePos {" + qPoint2Str(m_ptScenePosOnMousePressEvent) + "}" +
                 ", MouseEvScenePos {" + qPoint2Str(m_ptMouseEvScenePosOnMousePressEvent) + "}" +
                 ", Rect {" + qRect2Str(m_rctOnMousePressEvent) + "}" +
                 ", RotPos {" + qPoint2Str(m_ptRotOriginOnMousePressEvent) +
             "}";
-        i_mthTracer.trace(strAddTrcInfo);
+        i_mthTracer.trace(strMthInArgs);
     }
 }

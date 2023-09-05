@@ -289,17 +289,17 @@ void CApplication::createAndShowMainWindow(
         /* strlstObjFactories    */ i_strlstObjFactories );
     m_pMainWindow->show();
 
-    if (m_pTest != nullptr )
-    {
+    if (m_pTest == nullptr) {
+        if (i_strFileName.isEmpty()) {
+            m_pMainWindow->onActionFilePageSetupTriggered(false);
+        }
+        else {
+            m_pMainWindow->setCurrentUsedFile(i_strFileName);
+        }
+    }
+    else {
         m_pTest->setMainWindow(m_pMainWindow);
-    }
-    if (i_strFileName.isEmpty())
-    {
-        m_pMainWindow->onActionFilePageSetupTriggered(false);
-    }
-    else
-    {
-        m_pMainWindow->setCurrentUsedFile(i_strFileName);
+        m_pMainWindow->onActionDebugTestTriggered(false);
     }
 }
 

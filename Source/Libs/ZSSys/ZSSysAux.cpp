@@ -1602,18 +1602,11 @@ QString ZS::System::qDropActions2Str( int i_actions )
 } // qDropActions2Str
 
 //------------------------------------------------------------------------------
-QString ZS::System::qEvent2Str( QEvent* i_pEv, int i_iDetailLevel )
+QString ZS::System::qEvent2Str( QEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    QString str;
-
-    QEvent::Type evType = i_pEv->type();
-
-    str = qEventType2Str( evType, i_iDetailLevel == 0 ? true : false );
-
-    return str;
-
-} // qEvent2Str
+    return qEventType2Str(i_pEv->type());
+}
 
 /*==============================================================================
 Enum QEvent:Type

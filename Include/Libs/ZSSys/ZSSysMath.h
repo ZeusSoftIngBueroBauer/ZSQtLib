@@ -98,6 +98,7 @@ const QChar   c_chSymbolSquareRoot(0x221A);
 const QString c_strSymbolSquareRoot(c_chSymbolSquareRoot);
 
 double ZSSYSDLL_API sqr( double i_fVal );
+double ZSSYSDLL_API sqrt( double i_fVal );
 double ZSSYSDLL_API abs( double i_fVal );
 double ZSSYSDLL_API rad2Deg( double i_fVal_rad, bool i_bNormalize = true );
 double ZSSYSDLL_API deg2Rad( double i_fVal_deg, bool i_bNormalize = true );

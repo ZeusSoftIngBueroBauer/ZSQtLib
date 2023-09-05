@@ -1862,14 +1862,15 @@ public: // instance methods (to convert the unit)
 void CPhysVal::convertValue( const CUnit& i_unitDst )
 //------------------------------------------------------------------------------
 {
-    if( !areOfSameUnitGroup(m_unit,i_unitDst) )
-    {
+    if (!areOfSameUnitGroup(m_unit,i_unitDst)) {
         QString strAddErrInfo = "Src:" + m_unit.keyInTree() + ", Dst:" + i_unitDst.keyInTree();
         throw CUnitConversionException( __FILE__, __LINE__, EResultDifferentPhysSizes, strAddErrInfo );
     }
-    if( isValid() && m_unit.isValid() && i_unitDst.isValid() && m_unit != i_unitDst )
-    {
+    if (isValid() && m_unit.isValid() && i_unitDst.isValid() && m_unit != i_unitDst) {
         m_fVal = m_unit.convertValue(m_fVal, i_unitDst);
         m_unit = i_unitDst;
+        if (m_physValRes.isValid()) {
+            m_physValRes.convertValue(i_unitDst);
+        }
     }
 }

@@ -60,21 +60,18 @@ public: // ctors and dtor
         const QString&       i_strObjName = "" );
     virtual ~CGraphObjPolygon();
 public: // must overridables of base class CGraphObj
-    virtual CGraphObj* clone();
-public: // overridables
-    virtual QString nameSpace() { return NameSpace(); }
-    virtual QString className() { return ClassName(); }
+    virtual CGraphObj* clone() override;
 public: // overridables of base class CGraphObj
-    virtual void onDrawSettingsChanged();
+    virtual void onDrawSettingsChanged() override;
 public: // overridables of base class CGraphObj
-    virtual bool isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) const;
+    virtual bool isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo = nullptr ) const override;
 public: // reimplementing methods of base class QGraphicItem
     void setCursor( const QCursor& cursor );
 public: // overridables of base class QGraphicsItem
-    virtual int type() const { return EGraphObjTypePolygon; }
+    virtual int type() const override { return EGraphObjTypePolygon; }
 public: // must overridables of base class QGraphicsItem
-    virtual QRectF boundingRect() const;
-    virtual void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr );
+    virtual QRectF boundingRect() const override;
+    virtual void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr ) override;
 protected: // class members
     /*!< Needed to set an initial unique name when creating a new instance. */
     static qint64 s_iInstCount;

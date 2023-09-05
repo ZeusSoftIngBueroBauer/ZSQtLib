@@ -61,39 +61,45 @@ public: // class methods
     static QString ClassName() { return "CGraphObjLine"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
 public: // ctors and dtor
     CGraphObjLine(
-        CDrawingScene*       i_pDrawingScene,
+        CDrawingScene* i_pDrawingScene,
         const CDrawSettings& i_drawSettings,
-        const QString&       i_strObjName,
-        const QPointF&       i_pt1,
-        const QPointF&       i_pt2 );
+        const QString& i_strObjName,
+        const CPhysValPoint& i_physValPoint1,
+        const CPhysValPoint& i_physValPoint2 );
     virtual ~CGraphObjLine();
 public: // overridables of base class QGraphicsItem
-    virtual int type() const override { return EGraphObjTypeLine; }
+    virtual int type() const override;
 public: // must overridables of base class CGraphObj
-    virtual CGraphObj* clone() override ;
-public: // overridables
-    virtual QString nameSpace() { return NameSpace(); }
-    virtual QString className() { return ClassName(); }
-public: // replacing methods of QGraphicsLineItem
-    void setLine( const QLineF& i_lin );
-    void setLine( qreal i_x1, qreal i_y1, qreal i_x2, qreal i_y2 );
-    QLineF getLine() const;
+    virtual CGraphObj* clone() override;
 public: // overridables of base class CGraphObj
-    virtual QString getScenePolygonShapePointsString() const override ; // for subsystem test
+    virtual QString getScenePolygonShapePointsString() const override; // for subsystem test
 public: // overridables of base class CGraphObj
-    virtual void onDrawSettingsChanged() override ;
+    virtual void onDrawSettingsChanged() override;
+public: // instance methods
+    void setLine( const CPhysValLine& i_physValLine );
+    void setLine( const CPhysValPoint& i_physValPoint1, const CPhysValPoint& i_physValPoint2 );
+    void setLine( const ZS::PhysVal::CPhysVal& i_physValX1, const ZS::PhysVal::CPhysVal& i_physValY1,
+                  const ZS::PhysVal::CPhysVal& i_physValX2, const ZS::PhysVal::CPhysVal& i_physValY2 );
+    CPhysValLine getLine() const;
+    CPhysValPoint getPoint1() const;
+    CPhysValPoint getPoint2() const;
 public: // must overridables of base class CGraphObj
-    virtual void setWidth( double i_fWidth ) override ;
-    virtual void setHeight( double i_fHeight ) override ;
-    virtual void setSize( double i_fWidth, double i_fHeight ) override ;
-    virtual void setSize( const QSizeF& i_size ) override ;
-    virtual bool hasBoundingRect() const  override { return false; }
-    virtual bool hasLineShapePoints() const  override { return false; }
-    virtual bool hasRotationSelectionPoints() const  override { return false; }
-public: // must overridables of base class CGraphObj
-    virtual void setIsHit( bool i_bHit ) override ;
+    virtual void setWidth( const ZS::PhysVal::CPhysVal& i_physValWidth ) override;
+    virtual void setHeight( const ZS::PhysVal::CPhysVal& i_physValHeight ) override;
+    virtual void setSize( const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight ) override;
+    virtual void setSize( const CPhysValSize& i_physValSize ) override;
+    virtual bool hasBoundingRect() const override;
+    virtual bool hasLineShapePoints() const override;
+    virtual bool hasRotationSelectionPoints() const override;
 public: // overridables of base class CGraphObj
-    virtual bool isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) const override ;
+    virtual CPhysValPoint getPos( ECoordinatesVersion i_version = ECoordinatesVersion::Transformed ) const override;
+    virtual ZS::PhysVal::CPhysVal getWidth( ECoordinatesVersion i_version = ECoordinatesVersion::Transformed ) const override;
+    virtual ZS::PhysVal::CPhysVal getHeight( ECoordinatesVersion i_version = ECoordinatesVersion::Transformed ) const override;
+    virtual CPhysValSize getSize( ECoordinatesVersion i_version = ECoordinatesVersion::Transformed ) const override;
+public: // must overridables of base class CGraphObj
+    virtual void setIsHit( bool i_bHit ) override;
+public: // overridables of base class CGraphObj
+    virtual bool isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo = nullptr ) const override;
 public: // reimplementing methods of base class QGraphicItem
     void setCursor( const QCursor& cursor );
 public: // overridables of base class CGraphObj

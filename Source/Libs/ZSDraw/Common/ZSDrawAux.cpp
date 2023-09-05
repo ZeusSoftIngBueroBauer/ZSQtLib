@@ -28,7 +28,10 @@ may result in using the software modules.
 #include "ZSDraw/Common/ZSDrawSettings.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
 #include "ZSPhysVal/ZSPhysVal.h"
+#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysMath.h"
+
+#include <QtWidgets/qgraphicsitem.h>
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -93,53 +96,40 @@ QString ZS::Draw::qTransformationType2Str( int i_type )
 {
     QString str;
 
-    if( i_type == QTransform::TxNone )
-    {
+    if (i_type == QTransform::TxNone) {
         str = "None";
     }
-    else // if( i_type != QTransform::TxNone )
-    {
-        if( i_type & QTransform::TxTranslate )
-        {
+    else /*if (i_type != QTransform::TxNone)*/ {
+        if (i_type & QTransform::TxTranslate) {
             str = "Translate";
         }
-        if( i_type & QTransform::TxScale )
-        {
-            if( !str.isEmpty() )
-            {
+        if( i_type & QTransform::TxScale ) {
+            if( !str.isEmpty() ) {
                 str += "|";
             }
             str += "Scale";
         }
-        if( i_type & QTransform::TxRotate )
-        {
-            if( !str.isEmpty() )
-            {
+        if( i_type & QTransform::TxRotate ) {
+            if( !str.isEmpty() ) {
                 str += "|";
             }
             str += "Rotate";
         }
-        if( i_type & QTransform::TxShear )
-        {
-            if( !str.isEmpty() )
-            {
+        if( i_type & QTransform::TxShear ) {
+            if( !str.isEmpty() ) {
                 str += "|";
             }
             str += "Shear";
         }
-        if( i_type & QTransform::TxProject )
-        {
-            if( !str.isEmpty() )
-            {
+        if( i_type & QTransform::TxProject ) {
+            if( !str.isEmpty() ) {
                 str += "|";
             }
             str += "Project";
         }
-    } // if( i_type != QTransform::TxNone )
-
+    }
     return str;
-
-} // qTransformationType2Str
+}
 
 //------------------------------------------------------------------------------
 QStringList ZS::Draw::qTransformation2StrList( const QTransform& i_transform )
@@ -179,87 +169,68 @@ QStringList ZS::Draw::qTransformation2StrList( const QTransform& i_transform )
 
     strFormula = "x' = ";
 
-    if( i_transform.m11() > 0.0 )
-    {
+    if( i_transform.m11() > 0.0 ) {
         strFormula += strm11 + "*x";
     }
-    else if( i_transform.m11() < 0.0 )
-    {
+    else if( i_transform.m11() < 0.0 ) {
         strFormula += "-" + strm11 + "*x";
     }
-    if( i_transform.m21() > 0.0 )
-    {
+    if( i_transform.m21() > 0.0 ) {
         strFormula += " + " + strm21 + "*y";
     }
-    else if( i_transform.m21() < 0.0 )
-    {
+    else if( i_transform.m21() < 0.0 ) {
         strFormula += " - " + strm21 + "*y";
     }
-    if( i_transform.m31() > 0.0 )
-    {
+    if( i_transform.m31() > 0.0 ) {
         strFormula += " + " + strm31;
     }
-    else if( i_transform.m31() < 0.0 )
-    {
+    else if( i_transform.m31() < 0.0 ) {
         strFormula += " - " + strm31;
     }
     strlst << strFormula; // Idx 1
 
     strFormula = "y' = ";
 
-    if( i_transform.m22() > 0.0 )
-    {
+    if( i_transform.m22() > 0.0 ) {
         strFormula += strm22 + "*y";
     }
-    else if( i_transform.m22() < 0.0 )
-    {
+    else if( i_transform.m22() < 0.0 ) {
         strFormula += "-" + strm22 + "*y";
     }
-    if( i_transform.m12() > 0.0 )
-    {
+    if( i_transform.m12() > 0.0 ) {
         strFormula += " + " + strm12 + "*x";
     }
-    else if( i_transform.m12() < 0.0 )
-    {
+    else if( i_transform.m12() < 0.0 ) {
         strFormula += " - " + strm12 + "*x";
     }
-    if( i_transform.m32() > 0.0 )
-    {
+    if( i_transform.m32() > 0.0 ) {
         strFormula += " + " + strm32;
     }
-    else if( i_transform.m32() < 0.0 )
-    {
+    else if( i_transform.m32() < 0.0 ) {
         strFormula += " - " + strm32;
     }
 
     strlst << strFormula; // Idx 2
 
-    if( !i_transform.isAffine() )
-    {
+    if( !i_transform.isAffine() ) {
         strFormula = "w' = ";
 
-        if( i_transform.m32() > 0.0 )
-        {
+        if( i_transform.m32() > 0.0 ) {
             strFormula += strm32 + "*x";
         }
-        else if( i_transform.m32() < 0.0 )
-        {
+        else if( i_transform.m32() < 0.0 ) {
             strFormula += "-" + strm32 + "*x";
         }
-        if( i_transform.m23() > 0.0 )
-        {
+        if( i_transform.m23() > 0.0 ) {
             strFormula += " + " + strm23 + "*y";
         }
-        else if( i_transform.m23() < 0.0 )
-        {
+        else if( i_transform.m23() < 0.0 ) {
             strFormula += " - " + strm23 + "*y";
         }
-        if( i_transform.m33() > 0.0 )
-        {
+        if( i_transform.m33() > 0.0 ) {
             strFormula += " + " + strm33;
         }
-        else if( i_transform.m33() < 0.0 )
-        {
+        else if( i_transform.m33() < 0.0 ) {
             strFormula += " - " + strm33;
         }
         strlst << strFormula; // Idx 3
@@ -320,15 +291,149 @@ const ZS::System::SEnumEntry s_arEnumStrGraphicsItemChange[] =
 };
 
 //------------------------------------------------------------------------------
-QString ZS::Draw::qGraphicsItemChange2Str( int i_change )
+QString ZS::Draw::qGraphicsItemChange2Str( int i_change, const QVariant& i_value, bool i_bIncludeChange )
 //------------------------------------------------------------------------------
 {
-    return SEnumEntry::enumerator2Str( s_arEnumStrGraphicsItemChange, _ZSArrLen(s_arEnumStrGraphicsItemChange), i_change );
+    QString str;
+    if (i_bIncludeChange) {
+        str = SEnumEntry::enumerator2Str(
+            s_arEnumStrGraphicsItemChange, _ZSArrLen(s_arEnumStrGraphicsItemChange), i_change);
+    }
+    if (!str.isEmpty()) str += ", ";
+    str += qVariantType2Str(i_value.type());
+    if (((i_change == QGraphicsItem::ItemEnabledChange) || (i_change == QGraphicsItem::ItemEnabledHasChanged))
+     || ((i_change == QGraphicsItem::ItemSelectedChange) || (i_change == QGraphicsItem::ItemSelectedHasChanged))
+     || ((i_change == QGraphicsItem::ItemVisibleChange) || (i_change == QGraphicsItem::ItemVisibleHasChanged))) {
+        str += " {" + bool2Str(i_value.toBool()) + "}";
+    }
+    else if ((i_change == QGraphicsItem::ItemFlagsChange) || (i_change == QGraphicsItem::ItemFlagsHaveChanged)) {
+        str += " {" + qGraphicsItemFlags2Str(i_value.toUInt()) + "}";
+    }
+    else if ((i_change == QGraphicsItem::ItemParentChange) || (i_change == QGraphicsItem::ItemParentHasChanged)
+          || (i_change == QGraphicsItem::ItemChildAddedChange) || (i_change == QGraphicsItem::ItemChildRemovedChange)) {
+        QGraphicsItem* pGraphicsItem = i_value.value<QGraphicsItem*>();
+        if (pGraphicsItem != nullptr) {
+            CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+            str += QString(pGraphObj == nullptr ? "null" : pGraphObj->path());
+        } else {
+            str += "null";
+        }
+    }
+    else if (i_value.type() == QVariant::Point) {
+        str += " {" + point2Str(i_value.toPoint()) + "}";
+    } else if (i_value.type() == QVariant::PointF) {
+        str += " {" + point2Str(i_value.toPointF()) + "}";
+    } else if (i_value.type() == QVariant::Bool) {
+        str += " {" + bool2Str(i_value.toBool()) + "}";
+    } else if (i_value.type() == QVariant::Transform) {
+        str += " {" + qTransformation2StrList(i_value.value<QTransform>()).join(", ") + "}";
+    } else if (i_value.type() == QVariant::Cursor) {
+        str += " {Pos {" + qPoint2Str(i_value.value<QCursor>().pos()) + "}}";
+    } else {
+        str += " {" + i_value.toString() + "}";
+    }
+    return str;
+}
+
+//------------------------------------------------------------------------------
+QString ZS::Draw::qGraphicsItemFlags2Str( quint32 i_flags )
+//------------------------------------------------------------------------------
+{
+    QString str;
+    QGraphicsItem::GraphicsItemFlags flags = i_flags;
+    if (flags.testFlag(QGraphicsItem::GraphicsItemFlag::ItemIsMovable)) {
+        if (!str.isEmpty()) str += "|";
+        str += "IsMovable";
+    }
+    if (flags.testFlag(QGraphicsItem::GraphicsItemFlag::ItemIsSelectable)) {
+        if (!str.isEmpty()) str += "|";
+        str += "IsSelectable";
+    }
+    if (flags.testFlag(QGraphicsItem::GraphicsItemFlag::ItemIsFocusable)) {
+        if (!str.isEmpty()) str += "|";
+        str += "IsFocusable";
+    }
+    if (flags.testFlag(QGraphicsItem::GraphicsItemFlag::ItemClipsToShape)) {
+        if (!str.isEmpty()) str += "|";
+        str += "ClipsToShape";
+    }
+    if (flags.testFlag(QGraphicsItem::GraphicsItemFlag::ItemClipsChildrenToShape)) {
+        if (!str.isEmpty()) str += "|";
+        str += "ClipsChildrenToShape";
+    }
+    if (flags.testFlag(QGraphicsItem::GraphicsItemFlag::ItemIgnoresTransformations)) {
+        if (!str.isEmpty()) str += "|";
+        str += "IgnoresTransformations";
+    }
+    if (flags.testFlag(QGraphicsItem::GraphicsItemFlag::ItemIgnoresParentOpacity)) {
+        if (!str.isEmpty()) str += "|";
+        str += "IgnoresParentOpacity";
+    }
+    if (flags.testFlag(QGraphicsItem::GraphicsItemFlag::ItemDoesntPropagateOpacityToChildren)) {
+        if (!str.isEmpty()) str += "|";
+        str += "DoesntPropagateOpacityToChildren";
+    }
+    if (flags.testFlag(QGraphicsItem::GraphicsItemFlag::ItemStacksBehindParent)) {
+        if (!str.isEmpty()) str += "|";
+        str += "StacksBehindParent";
+    }
+    if (flags.testFlag(QGraphicsItem::GraphicsItemFlag::ItemUsesExtendedStyleOption)) {
+        if (!str.isEmpty()) str += "|";
+        str += "UsesExtendedStyleOption";
+    }
+    if (flags.testFlag(QGraphicsItem::GraphicsItemFlag::ItemHasNoContents)) {
+        if (!str.isEmpty()) str += "|";
+        str += "HasNoContents";
+    }
+    if (flags.testFlag(QGraphicsItem::GraphicsItemFlag::ItemSendsGeometryChanges)) {
+        if (!str.isEmpty()) str += "|";
+        str += "SendsGeometryChanges";
+    }
+    if (flags.testFlag(QGraphicsItem::GraphicsItemFlag::ItemAcceptsInputMethod)) {
+        if (!str.isEmpty()) str += "|";
+        str += "AcceptsInputMethod";
+    }
+    if (flags.testFlag(QGraphicsItem::GraphicsItemFlag::ItemNegativeZStacksBehindParent)) {
+        if (!str.isEmpty()) str += "|";
+        str += "NegativeZStacksBehindParent";
+    }
+    if (flags.testFlag(QGraphicsItem::GraphicsItemFlag::ItemIsPanel)) {
+        if (!str.isEmpty()) str += "|";
+        str += "IsPanel";
+    }
+    if (flags.testFlag(QGraphicsItem::GraphicsItemFlag::ItemIsFocusScope)) {
+        if (!str.isEmpty()) str += "|";
+        str += "IsFocusScope";
+    }
+    if (flags.testFlag(QGraphicsItem::GraphicsItemFlag::ItemSendsScenePositionChanges)) {
+        if (!str.isEmpty()) str += "|";
+        str += "SendsScenePositionChanges";
+    }
+    if (flags.testFlag(QGraphicsItem::GraphicsItemFlag::ItemStopsClickFocusPropagation)) {
+        if (!str.isEmpty()) str += "|";
+        str += "StopsClickFocusPropagation";
+    }
+    if (flags.testFlag(QGraphicsItem::GraphicsItemFlag::ItemStopsFocusHandling)) {
+        if (!str.isEmpty()) str += "|";
+        str += "StopsFocusHandling";
+    }
+    if (flags.testFlag(QGraphicsItem::GraphicsItemFlag::ItemContainsChildrenInShape)) {
+        if (!str.isEmpty()) str += "|";
+        str += "ContainsChildrenInShape";
+    }
+    return str;
 }
 
 /*==============================================================================
 QGraphicsItem::QGraphicsSceneEvents
 ==============================================================================*/
+
+//------------------------------------------------------------------------------
+bool ZS::Draw::isGraphicsSceneHoverEvent( QEvent* i_pEv )
+//------------------------------------------------------------------------------
+{
+    return (dynamic_cast<QGraphicsSceneHoverEvent*>(i_pEv) != nullptr);
+}
 
 //------------------------------------------------------------------------------
 QString ZS::Draw::qGraphicsSceneHoverEvent2Str( QGraphicsSceneHoverEvent* i_pEv )
@@ -338,6 +443,13 @@ QString ZS::Draw::qGraphicsSceneHoverEvent2Str( QGraphicsSceneHoverEvent* i_pEv 
         ", ScenePos {" + point2Str(i_pEv->scenePos()) + "}" +
         ", ScreenPos {" + point2Str(i_pEv->screenPos()) + "}";
     return str;
+}
+
+//------------------------------------------------------------------------------
+bool ZS::Draw::isGraphicsSceneMouseEvent( QEvent* i_pEv )
+//------------------------------------------------------------------------------
+{
+    return (dynamic_cast<QGraphicsSceneMouseEvent*>(i_pEv) != nullptr);
 }
 
 //------------------------------------------------------------------------------

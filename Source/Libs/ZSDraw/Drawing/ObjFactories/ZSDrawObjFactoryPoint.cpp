@@ -303,7 +303,9 @@ CGraphObj* CObjFactoryPoint::loadGraphObj(
 
         i_pDrawingScene->onGraphObjCreationFinished(pGraphObj);
 
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
         pGraphObj->acceptCurrentAsOriginalCoors();
+#endif
 
         //if( arpLabels.size() > 0 )
         //{

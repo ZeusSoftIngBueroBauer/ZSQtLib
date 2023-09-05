@@ -24,18 +24,6 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include <QtGui/QBitmap>
-#include <QtGui/qevent.h>
-#include <QtGui/QPainter>
-
-#if QT_VERSION < 0x050000
-#include <QtGui/QGraphicsSceneEvent>
-#include <QtGui/QStyleOption>
-#else
-#include <QtWidgets/QGraphicsSceneEvent>
-#include <QtWidgets/QStyleOption>
-#endif
-
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabel.h"
 #include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
@@ -48,6 +36,18 @@ may result in using the software modules.
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
+
+#include <QtGui/QBitmap>
+#include <QtGui/qevent.h>
+#include <QtGui/QPainter>
+
+#if QT_VERSION < 0x050000
+#include <QtGui/QGraphicsSceneEvent>
+#include <QtGui/QStyleOption>
+#else
+#include <QtWidgets/QGraphicsSceneEvent>
+#include <QtWidgets/QStyleOption>
+#endif
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -124,7 +124,9 @@ CGraphObjLabel::CGraphObjLabel(
 
     //setAcceptHoverEvents(true);
 
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
     m_rctCurr = QGraphicsSimpleTextItem::boundingRect();
+#endif
 
 } // ctor
 
@@ -233,7 +235,9 @@ void CGraphObjLabel::setText( const QString& i_strText )
         /* strAddInfo   */ strMthInArgs );
 
     QGraphicsSimpleTextItem::setText(i_strText);
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
     m_rctCurr = QGraphicsSimpleTextItem::boundingRect();
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -276,7 +280,7 @@ void CGraphObjLabel::setLinkedSelectionPoint(ESelectionPoint i_selPt)
             i_selPt != ESelectionPoint::BottomLeft &&
             i_selPt != ESelectionPoint::BottomCenter)
         {
-            ptLabelTmp.setY(ptLabelTmp.y() - getHeight());
+            ptLabelTmp.setY(ptLabelTmp.y() - getHeight().getVal(Units.Length.px));
         }
 
         QSize sizeDist(ptLabelTmp.x() - ptSelPt.x(), ptLabelTmp.y() - ptSelPt.y());
@@ -436,7 +440,7 @@ void CGraphObjLabel::setIsHit( bool i_bHit )
 
         QRectF rctUpd = boundingRect();
         QPolygonF plgLabel = mapToScene(rctUpd);
-        QRectF rctGraphObj = QRectF( QPointF(0.0,0.0), m_pGraphObjParent->getSize() );
+        QRectF rctGraphObj = QRectF(QPointF(0.0, 0.0), m_pGraphObjParent->getSize().toQSizeF());
         QPolygonF plgGraphObj = m_pGraphicsItemParent->mapToScene(rctGraphObj);
 
         rctUpd = plgLabel.boundingRect();
@@ -488,6 +492,7 @@ bool CGraphObjLabel::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) 
         o_pHitInfo->m_ptSelected = rctBounding.center();
     }
 
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
     if (bIsHit && o_pHitInfo != nullptr) {
         double fRotAngleCurr_deg = m_fRotAngleCurr_deg;
         if (m_pGraphObjParent != nullptr) {
@@ -495,6 +500,7 @@ bool CGraphObjLabel::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) 
         }
         o_pHitInfo->setCursor( Math::deg2Rad(fRotAngleCurr_deg) );
     }
+#endif
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthOutArgs;
@@ -795,7 +801,7 @@ void CGraphObjLabel::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjHoverEvents, EMethodTraceDetailLevel::ArgsNormal)) {
-        qGraphicsSceneHoverEvent2Str(i_pEv);
+        strMthInArgs = qGraphicsSceneHoverEvent2Str(i_pEv);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjHoverEvents,
@@ -824,7 +830,7 @@ void CGraphObjLabel::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjHoverEvents, EMethodTraceDetailLevel::ArgsNormal)) {
-        qGraphicsSceneHoverEvent2Str(i_pEv);
+        strMthInArgs = qGraphicsSceneHoverEvent2Str(i_pEv);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjHoverEvents,
@@ -853,7 +859,7 @@ void CGraphObjLabel::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjHoverEvents, EMethodTraceDetailLevel::ArgsNormal)) {
-        qGraphicsSceneHoverEvent2Str(i_pEv);
+        strMthInArgs = qGraphicsSceneHoverEvent2Str(i_pEv);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjHoverEvents,
@@ -875,7 +881,7 @@ void CGraphObjLabel::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjHoverEvents, EMethodTraceDetailLevel::ArgsNormal)) {
-        qGraphicsSceneMouseEvent2Str(i_pEv);
+        strMthInArgs = qGraphicsSceneMouseEvent2Str(i_pEv);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseEvents,
@@ -895,7 +901,7 @@ void CGraphObjLabel::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjHoverEvents, EMethodTraceDetailLevel::ArgsNormal)) {
-        qGraphicsSceneMouseEvent2Str(i_pEv);
+        strMthInArgs = qGraphicsSceneMouseEvent2Str(i_pEv);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseEvents,
@@ -915,7 +921,7 @@ void CGraphObjLabel::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjHoverEvents, EMethodTraceDetailLevel::ArgsNormal)) {
-        qGraphicsSceneMouseEvent2Str(i_pEv);
+        strMthInArgs = qGraphicsSceneMouseEvent2Str(i_pEv);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseEvents,
@@ -936,7 +942,7 @@ void CGraphObjLabel::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjHoverEvents, EMethodTraceDetailLevel::ArgsNormal)) {
-        qGraphicsSceneMouseEvent2Str(i_pEv);
+        strMthInArgs = qGraphicsSceneMouseEvent2Str(i_pEv);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseEvents,
@@ -971,14 +977,7 @@ QVariant CGraphObjLabel::itemChange( GraphicsItemChange i_change, const QVariant
 
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs =
-            "Changed:" + qGraphicsItemChange2Str(i_change) +
-            ", Value: " + qVariantType2Str(i_value.type());
-        if (i_value.type() == QVariant::PointF) {
-            strMthInArgs += " {" + point2Str(i_value.toPointF()) + "}";
-        } else {
-            strMthInArgs += " {" + i_value.toString() + "}";
-        }
+        strMthInArgs = qGraphicsItemChange2Str(i_change, i_value);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -997,7 +996,7 @@ QVariant CGraphObjLabel::itemChange( GraphicsItemChange i_change, const QVariant
     {
         QRectF    rctUpd      = boundingRect();
         QPolygonF plgLabel    = mapToScene(rctUpd);
-        QRectF    rctGraphObj = QRectF( QPointF(0.0,0.0), m_pGraphObjParent->getSize() );
+        QRectF    rctGraphObj = QRectF(QPointF(0.0, 0.0), m_pGraphObjParent->getSize().toQSizeF());
         QPolygonF plgGraphObj = m_pGraphicsItemParent->mapToScene(rctGraphObj);
 
         rctUpd      = plgLabel.boundingRect();
@@ -1079,16 +1078,10 @@ QVariant CGraphObjLabel::itemChange( GraphicsItemChange i_change, const QVariant
         m_pTree->onTreeEntryChanged(this);
     }
 
-    valChanged = QGraphicsItem::itemChange(i_change,i_value);
+    valChanged = QGraphicsItem::itemChange(i_change, i_value);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthRet = "ValChanged: " + qVariantType2Str(valChanged.type());
-        if( i_value.type() == QVariant::PointF ) {
-            strMthRet += " {" + point2Str(valChanged.toPointF()) + "}";
-        }
-        else {
-            strMthRet += " {" + valChanged.toString() + "}";
-        }
+        QString strMthRet = qGraphicsItemChange2Str(i_change, valChanged, false);
         mthTracer.setMethodReturn(strMthRet);
     }
 

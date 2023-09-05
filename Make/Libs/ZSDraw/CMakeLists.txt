@@ -35,6 +35,10 @@ list(APPEND _HeadersCommon
     ${_HeadersPath}/${PROJECT_NAME}/Common/ZSDrawAux.h
     ${_HeadersPath}/${PROJECT_NAME}/Common/ZSDrawCommon.h
     ${_HeadersPath}/${PROJECT_NAME}/Common/ZSDrawDllMain.h
+    ${_HeadersPath}/${PROJECT_NAME}/Common/ZSDrawPhysValLine.h
+    ${_HeadersPath}/${PROJECT_NAME}/Common/ZSDrawPhysValPoint.h
+    ${_HeadersPath}/${PROJECT_NAME}/Common/ZSDrawPhysValRect.h
+    ${_HeadersPath}/${PROJECT_NAME}/Common/ZSDrawPhysValSize.h
     ${_HeadersPath}/${PROJECT_NAME}/Common/ZSDrawSettings.h
     ${_HeadersPath}/${PROJECT_NAME}/Common/ZSDrawUnits.h
 )
@@ -97,9 +101,9 @@ list(APPEND _HeadersWidgetsGraphObjFormat
 )
 
 list(APPEND _HeadersWidgetsGraphObjs
+    ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLineGeometryPropertiesWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLinePropertiesWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjPropertiesAbstractWdgt.h
-    ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjPropertiesGeometryWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjPropertiesLabelsWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjsPropertiesWdgtStack.h
 )
@@ -133,6 +137,10 @@ list(APPEND _SourcesCommon
     ${_SourcesPath}/${PROJECT_NAME}/Common/ZSDrawAux.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Common/ZSDrawCommon.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Common/ZSDrawDllMain.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Common/ZSDrawPhysValLine.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Common/ZSDrawPhysValPoint.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Common/ZSDrawPhysValRect.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Common/ZSDrawPhysValSize.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Common/ZSDrawSettings.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Common/ZSDrawUnits.cpp
 )
@@ -194,9 +202,9 @@ list(APPEND _SourcesWidgetsGraphObjFormat
 )
 
 list(APPEND _SourcesWidgetsGraphObjs
+    ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLineGeometryPropertiesWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLinePropertiesWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjPropertiesAbstractWdgt.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjPropertiesGeometryWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjPropertiesLabelsWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjsPropertiesWdgtStack.cpp
 )

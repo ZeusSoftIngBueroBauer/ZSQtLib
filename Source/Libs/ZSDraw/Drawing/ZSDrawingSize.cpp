@@ -55,18 +55,16 @@ CDrawingSize::CDrawingSize(const QString& i_strName) :
     m_strName(i_strName),
     m_eDimensionUnit(EDrawingDimensionUnit::Pixels),
     m_metricUnit(Units.Length.mm),
+    m_fImageMetricRes(Units.Length.physValResPerPx(m_metricUnit).getVal()),
     m_fImageMetricWidth(0.0),
-    m_fImageMetricWidthRes(Units.Length.physValResPerPx(EOrientation::Horizontal, m_metricUnit).getVal()),
     m_fImageMetricHeight(0.0),
-    m_fImageMetricHeightRes(Units.Length.physValResPerPx(EOrientation::Vertical, m_metricUnit).getVal()),
     m_eNormedPaperSize(),
     m_eNormedPaperOrientation(),
     m_iMetricScaleFactorDividend(1),
     m_iMetricScaleFactorDivisor(1),
+    m_fImageSizeRes_px(Units.Length.physValResPerPx(Units.Length.px).getVal()),
     m_fImageSizeWidth_px(0.0),
-    m_fImageSizeWidthRes_px(Units.Length.physValResPerPx(EOrientation::Horizontal, Units.Length.pxX).getVal()),
     m_fImageSizeHeight_px(0.0),
-    m_fImageSizeHeightRes_px(Units.Length.physValResPerPx(EOrientation::Vertical, Units.Length.pxY).getVal()),
     m_pTrcAdminObj(nullptr)
 {
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
@@ -91,17 +89,15 @@ CDrawingSize::CDrawingSize(const QString& i_strName, const QSize& i_size) :
     m_strName(i_strName),
     m_eDimensionUnit(EDrawingDimensionUnit::Pixels),
     m_metricUnit(Units.Length.mm),
+    m_fImageMetricRes(Units.Length.physValResPerPx(m_metricUnit).getVal()),
     m_fImageMetricWidth(0.0),
-    m_fImageMetricWidthRes(Units.Length.physValResPerPx(EOrientation::Horizontal, m_metricUnit).getVal()),
     m_fImageMetricHeight(0.0),
-    m_fImageMetricHeightRes(Units.Length.physValResPerPx(EOrientation::Vertical, m_metricUnit).getVal()),
     m_eNormedPaperSize(),
     m_eNormedPaperOrientation(),
     m_iMetricScaleFactorDividend(1),
     m_iMetricScaleFactorDivisor(1),
-    m_fImageSizeWidthRes_px(Units.Length.physValResPerPx(EOrientation::Horizontal, Units.Length.pxX).getVal()),
+    m_fImageSizeRes_px(Units.Length.physValResPerPx(Units.Length.px).getVal()),
     m_fImageSizeWidth_px(i_size.width()),
-    m_fImageSizeHeightRes_px(Units.Length.physValResPerPx(EOrientation::Vertical, Units.Length.pxY).getVal()),
     m_fImageSizeHeight_px(i_size.height()),
     m_pTrcAdminObj(nullptr)
 {
@@ -127,18 +123,16 @@ CDrawingSize::CDrawingSize(const CDrawingSize& i_other) :
     m_strName(i_other.m_strName),
     m_eDimensionUnit(i_other.m_eDimensionUnit),
     m_metricUnit(i_other.m_metricUnit),
+    m_fImageMetricRes(i_other.m_fImageMetricRes),
     m_fImageMetricWidth(i_other.m_fImageMetricWidth),
-    m_fImageMetricWidthRes(i_other.m_fImageMetricWidthRes),
     m_fImageMetricHeight(i_other.m_fImageMetricHeight),
-    m_fImageMetricHeightRes(i_other.m_fImageMetricHeightRes),
     m_eNormedPaperSize(i_other.m_eNormedPaperSize),
     m_eNormedPaperOrientation(i_other.m_eNormedPaperOrientation),
     m_iMetricScaleFactorDividend(i_other.m_iMetricScaleFactorDividend),
     m_iMetricScaleFactorDivisor(i_other.m_iMetricScaleFactorDivisor),
+    m_fImageSizeRes_px(i_other.m_fImageSizeRes_px),
     m_fImageSizeWidth_px(i_other.m_fImageSizeWidth_px),
-    m_fImageSizeWidthRes_px(i_other.m_fImageSizeWidthRes_px),
     m_fImageSizeHeight_px(i_other.m_fImageSizeHeight_px),
-    m_fImageSizeHeightRes_px(i_other.m_fImageSizeHeightRes_px),
     m_pTrcAdminObj(nullptr)
 {
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
@@ -167,18 +161,16 @@ CDrawingSize::~CDrawingSize()
 
     //m_eDimensionUnit = static_cast<EDrawingDimensionUnit>(0);
     //m_metricUnit;
+    m_fImageMetricRes = 0.0;
     m_fImageMetricWidth = 0.0;
-    m_fImageMetricWidthRes = 0.0;
     m_fImageMetricHeight = 0.0;
-    m_fImageMetricHeightRes = 0.0;
     //m_eNormedPaperSize = static_cast<ENormedPaperSize>(0);
     //m_eNormedPaperOrientation = static_cast<EOrientation>(0);
     m_iMetricScaleFactorDividend = 0;
     m_iMetricScaleFactorDivisor = 0;
+    m_fImageSizeRes_px = 0.0;
     m_fImageSizeWidth_px = 0.0;
-    m_fImageSizeWidthRes_px = 0.0;
     m_fImageSizeHeight_px = 0.0;
-    m_fImageSizeHeightRes_px = 0.0;
     m_pTrcAdminObj = nullptr;
 
 } // dtor
@@ -205,18 +197,16 @@ CDrawingSize& CDrawingSize::operator = (const CDrawingSize& i_other)
     m_strName = i_other.m_strName;
     m_eDimensionUnit = i_other.m_eDimensionUnit;
     m_metricUnit = i_other.m_metricUnit;
+    m_fImageMetricRes = i_other.m_fImageMetricRes;
     m_fImageMetricWidth = i_other.m_fImageMetricWidth;
-    m_fImageMetricWidthRes = i_other.m_fImageMetricWidthRes;
     m_fImageMetricHeight = i_other.m_fImageMetricHeight;
-    m_fImageMetricHeightRes = i_other.m_fImageMetricHeightRes;
     m_eNormedPaperSize = i_other.m_eNormedPaperSize;
     m_eNormedPaperOrientation = i_other.m_eNormedPaperOrientation;
     m_iMetricScaleFactorDividend = i_other.m_iMetricScaleFactorDividend;
     m_iMetricScaleFactorDivisor = i_other.m_iMetricScaleFactorDivisor;
     m_fImageSizeWidth_px = i_other.m_fImageSizeWidth_px;
-    m_fImageSizeWidthRes_px = i_other.m_fImageSizeWidthRes_px;
+    m_fImageSizeWidth_px = i_other.m_fImageSizeWidth_px;
     m_fImageSizeHeight_px = i_other.m_fImageSizeHeight_px;
-    m_fImageSizeHeightRes_px = i_other.m_fImageSizeHeightRes_px;
 
     return *this;
 }
@@ -236,16 +226,13 @@ bool CDrawingSize::operator == ( const CDrawingSize& i_other ) const
     else if( m_metricUnit != i_other.m_metricUnit ) {
         bEqual = false;
     }
+    else if( m_fImageMetricRes != i_other.m_fImageMetricRes ) {
+        bEqual = false;
+    }
     else if( m_fImageMetricWidth != i_other.m_fImageMetricWidth ) {
         bEqual = false;
     }
-    else if( m_fImageMetricWidthRes != i_other.m_fImageMetricWidthRes ) {
-        bEqual = false;
-    }
     else if( m_fImageMetricHeight != i_other.m_fImageMetricHeight ) {
-        bEqual = false;
-    }
-    else if( m_fImageMetricHeightRes != i_other.m_fImageMetricHeightRes ) {
         bEqual = false;
     }
     else if( m_eNormedPaperSize != i_other.m_eNormedPaperSize ) {
@@ -260,16 +247,13 @@ bool CDrawingSize::operator == ( const CDrawingSize& i_other ) const
     else if( m_iMetricScaleFactorDivisor != i_other.m_iMetricScaleFactorDivisor ) {
         bEqual = false;
     }
+    else if( m_fImageSizeRes_px != i_other.m_fImageSizeRes_px ) {
+        bEqual = false;
+    }
     else if( m_fImageSizeWidth_px != i_other.m_fImageSizeWidth_px ) {
         bEqual = false;
     }
-    else if( m_fImageSizeWidthRes_px != i_other.m_fImageSizeWidthRes_px ) {
-        bEqual = false;
-    }
     else if( m_fImageSizeHeight_px != i_other.m_fImageSizeHeight_px ) {
-        bEqual = false;
-    }
-    else if( m_fImageSizeHeightRes_px != i_other.m_fImageSizeHeightRes_px ) {
         bEqual = false;
     }
     return bEqual;
@@ -311,6 +295,40 @@ CEnumDrawingDimensionUnit CDrawingSize::dimensionUnit() const
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Returns the current unit to be used.
+
+    If dimension unit is set to Pixels, px is returned.
+    If dimension unit is set to Metric, the metric unit is returned.
+*/
+CUnit CDrawingSize::unit() const
+//------------------------------------------------------------------------------
+{
+    if (m_eDimensionUnit == EDrawingDimensionUnit::Pixels) {
+        return Units.Length.px;
+    }
+    return m_metricUnit;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the current resolution.
+
+    If dimension unit is set to Pixels, the resolution in pixels is returned.
+    If dimension unit is set to Metric, the resolution in metric unit is returned.
+*/
+CPhysValRes CDrawingSize::resolution() const
+//------------------------------------------------------------------------------
+{
+    if (m_eDimensionUnit == EDrawingDimensionUnit::Pixels) {
+        return CPhysValRes(m_fImageSizeRes_px, Units.Length.px);
+    }
+    return CPhysValRes(m_fImageMetricRes, m_metricUnit);
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
 void CDrawingSize::setMetricUnit( const CUnit& i_unit )
 //------------------------------------------------------------------------------
 {
@@ -328,11 +346,18 @@ void CDrawingSize::setMetricUnit( const CUnit& i_unit )
         // If changing the unit the metrics width and height and also the
         // size in pixels remain the same. Only the unit in which the values
         // are indicated will be changed.
-        CPhysVal physValWidth(m_fImageMetricWidth, m_metricUnit);   // Value in previous unit
-        CPhysVal physValHeight(m_fImageMetricHeight, m_metricUnit); // Value in previous unit
+
+        // Current values:
+        CPhysVal physValWidth(m_fImageMetricWidth, m_metricUnit, m_fImageMetricRes);
+        CPhysVal physValHeight(m_fImageMetricHeight, m_metricUnit, m_fImageMetricRes);
+
+        // Convert into new unit:
         m_metricUnit = i_unit;
         physValWidth.convertValue(m_metricUnit);
         physValHeight.convertValue(m_metricUnit);
+
+        // New values. Also the resolution is returned in the new unit.
+        m_fImageMetricRes = physValWidth.getRes().getVal();
         m_fImageMetricWidth = physValWidth.getVal();
         m_fImageMetricHeight = physValHeight.getVal();
     }
@@ -498,8 +523,8 @@ void CDrawingSize::setImageSize( const CPhysVal& i_physValWidth, const CPhysVal&
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_physValWidth.toString() + ", " + i_physValHeight.toString()
-                    + " (Prev: " + CPhysVal(m_fImageSizeWidth_px, Units.Length.pxX).toString()
-                    + ", " + CPhysVal(m_fImageSizeHeight_px, Units.Length.pxY).toString() + ")"
+                    + " (Prev: " + CPhysVal(m_fImageSizeWidth_px, Units.Length.px).toString()
+                    + ", " + CPhysVal(m_fImageSizeHeight_px, Units.Length.px).toString() + ")"
                     + ", (Prev: " + CPhysVal(m_fImageMetricWidth, m_metricUnit).toString()
                     + ", " + CPhysVal(m_fImageMetricHeight, m_metricUnit).toString() + ")";
     }
@@ -523,8 +548,8 @@ void CDrawingSize::setImageSize( const CPhysVal& i_physValWidth, const CPhysVal&
                 + i_physValWidth.toString() + ", " + i_physValHeight.toString() + "): "
                 + "!i_physValHeight <= 0.0!");
     }
-    if( (i_physValWidth.unit() == Units.Length.pxX && i_physValHeight.unit() != Units.Length.pxY)
-     || (i_physValWidth.unit() != Units.Length.pxX && i_physValHeight.unit() == Units.Length.pxY) ) {
+    if( (i_physValWidth.unit() == Units.Length.px && i_physValHeight.unit() != Units.Length.px)
+     || (i_physValWidth.unit() != Units.Length.px && i_physValHeight.unit() == Units.Length.px) ) {
         throw CException(
             __FILE__, __LINE__, EResultArgOutOfRange,
             ClassName() + "::setImageSize("
@@ -532,7 +557,7 @@ void CDrawingSize::setImageSize( const CPhysVal& i_physValWidth, const CPhysVal&
                 + "Either set size in pixels or in metrics");
     }
 
-    if( i_physValWidth.unit() == Units.Length.pxX ) {
+    if( i_physValWidth.unit() == Units.Length.px ) {
         double fImageSizeWidth_px = i_physValWidth.getVal();
         double fImageSizeHeight_px = i_physValHeight.getVal();
         if( m_fImageSizeWidth_px != fImageSizeWidth_px || m_fImageSizeHeight_px != fImageSizeHeight_px ) {
@@ -579,14 +604,14 @@ int CDrawingSize::imageHeightInPixels() const
 CPhysVal CDrawingSize::metricImageWidth() const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_fImageMetricWidth, m_metricUnit, m_fImageMetricWidthRes);
+    return CPhysVal(m_fImageMetricWidth, m_metricUnit, m_fImageMetricRes);
 }
 
 //------------------------------------------------------------------------------
 CPhysVal CDrawingSize::metricImageHeight() const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_fImageMetricHeight, m_metricUnit, m_fImageMetricHeightRes);
+    return CPhysVal(m_fImageMetricHeight, m_metricUnit, m_fImageMetricRes);
 }
 
 /*==============================================================================
@@ -607,11 +632,11 @@ CPhysVal CDrawingSize::toMetricXCoor(double i_fXCoor_px) const
 {
     CPhysVal physVal;
     if (m_eDimensionUnit == EDrawingDimensionUnit::Pixels) {
-        physVal = CPhysVal(i_fXCoor_px, Units.Length.pxX, m_fImageSizeWidthRes_px);
+        physVal = CPhysVal(i_fXCoor_px, Units.Length.px, m_fImageSizeWidth_px);
     }
     else /*if (m_eDimensionUnit == EDrawingDimensionUnit::Metric)*/ {
         double fVal = (i_fXCoor_px * m_fImageMetricWidth) / m_fImageSizeWidth_px;
-        physVal = CPhysVal(fVal, m_metricUnit, m_fImageMetricWidthRes);
+        physVal = CPhysVal(fVal, m_metricUnit, m_fImageMetricRes);
     }
     return physVal;
 }
@@ -630,12 +655,12 @@ CPhysVal CDrawingSize::toMetricYCoor(double i_fYCoor_px) const
 {
     CPhysVal physVal;
     if (m_eDimensionUnit == EDrawingDimensionUnit::Pixels) {
-        physVal = CPhysVal(i_fYCoor_px, Units.Length.pxY, m_fImageSizeHeightRes_px);
+        physVal = CPhysVal(i_fYCoor_px, Units.Length.px, m_fImageSizeRes_px);
     }
     else /*if (m_eDimensionUnit == EDrawingDimensionUnit::Metric)*/ {
         // The metric coordinate system is from bottom to top.
         double fVal = m_fImageMetricHeight - (i_fYCoor_px * m_fImageMetricHeight) / m_fImageSizeHeight_px;
-        physVal = CPhysVal(fVal, m_metricUnit, m_fImageMetricHeightRes);
+        physVal = CPhysVal(fVal, m_metricUnit, m_fImageMetricRes);
     }
     return physVal;
 }
@@ -653,11 +678,11 @@ double CDrawingSize::toPixelXCoor(const CPhysVal& i_physValXCoor) const
 //------------------------------------------------------------------------------
 {
     double fCoor_px = 0.0;
-    if (i_physValXCoor.unit() == Units.Length.pxX) {
+    if (i_physValXCoor.unit() == Units.Length.px) {
         fCoor_px = i_physValXCoor.getVal();
     }
     else if (m_eDimensionUnit == EDrawingDimensionUnit::Pixels) {
-        fCoor_px = i_physValXCoor.getVal(Units.Length.pxX);
+        fCoor_px = i_physValXCoor.getVal(Units.Length.px);
     }
     else /*if (m_eDimensionUnit == EDrawingDimensionUnit::Metric)*/ {
         double fVal = i_physValXCoor.getVal(m_metricUnit);
@@ -679,11 +704,11 @@ double CDrawingSize::toPixelYCoor(const CPhysVal& i_physValYCoor) const
 //------------------------------------------------------------------------------
 {
     double fCoor_px = 0.0;
-    if (i_physValYCoor.unit() == Units.Length.pxX) {
+    if (i_physValYCoor.unit() == Units.Length.px) {
         fCoor_px = i_physValYCoor.getVal();
     }
     else if (m_eDimensionUnit == EDrawingDimensionUnit::Pixels) {
-        fCoor_px = i_physValYCoor.getVal(Units.Length.pxY);
+        fCoor_px = i_physValYCoor.getVal(Units.Length.px);
     }
     else /*if (m_eDimensionUnit == EDrawingDimensionUnit::Metric)*/ {
         double fVal = i_physValYCoor.getVal(m_metricUnit);
@@ -715,8 +740,8 @@ void CDrawingSize::updateImageSizeInPixels()
     double fScaledHeight = fFactor * m_fImageMetricHeight;
     CPhysVal physValWidth(fScaledWidth, m_metricUnit);
     CPhysVal physValHeight(fScaledHeight, m_metricUnit);
-    physValWidth.convertValue(Units.Length.pxX);
-    physValHeight.convertValue(Units.Length.pxY);
+    physValWidth.convertValue(Units.Length.px);
+    physValHeight.convertValue(Units.Length.px);
     m_fImageSizeWidth_px = physValWidth.getVal();
     m_fImageSizeHeight_px = physValHeight.getVal();
 
@@ -738,8 +763,8 @@ void CDrawingSize::updateImageSizeMetrics()
         traceValues(mthTracer, EMethodDir::Enter);
     }
 
-    CPhysVal physValWidth(m_fImageSizeWidth_px, Units.Length.pxX);
-    CPhysVal physValHeight(m_fImageSizeHeight_px, Units.Length.pxY);
+    CPhysVal physValWidth(m_fImageSizeWidth_px, Units.Length.px);
+    CPhysVal physValHeight(m_fImageSizeHeight_px, Units.Length.px);
     physValWidth.convertValue(m_metricUnit);
     physValHeight.convertValue(m_metricUnit);
     m_fImageMetricWidth = physValWidth.getVal();
@@ -810,10 +835,10 @@ QString CDrawingSize::toString() const
         + ", Orientation: " + QString(m_eNormedPaperOrientation.isValid() ? m_eNormedPaperOrientation.toString() : "Invalid")
         + ", Scale (" + QString::number(m_iMetricScaleFactorDividend)
             + "/" + QString::number(m_iMetricScaleFactorDivisor) + ")"
-        + ", Size (" + CPhysVal(m_fImageMetricWidth, m_metricUnit, m_fImageMetricWidthRes).toString()
-            + " * " + CPhysVal(m_fImageMetricHeight, m_metricUnit, m_fImageMetricHeightRes).toString() + ")"
-        + ", Size (" + CPhysVal(m_fImageSizeWidth_px, Units.Length.pxX, m_fImageSizeWidthRes_px).toString()
-            + " * " + CPhysVal(m_fImageSizeHeight_px, Units.Length.pxY, m_fImageSizeHeightRes_px).toString() + ")";
+        + ", Size (" + CPhysVal(m_fImageMetricWidth, m_metricUnit, m_fImageMetricRes).toString()
+            + " * " + CPhysVal(m_fImageMetricHeight, m_metricUnit, m_fImageMetricRes).toString() + ")"
+        + ", Size (" + CPhysVal(m_fImageSizeWidth_px, Units.Length.px, m_fImageSizeRes_px).toString()
+            + " * " + CPhysVal(m_fImageSizeHeight_px, Units.Length.px, m_fImageSizeRes_px).toString() + ")";
     return str;
 }
 
@@ -831,9 +856,9 @@ void CDrawingSize::traceValues(CMethodTracer& mthTracer, EMethodDir i_methodDir)
         + ", NormedOrientation: " + QString(m_eNormedPaperOrientation.isValid() ? m_eNormedPaperOrientation.toString() : "---")
         + ", Scale (" + QString::number(m_iMetricScaleFactorDividend)
             + "/" + QString::number(m_iMetricScaleFactorDivisor) + ")"
-        + ", Size (" + CPhysVal(m_fImageMetricWidth, m_metricUnit, m_fImageMetricWidthRes).toString()
-            + " * " + CPhysVal(m_fImageMetricHeight, m_metricUnit, m_fImageMetricHeightRes).toString() + ")"
-        + ", Size (" + CPhysVal(m_fImageSizeWidth_px, Units.Length.pxX, m_fImageSizeWidthRes_px).toString()
-            + " * " + CPhysVal(m_fImageSizeHeight_px, Units.Length.pxY, m_fImageSizeHeightRes_px).toString() + ")";
+        + ", Size (" + CPhysVal(m_fImageMetricWidth, m_metricUnit, m_fImageMetricRes).toString()
+            + " * " + CPhysVal(m_fImageMetricHeight, m_metricUnit, m_fImageMetricRes).toString() + ")"
+        + ", Size (" + CPhysVal(m_fImageSizeWidth_px, Units.Length.px, m_fImageSizeRes_px).toString()
+            + " * " + CPhysVal(m_fImageSizeHeight_px, Units.Length.px, m_fImageSizeRes_px).toString() + ")";
     mthTracer.trace(strMthLog);
 }

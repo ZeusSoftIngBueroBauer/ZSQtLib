@@ -99,16 +99,8 @@ CGraphObj* CObjFactoryLine::createGraphObj(
         mthTracer.trace(strMthInArgs);
     }
 
-    // We need to create an object with at least one pixel size so that the
-    // drawing scene can "find" the object and can dispatch events to it.
-    // It is not important whether width or height is set to one pixel.
-    // For a line it makes sense to set both extents to one pixel.
-
-    QPointF pt1 = i_ptItemPos;
-    QPointF pt2(i_ptItemPos.x() + 1, i_ptItemPos.y() + 1);
-
     CGraphObjLine* pGraphObj = new CGraphObjLine(
-        i_pDrawingScene, i_drawSettings, "", pt1, pt2);
+        i_pDrawingScene, i_drawSettings, "", i_ptItemPos, i_ptItemPos);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(pGraphObj->path());

@@ -111,7 +111,9 @@ CGraphObjWdgtCheckBox::CGraphObjWdgtCheckBox(
 
     QRectF rctBounding = QGraphicsProxyWidget::boundingRect();
 
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
     m_ptRotOriginCurr = rctBounding.center();
+#endif
 
     setFlags( QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges );
 

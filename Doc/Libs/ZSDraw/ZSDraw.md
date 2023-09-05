@@ -134,74 +134,47 @@ aus dem metrischen System (z.B. mm, cm, m, km, etc.).
 Erzeugen von Objekten
 =====================
 
-Grafische Objekte werden über Objekt-Faktories erstellt, die in Gruppen zusammengefasst werden.
-Mögliche Gruppen sind z.B.:
+Um die Erstellung benutzerdefinierter grafischer Objekte zu erlauben, wird das Design Pattern der Objekt Faktories verwendet.
+Für jeden grafischen Objekt Typ muss eine Objekt Faktory implementiert und mit einem eindeutigen Namen registriert werden.
+Objekt Faktories werden wie die grafischen Objekt Typen in logische Gruppen geordnet.
 
-- "Standard Shapes" unter die die grafischen Objekt Klassen Point, Line, Rect, Ellipse, Polyline, Polygon und Text zählen.
-- "Connections" zu denen die Grafischen Objekt Klassen ConnectionLines und ConnectionPoints zählen.
-- Benutzerdefinierte Objekt Klassen wie "Widgets", deren Klassen von QGraphicsProxyWidget abgeleitetet werden können,
-  und als Host für Qt Widget Klassen wie QComboBox, QGroupBox, QLineEdit etc. dienen können.
-- Benutzerdefinierte Objekt Klassen, die Standard Shapes zu einer Gruppe zusammenfassen, um z.B. einen Transistor,
-  einen elektrischen Widerstand, eine Diode, einen Kondensator oder eine Spule darzustellen.
+Auch für die innerhalb der ZSDraw Bibliothek vordefinierten grafischen Objekt Typen werden Objekt Faktories registriert,
+die in die beiden Gruppen "Standard Shapes" und "Connections" unterteilt werden.
 
-Für jedes auf der Zeichenfläche zu erstellende Objekt muss eine entpsrechende Instanz einer Objekt-Faktory
-registriert werden. Dies geschieht durch den Gruppen Namen (wie "Standard Shapes") und dem zu erstellen Element
-(wie z.B. "Rect", "Line", "Ellipse"). Die Liste der registrierten Objekt Factories wird als Klassenvariable
-innerhalb der Klass CObjFactory verwaltet.
+Zu den "Standard Shapes" gehören die grafischen Objekt Klassen Point, Line, Rect, Ellipse, Polyline, Polygon und Text.
+Zur Gruppe "Connections" zählen die Klassen ConnectionLines und ConnectionPoints.
 
-Um den Code innerhalb der Klasse CDrawingScene besser zu verstehen wird im Folgenden beschrieben, wie
-grafische Objekte auf der Zeichenfläche mittels Maus erzeugt werden.
+Jede registrierte Objekt Faktory wird mit Gruppen und Typ Name in einer Klassenvariable der Klasse CObjFactory gespeichert.
 
-1. Point
---------
+Um ein Objekt auf der Zeichenfläche zu erstellen, muss zunächst das Zeichen Werkzeug ausgewählt werden. Die Auswahl eines
+Zeichen Werkzeugs entspricht dabei der Auswahl einer Objekt Factory. Wird z.B. das Werkzeug "Linie Zeichnen" ausgewählt,
+wird über die Methode CDrawingScene::setCurrentDrawingTool("Standard Shapes", "Line") die zugehörige Objekt Faktory aktiviert.
 
-Ein Point besteht nur aus einem Punkt, der nicht als Polygon behandelt wird.
-Das Bounding Rectangle des Punktes ist der Punkt selbst.
-Da alle Selection Points des Bounding Rectangles übereinander liegen würden,
-wird der Center Point des des Bounding Rectangles verwendet.
+Implizit werden für die Faktory "Standard Shapes - Line" folgende Modi in der Drawing Scene eingestellt:
 
-Betrachten wir das Malen eines Punktes, das das einfachste, grafische Objekt darstellt.
+- Mode: Edit
+- EditTool: CreateObjects
+- EditMode: Creating
+- EditResizeMode: None
 
-Über den Aufruf CDrawingScene::setCurrentDrawingTool wird zunächst die Objekt Faktory aktiviert, über die
-das Objekt auf der Zeichenfläche zu erstellen ist. Änderte sich die aktivierte Objekt Factory dabei,
-wird der Mode der Drawing Scene auf EditTool = CreateObjects, EditMode = Undefined, EditResizeMode = Undefined
-und das Flag ObjFactoryTypeChanged auf true gesetzt.
+Mit einem Maus Klick in die Zeichenfläche wird die Methode "createGraphObj" der Objekt Factory aufgerufen und dabei
+die aktuelle Maus Position und die zu verwendenden Mal Attribute wie Liniendicke, Linienfarbe etc. übergeben.
+Da in der Regel das neu erzeugte grafische Objekt durch weitere Maus Bewegungen noch in der Form angepasst werden
+(Linien End Punkt wird durch Mouse Move verschoben und mit Maus Release endgültig festgelegt) wird das neu erzeugte
+Objekt als Objekt "under construction" in den Instanzvariablen "m_pGraphObjCreating" und "m_pGraphicsItemCreating"
+gespeichert. Beide Instanzvariablen verweisen auf das selbe Objekt, werden aber doppelt gehalten, um "dynamic_cast"
+Aufrufe zwischen den Klassen "CGraphObj" und "QGrahicsItem" überflüssig zu machen.
 
-Um das Objekt per Maus zu erzeugen, wird die Maus an die gewünschte Position bewegt, ohne dabei einen
-Maus Taste gedrückt zu halten. Da sich momentan kein Objekt under construction befindet, werden die
-Maus Events ohne gedrückte Taste ignoriert.
+Nachfolgende Maus Events werden and das "Creating" Objekt geschickt werden.
 
-Erreicht man die gewünschte Position und drückt die linke Maus Taste, wird das grafische Objekt "Point"
-in der Methode "mousePressEvent" über den Factory Aufruf "createGraphObj" erzeugt und der graphics scene
-als graphic item hinzugefügt. Die Drawing Scene fügt das Objekt daraufhin auch in den Index Tree seiner
-grafischen Objekte ein.
+Über den Methodenaufruf "CDrawingScene::addGraphObj" wird das neu erzeugte Objekt über "QGraphicsScene::addItem" der
+GrahicsScene und außerdem mit "CIdxTree::add" das "CGraphObj" dem Index Tree grafischer Objekte hinzugefügt.
 
-In der Regel ist ein grafisches Objekt nach dem ersten Maus Click nicht fertig gestellt sondern wird durch
-ziehen der Maus bei gedrückter Maustaste noch in der Form geändert und befindet sich somit noch "under construction".
-Da das Objekt selbst am besten weiß, wie es über Maus-Events erzeugt wird und z.B. SelectionPoints temporär
-erzeugen muss, wird ihm dieser Zustand durch den Aufruf "setEditMode(EEditMode::Creating)" mitgeteilt
-und der Mouse Click Event an das Objekt weitergeleitet. Bei Verarbeitung dieses Events kann das Objekt selbst
-entsprechend seinem Objekt Typ und seinem aktuellen Zustand darauf reagieren.
+Über die Methodenaufrufe "CGraphObj::setEditMode(EEditMode::Creating)" wird dem Objekt mitgeteilt, dass es
+"under construction" ist und entsprechend auf nachfolgende Maus Events reagieren kann.
 
-Im Falle des Point Objekts ist das Objekt mit dem ersten Maus Click fertig gestellt und in der
-"mousePressEvent" Methode des Point Objekts wird bei Empfang des Mouse Clicks Events der Drawing Scene
-durch Aufruf von "onGraphObjCreationFinished" mitgeteilt, dass das Objekt fertig gestellt ist.
+Des weiteren wird das Grafik Item selektiert über den Methoden Aufruf "QGrahicsItem::setSelected".
 
-Wird die Maus Taste nach Erzeugen des Point Objekts gedrückt gehalten und die Maus bewegt, werden
-weitere Punkte innerhalb der "mouseMoveEvent" Methode erzeugt. Dies ist eine Besonderheit des grafischen
-Point Objekts.
-
-2. Line
--------
-
-3. Rectangle
-------------
-
-4. Polyline
------------
-
-5. Connections
---------------
 
 Selektieren von Objekten
 ========================

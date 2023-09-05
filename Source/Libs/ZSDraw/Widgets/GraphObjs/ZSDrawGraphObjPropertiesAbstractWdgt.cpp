@@ -63,12 +63,15 @@ CWdgtGraphObjPropertiesAbstract::CWdgtGraphObjPropertiesAbstract(
 //------------------------------------------------------------------------------
     QWidget(i_pWdgtParent),
     m_pDrawingScene(i_pDrawingScene),
+    m_drawingSize(i_strObjName),
     m_strKeyInTree(),
     m_pGraphObj(nullptr),
     m_graphObjTypeCurr(EGraphObjTypeUndefined),
     m_graphObjTypePrev(EGraphObjTypeUndefined),
-    m_iContentChangedSignalBlockedCounter(0),
+    m_bContentUpdateOnSelectedChanged(false),
+    m_bContentUpdateOnGeometryChanged(false),
     m_bContentChanged(false),
+    m_iContentChangedSignalBlockedCounter(0),
     // Edit Controls
     m_pLyt(nullptr),
     // Button Line
@@ -90,21 +93,14 @@ CWdgtGraphObjPropertiesAbstract::CWdgtGraphObjPropertiesAbstract(
         /* strMethod    */ "CWdgtGraphObjPropertiesAbstract::ctor",
         /* strAddInfo   */ "" );
 
+    m_drawingSize = m_pDrawingScene->drawingSize();
+
     m_pLyt = new QVBoxLayout();
     setLayout(m_pLyt);
 
     QObject::connect(
-        m_pDrawingScene, &CDrawingScene::graphObjChanged,
-        this, &CWdgtGraphObjPropertiesAbstract::onDrawingSceneGraphObjChanged );
-    QObject::connect(
-        m_pDrawingScene, &CDrawingScene::graphObjMoved,
-        this, &CWdgtGraphObjPropertiesAbstract::onDrawingSceneGraphObjMoved );
-    QObject::connect(
-        m_pDrawingScene, &CDrawingScene::graphObjRenamed,
-        this, &CWdgtGraphObjPropertiesAbstract::onDrawingSceneGraphObjRenamed );
-    QObject::connect(
-        m_pDrawingScene, &CDrawingScene::graphObjAboutToBeDestroyed,
-        this, &CWdgtGraphObjPropertiesAbstract::onDrawingSceneGraphObjAboutToBeDestroyed );
+        m_pDrawingScene, &CDrawingScene::drawingSizeChanged,
+        this, &CWdgtGraphObjPropertiesAbstract::onDrawingSceneDrawingSizeChanged );
 
 } // ctor
 
@@ -122,12 +118,15 @@ CWdgtGraphObjPropertiesAbstract::~CWdgtGraphObjPropertiesAbstract()
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
 
     m_pDrawingScene = nullptr;
+    //m_drawingSize;
     //m_strKeyInTree;
     m_pGraphObj = nullptr;
     m_graphObjTypeCurr = static_cast<EGraphObjType>(0);
     m_graphObjTypePrev = static_cast<EGraphObjType>(0);
-    m_iContentChangedSignalBlockedCounter = 0;
+    m_bContentUpdateOnSelectedChanged = false;
+    m_bContentUpdateOnGeometryChanged = false;
     m_bContentChanged = false;
+    m_iContentChangedSignalBlockedCounter = 0;
     // Edit Controls
     m_pLyt = nullptr;
     // Button Line
@@ -212,6 +211,19 @@ void CWdgtGraphObjPropertiesAbstract::setKeyInTree( const QString& i_strKeyInTre
 
     if (m_strKeyInTree != i_strKeyInTree)
     {
+        if (m_pGraphObj != nullptr) {
+            if (m_bContentUpdateOnSelectedChanged) {
+                QObject::disconnect(
+                    m_pGraphObj, &CGraphObj::selectedChanged,
+                    this, &CWdgtGraphObjPropertiesAbstract::onGraphObjSelectedChanged);
+            }
+            if (m_bContentUpdateOnGeometryChanged) {
+                QObject::disconnect(
+                    m_pGraphObj, &CGraphObj::geometryChanged,
+                    this, &CWdgtGraphObjPropertiesAbstract::onGraphObjGeometryChanged);
+            }
+        }
+
         m_strKeyInTree = i_strKeyInTree;
 
         if (m_strKeyInTree.isEmpty()) {
@@ -225,6 +237,17 @@ void CWdgtGraphObjPropertiesAbstract::setKeyInTree( const QString& i_strKeyInTre
         }
         else {
             m_graphObjTypeCurr = m_pGraphObj->type();
+
+            if (m_bContentUpdateOnSelectedChanged) {
+                QObject::connect(
+                    m_pGraphObj, &CGraphObj::selectedChanged,
+                    this, &CWdgtGraphObjPropertiesAbstract::onGraphObjSelectedChanged);
+            }
+            if (m_bContentUpdateOnGeometryChanged) {
+                QObject::connect(
+                    m_pGraphObj, &CGraphObj::geometryChanged,
+                    this, &CWdgtGraphObjPropertiesAbstract::onGraphObjGeometryChanged);
+            }
         }
 
         // Fill the content of the edit controls.
@@ -514,11 +537,34 @@ void CWdgtGraphObjPropertiesAbstract::applySettings()
 }
 
 /*==============================================================================
-protected: // overridables
+protected slots: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief This method is called by the slot onDrawingSceneGraphObjChanged.
+void CWdgtGraphObjPropertiesAbstract::onDrawingSceneDrawingSizeChanged(const CDrawingSize& i_size)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_size.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "CWdgtGraphObjPropertiesAbstract::onDrawingSceneDrawingSizeChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    //if( m_drawingSize != i_size ) {
+        m_drawingSize = i_size;
+    //}
+}
+
+/*==============================================================================
+protected slots: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Slot method connected to the selectedChanged signal of the graphical object.
 
     The method calls fillEditControls. Derived classes should overwrite this method
     to fill their edit controls with the current data of the graphical object.
@@ -534,16 +580,16 @@ protected: // overridables
     and the property has been applied to the edit control instead of emitting
     the contentChanged signal.
 
-    After invoking fillEditControls the method onGraphObjChanged will check the
+    After invoking fillEditControls the method onGraphObjSelectedChanged will check the
     flag and emit the contentChanged signal if needed.
 */
-void CWdgtGraphObjPropertiesAbstract::onGraphObjChanged()
+void CWdgtGraphObjPropertiesAbstract::onGraphObjSelectedChanged()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "CWdgtGraphObjPropertiesAbstract::onGraphObjChanged",
+        /* strMethod    */ "CWdgtGraphObjPropertiesAbstract::onGraphObjSelectedChanged",
         /* strAddInfo   */ "" );
 
     // When applying the changes from the edit controls by invoking "acceptChanges"
@@ -575,52 +621,55 @@ void CWdgtGraphObjPropertiesAbstract::onGraphObjChanged()
 }
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjPropertiesAbstract::onGraphObjMoved()
+/*! @brief Slot method connected to the geometryChanged signal of the graphical object.
+
+    The method calls fillEditControls. Derived classes should overwrite this method
+    to fill their edit controls with the current data of the graphical object.
+
+    The ContentChangedSignalBlocked counter is incrememented before fillEditControls
+    is called as the "contentChanged" signal should not be emitted for each applied
+    property. This signal should just be emitted once after all properties from the
+    graphical objects have been set at all edit controls of the property widget and
+    fillEditControls returns.
+
+    In the fillEditControls method of the derived class the flag "contentChanged"
+    has to be set if the ContentChangedSignalBlocked counter is greater than 0
+    and the property has been applied to the edit control instead of emitting
+    the contentChanged signal.
+
+    After invoking fillEditControls the method onGraphObjSelectedChanged will check the
+    flag and emit the contentChanged signal if needed.
+*/
+void CWdgtGraphObjPropertiesAbstract::onGraphObjGeometryChanged()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "CWdgtGraphObjPropertiesAbstract::onGraphObjMoved",
+        /* strMethod    */ "CWdgtGraphObjPropertiesAbstract::onGraphObjGeometryChanged",
         /* strAddInfo   */ "" );
 
+    // When applying the changes from the edit controls by invoking "acceptChanges"
+    // the ContentChangedSignalBlockedCounter is incremented to avoid that
+    // "onGraphObjChanged" overwrites settings in edit controls which haven't been
+    // applied yet. E.g. if the line width and the pen color are changed, both values
+    // will be set one after another at the graphical object. When applying line width
+    // "onGraphObjChanged" is called and the current pen color setting of the user
+    // control would be overwritten with the current pen color of the graphical object.
     if (m_iContentChangedSignalBlockedCounter == 0)
     {
-        {
-            CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
+        {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
 
             // Here the derived class should apply the properties from the graphical
             // object to the edit controls.
+            fillEditControls();
         }
 
+        // If the "contentChanged" signal is no longer blocked and the content of
+        // properties widget has been changed ...
         if (m_iContentChangedSignalBlockedCounter == 0 && m_bContentChanged) {
-            updateButtonsEnabled();
-            emit_contentChanged();
-            m_bContentChanged = false;
-        }
-    }
-}
-
-//------------------------------------------------------------------------------
-void CWdgtGraphObjPropertiesAbstract::onGraphObjRenamed()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "CWdgtGraphObjPropertiesAbstract::onGraphObjRenamed",
-        /* strAddInfo   */ "" );
-
-    if (m_iContentChangedSignalBlockedCounter == 0)
-    {
-        {
-            CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
-
-            // Here the derived class should apply the properties from the graphical
-            // object to the edit controls.
-        }
-
-        if (m_iContentChangedSignalBlockedCounter == 0 && m_bContentChanged) {
+            // .. emit the contentChanged signal and update the enabled state
+            // of the Apply and Reset buttons.
             updateButtonsEnabled();
             emit_contentChanged();
             m_bContentChanged = false;
@@ -640,111 +689,7 @@ void CWdgtGraphObjPropertiesAbstract::onGraphObjAboutToDestroyed()
 
     m_pGraphObj = nullptr;
 
-    onGraphObjChanged();
-}
-
-/*==============================================================================
-private slots:
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! Slot connected to the graphObjChanged signal of the drawing scene.
-
-    The signal is emitted for any changed object of the drawing scene.
-    The slot checks whether the changed object is the object shown by the widget
-    and invokes the pure virtual method onGraphObjChanged.
-    For all other objects the slot will be ignored.
-
-    @param i_strKeyInTree [in]
-        Unique key of the changed object.
-*/
-void CWdgtGraphObjPropertiesAbstract::onDrawingSceneGraphObjChanged(const QString& i_strKeyInTree)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_strKeyInTree;
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "CWdgtGraphObjPropertiesAbstract::onDrawingSceneGraphObjChanged",
-        /* strAddInfo   */ strMthInArgs );
-
-    if (m_strKeyInTree == i_strKeyInTree)
-    {
-        onGraphObjChanged();
-    }
-}
-
-//------------------------------------------------------------------------------
-void CWdgtGraphObjPropertiesAbstract::onDrawingSceneGraphObjMoved(
-    const QString& i_strNewKeyInTree,
-    const QString& i_strOrigKeyInTree,
-    const QString& i_strKeyInTreeOfTargetBranch)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "NewKey: " + i_strNewKeyInTree +
-            ", OrigKey: " + i_strOrigKeyInTree +
-            ", KeyInTreeOfTargetBranch: " + i_strKeyInTreeOfTargetBranch;
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "CWdgtGraphObjPropertiesAbstract::onDrawingSceneGraphObjMoved",
-        /* strAddInfo   */ strMthInArgs );
-
-    if (m_strKeyInTree == i_strOrigKeyInTree)
-    {
-        onGraphObjMoved();
-    }
-}
-
-//------------------------------------------------------------------------------
-void CWdgtGraphObjPropertiesAbstract::onDrawingSceneGraphObjRenamed(
-    const QString& i_strNewKeyInTree,
-    const QString& i_strOrigKeyInTree,
-    const QString& i_strOrigName)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "NewKey: " + i_strNewKeyInTree +
-            ", OrigKey: " + i_strOrigKeyInTree +
-            ", OrigName: " + i_strOrigName;
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "CWdgtGraphObjPropertiesAbstract::onDrawingSceneGraphObjRenamed",
-        /* strAddInfo   */ strMthInArgs );
-
-    if (m_strKeyInTree == i_strOrigKeyInTree)
-    {
-        onGraphObjRenamed();
-    }
-}
-
-//------------------------------------------------------------------------------
-void CWdgtGraphObjPropertiesAbstract::onDrawingSceneGraphObjAboutToBeDestroyed(const QString& i_strKeyInTree)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_strKeyInTree;
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "CWdgtGraphObjPropertiesAbstract::onDrawingSceneGraphObjAboutToBeDestroyed",
-        /* strAddInfo   */ strMthInArgs );
-
-    if (m_strKeyInTree == i_strKeyInTree)
-    {
-        onGraphObjAboutToDestroyed();
-    }
+    fillEditControls();
 }
 
 /*==============================================================================

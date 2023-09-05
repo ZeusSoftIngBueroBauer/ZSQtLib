@@ -28,6 +28,7 @@ may result in using the software modules.
 #define ZSDraw_DrawingSize_h
 
 #include "ZSDraw/Common/ZSDrawCommon.h"
+#include "ZSPhysVal/ZSPhysVal.h"
 
 class QXmlStreamReader;
 class QXmlStreamWriter;
@@ -61,6 +62,9 @@ public: // operators
 public: // instance methods
     void setDimensionUnit( const CEnumDrawingDimensionUnit& i_eDimensionUnit );
     CEnumDrawingDimensionUnit dimensionUnit() const;
+    ZS::PhysVal::CUnit unit() const;
+    ZS::PhysVal::CPhysValRes resolution() const;
+public: // instance methods
     void setMetricUnit( const ZS::PhysVal::CUnit& i_unit );
     ZS::PhysVal::CUnit metricUnit() const;
     void setNormedPaperSize( const CEnumNormedPaperSize& i_ePaperSize );
@@ -94,16 +98,14 @@ private: // instance members
     QString m_strName;
     /*!< Either Pixels or Metric System (e.g. mm, cm, m, etc.). */
     CEnumDrawingDimensionUnit m_eDimensionUnit;
-    /*!< If m_eDimensionUnit is Metric the unit (mm, cm, m, etc.) is defined here. */
+    /*!< If m_eDimensionUnit is Metric the metric unit (mm, cm, m, etc.) is set here. */
     ZS::PhysVal::CUnit m_metricUnit;
+    /*!< Resolution of the metric sizes in metric unit. */
+    double m_fImageMetricRes;
     /*!< Width of the image in metric unit. */
     double m_fImageMetricWidth;
-    /*!< Resolution of the image width in metric unit. */
-    double m_fImageMetricWidthRes;
     /*!< Height of the image in metric unit. */
     double m_fImageMetricHeight;
-    /*!< Resolution of the image Height in metric unit. */
-    double m_fImageMetricHeightRes;
     /*!< One of the normed paper sizes (DINA4 etc.) or invalid. */
     CEnumNormedPaperSize m_eNormedPaperSize;
     /*!< If a normed paper size is used the paper may be orientated vertical or horizontal.
@@ -113,16 +115,14 @@ private: // instance members
     int m_iMetricScaleFactorDividend;
     /*!< For metric system the scale factor is defined by Dividend/Divisor. */
     int m_iMetricScaleFactorDivisor;
+    /*!< Resolution of the image in pixels. As default the resolution is 1 pixel. */
+    double m_fImageSizeRes_px;
     /*!< Width of the image in pixels. Either set for Dimension unit Pixels or calculated
          by the metric width, the scale factor and the screen resolution in pixels per mm. */
     double m_fImageSizeWidth_px;
-    /*!< Resolution of the image width in pixels. As default the resolution is 1 pixel. */
-    double m_fImageSizeWidthRes_px;
     /*!< Height of the image in pixels. Either set for Dimension unit Pixels or calculated
          by the metric height, the scale factor and the screen resolution in pixels per mm. */
     double m_fImageSizeHeight_px;
-    /*!< Resolution of the image height in pixels. As default the resolution is 1 pixel. */
-    double m_fImageSizeHeightRes_px;
     /*!< Trace admin object for method tracing. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 

@@ -27,12 +27,14 @@ may result in using the software modules.
 #ifndef ZSDraw_GraphObj_h
 #define ZSDraw_GraphObj_h
 
-#include <QtGui/qcursor.h>
-
 #include "ZSSys/ZSSysIdxTreeEntry.h"
-#include "ZSDraw/Common/ZSDrawDllMain.h"
+#include "ZSDraw/Common/ZSDrawPhysValLine.h"
+#include "ZSDraw/Common/ZSDrawPhysValRect.h"
+#include "ZSDraw/Common/ZSDrawPhysValSize.h"
 #include "ZSDraw/Common/ZSDrawSettings.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjEventFct.h"
+
+#include <QtGui/qcursor.h>
 
 namespace ZS
 {
@@ -166,13 +168,13 @@ public: // struct members
 
     - CGraphObj* clone();
 
-    - void setWidth(double i_fWidth);
+    - void setWidth(const CPhysVal& i_physValWidth);
 
-    - void setHeight(double i_fHeight);
+    - void setHeight(const CPhysVal& i_physValHeight);
 
-    - void setSize(double i_fWidth, double i_fHeight);
+    - void setSize(const CPhysVal& i_physValWidth, const CPhysVal& i_physValHeight);
 
-    - void setSize(const QSizeF& i_size);
+    - void setSize(const CPhysValSizeF& i_physValSize);
 
     - bool hasBoundingRect() const;
 
@@ -189,10 +191,11 @@ public: // struct members
 
     - void updateSelectionPoints(unsigned char i_selPts = ESelectionPointsAll);
 */
- class ZSDRAWDLL_API CGraphObj : public ZS::System::CIdxTreeEntry
+class ZSDRAWDLL_API CGraphObj : public QObject, public ZS::System::CIdxTreeEntry
 //******************************************************************************
 {
-friend class CGraphObjLabel;
+//friend class CGraphObjLabel;
+    Q_OBJECT
 public: // class methods
     /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
@@ -209,125 +212,124 @@ protected: // ctor
         ZS::System::CIdxTreeEntry::EEntryType i_idxTreeEntryType = ZS::System::CIdxTreeEntry::EEntryType::Branch );
 public: // dtor
     virtual ~CGraphObj();
+signals:
+    void selectedChanged();
+    void geometryChanged();
 protected: // instance methods (trace admin objects for method tracing)
     void createTraceAdminObjs(const QString& i_strClassName);
     void releaseTraceAdminObjs();
 public: // must overridables
     virtual CGraphObj* clone() = 0;
-public: // overridables
-    virtual QString nameSpace() { return NameSpace(); }
-    virtual QString className() { return ClassName(); }
-    virtual QString objectName() { return name(); }
 public: // instance methods
-    EGraphObjType type() const { return m_type; }
-    QString typeAsString() const { return m_strType; }
-    bool isPoint() const { return m_type == EGraphObjTypePoint; }
-    bool isLine() const { return m_type == EGraphObjTypeLine; }
-    bool isRect() const { return m_type == EGraphObjTypeRect; }
-    bool isEllipse() const { return m_type == EGraphObjTypeEllipse; }
-    bool isPolygon() const { return m_type == EGraphObjTypePolygon; }
-    bool isPolyline() const { return m_type == EGraphObjTypePolyline; }
-    bool isText() const { return m_type == EGraphObjTypeText; }
-    bool isImage() const { return m_type == EGraphObjTypeImage; }
-    bool isConnectionPoint() const { return m_type == EGraphObjTypeConnectionPoint; }
-    bool isConnectionLine() const { return m_type == EGraphObjTypeConnectionLine; }
-    bool isGroup() const { return m_type == EGraphObjTypeGroup; }
-    bool isSelectionPoint() const { return m_type == EGraphObjTypeSelectionPoint; }
-    bool isLabel() const { return m_type == EGraphObjTypeLabel; }
+    EGraphObjType type() const;
+    QString typeAsString() const;
+    bool isPoint() const;
+    bool isLine() const;
+    bool isRect() const;
+    bool isEllipse() const;
+    bool isPolygon() const;
+    bool isPolyline() const;
+    bool isText() const;
+    bool isImage() const;
+    bool isConnectionPoint() const;
+    bool isConnectionLine() const;
+    bool isGroup() const;
+    bool isSelectionPoint() const;
+    bool isLabel() const;
 public: // instance methods
-    CDrawingScene* getDrawingScene() { return m_pDrawingScene; }
+    CDrawingScene* getDrawingScene();
 public: // overridables
     virtual void rename( const QString& i_strNameNew );
 protected: // overridables of base class CIdxTreeEntry
     virtual void setName( const QString& i_strName ) override;
     virtual void setKeyInTree( const QString& i_strKey ) override;
 public: // instance methods
-    QString getFactoryGroupName() const { return m_strFactoryGroupName; }
-    CEnumEditMode getEditMode() const { return m_editMode; }
-    CEnumEditResizeMode getEditResizeMode() const { return m_editResizeMode; }
+    QString getFactoryGroupName() const;
+    CEnumEditMode getEditMode() const;
+    CEnumEditResizeMode getEditResizeMode() const;
 public: // overridables
-    virtual QString getScenePolygonShapePointsString() const { return ""; } // for subsystem test
+    virtual QString getScenePolygonShapePointsString() const;
 public: // instance methods
-    int getSelectedPolygonShapePointIndex() const { return m_idxSelPtSelectedPolygon; }
-    CEnumSelectionPoint getSelectedBoundingRectPoint() const { return m_selPtSelectedBoundingRect; }
-    QString getToolTip() const { return m_strToolTip; }
-    QString getEditInfo() const { return m_strEditInfo; }
+    int getSelectedPolygonShapePointIndex() const;
+    CEnumSelectionPoint getSelectedBoundingRectPoint() const;
+    QString getToolTip() const;
+    QString getEditInfo() const;
 public: // instance methods
     CGraphObj* parentGraphObj();
 public: // overridables
     virtual void onCreateAndExecDlgFormatGraphObjs();
 public: // overridables
     virtual void setDrawSettings( const CDrawSettings& i_drawSettings );
-    virtual CDrawSettings getDrawSettings() const { return m_drawSettings; }
+    virtual CDrawSettings getDrawSettings() const;
     virtual void onDrawSettingsChanged();
 public: // overridables (you must call those methods (instead of e.g. "QGrahicsLineItem::setPen") to keep the settings synchronized with QGraphicsItem attributes)
     virtual void setPenColor( const QColor& i_clr, bool i_bImmediatelyApplySetting = true );
-    virtual QColor getPenColor() const { return m_drawSettings.getPenColor(); }
+    virtual QColor getPenColor() const;
     virtual void setPenWidth( int i_iLineWidth, bool i_bImmediatelyApplySetting = true );
-    virtual int getPenWidth() const { return m_drawSettings.getPenWidth(); }
+    virtual int getPenWidth() const;
 public: // overridables (you must call those methods (instead of e.g. "QGrahicsLineItem::setPen") to keep the settings synchronized with QGraphicsItem attributes)
     virtual void setLineStyle( ELineStyle i_lineStyle, bool i_bImmediatelyApplySetting = true );
-    virtual ELineStyle getLineStyle() const { return m_drawSettings.getLineStyle(); }
+    virtual ELineStyle getLineStyle() const;
 public: // overridables (you must call those methods (instead of e.g. "QGrahicsLineItem::setPen") to keep the settings synchronized with QGraphicsItem attributes)
     virtual void setFillColor( const QColor& i_clr, bool i_bImmediatelyApplySetting = true );
-    virtual QColor getFillColor() const { return m_drawSettings.getFillColor(); }
+    virtual QColor getFillColor() const;
     virtual void setFillStyle( EFillStyle i_fillStyle, bool i_bImmediatelyApplySetting = true );
-    virtual EFillStyle getFillStyle() const { return m_drawSettings.getFillStyle(); }
+    virtual EFillStyle getFillStyle() const;
 public: // overridables (you must call those methods (instead of e.g. "QGrahicsLineItem::setPen") to keep the settings synchronized with QGraphicsItem attributes)
     virtual void setLineRecordType( ELineRecordType i_lineRecordType, bool i_bImmediatelyApplySetting = true );
-    virtual ELineRecordType getLineRecordType() const { return m_drawSettings.getLineRecordType(); }
+    virtual ELineRecordType getLineRecordType() const;
     virtual void setLineExtent( int i_iLineExtent_px, bool i_bImmediatelyApplySetting = true );
-    virtual int getLineExtent() const { return m_drawSettings.getLineExtent(); }
+    virtual int getLineExtent() const;
 public: // overridables (you must call those methods (instead of e.g. "QGrahicsLineItem::setPen") to keep the settings synchronized with QGraphicsItem attributes)
     virtual void setLineEndStyle( ELinePoint i_linePoint, ELineEndStyle i_endStyle, bool i_bImmediatelyApplySetting = true );
-    virtual ELineEndStyle getLineEndStyle( ELinePoint i_linePoint ) const { return m_drawSettings.getLineEndStyle(i_linePoint); }
+    virtual ELineEndStyle getLineEndStyle( ELinePoint i_linePoint ) const;
     virtual void setLineEndBaseLineType( ELinePoint i_linePoint, ELineEndBaseLineType i_baseLineType, bool i_bImmediatelyApplySetting = true );
-    virtual ELineEndBaseLineType getLineEndBaseLineType( ELinePoint i_linePoint) const { return m_drawSettings.getLineEndBaseLineType(i_linePoint); }
+    virtual ELineEndBaseLineType getLineEndBaseLineType( ELinePoint i_linePoint ) const;
     virtual void setLineEndFillStyle( ELinePoint i_linePoint, ELineEndFillStyle i_fillStyle, bool i_bImmediatelyApplySetting = true );
-    virtual ELineEndFillStyle getLineEndFillStyle( ELinePoint i_linePoint ) const { return m_drawSettings.getLineEndFillStyle(i_linePoint); }
+    virtual ELineEndFillStyle getLineEndFillStyle( ELinePoint i_linePoint ) const;
     virtual void setLineEndWidth( ELinePoint i_linePoint, ELineEndWidth i_width, bool i_bImmediatelyApplySetting = true );
-    virtual ELineEndWidth getLineEndWidth( ELinePoint i_linePoint ) const { return m_drawSettings.getLineEndWidth(i_linePoint); }
+    virtual ELineEndWidth getLineEndWidth( ELinePoint i_linePoint ) const;
     virtual void setLineEndLength( ELinePoint i_linePoint, ELineEndLength i_length, bool i_bImmediatelyApplySetting = true );
-    virtual ELineEndLength getLineEndLength( ELinePoint i_linePoint ) const { return m_drawSettings.getLineEndLength(i_linePoint); }
+    virtual ELineEndLength getLineEndLength( ELinePoint i_linePoint ) const;
 public: // overridables (you must call those methods (instead of e.g. "QGrahicsLineItem::setPen") to keep the settings synchronized with QGraphicsItem attributes)
     virtual void setTextColor( const QColor& i_clr, bool i_bImmediatelyApplySetting = true );
-    virtual QColor getTextColor() const { return m_drawSettings.getTextColor(); }
+    virtual QColor getTextColor() const;
     virtual void setTextFont( const QFont& i_fnt, bool i_bImmediatelyApplySetting = true );
-    virtual QFont getTextFont() const { return m_drawSettings.getTextFont(); }
+    virtual QFont getTextFont() const;
     virtual void setTextSize( ETextSize i_size, bool i_bImmediatelyApplySetting = true );
-    virtual ETextSize getTextSize() const { return m_drawSettings.getTextSize(); }
+    virtual ETextSize getTextSize() const;
     virtual void setTextStyle( ETextStyle i_style, bool i_bImmediatelyApplySetting = true );
-    virtual ETextStyle getTextStyle() const { return m_drawSettings.getTextStyle(); }
+    virtual ETextStyle getTextStyle() const;
     virtual void setTextEffect( ETextEffect i_effect, bool i_bImmediatelyApplySetting = true );
-    virtual ETextEffect getTextEffect() const { return m_drawSettings.getTextEffect(); }
+    virtual ETextEffect getTextEffect() const;
 public: // overridables
-    virtual void setMinimumWidth( double i_fWidth );
+    virtual void setMinimumWidth( const ZS::PhysVal::CPhysVal& i_physValWidth );
     virtual bool hasMinimumWidth() const;
-    virtual double getMinimumWidth() const;
-    virtual void setMinimumHeight( double i_fHeight );
+    virtual ZS::PhysVal::CPhysVal getMinimumWidth() const;
+    virtual void setMinimumHeight( const ZS::PhysVal::CPhysVal& i_physValHeight );
     virtual bool hasMinimumHeight() const;
-    virtual double getMinimumHeight() const;
-    virtual void setMinimumSize( const QSize& i_siz );
+    virtual ZS::PhysVal::CPhysVal getMinimumHeight() const;
+    virtual void setMinimumSize( const CPhysValSize& i_physValSize );
     virtual bool hasMinimumSize() const;
-    virtual QSize getMinimumSize() const;
-    virtual void setMaximumWidth( double i_fWidth );
+    virtual CPhysValSize getMinimumSize() const;
+    virtual void setMaximumWidth( const ZS::PhysVal::CPhysVal& i_physValWidth );
     virtual bool hasMaximumWidth() const;
-    virtual double getMaximumWidth() const;
-    virtual void setMaximumHeight( double i_fHeight );
+    virtual ZS::PhysVal::CPhysVal getMaximumWidth() const;
+    virtual void setMaximumHeight( const ZS::PhysVal::CPhysVal& i_physValHeight );
     virtual bool hasMaximumHeight() const;
-    virtual double getMaximumHeight() const;
-    virtual void setMaximumSize( const QSize& i_siz );
+    virtual ZS::PhysVal::CPhysVal getMaximumHeight() const;
+    virtual void setMaximumSize( const CPhysValSize& i_physValSize );
     virtual bool hasMaximumSize() const;
-    virtual QSize getMaximumSize() const;
-    virtual void setFixedWidth( double i_fWidth );
+    virtual CPhysValSize getMaximumSize() const;
+    virtual void setFixedWidth( const ZS::PhysVal::CPhysVal& i_physValWidth );
     virtual bool hasFixedWidth() const;
-    virtual double getFixedWidth() const;
-    virtual void setFixedHeight( double i_fHeight );
+    virtual ZS::PhysVal::CPhysVal getFixedWidth() const;
+    virtual void setFixedHeight( const ZS::PhysVal::CPhysVal& i_physValHeight );
     virtual bool hasFixedHeight() const;
-    virtual double getFixedHeight() const;
-    virtual void setFixedSize( const QSize& i_siz );
+    virtual ZS::PhysVal::CPhysVal getFixedHeight() const;
+    virtual void setFixedSize( const CPhysValSize& i_physValSize );
     virtual bool hasFixedSize() const;
-    virtual QSize getFixedSize() const;
+    virtual CPhysValSize getFixedSize() const;
 public: // overridables
     virtual int addAlignment( const SGraphObjAlignment& i_alignment );
     virtual int getAlignmentCount() const;
@@ -336,40 +338,40 @@ public: // overridables
     virtual void removeAlignment( int i_idx );
     virtual void clearAlignments();
 public: // overridables
-    virtual void acceptCurrentAsOriginalCoors();
-    virtual bool hasValidOrigCoors() const { return m_bHasValidOrigCoors; }
+    //virtual void acceptCurrentAsOriginalCoors();
+    //virtual bool hasValidOrigCoors() const { return m_bHasValidOrigCoors; }
 public: // must overridables
-    virtual void setWidth( double i_fWidth ) = 0;
-    virtual void setHeight( double i_fHeight ) = 0;
-    virtual void setSize( double i_fWidth, double i_fHeight ) = 0;
-    virtual void setSize( const QSizeF& i_size ) = 0;
+    virtual void setWidth( const ZS::PhysVal::CPhysVal& i_physValWidth ) = 0;
+    virtual void setHeight( const ZS::PhysVal::CPhysVal& i_physValHeight ) = 0;
+    virtual void setSize( const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight ) = 0;
+    virtual void setSize( const CPhysValSize& i_physValSize ) = 0;
     virtual bool hasBoundingRect() const = 0;
     virtual bool hasLineShapePoints() const = 0;
     virtual bool hasRotationSelectionPoints() const = 0;
 public: // overridables
-    virtual QPointF getPos( ECoordinatesVersion i_version = ECoordinatesVersion::Current ) const;
-    virtual double getWidth( ECoordinatesVersion i_version = ECoordinatesVersion::Current ) const;
-    virtual double getHeight( ECoordinatesVersion i_version = ECoordinatesVersion::Current ) const;
-    virtual QSizeF getSize( ECoordinatesVersion i_version = ECoordinatesVersion::Current ) const;
+    virtual CPhysValPoint getPos( ECoordinatesVersion i_version = ECoordinatesVersion::Transformed ) const;
+    virtual ZS::PhysVal::CPhysVal getWidth( ECoordinatesVersion i_version = ECoordinatesVersion::Transformed ) const;
+    virtual ZS::PhysVal::CPhysVal getHeight( ECoordinatesVersion i_version = ECoordinatesVersion::Transformed ) const;
+    virtual CPhysValSize getSize( ECoordinatesVersion i_version = ECoordinatesVersion::Transformed ) const;
 public: // overridables
     virtual void setRotationAngleInDegree( double i_fRotAngle_deg );
-    virtual double getRotationAngleInDegree( ECoordinatesVersion i_version = ECoordinatesVersion::Current );
+    virtual double getRotationAngleInDegree( ECoordinatesVersion i_version = ECoordinatesVersion::Transformed );
 public: // overridables
     virtual void setEditMode( EEditMode i_editMode );
     virtual void setEditResizeMode( EEditResizeMode i_editResizeMode );
 public: // must overridables
     virtual void setIsHit( bool i_bHit ) = 0;
 public: // overridables
-    virtual bool isHit() const { return m_bIsHit; }
+    virtual bool isHit() const;
     virtual bool isHit(const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo = nullptr) const;
 public: // overridables
     virtual double bringToFront();
     virtual void setStackingOrderValue( double i_fZValue );
-    double getStackingOrderValue() { return m_fZValue; }
+    double getStackingOrderValue() const;
 public: // overridables
     virtual void showBoundingRect();
     virtual void hideBoundingRect();
-    virtual bool isBoundingRectVisible() const { return m_bBoundRectVisible; }
+    virtual bool isBoundingRectVisible() const;
 public: // overridables
     virtual bool isBoundingRectSelectionPointHit( const QPointF& i_pt, int i_iSelPtsCount, const ESelectionPoint* i_pSelPts, SGraphObjHitInfo* o_pHitInfo ) const;
     virtual bool isPolygonSelectionPointHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) const;
@@ -422,7 +424,7 @@ protected: // overridables
 //    QHash<QString, CGraphObjLabel*> getLabels() { return m_arpLabels; }
 //    void addLabels( QHash<QString, CGraphObjLabel*> i_arpLabels );
 public: // overridables
-    virtual void onParentItemCoorsHasChanged( CGraphObj* /*i_pGraphObjParent*/ ) {}
+    virtual void onParentItemCoorsHasChanged( CGraphObj* /*i_pGraphObjParent*/ );
     virtual void onSelectionPointDestroying( CGraphObjSelectionPoint* i_pSelectionPoint );
     virtual void onLabelAboutToBeDestroyed( CGraphObjLabel* i_pLabel );
 public: // instance methods (simulation methods)
@@ -451,6 +453,9 @@ protected: // auxiliary instance methods
     void showLabel(QHash<QString, CGraphObjLabel*>& i_arpLabels, const QString& i_strKey, const QString& i_strText, ESelectionPoint i_selPt);
     void hideLabel(QHash<QString, CGraphObjLabel*>& i_arpLabels, const QString& i_strKey);
     void destroyLabels();
+protected: // auxiliary instance methods (method tracing)
+    void emit_selectedChanged();
+    void emit_geometryChanged();
 protected: // overridable auxiliary instance methods (method tracing)
     virtual void traceInternalStates(
         ZS::System::CMethodTracer& i_mthTracer,
@@ -475,14 +480,12 @@ protected: // instance members
          Call "updateSettings" before accessing settings to keep this struct up to date with graphics
          item settings. */
     CDrawSettings m_drawSettings;
-    /*!< Flag to indicate that the coordinates need to be updated. */
-    bool m_bCoorsDirty;
     /*!< If valid defines the minimum size of the graphical object. */
-    QSize m_sizMinimum;
+    CPhysValSize m_physValSizeMinimum;
     /*!< If valid defines the maximum size of the graphical object. */
-    QSize m_sizMaximum;
+    CPhysValSize m_physValSizeMaximum;
     /*!< If valid defines the fixed size of the graphical object. */
-    QSize m_sizFixed;
+    CPhysValSize m_physValSizeFixed;
     /*!< Alignments of the graphical object to the parent group.. */
     QList<SGraphObjAlignment> m_arAlignments;
     /*!< Flag indicating whether the graphical object is hit by the mouse cursor. */
@@ -526,6 +529,10 @@ protected: // instance members
     QString m_strToolTip;
     /*!< Current edit info. */
     QString m_strEditInfo;
+protected: // !!! OBSOLETE !!! instance members
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
+    /*!< Flag to indicate that the coordinates need to be updated. */
+    bool m_bCoorsDirty;
     /*!< Current item coordinates and transform values:
          In item's coordinate system (during mouse resize events topLeft may not be at 0.0/0.0). */
     QRectF m_rctCurr;
@@ -546,6 +553,8 @@ protected: // instance members
     double m_fRotAngleOrig_deg;
     /*!< In item's coordinate system. */
     QPointF m_ptRotOriginOrig;
+#endif
+protected: // instance members
     /*!< Coordinates stored on mouse press events:
          In scene's coordinate system (for moving by my mouse move events). */
     QPointF m_ptScenePosOnMousePressEvent;

@@ -8,4 +8,5 @@ The following libraries belong to the ZSQtLib:
 - @subpage _PAGE_Libs_ZSIpcLog
 - @subpage _PAGE_Libs_ZSPhysVal
 - @subpage _PAGE_Libs_ZSDiagram
+- @subpage _PAGE_Libs_ZSDraw
 

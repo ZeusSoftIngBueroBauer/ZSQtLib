@@ -25,7 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLinePropertiesWdgt.h"
-#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPropertiesGeometryWdgt.h"
+#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLineGeometryPropertiesWdgt.h"
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPropertiesLabelsWdgt.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLine.h"
 #include "ZSDraw/Widgets/Drawing/ZSDrawingView.h"
@@ -66,8 +66,8 @@ public: // ctors and dtor
 CWdgtGraphObjLineProperties::CWdgtGraphObjLineProperties(
     CDrawingScene* i_pDrawingScene, const QString& i_strObjName, QWidget* i_pWdgtParent) :
 //------------------------------------------------------------------------------
-    CWdgtGraphObjPropertiesAbstract(i_pDrawingScene, "StandardShapes::" + ClassName(), i_strObjName, i_pWdgtParent),
-    m_pGraphObjLine(nullptr),
+    CWdgtGraphObjPropertiesAbstract(
+        i_pDrawingScene, "StandardShapes::" + ClassName(), i_strObjName, i_pWdgtParent),
     m_pWdgtLabels(nullptr),
     m_pWdgtGeometry(nullptr)
 {
@@ -85,7 +85,7 @@ CWdgtGraphObjLineProperties::CWdgtGraphObjLineProperties(
         m_pWdgtLabels, &CWdgtGraphObjPropertiesLabels::contentChanged,
         this, &CWdgtGraphObjLineProperties::onWdgtLabelsContentChanged);
 
-    m_pWdgtGeometry = new CWdgtGraphObjPropertiesGeometry(
+    m_pWdgtGeometry = new CWdgtGraphObjLineGeometryProperties(
         i_pDrawingScene, "StandardShapes::" + ClassName(), i_strObjName);
     m_pLyt->addWidget(m_pWdgtGeometry);
 
@@ -113,7 +113,6 @@ CWdgtGraphObjLineProperties::~CWdgtGraphObjLineProperties()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
-    m_pGraphObjLine = nullptr;
     m_pWdgtLabels = nullptr;
     m_pWdgtGeometry = nullptr;
 }
@@ -140,24 +139,8 @@ void CWdgtGraphObjLineProperties::setKeyInTree(const QString& i_strKeyInTree)
     {
         CWdgtGraphObjPropertiesAbstract::setKeyInTree(i_strKeyInTree);
 
-        if (m_pGraphObj != nullptr && m_pGraphObj->type() == EGraphObjTypeLine)
-        {
-            m_pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_pGraphObj);
-
-            m_pWdgtLabels->setKeyInTree(i_strKeyInTree);
-            m_pWdgtGeometry->setKeyInTree(i_strKeyInTree);
-        }
-        else
-        {
-            m_pGraphObjLine = nullptr;
-
-            m_pWdgtLabels->setKeyInTree("");
-            m_pWdgtGeometry->setKeyInTree("");
-        }
-
-        // Fill the content of the edit controls. But the line widget itself
-        // does not have any edit controls but hosts other property widgets.
-        //fillEditControls();
+        m_pWdgtLabels->setKeyInTree(i_strKeyInTree);
+        m_pWdgtGeometry->setKeyInTree(i_strKeyInTree);
     }
 }
 

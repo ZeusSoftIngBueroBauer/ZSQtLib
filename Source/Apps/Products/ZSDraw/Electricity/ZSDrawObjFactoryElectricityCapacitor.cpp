@@ -370,8 +370,10 @@ CGraphObj* CObjFactoryCapacitor::loadGraphObj(
 
         i_pDrawingScene->onGraphObjCreationFinished(pGraphObj);
 
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
         #pragma message(__TODO__"The methods onGraphObjCreationFinished and acceptCurrentAsOriginalCoors should become protected and it should not be necessary to explicitly call them")
         pGraphObj->acceptCurrentAsOriginalCoors();
+#endif
 
         //if( arpLabels.size() > 0 )
         //{

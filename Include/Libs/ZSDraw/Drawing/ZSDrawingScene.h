@@ -27,6 +27,17 @@ may result in using the software modules.
 #ifndef ZSDraw_DrawingScene_h
 #define ZSDraw_DrawingScene_h
 
+#include "ZSDraw/Common/ZSDrawDllMain.h"
+#include "ZSDraw/Common/ZSDrawCommon.h"
+#include "ZSDraw/Common/ZSDrawPhysValPoint.h"
+#include "ZSDraw/Common/ZSDrawPhysValSize.h"
+#include "ZSDraw/Common/ZSDrawSettings.h"
+#include "ZSDraw/Common/ZSDrawUnits.h"
+#include "ZSDraw/Drawing/ZSDrawGridSettings.h"
+#include "ZSDraw/Drawing/ZSDrawingSize.h"
+#include "ZSSys/ZSSysCommon.h"
+#include "ZSSysGUI/ZSSysGUIMathScaleDivLinesMetrics.h"
+
 #include <QtCore/qglobal.h>
 
 #if QT_VERSION < 0x050000
@@ -34,15 +45,6 @@ may result in using the software modules.
 #else
 #include <QtWidgets/qgraphicsscene.h>
 #endif
-
-#include "ZSDraw/Common/ZSDrawDllMain.h"
-#include "ZSDraw/Common/ZSDrawCommon.h"
-#include "ZSDraw/Common/ZSDrawSettings.h"
-#include "ZSDraw/Common/ZSDrawUnits.h"
-#include "ZSDraw/Drawing/ZSDrawGridSettings.h"
-#include "ZSDraw/Drawing/ZSDrawingSize.h"
-#include "ZSSys/ZSSysCommon.h"
-#include "ZSSysGUI/ZSSysGUIMathScaleDivLinesMetrics.h"
 
 class QXmlStreamWriter;
 class QXmlStreamAttributes;
@@ -164,16 +166,20 @@ signals:
         @param i_strKeyInTree [in] Unique key of the graphical object. */
     void graphObjAboutToBeDestroyed(const QString& i_strKeyInTree);
 public: // instance methods
-    void setDrawingSize( const CDrawingSize& i_size);
-    CDrawingSize drawingSize() const;
+    void setDrawingSize( const CDrawingSize& i_drawingSize);
+    const CDrawingSize& drawingSize() const;
 public: // instance methods
     ZS::PhysVal::CPhysVal toMetricXCoor(double i_fXCoor_px) const;
     ZS::PhysVal::CPhysVal toMetricYCoor(double i_fYCoor_px) const;
+    CPhysValPoint toMetricPoint(const QPointF& i_pt) const;
+    CPhysValSize toMetricSize(const QSizeF& i_size) const;
     double toPixelXCoor(const ZS::PhysVal::CPhysVal& i_physValXCoor) const;
     double toPixelYCoor(const ZS::PhysVal::CPhysVal& i_physValYCoor) const;
+    QPointF toPixelPoint(const CPhysValPoint& i_physValPoint) const;
+    QSizeF toPixelSize(const CPhysValSize& i_physValSize) const;
 public: // instance methods
-    void setGridSettings( const CDrawGridSettings& i_settings);
-    CDrawGridSettings gridSettings() const;
+    void setGridSettings( const CDrawGridSettings& i_gridSettings);
+    const CDrawGridSettings& gridSettings() const;
 public: // instance methods
     const ZS::System::GUI::Math::CScaleDivLinesMetrics& divLinesMetricsX() const { return m_divLinesMetricsX; }
     const ZS::System::GUI::Math::CScaleDivLinesMetrics& divLinesMetricsY() const { return m_divLinesMetricsY; }

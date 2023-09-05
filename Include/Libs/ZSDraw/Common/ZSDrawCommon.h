@@ -29,7 +29,6 @@ may result in using the software modules.
 
 #include "ZSDraw/Common/ZSDrawDllMain.h"
 
-#include "ZSPhysVal/ZSPhysVal.h"
 #include "ZSSys/ZSSysEnumTemplate.h"
 
 #if QT_VERSION < 0x050000
@@ -177,28 +176,6 @@ typedef void (*TFctKeyEvent)( void* i_pvThis, void* i_pvData, CGraphObj* i_pGrap
 
 
 //==============================================================================
-struct ZSDRAWDLL_API SDrawArea
-//==============================================================================
-{
-public: // ctors and dtor
-    SDrawArea();
-    SDrawArea(
-        const ZS::PhysVal::CPhysVal& i_physValWidth,
-        const ZS::PhysVal::CPhysVal& i_physValHeight,
-        double                       i_fXScaleFactor,
-        double                       i_fYScaleFactor );
-public: // methods
-    bool isValid() const;
-public: // struct members
-    ZS::PhysVal::CPhysVal m_physValWidth;
-    ZS::PhysVal::CPhysVal m_physValHeight;
-    double                m_fXScaleFac;
-    double                m_fYScaleFac;
-
-}; // struct SDrawArea
-
-
-//==============================================================================
 /*! Paper source for the printer.
 */
 enum class EPrinterPaperSource
@@ -265,13 +242,16 @@ typedef ::CEnum<EEditTool> CEnumEditTool;
 
 
 //==============================================================================
-/*!
+/*! When formating the shape of an object using transformatons like scaling or
+    or rotating the original coordinates need to be kept to avoid inaccuracies.
+    E.g. when rotating an object around its center by 360° the objects position
+    and size should be the same as it would not have been rotated at all.
 */
 enum class ECoordinatesVersion
 //==============================================================================
 {
-    Original  = 0,
-    Current   = 1
+    Original    = 0,    /*!< The coordinate has been explicitly set. */
+    Transformed = 1     /*!< Current coordinates resulting when transforming the original coordinates. */
 };
 
 template class ZSDRAWDLL_API ::CEnum<ECoordinatesVersion>;
@@ -279,19 +259,21 @@ typedef ::CEnum<ECoordinatesVersion> CEnumCoordinatesVersion;
 
 
 //==============================================================================
-/*!
+/*! Defines the current edit mode of the drawing scene and the graphics item.
 */
 enum class EEditMode
 //==============================================================================
 {
-    None           = 0,
-    Creating       = 1, // The object has been initially created and is still under construction (e.g. adding points to poly lines). !! This mode is not used by the scene !!
-    Move           = 2, // The selected objects are moved.
-    Resize         = 3, // The selected object is resized.
-    Rotate         = 4, // The selected object is rotated around the centre point of its bounding rectangle.
-    MoveShapePoint = 5, // A single shape point of the selected object is being moved.
-    EditText       = 6, // A single shape point of the selected object is being moved.
-    Ignore         = 7  // May be passed to methods to indicate that the argument should be ignored.
+    None           = 0, /*!< No edit mode is selected. */
+    Creating       = 1, /*!< The object has been initially created and is still under
+                             construction (e.g. adding points to poly lines). 
+                             !! This mode is not used by the scene !! */
+    Move           = 2, /*!< The selected objects are moved. */
+    Resize         = 3, /*!< The selected object is resized. */
+    Rotate         = 4, /*!< The selected object is rotated around the centre point of its bounding rectangle. */
+    MoveShapePoint = 5, /*!< A single shape point of the selected object is being moved. */
+    EditText       = 6, /*!< A single shape point of the selected object is being moved. */
+    Ignore         = 7  /*!< May be passed to methods to indicate that the argument should be ignored. */
 };
 
 template class ZSDRAWDLL_API ::CEnum<EEditMode>;
@@ -299,16 +281,17 @@ typedef ::CEnum<EEditMode> CEnumEditMode;
 
 
 //==============================================================================
-/*!
+/*! When currently resizing an object (EditMode::Resize) the resize mode defines
+    in which direction the object is being resized.
 */
 enum class EEditResizeMode
 //==============================================================================
 {
-    None      = 0,
-    ResizeAll = 1, // The selected object is resized horizontally and vertically.
-    ResizeHor = 2, // The selected object is resized horizontally.
-    ResizeVer = 3, // The selected object is resized vertically.
-    Ignore    = 4, // May be passed to methods to indicate that the argument should be ignored.
+    None      = 0, /*!< No resize mode selected. */
+    ResizeAll = 1, /*!< The selected object is resized horizontally and vertically. */
+    ResizeHor = 2, /*!< The selected object is resized horizontally. */
+    ResizeVer = 3, /*!< The selected object is resized vertically. */
+    Ignore    = 4, /*!< May be passed to methods to indicate that the argument should be ignored. */
 };
 
 template class ZSDRAWDLL_API ::CEnum<EEditResizeMode>;
@@ -316,13 +299,13 @@ typedef ::CEnum<EEditResizeMode> CEnumEditResizeMode;
 
 
 //==============================================================================
-/*!
+/*! Object may provide different selection points for editing and selecting.
 */
 enum class ESelectionPointType
 //==============================================================================
 {
-    BoundingRectangle = 0,
-    PolygonShapePoint = 1
+    BoundingRectangle = 0,  /*!< The selection point is at the bounding rectangle. */
+    PolygonShapePoint = 1   /*!< The selection point is one of the points of a polygon. */
 };
 
 template class ZSDRAWDLL_API ::CEnum<ESelectionPointType>;
@@ -349,26 +332,42 @@ ZSDRAWDLL_API QString selectionPoints2Str( int i_selPts );
 
 
 //==============================================================================
-/*!
+/*! Defines the different selection points which an object may provide for
+    editing and moving an object.
+
+    Selection points are usually at the bounding rectangle or, in case of polygons,
+    may also be a specific point of a polygon.
+
+                          RotateTop
+                              +
+             TopLeft      TopCenter       TopRight
+               +--------------+--------------+
+               |            Center           |
+    LeftCenter +              +              + RightCenter
+               |                             |
+               +--------------+--------------+
+             BottomLeft   BottomCenter    BottomRight
+                              +
+                          RotateBottom
 */
 enum class ESelectionPoint
 //==============================================================================
 {
-    None          =  0,
-    TopLeft       =  1, /*!< Also used to select the StartPoint of a line. */
-    TopRight      =  2,
-    BottomRight   =  3, /*!< Also used to select the EndPoint of a line. */
-    BottomLeft    =  4,
-    TopCenter     =  5,
-    RightCenter   =  6,
-    BottomCenter  =  7,
-    LeftCenter    =  8,
-    Center        =  9,
-    RotateTop     = 10,
-    RotateBottom  = 11,
-    PolygonPoint  = 12,
-    All           = 13,
-    Any           = 14
+    None          =  0, /*!< No selection point. */
+    TopLeft       =  1, /*!< Top left corner of a rectangle. Also used to select the StartPoint of a line. */
+    TopRight      =  2, /*!< Top right corner of a rectangle. */
+    BottomRight   =  3, /*!< Bottom right corner of a rectangle. Also used to select the EndPoint of a line. */
+    BottomLeft    =  4, /*!< Top right corner of a rectangle. */
+    TopCenter     =  5, /*!< Center point of the top line of a rectangle. */
+    RightCenter   =  6, /*!< Center point of the right line of a rectangle. */
+    BottomCenter  =  7, /*!< Center point of the bottom line of a rectangle. */
+    LeftCenter    =  8, /*!< Center point of the left line of a rectangle. */
+    Center        =  9, /*!< Center point of the rectangle. */
+    RotateTop     = 10, /*!< Rotation point above the rectangle. */
+    RotateBottom  = 11, /*!< Rotation point below the rectangle. */
+    PolygonPoint  = 12, /*!< A specific polygon point. */
+    All           = 13, /*!< To select all selection points at once. */
+    Any           = 14  /*!< To specify any selection point. */
 };
 
 template class ZSDRAWDLL_API ::CEnum<ESelectionPoint>;
@@ -395,14 +394,14 @@ ZSDRAWDLL_API Qt::CursorShape selectionPoint2CursorShape( ESelectionPoint i_selP
 
 
 //==============================================================================
-/*!
+/*! Defines the possible line points.
 */
 enum class ELinePoint
 //==============================================================================
 {
-    None  = 0,
-    Start = 1,
-    End   = 2
+    None  = 0,  /*!< No line point selected. */
+    Start = 1,  /*!< Start point of a line (usually P1). */
+    End   = 2   /*!< End point of a line (usually P2). */
 };
 
 template class ZSDRAWDLL_API ::CEnum<ELinePoint>;
@@ -418,7 +417,7 @@ enum class ETextStyle
    Normal     = 0,
    Italic     = 1,
    Bold       = 2,
-   BoldItalic = 3  // Italic|Bold
+   BoldItalic = 3  /*!< Italic|Bold */
 };
 
 template class ZSDRAWDLL_API ::CEnum<ETextStyle>;
@@ -602,9 +601,9 @@ typedef ::CEnum<ELineEndBaseLineType> CEnumLineEndBaseLineType;
 enum class ELineEndWidth
 //==============================================================================
 {
-    Thin   = 0,    //  7 Pixel
-    Medium = 1,    // 13 Pixel
-    Wide   = 2     // 19 Pixel
+    Thin   = 0,    /*!<  7 Pixel */
+    Medium = 1,    /*!< 13 Pixel */
+    Wide   = 2     /*!< 19 Pixel */
 };
 
 template class ZSDRAWDLL_API ::CEnum<ELineEndWidth>;
@@ -619,9 +618,9 @@ ZSDRAWDLL_API double lineEndWidth2dy( ELineEndWidth i_lineEndWidth );
 enum class ELineEndLength
 //==============================================================================
 {
-    Short  = 0,   //  7 Pixel
-    Medium = 1,   // 10 Pixel
-    Long   = 2    // 13 Pixel
+    Short  = 0,   /*!<  7 Pixel */
+    Medium = 1,   /*!< 10 Pixel */
+    Long   = 2    /*!< 13 Pixel */
 };
 
 template class ZSDRAWDLL_API ::CEnum<ELineEndLength>;

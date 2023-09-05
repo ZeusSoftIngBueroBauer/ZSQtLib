@@ -46,16 +46,14 @@ public: // ctors and dtor
     CUnitsLength(ZS::System::CIdxTreeEntry* i_pParentBranch);
     ~CUnitsLength();
 public: // instance methods (resolution of monitor, pixels per inches)
-    void setPxpis(double i_fPxpiX, double i_fPxpiY);
-    double pxpi(ZS::System::EOrientation i_orientation) const;
+    void setPxpi(double i_fPxpi);
+    double pxpi() const;
 public: // instance methods (resolution of printer, dots per inches)
-    void setDpis(double i_fDpiX, double i_fDpiY);
-    double dpi(ZS::System::EOrientation i_orientation) const;
+    void setDpi(double i_fDpi);
+    double dpi() const;
 public: // instance methods
-    ZS::PhysVal::CPhysValRes physValResPerPx(
-        ZS::System::EOrientation i_orientation, const ZS::PhysVal::CUnit& i_unit) const;
-    ZS::PhysVal::CPhysValRes physValResPerDot(
-        ZS::System::EOrientation i_orientation, const ZS::PhysVal::CUnit& i_unit) const;
+    ZS::PhysVal::CPhysValRes physValResPerPx(const ZS::PhysVal::CUnit& i_unit) const;
+    ZS::PhysVal::CPhysValRes physValResPerDot(const ZS::PhysVal::CUnit& i_unit) const;
 public: // instance methods (distinguish between metric system and pixels or dots)
     bool isMetricUnit(const QString& i_strSymbolOrName) const;
 private: // instance methods
@@ -68,10 +66,8 @@ private: // instance methods
     /*!< Inches (1 Inch = 25.4 mm = 2.54cm = 0.0254m)
          MToSI: 0.0254 -> MFromSI: 1.0/MToSI */
     ZS::PhysVal::CUnitsTreeEntryPhysUnit m_treeEntryInch;
-    ZS::PhysVal::CUnitsTreeEntryPhysUnit m_treeEntryPixelX;
-    ZS::PhysVal::CUnitsTreeEntryPhysUnit m_treeEntryPixelY;
-    ZS::PhysVal::CUnitsTreeEntryPhysUnit m_treeEntryDotsX;
-    ZS::PhysVal::CUnitsTreeEntryPhysUnit m_treeEntryDotsY;
+    ZS::PhysVal::CUnitsTreeEntryPhysUnit m_treeEntryPixel;
+    ZS::PhysVal::CUnitsTreeEntryPhysUnit m_treeEntryDots;
 public: // instance members
     ZS::PhysVal::CUnit um;
     ZS::PhysVal::CUnit mm;
@@ -80,12 +76,28 @@ public: // instance members
     ZS::PhysVal::CUnit m;
     ZS::PhysVal::CUnit km;
     ZS::PhysVal::CUnit in;
-    ZS::PhysVal::CUnit pxX;
-    ZS::PhysVal::CUnit pxY;
-    ZS::PhysVal::CUnit dotsX;
-    ZS::PhysVal::CUnit dotsY;
+    ZS::PhysVal::CUnit px;
+    ZS::PhysVal::CUnit dots;
 
 }; // CUnitsLength
+
+//******************************************************************************
+class CUnitsAngle : public ZS::PhysVal::CUnitsTreeEntryGrpPhysUnits
+//******************************************************************************
+{
+public: // ctors and dtor
+    CUnitsAngle(ZS::System::CIdxTreeEntry* i_pParentBranch);
+    virtual ~CUnitsAngle();
+public: // class members
+    static const QString c_strSymbolPhi;
+private: // instance members
+    ZS::PhysVal::CUnitsTreeEntryPhysUnit m_treeEntryRad;
+    ZS::PhysVal::CUnitsTreeEntryPhysUnit m_treeEntryDegree;
+public: // instance members
+    ZS::PhysVal::CUnit Rad;
+    ZS::PhysVal::CUnit Degree;
+
+}; // CUnitsAngle
 
 //******************************************************************************
 class ZSDRAWDLL_API CUnits : public ZS::PhysVal::CIdxTreeUnits
@@ -96,6 +108,7 @@ public: // ctors and dtor
     ~CUnits();
 public: // instance members
     CUnitsLength Length;
+    CUnitsAngle Angle;
 
 }; // CUnits
 

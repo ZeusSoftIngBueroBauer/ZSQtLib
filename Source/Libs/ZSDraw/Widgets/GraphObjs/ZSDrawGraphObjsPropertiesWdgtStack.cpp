@@ -184,49 +184,51 @@ bool CWdgtStackGraphObjsProperties::setKeyInTree( const QString& i_strKeyInTree 
     bool bObjectChanged = true;
 
     if (m_strKeyInTree != i_strKeyInTree) {
-        CWdgtGraphObjPropertiesAbstract* pWdgtProperties =
+        CWdgtGraphObjPropertiesAbstract* pWdgtPropertiesPrev =
             dynamic_cast<CWdgtGraphObjPropertiesAbstract*>(
                 m_pStackedWdgtGraphObjsProperties->currentWidget());
-        if (pWdgtProperties != nullptr) {
+        if (pWdgtPropertiesPrev != nullptr) {
             CIdxTreeEntry* pTreeEntry = m_pIdxTree->findEntry(m_strKeyInTree);
-            if (pWdgtProperties->hasChanges()) {
-                QString strGraphObjType;
-                QString strGraphObjName;
-                if (pTreeEntry != nullptr) {
-                    if (pTreeEntry->isRoot()) {
-                        strGraphObjType = "DrawingView";
-                    }
-                    else {
-                        CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pTreeEntry);
-                        if (pGraphObj != nullptr) {
-                            strGraphObjType = pGraphObj->typeAsString();
-                            strGraphObjName = pGraphObj->name();
+            if (pTreeEntry != nullptr && !pTreeEntry->isAboutToBeDestroyed()) {
+                if (pWdgtPropertiesPrev->hasChanges()) {
+                    QString strGraphObjType;
+                    QString strGraphObjName;
+                    if (pTreeEntry != nullptr) {
+                        if (pTreeEntry->isRoot()) {
+                            strGraphObjType = "DrawingView";
+                        }
+                        else {
+                            CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pTreeEntry);
+                            if (pGraphObj != nullptr) {
+                                strGraphObjType = pGraphObj->typeAsString();
+                                strGraphObjName = pGraphObj->name();
+                            }
                         }
                     }
-                }
-                int iRes = QMessageBox::Apply;
-                if (pWdgtProperties->hasErrors()) {
-                    iRes = QMessageBox::question(
-                        this, ZS::System::GUI::getMainWindowTitle() + ": Unsaved changes",
-                        "You made erroneous changes to " + strGraphObjType + " " + strGraphObjName + ".\n"
-                        "Do you want to resume (Retry) the edit session or Discard the changes?",
-                        QMessageBox::Retry | QMessageBox::Discard);
-                }
-                else {
-                    iRes = QMessageBox::question(
-                        this, ZS::System::GUI::getMainWindowTitle() + ": Unsaved changes",
-                        "You made changes to " + strGraphObjType + " " + strGraphObjName + ".\n"
-                        "Do you want to resume (Retry) the edit session, Apply or Discard the changes?",
-                        QMessageBox::Retry | QMessageBox::Discard | QMessageBox::Apply);
-                }
-                if (iRes == QMessageBox::Apply) {
-                    pWdgtProperties->acceptChanges();
-                }
-                else if (iRes == QMessageBox::Discard) {
-                    pWdgtProperties->rejectChanges();
-                }
-                else if (iRes == QMessageBox::Retry) {
-                    bObjectChanged = false;
+                    int iRes = QMessageBox::Apply;
+                    if (pWdgtPropertiesPrev->hasErrors()) {
+                        iRes = QMessageBox::question(
+                            this, ZS::System::GUI::getMainWindowTitle() + ": Unsaved changes",
+                            "You made erroneous changes to " + strGraphObjType + " " + strGraphObjName + ".\n"
+                            "Do you want to resume (Retry) the edit session or Discard the changes?",
+                            QMessageBox::Retry | QMessageBox::Discard);
+                    }
+                    else {
+                        iRes = QMessageBox::question(
+                            this, ZS::System::GUI::getMainWindowTitle() + ": Unsaved changes",
+                            "You made changes to " + strGraphObjType + " " + strGraphObjName + ".\n"
+                            "Do you want to resume (Retry) the edit session, Apply or Discard the changes?",
+                            QMessageBox::Retry | QMessageBox::Discard | QMessageBox::Apply);
+                    }
+                    if (iRes == QMessageBox::Apply) {
+                        pWdgtPropertiesPrev->acceptChanges();
+                    }
+                    else if (iRes == QMessageBox::Discard) {
+                        pWdgtPropertiesPrev->rejectChanges();
+                    }
+                    else if (iRes == QMessageBox::Retry) {
+                        bObjectChanged = false;
+                    }
                 }
             }
         }
@@ -252,10 +254,14 @@ bool CWdgtStackGraphObjsProperties::setKeyInTree( const QString& i_strKeyInTree 
                 }
                 m_pEdtPath->setText(strEntryPath);
                 m_pStackedWdgtGraphObjsProperties->setCurrentIndex(idxStackWdgt);
-                pWdgtProperties = dynamic_cast<CWdgtGraphObjPropertiesAbstract*>(
-                    m_pStackedWdgtGraphObjsProperties->widget(idxStackWdgt));
-                if (pWdgtProperties != nullptr) {
-                    pWdgtProperties->setKeyInTree(m_strKeyInTree);
+                CWdgtGraphObjPropertiesAbstract* pWdgtPropertiesCurr =
+                    dynamic_cast<CWdgtGraphObjPropertiesAbstract*>(
+                        m_pStackedWdgtGraphObjsProperties->widget(idxStackWdgt));
+                if (pWdgtPropertiesPrev != nullptr && pWdgtPropertiesPrev != pWdgtPropertiesCurr) {
+                    pWdgtPropertiesPrev->setKeyInTree("");
+                }
+                if (pWdgtPropertiesCurr != nullptr) {
+                    pWdgtPropertiesCurr->setKeyInTree(m_strKeyInTree);
                 }
             }
         }

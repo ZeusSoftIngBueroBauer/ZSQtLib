@@ -83,8 +83,7 @@ protected slots: // instance methods
     void onBtnResetClicked(bool i_bChecked = false);
     void onBtnCancelClicked(bool i_bChecked = false);
 protected slots:
-    void onWdgtDrawingViewPropertiesDrawingSizeChanged(const ZS::Draw::CDrawingSize& i_size);
-    void onWdgtDrawingViewPropertiesGridSettingsChanged(const ZS::Draw::CDrawGridSettings& i_settings);
+    void onWdgtDrawingViewPropertiesContentChanged();
 private: // instance members
     CDrawingView* m_pDrawingView;
     QVBoxLayout* m_pLyt;

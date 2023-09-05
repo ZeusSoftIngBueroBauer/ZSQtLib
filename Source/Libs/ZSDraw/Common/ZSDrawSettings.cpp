@@ -24,6 +24,11 @@ may result in using the software modules.
 
 *******************************************************************************/
 
+#include "ZSDraw/Common/ZSDrawSettings.h"
+#include "ZSSys/ZSSysAux.h"
+#include "ZSSys/ZSSysEnumEntry.h"
+#include "ZSSys/ZSSysException.h"
+
 #include <QtCore/qsettings.h>
 
 #if QT_VERSION < 0x050000
@@ -31,11 +36,6 @@ may result in using the software modules.
 #else
 #include <QtCore/qxmlstream.h>
 #endif
-
-#include "ZSDraw/Common/ZSDrawSettings.h"
-#include "ZSSys/ZSSysAux.h"
-#include "ZSSys/ZSSysEnumEntry.h"
-#include "ZSSys/ZSSysException.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 

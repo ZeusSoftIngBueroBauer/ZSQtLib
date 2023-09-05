@@ -35,7 +35,7 @@ namespace Draw
 {
 class CDrawingScene;
 class CGraphObjLine;
-class CWdgtGraphObjPropertiesGeometry;
+class CWdgtGraphObjLineGeometryProperties;
 class CWdgtGraphObjPropertiesLabels;
 
 //******************************************************************************
@@ -52,9 +52,6 @@ public: // ctors and dtor
         const QString& i_strObjName,
         QWidget* i_pWdgtParent = nullptr);
     virtual ~CWdgtGraphObjLineProperties();
-public: // overridables
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 public: // overridables of base class CWdgtGraphObjPropertiesAbstract
     virtual void setKeyInTree(const QString& i_strKeyInTree) override;
 public: // overridables of base class CWdgtGraphObjPropertiesAbstract
@@ -66,9 +63,8 @@ protected slots:
     void onWdgtLabelsContentChanged();
     void onWdgtGeometryContentChanged();
 protected: // instance members
-    CGraphObjLine* m_pGraphObjLine;
     CWdgtGraphObjPropertiesLabels* m_pWdgtLabels;
-    CWdgtGraphObjPropertiesGeometry* m_pWdgtGeometry;
+    CWdgtGraphObjLineGeometryProperties* m_pWdgtGeometry;
 
 }; // class CWdgtDrawingViewProperties
 

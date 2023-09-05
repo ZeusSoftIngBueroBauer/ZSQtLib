@@ -79,39 +79,39 @@ public: // dtor
 public: // overridables
     virtual QString nameSpace() { return NameSpace(); }
     virtual QString className() { return ClassName(); }
-public: // overridables of base class QGraphicsItem
-    virtual int type() const { return EGraphObjTypeUserDefined; }
+public: // overridables of base class CGraphObj
+    virtual int type() const override { return EGraphObjTypeUserDefined; }
 public: // must overridables of base class CGraphObj
-    virtual void setIsHit( bool i_bHit );
+    virtual void setIsHit( bool i_bHit ) override;
 public: // overridables
-    virtual QString getScenePolygonShapePointsString() const; // for subsystem test
+    virtual QString getScenePolygonShapePointsString() const override; // for subsystem test
 public: // must overridables of base class CGraphObj
-    virtual void setWidth( double i_fWidth );
-    virtual void setHeight( double i_fHeight );
-    virtual void setSize( double i_fWidth, double i_fHeight );
-    virtual void setSize( const QSizeF& i_size );
-    virtual bool hasBoundingRect() const { return false; }
-    virtual bool hasLineShapePoints() const { return false; }
-    virtual bool hasRotationSelectionPoints() const { return false; }
+    virtual void setWidth( double i_fWidth ) override;
+    virtual void setHeight( double i_fHeight ) override;
+    virtual void setSize( double i_fWidth, double i_fHeight ) override;
+    virtual void setSize( const QSizeF& i_size ) override;
+    virtual bool hasBoundingRect() const override { return false; }
+    virtual bool hasLineShapePoints() const override { return false; }
+    virtual bool hasRotationSelectionPoints() const override { return false; }
 public: // must overridables of base class QGraphicsItem, overriding implementation of QGraphicsWidget
-    virtual QRectF boundingRect() const;
-    virtual void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr );
+    virtual QRectF boundingRect() const override;
+    virtual void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr ) override;
 protected: // must overridables of base class CGraphObj
-    virtual void showSelectionPoints( unsigned char i_selPts = ESelectionPointsAll );
-    virtual void updateSelectionPoints( unsigned char i_selPts = ESelectionPointsAll );
+    virtual void showSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) override;
+    virtual void updateSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) override;
 protected: // overridables of base class QGraphicsItem, overriding implementation of QGraphicsWidget
-    virtual bool sceneEventFilter( QGraphicsItem* i_pGraphicsItemWatched, QEvent* i_pEv );
+    virtual bool sceneEventFilter( QGraphicsItem* i_pGraphicsItemWatched, QEvent* i_pEv ) override;
 protected: // overridables of base class QGraphicsItem, overriding implementation of QGraphicsProxyWidget
-    virtual void hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv );
-    virtual void hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv );
-    virtual void hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv );
+    virtual void hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
+    virtual void hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
+    virtual void hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
 protected: // overridables of base class QGraphicsItem, overriding implementation of QGraphicsProxyWidget
-    virtual void mousePressEvent( QGraphicsSceneMouseEvent* i_pEv );
-    virtual void mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv );
-    virtual void mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv );
-    virtual void mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv );
+    virtual void mousePressEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
+    virtual void mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
+    virtual void mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
+    virtual void mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
 protected: // overridables of base class QGraphicsItem, overriding implementation of QGraphicsProxyWidget
-    virtual QVariant itemChange( GraphicsItemChange i_change, const QVariant& i_value );
+    virtual QVariant itemChange( GraphicsItemChange i_change, const QVariant& i_value ) override;
 
 }; // class CGraphObjWdgt
 

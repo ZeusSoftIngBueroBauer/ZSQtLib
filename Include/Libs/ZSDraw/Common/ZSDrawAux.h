@@ -67,8 +67,11 @@ ZSDRAWDLL_API QString qPainterPathElemType2Str( int i_type );
 ZSDRAWDLL_API QString qPainterPath2Str( QGraphicsItem* i_pGraphObj, const QPainterPath& i_painterPath );
 ZSDRAWDLL_API QString qTransformationType2Str( int i_type );
 ZSDRAWDLL_API QStringList qTransformation2StrList( const QTransform& i_transform );
-ZSDRAWDLL_API QString qGraphicsItemChange2Str( int i_change );
+ZSDRAWDLL_API QString qGraphicsItemChange2Str( int i_change, const QVariant& i_value, bool i_bIncludeChange = true );
+ZSDRAWDLL_API QString qGraphicsItemFlags2Str( quint32 i_flags );
+ZSDRAWDLL_API bool isGraphicsSceneHoverEvent( QEvent* i_pEv );
 ZSDRAWDLL_API QString qGraphicsSceneHoverEvent2Str( QGraphicsSceneHoverEvent* i_pEv );
+ZSDRAWDLL_API bool isGraphicsSceneMouseEvent( QEvent* i_pEv );
 ZSDRAWDLL_API QString qGraphicsSceneMouseEvent2Str( QGraphicsSceneMouseEvent* i_pEv );
 
 

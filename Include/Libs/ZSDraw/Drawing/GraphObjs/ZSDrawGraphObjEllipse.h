@@ -69,49 +69,46 @@ public: // overridables of base class QGraphicsItem
     virtual int type() const { return EGraphObjTypeEllipse; }
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone();
-public: // overridables
-    virtual QString nameSpace() { return NameSpace(); }
-    virtual QString className() { return ClassName(); }
 public: // replacing methods of QGraphicsEllipseItem
     void setRect( const QRectF& i_rct );
     void setRect( qreal i_x, qreal i_y, qreal i_width, qreal i_height );
 public: // overridables of base class CGraphObj
-    virtual QString getScenePolygonShapePointsString() const; // for subsystem test
+    virtual QString getScenePolygonShapePointsString() const override; // for subsystem test
 public: // overridables of base class CGraphObj
-    virtual void onDrawSettingsChanged();
+    virtual void onDrawSettingsChanged() override;
 public: // must overridables of base class CGraphObj
-    virtual void setWidth( double i_fWidth );
-    virtual void setHeight( double i_fHeight );
-    virtual void setSize( double i_fWidth, double i_fHeight );
-    virtual void setSize( const QSizeF& i_size );
-    virtual bool hasBoundingRect() const { return true; }
-    virtual bool hasLineShapePoints() const { return false; }
-    virtual bool hasRotationSelectionPoints() const { return true; }
+    virtual void setWidth( const ZS::PhysVal::CPhysVal& i_physValWidth ) override;
+    virtual void setHeight( const ZS::PhysVal::CPhysVal& i_physValHeight ) override;
+    virtual void setSize( const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight ) override;
+    virtual void setSize( const CPhysValSize& i_physValSize ) override;
+    virtual bool hasBoundingRect() const override { return true; }
+    virtual bool hasLineShapePoints() const override { return false; }
+    virtual bool hasRotationSelectionPoints() const override { return true; }
 public: // must overridables of base class CGraphObj
-    virtual void setIsHit( bool i_bHit );
+    virtual void setIsHit( bool i_bHit ) override;
 public: // overridables of base class CGraphObj
-    virtual bool isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) const;
+    virtual bool isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo = nullptr ) const override;
 public: // reimplementing methods of base class QGraphicItem
     void setCursor( const QCursor& cursor );
 protected: // must overridables of base class CGraphObj
-    virtual void showSelectionPoints( unsigned char i_selPts = ESelectionPointsAll );
-    virtual void updateSelectionPoints( unsigned char i_selPts = ESelectionPointsAll );
+    virtual void showSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) override;
+    virtual void updateSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) override;
 public: // must overridables of base class QGraphicsItem
-    virtual QRectF boundingRect() const;
-    virtual void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr );
+    virtual QRectF boundingRect() const override;
+    virtual void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr ) override;
 protected: // overridables of base class QGraphicsItem
-    virtual bool sceneEventFilter( QGraphicsItem* i_pGraphicsItemWatched, QEvent* i_pEv );
+    virtual bool sceneEventFilter( QGraphicsItem* i_pGraphicsItemWatched, QEvent* i_pEv ) override;
 protected: // overridables of base class QGraphicsItem
-    virtual void hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv );
-    virtual void hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv );
-    virtual void hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv );
+    virtual void hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
+    virtual void hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
+    virtual void hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
 protected: // overridables of base class QGraphicsItem
-    virtual void mousePressEvent( QGraphicsSceneMouseEvent* i_pEv );
-    virtual void mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv );
-    virtual void mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv );
-    virtual void mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv );
+    virtual void mousePressEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
+    virtual void mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
+    virtual void mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
+    virtual void mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
 protected: // overridables of base class QGraphicsItem
-    virtual QVariant itemChange( GraphicsItemChange i_change, const QVariant& i_value );
+    virtual QVariant itemChange( GraphicsItemChange i_change, const QVariant& i_value ) override;
 protected: // class members
     /*!< Needed to set an initial unique name when creating a new instance. */
     static qint64 s_iInstCount;

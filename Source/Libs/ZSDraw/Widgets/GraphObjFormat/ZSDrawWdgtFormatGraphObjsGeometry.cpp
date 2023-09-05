@@ -213,8 +213,8 @@ CWdgtFormatGraphObjsGeometry::CWdgtFormatGraphObjsGeometry(
         // <Widget> Position and Size
         //===========================
 
-        m_ptPos = m_pGraphObj->getPos();
-        m_size  = m_pGraphObj->getSize();
+        m_ptPos = m_pGraphObj->getPos().toQPointF();
+        m_size  = m_pGraphObj->getSize().toQSizeF();
 
         if( graphObjType != EGraphObjTypeLine && graphObjType != EGraphObjTypeConnectionLine )
         {
@@ -879,7 +879,7 @@ bool CWdgtFormatGraphObjsGeometry::hasChanges() const
                 bHasChanges = true;
             }
 
-            QSizeF siz = m_pGraphObj->getSize();
+            QSizeF siz = m_pGraphObj->getSize().toQSizeF();
 
             if( m_size != siz )
             {
@@ -984,7 +984,7 @@ void CWdgtFormatGraphObjsGeometry::onGraphObjChanged()
         /* strAddInfo   */ strMthInArgs );
 
     m_ptPos = m_pGraphicsItem->pos();
-    m_size = m_pGraphObj->getSize();
+    m_size = m_pGraphObj->getSize().toQSizeF();
     m_fRotAngle_deg = m_pGraphObj->getRotationAngleInDegree();
     m_fZValue = m_pGraphObj->getStackingOrderValue();
 

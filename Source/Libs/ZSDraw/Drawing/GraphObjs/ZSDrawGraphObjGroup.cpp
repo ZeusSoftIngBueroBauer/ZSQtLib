@@ -24,18 +24,6 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include <QtGui/QBitmap>
-#include <QtGui/qevent.h>
-#include <QtGui/QPainter>
-
-#if QT_VERSION < 0x050000
-#include <QtGui/QGraphicsSceneEvent>
-#include <QtGui/QStyleOption>
-#else
-#include <QtWidgets/QGraphicsSceneEvent>
-#include <QtWidgets/QStyleOption>
-#endif
-
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjGroup.h"
 #include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabel.h"
@@ -50,6 +38,18 @@ may result in using the software modules.
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
+
+#include <QtGui/QBitmap>
+#include <QtGui/qevent.h>
+#include <QtGui/QPainter>
+
+#if QT_VERSION < 0x050000
+#include <QtGui/QGraphicsSceneEvent>
+#include <QtGui/QStyleOption>
+#else
+#include <QtWidgets/QGraphicsSceneEvent>
+#include <QtWidgets/QStyleOption>
+#endif
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -260,9 +260,11 @@ CGraphObj* CGraphObjGroup::clone()
     QPointF ptPos = pos();
 
     pGraphObj->setPos(ptPos);
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
     pGraphObj->setRotationAngleInDegree(m_fRotAngleCurr_deg);
     //pGraphObj->setScaleFactors(m_fScaleFacXCurr,m_fScaleFacYCurr);
     pGraphObj->acceptCurrentAsOriginalCoors();
+#endif
 
     return pGraphObj;
 
@@ -363,30 +365,26 @@ public: // overridables of base class CGraphObj
 QString CGraphObjGroup::getScenePolygonShapePointsString() const
 //------------------------------------------------------------------------------
 {
-    QString   strScenePolygonShapePoints;
+    QString strScenePolygonShapePoints;
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
     QPolygonF plgScene = mapToScene(m_rctCurr);
-
     strScenePolygonShapePoints = polygon2Str(plgScene);
-
+#endif
     return strScenePolygonShapePoints;
-
-} // getScenePolygonShapePointsString
+}
 
 /*==============================================================================
 public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObjGroup::setWidth( double i_fWidth )
+void CGraphObjGroup::setWidth( const CPhysVal& i_physValWidth )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strMthInArgs = "Width:" + QString::number(i_fWidth);
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_physValWidth.toString();
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -394,21 +392,17 @@ void CGraphObjGroup::setWidth( double i_fWidth )
         /* strMethod    */ "setWidth",
         /* strAddInfo   */ strMthInArgs );
 
-    setSize( i_fWidth, m_rctCurr.height() );
-
-} // setWidth
+    setSize(i_physValWidth, getHeight());
+}
 
 //------------------------------------------------------------------------------
-void CGraphObjGroup::setHeight( double i_fHeight )
+void CGraphObjGroup::setHeight( const CPhysVal& i_physValHeight )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strMthInArgs = "Height:" + QString::number(i_fHeight);
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_physValHeight.toString();
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -416,22 +410,17 @@ void CGraphObjGroup::setHeight( double i_fHeight )
         /* strMethod    */ "setHeight",
         /* strAddInfo   */ strMthInArgs );
 
-    setSize( m_rctCurr.width(), i_fHeight );
-
-} // setHeight
+    setSize(getWidth(), i_physValHeight);
+}
 
 //------------------------------------------------------------------------------
-void CGraphObjGroup::setSize( double i_fWidth, double i_fHeight )
+void CGraphObjGroup::setSize( const CPhysVal& i_physValWidth, const CPhysVal& i_physValHeight )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strMthInArgs  = "Width:" + QString::number(i_fWidth);
-        strMthInArgs += ", Height:" + QString::number(i_fHeight);
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_physValWidth.toString() + ", " + i_physValHeight.toString();
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -439,41 +428,39 @@ void CGraphObjGroup::setSize( double i_fWidth, double i_fHeight )
         /* strMethod    */ "setSize",
         /* strAddInfo   */ strMthInArgs );
 
-    double fWidth  = i_fWidth;
-    double fHeight = i_fHeight;
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
 
-    if( hasFixedWidth() && fWidth != getFixedWidth() )
-    {
-        fWidth = getFixedWidth();
-    }
-    else
-    {
-        if( hasMinimumWidth() && fWidth > getMinimumWidth() )
-        {
-            fWidth = getMinimumWidth();
-        }
-        if( hasMaximumWidth() && fWidth > getMaximumWidth() )
-        {
-            fWidth = getMaximumWidth();
-        }
-    }
+    CPhysVal physValWidth = i_physValWidth;
+    CPhysVal physValHeight = i_physValHeight;
 
-    if( hasFixedHeight() && fHeight != getFixedHeight() )
-    {
-        fHeight = getFixedHeight();
+    physValWidth.convertValue(drawingSize.unit());
+    physValHeight.convertValue(drawingSize.unit());
+
+    if (hasFixedWidth() && physValWidth != getFixedWidth()) {
+        physValWidth = getFixedWidth();
     }
-    else
-    {
-        if( hasMinimumHeight() && fHeight > getMinimumHeight() )
-        {
-            fHeight = getMinimumHeight();
+    else {
+        if (hasMinimumWidth() && physValWidth > getMinimumWidth()) {
+            physValWidth = getMinimumWidth();
         }
-        if( hasMaximumHeight() && fHeight > getMaximumHeight() )
-        {
-            fHeight = getMaximumHeight();
+        if (hasMaximumWidth() && physValWidth > getMaximumWidth()) {
+            physValWidth = getMaximumWidth();
         }
     }
 
+    if (hasFixedHeight() && physValHeight != getFixedHeight()) {
+        physValHeight = getFixedHeight();
+    }
+    else {
+        if (hasMinimumHeight() && physValHeight > getMinimumHeight()) {
+            physValHeight = getMinimumHeight();
+        }
+        if (hasMaximumHeight() && physValHeight > getMaximumHeight()) {
+            physValHeight = getMaximumHeight();
+        }
+    }
+
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
     if( fWidth != m_rctCurr.width() || fHeight != m_rctCurr.height() )
     {
         m_rctCurr.setWidth(fWidth);
@@ -495,31 +482,16 @@ void CGraphObjGroup::setSize( double i_fWidth, double i_fHeight )
         updateEditInfo();
         updateToolTip();
     }
+#endif
 
 } // setSize
 
 //------------------------------------------------------------------------------
-void CGraphObjGroup::setSize( const QSizeF& i_size )
+void CGraphObjGroup::setSize( const CPhysValSize& i_physValSize )
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strMthInArgs  = "Width:" + QString::number(i_size.width());
-        strMthInArgs += ", Height:" + QString::number(i_size.height());
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "setSize",
-        /* strAddInfo   */ strMthInArgs );
-
-    setSize( i_size.width(), i_size.height() );
-
-} // setSize
+    setSize(i_physValSize.width(), i_physValSize.height());
+}
 
 /*==============================================================================
 protected: // overridables
@@ -543,12 +515,15 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
         /* strMethod    */ "applyGeometryChangeToChildrens",
         /* strAddInfo   */ strMthInArgs );
 
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         strAddTrcInfo = "Rect:" + rect2Str(m_rctCurr);
         mthTracer.trace(strAddTrcInfo);
     }
+#endif
 
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
     double fScaleWidthCurr  = 1.0;
     double fScaleHeightCurr = 1.0;
 
@@ -2573,6 +2548,7 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
         } // if( pGraphObjChild != nullptr )
 
     } // for( idxGraphObjChild = 0; idxGraphObjChild < arpGraphicsItemsChilds.size(); idxGraphObjChild++ )
+#endif
 
     prepareGeometryChange();
 
@@ -2641,11 +2617,13 @@ bool CGraphObjGroup::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) 
         /* strMethod    */ "isHit",
         /* strAddInfo   */ strMthInArgs );
 
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         strAddTrcInfo = "Rect: " + rect2Str(m_rctCurr);
         mthTracer.trace(strAddTrcInfo);
     }
+#endif
 
     bool bIsHit = false;
 
@@ -2662,10 +2640,12 @@ bool CGraphObjGroup::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) 
                 /* pGraphObjHitInfo */ o_pHitInfo );
         }
 
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
         if( !bIsHit )
         {
             bIsHit = isRectHit( m_rctCurr, EFillStyle::SolidPattern, i_pt, m_pDrawingScene->getHitToleranceInPx(), o_pHitInfo );
         }
+#endif
 
         if( !bIsHit )
         {
@@ -2685,10 +2665,12 @@ bool CGraphObjGroup::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) 
             }
         }
 
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
         if( bIsHit && o_pHitInfo != nullptr )
         {
             o_pHitInfo->setCursor( Math::deg2Rad(m_fRotAngleCurr_deg) );
         }
+#endif
     } // if( pGraphicsItem != nullptr )
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -2752,10 +2734,12 @@ void CGraphObjGroup::showSelectionPoints( unsigned char i_selPts )
         /* strMethod    */ "showSelectionPoints",
         /* strAddInfo   */ strMthInArgs );
 
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
     if( parentItem() == nullptr )
     {
         showSelectionPointsOfBoundingRect( m_rctCurr, i_selPts );
     }
+#endif
 } // showSelectionPoints
 
 //------------------------------------------------------------------------------
@@ -2776,10 +2760,12 @@ void CGraphObjGroup::updateSelectionPoints( unsigned char i_selPts )
         /* strMethod    */ "updateSelectionPoints",
         /* strAddInfo   */ strMthInArgs );
 
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
     if( parentItem() == nullptr )
     {
         updateSelectionPointsOfBoundingRect( m_rctCurr, i_selPts );
     }
+#endif
 } // updateSelectionPoints
 
 /*==============================================================================
@@ -2974,7 +2960,9 @@ void CGraphObjGroup::paint(
         i_pPainter->setPen(pn);
         i_pPainter->setBrush(Qt::NoBrush);
 
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
         i_pPainter->drawRect(m_rctCurr);
+#endif
 
         if( isSelected() )
         {
@@ -3393,9 +3381,10 @@ void CGraphObjGroup::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                 }
             }
 
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
             m_rctOnMousePressEvent = m_rctCurr;
-
             m_ptRotOriginOnMousePressEvent = mapToScene(m_ptRotOriginCurr);
+#endif
 
             m_pDrawingScene->setMode( EMode::Ignore, EEditTool::Ignore, m_editMode, m_editResizeMode, false );
 
@@ -3487,6 +3476,7 @@ void CGraphObjGroup::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         {
             QPointF ptMouseItemPos = i_pEv->pos();
 
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
             m_rctCurr = resizeRect( m_rctOnMousePressEvent, m_selPtSelectedBoundingRect.enumerator(), ptMouseItemPos, nullptr );
 
             // Don't change the position of the object as the position of further
@@ -3495,8 +3485,8 @@ void CGraphObjGroup::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
             //setPos(ptPosNew); // does not lead to "itemChange" call even if flag ItemSendsGeometryChanges is set.
 
             applyGeometryChangeToChildrens();
-
             updateSelectionPointsOfBoundingRect(m_rctCurr);
+#endif
 
             updateLabelPositionsAndContents();
 
@@ -3513,6 +3503,7 @@ void CGraphObjGroup::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 
             double fRotAngle_rad = getAngleRad( m_ptRotOriginOnMousePressEvent, ptMouseScenePos );
 
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
             m_fRotAngleCurr_deg = Math::rad2Deg(fRotAngle_rad);
 
             switch( m_selPtSelectedBoundingRect.enumerator() )
@@ -3543,6 +3534,7 @@ void CGraphObjGroup::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
             {
                 m_fRotAngleCurr_deg += 360.0;
             }
+#endif
 
             updateTransform();
             updateEditInfo();
@@ -3640,6 +3632,7 @@ void CGraphObjGroup::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
             // moving the mouse). In this case changing the size of the item according to
             // position of the mouse is not expected.
 
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
             QPolygonF plgSceneNew         = mapToScene(m_rctCurr);
             QRectF    rctBoundingSceneNew = plgSceneNew.boundingRect();
             QPointF   ptRotOriginSceneNew = rctBoundingSceneNew.center();
@@ -3666,6 +3659,7 @@ void CGraphObjGroup::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
             applyGeometryChangeToChildrens();
 
             updateSelectionPointsOfBoundingRect(m_rctCurr);
+#endif
 
             updateLabelPositionsAndContents();
 
@@ -3952,23 +3946,9 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
     }
 
     QString strMthInArgs;
-    QString strAddTrcInfo;
-    QString strMthReturn;
-
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strMthInArgs = "Changed:" + qGraphicsItemChange2Str(i_change);
-
-        if( i_value.type() == QVariant::PointF )
-        {
-            strMthInArgs += ", Value(" + qVariantType2Str(i_value.type()) + "):" + point2Str(i_value.toPointF());
-        }
-        else
-        {
-            strMthInArgs += ", Value(" + qVariantType2Str(i_value.type()) + "):" + i_value.toString();
-        }
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = qGraphicsItemChange2Str(i_change, i_value);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -3976,14 +3956,14 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
         /* strMethod    */ "itemChange",
         /* strAddInfo   */ strMthInArgs );
 
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
-        mthTracer.trace(strAddTrcInfo);
-    }
+    //if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
+    //{
+    //    strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
+    //    strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+    //    strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+    //    strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
+    //    mthTracer.trace(strAddTrcInfo);
+    //}
 
     QVariant valChanged = i_value;
 
@@ -4143,7 +4123,9 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
             }
         }
 
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
         updateSelectionPointsOfBoundingRect(m_rctCurr);
+#endif
 
         updateLabelPositionsAndContents();
 
@@ -4203,28 +4185,20 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
         m_pTree->onTreeEntryChanged(this);
     }
 
-    valChanged = QGraphicsItem::itemChange(i_change,i_value);
+    valChanged = QGraphicsItem::itemChange(i_change, i_value);
 
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
-        mthTracer.trace(strAddTrcInfo);
-    }
+    //if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
+    //{
+    //    strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
+    //    strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+    //    strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+    //    strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
+    //    mthTracer.trace(strAddTrcInfo);
+    //}
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        if( i_value.type() == QVariant::PointF )
-        {
-            strMthReturn = "ValChanged(" + qVariantType2Str(valChanged.type()) + "):" + point2Str(valChanged.toPointF());
-        }
-        else
-        {
-            strMthReturn = "ValChanged(" + qVariantType2Str(valChanged.type()) + "):" + valChanged.toString();
-        }
-        mthTracer.setMethodReturn(strMthReturn);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        QString strMthRet = qGraphicsItemChange2Str(i_change, valChanged, false);
+        mthTracer.setMethodReturn(strMthRet);
     }
 
     return valChanged;
