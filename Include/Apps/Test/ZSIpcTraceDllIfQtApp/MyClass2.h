@@ -72,9 +72,6 @@ public: // ctors and dtor
     virtual ~CMyClass2Thread();
 signals:
     void aboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName);
-public: // overridables
-    virtual QString nameSpace() { return NameSpace(); }
-    virtual QString className() { return ClassName(); }
 public: // instance methods (reimplementing methods of base class QObject)
     void setObjectName(const QString& i_strObjName);
 public: // instance methods
@@ -118,9 +115,6 @@ public: // ctors and dtor
     virtual ~CMyClass2();
 signals:
     void aboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName);
-public: // overridables
-    virtual QString nameSpace() { return NameSpace(); }
-    virtual QString className() { return ClassName(); }
 public: // instance methods (reimplementing methods of base class QObject)
     void setObjectName(const QString& i_strObjName);
 public: // instance methods

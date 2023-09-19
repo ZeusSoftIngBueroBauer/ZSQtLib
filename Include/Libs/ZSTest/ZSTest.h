@@ -73,9 +73,6 @@ signals:
     void runModeChanged( const ZS::System::CEnumRunMode& i_runMode );
     void currentTestStepChanged( ZS::Test::CTestStep* i_pTestStep );
     void testStepIntervalChanged( int i_iInterval_ms );
-public: // overridables
-    virtual QString nameSpace() const { return CTest::NameSpace(); }
-    virtual QString className() const { return CTest::ClassName(); }
 public: // instance methods
     CTestStepIdxTree* getTestStepIdxTree() { return m_pIdxTree; }
 public: // instance methods

@@ -68,11 +68,12 @@ public: // instance methods
     virtual CUnitsTreeEntryUnitBase* findUnitBySymbol( const QString& i_strSymbol ) const;
     virtual CUnitsTreeEntryUnitBase* findUnitByFactorPrefix( const QString& i_strPrefix ) const;
 public: // overidables
-    virtual int setReferenceValue( const QString& i_strName, const CPhysVal& i_physVal );
-    virtual int getReferenceValuesCount() const;
-    virtual CPhysVal getReferenceValue( int i_idx ) const;
-    virtual QString getReferenceValueName( int i_idx ) const;
-    virtual CPhysVal getReferenceValue( const QString& i_strName ) const;
+    int setReferenceValue( const QString& i_strName, const CPhysVal& i_physVal );
+    int getReferenceValuesCount() const;
+    CPhysVal getReferenceValue( int i_idx ) const;
+    QString getReferenceValueName( int i_idx ) const;
+    CPhysVal getReferenceValue( const QString& i_strName ) const;
+    bool hasReferenceValue( const QString& i_strName ) const;
 protected: // instance members
     /*!< Class type of the child nodes.
          A group may be the parent of either

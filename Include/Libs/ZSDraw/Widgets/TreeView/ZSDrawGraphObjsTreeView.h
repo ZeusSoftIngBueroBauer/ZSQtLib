@@ -63,9 +63,6 @@ public: // class methods
 public: // ctors and dtor
     CDelegateGraphObjsTreeView( QObject* i_pObjParent = nullptr );
     virtual ~CDelegateGraphObjsTreeView();
-public: // overridables
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 public: // instance methods
     QLineEdit* nameColumnEditor();
 public: // overridables of base class QStyledItemDelegate
@@ -110,9 +107,6 @@ public: // ctors and dtor
         CDrawingScene* i_pDrawingScene,
         QWidget*       i_pWdgtParent = nullptr );
     virtual ~CTreeViewGraphObjs();
-public: // overridables
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 public: // instance methods
     void setSortOrder( ZS::System::GUI::EIdxTreeSortOrder i_sortOrder );
     ZS::System::GUI::EIdxTreeSortOrder sortOrder() const;

@@ -27,7 +27,7 @@ may result in using the software modules.
 #ifndef ZSDraw_GraphObjPropertiesAbstractWdgt_h
 #define ZSDraw_GraphObjPropertiesAbstractWdgt_h
 
-#include "ZSDraw/Drawing/ZSDrawingSize.h"
+#include "ZSDraw/Common/ZSDrawingSize.h"
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qwidget.h>

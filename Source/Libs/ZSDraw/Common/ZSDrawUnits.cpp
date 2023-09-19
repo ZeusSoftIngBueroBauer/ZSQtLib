@@ -132,6 +132,9 @@ CUnitsLength::CUnitsLength(CIdxTreeEntry* i_pParentBranch) :
     m_pTree->addShortcut(&m_treeEntryPixel, "px");
     m_pTree->addShortcut(&m_treeEntryDots, "dots");
 
+    // If not explicitly set, the scale factors default value is used which is 1.0 (1/1).
+    setScaleFactor(1, 1);
+
 } // ctor
 
 //------------------------------------------------------------------------------
@@ -152,7 +155,8 @@ public: // instance methods (resolution of monitor, pixels per inches)
            as reference value with the name "Pxpi" to the unit group.
 
     Different resolutions for horizontal and vertical directions are not supported.
-    Anyway very often several monitors are used whose resolution may be different.
+    Anyway very often several monitors are used whose resolution may be different
+    both horizontally and vertically.
 
     @param [in] i_fPxpi
         Resolution of a screen pixel in pixels/inches.
@@ -169,8 +173,13 @@ void CUnitsLength::setPxpi( double i_fPxpi )
     // Factor to convert m into inches: 1/0.0254
     double fipm = m_treeEntryInch.getFactorConvertFromSIUnit();
 
-    // Factor to convert Px/inch to Px/m: 1/0.0254
-    double fpxm = fipm * i_fPxpi;
+    double fScaleFactor = 1.0;
+    if (hasReferenceValue("ScaleFactorDividend") && hasReferenceValue("ScaleFactorDivisor")) {
+        fScaleFactor = scaleFactor();
+    }
+
+    // Factor to convert Px/inch to Px/m: 1.0/0.0254
+    double fpxm = fipm * pxpi() * fScaleFactor;
 
     SFctConvert fctConvertPxFromMeter(
         /* fctConvertType */ EFctConvert_mMULxADDt,
@@ -218,8 +227,13 @@ void CUnitsLength::setDpi( double i_fDpi )
     // Factor to convert m into inches: 1/0.0254
     double fipm = m_treeEntryInch.getFactorConvertFromSIUnit();
 
+    double fScaleFactor = 1.0;
+    if (hasReferenceValue("ScaleFactorDividend") && hasReferenceValue("ScaleFactorDivisor")) {
+        fScaleFactor = scaleFactor();
+    }
+
     // Factor to convert Dots/inch to Dots/m: 1/0.0254
-    double fdm = fipm * i_fDpi;
+    double fdm = fipm * dpi() * fScaleFactor;
 
     SFctConvert fctConvertDotsFromMeter(
         /* fctConvertType */ EFctConvert_mMULxADDt,
@@ -240,6 +254,90 @@ double CUnitsLength::dpi() const
 //------------------------------------------------------------------------------
 {
     return getReferenceValue("Dpi").getVal();
+}
+
+/*==============================================================================
+public: // instance methods (scale factor of drawing in metric dimension)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the scale factor to be used by the drawing as reference value
+           with the names "ScaleFactorDividend" and "ScaleFactorDivisor" to
+           the unit group.
+
+    ScaleFactor = Dividend/Divisor
+
+    @Note If not explicitly set the scale factors default value is used which is 1.0 (1/1).
+
+    @param [in] i_iDividend
+        Dividend of the scale factor.
+    @param [in] i_iDivisor
+        Divisor of the scale factor.
+*/
+void CUnitsLength::setScaleFactor(int i_iDividend, int i_iDivisor)
+//------------------------------------------------------------------------------
+{
+    setReferenceValue("ScaleFactorDividend", i_iDividend);
+    setReferenceValue("ScaleFactorDivisor", i_iDivisor);
+
+    // 1 Inch = 2.54 cm
+    // Factor to convert inches into mm: 25.4
+    // Factor to convert inches into cm: 2.54
+    // Factor to convert inches to m: 0.0254
+    // Factor to convert m into inches: 1/0.0254
+    double fipm = m_treeEntryInch.getFactorConvertFromSIUnit();
+
+    double fpxpi = 1.0;
+    if (hasReferenceValue("Pxpi")) {
+        fpxpi = pxpi();
+    }
+
+    // Factor to convert Px/inch to Px/m: 1.0/0.0254
+    double fpxm = fipm * fpxpi * scaleFactor();
+
+    SFctConvert fctConvertPxFromMeter(
+        /* fctConvertType */ EFctConvert_mMULxADDt,
+        /* pPhysUnitSrc   */ &m_treeEntryMeter,
+        /* pPhysUnitDst   */ &m_treeEntryPixel,
+        /* physValM       */ fpxm );
+
+    m_treeEntryPixel.setFctConvertFromSIUnit(fctConvertPxFromMeter);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the scale factors dividend.
+
+    @return
+        Scale factor dividend.
+*/
+double CUnitsLength::scaleFactor() const
+//------------------------------------------------------------------------------
+{
+    return getReferenceValue("ScaleFactorDividend").getVal() / getReferenceValue("ScaleFactorDivisor").getVal();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the scale factors dividend.
+
+    @return
+        Scale factor dividend.
+*/
+int CUnitsLength::scaleFactorDividend() const
+//------------------------------------------------------------------------------
+{
+    return static_cast<int>(getReferenceValue("ScaleFactorDividend").getVal());
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the scale factors divisor.
+
+    @return
+        Scale factor divisor.
+*/
+int CUnitsLength::scaleFactorDivisor() const
+//------------------------------------------------------------------------------
+{
+    return static_cast<int>(getReferenceValue("ScaleFactorDivisor").getVal());
 }
 
 /*==============================================================================

@@ -63,9 +63,6 @@ public: // dtor
     virtual ~CIpcServerWrapper();
 signals:
     void newConnection( QObject* i_pSocketWrapper );
-public: // overridables
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 public: // instance methods
     ESocketType socketType() const;
 public: // overridables

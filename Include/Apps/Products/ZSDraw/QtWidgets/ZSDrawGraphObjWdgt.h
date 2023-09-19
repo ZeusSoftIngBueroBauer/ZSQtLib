@@ -54,13 +54,9 @@ class CGraphObjWdgt : public CGraphObj, public QGraphicsProxyWidget
 {
 public: // class methods
 public: // class methods
-    /*! Returns the namespace the class belongs to.
-        Please note that the static class functions name must be different
-        from the non static virtual member function "nameSpace" */
+    /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw::QtWidgets"; }
-    /*! Returns the class name.
-        Please note that the static class functions name must be different
-        from the non static virtual member function "nameSpace" */
+    /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjWdgt"; }
 public: // class members
     /*! Group name of the factories to create the standard shapes (Line, Point, Rect, etc).
@@ -76,9 +72,6 @@ protected: // ctor
         const CDrawSettings& i_drawSettings );
 public: // dtor
     virtual ~CGraphObjWdgt();
-public: // overridables
-    virtual QString nameSpace() { return NameSpace(); }
-    virtual QString className() { return ClassName(); }
 public: // overridables of base class CGraphObj
     virtual int type() const override { return EGraphObjTypeUserDefined; }
 public: // must overridables of base class CGraphObj
@@ -86,10 +79,10 @@ public: // must overridables of base class CGraphObj
 public: // overridables
     virtual QString getScenePolygonShapePointsString() const override; // for subsystem test
 public: // must overridables of base class CGraphObj
-    virtual void setWidth( double i_fWidth ) override;
-    virtual void setHeight( double i_fHeight ) override;
-    virtual void setSize( double i_fWidth, double i_fHeight ) override;
-    virtual void setSize( const QSizeF& i_size ) override;
+    virtual void setWidth( const ZS::PhysVal::CPhysVal& i_physValWidth ) override;
+    virtual void setHeight( const ZS::PhysVal::CPhysVal& i_physValHeight ) override;
+    virtual void setSize( const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight ) override;
+    virtual void setSize( const CPhysValSize& i_physValSize ) override;
     virtual bool hasBoundingRect() const override { return false; }
     virtual bool hasLineShapePoints() const override { return false; }
     virtual bool hasRotationSelectionPoints() const override { return false; }

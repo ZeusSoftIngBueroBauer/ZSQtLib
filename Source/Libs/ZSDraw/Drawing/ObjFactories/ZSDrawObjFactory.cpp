@@ -163,14 +163,14 @@ protected: // ctor
 CObjFactory::CObjFactory(
     const QString& i_strGroupName,
     const QString& i_strClassName,
-    int i_iGraphObjType,
+    EGraphObjType  i_eGraphObjType,
     const QString& i_strGraphObjType,
     const QPixmap& i_pxmToolIcon ) :
 //------------------------------------------------------------------------------
     QObject(),
     CIdxTreeEntry(EEntryType::Leave, i_strGraphObjType),
     m_strGroupName(i_strGroupName),
-    m_iGraphObjType(i_iGraphObjType),
+    m_eGraphObjType(i_eGraphObjType),
     m_pxmToolIcon(i_pxmToolIcon),
     m_strFileName(),
     m_pTrcAdminObj(nullptr)
@@ -191,8 +191,8 @@ CObjFactory::CObjFactory(
 
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Group: " + i_strGroupName;
-        strMthInArgs += "ObjType: " + i_strGraphObjType + "(" + QString::number(i_iGraphObjType) + ")";
+        strMthInArgs = "Group: " + i_strGroupName + ", Class: " + i_strClassName + 
+                       ", ObjType: " + graphObjType2Str(i_eGraphObjType) + "(" + i_strGraphObjType + ")";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -238,7 +238,7 @@ CObjFactory::~CObjFactory()
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
 
     //m_strGroupName;
-    m_iGraphObjType = 0;
+    m_eGraphObjType = static_cast<EGraphObjType>(0);
     //m_toolIcon;
     //m_strFileDir;
     //m_strFileName;

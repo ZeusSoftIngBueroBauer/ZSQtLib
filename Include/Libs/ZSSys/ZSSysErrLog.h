@@ -273,15 +273,6 @@ signals:
     /*! Signal which will be emitted if the number of entries has been changed. */
     void countChanged();
 public: // instance methods
-    /*! This virtual method returns the name space of the object's class.
-        This method can be reimplemented in derived classes so when invoked for the
-        polymorphic base type the method returns the name space of the derived class. */
-    virtual QString nameSpace() const { return NameSpace(); }
-    /*! This virtual method returns the class name of the object's class.
-        This method can be reimplemented in derived classes so when invoked for the
-        polymorphic base type the method returns the name of the derived class. */
-    virtual QString className() const { return ClassName(); }
-public: // instance methods
     void setEntriesCountMax( int i_iCount, EResultSeverity i_severity = EResultSeverityUndefined );
     int getEntriesCountMax( EResultSeverity i_severity = EResultSeverityUndefined ) const;
 public: // instance methods

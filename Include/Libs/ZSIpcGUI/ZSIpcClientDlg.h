@@ -65,9 +65,6 @@ protected: // ctor
         Qt::WindowFlags i_wFlags = Qt::WindowFlags());
 public: // dtor
     virtual ~CDlgIpcClient();
-public: // overridables of base class ZS::System::GUI::CDialog
-    virtual QString nameSpace() override { return NameSpace(); }
-    virtual QString className() override { return ClassName(); }
 public: // instance methods
     void setClient( CClient* i_pClient );
 public: // instance methods

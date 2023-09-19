@@ -136,11 +136,9 @@ class ZSSYSDLL_API CTrcServer : public QObject
     Q_PROPERTY(QString className READ ClassName CONSTANT)
     Q_PROPERTY(QString objectName READ objectName CONSTANT)
 public: // class methods
-    /*! Returns the namespace of the class.
-        @note The static class functions name must be different from the instance method "nameSpace". */
+    /*! Returns the namespace of the class. */
     static QString NameSpace() { return "ZS::System"; }
-    /*! Returns the class name.
-        @note The static class functions name must be different from the instance method "className". */
+    /*! Returns the class name. */
     static QString ClassName() { return "CTrcServer"; }
 public: // class methods
     static CTrcServer* GetInstance();
@@ -192,11 +190,6 @@ signals:
     /*! Signal which is emitted if a trace setting has been changed.
         @param i_pTrcServer [in] Pointer to object emitting the signal. */
     void traceSettingsChanged( QObject* i_pTrcServer );
-public: // instance methods
-    /*! Returns the namespace of the class. May be overriden to return the namespace of the derived class. */
-    QString nameSpace() const { return NameSpace(); }
-    /*! Returns the class name. May be overriden to return the class name of the derived class. */
-    QString className() const { return ClassName(); }
 public: // instance methods
     CIdxTreeTrcAdminObjs* getTraceAdminObjIdxTree();
 public: // instance methods to add, remove and modify admin objects

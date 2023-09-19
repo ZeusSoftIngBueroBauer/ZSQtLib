@@ -62,9 +62,9 @@ class ZSDRAWDLL_API CWdgtFormatGraphObjsLabelVisibilities : public CWdgtFormatGr
     Q_OBJECT
 public: // class methods
     /*! Returns the namespace the class belongs to. */
-    static QString NameSpace() { return "ZS::Draw"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
+    static QString NameSpace() { return "ZS::Draw"; }
     /*! Returns the class name. */
-    static QString ClassName() { return "CWdgtFormatGraphObjsLabelVisibilities"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
+    static QString ClassName() { return "CWdgtFormatGraphObjsLabelVisibilities"; }
 public: // type definitions and constants
     enum EClmModelShapePoints
     {
@@ -78,15 +78,6 @@ public: // ctors and dtor
         CGraphObj*     i_pGraphObj,
         QWidget*       i_pWdgtParent = nullptr );
     virtual ~CWdgtFormatGraphObjsLabelVisibilities();
-public: // overridables
-    /*! This virtual method returns the name space of the object's class.
-        This method can be reimplemented in derived classes so when invoked for the
-        polymorphic base type the method returns the name space of the derived class. */
-    virtual QString nameSpace() const { return NameSpace(); }
-    /*! This virtual method returns the class name of the object's class.
-        This method can be reimplemented in derived classes so when invoked for the
-        polymorphic base type the method returns the name of the derived class. */
-    virtual QString className() const { return ClassName(); }
 public: // must overridables of base class CWdgtFormatGraphObjs
     virtual void applyChanges() override;
     virtual void resetChanges() override;

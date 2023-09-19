@@ -80,8 +80,10 @@ public: // instance methods
 public: // instance methods
     QString toString() const;
 protected: // instance members
-    EResultSeverity m_severity; /*!< Severity of the error. */
-    EResult         m_result;   /*!< Result code. */
+    /*!< Severity of the error. */
+    EResultSeverity m_severity;
+    /*!< Result code. */
+    EResult m_result;
 
 }; // struct SErrResult
 
@@ -95,7 +97,8 @@ protected: // instance members
     @endcode
 */
 //------------------------------------------------------------------------------
-#define ErrResultSuccess ZS::System::SErrResult(ZS::System::EResultSeveritySuccess, ZS::System::EResultSuccess)
+#define ErrResultSuccess \
+    ZS::System::SErrResult(ZS::System::EResultSeveritySuccess, ZS::System::EResultSuccess)
 
 //------------------------------------------------------------------------------
 /*! Macro to initialise an error result tuple indicating an undefined (not yet set) error.
@@ -107,7 +110,8 @@ protected: // instance members
     @endcode
 */
 //------------------------------------------------------------------------------
-#define ErrResultUndefined ZS::System::SErrResult(ZS::System::EResultSeveritySuccess, ZS::System::EResultUndefined)
+#define ErrResultUndefined \
+    ZS::System::SErrResult(ZS::System::EResultSeveritySuccess, ZS::System::EResultUndefined)
 
 
 //******************************************************************************
@@ -158,8 +162,10 @@ public: // instance methods
     /*! Returns the name of the object generating the error. */
     QString getObjectName() const { return m_strObjName; }
 public: // instance methods
-    QString getObjectPath() const; // returns path string build with name space, class name and object name
-    bool isObjectPathEmpty() const; // returns false if name space, class name and object name is not set
+    /*! Returns path string build with name space, class name and object name. */
+    QString getObjectPath() const;
+    /*! Returns false if name space, class name and object name is not set. */
+    bool isObjectPathEmpty() const;
 public: // instance methods
     void setMethodName( const QString& i_strMthName );
     /*! Returns the name of the method generating the error. */
@@ -178,13 +184,20 @@ public: // instance methods
 public: // instance methods
     QString toString() const;
 protected: // instance members
-    QString m_strNameSpace;     /*!< Namespace of the class producing the error. */
-    QString m_strClassName;     /*!< Name of the class producing the error. */
-    QString m_strObjName;       /*!< Name of the object (instance) producing the error. */
-    QString m_strMthName;       /*!< Name of the method producing the error. */
-    QString m_strFilePath;      /*!< Name of the file producing the error. */
-    int     m_iLineNr;          /*!< Line number within the file producing the error. */
-    QString m_strThreadName;    /*!< Name of the thread producing the error. */
+    /*!< Namespace of the class producing the error. */
+    QString m_strNameSpace;
+    /*!< Name of the class producing the error. */
+    QString m_strClassName;
+    /*!< Name of the object (instance) producing the error. */
+    QString m_strObjName;
+    /*!< Name of the method producing the error. */
+    QString m_strMthName;
+    /*!< Name of the file producing the error. */
+    QString m_strFilePath;
+    /*!< Line number within the file producing the error. */
+    int m_iLineNr;
+    /*!< Name of the thread producing the error. */
+    QString m_strThreadName;
 
 }; // struct SErrSource
 
@@ -337,10 +350,14 @@ public: // instance methods
 public: // instance methods
     QString toString( int i_iDetailLevel = 0 ) const;
 protected: // instance members
-    SErrResult m_errResult;             /*!< Error result code together with severity of error. */
-    SErrSource m_errSource;             /*!< Source of the error. */
-    QString    m_strAddErrInfoDscr;     /*!< Additional information about the error cause. */
-    bool       m_bAddedToErrLogModel;   /*!< Flag defining whether the error has been added to the error log. */
+    /*!< Error result code together with severity of error. */
+    SErrResult m_errResult;
+    /*!< Source of the error. */
+    SErrSource m_errSource;
+    /*!< Additional information about the error cause. */
+    QString m_strAddErrInfoDscr;
+    /*!< Flag defining whether the error has been added to the error log. */
+    bool m_bAddedToErrLogModel;
 
 }; // struct SErrResultInfo
 
@@ -348,7 +365,7 @@ protected: // instance members
 /*! Macro to initialise an error result info structure indicating no error.
 
     Using this macro requires that the class provides the methods
-    nameSpace, className and objectName.
+    NameSpace, ClassName and objectName.
 
     @param _strMth [in] Name of the method generating the error.
 
@@ -359,13 +376,16 @@ protected: // instance members
     @endcode
 */
 //------------------------------------------------------------------------------
-#define ErrResultInfoSuccess(_strMth) ZS::System::SErrResultInfo(nameSpace(), className(), objectName(), _strMth, ZS::System::EResultSuccess, ZS::System::EResultSeveritySuccess)
+#define ErrResultInfoSuccess(_strMth) \
+    ZS::System::SErrResultInfo( \
+        NameSpace(), ClassName(), objectName(), \
+        _strMth, ZS::System::EResultSuccess, ZS::System::EResultSeveritySuccess)
 
 //------------------------------------------------------------------------------
 /*! Macro to initialise an error result info structure indicating and undefined (not yet set) error.
 
     Using this macro requires that the class provides the methods
-    nameSpace, className and objectName.
+    NameSpace, ClassName and objectName.
 
     @param _strMth [in] Name of the method generating the error.
 
@@ -376,14 +396,17 @@ protected: // instance members
     @endcode
 */
 //------------------------------------------------------------------------------
-#define ErrResultInfoUndefined(_strMth) ZS::System::SErrResultInfo(nameSpace(), className(), objectName(), _strMth, ZS::System::EResultUndefined, ZS::System::EResultSeveritySuccess)
+#define ErrResultInfoUndefined(_strMth) \
+    ZS::System::SErrResultInfo( \
+        NameSpace(), ClassName(), objectName(), \
+        _strMth, ZS::System::EResultUndefined, ZS::System::EResultSeveritySuccess)
 
 //------------------------------------------------------------------------------
 /*! Macro to initialise an error result info structure indicating and error
     with severity Info.
 
     Using this macro requires that the class provides the methods
-    nameSpace, className and objectName.
+    NameSpace, ClassName and objectName.
 
     @param _strMth [in] Name of the method generating the error.
     @param _result [in] Error result code.
@@ -396,14 +419,17 @@ protected: // instance members
     @endcode
 */
 //------------------------------------------------------------------------------
-#define ErrResultInfoInfo(_strMth, _result, _strAddErrInfo) ZS::System::SErrResultInfo(nameSpace(), className(), objectName(), _strMth, _result, ZS::System::EResultSeverityInfo, _strAddErrInfo)
+#define ErrResultInfoInfo(_strMth, _result, _strAddErrInfo) \
+    ZS::System::SErrResultInfo( \
+        NameSpace(), ClassName(), objectName(), \
+        _strMth, _result, ZS::System::EResultSeverityInfo, _strAddErrInfo)
 
 //------------------------------------------------------------------------------
 /*! Macro to initialise an error result info structure indicating and error
     with severity Warning.
 
     Using this macro requires that the class provides the methods
-    nameSpace, className and objectName.
+    NameSpace, ClassName and objectName.
 
     @param _strMth [in] Name of the method generating the error.
     @param _result [in] Error result code.
@@ -416,14 +442,17 @@ protected: // instance members
     @endcode
 */
 //------------------------------------------------------------------------------
-#define ErrResultInfoWarning(_strMth, _result, _strAddErrInfo) ZS::System::SErrResultInfo(nameSpace(), className(), objectName(), _strMth, _result, ZS::System::EResultSeverityWarning, _strAddErrInfo)
+#define ErrResultInfoWarning(_strMth, _result, _strAddErrInfo) \
+    ZS::System::SErrResultInfo( \
+        NameSpace(), ClassName(), objectName(), \
+        _strMth, _result, ZS::System::EResultSeverityWarning, _strAddErrInfo)
 
 //------------------------------------------------------------------------------
 /*! Macro to initialise an error result info structure indicating and error
     with severity Error.
 
     Using this macro requires that the class provides the methods
-    nameSpace, className and objectName.
+    NameSpace, ClassName and objectName.
 
     @param _strMth [in] Name of the method generating the error.
     @param _result [in] Error result code.
@@ -436,14 +465,17 @@ protected: // instance members
     @endcode
 */
 //------------------------------------------------------------------------------
-#define ErrResultInfoError(_strMth, _result, _strAddErrInfo) ZS::System::SErrResultInfo(nameSpace(), className(), objectName(), _strMth, _result, ZS::System::EResultSeverityError, _strAddErrInfo)
+#define ErrResultInfoError(_strMth, _result, _strAddErrInfo) \
+    ZS::System::SErrResultInfo( \
+        NameSpace(), ClassName(), objectName(), \
+        _strMth, _result, ZS::System::EResultSeverityError, _strAddErrInfo)
 
 //------------------------------------------------------------------------------
 /*! Macro to initialise an error result info structure indicating and error
     with severity Critical.
 
     Using this macro requires that the class provides the methods
-    nameSpace, className and objectName.
+    NameSpace, ClassName and objectName.
 
     @param _strMth [in] Name of the method generating the error.
     @param _result [in] Error result code.
@@ -456,7 +488,10 @@ protected: // instance members
     @endcode
 */
 //------------------------------------------------------------------------------
-#define ErrResultInfoCritical(_strMth, _result, _strAddErrInfo) ZS::System::SErrResultInfo(nameSpace(), className(), objectName(), _strMth, _result, ZS::System::EResultSeverityCritical, _strAddErrInfo)
+#define ErrResultInfoCritical(_strMth, _result, _strAddErrInfo) \
+    ZS::System::SErrResultInfo( \
+        NameSpace(), ClassName(), objectName(), \
+        _strMth, _result, ZS::System::EResultSeverityCritical, _strAddErrInfo)
 
 } // namespace System
 

@@ -140,6 +140,70 @@ public: // struct members
     As CGraphObj is derived from CIdxTreeEntry each graphical object can be added
     to an index tree and can be shown and accessed through a tree view.
 
+
+    In a 1:1 "wysiwyg" scenario with a screen resolution of 4 px/mm
+
+    - a line with 2.0 mm length would have 8 pixels on the screen and, vice versa,
+    - a line with 8 pixels on the screen would measure 2.0 mm in length.
+
+    But that's only true for vertical or horizontal lines.
+
+    The following figure shows a line
+
+    - starting at [0.0/0.0] and ending at [2.0/0.0] mm in metric system and
+    - starting at [0/0] and ending at [7/0] px in pixel system.
+
+           0.0             1.0             2.0 mm
+            | 0   1   2   3 | 4   5   6   7 |  px
+          - +---+---+---+---+---+---+---+---+
+          0 | X | X | X | X | X | X | X | X |
+          - +---+---+---+---+---+---+---+---+
+
+    If the line would be rotated by 45 degrees keeping the length of the line
+    at 2.0 mm, the end points can not be exactly shown on the screen but have
+    to be rounded to a whole number.
+
+    The width and the height of the lines bounding rectangle would be
+    - sqrt(2.0 mm²) = 1.41421... mm = 5,65685... px = 6 pixels
+    and the resulting length of the line on the screen becomes longer than 2.0 mm.
+
+           0.0     0.5     1.0     1.5     2.0 mm
+            | 0   1   2   3 | 4   5   6   7 |  px
+      0.0 - +---+---+---+---+---+---+---+---+
+          0 | X |   |   |   |   |   |   |   |
+          - +---+---+---+---+---+---+---+---+
+          1 |   | X |   |   |   |   |   |   |
+      0.5 - +---+---+---+---+---+---+---+---+
+          2 |   |   | X |   |   |   |   |   |
+          - +---+---+---+---+---+---+---+---+
+          3 |   |   |   | X |   |   |   |   |
+      1.0 - +---+---+---+---+---+---+---+---+
+          4 |   |   |   |   | X |   |   |   |
+          - +---+---+---+---+---+---+---+---+
+          5 |   |   |   |   |   | X |   |   |
+      1.5 - +---+---+---+---+---+---+---+---+
+          6 |   |   |   |   |   |   | X |   |
+          - +---+---+---+---+---+---+---+---+
+          7 |   |   |   |   |   |   |   |   |
+      2.0 - +---+---+---+---+---+---+---+---+
+      mm  px
+
+    This means, that the coordinates of the graphical objects must be saved and kept
+    with floating point format. As each transformation 
+
+    Since every arithmetic operation also brings in some inaccuracy the original values
+    will be stored in floating point format and the transformations are applied to the
+    original values.
+
+    !Additional notes!
+
+    - When calculation Y coordinates the metric coordinate system is from bottom to top
+      whereas the pixel coordinate system is from top to bottom. As shown in the example
+      above to get the real Y coordinate the resulting Y coordinate from the unit conversion
+      routine must be calculated as follows:
+
+      Ypx = ImageHeight/px - P1y/px
+
     Several labels may be assigned to a graphical object. The labels may be shown
     within the drawing view. The labels may be anchored to different points of
     the graphical labels and may be shown within the drawing view. To which points
@@ -198,9 +262,9 @@ class ZSDRAWDLL_API CGraphObj : public QObject, public ZS::System::CIdxTreeEntry
     Q_OBJECT
 public: // class methods
     /*! Returns the namespace the class belongs to. */
-    static QString NameSpace() { return "ZS::Draw"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
+    static QString NameSpace() { return "ZS::Draw"; }
     /*! Returns the class name. */
-    static QString ClassName() { return "CGraphObj"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
+    static QString ClassName() { return "CGraphObj"; }
 protected: // ctor
     CGraphObj(
         CDrawingScene* i_pDrawingScene,

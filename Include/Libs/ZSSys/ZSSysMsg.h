@@ -178,9 +178,6 @@ protected: // ctors (pure virtual base class)
 public: // dtor
     virtual ~CMsg();
 public: // instance methods
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
-public: // instance methods
     MsgProtocol::TSystemMsgType getSystemMsgType() const { return m_systemMsgType; }
     bool isBaseMsgType() const { return m_bIsBaseMsgType; }
 public: // alias for QEvent::type()
@@ -248,9 +245,6 @@ protected: // ctors (pure virtual base class)
 public: // dtor
     virtual ~CMsgReq();
 public: // instance methods
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
-public: // instance methods
     void setMustBeConfirmed( bool i_bMustBeConfirmed );
     bool mustBeConfirmed() const { return m_bMustBeConfirmed; }
 public: // instance methods
@@ -301,9 +295,6 @@ protected: // ctors (pure virtual base class)
     CMsgCon( const MsgProtocol::SMsgHeader* i_pMsgHdr );
 public: // dtor
     virtual ~CMsgCon();
-public: // instance methods
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 public: // instance methods
     void setRequestId( qint64 i_iId );
     qint64 getRequestId() const { return m_iReqId; }
@@ -363,9 +354,6 @@ protected: // ctors (pure virtual base class)
 public: // dtor
     virtual ~CMsgInd();
 public: // instance methods
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
-public: // instance methods
     void setMustBeAcknowledged( bool i_bMustBeAcknowledged );
     bool mustBeAcknowledged() const { return m_bMustBeAcknowledged; }
 public: // instance methods
@@ -417,9 +405,6 @@ protected: // ctors (pure virtual base class)
 public: // dtor
     virtual ~CMsgAck();
 public: // instance methods
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
-public: // instance methods
     void setRequestId( qint64 i_iId );
     qint64 getRequestId() const { return m_iReqId; }
 public: // instance methods
@@ -470,9 +455,6 @@ public: // ctors and dtor
         const QString&    i_strExcType,
         qint64            i_iMsgId = -1 );
     virtual ~CMsgErr();
-public: // instance methods
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 public: // instance methods
     bool wasException() const { return m_bExc; }
     QString getExcTypeName() const { return m_strExcType; }
@@ -531,9 +513,6 @@ public: // ctors and dtor
         double           i_fSysTime_s = Time::getProcTimeInSec() );
     virtual ~CMsgReqAddLogItem();
 public: // instance methods
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
-public: // instance methods
     ETransmitDir getTransmitDir() const { return m_transmitDir; }
     bool isBold() const { return m_bBold; }
     QString getMsg() const { return m_strMsg; }
@@ -575,9 +554,6 @@ public: // ctors and dtor
         qint64   i_iMsgId = -1 );
     virtual ~CMsgReqStartTimer();
 public: // instance methods
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
-public: // instance methods
     int getTimerId() const { return m_iTimerId; }
     bool isSingleShot() const { return m_bSingleShot; }
     int getIntervalInMs() const { return m_iInterval_ms; }
@@ -609,9 +585,6 @@ public: // ctors and dtor
         const SErrResultInfo& i_errResultInfo );
     virtual ~CMsgConStartTimer();
 public: // instance methods
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
-public: // instance methods
     int getTimerId() const { return m_iTimerId; }
 public: // must overridables of base class CMsg
     virtual CMsg* clone( ECopyDepth i_copyDepth = ECopyDepth::FlatKeepOwnership );
@@ -638,9 +611,6 @@ public: // ctors and dtor
         qint64   i_iReqId = -1,
         qint64   i_iMsgId = -1 );
     virtual ~CMsgReqStopTimer();
-public: // instance methods
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 public: // instance methods
     int getTimerId() const { return m_iTimerId; }
 public: // must overridables of base class CMsg
@@ -669,9 +639,6 @@ public: // ctors and dtor
         const SErrResultInfo& i_errResultInfo );
     virtual ~CMsgConStopTimer();
 public: // instance methods
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
-public: // instance methods
     int getTimerId() const { return m_iTimerId; }
 public: // must overridables of base class CMsg
     virtual CMsg* clone( ECopyDepth i_copyDepth = ECopyDepth::FlatKeepOwnership );
@@ -697,9 +664,6 @@ public: // ctors and dtor
         qint64   i_iReqId = -1,
         qint64   i_iMsgId = -1 );
     virtual ~CMsgReqContinue();
-public: // instance methods
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 public: // must overridables of base class CMsg
     virtual CMsg* clone( ECopyDepth i_copyDepth = ECopyDepth::FlatKeepOwnership );
     virtual CMsgCon* createConfirmationMessage( ECopyDepth i_copyDepth = ECopyDepth::FlatKeepOwnership ); // not used, throws exception.
@@ -723,9 +687,6 @@ public: // ctors and dtor
         qint64   i_iReqId = -1,
         qint64   i_iMsgId = -1 );
     virtual ~CMsgReqAbort();
-public: // instance methods
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 public: // must overridables of base class CMsg
     virtual CMsg* clone( ECopyDepth i_copyDepth = ECopyDepth::FlatKeepOwnership );
     virtual CMsgCon* createConfirmationMessage( ECopyDepth i_copyDepth = ECopyDepth::FlatKeepOwnership ); // not used, throws exception.
@@ -749,9 +710,6 @@ public: // ctors and dtor
         qint64   i_iReqId = -1,
         qint64   i_iMsgId = -1 );
     virtual ~CMsgReqPoll();
-public: // instance methods
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 public: // must overridables of base class CMsg
     virtual CMsg* clone( ECopyDepth i_copyDepth = ECopyDepth::FlatKeepOwnership );
     virtual CMsgCon* createConfirmationMessage( ECopyDepth i_copyDepth = ECopyDepth::FlatKeepOwnership ); // not used, throws exception.
@@ -775,9 +733,6 @@ public: // ctors and dtor
         qint64                i_iMsgIdReq,
         const SErrResultInfo& i_errResultInfo );
     virtual ~CMsgConStartThread();
-public: // instance methods
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 public: // must overridables of base class CMsg
     virtual CMsg* clone( ECopyDepth i_copyDepth = ECopyDepth::FlatKeepOwnership );
 public: // overridables of base class CMsg

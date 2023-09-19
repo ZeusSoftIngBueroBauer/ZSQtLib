@@ -1120,7 +1120,7 @@ CLogger* CLogServer::getLogger( int i_idxInTree )
     if( i_idxInTree < 0 )
     {
         SErrResultInfo errResultInfo(
-            /* errSource     */ nameSpace(), className(), objectName(), "getLogger",
+            /* errSource     */ NameSpace(), ClassName(), objectName(), "getLogger",
             /* result        */ EResultArgOutOfRange,
             /* severity      */ EResultSeverityError,
             /* strAddErrInfo */ "Idx In Tree (=" + QString::number(i_idxInTree) + ") is out of range");
@@ -1167,7 +1167,7 @@ CLogger* CLogServer::getLogger(
     if( i_strName.isEmpty() )
     {
         SErrResultInfo errResultInfo(
-            /* errSource     */ nameSpace(), className(), objectName(), "getLogger",
+            /* errSource     */ NameSpace(), ClassName(), objectName(), "getLogger",
             /* result        */ EResultArgOutOfRange,
             /* severity      */ EResultSeverityError,
             /* strAddErrInfo */ "No Name defined");

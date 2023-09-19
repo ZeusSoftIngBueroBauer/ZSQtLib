@@ -49,13 +49,9 @@ CnctPt1 SwitchLine CnctPt2
 {
 public: // class methods
 public: // class methods
-    /*! Returns the namespace the class belongs to.
-        Please note that the static class functions name must be different
-        from the non static virtual member function "nameSpace" */
+    /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw::Electricity"; }
-    /*! Returns the class name.
-        Please note that the static class functions name must be different
-        from the non static virtual member function "nameSpace" */
+    /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjSwitch"; }
 public: // type definitions and constants
     static const QSize c_sizInitial;
@@ -74,9 +70,6 @@ public: // ctors and dtor
         EState               i_state = EStateOpened,
         const QString&       i_strObjName = "" );
     virtual ~CGraphObjSwitch();
-public: // overridables
-    virtual QString nameSpace() { return NameSpace(); }
-    virtual QString className() { return ClassName(); }
 public: // instance methods
     EState getState() const { return m_state; }
     QString getStateAsString() const { return State2Str(m_state); }

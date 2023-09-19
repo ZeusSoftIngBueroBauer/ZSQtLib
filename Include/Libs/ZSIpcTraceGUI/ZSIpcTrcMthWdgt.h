@@ -97,9 +97,6 @@ public: // ctors and dtor
         int            i_iItemsCountMax = 100000,
         QWidget*       i_pWdgtParent = nullptr );
     virtual ~CWdgtTrcMthList();
-public: // instance methods
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 signals:
     void progressBarConnectDblClicked();
     void textItemAdded( const QString& i_strText );

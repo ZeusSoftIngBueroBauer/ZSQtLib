@@ -220,9 +220,6 @@ public: // ctors and dtor
         QWidget*           i_pWdgtParent = nullptr,
         Qt::WindowFlags    i_wflags = Qt::WindowFlags());
     virtual ~CMainWindow();
-public: // overridables
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 protected: // overridables of base class QWidget
     virtual void closeEvent( QCloseEvent* i_pEv );
 public: // instance methods

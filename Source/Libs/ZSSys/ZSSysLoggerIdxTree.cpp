@@ -114,7 +114,7 @@ CLogger* CIdxTreeLoggers::getLogger(
     if( i_strName.isEmpty() )
     {
         SErrResultInfo errResultInfo(
-            /* errSource     */ nameSpace(), className(), objectName(), "getLogger",
+            /* errSource     */ NameSpace(), ClassName(), objectName(), "getLogger",
             /* result        */ EResultArgOutOfRange,
             /* severity      */ EResultSeverityError,
             /* strAddErrInfo */ "No name defined");
@@ -588,7 +588,7 @@ SErrResultInfo CIdxTreeLoggers::save( const QString& i_strAbsFilePath ) const
 
     QString strMth = "save";
 
-    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
+    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
 
     QFile file;
 
@@ -652,7 +652,7 @@ SErrResultInfo CIdxTreeLoggers::recall( const QString& i_strAbsFilePath )
 
     QString strAddErrInfo;
 
-    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
+    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
 
     QFile file;
 

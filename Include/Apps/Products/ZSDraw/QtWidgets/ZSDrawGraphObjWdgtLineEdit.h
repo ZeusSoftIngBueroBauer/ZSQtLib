@@ -49,13 +49,9 @@ namespace QtWidgets
 class CGraphObjWdgtLineEdit : public CGraphObjWdgt
 //******************************************************************************
 {
-    /*! Returns the namespace the class belongs to.
-        Please note that the static class functions name must be different
-        from the non static virtual member function "nameSpace" */
+    /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw::QtWidgets"; }
-    /*! Returns the class name.
-        Please note that the static class functions name must be different
-        from the non static virtual member function "nameSpace" */
+    /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjWdgtLineEdit"; }
 public: // ctors and dtor
     CGraphObjWdgtLineEdit(

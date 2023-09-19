@@ -77,9 +77,6 @@ signals:
     void aboutToClose( QObject* i_pSocketWrapper );
     void bytesWritten( QObject* i_pSocketWrapper, qint64 i_iBytes );
     void readyRead( QObject* i_pSocketWrapper );
-public: // overridables
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 public: // instance methods
     SSocketDscr getSocketDscr() const { return m_socketDscr; }
     ESrvCltType srvCltType() const { return m_socketDscr.m_srvCltType; }

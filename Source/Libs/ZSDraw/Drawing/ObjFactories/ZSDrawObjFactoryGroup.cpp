@@ -79,22 +79,24 @@ public: // interface methods
 
 //------------------------------------------------------------------------------
 CGraphObj* CObjFactoryGroup::createGraphObj(
-    CDrawingScene*       i_pDrawingScene,
-    const QPointF&       /*i_ptItemPos*/,
+    CDrawingScene* i_pDrawingScene,
+    const CPhysValPoint& i_physValPoint,
     const CDrawSettings& i_drawSettings )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Point {" + i_physValPoint.toString() + "}";
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createGraphObj",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsDetailed)) {
+        strMthInArgs = "DrawSettings {" + i_drawSettings.toString(EGraphObjTypeLine) + "}";
+        mthTracer.trace(strMthInArgs);
+    }
 
     CGraphObjGroup* pGraphObj = new CGraphObjGroup(i_pDrawingScene,i_drawSettings);
 
@@ -117,8 +119,8 @@ SErrResultInfo CObjFactoryGroup::saveGraphObj(
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strAddTrcInfo  = "GraphObj:" + i_pGraphObj->nameSpace();
-        strAddTrcInfo += "::" + i_pGraphObj->className();
+        strAddTrcInfo  = "GraphObj:" + i_pGraphObj->NameSpace();
+        strAddTrcInfo += "::" + i_pGraphObj->ClassName();
         strAddTrcInfo += "::" + i_pGraphObj->name();
     }
 
@@ -199,8 +201,8 @@ SErrResultInfo CObjFactoryGroup::saveGraphObj(
         {
             pGraphObjChild = dynamic_cast<CGraphObj*>(pGraphicsItemChild);
 
-            strNameSpaceChild = pGraphObjChild->nameSpace();
-            strClassNameChild = pGraphObjChild->className();
+            strNameSpaceChild = pGraphObjChild->NameSpace();
+            strClassNameChild = pGraphObjChild->ClassName();
             strObjTypeChild   = pGraphObjChild->typeAsString();
             strObjNameChild   = pGraphObjChild->name();
             strObjIdChild     = pGraphObjChild->keyInTree();
@@ -241,8 +243,8 @@ SErrResultInfo CObjFactoryGroup::saveGraphObj(
             {
                 pGraphObjChild = dynamic_cast<CGraphObj*>(pGraphicsItemChild);
 
-                strNameSpaceChild = pGraphObjChild->nameSpace();
-                strClassNameChild = pGraphObjChild->className();
+                strNameSpaceChild = pGraphObjChild->NameSpace();
+                strClassNameChild = pGraphObjChild->ClassName();
                 strObjTypeChild   = pGraphObjChild->typeAsString();
                 strObjNameChild   = pGraphObjChild->name();
                 strObjIdChild     = pGraphObjChild->keyInTree();
@@ -304,6 +306,7 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
 
     CGraphObjGroup* pGraphObjGroup = nullptr;
 
+#if 0
     QXmlStreamAttributes            xmlStreamAttrs;
     QString                         strElemName;
     QString                         strElemText;
@@ -587,7 +590,7 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
             pGraphObjLabel = nullptr;
         }
     }
-
+#endif
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs(i_xmlStreamReader.errorString());
         QString strMthRet = QString(pGraphObjGroup == nullptr ? "null" : pGraphObjGroup->path());

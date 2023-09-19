@@ -101,15 +101,11 @@ public: // type definitions and constants
     static const QString c_strDefaultTheme;
     Q_INVOKABLE static QStringList themes();
 public: // class methods
-    /*! Returns the namespace of the class.
-        @note The static class functions name must be different from the instance method "nameSpace". */
+    /*! Returns the namespace of the class. */
     static QString NameSpace() { return "ZS::QuickControls"; }
-    /*! Returns the class name.
-        @note The static class functions name must be different from the instance method "className". */
+    /*! Returns the class name. */
     static QString ClassName() { return "CWindowsStyle"; }
-    /*! Returns the name of the style.
-        @note The name of the style must correspond to the name of the sub directory where
-              qml files of the controls are located. */
+    /*! Returns the name of the style. */
     static QString StyleName() { return "ZSStyleWindows"; }
     /*! Returns the name of the fallback style.
         @note The controls implemented in the ZSWindowsStyle are based on the controls from

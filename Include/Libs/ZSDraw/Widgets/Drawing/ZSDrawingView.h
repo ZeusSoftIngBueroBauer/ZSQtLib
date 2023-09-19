@@ -35,8 +35,8 @@ may result in using the software modules.
 #include <QtWidgets/qgraphicsview.h>
 #endif
 
+#include "ZSDraw/Common/ZSDrawingSize.h"
 #include "ZSDraw/Drawing/ZSDrawGridSettings.h"
-#include "ZSDraw/Drawing/ZSDrawingSize.h"
 
 namespace ZS
 {
@@ -55,13 +55,9 @@ class ZSDRAWDLL_API CDrawingView : public QGraphicsView
 {
     Q_OBJECT
 public: // class methods
-    /*! Returns the namespace the class belongs to.
-        Please note that the static class functions name must be different from
-        the non static virtual member function "nameSpace"*/
+    /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw"; }
-    /*! Returns the class name.
-        Please note that the static class functions name must be different from
-        the non static virtual member function "className"*/
+    /*! Returns the class name. */
     static QString ClassName() { return "CDrawingView"; }
 public: // ctors and dtor
     CDrawingView( CDrawingScene* i_pDrawingScene, QWidget* i_pWdgtParent = nullptr );
@@ -71,15 +67,6 @@ signals:
     void gridSettingsChanged( const ZS::Draw::CDrawGridSettings& i_settings );
     void mousePosChanged( const QPointF& i_ptMousePos );
     //void viewportMarginsChanged( const QMargins& i_margins );
-public: // overridables
-    /*! This virtual method returns the name space of the object's class.
-        This method can be reimplemented in derived classes so when invoked for the
-        polymorphic base type the method returns the name space of the derived class. */
-    virtual QString nameSpace() const { return NameSpace(); }
-    /*! This virtual method returns the class name of the object's class.
-        This method can be reimplemented in derived classes so when invoked for the
-        polymorphic base type the method returns the name of the derived class. */
-    virtual QString className() const { return ClassName(); }
 public: // instance methods
     CDrawingScene* drawingScene() { return m_pDrawingScene; }
 public: // instance methods (drawing area)

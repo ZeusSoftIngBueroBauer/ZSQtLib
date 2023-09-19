@@ -24,17 +24,6 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include <QtGui/QBitmap>
-#include <QtGui/QPainter>
-
-#if QT_VERSION < 0x050000
-#include <QtGui/QGraphicsSceneEvent>
-#include <QtGui/QStyleOption>
-#else
-#include <QtWidgets/QGraphicsSceneEvent>
-#include <QtWidgets/QStyleOption>
-#endif
-
 #include "QtWidgets/ZSDrawGraphObjWdgt.h"
 
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjSelectionPoint.h"
@@ -46,10 +35,22 @@ may result in using the software modules.
 #include "ZSSys/ZSSysIdxTree.h"
 #include "ZSSys/ZSSysMath.h"
 
+#include <QtGui/QBitmap>
+#include <QtGui/QPainter>
+
+#if QT_VERSION < 0x050000
+#include <QtGui/QGraphicsSceneEvent>
+#include <QtGui/QStyleOption>
+#else
+#include <QtWidgets/QGraphicsSceneEvent>
+#include <QtWidgets/QStyleOption>
+#endif
+
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 
 using namespace ZS::System;
+using namespace ZS::PhysVal;
 using namespace ZS::Draw;
 using namespace ZS::Draw::QtWidgets;
 
@@ -186,23 +187,24 @@ public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObjWdgt::setWidth( double i_fWidth )
+void CGraphObjWdgt::setWidth( const CPhysVal& i_physValWidth )
 //------------------------------------------------------------------------------
 {
-    setSize( i_fWidth, getHeight() );
+    setSize( i_physValWidth, getHeight() );
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjWdgt::setHeight( double i_fHeight )
+void CGraphObjWdgt::setHeight( const CPhysVal& i_physValHeight )
 //------------------------------------------------------------------------------
 {
-    setSize( getWidth(), i_fHeight );
+    setSize( getWidth(), i_physValHeight );
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjWdgt::setSize( double i_fWidth, double i_fHeight )
+void CGraphObjWdgt::setSize( const CPhysVal& i_physValWidth, const CPhysVal& i_physValHeight )
 //------------------------------------------------------------------------------
 {
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
     double fWidth  = i_fWidth;
     double fHeight = i_fHeight;
 
@@ -238,7 +240,6 @@ void CGraphObjWdgt::setSize( double i_fWidth, double i_fHeight )
         }
     }
 
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
     if( fWidth != m_rctCurr.width() || fHeight != m_rctCurr.height() )
     {
         m_rctCurr.setWidth(fWidth);
@@ -255,10 +256,10 @@ void CGraphObjWdgt::setSize( double i_fWidth, double i_fHeight )
 } // setSize
 
 //------------------------------------------------------------------------------
-void CGraphObjWdgt::setSize( const QSizeF& i_size )
+void CGraphObjWdgt::setSize( const CPhysValSize& i_physValSize )
 //------------------------------------------------------------------------------
 {
-    setSize( i_size.width(), i_size.height() );
+    setSize( i_physValSize.width(), i_physValSize.height() );
 }
 
 /*==============================================================================

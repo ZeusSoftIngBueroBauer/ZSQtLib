@@ -80,14 +80,14 @@ public: // interface methods
 
 //------------------------------------------------------------------------------
 CGraphObj* CObjFactoryLine::createGraphObj(
-    CDrawingScene*       i_pDrawingScene,
-    const QPointF&       i_ptItemPos,
+    CDrawingScene* i_pDrawingScene,
+    const CPhysValPoint& i_physValPoint,
     const CDrawSettings& i_drawSettings )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "ItemPos {" + point2Str(i_ptItemPos) + "}";
+        strMthInArgs = "Point {" + i_physValPoint.toString() + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -100,7 +100,7 @@ CGraphObj* CObjFactoryLine::createGraphObj(
     }
 
     CGraphObjLine* pGraphObj = new CGraphObjLine(
-        i_pDrawingScene, i_drawSettings, "", i_ptItemPos, i_ptItemPos);
+        i_pDrawingScene, i_drawSettings, "", i_physValPoint, i_physValPoint);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(pGraphObj->path());
@@ -141,7 +141,7 @@ SErrResultInfo CObjFactoryLine::saveGraphObj(
     CDrawSettings drawSettings = pGraphObj->getDrawSettings();
     i_xmlStreamWriter.writeStartElement("DrawSettings");
     drawSettings.save(i_xmlStreamWriter);
-    i_xmlStreamWriter.writeEndElement();
+    i_xmlStreamWriter.writeEndElement(); // DrawSettings
 
     // Geometry
     //-------------
@@ -154,8 +154,8 @@ SErrResultInfo CObjFactoryLine::saveGraphObj(
     i_xmlStreamWriter.writeStartElement("ShapePoints");
     i_xmlStreamWriter.writeTextElement( "P1", point2Str(pt1) );
     i_xmlStreamWriter.writeTextElement( "P2", point2Str(pt2) );
-    i_xmlStreamWriter.writeEndElement();
-    i_xmlStreamWriter.writeEndElement();
+    i_xmlStreamWriter.writeEndElement(); // ShapePoints
+    i_xmlStreamWriter.writeEndElement(); // Geometry
 
     // It makes no sense to rotate or scale a line.
 
@@ -197,8 +197,8 @@ CGraphObj* CObjFactoryLine::loadGraphObj(
 
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = ", ObjName: " + i_strObjName +
-            "ParentGroup: " + QString(i_pGraphObjGroup == nullptr ? "null" : i_pGraphObjGroup->path());
+        strMthInArgs = "Group: " + QString(i_pGraphObjGroup == nullptr ? "null" : i_pGraphObjGroup->path()) +
+            ", ObjName: " + i_strObjName;
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -209,8 +209,8 @@ CGraphObj* CObjFactoryLine::loadGraphObj(
     CGraphObjLine* pGraphObj = nullptr;
 
     CDrawSettings drawSettings(EGraphObjTypeLine);
-    QPointF pt1;
-    QPointF pt2;
+    CPhysValPoint physValPoint1;
+    CPhysValPoint physValPoint2;
     bool bPt1Valid = false;
     bool bPt2Valid = false;
     double fZValue = 0.0;
@@ -283,17 +283,24 @@ CGraphObj* CObjFactoryLine::loadGraphObj(
                      || (strElemName == CDrawingScene::c_strXmlElemNameShapePointP2)) {
                         QString strElemText = i_xmlStreamReader.readElementText();
                         bool bConverted = false;
-                        QPointF ptTmp = str2PointF(strElemText, &bConverted);
+                        CPhysValPoint physValPointTmp(i_pDrawingScene->drawingSize().unit());
+                        try {
+                            physValPointTmp = strElemText;
+                            bConverted = true;
+                        }
+                        catch (...) {
+                            bConverted = false;
+                        }
                         if (!bConverted) {
                             i_xmlStreamReader.raiseError(
                                 "Element \"" + strElemName + "\" (" + strElemText + ") cannot be converted to Point");
                         }
                         else if (strElemName == CDrawingScene::c_strXmlElemNameShapePointP1) {
-                            pt1 = ptTmp;
+                            physValPoint1 = physValPointTmp;
                             bPt1Valid = true;
                         }
                         else if (strElemName == CDrawingScene::c_strXmlElemNameShapePointP2) {
-                            pt2 = ptTmp;
+                            physValPoint2 = physValPointTmp;
                             bPt2Valid = true;
                         }
                     }
@@ -314,7 +321,7 @@ CGraphObj* CObjFactoryLine::loadGraphObj(
     }
     else {
         pGraphObj = new CGraphObjLine(
-            i_pDrawingScene, drawSettings, i_strObjName, pt1, pt2);
+            i_pDrawingScene, drawSettings, i_strObjName, physValPoint1, physValPoint2);
         //QLineF lin(pt1, pt2);
         //lin.translate(-pt1.x(), -pt1.y());
         //pGraphObj->setLine(lin);

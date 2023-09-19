@@ -48,13 +48,9 @@ class CGraphObjElectricity : public CGraphObjGroup
 //******************************************************************************
 {
 public: // class methods
-    /*! Returns the namespace the class belongs to.
-        Please note that the static class functions name must be different
-        from the non static virtual member function "nameSpace" */
+    /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw::Electricity"; }
-    /*! Returns the class name.
-        Please note that the static class functions name must be different
-        from the non static virtual member function "nameSpace" */
+    /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjElectricity"; }
 public: // class members
     /*! Group name of the factories to create the standard shapes (Line, Point, Rect, etc).
@@ -70,9 +66,6 @@ protected: // ctor
         const CDrawSettings& i_drawSettings );
 public: // dtor
     virtual ~CGraphObjElectricity();
-public: // overridables
-    virtual QString nameSpace() { return NameSpace(); }
-    virtual QString className() { return ClassName(); }
 public: // overridables of base class QGraphicsItem
     virtual int type() const { return EGraphObjTypeUserDefined; }
 public: // overridables of base class CGraphObj

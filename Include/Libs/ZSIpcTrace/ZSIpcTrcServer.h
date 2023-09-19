@@ -93,9 +93,6 @@ protected: // ctors and dtor
         ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevelIpcServerMutex = ZS::System::EMethodTraceDetailLevel::None,
         ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevelIpcServerGateway = ZS::System::EMethodTraceDetailLevel::None );
     virtual ~CIpcTrcServer();
-public: // overridables
-    QString nameSpace() const { return CIpcTrcServer::NameSpace(); }
-    QString className() const { return CIpcTrcServer::ClassName(); }
 public: // instance methods
     Ipc::CServer* getIpcServer() { return m_pIpcServer; }
 public: // overridables of base class CTrcServer

@@ -42,9 +42,9 @@ class ZSDRAWDLL_API CObjFactoriesModel : public ZS::System::GUI::CModelIdxTree
 {
 public: // class methods
     /*! Returns the namespace the class belongs to. */
-    static QString NameSpace() { return "ZS::Draw"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
+    static QString NameSpace() { return "ZS::Draw"; }
     /*! Returns the class name. */
-    static QString ClassName() { return "CObjFactoriesModel"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
+    static QString ClassName() { return "CObjFactoriesModel"; }
 public: // type definitions and constants
     typedef enum
     {
@@ -56,15 +56,6 @@ public: // type definitions and constants
 public: // ctors and dtor
     CObjFactoriesModel( ZS::System::CIdxTree* i_pIdxTree, QObject* i_pObjParent = nullptr );
     virtual ~CObjFactoriesModel();
-public: // overridables
-    /*! This virtual method returns the name space of the object's class.
-        This method can be reimplemented in derived classes so when invoked for the
-        polymorphic base type the method returns the name space of the derived class. */
-    virtual QString nameSpace() const { return NameSpace(); }
-    /*! This virtual method returns the class name of the object's class.
-        This method can be reimplemented in derived classes so when invoked for the
-        polymorphic base type the method returns the name of the derived class. */
-    virtual QString className() const { return ClassName(); }
 public: // overridables of base class QAbstractItemModel, overriding implementation in class CModelIdxTree
     virtual int columnCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
     virtual QVariant data( const QModelIndex& i_modelIdx, int i_iRole = Qt::DisplayRole ) const;

@@ -1438,7 +1438,7 @@ SErrResultInfo CIdxTree::canAdd( CIdxTreeEntry* i_pTreeEntry, const QString& i_s
 
     QString strMth = "add";
 
-    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
+    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
 
     CMutexLocker mtxLocker(m_pMtx);
 
@@ -1515,7 +1515,7 @@ SErrResultInfo CIdxTree::canAdd( CIdxTreeEntry* i_pTreeEntry, CIdxTreeEntry* i_p
 
     QString strMth = "add";
 
-    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
+    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
 
     CMutexLocker mtxLocker(m_pMtx);
 
@@ -1872,7 +1872,7 @@ SErrResultInfo CIdxTree::canInsert(
 
     QString strMth = "insert";
 
-    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
+    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
 
     CMutexLocker mtxLocker(m_pMtx);
 
@@ -1974,7 +1974,7 @@ SErrResultInfo CIdxTree::canInsert(
 
     QString strMth = "insert";
 
-    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
+    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
 
     if( i_pTreeEntry == nullptr )
     {
@@ -2411,7 +2411,7 @@ SErrResultInfo CIdxTree::canRemove( CIdxTreeEntry* i_pTreeEntry ) const
 
     QString strMth = "remove";
 
-    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
+    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
 
     CMutexLocker mtxLocker(m_pMtx);
 
@@ -2478,7 +2478,7 @@ SErrResultInfo CIdxTree::canRemove( const QString& i_strKeyInTree ) const
 
     QString strMth = "remove";
 
-    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
+    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
 
     CMutexLocker mtxLocker(m_pMtx);
 
@@ -2786,7 +2786,7 @@ SErrResultInfo CIdxTree::canMove(
 
     QString strMth = "move";
 
-    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
+    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
 
     CIdxTreeEntry* pTreeEntry = findEntry(i_strSourcePath);
 
@@ -2900,7 +2900,7 @@ SErrResultInfo CIdxTree::canMove(
 
     QString strMth = "move";
 
-    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
+    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
 
     if( i_pTreeEntry == nullptr )
     {
@@ -3008,7 +3008,7 @@ SErrResultInfo CIdxTree::canMove(
 
     QString strMth = "move";
 
-    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
+    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
 
     if( i_pTreeEntry == nullptr )
     {
@@ -3366,7 +3366,7 @@ SErrResultInfo CIdxTree::canCopy(
 
     QString strMth = "copy";
 
-    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
+    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
 
     CIdxTreeEntry* pTreeEntry = findEntry(i_strSourcePath);
 
@@ -3500,7 +3500,7 @@ SErrResultInfo CIdxTree::canCopy(
 
     QString strMth = "copy";
 
-    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
+    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
 
     if( i_pTreeEntry == nullptr )
     {
@@ -3629,7 +3629,7 @@ SErrResultInfo CIdxTree::canCopy(
 
     QString strMth = "copy";
 
-    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
+    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
 
     if( i_pTreeEntry == nullptr )
     {
@@ -4024,7 +4024,7 @@ SErrResultInfo CIdxTree::canRename( const QString& i_strSourcePath, const QStrin
 
     QString strMth = "rename";
 
-    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
+    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
 
     CIdxTreeEntry* pTreeEntry = findEntry(i_strSourcePath);
 
@@ -4098,7 +4098,7 @@ SErrResultInfo CIdxTree::canRename( CIdxTreeEntry* i_pTreeEntry, const QString& 
 
     QString strMth = "rename";
 
-    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
+    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
 
     CIdxTreeEntry* pParentBranch = i_pTreeEntry->parentBranch();
 
@@ -4289,7 +4289,7 @@ SErrResultInfo CIdxTree::canAddShortcut( const QString& i_strUniqueName ) const
 
     QString strMth = "addShortcut";
 
-    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
+    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
 
     CMutexLocker mtxLocker(m_pMtx);
 
@@ -4360,7 +4360,7 @@ void CIdxTree::addShortcut( CIdxTreeEntry* i_pTreeEntry, const QString& i_strUni
 
     QString strMth = "addShortcut";
 
-    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
+    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
 
     if( i_strUniqueName.isEmpty() )
     {
@@ -4436,7 +4436,7 @@ SErrResultInfo CIdxTree::removeShortcut( const QString& i_strUniqueName )
 
     QString strMth = "removeShortcut";
 
-    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
+    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
 
     if( i_strUniqueName.isEmpty() )
     {

@@ -643,7 +643,7 @@ public: // instance methods
 SErrResultInfo CWdgtLog::readLogFile( const QString& i_strAbsFilePath )
 //------------------------------------------------------------------------------
 {
-    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), "readLogFile");
+    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), "readLogFile");
 
     QFile fileTrcMthFile;
 
@@ -786,7 +786,7 @@ SErrResultInfo CWdgtLog::readLogFile( const QString& i_strAbsFilePath )
 SErrResultInfo CWdgtLog::writeLogFile( const QString& i_strAbsFilePath )
 //------------------------------------------------------------------------------
 {
-    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), "writeLogFile");
+    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), "writeLogFile");
 
     QFile fileTrcMthFile;
 

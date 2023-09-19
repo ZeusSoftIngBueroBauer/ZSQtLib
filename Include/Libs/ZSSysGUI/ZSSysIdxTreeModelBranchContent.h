@@ -99,9 +99,6 @@ signals:
     /*! Signal which will be emitted if the sort order has been changed.
         @param i_sortOrder New applied sort order as enum value. */
     void sortOrderChanged(EIdxTreeSortOrder i_sortOrder);
-public: // overridables
-    virtual QString nameSpace() const { return CModelIdxTreeBranchContent::NameSpace(); }
-    virtual QString className() const { return CModelIdxTreeBranchContent::ClassName(); }
 public: // instance methods
     Q_PROPERTY(QObject* idxTree READ idxTree WRITE setIdxTree NOTIFY idxTreeChanged)
     virtual void setIdxTree( QObject* i_pIdxTree );

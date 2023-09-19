@@ -541,7 +541,7 @@ void CTest::doTestStepSetDrawingSize( ZS::Test::CTestStep* i_pTestStep )
     if (drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels) {
         int cxWidth = i_pTestStep->getConfigValue(CDrawingScene::c_strXmlAttrWidth).toInt();
         int cyHeight = i_pTestStep->getConfigValue(CDrawingScene::c_strXmlAttrHeight).toInt();
-        drawingSize.setImageSize(CPhysVal(cxWidth, Units.Length.pxX), CPhysVal(cyHeight, Units.Length.pxY));
+        drawingSize.setImageSize(CPhysVal(cxWidth, Units.Length.px), CPhysVal(cyHeight, Units.Length.px));
     }
     else {
         CUnit unit = i_pTestStep->getConfigValue(CDrawingScene::c_strXmlAttrUnit).toString();

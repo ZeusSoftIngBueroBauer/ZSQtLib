@@ -730,8 +730,8 @@ QVariant CGraphicsItemsModel::data( const QModelIndex& i_modelIdx, int i_iRole )
                     if( pGraphObj != nullptr )
                     {
                         pObjFactory = CObjFactory::FindObjFactory(
-                            /* strNameSpace */ pGraphObj->nameSpace(),
-                            /* strClassName */ pGraphObj->className() );
+                            /* strNameSpace */ pGraphObj->NameSpace(),
+                            /* strClassName */ pGraphObj->ClassName() );
                     }
                     if( pObjFactory != nullptr )
                     {

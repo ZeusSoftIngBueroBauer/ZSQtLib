@@ -162,7 +162,7 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CDrawingScene::CDrawingScene( QObject* i_pObjParent ) :
+CDrawingScene::CDrawingScene(const QString& i_strName, QObject* i_pObjParent) :
 //------------------------------------------------------------------------------
     QGraphicsScene(i_pObjParent),
     m_drawingSize("DrawingScene"),
@@ -193,9 +193,9 @@ CDrawingScene::CDrawingScene( QObject* i_pObjParent ) :
     m_pTrcAdminObjMouseMoveEvent(nullptr),
     m_pTrcAdminObjPaintEvent(nullptr)
 {
-    setObjectName("theInst");
+    setObjectName(i_strName);
 
-    //if( m_strGraphObjNameSeparator.isEmpty() )
+    //if (m_strGraphObjNameSeparator.isEmpty())
     //{
     //    m_strGraphObjNameSeparator = "/";
     //}
@@ -394,41 +394,89 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Converts the given X coordinate in pixels into world coordinate in metric unit.
+/*! @brief Converts the given X coordinate in pixels into a physical value containing
+           the coordinate in the unit and the resolution of the drawing scene.
 
-    As a precondition the drawing must have been setup to use metric coordinate system.
-    If not the returned value is the same as the passed coordinate just converted into
-    a physical value in unit pxX.
+    If the drawing is not setup to use metric coordinate system, the method just
+    adds the unit pixels and the resolution to the returned physical value.
 
-    @return Converted value.
-*/
-CPhysVal CDrawingScene::toMetricXCoor(double i_fXCoor_px) const
-//------------------------------------------------------------------------------
-{
-    return m_drawingSize.toMetricXCoor(i_fXCoor_px);
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Converts the given Y coordinate in pixels into world coordinate in metric unit.
-
-    As a precondition the drawing must have been setup to use metric coordinate system.
-    If not the returned value is the same as the passed coordinate just converted into
-    a physical value in unit pxY.
+    If the drawing is setup to use metric coordinate system, the given pixel
+    coordinate will be converted to a physical value with the metric unit
+    of the drawing scene adding the resolution to the returned physical value.
 
     @return Converted value.
 */
-CPhysVal CDrawingScene::toMetricYCoor(double i_fYCoor_px) const
+CPhysVal CDrawingScene::toPhysValXCoor(double i_fXCoor_px) const
 //------------------------------------------------------------------------------
 {
-    return m_drawingSize.toMetricYCoor(i_fYCoor_px);
+    return m_drawingSize.toPhysValXCoor(i_fXCoor_px);
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Converts the given X coordinate in metric unit into the pixel coordinate.
+/*! @brief Converts the given Y coordinate in pixels into a physical value containing
+           the coordinate in the unit and the resolution of the drawing scene.
 
-    As a precondition the drawing must have been setup to use metric coordinate system.
-    If not the conversion uses the screen resolution in pixels/mm to return a value in
-    pixel coordinates.
+    If the drawing is not setup to use metric coordinate system, the method just
+    adds the unit pixels and the resolution to the returned physical value.
+
+    If the drawing is setup to use metric coordinate system, the given pixel
+    coordinate will be converted to a physical value with the metric unit
+    of the drawing scene adding the resolution to the returned physical value.
+
+    @return Converted value.
+*/
+CPhysVal CDrawingScene::toPhysValYCoor(double i_fYCoor_px) const
+//------------------------------------------------------------------------------
+{
+    return m_drawingSize.toPhysValYCoor(i_fYCoor_px);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Converts the given point coordinate in pixels into a physical point value
+           containing the coordinates in the unit and the resolution of the drawing scene.
+
+    If the drawing is not setup to use metric coordinate system, the method just
+    adds the unit pixels and the resolution to the returned physical value.
+
+    If the drawing is setup to use metric coordinate system, the given pixel
+    coordinate will be converted to a physical value with the metric unit
+    of the drawing scene adding the resolution to the returned physical value.
+
+    @return Converted value.
+*/
+CPhysValPoint CDrawingScene::toPhysValPoint(const QPointF& i_pt) const
+//------------------------------------------------------------------------------
+{
+    QPointF pt(
+        Units.Length.px.convertValue(i_pt.x(), m_drawingSize.unit()),
+        Units.Length.px.convertValue(i_pt.y(), m_drawingSize.unit()));
+    return CPhysValPoint(pt, m_drawingSize.unit());
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Converts the given size coordinate in pixels into a physical size value
+           containing the coordinates in the unit and the resolution of the drawing scene.
+
+    If the drawing is not setup to use metric coordinate system, the method just
+    adds the unit pixels and the resolution to the returned physical value.
+
+    If the drawing is setup to use metric coordinate system, the given pixel
+    coordinate will be converted to a physical value with the metric unit
+    of the drawing scene adding the resolution to the returned physical value.
+
+    @return Converted value.
+*/
+CPhysValSize CDrawingScene::toPhysValSize(const QSizeF& i_size) const
+//------------------------------------------------------------------------------
+{
+    QSizeF size(
+        Units.Length.px.convertValue(i_size.width(), m_drawingSize.unit()),
+        Units.Length.px.convertValue(i_size.height(), m_drawingSize.unit()));
+    return CPhysValSize(size, m_drawingSize.unit());
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Converts the given X coordinate into the pixel coordinate.
 
     @return Converted value.
 */
@@ -439,11 +487,7 @@ double CDrawingScene::toPixelXCoor(const CPhysVal& i_physValXCoor) const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Converts the given Y coordinate in metric unit into the pixel coordinate.
-
-    As a precondition the drawing must have been setup to use metric coordinate system.
-    If not the conversion uses the screen resolution in pixels/mm to return a value in
-    pixel coordinates.
+/*! @brief Converts the given Y coordinate into the pixel coordinate.
 
     @return Converted value.
 */
@@ -2475,7 +2519,7 @@ int CDrawingScene::groupGraphObjsSelected()
 
             m_pGraphObjCreating = pObjFactoryGroup->createGraphObj(
                 /* pDrawingScene */ this,
-                /* ptItemPos     */ QPointF(0.0, 0.0),
+                /* ptItemPos     */ CPhysValPoint(QPointF(0.0, 0.0), m_drawingSize.unit()),
                 /* drawSettings  */ m_drawSettings );
 
             m_pGraphicsItemCreating = dynamic_cast<QGraphicsItem*>(m_pGraphObjCreating);
@@ -2564,8 +2608,8 @@ int CDrawingScene::groupGraphObjsSelected()
 
                 if( !pGraphObjSelected->isConnectionLine() )
                 {
-                    QPointF posItem = toPixelPoint(pGraphObjSelected->getPos());
-                    QSizeF  sizItem = toPixelSize(pGraphObjSelected->getSize());
+                    QPointF posItem = pGraphObjSelected->getPos().toQPointF();
+                    QSizeF  sizItem = pGraphObjSelected->getSize().toQSizeF();
                     QRectF  rctItem = QRectF(posItem, sizItem);
 
                     if( rctItem.width() >= 0.0 )
@@ -2631,13 +2675,13 @@ int CDrawingScene::groupGraphObjsSelected()
                 if( !pGraphObjSelected->isConnectionLine() )
                 {
                     // for debugging purposes also called here before adding the item to the group
-                    QPointF posItem = toPixelPoint(pGraphObjSelected->getPos());
-                    QSizeF  sizItem = toPixelSize(pGraphObjSelected->getSize());
+                    QPointF posItem = pGraphObjSelected->getPos().toQPointF();
+                    QSizeF  sizItem = pGraphObjSelected->getSize().toQSizeF();
 
                     pGraphicsItemGroup->addToGroup(pGraphicsItemSelected);
 
-                    posItem = toPixelPoint(pGraphObjSelected->getPos());
-                    sizItem = toPixelSize(pGraphObjSelected->getSize());
+                    posItem = pGraphObjSelected->getPos().toQPointF();
+                    sizItem = pGraphObjSelected->getSize().toQSizeF();
 
                     m_pGraphObjsIdxTree->move(pGraphObjSelected, pGraphObjGroup);
 
@@ -2684,7 +2728,7 @@ int CDrawingScene::groupGraphObjsSelected()
             } // for( auto* pGraphicsItem : arpGraphicsItemsSelected )
 
             // Finish creation of group.
-            pGraphObjGroup->setSize( toMetricSize(rctGroupSceneCoors.size()) );
+            pGraphObjGroup->setSize( toPhysValSize(rctGroupSceneCoors.size()) );
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
             pGraphObjGroup->acceptCurrentAsOriginalCoors();
 #endif
@@ -2770,13 +2814,13 @@ int CDrawingScene::ungroupGraphObjsSelected()
                 }
 
                 // for debugging purposes also called here before removing the item from the group
-                QPointF posItem = toPixelPoint(pGraphObjSelected->getPos());
-                QSizeF  sizItem = toPixelSize(pGraphObjSelected->getSize());
+                QPointF posItem = pGraphObjSelected->getPos().toQPointF();
+                QSizeF  sizItem = pGraphObjSelected->getSize().toQSizeF();
 
                 pGraphicsItemGroupSelected->removeFromGroup(pGraphicsItemChild);
 
-                posItem = toPixelPoint(pGraphObjSelected->getPos());
-                sizItem = toPixelSize(pGraphObjSelected->getSize());
+                posItem = pGraphObjSelected->getPos().toQPointF();
+                sizItem = pGraphObjSelected->getSize().toQSizeF();
 
                 m_pGraphObjsIdxTree->move(pGraphObjChild, nullptr);
             }
@@ -3430,7 +3474,7 @@ void CDrawingScene::dropEvent( QGraphicsSceneDragDropEvent* i_pEv )
                             {
                                 pGraphObj = pObjFactory->createGraphObj(
                                     /* pDrawingScene */ this,
-                                    /* ptItemPos     */ i_pEv->scenePos(),
+                                    /* ptItemPos     */ toPhysValPoint(i_pEv->scenePos()),
                                     /* drawSettings  */ m_drawSettings );
 
                                 pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
@@ -3629,7 +3673,7 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                         // In special this applies to connection points and circles.
                         m_pGraphObjCreating = m_pObjFactory->createGraphObj(
                             /* pDrawingScene */ this,
-                            /* ptItemPos     */ i_pEv->scenePos(),
+                            /* ptItemPos     */ toPhysValPoint(i_pEv->scenePos()),
                             /* drawSettings  */ m_drawSettings );
 
                         if (m_pGraphObjCreating != nullptr)
@@ -4045,7 +4089,7 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
                         // .. we are going to create further points at the current mouse position.
                         m_pGraphObjCreating = m_pObjFactory->createGraphObj(
                             /* pDrawingScene */ this,
-                            /* ptItemPos     */ i_pEv->scenePos(),
+                            /* ptItemPos     */ toPhysValPoint(i_pEv->scenePos()),
                             /* drawSettings  */ m_drawSettings );
 
                         m_pGraphicsItemCreating = dynamic_cast<QGraphicsItem*>(m_pGraphObjCreating);

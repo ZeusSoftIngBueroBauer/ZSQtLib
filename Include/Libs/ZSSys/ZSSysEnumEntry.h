@@ -428,11 +428,6 @@ public: // ctors
         EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
 public: // dtor
     virtual ~SEnumEntry();
-public: // instance methods
-    /*! Returns the namespace of the structure. */
-    virtual QString nameSpace() const { return NameSpace(); }
-    /*! Returns the class name of the structure. */
-    virtual QString className() const { return ClassName(); }
 public: // methods
     QString getName( int i_idxAlias = EEnumEntryAliasStrName ) const;
 public: // struct members

@@ -75,9 +75,6 @@ public: // ctors and dtor
     CEnumeration( const QString& i_strNameSpace, const QString& i_strEnumName, const SEnumEntry* i_pEnumArr, int i_iArrLen );
     //CEnumeration( const CEnumeration& i_other );
     ~CEnumeration();
-public: // instance methods
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 public: // operators
     //CEnumeration& operator = ( const CEnumeration& i_other );
 public: // operators

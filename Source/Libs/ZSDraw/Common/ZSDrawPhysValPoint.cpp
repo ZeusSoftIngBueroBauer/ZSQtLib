@@ -25,6 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDraw/Common/ZSDrawPhysValPoint.h"
+#include "ZSDraw/Common/ZSDrawUnits.h"
 #include "ZSPhysVal/ZSPhysValExceptions.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
@@ -44,20 +45,33 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CPhysValPoint::CPhysValPoint( EResType i_resType ) :
+CPhysValPoint::CPhysValPoint() :
 //------------------------------------------------------------------------------
     m_unit(),
-    m_physValRes(i_resType),
     m_pt()
 {
 }
 
 //------------------------------------------------------------------------------
-CPhysValPoint::CPhysValPoint( const CUnit& i_unit, double i_fRes, EResType i_resType ) :
+CPhysValPoint::CPhysValPoint(const CUnit& i_unit) :
 //------------------------------------------------------------------------------
     m_unit(i_unit),
-    m_physValRes(i_fRes, i_unit, i_resType),
     m_pt()
+{
+}
+
+//------------------------------------------------------------------------------
+/*! @brief
+
+    @param [in] i_pt
+        Point whose coordinates are in the given unit.
+    @param [in] i_unit
+        Unit the coordinates are passed.
+*/
+CPhysValPoint::CPhysValPoint(const QPointF& i_pt, const CUnit& i_unit) :
+//------------------------------------------------------------------------------
+    m_unit(i_unit),
+    m_pt(i_pt)
 {
 }
 
@@ -65,7 +79,6 @@ CPhysValPoint::CPhysValPoint( const CUnit& i_unit, double i_fRes, EResType i_res
 CPhysValPoint::CPhysValPoint( const CPhysValPoint& i_physValPointOther ) :
 //------------------------------------------------------------------------------
     m_unit(i_physValPointOther.m_unit),
-    m_physValRes(i_physValPointOther.m_physValRes),
     m_pt(i_physValPointOther.m_pt)
 {
 }
@@ -74,7 +87,74 @@ CPhysValPoint::CPhysValPoint( const CPhysValPoint& i_physValPointOther ) :
 CPhysValPoint::~CPhysValPoint()
 //------------------------------------------------------------------------------
 {
-} // dtor
+    //m_unit;
+    //m_pt;
+}
+
+/*==============================================================================
+public: // operators
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CPhysValPoint& CPhysValPoint::operator = ( const CPhysValPoint& i_physValPointOther )
+//------------------------------------------------------------------------------
+{
+    m_unit = i_physValPointOther.m_unit;
+    m_pt = i_physValPointOther.m_pt;
+    return *this;
+}
+
+//------------------------------------------------------------------------------
+CPhysValPoint& CPhysValPoint::operator = ( const QPointF& i_ptOther )
+//------------------------------------------------------------------------------
+{
+    m_pt = i_ptOther;
+    return *this;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Assigns the string containing a physical point definition to this.
+
+    @param [in] i_strValOther
+        String containing the physical point definition in the following format:
+        "X [unit] / Y [unit]".
+        If [unit] is omitted the current unit of the instance is kept unchanged.
+        If no current unit has been assigned to this yet, the unit "px" is used.
+
+    @return New physical point value.
+
+    @note throws a CUnitConversionException if conversion fails.
+*/
+CPhysValPoint& CPhysValPoint::operator = ( const QString& i_strValOther )
+//------------------------------------------------------------------------------
+{
+    QStringList strlst = i_strValOther.split("/");
+    if (strlst.size() != 2) {
+        throw CUnitConversionException(
+            __FILE__, __LINE__, EResultArgOutOfRange, i_strValOther);
+    }
+
+    CPhysVal physValX(m_unit);
+    CPhysVal physValY(m_unit);
+    physValX = strlst[0];
+    physValY = strlst[1];
+    if (!m_unit.isValid()) {
+        if (physValX.unit().isValid()) {
+            m_unit = physValX.unit();
+        }
+        else if (physValY.unit().isValid()) {
+            m_unit = physValY.unit();
+        }
+        else {
+            m_unit = Units.Length.px;
+        }
+    }
+    physValX.convertValue(m_unit);
+    physValY.convertValue(m_unit);
+    m_pt.setX(physValX.getVal());
+    m_pt.setY(physValY.getVal());
+    return *this;
+}
 
 /*==============================================================================
 public: // operators
@@ -86,9 +166,6 @@ bool CPhysValPoint::operator == ( const CPhysValPoint& i_physValPointOther ) con
 {
     bool bEqual = true;
     if (!areOfSameUnitGroup(m_unit, i_physValPointOther.m_unit)) {
-        bEqual = false;
-    }
-    else if (m_physValRes != i_physValPointOther.m_physValRes) {
         bEqual = false;
     }
     else if (m_unit == i_physValPointOther.m_unit && m_pt != i_physValPointOther.m_pt) {
@@ -115,20 +192,6 @@ bool CPhysValPoint::operator != ( const CPhysValPoint& i_physValPointOther ) con
 }
 
 /*==============================================================================
-public: // operators
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-CPhysValPoint& CPhysValPoint::operator = ( const CPhysValPoint& i_physValPointOther )
-//------------------------------------------------------------------------------
-{
-    m_unit = i_physValPointOther.m_unit;
-    m_physValRes = i_physValPointOther.m_physValRes;
-    m_pt = i_physValPointOther.m_pt;
-    return *this;
-}
-
-/*==============================================================================
 public: // instance methods
 ==============================================================================*/
 
@@ -143,14 +206,32 @@ CUnit CPhysValPoint::unit() const
 CPhysVal CPhysValPoint::x() const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_pt.x(), m_unit, m_physValRes);
+    return CPhysVal(m_pt.x(), m_unit);
 }
 
 //------------------------------------------------------------------------------
 CPhysVal CPhysValPoint::y() const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_pt.y(), m_unit, m_physValRes);
+    return CPhysVal(m_pt.y(), m_unit);
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CPhysValPoint::setX( const CPhysVal& i_physValX )
+//------------------------------------------------------------------------------
+{
+    m_pt.setX(i_physValX.getVal(m_unit));
+}
+
+//------------------------------------------------------------------------------
+void CPhysValPoint::setY( const CPhysVal& i_physValY )
+//------------------------------------------------------------------------------
+{
+    m_pt.setY(i_physValY.getVal(m_unit));
 }
 
 /*==============================================================================
@@ -158,21 +239,24 @@ public: // instance methods (to convert the values into another unit)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CPhysValPoint::convertValues( const CUnit& i_unitDst )
+/*! @brief Returns the physical point as a QPointF instance in pixel coordinates.
+*/
+QPointF CPhysValPoint::toQPointF() const
 //------------------------------------------------------------------------------
 {
-    if (m_unit.isValid() && !areOfSameUnitGroup(m_unit, i_unitDst)) {
-        QString strAddErrInfo = "Src: " + m_unit.keyInTree() + ", Dst: " + i_unitDst.keyInTree();
-        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes, strAddErrInfo);
+    QPointF ptF = m_pt;
+    if (m_unit != Units.Length.px) {
+        double fX_px = m_unit.convertValue(m_pt.x(), Units.Length.px);
+        double fY_px = m_unit.convertValue(m_pt.y(), Units.Length.px);
+        ptF.setX(fX_px);
+        ptF.setY(fY_px);
     }
-    if (i_unitDst != m_unit) {
-        double fX = m_pt.x();
-        fX = m_unit.convertValue(fX, i_unitDst);
-        m_pt.setX(fX);
-        double fY = m_pt.y();
-        fY = m_unit.convertValue(fY, i_unitDst);
-        m_pt.setY(fY);
-        m_physValRes.convertValue(i_unitDst);
-    }
-    m_unit = i_unitDst;
+    return ptF;
+}
+
+//------------------------------------------------------------------------------
+QString CPhysValPoint::toString() const
+//------------------------------------------------------------------------------
+{
+    return x().toString() + ", " + y().toString();
 }

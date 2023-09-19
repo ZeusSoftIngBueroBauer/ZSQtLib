@@ -56,9 +56,6 @@ signals:
     void doTestStep( ZS::Test::CTestStep* i_pTestStep );
     /*! @brief This signal is emitted if result values are set. */
     void testStepFinished( ZS::Test::CTestStep* i_pTestStep );
-public: // overridables
-    virtual QString nameSpace() const { return CTestStep::NameSpace(); }
-    virtual QString className() const { return CTestStep::ClassName(); }
 public: // instance methods
     QString getOperation() const { return m_strOperation; }
     void setOperation( const QString& i_strOperation );

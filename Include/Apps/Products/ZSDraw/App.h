@@ -69,9 +69,6 @@ public: // ctors and dtor
         const QString& i_strOrganizationDomain,
         const QString& i_strAppName );
     ~CApplication();
-public: // overridables
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 public: // instance methods
     void createAndShowMainWindow(
         const QString&     i_strMainWindowTitle,

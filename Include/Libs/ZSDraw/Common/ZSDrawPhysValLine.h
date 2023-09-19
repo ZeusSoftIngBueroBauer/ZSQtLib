@@ -37,9 +37,14 @@ namespace Draw
 //******************************************************************************
 /*! @brief Corresponds to QLineF but providing a physical unit and a resolution.
 
-    This class is not part of ZS::PhysVal as conversion into pixel values is
-    necessary and for this the unit "Pixel" must be available.
-    ZS::PhysVal is abstract concerning units and does not know about the unit "px".
+    This class is not part of ZS::PhysVal as the namespace ZS::PhysVal is abstract
+    concerning units and the units "pixels" or any metric units is not known within
+    the ZS::PhysVal library. The corresponding unit tree must be configured for the
+    specific application or, as in this case, in the units tree of the ZS::Draw library.
+
+    In addition to convert between metric and pixel dimensions (and vice versa)
+    the screen resolution and the scale factor must be known. Both are properties
+    of the physical size "Length" within the ZS::Draw library.
 */
 class ZSDRAWDLL_API CPhysValLine
 //******************************************************************************
@@ -48,20 +53,20 @@ public: // class methods
     static QString NameSpace() { return "ZS::Draw"; }
     static QString ClassName() { return "CPhysValLine"; }
 public: // ctors and dtor
-    CPhysValLine( ZS::PhysVal::EResType i_resType = ZS::PhysVal::EResType::Resolution );
-    CPhysValLine( const ZS::PhysVal::CUnit& i_unit, double i_fRes = 0.0, ZS::PhysVal::EResType i_resType = ZS::PhysVal::EResType::Resolution );
-    CPhysValLine( const CPhysValPoint& i_physValPoint1, const CPhysValPoint& i_physValPoint2 );
-    CPhysValLine( const ZS::PhysVal::CPhysVal& i_physValX1, const ZS::PhysVal::CPhysVal& i_physValY1,
-                  const ZS::PhysVal::CPhysVal& i_physValX2, const ZS::PhysVal::CPhysVal& i_physValY2 );
-    CPhysValLine( const CPhysValLine& i_physValLineOther );
-    CPhysValLine( const QLineF& i_line );
+    CPhysValLine();
+    CPhysValLine(const ZS::PhysVal::CUnit& i_unit);
+    CPhysValLine(double i_fX1, double i_fY1, double i_fX2, double i_fY2, const ZS::PhysVal::CUnit& i_unit);
+    CPhysValLine(const QPointF& i_p1, const QPointF& i_p2, const ZS::PhysVal::CUnit& i_unit);
+    CPhysValLine(const QLineF& i_line, const ZS::PhysVal::CUnit& i_unit);
+    CPhysValLine(const CPhysValPoint& i_physValPoint1, const CPhysValPoint& i_physValPoint2);
+    CPhysValLine(const CPhysValLine& i_physValLineOther);
     virtual ~CPhysValLine();
 public: // operators
-    bool operator == ( const CPhysValLine& i_physValLineOther ) const;
-    bool operator != ( const CPhysValLine& i_physValLineOther ) const;
+    CPhysValLine& operator = (const CPhysValLine& i_physValLineOther);
+    CPhysValLine& operator = (const QLineF& i_line);
 public: // operators
-    CPhysValLine& operator = ( const CPhysValLine& i_physValLineOther );
-    CPhysValLine& operator = ( const QLineF& i_line );
+    bool operator == (const CPhysValLine& i_physValLineOther) const;
+    bool operator != (const CPhysValLine& i_physValLineOther) const;
 public: // instance methods
     ZS::PhysVal::CUnit unit() const;
     CPhysValPoint p1() const;
@@ -70,15 +75,28 @@ public: // instance methods
     ZS::PhysVal::CPhysVal x2() const;
     ZS::PhysVal::CPhysVal y1() const;
     ZS::PhysVal::CPhysVal y2() const;
+    ZS::PhysVal::CPhysVal angle() const;
+    ZS::PhysVal::CPhysVal angleTo(const CPhysValLine& i_physValLineOther) const;
     CPhysValPoint center() const;
+    ZS::PhysVal::CPhysVal dx() const;
+    ZS::PhysVal::CPhysVal dy() const;
+    QLineF::IntersectionType intersects(const CPhysValLine& i_physValLineOther, CPhysValPoint* i_physValPointIntersection) const;
+    bool isNull() const;
+    ZS::PhysVal::CPhysVal length() const;
+    void setUnit( const ZS::PhysVal::CUnit& i_unit );
+    void setP1( const CPhysValPoint& i_physValPoint1 );
+    void setP2( const CPhysValPoint& i_physValPoint2 );
+    void setAngle( const ZS::PhysVal::CPhysVal& i_physValAngle );
+    void setLength( const ZS::PhysVal::CPhysVal& i_physValLength );
+    void setLine( double i_fX1, double i_fY1, double i_fX2, double i_fY2 );
+    void setPoints( const QPointF& i_p1, const QPointF& i_p2 );
 public: // instance methods (to convert the values into another unit)
     QLineF toQLineF() const;
-    void convertValues( const ZS::PhysVal::CUnit& i_unitDst );
-public: // instance methods
     QString toString() const;
 protected: // instance members
+    /*!< Unit the values are store in "m_line". */
     ZS::PhysVal::CUnit m_unit;
-    ZS::PhysVal::CPhysValRes m_physValRes;
+    /*!< Values of the line stored in "m_unit". */
     QLineF m_line;
 
 }; // class CPhysValLine

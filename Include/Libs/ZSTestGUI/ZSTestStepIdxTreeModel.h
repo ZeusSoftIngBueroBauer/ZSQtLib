@@ -69,9 +69,6 @@ public: // ctors and dtor
     virtual ~CModeldxTreeTestSteps();
 public: // instance methods
     CTestStepIdxTree* idxTree();
-public: // overridables
-    virtual QString nameSpace() const override { return NameSpace(); }
-    virtual QString className() const override { return ClassName(); }
 public: // instance methods
     bool isSetShowExpectedAndResultValuesOnlyIfTestStepFailed() const { return m_bShowExpectedAndResultValuesOnlyIfTestStepFailed; }
     void setShowExpectedAndResultValuesOnlyIfTestStepFailed( bool i_bSet );

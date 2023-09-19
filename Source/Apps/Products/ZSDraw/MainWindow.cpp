@@ -4157,8 +4157,8 @@ void CMainWindow::onDrawingSceneSizeChanged(const CDrawingSize& i_drawingSize)
 
     if (m_pLblStatusBarDrawingSceneMouseCursorPos != nullptr) {
         CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
-        CPhysVal physValX = pDrawingScene->toMetricXCoor(m_ptDrawingSceneMouseCursorPos.x());
-        CPhysVal physValY = pDrawingScene->toMetricYCoor(m_ptDrawingSceneMouseCursorPos.y());
+        CPhysVal physValX = pDrawingScene->toPhysValXCoor(m_ptDrawingSceneMouseCursorPos.x());
+        CPhysVal physValY = pDrawingScene->toPhysValYCoor(m_ptDrawingSceneMouseCursorPos.y());
         QString strPosInfo = "MousePos {" + qPoint2Str(m_ptDrawingSceneMouseCursorPos.toPoint()) + "}" +
             "{" + physValX.toString() + ", " + physValY.toString() + "}";
         m_pLblStatusBarDrawingSceneMouseCursorPos->setText(strPosInfo);
@@ -4288,8 +4288,8 @@ void CMainWindow::onDrawingSceneMousePosChanged( const QPointF& i_ptMousePos )
     m_ptDrawingSceneMouseCursorPos = i_ptMousePos;
     if (m_pLblStatusBarDrawingSceneMouseCursorPos != nullptr) {
         CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
-        CPhysVal physValX = pDrawingScene->toMetricXCoor(m_ptDrawingSceneMouseCursorPos.x());
-        CPhysVal physValY = pDrawingScene->toMetricYCoor(m_ptDrawingSceneMouseCursorPos.y());
+        CPhysVal physValX = pDrawingScene->toPhysValXCoor(m_ptDrawingSceneMouseCursorPos.x());
+        CPhysVal physValY = pDrawingScene->toPhysValYCoor(m_ptDrawingSceneMouseCursorPos.y());
         QString strPosInfo = "MousePos {" + qPoint2Str(m_ptDrawingSceneMouseCursorPos.toPoint()) + "}" +
             "{" + physValX.toString() + ", " + physValY.toString() + "}";
         m_pLblStatusBarDrawingSceneMouseCursorPos->setText(strPosInfo);

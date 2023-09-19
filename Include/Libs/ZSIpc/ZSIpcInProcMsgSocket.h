@@ -100,9 +100,6 @@ public: // ctors and dtor
         CInProcMsgSocket* i_pSocketClient,
         bool              i_bTracingEnabled = true );
     virtual ~CInProcMsgSocket();
-public: // instance methods
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 signals: // AbstractSocket
     void connected();
     void disconnected();

@@ -182,7 +182,7 @@ CServer::CServer(
     }
     else
     {
-        m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(nameSpace(), className(), objectName());
+        m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
     }
 
     CMethodTracer mthTracer(
@@ -190,8 +190,8 @@ CServer::CServer(
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "ctor",
         /* strMthInArgs       */ "" );
@@ -250,8 +250,8 @@ CServer::CServer(
     }
 
     m_pRequestQueue = new CRequestQueue(
-        /* strCreatorNameSpace    */ nameSpace(),
-        /* strCreatorClassName    */ className(),
+        /* strCreatorNameSpace    */ NameSpace(),
+        /* strCreatorClassName    */ ClassName(),
         /* pObjParent             */ this,
         /* bKeepReqDscrInExecTree */ false );
 
@@ -294,8 +294,8 @@ CServer::~CServer()
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "dtor",
         /* strAddInfo         */ strAddTrcInfo );
@@ -407,8 +407,8 @@ void CServer::setKeepReqDscrInExecTree( bool i_bKeep )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setKeepReqDscrInExecTree",
         /* strAddInfo         */ strAddTrcInfo );
@@ -463,8 +463,8 @@ CRequest* CServer::startup(
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "startup",
         /* strAddInfo         */ strAddTrcInfo );
@@ -487,8 +487,8 @@ CRequest* CServer::startup(
     EState statePrev = m_state;
 
     CRequest* pReq = m_pRequestQueue->createRequest(
-        /* strNameSpace */ nameSpace(),
-        /* strClassName */ className(),
+        /* strNameSpace */ NameSpace(),
+        /* strClassName */ ClassName(),
         /* iRequest     */ ERequestStartup,
         /* strRequest   */ Request2Str(ERequestStartup),
         /* iReqIdParent */ i_iReqIdParent,
@@ -622,8 +622,8 @@ CRequest* CServer::shutdown(
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "shutdown",
         /* strAddInfo         */ strAddTrcInfo );
@@ -646,8 +646,8 @@ CRequest* CServer::shutdown(
     EState statePrev = m_state;
 
     CRequest* pReq = m_pRequestQueue->createRequest(
-        /* strNameSpace */ nameSpace(),
-        /* strClassName */ className(),
+        /* strNameSpace */ NameSpace(),
+        /* strClassName */ ClassName(),
         /* iRequest     */ ERequestShutdown,
         /* strRequest   */ Request2Str(ERequestShutdown),
         /* iReqIdParent */ i_iReqIdParent,
@@ -782,8 +782,8 @@ CRequest* CServer::changeSettings( int i_iTimeout_ms, bool i_bWait, qint64 i_iRe
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "changeSettings",
         /* strAddInfo         */ strAddTrcInfo );
@@ -806,8 +806,8 @@ CRequest* CServer::changeSettings( int i_iTimeout_ms, bool i_bWait, qint64 i_iRe
     EState statePrev = m_state;
 
     CRequest* pReq = m_pRequestQueue->createRequest(
-        /* strNameSpace */ nameSpace(),
-        /* strClassName */ className(),
+        /* strNameSpace */ NameSpace(),
+        /* strClassName */ ClassName(),
         /* iRequest     */ ERequestChangeSettings,
         /* strRequest   */ Request2Str(ERequestChangeSettings),
         /* iReqIdParent */ i_iReqIdParent,
@@ -959,8 +959,8 @@ ZS::System::CRequest* CServer::sendData(
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "sendData",
         /* strAddInfo         */ strAddTrcInfo );
@@ -981,8 +981,8 @@ ZS::System::CRequest* CServer::sendData(
     SErrResultInfo errResultInfo = ErrResultInfoSuccess("sendData" );
 
     CRequest* pReq = m_pRequestQueue->createRequest(
-        /* strNameSpace */ nameSpace(),
-        /* strClassName */ className(),
+        /* strNameSpace */ NameSpace(),
+        /* strClassName */ ClassName(),
         /* iRequest     */ ERequestSendData,
         /* strRequest   */ Request2Str(ERequestSendData),
         /* iReqIdParent */ i_iReqIdParent,
@@ -1273,8 +1273,8 @@ void CServer::setHostSettings( const SServerHostSettings& i_hostSettings )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setHostSettings",
         /* strAddInfo         */ strAddTrcInfo );
@@ -1343,8 +1343,8 @@ void CServer::setBlkType( CBlkType* i_pBlkType )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setBlkType",
         /* strAddInfo         */ strAddTrcInfo );
@@ -1506,8 +1506,8 @@ void CServer::setSocketName( int i_iSocketId, const QString& i_strSocketName )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setSocketName",
         /* strAddInfo         */ strAddTrcInfo );
@@ -1722,8 +1722,8 @@ void CServer::abortRequest( qint64 i_iRequestId )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "abortRequest",
         /* strAddInfo         */ strAddTrcInfo );
@@ -1785,8 +1785,8 @@ void CServer::abortRequestInProgress()
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "abortRequestInProgress",
         /* strAddInfo         */ strAddTrcInfo );
@@ -1839,8 +1839,8 @@ void CServer::abortAllRequests()
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "abortAllRequests",
         /* strAddInfo         */ strAddTrcInfo );
@@ -1983,8 +1983,8 @@ void CServer::onReceivedData( int i_iSocketId, const QByteArray& i_byteArr )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "onReceivedData",
         /* strAddInfo         */ strAddTrcInfo );
@@ -2024,8 +2024,8 @@ void CServer::executeNextPostponedRequest()
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "executeNextPostponedRequest",
         /* strAddInfo         */ strAddTrcInfo );
@@ -2085,8 +2085,8 @@ void CServer::executeStartupRequest( CRequest* i_pReq )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "executeStartupRequest",
         /* strAddInfo         */ strAddTrcInfo );
@@ -2252,8 +2252,8 @@ void CServer::executeShutdownRequest( CRequest* i_pReq )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "executeShutdownRequest",
         /* strAddInfo         */ strAddTrcInfo );
@@ -2421,8 +2421,8 @@ void CServer::executeChangeSettingsRequest( CRequest* i_pReq )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "executeChangeSettingsRequest",
         /* strAddInfo         */ strAddTrcInfo );
@@ -2635,8 +2635,8 @@ void CServer::executeSendDataRequest( CRequest* i_pReq )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "executeSendDataRequest",
         /* strAddInfo         */ strAddTrcInfo );
@@ -2830,8 +2830,8 @@ CSrvCltBaseGatewayThread* CServer::createGatewayThread()
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "createGatewayThread",
         /* strAddInfo         */ strAddTrcInfo );
@@ -2864,8 +2864,8 @@ SErrResultInfo CServer::startGatewayThread( int i_iTimeout_ms, qint64 i_iReqIdPa
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "startGatewayThread",
         /* strAddInfo         */ strAddTrcInfo );
@@ -2877,8 +2877,8 @@ SErrResultInfo CServer::startGatewayThread( int i_iTimeout_ms, qint64 i_iReqIdPa
 
     // Initialized as an asynchronous request (ResultUndefined).
     CRequest* pReqStartThread = m_pRequestQueue->createRequest(
-        /* strNameSpace */ nameSpace(),
-        /* strClassName */ className(),
+        /* strNameSpace */ NameSpace(),
+        /* strClassName */ ClassName(),
         /* iRequest     */ ERequestStartGatewayThread,
         /* strRequest   */ Request2Str(ERequestStartGatewayThread),
         /* iReqIdParent */ i_iReqIdParent,
@@ -2969,8 +2969,8 @@ SErrResultInfo CServer::stopGatewayThread( int i_iTimeout_ms, qint64 i_iReqIdPar
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "stopGatewayThread",
         /* strAddInfo         */ strAddTrcInfo );
@@ -2984,8 +2984,8 @@ SErrResultInfo CServer::stopGatewayThread( int i_iTimeout_ms, qint64 i_iReqIdPar
     {
         // Initialized as an asynchronous request (ResultUndefined).
         CRequest* pReqStopThread = m_pRequestQueue->createRequest(
-            /* strNameSpace */ nameSpace(),
-            /* strClassName */ className(),
+            /* strNameSpace */ NameSpace(),
+            /* strClassName */ ClassName(),
             /* iRequest     */ ERequestStopGatewayThread,
             /* strRequest   */ Request2Str(ERequestStopGatewayThread),
             /* iReqIdParent */ i_iReqIdParent,
@@ -3092,8 +3092,8 @@ CRequest* CServer::startupGateway( int i_iTimeout_ms, bool i_bWait, qint64 i_iRe
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "startupGateway",
         /* strAddInfo         */ strAddTrcInfo );
@@ -3116,8 +3116,8 @@ CRequest* CServer::startupGateway( int i_iTimeout_ms, bool i_bWait, qint64 i_iRe
 
     // Initialized as an asynchronous request (ResultUndefined).
     CRequest* pReqStartupGateway = m_pRequestQueue->createRequest(
-        /* strNameSpace */ nameSpace(),
-        /* strClassName */ className(),
+        /* strNameSpace */ NameSpace(),
+        /* strClassName */ ClassName(),
         /* iRequest     */ ERequestStartupGateway,
         /* strRequest   */ Request2Str(ERequestStartupGateway),
         /* iReqIdParent */ i_iReqIdParent,
@@ -3284,8 +3284,8 @@ CRequest* CServer::shutdownGateway( int i_iTimeout_ms, bool i_bWait, qint64 i_iR
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "shutdownGateway",
         /* strAddInfo         */ strAddTrcInfo );
@@ -3308,8 +3308,8 @@ CRequest* CServer::shutdownGateway( int i_iTimeout_ms, bool i_bWait, qint64 i_iR
 
     // Initialized as an asynchronous request (ResultUndefined).
     CRequest* pReqShutdownGateway = m_pRequestQueue->createRequest(
-        /* strNameSpace */ nameSpace(),
-        /* strClassName */ className(),
+        /* strNameSpace */ NameSpace(),
+        /* strClassName */ ClassName(),
         /* iRequest     */ ERequestShutdownGateway,
         /* strRequest   */ Request2Str(ERequestShutdownGateway),
         /* iReqIdParent */ i_iReqIdParent,
@@ -3488,8 +3488,8 @@ void CServer::onRequestTimeout()
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "onRequestTimeout",
         /* strAddInfo         */ strAddTrcInfo );
@@ -3569,8 +3569,8 @@ void CServer::onRequestChanged( ZS::System::SRequestDscr i_reqDscr )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "onRequestChanged",
         /* strAddInfo         */ strAddTrcInfo );
@@ -3695,7 +3695,7 @@ void CServer::onRequestChanged( ZS::System::SRequestDscr i_reqDscr )
         // The Ipc server does not trigger requests of "foreign" classes.
         // So the following string compare is unnecessary as this slot may only
         // be called if the server itself updates the request.
-        //if( i_reqDscr.m_strCreatorClassName.compare(className(),Qt::CaseInsensitive) == 0 )
+        //if( i_reqDscr.m_strCreatorClassName.compare(ClassName(),Qt::CaseInsensitive) == 0 )
 
         if( !bIsPostponedRequest )
         {
@@ -4044,8 +4044,8 @@ bool CServer::event( QEvent* i_pMsg )
             /* pTrcMthFile        */ m_pTrcMthFile,
             /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
             /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-            /* strNameSpace       */ nameSpace(),
-            /* strClassName       */ className(),
+            /* strNameSpace       */ NameSpace(),
+            /* strClassName       */ ClassName(),
             /* strObjName         */ objectName(),
             /* strMethod          */ "event",
             /* strAddInfo         */ strAddTrcInfo );

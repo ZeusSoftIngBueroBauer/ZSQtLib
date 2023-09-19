@@ -51,13 +51,9 @@ CnctPt1 Plates  CnctPt2
 *******************************************************************************/
 {
 public: // class methods
-    /*! Returns the namespace the class belongs to.
-        Please note that the static class functions name must be different
-        from the non static virtual member function "nameSpace" */
+    /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw::Electricity"; }
-    /*! Returns the class name.
-        Please note that the static class functions name must be different
-        from the non static virtual member function "nameSpace" */
+    /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjCapacitor"; }
 public: // type definitions and constants
     static const QSize c_sizInitial;
@@ -67,9 +63,6 @@ public: // ctors and dtor
         const CDrawSettings& i_drawSettings,
         const QString&       i_strObjName = "" );
     virtual ~CGraphObjCapacitor();
-public: // overridables
-    virtual QString nameSpace() { return NameSpace(); }
-    virtual QString className() { return ClassName(); }
 public: // instance methods
     double getCapacitance() const { return m_fCapacitance_F; }
     void setCapacitance( double i_fCapacitance_F );

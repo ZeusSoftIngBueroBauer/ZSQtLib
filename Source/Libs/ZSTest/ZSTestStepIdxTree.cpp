@@ -247,7 +247,7 @@ SErrResultInfo CTestStepIdxTree::save( const QString& i_strAbsFilePath ) const
 
     QString strMth = "save";
 
-    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
+    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
 
     QFile file;
 
@@ -342,7 +342,7 @@ SErrResultInfo CTestStepIdxTree::recall( const QString& i_strAbsFilePath )
 
     QString strAddErrInfo;
 
-    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
+    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
 
     QFile file;
 

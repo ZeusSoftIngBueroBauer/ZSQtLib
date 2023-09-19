@@ -61,9 +61,9 @@ class ZSDRAWDLL_API CGraphObjLabel : public CGraphObj, public QGraphicsSimpleTex
 {
 public: // class methods
     /*! Returns the namespace the class belongs to. */
-    static QString NameSpace() { return "ZS::Draw"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
+    static QString NameSpace() { return "ZS::Draw"; }
     /*! Returns the class name. */
-    static QString ClassName() { return "CGraphObjLabel"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
+    static QString ClassName() { return "CGraphObjLabel"; }
 public: // ctors and dtor
     CGraphObjLabel( // for (bounding) rectangles
         CDrawingScene*  i_pDrawingScene,

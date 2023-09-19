@@ -42,9 +42,14 @@ namespace Draw
 //******************************************************************************
 /*! @brief Corresponds to QSizeF but providing a physical unit and a resolution.
 
-    This class is not part of ZS::PhysVal as conversion into pixel values is
-    necessary and for this the unit "Pixel" must be available.
-    ZS::PhysVal is abstract concerning units and does not know about the unit "px".
+    This class is not part of ZS::PhysVal as the namespace ZS::PhysVal is abstract
+    concerning units and the units "pixels" or any metric units is not known within
+    the ZS::PhysVal library. The corresponding unit tree must be configured for the
+    specific application or, as in this case, in the units tree of the ZS::Draw library.
+
+    In addition to convert between metric and pixel dimensions (and vice versa)
+    the screen resolution and the scale factor must be known. Both are properties
+    of the physical size "Length" within the ZS::Draw library.
 */
 class ZSDRAWDLL_API CPhysValSize
 //******************************************************************************
@@ -53,18 +58,19 @@ public: // class methods
     static QString NameSpace() { return "ZS::Draw"; }
     static QString ClassName() { return "CPhysValSize"; }
 public: // ctors and dtor
-    CPhysValSize( ZS::PhysVal::EResType i_resType = ZS::PhysVal::EResType::Resolution );
-    CPhysValSize( const ZS::PhysVal::CUnit& i_unit, double i_fRes = 0.0, ZS::PhysVal::EResType i_resType = ZS::PhysVal::EResType::Resolution );
-    CPhysValSize( const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight );
-    CPhysValSize( const CPhysValSize& i_physValSizeOther );
-    CPhysValSize( const QSizeF& i_rect );
+    CPhysValSize();
+    CPhysValSize(const ZS::PhysVal::CUnit& i_unit);
+    CPhysValSize(double i_fWidth, double i_fHeight, const ZS::PhysVal::CUnit& i_unit);
+    CPhysValSize(const QSizeF& i_size, const ZS::PhysVal::CUnit& i_unit);
+    CPhysValSize(const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight);
+    CPhysValSize(const CPhysValSize& i_physValSizeOther);
     virtual ~CPhysValSize();
 public: // operators
-    bool operator == ( const CPhysValSize& i_physValSizeOther ) const;
-    bool operator != ( const CPhysValSize& i_physValSizeOther ) const;
+    CPhysValSize& operator = (const CPhysValSize& i_physValSizeOther);
+    CPhysValSize& operator = (const QSizeF& i_size);
 public: // operators
-    CPhysValSize& operator = ( const CPhysValSize& i_physValSizeOther );
-    CPhysValSize& operator = ( const QSizeF& i_size );
+    bool operator == (const CPhysValSize& i_physValSizeOther) const;
+    bool operator != (const CPhysValSize& i_physValSizeOther) const;
 public: // instance methods
     ZS::PhysVal::CUnit unit() const;
     ZS::PhysVal::CPhysVal width() const;
@@ -75,12 +81,9 @@ public: // instance methods
     void setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight);
 public: // instance methods (to convert the values into another unit)
     QSizeF toQSizeF() const;
-    void convertValues( const ZS::PhysVal::CUnit& i_unitDst );
-public: // instance methods
     QString toString() const;
 protected: // instance members
     ZS::PhysVal::CUnit m_unit;
-    ZS::PhysVal::CPhysValRes m_physValRes;
     QSizeF m_size;
 
 }; // class CPhysValSize

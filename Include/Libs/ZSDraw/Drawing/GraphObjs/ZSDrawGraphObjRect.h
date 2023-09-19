@@ -56,9 +56,9 @@ class ZSDRAWDLL_API CGraphObjRect : public CGraphObj, public QGraphicsRectItem
 {
 public: // class methods
     /*! Returns the namespace the class belongs to. */
-    static QString NameSpace() { return "ZS::Draw"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
+    static QString NameSpace() { return "ZS::Draw"; }
     /*! Returns the class name. */
-    static QString ClassName() { return "CGraphObjRect"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
+    static QString ClassName() { return "CGraphObjRect"; }
 public: // ctors and dtor
     CGraphObjRect(
         CDrawingScene*       i_pDrawingScene,

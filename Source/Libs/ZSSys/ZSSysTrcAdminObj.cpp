@@ -474,7 +474,7 @@ protected: // instance methods
     to create dummy trace admin objects.
 
     The name space, the class name and the object name for those objects are set
-    by asssigning values to the properties "nameSpace", "className" and "objectName".
+    by asssigning values to the properties "NameSpace", "ClassName" and "objectName".
 
     @param i_strNameSpace [in] Name space (e.g. "ZS::System::GUI::Qml")
         Name space of the trace admin object.
@@ -503,7 +503,7 @@ void CTrcAdminObj::setNameSpace( const QString& i_strNameSpace )
     to create dummy trace admin objects.
 
     The name space, the class name and the object name for those objects are set
-    by asssigning values to the properties "nameSpace", "className" and "objectName".
+    by asssigning values to the properties "NameSpace", "ClassName" and "objectName".
 
     @param i_strClassName [in] Class name (e.g. "ErrLogWdgt")
         Class name of the trace admin object.
@@ -1796,7 +1796,7 @@ bool CTrcAdminObj::blockTreeEntryChangedSignal( bool i_bBlock )
         if( m_iBlockTreeEntryChangedSignalCounter <= 0 )
         {
             SErrResultInfo errResultInfo(
-                /* errSource     */ nameSpace(), className(), keyInTree(), "blockTreeEntryChangedSignal",
+                /* errSource     */ NameSpace(), ClassName(), keyInTree(), "blockTreeEntryChangedSignal",
                 /* result        */ EResultObjRefCounterIsNotZero,
                 /* severity      */ EResultSeverityError,
                 /* strAddErrInfo */ "Unblock tree entry changed signal counter becomes less than 0" );

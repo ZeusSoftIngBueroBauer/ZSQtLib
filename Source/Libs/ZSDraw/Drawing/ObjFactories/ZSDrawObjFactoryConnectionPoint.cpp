@@ -80,37 +80,37 @@ public: // interface methods
 
 //------------------------------------------------------------------------------
 CGraphObj* CObjFactoryConnectionPoint::createGraphObj(
-    CDrawingScene*       i_pDrawingScene,
-    const QPointF&       i_ptItemPos,
+    CDrawingScene* i_pDrawingScene,
+    const CPhysValPoint& i_physValPoint,
     const CDrawSettings& i_drawSettings )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strAddTrcInfo = "ItemPos:" + QString::number(i_ptItemPos.x()) + "," + QString::number(i_ptItemPos.y());
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Point {" + i_physValPoint.toString() + "}";
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createGraphObj",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsDetailed)) {
+        strMthInArgs = "DrawSettings {" + i_drawSettings.toString(EGraphObjTypeLine) + "}";
+        mthTracer.trace(strMthInArgs);
+    }
 
     CDrawSettings drawSettings = i_drawSettings;
-
     drawSettings.setPenColor(Qt::black);
     drawSettings.setPenWidth(1);
-
     drawSettings.setLineStyle(ELineStyle::SolidLine);
-
     drawSettings.setFillStyle(EFillStyle::SolidPattern);
     drawSettings.setFillColor(Qt::black);
 
-    CGraphObjConnectionPoint* pGraphObj = new CGraphObjConnectionPoint(i_pDrawingScene,drawSettings);
+    CGraphObjConnectionPoint* pGraphObj = new CGraphObjConnectionPoint(i_pDrawingScene, drawSettings);
 
+#if 0
     pGraphObj->setPos(i_ptItemPos);
+#endif
 
     return pGraphObj;
 
@@ -131,8 +131,8 @@ SErrResultInfo CObjFactoryConnectionPoint::saveGraphObj(
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strAddTrcInfo  = "GraphObj:" + i_pGraphObj->nameSpace();
-        strAddTrcInfo += "::" + i_pGraphObj->className();
+        strAddTrcInfo  = "GraphObj:" + i_pGraphObj->NameSpace();
+        strAddTrcInfo += "::" + i_pGraphObj->ClassName();
         strAddTrcInfo += "::" + i_pGraphObj->name();
     }
 

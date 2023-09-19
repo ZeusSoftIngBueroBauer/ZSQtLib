@@ -45,13 +45,9 @@ class CGraphObjWdgtGroupBox : public CGraphObjWdgt
 //******************************************************************************
 {
 public: // class methods
-    /*! Returns the namespace the class belongs to.
-        Please note that the static class functions name must be different
-        from the non static virtual member function "nameSpace" */
+    /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw::QtWidgets"; }
-    /*! Returns the class name.
-        Please note that the static class functions name must be different
-        from the non static virtual member function "nameSpace" */
+    /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjWdgtGroupBox"; }
 public: // ctors and dtor
     CGraphObjWdgtGroupBox(
@@ -59,9 +55,6 @@ public: // ctors and dtor
         const CDrawSettings& i_drawSettings,
         const QString&       i_strObjName = "" );
     virtual ~CGraphObjWdgtGroupBox();
-public: // overridables
-    virtual QString nameSpace() { return NameSpace(); }
-    virtual QString className() { return ClassName(); }
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone();
 protected: // class members

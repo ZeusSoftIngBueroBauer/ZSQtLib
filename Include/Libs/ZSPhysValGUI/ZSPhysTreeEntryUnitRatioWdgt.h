@@ -52,9 +52,6 @@ public: // ctors and dtor
     CWdgtUnitRatio(QWidget* i_pWdgtParent = nullptr );
     virtual ~CWdgtUnitRatio();
 public: // overridables
-    virtual QString nameSpace() const { return CWdgtUnitRatio::NameSpace(); }
-    virtual QString className() const { return CWdgtUnitRatio::ClassName(); }
-public: // overridables
     virtual void setKeyInTreeOfRootEntry( const QString& i_strKeyInTree ) override;
 protected: // instance members
     QVBoxLayout* m_pLyt;

@@ -50,9 +50,6 @@ public: // class methods
 public: // ctors and dtor
     CIdxTreeLoggers( const QString& i_strObjName, QObject* i_pObjParent = nullptr );
     virtual ~CIdxTreeLoggers();
-public: // instance methods
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 public: // instance methods to get and release admin objects
     CLogger* getLogger(
         const QString& i_strName, // Use node separator "::" to include name space, class name etc.

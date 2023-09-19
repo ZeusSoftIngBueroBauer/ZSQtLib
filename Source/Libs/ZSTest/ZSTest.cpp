@@ -525,7 +525,7 @@ SErrResultInfo CTest::readExpectedTestResults(
         /* strMethod    */ "readExpectedTestResults",
         /* strMthInArgs */ strMthInArgs );
 
-    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), "saveTestResults");
+    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), "saveTestResults");
 
     QFile file;
 
@@ -818,7 +818,7 @@ SErrResultInfo CTest::saveTestResults( const QString& i_strAbsFilePath, bool i_b
         /* strMethod    */ "saveTestResults",
         /* strMthInArgs */ strMthInArgs );
 
-    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), "saveTestResults");
+    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), "saveTestResults");
 
     QString strAbsFilePath = i_strAbsFilePath;
 

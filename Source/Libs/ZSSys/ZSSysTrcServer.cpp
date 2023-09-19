@@ -777,8 +777,8 @@ CTrcServer::CTrcServer(
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLavel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "ctor",
         /* strMthInArgs       */ "" );
@@ -813,8 +813,8 @@ CTrcServer::~CTrcServer()
             /* pTrcMthFile        */ m_pTrcMthFile,
             /* eTrcDetailLevel    */ m_eTrcDetailLevel,
             /* eFilterDetailLavel */ EMethodTraceDetailLevel::EnterLeave,
-            /* strNameSpace       */ nameSpace(),
-            /* strClassName       */ className(),
+            /* strNameSpace       */ NameSpace(),
+            /* strClassName       */ ClassName(),
             /* strObjName         */ objectName(),
             /* strMethod          */ "dtor",
             /* strMthInArgs       */ "" );
@@ -893,8 +893,8 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj( int i_idxInTree )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLavel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "getTraceAdminObj",
         /* strMthInArgs       */ strMthInArgs );
@@ -906,7 +906,7 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj( int i_idxInTree )
     if( i_idxInTree < 0 )
     {
         SErrResultInfo errResultInfo(
-            /* errSource     */ nameSpace(), className(), objectName(), "getTraceAdminObj",
+            /* errSource     */ NameSpace(), ClassName(), objectName(), "getTraceAdminObj",
             /* result        */ EResultArgOutOfRange,
             /* severity      */ EResultSeverityError,
             /* strAddErrInfo */ "Idx In Tree (=" + QString::number(i_idxInTree) + ") is out of range");
@@ -982,8 +982,8 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj(
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLavel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "getTraceAdminObj",
         /* strMthInArgs       */ strMthInArgs );
@@ -999,7 +999,7 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj(
     if( !eEnabledAsDefault.isValid() )
     {
         SErrResultInfo errResultInfo(
-            /* errSource     */ nameSpace(), className(), objectName(), "getTraceAdminObj",
+            /* errSource     */ NameSpace(), ClassName(), objectName(), "getTraceAdminObj",
             /* result        */ EResultArgOutOfRange,
             /* severity      */ EResultSeverityError,
             /* strAddErrInfo */ "EnabledAsDefault " + i_strEnabledAsDefault + " is out of range");
@@ -1011,7 +1011,7 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj(
     else if( !eMethodCallsDefaultDetailLevel.isValid() )
     {
         SErrResultInfo errResultInfo(
-            /* errSource     */ nameSpace(), className(), objectName(), "getTraceAdminObj",
+            /* errSource     */ NameSpace(), ClassName(), objectName(), "getTraceAdminObj",
             /* result        */ EResultArgOutOfRange,
             /* severity      */ EResultSeverityError,
             /* strAddErrInfo */ "MethodCallsDefaultDetailLevel " + i_strMethodCallsDefaultDetailLevel + " is out of range");
@@ -1023,7 +1023,7 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj(
     else if( !eRuntimeInfoDefaultDetailLevel.isValid() )
     {
         SErrResultInfo errResultInfo(
-            /* errSource     */ nameSpace(), className(), objectName(), "getTraceAdminObj",
+            /* errSource     */ NameSpace(), ClassName(), objectName(), "getTraceAdminObj",
             /* result        */ EResultArgOutOfRange,
             /* severity      */ EResultSeverityError,
             /* strAddErrInfo */ "RuntimeInfoDefaultDetailLevel " + i_strRuntimeInfoDefaultDetailLevel + " is out of range");
@@ -1035,7 +1035,7 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj(
     else if( i_strObjName.isEmpty() && i_strClassName.isEmpty() && i_strNameSpace.isEmpty() )
     {
         SErrResultInfo errResultInfo(
-            /* errSource     */ nameSpace(), className(), objectName(), "getTraceAdminObj",
+            /* errSource     */ NameSpace(), ClassName(), objectName(), "getTraceAdminObj",
             /* result        */ EResultArgOutOfRange,
             /* severity      */ EResultSeverityError,
             /* strAddErrInfo */ "Neither NameSpace nor ClassName nor ObjectName defined");
@@ -1114,8 +1114,8 @@ void CTrcServer::releaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLavel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "releaseTraceAdminObj",
         /* strMthInArgs       */ strMthInArgs );
@@ -1172,8 +1172,8 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj(
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLavel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "getTraceAdminObj",
         /* strMthInArgs       */ strMthInArgs );
@@ -1185,7 +1185,7 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj(
     if( i_strObjName.isEmpty() && i_strClassName.isEmpty() && i_strNameSpace.isEmpty() )
     {
         SErrResultInfo errResultInfo(
-            /* errSource     */ nameSpace(), className(), objectName(), "getTraceAdminObj",
+            /* errSource     */ NameSpace(), ClassName(), objectName(), "getTraceAdminObj",
             /* result        */ EResultArgOutOfRange,
             /* severity      */ EResultSeverityError,
             /* strAddErrInfo */ "Neither NameSpace nor ClassName nor ObjectName defined");
@@ -1279,8 +1279,8 @@ CTrcAdminObj* CTrcServer::renameTraceAdminObj(
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLavel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "renameTraceAdminObj",
         /* strMthInArgs       */ strMthInArgs );
@@ -1728,8 +1728,8 @@ void CTrcServer::setEnabled( bool i_bEnabled )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLavel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setEnabled",
         /* strMthInArgs       */ "" );
@@ -1776,8 +1776,8 @@ void CTrcServer::setNewTrcAdminObjsEnabledAsDefault( bool i_bEnabled )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLavel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setNewTrcAdminObjsEnabledAsDefault",
         /* strMthInArgs       */ strMthInArgs );
@@ -1815,8 +1815,8 @@ void CTrcServer::setNewTrcAdminObjsMethodCallsDefaultDetailLevel( EMethodTraceDe
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLavel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setNewTrcAdminObjsMethodCallsDefaultDetailLevel",
         /* strMthInArgs       */ strMthInArgs );
@@ -1854,8 +1854,8 @@ void CTrcServer::setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel( ELogDetailLeve
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLavel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel",
         /* strMthInArgs       */ strMthInArgs );
@@ -1897,8 +1897,8 @@ void CTrcServer::setAdminObjFileAbsoluteFilePath( const QString& i_strAbsFilePat
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLavel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setAdminObjFileAbsoluteFilePath",
         /* strMthInArgs       */ strMthInArgs );
@@ -1958,8 +1958,8 @@ SErrResultInfo CTrcServer::recallAdminObjs( const QString& i_strAbsFilePath )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLavel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "recallAdminObjs",
         /* strMthInArgs       */ strMthInArgs );
@@ -1995,8 +1995,8 @@ SErrResultInfo CTrcServer::saveAdminObjs( const QString& i_strAbsFilePath )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLavel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "saveAdminObjs",
         /* strMthInArgs       */ strMthInArgs );
@@ -2036,8 +2036,8 @@ void CTrcServer::setLocalTrcFileAbsoluteFilePath( const QString& i_strAbsFilePat
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLavel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setLocalTrcFileAbsoluteFilePath",
         /* strMthInArgs       */ strMthInArgs );
@@ -2094,8 +2094,8 @@ void CTrcServer::setUseLocalTrcFile( bool i_bUse )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLavel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setUseLocalTrcFile",
         /* strMthInArgs       */ "" );
@@ -2147,8 +2147,8 @@ void CTrcServer::setLocalTrcFileAutoSaveIntervalInMs( int i_iAutoSaveInterval_ms
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLavel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setLocalTrcFileAutoSaveIntervalInMs",
         /* strMthInArgs       */ "" );
@@ -2183,8 +2183,8 @@ void CTrcServer::setLocalTrcFileCloseFileAfterEachWrite( bool i_bCloseFile )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLavel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setLocalTrcFileCloseFileAfterEachWrite",
         /* strMthInArgs       */ "" );
@@ -2227,8 +2227,8 @@ void CTrcServer::setLocalTrcFileSubFileCountMax( int i_iCountMax )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLavel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setLocalTrcFileSubFileCountMax",
         /* strMthInArgs       */ "" );
@@ -2263,8 +2263,8 @@ void CTrcServer::setLocalTrcFileSubFileLineCountMax( int i_iCountMax )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLavel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setLocalTrcFileSubFileLineCountMax",
         /* strMthInArgs       */ "" );
@@ -2304,8 +2304,8 @@ void CTrcServer::setUseIpcServer( bool i_bUse )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLavel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setUseIpcServer",
         /* strMthInArgs       */ "" );
@@ -2335,8 +2335,8 @@ void CTrcServer::setCacheTrcDataIfNotConnected( bool i_bCacheData )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLavel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setCacheTrcDataIfNotConnected",
         /* strMthInArgs       */ "" );
@@ -2367,8 +2367,8 @@ void CTrcServer::setCacheTrcDataMaxArrLen( int i_iMaxArrLen )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLavel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setCacheTrcDataMaxArrLen",
         /* strMthInArgs       */ "" );
@@ -2403,8 +2403,8 @@ void CTrcServer::setTraceSettings( const STrcServerSettings& i_settings )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLavel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setTraceSettings",
         /* strMthInArgs       */ "" );
@@ -2503,8 +2503,8 @@ void CTrcServer::clearLocalTrcFile()
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLavel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "clearLocalTrcFile",
         /* strMthInArgs       */ "" );

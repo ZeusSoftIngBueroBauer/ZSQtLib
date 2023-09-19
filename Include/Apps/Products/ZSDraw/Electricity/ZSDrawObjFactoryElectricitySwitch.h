@@ -41,13 +41,9 @@ class CObjFactorySwitch : public CObjFactory
 //******************************************************************************
 {
 public: // class methods
-    /*! Returns the namespace the class belongs to.
-        Please note that the static class functions name must be different
-        from the non static virtual member function "nameSpace" */
+    /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw::Electricity"; }
-    /*! Returns the class name.
-        Please note that the static class functions name must be different
-        from the non static virtual member function "nameSpace" */
+    /*! Returns the class name. */
     static QString ClassName() { return "CObjFactorySwitch"; }
 public: // ctors and dtor
     CObjFactorySwitch( const QPixmap& i_pxmToolIcon = QPixmap() );
@@ -55,7 +51,7 @@ public: // ctors and dtor
 public: // interface methods of base class CObjFactory
     virtual CGraphObj* createGraphObj(
         CDrawingScene* i_pDrawingScene,
-        const QPointF& i_ptItemPos,
+        const CPhysValPoint& i_physValPoint,
         const CDrawSettings& i_drawSettings ) override;
     virtual ZS::System::SErrResultInfo saveGraphObj(
         CGraphObj* i_pGraphObj,

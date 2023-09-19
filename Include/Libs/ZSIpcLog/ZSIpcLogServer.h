@@ -77,9 +77,6 @@ public: // class methods
 protected: // ctors and dtor
     CIpcLogServer();
     virtual ~CIpcLogServer();
-public: // overridables
-    QString nameSpace() const { return CIpcLogServer::NameSpace(); }
-    QString className() const { return CIpcLogServer::ClassName(); }
 public: // instance methods
     Ipc::CServer* getIpcServer() { return m_pIpcServer; }
 public: // overridables of base class CLogServer

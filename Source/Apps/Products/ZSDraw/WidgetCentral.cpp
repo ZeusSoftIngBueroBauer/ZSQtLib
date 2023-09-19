@@ -130,14 +130,13 @@ CWidgetCentral::CWidgetCentral(
     setLayout(m_pLyt);
 
     // The drawing size instance created by the drawing scene accesses the
-    // the unit to get the screen resolution. To get the screen resolution
-    // the screen resolution must be set before. Setting it in the drawing
-    // views constructor would be too late. It must be done by the creator
-    // of the drawing view.
-    Units.Length.setPxpis(logicalDpiX(), logicalDpiY());
-    Units.Length.setDpis(physicalDpiX(), physicalDpiY());
+    // unit to get the screen resolution. To get the screen resolution the
+    // screen resolution must be set before. Setting it in the drawing views
+    // constructor is too late. It must be done by the creator of the drawing view.
+    Units.Length.setPxpi(logicalDpiX());
+    Units.Length.setDpi(physicalDpiX());
 
-    m_pDrawingScene = new CDrawingScene(/*this*/);
+    m_pDrawingScene = new CDrawingScene("theInst");
     //m_pDrawingScene->setBackgroundBrush(Qt::blue);
 
     m_pDrawingView = new CDrawingView(m_pDrawingScene);

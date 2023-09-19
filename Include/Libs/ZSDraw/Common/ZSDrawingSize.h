@@ -28,7 +28,8 @@ may result in using the software modules.
 #define ZSDraw_DrawingSize_h
 
 #include "ZSDraw/Common/ZSDrawCommon.h"
-#include "ZSPhysVal/ZSPhysVal.h"
+#include "ZSDraw/Common/ZSDrawPhysValPoint.h"
+#include "ZSDraw/Common/ZSDrawPhysValSize.h"
 
 class QXmlStreamReader;
 class QXmlStreamWriter;
@@ -43,15 +44,24 @@ class CMethodTracer;
 namespace Draw
 {
 //******************************************************************************
-class ZSDRAWDLL_API CDrawingSize
+/*! The class combines the properties to define the size of a drawing scene.
+
+    This includes the unit (either metric or pixels) as well as the scale factor.
+    Unit conversion routines between pixels and metric units (and vice versa)
+    must take the screen resolution (defined in pixels per inch or pixels per mm)
+    and the scale factor into account. This means that those unit conversion routines
+    must be able to access the drawing scene and its drawing size to use the currently
+    used scale factor.
+*/
+class ZSDRAWDLL_API CDrawingSize : public QObject
 //******************************************************************************
 {
+    Q_OBJECT
 public: // class methods
     static QString NameSpace() { return "ZS::Draw"; }
     static QString ClassName() { return "CDrawingSize"; }
 public: // ctors and dtor
     CDrawingSize(const QString& i_strName);
-    CDrawingSize(const QString& i_strName, const QSize& i_size);
     CDrawingSize(const CDrawingSize& i_other);
     ~CDrawingSize();
 public: // operators
@@ -65,24 +75,24 @@ public: // instance methods
     ZS::PhysVal::CUnit unit() const;
     ZS::PhysVal::CPhysValRes resolution() const;
 public: // instance methods
-    void setMetricUnit( const ZS::PhysVal::CUnit& i_unit );
+    void setMetricUnit(const ZS::PhysVal::CUnit& i_unit);
     ZS::PhysVal::CUnit metricUnit() const;
-    void setNormedPaperSize( const CEnumNormedPaperSize& i_ePaperSize );
+    void setNormedPaperSize(const CEnumNormedPaperSize& i_ePaperSize);
     CEnumNormedPaperSize normedPaperSize() const;
-    void setNormedPaperOrientation( const ZS::System::CEnumOrientation& i_eOrientation );
+    void setNormedPaperOrientation(const ZS::System::CEnumOrientation& i_eOrientation);
     ZS::System::CEnumOrientation normedPaperOrientation() const;
-    void setScaleFactor( int i_iDividend, int i_iDivisor );
+    void setScaleFactor(int i_iDividend, int i_iDivisor);
     int scaleFactorDividend() const;
     int scaleFactorDivisor() const;
-    void setImageSize( const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight );
+    void setImageSize(const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight);
     QSize imageSizeInPixels() const;
     int imageWidthInPixels() const;
     int imageHeightInPixels() const;
     ZS::PhysVal::CPhysVal metricImageWidth() const;
     ZS::PhysVal::CPhysVal metricImageHeight() const;
 public: // instance methods
-    ZS::PhysVal::CPhysVal toMetricXCoor(double i_fXCoor_px) const;
-    ZS::PhysVal::CPhysVal toMetricYCoor(double i_fYCoor_px) const;
+    ZS::PhysVal::CPhysVal toPhysValXCoor(double i_fXCoor_px) const;
+    ZS::PhysVal::CPhysVal toPhysValYCoor(double i_fYCoor_px) const;
     double toPixelXCoor(const ZS::PhysVal::CPhysVal& i_physValXCoor) const;
     double toPixelYCoor(const ZS::PhysVal::CPhysVal& i_physValYCoor) const;
 protected: // instance methods
@@ -94,8 +104,6 @@ public: // instance methods
 protected: // instance methods (method tracing)
     void traceValues(ZS::System::CMethodTracer& i_mthTracer, ZS::System::EMethodDir i_methodDir);
 private: // instance members
-    /*!< Name of the instance. */
-    QString m_strName;
     /*!< Either Pixels or Metric System (e.g. mm, cm, m, etc.). */
     CEnumDrawingDimensionUnit m_eDimensionUnit;
     /*!< If m_eDimensionUnit is Metric the metric unit (mm, cm, m, etc.) is set here. */

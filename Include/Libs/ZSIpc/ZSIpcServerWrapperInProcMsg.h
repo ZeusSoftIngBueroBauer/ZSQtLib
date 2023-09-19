@@ -52,9 +52,6 @@ public: // ctors and dtor
         ZS::System::CTrcMthFile* i_pTrcMthFile = nullptr,         // If != nullptr trace method file with detail level is used instead of trace admin object with Trace server.
         ZS::System::EMethodTraceDetailLevel i_eTrcMthFileDetailLevel = ZS::System::EMethodTraceDetailLevel::None );
     virtual ~CInProcMsgServerWrapper();
-public: // overridables of base class CIpcServerWrapper
-    virtual QString nameSpace() const override { return NameSpace(); }
-    virtual QString className() const override { return ClassName(); }
 public: // instance methods
     ZS::System::ECopyDepth getMsgReadBuffCopyDepth() const;
     void setMsgReadBuffCopyDepth( ZS::System::ECopyDepth i_copyDepth );

@@ -61,9 +61,6 @@ public: // ctors and dtor
 signals:
     void sortOrderChanged(const QString& i_strSortOrder);
     void sortOrderChanged(EIdxTreeSortOrder i_sortOrder);
-public: // overridables
-    virtual QString nameSpace() const { return CTableViewIdxTreeBranchContent::NameSpace(); }
-    virtual QString className() const { return CTableViewIdxTreeBranchContent::ClassName(); }
 public: // instance methods
     void setIdxTree(CIdxTree* i_pIdxTree);
     CIdxTree* idxTree() { return m_pIdxTree; }

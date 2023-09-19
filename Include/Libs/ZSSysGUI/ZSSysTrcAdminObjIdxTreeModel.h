@@ -68,9 +68,6 @@ public: // ctors and dtor
         CIdxTreeTrcAdminObjs* i_pIdxTree = nullptr,
         QObject* i_pObjParent = nullptr );
     virtual ~CModelIdxTreeTrcAdminObjs();
-public: // overridables
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 public: // instance methods
     CIdxTreeTrcAdminObjs* idxTree();
 public: // instance methods

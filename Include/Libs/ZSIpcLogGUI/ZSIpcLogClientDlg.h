@@ -74,9 +74,6 @@ protected: // ctor
         Qt::WindowFlags i_wFlags = Qt::WindowFlags());
 public: // dtor
     virtual ~CDlgLogClient();
-public: // overridables of base class ZS::System::GUI::CDialog
-    virtual QString nameSpace() override { return NameSpace(); }
-    virtual QString className() override { return ClassName(); }
 public: // instance methods
     void setClient( CIpcLogClient* i_pLogClient );
 protected slots:

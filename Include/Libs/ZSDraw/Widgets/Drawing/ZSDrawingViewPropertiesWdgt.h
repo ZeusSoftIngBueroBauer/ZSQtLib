@@ -51,9 +51,6 @@ public: // ctors and dtor
         bool i_bCreateButtonsWidget = true,
         QWidget* i_pWdgtParent = nullptr);
     virtual ~CWdgtDrawingViewProperties();
-public: // overridables
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 public: // overridables of base class CWdgtGraphObjPropertiesAbstract
     bool hasChanges() const override;
     void acceptChanges() override;

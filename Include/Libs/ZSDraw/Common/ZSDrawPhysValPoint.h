@@ -42,9 +42,14 @@ namespace Draw
 //******************************************************************************
 /*! @brief Corresponds to QPointF but providing a physical unit and a resolution.
 
-    This class is not part of ZS::PhysVal as conversion into pixel values is
-    necessary and for this the unit "Pixel" must be available.
-    ZS::PhysVal is abstract concerning units and does not know about the unit "px".
+    This class is not part of ZS::PhysVal as the namespace ZS::PhysVal is abstract
+    concerning units and the units "pixels" or any metric units is not known within
+    the ZS::PhysVal library. The corresponding unit tree must be configured for the
+    specific application or, as in this case, in the units tree of the ZS::Draw library.
+
+    In addition to convert between metric and pixel dimensions (and vice versa)
+    the screen resolution and the scale factor must be known. Both are properties
+    of the physical size "Length" within the ZS::Draw library.
 */
 class ZSDRAWDLL_API CPhysValPoint
 //******************************************************************************
@@ -53,17 +58,18 @@ public: // class methods
     static QString NameSpace() { return "ZS::Draw"; }
     static QString ClassName() { return "CPhysValPoint"; }
 public: // ctors and dtor
-    CPhysValPoint( ZS::PhysVal::EResType i_resType = ZS::PhysVal::EResType::Resolution );
-    CPhysValPoint( const ZS::PhysVal::CUnit& i_unit, double i_fRes = 0.0, ZS::PhysVal::EResType i_resType = ZS::PhysVal::EResType::Resolution );
-    CPhysValPoint( const CPhysValPoint& i_physValPointOther );
-    CPhysValPoint( const QPointF& i_pt );
-    virtual ~CPhysValPoint();
+    CPhysValPoint();
+    CPhysValPoint(const ZS::PhysVal::CUnit& i_unit);
+    CPhysValPoint(const QPointF& i_pt, const ZS::PhysVal::CUnit& i_unit);
+    CPhysValPoint(const CPhysValPoint& i_physValPointOther);
+    ~CPhysValPoint();
 public: // operators
-    bool operator == ( const CPhysValPoint& i_physValPointOther ) const;
-    bool operator != ( const CPhysValPoint& i_physValPointOther ) const;
+    CPhysValPoint& operator = (const CPhysValPoint& i_physValPointOther);
+    CPhysValPoint& operator = (const QPointF& i_ptOther);
+    CPhysValPoint& operator = ( const QString& i_strValOther );
 public: // operators
-    CPhysValPoint& operator = ( const CPhysValPoint& i_physValPointOther );
-    CPhysValPoint& operator = ( const QPointF& i_pt );
+    bool operator == (const CPhysValPoint& i_physValPointOther) const;
+    bool operator != (const CPhysValPoint& i_physValPointOther) const;
 public: // instance methods
     ZS::PhysVal::CUnit unit() const;
     ZS::PhysVal::CPhysVal x() const;
@@ -73,12 +79,11 @@ public: // instance methods
     void setY(const ZS::PhysVal::CPhysVal& i_physValY);
 public: // instance methods (to convert the values into another unit)
     QPointF toQPointF() const;
-    void convertValues(const ZS::PhysVal::CUnit& i_unitDst);
-public: // instance methods
     QString toString() const;
 protected: // instance members
+    /*!< Unit (either metric or pixels) in which the line coordinates are internally stored in 'm_pt'. */
     ZS::PhysVal::CUnit m_unit;
-    ZS::PhysVal::CPhysValRes m_physValRes;
+    /*!< The point coordinates stored in the unit 'm_unit'. */
     QPointF m_pt;
 
 }; // class CPhysValPoint

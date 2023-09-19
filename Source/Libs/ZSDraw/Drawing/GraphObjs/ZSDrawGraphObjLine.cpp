@@ -74,14 +74,24 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Creates a line object.
+/*! @brief Creates a graphical line object.
 
-    The number of line objects stored in s_iInstCount is increased.
+    The number of line objects stored in s_iInstCount is increased to create
+    a unique line name when creating objects by passing an empty object name.
 
-    @param i_strObjName [in]
-        Name of the graphical object which must be unique below its parent.
-        If an empty string is passed a unique name is created by using the
-        current number of line objects taken from s_iInstCount.
+    @param [in] i_pDrawingScene
+        Pointer to drawing scene creating the line object.
+    @param [in] i_drawSettings
+        Current draw settings like pen width, pen color, line style etc. to be used.
+    @param [in] i_strObjName
+        Name of the graphical object.
+        Names of graphical objects must be unique below its parent.
+        If an empty string is passed a unique name is created by adding the
+        current number of line objects taken from s_iInstCount to "Line".
+    @param [in] i_physValPoint1
+        Start point of the line.
+    @param [in] i_physValPoint2
+        End point of the line.
 */
 CGraphObjLine::CGraphObjLine(
     CDrawingScene* i_pDrawingScene,
@@ -98,24 +108,16 @@ CGraphObjLine::CGraphObjLine(
         /* strObjName          */ i_strObjName.isEmpty() ? "Line" + QString::number(s_iInstCount) : i_strObjName,
         /* drawSettings        */ i_drawSettings ),
     QGraphicsLineItem(),
+    m_line(i_physValPoint1, i_physValPoint2),
     m_plgLineStart(),
     m_plgLineEnd()
 {
-    // Just incremented by the ctor but not decremented by the dtor.
-    // Used to create a unique name for newly created objects of this type.
     s_iInstCount++;
 
+    // Initialise list with number of selection points.
+    // A line may provide two selection points - at start and end of line.
     m_arpSelPtsPolygon.append(nullptr);
     m_arpSelPtsPolygon.append(nullptr);
-
-    CPhysValPoint physValPt1 = i_physValPoint1;
-    CPhysValPoint physValPt2 = i_physValPoint2;
-
-    physValPt1.convertValues(Units.Length.px);
-    physValPt2.convertValues(Units.Length.px);
-
-    m_plgLineStart.append(QPointF(physValPt1.x().getVal(), physValPt1.y().getVal()));
-    m_plgLineEnd.append(QPointF(physValPt2.x().getVal(), physValPt2.y().getVal()));
 
     createTraceAdminObjs("StandardShapes::" + ClassName());
 
@@ -229,7 +231,7 @@ CGraphObj* CGraphObjLine::clone()
 
     CGraphObjLine* pGraphObj = new CGraphObjLine(
         m_pDrawingScene, m_drawSettings, m_strName,
-        getPoint1(), getPoint2() );
+        getP1(), getP2() );
     return pGraphObj;
 }
 
@@ -321,41 +323,31 @@ void CGraphObjLine::setLine(
 
 //------------------------------------------------------------------------------
 void CGraphObjLine::setLine(
-    const CPhysVal& i_physValX1, const CPhysVal& i_physValY1,
-    const CPhysVal& i_physValX2, const CPhysVal& i_physValY2 )
+    double i_fX1, double i_fY1, double i_fX2, double i_fY2, const ZS::PhysVal::CUnit& i_unit )
 //------------------------------------------------------------------------------
 {
-    setLine(CPhysValLine(i_physValX1, i_physValY1, i_physValX2, i_physValY2));
+    setLine(CPhysValLine(i_fX1, i_fY1, i_fX2, i_fY2, i_unit));
 }
 
 //------------------------------------------------------------------------------
 CPhysValLine CGraphObjLine::getLine() const
 //------------------------------------------------------------------------------
 {
-    CPhysValLine physValLine = QGraphicsLineItem::line();
-    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    physValLine.convertValues(drawingSize.unit());
-    return physValLine;
+    return m_line;
 }
 
 //------------------------------------------------------------------------------
-CPhysValPoint CGraphObjLine::getPoint1() const
+CPhysValPoint CGraphObjLine::getP1() const
 //------------------------------------------------------------------------------
 {
-    CPhysValPoint physValPoint = QGraphicsLineItem::line().p1();
-    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    physValPoint.convertValues(drawingSize.unit());
-    return physValPoint;
+    return m_line.p1();
 }
 
 //------------------------------------------------------------------------------
-CPhysValPoint CGraphObjLine::getPoint2() const
+CPhysValPoint CGraphObjLine::getP2() const
 //------------------------------------------------------------------------------
 {
-    CPhysValPoint physValPoint = QGraphicsLineItem::line().p2();
-    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    physValPoint.convertValues(drawingSize.unit());
-    return physValPoint;
+    return m_line.p2();
 }
 
 /*==============================================================================
@@ -1261,14 +1253,15 @@ void CGraphObjLine::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
             QRectF sceneRect = m_pDrawingScene->sceneRect();
             QPointF posEv = i_pEv->pos();
             if (sceneRect.contains(mapToScene(posEv))) {
-                QLineF lineF = line();
+                CPhysValPoint physValPosEv = m_pDrawingScene->toPhysValPoint(posEv);
+                CPhysValLine physValLine = m_line;
                 if (m_idxSelPtSelectedPolygon == 1) {
-                    lineF.setP2(posEv);
+                    physValLine.setP2(physValPosEv);
                 }
                 else /*if( m_idxSelPtSelectedPolygon == 0 )*/ {
-                    lineF.setP1(posEv);
+                    physValLine.setP1(physValPosEv);
                 }
-                setLine(lineF);
+                setLine(physValLine);
             }
         }
         else if (m_editMode == EEditMode::Move)

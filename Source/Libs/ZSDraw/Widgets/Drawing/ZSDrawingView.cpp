@@ -99,7 +99,9 @@ CDrawingView::CDrawingView( CDrawingScene* i_pDrawingScene, QWidget* i_pWdgtPare
     //Units.Length.setPxpis(logicalDpiX(), logicalDpiY());
     //Units.Length.setDpis(physicalDpiX(), physicalDpiY());
 
-    m_pDrawingScene->setDrawingSize(CDrawingSize("DrawingScene", QSize(1024, 768)));
+    CDrawingSize drawingSize("DrawingScene");
+    drawingSize.setImageSize(CPhysVal(1024, Units.Length.px), CPhysVal(768, Units.Length.px));
+    m_pDrawingScene->setDrawingSize(drawingSize);
 
     //QWidget* pWdgtViewPort = new QWidget();
     //pWdgtViewPort->setBackgroundRole(QPalette::ToolTipBase);

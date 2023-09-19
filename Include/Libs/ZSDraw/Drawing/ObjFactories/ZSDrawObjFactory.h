@@ -27,7 +27,7 @@ may result in using the software modules.
 #ifndef ZSDraw_ObjFactory_h
 #define ZSDraw_ObjFactory_h
 
-#include "ZSDraw/Common/ZSDrawDllMain.h"
+#include "ZSDraw/Common/ZSDrawCommon.h"
 #include "ZSSys/ZSSysIdxTreeEntry.h"
 #include "ZSSys/ZSSysErrResult.h"
 
@@ -58,6 +58,7 @@ class CDrawSettings;
 class CGraphObj;
 class CGraphObjGroup;
 class CGraphObjLabel;
+class CPhysValPoint;
 
 //******************************************************************************
 class ZSDRAWDLL_API CObjFactory : public QObject, public ZS::System::CIdxTreeEntry
@@ -65,9 +66,9 @@ class ZSDRAWDLL_API CObjFactory : public QObject, public ZS::System::CIdxTreeEnt
 {
 public: // class methods
     /*! Returns the namespace the class belongs to. */
-    static QString NameSpace() { return "ZS::Draw"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
+    static QString NameSpace() { return "ZS::Draw"; }
     /*! Returns the class name. */
-    static QString ClassName() { return "CObjFactory"; }  // Please note that the static class functions name must be different from the non static virtual member function "className"
+    static QString ClassName() { return "CObjFactory"; }
 public: // class members
     /*! Separator used to name group of factories. */
     static const QString c_strGroupSeparater;   // = "::"
@@ -93,24 +94,15 @@ protected: // ctor
     CObjFactory(
         const QString& i_strGroupName,
         const QString& i_strClassName,
-        int i_iGraphObjType,
+        EGraphObjType i_eGraphObjType,
         const QString& i_strGraphObjType,
         const QPixmap& i_pxmToolIcon = QPixmap() );
 public: // dtor
     virtual ~CObjFactory();
-public: // overridables
-    /*! This virtual method returns the name space of the object's class.
-        This method can be reimplemented in derived classes so when invoked for the
-        polymorphic base type the method returns the name space of the derived class. */
-    virtual QString nameSpace() const { return NameSpace(); }
-    /*! This virtual method returns the class name of the object's class.
-        This method can be reimplemented in derived classes so when invoked for the
-        polymorphic base type the method returns the name of the derived class. */
-    virtual QString className() const { return ClassName(); }
 public: // interface methods
     virtual CGraphObj* createGraphObj(
         CDrawingScene* i_pDrawingScene,
-        const QPointF& i_ptItemPos, // usually QPointF(0.0, 0.0)
+        const CPhysValPoint& i_physValPoint,
         const CDrawSettings& i_drawSettings ) = 0;
     virtual ZS::System::SErrResultInfo saveGraphObj(
         CGraphObj* i_pGraphObj,
@@ -122,7 +114,7 @@ public: // interface methods
         QXmlStreamReader& i_xmlStreamReader ) = 0;
 public: // instance methods
     QString getGroupName() const { return m_strGroupName; }
-    int getGraphObjType() const { return m_iGraphObjType; }
+    EGraphObjType getGraphObjType() const { return m_eGraphObjType; }
     QString getGraphObjTypeAsString() const { return m_strName; }
 public: // instance methods
     void setToolIconPixmap( const QPixmap& i_pxm );
@@ -146,8 +138,8 @@ protected: // class members
 protected: // instance members
     /*!< To group the factory in index tree (e.g. "Draw::Standard Shapes", "Draw::Widgets", "Draw::Electricity") */
     QString m_strGroupName;
-    /*!< Type as int of the graphic items created by this factory. */
-    int m_iGraphObjType;
+    /*!< Type of the graphic items created by this factory. */
+    EGraphObjType m_eGraphObjType;
     /*!< Pixmap for icon to indicate the graphic items created by this factory in the index tree. */
     QPixmap m_pxmToolIcon;
     /*!< The file's path (which may be absolute or relative). This doesn't include the file name. */

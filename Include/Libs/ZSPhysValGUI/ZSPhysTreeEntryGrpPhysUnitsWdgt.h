@@ -59,9 +59,6 @@ public: // class methods
 public: // ctors and dtor
     CWdgtPhysUnitsGrp(QWidget* i_pWdgtParent = nullptr);
     virtual ~CWdgtPhysUnitsGrp();
-public: // overridables
-    virtual QString nameSpace() const { return CWdgtPhysUnitsGrp::NameSpace(); }
-    virtual QString className() const { return CWdgtPhysUnitsGrp::ClassName(); }
 public: // overridables of base class CWdgtAbstractTreeEntry
     virtual void setKeyInTreeOfRootEntry( const QString& i_strKeyInTree ) override;
     virtual void resizeToContents() override;

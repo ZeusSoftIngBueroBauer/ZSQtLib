@@ -64,9 +64,6 @@ public: // ctors and dtor
         ZS::System::CErrLog* i_pErrLog,
         ZS::System::EMethodTraceDetailLevel i_eTrcMthFileDetailLevel = ZS::System::EMethodTraceDetailLevel::None );
     virtual ~CSrvCltBaseGatewayThread();
-public: // overridables
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 public: // instance methods
     QObject* getGateway() { return m_pGateway; }
 public: // instance methods
@@ -128,9 +125,6 @@ protected: // ctor
         ZS::System::EMethodTraceDetailLevel i_eTrcMthFileDetailLevel = ZS::System::EMethodTraceDetailLevel::None );
 public: // dtor
     virtual ~CSrvCltBaseGateway();
-public: // instance methods
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 protected slots: // must overridables
     virtual void onDisconnected( QObject* i_pSocketWrapper ) = 0;
     virtual void onReadyRead( QObject* i_pSocketWrapper ) = 0;

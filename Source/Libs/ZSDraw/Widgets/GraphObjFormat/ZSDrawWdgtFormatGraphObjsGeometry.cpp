@@ -775,7 +775,7 @@ void CWdgtFormatGraphObjsGeometry::applyChanges()
     if( m_pWdgtPosSize != nullptr )
     {
         m_pGraphicsItem->setPos(m_ptPos);
-        m_pGraphObj->setSize(m_size);
+        //m_pGraphObj->setSize(m_size);
     }
 
     // Shape Points
@@ -789,7 +789,7 @@ void CWdgtFormatGraphObjsGeometry::applyChanges()
             QPointF pt1 = pGraphObjLine->mapFromParent(m_plg[0]);
             QPointF pt2 = pGraphObjLine->mapFromParent(m_plg[1]);
             QLineF  lin( pt1, pt2 );
-            pGraphObjLine->setLine(lin);
+            //pGraphObjLine->setLine(lin);
         }
         else
         {

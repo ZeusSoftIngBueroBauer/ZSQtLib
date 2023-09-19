@@ -1020,7 +1020,7 @@ void CErrLog::addEntry(
         addEntry_(
             /* dateTime    */ QDateTime::currentDateTime(),
             /* errResultInfo  */ SErrResultInfo(
-                /* errSource  */ nameSpace(), className(), objectName(), "addEntry",
+                /* errSource  */ NameSpace(), ClassName(), objectName(), "addEntry",
                 /* result     */ EResultListIsFull,
                 /* severity   */ EResultSeverityError,
                 /* strAddInfo */ "Maximum number of error log entries for severity " + resultSeverity2Str(severity) + " reached." ),

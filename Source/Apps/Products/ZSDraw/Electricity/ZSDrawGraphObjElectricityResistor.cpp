@@ -180,6 +180,7 @@ CGraphObjResistor::CGraphObjResistor(
 
     CDrawSettings drawSettingsCnctPt(EGraphObjTypeConnectionPoint);
 
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
     // Connection Line
     //----------------
 
@@ -274,7 +275,6 @@ CGraphObjResistor::CGraphObjResistor(
     // Update group coordinates
     //-------------------------
 
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
     m_rctCurr = rctBounding;
 
     m_ptRotOriginCurr = m_rctCurr.center();
@@ -517,8 +517,8 @@ void CGraphObjResistor::updateToolTip()
             m_strToolTip += "\nPos:\t\t" + point2Str(ptPos);
         }
 
-        m_strToolTip += "\nSize:\t\t" + size2Str(getSize());
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
+        m_strToolTip += "\nSize:\t\t" + size2Str(getSize());
         m_strToolTip += "\nRotation:\t" + QString::number(m_fRotAngleCurr_deg,'f',1) + " " + ZS::PhysVal::c_strSymbolDegree;
 #endif
         m_strToolTip += "\nZValue:\t\t" + QString::number(pGraphicsItem->zValue());

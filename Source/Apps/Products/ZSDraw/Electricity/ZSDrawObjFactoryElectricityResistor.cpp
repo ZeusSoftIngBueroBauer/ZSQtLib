@@ -88,23 +88,24 @@ public: // interface methods
 
 //------------------------------------------------------------------------------
 CGraphObj* CObjFactoryResistor::createGraphObj(
-    CDrawingScene*       i_pDrawingScene,
-    const QPointF&       i_ptItemPos,
+    CDrawingScene* i_pDrawingScene,
+    const CPhysValPoint& i_physValPoint,
     const CDrawSettings& i_drawSettings )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strAddTrcInfo = "ItemPos:" + QString::number(i_ptItemPos.x()) + "," + QString::number(i_ptItemPos.y());
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Point {" + i_physValPoint.toString() + "}";
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createGraphObj",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsDetailed)) {
+        strMthInArgs = "DrawSettings {" + i_drawSettings.toString(EGraphObjTypeLine) + "}";
+        mthTracer.trace(strMthInArgs);
+    }
 
     CGraphObj* pGraphObj = new CGraphObjResistor(
         /* pDrawingScene */ i_pDrawingScene,
@@ -129,8 +130,8 @@ SErrResultInfo CObjFactoryResistor::saveGraphObj(
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strAddTrcInfo  = "GraphObj:" + i_pGraphObj->nameSpace();
-        strAddTrcInfo += "::" + i_pGraphObj->className();
+        strAddTrcInfo  = "GraphObj:" + i_pGraphObj->NameSpace();
+        strAddTrcInfo += "::" + i_pGraphObj->ClassName();
         strAddTrcInfo += "::" + i_pGraphObj->name();
     }
 
@@ -149,6 +150,7 @@ SErrResultInfo CObjFactoryResistor::saveGraphObj(
         throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjResistor == nullptr" );
     }
 
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
     // Electrical Parameters
     //----------------------
 
@@ -193,6 +195,7 @@ SErrResultInfo CObjFactoryResistor::saveGraphObj(
     //    errResultInfo = saveGraphObjLabels( arpLabels, i_xmlStreamWriter );
     //    i_xmlStreamWriter.writeEndElement();
     //}
+#endif
 
     if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -226,7 +229,7 @@ CGraphObj* CObjFactoryResistor::loadGraphObj(
 
     CGraphObjResistor* pGraphObj = nullptr;
 
-    QString                          strElemName;
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
     QString                          strElemText;
     bool                             bConverted;
     CDrawSettings                    drawSettings(EGraphObjTypeText);
@@ -370,10 +373,8 @@ CGraphObj* CObjFactoryResistor::loadGraphObj(
 
         i_pDrawingScene->onGraphObjCreationFinished(pGraphObj);
 
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
         #pragma message(__TODO__"The methods onGraphObjCreationFinished and acceptCurrentAsOriginalCoors should become protected and it should not be necessary to explicitly call them")
         pGraphObj->acceptCurrentAsOriginalCoors();
-#endif
 
         //if( arpLabels.size() > 0 )
         //{
@@ -398,6 +399,7 @@ CGraphObj* CObjFactoryResistor::loadGraphObj(
             pGraphObjLabel = nullptr;
         }
     }
+#endif
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs(i_xmlStreamReader.errorString());

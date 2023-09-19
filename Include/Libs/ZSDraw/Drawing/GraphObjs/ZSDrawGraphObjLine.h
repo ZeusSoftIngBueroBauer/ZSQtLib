@@ -56,9 +56,9 @@ class ZSDRAWDLL_API CGraphObjLine : public CGraphObj, public QGraphicsLineItem
 {
 public: // class methods
     /*! Returns the namespace the class belongs to. */
-    static QString NameSpace() { return "ZS::Draw"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
+    static QString NameSpace() { return "ZS::Draw"; }
     /*! Returns the class name. */
-    static QString ClassName() { return "CGraphObjLine"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
+    static QString ClassName() { return "CGraphObjLine"; }
 public: // ctors and dtor
     CGraphObjLine(
         CDrawingScene* i_pDrawingScene,
@@ -77,12 +77,13 @@ public: // overridables of base class CGraphObj
     virtual void onDrawSettingsChanged() override;
 public: // instance methods
     void setLine( const CPhysValLine& i_physValLine );
+    void setLine( double i_fX1, double i_fY1, double i_fX2, double i_fY2, const ZS::PhysVal::CUnit& i_unit );
+    void setLine( const QPointF& i_p1, const QPointF& i_p2, const ZS::PhysVal::CUnit& i_unit );
+    void setLine( const QLineF& i_line, const ZS::PhysVal::CUnit& i_unit );
     void setLine( const CPhysValPoint& i_physValPoint1, const CPhysValPoint& i_physValPoint2 );
-    void setLine( const ZS::PhysVal::CPhysVal& i_physValX1, const ZS::PhysVal::CPhysVal& i_physValY1,
-                  const ZS::PhysVal::CPhysVal& i_physValX2, const ZS::PhysVal::CPhysVal& i_physValY2 );
     CPhysValLine getLine() const;
-    CPhysValPoint getPoint1() const;
-    CPhysValPoint getPoint2() const;
+    CPhysValPoint getP1() const;
+    CPhysValPoint getP2() const;
 public: // must overridables of base class CGraphObj
     virtual void setWidth( const ZS::PhysVal::CPhysVal& i_physValWidth ) override;
     virtual void setHeight( const ZS::PhysVal::CPhysVal& i_physValHeight ) override;
@@ -136,9 +137,13 @@ protected: // overridable auxiliary instance methods of base class CGraphObj (me
         ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
         ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const override;
 protected: // class members
-    /*!< Needed to set an initial unique name when creating a new instance. */
+    /*!< Needed to set an initial unique name when creating a new instance.
+         Incremented by the ctor but not decremented by the dtor.
+         Used to create a unique name for newly created objects of this type. */
     static qint64 s_iInstCount;
 protected: // instance members
+    /*!< The original, untransformed line coordinates with unit. */
+    CPhysValLine m_line;
     /*!< Start point and polygon points for arrow heads */
     QPolygonF m_plgLineStart;
     /*!< End point and polygon points for arrow heads */

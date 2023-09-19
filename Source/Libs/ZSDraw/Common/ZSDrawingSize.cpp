@@ -24,7 +24,7 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include "ZSDraw/Drawing/ZSDrawingSize.h"
+#include "ZSDraw/Common/ZSDrawingSize.h"
 #include "ZSDraw/Common/ZSDrawUnits.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysTrcMethod.h"
@@ -52,7 +52,7 @@ public: // ctors and dtor
 */
 CDrawingSize::CDrawingSize(const QString& i_strName) :
 //------------------------------------------------------------------------------
-    m_strName(i_strName),
+    QObject(),
     m_eDimensionUnit(EDrawingDimensionUnit::Pixels),
     m_metricUnit(Units.Length.mm),
     m_fImageMetricRes(Units.Length.physValResPerPx(m_metricUnit).getVal()),
@@ -67,8 +67,10 @@ CDrawingSize::CDrawingSize(const QString& i_strName) :
     m_fImageSizeHeight_px(0.0),
     m_pTrcAdminObj(nullptr)
 {
+    setObjectName(i_strName);
+
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
-        NameSpace() + "::Drawing", ClassName(), m_strName);
+        NameSpace() + "::Drawing", ClassName(), objectName());
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -78,49 +80,50 @@ CDrawingSize::CDrawingSize(const QString& i_strName) :
 
 } // ctor
 
-//------------------------------------------------------------------------------
-/*! Creates an instance of the class.
-
-    @param i_strName [in] Name of the instance.
-    @param i_size [in] Width and height in pixels.
-*/
-CDrawingSize::CDrawingSize(const QString& i_strName, const QSize& i_size) :
-//------------------------------------------------------------------------------
-    m_strName(i_strName),
-    m_eDimensionUnit(EDrawingDimensionUnit::Pixels),
-    m_metricUnit(Units.Length.mm),
-    m_fImageMetricRes(Units.Length.physValResPerPx(m_metricUnit).getVal()),
-    m_fImageMetricWidth(0.0),
-    m_fImageMetricHeight(0.0),
-    m_eNormedPaperSize(),
-    m_eNormedPaperOrientation(),
-    m_iMetricScaleFactorDividend(1),
-    m_iMetricScaleFactorDivisor(1),
-    m_fImageSizeRes_px(Units.Length.physValResPerPx(Units.Length.px).getVal()),
-    m_fImageSizeWidth_px(i_size.width()),
-    m_fImageSizeHeight_px(i_size.height()),
-    m_pTrcAdminObj(nullptr)
-{
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
-        NameSpace() + "::Drawing", ClassName(), m_strName);
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "ctor",
-        /* strAddInfo   */ "" );
-
-    updateImageSizeMetrics();
-    updatePaperFormat();
-
-} // ctor
+////------------------------------------------------------------------------------
+///*! Creates an instance of the class.
+//
+//    @param i_strName [in] Name of the instance.
+//    @param i_size [in] Width and height in pixels.
+//*/
+//CDrawingSize::CDrawingSize(const QString& i_strName, const QSize& i_size) :
+////------------------------------------------------------------------------------
+//    QObject(),
+//    m_eDimensionUnit(EDrawingDimensionUnit::Pixels),
+//    m_metricUnit(Units.Length.mm),
+//    m_fImageMetricRes(Units.Length.physValResPerPx(m_metricUnit).getVal()),
+//    m_fImageMetricWidth(0.0),
+//    m_fImageMetricHeight(0.0),
+//    m_eNormedPaperSize(),
+//    m_eNormedPaperOrientation(),
+//    m_iMetricScaleFactorDividend(1),
+//    m_iMetricScaleFactorDivisor(1),
+//    m_fImageSizeRes_px(Units.Length.physValResPerPx(Units.Length.px).getVal()),
+//    m_fImageSizeWidth_px(i_size.width()),
+//    m_fImageSizeHeight_px(i_size.height()),
+//    m_pTrcAdminObj(nullptr)
+//{
+//    setObjectName(i_strName);
+//
+//    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
+//        NameSpace() + "::Drawing", ClassName(), objectName());
+//
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObj,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strMethod    */ "ctor",
+//        /* strAddInfo   */ "" );
+//
+//    updateImageSizeMetrics();
+//    updatePaperFormat();
+//
+//} // ctor
 
 //------------------------------------------------------------------------------
 /*! Creates an instance of the class.
 */
 CDrawingSize::CDrawingSize(const CDrawingSize& i_other) :
 //------------------------------------------------------------------------------
-    m_strName(i_other.m_strName),
     m_eDimensionUnit(i_other.m_eDimensionUnit),
     m_metricUnit(i_other.m_metricUnit),
     m_fImageMetricRes(i_other.m_fImageMetricRes),
@@ -135,8 +138,10 @@ CDrawingSize::CDrawingSize(const CDrawingSize& i_other) :
     m_fImageSizeHeight_px(i_other.m_fImageSizeHeight_px),
     m_pTrcAdminObj(nullptr)
 {
+    setObjectName(i_other.objectName());
+
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
-        NameSpace() + "::Drawing", ClassName(), m_strName);
+        NameSpace() + "::Drawing", ClassName(), objectName());
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -187,14 +192,14 @@ CDrawingSize& CDrawingSize::operator = (const CDrawingSize& i_other)
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_other.toString();
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "=Other",
         /* strAddInfo   */ strMthInArgs );
 
-    m_strName = i_other.m_strName;
+    setObjectName(i_other.objectName());
+
     m_eDimensionUnit = i_other.m_eDimensionUnit;
     m_metricUnit = i_other.m_metricUnit;
     m_fImageMetricRes = i_other.m_fImageMetricRes;
@@ -619,20 +624,24 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Converts the given X coordinate in pixels into world coordinate in metric unit.
+/*! @brief Converts the given X coordinate in pixels into a physical value containing
+           the coordinate in the unit and the resolution of the drawing scene.
 
-    As a precondition the drawing must have been setup to use metric coordinate system.
-    If not the returned value is the same as the passed coordinate just converted into
-    a physical value in unit pxX.
+    If the drawing is not setup to use metric coordinate system, the method just
+    adds the unit pixels and the resolution to the returned physical value.
+
+    If the drawing is setup to use metric coordinate system, the given pixel
+    coordinate will be converted to a physical value with the metric unit
+    of the drawing scene adding the resolution to the returned physical value.
 
     @return Converted value.
 */
-CPhysVal CDrawingSize::toMetricXCoor(double i_fXCoor_px) const
+CPhysVal CDrawingSize::toPhysValXCoor(double i_fXCoor_px) const
 //------------------------------------------------------------------------------
 {
     CPhysVal physVal;
     if (m_eDimensionUnit == EDrawingDimensionUnit::Pixels) {
-        physVal = CPhysVal(i_fXCoor_px, Units.Length.px, m_fImageSizeWidth_px);
+        physVal = CPhysVal(i_fXCoor_px, Units.Length.px, m_fImageSizeRes_px);
     }
     else /*if (m_eDimensionUnit == EDrawingDimensionUnit::Metric)*/ {
         double fVal = (i_fXCoor_px * m_fImageMetricWidth) / m_fImageSizeWidth_px;
@@ -642,15 +651,19 @@ CPhysVal CDrawingSize::toMetricXCoor(double i_fXCoor_px) const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Converts the given Y coordinate in pixels into world coordinate in metric unit.
+/*! @brief Converts the given Y coordinate in pixels into a physical value containing
+           the coordinate in the unit and the resolution of the drawing scene.
 
-    As a precondition the drawing must have been setup to use metric coordinate system.
-    If not the returned value is the same as the passed coordinate just converted into
-    a physical value in unit pxY.
+    If the drawing is not setup to use metric coordinate system, the method just
+    adds the unit pixels and the resolution to the returned physical value.
+
+    If the drawing is setup to use metric coordinate system, the given pixel
+    coordinate will be converted to a physical value with the metric unit
+    of the drawing scene adding the resolution to the returned physical value.
 
     @return Converted value.
 */
-CPhysVal CDrawingSize::toMetricYCoor(double i_fYCoor_px) const
+CPhysVal CDrawingSize::toPhysValYCoor(double i_fYCoor_px) const
 //------------------------------------------------------------------------------
 {
     CPhysVal physVal;
@@ -829,16 +842,15 @@ public: // instance methods
 QString CDrawingSize::toString() const
 //------------------------------------------------------------------------------
 {
-    QString str = m_strName
-        +  ", " + m_eDimensionUnit.toString()
-        + ", NormedPaperSize: " + QString(m_eNormedPaperSize.isValid() ? m_eNormedPaperSize.toString() : "Invalid")
-        + ", Orientation: " + QString(m_eNormedPaperOrientation.isValid() ? m_eNormedPaperOrientation.toString() : "Invalid")
-        + ", Scale (" + QString::number(m_iMetricScaleFactorDividend)
-            + "/" + QString::number(m_iMetricScaleFactorDivisor) + ")"
-        + ", Size (" + CPhysVal(m_fImageMetricWidth, m_metricUnit, m_fImageMetricRes).toString()
-            + " * " + CPhysVal(m_fImageMetricHeight, m_metricUnit, m_fImageMetricRes).toString() + ")"
-        + ", Size (" + CPhysVal(m_fImageSizeWidth_px, Units.Length.px, m_fImageSizeRes_px).toString()
-            + " * " + CPhysVal(m_fImageSizeHeight_px, Units.Length.px, m_fImageSizeRes_px).toString() + ")";
+    QString str = m_eDimensionUnit.toString() +
+        ", NormedPaperSize: " + QString(m_eNormedPaperSize.isValid() ? m_eNormedPaperSize.toString() : "Invalid") +
+        ", Orientation: " + QString(m_eNormedPaperOrientation.isValid() ? m_eNormedPaperOrientation.toString() : "Invalid") +
+        ", Scale (" + QString::number(m_iMetricScaleFactorDividend) +
+            "/" + QString::number(m_iMetricScaleFactorDivisor) + ")" +
+        ", Size (" + CPhysVal(m_fImageMetricWidth, m_metricUnit, m_fImageMetricRes).toString() +
+            " * " + CPhysVal(m_fImageMetricHeight, m_metricUnit, m_fImageMetricRes).toString() + ")" +
+        ", Size (" + CPhysVal(m_fImageSizeWidth_px, Units.Length.px, m_fImageSizeRes_px).toString() +
+            " * " + CPhysVal(m_fImageSizeHeight_px, Units.Length.px, m_fImageSizeRes_px).toString() + ")";
     return str;
 }
 
@@ -850,15 +862,15 @@ protected: // instance methods (method tracing)
 void CDrawingSize::traceValues(CMethodTracer& mthTracer, EMethodDir i_methodDir)
 //------------------------------------------------------------------------------
 {
-    QString strMthLog = QString(i_methodDir == EMethodDir::Enter ? "-+ " : "+- ")
-        +  m_eDimensionUnit.toString()
-        + ", NormedPaperSize: " + QString(m_eNormedPaperSize.isValid() ? m_eNormedPaperSize.toString() : "---")
-        + ", NormedOrientation: " + QString(m_eNormedPaperOrientation.isValid() ? m_eNormedPaperOrientation.toString() : "---")
-        + ", Scale (" + QString::number(m_iMetricScaleFactorDividend)
-            + "/" + QString::number(m_iMetricScaleFactorDivisor) + ")"
-        + ", Size (" + CPhysVal(m_fImageMetricWidth, m_metricUnit, m_fImageMetricRes).toString()
-            + " * " + CPhysVal(m_fImageMetricHeight, m_metricUnit, m_fImageMetricRes).toString() + ")"
-        + ", Size (" + CPhysVal(m_fImageSizeWidth_px, Units.Length.px, m_fImageSizeRes_px).toString()
-            + " * " + CPhysVal(m_fImageSizeHeight_px, Units.Length.px, m_fImageSizeRes_px).toString() + ")";
+    QString strMthLog = QString(i_methodDir == EMethodDir::Enter ? "-+ " : "+- ") +
+        m_eDimensionUnit.toString() +
+        ", NormedPaperSize: " + QString(m_eNormedPaperSize.isValid() ? m_eNormedPaperSize.toString() : "---") +
+        ", NormedOrientation: " + QString(m_eNormedPaperOrientation.isValid() ? m_eNormedPaperOrientation.toString() : "---") +
+        ", Scale (" + QString::number(m_iMetricScaleFactorDividend) +
+            + "/" + QString::number(m_iMetricScaleFactorDivisor) + ")" +
+        ", Size (" + CPhysVal(m_fImageMetricWidth, m_metricUnit, m_fImageMetricRes).toString() +
+            " * " + CPhysVal(m_fImageMetricHeight, m_metricUnit, m_fImageMetricRes).toString() + ")" +
+        ", Size (" + CPhysVal(m_fImageSizeWidth_px, Units.Length.px, m_fImageSizeRes_px).toString() +
+            " * " + CPhysVal(m_fImageSizeHeight_px, Units.Length.px, m_fImageSizeRes_px).toString() + ")";
     mthTracer.trace(strMthLog);
 }

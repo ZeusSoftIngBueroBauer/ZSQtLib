@@ -55,9 +55,6 @@ public: // class methods
 public: // ctors and dtor
     CTreeWdgtItemLastUsedFile(QTreeWidgetItem* i_pParentItem, const SLastUsedFile& i_lastUsedFile, const QIcon& i_icon);
     virtual ~CTreeWdgtItemLastUsedFile();
-public: // overridables of base class ZS::System::GUI::CDialog
-    virtual QString nameSpace() { return NameSpace(); }
-    virtual QString className() { return ClassName(); }
 public: // instance methods
     SLastUsedFile const lastUsedFile() const { return m_lastUsedFile; }
 protected: // instance members

@@ -25,6 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDraw/Common/ZSDrawPhysValSize.h"
+#include "ZSDraw/Common/ZSDrawUnits.h"
 #include "ZSPhysVal/ZSPhysValExceptions.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
@@ -44,28 +45,52 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CPhysValSize::CPhysValSize( EResType i_resType ) :
+CPhysValSize::CPhysValSize() :
 //------------------------------------------------------------------------------
     m_unit(),
-    m_physValRes(i_resType),
     m_size()
 {
 }
 
 //------------------------------------------------------------------------------
-CPhysValSize::CPhysValSize( const CUnit& i_unit, double i_fRes, EResType i_resType ) :
+CPhysValSize::CPhysValSize(const CUnit& i_unit) :
 //------------------------------------------------------------------------------
     m_unit(i_unit),
-    m_physValRes(i_fRes, i_unit, i_resType),
     m_size()
 {
 }
 
 //------------------------------------------------------------------------------
-CPhysValSize::CPhysValSize( const CPhysValSize& i_physValSizeOther ) :
+CPhysValSize::CPhysValSize(double i_fWidth, double i_fHeight, const CUnit& i_unit) :
+//------------------------------------------------------------------------------
+    m_unit(i_unit),
+    m_size(i_fWidth, i_fHeight)
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysValSize::CPhysValSize(const QSizeF& i_size, const CUnit& i_unit) :
+//------------------------------------------------------------------------------
+    m_unit(i_unit),
+    m_size(i_size)
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysValSize::CPhysValSize(const CPhysVal& i_physValWidth, const CPhysVal& i_physValHeight) :
+//------------------------------------------------------------------------------
+    m_unit(i_physValWidth.unit()),
+    m_size(i_physValWidth.getVal(), i_physValHeight.getVal())
+{
+    if (i_physValWidth.unit() != i_physValHeight.unit()) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+    }
+}
+
+//------------------------------------------------------------------------------
+CPhysValSize::CPhysValSize(const CPhysValSize& i_physValSizeOther) :
 //------------------------------------------------------------------------------
     m_unit(i_physValSizeOther.m_unit),
-    m_physValRes(i_physValSizeOther.m_physValRes),
     m_size(i_physValSizeOther.m_size)
 {
 }
@@ -74,7 +99,30 @@ CPhysValSize::CPhysValSize( const CPhysValSize& i_physValSizeOther ) :
 CPhysValSize::~CPhysValSize()
 //------------------------------------------------------------------------------
 {
-} // dtor
+    //m_unit;
+    //m_size;
+}
+
+/*==============================================================================
+public: // operators
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CPhysValSize& CPhysValSize::operator = ( const CPhysValSize& i_physValSizeOther )
+//------------------------------------------------------------------------------
+{
+    m_unit = i_physValSizeOther.m_unit;
+    m_size = i_physValSizeOther.m_size;
+    return *this;
+}
+
+//------------------------------------------------------------------------------
+CPhysValSize& CPhysValSize::operator = ( const QSizeF& i_size )
+//------------------------------------------------------------------------------
+{
+    m_size = i_size;
+    return *this;
+}
 
 /*==============================================================================
 public: // operators
@@ -86,9 +134,6 @@ bool CPhysValSize::operator == ( const CPhysValSize& i_physValSizeOther ) const
 {
     bool bEqual = true;
     if (!areOfSameUnitGroup(m_unit, i_physValSizeOther.m_unit)) {
-        bEqual = false;
-    }
-    else if (m_physValRes != i_physValSizeOther.m_physValRes) {
         bEqual = false;
     }
     else if (m_unit == i_physValSizeOther.m_unit && m_size != i_physValSizeOther.m_size) {
@@ -115,20 +160,6 @@ bool CPhysValSize::operator != ( const CPhysValSize& i_physValSizeOther ) const
 }
 
 /*==============================================================================
-public: // operators
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-CPhysValSize& CPhysValSize::operator = ( const CPhysValSize& i_physValSizeOther )
-//------------------------------------------------------------------------------
-{
-    m_unit = i_physValSizeOther.m_unit;
-    m_physValRes = i_physValSizeOther.m_physValRes;
-    m_size = i_physValSizeOther.m_size;
-    return *this;
-}
-
-/*==============================================================================
 public: // instance methods
 ==============================================================================*/
 
@@ -143,14 +174,14 @@ CUnit CPhysValSize::unit() const
 CPhysVal CPhysValSize::width() const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_size.width(), m_unit, m_physValRes);
+    return CPhysVal(m_size.width(), m_unit);
 }
 
 //------------------------------------------------------------------------------
 CPhysVal CPhysValSize::height() const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_size.height(), m_unit, m_physValRes);
+    return CPhysVal(m_size.height(), m_unit);
 }
 
 //------------------------------------------------------------------------------
@@ -161,25 +192,46 @@ bool CPhysValSize::isValid() const
 }
 
 /*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CPhysValSize::setWidth( const CPhysVal& i_physValWidth )
+//------------------------------------------------------------------------------
+{
+    m_size.setWidth(i_physValWidth.getVal(m_unit));
+}
+
+//------------------------------------------------------------------------------
+void CPhysValSize::setHeight( const CPhysVal& i_physValHeight )
+//------------------------------------------------------------------------------
+{
+    m_size.setHeight(i_physValHeight.getVal(m_unit));
+}
+
+/*==============================================================================
 public: // instance methods (to convert the values into another unit)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CPhysValSize::convertValues( const CUnit& i_unitDst )
+/*! @brief Returns the physical size as a QSizeF instance in pixel coordinates.
+*/
+QSizeF CPhysValSize::toQSizeF() const
 //------------------------------------------------------------------------------
 {
-    if (m_unit.isValid() && !areOfSameUnitGroup(m_unit, i_unitDst)) {
-        QString strAddErrInfo = "Src: " + m_unit.keyInTree() + ", Dst: " + i_unitDst.keyInTree();
-        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes, strAddErrInfo);
+    QSizeF sizeF = m_size;
+    if (m_unit != Units.Length.px) {
+        double fWidth_px = m_unit.convertValue(m_size.width(), Units.Length.px);
+        double fHeight_px = m_unit.convertValue(m_size.height(), Units.Length.px);
+        sizeF.setWidth(fWidth_px);
+        sizeF.setWidth(fHeight_px);
     }
-    if (i_unitDst != m_unit) {
-        double fWidth = m_size.width();
-        fWidth = m_unit.convertValue(fWidth, i_unitDst);
-        m_size.setWidth(fWidth);
-        double fHeight = m_size.height();
-        fHeight = m_unit.convertValue(fHeight, i_unitDst);
-        m_size.setHeight(fHeight);
-        m_physValRes.convertValue(i_unitDst);
-    }
-    m_unit = i_unitDst;
+    return sizeF;
+}
+
+//------------------------------------------------------------------------------
+QString CPhysValSize::toString() const
+//------------------------------------------------------------------------------
+{
+    return width().toString() + ", " + height().toString();
 }

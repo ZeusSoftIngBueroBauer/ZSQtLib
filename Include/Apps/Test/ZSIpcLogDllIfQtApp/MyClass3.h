@@ -71,9 +71,6 @@ public: // ctors and dtor
 signals:
     void running();
     void aboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName);
-public: // overridables
-    virtual QString nameSpace() { return NameSpace(); }
-    virtual QString className() { return ClassName(); }
 public: // instance methods
     CMyClass3* getMyClass3() { return m_pMyClass3; }
 public: // instance methods
@@ -112,9 +109,6 @@ public: // ctors and dtor
     virtual ~CMyClass3();
 signals:
     void aboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName);
-public: // overridables
-    virtual QString nameSpace() { return NameSpace(); }
-    virtual QString className() { return ClassName(); }
 public: // instance methods
     void sendMuchData();
 protected: // overridables of base class QObject

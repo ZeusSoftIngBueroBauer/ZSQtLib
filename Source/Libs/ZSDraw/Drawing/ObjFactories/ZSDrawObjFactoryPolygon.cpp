@@ -80,34 +80,32 @@ public: // interface methods
 
 //------------------------------------------------------------------------------
 CGraphObj* CObjFactoryPolygon::createGraphObj(
-    CDrawingScene*       i_pDrawingScene,
-    const QPointF&       i_ptItemPos,
+    CDrawingScene* i_pDrawingScene,
+    const CPhysValPoint& i_physValPoint,
     const CDrawSettings& i_drawSettings )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strAddTrcInfo = "ItemPos:" + QString::number(i_ptItemPos.x()) + "," + QString::number(i_ptItemPos.y());
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Point {" + i_physValPoint.toString() + "}" +
+                        ", DrawSettings {" + i_drawSettings.toString(getGraphObjType()) + "}";
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createGraphObj",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
+    CGraphObjPolygon* pGraphObj = new CGraphObjPolygon(i_pDrawingScene, i_drawSettings);
+
+#if 0
     QPointF   ptStart = i_ptItemPos;
     QPointF   ptEnd( i_ptItemPos.x()+1, i_ptItemPos.y()+1 );
     QPolygonF plg;
-
     plg.append(ptStart);
     plg.append(ptEnd);
-
-    CGraphObjPolygon* pGraphObj = new CGraphObjPolygon(i_pDrawingScene,i_drawSettings);
-
     pGraphObj->setPolygon(plg);
+#endif
 
     return pGraphObj;
 
@@ -128,8 +126,8 @@ SErrResultInfo CObjFactoryPolygon::saveGraphObj(
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strAddTrcInfo  = "GraphObj:" + i_pGraphObj->nameSpace();
-        strAddTrcInfo += "::" + i_pGraphObj->className();
+        strAddTrcInfo  = "GraphObj:" + i_pGraphObj->NameSpace();
+        strAddTrcInfo += "::" + i_pGraphObj->ClassName();
         strAddTrcInfo += "::" + i_pGraphObj->name();
     }
 

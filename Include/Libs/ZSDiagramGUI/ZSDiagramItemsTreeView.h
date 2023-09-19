@@ -65,9 +65,6 @@ public: // class methods
 public: // ctors and dtor
     CDelegateDiagramObjsTreeView( QObject* i_pObjParent = nullptr );
     virtual ~CDelegateDiagramObjsTreeView();
-public: // overridables
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 public: // instance methods
     QLineEdit* nameColumnEditor();
 public: // overridables of base class QStyledItemDelegate
@@ -110,9 +107,6 @@ public: // class methods
 public: // ctors and dtor
     CTreeViewDiagramItems(CWdgtDiagram* i_pDiagram, QWidget* i_pWdgtParent = nullptr );
     virtual ~CTreeViewDiagramItems();
-public: // overridables
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 public: // instance methods
     void setSilentlyExecuteDeleteRequests( bool i_bExecuteSilently );
     bool silentlyExecuteDeleteRequests() const { return m_bSilentlyExecuteDeleteRequests; }

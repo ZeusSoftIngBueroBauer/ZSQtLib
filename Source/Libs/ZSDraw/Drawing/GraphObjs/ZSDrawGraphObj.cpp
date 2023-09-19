@@ -2636,25 +2636,32 @@ public: // overridables
     The position of the item describes its origin (local coordinate (0, 0)) in parent
     coordinates; this function returns the same as mapToParent(0, 0).
 
-    Items may be transformed (rotated, resized, etc.). Each rotation step may
-    include inaccuracy when calculation the resulting position. The more often
-    it is rotated, the greater the inaccuracy. If the original rotation angle of 0.0
-    will be reached the resulting position in scene coordinates may not be the same
-    as the original position. Therefore the original coordinates of the item are
-    stored. The given version either selects the current (transformed) postion
-    or the orignal (not transformed) position of the item.
+    Items may be transformed (rotated, resized, etc.). Each transformation step may
+    include inaccuracy when calculating the resulting position. The more often
+    it is transformed, the greater the inaccuracy.
+
+    Assuming rotation transformation:
+
+    If the original rotation angle of 0.0 will be reached after some rotation steps
+    the resulting position in scene coordinates should be equal to the original
+    position before any rotation step. To achieve that the original coordinates of the
+    items are stored.
+
+    The given version either selects the current (transformed) position or the orignal
+    (not transformed) position of the item.
 
     @param i_version [in]
-        Original .. Return the original coordinates without transformation.
-        Current ... Return the current coordinates calculated with transformation.
+        Original ...... Return the original coordinates without transformation.
+        Transformed ... Return the current coordinates calculated with transformation.
 
     @return Position of the item in parent coordinates.
 */
 CPhysValPoint CGraphObj::getPos( ECoordinatesVersion i_version ) const
 //------------------------------------------------------------------------------
 {
+#pragma message(__TODO__"Pure virtual")
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    CPhysValPoint physValPoint(drawingSize.unit(), drawingSize.resolution().getVal());
+    CPhysValPoint physValPoint(drawingSize.unit());
     if (i_version == ECoordinatesVersion::Original) {
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
         ptPos = m_ptPosOrig;
@@ -2673,6 +2680,7 @@ CPhysValPoint CGraphObj::getPos( ECoordinatesVersion i_version ) const
 CPhysVal CGraphObj::getWidth( ECoordinatesVersion i_version ) const
 //------------------------------------------------------------------------------
 {
+#pragma message(__TODO__"Pure virtual")
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     CPhysVal physValWidth(0.0, drawingSize.unit(), drawingSize.resolution().getVal());
     if (i_version == ECoordinatesVersion::Original) {
@@ -2693,6 +2701,7 @@ CPhysVal CGraphObj::getWidth( ECoordinatesVersion i_version ) const
 CPhysVal CGraphObj::getHeight( ECoordinatesVersion i_version ) const
 //------------------------------------------------------------------------------
 {
+#pragma message(__TODO__"Pure virtual")
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     CPhysVal physValHeight(0.0, drawingSize.unit(), drawingSize.resolution().getVal());
     if (i_version == ECoordinatesVersion::Original) {
@@ -2713,8 +2722,9 @@ CPhysVal CGraphObj::getHeight( ECoordinatesVersion i_version ) const
 CPhysValSize CGraphObj::getSize( ECoordinatesVersion i_version ) const
 //------------------------------------------------------------------------------
 {
+#pragma message(__TODO__"Pure virtual")
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    CPhysValSize physValSize(drawingSize.unit(), drawingSize.resolution().getVal());
+    CPhysValSize physValSize(drawingSize.unit());
     if (i_version == ECoordinatesVersion::Original) {
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
         siz = m_sizOrig;

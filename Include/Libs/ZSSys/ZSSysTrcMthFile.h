@@ -152,15 +152,6 @@ protected: // ctors and dtor
     CTrcMthFile( const QString& i_strAbsFilePath );
     virtual ~CTrcMthFile();
 public: // instance methods
-    /*! This virtual method returns the name space of the object's class.
-        This method can be reimplemented in derived classes so when invoked for the
-        polymorphic base type the method returns the name space of the derived class. */
-    virtual QString nameSpace() const { return NameSpace(); }
-    /*! This virtual method returns the class name of the object's class.
-        This method can be reimplemented in derived classes so when invoked for the
-        polymorphic base type the method returns the name of the derived class. */
-    virtual QString className() const { return ClassName(); }
-public: // instance methods
     void close();
     void clear();
 public: // instance methods

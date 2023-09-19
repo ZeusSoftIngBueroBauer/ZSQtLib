@@ -29,12 +29,12 @@ may result in using the software modules.
 
 #include "ZSDraw/Common/ZSDrawDllMain.h"
 #include "ZSDraw/Common/ZSDrawCommon.h"
+#include "ZSDraw/Common/ZSDrawingSize.h"
 #include "ZSDraw/Common/ZSDrawPhysValPoint.h"
 #include "ZSDraw/Common/ZSDrawPhysValSize.h"
 #include "ZSDraw/Common/ZSDrawSettings.h"
 #include "ZSDraw/Common/ZSDrawUnits.h"
 #include "ZSDraw/Drawing/ZSDrawGridSettings.h"
-#include "ZSDraw/Drawing/ZSDrawingSize.h"
 #include "ZSSys/ZSSysCommon.h"
 #include "ZSSysGUI/ZSSysGUIMathScaleDivLinesMetrics.h"
 
@@ -74,9 +74,9 @@ class ZSDRAWDLL_API CDrawingScene : public QGraphicsScene
     Q_OBJECT
 public: // class methods
     /*! Returns the namespace the class belongs to. */
-    static QString NameSpace() { return "ZS::Draw"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
+    static QString NameSpace() { return "ZS::Draw"; }
     /*! Returns the class name. */
-    static QString ClassName() { return "CDrawingScene"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
+    static QString ClassName() { return "CDrawingScene"; }
 public: // type definitions and constants
     static const QString c_strXmlElemNameDrawing;
     static const QString c_strXmlElemNameGraphObj;
@@ -113,11 +113,8 @@ public: // class methods
     //    const QMap<QString,CGraphObj*>& i_dctpGraphObjs,
     //    const QString&                  i_strKeyInTreeCurr );
 public: // ctors and dtor
-    CDrawingScene( QObject* i_pObjParent = nullptr );
+    CDrawingScene(const QString& i_strName, QObject* i_pObjParent = nullptr);
     ~CDrawingScene();
-public: // overridables
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 signals:
     /*! Signal emitted if the drawing size has been changed.
         @param i_size [in] Contains the new drawing size (pixel dimension, metric, etc.). */
@@ -169,14 +166,12 @@ public: // instance methods
     void setDrawingSize( const CDrawingSize& i_drawingSize);
     const CDrawingSize& drawingSize() const;
 public: // instance methods
-    ZS::PhysVal::CPhysVal toMetricXCoor(double i_fXCoor_px) const;
-    ZS::PhysVal::CPhysVal toMetricYCoor(double i_fYCoor_px) const;
-    CPhysValPoint toMetricPoint(const QPointF& i_pt) const;
-    CPhysValSize toMetricSize(const QSizeF& i_size) const;
+    ZS::PhysVal::CPhysVal toPhysValXCoor(double i_fXCoor_px) const;
+    ZS::PhysVal::CPhysVal toPhysValYCoor(double i_fYCoor_px) const;
+    CPhysValPoint toPhysValPoint(const QPointF& i_pt) const;
+    CPhysValSize toPhysValSize(const QSizeF& i_size) const;
     double toPixelXCoor(const ZS::PhysVal::CPhysVal& i_physValXCoor) const;
     double toPixelYCoor(const ZS::PhysVal::CPhysVal& i_physValYCoor) const;
-    QPointF toPixelPoint(const CPhysValPoint& i_physValPoint) const;
-    QSizeF toPixelSize(const CPhysValSize& i_physValSize) const;
 public: // instance methods
     void setGridSettings( const CDrawGridSettings& i_gridSettings);
     const CDrawGridSettings& gridSettings() const;

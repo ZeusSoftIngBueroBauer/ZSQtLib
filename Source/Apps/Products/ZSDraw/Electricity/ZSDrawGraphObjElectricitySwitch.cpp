@@ -203,6 +203,7 @@ CGraphObjSwitch::CGraphObjSwitch(
 
     CDrawSettings drawSettingsCnctPt(EGraphObjTypeConnectionPoint);
 
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
     // Connection Point 1
     //-------------------
 
@@ -294,7 +295,6 @@ CGraphObjSwitch::CGraphObjSwitch(
     // Update group coordinates
     //-------------------------
 
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
     m_rctCurr = rctBounding;
     m_ptRotOriginCurr = m_rctCurr.center();
     #pragma message(__TODO__"The methods onGraphObjCreationFinished and acceptCurrentAsOriginalCoors should become protected and it should not be necessary to explicitly call them")
@@ -355,6 +355,7 @@ void CGraphObjSwitch::setState( EState i_state )
         /* strMethod    */ "setState",
         /* strAddInfo   */ strAddTrcInfo );
 
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
     if( m_state != i_state )
     {
         m_state = i_state;
@@ -364,9 +365,7 @@ void CGraphObjSwitch::setState( EState i_state )
 
         if( m_state == EStateOpened )
         {
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
             ptSwitchLineEnd.setY( -(m_rctCurr.height()-m_pCnctPt2->getHeight()/2.0) );
-#endif
         }
         else // if( m_state == EStateClosed )
         {
@@ -392,6 +391,7 @@ void CGraphObjSwitch::setState( EState i_state )
         //setDescription( State2Str(m_state) );
 
     } // if( m_state != i_state )
+#endif
 
 } // setState
 
@@ -795,8 +795,8 @@ void CGraphObjSwitch::updateToolTip()
             m_strToolTip += "\nPos:\t\t" + point2Str(ptPos);
         }
 
-        m_strToolTip += "\nSize:\t\t" + size2Str(getSize());
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
+        m_strToolTip += "\nSize:\t\t" + size2Str(getSize());
         m_strToolTip += "\nRotation:\t" + QString::number(m_fRotAngleCurr_deg,'f',1) + " " + ZS::PhysVal::c_strSymbolDegree;
 #endif
         m_strToolTip += "\nZValue:\t\t" + QString::number(pGraphicsItem->zValue());

@@ -109,9 +109,6 @@ signals:
     void started( qint64 i_iReqId );    // As set as the parent request id for the start method.
     void finished( qint64 i_iReqId );   // As set as the parent request id for the start method.
 public: // instance methods
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
-public: // instance methods
     bool isMethodTracingEnabled() const { return m_bTracingEnabled; }  // Trace Server/Clients must not trace themselves (endless recursion)
 public: // instance methods
     qint64 GetUniqueRequestId() const;

@@ -25,6 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDraw/Common/ZSDrawPhysValRect.h"
+#include "ZSDraw/Common/ZSDrawUnits.h"
 #include "ZSPhysVal/ZSPhysValExceptions.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
@@ -44,20 +45,26 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CPhysValRect::CPhysValRect( EResType i_resType ) :
+CPhysValRect::CPhysValRect() :
 //------------------------------------------------------------------------------
     m_unit(),
-    m_physValRes(i_resType),
     m_rect()
 {
 }
 
 //------------------------------------------------------------------------------
-CPhysValRect::CPhysValRect( const CUnit& i_unit, double i_fRes, EResType i_resType ) :
+CPhysValRect::CPhysValRect(const CUnit& i_unit) :
 //------------------------------------------------------------------------------
     m_unit(i_unit),
-    m_physValRes(i_fRes, i_unit, i_resType),
     m_rect()
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysValRect::CPhysValRect(const QRectF& i_rect, const CUnit& i_unit) :
+//------------------------------------------------------------------------------
+    m_unit(i_unit),
+    m_rect(i_rect)
 {
 }
 
@@ -65,7 +72,6 @@ CPhysValRect::CPhysValRect( const CUnit& i_unit, double i_fRes, EResType i_resTy
 CPhysValRect::CPhysValRect( const CPhysValRect& i_physValRectOther ) :
 //------------------------------------------------------------------------------
     m_unit(i_physValRectOther.m_unit),
-    m_physValRes(i_physValRectOther.m_physValRes),
     m_rect(i_physValRectOther.m_rect)
 {
 }
@@ -74,7 +80,30 @@ CPhysValRect::CPhysValRect( const CPhysValRect& i_physValRectOther ) :
 CPhysValRect::~CPhysValRect()
 //------------------------------------------------------------------------------
 {
-} // dtor
+    //m_unit;
+    //m_rect;
+}
+
+/*==============================================================================
+public: // operators
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CPhysValRect& CPhysValRect::operator = ( const CPhysValRect& i_physValRectOther )
+//------------------------------------------------------------------------------
+{
+    m_unit = i_physValRectOther.m_unit;
+    m_rect = i_physValRectOther.m_rect;
+    return *this;
+}
+
+//------------------------------------------------------------------------------
+CPhysValRect& CPhysValRect::operator = ( const QRectF& i_rect )
+//------------------------------------------------------------------------------
+{
+    m_rect = i_rect;
+    return *this;
+}
 
 /*==============================================================================
 public: // operators
@@ -86,9 +115,6 @@ bool CPhysValRect::operator == ( const CPhysValRect& i_physValRectOther ) const
 {
     bool bEqual = true;
     if (!areOfSameUnitGroup(m_unit, i_physValRectOther.m_unit)) {
-        bEqual = false;
-    }
-    else if (m_physValRes != i_physValRectOther.m_physValRes) {
         bEqual = false;
     }
     else if (m_unit == i_physValRectOther.m_unit && m_rect != i_physValRectOther.m_rect) {
@@ -118,20 +144,6 @@ bool CPhysValRect::operator != ( const CPhysValRect& i_physValRectOther ) const
 }
 
 /*==============================================================================
-public: // operators
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-CPhysValRect& CPhysValRect::operator = ( const CPhysValRect& i_physValRectOther )
-//------------------------------------------------------------------------------
-{
-    m_unit = i_physValRectOther.m_unit;
-    m_physValRes = i_physValRectOther.m_physValRes;
-    m_rect = i_physValRectOther.m_rect;
-    return *this;
-}
-
-/*==============================================================================
 public: // instance methods
 ==============================================================================*/
 
@@ -146,28 +158,42 @@ CUnit CPhysValRect::unit() const
 CPhysVal CPhysValRect::top() const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_rect.top(), m_unit, m_physValRes);
+    return CPhysVal(m_rect.top(), m_unit);
 }
 
 //------------------------------------------------------------------------------
 CPhysVal CPhysValRect::bottom() const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_rect.bottom(), m_unit, m_physValRes);
+    return CPhysVal(m_rect.bottom(), m_unit);
+}
+
+//------------------------------------------------------------------------------
+CPhysVal CPhysValRect::left() const
+//------------------------------------------------------------------------------
+{
+    return CPhysVal(m_rect.left(), m_unit);
+}
+
+//------------------------------------------------------------------------------
+CPhysVal CPhysValRect::right() const
+//------------------------------------------------------------------------------
+{
+    return CPhysVal(m_rect.right(), m_unit);
 }
 
 //------------------------------------------------------------------------------
 CPhysVal CPhysValRect::width() const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_rect.width(), m_unit, m_physValRes);
+    return CPhysVal(m_rect.width(), m_unit);
 }
 
 //------------------------------------------------------------------------------
 CPhysVal CPhysValRect::height() const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_rect.height(), m_unit, m_physValRes);
+    return CPhysVal(m_rect.height(), m_unit);
 }
 
 /*==============================================================================
@@ -175,27 +201,25 @@ public: // instance methods (to convert the values into another unit)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CPhysValRect::convertValues( const CUnit& i_unitDst )
+/*! @brief Returns the physical line as a QRectF instance in pixel coordinates.
+*/
+QRectF CPhysValRect::toQRectF() const
 //------------------------------------------------------------------------------
 {
-    if (m_unit.isValid() && !areOfSameUnitGroup(m_unit,i_unitDst)) {
-        QString strAddErrInfo = "Src: " + m_unit.keyInTree() + ", Dst: " + i_unitDst.keyInTree();
-        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes, strAddErrInfo);
+    QRectF rectF = m_rect;
+    if (m_unit != Units.Length.px) {
+        double fLeft_px = m_unit.convertValue(m_rect.left(), Units.Length.px);
+        double fTop_px = m_unit.convertValue(m_rect.top(), Units.Length.px);
+        double fWidth_px = m_unit.convertValue(m_rect.width(), Units.Length.px);
+        double fHeight_px = m_unit.convertValue(m_rect.height(), Units.Length.px);
+        rectF.setRect(fLeft_px, fTop_px, fWidth_px, fHeight_px);
     }
-    if (i_unitDst != m_unit) {
-        double fTop = m_rect.top();
-        fTop = m_unit.convertValue(fTop, i_unitDst);
-        m_rect.setTop(fTop);
-        double fBottom = m_rect.bottom();
-        fBottom = m_unit.convertValue(fBottom, i_unitDst);
-        m_rect.setBottom(fTop);
-        double fWidth = m_rect.width();
-        fWidth = m_unit.convertValue(fWidth, i_unitDst);
-        m_rect.setWidth(fWidth);
-        double fHeight = m_rect.height();
-        fHeight = m_unit.convertValue(fHeight, i_unitDst);
-        m_rect.setHeight(fHeight);
-        m_physValRes.convertValue(i_unitDst);
-    }
-    m_unit = i_unitDst;
+    return rectF;
+}
+
+//------------------------------------------------------------------------------
+QString CPhysValRect::toString() const
+//------------------------------------------------------------------------------
+{
+    return left().toString() + ", " + top().toString() + ", " + width().toString() + ", " + height().toString();
 }

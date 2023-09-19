@@ -860,7 +860,7 @@ CRequest::~CRequest()
         {
             QString strAddErrInfo = "Deleting the locked Request: " + getAddTrcInfoStr(1);
             SErrResultInfo errResultInfo(
-                /* errSource  */ nameSpace(), className(), objectName(), "dtor",
+                /* errSource  */ NameSpace(), ClassName(), objectName(), "dtor",
                 /* result     */ EResultInternalProgramError,
                 /* severtiy   */ EResultSeverityCritical,
                 /* strAddInfo */ strAddErrInfo );
@@ -1110,7 +1110,7 @@ void CRequest::update()
                 strAddErrInfo += ": Requests should only be changed from within the thread in which the request was created";
 
                 SErrResultInfo errResultInfo(
-                    /* errSource  */ nameSpace(), className(), objectName(), "update",
+                    /* errSource  */ NameSpace(), ClassName(), objectName(), "update",
                     /* result     */ EResultInvalidMethodCall,
                     /* severity   */ EResultSeverityWarning,
                     /* strAddInfo */ strAddErrInfo );

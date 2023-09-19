@@ -1454,7 +1454,7 @@ void CIpcLogServer::onIpcServerReceivedReqSelect( int i_iSocketId, const QString
     {
         if( CErrLog::GetInstance() != nullptr )
         {
-            SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
+            SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
 
             errResultInfo.setSeverity(EResultSeverityError);
             errResultInfo.setResult(EResultFileReadContent);
@@ -1815,7 +1815,7 @@ void CIpcLogServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
     {
         if( CErrLog::GetInstance() != nullptr )
         {
-            SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
+            SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
 
             errResultInfo.setSeverity(EResultSeverityError);
             errResultInfo.setResult(EResultFileReadContent);
