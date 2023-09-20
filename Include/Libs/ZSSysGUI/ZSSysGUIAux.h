@@ -48,6 +48,10 @@ may result in using the software modules.
 
 class QMouseEvent;
 class QKeyEvent;
+class QPaintEvent;
+class QPolygon;
+class QPolygonF;
+class QResizeEvent;
 
 namespace ZS
 {
@@ -59,26 +63,29 @@ namespace GUI
 public auxiliary methods
 *******************************************************************************/
 
-ZSSYSGUIDLL_API QString qColor2Str( const QColor& i_clr );
+ZSSYSGUIDLL_API QString qColor2Str(const QColor& i_clr);
 
-ZSSYSGUIDLL_API QString qItemViewDragDropMode2Str( int i_iVal, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName );
-ZSSYSGUIDLL_API QAbstractItemView::DragDropMode str2QItemViewDragDropMode( const QString& i_str, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName, bool* o_pbConverted = nullptr );
+ZSSYSGUIDLL_API QString qItemViewDragDropMode2Str(int i_iVal, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName);
+ZSSYSGUIDLL_API QAbstractItemView::DragDropMode str2QItemViewDragDropMode(
+    const QString& i_str, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName, bool* o_pbConverted = nullptr);
+ZSSYSGUIDLL_API QString qDropAction2Str(int i_iVal, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName);
+ZSSYSGUIDLL_API QString qItemViewCursorAction2Str(int i_iVal, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName);
 
-ZSSYSGUIDLL_API QString qDropAction2Str( int i_iVal, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName );
+ZSSYSGUIDLL_API QString qDockWidgetArea2Str(Qt::DockWidgetAreas i_areas, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName);
+ZSSYSGUIDLL_API Qt::DockWidgetArea str2QDockWidgetArea(const QString& i_str);
 
-ZSSYSGUIDLL_API QString qItemViewCursorAction2Str( int i_iVal, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName );
+ZSSYSGUIDLL_API QString qDragEnterEvent2Str(QDragEnterEvent* i_pEv);
+ZSSYSGUIDLL_API QString qDragLeaveEvent2Str(QDragLeaveEvent* i_pEv);
+ZSSYSGUIDLL_API QString qDragMoveEvent2Str(QDragMoveEvent* i_pEv);
+ZSSYSGUIDLL_API QString qDropEvent2Str(QDropEvent* i_pEv);
+ZSSYSGUIDLL_API QString qKeyEvent2Str(QKeyEvent* i_pEv);
+ZSSYSGUIDLL_API QKeyEvent* str2QKeyEvent(const QString& i_str, QEvent::Type i_type);
+ZSSYSGUIDLL_API QString qMouseEvent2Str(QMouseEvent* i_pEv);
+ZSSYSGUIDLL_API QString qPaintEvent2Str(QPaintEvent* i_pEv);
+ZSSYSGUIDLL_API QString qResizeEvent2Str(QResizeEvent* i_pEv);
 
-ZSSYSGUIDLL_API QString qDockWidgetArea2Str( Qt::DockWidgetAreas i_areas, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName );
-ZSSYSGUIDLL_API Qt::DockWidgetArea str2QDockWidgetArea( const QString& i_str );
-
-ZSSYSGUIDLL_API QKeyEvent* str2QKeyEvent( const QString& i_str, QEvent::Type i_type ); // type must be either QEvent::KeyPress or QEvent::KeyRelease
-
-ZSSYSGUIDLL_API QString qKeyEvent2Str( QKeyEvent* i_pEv, int i_iDetailLevel = 0 );
-ZSSYSGUIDLL_API QString qMouseEvent2Str( QMouseEvent* i_pEv, int i_iDetailLevel = 0 );
-ZSSYSGUIDLL_API QString qDragEnterEvent2Str( QDragEnterEvent* i_pEv, int i_iDetailLevel = 0 );
-ZSSYSGUIDLL_API QString qDragLeaveEvent2Str( QDragLeaveEvent* i_pEv, int i_iDetailLevel = 0 );
-ZSSYSGUIDLL_API QString qDragMoveEvent2Str( QDragMoveEvent* i_pEv, int i_iDetailLevel = 0 );
-ZSSYSGUIDLL_API QString qDropEvent2Str( QDropEvent* i_pEv, int i_iDetailLevel = 0 );
+ZSSYSGUIDLL_API QString qPolygon2Str(const QPolygon& i_plg);
+ZSSYSGUIDLL_API QString qPolygon2Str(const QPolygonF& i_plg);
 
 } // namespace GUI
 

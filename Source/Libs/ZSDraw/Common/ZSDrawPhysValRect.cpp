@@ -201,17 +201,20 @@ public: // instance methods (to convert the values into another unit)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the physical line as a QRectF instance in pixel coordinates.
+/*! @brief Returns the physical line as a QRectF instance in the desired unit.
+
+    @param [in] i_unit
+        Unit in which the coordinates should be returned.
 */
-QRectF CPhysValRect::toQRectF() const
+QRectF CPhysValRect::toQRectF(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     QRectF rectF = m_rect;
-    if (m_unit != Units.Length.px) {
-        double fLeft_px = m_unit.convertValue(m_rect.left(), Units.Length.px);
-        double fTop_px = m_unit.convertValue(m_rect.top(), Units.Length.px);
-        double fWidth_px = m_unit.convertValue(m_rect.width(), Units.Length.px);
-        double fHeight_px = m_unit.convertValue(m_rect.height(), Units.Length.px);
+    if (m_unit != i_unit) {
+        double fLeft_px = m_unit.convertValue(m_rect.left(), i_unit);
+        double fTop_px = m_unit.convertValue(m_rect.top(), i_unit);
+        double fWidth_px = m_unit.convertValue(m_rect.width(), i_unit);
+        double fHeight_px = m_unit.convertValue(m_rect.height(), i_unit);
         rectF.setRect(fLeft_px, fTop_px, fWidth_px, fHeight_px);
     }
     return rectF;

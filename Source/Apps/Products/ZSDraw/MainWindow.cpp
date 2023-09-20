@@ -86,7 +86,7 @@ may result in using the software modules.
 #include <QtCore/qfileinfo.h>
 #include <QtCore/qsettings.h>
 #include <QtCore/qstandardpaths.h>
-//#include <QtCore/qtimer.h>
+#include <QtCore/qtimer.h>
 
 //#include <QtGui/qbitmap.h>
 #include <QtGui/qevent.h>
@@ -466,6 +466,9 @@ CMainWindow::CMainWindow(
     QObject::connect(
         pDrawingView, &CDrawingView::mousePosChanged,
         this, &CMainWindow::onDrawingViewMousePosChanged );
+    QObject::connect(
+        pDrawingView, &CDrawingView::contentAreaChanged,
+        this, &CMainWindow::onDrawingViewContentAreaChanged );
 
     // Actions/Menu/StatusBar/ToolBars/DockWidgets
     //--------------------------------------------
@@ -493,6 +496,7 @@ CMainWindow::CMainWindow(
     //---------------------------
 
     onDrawingSceneModeChanged();
+    onDrawingSceneSizeChanged(pDrawingScene->drawingSize());
     onDrawingSceneDrawSettingsChanged(pDrawingScene->getDrawSettings());
 
 } // ctor
@@ -2023,17 +2027,8 @@ void CMainWindow::createStatusBar()
     //m_pLblStatusBarDrawingSceneGraphObjEditInfo->setMinimumWidth(120);
     //statusBar()->addPermanentWidget(m_pLblStatusBarDrawingSceneGraphObjEditInfo);
 
-    m_pLblStatusBarDrawingSceneRect = new QLabel();
+    m_pLblStatusBarDrawingSceneRect = new QLabel("SceneRect {-, -}");
     statusBar()->addWidget(m_pLblStatusBarDrawingSceneRect);
-
-    CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
-    CDrawingSize drawingSize = pDrawingScene->drawingSize();
-    QSize sizeScene = drawingSize.imageSizeInPixels();
-    CPhysVal physValWidth = drawingSize.metricImageWidth();
-    CPhysVal physValHeight = drawingSize.metricImageHeight();
-    QString strSceneSizeInfo = "SceneRect {" + qSize2Str(sizeScene) + "}" +
-        "{" + physValWidth.toString() + ", " + physValHeight.toString() + "}";
-    m_pLblStatusBarDrawingSceneRect->setText(strSceneSizeInfo);
 
     m_pLblStatusBarDrawingSceneMouseCursorPos = new QLabel("MousePos {-, -}");
     statusBar()->addWidget(m_pLblStatusBarDrawingSceneMouseCursorPos);
@@ -4146,14 +4141,7 @@ void CMainWindow::onDrawingSceneSizeChanged(const CDrawingSize& i_drawingSize)
         updateActions();
     }
 
-    if (m_pLblStatusBarDrawingSceneRect != nullptr) {
-        QSize sizeScene = i_drawingSize.imageSizeInPixels();
-        CPhysVal physValWidth = i_drawingSize.metricImageWidth();
-        CPhysVal physValHeight = i_drawingSize.metricImageHeight();
-        QString strSceneSizeInfo = "SceneRect {" + qSize2Str(sizeScene) + "}" +
-            "{" + physValWidth.toString() + ", " + physValHeight.toString() + "}";
-        m_pLblStatusBarDrawingSceneRect->setText(strSceneSizeInfo);
-    }
+    onDrawingViewContentAreaChanged();
 
     if (m_pLblStatusBarDrawingSceneMouseCursorPos != nullptr) {
         CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
@@ -4254,8 +4242,7 @@ void CMainWindow::onDrawingSceneFocusItemChanged(
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onDrawingSceneFocusItemChanged",
         /* strAddInfo   */ strMthInArgs );
-
-} // onDrawingSceneFocusItemChanged
+}
 
 //------------------------------------------------------------------------------
 void CMainWindow::onDrawingSceneSelectionChanged()
@@ -4268,8 +4255,7 @@ void CMainWindow::onDrawingSceneSelectionChanged()
         /* strAddInfo   */ "" );
 
     updateActions();
-
-} // onDrawingSceneSelectionChanged
+}
 
 //------------------------------------------------------------------------------
 void CMainWindow::onDrawingSceneMousePosChanged( const QPointF& i_ptMousePos )
@@ -4277,7 +4263,7 @@ void CMainWindow::onDrawingSceneMousePosChanged( const QPointF& i_ptMousePos )
 {
     QString strMthInArgs;
     if( areMethodCallsActive(m_pTrcAdminObjMouseEvents, EMethodTraceDetailLevel::ArgsNormal) )  {
-        strMthInArgs = "Pos:" + point2Str(i_ptMousePos);
+        strMthInArgs = point2Str(i_ptMousePos);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseEvents,
@@ -4294,33 +4280,29 @@ void CMainWindow::onDrawingSceneMousePosChanged( const QPointF& i_ptMousePos )
             "{" + physValX.toString() + ", " + physValY.toString() + "}";
         m_pLblStatusBarDrawingSceneMouseCursorPos->setText(strPosInfo);
     }
-} // onDrawingSceneMousePosChanged
+}
 
 //------------------------------------------------------------------------------
 void CMainWindow::onDrawingSceneModeChanged()
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    QString strAddTrcInfo;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onDrawingSceneModeChanged",
-        /* strAddInfo   */ strMthInArgs );
+        /* strAddInfo   */ "" );
 
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         if (m_pWdgtCentral != nullptr) {
             CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
             int iObjFactoryType = pDrawingScene->getCurrentDrawingToolGraphObjType();
             CGraphObj* pGraphObjCreating = pDrawingScene->getGraphObjCreating();
-            strAddTrcInfo  = "Mode:" + pDrawingScene->getMode().toString();
-            strAddTrcInfo += ", EditTool:" + pDrawingScene->getEditTool().toString();
-            strAddTrcInfo += ", EditMode:" + pDrawingScene->getEditMode().toString();
-            strAddTrcInfo += ", ResizeMode:" + pDrawingScene->getEditResizeMode().toString();
-            strAddTrcInfo += ", ObjFactory:" + graphObjType2Str(iObjFactoryType);
-            strAddTrcInfo += ", GraphObjCreating: " + QString(pGraphObjCreating == nullptr ? "nullptr" : pGraphObjCreating->name());
+            QString strAddTrcInfo = "Mode:" + pDrawingScene->getMode().toString() +
+                ", EditTool:" + pDrawingScene->getEditTool().toString() +
+                ", EditMode:" + pDrawingScene->getEditMode().toString() +
+                ", ResizeMode:" + pDrawingScene->getEditResizeMode().toString() +
+                ", ObjFactory:" + graphObjType2Str(iObjFactoryType) +
+                ", GraphObjCreating: " + QString(pGraphObjCreating == nullptr ? "nullptr" : pGraphObjCreating->name());
             mthTracer.trace(strAddTrcInfo);
         }
     }
@@ -4328,8 +4310,7 @@ void CMainWindow::onDrawingSceneModeChanged()
     updateWindowTitle();
     updateActions();
     updateStatusBar();
-
-} // onDrawingSceneModeChanged
+}
 
 //------------------------------------------------------------------------------
 void CMainWindow::onDrawingSceneDrawSettingsChanged( const CDrawSettings& i_drawSettings )
@@ -4430,26 +4411,20 @@ void CMainWindow::onDrawingViewMousePosChanged( const QPointF& i_ptMousePos )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObjMouseEvents, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strMthInArgs = "Pos:" + point2Str(i_ptMousePos);
+    if (areMethodCallsActive(m_pTrcAdminObjMouseEvents, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = point2Str(i_ptMousePos);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onDrawingViewMousePosChanged",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_pLblStatusBarDrawingViewMouseCursorPos != nullptr)
-    {
+    if (m_pLblStatusBarDrawingViewMouseCursorPos != nullptr) {
         //CDrawingView* pDrawingView = m_pWdgtCentral->drawingView();
         //CPageSetup* pageSetup = pDrawingView->getPageSetup();
         //CUnit unitWidth = pageSetup->unit(EOrientation::Horizontal);
-
         //QString strMouseCursorPos;
-
         //strMouseCursorPos += QString("ViewPos: ");
         //strMouseCursorPos += QString::number(i_ptMousePos.x());
         //strMouseCursorPos += QString("/");
@@ -4457,12 +4432,33 @@ void CMainWindow::onDrawingViewMousePosChanged( const QPointF& i_ptMousePos )
         //strMouseCursorPos += QString(" [");
         //strMouseCursorPos += QString(unitWidth.symbol());
         //strMouseCursorPos += QString("]");
-
         //m_pLblStatusBarDrawingViewMouseCursorPos->setText(strMouseCursorPos);
-
-    } // if( m_pLblStatusBarDrawingViewMouseCursorPos != nullptr )
-
+    }
 } // onDrawingViewMousePosChanged
+
+//------------------------------------------------------------------------------
+void CMainWindow::onDrawingViewContentAreaChanged()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjMouseEvents,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onDrawingViewContentAreaChanged",
+        /* strAddInfo   */ "" );
+
+    if (m_pLblStatusBarDrawingSceneRect != nullptr) {
+        CDrawingView* pDrawingView = m_pWdgtCentral->drawingView();
+        CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
+        QRectF rectScene = pDrawingScene->sceneRect();
+        QPolygon plgViewRectScene = pDrawingView->mapFromScene(rectScene);
+        CDrawingSize drawingSize = pDrawingScene->drawingSize();
+        CPhysVal physValWidth = drawingSize.metricImageWidth();
+        CPhysVal physValHeight = drawingSize.metricImageHeight();
+        QString strSceneSizeInfo = "SceneRect {" + qRect2Str(plgViewRectScene.boundingRect()) + "}" +
+            "{" + physValWidth.toString() + ", " + physValHeight.toString() + "}";
+        m_pLblStatusBarDrawingSceneRect->setText(strSceneSizeInfo);
+    }
+}
 
 /*==============================================================================
 protected slots: // Tree View Object Factories (ToolBox)
@@ -4473,23 +4469,18 @@ void CMainWindow::onTreeViewObjFactoriesExpanded( const QModelIndex& i_modelIdx 
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onTreeViewObjFactoriesExpanded",
         /* strAddInfo   */ strMthInArgs );
 
-    if( i_modelIdx.isValid() )
-    {
+    if (i_modelIdx.isValid()) {
         m_pTreeViewObjFactories->resizeColumnToContents(i_modelIdx.column());
     }
-
-} // onTreeViewObjFactoriesExpanded
+}
 
 //------------------------------------------------------------------------------
 void CMainWindow::onTreeViewObjFactoriesCurrentChanged(

@@ -75,26 +75,18 @@ QAbstractItemView::DragDropMode ZS::System::GUI::str2QItemViewDragDropMode( cons
 //------------------------------------------------------------------------------
 {
     QAbstractItemView::DragDropMode mode = QAbstractItemView::NoDragDrop;
-
     bool bConverted = false;
-
-    int iVal = SEnumEntry::str2Enumerator( s_arEnumStrQItemViewDragDropMode, _ZSArrLen(s_arEnumStrQItemViewDragDropMode), i_str, i_alias, Qt::CaseInsensitive );
-
-    if( iVal >= 0 && iVal < _ZSArrLen(s_arEnumStrQItemViewDragDropMode) )
-    {
+    int iVal = SEnumEntry::str2Enumerator(
+        s_arEnumStrQItemViewDragDropMode, _ZSArrLen(s_arEnumStrQItemViewDragDropMode), i_str, i_alias, Qt::CaseInsensitive);
+    if (iVal >= 0 && iVal < _ZSArrLen(s_arEnumStrQItemViewDragDropMode)) {
         mode = static_cast<QAbstractItemView::DragDropMode>(iVal);
         bConverted = true;
     }
-
-    if( o_pbConverted != nullptr )
-    {
+    if (o_pbConverted != nullptr) {
         *o_pbConverted = bConverted;
     }
-
     return mode;
-
-} // str2QItemViewDragDropMode
-
+}
 
 /*==============================================================================
 Enum QAbstractItemView::ItemDataRole
@@ -115,6 +107,35 @@ static const ZS::System::SEnumEntry s_arEnumStrQItemViewCursorAction[] =
     /* 8 */ SEnumEntry( /*QAbstractItemView::MoveNext*/     8, "MoveNext"     ),
     /* 9 */ SEnumEntry( /*QAbstractItemView::MovePrevious*/ 9, "MovePrevious" )
 };
+
+/*==============================================================================
+Enum Qt::DropAction
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QString ZS::System::GUI::qDropAction2Str( int i_iVal, EEnumEntryAliasStr /*i_alias*/ )
+//------------------------------------------------------------------------------
+{
+    QString str;
+    if (i_iVal == Qt::IgnoreAction) {
+        str = "Ignore";
+    }
+    else {
+        if (i_iVal & Qt::CopyAction) {
+            if( !str.isEmpty() ) str += "|";
+            str += "Copy";
+        }
+        if (i_iVal & Qt::MoveAction) {
+            if( !str.isEmpty() ) str += "|";
+            str += "Move";
+        }
+        if (i_iVal & Qt::LinkAction) {
+            if( !str.isEmpty() ) str += "|";
+            str += "Link";
+        }
+    }
+    return str;
+}
 
 //------------------------------------------------------------------------------
 QString ZS::System::GUI::qItemViewCursorAction2Str( int i_iVal, EEnumEntryAliasStr i_alias )
@@ -177,47 +198,79 @@ Qt::DockWidgetArea ZS::System::GUI::str2QDockWidgetArea( const QString& i_str )
 }
 
 /*==============================================================================
-Enum Qt::DropAction
+QEvents
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QString ZS::System::GUI::qDropAction2Str( int i_iVal, EEnumEntryAliasStr /*i_alias*/ )
+QString ZS::System::GUI::qDragEnterEvent2Str(QDragEnterEvent* i_pEv)
 //------------------------------------------------------------------------------
 {
-    QString str;
-
-    if( i_iVal == Qt::IgnoreAction )
-    {
-        str = "Ignore";
-    }
-    else
-    {
-        if( i_iVal & Qt::CopyAction )
-        {
-            if( !str.isEmpty() ) str += "|";
-            str += "Copy";
-        }
-        if( i_iVal & Qt::MoveAction )
-        {
-            if( !str.isEmpty() ) str += "|";
-            str += "Move";
-        }
-        if( i_iVal & Qt::LinkAction )
-        {
-            if( !str.isEmpty() ) str += "|";
-            str += "Link";
-        }
-    }
-
+    QString str =
+        "Type: " + qEventType2Str(i_pEv->type()) +
+        ", DropAction: " + qDropAction2Str(i_pEv->dropAction()) +
+        ", MouseButtons: " + qMouseButtons2Str(i_pEv->mouseButtons()) +
+        ", KeyboardModifiers: " + qKeyboardModifiers2Str(i_pEv->keyboardModifiers()) +
+        ", Pos: " + qPoint2Str(i_pEv->pos()) +
+        ", MimeData: " + qMimeData2Str(i_pEv->mimeData());
     return str;
-
-} // qDropAction2Str
-
-/*==============================================================================
-QKeyEvent
-==============================================================================*/
+}
 
 //------------------------------------------------------------------------------
+QString ZS::System::GUI::qDragLeaveEvent2Str(QDragLeaveEvent* i_pEv)
+//------------------------------------------------------------------------------
+{
+    return qEventType2Str(i_pEv->type());
+}
+
+//------------------------------------------------------------------------------
+QString ZS::System::GUI::qDragMoveEvent2Str(QDragMoveEvent* i_pEv)
+//------------------------------------------------------------------------------
+{
+    QString str =
+        "Type: " + qEventType2Str(i_pEv->type()) +
+        ", DropAction: " + qDropAction2Str(i_pEv->dropAction()) +
+        ", MouseButtons: " + qMouseButtons2Str(i_pEv->mouseButtons()) +
+        ", KeyboardModifiers: " + qKeyboardModifiers2Str(i_pEv->keyboardModifiers()) +
+        ", Pos: " + qPoint2Str(i_pEv->pos()) +
+        ", MimeData: " + qMimeData2Str(i_pEv->mimeData());
+    return str;
+}
+
+//------------------------------------------------------------------------------
+QString ZS::System::GUI::qDropEvent2Str(QDropEvent* i_pEv)
+//------------------------------------------------------------------------------
+{
+    QString str =
+        "Type: " + qEventType2Str(i_pEv->type()) +
+        ", DropAction: " + qDropAction2Str(i_pEv->dropAction()) +
+        ", MouseButtons: " + qMouseButtons2Str(i_pEv->mouseButtons()) +
+        ", KeyboardModifiers: " + qKeyboardModifiers2Str(i_pEv->keyboardModifiers()) +
+        ", Pos: " + qPoint2Str(i_pEv->pos()) +
+        ", MimeData: " + qMimeData2Str(i_pEv->mimeData());
+    return str;
+}
+
+//------------------------------------------------------------------------------
+QString ZS::System::GUI::qKeyEvent2Str(QKeyEvent* i_pEv)
+//------------------------------------------------------------------------------
+{
+    QString str =
+        "Type: " + qEventType2Str(i_pEv->type()) +
+        ", Key: " + qKeyCode2Str(i_pEv->key()) +
+        ", KeyboardModifiers: " + qKeyboardModifiers2Str(i_pEv->modifiers()) +
+        ", Text: " + i_pEv->text() +
+        ", AutoRepeat: " + bool2Str(i_pEv->isAutoRepeat());
+    if (i_pEv->isAutoRepeat()) {
+        str += ": Count: " + QString::number(i_pEv->count());
+    }
+    return str;
+}
+
+//------------------------------------------------------------------------------
+/*!
+    @param [in] i_type
+        Must be either QEvent::KeyPress or QEvent::KeyRelease.
+*/
 QKeyEvent* ZS::System::GUI::str2QKeyEvent( const QString& i_str, QEvent::Type i_type )
 //------------------------------------------------------------------------------
 {
@@ -293,112 +346,76 @@ QKeyEvent* ZS::System::GUI::str2QKeyEvent( const QString& i_str, QEvent::Type i_
 
     return pEv;
 
-} // char2QKeyEvent
+} // str2QKeyEvent
 
 //------------------------------------------------------------------------------
-QString ZS::System::GUI::qKeyEvent2Str( QKeyEvent* i_pEv, int /*i_iDetailLevel*/ )
+QString ZS::System::GUI::qMouseEvent2Str(QMouseEvent* i_pEv)
 //------------------------------------------------------------------------------
 {
-    QString str;
+    QString str =
+        "Type: " + qEventType2Str(i_pEv->type()) +
+        ", Button: " + qMouseButton2Str(i_pEv->button()) +
+        ", Buttons: " + qMouseButtons2Str(i_pEv->buttons()) +
+        ", KeyboardModifiers: " + qKeyboardModifiers2Str(i_pEv->modifiers()) +
+        ", Pos: " + qPoint2Str(i_pEv->pos()) +
+        ", GlobalPos: " + qPoint2Str(i_pEv->globalPos());
+    return str;
+}
 
-    str  = "Type: " + qEventType2Str(i_pEv->type());
-    str += ", Key: " + qKeyCode2Str(i_pEv->key());
-    str += ", KeyboardModifiers: " + qKeyboardModifiers2Str(i_pEv->modifiers());
-    str += ", Text: " + i_pEv->text();
-    str += ", AutoRepeat: " + bool2Str(i_pEv->isAutoRepeat());
-    if( i_pEv->isAutoRepeat() )
-    {
-        str += ": Count: " + QString::number(i_pEv->count());
+//------------------------------------------------------------------------------
+QString ZS::System::GUI::qPaintEvent2Str(QPaintEvent* i_pEv)
+//------------------------------------------------------------------------------
+{
+    QString str =
+        "Type: " + qEventType2Str(i_pEv->type()) +
+        ", Rect {" + qRect2Str(i_pEv->rect()) + "}";
+        //", Region {" + qRegion2Str(i_pEv->region()) + "}";
+    return str;
+}
+
+//------------------------------------------------------------------------------
+QString ZS::System::GUI::qResizeEvent2Str(QResizeEvent* i_pEv)
+//------------------------------------------------------------------------------
+{
+    QString str =
+        "Type: " + qEventType2Str(i_pEv->type()) +
+        ", Size {" + qSize2Str(i_pEv->size()) + "}" +
+        ", OldSize {" + qSize2Str(i_pEv->oldSize()) + "}";
+    return str;
+}
+
+/*==============================================================================
+QPolygon
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QString ZS::System::GUI::qPolygon2Str(const QPolygon& i_plg)
+//------------------------------------------------------------------------------
+{
+    QString str = "[" + QString::number(i_plg.size()) + "]";
+    if (i_plg.size() > 0) {
+        str += "(";
+        for (int idxPt = 0; idxPt < i_plg.size(); ++idxPt) {
+            if (idxPt > 0) str += ", ";
+            str += "{" + qPoint2Str(i_plg.at(idxPt)) + "}";
+        }
+        str += ")";
     }
-
     return str;
-
-} // qKeyEvent2Str
-
-/*==============================================================================
-QMouseEvent
-==============================================================================*/
+}
 
 //------------------------------------------------------------------------------
-QString ZS::System::GUI::qMouseEvent2Str( QMouseEvent* i_pEv, int /*i_iDetailLevel*/ )
+QString ZS::System::GUI::qPolygon2Str(const QPolygonF& i_plg)
 //------------------------------------------------------------------------------
 {
-    QString str;
-
-    str  = "Type: " + qEventType2Str(i_pEv->type());
-    str += ", Button: " + qMouseButton2Str(i_pEv->button());
-    str += ", Buttons: " + qMouseButtons2Str(i_pEv->buttons());
-    str += ", KeyboardModifiers: " + qKeyboardModifiers2Str(i_pEv->modifiers());
-    str += ", Pos: " + qPoint2Str(i_pEv->pos());
-    str += ", GlobalPos: " + qPoint2Str(i_pEv->globalPos());
-
+    QString str = "[" + QString::number(i_plg.size()) + "]";
+    if (i_plg.size() > 0) {
+        str += "(";
+        for (int idxPt = 0; idxPt < i_plg.size(); ++idxPt) {
+            if (idxPt > 0) str += ", ";
+            str += "{" + qPoint2Str(i_plg.at(idxPt)) + "}";
+        }
+        str += ")";
+    }
     return str;
-
-} // qMouseEvent2Str
-
-/*==============================================================================
-QDrag/Drop-Event
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-QString ZS::System::GUI::qDragEnterEvent2Str( QDragEnterEvent* i_pEv, int /*i_iDetailLevel*/ )
-//------------------------------------------------------------------------------
-{
-    QString str;
-
-    str  = "Type: " + qEventType2Str(i_pEv->type());
-    str += ", DropAction: " + qDropAction2Str(i_pEv->dropAction());
-    str += ", MouseButtons: " + qMouseButtons2Str(i_pEv->mouseButtons());
-    str += ", KeyboardModifiers: " + qKeyboardModifiers2Str(i_pEv->keyboardModifiers());
-    str += ", Pos: " + qPoint2Str(i_pEv->pos());
-    str += ", MimeData: " + qMimeData2Str(i_pEv->mimeData());
-
-    return str;
-
-} // qDragEnterEvent2Str
-
-//------------------------------------------------------------------------------
-QString ZS::System::GUI::qDragLeaveEvent2Str( QDragLeaveEvent* i_pEv, int /*i_iDetailLevel*/ )
-//------------------------------------------------------------------------------
-{
-    QString str;
-
-    str = "Type: " + qEventType2Str(i_pEv->type());
-
-    return str;
-
-} // qDragLeaveEvent2Str
-
-//------------------------------------------------------------------------------
-QString ZS::System::GUI::qDragMoveEvent2Str( QDragMoveEvent* i_pEv, int /*i_iDetailLevel*/ )
-//------------------------------------------------------------------------------
-{
-    QString str;
-
-    str  = "Type: " + qEventType2Str(i_pEv->type());
-    str += ", DropAction: " + qDropAction2Str(i_pEv->dropAction());
-    str += ", MouseButtons: " + qMouseButtons2Str(i_pEv->mouseButtons());
-    str += ", KeyboardModifiers: " + qKeyboardModifiers2Str(i_pEv->keyboardModifiers());
-    str += ", Pos: " + qPoint2Str(i_pEv->pos());
-    str += ", MimeData: " + qMimeData2Str(i_pEv->mimeData());
-
-    return str;
-
-} // qDragMoveEvent2Str
-
-//------------------------------------------------------------------------------
-QString ZS::System::GUI::qDropEvent2Str( QDropEvent* i_pEv, int /*i_iDetailLevel*/ )
-//------------------------------------------------------------------------------
-{
-    QString str;
-
-    str  = "Type: " + qEventType2Str(i_pEv->type());
-    str += ", DropAction: " + qDropAction2Str(i_pEv->dropAction());
-    str += ", MouseButtons: " + qMouseButtons2Str(i_pEv->mouseButtons());
-    str += ", KeyboardModifiers: " + qKeyboardModifiers2Str(i_pEv->keyboardModifiers());
-    str += ", Pos: " + qPoint2Str(i_pEv->pos());
-    str += ", MimeData: " + qMimeData2Str(i_pEv->mimeData());
-
-    return str;
-
-} // qDropEvent2Str
+}

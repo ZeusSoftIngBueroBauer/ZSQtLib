@@ -26,51 +26,12 @@ may result in using the software modules.
 
 #include "WidgetCentral.h"
 
-#include "ZSDraw/Drawing/ZSDrawingScene.h"
-#include "ZSDraw/Widgets/Drawing/ZSDrawingView.h"
-
-//#include <QtCore/qsettings.h>
-//#include <QtCore/qtimer.h>
-
-//#include <QtGui/qbitmap.h>
-//#include <QtGui/qevent.h>
-//#include <QtGui/qicon.h>
-//#include <QtGui/qpainter.h>
+#include "ZSDraw/Widgets/Drawing/ZSDrawingWidget.h"
 
 #if QT_VERSION < 0x050000
-//#include <QtGui/qapplication.h>
-//#include <QtGui/qbuttongroup.h>
-//#include <QtGui/qcombobox.h>
-//#include <QtGui/qdockwidget.h>
-//#include <QtGui/qfiledialog.h>
-//#include <QtGui/qlabel.h>
 #include <QtGui/qlayout.h>
-//#include <QtGui/qmenubar.h>
-//#include <QtGui/qmessagebox.h>
-//#include <QtGui/qpushbutton.h>
-//#include <QtGui/qspinbox.h>
-//#include <QtGui/qsplitter.h>
-//#include <QtGui/qstatusbar.h>
-//#include <QtGui/qtoolbar.h>
-//#include <QtGui/qtoolbutton.h>
-//#include <QtGui/qtreeview.h>
 #else
-//#include <QtWidgets/qapplication.h>
-//#include <QtWidgets/qbuttongroup.h>
-//#include <QtWidgets/qcombobox.h>
-//#include <QtWidgets/qdockwidget.h>
-//#include <QtWidgets/qfiledialog.h>
-//#include <QtWidgets/qlabel.h>
 #include <QtWidgets/qlayout.h>
-//#include <QtWidgets/qmenubar.h>
-//#include <QtWidgets/qmessagebox.h>
-//#include <QtWidgets/qpushbutton.h>
-//#include <QtWidgets/qspinbox.h>
-//#include <QtWidgets/qsplitter.h>
-//#include <QtWidgets/qstatusbar.h>
-//#include <QtWidgets/qtoolbar.h>
-//#include <QtWidgets/qtoolbutton.h>
-//#include <QtWidgets/qtreeview.h>
 #endif
 
 #include "ZSSys/ZSSysException.h"
@@ -115,8 +76,7 @@ CWidgetCentral::CWidgetCentral(
 //------------------------------------------------------------------------------
     QWidget(i_pWdgtParent, i_wflags),
     m_pLyt(nullptr),
-    m_pDrawingScene(nullptr),
-    m_pDrawingView(nullptr)
+    m_pWdgtDrawing(nullptr)
 {
     if( s_pThis != nullptr )
     {
@@ -129,19 +89,8 @@ CWidgetCentral::CWidgetCentral(
     m_pLyt = new QVBoxLayout();
     setLayout(m_pLyt);
 
-    // The drawing size instance created by the drawing scene accesses the
-    // unit to get the screen resolution. To get the screen resolution the
-    // screen resolution must be set before. Setting it in the drawing views
-    // constructor is too late. It must be done by the creator of the drawing view.
-    Units.Length.setPxpi(logicalDpiX());
-    Units.Length.setDpi(physicalDpiX());
-
-    m_pDrawingScene = new CDrawingScene("theInst");
-    //m_pDrawingScene->setBackgroundBrush(Qt::blue);
-
-    m_pDrawingView = new CDrawingView(m_pDrawingScene);
-    m_pDrawingView->setMouseTracking(true);
-    m_pLyt->addWidget(m_pDrawingView/*, 0, Qt::AlignCenter*/);
+    m_pWdgtDrawing = new CWdgtDrawing();
+    m_pLyt->addWidget(m_pWdgtDrawing);
 
 } // ctor
 
@@ -151,17 +100,32 @@ CWidgetCentral::~CWidgetCentral()
 {
     s_pThis = nullptr;
 
-    try
-    {
-        delete m_pDrawingScene;
-    }
-    catch(...)
-    {
-    }
-
     m_pLyt = nullptr;
-    m_pDrawingScene = nullptr;
-    m_pDrawingView = nullptr;
+    m_pWdgtDrawing = nullptr;
 
 } // dtor
 
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CWdgtDrawing* CWidgetCentral::drawingWidget()
+//------------------------------------------------------------------------------
+{
+    return m_pWdgtDrawing;
+}
+
+//------------------------------------------------------------------------------
+CDrawingView* CWidgetCentral::drawingView()
+//------------------------------------------------------------------------------
+{
+    return m_pWdgtDrawing->drawingView();
+}
+
+//------------------------------------------------------------------------------
+CDrawingScene* CWidgetCentral::drawingScene()
+//------------------------------------------------------------------------------
+{
+    return m_pWdgtDrawing->drawingScene();
+}

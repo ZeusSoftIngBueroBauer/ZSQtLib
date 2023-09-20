@@ -493,7 +493,10 @@ void CTest::doTestStepMainWindowSetGeometry( ZS::Test::CTestStep* i_pTestStep )
     strlstExpectedValues.append(qSize2Str(QSize(cxWidth, cyHeight)));
     i_pTestStep->setExpectedValues(strlstExpectedValues);
 
-    m_pMainWindow->setFixedSize(cxWidth, cyHeight);
+    QRect rectMainWindow = m_pMainWindow->geometry();
+    rectMainWindow.setWidth(cxWidth);
+    rectMainWindow.setHeight(cyHeight);
+    m_pMainWindow->setGeometry(rectMainWindow);
 
     QStringList strlstResultValues;
     strlstResultValues.append(qSize2Str(m_pMainWindow->size()));

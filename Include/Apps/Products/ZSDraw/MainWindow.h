@@ -319,6 +319,7 @@ public slots: // Drawing Scene
     void onDrawingSceneDrawSettingsChanged( const ZS::Draw::CDrawSettings& i_drawSettings );
 protected slots: // Drawing View
     void onDrawingViewMousePosChanged( const QPointF& i_ptMousePos );
+    void onDrawingViewContentAreaChanged();
 protected slots: // Tree View Object Factories (ToolBox)
     void onTreeViewObjFactoriesExpanded( const QModelIndex& i_modelIdx );
     void onTreeViewObjFactoriesCurrentChanged( const QModelIndex& i_modelIdxCurr, const QModelIndex& i_modelIdxPrev );
@@ -409,9 +410,9 @@ protected: // instance members
     QAction*  m_pActEditRotateRight;
     QDoubleSpinBox* m_pEdtEditRotateAngle;
     // Menu - Edit - Mirror
-    QMenu*   m_pMenuEditMirror;
-    QAction* m_pActEditMirrorVertical;
-    QAction* m_pActEditMirrorHorizontal;
+    QMenu*    m_pMenuEditMirror;
+    QAction*  m_pActEditMirrorVertical;
+    QAction*  m_pActEditMirrorHorizontal;
     // Menu - Edit - Group
     QToolBar* m_pToolBarEditGroup;
     QAction*  m_pActEditGroup;

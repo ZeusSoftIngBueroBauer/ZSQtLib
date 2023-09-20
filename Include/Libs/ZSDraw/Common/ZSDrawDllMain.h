@@ -55,6 +55,8 @@ may result in using the software modules.
 global type definitions and constants
 *******************************************************************************/
 
+#include <QtCore/qglobal.h>
+
 namespace ZS
 {
 namespace Draw

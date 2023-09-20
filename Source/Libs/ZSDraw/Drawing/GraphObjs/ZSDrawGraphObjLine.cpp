@@ -282,7 +282,9 @@ void CGraphObjLine::setLine( const CPhysValLine& i_physValLine )
         /* strMethod    */ "setLine",
         /* strAddInfo   */ strMthInArgs );
 
-    QGraphicsLineItem::setLine(i_physValLine.toQLineF());
+    m_line = i_physValLine;
+
+    QGraphicsLineItem::setLine(i_physValLine.toQLineF(Units.Length.px));
 
     //m_rctCurr.setTopLeft(i_line.p1());
     //m_rctCurr.setWidth(i_line.dx());
@@ -1183,10 +1185,8 @@ void CGraphObjLine::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
     CEnumMode modeDrawing = m_pDrawingScene->getMode();
     CEnumEditTool editToolDrawing = m_pDrawingScene->getEditTool();
 
-    if (modeDrawing == EMode::Edit)
-    {
-        if (editToolDrawing == EEditTool::CreateObjects && m_editMode == EEditMode::Creating)
-        {
+    if (modeDrawing == EMode::Edit) {
+        if (editToolDrawing == EEditTool::CreateObjects && m_editMode == EEditMode::Creating) {
             QGraphicsLineItem::mousePressEvent(i_pEv); // this will select the item (creating selection points)
             m_idxSelPtSelectedPolygon = 1;
             if (m_arpSelPtsPolygon[m_idxSelPtSelectedPolygon] != nullptr) {
@@ -1195,17 +1195,13 @@ void CGraphObjLine::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
             updateEditInfo();
             updateToolTip();
         }
-        else if (editToolDrawing == EEditTool::Select && m_editMode == EEditMode::None)
-        {
+        else if (editToolDrawing == EEditTool::Select && m_editMode == EEditMode::None) {
             QGraphicsLineItem::mousePressEvent(i_pEv); // this will select the item (creating selection points)
-
             SGraphObjHitInfo hitInfo;
             bool bIsHit = isHit(i_pEv->pos(), &hitInfo);
-
             m_editMode = hitInfo.m_editMode;
             m_editResizeMode = hitInfo.m_editResizeMode;
             m_idxSelPtSelectedPolygon = hitInfo.m_idxPolygonShapePoint;
-
             for (int idxSelPt = 0; idxSelPt < m_arpSelPtsPolygon.size(); idxSelPt++) {
                 CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
                 if (pGraphObjSelPt != nullptr) {
@@ -1217,9 +1213,7 @@ void CGraphObjLine::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                     }
                 }
             }
-
             m_pDrawingScene->setMode( EMode::Ignore, EEditTool::Ignore, m_editMode, m_editResizeMode, false );
-
             updateEditInfo();
             updateToolTip();
         }
@@ -1246,38 +1240,32 @@ void CGraphObjLine::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     CEnumMode modeDrawing = m_pDrawingScene->getMode();
 
-    if (modeDrawing == EMode::Edit)
-    {
-        if (m_editMode == EEditMode::Creating || m_editMode == EEditMode::MoveShapePoint)
-        {
+    if (modeDrawing == EMode::Edit) {
+        if (m_editMode == EEditMode::Creating || m_editMode == EEditMode::MoveShapePoint) {
             QRectF sceneRect = m_pDrawingScene->sceneRect();
             QPointF posEv = i_pEv->pos();
             if (sceneRect.contains(mapToScene(posEv))) {
                 CPhysValPoint physValPosEv = m_pDrawingScene->toPhysValPoint(posEv);
                 CPhysValLine physValLine = m_line;
-                if (m_idxSelPtSelectedPolygon == 1) {
-                    physValLine.setP2(physValPosEv);
-                }
-                else /*if( m_idxSelPtSelectedPolygon == 0 )*/ {
+                if (m_idxSelPtSelectedPolygon == 0) {
                     physValLine.setP1(physValPosEv);
+                }
+                else if (m_idxSelPtSelectedPolygon == 1) {
+                    physValLine.setP2(physValPosEv);
                 }
                 setLine(physValLine);
             }
         }
-        else if (m_editMode == EEditMode::Move)
-        {
+        else if (m_editMode == EEditMode::Move) {
             QGraphicsLineItem::mouseMoveEvent(i_pEv);
             updateEditInfo();
             updateToolTip();
         }
-        else if( m_editMode == EEditMode::Resize )
-        {
+        else if (m_editMode == EEditMode::Resize) {
         }
-        else if( m_editMode == EEditMode::Rotate )
-        {
+        else if (m_editMode == EEditMode::Rotate) {
         }
-        else if( m_editMode == EEditMode::EditText )
-        {
+        else if (m_editMode == EEditMode::EditText) {
         }
     }
 } // mouseMoveEvent
@@ -1302,8 +1290,7 @@ void CGraphObjLine::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     CEnumMode modeDrawing = m_pDrawingScene->getMode();
 
-    if (modeDrawing == EMode::Edit)
-    {
+    if (modeDrawing == EMode::Edit) {
         if (m_editMode == EEditMode::Creating) {
             // The object has been initially created.
             m_pDrawingScene->onGraphObjCreationFinished(this);
@@ -1312,17 +1299,13 @@ void CGraphObjLine::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
             updateEditInfo();
             updateToolTip();
         }
-        else if( m_editMode == EEditMode::Resize )
-        {
+        else if (m_editMode == EEditMode::Resize) {
         }
-        else if( m_editMode == EEditMode::Rotate )
-        {
+        else if (m_editMode == EEditMode::Rotate) {
         }
-        else if( m_editMode == EEditMode::MoveShapePoint )
-        {
+        else if (m_editMode == EEditMode::MoveShapePoint) {
         }
-        else if( m_editMode == EEditMode::EditText )
-        {
+        else if (m_editMode == EEditMode::EditText) {
         }
 
         m_editMode = EEditMode::None;

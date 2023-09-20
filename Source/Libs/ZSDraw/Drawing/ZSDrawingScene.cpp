@@ -2608,8 +2608,8 @@ int CDrawingScene::groupGraphObjsSelected()
 
                 if( !pGraphObjSelected->isConnectionLine() )
                 {
-                    QPointF posItem = pGraphObjSelected->getPos().toQPointF();
-                    QSizeF  sizItem = pGraphObjSelected->getSize().toQSizeF();
+                    QPointF posItem = pGraphObjSelected->getPos().toQPointF(Units.Length.px);
+                    QSizeF  sizItem = pGraphObjSelected->getSize().toQSizeF(Units.Length.px);
                     QRectF  rctItem = QRectF(posItem, sizItem);
 
                     if( rctItem.width() >= 0.0 )
@@ -2675,13 +2675,13 @@ int CDrawingScene::groupGraphObjsSelected()
                 if( !pGraphObjSelected->isConnectionLine() )
                 {
                     // for debugging purposes also called here before adding the item to the group
-                    QPointF posItem = pGraphObjSelected->getPos().toQPointF();
-                    QSizeF  sizItem = pGraphObjSelected->getSize().toQSizeF();
+                    QPointF posItem = pGraphObjSelected->getPos().toQPointF(Units.Length.px);
+                    QSizeF  sizItem = pGraphObjSelected->getSize().toQSizeF(Units.Length.px);
 
                     pGraphicsItemGroup->addToGroup(pGraphicsItemSelected);
 
-                    posItem = pGraphObjSelected->getPos().toQPointF();
-                    sizItem = pGraphObjSelected->getSize().toQSizeF();
+                    posItem = pGraphObjSelected->getPos().toQPointF(Units.Length.px);
+                    sizItem = pGraphObjSelected->getSize().toQSizeF(Units.Length.px);
 
                     m_pGraphObjsIdxTree->move(pGraphObjSelected, pGraphObjGroup);
 
@@ -2814,13 +2814,13 @@ int CDrawingScene::ungroupGraphObjsSelected()
                 }
 
                 // for debugging purposes also called here before removing the item from the group
-                QPointF posItem = pGraphObjSelected->getPos().toQPointF();
-                QSizeF  sizItem = pGraphObjSelected->getSize().toQSizeF();
+                QPointF posItem = pGraphObjSelected->getPos().toQPointF(Units.Length.px);
+                QSizeF  sizItem = pGraphObjSelected->getSize().toQSizeF(Units.Length.px);
 
                 pGraphicsItemGroupSelected->removeFromGroup(pGraphicsItemChild);
 
-                posItem = pGraphObjSelected->getPos().toQPointF();
-                sizItem = pGraphObjSelected->getSize().toQSizeF();
+                posItem = pGraphObjSelected->getPos().toQPointF(Units.Length.px);
+                sizItem = pGraphObjSelected->getSize().toQSizeF(Units.Length.px);
 
                 m_pGraphObjsIdxTree->move(pGraphObjChild, nullptr);
             }

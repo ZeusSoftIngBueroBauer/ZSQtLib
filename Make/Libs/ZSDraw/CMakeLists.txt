@@ -86,6 +86,7 @@ list(APPEND _HeadersWidgetsDrawing
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/Drawing/ZSDrawDlgDrawingViewSetup.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/Drawing/ZSDrawingView.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/Drawing/ZSDrawingViewPropertiesWdgt.h
+    ${_HeadersPath}/${PROJECT_NAME}/Widgets/Drawing/ZSDrawingWidget.h
 )
 
 list(APPEND _HeadersWidgetsGraphObjFormat
@@ -187,6 +188,7 @@ list(APPEND _SourcesWidgetsDrawing
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/Drawing/ZSDrawDlgDrawingViewSetup.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/Drawing/ZSDrawingView.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/Drawing/ZSDrawingViewPropertiesWdgt.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Widgets/Drawing/ZSDrawingWidget.cpp
 )
 
 list(APPEND _SourcesWidgetsGraphObjFormat

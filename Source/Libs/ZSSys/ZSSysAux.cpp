@@ -2738,39 +2738,21 @@ Qt::KeyboardModifiers ZS::System::char2QKeyboardModifiers( const QChar& i_ch )
 //------------------------------------------------------------------------------
 {
     Qt::KeyboardModifiers keyboardModifiers = Qt::NoModifier;
-
     QChar ch = i_ch;
-
-    if( ch.toLower() != i_ch )
-    {
+    if (ch.toLower() != i_ch) {
         keyboardModifiers |= Qt::ShiftModifier;
     }
-
     return keyboardModifiers;
-
-} // char2QKeyboardModifiers
+}
 
 //------------------------------------------------------------------------------
-QString ZS::System::qMargins2Str( const QMargins& i_margins, bool i_bShort )
+QString ZS::System::qMargins2Str( const QMargins& i_margins )
 //------------------------------------------------------------------------------
 {
-    QString str;
-
-    if( i_bShort )
-    {
-        str  = QString::number(i_margins.left()) + ", " + QString::number(i_margins.top());
-        str += ", " + QString::number(i_margins.right()) + ", " + QString::number(i_margins.bottom());
-    }
-    else
-    {
-        str  = "Left: " + QString::number(i_margins.left());
-        str += ", Top: " + QString::number(i_margins.top());
-        str += ", Right: " + QString::number(i_margins.right());
-        str += ", Bottom: " + QString::number(i_margins.bottom());
-    }
+    QString str = QString::number(i_margins.left()) + ", " + QString::number(i_margins.top())
+        + ", " + QString::number(i_margins.right()) + ", " + QString::number(i_margins.bottom());
     return str;
-
-} // qMargins2Str
+}
 
 //------------------------------------------------------------------------------
 QString ZS::System::qMimeData2Str( const QMimeData* i_pMimeData, int i_iDetailLevel )
@@ -2896,7 +2878,7 @@ QString ZS::System::qModelIndex2Str( const QModelIndex& i_modelIdx )
 } // qModelIndex2Str
 
 //------------------------------------------------------------------------------
-QString ZS::System::qMouseButton2Str( int i_iBtn, bool /*i_bShort*/ )
+QString ZS::System::qMouseButton2Str( int i_iBtn )
 //------------------------------------------------------------------------------
 {
     QString str;
@@ -3049,7 +3031,7 @@ QString ZS::System::qMouseButton2Str( int i_iBtn, bool /*i_bShort*/ )
 } // qMouseButton2Str
 
 //------------------------------------------------------------------------------
-QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
+QString ZS::System::qMouseButtons2Str( int i_iBtns )
 //------------------------------------------------------------------------------
 {
     QString str;
@@ -3363,100 +3345,56 @@ QString ZS::System::qPenStyle2Str( const Qt::PenStyle& i_penStyle )
 }
 
 //------------------------------------------------------------------------------
-QString ZS::System::qPoint2Str( const QPoint& i_pt, bool i_bShort )
+QString ZS::System::qPoint2Str( const QPoint& i_pt )
 //------------------------------------------------------------------------------
 {
-    QString str;
-    if( i_bShort ) {
-        str = QString::number(i_pt.x())
-            + ", " + QString::number(i_pt.y());
-    } else {
-        str = "x: " + QString::number(i_pt.x())
-            + ", y: " + QString::number(i_pt.y());
-    }
+    QString str = QString::number(i_pt.x()) + ", " + QString::number(i_pt.y());
     return str;
 }
 
 //------------------------------------------------------------------------------
-QString ZS::System::qPoint2Str( const QPointF& i_pt, bool i_bShort )
+QString ZS::System::qPoint2Str( const QPointF& i_pt )
 //------------------------------------------------------------------------------
 {
-    QString str;
-    if( i_bShort ) {
-        str = QString::number(i_pt.x(),'f',1)
-            + ", " + QString::number(i_pt.y(),'f',1);
-    } else {
-        str = "x: " + QString::number(i_pt.x(),'f',1)
-            + ", y: " + QString::number(i_pt.y(),'f',1);
-    }
+    QString str = QString::number(i_pt.x(),'f',1) + ", " + QString::number(i_pt.y(),'f',1);
     return str;
 }
 
 //------------------------------------------------------------------------------
-QString ZS::System::qRect2Str( const QRect& i_rct, bool i_bShort )
+QString ZS::System::qRect2Str( const QRect& i_rct )
 //------------------------------------------------------------------------------
 {
-    QString str;
-    if( i_bShort ) {
-        str  = QString::number(i_rct.x())
-             + ", " + QString::number(i_rct.y())
-             + ", " + QString::number(i_rct.width())
-             + ", " + QString::number(i_rct.height());
-    } else {
-        str  = "x: " + QString::number(i_rct.x())
-             + ", y: " + QString::number(i_rct.y())
-             + ", w: " + QString::number(i_rct.width())
-             + ", h: " + QString::number(i_rct.height());
-    }
+    QString str = QString::number(i_rct.x())
+        + ", " + QString::number(i_rct.y())
+        + ", " + QString::number(i_rct.width())
+        + ", " + QString::number(i_rct.height());
     return str;
 }
 
 //------------------------------------------------------------------------------
-QString ZS::System::qRect2Str( const QRectF& i_rct, bool i_bShort )
+QString ZS::System::qRect2Str( const QRectF& i_rct )
 //------------------------------------------------------------------------------
 {
-    QString str;
-    if( i_bShort ) {
-        str = QString::number(i_rct.x(),'f',1)
-            + ", " + QString::number(i_rct.y(),'f',1)
-            + ", " + QString::number(i_rct.width(),'f',1)
-            + ", " + QString::number(i_rct.height(),'f',1);
-    } else {
-        str = "x: " + QString::number(i_rct.x(),'f',1)
-            + ", y: " + QString::number(i_rct.y(),'f',1)
-            + ", w: " + QString::number(i_rct.width(),'f',1)
-            + ", h: " + QString::number(i_rct.height(),'f',1);
-    }
+    QString str = QString::number(i_rct.x(),'f',1)
+        + ", " + QString::number(i_rct.y(),'f',1)
+        + ", " + QString::number(i_rct.width(),'f',1)
+        + ", " + QString::number(i_rct.height(),'f',1);
     return str;
 }
 
 //------------------------------------------------------------------------------
-QString ZS::System::qSize2Str( const QSize& i_size, bool i_bShort )
+QString ZS::System::qSize2Str( const QSize& i_size )
 //------------------------------------------------------------------------------
 {
-    QString str;
-    if( i_bShort ) {
-        str = QString::number(i_size.width())
-            + ", " + QString::number(i_size.height());
-    } else {
-        str = "w: " + QString::number(i_size.width())
-            + ", h: " + QString::number(i_size.height());
-    }
+    QString str = QString::number(i_size.width()) + ", " + QString::number(i_size.height());
     return str;
 }
 
 //------------------------------------------------------------------------------
-QString ZS::System::qSize2Str( const QSizeF& i_size, bool i_bShort )
+QString ZS::System::qSize2Str( const QSizeF& i_size )
 //------------------------------------------------------------------------------
 {
-    QString str;
-    if( i_bShort ) {
-        str = QString::number(i_size.width(),'f',1)
-            + ", " + QString::number(i_size.height(),'f',1);
-    } else {
-        str = "w: " + QString::number(i_size.width(),'f',1)
-            + ", h: " + QString::number(i_size.height(),'f',1);
-    }
+    QString str = QString::number(i_size.width(),'f',1) + ", " + QString::number(i_size.height(),'f',1);
     return str;
 }
 

@@ -743,7 +743,7 @@ bool CWdgtGraphObjLineGeometryProperties::hasChanges() const
         //if (pGraphObjLine->() != physValMetricPt1X) {
         //    bHasChanges = true;
         //}
-        QLineF lin = pGraphObjLine->getLine().toQLineF();
+        QLineF lin = pGraphObjLine->getLine().toQLineF(Units.Length.px);
         if (ZS::System::Math::round2Nearest(lin.p1().x(), 0) != m_pEdtPixelsPt1X->value()) {
             bHasChanges = true;
         }
@@ -762,14 +762,14 @@ bool CWdgtGraphObjLineGeometryProperties::hasChanges() const
         if (ZS::System::Math::round2Nearest(lin.angle(), 1) != m_pEdtPixelsAngle->value().getVal()) {
             bHasChanges = true;
         }
-        QPointF ptPos = pGraphObjLine->getPos().toQPointF();
+        QPointF ptPos = pGraphObjLine->getPos().toQPointF(Units.Length.px);
         if (ZS::System::Math::round2Nearest(ptPos.x(), 1) != m_pEdtPixelsPosX->value()) {
             bHasChanges = true;
         }
         if (ZS::System::Math::round2Nearest(ptPos.y(), 1) != m_pEdtPixelsPosY->value()) {
             bHasChanges = true;
         }
-        QSizeF size = pGraphObjLine->getSize().toQSizeF();
+        QSizeF size = pGraphObjLine->getSize().toQSizeF(Units.Length.px);
         if (ZS::System::Math::round2Nearest(size.width(), 0) != m_pEdtPixelsWidth->value()) {
             bHasChanges = true;
         }
@@ -1353,14 +1353,14 @@ void CWdgtGraphObjLineGeometryProperties::fillEditControls()
         m_pEdtPixelsAngle->setEnabled(true);
         m_pEdtPixelsAngle->setReadOnly(true);
         m_pEdtPixelsAngle->setValue(line.angle());
-        QPointF ptPos = pGraphObjLine->getPos().toQPointF();
+        QPointF ptPos = pGraphObjLine->getPos().toQPointF(Units.Length.px);
         m_pEdtPixelsPosX->setEnabled(true);
         m_pEdtPixelsPosX->setReadOnly(true);
         m_pEdtPixelsPosX->setValue(ptPos.x());
         m_pEdtPixelsPosY->setEnabled(true);
         m_pEdtPixelsPosY->setReadOnly(true);
         m_pEdtPixelsPosY->setValue(ptPos.y());
-        QSizeF size = pGraphObjLine->getSize().toQSizeF();
+        QSizeF size = pGraphObjLine->getSize().toQSizeF(Units.Length.px);
         m_pEdtPixelsWidth->setEnabled(true);
         m_pEdtPixelsWidth->setReadOnly(false);
         m_pEdtPixelsWidth->setValue(ZS::System::Math::round2Nearest(size.width(), 0));

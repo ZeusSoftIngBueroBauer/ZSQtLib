@@ -150,100 +150,70 @@ QString ZS::Draw::graphObjType2Str( int i_graphObjType )
 //------------------------------------------------------------------------------
 {
     QString str;
-
-    if( i_graphObjType == EGraphObjTypeSelectionPoint )
-    {
+    if (i_graphObjType == EGraphObjTypeSelectionPoint) {
         str = "SelectionPoint";
     }
-    else if( i_graphObjType == EGraphObjTypeLabel )
-    {
+    else if (i_graphObjType == EGraphObjTypeLabel) {
         str = "Label";
     }
-    else if( i_graphObjType == EGraphObjTypeUndefined )
-    {
+    else if (i_graphObjType == EGraphObjTypeUndefined) {
         str = "Undefined";
     }
-    else if ( i_graphObjType >= EGraphObjTypeMin && i_graphObjType <= EGraphObjTypeMax )
-    {
-        str = SEnumEntry::enumerator2Str(s_arEnumStrGraphObjType, _ZSArrLen(s_arEnumStrGraphObjType), i_graphObjType-EGraphObjTypeMin);
+    else if (i_graphObjType >= EGraphObjTypeMin && i_graphObjType <= EGraphObjTypeMax) {
+        str = SEnumEntry::enumerator2Str(
+            s_arEnumStrGraphObjType, _ZSArrLen(s_arEnumStrGraphObjType), i_graphObjType-EGraphObjTypeMin);
     }
-    else
-    {
+    else {
         str = "? (" + QString::number(i_graphObjType) + ")";
     }
     return str;
-
-} // graphObjType2Str
+}
 
 //------------------------------------------------------------------------------
 EGraphObjType ZS::Draw::str2GraphObjType( const QString& i_str )
 //------------------------------------------------------------------------------
 {
     EGraphObjType graphObjType = EGraphObjTypeUndefined;
-    
-    int iGraphObjType = SEnumEntry::str2Enumerator(s_arEnumStrGraphObjType, _ZSArrLen(s_arEnumStrGraphObjType), i_str);
-
-    if( iGraphObjType >= 0 && iGraphObjType < _ZSArrLen(s_arEnumStrGraphObjType) )
-    {
+    bool bOk = false;
+    int iGraphObjType = SEnumEntry::str2Enumerator(
+        s_arEnumStrGraphObjType, _ZSArrLen(s_arEnumStrGraphObjType), i_str, -1, Qt::CaseInsensitive, &bOk);
+    if (bOk) {
         graphObjType = static_cast<EGraphObjType>(iGraphObjType);
     }
-    else
-    {
-        bool bConverted;
-        iGraphObjType = i_str.toInt(&bConverted);
-        if( bConverted && iGraphObjType >= 0 && iGraphObjType < _ZSArrLen(s_arEnumStrGraphObjType) )
-        {
-            graphObjType = static_cast<EGraphObjType>(iGraphObjType);
-        }
-    }
     return graphObjType;
-
-} // str2GraphObjType
+}
 
 //------------------------------------------------------------------------------
 QString ZS::Draw::graphObjType2ClassName( int i_graphObjType )
 //------------------------------------------------------------------------------
 {
     QString str;
-
-    if( i_graphObjType == EGraphObjTypeSelectionPoint )
-    {
+    if (i_graphObjType == EGraphObjTypeSelectionPoint) {
         str = "CGraphObjSelectionPoint";
     }
-    else if( i_graphObjType == EGraphObjTypeLabel )
-    {
+    else if (i_graphObjType == EGraphObjTypeLabel) {
         str = "CGraphObjLabel";
     }
-    else
-    {
-        str = SEnumEntry::enumerator2Str(s_arEnumStrGraphObjClassName,_ZSArrLen(s_arEnumStrGraphObjClassName),i_graphObjType);
+    else {
+        str = SEnumEntry::enumerator2Str(
+            s_arEnumStrGraphObjClassName, _ZSArrLen(s_arEnumStrGraphObjClassName), i_graphObjType);
     }
     return str;
-
-} // graphObjType2ClassName
+}
 
 //------------------------------------------------------------------------------
 EGraphObjType ZS::Draw::className2GraphObjType( const QString& i_str )
 //------------------------------------------------------------------------------
 {
     EGraphObjType graphObjType = EGraphObjTypeUndefined;
-    int iGraphObjType = SEnumEntry::str2Enumerator(s_arEnumStrGraphObjClassName,_ZSArrLen(s_arEnumStrGraphObjClassName),i_str);
-    if( iGraphObjType >= 0 && iGraphObjType < _ZSArrLen(s_arEnumStrGraphObjClassName) )
-    {
+    bool bOk = false;
+    int iGraphObjType = SEnumEntry::str2Enumerator(
+        s_arEnumStrGraphObjClassName, _ZSArrLen(s_arEnumStrGraphObjClassName), i_str, -1, Qt::CaseInsensitive, &bOk);
+    if (bOk) {
         graphObjType = static_cast<EGraphObjType>(iGraphObjType);
     }
-    else
-    {
-        bool bConverted;
-        iGraphObjType = i_str.toInt(&bConverted);
-        if( bConverted && iGraphObjType >= 0 && iGraphObjType < _ZSArrLen(s_arEnumStrGraphObjClassName) )
-        {
-            graphObjType = static_cast<EGraphObjType>(iGraphObjType);
-        }
-    }
     return graphObjType;
-
-} // str2GraphObjClassName
+}
 
 
 /*==============================================================================

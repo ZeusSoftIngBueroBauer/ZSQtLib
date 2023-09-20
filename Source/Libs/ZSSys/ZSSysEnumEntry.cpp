@@ -125,14 +125,13 @@ EEnumEntryValidity ZS::System::str2EnumEntryValidity( const QString& i_str, EEnu
 {
     EEnumEntryValidity validity = EEnumEntryValidityUndefined;
     bool bOk = false;
-    int iVal = SEnumEntry::str2Enumerator(s_arEnumStrValidities,_ZSArrLen(s_arEnumStrValidities),i_str,i_alias,Qt::CaseInsensitive, &bOk);
-    if( bOk && iVal >= 0 && iVal < EEnumEntryValidityCount )
-    {
+    int iVal = SEnumEntry::str2Enumerator(
+        s_arEnumStrValidities, _ZSArrLen(s_arEnumStrValidities), i_str, i_alias, Qt::CaseInsensitive, &bOk);
+    if (bOk && iVal >= 0 && iVal < EEnumEntryValidityCount) {
         validity = static_cast<EEnumEntryValidity>(iVal);
     }
     return validity;
-
-} // str2EnumEntryValidity
+}
 
 
 /*******************************************************************************
@@ -168,15 +167,17 @@ QString SEnumEntry::enumerator2Str(
     QString strMth = "enumerator2Str";
     QString strAddErrInfo;
 
-    if( i_iEnumerator < 0 || i_iEnumerator >= i_iArrLen )
-    {
-        strAddErrInfo  = "Enumerator " + QString::number(i_iEnumerator);
-        strAddErrInfo += " not in range [0.." + QString::number(i_iArrLen-1) + "]";
-        if( i_iArrLen > 0 )
-        {
+    if (i_iEnumerator < 0 || i_iEnumerator >= i_iArrLen) {
+        strAddErrInfo = "Enumerator " + QString::number(i_iEnumerator) +
+                        " not in range [0.." + QString::number(i_iArrLen-1) + "]";
+        if (i_iArrLen > 0) {
             strAddErrInfo += "[";
-            if( i_pEnumArr[0].m_strlstNames.size() > 0 ) strAddErrInfo += i_pEnumArr[0].m_strlstNames[0];
-            if( i_pEnumArr[i_iArrLen-1].m_strlstNames.size() > 0 ) strAddErrInfo += ".." + i_pEnumArr[i_iArrLen-1].m_strlstNames[0];
+            if( i_pEnumArr[0].m_strlstNames.size() > 0 ) {
+                strAddErrInfo += i_pEnumArr[0].m_strlstNames[0];
+            }
+            if( i_pEnumArr[i_iArrLen-1].m_strlstNames.size() > 0 ) {
+                strAddErrInfo += ".." + i_pEnumArr[i_iArrLen-1].m_strlstNames[0];
+            }
             strAddErrInfo += "]";
         }
         SErrResultInfo errResultInfo(
@@ -186,9 +187,7 @@ QString SEnumEntry::enumerator2Str(
             /* strAddInfo */ strAddErrInfo );
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
-
-    if( i_idxAlias < 0 )
-    {
+    if (i_idxAlias < 0) {
         strAddErrInfo  = "AliasIdx " + QString::number(i_idxAlias);
         strAddErrInfo += " out of range [0..N]";
         SErrResultInfo errResultInfo(
@@ -200,15 +199,11 @@ QString SEnumEntry::enumerator2Str(
     }
 
     QString strName;
-
     const SEnumEntry* pEntry = &i_pEnumArr[i_iEnumerator];
-
-    if( i_idxAlias >= 0 && i_idxAlias < pEntry->m_strlstNames.size() )
-    {
+    if (i_idxAlias >= 0 && i_idxAlias < pEntry->m_strlstNames.size()) {
         strName = pEntry->m_strlstNames[i_idxAlias];
     }
-    else
-    {
+    else {
         strAddErrInfo  = "Enumerator " + pEntry->getName();
         strAddErrInfo += " does not have an alias string at index " + QString::number(i_idxAlias);
         SErrResultInfo errResultInfo(
@@ -218,7 +213,6 @@ QString SEnumEntry::enumerator2Str(
             /* strAddInfo */ strAddErrInfo );
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
-
     return strName;
 
 } // enumerator2Str
@@ -249,15 +243,17 @@ QVariant SEnumEntry::enumerator2Val(
     QString strMth = "enumerator2Val";
     QString strAddErrInfo;
 
-    if( i_iEnumerator < 0 || i_iEnumerator >= i_iArrLen )
-    {
-        strAddErrInfo  = "Enumerator " + QString::number(i_iEnumerator);
-        strAddErrInfo += " not in range [0.." + QString::number(i_iArrLen-1) + "]";
-        if( i_iArrLen > 0 )
-        {
+    if (i_iEnumerator < 0 || i_iEnumerator >= i_iArrLen) {
+        strAddErrInfo = "Enumerator " + QString::number(i_iEnumerator) +
+                        " not in range [0.." + QString::number(i_iArrLen-1) + "]";
+        if (i_iArrLen > 0) {
             strAddErrInfo += "[";
-            if( i_pEnumArr[0].m_strlstNames.size() > 0 ) strAddErrInfo += i_pEnumArr[0].m_strlstNames[0];
-            if( i_pEnumArr[i_iArrLen-1].m_strlstNames.size() > 0 ) strAddErrInfo += ".." + i_pEnumArr[i_iArrLen-1].m_strlstNames[0];
+            if (i_pEnumArr[0].m_strlstNames.size() > 0) {
+                strAddErrInfo += i_pEnumArr[0].m_strlstNames[0];
+            }
+            if (i_pEnumArr[i_iArrLen-1].m_strlstNames.size() > 0) {
+                strAddErrInfo += ".." + i_pEnumArr[i_iArrLen-1].m_strlstNames[0];
+            }
             strAddErrInfo += "]";
         }
         SErrResultInfo errResultInfo(
@@ -269,30 +265,20 @@ QVariant SEnumEntry::enumerator2Val(
     }
 
     QVariant val;
-
     bool bOk = false;
-
     const SEnumEntry* pEntry = &i_pEnumArr[i_iEnumerator];
-
-    if( pEntry->m_val.isValid() )
-    {
+    if (pEntry->m_val.isValid()) {
         val = pEntry->m_val;
-
-        if( i_type != QVariant::Invalid )
-        {
+        if (i_type != QVariant::Invalid) {
             bOk = val.canConvert(i_type);
         }
-        else
-        {
+        else {
             bOk = true;
         }
     }
-
-    if( o_pbOk != nullptr )
-    {
+    if (o_pbOk != nullptr) {
         *o_pbOk = bOk;
     }
-
     return val;
 
 } // enumerator2Val
@@ -329,49 +315,28 @@ int SEnumEntry::str2Enumerator(
     QString strAddErrInfo;
 
     int iEnumerator = -1;
-
     bool bOk = false;
-
-    const SEnumEntry* pEntry;
-    QString           strName;
-    int               iAliasMin;
-    int               iAliasMax;
-    int               iAlias;
-
-    for( int idxRow = 0; idxRow < i_iArrLen; idxRow++ )
-    {
-        pEntry = &i_pEnumArr[idxRow];
-
-        if( i_idxAlias == EEnumEntryAliasStrUndefined )
-        {
+    for (int idxRow = 0; idxRow < i_iArrLen; idxRow++) {
+        const SEnumEntry* pEntry = &i_pEnumArr[idxRow];
+        int iAliasMin = i_idxAlias;
+        int iAliasMax = i_idxAlias;
+        if (i_idxAlias == EEnumEntryAliasStrUndefined) {
             iAliasMin = 0;
             iAliasMax = pEntry->m_strlstNames.size() - 1;
         }
-        else
-        {
-            iAliasMin = i_idxAlias;
-            iAliasMax = i_idxAlias;
-        }
-
-        if( iAliasMin >= 0 && iAliasMax < pEntry->m_strlstNames.size() )
-        {
-            for( iAlias = iAliasMin; iAlias <= iAliasMax; iAlias++ )
-            {
-                if( iAlias >= 0 && iAlias < pEntry->m_strlstNames.size() )
-                {
-                    strName = pEntry->m_strlstNames[iAlias];
-
-                    if( i_strName.compare(strName,i_caseSensitivity) == 0 )
-                    {
-                        iEnumerator = idxRow;
+        if (iAliasMin >= 0 && iAliasMax < pEntry->m_strlstNames.size()) {
+            for (int iAlias = iAliasMin; iAlias <= iAliasMax; iAlias++) {
+                if (iAlias >= 0 && iAlias < pEntry->m_strlstNames.size()) {
+                    QString strName = pEntry->m_strlstNames[iAlias];
+                    if (i_strName.compare(strName,i_caseSensitivity) == 0) {
+                        iEnumerator = pEntry->m_iEnumerator;
                         bOk = true;
                         break;
                     }
                 }
-                else
-                {
-                    strAddErrInfo  = "Enumerator " + pEntry->getName();
-                    strAddErrInfo += " does not have an alias string at index " + QString::number(iAlias);
+                else {
+                    strAddErrInfo = "Enumerator " + pEntry->getName() +
+                                    " does not have an alias string at index " + QString::number(iAlias);
                     SErrResultInfo errResultInfo(
                         /* errSource  */ NameSpace(), ClassName(), pEntry->getName(), strMth,
                         /* result     */ EResultListCorrupted,
@@ -380,19 +345,14 @@ int SEnumEntry::str2Enumerator(
                     throw CException(__FILE__, __LINE__, errResultInfo);
                 }
             }
-        } // if( iAliasMin >= 0 && iAliasMax < pEntry->m_strlstNames.size() )
-
-        if( bOk )
-        {
+        }
+        if (bOk) {
             break;
         }
-    } // for( idxRow = 0; idxRow < i_iArrLen; idxRow++ )
-
-    if( o_pbOk != nullptr )
-    {
+    }
+    if (o_pbOk != nullptr) {
         *o_pbOk = bOk;
     }
-
     return iEnumerator;
 
 } // str2Enumerator
@@ -429,39 +389,26 @@ QVariant SEnumEntry::str2Val(
 //------------------------------------------------------------------------------
 {
     QVariant val;
-
     bool bOk = false;
-
     int iEnumerator = str2Enumerator(i_pEnumArr, i_iArrLen, i_strName, i_idxAlias, i_caseSensitivity, &bOk);
-
-    if( bOk && iEnumerator >= 0 && iEnumerator < i_iArrLen )
-    {
+    if (bOk && iEnumerator >= 0 && iEnumerator < i_iArrLen) {
         const SEnumEntry* pEntry = &i_pEnumArr[iEnumerator];
-
-        if( pEntry->m_val.isValid() )
-        {
+        if (pEntry->m_val.isValid()) {
             val = pEntry->m_val;
-
-            if( i_type != QVariant::Invalid )
-            {
+            if (i_type != QVariant::Invalid) {
                 bOk = val.canConvert(i_type);
             }
-            else
-            {
+            else {
                 bOk = true;
             }
         }
-        else
-        {
+        else {
             bOk = false;
         }
-    } // if( bOk && iEnumerator >= 0 && iEnumerator < i_iArrLen )
-
-    if( o_pbOk != nullptr )
-    {
+    }
+    if (o_pbOk != nullptr) {
         *o_pbOk = bOk;
     }
-
     return val;
 
 } // str2Val
@@ -484,31 +431,20 @@ int SEnumEntry::val2Enumerator(
 //------------------------------------------------------------------------------
 {
     int iEnumerator = -1;
-
-    const SEnumEntry* pEntry;
-
     bool bOk = false;
-
-    for( int idxRow = 0; idxRow < i_iArrLen; idxRow++ )
-    {
-        pEntry = &i_pEnumArr[idxRow];
-
-        if( pEntry->m_val.isValid() && i_val == pEntry->m_val )
-        {
+    for (int idxRow = 0; idxRow < i_iArrLen; idxRow++) {
+        const SEnumEntry* pEntry = &i_pEnumArr[idxRow];
+        if (pEntry->m_val.isValid() && i_val == pEntry->m_val) {
             iEnumerator = pEntry->m_iEnumerator;
             bOk = true;
             break;
         }
     }
-
-    if( o_pbOk != nullptr )
-    {
+    if (o_pbOk != nullptr) {
         *o_pbOk = bOk;
     }
-
     return iEnumerator;
-
-} // val2Enumerator
+}
 
 //------------------------------------------------------------------------------
 /*! Converts the given real value into the corresponding string representation of the enumerator.
@@ -534,25 +470,17 @@ QString SEnumEntry::val2Str(
 //------------------------------------------------------------------------------
 {
     QString strVal;
-
     bool bOk = false;
-
     int iEnumerator = val2Enumerator(i_pEnumArr, i_iArrLen, i_val, &bOk);
-
-    if( bOk && iEnumerator >= 0 && iEnumerator < i_iArrLen )
-    {
+    if (bOk && iEnumerator >= 0 && iEnumerator < i_iArrLen) {
         // May throw an exception if there is no alias string.
         strVal = enumerator2Str(i_pEnumArr, i_iArrLen, iEnumerator, i_idxAlias);
     }
-
-    if( o_pbOk != nullptr )
-    {
+    if (o_pbOk != nullptr) {
         *o_pbOk = bOk;
     }
-
     return strVal;
-
-} // val2Str
+}
 
 //------------------------------------------------------------------------------
 /*! Checks whether the given enumerator is valid.
@@ -569,27 +497,15 @@ bool SEnumEntry::isValidEnumerator(
     int               i_iEnumerator )
 //------------------------------------------------------------------------------
 {
-    QString strMth = "isValidEnumerator";
-
     bool bOk = false;
-
-    QString strAddErrInfo;
-
-    const SEnumEntry* pEntry;
-
-    if( i_iEnumerator >= 0 && i_iEnumerator < i_iArrLen )
-    {
-        pEntry = &i_pEnumArr[i_iEnumerator];
-
-        if( pEntry->m_iEnumerator == i_iEnumerator )
-        {
+    if (i_iEnumerator >= 0 && i_iEnumerator < i_iArrLen) {
+        const SEnumEntry* pEntry = &i_pEnumArr[i_iEnumerator];
+        if (pEntry->m_iEnumerator == i_iEnumerator) {
             bOk = true;
         }
     }
-
     return bOk;
-
-} // isValidEnumerator
+}
 
 /*==============================================================================
 public: // class methods

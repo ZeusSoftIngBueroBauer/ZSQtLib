@@ -37,14 +37,12 @@ may result in using the software modules.
 #include <QtGui/qlayout.h>
 #include <QtGui/qlineedit.h>
 #include <QtGui/qmessagebox.h>
-#include <QtGui/qsplitter.h>
-#include <QtGui/qstackedwidget.h>
+#include <QtGui/qscrollarea.h>
 #else
 #include <QtWidgets/qlayout.h>
 #include <QtWidgets/qlineedit.h>
 #include <QtWidgets/qmessagebox.h>
-#include <QtWidgets/qsplitter.h>
-#include <QtWidgets/qstackedwidget.h>
+#include <QtWidgets/qscrollarea.h>
 #endif
 
 #include "ZSSys/ZSSysMemLeakDump.h"
@@ -75,8 +73,7 @@ CWdgtStackGraphObjsProperties::CWdgtStackGraphObjsProperties(
     m_pLytMain(nullptr),
     m_pLytHeadLine(nullptr),
     m_pEdtPath(nullptr),
-    m_pStackedWdgtGraphObjsProperties(nullptr),
-    m_hshGraphObjType2StackWdgtIndex()
+    m_pScrollArea(nullptr)
 {
     setObjectName(i_pDrawingView->objectName());
 
@@ -109,31 +106,10 @@ CWdgtStackGraphObjsProperties::CWdgtStackGraphObjsProperties(
     // Content of selected tree node
     //------------------------------
 
-    m_pStackedWdgtGraphObjsProperties = new QStackedWidget();
-    m_pLytMain->addWidget(m_pStackedWdgtGraphObjsProperties, 1);
-
-    EGraphObjType graphObjType = EGraphObjTypeUndefined;
-    int idxWdgt = m_pStackedWdgtGraphObjsProperties->addWidget(
-        new CWdgtGraphObjPropertiesAbstract(
-            m_pDrawingView->drawingScene(),
-            "Dummy::CWdgtGraphObjPropertiesAbstract",
-            "WdgtStackGraphObjProperties"));
-    m_hshGraphObjType2StackWdgtIndex.insert(graphObjType2Str(graphObjType), idxWdgt);
-
-    idxWdgt = m_pStackedWdgtGraphObjsProperties->addWidget(
-        new CWdgtDrawingViewProperties(
-            m_pDrawingView,
-            "WdgtStackGraphObjProperties"));
-    m_hshGraphObjType2StackWdgtIndex.insert("DrawingView", idxWdgt);
-
-    graphObjType = EGraphObjTypeLine;
-    idxWdgt = m_pStackedWdgtGraphObjsProperties->addWidget(
-        new CWdgtGraphObjLineProperties(
-            m_pDrawingView->drawingScene(),
-            "WdgtStackGraphObjProperties"));
-    m_hshGraphObjType2StackWdgtIndex.insert(graphObjType2Str(graphObjType), idxWdgt);
-
-    m_pStackedWdgtGraphObjsProperties->setCurrentIndex(0);
+    m_pScrollArea = new QScrollArea();
+    m_pScrollArea->setWidgetResizable(true);
+    m_pLytMain->addWidget(m_pScrollArea, 1);
+    m_pScrollArea->setWidget(createGraphObjPropertiesWidget(""));
 
 } // ctor
 
@@ -158,8 +134,7 @@ CWdgtStackGraphObjsProperties::~CWdgtStackGraphObjsProperties()
     m_pLytMain = nullptr;
     m_pLytHeadLine = nullptr;
     m_pEdtPath = nullptr;
-    m_pStackedWdgtGraphObjsProperties = nullptr;
-    //m_hshGraphObjType2StackWdgtIndex.clear();
+    m_pScrollArea = nullptr;
 
 } // dtor
 
@@ -184,23 +159,22 @@ bool CWdgtStackGraphObjsProperties::setKeyInTree( const QString& i_strKeyInTree 
     bool bObjectChanged = true;
 
     if (m_strKeyInTree != i_strKeyInTree) {
+        QString strGraphObjTypePrev; // as string to also support "DrawingView" which isn't a GraphObjType
         CWdgtGraphObjPropertiesAbstract* pWdgtPropertiesPrev =
-            dynamic_cast<CWdgtGraphObjPropertiesAbstract*>(
-                m_pStackedWdgtGraphObjsProperties->currentWidget());
+            dynamic_cast<CWdgtGraphObjPropertiesAbstract*>(m_pScrollArea->widget());
         if (pWdgtPropertiesPrev != nullptr) {
             CIdxTreeEntry* pTreeEntry = m_pIdxTree->findEntry(m_strKeyInTree);
             if (pTreeEntry != nullptr && !pTreeEntry->isAboutToBeDestroyed()) {
                 if (pWdgtPropertiesPrev->hasChanges()) {
-                    QString strGraphObjType;
                     QString strGraphObjName;
                     if (pTreeEntry != nullptr) {
                         if (pTreeEntry->isRoot()) {
-                            strGraphObjType = "DrawingView";
+                            strGraphObjTypePrev = "DrawingView";
                         }
                         else {
                             CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pTreeEntry);
                             if (pGraphObj != nullptr) {
-                                strGraphObjType = pGraphObj->typeAsString();
+                                strGraphObjTypePrev = pGraphObj->typeAsString();
                                 strGraphObjName = pGraphObj->name();
                             }
                         }
@@ -209,14 +183,14 @@ bool CWdgtStackGraphObjsProperties::setKeyInTree( const QString& i_strKeyInTree 
                     if (pWdgtPropertiesPrev->hasErrors()) {
                         iRes = QMessageBox::question(
                             this, ZS::System::GUI::getMainWindowTitle() + ": Unsaved changes",
-                            "You made erroneous changes to " + strGraphObjType + " " + strGraphObjName + ".\n"
+                            "You made erroneous changes to " + strGraphObjTypePrev + " " + strGraphObjName + ".\n"
                             "Do you want to resume (Retry) the edit session or Discard the changes?",
                             QMessageBox::Retry | QMessageBox::Discard);
                     }
                     else {
                         iRes = QMessageBox::question(
                             this, ZS::System::GUI::getMainWindowTitle() + ": Unsaved changes",
-                            "You made changes to " + strGraphObjType + " " + strGraphObjName + ".\n"
+                            "You made changes to " + strGraphObjTypePrev + " " + strGraphObjName + ".\n"
                             "Do you want to resume (Retry) the edit session, Apply or Discard the changes?",
                             QMessageBox::Retry | QMessageBox::Discard | QMessageBox::Apply);
                     }
@@ -233,33 +207,30 @@ bool CWdgtStackGraphObjsProperties::setKeyInTree( const QString& i_strKeyInTree 
             }
         }
         if (bObjectChanged) {
+            QString strGraphObjTypeCurr;
             m_strKeyInTree = i_strKeyInTree;
             if (m_pIdxTree != nullptr) {
-                int idxStackWdgt = 0;
                 QString strEntryPath;
                 CIdxTreeEntry* pTreeEntry = m_pIdxTree->findEntry(i_strKeyInTree);
                 if (pTreeEntry != nullptr) {
-                    QString strGraphObjType;
                     strEntryPath = pTreeEntry->path();
                     if (pTreeEntry->isRoot()) {
-                        strGraphObjType = "DrawingView";
+                        strGraphObjTypeCurr = "DrawingView";
                     }
                     else {
                         CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pTreeEntry);
                         if (pGraphObj != nullptr) {
-                            strGraphObjType = pGraphObj->typeAsString();
+                            strGraphObjTypeCurr = pGraphObj->typeAsString();
                         }
                     }
-                    idxStackWdgt = graphObjType2StackWdgtIndex(strGraphObjType);
                 }
                 m_pEdtPath->setText(strEntryPath);
-                m_pStackedWdgtGraphObjsProperties->setCurrentIndex(idxStackWdgt);
-                CWdgtGraphObjPropertiesAbstract* pWdgtPropertiesCurr =
-                    dynamic_cast<CWdgtGraphObjPropertiesAbstract*>(
-                        m_pStackedWdgtGraphObjsProperties->widget(idxStackWdgt));
-                if (pWdgtPropertiesPrev != nullptr && pWdgtPropertiesPrev != pWdgtPropertiesCurr) {
-                    pWdgtPropertiesPrev->setKeyInTree("");
+                if (strGraphObjTypeCurr != strGraphObjTypePrev) {
+                    delete m_pScrollArea->takeWidget();
+                    m_pScrollArea->setWidget(createGraphObjPropertiesWidget(strGraphObjTypeCurr));
                 }
+                CWdgtGraphObjPropertiesAbstract* pWdgtPropertiesCurr =
+                    dynamic_cast<CWdgtGraphObjPropertiesAbstract*>(m_pScrollArea->widget());
                 if (pWdgtPropertiesCurr != nullptr) {
                     pWdgtPropertiesCurr->setKeyInTree(m_strKeyInTree);
                 }
@@ -281,14 +252,32 @@ QString CWdgtStackGraphObjsProperties::getKeyInTree() const
 }
 
 /*==============================================================================
-protected: // class methods
+protected: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-int CWdgtStackGraphObjsProperties::graphObjType2StackWdgtIndex(const QString& i_strGraphObjType) const
+CWdgtGraphObjPropertiesAbstract* CWdgtStackGraphObjsProperties::createGraphObjPropertiesWidget(const QString& i_strGraphObjType) const
 //------------------------------------------------------------------------------
 {
-    return m_hshGraphObjType2StackWdgtIndex.value(i_strGraphObjType, 0);
+    CWdgtGraphObjPropertiesAbstract* pWidget = nullptr;
+    if (i_strGraphObjType == "DrawingView") {
+        pWidget = new CWdgtDrawingViewProperties(
+            m_pDrawingView, "WdgtStackGraphObjProperties");
+    }
+    else {
+        EGraphObjType eGraphObjType = str2GraphObjType(i_strGraphObjType);
+        if (eGraphObjType == EGraphObjTypeLine) {
+            pWidget = new CWdgtGraphObjLineProperties(
+                m_pDrawingView->drawingScene(), "WdgtStackGraphObjProperties");
+        }
+        else {
+            pWidget = new CWdgtGraphObjPropertiesAbstract(
+                m_pDrawingView->drawingScene(),
+                "Dummy::CWdgtGraphObjPropertiesAbstract",
+                "WdgtStackGraphObjProperties");
+        }
+    }
+    return pWidget;
 }
 
 /*==============================================================================
@@ -307,3 +296,4 @@ void CWdgtStackGraphObjsProperties::onIdxTreeAboutToBeDestroyed()
 
     m_pIdxTree = nullptr;
 }
+

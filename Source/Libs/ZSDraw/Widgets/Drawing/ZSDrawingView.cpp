@@ -24,13 +24,12 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include <QtGui/qevent.h>
-
 #include "ZSDraw/Widgets/Drawing/ZSDrawingView.h"
 #include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactory.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
+#include "ZSSysGUI/ZSSysGUIAux.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
@@ -48,6 +47,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 using namespace ZS::System;
+using namespace ZS::System::GUI;
 using namespace ZS::Draw;
 using namespace ZS::PhysVal;
 
@@ -103,15 +103,6 @@ CDrawingView::CDrawingView( CDrawingScene* i_pDrawingScene, QWidget* i_pWdgtPare
     drawingSize.setImageSize(CPhysVal(1024, Units.Length.px), CPhysVal(768, Units.Length.px));
     m_pDrawingScene->setDrawingSize(drawingSize);
 
-    //QWidget* pWdgtViewPort = new QWidget();
-    //pWdgtViewPort->setBackgroundRole(QPalette::ToolTipBase);
-    //QVBoxLayout* pLytViewPort = new QVBoxLayout();
-    //pWdgtViewPort->setLayout(pLytViewPort);
-    //QLabel* pLblHelloWorld = new QLabel("Hello World");
-    //pLytViewPort->addWidget(pLblHelloWorld);
-
-    //setViewport(pWdgtViewPort);
-
     //setViewportMargins(50.0, 50.0, 50.0, 50.0);
 
     setMouseTracking(true);
@@ -144,7 +135,6 @@ CDrawingView::~CDrawingView()
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjMouseMoveEvent);
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjPaintEvent);
 
-    //m_pageSetup;
     m_pDrawingScene = nullptr;
     m_pTrcAdminObj = nullptr;
     m_pTrcAdminObjMouseMoveEvent = nullptr;
@@ -219,15 +209,12 @@ public: // instance methods (drawing area)
 ////------------------------------------------------------------------------------
 //{
 //    QString strMthInArgs;
-//
-//    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-//    {
+//    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
 //        strMthInArgs  = "Left: "+ QString::number(i_iLeft);
 //        strMthInArgs += ", Top: "+ QString::number(i_iTop);
 //        strMthInArgs += ", Right: "+ QString::number(i_iRight);
 //        strMthInArgs += ", Bottom: "+ QString::number(i_iBottom);
 //    }
-//
 //    CMethodTracer mthTracer(
 //        /* pAdminObj    */ m_pTrcAdminObj,
 //        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -244,18 +231,15 @@ public: // instance methods (drawing area)
 //        //emit_viewportMarginsChanged(viewportMargins());
 //    }
 //} // setViewportMargins
-//
+
 ////------------------------------------------------------------------------------
 //void CDrawingView::setViewportMargins(const QMargins& i_margins)
 ////------------------------------------------------------------------------------
 //{
 //    QString strMthInArgs;
-//
-//    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-//    {
+//    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
 //        strMthInArgs = qMargins2Str(i_margins);
 //    }
-//
 //    CMethodTracer mthTracer(
 //        /* pAdminObj    */ m_pTrcAdminObj,
 //        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -280,283 +264,76 @@ void CDrawingView::mousePressEvent( QMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        #if QT_VERSION < 0x050000
-        strMthInArgs = "Pos:(" + QString::number(i_pEv->posF().x()) + "," + QString::number(i_pEv->posF().y()) + ")";
-        #else
-        strMthInArgs = "Pos:(" + QString::number(i_pEv->windowPos().x()) + "," + QString::number(i_pEv->windowPos().y()) + ")";
-        #endif
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = qMouseEvent2Str(i_pEv);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mousePressEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    QPointF ptPos = i_pEv->pos();
-
-    emit_mousePosChanged(ptPos);
-
+    emit_mousePosChanged(i_pEv->pos());
     QGraphicsView::mousePressEvent(i_pEv);
-
-    QList<QGraphicsItem*> arpGraphicsItemsUnderCursor = items(mapFromGlobal(QCursor::pos()));
-    QGraphicsItem*        pGraphicsItem;
-    int                   idxGraphObj;
-    QCursor               cursor;
-    bool                  bGraphicsItemHasCursor = false;
-
-    for( idxGraphObj = 0; idxGraphObj < arpGraphicsItemsUnderCursor.size(); idxGraphObj++ )
-    {
-        pGraphicsItem = arpGraphicsItemsUnderCursor[idxGraphObj];
-
-        if( pGraphicsItem->hasCursor() )
-        {
-            //QMetaObject::invokeMethod( this, "_q_setViewportCursor", Q_ARG(QCursor,itemUnderCursor->cursor()) );
-            bGraphicsItemHasCursor = true;
-            cursor = pGraphicsItem->cursor();
-            break;
-        }
-    }
-
-    if( bGraphicsItemHasCursor )
-    {
-        setCursor(cursor);
-        viewport()->setCursor(cursor);
-    }
-    else // if( !bGraphicsItemHasCursor )
-    {
-        QPointF ptScenePos = mapToScene(ptPos.toPoint());
-        QRectF  rctScene = m_pDrawingScene->sceneRect();
-
-        if( rctScene.contains(ptScenePos) )
-        {
-            QCursor cursor = m_pDrawingScene->getProposedCursor(ptScenePos);
-            setCursor(cursor);
-            viewport()->setCursor(cursor);
-        }
-        else
-        {
-            unsetCursor();
-            viewport()->unsetCursor();
-        }
-    }
-
-} // mousePressEvent
+    adjustCursor(i_pEv);
+}
 
 //------------------------------------------------------------------------------
 void CDrawingView::mouseMoveEvent( QMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObjMouseMoveEvent, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        #if QT_VERSION < 0x050000
-        strMthInArgs = "Pos:(" + QString::number(i_pEv->posF().x()) + "," + QString::number(i_pEv->posF().y()) + ")";
-        #else
-        strMthInArgs = "Pos:(" + QString::number(i_pEv->windowPos().x()) + "," + QString::number(i_pEv->windowPos().y()) + ")";
-        #endif
+    if (areMethodCallsActive(m_pTrcAdminObjMouseMoveEvent, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = qMouseEvent2Str(i_pEv);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseMoveEvent,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mouseMoveEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    QPoint ptPos = i_pEv->pos();
-
-    emit_mousePosChanged(ptPos);
-
+    emit_mousePosChanged(i_pEv->pos());
     QGraphicsView::mouseMoveEvent(i_pEv);
-
-    QList<QGraphicsItem*> arpGraphicsItemsUnderCursor = items(ptPos);
-    QGraphicsItem*        pGraphicsItem;
-    int                   idxGraphObj;
-    QCursor               cursor;
-    bool                  bGraphicsItemHasCursor = false;
-
-    for( idxGraphObj = 0; idxGraphObj < arpGraphicsItemsUnderCursor.size(); idxGraphObj++ )
-    {
-        pGraphicsItem = arpGraphicsItemsUnderCursor[idxGraphObj];
-
-        if( pGraphicsItem->hasCursor() )
-        {
-            bGraphicsItemHasCursor = true;
-            cursor = pGraphicsItem->cursor();
-            break;
-        }
-    }
-
-    if( bGraphicsItemHasCursor )
-    {
-        setCursor(cursor);
-        viewport()->setCursor(cursor);
-    }
-    else // if( !bGraphicsItemHasCursor )
-    {
-        QPointF ptScenePos = mapToScene(ptPos);
-        QRectF  rctScene = m_pDrawingScene->sceneRect();
-
-        if( rctScene.contains(ptScenePos) )
-        {
-            QCursor cursor = m_pDrawingScene->getProposedCursor(ptScenePos);
-            setCursor(cursor);
-            viewport()->setCursor(cursor);
-        }
-        else
-        {
-            unsetCursor();
-            viewport()->unsetCursor();
-        }
-    }
-
-} // mouseMoveEvent
+    adjustCursor(i_pEv);
+}
 
 //------------------------------------------------------------------------------
 void CDrawingView::mouseReleaseEvent( QMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        #if QT_VERSION < 0x050000
-        strMthInArgs = "Pos:(" + QString::number(i_pEv->posF().x()) + "," + QString::number(i_pEv->posF().y()) + ")";
-        #else
-        strMthInArgs = "Pos:(" + QString::number(i_pEv->windowPos().x()) + "," + QString::number(i_pEv->windowPos().y()) + ")";
-        #endif
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = qMouseEvent2Str(i_pEv);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mouseReleaseEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    QPointF ptPos = i_pEv->pos();
-
-    emit_mousePosChanged(ptPos);
-
+    emit_mousePosChanged(i_pEv->pos());
     QGraphicsView::mouseReleaseEvent(i_pEv);
-
-    QList<QGraphicsItem*> arpGraphicsItemsUnderCursor = items(mapFromGlobal(QCursor::pos()));
-    QGraphicsItem*        pGraphicsItem;
-    int                   idxGraphObj;
-    QCursor               cursor;
-    bool                  bGraphicsItemHasCursor = false;
-
-    for( idxGraphObj = 0; idxGraphObj < arpGraphicsItemsUnderCursor.size(); idxGraphObj++ )
-    {
-        pGraphicsItem = arpGraphicsItemsUnderCursor[idxGraphObj];
-
-        if( pGraphicsItem->hasCursor() )
-        {
-            //QMetaObject::invokeMethod( this, "_q_setViewportCursor", Q_ARG(QCursor,itemUnderCursor->cursor()) );
-            bGraphicsItemHasCursor = true;
-            cursor = pGraphicsItem->cursor();
-            break;
-        }
-    }
-
-    if( bGraphicsItemHasCursor )
-    {
-        setCursor(cursor);
-        viewport()->setCursor(cursor);
-    }
-    else // if( !bGraphicsItemHasCursor )
-    {
-        QPointF ptScenePos = mapToScene(ptPos.toPoint());
-        QRectF  rctScene = m_pDrawingScene->sceneRect();
-
-        if( rctScene.contains(ptScenePos) )
-        {
-            QCursor cursor = m_pDrawingScene->getProposedCursor(ptScenePos);
-            setCursor(cursor);
-            viewport()->setCursor(cursor);
-        }
-        else
-        {
-            unsetCursor();
-            viewport()->unsetCursor();
-        }
-    }
-
-} // mouseReleaseEvent
+    adjustCursor(i_pEv);
+}
 
 //------------------------------------------------------------------------------
 void CDrawingView::mouseDoubleClickEvent( QMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        #if QT_VERSION < 0x050000
-        strMthInArgs = "Pos:(" + QString::number(i_pEv->posF().x()) + "," + QString::number(i_pEv->posF().y()) + ")";
-        #else
-        strMthInArgs = "Pos:(" + QString::number(i_pEv->windowPos().x()) + "," + QString::number(i_pEv->windowPos().y()) + ")";
-        #endif
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = qMouseEvent2Str(i_pEv);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mouseDoubleClickEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    QPointF ptPos = i_pEv->pos();
-
-    emit_mousePosChanged(ptPos);
-
+    emit_mousePosChanged(i_pEv->pos());
     QGraphicsView::mouseDoubleClickEvent(i_pEv);
-
-    QList<QGraphicsItem*> arpGraphicsItemsUnderCursor = items(mapFromGlobal(QCursor::pos()));
-    QGraphicsItem*        pGraphicsItem;
-    int                   idxGraphObj;
-    QCursor               cursor;
-    bool                  bGraphicsItemHasCursor = false;
-
-    for( idxGraphObj = 0; idxGraphObj < arpGraphicsItemsUnderCursor.size(); idxGraphObj++ )
-    {
-        pGraphicsItem = arpGraphicsItemsUnderCursor[idxGraphObj];
-
-        if( pGraphicsItem->hasCursor() )
-        {
-            //QMetaObject::invokeMethod( this, "_q_setViewportCursor", Q_ARG(QCursor,itemUnderCursor->cursor()) );
-            bGraphicsItemHasCursor = true;
-            cursor = pGraphicsItem->cursor();
-            break;
-        }
-    }
-
-    if( bGraphicsItemHasCursor )
-    {
-        setCursor(cursor);
-        viewport()->setCursor(cursor);
-    }
-    else // if( !bGraphicsItemHasCursor )
-    {
-        QPointF ptScenePos = mapToScene(ptPos.toPoint());
-        QRectF  rctScene = m_pDrawingScene->sceneRect();
-
-        if( rctScene.contains(ptScenePos) )
-        {
-            QCursor cursor = m_pDrawingScene->getProposedCursor(ptScenePos);
-            setCursor(cursor);
-            viewport()->setCursor(cursor);
-        }
-        else
-        {
-            unsetCursor();
-            viewport()->unsetCursor();
-        }
-    }
-
-} // mouseDoubleClickEvent
+    adjustCursor(i_pEv);
+}
 
 /*==============================================================================
 public: // overridables of base class QWidget
@@ -567,15 +344,9 @@ void CDrawingView::keyPressEvent( QKeyEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strMthInArgs  = "Key:" + qKeyCode2Str(i_pEv->key()) + " (" + i_pEv->text() + ")";
-        strMthInArgs += ", Count:" + QString::number(i_pEv->count());
-        strMthInArgs += ", IsAutoRepeat:" + QString::number(i_pEv->count());
-        strMthInArgs += ", Modifiers:" + qKeyboardModifiers2Str(i_pEv->modifiers());
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = qKeyEvent2Str(i_pEv);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -583,23 +354,16 @@ void CDrawingView::keyPressEvent( QKeyEvent* i_pEv )
         /* strAddInfo   */ strMthInArgs );
 
     QGraphicsView::keyPressEvent(i_pEv);
-
-} // keyPressEvent
+}
 
 //------------------------------------------------------------------------------
 void CDrawingView::keyReleaseEvent( QKeyEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strMthInArgs  = "Key:" + qKeyCode2Str(i_pEv->key()) + " (" + i_pEv->text() + ")";
-        strMthInArgs += ", Count:" + QString::number(i_pEv->count());
-        strMthInArgs += ", IsAutoRepeat:" + QString::number(i_pEv->count());
-        strMthInArgs += ", Modifiers:" + qKeyboardModifiers2Str(i_pEv->modifiers());
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = qKeyEvent2Str(i_pEv);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -607,25 +371,58 @@ void CDrawingView::keyReleaseEvent( QKeyEvent* i_pEv )
         /* strAddInfo   */ strMthInArgs );
 
     QGraphicsView::keyReleaseEvent(i_pEv);
-
-} // keyReleaseEvent
+}
 
 /*==============================================================================
 protected: // overridables of base class QAbstractScrollArea
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+void CDrawingView::scrollContentsBy( int i_dx, int i_dy )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Dx: " + QString::number(i_dx) + ", Dy: " + QString::number(i_dy);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "scrollContentsBy",
+        /* strAddInfo   */ strMthInArgs );
+
+    QGraphicsView::scrollContentsBy(i_dx, i_dy);
+
+    emit_contentAreaChanged();
+}
+
+//------------------------------------------------------------------------------
+void CDrawingView::resizeEvent( QResizeEvent* i_pEv )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = qResizeEvent2Str(i_pEv);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "resizeEvent",
+        /* strAddInfo   */ strMthInArgs );
+
+    QGraphicsView::resizeEvent(i_pEv);
+
+    emit_contentAreaChanged();
+}
+
+//------------------------------------------------------------------------------
 void CDrawingView::paintEvent( QPaintEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObjPaintEvent, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strMthInArgs  = "Rect: " + rect2Str(i_pEv->rect());
-        //strMthInArgs += ", Region: " + region2Str(i_pEv->region());
+    if (areMethodCallsActive(m_pTrcAdminObjPaintEvent, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = qPaintEvent2Str(i_pEv);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjPaintEvent,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -654,8 +451,72 @@ void CDrawingView::paintEvent( QPaintEvent* i_pEv )
 } // paintEvent
 
 /*==============================================================================
+protected: // overridables of base class QGraphicsView
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CDrawingView::setupViewport(QWidget* i_pWdgt)
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjPaintEvent,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setupViewport",
+        /* strAddInfo   */ "" );
+
+    QGraphicsView::setupViewport(i_pWdgt);
+}
+
+/*==============================================================================
 protected: // auxiliary methods
 ==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CDrawingView::adjustCursor(QMouseEvent* i_pEv)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = qMouseEvent2Str(i_pEv);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjPaintEvent,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "adjustCursor",
+        /* strAddInfo   */ strMthInArgs );
+
+    QCursor cursor;
+    bool bGraphicsItemHasCursor = false;
+
+    QList<QGraphicsItem*> arpGraphicsItemsUnderCursor = items(mapFromGlobal(QCursor::pos()));
+    //QList<QGraphicsItem*> arpGraphicsItemsUnderCursor = items(i_pEv->pos());
+    for (int idxGraphObj = 0; idxGraphObj < arpGraphicsItemsUnderCursor.size(); idxGraphObj++) {
+        QGraphicsItem* pGraphicsItem = arpGraphicsItemsUnderCursor[idxGraphObj];
+        if (pGraphicsItem->hasCursor()) {
+            bGraphicsItemHasCursor = true;
+            cursor = pGraphicsItem->cursor();
+            break;
+        }
+    }
+
+    if (bGraphicsItemHasCursor) {
+        setCursor(cursor);
+        viewport()->setCursor(cursor);
+    }
+    else {
+        QPointF ptScenePos = mapToScene(i_pEv->pos());
+        QRectF  rctScene = m_pDrawingScene->sceneRect();
+        if (rctScene.contains(ptScenePos)) {
+            QCursor cursor = m_pDrawingScene->getProposedCursor(ptScenePos);
+            setCursor(cursor);
+            viewport()->setCursor(cursor);
+        }
+        else {
+            unsetCursor();
+            viewport()->unsetCursor();
+        }
+    }
+}
 
 //------------------------------------------------------------------------------
 void CDrawingView::paintGridLabels(QPainter* i_pPainter)
@@ -718,7 +579,7 @@ void CDrawingView::paintGridLabels(QPainter* i_pPainter)
     }
     else {
         strUnit = drawingSize.metricUnit().symbol();
-     }
+    }
     sizeUnitString = fntmtr.boundingRect(strUnit).size();
     sizeUnitString.setHeight(sizeUnitString.height() + 2);
     sizeUnitString.setWidth(sizeUnitString.width() + 2);
@@ -884,7 +745,6 @@ void CDrawingView::emit_gridSettingsChanged( const ZS::Draw::CDrawGridSettings& 
     emit gridSettingsChanged(i_settings);
 }
 
-
 //------------------------------------------------------------------------------
 void CDrawingView::emit_mousePosChanged( const QPointF& i_ptMousePos )
 //------------------------------------------------------------------------------
@@ -899,4 +759,17 @@ void CDrawingView::emit_mousePosChanged( const QPointF& i_ptMousePos )
         /* strMethod    */ "emit_mousePosChanged",
         /* strAddInfo   */ strMthInArgs );
     emit mousePosChanged(i_ptMousePos);
+}
+
+//------------------------------------------------------------------------------
+void CDrawingView::emit_contentAreaChanged()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjMouseMoveEvent,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "emit_contentAreaChanged",
+        /* strAddInfo   */ "" );
+
+    emit contentAreaChanged();
 }

@@ -27,7 +27,7 @@ may result in using the software modules.
 #ifndef ZSDraw_GraphObjsPropertiesWdgtStack_h
 #define ZSDraw_GraphObjsPropertiesWdgtStack_h
 
-#include <QtCore/qglobal.h>
+#include "ZSDraw/Common/ZSDrawCommon.h"
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qwidget.h>
@@ -35,10 +35,8 @@ may result in using the software modules.
 #include <QtWidgets/qwidget.h>
 #endif
 
-#include "ZSDraw/Common/ZSDrawCommon.h"
-
 class QLineEdit;
-class QStackedWidget;
+class QScrollArea;
 class QSettings;
 class QHBoxLayout;
 class QVBoxLayout;
@@ -74,7 +72,7 @@ public: // instance methods
     bool setKeyInTree( const QString& i_strKeyInTree );
     QString getKeyInTree() const;
 protected: // instance methods
-    int graphObjType2StackWdgtIndex(const QString& i_strGraphObjType) const;
+    CWdgtGraphObjPropertiesAbstract* createGraphObjPropertiesWidget(const QString& i_strGraphObjType) const;
 protected slots: // overridables
     virtual void onIdxTreeAboutToBeDestroyed();
 protected: // instance members
@@ -84,8 +82,8 @@ protected: // instance members
     QVBoxLayout* m_pLytMain;
     QHBoxLayout* m_pLytHeadLine;
     QLineEdit* m_pEdtPath;
-    QStackedWidget* m_pStackedWdgtGraphObjsProperties;
-    QHash<QString, int> m_hshGraphObjType2StackWdgtIndex;
+    QScrollArea* m_pScrollArea;
+    //QHash<QString, int> m_hshGraphObjType2StackWdgtIndex;
     /*!< Trace admin object for method tracing. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 

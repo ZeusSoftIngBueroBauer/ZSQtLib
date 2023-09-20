@@ -78,7 +78,7 @@ public: // instance methods
     void setX(const ZS::PhysVal::CPhysVal& i_physValX);
     void setY(const ZS::PhysVal::CPhysVal& i_physValY);
 public: // instance methods (to convert the values into another unit)
-    QPointF toQPointF() const;
+    QPointF toQPointF(const ZS::PhysVal::CUnit& i_unit) const;
     QString toString() const;
 protected: // instance members
     /*!< Unit (either metric or pixels) in which the line coordinates are internally stored in 'm_pt'. */

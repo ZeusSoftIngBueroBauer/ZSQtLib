@@ -214,15 +214,18 @@ public: // instance methods (to convert the values into another unit)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the physical size as a QSizeF instance in pixel coordinates.
+/*! @brief Returns the physical size as a QSizeF instance in the desired unit.
+
+    @param [in] i_unit
+        Unit in which the coordinates should be returned.
 */
-QSizeF CPhysValSize::toQSizeF() const
+QSizeF CPhysValSize::toQSizeF(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     QSizeF sizeF = m_size;
-    if (m_unit != Units.Length.px) {
-        double fWidth_px = m_unit.convertValue(m_size.width(), Units.Length.px);
-        double fHeight_px = m_unit.convertValue(m_size.height(), Units.Length.px);
+    if (m_unit != i_unit) {
+        double fWidth_px = m_unit.convertValue(m_size.width(), i_unit);
+        double fHeight_px = m_unit.convertValue(m_size.height(), i_unit);
         sizeF.setWidth(fWidth_px);
         sizeF.setWidth(fHeight_px);
     }

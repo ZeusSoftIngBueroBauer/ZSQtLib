@@ -239,15 +239,18 @@ public: // instance methods (to convert the values into another unit)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the physical point as a QPointF instance in pixel coordinates.
+/*! @brief Returns the physical point as a QPointF instance in the desired unit.
+
+    @param [in] i_unit
+        Unit in which the coordinates should be returned.
 */
-QPointF CPhysValPoint::toQPointF() const
+QPointF CPhysValPoint::toQPointF(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     QPointF ptF = m_pt;
-    if (m_unit != Units.Length.px) {
-        double fX_px = m_unit.convertValue(m_pt.x(), Units.Length.px);
-        double fY_px = m_unit.convertValue(m_pt.y(), Units.Length.px);
+    if (m_unit != i_unit) {
+        double fX_px = m_unit.convertValue(m_pt.x(), i_unit);
+        double fY_px = m_unit.convertValue(m_pt.y(), i_unit);
         ptF.setX(fX_px);
         ptF.setY(fY_px);
     }

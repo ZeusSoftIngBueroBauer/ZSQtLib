@@ -628,7 +628,12 @@ typedef ::CEnum<ELineEndLength> CEnumLineEndLength;
 
 ZSDRAWDLL_API double lineEndLength2dx( ELineEndLength i_lineEndLength );
 
+} // namespace Draw
 
+} // namespace ZS
+
+namespace ZS {
+namespace Draw {
 //==============================================================================
 /*!
 */
@@ -645,12 +650,13 @@ enum class EAlignmentRef
     Width     = 7,
     Height    = 8
 };
+} } // ZS::Draw
 
-template class ZSDRAWDLL_API ::CEnum<EAlignmentRef>;
+template class ZSDRAWDLL_API ::CEnum<ZS::Draw::EAlignmentRef>;
+
+namespace ZS {
+namespace Draw {
 typedef ::CEnum<EAlignmentRef> CEnumAlignmentRef;
-
-} // namespace Draw
-
-} // namespace ZS
+} } // ZS::Draw
 
 #endif // #ifndef ZSDraw_Common_h

@@ -66,6 +66,7 @@ signals:
     void drawingSizeChanged( const ZS::Draw::CDrawingSize& i_size );
     void gridSettingsChanged( const ZS::Draw::CDrawGridSettings& i_settings );
     void mousePosChanged( const QPointF& i_ptMousePos );
+    void contentAreaChanged();
     //void viewportMarginsChanged( const QMargins& i_margins );
 public: // instance methods
     CDrawingScene* drawingScene() { return m_pDrawingScene; }
@@ -87,8 +88,13 @@ public: // overridables of base class QWidget
     virtual void keyPressEvent( QKeyEvent* i_pEv ) override;
     virtual void keyReleaseEvent( QKeyEvent* i_pEv ) override;
 protected: // overridables of base class QGraphicsView
+    virtual void scrollContentsBy( int i_dx, int i_dy ) override;
+    virtual void resizeEvent( QResizeEvent* i_pEv ) override;
     virtual void paintEvent( QPaintEvent* i_pEv ) override;
+protected: // overridables of base class QGraphicsView
+    virtual void setupViewport(QWidget* i_pWdgt);
 protected: // auxiliary methods
+    void adjustCursor(QMouseEvent* i_pEv);
     void paintGridLabels(QPainter* i_pPainter);
 protected slots:
     void onSceneDrawingSizeChanged( const ZS::Draw::CDrawingSize& i_size );
@@ -97,6 +103,7 @@ protected: // instance methods (method tracing)
     void emit_mousePosChanged( const QPointF& i_ptMousePos );
     void emit_drawingSizeChanged( const ZS::Draw::CDrawingSize& i_size );
     void emit_gridSettingsChanged( const ZS::Draw::CDrawGridSettings& i_settings );
+    void emit_contentAreaChanged();
 protected: // instance members
     CDrawingScene* m_pDrawingScene;
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;

@@ -24,65 +24,67 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSApps_Draw_WidgetCentral_h
-#define ZSApps_Draw_WidgetCentral_h
+#ifndef ZSDraw_DrawingWidget_h
+#define ZSDraw_DrawingWidget_h
 
-#include <QtCore/qglobal.h>
-#include <QtCore/qhash.h>
+#include "ZSDraw/Common/ZSDrawDllMain.h"
 
 #if QT_VERSION < 0x050000
-#include <QtGui/qmainwindow.h>
+#include <QtGui/qwidget.h>
 #else
-#include <QtWidgets/qmainwindow.h>
+#include <QtWidgets/qwidget.h>
 #endif
 
 class QVBoxLayout;
 
 namespace ZS
 {
+namespace System
+{
+class CTrcAdminObj;
+}
+
 namespace Draw
 {
 class CDrawingScene;
 class CDrawingView;
-class CWdgtDrawing;
-}
 
-namespace Apps
-{
-namespace Products
-{
-namespace Draw
-{
 //******************************************************************************
-class CWidgetCentral : public QWidget
+/*! @brief Class containing the drawing view which again contains the graphics
+           view in a scroll area.
+
+    Around the drawing view additional widgets are created to label the grid lines.
+    Those widgets should not be in the scroll area but should always be visible either
+    - on top to show the X scale for pixel dimension drawings or
+    - at bottom to show the X scale for metrics dimension drawings and
+    - on the left side to show the Y scale for both pixel dimension and metric
+      dimension drawings.
+*/
+class ZSDRAWDLL_API CWdgtDrawing : public QWidget
 //******************************************************************************
 {
     Q_OBJECT
 public: // class methods
-    static CWidgetCentral* GetInstance(); // singleton class
+    /*! Returns the namespace the class belongs to. */
+    static QString NameSpace() { return "ZS::Draw"; }
+    /*! Returns the class name. */
+    static QString ClassName() { return "CWdgtDrawing"; }
 public: // ctors and dtor
-    CWidgetCentral(
-        QWidget* i_pWdgtParent = nullptr,
-        Qt::WindowFlags i_wflags = Qt::WindowFlags());
-    virtual ~CWidgetCentral();
+    CWdgtDrawing(QWidget* i_pWdgtParent = nullptr);
+    ~CWdgtDrawing();
 public: // instance methods
-    ZS::Draw::CWdgtDrawing* drawingWidget();
-    ZS::Draw::CDrawingView* drawingView();
-    ZS::Draw::CDrawingScene* drawingScene();
-protected: // class members
-    static CWidgetCentral* s_pThis; // singleton class
+    CDrawingView* drawingView() { return m_pDrawingView; }
+    CDrawingScene* drawingScene() { return m_pDrawingScene; }
 protected: // instance members
     QVBoxLayout* m_pLyt;
-    ZS::Draw::CWdgtDrawing* m_pWdgtDrawing;
+    CDrawingView* m_pDrawingView;
+    CDrawingScene* m_pDrawingScene;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
-}; // class CWidgetCentral
+}; // class CWdgtDrawing
 
 } // namespace Draw
 
-} // namespace Products
-
-} // namespace Apps
-
 } // namespace ZS
 
-#endif // #ifndef ZSApps_Draw_WidgetCentral_h
+#endif // #ifndef ZSDraw_DrawingWidget_h
