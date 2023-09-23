@@ -318,7 +318,6 @@ protected slots:
     void onGraphObjsIdxTreeEntryRenamed( const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree, const QString& i_strOrigName );
 protected: // auxiliary instance methods
     void paintGridLines(QPainter* i_pPainter);
-    //void paintGridLabels(QPainter* i_pPainter);
 protected: // auxiliary instance methods
     void raiseErrorAttributeNotDefined(QXmlStreamReader& i_xmlStreamReader, const QString& i_strElemName, const QString& i_strAttrName) const;
     void raiseErrorAttributeOutOfRange(QXmlStreamReader& i_xmlStreamReader, const QString& i_strElemName, const QString& i_strAttrName, const QString& i_strAttrVal) const;

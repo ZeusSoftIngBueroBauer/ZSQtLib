@@ -5107,8 +5107,7 @@ void CDrawingScene::drawBackground( QPainter* i_pPainter, const QRectF& i_rect )
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjPaintEvent, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs  = "Rect(x,y,w,h):(" + QString::number(i_rect.x()) + "," + QString::number(i_rect.y());
-        strMthInArgs += "," + QString::number(i_rect.width()) + "," + QString::number(i_rect.height()) + ")";
+        strMthInArgs = qRect2Str(i_rect);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjPaintEvent,
@@ -5144,8 +5143,7 @@ void CDrawingScene::drawForeground( QPainter* i_pPainter, const QRectF& i_rect )
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjPaintEvent, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs  = "Rect(x,y,w,h):(" + QString::number(i_rect.x()) + "," + QString::number(i_rect.y());
-        strMthInArgs += "," + QString::number(i_rect.width()) + "," + QString::number(i_rect.height()) + ")";
+        strMthInArgs = qRect2Str(i_rect);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjPaintEvent,
@@ -5364,69 +5362,6 @@ void CDrawingScene::paintGridLines(QPainter* i_pPainter)
     i_pPainter->restore();
 
 } // paintGridLines
-
-////------------------------------------------------------------------------------
-//void CDrawingScene::paintGridLabels(QPainter* i_pPainter)
-////------------------------------------------------------------------------------
-//{
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObjPaintEvent,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strMethod    */ "paintGridLabels",
-//        /* strAddInfo   */ "" );
-//
-//    i_pPainter->save();
-//
-//    QRectF rectScene = sceneRect();
-//
-//    QFontMetrics fntmtr(m_gridSettings.labelsFont());
-//    QSize sizeUnitString;
-//    if (m_drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels) {
-//        sizeUnitString = fntmtr.boundingRect(Units.Length.pxX.symbol()).size();
-//    }
-//    else {
-//        sizeUnitString = fntmtr.boundingRect(m_drawingSize.metricUnit().symbol()).size();
-//     }
-//    sizeUnitString.setHeight(sizeUnitString.height() + 2);
-//    sizeUnitString.setWidth(sizeUnitString.width() + 2);
-//
-//    //m_rectDivLineLabelsPhysUnit = QRect(
-//    //    0, 0, sizeUnitString.width(), sizeUnitString.height());
-//
-//    i_pPainter->setPen(m_gridSettings.labelsTextColor());
-//    i_pPainter->setFont(m_gridSettings.labelsFont());
-//
-//    EDivLineLayer eLayer = EDivLineLayer::Main;
-//
-//    QPen pen(m_gridSettings.linesColor());
-//    pen.setStyle(lineStyle2QtPenStyle(m_gridSettings.linesStyle().enumerator()));
-//    pen.setWidth(m_gridSettings.linesWidth());
-//    i_pPainter->setPen(pen);
-//
-//    for (int idxLine = 0; idxLine < m_divLinesMetricsX.getDivLinesCount(EDivLineLayer::Main); ++idxLine ) {
-//        int x = m_divLinesMetricsX.getDivLineInPix(EDivLineLayer::Main, idxLine);
-//        i_pPainter->drawLine(x, rectScene.top(), x, rectScene.top() - 4);
-//    }
-//
-//    for (int idxDivLine = 0; idxDivLine < m_divLinesMetricsX.getDivLinesCount(eLayer); idxDivLine++)
-//    {
-//        if (m_divLinesMetricsX.isDivLineLabelVisible(eLayer, idxDivLine))
-//        {
-//            QString strDivLineLabel = m_divLinesMetricsX.getDivLineLabelText(eLayer, idxDivLine);
-//            QRect rectDivLineLabel = m_divLinesMetricsX.getDivLineLabelBoundingRect(eLayer, idxDivLine);
-//            QRect rect;
-//
-//            rect.setLeft(rectDivLineLabel.left());
-//            rect.setRight(rect.left() + rectDivLineLabel.width());
-//            rect.setTop(rectScene.top() - rectDivLineLabel.height() - 5);
-//            rect.setBottom(rectScene.top());
-//
-//            i_pPainter->drawText(rect, Qt::AlignVCenter|Qt::AlignHCenter, strDivLineLabel);
-//        }
-//    }
-//    i_pPainter->restore();
-//
-//} // paintGridLabels
 
 /*==============================================================================
 protected: // auxiliary methods

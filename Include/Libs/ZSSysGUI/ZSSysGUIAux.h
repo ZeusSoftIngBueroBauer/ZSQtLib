@@ -46,6 +46,7 @@ may result in using the software modules.
 #include <windows.h>
 #endif
 
+class QCursor;
 class QMouseEvent;
 class QKeyEvent;
 class QPaintEvent;
@@ -64,6 +65,7 @@ public auxiliary methods
 *******************************************************************************/
 
 ZSSYSGUIDLL_API QString qColor2Str(const QColor& i_clr);
+ZSSYSGUIDLL_API QString qCursor2Str(const QCursor& i_cursor);
 
 ZSSYSGUIDLL_API QString qItemViewDragDropMode2Str(int i_iVal, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName);
 ZSSYSGUIDLL_API QAbstractItemView::DragDropMode str2QItemViewDragDropMode(

@@ -72,6 +72,7 @@ CDrawingView::CDrawingView( CDrawingScene* i_pDrawingScene, QWidget* i_pWdgtPare
 //------------------------------------------------------------------------------
     QGraphicsView(i_pDrawingScene, i_pWdgtParent),
     m_pDrawingScene(i_pDrawingScene),
+    m_iZoomFactor_perCent(100),
     m_pTrcAdminObj(nullptr),
     m_pTrcAdminObjMouseMoveEvent(nullptr),
     m_pTrcAdminObjPaintEvent(nullptr)
@@ -132,6 +133,7 @@ CDrawingView::~CDrawingView()
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjPaintEvent);
 
     m_pDrawingScene = nullptr;
+    m_iZoomFactor_perCent = 0;
     m_pTrcAdminObj = nullptr;
     m_pTrcAdminObjMouseMoveEvent = nullptr;
     m_pTrcAdminObjPaintEvent = nullptr;
@@ -166,6 +168,39 @@ const CDrawingSize& CDrawingView::drawingSize() const
 //------------------------------------------------------------------------------
 {
     return m_pDrawingScene->drawingSize();
+}
+
+/*==============================================================================
+public: // instance methods (drawing area)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CDrawingView::setZoomFactorInPerCent( int i_iFactor_perCent )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString::number(i_iFactor_perCent);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setZoomFactorInPerCent",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (m_iZoomFactor_perCent != i_iFactor_perCent) {
+        double fScale = static_cast<double>(i_iFactor_perCent) / static_cast<double>(m_iZoomFactor_perCent);
+        m_iZoomFactor_perCent = i_iFactor_perCent;
+        scale(fScale, fScale);
+        emit_contentAreaChanged();
+    }
+}
+
+//------------------------------------------------------------------------------
+int CDrawingView::zoomFactorInPerCent() const
+//------------------------------------------------------------------------------
+{
+    return m_iZoomFactor_perCent;
 }
 
 /*==============================================================================
@@ -315,6 +350,50 @@ void CDrawingView::keyReleaseEvent( QKeyEvent* i_pEv )
 }
 
 /*==============================================================================
+public: // reimplemented method of base class QWidget
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CDrawingView::setCursor(const QCursor& i_cursor)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = qCursor2Str(i_cursor);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setCursor",
+        /* strAddInfo   */ strMthInArgs );
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        QString strAddTrcInfo = "CurrentCursor: " + qCursor2Str(cursor());
+        mthTracer.trace(strAddTrcInfo);
+    }
+
+    QGraphicsView::setCursor(i_cursor);
+    viewport()->setCursor(i_cursor);
+}
+
+//------------------------------------------------------------------------------
+void CDrawingView::unsetCursor()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "unsetCursor",
+        /* strAddInfo   */ "" );
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        QString strAddTrcInfo = "CurrentCursor: " + qCursor2Str(cursor());
+        mthTracer.trace(strAddTrcInfo);
+    }
+
+    QGraphicsView::unsetCursor();
+    viewport()->unsetCursor();
+}
+
+/*==============================================================================
 protected: // overridables of base class QAbstractScrollArea
 ==============================================================================*/
 
@@ -335,6 +414,10 @@ void CDrawingView::scrollContentsBy( int i_dx, int i_dy )
     QGraphicsView::scrollContentsBy(i_dx, i_dy);
 
     emit_contentAreaChanged();
+
+    // Workaround for bug in Qt? Without invalidate here some regions
+    // are not updated and the grid for example has gaps.
+    m_pDrawingScene->invalidate();
 }
 
 //------------------------------------------------------------------------------
@@ -354,40 +437,10 @@ void CDrawingView::resizeEvent( QResizeEvent* i_pEv )
     QGraphicsView::resizeEvent(i_pEv);
 
     emit_contentAreaChanged();
-}
 
-//------------------------------------------------------------------------------
-void CDrawingView::paintEvent( QPaintEvent* i_pEv )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjPaintEvent, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qPaintEvent2Str(i_pEv);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjPaintEvent,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "paintEvent",
-        /* strAddInfo   */ strMthInArgs );
-
-    QGraphicsView::paintEvent(i_pEv);
-}
-
-/*==============================================================================
-protected: // overridables of base class QGraphicsView
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CDrawingView::setupViewport(QWidget* i_pWdgt)
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjPaintEvent,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setupViewport",
-        /* strAddInfo   */ "" );
-
-    QGraphicsView::setupViewport(i_pWdgt);
+    // Workaround for bug in Qt? Without invalidate here some regions
+    // are not updated and the grid for example has gaps.
+    m_pDrawingScene->invalidate();
 }
 
 /*==============================================================================
@@ -398,17 +451,7 @@ protected: // auxiliary methods
 void CDrawingView::adjustCursor(QMouseEvent* i_pEv)
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qMouseEvent2Str(i_pEv);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjPaintEvent,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "adjustCursor",
-        /* strAddInfo   */ strMthInArgs );
-
-    QCursor cursor;
+    QCursor crsor;
     bool bGraphicsItemHasCursor = false;
 
     QList<QGraphicsItem*> arpGraphicsItemsUnderCursor = items(mapFromGlobal(QCursor::pos()));
@@ -417,26 +460,27 @@ void CDrawingView::adjustCursor(QMouseEvent* i_pEv)
         QGraphicsItem* pGraphicsItem = arpGraphicsItemsUnderCursor[idxGraphObj];
         if (pGraphicsItem->hasCursor()) {
             bGraphicsItemHasCursor = true;
-            cursor = pGraphicsItem->cursor();
+            crsor = pGraphicsItem->cursor();
             break;
         }
     }
 
     if (bGraphicsItemHasCursor) {
-        setCursor(cursor);
-        viewport()->setCursor(cursor);
+        if (cursor() != crsor) {
+            setCursor(crsor);
+        }
     }
     else {
         QPointF ptScenePos = mapToScene(i_pEv->pos());
         QRectF  rctScene = m_pDrawingScene->sceneRect();
         if (rctScene.contains(ptScenePos)) {
-            QCursor cursor = m_pDrawingScene->getProposedCursor(ptScenePos);
-            setCursor(cursor);
-            viewport()->setCursor(cursor);
+            crsor = m_pDrawingScene->getProposedCursor(ptScenePos);
+            if (cursor() != crsor) {
+                setCursor(crsor);
+            }
         }
         else {
             unsetCursor();
-            viewport()->unsetCursor();
         }
     }
 }
@@ -534,6 +578,7 @@ void CDrawingView::emit_mousePosChanged( const QPointF& i_ptMousePos )
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "emit_mousePosChanged",
         /* strAddInfo   */ strMthInArgs );
+
     emit mousePosChanged(i_ptMousePos);
 }
 

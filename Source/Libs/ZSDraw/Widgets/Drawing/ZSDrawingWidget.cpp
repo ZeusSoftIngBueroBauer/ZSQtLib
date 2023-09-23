@@ -35,9 +35,11 @@ may result in using the software modules.
 #if QT_VERSION < 0x050000
 #include <QtGui/qlabel.h>
 #include <QtGui/qlayout.h>
+#include <QtGui/qscrollbar.h>
 #else
 #include <QtWidgets/qlabel.h>
 #include <QtWidgets/qlayout.h>
+#include <QtWidgets/qscrollbar.h>
 #endif
 
 #include "ZSSys/ZSSysMemLeakDump.h"
@@ -153,6 +155,9 @@ CWdgtDrawing::CWdgtDrawing(QWidget* i_pWdgtParent) :
     QObject::connect(
         m_pDrawingView, &CDrawingView::gridSettingsChanged,
         this, &CWdgtDrawing::onDrawingViewGridSettingsChanged);
+    QObject::connect(
+        m_pDrawingView, &CDrawingView::contentAreaChanged,
+        this, &CWdgtDrawing::onDrawingViewContentAreaChanged);
 
 } // ctor
 
@@ -207,11 +212,7 @@ void CWdgtDrawing::onDrawingViewDrawingSizeChanged(const CDrawingSize& i_size)
         /* strMethod    */ "onDrawingViewDrawingSizeChanged",
         /* strAddInfo   */ strMthInArgs );
 
-    QMargins marginsDrawingView = m_pDrawingView->contentsMargins();
-    int cxMarginHor = marginsDrawingView.left() + marginsDrawingView.right();
-    int cyMarginVer = marginsDrawingView.top() + marginsDrawingView.bottom();
-    m_pDrawingView->setMaximumWidth(i_size.imageWidthInPixels() + cxMarginHor);
-    m_pDrawingView->setMaximumHeight(i_size.imageHeightInPixels() + cyMarginVer);
+    adjustDrawingViewMaximumSize();
 }
 
 //------------------------------------------------------------------------------
@@ -228,4 +229,59 @@ void CWdgtDrawing::onDrawingViewGridSettingsChanged(const CDrawGridSettings& i_s
         /* strMethod    */ "onDrawingViewGridSettingsChanged",
         /* strAddInfo   */ strMthInArgs );
 
+    adjustDrawingViewMaximumSize();
+}
+
+//------------------------------------------------------------------------------
+void CWdgtDrawing::onDrawingViewContentAreaChanged()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onDrawingViewContentAreaChanged",
+        /* strAddInfo   */ "" );
+
+    adjustDrawingViewMaximumSize();
+}
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtDrawing::adjustDrawingViewMaximumSize()
+//------------------------------------------------------------------------------
+{
+    const CDrawingSize& drawingSize = m_pDrawingView->drawingSize();
+    QMargins marginsDrawingView = m_pDrawingView->contentsMargins();
+
+    int cxMarginHor = marginsDrawingView.left() + marginsDrawingView.right();
+    int cyMarginVer = marginsDrawingView.top() + marginsDrawingView.bottom();
+    int iZoomFactor_perCent = m_pDrawingView->zoomFactorInPerCent();
+    int iImageWidth_px = (iZoomFactor_perCent * drawingSize.imageWidthInPixels()) / 100;
+    int iImageHeight_px = (iZoomFactor_perCent * drawingSize.imageHeightInPixels()) / 100;
+    int iDrawingViewMaxWidth = iImageWidth_px + cxMarginHor;
+    int iDrawingViewMaxHeight = iImageHeight_px + cyMarginVer;
+
+    //if (m_pDrawingView->horizontalScrollBar()->isVisible()) {
+    //    QSize sizeHorScrollBar = m_pDrawingView->horizontalScrollBar()->size();
+    //    iDrawingViewMaxWidth += sizeHorScrollBar.width();
+    //}
+    //if (m_pDrawingView->verticalScrollBar()->isVisible()) {
+    //    QSize sizeVerScrollBar = m_pDrawingView->horizontalScrollBar()->size();
+    //    iDrawingViewMaxHeight += sizeVerScrollBar.height();
+    //}
+
+    m_pDrawingView->setMaximumSize(iDrawingViewMaxWidth, iDrawingViewMaxHeight);
+    // But in Qt? If set separately the viewport geometry is not updated correctly and
+    // the second setMaximum call seem to be ignored.
+    //m_pDrawingView->setMaximumWidth(iImageWidth_px + cxMarginHor);
+    //m_pDrawingView->setMaximumHeight(iImageHeight_px + cyMarginVer);
+    //m_pDrawingScene->invalidate();
+
+    //m_pWdgtGridLabelsXTop->setFixedHeight(m_pWdgtGridLabelsXTop->sizeHint().height());
+    //m_pWdgtGridLabelsXBottom->setFixedHeight(m_pWdgtGridLabelsXBottom->sizeHint().height());
+    //m_pWdgtGridLabelsYLeft->setFixedWidth(m_pWdgtGridLabelsYLeft->sizeHint().width());
+    //m_pWdgtGridLabelsYRight->setFixedWidth(m_pWdgtGridLabelsYRight->sizeHint().width());
 }

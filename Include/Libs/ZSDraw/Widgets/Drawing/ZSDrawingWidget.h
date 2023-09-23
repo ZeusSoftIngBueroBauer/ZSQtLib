@@ -81,6 +81,9 @@ public: // instance methods
 protected slots:
     void onDrawingViewDrawingSizeChanged(const ZS::Draw::CDrawingSize& i_size);
     void onDrawingViewGridSettingsChanged(const ZS::Draw::CDrawGridSettings& i_settings);
+    void onDrawingViewContentAreaChanged();
+protected: // auxiliary methods
+    void adjustDrawingViewMaximumSize();
 protected: // instance members
     QGridLayout* m_pLyt;
     CWdgtGridLabels* m_pWdgtGridLabelsXTop;

@@ -29,7 +29,7 @@ So you cannot define a static class variable like this:
         ...
     };
 
-Instead you need a pointer to to the trace admin object and register it during
+Instead you need a pointer to the trace admin object and register it during
 runtime at the server if needed. If the admin object is no longer needed it
 must be released to avoid memory leaks.
 
@@ -62,6 +62,7 @@ must be released to avoid memory leaks.
 !!! The following description need to be revised. !!!
 !!! The trace admin object already has a referene counter. !!!
 !!! RefGuard and RefAnchor is a design pattern. !!!
+!!! RefGuard to trace class methods to ensure that trace admin object is released if method returns. !!!
 
 If you don't trace class methods but just instance methods you can implement a
 reference counter to ensure that no memory leaks are left behind and that the

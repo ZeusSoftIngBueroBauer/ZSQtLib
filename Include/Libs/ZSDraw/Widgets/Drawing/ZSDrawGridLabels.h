@@ -77,14 +77,17 @@ protected: // overridables of base class QWidget
 protected slots:
     void onDrawingViewDrawingSizeChanged(const ZS::Draw::CDrawingSize& i_size);
     void onDrawingViewGridSettingsChanged(const ZS::Draw::CDrawGridSettings& i_settings);
+    void onDrawingViewContentAreaChanged();
 protected: // auxiliary methods
     void paintGridLabels(QPainter* i_pPainter);
 protected: // instance members
     CDrawingView* m_pDrawingView;
     ZS::System::GUI::Math::CScaleDivLinesMetrics m_divLinesMetrics;
+    int m_iDivLineLabelsLineLength;
     ZS::System::EScaleDir m_scaleDir;
     ZS::System::ELayoutPos m_layoutPos;
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjPaintEvent;
 
 }; // class CWdgtGridLabels
 

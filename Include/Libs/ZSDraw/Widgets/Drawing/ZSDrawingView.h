@@ -70,6 +70,9 @@ public: // instance methods
 public: // instance methods (drawing area)
     void setDrawingSize( const CDrawingSize& i_size );
     const CDrawingSize& drawingSize() const;
+public: // instance methods (drawing area)
+    void setZoomFactorInPerCent(int i_iFactor_perCent);
+    int zoomFactorInPerCent() const;
 public: // instance methods (grid lines with labels)
     void setGridSettings( const CDrawGridSettings& i_settings );
     const CDrawGridSettings& gridSettings() const;
@@ -81,15 +84,14 @@ public: // overridables of base class QWidget
 public: // overridables of base class QWidget
     virtual void keyPressEvent( QKeyEvent* i_pEv ) override;
     virtual void keyReleaseEvent( QKeyEvent* i_pEv ) override;
+public: // reimplemented method of base class QWidget
+    void setCursor(const QCursor& i_cursor);
+    void unsetCursor();
 protected: // overridables of base class QGraphicsView
     virtual void scrollContentsBy( int i_dx, int i_dy ) override;
     virtual void resizeEvent( QResizeEvent* i_pEv ) override;
-    virtual void paintEvent( QPaintEvent* i_pEv ) override;
-protected: // overridables of base class QGraphicsView
-    virtual void setupViewport(QWidget* i_pWdgt);
 protected: // auxiliary methods
     void adjustCursor(QMouseEvent* i_pEv);
-    void paintGridLabels(QPainter* i_pPainter);
 protected slots:
     void onSceneDrawingSizeChanged( const ZS::Draw::CDrawingSize& i_size );
     void onSceneGridSettingsChanged( const ZS::Draw::CDrawGridSettings& i_settings );
@@ -100,6 +102,7 @@ protected: // instance methods (method tracing)
     void emit_contentAreaChanged();
 protected: // instance members
     CDrawingScene* m_pDrawingScene;
+    int m_iZoomFactor_perCent;
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjMouseMoveEvent;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjPaintEvent;

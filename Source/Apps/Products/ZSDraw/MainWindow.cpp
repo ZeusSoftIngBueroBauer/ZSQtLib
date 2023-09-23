@@ -3951,11 +3951,10 @@ void CMainWindow::onEdtViewZoomFactorEditingFinished()
 
     if( m_iViewZoomFactor_perCent != iZoomFactor_perCent ) {
         CDrawingView* pDrawingView = m_pWdgtCentral->drawingView();
-        double fScale = static_cast<double>(iZoomFactor_perCent) / static_cast<double>(m_iViewZoomFactor_perCent);
+        pDrawingView->setZoomFactorInPerCent(iZoomFactor_perCent);
         m_iViewZoomFactor_perCent = iZoomFactor_perCent;
-        pDrawingView->scale(fScale, fScale);
     }
-} // onEdtViewZoomFactorEditingFinished
+}
 
 /*==============================================================================
 public slots: // Menu - Debug
