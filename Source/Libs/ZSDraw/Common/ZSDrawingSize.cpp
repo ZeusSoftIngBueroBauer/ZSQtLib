@@ -122,7 +122,7 @@ CDrawingSize::CDrawingSize(const QString& i_strName) :
 //------------------------------------------------------------------------------
 /*! Creates an instance of the class.
 */
-CDrawingSize::CDrawingSize(const CDrawingSize& i_other) :
+CDrawingSize::CDrawingSize(const QString& i_strName, const CDrawingSize& i_other) :
 //------------------------------------------------------------------------------
     m_eDimensionUnit(i_other.m_eDimensionUnit),
     m_metricUnit(i_other.m_metricUnit),
@@ -138,7 +138,7 @@ CDrawingSize::CDrawingSize(const CDrawingSize& i_other) :
     m_fImageSizeHeight_px(i_other.m_fImageSizeHeight_px),
     m_pTrcAdminObj(nullptr)
 {
-    setObjectName(i_other.objectName());
+    setObjectName(i_strName);
 
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
         NameSpace() + "::Drawing", ClassName(), objectName());

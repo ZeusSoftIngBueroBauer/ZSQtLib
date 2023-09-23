@@ -1210,27 +1210,27 @@ void CDiagObjLabel::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintD
             }
             switch( m_layoutPos )
             {
-                case ELayoutPosTop:
+                case ELayoutPos::Top:
                 {
                     rectLayoutPos = pPixmapDiagram->getRectPartTop();
                     break;
                 }
-                case ELayoutPosBottom:
+                case ELayoutPos::Bottom:
                 {
                     rectLayoutPos = pPixmapDiagram->getRectPartBottom();
                     break;
                 }
-                case ELayoutPosLeft:
+                case ELayoutPos::Left:
                 {
                     rectLayoutPos = pPixmapDiagram->getRectPartLeft();
                     break;
                 }
-                case ELayoutPosRight:
+                case ELayoutPos::Right:
                 {
                     rectLayoutPos = pPixmapDiagram->getRectPartRight();
                     break;
                 }
-                case ELayoutPosCenter:
+                case ELayoutPos::Center:
                 default:
                 {
                     break;

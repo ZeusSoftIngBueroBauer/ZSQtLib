@@ -59,7 +59,7 @@ CDiagObjHistogram::CDiagObjHistogram(
         /* strClassName */ CDiagObjHistogram::ClassName(),
         /* strObjName   */ i_strObjName,
         /* pDiagTrace   */ i_pDiagTrace,
-        /* layoutPos    */ ELayoutPosCenter ),
+        /* layoutPos    */ ELayoutPos::Center ),
     m_col(Qt::yellow),
     m_pPtArr(nullptr),
     m_bUpdWidget(true)

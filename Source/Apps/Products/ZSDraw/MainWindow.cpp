@@ -2956,7 +2956,7 @@ void CMainWindow::onActionFileSaveAsTriggered(bool i_bChecked)
             errResultInfo = pDrawingScene->save(strAbsFilePath);
         }
         else {
-            CDrawingSize drawingSize = pDrawingScene->drawingSize();
+            const CDrawingSize& drawingSize = pDrawingScene->drawingSize();
             QImage img(
                 drawingSize.imageSizeInPixels().width(),
                 drawingSize.imageSizeInPixels().height(),
@@ -4451,7 +4451,7 @@ void CMainWindow::onDrawingViewContentAreaChanged()
         CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
         QRectF rectScene = pDrawingScene->sceneRect();
         QPolygon plgViewRectScene = pDrawingView->mapFromScene(rectScene);
-        CDrawingSize drawingSize = pDrawingScene->drawingSize();
+        const CDrawingSize& drawingSize = pDrawingScene->drawingSize();
         CPhysVal physValWidth = drawingSize.metricImageWidth();
         CPhysVal physValHeight = drawingSize.metricImageHeight();
         QString strSceneSizeInfo = "SceneRect {" + qRect2Str(plgViewRectScene.boundingRect()) + "}" +

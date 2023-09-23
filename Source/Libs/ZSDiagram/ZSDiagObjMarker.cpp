@@ -66,7 +66,7 @@ CDiagObjMarker::CDiagObjMarker(
         /* strClassName */ CDiagObjMarker::ClassName(),
         /* strObjName   */ i_strObjName,
         /* pDiagTrace   */ i_pDiagTrace,
-        /* layoutPos    */ ELayoutPosCenter ),
+        /* layoutPos    */ ELayoutPos::Center ),
     // Previous states (before data processing in "update" method)
     m_bVisiblePrev(false),
     m_statePrev(EDiagObjStateNormal),

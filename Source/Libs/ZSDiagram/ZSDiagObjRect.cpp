@@ -59,7 +59,7 @@ CDiagObjRect::CDiagObjRect(
         /* strClassName */ CDiagObjRect::ClassName(),
         /* strObjName   */ i_strObjName,
         /* pDiagTrace   */ i_pDiagTrace,
-        /* layoutPos    */ ELayoutPosCenter ),
+        /* layoutPos    */ ELayoutPos::Center ),
     m_pen(Qt::white),
     m_brush(),
     m_rct(),

@@ -815,7 +815,7 @@ void CTest::doTestStepSigGenAddAxisLabels( ZS::Test::CTestStep* i_pTestStep )
         m_pDiagObjAxisLabelX = new CDiagObjAxisLabel(
             /* strObjName  */ "X-AxisLabel",
             /* pDiagScaleX */ m_pDiagScaleX,
-            /* layoutPos   */ ELayoutPosBottom );
+            /* layoutPos   */ ELayoutPos::Bottom );
         m_pDiagObjAxisLabelX->setSpacingDiagPartCenter2DivLineLabels(10);
         m_pDiagObjAxisLabelX->setSpacingDivLineLabels2AxisLabel(10);
         m_pDiagObjAxisLabelX->setDivLinesColor(Qt::red);
@@ -831,7 +831,7 @@ void CTest::doTestStepSigGenAddAxisLabels( ZS::Test::CTestStep* i_pTestStep )
         m_pDiagObjAxisLabelY = new CDiagObjAxisLabel(
             /* strObjName  */ "Y-AxisLabel",
             /* pDiagScaleX */ m_pDiagScaleY,
-            /* layoutPos   */ ELayoutPosLeft );
+            /* layoutPos   */ ELayoutPos::Left );
         m_pDiagObjAxisLabelY->setSpacingDiagPartCenter2DivLineLabels(10);
         m_pDiagObjAxisLabelY->setSpacingDivLineLabels2AxisLabel(10);
         m_pDiagObjAxisLabelY->setDivLinesColor(Qt::red);

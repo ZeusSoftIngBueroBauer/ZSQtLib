@@ -24,7 +24,7 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include "ZSDraw/Drawing/ZSDrawGridSettings.h"
+#include "ZSDraw/Common/ZSDrawGridSettings.h"
 
 #include "ZSSys/ZSSysAux.h"
 
@@ -62,9 +62,9 @@ CDrawGridSettings::CDrawGridSettings(const QString& i_strName) :
 }
 
 //------------------------------------------------------------------------------
-CDrawGridSettings::CDrawGridSettings(const CDrawGridSettings& i_other) :
+CDrawGridSettings::CDrawGridSettings(const QString& i_strName, const CDrawGridSettings& i_other) :
 //------------------------------------------------------------------------------
-    m_strName(i_other.m_strName),
+    m_strName(i_strName),
     m_bLinesVisible(i_other.m_bLinesVisible),
     m_iLinesDistMin_px(i_other.m_iLinesDistMin_px),
     m_eLinesStyle(i_other.m_eLinesStyle),

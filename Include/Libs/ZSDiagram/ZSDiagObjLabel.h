@@ -48,13 +48,13 @@ public: // ctors and dtor
     CDiagObjLabel(
         const QString& i_strObjName,
         const QString& i_strText,
-        ELayoutPos     i_layoutPos,
-        int            i_iStateCount = 1 );
+        ZS::System::ELayoutPos i_layoutPos,
+        int i_iStateCount = 1 );
     CDiagObjLabel(
         const QString& i_strObjName,
         const QPixmap& i_pxm,
-        ELayoutPos     i_layoutPos,
-        int            i_iStateCount = 1 );
+        ZS::System::ELayoutPos i_layoutPos,
+        int i_iStateCount = 1 );
     virtual ~CDiagObjLabel();
 public: // instance methods
     void setState( int i_iState );

@@ -106,14 +106,14 @@ protected: // ctors
     CDiagObj(
         const QString& i_strClassName,
         const QString& i_strObjName,
-        CDiagTrace*    i_pDiagTrace,
-        ELayoutPos     i_layoutPos );
+        CDiagTrace* i_pDiagTrace,
+        ZS::System::ELayoutPos i_layoutPos );
     CDiagObj(
         const QString& i_strClassName,
         const QString& i_strObjName,
-        CDiagScale*    i_pDiagScaleX,
-        CDiagScale*    i_pDiagScaleY,
-        ELayoutPos     i_layoutPos );
+        CDiagScale* i_pDiagScaleX,
+        CDiagScale* i_pDiagScaleY,
+        ZS::System::ELayoutPos i_layoutPos );
 public: // dtor
     virtual ~CDiagObj();
 signals:
@@ -133,7 +133,7 @@ public: // instance methods
     CDiagScale* getDiagScale( const ZS::System::CEnumScaleDir& i_scaleDir );
     virtual void setDiagTrace( CDiagTrace* i_pDiagTrace );
     CDiagTrace* getDiagTrace();
-    ELayoutPos getLayoutPos() const;
+    ZS::System::ELayoutPos getLayoutPos() const;
 public: // overridables
     virtual PhysVal::CPhysValRes getValRes( const ZS::System::CEnumScaleDir& i_scaleDir ) const;
     virtual PhysVal::CPhysVal getVal( const ZS::System::CEnumScaleDir& i_scaleDir ) const;
@@ -196,7 +196,7 @@ protected:  // instance members
     /*!< Bitmap with flags from Diagram::EUpdate to indicate which process depth need to be recalculated. */
     unsigned int m_uUpdateFlags;
     /*!< Layout position of the object within the diagram. */
-    ELayoutPos m_layoutPos;
+    ZS::System::ELayoutPos m_layoutPos;
     /*!< Rectangle used by the object to indicate the object within the diagram. */
     QRect m_rectContent;
     /*!< To decide whether the object needs repainting the previous rectangle are is stored here. */

@@ -62,7 +62,7 @@ CDiagObjValueProvider::CDiagObjValueProvider(
         /* strClassName */ CDiagObjValueProvider::ClassName(),
         /* strObjName   */ i_strObjName,
         /* pDiagTrace   */ nullptr,
-        /* layoutPos    */ ELayoutPosUndefined ),
+        /* layoutPos    */ ELayoutPos::Center ),
     m_mathOp(i_mathOp),
     m_pDiagObjOp1(i_pDiagObjOp1),
     m_scaleDirOp1(i_scaleDirOp1.enumerator()),

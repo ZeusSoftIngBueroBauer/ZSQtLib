@@ -29,12 +29,12 @@ may result in using the software modules.
 
 #include "ZSDraw/Common/ZSDrawDllMain.h"
 #include "ZSDraw/Common/ZSDrawCommon.h"
+#include "ZSDraw/Common/ZSDrawGridSettings.h"
 #include "ZSDraw/Common/ZSDrawingSize.h"
 #include "ZSDraw/Common/ZSDrawPhysValPoint.h"
 #include "ZSDraw/Common/ZSDrawPhysValSize.h"
 #include "ZSDraw/Common/ZSDrawSettings.h"
 #include "ZSDraw/Common/ZSDrawUnits.h"
-#include "ZSDraw/Drawing/ZSDrawGridSettings.h"
 #include "ZSSys/ZSSysCommon.h"
 #include "ZSSysGUI/ZSSysGUIMathScaleDivLinesMetrics.h"
 

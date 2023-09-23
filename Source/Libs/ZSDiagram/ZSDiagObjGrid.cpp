@@ -61,7 +61,7 @@ CDiagObjGrid::CDiagObjGrid(
         /* strObjName   */ i_strObjName,
         /* pDiagScaleX  */ i_pDiagScaleX,
         /* pDiagScaleY  */ i_pDiagScaleY,
-        /* layoutPos    */ ELayoutPosCenter ),
+        /* layoutPos    */ ELayoutPos::Center ),
     m_arcol(CEnumDivLineLayer::count()),
     m_arpenStyle(CEnumDivLineLayer::count()),
     m_arbShow(CEnumDivLineLayer::count()),

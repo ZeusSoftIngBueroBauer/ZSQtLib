@@ -62,7 +62,7 @@ CDiagObjLine::CDiagObjLine(
         /* strObjName   */ i_strObjName,
         /* pDiagScaleX  */ i_pDiagScaleX,
         /* pDiagScaleY  */ i_pDiagScaleY,
-        /* layoutPos    */ ELayoutPosCenter ),
+        /* layoutPos    */ ELayoutPos::Center ),
     m_pLineStyle( i_lineStyle ),
     m_pt1( -1 , -1 ),
     m_pt2( -1 , -1 ),

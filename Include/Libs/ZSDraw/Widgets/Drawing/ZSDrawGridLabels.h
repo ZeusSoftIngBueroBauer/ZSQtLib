@@ -24,18 +24,18 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSDraw_DrawingWidget_h
-#define ZSDraw_DrawingWidget_h
+#ifndef ZSDraw_DrawGridLabels_h
+#define ZSDraw_DrawGridLabels_h
 
 #include "ZSDraw/Common/ZSDrawDllMain.h"
+#include "ZSSysGUI/ZSSysGUIMathScaleDivLinesMetrics.h"
+#include "ZSSys/ZSSysCommon.h"
 
 #if QT_VERSION < 0x050000
 #include <QtGui/qwidget.h>
 #else
 #include <QtWidgets/qwidget.h>
 #endif
-
-class QGridLayout;
 
 namespace ZS
 {
@@ -46,24 +46,14 @@ class CTrcAdminObj;
 
 namespace Draw
 {
-class CDrawingScene;
-class CDrawingView;
-class CDrawingSize;
 class CDrawGridSettings;
-class CWdgtGridLabels;
+class CDrawingSize;
+class CDrawingView;
 
 //******************************************************************************
-/*! @brief Class containing the drawing view which again contains the graphics
-           view in a scroll area.
-
-    Around the drawing view additional widgets are created to label the grid lines.
-    Those widgets should not be in the scroll area but should always be visible either
-    - on top to show the X scale for pixel dimension drawings or
-    - at bottom to show the X scale for metrics dimension drawings and
-    - on the left side to show the Y scale for both pixel dimension and metric
-      dimension drawings.
+/*! @brief 
 */
-class ZSDRAWDLL_API CWdgtDrawing : public QWidget
+class ZSDRAWDLL_API CWdgtGridLabels : public QWidget
 //******************************************************************************
 {
     Q_OBJECT
@@ -71,30 +61,35 @@ public: // class methods
     /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw"; }
     /*! Returns the class name. */
-    static QString ClassName() { return "CWdgtDrawing"; }
+    static QString ClassName() { return "CWdgtGridLabels"; }
 public: // ctors and dtor
-    CWdgtDrawing(QWidget* i_pWdgtParent = nullptr);
-    ~CWdgtDrawing();
-public: // instance methods
-    CDrawingView* drawingView() { return m_pDrawingView; }
-    CDrawingScene* drawingScene() { return m_pDrawingScene; }
+    CWdgtGridLabels(
+        const QString& i_strName,
+        CDrawingView* i_pDrawingView,
+        ZS::System::EScaleDir i_scaleDir,
+        ZS::System::ELayoutPos i_layoutPos,
+        QWidget* i_pWdgtParent = nullptr);
+    ~CWdgtGridLabels();
+public: // overridables of base class QWidget
+    QSize sizeHint() const override;
+protected: // overridables of base class QWidget
+    void paintEvent(QPaintEvent* i_pEv) override;
 protected slots:
     void onDrawingViewDrawingSizeChanged(const ZS::Draw::CDrawingSize& i_size);
     void onDrawingViewGridSettingsChanged(const ZS::Draw::CDrawGridSettings& i_settings);
+protected: // auxiliary methods
+    void paintGridLabels(QPainter* i_pPainter);
 protected: // instance members
-    QGridLayout* m_pLyt;
-    CWdgtGridLabels* m_pWdgtGridLabelsXTop;
-    CWdgtGridLabels* m_pWdgtGridLabelsXBottom;
-    CWdgtGridLabels* m_pWdgtGridLabelsYLeft;
-    CWdgtGridLabels* m_pWdgtGridLabelsYRight;
     CDrawingView* m_pDrawingView;
-    CDrawingScene* m_pDrawingScene;
+    ZS::System::GUI::Math::CScaleDivLinesMetrics m_divLinesMetrics;
+    ZS::System::EScaleDir m_scaleDir;
+    ZS::System::ELayoutPos m_layoutPos;
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
-}; // class CWdgtDrawing
+}; // class CWdgtGridLabels
 
 } // namespace Draw
 
 } // namespace ZS
 
-#endif // #ifndef ZSDraw_DrawingWidget_h
+#endif // #ifndef ZSDraw_DrawGridLabels_h

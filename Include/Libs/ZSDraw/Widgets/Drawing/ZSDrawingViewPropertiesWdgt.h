@@ -28,7 +28,7 @@ may result in using the software modules.
 #define ZSDraw_DrawingViewPropertiesWdgt_h
 
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPropertiesAbstractWdgt.h"
-#include "ZSDraw/Drawing/ZSDrawGridSettings.h"
+#include "ZSDraw/Common/ZSDrawGridSettings.h"
 
 namespace ZS
 {

@@ -86,6 +86,43 @@ CScaleDivLinesMetrics::CScaleDivLinesMetrics(const QString& i_strObjName, EScale
 } // ctor
 
 //------------------------------------------------------------------------------
+/*! @brief Assignment operator.
+
+    @param i_other [in]
+        Reference to base class object whose current internal data should be taken over.
+*/
+CScaleDivLinesMetrics::CScaleDivLinesMetrics(const QString& i_strObjName, const CScaleDivLinesMetrics& i_other) :
+//------------------------------------------------------------------------------
+    CScaleDivLines(i_strObjName, i_other),
+    // config values
+    m_fnt(i_other.m_fnt),
+    m_iDigitsCountMax(i_other.m_iDigitsCountMax),
+    m_bUseEngineeringFormat(i_other.m_bUseEngineeringFormat),
+    m_sizeMinTextExtent(i_other.m_sizeMinTextExtent),
+    // calculated
+    m_iTrailingDigits(i_other.m_iTrailingDigits),
+    m_iExponentDigits(i_other.m_iExponentDigits),
+    m_sizeMaxTextExtent(i_other.m_sizeMaxTextExtent),
+    m_iSpacing_px(i_other.m_iSpacing_px),
+    m_ararrectLabels(i_other.m_ararrectLabels),
+    m_ararstrLabels(i_other.m_ararstrLabels),
+    m_ararbLabelsVisible(i_other.m_ararbLabelsVisible),
+    m_arstrScaleMinMaxVal(i_other.m_arstrScaleMinMaxVal),
+    m_arrectScaleMinMaxVal(i_other.m_arrectScaleMinMaxVal)
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_other.objectName();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "=",
+        /* strAddInfo   */ i_other.NameSpace() + "::" + i_other.ClassName() + "::" + i_other.objectName() );
+
+} // copy ctor
+
+//------------------------------------------------------------------------------
 /*! @brief Destructor.
 */
 CScaleDivLinesMetrics::~CScaleDivLinesMetrics()
@@ -166,7 +203,20 @@ CScaleDivLinesMetrics& CScaleDivLinesMetrics::operator = (const CScaleDivLinesMe
         /* strMethod    */ "=",
         /* strAddInfo   */ i_other.NameSpace() + "::" + i_other.ClassName() + "::" + i_other.objectName() );
 
-    static_cast<CScaleDivLines&>(*this) = static_cast<CScaleDivLines>(i_other);
+    m_scaleDir = i_other.m_scaleDir;
+    m_spacing = i_other.m_spacing;
+    m_fScaleMin = i_other.m_fScaleMin;
+    m_fScaleMax = i_other.m_fScaleMax;
+    m_fScaleRes = i_other.m_fScaleRes;
+    m_fMin_px = i_other.m_fMin_px;
+    m_fMax_px = i_other.m_fMax_px;
+    m_ariDivLinesDistMin_px = i_other.m_ariDivLinesDistMin_px;
+    m_bDivLinesCalculated = i_other.m_bDivLinesCalculated;
+    m_ariDivLinesCount = i_other.m_ariDivLinesCount;
+    m_arfDivLinesDistMinVal = i_other.m_arfDivLinesDistMinVal;
+    m_ararfDivLinesVals = i_other.m_ararfDivLinesVals;
+    m_arfDivLinesValsSorted = i_other.m_arfDivLinesValsSorted;
+    m_ararfDivLines_px = i_other.m_ararfDivLines_px;
 
     m_fnt = i_other.m_fnt;
     m_iDigitsCountMax = i_other.m_iDigitsCountMax;

@@ -59,6 +59,10 @@ must be released to avoid memory leaks.
         }
     }
 
+!!! The following description need to be revised. !!!
+!!! The trace admin object already has a referene counter. !!!
+!!! RefGuard and RefAnchor is a design pattern. !!!
+
 If you don't trace class methods but just instance methods you can implement a
 reference counter to ensure that no memory leaks are left behind and that the
 trace admin object is created exactly once and freed, if no longer needed.

@@ -26,15 +26,9 @@ may result in using the software modules.
 
 #include "ZSDraw/Widgets/Drawing/ZSDrawingWidget.h"
 #include "ZSDraw/Common/ZSDrawUnits.h"
-//#include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
+#include "ZSDraw/Widgets/Drawing/ZSDrawGridLabels.h"
 #include "ZSDraw/Widgets/Drawing/ZSDrawingView.h"
-//#include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactory.h"
-//#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
-//#include "ZSSysGUI/ZSSysGUIAux.h"
-//#include "ZSSys/ZSSysAux.h"
-//#include "ZSSys/ZSSysException.h"
-//#include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
 
@@ -74,6 +68,10 @@ CWdgtDrawing::CWdgtDrawing(QWidget* i_pWdgtParent) :
 //------------------------------------------------------------------------------
     QWidget(i_pWdgtParent),
     m_pLyt(nullptr),
+    m_pWdgtGridLabelsXTop(nullptr),
+    m_pWdgtGridLabelsXBottom(nullptr),
+    m_pWdgtGridLabelsYLeft(nullptr),
+    m_pWdgtGridLabelsYRight(nullptr),
     m_pDrawingView(nullptr),
     m_pDrawingScene(nullptr),
     m_pTrcAdminObj(nullptr)
@@ -89,15 +87,28 @@ CWdgtDrawing::CWdgtDrawing(QWidget* i_pWdgtParent) :
         /* strMethod    */ "ctor",
         /* strAddInfo   */ "" );
 
-    m_pLyt = new QVBoxLayout();
-    setLayout(m_pLyt);
+    /*
+         0               1                      2
+       +---+----------------------------------+---+
+     0 | G         GridLabelXTop                G |
+       + r +----------------------------------+ r +
+       | i |                                  | i |
+       | d |                                  | d |
+       | L |                                  | L |
+       | a |                                  | a |
+     1 | b |        DrawingView               | b |
+       | e |                                  | e |
+       | l |                                  | l |
+       | Y |                                  | Y |
+       | L |                                  | R |
+       | e |                                  | i |
+       + f +----------------------------------+ g +
+     2 | t         GridLabelXBottom             h |
+       +---+----------------------------------+---+
+    */
 
-    QHBoxLayout* pLytLine1 = new QHBoxLayout();
-    m_pLyt->addLayout(pLytLine1);
-    QLabel* pLblHelloWorld = new QLabel("Hello World");
-    pLblHelloWorld->setBackgroundRole(QPalette::ToolTipBase);
-    pLytLine1->addWidget(pLblHelloWorld);
-    pLytLine1->addStretch();
+    m_pLyt = new QGridLayout();
+    setLayout(m_pLyt);
 
     // The drawing size instance created by the drawing scene accesses the
     // unit to get the screen resolution. To get the screen resolution the
@@ -110,9 +121,38 @@ CWdgtDrawing::CWdgtDrawing(QWidget* i_pWdgtParent) :
 
     m_pDrawingView = new CDrawingView(m_pDrawingScene);
     m_pDrawingView->setMouseTracking(true);
-    m_pLyt->addWidget(m_pDrawingView/*, 0, Qt::AlignCenter*/);
+    m_pLyt->addWidget(m_pDrawingView, 1, 1, 1, 1);
 
-    m_pLyt->addStretch();
+    m_pWdgtGridLabelsXTop = new CWdgtGridLabels(
+        "XTop", m_pDrawingView, EScaleDir::X, ELayoutPos::Top);
+    m_pLyt->addWidget(m_pWdgtGridLabelsXTop, 0, 0, 1, 3);
+
+    m_pWdgtGridLabelsXBottom = new CWdgtGridLabels(
+        "XBottom", m_pDrawingView, EScaleDir::X, ELayoutPos::Bottom);
+    m_pLyt->addWidget(m_pWdgtGridLabelsXBottom, 2, 0, 1, 3);
+
+    m_pWdgtGridLabelsYLeft = new CWdgtGridLabels(
+        "YLeft", m_pDrawingView, EScaleDir::Y, ELayoutPos::Left);
+    m_pLyt->addWidget(m_pWdgtGridLabelsYLeft, 0, 0, 3, 1);
+
+    m_pWdgtGridLabelsYRight = new CWdgtGridLabels(
+        "YRight", m_pDrawingView, EScaleDir::Y, ELayoutPos::Right);
+    m_pLyt->addWidget(m_pWdgtGridLabelsYRight, 0, 2, 3, 1);
+
+    m_pLyt->setRowStretch(1, 1);
+    m_pLyt->setColumnStretch(1, 1);
+    m_pLyt->setHorizontalSpacing(0);
+    m_pLyt->setVerticalSpacing(0);
+
+    onDrawingViewDrawingSizeChanged(m_pDrawingView->drawingSize());
+    onDrawingViewGridSettingsChanged(m_pDrawingView->gridSettings());
+
+    QObject::connect(
+        m_pDrawingView, &CDrawingView::drawingSizeChanged,
+        this, &CWdgtDrawing::onDrawingViewDrawingSizeChanged);
+    QObject::connect(
+        m_pDrawingView, &CDrawingView::gridSettingsChanged,
+        this, &CWdgtDrawing::onDrawingViewGridSettingsChanged);
 
 } // ctor
 
@@ -139,8 +179,53 @@ CWdgtDrawing::~CWdgtDrawing()
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
 
     m_pLyt = nullptr;
+    m_pWdgtGridLabelsXTop = nullptr;
+    m_pWdgtGridLabelsXBottom = nullptr;
+    m_pWdgtGridLabelsYLeft = nullptr;
+    m_pWdgtGridLabelsYRight = nullptr;
     m_pDrawingView = nullptr;
     m_pDrawingScene = nullptr;
     m_pTrcAdminObj = nullptr;
 
 } // dtor
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtDrawing::onDrawingViewDrawingSizeChanged(const CDrawingSize& i_size)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_size.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onDrawingViewDrawingSizeChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    QMargins marginsDrawingView = m_pDrawingView->contentsMargins();
+    int cxMarginHor = marginsDrawingView.left() + marginsDrawingView.right();
+    int cyMarginVer = marginsDrawingView.top() + marginsDrawingView.bottom();
+    m_pDrawingView->setMaximumWidth(i_size.imageWidthInPixels() + cxMarginHor);
+    m_pDrawingView->setMaximumHeight(i_size.imageHeightInPixels() + cyMarginVer);
+}
+
+//------------------------------------------------------------------------------
+void CWdgtDrawing::onDrawingViewGridSettingsChanged(const CDrawGridSettings& i_settings)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_settings.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onDrawingViewGridSettingsChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+}

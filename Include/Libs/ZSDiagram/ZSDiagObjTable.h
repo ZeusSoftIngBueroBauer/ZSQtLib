@@ -95,9 +95,9 @@ public: // type definitions and constants
 public: // ctors and dtor
     CDiagObjTable(
         const QString& i_strObjName,
-        int            i_iRowCountMax,
-        int            i_iClmCountMax,
-        ELayoutPos     i_layoutPos );
+        int i_iRowCountMax,
+        int i_iClmCountMax,
+        ZS::System::ELayoutPos i_layoutPos );
     virtual ~CDiagObjTable();
 public: // instance methods
     void showGridLines( const ZS::System::CEnumOrientation& i_orientation = ZS::System::CEnumOrientation() );

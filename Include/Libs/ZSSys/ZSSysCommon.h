@@ -529,6 +529,28 @@ typedef CEnum<EOrientation> CEnumOrientation;
 namespace ZS {
 namespace System {
 //==============================================================================
+/*! Layout positions
+*/
+enum class ELayoutPos {
+//==============================================================================
+    Top    = 0,
+    Bottom = 1,
+    Left   = 2,
+    Right  = 3,
+    Center = 4,
+};
+} } // ZS::System
+
+template class ZSSYSDLL_API CEnum<ZS::System::ELayoutPos>;
+namespace ZS {
+namespace System {
+typedef CEnum<ELayoutPos> CEnumLayoutPos;
+} } // ZS::System
+
+
+namespace ZS {
+namespace System {
+//==============================================================================
 /*! Scale orientations.
 
     @see ZS::System::SEnumEntry

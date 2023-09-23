@@ -1359,7 +1359,7 @@ void CPixmapDiagram::updateLayout()
             {
                 switch( pDiagObj->getLayoutPos() )
                 {
-                    case ELayoutPosTop:
+                    case ELayoutPos::Top:
                     {
                         iDiagObjExtent   = pDiagObj->sizeHint().height();
                         *piDiagObjOffset = cyPartTopHeight;
@@ -1367,7 +1367,7 @@ void CPixmapDiagram::updateLayout()
                         cyPartTopHeight += iDiagObjExtent;
                         break;
                     }
-                    case ELayoutPosBottom:
+                    case ELayoutPos::Bottom:
                     {
                         iDiagObjExtent      = pDiagObj->sizeHint().height();
                         *piDiagObjOffset    = cyPartBottomHeight;
@@ -1375,7 +1375,7 @@ void CPixmapDiagram::updateLayout()
                         cyPartBottomHeight += iDiagObjExtent;
                         break;
                     }
-                    case ELayoutPosLeft:
+                    case ELayoutPos::Left:
                     {
                         iDiagObjExtent   = pDiagObj->sizeHint().width();
                         *piDiagObjOffset = cxPartLeftWidth;
@@ -1383,7 +1383,7 @@ void CPixmapDiagram::updateLayout()
                         cxPartLeftWidth += iDiagObjExtent;
                         break;
                     }
-                    case ELayoutPosRight:
+                    case ELayoutPos::Right:
                     {
                         iDiagObjExtent    = pDiagObj->sizeHint().width();
                         *piDiagObjOffset  = cxPartRightWidth;
@@ -1391,7 +1391,7 @@ void CPixmapDiagram::updateLayout()
                         cxPartRightWidth += iDiagObjExtent;
                         break;
                     }
-                    case ELayoutPosCenter:
+                    case ELayoutPos::Center:
                     {
                         *piDiagObjOffset = 0;
                         *piDiagObjExtent = 0;
@@ -1591,7 +1591,7 @@ void CPixmapDiagram::updateLayout()
     {
         switch( pDiagObj->getLayoutPos() )
         {
-            case ELayoutPosTop:
+            case ELayoutPos::Top:
             {
                 rectDiagObjContent.setWidth( m_rectPartTop.width() );
                 rectDiagObjContent.setHeight( *piDiagObjExtent );
@@ -1604,7 +1604,7 @@ void CPixmapDiagram::updateLayout()
                 }
                 break;
             }
-            case ELayoutPosBottom:
+            case ELayoutPos::Bottom:
             {
                 rectDiagObjContent.setWidth( m_rectPartBottom.width() );
                 rectDiagObjContent.setHeight( *piDiagObjExtent );
@@ -1617,7 +1617,7 @@ void CPixmapDiagram::updateLayout()
                 }
                 break;
             }
-            case ELayoutPosLeft:
+            case ELayoutPos::Left:
             {
                 rectDiagObjContent.setWidth( *piDiagObjExtent );
                 rectDiagObjContent.setHeight( m_rectPartLeft.height() );
@@ -1630,7 +1630,7 @@ void CPixmapDiagram::updateLayout()
                 }
                 break;
             }
-            case ELayoutPosRight:
+            case ELayoutPos::Right:
             {
                 rectDiagObjContent.setWidth( *piDiagObjExtent );
                 rectDiagObjContent.setHeight( m_rectPartRight.height() );
@@ -1643,7 +1643,7 @@ void CPixmapDiagram::updateLayout()
                 }
                 break;
             }
-            case ELayoutPosCenter:
+            case ELayoutPos::Center:
             {
                 if( pDiagObj->geometry() != m_rectPartCenter )
                 {

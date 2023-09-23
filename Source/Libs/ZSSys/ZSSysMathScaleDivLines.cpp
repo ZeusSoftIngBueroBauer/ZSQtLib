@@ -529,6 +529,43 @@ CScaleDivLines::CScaleDivLines(
 } // ctor
 
 //------------------------------------------------------------------------------
+/*! @brief Assignment operator.
+
+    @param i_other [in]
+        Reference to instance whose current internal data should be taken over.
+*/
+CScaleDivLines::CScaleDivLines(const QString& i_strObjName, const CScaleDivLines& i_other) :
+//------------------------------------------------------------------------------
+    m_strNameSpace(i_other.m_strNameSpace),
+    m_strClassName(i_other.m_strClassName),
+    m_strObjName(i_strObjName),
+    m_scaleDir(i_other.m_scaleDir),
+    m_spacing(i_other.m_spacing),
+    m_fScaleMin(i_other.m_fScaleMin),
+    m_fScaleMax(i_other.m_fScaleMax),
+    m_fScaleRes(i_other.m_fScaleRes),
+    m_fMin_px(i_other.m_fMin_px),
+    m_fMax_px(i_other.m_fMax_px),
+    m_ariDivLinesDistMin_px(i_other.m_ariDivLinesDistMin_px),
+    m_bDivLinesCalculated(i_other.m_bDivLinesCalculated),
+    m_ariDivLinesCount(i_other.m_ariDivLinesCount),
+    m_arfDivLinesDistMinVal(i_other.m_arfDivLinesDistMinVal),
+    m_ararfDivLinesVals(i_other.m_ararfDivLinesVals),
+    m_arfDivLinesValsSorted(m_arfDivLinesValsSorted),
+    m_ararfDivLines_px(i_other.m_ararfDivLines_px),
+    m_pTrcAdminObj(nullptr)
+{
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
+        NameSpace(), ClassName(), objectName());
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "copy ctor",
+        /* strAddInfo   */ i_other.NameSpace() + "::" + i_other.ClassName() + "::" + i_other.objectName() );
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Destructor.
 */
 CScaleDivLines::~CScaleDivLines()
@@ -579,8 +616,8 @@ CScaleDivLines& CScaleDivLines::operator = (const CScaleDivLines& i_other)
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "=",
-        /* strAddInfo   */ i_other.NameSpace() + "::" + i_other.ClassName() + "::" + i_other.objectName() );
+        /* strMethod    */ "operator =",
+        /* strAddInfo   */ i_other.NameSpace() + "::" + i_other.ClassName() + "::" + objectName() );
 
     m_scaleDir = i_other.m_scaleDir;
     m_spacing = i_other.m_spacing;

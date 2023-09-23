@@ -529,31 +529,31 @@ void CDiagObjErrInfo::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPain
 
                         switch( m_layoutPos )
                         {
-                            case ELayoutPosTop:
+                            case ELayoutPos::Top:
                             {
                                 rectText.moveTop( m_rectContent.top() );
                                 rectText.moveLeft( m_rectContent.center().x() - cxWidth/2 );
                                 break;
                             }
-                            case ELayoutPosBottom:
+                            case ELayoutPos::Bottom:
                             {
                                 rectText.moveTop( m_rectContent.bottom() - cyHeight ); //lint !e834 .. so schwierig ist eine Subtraktion doch auch wieder nicht
                                 rectText.moveLeft( m_rectContent.center().x() - cxWidth/2 );
                                 break;
                             }
-                            case ELayoutPosLeft:
+                            case ELayoutPos::Left:
                             {
                                 rectText.moveTop( m_rectContent.center().y() - cyHeight/2 );
                                 rectText.moveLeft( m_rectContent.left() );
                                 break;
                             }
-                            case ELayoutPosRight:
+                            case ELayoutPos::Right:
                             {
                                 rectText.moveTop( m_rectContent.center().y() - cyHeight/2 );
                                 rectText.moveLeft( m_rectContent.right() - cxWidth ); //lint !e834 .. so schwierig ist eine Subtraktion doch auch wieder nicht
                                 break;
                             }
-                            case ELayoutPosCenter:
+                            case ELayoutPos::Center:
                             {
                                 rectText.moveTop( m_rectContent.center().y() - cyHeight/2 );
                                 rectText.moveLeft( m_rectContent.center().x() - cxWidth/2 );

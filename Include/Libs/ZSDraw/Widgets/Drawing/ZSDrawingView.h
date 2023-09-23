@@ -27,16 +27,14 @@ may result in using the software modules.
 #ifndef ZSDraw_DrawingView_h
 #define ZSDraw_DrawingView_h
 
-#include <QtCore/qglobal.h>
+#include "ZSDraw/Common/ZSDrawGridSettings.h"
+#include "ZSDraw/Common/ZSDrawingSize.h"
 
 #if QT_VERSION < 0x050000
 #include <QtGui/qgraphicsview.h>
 #else
 #include <QtWidgets/qgraphicsview.h>
 #endif
-
-#include "ZSDraw/Common/ZSDrawingSize.h"
-#include "ZSDraw/Drawing/ZSDrawGridSettings.h"
 
 namespace ZS
 {
@@ -67,18 +65,14 @@ signals:
     void gridSettingsChanged( const ZS::Draw::CDrawGridSettings& i_settings );
     void mousePosChanged( const QPointF& i_ptMousePos );
     void contentAreaChanged();
-    //void viewportMarginsChanged( const QMargins& i_margins );
 public: // instance methods
     CDrawingScene* drawingScene() { return m_pDrawingScene; }
 public: // instance methods (drawing area)
     void setDrawingSize( const CDrawingSize& i_size );
-    CDrawingSize drawingSize() const;
+    const CDrawingSize& drawingSize() const;
 public: // instance methods (grid lines with labels)
     void setGridSettings( const CDrawGridSettings& i_settings );
-    CDrawGridSettings gridSettings() const;
-public: // instance methods (drawing area)
-    //void setViewportMargins( int i_iLeft, int i_iTop, int i_iRight, int i_iBottom );
-    //void setViewportMargins( const QMargins& i_margins );
+    const CDrawGridSettings& gridSettings() const;
 public: // overridables of base class QWidget
     virtual void mousePressEvent( QMouseEvent* i_pEv ) override;
     virtual void mouseMoveEvent( QMouseEvent* i_pEv ) override;

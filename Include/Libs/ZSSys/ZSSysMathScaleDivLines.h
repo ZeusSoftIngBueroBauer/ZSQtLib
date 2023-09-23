@@ -100,6 +100,8 @@ public: // ctors and dtor
     CScaleDivLines(
         const QString& i_strNameSpace, const QString& i_strClassName,
         const QString& i_strObjName, EScaleDir i_scaleDir);
+    CScaleDivLines(const QString& i_strObjName, const CScaleDivLines& i_other);
+    CScaleDivLines(const CScaleDivLines& i_other) = delete;
     ~CScaleDivLines();
 public: // operators
     CScaleDivLines& operator = (const CScaleDivLines& i_other);

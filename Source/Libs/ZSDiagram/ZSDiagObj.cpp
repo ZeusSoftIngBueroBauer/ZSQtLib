@@ -205,9 +205,9 @@ CDiagObj::CDiagObj(
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strMthInArgs = i_strObjName;
-        strMthInArgs += ", Trace: " + QString(i_pDiagTrace == nullptr ? "nullptr" : i_pDiagTrace->objectName());
-        strMthInArgs += ", LayoutPos: " + layoutPos2Str(i_layoutPos);
+        strMthInArgs = i_strObjName +
+        ", Trace: " + QString(i_pDiagTrace == nullptr ? "nullptr" : i_pDiagTrace->objectName()) +
+        ", LayoutPos: " + CEnumLayoutPos(i_layoutPos).toString();
     }
 
     CMethodTracer mthTracer(
@@ -271,10 +271,10 @@ CDiagObj::CDiagObj(
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strMthInArgs = i_strObjName;
-        strMthInArgs += ", ScaleX: " + QString(i_pDiagScaleX == nullptr ? "nullptr" : i_pDiagScaleX->objectName());
-        strMthInArgs += ", ScaleY: " + QString(i_pDiagScaleY == nullptr ? "nullptr" : i_pDiagScaleY->objectName());
-        strMthInArgs += ", LayoutPos: " + layoutPos2Str(i_layoutPos);
+        strMthInArgs = i_strObjName +
+            ", ScaleX: " + QString(i_pDiagScaleX == nullptr ? "nullptr" : i_pDiagScaleX->objectName()) +
+            ", ScaleY: " + QString(i_pDiagScaleY == nullptr ? "nullptr" : i_pDiagScaleY->objectName()) +
+            ", LayoutPos: " + CEnumLayoutPos(i_layoutPos).toString();
     }
 
     CMethodTracer mthTracer(
@@ -565,7 +565,7 @@ void CDiagObj::show( bool i_bInformDiagram )
         // On invalidating a process depth all "higher" update functions also need to
         // be processed by the diagram (but not necessarily by all diagram objects).
         // The diagram may need to change the position and sizes of the objects.
-        if( m_layoutPos == ELayoutPosCenter || m_layoutPos == ELayoutPosUndefined )
+        if( m_layoutPos == ELayoutPos::Center)
         {
             invalidate(EUpdateDataPixmapWidget,i_bInformDiagram);
         }
@@ -604,7 +604,7 @@ void CDiagObj::hide( bool i_bInformDiagram )
         // On invalidating a process depth all "higher" update functions also need to
         // be processed by the diagram (but not necessarily by all diagram objects).
         // The diagram may need to change the position and sizes of the objects.
-        if( m_layoutPos == ELayoutPosCenter || m_layoutPos == ELayoutPosUndefined )
+        if( m_layoutPos == ELayoutPos::Center)
         {
             invalidate(EUpdateDataPixmapWidget,i_bInformDiagram);
         }
@@ -985,17 +985,17 @@ QSize CDiagObj::sizeHint()
 
     switch( m_layoutPos )
     {
-        case ELayoutPosTop:
-        case ELayoutPosBottom:
+        case ELayoutPos::Top:
+        case ELayoutPos::Bottom:
         {
             break;
         }
-        case ELayoutPosLeft:
-        case ELayoutPosRight:
+        case ELayoutPos::Left:
+        case ELayoutPos::Right:
         {
             break;
         }
-        case ELayoutPosCenter:
+        case ELayoutPos::Center:
         default:
         {
             break;

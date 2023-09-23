@@ -583,6 +583,25 @@ template<> const QVector<SEnumEntry> CEnum<EOrientation>::s_arEnumEntries =
 
 
 /*==============================================================================
+Enum ELayoutPos
+==============================================================================*/
+
+template<> QMutex CEnum<ELayoutPos>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<ELayoutPos>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+
+//------------------------------------------------------------------------------
+template<> const QVector<SEnumEntry> CEnum<ELayoutPos>::s_arEnumEntries =
+//------------------------------------------------------------------------------
+{
+    /* 0 */ SEnumEntry( static_cast<int>(ELayoutPos::Top), "Top" ),
+    /* 1 */ SEnumEntry( static_cast<int>(ELayoutPos::Bottom), "Bottom" ),
+    /* 2 */ SEnumEntry( static_cast<int>(ELayoutPos::Left), "Left" ),
+    /* 3 */ SEnumEntry( static_cast<int>(ELayoutPos::Right), "Right" ),
+    /* 4 */ SEnumEntry( static_cast<int>(ELayoutPos::Center), "Center" )
+};
+
+
+/*==============================================================================
 Enum EScaleDir
 ==============================================================================*/
 

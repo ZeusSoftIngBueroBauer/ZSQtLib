@@ -37,6 +37,15 @@ may result in using the software modules.
 #include <QtWidgets/qgraphicsitem.h>
 #endif
 
+// The static arrays "CEnum<>::s_arEnumEntries" are defined in the cpp file.
+#ifdef _WINDOWS
+#pragma warning( push )
+#pragma warning( disable : 4661 )
+#elif defined __linux__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-result"
+#pragma GCC diagnostic pop
+#endif
 
 /*******************************************************************************
 global type definitions and constants

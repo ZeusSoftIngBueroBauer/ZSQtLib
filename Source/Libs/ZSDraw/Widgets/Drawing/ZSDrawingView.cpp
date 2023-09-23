@@ -103,8 +103,6 @@ CDrawingView::CDrawingView( CDrawingScene* i_pDrawingScene, QWidget* i_pWdgtPare
     drawingSize.setImageSize(CPhysVal(1024, Units.Length.px), CPhysVal(768, Units.Length.px));
     m_pDrawingScene->setDrawingSize(drawingSize);
 
-    //setViewportMargins(50.0, 50.0, 50.0, 50.0);
-
     setMouseTracking(true);
     setAcceptDrops(true);
 
@@ -126,8 +124,6 @@ CDrawingView::~CDrawingView()
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
-
-    //saveSettings();
 
     mthTracer.onAdminObjAboutToBeReleased();
 
@@ -166,7 +162,7 @@ void CDrawingView::setDrawingSize( const CDrawingSize& i_size )
 }
 
 //------------------------------------------------------------------------------
-CDrawingSize CDrawingView::drawingSize() const
+const CDrawingSize& CDrawingView::drawingSize() const
 //------------------------------------------------------------------------------
 {
     return m_pDrawingScene->drawingSize();
@@ -194,66 +190,11 @@ void CDrawingView::setGridSettings( const CDrawGridSettings& i_settings )
 }
 
 //------------------------------------------------------------------------------
-CDrawGridSettings CDrawingView::gridSettings() const
+const CDrawGridSettings& CDrawingView::gridSettings() const
 //------------------------------------------------------------------------------
 {
     return m_pDrawingScene->gridSettings();
 }
-
-/*==============================================================================
-public: // instance methods (drawing area)
-==============================================================================*/
-
-////------------------------------------------------------------------------------
-//void CDrawingView::setViewportMargins(int i_iLeft, int i_iTop, int i_iRight, int i_iBottom)
-////------------------------------------------------------------------------------
-//{
-//    QString strMthInArgs;
-//    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-//        strMthInArgs  = "Left: "+ QString::number(i_iLeft);
-//        strMthInArgs += ", Top: "+ QString::number(i_iTop);
-//        strMthInArgs += ", Right: "+ QString::number(i_iRight);
-//        strMthInArgs += ", Bottom: "+ QString::number(i_iBottom);
-//    }
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObj,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strMethod    */ "setViewportMargins",
-//        /* strAddInfo   */ strMthInArgs );
-//
-//    QMargins margins(i_iLeft, i_iTop, i_iRight, i_iBottom);
-//
-//    if( margins != viewportMargins() )
-//    {
-//        QGraphicsView::setViewportMargins(margins);
-//
-//        // QGraphicsView has no signal "viewportMarginsChanged".
-//        //emit_viewportMarginsChanged(viewportMargins());
-//    }
-//} // setViewportMargins
-
-////------------------------------------------------------------------------------
-//void CDrawingView::setViewportMargins(const QMargins& i_margins)
-////------------------------------------------------------------------------------
-//{
-//    QString strMthInArgs;
-//    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-//        strMthInArgs = qMargins2Str(i_margins);
-//    }
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObj,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strMethod    */ "setViewportMargins",
-//        /* strAddInfo   */ strMthInArgs );
-//
-//    if( i_margins != viewportMargins() )
-//    {
-//        QGraphicsView::setViewportMargins(i_margins);
-//
-//        // QGraphicsView has no signal "viewportMarginsChanged".
-//        //emit_viewportMarginsChanged(viewportMargins());
-//    }
-//} // setViewportMargins
 
 /*==============================================================================
 protected slots:
@@ -429,26 +370,8 @@ void CDrawingView::paintEvent( QPaintEvent* i_pEv )
         /* strMethod    */ "paintEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    QRect rect = viewport()->rect();
-
-    QColor colBackground = viewport()->palette().color(QPalette::Window);
-
-    QPainter painter;
-    painter.begin(viewport());
-    painter.setBrush(colBackground);
-    painter.setPen(Qt::NoPen);
-    painter.drawRect(rect);
-
-    CDrawGridSettings gridSettings = m_pDrawingScene->gridSettings();
-
-    if (gridSettings.areLabelsVisible()) {
-        paintGridLabels(&painter);
-    }
-    painter.end();
-
     QGraphicsView::paintEvent(i_pEv);
-
-} // paintEvent
+}
 
 /*==============================================================================
 protected: // overridables of base class QGraphicsView
@@ -517,153 +440,6 @@ void CDrawingView::adjustCursor(QMouseEvent* i_pEv)
         }
     }
 }
-
-//------------------------------------------------------------------------------
-void CDrawingView::paintGridLabels(QPainter* i_pPainter)
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjPaintEvent,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "paintGridLabels",
-        /* strAddInfo   */ "" );
-
-    i_pPainter->save();
-
-    QRectF rectScene = mapFromScene(sceneRect()).boundingRect();
-
-    CDrawingSize drawingSize = m_pDrawingScene->drawingSize();
-    CDrawGridSettings gridSettings = m_pDrawingScene->gridSettings();
-
-    const GUI::Math::CScaleDivLinesMetrics& divLinesMetricsX = m_pDrawingScene->divLinesMetricsX();
-    const GUI::Math::CScaleDivLinesMetrics& divLinesMetricsY = m_pDrawingScene->divLinesMetricsY();
-
-    EDivLineLayer eLayer = EDivLineLayer::Main;
-
-    // Lines from drawing scene to labels
-    // ----------------------------------
-
-    QPen pen(gridSettings.linesColor());
-    pen.setStyle(lineStyle2QtPenStyle(gridSettings.linesStyle().enumerator()));
-    pen.setWidth(gridSettings.linesWidth());
-    i_pPainter->setPen(pen);
-
-    // X Axis
-    for (int idxDivLine = 0; idxDivLine < divLinesMetricsX.getDivLinesCount(EDivLineLayer::Main); ++idxDivLine ) {
-        int x = rectScene.left() + divLinesMetricsX.getDivLineInPix(EDivLineLayer::Main, idxDivLine);
-        if (drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels) {
-            i_pPainter->drawLine(x, rectScene.top(), x, rectScene.top() - 5);
-        }
-        else {
-            i_pPainter->drawLine(x, rectScene.bottom(), x, rectScene.bottom() + 5);
-        }
-    }
-
-    // Y Axis
-    for (int idxDivLine = 0; idxDivLine < divLinesMetricsY.getDivLinesCount(EDivLineLayer::Main); ++idxDivLine ) {
-        int y = rectScene.top() + divLinesMetricsY.getDivLineInPix(EDivLineLayer::Main, idxDivLine);
-        i_pPainter->drawLine(rectScene.left(), y, rectScene.left() - 5, y);
-    }
-
-    // Labels and unit string
-    // ----------------------
-
-    i_pPainter->setPen(gridSettings.labelsTextColor());
-    i_pPainter->setFont(gridSettings.labelsFont());
-
-    QFontMetrics fntmtr(gridSettings.labelsFont());
-    QSize sizeUnitString;
-    QString strUnit;
-    if (drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels) {
-        strUnit = "Px";
-    }
-    else {
-        strUnit = drawingSize.metricUnit().symbol();
-    }
-    sizeUnitString = fntmtr.boundingRect(strUnit).size();
-    sizeUnitString.setHeight(sizeUnitString.height() + 2);
-    sizeUnitString.setWidth(sizeUnitString.width() + 2);
-
-    QRect rectDivLineLabelsPhysUnit = QRect(
-        0, 0, sizeUnitString.width(), sizeUnitString.height());
-
-    // X Axis
-    QRect rectXScaleMax = divLinesMetricsX.getScaleMaxValBoundingRect();
-    rectXScaleMax.moveLeft(rectScene.left() + rectXScaleMax.left());
-    if (drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels) {
-        rectXScaleMax.moveTop(rectScene.top() - rectXScaleMax.height() - 5);
-    }
-    else {
-        rectXScaleMax.moveTop(rectScene.bottom() + 5);
-    }
-    QPoint ptCenterXScaleMax = rectXScaleMax.center();
-    rectXScaleMax.setWidth(sizeUnitString.width());
-    rectXScaleMax.setHeight(sizeUnitString.height());
-    rectXScaleMax.moveCenter(ptCenterXScaleMax);
-    //i_pPainter->drawRect(rectXScaleMax);
-    i_pPainter->drawText(rectXScaleMax, Qt::AlignVCenter|Qt::AlignHCenter, strUnit);
-
-    for (int idxDivLine = 0; idxDivLine < divLinesMetricsX.getDivLinesCount(eLayer); idxDivLine++)
-    {
-        if (divLinesMetricsX.isDivLineLabelVisible(eLayer, idxDivLine))
-        {
-            QString strDivLineLabel;
-            if (drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels) {
-                int x = divLinesMetricsX.getDivLineInPix(EDivLineLayer::Main, idxDivLine);
-                strDivLineLabel = QString::number(x);
-            }
-            else {
-                strDivLineLabel = divLinesMetricsX.getDivLineLabelText(eLayer, idxDivLine);
-            }
-            QRect rectDivLineLabel = divLinesMetricsX.getDivLineLabelBoundingRect(eLayer, idxDivLine);
-            QRect rect = rectDivLineLabel;
-            rect.moveLeft(rectScene.left() + rectDivLineLabel.left());
-            if (drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels) {
-                rect.moveTop(rectScene.top() - rectDivLineLabel.height() - 5);
-            }
-            else {
-                rect.moveTop(rectScene.bottom() + 5);
-            }
-            if (!rect.intersects(rectXScaleMax)) {
-                i_pPainter->drawText(rect, Qt::AlignVCenter|Qt::AlignHCenter, strDivLineLabel);
-            }
-        }
-    }
-
-    // Y Axis
-    QRect rectYScaleMax = divLinesMetricsY.getScaleMaxValBoundingRect();
-    rectYScaleMax.setWidth(sizeUnitString.width());
-    rectYScaleMax.setHeight(sizeUnitString.height());
-    rectYScaleMax.moveRight(rectScene.left() - 7);
-    rectYScaleMax.moveTop(rectScene.top() + rectYScaleMax.top());
-    //i_pPainter->drawRect(rectYScaleMax);
-    i_pPainter->drawText(rectYScaleMax, Qt::AlignVCenter|Qt::AlignRight, strUnit);
-
-    for (int idxDivLine = 0; idxDivLine < divLinesMetricsY.getDivLinesCount(eLayer); idxDivLine++)
-    {
-        if (divLinesMetricsY.isDivLineLabelVisible(eLayer, idxDivLine))
-        {
-            QString strDivLineLabel;
-            if (drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels) {
-                int y = divLinesMetricsY.getDivLineInPix(EDivLineLayer::Main, idxDivLine);
-                strDivLineLabel = QString::number(y);
-            }
-            else {
-                strDivLineLabel = divLinesMetricsY.getDivLineLabelText(eLayer, idxDivLine);
-            }
-            QRect rectDivLineLabel = divLinesMetricsY.getDivLineLabelBoundingRect(eLayer, idxDivLine);
-            QRect rect = rectDivLineLabel;
-            rect.moveLeft(rectScene.left() - rectDivLineLabel.width() - 7);
-            rect.moveTop(rectScene.top() + rectDivLineLabel.top());
-            if (!rect.intersects(rectYScaleMax)) {
-                i_pPainter->drawText(rect, Qt::AlignVCenter|Qt::AlignRight, strDivLineLabel);
-            }
-        }
-    }
-
-    i_pPainter->restore();
-
-} // paintGridLabels
 
 /*==============================================================================
 protected slots:

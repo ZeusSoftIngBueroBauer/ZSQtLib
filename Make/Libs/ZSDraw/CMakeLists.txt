@@ -35,6 +35,7 @@ list(APPEND _HeadersCommon
     ${_HeadersPath}/${PROJECT_NAME}/Common/ZSDrawAux.h
     ${_HeadersPath}/${PROJECT_NAME}/Common/ZSDrawCommon.h
     ${_HeadersPath}/${PROJECT_NAME}/Common/ZSDrawDllMain.h
+    ${_HeadersPath}/${PROJECT_NAME}/Common/ZSDrawGridSettings.h
     ${_HeadersPath}/${PROJECT_NAME}/Common/ZSDrawingSize.h
     ${_HeadersPath}/${PROJECT_NAME}/Common/ZSDrawPhysValLine.h
     ${_HeadersPath}/${PROJECT_NAME}/Common/ZSDrawPhysValPoint.h
@@ -45,7 +46,6 @@ list(APPEND _HeadersCommon
 )
 
 list(APPEND _HeadersDrawing
-    ${_HeadersPath}/${PROJECT_NAME}/Drawing/ZSDrawGridSettings.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/ZSDrawingScene.h
 )
 
@@ -84,6 +84,7 @@ list(APPEND _HeadersDrawingObjFactories
 
 list(APPEND _HeadersWidgetsDrawing
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/Drawing/ZSDrawDlgDrawingViewSetup.h
+    ${_HeadersPath}/${PROJECT_NAME}/Widgets/Drawing/ZSDrawGridLabels.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/Drawing/ZSDrawingView.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/Drawing/ZSDrawingViewPropertiesWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/Drawing/ZSDrawingWidget.h
@@ -138,6 +139,7 @@ list(APPEND _SourcesCommon
     ${_SourcesPath}/${PROJECT_NAME}/Common/ZSDrawAux.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Common/ZSDrawCommon.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Common/ZSDrawDllMain.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Common/ZSDrawGridSettings.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Common/ZSDrawingSize.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Common/ZSDrawPhysValLine.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Common/ZSDrawPhysValPoint.cpp
@@ -180,12 +182,12 @@ list(APPEND _SourcesDrawingObjFactories
 )
 
 list(APPEND _SourcesDrawing
-    ${_SourcesPath}/${PROJECT_NAME}/Drawing/ZSDrawGridSettings.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/ZSDrawingScene.cpp
 )
 
 list(APPEND _SourcesWidgetsDrawing
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/Drawing/ZSDrawDlgDrawingViewSetup.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Widgets/Drawing/ZSDrawGridLabels.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/Drawing/ZSDrawingView.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/Drawing/ZSDrawingViewPropertiesWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/Drawing/ZSDrawingWidget.cpp
