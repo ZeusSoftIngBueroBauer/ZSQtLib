@@ -207,7 +207,9 @@ CWdgtGraphObjPropertiesLabels::CWdgtGraphObjPropertiesLabels(
         m_pChkNameLabelAnchorLineVisible, &QCheckBox::stateChanged,
         this, &CWdgtGraphObjPropertiesLabels::onChkNameLabelAnchorLineVisibleStateChanged);
 
-    m_pWdgtLabels->hide();
+    if (!s_bWdgtLabelsVisible) {
+        m_pWdgtLabels->hide();
+    }
 
 } // ctor
 
@@ -326,10 +328,12 @@ void CWdgtGraphObjPropertiesLabels::onBtnCollapseClicked(bool /*i_bChecked*/)
     if (m_pWdgtLabels->isHidden()) {
         m_pBtnCollapse->setIcon(m_pxmBtnUp);
         m_pWdgtLabels->show();
+        s_bWdgtLabelsVisible = true;
     }
     else {
         m_pBtnCollapse->setIcon(m_pxmBtnDown);
         m_pWdgtLabels->hide();
+        s_bWdgtLabelsVisible = false;
     }
 }
 

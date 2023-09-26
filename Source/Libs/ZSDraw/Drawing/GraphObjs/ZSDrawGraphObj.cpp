@@ -1092,6 +1092,27 @@ public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+void CGraphObj::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
+//------------------------------------------------------------------------------
+{
+#pragma message(__TODO__"Pure virtual")
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_drawingSize.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "CGraphObj::onDrawingSizeChanged",
+        /* strAddInfo   */ strMthInArgs );
+}
+
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
 /*! @brief Sets the draw settings like pen color, pen style, brush style etc.
            used to paint the object.
 */
@@ -1917,7 +1938,7 @@ void CGraphObj::setMinimumWidth( const CPhysVal& i_physValWidth )
     m_physValSizeMinimum.setWidth(i_physValWidth);
 
     if (m_physValSizeMinimum.width() > 0.0) {
-        CPhysValSize physValSize = getSize();
+        CPhysValSize physValSize = getSize(m_physValSizeMinimum.unit());
         if (physValSize.width() < m_physValSizeMinimum.width()) {
             physValSize.setWidth(m_physValSizeMinimum.width());
             setSize(physValSize);
@@ -1940,7 +1961,7 @@ bool CGraphObj::hasMinimumWidth() const
 }
 
 //------------------------------------------------------------------------------
-CPhysVal CGraphObj::getMinimumWidth() const
+CPhysVal CGraphObj::getMinimumWidth(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
@@ -1951,6 +1972,7 @@ CPhysVal CGraphObj::getMinimumWidth() const
     else if (m_physValSizeMinimum.width() > 0.0) {
         physValWidth = m_physValSizeMinimum.width();
     }
+    physValWidth.convertValue(i_unit);
     return physValWidth;
 }
 
@@ -1972,7 +1994,7 @@ void CGraphObj::setMinimumHeight( const CPhysVal& i_physValHeight )
     m_physValSizeMinimum.setHeight(i_physValHeight);
 
     if (m_physValSizeMinimum.height() > 0.0) {
-        CPhysValSize physValSize = getSize();
+        CPhysValSize physValSize = getSize(m_physValSizeMinimum.unit());
         if (physValSize.height() < m_physValSizeMinimum.height()) {
             physValSize.setHeight(m_physValSizeMinimum.height());
             setSize(physValSize);
@@ -1995,7 +2017,7 @@ bool CGraphObj::hasMinimumHeight() const
 }
 
 //------------------------------------------------------------------------------
-CPhysVal CGraphObj::getMinimumHeight() const
+CPhysVal CGraphObj::getMinimumHeight(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
@@ -2006,6 +2028,7 @@ CPhysVal CGraphObj::getMinimumHeight() const
     else if (m_physValSizeMinimum.height() > 0.0) {
         physValHeight = m_physValSizeMinimum.height();
     }
+    physValHeight.convertValue(i_unit);
     return physValHeight;
 }
 
@@ -2027,7 +2050,7 @@ void CGraphObj::setMinimumSize( const CPhysValSize& i_physValSize )
     m_physValSizeMinimum = i_physValSize;
 
     if (m_physValSizeMinimum.isValid()) {
-        CPhysValSize physValSize = getSize();
+        CPhysValSize physValSize = getSize(m_physValSizeMinimum.unit());
         if (physValSize.width() < m_physValSizeMinimum.width() || physValSize.height() < m_physValSizeMinimum.height()) {
             if (physValSize.width() < m_physValSizeMinimum.width()) {
                 physValSize.setWidth( m_physValSizeMinimum.width() );
@@ -2055,7 +2078,7 @@ bool CGraphObj::hasMinimumSize() const
 }
 
 //------------------------------------------------------------------------------
-CPhysValSize CGraphObj::getMinimumSize() const
+CPhysValSize CGraphObj::getMinimumSize(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     CPhysValSize physValSize;
@@ -2065,6 +2088,7 @@ CPhysValSize CGraphObj::getMinimumSize() const
     else if (m_physValSizeMinimum.isValid()) {
         physValSize = m_physValSizeMinimum;
     }
+    physValSize.convert(i_unit);
     return physValSize;
 }
 
@@ -2086,7 +2110,7 @@ void CGraphObj::setMaximumWidth( const CPhysVal& i_physValWidth )
     m_physValSizeMaximum.setWidth(i_physValWidth);
 
     if (m_physValSizeMaximum.width() > 0.0) {
-        CPhysValSize physValSize = getSize();
+        CPhysValSize physValSize = getSize(m_physValSizeMaximum.unit());
         if (physValSize.width() > m_physValSizeMaximum.width()) {
             physValSize.setWidth( m_physValSizeMaximum.width() );
             setSize(physValSize);
@@ -2109,7 +2133,7 @@ bool CGraphObj::hasMaximumWidth() const
 }
 
 //------------------------------------------------------------------------------
-CPhysVal CGraphObj::getMaximumWidth() const
+CPhysVal CGraphObj::getMaximumWidth(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
@@ -2120,6 +2144,7 @@ CPhysVal CGraphObj::getMaximumWidth() const
     else if (m_physValSizeMaximum.width() > 0.0) {
         physValWidth = m_physValSizeMaximum.width();
     }
+    physValWidth.convertValue(i_unit);
     return physValWidth;
 }
 
@@ -2141,7 +2166,7 @@ void CGraphObj::setMaximumHeight( const CPhysVal& i_physValHeight )
     m_physValSizeMaximum.setHeight(i_physValHeight);
 
     if (m_physValSizeMaximum.height() > 0.0) {
-        CPhysValSize physValSize = getSize();
+        CPhysValSize physValSize = getSize(m_physValSizeMaximum.unit());
         if (physValSize.height() > m_physValSizeMaximum.height()) {
             physValSize.setHeight( m_physValSizeMaximum.height() );
             setSize(physValSize);
@@ -2164,7 +2189,7 @@ bool CGraphObj::hasMaximumHeight() const
 }
 
 //------------------------------------------------------------------------------
-CPhysVal CGraphObj::getMaximumHeight() const
+CPhysVal CGraphObj::getMaximumHeight(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
@@ -2175,6 +2200,7 @@ CPhysVal CGraphObj::getMaximumHeight() const
     else if (m_physValSizeMaximum.height() > 0.0) {
         physValHeight = m_physValSizeMaximum.height();
     }
+    physValHeight.convertValue(i_unit);
     return physValHeight;
 }
 
@@ -2196,7 +2222,7 @@ void CGraphObj::setMaximumSize( const CPhysValSize& i_physValSize )
     m_physValSizeMaximum = i_physValSize;
 
     if (m_physValSizeMaximum.isValid()) {
-        CPhysValSize physValSize = getSize();
+        CPhysValSize physValSize = getSize(m_physValSizeMaximum.unit());
         if (physValSize.width() > m_physValSizeMaximum.width()
          || physValSize.height() > m_physValSizeMaximum.height()) {
             if (physValSize.width() > m_physValSizeMaximum.width()) {
@@ -2225,7 +2251,7 @@ bool CGraphObj::hasMaximumSize() const
 }
 
 //------------------------------------------------------------------------------
-CPhysValSize CGraphObj::getMaximumSize() const
+CPhysValSize CGraphObj::getMaximumSize(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     CPhysValSize physValSize;
@@ -2235,6 +2261,7 @@ CPhysValSize CGraphObj::getMaximumSize() const
     else if (m_physValSizeMaximum.isValid()) {
         physValSize = m_physValSizeMaximum;
     }
+    physValSize.convert(i_unit);
     return physValSize;
 }
 
@@ -2256,7 +2283,7 @@ void CGraphObj::setFixedWidth( const CPhysVal& i_physValWidth )
     m_physValSizeFixed.setWidth(i_physValWidth);
 
     if (m_physValSizeFixed.width() > 0.0) {
-        CPhysValSize physValSize = getSize();
+        CPhysValSize physValSize = getSize(m_physValSizeFixed.unit());
         if (physValSize.width() != m_physValSizeFixed.width()) {
             physValSize.setWidth( m_physValSizeFixed.width() );
             setSize(physValSize);
@@ -2280,7 +2307,7 @@ bool CGraphObj::hasFixedWidth() const
 }
 
 //------------------------------------------------------------------------------
-CPhysVal CGraphObj::getFixedWidth() const
+CPhysVal CGraphObj::getFixedWidth(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
@@ -2292,6 +2319,7 @@ CPhysVal CGraphObj::getFixedWidth() const
           && (m_physValSizeMinimum.width() == m_physValSizeMaximum.width())) {
         physValWidth = m_physValSizeMinimum.width();
     }
+    physValWidth.convertValue(i_unit);
     return physValWidth;
 }
 
@@ -2313,7 +2341,7 @@ void CGraphObj::setFixedHeight( const CPhysVal& i_physValHeight )
     m_physValSizeFixed.setHeight(i_physValHeight);
 
     if (m_physValSizeFixed.height() > 0.0) {
-        CPhysValSize physValSize = getSize();
+        CPhysValSize physValSize = getSize(m_physValSizeFixed.unit());
         if (physValSize.height() != m_physValSizeFixed.height()) {
             physValSize.setHeight( m_physValSizeFixed.height() );
             setSize(physValSize);
@@ -2337,7 +2365,7 @@ bool CGraphObj::hasFixedHeight() const
 }
 
 //------------------------------------------------------------------------------
-CPhysVal CGraphObj::getFixedHeight() const
+CPhysVal CGraphObj::getFixedHeight(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
@@ -2349,6 +2377,7 @@ CPhysVal CGraphObj::getFixedHeight() const
           && (m_physValSizeMinimum.height() == m_physValSizeMaximum.height())) {
         physValHeight = m_physValSizeMinimum.height();
     }
+    physValHeight.convertValue(i_unit);
     return physValHeight;
 }
 
@@ -2370,7 +2399,7 @@ void CGraphObj::setFixedSize( const CPhysValSize& i_physValSize )
     m_physValSizeFixed = i_physValSize;
 
     if (m_physValSizeFixed.isValid()) {
-        CPhysValSize physValSize = getSize();
+        CPhysValSize physValSize = getSize(m_physValSizeFixed.unit());
         if (physValSize.width() != m_physValSizeFixed.width()
          || physValSize.height() != m_physValSizeFixed.height()) {
             if (physValSize.width() != m_physValSizeFixed.width()) {
@@ -2402,7 +2431,7 @@ bool CGraphObj::hasFixedSize() const
 }
 
 //------------------------------------------------------------------------------
-CPhysValSize CGraphObj::getFixedSize() const
+CPhysValSize CGraphObj::getFixedSize(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     CPhysValSize physValSize;
@@ -2415,6 +2444,7 @@ CPhysValSize CGraphObj::getFixedSize() const
             physValSize = m_physValSizeMinimum;
         }
     }
+    physValSize.convert(i_unit);
     return physValSize;
 }
 
@@ -2656,7 +2686,7 @@ public: // overridables
 
     @return Position of the item in parent coordinates.
 */
-CPhysValPoint CGraphObj::getPos( ECoordinatesVersion i_version ) const
+CPhysValPoint CGraphObj::getPos( const CUnit& i_unit, ECoordinatesVersion i_version ) const
 //------------------------------------------------------------------------------
 {
 #pragma message(__TODO__"Pure virtual")
@@ -2677,7 +2707,7 @@ CPhysValPoint CGraphObj::getPos( ECoordinatesVersion i_version ) const
 }
 
 //------------------------------------------------------------------------------
-CPhysVal CGraphObj::getWidth( ECoordinatesVersion i_version ) const
+CPhysVal CGraphObj::getWidth( const CUnit& i_unit, ECoordinatesVersion i_version ) const
 //------------------------------------------------------------------------------
 {
 #pragma message(__TODO__"Pure virtual")
@@ -2698,7 +2728,7 @@ CPhysVal CGraphObj::getWidth( ECoordinatesVersion i_version ) const
 }
 
 //------------------------------------------------------------------------------
-CPhysVal CGraphObj::getHeight( ECoordinatesVersion i_version ) const
+CPhysVal CGraphObj::getHeight( const CUnit& i_unit, ECoordinatesVersion i_version ) const
 //------------------------------------------------------------------------------
 {
 #pragma message(__TODO__"Pure virtual")
@@ -2719,7 +2749,7 @@ CPhysVal CGraphObj::getHeight( ECoordinatesVersion i_version ) const
 }
 
 //------------------------------------------------------------------------------
-CPhysValSize CGraphObj::getSize( ECoordinatesVersion i_version ) const
+CPhysValSize CGraphObj::getSize( const CUnit& i_unit, ECoordinatesVersion i_version ) const
 //------------------------------------------------------------------------------
 {
 #pragma message(__TODO__"Pure virtual")
@@ -5040,7 +5070,7 @@ void CGraphObj::updateToolTip()
             m_strToolTip += "\nPos:\t\t" + point2Str(ptPos);
         }
 
-        m_strToolTip += "\nSize:\t\t" + getSize().toString();
+        m_strToolTip += "\nSize:\t\t" + getSize(Units.Length.px).toString();
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
         m_strToolTip += "\nRotation:\t" + QString::number(m_fRotAngleCurr_deg,'f',1) + " " + c_strSymbolDegree;
 #endif

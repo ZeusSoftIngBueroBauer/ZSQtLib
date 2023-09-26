@@ -55,14 +55,14 @@ CDrawingSize::CDrawingSize(const QString& i_strName) :
     QObject(),
     m_eDimensionUnit(EDrawingDimensionUnit::Pixels),
     m_metricUnit(Units.Length.mm),
-    m_fImageMetricRes(Units.Length.physValResPerPx(m_metricUnit).getVal()),
+    m_fImageMetricRes(Units.Length.physValResolution(m_metricUnit).getVal()),
     m_fImageMetricWidth(0.0),
     m_fImageMetricHeight(0.0),
     m_eNormedPaperSize(),
     m_eNormedPaperOrientation(),
     m_iMetricScaleFactorDividend(1),
     m_iMetricScaleFactorDivisor(1),
-    m_fImageSizeRes_px(Units.Length.physValResPerPx(Units.Length.px).getVal()),
+    m_fImageSizeRes_px(Units.Length.physValResolution(Units.Length.px).getVal()),
     m_fImageSizeWidth_px(0.0),
     m_fImageSizeHeight_px(0.0),
     m_pTrcAdminObj(nullptr)
@@ -79,45 +79,6 @@ CDrawingSize::CDrawingSize(const QString& i_strName) :
         /* strAddInfo   */ "" );
 
 } // ctor
-
-////------------------------------------------------------------------------------
-///*! Creates an instance of the class.
-//
-//    @param i_strName [in] Name of the instance.
-//    @param i_size [in] Width and height in pixels.
-//*/
-//CDrawingSize::CDrawingSize(const QString& i_strName, const QSize& i_size) :
-////------------------------------------------------------------------------------
-//    QObject(),
-//    m_eDimensionUnit(EDrawingDimensionUnit::Pixels),
-//    m_metricUnit(Units.Length.mm),
-//    m_fImageMetricRes(Units.Length.physValResPerPx(m_metricUnit).getVal()),
-//    m_fImageMetricWidth(0.0),
-//    m_fImageMetricHeight(0.0),
-//    m_eNormedPaperSize(),
-//    m_eNormedPaperOrientation(),
-//    m_iMetricScaleFactorDividend(1),
-//    m_iMetricScaleFactorDivisor(1),
-//    m_fImageSizeRes_px(Units.Length.physValResPerPx(Units.Length.px).getVal()),
-//    m_fImageSizeWidth_px(i_size.width()),
-//    m_fImageSizeHeight_px(i_size.height()),
-//    m_pTrcAdminObj(nullptr)
-//{
-//    setObjectName(i_strName);
-//
-//    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
-//        NameSpace() + "::Drawing", ClassName(), objectName());
-//
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObj,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strMethod    */ "ctor",
-//        /* strAddInfo   */ "" );
-//
-//    updateImageSizeMetrics();
-//    updatePaperFormat();
-//
-//} // ctor
 
 //------------------------------------------------------------------------------
 /*! Creates an instance of the class.
@@ -624,6 +585,75 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+CPhysValPoint CDrawingSize::convert(const CPhysValPoint& i_physValPoint) const
+//------------------------------------------------------------------------------
+{
+    CPhysValPoint physValPoint(i_physValPoint);
+    if (i_physValPoint.unit() == Units.Length.px) {
+        if (m_eDimensionUnit == EDrawingDimensionUnit::Metric) {
+            CPhysVal physValX = toPhysValXCoor(i_physValPoint.x().getVal());
+            CPhysVal physValY = toPhysValYCoor(i_physValPoint.y().getVal());
+            physValPoint.setUnit(m_metricUnit);
+            physValPoint.setX(physValX);
+            physValPoint.setY(physValY);
+        }
+    }
+    else /*if (i_physValPoint.unit() != Units.Length.px)*/ {
+        if (m_eDimensionUnit == EDrawingDimensionUnit::Pixels) {
+            double fX_px = toPixelXCoor(i_physValPoint.x());
+            double fY_px = toPixelYCoor(i_physValPoint.y());
+            physValPoint.setUnit(Units.Length.px);
+            physValPoint.setX(CPhysVal(fX_px, Units.Length.px));
+            physValPoint.setY(CPhysVal(fY_px, Units.Length.px));
+        }
+        else if (i_physValPoint.unit() != m_metricUnit) {
+            CPhysVal physValX = i_physValPoint.x();
+            CPhysVal physValY = i_physValPoint.y();
+            physValX.convertValue(m_metricUnit);
+            physValX.convertValue(m_metricUnit);
+            physValPoint.setUnit(m_metricUnit);
+            physValPoint.setX(physValX);
+            physValPoint.setY(physValY);
+        }
+    }
+    return physValPoint;
+}
+
+//------------------------------------------------------------------------------
+CPhysValSize CDrawingSize::convert(const CPhysValSize& i_physValSize) const
+//------------------------------------------------------------------------------
+{
+    CPhysValSize physValSize(i_physValSize);
+    CPhysVal physValWidth = i_physValSize.width();
+    CPhysVal physValHeight = i_physValSize.height();
+    CUnit unit(m_eDimensionUnit == EDrawingDimensionUnit::Metric ? m_metricUnit : Units.Length.px);
+    physValWidth.convertValue(unit);
+    physValHeight.convertValue(unit);
+    physValSize.setUnit(unit);
+    physValSize.setWidth(physValWidth);
+    physValSize.setHeight(physValHeight);
+    return physValSize;
+}
+
+//------------------------------------------------------------------------------
+CPhysValLine CDrawingSize::convert(const CPhysValLine& i_physValLine) const
+//------------------------------------------------------------------------------
+{
+    CPhysValPoint physValP1 = convert(i_physValLine.p1());
+    CPhysValPoint physValP2 = convert(i_physValLine.p2());
+    return CPhysValLine(physValP1, physValP2);
+}
+
+//------------------------------------------------------------------------------
+CPhysValRect CDrawingSize::convert(const CPhysValRect& i_physValRect) const
+//------------------------------------------------------------------------------
+{
+    CPhysValPoint physValTL = convert(i_physValRect.topLeft());
+    CPhysValPoint physValBR = convert(i_physValRect.bottomRight());
+    return CPhysValRect(physValTL, physValBR);
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Converts the given X coordinate in pixels into a physical value containing
            the coordinate in the unit and the resolution of the drawing scene.
 
@@ -728,6 +758,58 @@ double CDrawingSize::toPixelYCoor(const CPhysVal& i_physValYCoor) const
         fCoor_px = (fVal * m_fImageSizeHeight_px) / m_fImageMetricHeight;
     }
     return fCoor_px;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief 
+
+    @return Converted value.
+*/
+CPhysValPoint CDrawingSize::toPixelCoor(const CPhysValPoint& i_physValPoint) const
+//------------------------------------------------------------------------------
+{
+    CPhysVal physValX(toPixelXCoor(i_physValPoint.x()), Units.Length.px, m_fImageSizeRes_px);
+    CPhysVal physValY(toPixelYCoor(i_physValPoint.y()), Units.Length.px, m_fImageSizeRes_px);
+    return CPhysValPoint(physValX, physValY);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief 
+
+    @return Converted value.
+*/
+CPhysValSize CDrawingSize::toPixelCoor(const CPhysValSize& i_physValSize) const
+//------------------------------------------------------------------------------
+{
+    double fWidth_px = i_physValSize.width().getVal(Units.Length.px);
+    double fHeight_px = i_physValSize.height().getVal(Units.Length.px);
+    return CPhysValSize(fWidth_px, fHeight_px, Units.Length.px);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief 
+
+    @return Converted value.
+*/
+CPhysValLine CDrawingSize::toPixelCoor(const CPhysValLine& i_physValLine) const
+//------------------------------------------------------------------------------
+{
+    CPhysValPoint physValP1 = toPixelCoor(i_physValLine.p1());
+    CPhysValPoint physValP2 = toPixelCoor(i_physValLine.p2());
+    return CPhysValLine(physValP1, physValP2);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief 
+
+    @return Converted value.
+*/
+CPhysValRect CDrawingSize::toPixelCoor(const CPhysValRect& i_physValRect) const
+//------------------------------------------------------------------------------
+{
+    CPhysValPoint physValTL = toPixelCoor(i_physValRect.topLeft());
+    CPhysValPoint physValBR = toPixelCoor(i_physValRect.bottomRight());
+    return CPhysValRect(physValTL, physValBR);
 }
 
 /*==============================================================================

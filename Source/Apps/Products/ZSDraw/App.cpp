@@ -132,6 +132,17 @@ CApplication::CApplication(
 
     QApplication::setWindowIcon(iconApp);
 
+    setStyleSheet(
+        "QDoubleSpinBox:read-only { "
+            "color: #7070F0;"
+            "background-color: #F8F8F8; }"
+        "QSpinBox:read-only { "
+            "color: #7070F0;"
+            "background-color: #F8F8F8; }"
+        "QLineEdit:read-only { "
+            "color: #7070F0;"
+            "background-color: #F8F8F8; }");
+
     // Create error manager
     //------------------------
 

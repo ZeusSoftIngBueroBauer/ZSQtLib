@@ -357,6 +357,8 @@ void CTest::createTestGroupDrawStandardShapesLines(ZS::Test::CTestStepGroup* i_p
         /* pGrpParent      */ pGrpDrawLinesMouseEvents,
         /* szDoTestStepFct */ SLOT(doTestStepSetDrawingSize(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue(
+        CDrawingScene::c_strXmlAttrScreenResolutionPxPerMilliMeter, 1.0);
+    pTestStep->setConfigValue(
         CDrawingScene::c_strXmlAttrDimensionUnit, CEnumDrawingDimensionUnit(EDrawingDimensionUnit::Pixels).toString());
     pTestStep->setConfigValue(
         CDrawingScene::c_strXmlAttrWidth, 600);
@@ -538,6 +540,12 @@ void CTest::doTestStepSetDrawingSize( ZS::Test::CTestStep* i_pTestStep )
         /* strMethod    */ "doTestStepSetDrawingSize",
         /* strAddInfo   */ strMthInArgs );
 
+#pragma message(__TODO__"Test with different scale factors")
+
+    if (i_pTestStep->hasConfigValue(CDrawingScene::c_strXmlAttrScreenResolutionPxPerMilliMeter)) {
+        double fResPxPerMM = i_pTestStep->getConfigValue(CDrawingScene::c_strXmlAttrScreenResolutionPxPerMilliMeter).toDouble();
+        Units.Length.setResolutionInPxPerMM(fResPxPerMM);
+    }
     CDrawingSize drawingSize("Test");
     drawingSize.setDimensionUnit(
         i_pTestStep->getConfigValue(CDrawingScene::c_strXmlAttrDimensionUnit).toString());

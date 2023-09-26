@@ -28,7 +28,7 @@ may result in using the software modules.
 #define ZSDraw_DrawingSize_h
 
 #include "ZSDraw/Common/ZSDrawCommon.h"
-#include "ZSDraw/Common/ZSDrawPhysValPoint.h"
+#include "ZSDraw/Common/ZSDrawPhysValRect.h"
 #include "ZSDraw/Common/ZSDrawPhysValSize.h"
 
 class QXmlStreamReader;
@@ -91,10 +91,18 @@ public: // instance methods
     ZS::PhysVal::CPhysVal metricImageWidth() const;
     ZS::PhysVal::CPhysVal metricImageHeight() const;
 public: // instance methods
+    CPhysValPoint convert(const CPhysValPoint& i_physValPoint) const;
+    CPhysValSize convert(const CPhysValSize& i_physValSize) const;
+    CPhysValLine convert(const CPhysValLine& i_physValLine) const;
+    CPhysValRect convert(const CPhysValRect& i_physValRect) const;
     ZS::PhysVal::CPhysVal toPhysValXCoor(double i_fXCoor_px) const;
     ZS::PhysVal::CPhysVal toPhysValYCoor(double i_fYCoor_px) const;
     double toPixelXCoor(const ZS::PhysVal::CPhysVal& i_physValXCoor) const;
     double toPixelYCoor(const ZS::PhysVal::CPhysVal& i_physValYCoor) const;
+    CPhysValPoint toPixelCoor(const CPhysValPoint& i_physValPoint) const;
+    CPhysValSize toPixelCoor(const CPhysValSize& i_physValSize) const;
+    CPhysValLine toPixelCoor(const CPhysValLine& i_physValLine) const;
+    CPhysValRect toPixelCoor(const CPhysValRect& i_physValRect) const;
 protected: // instance methods
     void updateImageSizeInPixels();
     void updateImageSizeMetrics();

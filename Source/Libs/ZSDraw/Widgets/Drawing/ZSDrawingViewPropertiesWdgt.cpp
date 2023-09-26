@@ -94,6 +94,7 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     CWdgtGraphObjPropertiesAbstract(i_pDrawingView->drawingScene(), "Drawing::" + ClassName(), i_strObjName, i_pWdgtParent),
     m_pDrawingView(i_pDrawingView),
     // Caching values
+    m_drawingSize(i_strObjName),
     m_gridSettings(i_strObjName),
     // Edit Controls
     // Geometry
@@ -192,6 +193,7 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
         m_pDrawingView, &CDrawingView::gridSettingsChanged,
         this, &CWdgtDrawingViewProperties::onDrawingViewGridSettingsChanged );
 
+    m_drawingSize = m_pDrawingView->drawingSize();
     m_gridSettings = m_pDrawingView->gridSettings();
 
     int cxLblWidthClm1 = 80;
@@ -243,17 +245,11 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     // <Section> Resolution
     //-------------------------
 
-    double fXResolution_pxpi = Units.Length.pxpi();
-    double fYResolution_pxpi = Units.Length.pxpi();
-    // (1 Inch = 2.54cm = 25.4 mm)
-    double fXResolution_pxpmm = fXResolution_pxpi/25.4;
-    double fYResolution_pxpmm = fYResolution_pxpi/25.4;
+    double fResolution_pxpin = 1.0/Units.Length.physValResolution(Units.Length.in).getVal();
+    double fResolution_pxpmm = 1.0/Units.Length.physValResolution(Units.Length.mm).getVal();
 
-    QString strXPxpi  = QString::number(fXResolution_pxpi,'f',2);
-    QString strYPxpi  = QString::number(fYResolution_pxpi,'f',2);
-    QString strXPxpmm = QString::number(fXResolution_pxpmm,'f',2);
-    QString strYPxpmm = QString::number(fYResolution_pxpmm,'f',2);
-    QString strResolution;
+    QString strPxpin = QString::number(fResolution_pxpin,'f',2);
+    QString strPxpmm = QString::number(fResolution_pxpmm,'f',2);
 
     m_pLytSepLineResolution = new QHBoxLayout();
     m_pLytWdgtMetric->addLayout(m_pLytSepLineResolution);
@@ -268,25 +264,21 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pLytLineResolution = new QHBoxLayout();
     m_pLytWdgtMetric->addLayout(m_pLytLineResolution);
 
-    strResolution = strXPxpi + " * " + strYPxpi;
     m_pLblResolution_pxpi = new QLabel("Pixels/Inch:");
     m_pLblResolution_pxpi->setFixedWidth(cxLblWidthClm1);
     m_pLytLineResolution->addWidget(m_pLblResolution_pxpi);
-    m_pEdtResolution_pxpi = new QLineEdit(strResolution);
+    m_pEdtResolution_pxpi = new QLineEdit(strPxpin);
     m_pEdtResolution_pxpi->setFixedWidth(cxEdtWidthClm1);
-    m_pEdtResolution_pxpi->setEnabled(false);
-    //m_pEdtResolution_pxpi->setReadOnly(true);
+    m_pEdtResolution_pxpi->setReadOnly(true);
     m_pLytLineResolution->addWidget(m_pEdtResolution_pxpi);
     m_pLytLineResolution->addSpacing(cxClmSpacing);
 
-    strResolution = strXPxpmm + " * " + strYPxpmm;
     m_pLblResolution_pxpmm = new QLabel("Pixels/mm:");
     m_pLblResolution_pxpmm->setFixedWidth(cxLblWidthClm2);
     m_pLytLineResolution->addWidget(m_pLblResolution_pxpmm);
-    m_pEdtResolution_pxpmm = new QLineEdit(strResolution);
+    m_pEdtResolution_pxpmm = new QLineEdit(strPxpmm);
     m_pEdtResolution_pxpmm->setFixedWidth(cxEdtWidthClm2);
-    m_pEdtResolution_pxpmm->setEnabled(false);
-    //m_pEdtResolution_pxpmm->setReadOnly(true);
+    m_pEdtResolution_pxpmm->setReadOnly(true);
     m_pLytLineResolution->addWidget(m_pEdtResolution_pxpmm);
     m_pLytLineResolution->addStretch();
 
@@ -313,7 +305,7 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pLytLineImageMetricUnit->addWidget(m_pLblImageMetricUnit);
     m_pCmbImageMetricUnit = new QComboBox();
     m_pCmbImageMetricUnit->setFixedWidth(cxEdtWidthClm2);
-    m_pCmbImageMetricUnit->setEnabled(false);
+    //m_pCmbImageMetricUnit->setEnabled(false);
     m_pLytLineImageMetricUnit->addWidget(m_pCmbImageMetricUnit);
     m_pLytLineImageMetricUnit->addStretch();
     for( int idxUnit = 0; idxUnit < Units.Length.count(); ++idxUnit ) {
@@ -344,7 +336,6 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pLytLineMetricSize->addWidget(m_pLblImageMetricWidth);
     m_pEdtImageMetricWidth = new CWdgtEditPhysVal();
     m_pEdtImageMetricWidth->setFixedWidth(cxEdtWidthClm1);
-    m_pEdtImageMetricWidth->setReadOnly(true);
     m_pLytLineMetricSize->addWidget(m_pEdtImageMetricWidth);
     m_pLytLineMetricSize->addSpacing(cxClmSpacing);
     QObject::connect(
@@ -359,7 +350,6 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pLytLineMetricSize->addWidget(m_pLblImageMetricHeight);
     m_pEdtImageMetricHeight = new CWdgtEditPhysVal();
     m_pEdtImageMetricHeight->setFixedWidth(cxEdtWidthClm2);
-    m_pEdtImageMetricHeight->setReadOnly(true);
     m_pLytLineMetricSize->addWidget(m_pEdtImageMetricHeight);
     m_pLytLineMetricSize->addStretch();
     QObject::connect(
@@ -380,7 +370,7 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pLytLineImageMetricNormedPaper->addWidget(m_pLblImageMetricNormedPaperSizes);
     m_pCmbImageMetricNormedPaperSizes = new QComboBox();
     m_pCmbImageMetricNormedPaperSizes->setFixedWidth(cxEdtWidthClm1);
-    m_pCmbImageMetricNormedPaperSizes->setEnabled(false);
+    //m_pCmbImageMetricNormedPaperSizes->setEnabled(false);
     m_pLytLineImageMetricNormedPaper->addWidget(m_pCmbImageMetricNormedPaperSizes);
     m_pLytLineImageMetricNormedPaper->addSpacing(cxClmSpacing);
     for( CEnumNormedPaperSize ePaperSize = 0; ePaperSize < CEnumNormedPaperSize::count(); ++ePaperSize ) {
@@ -408,7 +398,7 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pLblImageMetricNormedPaperOrientation->setVisible(false);
     m_pCmbImageMetricNormedPaperOrientation = new QComboBox();
     m_pCmbImageMetricNormedPaperOrientation->setFixedWidth(cxEdtWidthClm2);
-    m_pCmbImageMetricNormedPaperOrientation->setEnabled(false);
+    //m_pCmbImageMetricNormedPaperOrientation->setEnabled(false);
     m_pLytLineImageMetricNormedPaper->addWidget(m_pCmbImageMetricNormedPaperOrientation);
     m_pLytLineImageMetricNormedPaper->addStretch();
     for (CEnumOrientation eOrientation = 0; eOrientation < CEnumOrientation::count(); ++eOrientation ) {
@@ -441,7 +431,7 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pLytLineImageMetricScaleFactor->addWidget(pWdgtImageMetricScaleFactor);
 
     m_pCmbImageMetricScaleFactorDividend = new QComboBox();
-    m_pCmbImageMetricScaleFactorDividend->setEnabled(false);
+    //m_pCmbImageMetricScaleFactorDividend->setEnabled(false);
     m_pCmbImageMetricScaleFactorDividend->setEditable(true);
     m_pCmbImageMetricScaleFactorDividend->setInsertPolicy(QComboBox::NoInsert);
     m_pCmbImageMetricScaleFactorDividend->setValidator(
@@ -450,7 +440,7 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pLblImageMetricScaleFactorHyphen = new QLabel(":");
     pLytWdgtImageMetricScaleFactor->addWidget(m_pLblImageMetricScaleFactorHyphen);
     m_pCmbImageMetricScaleFactorDivisor = new QComboBox();
-    m_pCmbImageMetricScaleFactorDivisor->setEnabled(false);
+    //m_pCmbImageMetricScaleFactorDivisor->setEnabled(false);
     m_pCmbImageMetricScaleFactorDivisor->setEditable(true);
     m_pCmbImageMetricScaleFactorDivisor->setInsertPolicy(QComboBox::NoInsert);
     m_pCmbImageMetricScaleFactorDivisor->setValidator(
@@ -523,7 +513,6 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pEdtImageSizeWidth_px->setMaximum(100000);
     m_pEdtImageSizeWidth_px->setValue(m_drawingSize.imageSizeInPixels().width());
     m_pEdtImageSizeWidth_px->setSuffix(" px");
-    m_pEdtImageSizeWidth_px->setReadOnly(false);
     m_pLytLineImageSize_px->addWidget(m_pEdtImageSizeWidth_px);
     m_pLytLineImageSize_px->addSpacing(cxClmSpacing);
     QObject::connect(
@@ -542,7 +531,6 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pEdtImageSizeHeight_px->setMaximum(100000);
     m_pEdtImageSizeHeight_px->setValue(m_drawingSize.imageSizeInPixels().height());
     m_pEdtImageSizeHeight_px->setSuffix(" px");
-    m_pEdtImageSizeHeight_px->setReadOnly(false);
     m_pLytLineImageSize_px->addWidget(m_pEdtImageSizeHeight_px);
     m_pLytLineImageSize_px->addStretch();
     QObject::connect(
@@ -802,6 +790,7 @@ CWdgtDrawingViewProperties::~CWdgtDrawingViewProperties()
 
     m_pDrawingView = nullptr;
     // Caching values
+    //m_drawingSize;
     //m_gridSettings;
     // Edit Controls
     m_pGrpGeometry = nullptr;
@@ -2139,13 +2128,13 @@ void CWdgtDrawingViewProperties::updateDimensionUnit()
 
     m_pCmbDimensionUnit->setCurrentIndex(eDimensionUnit.enumeratorAsInt());
     m_pWdgtMetric->setVisible(eDimensionUnit == EDrawingDimensionUnit::Metric);
-    m_pCmbImageMetricUnit->setEnabled(eDimensionUnit == EDrawingDimensionUnit::Metric);
-    m_pEdtImageMetricWidth->setReadOnly(eDimensionUnit != EDrawingDimensionUnit::Metric);
-    m_pEdtImageMetricHeight->setReadOnly(eDimensionUnit != EDrawingDimensionUnit::Metric);
-    m_pCmbImageMetricNormedPaperSizes->setEnabled(eDimensionUnit == EDrawingDimensionUnit::Metric);
-    m_pCmbImageMetricNormedPaperOrientation->setEnabled(eDimensionUnit == EDrawingDimensionUnit::Metric);
-    m_pCmbImageMetricScaleFactorDividend->setEnabled(eDimensionUnit == EDrawingDimensionUnit::Metric);
-    m_pCmbImageMetricScaleFactorDivisor->setEnabled(eDimensionUnit == EDrawingDimensionUnit::Metric);
+    //m_pCmbImageMetricUnit->setEnabled(eDimensionUnit == EDrawingDimensionUnit::Metric);
+    //m_pEdtImageMetricWidth->setReadOnly(eDimensionUnit != EDrawingDimensionUnit::Metric);
+    //m_pEdtImageMetricHeight->setReadOnly(eDimensionUnit != EDrawingDimensionUnit::Metric);
+    //m_pCmbImageMetricNormedPaperSizes->setEnabled(eDimensionUnit == EDrawingDimensionUnit::Metric);
+    //m_pCmbImageMetricNormedPaperOrientation->setEnabled(eDimensionUnit == EDrawingDimensionUnit::Metric);
+    //m_pCmbImageMetricScaleFactorDividend->setEnabled(eDimensionUnit == EDrawingDimensionUnit::Metric);
+    //m_pCmbImageMetricScaleFactorDivisor->setEnabled(eDimensionUnit == EDrawingDimensionUnit::Metric);
     m_pEdtImageSizeWidth_px->setReadOnly(eDimensionUnit != EDrawingDimensionUnit::Pixels);
     m_pEdtImageSizeHeight_px->setReadOnly(eDimensionUnit != EDrawingDimensionUnit::Pixels);
 

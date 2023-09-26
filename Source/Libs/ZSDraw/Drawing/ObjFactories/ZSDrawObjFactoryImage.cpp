@@ -160,10 +160,12 @@ SErrResultInfo CObjFactoryImage::saveGraphObj(
     // Geometry
     //-------------
 
+    const CDrawingSize& drawingSize = i_pGraphObj->getDrawingScene()->drawingSize();
+
     // "pos" returns the position of the item in parent coordinates.
     // If the item has no parent, its position is given in scene coordinates.
     QPointF ptPos         = pGraphObj->pos();
-    QSizeF  siz           = pGraphObj->getSize().toQSizeF(i_pGraphObj->getDrawingScene()->drawingSize().unit());
+    QSizeF  siz           = pGraphObj->getSize(drawingSize.unit()).toQSizeF(drawingSize.unit());
     double  fRotAngle_deg = pGraphObj->getRotationAngleInDegree();
 
     i_xmlStreamWriter.writeStartElement("Geometry");

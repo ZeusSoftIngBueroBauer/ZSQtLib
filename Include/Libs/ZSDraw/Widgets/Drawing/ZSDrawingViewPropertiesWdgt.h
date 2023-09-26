@@ -122,8 +122,10 @@ protected: // instance methods (method tracing)
     void traceValues(ZS::System::CMethodTracer& i_mthTracer, ZS::System::EMethodDir i_methodDir);
 protected: // instance members
     CDrawingView* m_pDrawingView;
-    // Caching values
+    /*!< Caching values. */
+    CDrawingSize m_drawingSize;
     CDrawGridSettings m_gridSettings;
+    // Edit Controls
     // Geometry
     QGroupBox* m_pGrpGeometry;
     QVBoxLayout* m_pLytGrpGeometry;

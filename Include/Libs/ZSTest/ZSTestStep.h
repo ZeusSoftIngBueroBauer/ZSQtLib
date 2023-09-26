@@ -64,6 +64,7 @@ public: // instance methods
     void setDescription( const QString& i_strDescription );
 public: // instance methods
     QStringList getConfigValueKeys() const;
+    bool hasConfigValue( const QString& i_strKey ) const;
     QVariant getConfigValue( const QString& i_strKey ) const;
     void setConfigValue( const QString& i_strKey, const QVariant& i_val );
 public: // instance methods

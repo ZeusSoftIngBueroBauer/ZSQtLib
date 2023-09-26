@@ -234,7 +234,7 @@ protected: // instance methods (for ctor)
     void createToolBars();
     void createDockWidgets();
 protected: // overridables of base class QWidget
-    virtual bool eventFilter( QObject* i_pObjWatched, QEvent* i_pEv );
+    virtual bool eventFilter( QObject* i_pObjWatched, QEvent* i_pEv ) override;
 public: // instance methods
     void setCurrentUsedFile( const QString& i_strAbsFilePath );
 public: // instance methods

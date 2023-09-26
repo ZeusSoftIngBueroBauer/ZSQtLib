@@ -151,35 +151,30 @@ public: // instance methods (resolution of monitor, pixels per inches)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Sets the logical resolution of a pixel on the screen in pixel/inch
-           as reference value with the name "Pxpi" to the unit group.
+/*! @brief Sets the logical resolution of a pixel on the screen as reference value
+           at the unit group with the name "PixelResolution_mm".
 
     Different resolutions for horizontal and vertical directions are not supported.
     Anyway very often several monitors are used whose resolution may be different
     both horizontally and vertically.
 
-    @param [in] i_fPxpi
-        Resolution of a screen pixel in pixels/inches.
+    @param [in] i_fRes_px_mm
+        Resolution of a pixel on the screen pixel in pixels/mm.
 */
-void CUnitsLength::setPxpi( double i_fPxpi )
+void CUnitsLength::setResolutionInPxPerMM( double i_fRes_px_mm )
 //------------------------------------------------------------------------------
 {
-    setReferenceValue("Pxpi", i_fPxpi);
+    // 4.0 px/mm results in a resolution of 0.25 mm:
+    setReferenceValue("PixelResolution_mm", CPhysVal(1.0/i_fRes_px_mm, mm));
 
-    // 1 Inch = 2.54 cm
-    // Factor to convert inches into mm: 25.4
-    // Factor to convert inches into cm: 2.54
-    // Factor to convert inches to m: 0.0254
-    // Factor to convert m into inches: 1/0.0254
-    double fipm = m_treeEntryInch.getFactorConvertFromSIUnit();
+    double fipm = m_treeEntryMilliMeter.getFactorConvertFromSIUnit();
 
     double fScaleFactor = 1.0;
     if (hasReferenceValue("ScaleFactorDividend") && hasReferenceValue("ScaleFactorDivisor")) {
         fScaleFactor = scaleFactor();
     }
 
-    // Factor to convert Px/inch to Px/m: 1.0/0.0254
-    double fpxm = fipm * pxpi() * fScaleFactor;
+    double fpxm = fipm * i_fRes_px_mm * fScaleFactor;
 
     SFctConvert fctConvertPxFromMeter(
         /* fctConvertType */ EFctConvert_mMULxADDt,
@@ -191,69 +186,33 @@ void CUnitsLength::setPxpi( double i_fPxpi )
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the logical resolution of a pixel on the screen.
+/*! @brief Returns the screen resolution of a pixel in the given unit.
 
-    @return
-        Resolution in pixels per inch.
+    The screen resolution is usually defined in pixels per inch or pixels per mm.
+    To format values correctly with the number of significant digits the resolution
+    normed to a metric unit is needed. E.g. if the screen resolution would be 10 pixels
+    per mm, the number of trailing digits to indicate a value in mm would be 1 and
+    e.g. 7 pixels would have to be rounded to 0.7 mm.
+
+    @param [in] i_unit (default mm)
+        Unit in which the resolution has to be returned.
+        Please note that it does not make sense to pass pixels or dots as the
+        desired unit as the screen resolution or the device resolution in pixels
+        or dots is always 1.0.
+
+    @return Screen resolution normed to the given metric unit.
 */
-double CUnitsLength::pxpi() const
+CPhysValRes CUnitsLength::physValResolution(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
-    return getReferenceValue("Pxpi").getVal();
-}
-
-/*==============================================================================
-public: // instance methods (resolution of printer, dots per inches)
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! @brief Sets the resolution of a dot on the print device in Dots/inch as
-           reference value with the names "Dpi" to the unit group.
-
-    Different resolutions for horizontal and vertical directions are not supported.
-
-    @param [in] i_fDpi
-        Resolution of a dot in Dots/inch.
-*/
-void CUnitsLength::setDpi( double i_fDpi )
-//------------------------------------------------------------------------------
-{
-    setReferenceValue("Dpi", i_fDpi);
-
-    // 1 Inch = 2.54 cm
-    // Factor to convert inches into mm: 25.4
-    // Factor to convert inches into cm: 2.54
-    // Factor to convert inches to m: 0.0254
-    // Factor to convert m into inches: 1/0.0254
-    double fipm = m_treeEntryInch.getFactorConvertFromSIUnit();
-
-    double fScaleFactor = 1.0;
-    if (hasReferenceValue("ScaleFactorDividend") && hasReferenceValue("ScaleFactorDivisor")) {
-        fScaleFactor = scaleFactor();
+    double fResVal = 0.1;
+    if (i_unit == px || i_unit == dots) {
+        fResVal = 1.0;
     }
-
-    // Factor to convert Dots/inch to Dots/m: 1/0.0254
-    double fdm = fipm * dpi() * fScaleFactor;
-
-    SFctConvert fctConvertDotsFromMeter(
-        /* fctConvertType */ EFctConvert_mMULxADDt,
-        /* pPhysUnitSrc   */ &m_treeEntryMeter,
-        /* pPhysUnitDst   */ &m_treeEntryDots,
-        /* physValM       */ fdm );
-
-    m_treeEntryDots.setFctConvertFromSIUnit(fctConvertDotsFromMeter);
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Returns the resolution of a dot on the print device in dots/inch.
-
-    @return
-        Resolution in dots per inch.
-*/
-double CUnitsLength::dpi() const
-//------------------------------------------------------------------------------
-{
-    return getReferenceValue("Dpi").getVal();
+    else {
+        fResVal = getReferenceValue("PixelResolution_mm").getVal(i_unit);
+    }
+    return CPhysValRes(fResVal, i_unit);
 }
 
 /*==============================================================================
@@ -285,15 +244,15 @@ void CUnitsLength::setScaleFactor(int i_iDividend, int i_iDivisor)
     // Factor to convert inches into cm: 2.54
     // Factor to convert inches to m: 0.0254
     // Factor to convert m into inches: 1/0.0254
-    double fipm = m_treeEntryInch.getFactorConvertFromSIUnit();
+    double fipm = m_treeEntryMilliMeter.getFactorConvertFromSIUnit();
 
-    double fpxpi = 1.0;
-    if (hasReferenceValue("Pxpi")) {
-        fpxpi = pxpi();
+    double fpxpmm = 1.0;
+    if (hasReferenceValue("PixelResolution_mm")) {
+        fpxpmm = 1.0/physValResolution(mm).getVal();
     }
 
     // Factor to convert Px/inch to Px/m: 1.0/0.0254
-    double fpxm = fipm * fpxpi * scaleFactor();
+    double fpxm = fipm * fpxpmm * scaleFactor();
 
     SFctConvert fctConvertPxFromMeter(
         /* fctConvertType */ EFctConvert_mMULxADDt,
@@ -338,78 +297,6 @@ int CUnitsLength::scaleFactorDivisor() const
 //------------------------------------------------------------------------------
 {
     return static_cast<int>(getReferenceValue("ScaleFactorDivisor").getVal());
-}
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! @brief Returns the screen resolution of a pixel in the given unit.
-
-    The screen resolution is usually defined in pixels per inch or pixels per mm.
-    To format values correctly with the number of significant digits the resolution
-    normed to a metric unit is needed. E.g. if the screen resolution would be 10 pixels
-    per mm, the number of trailing digits to indicate a value in mm would be 1 and
-    e.g. 7 pixels would have to be rounded to 0.7 mm.
-
-    @param [in] i_unit (default mm)
-        Unit in which the resolution has to be returned.
-        Please note that it does not make sense to pass pixels or dots as the
-        desired unit as the screen resolution or the device resolution in pixels
-        or dots is always 1.0.
-
-    @return Screen resolution normed to the given metric unit.
-*/
-CPhysValRes CUnitsLength::physValResPerPx(const CUnit& i_unit) const
-//------------------------------------------------------------------------------
-{
-    double fResVal = 0.1;
-    if (i_unit == px || i_unit == dots) {
-        fResVal = 1.0;
-    }
-    else {
-        // Resolution in inches:
-        fResVal = 1.0 / pxpi();
-        if (i_unit != in) {
-            fResVal = in.convertValue(fResVal, i_unit);
-        }
-    }
-    return CPhysValRes(fResVal, i_unit);
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Returns the resolution of a dot on the print device in the given unit.
-
-    The print device resolution is usually defined in dots per inch or dots per mm.
-    To format values correctly with the number of significant digits the resolution
-    normed to a metric unit is needed. E.g. if the print device resolution would be 10 dots
-    per mm, the number of trailing digits to indicate a value in mm would be 1 and
-    e.g. 7 dots would have to be rounded to 0.7 mm.
-
-    @param [in] i_unit (default mm)
-        Unit in which the resolution has to be returned.
-        Please note that it does not make sense to pass pixels or dots as the
-        desired unit as the screen resolution or the device resolution in pixels
-        or dots is always 1.0.
-
-    @return Screen resolution normed to the given metric unit.
-*/
-CPhysValRes CUnitsLength::physValResPerDot(const CUnit& i_unit) const
-//------------------------------------------------------------------------------
-{
-    double fResVal = 0.1;
-    if (i_unit == px || i_unit == dots) {
-        fResVal = 1.0;
-    }
-    else {
-        // Resolution in inches:
-        fResVal = 1.0 / dpi();
-        if (i_unit != in) {
-            fResVal = in.convertValue(fResVal, i_unit);
-        }
-    }
-    return CPhysValRes(fResVal, i_unit);
 }
 
 /*==============================================================================

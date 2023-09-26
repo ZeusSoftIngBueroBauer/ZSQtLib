@@ -25,6 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDraw/Common/ZSDrawPhysValPoint.h"
+#include "ZSDraw/Common/ZSDrawingSize.h"
 #include "ZSDraw/Common/ZSDrawUnits.h"
 #include "ZSPhysVal/ZSPhysValExceptions.h"
 
@@ -73,6 +74,17 @@ CPhysValPoint::CPhysValPoint(const QPointF& i_pt, const CUnit& i_unit) :
     m_unit(i_unit),
     m_pt(i_pt)
 {
+}
+
+//------------------------------------------------------------------------------
+CPhysValPoint::CPhysValPoint(const CPhysVal& i_physValX, const CPhysVal& i_physValY) :
+//------------------------------------------------------------------------------
+    m_unit(i_physValX.unit()),
+    m_pt(i_physValX.getVal(), i_physValY.getVal())
+{
+    if (i_physValX.unit() != i_physValY.unit()) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -221,6 +233,13 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+void CPhysValPoint::setUnit( const CUnit& i_unit )
+//------------------------------------------------------------------------------
+{
+    m_unit = i_unit;
+}
+
+//------------------------------------------------------------------------------
 void CPhysValPoint::setX( const CPhysVal& i_physValX )
 //------------------------------------------------------------------------------
 {
@@ -249,10 +268,10 @@ QPointF CPhysValPoint::toQPointF(const CUnit& i_unit) const
 {
     QPointF ptF = m_pt;
     if (m_unit != i_unit) {
-        double fX_px = m_unit.convertValue(m_pt.x(), i_unit);
-        double fY_px = m_unit.convertValue(m_pt.y(), i_unit);
-        ptF.setX(fX_px);
-        ptF.setY(fY_px);
+        double fX = m_unit.convertValue(m_pt.x(), i_unit);
+        double fY = m_unit.convertValue(m_pt.y(), i_unit);
+        ptF.setX(fX);
+        ptF.setY(fY);
     }
     return ptF;
 }

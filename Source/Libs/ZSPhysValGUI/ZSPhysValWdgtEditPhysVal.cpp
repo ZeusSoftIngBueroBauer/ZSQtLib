@@ -26,15 +26,18 @@ may result in using the software modules.
 
 #include <float.h>
 
-#include <QtCore/qcoreapplication.h>
+#include <QtWidgets/qapplication.h>
 
 #include <QtGui/qevent.h>
 #if QT_VERSION < 0x050000
 #include <QtGui/qlayout.h>
+#include <QtGui/qlineedit.h>
 #include <QtGui/qspinbox.h>
 #else
 #include <QtWidgets/qlayout.h>
+#include <QtWidgets/qlineedit.h>
 #include <QtWidgets/qspinbox.h>
+#include <QtWidgets/qstyle.h>
 #endif
 
 #include "ZSPhysValGUI/ZSPhysValWdgtEditPhysVal.h"
@@ -66,9 +69,11 @@ public: // ctors and dtor
     {
     }
     virtual ~CDoubleSpinBox() {}
+public: // instance methdos
+    QLineEdit* lineEdit() { return QDoubleSpinBox::lineEdit(); }
 public: // overridables of base class QDoubleSpinBox
-    virtual QValidator::State validate( QString& i_strVal, int& i_iPos ) const override {
-        return QDoubleSpinBox::validate(i_strVal,i_iPos);
+    virtual QValidator::State validate(QString& i_strVal, int& i_iPos) const override {
+        return QDoubleSpinBox::validate(i_strVal, i_iPos);
     }
     virtual void keyPressEvent(QKeyEvent* i_pEv) override {
         //QString strTxt = i_pEv->text();
@@ -92,9 +97,10 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CWdgtEditPhysVal::CWdgtEditPhysVal( QWidget* i_pWdgtParent ) :
+CWdgtEditPhysVal::CWdgtEditPhysVal(const QString& i_strName, QWidget* i_pWdgtParent) :
 //------------------------------------------------------------------------------
     QWidget(i_pWdgtParent),
+    m_strName(i_strName),
     m_pLyt(nullptr),
     m_pEdt(nullptr),
     m_physVal(),
@@ -103,12 +109,21 @@ CWdgtEditPhysVal::CWdgtEditPhysVal( QWidget* i_pWdgtParent ) :
     m_physValRes(),
     m_iValueChangedSignalsBlocked(0)
 {
+    if (!m_strName.isEmpty()) {
+        setObjectName(m_strName);
+    }
+
     m_pLyt = new QHBoxLayout();
-    m_pLyt->setContentsMargins(0,0,0,0);
+    m_pLyt->setContentsMargins(0, 0, 0, 0);
 
     setLayout(m_pLyt);
 
     m_pEdt = new CDoubleSpinBox();
+    CDoubleSpinBox* pSpinBox = dynamic_cast<CDoubleSpinBox*>(m_pEdt);
+    if (!m_strName.isEmpty()) {
+        pSpinBox->setObjectName(i_strName);
+        pSpinBox->lineEdit()->setObjectName(i_strName);
+    }
 
     m_pEdt->setMinimum(DBL_MIN);
     m_pEdt->setMaximum(DBL_MAX);
@@ -132,6 +147,7 @@ CWdgtEditPhysVal::CWdgtEditPhysVal( QWidget* i_pWdgtParent ) :
 CWdgtEditPhysVal::~CWdgtEditPhysVal()
 //------------------------------------------------------------------------------
 {
+    //m_strName;
     m_pLyt = nullptr;
     m_pEdt = nullptr;
     //m_unit;
@@ -178,31 +194,63 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Installs the event filter.
+
+    To filter mouse events the event filter must also be set at the spin box
+    and the line edit of the spin box.
+*/
+void CWdgtEditPhysVal::installEventFilter(QObject* i_pObjEventWatcher)
+//------------------------------------------------------------------------------
+{
+    CDoubleSpinBox* pSpinBox = dynamic_cast<CDoubleSpinBox*>(m_pEdt);
+    pSpinBox->installEventFilter(i_pObjEventWatcher);
+    pSpinBox->lineEdit()->installEventFilter(i_pObjEventWatcher);
+}
+
+//------------------------------------------------------------------------------
+void CWdgtEditPhysVal::setName(const QString& i_strName)
+//------------------------------------------------------------------------------
+{
+    m_strName = i_strName;
+    setObjectName(i_strName);
+    CDoubleSpinBox* pSpinBox = dynamic_cast<CDoubleSpinBox*>(m_pEdt);
+    pSpinBox->setObjectName(i_strName);
+    pSpinBox->lineEdit()->setObjectName(i_strName);
+}
+
+//------------------------------------------------------------------------------
 void CWdgtEditPhysVal::setEnabled(bool i_bEnabled)
 //------------------------------------------------------------------------------
 {
-    m_pEdt->setEnabled(i_bEnabled);
+    QWidget::setEnabled(i_bEnabled);
+    CDoubleSpinBox* pSpinBox = dynamic_cast<CDoubleSpinBox*>(m_pEdt);
+    pSpinBox->setEnabled(i_bEnabled);
+    pSpinBox->lineEdit()->setEnabled(i_bEnabled);
 }
 
 //------------------------------------------------------------------------------
 bool CWdgtEditPhysVal::isEnabled() const
 //------------------------------------------------------------------------------
 {
-    return m_pEdt->isEnabled();
+    CDoubleSpinBox* pSpinBox = dynamic_cast<CDoubleSpinBox*>(m_pEdt);
+    return pSpinBox->isEnabled();
 }
 
 //------------------------------------------------------------------------------
 void CWdgtEditPhysVal::setReadOnly(bool i_bReadOnly)
 //------------------------------------------------------------------------------
 {
-    m_pEdt->setReadOnly(i_bReadOnly);
+    CDoubleSpinBox* pSpinBox = dynamic_cast<CDoubleSpinBox*>(m_pEdt);
+    pSpinBox->setReadOnly(i_bReadOnly);
+    pSpinBox->lineEdit()->setReadOnly(i_bReadOnly);
 }
 
 //------------------------------------------------------------------------------
 bool CWdgtEditPhysVal::isReadOnly() const
 //------------------------------------------------------------------------------
 {
-    return m_pEdt->isReadOnly();
+    CDoubleSpinBox* pSpinBox = dynamic_cast<CDoubleSpinBox*>(m_pEdt);
+    return pSpinBox->isReadOnly();
 }
 
 /*==============================================================================
@@ -215,7 +263,7 @@ public: // instance methods
     The units of the current value, the minimum and maximum value as well as
     the resolution will be set to the given unit.
 
-    If already set and valid the current edit value, the minimum, maximum and
+    If already set and valid, the current edit value, the minimum, maximum and
     resolution values will be converted into the new unit.
 
     E.g. if before the value "0.2 mm" was set and you change the unit to "m"
@@ -224,11 +272,11 @@ public: // instance methods
 
     @param [in] i_unit Unit to be used.
 */
-void CWdgtEditPhysVal::setUnit( const CUnit& i_unit )
+void CWdgtEditPhysVal::setUnit(const CUnit& i_unit)
 //------------------------------------------------------------------------------
 {
     // setUnit is not implicitly called. The reference counter must be 0.
-    if( m_iValueChangedSignalsBlocked != 0 ) {
+    if (m_iValueChangedSignalsBlocked != 0) {
         throw CException(
             __FILE__, __LINE__, EResultInternalProgramError,
             "m_iValueChangedSignalsBlocked not 0");
@@ -245,8 +293,8 @@ void CWdgtEditPhysVal::setUnit( const CUnit& i_unit )
     // the valueChanged and textChanged signals is suppressed
     // by setting the ValueChangedSignalsBlocked flag.
 
-    if( m_physVal.isValid() ) {
-        if( areOfSameUnitGroup(m_physVal.unit(), i_unit) ) {
+    if (m_physVal.isValid()) {
+        if (areOfSameUnitGroup(m_physVal.unit(), i_unit)) {
             m_physVal.convertValue(i_unit);
         }
         else {
@@ -257,10 +305,10 @@ void CWdgtEditPhysVal::setUnit( const CUnit& i_unit )
         m_physVal.setUnit(i_unit);
     }
 
-    m_pEdt->setSuffix( " " + m_physVal.unit().symbol() );
+    m_pEdt->setSuffix(" " + m_physVal.unit().symbol());
 
-    if( m_physValMin.isValid() ) {
-        if( areOfSameUnitGroup(m_physValMin.unit(), i_unit) ) {
+    if (m_physValMin.isValid()) {
+        if (areOfSameUnitGroup(m_physValMin.unit(), i_unit)) {
             m_physValMin.convertValue(i_unit);
             setMinimum(m_physValMin.getVal());
         }
@@ -272,8 +320,8 @@ void CWdgtEditPhysVal::setUnit( const CUnit& i_unit )
         m_physValMin.setUnit(i_unit);
     }
 
-    if( m_physValMax.isValid() ) {
-        if( areOfSameUnitGroup(m_physValMax.unit(), i_unit) ) {
+    if (m_physValMax.isValid()) {
+        if (areOfSameUnitGroup(m_physValMax.unit(), i_unit)) {
             m_physValMax.convertValue(i_unit);
             setMaximum(m_physValMax.getVal());
         }
@@ -285,8 +333,8 @@ void CWdgtEditPhysVal::setUnit( const CUnit& i_unit )
         m_physValMax.setUnit(i_unit);
     }
 
-    if( m_physValRes.isValid() ) {
-        if( areOfSameUnitGroup(m_physValRes.unit(), i_unit) ) {
+    if (m_physValRes.isValid()) {
+        if (areOfSameUnitGroup(m_physValRes.unit(), i_unit)) {
             m_physValRes.convertValue(i_unit);
             setResolution(m_physValRes.getVal());
         }
@@ -298,11 +346,11 @@ void CWdgtEditPhysVal::setUnit( const CUnit& i_unit )
         m_physValRes.setUnit(i_unit);
     }
 
-    if( m_physVal.isValid() ) {
+    if (m_physVal.isValid()) {
         setValue(m_physVal.getVal());
     }
 
-    if( m_iValueChangedSignalsBlocked == 0 ) {
+    if (m_iValueChangedSignalsBlocked == 0) {
         throw CException(
             __FILE__, __LINE__, EResultInternalProgramError,
             "m_iValueChangedSignalsBlocked already 0");
@@ -310,13 +358,13 @@ void CWdgtEditPhysVal::setUnit( const CUnit& i_unit )
 
     refCountGuard.decrementAndReleaseCounter();
 
-   if( m_iValueChangedSignalsBlocked == 0 ) {
+   if (m_iValueChangedSignalsBlocked == 0) {
         // Processing the signals were block. Now emit the signals
         // if the text and/or the values were changed.
-        if( strTextPrev != m_pEdt->text() ) {
+        if (strTextPrev != m_pEdt->text()) {
             emit textChanged(m_pEdt->text());
         }
-        if( fValPrev != m_pEdt->value() ) {
+        if (fValPrev != m_pEdt->value()) {
             emit valueChanged(m_physVal);
         }
     }
@@ -707,7 +755,7 @@ void CWdgtEditPhysVal::onEdtEditingFinished()
         double fVal = m_pEdt->value();
         QString strSymbol = m_pEdt->suffix();
         if( strSymbol.startsWith(" ") ) {
-            strSymbol.remove(0,1);
+            strSymbol.remove(0, 1);
         }
         m_physVal = CPhysVal(fVal, strSymbol);
         emit editingFinished();
@@ -722,7 +770,7 @@ void CWdgtEditPhysVal::onEdtValueChanged( double i_fVal )
         double fVal = m_pEdt->value();
         QString strSymbol = m_pEdt->suffix();
         if( strSymbol.startsWith(" ") ) {
-            strSymbol.remove(0,1);
+            strSymbol.remove(0, 1);
         }
         m_physVal = CPhysVal(fVal, strSymbol);
         emit valueChanged(m_physVal);
@@ -737,7 +785,7 @@ void CWdgtEditPhysVal::onEdtTextChanged( const QString& i_strText )
         double fVal = m_pEdt->value();
         QString strSymbol = m_pEdt->suffix();
         if( strSymbol.startsWith(" ") ) {
-            strSymbol.remove(0,1);
+            strSymbol.remove(0, 1);
         }
         m_physVal = CPhysVal(fVal, strSymbol);
         emit textChanged(i_strText);

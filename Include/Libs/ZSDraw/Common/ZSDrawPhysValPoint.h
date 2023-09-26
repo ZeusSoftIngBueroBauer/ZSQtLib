@@ -39,6 +39,8 @@ class CPhysVal;
 }
 namespace Draw
 {
+class CDrawingSize;
+
 //******************************************************************************
 /*! @brief Corresponds to QPointF but providing a physical unit and a resolution.
 
@@ -61,6 +63,7 @@ public: // ctors and dtor
     CPhysValPoint();
     CPhysValPoint(const ZS::PhysVal::CUnit& i_unit);
     CPhysValPoint(const QPointF& i_pt, const ZS::PhysVal::CUnit& i_unit);
+    CPhysValPoint(const ZS::PhysVal::CPhysVal& i_physValX, const ZS::PhysVal::CPhysVal& i_physValY);
     CPhysValPoint(const CPhysValPoint& i_physValPointOther);
     ~CPhysValPoint();
 public: // operators
@@ -75,6 +78,7 @@ public: // instance methods
     ZS::PhysVal::CPhysVal x() const;
     ZS::PhysVal::CPhysVal y() const;
 public: // instance methods
+    void setUnit(const ZS::PhysVal::CUnit& i_unit);
     void setX(const ZS::PhysVal::CPhysVal& i_physValX);
     void setY(const ZS::PhysVal::CPhysVal& i_physValY);
 public: // instance methods (to convert the values into another unit)

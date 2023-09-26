@@ -75,21 +75,27 @@ public: // instance methods
     ZS::PhysVal::CPhysVal x2() const;
     ZS::PhysVal::CPhysVal y1() const;
     ZS::PhysVal::CPhysVal y2() const;
+    ZS::PhysVal::CPhysVal width() const;
+    ZS::PhysVal::CPhysVal height() const;
+    ZS::PhysVal::CPhysVal length() const;
     ZS::PhysVal::CPhysVal angle() const;
     ZS::PhysVal::CPhysVal angleTo(const CPhysValLine& i_physValLineOther) const;
     CPhysValPoint center() const;
-    ZS::PhysVal::CPhysVal dx() const;
-    ZS::PhysVal::CPhysVal dy() const;
     QLineF::IntersectionType intersects(const CPhysValLine& i_physValLineOther, CPhysValPoint* i_physValPointIntersection) const;
     bool isNull() const;
-    ZS::PhysVal::CPhysVal length() const;
+public: // instance methods
     void setUnit(const ZS::PhysVal::CUnit& i_unit);
     void setP1(const CPhysValPoint& i_physValPoint1);
     void setP2(const CPhysValPoint& i_physValPoint2);
-    void setAngle(const ZS::PhysVal::CPhysVal& i_physValAngle);
+    void setLine(double i_fX1, double i_fY1, double i_fX2, double i_fY2, const ZS::PhysVal::CUnit& i_unit);
+    void setLine(const QLineF& i_line, const ZS::PhysVal::CUnit& i_unit);
+    void setPoints(const QPointF& i_p1, const QPointF& i_p2, const ZS::PhysVal::CUnit& i_unit);
+    void setPoints(const CPhysValPoint& i_physValP1, const CPhysValPoint& i_physValP2);
+    void setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth);
+    void setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight);
     void setLength(const ZS::PhysVal::CPhysVal& i_physValLength);
-    void setLine(double i_fX1, double i_fY1, double i_fX2, double i_fY2);
-    void setPoints(const QPointF& i_p1, const QPointF& i_p2);
+    void setAngle(const ZS::PhysVal::CPhysVal& i_physValAngle);
+    void setCenter(const CPhysValPoint& i_physValPointCenter);
 public: // instance methods (to convert the values into another unit)
     QLineF toQLineF(const ZS::PhysVal::CUnit& i_unit) const;
     QString toString() const;

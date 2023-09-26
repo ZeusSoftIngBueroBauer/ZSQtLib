@@ -280,7 +280,7 @@ void CGraphObjLabel::setLinkedSelectionPoint(ESelectionPoint i_selPt)
             i_selPt != ESelectionPoint::BottomLeft &&
             i_selPt != ESelectionPoint::BottomCenter)
         {
-            ptLabelTmp.setY(ptLabelTmp.y() - getHeight().getVal(Units.Length.px));
+            ptLabelTmp.setY(ptLabelTmp.y() - getHeight(Units.Length.px).getVal());
         }
 
         QSize sizeDist(ptLabelTmp.x() - ptSelPt.x(), ptLabelTmp.y() - ptSelPt.y());
@@ -440,7 +440,7 @@ void CGraphObjLabel::setIsHit( bool i_bHit )
 
         QRectF rctUpd = boundingRect();
         QPolygonF plgLabel = mapToScene(rctUpd);
-        QRectF rctGraphObj = QRectF(QPointF(0.0, 0.0), m_pGraphObjParent->getSize().toQSizeF(Units.Length.px));
+        QRectF rctGraphObj = QRectF(QPointF(0.0, 0.0), m_pGraphObjParent->getSize(Units.Length.px).toQSizeF(Units.Length.px));
         QPolygonF plgGraphObj = m_pGraphicsItemParent->mapToScene(rctGraphObj);
 
         rctUpd = plgLabel.boundingRect();
@@ -996,7 +996,7 @@ QVariant CGraphObjLabel::itemChange( GraphicsItemChange i_change, const QVariant
     {
         QRectF    rctUpd      = boundingRect();
         QPolygonF plgLabel    = mapToScene(rctUpd);
-        QRectF    rctGraphObj = QRectF(QPointF(0.0, 0.0), m_pGraphObjParent->getSize().toQSizeF(Units.Length.px));
+        QRectF    rctGraphObj = QRectF(QPointF(0.0, 0.0), m_pGraphObjParent->getSize(Units.Length.px).toQSizeF(Units.Length.px));
         QPolygonF plgGraphObj = m_pGraphicsItemParent->mapToScene(rctGraphObj);
 
         rctUpd      = plgLabel.boundingRect();

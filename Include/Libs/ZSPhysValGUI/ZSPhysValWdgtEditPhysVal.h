@@ -38,6 +38,7 @@ may result in using the software modules.
 #include "ZSPhysValGUI/ZSPhysValGUIDllMain.h"
 #include "ZSPhysVal/ZSPhysVal.h"
 
+class QDoubleSpinBox;
 class QHBoxLayout;
 
 namespace ZS
@@ -65,15 +66,17 @@ public: // class methods
     static QString NameSpace() { return "ZS::PhysVal::GUI"; }
     static QString ClassName() { return "CWdgtEditPhysVal"; }
 public: // ctors and dtor
-    CWdgtEditPhysVal( QWidget* i_pWdgtParent = nullptr );
+    CWdgtEditPhysVal(const QString& i_strName = "", QWidget* i_pWdgtParent = nullptr);
     virtual ~CWdgtEditPhysVal();
 signals:
     void editingFinished();
-    void valueChanged( const ZS::PhysVal::CPhysVal& i_val );
-    void textChanged( const QString& i_strVal );
+    void valueChanged(const ZS::PhysVal::CPhysVal& i_val);
+    void textChanged(const QString& i_strVal);
 public: // instance methods
     void clear();
 public: // instance methods
+    void installEventFilter(QObject* i_pObjEventWatcher);
+    void setName(const QString& i_strName);
     void setEnabled(bool i_bEnabled);
     bool isEnabled() const;
     void setReadOnly(bool i_bReadOnly);
@@ -82,29 +85,31 @@ public: // instance methods
     void setUnit( const CUnit& i_unit );
     CUnit unit() const;
 public: // instance methods
-    void setMinimum( double i_fVal );
+    void setMinimum(double i_fVal);
     CPhysVal minimum() const;
-    void setMaximum( double i_fVal );
+    void setMaximum(double i_fVal);
     CPhysVal maximum() const;
-    void setResolution( double i_fVal );
+    void setResolution(double i_fVal);
     CPhysValRes resolution() const;
-    void setDecimals( int i_iPrecision );
+    void setDecimals(int i_iPrecision);
     int decimals() const;
-    void setSingleStep( double i_fVal );
+    void setSingleStep(double i_fVal);
     double singleStep() const;
 public: // instance methods
-    void setValue( double i_fVal );
+    void setValue(double i_fVal);
     CPhysVal value() const;
 protected slots:
     void onEdtEditingFinished();
-    void onEdtValueChanged( double i_fVal );
-    void onEdtTextChanged( const QString& i_strText );
+    void onEdtValueChanged(double i_fVal);
+    void onEdtTextChanged(const QString& i_strText);
 private: // instance members
+    /*!< Name which can be set for debugging purposes. */
+    QString m_strName;
     /*!< The layout of the widget. */
     QHBoxLayout* m_pLyt;
     /*!< The value is edited by the double spin box.
          The suffix is set to the symbol of the unit to be used. */
-    CDoubleSpinBox* m_pEdt;
+    QDoubleSpinBox* m_pEdt;
     /*!< The cached current value. */
     CPhysVal m_physVal;
     /*!< The cached mimimum value. */

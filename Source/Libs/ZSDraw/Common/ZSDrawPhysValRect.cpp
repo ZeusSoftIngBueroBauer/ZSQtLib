@@ -25,6 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDraw/Common/ZSDrawPhysValRect.h"
+#include "ZSDraw/Common/ZSDrawingSize.h"
 #include "ZSDraw/Common/ZSDrawUnits.h"
 #include "ZSPhysVal/ZSPhysValExceptions.h"
 
@@ -69,7 +70,19 @@ CPhysValRect::CPhysValRect(const QRectF& i_rect, const CUnit& i_unit) :
 }
 
 //------------------------------------------------------------------------------
-CPhysValRect::CPhysValRect( const CPhysValRect& i_physValRectOther ) :
+CPhysValRect::CPhysValRect(
+    const CPhysValPoint& i_physValTopLeft, const CPhysValPoint& i_physValBottomRight) :
+//------------------------------------------------------------------------------
+    m_unit(i_physValTopLeft.unit()),
+    m_rect(i_physValTopLeft.toQPointF(m_unit), i_physValBottomRight.toQPointF(m_unit))
+{
+    if (i_physValTopLeft.unit() != i_physValBottomRight.unit()) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+    }
+}
+
+//------------------------------------------------------------------------------
+CPhysValRect::CPhysValRect(const CPhysValRect& i_physValRectOther) :
 //------------------------------------------------------------------------------
     m_unit(i_physValRectOther.m_unit),
     m_rect(i_physValRectOther.m_rect)
@@ -196,6 +209,45 @@ CPhysVal CPhysValRect::height() const
     return CPhysVal(m_rect.height(), m_unit);
 }
 
+//------------------------------------------------------------------------------
+CPhysValPoint CPhysValRect::topLeft() const
+//------------------------------------------------------------------------------
+{
+    return CPhysValPoint(m_rect.left(), m_rect.top());
+}
+
+//------------------------------------------------------------------------------
+CPhysValPoint CPhysValRect::topRight() const
+//------------------------------------------------------------------------------
+{
+    return CPhysValPoint(m_rect.right(), m_rect.top());
+}
+
+//------------------------------------------------------------------------------
+CPhysValPoint CPhysValRect::bottomLeft() const
+//------------------------------------------------------------------------------
+{
+    return CPhysValPoint(m_rect.left(), m_rect.bottom());
+}
+
+//------------------------------------------------------------------------------
+CPhysValPoint CPhysValRect::bottomRight() const
+//------------------------------------------------------------------------------
+{
+    return CPhysValPoint(m_rect.right(), m_rect.bottom());
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CPhysValRect::setUnit( const CUnit& i_unit )
+//------------------------------------------------------------------------------
+{
+    m_unit = i_unit;
+}
+
 /*==============================================================================
 public: // instance methods (to convert the values into another unit)
 ==============================================================================*/
@@ -211,11 +263,11 @@ QRectF CPhysValRect::toQRectF(const CUnit& i_unit) const
 {
     QRectF rectF = m_rect;
     if (m_unit != i_unit) {
-        double fLeft_px = m_unit.convertValue(m_rect.left(), i_unit);
-        double fTop_px = m_unit.convertValue(m_rect.top(), i_unit);
-        double fWidth_px = m_unit.convertValue(m_rect.width(), i_unit);
-        double fHeight_px = m_unit.convertValue(m_rect.height(), i_unit);
-        rectF.setRect(fLeft_px, fTop_px, fWidth_px, fHeight_px);
+        double fLeft = m_unit.convertValue(m_rect.left(), i_unit);
+        double fTop = m_unit.convertValue(m_rect.top(), i_unit);
+        double fWidth = m_unit.convertValue(m_rect.width(), i_unit);
+        double fHeight = m_unit.convertValue(m_rect.height(), i_unit);
+        rectF.setRect(fLeft, fTop, fWidth, fHeight);
     }
     return rectF;
 }

@@ -118,7 +118,7 @@ public: // instance methods
     bool getShowTimeInfo() const;
     void setShowTimeInfo( bool i_bShow );
 protected: // overridables of base class QWidget
-    virtual bool eventFilter( QObject* i_pObjWatched, QEvent* i_pEv );
+    virtual bool eventFilter( QObject* i_pObjWatched, QEvent* i_pEv ) override;
 protected slots: // connected to the signals of my user controls
     void onBtnClearClicked( bool i_bChecked );
     void onChkServerTracingEnabledToggled( bool i_bChecked );

@@ -108,7 +108,7 @@ CGraphObjLine::CGraphObjLine(
         /* strObjName          */ i_strObjName.isEmpty() ? "Line" + QString::number(s_iInstCount) : i_strObjName,
         /* drawSettings        */ i_drawSettings ),
     QGraphicsLineItem(),
-    m_line(i_physValPoint1, i_physValPoint2),
+    m_physValLine(), // don't initialize here but in setLine
     m_plgLineStart(),
     m_plgLineEnd()
 {
@@ -142,10 +142,6 @@ CGraphObjLine::CGraphObjLine(
            | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges);
 
     setLine(i_physValPoint1, i_physValPoint2);
-
-    //QGraphicsLineItem::setLine(QLineF(i_pt1, i_pt2));
-    //updateToolTip();
-    //onDrawSettingsChanged();
 
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceInternalStates(mthTracer, EMethodDir::Undefined);
@@ -229,9 +225,10 @@ CGraphObj* CGraphObjLine::clone()
         /* strMethod    */ "clone",
         /* strAddInfo   */ "" );
 
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     CGraphObjLine* pGraphObj = new CGraphObjLine(
         m_pDrawingScene, m_drawSettings, m_strName,
-        getP1(), getP2() );
+        getP1(drawingSize.unit()), getP2(drawingSize.unit()) );
     return pGraphObj;
 }
 
@@ -254,6 +251,13 @@ QString CGraphObjLine::getScenePolygonShapePointsString() const
 /*==============================================================================
 public: // overridables of base class CGraphObj
 ==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObjLine::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
+//------------------------------------------------------------------------------
+{
+    setLine(i_drawingSize.convert(m_physValLine));
+}
 
 //------------------------------------------------------------------------------
 void CGraphObjLine::onDrawSettingsChanged()
@@ -282,74 +286,68 @@ void CGraphObjLine::setLine( const CPhysValLine& i_physValLine )
         /* strMethod    */ "setLine",
         /* strAddInfo   */ strMthInArgs );
 
-    m_line = i_physValLine;
+    if (m_physValLine != i_physValLine) {
+        m_physValLine = i_physValLine;
+        QLineF lineF = i_physValLine.toQLineF(Units.Length.px);
+        QGraphicsLineItem::setLine(lineF);
 
-    QGraphicsLineItem::setLine(i_physValLine.toQLineF(Units.Length.px));
-
-    //m_rctCurr.setTopLeft(i_line.p1());
-    //m_rctCurr.setWidth(i_line.dx());
-    //m_rctCurr.setHeight(i_line.dy());
-
-    //m_ptRotOriginCurr = m_rctCurr.center();
-
-    ////setPos(m_ptRotOriginCurr);
-
-    //if (isSelected()) {
-    //    QPolygonF plg;
-    //    plg.append(i_line.p1());
-    //    plg.append(i_line.p2());
-    //    updateSelectionPointsOfPolygon(plg);
-    //}
-    //updateLabelPositionsAndContents();
-
-    ////m_bCoorsDirty = true;
-
-    //updateLineEndPolygonCoors();
-    //updateEditInfo();
-    //updateToolTip();
-
-    // As "setLine" does not end up in an "itemChange" call (even if the
-    // flag "ItemSendsGeometryChanges" has been set) we call the "itemChange"
-    // method on our own to update the position of the selection points.
-    itemChange(QGraphicsItem::ItemPositionHasChanged, pos());
-
-} // setLine
-
-//------------------------------------------------------------------------------
-void CGraphObjLine::setLine(
-    const CPhysValPoint& i_physValPoint1, const CPhysValPoint& i_physValPoint2 )
-//------------------------------------------------------------------------------
-{
-    setLine(CPhysValLine(i_physValPoint1, i_physValPoint2));
+        // As "setLine" does not end up in an "itemChange" call (even if the
+        // flag "ItemSendsGeometryChanges" has been set) we call the "itemChange"
+        // method on our own to update the position of the selection points.
+        itemChange(QGraphicsItem::ItemPositionHasChanged, pos());
+    }
 }
 
 //------------------------------------------------------------------------------
 void CGraphObjLine::setLine(
-    double i_fX1, double i_fY1, double i_fX2, double i_fY2, const ZS::PhysVal::CUnit& i_unit )
+    double i_fX1, double i_fY1, double i_fX2, double i_fY2, const CUnit& i_unit)
 //------------------------------------------------------------------------------
 {
     setLine(CPhysValLine(i_fX1, i_fY1, i_fX2, i_fY2, i_unit));
 }
 
 //------------------------------------------------------------------------------
-CPhysValLine CGraphObjLine::getLine() const
+void CGraphObjLine::setLine(
+    const QPointF& i_p1, const QPointF& i_p2, const CUnit& i_unit)
 //------------------------------------------------------------------------------
 {
-    return m_line;
+    setLine(CPhysValLine(i_p1, i_p2, i_unit));
 }
 
 //------------------------------------------------------------------------------
-CPhysValPoint CGraphObjLine::getP1() const
+void CGraphObjLine::setLine(const QLineF& i_line, const CUnit& i_unit)
 //------------------------------------------------------------------------------
 {
-    return m_line.p1();
+    setLine(CPhysValLine(i_line, i_unit));
 }
 
 //------------------------------------------------------------------------------
-CPhysValPoint CGraphObjLine::getP2() const
+void CGraphObjLine::setLine(
+    const CPhysValPoint& i_physValP1, const CPhysValPoint& i_physValP2)
 //------------------------------------------------------------------------------
 {
-    return m_line.p2();
+    setLine(CPhysValLine(i_physValP1, i_physValP2));
+}
+
+//------------------------------------------------------------------------------
+CPhysValLine CGraphObjLine::getLine(const CUnit& i_unit) const
+//------------------------------------------------------------------------------
+{
+    return m_physValLine;
+}
+
+//------------------------------------------------------------------------------
+CPhysValPoint CGraphObjLine::getP1(const CUnit& i_unit) const
+//------------------------------------------------------------------------------
+{
+    return m_physValLine.p1();
+}
+
+//------------------------------------------------------------------------------
+CPhysValPoint CGraphObjLine::getP2(const CUnit& i_unit) const
+//------------------------------------------------------------------------------
+{
+    return m_physValLine.p2();
 }
 
 /*==============================================================================
@@ -371,7 +369,7 @@ void CGraphObjLine::setWidth( const CPhysVal& i_physValWidth )
         /* strMethod    */ "setWidth",
         /* strAddInfo   */ strMthInArgs );
 
-    setSize(i_physValWidth, getHeight());
+    setSize(i_physValWidth, getHeight(i_physValWidth.unit()));
 }
 
 //------------------------------------------------------------------------------
@@ -389,7 +387,7 @@ void CGraphObjLine::setHeight( const CPhysVal& i_physValHeight )
         /* strMethod    */ "setHeight",
         /* strAddInfo   */ strMthInArgs );
 
-    setSize(getWidth(), i_physValHeight);
+    setSize(getWidth(i_physValHeight.unit()), i_physValHeight);
 }
 
 //------------------------------------------------------------------------------
@@ -415,31 +413,31 @@ void CGraphObjLine::setSize( const CPhysVal& i_physValWidth, const CPhysVal& i_p
     physValWidth.convertValue(drawingSize.unit());
     physValHeight.convertValue(drawingSize.unit());
 
-    if (hasFixedWidth() && physValWidth != getFixedWidth()) {
-        physValWidth = getFixedWidth();
+    if (hasFixedWidth() && physValWidth != getFixedWidth(drawingSize.unit())) {
+        physValWidth = getFixedWidth(drawingSize.unit());
     }
     else {
-        if (hasMinimumWidth() && physValWidth > getMinimumWidth()) {
-            physValWidth = getMinimumWidth();
+        if (hasMinimumWidth() && physValWidth > getMinimumWidth(drawingSize.unit())) {
+            physValWidth = getMinimumWidth(drawingSize.unit());
         }
-        if (hasMaximumWidth() && physValWidth > getMaximumWidth()) {
-            physValWidth = getMaximumWidth();
+        if (hasMaximumWidth() && physValWidth > getMaximumWidth(drawingSize.unit())) {
+            physValWidth = getMaximumWidth(drawingSize.unit());
         }
     }
 
-    if (hasFixedHeight() && physValHeight != getFixedHeight()) {
-        physValHeight = getFixedHeight();
+    if (hasFixedHeight() && physValHeight != getFixedHeight(drawingSize.unit())) {
+        physValHeight = getFixedHeight(drawingSize.unit());
     }
     else {
-        if (hasMinimumHeight() && physValHeight > getMinimumHeight()) {
-            physValHeight = getMinimumHeight();
+        if (hasMinimumHeight() && physValHeight > getMinimumHeight(drawingSize.unit())) {
+            physValHeight = getMinimumHeight(drawingSize.unit());
         }
-        if (hasMaximumHeight() && physValHeight > getMaximumHeight()) {
-            physValHeight = getMaximumHeight();
+        if (hasMaximumHeight() && physValHeight > getMaximumHeight(drawingSize.unit())) {
+            physValHeight = getMaximumHeight(drawingSize.unit());
         }
     }
 
-    CPhysValLine physValLine = getLine();
+    CPhysValLine physValLine = getLine(drawingSize.unit());
 
     CPhysValPoint physValPoint1 = physValLine.p1();
     CPhysValPoint physValPoint2 = physValLine.p2();
@@ -491,33 +489,33 @@ public: // overridables of base class CGraphObj
           For me this looks like a bug in Qt.
           As a workaround CGraphObjLine::getPos returns the center of the line.
 */
-CPhysValPoint CGraphObjLine::getPos( ECoordinatesVersion /*i_version*/ ) const
+CPhysValPoint CGraphObjLine::getPos( const CUnit& i_unit, ECoordinatesVersion /*i_version*/ ) const
 //------------------------------------------------------------------------------
 {
-    return getLine().center();
+    return getLine(i_unit).center();
 }
 
 //------------------------------------------------------------------------------
-CPhysVal CGraphObjLine::getWidth( ECoordinatesVersion /*i_version*/ ) const
+CPhysVal CGraphObjLine::getWidth( const CUnit& i_unit, ECoordinatesVersion /*i_version*/ ) const
 //------------------------------------------------------------------------------
 {
-    CPhysValLine physValLine = getLine();
+    CPhysValLine physValLine = getLine(i_unit);
     return physValLine.p2().x() - physValLine.p1().x();
 }
 
 //------------------------------------------------------------------------------
-CPhysVal CGraphObjLine::getHeight( ECoordinatesVersion /*i_version*/ ) const
+CPhysVal CGraphObjLine::getHeight( const CUnit& i_unit, ECoordinatesVersion /*i_version*/ ) const
 //------------------------------------------------------------------------------
 {
-    CPhysValLine physValLine = getLine();
+    CPhysValLine physValLine = getLine(i_unit);
     return physValLine.p2().y() - physValLine.p1().y();
 }
 
 //------------------------------------------------------------------------------
-CPhysValSize CGraphObjLine::getSize( ECoordinatesVersion /*i_version*/ ) const
+CPhysValSize CGraphObjLine::getSize( const CUnit& i_unit, ECoordinatesVersion /*i_version*/ ) const
 //------------------------------------------------------------------------------
 {
-    return CPhysValSize(getWidth(), getHeight());
+    return CPhysValSize(getWidth(i_unit), getHeight(i_unit));
 }
 
 /*==============================================================================
@@ -1246,7 +1244,7 @@ void CGraphObjLine::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
             QPointF posEv = i_pEv->pos();
             if (sceneRect.contains(mapToScene(posEv))) {
                 CPhysValPoint physValPosEv = m_pDrawingScene->toPhysValPoint(posEv);
-                CPhysValLine physValLine = m_line;
+                CPhysValLine physValLine = m_physValLine;
                 if (m_idxSelPtSelectedPolygon == 0) {
                     physValLine.setP1(physValPosEv);
                 }
@@ -1448,6 +1446,7 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
         plg.append(lineF.p2());
         updateSelectionPointsOfPolygon(plg);
         updateLabelPositionsAndContents();
+        //updateLineEndPolygonCoors();
         updateEditInfo();
         updateToolTip();
 
@@ -1478,7 +1477,7 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
         //    }
         //}
 
-        bGeometryChanged = true;
+        //bGeometryChanged = true;
         bTreeEntryChanged = true;
     }
 
@@ -1616,7 +1615,7 @@ void CGraphObjLine::updateToolTip()
             m_strToolTip += "\nPos:\t\t" + point2Str(ptPos);
         }
 
-        m_strToolTip += "\nSize:\t\t" + getSize().toString();
+        m_strToolTip += "\nSize:\t\t" + getSize(Units.Length.px).toString();
         m_strToolTip += "\nZValue:\t\t" + QString::number(pGraphicsItem->zValue());
 
         pGraphicsItem->setToolTip(m_strToolTip);

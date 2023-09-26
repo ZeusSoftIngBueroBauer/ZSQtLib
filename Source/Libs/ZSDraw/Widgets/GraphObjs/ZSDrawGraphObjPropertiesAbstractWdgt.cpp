@@ -51,6 +51,13 @@ class CWdgtGraphObjPropertiesAbstract : public QWidget
 *******************************************************************************/
 
 /*==============================================================================
+public: // class members
+==============================================================================*/
+
+bool CWdgtGraphObjPropertiesAbstract::s_bWdgtLabelsVisible = false;
+bool CWdgtGraphObjPropertiesAbstract::s_bWdgtGeometryVisible = false;
+
+/*==============================================================================
 public: // ctors and dtor
 ==============================================================================*/
 
@@ -63,7 +70,6 @@ CWdgtGraphObjPropertiesAbstract::CWdgtGraphObjPropertiesAbstract(
 //------------------------------------------------------------------------------
     QWidget(i_pWdgtParent),
     m_pDrawingScene(i_pDrawingScene),
-    m_drawingSize(i_strObjName),
     m_strKeyInTree(),
     m_pGraphObj(nullptr),
     m_graphObjTypeCurr(EGraphObjTypeUndefined),
@@ -80,20 +86,21 @@ CWdgtGraphObjPropertiesAbstract::CWdgtGraphObjPropertiesAbstract(
     m_pBtnApply(nullptr),
     m_pBtnReset(nullptr),
     // Trace admin object for method tracing
-    m_pTrcAdminObj(nullptr)
+    m_pTrcAdminObj(nullptr),
+    m_pTrcAdminObjMouseEvents(nullptr)
 {
     setObjectName(i_strObjName);
 
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
         NameSpace() + "::Widgets::GraphObjs", i_strClassName, i_strObjName);
+    m_pTrcAdminObjMouseEvents = CTrcServer::GetTraceAdminObj(
+        NameSpace() + "::Widgets::GraphObjs", i_strClassName + "::MouseEvents", i_strObjName);
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "CWdgtGraphObjPropertiesAbstract::ctor",
         /* strAddInfo   */ "" );
-
-    m_drawingSize = m_pDrawingScene->drawingSize();
 
     m_pLyt = new QVBoxLayout();
     setLayout(m_pLyt);
@@ -116,9 +123,9 @@ CWdgtGraphObjPropertiesAbstract::~CWdgtGraphObjPropertiesAbstract()
 
     mthTracer.onAdminObjAboutToBeReleased();
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjMouseEvents);
 
     m_pDrawingScene = nullptr;
-    //m_drawingSize;
     //m_strKeyInTree;
     m_pGraphObj = nullptr;
     m_graphObjTypeCurr = static_cast<EGraphObjType>(0);
@@ -136,6 +143,7 @@ CWdgtGraphObjPropertiesAbstract::~CWdgtGraphObjPropertiesAbstract()
     m_pBtnReset = nullptr;
     // Trace admin object for method tracing
     m_pTrcAdminObj = nullptr;
+    m_pTrcAdminObjMouseEvents = nullptr;
 
 } // dtor
 
@@ -194,9 +202,10 @@ public: // overridables
     of the graphical object.
 
     @param i_strKeyInTree [in]
-        Unique key of the graphical object.
+        Unique key of the graphical object. Stored and set as key string to also
+        support changing geometry of CDrawingView.
 */
-void CWdgtGraphObjPropertiesAbstract::setKeyInTree( const QString& i_strKeyInTree )
+bool CWdgtGraphObjPropertiesAbstract::setKeyInTree( const QString& i_strKeyInTree )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -209,8 +218,12 @@ void CWdgtGraphObjPropertiesAbstract::setKeyInTree( const QString& i_strKeyInTre
         /* strMethod    */ "CWdgtGraphObjPropertiesAbstract::setKeyInTree",
         /* strAddInfo   */ strMthInArgs );
 
+    bool bObjectChanged = false;
+
     if (m_strKeyInTree != i_strKeyInTree)
     {
+        bObjectChanged = true;
+
         if (m_pGraphObj != nullptr) {
             if (m_bContentUpdateOnSelectedChanged) {
                 QObject::disconnect(
@@ -257,6 +270,11 @@ void CWdgtGraphObjPropertiesAbstract::setKeyInTree( const QString& i_strKeyInTre
         }
         m_graphObjTypePrev = m_graphObjTypeCurr;
     }
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(bObjectChanged);
+    }
+    return bObjectChanged;
 }
 
 //------------------------------------------------------------------------------
@@ -553,10 +571,6 @@ void CWdgtGraphObjPropertiesAbstract::onDrawingSceneDrawingSizeChanged(const CDr
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "CWdgtGraphObjPropertiesAbstract::onDrawingSceneDrawingSizeChanged",
         /* strAddInfo   */ strMthInArgs );
-
-    //if( m_drawingSize != i_size ) {
-        m_drawingSize = i_size;
-    //}
 }
 
 /*==============================================================================

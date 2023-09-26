@@ -53,7 +53,7 @@ public: // ctors and dtor
         QWidget* i_pWdgtParent = nullptr);
     virtual ~CWdgtGraphObjLineProperties();
 public: // overridables of base class CWdgtGraphObjPropertiesAbstract
-    virtual void setKeyInTree(const QString& i_strKeyInTree) override;
+    virtual bool setKeyInTree(const QString& i_strKeyInTree) override;
 public: // overridables of base class CWdgtGraphObjPropertiesAbstract
     bool hasErrors() const override;
     bool hasChanges() const override;

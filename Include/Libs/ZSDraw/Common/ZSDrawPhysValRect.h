@@ -28,6 +28,7 @@ may result in using the software modules.
 #define ZSDraw_PhysValRect_h
 
 #include "ZSDraw/Common/ZSDrawPhysValPoint.h"
+#include "ZSDraw/Common/ZSDrawPhysValLine.h"
 #include "QtCore/qrect.h"
 
 namespace ZS
@@ -56,6 +57,7 @@ public: // ctors and dtor
     CPhysValRect();
     CPhysValRect(const ZS::PhysVal::CUnit& i_unit);
     CPhysValRect(const QRectF& i_rect, const ZS::PhysVal::CUnit& i_unit);
+    CPhysValRect(const CPhysValPoint& i_physValTopLeft, const CPhysValPoint& i_physValBottomRight);
     CPhysValRect(const CPhysValRect& i_physValRectOther);
     virtual ~CPhysValRect();
 public: // operators
@@ -72,6 +74,12 @@ public: // instance methods
     ZS::PhysVal::CPhysVal right() const;
     ZS::PhysVal::CPhysVal width() const;
     ZS::PhysVal::CPhysVal height() const;
+    CPhysValPoint topLeft() const;
+    CPhysValPoint topRight() const;
+    CPhysValPoint bottomLeft() const;
+    CPhysValPoint bottomRight() const;
+public: // instance methods
+    void setUnit(const ZS::PhysVal::CUnit& i_unit);
 public: // instance methods (to convert the values into another unit)
     QRectF toQRectF(const ZS::PhysVal::CUnit& i_unit) const;
     QString toString() const;

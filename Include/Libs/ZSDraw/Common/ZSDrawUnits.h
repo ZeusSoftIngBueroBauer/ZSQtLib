@@ -122,19 +122,14 @@ public: // ctors and dtor
     CUnitsLength(ZS::System::CIdxTreeEntry* i_pParentBranch);
     ~CUnitsLength();
 public: // instance methods (resolution of monitor, pixels per inches)
-    void setPxpi(double i_fPxpi);
-    double pxpi() const;
-public: // instance methods (resolution of printer, dots per inches)
-    void setDpi(double i_fDpi);
-    double dpi() const;
+    void setResolutionInPxPerMM(double i_fRes_px_mm);
+    ZS::PhysVal::CPhysValRes physValResolution(const ZS::PhysVal::CUnit& i_unit) const;
 public: // instance methods (scale factor of drawing in metric dimension)
     void setScaleFactor(int i_iDividend, int i_iDivisor);
     double scaleFactor() const;
     int scaleFactorDividend() const;
     int scaleFactorDivisor() const;
 public: // instance methods
-    ZS::PhysVal::CPhysValRes physValResPerPx(const ZS::PhysVal::CUnit& i_unit) const;
-    ZS::PhysVal::CPhysValRes physValResPerDot(const ZS::PhysVal::CUnit& i_unit) const;
 public: // instance methods (distinguish between metric system and pixels or dots)
     bool isMetricUnit(const QString& i_strSymbolOrName) const;
 private: // instance methods

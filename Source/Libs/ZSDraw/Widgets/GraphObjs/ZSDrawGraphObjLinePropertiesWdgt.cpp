@@ -90,7 +90,7 @@ CWdgtGraphObjLineProperties::CWdgtGraphObjLineProperties(
     m_pLyt->addWidget(m_pWdgtGeometry);
 
     QObject::connect(
-        m_pWdgtLabels, &CWdgtGraphObjPropertiesLabels::contentChanged,
+        m_pWdgtGeometry, &CWdgtGraphObjLineGeometryProperties::contentChanged,
         this, &CWdgtGraphObjLineProperties::onWdgtGeometryContentChanged);
 
     // <Buttons>
@@ -122,7 +122,7 @@ public: // overridables of base class CWdgtGraphObjPropertiesAbstract
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjLineProperties::setKeyInTree(const QString& i_strKeyInTree)
+bool CWdgtGraphObjLineProperties::setKeyInTree(const QString& i_strKeyInTree)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -135,13 +135,19 @@ void CWdgtGraphObjLineProperties::setKeyInTree(const QString& i_strKeyInTree)
         /* strMethod    */ "setKeyInTree",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_strKeyInTree != i_strKeyInTree)
-    {
-        CWdgtGraphObjPropertiesAbstract::setKeyInTree(i_strKeyInTree);
+    bool bObjectChanged = false;
 
+    if (m_strKeyInTree != i_strKeyInTree) {
+        bObjectChanged = true;
+        CWdgtGraphObjPropertiesAbstract::setKeyInTree(i_strKeyInTree);
         m_pWdgtLabels->setKeyInTree(i_strKeyInTree);
         m_pWdgtGeometry->setKeyInTree(i_strKeyInTree);
     }
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(bObjectChanged);
+    }
+    return bObjectChanged;
 }
 
 /*==============================================================================

@@ -88,6 +88,7 @@ public: // type definitions and constants
     static const QString c_strXmlElemNameZValue;
     static const QString c_strXmlElemNameLabels;
 public: // type definitions and constants
+    static const QString c_strXmlAttrScreenResolutionPxPerMilliMeter;
     static const QString c_strXmlAttrDimensionUnit;
     static const QString c_strXmlAttrUnit;
     static const QString c_strXmlAttrWidth;
@@ -172,6 +173,10 @@ public: // instance methods
     CPhysValSize toPhysValSize(const QSizeF& i_size) const;
     double toPixelXCoor(const ZS::PhysVal::CPhysVal& i_physValXCoor) const;
     double toPixelYCoor(const ZS::PhysVal::CPhysVal& i_physValYCoor) const;
+    CPhysValPoint toPixelCoor(const CPhysValPoint& i_physValPoint) const;
+    CPhysValSize toPixelCoor(const CPhysValSize& i_physValSize) const;
+    CPhysValLine toPixelCoor(const CPhysValLine& i_physValLine) const;
+    CPhysValRect toPixelCoor(const CPhysValRect& i_physValRect) const;
 public: // instance methods
     void setGridSettings( const CDrawGridSettings& i_gridSettings);
     const CDrawGridSettings& gridSettings() const;

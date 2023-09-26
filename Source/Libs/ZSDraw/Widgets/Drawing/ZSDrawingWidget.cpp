@@ -116,8 +116,11 @@ CWdgtDrawing::CWdgtDrawing(QWidget* i_pWdgtParent) :
     // unit to get the screen resolution. To get the screen resolution the
     // screen resolution must be set before. Setting it in the drawing views
     // constructor is too late. It must be done by the creator of the drawing view.
-    Units.Length.setPxpi(logicalDpiX());
-    Units.Length.setDpi(physicalDpiX());
+
+    // Factor to convert Px/inch to Px/m: 1.0/0.0254
+    double fDpi = logicalDpiX();  // e.g. 100 px/inch
+    double fDpmm = fDpi / Units.Length.in.convertValue(1.0, Units.Length.mm);
+    Units.Length.setResolutionInPxPerMM(fDpmm);
 
     m_pDrawingScene = new CDrawingScene("theInst");
 

@@ -91,6 +91,7 @@ const QString CDrawingScene::c_strXmlElemNameLabels = "Labels";
 public: // type definitions and constants
 ==============================================================================*/
 
+const QString CDrawingScene::c_strXmlAttrScreenResolutionPxPerMilliMeter = "ResolutionPxPerMM";
 const QString CDrawingScene::c_strXmlAttrDimensionUnit = "DimensionUnit";
 const QString CDrawingScene::c_strXmlAttrUnit = "Unit";
 const QString CDrawingScene::c_strXmlAttrWidth = "Width";
@@ -242,7 +243,6 @@ CDrawingScene::CDrawingScene(const QString& i_strName, QObject* i_pObjParent) :
 
     //setItemIndexMethod(NoIndex);
 
-
     // To update the mode labels:
     setMode( EMode::Edit/*, m_editTool, m_editMode, m_editResizeMode*/ );
 
@@ -377,6 +377,17 @@ void CDrawingScene::setDrawingSize( const CDrawingSize& i_drawingSize)
         }
         m_divLinesMetricsX.update();
         m_divLinesMetricsY.update();
+
+        for (int idxGraphObj = 0; idxGraphObj < items().size(); idxGraphObj++) {
+            QGraphicsItem* pGraphicsItem = items()[idxGraphObj];
+            CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+            if (pGraphObj != nullptr) {
+                if (!pGraphObj->isSelectionPoint() && !pGraphObj->isLabel() && !pGraphObj->isConnectionLine()) {
+                    pGraphObj->onDrawingSizeChanged(m_drawingSize);
+                }
+            }
+        }
+
         update();
         emit_drawingSizeChanged(m_drawingSize);
     }
@@ -495,6 +506,34 @@ double CDrawingScene::toPixelYCoor(const CPhysVal& i_physValYCoor) const
 //------------------------------------------------------------------------------
 {
     return m_drawingSize.toPixelYCoor(i_physValYCoor);
+}
+
+//------------------------------------------------------------------------------
+CPhysValPoint CDrawingScene::toPixelCoor(const CPhysValPoint& i_physValPoint) const
+//------------------------------------------------------------------------------
+{
+    return m_drawingSize.toPixelCoor(i_physValPoint);
+}
+
+//------------------------------------------------------------------------------
+CPhysValSize CDrawingScene::toPixelCoor(const CPhysValSize& i_physValSize) const
+//------------------------------------------------------------------------------
+{
+    return m_drawingSize.toPixelCoor(i_physValSize);
+}
+
+//------------------------------------------------------------------------------
+CPhysValLine CDrawingScene::toPixelCoor(const CPhysValLine& i_physValLine) const
+//------------------------------------------------------------------------------
+{
+    return m_drawingSize.toPixelCoor(i_physValLine);
+}
+
+//------------------------------------------------------------------------------
+CPhysValRect CDrawingScene::toPixelCoor(const CPhysValRect& i_physValRect) const
+//------------------------------------------------------------------------------
+{
+    return m_drawingSize.toPixelCoor(i_physValRect);
 }
 
 /*==============================================================================
@@ -2608,8 +2647,8 @@ int CDrawingScene::groupGraphObjsSelected()
 
                 if( !pGraphObjSelected->isConnectionLine() )
                 {
-                    QPointF posItem = pGraphObjSelected->getPos().toQPointF(Units.Length.px);
-                    QSizeF  sizItem = pGraphObjSelected->getSize().toQSizeF(Units.Length.px);
+                    QPointF posItem = pGraphObjSelected->getPos(Units.Length.px).toQPointF(Units.Length.px);
+                    QSizeF  sizItem = pGraphObjSelected->getSize(Units.Length.px).toQSizeF(Units.Length.px);
                     QRectF  rctItem = QRectF(posItem, sizItem);
 
                     if( rctItem.width() >= 0.0 )
@@ -2675,13 +2714,13 @@ int CDrawingScene::groupGraphObjsSelected()
                 if( !pGraphObjSelected->isConnectionLine() )
                 {
                     // for debugging purposes also called here before adding the item to the group
-                    QPointF posItem = pGraphObjSelected->getPos().toQPointF(Units.Length.px);
-                    QSizeF  sizItem = pGraphObjSelected->getSize().toQSizeF(Units.Length.px);
+                    QPointF posItem = pGraphObjSelected->getPos(Units.Length.px).toQPointF(Units.Length.px);
+                    QSizeF  sizItem = pGraphObjSelected->getSize(Units.Length.px).toQSizeF(Units.Length.px);
 
                     pGraphicsItemGroup->addToGroup(pGraphicsItemSelected);
 
-                    posItem = pGraphObjSelected->getPos().toQPointF(Units.Length.px);
-                    sizItem = pGraphObjSelected->getSize().toQSizeF(Units.Length.px);
+                    posItem = pGraphObjSelected->getPos(Units.Length.px).toQPointF(Units.Length.px);
+                    sizItem = pGraphObjSelected->getSize(Units.Length.px).toQSizeF(Units.Length.px);
 
                     m_pGraphObjsIdxTree->move(pGraphObjSelected, pGraphObjGroup);
 
@@ -2814,13 +2853,13 @@ int CDrawingScene::ungroupGraphObjsSelected()
                 }
 
                 // for debugging purposes also called here before removing the item from the group
-                QPointF posItem = pGraphObjSelected->getPos().toQPointF(Units.Length.px);
-                QSizeF  sizItem = pGraphObjSelected->getSize().toQSizeF(Units.Length.px);
+                QPointF posItem = pGraphObjSelected->getPos(Units.Length.px).toQPointF(Units.Length.px);
+                QSizeF  sizItem = pGraphObjSelected->getSize(Units.Length.px).toQSizeF(Units.Length.px);
 
                 pGraphicsItemGroupSelected->removeFromGroup(pGraphicsItemChild);
 
-                posItem = pGraphObjSelected->getPos().toQPointF(Units.Length.px);
-                sizItem = pGraphObjSelected->getSize().toQSizeF(Units.Length.px);
+                posItem = pGraphObjSelected->getPos(Units.Length.px).toQPointF(Units.Length.px);
+                sizItem = pGraphObjSelected->getSize(Units.Length.px).toQSizeF(Units.Length.px);
 
                 m_pGraphObjsIdxTree->move(pGraphObjChild, nullptr);
             }

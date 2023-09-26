@@ -63,7 +63,7 @@ public: // ctors and dtor
         const CPhysVal& i_physVal,
         double i_fMin,
         double i_fMax,
-        double i_iDecimals,
+        int i_iDecimals,
         QWidget* i_pWdgtParent = nullptr );
     virtual ~CDlgEditPhysVal();
 public: // instance methods

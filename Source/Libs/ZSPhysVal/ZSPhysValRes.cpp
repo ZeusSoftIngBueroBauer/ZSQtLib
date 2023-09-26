@@ -368,9 +368,9 @@ QString CPhysValRes::toString( EUnitFind i_unitFind, int i_iSubStrVisibility ) c
     QString strVal;
     const CUnit* pUnit = &m_unit;
     int iDigitsAccuracy = Math::getFirstSignificantDigit(m_fVal);
-    if (iDigitsAccuracy <= 1) {
-        iDigitsAccuracy = 2;
-    }
+    //if (iDigitsAccuracy <= 1) {
+    //    iDigitsAccuracy = 2;
+    //}
 
     if( i_unitFind == EUnitFind::Best )
     {

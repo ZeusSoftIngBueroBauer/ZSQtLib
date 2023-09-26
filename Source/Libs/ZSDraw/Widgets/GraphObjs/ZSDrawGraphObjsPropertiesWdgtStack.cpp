@@ -70,7 +70,7 @@ CWdgtStackGraphObjsProperties::CWdgtStackGraphObjsProperties(
     m_pDrawingView(i_pDrawingView),
     m_pIdxTree(i_pDrawingView->drawingScene()->getGraphObjsIdxTree()),
     m_strKeyInTree(),
-    m_pLytMain(nullptr),
+    m_pLyt(nullptr),
     m_pLytHeadLine(nullptr),
     m_pEdtPath(nullptr),
     m_pScrollArea(nullptr)
@@ -90,14 +90,14 @@ CWdgtStackGraphObjsProperties::CWdgtStackGraphObjsProperties(
         m_pIdxTree, &CIdxTree::aboutToBeDestroyed,
         this, &CWdgtStackGraphObjsProperties::onIdxTreeAboutToBeDestroyed);
 
-    m_pLytMain = new QVBoxLayout();
-    setLayout(m_pLytMain);
+    m_pLyt = new QVBoxLayout();
+    setLayout(m_pLyt);
 
     // Headline
     //---------
 
     m_pLytHeadLine = new QHBoxLayout();
-    m_pLytMain->addLayout(m_pLytHeadLine);
+    m_pLyt->addLayout(m_pLytHeadLine);
 
     m_pEdtPath = new QLineEdit();
     m_pEdtPath->setReadOnly(true);
@@ -108,7 +108,7 @@ CWdgtStackGraphObjsProperties::CWdgtStackGraphObjsProperties(
 
     m_pScrollArea = new QScrollArea();
     m_pScrollArea->setWidgetResizable(true);
-    m_pLytMain->addWidget(m_pScrollArea, 1);
+    m_pLyt->addWidget(m_pScrollArea, 1);
     m_pScrollArea->setWidget(createGraphObjPropertiesWidget(""));
 
 } // ctor
@@ -131,7 +131,7 @@ CWdgtStackGraphObjsProperties::~CWdgtStackGraphObjsProperties()
     m_pDrawingView = nullptr;
     m_pIdxTree = nullptr;
     //m_strKeyInTree;
-    m_pLytMain = nullptr;
+    m_pLyt = nullptr;
     m_pLytHeadLine = nullptr;
     m_pEdtPath = nullptr;
     m_pScrollArea = nullptr;

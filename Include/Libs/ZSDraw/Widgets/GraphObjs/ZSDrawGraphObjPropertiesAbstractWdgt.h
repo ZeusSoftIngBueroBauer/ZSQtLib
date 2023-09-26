@@ -28,6 +28,7 @@ may result in using the software modules.
 #define ZSDraw_GraphObjPropertiesAbstractWdgt_h
 
 #include "ZSDraw/Common/ZSDrawingSize.h"
+#include "ZSDraw/Common/ZSDrawPhysValRect.h"
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qwidget.h>
@@ -91,7 +92,7 @@ signals:
         by an edit control of the widget. */
     void contentChanged();
 public: // overridables
-    virtual void setKeyInTree(const QString& i_strKeyInTree);
+    virtual bool setKeyInTree(const QString& i_strKeyInTree);
     QString getKeyInTree() const;
 public: // overridables of base class CWdgtGraphObjPropertiesAbstract
     virtual bool hasErrors() const;
@@ -120,12 +121,18 @@ private slots:
     //void onDrawingSceneGraphObjAboutToBeDestroyed(const QString& i_strKeyInTree);
 protected: // instance methods (tracing emitting signals)
     void emit_contentChanged();
+protected: // class members
+    /*!< Class variable to store the current state of the labels widget.
+         Used to restore the widget state after changing node types. */
+    static bool s_bWdgtLabelsVisible;
+    /*!< Class variable to store the current state of the geometry widget.
+         Used to restore the widget state after changing node types. */
+    static bool s_bWdgtGeometryVisible;
 protected: // instance members
     /*!< Pointer to drawing scene. */
     CDrawingScene* m_pDrawingScene;
-    // Caching values
-    CDrawingSize m_drawingSize;
-    /*!< Unique key of the graphical to be edited. */
+    /*!< Unique key of the graphical to be edited. Stored and set as key string to also
+         support changing geometry of CDrawingView. */
     QString m_strKeyInTree;
     /*!< If the unique key is set the drawing scene is queried to get the pointer to
          graphical object which should be edited. */
@@ -170,6 +177,7 @@ protected: // instance members
     QPushButton* m_pBtnReset;
     /*!< Trace admin object for method tracing. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjMouseEvents;
 
 }; // class CWdgtGraphObjPropertiesAbstract
 

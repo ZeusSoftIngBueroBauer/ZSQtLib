@@ -25,6 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDraw/Common/ZSDrawPhysValLine.h"
+#include "ZSDraw/Common/ZSDrawingSize.h"
 #include "ZSDraw/Common/ZSDrawUnits.h"
 #include "ZSPhysVal/ZSPhysValExceptions.h"
 
@@ -88,13 +89,13 @@ CPhysValLine::CPhysValLine(const QLineF& i_line, const CUnit& i_unit) :
 
 //------------------------------------------------------------------------------
 CPhysValLine::CPhysValLine(
-    const CPhysValPoint& i_physValPoint1,
-    const CPhysValPoint& i_physValPoint2) :
+    const CPhysValPoint& i_physValP1,
+    const CPhysValPoint& i_physValP2) :
 //------------------------------------------------------------------------------
-    m_unit(i_physValPoint1.unit()),
-    m_line(i_physValPoint1.toQPointF(m_unit), i_physValPoint2.toQPointF(m_unit))
+    m_unit(i_physValP1.unit()),
+    m_line(i_physValP1.toQPointF(m_unit), i_physValP2.toQPointF(m_unit))
 {
-    if (i_physValPoint1.unit() != i_physValPoint2.unit()) {
+    if (i_physValP1.unit() != i_physValP2.unit()) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
     }
 }
@@ -227,6 +228,27 @@ CPhysVal CPhysValLine::y2() const
 }
 
 //------------------------------------------------------------------------------
+CPhysVal CPhysValLine::width() const
+//------------------------------------------------------------------------------
+{
+    return CPhysVal(m_line.dx(), m_unit);
+}
+
+//------------------------------------------------------------------------------
+CPhysVal CPhysValLine::height() const
+//------------------------------------------------------------------------------
+{
+    return CPhysVal(m_line.dy(), m_unit);
+}
+
+//------------------------------------------------------------------------------
+CPhysVal CPhysValLine::length() const
+//------------------------------------------------------------------------------
+{
+    return CPhysVal(m_line.length(), m_unit);
+}
+
+//------------------------------------------------------------------------------
 CPhysVal CPhysValLine::angle() const
 //------------------------------------------------------------------------------
 {
@@ -245,20 +267,6 @@ CPhysValPoint CPhysValLine::center() const
 //------------------------------------------------------------------------------
 {
     return CPhysValPoint(m_line.center(), m_unit);
-}
-
-//------------------------------------------------------------------------------
-CPhysVal CPhysValLine::dx() const
-//------------------------------------------------------------------------------
-{
-    return CPhysVal(m_line.dx(), m_unit);
-}
-
-//------------------------------------------------------------------------------
-CPhysVal CPhysValLine::dy() const
-//------------------------------------------------------------------------------
-{
-    return CPhysVal(m_line.dy(), m_unit);
 }
 
 //------------------------------------------------------------------------------
@@ -281,12 +289,9 @@ bool CPhysValLine::isNull() const
     return m_line.isNull();
 }
 
-//------------------------------------------------------------------------------
-CPhysVal CPhysValLine::length() const
-//------------------------------------------------------------------------------
-{
-    return CPhysVal(m_line.length(), m_unit);
-}
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
 
 //------------------------------------------------------------------------------
 void CPhysValLine::setUnit( const CUnit& i_unit )
@@ -296,24 +301,69 @@ void CPhysValLine::setUnit( const CUnit& i_unit )
 }
 
 //------------------------------------------------------------------------------
-void CPhysValLine::setP1( const CPhysValPoint& i_physValPoint1 )
+void CPhysValLine::setP1( const CPhysValPoint& i_physValP1 )
 //------------------------------------------------------------------------------
 {
-    m_line.setP1(QPointF(i_physValPoint1.x().getVal(m_unit), i_physValPoint1.y().getVal(m_unit)));
+    m_line.setP1(QPointF(i_physValP1.x().getVal(m_unit), i_physValP1.y().getVal(m_unit)));
 }
 
 //------------------------------------------------------------------------------
-void CPhysValLine::setP2( const CPhysValPoint& i_physValPoint2 )
+void CPhysValLine::setP2( const CPhysValPoint& i_physValP2 )
 //------------------------------------------------------------------------------
 {
-    m_line.setP2(QPointF(i_physValPoint2.x().getVal(m_unit), i_physValPoint2.y().getVal(m_unit)));
+    m_line.setP2(QPointF(i_physValP2.x().getVal(m_unit), i_physValP2.y().getVal(m_unit)));
 }
 
 //------------------------------------------------------------------------------
-void CPhysValLine::setAngle( const CPhysVal& i_physValAngle )
+void CPhysValLine::setLine(
+    double i_fX1, double i_fY1, double i_fX2, double i_fY2, const CUnit& i_unit)
 //------------------------------------------------------------------------------
 {
-    m_line.setAngle(i_physValAngle.getVal(Units.Angle.Degree));
+    m_unit = i_unit;
+    m_line.setLine(i_fX1, i_fY1, i_fX2, i_fY2);
+}
+
+//------------------------------------------------------------------------------
+void CPhysValLine::setLine(const QLineF& i_line, const CUnit& i_unit)
+//------------------------------------------------------------------------------
+{
+    m_unit = i_unit;
+    m_line = i_line;
+}
+
+//------------------------------------------------------------------------------
+void CPhysValLine::setPoints(
+    const QPointF& i_p1, const QPointF& i_p2, const CUnit& i_unit)
+//------------------------------------------------------------------------------
+{
+    m_unit = i_unit;
+    m_line.setPoints(i_p1, i_p2);
+}
+
+//------------------------------------------------------------------------------
+void CPhysValLine::setPoints(
+    const CPhysValPoint& i_physValP1, const CPhysValPoint& i_physValP2)
+//------------------------------------------------------------------------------
+{
+    if (i_physValP1.unit() != i_physValP2.unit()) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+    }
+    m_unit = i_physValP1.unit();
+    m_line.setPoints(i_physValP1.toQPointF(m_unit), i_physValP2.toQPointF(m_unit));
+}
+
+//------------------------------------------------------------------------------
+void CPhysValLine::setWidth( const CPhysVal& i_physValWidth )
+//------------------------------------------------------------------------------
+{
+    m_line.setP2(QPointF(m_line.x1() + i_physValWidth.getVal(m_unit), m_line.y2()));
+}
+
+//------------------------------------------------------------------------------
+void CPhysValLine::setHeight( const CPhysVal& i_physValHeight )
+//------------------------------------------------------------------------------
+{
+    m_line.setP2(QPointF(m_line.x2(), m_line.y1() + i_physValHeight.getVal(m_unit)));
 }
 
 //------------------------------------------------------------------------------
@@ -324,17 +374,21 @@ void CPhysValLine::setLength( const CPhysVal& i_physValLength )
 }
 
 //------------------------------------------------------------------------------
-void CPhysValLine::setLine( double i_fX1, double i_fY1, double i_fX2, double i_fY2 )
+void CPhysValLine::setAngle( const CPhysVal& i_physValAngle )
 //------------------------------------------------------------------------------
 {
-    m_line.setLine(i_fX1, i_fY1, i_fX2, i_fY2);
+    m_line.setAngle(i_physValAngle.getVal(Units.Angle.Degree));
 }
 
 //------------------------------------------------------------------------------
-void CPhysValLine::setPoints( const QPointF& i_p1, const QPointF& i_p2 )
+void CPhysValLine::setCenter(const CPhysValPoint& i_physValPointCenter)
 //------------------------------------------------------------------------------
 {
-    m_line.setPoints(i_p1, i_p2);
+    double fCenterX = i_physValPointCenter.x().getVal(m_unit);
+    double fdx = fCenterX - m_line.center().x();
+    double fCenterY = i_physValPointCenter.y().getVal(m_unit);
+    double fdy = fCenterY - m_line.center().y();
+    m_line.translate(fdx, fdy);
 }
 
 /*==============================================================================

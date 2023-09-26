@@ -190,14 +190,14 @@ public: // must overridables of base class CGraphObj
 void CGraphObjWdgt::setWidth( const CPhysVal& i_physValWidth )
 //------------------------------------------------------------------------------
 {
-    setSize( i_physValWidth, getHeight() );
+    setSize( i_physValWidth, getHeight(i_physValWidth.unit()) );
 }
 
 //------------------------------------------------------------------------------
 void CGraphObjWdgt::setHeight( const CPhysVal& i_physValHeight )
 //------------------------------------------------------------------------------
 {
-    setSize( getWidth(), i_physValHeight );
+    setSize( getWidth(i_physValHeight.unit()), i_physValHeight );
 }
 
 //------------------------------------------------------------------------------

@@ -39,6 +39,8 @@ class CPhysVal;
 }
 namespace Draw
 {
+class CDrawingSize;
+
 //******************************************************************************
 /*! @brief Corresponds to QSizeF but providing a physical unit and a resolution.
 
@@ -77,9 +79,11 @@ public: // instance methods
     ZS::PhysVal::CPhysVal height() const;
     bool isValid() const;
 public: // instance methods
+    void setUnit(const ZS::PhysVal::CUnit& unit);
     void setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth);
     void setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight);
 public: // instance methods (to convert the values into another unit)
+    void convert(const ZS::PhysVal::CUnit& unit);
     QSizeF toQSizeF(const ZS::PhysVal::CUnit& i_unit) const;
     QString toString() const;
 protected: // instance members

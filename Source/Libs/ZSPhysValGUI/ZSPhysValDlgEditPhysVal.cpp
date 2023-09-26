@@ -24,7 +24,12 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include <QtCore/qglobal.h>
+#include "ZSPhysValGUI/ZSPhysValDlgEditPhysVal.h"
+#include "ZSPhysVal/ZSPhysUnitsIdxTree.h"
+#include "ZSPhysVal/ZSPhysTreeEntryGrpPhysUnits.h"
+#include "ZSPhysVal/ZSPhysTreeEntryPhysUnit.h"
+#include "ZSSys/ZSSysErrResult.h"
+#include "ZSSys/ZSSysException.h"
 
 #if QT_VERSION < 0x050000
 #include <QtGui/qapplication.h>
@@ -41,13 +46,6 @@ may result in using the software modules.
 #include <QtWidgets/qlineedit.h>
 #include <QtWidgets/qpushbutton.h>
 #endif
-
-#include "ZSPhysValGUI/ZSPhysValDlgEditPhysVal.h"
-#include "ZSPhysVal/ZSPhysUnitsIdxTree.h"
-#include "ZSPhysVal/ZSPhysTreeEntryGrpPhysUnits.h"
-#include "ZSPhysVal/ZSPhysTreeEntryPhysUnit.h"
-#include "ZSSys/ZSSysErrResult.h"
-#include "ZSSys/ZSSysException.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -68,10 +66,10 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CDlgEditPhysVal::CDlgEditPhysVal(
     const CPhysVal& i_physVal,
-    double          i_fMin,
-    double          i_fMax,
-    double          i_iDecimals,
-    QWidget*        i_pWdgtParent ) :
+    double i_fMin,
+    double i_fMax,
+    int i_iDecimals,
+    QWidget* i_pWdgtParent ) :
 //------------------------------------------------------------------------------
     QDialog(i_pWdgtParent),
     m_physValOld(i_physVal),
@@ -101,7 +99,7 @@ CDlgEditPhysVal::CDlgEditPhysVal(
 
     m_pEdtVal = new QLineEdit();
     m_pEdtVal->setText( QString::number(m_physValOld.getVal()) );
-    m_pEdtVal->setValidator( new QDoubleValidator(m_fMin,m_fMax,m_iDecimals,m_pEdtVal) );
+    m_pEdtVal->setValidator( new QDoubleValidator(m_fMin, m_fMax, m_iDecimals, m_pEdtVal) );
     m_pLytLine->addWidget(m_pEdtVal);
 
     // Unit Combo

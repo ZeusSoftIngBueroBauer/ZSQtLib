@@ -546,7 +546,7 @@ void CGraphObjConnectionLine::setWidth( const CPhysVal& i_physValWidth )
 
     // This method call does not really make sense for connection lines.
     // But at least we update the current size member variable.
-    setSize(i_physValWidth, getHeight());
+    setSize(i_physValWidth, getHeight(i_physValWidth.unit()));
 }
 
 //------------------------------------------------------------------------------
@@ -566,7 +566,7 @@ void CGraphObjConnectionLine::setHeight( const CPhysVal& i_physValHeight )
 
     // This method call does not really make sense for connection lines.
     // But at least we update the current size member variable.
-    setSize(getWidth(), i_physValHeight);
+    setSize(getWidth(i_physValHeight.unit()), i_physValHeight);
 }
 
 //------------------------------------------------------------------------------
@@ -595,27 +595,27 @@ void CGraphObjConnectionLine::setSize( const CPhysVal& i_physValWidth, const CPh
     physValWidth.convertValue(drawingSize.unit());
     physValHeight.convertValue(drawingSize.unit());
 
-    if (hasFixedWidth() && physValWidth != getFixedWidth()) {
-        physValWidth = getFixedWidth();
+    if (hasFixedWidth() && physValWidth != getFixedWidth(drawingSize.unit())) {
+        physValWidth = getFixedWidth(drawingSize.unit());
     }
     else {
-        if (hasMinimumWidth() && physValWidth > getMinimumWidth()) {
-            physValWidth = getMinimumWidth();
+        if (hasMinimumWidth() && physValWidth > getMinimumWidth(drawingSize.unit())) {
+            physValWidth = getMinimumWidth(drawingSize.unit());
         }
-        if (hasMaximumWidth() && physValWidth > getMaximumWidth()) {
-            physValWidth = getMaximumWidth();
+        if (hasMaximumWidth() && physValWidth > getMaximumWidth(drawingSize.unit())) {
+            physValWidth = getMaximumWidth(drawingSize.unit());
         }
     }
 
-    if (hasFixedHeight() && physValHeight != getFixedHeight()) {
-        physValHeight = getFixedHeight();
+    if (hasFixedHeight() && physValHeight != getFixedHeight(drawingSize.unit())) {
+        physValHeight = getFixedHeight(drawingSize.unit());
     }
     else {
-        if (hasMinimumHeight() && physValHeight > getMinimumHeight()) {
-            physValHeight = getMinimumHeight();
+        if (hasMinimumHeight() && physValHeight > getMinimumHeight(drawingSize.unit())) {
+            physValHeight = getMinimumHeight(drawingSize.unit());
         }
-        if (hasMaximumHeight() && physValHeight > getMaximumHeight()) {
-            physValHeight = getMaximumHeight();
+        if (hasMaximumHeight() && physValHeight > getMaximumHeight(drawingSize.unit())) {
+            physValHeight = getMaximumHeight(drawingSize.unit());
         }
     }
 

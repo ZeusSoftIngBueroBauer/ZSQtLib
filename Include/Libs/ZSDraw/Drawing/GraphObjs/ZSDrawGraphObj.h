@@ -323,6 +323,8 @@ public: // instance methods
 public: // overridables
     virtual void onCreateAndExecDlgFormatGraphObjs();
 public: // overridables
+    virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize);
+public: // overridables
     virtual void setDrawSettings( const CDrawSettings& i_drawSettings );
     virtual CDrawSettings getDrawSettings() const;
     virtual void onDrawSettingsChanged();
@@ -369,31 +371,31 @@ public: // overridables (you must call those methods (instead of e.g. "QGrahicsL
 public: // overridables
     virtual void setMinimumWidth( const ZS::PhysVal::CPhysVal& i_physValWidth );
     virtual bool hasMinimumWidth() const;
-    virtual ZS::PhysVal::CPhysVal getMinimumWidth() const;
+    virtual ZS::PhysVal::CPhysVal getMinimumWidth(const ZS::PhysVal::CUnit& i_unit) const;
     virtual void setMinimumHeight( const ZS::PhysVal::CPhysVal& i_physValHeight );
     virtual bool hasMinimumHeight() const;
-    virtual ZS::PhysVal::CPhysVal getMinimumHeight() const;
+    virtual ZS::PhysVal::CPhysVal getMinimumHeight(const ZS::PhysVal::CUnit& i_unit) const;
     virtual void setMinimumSize( const CPhysValSize& i_physValSize );
     virtual bool hasMinimumSize() const;
-    virtual CPhysValSize getMinimumSize() const;
+    virtual CPhysValSize getMinimumSize(const ZS::PhysVal::CUnit& i_unit) const;
     virtual void setMaximumWidth( const ZS::PhysVal::CPhysVal& i_physValWidth );
     virtual bool hasMaximumWidth() const;
-    virtual ZS::PhysVal::CPhysVal getMaximumWidth() const;
+    virtual ZS::PhysVal::CPhysVal getMaximumWidth(const ZS::PhysVal::CUnit& i_unit) const;
     virtual void setMaximumHeight( const ZS::PhysVal::CPhysVal& i_physValHeight );
     virtual bool hasMaximumHeight() const;
-    virtual ZS::PhysVal::CPhysVal getMaximumHeight() const;
+    virtual ZS::PhysVal::CPhysVal getMaximumHeight(const ZS::PhysVal::CUnit& i_unit) const;
     virtual void setMaximumSize( const CPhysValSize& i_physValSize );
     virtual bool hasMaximumSize() const;
-    virtual CPhysValSize getMaximumSize() const;
+    virtual CPhysValSize getMaximumSize(const ZS::PhysVal::CUnit& i_unit) const;
     virtual void setFixedWidth( const ZS::PhysVal::CPhysVal& i_physValWidth );
     virtual bool hasFixedWidth() const;
-    virtual ZS::PhysVal::CPhysVal getFixedWidth() const;
+    virtual ZS::PhysVal::CPhysVal getFixedWidth(const ZS::PhysVal::CUnit& i_unit) const;
     virtual void setFixedHeight( const ZS::PhysVal::CPhysVal& i_physValHeight );
     virtual bool hasFixedHeight() const;
-    virtual ZS::PhysVal::CPhysVal getFixedHeight() const;
+    virtual ZS::PhysVal::CPhysVal getFixedHeight(const ZS::PhysVal::CUnit& i_unit) const;
     virtual void setFixedSize( const CPhysValSize& i_physValSize );
     virtual bool hasFixedSize() const;
-    virtual CPhysValSize getFixedSize() const;
+    virtual CPhysValSize getFixedSize(const ZS::PhysVal::CUnit& i_unit) const;
 public: // overridables
     virtual int addAlignment( const SGraphObjAlignment& i_alignment );
     virtual int getAlignmentCount() const;
@@ -413,10 +415,10 @@ public: // must overridables
     virtual bool hasLineShapePoints() const = 0;
     virtual bool hasRotationSelectionPoints() const = 0;
 public: // overridables
-    virtual CPhysValPoint getPos( ECoordinatesVersion i_version = ECoordinatesVersion::Transformed ) const;
-    virtual ZS::PhysVal::CPhysVal getWidth( ECoordinatesVersion i_version = ECoordinatesVersion::Transformed ) const;
-    virtual ZS::PhysVal::CPhysVal getHeight( ECoordinatesVersion i_version = ECoordinatesVersion::Transformed ) const;
-    virtual CPhysValSize getSize( ECoordinatesVersion i_version = ECoordinatesVersion::Transformed ) const;
+    virtual CPhysValPoint getPos( const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed ) const;
+    virtual ZS::PhysVal::CPhysVal getWidth( const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed ) const;
+    virtual ZS::PhysVal::CPhysVal getHeight( const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed ) const;
+    virtual CPhysValSize getSize( const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed ) const;
 public: // overridables
     virtual void setRotationAngleInDegree( double i_fRotAngle_deg );
     virtual double getRotationAngleInDegree( ECoordinatesVersion i_version = ECoordinatesVersion::Transformed );

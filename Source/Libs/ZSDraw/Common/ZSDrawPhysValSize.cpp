@@ -25,6 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDraw/Common/ZSDrawPhysValSize.h"
+#include "ZSDraw/Common/ZSDrawingSize.h"
 #include "ZSDraw/Common/ZSDrawUnits.h"
 #include "ZSPhysVal/ZSPhysValExceptions.h"
 
@@ -196,6 +197,13 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+void CPhysValSize::setUnit( const CUnit& i_unit )
+//------------------------------------------------------------------------------
+{
+    m_unit = i_unit;
+}
+
+//------------------------------------------------------------------------------
 void CPhysValSize::setWidth( const CPhysVal& i_physValWidth )
 //------------------------------------------------------------------------------
 {
@@ -214,6 +222,24 @@ public: // instance methods (to convert the values into another unit)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief 
+
+    @param [in] i_unit
+        Unit in which the coordinates should be converted.
+*/
+void CPhysValSize::convert(const CUnit& i_unit)
+//------------------------------------------------------------------------------
+{
+    if (m_unit != i_unit) {
+        double fWidth = m_unit.convertValue(m_size.width(), i_unit);
+        double fHeight = m_unit.convertValue(m_size.height(), i_unit);
+        m_size.setWidth(fWidth);
+        m_size.setHeight(fHeight);
+        m_unit = i_unit;
+    }
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Returns the physical size as a QSizeF instance in the desired unit.
 
     @param [in] i_unit
@@ -224,10 +250,10 @@ QSizeF CPhysValSize::toQSizeF(const CUnit& i_unit) const
 {
     QSizeF sizeF = m_size;
     if (m_unit != i_unit) {
-        double fWidth_px = m_unit.convertValue(m_size.width(), i_unit);
-        double fHeight_px = m_unit.convertValue(m_size.height(), i_unit);
-        sizeF.setWidth(fWidth_px);
-        sizeF.setWidth(fHeight_px);
+        double fWidth = m_unit.convertValue(m_size.width(), i_unit);
+        double fHeight = m_unit.convertValue(m_size.height(), i_unit);
+        sizeF.setWidth(fWidth);
+        sizeF.setHeight(fHeight);
     }
     return sizeF;
 }

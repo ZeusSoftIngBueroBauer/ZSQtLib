@@ -79,7 +79,7 @@ protected: // instance members
     CDrawingView* m_pDrawingView;
     ZS::System::CIdxTree* m_pIdxTree;
     QString m_strKeyInTree;
-    QVBoxLayout* m_pLytMain;
+    QVBoxLayout* m_pLyt;
     QHBoxLayout* m_pLytHeadLine;
     QLineEdit* m_pEdtPath;
     QScrollArea* m_pScrollArea;
