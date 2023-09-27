@@ -83,9 +83,9 @@ CDiagTrace::CDiagTrace(
     QObject(),
     m_strObjName(i_strObjName),
     m_pDiagram(nullptr),
-    m_arpDiagScale(CEnumScaleDir::count(), nullptr),
-    //m_arphysValRes(CEnumScaleDir::count()),
-    m_arphysValArr(CEnumScaleDir::count()),
+    m_arpDiagScale(CEnumScaleAxis::count(), nullptr),
+    //m_arphysValRes(CEnumScaleAxis::count()),
+    m_arphysValArr(CEnumScaleAxis::count()),
     m_uUpdateFlags(EUpdateData),
     m_pTrcAdminObj(nullptr),
     m_pTrcAdminObjUpdate(nullptr),
@@ -122,26 +122,26 @@ CDiagTrace::CDiagTrace(
         s_bClassInitialised = true;
     }
 
-    m_arpDiagScale[EScaleDirX] = i_pDiagScaleX;
-    m_arpDiagScale[EScaleDirY] = i_pDiagScaleY;
+    m_arpDiagScale[EScaleAxisX] = i_pDiagScaleX;
+    m_arpDiagScale[EScaleAxisY] = i_pDiagScaleY;
 
-    //m_arphysValRes[EScaleDirX].setValidity(EValueValidity::Invalid);
-    //m_arphysValRes[EScaleDirY].setValidity(EValueValidity::Invalid);
+    //m_arphysValRes[EScaleAxisX].setValidity(EValueValidity::Invalid);
+    //m_arphysValRes[EScaleAxisY].setValidity(EValueValidity::Invalid);
 
-    //m_arphysValArr[EScaleDirX].setValidity(EValueValidity::Invalid);
-    //m_arphysValArr[EScaleDirY].setValidity(EValueValidity::Invalid);
+    //m_arphysValArr[EScaleAxisX].setValidity(EValueValidity::Invalid);
+    //m_arphysValArr[EScaleAxisY].setValidity(EValueValidity::Invalid);
 
     if( i_pDiagScaleX != nullptr )
     {
-        //m_arphysValRes[EScaleDirX].setUnit(i_pDiagScaleX->getScale().m_unit);
-        m_arphysValArr[EScaleDirX].setUnit(i_pDiagScaleX->getScale().unit());
-        m_arphysValArr[EScaleDirX].setRes(i_physValResX);
+        //m_arphysValRes[EScaleAxisX].setUnit(i_pDiagScaleX->getScale().m_unit);
+        m_arphysValArr[EScaleAxisX].setUnit(i_pDiagScaleX->getScale().unit());
+        m_arphysValArr[EScaleAxisX].setRes(i_physValResX);
     }
     if( i_pDiagScaleY != nullptr )
     {
-        //m_arphysValRes[EScaleDirY].setUnit(i_pDiagScaleY->getScale().m_unit);
-        m_arphysValArr[EScaleDirY].setUnit(i_pDiagScaleY->getScale().unit());
-        m_arphysValArr[EScaleDirY].setRes(i_physValResY);
+        //m_arphysValRes[EScaleAxisY].setUnit(i_pDiagScaleY->getScale().m_unit);
+        m_arphysValArr[EScaleAxisY].setUnit(i_pDiagScaleY->getScale().unit());
+        m_arphysValArr[EScaleAxisY].setRes(i_physValResY);
     }
 
 } // ctor
@@ -207,56 +207,56 @@ CDataDiagram* CDiagTrace::getDiagram()
 //------------------------------------------------------------------------------
 /*! @brief Returns the scale object for the given scale direction the trace is linked to.
 
-    @param i_scaleDir [in]
-        Scale direction (either X or Y).
+    @param i_scaleAxis [in]
+        Scale axis (either X or Y).
 
     @return Linked scale object.
 */
-CDiagScale* CDiagTrace::getDiagScale( const CEnumScaleDir& i_scaleDir )
+CDiagScale* CDiagTrace::getDiagScale( const CEnumScaleAxis& i_scaleAxis )
 //------------------------------------------------------------------------------
 {
-    return m_arpDiagScale[i_scaleDir.enumeratorAsInt()];
+    return m_arpDiagScale[i_scaleAxis.enumeratorAsInt()];
 }
 //lint +e1762
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the spacing used by scale object for the given scale direction.
 
-    @param i_scaleDir [in]
-        Scale direction (either X or Y).
+    @param i_scaleAxis [in]
+        Scale axis (either X or Y).
 
     @return Spacing used by the scale object.
 */
-ESpacing CDiagTrace::getSpacing( const CEnumScaleDir& i_scaleDir ) const
+ESpacing CDiagTrace::getSpacing( const CEnumScaleAxis& i_scaleAxis ) const
 //------------------------------------------------------------------------------
 {
-    if( m_arpDiagScale[i_scaleDir.enumeratorAsInt()] == nullptr )
+    if( m_arpDiagScale[i_scaleAxis.enumeratorAsInt()] == nullptr )
     {
         throw ZS::System::CException(__FILE__,__LINE__,EResultObjNotInList);
     }
-    return m_arpDiagScale[i_scaleDir.enumeratorAsInt()]->getSpacing();
+    return m_arpDiagScale[i_scaleAxis.enumeratorAsInt()]->getSpacing();
 }
 
 //------------------------------------------------------------------------------
 /*! @brief Checks whether the scale object for the given scale direction is valid.
 
-    @param i_scaleDir [in]
-        Scale direction (either X or Y).
+    @param i_scaleAxis [in]
+        Scale axis (either X or Y).
         Also an invalid enum value may be passed to check all scale direction.
 
     @return true if scale is valid, false otherwise.
 */
-bool CDiagTrace::isScaleValid( const CEnumScaleDir& i_scaleDir ) const
+bool CDiagTrace::isScaleValid( const CEnumScaleAxis& i_scaleAxis ) const
 //------------------------------------------------------------------------------
 {
     bool bScaleValid = true;
     int  idxScaleMin = 0;
-    int  idxScaleMax = CEnumScaleDir::count()-1;
+    int  idxScaleMax = CEnumScaleAxis::count()-1;
 
-    if( i_scaleDir.isValid() )
+    if( i_scaleAxis.isValid() )
     {
-        idxScaleMin = i_scaleDir.enumeratorAsInt();
-        idxScaleMax = i_scaleDir.enumeratorAsInt();
+        idxScaleMin = i_scaleAxis.enumeratorAsInt();
+        idxScaleMax = i_scaleAxis.enumeratorAsInt();
     }
 
     for (int idxScale = idxScaleMin; idxScale <= idxScaleMax; idxScale++)
@@ -282,93 +282,93 @@ bool CDiagTrace::isScaleValid( const CEnumScaleDir& i_scaleDir ) const
 //------------------------------------------------------------------------------
 /*! @brief Returns the scale values used by scale object for the given scale direction.
 
-    @param i_scaleDir [in]
-        Scale direction (either X or Y).
+    @param i_scaleAxis [in]
+        Scale axis (either X or Y).
 
     @return Scale values.
 */
-CScale CDiagTrace::getScale( const CEnumScaleDir& i_scaleDir ) const
+CScale CDiagTrace::getScale( const CEnumScaleAxis& i_scaleAxis ) const
 //------------------------------------------------------------------------------
 {
-    if( m_arpDiagScale[i_scaleDir.enumeratorAsInt()] == nullptr )
+    if( m_arpDiagScale[i_scaleAxis.enumeratorAsInt()] == nullptr )
     {
         throw CException(__FILE__,__LINE__,EResultObjNotInList);
     }
-    return m_arpDiagScale[i_scaleDir.enumeratorAsInt()]->getScale();
+    return m_arpDiagScale[i_scaleAxis.enumeratorAsInt()]->getScale();
 }
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the minimum scale value in pixels used by scale object for
            the given scale direction.
 
-    @param i_scaleDir [in]
-        Scale direction (either X or Y).
+    @param i_scaleAxis [in]
+        Scale axis (either X or Y).
 
     @return Minimum scale value in pixels.
 */
-int CDiagTrace::getScaleMinValPix( const CEnumScaleDir& i_scaleDir ) const
+int CDiagTrace::getScaleMinValPix( const CEnumScaleAxis& i_scaleAxis ) const
 //------------------------------------------------------------------------------
 {
-    if( m_arpDiagScale[i_scaleDir.enumeratorAsInt()] == nullptr )
+    if( m_arpDiagScale[i_scaleAxis.enumeratorAsInt()] == nullptr )
     {
         throw CException(__FILE__,__LINE__,EResultObjNotInList);
     }
-    return m_arpDiagScale[i_scaleDir.enumeratorAsInt()]->getMinValPix();
+    return m_arpDiagScale[i_scaleAxis.enumeratorAsInt()]->getMinValPix();
 }
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the maximum scale value in pixels used by scale object for
            the given scale direction.
 
-    @param i_scaleDir [in]
-        Scale direction (either X or Y).
+    @param i_scaleAxis [in]
+        Scale axis (either X or Y).
 
     @return Maximum scale value in pixels.
 */
-int CDiagTrace::getScaleMaxValPix( const CEnumScaleDir& i_scaleDir ) const
+int CDiagTrace::getScaleMaxValPix( const CEnumScaleAxis& i_scaleAxis ) const
 //------------------------------------------------------------------------------
 {
-    if( m_arpDiagScale[i_scaleDir.enumeratorAsInt()] == nullptr )
+    if( m_arpDiagScale[i_scaleAxis.enumeratorAsInt()] == nullptr )
     {
         throw CException(__FILE__,__LINE__,EResultObjNotInList);
     }
-    return m_arpDiagScale[i_scaleDir.enumeratorAsInt()]->getMaxValPix();
+    return m_arpDiagScale[i_scaleAxis.enumeratorAsInt()]->getMaxValPix();
 }
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the range in pixels used by scale object for the given scale direction.
 
-    @param i_scaleDir [in]
-        Scale direction (either X or Y).
+    @param i_scaleAxis [in]
+        Scale axis (either X or Y).
 
     @return Scale range in pixels.
 */
-int CDiagTrace::getScaleRangePix( const CEnumScaleDir& i_scaleDir ) const
+int CDiagTrace::getScaleRangePix( const CEnumScaleAxis& i_scaleAxis ) const
 //------------------------------------------------------------------------------
 {
-    if( m_arpDiagScale[i_scaleDir.enumeratorAsInt()] == nullptr )
+    if( m_arpDiagScale[i_scaleAxis.enumeratorAsInt()] == nullptr )
     {
         throw CException(__FILE__,__LINE__,EResultObjNotInList);
     }
-    return m_arpDiagScale[i_scaleDir.enumeratorAsInt()]->getRangePix();
+    return m_arpDiagScale[i_scaleAxis.enumeratorAsInt()]->getRangePix();
 }
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the range in pixels used by scale object for the given scale direction.
 
-    @param i_scaleDir [in]
-        Scale direction (either X or Y).
+    @param i_scaleAxis [in]
+        Scale axis (either X or Y).
 
     @return Scale range in pixels.
 */
-CPhysValRes CDiagTrace::getScaleRes( const CEnumScaleDir& i_scaleDir ) const
+CPhysValRes CDiagTrace::getScaleRes( const CEnumScaleAxis& i_scaleAxis ) const
 //------------------------------------------------------------------------------
 {
-    if( m_arpDiagScale[i_scaleDir.enumeratorAsInt()] == nullptr )
+    if( m_arpDiagScale[i_scaleAxis.enumeratorAsInt()] == nullptr )
     {
         throw CException(__FILE__,__LINE__,EResultObjNotInList);
     }
-    return m_arpDiagScale[i_scaleDir.enumeratorAsInt()]->getScaleRes();
+    return m_arpDiagScale[i_scaleAxis.enumeratorAsInt()]->getScaleRes();
 }
 
 /*==============================================================================
@@ -378,15 +378,15 @@ public: // instance methods
 //------------------------------------------------------------------------------
 /*! @brief Returns the unit of the values for the given scale direction.
 
-    @param i_scaleDir [in]
-        Scale direction (either X or Y).
+    @param i_scaleAxis [in]
+        Scale axis (either X or Y).
 
     @return Unit of the values.
 */
-CUnit CDiagTrace::getValuesUnit( const CEnumScaleDir& i_scaleDir ) const
+CUnit CDiagTrace::getValuesUnit( const CEnumScaleAxis& i_scaleAxis ) const
 //------------------------------------------------------------------------------
 {
-    return m_arphysValArr[i_scaleDir.enumeratorAsInt()].unit();
+    return m_arphysValArr[i_scaleAxis.enumeratorAsInt()].unit();
 }
 
 //------------------------------------------------------------------------------
@@ -398,15 +398,15 @@ CUnit CDiagTrace::getValuesUnit( const CEnumScaleDir& i_scaleDir ) const
     @note For the changed setting to take effect and become visible in the
           diagrams pixmap you must call the diagrams update method afterwards.
 
-    @param i_scaleDir [in]
-        Scale direction (either X or Y).
+    @param i_scaleAxis [in]
+        Scale axis (either X or Y).
     @param i_physValRes [in]
         Resolution of the values to be set.
 */
-void CDiagTrace::setValuesRes( const CEnumScaleDir& i_scaleDir, const CPhysValRes& i_physValRes )
+void CDiagTrace::setValuesRes( const CEnumScaleAxis& i_scaleAxis, const CPhysValRes& i_physValRes )
 //------------------------------------------------------------------------------
 {
-    return m_arphysValArr[i_scaleDir.enumeratorAsInt()].setRes(i_physValRes);
+    return m_arphysValArr[i_scaleAxis.enumeratorAsInt()].setRes(i_physValRes);
 }
 
 //------------------------------------------------------------------------------
@@ -415,15 +415,15 @@ void CDiagTrace::setValuesRes( const CEnumScaleDir& i_scaleDir, const CPhysValRe
     The resolution of the values defines the number of significant digits to be
     output if the values should be indicated e.g. by a marker object.
 
-    @param i_scaleDir [in]
-        Scale direction (either X or Y).
+    @param i_scaleAxis [in]
+        Scale axis (either X or Y).
 
     @return Resolution of the values.
 */
-CPhysValRes CDiagTrace::getValuesRes( const CEnumScaleDir& i_scaleDir ) const
+CPhysValRes CDiagTrace::getValuesRes( const CEnumScaleAxis& i_scaleAxis ) const
 //------------------------------------------------------------------------------
 {
-    return m_arphysValArr[i_scaleDir.enumeratorAsInt()].getRes();
+    return m_arphysValArr[i_scaleAxis.enumeratorAsInt()].getRes();
 }
 
 /*==============================================================================
@@ -439,17 +439,17 @@ public: // instance methods
     @note For the changed setting to take effect and become visible in the
           diagrams pixmap you must call the diagrams update method afterwards.
 
-    @param i_scaleDir [in]
-        Scale direction (either X or Y).
+    @param i_scaleAxis [in]
+        Scale axis (either X or Y).
     @param i_physValArr [in]
         New value array to be set.
 */
-void CDiagTrace::setValues( const CEnumScaleDir& i_scaleDir, const CPhysValArr& i_physValArr )
+void CDiagTrace::setValues( const CEnumScaleAxis& i_scaleAxis, const CPhysValArr& i_physValArr )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_scaleDir.toString() +
+        strMthInArgs = i_scaleAxis.toString() +
             ", ValArrRes: " + i_physValArr.getRes().toString() +
             ", ValArr [" + QString::number(i_physValArr.size()) + "]";
         if (i_physValArr.size() > 0) {
@@ -491,26 +491,26 @@ void CDiagTrace::setValues( const CEnumScaleDir& i_scaleDir, const CPhysValArr& 
         /* strMethod    */ "setValues",
         /* strAddInfo   */ strMthInArgs );
 
-    int iScaleDir = i_scaleDir.enumeratorAsInt();
+    int iScaleAxis = i_scaleAxis.enumeratorAsInt();
 
-    if( m_arpDiagScale[iScaleDir] == nullptr )
+    if( m_arpDiagScale[iScaleAxis] == nullptr )
     {
         throw CException(__FILE__,__LINE__,EResultObjNotInList);
     }
 
-    const CDiagScale* pDiagScale = m_arpDiagScale[iScaleDir];
+    const CDiagScale* pDiagScale = m_arpDiagScale[iScaleAxis];
 
-    CPhysValRes physValResPrev = m_arphysValArr[iScaleDir].getRes();
+    CPhysValRes physValResPrev = m_arphysValArr[iScaleAxis].getRes();
 
-    m_arphysValArr[iScaleDir] = i_physValArr;
+    m_arphysValArr[iScaleAxis] = i_physValArr;
 
     if( i_physValArr.unit().isValid() && pDiagScale->getScale().unit() != i_physValArr.unit() )
     {
-        m_arphysValArr[iScaleDir].convertValues(pDiagScale->getScale().unit());
+        m_arphysValArr[iScaleAxis].convertValues(pDiagScale->getScale().unit());
     }
     if( !i_physValArr.getRes().isValid() )
     {
-        m_arphysValArr[iScaleDir].setRes(physValResPrev);
+        m_arphysValArr[iScaleAxis].setRes(physValResPrev);
     }
 
     invalidate(EUpdateData);
@@ -530,8 +530,8 @@ void CDiagTrace::setValues( const CEnumScaleDir& i_scaleDir, const CPhysValArr& 
     @note For the changed setting to take effect and become visible in the
           diagrams pixmap you must call the diagrams update method afterwards.
 
-    @param i_scaleDir [in]
-        Scale direction (either X or Y).
+    @param i_scaleAxis [in]
+        Scale axis (either X or Y).
     @param i_arfValues [in]
         New value array to be set.
     @param i_pUnitVal [in]
@@ -542,7 +542,7 @@ void CDiagTrace::setValues( const CEnumScaleDir& i_scaleDir, const CPhysValArr& 
         current resolution will not be changed.
 */
 void CDiagTrace::setValues(
-    const CEnumScaleDir&   i_scaleDir,
+    const CEnumScaleAxis&   i_scaleAxis,
     const QVector<double>& i_arfValues,
     const CUnit*           i_pUnitVals,
     const CPhysValRes&     i_physValRes )
@@ -550,7 +550,7 @@ void CDiagTrace::setValues(
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_scaleDir.toString() +
+        strMthInArgs = i_scaleAxis.toString() +
             ", ValArrRes: " + i_physValRes.toString() +
             ", ValArr [" + QString::number(i_arfValues.size()) + "] " +
             QString(i_pUnitVals == nullptr ? "" : i_pUnitVals->symbol());
@@ -607,32 +607,32 @@ void CDiagTrace::setValues(
         /* strMethod    */ "setValues",
         /* strAddInfo   */ strMthInArgs );
 
-    int iScaleDir = i_scaleDir.enumeratorAsInt();
+    int iScaleAxis = i_scaleAxis.enumeratorAsInt();
 
-    if( m_arpDiagScale[iScaleDir] == nullptr )
+    if( m_arpDiagScale[iScaleAxis] == nullptr )
     {
         throw CException(__FILE__,__LINE__,EResultObjNotInList);
     }
 
-    const CDiagScale* pDiagScale = m_arpDiagScale[iScaleDir];
-    CUnit  unitVal = i_pUnitVals == nullptr ? m_arphysValArr[iScaleDir].unit() : *i_pUnitVals;
+    const CDiagScale* pDiagScale = m_arpDiagScale[iScaleAxis];
+    CUnit  unitVal = i_pUnitVals == nullptr ? m_arphysValArr[iScaleAxis].unit() : *i_pUnitVals;
 
-    if( !areOfSameUnitGroup(m_arphysValArr[iScaleDir].unit(),unitVal) )
+    if( !areOfSameUnitGroup(m_arphysValArr[iScaleAxis].unit(),unitVal) )
     {
-        m_arphysValArr[iScaleDir].setUnit(unitVal);
+        m_arphysValArr[iScaleAxis].setUnit(unitVal);
     }
 
-    m_arphysValArr[iScaleDir].setValues(0, i_arfValues, unitVal);
+    m_arphysValArr[iScaleAxis].setValues(0, i_arfValues, unitVal);
 
     if( pDiagScale->getScale().unit() != unitVal )
     {
-        m_arphysValArr[iScaleDir].convertValues(pDiagScale->getScale().unit());
+        m_arphysValArr[iScaleAxis].convertValues(pDiagScale->getScale().unit());
     }
     if( i_physValRes.isValid() )
     {
-        m_arphysValArr[iScaleDir].setRes(i_physValRes);
+        m_arphysValArr[iScaleAxis].setRes(i_physValRes);
     }
-    m_arphysValArr[iScaleDir].setValidity(EValueValidity::Valid);
+    m_arphysValArr[iScaleAxis].setValidity(EValueValidity::Valid);
 
     invalidate(EUpdateData);
 
@@ -645,23 +645,23 @@ void CDiagTrace::setValues(
 //------------------------------------------------------------------------------
 /*! @brief Returns whether valid values have been set for the given scale direction.
 
-    @param i_scaleDir [in]
-        Scale direction (either X or Y).
+    @param i_scaleAxis [in]
+        Scale axis (either X or Y).
 
     @return true if there are valid values, false otherwise.
 */
-bool CDiagTrace::areValuesValid( const CEnumScaleDir& i_scaleDir ) const
+bool CDiagTrace::areValuesValid( const CEnumScaleAxis& i_scaleAxis ) const
 //------------------------------------------------------------------------------
 {
     bool bValuesValid = true;
 
     int idxScaleMin = 0;
-    int idxScaleMax = CEnumScaleDir::count()-1;
+    int idxScaleMax = CEnumScaleAxis::count()-1;
 
-    if( i_scaleDir.isValid() )
+    if( i_scaleAxis.isValid() )
     {
-        idxScaleMin = i_scaleDir.enumeratorAsInt();
-        idxScaleMax = i_scaleDir.enumeratorAsInt();
+        idxScaleMin = i_scaleAxis.enumeratorAsInt();
+        idxScaleMax = i_scaleAxis.enumeratorAsInt();
     }
 
     for( int idxScale = idxScaleMin; idxScale <= idxScaleMax; idxScale++ )
@@ -680,15 +680,15 @@ bool CDiagTrace::areValuesValid( const CEnumScaleDir& i_scaleDir ) const
 
     Usually the number of values is the same for both scale directions.
 
-    @param i_scaleDir [in]
-        Scale direction (either X or Y).
+    @param i_scaleAxis [in]
+        Scale axis (either X or Y).
 
     @return Number of values.
 */
-int CDiagTrace::getValCount( const CEnumScaleDir& i_scaleDir ) const
+int CDiagTrace::getValCount( const CEnumScaleAxis& i_scaleAxis ) const
 //------------------------------------------------------------------------------
 {
-    return m_arphysValArr[i_scaleDir.enumeratorAsInt()].size();
+    return m_arphysValArr[i_scaleAxis.enumeratorAsInt()].size();
 }
 
 //------------------------------------------------------------------------------
@@ -696,15 +696,15 @@ int CDiagTrace::getValCount( const CEnumScaleDir& i_scaleDir ) const
 
     Usually the number of values is the same for both scale directions.
 
-    @param i_scaleDir [in]
-        Scale direction (either X or Y).
+    @param i_scaleAxis [in]
+        Scale axis (either X or Y).
 
     @return Array with values.
 */
-QVector<double> CDiagTrace::getValues( const CEnumScaleDir& i_scaleDir ) const
+QVector<double> CDiagTrace::getValues( const CEnumScaleAxis& i_scaleAxis ) const
 //------------------------------------------------------------------------------
 {
-    return m_arphysValArr[i_scaleDir.enumeratorAsInt()].toDoubleVec(0,EArrayIndexCountAllElements);
+    return m_arphysValArr[i_scaleAxis.enumeratorAsInt()].toDoubleVec(0,EArrayIndexCountAllElements);
 }
 
 /*==============================================================================
@@ -717,8 +717,8 @@ public: // instance methods
     The method call will be forwarded to the corresponding scale object which
     contains the pixel range for the axis.
 
-    @param i_scaleDir [in]
-        Scale direction (either X or Y).
+    @param i_scaleAxis [in]
+        Scale axis (either X or Y).
     @param i_fVal [in]
         Value to be converted into the corresponding pixel value.
     @param i_pUnit [in]
@@ -726,14 +726,14 @@ public: // instance methods
 
     @Return Value converted into pixel.
 */
-int CDiagTrace::getValPix( const CEnumScaleDir& i_scaleDir, double i_fVal, const CUnit* i_pUnit ) const
+int CDiagTrace::getValPix( const CEnumScaleAxis& i_scaleAxis, double i_fVal, const CUnit* i_pUnit ) const
 //------------------------------------------------------------------------------
 {
-    if( m_arpDiagScale[i_scaleDir.enumeratorAsInt()] == nullptr )
+    if( m_arpDiagScale[i_scaleAxis.enumeratorAsInt()] == nullptr )
     {
         throw CException(__FILE__,__LINE__,EResultObjNotInList);
     }
-    return m_arpDiagScale[i_scaleDir.enumeratorAsInt()]->getValPix(i_fVal,i_pUnit);
+    return m_arpDiagScale[i_scaleAxis.enumeratorAsInt()]->getValPix(i_fVal,i_pUnit);
 }
 
 //------------------------------------------------------------------------------
@@ -742,8 +742,8 @@ int CDiagTrace::getValPix( const CEnumScaleDir& i_scaleDir, double i_fVal, const
     The method call will be forwarded to the corresponding scale object which
     contains the pixel range for the axis.
 
-    @param i_scaleDir [in]
-        Scale direction (either X or Y).
+    @param i_scaleAxis [in]
+        Scale axis (either X or Y).
     @param i_fVal [in]
         Value to be converted into the corresponding pixel value.
     @param i_pUnit [in]
@@ -757,22 +757,22 @@ int CDiagTrace::getValPix( const CEnumScaleDir& i_scaleDir, double i_fVal, const
     @return Value converted to string.
 */
 QString CDiagTrace::getValString(
-    const CEnumScaleDir& i_scaleDir,
+    const CEnumScaleAxis& i_scaleAxis,
     double i_fVal,
     const CUnit* i_pUnit,
     int i_iDigitsCountMax,
     bool i_bUseEngineeringFormat ) const
 //------------------------------------------------------------------------------
 {
-    int iScaleDir = i_scaleDir.enumeratorAsInt();
+    int iScaleAxis = i_scaleAxis.enumeratorAsInt();
 
-    CUnit unit = m_arphysValArr[iScaleDir].unit();
+    CUnit unit = m_arphysValArr[iScaleAxis].unit();
 
     if( i_pUnit != nullptr )
     {
         unit = *i_pUnit;
     }
-    if( !areOfSameUnitGroup(m_arphysValArr[iScaleDir].unit(), unit) )
+    if( !areOfSameUnitGroup(m_arphysValArr[iScaleAxis].unit(), unit) )
     {
         throw CException(__FILE__, __LINE__, EResultDifferentPhysSizes);
     }
@@ -783,7 +783,7 @@ QString CDiagTrace::getValString(
     int    iLeadingDigits = 1;
     int    iTrailingDigits = 1;
     int    iExponentDigits = 0;
-    double fRes = getValuesRes(i_scaleDir).getVal(unit);
+    double fRes = getValuesRes(i_scaleAxis).getVal(unit);
 
     if( fVal >= 10.0 )
     {
@@ -844,14 +844,14 @@ QString CDiagTrace::getValString(
 
     If the source value is out of range the method returns Invalid.
 
-    @param i_scaleDirSrc [in]
-        Scale direction (either X or Y) of the source value.
+    @param i_scaleAxisSrc [in]
+        Scale axis (either X or Y) of the source value.
     @param i_fValSrc [in]
         Source value for which the destination value should be calculated.
     @param i_pUnitSrc [in]
         Pass a reference to a valid unit if the value is not given in the unit of the trace.
-    @param i_scaleDirDst [in]
-        Scale direction (either X or Y) of the destination value.
+    @param i_scaleAxisDst [in]
+        Scale axis (either X or Y) of the destination value.
         If the source value is on the X-axis the destination value should
         be on the Y-axis and vice versa.
     @param o_pfValDst [out]
@@ -863,28 +863,28 @@ QString CDiagTrace::getValString(
         false otherwise.
 */
 EValueValidity CDiagTrace::getVal(
-    const CEnumScaleDir& i_scaleDirSrc,
+    const CEnumScaleAxis& i_scaleAxisSrc,
     double               i_fValSrc,
     const CUnit*         i_pUnitSrc,
-    const CEnumScaleDir& i_scaleDirDst,
+    const CEnumScaleAxis& i_scaleAxisDst,
     double*              o_pfValDst,
     CUnit*               i_pUnitDst,
     bool                 i_bRound2Res ) const
 //------------------------------------------------------------------------------
 {
-    int iScaleDirSrc = i_scaleDirSrc.enumeratorAsInt();
-    int iScaleDirDst = i_scaleDirDst.enumeratorAsInt();
+    int iScaleAxisSrc = i_scaleAxisSrc.enumeratorAsInt();
+    int iScaleAxisDst = i_scaleAxisDst.enumeratorAsInt();
 
-    if( m_arpDiagScale[iScaleDirSrc] == nullptr )
+    if( m_arpDiagScale[iScaleAxisSrc] == nullptr )
     {
         throw CException(__FILE__,__LINE__,EResultObjNotInList);
     }
-    if( m_arpDiagScale[iScaleDirDst] == nullptr )
+    if( m_arpDiagScale[iScaleAxisDst] == nullptr )
     {
         throw CException(__FILE__,__LINE__,EResultObjNotInList);
     }
 
-    for( int idxScale = 0; idxScale < CEnumScaleDir::count(); idxScale++ )
+    for( int idxScale = 0; idxScale < CEnumScaleAxis::count(); idxScale++ )
     {
         if( !m_arphysValArr[idxScale].isValid() )
         {
@@ -892,8 +892,8 @@ EValueValidity CDiagTrace::getVal(
         }
     }
 
-    QVector<double> arfValuesSrc = m_arphysValArr[iScaleDirSrc].toDoubleVec(0, EArrayIndexCountAllElements);
-    QVector<double> arfValuesDst = m_arphysValArr[iScaleDirDst].toDoubleVec(0, EArrayIndexCountAllElements);
+    QVector<double> arfValuesSrc = m_arphysValArr[iScaleAxisSrc].toDoubleVec(0, EArrayIndexCountAllElements);
+    QVector<double> arfValuesDst = m_arphysValArr[iScaleAxisDst].toDoubleVec(0, EArrayIndexCountAllElements);
 
     if( arfValuesSrc.size() == 0 || arfValuesDst.size() == 0 )
     {
@@ -901,7 +901,7 @@ EValueValidity CDiagTrace::getVal(
     }
 
     double fValSrc = i_fValSrc;
-    CUnit unitValuesSrc = m_arphysValArr[iScaleDirSrc].unit();
+    CUnit unitValuesSrc = m_arphysValArr[iScaleAxisSrc].unit();
     if( i_pUnitSrc != nullptr && *i_pUnitSrc != unitValuesSrc )
     {
         fValSrc = i_pUnitSrc->convertValue(fValSrc, unitValuesSrc);
@@ -918,7 +918,7 @@ EValueValidity CDiagTrace::getVal(
     double fValSrcNext = 0.0;
     double fValDstPrev = 0.0;
     double fValDstNext = 0.0;
-    double fResSrc = getValuesRes(i_scaleDirSrc).getVal(unitValuesSrc);
+    double fResSrc = getValuesRes(i_scaleAxisSrc).getVal(unitValuesSrc);
 
     if( iValCount == 1 )
     {
@@ -938,7 +938,7 @@ EValueValidity CDiagTrace::getVal(
         {
             validDst = EValueValidity::Valid;
 
-            const CDiagScale* pDiagScaleSrc = m_arpDiagScale[iScaleDirSrc];
+            const CDiagScale* pDiagScaleSrc = m_arpDiagScale[iScaleAxisSrc];
 
             double fScaleMinSrc = arfValuesSrc[0];
             double fScaleMaxSrc = arfValuesSrc[iValCount-1];
@@ -1030,15 +1030,15 @@ EValueValidity CDiagTrace::getVal(
             fValDst = fValDstPrev;
         }
 
-        CUnit unitDst = m_arphysValArr[iScaleDirDst].unit();
+        CUnit unitDst = m_arphysValArr[iScaleAxisDst].unit();
         if( i_pUnitDst != nullptr && *i_pUnitDst != unitDst )
         {
-            fValDst = m_arphysValArr[iScaleDirDst].unit().convertValue(fValDst, unitDst);
+            fValDst = m_arphysValArr[iScaleAxisDst].unit().convertValue(fValDst, unitDst);
         }
 
         if (i_bRound2Res)
         {
-            double fResDst = getValuesRes(i_scaleDirDst).getVal(unitDst);
+            double fResDst = getValuesRes(i_scaleAxisDst).getVal(unitDst);
             if (fResDst != 0.0)
             {
                 fValDst = Math::round2Resolution(fValDst, fabs(fResDst));
@@ -1054,8 +1054,8 @@ EValueValidity CDiagTrace::getVal(
 /*! @brief Returns the value in world coordinates (physical value) for the
            given position in pixels.
 
-    @param i_scaleDirSrc [in]
-        Scale direction (either X or Y) for which the pixel coordinate should be returned.
+    @param i_scaleAxisSrc [in]
+        Scale axis (either X or Y) for which the pixel coordinate should be returned.
     @param i_fPix [in]
         Value in pixel coordinates.
     @param i_pUnit [in]
@@ -1064,14 +1064,14 @@ EValueValidity CDiagTrace::getVal(
 
     @return Value in world coordinates.
 */
-double CDiagTrace::getVal( const CEnumScaleDir& i_scaleDir, double i_fPix, const CUnit* i_pUnit ) const
+double CDiagTrace::getVal( const CEnumScaleAxis& i_scaleAxis, double i_fPix, const CUnit* i_pUnit ) const
 //------------------------------------------------------------------------------
 {
-    if( m_arpDiagScale[i_scaleDir.enumeratorAsInt()] == nullptr )
+    if( m_arpDiagScale[i_scaleAxis.enumeratorAsInt()] == nullptr )
     {
         throw CException(__FILE__,__LINE__,EResultObjNotInList);
     }
-    return m_arpDiagScale[i_scaleDir.enumeratorAsInt()]->getVal(i_fPix, i_pUnit);
+    return m_arpDiagScale[i_scaleAxis.enumeratorAsInt()]->getVal(i_fPix, i_pUnit);
 }
 
 /*==============================================================================
@@ -1193,7 +1193,7 @@ void CDiagTrace::update( unsigned int i_uUpdateFlags )
     }
     else if( i_uUpdateFlags & EUpdateData && m_uUpdateFlags & EUpdateData )
     {
-        for( int idxScale = 0; idxScale < CEnumScaleDir::count(); idxScale++ )
+        for( int idxScale = 0; idxScale < CEnumScaleAxis::count(); idxScale++ )
         {
             CDiagScale* pDiagScale = m_arpDiagScale[idxScale];
 
@@ -1237,8 +1237,8 @@ CDiagTrace* CDiagTrace::clone( CDataDiagram* i_pDiagramTrg ) const
         return nullptr;
     }
 
-    const CDiagScale* pDiagScaleXSrc = m_arpDiagScale[EScaleDirX];
-    const CDiagScale* pDiagScaleYSrc = m_arpDiagScale[EScaleDirY];
+    const CDiagScale* pDiagScaleXSrc = m_arpDiagScale[EScaleAxisX];
+    const CDiagScale* pDiagScaleYSrc = m_arpDiagScale[EScaleAxisY];
 
     if( pDiagScaleXSrc == nullptr || pDiagScaleYSrc == nullptr )
     {
@@ -1257,12 +1257,12 @@ CDiagTrace* CDiagTrace::clone( CDataDiagram* i_pDiagramTrg ) const
         /* strObjName  */ m_strObjName,
         /* pDiagScaleX */ pDiagScaleX,
         /* pDiagScaleY */ pDiagScaleY,
-        /* physValResX */ m_arphysValArr[EScaleDirX].getRes(),
-        /* physValResY */ m_arphysValArr[EScaleDirY].getRes() );
+        /* physValResX */ m_arphysValArr[EScaleAxisX].getRes(),
+        /* physValResY */ m_arphysValArr[EScaleAxisY].getRes() );
 
     int idxScale;
 
-    for( idxScale = 0; idxScale < CEnumScaleDir::count(); idxScale++ )
+    for( idxScale = 0; idxScale < CEnumScaleAxis::count(); idxScale++ )
     {
         pDiagTraceCloned->m_arphysValArr[idxScale] = m_arphysValArr[idxScale];
     }

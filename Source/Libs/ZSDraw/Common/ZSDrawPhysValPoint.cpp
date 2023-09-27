@@ -69,6 +69,21 @@ CPhysValPoint::CPhysValPoint(const CUnit& i_unit) :
     @param [in] i_unit
         Unit the coordinates are passed.
 */
+CPhysValPoint::CPhysValPoint(double i_fX, double i_fY, const CUnit& i_unit) :
+//------------------------------------------------------------------------------
+    m_unit(i_unit),
+    m_pt(i_fX, i_fY)
+{
+}
+
+//------------------------------------------------------------------------------
+/*! @brief
+
+    @param [in] i_pt
+        Point whose coordinates are in the given unit.
+    @param [in] i_unit
+        Unit the coordinates are passed.
+*/
 CPhysValPoint::CPhysValPoint(const QPointF& i_pt, const CUnit& i_unit) :
 //------------------------------------------------------------------------------
     m_unit(i_unit),
@@ -258,22 +273,12 @@ public: // instance methods (to convert the values into another unit)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the physical point as a QPointF instance in the desired unit.
-
-    @param [in] i_unit
-        Unit in which the coordinates should be returned.
+/*! @brief Returns the physical point as a QPointF instance.
 */
-QPointF CPhysValPoint::toQPointF(const CUnit& i_unit) const
+QPointF CPhysValPoint::toQPointF() const
 //------------------------------------------------------------------------------
 {
-    QPointF ptF = m_pt;
-    if (m_unit != i_unit) {
-        double fX = m_unit.convertValue(m_pt.x(), i_unit);
-        double fY = m_unit.convertValue(m_pt.y(), i_unit);
-        ptF.setX(fX);
-        ptF.setY(fY);
-    }
-    return ptF;
+    return m_pt;
 }
 
 //------------------------------------------------------------------------------

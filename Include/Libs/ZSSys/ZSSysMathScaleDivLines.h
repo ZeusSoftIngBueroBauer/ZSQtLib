@@ -96,10 +96,10 @@ public: // class methods
         int i_iPrecisionMax = 10,
         CTrcAdminObj* i_pTrcAdminObj = nullptr);
 public: // ctors and dtor
-    CScaleDivLines(const QString& i_strObjName, EScaleDir i_scaleDir);
+    CScaleDivLines(const QString& i_strObjName, EScaleAxis i_scaleAxis);
     CScaleDivLines(
         const QString& i_strNameSpace, const QString& i_strClassName,
-        const QString& i_strObjName, EScaleDir i_scaleDir);
+        const QString& i_strObjName, EScaleAxis i_scaleAxis);
     CScaleDivLines(const QString& i_strObjName, const CScaleDivLines& i_other);
     CScaleDivLines(const CScaleDivLines& i_other) = delete;
     ~CScaleDivLines();
@@ -108,6 +108,7 @@ public: // operators
 public: // instance methods
     QString objectName() const;
 public: // instance methods (setting properties)
+    bool setYScaleAxisOrientation(const CEnumYScaleAxisOrientation& i_eOrientation);
     bool setSpacing(const CEnumSpacing& i_eSpacing);
     bool setScale(double i_fMin, double i_fMax, double i_fRes, double i_fMin_px, double i_fMax_px);
     bool setScaleMin(double i_fMin);
@@ -120,7 +121,8 @@ public: // instance methods (setting properties)
     bool setDivLinesDistMinInPix(const CEnumDivLineLayer& i_eLayer, int i_iDist_px);
 public: // instance methods (getting properties)
     bool isValid() const;
-    EScaleDir scaleDir() const;
+    EScaleAxis scaleAxis() const;
+    EYScaleAxisOrientation yScaleAxisOrientation() const;
     ESpacing spacing() const;
     double scaleMin() const;
     double scaleMax() const;
@@ -164,8 +166,10 @@ protected: // instance members (config values)
     QString m_strClassName;
     /*!< Name of the instance. */
     QString m_strObjName;
-    /*!< Scale direction (X or Y). Set by the constructor. Not changeable during runtime. */
-    EScaleDir m_scaleDir;
+    /*!< Scale axis (X or Y). Set by the constructor. Not changeable during runtime. */
+    EScaleAxis m_scaleAxis;
+    /*!< Y scale axis orientation. Defaults to "BottomUp". */
+    EYScaleAxisOrientation m_yScaleAxisOrientation;
     /*!< Spacing of the scale (either linear or logarithmic). */
     ESpacing m_spacing;
     /*!< Minimum scale value. */

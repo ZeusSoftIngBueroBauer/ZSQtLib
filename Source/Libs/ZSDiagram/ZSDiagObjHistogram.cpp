@@ -212,8 +212,8 @@ void CDiagObjHistogram::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPa
     // If data processing is requested and necessary for this object ..
     if( i_uUpdateFlags & EUpdateData && m_uUpdateFlags & EUpdateData )
     {
-        QVector<double> arfXValues  = m_pDiagTrace->getValues(EScaleDir::X);
-        QVector<double> arfYValues  = m_pDiagTrace->getValues(EScaleDir::Y);
+        QVector<double> arfXValues  = m_pDiagTrace->getValues(EScaleAxis::X);
+        QVector<double> arfYValues  = m_pDiagTrace->getValues(EScaleAxis::Y);
 
         mthTracer.trace("Processing Data", ELogDetailLevel::Debug);
 
@@ -241,8 +241,8 @@ void CDiagObjHistogram::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPa
         QPoint*       pPt;
         const double* pfX;
         const double* pfY;
-        double        fXMin = m_pDiagTrace->getScale(EScaleDir::X).minVal().getVal();
-        double        fXMax = m_pDiagTrace->getScale(EScaleDir::X).maxVal().getVal();
+        double        fXMin = m_pDiagTrace->getScale(EScaleAxis::X).minVal().getVal();
+        double        fXMax = m_pDiagTrace->getScale(EScaleAxis::X).maxVal().getVal();
         double        fx, fy;
         int           xPix, yPix;
 
@@ -319,11 +319,11 @@ void CDiagObjHistogram::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPa
             {
                 break;
             }
-            xPix = m_pDiagTrace->getValPix(EScaleDir::X,fx);
+            xPix = m_pDiagTrace->getValPix(EScaleAxis::X,fx);
             pPt->setX(xPix);
 
             fy = *pfY;
-            yPix = m_pDiagTrace->getValPix(EScaleDir::Y,fy);
+            yPix = m_pDiagTrace->getValPix(EScaleAxis::Y,fy);
             pPt->setY(yPix);
         }
 
@@ -357,7 +357,7 @@ void CDiagObjHistogram::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPa
                 {
                     painter.drawLine(
                         /* x1 */ m_pPtArr->at(idxVal).x(),
-                        /* y1 */ m_pDiagTrace->getScaleMinValPix(EScaleDir::Y),
+                        /* y1 */ m_pDiagTrace->getScaleMinValPix(EScaleAxis::Y),
                         /* x2 */ m_pPtArr->at(idxVal).x(),
                         /* y2 */ m_pPtArr->at(idxVal).y() );
                 }

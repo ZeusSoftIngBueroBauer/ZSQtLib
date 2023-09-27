@@ -57,7 +57,7 @@ may result in using the software modules.
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactoryRect.h"
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactoryText.h"
 #include "ZSDraw/Widgets/GraphObjFormat/ZSDrawDlgFormatGraphObjs.h"
-#include "ZSDraw/Widgets/Drawing/ZSDrawDlgDrawingViewSetup.h"
+#include "ZSDraw/Widgets/Drawing/ZSDrawingViewPropertiesDlg.h"
 #include "ZSDraw/Widgets/Drawing/ZSDrawingView.h"
 #include "ZSDraw/Widgets/ObjFactories/ZSDrawObjFactoriesModel.h"
 #include "ZSDraw/Widgets/TreeView/ZSDrawGraphObjsWdgt.h"
@@ -3010,9 +3010,9 @@ void CMainWindow::onActionFilePageSetupTriggered(bool i_bChecked)
 
     CDrawingView* pDrawingView = m_pWdgtCentral->drawingView();
     QString strDlgTitle = ZS::System::GUI::getMainWindowTitle() + ": Page Setup";
-    CDlgDrawingViewSetup* pDlg = CDlgDrawingViewSetup::GetInstance(pDrawingView);
+    CDlgDrawingViewProperties* pDlg = CDlgDrawingViewProperties::GetInstance(pDrawingView);
     if( pDlg == nullptr ) {
-        pDlg = CDlgDrawingViewSetup::CreateInstance(strDlgTitle, pDrawingView);
+        pDlg = CDlgDrawingViewProperties::CreateInstance(strDlgTitle, pDrawingView);
         pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
         pDlg->adjustSize();
         pDlg->show();
@@ -4144,10 +4144,9 @@ void CMainWindow::onDrawingSceneSizeChanged(const CDrawingSize& i_drawingSize)
 
     if (m_pLblStatusBarDrawingSceneMouseCursorPos != nullptr) {
         CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
-        CPhysVal physValX = pDrawingScene->toPhysValXCoor(m_ptDrawingSceneMouseCursorPos.x());
-        CPhysVal physValY = pDrawingScene->toPhysValYCoor(m_ptDrawingSceneMouseCursorPos.y());
+        CPhysValPoint physValPoint = pDrawingScene->toPhysValPoint(m_ptDrawingSceneMouseCursorPos);
         QString strPosInfo = "MousePos {" + qPoint2Str(m_ptDrawingSceneMouseCursorPos.toPoint()) + "}" +
-            "{" + physValX.toString() + ", " + physValY.toString() + "}";
+            "{" + physValPoint.toString() + "}";
         m_pLblStatusBarDrawingSceneMouseCursorPos->setText(strPosInfo);
     }
 }
@@ -4273,10 +4272,9 @@ void CMainWindow::onDrawingSceneMousePosChanged( const QPointF& i_ptMousePos )
     m_ptDrawingSceneMouseCursorPos = i_ptMousePos;
     if (m_pLblStatusBarDrawingSceneMouseCursorPos != nullptr) {
         CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
-        CPhysVal physValX = pDrawingScene->toPhysValXCoor(m_ptDrawingSceneMouseCursorPos.x());
-        CPhysVal physValY = pDrawingScene->toPhysValYCoor(m_ptDrawingSceneMouseCursorPos.y());
+        CPhysValPoint physValPoint = pDrawingScene->toPhysValPoint(m_ptDrawingSceneMouseCursorPos);
         QString strPosInfo = "MousePos {" + qPoint2Str(m_ptDrawingSceneMouseCursorPos.toPoint()) + "}" +
-            "{" + physValX.toString() + ", " + physValY.toString() + "}";
+            "{" + physValPoint.toString() + "}";
         m_pLblStatusBarDrawingSceneMouseCursorPos->setText(strPosInfo);
     }
 }

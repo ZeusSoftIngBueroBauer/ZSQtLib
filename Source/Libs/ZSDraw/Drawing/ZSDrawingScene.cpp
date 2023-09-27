@@ -99,6 +99,7 @@ const QString CDrawingScene::c_strXmlAttrHeight = "Height";
 const QString CDrawingScene::c_strXmlAttrScaleFactor = "ScaleFactor";
 const QString CDrawingScene::c_strXmlAttrPaperSize = "PaperSize";
 const QString CDrawingScene::c_strXmlAttrPaperOrientation = "PaperOrientation";
+const QString CDrawingScene::c_strXmlAttrYScaleAxisOrientation = "YScaleAxisOrientation";
 const QString CDrawingScene::c_strXmlAttrGridLinesVisible = "GridLinesVisible";
 const QString CDrawingScene::c_strXmlAttrGridLinesStyle = "GridLinesStyle";
 const QString CDrawingScene::c_strXmlAttrGridLinesWidth = "GridLinesWidth";
@@ -168,8 +169,8 @@ CDrawingScene::CDrawingScene(const QString& i_strName, QObject* i_pObjParent) :
     QGraphicsScene(i_pObjParent),
     m_drawingSize("DrawingScene"),
     m_gridSettings("DrawingScene"),
-    m_divLinesMetricsX("DrawingScene", EScaleDir::X),
-    m_divLinesMetricsY("DrawingScene", EScaleDir::Y),
+    m_divLinesMetricsX("DrawingScene", EScaleAxis::X),
+    m_divLinesMetricsY("DrawingScene", EScaleAxis::Y),
     m_drawSettings(),
     m_mode(EMode::Undefined),
     m_editTool(EEditTool::None),
@@ -220,6 +221,10 @@ CDrawingScene::CDrawingScene(const QString& i_strName, QObject* i_pObjParent) :
         /* strNodeSeparator */ "::",
         /* bCreateMutex     */ false,
         /* pObjParent       */ nullptr );
+
+    QObject::connect(
+        &Units.Length, &CUnitsLength::resolutionChanged,
+        this, &CDrawingScene::onDrawUnitsLengthResolutionChanged );
 
     QObject::connect(
         m_pGraphObjsIdxTree, &CIdxTree::treeEntryAdded,
@@ -360,7 +365,8 @@ void CDrawingScene::setDrawingSize( const CDrawingSize& i_drawingSize)
             // The Y scale direction is from bottom to top.
             m_divLinesMetricsY.setScale(
                 0.0, m_drawingSize.metricImageHeight().getVal(), 0.0,
-                m_drawingSize.imageHeightInPixels()-1, 0);
+                0, m_drawingSize.imageHeightInPixels()-1);
+            m_divLinesMetricsY.setYScaleAxisOrientation(m_drawingSize.yScaleAxisOrientation());
         }
         else {
             // Pixel drawing: the origin is at the top left corner:
@@ -374,6 +380,7 @@ void CDrawingScene::setDrawingSize( const CDrawingSize& i_drawingSize)
             m_divLinesMetricsY.setScale(
                 0.0, m_drawingSize.imageHeightInPixels()-1, 0.0,
                 0, m_drawingSize.imageHeightInPixels()-1);
+            m_divLinesMetricsY.setYScaleAxisOrientation(EYScaleAxisOrientation::TopDown);
         }
         m_divLinesMetricsX.update();
         m_divLinesMetricsY.update();
@@ -404,137 +411,240 @@ const CDrawingSize& CDrawingScene::drawingSize() const
 public: // instance methods
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-/*! @brief Converts the given X coordinate in pixels into a physical value containing
-           the coordinate in the unit and the resolution of the drawing scene.
+////------------------------------------------------------------------------------
+///*! @brief Converts the given X coordinate in pixels into a physical value containing
+//           the coordinate in the unit and the resolution of the drawing scene.
+//
+//    If the drawing is not setup to use metric coordinate system, the method just
+//    adds the unit pixels and the resolution to the returned physical value.
+//
+//    If the drawing is setup to use metric coordinate system, the given pixel
+//    coordinate will be converted to a physical value with the metric unit
+//    of the drawing scene adding the resolution to the returned physical value.
+//
+//    @return Converted value.
+//*/
+//CPhysVal CDrawingScene::toPhysValXCoor(double i_fXCoor_px) const
+////------------------------------------------------------------------------------
+//{
+//    return m_drawingSize.toPhysValXCoor(i_fXCoor_px);
+//}
 
-    If the drawing is not setup to use metric coordinate system, the method just
-    adds the unit pixels and the resolution to the returned physical value.
-
-    If the drawing is setup to use metric coordinate system, the given pixel
-    coordinate will be converted to a physical value with the metric unit
-    of the drawing scene adding the resolution to the returned physical value.
-
-    @return Converted value.
-*/
-CPhysVal CDrawingScene::toPhysValXCoor(double i_fXCoor_px) const
-//------------------------------------------------------------------------------
-{
-    return m_drawingSize.toPhysValXCoor(i_fXCoor_px);
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Converts the given Y coordinate in pixels into a physical value containing
-           the coordinate in the unit and the resolution of the drawing scene.
-
-    If the drawing is not setup to use metric coordinate system, the method just
-    adds the unit pixels and the resolution to the returned physical value.
-
-    If the drawing is setup to use metric coordinate system, the given pixel
-    coordinate will be converted to a physical value with the metric unit
-    of the drawing scene adding the resolution to the returned physical value.
-
-    @return Converted value.
-*/
-CPhysVal CDrawingScene::toPhysValYCoor(double i_fYCoor_px) const
-//------------------------------------------------------------------------------
-{
-    return m_drawingSize.toPhysValYCoor(i_fYCoor_px);
-}
+////------------------------------------------------------------------------------
+///*! @brief Converts the given Y coordinate in pixels into a physical value containing
+//           the coordinate in the unit and the resolution of the drawing scene.
+//
+//    If the drawing is not setup to use metric coordinate system, the method just
+//    adds the unit pixels and the resolution to the returned physical value.
+//
+//    If the drawing is setup to use metric coordinate system, the given pixel
+//    coordinate will be converted to a physical value with the metric unit
+//    of the drawing scene adding the resolution to the returned physical value.
+//
+//    @return Converted value.
+//*/
+//CPhysVal CDrawingScene::toPhysValYCoor(double i_fYCoor_px) const
+////------------------------------------------------------------------------------
+//{
+//    return m_drawingSize.toPhysValYCoor(i_fYCoor_px);
+//}
 
 //------------------------------------------------------------------------------
 /*! @brief Converts the given point coordinate in pixels into a physical point value
-           containing the coordinates in the unit and the resolution of the drawing scene.
-
-    If the drawing is not setup to use metric coordinate system, the method just
-    adds the unit pixels and the resolution to the returned physical value.
-
-    If the drawing is setup to use metric coordinate system, the given pixel
-    coordinate will be converted to a physical value with the metric unit
-    of the drawing scene adding the resolution to the returned physical value.
+@@ -455,86 +458,112 @@ CPhysVal CDrawingScene::toPhysValYCoor(double i_fYCoor_px) const
 
     @return Converted value.
 */
 CPhysValPoint CDrawingScene::toPhysValPoint(const QPointF& i_pt) const
 //------------------------------------------------------------------------------
 {
-    QPointF pt(
-        Units.Length.px.convertValue(i_pt.x(), m_drawingSize.unit()),
-        Units.Length.px.convertValue(i_pt.y(), m_drawingSize.unit()));
-    return CPhysValPoint(pt, m_drawingSize.unit());
+    if (m_drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels) {
+        return CPhysValPoint(i_pt, Units.Length.px);
+    }
+    else /*if (m_drawingSize.dimensionUnit() == EDrawingDimensionUnit::Metric)*/ {
+        double fXVal = m_divLinesMetricsX.getVal(i_pt.x());
+        double fYVal = m_divLinesMetricsY.getVal(i_pt.y());
+        return CPhysValPoint(fXVal, fYVal, m_drawingSize.unit());
+    }
 }
 
+////------------------------------------------------------------------------------
+///*! @brief Converts the given size coordinate in pixels into a physical size value
+//           containing the coordinates in the unit and the resolution of the drawing scene.
+//
+//    If the drawing is not setup to use metric coordinate system, the method just
+//    adds the unit pixels and the resolution to the returned physical value.
+//
+//    If the drawing is setup to use metric coordinate system, the given pixel
+//    coordinate will be converted to a physical value with the metric unit
+//    of the drawing scene adding the resolution to the returned physical value.
+//
+//    @return Converted value.
+//*/
+//CPhysValSize CDrawingScene::toPhysValSize(const QSizeF& i_size) const
+////------------------------------------------------------------------------------
+//{
+//    QSizeF size(
+//        Units.Length.px.convertValue(i_size.width(), m_drawingSize.unit()),
+//        Units.Length.px.convertValue(i_size.height(), m_drawingSize.unit()));
+//    return CPhysValSize(size, m_drawingSize.unit());
+//}
+
 //------------------------------------------------------------------------------
-/*! @brief Converts the given size coordinate in pixels into a physical size value
-           containing the coordinates in the unit and the resolution of the drawing scene.
+/*! @brief Converts the given point value into the desired unit.
 
-    If the drawing is not setup to use metric coordinate system, the method just
-    adds the unit pixels and the resolution to the returned physical value.
-
-    If the drawing is setup to use metric coordinate system, the given pixel
-    coordinate will be converted to a physical value with the metric unit
-    of the drawing scene adding the resolution to the returned physical value.
+    @param [in] i_physValPoint
+    @param [ib] i_unitDst
 
     @return Converted value.
 */
-CPhysValSize CDrawingScene::toPhysValSize(const QSizeF& i_size) const
+CPhysValPoint CDrawingScene::convert(const CPhysValPoint& i_physValPoint, const CUnit& i_unitDst) const
 //------------------------------------------------------------------------------
 {
-    QSizeF size(
-        Units.Length.px.convertValue(i_size.width(), m_drawingSize.unit()),
-        Units.Length.px.convertValue(i_size.height(), m_drawingSize.unit()));
-    return CPhysValSize(size, m_drawingSize.unit());
+    CPhysValPoint physValPoint = i_physValPoint;
+    if (i_physValPoint.unit() != i_unitDst) {
+        if (Units.Length.isMetricUnit(i_physValPoint.unit()) && Units.Length.isMetricUnit(i_unitDst)) {
+            CPhysVal physValX = i_physValPoint.x();
+            CPhysVal physValY = i_physValPoint.y();
+            physValX.convertValue(i_unitDst);
+            physValX.convertValue(i_unitDst);
+            physValPoint.setUnit(i_unitDst);
+            physValPoint.setX(physValX);
+            physValPoint.setY(physValY);
+        }
+        else if ((i_physValPoint.unit() == Units.Length.px) && Units.Length.isMetricUnit(i_unitDst)) {
+            QPointF pt = i_physValPoint.toQPointF();
+            CPhysVal physValX(m_divLinesMetricsX.getVal(pt.x()), m_drawingSize.unit());
+            CPhysVal physValY(m_divLinesMetricsY.getVal(pt.y()), m_drawingSize.unit());
+            physValX.convertValue(i_unitDst);
+            physValX.convertValue(i_unitDst);
+            physValPoint.setUnit(i_unitDst);
+            physValPoint.setX(physValX);
+            physValPoint.setY(physValY);
+        }
+        else if (Units.Length.isMetricUnit(i_physValPoint.unit()) && (i_unitDst == Units.Length.px)) {
+            CPhysVal physValX = i_physValPoint.x();
+            CPhysVal physValY = i_physValPoint.y();
+            double fX_px = m_divLinesMetricsX.getValInPix(physValX.getVal(m_drawingSize.unit()));
+            double fY_px = m_divLinesMetricsY.getValInPix(physValY.getVal(m_drawingSize.unit()));
+            physValPoint.setUnit(i_unitDst);
+            physValPoint.setX(CPhysVal(fX_px, i_unitDst));
+            physValPoint.setY(CPhysVal(fY_px, i_unitDst));
+        }
+    }
+    return physValPoint;
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Converts the given X coordinate into the pixel coordinate.
+/*! @brief Converts the given size value into the desired unit.
+
+    @param [in] i_physValSize
+    @param [ib] i_unitDst
 
     @return Converted value.
 */
-double CDrawingScene::toPixelXCoor(const CPhysVal& i_physValXCoor) const
+CPhysValSize CDrawingScene::convert(const CPhysValSize& i_physValSize, const CUnit& i_unitDst) const
 //------------------------------------------------------------------------------
 {
-    return m_drawingSize.toPixelXCoor(i_physValXCoor);
+    CPhysValSize physValSize = i_physValSize;
+    if (i_physValSize.unit() != i_unitDst) {
+        if (Units.Length.isMetricUnit(i_physValSize.unit()) && Units.Length.isMetricUnit(i_unitDst)) {
+            CPhysVal physValWidth = i_physValSize.width();
+            CPhysVal physValHeight = i_physValSize.width();
+            physValWidth.convertValue(i_unitDst);
+            physValHeight.convertValue(i_unitDst);
+            physValSize.setUnit(i_unitDst);
+            physValSize.setWidth(physValWidth);
+            physValSize.setHeight(physValHeight);
+        }
+        else if ((i_physValSize.unit() == Units.Length.px) && Units.Length.isMetricUnit(i_unitDst)) {
+            QSizeF size = i_physValSize.toQSizeF();
+            CPhysVal physValWidth(m_divLinesMetricsX.getVal(size.width()), m_drawingSize.unit());
+            CPhysVal physValHeight(m_divLinesMetricsY.getVal(size.height()), m_drawingSize.unit());
+            physValWidth.convertValue(i_unitDst);
+            physValHeight.convertValue(i_unitDst);
+            physValSize.setUnit(i_unitDst);
+            physValSize.setWidth(physValWidth);
+            physValSize.setHeight(physValHeight);
+        }
+        else if (Units.Length.isMetricUnit(i_physValSize.unit()) && (i_unitDst == Units.Length.px)) {
+            CPhysVal physValWidth = i_physValSize.width();
+            CPhysVal physValHeight = i_physValSize.height();
+            double fX_px = m_divLinesMetricsX.getValInPix(physValWidth.getVal(m_drawingSize.unit()));
+            double fY_px = m_divLinesMetricsY.getValInPix(physValWidth.getVal(m_drawingSize.unit()));
+            physValSize.setUnit(i_unitDst);
+            physValSize.setWidth(CPhysVal(fX_px, i_unitDst));
+            physValSize.setHeight(CPhysVal(fY_px, i_unitDst));
+        }
+    }
+    return physValSize;
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Converts the given Y coordinate into the pixel coordinate.
+/*! @brief Converts the given line value into the desired unit.
+
+    @param [in] i_physValLine
+    @param [ib] i_unitDst
 
     @return Converted value.
 */
-double CDrawingScene::toPixelYCoor(const CPhysVal& i_physValYCoor) const
+CPhysValLine CDrawingScene::convert(const CPhysValLine& i_physValLine, const CUnit& i_unitDst) const
 //------------------------------------------------------------------------------
 {
-    return m_drawingSize.toPixelYCoor(i_physValYCoor);
+    CPhysValPoint physValP1 = convert(i_physValLine.p1(), i_unitDst);
+    CPhysValPoint physValP2 = convert(i_physValLine.p2(), i_unitDst);
+    return CPhysValLine(physValP1, physValP2);
 }
 
-//------------------------------------------------------------------------------
-CPhysValPoint CDrawingScene::toPixelCoor(const CPhysValPoint& i_physValPoint) const
-//------------------------------------------------------------------------------
-{
-    return m_drawingSize.toPixelCoor(i_physValPoint);
-}
-
-//------------------------------------------------------------------------------
-CPhysValSize CDrawingScene::toPixelCoor(const CPhysValSize& i_physValSize) const
-//------------------------------------------------------------------------------
-{
-    return m_drawingSize.toPixelCoor(i_physValSize);
-}
-
-//------------------------------------------------------------------------------
-CPhysValLine CDrawingScene::toPixelCoor(const CPhysValLine& i_physValLine) const
-//------------------------------------------------------------------------------
-{
-    return m_drawingSize.toPixelCoor(i_physValLine);
-}
-
-//------------------------------------------------------------------------------
-CPhysValRect CDrawingScene::toPixelCoor(const CPhysValRect& i_physValRect) const
-//------------------------------------------------------------------------------
-{
-    return m_drawingSize.toPixelCoor(i_physValRect);
-}
+////------------------------------------------------------------------------------
+///*! @brief Converts the given X coordinate into the pixel coordinate.
+//
+//    @return Converted value.
+//*/
+//double CDrawingScene::toPixelXCoor(const CPhysVal& i_physValXCoor) const
+////------------------------------------------------------------------------------
+//{
+//    return m_drawingSize.toPixelXCoor(i_physValXCoor);
+//}
+//
+////------------------------------------------------------------------------------
+///*! @brief Converts the given Y coordinate into the pixel coordinate.
+//
+//    @return Converted value.
+//*/
+//double CDrawingScene::toPixelYCoor(const CPhysVal& i_physValYCoor) const
+////------------------------------------------------------------------------------
+//{
+//    return m_drawingSize.toPixelYCoor(i_physValYCoor);
+//}
+//
+////------------------------------------------------------------------------------
+//CPhysValPoint CDrawingScene::toPixelCoor(const CPhysValPoint& i_physValPoint) const
+////------------------------------------------------------------------------------
+//{
+//    return m_drawingSize.toPixelCoor(i_physValPoint);
+//}
+//
+////------------------------------------------------------------------------------
+//CPhysValSize CDrawingScene::toPixelCoor(const CPhysValSize& i_physValSize) const
+////------------------------------------------------------------------------------
+//{
+//    return m_drawingSize.toPixelCoor(i_physValSize);
+//}
+//
+////------------------------------------------------------------------------------
+//CPhysValLine CDrawingScene::toPixelCoor(const CPhysValLine& i_physValLine) const
+////------------------------------------------------------------------------------
+//{
+//    return m_drawingSize.toPixelCoor(i_physValLine);
+//}
+//
+////------------------------------------------------------------------------------
+//CPhysValRect CDrawingScene::toPixelCoor(const CPhysValRect& i_physValRect) const
+////------------------------------------------------------------------------------
+//{
+//    return m_drawingSize.toPixelCoor(i_physValRect);
+//}
 
 /*==============================================================================
 public: // instance methods
@@ -2647,8 +2757,8 @@ int CDrawingScene::groupGraphObjsSelected()
 
                 if( !pGraphObjSelected->isConnectionLine() )
                 {
-                    QPointF posItem = pGraphObjSelected->getPos(Units.Length.px).toQPointF(Units.Length.px);
-                    QSizeF  sizItem = pGraphObjSelected->getSize(Units.Length.px).toQSizeF(Units.Length.px);
+                    QPointF posItem = pGraphObjSelected->getPos(Units.Length.px).toQPointF();
+                    QSizeF  sizItem = pGraphObjSelected->getSize(Units.Length.px).toQSizeF();
                     QRectF  rctItem = QRectF(posItem, sizItem);
 
                     if( rctItem.width() >= 0.0 )
@@ -2714,13 +2824,13 @@ int CDrawingScene::groupGraphObjsSelected()
                 if( !pGraphObjSelected->isConnectionLine() )
                 {
                     // for debugging purposes also called here before adding the item to the group
-                    QPointF posItem = pGraphObjSelected->getPos(Units.Length.px).toQPointF(Units.Length.px);
-                    QSizeF  sizItem = pGraphObjSelected->getSize(Units.Length.px).toQSizeF(Units.Length.px);
+                    QPointF posItem = pGraphObjSelected->getPos(Units.Length.px).toQPointF();
+                    QSizeF  sizItem = pGraphObjSelected->getSize(Units.Length.px).toQSizeF();
 
                     pGraphicsItemGroup->addToGroup(pGraphicsItemSelected);
 
-                    posItem = pGraphObjSelected->getPos(Units.Length.px).toQPointF(Units.Length.px);
-                    sizItem = pGraphObjSelected->getSize(Units.Length.px).toQSizeF(Units.Length.px);
+                    posItem = pGraphObjSelected->getPos(Units.Length.px).toQPointF();
+                    sizItem = pGraphObjSelected->getSize(Units.Length.px).toQSizeF();
 
                     m_pGraphObjsIdxTree->move(pGraphObjSelected, pGraphObjGroup);
 
@@ -2767,8 +2877,8 @@ int CDrawingScene::groupGraphObjsSelected()
             } // for( auto* pGraphicsItem : arpGraphicsItemsSelected )
 
             // Finish creation of group.
-            pGraphObjGroup->setSize( toPhysValSize(rctGroupSceneCoors.size()) );
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
+            pGraphObjGroup->setSize( toPhysValSize(rctGroupSceneCoors.size()) );
             pGraphObjGroup->acceptCurrentAsOriginalCoors();
 #endif
             pGraphObjGroup->setEditMode(EEditMode::None);
@@ -2853,13 +2963,13 @@ int CDrawingScene::ungroupGraphObjsSelected()
                 }
 
                 // for debugging purposes also called here before removing the item from the group
-                QPointF posItem = pGraphObjSelected->getPos(Units.Length.px).toQPointF(Units.Length.px);
-                QSizeF  sizItem = pGraphObjSelected->getSize(Units.Length.px).toQSizeF(Units.Length.px);
+                QPointF posItem = pGraphObjSelected->getPos(Units.Length.px).toQPointF();
+                QSizeF  sizItem = pGraphObjSelected->getSize(Units.Length.px).toQSizeF();
 
                 pGraphicsItemGroupSelected->removeFromGroup(pGraphicsItemChild);
 
-                posItem = pGraphObjSelected->getPos(Units.Length.px).toQPointF(Units.Length.px);
-                sizItem = pGraphObjSelected->getSize(Units.Length.px).toQSizeF(Units.Length.px);
+                posItem = pGraphObjSelected->getPos(Units.Length.px).toQPointF();
+                sizItem = pGraphObjSelected->getSize(Units.Length.px).toQSizeF();
 
                 m_pGraphObjsIdxTree->move(pGraphObjChild, nullptr);
             }
@@ -5193,6 +5303,31 @@ void CDrawingScene::drawForeground( QPainter* i_pPainter, const QRectF& i_rect )
     //i_pPainter->setClipRect(i_rect);
 
     QGraphicsScene::drawForeground(i_pPainter, i_rect);
+}
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief This slot is called if the screen resolution in pixels/mm has been changed.
+
+    The metrics image size of the drawing size need to be updated.
+    The method emits the drawingSizeChanged signal.
+*/
+void CDrawingScene::onDrawUnitsLengthResolutionChanged()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjPaintEvent,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onDrawUnitsLengthResolutionChanged",
+        /* strAddInfo   */ "" );
+
+    CDrawingSize drawingSize("TempCopyToForceUpdate");
+    drawingSize = m_drawingSize;
+    drawingSize.onDrawUnitsLengthResolutionChanged();
+    setDrawingSize(drawingSize);
 }
 
 /*==============================================================================

@@ -440,7 +440,7 @@ void CGraphObjLabel::setIsHit( bool i_bHit )
 
         QRectF rctUpd = boundingRect();
         QPolygonF plgLabel = mapToScene(rctUpd);
-        QRectF rctGraphObj = QRectF(QPointF(0.0, 0.0), m_pGraphObjParent->getSize(Units.Length.px).toQSizeF(Units.Length.px));
+        QRectF rctGraphObj = QRectF(QPointF(0.0, 0.0), m_pGraphObjParent->getSize(Units.Length.px).toQSizeF());
         QPolygonF plgGraphObj = m_pGraphicsItemParent->mapToScene(rctGraphObj);
 
         rctUpd = plgLabel.boundingRect();
@@ -996,7 +996,7 @@ QVariant CGraphObjLabel::itemChange( GraphicsItemChange i_change, const QVariant
     {
         QRectF    rctUpd      = boundingRect();
         QPolygonF plgLabel    = mapToScene(rctUpd);
-        QRectF    rctGraphObj = QRectF(QPointF(0.0, 0.0), m_pGraphObjParent->getSize(Units.Length.px).toQSizeF(Units.Length.px));
+        QRectF    rctGraphObj = QRectF(QPointF(0.0, 0.0), m_pGraphObjParent->getSize(Units.Length.px).toQSizeF());
         QPolygonF plgGraphObj = m_pGraphicsItemParent->mapToScene(rctGraphObj);
 
         rctUpd      = plgLabel.boundingRect();

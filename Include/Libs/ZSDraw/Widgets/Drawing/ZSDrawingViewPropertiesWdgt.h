@@ -35,6 +35,7 @@ namespace ZS
 namespace Draw
 {
 class CDrawingView;
+class CDlgDrawingViewEditProperty;
 
 //******************************************************************************
 class ZSDRAWDLL_API CWdgtDrawingViewProperties : public CWdgtGraphObjPropertiesAbstract
@@ -70,6 +71,7 @@ protected slots:
     void onCmbImageMetricScaleFactorDividendEditTextChanged(const QString& i_strDividend);
     void onCmbImageMetricScaleFactorDivisorCurrentTextChanged(const QString& i_strDivisor);
     void onCmbImageMetricScaleFactorDivisorEditTextChanged(const QString& i_strDivisor);
+    void onCmbImageMetricYScaleAxisOrientationCurrentIndexChanged(int i_idx);
     void onEdtImageSizeWidthPxValueChanged(int i_cxWidth_px);
     void onEdtImageSizeHeightPxValueChanged(int i_cyHeight_px);
     void onChkGridLinesVisibleStateChanged(int i_iState);
@@ -85,12 +87,14 @@ protected slots:
     void onBtnGridScaleLabelsFontStyleItalicToggled(int i_iState);
     void onBtnGridScaleLabelsTextEffectUnderlineToggled(int i_iState);
     void onBtnGridScaleLabelsTextEffectStrikeoutToggled(int i_iState);
+    void onDlgEditPropertyDestroyed(QObject* i_pObj = nullptr);
 protected: // instance methods
     void setDimensionUnit( const CEnumDrawingDimensionUnit& i_eDimensionUnit );
     void setMetricUnit( const ZS::PhysVal::CUnit& i_metricUnit );
     void setNormedPaperSize( const CEnumNormedPaperSize& i_ePaperSize );
     void setNormedPaperOrientation( const ZS::System::CEnumOrientation& i_eOrientation );
     void setScaleFactor( int i_iDividend, int i_iDivisor );
+    void setYScaleAxisOrientation( const ZS::System::CEnumYScaleAxisOrientation& i_eOrientation );
     void setImageSize( const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight );
 protected: // instance methods
     void setGridLinesVisible(bool i_bVisible);
@@ -106,6 +110,7 @@ protected: // instance methods
     void setGridLabelsTextEffect(const ETextEffect i_textEffect);
 protected: // instance methods
     void updateDimensionUnit();
+    void updateResolution();
     void updateImageSizeInPixels();
     void updateImageSizeMetrics();
     void updatePaperFormat();
@@ -118,6 +123,10 @@ protected: // instance methods
     void updateGridLabelsTextStyleItalicButton();
     void updateGridLabelsTextEffectUnderlineButton();
     void updateGridLabelsTextEffectStrikeoutButton();
+protected: // instance methods
+    void registerEditPropertyDialog(QLineEdit* i_pEdtWidget);
+protected: // overridables of base class QObject
+    bool eventFilter(QObject* i_pObjWatched, QEvent* i_pEv) override;
 protected: // instance methods (method tracing)
     void traceValues(ZS::System::CMethodTracer& i_mthTracer, ZS::System::EMethodDir i_methodDir);
 protected: // instance members
@@ -166,6 +175,8 @@ protected: // instance members
     QComboBox* m_pCmbImageMetricScaleFactorDividend;
     QLabel* m_pLblImageMetricScaleFactorHyphen;
     QComboBox* m_pCmbImageMetricScaleFactorDivisor;
+    QLabel* m_pLblImageMetricYScaleAxisOrientation;
+    QComboBox* m_pCmbImageMetricYScaleAxisOrientation;
     // Image Size in Pixels
     QWidget* m_pWdgtImageSize_px;
     QVBoxLayout* m_pLytWdgtImageSize_px;
@@ -207,6 +218,9 @@ protected: // instance members
     QPushButton* m_pBtnGridScaleLabelsFontStyleItalic;
     QPushButton* m_pBtnGridScaleLabelsTextEffectUnderline;
     QPushButton* m_pBtnGridScaleLabelsTextEffectStrikeout;
+    // Dialog to edit and immediately apply changed properties.
+    QHash<QString, QWidget*> m_hshpRegisteredEditPropertyDialogs;
+    CDlgDrawingViewEditProperty* m_pDlgEditProperty;
 
 }; // class CWdgtDrawingViewProperties
 

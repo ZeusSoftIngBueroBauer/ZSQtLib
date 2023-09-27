@@ -84,6 +84,8 @@ protected slots:
     void onEdtCoorValueChanged(const ZS::PhysVal::CPhysVal& i_physVal);
     void onDrawingSceneDrawingSizeChanged(const CDrawingSize& i_drawingSize);
     void onGraphObjAboutToDestroyed();
+protected: // auxiliary methods
+    void update();
 protected: // class members
     /*!< Trace admin object for method tracing. */
     static ZS::System::CTrcAdminObj* s_pTrcAdminObj;

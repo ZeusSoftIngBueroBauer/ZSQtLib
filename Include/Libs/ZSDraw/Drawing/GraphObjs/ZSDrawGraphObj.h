@@ -530,6 +530,13 @@ protected: // overridable auxiliary instance methods (method tracing)
 protected: // instance members
     /*!< Flag to indicate that the destructor has been called. */
     bool m_bDtorInProgress;
+    /*!< When changing the drawing size in metric unit dimension
+         (e.g. on changing the Y Scale Orientation) the scene coordinates
+         must be newly calculated even if the original values stored in
+         metric units have not been changed. On changing the drawing size
+         the drawing scene will call "onDrawingSizeChanged" of the graphical
+         object and the method sets this flag to true. */
+    bool m_bForceConversionToSceneCoors;
     /*!< Pointer to drawing scene the graphical object belongs to. */
     CDrawingScene* m_pDrawingScene;
     /*!< Graphical objects are called via factories which must be registered at the drawing scene.

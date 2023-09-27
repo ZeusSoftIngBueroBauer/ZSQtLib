@@ -62,6 +62,7 @@ public: // class methods
 public: // ctors and dtor
     CPhysValPoint();
     CPhysValPoint(const ZS::PhysVal::CUnit& i_unit);
+    CPhysValPoint(double i_fX, double i_fY, const ZS::PhysVal::CUnit& i_unit);
     CPhysValPoint(const QPointF& i_pt, const ZS::PhysVal::CUnit& i_unit);
     CPhysValPoint(const ZS::PhysVal::CPhysVal& i_physValX, const ZS::PhysVal::CPhysVal& i_physValY);
     CPhysValPoint(const CPhysValPoint& i_physValPointOther);
@@ -82,7 +83,7 @@ public: // instance methods
     void setX(const ZS::PhysVal::CPhysVal& i_physValX);
     void setY(const ZS::PhysVal::CPhysVal& i_physValY);
 public: // instance methods (to convert the values into another unit)
-    QPointF toQPointF(const ZS::PhysVal::CUnit& i_unit) const;
+    QPointF toQPointF() const;
     QString toString() const;
 protected: // instance members
     /*!< Unit (either metric or pixels) in which the line coordinates are internally stored in 'm_pt'. */

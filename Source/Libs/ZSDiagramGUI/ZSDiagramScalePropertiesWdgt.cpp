@@ -80,7 +80,7 @@ CWdgtDiagramScaleProperties::CWdgtDiagramScaleProperties(
     CWdgtDiagramItemPropertiesBase(ClassName(), i_pDiagram, "CDiagScale", i_mode, i_pWdgtParent),
     m_pDiagScale(nullptr),
     // Caching values
-    m_scaleDir(),
+    m_scaleAxis(),
     m_spacing(),
     m_iMinVal_px(0),
     m_iMaxVal_px(0),
@@ -89,9 +89,9 @@ CWdgtDiagramScaleProperties::CWdgtDiagramScaleProperties(
     // Geometry
     m_pGrpGeometry(nullptr),
     m_pLytGrpGeometry(nullptr),
-    m_pLytLineScaleDir(nullptr),
-    m_pLblScaleDir(nullptr),
-    m_pCmbScaleDir(nullptr),
+    m_pLytLineScaleAxis(nullptr),
+    m_pLblScaleAxis(nullptr),
+    m_pCmbScaleAxis(nullptr),
     m_pLblSpacing(nullptr),
     m_pCmbSpacing(nullptr),
     m_pLblRange_px(nullptr),
@@ -137,36 +137,36 @@ CWdgtDiagramScaleProperties::CWdgtDiagramScaleProperties(
     m_pLytGrpGeometry = new QVBoxLayout();
     m_pGrpGeometry->setLayout(m_pLytGrpGeometry);
 
-    // <Line> ScaleDir and Spacing
+    // <Line> ScaleAxis and Spacing
     //----------------------------
 
-    m_pLytLineScaleDir = new QHBoxLayout();
-    m_pLytGrpGeometry->addLayout(m_pLytLineScaleDir);
+    m_pLytLineScaleAxis = new QHBoxLayout();
+    m_pLytGrpGeometry->addLayout(m_pLytLineScaleAxis);
 
-    m_pLblScaleDir = new QLabel("Direction:");
-    m_pLblScaleDir->setFixedWidth(m_cxLblWidthClm1);
-    m_pLytLineScaleDir->addWidget(m_pLblScaleDir);
-    m_pCmbScaleDir = new QComboBox();
-    m_pCmbScaleDir->setFixedWidth(m_cxEdtWidthClm1);
-    m_pCmbScaleDir->setEnabled(false);
-    m_pLytLineScaleDir->addWidget(m_pCmbScaleDir);
-    m_pLytLineScaleDir->addSpacing(m_cxClmSpacing);
-    for( CEnumScaleDir scaleDir = 0; scaleDir < CEnumScaleDir::count(); ++scaleDir ) {
-        m_pCmbScaleDir->addItem(scaleDir.toString());
+    m_pLblScaleAxis = new QLabel("Direction:");
+    m_pLblScaleAxis->setFixedWidth(m_cxLblWidthClm1);
+    m_pLytLineScaleAxis->addWidget(m_pLblScaleAxis);
+    m_pCmbScaleAxis = new QComboBox();
+    m_pCmbScaleAxis->setFixedWidth(m_cxEdtWidthClm1);
+    m_pCmbScaleAxis->setEnabled(false);
+    m_pLytLineScaleAxis->addWidget(m_pCmbScaleAxis);
+    m_pLytLineScaleAxis->addSpacing(m_cxClmSpacing);
+    for( CEnumScaleAxis scaleAxis = 0; scaleAxis < CEnumScaleAxis::count(); ++scaleAxis ) {
+        m_pCmbScaleAxis->addItem(scaleAxis.toString());
     }
     /* The scale direction cannot be changed during runtime
     QObject::connect(
-        m_pCmbScaleDir, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
-        this, &CWdgtDiagramScaleProperties::onCmbScaleDirCurrentIndexChanged ); */
+        m_pCmbScaleAxis, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+        this, &CWdgtDiagramScaleProperties::onCmbScaleAxisCurrentIndexChanged ); */
 
     m_pLblSpacing = new QLabel("Spacing:");
     m_pLblSpacing->setFixedWidth(m_cxLblWidthClm2);
-    m_pLytLineScaleDir->addWidget(m_pLblSpacing);
+    m_pLytLineScaleAxis->addWidget(m_pLblSpacing);
     m_pCmbSpacing = new QComboBox();
     m_pCmbSpacing->setFixedWidth(m_cxEdtWidthClm2);
     m_pCmbSpacing->setEnabled(false);
-    m_pLytLineScaleDir->addWidget(m_pCmbSpacing);
-    m_pLytLineScaleDir->addSpacing(m_cxClmSpacing);
+    m_pLytLineScaleAxis->addWidget(m_pCmbSpacing);
+    m_pLytLineScaleAxis->addSpacing(m_cxClmSpacing);
     for( CEnumSpacing spacing = 0; spacing < CEnumSpacing::count(); ++spacing ) {
         m_pCmbSpacing->addItem(spacing.toString());
     }
@@ -176,12 +176,12 @@ CWdgtDiagramScaleProperties::CWdgtDiagramScaleProperties(
 
     m_pLblRange_px = new QLabel("Range:");
     m_pLblRange_px->setFixedWidth(m_cxLblWidthClm3);
-    m_pLytLineScaleDir->addWidget(m_pLblRange_px);
+    m_pLytLineScaleAxis->addWidget(m_pLblRange_px);
     m_pEdtRange_px = new QLineEdit();
     m_pEdtRange_px->setFixedWidth(m_cxEdtWidthClm3);
     m_pEdtRange_px->setEnabled(false);
-    m_pLytLineScaleDir->addWidget(m_pEdtRange_px);
-    m_pLytLineScaleDir->addStretch();
+    m_pLytLineScaleAxis->addWidget(m_pEdtRange_px);
+    m_pLytLineScaleAxis->addStretch();
 
     // <Line> Division Lines
     //----------------------
@@ -338,7 +338,7 @@ CWdgtDiagramScaleProperties::~CWdgtDiagramScaleProperties()
 
     m_pDiagScale = nullptr;
     // Caching values
-    m_scaleDir = static_cast<EScaleDir>(0);
+    m_scaleAxis = static_cast<EScaleAxis>(0);
     m_iMinVal_px = 0;
     m_iMaxVal_px = 0;
     //m_ariDivLineDistMin_px.clear();
@@ -347,9 +347,9 @@ CWdgtDiagramScaleProperties::~CWdgtDiagramScaleProperties()
     // Geometry
     m_pGrpGeometry = nullptr;
     m_pLytGrpGeometry = nullptr;
-    m_pLytLineScaleDir = nullptr;
-    m_pLblScaleDir = nullptr;
-    m_pCmbScaleDir = nullptr;
+    m_pLytLineScaleAxis = nullptr;
+    m_pLblScaleAxis = nullptr;
+    m_pCmbScaleAxis = nullptr;
     m_pLblSpacing = nullptr;
     m_pCmbSpacing = nullptr;
     m_pLblRange_px = nullptr;
@@ -404,7 +404,7 @@ void CWdgtDiagramScaleProperties::setMode(EMode i_mode)
 
         if (m_mode == EMode::Edit)
         {
-            //m_pCmbScaleDir->setEnabled(m_pDiagScale != nullptr); remains disabled as scale dir cannot be changed
+            //m_pCmbScaleAxis->setEnabled(m_pDiagScale != nullptr); remains disabled as scale dir cannot be changed
             m_pCmbSpacing->setEnabled(m_pDiagScale != nullptr);
             //m_pEdtRange_px->setEnabled(m_pDiagScale != nullptr); remains disabled
             m_pEdtDivLineDistMinLayerMain_px->setEnabled(m_pDiagScale != nullptr);
@@ -530,7 +530,7 @@ void CWdgtDiagramScaleProperties::setDiagItemObjName( const QString& i_strObjNam
         }
         else
         {
-            //m_pCmbScaleDir->setEnabled(m_mode == EMode::Edit); remains disabled as scale dir cannot be changed
+            //m_pCmbScaleAxis->setEnabled(m_mode == EMode::Edit); remains disabled as scale dir cannot be changed
             m_pCmbSpacing->setEnabled(m_mode == EMode::Edit);
             //m_pEdtRange_px->setEnabled(m_mode == EMode::Edit); remains disabled
             //m_pEdtRange_px->setReadOnly(m_mode != EMode::Edit); remains disabled
@@ -563,7 +563,7 @@ void CWdgtDiagramScaleProperties::setDiagItemObjName( const QString& i_strObjNam
             }
             m_pCmbScaleUnit->setCurrentText(scale.unit().symbol());
 
-            setScaleDir(m_pDiagScale->getScaleDir());
+            setScaleAxis(m_pDiagScale->getScaleAxis());
 
             onDiagItemScaleSpacingChanged(m_pDiagScale->getSpacing());
             onDiagItemScaleGeometryChanged(m_pDiagScale->getMinValPix(), m_pDiagScale->getMaxValPix());
@@ -607,7 +607,7 @@ bool CWdgtDiagramScaleProperties::hasChanges() const
     bool bHasChanges = false;
     if (m_pDiagScale != nullptr)
     {
-        bHasChanges = (m_scaleDir != m_pDiagScale->getScaleDir());
+        bHasChanges = (m_scaleAxis != m_pDiagScale->getScaleAxis());
         if (!bHasChanges) {
             bHasChanges = (m_spacing != m_pDiagScale->getSpacing());
         }
@@ -1004,27 +1004,27 @@ void CWdgtDiagramScaleProperties::onEdtScaleRangeValueChanged(const CPhysVal& i_
 protected: // instance methods
 ==============================================================================*/
 //------------------------------------------------------------------------------
-void CWdgtDiagramScaleProperties::setScaleDir( const CEnumScaleDir& i_scaleDir )
+void CWdgtDiagramScaleProperties::setScaleAxis( const CEnumScaleAxis& i_scaleAxis )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_scaleDir.toString();
+        strMthInArgs = i_scaleAxis.toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setScaleDir",
+        /* strMethod    */ "setScaleAxis",
         /* strAddInfo   */ strMthInArgs );
 
-    if( m_scaleDir != i_scaleDir ) {
+    if( m_scaleAxis != i_scaleAxis ) {
         CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
-        m_scaleDir = i_scaleDir;
-        m_pCmbScaleDir->setCurrentText(m_scaleDir.toString());
-        if (m_scaleDir == EScaleDir::X) {
+        m_scaleAxis = i_scaleAxis;
+        m_pCmbScaleAxis->setCurrentText(m_scaleAxis.toString());
+        if (m_scaleAxis == EScaleAxis::X) {
             m_pLblRange_px->setText("Width:");
         }
-        else if (m_scaleDir == EScaleDir::Y) {
+        else if (m_scaleAxis == EScaleAxis::Y) {
             m_pLblRange_px->setText("Height;");
         }
         else {

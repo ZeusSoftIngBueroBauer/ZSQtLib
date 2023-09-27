@@ -115,12 +115,15 @@ namespace Draw
       image size in pixels on all PCs will be the same. But "wysiwyg" may no longer appear
       as expected.
 */
-class ZSDRAWDLL_API CUnitsLength : public ZS::PhysVal::CUnitsTreeEntryGrpPhysUnits
+class ZSDRAWDLL_API CUnitsLength : public QObject, public ZS::PhysVal::CUnitsTreeEntryGrpPhysUnits
 //******************************************************************************
 {
+    Q_OBJECT
 public: // ctors and dtor
     CUnitsLength(ZS::System::CIdxTreeEntry* i_pParentBranch);
     ~CUnitsLength();
+signals:
+    void resolutionChanged();
 public: // instance methods (resolution of monitor, pixels per inches)
     void setResolutionInPxPerMM(double i_fRes_px_mm);
     ZS::PhysVal::CPhysValRes physValResolution(const ZS::PhysVal::CUnit& i_unit) const;
@@ -129,9 +132,9 @@ public: // instance methods (scale factor of drawing in metric dimension)
     double scaleFactor() const;
     int scaleFactorDividend() const;
     int scaleFactorDivisor() const;
-public: // instance methods
 public: // instance methods (distinguish between metric system and pixels or dots)
     bool isMetricUnit(const QString& i_strSymbolOrName) const;
+    bool isMetricUnit(const ZS::PhysVal::CUnit& i_unit) const;
 private: // instance methods
     /*!< Unit tree entry for metric unit micro meter */
     ZS::PhysVal::CUnitsTreeEntryPhysUnit m_treeEntryMicroMeter;

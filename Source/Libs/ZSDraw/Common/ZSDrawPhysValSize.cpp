@@ -222,40 +222,12 @@ public: // instance methods (to convert the values into another unit)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief 
-
-    @param [in] i_unit
-        Unit in which the coordinates should be converted.
+/*! @brief Returns the physical size as a QSizeF instance.
 */
-void CPhysValSize::convert(const CUnit& i_unit)
+QSizeF CPhysValSize::toQSizeF() const
 //------------------------------------------------------------------------------
 {
-    if (m_unit != i_unit) {
-        double fWidth = m_unit.convertValue(m_size.width(), i_unit);
-        double fHeight = m_unit.convertValue(m_size.height(), i_unit);
-        m_size.setWidth(fWidth);
-        m_size.setHeight(fHeight);
-        m_unit = i_unit;
-    }
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Returns the physical size as a QSizeF instance in the desired unit.
-
-    @param [in] i_unit
-        Unit in which the coordinates should be returned.
-*/
-QSizeF CPhysValSize::toQSizeF(const CUnit& i_unit) const
-//------------------------------------------------------------------------------
-{
-    QSizeF sizeF = m_size;
-    if (m_unit != i_unit) {
-        double fWidth = m_unit.convertValue(m_size.width(), i_unit);
-        double fHeight = m_unit.convertValue(m_size.height(), i_unit);
-        sizeF.setWidth(fWidth);
-        sizeF.setHeight(fHeight);
-    }
-    return sizeF;
+    return m_size;
 }
 
 //------------------------------------------------------------------------------

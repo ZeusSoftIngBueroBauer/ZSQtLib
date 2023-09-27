@@ -74,7 +74,7 @@ CPhysValRect::CPhysValRect(
     const CPhysValPoint& i_physValTopLeft, const CPhysValPoint& i_physValBottomRight) :
 //------------------------------------------------------------------------------
     m_unit(i_physValTopLeft.unit()),
-    m_rect(i_physValTopLeft.toQPointF(m_unit), i_physValBottomRight.toQPointF(m_unit))
+    m_rect(i_physValTopLeft.toQPointF(), i_physValBottomRight.toQPointF())
 {
     if (i_physValTopLeft.unit() != i_physValBottomRight.unit()) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
@@ -253,23 +253,12 @@ public: // instance methods (to convert the values into another unit)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the physical line as a QRectF instance in the desired unit.
-
-    @param [in] i_unit
-        Unit in which the coordinates should be returned.
+/*! @brief Returns the physical line as a QRectF instance.
 */
-QRectF CPhysValRect::toQRectF(const CUnit& i_unit) const
+QRectF CPhysValRect::toQRectF() const
 //------------------------------------------------------------------------------
 {
-    QRectF rectF = m_rect;
-    if (m_unit != i_unit) {
-        double fLeft = m_unit.convertValue(m_rect.left(), i_unit);
-        double fTop = m_unit.convertValue(m_rect.top(), i_unit);
-        double fWidth = m_unit.convertValue(m_rect.width(), i_unit);
-        double fHeight = m_unit.convertValue(m_rect.height(), i_unit);
-        rectF.setRect(fLeft, fTop, fWidth, fHeight);
-    }
-    return rectF;
+    return m_rect;
 }
 
 //------------------------------------------------------------------------------

@@ -256,7 +256,9 @@ public: // overridables of base class CGraphObj
 void CGraphObjLine::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
 //------------------------------------------------------------------------------
 {
-    setLine(i_drawingSize.convert(m_physValLine));
+    m_bForceConversionToSceneCoors = true;
+    setLine(m_pDrawingScene->convert(m_physValLine, i_drawingSize.unit()));
+    m_bForceConversionToSceneCoors = false;
 }
 
 //------------------------------------------------------------------------------
@@ -286,9 +288,14 @@ void CGraphObjLine::setLine( const CPhysValLine& i_physValLine )
         /* strMethod    */ "setLine",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_physValLine != i_physValLine) {
+    // If the coordinates MUST be updated (e.g. after the drawing size has been changed)
+    // or if they have been changed ...
+    if (m_bForceConversionToSceneCoors || m_physValLine != i_physValLine) {
         m_physValLine = i_physValLine;
-        QLineF lineF = i_physValLine.toQLineF(Units.Length.px);
+        QLineF lineF = m_physValLine.toQLineF();
+        if (m_physValLine.unit() != Units.Length.px) {
+            lineF = m_pDrawingScene->convert(m_physValLine, Units.Length.px).toQLineF();
+        }
         QGraphicsLineItem::setLine(lineF);
 
         // As "setLine" does not end up in an "itemChange" call (even if the

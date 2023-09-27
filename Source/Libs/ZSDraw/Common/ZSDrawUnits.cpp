@@ -183,6 +183,8 @@ void CUnitsLength::setResolutionInPxPerMM( double i_fRes_px_mm )
         /* physValM       */ fpxm );
 
     m_treeEntryPixel.setFctConvertFromSIUnit(fctConvertPxFromMeter);
+
+    emit resolutionChanged();
 }
 
 //------------------------------------------------------------------------------
@@ -316,6 +318,21 @@ bool CUnitsLength::isMetricUnit(const QString& i_strSymbolOrName) const
         bIsMetricUnit = false;
     }
     else if (i_strSymbolOrName == dots.symbol() || i_strSymbolOrName == dots.unitName()) {
+        bIsMetricUnit = false;
+    }
+    return bIsMetricUnit;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Checks whether the given unit string is a metric unit.
+
+    @return true, if the given unit string is a metric unit, false otherwise.
+*/
+bool CUnitsLength::isMetricUnit(const CUnit& i_unit) const
+//------------------------------------------------------------------------------
+{
+    bool bIsMetricUnit = true;
+    if (i_unit == px || i_unit == dots) {
         bIsMetricUnit = false;
     }
     return bIsMetricUnit;

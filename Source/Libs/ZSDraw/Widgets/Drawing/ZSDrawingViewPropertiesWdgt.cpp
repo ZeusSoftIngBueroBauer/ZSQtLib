@@ -25,8 +25,9 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDraw/Widgets/Drawing/ZSDrawingViewPropertiesWdgt.h"
+#include "ZSDraw/Widgets/Drawing/ZSDrawingViewEditPropertyDlg.h"
+#include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSDraw/Common/ZSDrawCommon.h"
-#include "ZSDraw/Widgets/Drawing/ZSDrawDlgDrawingViewSetup.h"
 #include "ZSDraw/Common/ZSDrawUnits.h"
 #include "ZSDraw/Widgets/Drawing/ZSDrawingView.h"
 #include "ZSPhysValGUI/ZSPhysValWdgtEditPhysVal.h"
@@ -38,6 +39,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysTrcServer.h"
 
 #include <QtCore/qcoreapplication.h>
+#include <QtGui/qevent.h>
 #include <QtGui/qstandarditemmodel.h>
 
 #if QT_VERSION < 0x050000
@@ -137,6 +139,8 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pCmbImageMetricScaleFactorDividend(nullptr),
     m_pLblImageMetricScaleFactorHyphen(nullptr),
     m_pCmbImageMetricScaleFactorDivisor(nullptr),
+    m_pLblImageMetricYScaleAxisOrientation(nullptr),
+    m_pCmbImageMetricYScaleAxisOrientation(nullptr),
     // Image Size in Pixels
     m_pWdgtImageSize_px(nullptr),
     m_pLytWdgtImageSize_px(nullptr),
@@ -177,7 +181,10 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pBtnGridScaleLabelsFontStyleBold(nullptr),
     m_pBtnGridScaleLabelsFontStyleItalic(nullptr),
     m_pBtnGridScaleLabelsTextEffectUnderline(nullptr),
-    m_pBtnGridScaleLabelsTextEffectStrikeout(nullptr)
+    m_pBtnGridScaleLabelsTextEffectStrikeout(nullptr),
+    // Edit dialog
+    m_hshpRegisteredEditPropertyDialogs(),
+    m_pDlgEditProperty(nullptr)
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
@@ -245,8 +252,8 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     // <Section> Resolution
     //-------------------------
 
-    double fResolution_pxpin = 1.0/Units.Length.physValResolution(Units.Length.in).getVal();
-    double fResolution_pxpmm = 1.0/Units.Length.physValResolution(Units.Length.mm).getVal();
+    double fResolution_pxpin = 1.0 / m_drawingSize.resolution().getVal(Units.Length.in);
+    double fResolution_pxpmm = 1.0 / m_drawingSize.resolution().getVal(Units.Length.mm);
 
     QString strPxpin = QString::number(fResolution_pxpin,'f',2);
     QString strPxpmm = QString::number(fResolution_pxpmm,'f',2);
@@ -277,8 +284,10 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pLblResolution_pxpmm->setFixedWidth(cxLblWidthClm2);
     m_pLytLineResolution->addWidget(m_pLblResolution_pxpmm);
     m_pEdtResolution_pxpmm = new QLineEdit(strPxpmm);
+    m_pEdtResolution_pxpmm->setObjectName(CDrawingScene::c_strXmlAttrScreenResolutionPxPerMilliMeter);
     m_pEdtResolution_pxpmm->setFixedWidth(cxEdtWidthClm2);
     m_pEdtResolution_pxpmm->setReadOnly(true);
+    registerEditPropertyDialog(m_pEdtResolution_pxpmm);
     m_pLytLineResolution->addWidget(m_pEdtResolution_pxpmm);
     m_pLytLineResolution->addStretch();
 
@@ -419,6 +428,9 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pLytLineImageMetricScaleFactor = new QHBoxLayout();
     m_pLytWdgtMetric->addLayout(m_pLytLineImageMetricScaleFactor);
 
+    // <ComboBox> Scale Factor
+    //------------------------
+
     m_pLblImageMetricScaleFactor = new QLabel("Scale Factor:");
     m_pLblImageMetricScaleFactor->setFixedWidth(cxLblWidthClm1);
     m_pLytLineImageMetricScaleFactor->addWidget(m_pLblImageMetricScaleFactor);
@@ -446,7 +458,7 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pCmbImageMetricScaleFactorDivisor->setValidator(
         new QIntValidator(m_pCmbImageMetricScaleFactorDivisor));
     pLytWdgtImageMetricScaleFactor->addWidget(m_pCmbImageMetricScaleFactorDivisor, 1);
-    m_pLytLineImageMetricScaleFactor->addStretch();
+    m_pLytLineImageMetricScaleFactor->addSpacing(cxClmSpacing);
 
     const QVector<int> arMetricScaleFactorsPredefined = {
         1, 2, 5, 10, 20, 50, 100, 200, 500,
@@ -473,6 +485,26 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     QObject::connect(
         m_pCmbImageMetricScaleFactorDivisor, &QComboBox::editTextChanged,
         this, &CWdgtDrawingViewProperties::onCmbImageMetricScaleFactorDivisorEditTextChanged );
+
+    // <ComboBox> Y Scale Axis Orientation
+    //------------------------------------
+
+    m_pLblImageMetricYScaleAxisOrientation = new QLabel("Y Scale Axis:");
+    m_pLblImageMetricYScaleAxisOrientation->setFixedWidth(cxLblWidthClm2);
+    m_pLytLineImageMetricScaleFactor->addWidget(m_pLblImageMetricYScaleAxisOrientation);
+
+    m_pCmbImageMetricYScaleAxisOrientation = new QComboBox();
+    m_pCmbImageMetricYScaleAxisOrientation->setFixedWidth(cxEdtWidthClm2);
+    m_pLytLineImageMetricScaleFactor->addWidget(m_pCmbImageMetricYScaleAxisOrientation);
+    m_pLytLineImageMetricScaleFactor->addStretch();
+    for (CEnumYScaleAxisOrientation eOrientation = 0; eOrientation < CEnumYScaleAxisOrientation::count(); ++eOrientation ) {
+        m_pCmbImageMetricYScaleAxisOrientation->addItem(eOrientation.toString(EEnumEntryAliasStrText));
+    }
+    m_pCmbImageMetricYScaleAxisOrientation->setCurrentText(
+        m_drawingSize.yScaleAxisOrientation().toString(EEnumEntryAliasStrText));
+    QObject::connect(
+        m_pCmbImageMetricYScaleAxisOrientation, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+        this, &CWdgtDrawingViewProperties::onCmbImageMetricYScaleAxisOrientationCurrentIndexChanged );
 
     // <Visibility> Metric Widget
     //---------------------------
@@ -788,6 +820,15 @@ CWdgtDrawingViewProperties::~CWdgtDrawingViewProperties()
     catch(...) {
     }
 
+    if (m_pDlgEditProperty != nullptr) {
+        m_pDlgEditProperty->close();
+        try {
+            delete m_pDlgEditProperty;
+        }
+        catch (...) {
+        }
+    }
+
     m_pDrawingView = nullptr;
     // Caching values
     //m_drawingSize;
@@ -843,6 +884,8 @@ CWdgtDrawingViewProperties::~CWdgtDrawingViewProperties()
     m_pEdtImageSizeWidth_px = nullptr;
     m_pLblImageSizeHeight_px = nullptr;
     m_pEdtImageSizeHeight_px = nullptr;
+    m_pLblImageMetricYScaleAxisOrientation = nullptr;
+    m_pCmbImageMetricYScaleAxisOrientation = nullptr;
     // Grid
     m_pGrpGrid = nullptr;
     m_pLytGrpGrid = nullptr;
@@ -872,6 +915,8 @@ CWdgtDrawingViewProperties::~CWdgtDrawingViewProperties()
     m_pBtnGridScaleLabelsFontStyleItalic = nullptr;
     m_pBtnGridScaleLabelsTextEffectUnderline = nullptr;
     m_pBtnGridScaleLabelsTextEffectStrikeout = nullptr;
+    m_hshpRegisteredEditPropertyDialogs.clear();
+    m_pDlgEditProperty = nullptr;
 
 } // dtor
 
@@ -957,6 +1002,7 @@ void CWdgtDrawingViewProperties::onDrawingSceneDrawingSizeChanged(const CDrawing
         m_drawingSize = i_drawingSize;
         CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
         updateDimensionUnit();
+        updateResolution();
         updateButtonsEnabled();
         emit_contentChanged();
     }
@@ -1247,6 +1293,27 @@ void CWdgtDrawingViewProperties::onCmbImageMetricScaleFactorDivisorEditTextChang
             setScaleFactor(iDividend, iDivisor);
         }
     }
+}
+
+//------------------------------------------------------------------------------
+void CWdgtDrawingViewProperties::onCmbImageMetricYScaleAxisOrientationCurrentIndexChanged(int i_idx)
+//------------------------------------------------------------------------------
+{
+    if( m_iContentChangedSignalBlockedCounter > 0 ) {
+        return;
+    }
+
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString::number(i_idx);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onCmbImageMetricYScaleAxisOrientationCurrentIndexChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    setYScaleAxisOrientation(m_pCmbImageMetricYScaleAxisOrientation->currentText());
 }
 
 //------------------------------------------------------------------------------
@@ -1643,6 +1710,19 @@ void CWdgtDrawingViewProperties::onBtnGridScaleLabelsTextEffectStrikeoutToggled(
     setGridLabelsTextEffect(textEffect.enumerator());
 }
 
+//------------------------------------------------------------------------------
+void CWdgtDrawingViewProperties::onDlgEditPropertyDestroyed(QObject* i_pObj)
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onDlgEditPropertyDestroyed",
+        /* strAddInfo   */ "" );
+
+    m_pDlgEditProperty = nullptr;
+}
+
 /*==============================================================================
 protected: // instance methods
 ==============================================================================*/
@@ -1792,6 +1872,28 @@ void CWdgtDrawingViewProperties::setScaleFactor( int i_iDividend, int i_iDivisor
         CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
         m_drawingSize.setScaleFactor(i_iDividend, i_iDivisor);
         updateImageSizeInPixels();
+        updateButtonsEnabled();
+        emit_contentChanged();
+    }
+}
+
+//------------------------------------------------------------------------------
+void CWdgtDrawingViewProperties::setYScaleAxisOrientation( const CEnumYScaleAxisOrientation& i_eOrientation )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_eOrientation.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setYScaleAxisOrientation",
+        /* strAddInfo   */ strMthInArgs );
+
+    if( m_drawingSize.yScaleAxisOrientation() != i_eOrientation ) {
+        CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
+        m_drawingSize.setYScaleAxisOrientation(i_eOrientation);
         updateButtonsEnabled();
         emit_contentChanged();
     }
@@ -2145,6 +2247,32 @@ void CWdgtDrawingViewProperties::updateDimensionUnit()
 } // updateDimensionUnit
 
 //------------------------------------------------------------------------------
+void CWdgtDrawingViewProperties::updateResolution()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "updateResolution",
+        /* strAddInfo   */ "" );
+
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) ) {
+        traceValues(mthTracer, EMethodDir::Enter);
+    }
+
+    CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
+
+    double fResolution_pxpin = 1.0 / Units.Length.physValResolution(Units.Length.in).getVal();
+    double fResolution_pxpmm = 1.0 / Units.Length.physValResolution(Units.Length.mm).getVal();
+
+    QString strPxpin = QString::number(fResolution_pxpin,'f',2);
+    QString strPxpmm = QString::number(fResolution_pxpmm,'f',2);
+
+    m_pEdtResolution_pxpi->setText(strPxpin);
+    m_pEdtResolution_pxpmm->setText(strPxpmm);
+}
+
+//------------------------------------------------------------------------------
 void CWdgtDrawingViewProperties::updateImageSizeInPixels()
 //------------------------------------------------------------------------------
 {
@@ -2450,6 +2578,81 @@ void CWdgtDrawingViewProperties::updateGridLabelsTextEffectStrikeoutButton()
         m_pBtnGridScaleLabelsTextEffectStrikeout->setChecked(false);
         m_pBtnGridScaleLabelsTextEffectStrikeout->setIcon(QIcon());
     }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Registers the given edit widget for the edit property dialog by
+           installing an event filter for the given edit widget for the
+           mouse double click event.
+
+    @param [in] i_pEdtWidget
+        Edit widget for which the edit dialog should be opened by a mouse
+        double click. As a precondition an object name must have been set
+        at the edit widget as follows:
+        <DimensionUnit>.<CoordinatePart1>[.<CoordinatePart2>]
+        The sections of the object name will be used by the edit dialog
+        to create the labels and to decide, which property has to be
+        edited. E.g. for "Pixels.Point 1.X" the x coordinate of Point 1
+        in dimension unit pixels will be edited.
+*/
+void CWdgtDrawingViewProperties::registerEditPropertyDialog(QLineEdit* i_pEdtWidget)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pEdtWidget->objectName();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "registerEditPropertyDialog",
+        /* strAddInfo   */ strMthInArgs );
+
+    QString strObjName = i_pEdtWidget->objectName();
+    m_hshpRegisteredEditPropertyDialogs.insert(strObjName, i_pEdtWidget);
+    // To filter mouse events the event filter must also be set at the spin box
+    // and the line edit of the spin box. So we must call the installEventFilter
+    // method of class CWdgtEditPhysVal which not just installs the event filter
+    // on the EditPhysVal widget but also forwards the method to both the
+    // spin box and the line edit.
+    i_pEdtWidget->installEventFilter(this);
+}
+
+/*==============================================================================
+protected: // overridables of base class QObject
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Opens the edit property dialog on pressing Ctrl + MouseDblClick.
+*/
+bool CWdgtDrawingViewProperties::eventFilter(QObject* i_pObjWatched, QEvent* i_pEv)
+//------------------------------------------------------------------------------
+{
+    bool bHandled = false;
+
+    if (i_pEv->type() == QEvent::MouseButtonDblClick) {
+        QMouseEvent* pMouseEvent = dynamic_cast<QMouseEvent*>(i_pEv);
+        if (pMouseEvent->modifiers() & Qt::ControlModifier) {
+            QString strObjName = i_pObjWatched->objectName();
+            QWidget* pEdtWidget = m_hshpRegisteredEditPropertyDialogs.value(strObjName, nullptr);
+            if (pEdtWidget != nullptr) {
+                if (m_pDlgEditProperty == nullptr) {
+                    m_pDlgEditProperty = new CDlgDrawingViewEditProperty(m_pDrawingView, this);
+                    m_pDlgEditProperty->setAttribute(Qt::WA_DeleteOnClose, true);
+                    QObject::connect(
+                        m_pDlgEditProperty, &QDialog::destroyed,
+                        this, &CWdgtDrawingViewProperties::onDlgEditPropertyDestroyed);
+                }
+                m_pDlgEditProperty->setCoordinate(pEdtWidget->objectName());
+                m_pDlgEditProperty->show();
+                bHandled = true;
+            }
+        }
+    }
+    if (!bHandled) {
+        bHandled = CWdgtGraphObjPropertiesAbstract::eventFilter(i_pObjWatched, i_pEv);
+    }
+    return bHandled;
 }
 
 /*==============================================================================

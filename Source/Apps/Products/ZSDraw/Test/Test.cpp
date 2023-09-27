@@ -541,6 +541,7 @@ void CTest::doTestStepSetDrawingSize( ZS::Test::CTestStep* i_pTestStep )
         /* strAddInfo   */ strMthInArgs );
 
 #pragma message(__TODO__"Test with different scale factors")
+#pragma message(__TODO__"Test with different Y Scale Axis orientations")
 
     if (i_pTestStep->hasConfigValue(CDrawingScene::c_strXmlAttrScreenResolutionPxPerMilliMeter)) {
         double fResPxPerMM = i_pTestStep->getConfigValue(CDrawingScene::c_strXmlAttrScreenResolutionPxPerMilliMeter).toDouble();

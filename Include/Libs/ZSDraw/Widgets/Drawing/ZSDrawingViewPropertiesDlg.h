@@ -24,36 +24,27 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSDraw_DrawGridLabels_h
-#define ZSDraw_DrawGridLabels_h
+#ifndef ZSDraw_DrawingViewPropertiesDlg_h
+#define ZSDraw_DrawingViewPropertiesDlg_h
 
 #include "ZSDraw/Common/ZSDrawDllMain.h"
-#include "ZSSysGUI/ZSSysGUIMathScaleDivLinesMetrics.h"
-#include "ZSSys/ZSSysCommon.h"
+#include "ZSSysGUI/ZSSysDialog.h"
 
-#if QT_VERSION < 0x050000
-#include <QtGui/qwidget.h>
-#else
-#include <QtWidgets/qwidget.h>
-#endif
+class QPushButton;
+class QHBoxLayout;
+class QVBoxLayout;
 
 namespace ZS
 {
-namespace System
-{
-class CTrcAdminObj;
-}
-
 namespace Draw
 {
 class CDrawGridSettings;
 class CDrawingSize;
 class CDrawingView;
+class CWdgtDrawingViewProperties;
 
 //******************************************************************************
-/*! @brief 
-*/
-class ZSDRAWDLL_API CWdgtGridLabels : public QWidget
+class ZSDRAWDLL_API CDlgDrawingViewProperties : public ZS::System::GUI::CDialog
 //******************************************************************************
 {
     Q_OBJECT
@@ -61,38 +52,43 @@ public: // class methods
     /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw"; }
     /*! Returns the class name. */
-    static QString ClassName() { return "CWdgtGridLabels"; }
-public: // ctors and dtor
-    CWdgtGridLabels(
-        const QString& i_strName,
-        CDrawingView* i_pDrawingView,
-        ZS::System::EScaleAxis i_scaleAxis,
-        ZS::System::ELayoutPos i_layoutPos,
-        QWidget* i_pWdgtParent = nullptr);
-    ~CWdgtGridLabels();
-public: // overridables of base class QWidget
-    QSize sizeHint() const override;
-protected: // overridables of base class QWidget
-    void paintEvent(QPaintEvent* i_pEv) override;
+    static QString ClassName() { return "CDlgDrawingViewProperties"; }
+public: // class methods
+    static CDlgDrawingViewProperties* CreateInstance(
+        const QString&  i_strDlgTitle,
+        CDrawingView*   i_pDrawingView,
+        QWidget*        i_pWdgtParent = nullptr,
+        Qt::WindowFlags i_wflags = Qt::WindowFlags());
+    static CDlgDrawingViewProperties* GetInstance( CDrawingView* i_pDrawingView );
+protected: // ctor
+    CDlgDrawingViewProperties(
+        const QString&  i_strDlgTitle,
+        CDrawingView*   i_pDrawingView,
+        QWidget*        i_pWdgtParent = nullptr,
+        Qt::WindowFlags i_wFlags = Qt::WindowFlags());
+public: // dtor
+    virtual ~CDlgDrawingViewProperties();
+protected slots: // instance methods
+    void onBtnOkClicked(bool i_bChecked = false);
+    void onBtnApplyClicked(bool i_bChecked = false);
+    void onBtnResetClicked(bool i_bChecked = false);
+    void onBtnCancelClicked(bool i_bChecked = false);
 protected slots:
-    void onDrawingViewDrawingSizeChanged(const ZS::Draw::CDrawingSize& i_size);
-    void onDrawingViewGridSettingsChanged(const ZS::Draw::CDrawGridSettings& i_settings);
-    void onDrawingViewContentAreaChanged();
-protected: // auxiliary methods
-    void paintGridLabels(QPainter* i_pPainter);
-protected: // instance members
+    void onWdgtDrawingViewPropertiesContentChanged();
+private: // instance members
     CDrawingView* m_pDrawingView;
-    ZS::System::GUI::Math::CScaleDivLinesMetrics m_divLinesMetrics;
-    int m_iDivLineLabelsLineLength;
-    ZS::System::EScaleAxis m_scaleAxis;
-    ZS::System::ELayoutPos m_layoutPos;
-    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
-    ZS::System::CTrcAdminObj* m_pTrcAdminObjPaintEvent;
+    QVBoxLayout* m_pLyt;
+    CWdgtDrawingViewProperties* m_pWdgtDrawingViewProperties;
+    QHBoxLayout* m_pLytLineBtns;
+    QPushButton* m_pBtnOk;
+    QPushButton* m_pBtnApply;
+    QPushButton* m_pBtnReset;
+    QPushButton* m_pBtnCancel;
 
-}; // class CWdgtGridLabels
+}; // CDlgDrawingViewProperties
 
 } // namespace Draw
 
 } // namespace ZS
 
-#endif // #ifndef ZSDraw_DrawGridLabels_h
+#endif // #ifndef ZSDraw_DrawingViewPropertiesDlg_h

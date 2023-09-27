@@ -67,15 +67,15 @@ public: // ctors and dtor
 CWdgtGridLabels::CWdgtGridLabels(
     const QString& i_strName,
     CDrawingView* i_pDrawingView,
-    EScaleDir i_scaleDir,
+    EScaleAxis i_scaleAxis,
     ELayoutPos i_layoutPos,
     QWidget* i_pWdgtParent) :
 //------------------------------------------------------------------------------
     QWidget(i_pWdgtParent),
     m_pDrawingView(i_pDrawingView),
-    m_divLinesMetrics("GridLabels" + i_strName, i_scaleDir),
+    m_divLinesMetrics("GridLabels" + i_strName, i_scaleAxis),
     m_iDivLineLabelsLineLength(5),
-    m_scaleDir(i_scaleDir),
+    m_scaleAxis(i_scaleAxis),
     m_layoutPos(i_layoutPos),
     m_pTrcAdminObj(nullptr)
 {
@@ -89,7 +89,7 @@ CWdgtGridLabels::CWdgtGridLabels(
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Name: " + i_strName +
-            ", ScaleDir: " + CEnumScaleDir(i_scaleDir).toString() +
+            ", ScaleAxis: " + CEnumScaleAxis(i_scaleAxis).toString() +
             ", LayoutPos: " + CEnumLayoutPos(i_layoutPos).toString();
     }
     CMethodTracer mthTracer(
@@ -98,7 +98,7 @@ CWdgtGridLabels::CWdgtGridLabels(
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_scaleDir == EScaleDir::X) {
+    if (m_scaleAxis == EScaleAxis::X) {
         m_divLinesMetrics = i_pDrawingView->drawingScene()->divLinesMetricsX();
     }
     else {
@@ -135,7 +135,7 @@ CWdgtGridLabels::~CWdgtGridLabels()
     m_pDrawingView = nullptr;
     //m_divLinesMetrics;
     m_iDivLineLabelsLineLength = 0;
-    m_scaleDir = static_cast<EScaleDir>(0);
+    m_scaleAxis = static_cast<EScaleAxis>(0);
     m_layoutPos = static_cast<ELayoutPos>(0);
     m_pTrcAdminObj = nullptr;
     m_pTrcAdminObjPaintEvent = nullptr;
@@ -157,7 +157,7 @@ QSize CWdgtGridLabels::sizeHint() const
         /* strAddInfo   */ "" );
 
     QSize sizeRecommended;
-    if (m_scaleDir == EScaleDir::X) {
+    if (m_scaleAxis == EScaleAxis::X) {
         sizeRecommended.setHeight(
             m_divLinesMetrics.getDivLineLabelsMaxTextExtent().height() + m_iDivLineLabelsLineLength + 5);
     }
@@ -216,7 +216,7 @@ void CWdgtGridLabels::onDrawingViewDrawingSizeChanged(const CDrawingSize& i_size
         /* strMethod    */ "onDrawingViewDrawingSizeChanged",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_scaleDir == EScaleDir::X) {
+    if (m_scaleAxis == EScaleAxis::X) {
         m_divLinesMetrics = m_pDrawingView->drawingScene()->divLinesMetricsX();
     }
     else {
@@ -240,7 +240,7 @@ void CWdgtGridLabels::onDrawingViewGridSettingsChanged(const CDrawGridSettings& 
         /* strMethod    */ "onDrawingViewGridSettingsChanged",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_scaleDir == EScaleDir::X) {
+    if (m_scaleAxis == EScaleAxis::X) {
         m_divLinesMetrics = m_pDrawingView->drawingScene()->divLinesMetricsX();
     }
     else {
@@ -343,7 +343,7 @@ void CWdgtGridLabels::paintGridLabels(QPainter* i_pPainter)
     pen.setWidth(gridSettings.linesWidth());
     i_pPainter->setPen(pen);
 
-    if (m_scaleDir == EScaleDir::X) {
+    if (m_scaleAxis == EScaleAxis::X) {
         for (int idxDivLine = 0; idxDivLine < m_divLinesMetrics.getDivLinesCount(EDivLineLayer::Main); ++idxDivLine ) {
             int xDivLine = m_divLinesMetrics.getDivLineInPix(EDivLineLayer::Main, idxDivLine);
             int xOffset = (iZoomFactor_perCent * xDivLine) / 100 - iHorScrollBarValue;
@@ -398,7 +398,7 @@ void CWdgtGridLabels::paintGridLabels(QPainter* i_pPainter)
     QRect rectDivLineLabelsPhysUnit = QRect(
         0, 0, sizeUnitString.width(), sizeUnitString.height());
 
-    if (m_scaleDir == EScaleDir::X) {
+    if (m_scaleAxis == EScaleAxis::X) {
         QRect rectXScaleMax = m_divLinesMetrics.getScaleMaxValBoundingRect();
         rectXScaleMax.moveLeft(rectDrawingViewportMapped.right() - rectXScaleMax.width()/2);
         if (m_layoutPos == ELayoutPos::Top) {
@@ -440,9 +440,9 @@ void CWdgtGridLabels::paintGridLabels(QPainter* i_pPainter)
                 }
             }
         }
-    } // if (m_scaleDir == EScaleDir::X)
+    } // if (m_scaleAxis == EScaleAxis::X)
 
-    else /* if (m_scaleDir == EScaleDir::Y) */ {
+    else /* if (m_scaleAxis == EScaleAxis::Y) */ {
         QRect rectYScaleMax = m_divLinesMetrics.getScaleMaxValBoundingRect();
         rectYScaleMax.setWidth(sizeUnitString.width());
         rectYScaleMax.setHeight(sizeUnitString.height());
@@ -487,7 +487,7 @@ void CWdgtGridLabels::paintGridLabels(QPainter* i_pPainter)
                 }
             }
         }
-    } // if (m_scaleDir == EScaleDir::Y)
+    } // if (m_scaleAxis == EScaleAxis::Y)
 
     i_pPainter->restore();
 

@@ -307,7 +307,7 @@ CDataDiagram* CPixmapDiagram::clone( EDiagramUpdateType i_diagramUpdateType ) co
         pPixmapDiagram->m_measMode = m_measMode;
         pPixmapDiagram->m_iMeasType = m_iMeasType;
 
-        for (int idx = 0; idx < CEnumScaleDir::count(); idx++)
+        for (int idx = 0; idx < CEnumScaleAxis::count(); idx++)
         {
             pPixmapDiagram->m_arSpacing[idx] = m_arSpacing[idx];
         }
@@ -1278,9 +1278,9 @@ void CPixmapDiagram::updateLayout()
     {
         // If the scale will be changed the method "scaleChanged" of the diagram will be
         // called invalidating the data of all objects linked to the changed scale.
-        switch( pDiagScale->getScaleDir() )
+        switch( pDiagScale->getScaleAxis() )
         {
-            case EScaleDir::X:
+            case EScaleAxis::X:
             {
                 if( pDiagScale->getMinValPix() != m_rectPartCenter.left()
                  || pDiagScale->getMaxValPix() != m_rectPartCenter.right() )
@@ -1289,7 +1289,7 @@ void CPixmapDiagram::updateLayout()
                 }
                 break;
             }
-            case EScaleDir::Y:
+            case EScaleAxis::Y:
             {
                 if( pDiagScale->getMinValPix() != m_rectPartCenter.bottom()
                  || pDiagScale->getMaxValPix() != m_rectPartCenter.top() )
@@ -1457,9 +1457,9 @@ void CPixmapDiagram::updateLayout()
         {
             // If the scale will be changed the method "scaleChanged" of the diagram will be
             // called invalidating the data of all objects linked to the changed scale.
-            switch( pDiagScale->getScaleDir() )
+            switch( pDiagScale->getScaleAxis() )
             {
-                case EScaleDir::X:
+                case EScaleAxis::X:
                 {
                     if( pDiagScale->getMinValPix() != m_rectPartCenter.left()
                      || pDiagScale->getMaxValPix() != m_rectPartCenter.right() )
@@ -1468,7 +1468,7 @@ void CPixmapDiagram::updateLayout()
                     }
                     break;
                 }
-                case EScaleDir::Y:
+                case EScaleAxis::Y:
                 {
                     if( pDiagScale->getMinValPix() != m_rectPartCenter.bottom()
                      || pDiagScale->getMaxValPix() != m_rectPartCenter.top() )

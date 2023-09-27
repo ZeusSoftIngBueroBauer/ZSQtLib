@@ -83,9 +83,10 @@ list(APPEND _HeadersDrawingObjFactories
 )
 
 list(APPEND _HeadersWidgetsDrawing
-    ${_HeadersPath}/${PROJECT_NAME}/Widgets/Drawing/ZSDrawDlgDrawingViewSetup.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/Drawing/ZSDrawGridLabels.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/Drawing/ZSDrawingView.h
+    ${_HeadersPath}/${PROJECT_NAME}/Widgets/Drawing/ZSDrawingViewEditPropertyDlg.h
+    ${_HeadersPath}/${PROJECT_NAME}/Widgets/Drawing/ZSDrawingViewPropertiesDlg.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/Drawing/ZSDrawingViewPropertiesWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/Drawing/ZSDrawingWidget.h
 )
@@ -187,9 +188,10 @@ list(APPEND _SourcesDrawing
 )
 
 list(APPEND _SourcesWidgetsDrawing
-    ${_SourcesPath}/${PROJECT_NAME}/Widgets/Drawing/ZSDrawDlgDrawingViewSetup.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/Drawing/ZSDrawGridLabels.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/Drawing/ZSDrawingView.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Widgets/Drawing/ZSDrawingViewEditPropertyDlg.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Widgets/Drawing/ZSDrawingViewPropertiesDlg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/Drawing/ZSDrawingViewPropertiesWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/Drawing/ZSDrawingWidget.cpp
 )

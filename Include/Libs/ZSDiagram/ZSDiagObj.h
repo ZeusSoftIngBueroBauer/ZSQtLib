@@ -120,7 +120,7 @@ signals:
     // Please note that the following signals may only be thrown by the
     // derived classed after updating its internal data.
     void valueChanged( ZS::Diagram::CDiagObj* );
-    void valueChanged( ZS::System::EScaleDir, ZS::Diagram::CDiagObj* );
+    void valueChanged( ZS::System::EScaleAxis, ZS::Diagram::CDiagObj* );
     void valueXChanged( ZS::Diagram::CDiagObj* );
     void valueYChanged( ZS::Diagram::CDiagObj* );
     void visibilityChanged( ZS::Diagram::CDiagObj* );
@@ -130,13 +130,13 @@ public: // instance methods
     void setObjName( const QString& i_strObjName );
     QString getObjName() const;
     CDataDiagram* getDiagram();
-    CDiagScale* getDiagScale( const ZS::System::CEnumScaleDir& i_scaleDir );
+    CDiagScale* getDiagScale( const ZS::System::CEnumScaleAxis& i_scaleAxis );
     virtual void setDiagTrace( CDiagTrace* i_pDiagTrace );
     CDiagTrace* getDiagTrace();
     ZS::System::ELayoutPos getLayoutPos() const;
 public: // overridables
-    virtual PhysVal::CPhysValRes getValRes( const ZS::System::CEnumScaleDir& i_scaleDir ) const;
-    virtual PhysVal::CPhysVal getVal( const ZS::System::CEnumScaleDir& i_scaleDir ) const;
+    virtual PhysVal::CPhysValRes getValRes( const ZS::System::CEnumScaleAxis& i_scaleAxis ) const;
+    virtual PhysVal::CPhysVal getVal( const ZS::System::CEnumScaleAxis& i_scaleAxis ) const;
 public: // overridables
     virtual void setAdjustContentRect2DiagPartCenter( bool i_bAdjust );
     virtual bool getAdjustContentRect2DiagPartCenter() const;

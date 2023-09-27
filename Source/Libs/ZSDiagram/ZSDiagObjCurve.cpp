@@ -213,8 +213,8 @@ void CDiagObjCurve::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintD
     // If the internal data structures need to be updated ..
     if( i_uUpdateFlags & EUpdateData && m_uUpdateFlags & EUpdateData )
     {
-        QVector<double> arfXValues = m_pDiagTrace->getValues(EScaleDir::X);
-        QVector<double> arfYValues = m_pDiagTrace->getValues(EScaleDir::Y);
+        QVector<double> arfXValues = m_pDiagTrace->getValues(EScaleAxis::X);
+        QVector<double> arfYValues = m_pDiagTrace->getValues(EScaleAxis::Y);
 
         mthTracer.trace("Processing Data", ELogDetailLevel::Debug);
 
@@ -242,8 +242,8 @@ void CDiagObjCurve::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintD
         QPoint*       pPt;
         const double* pfX;
         const double* pfY;
-        double        fXMin = m_pDiagTrace->getScale(EScaleDir::X).minVal().getVal();
-        double        fXMax = m_pDiagTrace->getScale(EScaleDir::X).maxVal().getVal();
+        double        fXMin = m_pDiagTrace->getScale(EScaleAxis::X).minVal().getVal();
+        double        fXMax = m_pDiagTrace->getScale(EScaleAxis::X).maxVal().getVal();
         double        fx, fy;
         int           xPix, yPix;
         bool          bAddXMin = false;
@@ -339,16 +339,16 @@ void CDiagObjCurve::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintD
         // If the point at XScaleMin should be added ..
         if( bAddXMin )
         {
-            xPix = m_pDiagTrace->getValPix(EScaleDir::X, fXMin);
+            xPix = m_pDiagTrace->getValPix(EScaleAxis::X, fXMin);
             pPt->setX(xPix);
 
             m_pDiagTrace->getVal(
-                /* scaleDirSrc */ EScaleDir::X,
-                /* fValSrc     */ fXMin,
-                /* pUnitSrc    */ nullptr,
-                /* scaleDirDst */ EScaleDir::Y,
-                /* pfValDst    */ &fy );
-            yPix = m_pDiagTrace->getValPix(EScaleDir::Y, fy);
+                /* scaleAxisSrc */ EScaleAxis::X,
+                /* fValSrc      */ fXMin,
+                /* pUnitSrc     */ nullptr,
+                /* scaleAxisDst */ EScaleAxis::Y,
+                /* pfValDst     */ &fy );
+            yPix = m_pDiagTrace->getValPix(EScaleAxis::Y, fy);
             pPt->setY(yPix);
 
             pPt++;
@@ -364,27 +364,27 @@ void CDiagObjCurve::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintD
             {
                 break;
             }
-            xPix = m_pDiagTrace->getValPix(EScaleDir::X, fx);
+            xPix = m_pDiagTrace->getValPix(EScaleAxis::X, fx);
             pPt->setX(xPix);
 
             fy = *pfY;
-            yPix = m_pDiagTrace->getValPix(EScaleDir::Y, fy);
+            yPix = m_pDiagTrace->getValPix(EScaleAxis::Y, fy);
             pPt->setY(yPix);
         }
 
         // If the point at XScaleMax should be added ..
         if( bAddXMax )
         {
-            xPix = m_pDiagTrace->getValPix(EScaleDir::X, fXMax);
+            xPix = m_pDiagTrace->getValPix(EScaleAxis::X, fXMax);
             pPt->setX(xPix);
 
             m_pDiagTrace->getVal(
-                /* scaleDirSrc */ EScaleDir::X,
-                /* fValSrc     */ fXMax,
-                /* pUnitSrc    */ nullptr,
-                /* scaleDirDst */ EScaleDir::Y,
-                /* pfValDst    */ &fy );
-            yPix = m_pDiagTrace->getValPix(EScaleDir::Y,fy);
+                /* scaleAxisSrc */ EScaleAxis::X,
+                /* fValSrc      */ fXMax,
+                /* pUnitSrc     */ nullptr,
+                /* scaleAxisDst */ EScaleAxis::Y,
+                /* pfValDst     */ &fy );
+            yPix = m_pDiagTrace->getValPix(EScaleAxis::Y,fy);
             pPt->setY(yPix);
 
             pPt++;

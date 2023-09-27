@@ -240,151 +240,9 @@ void CDlgGraphObjLineGeometryEditProperty::setCoordinate(
             m_strCoorPart2 = strlstCoors[2];
         }
         if (bIsValidCoordinate) {
-            bIsValidCoordinate = false;
-            if (m_strCoorPart2.isEmpty()) {
-                m_pLblCoorPart1->setText(m_strCoorPart1 + ":");
-                m_pLblCoorPart1->setFixedWidth(40);
-                m_pLblCoorPart2->setText(m_strCoorPart2);
-                m_pLblCoorPart2->setFixedWidth(0);
-            }
-            else {
-                m_pLblCoorPart1->setText(m_strCoorPart1);
-                m_pLblCoorPart1->setFixedWidth(40);
-                m_pLblCoorPart2->setText(m_strCoorPart2 + ":");
-                m_pLblCoorPart2->setFixedWidth(20);
-            }
-            const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-            CPhysValLine physValLine = m_pGraphObj->getLine(drawingSize.unit());
-            bool bEnabled = true;
-            bool bReadOnly = false;
-            CUnit unit = physValLine.unit();
-            double fResolution = 1.0;
-            double fMinimum = 0.0;
-            double fMaximum = 0.0;
-            double fValue = 0.0;
-            if (m_eDimensionUnit == EDrawingDimensionUnit::Metric) {
-                if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorPoint1) {
-                    if (m_strCoorPart2 == CWdgtGraphObjLineGeometryProperties::c_strCoorX) {
-                        bIsValidCoordinate = true;
-                        fResolution = drawingSize.metricImageWidth().getRes().getVal(unit);
-                        fMaximum = drawingSize.metricImageWidth().getVal(unit);
-                        fValue = physValLine.p1().x().getVal(unit);
-                    }
-                    else if (m_strCoorPart2 == CWdgtGraphObjLineGeometryProperties::c_strCoorY) {
-                        bIsValidCoordinate = true;
-                        fResolution = drawingSize.metricImageHeight().getRes().getVal(unit);
-                        fMaximum =  drawingSize.metricImageHeight().getVal(unit);
-                        fValue = physValLine.p1().y().getVal(unit);
-                    }
-                }
-                else if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorPoint2) {
-                    if (m_strCoorPart2 == CWdgtGraphObjLineGeometryProperties::c_strCoorX) {
-                        bIsValidCoordinate = true;
-                        fResolution = drawingSize.metricImageWidth().getRes().getVal(unit);
-                        fMaximum = drawingSize.metricImageWidth().getVal(unit);
-                        fValue = physValLine.p2().x().getVal(unit);
-                    }
-                    else if (m_strCoorPart2 == CWdgtGraphObjLineGeometryProperties::c_strCoorY) {
-                        bIsValidCoordinate = true;
-                        fResolution = drawingSize.metricImageHeight().getRes().getVal(unit);
-                        fMaximum =  drawingSize.metricImageHeight().getVal(unit);
-                        fValue = physValLine.p2().y().getVal(unit);
-                    }
-                }
-                else if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorWidth) {
-                    bIsValidCoordinate = true;
-                    fResolution = drawingSize.metricImageWidth().getRes().getVal(unit);
-                    fMaximum = drawingSize.metricImageWidth().getVal(unit);
-                    fMinimum = -fMaximum;
-                    fValue = physValLine.width().getVal(unit);
-                }
-                else if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorHeight) {
-                    bIsValidCoordinate = true;
-                    fResolution = drawingSize.metricImageHeight().getRes().getVal(unit);
-                    fMaximum = drawingSize.metricImageHeight().getVal(unit);
-                    fMinimum = -fMaximum;
-                    fValue = physValLine.height().getVal(unit);
-                }
-                else if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorLength) {
-                    bIsValidCoordinate = true;
-                    fResolution = drawingSize.metricImageWidth().getRes().getVal(unit);
-                    fMaximum = ZS::System::Math::sqrt(
-                        ZS::System::Math::sqr(drawingSize.metricImageWidth().getVal(unit))
-                        + ZS::System::Math::sqr(drawingSize.metricImageHeight().getVal(unit)));
-                    fValue = physValLine.length().getVal(unit);
-                }
-                else if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorAngle) {
-                    bIsValidCoordinate = true;
-                    unit = Units.Angle.Degree;
-                    fResolution = 0.1;
-                    fMinimum = -360.0;
-                    fMaximum = 360.0;
-                    fValue = physValLine.angle().getVal(unit);
-                }
-                else if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorCenter) {
-                    if (m_strCoorPart2 == CWdgtGraphObjLineGeometryProperties::c_strCoorX) {
-                        bIsValidCoordinate = true;
-                        fResolution = 0.1;
-                        fMaximum = drawingSize.metricImageWidth().getVal(unit);
-                        fValue = physValLine.center().x().getVal(unit);
-                    }
-                    else if (m_strCoorPart2 == CWdgtGraphObjLineGeometryProperties::c_strCoorY) {
-                        bIsValidCoordinate = true;
-                        fResolution = 0.1;
-                        fMaximum =  drawingSize.metricImageHeight().getVal(unit);
-                        fValue = physValLine.center().y().getVal(unit);
-                    }
-                }
-            }
-            else /*if (m_eDimensionUnit == EDrawingDimensionUnit::Pixels)*/ {
-                unit = Units.Length.px;
-                if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorPoint1) {
-                    if (m_strCoorPart2 == CWdgtGraphObjLineGeometryProperties::c_strCoorX) {
-                        bIsValidCoordinate = true;
-                        fMaximum = drawingSize.imageWidthInPixels();
-                        fValue = physValLine.p1().x().getVal(unit);
-                    }
-                    else if (m_strCoorPart2 == CWdgtGraphObjLineGeometryProperties::c_strCoorY) {
-                        bIsValidCoordinate = true;
-                        fMaximum =  drawingSize.imageHeightInPixels();
-                        fValue = physValLine.p1().y().getVal(unit);
-                    }
-                }
-                else if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorPoint2) {
-                    if (m_strCoorPart2 == CWdgtGraphObjLineGeometryProperties::c_strCoorX) {
-                        bIsValidCoordinate = true;
-                        fMaximum = drawingSize.imageWidthInPixels();
-                        fValue = physValLine.p2().x().getVal(unit);
-                    }
-                    else if (m_strCoorPart2 == CWdgtGraphObjLineGeometryProperties::c_strCoorY) {
-                        bIsValidCoordinate = true;
-                        fMaximum =  drawingSize.imageHeightInPixels();
-                        fValue = physValLine.p2().y().getVal(unit);
-                    }
-                }
-                else if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorWidth) {
-                    bIsValidCoordinate = true;
-                    fMaximum = drawingSize.imageWidthInPixels();
-                    fMinimum = -fMaximum;
-                    fValue = physValLine.width().getVal(unit);
-                }
-                else if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorHeight) {
-                    bIsValidCoordinate = true;
-                    fMaximum = drawingSize.imageHeightInPixels();
-                    fMinimum = -fMaximum;
-                    fValue = physValLine.height().getVal(unit);
-                }
-            }
-            m_pEdtCoor->setEnabled(bEnabled);
-            m_pEdtCoor->setReadOnly(bReadOnly);
-            m_pEdtCoor->setUnit(unit);
-            m_pEdtCoor->setResolution(fResolution);
-            m_pEdtCoor->setMinimum(fMinimum);
-            m_pEdtCoor->setMaximum(fMaximum);
-            m_pEdtCoor->setValue(fValue);
+            update();
         }
     }
-
     if (!bIsValidCoordinate) {
         m_pLblCoorPart1->setText("");
         m_pLblCoorPart2->setText("");
@@ -511,92 +369,7 @@ void CDlgGraphObjLineGeometryEditProperty::onDrawingSceneDrawingSizeChanged(
         /* strMethod    */ "onDrawingSceneDrawingSizeChanged",
         /* strInArgs    */ strMthInArgs );
 
-    CPhysValLine physValLine = m_pGraphObj->getLine(i_drawingSize.unit());
-    CUnit unit = physValLine.unit();
-    double fResolution = 1.0;
-    double fMinimum = 0.0;
-    double fMaximum = 0.0;
-    if (m_eDimensionUnit == EDrawingDimensionUnit::Metric) {
-        if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorPoint1) {
-            if (m_strCoorPart2 == CWdgtGraphObjLineGeometryProperties::c_strCoorX) {
-                fResolution = i_drawingSize.metricImageWidth().getRes().getVal(unit);
-                fMaximum = i_drawingSize.metricImageWidth().getVal(unit);
-            }
-            else if (m_strCoorPart2 == CWdgtGraphObjLineGeometryProperties::c_strCoorY) {
-                fResolution = i_drawingSize.metricImageHeight().getRes().getVal(unit);
-                fMaximum =  i_drawingSize.metricImageHeight().getVal(unit);
-            }
-        }
-        else if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorPoint2) {
-            if (m_strCoorPart2 == CWdgtGraphObjLineGeometryProperties::c_strCoorX) {
-                fResolution = i_drawingSize.metricImageWidth().getRes().getVal(unit);
-                fMaximum = i_drawingSize.metricImageWidth().getVal(unit);
-            }
-            else if (m_strCoorPart2 == CWdgtGraphObjLineGeometryProperties::c_strCoorY) {
-                fResolution = i_drawingSize.metricImageHeight().getRes().getVal(unit);
-                fMaximum =  i_drawingSize.metricImageHeight().getVal(unit);
-            }
-        }
-        else if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorWidth) {
-            fResolution = i_drawingSize.metricImageWidth().getRes().getVal(unit);
-            fMaximum = i_drawingSize.metricImageWidth().getVal(unit);
-        }
-        else if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorHeight) {
-            fResolution = i_drawingSize.metricImageHeight().getRes().getVal(unit);
-            fMaximum = i_drawingSize.metricImageHeight().getVal(unit);
-        }
-        else if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorLength) {
-            fResolution = i_drawingSize.metricImageWidth().getRes().getVal(unit);
-            fMaximum = ZS::System::Math::sqrt(
-                ZS::System::Math::sqr(i_drawingSize.metricImageWidth().getVal(unit))
-                + ZS::System::Math::sqr(i_drawingSize.metricImageHeight().getVal(unit)));
-        }
-        else if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorAngle) {
-            unit = Units.Angle.Degree;
-            fResolution = 0.1;
-            fMinimum = -360.0;
-            fMaximum = 360.0;
-        }
-        else if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorCenter) {
-            if (m_strCoorPart2 == CWdgtGraphObjLineGeometryProperties::c_strCoorX) {
-                fResolution = 0.1;
-                fMaximum = i_drawingSize.metricImageWidth().getVal(unit);
-            }
-            else if (m_strCoorPart2 == CWdgtGraphObjLineGeometryProperties::c_strCoorY) {
-                fResolution = 0.1;
-                fMaximum =  i_drawingSize.metricImageHeight().getVal(unit);
-            }
-        }
-    }
-    else /*if (m_eDimensionUnit == EDrawingDimensionUnit::Pixels)*/ {
-        unit = Units.Length.px;
-        if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorPoint1) {
-            if (m_strCoorPart2 == CWdgtGraphObjLineGeometryProperties::c_strCoorX) {
-                fMaximum = i_drawingSize.imageWidthInPixels();
-            }
-            else if (m_strCoorPart2 == CWdgtGraphObjLineGeometryProperties::c_strCoorY) {
-                fMaximum =  i_drawingSize.imageHeightInPixels();
-            }
-        }
-        else if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorPoint2) {
-            if (m_strCoorPart2 == CWdgtGraphObjLineGeometryProperties::c_strCoorX) {
-                fMaximum = i_drawingSize.imageWidthInPixels();
-            }
-            else if (m_strCoorPart2 == CWdgtGraphObjLineGeometryProperties::c_strCoorY) {
-                fMaximum =  i_drawingSize.imageHeightInPixels();
-            }
-        }
-        else if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorWidth) {
-            fMaximum = i_drawingSize.imageWidthInPixels();
-        }
-        else if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorHeight) {
-            fMaximum = i_drawingSize.imageHeightInPixels();
-        }
-    }
-    m_pEdtCoor->setUnit(unit);
-    m_pEdtCoor->setResolution(fResolution);
-    m_pEdtCoor->setMinimum(fMinimum);
-    m_pEdtCoor->setMaximum(fMaximum);
+    update();
 }
 
 //------------------------------------------------------------------------------
@@ -611,4 +384,180 @@ void CDlgGraphObjLineGeometryEditProperty::onGraphObjAboutToDestroyed()
         /* strInArgs    */ "" );
 
     setCoordinate(nullptr, "");
+}
+
+/*==============================================================================
+protected: // auxiliary methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief 
+
+*/
+void CDlgGraphObjLineGeometryEditProperty::update()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ s_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ objectName(),
+        /* strMethod    */ "update",
+        /* strInArgs    */ "" );
+
+    bool bIsValidCoordinate = false;
+
+    CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
+
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    CPhysValLine physValLine = m_pGraphObj->getLine(drawingSize.unit());
+    bool bEnabled = true;
+    bool bReadOnly = false;
+    CUnit unit = physValLine.unit();
+    double fResolution = 1.0;
+    double fMinimum = 0.0;
+    double fMaximum = 0.0;
+    double fValue = 0.0;
+
+    if (m_eDimensionUnit == EDrawingDimensionUnit::Metric) {
+        if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorPoint1) {
+            if (m_strCoorPart2 == CWdgtGraphObjLineGeometryProperties::c_strCoorX) {
+                bIsValidCoordinate = true;
+                fResolution = drawingSize.metricImageWidth().getRes().getVal(unit);
+                fMaximum = drawingSize.metricImageWidth().getVal(unit);
+                fValue = physValLine.p1().x().getVal(unit);
+            }
+            else if (m_strCoorPart2 == CWdgtGraphObjLineGeometryProperties::c_strCoorY) {
+                bIsValidCoordinate = true;
+                fResolution = drawingSize.metricImageHeight().getRes().getVal(unit);
+                fMaximum =  drawingSize.metricImageHeight().getVal(unit);
+                fValue = physValLine.p1().y().getVal(unit);
+            }
+        }
+        else if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorPoint2) {
+            if (m_strCoorPart2 == CWdgtGraphObjLineGeometryProperties::c_strCoorX) {
+                bIsValidCoordinate = true;
+                fResolution = drawingSize.metricImageWidth().getRes().getVal(unit);
+                fMaximum = drawingSize.metricImageWidth().getVal(unit);
+                fValue = physValLine.p2().x().getVal(unit);
+            }
+            else if (m_strCoorPart2 == CWdgtGraphObjLineGeometryProperties::c_strCoorY) {
+                bIsValidCoordinate = true;
+                fResolution = drawingSize.metricImageHeight().getRes().getVal(unit);
+                fMaximum =  drawingSize.metricImageHeight().getVal(unit);
+                fValue = physValLine.p2().y().getVal(unit);
+            }
+        }
+        else if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorWidth) {
+            bIsValidCoordinate = true;
+            fResolution = drawingSize.metricImageWidth().getRes().getVal(unit);
+            fMaximum = drawingSize.metricImageWidth().getVal(unit);
+            fMinimum = -fMaximum;
+            fValue = physValLine.width().getVal(unit);
+        }
+        else if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorHeight) {
+            bIsValidCoordinate = true;
+            fResolution = drawingSize.metricImageHeight().getRes().getVal(unit);
+            fMaximum = drawingSize.metricImageHeight().getVal(unit);
+            fMinimum = -fMaximum;
+            fValue = physValLine.height().getVal(unit);
+        }
+        else if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorLength) {
+            bIsValidCoordinate = true;
+            fResolution = drawingSize.metricImageWidth().getRes().getVal(unit);
+            fMaximum = ZS::System::Math::sqrt(
+                ZS::System::Math::sqr(drawingSize.metricImageWidth().getVal(unit))
+                + ZS::System::Math::sqr(drawingSize.metricImageHeight().getVal(unit)));
+            fValue = physValLine.length().getVal(unit);
+        }
+        else if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorAngle) {
+            bIsValidCoordinate = true;
+            unit = Units.Angle.Degree;
+            fResolution = 0.1;
+            fMinimum = -360.0;
+            fMaximum = 360.0;
+            fValue = physValLine.angle().getVal(unit);
+        }
+        else if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorCenter) {
+            if (m_strCoorPart2 == CWdgtGraphObjLineGeometryProperties::c_strCoorX) {
+                bIsValidCoordinate = true;
+                fResolution = 0.1;
+                fMaximum = drawingSize.metricImageWidth().getVal(unit);
+                fValue = physValLine.center().x().getVal(unit);
+            }
+            else if (m_strCoorPart2 == CWdgtGraphObjLineGeometryProperties::c_strCoorY) {
+                bIsValidCoordinate = true;
+                fResolution = 0.1;
+                fMaximum =  drawingSize.metricImageHeight().getVal(unit);
+                fValue = physValLine.center().y().getVal(unit);
+            }
+        }
+    }
+    else /*if (m_eDimensionUnit == EDrawingDimensionUnit::Pixels)*/ {
+        unit = Units.Length.px;
+        if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorPoint1) {
+            if (m_strCoorPart2 == CWdgtGraphObjLineGeometryProperties::c_strCoorX) {
+                bIsValidCoordinate = true;
+                fMaximum = drawingSize.imageWidthInPixels();
+                fValue = physValLine.p1().x().getVal(unit);
+            }
+            else if (m_strCoorPart2 == CWdgtGraphObjLineGeometryProperties::c_strCoorY) {
+                bIsValidCoordinate = true;
+                fMaximum =  drawingSize.imageHeightInPixels();
+                fValue = physValLine.p1().y().getVal(unit);
+            }
+        }
+        else if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorPoint2) {
+            if (m_strCoorPart2 == CWdgtGraphObjLineGeometryProperties::c_strCoorX) {
+                bIsValidCoordinate = true;
+                fMaximum = drawingSize.imageWidthInPixels();
+                fValue = physValLine.p2().x().getVal(unit);
+            }
+            else if (m_strCoorPart2 == CWdgtGraphObjLineGeometryProperties::c_strCoorY) {
+                bIsValidCoordinate = true;
+                fMaximum =  drawingSize.imageHeightInPixels();
+                fValue = physValLine.p2().y().getVal(unit);
+            }
+        }
+        else if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorWidth) {
+            bIsValidCoordinate = true;
+            fMaximum = drawingSize.imageWidthInPixels();
+            fMinimum = -fMaximum;
+            fValue = physValLine.width().getVal(unit);
+        }
+        else if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorHeight) {
+            bIsValidCoordinate = true;
+            fMaximum = drawingSize.imageHeightInPixels();
+            fMinimum = -fMaximum;
+            fValue = physValLine.height().getVal(unit);
+        }
+    }
+
+    m_pEdtCoor->setUnit(unit);
+    m_pEdtCoor->setResolution(fResolution);
+    m_pEdtCoor->setMinimum(fMinimum);
+    m_pEdtCoor->setMaximum(fMaximum);
+    m_pEdtCoor->setValue(fValue);
+
+    if (bIsValidCoordinate) {
+        if (m_strCoorPart2.isEmpty()) {
+            m_pLblCoorPart1->setText(m_strCoorPart1 + ":");
+            m_pLblCoorPart1->setFixedWidth(40);
+            m_pLblCoorPart2->setText(m_strCoorPart2);
+            m_pLblCoorPart2->setFixedWidth(0);
+        }
+        else {
+            m_pLblCoorPart1->setText(m_strCoorPart1);
+            m_pLblCoorPart1->setFixedWidth(40);
+            m_pLblCoorPart2->setText(m_strCoorPart2 + ":");
+            m_pLblCoorPart2->setFixedWidth(20);
+        }
+        m_pEdtCoor->setEnabled(true);
+        m_pEdtCoor->setReadOnly(false);
+    }
+    else {
+        m_pLblCoorPart1->setText("");
+        m_pLblCoorPart2->setText("");
+        m_pEdtCoor->setEnabled(false);
+        m_pEdtCoor->setReadOnly(true);
+    }
 }

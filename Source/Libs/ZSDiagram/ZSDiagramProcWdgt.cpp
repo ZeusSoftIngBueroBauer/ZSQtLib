@@ -237,7 +237,7 @@ CDataDiagram* CWdgtDiagram::clone( EDiagramUpdateType i_diagramUpdateType ) cons
         pWdgtDiagram->m_measMode = m_measMode;
         pWdgtDiagram->m_iMeasType = m_iMeasType;
 
-        for (int idx = 0; idx < CEnumScaleDir::count(); idx++)
+        for (int idx = 0; idx < CEnumScaleAxis::count(); idx++)
         {
             pWdgtDiagram->m_arSpacing[idx] = m_arSpacing[idx];
         }
@@ -353,17 +353,17 @@ public: // instance methods to set optional attributes of the diagram
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtDiagram::enableZooming( const CEnumScaleDir& i_scaleDir )
+void CWdgtDiagram::enableZooming( const CEnumScaleAxis& i_scaleAxis )
 //------------------------------------------------------------------------------
 {
-    switch( i_scaleDir.enumerator() )
+    switch( i_scaleAxis.enumerator() )
     {
-        case EScaleDir::X:
+        case EScaleAxis::X:
         {
             m_bZoomingXScaleEnabled = true;
             break;
         }
-        case EScaleDir::Y:
+        case EScaleAxis::Y:
         {
             m_bZoomingYScaleEnabled = true;
             break;
@@ -378,17 +378,17 @@ void CWdgtDiagram::enableZooming( const CEnumScaleDir& i_scaleDir )
 }
 
 //------------------------------------------------------------------------------
-void CWdgtDiagram::disableZooming( const CEnumScaleDir& i_scaleDir )
+void CWdgtDiagram::disableZooming( const CEnumScaleAxis& i_scaleAxis )
 //------------------------------------------------------------------------------
 {
-    switch( i_scaleDir.enumerator() )
+    switch( i_scaleAxis.enumerator() )
     {
-        case EScaleDir::X:
+        case EScaleAxis::X:
         {
             m_bZoomingXScaleEnabled = false;
             break;
         }
-        case EScaleDir::Y:
+        case EScaleAxis::Y:
         {
             m_bZoomingYScaleEnabled = false;
             break;
@@ -403,19 +403,19 @@ void CWdgtDiagram::disableZooming( const CEnumScaleDir& i_scaleDir )
 }
 
 //------------------------------------------------------------------------------
-bool CWdgtDiagram::isZoomingEnabled( const CEnumScaleDir& i_scaleDir ) const
+bool CWdgtDiagram::isZoomingEnabled( const CEnumScaleAxis& i_scaleAxis ) const
 //------------------------------------------------------------------------------
 {
     bool bZoomingEnabled = false;
 
-    switch( i_scaleDir.enumerator() )
+    switch( i_scaleAxis.enumerator() )
     {
-        case EScaleDir::X:
+        case EScaleAxis::X:
         {
             bZoomingEnabled = m_bZoomingXScaleEnabled;
             break;
         }
-        case EScaleDir::Y:
+        case EScaleAxis::Y:
         {
             bZoomingEnabled = m_bZoomingYScaleEnabled;
             break;
@@ -1122,7 +1122,7 @@ void CWdgtDiagram::keyPressEvent( QKeyEvent* i_pEv )
 
                                     if( m_pMoveKeyAccelerationDiagScale != nullptr && m_pMoveKeyAccelerationDiagScale->isScaleValid() )
                                     {
-                                        EScaleDir scaleDir;
+                                        EScaleAxis scaleAxis;
                                         double    fScaleMin;
                                         double    fScaleMax;
                                         double    fScaleRange;
@@ -1130,17 +1130,17 @@ void CWdgtDiagram::keyPressEvent( QKeyEvent* i_pEv )
                                         double    fVal = 0.0;
                                         double    fRes = 0.0;
 
-                                        scaleDir = m_pMoveKeyAccelerationDiagScale->getScaleDir();
-                                        bValIsValid = m_pDiagObjEditing->getVal(scaleDir).isValid();
+                                        scaleAxis = m_pMoveKeyAccelerationDiagScale->getScaleAxis();
+                                        bValIsValid = m_pDiagObjEditing->getVal(scaleAxis).isValid();
 
                                         if( bValIsValid )
                                         {
-                                            fVal = m_pDiagObjEditing->getVal(scaleDir).getVal();
-                                            fRes = m_pDiagObjEditing->getValRes(scaleDir).getVal();
+                                            fVal = m_pDiagObjEditing->getVal(scaleAxis).getVal();
+                                            fRes = m_pDiagObjEditing->getValRes(scaleAxis).getVal();
                                         }
                                         else
                                         {
-                                            fRes = m_pDiagObjEditing->getValRes(scaleDir).getVal();
+                                            fRes = m_pDiagObjEditing->getValRes(scaleAxis).getVal();
                                         }
                                         fScaleMin = m_pMoveKeyAccelerationDiagScale->getScale().minVal().getVal();
                                         fScaleMax = m_pMoveKeyAccelerationDiagScale->getScale().maxVal().getVal();
@@ -1432,12 +1432,12 @@ void CWdgtDiagram::mouseReleaseEvent( QMouseEvent* i_pEv )
 
             m_rectZoom = Math::calcRect(m_ptZoomStart,m_ptZoomEnd);
 
-            if( !isZoomingEnabled(EScaleDir::X) )
+            if( !isZoomingEnabled(EScaleAxis::X) )
             {
                 m_rectZoom.setLeft(m_rectPartCenter.left());
                 m_rectZoom.setWidth(m_rectPartCenter.width());
             }
-            else if( !isZoomingEnabled(EScaleDir::Y) )
+            else if( !isZoomingEnabled(EScaleAxis::Y) )
             {
                 m_rectZoom.setTop(m_rectPartCenter.top());
                 m_rectZoom.setHeight(m_rectPartCenter.height());
@@ -1447,14 +1447,14 @@ void CWdgtDiagram::mouseReleaseEvent( QMouseEvent* i_pEv )
             {
                 for (CDiagScale* pDiagScale : m_arpDiagScales)
                 {
-                    switch( pDiagScale->getScaleDir() )
+                    switch( pDiagScale->getScaleAxis() )
                     {
-                        case EScaleDir::X:
+                        case EScaleAxis::X:
                         {
                             pDiagScale->zoomIn(m_rectZoom.left(),m_rectZoom.right());
                             break;
                         }
-                        case EScaleDir::Y:
+                        case EScaleAxis::Y:
                         {
                             pDiagScale->zoomIn(m_rectZoom.bottom(),m_rectZoom.top());
                             break;

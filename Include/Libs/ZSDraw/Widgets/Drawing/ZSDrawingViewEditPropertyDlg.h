@@ -24,71 +24,99 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSDraw_DlgDrawingViewSetup_h
-#define ZSDraw_DlgDrawingViewSetup_h
+#ifndef ZSDraw_DrawinvViewEditPropertyDlg_h
+#define ZSDraw_DrawinvViewEditPropertyDlg_h
 
-#include "ZSDraw/Common/ZSDrawDllMain.h"
-#include "ZSSysGUI/ZSSysDialog.h"
+#include "ZSDraw/Common/ZSDrawCommon.h"
 
+#if QT_VERSION < 0x050000
+#include <QtGui/qdialog.h>
+#else
+#include <QtWidgets/qdialog.h>
+#endif
+
+class QDoubleSpinBox;
+class QLabel;
+class QLineEdit;
 class QPushButton;
 class QHBoxLayout;
 class QVBoxLayout;
 
 namespace ZS
 {
+namespace System {
+class CTrcAdminObj;
+}
+namespace PhysVal {
+class CPhysVal;
+}
+
 namespace Draw
 {
-class CDrawGridSettings;
+class CDrawingScene;
 class CDrawingSize;
 class CDrawingView;
-class CWdgtDrawingViewProperties;
 
 //******************************************************************************
-class ZSDRAWDLL_API CDlgDrawingViewSetup : public ZS::System::GUI::CDialog
+/*! @brief Dialog to edit a property of a line.
+
+    On changing the value through the up and down buttons or by using the
+    keyboards accelerator's Up and Down arrows or by pressing the enter key
+    the value will be immediately set at the graphical object.
+*/
+class ZSDRAWDLL_API CDlgDrawingViewEditProperty : public QDialog
 //******************************************************************************
 {
     Q_OBJECT
 public: // class methods
-    /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw"; }
-    /*! Returns the class name. */
-    static QString ClassName() { return "CDlgDrawingViewSetup"; }
-public: // class methods
-    static CDlgDrawingViewSetup* CreateInstance(
-        const QString&  i_strDlgTitle,
-        CDrawingView*   i_pDrawingView,
-        QWidget*        i_pWdgtParent = nullptr,
-        Qt::WindowFlags i_wflags = Qt::WindowFlags());
-    static CDlgDrawingViewSetup* GetInstance( CDrawingView* i_pDrawingView );
-protected: // ctor
-    CDlgDrawingViewSetup(
-        const QString&  i_strDlgTitle,
-        CDrawingView*   i_pDrawingView,
-        QWidget*        i_pWdgtParent = nullptr,
-        Qt::WindowFlags i_wFlags = Qt::WindowFlags());
-public: // dtor
-    virtual ~CDlgDrawingViewSetup();
+    static QString ClassName() { return "CDlgDrawingViewEditProperty"; }
+public: // ctors and dtor
+    CDlgDrawingViewEditProperty(CDrawingView* i_pDrawingView, QWidget* i_pWdgtParent = nullptr);
+    virtual ~CDlgDrawingViewEditProperty();
+public: // instance methods
+    void setCoordinate(const QString& i_strCoorSpec);
 protected slots: // instance methods
     void onBtnOkClicked(bool i_bChecked = false);
     void onBtnApplyClicked(bool i_bChecked = false);
     void onBtnResetClicked(bool i_bChecked = false);
     void onBtnCancelClicked(bool i_bChecked = false);
 protected slots:
-    void onWdgtDrawingViewPropertiesContentChanged();
-private: // instance members
+    void onDrawUnitsLengthResolutionChanged();
+    void onDrawingViewDrawingSizeChanged(const CDrawingSize& i_drawingSize);
+protected slots:
+    void onEdtCoorValueChanged(double i_fValue);
+protected: // auxiliary instance methods
+    bool hasChanges() const;
+    void acceptChanges();
+    void updateButtonStates();
+protected: // auxiliary instance methods
+    void fillEditControls();
+protected: // class members
+    /*!< Trace admin object for method tracing. */
+    static ZS::System::CTrcAdminObj* s_pTrcAdminObj;
+protected: // instance members
     CDrawingView* m_pDrawingView;
+    int m_iContentChangedSignalBlockedCounter;
+    QString m_strCoorPart1;
+    QString m_strCoorPart2;
     QVBoxLayout* m_pLyt;
-    CWdgtDrawingViewProperties* m_pWdgtDrawingViewProperties;
+    QHBoxLayout* m_pLytHeadLine;
+    QLineEdit* m_pEdtPath;
+    QHBoxLayout* m_pLytLineEdtVal;
+    QLabel* m_pLblCoorPart1;
+    QLabel* m_pLblCoorPart2;
+    QDoubleSpinBox* m_pEdtCoor;
     QHBoxLayout* m_pLytLineBtns;
     QPushButton* m_pBtnOk;
     QPushButton* m_pBtnApply;
     QPushButton* m_pBtnReset;
     QPushButton* m_pBtnCancel;
 
-}; // CDlgDrawingViewSetup
+}; // class CDlgDrawingViewEditProperty
 
 } // namespace Draw
 
 } // namespace ZS
 
-#endif // #ifndef ZSDraw_DlgDrawingViewSetup_h
+#endif // #ifndef ZSDraw_DrawinvViewEditPropertyDlg_h

@@ -2761,7 +2761,7 @@ void CDiagObjTable::clmValueChanged( CDiagObj* i_pDiagObjValSrc )
     //int            idxClm;
     //int            physUnitClm;
     //CDiagObj*      pDiagObjClm;
-    //EScaleDir      scaleDirClm;
+    //EScaleAxis      scaleAxisClm;
     //EValueValidity validity;
     //double         fVal;
 

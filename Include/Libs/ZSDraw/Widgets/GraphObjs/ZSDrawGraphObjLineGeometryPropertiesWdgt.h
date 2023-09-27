@@ -93,11 +93,11 @@ protected slots:
     void onEdtPixelsPtCenterXValueChanged(const ZS::PhysVal::CPhysVal& i_physVal);
     void onEdtPixelsPtCenterYValueChanged(const ZS::PhysVal::CPhysVal& i_physVal);
     void onDlgEditPropertyDestroyed(QObject* i_pObj = nullptr);
-protected: // overridables of base class QObject
-    bool eventFilter(QObject* i_pObjWatched, QEvent* i_pEv) override;
 private: // auxiliary instance methods
     void fillEditControls(const CPhysValLine& i_physValLine);
     void registerEditPropertyDialog(ZS::PhysVal::GUI::CWdgtEditPhysVal* i_pEdtWidget);
+protected: // overridables of base class QObject
+    bool eventFilter(QObject* i_pObjWatched, QEvent* i_pEv) override;
 private: // instance members
     /*!< Cached coordinates of the graphical object.
          The values are stored in the unit of the drawing size.

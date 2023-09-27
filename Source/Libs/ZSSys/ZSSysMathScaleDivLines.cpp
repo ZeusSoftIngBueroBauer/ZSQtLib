@@ -445,14 +445,14 @@ public: // ctors and dtor
 
     @param i_strObjName [in]
         Name of the object.
-    @param i_scaleDir [in]
+    @param i_scaleAxis [in]
         Direction of the scale which could be either X or Y.
-        3 dimensional scales with scaleDir = Z are not supported.
+        3 dimensional scales with scaleAxis = Z are not supported.
         Please note that the scale direction cannot be changed during runtime.
 */
-CScaleDivLines::CScaleDivLines(const QString& i_strObjName, EScaleDir i_scaleDir) :
+CScaleDivLines::CScaleDivLines(const QString& i_strObjName, EScaleAxis i_scaleAxis) :
 //------------------------------------------------------------------------------
-    CScaleDivLines(ClassName(), NameSpace(), i_strObjName, i_scaleDir)
+    CScaleDivLines(ClassName(), NameSpace(), i_strObjName, i_scaleAxis)
 {
 }
 
@@ -468,19 +468,20 @@ CScaleDivLines::CScaleDivLines(const QString& i_strObjName, EScaleDir i_scaleDir
         Class name of the derived class.
     @param i_strObjName [in]
         Name of the object.
-    @param i_scaleDir [in]
+    @param i_scaleAxis [in]
         Direction of the scale which could be either X or Y.
-        3 dimensional scales with scaleDir = Z are not supported.
+        3 dimensional scales with scaleAxis = Z are not supported.
         Please note that the scale direction cannot be changed during runtime.
 */
 CScaleDivLines::CScaleDivLines(
     const QString& i_strNameSpace, const QString& i_strClassName,
-    const QString& i_strObjName, EScaleDir i_scaleDir) :
+    const QString& i_strObjName, EScaleAxis i_scaleAxis) :
 //------------------------------------------------------------------------------
     m_strNameSpace(i_strNameSpace),
     m_strClassName(i_strClassName),
     m_strObjName(i_strObjName),
-    m_scaleDir(i_scaleDir),
+    m_scaleAxis(i_scaleAxis),
+    m_yScaleAxisOrientation(EYScaleAxisOrientation::BottomUp),
     m_spacing(ESpacing::Linear),
     m_fScaleMin(0.0),
     m_fScaleMax(0.0),
@@ -501,7 +502,7 @@ CScaleDivLines::CScaleDivLines(
 
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = CEnumScaleDir(i_scaleDir).toString();
+        strMthInArgs = CEnumScaleAxis(i_scaleAxis).toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -539,7 +540,8 @@ CScaleDivLines::CScaleDivLines(const QString& i_strObjName, const CScaleDivLines
     m_strNameSpace(i_other.m_strNameSpace),
     m_strClassName(i_other.m_strClassName),
     m_strObjName(i_strObjName),
-    m_scaleDir(i_other.m_scaleDir),
+    m_scaleAxis(i_other.m_scaleAxis),
+    m_yScaleAxisOrientation(i_other.m_yScaleAxisOrientation),
     m_spacing(i_other.m_spacing),
     m_fScaleMin(i_other.m_fScaleMin),
     m_fScaleMax(i_other.m_fScaleMax),
@@ -578,7 +580,8 @@ CScaleDivLines::~CScaleDivLines()
         /* strAddInfo   */ "" );
 
     //m_strObjName;
-    m_scaleDir = static_cast<EScaleDir>(0);
+    m_scaleAxis = static_cast<EScaleAxis>(0);
+    m_yScaleAxisOrientation = static_cast<EYScaleAxisOrientation>(0);
     m_spacing = static_cast<ESpacing>(0);
     m_fScaleMin = 0.0;
     m_fScaleMax = 0.0;
@@ -619,7 +622,7 @@ CScaleDivLines& CScaleDivLines::operator = (const CScaleDivLines& i_other)
         /* strMethod    */ "operator =",
         /* strAddInfo   */ i_other.NameSpace() + "::" + i_other.ClassName() + "::" + objectName() );
 
-    m_scaleDir = i_other.m_scaleDir;
+    m_scaleAxis = i_other.m_scaleAxis;
     m_spacing = i_other.m_spacing;
     m_fScaleMin = i_other.m_fScaleMin;
     m_fScaleMax = i_other.m_fScaleMax;
@@ -655,6 +658,47 @@ QString CScaleDivLines::objectName() const
 /*==============================================================================
 public: // instance methods (setting properties)
 ==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the orientation of the Y scale axis.
+
+    Y scales can be either orientated from top to bottom (like in papers)
+    or from bottom to top (e.g. for technical drawings or diagrams).
+
+    The method returns false if the value did not change and true
+    if the value changed and the update method need to be called afterwards
+    to recalculate the division lines.
+
+    @param i_eOrientation [in]
+        Range [TopDown, BottomUp]
+
+    @return true if the value has been changed and the division lines need to
+            be recalculated, false otherwise.
+*/
+bool CScaleDivLines::setYScaleAxisOrientation(const CEnumYScaleAxisOrientation& i_eOrientation)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_eOrientation.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setYScaleAxisOrientation",
+        /* strAddInfo   */ strMthInArgs );
+
+    bool bChanged = false;
+    if (m_yScaleAxisOrientation != i_eOrientation.enumerator()) {
+        m_yScaleAxisOrientation = i_eOrientation.enumerator();
+        bChanged = true;
+        m_bDivLinesCalculated = false;
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(bChanged);
+    }
+    return bChanged;
+}
 
 //------------------------------------------------------------------------------
 /*! @brief Sets the spacing.
@@ -1088,10 +1132,22 @@ bool CScaleDivLines::isValid() const
 
     @return Spacing.
 */
-EScaleDir CScaleDivLines::scaleDir() const
+EScaleAxis CScaleDivLines::scaleAxis() const
 //------------------------------------------------------------------------------
 {
-    return m_scaleDir;
+    return m_scaleAxis;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the orientation of the Y scale axis which could be either
+           TopDown or ButtomUp.
+
+    @return Spacing.
+*/
+EYScaleAxisOrientation CScaleDivLines::yScaleAxisOrientation() const
+//------------------------------------------------------------------------------
+{
+    return m_yScaleAxisOrientation;
 }
 
 //------------------------------------------------------------------------------
@@ -1477,28 +1533,33 @@ double CScaleDivLines::getValInPix(double i_fVal) const
     if (isValid())
     {
         double fVal = i_fVal;
-
         double fRange_px = scaleRangeInPix();
 
         // At the minimum scale value ..
-        if (fVal == m_fScaleMin)
-        {
-            fPix = m_fMin_px;
+        if (fVal == m_fScaleMin) {
+            if (m_scaleAxis == EScaleAxis::Y && (m_yScaleAxisOrientation == EYScaleAxisOrientation::BottomUp)) {
+                fPix = m_fMax_px;
+            }
+            else {
+                fPix = m_fMin_px;
+            }
         }
         // At the maximum scale value ..
-        else if( fVal == m_fScaleMax )
-        {
-            fPix = m_fMax_px;
+        else if (fVal == m_fScaleMax) {
+            if (m_scaleAxis == EScaleAxis::Y && (m_yScaleAxisOrientation == EYScaleAxisOrientation::BottomUp)) {
+                fPix = m_fMin_px;
+            }
+            else {
+                fPix = m_fMax_px;
+            }
         }
         // Somewhere between minimum and maximum scale ..
-        else
-        {
+        else {
             double fScaleValMin = m_fScaleMin;
             double fScaleValMax = m_fScaleMax;
 
             // Calculate range and resolution of one pixel:
-            if (m_spacing == ESpacing::Logarithmic)
-            {
+            if (m_spacing == ESpacing::Logarithmic) {
                 fScaleValMin = log10(fScaleValMin);
                 fScaleValMax = log10(fScaleValMax);
             }
@@ -1509,88 +1570,68 @@ double CScaleDivLines::getValInPix(double i_fVal) const
             bool bDivLineHit = false;
 
             // Get the nearest division line.
-            for( int iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
+            for (int iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++)
             {
-                if( m_ariDivLinesCount[iLayer] > 1 )
+                if (m_ariDivLinesCount[iLayer] > 1)
                 {
-                    for( int idxDivLine = 0; idxDivLine < m_ariDivLinesCount[iLayer]-1; idxDivLine++ )
+                    for (int idxDivLine = 0; idxDivLine < m_ariDivLinesCount[iLayer]-1; idxDivLine++)
                     {
                         double fDivLineVal1 = m_ararfDivLinesVals[iLayer][idxDivLine];
                         double fDivLineVal2 = m_ararfDivLinesVals[iLayer][idxDivLine+1];
 
-                        if( fVal >= (fDivLineVal1-DBL_EPSILON) && fVal <= (fDivLineVal1+DBL_EPSILON) )
-                        {
+                        if (fVal >= (fDivLineVal1-DBL_EPSILON) && fVal <= (fDivLineVal1+DBL_EPSILON)) {
                             fPix = m_ararfDivLines_px[iLayer][idxDivLine];
                             bDivLineHit = true;
                             break;
                         }
-                        else if( fVal >= (fDivLineVal2-DBL_EPSILON) && fVal <= (fDivLineVal2+DBL_EPSILON) )
-                        {
+                        else if (fVal >= (fDivLineVal2-DBL_EPSILON) && fVal <= (fDivLineVal2+DBL_EPSILON)) {
                             fPix = m_ararfDivLines_px[iLayer][idxDivLine+1];
                             bDivLineHit = true;
                             break;
                         }
-                        else if( fVal > fDivLineVal1 && fVal < fDivLineVal2 )
-                        {
+                        else if (fVal > fDivLineVal1 && fVal < fDivLineVal2) {
                             break;
                         }
                     }
                 }
-                else if( m_ariDivLinesCount[iLayer] == 1 )
-                {
+                else if (m_ariDivLinesCount[iLayer] == 1) {
                     double fDivLineVal1 = m_ararfDivLinesVals[iLayer][0];
-
-                    if( fVal == fDivLineVal1 )
-                    {
+                    if (fVal == fDivLineVal1) {
                         fPix = m_ararfDivLines_px[iLayer][0];
                         bDivLineHit = true;
                     }
                 }
-                if( bDivLineHit )
-                {
+                if (bDivLineHit) {
                     break;
                 }
             } // for( iLayer < CEnumDivLineLayer::count() )
 
             // Did not hit a division line ..
-            if( !bDivLineHit )
-            {
-                if( m_spacing == ESpacing::Logarithmic )
-                {
+            if (!bDivLineHit) {
+                if (m_spacing == ESpacing::Logarithmic) {
                     fVal = log10(fVal);
                 }
                 // Calculate value as distance to left grid line:
-                switch( m_scaleDir )
-                {
-                    case EScaleDir::X:
-                    {
+                if (m_scaleAxis == EScaleAxis::X) {
+                    fPix = m_fMin_px + fPixRes*(fVal-fScaleValMin);
+                }
+                else /*if (m_scaleAxis == EScaleAxis::Y)*/ {
+                    if (m_yScaleAxisOrientation == EYScaleAxisOrientation::TopDown) {
+                        // Orientation from top to bottom like in pixel drawing:
+                        // The origin is at the top left corner.
+                        // XScaleMin = XMin_px, XScaleMax = XMax_px
+                        // YScaleMin = XMin_px, YScaleMax = XMax_px
+                        // The greater the value, the greater the pixel coordinate on the screen.
                         fPix = m_fMin_px + fPixRes*(fVal-fScaleValMin);
-                        break;
                     }
-                    case EScaleDir::Y:
-                    {
-                        if (m_fMin_px < m_fMax_px) {
-                            // Orientation from top to bottom like in pixel drawing:
-                            // The origin is at the top left corner.
-                            // XScaleMin = XMin_px, XScaleMax = XMax_px
-                            // YScaleMin = XMin_px, YScaleMax = XMax_px
-                            // The greater the value, the greater the pixel coordinate on the screen.
-                            fPix = m_fMin_px + fPixRes*(fVal-fScaleValMin);
-                        }
-                        else {
-                            // Orientation from bottom to top like in diagrams or in drawings
-                            // based on metric units:
-                            // The origin is at the bottom left corner.
-                            // XScaleMin = XMin_px, XScaleMax = XMax_px
-                            // YScaleMin = XMax_px, YScaleMax = XMin_px
-                            // The greater the value, the less the pixel coordinate on the screen.
-                            fPix = m_fMin_px - fPixRes*(fVal-fScaleValMin);
-                        }
-                        break;
-                    }
-                    default:
-                    {
-                        break;
+                    else /*if (m_yScaleAxisOrientation == EYScaleAxisOrientation::BottomUp)*/ {
+                        // Orientation from bottom to top like in diagrams or in technical drawings
+                        // based on metric units:
+                        // The origin is at the bottom left corner.
+                        // XScaleMin = XMin_px, XScaleMax = XMax_px
+                        // YScaleMin = XMax_px, YScaleMax = XMin_px
+                        // The greater the value, the less the pixel coordinate on the screen.
+                        fPix = m_fMax_px - fPixRes*(fVal-fScaleValMin);
                     }
                 }
             }
@@ -1615,14 +1656,13 @@ double CScaleDivLines::getVal(double i_fPix) const
 {
     double fVal = 0.0;
 
-    if( isValid() )
+    if (isValid())
     {
         double fScaleValMin = m_fScaleMin;
         double fScaleValMax = m_fScaleMax;
 
         // Calculate range and resolution of one pixel:
-        if( m_spacing == ESpacing::Logarithmic )
-        {
+        if (m_spacing == ESpacing::Logarithmic) {
             fScaleValMin = log10(fScaleValMin);
             fScaleValMax = log10(fScaleValMax);
         }
@@ -1632,95 +1672,97 @@ double CScaleDivLines::getVal(double i_fPix) const
         double fPixRes = fScaleValRange / fRange_px;
 
         // At the minimum scale value ..
-        if( i_fPix == 0.0 )
-        {
-            fVal = fScaleValMin;
+        if (i_fPix == m_fMin_px) {
+            if (m_scaleAxis == EScaleAxis::Y && (m_yScaleAxisOrientation == EYScaleAxisOrientation::BottomUp)) {
+                fVal = fScaleValMax;
+            }
+            else {
+                fVal = fScaleValMin;
+            }
         }
         // At the maximum scale value ..
-        else if( i_fPix == m_fMax_px )
-        {
-            fVal = fScaleValMax;
+        else if (i_fPix == m_fMax_px) {
+            if (m_scaleAxis == EScaleAxis::Y && (m_yScaleAxisOrientation == EYScaleAxisOrientation::BottomUp)) {
+                fVal = fScaleValMin;
+            }
+            else {
+                fVal = fScaleValMax;
+            }
         }
         // Somewhere between minimum and maximum scale ..
-        else
-        {
+        else {
             bool bDivLineHit = false;
 
             // Get the nearest division line. This is necessary to exactly return the value
             // at a grid line if the mouse cursor is positioned on a grid line.
-            for( int iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
+            for (int iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++)
             {
-                if( m_ariDivLinesCount[iLayer] > 1 )
+                if (m_ariDivLinesCount[iLayer] > 1)
                 {
-                    for( int idxDivLine = 0; idxDivLine < m_ariDivLinesCount[iLayer]-1; idxDivLine++ )
+                    for (int idxDivLine = 0; idxDivLine < m_ariDivLinesCount[iLayer]-1; idxDivLine++)
                     {
                         double fDivLinePix1 = m_ararfDivLines_px[iLayer][idxDivLine];
                         double fDivLinePix2 = m_ararfDivLines_px[iLayer][idxDivLine+1];
 
-                        if( i_fPix >= (fDivLinePix1-DBL_EPSILON) && i_fPix <= (fDivLinePix1+DBL_EPSILON) )
-                        {
+                        if (i_fPix >= (fDivLinePix1-DBL_EPSILON) && i_fPix <= (fDivLinePix1+DBL_EPSILON)) {
                             fVal = m_ararfDivLinesVals[iLayer][idxDivLine];
                             bDivLineHit = true;
                             break;
                         }
-                        else if( i_fPix >= (fDivLinePix2-DBL_EPSILON) && i_fPix <= (fDivLinePix2+DBL_EPSILON) )
-                        {
+                        else if (i_fPix >= (fDivLinePix2-DBL_EPSILON) && i_fPix <= (fDivLinePix2+DBL_EPSILON)) {
                             fVal = m_ararfDivLinesVals[iLayer][idxDivLine+1];
                             bDivLineHit = true;
                             break;
                         }
-                        else if( i_fPix > fDivLinePix1 && i_fPix < fDivLinePix2 )
-                        {
+                        else if (i_fPix > fDivLinePix1 && i_fPix < fDivLinePix2) {
                             break;
                         }
                     }
                 }
-                else if( m_ariDivLinesCount[iLayer] == 1 )
-                {
+                else if (m_ariDivLinesCount[iLayer] == 1) {
                     double fDivLinePix1 = m_ararfDivLines_px[iLayer][0];
-
-                    if( i_fPix == fDivLinePix1 )
-                    {
+                    if (i_fPix == fDivLinePix1) {
                         fVal = m_ararfDivLinesVals[iLayer][0];
                         bDivLineHit = true;
                     }
                 }
-                if( bDivLineHit )
-                {
+                if (bDivLineHit) {
                     break;
                 }
             } // for( iLayer < CEnumDivLineLayer::count() )
 
             // Did not hit a division line ..
-            if( !bDivLineHit )
-            {
+            if (!bDivLineHit) {
                 // Calculate value as distance to left grid line:
-                switch( m_scaleDir )
-                {
-                    case EScaleDir::X:
-                    {
-                        fVal = fScaleValMin + fPixRes*(i_fPix-m_fMin_px);
-                        break;
+                if (m_scaleAxis == EScaleAxis::X) {
+                    fVal = fScaleValMin + fPixRes*(i_fPix-m_fMin_px);
+                }
+                else /*if (m_scaleAxis == EScaleAxis::Y)*/ {
+                    if (m_yScaleAxisOrientation == EYScaleAxisOrientation::TopDown) {
+                        // Orientation from top to bottom like in pixel drawing:
+                        // The origin is at the top left corner.
+                        // XScaleMin = XMin_px, XScaleMax = XMax_px
+                        // YScaleMin = XMin_px, YScaleMax = XMax_px
+                        // The greater the value, the greater the pixel coordinate on the screen.
+                        fVal = fScaleValMin + fPixRes*(m_fMin_px+i_fPix);
                     }
-                    case EScaleDir::Y:
-                    {
-                        fVal = fScaleValMin + fPixRes*(m_fMin_px-i_fPix);
-                        break;
-                    }
-                    default:
-                    {
-                        break;
+                    else /*if (m_yScaleAxisOrientation == EYScaleAxisOrientation::BottomUp)*/ {
+                        // Orientation from bottom to top like in diagrams or in technical drawings
+                        // based on metric units:
+                        // The origin is at the bottom left corner.
+                        // XScaleMin = XMin_px, XScaleMax = XMax_px
+                        // YScaleMin = XMax_px, YScaleMax = XMin_px
+                        // The greater the value, the less the pixel coordinate on the screen.
+                        fVal = fScaleValMin + fPixRes*(m_fMax_px-i_fPix);
                     }
                 }
-                if( m_spacing == ESpacing::Logarithmic )
-                {
+                if (m_spacing == ESpacing::Logarithmic) {
                     fVal = pow(10.0, fVal);
                 }
             } // Neither hit a main nor a sub division line ..
         } // Somewhere between minimum and maximum scale ..
 
-        if( m_spacing == ESpacing::Linear )
-        {
+        if (m_spacing == ESpacing::Linear) {
             fPixRes = Math::round2LowerDecade(fPixRes);
         }
         fVal = Math::round2Resolution(fVal, fPixRes);
@@ -1728,7 +1770,8 @@ double CScaleDivLines::getVal(double i_fPix) const
     } // if( isValid() )
 
     return fVal;
-}
+
+} // getVal
 
 /*==============================================================================
 protected: // overridable auxiliary instance methods

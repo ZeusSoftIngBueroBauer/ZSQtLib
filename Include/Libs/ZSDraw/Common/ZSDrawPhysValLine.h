@@ -97,7 +97,7 @@ public: // instance methods
     void setAngle(const ZS::PhysVal::CPhysVal& i_physValAngle);
     void setCenter(const CPhysValPoint& i_physValPointCenter);
 public: // instance methods (to convert the values into another unit)
-    QLineF toQLineF(const ZS::PhysVal::CUnit& i_unit) const;
+    QLineF toQLineF() const;
     QString toString() const;
 protected: // instance members
     /*!< Unit the values are store in "m_line". */

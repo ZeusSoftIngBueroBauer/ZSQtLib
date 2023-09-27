@@ -910,86 +910,91 @@ void CWdgtGraphObjLineGeometryProperties::onDrawingSceneDrawingSizeChanged(const
         /* strMethod    */ "onDrawingSceneDrawingSizeChanged",
         /* strAddInfo   */ strMthInArgs );
 
-    if (i_drawingSize.dimensionUnit() == EDrawingDimensionUnit::Metric)
-    {
-        m_pEdtMetricPt1X->setUnit(i_drawingSize.metricUnit());
-        m_pEdtMetricPt1X->setResolution(i_drawingSize.metricImageWidth().getRes().getVal());
-        m_pEdtMetricPt1X->setMaximum(i_drawingSize.metricImageWidth().getVal());
+    { CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
 
-        m_pEdtMetricPt1Y->setUnit(i_drawingSize.metricUnit());
-        m_pEdtMetricPt1Y->setResolution(i_drawingSize.metricImageHeight().getRes().getVal());
-        m_pEdtMetricPt1Y->setMaximum(i_drawingSize.metricImageHeight().getVal());
+        if (i_drawingSize.dimensionUnit() == EDrawingDimensionUnit::Metric)
+        {
+            m_pEdtMetricPt1X->setUnit(i_drawingSize.metricUnit());
+            m_pEdtMetricPt1X->setResolution(i_drawingSize.metricImageWidth().getRes().getVal());
+            m_pEdtMetricPt1X->setMaximum(i_drawingSize.metricImageWidth().getVal());
 
-        m_pEdtMetricPt2X->setUnit(i_drawingSize.metricUnit());
-        m_pEdtMetricPt2X->setResolution(i_drawingSize.metricImageWidth().getRes().getVal());
-        m_pEdtMetricPt2X->setMaximum(i_drawingSize.metricImageWidth().getVal());
+            m_pEdtMetricPt1Y->setUnit(i_drawingSize.metricUnit());
+            m_pEdtMetricPt1Y->setResolution(i_drawingSize.metricImageHeight().getRes().getVal());
+            m_pEdtMetricPt1Y->setMaximum(i_drawingSize.metricImageHeight().getVal());
 
-        m_pEdtMetricPt2Y->setUnit(i_drawingSize.metricUnit());
-        m_pEdtMetricPt2Y->setResolution(i_drawingSize.metricImageHeight().getRes().getVal());
-        m_pEdtMetricPt2Y->setMaximum(i_drawingSize.metricImageHeight().getVal());
+            m_pEdtMetricPt2X->setUnit(i_drawingSize.metricUnit());
+            m_pEdtMetricPt2X->setResolution(i_drawingSize.metricImageWidth().getRes().getVal());
+            m_pEdtMetricPt2X->setMaximum(i_drawingSize.metricImageWidth().getVal());
 
-        m_pEdtMetricWidth->setUnit(i_drawingSize.metricUnit());
-        m_pEdtMetricWidth->setResolution(i_drawingSize.metricImageWidth().getRes().getVal());
-        m_pEdtMetricWidth->setMinimum(-i_drawingSize.metricImageWidth().getVal());
-        m_pEdtMetricWidth->setMaximum(i_drawingSize.metricImageWidth().getVal());
+            m_pEdtMetricPt2Y->setUnit(i_drawingSize.metricUnit());
+            m_pEdtMetricPt2Y->setResolution(i_drawingSize.metricImageHeight().getRes().getVal());
+            m_pEdtMetricPt2Y->setMaximum(i_drawingSize.metricImageHeight().getVal());
 
-        m_pEdtMetricHeight->setUnit(i_drawingSize.metricUnit());
-        m_pEdtMetricHeight->setResolution(i_drawingSize.metricImageHeight().getRes().getVal());
-        m_pEdtMetricHeight->setMinimum(-i_drawingSize.metricImageHeight().getVal());
-        m_pEdtMetricHeight->setMaximum(i_drawingSize.metricImageHeight().getVal());
+            m_pEdtMetricWidth->setUnit(i_drawingSize.metricUnit());
+            m_pEdtMetricWidth->setResolution(i_drawingSize.metricImageWidth().getRes().getVal());
+            m_pEdtMetricWidth->setMinimum(-i_drawingSize.metricImageWidth().getVal());
+            m_pEdtMetricWidth->setMaximum(i_drawingSize.metricImageWidth().getVal());
 
-        m_pEdtMetricLength->setUnit(i_drawingSize.metricUnit());
-        m_pEdtMetricLength->setResolution(i_drawingSize.metricImageWidth().getRes().getVal());
-        double fWidthMetricImageDiagonale = ZS::System::Math::sqrt(
-            ZS::System::Math::sqr(i_drawingSize.metricImageWidth().getVal())
-            + ZS::System::Math::sqr(i_drawingSize.metricImageHeight().getVal()));
-        m_pEdtMetricLength->setMaximum(fWidthMetricImageDiagonale);
+            m_pEdtMetricHeight->setUnit(i_drawingSize.metricUnit());
+            m_pEdtMetricHeight->setResolution(i_drawingSize.metricImageHeight().getRes().getVal());
+            m_pEdtMetricHeight->setMinimum(-i_drawingSize.metricImageHeight().getVal());
+            m_pEdtMetricHeight->setMaximum(i_drawingSize.metricImageHeight().getVal());
 
-        m_pEdtMetricPtCenterX->setUnit(i_drawingSize.metricUnit());
-        m_pEdtMetricPtCenterX->setResolution(i_drawingSize.metricImageWidth().getRes().getVal());
-        m_pEdtMetricPtCenterX->setMaximum(i_drawingSize.metricImageWidth().getVal());
+            m_pEdtMetricLength->setUnit(i_drawingSize.metricUnit());
+            m_pEdtMetricLength->setResolution(i_drawingSize.metricImageWidth().getRes().getVal());
+            double fWidthMetricImageDiagonale = ZS::System::Math::sqrt(
+                ZS::System::Math::sqr(i_drawingSize.metricImageWidth().getVal())
+                + ZS::System::Math::sqr(i_drawingSize.metricImageHeight().getVal()));
+            m_pEdtMetricLength->setMaximum(fWidthMetricImageDiagonale);
 
-        m_pEdtMetricPtCenterY->setUnit(i_drawingSize.metricUnit());
-        m_pEdtMetricPtCenterY->setResolution(i_drawingSize.metricImageHeight().getRes().getVal());
-        m_pEdtMetricPtCenterY->setMaximum(i_drawingSize.metricImageHeight().getVal());
+            m_pEdtMetricPtCenterX->setUnit(i_drawingSize.metricUnit());
+            m_pEdtMetricPtCenterX->setResolution(i_drawingSize.metricImageWidth().getRes().getVal());
+            m_pEdtMetricPtCenterX->setMaximum(i_drawingSize.metricImageWidth().getVal());
 
-        m_pWdgtMetric->show();
-        m_pWdgtSepLinePixelsGeometry->show();
+            m_pEdtMetricPtCenterY->setUnit(i_drawingSize.metricUnit());
+            m_pEdtMetricPtCenterY->setResolution(i_drawingSize.metricImageHeight().getRes().getVal());
+            m_pEdtMetricPtCenterY->setMaximum(i_drawingSize.metricImageHeight().getVal());
 
-        m_pEdtPixelsPt1X->setReadOnly(true);
-        m_pEdtPixelsPt1Y->setReadOnly(true);
-        m_pEdtPixelsPt2X->setReadOnly(true);
-        m_pEdtPixelsPt2Y->setReadOnly(true);
-        m_pEdtPixelsWidth->setReadOnly(true);
-        m_pEdtPixelsHeight->setReadOnly(true);
+            m_pWdgtMetric->show();
+            m_pWdgtSepLinePixelsGeometry->show();
+
+            m_pEdtPixelsPt1X->setReadOnly(true);
+            m_pEdtPixelsPt1Y->setReadOnly(true);
+            m_pEdtPixelsPt2X->setReadOnly(true);
+            m_pEdtPixelsPt2Y->setReadOnly(true);
+            m_pEdtPixelsWidth->setReadOnly(true);
+            m_pEdtPixelsHeight->setReadOnly(true);
+        }
+        else // if (i_drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels)
+        {
+            m_pEdtPixelsPt1X->setReadOnly(false);
+            m_pEdtPixelsPt1Y->setReadOnly(false);
+            m_pEdtPixelsPt2X->setReadOnly(false);
+            m_pEdtPixelsPt2Y->setReadOnly(false);
+            m_pEdtPixelsWidth->setReadOnly(false);
+            m_pEdtPixelsHeight->setReadOnly(false);
+
+            m_pWdgtMetric->hide();
+            m_pWdgtSepLinePixelsGeometry->hide();
+        }
+
+        m_pEdtPixelsPt1X->setMaximum(i_drawingSize.imageWidthInPixels());
+        m_pEdtPixelsPt1Y->setMaximum(i_drawingSize.imageHeightInPixels());
+        m_pEdtPixelsPt2X->setMaximum(i_drawingSize.imageWidthInPixels());
+        m_pEdtPixelsPt2Y->setMaximum(i_drawingSize.imageHeightInPixels());
+        m_pEdtPixelsWidth->setMinimum(-i_drawingSize.imageWidthInPixels());
+        m_pEdtPixelsWidth->setMaximum(i_drawingSize.imageWidthInPixels());
+        m_pEdtPixelsHeight->setMinimum(-i_drawingSize.imageHeightInPixels());
+        m_pEdtPixelsHeight->setMaximum(i_drawingSize.imageHeightInPixels());
+        double fWidthPixelsImageDiagonale = ZS::System::Math::sqrt(
+            ZS::System::Math::sqr(i_drawingSize.imageWidthInPixels())
+            + ZS::System::Math::sqr(i_drawingSize.imageHeightInPixels()));
+        m_pEdtPixelsLength->setMaximum(fWidthPixelsImageDiagonale);
+        m_pEdtPixelsPtCenterX->setMaximum(i_drawingSize.imageWidthInPixels());
+        m_pEdtPixelsPtCenterY->setMaximum(i_drawingSize.imageHeightInPixels());
     }
-    else // if (i_drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels)
-    {
-        m_pEdtPixelsPt1X->setReadOnly(false);
-        m_pEdtPixelsPt1Y->setReadOnly(false);
-        m_pEdtPixelsPt2X->setReadOnly(false);
-        m_pEdtPixelsPt2Y->setReadOnly(false);
-        m_pEdtPixelsWidth->setReadOnly(false);
-        m_pEdtPixelsHeight->setReadOnly(false);
 
-        m_pWdgtMetric->hide();
-        m_pWdgtSepLinePixelsGeometry->hide();
-    }
-
-    m_pEdtPixelsPt1X->setMaximum(i_drawingSize.imageWidthInPixels());
-    m_pEdtPixelsPt1Y->setMaximum(i_drawingSize.imageHeightInPixels());
-    m_pEdtPixelsPt2X->setMaximum(i_drawingSize.imageWidthInPixels());
-    m_pEdtPixelsPt2Y->setMaximum(i_drawingSize.imageHeightInPixels());
-    m_pEdtPixelsWidth->setMinimum(-i_drawingSize.imageWidthInPixels());
-    m_pEdtPixelsWidth->setMaximum(i_drawingSize.imageWidthInPixels());
-    m_pEdtPixelsHeight->setMinimum(-i_drawingSize.imageHeightInPixels());
-    m_pEdtPixelsHeight->setMaximum(i_drawingSize.imageHeightInPixels());
-    double fWidthPixelsImageDiagonale = ZS::System::Math::sqrt(
-        ZS::System::Math::sqr(i_drawingSize.imageWidthInPixels())
-        + ZS::System::Math::sqr(i_drawingSize.imageHeightInPixels()));
-    m_pEdtPixelsLength->setMaximum(fWidthPixelsImageDiagonale);
-    m_pEdtPixelsPtCenterX->setMaximum(i_drawingSize.imageWidthInPixels());
-    m_pEdtPixelsPtCenterY->setMaximum(i_drawingSize.imageHeightInPixels());
+    fillEditControls();
 }
 
 /*==============================================================================
@@ -1540,66 +1545,6 @@ void CWdgtGraphObjLineGeometryProperties::onDlgEditPropertyDestroyed(QObject* i_
 }
 
 /*==============================================================================
-protected: // overridables of base class QObject
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! @brief Opens the edit property dialog on pressing Ctrl + MouseDblClick.
-*/
-bool CWdgtGraphObjLineGeometryProperties::eventFilter(QObject* i_pObjWatched, QEvent* i_pEv)
-//------------------------------------------------------------------------------
-{
-    CTrcAdminObj* pTrcAdminObj = nullptr;
-    if (dynamic_cast<QMouseEvent*>(i_pEv) != nullptr) {
-        pTrcAdminObj = m_pTrcAdminObjMouseEvents;
-    }
-    QString strMthInArgs;
-    if (areMethodCallsActive(pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Obj: " + i_pObjWatched->objectName() + ", Ev {" + qEvent2Str(i_pEv) + "}";
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "eventFilter",
-        /* strAddInfo   */ strMthInArgs );
-
-    bool bHandled = false;
-
-    if (i_pEv->type() == QEvent::MouseButtonDblClick) {
-        QMouseEvent* pMouseEvent = dynamic_cast<QMouseEvent*>(i_pEv);
-        if (pMouseEvent->modifiers() & Qt::ControlModifier) {
-            QString strObjName = i_pObjWatched->objectName();
-            QWidget* pEdtWidget = m_hshpRegisteredEditPropertyDialogs.value(strObjName, nullptr);
-            if (pEdtWidget != nullptr) {
-                if (m_pDlgEditProperty == nullptr) {
-                    m_pDlgEditProperty = new CDlgGraphObjLineGeometryEditProperty(m_pDrawingScene, this);
-                    m_pDlgEditProperty->setAttribute(Qt::WA_DeleteOnClose, true);
-                    QObject::connect(
-                        m_pDlgEditProperty, &QDialog::destroyed,
-                        this, &CWdgtGraphObjLineGeometryProperties::onDlgEditPropertyDestroyed);
-                }
-                CGraphObjLine* pGraphObjLine = nullptr;
-                if (m_pGraphObj != nullptr) {
-                    pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_pGraphObj);
-                }
-                m_pDlgEditProperty->setCoordinate(pGraphObjLine, pEdtWidget->objectName());
-                m_pDlgEditProperty->show();
-                bHandled = true;
-            }
-        }
-    }
-    if (!bHandled) {
-        bHandled = CWdgtGraphObjPropertiesAbstract::eventFilter(i_pObjWatched, i_pEv);
-    }
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(bHandled);
-    }
-    return bHandled;
-
-} // eventFilter
-
-/*==============================================================================
 private: // auxiliary instance methods
 ==============================================================================*/
 
@@ -1635,7 +1580,11 @@ void CWdgtGraphObjLineGeometryProperties::fillEditControls(const CPhysValLine& i
         m_pEdtMetricPtCenterX->setValue(i_physValLine.center().x().getVal());
         m_pEdtMetricPtCenterY->setValue(i_physValLine.center().y().getVal());
 
-        CPhysValLine physValLinePx = m_pDrawingScene->toPixelCoor(i_physValLine);
+        // No simple unit conversion is possible here. The Y Scale Axis may
+        // be oriented from top to bottom or bottom to top.
+        // To get the correct scene coordinates we must let the drawing scene
+        // convert the coordinates into pixel values.
+        CPhysValLine physValLinePx = m_pDrawingScene->convert(i_physValLine, Units.Length.px);
         m_pEdtPixelsPt1X->setValue(physValLinePx.p1().x().getVal());
         m_pEdtPixelsPt1Y->setValue(physValLinePx.p1().y().getVal());
         m_pEdtPixelsPt2X->setValue(physValLinePx.p2().x().getVal());
@@ -1699,3 +1648,63 @@ void CWdgtGraphObjLineGeometryProperties::registerEditPropertyDialog(CWdgtEditPh
     // spin box and the line edit.
     i_pEdtWidget->installEventFilter(this);
 }
+
+/*==============================================================================
+protected: // overridables of base class QObject
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Opens the edit property dialog on pressing Ctrl + MouseDblClick.
+*/
+bool CWdgtGraphObjLineGeometryProperties::eventFilter(QObject* i_pObjWatched, QEvent* i_pEv)
+//------------------------------------------------------------------------------
+{
+    CTrcAdminObj* pTrcAdminObj = nullptr;
+    if (dynamic_cast<QMouseEvent*>(i_pEv) != nullptr) {
+        pTrcAdminObj = m_pTrcAdminObjMouseEvents;
+    }
+    QString strMthInArgs;
+    if (areMethodCallsActive(pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Obj: " + i_pObjWatched->objectName() + ", Ev {" + qEvent2Str(i_pEv) + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "eventFilter",
+        /* strAddInfo   */ strMthInArgs );
+
+    bool bHandled = false;
+
+    if (i_pEv->type() == QEvent::MouseButtonDblClick) {
+        QMouseEvent* pMouseEvent = dynamic_cast<QMouseEvent*>(i_pEv);
+        if (pMouseEvent->modifiers() & Qt::ControlModifier) {
+            QString strObjName = i_pObjWatched->objectName();
+            QWidget* pEdtWidget = m_hshpRegisteredEditPropertyDialogs.value(strObjName, nullptr);
+            if (pEdtWidget != nullptr) {
+                if (m_pDlgEditProperty == nullptr) {
+                    m_pDlgEditProperty = new CDlgGraphObjLineGeometryEditProperty(m_pDrawingScene, this);
+                    m_pDlgEditProperty->setAttribute(Qt::WA_DeleteOnClose, true);
+                    QObject::connect(
+                        m_pDlgEditProperty, &QDialog::destroyed,
+                        this, &CWdgtGraphObjLineGeometryProperties::onDlgEditPropertyDestroyed);
+                }
+                CGraphObjLine* pGraphObjLine = nullptr;
+                if (m_pGraphObj != nullptr) {
+                    pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_pGraphObj);
+                }
+                m_pDlgEditProperty->setCoordinate(pGraphObjLine, pEdtWidget->objectName());
+                m_pDlgEditProperty->show();
+                bHandled = true;
+            }
+        }
+    }
+    if (!bHandled) {
+        bHandled = CWdgtGraphObjPropertiesAbstract::eventFilter(i_pObjWatched, i_pEv);
+    }
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(bHandled);
+    }
+    return bHandled;
+
+} // eventFilter

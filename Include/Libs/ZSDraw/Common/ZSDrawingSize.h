@@ -31,9 +31,6 @@ may result in using the software modules.
 #include "ZSDraw/Common/ZSDrawPhysValRect.h"
 #include "ZSDraw/Common/ZSDrawPhysValSize.h"
 
-class QXmlStreamReader;
-class QXmlStreamWriter;
-
 namespace ZS
 {
 namespace System
@@ -53,10 +50,9 @@ namespace Draw
     must be able to access the drawing scene and its drawing size to use the currently
     used scale factor.
 */
-class ZSDRAWDLL_API CDrawingSize : public QObject
+class ZSDRAWDLL_API CDrawingSize
 //******************************************************************************
 {
-    Q_OBJECT
 public: // class methods
     static QString NameSpace() { return "ZS::Draw"; }
     static QString ClassName() { return "CDrawingSize"; }
@@ -70,10 +66,13 @@ public: // operators
     bool operator == (const CDrawingSize& i_other) const;
     bool operator != (const CDrawingSize& i_other) const;
 public: // instance methods
+    void onDrawUnitsLengthResolutionChanged();
+public: // instance methods
     void setDimensionUnit( const CEnumDrawingDimensionUnit& i_eDimensionUnit );
     CEnumDrawingDimensionUnit dimensionUnit() const;
-    ZS::PhysVal::CUnit unit() const;
+    void setResolution(const ZS::PhysVal::CPhysValRes& i_physValRes);
     ZS::PhysVal::CPhysValRes resolution() const;
+    ZS::PhysVal::CUnit unit() const;
 public: // instance methods
     void setMetricUnit(const ZS::PhysVal::CUnit& i_unit);
     ZS::PhysVal::CUnit metricUnit() const;
@@ -84,25 +83,14 @@ public: // instance methods
     void setScaleFactor(int i_iDividend, int i_iDivisor);
     int scaleFactorDividend() const;
     int scaleFactorDivisor() const;
+    void setYScaleAxisOrientation(const ZS::System::CEnumYScaleAxisOrientation& i_eOrientation);
+    ZS::System::CEnumYScaleAxisOrientation yScaleAxisOrientation() const;
     void setImageSize(const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight);
     QSize imageSizeInPixels() const;
     int imageWidthInPixels() const;
     int imageHeightInPixels() const;
     ZS::PhysVal::CPhysVal metricImageWidth() const;
     ZS::PhysVal::CPhysVal metricImageHeight() const;
-public: // instance methods
-    CPhysValPoint convert(const CPhysValPoint& i_physValPoint) const;
-    CPhysValSize convert(const CPhysValSize& i_physValSize) const;
-    CPhysValLine convert(const CPhysValLine& i_physValLine) const;
-    CPhysValRect convert(const CPhysValRect& i_physValRect) const;
-    ZS::PhysVal::CPhysVal toPhysValXCoor(double i_fXCoor_px) const;
-    ZS::PhysVal::CPhysVal toPhysValYCoor(double i_fYCoor_px) const;
-    double toPixelXCoor(const ZS::PhysVal::CPhysVal& i_physValXCoor) const;
-    double toPixelYCoor(const ZS::PhysVal::CPhysVal& i_physValYCoor) const;
-    CPhysValPoint toPixelCoor(const CPhysValPoint& i_physValPoint) const;
-    CPhysValSize toPixelCoor(const CPhysValSize& i_physValSize) const;
-    CPhysValLine toPixelCoor(const CPhysValLine& i_physValLine) const;
-    CPhysValRect toPixelCoor(const CPhysValRect& i_physValRect) const;
 protected: // instance methods
     void updateImageSizeInPixels();
     void updateImageSizeMetrics();
@@ -112,6 +100,8 @@ public: // instance methods
 protected: // instance methods (method tracing)
     void traceValues(ZS::System::CMethodTracer& i_mthTracer, ZS::System::EMethodDir i_methodDir);
 private: // instance members
+    /*!< Name of the instance. Mainly introduced for debugging purposes. */
+    QString m_strName;
     /*!< Either Pixels or Metric System (e.g. mm, cm, m, etc.). */
     CEnumDrawingDimensionUnit m_eDimensionUnit;
     /*!< If m_eDimensionUnit is Metric the metric unit (mm, cm, m, etc.) is set here. */
@@ -131,6 +121,8 @@ private: // instance members
     int m_iMetricScaleFactorDividend;
     /*!< For metric system the scale factor is defined by Dividend/Divisor. */
     int m_iMetricScaleFactorDivisor;
+    /*!< Y scale axis orientation. Defaults to "TopDown". */
+    ZS::System::CEnumYScaleAxisOrientation m_eYScaleAxisOrientation;
     /*!< Resolution of the image in pixels. As default the resolution is 1 pixel. */
     double m_fImageSizeRes_px;
     /*!< Width of the image in pixels. Either set for Dimension unit Pixels or calculated

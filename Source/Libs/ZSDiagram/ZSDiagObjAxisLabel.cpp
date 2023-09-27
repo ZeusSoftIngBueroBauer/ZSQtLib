@@ -103,7 +103,7 @@ CDiagObjAxisLabel::CDiagObjAxisLabel(
     m_colUnitAtDivLines(Qt::black),
     m_fntUnitAtDivLines(),
     m_bShowUnitAtAxisLabel(false),
-    m_divLinesMetrics(i_strObjName, EScaleDir::X),
+    m_divLinesMetrics(i_strObjName, EScaleAxis::X),
     // calculated
     m_sizeDivLineLabelsMaxTextExtent(),
     m_rectAxisLabel(),
@@ -124,16 +124,16 @@ CDiagObjAxisLabel::CDiagObjAxisLabel(
     // label class. But the diagram needs to know to which scale object the
     // axis label object is linked to. So we need to set the member element of
     // the base class correspondingly.
-    switch( m_pDiagScale->getScaleDir() )
+    switch( m_pDiagScale->getScaleAxis() )
     {
-        case EScaleDir::X:
+        case EScaleAxis::X:
         {
-            m_arpDiagScale[static_cast<int>(EScaleDir::X)] = m_pDiagScale;
+            m_arpDiagScale[static_cast<int>(EScaleAxis::X)] = m_pDiagScale;
             break;
         }
-        case EScaleDir::Y:
+        case EScaleAxis::Y:
         {
-            m_arpDiagScale[static_cast<int>(EScaleDir::Y)] = m_pDiagScale;
+            m_arpDiagScale[static_cast<int>(EScaleAxis::Y)] = m_pDiagScale;
             break;
         }
         default:
@@ -1353,7 +1353,7 @@ QSize CDiagObjAxisLabel::sizeHint()
         {
             bool bShowDivLineLabels = m_arbShowDivLineLabels[EDivLineLayerMain];
 
-            if (m_pDiagScale->getScaleDir() == EScaleDir::X)
+            if (m_pDiagScale->getScaleAxis() == EScaleAxis::X)
             {
                 // The axis label coveres the whole horizontal extent of the diagram.
                 cxWidth = pPixmapDiagram->getWidth();
@@ -1399,7 +1399,7 @@ QSize CDiagObjAxisLabel::sizeHint()
                         + m_sizeDivLineLabelsMaxTextExtent.height());
                 }
             }
-            else if (m_pDiagScale->getScaleDir() == EScaleDir::Y)
+            else if (m_pDiagScale->getScaleAxis() == EScaleAxis::Y)
             {
                 // The axis label coveres the whole vertical extent of the diagram.
                 cyHeight = pPixmapDiagram->getHeight();
@@ -2516,7 +2516,7 @@ void CDiagObjAxisLabel::paintDivisionLineLabelsUnit(QPaintDevice* i_pPaintDevice
 
     QPainter painter(i_pPaintDevice);
 
-    //if (m_divLinesMetrics.scaleDir() == EScaleDir::Y) {
+    //if (m_divLinesMetrics.scaleAxis() == EScaleAxis::Y) {
     //    painter.setPen(Qt::red);
     //    painter.setBrush(Qt::yellow);
     //    painter.drawRect(m_rectContent);
@@ -2546,7 +2546,7 @@ void CDiagObjAxisLabel::paintScaleMinMaxVals(QPaintDevice* i_pPaintDevice)
 
     QPainter painter(i_pPaintDevice);
 
-    //if (m_divLinesMetrics.scaleDir() == EScaleDir::Y) {
+    //if (m_divLinesMetrics.scaleAxis() == EScaleAxis::Y) {
     //    painter.setPen(Qt::red);
     //    painter.setBrush(Qt::yellow);
     //    painter.drawRect(m_rectContent);

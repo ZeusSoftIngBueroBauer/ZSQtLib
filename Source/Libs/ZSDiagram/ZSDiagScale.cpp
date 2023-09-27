@@ -387,9 +387,9 @@ public: // ctors and dtor
     @param i_strObjName [in]
         Name of the object.
         Each scale object belonging to the same diagram must have a unique name.
-    @param i_scaleDir [in]
+    @param i_scaleAxis [in]
         Direction of the scale which could be either X or Y.
-        3 dimensional scales with scaleDir = Z are not supported.
+        3 dimensional scales with scaleAxis = Z are not supported.
         Please note that the scale direction cannot be changed during runtime.
     @param i_scale [in]
         Minimum, maximum values and unit of the scale.
@@ -399,14 +399,14 @@ public: // ctors and dtor
 */
 CDiagScale::CDiagScale(
     const QString& i_strObjName,
-    EScaleDir      i_scaleDir,
+    EScaleAxis     i_scaleAxis,
     const CScale&  i_scale ) :
 //------------------------------------------------------------------------------
     QObject(),
     m_strObjName(i_strObjName),
     m_pDiagram(nullptr),
     m_scale(i_scale),
-    m_divLines("DiagScale"+ i_strObjName, i_scaleDir),
+    m_divLines("DiagScale"+ i_strObjName, i_scaleAxis),
     m_iZoomCount(0),
     m_pZoomStackFirst(nullptr),
     m_pZoomStackLast(nullptr),
@@ -428,7 +428,7 @@ CDiagScale::CDiagScale(
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = i_strObjName;
-        strMthInArgs += ", ScaleDir: " + CEnumScaleDir(i_scaleDir).toString();
+        strMthInArgs += ", ScaleAxis: " + CEnumScaleAxis(i_scaleAxis).toString();
         strMthInArgs += ", Scale: " + i_scale.toString();
     }
 
@@ -505,12 +505,12 @@ QString CDiagScale::getObjName() const
 //------------------------------------------------------------------------------
 /*! @brief Returns the direction of the scale (X or Y).
 
-    @return Scale direction.
+    @return Scale axis.
 */
-EScaleDir CDiagScale::getScaleDir() const
+EScaleAxis CDiagScale::getScaleAxis() const
 //------------------------------------------------------------------------------
 {
-    return m_divLines.scaleDir();
+    return m_divLines.scaleAxis();
 }
 
 //------------------------------------------------------------------------------
@@ -1705,7 +1705,7 @@ CDiagScale* CDiagScale::clone( CDataDiagram* i_pDiagramTrg ) const
 
     CDiagScale* pDiagScaleCloned = new CDiagScale(
         /* strObjName */ m_strObjName,
-        /* scaleDir   */ m_divLines.scaleDir(),
+        /* scaleAxis   */ m_divLines.scaleAxis(),
         /* scale      */ m_scale );
 
     if( m_pZoomStackFirst != nullptr )

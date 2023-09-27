@@ -168,7 +168,7 @@ CDiagObj::CDiagObj(
     m_strObjName(i_strObjName),
     m_pDiagram(nullptr),
     m_pDiagTrace(i_pDiagTrace),
-    m_arpDiagScale(CEnumScaleDir::count(), nullptr),
+    m_arpDiagScale(CEnumScaleAxis::count(), nullptr),
     m_uUpdateFlags(EUpdateAll),
     m_layoutPos(i_layoutPos),
     m_rectContent(),
@@ -231,7 +231,7 @@ CDiagObj::CDiagObj(
     m_strObjName(i_strObjName),
     m_pDiagram(nullptr),
     m_pDiagTrace(nullptr),
-    m_arpDiagScale(CEnumScaleDir::count(), nullptr),
+    m_arpDiagScale(CEnumScaleAxis::count(), nullptr),
     m_uUpdateFlags(EUpdateAll),
     m_layoutPos(i_layoutPos),
     m_rectContent(),
@@ -251,8 +251,8 @@ CDiagObj::CDiagObj(
     m_pTrcAdminObjLayout(nullptr),
     m_pTrcAdminObjValidate(nullptr)
 {
-    m_arpDiagScale[static_cast<int>(EScaleDir::X)] = i_pDiagScaleX;
-    m_arpDiagScale[static_cast<int>(EScaleDir::Y)] = i_pDiagScaleY;
+    m_arpDiagScale[static_cast<int>(EScaleAxis::X)] = i_pDiagScaleX;
+    m_arpDiagScale[static_cast<int>(EScaleAxis::Y)] = i_pDiagScaleY;
 
     setObjectName(i_strObjName);
 
@@ -404,14 +404,14 @@ CDataDiagram* CDiagObj::getDiagram()
 }
 
 //------------------------------------------------------------------------------
-CDiagScale* CDiagObj::getDiagScale( const CEnumScaleDir& i_scaleDir )
+CDiagScale* CDiagObj::getDiagScale( const CEnumScaleAxis& i_scaleAxis )
 //------------------------------------------------------------------------------
 {
-    CDiagScale* pDiagScale = m_arpDiagScale[i_scaleDir.enumeratorAsInt()];
+    CDiagScale* pDiagScale = m_arpDiagScale[i_scaleAxis.enumeratorAsInt()];
 
     if( pDiagScale == nullptr && m_pDiagTrace != nullptr )
     {
-        pDiagScale = m_pDiagTrace->getDiagScale(i_scaleDir);
+        pDiagScale = m_pDiagTrace->getDiagScale(i_scaleAxis);
     }
     return pDiagScale;
 }
@@ -483,24 +483,24 @@ public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CPhysValRes CDiagObj::getValRes( const CEnumScaleDir& i_scaleDir ) const
+CPhysValRes CDiagObj::getValRes( const CEnumScaleAxis& i_scaleAxis ) const
 //------------------------------------------------------------------------------
 {
     CPhysValRes physValRes;
 
     if( m_pDiagTrace != nullptr )
     {
-        physValRes = m_pDiagTrace->getValuesRes(i_scaleDir);
+        physValRes = m_pDiagTrace->getValuesRes(i_scaleAxis);
     }
-    else if( m_arpDiagScale[i_scaleDir.enumeratorAsInt()] != nullptr )
+    else if( m_arpDiagScale[i_scaleAxis.enumeratorAsInt()] != nullptr )
     {
-        physValRes = m_arpDiagScale[i_scaleDir.enumeratorAsInt()]->getScaleRes();
+        physValRes = m_arpDiagScale[i_scaleAxis.enumeratorAsInt()]->getScaleRes();
     }
     return physValRes;
 }
 
 //------------------------------------------------------------------------------
-CPhysVal CDiagObj::getVal( const CEnumScaleDir& /*i_scaleDir*/ ) const
+CPhysVal CDiagObj::getVal( const CEnumScaleAxis& /*i_scaleAxis*/ ) const
 //------------------------------------------------------------------------------
 {
     return CPhysVal();

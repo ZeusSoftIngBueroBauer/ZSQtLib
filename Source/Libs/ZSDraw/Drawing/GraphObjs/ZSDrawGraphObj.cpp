@@ -341,6 +341,7 @@ CGraphObj::CGraphObj(
 //------------------------------------------------------------------------------
     CIdxTreeEntry(i_idxTreeEntryType, i_strObjName),
     m_bDtorInProgress(false),
+    m_bForceConversionToSceneCoors(false),
     m_pDrawingScene(i_pDrawingScene),
     m_strFactoryGroupName(i_strFactoryGroupName),
     m_type(i_type),
@@ -514,6 +515,7 @@ CGraphObj::~CGraphObj()
     releaseTraceAdminObjs();
 
     m_bDtorInProgress = false;
+    m_bForceConversionToSceneCoors = false;
     m_pDrawingScene = nullptr;
     //m_strFactoryGroupName;
     m_type = static_cast<EGraphObjType>(0);
@@ -1092,6 +1094,15 @@ public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Called by the drawing scene if the drawing size is changed.
+
+    When changing the drawing size in metric unit dimension
+    (e.g. on changing the Y Scale Orientation) the scene coordinates
+    must be newly calculated even if the original values stored in
+    metric units have not been changed. On changing the drawing size
+    the drawing scene will call "onDrawingSizeChanged" and the method
+    MUST set the flag "m_bForceConversionToSceneCoors" to true before
+    converting the coordinates and setting the converted values. */
 void CGraphObj::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
 //------------------------------------------------------------------------------
 {
@@ -1106,6 +1117,12 @@ void CGraphObj::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
         /* strObjName   */ m_strName,
         /* strMethod    */ "CGraphObj::onDrawingSizeChanged",
         /* strAddInfo   */ strMthInArgs );
+
+    m_bForceConversionToSceneCoors = true;
+
+    // Here add code in your derived class to convert and recalculate the coordinates.
+
+    m_bForceConversionToSceneCoors = false;
 }
 
 /*==============================================================================
@@ -2088,7 +2105,7 @@ CPhysValSize CGraphObj::getMinimumSize(const CUnit& i_unit) const
     else if (m_physValSizeMinimum.isValid()) {
         physValSize = m_physValSizeMinimum;
     }
-    physValSize.convert(i_unit);
+    m_pDrawingScene->convert(physValSize, i_unit);
     return physValSize;
 }
 
@@ -2261,7 +2278,7 @@ CPhysValSize CGraphObj::getMaximumSize(const CUnit& i_unit) const
     else if (m_physValSizeMaximum.isValid()) {
         physValSize = m_physValSizeMaximum;
     }
-    physValSize.convert(i_unit);
+    m_pDrawingScene->convert(physValSize, i_unit);
     return physValSize;
 }
 
@@ -2444,7 +2461,7 @@ CPhysValSize CGraphObj::getFixedSize(const CUnit& i_unit) const
             physValSize = m_physValSizeMinimum;
         }
     }
-    physValSize.convert(i_unit);
+    m_pDrawingScene->convert(physValSize, i_unit);
     return physValSize;
 }
 

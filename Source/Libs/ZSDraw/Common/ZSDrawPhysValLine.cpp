@@ -93,7 +93,7 @@ CPhysValLine::CPhysValLine(
     const CPhysValPoint& i_physValP2) :
 //------------------------------------------------------------------------------
     m_unit(i_physValP1.unit()),
-    m_line(i_physValP1.toQPointF(m_unit), i_physValP2.toQPointF(m_unit))
+    m_line(i_physValP1.toQPointF(), i_physValP2.toQPointF())
 {
     if (i_physValP1.unit() != i_physValP2.unit()) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
@@ -259,7 +259,10 @@ CPhysVal CPhysValLine::angle() const
 CPhysVal CPhysValLine::angleTo(const CPhysValLine& i_physValLineOther) const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_line.angleTo(i_physValLineOther.toQLineF(m_unit)), Units.Angle.Degree, 0.1);
+    if (m_unit != i_physValLineOther.unit()) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+    }
+    return CPhysVal(m_line.angleTo(i_physValLineOther.toQLineF()), Units.Angle.Degree, 0.1);
 }
 
 //------------------------------------------------------------------------------
@@ -274,8 +277,11 @@ QLineF::IntersectionType CPhysValLine::intersects(
     const CPhysValLine& i_physValLineOther, CPhysValPoint* i_physValPointIntersection) const
 //------------------------------------------------------------------------------
 {
+    if (m_unit != i_physValLineOther.unit()) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+    }
     QPointF ptIntersection;
-    QLineF::IntersectionType intersectionType = m_line.intersects(i_physValLineOther.toQLineF(m_unit), &ptIntersection);
+    QLineF::IntersectionType intersectionType = m_line.intersects(i_physValLineOther.toQLineF(), &ptIntersection);
     if (i_physValPointIntersection != nullptr) {
         *i_physValPointIntersection = CPhysValPoint(ptIntersection, m_unit);
     }
@@ -349,7 +355,7 @@ void CPhysValLine::setPoints(
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
     }
     m_unit = i_physValP1.unit();
-    m_line.setPoints(i_physValP1.toQPointF(m_unit), i_physValP2.toQPointF(m_unit));
+    m_line.setPoints(i_physValP1.toQPointF(), i_physValP2.toQPointF());
 }
 
 //------------------------------------------------------------------------------
@@ -396,23 +402,12 @@ public: // instance methods (to convert the values into another unit)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the physical line as a QLineF instance in the desired unit.
-
-    @param [in] i_unit
-        Unit in which the coordinates should be returned.
+/*! @brief Returns the physical line as a QLineF instance.
 */
-QLineF CPhysValLine::toQLineF(const CUnit& i_unit) const
+QLineF CPhysValLine::toQLineF() const
 //------------------------------------------------------------------------------
 {
-    QLineF lineF = m_line;
-    if (m_unit != i_unit) {
-        double fX1_px = m_unit.convertValue(m_line.x1(), i_unit);
-        double fY1_px = m_unit.convertValue(m_line.y1(), i_unit);
-        double fX2_px = m_unit.convertValue(m_line.x2(), i_unit);
-        double fY2_px = m_unit.convertValue(m_line.y2(), i_unit);
-        lineF.setLine(fX1_px, fY1_px, fX2_px, fY2_px);
-    }
-    return lineF;
+    return m_line;
 }
 
 //------------------------------------------------------------------------------

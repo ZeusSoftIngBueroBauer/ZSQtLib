@@ -129,19 +129,19 @@ CWdgtDrawing::CWdgtDrawing(QWidget* i_pWdgtParent) :
     m_pLyt->addWidget(m_pDrawingView, 1, 1, 1, 1);
 
     m_pWdgtGridLabelsXTop = new CWdgtGridLabels(
-        "XTop", m_pDrawingView, EScaleDir::X, ELayoutPos::Top);
+        "XTop", m_pDrawingView, EScaleAxis::X, ELayoutPos::Top);
     m_pLyt->addWidget(m_pWdgtGridLabelsXTop, 0, 0, 1, 3);
 
     m_pWdgtGridLabelsXBottom = new CWdgtGridLabels(
-        "XBottom", m_pDrawingView, EScaleDir::X, ELayoutPos::Bottom);
+        "XBottom", m_pDrawingView, EScaleAxis::X, ELayoutPos::Bottom);
     m_pLyt->addWidget(m_pWdgtGridLabelsXBottom, 2, 0, 1, 3);
 
     m_pWdgtGridLabelsYLeft = new CWdgtGridLabels(
-        "YLeft", m_pDrawingView, EScaleDir::Y, ELayoutPos::Left);
+        "YLeft", m_pDrawingView, EScaleAxis::Y, ELayoutPos::Left);
     m_pLyt->addWidget(m_pWdgtGridLabelsYLeft, 0, 0, 3, 1);
 
     m_pWdgtGridLabelsYRight = new CWdgtGridLabels(
-        "YRight", m_pDrawingView, EScaleDir::Y, ELayoutPos::Right);
+        "YRight", m_pDrawingView, EScaleAxis::Y, ELayoutPos::Right);
     m_pLyt->addWidget(m_pWdgtGridLabelsYRight, 0, 2, 3, 1);
 
     m_pLyt->setRowStretch(1, 1);

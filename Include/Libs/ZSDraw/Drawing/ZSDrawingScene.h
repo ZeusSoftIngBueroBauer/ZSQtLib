@@ -96,6 +96,7 @@ public: // type definitions and constants
     static const QString c_strXmlAttrScaleFactor;
     static const QString c_strXmlAttrPaperSize;
     static const QString c_strXmlAttrPaperOrientation;
+    static const QString c_strXmlAttrYScaleAxisOrientation;
     static const QString c_strXmlAttrGridLinesVisible;
     static const QString c_strXmlAttrGridLinesStyle;
     static const QString c_strXmlAttrGridLinesWidth;
@@ -167,16 +168,19 @@ public: // instance methods
     void setDrawingSize( const CDrawingSize& i_drawingSize);
     const CDrawingSize& drawingSize() const;
 public: // instance methods
-    ZS::PhysVal::CPhysVal toPhysValXCoor(double i_fXCoor_px) const;
-    ZS::PhysVal::CPhysVal toPhysValYCoor(double i_fYCoor_px) const;
-    CPhysValPoint toPhysValPoint(const QPointF& i_pt) const;
-    CPhysValSize toPhysValSize(const QSizeF& i_size) const;
-    double toPixelXCoor(const ZS::PhysVal::CPhysVal& i_physValXCoor) const;
-    double toPixelYCoor(const ZS::PhysVal::CPhysVal& i_physValYCoor) const;
-    CPhysValPoint toPixelCoor(const CPhysValPoint& i_physValPoint) const;
-    CPhysValSize toPixelCoor(const CPhysValSize& i_physValSize) const;
-    CPhysValLine toPixelCoor(const CPhysValLine& i_physValLine) const;
-    CPhysValRect toPixelCoor(const CPhysValRect& i_physValRect) const;
+    //ZS::PhysVal::CPhysVal toPhysValXCoor(double i_fXCoor_px) const;
+    //ZS::PhysVal::CPhysVal toPhysValYCoor(double i_fYCoor_px) const;
+    CPhysValPoint toPhysValPoint(const QPointF& i_pt_px) const;
+    //CPhysValSize toPhysValSize(const QSizeF& i_size) const;
+    CPhysValPoint convert(const CPhysValPoint& i_physValPoint, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValSize convert(const CPhysValSize& i_physValSize, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValLine convert(const CPhysValLine& i_physValLine, const ZS::PhysVal::CUnit& i_unitDst) const;
+    //double toPixelXCoor(const ZS::PhysVal::CPhysVal& i_physValXCoor) const;
+    //double toPixelYCoor(const ZS::PhysVal::CPhysVal& i_physValYCoor) const;
+    //CPhysValPoint toPixelCoor(const CPhysValPoint& i_physValPoint) const;
+    //CPhysValSize toPixelCoor(const CPhysValSize& i_physValSize) const;
+    //CPhysValLine toPixelCoor(const CPhysValLine& i_physValLine) const;
+    //CPhysValRect toPixelCoor(const CPhysValRect& i_physValRect) const;
 public: // instance methods
     void setGridSettings( const CDrawGridSettings& i_gridSettings);
     const CDrawGridSettings& gridSettings() const;
@@ -314,6 +318,8 @@ public: // overridables of base class QGraphicsScene
 protected: // overridables of base class QGraphicsScene
     virtual void drawBackground( QPainter* i_pPainter, const QRectF& i_rect );
     virtual void drawForeground( QPainter* i_pPainter, const QRectF& i_rect );
+protected slots:
+    void onDrawUnitsLengthResolutionChanged();
 protected slots:
     void onGraphObjFactoryDestroyed( QObject* i_pObjFactory );
 protected slots:

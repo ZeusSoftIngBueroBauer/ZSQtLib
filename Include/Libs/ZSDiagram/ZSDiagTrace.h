@@ -71,45 +71,45 @@ signals:
 public: // instance methods
     QString getObjName() const;
     CDataDiagram* getDiagram();
-    CDiagScale* getDiagScale( const ZS::System::CEnumScaleDir& i_scaleDir );
-    ZS::System::ESpacing getSpacing( const ZS::System::CEnumScaleDir& i_scaleDir ) const;
-    bool isScaleValid( const ZS::System::CEnumScaleDir& i_scaleDir ) const;
-    CScale getScale( const ZS::System::CEnumScaleDir& i_scaleDir ) const;
-    int getScaleMinValPix( const ZS::System::CEnumScaleDir& i_scaleDir ) const;
-    int getScaleMaxValPix( const ZS::System::CEnumScaleDir& i_scaleDir ) const;
-    int getScaleRangePix( const ZS::System::CEnumScaleDir& i_scaleDir ) const;
-    PhysVal::CPhysValRes getScaleRes( const ZS::System::CEnumScaleDir& i_scaleDir ) const;
+    CDiagScale* getDiagScale( const ZS::System::CEnumScaleAxis& i_scaleAxis );
+    ZS::System::ESpacing getSpacing( const ZS::System::CEnumScaleAxis& i_scaleAxis ) const;
+    bool isScaleValid( const ZS::System::CEnumScaleAxis& i_scaleAxis ) const;
+    CScale getScale( const ZS::System::CEnumScaleAxis& i_scaleAxis ) const;
+    int getScaleMinValPix( const ZS::System::CEnumScaleAxis& i_scaleAxis ) const;
+    int getScaleMaxValPix( const ZS::System::CEnumScaleAxis& i_scaleAxis ) const;
+    int getScaleRangePix( const ZS::System::CEnumScaleAxis& i_scaleAxis ) const;
+    PhysVal::CPhysValRes getScaleRes( const ZS::System::CEnumScaleAxis& i_scaleAxis ) const;
 public: // instance methods
-    PhysVal::CUnit getValuesUnit( const ZS::System::CEnumScaleDir& i_scaleDir ) const;
-    void setValuesRes( const ZS::System::CEnumScaleDir& i_scaleDir, const PhysVal::CPhysValRes& i_physValRes );
-    PhysVal::CPhysValRes getValuesRes( const ZS::System::CEnumScaleDir& i_scaleDir ) const;
+    PhysVal::CUnit getValuesUnit( const ZS::System::CEnumScaleAxis& i_scaleAxis ) const;
+    void setValuesRes( const ZS::System::CEnumScaleAxis& i_scaleAxis, const PhysVal::CPhysValRes& i_physValRes );
+    PhysVal::CPhysValRes getValuesRes( const ZS::System::CEnumScaleAxis& i_scaleAxis ) const;
 public: // instance methods
-    void setValues( const ZS::System::CEnumScaleDir& i_scaleDir, const PhysVal::CPhysValArr& i_physValArr );
+    void setValues( const ZS::System::CEnumScaleAxis& i_scaleAxis, const PhysVal::CPhysValArr& i_physValArr );
     void setValues(
-        const ZS::System::CEnumScaleDir& i_scaleDir,
+        const ZS::System::CEnumScaleAxis& i_scaleAxis,
         const QVector<double>& i_arfValues,
         const PhysVal::CUnit* i_pUnitVals = nullptr,
         const PhysVal::CPhysValRes& i_physValRes = PhysVal::CPhysValRes() );
-    bool areValuesValid( const ZS::System::CEnumScaleDir& i_scaleDir ) const;
-    int getValCount( const ZS::System::CEnumScaleDir& i_scaleDir ) const;
-    QVector<double> getValues( const ZS::System::CEnumScaleDir& i_scaleDir ) const;
+    bool areValuesValid( const ZS::System::CEnumScaleAxis& i_scaleAxis ) const;
+    int getValCount( const ZS::System::CEnumScaleAxis& i_scaleAxis ) const;
+    QVector<double> getValues( const ZS::System::CEnumScaleAxis& i_scaleAxis ) const;
 public: // instance methods
-    int getValPix( const ZS::System::CEnumScaleDir& i_scaleDir, double i_fVal, const PhysVal::CUnit* i_pUnit = nullptr ) const;
+    int getValPix( const ZS::System::CEnumScaleAxis& i_scaleAxis, double i_fVal, const PhysVal::CUnit* i_pUnit = nullptr ) const;
     QString getValString(
-        const ZS::System::CEnumScaleDir&  i_scaleDir,
+        const ZS::System::CEnumScaleAxis&  i_scaleAxis,
         double i_fVal,
         const PhysVal::CUnit* i_pUnit = nullptr,
         int i_iDigitsCountMax = 0,
         bool i_bUseEngineeringFormat = false ) const;
     ZS::System::EValueValidity getVal(
-        const ZS::System::CEnumScaleDir&  i_scaleDirSrc,
+        const ZS::System::CEnumScaleAxis&  i_scaleAxisSrc,
         double i_fValSrc,
         const PhysVal::CUnit* i_pUnitSrc,
-        const ZS::System::CEnumScaleDir&  i_scaleDirDst,
+        const ZS::System::CEnumScaleAxis&  i_scaleAxisDst,
         double* o_pfValDst,
         PhysVal::CUnit* i_pUnitDst = nullptr,
         bool i_bRound2Res = true ) const;
-    double getVal( const ZS::System::CEnumScaleDir& i_scaleDir, double i_fPix, const PhysVal::CUnit* i_pUnit = nullptr ) const;
+    double getVal( const ZS::System::CEnumScaleAxis& i_scaleAxis, double i_fPix, const PhysVal::CUnit* i_pUnit = nullptr ) const;
 protected: // instance methods
     void invalidate( unsigned int i_uUpdateFlags );
     void validate( unsigned int i_uUpdateFlags );

@@ -79,13 +79,13 @@ protected slots:
     void onEdtScaleMaxValValueChanged(const ZS::PhysVal::CPhysVal& i_physVal);
     void onEdtScaleRangeValueChanged(const ZS::PhysVal::CPhysVal& i_physVal);
 protected: // instance methods
-    void setScaleDir(const ZS::System::CEnumScaleDir& i_scaleDir);
+    void setScaleAxis(const ZS::System::CEnumScaleAxis& i_scaleAxis);
 protected slots:
     void onDiagScaleDestroyed(QObject* i_pObj);
 protected: // instance members
     CDiagScale* m_pDiagScale;
     // Caching values
-    ZS::System::CEnumScaleDir m_scaleDir;
+    ZS::System::CEnumScaleAxis m_scaleAxis;
     ZS::System::CEnumSpacing m_spacing;
     int m_iMinVal_px;
     int m_iMaxVal_px;
@@ -94,9 +94,9 @@ protected: // instance members
     // Geometry
     QGroupBox* m_pGrpGeometry;
     QVBoxLayout* m_pLytGrpGeometry;
-    QHBoxLayout* m_pLytLineScaleDir;
-    QLabel* m_pLblScaleDir;
-    QComboBox* m_pCmbScaleDir;
+    QHBoxLayout* m_pLytLineScaleAxis;
+    QLabel* m_pLblScaleAxis;
+    QComboBox* m_pCmbScaleAxis;
     QLabel* m_pLblSpacing;
     QComboBox* m_pCmbSpacing;
     QLabel* m_pLblRange_px;

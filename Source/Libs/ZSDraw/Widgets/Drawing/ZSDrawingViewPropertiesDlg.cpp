@@ -24,7 +24,7 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include "ZSDraw/Widgets/Drawing/ZSDrawDlgDrawingViewSetup.h"
+#include "ZSDraw/Widgets/Drawing/ZSDrawingViewPropertiesDlg.h"
 #include "ZSDraw/Widgets/Drawing/ZSDrawingViewPropertiesWdgt.h"
 #include "ZSDraw/Widgets/Drawing/ZSDrawingView.h"
 #include "ZSSys/ZSSysAux.h"
@@ -52,7 +52,7 @@ using namespace ZS::Draw;
 
 
 /*******************************************************************************
-class CDlgDrawingViewSetup : public CDialog
+class CDlgDrawingViewProperties : public CDialog
 *******************************************************************************/
 
 /*==============================================================================
@@ -60,7 +60,7 @@ public: // class methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CDlgDrawingViewSetup* CDlgDrawingViewSetup::CreateInstance(
+CDlgDrawingViewProperties* CDlgDrawingViewProperties::CreateInstance(
     const QString&  i_strDlgTitle,
     CDrawingView*   i_pDrawingView,
     QWidget*        i_pWdgtParent,
@@ -73,7 +73,7 @@ CDlgDrawingViewSetup* CDlgDrawingViewSetup::CreateInstance(
         throw CException(__FILE__, __LINE__, EResultSingletonClassAlreadyInstantiated, strKey);
     }
 
-    return new CDlgDrawingViewSetup(
+    return new CDlgDrawingViewProperties(
         /* strDlgTitle  */ i_strDlgTitle,
         /* pDrawingView */ i_pDrawingView,
         /* pWdgtParent  */ i_pWdgtParent,
@@ -81,10 +81,10 @@ CDlgDrawingViewSetup* CDlgDrawingViewSetup::CreateInstance(
 }
 
 //------------------------------------------------------------------------------
-CDlgDrawingViewSetup* CDlgDrawingViewSetup::GetInstance( CDrawingView* i_pDrawingView )
+CDlgDrawingViewProperties* CDlgDrawingViewProperties::GetInstance( CDrawingView* i_pDrawingView )
 //------------------------------------------------------------------------------
 {
-    return dynamic_cast<CDlgDrawingViewSetup*>(
+    return dynamic_cast<CDlgDrawingViewProperties*>(
         CDialog::GetInstance(NameSpace(), ClassName(), i_pDrawingView->objectName()));
 }
 
@@ -93,7 +93,7 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CDlgDrawingViewSetup::CDlgDrawingViewSetup(
+CDlgDrawingViewProperties::CDlgDrawingViewProperties(
     const QString&  i_strDlgTitle,
     CDrawingView*   i_pDrawingView,
     QWidget*        i_pWdgtParent,
@@ -138,7 +138,7 @@ CDlgDrawingViewSetup::CDlgDrawingViewSetup(
 
     QObject::connect(
         m_pWdgtDrawingViewProperties, &CWdgtDrawingViewProperties::contentChanged,
-        this, &CDlgDrawingViewSetup::onWdgtDrawingViewPropertiesContentChanged);
+        this, &CDlgDrawingViewProperties::onWdgtDrawingViewPropertiesContentChanged);
 
     // Dialog buttons
     //---------------
@@ -152,27 +152,27 @@ CDlgDrawingViewSetup::CDlgDrawingViewSetup(
     m_pBtnOk->setDefault(true);
     QObject::connect(
         m_pBtnOk, &QPushButton::clicked,
-        this, &CDlgDrawingViewSetup::onBtnOkClicked);
+        this, &CDlgDrawingViewProperties::onBtnOkClicked);
 
     m_pBtnApply = new QPushButton("Apply");
     m_pBtnApply->setEnabled(false);
     m_pLytLineBtns->addWidget(m_pBtnApply);
     QObject::connect(
         m_pBtnApply, &QPushButton::clicked,
-        this, &CDlgDrawingViewSetup::onBtnApplyClicked);
+        this, &CDlgDrawingViewProperties::onBtnApplyClicked);
 
     m_pBtnReset = new QPushButton("Reset");
     m_pBtnReset->setEnabled(false);
     m_pLytLineBtns->addWidget(m_pBtnReset);
     QObject::connect(
         m_pBtnReset, &QPushButton::clicked,
-        this, &CDlgDrawingViewSetup::onBtnResetClicked);
+        this, &CDlgDrawingViewProperties::onBtnResetClicked);
 
     m_pBtnCancel = new QPushButton("Cancel");
     m_pLytLineBtns->addWidget(m_pBtnCancel);
     QObject::connect(
         m_pBtnCancel, &QPushButton::clicked,
-        this, &CDlgDrawingViewSetup::onBtnCancelClicked);
+        this, &CDlgDrawingViewProperties::onBtnCancelClicked);
 
     m_pLytLineBtns->addStretch();
 
@@ -185,7 +185,7 @@ CDlgDrawingViewSetup::CDlgDrawingViewSetup(
 } // ctor
 
 //------------------------------------------------------------------------------
-CDlgDrawingViewSetup::~CDlgDrawingViewSetup()
+CDlgDrawingViewProperties::~CDlgDrawingViewProperties()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -212,7 +212,7 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDlgDrawingViewSetup::onBtnOkClicked(bool /*i_bChecked*/)
+void CDlgDrawingViewProperties::onBtnOkClicked(bool /*i_bChecked*/)
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -227,7 +227,7 @@ void CDlgDrawingViewSetup::onBtnOkClicked(bool /*i_bChecked*/)
 }
 
 //------------------------------------------------------------------------------
-void CDlgDrawingViewSetup::onBtnApplyClicked(bool /*i_bChecked*/)
+void CDlgDrawingViewProperties::onBtnApplyClicked(bool /*i_bChecked*/)
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -251,7 +251,7 @@ void CDlgDrawingViewSetup::onBtnApplyClicked(bool /*i_bChecked*/)
 }
 
 //------------------------------------------------------------------------------
-void CDlgDrawingViewSetup::onBtnResetClicked(bool /*i_bChecked*/)
+void CDlgDrawingViewProperties::onBtnResetClicked(bool /*i_bChecked*/)
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -275,7 +275,7 @@ void CDlgDrawingViewSetup::onBtnResetClicked(bool /*i_bChecked*/)
 }
 
 //------------------------------------------------------------------------------
-void CDlgDrawingViewSetup::onBtnCancelClicked(bool /*i_bChecked*/)
+void CDlgDrawingViewProperties::onBtnCancelClicked(bool /*i_bChecked*/)
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -294,7 +294,7 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDlgDrawingViewSetup::onWdgtDrawingViewPropertiesContentChanged()
+void CDlgDrawingViewProperties::onWdgtDrawingViewPropertiesContentChanged()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(

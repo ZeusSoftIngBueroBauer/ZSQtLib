@@ -51,12 +51,12 @@ public: // ctors and dtor
 
     @param i_strObjName [in]
         Name of the object.
-    @param i_scaleDir [in]
+    @param i_scaleAxis [in]
         Range [X, Y]
 */
-CScaleDivLinesMetrics::CScaleDivLinesMetrics(const QString& i_strObjName, EScaleDir i_scaleDir) :
+CScaleDivLinesMetrics::CScaleDivLinesMetrics(const QString& i_strObjName, EScaleAxis i_scaleAxis) :
 //------------------------------------------------------------------------------
-    CScaleDivLines(NameSpace(), ClassName(), i_strObjName, i_scaleDir),
+    CScaleDivLines(NameSpace(), ClassName(), i_strObjName, i_scaleAxis),
     // config values
     m_fnt(),
     m_iDigitsCountMax(0),
@@ -75,7 +75,7 @@ CScaleDivLinesMetrics::CScaleDivLinesMetrics(const QString& i_strObjName, EScale
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = CEnumScaleDir(i_scaleDir).toString();
+        strMthInArgs = CEnumScaleAxis(i_scaleAxis).toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -203,7 +203,7 @@ CScaleDivLinesMetrics& CScaleDivLinesMetrics::operator = (const CScaleDivLinesMe
         /* strMethod    */ "=",
         /* strAddInfo   */ i_other.NameSpace() + "::" + i_other.ClassName() + "::" + i_other.objectName() );
 
-    m_scaleDir = i_other.m_scaleDir;
+    m_scaleAxis = i_other.m_scaleAxis;
     m_spacing = i_other.m_spacing;
     m_fScaleMin = i_other.m_fScaleMin;
     m_fScaleMax = i_other.m_fScaleMax;
@@ -943,7 +943,7 @@ void CScaleDivLinesMetrics::updateDivLineLabelsBoundingRects()
         }
     }
 
-    if (m_scaleDir == EScaleDir::X)
+    if (m_scaleAxis == EScaleAxis::X)
     {
         QFontMetrics fntmtr(m_fnt);
 
@@ -973,7 +973,7 @@ void CScaleDivLinesMetrics::updateDivLineLabelsBoundingRects()
             }
         }
     }
-    else // if (m_scaleDir == EScaleDir::Y)
+    else // if (m_scaleAxis == EScaleAxis::Y)
     {
         for (int iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++)
         {
@@ -1100,7 +1100,7 @@ void CScaleDivLinesMetrics::updateScaleMinMaxBoundingRects()
 
     QFontMetrics fntmtr(m_fnt);
 
-    if (m_scaleDir == EScaleDir::X)
+    if (m_scaleAxis == EScaleAxis::X)
     {
         for (int idxMinMax = 0; idxMinMax < 2; ++idxMinMax)
         {
@@ -1132,7 +1132,7 @@ void CScaleDivLinesMetrics::updateScaleMinMaxBoundingRects()
             //}
         }
     }
-    else // if (m_scaleDir == EScaleDir::Y)
+    else // if (m_scaleAxis == EScaleAxis::Y)
     {
         for (int idxMinMax = 0; idxMinMax < 2; ++idxMinMax)
         {

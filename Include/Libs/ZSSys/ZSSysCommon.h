@@ -551,27 +551,49 @@ typedef CEnum<ELayoutPos> CEnumLayoutPos;
 namespace ZS {
 namespace System {
 //==============================================================================
-/*! Scale orientations.
+/*! Scale axis.
 
     @see ZS::System::SEnumEntry
     @see ZS::System::CEnum
     @see _GRP_BasicConcepts_Enumerations
 */
-enum class EScaleDir {
+enum class EScaleAxis {
 //==============================================================================
     X,  /*!< X (horizontal) scale orientation. */
     Y   /*!< Y (vertical ) scale orientation. */
 };
 } }
 
-template class ZSSYSDLL_API CEnum<ZS::System::EScaleDir>;
+template class ZSSYSDLL_API CEnum<ZS::System::EScaleAxis>;
 namespace ZS {
 namespace System {
-typedef CEnum<EScaleDir> CEnumScaleDir;
+typedef CEnum<EScaleAxis> CEnumScaleAxis;
 
 // To make the code more readable:
-const int EScaleDirX = static_cast<int>(EScaleDir::X);
-const int EScaleDirY = static_cast<int>(EScaleDir::Y);
+const int EScaleAxisX = static_cast<int>(EScaleAxis::X);
+const int EScaleAxisY = static_cast<int>(EScaleAxis::Y);
+} }
+
+namespace ZS {
+namespace System {
+//==============================================================================
+/*! Orientation of the Y scale axis.
+
+    @see ZS::System::SEnumEntry
+    @see ZS::System::CEnum
+    @see _GRP_BasicConcepts_Enumerations
+*/
+enum class EYScaleAxisOrientation {
+//==============================================================================
+    TopDown, /*!< Y scale orientation is from top to bottom. */
+    BottomUp /*!< Y scale orientation is from bottom to top. */
+};
+} }
+
+template class ZSSYSDLL_API CEnum<ZS::System::EYScaleAxisOrientation>;
+namespace ZS {
+namespace System {
+typedef CEnum<EYScaleAxisOrientation> CEnumYScaleAxisOrientation;
 } }
 
 
