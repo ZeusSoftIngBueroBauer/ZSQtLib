@@ -42,33 +42,129 @@ namespace Math
 
     The division lines are rounded to a whole number of a decimal power.
 
-    @Example:
+        @Example:
 
-    Input:
+        Input:
 
-                  DistMinVal
-        |         |<--   -->|                                                                               |
-        |         |<- 10.0->|                                                                               |
-    ScaleMinVal                                                                                        ScaleMaxVal
-       0.0                                                                                                100.0
-        +---------------------------------------------------------------------------------------------------+
-        |<-------------------------------------------------- 1000 ----------------------------------------->|
-        |<----------------------------------------------- ScaleRangePix ----------------------------------->|
-        |       |<50>|                                                                                      |
-        |       |<-->|                                                                                      |
-        |       DistMinPix                                                                                  |
+                      DistMinVal
+            |         |<--   -->|                             |
+            |         |<- 10.0->|                             |
+        ScaleMinVal                                      ScaleMaxVal
+           0.0                                              100.0
+            +-------------------------------------------------+
+            |<--------------------- 500 --------------------->|
+            |<-------------------ScaleRangePix -------------->|
+            |       |<50>|                                    |
+            |       |<-->|                                    |
+            |       DistMinPix                                |
 
-    Output:
+        Output:
 
-        |<DistVal>|
-        |<- 10.0->|
-     FirstVal
-       0.0                                                                                                  |
-        +---------|---------|---------|---------|---------|---------|---------|---------|---------|---------+
-       0.0       10.0      20.0      30.0      40.0      50.0      60.0      70.0      80.0      90.0     100.0
-     FirstPix                                                                                               |
-        |<- 100 ->|                                                                                         |
-        |<DistPix>|                                                                                         |
+            |<DistVal>|
+            |<- 10.0->|
+         FirstVal
+           0.0                                                |
+            +---------|---------|---------|---------|---------+
+           0.0       10.0      20.0      30.0      40.0      50.0
+         FirstPix                                             |
+            |<- 100 ->|                                       |
+            |<DistPix>|                                       |
+
+    Pixel dimensions (both ScaleRangeVal and ScaleRangePix are in pixels):
+
+        ScaleMinVal:    0 px
+        ScaleMaxVal:   20 px
+        ScaleRange:    20 px
+        Min_px:         0 px
+        Max_px:        19 px
+        Width/px:      Max/px - Min/px + 1 = 20 px
+
+        Figure with division lines at all 10 pixels:
+
+        |<-                                  Width: 20 px                             ->|
+        |                                                                               |
+        | 0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19  20 px
+        +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+        | X |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   |
+        | X |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   |
+        | X |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   |
+        | X |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   |
+        +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+
+        !! There will be no division line at position 20 px. !!
+
+    Metric drawings (ScaleRangeVal in metric unit and ScaleRangePix in pixels):
+
+        ScaleMinVal:  0.0 mm
+        ScaleMaxVal: 10.0 mm
+        ScaleRange:  10.0 mm
+        Min_px:         0 px
+        Max_px:        19 px
+        Width/px:      Max/px - Min/px + 1 = 20 px
+
+        Theoretical figure with division lines at all 5 mm:
+
+        |<-                                  Width: 20 px                             ->|
+        |                                                                               |
+        | 0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19 | 20 px
+        +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+        X   |   |   |   |   |   |   |   |   |   X   |   |   |   |   |   |   |   |   |   X
+        X   |   |   |   |   |   |   |   |   |   X   |   |   |   |   |   |   |   |   |   X
+        X   |   |   |   |   |   |   |   |   |   X   |   |   |   |   |   |   |   |   |   X
+        X   |   |   |   |   |   |   |   |   |   X   |   |   |   |   |   |   |   |   |   X
+        +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+       0.0     1.0     2.0     3.0     4.0     5.0     6.0     7.0     8.0     9.0    10.0 mm
+
+        Lines can only be drawn on whole number pixel positions but not between two pixels as
+        shown in the theoretical figure above. Pixel positions will be truncated to a whole number.
+
+        Conversion from mm into pixels:
+
+            Val_px = Min_px + Width_px * Val_mm / ScaleRange_mm = 0 px + (Val_mm * 20 px) / 10.0 mm
+
+        Val_mm | Val_px
+        -------+-------
+           0.0 |    0.0
+           2.0 |    4.0
+           5.0 |   10.0
+           8.0 |   16.0
+          10.0 |   20.0   !! The division line at scale max will not be visible !!
+
+        In order to draw division lines at min and max scale the width in pixels
+        got to be extended by one pixel when using metric scales.
+
+        !!! As the scale division line class doesn't know whether metric system is !!!
+        !! used this has to be taken into account when setting the scale values.   !!!
+
+        ScaleMinVal:  0.0 mm
+        ScaleMaxVal: 10.0 mm
+        ScaleRange:  10.0 mm
+        Min_px:         0 px
+        Max_px:        20 px
+        Width/px:      Max/px - Min/px + 1 = 21 px
+
+        Conversion from mm into pixels:
+
+            Val_px = Min_px + Width_px * Val_mm / ScaleRange_mm = 0 px + (Val_mm * 21 px) / 10.0 mm
+
+        Val_mm | Val_px
+        -------+-------
+           0.0 |    0.0
+           2.0 |    4.2
+           5.0 |   10.5
+           8.0 |   16.8
+          10.0 |   21.0   !! The division line at scale max will become visible !!
+
+        |<-                                  Width: 21 px                                 ->|
+        |                                                                                   |
+        | 0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19  20 | px
+        +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+        | X |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   | X |
+        | X |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   | X |
+        | X |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   | X |
+        | X |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   | X |
+        +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+         0.0     1.0     2.0     3.0     4.0     5.0     6.0     7.0     8.0     9.0     10.0 mm
 */
 class ZSSYSDLL_API CScaleDivLines
 //******************************************************************************

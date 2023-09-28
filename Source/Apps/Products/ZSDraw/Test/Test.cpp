@@ -103,39 +103,6 @@ CTest::CTest() :
     m_pMainWindow(nullptr),
     m_pDrawingView(nullptr),
     m_pDrawingScene(nullptr)
-    //m_ptDrawingSceneMousePos(),
-    //m_ptDrawingViewMousePos(),
-    //m_pGraphObjCreating(nullptr),
-    //m_pGraphObjSelected(nullptr),
-    //m_iTestStepLev1(0),
-    //m_iTestStepLev2(0),
-    //m_iTestStepLev3(0),
-    //m_iTestStepLev4(0),
-    //m_fAngle_degree(0.0),
-    //m_fxOffsHor(0.0),
-    //m_fyOffsHor(0.0),
-    //m_iPointsCount(0),
-    //m_iLinesCount(0),
-    //m_iRectanglesCount(0),
-    //m_iEllipsesCount(0),
-    //m_iPolylinesCount(0),
-    //m_iPolygonsCount(0),
-    //m_iTextsCount(0),
-    //m_iImagesCount(0),
-    //m_iConnectionPointsCount(0),
-    //m_iConnectionLinesCount(0),
-    //m_iGroupsCount(0),
-    //m_iElectricityResistorsCount(0),
-    //m_iElectricityCapacitorsCount(0),
-    //m_iElectricityInductorsCount(0),
-    //m_iElectricityTransistorsCount(0),
-    //m_iElectricitySwitchesCount(0),
-    //m_iWdgtCheckBoxesCount(0),
-    //m_iWdgtComboBoxesCount(0),
-    //m_iWdgtGroupBoxesCount(0),
-    //m_iWdgtLabelsCount(0),
-    //m_iWdgtLineEditsCount(0),
-    //m_iWdgtPushButtonsCount(0)
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -177,39 +144,6 @@ CTest::~CTest()
     m_pMainWindow = nullptr;
     m_pDrawingView = nullptr;
     m_pDrawingScene = nullptr;
-    //m_ptDrawingSceneMousePos;
-    //m_ptDrawingViewMousePos;
-    //m_pGraphObjCreating = nullptr;
-    //m_pGraphObjSelected = nullptr;
-    //m_iTestStepLev1 = 0;
-    //m_iTestStepLev2 = 0;
-    //m_iTestStepLev3 = 0;
-    //m_iTestStepLev4 = 0;
-    //m_fAngle_degree = 0.0;
-    //m_fxOffsHor = 0.0;
-    //m_fyOffsHor = 0.0;
-    //m_iPointsCount = 0;
-    //m_iLinesCount = 0;
-    //m_iRectanglesCount = 0;
-    //m_iEllipsesCount = 0;
-    //m_iPolylinesCount = 0;
-    //m_iPolygonsCount = 0;
-    //m_iTextsCount = 0;
-    //m_iImagesCount = 0;
-    //m_iConnectionPointsCount = 0;
-    //m_iConnectionLinesCount = 0;
-    //m_iGroupsCount = 0;
-    //m_iElectricityResistorsCount = 0;
-    //m_iElectricityCapacitorsCount = 0;
-    //m_iElectricityInductorsCount = 0;
-    //m_iElectricityTransistorsCount = 0;
-    //m_iElectricitySwitchesCount = 0;
-    //m_iWdgtCheckBoxesCount = 0;
-    //m_iWdgtComboBoxesCount = 0;
-    //m_iWdgtGroupBoxesCount = 0;
-    //m_iWdgtLabelsCount = 0;
-    //m_iWdgtLineEditsCount = 0;
-    //m_iWdgtPushButtonsCount = 0;
 
 } // dtor
 
@@ -283,6 +217,18 @@ void CTest::createTestGroupDrawStandardShapesLines(ZS::Test::CTestStepGroup* i_p
         /* strMethod    */ "createTestGroupDrawStandardShapesLines",
         /* strAddInfo   */ strMthInArgs );
 
+    QString strFileName;
+
+    QString strGroupName = CObjFactory::c_strGroupNameStandardShapes;
+    QString strTypeName = graphObjType2Str(EGraphObjTypeLine);
+
+    QPoint ptGraphObjLineP1;
+    QPoint ptGraphObjLineP2;
+    QPoint ptGraphObjLineCenter;
+
+    QPoint ptMouseMovePos;
+    QSize sizeMouseMoveDist;
+
     int idxStep = 0;
 
     ZS::Test::CTestStep* pTestStep = nullptr;
@@ -292,16 +238,27 @@ void CTest::createTestGroupDrawStandardShapesLines(ZS::Test::CTestStepGroup* i_p
         /* strName      */ "Group " + QString::number(++io_idxGroup) + " Lines",
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
-    ZS::Test::CTestStepGroup* pGrpDrawLinesLoadSave = new ZS::Test::CTestStepGroup(
+    // Pixels Drawing
+    //===============
+
+    ZS::Test::CTestStepGroup* pGrpDrawLinesPixelsDrawing = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(++io_idxGroup) + " PixelsDrawing",
+        /* pTSGrpParent */ pGrpDrawLines );
+
+    // Load/Save
+    //----------
+
+    ZS::Test::CTestStepGroup* pGrpDrawLinesPixelsDrawingLoadSave = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(++io_idxGroup) + " Load/Save",
-        /* pTSGrpParent */ pGrpDrawLines );
+        /* pTSGrpParent */ pGrpDrawLinesPixelsDrawing );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " SetGeometry",
         /* strOperation    */ "MainWindow.setGeometry",
-        /* pGrpParent      */ pGrpDrawLinesLoadSave,
+        /* pGrpParent      */ pGrpDrawLinesPixelsDrawingLoadSave,
         /* szDoTestStepFct */ SLOT(doTestStepMainWindowSetGeometry(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("Width", 1600);
     pTestStep->setConfigValue("Height", 800);
@@ -310,14 +267,14 @@ void CTest::createTestGroupDrawStandardShapesLines(ZS::Test::CTestStepGroup* i_p
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Clear",
         /* strOperation    */ "DrawingScene.clear",
-        /* pGrpParent      */ pGrpDrawLinesLoadSave,
+        /* pGrpParent      */ pGrpDrawLinesPixelsDrawingLoadSave,
         /* szDoTestStepFct */ SLOT(doTestStepClearDrawingScene(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " LoadFile",
         /* strOperation    */ "DrawingScene.load",
-        /* pGrpParent      */ pGrpDrawLinesLoadSave,
+        /* pGrpParent      */ pGrpDrawLinesPixelsDrawingLoadSave,
         /* szDoTestStepFct */ SLOT(doTestStepLoadFile(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("FileName", "600px400pxOneLine.xml");
 
@@ -325,20 +282,31 @@ void CTest::createTestGroupDrawStandardShapesLines(ZS::Test::CTestStepGroup* i_p
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " SaveFile",
         /* strOperation    */ "DrawingScene.save",
-        /* pGrpParent      */ pGrpDrawLinesLoadSave,
+        /* pGrpParent      */ pGrpDrawLinesPixelsDrawingLoadSave,
         /* szDoTestStepFct */ SLOT(doTestStepSaveFile(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("FileName", "600px400pxOneLine.xml");
 
-    ZS::Test::CTestStepGroup* pGrpDrawLinesMouseEvents = new ZS::Test::CTestStepGroup(
+    // Mouse Events
+    //-------------
+
+    ZS::Test::CTestStepGroup* pGrpDrawLinesPixelsDrawingMouseEvents = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(++io_idxGroup) + " MouseEvents",
-        /* pTSGrpParent */ pGrpDrawLines );
+        /* pTSGrpParent */ pGrpDrawLinesPixelsDrawing );
+
+    // Prepare drawing scene
+    //----------------------
+
+    ZS::Test::CTestStepGroup* pGrpDrawLinesPixelsDrawingMouseEventsPrepareScene = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(++io_idxGroup) + " PrepareScene",
+        /* pTSGrpParent */ pGrpDrawLinesPixelsDrawingMouseEvents );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " SetGeometry",
         /* strOperation    */ "MainWindow.setGeometry",
-        /* pGrpParent      */ pGrpDrawLinesMouseEvents,
+        /* pGrpParent      */ pGrpDrawLinesPixelsDrawingMouseEventsPrepareScene,
         /* szDoTestStepFct */ SLOT(doTestStepMainWindowSetGeometry(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("Width", 1600);
     pTestStep->setConfigValue("Height", 800);
@@ -347,126 +315,480 @@ void CTest::createTestGroupDrawStandardShapesLines(ZS::Test::CTestStepGroup* i_p
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Clear",
         /* strOperation    */ "DrawingScene.clear",
-        /* pGrpParent      */ pGrpDrawLinesMouseEvents,
+        /* pGrpParent      */ pGrpDrawLinesPixelsDrawingMouseEventsPrepareScene,
         /* szDoTestStepFct */ SLOT(doTestStepClearDrawingScene(ZS::Test::CTestStep*)) );
+
+    int cxDrawingWidth_px = 600;
+    int cyDrawingHeight_px = 400;
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " SetDrawingSize",
         /* strOperation    */ "DrawingScene.setDrawingSize",
-        /* pGrpParent      */ pGrpDrawLinesMouseEvents,
+        /* pGrpParent      */ pGrpDrawLinesPixelsDrawingMouseEventsPrepareScene,
         /* szDoTestStepFct */ SLOT(doTestStepSetDrawingSize(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue(
         CDrawingScene::c_strXmlAttrScreenResolutionPxPerMilliMeter, 1.0);
     pTestStep->setConfigValue(
         CDrawingScene::c_strXmlAttrDimensionUnit, CEnumDrawingDimensionUnit(EDrawingDimensionUnit::Pixels).toString());
     pTestStep->setConfigValue(
-        CDrawingScene::c_strXmlAttrWidth, 600);
+        CDrawingScene::c_strXmlAttrWidth, cxDrawingWidth_px);
     pTestStep->setConfigValue(
-        CDrawingScene::c_strXmlAttrHeight, 400);
+        CDrawingScene::c_strXmlAttrHeight, cyDrawingHeight_px);
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " SetGridSettings",
         /* strOperation    */ "DrawingScene.setGridSettings",
-        /* pGrpParent      */ pGrpDrawLinesMouseEvents,
+        /* pGrpParent      */ pGrpDrawLinesPixelsDrawingMouseEventsPrepareScene,
         /* szDoTestStepFct */ SLOT(doTestStepSetGridSettings(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue(
         CDrawingScene::c_strXmlAttrGridLinesVisible, true);
     pTestStep->setConfigValue(
         CDrawingScene::c_strXmlAttrGridLabelsVisible, true);
 
-    QString strGroupName = CObjFactory::c_strGroupNameStandardShapes;
-    QString strTypeName = graphObjType2Str(EGraphObjTypeLine);
+    // Create object
+    //--------------
+
+    ZS::Test::CTestStepGroup* pGrpDrawLinesPixelsDrawingMouseEventsCreateObject = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(++io_idxGroup) + " CreateObject",
+        /* pTSGrpParent */ pGrpDrawLinesPixelsDrawingMouseEvents );
+
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " SetCurrentDrawingTool(" + strGroupName + ", " + strTypeName + ")",
         /* strOperation    */ "DrawingScene.setCurrentDrawingTool(" + strGroupName + ", " + strTypeName + ")",
-        /* pGrpParent      */ pGrpDrawLinesMouseEvents,
+        /* pGrpParent      */ pGrpDrawLinesPixelsDrawingMouseEventsCreateObject,
         /* szDoTestStepFct */ SLOT(doTestStepSetCurrentDrawingTool(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GroupName", strGroupName);
     pTestStep->setConfigValue("GraphObjType", strTypeName);
 
-    QPoint ptMousePressPos(100, 100);
-    //QPoint ptMouseReleasePos(200, 200);
-    QPoint ptMouseReleasePos(110, 110);
-    QSize sizeMouseMoveDist(10, 10);
+    ptGraphObjLineP1 = QPoint(100, 100);
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MousePressEvent(" + qPoint2Str(ptMousePressPos) + ")",
-        /* strOperation    */ "DrawingView.mousePressEvent(" + qPoint2Str(ptMousePressPos) + ")",
-        /* pGrpParent      */ pGrpDrawLinesMouseEvents,
+        /* strName         */ "Step " + QString::number(++idxStep) + " MousePressEvent(" + qPoint2Str(ptGraphObjLineP1) + ")",
+        /* strOperation    */ "DrawingView.mousePressEvent(" + qPoint2Str(ptGraphObjLineP1) + ")",
+        /* pGrpParent      */ pGrpDrawLinesPixelsDrawingMouseEventsCreateObject,
         /* szDoTestStepFct */ SLOT(doTestStepMousePressEvent(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("MousePos", ptMousePressPos);
+    pTestStep->setConfigValue("MousePos", ptGraphObjLineP1);
 
-    QPoint ptMouseMovePos = ptMousePressPos;
-    while (ptMouseMovePos.x() < ptMouseReleasePos.x()) {
+    ptGraphObjLineP2 = QPoint(110, 110);
+    //ptGraphObjLineP2 = QPoint(200, 200);
+    ptMouseMovePos = ptGraphObjLineP1;
+    sizeMouseMoveDist = QSize(10, 10);
+    while (ptMouseMovePos.x() < ptGraphObjLineP2.x()) {
         ptMouseMovePos.setX(ptMouseMovePos.x() + sizeMouseMoveDist.width());
         ptMouseMovePos.setY(ptMouseMovePos.y() + sizeMouseMoveDist.height());
         pTestStep = new ZS::Test::CTestStep(
             /* pTest           */ this,
             /* strName         */ "Step " + QString::number(++idxStep) + " MouseMoveEvent(" + qPoint2Str(ptMouseMovePos) + ")",
             /* strOperation    */ "DrawingView.mouseMoveEvent(" + qPoint2Str(ptMouseMovePos) + ")",
-            /* pGrpParent      */ pGrpDrawLinesMouseEvents,
+            /* pGrpParent      */ pGrpDrawLinesPixelsDrawingMouseEventsCreateObject,
             /* szDoTestStepFct */ SLOT(doTestStepMouseMoveEvent(ZS::Test::CTestStep*)) );
         pTestStep->setConfigValue("MousePos", ptMouseMovePos);
     }
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MouseReleaseEvent(" + qPoint2Str(ptMouseReleasePos) + ")",
-        /* strOperation    */ "DrawingView.mouseReleaseEvent(" + qPoint2Str(ptMouseReleasePos) + ")",
-        /* pGrpParent      */ pGrpDrawLinesMouseEvents,
+        /* strName         */ "Step " + QString::number(++idxStep) + " MouseReleaseEvent(" + qPoint2Str(ptMouseMovePos) + ")",
+        /* strOperation    */ "DrawingView.mouseReleaseEvent(" + qPoint2Str(ptMouseMovePos) + ")",
+        /* pGrpParent      */ pGrpDrawLinesPixelsDrawingMouseEventsCreateObject,
         /* szDoTestStepFct */ SLOT(doTestStepMouseReleaseEvent(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("MousePos", ptMouseReleasePos);
+    pTestStep->setConfigValue("MousePos", ptMouseMovePos);
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " UnsetCurrentDrawingTool",
         /* strOperation    */ "DrawingScene.setCurrentDrawingTool(null)",
-        /* pGrpParent      */ pGrpDrawLinesMouseEvents,
+        /* pGrpParent      */ pGrpDrawLinesPixelsDrawingMouseEventsCreateObject,
         /* szDoTestStepFct */ SLOT(doTestStepUnsetCurrentDrawingTool(ZS::Test::CTestStep*)) );
 
-    ptMousePressPos = ptMouseReleasePos;
-    ptMouseReleasePos = QPoint(ptMousePressPos.x() + 10, ptMousePressPos.y() + 10);
+    // Resize object
+    //--------------
 
+    ZS::Test::CTestStepGroup* pGrpDrawLinesPixelsDrawingMouseEventsResizeObject = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(++io_idxGroup) + " ResizeObject",
+        /* pTSGrpParent */ pGrpDrawLinesPixelsDrawingMouseEvents );
+
+    ptGraphObjLineP2 = ptMouseMovePos;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MousePressEvent(" + qPoint2Str(ptMousePressPos) + ")",
-        /* strOperation    */ "DrawingView.mousePressEvent(" + qPoint2Str(ptMousePressPos) + ")",
-        /* pGrpParent      */ pGrpDrawLinesMouseEvents,
+        /* strName         */ "Step " + QString::number(++idxStep) + " MousePressEvent(" + qPoint2Str(ptGraphObjLineP2) + ")",
+        /* strOperation    */ "DrawingView.mousePressEvent(" + qPoint2Str(ptGraphObjLineP2) + ")",
+        /* pGrpParent      */ pGrpDrawLinesPixelsDrawingMouseEventsResizeObject,
         /* szDoTestStepFct */ SLOT(doTestStepMousePressEvent(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("MousePos", ptMousePressPos);
+    pTestStep->setConfigValue("MousePos", ptGraphObjLineP2);
 
-    ptMouseMovePos = ptMousePressPos;
-    while (ptMouseMovePos.x() < ptMouseReleasePos.x()) {
+    ptGraphObjLineP2 = QPoint(ptGraphObjLineP2.x() + 10, ptGraphObjLineP2.y() + 10);
+    //ptGraphObjLineP2 = QPoint(ptGraphObjLineP2.x() + 50, ptGraphObjLineP2.y() + 50);
+    sizeMouseMoveDist = QSize(10, 10);
+    while (ptMouseMovePos.x() < ptGraphObjLineP2.x()) {
         ptMouseMovePos.setX(ptMouseMovePos.x() + sizeMouseMoveDist.width());
         ptMouseMovePos.setY(ptMouseMovePos.y() + sizeMouseMoveDist.height());
         pTestStep = new ZS::Test::CTestStep(
             /* pTest           */ this,
             /* strName         */ "Step " + QString::number(++idxStep) + " MouseMoveEvent(" + qPoint2Str(ptMouseMovePos) + ")",
             /* strOperation    */ "DrawingView.mouseMoveEvent(" + qPoint2Str(ptMouseMovePos) + ")",
-            /* pGrpParent      */ pGrpDrawLinesMouseEvents,
+            /* pGrpParent      */ pGrpDrawLinesPixelsDrawingMouseEventsResizeObject,
             /* szDoTestStepFct */ SLOT(doTestStepMouseMoveEvent(ZS::Test::CTestStep*)) );
         pTestStep->setConfigValue("MousePos", ptMouseMovePos);
     }
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MouseReleaseEvent(" + qPoint2Str(ptMouseReleasePos) + ")",
-        /* strOperation    */ "DrawingView.mouseReleaseEvent(" + qPoint2Str(ptMouseReleasePos) + ")",
-        /* pGrpParent      */ pGrpDrawLinesMouseEvents,
+        /* strName         */ "Step " + QString::number(++idxStep) + " MouseReleaseEvent(" + qPoint2Str(ptMouseMovePos) + ")",
+        /* strOperation    */ "DrawingView.mouseReleaseEvent(" + qPoint2Str(ptMouseMovePos) + ")",
+        /* pGrpParent      */ pGrpDrawLinesPixelsDrawingMouseEventsResizeObject,
         /* szDoTestStepFct */ SLOT(doTestStepMouseReleaseEvent(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("MousePos", ptMouseReleasePos);
+    pTestStep->setConfigValue("MousePos", ptMouseMovePos);
+
+    // Move object
+    //------------
+
+    ZS::Test::CTestStepGroup* pGrpDrawLinesPixelsDrawingMouseEventsMoveObject = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(++io_idxGroup) + " MoveObject",
+        /* pTSGrpParent */ pGrpDrawLinesPixelsDrawingMouseEvents );
+
+    // First move the cursor on the line so that the line is hit.
+    ptGraphObjLineCenter = QLine(ptGraphObjLineP1, ptGraphObjLineP2).center();
+    ptMouseMovePos = ptGraphObjLineCenter;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " MouseMoveEvent(" + qPoint2Str(ptMouseMovePos) + ")",
+        /* strOperation    */ "DrawingView.mouseMoveEvent(" + qPoint2Str(ptMouseMovePos) + ")",
+        /* pGrpParent      */ pGrpDrawLinesPixelsDrawingMouseEventsMoveObject,
+        /* szDoTestStepFct */ SLOT(doTestStepMouseMoveEvent(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("MouseButtons", Qt::NoButton);
+    pTestStep->setConfigValue("MousePos", ptMouseMovePos);
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " MousePressEvent(" + qPoint2Str(ptGraphObjLineCenter) + ")",
+        /* strOperation    */ "DrawingView.mousePressEvent(" + qPoint2Str(ptGraphObjLineCenter) + ")",
+        /* pGrpParent      */ pGrpDrawLinesPixelsDrawingMouseEventsMoveObject,
+        /* szDoTestStepFct */ SLOT(doTestStepMousePressEvent(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("MousePos", ptGraphObjLineCenter);
+
+    ptGraphObjLineCenter = QPoint(ptGraphObjLineCenter.x() + 10, ptGraphObjLineCenter.y() + 10);
+    //ptGraphObjLineCenter = QPoint(ptGraphObjLineCenter.x() + 50, ptGraphObjLineCenter.y() + 50);
+    sizeMouseMoveDist = QSize(10, 10);
+    while (ptMouseMovePos.x() < ptGraphObjLineCenter.x()) {
+        ptMouseMovePos.setX(ptMouseMovePos.x() + sizeMouseMoveDist.width());
+        ptMouseMovePos.setY(ptMouseMovePos.y() + sizeMouseMoveDist.height());
+        pTestStep = new ZS::Test::CTestStep(
+            /* pTest           */ this,
+            /* strName         */ "Step " + QString::number(++idxStep) + " MouseMoveEvent(" + qPoint2Str(ptMouseMovePos) + ")",
+            /* strOperation    */ "DrawingView.mouseMoveEvent(" + qPoint2Str(ptMouseMovePos) + ")",
+            /* pGrpParent      */ pGrpDrawLinesPixelsDrawingMouseEventsMoveObject,
+            /* szDoTestStepFct */ SLOT(doTestStepMouseMoveEvent(ZS::Test::CTestStep*)) );
+        pTestStep->setConfigValue("MousePos", ptMouseMovePos);
+    }
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " MouseReleaseEvent(" + qPoint2Str(ptMouseMovePos) + ")",
+        /* strOperation    */ "DrawingView.mouseReleaseEvent(" + qPoint2Str(ptMouseMovePos) + ")",
+        /* pGrpParent      */ pGrpDrawLinesPixelsDrawingMouseEventsMoveObject,
+        /* szDoTestStepFct */ SLOT(doTestStepMouseReleaseEvent(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("MousePos", ptMouseMovePos);
+
+    // Save changes
+    //-------------
+
+    ZS::Test::CTestStepGroup* pGrpDrawLinesPixelsDrawingMouseEventsSaveScene = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(++io_idxGroup) + " SaveScene",
+        /* pTSGrpParent */ pGrpDrawLinesPixelsDrawingMouseEvents );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " SaveFile",
         /* strOperation    */ "DrawingScene.save",
-        /* pGrpParent      */ pGrpDrawLinesMouseEvents,
+        /* pGrpParent      */ pGrpDrawLinesPixelsDrawingMouseEventsSaveScene,
         /* szDoTestStepFct */ SLOT(doTestStepSaveFile(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("FileName", "New600px400px.xml");
+    strFileName = "New" + QString::number(cxDrawingWidth_px) + "px" + QString::number(cyDrawingHeight_px) + "px.xml";
+    pTestStep->setConfigValue("FileName", strFileName);
+
+    // Metrics Drawing
+    //==================
+
+    ZS::Test::CTestStepGroup* pGrpDrawLinesMetricsDrawing = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(++io_idxGroup) + " MetricsDrawing",
+        /* pTSGrpParent */ pGrpDrawLines );
+
+    // Load/Save
+    //----------
+
+    ZS::Test::CTestStepGroup* pGrpDrawLinesMetricsDrawingLoadSave = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Load/Save",
+        /* pTSGrpParent */ pGrpDrawLinesMetricsDrawing );
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " SetGeometry",
+        /* strOperation    */ "MainWindow.setGeometry",
+        /* pGrpParent      */ pGrpDrawLinesMetricsDrawingLoadSave,
+        /* szDoTestStepFct */ SLOT(doTestStepMainWindowSetGeometry(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("Width", 1600);
+    pTestStep->setConfigValue("Height", 800);
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Clear",
+        /* strOperation    */ "DrawingScene.clear",
+        /* pGrpParent      */ pGrpDrawLinesMetricsDrawingLoadSave,
+        /* szDoTestStepFct */ SLOT(doTestStepClearDrawingScene(ZS::Test::CTestStep*)) );
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " LoadFile",
+        /* strOperation    */ "DrawingScene.load",
+        /* pGrpParent      */ pGrpDrawLinesMetricsDrawingLoadSave,
+        /* szDoTestStepFct */ SLOT(doTestStepLoadFile(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("FileName", "600mm400mmOneLine.xml");
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " SaveFile",
+        /* strOperation    */ "DrawingScene.save",
+        /* pGrpParent      */ pGrpDrawLinesMetricsDrawingLoadSave,
+        /* szDoTestStepFct */ SLOT(doTestStepSaveFile(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("FileName", "600mm400mmOneLine.xml");
+
+    // Mouse Events
+    //-------------
+
+    ZS::Test::CTestStepGroup* pGrpDrawLinesMetricsDrawingMouseEvents = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(++io_idxGroup) + " MouseEvents",
+        /* pTSGrpParent */ pGrpDrawLinesMetricsDrawing );
+
+    // Prepare drawing scene
+    //----------------------
+
+    ZS::Test::CTestStepGroup* pGrpDrawLinesMetricsDrawingMouseEventsPrepareScene = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(++io_idxGroup) + " PrepareScene",
+        /* pTSGrpParent */ pGrpDrawLinesMetricsDrawingMouseEvents );
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " SetGeometry",
+        /* strOperation    */ "MainWindow.setGeometry",
+        /* pGrpParent      */ pGrpDrawLinesMetricsDrawingMouseEventsPrepareScene,
+        /* szDoTestStepFct */ SLOT(doTestStepMainWindowSetGeometry(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("Width", 1600);
+    pTestStep->setConfigValue("Height", 800);
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Clear",
+        /* strOperation    */ "DrawingScene.clear",
+        /* pGrpParent      */ pGrpDrawLinesMetricsDrawingMouseEventsPrepareScene,
+        /* szDoTestStepFct */ SLOT(doTestStepClearDrawingScene(ZS::Test::CTestStep*)) );
+
+    int cxDrawingWidth_mm = 600;
+    int cyDrawingHeight_mm = 400;
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " SetDrawingSize",
+        /* strOperation    */ "DrawingScene.setDrawingSize",
+        /* pGrpParent      */ pGrpDrawLinesMetricsDrawingMouseEventsPrepareScene,
+        /* szDoTestStepFct */ SLOT(doTestStepSetDrawingSize(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue(
+        CDrawingScene::c_strXmlAttrScreenResolutionPxPerMilliMeter, 1.0);
+    pTestStep->setConfigValue(
+        CDrawingScene::c_strXmlAttrDimensionUnit, CEnumDrawingDimensionUnit(EDrawingDimensionUnit::Metric).toString());
+    pTestStep->setConfigValue(
+        CDrawingScene::c_strXmlAttrUnit, "mm");
+    pTestStep->setConfigValue(
+        CDrawingScene::c_strXmlAttrWidth, cxDrawingWidth_mm);
+    pTestStep->setConfigValue(
+        CDrawingScene::c_strXmlAttrHeight, cyDrawingHeight_mm);
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " SetGridSettings",
+        /* strOperation    */ "DrawingScene.setGridSettings",
+        /* pGrpParent      */ pGrpDrawLinesMetricsDrawingMouseEventsPrepareScene,
+        /* szDoTestStepFct */ SLOT(doTestStepSetGridSettings(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue(
+        CDrawingScene::c_strXmlAttrGridLinesVisible, true);
+    pTestStep->setConfigValue(
+        CDrawingScene::c_strXmlAttrGridLabelsVisible, true);
+
+    // Create object
+    //--------------
+
+    ZS::Test::CTestStepGroup* pGrpDrawLinesMetricsDrawingMouseEventsCreateObject = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(++io_idxGroup) + " CreateObject",
+        /* pTSGrpParent */ pGrpDrawLinesMetricsDrawingMouseEvents );
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " SetCurrentDrawingTool(" + strGroupName + ", " + strTypeName + ")",
+        /* strOperation    */ "DrawingScene.setCurrentDrawingTool(" + strGroupName + ", " + strTypeName + ")",
+        /* pGrpParent      */ pGrpDrawLinesMetricsDrawingMouseEventsCreateObject,
+        /* szDoTestStepFct */ SLOT(doTestStepSetCurrentDrawingTool(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("GroupName", strGroupName);
+    pTestStep->setConfigValue("GraphObjType", strTypeName);
+
+    ptGraphObjLineP1 = QPoint(100, 100);
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " MousePressEvent(" + qPoint2Str(ptGraphObjLineP1) + ")",
+        /* strOperation    */ "DrawingView.mousePressEvent(" + qPoint2Str(ptGraphObjLineP1) + ")",
+        /* pGrpParent      */ pGrpDrawLinesMetricsDrawingMouseEventsCreateObject,
+        /* szDoTestStepFct */ SLOT(doTestStepMousePressEvent(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("MousePos", ptGraphObjLineP1);
+
+    ptGraphObjLineP2 = QPoint(110, 110);
+    //ptGraphObjLineP2 = QPoint(200, 200);
+    ptMouseMovePos = ptGraphObjLineP1;
+    sizeMouseMoveDist = QSize(10, 10);
+    while (ptMouseMovePos.x() < ptGraphObjLineP2.x()) {
+        ptMouseMovePos.setX(ptMouseMovePos.x() + sizeMouseMoveDist.width());
+        ptMouseMovePos.setY(ptMouseMovePos.y() + sizeMouseMoveDist.height());
+        pTestStep = new ZS::Test::CTestStep(
+            /* pTest           */ this,
+            /* strName         */ "Step " + QString::number(++idxStep) + " MouseMoveEvent(" + qPoint2Str(ptMouseMovePos) + ")",
+            /* strOperation    */ "DrawingView.mouseMoveEvent(" + qPoint2Str(ptMouseMovePos) + ")",
+            /* pGrpParent      */ pGrpDrawLinesMetricsDrawingMouseEventsCreateObject,
+            /* szDoTestStepFct */ SLOT(doTestStepMouseMoveEvent(ZS::Test::CTestStep*)) );
+        pTestStep->setConfigValue("MousePos", ptMouseMovePos);
+    }
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " MouseReleaseEvent(" + qPoint2Str(ptMouseMovePos) + ")",
+        /* strOperation    */ "DrawingView.mouseReleaseEvent(" + qPoint2Str(ptMouseMovePos) + ")",
+        /* pGrpParent      */ pGrpDrawLinesMetricsDrawingMouseEventsCreateObject,
+        /* szDoTestStepFct */ SLOT(doTestStepMouseReleaseEvent(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("MousePos", ptMouseMovePos);
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " UnsetCurrentDrawingTool",
+        /* strOperation    */ "DrawingScene.setCurrentDrawingTool(null)",
+        /* pGrpParent      */ pGrpDrawLinesMetricsDrawingMouseEventsCreateObject,
+        /* szDoTestStepFct */ SLOT(doTestStepUnsetCurrentDrawingTool(ZS::Test::CTestStep*)) );
+
+    // Resize object
+    //--------------
+
+    ZS::Test::CTestStepGroup* pGrpDrawLinesMetricsDrawingMouseEventsResizeObject = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(++io_idxGroup) + " ResizeObject",
+        /* pTSGrpParent */ pGrpDrawLinesMetricsDrawingMouseEvents );
+
+    ptGraphObjLineP2 = ptMouseMovePos;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " MousePressEvent(" + qPoint2Str(ptGraphObjLineP2) + ")",
+        /* strOperation    */ "DrawingView.mousePressEvent(" + qPoint2Str(ptGraphObjLineP2) + ")",
+        /* pGrpParent      */ pGrpDrawLinesMetricsDrawingMouseEventsResizeObject,
+        /* szDoTestStepFct */ SLOT(doTestStepMousePressEvent(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("MousePos", ptGraphObjLineP2);
+
+    ptGraphObjLineP2 = QPoint(ptGraphObjLineP2.x() + 10, ptGraphObjLineP2.y() + 10);
+    //ptGraphObjLineP2 = QPoint(ptGraphObjLineP2.x() + 50, ptGraphObjLineP2.y() + 50);
+    sizeMouseMoveDist = QSize(10, 10);
+    while (ptMouseMovePos.x() < ptGraphObjLineP2.x()) {
+        ptMouseMovePos.setX(ptMouseMovePos.x() + sizeMouseMoveDist.width());
+        ptMouseMovePos.setY(ptMouseMovePos.y() + sizeMouseMoveDist.height());
+        pTestStep = new ZS::Test::CTestStep(
+            /* pTest           */ this,
+            /* strName         */ "Step " + QString::number(++idxStep) + " MouseMoveEvent(" + qPoint2Str(ptMouseMovePos) + ")",
+            /* strOperation    */ "DrawingView.mouseMoveEvent(" + qPoint2Str(ptMouseMovePos) + ")",
+            /* pGrpParent      */ pGrpDrawLinesMetricsDrawingMouseEventsResizeObject,
+            /* szDoTestStepFct */ SLOT(doTestStepMouseMoveEvent(ZS::Test::CTestStep*)) );
+        pTestStep->setConfigValue("MousePos", ptMouseMovePos);
+    }
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " MouseReleaseEvent(" + qPoint2Str(ptMouseMovePos) + ")",
+        /* strOperation    */ "DrawingView.mouseReleaseEvent(" + qPoint2Str(ptMouseMovePos) + ")",
+        /* pGrpParent      */ pGrpDrawLinesMetricsDrawingMouseEventsResizeObject,
+        /* szDoTestStepFct */ SLOT(doTestStepMouseReleaseEvent(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("MousePos", ptMouseMovePos);
+
+    // Move object
+    //------------
+
+    ZS::Test::CTestStepGroup* pGrpDrawLinesMetricsDrawingMouseEventsMoveObject = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(++io_idxGroup) + " MoveObject",
+        /* pTSGrpParent */ pGrpDrawLinesMetricsDrawingMouseEvents );
+
+    // First move the cursor on the line so that the line is hit.
+    ptGraphObjLineCenter = QLine(ptGraphObjLineP1, ptGraphObjLineP2).center();
+    ptMouseMovePos = ptGraphObjLineCenter;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " MouseMoveEvent(" + qPoint2Str(ptMouseMovePos) + ")",
+        /* strOperation    */ "DrawingView.mouseMoveEvent(" + qPoint2Str(ptMouseMovePos) + ")",
+        /* pGrpParent      */ pGrpDrawLinesPixelsDrawingMouseEventsMoveObject,
+        /* szDoTestStepFct */ SLOT(doTestStepMouseMoveEvent(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("MouseButtons", Qt::NoButton);
+    pTestStep->setConfigValue("MousePos", ptMouseMovePos);
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " MousePressEvent(" + qPoint2Str(ptGraphObjLineCenter) + ")",
+        /* strOperation    */ "DrawingView.mousePressEvent(" + qPoint2Str(ptGraphObjLineCenter) + ")",
+        /* pGrpParent      */ pGrpDrawLinesMetricsDrawingMouseEventsMoveObject,
+        /* szDoTestStepFct */ SLOT(doTestStepMousePressEvent(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("MousePos", ptGraphObjLineCenter);
+
+    ptGraphObjLineCenter = QPoint(ptGraphObjLineCenter.x() + 10, ptGraphObjLineCenter.y() + 10);
+    //ptGraphObjLineCenter = QPoint(ptGraphObjLineCenter.x() + 50, ptGraphObjLineCenter.y() + 50);
+    sizeMouseMoveDist = QSize(10, 10);
+    while (ptMouseMovePos.x() < ptGraphObjLineCenter.x()) {
+        ptMouseMovePos.setX(ptMouseMovePos.x() + sizeMouseMoveDist.width());
+        ptMouseMovePos.setY(ptMouseMovePos.y() + sizeMouseMoveDist.height());
+        pTestStep = new ZS::Test::CTestStep(
+            /* pTest           */ this,
+            /* strName         */ "Step " + QString::number(++idxStep) + " MouseMoveEvent(" + qPoint2Str(ptMouseMovePos) + ")",
+            /* strOperation    */ "DrawingView.mouseMoveEvent(" + qPoint2Str(ptMouseMovePos) + ")",
+            /* pGrpParent      */ pGrpDrawLinesMetricsDrawingMouseEventsMoveObject,
+            /* szDoTestStepFct */ SLOT(doTestStepMouseMoveEvent(ZS::Test::CTestStep*)) );
+        pTestStep->setConfigValue("MousePos", ptMouseMovePos);
+    }
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " MouseReleaseEvent(" + qPoint2Str(ptMouseMovePos) + ")",
+        /* strOperation    */ "DrawingView.mouseReleaseEvent(" + qPoint2Str(ptMouseMovePos) + ")",
+        /* pGrpParent      */ pGrpDrawLinesMetricsDrawingMouseEventsMoveObject,
+        /* szDoTestStepFct */ SLOT(doTestStepMouseReleaseEvent(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("MousePos", ptMouseMovePos);
+
+    // Save changes
+    //-------------
+
+    ZS::Test::CTestStepGroup* pGrpDrawLinesMetricsDrawingMouseEventsSaveScene = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(++io_idxGroup) + " SaveScene",
+        /* pTSGrpParent */ pGrpDrawLinesMetricsDrawingMouseEvents );
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " SaveFile",
+        /* strOperation    */ "DrawingScene.save",
+        /* pGrpParent      */ pGrpDrawLinesMetricsDrawingMouseEventsSaveScene,
+        /* szDoTestStepFct */ SLOT(doTestStepSaveFile(ZS::Test::CTestStep*)) );
+    strFileName = "New" + QString::number(cxDrawingWidth_mm) + "mm" + QString::number(cyDrawingHeight_mm) + "mm.xml";
+    pTestStep->setConfigValue("FileName", strFileName);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
@@ -739,7 +1061,7 @@ void CTest::doTestStepMousePressEvent( ZS::Test::CTestStep* i_pTestStep )
         /* pos       */ ptDrawingViewMousePos,
         /* globalPos */ ptMousePosGlobal,
         /* button    */ Qt::LeftButton,
-        /* buttons   */ Qt::NoButton,
+        /* button    */ Qt::LeftButton,
         /* modifiers */ Qt::NoModifier );
     m_pDrawingView->mousePressEvent(pMouseEv);
     delete pMouseEv;
@@ -766,6 +1088,10 @@ void CTest::doTestStepMouseMoveEvent( ZS::Test::CTestStep* i_pTestStep )
         /* strMethod    */ "doTestStepMouseMoveEvent",
         /* strAddInfo   */ strMthInArgs );
 
+    Qt::MouseButton mouseBtn = Qt::LeftButton;
+    if (i_pTestStep->hasConfigValue("MouseButtons")) {
+        mouseBtn = static_cast<Qt::MouseButton>(i_pTestStep->getConfigValue("MouseButtons").toInt());
+    }
     QPoint ptMousePos = i_pTestStep->getConfigValue("MousePos").toPoint();
     QPoint ptDrawingViewMousePos = m_pDrawingView->mapFromScene(ptMousePos);
     QPoint ptMousePosGlobal = m_pDrawingView->mapToGlobal(ptDrawingViewMousePos);
@@ -777,7 +1103,7 @@ void CTest::doTestStepMouseMoveEvent( ZS::Test::CTestStep* i_pTestStep )
         /* pos       */ ptDrawingViewMousePos,
         /* globalPos */ ptMousePosGlobal,
         /* button    */ Qt::NoButton,
-        /* buttons   */ Qt::LeftButton,
+        /* buttons   */ mouseBtn,
         /* modifiers */ Qt::NoModifier );
     m_pDrawingView->mouseMoveEvent(pMouseEv);
     delete pMouseEv;

@@ -742,6 +742,9 @@ bool CScaleDivLines::setSpacing(const CEnumSpacing& i_eSpacing)
 /*! @brief Sets both the world coordinates (phyiscal values) and the
            range in pixels of the scale.
 
+    Please see the class documenation on how to correctly setup the scale
+    values in metric systems.
+
     The method returns false if none of the values changed and true if at
     least one value changed and the update method need to be called afterwards
     to recalculate the division lines.
@@ -1026,7 +1029,7 @@ bool CScaleDivLines::setScaleRangeInPix(double i_fRange_px)
     bool bChanged = false;
     double fRangePrev_px = scaleRangeInPix();
     if (fRangePrev_px != i_fRange_px) {
-        m_fMax_px = m_fMin_px + i_fRange_px;
+        m_fMax_px = m_fMin_px + i_fRange_px - 1;
         bChanged = true;
         m_bDivLinesCalculated = false;
     }
@@ -1242,7 +1245,7 @@ double CScaleDivLines::scaleMaxInPix() const
 double CScaleDivLines::scaleRangeInPix() const
 //------------------------------------------------------------------------------
 {
-    return abs(m_fMax_px - m_fMin_px);
+    return abs(m_fMax_px - m_fMin_px + 1);
 }
 
 /*==============================================================================

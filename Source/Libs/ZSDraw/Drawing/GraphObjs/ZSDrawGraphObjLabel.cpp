@@ -884,7 +884,7 @@ void CGraphObjLabel::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         strMthInArgs = qGraphicsSceneMouseEvent2Str(i_pEv);
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjMouseEvents,
+        /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "mousePressEvent",
@@ -904,7 +904,7 @@ void CGraphObjLabel::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         strMthInArgs = qGraphicsSceneMouseEvent2Str(i_pEv);
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjMouseEvents,
+        /* pAdminObj    */ m_pTrcAdminObjMouseMoveEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "mouseMoveEvent",
@@ -924,7 +924,7 @@ void CGraphObjLabel::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
         strMthInArgs = qGraphicsSceneMouseEvent2Str(i_pEv);
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjMouseEvents,
+        /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "mouseReleaseEvent",
@@ -945,7 +945,7 @@ void CGraphObjLabel::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
         strMthInArgs = qGraphicsSceneMouseEvent2Str(i_pEv);
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjMouseEvents,
+        /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "mouseDoubleClickEvent",

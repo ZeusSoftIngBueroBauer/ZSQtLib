@@ -90,8 +90,14 @@ public: // ctors and dtor
         current number of line objects taken from s_iInstCount to "Line".
     @param [in] i_physValPoint1
         Start point of the line.
+        Coordinates are assumed to be relative to the parent item the item
+        will later be added to as a child (or in scene coordinates if the item
+        is added to the scene).
     @param [in] i_physValPoint2
         End point of the line.
+        Coordinates are assumed to be relative to the parent item the item
+        will later be added to as a child (or in scene coordinates if the item
+        is added to the scene).
 */
 CGraphObjLine::CGraphObjLine(
     CDrawingScene* i_pDrawingScene,
@@ -108,10 +114,12 @@ CGraphObjLine::CGraphObjLine(
         /* strObjName          */ i_strObjName.isEmpty() ? "Line" + QString::number(s_iInstCount) : i_strObjName,
         /* drawSettings        */ i_drawSettings ),
     QGraphicsLineItem(),
-    m_physValLine(), // don't initialize here but in setLine
+    m_physValLine(i_physValPoint1, i_physValPoint2),
     m_plgLineStart(),
     m_plgLineEnd()
 {
+    // Just incremented by the ctor but not decremented by the dtor.
+    // Used to create a unique name for newly created objects of this type.
     s_iInstCount++;
 
     // Initialise list with number of selection points.
@@ -141,10 +149,37 @@ CGraphObjLine::CGraphObjLine(
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable
            | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges);
 
-    setLine(i_physValPoint1, i_physValPoint2);
+    // The line coordinates are passed relative to the parent item
+    // (usually the scene coordinates or a group item).
+    // But the graphics item expects the coordinates based on the
+    // local coordinate system of the graphics item.
+    // Items live in their own local coordinate system.
+    // Their coordinates are usually centered around its center point (0, 0).
+    // As the item is not yet added to a parent we got to adjust
+    // the coordinates coorespondingly.
+    QLineF lineF = m_physValLine.toQLineF();
+    if (m_physValLine.unit() != Units.Length.px) {
+        lineF = m_pDrawingScene->convert(m_physValLine, Units.Length.px).toQLineF();
+    }
+
+    // Center position in parent coordinates.
+    QPointF ptPos = lineF.center();
+
+    // Move the points into the item's local coordinate system.
+    QPointF p1 = lineF.p1() - ptPos;
+    QPointF p2 = lineF.p2() - ptPos;
+
+    // Set the line in local coordinate system.
+    QGraphicsLineItem_setLine(QLineF(p1, p2));
+
+    // GraphicsLineItem::setLine does not update the position.
+    // Must be done "manually" afterwards.
+    // Move the object to the parent position.
+    QGraphicsItem_setPos(ptPos);
 
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Undefined);
+        traceInternalStates(mthTracer, EMethodDir::Undefined,
+            m_pTrcAdminObjCtorsAndDtor->getRuntimeInfoTraceDetailLevel());
     }
 } // ctor
 
@@ -256,6 +291,17 @@ public: // overridables of base class CGraphObj
 void CGraphObjLine::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_drawingSize.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "onDrawingSizeChanged",
+        /* strAddInfo   */ strMthInArgs );
+
     m_bForceConversionToSceneCoors = true;
     setLine(m_pDrawingScene->convert(m_physValLine, i_drawingSize.unit()));
     m_bForceConversionToSceneCoors = false;
@@ -265,6 +311,13 @@ void CGraphObjLine::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
 void CGraphObjLine::onDrawSettingsChanged()
 //------------------------------------------------------------------------------
 {
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "onDrawSettingsChanged",
+        /* strAddInfo   */ "" );
+
     //m_bCoorsDirty = true;
     update();
 }
@@ -274,6 +327,13 @@ public: // replacing methods of QGraphicsLineItem
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Sets the item's line to the given line.
+
+    @param [in] i_physValLine
+        Line to be set.
+        Coordinates must be passed relative to it's parent item
+        (or in scene coordinates if the item does not have parent).
+*/
 void CGraphObjLine::setLine( const CPhysValLine& i_physValLine )
 //------------------------------------------------------------------------------
 {
@@ -290,18 +350,51 @@ void CGraphObjLine::setLine( const CPhysValLine& i_physValLine )
 
     // If the coordinates MUST be updated (e.g. after the drawing size has been changed)
     // or if they have been changed ...
-    if (m_bForceConversionToSceneCoors || m_physValLine != i_physValLine) {
-        m_physValLine = i_physValLine;
-        QLineF lineF = m_physValLine.toQLineF();
-        if (m_physValLine.unit() != Units.Length.px) {
-            lineF = m_pDrawingScene->convert(m_physValLine, Units.Length.px).toQLineF();
-        }
-        QGraphicsLineItem::setLine(lineF);
+    if (m_bForceConversionToSceneCoors || m_physValLine != i_physValLine)
+    {
+        // Prepare the item for a geometry change. This function must be called before
+        // changing the bounding rect of an item to keep QGraphicsScene's index up to date.
+        QGraphicsLineItem::prepareGeometryChange();
 
-        // As "setLine" does not end up in an "itemChange" call (even if the
-        // flag "ItemSendsGeometryChanges" has been set) we call the "itemChange"
-        // method on our own to update the position of the selection points.
-        itemChange(QGraphicsItem::ItemPositionHasChanged, pos());
+        // Please note that the original, untransformed line coordinates m_physValLine
+        // kept in the unit of the drawing scene is update in the "itemChange" method.
+        // The line may be moved or transformed by other methods. "itemChange" is a
+        // central point to update the coordinates upon those changes.
+        //setPhysValLine(i_physValLine);
+
+        // The line coordinates are passed relative to the parent item
+        // (usually the scene coordinates or a group item).
+        // But the graphics item expects the coordinates based on the
+        // local coordinate system of the graphics item.
+        // Items live in their own local coordinate system.
+        // Their coordinates are usually centered around its center point (0, 0).
+
+        QLineF lineF = i_physValLine.toQLineF();
+        if (i_physValLine.unit() != Units.Length.px) {
+            lineF = m_pDrawingScene->convert(i_physValLine, Units.Length.px).toQLineF();
+        }
+
+        // Center position in parent coordinates.
+        QPointF ptPos = lineF.center();
+
+        // Move the points into the item's local coordinate system.
+        // Please note that "mapFromParent" cannot be used here as
+        // the position of the line will be moved.
+        QPointF p1 = lineF.p1() - ptPos;
+        QPointF p2 = lineF.p2() - ptPos;
+
+        // Set the line in local coordinate system.
+        QGraphicsLineItem_setLine(QLineF(p1, p2));
+
+        // GraphicsLineItem::setLine does not update the position.
+        // This has to be done "manually" afterwards.
+
+        // Move the object to the parent position.
+        // This has to be done after resizing the line as this will trigger
+        // an itemChange call which will update the position of the selection
+        // points. And to position the selection points the local coordinate
+        // system must be up-to-date.
+        QGraphicsItem_setPos(ptPos);
     }
 }
 
@@ -490,11 +583,6 @@ public: // overridables of base class CGraphObj
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the position of the item relative to its parent item.
-
-    @note QGraphicsLineItem::pos does not return the position relative to its
-          parent or, if it does not have a parent, relative to the scene.
-          For me this looks like a bug in Qt.
-          As a workaround CGraphObjLine::getPos returns the center of the line.
 */
 CPhysValPoint CGraphObjLine::getPos( const CUnit& i_unit, ECoordinatesVersion /*i_version*/ ) const
 //------------------------------------------------------------------------------
@@ -599,11 +687,6 @@ bool CGraphObjLine::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) c
                 o_pHitInfo->m_ptSelected = i_pt;
             }
         }
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-        if (bIsHit && o_pHitInfo != nullptr) {
-            o_pHitInfo->setCursor(Math::deg2Rad(m_fRotAngleCurr_deg));
-        }
-#endif
     }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -711,7 +794,7 @@ public: // overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the list of the possible selection points the labels may be  anchored to.
+/*! @brief Returns the list of the possible anchor points for labels.
 
     For a line the labels may be anchored to the start and end point of the line
     but also to the center of the line.
@@ -851,7 +934,8 @@ void CGraphObjLine::paint(
         /* strAddInfo   */ "" );
 
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer);
+        traceInternalStates(mthTracer, EMethodDir::Enter,
+            m_pTrcAdminObjPaint->getRuntimeInfoTraceDetailLevel());
     }
 
     i_pPainter->save();
@@ -941,14 +1025,12 @@ protected: // overridables of base class QGraphicsItem
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Watches mouse events of selection points to forward those
+          events to this item in order to resize and rotate this item.
+*/
 bool CGraphObjLine::sceneEventFilter( QGraphicsItem* i_pGraphicsItemWatched, QEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    //--------------------------------------------------------------------
-    // Mouse events of selection points will be "watched" to forward those
-    // events to this item in order to resize and rotate this item.
-    //--------------------------------------------------------------------
-
     CGraphObjSelectionPoint* pGraphObjSelPtWatched = dynamic_cast<CGraphObjSelectionPoint*>(i_pGraphicsItemWatched);
 
     if (pGraphObjSelPtWatched == nullptr) {
@@ -1174,17 +1256,18 @@ void CGraphObjLine::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjMouseEvents, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = qGraphicsSceneMouseEvent2Str(i_pEv);
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjMouseEvents,
+        /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "mousePressEvent",
         /* strAddInfo   */ strMthInArgs );
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Enter);
+        traceInternalStates(mthTracer, EMethodDir::Enter,
+            m_pTrcAdminObjMouseClickEvents->getRuntimeInfoTraceDetailLevel());
     }
 
     CEnumMode modeDrawing = m_pDrawingScene->getMode();
@@ -1224,7 +1307,8 @@ void CGraphObjLine::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         }
     }
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Leave);
+        traceInternalStates(mthTracer, EMethodDir::Leave,
+            m_pTrcAdminObjMouseClickEvents->getRuntimeInfoTraceDetailLevel());
     }
 } // mousePressEvent
 
@@ -1233,15 +1317,19 @@ void CGraphObjLine::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjMouseEvents, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjMouseMoveEvents, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = qGraphicsSceneMouseEvent2Str(i_pEv);
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjMouseEvents,
+        /* pAdminObj    */ m_pTrcAdminObjMouseMoveEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "mouseMoveEvent",
         /* strAddInfo   */ strMthInArgs );
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Enter,
+            m_pTrcAdminObjMouseMoveEvents->getRuntimeInfoTraceDetailLevel());
+    }
 
     CEnumMode modeDrawing = m_pDrawingScene->getMode();
 
@@ -1250,6 +1338,7 @@ void CGraphObjLine::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
             QRectF sceneRect = m_pDrawingScene->sceneRect();
             QPointF posEv = i_pEv->pos();
             if (sceneRect.contains(mapToScene(posEv))) {
+                posEv = mapToParent(posEv);
                 CPhysValPoint physValPosEv = m_pDrawingScene->toPhysValPoint(posEv);
                 CPhysValLine physValLine = m_physValLine;
                 if (m_idxSelPtSelectedPolygon == 0) {
@@ -1273,6 +1362,10 @@ void CGraphObjLine::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         else if (m_editMode == EEditMode::EditText) {
         }
     }
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Leave,
+            m_pTrcAdminObjMouseMoveEvents->getRuntimeInfoTraceDetailLevel());
+    }
 } // mouseMoveEvent
 
 //------------------------------------------------------------------------------
@@ -1280,17 +1373,18 @@ void CGraphObjLine::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjMouseEvents, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = qGraphicsSceneMouseEvent2Str(i_pEv);
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjMouseEvents,
+        /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "mouseReleaseEvent",
         /* strAddInfo   */ strMthInArgs );
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Enter);
+        traceInternalStates(mthTracer, EMethodDir::Enter,
+            m_pTrcAdminObjMouseClickEvents->getRuntimeInfoTraceDetailLevel());
     }
 
     CEnumMode modeDrawing = m_pDrawingScene->getMode();
@@ -1335,7 +1429,8 @@ void CGraphObjLine::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
         setFlag(QGraphicsItem::ItemIsSelectable, bIsSelectable);
     }
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Leave);
+        traceInternalStates(mthTracer, EMethodDir::Leave,
+            m_pTrcAdminObjMouseClickEvents->getRuntimeInfoTraceDetailLevel());
     }
 } // mouseReleaseEvent
 
@@ -1344,11 +1439,11 @@ void CGraphObjLine::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjMouseEvents, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = qGraphicsSceneMouseEvent2Str(i_pEv);
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjMouseEvents,
+        /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "mouseDoubleClickEvent",
@@ -1392,7 +1487,8 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
         /* strMethod    */ "itemChange",
         /* strAddInfo   */ strMthInArgs );
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Enter);
+        traceInternalStates(mthTracer, EMethodDir::Enter,
+            m_pTrcAdminObjItemChange->getRuntimeInfoTraceDetailLevel());
     }
 
     QVariant valChanged = i_value;
@@ -1445,6 +1541,16 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
           || i_change == ItemTransformOriginPointHasChanged)
     {
         QLineF lineF = line();
+        QPointF ptPos = pos();
+
+        // Update the original, untransformed line coordinates kept in the unit of
+        // the drawing scene. The line may be moved or transformed by several methods.
+        // "itemChange" is a central point to update the coordinates upon those changes.
+        QPointF p1 = mapToParent(lineF.p1());
+        QPointF p2 = mapToParent(lineF.p2());
+        CPhysValPoint physValP1 = m_pDrawingScene->toPhysValPoint(p1);
+        CPhysValPoint physValP2 = m_pDrawingScene->toPhysValPoint(p2);
+        setPhysValLine(CPhysValLine(physValP1, physValP2));
 
         //m_bCoorsDirty = true;
 
@@ -1530,17 +1636,15 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
     valChanged = QGraphicsItem::itemChange(i_change, i_value);
 
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Leave);
+        traceInternalStates(mthTracer, EMethodDir::Leave,
+            m_pTrcAdminObjItemChange->getRuntimeInfoTraceDetailLevel());
     }
-
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthRet = qGraphicsItemChange2Str(i_change, valChanged, false);
         mthTracer.setMethodReturn(strMthRet);
     }
-
     return valChanged;
-
-} // itemChange
+}
 
 /*==============================================================================
 protected: // instance methods
@@ -1591,6 +1695,13 @@ protected: // overridables of base class CGraphObj
 void CGraphObjLine::updateToolTip()
 //------------------------------------------------------------------------------
 {
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "updateToolTip",
+        /* strAddInfo   */ "" );
+
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
 
     if (pGraphicsItem != nullptr)
@@ -1634,6 +1745,60 @@ protected: // overridable auxiliary instance methods of base class CGraphObj (me
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+void CGraphObjLine::setPhysValLine(const CPhysValLine& i_physValLine)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_physValLine.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "setPhysValLine",
+        /* strAddInfo   */ strMthInArgs );
+
+    m_physValLine = i_physValLine;
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjLine::QGraphicsLineItem_setLine(const QLineF& i_line)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = line2Str(i_line);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "QGraphicsLineItem_setLine",
+        /* strAddInfo   */ strMthInArgs );
+
+    QGraphicsLineItem::setLine(i_line);
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjLine::QGraphicsLineItem_setLine(double i_fX1, double i_fY1, double i_fX2, double i_fY2)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = line2Str(QLineF(i_fX1, i_fY1, i_fX2, i_fY2));
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "QGraphicsLineItem_setLine",
+        /* strAddInfo   */ strMthInArgs );
+
+    QGraphicsLineItem::setLine(i_fX1, i_fY1, i_fX2, i_fY2);
+}
+
+//------------------------------------------------------------------------------
 void CGraphObjLine::traceInternalStates(
     CMethodTracer& i_mthTracer,
     EMethodDir i_mthDir,
@@ -1641,16 +1806,19 @@ void CGraphObjLine::traceInternalStates(
 //------------------------------------------------------------------------------
 {
     if (i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
-        QString strMthInArgs;
-        if (i_mthDir == EMethodDir::Enter) strMthInArgs = "-+ ";
-        else if (i_mthDir == EMethodDir::Leave) strMthInArgs = "+- ";
-        else strMthInArgs = "";
-        strMthInArgs +=
-            "Selected: " + bool2Str(isSelected()) +
-            ", Pt1 {" + point2Str(line().p1()) + "}" +
-            ", Pt2 {" + point2Str(line().p2()) + "}";
-        i_mthTracer.trace(strMthInArgs);
-
+        QString strTrcInfo;
+        if (i_mthDir == EMethodDir::Enter) strTrcInfo = "-+ ";
+        else if (i_mthDir == EMethodDir::Leave) strTrcInfo = "+- ";
+        else strTrcInfo = "";
+        strTrcInfo +=
+            "Geometry: GraphObj {" + m_physValLine.toString() + "}"
+            ", Item { Pos {" + point2Str(pos()) + "}, Line {" + line2Str(line()) + "}";
+        i_mthTracer.trace(strTrcInfo);
+        if (i_mthDir == EMethodDir::Enter) strTrcInfo = "-+ ";
+        else if (i_mthDir == EMethodDir::Leave) strTrcInfo = "+- ";
+        else strTrcInfo = "";
+        strTrcInfo += "Selected: " + bool2Str(isSelected());
+        i_mthTracer.trace(strTrcInfo);
         CGraphObj::traceInternalStates(i_mthTracer, i_mthDir, i_detailLevel);
     }
 }

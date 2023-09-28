@@ -416,12 +416,10 @@ void CWdgtGridLabels::paintGridLabels(QPainter* i_pPainter)
         for (int idxDivLine = 0; idxDivLine < m_divLinesMetrics.getDivLinesCount(eLayer); idxDivLine++) {
             if (m_divLinesMetrics.isDivLineLabelVisible(eLayer, idxDivLine)) {
                 QString strDivLineLabel;
+                strDivLineLabel = m_divLinesMetrics.getDivLineLabelText(eLayer, idxDivLine);
                 if (drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels) {
-                    int x = m_divLinesMetrics.getDivLineInPix(EDivLineLayer::Main, idxDivLine);
+                    int x = static_cast<int>(strDivLineLabel.toDouble());
                     strDivLineLabel = QString::number(x);
-                }
-                else {
-                    strDivLineLabel = m_divLinesMetrics.getDivLineLabelText(eLayer, idxDivLine);
                 }
                 QRect rectDivLineLabel = m_divLinesMetrics.getDivLineLabelBoundingRect(eLayer, idxDivLine);
                 QRect rect = rectDivLineLabel;
@@ -458,12 +456,10 @@ void CWdgtGridLabels::paintGridLabels(QPainter* i_pPainter)
         for (int idxDivLine = 0; idxDivLine < m_divLinesMetrics.getDivLinesCount(eLayer); idxDivLine++) {
             if (m_divLinesMetrics.isDivLineLabelVisible(eLayer, idxDivLine)) {
                 QString strDivLineLabel;
+                strDivLineLabel = m_divLinesMetrics.getDivLineLabelText(eLayer, idxDivLine);
                 if (drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels) {
-                    int y = m_divLinesMetrics.getDivLineInPix(EDivLineLayer::Main, idxDivLine);
+                    int y = static_cast<int>(strDivLineLabel.toDouble());
                     strDivLineLabel = QString::number(y);
-                }
-                else {
-                    strDivLineLabel = m_divLinesMetrics.getDivLineLabelText(eLayer, idxDivLine);
                 }
                 QRect rectDivLineLabel = m_divLinesMetrics.getDivLineLabelBoundingRect(eLayer, idxDivLine);
                 QRect rect = rectDivLineLabel;

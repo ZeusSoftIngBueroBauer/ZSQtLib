@@ -523,6 +523,7 @@ protected: // auxiliary instance methods (method tracing)
     void emit_selectedChanged();
     void emit_geometryChanged();
 protected: // overridable auxiliary instance methods (method tracing)
+    virtual void QGraphicsItem_setPos(const QPointF& i_pos);
     virtual void traceInternalStates(
         ZS::System::CMethodTracer& i_mthTracer,
         ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
@@ -654,7 +655,8 @@ protected: // instance members
     ZS::System::CTrcAdminObj* m_pTrcAdminObjSceneEvent;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjSceneEventFilter;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjHoverEvents;
-    ZS::System::CTrcAdminObj* m_pTrcAdminObjMouseEvents;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjMouseClickEvents;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjMouseMoveEvents;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjKeyEvents;
 
 }; // class CGraphObj

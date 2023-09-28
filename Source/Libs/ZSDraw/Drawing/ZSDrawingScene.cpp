@@ -350,37 +350,56 @@ void CDrawingScene::setDrawingSize( const CDrawingSize& i_drawingSize)
         m_drawingSize = i_drawingSize;
         QRectF rect(QPointF(0.0, 0.0), m_drawingSize.imageSizeInPixels());
         setSceneRect(rect);
-        // Just a small note about pixel range and min and max values:
-        // If you don't use a metric system like in drawings and define
-        // a 500 pixel range, min is at 0, max is at 499. To have min
-        // and max set to 0 and 500 a range of 501 pixels must be defined.
-        if (m_drawingSize.dimensionUnit() == EDrawingDimensionUnit::Metric) {
-            // Metric units: the origin is at the bottom left corner.
-            // XScaleMin = XMin_px, XScaleMax = XMax_px
-            // YScaleMin = XMax_px, YScaleMax = XMin_px
-            // The greater the value, the less the pixel coordinate on the screen.
-            m_divLinesMetricsX.setScale(
-                0.0, m_drawingSize.metricImageWidth().getVal(), 0.0,
-                0, m_drawingSize.imageWidthInPixels()-1);
-            // The Y scale direction is from bottom to top.
-            m_divLinesMetricsY.setScale(
-                0.0, m_drawingSize.metricImageHeight().getVal(), 0.0,
-                0, m_drawingSize.imageHeightInPixels()-1);
-            m_divLinesMetricsY.setYScaleAxisOrientation(m_drawingSize.yScaleAxisOrientation());
-        }
-        else {
+
+        if (m_drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels) {
+            // Just a small note about pixel range and min and max values:
+            // If you don't use a metric system like in drawings and define
+            // a 500 pixel range, min is at 0, max is at 499. To have min
+            // and max set to 0 and 500 a range of 501 pixels must be defined.
             // Pixel drawing: the origin is at the top left corner:
             // XScaleMin = XMin_px, XScaleMax = XMax_px
             // YScaleMin = XMin_px, YScaleMax = XMax_px
             // The greater the value, the greater the pixel coordinate on the screen.
             m_divLinesMetricsX.setScale(
-                0.0, m_drawingSize.imageWidthInPixels()-1, 0.0,
-                0, m_drawingSize.imageWidthInPixels()-1);
+                /* fScaleMinVal */ 0.0,
+                /* fScaleMaxVal */ m_drawingSize.imageWidthInPixels()-1,
+                /* fScaleResVal */ m_drawingSize.resolution().getVal(Units.Length.px),
+                /* fMin_px      */ 0,
+                /* fMax_px      */ m_drawingSize.imageWidthInPixels()-1);
             // The Y scale direction is from top to bottom.
             m_divLinesMetricsY.setScale(
-                0.0, m_drawingSize.imageHeightInPixels()-1, 0.0,
-                0, m_drawingSize.imageHeightInPixels()-1);
+                /* fScaleMinVal */ 0.0,
+                /* fScaleMaxVal */ m_drawingSize.imageHeightInPixels()-1,
+                /* fScaleResVal */ m_drawingSize.resolution().getVal(Units.Length.px),
+                /* fMin_px      */ 0,
+                /* fMax_px      */ m_drawingSize.imageHeightInPixels()-1);
             m_divLinesMetricsY.setYScaleAxisOrientation(EYScaleAxisOrientation::TopDown);
+        }
+        else /*if (m_drawingSize.dimensionUnit() == EDrawingDimensionUnit::Metric)*/ {
+            // In order to draw division lines at min and max scale the width
+            // in pixels got to be extended by one pixel when using metric scales
+            // (see also documentation at class CScaleDivLines). This must have
+            // been taken into account by the CDrawingSize class when calculating
+            // the width and height of the image size in pixels.
+            // Metric units:
+            // Depending on the YScaleAxisOrientation the origin is either
+            // at the top left or bottom left corner.
+            // XScaleMin = XMin_px, XScaleMax = XMax_px
+            // YScaleMin = XMax_px, YScaleMax = XMin_px
+            // The greater the value, the less the pixel coordinate on the screen.
+            m_divLinesMetricsX.setScale(
+                /* fScaleMinVal */ 0.0,
+                /* fScaleMaxVal */ m_drawingSize.metricImageWidth().getVal(),
+                /* fScaleResVal */ m_drawingSize.resolution().getVal(m_drawingSize.unit()),
+                /* fMin_px      */ 0,
+                /* fMax_px      */ m_drawingSize.imageWidthInPixels() - 1);
+            m_divLinesMetricsY.setScale(
+                /* fScaleMinVal */ 0.0,
+                /* fScaleMaxVal */ m_drawingSize.metricImageHeight().getVal(),
+                /* fScaleResVal */ m_drawingSize.resolution().getVal(m_drawingSize.unit()),
+                /* fMin_px      */ 0,
+                /* fMax_px      */ m_drawingSize.imageHeightInPixels() - 1);
+            m_divLinesMetricsY.setYScaleAxisOrientation(m_drawingSize.yScaleAxisOrientation());
         }
         m_divLinesMetricsX.update();
         m_divLinesMetricsY.update();
@@ -4314,10 +4333,10 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
                 // should only be selected if one of its line segments would be hit.
 
                 QRectF rctToCheck(
-                    i_pEv->scenePos().x() - m_fHitTolerance_px,
-                    i_pEv->scenePos().y() - m_fHitTolerance_px,
-                    i_pEv->scenePos().x() + 2*m_fHitTolerance_px,
-                    i_pEv->scenePos().y() + 2*m_fHitTolerance_px );
+                    /* x      */ i_pEv->scenePos().x() - m_fHitTolerance_px,
+                    /* y      */ i_pEv->scenePos().y() - m_fHitTolerance_px,
+                    /* width  */ 2*m_fHitTolerance_px,
+                    /* height */ 2*m_fHitTolerance_px );
                 QList<QGraphicsItem*> arpGraphicsItemsIntersected =
                     items(rctToCheck, Qt::IntersectsItemShape, Qt::AscendingOrder);
                 QList<QGraphicsItem*> arpGraphicsItemsHit;

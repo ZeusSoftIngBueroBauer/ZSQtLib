@@ -133,6 +133,9 @@ protected: // instance methods
 protected: // overridables of base class CGraphObj
     virtual void updateToolTip() override;
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
+    void setPhysValLine(const CPhysValLine& i_physValLine);
+    void QGraphicsLineItem_setLine(const QLineF& i_line);
+    void QGraphicsLineItem_setLine(double i_fX1, double i_fY1, double i_fX2, double i_fY2);
     void traceInternalStates(
         ZS::System::CMethodTracer& i_mthTracer,
         ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
@@ -143,7 +146,10 @@ protected: // class members
          Used to create a unique name for newly created objects of this type. */
     static qint64 s_iInstCount;
 protected: // instance members
-    /*!< The original, untransformed line coordinates with unit. */
+    /*!< The original, untransformed line coordinates with unit.
+         The coordinates are relative to the parent item.
+         If the item does not have another graphical object as a 
+         parent, the coordinates are scene coordinates. */
     CPhysValLine m_physValLine;
     /*!< Start point and polygon points for arrow heads */
     QPolygonF m_plgLineStart;

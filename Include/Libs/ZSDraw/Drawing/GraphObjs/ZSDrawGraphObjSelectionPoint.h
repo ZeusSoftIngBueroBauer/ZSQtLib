@@ -66,13 +66,13 @@ public: // class methods
     static double GetDefaultRadiusInPx() { return s_fRadius_px; }
 public: // ctors and dtor
     CGraphObjSelectionPoint( // for (bounding) rectangles
-        CDrawingScene*  i_pDrawingScene,
-        CGraphObj*      i_pGraphObjSelected,
+        CDrawingScene* i_pDrawingScene,
+        CGraphObj* i_pGraphObjSelected,
         ESelectionPoint i_selectionPoint );
     CGraphObjSelectionPoint( // for polygon shape points
         CDrawingScene* i_pDrawingScene,
-        CGraphObj*     i_pGraphObjSelected,
-        int            i_idxPt );
+        CGraphObj* i_pGraphObjSelected,
+        int i_idxPt );
     virtual ~CGraphObjSelectionPoint();
 public: // overridables of base class QGraphicsItem
     int type() const override { return static_cast<int>(EGraphObjTypeSelectionPoint); }
@@ -129,18 +129,23 @@ protected: // overridables of base class QGraphicsItem
     virtual void mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
 protected: // overridables of base class QGraphicsItem
     virtual QVariant itemChange( GraphicsItemChange i_change, const QVariant& i_value ) override;
+protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
+    void traceInternalStates(
+        ZS::System::CMethodTracer& i_mthTracer,
+        ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
+        ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const override;
 protected: // class members
     /*!< Needed to set an initial unique name when creating a new instance. */
     static qint64 s_iInstCount;
 protected: // class members
     static double s_fRadius_px;
 protected: // instance members
-    CGraphObj*              m_pGraphObjSelected;
+    CGraphObj* m_pGraphObjSelected;
     CEnumSelectionPointType m_selPtType;
-    CEnumSelectionPoint     m_selPt;
-    int                     m_idxPt;
-    double                  m_fRadius_px;
-    bool                    m_bSelected;
+    CEnumSelectionPoint m_selPt;
+    int m_idxPt;
+    double m_fRadius_px;
+    bool m_bSelected;
 
 }; // class CGraphObjSelectionPoint
 
