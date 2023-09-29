@@ -385,7 +385,7 @@ void CWdgtGridLabels::paintGridLabels(QPainter* i_pPainter)
     QFontMetrics fntmtr(gridSettings.labelsFont());
     QSize sizeUnitString;
     QString strUnit;
-    if (drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels) {
+    if (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
         strUnit = "Px";
     }
     else {
@@ -417,7 +417,7 @@ void CWdgtGridLabels::paintGridLabels(QPainter* i_pPainter)
             if (m_divLinesMetrics.isDivLineLabelVisible(eLayer, idxDivLine)) {
                 QString strDivLineLabel;
                 strDivLineLabel = m_divLinesMetrics.getDivLineLabelText(eLayer, idxDivLine);
-                if (drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels) {
+                if (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
                     int x = static_cast<int>(strDivLineLabel.toDouble());
                     strDivLineLabel = QString::number(x);
                 }
@@ -457,7 +457,7 @@ void CWdgtGridLabels::paintGridLabels(QPainter* i_pPainter)
             if (m_divLinesMetrics.isDivLineLabelVisible(eLayer, idxDivLine)) {
                 QString strDivLineLabel;
                 strDivLineLabel = m_divLinesMetrics.getDivLineLabelText(eLayer, idxDivLine);
-                if (drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels) {
+                if (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
                     int y = static_cast<int>(strDivLineLabel.toDouble());
                     strDivLineLabel = QString::number(y);
                 }

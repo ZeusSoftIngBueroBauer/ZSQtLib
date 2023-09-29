@@ -634,6 +634,22 @@ template<> const QVector<SEnumEntry> CEnum<EYScaleAxisOrientation>::s_arEnumEntr
 
 
 /*==============================================================================
+Enum EScaleDimensionUnit
+==============================================================================*/
+
+template<> QMutex CEnum<EScaleDimensionUnit>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<EScaleDimensionUnit>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+
+//------------------------------------------------------------------------------
+template<> const QVector<SEnumEntry> CEnum<EScaleDimensionUnit>::s_arEnumEntries =
+//------------------------------------------------------------------------------
+{
+    /* 0 */ SEnumEntry( static_cast<int>(EScaleDimensionUnit::Pixels), "Pixels" ),
+    /* 1 */ SEnumEntry( static_cast<int>(EScaleDimensionUnit::Metric), "Metric" )
+};
+
+
+/*==============================================================================
 Enum ESpacing
 ==============================================================================*/
 

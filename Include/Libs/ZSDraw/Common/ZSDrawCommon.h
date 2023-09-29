@@ -28,7 +28,7 @@ may result in using the software modules.
 #define ZSDraw_Common_h
 
 #include "ZSDraw/Common/ZSDrawDllMain.h"
-
+#include "ZSSys/ZSSysCommon.h"
 #include "ZSSys/ZSSysEnumTemplate.h"
 
 #if QT_VERSION < 0x050000
@@ -56,20 +56,6 @@ namespace ZS
 namespace Draw
 {
 class CGraphObj;
-
-//==============================================================================
-/*! Dimension unit for the drawing.
-*/
-enum class EDrawingDimensionUnit {
-//==============================================================================
-    Pixels, /*!< Dimensions defined based on pixels. */
-    Metric  /*!< Dimensions defined based on metric units.
-                 The logical pixel positions got to be calculated depending
-                 on the screen resolution given in Dots/Inch or Pixels/Inch. */
-};
-
-template class ZSDRAWDLL_API ::CEnum<ZS::Draw::EDrawingDimensionUnit>;
-typedef ::CEnum<EDrawingDimensionUnit> CEnumDrawingDimensionUnit;
 
 //==============================================================================
 /*! Normed paper sizes.

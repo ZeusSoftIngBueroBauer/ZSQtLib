@@ -134,7 +134,7 @@ namespace Math
         got to be extended by one pixel when using metric scales.
 
         !!! As the scale division line class doesn't know whether metric system is !!!
-        !! used this has to be taken into account when setting the scale values.   !!!
+        !!! used this has to be taken into account when setting the scale values.  !!!
 
         ScaleMinVal:  0.0 mm
         ScaleMaxVal: 10.0 mm
@@ -153,7 +153,27 @@ namespace Math
            2.0 |    4.2
            5.0 |   10.5
            8.0 |   16.8
-          10.0 |   21.0   !! The division line at scale max will become visible !!
+          10.0 |   21.0   !! The division line at scale max will still NOT become visible !!
+
+        As shown in the table above just extending the width in pixels by one pixel is not
+        sufficient to calculate the correct pixel value for the metric value. The scale
+        division line class must be aware of converting from metric dimension into pixels.
+        For this the enumeration EScaleDimensionUnit with the enumerators Pixels and Metric
+        is used which must be passed to the scale method when specifying the scale values.
+        If metric dimension is used the conversion will correct the used Width_px when converting
+        from world coordinate into the pixel position.
+
+        Conversion from mm into pixels if dimensionUnit = Metric has been set.
+
+            Val_px = Min_px + (Width_px-1) * Val_mm / ScaleRange_mm = 0 px + (Val_mm * (21 - 1) px) / 10.0 mm
+
+        Val_mm | Val_px
+        -------+-------
+           0.0 |    0.0
+           2.0 |    4.0
+           5.0 |   10.0
+           8.0 |   16.0
+          10.0 |   20.0   !! The division line at scale max will become visible !!
 
         |<-                                  Width: 21 px                                 ->|
         |                                                                                   |
@@ -206,10 +226,13 @@ public: // instance methods
 public: // instance methods (setting properties)
     bool setYScaleAxisOrientation(const CEnumYScaleAxisOrientation& i_eOrientation);
     bool setSpacing(const CEnumSpacing& i_eSpacing);
-    bool setScale(double i_fMin, double i_fMax, double i_fRes, double i_fMin_px, double i_fMax_px);
+    bool setScale(
+        double i_fScaleMin, double i_fScaleMax, double i_fScaleRes,
+        double i_fMin_px, double i_fMax_px, const CEnumScaleDimensionUnit& i_eDimensionUnit = EScaleDimensionUnit::Pixels);
     bool setScaleMin(double i_fMin);
     bool setScaleMax(double i_fMax);
     bool setScaleRes(double i_fRes);
+    bool setScaleDimensionUnit(const CEnumScaleDimensionUnit& i_eDimensionUnit);
     bool setScaleMinInPix(double i_fMin_px);
     bool setScaleMaxInPix(double i_fMax_px);
     bool setScaleRangeInPix(double i_fRange_px);
@@ -220,6 +243,7 @@ public: // instance methods (getting properties)
     EScaleAxis scaleAxis() const;
     EYScaleAxisOrientation yScaleAxisOrientation() const;
     ESpacing spacing() const;
+    EScaleDimensionUnit scaleDimensionUnit() const;
     double scaleMin() const;
     double scaleMax() const;
     double scaleRange() const;
@@ -264,6 +288,8 @@ protected: // instance members (config values)
     QString m_strObjName;
     /*!< Scale axis (X or Y). Set by the constructor. Not changeable during runtime. */
     EScaleAxis m_scaleAxis;
+    /*!< Scale dimension unit. Defaults to "Pixels". */
+    EScaleDimensionUnit m_scaleDimensionUnit;
     /*!< Y scale axis orientation. Defaults to "BottomUp". */
     EYScaleAxisOrientation m_yScaleAxisOrientation;
     /*!< Spacing of the scale (either linear or logarithmic). */

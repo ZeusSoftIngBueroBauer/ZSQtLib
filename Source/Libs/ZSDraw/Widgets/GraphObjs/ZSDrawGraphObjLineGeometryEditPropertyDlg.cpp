@@ -165,7 +165,7 @@ CDlgGraphObjLineGeometryEditProperty::~CDlgGraphObjLineGeometryEditProperty()
     m_pDrawingScene = nullptr;
     m_pGraphObj = nullptr;
     m_iContentChangedSignalBlockedCounter = 0;
-    m_eDimensionUnit = static_cast<EDrawingDimensionUnit>(0);
+    m_eDimensionUnit = static_cast<EScaleDimensionUnit>(0);
     //m_strCoorPart1;
     //m_strCoorPart2;
     m_pLyt = nullptr;
@@ -229,12 +229,12 @@ void CDlgGraphObjLineGeometryEditProperty::setCoordinate(
 
     QStringList strlstCoors = i_strCoorSpec.split(".");
 
-    m_eDimensionUnit = CEnumDrawingDimensionUnit();
+    m_eDimensionUnit = CEnumScaleDimensionUnit();
     m_strCoorPart1 = "";
     m_strCoorPart2 = "";
 
     if (m_pGraphObj != nullptr && strlstCoors.size() >= 2 && strlstCoors.size() <= 3) {
-        m_eDimensionUnit = CEnumDrawingDimensionUnit::fromString(strlstCoors[0], &bIsValidCoordinate);
+        m_eDimensionUnit = CEnumScaleDimensionUnit::fromString(strlstCoors[0], &bIsValidCoordinate);
         m_strCoorPart1 = strlstCoors[1];
         if (strlstCoors.size() == 3) {
             m_strCoorPart2 = strlstCoors[2];
@@ -274,7 +274,7 @@ void CDlgGraphObjLineGeometryEditProperty::onEdtCoorValueChanged(const CPhysVal&
     if (m_iContentChangedSignalBlockedCounter == 0) {
         const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
         CPhysValLine physValLine = m_pGraphObj->getLine(drawingSize.unit());
-        if (m_eDimensionUnit == EDrawingDimensionUnit::Metric) {
+        if (m_eDimensionUnit == EScaleDimensionUnit::Metric) {
             if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorPoint1) {
                 CPhysValPoint physValP1 = physValLine.p1();
                 if (m_strCoorPart2 == CWdgtGraphObjLineGeometryProperties::c_strCoorX) {
@@ -319,7 +319,7 @@ void CDlgGraphObjLineGeometryEditProperty::onEdtCoorValueChanged(const CPhysVal&
             }
             m_pGraphObj->setLine(physValLine);
         }
-        else /*if (m_eDimensionUnit == EDrawingDimensionUnit::Pixels) */ {
+        else /*if (m_eDimensionUnit == EScaleDimensionUnit::Pixels) */ {
             if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorPoint1) {
                 CPhysValPoint physValP1 = physValLine.p1();
                 if (m_strCoorPart2 == CWdgtGraphObjLineGeometryProperties::c_strCoorX) {
@@ -418,7 +418,7 @@ void CDlgGraphObjLineGeometryEditProperty::update()
     double fMaximum = 0.0;
     double fValue = 0.0;
 
-    if (m_eDimensionUnit == EDrawingDimensionUnit::Metric) {
+    if (m_eDimensionUnit == EScaleDimensionUnit::Metric) {
         if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorPoint1) {
             if (m_strCoorPart2 == CWdgtGraphObjLineGeometryProperties::c_strCoorX) {
                 bIsValidCoordinate = true;
@@ -492,7 +492,7 @@ void CDlgGraphObjLineGeometryEditProperty::update()
             }
         }
     }
-    else /*if (m_eDimensionUnit == EDrawingDimensionUnit::Pixels)*/ {
+    else /*if (m_eDimensionUnit == EScaleDimensionUnit::Pixels)*/ {
         unit = Units.Length.px;
         if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorPoint1) {
             if (m_strCoorPart2 == CWdgtGraphObjLineGeometryProperties::c_strCoorX) {

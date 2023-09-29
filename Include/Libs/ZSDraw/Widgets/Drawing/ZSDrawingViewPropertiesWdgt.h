@@ -89,7 +89,7 @@ protected slots:
     void onBtnGridScaleLabelsTextEffectStrikeoutToggled(int i_iState);
     void onDlgEditPropertyDestroyed(QObject* i_pObj = nullptr);
 protected: // instance methods
-    void setDimensionUnit( const CEnumDrawingDimensionUnit& i_eDimensionUnit );
+    void setDimensionUnit( const ZS::System::CEnumScaleDimensionUnit& i_eDimensionUnit );
     void setMetricUnit( const ZS::PhysVal::CUnit& i_metricUnit );
     void setNormedPaperSize( const CEnumNormedPaperSize& i_ePaperSize );
     void setNormedPaperOrientation( const ZS::System::CEnumOrientation& i_eOrientation );

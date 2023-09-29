@@ -53,7 +53,7 @@ public: // ctors and dtor
 CDrawingSize::CDrawingSize(const QString& i_strName) :
 //------------------------------------------------------------------------------
     m_strName(i_strName),
-    m_eDimensionUnit(EDrawingDimensionUnit::Pixels),
+    m_eDimensionUnit(EScaleDimensionUnit::Pixels),
     m_metricUnit(Units.Length.mm),
     m_fImageMetricRes(0.1),
     m_fImageMetricWidth(0.0),
@@ -124,7 +124,7 @@ CDrawingSize::~CDrawingSize()
     mthTracer.onAdminObjAboutToBeReleased();
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
 
-    m_eDimensionUnit = static_cast<EDrawingDimensionUnit>(0);
+    m_eDimensionUnit = static_cast<EScaleDimensionUnit>(0);
     //m_metricUnit;
     m_fImageMetricRes = 0.0;
     m_fImageMetricWidth = 0.0;
@@ -251,11 +251,11 @@ void CDrawingSize::onDrawUnitsLengthResolutionChanged()
         /* strMethod    */ "onDrawUnitsLengthResolutionChanged",
         /* strAddInfo   */ "" );
 
-    if (m_eDimensionUnit == EDrawingDimensionUnit::Pixels) {
+    if (m_eDimensionUnit == EScaleDimensionUnit::Pixels) {
         // Keep the image size in pixels but update the image size in metric unit.
         updateImageSizeMetrics();
     }
-    else /*if (m_eDimensionUnit == EDrawingDimensionUnit::Metric)*/ {
+    else /*if (m_eDimensionUnit == EScaleDimensionUnit::Metric)*/ {
         // Keep the image size in metric unit but update the image size in pixels.
         updateImageSizeInPixels();
     }
@@ -266,7 +266,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDrawingSize::setDimensionUnit( const CEnumDrawingDimensionUnit& i_eDimensionUnit )
+void CDrawingSize::setDimensionUnit( const CEnumScaleDimensionUnit& i_eDimensionUnit )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -283,7 +283,7 @@ void CDrawingSize::setDimensionUnit( const CEnumDrawingDimensionUnit& i_eDimensi
 }
 
 //------------------------------------------------------------------------------
-CEnumDrawingDimensionUnit CDrawingSize::dimensionUnit() const
+CEnumScaleDimensionUnit CDrawingSize::dimensionUnit() const
 //------------------------------------------------------------------------------
 {
     return m_eDimensionUnit;
@@ -298,7 +298,7 @@ CEnumDrawingDimensionUnit CDrawingSize::dimensionUnit() const
 CUnit CDrawingSize::unit() const
 //------------------------------------------------------------------------------
 {
-    if (m_eDimensionUnit == EDrawingDimensionUnit::Pixels) {
+    if (m_eDimensionUnit == EScaleDimensionUnit::Pixels) {
         return Units.Length.px;
     }
     return m_metricUnit;
@@ -341,7 +341,7 @@ void CDrawingSize::setResolution( const CPhysValRes& i_physValRes )
 CPhysValRes CDrawingSize::resolution() const
 //------------------------------------------------------------------------------
 {
-    if (m_eDimensionUnit == EDrawingDimensionUnit::Pixels) {
+    if (m_eDimensionUnit == EScaleDimensionUnit::Pixels) {
         return CPhysValRes(m_fImageSizeRes_px, Units.Length.px);
     }
     return CPhysValRes(m_fImageMetricRes, m_metricUnit);
@@ -706,7 +706,7 @@ void CDrawingSize::updateImageSizeInPixels()
     // In order to draw division lines at min and max scale the width
     // in pixels got to be extended by one pixel when using metric scales
     // (see also documentation at class CScaleDivLines).
-    if (m_eDimensionUnit == EDrawingDimensionUnit::Metric) {
+    if (m_eDimensionUnit == EScaleDimensionUnit::Metric) {
         m_fImageSizeWidth_px += 1;
         m_fImageSizeHeight_px += 1;
     }
@@ -744,7 +744,7 @@ void CDrawingSize::updateImageSizeMetrics()
     // In order to draw division lines at min and max scale the width
     // in pixels got to be extended by one pixel when using metric scales
     // (see also documentation at class CScaleDivLines).
-    if (m_eDimensionUnit == EDrawingDimensionUnit::Metric) {
+    if (m_eDimensionUnit == EScaleDimensionUnit::Metric) {
         fImageSizeWidth_px -= 1;
         fImageSizeHeight_px -= 1;
     }

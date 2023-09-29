@@ -68,8 +68,8 @@ public: // operators
 public: // instance methods
     void onDrawUnitsLengthResolutionChanged();
 public: // instance methods
-    void setDimensionUnit( const CEnumDrawingDimensionUnit& i_eDimensionUnit );
-    CEnumDrawingDimensionUnit dimensionUnit() const;
+    void setDimensionUnit( const ZS::System::CEnumScaleDimensionUnit& i_eDimensionUnit );
+    ZS::System::CEnumScaleDimensionUnit dimensionUnit() const;
     void setResolution(const ZS::PhysVal::CPhysValRes& i_physValRes);
     ZS::PhysVal::CPhysValRes resolution() const;
     ZS::PhysVal::CUnit unit() const;
@@ -103,7 +103,7 @@ private: // instance members
     /*!< Name of the instance. Mainly introduced for debugging purposes. */
     QString m_strName;
     /*!< Either Pixels or Metric System (e.g. mm, cm, m, etc.). */
-    CEnumDrawingDimensionUnit m_eDimensionUnit;
+    ZS::System::CEnumScaleDimensionUnit m_eDimensionUnit;
     /*!< If m_eDimensionUnit is Metric the metric unit (mm, cm, m, etc.) is set here. */
     ZS::PhysVal::CUnit m_metricUnit;
     /*!< Resolution of the metric sizes in metric unit. */

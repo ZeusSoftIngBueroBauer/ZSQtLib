@@ -39,21 +39,6 @@ global type definitions and constants
 *******************************************************************************/
 
 /*==============================================================================
-Enum EDrawingDimensionUnit
-==============================================================================*/
-
-template<> QMutex CEnum<EDrawingDimensionUnit>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> CEnum<EDrawingDimensionUnit>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
-
-//------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> CEnum<EDrawingDimensionUnit>::s_arEnumEntries =
-//------------------------------------------------------------------------------
-{
-    /* 0 */ SEnumEntry( static_cast<int>(EDrawingDimensionUnit::Pixels), "Pixels" ),
-    /* 1 */ SEnumEntry( static_cast<int>(EDrawingDimensionUnit::Metric), "Metric" )
-};
-
-/*==============================================================================
 Enum ENormedPaperSizes
 ==============================================================================*/
 

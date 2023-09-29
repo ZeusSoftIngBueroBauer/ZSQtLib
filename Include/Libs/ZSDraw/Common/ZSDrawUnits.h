@@ -99,9 +99,6 @@ namespace Draw
 
     !Additional notes!
 
-    - When calculation Y coordinates the metric coordinate system is from bottom to top
-      whereas the pixel coordinate system is from top to bottom.
-
     - When saving a drawing whose dimension unit is set to metrics the image size in pixels is
       not stored together with the drawings. The image size is always recalculated using the
       current screen resolution on loading the drawing. This means that on one PC the image
@@ -110,10 +107,9 @@ namespace Draw
       other PC (maybe 2180 px * 880 px).
 
     - When setting up the drawing size the automatically detected screen resolution may be
-      overwritten by the user. In this case the screen resolution will become a property of
-      the drawing and will be restored on each PC the drawing is loaded. In this case the
-      image size in pixels on all PCs will be the same. But "wysiwyg" may no longer appear
-      as expected.
+      manually set by the user - if supported by the application. The DrawingSizeProperties
+      widget allows editing the screen resolution by double clicking on the edit control
+      "Resolution - Pixels/mm".
 */
 class ZSDRAWDLL_API CUnitsLength : public QObject, public ZS::PhysVal::CUnitsTreeEntryGrpPhysUnits
 //******************************************************************************

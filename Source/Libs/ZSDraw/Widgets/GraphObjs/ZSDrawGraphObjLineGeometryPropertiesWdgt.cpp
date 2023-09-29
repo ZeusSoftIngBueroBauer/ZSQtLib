@@ -242,8 +242,8 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
 
     m_pLytWdgtHeadline->addStretch();
 
-    const QString strMetric = CEnumDrawingDimensionUnit(EDrawingDimensionUnit::Metric).toString();
-    const QString strPixels = CEnumDrawingDimensionUnit(EDrawingDimensionUnit::Pixels).toString();
+    const QString strMetric = CEnumScaleDimensionUnit(EScaleDimensionUnit::Metric).toString();
+    const QString strPixels = CEnumScaleDimensionUnit(EScaleDimensionUnit::Pixels).toString();
 
     // <Widget> Geometry
     //==================
@@ -912,7 +912,7 @@ void CWdgtGraphObjLineGeometryProperties::onDrawingSceneDrawingSizeChanged(const
 
     { CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
 
-        if (i_drawingSize.dimensionUnit() == EDrawingDimensionUnit::Metric)
+        if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric)
         {
             m_pEdtMetricPt1X->setUnit(i_drawingSize.metricUnit());
             m_pEdtMetricPt1X->setResolution(i_drawingSize.metricImageWidth().getRes().getVal());
@@ -965,7 +965,7 @@ void CWdgtGraphObjLineGeometryProperties::onDrawingSceneDrawingSizeChanged(const
             m_pEdtPixelsWidth->setReadOnly(true);
             m_pEdtPixelsHeight->setReadOnly(true);
         }
-        else // if (i_drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels)
+        else // if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels)
         {
             m_pEdtPixelsPt1X->setReadOnly(false);
             m_pEdtPixelsPt1Y->setReadOnly(false);
@@ -1566,7 +1566,7 @@ void CWdgtGraphObjLineGeometryProperties::fillEditControls(const CPhysValLine& i
 
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
 
-    if (drawingSize.dimensionUnit() == EDrawingDimensionUnit::Metric)
+    if (drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric)
     {
         // Geometry in Metric System
         m_pEdtMetricPt1X->setValue(i_physValLine.p1().x().getVal());
@@ -1596,7 +1596,7 @@ void CWdgtGraphObjLineGeometryProperties::fillEditControls(const CPhysValLine& i
         m_pEdtPixelsPtCenterX->setValue(physValLinePx.center().x().getVal());
         m_pEdtPixelsPtCenterY->setValue(physValLinePx.center().y().getVal());
     }
-    else /*if (drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels)*/ {
+    else /*if (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels)*/ {
         // Geometry in Pixels
         m_pEdtPixelsPt1X->setValue(i_physValLine.p1().x().getVal());
         m_pEdtPixelsPt1Y->setValue(i_physValLine.p1().y().getVal());

@@ -351,7 +351,7 @@ void CDrawingScene::setDrawingSize( const CDrawingSize& i_drawingSize)
         QRectF rect(QPointF(0.0, 0.0), m_drawingSize.imageSizeInPixels());
         setSceneRect(rect);
 
-        if (m_drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels) {
+        if (m_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
             // Just a small note about pixel range and min and max values:
             // If you don't use a metric system like in drawings and define
             // a 500 pixel range, min is at 0, max is at 499. To have min
@@ -362,20 +362,22 @@ void CDrawingScene::setDrawingSize( const CDrawingSize& i_drawingSize)
             // The greater the value, the greater the pixel coordinate on the screen.
             m_divLinesMetricsX.setScale(
                 /* fScaleMinVal */ 0.0,
-                /* fScaleMaxVal */ m_drawingSize.imageWidthInPixels()-1,
+                /* fScaleMaxVal */ m_drawingSize.imageWidthInPixels() - 1,
                 /* fScaleResVal */ m_drawingSize.resolution().getVal(Units.Length.px),
                 /* fMin_px      */ 0,
-                /* fMax_px      */ m_drawingSize.imageWidthInPixels()-1);
+                /* fMax_px      */ m_drawingSize.imageWidthInPixels() - 1,
+                /* scaleDimUnit */ m_drawingSize.dimensionUnit());
             // The Y scale direction is from top to bottom.
             m_divLinesMetricsY.setScale(
                 /* fScaleMinVal */ 0.0,
-                /* fScaleMaxVal */ m_drawingSize.imageHeightInPixels()-1,
+                /* fScaleMaxVal */ m_drawingSize.imageHeightInPixels() - 1,
                 /* fScaleResVal */ m_drawingSize.resolution().getVal(Units.Length.px),
                 /* fMin_px      */ 0,
-                /* fMax_px      */ m_drawingSize.imageHeightInPixels()-1);
+                /* fMax_px      */ m_drawingSize.imageHeightInPixels() - 1,
+                /* scaleDimUnit */ m_drawingSize.dimensionUnit());
             m_divLinesMetricsY.setYScaleAxisOrientation(EYScaleAxisOrientation::TopDown);
         }
-        else /*if (m_drawingSize.dimensionUnit() == EDrawingDimensionUnit::Metric)*/ {
+        else /*if (m_drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric)*/ {
             // In order to draw division lines at min and max scale the width
             // in pixels got to be extended by one pixel when using metric scales
             // (see also documentation at class CScaleDivLines). This must have
@@ -392,13 +394,15 @@ void CDrawingScene::setDrawingSize( const CDrawingSize& i_drawingSize)
                 /* fScaleMaxVal */ m_drawingSize.metricImageWidth().getVal(),
                 /* fScaleResVal */ m_drawingSize.resolution().getVal(m_drawingSize.unit()),
                 /* fMin_px      */ 0,
-                /* fMax_px      */ m_drawingSize.imageWidthInPixels() - 1);
+                /* fMax_px      */ m_drawingSize.imageWidthInPixels() - 1,
+                /* scaleDimUnit */ m_drawingSize.dimensionUnit());
             m_divLinesMetricsY.setScale(
                 /* fScaleMinVal */ 0.0,
                 /* fScaleMaxVal */ m_drawingSize.metricImageHeight().getVal(),
                 /* fScaleResVal */ m_drawingSize.resolution().getVal(m_drawingSize.unit()),
                 /* fMin_px      */ 0,
-                /* fMax_px      */ m_drawingSize.imageHeightInPixels() - 1);
+                /* fMax_px      */ m_drawingSize.imageHeightInPixels() - 1,
+                /* scaleDimUnit */ m_drawingSize.dimensionUnit());
             m_divLinesMetricsY.setYScaleAxisOrientation(m_drawingSize.yScaleAxisOrientation());
         }
         m_divLinesMetricsX.update();
@@ -477,10 +481,10 @@ public: // instance methods
 CPhysValPoint CDrawingScene::toPhysValPoint(const QPointF& i_pt) const
 //------------------------------------------------------------------------------
 {
-    if (m_drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels) {
+    if (m_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
         return CPhysValPoint(i_pt, Units.Length.px);
     }
-    else /*if (m_drawingSize.dimensionUnit() == EDrawingDimensionUnit::Metric)*/ {
+    else /*if (m_drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric)*/ {
         double fXVal = m_divLinesMetricsX.getVal(i_pt.x());
         double fYVal = m_divLinesMetricsY.getVal(i_pt.y());
         return CPhysValPoint(fXVal, fYVal, m_drawingSize.unit());
@@ -769,11 +773,11 @@ SErrResultInfo CDrawingScene::load( const QString& i_strFileName )
                         CDrawingSize drawingSize("Drawing");
                         CDrawGridSettings gridSettings("Drawing");
 
-                        CEnumDrawingDimensionUnit dimensionUnit = getDimensionUnit(
+                        CEnumScaleDimensionUnit dimensionUnit = getDimensionUnit(
                             xmlStreamReader, xmlStreamAttrs, strElemName, c_strXmlAttrDimensionUnit);
                         if (!xmlStreamReader.hasError()) {
                             drawingSize.setDimensionUnit(dimensionUnit);
-                            if (dimensionUnit == EDrawingDimensionUnit::Pixels) {
+                            if (dimensionUnit == EScaleDimensionUnit::Pixels) {
                                 double cxWidth_px = getDoubleVal(
                                     xmlStreamReader, xmlStreamAttrs, strElemName, c_strXmlAttrWidth);
                                 double cyHeight_px = getDoubleVal(
@@ -784,7 +788,7 @@ SErrResultInfo CDrawingScene::load( const QString& i_strFileName )
                                         CPhysVal(cyHeight_px, Units.Length.px));
                                 }
                             }
-                            else if (dimensionUnit == EDrawingDimensionUnit::Metric) {
+                            else if (dimensionUnit == EScaleDimensionUnit::Metric) {
                                 CUnit unit = getUnit(
                                     xmlStreamReader, xmlStreamAttrs, strElemName, c_strXmlAttrUnit);
                                 if (!xmlStreamReader.hasError()) {
@@ -1015,11 +1019,11 @@ SErrResultInfo CDrawingScene::save( const QString& i_strFileName )
         xmlStreamWriter.writeStartDocument();
         xmlStreamWriter.writeStartElement(c_strXmlElemNameDrawing);
         xmlStreamWriter.writeAttribute(c_strXmlAttrDimensionUnit, m_drawingSize.dimensionUnit().toString());
-        if (m_drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels) {
+        if (m_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
             xmlStreamWriter.writeAttribute(c_strXmlAttrWidth, QString::number(m_drawingSize.imageSizeInPixels().width()));
             xmlStreamWriter.writeAttribute(c_strXmlAttrHeight, QString::number(m_drawingSize.imageSizeInPixels().height()));
         }
-        else /*if (m_drawingSize.dimensionUnit() == EDrawingDimensionUnit::Metric)*/ {
+        else /*if (m_drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric)*/ {
             xmlStreamWriter.writeAttribute(c_strXmlAttrUnit, m_drawingSize.metricUnit().symbol());
             xmlStreamWriter.writeAttribute(c_strXmlAttrWidth, m_drawingSize.metricImageWidth().toString());
             xmlStreamWriter.writeAttribute(c_strXmlAttrHeight, m_drawingSize.metricImageHeight().toString());
@@ -5608,16 +5612,16 @@ protected: // auxiliary methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CEnumDrawingDimensionUnit CDrawingScene::getDimensionUnit(
+CEnumScaleDimensionUnit CDrawingScene::getDimensionUnit(
     QXmlStreamReader& i_xmlStreamReader,
     QXmlStreamAttributes& i_xmlStreamAttrs,
     const QString& i_strElemName,
     const QString& i_strAttrName,
     bool i_bAttrIsMandatory,
-    const CEnumDrawingDimensionUnit& i_eDefaultVal ) const
+    const CEnumScaleDimensionUnit& i_eDefaultVal ) const
 //------------------------------------------------------------------------------
 {
-    CEnumDrawingDimensionUnit dimensionUnit = i_eDefaultVal;
+    CEnumScaleDimensionUnit dimensionUnit = i_eDefaultVal;
     if( !i_xmlStreamAttrs.hasAttribute(i_strAttrName) ) {
         if (i_bAttrIsMandatory) {
             raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
@@ -5626,7 +5630,7 @@ CEnumDrawingDimensionUnit CDrawingScene::getDimensionUnit(
     else {
         QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
         bool bOk = true;
-        CEnumDrawingDimensionUnit eVal = CEnumDrawingDimensionUnit::fromString(strAttrVal, &bOk);
+        CEnumScaleDimensionUnit eVal = CEnumScaleDimensionUnit::fromString(strAttrVal, &bOk);
         if (bOk) {
             dimensionUnit = eVal;
         } else {

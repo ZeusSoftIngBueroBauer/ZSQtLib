@@ -232,7 +232,7 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pCmbDimensionUnit->setFixedWidth(cxEdtWidthClm1);
     m_pLytLineDimensionUnit->addWidget(m_pCmbDimensionUnit);
     m_pLytLineDimensionUnit->addStretch();
-    for( CEnumDrawingDimensionUnit eVal = 0; eVal < CEnumDrawingDimensionUnit::count(); ++eVal ) {
+    for( CEnumScaleDimensionUnit eVal = 0; eVal < CEnumScaleDimensionUnit::count(); ++eVal ) {
         m_pCmbDimensionUnit->addItem(eVal.toString(), eVal.enumeratorAsInt());
     }
     m_pCmbDimensionUnit->setCurrentIndex(m_drawingSize.dimensionUnit().enumeratorAsInt());
@@ -1061,7 +1061,7 @@ void CWdgtDrawingViewProperties::onCmbDimensionUnitCurrentIndexChanged( int i_id
         /* strMethod    */ "onCmbDimensionUnitCurrentIndexChanged",
         /* strAddInfo   */ strMthInArgs );
 
-    setDimensionUnit(static_cast<EDrawingDimensionUnit>(i_idx));
+    setDimensionUnit(static_cast<EScaleDimensionUnit>(i_idx));
 }
 
 //------------------------------------------------------------------------------
@@ -1728,7 +1728,7 @@ protected: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtDrawingViewProperties::setDimensionUnit( const CEnumDrawingDimensionUnit& i_eDimensionUnit )
+void CWdgtDrawingViewProperties::setDimensionUnit( const CEnumScaleDimensionUnit& i_eDimensionUnit )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -2226,20 +2226,21 @@ void CWdgtDrawingViewProperties::updateDimensionUnit()
 
     CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
 
-    CEnumDrawingDimensionUnit eDimensionUnit = m_drawingSize.dimensionUnit();
+    CEnumScaleDimensionUnit eDimensionUnit = m_drawingSize.dimensionUnit();
 
     m_pCmbDimensionUnit->setCurrentIndex(eDimensionUnit.enumeratorAsInt());
-    m_pWdgtMetric->setVisible(eDimensionUnit == EDrawingDimensionUnit::Metric);
-    //m_pCmbImageMetricUnit->setEnabled(eDimensionUnit == EDrawingDimensionUnit::Metric);
-    //m_pEdtImageMetricWidth->setReadOnly(eDimensionUnit != EDrawingDimensionUnit::Metric);
-    //m_pEdtImageMetricHeight->setReadOnly(eDimensionUnit != EDrawingDimensionUnit::Metric);
-    //m_pCmbImageMetricNormedPaperSizes->setEnabled(eDimensionUnit == EDrawingDimensionUnit::Metric);
-    //m_pCmbImageMetricNormedPaperOrientation->setEnabled(eDimensionUnit == EDrawingDimensionUnit::Metric);
-    //m_pCmbImageMetricScaleFactorDividend->setEnabled(eDimensionUnit == EDrawingDimensionUnit::Metric);
-    //m_pCmbImageMetricScaleFactorDivisor->setEnabled(eDimensionUnit == EDrawingDimensionUnit::Metric);
-    m_pEdtImageSizeWidth_px->setReadOnly(eDimensionUnit != EDrawingDimensionUnit::Pixels);
-    m_pEdtImageSizeHeight_px->setReadOnly(eDimensionUnit != EDrawingDimensionUnit::Pixels);
+    m_pWdgtMetric->setVisible(eDimensionUnit == EScaleDimensionUnit::Metric);
+    //m_pCmbImageMetricUnit->setEnabled(eDimensionUnit == EScaleDimensionUnit::Metric);
+    //m_pEdtImageMetricWidth->setReadOnly(eDimensionUnit != EScaleDimensionUnit::Metric);
+    //m_pEdtImageMetricHeight->setReadOnly(eDimensionUnit != EScaleDimensionUnit::Metric);
+    //m_pCmbImageMetricNormedPaperSizes->setEnabled(eDimensionUnit == EScaleDimensionUnit::Metric);
+    //m_pCmbImageMetricNormedPaperOrientation->setEnabled(eDimensionUnit == EScaleDimensionUnit::Metric);
+    //m_pCmbImageMetricScaleFactorDividend->setEnabled(eDimensionUnit == EScaleDimensionUnit::Metric);
+    //m_pCmbImageMetricScaleFactorDivisor->setEnabled(eDimensionUnit == EScaleDimensionUnit::Metric);
+    m_pEdtImageSizeWidth_px->setReadOnly(eDimensionUnit != EScaleDimensionUnit::Pixels);
+    m_pEdtImageSizeHeight_px->setReadOnly(eDimensionUnit != EScaleDimensionUnit::Pixels);
 
+    updateResolution();
     updateImageSizeMetrics();
     updateImageSizeInPixels();
     updatePaperFormat();

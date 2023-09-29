@@ -330,7 +330,7 @@ void CTest::createTestGroupDrawStandardShapesLines(ZS::Test::CTestStepGroup* i_p
     pTestStep->setConfigValue(
         CDrawingScene::c_strXmlAttrScreenResolutionPxPerMilliMeter, 1.0);
     pTestStep->setConfigValue(
-        CDrawingScene::c_strXmlAttrDimensionUnit, CEnumDrawingDimensionUnit(EDrawingDimensionUnit::Pixels).toString());
+        CDrawingScene::c_strXmlAttrDimensionUnit, CEnumScaleDimensionUnit(EScaleDimensionUnit::Pixels).toString());
     pTestStep->setConfigValue(
         CDrawingScene::c_strXmlAttrWidth, cxDrawingWidth_px);
     pTestStep->setConfigValue(
@@ -510,7 +510,7 @@ void CTest::createTestGroupDrawStandardShapesLines(ZS::Test::CTestStepGroup* i_p
         /* strOperation    */ "DrawingScene.save",
         /* pGrpParent      */ pGrpDrawLinesPixelsDrawingMouseEventsSaveScene,
         /* szDoTestStepFct */ SLOT(doTestStepSaveFile(ZS::Test::CTestStep*)) );
-    strFileName = "New" + QString::number(cxDrawingWidth_px) + "px" + QString::number(cyDrawingHeight_px) + "px.xml";
+    strFileName = "TestStandardShapesLinesPixelsDrawing-" + QString::number(cxDrawingWidth_px) + "px" + QString::number(cyDrawingHeight_px) + "px.xml";
     pTestStep->setConfigValue("FileName", strFileName);
 
     // Metrics Drawing
@@ -605,7 +605,7 @@ void CTest::createTestGroupDrawStandardShapesLines(ZS::Test::CTestStepGroup* i_p
     pTestStep->setConfigValue(
         CDrawingScene::c_strXmlAttrScreenResolutionPxPerMilliMeter, 1.0);
     pTestStep->setConfigValue(
-        CDrawingScene::c_strXmlAttrDimensionUnit, CEnumDrawingDimensionUnit(EDrawingDimensionUnit::Metric).toString());
+        CDrawingScene::c_strXmlAttrDimensionUnit, CEnumScaleDimensionUnit(EScaleDimensionUnit::Metric).toString());
     pTestStep->setConfigValue(
         CDrawingScene::c_strXmlAttrUnit, "mm");
     pTestStep->setConfigValue(
@@ -787,7 +787,7 @@ void CTest::createTestGroupDrawStandardShapesLines(ZS::Test::CTestStepGroup* i_p
         /* strOperation    */ "DrawingScene.save",
         /* pGrpParent      */ pGrpDrawLinesMetricsDrawingMouseEventsSaveScene,
         /* szDoTestStepFct */ SLOT(doTestStepSaveFile(ZS::Test::CTestStep*)) );
-    strFileName = "New" + QString::number(cxDrawingWidth_mm) + "mm" + QString::number(cyDrawingHeight_mm) + "mm.xml";
+    strFileName = "TestStandardShapesLinesMetricDrawing-" + QString::number(cxDrawingWidth_mm) + "mm" + QString::number(cyDrawingHeight_mm) + "mm.xml";
     pTestStep->setConfigValue("FileName", strFileName);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -872,7 +872,7 @@ void CTest::doTestStepSetDrawingSize( ZS::Test::CTestStep* i_pTestStep )
     CDrawingSize drawingSize("Test");
     drawingSize.setDimensionUnit(
         i_pTestStep->getConfigValue(CDrawingScene::c_strXmlAttrDimensionUnit).toString());
-    if (drawingSize.dimensionUnit() == EDrawingDimensionUnit::Pixels) {
+    if (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
         int cxWidth = i_pTestStep->getConfigValue(CDrawingScene::c_strXmlAttrWidth).toInt();
         int cyHeight = i_pTestStep->getConfigValue(CDrawingScene::c_strXmlAttrHeight).toInt();
         drawingSize.setImageSize(CPhysVal(cxWidth, Units.Length.px), CPhysVal(cyHeight, Units.Length.px));
