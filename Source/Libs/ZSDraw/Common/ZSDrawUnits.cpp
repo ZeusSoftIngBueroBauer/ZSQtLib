@@ -27,8 +27,6 @@ may result in using the software modules.
 #include "ZSDraw/Common/ZSDrawUnits.h"
 #include "ZSSys/ZSSysMath.h"
 
-//#include <QtGui/qpaintdevice.h>
-
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 using namespace ZS::System;
@@ -169,12 +167,13 @@ void CUnitsLength::setScreenResolutionInPxPerMM( double i_fRes_px_mm )
 {
     double fResPrev_px_mm = 0.0;
 
-    if (hasReferenceValue("ScreenResolutionInPxPerMM")) {
+    if (hasReferenceValue("ScreenResolutionPxPerMM")) {
         fResPrev_px_mm = screenResolutionInPxPerMM();
     }
 
     if (fResPrev_px_mm != i_fRes_px_mm) {
-        setReferenceValue("ScreenResolutionInPxPerMM", CPhysVal(i_fRes_px_mm, Units.Length.mm));
+
+        setReferenceValue("ScreenResolutionPxPerMM", CPhysVal(i_fRes_px_mm, Units.Length.mm));
 
         double fipm = m_treeEntryMilliMeter.getFactorConvertFromSIUnit();
 
@@ -203,7 +202,7 @@ void CUnitsLength::setScreenResolutionInPxPerMM( double i_fRes_px_mm )
 double CUnitsLength::screenResolutionInPxPerMM() const
 //------------------------------------------------------------------------------
 {
-    return getReferenceValue("ScreenResolutionInPxPerMM").getVal();
+    return getReferenceValue("ScreenResolutionPxPerMM").getVal();
 }
 
 //------------------------------------------------------------------------------
@@ -225,7 +224,7 @@ CPhysVal CUnitsLength::screenPixelWidth(const CUnit& i_unit) const
         fPxWidth = 1.0;
     }
     else {
-        fPxWidth = 1.0 / getReferenceValue("ScreenResolutionInPxPerMM").getVal(i_unit);
+        fPxWidth = 1.0 / getReferenceValue("ScreenResolutionPxPerMM").getVal(i_unit);
     }
     return CPhysVal(fPxWidth, i_unit);
 }
@@ -251,25 +250,38 @@ public: // instance methods (scale factor of drawing in metric dimension)
 void CUnitsLength::setScaleFactor(int i_iDividend, int i_iDivisor)
 //------------------------------------------------------------------------------
 {
-    setReferenceValue("ScaleFactorDividend", i_iDividend);
-    setReferenceValue("ScaleFactorDivisor", i_iDivisor);
+    int iDividendPrev = 1;
+    int iDivisorPrev = 1;
 
-    double fFac = m_treeEntryMilliMeter.getFactorConvertFromSIUnit();
-
-    double fpxpmm = 1.0;
-    if (hasReferenceValue("PixelResolution_mm")) {
-        fpxpmm = 1.0/screenPixelWidth(mm).getVal();
+    if (hasReferenceValue("ScaleFactorDividend") && hasReferenceValue("ScaleFactorDivisor")) {
+        iDividendPrev = scaleFactorDividend();
+        iDivisorPrev = scaleFactorDivisor();
     }
 
-    fFac = fFac * fpxpmm * scaleFactor();
+    if (iDividendPrev != i_iDividend || iDivisorPrev != i_iDivisor) {
 
-    SFctConvert fctConvertPxFromMeter(
-        /* fctConvertType */ EFctConvert_mMULxADDt,
-        /* pPhysUnitSrc   */ &m_treeEntryMeter,
-        /* pPhysUnitDst   */ &m_treeEntryPixel,
-        /* physValM       */ fFac );
+        setReferenceValue("ScaleFactorDividend", i_iDividend);
+        setReferenceValue("ScaleFactorDivisor", i_iDivisor);
 
-    m_treeEntryPixel.setFctConvertFromSIUnit(fctConvertPxFromMeter);
+        double fFac = m_treeEntryMilliMeter.getFactorConvertFromSIUnit();
+
+        double fpxpmm = 1.0;
+        if (hasReferenceValue("PixelResolution_mm")) {
+            fpxpmm = 1.0/screenPixelWidth(mm).getVal();
+        }
+
+        fFac = fFac * fpxpmm * scaleFactor();
+
+        SFctConvert fctConvertPxFromMeter(
+            /* fctConvertType */ EFctConvert_mMULxADDt,
+            /* pPhysUnitSrc   */ &m_treeEntryMeter,
+            /* pPhysUnitDst   */ &m_treeEntryPixel,
+            /* physValM       */ fFac );
+
+        m_treeEntryPixel.setFctConvertFromSIUnit(fctConvertPxFromMeter);
+
+        emit scaleFactorChanged();
+    }
 }
 
 //------------------------------------------------------------------------------

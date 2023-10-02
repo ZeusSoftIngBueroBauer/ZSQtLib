@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Drawing DimensionUnit="Metric" Unit="mm" Width="600.0 mm" Height="400.0 mm" ScaleFactor="1:1" GridLinesVisible="true" GridLinesStyle="DotLine" GridLinesWidth="1" GridLinesColor="#c0c0c0" GridLabelsVisible="true" GridLabelsFont="MS Shell Dlg 2" GridLabelsTextSize="2" GridLabelsTextColor="#000000" GridLabelsTextStyle="Normal" GridLabelsTextEffect="None">
+<Drawing DimensionUnit="Metric" ScreenResolutionPxPerMM="1.0" MetricImageCoorsDecimals="1" Unit="mm" Width="600.0 mm" Height="400.0 mm" ScaleFactor="1:1" GridLinesVisible="true" GridLinesStyle="DotLine" GridLinesWidth="1" GridLinesColor="#c0c0c0" GridLabelsVisible="true" GridLabelsFont="MS Shell Dlg 2" GridLabelsTextSize="2" GridLabelsTextColor="#000000" GridLabelsTextStyle="Normal" GridLabelsTextEffect="None">
     <GraphObj FactoryGroupName="Standard Shapes" ObjectType="Line" ObjectName="Line1">
         <DrawSettings/>
         <Geometry>

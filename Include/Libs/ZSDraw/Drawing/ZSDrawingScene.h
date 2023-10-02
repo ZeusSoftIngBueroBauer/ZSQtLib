@@ -88,8 +88,9 @@ public: // type definitions and constants
     static const QString c_strXmlElemNameZValue;
     static const QString c_strXmlElemNameLabels;
 public: // type definitions and constants
-    static const QString c_strXmlAttrScreenResolutionPxPerMilliMeter;
     static const QString c_strXmlAttrDimensionUnit;
+    static const QString c_strXmlAttrScreenResolutionPxPerMilliMeter;
+    static const QString c_strXmlAttrMetricImageCoorsDecimals;
     static const QString c_strXmlAttrUnit;
     static const QString c_strXmlAttrWidth;
     static const QString c_strXmlAttrHeight;
@@ -320,6 +321,7 @@ protected: // overridables of base class QGraphicsScene
     virtual void drawForeground( QPainter* i_pPainter, const QRectF& i_rect );
 protected slots:
     void onDrawUnitsScreenResolutionInPxPerMMChanged();
+    void onDrawUnitsScaleFactorChanged();
 protected slots:
     void onGraphObjFactoryDestroyed( QObject* i_pObjFactory );
 protected slots:

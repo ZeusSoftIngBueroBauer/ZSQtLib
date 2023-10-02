@@ -120,6 +120,7 @@ public: // ctors and dtor
     ~CUnitsLength();
 signals:
     void screenResolutionInPxPerMMChanged();
+    void scaleFactorChanged();
 public: // instance methods (resolution of monitor, pixels per inches)
     void setScreenResolutionInPxPerMM(double i_fRes_px_mm);
     double screenResolutionInPxPerMM() const;

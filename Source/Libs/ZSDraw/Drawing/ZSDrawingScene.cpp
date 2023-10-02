@@ -91,8 +91,9 @@ const QString CDrawingScene::c_strXmlElemNameLabels = "Labels";
 public: // type definitions and constants
 ==============================================================================*/
 
-const QString CDrawingScene::c_strXmlAttrScreenResolutionPxPerMilliMeter = "ResolutionPxPerMM";
 const QString CDrawingScene::c_strXmlAttrDimensionUnit = "DimensionUnit";
+const QString CDrawingScene::c_strXmlAttrScreenResolutionPxPerMilliMeter = "ScreenResolutionPxPerMM";
+const QString CDrawingScene::c_strXmlAttrMetricImageCoorsDecimals = "MetricImageCoorsDecimals";
 const QString CDrawingScene::c_strXmlAttrUnit = "Unit";
 const QString CDrawingScene::c_strXmlAttrWidth = "Width";
 const QString CDrawingScene::c_strXmlAttrHeight = "Height";
@@ -225,6 +226,9 @@ CDrawingScene::CDrawingScene(const QString& i_strName, QObject* i_pObjParent) :
     QObject::connect(
         &Units.Length, &CUnitsLength::screenResolutionInPxPerMMChanged,
         this, &CDrawingScene::onDrawUnitsScreenResolutionInPxPerMMChanged );
+    QObject::connect(
+        &Units.Length, &CUnitsLength::scaleFactorChanged,
+        this, &CDrawingScene::onDrawUnitsScaleFactorChanged );
 
     QObject::connect(
         m_pGraphObjsIdxTree, &CIdxTree::treeEntryAdded,
@@ -350,6 +354,7 @@ void CDrawingScene::setDrawingSize( const CDrawingSize& i_drawingSize)
         m_drawingSize = i_drawingSize;
 
         Units.Length.setScreenResolutionInPxPerMM(m_drawingSize.screenResolutionInPxPerMM());
+        Units.Length.setScaleFactor(m_drawingSize.scaleFactorDividend(), m_drawingSize.scaleFactorDivisor());
 
         QRectF rect(QPointF(0.0, 0.0), m_drawingSize.imageSizeInPixels());
         setSceneRect(rect);
@@ -792,10 +797,24 @@ SErrResultInfo CDrawingScene::load( const QString& i_strFileName )
                                 }
                             }
                             else if (dimensionUnit == EScaleDimensionUnit::Metric) {
-                                CUnit unit = getUnit(
-                                    xmlStreamReader, xmlStreamAttrs, strElemName, c_strXmlAttrUnit);
+                                double fScreenResPxPerMM = getDoubleVal(
+                                    xmlStreamReader, xmlStreamAttrs, strElemName, c_strXmlAttrScreenResolutionPxPerMilliMeter);
                                 if (!xmlStreamReader.hasError()) {
+                                    drawingSize.setScreenResolutionInPxPerMM(fScreenResPxPerMM);
+                                }
+                                if (!xmlStreamReader.hasError()) {
+                                    int iDecimals = getIntVal(
+                                        xmlStreamReader, xmlStreamAttrs, strElemName, c_strXmlAttrMetricImageCoorsDecimals);
+                                    if (!xmlStreamReader.hasError()) {
+                                        drawingSize.setMetricImageCoorsDecimals(iDecimals);
+                                    }
+                                }
+                                if (!xmlStreamReader.hasError()) {
+                                    CUnit unit = getUnit(
+                                        xmlStreamReader, xmlStreamAttrs, strElemName, c_strXmlAttrUnit);
                                     drawingSize.setMetricUnit(unit);
+                                }
+                                if (!xmlStreamReader.hasError()) {
                                     CPhysVal physValWidth = getPhysVal(
                                         xmlStreamReader, xmlStreamAttrs, strElemName, c_strXmlAttrWidth);
                                     CPhysVal physValHeight = getPhysVal(
@@ -1027,6 +1046,8 @@ SErrResultInfo CDrawingScene::save( const QString& i_strFileName )
             xmlStreamWriter.writeAttribute(c_strXmlAttrHeight, QString::number(m_drawingSize.imageSizeInPixels().height()));
         }
         else /*if (m_drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric)*/ {
+            xmlStreamWriter.writeAttribute(c_strXmlAttrScreenResolutionPxPerMilliMeter, QString::number(m_drawingSize.screenResolutionInPxPerMM()));
+            xmlStreamWriter.writeAttribute(c_strXmlAttrMetricImageCoorsDecimals, QString::number(m_drawingSize.metricImageCoorsDecimals()));
             xmlStreamWriter.writeAttribute(c_strXmlAttrUnit, m_drawingSize.metricUnit().symbol());
             xmlStreamWriter.writeAttribute(c_strXmlAttrWidth, m_drawingSize.metricImageWidth().toString());
             xmlStreamWriter.writeAttribute(c_strXmlAttrHeight, m_drawingSize.metricImageHeight().toString());
@@ -5353,6 +5374,27 @@ void CDrawingScene::onDrawUnitsScreenResolutionInPxPerMMChanged()
     CDrawingSize drawingSize("TempCopyToForceUpdate");
     drawingSize = m_drawingSize;
     drawingSize.setScreenResolutionInPxPerMM(Units.Length.screenResolutionInPxPerMM());
+    setDrawingSize(drawingSize);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief This slot is called if the screen resolution in pixels/mm has been changed.
+
+    The metrics image size of the drawing size need to be updated.
+    The method emits the drawingSizeChanged signal.
+*/
+void CDrawingScene::onDrawUnitsScaleFactorChanged()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onDrawUnitsScaleFactorChanged",
+        /* strAddInfo   */ "" );
+
+    CDrawingSize drawingSize("TempCopyToForceUpdate");
+    drawingSize = m_drawingSize;
+    drawingSize.setScaleFactor(Units.Length.scaleFactorDividend(), Units.Length.scaleFactorDivisor());
     setDrawingSize(drawingSize);
 }
 

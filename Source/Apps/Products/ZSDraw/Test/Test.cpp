@@ -865,13 +865,13 @@ void CTest::doTestStepSetDrawingSize( ZS::Test::CTestStep* i_pTestStep )
 #pragma message(__TODO__"Test with different scale factors")
 #pragma message(__TODO__"Test with different Y Scale Axis orientations")
 
-    if (i_pTestStep->hasConfigValue(CDrawingScene::c_strXmlAttrScreenResolutionPxPerMilliMeter)) {
-        double fResPxPerMM = i_pTestStep->getConfigValue(CDrawingScene::c_strXmlAttrScreenResolutionPxPerMilliMeter).toDouble();
-        Units.Length.setScreenResolutionInPxPerMM(fResPxPerMM);
-    }
     CDrawingSize drawingSize("Test");
     drawingSize.setDimensionUnit(
         i_pTestStep->getConfigValue(CDrawingScene::c_strXmlAttrDimensionUnit).toString());
+    if (i_pTestStep->hasConfigValue(CDrawingScene::c_strXmlAttrScreenResolutionPxPerMilliMeter)) {
+        double fResPxPerMM = i_pTestStep->getConfigValue(CDrawingScene::c_strXmlAttrScreenResolutionPxPerMilliMeter).toDouble();
+        drawingSize.setScreenResolutionInPxPerMM(fResPxPerMM);
+    }
     if (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
         int cxWidth = i_pTestStep->getConfigValue(CDrawingScene::c_strXmlAttrWidth).toInt();
         int cyHeight = i_pTestStep->getConfigValue(CDrawingScene::c_strXmlAttrHeight).toInt();
