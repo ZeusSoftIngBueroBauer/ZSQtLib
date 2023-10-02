@@ -119,10 +119,11 @@ public: // ctors and dtor
     CUnitsLength(ZS::System::CIdxTreeEntry* i_pParentBranch);
     ~CUnitsLength();
 signals:
-    void resolutionChanged();
+    void screenResolutionInPxPerMMChanged();
 public: // instance methods (resolution of monitor, pixels per inches)
-    void setResolutionInPxPerMM(double i_fRes_px_mm);
-    ZS::PhysVal::CPhysValRes physValResolution(const ZS::PhysVal::CUnit& i_unit) const;
+    void setScreenResolutionInPxPerMM(double i_fRes_px_mm);
+    double screenResolutionInPxPerMM() const;
+    ZS::PhysVal::CPhysVal screenPixelWidth(const ZS::PhysVal::CUnit& i_unit) const;
 public: // instance methods (scale factor of drawing in metric dimension)
     void setScaleFactor(int i_iDividend, int i_iDivisor);
     double scaleFactor() const;

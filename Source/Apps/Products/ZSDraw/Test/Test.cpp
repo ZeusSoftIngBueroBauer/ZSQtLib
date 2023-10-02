@@ -867,7 +867,7 @@ void CTest::doTestStepSetDrawingSize( ZS::Test::CTestStep* i_pTestStep )
 
     if (i_pTestStep->hasConfigValue(CDrawingScene::c_strXmlAttrScreenResolutionPxPerMilliMeter)) {
         double fResPxPerMM = i_pTestStep->getConfigValue(CDrawingScene::c_strXmlAttrScreenResolutionPxPerMilliMeter).toDouble();
-        Units.Length.setResolutionInPxPerMM(fResPxPerMM);
+        Units.Length.setScreenResolutionInPxPerMM(fResPxPerMM);
     }
     CDrawingSize drawingSize("Test");
     drawingSize.setDimensionUnit(

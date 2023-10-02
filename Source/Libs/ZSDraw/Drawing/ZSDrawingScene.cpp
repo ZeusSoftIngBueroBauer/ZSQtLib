@@ -223,8 +223,8 @@ CDrawingScene::CDrawingScene(const QString& i_strName, QObject* i_pObjParent) :
         /* pObjParent       */ nullptr );
 
     QObject::connect(
-        &Units.Length, &CUnitsLength::resolutionChanged,
-        this, &CDrawingScene::onDrawUnitsLengthResolutionChanged );
+        &Units.Length, &CUnitsLength::screenResolutionInPxPerMMChanged,
+        this, &CDrawingScene::onDrawUnitsScreenResolutionInPxPerMMChanged );
 
     QObject::connect(
         m_pGraphObjsIdxTree, &CIdxTree::treeEntryAdded,
@@ -348,6 +348,9 @@ void CDrawingScene::setDrawingSize( const CDrawingSize& i_drawingSize)
     if (m_drawingSize != i_drawingSize)
     {
         m_drawingSize = i_drawingSize;
+
+        Units.Length.setScreenResolutionInPxPerMM(m_drawingSize.screenResolutionInPxPerMM());
+
         QRectF rect(QPointF(0.0, 0.0), m_drawingSize.imageSizeInPixels());
         setSceneRect(rect);
 
@@ -363,7 +366,7 @@ void CDrawingScene::setDrawingSize( const CDrawingSize& i_drawingSize)
             m_divLinesMetricsX.setScale(
                 /* fScaleMinVal */ 0.0,
                 /* fScaleMaxVal */ m_drawingSize.imageWidthInPixels() - 1,
-                /* fScaleResVal */ m_drawingSize.resolution().getVal(Units.Length.px),
+                /* fScaleResVal */ m_drawingSize.imageCoorsResolution(Units.Length.px).getVal(),
                 /* fMin_px      */ 0,
                 /* fMax_px      */ m_drawingSize.imageWidthInPixels() - 1,
                 /* scaleDimUnit */ m_drawingSize.dimensionUnit());
@@ -371,7 +374,7 @@ void CDrawingScene::setDrawingSize( const CDrawingSize& i_drawingSize)
             m_divLinesMetricsY.setScale(
                 /* fScaleMinVal */ 0.0,
                 /* fScaleMaxVal */ m_drawingSize.imageHeightInPixels() - 1,
-                /* fScaleResVal */ m_drawingSize.resolution().getVal(Units.Length.px),
+                /* fScaleResVal */ m_drawingSize.imageCoorsResolution(Units.Length.px).getVal(),
                 /* fMin_px      */ 0,
                 /* fMax_px      */ m_drawingSize.imageHeightInPixels() - 1,
                 /* scaleDimUnit */ m_drawingSize.dimensionUnit());
@@ -392,14 +395,14 @@ void CDrawingScene::setDrawingSize( const CDrawingSize& i_drawingSize)
             m_divLinesMetricsX.setScale(
                 /* fScaleMinVal */ 0.0,
                 /* fScaleMaxVal */ m_drawingSize.metricImageWidth().getVal(),
-                /* fScaleResVal */ m_drawingSize.resolution().getVal(m_drawingSize.unit()),
+                /* fScaleResVal */ m_drawingSize.imageCoorsResolution(m_drawingSize.unit()).getVal(),
                 /* fMin_px      */ 0,
                 /* fMax_px      */ m_drawingSize.imageWidthInPixels() - 1,
                 /* scaleDimUnit */ m_drawingSize.dimensionUnit());
             m_divLinesMetricsY.setScale(
                 /* fScaleMinVal */ 0.0,
                 /* fScaleMaxVal */ m_drawingSize.metricImageHeight().getVal(),
-                /* fScaleResVal */ m_drawingSize.resolution().getVal(m_drawingSize.unit()),
+                /* fScaleResVal */ m_drawingSize.imageCoorsResolution(m_drawingSize.unit()).getVal(),
                 /* fMin_px      */ 0,
                 /* fMax_px      */ m_drawingSize.imageHeightInPixels() - 1,
                 /* scaleDimUnit */ m_drawingSize.dimensionUnit());
@@ -5338,18 +5341,18 @@ protected slots:
     The metrics image size of the drawing size need to be updated.
     The method emits the drawingSizeChanged signal.
 */
-void CDrawingScene::onDrawUnitsLengthResolutionChanged()
+void CDrawingScene::onDrawUnitsScreenResolutionInPxPerMMChanged()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjPaintEvent,
+        /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onDrawUnitsLengthResolutionChanged",
+        /* strMethod    */ "onDrawUnitsScreenResolutionInPxPerMMChanged",
         /* strAddInfo   */ "" );
 
     CDrawingSize drawingSize("TempCopyToForceUpdate");
     drawingSize = m_drawingSize;
-    drawingSize.onDrawUnitsLengthResolutionChanged();
+    drawingSize.setScreenResolutionInPxPerMM(Units.Length.screenResolutionInPxPerMM());
     setDrawingSize(drawingSize);
 }
 

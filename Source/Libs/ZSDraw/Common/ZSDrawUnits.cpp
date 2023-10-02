@@ -27,7 +27,7 @@ may result in using the software modules.
 #include "ZSDraw/Common/ZSDrawUnits.h"
 #include "ZSSys/ZSSysMath.h"
 
-#include <QtGui/qpaintdevice.h>
+//#include <QtGui/qpaintdevice.h>
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -132,6 +132,9 @@ CUnitsLength::CUnitsLength(CIdxTreeEntry* i_pParentBranch) :
     m_pTree->addShortcut(&m_treeEntryPixel, "px");
     m_pTree->addShortcut(&m_treeEntryDots, "dots");
 
+    // reasonable value close to what many monitors are using
+    setScreenResolutionInPxPerMM(4.0);
+
     // If not explicitly set, the scale factors default value is used which is 1.0 (1/1).
     setScaleFactor(1, 1);
 
@@ -161,60 +164,70 @@ public: // instance methods (resolution of monitor, pixels per inches)
     @param [in] i_fRes_px_mm
         Resolution of a pixel on the screen pixel in pixels/mm.
 */
-void CUnitsLength::setResolutionInPxPerMM( double i_fRes_px_mm )
+void CUnitsLength::setScreenResolutionInPxPerMM( double i_fRes_px_mm )
 //------------------------------------------------------------------------------
 {
-    // 4.0 px/mm results in a resolution of 0.25 mm:
-    setReferenceValue("PixelResolution_mm", CPhysVal(1.0/i_fRes_px_mm, mm));
+    double fResPrev_px_mm = 0.0;
 
-    double fipm = m_treeEntryMilliMeter.getFactorConvertFromSIUnit();
-
-    double fScaleFactor = 1.0;
-    if (hasReferenceValue("ScaleFactorDividend") && hasReferenceValue("ScaleFactorDivisor")) {
-        fScaleFactor = scaleFactor();
+    if (hasReferenceValue("ScreenResolutionInPxPerMM")) {
+        fResPrev_px_mm = screenResolutionInPxPerMM();
     }
 
-    double fpxm = fipm * i_fRes_px_mm * fScaleFactor;
+    if (fResPrev_px_mm != i_fRes_px_mm) {
+        setReferenceValue("ScreenResolutionInPxPerMM", CPhysVal(i_fRes_px_mm, Units.Length.mm));
 
-    SFctConvert fctConvertPxFromMeter(
-        /* fctConvertType */ EFctConvert_mMULxADDt,
-        /* pPhysUnitSrc   */ &m_treeEntryMeter,
-        /* pPhysUnitDst   */ &m_treeEntryPixel,
-        /* physValM       */ fpxm );
+        double fipm = m_treeEntryMilliMeter.getFactorConvertFromSIUnit();
 
-    m_treeEntryPixel.setFctConvertFromSIUnit(fctConvertPxFromMeter);
+        double fScaleFactor = 1.0;
+        if (hasReferenceValue("ScaleFactorDividend") && hasReferenceValue("ScaleFactorDivisor")) {
+            fScaleFactor = scaleFactor();
+        }
 
-    emit resolutionChanged();
+        double fpxm = fipm * i_fRes_px_mm * fScaleFactor;
+
+        SFctConvert fctConvertPxFromMeter(
+            /* fctConvertType */ EFctConvert_mMULxADDt,
+            /* pPhysUnitSrc   */ &m_treeEntryMeter,
+            /* pPhysUnitDst   */ &m_treeEntryPixel,
+            /* physValM       */ fpxm );
+
+        m_treeEntryPixel.setFctConvertFromSIUnit(fctConvertPxFromMeter);
+
+        emit screenResolutionInPxPerMMChanged();
+    }
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the screen resolution of a pixel in the given unit.
+/*! @brief Returns the screen resolution of a pixel on the screen in pixels/mm.
+*/
+double CUnitsLength::screenResolutionInPxPerMM() const
+//------------------------------------------------------------------------------
+{
+    return getReferenceValue("ScreenResolutionInPxPerMM").getVal();
+}
 
-    The screen resolution is usually defined in pixels per inch or pixels per mm.
-    To format values correctly with the number of significant digits the resolution
-    normed to a metric unit is needed. E.g. if the screen resolution would be 10 pixels
-    per mm, the number of trailing digits to indicate a value in mm would be 1 and
-    e.g. 7 pixels would have to be rounded to 0.7 mm.
+//------------------------------------------------------------------------------
+/*! @brief Returns the width of a pixel on the screen in the given unit.
 
     @param [in] i_unit (default mm)
-        Unit in which the resolution has to be returned.
+        Unit in which the width of a pixel has to be returned.
         Please note that it does not make sense to pass pixels or dots as the
         desired unit as the screen resolution or the device resolution in pixels
         or dots is always 1.0.
 
-    @return Screen resolution normed to the given metric unit.
+    @return Width of a pixel on the screen in the given unit.
 */
-CPhysValRes CUnitsLength::physValResolution(const CUnit& i_unit) const
+CPhysVal CUnitsLength::screenPixelWidth(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
-    double fResVal = 0.1;
+    double fPxWidth = 1.0;
     if (i_unit == px || i_unit == dots) {
-        fResVal = 1.0;
+        fPxWidth = 1.0;
     }
     else {
-        fResVal = getReferenceValue("PixelResolution_mm").getVal(i_unit);
+        fPxWidth = 1.0 / getReferenceValue("ScreenResolutionInPxPerMM").getVal(i_unit);
     }
-    return CPhysValRes(fResVal, i_unit);
+    return CPhysVal(fPxWidth, i_unit);
 }
 
 /*==============================================================================
@@ -241,26 +254,20 @@ void CUnitsLength::setScaleFactor(int i_iDividend, int i_iDivisor)
     setReferenceValue("ScaleFactorDividend", i_iDividend);
     setReferenceValue("ScaleFactorDivisor", i_iDivisor);
 
-    // 1 Inch = 2.54 cm
-    // Factor to convert inches into mm: 25.4
-    // Factor to convert inches into cm: 2.54
-    // Factor to convert inches to m: 0.0254
-    // Factor to convert m into inches: 1/0.0254
-    double fipm = m_treeEntryMilliMeter.getFactorConvertFromSIUnit();
+    double fFac = m_treeEntryMilliMeter.getFactorConvertFromSIUnit();
 
     double fpxpmm = 1.0;
     if (hasReferenceValue("PixelResolution_mm")) {
-        fpxpmm = 1.0/physValResolution(mm).getVal();
+        fpxpmm = 1.0/screenPixelWidth(mm).getVal();
     }
 
-    // Factor to convert Px/inch to Px/m: 1.0/0.0254
-    double fpxm = fipm * fpxpmm * scaleFactor();
+    fFac = fFac * fpxpmm * scaleFactor();
 
     SFctConvert fctConvertPxFromMeter(
         /* fctConvertType */ EFctConvert_mMULxADDt,
         /* pPhysUnitSrc   */ &m_treeEntryMeter,
         /* pPhysUnitDst   */ &m_treeEntryPixel,
-        /* physValM       */ fpxm );
+        /* physValM       */ fFac );
 
     m_treeEntryPixel.setFctConvertFromSIUnit(fctConvertPxFromMeter);
 }

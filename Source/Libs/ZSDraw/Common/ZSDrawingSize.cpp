@@ -55,7 +55,8 @@ CDrawingSize::CDrawingSize(const QString& i_strName) :
     m_strName(i_strName),
     m_eDimensionUnit(EScaleDimensionUnit::Pixels),
     m_metricUnit(Units.Length.mm),
-    m_fImageMetricRes(0.1),
+    m_fScreenResolution_px_mm(4.0), // reasonable value close to what many monitors are using
+    m_iImageMetricCoorsDecimals(2), // to indicate 1.0/4.0 = 0.25
     m_fImageMetricWidth(0.0),
     m_fImageMetricHeight(0.0),
     m_eNormedPaperSize(),
@@ -87,7 +88,8 @@ CDrawingSize::CDrawingSize(const QString& i_strName, const CDrawingSize& i_other
     m_strName(i_strName),
     m_eDimensionUnit(i_other.m_eDimensionUnit),
     m_metricUnit(i_other.m_metricUnit),
-    m_fImageMetricRes(i_other.m_fImageMetricRes),
+    m_fScreenResolution_px_mm(i_other.m_fScreenResolution_px_mm),
+    m_iImageMetricCoorsDecimals(i_other.m_iImageMetricCoorsDecimals),
     m_fImageMetricWidth(i_other.m_fImageMetricWidth),
     m_fImageMetricHeight(i_other.m_fImageMetricHeight),
     m_eNormedPaperSize(i_other.m_eNormedPaperSize),
@@ -126,7 +128,8 @@ CDrawingSize::~CDrawingSize()
 
     m_eDimensionUnit = static_cast<EScaleDimensionUnit>(0);
     //m_metricUnit;
-    m_fImageMetricRes = 0.0;
+    m_fScreenResolution_px_mm = 0.0;
+    m_iImageMetricCoorsDecimals = 0;
     m_fImageMetricWidth = 0.0;
     m_fImageMetricHeight = 0.0;
     m_eNormedPaperSize = static_cast<ENormedPaperSize>(0);
@@ -161,7 +164,8 @@ CDrawingSize& CDrawingSize::operator = (const CDrawingSize& i_other)
 
     m_eDimensionUnit = i_other.m_eDimensionUnit;
     m_metricUnit = i_other.m_metricUnit;
-    m_fImageMetricRes = i_other.m_fImageMetricRes;
+    m_fScreenResolution_px_mm = i_other.m_fScreenResolution_px_mm;
+    m_iImageMetricCoorsDecimals = i_other.m_iImageMetricCoorsDecimals;
     m_fImageMetricWidth = i_other.m_fImageMetricWidth;
     m_fImageMetricHeight = i_other.m_fImageMetricHeight;
     m_eNormedPaperSize = i_other.m_eNormedPaperSize;
@@ -191,7 +195,10 @@ bool CDrawingSize::operator == ( const CDrawingSize& i_other ) const
     else if( m_metricUnit != i_other.m_metricUnit ) {
         bEqual = false;
     }
-    else if( m_fImageMetricRes != i_other.m_fImageMetricRes ) {
+    else if( m_fScreenResolution_px_mm != i_other.m_fScreenResolution_px_mm ) {
+        bEqual = false;
+    }
+    else if( m_iImageMetricCoorsDecimals != i_other.m_iImageMetricCoorsDecimals ) {
         bEqual = false;
     }
     else if( m_fImageMetricWidth != i_other.m_fImageMetricWidth ) {
@@ -239,33 +246,6 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Called by the drawing scene if the screen resolution in
-           pixels/mm has been changed to update the metrics image size.
-*/
-void CDrawingSize::onDrawUnitsLengthResolutionChanged()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onDrawUnitsLengthResolutionChanged",
-        /* strAddInfo   */ "" );
-
-    if (m_eDimensionUnit == EScaleDimensionUnit::Pixels) {
-        // Keep the image size in pixels but update the image size in metric unit.
-        updateImageSizeMetrics();
-    }
-    else /*if (m_eDimensionUnit == EScaleDimensionUnit::Metric)*/ {
-        // Keep the image size in metric unit but update the image size in pixels.
-        updateImageSizeInPixels();
-    }
-}
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
 void CDrawingSize::setDimensionUnit( const CEnumScaleDimensionUnit& i_eDimensionUnit )
 //------------------------------------------------------------------------------
 {
@@ -279,7 +259,17 @@ void CDrawingSize::setDimensionUnit( const CEnumScaleDimensionUnit& i_eDimension
         /* strMethod    */ "setDimensionUnit",
         /* strAddInfo   */ strMthInArgs );
 
-    m_eDimensionUnit = i_eDimensionUnit;
+    if (m_eDimensionUnit != i_eDimensionUnit) {
+        m_eDimensionUnit = i_eDimensionUnit;
+        if (m_eDimensionUnit == EScaleDimensionUnit::Pixels) {
+            // Keep the image size in metric unit but update the image size in pixels.
+            updateImageSizeInPixels();
+        }
+        else /*if (m_eDimensionUnit == EScaleDimensionUnit::Metric)*/ {
+            // Keep the image size in pixels but update the image size in metric unit.
+            updateImageSizeMetrics();
+        }
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -304,47 +294,139 @@ CUnit CDrawingSize::unit() const
     return m_metricUnit;
 }
 
-//------------------------------------------------------------------------------
-/*! @brief Sets the current resolution.
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
 
-    If dimension unit is set to Metric, the metrics width and height is adjusted.
-    As a precondition the resolution in pixels/mm must have been set before
-    at the Units.Length.
+//------------------------------------------------------------------------------
+/*! @brief Sets the resolution of a pixel on the screen in "pixels/mm".
+
+    The screen resolution is also set at the Units.Length so that following
+    unit conversion routines between pixels and metric units are using the
+    updated conversion factor.
+
+    If the current dimension unit of the drawing size is set to Pixels,
+    the image width and height in metrics unit is adjusted.
+    If the current dimension unit of the drawing size is set to Metric,
+    the image width and height in pixels is adjusted.
+
+    @param [in] i_fRes_px_mm
+        Resolution of a screen pixel in "pixels/mm".
 */
-void CDrawingSize::setResolution( const CPhysValRes& i_physValRes )
+void CDrawingSize::setScreenResolutionInPxPerMM(double i_fRes_px_mm)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_physValRes.toString();
+        strMthInArgs = QString::number(i_fRes_px_mm);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setResolution",
+        /* strMethod    */ "setScreenResolutionInPxPerMM",
         /* strAddInfo   */ strMthInArgs );
 
-    if (i_physValRes.unit() == Units.Length.px) {
-        m_fImageSizeRes_px = i_physValRes.getVal();
+    // Set the screen resolution also at the Units.Length so that following
+    // unit conversion routines between pixels and metric units are using the
+    // updated conversion factor.
+    m_fScreenResolution_px_mm = i_fRes_px_mm;
+
+    if (m_eDimensionUnit == EScaleDimensionUnit::Pixels) {
+        // Keep the image size in pixels but update the image size in metric unit.
+        updateImageSizeMetrics();
     }
-    else {
-        m_fImageMetricRes = i_physValRes.getVal(m_metricUnit);
+    else /*if (m_eDimensionUnit == EScaleDimensionUnit::Metric)*/ {
+        // Keep the image size in metric unit but update the image size in pixels.
+        updateImageSizeInPixels();
     }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the resolution of a pixel on the screen in "pixels/<unit>".
+
+    @param [in] i_unit
+        Unit in which the value should be returned.
+        If the unit is not a metric unit an exception is thrown.
+*/
+double CDrawingSize::screenResolutionInPxPerMM() const
+//------------------------------------------------------------------------------
+{
+    return m_fScreenResolution_px_mm;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the width of a screen pixel in the given unit.
+
+    The width of a screen pixel is defined by the screen resolution in pixels/mm.
+
+    @param [in] i_unit
+        Unit in which the value should be returned.
+        If the unit is not a metric unit an exception is thrown.
+*/
+CPhysVal CDrawingSize::screenPixelWidth(const CUnit& i_unit) const
+//------------------------------------------------------------------------------
+{
+    if (!Units.Length.isMetricUnit(i_unit)) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+    }
+    CPhysVal physVal(1.0/m_fScreenResolution_px_mm, m_metricUnit);
+    physVal.convertValue(i_unit);
+    return physVal;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the number of decimals to be used for editing and indicating
+           coordinates in metric system.
+
+    @param [in] i_iDecimals
+        Number of decimals. Must be >= 0.
+*/
+void CDrawingSize::setMetricImageCoorsDecimals(int i_iDecimals)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString::number(i_iDecimals);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setMetricImageCoorsDecimals",
+        /* strAddInfo   */ strMthInArgs );
+    if (i_iDecimals < 0) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+    }
+
+    m_iImageMetricCoorsDecimals = i_iDecimals;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the number of decimals used fro editing and indicating
+           coordinates in metric system.
+*/
+int CDrawingSize::metricImageCoorsDecimals() const
+//------------------------------------------------------------------------------
+{
+    return m_iImageMetricCoorsDecimals;
 }
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the current resolution.
 
-    If dimension unit is set to Pixels, the resolution in pixels is returned.
-    If dimension unit is set to Metric, the resolution in metric unit is returned.
+    @param [in] i_unit
+        Unit in which the value should be returned.
+        If the desired unit is Pixels, the resolution in pixels is returned.
+        If the desired unit is a metric unit, the resolution in metric unit is returned.
 */
-CPhysValRes CDrawingSize::resolution() const
+CPhysValRes CDrawingSize::imageCoorsResolution(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
-    if (m_eDimensionUnit == EScaleDimensionUnit::Pixels) {
-        return CPhysValRes(m_fImageSizeRes_px, Units.Length.px);
+    if (Units.Length.isMetricUnit(i_unit)) {
+        CPhysValRes physValRes(pow(10.0, -m_iImageMetricCoorsDecimals), m_metricUnit);
+        physValRes.convertValue(i_unit);
+        return physValRes;
     }
-    return CPhysValRes(m_fImageMetricRes, m_metricUnit);
+    return CPhysValRes(m_fImageSizeRes_px, Units.Length.px);
 }
 
 /*==============================================================================
@@ -371,16 +453,16 @@ void CDrawingSize::setMetricUnit( const CUnit& i_unit )
         // are indicated will be changed.
 
         // Current values:
-        CPhysVal physValWidth(m_fImageMetricWidth, m_metricUnit, m_fImageMetricRes);
-        CPhysVal physValHeight(m_fImageMetricHeight, m_metricUnit, m_fImageMetricRes);
+        CPhysVal physValWidth(m_fImageMetricWidth, m_metricUnit);
+        CPhysVal physValHeight(m_fImageMetricHeight, m_metricUnit);
 
         // Convert into new unit:
         m_metricUnit = i_unit;
         physValWidth.convertValue(m_metricUnit);
         physValHeight.convertValue(m_metricUnit);
 
-        // New values. Also the resolution is returned in the new unit.
-        m_fImageMetricRes = physValWidth.getRes().getVal();
+        // New values. Also the resolution to edit the coors need to be
+        // converted to the new unit.
         m_fImageMetricWidth = physValWidth.getVal();
         m_fImageMetricHeight = physValHeight.getVal();
     }
@@ -653,14 +735,16 @@ int CDrawingSize::imageHeightInPixels() const
 CPhysVal CDrawingSize::metricImageWidth() const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_fImageMetricWidth, m_metricUnit, m_fImageMetricRes);
+    double fRes = imageCoorsResolution(m_metricUnit).getVal();
+    return CPhysVal(m_fImageMetricWidth, m_metricUnit, fRes);
 }
 
 //------------------------------------------------------------------------------
 CPhysVal CDrawingSize::metricImageHeight() const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_fImageMetricHeight, m_metricUnit, m_fImageMetricRes);
+    double fRes = imageCoorsResolution(m_metricUnit).getVal();
+    return CPhysVal(m_fImageMetricHeight, m_metricUnit, fRes);
 }
 
 /*==============================================================================
@@ -689,27 +773,35 @@ void CDrawingSize::updateImageSizeInPixels()
         traceValues(mthTracer, EMethodDir::Enter);
     }
 
-    double fFactor =  static_cast<double>(m_iMetricScaleFactorDividend)
-                    / static_cast<double>(m_iMetricScaleFactorDivisor);
-    double fScaledWidth = fFactor * m_fImageMetricWidth;
-    double fScaledHeight = fFactor * m_fImageMetricHeight;
-    CPhysVal physValWidth(fScaledWidth, m_metricUnit);
-    CPhysVal physValHeight(fScaledHeight, m_metricUnit);
+    CPhysVal physValWidth(m_fImageMetricWidth, m_metricUnit);
+    CPhysVal physValHeight(m_fImageMetricHeight, m_metricUnit);
 
-    // The unit conversion will take the screen resolution in pixels/mm into account.
-    physValWidth.convertValue(Units.Length.px);
-    physValHeight.convertValue(Units.Length.px);
-
-    m_fImageSizeWidth_px = physValWidth.getVal();
-    m_fImageSizeHeight_px = physValHeight.getVal();
+    double fImageMetricWidth_mm = physValWidth.getVal(Units.Length.mm);
+    double fImageMetricHeight_mm = physValHeight.getVal(Units.Length.mm);
 
     // In order to draw division lines at min and max scale the width
     // in pixels got to be extended by one pixel when using metric scales
     // (see also documentation at class CScaleDivLines).
     if (m_eDimensionUnit == EScaleDimensionUnit::Metric) {
-        m_fImageSizeWidth_px += 1;
-        m_fImageSizeHeight_px += 1;
+        fImageMetricWidth_mm += 1.0 / m_fScreenResolution_px_mm;
+        fImageMetricHeight_mm += 1.0 / m_fScreenResolution_px_mm;
     }
+
+    double fFactor =  static_cast<double>(m_iMetricScaleFactorDividend)
+                    / static_cast<double>(m_iMetricScaleFactorDivisor);
+    double fScaledWidth_mm = fFactor * fImageMetricWidth_mm;
+    double fScaledHeight_mm = fFactor * fImageMetricHeight_mm;
+
+    m_fImageSizeWidth_px = m_fScreenResolution_px_mm * fScaledWidth_mm;
+    m_fImageSizeHeight_px = m_fScreenResolution_px_mm * fScaledHeight_mm;
+
+    //// In order to draw division lines at min and max scale the width
+    //// in pixels got to be extended by one pixel when using metric scales
+    //// (see also documentation at class CScaleDivLines).
+    //if (m_eDimensionUnit == EScaleDimensionUnit::Metric) {
+    //    m_fImageSizeWidth_px += 1;
+    //    m_fImageSizeHeight_px += 1;
+    //}
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) ) {
         traceValues(mthTracer, EMethodDir::Leave);
@@ -749,8 +841,11 @@ void CDrawingSize::updateImageSizeMetrics()
         fImageSizeHeight_px -= 1;
     }
 
-    CPhysVal physValWidth(fImageSizeWidth_px, Units.Length.px);
-    CPhysVal physValHeight(fImageSizeHeight_px, Units.Length.px);
+    double fWidth_mm = fImageSizeWidth_px / m_fScreenResolution_px_mm;
+    double fHeight_mm = fImageSizeHeight_px / m_fScreenResolution_px_mm;
+
+    CPhysVal physValWidth(fWidth_mm, Units.Length.mm);
+    CPhysVal physValHeight(fHeight_mm, Units.Length.mm);
 
     physValWidth.convertValue(m_metricUnit);
     physValHeight.convertValue(m_metricUnit);
@@ -822,8 +917,8 @@ QString CDrawingSize::toString() const
         ", Orientation: " + QString(m_eNormedPaperOrientation.isValid() ? m_eNormedPaperOrientation.toString() : "Invalid") +
         ", Scale (" + QString::number(m_iMetricScaleFactorDividend) +
             "/" + QString::number(m_iMetricScaleFactorDivisor) + ")" +
-        ", Size (" + CPhysVal(m_fImageMetricWidth, m_metricUnit, m_fImageMetricRes).toString() +
-            " * " + CPhysVal(m_fImageMetricHeight, m_metricUnit, m_fImageMetricRes).toString() + ")" +
+        ", Size (" + CPhysVal(m_fImageMetricWidth, m_metricUnit, imageCoorsResolution(m_metricUnit)).toString() +
+            " * " + CPhysVal(m_fImageMetricHeight, m_metricUnit, imageCoorsResolution(m_metricUnit)).toString() + ")" +
         ", Size (" + CPhysVal(m_fImageSizeWidth_px, Units.Length.px, m_fImageSizeRes_px).toString() +
             " * " + CPhysVal(m_fImageSizeHeight_px, Units.Length.px, m_fImageSizeRes_px).toString() + ")";
     return str;
@@ -843,8 +938,8 @@ void CDrawingSize::traceValues(CMethodTracer& mthTracer, EMethodDir i_methodDir)
         ", NormedOrientation: " + QString(m_eNormedPaperOrientation.isValid() ? m_eNormedPaperOrientation.toString() : "---") +
         ", Scale (" + QString::number(m_iMetricScaleFactorDividend) +
             + "/" + QString::number(m_iMetricScaleFactorDivisor) + ")" +
-        ", Size (" + CPhysVal(m_fImageMetricWidth, m_metricUnit, m_fImageMetricRes).toString() +
-            " * " + CPhysVal(m_fImageMetricHeight, m_metricUnit, m_fImageMetricRes).toString() + ")" +
+        ", Size (" + CPhysVal(m_fImageMetricWidth, m_metricUnit, imageCoorsResolution(m_metricUnit)).toString() +
+            " * " + CPhysVal(m_fImageMetricHeight, m_metricUnit, imageCoorsResolution(m_metricUnit)).toString() + ")" +
         ", Size (" + CPhysVal(m_fImageSizeWidth_px, Units.Length.px, m_fImageSizeRes_px).toString() +
             " * " + CPhysVal(m_fImageSizeHeight_px, Units.Length.px, m_fImageSizeRes_px).toString() + ")";
     mthTracer.trace(strMthLog);

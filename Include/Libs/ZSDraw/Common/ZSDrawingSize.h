@@ -66,13 +66,16 @@ public: // operators
     bool operator == (const CDrawingSize& i_other) const;
     bool operator != (const CDrawingSize& i_other) const;
 public: // instance methods
-    void onDrawUnitsLengthResolutionChanged();
-public: // instance methods
     void setDimensionUnit( const ZS::System::CEnumScaleDimensionUnit& i_eDimensionUnit );
     ZS::System::CEnumScaleDimensionUnit dimensionUnit() const;
-    void setResolution(const ZS::PhysVal::CPhysValRes& i_physValRes);
-    ZS::PhysVal::CPhysValRes resolution() const;
     ZS::PhysVal::CUnit unit() const;
+public: // instance methods
+    void setScreenResolutionInPxPerMM(double i_fRes_px_mm);
+    double screenResolutionInPxPerMM() const;
+    ZS::PhysVal::CPhysVal screenPixelWidth(const ZS::PhysVal::CUnit& i_unit) const;
+    void setMetricImageCoorsDecimals(int i_iDecimals);
+    int metricImageCoorsDecimals() const;
+    ZS::PhysVal::CPhysValRes imageCoorsResolution(const ZS::PhysVal::CUnit& i_unit) const;
 public: // instance methods
     void setMetricUnit(const ZS::PhysVal::CUnit& i_unit);
     ZS::PhysVal::CUnit metricUnit() const;
@@ -106,8 +109,14 @@ private: // instance members
     ZS::System::CEnumScaleDimensionUnit m_eDimensionUnit;
     /*!< If m_eDimensionUnit is Metric the metric unit (mm, cm, m, etc.) is set here. */
     ZS::PhysVal::CUnit m_metricUnit;
-    /*!< Resolution of the metric sizes in metric unit. */
-    double m_fImageMetricRes;
+    /*!< Resolution of a pixel on the screen in pixels/mm.
+         The screen resolution in "pixels/mm" is automatically detected by a system call via
+         "QPaintDevice::logicalDpi". This automatically detected value is just an approximate
+         value and may be overwritten. */
+    double m_fScreenResolution_px_mm;
+    /*!< Number of valid decimals for editing and indicating coordinates in metric system.
+         The number of decimals defines the resolution of the coordinates. */
+    int m_iImageMetricCoorsDecimals;
     /*!< Width of the image in metric unit. */
     double m_fImageMetricWidth;
     /*!< Height of the image in metric unit. */

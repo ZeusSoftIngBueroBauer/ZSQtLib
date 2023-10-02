@@ -1988,7 +1988,7 @@ CPhysVal CGraphObj::getMinimumWidth(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    CPhysVal physValWidth(0.0, drawingSize.unit(), drawingSize.resolution());
+    CPhysVal physValWidth(0.0, drawingSize.unit(), drawingSize.imageCoorsResolution(drawingSize.unit()));
     if (m_physValSizeFixed.width() > 0.0) {
         physValWidth = m_physValSizeFixed.width();
     }
@@ -2044,7 +2044,7 @@ CPhysVal CGraphObj::getMinimumHeight(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    CPhysVal physValHeight(0.0, drawingSize.unit(), drawingSize.resolution());
+    CPhysVal physValHeight(0.0, drawingSize.unit(), drawingSize.imageCoorsResolution(drawingSize.unit()));
     if (m_physValSizeFixed.height() > 0.0) {
         physValHeight = m_physValSizeFixed.height();
     }
@@ -2160,7 +2160,7 @@ CPhysVal CGraphObj::getMaximumWidth(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    CPhysVal physValWidth(0.0, drawingSize.unit(), drawingSize.resolution());
+    CPhysVal physValWidth(0.0, drawingSize.unit(), drawingSize.imageCoorsResolution(drawingSize.unit()));
     if (m_physValSizeFixed.width() > 0.0) {
         physValWidth = m_physValSizeFixed.width();
     }
@@ -2216,7 +2216,7 @@ CPhysVal CGraphObj::getMaximumHeight(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    CPhysVal physValHeight(0.0, drawingSize.unit(), drawingSize.resolution());
+    CPhysVal physValHeight(0.0, drawingSize.unit(), drawingSize.imageCoorsResolution(drawingSize.unit()));
     if (m_physValSizeFixed.height() > 0.0) {
         physValHeight = m_physValSizeFixed.height();
     }
@@ -2334,7 +2334,7 @@ CPhysVal CGraphObj::getFixedWidth(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    CPhysVal physValWidth(0.0, drawingSize.unit(), drawingSize.resolution());
+    CPhysVal physValWidth(0.0, drawingSize.unit(), drawingSize.imageCoorsResolution(drawingSize.unit()));
     if (m_physValSizeFixed.width() > 0.0) {
         physValWidth = m_physValSizeFixed.width();
     }
@@ -2392,7 +2392,7 @@ CPhysVal CGraphObj::getFixedHeight(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    CPhysVal physValHeight(0.0, drawingSize.unit(), drawingSize.resolution());
+    CPhysVal physValHeight(0.0, drawingSize.unit(), drawingSize.imageCoorsResolution(drawingSize.unit()));
     if (m_physValSizeFixed.height() > 0.0) {
         physValHeight = m_physValSizeFixed.height();
     }
@@ -2735,7 +2735,7 @@ CPhysVal CGraphObj::getWidth( const CUnit& i_unit, ECoordinatesVersion i_version
 {
 #pragma message(__TODO__"Pure virtual")
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    CPhysVal physValWidth(0.0, drawingSize.unit(), drawingSize.resolution().getVal());
+    CPhysVal physValWidth(0.0, drawingSize.unit(), drawingSize.imageCoorsResolution(drawingSize.unit()).getVal());
     if (i_version == ECoordinatesVersion::Original) {
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
         fWidth = m_sizOrig.width();
@@ -2756,7 +2756,7 @@ CPhysVal CGraphObj::getHeight( const CUnit& i_unit, ECoordinatesVersion i_versio
 {
 #pragma message(__TODO__"Pure virtual")
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    CPhysVal physValHeight(0.0, drawingSize.unit(), drawingSize.resolution().getVal());
+    CPhysVal physValHeight(0.0, drawingSize.unit(), drawingSize.imageCoorsResolution(drawingSize.unit()).getVal());
     if (i_version == ECoordinatesVersion::Original) {
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
         fHeight = m_sizOrig.height();

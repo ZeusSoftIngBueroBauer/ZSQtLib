@@ -319,7 +319,7 @@ protected: // overridables of base class QGraphicsScene
     virtual void drawBackground( QPainter* i_pPainter, const QRectF& i_rect );
     virtual void drawForeground( QPainter* i_pPainter, const QRectF& i_rect );
 protected slots:
-    void onDrawUnitsLengthResolutionChanged();
+    void onDrawUnitsScreenResolutionInPxPerMMChanged();
 protected slots:
     void onGraphObjFactoryDestroyed( QObject* i_pObjFactory );
 protected slots:

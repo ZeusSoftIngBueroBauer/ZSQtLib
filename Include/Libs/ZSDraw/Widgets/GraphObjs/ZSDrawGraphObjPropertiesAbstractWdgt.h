@@ -38,6 +38,7 @@ may result in using the software modules.
 
 class QCheckBox;
 class QComboBox;
+class QDoubleSpinBox;
 class QFontComboBox;
 class QGroupBox;
 class QLabel;

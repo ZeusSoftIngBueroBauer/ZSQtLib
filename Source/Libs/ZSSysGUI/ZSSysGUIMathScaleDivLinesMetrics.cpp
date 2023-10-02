@@ -953,6 +953,7 @@ void CScaleDivLinesMetrics::updateDivLineLabelsBoundingRects()
             QRect rectDivLineLabel;
 
             rectDivLineLabel.setHeight(m_sizeMaxTextExtent.height());
+            rectDivLineLabel.setWidth(m_sizeMaxTextExtent.width());
 
             for (int idxDivLine = 0; idxDivLine < m_ariDivLinesCount[iLayer]; idxDivLine++)
             {
@@ -962,8 +963,8 @@ void CScaleDivLinesMetrics::updateDivLineLabelsBoundingRects()
                 // At the horizontal (X) axis the labels will be output centered below the division lines
                 // and we can remove trailing zeros:
                 removeTrailingZeros(&strDivLineLabel);
-                rectDivLineLabel = fntmtr.boundingRect(strDivLineLabel);
-                rectDivLineLabel.setWidth(rectDivLineLabel.width() + m_iSpacing_px);
+                //rectDivLineLabel = fntmtr.boundingRect(strDivLineLabel);
+                //rectDivLineLabel.setWidth(rectDivLineLabel.width() + m_iSpacing_px);
                 rectDivLineLabel.moveLeft(xDivLine_px - rectDivLineLabel.width()/2);
 
                 // To discover overlapping division line labels the rectangle extents of the

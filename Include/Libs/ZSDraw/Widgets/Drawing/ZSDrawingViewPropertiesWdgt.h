@@ -35,7 +35,6 @@ namespace ZS
 namespace Draw
 {
 class CDrawingView;
-class CDlgDrawingViewEditProperty;
 
 //******************************************************************************
 class ZSDRAWDLL_API CWdgtDrawingViewProperties : public CWdgtGraphObjPropertiesAbstract
@@ -59,9 +58,12 @@ public: // overridables of base class CWdgtGraphObjPropertiesAbstract
 protected slots: // overridables of base class CWdgtGraphObjPropertiesAbstract
     void onDrawingSceneDrawingSizeChanged(const CDrawingSize& i_drawingSize) override;
 protected slots:
+    void onDrawUnitsScreenResolutionInPxPerMMChanged();
     void onDrawingViewGridSettingsChanged(const CDrawGridSettings& i_gridSettings);
 protected slots:
     void onCmbDimensionUnitCurrentIndexChanged(int i_idx);
+    void onEdtScreenPixelResolutionPxPerMMValueChanged(double i_fRes_px_mm);
+    void onEdtImageCoorsDecimalsValueChanged(int i_iDecimals);
     void onCmbImageMetricUnitCurrentIndexChanged(int i_idx);
     void onEdtImageMetricWidthValueChanged(const ZS::PhysVal::CPhysVal& i_physValWidth);
     void onEdtImageMetricHeightValueChanged(const ZS::PhysVal::CPhysVal& i_physValHeight);
@@ -87,9 +89,10 @@ protected slots:
     void onBtnGridScaleLabelsFontStyleItalicToggled(int i_iState);
     void onBtnGridScaleLabelsTextEffectUnderlineToggled(int i_iState);
     void onBtnGridScaleLabelsTextEffectStrikeoutToggled(int i_iState);
-    void onDlgEditPropertyDestroyed(QObject* i_pObj = nullptr);
 protected: // instance methods
     void setDimensionUnit( const ZS::System::CEnumScaleDimensionUnit& i_eDimensionUnit );
+    void setScreenPixelResolutionInPxPerMM(double i_fRes_px_mm);
+    void setImageCoorsDecimals(int i_iDecimals);
     void setMetricUnit( const ZS::PhysVal::CUnit& i_metricUnit );
     void setNormedPaperSize( const CEnumNormedPaperSize& i_ePaperSize );
     void setNormedPaperOrientation( const ZS::System::CEnumOrientation& i_eOrientation );
@@ -110,7 +113,7 @@ protected: // instance methods
     void setGridLabelsTextEffect(const ETextEffect i_textEffect);
 protected: // instance methods
     void updateDimensionUnit();
-    void updateResolution();
+    void updateResolutions();
     void updateImageSizeInPixels();
     void updateImageSizeMetrics();
     void updatePaperFormat();
@@ -123,10 +126,6 @@ protected: // instance methods
     void updateGridLabelsTextStyleItalicButton();
     void updateGridLabelsTextEffectUnderlineButton();
     void updateGridLabelsTextEffectStrikeoutButton();
-protected: // instance methods
-    void registerEditPropertyDialog(QLineEdit* i_pEdtWidget);
-protected: // overridables of base class QObject
-    bool eventFilter(QObject* i_pObjWatched, QEvent* i_pEv) override;
 protected: // instance methods (method tracing)
     void traceValues(ZS::System::CMethodTracer& i_mthTracer, ZS::System::EMethodDir i_methodDir);
 protected: // instance members
@@ -144,15 +143,15 @@ protected: // instance members
     // Metric system
     QWidget* m_pWdgtMetric;
     QVBoxLayout* m_pLytWdgtMetric;
-    // Resolution of a pixel on screen
+    // Resolutions of pixel on screen, editing and indicating coordinates
     QHBoxLayout* m_pLytSepLineResolution;
     QLabel* m_pLblSepLineResolution;
     ZS::System::GUI::CSepLine* m_pSepLineResolution;
-    QHBoxLayout* m_pLytLineResolution;
-    QLabel* m_pLblResolution_pxpi;
-    QLineEdit* m_pEdtResolution_pxpi;
-    QLabel* m_pLblResolution_pxpmm;
-    QLineEdit* m_pEdtResolution_pxpmm;
+    QHBoxLayout* m_pLytLineResolutions;
+    QLabel* m_pLblScreenPixelResolution_pxpmm;
+    QDoubleSpinBox* m_pEdtScreenPixelResolution_pxpmm;
+    QLabel* m_pLblImageCoorsDecimals;
+    QSpinBox* m_pEdtImageCoorsDecimals;
     // Image Size in Metric System
     QHBoxLayout* m_pLytSepLineImageMetric;
     QLabel* m_pLblSepLineImageMetric;
@@ -218,9 +217,6 @@ protected: // instance members
     QPushButton* m_pBtnGridScaleLabelsFontStyleItalic;
     QPushButton* m_pBtnGridScaleLabelsTextEffectUnderline;
     QPushButton* m_pBtnGridScaleLabelsTextEffectStrikeout;
-    // Dialog to edit and immediately apply changed properties.
-    QHash<QString, QWidget*> m_hshpRegisteredEditPropertyDialogs;
-    CDlgDrawingViewEditProperty* m_pDlgEditProperty;
 
 }; // class CWdgtDrawingViewProperties
 
