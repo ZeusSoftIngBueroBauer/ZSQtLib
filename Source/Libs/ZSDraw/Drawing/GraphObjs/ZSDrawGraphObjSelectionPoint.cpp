@@ -799,9 +799,8 @@ void CGraphObjSelectionPoint::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
                 case ESelectionPoint::RotateTop:
                 case ESelectionPoint::RotateBottom:
                 {
-                    QBitmap bmpCursor(":/ZS/Draw/CursorRotateFree16x16.bmp");
-                    QBitmap bmpCursorMask = bmpCursor.createHeuristicMask();
-                    cursor = QCursor(bmpCursor,bmpCursorMask);
+                    QBitmap bmpCursor(":/ZS/Draw/CursorRotateFree16x16.png");
+                    cursor = QCursor(bmpCursor);
                     break;
                 }
                 default:
@@ -918,9 +917,8 @@ void CGraphObjSelectionPoint::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
                 case ESelectionPoint::RotateTop:
                 case ESelectionPoint::RotateBottom:
                 {
-                    QBitmap bmpCursor(":/ZS/Draw/CursorRotateFree16x16.bmp");
-                    QBitmap bmpCursorMask = bmpCursor.createHeuristicMask();
-                    cursor = QCursor(bmpCursor,bmpCursorMask);
+                    QBitmap bmpCursor(":/ZS/Draw/CursorRotateFree16x16.png");
+                    cursor = QCursor(bmpCursor);
                     break;
                 }
                 default:

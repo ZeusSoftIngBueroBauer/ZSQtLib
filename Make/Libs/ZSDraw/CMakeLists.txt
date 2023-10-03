@@ -105,6 +105,7 @@ list(APPEND _HeadersWidgetsGraphObjFormat
 list(APPEND _HeadersWidgetsGraphObjs
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLineGeometryEditPropertyDlg.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLineGeometryPropertiesWdgt.h
+    ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLineStylePropertiesWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLinePropertiesWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjPropertiesAbstractWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjPropertiesLabelsWdgt.h
@@ -209,6 +210,7 @@ list(APPEND _SourcesWidgetsGraphObjFormat
 list(APPEND _SourcesWidgetsGraphObjs
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLineGeometryEditPropertyDlg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLineGeometryPropertiesWdgt.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLineStylePropertiesWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLinePropertiesWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjPropertiesAbstractWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjPropertiesLabelsWdgt.cpp
@@ -245,39 +247,37 @@ list(APPEND _Resources
 )
 
 list(APPEND _Images
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/CursorPin16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/CursorPin32x32.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/CursorRotateFree16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/CursorSelect16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawConnectionLine16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawConnectionPoint16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawEllipse16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawImage16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawLabel16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawLine16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawPoint16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawPolygon16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawPolyline16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawRect16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawSelectionPoint16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawText16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawToolBrush16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawToolGeometry16x16.png
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawToolLine16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawToolMirrorHorizontal16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawToolMirrorVertical16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawToolPen16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawToolRotateLeftBy90Degrees16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawToolRotateRightBy90Degrees16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawToolText16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/EditGroup16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/EditUngroup16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/FilePageSetup16x16.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/CursorPin16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/CursorPin32x32.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/CursorRotateFree16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/CursorSelect16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/GraphObjConnectionLine16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/GraphObjConnectionPoint16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/GraphObjEllipse16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/GraphObjImage16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/GraphObjLabel16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/GraphObjLine16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/GraphObjPolygon16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/GraphObjPolyline16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/GraphObjRect16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/GraphObjSelectionPoint16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/GraphObjText16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawSettingsBrushStyle16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawSettingsGeometry16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawSettingsLineStyle16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawSettingsTextStyle16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawToolMirrorHorizontal16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawToolMirrorVertical16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawToolRotateLeftBy90Degrees16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawToolRotateRightBy90Degrees16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/EditGroup16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/EditUngroup16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/PageSetup16x16.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/Key16x16.png
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/Refresh16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/Refresh24x24.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/Refresh32x32.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ToolBtn24x16.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/Pen16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/Refresh16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/Refresh24x24.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/Refresh32x32.png
 )
 
 if(WIN32)

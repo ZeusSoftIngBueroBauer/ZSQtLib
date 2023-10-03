@@ -56,6 +56,7 @@ public: // class members
 
 bool CWdgtGraphObjPropertiesAbstract::s_bWdgtLabelsVisible = false;
 bool CWdgtGraphObjPropertiesAbstract::s_bWdgtGeometryVisible = false;
+bool CWdgtGraphObjPropertiesAbstract::s_bWdgtLineStyleVisible = false;
 
 /*==============================================================================
 public: // ctors and dtor
@@ -76,6 +77,7 @@ CWdgtGraphObjPropertiesAbstract::CWdgtGraphObjPropertiesAbstract(
     m_graphObjTypePrev(EGraphObjTypeUndefined),
     m_bContentUpdateOnSelectedChanged(false),
     m_bContentUpdateOnGeometryChanged(false),
+    m_bContentUpdateOnDrawSettingsChanged(false),
     m_bContentChanged(false),
     m_iContentChangedSignalBlockedCounter(0),
     // Edit Controls
@@ -132,6 +134,7 @@ CWdgtGraphObjPropertiesAbstract::~CWdgtGraphObjPropertiesAbstract()
     m_graphObjTypePrev = static_cast<EGraphObjType>(0);
     m_bContentUpdateOnSelectedChanged = false;
     m_bContentUpdateOnGeometryChanged = false;
+    m_bContentUpdateOnDrawSettingsChanged = false;
     m_bContentChanged = false;
     m_iContentChangedSignalBlockedCounter = 0;
     // Edit Controls
@@ -235,6 +238,11 @@ bool CWdgtGraphObjPropertiesAbstract::setKeyInTree( const QString& i_strKeyInTre
                     m_pGraphObj, &CGraphObj::geometryChanged,
                     this, &CWdgtGraphObjPropertiesAbstract::onGraphObjGeometryChanged);
             }
+            if (m_bContentUpdateOnDrawSettingsChanged) {
+                QObject::disconnect(
+                    m_pGraphObj, &CGraphObj::drawSettingsChanged,
+                    this, &CWdgtGraphObjPropertiesAbstract::onGraphObjDrawSettingsChanged);
+            }
         }
 
         m_strKeyInTree = i_strKeyInTree;
@@ -260,6 +268,11 @@ bool CWdgtGraphObjPropertiesAbstract::setKeyInTree( const QString& i_strKeyInTre
                 QObject::connect(
                     m_pGraphObj, &CGraphObj::geometryChanged,
                     this, &CWdgtGraphObjPropertiesAbstract::onGraphObjGeometryChanged);
+            }
+            if (m_bContentUpdateOnDrawSettingsChanged) {
+                QObject::connect(
+                    m_pGraphObj, &CGraphObj::drawSettingsChanged,
+                    this, &CWdgtGraphObjPropertiesAbstract::onGraphObjDrawSettingsChanged);
             }
         }
 
@@ -540,9 +553,11 @@ void CWdgtGraphObjPropertiesAbstract::updateButtonsEnabled()
     Derived classes should overwrite this method.
 
     The ContentChangedSignalBlocked counter has been incrememented by the
-    acceptChanges method as onGraphObjChanged is called as a reentry when
-    applying the changes at the graphical object. onGraphObjChanged should
-    return in this case without doing anything.
+    acceptChanges method as on changing properties of the graphical object
+    the on<Properties>Changed slots are called as reentries when applying the
+    changes at the graphical object. The on<Properties>Changed slots should
+    not call fillEditControls when applying the changes at the graphical object
+    as that would overwrite current settings with old setting.
 */
 void CWdgtGraphObjPropertiesAbstract::applySettings()
 //------------------------------------------------------------------------------
@@ -580,8 +595,9 @@ protected slots: // overridables
 //------------------------------------------------------------------------------
 /*! @brief Slot method connected to the selectedChanged signal of the graphical object.
 
-    The method calls fillEditControls. Derived classes should overwrite this method
-    to fill their edit controls with the current data of the graphical object.
+    The method calls fillEditControls. Derived classes should overwrite the
+    fillEditControls method to fill their edit controls with the current data
+    of the graphical object.
 
     The ContentChangedSignalBlocked counter is incrememented before fillEditControls
     is called as the "contentChanged" signal should not be emitted for each applied
@@ -589,13 +605,12 @@ protected slots: // overridables
     graphical objects have been set at all edit controls of the property widget and
     fillEditControls returns.
 
-    In the fillEditControls method of the derived class the flag "contentChanged"
-    has to be set if the ContentChangedSignalBlocked counter is greater than 0
-    and the property has been applied to the edit control instead of emitting
-    the contentChanged signal.
+    Instead of emitting the contentChanged signal the derived class should set the flag
+    "contentChanged" in the fillEditControls method if the ContentChangedSignalBlocked
+    counter is greater than 0 and the property has been applied to the edit control.
 
-    After invoking fillEditControls the method onGraphObjSelectedChanged will check the
-    flag and emit the contentChanged signal if needed.
+    After invoking fillEditControls the method onGraphObjSelectedChanged checks the
+    "contentChanged" flag and emits the contentChanged signal if needed.
 */
 void CWdgtGraphObjPropertiesAbstract::onGraphObjSelectedChanged()
 //------------------------------------------------------------------------------
@@ -637,22 +652,9 @@ void CWdgtGraphObjPropertiesAbstract::onGraphObjSelectedChanged()
 //------------------------------------------------------------------------------
 /*! @brief Slot method connected to the geometryChanged signal of the graphical object.
 
-    The method calls fillEditControls. Derived classes should overwrite this method
-    to fill their edit controls with the current data of the graphical object.
-
-    The ContentChangedSignalBlocked counter is incrememented before fillEditControls
-    is called as the "contentChanged" signal should not be emitted for each applied
-    property. This signal should just be emitted once after all properties from the
-    graphical objects have been set at all edit controls of the property widget and
-    fillEditControls returns.
-
-    In the fillEditControls method of the derived class the flag "contentChanged"
-    has to be set if the ContentChangedSignalBlocked counter is greater than 0
-    and the property has been applied to the edit control instead of emitting
-    the contentChanged signal.
-
-    After invoking fillEditControls the method onGraphObjSelectedChanged will check the
-    flag and emit the contentChanged signal if needed.
+    See description of method onGraphObjSelectedChanged on how derived classes
+    should handle the content changed flag and the content changed signal blocked
+    counter in method fillEditControls.
 */
 void CWdgtGraphObjPropertiesAbstract::onGraphObjGeometryChanged()
 //------------------------------------------------------------------------------
@@ -661,6 +663,50 @@ void CWdgtGraphObjPropertiesAbstract::onGraphObjGeometryChanged()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "CWdgtGraphObjPropertiesAbstract::onGraphObjGeometryChanged",
+        /* strAddInfo   */ "" );
+
+    // When applying the changes from the edit controls by invoking "acceptChanges"
+    // the ContentChangedSignalBlockedCounter is incremented to avoid that
+    // "onGraphObjChanged" overwrites settings in edit controls which haven't been
+    // applied yet. E.g. if the line width and the pen color are changed, both values
+    // will be set one after another at the graphical object. When applying line width
+    // "onGraphObjChanged" is called and the current pen color setting of the user
+    // control would be overwritten with the current pen color of the graphical object.
+    if (m_iContentChangedSignalBlockedCounter == 0)
+    {
+        {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
+
+            // Here the derived class should apply the properties from the graphical
+            // object to the edit controls.
+            fillEditControls();
+        }
+
+        // If the "contentChanged" signal is no longer blocked and the content of
+        // properties widget has been changed ...
+        if (m_iContentChangedSignalBlockedCounter == 0 && m_bContentChanged) {
+            // .. emit the contentChanged signal and update the enabled state
+            // of the Apply and Reset buttons.
+            updateButtonsEnabled();
+            emit_contentChanged();
+            m_bContentChanged = false;
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Slot method connected to the drawSettingsChanged signal of the graphical object.
+
+    See description of method onGraphObjSelectedChanged on how derived classes
+    should handle the content changed flag and the content changed signal blocked
+    counter in method fillEditControls.
+*/
+void CWdgtGraphObjPropertiesAbstract::onGraphObjDrawSettingsChanged()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "CWdgtGraphObjPropertiesAbstract::onGraphObjDrawSettingsChanged",
         /* strAddInfo   */ "" );
 
     // When applying the changes from the edit controls by invoking "acceptChanges"

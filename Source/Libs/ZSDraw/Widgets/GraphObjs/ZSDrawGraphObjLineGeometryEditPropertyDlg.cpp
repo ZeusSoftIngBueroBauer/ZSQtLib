@@ -96,7 +96,7 @@ CDlgGraphObjLineGeometryEditProperty::CDlgGraphObjLineGeometryEditProperty(
     setWindowTitle(QCoreApplication::applicationName() + ": Enter Value");
 
     s_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
-        NameSpace() + "::Widgets::GraphObjs", ClassName());
+        NameSpace() + "::Widgets::GraphObjs::StandardShapes", ClassName());
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ s_pTrcAdminObj,

@@ -60,7 +60,7 @@ using namespace ZS::Draw;
 
 
 /*******************************************************************************
-class CWdgtGraphObjPropertiesLabels : public CWdgtFormatGraphObjs
+class CWdgtGraphObjPropertiesLabels : public CWdgtGraphObjPropertiesAbstract
 *******************************************************************************/
 
 /*==============================================================================
@@ -115,7 +115,12 @@ CWdgtGraphObjPropertiesLabels::CWdgtGraphObjPropertiesLabels(
     m_pLyt->addWidget(m_pWdgtHeadline);
 
     m_pBtnCollapse = new QPushButton();
-    m_pBtnCollapse->setIcon(m_pxmBtnDown);
+    if (s_bWdgtLabelsVisible) {
+        m_pBtnCollapse->setIcon(m_pxmBtnUp);
+    }
+    else {
+        m_pBtnCollapse->setIcon(m_pxmBtnDown);
+    }
     m_pLytWdgtHeadline->addWidget(m_pBtnCollapse);
 
     QObject::connect(

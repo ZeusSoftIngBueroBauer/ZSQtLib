@@ -165,9 +165,6 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pEdtGridLinesWidth(nullptr),
     m_pPxmBtnGridLinesColor(nullptr),
     m_rctBtnGridLinesColor(0, 12, 16, 4),
-    m_lineBtnGridLinesColor1(QPoint(0,2), QPoint(8,2)),
-    m_lineBtnGridLinesColor2(QPoint(0,2), QPoint(0,10)),
-    m_lineBtnGridLinesColor3(QPoint(0,10), QPoint(5,10)),
     m_pBtnGridLinesColor(nullptr),
     // Grid Scale Labels
     m_pLblGridScaleLabels(nullptr),
@@ -675,8 +672,7 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
         this, &CWdgtDrawingViewProperties::onEdtGridLinesWidthValueChanged);
 
     iClm = iClmBtnLinesColor;
-    m_pPxmBtnGridLinesColor = new QPixmap(":/ZS/Draw/DrawToolPen16x16.bmp");
-    m_pPxmBtnGridLinesColor->setMask(m_pPxmBtnGridLinesColor->createHeuristicMask());
+    m_pPxmBtnGridLinesColor = new QPixmap(":/ZS/Draw/DrawSettingsLineStyle16x16.png");
     m_pBtnGridLinesColor = new QPushButton();
     updateGridLinesColorButtonIcon();
     m_pLytGridSettings->addWidget(m_pBtnGridLinesColor, iRow, iClm);
@@ -721,8 +717,7 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
         this, &CWdgtDrawingViewProperties::onCmbGridScaleLabelsFontSizeCurrentIndexChanged);
 
     iClm = iClmBtnTextColor;
-    m_pPxmBtnGridScaleLabelsTextColor = new QPixmap(":/ZS/Draw/DrawToolText16x16.bmp");
-    m_pPxmBtnGridScaleLabelsTextColor->setMask(m_pPxmBtnGridScaleLabelsTextColor->createHeuristicMask());
+    m_pPxmBtnGridScaleLabelsTextColor = new QPixmap(":/ZS/Draw/DrawSettingsTextStyle16x16.png");
     m_pBtnGridScaleLabelsTextColor = new QPushButton();
     updateGridLabelsTextColorButtonIcon();
     m_pLytGridSettings->addWidget(m_pBtnGridScaleLabelsTextColor, iRow, iClm);
@@ -896,9 +891,6 @@ CWdgtDrawingViewProperties::~CWdgtDrawingViewProperties()
     m_pEdtGridLinesWidth = nullptr;
     m_pPxmBtnGridLinesColor = nullptr;
     //m_rctBtnGridLinesColor;
-    //m_lineBtnGridLinesColor1;
-    //m_lineBtnGridLinesColor2;
-    //m_lineBtnGridLinesColor3;
     m_pBtnGridLinesColor = nullptr;
     // Grid Scale Labels
     m_pLblGridScaleLabels = nullptr;
@@ -2540,16 +2532,9 @@ void CWdgtDrawingViewProperties::updateGridLinesColorButtonIcon()
         /* strAddInfo   */ "" );
 
     QPainter painter(m_pPxmBtnGridLinesColor);
-
     painter.setPen(m_gridSettings.linesColor());
-    painter.setBrush(Qt::NoBrush);
-    painter.drawLine(m_lineBtnGridLinesColor1);
-    painter.drawLine(m_lineBtnGridLinesColor2);
-    painter.drawLine(m_lineBtnGridLinesColor3);
-    painter.setPen(Qt::NoPen);
     painter.setBrush(m_gridSettings.linesColor());
     painter.drawRect(m_rctBtnGridLinesColor);
-
     m_pBtnGridLinesColor->setIcon(*m_pPxmBtnGridLinesColor);
 }
 

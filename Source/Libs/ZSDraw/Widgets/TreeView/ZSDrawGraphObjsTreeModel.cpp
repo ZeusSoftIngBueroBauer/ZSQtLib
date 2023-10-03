@@ -94,20 +94,14 @@ CModelIdxTreeGraphObjs::CModelIdxTreeGraphObjs(
     m_iconRootEntry.addPixmap(pxmRootEntrySelectedOff, QIcon::Selected, QIcon::Off);
     m_iconRootEntry.addPixmap(pxmRootEntrySelectedOn, QIcon::Selected, QIcon::On);
 
-    QPixmap pxmSelectionPointNormalOff(":/ZS/Draw/DrawSelectionPoint16x16.bmp");
-    pxmSelectionPointNormalOff.setMask(pxmSelectionPointNormalOff.createHeuristicMask());
-
-    QPixmap pxmSelectionPointEntrySelectedOff(":/ZS/Draw/DrawSelectionPoint16x16.bmp");
-    pxmSelectionPointEntrySelectedOff.setMask(pxmSelectionPointEntrySelectedOff.createHeuristicMask());
+    QPixmap pxmSelectionPointNormalOff(":/ZS/Draw/GraphObjSelectionPoint16x16.png");
+    QPixmap pxmSelectionPointEntrySelectedOff(":/ZS/Draw/GraphObjSelectionPoint16x16.png");
 
     m_iconSelectionPointEntry.addPixmap(pxmSelectionPointNormalOff, QIcon::Normal, QIcon::Off);
     m_iconSelectionPointEntry.addPixmap(pxmSelectionPointEntrySelectedOff, QIcon::Selected, QIcon::Off);
 
-    QPixmap pxmLabelNormalOff(":/ZS/Draw/DrawLabel16x16.bmp");
-    pxmLabelNormalOff.setMask(pxmLabelNormalOff.createHeuristicMask());
-
-    QPixmap pxmLabelEntrySelectedOff(":/ZS/Draw/DrawLabel16x16.bmp");
-    pxmLabelEntrySelectedOff.setMask(pxmLabelEntrySelectedOff.createHeuristicMask());
+    QPixmap pxmLabelNormalOff(":/ZS/Draw/GraphObjLabel16x16.png");
+    QPixmap pxmLabelEntrySelectedOff(":/ZS/Draw/GraphObjLabel16x16.png");
 
     m_iconLabelEntry.addPixmap(pxmLabelNormalOff, QIcon::Normal, QIcon::Off);
     m_iconLabelEntry.addPixmap(pxmLabelEntrySelectedOff, QIcon::Selected, QIcon::Off);

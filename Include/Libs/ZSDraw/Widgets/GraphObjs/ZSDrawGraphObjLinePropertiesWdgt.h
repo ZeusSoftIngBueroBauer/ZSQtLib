@@ -36,6 +36,7 @@ namespace Draw
 class CDrawingScene;
 class CGraphObjLine;
 class CWdgtGraphObjLineGeometryProperties;
+class CWdgtGraphObjLineStyleProperties;
 class CWdgtGraphObjPropertiesLabels;
 
 //******************************************************************************
@@ -62,9 +63,11 @@ public: // overridables of base class CWdgtGraphObjPropertiesAbstract
 protected slots:
     void onWdgtLabelsContentChanged();
     void onWdgtGeometryContentChanged();
+    void onWdgtLineStyleContentChanged();
 protected: // instance members
     CWdgtGraphObjPropertiesLabels* m_pWdgtLabels;
     CWdgtGraphObjLineGeometryProperties* m_pWdgtGeometry;
+    CWdgtGraphObjLineStyleProperties* m_pWdgtLineStyle;
 
 }; // class CWdgtDrawingViewProperties
 

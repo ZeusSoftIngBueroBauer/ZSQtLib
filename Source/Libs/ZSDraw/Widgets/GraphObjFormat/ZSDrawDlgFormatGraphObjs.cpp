@@ -163,9 +163,8 @@ CDlgFormatGraphObjs::CDlgFormatGraphObjs(
     m_pStackedWdgt = new QStackedWidget();
     m_pLytSettings->addWidget(m_pStackedWdgt,1);
 
-    QIcon   iconLabels;
+    QIcon iconLabels;
     QPixmap pxmLabels(":/ZS/Draw/Key16x16.png");
-    pxmLabels.setMask(pxmLabels.createHeuristicMask());
     iconLabels.addPixmap(pxmLabels);
 
     QListWidgetItem* pListWdgtItemLabels = new QListWidgetItem(iconLabels, c_strWdgtLabels, m_pListWdgt);
@@ -177,9 +176,8 @@ CDlgFormatGraphObjs::CDlgFormatGraphObjs(
 
     if( drawSettings.isPenUsed() )
     {
-        QIcon   iconLine;
-        QPixmap pxmLine(":/ZS/Draw/DrawToolPen16x16.bmp");
-        pxmLine.setMask(pxmLine.createHeuristicMask());
+        QIcon iconLine;
+        QPixmap pxmLine(":/ZS/Draw/DrawSettingsLineStyle16x16.png");
         iconLine.addPixmap(pxmLine);
 
         QListWidgetItem* pListWdgtItemLineStyle = nullptr;
@@ -201,9 +199,8 @@ CDlgFormatGraphObjs::CDlgFormatGraphObjs(
 
     if( drawSettings.isFillUsed() )
     {
-        QIcon   iconFill;
-        QPixmap pxmFill(":/ZS/Draw/DrawToolBrush16x16.bmp");
-        pxmFill.setMask(pxmFill.createHeuristicMask());
+        QIcon iconFill;
+        QPixmap pxmFill(":/ZS/Draw/DrawSettingsBrushStyle16x16.png");
         iconFill.addPixmap(pxmFill);
 
         QListWidgetItem* pListWdgtItemFillStyle = new QListWidgetItem(iconFill, c_strWdgtFillStyle, m_pListWdgt);
@@ -216,9 +213,8 @@ CDlgFormatGraphObjs::CDlgFormatGraphObjs(
 
     if( drawSettings.isTextUsed() )
     {
-        QIcon   iconText;
-        QPixmap pxmText(":/ZS/Draw/DrawToolText16x16.bmp");
-        pxmText.setMask(pxmText.createHeuristicMask());
+        QIcon iconText;
+        QPixmap pxmText(":/ZS/Draw/DrawSettingsTextStyle16x16.png");
         iconText.addPixmap(pxmText);
 
         QListWidgetItem* pListWdgtItemTextStyle = new QListWidgetItem(iconText, c_strWdgtTextStyle, m_pListWdgt);
@@ -229,8 +225,8 @@ CDlgFormatGraphObjs::CDlgFormatGraphObjs(
         m_pStackedWdgt->addWidget(pWdgtTextStyle);
     }
 
-    QIcon   iconGeometry;
-    QPixmap pxmGeometry(":/ZS/Draw/DrawToolGeometry16x16.png");
+    QIcon iconGeometry;
+    QPixmap pxmGeometry(":/ZS/Draw/DrawSettingsGeometry16x16.png");
     iconGeometry.addPixmap(pxmGeometry);
 
     QListWidgetItem* pListWdgtItemGeometry = new QListWidgetItem(iconGeometry, c_strWdgtGeometry, m_pListWdgt);
@@ -242,9 +238,8 @@ CDlgFormatGraphObjs::CDlgFormatGraphObjs(
 
     if( m_pGraphObj != nullptr && m_pGraphObj->isText() )
     {
-        QIcon   iconText;
-        QPixmap pxmText(":/ZS/Draw/DrawText16x16.bmp");
-        pxmText.setMask(pxmText.createHeuristicMask());
+        QIcon iconText;
+        QPixmap pxmText(":/ZS/Draw/GraphObjText16x16.png");
         iconText.addPixmap(pxmText);
 
         QListWidgetItem* pListWdgtItemText = new QListWidgetItem(iconText, c_strWdgtText, m_pListWdgt);
@@ -255,9 +250,8 @@ CDlgFormatGraphObjs::CDlgFormatGraphObjs(
         m_pStackedWdgt->addWidget(pWdgtText);
     }
 
-    QIcon   iconLabelVisibilities;
-    QPixmap pxmLabelVisibilities(":/ZS/Draw/DrawText16x16.bmp");
-    pxmLabelVisibilities.setMask(pxmLabelVisibilities.createHeuristicMask());
+    QIcon iconLabelVisibilities;
+    QPixmap pxmLabelVisibilities(":/ZS/Draw/GraphObjText16x16.png");
     iconLabelVisibilities.addPixmap(pxmLabelVisibilities);
 
     QListWidgetItem* pListWdgtItemLabelVisibilitiess = new QListWidgetItem(iconLabelVisibilities, c_strWdgtLabelVisibilities, m_pListWdgt);

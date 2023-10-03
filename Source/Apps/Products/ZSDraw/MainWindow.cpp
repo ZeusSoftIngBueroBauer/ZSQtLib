@@ -998,8 +998,7 @@ void CMainWindow::createObjFactories()
     // <MenuItem> Edit::Group
     //-----------------------
 
-    QPixmap pxmEditGroup16x16(":/ZS/Draw/EditGroup16x16.bmp");
-    pxmEditGroup16x16.setMask(pxmEditGroup16x16.createMaskFromColor(Qt::white));
+    QPixmap pxmEditGroup16x16(":/ZS/Draw/EditGroup16x16.png");
     m_pObjFactoryGroup = new CObjFactoryGroup(pxmEditGroup16x16);
 
     // <Menu> Draw
@@ -1011,50 +1010,43 @@ void CMainWindow::createObjFactories()
     // <MenuItem> Draw::Standard Shapes::Draw Point
     //---------------------------------------------
 
-    QPixmap pxmDrawStandardShapesPoint16x16(":/ZS/Draw/DrawPoint16x16.bmp");
-    pxmDrawStandardShapesPoint16x16.setMask(pxmDrawStandardShapesPoint16x16.createHeuristicMask());
+    QPixmap pxmDrawStandardShapesPoint16x16(":/ZS/Draw/Pen16x16.png");
     m_pObjFactoryPoint = new CObjFactoryPoint(pxmDrawStandardShapesPoint16x16);
 
     // <MenuItem> Draw::Standard Shapes::Draw Line
     //--------------------------------------------
 
-    QPixmap pxmDrawStandardShapesLine16x16(":/ZS/Draw/DrawLine16x16.bmp");
-    pxmDrawStandardShapesLine16x16.setMask(pxmDrawStandardShapesLine16x16.createHeuristicMask());
+    QPixmap pxmDrawStandardShapesLine16x16(":/ZS/Draw/GraphObjLine16x16.png");
     m_pObjFactoryLine = new CObjFactoryLine(pxmDrawStandardShapesLine16x16);
 
     // <MenuItem> Draw::Standard Shapes::Draw Rect
     //--------------------------------------------
 
-    QPixmap pxmDrawStandardShapesRect16x16(":/ZS/Draw/DrawRect16x16.bmp");
-    pxmDrawStandardShapesRect16x16.setMask(pxmDrawStandardShapesRect16x16.createHeuristicMask());
+    QPixmap pxmDrawStandardShapesRect16x16(":/ZS/Draw/GraphObjRect16x16.png");
     m_pObjFactoryRect = new CObjFactoryRect(pxmDrawStandardShapesRect16x16);
 
     // <MenuItem> Draw::Standard Shapes::Draw Ellipse
     //-----------------------------------------------
 
-    QPixmap pxmDrawStandardShapesEllipse16x16(":/ZS/Draw/DrawEllipse16x16.bmp");
-    pxmDrawStandardShapesEllipse16x16.setMask(pxmDrawStandardShapesEllipse16x16.createHeuristicMask());
+    QPixmap pxmDrawStandardShapesEllipse16x16(":/ZS/Draw/GraphObjEllipse16x16.png");
     m_pObjFactoryEllipse = new CObjFactoryEllipse(pxmDrawStandardShapesEllipse16x16);
 
     // <MenuItem> Draw::Standard Shapes::Draw Polyline
     //------------------------------------------------
 
-    QPixmap pxmDrawStandardShapesPolyline16x16(":/ZS/Draw/DrawPolyline16x16.bmp");
-    pxmDrawStandardShapesPolyline16x16.setMask(pxmDrawStandardShapesPolyline16x16.createHeuristicMask());
+    QPixmap pxmDrawStandardShapesPolyline16x16(":/ZS/Draw/GraphObjPolyline16x16.png");
     m_pObjFactoryPolyline = new CObjFactoryPolyline(pxmDrawStandardShapesPolyline16x16);
 
     // <MenuItem> Draw::Standard Shapes::Draw Polygon
     //------------------------------------------------
 
-    QPixmap pxmDrawStandardShapesPolygon16x16(":/ZS/Draw/DrawPolygon16x16.bmp");
-    pxmDrawStandardShapesPolygon16x16.setMask(pxmDrawStandardShapesPolygon16x16.createHeuristicMask());
+    QPixmap pxmDrawStandardShapesPolygon16x16(":/ZS/Draw/GraphObjPolygon16x16.png");
     m_pObjFactoryPolygon = new CObjFactoryPolygon(pxmDrawStandardShapesPolygon16x16);
 
     // <MenuItem> Draw::Standard Shapes::Draw Text
     //------------------------------------------------
 
-    QPixmap pxmDrawStandardShapesText16x16(":/ZS/Draw/DrawText16x16.bmp");
-    pxmDrawStandardShapesText16x16.setMask(pxmDrawStandardShapesText16x16.createHeuristicMask());
+    QPixmap pxmDrawStandardShapesText16x16(":/ZS/Draw/GraphObjText16x16.png");
     m_pObjFactoryText = new CObjFactoryText(pxmDrawStandardShapesText16x16);
 
     // <Menu> Draw::Graphics
@@ -1063,8 +1055,7 @@ void CMainWindow::createObjFactories()
     // <MenuItem> Draw::Graphics::Image
     //---------------------------------
 
-    QPixmap pxmDrawGraphicsImage16x16(":/ZS/Draw/DrawImage16x16.bmp");
-    pxmDrawGraphicsImage16x16.setMask(pxmDrawGraphicsImage16x16.createHeuristicMask());
+    QPixmap pxmDrawGraphicsImage16x16(":/ZS/Draw/GraphObjImage16x16.png");
     m_pObjFactoryImage = new CObjFactoryImage(pxmDrawGraphicsImage16x16);
 
     // <Menu> Draw::Connections
@@ -1073,15 +1064,13 @@ void CMainWindow::createObjFactories()
     // <MenuItem> Draw::Connections::Draw Connection Point
     //----------------------------------------------------
 
-    QPixmap pxmDrawConnectionPoint16x16(":/ZS/Draw/DrawConnectionPoint16x16.bmp");
-    pxmDrawConnectionPoint16x16.setMask(pxmDrawConnectionPoint16x16.createHeuristicMask());
+    QPixmap pxmDrawConnectionPoint16x16(":/ZS/Draw/GraphObjConnectionPoint16x16.png");
     m_pObjFactoryConnectionPoint = new CObjFactoryConnectionPoint(pxmDrawConnectionPoint16x16);
 
     // <MenuItem> Draw::Connections::Draw Connection Line
     //----------------------------------------------------
 
-    QPixmap pxmDrawConnectionLine16x16(":/ZS/Draw/DrawConnectionLine16x16.bmp");
-    pxmDrawConnectionLine16x16.setMask(pxmDrawConnectionLine16x16.createHeuristicMask());
+    QPixmap pxmDrawConnectionLine16x16(":/ZS/Draw/GraphObjConnectionLine16x16.png");
     m_pObjFactoryConnectionLine = new CObjFactoryConnectionLine(pxmDrawConnectionLine16x16);
 
     // <Menu> Draw::Widgets
@@ -1272,8 +1261,7 @@ void CMainWindow::createActions()
     //----------------------------
 
     QIcon iconFilePageSetup;
-    QPixmap pxmFilePageSetup16x16(":/ZS/Draw/FilePageSetup16x16.bmp");
-    pxmFilePageSetup16x16.setMask(pxmFilePageSetup16x16.createHeuristicMask());
+    QPixmap pxmFilePageSetup16x16(":/ZS/Draw/PageSetup16x16.png");
     iconFilePageSetup.addPixmap(pxmFilePageSetup16x16);
 
     m_pActFilePageSetup = new QAction( iconFilePageSetup, c_strActionNameFilePageSetup.section(":",-1,-1), this );
@@ -1333,8 +1321,7 @@ void CMainWindow::createActions()
     //-------------------------------
 
     QIcon iconEditSelect;
-    QPixmap pxmEditSelect16x16(":/ZS/Draw/CursorSelect16x16.bmp");
-    pxmEditSelect16x16.setMask(pxmEditSelect16x16.createHeuristicMask());
+    QPixmap pxmEditSelect16x16(":/ZS/Draw/CursorSelect16x16.png");
     iconEditSelect.addPixmap(pxmEditSelect16x16);
 
     m_pActEditSelect = new QAction( iconEditSelect, c_strActionNameEditSelect.section(":",-1,-1), this );
@@ -1350,8 +1337,7 @@ void CMainWindow::createActions()
     //------------------------------
 
     QIcon iconEditRotateLeft;
-    QPixmap pxmEditRotateLeft(":/ZS/Draw/DrawToolRotateLeftBy90Degrees16x16.bmp");
-    pxmEditRotateLeft.setMask(pxmEditRotateLeft.createHeuristicMask());
+    QPixmap pxmEditRotateLeft(":/ZS/Draw/DrawToolRotateLeftBy90Degrees16x16.png");
     iconEditRotateLeft.addPixmap(pxmEditRotateLeft);
 
     m_pActEditRotateLeft = new QAction( iconEditRotateLeft, c_strActionNameEditRotateLeft.section(":",-1,-1), this );
@@ -1366,8 +1352,7 @@ void CMainWindow::createActions()
     //-------------------------------
 
     QIcon iconEditRotateRight;
-    QPixmap pxmEditRotateRight(":/ZS/Draw/DrawToolRotateRightBy90Degrees16x16.bmp");
-    pxmEditRotateRight.setMask(pxmEditRotateRight.createHeuristicMask());
+    QPixmap pxmEditRotateRight(":/ZS/Draw/DrawToolRotateRightBy90Degrees16x16.png");
     iconEditRotateRight.addPixmap(pxmEditRotateRight);
 
     m_pActEditRotateRight = new QAction( iconEditRotateRight, c_strActionNameEditRotateRight.section(":",-1,-1), this );
@@ -1387,8 +1372,7 @@ void CMainWindow::createActions()
     //----------------------------------
 
     QIcon iconEditMirrorVertical;
-    QPixmap pxmEditMirrorVertical(":/ZS/Draw/DrawToolMirrorVertical16x16.bmp");
-    pxmEditMirrorVertical.setMask(pxmEditMirrorVertical.createHeuristicMask());
+    QPixmap pxmEditMirrorVertical(":/ZS/Draw/DrawToolMirrorVertical16x16.png");
     iconEditMirrorVertical.addPixmap(pxmEditMirrorVertical);
 
     m_pActEditMirrorVertical = new QAction( iconEditMirrorVertical, c_strActionNameEditMirrorVertical.section(":",-1,-1), this );
@@ -1403,8 +1387,7 @@ void CMainWindow::createActions()
     //------------------------------------
 
     QIcon iconEditMirrorHorizontal;
-    QPixmap pxmEditMirrorHorizontal(":/ZS/Draw/DrawToolMirrorHorizontal16x16.bmp");
-    pxmEditMirrorHorizontal.setMask(pxmEditMirrorHorizontal.createHeuristicMask());
+    QPixmap pxmEditMirrorHorizontal(":/ZS/Draw/DrawToolMirrorHorizontal16x16.png");
     iconEditMirrorHorizontal.addPixmap(pxmEditMirrorHorizontal);
 
     m_pActEditMirrorHorizontal = new QAction( iconEditMirrorHorizontal, c_strActionNameEditMirrorHorizontal.section(":",-1,-1), this );
@@ -1419,8 +1402,7 @@ void CMainWindow::createActions()
     //-----------------------
 
     QIcon iconEditGroup;
-    QPixmap pxmEditGroup16x16(":/ZS/Draw/EditGroup16x16.bmp");
-    pxmEditGroup16x16.setMask(pxmEditGroup16x16.createMaskFromColor(Qt::white));
+    QPixmap pxmEditGroup16x16(":/ZS/Draw/EditGroup16x16.png");
     iconEditGroup.addPixmap(pxmEditGroup16x16);
 
     m_pActEditGroup = new QAction(iconEditGroup, c_strActionNameEditGroup.section(":",-1,-1), this);
@@ -1434,11 +1416,8 @@ void CMainWindow::createActions()
     // <MenuItem> Edit::Ungroup
     //-------------------------
 
-    QIcon   iconEditUngroup;
-    QPixmap pxmEditUngroup16x16(":/ZS/Draw/EditUngroup16x16.bmp");
-
-    pxmEditUngroup16x16.setMask(pxmEditUngroup16x16.createMaskFromColor(Qt::white));
-
+    QIcon iconEditUngroup;
+    QPixmap pxmEditUngroup16x16(":/ZS/Draw/EditUngroup16x16.png");
     iconEditUngroup.addPixmap(pxmEditUngroup16x16);
 
     m_pActEditUngroup = new QAction( iconEditUngroup, c_strActionNameEditUngroup.section(":",-1,-1), this );
@@ -1459,8 +1438,7 @@ void CMainWindow::createActions()
     //--------------------------------
 
     QIcon iconEditDrawSettingsLine;
-    QPixmap pxmEditDrawSettingsLine(":/ZS/Draw/DrawToolPen16x16.bmp");
-    pxmEditDrawSettingsLine.setMask(pxmEditDrawSettingsLine.createHeuristicMask());
+    QPixmap pxmEditDrawSettingsLine(":/ZS/Draw/DrawSettingsLineStyle16x16.png");
     iconEditDrawSettingsLine.addPixmap(pxmEditDrawSettingsLine);
 
     m_pActDrawSettingsLine = new QAction( iconEditDrawSettingsLine, c_strActionNameDrawSettingsLine.section(":",-1,-1), this );
@@ -1474,11 +1452,10 @@ void CMainWindow::createActions()
     //---------------------------------
 
     QIcon iconEditDrawSettingsFill;
-    QPixmap pxmEditDrawSettingsFill(":/ZS/Draw/DrawToolBrush16x16.bmp");
-    pxmEditDrawSettingsFill.setMask(pxmEditDrawSettingsFill.createHeuristicMask());
+    QPixmap pxmEditDrawSettingsFill(":/ZS/Draw/DrawSettingsBrushStyle16x16.png");
     iconEditDrawSettingsFill.addPixmap(pxmEditDrawSettingsFill);
 
-    m_pActDrawSettingsFill = new QAction( iconEditDrawSettingsFill, c_strActionNameDrawSettingsFill.section(":",-1,-1), this );
+    m_pActDrawSettingsFill = new QAction(iconEditDrawSettingsFill, c_strActionNameDrawSettingsFill.section(":",-1,-1), this);
     m_pActDrawSettingsFill->setStatusTip( tr("Draw Settings Fill Style") );
 
     QObject::connect(
@@ -1489,8 +1466,7 @@ void CMainWindow::createActions()
     //---------------------------------
 
     QIcon iconEditDrawSettingsText;
-    QPixmap pxmEditDrawSettingsText(":/ZS/Draw/DrawToolText16x16.bmp");
-    pxmEditDrawSettingsText.setMask(pxmEditDrawSettingsText.createHeuristicMask());
+    QPixmap pxmEditDrawSettingsText(":/ZS/Draw/DrawSettingsTextStyle16x16.png");
     iconEditDrawSettingsText.addPixmap(pxmEditDrawSettingsText);
 
     m_pActDrawSettingsText = new QAction( iconEditDrawSettingsText, c_strActionNameDrawSettingsText.section(":",-1,-1), this );
@@ -1507,8 +1483,7 @@ void CMainWindow::createActions()
     //---------------------------------------------
 
     QIcon iconDrawPoint;
-    QPixmap pxmDrawPoint(":/ZS/Draw/DrawPoint16x16.bmp");
-    pxmDrawPoint.setMask(pxmDrawPoint.createHeuristicMask());
+    QPixmap pxmDrawPoint(":/ZS/Draw/Pen16x16.png");
     iconDrawPoint.addPixmap(pxmDrawPoint);
 
     m_pActDrawStandardShapePoint = new QAction(iconDrawPoint, c_strActionNameDrawStandardShapePoint.section(":",-1,-1), this);
@@ -1523,8 +1498,7 @@ void CMainWindow::createActions()
     //--------------------------------------------
 
     QIcon iconDrawLine;
-    QPixmap pxmDrawLine(":/ZS/Draw/DrawLine16x16.bmp");
-    pxmDrawLine.setMask(pxmDrawLine.createHeuristicMask());
+    QPixmap pxmDrawLine(":/ZS/Draw/GraphObjLine16x16.png");
     iconDrawLine.addPixmap(pxmDrawLine);
 
     m_pActDrawStandardShapeLine = new QAction(iconDrawLine, c_strActionNameDrawStandardShapeLine.section(":",-1,-1), this);
@@ -1539,8 +1513,7 @@ void CMainWindow::createActions()
     //--------------------------------------------
 
     QIcon iconDrawRect;
-    QPixmap pxmDrawRect(":/ZS/Draw/DrawRect16x16.bmp");
-    pxmDrawRect.setMask(pxmDrawRect.createHeuristicMask());
+    QPixmap pxmDrawRect(":/ZS/Draw/GraphObjRect16x16.png");
     iconDrawRect.addPixmap(pxmDrawRect);
 
     m_pActDrawStandardShapeRect = new QAction(iconDrawRect, c_strActionNameDrawStandardShapeRect.section(":",-1,-1), this);
@@ -1555,8 +1528,7 @@ void CMainWindow::createActions()
     //-----------------------------------------------
 
     QIcon iconDrawEllipse;
-    QPixmap pxmDrawEllipse(":/ZS/Draw/DrawEllipse16x16.bmp");
-    pxmDrawEllipse.setMask(pxmDrawEllipse.createHeuristicMask());
+    QPixmap pxmDrawEllipse(":/ZS/Draw/GraphObjEllipse16x16.png");
     iconDrawEllipse.addPixmap(pxmDrawEllipse);
 
     m_pActDrawStandardShapeEllipse = new QAction(iconDrawEllipse, c_strActionNameDrawStandardShapeEllipse.section(":",-1,-1), this);
@@ -1571,8 +1543,7 @@ void CMainWindow::createActions()
     //------------------------------------------------
 
     QIcon iconDrawPolyline;
-    QPixmap pxmDrawPolyline(":/ZS/Draw/DrawPolyline16x16.bmp");
-    pxmDrawPolyline.setMask(pxmDrawPolyline.createHeuristicMask());
+    QPixmap pxmDrawPolyline(":/ZS/Draw/GraphObjPolyline16x16.png");
     iconDrawPolyline.addPixmap(pxmDrawPolyline);
 
     m_pActDrawStandardShapePolyline = new QAction(iconDrawPolyline, c_strActionNameDrawStandardShapePolyline.section(":",-1,-1), this);
@@ -1587,8 +1558,7 @@ void CMainWindow::createActions()
     //------------------------------------------------
 
     QIcon iconDrawPolygon;
-    QPixmap pxmDrawPolygon(":/ZS/Draw/DrawPolygon16x16.bmp");
-    pxmDrawPolygon.setMask(pxmDrawPolygon.createHeuristicMask());
+    QPixmap pxmDrawPolygon(":/ZS/Draw/GraphObjPolygon16x16.png");
     iconDrawPolygon.addPixmap(pxmDrawPolygon);
 
     m_pActDrawStandardShapePolygon = new QAction(iconDrawPolygon, c_strActionNameDrawStandardShapePolygon.section(":",-1,-1), this);
@@ -1603,8 +1573,7 @@ void CMainWindow::createActions()
     //------------------------------------------------
 
     QIcon iconDrawText;
-    QPixmap pxmDrawText(":/ZS/Draw/DrawText16x16.bmp");
-    pxmDrawText.setMask(pxmDrawText.createHeuristicMask());
+    QPixmap pxmDrawText(":/ZS/Draw/GraphObjText16x16.png");
     iconDrawText.addPixmap(pxmDrawText);
 
     m_pActDrawStandardShapeText = new QAction(iconDrawText, c_strActionNameDrawStandardShapeText.section(":",-1,-1), this);
@@ -1622,8 +1591,7 @@ void CMainWindow::createActions()
     //---------------------------------
 
     QIcon iconDrawImage;
-    QPixmap pxmDrawImage(":/ZS/Draw/DrawImage16x16.bmp");
-    pxmDrawImage.setMask(pxmDrawImage.createHeuristicMask());
+    QPixmap pxmDrawImage(":/ZS/Draw/GraphObjImage16x16.png");
     iconDrawImage.addPixmap(pxmDrawImage);
 
     m_pActDrawGraphicsImage = new QAction(iconDrawImage, c_strActionNameDrawGraphicsImage.section(":",-1,-1), this);
@@ -1641,8 +1609,7 @@ void CMainWindow::createActions()
     //----------------------------------------------------
 
     QIcon iconDrawConnectionPoint;
-    QPixmap pxmDrawConnectionPoint(":/ZS/Draw/DrawConnectionPoint16x16.bmp");
-    pxmDrawConnectionPoint.setMask(pxmDrawConnectionPoint.createHeuristicMask());
+    QPixmap pxmDrawConnectionPoint(":/ZS/Draw/GraphObjConnectionPoint16x16.png");
     iconDrawConnectionPoint.addPixmap(pxmDrawConnectionPoint);
 
     m_pActDrawConnectionPoint = new QAction(iconDrawConnectionPoint, c_strActionNameDrawConnectionPoint.section(":",-1,-1), this);
@@ -1657,8 +1624,7 @@ void CMainWindow::createActions()
     //----------------------------------------------------
 
     QIcon iconDrawConnectionLine;
-    QPixmap pxmDrawConnectionLine(":/ZS/Draw/DrawConnectionLine16x16.bmp");
-    pxmDrawConnectionLine.setMask(pxmDrawConnectionLine.createHeuristicMask());
+    QPixmap pxmDrawConnectionLine(":/ZS/Draw/GraphObjConnectionLine16x16.png");
     iconDrawConnectionLine.addPixmap(pxmDrawConnectionLine);
 
     m_pActDrawConnectionLine = new QAction(iconDrawConnectionLine, c_strActionNameDrawConnectionLine.section(":",-1,-1), this);
@@ -4321,24 +4287,13 @@ void CMainWindow::onDrawingSceneDrawSettingsChanged( const CDrawSettings& i_draw
 
     if( m_pActDrawSettingsLine != nullptr )
     {
-        QIcon   iconEditDrawSettingsLine;
-        QPixmap pxmEditDrawSettingsLine(":/ZS/Draw/DrawToolPen16x16.bmp");
-
-        pxmEditDrawSettingsLine.setMask(pxmEditDrawSettingsLine.createHeuristicMask());
+        QIcon iconEditDrawSettingsLine;
+        QPixmap pxmEditDrawSettingsLine(":/ZS/Draw/DrawSettingsLineStyle16x16.png");
 
         QPainter painter(&pxmEditDrawSettingsLine);
-        QLine    lineBtnLineColor1( QPoint(0,2), QPoint(8,2) );
-        QLine    lineBtnLineColor2( QPoint(0,2), QPoint(0,10) );
-        QLine    lineBtnLineColor3( QPoint(0,10), QPoint(5,10) );
-        QRect    rctBtnLineColor(0,12,16,4);
+        QRect rctBtnLineColor(0, 12, 16, 4);
 
         painter.setPen(i_drawSettings.getPenColor());
-        painter.setBrush(Qt::NoBrush);
-        painter.drawLine(lineBtnLineColor1);
-        painter.drawLine(lineBtnLineColor2);
-        painter.drawLine(lineBtnLineColor3);
-
-        painter.setPen(Qt::NoPen);
         painter.setBrush(i_drawSettings.getPenColor());
         painter.drawRect(rctBtnLineColor);
 
@@ -4351,9 +4306,7 @@ void CMainWindow::onDrawingSceneDrawSettingsChanged( const CDrawSettings& i_draw
     if( m_pActDrawSettingsFill != nullptr )
     {
         QIcon   iconEditDrawSettingsFill;
-        QPixmap pxmEditDrawSettingsFill(":/ZS/Draw/DrawToolBrush16x16.bmp");
-
-        pxmEditDrawSettingsFill.setMask(pxmEditDrawSettingsFill.createHeuristicMask());
+        QPixmap pxmEditDrawSettingsFill(":/ZS/Draw/DrawSettingsBrushStyle16x16.png");
 
         QPainter painter(&pxmEditDrawSettingsFill);
         QLine    lineBtnFillColor1( QPoint(13,5), QPoint(13,10) );
@@ -4379,13 +4332,11 @@ void CMainWindow::onDrawingSceneDrawSettingsChanged( const CDrawSettings& i_draw
 
     if( m_pActDrawSettingsText != nullptr )
     {
-        QIcon   iconEditDrawSettingsText;
-        QPixmap pxmEditDrawSettingsText(":/ZS/Draw/DrawToolText16x16.bmp");
-
-        pxmEditDrawSettingsText.setMask(pxmEditDrawSettingsText.createHeuristicMask());
+        QIcon iconEditDrawSettingsText;
+        QPixmap pxmEditDrawSettingsText(":/ZS/Draw/DrawSettingsTextStyle16x16.png");
 
         QPainter painter(&pxmEditDrawSettingsText);
-        QRect    rctBtnLineColor(0,12,16,4);
+        QRect rctBtnLineColor(0, 12, 16, 4);
 
         painter.setPen(Qt::NoPen);
         painter.setBrush(i_drawSettings.getTextColor());

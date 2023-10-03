@@ -1962,10 +1962,8 @@ QCursor CDrawingScene::getProposedCursor( const QPointF& i_ptPos ) const
 
                                     if( pGraphicsItem->type() == static_cast<int>(EGraphObjTypeConnectionPoint) )
                                     {
-                                        QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.bmp");
-                                        QBitmap bmpCursorMask = pxmCursor.createHeuristicMask();
-                                        pxmCursor.setMask(bmpCursorMask);
-                                        cursor = QCursor(pxmCursor,0,pxmCursor.height()-1);
+                                        QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.png");
+                                        cursor = QCursor(pxmCursor, 0, pxmCursor.height()-1);
                                         break;
                                     }
                                 }

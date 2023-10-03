@@ -166,8 +166,7 @@ CWdgtFormatGraphObjsTextStyle::CWdgtFormatGraphObjsTextStyle(
     m_pLytTextColor->addWidget(m_pBtnTextColor);
     m_pLytTextColor->addStretch();
 
-    m_pPxmBtnTextColor = new QPixmap(":/ZS/Draw/DrawToolText16x16.bmp");
-    m_pPxmBtnTextColor->setMask(m_pPxmBtnTextColor->createHeuristicMask());
+    m_pPxmBtnTextColor = new QPixmap(":/ZS/Draw/DrawSettingsTextStyle16x16.png");
 
     if( !connect(
         /* pObjSender   */ m_pBtnTextColor,

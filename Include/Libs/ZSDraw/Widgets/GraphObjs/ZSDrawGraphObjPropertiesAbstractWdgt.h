@@ -29,6 +29,7 @@ may result in using the software modules.
 
 #include "ZSDraw/Common/ZSDrawingSize.h"
 #include "ZSDraw/Common/ZSDrawPhysValRect.h"
+#include "ZSDraw/Common/ZSDrawSettings.h"
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qwidget.h>
@@ -112,6 +113,7 @@ protected slots: // overridables
 protected slots: // overridables
     virtual void onGraphObjSelectedChanged();
     virtual void onGraphObjGeometryChanged();
+    virtual void onGraphObjDrawSettingsChanged();
     //virtual void onGraphObjMoved();
     //virtual void onGraphObjRenamed();
     virtual void onGraphObjAboutToDestroyed();
@@ -129,6 +131,9 @@ protected: // class members
     /*!< Class variable to store the current state of the geometry widget.
          Used to restore the widget state after changing node types. */
     static bool s_bWdgtGeometryVisible;
+    /*!< Class variable to store the current state of the line style widget.
+         Used to restore the widget state after changing node types. */
+    static bool s_bWdgtLineStyleVisible;
 protected: // instance members
     /*!< Pointer to drawing scene. */
     CDrawingScene* m_pDrawingScene;
@@ -160,6 +165,13 @@ protected: // instance members
          "selectedChanged" signal the flag has to be set in the constructor of the derived class.
          If set to true the widget connects to the "geometryChanged" signal of the graphical object. */
     bool m_bContentUpdateOnGeometryChanged;
+    /*!< Flag to indicate that the content of an edit control has been changed while the "contentChanged"
+         signal was blocked by the "contentChanged" counter. */
+    /*!< Flag to filter the indicated properties to the draw settings of the graphical object.
+         This flag is set to false as default. If the property widget has to react on
+         "drawSettingsChanged" signal the flag has to be set in the constructor of the derived class.
+         If set to true the widget connects to the "drawSettingsChanged" signal of the graphical object. */
+    bool m_bContentUpdateOnDrawSettingsChanged;
     /*!< Flag to indicate that the content of an edit control has been changed while the "contentChanged"
          signal was blocked by the "contentChanged" counter. */
     bool m_bContentChanged;

@@ -163,9 +163,8 @@ void SGraphObjHitInfo::setCursor(double i_fGraphObjRotAngle_rad)
                         case ESelectionPoint::RotateTop:
                         case ESelectionPoint::RotateBottom:
                         {
-                            QBitmap bmpCursor(":/ZS/Draw/CursorRotateFree16x16.bmp");
-                            QBitmap bmpCursorMask = bmpCursor.createHeuristicMask();
-                            m_cursor = QCursor(bmpCursor,bmpCursorMask);
+                            QBitmap bmpCursor(":/ZS/Draw/CursorRotateFree16x16.png");
+                            m_cursor = QCursor(bmpCursor);
                             break;
                         }
                         case ESelectionPoint::LeftCenter:
@@ -203,9 +202,8 @@ void SGraphObjHitInfo::setCursor(double i_fGraphObjRotAngle_rad)
         }
         case EEditMode::Rotate:
         {
-            QBitmap bmpCursor(":/ZS/Draw/CursorRotateFree16x16.bmp");
-            QBitmap bmpCursorMask = bmpCursor.createHeuristicMask();
-            m_cursor = QCursor(bmpCursor,bmpCursorMask);
+            QBitmap bmpCursor(":/ZS/Draw/CursorRotateFree16x16.png");
+            m_cursor = QCursor(bmpCursor);
             break;
         }
         case EEditMode::MoveShapePoint:
@@ -5428,6 +5426,20 @@ void CGraphObj::emit_geometryChanged()
         /* strAddInfo   */ "" );
 
     emit geometryChanged();
+}
+
+//------------------------------------------------------------------------------
+void CGraphObj::emit_drawSettingsChanged()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "CGraphObj::emit_drawSettingsChanged",
+        /* strAddInfo   */ "" );
+
+    emit drawSettingsChanged();
 }
 
 /*==============================================================================

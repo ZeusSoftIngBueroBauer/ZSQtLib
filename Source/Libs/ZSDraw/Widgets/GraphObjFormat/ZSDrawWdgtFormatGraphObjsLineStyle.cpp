@@ -99,9 +99,6 @@ CWdgtFormatGraphObjsLineStyle::CWdgtFormatGraphObjsLineStyle(
     m_pLblPenColor(nullptr),
     m_pPxmBtnPenColor(nullptr),
     m_rctBtnPenColor(0,12,16,4),
-    m_lineBtnPenColor1( QPoint(0,2), QPoint(8,2) ),
-    m_lineBtnPenColor2( QPoint(0,2), QPoint(0,10) ),
-    m_lineBtnPenColor3( QPoint(0,10), QPoint(5,10) ),
     m_pBtnPenColor(nullptr),
     m_pLytPenWidth(nullptr),
     m_pLblPenWidth(nullptr),
@@ -194,8 +191,7 @@ CWdgtFormatGraphObjsLineStyle::CWdgtFormatGraphObjsLineStyle(
         m_pLytPenColor->addWidget(m_pBtnPenColor);
         m_pLytPenColor->addStretch();
 
-        m_pPxmBtnPenColor = new QPixmap(":/ZS/Draw/DrawToolPen16x16.bmp");
-        m_pPxmBtnPenColor->setMask(m_pPxmBtnPenColor->createHeuristicMask());
+        m_pPxmBtnPenColor = new QPixmap(":/ZS/Draw/DrawSettingsLineStyle16x16.png");
 
         if( !connect(
             /* pObjSender   */ m_pBtnPenColor,
@@ -2033,16 +2029,9 @@ void CWdgtFormatGraphObjsLineStyle::setPenColor( const CDrawSettings& i_drawSett
         /* strAddInfo   */ strAddTrcInfo );
 
     QPainter painter(m_pPxmBtnPenColor);
-
     painter.setPen(i_drawSettings.getPenColor());
-    painter.setBrush(Qt::NoBrush);
-    painter.drawLine(m_lineBtnPenColor1);
-    painter.drawLine(m_lineBtnPenColor2);
-    painter.drawLine(m_lineBtnPenColor3);
-    painter.setPen(Qt::NoPen);
     painter.setBrush(i_drawSettings.getPenColor());
     painter.drawRect(m_rctBtnPenColor);
-
     m_pBtnPenColor->setIcon(*m_pPxmBtnPenColor);
 
 } // setPenColor

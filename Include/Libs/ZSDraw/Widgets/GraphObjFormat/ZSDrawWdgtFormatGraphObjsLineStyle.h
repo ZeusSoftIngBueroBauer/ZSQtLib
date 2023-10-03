@@ -129,9 +129,6 @@ protected: // instance members
     QLabel*                       m_pLblPenColor;
     QPixmap*                      m_pPxmBtnPenColor;
     QRect                         m_rctBtnPenColor;
-    QLine                         m_lineBtnPenColor1;
-    QLine                         m_lineBtnPenColor2;
-    QLine                         m_lineBtnPenColor3;
     QPushButton*                  m_pBtnPenColor;
     QHBoxLayout*                  m_pLytPenWidth;
     QLabel*                       m_pLblPenWidth;

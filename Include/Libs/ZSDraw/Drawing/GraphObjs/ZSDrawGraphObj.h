@@ -279,6 +279,7 @@ public: // dtor
 signals:
     void selectedChanged();
     void geometryChanged();
+    void drawSettingsChanged();
 protected: // instance methods (trace admin objects for method tracing)
     void createTraceAdminObjs(const QString& i_strClassName);
     void releaseTraceAdminObjs();
@@ -522,6 +523,7 @@ protected: // auxiliary instance methods
 protected: // auxiliary instance methods (method tracing)
     void emit_selectedChanged();
     void emit_geometryChanged();
+    void emit_drawSettingsChanged();
 protected: // overridable auxiliary instance methods (method tracing)
     virtual void QGraphicsItem_setPos(const QPointF& i_pos);
     virtual void traceInternalStates(

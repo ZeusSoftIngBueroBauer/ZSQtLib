@@ -26,6 +26,7 @@ may result in using the software modules.
 
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLinePropertiesWdgt.h"
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLineGeometryPropertiesWdgt.h"
+#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLineStylePropertiesWdgt.h"
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPropertiesLabelsWdgt.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLine.h"
 #include "ZSDraw/Widgets/Drawing/ZSDrawingView.h"
@@ -69,7 +70,8 @@ CWdgtGraphObjLineProperties::CWdgtGraphObjLineProperties(
     CWdgtGraphObjPropertiesAbstract(
         i_pDrawingScene, "StandardShapes::" + ClassName(), i_strObjName, i_pWdgtParent),
     m_pWdgtLabels(nullptr),
-    m_pWdgtGeometry(nullptr)
+    m_pWdgtGeometry(nullptr),
+    m_pWdgtLineStyle(nullptr)
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -80,7 +82,6 @@ CWdgtGraphObjLineProperties::CWdgtGraphObjLineProperties(
     m_pWdgtLabels = new CWdgtGraphObjPropertiesLabels(
         i_pDrawingScene, "StandardShapes::" + ClassName(), i_strObjName);
     m_pLyt->addWidget(m_pWdgtLabels);
-
     QObject::connect(
         m_pWdgtLabels, &CWdgtGraphObjPropertiesLabels::contentChanged,
         this, &CWdgtGraphObjLineProperties::onWdgtLabelsContentChanged);
@@ -88,10 +89,16 @@ CWdgtGraphObjLineProperties::CWdgtGraphObjLineProperties(
     m_pWdgtGeometry = new CWdgtGraphObjLineGeometryProperties(
         i_pDrawingScene, "StandardShapes::" + ClassName(), i_strObjName);
     m_pLyt->addWidget(m_pWdgtGeometry);
-
     QObject::connect(
         m_pWdgtGeometry, &CWdgtGraphObjLineGeometryProperties::contentChanged,
         this, &CWdgtGraphObjLineProperties::onWdgtGeometryContentChanged);
+
+    m_pWdgtLineStyle = new CWdgtGraphObjLineStyleProperties(
+        i_pDrawingScene, "StandardShapes::" + ClassName(), i_strObjName);
+    m_pLyt->addWidget(m_pWdgtLineStyle);
+    QObject::connect(
+        m_pWdgtLineStyle, &CWdgtGraphObjLineStyleProperties::contentChanged,
+        this, &CWdgtGraphObjLineProperties::onWdgtLineStyleContentChanged);
 
     // <Buttons>
     //==========
@@ -115,6 +122,7 @@ CWdgtGraphObjLineProperties::~CWdgtGraphObjLineProperties()
 
     m_pWdgtLabels = nullptr;
     m_pWdgtGeometry = nullptr;
+    m_pWdgtLineStyle = nullptr;
 }
 
 /*==============================================================================
@@ -142,6 +150,7 @@ bool CWdgtGraphObjLineProperties::setKeyInTree(const QString& i_strKeyInTree)
         CWdgtGraphObjPropertiesAbstract::setKeyInTree(i_strKeyInTree);
         m_pWdgtLabels->setKeyInTree(i_strKeyInTree);
         m_pWdgtGeometry->setKeyInTree(i_strKeyInTree);
+        m_pWdgtLineStyle->setKeyInTree(i_strKeyInTree);
     }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -167,6 +176,9 @@ bool CWdgtGraphObjLineProperties::hasErrors() const
     bool bHasErrors = m_pWdgtLabels->hasErrors();
     if (!bHasErrors) {
         bHasErrors = m_pWdgtGeometry->hasErrors();
+    }
+    if (!bHasErrors) {
+        bHasErrors = m_pWdgtLineStyle->hasErrors();
     }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -196,6 +208,9 @@ bool CWdgtGraphObjLineProperties::hasChanges() const
         bHasChanges = m_pWdgtLabels->hasChanges();
         if (!bHasChanges) {
             bHasChanges = m_pWdgtGeometry->hasChanges();
+        }
+        if (!bHasChanges) {
+            bHasChanges = m_pWdgtLineStyle->hasChanges();
         }
         if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
             mthTracer.setMethodReturn(bHasChanges);
@@ -235,6 +250,7 @@ void CWdgtGraphObjLineProperties::acceptChanges()
                 // (and to have a clear method trace output where the unexpected call is not listed).
                 m_pWdgtLabels->acceptChanges();
                 m_pWdgtGeometry->acceptChanges();
+                m_pWdgtLineStyle->acceptChanges();
             }
 
             // After the changes have been applied the enabled state of the Apply and
@@ -256,6 +272,7 @@ void CWdgtGraphObjLineProperties::rejectChanges()
 
     m_pWdgtLabels->rejectChanges();
     m_pWdgtGeometry->rejectChanges();
+    m_pWdgtLineStyle->rejectChanges();
 
     updateButtonsEnabled();
 }
@@ -285,6 +302,19 @@ void CWdgtGraphObjLineProperties::onWdgtGeometryContentChanged()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onWdgtGeometryContentChanged",
+        /* strAddInfo   */ "" );
+
+    updateButtonsEnabled();
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjLineProperties::onWdgtLineStyleContentChanged()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onWdgtLineStyleContentChanged",
         /* strAddInfo   */ "" );
 
     updateButtonsEnabled();

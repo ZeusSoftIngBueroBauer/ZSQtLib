@@ -147,8 +147,7 @@ CWdgtFormatGraphObjsFillStyle::CWdgtFormatGraphObjsFillStyle(
     m_pLytFillColor->addWidget(m_pBtnFillColor);
     m_pLytFillColor->addStretch();
 
-    m_pPxmBtnFillColor = new QPixmap(":/ZS/Draw/DrawToolBrush16x16.bmp");
-    m_pPxmBtnFillColor->setMask(m_pPxmBtnFillColor->createHeuristicMask());
+    m_pPxmBtnFillColor = new QPixmap(":/ZS/Draw/DrawSettingsBrushStyle16x16.png");
 
     if( !connect(
         /* pObjSender   */ m_pBtnFillColor,

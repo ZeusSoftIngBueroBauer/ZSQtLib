@@ -69,7 +69,7 @@ using namespace ZS::Draw;
 
 
 /*******************************************************************************
-class CWdgtGraphObjLineGeometryProperties : public CWdgtFormatGraphObjs
+class CWdgtGraphObjLineGeometryProperties : public CWdgtGraphObjPropertiesAbstract
 *******************************************************************************/
 
 /*==============================================================================
@@ -205,8 +205,6 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     int cxClmSpacing = 30;
     int idxClm = 0;
 
-    setMinimumWidth(560);
-
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
 
     // <Widget> Headline
@@ -219,14 +217,19 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     m_pLyt->addWidget(m_pWdgtHeadline);
 
     m_pBtnCollapse = new QPushButton();
-    m_pBtnCollapse->setIcon(m_pxmBtnDown);
+    if (s_bWdgtGeometryVisible) {
+        m_pBtnCollapse->setIcon(m_pxmBtnUp);
+    }
+    else {
+        m_pBtnCollapse->setIcon(m_pxmBtnDown);
+    }
     m_pLytWdgtHeadline->addWidget(m_pBtnCollapse);
 
     QObject::connect(
         m_pBtnCollapse, &QPushButton::clicked,
         this, &CWdgtGraphObjLineGeometryProperties::onBtnCollapseClicked);
 
-    QPixmap pxmHeadline(":/ZS/Draw/DrawToolGeometry16x16.png");
+    QPixmap pxmHeadline(":/ZS/Draw/DrawSettingsGeometry16x16.png");
     m_pLblHeadlineIcon = new QLabel();
     m_pLblHeadlineIcon->setPixmap(pxmHeadline);
     m_pLytWdgtHeadline->addWidget(m_pLblHeadlineIcon);

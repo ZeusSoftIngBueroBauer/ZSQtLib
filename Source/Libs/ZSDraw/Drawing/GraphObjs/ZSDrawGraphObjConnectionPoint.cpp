@@ -1390,10 +1390,8 @@ void CGraphObjConnectionPoint::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv 
         {
             if( m_pDrawingScene->getCurrentDrawingToolGraphObjType() == EGraphObjTypeConnectionLine )
             {
-                //QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.bmp");
-                //QBitmap bmpCursorMask = pxmCursor.createHeuristicMask();
-                //pxmCursor.setMask(bmpCursorMask);
-                //setCursor( QCursor(pxmCursor,0,pxmCursor.height()-1) );
+                //QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.png");
+                //setCursor(QCursor(pxmCursor,0,pxmCursor.height()-1));
             }
         }
 
@@ -1452,10 +1450,8 @@ void CGraphObjConnectionPoint::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
         {
             if( m_pDrawingScene->getCurrentDrawingToolGraphObjType() == EGraphObjTypeConnectionLine )
             {
-                //QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.bmp");
-                //QBitmap bmpCursorMask = pxmCursor.createHeuristicMask();
-                //pxmCursor.setMask(bmpCursorMask);
-                //setCursor( QCursor(pxmCursor,0,pxmCursor.height()-1) );
+                //QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.png");
+                //setCursor(QCursor(pxmCursor,0,pxmCursor.height()-1));
             }
         }
 
