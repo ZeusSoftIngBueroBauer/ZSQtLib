@@ -255,78 +255,46 @@ public: // must overridables of base class CWdgtFormatGraphObjs
 void CWdgtFormatGraphObjsFillStyle::applyChanges()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-    }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "applyChanges",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ "" );
 
-    if( m_pGraphObj != nullptr )
-    {
-        m_pGraphObj->setFillColor(m_drawSettings.getFillColor(),false);
-        m_pGraphObj->setFillStyle(m_drawSettings.getFillStyle(),false);
-        m_pGraphObj->onDrawSettingsChanged();
+    if (m_pGraphObj != nullptr) {
+        m_pGraphObj->setDrawSettings(m_drawSettings);
     }
-    else if( /*m_pGraphObj == nullptr &&*/ m_pDrawingScene != nullptr )
-    {
-        QList<QGraphicsItem*> arpGraphicsItemsSelected = m_pDrawingScene->selectedItems();
-
+    else if (m_pDrawingScene != nullptr) {
         // If graphical objects are selected ...
-        if( arpGraphicsItemsSelected.size() > 0 )
-        {
+        QList<QGraphicsItem*> arpGraphicsItemsSelected = m_pDrawingScene->selectedItems();
+        if (arpGraphicsItemsSelected.size() > 0) {
             // .. all selected graphical objects will be changed according to the new settings.
-            QGraphicsItem* pGraphicsItem;
-            CGraphObj*     pGraphObj;
-            int            idxGraphObj;
-
-            for( idxGraphObj = 0; idxGraphObj < arpGraphicsItemsSelected.size(); idxGraphObj++ )
-            {
-                pGraphicsItem = arpGraphicsItemsSelected[idxGraphObj];
-                pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
-
-                if( pGraphObj != nullptr )
-                {
-                    pGraphObj->setFillColor(m_drawSettings.getFillColor(),false);
-                    pGraphObj->setFillStyle(m_drawSettings.getFillStyle(),false);
-                    pGraphObj->onDrawSettingsChanged();
+            for (int idxGraphObj = 0; idxGraphObj < arpGraphicsItemsSelected.size(); idxGraphObj++) {
+                QGraphicsItem* pGraphicsItem = arpGraphicsItemsSelected[idxGraphObj];
+                CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+                if (pGraphObj != nullptr) {
+                    pGraphObj->setDrawSettings(m_drawSettings);
                 }
             }
-        } // if( arpGraphicsItemsSelected.size() > 0 )
-
+        }
         // If no graphical object is selected ...
-        else // if( arpGraphicsItemsSelected.size() == 0 )
+        else
         {
             // .. set default attribute for following draw commands.
-            m_pDrawingScene->setFillColor(m_drawSettings.getFillColor());
-            m_pDrawingScene->setFillStyle(m_drawSettings.getFillStyle());
-
-        } // if( arpGraphicsItemsSelected.size() == 0 )
-
-    } // if( m_pGraphObj == nullptr && m_pDrawingScene != nullptr )
-
+            m_pDrawingScene->setDrawSettings(m_drawSettings);
+        }
+    }
 } // applyChanges
 
 //------------------------------------------------------------------------------
 void CWdgtFormatGraphObjsFillStyle::resetChanges()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-    }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "resetChanges",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ "" );
 
     if( m_pGraphObj != nullptr )
     {

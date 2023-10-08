@@ -4289,19 +4289,15 @@ void CMainWindow::onDrawingSceneDrawSettingsChanged( const CDrawSettings& i_draw
     {
         QIcon iconEditDrawSettingsLine;
         QPixmap pxmEditDrawSettingsLine(":/ZS/Draw/DrawSettingsLineStyle16x16.png");
-
+        QSize sizePxm = pxmEditDrawSettingsLine.size();
         QPainter painter(&pxmEditDrawSettingsLine);
-        QRect rctBtnLineColor(0, 12, 16, 4);
-
-        painter.setPen(i_drawSettings.getPenColor());
-        painter.setBrush(i_drawSettings.getPenColor());
-        painter.drawRect(rctBtnLineColor);
-
+        QPen pen(i_drawSettings.getPenColor(), 2);
+        painter.setPen(pen);
+        painter.setRenderHints(QPainter::Antialiasing, true);
+        painter.drawLine(2, 5, sizePxm.width()-6, sizePxm.height()-3);
         iconEditDrawSettingsLine.addPixmap(pxmEditDrawSettingsLine);
-
         m_pActDrawSettingsLine->setIcon(iconEditDrawSettingsLine);
-
-    } // if( m_pActDrawSettingsLine != nullptr )
+    }
 
     if( m_pActDrawSettingsFill != nullptr )
     {

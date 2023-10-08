@@ -113,9 +113,9 @@ CGraphObjPoint::CGraphObjPoint(
     m_rctCurr = QRectF( QPoint(0.0,0.0), QSize(1.0,1.0) );
 #endif
 
-    setFlags( QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges );
+    setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
 
-    onDrawSettingsChanged();
+    //onDrawSettingsChanged();
 
     updateToolTip();
 
@@ -249,9 +249,20 @@ public: // overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObjPoint::onDrawSettingsChanged()
+void CGraphObjPoint::onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld)
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "OldSettings {" + i_drawSettingsOld.toString() + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "onDrawSettingsChanged",
+        /* strAddInfo   */ strMthInArgs );
+
     if( m_drawSettings.isPenUsed() )
     {
         if( m_drawSettings.getLineStyle() != ELineStyle::NoLine )

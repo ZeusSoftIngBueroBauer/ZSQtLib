@@ -380,15 +380,19 @@ public: // overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObjSelectionPoint::onDrawSettingsChanged()
+void CGraphObjSelectionPoint::onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld)
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "OldSettings {" + i_drawSettingsOld.toString() + "}";
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "onDrawSettingsChanged",
-        /* strAddInfo   */ "" );
+        /* strAddInfo   */ strMthInArgs );
 
     if (m_drawSettings.isPenUsed()) {
         if (m_drawSettings.getLineStyle() != ELineStyle::NoLine) {

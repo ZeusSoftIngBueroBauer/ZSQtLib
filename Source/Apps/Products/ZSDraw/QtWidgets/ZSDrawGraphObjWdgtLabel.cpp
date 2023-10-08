@@ -119,30 +119,30 @@ CGraphObjWdgtLabel::CGraphObjWdgtLabel(
 
     //setAcceptHoverEvents(true);
 
-    m_drawSettings.setAttributeIsUsed(EDrawAttributeTextColor,false);
-    m_drawSettings.setAttributeIsUsed(EDrawAttributeTextFont,false);
-    m_drawSettings.setAttributeIsUsed(EDrawAttributeTextStyle,false);
-    m_drawSettings.setAttributeIsUsed(EDrawAttributeTextSize,false);
-    m_drawSettings.setAttributeIsUsed(EDrawAttributeTextEffect,false);
-    m_drawSettings.setAttributeIsUsed(EDrawAttributeFillColor,true);
-    m_drawSettings.setAttributeIsUsed(EDrawAttributeFillStyle,true);
-    m_drawSettings.setAttributeIsUsed(EDrawAttributePenColor,true);
-    m_drawSettings.setAttributeIsUsed(EDrawAttributePenWidth,true);
-    m_drawSettings.setAttributeIsUsed(EDrawAttributeLineStyle,true);
-    m_drawSettings.setAttributeIsUsed(EDrawAttributeLineRecordType,false);
-    m_drawSettings.setAttributeIsUsed(EDrawAttributeLineExtent,false);
-    m_drawSettings.setAttributeIsUsed(EDrawAttributeLineStartLineEndStyle,false);
-    m_drawSettings.setAttributeIsUsed(EDrawAttributeLineStartLineEndBaseLineType,false);
-    m_drawSettings.setAttributeIsUsed(EDrawAttributeLineStartLineEndFillStyle,false);
-    m_drawSettings.setAttributeIsUsed(EDrawAttributeLineStartLineEndWidth,false);
-    m_drawSettings.setAttributeIsUsed(EDrawAttributeLineStartLineEndLength,false);
-    m_drawSettings.setAttributeIsUsed(EDrawAttributeLineEndLineEndStyle,false);
-    m_drawSettings.setAttributeIsUsed(EDrawAttributeLineEndLineEndBaseLineType,false);
-    m_drawSettings.setAttributeIsUsed(EDrawAttributeLineEndLineEndFillStyle,false);
-    m_drawSettings.setAttributeIsUsed(EDrawAttributeLineEndLineEndWidth,false);
-    m_drawSettings.setAttributeIsUsed(EDrawAttributeLineEndLineEndLength,false);
+    //m_drawSettings.setAttributeIsUsed(EDrawAttributeTextColor,false);
+    //m_drawSettings.setAttributeIsUsed(EDrawAttributeTextFont,false);
+    //m_drawSettings.setAttributeIsUsed(EDrawAttributeTextStyle,false);
+    //m_drawSettings.setAttributeIsUsed(EDrawAttributeTextSize,false);
+    //m_drawSettings.setAttributeIsUsed(EDrawAttributeTextEffect,false);
+    //m_drawSettings.setAttributeIsUsed(EDrawAttributeFillColor,true);
+    //m_drawSettings.setAttributeIsUsed(EDrawAttributeFillStyle,true);
+    //m_drawSettings.setAttributeIsUsed(EDrawAttributePenColor,true);
+    //m_drawSettings.setAttributeIsUsed(EDrawAttributePenWidth,true);
+    //m_drawSettings.setAttributeIsUsed(EDrawAttributeLineStyle,true);
+    //m_drawSettings.setAttributeIsUsed(EDrawAttributeLineRecordType,false);
+    //m_drawSettings.setAttributeIsUsed(EDrawAttributeLineExtent,false);
+    //m_drawSettings.setAttributeIsUsed(EDrawAttributeLineP1EndStyle,false);
+    //m_drawSettings.setAttributeIsUsed(EDrawAttributeLineP1ArrowHeadBaseLineType,false);
+    //m_drawSettings.setAttributeIsUsed(EDrawAttributeLineP1ArrowHeadFillStyle,false);
+    //m_drawSettings.setAttributeIsUsed(EDrawAttributeLineP1ArrowHeadWidth,false);
+    //m_drawSettings.setAttributeIsUsed(EDrawAttributeLineP1ArrowHeadLength,false);
+    //m_drawSettings.setAttributeIsUsed(EDrawAttributeLineP2EndStyle,false);
+    //m_drawSettings.setAttributeIsUsed(EDrawAttributeLineP2ArrowHeadBaseLineType,false);
+    //m_drawSettings.setAttributeIsUsed(EDrawAttributeLineP2ArrowHeadFillStyle,false);
+    //m_drawSettings.setAttributeIsUsed(EDrawAttributeLineP2ArrowHeadWidth,false);
+    //m_drawSettings.setAttributeIsUsed(EDrawAttributeLineP2ArrowHeadLength,false);
 
-    onDrawSettingsChanged();
+    //onDrawSettingsChanged();
 
     updateToolTip();
 

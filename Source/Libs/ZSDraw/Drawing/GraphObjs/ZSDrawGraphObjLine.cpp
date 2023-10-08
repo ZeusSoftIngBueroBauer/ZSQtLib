@@ -115,8 +115,8 @@ CGraphObjLine::CGraphObjLine(
         /* drawSettings        */ i_drawSettings ),
     QGraphicsLineItem(),
     m_physValLine(i_physValPoint1, i_physValPoint2),
-    m_plgLineStart(),
-    m_plgLineEnd()
+    m_plgP1ArrowHead(),
+    m_plgP2ArrowHead()
 {
     // Just incremented by the ctor but not decremented by the dtor.
     // Used to create a unique name for newly created objects of this type.
@@ -142,7 +142,7 @@ CGraphObjLine::CGraphObjLine(
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
     if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsDetailed)) {
-        strMthInArgs = "DrawSettings {" + i_drawSettings.toString(EGraphObjTypeLine) + "}";
+        strMthInArgs = "DrawSettings {" + i_drawSettings.toString() + "}";
         mthTracer.trace(strMthInArgs);
     }
 
@@ -308,18 +308,32 @@ void CGraphObjLine::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjLine::onDrawSettingsChanged()
+void CGraphObjLine::onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld)
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "OldSettings {" + i_drawSettingsOld.toString() + "}";
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "onDrawSettingsChanged",
-        /* strAddInfo   */ "" );
+        /* strAddInfo   */ strMthInArgs );
 
-    //m_bCoorsDirty = true;
-    update();
+    bool bDrawSettingsChanged = (m_drawSettings != i_drawSettingsOld);
+    if (bDrawSettingsChanged) {
+        if (lineEndArrowHeadPolygonsNeedUpdate(ELinePoint::Start, i_drawSettingsOld)) {
+            updateLineEndArrowHeadPolygons(ELinePoint::Start);
+            bDrawSettingsChanged = true;
+        }
+        if (lineEndArrowHeadPolygonsNeedUpdate(ELinePoint::End, i_drawSettingsOld)) {
+            updateLineEndArrowHeadPolygons(ELinePoint::End);
+        }
+        update();
+        emit_drawSettingsChanged();
+    }
 }
 
 /*==============================================================================
@@ -844,11 +858,11 @@ QRectF CGraphObjLine::boundingRect() const
             rctBounding |= plgSelPt.boundingRect();
         }
     }
-    if (m_plgLineStart.size() > 0) {
-        rctBounding |= m_plgLineStart.boundingRect();
+    if (m_plgP1ArrowHead.size() > 0) {
+        rctBounding |= m_plgP1ArrowHead.boundingRect();
     }
-    if (m_plgLineEnd.size() > 0) {
-        rctBounding |= m_plgLineEnd.boundingRect();
+    if (m_plgP2ArrowHead.size() > 0) {
+        rctBounding |= m_plgP2ArrowHead.boundingRect();
     }
 
     rctBounding = QRectF(
@@ -903,11 +917,11 @@ QPainterPath CGraphObjLine::shape() const
         /* strAddInfo   */ "" );
 
     QPainterPath painterPath = QGraphicsLineItem::shape();
-    if (m_plgLineStart.size() > 0) {
-        painterPath.addPolygon(m_plgLineStart);
+    if (m_plgP1ArrowHead.size() > 0) {
+        painterPath.addPolygon(m_plgP1ArrowHead);
     }
-    if (m_plgLineEnd.size() > 0) {
-        painterPath.addPolygon(m_plgLineEnd);
+    if (m_plgP2ArrowHead.size() > 0) {
+        painterPath.addPolygon(m_plgP2ArrowHead);
     }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -940,14 +954,10 @@ void CGraphObjLine::paint(
 
     i_pPainter->save();
 
-    //if (m_bCoorsDirty) {
-    //    updateLineEndPolygonCoors();
-    //}
-
     QPen pn = pen();
     pn.setColor(m_drawSettings.getPenColor());
     pn.setWidth(m_drawSettings.getPenWidth());
-    pn.setStyle(lineStyle2QtPenStyle(m_drawSettings.getLineStyle()));
+    pn.setStyle(lineStyle2QtPenStyle(m_drawSettings.getLineStyle().enumerator()));
 
     if (m_pDrawingScene->getMode() == EMode::Edit && isSelected()) {
         //if (m_editMode == EEditMode::Move)
@@ -962,37 +972,33 @@ void CGraphObjLine::paint(
     QLineF lineF = line();
     i_pPainter->drawLine(lineF);
 
-    ELineEndStyle lineEndStyleLineStart = m_drawSettings.getLineEndStyle(ELinePoint::Start);
-    ELineEndStyle lineEndStyleLineEnd   = m_drawSettings.getLineEndStyle(ELinePoint::End);
-
-    if (lineEndStyleLineStart != ELineEndStyle::Normal || lineEndStyleLineEnd != ELineEndStyle::Normal)
-    {
-        ELineEndBaseLineType baseLineTypeLineStart = m_drawSettings.getLineEndBaseLineType(ELinePoint::Start);
-        ELineEndBaseLineType baseLineTypeLineEnd   = m_drawSettings.getLineEndBaseLineType(ELinePoint::End);
-
+    CEnumLineEndStyle lineEndStyleP1 = m_drawSettings.getLineEndStyle(ELinePoint::Start);
+    CEnumLineEndStyle lineEndStyleP2 = m_drawSettings.getLineEndStyle(ELinePoint::End);
+    if (lineEndStyleP1 != ELineEndStyle::Normal || lineEndStyleP2 != ELineEndStyle::Normal) {
+        CEnumArrowHeadBaseLineType baseLineTypeP1 = m_drawSettings.getLineEndBaseLineType(ELinePoint::Start);
+        CEnumArrowHeadBaseLineType baseLineTypeP2 = m_drawSettings.getLineEndBaseLineType(ELinePoint::End);
         pn.setWidth(1);
         pn.setStyle(Qt::SolidLine);
         i_pPainter->setPen(pn);
-
         QBrush brsh(pn.color());
-        if (lineEndStyleLineStart != ELineEndStyle::Normal) {
-            brsh.setStyle( lineEndFillStyle2QtBrushStyle(m_drawSettings.getLineEndFillStyle(ELinePoint::Start)) );
+        if (lineEndStyleP1 != ELineEndStyle::Normal) {
+            brsh.setStyle(arrowHeadFillStyle2QtBrushStyle(m_drawSettings.getLineEndFillStyle(ELinePoint::Start)));
             i_pPainter->setBrush(brsh);
-            if (baseLineTypeLineStart == ELineEndBaseLineType::NoLine) {
-                i_pPainter->drawPolyline(m_plgLineStart);
+            if (baseLineTypeP1 == EArrowHeadBaseLineType::NoLine) {
+                i_pPainter->drawPolyline(m_plgP1ArrowHead);
             }
             else {
-                i_pPainter->drawPolygon(m_plgLineStart);
+                i_pPainter->drawPolygon(m_plgP1ArrowHead);
             }
         }
-        if (lineEndStyleLineEnd != ELineEndStyle::Normal) {
-            brsh.setStyle( lineEndFillStyle2QtBrushStyle(m_drawSettings.getLineEndFillStyle(ELinePoint::End)) );
+        if (lineEndStyleP2 != ELineEndStyle::Normal) {
+            brsh.setStyle(arrowHeadFillStyle2QtBrushStyle(m_drawSettings.getLineEndFillStyle(ELinePoint::End)));
             i_pPainter->setBrush(brsh);
-            if (baseLineTypeLineEnd == ELineEndBaseLineType::NoLine) {
-                i_pPainter->drawPolyline(m_plgLineEnd);
+            if (baseLineTypeP2 == EArrowHeadBaseLineType::NoLine) {
+                i_pPainter->drawPolyline(m_plgP2ArrowHead);
             }
             else {
-                i_pPainter->drawPolygon(m_plgLineEnd);
+                i_pPainter->drawPolygon(m_plgP2ArrowHead);
             }
         }
     }
@@ -1552,14 +1558,12 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
         CPhysValPoint physValP2 = m_pDrawingScene->toPhysValPoint(p2);
         setPhysValLine(CPhysValLine(physValP1, physValP2));
 
-        //m_bCoorsDirty = true;
-
         QPolygonF plg;
         plg.append(lineF.p1());
         plg.append(lineF.p2());
         updateSelectionPointsOfPolygon(plg);
         updateLabelPositionsAndContents();
-        //updateLineEndPolygonCoors();
+        updateLineEndArrowHeadPolygons();
         updateEditInfo();
         updateToolTip();
 
@@ -1651,41 +1655,70 @@ protected: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObjLine::updateLineEndPolygonCoors()
+bool CGraphObjLine::lineEndArrowHeadPolygonsNeedUpdate(
+    const CEnumLinePoint& i_linePoint, const CDrawSettings& i_drawSettingsOld) const
 //------------------------------------------------------------------------------
 {
+    bool bNeedUpdate = false;
+
+    if (i_drawSettingsOld.getLineRecordType() != m_drawSettings.getLineRecordType()) {
+        bNeedUpdate = true;
+    }
+    else if (i_drawSettingsOld.getLineExtent() != m_drawSettings.getLineExtent()) {
+        bNeedUpdate = true;
+    }
+    else if (i_drawSettingsOld.getLineEndStyle(i_linePoint) != m_drawSettings.getLineEndStyle(i_linePoint)) {
+        bNeedUpdate = true;
+    }
+    else if (i_drawSettingsOld.getLineEndBaseLineType(i_linePoint) != m_drawSettings.getLineEndBaseLineType(i_linePoint)) {
+        bNeedUpdate = true;
+    }
+    else if (i_drawSettingsOld.getLineEndWidth(i_linePoint) != m_drawSettings.getLineEndWidth(i_linePoint)) {
+        bNeedUpdate = true;
+    }
+    else if (i_drawSettingsOld.getLineEndLength(i_linePoint) != m_drawSettings.getLineEndLength(i_linePoint)) {
+        bNeedUpdate = true;
+    }
+    return bNeedUpdate;
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjLine::updateLineEndArrowHeadPolygons(const CEnumLinePoint& i_linePoint)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString(i_linePoint.isValid() ? i_linePoint.toString() : "All");
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "updateLineEndPolygonCoors",
-        /* strAddInfo   */ "" );
+        /* strMethod    */ "updateLineEndArrowHeadPolygons",
+        /* strAddInfo   */ strMthInArgs );
 
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-    if (m_bCoorsDirty)
-    {
-        ELineEndStyle lineEndStyleLineStart = m_drawSettings.getLineEndStyle(ELinePoint::Start);
-        ELineEndStyle lineEndStyleLineEnd   = m_drawSettings.getLineEndStyle(ELinePoint::End);
-
-        QLineF lineF = line();
-
-        if( lineEndStyleLineStart != ELineEndStyle::Normal || lineEndStyleLineEnd != ELineEndStyle::Normal )
-        {
-            //ELineEndBaseLineType baseLineTypeLineStart = m_drawSettings.getLineEndBaseLineType(ELinePoint::Start);
-            //ELineEndBaseLineType baseLineTypeLineEnd   = m_drawSettings.getLineEndBaseLineType(ELinePoint::End);
-
+    QLineF lineF = line();
+    if (!i_linePoint.isValid() || i_linePoint == ELinePoint::Start) {
+        CEnumLineEndStyle lineEndStyle = m_drawSettings.getLineEndStyle(ELinePoint::Start);
+        if (lineEndStyle != ELineEndStyle::Normal) {
             getLineEndPolygons(
                 /* line          */ lineF,
                 /* drawSetings   */ m_drawSettings,
-                /* pplgLineStart */ lineEndStyleLineStart != ELineEndStyle::Normal ? &m_plgLineStart : nullptr,
-                /* pplgLineEnd   */ lineEndStyleLineEnd   != ELineEndStyle::Normal ? &m_plgLineEnd : nullptr );
+                /* pplgLineStart */ &m_plgP1ArrowHead,
+                /* pplgLineEnd   */ nullptr);
         }
     }
-
-    m_bCoorsDirty = false;
-#endif
-
-} // updateLineEndPolygonCoors
+    if (!i_linePoint.isValid() || i_linePoint == ELinePoint::End) {
+        CEnumLineEndStyle lineEndStyle = m_drawSettings.getLineEndStyle(ELinePoint::End);
+        if (lineEndStyle != ELineEndStyle::Normal) {
+            getLineEndPolygons(
+                /* line          */ lineF,
+                /* drawSetings   */ m_drawSettings,
+                /* pplgLineStart */ nullptr,
+                /* pplgLineEnd   */ &m_plgP2ArrowHead);
+        }
+    }
+}
 
 /*==============================================================================
 protected: // overridables of base class CGraphObj

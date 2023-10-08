@@ -467,61 +467,85 @@ exported methods implementation
 *******************************************************************************/
 
 //------------------------------------------------------------------------------
+/*! @brief Returns the polygon points to draw an arrow head at the line end.
+
+    The direction of the arrow head depends on whether the arrow should be shown
+    at the line start (P1) or line end (P2). To draw an arrow head a polygon with
+    4 points is used as shwon in the figure below (assuming a vertical line with
+    P1 at top and P2 at bottom):
+
+                           |--Width--|
+
+                               2^                    ---
+                               / \                    |
+         Line Start (P1)      /   \                 Length
+                             /     \                  |
+                          1 /___4___\3 BaseLine      ---
+                                |
+                                |
+                                |
+                           1____|____3 BaseLine
+                            \   4   /
+                             \     /
+         Line End (P2)        \   /
+                               \ /
+                               2'
+
+    The arrow head may be styled with a
+
+    - FillStyle (NoFill, SolidPattern),
+    - Width (Thin, Medium, Wide),
+    - Length (Short, Medium, Long) and
+    - a BaseLine.
+
+    Base line types for the arrow head:
+
+         NoLine           Normal         Indented
+            ^               ^               ^
+           /|\             / \             / \
+          / | \           /   \           /   \
+         /  |  \         /     \         /  ^  \
+        /   |   \       /_______\       /__/ \__\
+            |               |               |
+            |               |               |
+            |               |               |
+
+    @param [in] i_line
+        Line for which the polygon points should be calculated.
+    @param [in] i_drawSettings
+        The draw settings contain the styling for the arrow heads.
+    @param [out] i_pplgLineStart
+        If not nullptr the polygon points for the arrow head at the line start
+        point (P1) are calculated and stored in the passed polygon.
+    @param [out] i_pplgLineEnd
+        If not nullptr the polygon points for the arrow head at the line end
+        point (P2) are calculated and stored in the passed polygon.
+*/
 void ZS::Draw::getLineEndPolygons(
-    const QLineF&        i_line,
+    const QLineF& i_line,
     const CDrawSettings& i_drawSettings,
-    QPolygonF*           i_pplgLineStart,
-    QPolygonF*           i_pplgLineEnd )
+    QPolygonF* i_pplgLineStart,
+    QPolygonF* i_pplgLineEnd )
 //------------------------------------------------------------------------------
 {
-    /*--------------------------------------------------------------------------
-
-    Line Start (line.p1(())    Line End (line.p2())
-
-             Pt3                      Pt3
-             /                         \
-            /                           \
-        Pt2/__Pt4____           ____Pt4__\Pt2
-           \                             /
-            \                           /
-             \                         /
-             Pt1                      Pt1
-
-    --------------------------------------------------------------------------*/
-
-    if( i_drawSettings.getLineEndStyle(ELinePoint::Start) != ELineEndStyle::Normal
-     || i_drawSettings.getLineEndStyle(ELinePoint::End) != ELineEndStyle::Normal )
+    if( (i_drawSettings.getLineEndStyle(ELinePoint::Start) != ELineEndStyle::Normal)
+     || (i_drawSettings.getLineEndStyle(ELinePoint::End) != ELineEndStyle::Normal) )
     {
-        double fAngle_rad = 0.0;
-
-        QPolygonF            plgLineStart;
-        QPolygonF            plgLineEnd;
-        QPointF              pt;
-        int                  iLinePoint;
-        ELinePoint           linePoint;
-        ELineEndWidth        width;
-        ELineEndLength       length;
-        ELineEndBaseLineType baseLineType;
-
         double fdx = i_line.dx();
         double fdy = i_line.dy();
         double flen = i_line.length();
 
-        if( fabs(flen) > 0.0 )
-        {
-            fAngle_rad = acos( fdx / flen );
+        double fAngle_rad = 0.0;
+        if (fabs(flen) > 0.0) {
+            fAngle_rad = acos(fdx/flen);
         }
-
         // Right of y axis ..
-        if( fdx >= 0.0 )
-        {
+        if (fdx >= 0.0) {
             // "Above" x axis ( 1. quadrant, angle returned by acos: 0° <= f <= 90°) ..
-            if( fdy <= 0.0 )
-            {
+            if (fdy <= 0.0) {
             }
             // "Below" x axis ( 2. quadrant, angle returned by acos: 90° <= f <= 180°) ..
-            else
-            {
+            else {
                 fAngle_rad *= -1.0;
             }
         }
@@ -529,12 +553,10 @@ void ZS::Draw::getLineEndPolygons(
         else
         {
             // "Above" x axis ( 3. quadrant, angle returned by acos: 0° <= f <= 90°) ..
-            if( fdy <= 0.0 )
-            {
+            if (fdy <= 0.0) {
             }
             // "Below" x axis ( 4. quadrant, angle returned by acos: 90° <= f <= 180°) ..
-            else
-            {
+            else {
                 fAngle_rad *= -1.0;
             }
         }
@@ -543,92 +565,68 @@ void ZS::Draw::getLineEndPolygons(
         //double fAngle_deg = 360.0*fAngle_rad/Math::c_f2PI;
         #endif
 
-        for( iLinePoint = 0; iLinePoint < CEnumLinePoint::count(); iLinePoint++ )
-        {
-            linePoint = static_cast<ELinePoint>(iLinePoint);
+        for (CEnumLinePoint linePoint = 0; linePoint < CEnumLinePoint::count(); linePoint++) {
+            CEnumArrowHeadWidth width = i_drawSettings.getLineEndWidth(linePoint);
+            CEnumArrowHeadLength length = i_drawSettings.getLineEndLength(linePoint);
+            CEnumArrowHeadBaseLineType baseLineType = i_drawSettings.getLineEndBaseLineType(linePoint);
+            QPointF pt;
 
-            width        = i_drawSettings.getLineEndWidth(linePoint);
-            length       = i_drawSettings.getLineEndLength(linePoint);
-            baseLineType = i_drawSettings.getLineEndBaseLineType(linePoint);
+            if ((linePoint == ELinePoint::Start) && (i_pplgLineStart != nullptr)) {
+                QPolygonF plgLineStart;
+                pt.setX(i_line.p1().x() + arrowHeadLength2dx(length));
+                pt.setY(i_line.p1().y() + arrowHeadWidth2dy(width)/2.0);
+                pt = rotatePoint(i_line.p1(), pt, fAngle_rad);
+                plgLineStart.append(pt); // Pt1
+                plgLineStart.append(i_line.p1()); // Pt2
 
-            if( iLinePoint == static_cast<int>(ELinePoint::Start) )
-            {
-                if( i_pplgLineStart != nullptr )
-                {
-                    pt.setX( i_line.p1().x() + lineEndLength2dx(length) );
-                    pt.setY( i_line.p1().y() + lineEndWidth2dy(width)/2.0 );
-                    pt = rotatePoint( i_line.p1(), pt, fAngle_rad );
-                    plgLineStart.append(pt); // Pt1
+                pt.setX(i_line.p1().x() + arrowHeadLength2dx(length));
+                pt.setY(i_line.p1().y() - arrowHeadWidth2dy(width)/2.0);
+                pt = rotatePoint(i_line.p1(), pt, fAngle_rad);
+                plgLineStart.append(pt); // Pt3
 
-                    plgLineStart.append( i_line.p1() ); // Pt2
+                if (baseLineType == EArrowHeadBaseLineType::Normal) {
+                    pt.setX(i_line.p1().x() + arrowHeadLength2dx(length));
+                    pt.setY(i_line.p1().y());
+                    pt = rotatePoint(i_line.p1(), pt, fAngle_rad);
+                    plgLineStart.append(pt); // Pt4
+                }
+                else if (baseLineType == EArrowHeadBaseLineType::Indented) {
+                    pt.setX(i_line.p1().x() + arrowHeadLength2dx(length)/2.0);
+                    pt.setY(i_line.p1().y());
+                    pt = rotatePoint(i_line.p1(), pt, fAngle_rad);
+                    plgLineStart.append(pt); // Pt4
+                }
+                *i_pplgLineStart = plgLineStart;
+            }
+            else if ((linePoint == ELinePoint::End) && (i_pplgLineEnd != nullptr)) {
+                QPolygonF plgLineEnd;
+                pt.setX(i_line.p2().x() - arrowHeadLength2dx(length));
+                pt.setY(i_line.p2().y() + arrowHeadWidth2dy(width)/2.0);
+                pt = rotatePoint(i_line.p2(), pt, fAngle_rad);
+                plgLineEnd.append(pt); // Pt1
+                plgLineEnd.append(i_line.p2()); // Pt2
 
-                    pt.setX( i_line.p1().x() + lineEndLength2dx(length) );
-                    pt.setY( i_line.p1().y() - lineEndWidth2dy(width)/2.0 );
-                    pt = rotatePoint( i_line.p1(), pt, fAngle_rad );
-                    plgLineStart.append(pt); // Pt3
+                pt.setX(i_line.p2().x() - arrowHeadLength2dx(length));
+                pt.setY(i_line.p2().y() - arrowHeadWidth2dy(width)/2.0);
+                pt = rotatePoint(i_line.p2(), pt, fAngle_rad);
+                plgLineEnd.append(pt); // Pt3
 
-                    if( baseLineType == ELineEndBaseLineType::Normal )
-                    {
-                        pt.setX( i_line.p1().x() + lineEndLength2dx(length) );
-                        pt.setY( i_line.p1().y() );
-                        pt = rotatePoint( i_line.p1(), pt, fAngle_rad );
-                        plgLineStart.append(pt); // Pt4
-                    }
-                    else if( baseLineType == ELineEndBaseLineType::Indented )
-                    {
-                        pt.setX( i_line.p1().x() + lineEndLength2dx(length)/2.0 );
-                        pt.setY( i_line.p1().y() );
-                        pt = rotatePoint( i_line.p1(), pt, fAngle_rad );
-                        plgLineStart.append(pt); // Pt4
-                    }
-
-                    *i_pplgLineStart = plgLineStart;
-
-                } // if( i_pplgLineStart != nullptr )
-
-            } // if( iLinePoint == ELinePoint::Start )
-
-            else // if( iLinePoint == ELinePoint::End )
-            {
-                if( i_pplgLineEnd != nullptr )
-                {
-                    pt.setX( i_line.p2().x() - lineEndLength2dx(length) );
-                    pt.setY( i_line.p2().y() + lineEndWidth2dy(width)/2.0 );
-                    pt = rotatePoint( i_line.p2(), pt, fAngle_rad );
-                    plgLineEnd.append(pt); // Pt1
-
-                    plgLineEnd.append( i_line.p2() ); // Pt2
-
-                    pt.setX( i_line.p2().x() - lineEndLength2dx(length) );
-                    pt.setY( i_line.p2().y() - lineEndWidth2dy(width)/2.0 );
-                    pt = rotatePoint( i_line.p2(), pt, fAngle_rad );
-                    plgLineEnd.append(pt); // Pt3
-
-                    if( baseLineType == ELineEndBaseLineType::Normal )
-                    {
-                        pt.setX( i_line.p2().x() - lineEndLength2dx(length) );
-                        pt.setY( i_line.p2().y() );
-                        pt = rotatePoint( i_line.p2(), pt, fAngle_rad );
-                        plgLineEnd.append(pt); // Pt4
-                    }
-                    else if( baseLineType == ELineEndBaseLineType::Indented )
-                    {
-                        pt.setX( i_line.p2().x() - lineEndLength2dx(length)/2.0 );
-                        pt.setY( i_line.p2().y() );
-                        pt = rotatePoint( i_line.p2(), pt, fAngle_rad );
-                        plgLineEnd.append(pt); // Pt4
-                    }
-
-                    *i_pplgLineEnd = plgLineEnd;
-
-                } // if( i_pplgLineEnd != nullptr )
-
-            } // if( iLinePoint == ELinePoint::End )
-
-        } // for( iLinePoint = 0; iLinePoint < ELinePointCount; iLinePoint++ )
-
+                if (baseLineType == EArrowHeadBaseLineType::Normal) {
+                    pt.setX(i_line.p2().x() - arrowHeadLength2dx(length));
+                    pt.setY(i_line.p2().y() );
+                    pt = rotatePoint(i_line.p2(), pt, fAngle_rad);
+                    plgLineEnd.append(pt); // Pt4
+                }
+                else if (baseLineType == EArrowHeadBaseLineType::Indented) {
+                    pt.setX(i_line.p2().x() - arrowHeadLength2dx(length)/2.0);
+                    pt.setY(i_line.p2().y());
+                    pt = rotatePoint(i_line.p2(), pt, fAngle_rad);
+                    plgLineEnd.append(pt); // Pt4
+                }
+                *i_pplgLineEnd = plgLineEnd;
+            }
+        }
     } // if( i_drawSettings.getLineEndStyle(ELinePoint::Start) != ELineEndStyle::Normal ..
-
 } // getLineEndPolygons
 
 //------------------------------------------------------------------------------
@@ -1182,10 +1180,10 @@ bool ZS::Draw::isLineHit( const QLineF& i_lineF, const QPointF& i_point, double 
 
 //------------------------------------------------------------------------------
 bool ZS::Draw::isRectHit(
-    const QRectF&     i_rct,
-    EFillStyle        i_fillStyle,
-    const QPointF&    i_pt,
-    double            i_fTolerance,
+    const QRectF& i_rct,
+    const CEnumFillStyle& i_fillStyle,
+    const QPointF& i_pt,
+    double i_fTolerance,
     SGraphObjHitInfo* o_pHitInfo )
 //------------------------------------------------------------------------------
 {
@@ -1352,10 +1350,10 @@ bool ZS::Draw::isRectHit(
 
 //------------------------------------------------------------------------------
 bool ZS::Draw::isEllipseHit(
-    const QRectF&     i_rct,
-    EFillStyle        i_fillStyle,
-    const QPointF&    i_pt,
-    double            i_fTolerance,
+    const QRectF& i_rct,
+    const CEnumFillStyle& i_fillStyle,
+    const QPointF& i_pt,
+    double i_fTolerance,
     SGraphObjHitInfo* o_pHitInfo )
 //------------------------------------------------------------------------------
 {
@@ -1585,10 +1583,10 @@ bool ZS::Draw::isEllipseHit(
 
 //------------------------------------------------------------------------------
 bool ZS::Draw::isPolygonHit(
-    const QPolygonF&  i_plg,
-    EFillStyle        i_fillStyle,
-    const QPointF&    i_pt,
-    double            i_fTolerance,
+    const QPolygonF& i_plg,
+    const CEnumFillStyle& i_fillStyle,
+    const QPointF& i_pt,
+    double i_fTolerance,
     SGraphObjHitInfo* o_pHitInfo )
 //------------------------------------------------------------------------------
 {

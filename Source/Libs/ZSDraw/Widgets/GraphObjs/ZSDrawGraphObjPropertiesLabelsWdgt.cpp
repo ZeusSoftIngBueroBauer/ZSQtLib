@@ -496,7 +496,7 @@ void CWdgtGraphObjPropertiesLabels::applySettings()
         /* strMethod    */ "applySettings",
         /* strAddInfo   */ "" );
 
-    if (m_pGraphObj != nullptr && !hasErrors())
+    if (m_pGraphObj != nullptr && !hasErrors() && hasChanges())
     {
         m_pGraphObj->rename(m_pEdtName->text());
 

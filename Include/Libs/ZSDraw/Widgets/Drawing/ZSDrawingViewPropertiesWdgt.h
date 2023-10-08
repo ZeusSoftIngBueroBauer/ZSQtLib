@@ -199,7 +199,6 @@ protected: // instance members
     QStandardItemModel* m_pModelGridLinesStyles;
     QSpinBox* m_pEdtGridLinesWidth;
     QPixmap* m_pPxmBtnGridLinesColor;
-    QRect m_rctBtnGridLinesColor;
     QPushButton* m_pBtnGridLinesColor;
     // Grid Scale Labels
     QLabel* m_pLblGridScaleLabels;

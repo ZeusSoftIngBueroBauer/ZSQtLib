@@ -94,7 +94,7 @@ CGraphObj* CObjFactoryGroup::createGraphObj(
         /* strMethod    */ "createGraphObj",
         /* strAddInfo   */ strMthInArgs );
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsDetailed)) {
-        strMthInArgs = "DrawSettings {" + i_drawSettings.toString(EGraphObjTypeLine) + "}";
+        strMthInArgs = "DrawSettings {" + i_drawSettings.toString() + "}";
         mthTracer.trace(strMthInArgs);
     }
 

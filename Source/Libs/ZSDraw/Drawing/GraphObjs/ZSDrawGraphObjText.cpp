@@ -112,11 +112,11 @@ CGraphObjText::CGraphObjText(
     m_ptRotOriginCurr = rctBounding.center();
 #endif
 
-    setFlags( QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges );
+    setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
 
     setTextInteractionFlags(Qt::TextEditorInteraction);
 
-    onDrawSettingsChanged();
+    //onDrawSettingsChanged();
 
     updateToolTip();
 
@@ -337,9 +337,20 @@ public: // overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObjText::onDrawSettingsChanged()
+void CGraphObjText::onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld)
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "OldSettings {" + i_drawSettingsOld.toString() + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "onDrawSettingsChanged",
+        /* strAddInfo   */ strMthInArgs );
+
     if( m_drawSettings.isTextUsed() )
     {
         QFont fnt = m_drawSettings.getTextFont();
@@ -348,7 +359,7 @@ void CGraphObjText::onDrawSettingsChanged()
 
         fnt.setPixelSize( textSize2SizeInPixels(textSize) );
 
-        ETextStyle textStyle = m_drawSettings.getTextStyle();
+        CEnumTextStyle textStyle = m_drawSettings.getTextStyle();
 
         bool bItalic = (textStyle == ETextStyle::Italic || textStyle == ETextStyle::BoldItalic);
         bool bBold   = (textStyle == ETextStyle::Bold || textStyle == ETextStyle::BoldItalic);
@@ -356,7 +367,7 @@ void CGraphObjText::onDrawSettingsChanged()
         fnt.setItalic(bItalic);
         fnt.setBold(bBold);
 
-        ETextEffect textEffect = m_drawSettings.getTextEffect();
+        CEnumTextEffect textEffect = m_drawSettings.getTextEffect();
 
         bool bStrikeout = (textEffect == ETextEffect::Strikeout || textEffect == ETextEffect::StrikeoutUnderline);
         bool bUnderline = (textEffect == ETextEffect::Underline || textEffect == ETextEffect::StrikeoutUnderline);

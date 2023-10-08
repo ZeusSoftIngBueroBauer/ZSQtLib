@@ -312,7 +312,7 @@ public: // instance methods
     QString getFactoryGroupName() const;
     CEnumEditMode getEditMode() const;
     CEnumEditResizeMode getEditResizeMode() const;
-public: // overridables
+public: // overridables (for subsystem test)
     virtual QString getScenePolygonShapePointsString() const;
 public: // instance methods
     int getSelectedPolygonShapePointIndex() const;
@@ -326,38 +326,39 @@ public: // overridables
 public: // overridables
     virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize);
 public: // overridables
-    virtual void setDrawSettings( const CDrawSettings& i_drawSettings );
+    virtual void setDrawSettings(const CDrawSettings& i_drawSettings);
     virtual CDrawSettings getDrawSettings() const;
-    virtual void onDrawSettingsChanged();
+protected: // overridables
+    virtual void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld);
 public: // overridables (you must call those methods (instead of e.g. "QGrahicsLineItem::setPen") to keep the settings synchronized with QGraphicsItem attributes)
     virtual void setPenColor( const QColor& i_clr, bool i_bImmediatelyApplySetting = true );
     virtual QColor getPenColor() const;
     virtual void setPenWidth( int i_iLineWidth, bool i_bImmediatelyApplySetting = true );
     virtual int getPenWidth() const;
 public: // overridables (you must call those methods (instead of e.g. "QGrahicsLineItem::setPen") to keep the settings synchronized with QGraphicsItem attributes)
-    virtual void setLineStyle( ELineStyle i_lineStyle, bool i_bImmediatelyApplySetting = true );
-    virtual ELineStyle getLineStyle() const;
+    virtual void setLineStyle( const CEnumLineStyle& i_lineStyle, bool i_bImmediatelyApplySetting = true );
+    virtual CEnumLineStyle getLineStyle() const;
 public: // overridables (you must call those methods (instead of e.g. "QGrahicsLineItem::setPen") to keep the settings synchronized with QGraphicsItem attributes)
     virtual void setFillColor( const QColor& i_clr, bool i_bImmediatelyApplySetting = true );
     virtual QColor getFillColor() const;
-    virtual void setFillStyle( EFillStyle i_fillStyle, bool i_bImmediatelyApplySetting = true );
-    virtual EFillStyle getFillStyle() const;
+    virtual void setFillStyle( const CEnumFillStyle& i_fillStyle, bool i_bImmediatelyApplySetting = true );
+    virtual CEnumFillStyle getFillStyle() const;
 public: // overridables (you must call those methods (instead of e.g. "QGrahicsLineItem::setPen") to keep the settings synchronized with QGraphicsItem attributes)
-    virtual void setLineRecordType( ELineRecordType i_lineRecordType, bool i_bImmediatelyApplySetting = true );
-    virtual ELineRecordType getLineRecordType() const;
+    virtual void setLineRecordType( const CEnumLineRecordType& i_lineRecordType, bool i_bImmediatelyApplySetting = true );
+    virtual CEnumLineRecordType getLineRecordType() const;
     virtual void setLineExtent( int i_iLineExtent_px, bool i_bImmediatelyApplySetting = true );
     virtual int getLineExtent() const;
 public: // overridables (you must call those methods (instead of e.g. "QGrahicsLineItem::setPen") to keep the settings synchronized with QGraphicsItem attributes)
-    virtual void setLineEndStyle( ELinePoint i_linePoint, ELineEndStyle i_endStyle, bool i_bImmediatelyApplySetting = true );
-    virtual ELineEndStyle getLineEndStyle( ELinePoint i_linePoint ) const;
-    virtual void setLineEndBaseLineType( ELinePoint i_linePoint, ELineEndBaseLineType i_baseLineType, bool i_bImmediatelyApplySetting = true );
-    virtual ELineEndBaseLineType getLineEndBaseLineType( ELinePoint i_linePoint ) const;
-    virtual void setLineEndFillStyle( ELinePoint i_linePoint, ELineEndFillStyle i_fillStyle, bool i_bImmediatelyApplySetting = true );
-    virtual ELineEndFillStyle getLineEndFillStyle( ELinePoint i_linePoint ) const;
-    virtual void setLineEndWidth( ELinePoint i_linePoint, ELineEndWidth i_width, bool i_bImmediatelyApplySetting = true );
-    virtual ELineEndWidth getLineEndWidth( ELinePoint i_linePoint ) const;
-    virtual void setLineEndLength( ELinePoint i_linePoint, ELineEndLength i_length, bool i_bImmediatelyApplySetting = true );
-    virtual ELineEndLength getLineEndLength( ELinePoint i_linePoint ) const;
+    virtual void setLineEndStyle( const CEnumLinePoint& i_linePoint, const CEnumLineEndStyle& i_endStyle, bool i_bImmediatelyApplySetting = true );
+    virtual CEnumLineEndStyle getLineEndStyle( const CEnumLinePoint& i_linePoint ) const;
+    virtual void setLineEndBaseLineType( const CEnumLinePoint& i_linePoint, const CEnumArrowHeadBaseLineType& i_baseLineType, bool i_bImmediatelyApplySetting = true );
+    virtual CEnumArrowHeadBaseLineType getLineEndBaseLineType( const CEnumLinePoint& i_linePoint ) const;
+    virtual void setLineEndFillStyle( const CEnumLinePoint& i_linePoint, const CEnumArrowHeadFillStyle& i_fillStyle, bool i_bImmediatelyApplySetting = true );
+    virtual CEnumArrowHeadFillStyle getLineEndFillStyle( const CEnumLinePoint& i_linePoint ) const;
+    virtual void setLineEndWidth( const CEnumLinePoint& i_linePoint, const CEnumArrowHeadWidth& i_width, bool i_bImmediatelyApplySetting = true );
+    virtual CEnumArrowHeadWidth getLineEndWidth( const CEnumLinePoint& i_linePoint ) const;
+    virtual void setLineEndLength( const CEnumLinePoint& i_linePoint, const CEnumArrowHeadLength& i_length, bool i_bImmediatelyApplySetting = true );
+    virtual CEnumArrowHeadLength getLineEndLength( const CEnumLinePoint& i_linePoint ) const;
 public: // overridables (you must call those methods (instead of e.g. "QGrahicsLineItem::setPen") to keep the settings synchronized with QGraphicsItem attributes)
     virtual void setTextColor( const QColor& i_clr, bool i_bImmediatelyApplySetting = true );
     virtual QColor getTextColor() const;
@@ -365,10 +366,10 @@ public: // overridables (you must call those methods (instead of e.g. "QGrahicsL
     virtual QFont getTextFont() const;
     virtual void setTextSize( ETextSize i_size, bool i_bImmediatelyApplySetting = true );
     virtual ETextSize getTextSize() const;
-    virtual void setTextStyle( ETextStyle i_style, bool i_bImmediatelyApplySetting = true );
-    virtual ETextStyle getTextStyle() const;
-    virtual void setTextEffect( ETextEffect i_effect, bool i_bImmediatelyApplySetting = true );
-    virtual ETextEffect getTextEffect() const;
+    virtual void setTextStyle( const CEnumTextStyle& i_style, bool i_bImmediatelyApplySetting = true );
+    virtual CEnumTextStyle getTextStyle() const;
+    virtual void setTextEffect( const CEnumTextEffect& i_effect, bool i_bImmediatelyApplySetting = true );
+    virtual CEnumTextEffect getTextEffect() const;
 public: // overridables
     virtual void setMinimumWidth( const ZS::PhysVal::CPhysVal& i_physValWidth );
     virtual bool hasMinimumWidth() const;

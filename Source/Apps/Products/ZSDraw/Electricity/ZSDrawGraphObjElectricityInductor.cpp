@@ -155,8 +155,8 @@ CGraphObjInductor::CGraphObjInductor(
     // Draw settings for group item
     //-----------------------------
 
-    m_drawSettings.setAttributesAreUsed( true, EDrawAttributePenMin, EDrawAttributePenCount );
-    m_drawSettings.setAttributesAreUsed( true, EDrawAttributeLineStyleMin, EDrawAttributeLineStyleCount );
+    ////m_drawSettings.setAttributesAreUsed(true, EDrawAttributePenMin, EDrawAttributePenCount);
+    ////m_drawSettings.setAttributesAreUsed(true, EDrawAttributeLineStyleMin, EDrawAttributeLineStyleCount);
 
     m_drawSettings.setPenColor(Qt::black);
     m_drawSettings.setPenWidth(1);
@@ -167,8 +167,8 @@ CGraphObjInductor::CGraphObjInductor(
 
     CDrawSettings drawSettingsLine(EGraphObjTypeLine);
 
-    drawSettingsLine.setAttributesAreUsed( false, EDrawAttributeLineRecordTypeMin, EDrawAttributeLineRecordTypeCount );
-    drawSettingsLine.setAttributesAreUsed( false, EDrawAttributeLineEndStyleMin, EDrawAttributeLineEndStyleCount );
+    //drawSettingsLine.setAttributesAreUsed( false, EDrawAttributeLineRecordTypeMin, EDrawAttributeLineRecordTypeCount );
+    //drawSettingsLine.setAttributesAreUsed( false, EDrawAttributeLineEndStyleMin, EDrawAttributeLineEndStyleCount );
 
     CDrawSettings drawSettingsCnctPt(EGraphObjTypeConnectionPoint);
 
@@ -404,21 +404,19 @@ public: // overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObjInductor::onDrawSettingsChanged()
+void CGraphObjInductor::onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld)
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
-
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "OldSettings {" + i_drawSettingsOld.toString() + "}";
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "onDrawSettingsChanged",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     CDrawSettings drawSettingsLine = m_pLinBody->getDrawSettings();
 

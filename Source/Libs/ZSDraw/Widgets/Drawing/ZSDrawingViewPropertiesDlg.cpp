@@ -67,9 +67,9 @@ CDlgDrawingViewProperties* CDlgDrawingViewProperties::CreateInstance(
     Qt::WindowFlags i_wFlags )
 //------------------------------------------------------------------------------
 {
-    if( CDialog::GetInstance(NameSpace(), ClassName(), i_pDrawingView->objectName()) != nullptr )
+    if (GetInstance(i_pDrawingView) != nullptr )
     {
-        QString strKey = buildPathStr("::", NameSpace(), ClassName(), i_pDrawingView->objectName());
+        QString strKey = buildPathStr("::", NameSpace(), "Widgets", "Drawing", ClassName(), i_pDrawingView->objectName());
         throw CException(__FILE__, __LINE__, EResultSingletonClassAlreadyInstantiated, strKey);
     }
 
@@ -85,7 +85,7 @@ CDlgDrawingViewProperties* CDlgDrawingViewProperties::GetInstance( CDrawingView*
 //------------------------------------------------------------------------------
 {
     return dynamic_cast<CDlgDrawingViewProperties*>(
-        CDialog::GetInstance(NameSpace(), ClassName(), i_pDrawingView->objectName()));
+        CDialog::GetInstance(NameSpace() + "::Widgets::Drawing", ClassName(), i_pDrawingView->objectName()));
 }
 
 /*==============================================================================

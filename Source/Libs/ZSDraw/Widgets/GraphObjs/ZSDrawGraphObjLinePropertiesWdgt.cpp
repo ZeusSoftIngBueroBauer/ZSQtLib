@@ -239,7 +239,7 @@ void CWdgtGraphObjLineProperties::acceptChanges()
                 this, ZS::System::GUI::getMainWindowTitle() + ": Cannot save changes",
                 "Some input is erroneous. Please correct the relevant input first.");
         }
-        else {
+        else if (hasChanges()) {
             {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
 
                 // When applying changes onGraphObjChanged is called.

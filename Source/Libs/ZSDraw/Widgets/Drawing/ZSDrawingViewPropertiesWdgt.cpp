@@ -164,7 +164,6 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pModelGridLinesStyles(nullptr),
     m_pEdtGridLinesWidth(nullptr),
     m_pPxmBtnGridLinesColor(nullptr),
-    m_rctBtnGridLinesColor(0, 12, 16, 4),
     m_pBtnGridLinesColor(nullptr),
     // Grid Scale Labels
     m_pLblGridScaleLabels(nullptr),
@@ -196,9 +195,6 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     QObject::connect(
         m_pDrawingView, &CDrawingView::gridSettingsChanged,
         this, &CWdgtDrawingViewProperties::onDrawingViewGridSettingsChanged );
-
-    //m_drawingSize = m_pDrawingView->drawingSize();
-    //m_gridSettings = m_pDrawingView->gridSettings();
 
     int cxLblWidthClm1 = 80;
     int cxEdtWidthClm1 = 145;
@@ -232,7 +228,6 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     for( CEnumScaleDimensionUnit eVal = 0; eVal < CEnumScaleDimensionUnit::count(); ++eVal ) {
         m_pCmbDimensionUnit->addItem(eVal.toString(), eVal.enumeratorAsInt());
     }
-    //m_pCmbDimensionUnit->setCurrentIndex(m_drawingSize.dimensionUnit().enumeratorAsInt());
     QObject::connect(
         m_pCmbDimensionUnit, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
         this, &CWdgtDrawingViewProperties::onCmbDimensionUnitCurrentIndexChanged );
@@ -327,7 +322,6 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
             }
         }
     }
-    //m_pCmbImageMetricUnit->setCurrentText(m_drawingSize.metricUnit().symbol());
     QObject::connect(
         m_pCmbImageMetricUnit, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
         this, &CWdgtDrawingViewProperties::onCmbImageMetricUnitCurrentIndexChanged );
@@ -380,7 +374,6 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pLytLineImageMetricNormedPaper->addWidget(m_pLblImageMetricNormedPaperSizes);
     m_pCmbImageMetricNormedPaperSizes = new QComboBox();
     m_pCmbImageMetricNormedPaperSizes->setFixedWidth(cxEdtWidthClm1);
-    //m_pCmbImageMetricNormedPaperSizes->setEnabled(false);
     m_pLytLineImageMetricNormedPaper->addWidget(m_pCmbImageMetricNormedPaperSizes);
     m_pLytLineImageMetricNormedPaper->addSpacing(cxClmSpacing);
     for( CEnumNormedPaperSize ePaperSize = 0; ePaperSize < CEnumNormedPaperSize::count(); ++ePaperSize ) {
@@ -388,13 +381,7 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
             ePaperSize.toString(EEnumEntryAliasStrSymbol), ePaperSize.toValue());
     }
     m_pCmbImageMetricNormedPaperSizes->addItem("---");
-    //if (m_drawingSize.normedPaperSize().isValid()) {
-    //    m_pCmbImageMetricNormedPaperSizes->setCurrentText(
-    //        m_drawingSize.normedPaperSize().toString(EEnumEntryAliasStrSymbol));
-    //}
-    //else {
-        m_pCmbImageMetricNormedPaperSizes->setCurrentText("---");
-    //}
+    m_pCmbImageMetricNormedPaperSizes->setCurrentText("---");
     QObject::connect(
         m_pCmbImageMetricNormedPaperSizes, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
         this, &CWdgtDrawingViewProperties::onCmbImageMetricNormedPaperSizesCurrentIndexChanged );
@@ -408,16 +395,11 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pLblImageMetricNormedPaperOrientation->setVisible(false);
     m_pCmbImageMetricNormedPaperOrientation = new QComboBox();
     m_pCmbImageMetricNormedPaperOrientation->setFixedWidth(cxEdtWidthClm2);
-    //m_pCmbImageMetricNormedPaperOrientation->setEnabled(false);
     m_pLytLineImageMetricNormedPaper->addWidget(m_pCmbImageMetricNormedPaperOrientation);
     m_pLytLineImageMetricNormedPaper->addStretch();
     for (CEnumOrientation eOrientation = 0; eOrientation < CEnumOrientation::count(); ++eOrientation ) {
         m_pCmbImageMetricNormedPaperOrientation->addItem(eOrientation.toString(EEnumEntryAliasStrText));
     }
-    //if (m_drawingSize.normedPaperOrientation().isValid()) {
-    //    m_pCmbImageMetricNormedPaperOrientation->setCurrentText(
-    //        m_drawingSize.normedPaperOrientation().toString(EEnumEntryAliasStrText));
-    //}
     m_pCmbImageMetricNormedPaperOrientation->setVisible(false);
     QObject::connect(
         m_pCmbImageMetricNormedPaperOrientation, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
@@ -444,7 +426,6 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pLytLineImageMetricScaleFactor->addWidget(pWdgtImageMetricScaleFactor);
 
     m_pCmbImageMetricScaleFactorDividend = new QComboBox();
-    //m_pCmbImageMetricScaleFactorDividend->setEnabled(false);
     m_pCmbImageMetricScaleFactorDividend->setEditable(true);
     m_pCmbImageMetricScaleFactorDividend->setInsertPolicy(QComboBox::NoInsert);
     m_pCmbImageMetricScaleFactorDividend->setValidator(
@@ -453,7 +434,6 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pLblImageMetricScaleFactorHyphen = new QLabel(":");
     pLytWdgtImageMetricScaleFactor->addWidget(m_pLblImageMetricScaleFactorHyphen);
     m_pCmbImageMetricScaleFactorDivisor = new QComboBox();
-    //m_pCmbImageMetricScaleFactorDivisor->setEnabled(false);
     m_pCmbImageMetricScaleFactorDivisor->setEditable(true);
     m_pCmbImageMetricScaleFactorDivisor->setInsertPolicy(QComboBox::NoInsert);
     m_pCmbImageMetricScaleFactorDivisor->setValidator(
@@ -470,10 +450,6 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
         m_pCmbImageMetricScaleFactorDividend->addItem(QString::number(iScaleFactor));
         m_pCmbImageMetricScaleFactorDivisor->addItem(QString::number(iScaleFactor));
     }
-    //m_pCmbImageMetricScaleFactorDividend->setCurrentText(
-    //    QString::number(m_drawingSize.scaleFactorDividend()));
-    //m_pCmbImageMetricScaleFactorDivisor->setCurrentText(
-    //    QString::number(m_drawingSize.scaleFactorDivisor()));
     QObject::connect(
         m_pCmbImageMetricScaleFactorDividend, &QComboBox::currentTextChanged,
         this, &CWdgtDrawingViewProperties::onCmbImageMetricScaleFactorDividendCurrentTextChanged );
@@ -501,8 +477,6 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     for (CEnumYScaleAxisOrientation eOrientation = 0; eOrientation < CEnumYScaleAxisOrientation::count(); ++eOrientation ) {
         m_pCmbImageMetricYScaleAxisOrientation->addItem(eOrientation.toString(EEnumEntryAliasStrText));
     }
-    //m_pCmbImageMetricYScaleAxisOrientation->setCurrentText(
-    //    m_drawingSize.yScaleAxisOrientation().toString(EEnumEntryAliasStrText));
     QObject::connect(
         m_pCmbImageMetricYScaleAxisOrientation, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
         this, &CWdgtDrawingViewProperties::onCmbImageMetricYScaleAxisOrientationCurrentIndexChanged );
@@ -544,7 +518,6 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pEdtImageSizeWidth_px->setFixedWidth(cxEdtWidthClm1);
     m_pEdtImageSizeWidth_px->setMinimum(1);
     m_pEdtImageSizeWidth_px->setMaximum(100000);
-    //m_pEdtImageSizeWidth_px->setValue(m_drawingSize.imageSizeInPixels().width());
     m_pEdtImageSizeWidth_px->setSuffix(" px");
     m_pLytLineImageSize_px->addWidget(m_pEdtImageSizeWidth_px);
     m_pLytLineImageSize_px->addSpacing(cxClmSpacing);
@@ -562,7 +535,6 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pEdtImageSizeHeight_px->setFixedWidth(cxEdtWidthClm2);
     m_pEdtImageSizeHeight_px->setMinimum(1);
     m_pEdtImageSizeHeight_px->setMaximum(100000);
-    //m_pEdtImageSizeHeight_px->setValue(m_drawingSize.imageSizeInPixels().height());
     m_pEdtImageSizeHeight_px->setSuffix(" px");
     m_pLytLineImageSize_px->addWidget(m_pEdtImageSizeHeight_px);
     m_pLytLineImageSize_px->addStretch();
@@ -619,7 +591,6 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
 
     iClm = iClmChkVisible;
     m_pChkGridLinesVisible = new QCheckBox();
-    //m_pChkGridLinesVisible->setChecked(m_gridSettings.areLinesVisible());
     m_pLytGridSettings->addWidget(m_pChkGridLinesVisible, iRow, iClm);
     QObject::connect(
         m_pChkGridLinesVisible, &QCheckBox::stateChanged,
@@ -634,7 +605,6 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pEdtGridLinesDistMin->setMinimum(1);
     m_pEdtGridLinesDistMin->setMaximum(9999);
     m_pEdtGridLinesDistMin->setSuffix(" px");
-    //m_pEdtGridLinesDistMin->setValue(m_gridSettings.linesDistMin());
     m_pLytGridSettings->addWidget(m_pEdtGridLinesDistMin, iRow, iClm);
     QObject::connect(
         m_pEdtGridLinesDistMin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
@@ -647,32 +617,22 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pCmbGridLinesStyle->setModel(m_pModelGridLinesStyles);
     m_pCmbGridLinesStyle->setIconSize(iconSize);
     m_pLytGridSettings->addWidget(m_pCmbGridLinesStyle, iRow, iClm);
-    //int idx = m_pCmbGridLinesStyle->findData(m_gridSettings.linesStyle().enumeratorAsInt());
-    //if (idx >= 0) {
-    //    m_pCmbGridLinesStyle->setCurrentIndex(idx);
-    //}
     QObject::connect(
         m_pCmbGridLinesStyle, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
         this, &CWdgtDrawingViewProperties::onCmbGridLinesStyleCurrentIndexChanged);
-
-    // The list view  "m_pListViewGridLineStyles" must be created for the first
-    // time the button is pressed. If created before the widgets created afterwards
-    // will be above the list view in the widget hierarchy and the list view will
-    // be overlapped by those and is partly invisible.
 
     iClm = iClmEdtLinesWidth;
     m_pEdtGridLinesWidth = new QSpinBox();
     m_pEdtGridLinesWidth->setMinimum(1);
     m_pEdtGridLinesWidth->setMaximum(9999);
     m_pEdtGridLinesWidth->setSuffix(" px");
-    //m_pEdtGridLinesWidth->setValue(m_gridSettings.linesWidth());
     m_pLytGridSettings->addWidget(m_pEdtGridLinesWidth, iRow, iClm);
     QObject::connect(
         m_pEdtGridLinesWidth, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
         this, &CWdgtDrawingViewProperties::onEdtGridLinesWidthValueChanged);
 
     iClm = iClmBtnLinesColor;
-    m_pPxmBtnGridLinesColor = new QPixmap(":/ZS/Draw/DrawSettingsLineStyle16x16.png");
+    m_pPxmBtnGridLinesColor = new QPixmap(":/ZS/Draw/GraphObjLine16x16.png");
     m_pBtnGridLinesColor = new QPushButton();
     updateGridLinesColorButtonIcon();
     m_pLytGridSettings->addWidget(m_pBtnGridLinesColor, iRow, iClm);
@@ -691,7 +651,6 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
 
     iClm = iClmChkVisible;
     m_pChkGridScaleLabelsVisible = new QCheckBox();
-    //m_pChkGridScaleLabelsVisible->setChecked(m_gridSettings.areLabelsVisible());
     m_pLytGridSettings->addWidget(m_pChkGridScaleLabelsVisible, iRow, iClm);
     QObject::connect(
         m_pChkGridScaleLabelsVisible, &QCheckBox::stateChanged,
@@ -699,7 +658,6 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
 
     iClm = iClmCmbFont;
     m_pCmbGridScaleLabelsFont = new QFontComboBox();
-    //m_pCmbGridScaleLabelsFont->setCurrentFont(m_gridSettings.labelsFont());
     m_pLytGridSettings->addWidget(m_pCmbGridScaleLabelsFont, iRow, iClm, 1, iClmSpanCmbFont);
     QObject::connect(
         m_pCmbGridScaleLabelsFont, &QFontComboBox::currentFontChanged,
@@ -711,7 +669,6 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     for( int idx = 0; idx < ETextSizeCount; idx++ ) {
         m_pCmbGridScaleLabelsFontSize->addItem( textSize2Str(static_cast<ETextSize>(idx)), textSize2SizeInPixels(static_cast<ETextSize>(idx)) );
     }
-    //m_pCmbGridScaleLabelsFontSize->setCurrentIndex(m_gridSettings.labelsTextSize());
     QObject::connect(
         m_pCmbGridScaleLabelsFontSize, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
         this, &CWdgtDrawingViewProperties::onCmbGridScaleLabelsFontSizeCurrentIndexChanged);
@@ -731,11 +688,6 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     ++iRow;
     iClm = iClmBtnFontStyleBold;
     m_pBtnGridScaleLabelsFontStyleBold = new QPushButton("F");
-    //QFont fntStyleBold = m_gridSettings.labelsFont();
-    //fntStyleBold.setBold(true);
-    //m_pBtnGridScaleLabelsFontStyleBold->setFont(fntStyleBold);
-    //m_pBtnGridScaleLabelsFontStyleBold->setCheckable(true);
-    //updateGridLabelsTextStyleBoldButton();
     m_pLytGridSettings->addWidget(m_pBtnGridScaleLabelsFontStyleBold, iRow, iClm);
     QObject::connect(
         m_pBtnGridScaleLabelsFontStyleBold, &QPushButton::toggled,
@@ -743,11 +695,6 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
 
     iClm = iClmBtnFontStyleItalic;
     m_pBtnGridScaleLabelsFontStyleItalic = new QPushButton("I");
-    //QFont fntStyleItalic = m_gridSettings.labelsFont();
-    //fntStyleItalic.setItalic(true);
-    //m_pBtnGridScaleLabelsFontStyleItalic->setFont(fntStyleItalic);
-    //m_pBtnGridScaleLabelsFontStyleItalic->setCheckable(true);
-    //updateGridLabelsTextStyleItalicButton();
     m_pLytGridSettings->addWidget(m_pBtnGridScaleLabelsFontStyleItalic, iRow, iClm);
     QObject::connect(
         m_pBtnGridScaleLabelsFontStyleItalic, &QPushButton::toggled,
@@ -755,11 +702,6 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
 
     iClm = iClmBtnFontEffectUnderline;
     m_pBtnGridScaleLabelsTextEffectUnderline = new QPushButton("U");
-    //QFont fntEffectUnderline = m_gridSettings.labelsFont();
-    //fntEffectUnderline.setUnderline(true);
-    //m_pBtnGridScaleLabelsTextEffectUnderline->setFont(fntEffectUnderline);
-    //m_pBtnGridScaleLabelsTextEffectUnderline->setCheckable(true);
-    //updateGridLabelsTextEffectUnderlineButton();
     m_pLytGridSettings->addWidget(m_pBtnGridScaleLabelsTextEffectUnderline, iRow, iClm);
     QObject::connect(
         m_pBtnGridScaleLabelsTextEffectUnderline, &QPushButton::toggled,
@@ -767,11 +709,6 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
 
     iClm = iClmBtnFontEffectStrikeout;
     m_pBtnGridScaleLabelsTextEffectStrikeout = new QPushButton("ab");
-    //QFont fntEffectStrikeout = m_gridSettings.labelsFont();
-    //fntEffectStrikeout.setStrikeOut(true);
-    //m_pBtnGridScaleLabelsTextEffectStrikeout->setFont(fntEffectStrikeout);
-    //m_pBtnGridScaleLabelsTextEffectStrikeout->setCheckable(true);
-    //updateGridLabelsTextEffectStrikeoutButton();
     m_pLytGridSettings->addWidget(m_pBtnGridScaleLabelsTextEffectStrikeout, iRow, iClm);
     QObject::connect(
         m_pBtnGridScaleLabelsTextEffectStrikeout, &QPushButton::toggled,
@@ -789,11 +726,8 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     // Update metrics
     //---------------
 
-    //m_drawingSize = m_pDrawingView->drawingSize();
-    //m_gridSettings = m_pDrawingView->gridSettings();
     onDrawingSceneDrawingSizeChanged(m_pDrawingView->drawingSize());
     onDrawingViewGridSettingsChanged(m_pDrawingView->gridSettings());
-    //updateDimensionUnit();
 
 } // ctor
 
@@ -890,7 +824,6 @@ CWdgtDrawingViewProperties::~CWdgtDrawingViewProperties()
     m_pModelGridLinesStyles = nullptr;
     m_pEdtGridLinesWidth = nullptr;
     m_pPxmBtnGridLinesColor = nullptr;
-    //m_rctBtnGridLinesColor;
     m_pBtnGridLinesColor = nullptr;
     // Grid Scale Labels
     m_pLblGridScaleLabels = nullptr;
@@ -2494,12 +2427,9 @@ QSize CWdgtDrawingViewProperties::fillGridLineStylesModel()
     pen.setColor(m_gridSettings.linesColor());
     pen.setWidth(m_gridSettings.linesWidth());
 
-    for (CEnumLineStyle lineStyle = 0; lineStyle < CEnumLineStyle::count(); ++lineStyle)
-    {
-        if (lineStyle != ELineStyle::NoLine)
-        {
+    for (CEnumLineStyle lineStyle = 0; lineStyle < CEnumLineStyle::count(); ++lineStyle) {
+        if (lineStyle != ELineStyle::NoLine) {
             pxmLineStyle.fill(Qt::white);
-
             painter.begin(&pxmLineStyle);
             pen.setStyle(lineStyle2QtPenStyle(lineStyle.enumerator()));
             pen.setColor(Qt::black);
@@ -2507,15 +2437,13 @@ QSize CWdgtDrawingViewProperties::fillGridLineStylesModel()
             painter.setPen(pen);
             painter.drawLine(4, pxmLineStyle.height()/2, pxmLineStyle.width()-4, pxmLineStyle.height()/2);
             painter.end();
-
             QStandardItem* pLineStyleItem = new QStandardItem();
             pLineStyleItem->setData(pxmLineStyle, Qt::DecorationRole);
             pLineStyleItem->setData(static_cast<int>(lineStyle.enumerator()), Qt::UserRole);
             m_pModelGridLinesStyles->appendRow(pLineStyleItem);
         }
     }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(qSize2Str(iconSize));
     }
     return iconSize;
@@ -2531,10 +2459,12 @@ void CWdgtDrawingViewProperties::updateGridLinesColorButtonIcon()
         /* strMethod    */ "updateGridLinesColorButtonIcon",
         /* strAddInfo   */ "" );
 
+    QSize sizePxm = m_pPxmBtnGridLinesColor->size();
     QPainter painter(m_pPxmBtnGridLinesColor);
-    painter.setPen(m_gridSettings.linesColor());
-    painter.setBrush(m_gridSettings.linesColor());
-    painter.drawRect(m_rctBtnGridLinesColor);
+    QPen pen(m_gridSettings.linesColor(), 2);
+    painter.setPen(pen);
+    painter.setRenderHints(QPainter::Antialiasing, true);
+    painter.drawLine(3, 3, sizePxm.width()-4, sizePxm.height()-4);
     m_pBtnGridLinesColor->setIcon(*m_pPxmBtnGridLinesColor);
 }
 

@@ -207,9 +207,9 @@ CGraphObjTransistor::CGraphObjTransistor(
     // Draw settings for group item
     //-----------------------------
 
-    m_drawSettings.setAttributesAreUsed( true, EDrawAttributePenMin, EDrawAttributePenCount );
-    m_drawSettings.setAttributesAreUsed( true, EDrawAttributeLineStyleMin, EDrawAttributeLineStyleCount );
-    m_drawSettings.setAttributesAreUsed( true, EDrawAttributeFillMin, EDrawAttributeFillCount );
+    //m_drawSettings.setAttributesAreUsed( true, EDrawAttributePenMin, EDrawAttributePenCount );
+    ////m_drawSettings.setAttributesAreUsed( true, EDrawAttributeLineStyleMin, EDrawAttributeLineStyleCount );
+    //m_drawSettings.setAttributesAreUsed( true, EDrawAttributeFillMin, EDrawAttributeFillCount );
 
     m_drawSettings.setPenColor(Qt::black);
     m_drawSettings.setPenWidth(1);
@@ -226,39 +226,39 @@ CGraphObjTransistor::CGraphObjTransistor(
 
     CDrawSettings drawSettingsLine(EGraphObjTypeLine);
 
-    drawSettingsLine.setAttributesAreUsed( false, EDrawAttributeLineRecordTypeMin, EDrawAttributeLineRecordTypeCount );
-    drawSettingsLine.setAttributesAreUsed( false, EDrawAttributeLineEndStyleMin, EDrawAttributeLineEndStyleCount );
+    //drawSettingsLine.setAttributesAreUsed( false, EDrawAttributeLineRecordTypeMin, EDrawAttributeLineRecordTypeCount );
+    //drawSettingsLine.setAttributesAreUsed( false, EDrawAttributeLineEndStyleMin, EDrawAttributeLineEndStyleCount );
 
     CDrawSettings drawSettingsLineBaseUp = drawSettingsLine;
 
-    for( idxAttr = EDrawAttributeLineEndStyleMin; idxAttr <= EDrawAttributeLineEndStyleMax; idxAttr++ )
-    {
-        drawSettingsLineBaseUp.setAttributeIsUsed(idxAttr,true);
-    }
+    //for( idxAttr = EDrawAttributeLineEndStyleMin; idxAttr <= EDrawAttributeLineEndStyleMax; idxAttr++ )
+    //{
+    //    drawSettingsLineBaseUp.setAttributeIsUsed(idxAttr,true);
+    //}
 
     if( m_dopingType == EDopingTypePNP )
     {
         drawSettingsLineBaseUp.setLineEndStyle(ELinePoint::End,ELineEndStyle::ArrowHead);
-        drawSettingsLineBaseUp.setLineEndBaseLineType(ELinePoint::End,ELineEndBaseLineType::Normal);
-        drawSettingsLineBaseUp.setLineEndFillStyle(ELinePoint::End,ELineEndFillStyle::SolidPattern);
-        drawSettingsLineBaseUp.setLineEndWidth(ELinePoint::End,ELineEndWidth::Thin);
-        drawSettingsLineBaseUp.setLineEndLength(ELinePoint::End,ELineEndLength::Short);
+        drawSettingsLineBaseUp.setLineEndBaseLineType(ELinePoint::End,EArrowHeadBaseLineType::Normal);
+        drawSettingsLineBaseUp.setLineEndFillStyle(ELinePoint::End,EArrowHeadFillStyle::SolidPattern);
+        drawSettingsLineBaseUp.setLineEndWidth(ELinePoint::End,EArrowHeadWidth::Thin);
+        drawSettingsLineBaseUp.setLineEndLength(ELinePoint::End,EArrowHeadLength::Short);
     }
 
     CDrawSettings drawSettingsLineBaseDn = drawSettingsLine;
 
-    for( idxAttr = EDrawAttributeLineEndStyleMin; idxAttr <= EDrawAttributeLineEndStyleMax; idxAttr++ )
-    {
-        drawSettingsLineBaseDn.setAttributeIsUsed(idxAttr,true);
-    }
+    //for( idxAttr = EDrawAttributeLineEndStyleMin; idxAttr <= EDrawAttributeLineEndStyleMax; idxAttr++ )
+    //{
+    //    drawSettingsLineBaseDn.setAttributeIsUsed(idxAttr,true);
+    //}
 
     if( m_dopingType == EDopingTypeNPN )
     {
         drawSettingsLineBaseDn.setLineEndStyle(ELinePoint::End,ELineEndStyle::ArrowHead);
-        drawSettingsLineBaseDn.setLineEndBaseLineType(ELinePoint::End,ELineEndBaseLineType::Normal);
-        drawSettingsLineBaseDn.setLineEndFillStyle(ELinePoint::End,ELineEndFillStyle::SolidPattern);
-        drawSettingsLineBaseDn.setLineEndWidth(ELinePoint::End,ELineEndWidth::Thin);
-        drawSettingsLineBaseDn.setLineEndLength(ELinePoint::End,ELineEndLength::Short);
+        drawSettingsLineBaseDn.setLineEndBaseLineType(ELinePoint::End,EArrowHeadBaseLineType::Normal);
+        drawSettingsLineBaseDn.setLineEndFillStyle(ELinePoint::End,EArrowHeadFillStyle::SolidPattern);
+        drawSettingsLineBaseDn.setLineEndWidth(ELinePoint::End,EArrowHeadWidth::Thin);
+        drawSettingsLineBaseDn.setLineEndLength(ELinePoint::End,EArrowHeadLength::Short);
     }
 
     CDrawSettings drawSettingsCnctPt(EGraphObjTypeConnectionPoint);
@@ -557,19 +557,19 @@ void CGraphObjTransistor::setDopingType( EDopingType i_type )
             drawSettingsLineBaseUp.setLineEndStyle(ELinePoint::End,ELineEndStyle::Normal);
 
             drawSettingsLineBaseDn.setLineEndStyle(ELinePoint::End,ELineEndStyle::ArrowHead);
-            drawSettingsLineBaseDn.setLineEndBaseLineType(ELinePoint::End,ELineEndBaseLineType::Normal);
-            drawSettingsLineBaseDn.setLineEndFillStyle(ELinePoint::End,ELineEndFillStyle::SolidPattern);
-            drawSettingsLineBaseDn.setLineEndWidth(ELinePoint::End,ELineEndWidth::Thin);
-            drawSettingsLineBaseDn.setLineEndLength(ELinePoint::End,ELineEndLength::Short);
+            drawSettingsLineBaseDn.setLineEndBaseLineType(ELinePoint::End,EArrowHeadBaseLineType::Normal);
+            drawSettingsLineBaseDn.setLineEndFillStyle(ELinePoint::End,EArrowHeadFillStyle::SolidPattern);
+            drawSettingsLineBaseDn.setLineEndWidth(ELinePoint::End,EArrowHeadWidth::Thin);
+            drawSettingsLineBaseDn.setLineEndLength(ELinePoint::End,EArrowHeadLength::Short);
         }
 
         else // if( m_dopingType == ETypePNP )
         {
             drawSettingsLineBaseUp.setLineEndStyle(ELinePoint::End,ELineEndStyle::ArrowHead);
-            drawSettingsLineBaseUp.setLineEndBaseLineType(ELinePoint::End,ELineEndBaseLineType::Normal);
-            drawSettingsLineBaseUp.setLineEndFillStyle(ELinePoint::End,ELineEndFillStyle::SolidPattern);
-            drawSettingsLineBaseUp.setLineEndWidth(ELinePoint::End,ELineEndWidth::Thin);
-            drawSettingsLineBaseUp.setLineEndLength(ELinePoint::End,ELineEndLength::Short);
+            drawSettingsLineBaseUp.setLineEndBaseLineType(ELinePoint::End,EArrowHeadBaseLineType::Normal);
+            drawSettingsLineBaseUp.setLineEndFillStyle(ELinePoint::End,EArrowHeadFillStyle::SolidPattern);
+            drawSettingsLineBaseUp.setLineEndWidth(ELinePoint::End,EArrowHeadWidth::Thin);
+            drawSettingsLineBaseUp.setLineEndLength(ELinePoint::End,EArrowHeadLength::Short);
 
             drawSettingsLineBaseDn.setLineEndStyle(ELinePoint::End,ELineEndStyle::Normal);
         }
@@ -669,21 +669,19 @@ public: // overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObjTransistor::onDrawSettingsChanged()
+void CGraphObjTransistor::onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld)
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
-
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "OldSettings {" + i_drawSettingsOld.toString() + "}";
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "onDrawSettingsChanged",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     CDrawSettings drawSettingsLine = m_pLinBase->getDrawSettings();
 

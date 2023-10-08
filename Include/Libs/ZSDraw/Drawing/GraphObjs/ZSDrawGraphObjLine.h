@@ -71,11 +71,11 @@ public: // overridables of base class QGraphicsItem
     virtual int type() const override;
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone() override;
-public: // overridables of base class CGraphObj
-    virtual QString getScenePolygonShapePointsString() const override; // for subsystem test
+public: // overridables of base class CGraphObj (for subsystem test)
+    virtual QString getScenePolygonShapePointsString() const override;
 public: // overridables of base class CGraphObj
     virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize) override;
-    virtual void onDrawSettingsChanged() override;
+    virtual void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld) override;
 public: // instance methods
     void setLine(const CPhysValLine& i_physValLine);
     void setLine(double i_fX1, double i_fY1, double i_fX2, double i_fY2, const ZS::PhysVal::CUnit& i_unit);
@@ -129,7 +129,8 @@ protected: // overridables of base class QGraphicsItem
 protected: // overridables of base class QGraphicsItem
     virtual QVariant itemChange(GraphicsItemChange i_change, const QVariant& i_value) override;
 protected: // instance methods
-    virtual void updateLineEndPolygonCoors();
+    virtual bool lineEndArrowHeadPolygonsNeedUpdate(const CEnumLinePoint& i_linePoint, const CDrawSettings& i_drawSettingsOld) const;
+    virtual void updateLineEndArrowHeadPolygons(const CEnumLinePoint& i_linePoint = CEnumLinePoint());
 protected: // overridables of base class CGraphObj
     virtual void updateToolTip() override;
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
@@ -151,10 +152,10 @@ protected: // instance members
          If the item does not have another graphical object as a 
          parent, the coordinates are scene coordinates. */
     CPhysValLine m_physValLine;
-    /*!< Start point and polygon points for arrow heads */
-    QPolygonF m_plgLineStart;
-    /*!< End point and polygon points for arrow heads */
-    QPolygonF m_plgLineEnd;
+    /*!< Polygon points for arrow head at P1 (line start) */
+    QPolygonF m_plgP1ArrowHead;
+    /*!< Polygon points for arrow head at P2 (line end) */
+    QPolygonF m_plgP2ArrowHead;
 
 }; // class CGraphObjLine
 

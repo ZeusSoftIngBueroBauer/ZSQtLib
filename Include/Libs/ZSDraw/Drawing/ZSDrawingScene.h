@@ -268,40 +268,40 @@ public: // instance methods
     void setPenWidth( int i_iPenWidth );
     int getPenWidth() const { return m_drawSettings.getPenWidth(); }
 public: // instance methods
-    void setLineStyle( ELineStyle i_lineStyle );
-    ELineStyle getLineStyle() const { return m_drawSettings.getLineStyle(); }
+    void setLineStyle( const CEnumLineStyle& i_lineStyle );
+    CEnumLineStyle getLineStyle() const { return m_drawSettings.getLineStyle(); }
 public: // instance methods
     void setFillColor( const QColor& i_clr );
     QColor getFillColor() const { return m_drawSettings.getFillColor(); }
-    void setFillStyle( EFillStyle i_fillStyle );
-    EFillStyle getFillStyle() const { return m_drawSettings.getFillStyle(); }
+    void setFillStyle( const CEnumFillStyle& i_fillStyle );
+    CEnumFillStyle getFillStyle() const { return m_drawSettings.getFillStyle(); }
 public: // instance methods
-    void setLineRecordType( ELineRecordType i_lineRecordType );
-    ELineRecordType getLineRecordType() const { return m_drawSettings.getLineRecordType(); }
-    void setLineExtent( int i_iLineExtent );
+    void setLineRecordType( const CEnumLineRecordType& i_recordType );
+    CEnumLineRecordType getLineRecordType() const { return m_drawSettings.getLineRecordType(); }
+    void setLineExtent( int i_iExtent );
     int  getLineExtent() const { return m_drawSettings.getLineExtent(); }
 public: // instance methods
-    void setLineEndStyle( ELinePoint i_linePoint, ELineEndStyle i_endStyle );
-    ELineEndStyle getLineEndStyle( ELinePoint i_linePoint ) const { return m_drawSettings.getLineEndStyle(i_linePoint); }
-    void setLineEndBaseLineType( ELinePoint i_linePoint, ELineEndBaseLineType i_baseLineType );
-    ELineEndBaseLineType getLineEndBaseLineType( ELinePoint i_linePoint ) const { return m_drawSettings.getLineEndBaseLineType(i_linePoint); }
-    void setLineEndFillStyle( ELinePoint i_linePoint, ELineEndFillStyle i_fillStyle );
-    ELineEndFillStyle getLineEndFillStyle( ELinePoint i_linePoint ) const { return m_drawSettings.getLineEndFillStyle(i_linePoint); }
-    void setLineEndWidth( ELinePoint i_linePoint, ELineEndWidth i_arrowWidth );
-    ELineEndWidth getLineEndWidth( ELinePoint i_linePoint ) const { return m_drawSettings.getLineEndWidth(i_linePoint); }
-    void setLineEndLength( ELinePoint i_linePoint, ELineEndLength i_arrowLength );
-    ELineEndLength getLineEndLength( ELinePoint i_linePoint ) const { return m_drawSettings.getLineEndLength(i_linePoint); }
+    void setLineEndStyle( const CEnumLinePoint& i_linePoint, const CEnumLineEndStyle& i_endStyle );
+    CEnumLineEndStyle getLineEndStyle( const CEnumLinePoint& i_linePoint ) const { return m_drawSettings.getLineEndStyle(i_linePoint); }
+    void setLineEndBaseLineType( const CEnumLinePoint& i_linePoint, const CEnumArrowHeadBaseLineType& i_baseLineType );
+    CEnumArrowHeadBaseLineType getLineEndBaseLineType( const CEnumLinePoint& i_linePoint ) const { return m_drawSettings.getLineEndBaseLineType(i_linePoint); }
+    void setLineEndFillStyle( const CEnumLinePoint& i_linePoint, const CEnumArrowHeadFillStyle& i_fillStyle );
+    CEnumArrowHeadFillStyle getLineEndFillStyle( const CEnumLinePoint& i_linePoint ) const { return m_drawSettings.getLineEndFillStyle(i_linePoint); }
+    void setLineEndWidth( const CEnumLinePoint& i_linePoint, const CEnumArrowHeadWidth& i_arrowWidth );
+    CEnumArrowHeadWidth getLineEndWidth( const CEnumLinePoint& i_linePoint ) const { return m_drawSettings.getLineEndWidth(i_linePoint); }
+    void setLineEndLength( const CEnumLinePoint& i_linePoint, const CEnumArrowHeadLength& i_arrowLength );
+    CEnumArrowHeadLength getLineEndLength( const CEnumLinePoint& i_linePoint ) const { return m_drawSettings.getLineEndLength(i_linePoint); }
 public: // instance methods
     void setTextColor( const QColor& i_clr );
     QColor getTextColor() const { return m_drawSettings.getTextColor(); }
     void setTextFont( const QFont& i_fnt );
     QFont getTextFont() const { return m_drawSettings.getTextFont(); }
-    void setTextSize( ETextSize i_size );
+    void setTextSize( const ETextSize i_textSize );
     ETextSize getTextSize() const { return m_drawSettings.getTextSize(); }
-    void setTextStyle( ETextStyle i_style );
-    ETextStyle getTextStyle() const { return m_drawSettings.getTextStyle(); }
-    void setTextEffect( ETextEffect i_effect );
-    ETextEffect getTextEffect() const { return m_drawSettings.getTextEffect(); }
+    void setTextStyle( const CEnumTextStyle& i_textStyle );
+    CEnumTextStyle getTextStyle() const { return m_drawSettings.getTextStyle(); }
+    void setTextEffect( const CEnumTextEffect& i_textEffect );
+    CEnumTextEffect getTextEffect() const { return m_drawSettings.getTextEffect(); }
 public: // overridables of base class QGraphicsScene
     virtual void dragEnterEvent( QGraphicsSceneDragDropEvent* i_pEv );
     virtual void dragMoveEvent( QGraphicsSceneDragDropEvent* i_pEv );

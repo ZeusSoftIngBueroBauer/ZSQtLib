@@ -62,7 +62,7 @@ public: // ctors and dtor
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone() override;
 public: // overridables of base class CGraphObj
-    virtual void onDrawSettingsChanged() override;
+    virtual void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld) override;
 public: // overridables of base class CGraphObj
     virtual bool isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo = nullptr ) const override;
 public: // reimplementing methods of base class QGraphicItem

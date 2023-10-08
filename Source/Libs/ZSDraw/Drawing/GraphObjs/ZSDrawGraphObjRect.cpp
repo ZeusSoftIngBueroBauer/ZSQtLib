@@ -110,9 +110,9 @@ CGraphObjRect::CGraphObjRect(
     m_ptRotOriginCurr = rect().center();
 #endif
 
-    setFlags( QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges );
+    setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
 
-    onDrawSettingsChanged();
+    //onDrawSettingsChanged();
 
     updateToolTip();
 
@@ -299,9 +299,20 @@ public: // overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObjRect::onDrawSettingsChanged()
+void CGraphObjRect::onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld)
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "OldSettings {" + i_drawSettingsOld.toString() + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "onDrawSettingsChanged",
+        /* strAddInfo   */ strMthInArgs );
+
     if( m_drawSettings.isPenUsed() )
     {
         if( m_drawSettings.getLineStyle() != ELineStyle::NoLine )
@@ -533,7 +544,7 @@ bool CGraphObjRect::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) c
         if( !bIsHit )
         {
             QRectF rct = rect();
-            bIsHit = isRectHit( rct, m_drawSettings.getFillStyle(), i_pt, m_pDrawingScene->getHitToleranceInPx(), o_pHitInfo );
+            bIsHit = isRectHit(rct, m_drawSettings.getFillStyle(), i_pt, m_pDrawingScene->getHitToleranceInPx(), o_pHitInfo);
         }
 
         if( !bIsHit )

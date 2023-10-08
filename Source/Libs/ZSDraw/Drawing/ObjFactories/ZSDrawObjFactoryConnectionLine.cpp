@@ -89,7 +89,7 @@ CGraphObj* CObjFactoryConnectionLine::createGraphObj(
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Point {" + i_physValPoint.toString() + "}" +
-                        ", DrawSettings {" + i_drawSettings.toString(getGraphObjType()) + "}";
+                        ", DrawSettings {" + i_drawSettings.toString() + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,

@@ -53,21 +53,21 @@ typedef enum
 {
     EDrawAttributePenColor                     =  0,
     EDrawAttributePenWidth                     =  1,
-    EDrawAttributeLineStyle                    =  2,
-    EDrawAttributeFillColor                    =  3,
-    EDrawAttributeFillStyle                    =  4,
+    EDrawAttributeFillColor                    =  2,
+    EDrawAttributeFillStyle                    =  3,
+    EDrawAttributeLineStyle                    =  4,
     EDrawAttributeLineRecordType               =  5,
     EDrawAttributeLineExtent                   =  6,
-    EDrawAttributeLineStartLineEndStyle        =  7,
-    EDrawAttributeLineStartLineEndBaseLineType =  8,
-    EDrawAttributeLineStartLineEndFillStyle    =  9,
-    EDrawAttributeLineStartLineEndWidth        = 10,
-    EDrawAttributeLineStartLineEndLength       = 11,
-    EDrawAttributeLineEndLineEndStyle          = 12,
-    EDrawAttributeLineEndLineEndBaseLineType   = 13,
-    EDrawAttributeLineEndLineEndFillStyle      = 14,
-    EDrawAttributeLineEndLineEndWidth          = 15,
-    EDrawAttributeLineEndLineEndLength         = 16,
+    EDrawAttributeLineP1EndStyle               =  7,
+    EDrawAttributeLineP1ArrowHeadBaseLineType  =  8,
+    EDrawAttributeLineP1ArrowHeadFillStyle     =  9,
+    EDrawAttributeLineP1ArrowHeadWidth         = 10,
+    EDrawAttributeLineP1ArrowHeadLength        = 11,
+    EDrawAttributeLineP2EndStyle               = 12,
+    EDrawAttributeLineP2ArrowHeadBaseLineType  = 13,
+    EDrawAttributeLineP2ArrowHeadFillStyle     = 14,
+    EDrawAttributeLineP2ArrowHeadWidth         = 15,
+    EDrawAttributeLineP2ArrowHeadLength        = 16,
     EDrawAttributeTextColor                    = 17,
     EDrawAttributeTextFont                     = 18,
     EDrawAttributeTextStyle                    = 19,
@@ -78,18 +78,27 @@ typedef enum
     EDrawAttributePenMin                = EDrawAttributePenColor,
     EDrawAttributePenMax                = EDrawAttributePenWidth,
     EDrawAttributePenCount              = (EDrawAttributePenMax - EDrawAttributePenMin + 1),
-    EDrawAttributeLineStyleMin          = EDrawAttributeLineStyle,
-    EDrawAttributeLineStyleMax          = EDrawAttributeLineStyle,
-    EDrawAttributeLineStyleCount        = (EDrawAttributeLineStyleMax - EDrawAttributeLineStyleMin + 1),
     EDrawAttributeFillMin               = EDrawAttributeFillColor,
     EDrawAttributeFillMax               = EDrawAttributeFillStyle,
     EDrawAttributeFillCount             = (EDrawAttributeFillMax - EDrawAttributeFillMin + 1),
+    EDrawAttributeLineMin               = EDrawAttributeLineStyle,
+    EDrawAttributeLineMax               = EDrawAttributeLineP2ArrowHeadLength,
+    EDrawAttributeLineCount             = (EDrawAttributeLineMax - EDrawAttributeLineMin + 1),
     EDrawAttributeLineRecordTypeMin     = EDrawAttributeLineRecordType,
     EDrawAttributeLineRecordTypeMax     = EDrawAttributeLineExtent,
     EDrawAttributeLineRecordTypeCount   = (EDrawAttributeLineRecordTypeMax - EDrawAttributeLineRecordTypeMin + 1),
-    EDrawAttributeLineEndStyleMin       = EDrawAttributeLineStartLineEndStyle,
-    EDrawAttributeLineEndStyleMax       = EDrawAttributeLineEndLineEndLength,
-    EDrawAttributeLineEndStyleCount     = (EDrawAttributeLineEndStyleMax - EDrawAttributeLineEndStyleMin + 1),
+    EDrawAttributeLineP1EndStyleMin     = EDrawAttributeLineP1EndStyle,
+    EDrawAttributeLineP1EndStyleMax     = EDrawAttributeLineP1ArrowHeadLength,
+    EDrawAttributeLineP1EndStyleCount   = (EDrawAttributeLineP1EndStyleMax - EDrawAttributeLineP1EndStyleMin + 1),
+    EDrawAttributeLineP1ArrowHeadMin    = EDrawAttributeLineP1ArrowHeadBaseLineType,
+    EDrawAttributeLineP1ArrowHeadMax    = EDrawAttributeLineP1ArrowHeadLength,
+    EDrawAttributeLineP1ArrowHeadCount  = (EDrawAttributeLineP1ArrowHeadMax - EDrawAttributeLineP1ArrowHeadMin + 1),
+    EDrawAttributeLineP2EndStyleMin     = EDrawAttributeLineP2EndStyle,
+    EDrawAttributeLineP2EndStyleMax     = EDrawAttributeLineP2ArrowHeadLength,
+    EDrawAttributeLineP2EndStyleCount   = (EDrawAttributeLineP2EndStyleMax - EDrawAttributeLineP2EndStyleMin + 1),
+    EDrawAttributeLineP2ArrowHeadMin    = EDrawAttributeLineP2ArrowHeadBaseLineType,
+    EDrawAttributeLineP2ArrowHeadMax    = EDrawAttributeLineP2ArrowHeadLength,
+    EDrawAttributeLineP2ArrowHeadCount  = (EDrawAttributeLineP2ArrowHeadMax - EDrawAttributeLineP2ArrowHeadMin + 1),
     EDrawAttributeTextMin               = EDrawAttributeTextColor,
     EDrawAttributeTextMax               = EDrawAttributeTextEffect,
     EDrawAttributeTextCount             = (EDrawAttributeTextMax - EDrawAttributeTextMin + 1),
@@ -199,15 +208,15 @@ public: // instance methods
     QVariant getAttributeValue( int i_iAttribute ) const;
     QVariant getAttributeValue( const QString& i_strName ) const;
 public: // instance methods
-    void setAttributesAreUsed( bool i_bIsUsed, int i_iAttributeMin = 0, int i_iAttributesCount = EDrawAttributeCount );
-    void setAttributeIsUsed( int i_iAttribute, bool i_bIsUsed );
-    void setAttributeIsUsed( const QString& i_strName, bool i_bIsUsed );
+    //void setAttributesAreUsed( bool i_bIsUsed, int i_iAttributeMin = 0, int i_iAttributesCount = EDrawAttributeCount );
+    //void setAttributeIsUsed( int i_iAttribute, bool i_bIsUsed );
+    //void setAttributeIsUsed( const QString& i_strName, bool i_bIsUsed );
     bool isAttributeUsed( int i_iAttribute ) const;
     bool isAttributeUsed( const QString& i_strName ) const;
 public: // instance methods
     bool isPenUsed() const;
-    bool isLineStyleUsed() const;
     bool isFillUsed() const;
+    bool isLineStyleUsed() const;
     bool isLineRecordTypeUsed() const;
     bool isLineEndStyleUsed() const;
     bool isTextUsed() const;
@@ -217,46 +226,46 @@ public: // instance methods
     void setPenWidth( int );
     int getPenWidth() const;
 public: // instance methods
-    void setLineStyle( ELineStyle );
-    ELineStyle getLineStyle() const;
+    void setLineStyle( const CEnumLineStyle& i_lineStyle );
+    CEnumLineStyle getLineStyle() const;
 public: // instance methods
-    void setFillColor( const QColor& );
+    void setFillColor( const QColor& i_color );
     QColor getFillColor() const;
-    void setFillStyle( EFillStyle );
-    EFillStyle getFillStyle() const;
+    void setFillStyle( const CEnumFillStyle& i_fillStyle );
+    CEnumFillStyle getFillStyle() const;
 public: // instance methods
-    void setLineRecordType( ELineRecordType );
-    ELineRecordType getLineRecordType() const;
-    void setLineExtent( int );
+    void setLineRecordType( const CEnumLineRecordType& i_recordType );
+    CEnumLineRecordType getLineRecordType() const;
+    void setLineExtent( int i_iExtent );
     int getLineExtent() const;
 public: // instance methods
-    void setLineEndStyle( ELinePoint, ELineEndStyle );
-    ELineEndStyle getLineEndStyle( ELinePoint ) const;
-    void setLineEndBaseLineType( ELinePoint, ELineEndBaseLineType );
-    ELineEndBaseLineType getLineEndBaseLineType( ELinePoint ) const;
-    void setLineEndFillStyle( ELinePoint, ELineEndFillStyle );
-    ELineEndFillStyle getLineEndFillStyle( ELinePoint ) const;
-    void setLineEndWidth( ELinePoint, ELineEndWidth );
-    ELineEndWidth getLineEndWidth( ELinePoint ) const;
-    void setLineEndLength( ELinePoint, ELineEndLength );
-    ELineEndLength getLineEndLength( ELinePoint ) const;
+    void setLineEndStyle( const CEnumLinePoint& i_linePoint, const CEnumLineEndStyle& i_endStyle );
+    CEnumLineEndStyle getLineEndStyle( const CEnumLinePoint& i_linePoint ) const;
+    void setLineEndBaseLineType( const CEnumLinePoint& i_linePoint, const CEnumArrowHeadBaseLineType& i_baseLineType );
+    CEnumArrowHeadBaseLineType getLineEndBaseLineType( const CEnumLinePoint& i_linePoint ) const;
+    void setLineEndFillStyle( const CEnumLinePoint& i_linePoint, const CEnumArrowHeadFillStyle& i_fillStyle );
+    CEnumArrowHeadFillStyle getLineEndFillStyle( const CEnumLinePoint& i_linePoint ) const;
+    void setLineEndWidth( const CEnumLinePoint& i_linePoint, const CEnumArrowHeadWidth& i_width );
+    CEnumArrowHeadWidth getLineEndWidth( const CEnumLinePoint& i_linePoint ) const;
+    void setLineEndLength( const CEnumLinePoint& i_linePoint, const CEnumArrowHeadLength& i_length );
+    CEnumArrowHeadLength getLineEndLength( const CEnumLinePoint& i_linePoint ) const;
 public: // instance methods
     void setTextColor( const QColor& );
     QColor getTextColor() const;
     void setTextFont( const QFont& );
     QFont getTextFont() const;
-    void setTextStyle( ETextStyle );
-    ETextStyle getTextStyle() const;
-    void setTextSize( ETextSize );
+    void setTextStyle( const CEnumTextStyle& i_textStyle );
+    CEnumTextStyle getTextStyle() const;
+    void setTextSize( ETextSize i_textSize );
     ETextSize getTextSize() const;
-    void setTextEffect( const ETextEffect );
-    ETextEffect getTextEffect() const;
+    void setTextEffect( const CEnumTextEffect& i_textEffect );
+    CEnumTextEffect getTextEffect() const;
 public: // instance methods
-    QString toString(EGraphObjType i_graphObjType = EGraphObjTypeUndefined) const;
+    QString toString() const;
 protected: // instance members
-    EGraphObjType  m_graphObjType;
-    int            m_idxGraphObjType;
-    SDrawAttribute m_arAttributes[EDrawAttributeCount];
+    EGraphObjType m_graphObjType;
+    int m_idxGraphObjTypeDrawAttributesDefaultVals;
+    QVector<SDrawAttribute> m_arAttributes;
 
 }; // class CDrawSettings
 

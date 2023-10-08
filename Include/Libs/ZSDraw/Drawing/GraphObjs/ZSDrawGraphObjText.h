@@ -77,7 +77,7 @@ public: // instance methods
 public: // overridables of base class CGraphObj
     virtual QString getScenePolygonShapePointsString() const override; // for subsystem test
 public: // overridables of base class CGraphObj
-    virtual void onDrawSettingsChanged() override;
+    virtual void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld) override;
 public: // must overridables of base class CGraphObj
     virtual void setWidth( const ZS::PhysVal::CPhysVal& i_physValWidth ) override {};
     virtual void setHeight( const ZS::PhysVal::CPhysVal& i_physValHeight ) override {};

@@ -3110,12 +3110,12 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDrawingScene::setLineStyle( ELineStyle i_lineStyle )
+void CDrawingScene::setLineStyle( const CEnumLineStyle& i_lineStyle )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = CEnumLineStyle(i_lineStyle).toString();
+        strMthInArgs = i_lineStyle.toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -3154,12 +3154,12 @@ void CDrawingScene::setFillColor( const QColor& i_clr )
 }
 
 //------------------------------------------------------------------------------
-void CDrawingScene::setFillStyle( EFillStyle i_fillStyle )
+void CDrawingScene::setFillStyle( const CEnumFillStyle& i_fillStyle )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = CEnumFillStyle(i_fillStyle).toString();
+        strMthInArgs = i_fillStyle.toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -3178,12 +3178,12 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDrawingScene::setLineRecordType( ELineRecordType i_lineRecordType )
+void CDrawingScene::setLineRecordType( const CEnumLineRecordType& i_recordType )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = CEnumLineRecordType(i_lineRecordType).toString();
+        strMthInArgs = i_recordType.toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -3191,8 +3191,8 @@ void CDrawingScene::setLineRecordType( ELineRecordType i_lineRecordType )
         /* strMethod    */ "setLineRecordType",
         /* strAddInfo   */ strMthInArgs );
 
-    if (i_lineRecordType != m_drawSettings.getLineRecordType()) {
-        m_drawSettings.setLineRecordType(i_lineRecordType);
+    if (i_recordType != m_drawSettings.getLineRecordType()) {
+        m_drawSettings.setLineRecordType(i_recordType);
         emit_drawSettingsChanged(m_drawSettings);
     }
 }
@@ -3222,13 +3222,13 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDrawingScene::setLineEndStyle( ELinePoint i_linePoint, ELineEndStyle i_endStyle )
+void CDrawingScene::setLineEndStyle(
+    const CEnumLinePoint& i_linePoint, const CEnumLineEndStyle& i_endStyle )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = CEnumLinePoint(i_linePoint).toString();
-        strMthInArgs += ", " + CEnumLineEndStyle(i_endStyle).toString();
+        strMthInArgs = i_linePoint.toString() + ", " + i_endStyle.toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -3243,13 +3243,13 @@ void CDrawingScene::setLineEndStyle( ELinePoint i_linePoint, ELineEndStyle i_end
 }
 
 //------------------------------------------------------------------------------
-void CDrawingScene::setLineEndBaseLineType( ELinePoint i_linePoint, ELineEndBaseLineType i_baseLineType )
+void CDrawingScene::setLineEndBaseLineType(
+    const CEnumLinePoint& i_linePoint, const CEnumArrowHeadBaseLineType& i_baseLineType )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = CEnumLinePoint(i_linePoint).toString();
-        strMthInArgs += ", " + CEnumLineEndBaseLineType(i_baseLineType).toString();
+        strMthInArgs = i_linePoint.toString() + ", " + i_baseLineType.toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -3264,13 +3264,13 @@ void CDrawingScene::setLineEndBaseLineType( ELinePoint i_linePoint, ELineEndBase
 }
 
 //------------------------------------------------------------------------------
-void CDrawingScene::setLineEndFillStyle( ELinePoint i_linePoint, ELineEndFillStyle i_fillStyle )
+void CDrawingScene::setLineEndFillStyle(
+    const CEnumLinePoint& i_linePoint, const CEnumArrowHeadFillStyle& i_fillStyle )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = CEnumLinePoint(i_linePoint).toString();
-        strMthInArgs += ", " + CEnumLineEndFillStyle(i_fillStyle).toString();
+        strMthInArgs = i_linePoint.toString() + ", " + i_fillStyle.toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -3285,13 +3285,13 @@ void CDrawingScene::setLineEndFillStyle( ELinePoint i_linePoint, ELineEndFillSty
 }
 
 //------------------------------------------------------------------------------
-void CDrawingScene::setLineEndWidth( ELinePoint i_linePoint, ELineEndWidth i_width )
+void CDrawingScene::setLineEndWidth(
+    const CEnumLinePoint& i_linePoint, const CEnumArrowHeadWidth& i_width )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = CEnumLinePoint(i_linePoint).toString();
-        strMthInArgs += ", " + CEnumLineEndWidth(i_width).toString();
+        strMthInArgs = i_linePoint.toString() + ", " + i_width.toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -3306,13 +3306,13 @@ void CDrawingScene::setLineEndWidth( ELinePoint i_linePoint, ELineEndWidth i_wid
 }
 
 //------------------------------------------------------------------------------
-void CDrawingScene::setLineEndLength( ELinePoint i_linePoint, ELineEndLength i_length )
+void CDrawingScene::setLineEndLength(
+    const CEnumLinePoint& i_linePoint, const CEnumArrowHeadLength& i_length )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = CEnumLinePoint(i_linePoint).toString();
-        strMthInArgs += ", " + CEnumLineEndLength(i_length).toString();
+        strMthInArgs = i_linePoint.toString() + ", " + i_length.toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -3391,12 +3391,12 @@ void CDrawingScene::setTextSize( ETextSize i_size )
 }
 
 //------------------------------------------------------------------------------
-void CDrawingScene::setTextStyle( ETextStyle i_style )
+void CDrawingScene::setTextStyle( const CEnumTextStyle& i_textStyle )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = CEnumTextStyle(i_style).toString();
+        strMthInArgs = i_textStyle.toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -3404,19 +3404,19 @@ void CDrawingScene::setTextStyle( ETextStyle i_style )
         /* strMethod    */ "setTextStyle",
         /* strAddInfo   */ strMthInArgs );
 
-    if (i_style != m_drawSettings.getTextStyle()) {
-        m_drawSettings.setTextStyle(i_style);
+    if (i_textStyle != m_drawSettings.getTextStyle()) {
+        m_drawSettings.setTextStyle(i_textStyle);
         emit_drawSettingsChanged(m_drawSettings);
     }
 }
 
 //------------------------------------------------------------------------------
-void CDrawingScene::setTextEffect( ETextEffect i_effect )
+void CDrawingScene::setTextEffect( const CEnumTextEffect& i_textEffect )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = CEnumTextEffect(i_effect).toString();
+        strMthInArgs = i_textEffect.toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -3424,8 +3424,8 @@ void CDrawingScene::setTextEffect( ETextEffect i_effect )
         /* strMethod    */ "setTextEffect",
         /* strAddInfo   */ strMthInArgs );
 
-    if (i_effect != m_drawSettings.getTextEffect()) {
-        m_drawSettings.setTextEffect(i_effect);
+    if (i_textEffect != m_drawSettings.getTextEffect()) {
+        m_drawSettings.setTextEffect(i_textEffect);
         emit_drawSettingsChanged(m_drawSettings);
     }
 }

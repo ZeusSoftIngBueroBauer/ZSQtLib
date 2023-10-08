@@ -45,6 +45,14 @@ public: // class methods
     static QString NameSpace() { return "ZS::Draw"; }
     /*! Returns the class name. */
     static QString ClassName() { return "CWdgtGraphObjLineStyleProperties"; }
+protected: // type definitions and constants
+protected: // type definitions and constants
+    enum class EItemDataRoleModelLineEndStyle {
+        Id = Qt::UserRole+1,
+        LineEndStyle,
+        ArrowHeadFillStyle,
+        ArrowHeadBaseLineType
+    };
 public: // ctors and dtor
     CWdgtGraphObjLineStyleProperties(
         CDrawingScene* i_pDrawingScene,
@@ -60,7 +68,36 @@ protected: // overridables of base class CWdgtGraphObjPropertiesAbstract
 protected slots:
     void onBtnCollapseClicked(bool i_bChecked = false);
 protected slots:
+    void onBtnPenColorClicked(bool i_bChecked = false);
+    void onCmbLineStyleCurrentIndexChanged(int i_idx);
+    void onEdtLineWidthValueChanged(int i_iVal);
+    void onCmbP1LineEndStyleCurrentIndexChanged(int i_idx);
+    void onCmbP1ArrowHeadWidthClicked(int i_idx);
+    void onCmbP1ArrowHeadLengthClicked(int i_idx);
+    void onCmbP2LineEndStyleCurrentIndexChanged(int i_idx);
+    void onCmbP2ArrowHeadWidthClicked(int i_idx);
+    void onCmbP2ArrowHeadLengthClicked(int i_idx);
 private: // auxiliary instance methods
+    QSize fillLineStylesModel();
+    QSize fillLineEndStylesModel(const CEnumLinePoint& i_linePoint);
+    void fillArrowHeadWidthModel(const CEnumLinePoint& i_linePoint);
+    void fillArrowHeadLengthModel(const CEnumLinePoint& i_linePoint);
+private: // auxiliary instance methods
+    void updateBtnPenColor(const QColor& i_clr);
+    void updateCmbLineStyle(const CEnumLineStyle& i_lineStyle);
+    void updateCmbLineEndStyle(
+        const CEnumLinePoint& i_linePoint,
+        const CEnumLineEndStyle& i_lineEndStyle,
+        const CEnumArrowHeadFillStyle& i_arrowHeadFillStyle,
+        const CEnumArrowHeadBaseLineType& i_arrowHeadBaseLineType);
+    void updateCmbArrowHeadWidth(
+        const CEnumLinePoint& i_linePoint,
+        const CEnumArrowHeadWidth& i_lineEndWidth);
+    void updateCmbArrowHeadLength(
+        const CEnumLinePoint& i_linePoint,
+        const CEnumArrowHeadLength& i_lineEndLength);
+protected: // instance methods (method tracing)
+    void traceValues(ZS::System::CMethodTracer& i_mthTracer, ZS::System::EMethodDir i_methodDir);
 private: // instance members
     /*!< Cached draw settings of the graphical object. */
     CDrawSettings m_drawSettings;
@@ -73,46 +110,33 @@ private: // instance members
     QLabel* m_pLblHeadlineIcon;
     QLabel* m_pLblHeadline;
     ZS::System::GUI::CSepLine* m_pSepHeadline;
-    QWidget* m_pWdgtStyle;
-    QVBoxLayout* m_pLytWdgtStyle;
-    QHBoxLayout* m_pLytPenColor;
-    QLabel* m_pLblPenColor;
-    QPixmap* m_pPxmBtnPenColor;
-    QRect m_rctBtnPenColor;
-    QPushButton* m_pBtnPenColor;
-    QHBoxLayout* m_pLytPenWidth;
-    QLabel* m_pLblPenWidth;
-    QLineEdit* m_pEdtPenWidth;
-    QWidget* m_pWdgtLineStyle;
-    QVBoxLayout* m_pLytWdgtLineStyle;
-    QHBoxLayout* m_pLytLineStyle;
+    QWidget* m_pWdgtLineStyleSettings;
+    QGridLayout* m_pLytWdgtLineStyleSettings;
+    // Whole Line
     QLabel* m_pLblLineStyle;
-    QPushButton* m_pBtnLineStyle;
-    QListView* m_pViewLineStyles;
+    QPixmap* m_pPxmBtnLineColor;
+    QPushButton* m_pBtnLineColor;
     QStandardItemModel* m_pModelLineStyles;
-    QWidget* m_pWdgtLineEndSettings;
-    QVBoxLayout* m_pLytWdgtLineEndSettings;
-    QHBoxLayout* m_pLytLineEndSettings;
-    QLabel* m_pLblLineEndSettings;
-    ZS::System::GUI::CSepLine* m_pSepLineEndSettings;
-    QHBoxLayout* m_pLytLineEndStyles;
-    QLabel* m_pLblLineEndStylesLineStart;
-    QPushButton* m_pBtnLineEndStylesLineStart;
-    QTableView* m_pViewLineEndStylesLineStart;
-    QStandardItemModel* m_pModelLineEndStylesLineStart;
-    QLabel* m_pLblLineEndStylesLineEnd;
-    QPushButton* m_pBtnLineEndStylesLineEnd;
-    QTableView* m_pViewLineEndStylesLineEnd;
-    QStandardItemModel* m_pModelLineEndStylesLineEnd;
-    QHBoxLayout* m_pLytLineEndSizes;
-    QLabel* m_pLblLineEndSizesLineStart;
-    QPushButton* m_pBtnLineEndSizesLineStart;
-    QTableView* m_pViewLineEndSizesLineStart;
-    QStandardItemModel* m_pModelLineEndSizesLineStart;
-    QLabel* m_pLblLineEndSizesLineEnd;
-    QPushButton* m_pBtnLineEndSizesLineEnd;
-    QTableView* m_pViewLineEndSizesLineEnd;
-    QStandardItemModel* m_pModelLineEndSizesLineEnd;
+    QComboBox* m_pCmbLineStyle;
+    QSpinBox* m_pEdtLineWidth;
+    // Arrow Heads
+    QLabel* m_pLblLineEndStyles;
+    // P1 (LineStart)
+    QLabel* m_pLblP1LineEndStyles;
+    QStandardItemModel* m_pModelP1LineEndStyles;
+    QComboBox* m_pCmbP1LineEndStyle;
+    QStandardItemModel* m_pModelP1ArrowHeadWidth;
+    QComboBox* m_pCmbP1ArrowHeadWidth;
+    QStandardItemModel* m_pModelP1ArrowHeadLength;
+    QComboBox* m_pCmbP1ArrowHeadLength;
+    // P2 (LineEnd)
+    QLabel* m_pLblP2LineEndStyles;
+    QStandardItemModel* m_pModelP2LineEndStyles;
+    QComboBox* m_pCmbP2LineEndStyle;
+    QStandardItemModel* m_pModelP2ArrowHeadWidth;
+    QComboBox* m_pCmbP2ArrowHeadWidth;
+    QStandardItemModel* m_pModelP2ArrowHeadLength;
+    QComboBox* m_pCmbP2ArrowHeadLength;
 
 }; // class CWdgtGraphObjLineStyleProperties
 

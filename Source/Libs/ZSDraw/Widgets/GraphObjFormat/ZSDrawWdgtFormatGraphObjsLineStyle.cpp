@@ -74,11 +74,12 @@ using namespace ZS::Draw;
 class CWdgtFormatGraphObjsLineStyle : public CWdgtFormatGraphObjs
 *******************************************************************************/
 
-static QRect s_rctPxmLineEndSize(0,0,24,24);
+static QRect s_rctPxmLineEndSize(0, 0, 24, 24);
 
 static QLine s_arlineLineEndSizes[] = {
-    /* ELinePoint::Start */ QLine( 5, s_rctPxmLineEndSize.center().y(), s_rctPxmLineEndSize.right()-4, s_rctPxmLineEndSize.center().y() ),
-    /* ELinePoint::End   */ QLine( 4, s_rctPxmLineEndSize.center().y(), s_rctPxmLineEndSize.right()-5, s_rctPxmLineEndSize.center().y() )
+    /* ELinePoint::None  */ QLine(0, 0, 0, 0),
+    /* ELinePoint::Start */ QLine(5, s_rctPxmLineEndSize.center().y(), s_rctPxmLineEndSize.right()-4, s_rctPxmLineEndSize.center().y()),
+    /* ELinePoint::End   */ QLine(4, s_rctPxmLineEndSize.center().y(), s_rctPxmLineEndSize.right()-5, s_rctPxmLineEndSize.center().y())
 };
 
 
@@ -193,14 +194,9 @@ CWdgtFormatGraphObjsLineStyle::CWdgtFormatGraphObjsLineStyle(
 
         m_pPxmBtnPenColor = new QPixmap(":/ZS/Draw/DrawSettingsLineStyle16x16.png");
 
-        if( !connect(
-            /* pObjSender   */ m_pBtnPenColor,
-            /* szSignal     */ SIGNAL(clicked()),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onBtnPenColorClicked()) ) )
-        {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-        }
+        QObject::connect(
+            m_pBtnPenColor, &QPushButton::clicked,
+            this, &CWdgtFormatGraphObjsLineStyle::onBtnPenColorClicked);
     }
 
     // <EditField> Line Width
@@ -217,14 +213,9 @@ CWdgtFormatGraphObjsLineStyle::CWdgtFormatGraphObjsLineStyle(
         m_pLytPenWidth->addWidget(m_pEdtPenWidth);
         m_pLytPenWidth->addStretch();
 
-        if( !connect(
-            /* pObjSender   */ m_pEdtPenWidth,
-            /* szSignal     */ SIGNAL(textChanged(const QString&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onEdtPenWidthTextChanged(const QString&)) ) )
-        {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-        }
+        QObject::connect(
+            m_pEdtPenWidth, &QLineEdit::textChanged,
+            this, &CWdgtFormatGraphObjsLineStyle::onEdtPenWidthTextChanged);
     }
 
     // <Widget> Line Style
@@ -256,14 +247,9 @@ CWdgtFormatGraphObjsLineStyle::CWdgtFormatGraphObjsLineStyle(
 
         fillLineStylesModel(m_pModelLineStyles);
 
-        if( !connect(
-            /* pObjSender   */ m_pBtnLineStyle,
-            /* szSignal     */ SIGNAL(clicked()),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onBtnLineStyleClicked()) ) )
-        {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-        }
+        QObject::connect(
+            m_pBtnLineStyle, &QPushButton::clicked,
+            this, &CWdgtFormatGraphObjsLineStyle::onBtnLineStyleClicked);
 
         // <Widget> Line End Settings
         //---------------------------
@@ -314,14 +300,9 @@ CWdgtFormatGraphObjsLineStyle::CWdgtFormatGraphObjsLineStyle(
 
             fillLineEndStylesModel( ELinePoint::Start, m_pModelLineEndStylesLineStart );
 
-            if( !connect(
-                /* pObjSender   */ m_pBtnLineEndStylesLineStart,
-                /* szSignal     */ SIGNAL(clicked()),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onBtnLineEndStylesLineStartClicked()) ) )
-            {
-                throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-            }
+            QObject::connect(
+                m_pBtnLineEndStylesLineStart, &QPushButton::clicked,
+                this, &CWdgtFormatGraphObjsLineStyle::onBtnLineEndStylesLineStartClicked);
 
             // <ComboBoxes> Line End Styles - Line End
             //----------------------------------------
@@ -339,14 +320,9 @@ CWdgtFormatGraphObjsLineStyle::CWdgtFormatGraphObjsLineStyle(
 
             fillLineEndStylesModel( ELinePoint::End, m_pModelLineEndStylesLineEnd );
 
-            if( !connect(
-                /* pObjSender   */ m_pBtnLineEndStylesLineEnd,
-                /* szSignal     */ SIGNAL(clicked()),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onBtnLineEndStylesLineEndClicked()) ) )
-            {
-                throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-            }
+            QObject::connect(
+                m_pBtnLineEndStylesLineEnd, &QPushButton::clicked,
+                this, &CWdgtFormatGraphObjsLineStyle::onBtnLineEndStylesLineEndClicked);
 
             // <ComboBoxes> Line End Sizes
             //----------------------------
@@ -370,14 +346,9 @@ CWdgtFormatGraphObjsLineStyle::CWdgtFormatGraphObjsLineStyle(
 
             fillLineEndSizesModel( ELinePoint::Start, m_pModelLineEndSizesLineStart );
 
-            if( !connect(
-                /* pObjSender   */ m_pBtnLineEndSizesLineStart,
-                /* szSignal     */ SIGNAL(clicked()),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onBtnLineEndSizesLineStartClicked()) ) )
-            {
-                throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-            }
+            QObject::connect(
+                m_pBtnLineEndSizesLineStart, &QPushButton::clicked,
+                this, &CWdgtFormatGraphObjsLineStyle::onBtnLineEndSizesLineStartClicked);
 
             // <ComboBoxes> Line End Sizes - Line End
             //---------------------------------------
@@ -395,14 +366,9 @@ CWdgtFormatGraphObjsLineStyle::CWdgtFormatGraphObjsLineStyle(
 
             fillLineEndSizesModel( ELinePoint::End, m_pModelLineEndSizesLineEnd );
 
-            if( !connect(
-                /* pObjSender   */ m_pBtnLineEndSizesLineEnd,
-                /* szSignal     */ SIGNAL(clicked()),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onBtnLineEndSizesLineEndClicked()) ) )
-            {
-                throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-            }
+            QObject::connect(
+                m_pBtnLineEndSizesLineEnd, &QPushButton::clicked,
+                this, &CWdgtFormatGraphObjsLineStyle::onBtnLineEndSizesLineEndClicked);
 
         } // if( m_drawSettings.isLineEndStyleUsed() )
 
@@ -623,122 +589,45 @@ public: // must overridables of base class CWdgtFormatGraphObjs
 void CWdgtFormatGraphObjsLineStyle::applyChanges()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-    }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "applyChanges",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ "" );
 
-    if( m_pGraphObj != nullptr )
-    {
-        m_pGraphObj->setPenColor( m_drawSettings.getPenColor(), false );
-        m_pGraphObj->setPenWidth( m_drawSettings.getPenWidth(), false );
-
-        if( m_drawSettings.isLineStyleUsed() )
-        {
-            m_pGraphObj->setLineStyle( m_drawSettings.getLineStyle(), false );
-        }
-
-        if( m_drawSettings.isLineEndStyleUsed() )
-        {
-            m_pGraphObj->setLineEndStyle( ELinePoint::Start, m_drawSettings.getLineEndStyle(ELinePoint::Start), false );
-            m_pGraphObj->setLineEndBaseLineType( ELinePoint::Start, m_drawSettings.getLineEndBaseLineType(ELinePoint::Start), false );
-            m_pGraphObj->setLineEndFillStyle( ELinePoint::Start, m_drawSettings.getLineEndFillStyle(ELinePoint::Start), false );
-            m_pGraphObj->setLineEndWidth( ELinePoint::Start, m_drawSettings.getLineEndWidth(ELinePoint::Start), false );
-            m_pGraphObj->setLineEndLength( ELinePoint::Start, m_drawSettings.getLineEndLength(ELinePoint::Start), false );
-            m_pGraphObj->setLineEndStyle( ELinePoint::End, m_drawSettings.getLineEndStyle(ELinePoint::End), false );
-            m_pGraphObj->setLineEndBaseLineType( ELinePoint::End, m_drawSettings.getLineEndBaseLineType(ELinePoint::End), false );
-            m_pGraphObj->setLineEndFillStyle( ELinePoint::End, m_drawSettings.getLineEndFillStyle(ELinePoint::End), false );
-            m_pGraphObj->setLineEndWidth( ELinePoint::End, m_drawSettings.getLineEndWidth(ELinePoint::End), false );
-            m_pGraphObj->setLineEndLength( ELinePoint::End, m_drawSettings.getLineEndLength(ELinePoint::End), false );
-        }
-
-        m_pGraphObj->onDrawSettingsChanged();
-
-    } // if( m_pGraphObj != nullptr )
-
-    else if( /*m_pGraphObj == nullptr &&*/ m_pDrawingScene != nullptr )
-    {
-        QList<QGraphicsItem*> arpGraphicsItemsSelected = m_pDrawingScene->selectedItems();
-
+    if (m_pGraphObj != nullptr) {
+        m_pGraphObj->setDrawSettings(m_drawSettings);
+    }
+    else if (m_pDrawingScene != nullptr) {
         // If graphical objects are selected ...
-        if( arpGraphicsItemsSelected.size() > 0 )
-        {
+        QList<QGraphicsItem*> arpGraphicsItemsSelected = m_pDrawingScene->selectedItems();
+        if (arpGraphicsItemsSelected.size() > 0) {
             // .. all selected graphical objects will be changed according to the new settings.
-            QGraphicsItem* pGraphicsItem;
-            CGraphObj*     pGraphObj;
-            int            idxGraphObj;
-
-            for( idxGraphObj = 0; idxGraphObj < arpGraphicsItemsSelected.size(); idxGraphObj++ )
-            {
-                pGraphicsItem = arpGraphicsItemsSelected[idxGraphObj];
-                pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
-
-                if( pGraphObj != nullptr )
-                {
-                    pGraphObj->setPenColor( m_drawSettings.getPenColor(), false );
-                    pGraphObj->setPenWidth( m_drawSettings.getPenWidth(), false );
-                    pGraphObj->setLineStyle( m_drawSettings.getLineStyle(), false );
-                    pGraphObj->setLineEndStyle( ELinePoint::Start, m_drawSettings.getLineEndStyle(ELinePoint::Start), false );
-                    pGraphObj->setLineEndBaseLineType( ELinePoint::Start, m_drawSettings.getLineEndBaseLineType(ELinePoint::Start), false );
-                    pGraphObj->setLineEndFillStyle( ELinePoint::Start, m_drawSettings.getLineEndFillStyle(ELinePoint::Start), false );
-                    pGraphObj->setLineEndWidth( ELinePoint::Start, m_drawSettings.getLineEndWidth(ELinePoint::Start), false );
-                    pGraphObj->setLineEndLength( ELinePoint::Start, m_drawSettings.getLineEndLength(ELinePoint::Start), false );
-                    pGraphObj->setLineEndStyle( ELinePoint::End, m_drawSettings.getLineEndStyle(ELinePoint::End), false );
-                    pGraphObj->setLineEndBaseLineType( ELinePoint::End, m_drawSettings.getLineEndBaseLineType(ELinePoint::End), false );
-                    pGraphObj->setLineEndFillStyle( ELinePoint::End, m_drawSettings.getLineEndFillStyle(ELinePoint::End), false );
-                    pGraphObj->setLineEndWidth( ELinePoint::End, m_drawSettings.getLineEndWidth(ELinePoint::End), false );
-                    pGraphObj->setLineEndLength( ELinePoint::End, m_drawSettings.getLineEndLength(ELinePoint::End), false );
-                    pGraphObj->onDrawSettingsChanged();
+            for (int idxGraphObj = 0; idxGraphObj < arpGraphicsItemsSelected.size(); idxGraphObj++) {
+                QGraphicsItem* pGraphicsItem = arpGraphicsItemsSelected[idxGraphObj];
+                CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+                if (pGraphObj != nullptr) {
+                    pGraphObj->setDrawSettings(m_drawSettings);
                 }
             }
-        } // if( arpGraphicsItemsSelected.size() > 0 )
-
+        }
         // If no graphical object is selected ...
-        else // if( arpGraphicsItemsSelected.size() == 0 )
-        {
+        else {
             // .. set default attribute for following draw commands.
-            m_pDrawingScene->setPenColor( m_drawSettings.getPenColor() );
-            m_pDrawingScene->setPenWidth( m_drawSettings.getPenWidth() );
-            m_pDrawingScene->setLineStyle( m_drawSettings.getLineStyle() );
-            m_pDrawingScene->setLineEndStyle( ELinePoint::Start, m_drawSettings.getLineEndStyle(ELinePoint::Start) );
-            m_pDrawingScene->setLineEndBaseLineType( ELinePoint::Start, m_drawSettings.getLineEndBaseLineType(ELinePoint::Start) );
-            m_pDrawingScene->setLineEndFillStyle( ELinePoint::Start, m_drawSettings.getLineEndFillStyle(ELinePoint::Start) );
-            m_pDrawingScene->setLineEndWidth( ELinePoint::Start, m_drawSettings.getLineEndWidth(ELinePoint::Start) );
-            m_pDrawingScene->setLineEndLength( ELinePoint::Start, m_drawSettings.getLineEndLength(ELinePoint::Start) );
-            m_pDrawingScene->setLineEndStyle( ELinePoint::End, m_drawSettings.getLineEndStyle(ELinePoint::End) );
-            m_pDrawingScene->setLineEndBaseLineType( ELinePoint::End, m_drawSettings.getLineEndBaseLineType(ELinePoint::End) );
-            m_pDrawingScene->setLineEndFillStyle( ELinePoint::End, m_drawSettings.getLineEndFillStyle(ELinePoint::End) );
-            m_pDrawingScene->setLineEndWidth( ELinePoint::End, m_drawSettings.getLineEndWidth(ELinePoint::End) );
-            m_pDrawingScene->setLineEndLength( ELinePoint::End, m_drawSettings.getLineEndLength(ELinePoint::End) );
-
-        } // if( arpGraphicsItemsSelected.size() == 0 )
-
-    } // if( m_pGraphObj == nullptr && m_pDrawingScene != nullptr )
-
+            m_pDrawingScene->setDrawSettings(m_drawSettings);
+        }
+    }
 } // applyChanges
 
 //------------------------------------------------------------------------------
 void CWdgtFormatGraphObjsLineStyle::resetChanges()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-    }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "resetChanges",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ "" );
 
     if( m_pGraphObj != nullptr )
     {
@@ -779,17 +668,11 @@ void CWdgtFormatGraphObjsLineStyle::resetChanges()
 bool CWdgtFormatGraphObjsLineStyle::hasChanges() const
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-    }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "hasChanges",
-        /* strAddInfo   */ strMthInArgs );
+        /* strAddInfo   */ "" );
 
     bool bHasChanges = false;
 
@@ -1071,15 +954,15 @@ void CWdgtFormatGraphObjsLineStyle::fillLineEndStylesModel( ELinePoint i_linePoi
     pLineEndItem = new QStandardItem();
     pLineEndItem->setData( pxmLineEnd, Qt::DecorationRole );
     pLineEndItem->setData( static_cast<int>(ELineEndStyle::Normal), EItemDataRoleLineEndStyle );
-    pLineEndItem->setData( static_cast<int>(ELineEndBaseLineType::NoLine), EItemDataRoleLineEndBaseLineType );
-    pLineEndItem->setData( static_cast<int>(ELineEndFillStyle::NoFill), EItemDataRoleLineEndFillStyle );
+    pLineEndItem->setData( static_cast<int>(EArrowHeadBaseLineType::NoLine), EItemDataRoleLineEndBaseLineType );
+    pLineEndItem->setData( static_cast<int>(EArrowHeadFillStyle::NoFill), EItemDataRoleLineEndFillStyle );
     i_pModel->setItem(idxRow,idxClm,pLineEndItem);
     pLineEndItem = nullptr;
 
     // ELineEndStyle::ArrowHead
     //=======================
 
-    // ELineEndBaseLineType::NoLine && ELineEndFillStyle::NoFill
+    // EArrowHeadBaseLineType::NoLine && EArrowHeadFillStyle::NoFill
     //----------------------------------------------------------
 
     idxRow = 0;
@@ -1106,12 +989,12 @@ void CWdgtFormatGraphObjsLineStyle::fillLineEndStylesModel( ELinePoint i_linePoi
     pLineEndItem = new QStandardItem();
     pLineEndItem->setData( pxmLineEnd, Qt::DecorationRole );
     pLineEndItem->setData( static_cast<int>(ELineEndStyle::ArrowHead), EItemDataRoleLineEndStyle );
-    pLineEndItem->setData( static_cast<int>(ELineEndBaseLineType::NoLine), EItemDataRoleLineEndBaseLineType );
-    pLineEndItem->setData( static_cast<int>(ELineEndFillStyle::NoFill), EItemDataRoleLineEndFillStyle );
+    pLineEndItem->setData( static_cast<int>(EArrowHeadBaseLineType::NoLine), EItemDataRoleLineEndBaseLineType );
+    pLineEndItem->setData( static_cast<int>(EArrowHeadFillStyle::NoFill), EItemDataRoleLineEndFillStyle );
     i_pModel->setItem(idxRow,idxClm,pLineEndItem);
     pLineEndItem = nullptr;
 
-    // ELineEndBaseLineType::Normal && ELineEndFillStyle::NoFill
+    // EArrowHeadBaseLineType::Normal && EArrowHeadFillStyle::NoFill
     //------------------------------------------------------
 
     if( i_linePoint == ELinePoint::Start )
@@ -1147,12 +1030,12 @@ void CWdgtFormatGraphObjsLineStyle::fillLineEndStylesModel( ELinePoint i_linePoi
     pLineEndItem = new QStandardItem();
     pLineEndItem->setData( pxmLineEnd, Qt::DecorationRole );
     pLineEndItem->setData( static_cast<int>(ELineEndStyle::ArrowHead), EItemDataRoleLineEndStyle );
-    pLineEndItem->setData( static_cast<int>(ELineEndBaseLineType::Normal), EItemDataRoleLineEndBaseLineType );
-    pLineEndItem->setData( static_cast<int>(ELineEndFillStyle::NoFill), EItemDataRoleLineEndFillStyle );
+    pLineEndItem->setData( static_cast<int>(EArrowHeadBaseLineType::Normal), EItemDataRoleLineEndBaseLineType );
+    pLineEndItem->setData( static_cast<int>(EArrowHeadFillStyle::NoFill), EItemDataRoleLineEndFillStyle );
     i_pModel->setItem(idxRow,idxClm,pLineEndItem);
     pLineEndItem = nullptr;
 
-    // ELineEndBaseLineType::Normal && ELineEndFillStyle::SolidPattern
+    // EArrowHeadBaseLineType::Normal && EArrowHeadFillStyle::SolidPattern
     //------------------------------------------------------------
 
     idxRow = 1;
@@ -1181,12 +1064,12 @@ void CWdgtFormatGraphObjsLineStyle::fillLineEndStylesModel( ELinePoint i_linePoi
     pLineEndItem = new QStandardItem();
     pLineEndItem->setData( pxmLineEnd, Qt::DecorationRole );
     pLineEndItem->setData( static_cast<int>(ELineEndStyle::ArrowHead), EItemDataRoleLineEndStyle );
-    pLineEndItem->setData( static_cast<int>(ELineEndBaseLineType::Normal), EItemDataRoleLineEndBaseLineType );
-    pLineEndItem->setData( static_cast<int>(ELineEndFillStyle::SolidPattern), EItemDataRoleLineEndFillStyle );
+    pLineEndItem->setData( static_cast<int>(EArrowHeadBaseLineType::Normal), EItemDataRoleLineEndBaseLineType );
+    pLineEndItem->setData( static_cast<int>(EArrowHeadFillStyle::SolidPattern), EItemDataRoleLineEndFillStyle );
     i_pModel->setItem(idxRow,idxClm,pLineEndItem);
     pLineEndItem = nullptr;
 
-    // ELineEndBaseLineType::Indented && ELineEndFillStyle::NoFill
+    // EArrowHeadBaseLineType::Indented && EArrowHeadFillStyle::NoFill
     //--------------------------------------------------------
 
     idxRow = 2;
@@ -1213,12 +1096,12 @@ void CWdgtFormatGraphObjsLineStyle::fillLineEndStylesModel( ELinePoint i_linePoi
     pLineEndItem = new QStandardItem();
     pLineEndItem->setData( pxmLineEnd, Qt::DecorationRole );
     pLineEndItem->setData( static_cast<int>(ELineEndStyle::ArrowHead), EItemDataRoleLineEndStyle );
-    pLineEndItem->setData( static_cast<int>(ELineEndBaseLineType::Indented), EItemDataRoleLineEndBaseLineType );
-    pLineEndItem->setData( static_cast<int>(ELineEndFillStyle::NoFill), EItemDataRoleLineEndFillStyle );
+    pLineEndItem->setData( static_cast<int>(EArrowHeadBaseLineType::Indented), EItemDataRoleLineEndBaseLineType );
+    pLineEndItem->setData( static_cast<int>(EArrowHeadFillStyle::NoFill), EItemDataRoleLineEndFillStyle );
     i_pModel->setItem(idxRow,idxClm,pLineEndItem);
     pLineEndItem = nullptr;
 
-    // ELineEndBaseLineType::Indented && ELineEndFillStyle::SolidPattern
+    // EArrowHeadBaseLineType::Indented && EArrowHeadFillStyle::SolidPattern
     //--------------------------------------------------------------
 
     idxRow = 2;
@@ -1247,8 +1130,8 @@ void CWdgtFormatGraphObjsLineStyle::fillLineEndStylesModel( ELinePoint i_linePoi
     pLineEndItem = new QStandardItem();
     pLineEndItem->setData( pxmLineEnd, Qt::DecorationRole );
     pLineEndItem->setData( static_cast<int>(ELineEndStyle::ArrowHead), EItemDataRoleLineEndStyle );
-    pLineEndItem->setData( static_cast<int>(ELineEndBaseLineType::Indented), EItemDataRoleLineEndBaseLineType );
-    pLineEndItem->setData( static_cast<int>(ELineEndFillStyle::SolidPattern), EItemDataRoleLineEndFillStyle );
+    pLineEndItem->setData( static_cast<int>(EArrowHeadBaseLineType::Indented), EItemDataRoleLineEndBaseLineType );
+    pLineEndItem->setData( static_cast<int>(EArrowHeadFillStyle::SolidPattern), EItemDataRoleLineEndFillStyle );
     i_pModel->setItem(idxRow,idxClm,pLineEndItem);
     pLineEndItem = nullptr;
 
@@ -1278,18 +1161,18 @@ void CWdgtFormatGraphObjsLineStyle::fillLineEndSizesModel( ELinePoint i_linePoin
     CDrawSettings  drawSettings;
     QPolygonF      plgArrowHead;
 
-    CEnumLineEndWidth  lineEndWidth;
-    CEnumLineEndLength lineEndLength;
+    CEnumArrowHeadWidth lineEndWidth;
+    CEnumArrowHeadLength lineEndLength;
 
     drawSettings.setLineEndStyle(i_linePoint,ELineEndStyle::ArrowHead);
-    drawSettings.setLineEndBaseLineType(i_linePoint,ELineEndBaseLineType::Normal);
-    drawSettings.setLineEndFillStyle(i_linePoint,ELineEndFillStyle::SolidPattern);
+    drawSettings.setLineEndBaseLineType(i_linePoint,EArrowHeadBaseLineType::Normal);
+    drawSettings.setLineEndFillStyle(i_linePoint,EArrowHeadFillStyle::SolidPattern);
 
-    for( lineEndWidth = 0; lineEndWidth < CEnumLineEndWidth::count(); lineEndWidth++ )
+    for( lineEndWidth = 0; lineEndWidth < CEnumArrowHeadWidth::count(); lineEndWidth++ )
     {
         drawSettings.setLineEndWidth(i_linePoint,lineEndWidth.enumerator());
 
-        for( lineEndLength = 0; lineEndLength < CEnumLineEndLength::count(); lineEndLength++ )
+        for( lineEndLength = 0; lineEndLength < CEnumArrowHeadLength::count(); lineEndLength++ )
         {
             drawSettings.setLineEndLength(i_linePoint,lineEndLength.enumerator());
 
@@ -1441,14 +1324,9 @@ void CWdgtFormatGraphObjsLineStyle::onBtnLineStyleClicked()
         // List of popup widgets which have to be closed on activating other widgets
         m_arpWdgtsPopup.append(m_pViewLineStyles);
 
-        if( !connect(
-            /* pObjSender   */ m_pViewLineStyles,
-            /* szSignal     */ SIGNAL(clicked(const QModelIndex&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onViewLineStylesClicked(const QModelIndex&)) ) )
-        {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-        }
+        QObject::connect(
+            m_pViewLineStyles, &QListView::clicked,
+            this, &CWdgtFormatGraphObjsLineStyle::onViewLineStylesClicked);
     }
 
     if( m_pViewLineStyles->isVisible() )
@@ -1552,14 +1430,9 @@ void CWdgtFormatGraphObjsLineStyle::onBtnLineEndStylesLineStartClicked()
         // List of popup widgets which have to be closed on activating other widgets
         m_arpWdgtsPopup.append(m_pViewLineEndStylesLineStart);
 
-        if( !connect(
-            /* pObjSender   */ m_pViewLineEndStylesLineStart,
-            /* szSignal     */ SIGNAL(clicked(const QModelIndex&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onViewLineEndStylesLineStartClicked(const QModelIndex&)) ) )
-        {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-        }
+        QObject::connect(
+            m_pViewLineEndStylesLineStart, &QTableView::clicked,
+            this, &CWdgtFormatGraphObjsLineStyle::onViewLineEndStylesLineStartClicked);
     }
 
     if( m_pViewLineEndStylesLineStart->isVisible() )
@@ -1618,19 +1491,19 @@ void CWdgtFormatGraphObjsLineStyle::onViewLineEndStylesLineStartClicked( const Q
 
     if( pLineEndStyleItem != nullptr )
     {
-        CEnumLineEndStyle        lineEndStyle        = pLineEndStyleItem->data(EItemDataRoleLineEndStyle).toInt();
-        CEnumLineEndBaseLineType lineEndBaseLineType = pLineEndStyleItem->data(EItemDataRoleLineEndBaseLineType).toInt();
-        CEnumLineEndFillStyle    lineEndFillStyle    = pLineEndStyleItem->data(EItemDataRoleLineEndFillStyle).toInt();
+        CEnumLineEndStyle lineEndStyle = pLineEndStyleItem->data(EItemDataRoleLineEndStyle).toInt();
+        CEnumArrowHeadBaseLineType lineEndBaseLineType = pLineEndStyleItem->data(EItemDataRoleLineEndBaseLineType).toInt();
+        CEnumArrowHeadFillStyle lineEndFillStyle = pLineEndStyleItem->data(EItemDataRoleLineEndFillStyle).toInt();
 
         if( lineEndStyle >= 0 && lineEndStyle < CEnumLineEndStyle::count() )
         {
             m_drawSettings.setLineEndStyle(ELinePoint::Start,lineEndStyle.enumerator());
         }
-        if( lineEndBaseLineType >= 0 && lineEndBaseLineType < CEnumLineEndBaseLineType::count() )
+        if( lineEndBaseLineType >= 0 && lineEndBaseLineType < CEnumArrowHeadBaseLineType::count() )
         {
             m_drawSettings.setLineEndBaseLineType(ELinePoint::Start,lineEndBaseLineType.enumerator());
         }
-        if( lineEndFillStyle >= 0 && lineEndFillStyle < CEnumLineEndFillStyle::count() )
+        if( lineEndFillStyle >= 0 && lineEndFillStyle < CEnumArrowHeadFillStyle::count() )
         {
             m_drawSettings.setLineEndFillStyle(ELinePoint::Start,lineEndFillStyle.enumerator());
         }
@@ -1675,14 +1548,9 @@ void CWdgtFormatGraphObjsLineStyle::onBtnLineEndStylesLineEndClicked()
         // List of popup widgets which have to be closed on activating other widgets
         m_arpWdgtsPopup.append(m_pViewLineEndStylesLineEnd);
 
-        if( !connect(
-            /* pObjSender   */ m_pViewLineEndStylesLineEnd,
-            /* szSignal     */ SIGNAL(clicked(const QModelIndex&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onViewLineEndStylesLineEndClicked(const QModelIndex&)) ) )
-        {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-        }
+        QObject::connect(
+            m_pViewLineEndStylesLineEnd, &QTableView::clicked,
+            this, &CWdgtFormatGraphObjsLineStyle::onViewLineEndStylesLineEndClicked);
     }
 
     if( m_pViewLineEndStylesLineEnd->isVisible() )
@@ -1742,18 +1610,18 @@ void CWdgtFormatGraphObjsLineStyle::onViewLineEndStylesLineEndClicked( const QMo
     if( pLineEndStyleItem != nullptr )
     {
         CEnumLineEndStyle        lineEndStyle        = pLineEndStyleItem->data(EItemDataRoleLineEndStyle).toInt();
-        CEnumLineEndBaseLineType lineEndBaseLineType = pLineEndStyleItem->data(EItemDataRoleLineEndBaseLineType).toInt();
-        CEnumLineEndFillStyle    lineEndFillStyle    = pLineEndStyleItem->data(EItemDataRoleLineEndFillStyle).toInt();
+        CEnumArrowHeadBaseLineType lineEndBaseLineType = pLineEndStyleItem->data(EItemDataRoleLineEndBaseLineType).toInt();
+        CEnumArrowHeadFillStyle    lineEndFillStyle    = pLineEndStyleItem->data(EItemDataRoleLineEndFillStyle).toInt();
 
         if( lineEndStyle >= 0 && lineEndStyle < CEnumLineEndStyle::count() )
         {
             m_drawSettings.setLineEndStyle(ELinePoint::End,lineEndStyle.enumerator());
         }
-        if( lineEndBaseLineType >= 0 && lineEndBaseLineType < CEnumLineEndBaseLineType::count() )
+        if( lineEndBaseLineType >= 0 && lineEndBaseLineType < CEnumArrowHeadBaseLineType::count() )
         {
             m_drawSettings.setLineEndBaseLineType(ELinePoint::End,lineEndBaseLineType.enumerator());
         }
-        if( lineEndFillStyle >= 0 && lineEndFillStyle < CEnumLineEndFillStyle::count() )
+        if( lineEndFillStyle >= 0 && lineEndFillStyle < CEnumArrowHeadFillStyle::count() )
         {
             m_drawSettings.setLineEndFillStyle(ELinePoint::End,lineEndFillStyle.enumerator());
         }
@@ -1802,14 +1670,9 @@ void CWdgtFormatGraphObjsLineStyle::onBtnLineEndSizesLineStartClicked()
         // List of popup widgets which have to be closed on activating other widgets
         m_arpWdgtsPopup.append(m_pViewLineEndSizesLineStart);
 
-        if( !connect(
-            /* pObjSender   */ m_pViewLineEndSizesLineStart,
-            /* szSignal     */ SIGNAL(clicked(const QModelIndex&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onViewLineEndSizesLineStartClicked(const QModelIndex&)) ) )
-        {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-        }
+        QObject::connect(
+            m_pViewLineEndSizesLineStart, &QTableView::clicked,
+            this, &CWdgtFormatGraphObjsLineStyle::onViewLineEndSizesLineStartClicked);
     }
 
     if( m_pViewLineEndSizesLineStart->isVisible() )
@@ -1868,14 +1731,14 @@ void CWdgtFormatGraphObjsLineStyle::onViewLineEndSizesLineStartClicked( const QM
 
     if( pLineEndSizeItem != nullptr )
     {
-        CEnumLineEndWidth  lineEndWidth  = pLineEndSizeItem->data(EItemDataRoleLineEndWidth).toInt();
-        CEnumLineEndLength lineEndLength = pLineEndSizeItem->data(EItemDataRoleLineEndLength).toInt();
+        CEnumArrowHeadWidth  lineEndWidth  = pLineEndSizeItem->data(EItemDataRoleLineEndWidth).toInt();
+        CEnumArrowHeadLength lineEndLength = pLineEndSizeItem->data(EItemDataRoleLineEndLength).toInt();
 
-        if( lineEndWidth >= 0 && lineEndWidth < CEnumLineEndWidth::count() )
+        if( lineEndWidth >= 0 && lineEndWidth < CEnumArrowHeadWidth::count() )
         {
             m_drawSettings.setLineEndWidth(ELinePoint::Start,lineEndWidth.enumerator());
         }
-        if( lineEndLength >= 0 && lineEndLength < CEnumLineEndLength::count() )
+        if( lineEndLength >= 0 && lineEndLength < CEnumArrowHeadLength::count() )
         {
             m_drawSettings.setLineEndLength(ELinePoint::Start,lineEndLength.enumerator());
         }
@@ -1920,14 +1783,9 @@ void CWdgtFormatGraphObjsLineStyle::onBtnLineEndSizesLineEndClicked()
         // List of popup widgets which have to be closed on activating other widgets
         m_arpWdgtsPopup.append(m_pViewLineEndSizesLineEnd);
 
-        if( !connect(
-            /* pObjSender   */ m_pViewLineEndSizesLineEnd,
-            /* szSignal     */ SIGNAL(clicked(const QModelIndex&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onViewLineEndSizesLineEndClicked(const QModelIndex&)) ) )
-        {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-        }
+        QObject::connect(
+            m_pViewLineEndSizesLineEnd, &QTableView::clicked,
+            this, &CWdgtFormatGraphObjsLineStyle::onViewLineEndSizesLineEndClicked);
     }
 
     if( m_pViewLineEndSizesLineEnd->isVisible() )
@@ -1986,14 +1844,14 @@ void CWdgtFormatGraphObjsLineStyle::onViewLineEndSizesLineEndClicked( const QMod
 
     if( pLineEndSizeItem != nullptr )
     {
-        CEnumLineEndWidth  lineEndWidth  = pLineEndSizeItem->data(EItemDataRoleLineEndWidth).toInt();
-        CEnumLineEndLength lineEndLength = pLineEndSizeItem->data(EItemDataRoleLineEndLength).toInt();
+        CEnumArrowHeadWidth  lineEndWidth  = pLineEndSizeItem->data(EItemDataRoleLineEndWidth).toInt();
+        CEnumArrowHeadLength lineEndLength = pLineEndSizeItem->data(EItemDataRoleLineEndLength).toInt();
 
-        if( lineEndWidth >= 0 && lineEndWidth < CEnumLineEndWidth::count() )
+        if( lineEndWidth >= 0 && lineEndWidth < CEnumArrowHeadWidth::count() )
         {
             m_drawSettings.setLineEndWidth(ELinePoint::End,lineEndWidth.enumerator());
         }
-        if( lineEndLength >= 0 && lineEndLength < CEnumLineEndLength::count() )
+        if( lineEndLength >= 0 && lineEndLength < CEnumArrowHeadLength::count() )
         {
             m_drawSettings.setLineEndLength(ELinePoint::End,lineEndLength.enumerator());
         }
@@ -2110,9 +1968,9 @@ void CWdgtFormatGraphObjsLineStyle::setLineEndStyle( ELinePoint i_linePoint, con
         /* strMethod    */ "setLineEndStyle",
         /* strAddInfo   */ strAddTrcInfo );
 
-    ELineEndStyle        lineEndStyle        = i_drawSettings.getLineEndStyle(i_linePoint);
-    ELineEndBaseLineType lineEndBaseLineType = i_drawSettings.getLineEndBaseLineType(i_linePoint);
-    ELineEndFillStyle    lineEndFillStyle    = i_drawSettings.getLineEndFillStyle(i_linePoint);
+    CEnumLineEndStyle          lineEndStyle        = i_drawSettings.getLineEndStyle(i_linePoint);
+    CEnumArrowHeadBaseLineType lineEndBaseLineType = i_drawSettings.getLineEndBaseLineType(i_linePoint);
+    CEnumArrowHeadFillStyle    lineEndFillStyle    = i_drawSettings.getLineEndFillStyle(i_linePoint);
 
     QPixmap  pxmLineEnd(24,24);
     QPainter painter;
@@ -2160,7 +2018,7 @@ void CWdgtFormatGraphObjsLineStyle::setLineEndStyle( ELinePoint i_linePoint, con
     }
     else if( lineEndStyle == ELineEndStyle::ArrowHead )
     {
-        if( lineEndBaseLineType == ELineEndBaseLineType::NoLine )
+        if( lineEndBaseLineType == EArrowHeadBaseLineType::NoLine )
         {
             pen.setColor(Qt::black);
             pen.setWidth(3);
@@ -2170,7 +2028,7 @@ void CWdgtFormatGraphObjsLineStyle::setLineEndStyle( ELinePoint i_linePoint, con
             painter.setBrush(Qt::NoBrush);
             painter.drawPolyline(arPts,3);
         }
-        else if( lineEndBaseLineType == ELineEndBaseLineType::Normal )
+        else if( lineEndBaseLineType == EArrowHeadBaseLineType::Normal )
         {
             if( i_linePoint == ELinePoint::Start )
             {
@@ -2190,11 +2048,11 @@ void CWdgtFormatGraphObjsLineStyle::setLineEndStyle( ELinePoint i_linePoint, con
             pen.setStyle(Qt::SolidLine);
             painter.setPen(pen);
             brsh.setColor(Qt::black);
-            brsh.setStyle( lineEndFillStyle2QtBrushStyle(lineEndFillStyle) );
+            brsh.setStyle( arrowHeadFillStyle2QtBrushStyle(lineEndFillStyle) );
             painter.setBrush(brsh);
             painter.drawPolygon(arPts,3);
         }
-        else if( lineEndBaseLineType == ELineEndBaseLineType::Indented )
+        else if( lineEndBaseLineType == EArrowHeadBaseLineType::Indented )
         {
             if( i_linePoint == ELinePoint::Start )
             {
@@ -2214,7 +2072,7 @@ void CWdgtFormatGraphObjsLineStyle::setLineEndStyle( ELinePoint i_linePoint, con
             pen.setStyle(Qt::SolidLine);
             painter.setPen(pen);
             brsh.setColor(Qt::black);
-            brsh.setStyle( lineEndFillStyle2QtBrushStyle(lineEndFillStyle) );
+            brsh.setStyle( arrowHeadFillStyle2QtBrushStyle(lineEndFillStyle) );
             painter.setBrush(brsh);
             painter.drawPolygon(arPts,4);
         }
@@ -2251,13 +2109,13 @@ void CWdgtFormatGraphObjsLineStyle::setLineEndSize( ELinePoint i_linePoint, cons
         /* strMethod    */ "setLineEndSize",
         /* strAddInfo   */ strAddTrcInfo );
 
-    CEnumLineEndWidth  lineEndWidth  = i_drawSettings.getLineEndWidth(i_linePoint);
-    CEnumLineEndLength lineEndLength = i_drawSettings.getLineEndLength(i_linePoint);
+    CEnumArrowHeadWidth  lineEndWidth  = i_drawSettings.getLineEndWidth(i_linePoint);
+    CEnumArrowHeadLength lineEndLength = i_drawSettings.getLineEndLength(i_linePoint);
 
     QPolygonF plgArrowHead;
 
-    if( lineEndWidth >= 0 && lineEndWidth < CEnumLineEndWidth::count()
-     && lineEndLength >= 0 && lineEndLength < CEnumLineEndLength::count() )
+    if( lineEndWidth >= 0 && lineEndWidth < CEnumArrowHeadWidth::count()
+     && lineEndLength >= 0 && lineEndLength < CEnumArrowHeadLength::count() )
     {
         QPixmap       pxmLineEnd( s_rctPxmLineEndSize.size() );
         QPainter      painter;
@@ -2266,8 +2124,8 @@ void CWdgtFormatGraphObjsLineStyle::setLineEndSize( ELinePoint i_linePoint, cons
         QBrush        brsh;
 
         drawSettings.setLineEndStyle(i_linePoint,ELineEndStyle::ArrowHead);
-        drawSettings.setLineEndBaseLineType(i_linePoint,ELineEndBaseLineType::Normal);
-        drawSettings.setLineEndFillStyle(i_linePoint,ELineEndFillStyle::SolidPattern);
+        drawSettings.setLineEndBaseLineType(i_linePoint,EArrowHeadBaseLineType::Normal);
+        drawSettings.setLineEndFillStyle(i_linePoint,EArrowHeadFillStyle::SolidPattern);
 
         getLineEndPolygons(
             /* line          */ s_arlineLineEndSizes[static_cast<int>(i_linePoint)],

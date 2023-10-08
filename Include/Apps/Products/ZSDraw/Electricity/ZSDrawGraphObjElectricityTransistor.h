@@ -91,11 +91,11 @@ public: // instance methods
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone();
 public: // overridables of base class CGraphObj
-    virtual void onCreateAndExecDlgFormatGraphObjs();
+    virtual void onCreateAndExecDlgFormatGraphObjs() override;
 public: // overridables of base class CGraphObj
-    virtual void onDrawSettingsChanged();
+    virtual void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld) override;
 protected: // overridables of base class CGraphObj
-    virtual void updateToolTip();
+    virtual void updateToolTip() override;
 protected: // class members
     /*!< Needed to set an initial unique name when creating a new instance. */
     static qint64 s_iInstCount;

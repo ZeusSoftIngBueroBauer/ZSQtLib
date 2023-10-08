@@ -702,10 +702,10 @@ template<> const QVector<SEnumEntry> CEnum<ETextStyle>::s_arEnumEntries =
 };
 
 //------------------------------------------------------------------------------
-bool ZS::Draw::isTextStyleBold(ETextStyle i_style)
+bool ZS::Draw::isTextStyleBold(const CEnumTextStyle& i_textStyle)
 //------------------------------------------------------------------------------
 {
-    if (i_style == ETextStyle::Bold || i_style == ETextStyle::BoldItalic)
+    if (i_textStyle == ETextStyle::Bold || i_textStyle == ETextStyle::BoldItalic)
     {
         return true;
     }
@@ -713,10 +713,10 @@ bool ZS::Draw::isTextStyleBold(ETextStyle i_style)
 }
 
 //------------------------------------------------------------------------------
-bool ZS::Draw::isTextStyleItalic(ETextStyle i_style)
+bool ZS::Draw::isTextStyleItalic(const CEnumTextStyle& i_textStyle)
 //------------------------------------------------------------------------------
 {
-    if (i_style == ETextStyle::Italic || i_style == ETextStyle::BoldItalic)
+    if (i_textStyle == ETextStyle::Italic || i_textStyle == ETextStyle::BoldItalic)
     {
         return true;
     }
@@ -842,7 +842,7 @@ template<> const QVector<SEnumEntry> CEnum<ETextEffect>::s_arEnumEntries =
 };
 
 //------------------------------------------------------------------------------
-bool ZS::Draw::isTextEffectStrikeout(ETextEffect i_textEffect)
+bool ZS::Draw::isTextEffectStrikeout(const CEnumTextEffect& i_textEffect)
 //------------------------------------------------------------------------------
 {
     if (i_textEffect == ETextEffect::Strikeout || i_textEffect == ETextEffect::StrikeoutUnderline)
@@ -853,7 +853,7 @@ bool ZS::Draw::isTextEffectStrikeout(ETextEffect i_textEffect)
 }
 
 //------------------------------------------------------------------------------
-bool ZS::Draw::isTextEffectUnderline(ETextEffect i_textEffect)
+bool ZS::Draw::isTextEffectUnderline(const CEnumTextEffect& i_textEffect)
 //------------------------------------------------------------------------------
 {
     if (i_textEffect == ETextEffect::Underline || i_textEffect == ETextEffect::StrikeoutUnderline)
@@ -919,25 +919,21 @@ template<> const QVector<SEnumEntry> CEnum<EFillStyle>::s_arEnumEntries =
 };
 
 //------------------------------------------------------------------------------
-Qt::BrushStyle ZS::Draw::fillStyle2QtBrushStyle( EFillStyle i_fillStyle )
+Qt::BrushStyle ZS::Draw::fillStyle2QtBrushStyle( const CEnumFillStyle& i_fillStyle )
 //------------------------------------------------------------------------------
 {
     Qt::BrushStyle brushStyle = Qt::NoBrush;
-
-    if( static_cast<int>(i_fillStyle) >= 0 && static_cast<int>(i_fillStyle) < _ZSArrLen(s_arFillStyles2QtBrushStyles) )
-    {
-        brushStyle = s_arFillStyles2QtBrushStyles[static_cast<int>(i_fillStyle)];
+    if ((i_fillStyle.enumeratorAsInt() >= 0) && (i_fillStyle.enumeratorAsInt() < _ZSArrLen(s_arFillStyles2QtBrushStyles))) {
+        brushStyle = s_arFillStyles2QtBrushStyles[i_fillStyle.enumeratorAsInt()];
     }
     return brushStyle;
-
-} // fillStyle2QtBrushStyle
+}
 
 //------------------------------------------------------------------------------
-bool ZS::Draw::isFillStyleGradientPattern( EFillStyle i_fillStyle )
+bool ZS::Draw::isFillStyleGradientPattern( const CEnumFillStyle& i_fillStyle )
 //------------------------------------------------------------------------------
 {
     bool bIsGradientPattern = false;
-
     if( i_fillStyle == EFillStyle::LinearGradientPattern
      || i_fillStyle == EFillStyle::RadialGradientPattern
      || i_fillStyle == EFillStyle::ConicalGradientPattern )
@@ -945,8 +941,7 @@ bool ZS::Draw::isFillStyleGradientPattern( EFillStyle i_fillStyle )
         bIsGradientPattern = true;
     }
     return bIsGradientPattern;
-
-} // isFillStyleGradientPattern
+}
 
 
 /*==============================================================================
@@ -979,18 +974,15 @@ template<> const QVector<SEnumEntry> CEnum<ELineStyle>::s_arEnumEntries =
 };
 
 //------------------------------------------------------------------------------
-Qt::PenStyle ZS::Draw::lineStyle2QtPenStyle( ELineStyle i_lineStyle )
+Qt::PenStyle ZS::Draw::lineStyle2QtPenStyle( const CEnumLineStyle& i_lineStyle )
 //------------------------------------------------------------------------------
 {
     Qt::PenStyle penStyle = Qt::NoPen;
-
-    if( static_cast<int>(i_lineStyle) >= 0 && static_cast<int>(i_lineStyle) < _ZSArrLen(s_arLineStyles2QtPenStyles) )
-    {
-        penStyle = s_arLineStyles2QtPenStyles[static_cast<int>(i_lineStyle)];
+    if ((i_lineStyle.enumeratorAsInt() >= 0) && (i_lineStyle.enumeratorAsInt() < _ZSArrLen(s_arLineStyles2QtPenStyles))) {
+        penStyle = s_arLineStyles2QtPenStyles[i_lineStyle.enumeratorAsInt()];
     }
     return penStyle;
-
-} // lineStyle2QtPenStyle
+}
 
 
 /*==============================================================================
@@ -1027,66 +1019,63 @@ template<> const QVector<SEnumEntry> CEnum<ELineEndStyle>::s_arEnumEntries =
 
 
 /*==============================================================================
-Enum ELineEndFillStyle
+Enum EArrowHeadFillStyle
 ==============================================================================*/
 
-template<> QMutex CEnum<ELineEndFillStyle>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> CEnum<ELineEndFillStyle>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<EArrowHeadFillStyle>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<EArrowHeadFillStyle>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 const Qt::BrushStyle s_arLineEndFillStyles2QtBrushStyles[] =
 {
-    /*  0: ELineEndFillStyle::NoFill       */ Qt::NoBrush,
-    /*  1: ELineEndFillStyle::SolidPattern */ Qt::SolidPattern
+    /*  0: EArrowHeadFillStyle::NoFill       */ Qt::NoBrush,
+    /*  1: EArrowHeadFillStyle::SolidPattern */ Qt::SolidPattern
 };
 
 //------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> CEnum<ELineEndFillStyle>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<EArrowHeadFillStyle>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {
-    SEnumEntry( static_cast<int>(ELineEndFillStyle::NoFill),       "NoFill",       "No Fill"       ),
-    SEnumEntry( static_cast<int>(ELineEndFillStyle::SolidPattern), "SolidPattern", "Solid Pattern" )
+    SEnumEntry( static_cast<int>(EArrowHeadFillStyle::NoFill),       "NoFill",       "No Fill"       ),
+    SEnumEntry( static_cast<int>(EArrowHeadFillStyle::SolidPattern), "SolidPattern", "Solid Pattern" )
 };
 
 //------------------------------------------------------------------------------
-Qt::BrushStyle ZS::Draw::lineEndFillStyle2QtBrushStyle( ELineEndFillStyle i_fillStyle )
+Qt::BrushStyle ZS::Draw::arrowHeadFillStyle2QtBrushStyle( const CEnumArrowHeadFillStyle& i_fillStyle )
 //------------------------------------------------------------------------------
 {
     Qt::BrushStyle brushStyle = Qt::NoBrush;
-
-    if( static_cast<int>(i_fillStyle) >= 0 && static_cast<int>(i_fillStyle) < _ZSArrLen(s_arLineEndFillStyles2QtBrushStyles) )
-    {
-        brushStyle = s_arLineEndFillStyles2QtBrushStyles[static_cast<int>(i_fillStyle)];
+    if ((i_fillStyle.enumeratorAsInt() >= 0) && (i_fillStyle.enumeratorAsInt() < _ZSArrLen(s_arLineEndFillStyles2QtBrushStyles))) {
+        brushStyle = s_arLineEndFillStyles2QtBrushStyles[i_fillStyle.enumeratorAsInt()];
     }
     return brushStyle;
-
-} // lineEndFillStyle2QtBrushStyle
+}
 
 
 /*==============================================================================
-Enum ELineEndBaseLineType
+Enum EArrowHeadBaseLineType
 ==============================================================================*/
 
-template<> QMutex CEnum<ELineEndBaseLineType>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> CEnum<ELineEndBaseLineType>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<EArrowHeadBaseLineType>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<EArrowHeadBaseLineType>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 //------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> CEnum<ELineEndBaseLineType>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<EArrowHeadBaseLineType>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {
-    SEnumEntry( static_cast<int>(ELineEndBaseLineType::NoLine),   "NoLine",   "No Line"  ),
-    SEnumEntry( static_cast<int>(ELineEndBaseLineType::Normal),   "Normal",   "Normal"   ),
-    SEnumEntry( static_cast<int>(ELineEndBaseLineType::Indented), "Indented", "Indented" )
+    SEnumEntry( static_cast<int>(EArrowHeadBaseLineType::NoLine),   "NoLine",   "No Line"  ),
+    SEnumEntry( static_cast<int>(EArrowHeadBaseLineType::Normal),   "Normal",   "Normal"   ),
+    SEnumEntry( static_cast<int>(EArrowHeadBaseLineType::Indented), "Indented", "Indented" )
 };
 
 
 /*==============================================================================
-Enum ELineEndWidth
+Enum EArrowHeadWidth
 ==============================================================================*/
 
-template<> QMutex CEnum<ELineEndWidth>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> CEnum<ELineEndWidth>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<EArrowHeadWidth>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<EArrowHeadWidth>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
-const double s_arfLineEndWidths[] =
+const double s_arfArrowHeadWidths[] =
 {
     /* Thin   */  7.0,
     /* Medium */ 13.0,
@@ -1094,35 +1083,32 @@ const double s_arfLineEndWidths[] =
 };
 
 //------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> CEnum<ELineEndWidth>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<EArrowHeadWidth>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {
-    /* 0 */ SEnumEntry( static_cast<int>(ELineEndWidth::Thin),   "Thin",   "Thin"   ),
-    /* 1 */ SEnumEntry( static_cast<int>(ELineEndWidth::Medium), "Medium", "Medium" ),
-    /* 2 */ SEnumEntry( static_cast<int>(ELineEndWidth::Wide),   "Wide",   "Wide"   )
+    /* 0 */ SEnumEntry( static_cast<int>(EArrowHeadWidth::Thin),   "Thin",   "Thin"   ),
+    /* 1 */ SEnumEntry( static_cast<int>(EArrowHeadWidth::Medium), "Medium", "Medium" ),
+    /* 2 */ SEnumEntry( static_cast<int>(EArrowHeadWidth::Wide),   "Wide",   "Wide"   )
 };
 
 //------------------------------------------------------------------------------
-double ZS::Draw::lineEndWidth2dy( ELineEndWidth i_lineEndWidth )
+double ZS::Draw::arrowHeadWidth2dy( const CEnumArrowHeadWidth& i_width )
 //------------------------------------------------------------------------------
 {
     double fdy = 0.0;
-
-    if( static_cast<int>(i_lineEndWidth) >= 0 && static_cast<int>(i_lineEndWidth) < CEnumLineEndWidth::count() )
-    {
-        fdy = s_arfLineEndWidths[static_cast<int>(i_lineEndWidth)];
+    if ((i_width.enumeratorAsInt() >= 0) && (i_width.enumeratorAsInt() < _ZSArrLen(s_arfArrowHeadWidths))) {
+        fdy = s_arfArrowHeadWidths[i_width.enumeratorAsInt()];
     }
     return fdy;
-
-} // lineEndWidth2dy
+}
 
 
 /*==============================================================================
-Enum ELineEndLength
+Enum EArrowHeadLength
 ==============================================================================*/
 
-template<> QMutex CEnum<ELineEndLength>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> CEnum<ELineEndLength>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex CEnum<EArrowHeadLength>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<EArrowHeadLength>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 const double s_arfLineEndLengths[] =
 {
@@ -1132,27 +1118,24 @@ const double s_arfLineEndLengths[] =
 };
 
 //------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> CEnum<ELineEndLength>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<EArrowHeadLength>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {
-    /* 0 */ SEnumEntry( static_cast<int>(ELineEndLength::Short),  "Short",  "Short"  ),
-    /* 1 */ SEnumEntry( static_cast<int>(ELineEndLength::Medium), "Medium", "Medium" ),
-    /* 2 */ SEnumEntry( static_cast<int>(ELineEndLength::Long),   "Long",   "Long"   )
+    /* 0 */ SEnumEntry( static_cast<int>(EArrowHeadLength::Short),  "Short",  "Short"  ),
+    /* 1 */ SEnumEntry( static_cast<int>(EArrowHeadLength::Medium), "Medium", "Medium" ),
+    /* 2 */ SEnumEntry( static_cast<int>(EArrowHeadLength::Long),   "Long",   "Long"   )
 };
 
 //------------------------------------------------------------------------------
-double ZS::Draw::lineEndLength2dx( ELineEndLength i_lineEndLength )
+double ZS::Draw::arrowHeadLength2dx( const CEnumArrowHeadLength& i_length )
 //------------------------------------------------------------------------------
 {
     double fdx = 0.0;
-
-    if( static_cast<int>(i_lineEndLength) >= 0 && static_cast<int>(i_lineEndLength) < CEnumLineEndWidth::count() )
-    {
-        fdx = s_arfLineEndLengths[static_cast<int>(i_lineEndLength)];
+    if ((i_length.enumeratorAsInt() >= 0) && (i_length.enumeratorAsInt() < _ZSArrLen(s_arfLineEndLengths))) {
+        fdx = s_arfLineEndLengths[i_length.enumeratorAsInt()];
     }
     return fdx;
-
-} // lineEndLength2dx
+}
 
 
 /*==============================================================================

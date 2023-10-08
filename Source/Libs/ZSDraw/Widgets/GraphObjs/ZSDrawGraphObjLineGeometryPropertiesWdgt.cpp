@@ -890,7 +890,7 @@ void CWdgtGraphObjLineGeometryProperties::applySettings()
     if (m_pGraphObj != nullptr) {
         pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_pGraphObj);
     }
-    if (pGraphObjLine != nullptr && !hasErrors()) {
+    if (pGraphObjLine != nullptr && !hasErrors() && hasChanges()) {
         pGraphObjLine->setLine(m_physValLine);
     }
 }

@@ -418,8 +418,8 @@ enum class ETextStyle
 template class ZSDRAWDLL_API ::CEnum<ETextStyle>;
 typedef ::CEnum<ETextStyle> CEnumTextStyle;
 
-ZSDRAWDLL_API bool isTextStyleBold(ETextStyle i_style);
-ZSDRAWDLL_API bool isTextStyleItalic(ETextStyle i_style);
+ZSDRAWDLL_API bool isTextStyleBold(const CEnumTextStyle& i_style);
+ZSDRAWDLL_API bool isTextStyleItalic(const CEnumTextStyle& i_style);
 
 
 //==============================================================================
@@ -472,8 +472,8 @@ enum class ETextEffect
 template class ZSDRAWDLL_API ::CEnum<ETextEffect>;
 typedef ::CEnum<ETextEffect> CEnumTextEffect;
 
-ZSDRAWDLL_API bool isTextEffectStrikeout(ETextEffect i_textEffect);
-ZSDRAWDLL_API bool isTextEffectUnderline(ETextEffect i_textEffect);
+ZSDRAWDLL_API bool isTextEffectStrikeout(const CEnumTextEffect& i_textEffect);
+ZSDRAWDLL_API bool isTextEffectUnderline(const CEnumTextEffect& i_textEffect);
 
 //==============================================================================
 /*!
@@ -506,8 +506,8 @@ enum class EFillStyle
 template class ZSDRAWDLL_API ::CEnum<EFillStyle>;
 typedef ::CEnum<EFillStyle> CEnumFillStyle;
 
-ZSDRAWDLL_API Qt::BrushStyle fillStyle2QtBrushStyle( EFillStyle i_fillStyle );
-ZSDRAWDLL_API bool isFillStyleGradientPattern( EFillStyle i_fillStyle );
+ZSDRAWDLL_API Qt::BrushStyle fillStyle2QtBrushStyle( const CEnumFillStyle& i_fillStyle );
+ZSDRAWDLL_API bool isFillStyleGradientPattern( const CEnumFillStyle& i_fillStyle );
 
 
 //==============================================================================
@@ -527,11 +527,11 @@ enum class ELineStyle
 template class ZSDRAWDLL_API ::CEnum<ELineStyle>;
 typedef ::CEnum<ELineStyle> CEnumLineStyle;
 
-ZSDRAWDLL_API Qt::PenStyle lineStyle2QtPenStyle( ELineStyle i_lineStyle );
+ZSDRAWDLL_API Qt::PenStyle lineStyle2QtPenStyle( const CEnumLineStyle& i_lineStyle );
 
 
 //==============================================================================
-/*!
+/*! @brief A line may be indicated with one line (normal), a double line or a triple line.
 */
 enum class ELineRecordType
 //==============================================================================
@@ -546,7 +546,36 @@ typedef ::CEnum<ELineRecordType> CEnumLineRecordType;
 
 
 //==============================================================================
-/*!
+/*! @brief A line end may be indicated normal or showing an arrow head.
+
+    The direction of the arrow head depends on whether the arrow should be shown
+    at the line start (P1) or line end (P2). To draw an arrow head a polygon with
+    4 points is used as shwon in the figure below (assuming a vertical line with
+    P1 at top and P2 at bottom):
+
+                           |--Width--|
+
+                               2^                    ---
+                               / \                    |
+         Line Start (P1)      /   \                 Length
+                             /     \                  |
+                          1 /___4___\3 BaseLine      ---
+                                |
+                                |
+                                |
+                           1____|____3 BaseLine
+                            \   4   /
+                             \     /
+         Line End (P2)        \   /
+                               \ /
+                               2'
+
+    The arrow head may be styled with a
+
+    - FillStyle (NoFill, SolidPattern),
+    - Width (Thin, Medium, Wide),
+    - Length (Short, Medium, Long) and
+    - a BaseLine.
 */
 enum class ELineEndStyle
 //==============================================================================
@@ -562,23 +591,33 @@ typedef ::CEnum<ELineEndStyle> CEnumLineEndStyle;
 //==============================================================================
 /*!
 */
-enum class ELineEndFillStyle
+enum class EArrowHeadFillStyle
 //==============================================================================
 {
     NoFill       = 0,
     SolidPattern = 1
 };
 
-template class ZSDRAWDLL_API ::CEnum<ELineEndFillStyle>;
-typedef ::CEnum<ELineEndFillStyle> CEnumLineEndFillStyle;
+template class ZSDRAWDLL_API ::CEnum<EArrowHeadFillStyle>;
+typedef ::CEnum<EArrowHeadFillStyle> CEnumArrowHeadFillStyle;
 
-ZSDRAWDLL_API Qt::BrushStyle lineEndFillStyle2QtBrushStyle( ELineEndFillStyle i_fillStyle );
+ZSDRAWDLL_API Qt::BrushStyle arrowHeadFillStyle2QtBrushStyle(const CEnumArrowHeadFillStyle& i_fillStyle);
 
 
 //==============================================================================
-/*!
+/*! Base line type for the arrow head.
+
+         NoLine           Normal         Indented
+            ^               ^               ^
+           /|\             / \             / \
+          / | \           /   \           /   \
+         /  |  \         /     \         /  ^  \
+        /   |   \       /_______\       /__/ \__\
+            |               |               |
+            |               |               |
+            |               |               |
 */
-enum class ELineEndBaseLineType
+enum class EArrowHeadBaseLineType
 //==============================================================================
 {
     NoLine   = 0,
@@ -586,14 +625,14 @@ enum class ELineEndBaseLineType
     Indented = 2
 };
 
-template class ZSDRAWDLL_API ::CEnum<ELineEndBaseLineType>;
-typedef ::CEnum<ELineEndBaseLineType> CEnumLineEndBaseLineType;
+template class ZSDRAWDLL_API ::CEnum<EArrowHeadBaseLineType>;
+typedef ::CEnum<EArrowHeadBaseLineType> CEnumArrowHeadBaseLineType;
 
 
 //==============================================================================
 /*!
 */
-enum class ELineEndWidth
+enum class EArrowHeadWidth
 //==============================================================================
 {
     Thin   = 0,    /*!<  7 Pixel */
@@ -601,16 +640,16 @@ enum class ELineEndWidth
     Wide   = 2     /*!< 19 Pixel */
 };
 
-template class ZSDRAWDLL_API ::CEnum<ELineEndWidth>;
-typedef ::CEnum<ELineEndWidth> CEnumLineEndWidth;
+template class ZSDRAWDLL_API ::CEnum<EArrowHeadWidth>;
+typedef ::CEnum<EArrowHeadWidth> CEnumArrowHeadWidth;
 
-ZSDRAWDLL_API double lineEndWidth2dy( ELineEndWidth i_lineEndWidth );
+ZSDRAWDLL_API double arrowHeadWidth2dy(const CEnumArrowHeadWidth& i_width);
 
 
 //==============================================================================
 /*!
 */
-enum class ELineEndLength
+enum class EArrowHeadLength
 //==============================================================================
 {
     Short  = 0,   /*!<  7 Pixel */
@@ -618,17 +657,12 @@ enum class ELineEndLength
     Long   = 2    /*!< 13 Pixel */
 };
 
-template class ZSDRAWDLL_API ::CEnum<ELineEndLength>;
-typedef ::CEnum<ELineEndLength> CEnumLineEndLength;
+template class ZSDRAWDLL_API ::CEnum<EArrowHeadLength>;
+typedef ::CEnum<EArrowHeadLength> CEnumArrowHeadLength;
 
-ZSDRAWDLL_API double lineEndLength2dx( ELineEndLength i_lineEndLength );
+ZSDRAWDLL_API double arrowHeadLength2dx(const CEnumArrowHeadLength& i_length);
 
-} // namespace Draw
 
-} // namespace ZS
-
-namespace ZS {
-namespace Draw {
 //==============================================================================
 /*!
 */
@@ -645,13 +679,13 @@ enum class EAlignmentRef
     Width     = 7,
     Height    = 8
 };
-} } // ZS::Draw
 
-template class ZSDRAWDLL_API ::CEnum<ZS::Draw::EAlignmentRef>;
+template class ZSDRAWDLL_API ::CEnum<EAlignmentRef>;
 
-namespace ZS {
-namespace Draw {
 typedef ::CEnum<EAlignmentRef> CEnumAlignmentRef;
-} } // ZS::Draw
+
+} // namespace ZS
+
+} // namespace Draw
 
 #endif // #ifndef ZSDraw_Common_h

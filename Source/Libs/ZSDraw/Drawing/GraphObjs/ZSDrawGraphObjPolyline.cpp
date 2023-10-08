@@ -113,9 +113,9 @@ CGraphObjPolyline::CGraphObjPolyline(
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strAddTrcInfo );
 
-    setFlags( QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges );
+    setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
 
-    onDrawSettingsChanged();
+    //onDrawSettingsChanged();
 
     updateToolTip();
 
@@ -349,9 +349,20 @@ public: // overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObjPolyline::onDrawSettingsChanged()
+void CGraphObjPolyline::onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld)
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "OldSettings {" + i_drawSettingsOld.toString() + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "onDrawSettingsChanged",
+        /* strAddInfo   */ strMthInArgs );
+
     m_bCoorsDirty = true;
 
     if( m_drawSettings.isPenUsed() )
@@ -945,14 +956,15 @@ void CGraphObjPolyline::paint(
         i_pPainter->drawPolyline(m_plgCurr);
     }
 
-    ELineEndStyle lineEndStyleLineStart = m_drawSettings.getLineEndStyle(ELinePoint::Start);
-    ELineEndStyle lineEndStyleLineEnd   = m_drawSettings.getLineEndStyle(ELinePoint::End);
+    CEnumLineEndStyle lineEndStyleLineStart = m_drawSettings.getLineEndStyle(ELinePoint::Start);
+    CEnumLineEndStyle lineEndStyleLineEnd   = m_drawSettings.getLineEndStyle(ELinePoint::End);
 
     if( lineEndStyleLineStart != ELineEndStyle::Normal || lineEndStyleLineEnd != ELineEndStyle::Normal )
     {
-        ELineEndBaseLineType baseLineTypeLineStart = m_drawSettings.getLineEndBaseLineType(ELinePoint::Start);
-        ELineEndBaseLineType baseLineTypeLineEnd   = m_drawSettings.getLineEndBaseLineType(ELinePoint::End);
-        QBrush               brsh;
+        CEnumArrowHeadBaseLineType baseLineTypeLineStart = m_drawSettings.getLineEndBaseLineType(ELinePoint::Start);
+        CEnumArrowHeadBaseLineType baseLineTypeLineEnd   = m_drawSettings.getLineEndBaseLineType(ELinePoint::End);
+
+        QBrush brsh;
 
         pn.setStyle(Qt::SolidLine);
         pn.setWidth(1);
@@ -963,11 +975,11 @@ void CGraphObjPolyline::paint(
 
         if( lineEndStyleLineStart != ELineEndStyle::Normal )
         {
-            brsh.setStyle( lineEndFillStyle2QtBrushStyle(m_drawSettings.getLineEndFillStyle(ELinePoint::Start)) );
+            brsh.setStyle( arrowHeadFillStyle2QtBrushStyle(m_drawSettings.getLineEndFillStyle(ELinePoint::Start)) );
 
             i_pPainter->setBrush(brsh);
 
-            if( baseLineTypeLineStart == ELineEndBaseLineType::NoLine )
+            if( baseLineTypeLineStart == EArrowHeadBaseLineType::NoLine )
             {
                 i_pPainter->drawPolyline(m_plgLineStart);
             }
@@ -979,11 +991,11 @@ void CGraphObjPolyline::paint(
 
         if( lineEndStyleLineEnd != ELineEndStyle::Normal )
         {
-            brsh.setStyle( lineEndFillStyle2QtBrushStyle(m_drawSettings.getLineEndFillStyle(ELinePoint::End)) );
+            brsh.setStyle( arrowHeadFillStyle2QtBrushStyle(m_drawSettings.getLineEndFillStyle(ELinePoint::End)) );
 
             i_pPainter->setBrush(brsh);
 
-            if( baseLineTypeLineEnd == ELineEndBaseLineType::NoLine )
+            if( baseLineTypeLineEnd == EArrowHeadBaseLineType::NoLine )
             {
                 i_pPainter->drawPolyline(m_plgLineEnd);
             }
@@ -2416,8 +2428,8 @@ void CGraphObjPolyline::updateLineEndPolygonCoors()
 
     if( m_bCoorsDirty )
     {
-        ELineEndStyle lineEndStyleLineStart = m_drawSettings.getLineEndStyle(ELinePoint::Start);
-        ELineEndStyle lineEndStyleLineEnd   = m_drawSettings.getLineEndStyle(ELinePoint::End);
+        CEnumLineEndStyle lineEndStyleLineStart = m_drawSettings.getLineEndStyle(ELinePoint::Start);
+        CEnumLineEndStyle lineEndStyleLineEnd   = m_drawSettings.getLineEndStyle(ELinePoint::End);
 
         m_plgCurr = polygon();
 
@@ -2425,8 +2437,8 @@ void CGraphObjPolyline::updateLineEndPolygonCoors()
         {
             if( lineEndStyleLineStart != ELineEndStyle::Normal || lineEndStyleLineEnd != ELineEndStyle::Normal )
             {
-                //ELineEndBaseLineType baseLineTypeLineStart = m_drawSettings.getLineEndBaseLineType(ELinePoint::Start);
-                //ELineEndBaseLineType baseLineTypeLineEnd   = m_drawSettings.getLineEndBaseLineType(ELinePoint::End);
+                //EArrowHeadBaseLineType baseLineTypeLineStart = m_drawSettings.getLineEndBaseLineType(ELinePoint::Start);
+                //EArrowHeadBaseLineType baseLineTypeLineEnd   = m_drawSettings.getLineEndBaseLineType(ELinePoint::End);
 
                 QLineF linFirst( m_plgCurr[0], m_plgCurr[1] );
                 QLineF linLast( m_plgCurr[m_plgCurr.size()-2], m_plgCurr[m_plgCurr.size()-1] );
@@ -2439,7 +2451,7 @@ void CGraphObjPolyline::updateLineEndPolygonCoors()
                         /* pplgLineStart */ &m_plgLineStart,
                         /* pplgLineEnd   */ nullptr );
 
-                    //if( baseLineTypeLineStart != ELineEndBaseLineType::NoLine )
+                    //if( baseLineTypeLineStart != EArrowHeadBaseLineType::NoLine )
                     //{
                     //    if( m_plgLineStart.size() == 4 )
                     //    {
@@ -2456,7 +2468,7 @@ void CGraphObjPolyline::updateLineEndPolygonCoors()
                         /* pplgLineStart */ nullptr,
                         /* pplgLineEnd   */ &m_plgLineEnd );
 
-                    //if( baseLineTypeLineEnd != ELineEndBaseLineType::NoLine )
+                    //if( baseLineTypeLineEnd != EArrowHeadBaseLineType::NoLine )
                     //{
                     //    if( m_plgLineEnd.size() == 4 )
                     //    {

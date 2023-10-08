@@ -115,9 +115,9 @@ ZSDRAWDLL_API QPolygonF resizePolygon(
 ZSDRAWDLL_API QRectF boundingRect( const QPointF& i_pt, double i_fRadius );
 ZSDRAWDLL_API QPolygonF rect2Polygon( const QRectF& i_rct, int i_iSelPtsCount = -1, const ESelectionPoint* i_pSelPts = nullptr ); // if != nullptr must contain exactly 4 elements (for each corner)
 ZSDRAWDLL_API bool isLineHit( const QLineF& i_lin, const QPointF& i_pt, double i_fTolerance );
-ZSDRAWDLL_API bool isRectHit( const QRectF& i_rct, EFillStyle i_fillStyle, const QPointF& i_pt, double i_fTolerance, SGraphObjHitInfo* o_pHitInfo );
-ZSDRAWDLL_API bool isEllipseHit( const QRectF& i_rct, EFillStyle i_fillStyle, const QPointF& i_pt, double i_fTolerance, SGraphObjHitInfo* o_pHitInfo );
-ZSDRAWDLL_API bool isPolygonHit( const QPolygonF& i_rct, EFillStyle i_fillStyle, const QPointF& i_pt, double i_fTolerance, SGraphObjHitInfo* o_pHitInfo );
+ZSDRAWDLL_API bool isRectHit( const QRectF& i_rct, const CEnumFillStyle& i_fillStyle, const QPointF& i_pt, double i_fTolerance, SGraphObjHitInfo* o_pHitInfo );
+ZSDRAWDLL_API bool isEllipseHit( const QRectF& i_rct, const CEnumFillStyle& i_fillStyle, const QPointF& i_pt, double i_fTolerance, SGraphObjHitInfo* o_pHitInfo );
+ZSDRAWDLL_API bool isPolygonHit( const QPolygonF& i_rct, const CEnumFillStyle& i_fillStyle, const QPointF& i_pt, double i_fTolerance, SGraphObjHitInfo* o_pHitInfo );
 ZSDRAWDLL_API double getDist( const QPointF& i_pt1, const QPointF& i_pt2 );
 ZSDRAWDLL_API double getAngleRad( const QPointF& i_pt1, const QPointF& i_pt2 );
 ZSDRAWDLL_API QPointF rotatePoint( const QPointF& i_ptCenter, const QPointF& i_pt, double i_fAngle_rad );
