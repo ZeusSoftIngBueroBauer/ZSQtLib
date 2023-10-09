@@ -83,13 +83,13 @@ public: // class methods
     /*! Returns the class name. */
     static QString ClassName() { return "CDlgFormatGraphObjs"; }
 public: // type definitions and constants
-    static const QString c_strWdgtLabels;
+    //static const QString c_strWdgtLabels;
     static const QString c_strWdgtLineStyle;
     static const QString c_strWdgtFillStyle;
     static const QString c_strWdgtTextStyle;
-    static const QString c_strWdgtGeometry;
-    static const QString c_strWdgtText;
-    static const QString c_strWdgtLabelVisibilities;
+    //static const QString c_strWdgtGeometry;
+    //static const QString c_strWdgtText;
+    //static const QString c_strWdgtLabelVisibilities;
 public: // ctors and dtor
     CDlgFormatGraphObjs(
         CDrawingScene* i_pDrawingScene,

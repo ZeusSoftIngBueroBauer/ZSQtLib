@@ -73,7 +73,7 @@ CWdgtGridLabels::CWdgtGridLabels(
 //------------------------------------------------------------------------------
     QWidget(i_pWdgtParent),
     m_pDrawingView(i_pDrawingView),
-    m_divLinesMetrics("GridLabels" + i_strName, i_scaleAxis),
+    m_divLinesMetrics("DrawingViewGridLabels" + i_strName, i_scaleAxis),
     m_iDivLineLabelsLineLength(5),
     m_scaleAxis(i_scaleAxis),
     m_layoutPos(i_layoutPos),

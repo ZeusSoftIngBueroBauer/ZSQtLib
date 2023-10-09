@@ -99,7 +99,9 @@ CGraphObj* CObjFactoryEllipse::createGraphObj(
         mthTracer.trace(strMthInArgs);
     }
 
-    CGraphObjEllipse* pGraphObj = new CGraphObjEllipse(i_pDrawingScene, i_drawSettings);
+    CDrawSettings drawSettings = i_drawSettings;
+    drawSettings.setGraphObjType(EGraphObjTypeEllipse);
+    CGraphObjEllipse* pGraphObj = new CGraphObjEllipse(i_pDrawingScene, drawSettings);
 
 #if 0
     QPointF ptStart = i_ptItemPos;

@@ -178,6 +178,7 @@ public: // operators
     bool operator == ( const CDrawSettings& i_other ) const;
     bool operator != ( const CDrawSettings& i_other ) const;
 public: // instance methods
+    void setGraphObjType(EGraphObjType i_graphObjType);
     EGraphObjType getGraphObjType() const { return m_graphObjType; }
 public: // instance methods
     void save( QSettings& i_settings, const QString& i_strSettingsKey );

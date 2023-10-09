@@ -92,7 +92,10 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     bool i_bCreateButtonsWidget,
     QWidget* i_pWdgtParent) :
 //------------------------------------------------------------------------------
-    CWdgtGraphObjPropertiesAbstract(i_pDrawingView->drawingScene(), "Drawing::" + ClassName(), i_strObjName, i_pWdgtParent),
+    CWdgtGraphObjPropertiesAbstract(
+        i_pDrawingView->drawingScene(),
+        NameSpace() + "::Widgets", "Drawing",
+        ClassName(), i_strObjName, i_pWdgtParent),
     m_pDrawingView(i_pDrawingView),
     // Caching values
     m_drawingSize(i_strObjName),
@@ -187,6 +190,10 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
+
+    // We need to fill the edit controls if the graphical object emits the geometryChanged signal.
+    // The flag is checked if "setKeyInTree" is called.
+    m_bContentUpdateOnGeometryChanged = true;
 
     QObject::connect(
         &Units.Length, &CUnitsLength::screenResolutionInPxPerMMChanged,

@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSDraw_DrawGraphObjLineStylePropertiesWdgt_h
-#define ZSDraw_DrawGraphObjLineStylePropertiesWdgt_h
+#ifndef ZSDraw_DrawGraphObjTextStylePropertiesWdgt_h
+#define ZSDraw_DrawGraphObjTextStylePropertiesWdgt_h
 
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPropertiesAbstractWdgt.h"
 
@@ -36,7 +36,7 @@ namespace ZS
 namespace Draw
 {
 //******************************************************************************
-class ZSDRAWDLL_API CWdgtGraphObjLineStyleProperties : public CWdgtGraphObjPropertiesAbstract
+class ZSDRAWDLL_API CWdgtGraphObjTextStyleProperties : public CWdgtGraphObjPropertiesAbstract
 //******************************************************************************
 {
     Q_OBJECT
@@ -44,7 +44,7 @@ public: // class methods
     /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw"; }
     /*! Returns the class name. */
-    static QString ClassName() { return "CWdgtGraphObjLineStyleProperties"; }
+    static QString ClassName() { return "CWdgtGraphObjTextStyleProperties"; }
 protected: // type definitions and constants
     enum class EItemDataRoleModelLineEndStyle {
         Id = Qt::UserRole+1,
@@ -53,13 +53,13 @@ protected: // type definitions and constants
         ArrowHeadBaseLineType
     };
 public: // ctors and dtor
-    CWdgtGraphObjLineStyleProperties(
+    CWdgtGraphObjTextStyleProperties(
         CDrawingScene* i_pDrawingScene,
         const QString& i_strNameSpace,
         const QString& i_strGraphObjType,
         const QString& i_strObjName,
         QWidget* i_pWdgtParent = nullptr);
-    virtual ~CWdgtGraphObjLineStyleProperties();
+    virtual ~CWdgtGraphObjTextStyleProperties();
 public: // instance methods
     void expand(bool i_bExpand);
 public: // overridables of base class CWdgtGraphObjPropertiesAbstract
@@ -67,39 +67,8 @@ public: // overridables of base class CWdgtGraphObjPropertiesAbstract
 protected: // overridables of base class CWdgtGraphObjPropertiesAbstract
     void fillEditControls() override;
     void applySettings() override;
-protected slots: // overridables of base class CWdgtGraphObjPropertiesAbstract
-    void onDrawingSceneDrawSettingsChanged(const CDrawSettings& i_drawingSettings) override;
 protected slots:
     void onBtnCollapseClicked(bool i_bChecked = false);
-protected slots:
-    void onBtnPenColorClicked(bool i_bChecked = false);
-    void onCmbLineStyleCurrentIndexChanged(int i_idx);
-    void onEdtLineWidthValueChanged(int i_iVal);
-    void onCmbP1LineEndStyleCurrentIndexChanged(int i_idx);
-    void onCmbP1ArrowHeadWidthClicked(int i_idx);
-    void onCmbP1ArrowHeadLengthClicked(int i_idx);
-    void onCmbP2LineEndStyleCurrentIndexChanged(int i_idx);
-    void onCmbP2ArrowHeadWidthClicked(int i_idx);
-    void onCmbP2ArrowHeadLengthClicked(int i_idx);
-private: // auxiliary instance methods
-    QSize fillLineStylesModel();
-    QSize fillLineEndStylesModel(const CEnumLinePoint& i_linePoint);
-    void fillArrowHeadWidthModel(const CEnumLinePoint& i_linePoint);
-    void fillArrowHeadLengthModel(const CEnumLinePoint& i_linePoint);
-private: // auxiliary instance methods
-    void updateBtnPenColor(const QColor& i_clr);
-    void updateCmbLineStyle(const CEnumLineStyle& i_lineStyle);
-    void updateCmbLineEndStyle(
-        const CEnumLinePoint& i_linePoint,
-        const CEnumLineEndStyle& i_lineEndStyle,
-        const CEnumArrowHeadFillStyle& i_arrowHeadFillStyle,
-        const CEnumArrowHeadBaseLineType& i_arrowHeadBaseLineType);
-    void updateCmbArrowHeadWidth(
-        const CEnumLinePoint& i_linePoint,
-        const CEnumArrowHeadWidth& i_lineEndWidth);
-    void updateCmbArrowHeadLength(
-        const CEnumLinePoint& i_linePoint,
-        const CEnumArrowHeadLength& i_lineEndLength);
 protected: // instance methods (method tracing)
     void traceValues(ZS::System::CMethodTracer& i_mthTracer, ZS::System::EMethodDir i_methodDir);
 private: // instance members
@@ -116,36 +85,11 @@ private: // instance members
     ZS::System::GUI::CSepLine* m_pSepHeadline;
     QWidget* m_pWdgtLineStyleSettings;
     QGridLayout* m_pLytWdgtLineStyleSettings;
-    // Whole Line
-    QLabel* m_pLblLineStyle;
-    QPixmap* m_pPxmBtnLineColor;
-    QPushButton* m_pBtnLineColor;
-    QStandardItemModel* m_pModelLineStyles;
-    QComboBox* m_pCmbLineStyle;
-    QSpinBox* m_pEdtLineWidth;
-    // Arrow Heads
-    QLabel* m_pLblLineEndStyles;
-    // P1 (LineStart)
-    QLabel* m_pLblP1LineEndStyles;
-    QStandardItemModel* m_pModelP1LineEndStyles;
-    QComboBox* m_pCmbP1LineEndStyle;
-    QStandardItemModel* m_pModelP1ArrowHeadWidth;
-    QComboBox* m_pCmbP1ArrowHeadWidth;
-    QStandardItemModel* m_pModelP1ArrowHeadLength;
-    QComboBox* m_pCmbP1ArrowHeadLength;
-    // P2 (LineEnd)
-    QLabel* m_pLblP2LineEndStyles;
-    QStandardItemModel* m_pModelP2LineEndStyles;
-    QComboBox* m_pCmbP2LineEndStyle;
-    QStandardItemModel* m_pModelP2ArrowHeadWidth;
-    QComboBox* m_pCmbP2ArrowHeadWidth;
-    QStandardItemModel* m_pModelP2ArrowHeadLength;
-    QComboBox* m_pCmbP2ArrowHeadLength;
 
-}; // class CWdgtGraphObjLineStyleProperties
+}; // class CWdgtGraphObjTextStyleProperties
 
 } // namespace Draw
 
 } // namespace ZS
 
-#endif // #ifndef ZSDraw_DrawGraphObjLineStylePropertiesWdgt_h
+#endif // #ifndef ZSDraw_DrawGraphObjTextStylePropertiesWdgt_h

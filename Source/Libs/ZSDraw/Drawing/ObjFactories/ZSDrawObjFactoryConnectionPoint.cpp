@@ -100,6 +100,7 @@ CGraphObj* CObjFactoryConnectionPoint::createGraphObj(
     }
 
     CDrawSettings drawSettings = i_drawSettings;
+    drawSettings.setGraphObjType(EGraphObjTypeConnectionPoint);
     drawSettings.setPenColor(Qt::black);
     drawSettings.setPenWidth(1);
     drawSettings.setLineStyle(ELineStyle::SolidLine);

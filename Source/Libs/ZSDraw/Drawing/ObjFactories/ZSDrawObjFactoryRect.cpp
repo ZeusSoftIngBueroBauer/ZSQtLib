@@ -96,7 +96,9 @@ CGraphObj* CObjFactoryRect::createGraphObj(
         /* strMethod    */ "createGraphObj",
         /* strAddInfo   */ strMthInArgs );
 
-    CGraphObjRect* pGraphObj = new CGraphObjRect(i_pDrawingScene, i_drawSettings);
+    CDrawSettings drawSettings = i_drawSettings;
+    drawSettings.setGraphObjType(EGraphObjTypeRect);
+    CGraphObjRect* pGraphObj = new CGraphObjRect(i_pDrawingScene, drawSettings);
 
     // We need to create an object with at least one pixel size so that the
     // drawing scene can "find" the object and can dispatch events to it.

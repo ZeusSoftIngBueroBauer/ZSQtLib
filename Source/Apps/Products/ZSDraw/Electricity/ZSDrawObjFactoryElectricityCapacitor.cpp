@@ -107,10 +107,9 @@ CGraphObj* CObjFactoryCapacitor::createGraphObj(
         mthTracer.trace(strMthInArgs);
     }
 
-    CGraphObj* pGraphObj = new CGraphObjCapacitor(
-        /* pDrawingScene */ i_pDrawingScene,
-        /* drawSettings  */ i_drawSettings );
-
+    CDrawSettings drawSettings = i_drawSettings;
+    drawSettings.setGraphObjType(EGraphObjTypeGroup);
+    CGraphObj* pGraphObj = new CGraphObjCapacitor(i_pDrawingScene, drawSettings);
     return pGraphObj;
 
 } // createGraphObj

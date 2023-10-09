@@ -133,7 +133,8 @@ CGraphObjLine::CGraphObjLine(
     if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "ObjName: " + i_strObjName +
             ", Pt1 {" + i_physValPoint1.toString() + "}" +
-            ", Pt2 {" + i_physValPoint2.toString() + "}";
+            ", Pt2 {" + i_physValPoint2.toString() + "}" +
+            ", DrawSettings {" + i_drawSettings.toString() + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,

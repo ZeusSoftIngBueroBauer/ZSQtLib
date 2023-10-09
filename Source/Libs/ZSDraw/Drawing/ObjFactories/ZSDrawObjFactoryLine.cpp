@@ -99,8 +99,10 @@ CGraphObj* CObjFactoryLine::createGraphObj(
         mthTracer.trace(strMthInArgs);
     }
 
+    CDrawSettings drawSettings = i_drawSettings;
+    drawSettings.setGraphObjType(EGraphObjTypeLine);
     CGraphObjLine* pGraphObj = new CGraphObjLine(
-        i_pDrawingScene, i_drawSettings, "", i_physValPoint, i_physValPoint);
+        i_pDrawingScene, drawSettings, "", i_physValPoint, i_physValPoint);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(pGraphObj->path());

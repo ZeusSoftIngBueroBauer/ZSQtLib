@@ -46,7 +46,8 @@ public: // class methods
 public: // ctors and dtor
     CWdgtGraphObjPropertiesLabels(
         CDrawingScene* i_pDrawingScene,
-        const QString& i_strParentClassName,
+        const QString& i_strNameSpace,
+        const QString& i_strGraphObjType,
         const QString& i_strObjName,
         QWidget* i_pWdgtParent = nullptr);
     virtual ~CWdgtGraphObjPropertiesLabels();

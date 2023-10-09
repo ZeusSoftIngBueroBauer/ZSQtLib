@@ -106,10 +106,9 @@ CGraphObj* CObjFactoryWdgtGroupBox::createGraphObj(
         mthTracer.trace(strMthInArgs);
     }
 
-    CGraphObj* pGraphObj = new CGraphObjWdgtGroupBox(
-        /* pDrawingScene */ i_pDrawingScene,
-        /* drawSettings  */ i_drawSettings );
-
+    CDrawSettings drawSettings = i_drawSettings;
+    drawSettings.setGraphObjType(EGraphObjTypeGroup);
+    CGraphObj* pGraphObj = new CGraphObjWdgtGroupBox(i_pDrawingScene, drawSettings);
     return pGraphObj;
 
 } // createGraphObj

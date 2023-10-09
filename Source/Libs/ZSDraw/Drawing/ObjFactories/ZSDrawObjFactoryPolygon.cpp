@@ -96,7 +96,9 @@ CGraphObj* CObjFactoryPolygon::createGraphObj(
         /* strMethod    */ "createGraphObj",
         /* strAddInfo   */ strMthInArgs );
 
-    CGraphObjPolygon* pGraphObj = new CGraphObjPolygon(i_pDrawingScene, i_drawSettings);
+    CDrawSettings drawSettings = i_drawSettings;
+    drawSettings.setGraphObjType(EGraphObjTypePolygon);
+    CGraphObjPolygon* pGraphObj = new CGraphObjPolygon(i_pDrawingScene, drawSettings);
 
 #if 0
     QPointF   ptStart = i_ptItemPos;

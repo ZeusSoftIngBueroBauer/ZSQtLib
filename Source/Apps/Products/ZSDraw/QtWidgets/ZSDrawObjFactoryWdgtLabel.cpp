@@ -106,9 +106,9 @@ CGraphObj* CObjFactoryWdgtLabel::createGraphObj(
         mthTracer.trace(strMthInArgs);
     }
 
-    CGraphObj* pGraphObj = new CGraphObjWdgtLabel(
-        /* pDrawingScene */ i_pDrawingScene,
-        /* drawSettings  */ i_drawSettings );
+    CDrawSettings drawSettings = i_drawSettings;
+    drawSettings.setGraphObjType(EGraphObjTypeGroup);
+    CGraphObj* pGraphObj = new CGraphObjWdgtLabel(i_pDrawingScene, drawSettings);
 
     return pGraphObj;
 

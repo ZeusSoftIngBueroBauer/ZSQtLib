@@ -70,11 +70,15 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CWdgtGraphObjPropertiesLabels::CWdgtGraphObjPropertiesLabels(
     CDrawingScene* i_pDrawingScene,
-    const QString& i_strParentClassName,
+    const QString& i_strNameSpace,
+    const QString& i_strGraphObjType,
     const QString& i_strObjName,
     QWidget* i_pWdgtParent) :
 //------------------------------------------------------------------------------
-    CWdgtGraphObjPropertiesAbstract(i_pDrawingScene, i_strParentClassName + "::" + ClassName(), i_strObjName, i_pWdgtParent),
+    CWdgtGraphObjPropertiesAbstract(
+        i_pDrawingScene,
+        i_strNameSpace, i_strGraphObjType,
+        ClassName(), i_strObjName, i_pWdgtParent),
     m_pWdgtHeadline(nullptr),
     m_pLytWdgtHeadline(nullptr),
     m_pxmBtnDown(":/ZS/Button/ButtonArrowDown.png"),

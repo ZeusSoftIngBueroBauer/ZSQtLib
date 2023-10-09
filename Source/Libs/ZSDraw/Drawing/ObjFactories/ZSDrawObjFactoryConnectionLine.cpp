@@ -97,7 +97,9 @@ CGraphObj* CObjFactoryConnectionLine::createGraphObj(
         /* strMethod    */ "createGraphObj",
         /* strAddInfo   */ strMthInArgs );
 
-    CGraphObjConnectionLine* pGraphObj = new CGraphObjConnectionLine(i_pDrawingScene, i_drawSettings);
+    CDrawSettings drawSettings = i_drawSettings;
+    drawSettings.setGraphObjType(EGraphObjTypeConnectionLine);
+    CGraphObjConnectionLine* pGraphObj = new CGraphObjConnectionLine(i_pDrawingScene, drawSettings);
 
 #if 0
     QPolygonF plg;

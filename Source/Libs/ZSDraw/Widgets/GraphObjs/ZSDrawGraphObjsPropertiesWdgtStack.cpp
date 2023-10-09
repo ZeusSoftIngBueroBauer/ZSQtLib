@@ -273,8 +273,8 @@ CWdgtGraphObjPropertiesAbstract* CWdgtStackGraphObjsProperties::createGraphObjPr
         else {
             pWidget = new CWdgtGraphObjPropertiesAbstract(
                 m_pDrawingView->drawingScene(),
-                "Dummy::CWdgtGraphObjPropertiesAbstract",
-                "WdgtStackGraphObjProperties");
+                NameSpace() + "::Widgets::GraphObjs", "Dummy",
+                "CWdgtGraphObjPropertiesAbstract", "WdgtStackGraphObjProperties");
         }
     }
     return pWidget;

@@ -26,7 +26,7 @@ may result in using the software modules.
 
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLineStylePropertiesWdgt.h"
 #include "ZSDraw/Common/ZSDrawAux.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLine.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSSysGUI/ZSSysGUIDllMain.h"
 #include "ZSSysGUI/ZSSysSepLine.h"
@@ -44,28 +44,20 @@ may result in using the software modules.
 
 #if QT_VERSION < 0x050000
 #include <QtGui/qcolordialog.h>
-#include <QtGui/qcheckbox.h>
 #include <QtGui/qcombobox.h>
-#include <QtGui/qheaderview.h>
 #include <QtGui/qlabel.h>
 #include <QtGui/qlayout.h>
 #include <QtGui/qlineedit.h>
-#include <QtGui/qlistview.h>
 #include <QtGui/qpushbutton.h>
 #include <QtGui/qspinbox.h>
-#include <QtGui/qtableview.h>
 #else
 #include <QtWidgets/qcolordialog.h>
-#include <QtWidgets/qcheckbox.h>
 #include <QtWidgets/qcombobox.h>
-#include <QtWidgets/qheaderview.h>
 #include <QtWidgets/qlabel.h>
 #include <QtWidgets/qlayout.h>
 #include <QtWidgets/qlineedit.h>
-#include <QtWidgets/qlistview.h>
 #include <QtWidgets/qpushbutton.h>
 #include <QtWidgets/qspinbox.h>
-#include <QtWidgets/qtableview.h>
 #endif
 
 #include "ZSSys/ZSSysMemLeakDump.h"
@@ -87,12 +79,15 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CWdgtGraphObjLineStyleProperties::CWdgtGraphObjLineStyleProperties(
     CDrawingScene* i_pDrawingScene,
-    const QString& i_strParentClassName,
+    const QString& i_strNameSpace,
+    const QString& i_strGraphObjType,
     const QString& i_strObjName,
     QWidget* i_pWdgtParent) :
 //------------------------------------------------------------------------------
     CWdgtGraphObjPropertiesAbstract(
-        i_pDrawingScene, i_strParentClassName + "::" + ClassName(), i_strObjName, i_pWdgtParent),
+        i_pDrawingScene,
+        i_strNameSpace, i_strGraphObjType,
+        ClassName(), i_strObjName, i_pWdgtParent),
     // Caching values
     m_drawSettings(),
     // Edit Controls
@@ -138,7 +133,8 @@ CWdgtGraphObjLineStyleProperties::CWdgtGraphObjLineStyleProperties(
         /* strMethod    */ "ctor",
         /* strAddInfo   */ "" );
 
-    // We need to fill the edit controls if the graphical object emits the geometryChanged signal:
+    // We need to fill the edit controls if the graphical object emits the drawSettingsChanged signal.
+    // The flag is checked if "setKeyInTree" is called.
     m_bContentUpdateOnDrawSettingsChanged = true;
 
     // <Widget> Headline
@@ -326,7 +322,7 @@ CWdgtGraphObjLineStyleProperties::CWdgtGraphObjLineStyleProperties(
         this, &CWdgtGraphObjLineStyleProperties::onCmbP2ArrowHeadLengthClicked);
 
     // Restore visibility
-    //===================
+    //-------------------
 
     if (!s_bWdgtLineStyleVisible) {
         m_pWdgtLineStyleSettings->hide();
@@ -424,6 +420,39 @@ CWdgtGraphObjLineStyleProperties::~CWdgtGraphObjLineStyleProperties()
 }
 
 /*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjLineStyleProperties::expand(bool i_bExpand)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = bool2Str(i_bExpand);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "expand",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (i_bExpand && m_pWdgtLineStyleSettings->isHidden()) {
+        m_pBtnCollapse->setIcon(m_pxmBtnUp);
+        m_pWdgtLineStyleSettings->show();
+        s_bWdgtLineStyleVisible = true;
+    }
+    else if (!i_bExpand && !m_pWdgtLineStyleSettings->isHidden()) {
+        m_pBtnCollapse->setIcon(m_pxmBtnDown);
+        m_pWdgtLineStyleSettings->hide();
+        s_bWdgtLineStyleVisible = false;
+    }
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        mthTracer.setMethodReturn("Expanded: " + bool2Str(s_bWdgtLineStyleVisible));
+    }
+}
+
+/*==============================================================================
 public: // overridables of base class CWdgtGraphObjPropertiesAbstract
 ==============================================================================*/
 
@@ -438,14 +467,12 @@ bool CWdgtGraphObjLineStyleProperties::hasChanges() const
         /* strAddInfo   */ "" );
 
     bool bHasChanges = false;
-
-    CGraphObjLine* pGraphObjLine = nullptr;
-    if (m_pGraphObj != nullptr) {
-        pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_pGraphObj);
+    if (m_pGraphObj == nullptr) {
+        CDrawSettings drawSettings = m_pDrawingScene->drawSettings();
+        bHasChanges = (m_drawSettings != drawSettings);
     }
-
-    if (pGraphObjLine != nullptr) {
-        CDrawSettings drawSettings = pGraphObjLine->getDrawSettings();
+    else {
+        CDrawSettings drawSettings = m_pGraphObj->getDrawSettings();
         bHasChanges = (m_drawSettings != drawSettings);
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -468,16 +495,11 @@ void CWdgtGraphObjLineStyleProperties::fillEditControls()
         /* strMethod    */ "fillEditControls",
         /* strAddInfo   */ "" );
 
-    CGraphObjLine* pGraphObjLine = nullptr;
-    if (m_pGraphObj != nullptr) {
-        pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_pGraphObj);
-    }
-
-    if (pGraphObjLine == nullptr) {
-        m_drawSettings = CDrawSettings();
+    if (m_pGraphObj == nullptr) {
+        m_drawSettings = m_pDrawingScene->drawSettings();
     }
     else {
-        m_drawSettings = pGraphObjLine->getDrawSettings();
+        m_drawSettings = m_pGraphObj->getDrawSettings();
     }
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
@@ -533,16 +555,68 @@ void CWdgtGraphObjLineStyleProperties::applySettings()
         traceValues(mthTracer, EMethodDir::Enter);
     }
 
-    CGraphObjLine* pGraphObjLine = nullptr;
-    if (m_pGraphObj != nullptr) {
-        pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_pGraphObj);
-    }
-    if (pGraphObjLine != nullptr && !hasErrors() && hasChanges()) {
-        pGraphObjLine->setDrawSettings(m_drawSettings);
+    if (!hasErrors() && hasChanges()) {
+        if (m_pGraphObj == nullptr) {
+            m_pDrawingScene->setDrawSettings(m_drawSettings);
+        }
+        else {
+            m_pGraphObj->setDrawSettings(m_drawSettings);
+        }
     }
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
         traceValues(mthTracer, EMethodDir::Leave);
+    }
+}
+
+/*==============================================================================
+protected slots: // overridables of base class CWdgtGraphObjPropertiesAbstract
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjLineStyleProperties::onDrawingSceneDrawSettingsChanged(const CDrawSettings& i_drawSettings)
+//------------------------------------------------------------------------------
+{
+    if( m_iContentChangedSignalBlockedCounter > 0 ) {
+        return;
+    }
+
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_drawSettings.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onDrawingSceneDrawSettingsChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (m_pGraphObj == nullptr) {
+        // When applying the changes from the edit controls by invoking "acceptChanges"
+        // the ContentChangedSignalBlockedCounter is incremented to avoid that
+        // "onDrawingSceneDrawSettingsChanged" overwrites settings in edit controls which
+        // haven't been applied yet.
+        if (m_drawSettings != i_drawSettings && m_iContentChangedSignalBlockedCounter == 0)
+        {
+            m_drawSettings = i_drawSettings;
+
+            {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
+
+                // Here the derived class should apply the properties from the graphical
+                // object to the edit controls.
+                fillEditControls();
+            }
+
+            // If the "contentChanged" signal is no longer blocked and the content of
+            // properties widget has been changed ...
+            if (m_iContentChangedSignalBlockedCounter == 0 && m_bContentChanged) {
+                // .. emit the contentChanged signal and update the enabled state
+                // of the Apply and Reset buttons.
+                updateButtonsEnabled();
+                emit_contentChanged();
+                m_bContentChanged = false;
+            }
+        }
     }
 }
 
@@ -561,14 +635,10 @@ void CWdgtGraphObjLineStyleProperties::onBtnCollapseClicked(bool /*i_bChecked*/)
         /* strAddInfo   */ "" );
 
     if (m_pWdgtLineStyleSettings->isHidden()) {
-        m_pBtnCollapse->setIcon(m_pxmBtnUp);
-        m_pWdgtLineStyleSettings->show();
-        s_bWdgtLineStyleVisible = true;
+        expand(true);
     }
     else {
-        m_pBtnCollapse->setIcon(m_pxmBtnDown);
-        m_pWdgtLineStyleSettings->hide();
-        s_bWdgtLineStyleVisible = false;
+        expand(false);
     }
     if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
         mthTracer.setMethodReturn("Expanded: " + bool2Str(s_bWdgtLineStyleVisible));

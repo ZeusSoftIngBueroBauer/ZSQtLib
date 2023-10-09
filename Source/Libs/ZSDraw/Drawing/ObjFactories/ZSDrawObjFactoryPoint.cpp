@@ -96,7 +96,9 @@ CGraphObj* CObjFactoryPoint::createGraphObj(
         /* strMethod    */ "createGraphObj",
         /* strAddInfo   */ strMthInArgs );
 
-    CGraphObjPoint* pGraphObj = new CGraphObjPoint(i_pDrawingScene, i_drawSettings);
+    CDrawSettings drawSettings = i_drawSettings;
+    drawSettings.setGraphObjType(EGraphObjTypePoint);
+    CGraphObjPoint* pGraphObj = new CGraphObjPoint(i_pDrawingScene, drawSettings);
 
     return pGraphObj;
 

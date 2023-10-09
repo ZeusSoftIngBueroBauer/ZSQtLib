@@ -58,7 +58,7 @@ public: // class methods
 public: // ctors and dtor
     CWdgtGraphObjLineGeometryProperties(
         CDrawingScene* i_pDrawingScene,
-        const QString& i_strParentClassName,
+        const QString& i_strNameSpace,
         const QString& i_strObjName,
         QWidget* i_pWdgtParent = nullptr);
     virtual ~CWdgtGraphObjLineGeometryProperties();

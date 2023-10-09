@@ -79,7 +79,7 @@ CWdgtFormatGraphObjs::CWdgtFormatGraphObjs(
     }
     else
     {
-        m_drawSettings = m_pDrawingScene->getDrawSettings();
+        m_drawSettings = m_pDrawingScene->drawSettings();
     }
 
 } // ctor

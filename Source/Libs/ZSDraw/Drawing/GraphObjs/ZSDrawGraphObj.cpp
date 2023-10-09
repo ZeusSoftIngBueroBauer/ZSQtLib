@@ -1087,7 +1087,7 @@ void CGraphObj::onCreateAndExecDlgFormatGraphObjs()
         /* strAddInfo   */ "" );
 
     CDlgFormatGraphObjs* pDlgFormatGraphObjs = new CDlgFormatGraphObjs(m_pDrawingScene,this);
-    pDlgFormatGraphObjs->setCurrentWidget(CDlgFormatGraphObjs::c_strWdgtLabels);
+    pDlgFormatGraphObjs->setCurrentWidget(CDlgFormatGraphObjs::c_strWdgtLineStyle);
     pDlgFormatGraphObjs->exec();
     delete pDlgFormatGraphObjs;
     pDlgFormatGraphObjs = nullptr;

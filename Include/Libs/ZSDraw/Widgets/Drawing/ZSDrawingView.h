@@ -46,6 +46,7 @@ class CTrcAdminObj;
 namespace Draw
 {
 class CDrawingScene;
+class CDrawSettings;
 
 //******************************************************************************
 class ZSDRAWDLL_API CDrawingView : public QGraphicsView
@@ -76,17 +77,20 @@ public: // instance methods (drawing area)
 public: // instance methods (grid lines with labels)
     void setGridSettings( const CDrawGridSettings& i_settings );
     const CDrawGridSettings& gridSettings() const;
-public: // overridables of base class QWidget
+public: // instance methods (grid lines with labels)
+    void setDrawSettings( const CDrawSettings& i_settings );
+    const CDrawSettings& drawSettings() const;
+public: // reimplemented method of base class QWidget
+    void setCursor(const QCursor& i_cursor);
+    void unsetCursor();
+public: // protected overridables of base class QWidget make public for subsystem test
     virtual void mousePressEvent( QMouseEvent* i_pEv ) override;
     virtual void mouseMoveEvent( QMouseEvent* i_pEv ) override;
     virtual void mouseReleaseEvent( QMouseEvent* i_pEv ) override;
     virtual void mouseDoubleClickEvent( QMouseEvent* i_pEv ) override;
-public: // overridables of base class QWidget
+protected: // overridables of base class QWidget
     virtual void keyPressEvent( QKeyEvent* i_pEv ) override;
     virtual void keyReleaseEvent( QKeyEvent* i_pEv ) override;
-public: // reimplemented method of base class QWidget
-    void setCursor(const QCursor& i_cursor);
-    void unsetCursor();
 protected: // overridables of base class QGraphicsView
     virtual void scrollContentsBy( int i_dx, int i_dy ) override;
     virtual void resizeEvent( QResizeEvent* i_pEv ) override;

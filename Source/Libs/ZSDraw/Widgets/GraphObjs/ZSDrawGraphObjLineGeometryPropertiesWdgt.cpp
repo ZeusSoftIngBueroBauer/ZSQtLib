@@ -93,12 +93,14 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     CDrawingScene* i_pDrawingScene,
-    const QString& i_strParentClassName,
+    const QString& i_strNameSpace,
     const QString& i_strObjName,
     QWidget* i_pWdgtParent) :
 //------------------------------------------------------------------------------
     CWdgtGraphObjPropertiesAbstract(
-        i_pDrawingScene, i_strParentClassName + "::" + ClassName(), i_strObjName, i_pWdgtParent),
+        i_pDrawingScene,
+        i_strNameSpace, "StandardShapes::Line", ClassName(),
+        i_strObjName, i_pWdgtParent),
     // Caching values
     m_physValLine(),
     // Edit Controls
@@ -192,7 +194,8 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
         /* strMethod    */ "ctor",
         /* strAddInfo   */ "" );
 
-    // We need to fill the edit controls if the graphical object emits the geometryChanged signal:
+    // We need to fill the edit controls if the graphical object emits the geometryChanged signal.
+    // The flag is checked if "setKeyInTree" is called.
     m_bContentUpdateOnGeometryChanged = true;
 
     const QVector<int> ariClmWidths = {
@@ -1662,22 +1665,7 @@ protected: // overridables of base class QObject
 bool CWdgtGraphObjLineGeometryProperties::eventFilter(QObject* i_pObjWatched, QEvent* i_pEv)
 //------------------------------------------------------------------------------
 {
-    CTrcAdminObj* pTrcAdminObj = nullptr;
-    if (dynamic_cast<QMouseEvent*>(i_pEv) != nullptr) {
-        pTrcAdminObj = m_pTrcAdminObjMouseEvents;
-    }
-    QString strMthInArgs;
-    if (areMethodCallsActive(pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Obj: " + i_pObjWatched->objectName() + ", Ev {" + qEvent2Str(i_pEv) + "}";
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "eventFilter",
-        /* strAddInfo   */ strMthInArgs );
-
     bool bHandled = false;
-
     if (i_pEv->type() == QEvent::MouseButtonDblClick) {
         QMouseEvent* pMouseEvent = dynamic_cast<QMouseEvent*>(i_pEv);
         if (pMouseEvent->modifiers() & Qt::ControlModifier) {
@@ -1704,10 +1692,5 @@ bool CWdgtGraphObjLineGeometryProperties::eventFilter(QObject* i_pObjWatched, QE
     if (!bHandled) {
         bHandled = CWdgtGraphObjPropertiesAbstract::eventFilter(i_pObjWatched, i_pEv);
     }
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(bHandled);
-    }
     return bHandled;
-
-} // eventFilter
+}

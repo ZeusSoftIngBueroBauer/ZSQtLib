@@ -1064,13 +1064,9 @@ void CTreeViewGraphObjs::mousePressEvent( QMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    QString strAddTrcInfo;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Event {" + qMouseEvent2Str(i_pEv) + "}";
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -1081,61 +1077,44 @@ void CTreeViewGraphObjs::mousePressEvent( QMouseEvent* i_pEv )
 
     m_modelIdxSelectedOnMousePressEvent = indexAt(i_pEv->pos());
 
-    if( m_modelIdxSelectedOnMousePressEvent.isValid() )
-    {
-        if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug ) )
-        {
-            strAddTrcInfo = "ModelIdxPressed {" + CModelIdxTree::modelIdx2Str(m_modelIdxSelectedOnMousePressEvent) + "}";
+    if (m_modelIdxSelectedOnMousePressEvent.isValid()) {
+        if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+            QString strAddTrcInfo = "ModelIdxPressed {" + CModelIdxTree::modelIdx2Str(m_modelIdxSelectedOnMousePressEvent) + "}";
             mthTracer.trace(strAddTrcInfo);
         }
-
         CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
-
-        if( pModelTreeEntry != nullptr )
-        {
+        if (pModelTreeEntry != nullptr) {
             CGraphObj* pGraphObjClicked = dynamic_cast<CGraphObj*>(pModelTreeEntry->getIdxTreeEntry());
-
-            if( pGraphObjClicked != nullptr && !pGraphObjClicked->isRoot() )
-            {
+            if (pGraphObjClicked != nullptr && !pGraphObjClicked->isRoot()) {
                 QGraphicsItem* pGraphicsItemClicked = dynamic_cast<QGraphicsItem*>(pGraphObjClicked);
-
                 CGraphObj*     pGraphObj = pGraphObjClicked;
                 QGraphicsItem* pGraphicsItem = pGraphicsItemClicked;
 
                 // Ensure that only the clicked graphic item is selected taking into accout that selection points
                 // and labels cannot be selected but instead select their parents (if not already selected).
-                if( pGraphObjClicked->isSelectionPoint() || pGraphObjClicked->isLabel() )
-                {
+                if (pGraphObjClicked->isSelectionPoint() || pGraphObjClicked->isLabel()) {
                     pGraphObj = pGraphObjClicked->parentGraphObj();
                     // Selection points and labels don't have graphics item as a parent.
                     // Instead we must use the parent graph object in the index tree.
                     pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
                 }
-
-                if( pGraphicsItem != nullptr )
-                {
-                    if( i_pEv->buttons() & Qt::LeftButton )
-                    {
+                if (pGraphicsItem != nullptr) {
+                    if (i_pEv->buttons() & Qt::LeftButton) {
                     }
-                    else if( i_pEv->buttons() & Qt::RightButton )
-                    {
-                        if( m_pMenuGraphObjContext != nullptr )
-                        {
+                    else if (i_pEv->buttons() & Qt::RightButton) {
+                        if (m_pMenuGraphObjContext != nullptr) {
                             m_pActionGraphObjTitle->setText( "Object: " + pGraphObj->name() );
                             m_pMenuGraphObjContext->popup(QWidget::mapToGlobal(i_pEv->pos()));
                         }
                         bEventHandled = true;
                     }
-                } // if( pGraphicsItemClicked != nullptr )
-            } // if( pGraphObjClicked != nullptr && !pGraphObjClicked->isRoot() )
-        } // if( pModelTreeEntry != nullptr )
-    } // if( m_modelIdxSelectedOnMousePressEvent.isValid() )
-
-    if( !bEventHandled )
-    {
+                }
+            }
+        }
+    }
+    if (!bEventHandled) {
         QTreeView::mousePressEvent(i_pEv);
     }
-
 } // mousePressEvent
 
 //------------------------------------------------------------------------------
@@ -1143,13 +1122,9 @@ void CTreeViewGraphObjs::mouseReleaseEvent( QMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    QString strAddTrcInfo;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Event {" + qMouseEvent2Str(i_pEv) + "}";
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -1160,20 +1135,15 @@ void CTreeViewGraphObjs::mouseReleaseEvent( QMouseEvent* i_pEv )
 
     m_modelIdxSelectedOnMouseReleaseEvent = indexAt(i_pEv->pos());
 
-    if( m_modelIdxSelectedOnMouseReleaseEvent.isValid() )
-    {
-        if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug ) )
-        {
-            strAddTrcInfo = "ModelIdxReleased {" + CModelIdxTree::modelIdx2Str(m_modelIdxSelectedOnMouseReleaseEvent) + "}";
+    if (m_modelIdxSelectedOnMouseReleaseEvent.isValid()) {
+        if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+            QString strAddTrcInfo = "ModelIdxReleased {" + CModelIdxTree::modelIdx2Str(m_modelIdxSelectedOnMouseReleaseEvent) + "}";
             mthTracer.trace(strAddTrcInfo);
         }
     }
-
-    if( !bEventHandled )
-    {
+    if (!bEventHandled) {
         QTreeView::mouseReleaseEvent(i_pEv);
     }
-
 } // mouseReleaseEvent
 
 //------------------------------------------------------------------------------
@@ -1181,13 +1151,9 @@ void CTreeViewGraphObjs::mouseDoubleClickEvent( QMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    QString strAddTrcInfo;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Event {" + qMouseEvent2Str(i_pEv) + "}";
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -1198,82 +1164,43 @@ void CTreeViewGraphObjs::mouseDoubleClickEvent( QMouseEvent* i_pEv )
 
     QModelIndex modelIdx = indexAt(i_pEv->pos());
 
-    if( modelIdx.isValid() )
-    {
-        if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-        {
-            strAddTrcInfo = "ModelIdxClicked {" + CModelIdxTree::modelIdx2Str(modelIdx) + "}";
+    if (modelIdx.isValid()) {
+        if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+            QString strAddTrcInfo = "ModelIdxClicked {" + CModelIdxTree::modelIdx2Str(modelIdx) + "}";
             mthTracer.trace(strAddTrcInfo);
         }
-
         CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(modelIdx.internalPointer());
-
-        if( pModelTreeEntry != nullptr )
-        {
+        if (pModelTreeEntry != nullptr) {
             CGraphObj* pGraphObjClicked = dynamic_cast<CGraphObj*>(pModelTreeEntry->getIdxTreeEntry());
-
-            if( pGraphObjClicked != nullptr && !pGraphObjClicked->isRoot() )
-            {
+            if (pGraphObjClicked != nullptr && !pGraphObjClicked->isRoot()) {
                 QGraphicsItem* pGraphicsItemClicked = dynamic_cast<QGraphicsItem*>(pGraphObjClicked);
-
-                if( pGraphicsItemClicked != nullptr )
-                {
-                    if( i_pEv->buttons() & Qt::LeftButton )
-                    {
-                        CGraphObj*     pGraphObjSelected = pGraphObjClicked;
-                        QGraphicsItem* pGraphicsItemSelected = pGraphicsItemClicked;
-
-                        // Ensure that only the clicked graphic item is selected taking into accout that selection points
-                        // and labels cannot be selected but instead select their parents (if not already selected).
-                        if( pGraphObjClicked->isSelectionPoint() || pGraphObjClicked->isLabel() )
-                        {
-                            pGraphObjSelected = pGraphObjClicked->parentGraphObj();
-                            // Selection points and labels don't have graphics item as a parent.
-                            // Instead we must use the parent graph object in the index tree.
-                            pGraphicsItemSelected = dynamic_cast<QGraphicsItem*>(pGraphObjSelected);
-                        }
-
-                        CDlgFormatGraphObjs* pDlgFormatGraphObjs = new CDlgFormatGraphObjs(m_pDrawingScene, pGraphObjSelected);
-
-                        pDlgFormatGraphObjs->setCurrentWidget(CDlgFormatGraphObjs::c_strWdgtLabels);
-
-                        pDlgFormatGraphObjs->exec();
-
-                        delete pDlgFormatGraphObjs;
-                        pDlgFormatGraphObjs = nullptr;
+                if (pGraphicsItemClicked != nullptr) {
+                    if (i_pEv->buttons() & Qt::LeftButton) {
                     }
-                    else if( i_pEv->buttons() & Qt::RightButton )
-                    {
-                        if( m_pMenuGraphObjContext != nullptr )
-                        {
+                    else if (i_pEv->buttons() & Qt::RightButton) {
+                        if (m_pMenuGraphObjContext != nullptr) {
                             m_pActionGraphObjTitle->setText( "Object: " + pModelTreeEntry->name() );
                             m_pMenuGraphObjContext->popup(QWidget::mapToGlobal(i_pEv->pos()));
                         }
                         bEventHandled = true;
                     }
-                } // if( pGraphicsItem != nullptr )
-            } // if( pGraphObjClicked != nullptr && !pGraphObjClicked->isRoot() )
-        } // if( pModelTreeEntry != nullptr )
-    } // if( modelIdx.isValid() )
-
-    if( !bEventHandled )
-    {
+                }
+            }
+        }
+    }
+    if (!bEventHandled) {
         QTreeView::mouseDoubleClickEvent(i_pEv);
     }
-
-} // mouseDoubleClickEvent
+}
 
 //------------------------------------------------------------------------------
 void CTreeViewGraphObjs::mouseMoveEvent( QMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Event {" + qMouseEvent2Str(i_pEv) + "}";
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -1281,13 +1208,10 @@ void CTreeViewGraphObjs::mouseMoveEvent( QMouseEvent* i_pEv )
         /* strMthInArgs */ strMthInArgs );
 
     bool bEventHandled = false;
-
-    if( !bEventHandled )
-    {
+    if (!bEventHandled) {
         QTreeView::mouseMoveEvent(i_pEv);
     }
-
-} // mouseMoveEvent
+}
 
 /*==============================================================================
 protected: // overridables of base class QTreeView

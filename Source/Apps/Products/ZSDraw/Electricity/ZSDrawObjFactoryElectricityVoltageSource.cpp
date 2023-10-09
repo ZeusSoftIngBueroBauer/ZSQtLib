@@ -107,10 +107,9 @@ CGraphObj* CObjFactoryVoltageSource::createGraphObj(
         mthTracer.trace(strMthInArgs);
     }
 
-    CGraphObj* pGraphObj = new CGraphObjVoltageSource(
-        /* pDrawingScene */ i_pDrawingScene,
-        /* drawSettings  */ i_drawSettings );
-
+    CDrawSettings drawSettings = i_drawSettings;
+    drawSettings.setGraphObjType(EGraphObjTypeGroup);
+    CGraphObj* pGraphObj = new CGraphObjVoltageSource(i_pDrawingScene, drawSettings);
     return pGraphObj;
 
 } // createGraphObj

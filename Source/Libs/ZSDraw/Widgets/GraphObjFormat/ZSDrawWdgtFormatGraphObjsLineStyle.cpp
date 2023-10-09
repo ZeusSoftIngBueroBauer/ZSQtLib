@@ -635,7 +635,7 @@ void CWdgtFormatGraphObjsLineStyle::resetChanges()
     }
     else if( m_pDrawingScene != nullptr )
     {
-        m_drawSettings = m_pDrawingScene->getDrawSettings();
+        m_drawSettings = m_pDrawingScene->drawSettings();
     }
 
     // Set settings at GUI controls

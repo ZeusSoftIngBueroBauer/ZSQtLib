@@ -98,7 +98,9 @@ CGraphObj* CObjFactoryGroup::createGraphObj(
         mthTracer.trace(strMthInArgs);
     }
 
-    CGraphObjGroup* pGraphObj = new CGraphObjGroup(i_pDrawingScene,i_drawSettings);
+    CDrawSettings drawSettings = i_drawSettings;
+    drawSettings.setGraphObjType(EGraphObjTypeGroup);
+    CGraphObjGroup* pGraphObj = new CGraphObjGroup(i_pDrawingScene, drawSettings);
 
     return pGraphObj;
 

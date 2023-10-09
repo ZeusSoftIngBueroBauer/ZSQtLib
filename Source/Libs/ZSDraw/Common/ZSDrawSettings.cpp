@@ -118,16 +118,16 @@ static const SDrawAttribute s_arDrawAttributesDefaultValsGraphObjTypeUndefined[E
     /*  4 LineStyle                    */ SDrawAttribute( "LineStyle", static_cast<int>(ELineStyle::SolidLine), true ),
     /*  5 LineRecordType               */ SDrawAttribute( "LineRecordType", static_cast<int>(ELineRecordType::Normal), true ),
     /*  6 LineExtent                   */ SDrawAttribute( "LineExtent", 1, true ),
-    /*  7 LineStartLineEndStyle        */ SDrawAttribute( "LineStartLineEndStyle", static_cast<int>(ELineEndStyle::Normal), true ),
-    /*  8 LineStartLineEndBaseLineType */ SDrawAttribute( "LineStartLineEndBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), true ),
-    /*  9 LineStartLineEndFillStyle    */ SDrawAttribute( "LineStartLineEndFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), true ),
-    /* 10 LineStartLineEndWidth        */ SDrawAttribute( "LineStartLineEndWidth", static_cast<int>(EArrowHeadWidth::Medium), true ),
-    /* 11 LineStartLineEndLength       */ SDrawAttribute( "LineStartLineEndLength", static_cast<int>(EArrowHeadLength::Medium), true ),
-    /* 12 LineEndLineEndStyle          */ SDrawAttribute( "LineEndLineEndStyle", static_cast<int>(ELineEndStyle::Normal), true ),
-    /* 13 LineEndLineEndBaseLineType   */ SDrawAttribute( "LineEndLineEndBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), true ),
-    /* 14 LineEndLineEndFillStyle      */ SDrawAttribute( "LineEndLineEndFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), true ),
-    /* 15 LineEndLineEndWidth          */ SDrawAttribute( "LineEndLineEndWidth", static_cast<int>(EArrowHeadWidth::Medium), true ),
-    /* 16 LineEndLineEndLength         */ SDrawAttribute( "LineEndLineEndLength", static_cast<int>(EArrowHeadLength::Medium), true ),
+    /*  7 LineP1EndStyle               */ SDrawAttribute( "LineP1EndStyle", static_cast<int>(ELineEndStyle::Normal), true ),
+    /*  8 LineP1ArrowHeadBaseLineType  */ SDrawAttribute( "LineP1ArrowHeadBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), true ),
+    /*  9 LineP1ArrowHeadFillStyle     */ SDrawAttribute( "LineP1ArrowHeadFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), true ),
+    /* 10 LineP1ArrowHeadWidth         */ SDrawAttribute( "LineP1ArrowHeadWidth", static_cast<int>(EArrowHeadWidth::Medium), true ),
+    /* 11 LineP1ArrowHeadLength        */ SDrawAttribute( "LineP1ArrowHeadLength", static_cast<int>(EArrowHeadLength::Medium), true ),
+    /* 12 LineP2EndStyle               */ SDrawAttribute( "LineP2EndStyle", static_cast<int>(ELineEndStyle::Normal), true ),
+    /* 13 LineP2ArrowHeadBaseLineType  */ SDrawAttribute( "LineP2ArrowHeadBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), true ),
+    /* 14 LineP2ArrowHeadFillStyle     */ SDrawAttribute( "LineP2ArrowHeadFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), true ),
+    /* 15 LineP2ArrowHeadWidth         */ SDrawAttribute( "LineP2ArrowHeadWidth", static_cast<int>(EArrowHeadWidth::Medium), true ),
+    /* 16 LineP2ArrowHeadLength        */ SDrawAttribute( "LineP2ArrowHeadLength", static_cast<int>(EArrowHeadLength::Medium), true ),
     /* 17 TextColor                    */ SDrawAttribute( "TextColor", QColor(Qt::black), true ),
     /* 18 TextFont                     */ SDrawAttribute( "TextFont", QFont("Arial"), true ),
     /* 19 TextStyle                    */ SDrawAttribute( "TextStyle", static_cast<int>(ETextStyle::Normal), true ),
@@ -146,16 +146,16 @@ static const SDrawAttribute s_arDrawAttributesDefaultValsGraphObjTypeUserDefined
     /*  4 LineStyle                    */ SDrawAttribute( "LineStyle", static_cast<int>(ELineStyle::SolidLine), false ),
     /*  5 LineRecordType               */ SDrawAttribute( "LineRecordType", static_cast<int>(ELineRecordType::Normal), false ),
     /*  6 LineExtent                   */ SDrawAttribute( "LineExtent", 1, false ),
-    /*  7 LineStartLineEndStyle        */ SDrawAttribute( "LineStartLineEndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
-    /*  8 LineStartLineEndBaseLineType */ SDrawAttribute( "LineStartLineEndBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
-    /*  9 LineStartLineEndFillStyle    */ SDrawAttribute( "LineStartLineEndFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
-    /* 10 LineStartLineEndWidth        */ SDrawAttribute( "LineStartLineEndWidth", static_cast<int>(EArrowHeadWidth::Medium), false ),
-    /* 11 LineStartLineEndLength       */ SDrawAttribute( "LineStartLineEndLength", static_cast<int>(EArrowHeadLength::Medium), false ),
-    /* 12 LineEndLineEndStyle          */ SDrawAttribute( "LineEndLineEndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
-    /* 13 LineEndLineEndBaseLineType   */ SDrawAttribute( "LineEndLineEndBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
-    /* 14 LineEndLineEndFillStyle      */ SDrawAttribute( "LineEndLineEndFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
-    /* 15 LineEndLineEndWidth          */ SDrawAttribute( "LineEndLineEndWidth", static_cast<int>(EArrowHeadWidth::Medium), false ),
-    /* 16 LineEndLineEndLength         */ SDrawAttribute( "LineEndLineEndLength", static_cast<int>(EArrowHeadLength::Medium), false ),
+    /*  7 LineP1EndStyle               */ SDrawAttribute( "LineP1EndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
+    /*  8 LineP1ArrowHeadBaseLineType  */ SDrawAttribute( "LineP1ArrowHeadBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
+    /*  9 LineP1ArrowHeadFillStyle     */ SDrawAttribute( "LineP1ArrowHeadFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
+    /* 10 LineP1ArrowHeadWidth         */ SDrawAttribute( "LineP1ArrowHeadWidth", static_cast<int>(EArrowHeadWidth::Medium), false ),
+    /* 11 LineP1ArrowHeadLength        */ SDrawAttribute( "LineP1ArrowHeadLength", static_cast<int>(EArrowHeadLength::Medium), false ),
+    /* 12 LineP2EndStyle               */ SDrawAttribute( "LineP2EndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
+    /* 13 LineP2ArrowHeadBaseLineType  */ SDrawAttribute( "LineP2ArrowHeadBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
+    /* 14 LineP2ArrowHeadFillStyle     */ SDrawAttribute( "LineP2ArrowHeadFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
+    /* 15 LineP2ArrowHeadWidth         */ SDrawAttribute( "LineP2ArrowHeadWidth", static_cast<int>(EArrowHeadWidth::Medium), false ),
+    /* 16 LineP2ArrowHeadLength        */ SDrawAttribute( "LineP2ArrowHeadLength", static_cast<int>(EArrowHeadLength::Medium), false ),
     /* 17 TextColor                    */ SDrawAttribute( "TextColor", QColor(Qt::black), false ),
     /* 18 TextFont                     */ SDrawAttribute( "TextFont", QFont("Arial"), false ),
     /* 19 TextStyle                    */ SDrawAttribute( "TextStyle", static_cast<int>(ETextStyle::Normal), false ),
@@ -175,16 +175,16 @@ static const SDrawAttribute s_ararDrawAttributesDefaultVals[EGraphObjTypeCount][
         /*  4 LineStyle                    */ SDrawAttribute( "LineStyle", static_cast<int>(ELineStyle::SolidLine), false ),
         /*  5 LineRecordType               */ SDrawAttribute( "LineRecordType", static_cast<int>(ELineRecordType::Normal), false ),
         /*  6 LineExtent                   */ SDrawAttribute( "LineExtent", 1, false ),
-        /*  7 LineStartLineEndStyle        */ SDrawAttribute( "LineStartLineEndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
-        /*  8 LineStartLineEndBaseLineType */ SDrawAttribute( "LineStartLineEndBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
-        /*  9 LineStartLineEndFillStyle    */ SDrawAttribute( "LineStartLineEndFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
-        /* 10 LineStartLineEndWidth        */ SDrawAttribute( "LineStartLineEndWidth", static_cast<int>(EArrowHeadWidth::Medium), false ),
-        /* 11 LineStartLineEndLength       */ SDrawAttribute( "LineStartLineEndLength", static_cast<int>(EArrowHeadLength::Medium), false ),
-        /* 12 LineEndLineEndStyle          */ SDrawAttribute( "LineEndLineEndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
-        /* 13 LineEndLineEndBaseLineType   */ SDrawAttribute( "LineEndLineEndBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
-        /* 14 LineEndLineEndFillStyle      */ SDrawAttribute( "LineEndLineEndFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
-        /* 15 LineEndLineEndWidth          */ SDrawAttribute( "LineEndLineEndWidth", static_cast<int>(EArrowHeadWidth::Medium), false ),
-        /* 16 LineEndLineEndLength         */ SDrawAttribute( "LineEndLineEndLength", static_cast<int>(EArrowHeadLength::Medium), false ),
+        /*  7 LineP1EndStyle               */ SDrawAttribute( "LineP1EndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
+        /*  8 LineP1ArrowHeadBaseLineType  */ SDrawAttribute( "LineP1ArrowHeadBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
+        /*  9 LineP1ArrowHeadFillStyle     */ SDrawAttribute( "LineP1ArrowHeadFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
+        /* 10 LineP1ArrowHeadWidth         */ SDrawAttribute( "LineP1ArrowHeadWidth", static_cast<int>(EArrowHeadWidth::Medium), false ),
+        /* 11 LineP1ArrowHeadLength        */ SDrawAttribute( "LineP1ArrowHeadLength", static_cast<int>(EArrowHeadLength::Medium), false ),
+        /* 12 LineP2EndStyle               */ SDrawAttribute( "LineP2EndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
+        /* 13 LineP2ArrowHeadBaseLineType  */ SDrawAttribute( "LineP2ArrowHeadBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
+        /* 14 LineP2ArrowHeadFillStyle     */ SDrawAttribute( "LineP2ArrowHeadFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
+        /* 15 LineP2ArrowHeadWidth         */ SDrawAttribute( "LineP2ArrowHeadWidth", static_cast<int>(EArrowHeadWidth::Medium), false ),
+        /* 16 LineP2ArrowHeadLength        */ SDrawAttribute( "LineP2ArrowHeadLength", static_cast<int>(EArrowHeadLength::Medium), false ),
         /* 17 TextColor                    */ SDrawAttribute( "TextColor", QColor(Qt::black), false ),
         /* 18 TextFont                     */ SDrawAttribute( "TextFont", QFont("Arial"), false ),
         /* 19 TextStyle                    */ SDrawAttribute( "TextStyle", static_cast<int>(ETextStyle::Normal), false ),
@@ -199,16 +199,16 @@ static const SDrawAttribute s_ararDrawAttributesDefaultVals[EGraphObjTypeCount][
         /*  4 LineStyle                    */ SDrawAttribute( "LineStyle", static_cast<int>(ELineStyle::SolidLine), true ),
         /*  5 LineRecordType               */ SDrawAttribute( "LineRecordType", static_cast<int>(ELineRecordType::Normal), true ),
         /*  6 LineExtent                   */ SDrawAttribute( "LineExtent", 1, true ),
-        /*  7 LineStartLineEndStyle        */ SDrawAttribute( "LineStartLineEndStyle", static_cast<int>(ELineEndStyle::Normal), true ),
-        /*  8 LineStartLineEndBaseLineType */ SDrawAttribute( "LineStartLineEndBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), true ),
-        /*  9 LineStartLineEndFillStyle    */ SDrawAttribute( "LineStartLineEndFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), true ),
-        /* 10 LineStartLineEndWidth        */ SDrawAttribute( "LineStartLineEndWidth", static_cast<int>(EArrowHeadWidth::Medium), true ),
-        /* 11 LineStartLineEndLength       */ SDrawAttribute( "LineStartLineEndLength", static_cast<int>(EArrowHeadLength::Medium), true ),
-        /* 12 LineEndLineEndStyle          */ SDrawAttribute( "LineEndLineEndStyle", static_cast<int>(ELineEndStyle::Normal), true ),
-        /* 13 LineEndLineEndBaseLineType   */ SDrawAttribute( "LineEndLineEndBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), true ),
-        /* 14 LineEndLineEndFillStyle      */ SDrawAttribute( "LineEndLineEndFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), true ),
-        /* 15 LineEndLineEndWidth          */ SDrawAttribute( "LineEndLineEndWidth", static_cast<int>(EArrowHeadWidth::Medium), true ),
-        /* 16 LineEndLineEndLength         */ SDrawAttribute( "LineEndLineEndLength", static_cast<int>(EArrowHeadLength::Medium), true ),
+        /*  7 LineP1EndStyle               */ SDrawAttribute( "LineP1EndStyle", static_cast<int>(ELineEndStyle::Normal), true ),
+        /*  8 LineP1ArrowHeadBaseLineType  */ SDrawAttribute( "LineP1ArrowHeadBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), true ),
+        /*  9 LineP1ArrowHeadFillStyle     */ SDrawAttribute( "LineP1ArrowHeadFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), true ),
+        /* 10 LineP1ArrowHeadWidth         */ SDrawAttribute( "LineP1ArrowHeadWidth", static_cast<int>(EArrowHeadWidth::Medium), true ),
+        /* 11 LineP1ArrowHeadLength        */ SDrawAttribute( "LineP1ArrowHeadLength", static_cast<int>(EArrowHeadLength::Medium), true ),
+        /* 12 LineP2EndStyle               */ SDrawAttribute( "LineP2EndStyle", static_cast<int>(ELineEndStyle::Normal), true ),
+        /* 13 LineP2ArrowHeadBaseLineType  */ SDrawAttribute( "LineP2ArrowHeadBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), true ),
+        /* 14 LineP2ArrowHeadFillStyle     */ SDrawAttribute( "LineP2ArrowHeadFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), true ),
+        /* 15 LineP2ArrowHeadWidth         */ SDrawAttribute( "LineP2ArrowHeadWidth", static_cast<int>(EArrowHeadWidth::Medium), true ),
+        /* 16 LineP2ArrowHeadLength        */ SDrawAttribute( "LineP2ArrowHeadLength", static_cast<int>(EArrowHeadLength::Medium), true ),
         /* 17 TextColor                    */ SDrawAttribute( "TextColor", QColor(Qt::black), false ),
         /* 18 TextFont                     */ SDrawAttribute( "TextFont", QFont("Arial"), false ),
         /* 19 TextStyle                    */ SDrawAttribute( "TextStyle", static_cast<int>(ETextStyle::Normal), false ),
@@ -223,16 +223,16 @@ static const SDrawAttribute s_ararDrawAttributesDefaultVals[EGraphObjTypeCount][
         /*  4 LineStyle                    */ SDrawAttribute( "LineStyle", static_cast<int>(ELineStyle::SolidLine), true ),
         /*  5 LineRecordType               */ SDrawAttribute( "LineRecordType", static_cast<int>(ELineRecordType::Normal), false ),
         /*  6 LineExtent                   */ SDrawAttribute( "LineExtent", 1, false ),
-        /*  7 LineStartLineEndStyle        */ SDrawAttribute( "LineStartLineEndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
-        /*  8 LineStartLineEndBaseLineType */ SDrawAttribute( "LineStartLineEndBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
-        /*  9 LineStartLineEndFillStyle    */ SDrawAttribute( "LineStartLineEndFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
-        /* 10 LineStartLineEndWidth        */ SDrawAttribute( "LineStartLineEndWidth", static_cast<int>(EArrowHeadWidth::Medium), false ),
-        /* 11 LineStartLineEndLength       */ SDrawAttribute( "LineStartLineEndLength", static_cast<int>(EArrowHeadLength::Medium), false ),
-        /* 12 LineEndLineEndStyle          */ SDrawAttribute( "LineEndLineEndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
-        /* 13 LineEndLineEndBaseLineType   */ SDrawAttribute( "LineEndLineEndBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
-        /* 14 LineEndLineEndFillStyle      */ SDrawAttribute( "LineEndLineEndFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
-        /* 15 LineEndLineEndWidth          */ SDrawAttribute( "LineEndLineEndWidth", static_cast<int>(EArrowHeadWidth::Medium), false ),
-        /* 16 LineEndLineEndLength         */ SDrawAttribute( "LineEndLineEndLength", static_cast<int>(EArrowHeadLength::Medium), false ),
+        /*  7 LineP1EndStyle               */ SDrawAttribute( "LineP1EndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
+        /*  8 LineP1ArrowHeadBaseLineType  */ SDrawAttribute( "LineP1ArrowHeadBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
+        /*  9 LineP1ArrowHeadFillStyle     */ SDrawAttribute( "LineP1ArrowHeadFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
+        /* 10 LineP1ArrowHeadWidth         */ SDrawAttribute( "LineP1ArrowHeadWidth", static_cast<int>(EArrowHeadWidth::Medium), false ),
+        /* 11 LineP1ArrowHeadLength        */ SDrawAttribute( "LineP1ArrowHeadLength", static_cast<int>(EArrowHeadLength::Medium), false ),
+        /* 12 LineP2EndStyle               */ SDrawAttribute( "LineP2EndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
+        /* 13 LineP2ArrowHeadBaseLineType  */ SDrawAttribute( "LineP2ArrowHeadBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
+        /* 14 LineP2ArrowHeadFillStyle     */ SDrawAttribute( "LineP2ArrowHeadFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
+        /* 15 LineP2ArrowHeadWidth         */ SDrawAttribute( "LineP2ArrowHeadWidth", static_cast<int>(EArrowHeadWidth::Medium), false ),
+        /* 16 LineP2ArrowHeadLength        */ SDrawAttribute( "LineP2ArrowHeadLength", static_cast<int>(EArrowHeadLength::Medium), false ),
         /* 17 TextColor                    */ SDrawAttribute( "TextColor", QColor(Qt::black), false ),
         /* 18 TextFont                     */ SDrawAttribute( "TextFont", QFont("Arial"), false ),
         /* 19 TextStyle                    */ SDrawAttribute( "TextStyle", static_cast<int>(ETextStyle::Normal), false ),
@@ -247,16 +247,16 @@ static const SDrawAttribute s_ararDrawAttributesDefaultVals[EGraphObjTypeCount][
         /*  4 LineStyle                    */ SDrawAttribute( "LineStyle", static_cast<int>(ELineStyle::SolidLine), true ),
         /*  5 LineRecordType               */ SDrawAttribute( "LineRecordType", static_cast<int>(ELineRecordType::Normal), false ),
         /*  6 LineExtent                   */ SDrawAttribute( "LineExtent", 1, false ),
-        /*  7 LineStartLineEndStyle        */ SDrawAttribute( "LineStartLineEndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
-        /*  8 LineStartLineEndBaseLineType */ SDrawAttribute( "LineStartLineEndBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
-        /*  9 LineStartLineEndFillStyle    */ SDrawAttribute( "LineStartLineEndFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
-        /* 10 LineStartLineEndWidth        */ SDrawAttribute( "LineStartLineEndWidth", static_cast<int>(EArrowHeadWidth::Medium), false ),
-        /* 11 LineStartLineEndLength       */ SDrawAttribute( "LineStartLineEndLength", static_cast<int>(EArrowHeadLength::Medium), false ),
-        /* 12 LineEndLineEndStyle          */ SDrawAttribute( "LineEndLineEndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
-        /* 13 LineEndLineEndBaseLineType   */ SDrawAttribute( "LineEndLineEndBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
-        /* 14 LineEndLineEndFillStyle      */ SDrawAttribute( "LineEndLineEndFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
-        /* 15 LineEndLineEndWidth          */ SDrawAttribute( "LineEndLineEndWidth", static_cast<int>(EArrowHeadWidth::Medium), false ),
-        /* 16 LineEndLineEndLength         */ SDrawAttribute( "LineEndLineEndLength", static_cast<int>(EArrowHeadLength::Medium), false ),
+        /*  7 LineP1EndStyle               */ SDrawAttribute( "LineP1EndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
+        /*  8 LineP1ArrowHeadBaseLineType  */ SDrawAttribute( "LineP1ArrowHeadBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
+        /*  9 LineP1ArrowHeadFillStyle     */ SDrawAttribute( "LineP1ArrowHeadFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
+        /* 10 LineP1ArrowHeadWidth         */ SDrawAttribute( "LineP1ArrowHeadWidth", static_cast<int>(EArrowHeadWidth::Medium), false ),
+        /* 11 LineP1ArrowHeadLength        */ SDrawAttribute( "LineP1ArrowHeadLength", static_cast<int>(EArrowHeadLength::Medium), false ),
+        /* 12 LineP2EndStyle               */ SDrawAttribute( "LineP2EndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
+        /* 13 LineP2ArrowHeadBaseLineType  */ SDrawAttribute( "LineP2ArrowHeadBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
+        /* 14 LineP2ArrowHeadFillStyle     */ SDrawAttribute( "LineP2ArrowHeadFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
+        /* 15 LineP2ArrowHeadWidth         */ SDrawAttribute( "LineP2ArrowHeadWidth", static_cast<int>(EArrowHeadWidth::Medium), false ),
+        /* 16 LineP2ArrowHeadLength        */ SDrawAttribute( "LineP2ArrowHeadLength", static_cast<int>(EArrowHeadLength::Medium), false ),
         /* 17 TextColor                    */ SDrawAttribute( "TextColor", QColor(Qt::black), false ),
         /* 18 TextFont                     */ SDrawAttribute( "TextFont", QFont("Arial"), false ),
         /* 19 TextStyle                    */ SDrawAttribute( "TextStyle", static_cast<int>(ETextStyle::Normal), false ),
@@ -271,16 +271,16 @@ static const SDrawAttribute s_ararDrawAttributesDefaultVals[EGraphObjTypeCount][
         /*  4 LineStyle                    */ SDrawAttribute( "LineStyle", static_cast<int>(ELineStyle::SolidLine), true ),
         /*  5 LineRecordType               */ SDrawAttribute( "LineRecordType", static_cast<int>(ELineRecordType::Normal), false ),
         /*  6 LineExtent                   */ SDrawAttribute( "LineExtent", 1, false ),
-        /*  7 LineStartLineEndStyle        */ SDrawAttribute( "LineStartLineEndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
-        /*  8 LineStartLineEndBaseLineType */ SDrawAttribute( "LineStartLineEndBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
-        /*  9 LineStartLineEndFillStyle    */ SDrawAttribute( "LineStartLineEndFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
-        /* 10 LineStartLineEndWidth        */ SDrawAttribute( "LineStartLineEndWidth", static_cast<int>(EArrowHeadWidth::Medium), false ),
-        /* 11 LineStartLineEndLength       */ SDrawAttribute( "LineStartLineEndLength", static_cast<int>(EArrowHeadLength::Medium), false ),
-        /* 12 LineEndLineEndStyle          */ SDrawAttribute( "LineEndLineEndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
-        /* 13 LineEndLineEndBaseLineType   */ SDrawAttribute( "LineEndLineEndBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
-        /* 14 LineEndLineEndFillStyle      */ SDrawAttribute( "LineEndLineEndFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
-        /* 15 LineEndLineEndWidth          */ SDrawAttribute( "LineEndLineEndWidth", static_cast<int>(EArrowHeadWidth::Medium), false ),
-        /* 16 LineEndLineEndLength         */ SDrawAttribute( "LineEndLineEndLength", static_cast<int>(EArrowHeadLength::Medium), false ),
+        /*  7 LineP1EndStyle               */ SDrawAttribute( "LineP1EndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
+        /*  8 LineP1ArrowHeadBaseLineType  */ SDrawAttribute( "LineP1ArrowHeadBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
+        /*  9 LineP1ArrowHeadFillStyle     */ SDrawAttribute( "LineP1ArrowHeadFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
+        /* 10 LineP1ArrowHeadWidth         */ SDrawAttribute( "LineP1ArrowHeadWidth", static_cast<int>(EArrowHeadWidth::Medium), false ),
+        /* 11 LineP1ArrowHeadLength        */ SDrawAttribute( "LineP1ArrowHeadLength", static_cast<int>(EArrowHeadLength::Medium), false ),
+        /* 12 LineP2EndStyle               */ SDrawAttribute( "LineP2EndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
+        /* 13 LineP2ArrowHeadBaseLineType  */ SDrawAttribute( "LineP2ArrowHeadBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
+        /* 14 LineP2ArrowHeadFillStyle     */ SDrawAttribute( "LineP2ArrowHeadFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
+        /* 15 LineP2ArrowHeadWidth         */ SDrawAttribute( "LineP2ArrowHeadWidth", static_cast<int>(EArrowHeadWidth::Medium), false ),
+        /* 16 LineP2ArrowHeadLength        */ SDrawAttribute( "LineP2ArrowHeadLength", static_cast<int>(EArrowHeadLength::Medium), false ),
         /* 17 TextColor                    */ SDrawAttribute( "TextColor", QColor(Qt::black), false ),
         /* 18 TextFont                     */ SDrawAttribute( "TextFont", QFont("Arial"), false ),
         /* 19 TextStyle                    */ SDrawAttribute( "TextStyle", static_cast<int>(ETextStyle::Normal), false ),
@@ -295,16 +295,16 @@ static const SDrawAttribute s_ararDrawAttributesDefaultVals[EGraphObjTypeCount][
         /*  4 LineStyle                    */ SDrawAttribute( "LineStyle", static_cast<int>(ELineStyle::SolidLine), true ),
         /*  5 LineRecordType               */ SDrawAttribute( "LineRecordType", static_cast<int>(ELineRecordType::Normal), true ),
         /*  6 LineExtent                   */ SDrawAttribute( "LineExtent", 1, true ),
-        /*  7 LineStartLineEndStyle        */ SDrawAttribute( "LineStartLineEndStyle", static_cast<int>(ELineEndStyle::Normal), true ),
-        /*  8 LineStartLineEndBaseLineType */ SDrawAttribute( "LineStartLineEndBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), true ),
-        /*  9 LineStartLineEndFillStyle    */ SDrawAttribute( "LineStartLineEndFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), true ),
-        /* 10 LineStartLineEndWidth        */ SDrawAttribute( "LineStartLineEndWidth", static_cast<int>(EArrowHeadWidth::Medium), true ),
-        /* 11 LineStartLineEndLength       */ SDrawAttribute( "LineStartLineEndLength", static_cast<int>(EArrowHeadLength::Medium), true ),
-        /* 12 LineEndLineEndStyle          */ SDrawAttribute( "LineEndLineEndStyle", static_cast<int>(ELineEndStyle::Normal), true ),
-        /* 13 LineEndLineEndBaseLineType   */ SDrawAttribute( "LineEndLineEndBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), true ),
-        /* 14 LineEndLineEndFillStyle      */ SDrawAttribute( "LineEndLineEndFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), true ),
-        /* 15 LineEndLineEndWidth          */ SDrawAttribute( "LineEndLineEndWidth", static_cast<int>(EArrowHeadWidth::Medium), true ),
-        /* 16 LineEndLineEndLength         */ SDrawAttribute( "LineEndLineEndLength", static_cast<int>(EArrowHeadLength::Medium), true ),
+        /*  7 LineP1EndStyle               */ SDrawAttribute( "LineP1EndStyle", static_cast<int>(ELineEndStyle::Normal), true ),
+        /*  8 LineP1ArrowHeadBaseLineType  */ SDrawAttribute( "LineP1ArrowHeadBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), true ),
+        /*  9 LineP1ArrowHeadFillStyle     */ SDrawAttribute( "LineP1ArrowHeadFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), true ),
+        /* 10 LineP1ArrowHeadWidth         */ SDrawAttribute( "LineP1ArrowHeadWidth", static_cast<int>(EArrowHeadWidth::Medium), true ),
+        /* 11 LineP1ArrowHeadLength        */ SDrawAttribute( "LineP1ArrowHeadLength", static_cast<int>(EArrowHeadLength::Medium), true ),
+        /* 12 LineP2EndStyle               */ SDrawAttribute( "LineP2EndStyle", static_cast<int>(ELineEndStyle::Normal), true ),
+        /* 13 LineP2ArrowHeadBaseLineType  */ SDrawAttribute( "LineP2ArrowHeadBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), true ),
+        /* 14 LineP2ArrowHeadFillStyle     */ SDrawAttribute( "LineP2ArrowHeadFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), true ),
+        /* 15 LineP2ArrowHeadWidth         */ SDrawAttribute( "LineP2ArrowHeadWidth", static_cast<int>(EArrowHeadWidth::Medium), true ),
+        /* 16 LineP2ArrowHeadLength        */ SDrawAttribute( "LineP2ArrowHeadLength", static_cast<int>(EArrowHeadLength::Medium), true ),
         /* 17 TextColor                    */ SDrawAttribute( "TextColor", QColor(Qt::black), false ),
         /* 18 TextFont                     */ SDrawAttribute( "TextFont", QFont("Arial"), false ),
         /* 19 TextStyle                    */ SDrawAttribute( "TextStyle", static_cast<int>(ETextStyle::Normal), false ),
@@ -319,16 +319,16 @@ static const SDrawAttribute s_ararDrawAttributesDefaultVals[EGraphObjTypeCount][
         /*  4 LineStyle                    */ SDrawAttribute( "LineStyle", static_cast<int>(ELineStyle::SolidLine), true ),
         /*  5 LineRecordType               */ SDrawAttribute( "LineRecordType", static_cast<int>(ELineRecordType::Normal), false ),
         /*  6 LineExtent                   */ SDrawAttribute( "LineExtent", 1, false ),
-        /*  7 LineStartLineEndStyle        */ SDrawAttribute( "LineStartLineEndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
-        /*  8 LineStartLineEndBaseLineType */ SDrawAttribute( "LineStartLineEndBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
-        /*  9 LineStartLineEndFillStyle    */ SDrawAttribute( "LineStartLineEndFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
-        /* 10 LineStartLineEndWidth        */ SDrawAttribute( "LineStartLineEndWidth", static_cast<int>(EArrowHeadWidth::Medium), false ),
-        /* 11 LineStartLineEndLength       */ SDrawAttribute( "LineStartLineEndLength", static_cast<int>(EArrowHeadLength::Medium), false ),
-        /* 12 LineEndLineEndStyle          */ SDrawAttribute( "LineEndLineEndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
-        /* 13 LineEndLineEndBaseLineType   */ SDrawAttribute( "LineEndLineEndBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
-        /* 14 LineEndLineEndFillStyle      */ SDrawAttribute( "LineEndLineEndFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
-        /* 15 LineEndLineEndWidth          */ SDrawAttribute( "LineEndLineEndWidth", static_cast<int>(EArrowHeadWidth::Medium), false ),
-        /* 16 LineEndLineEndLength         */ SDrawAttribute( "LineEndLineEndLength", static_cast<int>(EArrowHeadLength::Medium), false ),
+        /*  7 LineP1EndStyle               */ SDrawAttribute( "LineP1EndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
+        /*  8 LineP1ArrowHeadBaseLineType  */ SDrawAttribute( "LineP1ArrowHeadBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
+        /*  9 LineP1ArrowHeadFillStyle     */ SDrawAttribute( "LineP1ArrowHeadFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
+        /* 10 LineP1ArrowHeadWidth         */ SDrawAttribute( "LineP1ArrowHeadWidth", static_cast<int>(EArrowHeadWidth::Medium), false ),
+        /* 11 LineP1ArrowHeadLength        */ SDrawAttribute( "LineP1ArrowHeadLength", static_cast<int>(EArrowHeadLength::Medium), false ),
+        /* 12 LineP2EndStyle               */ SDrawAttribute( "LineP2EndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
+        /* 13 LineP2ArrowHeadBaseLineType  */ SDrawAttribute( "LineP2ArrowHeadBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
+        /* 14 LineP2ArrowHeadFillStyle     */ SDrawAttribute( "LineP2ArrowHeadFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
+        /* 15 LineP2ArrowHeadWidth         */ SDrawAttribute( "LineP2ArrowHeadWidth", static_cast<int>(EArrowHeadWidth::Medium), false ),
+        /* 16 LineP2ArrowHeadLength        */ SDrawAttribute( "LineP2ArrowHeadLength", static_cast<int>(EArrowHeadLength::Medium), false ),
         /* 17 TextColor                    */ SDrawAttribute( "TextColor", QColor(Qt::black), true ),
         /* 18 TextFont                     */ SDrawAttribute( "TextFont", QFont("Arial"), true ),
         /* 19 TextStyle                    */ SDrawAttribute( "TextStyle", static_cast<int>(ETextStyle::Normal), true ),
@@ -343,16 +343,16 @@ static const SDrawAttribute s_ararDrawAttributesDefaultVals[EGraphObjTypeCount][
         /*  4 LineStyle                    */ SDrawAttribute( "LineStyle", static_cast<int>(ELineStyle::SolidLine), true ),
         /*  5 LineRecordType               */ SDrawAttribute( "LineRecordType", static_cast<int>(ELineRecordType::Normal), false ),
         /*  6 LineExtent                   */ SDrawAttribute( "LineExtent", 1, false ),
-        /*  7 LineStartLineEndStyle        */ SDrawAttribute( "LineStartLineEndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
-        /*  8 LineStartLineEndBaseLineType */ SDrawAttribute( "LineStartLineEndBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
-        /*  9 LineStartLineEndFillStyle    */ SDrawAttribute( "LineStartLineEndFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
-        /* 10 LineStartLineEndWidth        */ SDrawAttribute( "LineStartLineEndWidth", static_cast<int>(EArrowHeadWidth::Medium), false ),
-        /* 11 LineStartLineEndLength       */ SDrawAttribute( "LineStartLineEndLength", static_cast<int>(EArrowHeadLength::Medium), false ),
-        /* 12 LineEndLineEndStyle          */ SDrawAttribute( "LineEndLineEndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
-        /* 13 LineEndLineEndBaseLineType   */ SDrawAttribute( "LineEndLineEndBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
-        /* 14 LineEndLineEndFillStyle      */ SDrawAttribute( "LineEndLineEndFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
-        /* 15 LineEndLineEndWidth          */ SDrawAttribute( "LineEndLineEndWidth", static_cast<int>(EArrowHeadWidth::Medium), false ),
-        /* 16 LineEndLineEndLength         */ SDrawAttribute( "LineEndLineEndLength", static_cast<int>(EArrowHeadLength::Medium), false ),
+        /*  7 LineP1EndStyle               */ SDrawAttribute( "LineP1EndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
+        /*  8 LineP1ArrowHeadBaseLineType  */ SDrawAttribute( "LineP1ArrowHeadBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
+        /*  9 LineP1ArrowHeadFillStyle     */ SDrawAttribute( "LineP1ArrowHeadFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
+        /* 10 LineP1ArrowHeadWidth         */ SDrawAttribute( "LineP1ArrowHeadWidth", static_cast<int>(EArrowHeadWidth::Medium), false ),
+        /* 11 LineP1ArrowHeadLength        */ SDrawAttribute( "LineP1ArrowHeadLength", static_cast<int>(EArrowHeadLength::Medium), false ),
+        /* 12 LineP2EndStyle               */ SDrawAttribute( "LineP2EndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
+        /* 13 LineP2ArrowHeadBaseLineType  */ SDrawAttribute( "LineP2ArrowHeadBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
+        /* 14 LineP2ArrowHeadFillStyle     */ SDrawAttribute( "LineP2ArrowHeadFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
+        /* 15 LineP2ArrowHeadWidth         */ SDrawAttribute( "LineP2ArrowHeadWidth", static_cast<int>(EArrowHeadWidth::Medium), false ),
+        /* 16 LineP2ArrowHeadLength        */ SDrawAttribute( "LineP2ArrowHeadLength", static_cast<int>(EArrowHeadLength::Medium), false ),
         /* 17 TextColor                    */ SDrawAttribute( "TextColor", QColor(Qt::black), false ),
         /* 18 TextFont                     */ SDrawAttribute( "TextFont", QFont("Arial"), false ),
         /* 19 TextStyle                    */ SDrawAttribute( "TextStyle", static_cast<int>(ETextStyle::Normal), false ),
@@ -367,16 +367,16 @@ static const SDrawAttribute s_ararDrawAttributesDefaultVals[EGraphObjTypeCount][
         /*  4 LineStyle                    */ SDrawAttribute( "LineStyle", static_cast<int>(ELineStyle::SolidLine), true ),
         /*  5 LineRecordType               */ SDrawAttribute( "LineRecordType", static_cast<int>(ELineRecordType::Normal), false ),
         /*  6 LineExtent                   */ SDrawAttribute( "LineExtent", 1, false ),
-        /*  7 LineStartLineEndStyle        */ SDrawAttribute( "LineStartLineEndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
-        /*  8 LineStartLineEndBaseLineType */ SDrawAttribute( "LineStartLineEndBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
-        /*  9 LineStartLineEndFillStyle    */ SDrawAttribute( "LineStartLineEndFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
-        /* 10 LineStartLineEndWidth        */ SDrawAttribute( "LineStartLineEndWidth", static_cast<int>(EArrowHeadWidth::Medium), false ),
-        /* 11 LineStartLineEndLength       */ SDrawAttribute( "LineStartLineEndLength", static_cast<int>(EArrowHeadLength::Medium), false ),
-        /* 12 LineEndLineEndStyle          */ SDrawAttribute( "LineEndLineEndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
-        /* 13 LineEndLineEndBaseLineType   */ SDrawAttribute( "LineEndLineEndBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
-        /* 14 LineEndLineEndFillStyle      */ SDrawAttribute( "LineEndLineEndFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
-        /* 15 LineEndLineEndWidth          */ SDrawAttribute( "LineEndLineEndWidth", static_cast<int>(EArrowHeadWidth::Medium), false ),
-        /* 16 LineEndLineEndLength         */ SDrawAttribute( "LineEndLineEndLength", static_cast<int>(EArrowHeadLength::Medium), false ),
+        /*  7 LineP1EndStyle               */ SDrawAttribute( "LineP1EndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
+        /*  8 LineP1ArrowHeadBaseLineType  */ SDrawAttribute( "LineP1ArrowHeadBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
+        /*  9 LineP1ArrowHeadFillStyle     */ SDrawAttribute( "LineP1ArrowHeadFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
+        /* 10 LineP1ArrowHeadWidth         */ SDrawAttribute( "LineP1ArrowHeadWidth", static_cast<int>(EArrowHeadWidth::Medium), false ),
+        /* 11 LineP1ArrowHeadLength        */ SDrawAttribute( "LineP1ArrowHeadLength", static_cast<int>(EArrowHeadLength::Medium), false ),
+        /* 12 LineP2EndStyle               */ SDrawAttribute( "LineP2EndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
+        /* 13 LineP2ArrowHeadBaseLineType  */ SDrawAttribute( "LineP2ArrowHeadBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
+        /* 14 LineP2ArrowHeadFillStyle     */ SDrawAttribute( "LineP2ArrowHeadFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
+        /* 15 LineP2ArrowHeadWidth         */ SDrawAttribute( "LineP2ArrowHeadWidth", static_cast<int>(EArrowHeadWidth::Medium), false ),
+        /* 16 LineP2ArrowHeadLength        */ SDrawAttribute( "LineP2ArrowHeadLength", static_cast<int>(EArrowHeadLength::Medium), false ),
         /* 17 TextColor                    */ SDrawAttribute( "TextColor", QColor(Qt::black), false ),
         /* 18 TextFont                     */ SDrawAttribute( "TextFont", QFont("Arial"), false ),
         /* 19 TextStyle                    */ SDrawAttribute( "TextStyle", static_cast<int>(ETextStyle::Normal), false ),
@@ -391,16 +391,16 @@ static const SDrawAttribute s_ararDrawAttributesDefaultVals[EGraphObjTypeCount][
         /*  4 LineStyle                    */ SDrawAttribute( "LineStyle", static_cast<int>(ELineStyle::SolidLine), true ),
         /*  5 LineRecordType               */ SDrawAttribute( "LineRecordType", static_cast<int>(ELineRecordType::Normal), true ),
         /*  6 LineExtent                   */ SDrawAttribute( "LineExtent", 1, true ),
-        /*  7 LineStartLineEndStyle        */ SDrawAttribute( "LineStartLineEndStyle", static_cast<int>(ELineEndStyle::Normal), true ),
-        /*  8 LineStartLineEndBaseLineType */ SDrawAttribute( "LineStartLineEndBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), true ),
-        /*  9 LineStartLineEndFillStyle    */ SDrawAttribute( "LineStartLineEndFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), true ),
-        /* 10 LineStartLineEndWidth        */ SDrawAttribute( "LineStartLineEndWidth", static_cast<int>(EArrowHeadWidth::Medium), true ),
-        /* 11 LineStartLineEndLength       */ SDrawAttribute( "LineStartLineEndLength", static_cast<int>(EArrowHeadLength::Medium), true ),
-        /* 12 LineEndLineEndStyle          */ SDrawAttribute( "LineEndLineEndStyle", static_cast<int>(ELineEndStyle::Normal), true ),
-        /* 13 LineEndLineEndBaseLineType   */ SDrawAttribute( "LineEndLineEndBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), true ),
-        /* 14 LineEndLineEndFillStyle      */ SDrawAttribute( "LineEndLineEndFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), true ),
-        /* 15 LineEndLineEndWidth          */ SDrawAttribute( "LineEndLineEndWidth", static_cast<int>(EArrowHeadWidth::Medium), true ),
-        /* 16 LineEndLineEndLength         */ SDrawAttribute( "LineEndLineEndLength", static_cast<int>(EArrowHeadLength::Medium), true ),
+        /*  7 LineP1EndStyle               */ SDrawAttribute( "LineP1EndStyle", static_cast<int>(ELineEndStyle::Normal), true ),
+        /*  8 LineP1ArrowHeadBaseLineType  */ SDrawAttribute( "LineP1ArrowHeadBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), true ),
+        /*  9 LineP1ArrowHeadFillStyle     */ SDrawAttribute( "LineP1ArrowHeadFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), true ),
+        /* 10 LineP1ArrowHeadWidth         */ SDrawAttribute( "LineP1ArrowHeadWidth", static_cast<int>(EArrowHeadWidth::Medium), true ),
+        /* 11 LineP1ArrowHeadLength        */ SDrawAttribute( "LineP1ArrowHeadLength", static_cast<int>(EArrowHeadLength::Medium), true ),
+        /* 12 LineP2EndStyle               */ SDrawAttribute( "LineP2EndStyle", static_cast<int>(ELineEndStyle::Normal), true ),
+        /* 13 LineP2ArrowHeadBaseLineType  */ SDrawAttribute( "LineP2ArrowHeadBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), true ),
+        /* 14 LineP2ArrowHeadFillStyle     */ SDrawAttribute( "LineP2ArrowHeadFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), true ),
+        /* 15 LineP2ArrowHeadWidth         */ SDrawAttribute( "LineP2ArrowHeadWidth", static_cast<int>(EArrowHeadWidth::Medium), true ),
+        /* 16 LineP2ArrowHeadLength        */ SDrawAttribute( "LineP2ArrowHeadLength", static_cast<int>(EArrowHeadLength::Medium), true ),
         /* 17 TextColor                    */ SDrawAttribute( "TextColor", QColor(Qt::black), false ),
         /* 18 TextFont                     */ SDrawAttribute( "TextFont", QFont("Arial"), false ),
         /* 19 TextStyle                    */ SDrawAttribute( "TextStyle", static_cast<int>(ETextStyle::Normal), false ),
@@ -415,16 +415,16 @@ static const SDrawAttribute s_ararDrawAttributesDefaultVals[EGraphObjTypeCount][
         /*  4 LineStyle                    */ SDrawAttribute( "LineStyle", static_cast<int>(ELineStyle::SolidLine), false ),
         /*  5 LineRecordType               */ SDrawAttribute( "LineRecordType", static_cast<int>(ELineRecordType::Normal), false ),
         /*  6 LineExtent                   */ SDrawAttribute( "LineExtent", 1, false ),
-        /*  7 LineStartLineEndStyle        */ SDrawAttribute( "LineStartLineEndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
-        /*  8 LineStartLineEndBaseLineType */ SDrawAttribute( "LineStartLineEndBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
-        /*  9 LineStartLineEndFillStyle    */ SDrawAttribute( "LineStartLineEndFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
-        /* 10 LineStartLineEndWidth        */ SDrawAttribute( "LineStartLineEndWidth", static_cast<int>(EArrowHeadWidth::Medium), false ),
-        /* 11 LineStartLineEndLength       */ SDrawAttribute( "LineStartLineEndLength", static_cast<int>(EArrowHeadLength::Medium), false ),
-        /* 12 LineEndLineEndStyle          */ SDrawAttribute( "LineEndLineEndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
-        /* 13 LineEndLineEndBaseLineType   */ SDrawAttribute( "LineEndLineEndBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
-        /* 14 LineEndLineEndFillStyle      */ SDrawAttribute( "LineEndLineEndFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
-        /* 15 LineEndLineEndWidth          */ SDrawAttribute( "LineEndLineEndWidth", static_cast<int>(EArrowHeadWidth::Medium), false ),
-        /* 16 LineEndLineEndLength         */ SDrawAttribute( "LineEndLineEndLength", static_cast<int>(EArrowHeadLength::Medium), false ),
+        /*  7 LineP1EndStyle               */ SDrawAttribute( "LineP1EndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
+        /*  8 LineP1ArrowHeadBaseLineType  */ SDrawAttribute( "LineP1ArrowHeadBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
+        /*  9 LineP1ArrowHeadFillStyle     */ SDrawAttribute( "LineP1ArrowHeadFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
+        /* 10 LineP1ArrowHeadWidth         */ SDrawAttribute( "LineP1ArrowHeadWidth", static_cast<int>(EArrowHeadWidth::Medium), false ),
+        /* 11 LineP1ArrowHeadLength        */ SDrawAttribute( "LineP1ArrowHeadLength", static_cast<int>(EArrowHeadLength::Medium), false ),
+        /* 12 LineP2EndStyle               */ SDrawAttribute( "LineP2EndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
+        /* 13 LineP2ArrowHeadBaseLineType  */ SDrawAttribute( "LineP2ArrowHeadBaseLineType", static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
+        /* 14 LineP2ArrowHeadFillStyle     */ SDrawAttribute( "LineP2ArrowHeadFillStyle", static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
+        /* 15 LineP2ArrowHeadWidth         */ SDrawAttribute( "LineP2ArrowHeadWidth", static_cast<int>(EArrowHeadWidth::Medium), false ),
+        /* 16 LineP2ArrowHeadLength        */ SDrawAttribute( "LineP2ArrowHeadLength", static_cast<int>(EArrowHeadLength::Medium), false ),
         /* 17 TextColor                    */ SDrawAttribute( "TextColor", QColor(Qt::black), false ),
         /* 18 TextFont                     */ SDrawAttribute( "TextFont", QFont("Arial"), false ),
         /* 19 TextStyle                    */ SDrawAttribute( "TextStyle", static_cast<int>(ETextStyle::Normal), false ),
@@ -473,9 +473,13 @@ public: // ctors and dtor
 CDrawSettings::CDrawSettings( EGraphObjType i_graphObjType ) :
 //------------------------------------------------------------------------------
     m_graphObjType(i_graphObjType),
-    m_idxGraphObjTypeDrawAttributesDefaultVals(i_graphObjType-EGraphObjTypeMin),
+    m_idxGraphObjTypeDrawAttributesDefaultVals(-1),
     m_arAttributes(EDrawAttributeCount)
 {
+    if (m_graphObjType >= 0 && m_graphObjType < _ZSArrLen(s_ararDrawAttributesDefaultVals)) {
+        m_idxGraphObjTypeDrawAttributesDefaultVals = m_graphObjType - EGraphObjTypeMin;
+    }
+
     // On recalling graphical objects the attributes will be read from XML file
     // by the base class CGraphObj before the ctor of the inherited classes
     // (e.g. CGraphObjLine) is called. To force the base class to read all
@@ -488,13 +492,15 @@ CDrawSettings::CDrawSettings( EGraphObjType i_graphObjType ) :
 
     set2Default();
 
-} // default ctor
+} // ctor
 
 //------------------------------------------------------------------------------
 CDrawSettings::~CDrawSettings()
 //------------------------------------------------------------------------------
 {
-} // dtor
+    m_graphObjType = static_cast<EGraphObjType>(0);
+    m_idxGraphObjTypeDrawAttributesDefaultVals = 0;
+}
 
 /*==============================================================================
 public: // operators
@@ -505,10 +511,13 @@ bool CDrawSettings::operator == ( const CDrawSettings& i_other ) const
 //------------------------------------------------------------------------------
 {
     bool bEqual = true;
-    for (int idxAttr = 0; idxAttr < EDrawAttributeCount; idxAttr++) {
-        if (m_arAttributes[idxAttr].m_bIsUsed) {
-            if (m_arAttributes[idxAttr].m_val != i_other.m_arAttributes[idxAttr].m_val) {
-                bEqual = false;
+    if (m_graphObjType != i_other.m_graphObjType) {
+        bEqual = false;
+    }
+    else {
+        for (int idxAttr = 0; idxAttr < EDrawAttributeCount; idxAttr++) {
+            bEqual = (m_arAttributes[idxAttr] == i_other.m_arAttributes[idxAttr]);
+            if (!bEqual) {
                 break;
             }
         }
@@ -521,6 +530,32 @@ bool CDrawSettings::operator != ( const CDrawSettings& i_other ) const
 //------------------------------------------------------------------------------
 {
     return !(*this == i_other);
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CDrawSettings::setGraphObjType(EGraphObjType i_graphObjType)
+//------------------------------------------------------------------------------
+{
+    if (m_graphObjType != i_graphObjType) {
+        m_graphObjType = i_graphObjType;
+        if (m_graphObjType >= 0 && m_graphObjType < _ZSArrLen(s_ararDrawAttributesDefaultVals)) {
+            m_idxGraphObjTypeDrawAttributesDefaultVals = m_graphObjType - EGraphObjTypeMin;
+            for (int idxAttr = 0; idxAttr < EDrawAttributeCount; idxAttr++) {
+                m_arAttributes[idxAttr].m_bIsUsed =
+                    s_ararDrawAttributesDefaultVals[m_idxGraphObjTypeDrawAttributesDefaultVals][idxAttr].m_bIsUsed;
+            }
+        }
+        else {
+            m_idxGraphObjTypeDrawAttributesDefaultVals = -1;
+            for (int idxAttr = 0; idxAttr < EDrawAttributeCount; idxAttr++) {
+                m_arAttributes[idxAttr].m_bIsUsed = true;
+            }
+        }
+    }
 }
 
 /*==============================================================================

@@ -217,7 +217,7 @@ CDrawingScene::CDrawingScene(const QString& i_strName, QObject* i_pObjParent) :
         /* strAddInfo   */ "" );
 
     m_pGraphObjsIdxTree = new CIdxTree(
-        /* strObjName       */ objectName(),
+        /* strObjName       */ "DrawingScene",
         /* pRootTreeEntry   */ nullptr,
         /* strNodeSeparator */ "::",
         /* bCreateMutex     */ false,
@@ -244,7 +244,7 @@ CDrawingScene::CDrawingScene(const QString& i_strName, QObject* i_pObjParent) :
         this, &CDrawingScene::onGraphObjsIdxTreeEntryRenamed );
 
     m_pGraphObjsIdxTreeClipboard = new CIdxTree(
-        /* strObjName       */ objectName() + "-Clipboard-GraphObjs",
+        /* strObjName       */ "DrawingScene-" + objectName() + "-Clipboard-GraphObjs",
         /* pRootTreeEntry   */ nullptr,
         /* strNodeSeparator */ "::",
         /* bCreateMutex     */ false,

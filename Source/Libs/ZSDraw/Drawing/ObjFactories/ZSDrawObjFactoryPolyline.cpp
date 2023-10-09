@@ -96,7 +96,9 @@ CGraphObj* CObjFactoryPolyline::createGraphObj(
         /* strMethod    */ "createGraphObj",
         /* strAddInfo   */ strMthInArgs );
 
-    CGraphObjPolyline* pGraphObj = new CGraphObjPolyline(i_pDrawingScene, i_drawSettings);
+    CDrawSettings drawSettings = i_drawSettings;
+    drawSettings.setGraphObjType(EGraphObjTypePolyline);
+    CGraphObjPolyline* pGraphObj = new CGraphObjPolyline(i_pDrawingScene, drawSettings);
 
 #if 0
     QPolygonF plg;

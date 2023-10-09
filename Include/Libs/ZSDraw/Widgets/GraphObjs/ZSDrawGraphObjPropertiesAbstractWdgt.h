@@ -83,6 +83,8 @@ public: // class methods
 public: // ctors and dtor
     CWdgtGraphObjPropertiesAbstract(
         CDrawingScene* i_pDrawingScene,
+        const QString& i_strNameSpace,
+        const QString& i_strGraphObjType,
         const QString& i_strClassName,
         const QString& i_strObjName,
         QWidget* i_pWdgtParent = nullptr);
@@ -90,8 +92,7 @@ public: // ctors and dtor
 protected: // ctor auxiliary methods
     QWidget* createButtonsLineWidget();
 signals:
-    /*! This signal is emitted if any property of the graphical object is changed
-        by an edit control of the widget. */
+    /*! This signal is emitted if the indicated content has been changed. */
     void contentChanged();
 public: // overridables
     virtual bool setKeyInTree(const QString& i_strKeyInTree);
@@ -110,6 +111,7 @@ protected: // overridables
     virtual void applySettings();
 protected slots: // overridables
     virtual void onDrawingSceneDrawingSizeChanged(const CDrawingSize& i_drawingSize);
+    virtual void onDrawingSceneDrawSettingsChanged(const CDrawSettings& i_drawSettings);
 protected slots: // overridables
     virtual void onGraphObjSelectedChanged();
     virtual void onGraphObjGeometryChanged();
@@ -181,6 +183,12 @@ protected: // instance members
          If the counter is decremented and reaches 0 the flag "m_bContentChanged" is checked and
          the signal "contentChanged" is emitted if the flag is set. */
     int m_iContentChangedSignalBlockedCounter;
+    /*!< Flag to indicate whether the widget is connected to the drawingSizeChanged signal of
+         the drawing scene to avoid multiple connections or disconnections if not connected. */
+    bool m_bDrawingSceneDrawingSizeChangedSignalConnected;
+    /*!< Flag to indicate whether the widget is connected to the drawSettingsChanged signal of
+         the drawing scene to avoid multiple connections or disconnections if not connected. */
+    bool m_bDrawingSceneDrawSettingsChangedSignalConnected;
     // Edit Controls
     QVBoxLayout* m_pLyt;
     // Button Line
@@ -190,7 +198,6 @@ protected: // instance members
     QPushButton* m_pBtnReset;
     /*!< Trace admin object for method tracing. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
-    ZS::System::CTrcAdminObj* m_pTrcAdminObjMouseEvents;
 
 }; // class CWdgtGraphObjPropertiesAbstract
 

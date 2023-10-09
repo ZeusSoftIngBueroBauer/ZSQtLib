@@ -232,7 +232,79 @@ const CDrawGridSettings& CDrawingView::gridSettings() const
 }
 
 /*==============================================================================
-protected slots:
+public: // instance methods (grid lines with labels)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CDrawingView::setDrawSettings( const CDrawSettings& i_settings )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_settings.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setDrawSettings",
+        /* strAddInfo   */ strMthInArgs );
+
+    m_pDrawingScene->setDrawSettings(i_settings);
+}
+
+//------------------------------------------------------------------------------
+const CDrawSettings& CDrawingView::drawSettings() const
+//------------------------------------------------------------------------------
+{
+    return m_pDrawingScene->drawSettings();
+}
+
+/*==============================================================================
+public: // reimplemented method of base class QWidget
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CDrawingView::setCursor(const QCursor& i_cursor)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = qCursor2Str(i_cursor);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setCursor",
+        /* strAddInfo   */ strMthInArgs );
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        QString strAddTrcInfo = "CurrentCursor: " + qCursor2Str(cursor());
+        mthTracer.trace(strAddTrcInfo);
+    }
+
+    QGraphicsView::setCursor(i_cursor);
+    viewport()->setCursor(i_cursor);
+}
+
+//------------------------------------------------------------------------------
+void CDrawingView::unsetCursor()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "unsetCursor",
+        /* strAddInfo   */ "" );
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        QString strAddTrcInfo = "CurrentCursor: " + qCursor2Str(cursor());
+        mthTracer.trace(strAddTrcInfo);
+    }
+
+    QGraphicsView::unsetCursor();
+    viewport()->unsetCursor();
+}
+
+/*==============================================================================
+public: // overridables of base class QWidget
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -347,50 +419,6 @@ void CDrawingView::keyReleaseEvent( QKeyEvent* i_pEv )
         /* strAddInfo   */ strMthInArgs );
 
     QGraphicsView::keyReleaseEvent(i_pEv);
-}
-
-/*==============================================================================
-public: // reimplemented method of base class QWidget
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CDrawingView::setCursor(const QCursor& i_cursor)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qCursor2Str(i_cursor);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setCursor",
-        /* strAddInfo   */ strMthInArgs );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        QString strAddTrcInfo = "CurrentCursor: " + qCursor2Str(cursor());
-        mthTracer.trace(strAddTrcInfo);
-    }
-
-    QGraphicsView::setCursor(i_cursor);
-    viewport()->setCursor(i_cursor);
-}
-
-//------------------------------------------------------------------------------
-void CDrawingView::unsetCursor()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "unsetCursor",
-        /* strAddInfo   */ "" );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        QString strAddTrcInfo = "CurrentCursor: " + qCursor2Str(cursor());
-        mthTracer.trace(strAddTrcInfo);
-    }
-
-    QGraphicsView::unsetCursor();
-    viewport()->unsetCursor();
 }
 
 /*==============================================================================

@@ -56,7 +56,7 @@ may result in using the software modules.
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactoryPolyline.h"
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactoryRect.h"
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactoryText.h"
-#include "ZSDraw/Widgets/GraphObjFormat/ZSDrawDlgFormatGraphObjs.h"
+#include "ZSDraw/Widgets/Drawing/ZSDrawingViewDrawSettingsDlg.h"
 #include "ZSDraw/Widgets/Drawing/ZSDrawingViewPropertiesDlg.h"
 #include "ZSDraw/Widgets/Drawing/ZSDrawingView.h"
 #include "ZSDraw/Widgets/ObjFactories/ZSDrawObjFactoriesModel.h"
@@ -497,7 +497,7 @@ CMainWindow::CMainWindow(
 
     onDrawingSceneModeChanged();
     onDrawingSceneSizeChanged(pDrawingScene->drawingSize());
-    onDrawingSceneDrawSettingsChanged(pDrawingScene->getDrawSettings());
+    onDrawingSceneDrawSettingsChanged(pDrawingScene->drawSettings());
 
 } // ctor
 
@@ -3311,35 +3311,25 @@ void CMainWindow::onActionDrawSettingsLineTriggered(bool i_bChecked)
         /* strMethod    */ "onActionDrawSettingsLineTriggered",
         /* strAddInfo   */ strMthInArgs );
 
-    CDlgFormatGraphObjs* pDlgFormatGraphObjs = nullptr;
-    CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
-
-    // If no graphical object is selected ...
-    if( pDrawingScene->selectedItems().size() == 0 ) {
-        // .. set default drawing attribute for following draw commands.
-        pDlgFormatGraphObjs = new CDlgFormatGraphObjs(pDrawingScene);
+    CDrawingView* pDrawingView = m_pWdgtCentral->drawingView();
+    QString strDlgTitle = ZS::System::GUI::getMainWindowTitle() + ": Draw Settings";
+    CDlgDrawingViewDrawSettings* pDlg = CDlgDrawingViewDrawSettings::GetInstance(pDrawingView);
+    if( pDlg == nullptr ) {
+        pDlg = CDlgDrawingViewDrawSettings::CreateInstance(strDlgTitle, pDrawingView);
+        pDlg->setCurrentWidget(CWdgtDrawingViewDrawSettings::EWidget::LineStyle);
+        pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
+        pDlg->adjustSize();
+        pDlg->show();
     }
-    // If one specific graphical object is selected ...
-    else if( pDrawingScene->selectedItems().size() == 1 ) {
-        // .. set drawing attributes for this object.
-        CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pDrawingScene->selectedItems()[0]);
-        if( pGraphObj != nullptr ) {
-            pDlgFormatGraphObjs = new CDlgFormatGraphObjs(pDrawingScene,pGraphObj);
+    else {
+        if( pDlg->isHidden() ) {
+            pDlg->show();
         }
+        pDlg->setCurrentWidget(CWdgtDrawingViewDrawSettings::EWidget::LineStyle);
+        pDlg->raise();
+        pDlg->activateWindow();
     }
-    // If several graphical objects are selected ...
-    else { // if( m_pDrawingScene->selectedItems().size() > 1 )
-        // .. set drawing attributes for those object.
-        pDlgFormatGraphObjs = new CDlgFormatGraphObjs(pDrawingScene);
-    }
-
-    if( pDlgFormatGraphObjs != nullptr ) {
-        pDlgFormatGraphObjs->setCurrentWidget(CDlgFormatGraphObjs::c_strWdgtLineStyle);
-        pDlgFormatGraphObjs->exec();
-        delete pDlgFormatGraphObjs;
-        pDlgFormatGraphObjs = nullptr;
-    }
-} // onActionDrawSettingsLineTriggered
+}
 
 //------------------------------------------------------------------------------
 void CMainWindow::onActionDrawSettingsFillTriggered(bool i_bChecked)
@@ -3355,36 +3345,25 @@ void CMainWindow::onActionDrawSettingsFillTriggered(bool i_bChecked)
         /* strMethod    */ "onActionDrawSettingsFillTriggered",
         /* strAddInfo   */ strMthInArgs );
 
-    CDlgFormatGraphObjs* pDlgFormatGraphObjs = nullptr;
-    CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
-
-    // If no graphical object is selected ...
-    if( pDrawingScene->selectedItems().size() == 0 ) {
-        // .. set default drawing attribute for following draw commands.
-        pDlgFormatGraphObjs = new CDlgFormatGraphObjs(pDrawingScene);
+    CDrawingView* pDrawingView = m_pWdgtCentral->drawingView();
+    QString strDlgTitle = ZS::System::GUI::getMainWindowTitle() + ": Draw Settings";
+    CDlgDrawingViewDrawSettings* pDlg = CDlgDrawingViewDrawSettings::GetInstance(pDrawingView);
+    if( pDlg == nullptr ) {
+        pDlg = CDlgDrawingViewDrawSettings::CreateInstance(strDlgTitle, pDrawingView);
+        pDlg->setCurrentWidget(CWdgtDrawingViewDrawSettings::EWidget::FillStyle);
+        pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
+        pDlg->adjustSize();
+        pDlg->show();
     }
-    // If one specific graphical object is selected ...
-    else if( pDrawingScene->selectedItems().size() == 1 )
-    {
-        // .. set drawing attributes for this object.
-        CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pDrawingScene->selectedItems()[0]);
-        if( pGraphObj != nullptr ) {
-            pDlgFormatGraphObjs = new CDlgFormatGraphObjs(pDrawingScene,pGraphObj);
+    else {
+        if( pDlg->isHidden() ) {
+            pDlg->show();
         }
+        pDlg->setCurrentWidget(CWdgtDrawingViewDrawSettings::EWidget::FillStyle);
+        pDlg->raise();
+        pDlg->activateWindow();
     }
-    // If several graphical objects are selected ...
-    else { // if( m_pDrawingScene->selectedItems().size() > 1 )
-        // .. set drawing attributes for those object.
-        pDlgFormatGraphObjs = new CDlgFormatGraphObjs(pDrawingScene);
-    }
-
-    if( pDlgFormatGraphObjs != nullptr ) {
-        pDlgFormatGraphObjs->setCurrentWidget(CDlgFormatGraphObjs::c_strWdgtFillStyle);
-        pDlgFormatGraphObjs->exec();
-        delete pDlgFormatGraphObjs;
-        pDlgFormatGraphObjs = nullptr;
-    }
-} // onActionDrawSettingsFillTriggered
+}
 
 //------------------------------------------------------------------------------
 void CMainWindow::onActionDrawSettingsTextTriggered(bool i_bChecked)
@@ -3400,35 +3379,25 @@ void CMainWindow::onActionDrawSettingsTextTriggered(bool i_bChecked)
         /* strMethod    */ "onActionDrawSettingsTextTriggered",
         /* strAddInfo   */ strMthInArgs );
 
-    CDlgFormatGraphObjs* pDlgFormatGraphObjs = nullptr;
-    CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
-
-    // If no graphical object is selected ...
-    if( pDrawingScene->selectedItems().size() == 0 ) {
-        // .. set default drawing attribute for following draw commands.
-        pDlgFormatGraphObjs = new CDlgFormatGraphObjs(pDrawingScene);
+    CDrawingView* pDrawingView = m_pWdgtCentral->drawingView();
+    QString strDlgTitle = ZS::System::GUI::getMainWindowTitle() + ": Draw Settings";
+    CDlgDrawingViewDrawSettings* pDlg = CDlgDrawingViewDrawSettings::GetInstance(pDrawingView);
+    if( pDlg == nullptr ) {
+        pDlg = CDlgDrawingViewDrawSettings::CreateInstance(strDlgTitle, pDrawingView);
+        pDlg->setCurrentWidget(CWdgtDrawingViewDrawSettings::EWidget::TextStyle);
+        pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
+        pDlg->adjustSize();
+        pDlg->show();
     }
-    // If one specific graphical object is selected ...
-    else if( pDrawingScene->selectedItems().size() == 1 ) {
-        // .. set drawing attributes for this object.
-        CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pDrawingScene->selectedItems()[0]);
-        if( pGraphObj != nullptr ) {
-            pDlgFormatGraphObjs = new CDlgFormatGraphObjs(pDrawingScene,pGraphObj);
+    else {
+        if( pDlg->isHidden() ) {
+            pDlg->show();
         }
+        pDlg->setCurrentWidget(CWdgtDrawingViewDrawSettings::EWidget::TextStyle);
+        pDlg->raise();
+        pDlg->activateWindow();
     }
-    // If several graphical objects are selected ...
-    else { // if( m_pDrawingScene->selectedItems().size() > 1 )
-        // .. set drawing attributes for those object.
-        pDlgFormatGraphObjs = new CDlgFormatGraphObjs(pDrawingScene);
-    }
-
-    if( pDlgFormatGraphObjs != nullptr ) {
-        pDlgFormatGraphObjs->setCurrentWidget(CDlgFormatGraphObjs::c_strWdgtTextStyle);
-        pDlgFormatGraphObjs->exec();
-        delete pDlgFormatGraphObjs;
-        pDlgFormatGraphObjs = nullptr;
-    }
-} // onActionDrawSettingsTextTriggered
+}
 
 /*==============================================================================
 public slots: // Menu - Draw - Standard Shapes

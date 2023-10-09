@@ -24,13 +24,13 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLinePropertiesWdgt.h"
-#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLineGeometryPropertiesWdgt.h"
+#include "ZSDraw/Widgets/Drawing/ZSDrawingViewDrawSettingsWdgt.h"
+#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjFillStylePropertiesWdgt.h"
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLineStylePropertiesWdgt.h"
-#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPropertiesLabelsWdgt.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLine.h"
+#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjTextStylePropertiesWdgt.h"
 #include "ZSDraw/Widgets/Drawing/ZSDrawingView.h"
 #include "ZSSysGUI/ZSSysGUIDllMain.h"
+#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysRefCountGuard.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
@@ -56,23 +56,45 @@ using namespace ZS::Draw;
 
 
 /*******************************************************************************
-class CWdgtGraphObjLineProperties : public CWdgtGraphObjPropertiesAbstract
+class CWdgtDrawingViewDrawSettings : public CWdgtGraphObjPropertiesAbstract
 *******************************************************************************/
+
+/*==============================================================================
+public: // type definitions and constants
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QString CWdgtDrawingViewDrawSettings::widgetName(EWidget i_widget)
+//------------------------------------------------------------------------------
+{
+    QString str;
+    if (i_widget == EWidget::LineStyle) {
+        str = "LineStyle";
+    }
+    else if (i_widget == EWidget::FillStyle) {
+        str = "FillStyle";
+    }
+    else if (i_widget == EWidget::TextStyle) {
+        str = "TextStyle";
+    }
+    return str;
+}
 
 /*==============================================================================
 public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CWdgtGraphObjLineProperties::CWdgtGraphObjLineProperties(
+CWdgtDrawingViewDrawSettings::CWdgtDrawingViewDrawSettings(
     CDrawingScene* i_pDrawingScene, const QString& i_strObjName, QWidget* i_pWdgtParent) :
 //------------------------------------------------------------------------------
     CWdgtGraphObjPropertiesAbstract(
-        i_pDrawingScene, NameSpace() + "::Widgets::GraphObjs", "StandardShapes::Line",
+        i_pDrawingScene,
+        NameSpace() + "::Widgets", "Drawing",
         ClassName(), i_strObjName, i_pWdgtParent),
-    m_pWdgtLabels(nullptr),
-    m_pWdgtGeometry(nullptr),
-    m_pWdgtLineStyle(nullptr)
+    m_pWdgtLineStyle(nullptr),
+    m_pWdgtFillStyle(nullptr),
+    m_pWdgtTextStyle(nullptr)
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -80,41 +102,33 @@ CWdgtGraphObjLineProperties::CWdgtGraphObjLineProperties(
         /* strMethod    */ "ctor",
         /* strAddInfo   */ "" );
 
-    m_pWdgtLabels = new CWdgtGraphObjPropertiesLabels(
-        i_pDrawingScene, NameSpace() + "::Widgets::GraphObjs",
-        "StandardShapes::Line", i_strObjName);
-    m_pLyt->addWidget(m_pWdgtLabels);
-    QObject::connect(
-        m_pWdgtLabels, &CWdgtGraphObjPropertiesLabels::contentChanged,
-        this, &CWdgtGraphObjLineProperties::onWdgtLabelsContentChanged);
-
-    m_pWdgtGeometry = new CWdgtGraphObjLineGeometryProperties(
-        i_pDrawingScene, NameSpace() + "::Widgets::GraphObjs", i_strObjName);
-    m_pLyt->addWidget(m_pWdgtGeometry);
-    QObject::connect(
-        m_pWdgtGeometry, &CWdgtGraphObjLineGeometryProperties::contentChanged,
-        this, &CWdgtGraphObjLineProperties::onWdgtGeometryContentChanged);
-
     m_pWdgtLineStyle = new CWdgtGraphObjLineStyleProperties(
-        i_pDrawingScene, NameSpace() + "::Widgets::GraphObjs",
-        "StandardShapes::Line", i_strObjName);
+        i_pDrawingScene, NameSpace() + "::Widgets", "Drawing", i_strObjName);
     m_pLyt->addWidget(m_pWdgtLineStyle);
     QObject::connect(
         m_pWdgtLineStyle, &CWdgtGraphObjLineStyleProperties::contentChanged,
-        this, &CWdgtGraphObjLineProperties::onWdgtLineStyleContentChanged);
+        this, &CWdgtDrawingViewDrawSettings::onWdgtLineStyleContentChanged);
 
-    // <Buttons>
-    //==========
+    m_pWdgtFillStyle = new CWdgtGraphObjFillStyleProperties(
+        i_pDrawingScene, NameSpace() + "::Widgets", "Drawing", i_strObjName);
+    m_pLyt->addWidget(m_pWdgtFillStyle);
+    QObject::connect(
+        m_pWdgtFillStyle, &CWdgtGraphObjFillStyleProperties::contentChanged,
+        this, &CWdgtDrawingViewDrawSettings::onWdgtFillStyleContentChanged);
 
-    m_pLyt->addSpacing(10);
-    createButtonsLineWidget();
-    m_pLyt->addWidget(m_pWdgtButtons);
+    m_pWdgtTextStyle = new CWdgtGraphObjTextStyleProperties(
+        i_pDrawingScene, NameSpace() + "::Widgets", "Drawing", i_strObjName);
+    m_pLyt->addWidget(m_pWdgtTextStyle);
+    QObject::connect(
+        m_pWdgtTextStyle, &CWdgtGraphObjTextStyleProperties::contentChanged,
+        this, &CWdgtDrawingViewDrawSettings::onWdgtTextStyleContentChanged);
+
     m_pLyt->addStretch();
 
 } // ctor
 
 //------------------------------------------------------------------------------
-CWdgtGraphObjLineProperties::~CWdgtGraphObjLineProperties()
+CWdgtDrawingViewDrawSettings::~CWdgtDrawingViewDrawSettings()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -123,9 +137,38 @@ CWdgtGraphObjLineProperties::~CWdgtGraphObjLineProperties()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
-    m_pWdgtLabels = nullptr;
-    m_pWdgtGeometry = nullptr;
     m_pWdgtLineStyle = nullptr;
+    m_pWdgtFillStyle = nullptr;
+    m_pWdgtTextStyle = nullptr;
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtDrawingViewDrawSettings::expand(EWidget i_widget, bool i_bExpand)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = widgetName(i_widget) + ", " + bool2Str(i_bExpand);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "expand",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (i_widget == EWidget::LineStyle) {
+        m_pWdgtLineStyle->expand(i_bExpand);
+    }
+    else if (i_widget == EWidget::FillStyle) {
+        m_pWdgtFillStyle->expand(i_bExpand);
+    }
+    else if (i_widget == EWidget::TextStyle) {
+        m_pWdgtTextStyle->expand(i_bExpand);
+    }
 }
 
 /*==============================================================================
@@ -133,7 +176,7 @@ public: // overridables of base class CWdgtGraphObjPropertiesAbstract
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool CWdgtGraphObjLineProperties::setKeyInTree(const QString& i_strKeyInTree)
+bool CWdgtDrawingViewDrawSettings::setKeyInTree(const QString& i_strKeyInTree)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -150,10 +193,9 @@ bool CWdgtGraphObjLineProperties::setKeyInTree(const QString& i_strKeyInTree)
 
     if (m_strKeyInTree != i_strKeyInTree) {
         bObjectChanged = true;
-        CWdgtGraphObjPropertiesAbstract::setKeyInTree(i_strKeyInTree);
-        m_pWdgtLabels->setKeyInTree(i_strKeyInTree);
-        m_pWdgtGeometry->setKeyInTree(i_strKeyInTree);
         m_pWdgtLineStyle->setKeyInTree(i_strKeyInTree);
+        m_pWdgtFillStyle->setKeyInTree(i_strKeyInTree);
+        m_pWdgtTextStyle->setKeyInTree(i_strKeyInTree);
     }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -167,7 +209,7 @@ public: // overridables of base class CWdgtGraphObjPropertiesAbstract
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool CWdgtGraphObjLineProperties::hasErrors() const
+bool CWdgtDrawingViewDrawSettings::hasErrors() const
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -176,12 +218,12 @@ bool CWdgtGraphObjLineProperties::hasErrors() const
         /* strMethod    */ "hasErrors",
         /* strAddInfo   */ "" );
 
-    bool bHasErrors = m_pWdgtLabels->hasErrors();
+    bool bHasErrors = m_pWdgtLineStyle->hasErrors();
     if (!bHasErrors) {
-        bHasErrors = m_pWdgtGeometry->hasErrors();
+        bHasErrors = m_pWdgtFillStyle->hasErrors();
     }
     if (!bHasErrors) {
-        bHasErrors = m_pWdgtLineStyle->hasErrors();
+        bHasErrors = m_pWdgtTextStyle->hasErrors();
     }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -191,7 +233,7 @@ bool CWdgtGraphObjLineProperties::hasErrors() const
 }
 
 //------------------------------------------------------------------------------
-bool CWdgtGraphObjLineProperties::hasChanges() const
+bool CWdgtDrawingViewDrawSettings::hasChanges() const
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -206,15 +248,12 @@ bool CWdgtGraphObjLineProperties::hasChanges() const
     // here we are in the call stack of the "onGraphObjAboutToDestroyed" of this widget.
     // The child widgets slot may be called sometimes afterwards.
 
-    bool bHasChanges = false;
-    if (m_pGraphObj != nullptr) {
-        bHasChanges = m_pWdgtLabels->hasChanges();
-        if (!bHasChanges) {
-            bHasChanges = m_pWdgtGeometry->hasChanges();
-        }
-        if (!bHasChanges) {
-            bHasChanges = m_pWdgtLineStyle->hasChanges();
-        }
+    bool bHasChanges = m_pWdgtLineStyle->hasChanges();
+    if (!bHasChanges) {
+        bHasChanges = m_pWdgtFillStyle->hasChanges();
+    }
+    if (!bHasChanges) {
+        bHasChanges = m_pWdgtTextStyle->hasChanges();
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(bHasChanges);
@@ -223,7 +262,7 @@ bool CWdgtGraphObjLineProperties::hasChanges() const
 }
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjLineProperties::acceptChanges()
+void CWdgtDrawingViewDrawSettings::acceptChanges()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -232,39 +271,32 @@ void CWdgtGraphObjLineProperties::acceptChanges()
         /* strMethod    */ "acceptChanges",
         /* strAddInfo   */ "" );
 
-    if (m_pGraphObj != nullptr)
-    {
-        if (hasErrors()) {
-            // Not really necessary as the apply button should be disabled if an
-            // input control has an erronous value. But kept as an example how
-            // the user could be informed that he should correct the values.
-            QMessageBox::critical(
-                this, ZS::System::GUI::getMainWindowTitle() + ": Cannot save changes",
-                "Some input is erroneous. Please correct the relevant input first.");
-        }
-        else if (hasChanges()) {
-            {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
+    if (hasErrors()) {
+        // Not really necessary as the apply button should be disabled if an
+        // input control has an erronous value. But kept as an example how
+        // the user could be informed that he should correct the values.
+        QMessageBox::critical(
+            this, ZS::System::GUI::getMainWindowTitle() + ": Cannot save changes",
+            "Some input is erroneous. Please correct the relevant input first.");
+    }
+    else if (hasChanges()) {
+        {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
 
-                // When applying changes onGraphObjChanged is called.
-                // If the ContentChangedSignalBlockedCounter would not be incremented
-                // the abstract base class would call fillEditControls of the base class.
-                // This is not a problem as the method does nothing. But the method is not
-                // expected to be called so we avoid it for the sake of clarification
-                // (and to have a clear method trace output where the unexpected call is not listed).
-                m_pWdgtLabels->acceptChanges();
-                m_pWdgtGeometry->acceptChanges();
-                m_pWdgtLineStyle->acceptChanges();
-            }
-
-            // After the changes have been applied the enabled state of the Apply and
-            // Reset buttons got to be updated.
-            updateButtonsEnabled();
+            // When applying changes onGraphObjChanged is called.
+            // If the ContentChangedSignalBlockedCounter would not be incremented
+            // the abstract base class would call fillEditControls of the base class.
+            // This is not a problem as the method does nothing. But the method is not
+            // expected to be called so we avoid it for the sake of clarification
+            // (and to have a clear method trace output where the unexpected call is not listed).
+            m_pWdgtLineStyle->acceptChanges();
+            m_pWdgtFillStyle->acceptChanges();
+            m_pWdgtTextStyle->acceptChanges();
         }
     }
 }
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjLineProperties::rejectChanges()
+void CWdgtDrawingViewDrawSettings::rejectChanges()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -273,11 +305,9 @@ void CWdgtGraphObjLineProperties::rejectChanges()
         /* strMethod    */ "rejectChanges",
         /* strAddInfo   */ "" );
 
-    m_pWdgtLabels->rejectChanges();
-    m_pWdgtGeometry->rejectChanges();
     m_pWdgtLineStyle->rejectChanges();
-
-    updateButtonsEnabled();
+    m_pWdgtFillStyle->rejectChanges();
+    m_pWdgtTextStyle->rejectChanges();
 }
 
 /*==============================================================================
@@ -285,33 +315,7 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjLineProperties::onWdgtLabelsContentChanged()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onWdgtLabelsContentChanged",
-        /* strAddInfo   */ "" );
-
-    updateButtonsEnabled();
-}
-
-//------------------------------------------------------------------------------
-void CWdgtGraphObjLineProperties::onWdgtGeometryContentChanged()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onWdgtGeometryContentChanged",
-        /* strAddInfo   */ "" );
-
-    updateButtonsEnabled();
-}
-
-//------------------------------------------------------------------------------
-void CWdgtGraphObjLineProperties::onWdgtLineStyleContentChanged()
+void CWdgtDrawingViewDrawSettings::onWdgtLineStyleContentChanged()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -320,5 +324,31 @@ void CWdgtGraphObjLineProperties::onWdgtLineStyleContentChanged()
         /* strMethod    */ "onWdgtLineStyleContentChanged",
         /* strAddInfo   */ "" );
 
-    updateButtonsEnabled();
+    emit_contentChanged();
+}
+
+//------------------------------------------------------------------------------
+void CWdgtDrawingViewDrawSettings::onWdgtFillStyleContentChanged()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onWdgtFillStyleContentChanged",
+        /* strAddInfo   */ "" );
+
+    emit_contentChanged();
+}
+
+//------------------------------------------------------------------------------
+void CWdgtDrawingViewDrawSettings::onWdgtTextStyleContentChanged()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onWdgtTextStyleContentChanged",
+        /* strAddInfo   */ "" );
+
+    emit_contentChanged();
 }

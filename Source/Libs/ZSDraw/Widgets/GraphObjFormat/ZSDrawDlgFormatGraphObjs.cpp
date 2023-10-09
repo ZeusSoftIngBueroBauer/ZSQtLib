@@ -75,13 +75,9 @@ class CDlgFormatGraphObjs : public QDialog
 public: // type definitions and constants
 ==============================================================================*/
 
-const QString CDlgFormatGraphObjs::c_strWdgtLabels            = "Labels";
-const QString CDlgFormatGraphObjs::c_strWdgtLineStyle         = "Line Style";
-const QString CDlgFormatGraphObjs::c_strWdgtFillStyle         = "Fill Style";
-const QString CDlgFormatGraphObjs::c_strWdgtTextStyle         = "Text Style";
-const QString CDlgFormatGraphObjs::c_strWdgtGeometry          = "Geometry";
-const QString CDlgFormatGraphObjs::c_strWdgtText              = "Text";
-const QString CDlgFormatGraphObjs::c_strWdgtLabelVisibilities = "Label Visibilities";
+const QString CDlgFormatGraphObjs::c_strWdgtLineStyle = "Line Style";
+const QString CDlgFormatGraphObjs::c_strWdgtFillStyle = "Fill Style";
+const QString CDlgFormatGraphObjs::c_strWdgtTextStyle = "Text Style";
 
 /*==============================================================================
 public: // ctors and dtor
@@ -163,18 +159,7 @@ CDlgFormatGraphObjs::CDlgFormatGraphObjs(
     m_pStackedWdgt = new QStackedWidget();
     m_pLytSettings->addWidget(m_pStackedWdgt,1);
 
-    QIcon iconLabels;
-    QPixmap pxmLabels(":/ZS/Draw/Key16x16.png");
-    iconLabels.addPixmap(pxmLabels);
-
-    QListWidgetItem* pListWdgtItemLabels = new QListWidgetItem(iconLabels, c_strWdgtLabels, m_pListWdgt);
-    m_arpListWdgtItems.insert(c_strWdgtLabels,pListWdgtItemLabels);
-
-    CWdgtFormatGraphObjsLabels* pWdgtLabels = new CWdgtFormatGraphObjsLabels(m_pDrawingScene, m_pGraphObj);
-    m_arpWdgtsFormatGraphObjs.insert(c_strWdgtLabels,pWdgtLabels);
-    m_pStackedWdgt->addWidget(pWdgtLabels);
-
-    if( drawSettings.isPenUsed() )
+    //if( drawSettings.isPenUsed() )
     {
         QIcon iconLine;
         QPixmap pxmLine(":/ZS/Draw/DrawSettingsLineStyle16x16.png");
@@ -197,7 +182,7 @@ CDlgFormatGraphObjs::CDlgFormatGraphObjs(
         m_pStackedWdgt->addWidget(pWdgtLineStyle);
     }
 
-    if( drawSettings.isFillUsed() )
+    //if( drawSettings.isFillUsed() )
     {
         QIcon iconFill;
         QPixmap pxmFill(":/ZS/Draw/DrawSettingsBrushStyle16x16.png");
@@ -211,7 +196,7 @@ CDlgFormatGraphObjs::CDlgFormatGraphObjs(
         m_pStackedWdgt->addWidget(pWdgtFillStyle);
     }
 
-    if( drawSettings.isTextUsed() )
+    //if( drawSettings.isTextUsed() )
     {
         QIcon iconText;
         QPixmap pxmText(":/ZS/Draw/DrawSettingsTextStyle16x16.png");
@@ -224,42 +209,6 @@ CDlgFormatGraphObjs::CDlgFormatGraphObjs(
         m_arpWdgtsFormatGraphObjs.insert(c_strWdgtTextStyle,pWdgtTextStyle);
         m_pStackedWdgt->addWidget(pWdgtTextStyle);
     }
-
-    QIcon iconGeometry;
-    QPixmap pxmGeometry(":/ZS/Draw/DrawSettingsGeometry16x16.png");
-    iconGeometry.addPixmap(pxmGeometry);
-
-    QListWidgetItem* pListWdgtItemGeometry = new QListWidgetItem(iconGeometry, c_strWdgtGeometry, m_pListWdgt);
-    m_arpListWdgtItems.insert(c_strWdgtGeometry,pListWdgtItemGeometry);
-
-    CWdgtFormatGraphObjsGeometry* pWdgtGeometry = new CWdgtFormatGraphObjsGeometry(m_pDrawingScene, m_pGraphObj);
-    m_arpWdgtsFormatGraphObjs.insert(c_strWdgtGeometry,pWdgtGeometry);
-    m_pStackedWdgt->addWidget(pWdgtGeometry);
-
-    if( m_pGraphObj != nullptr && m_pGraphObj->isText() )
-    {
-        QIcon iconText;
-        QPixmap pxmText(":/ZS/Draw/GraphObjText16x16.png");
-        iconText.addPixmap(pxmText);
-
-        QListWidgetItem* pListWdgtItemText = new QListWidgetItem(iconText, c_strWdgtText, m_pListWdgt);
-        m_arpListWdgtItems.insert(c_strWdgtText,pListWdgtItemText);
-
-        CWdgtFormatGraphObjsText* pWdgtText = new CWdgtFormatGraphObjsText(m_pDrawingScene, m_pGraphObj);
-        m_arpWdgtsFormatGraphObjs.insert(c_strWdgtText,pWdgtText);
-        m_pStackedWdgt->addWidget(pWdgtText);
-    }
-
-    QIcon iconLabelVisibilities;
-    QPixmap pxmLabelVisibilities(":/ZS/Draw/GraphObjText16x16.png");
-    iconLabelVisibilities.addPixmap(pxmLabelVisibilities);
-
-    QListWidgetItem* pListWdgtItemLabelVisibilitiess = new QListWidgetItem(iconLabelVisibilities, c_strWdgtLabelVisibilities, m_pListWdgt);
-    m_arpListWdgtItems.insert(c_strWdgtLabelVisibilities, pListWdgtItemLabelVisibilitiess);
-
-    CWdgtFormatGraphObjsLabelVisibilities* pWdgtLabelVisibilitiess = new CWdgtFormatGraphObjsLabelVisibilities(m_pDrawingScene, m_pGraphObj);
-    m_arpWdgtsFormatGraphObjs.insert(c_strWdgtText, pWdgtLabelVisibilitiess);
-    m_pStackedWdgt->addWidget(pWdgtLabelVisibilitiess);
 
     if( !connect(
         /* pObjSender   */ m_pListWdgt,

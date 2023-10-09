@@ -24,12 +24,11 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include "ZSDraw/Widgets/Drawing/ZSDrawingViewPropertiesDlg.h"
-#include "ZSDraw/Widgets/Drawing/ZSDrawingViewPropertiesWdgt.h"
+#include "ZSDraw/Widgets/Drawing/ZSDrawingViewDrawSettingsDlg.h"
 #include "ZSDraw/Widgets/Drawing/ZSDrawingView.h"
+#include "ZSDraw/Common/ZSDrawSettings.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSSys/ZSSysAux.h"
-#include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 
@@ -38,9 +37,11 @@ may result in using the software modules.
 #if QT_VERSION < 0x050000
 #include <QtGui/qlayout.h>
 #include <QtGui/qpushbutton.h>
+#include <QtGui/qscrollarea.h>
 #else
 #include <QtWidgets/qlayout.h>
 #include <QtWidgets/qpushbutton.h>
+#include <QtWidgets/qscrollarea.h>
 #endif
 
 #include "ZSSys/ZSSysMemLeakDump.h"
@@ -52,7 +53,7 @@ using namespace ZS::Draw;
 
 
 /*******************************************************************************
-class CDlgDrawingViewProperties : public CDialog
+class CDlgDrawingViewDrawSettings : public ZS::System::GUI::CDialog
 *******************************************************************************/
 
 /*==============================================================================
@@ -60,7 +61,7 @@ public: // class methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CDlgDrawingViewProperties* CDlgDrawingViewProperties::CreateInstance(
+CDlgDrawingViewDrawSettings* CDlgDrawingViewDrawSettings::CreateInstance(
     const QString&  i_strDlgTitle,
     CDrawingView*   i_pDrawingView,
     QWidget*        i_pWdgtParent,
@@ -73,7 +74,7 @@ CDlgDrawingViewProperties* CDlgDrawingViewProperties::CreateInstance(
         throw CException(__FILE__, __LINE__, EResultSingletonClassAlreadyInstantiated, strKey);
     }
 
-    return new CDlgDrawingViewProperties(
+    return new CDlgDrawingViewDrawSettings(
         /* strDlgTitle  */ i_strDlgTitle,
         /* pDrawingView */ i_pDrawingView,
         /* pWdgtParent  */ i_pWdgtParent,
@@ -81,10 +82,10 @@ CDlgDrawingViewProperties* CDlgDrawingViewProperties::CreateInstance(
 }
 
 //------------------------------------------------------------------------------
-CDlgDrawingViewProperties* CDlgDrawingViewProperties::GetInstance( CDrawingView* i_pDrawingView )
+CDlgDrawingViewDrawSettings* CDlgDrawingViewDrawSettings::GetInstance( CDrawingView* i_pDrawingView )
 //------------------------------------------------------------------------------
 {
-    return dynamic_cast<CDlgDrawingViewProperties*>(
+    return dynamic_cast<CDlgDrawingViewDrawSettings*>(
         CDialog::GetInstance(NameSpace() + "::Widgets::Drawing", ClassName(), i_pDrawingView->objectName()));
 }
 
@@ -93,7 +94,7 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CDlgDrawingViewProperties::CDlgDrawingViewProperties(
+CDlgDrawingViewDrawSettings::CDlgDrawingViewDrawSettings(
     const QString&  i_strDlgTitle,
     CDrawingView*   i_pDrawingView,
     QWidget*        i_pWdgtParent,
@@ -108,7 +109,9 @@ CDlgDrawingViewProperties::CDlgDrawingViewProperties(
         /* wFlags       */ i_wFlags ),
     m_pDrawingView(i_pDrawingView),
     m_pLyt(nullptr),
-    m_pWdgtDrawingViewProperties(nullptr),
+    m_pScrollArea(nullptr),
+    m_pWdgtDrawSettings(nullptr),
+    // Buttons
     m_pLytLineBtns(nullptr),
     m_pBtnOk(nullptr),
     m_pBtnApply(nullptr),
@@ -126,65 +129,71 @@ CDlgDrawingViewProperties::CDlgDrawingViewProperties(
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
 
+    QObject::connect(
+        m_pDrawingView, &CDrawingView::destroyed,
+        this, &CDlgDrawingViewDrawSettings::onDrawingViewDestroyed);
+
     QVBoxLayout* m_pLyt = new QVBoxLayout();
     setLayout(m_pLyt);
 
-    QHBoxLayout* m_pLytSettings = new QHBoxLayout();
-    m_pLyt->addLayout(m_pLytSettings);
-
-    setMinimumHeight(480);
-    setMinimumWidth(560);
-
-    // <Widget> Drawing Scene
-    //-----------------------
+    // Style Widgets
+    //==============
 
     CDrawingScene* pDrawingScene = m_pDrawingView->drawingScene();
+    CDrawSettings drawSettings = m_pDrawingView->drawSettings();
 
-    m_pWdgtDrawingViewProperties = new CWdgtDrawingViewProperties(m_pDrawingView, "DialogPageSetup", false);
-    m_pWdgtDrawingViewProperties->setKeyInTree(pDrawingScene->getGraphObjsIdxTree()->root()->keyInTree());
-    m_pLyt->addWidget(m_pWdgtDrawingViewProperties);
+    m_pScrollArea = new QScrollArea();
+    m_pScrollArea->setWidgetResizable(true);
+    m_pLyt->addWidget(m_pScrollArea, 1);
+
+    m_pWdgtDrawSettings = new CWdgtDrawingViewDrawSettings(pDrawingScene, objectName());
+    m_pWdgtDrawSettings->setKeyInTree(pDrawingScene->getGraphObjsIdxTree()->root()->keyInTree());
+    m_pScrollArea->setWidget(m_pWdgtDrawSettings);
     QObject::connect(
-        m_pWdgtDrawingViewProperties, &CWdgtDrawingViewProperties::contentChanged,
-        this, &CDlgDrawingViewProperties::onWdgtDrawingViewPropertiesContentChanged);
+        m_pWdgtDrawSettings, &CWdgtDrawingViewDrawSettings::contentChanged,
+        this, &CDlgDrawingViewDrawSettings::onWdgtDrawSettingsContentChanged);
 
     // Dialog buttons
-    //---------------
+    //================
 
     m_pLytLineBtns = new QHBoxLayout();
     m_pLyt->addSpacing(5);
     m_pLyt->addLayout(m_pLytLineBtns);
+
+    m_pLytLineBtns->addStretch();
 
     m_pBtnOk = new QPushButton("Ok");
     m_pLytLineBtns->addWidget(m_pBtnOk);
     m_pBtnOk->setDefault(true);
     QObject::connect(
         m_pBtnOk, &QPushButton::clicked,
-        this, &CDlgDrawingViewProperties::onBtnOkClicked);
+        this, &CDlgDrawingViewDrawSettings::onBtnOkClicked);
 
-    m_pBtnApply = new QPushButton("Apply");
+    m_pBtnApply = new QPushButton("Accept");
     m_pBtnApply->setEnabled(false);
     m_pLytLineBtns->addWidget(m_pBtnApply);
     QObject::connect(
         m_pBtnApply, &QPushButton::clicked,
-        this, &CDlgDrawingViewProperties::onBtnApplyClicked);
+        this, &CDlgDrawingViewDrawSettings::onBtnApplyClicked);
 
     m_pBtnReset = new QPushButton("Reset");
     m_pBtnReset->setEnabled(false);
     m_pLytLineBtns->addWidget(m_pBtnReset);
     QObject::connect(
         m_pBtnReset, &QPushButton::clicked,
-        this, &CDlgDrawingViewProperties::onBtnResetClicked);
+        this, &CDlgDrawingViewDrawSettings::onBtnResetClicked);
 
     m_pBtnCancel = new QPushButton("Cancel");
     m_pLytLineBtns->addWidget(m_pBtnCancel);
     QObject::connect(
         m_pBtnCancel, &QPushButton::clicked,
-        this, &CDlgDrawingViewProperties::onBtnCancelClicked);
+        this, &CDlgDrawingViewDrawSettings::onBtnCancelClicked);
 
-    m_pLytLineBtns->addStretch();
+    // Geometry of dialog
+    //-------------------
 
-    // Restore Geometry
-    //-----------------
+    setMinimumHeight(360);
+    setMinimumWidth(460);
 
     QSettings settings;
     restoreGeometry(settings.value(ClassName() + "/" + objectName() + "/Geometry").toByteArray());
@@ -192,7 +201,7 @@ CDlgDrawingViewProperties::CDlgDrawingViewProperties(
 } // ctor
 
 //------------------------------------------------------------------------------
-CDlgDrawingViewProperties::~CDlgDrawingViewProperties()
+CDlgDrawingViewDrawSettings::~CDlgDrawingViewDrawSettings()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -206,12 +215,36 @@ CDlgDrawingViewProperties::~CDlgDrawingViewProperties()
 
     m_pDrawingView = nullptr;
     m_pLyt = nullptr;
-    m_pWdgtDrawingViewProperties = nullptr;
+    m_pScrollArea = nullptr;
+    m_pWdgtDrawSettings = nullptr;
+    // Buttons
     m_pLytLineBtns = nullptr;
     m_pBtnOk = nullptr;
     m_pBtnApply = nullptr;
     m_pBtnReset = nullptr;
     m_pBtnCancel = nullptr;
+
+} // dtor
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CDlgDrawingViewDrawSettings::setCurrentWidget(CWdgtDrawingViewDrawSettings::EWidget i_widget)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = CWdgtDrawingViewDrawSettings::widgetName(i_widget);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setCurrentWidget",
+        /* strAddInfo   */ strMthInArgs );
+
+    m_pWdgtDrawSettings->expand(i_widget, true);
 }
 
 /*==============================================================================
@@ -219,7 +252,7 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDlgDrawingViewProperties::onBtnOkClicked(bool /*i_bChecked*/)
+void CDlgDrawingViewDrawSettings::onBtnOkClicked(bool /*i_bChecked*/)
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -228,13 +261,12 @@ void CDlgDrawingViewProperties::onBtnOkClicked(bool /*i_bChecked*/)
         /* strMethod    */ "onBtnOkClicked",
         /* strAddInfo   */ "" );
 
-    m_pWdgtDrawingViewProperties->acceptChanges();
-
+    m_pWdgtDrawSettings->acceptChanges();
     QDialog::accept();
 }
 
 //------------------------------------------------------------------------------
-void CDlgDrawingViewProperties::onBtnApplyClicked(bool /*i_bChecked*/)
+void CDlgDrawingViewDrawSettings::onBtnApplyClicked(bool /*i_bChecked*/)
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -243,20 +275,17 @@ void CDlgDrawingViewProperties::onBtnApplyClicked(bool /*i_bChecked*/)
         /* strMethod    */ "onBtnApplyClicked",
         /* strAddInfo   */ "" );
 
-    m_pWdgtDrawingViewProperties->acceptChanges();
+    m_pWdgtDrawSettings->acceptChanges();
 
-    if (m_pWdgtDrawingViewProperties->hasChanges()) {
-        m_pBtnApply->setEnabled(true);
-        m_pBtnReset->setEnabled(true);
-    }
-    else {
-        m_pBtnApply->setEnabled(false);
-        m_pBtnReset->setEnabled(false);
-    }
+    // After accepting changes there should be no changes anymore.
+    // Code just added for the sake of clarification.
+    bool bHasChanges = m_pWdgtDrawSettings->hasChanges();
+    m_pBtnApply->setEnabled(bHasChanges);
+    m_pBtnReset->setEnabled(bHasChanges);
 }
 
 //------------------------------------------------------------------------------
-void CDlgDrawingViewProperties::onBtnResetClicked(bool /*i_bChecked*/)
+void CDlgDrawingViewDrawSettings::onBtnResetClicked(bool /*i_bChecked*/)
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -265,20 +294,17 @@ void CDlgDrawingViewProperties::onBtnResetClicked(bool /*i_bChecked*/)
         /* strMethod    */ "onBtnResetClicked",
         /* strAddInfo   */ "" );
 
-    m_pWdgtDrawingViewProperties->rejectChanges();
+    m_pWdgtDrawSettings->rejectChanges();
 
-    if (m_pWdgtDrawingViewProperties->hasChanges()) {
-        m_pBtnApply->setEnabled(true);
-        m_pBtnReset->setEnabled(true);
-    }
-    else {
-        m_pBtnApply->setEnabled(false);
-        m_pBtnReset->setEnabled(false);
-    }
+    // After rejecting changes there should be no changes anymore.
+    // Code just added for the sake of clarification.
+    bool bHasChanges = m_pWdgtDrawSettings->hasChanges();
+    m_pBtnApply->setEnabled(bHasChanges);
+    m_pBtnReset->setEnabled(bHasChanges);
 }
 
 //------------------------------------------------------------------------------
-void CDlgDrawingViewProperties::onBtnCancelClicked(bool /*i_bChecked*/)
+void CDlgDrawingViewDrawSettings::onBtnCancelClicked(bool /*i_bChecked*/)
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -287,8 +313,7 @@ void CDlgDrawingViewProperties::onBtnCancelClicked(bool /*i_bChecked*/)
         /* strMethod    */ "onBtnCancelClicked",
         /* strAddInfo   */ "" );
 
-    m_pWdgtDrawingViewProperties->rejectChanges();
-
+    m_pWdgtDrawSettings->rejectChanges();
     QDialog::reject();
 }
 
@@ -297,21 +322,31 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDlgDrawingViewProperties::onWdgtDrawingViewPropertiesContentChanged()
+void CDlgDrawingViewDrawSettings::onWdgtDrawSettingsContentChanged()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onWdgtDrawingViewPropertiesDrawingSizeChanged",
+        /* strMethod    */ "onWdgtDrawSettingsContentChanged",
         /* strAddInfo   */ "" );
 
-    if (m_pWdgtDrawingViewProperties->hasChanges()) {
-        m_pBtnApply->setEnabled(true);
-        m_pBtnReset->setEnabled(true);
-    }
-    else {
-        m_pBtnApply->setEnabled(false);
-        m_pBtnReset->setEnabled(false);
-    }
+    bool bHasChanges = m_pWdgtDrawSettings->hasChanges();
+    m_pBtnApply->setEnabled(bHasChanges);
+    m_pBtnReset->setEnabled(bHasChanges);
+}
+
+//------------------------------------------------------------------------------
+void CDlgDrawingViewDrawSettings::onDrawingViewDestroyed()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onDrawingViewDestroyed",
+        /* strAddInfo   */ "" );
+
+    m_pDrawingView = nullptr;
+
+    QDialog::reject();
 }

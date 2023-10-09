@@ -261,7 +261,7 @@ public: // instance methods
     double getHitToleranceInPx() const { return m_fHitTolerance_px; }
 public: // instance methods
     void setDrawSettings( const CDrawSettings& i_settings );
-    CDrawSettings getDrawSettings() const { return m_drawSettings; }
+    const CDrawSettings& drawSettings() const { return m_drawSettings; }
 public: // instance methods
     void setPenColor( const QColor& i_clr );
     QColor getPenColor() const { return m_drawSettings.getPenColor(); }

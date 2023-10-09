@@ -107,10 +107,9 @@ CGraphObj* CObjFactoryResistor::createGraphObj(
         mthTracer.trace(strMthInArgs);
     }
 
-    CGraphObj* pGraphObj = new CGraphObjResistor(
-        /* pDrawingScene */ i_pDrawingScene,
-        /* drawSettings  */ i_drawSettings );
-
+    CDrawSettings drawSettings = i_drawSettings;
+    drawSettings.setGraphObjType(EGraphObjTypeGroup);
+    CGraphObj* pGraphObj = new CGraphObjResistor(i_pDrawingScene, drawSettings);
     return pGraphObj;
 
 } // createGraphObj

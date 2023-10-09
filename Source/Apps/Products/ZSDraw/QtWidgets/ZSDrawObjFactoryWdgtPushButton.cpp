@@ -106,10 +106,9 @@ CGraphObj* CObjFactoryWdgtPushButton::createGraphObj(
         mthTracer.trace(strMthInArgs);
     }
 
-    CGraphObj* pGraphObj = new CGraphObjWdgtPushButton(
-        /* pDrawingScene */ i_pDrawingScene,
-        /* drawSettings  */ i_drawSettings );
-
+    CDrawSettings drawSettings = i_drawSettings;
+    drawSettings.setGraphObjType(EGraphObjTypeGroup);
+    CGraphObj* pGraphObj = new CGraphObjWdgtPushButton(i_pDrawingScene, drawSettings);
     return pGraphObj;
 
 } // createGraphObj

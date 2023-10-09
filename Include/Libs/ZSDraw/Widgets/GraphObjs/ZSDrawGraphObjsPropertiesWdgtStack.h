@@ -74,7 +74,7 @@ public: // instance methods
 protected: // instance methods
     CWdgtGraphObjPropertiesAbstract* createGraphObjPropertiesWidget(const QString& i_strGraphObjType) const;
 protected slots: // overridables
-    virtual void onIdxTreeAboutToBeDestroyed();
+    void onIdxTreeAboutToBeDestroyed();
 protected: // instance members
     CDrawingView* m_pDrawingView;
     ZS::System::CIdxTree* m_pIdxTree;
@@ -83,7 +83,6 @@ protected: // instance members
     QHBoxLayout* m_pLytHeadLine;
     QLineEdit* m_pEdtPath;
     QScrollArea* m_pScrollArea;
-    //QHash<QString, int> m_hshGraphObjType2StackWdgtIndex;
     /*!< Trace admin object for method tracing. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 

@@ -106,9 +106,9 @@ CGraphObj* CObjFactoryWdgtCheckBox::createGraphObj(
         mthTracer.trace(strMthInArgs);
     }
 
-    CGraphObj* pGraphObj = new CGraphObjWdgtCheckBox(
-        /* pDrawingScene */ i_pDrawingScene,
-        /* drawSettings  */ i_drawSettings );
+    CDrawSettings drawSettings = i_drawSettings;
+    drawSettings.setGraphObjType(EGraphObjTypeGroup);
+    CGraphObj* pGraphObj = new CGraphObjWdgtCheckBox(i_pDrawingScene, drawSettings);
 
     return pGraphObj;
 
