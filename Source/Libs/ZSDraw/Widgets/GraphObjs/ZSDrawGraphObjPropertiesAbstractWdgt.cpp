@@ -57,6 +57,8 @@ public: // class members
 bool CWdgtGraphObjPropertiesAbstract::s_bWdgtLabelsVisible = false;
 bool CWdgtGraphObjPropertiesAbstract::s_bWdgtGeometryVisible = false;
 bool CWdgtGraphObjPropertiesAbstract::s_bWdgtLineStyleVisible = false;
+bool CWdgtGraphObjPropertiesAbstract::s_bWdgtFillStyleVisible = false;
+bool CWdgtGraphObjPropertiesAbstract::s_bWdgtTextStyleVisible = false;
 
 /*==============================================================================
 public: // ctors and dtor

@@ -29,7 +29,7 @@ may result in using the software modules.
 
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPropertiesAbstractWdgt.h"
 
-class QTableView;
+class QFont;
 
 namespace ZS
 {
@@ -45,13 +45,6 @@ public: // class methods
     static QString NameSpace() { return "ZS::Draw"; }
     /*! Returns the class name. */
     static QString ClassName() { return "CWdgtGraphObjTextStyleProperties"; }
-protected: // type definitions and constants
-    enum class EItemDataRoleModelLineEndStyle {
-        Id = Qt::UserRole+1,
-        LineEndStyle,
-        ArrowHeadFillStyle,
-        ArrowHeadBaseLineType
-    };
 public: // ctors and dtor
     CWdgtGraphObjTextStyleProperties(
         CDrawingScene* i_pDrawingScene,
@@ -67,8 +60,26 @@ public: // overridables of base class CWdgtGraphObjPropertiesAbstract
 protected: // overridables of base class CWdgtGraphObjPropertiesAbstract
     void fillEditControls() override;
     void applySettings() override;
+protected slots: // overridables of base class CWdgtGraphObjPropertiesAbstract
+    void onDrawingSceneDrawSettingsChanged(const CDrawSettings& i_drawingSettings) override;
 protected slots:
     void onBtnCollapseClicked(bool i_bChecked = false);
+protected slots:
+    void onCmbFontCurrentFontChanged(const QFont& i_fnt);
+    void onCmbFontSizeCurrentIndexChanged(int i_idx);
+    void onBtnTextColorClicked(bool i_bChecked = false);
+    void onBtnFontStyleBoldToggled(bool i_bChecked);
+    void onBtnFontStyleItalicToggled(bool i_bChecked);
+    void onBtnTextEffectUnderlineToggled(bool i_bChecked);
+    void onBtnTextEffectStrikeoutToggled(bool i_bChecked);
+private: // auxiliary instance methods
+    void updateCmbFont(const QFont& i_font);
+    void updateCmbTextSize(ETextSize i_textSize);
+    void updateBtnTextColor(const QColor& i_clr);
+    void updateBtnFontStyleBold(const CEnumTextStyle& i_textStyle);
+    void updateBtnFontStyleItalic(const CEnumTextStyle& i_textStyle);
+    void updateBtnTextEffectUnderline(const CEnumTextEffect& i_textEffect);
+    void updateBtnTextEffectStrikeout(const CEnumTextEffect& i_textEffect);
 protected: // instance methods (method tracing)
     void traceValues(ZS::System::CMethodTracer& i_mthTracer, ZS::System::EMethodDir i_methodDir);
 private: // instance members
@@ -83,8 +94,19 @@ private: // instance members
     QLabel* m_pLblHeadlineIcon;
     QLabel* m_pLblHeadline;
     ZS::System::GUI::CSepLine* m_pSepHeadline;
-    QWidget* m_pWdgtLineStyleSettings;
-    QGridLayout* m_pLytWdgtLineStyleSettings;
+    QWidget* m_pWdgtTextStyleSettings;
+    QGridLayout* m_pLytWdgtTextStyleSettings;
+    // Text Style
+    QLabel* m_pLblFont;
+    QFontComboBox* m_pCmbFont;
+    QComboBox* m_pCmbFontSize;
+    QPixmap* m_pPxmBtnTextColor;
+    QPushButton* m_pBtnTextColor;
+    QLabel* m_pLblEffects;
+    QPushButton* m_pBtnFontStyleBold;
+    QPushButton* m_pBtnFontStyleItalic;
+    QPushButton* m_pBtnTextEffectUnderline;
+    QPushButton* m_pBtnTextEffectStrikeout;
 
 }; // class CWdgtGraphObjTextStyleProperties
 

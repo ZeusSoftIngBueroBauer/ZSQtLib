@@ -674,7 +674,9 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     m_pCmbGridScaleLabelsFontSize = new QComboBox();
     m_pLytGridSettings->addWidget(m_pCmbGridScaleLabelsFontSize, iRow, iClm);
     for( int idx = 0; idx < ETextSizeCount; idx++ ) {
-        m_pCmbGridScaleLabelsFontSize->addItem( textSize2Str(static_cast<ETextSize>(idx)), textSize2SizeInPixels(static_cast<ETextSize>(idx)) );
+        m_pCmbGridScaleLabelsFontSize->addItem(
+            textSize2Str(static_cast<ETextSize>(idx)),
+            textSize2SizeInPixels(static_cast<ETextSize>(idx)) );
     }
     QObject::connect(
         m_pCmbGridScaleLabelsFontSize, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
@@ -686,15 +688,21 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     updateGridLabelsTextColorButtonIcon();
     m_pLytGridSettings->addWidget(m_pBtnGridScaleLabelsTextColor, iRow, iClm);
     QObject::connect(
-        m_pBtnGridScaleLabelsTextColor, &QCheckBox::clicked,
+        m_pBtnGridScaleLabelsTextColor, &QPushButton::clicked,
         this, &CWdgtDrawingViewProperties::onBtnGridScaleLabelsTextColorClicked);
 
     // <Line> Grid Scale Labels Font Style and Font Effect
     //----------------------------------------------------
 
+    QFont font;
+
     ++iRow;
     iClm = iClmBtnFontStyleBold;
     m_pBtnGridScaleLabelsFontStyleBold = new QPushButton("F");
+    font = m_pBtnGridScaleLabelsFontStyleBold->font();
+    font.setBold(true);
+    m_pBtnGridScaleLabelsFontStyleBold->setFont(font);
+    m_pBtnGridScaleLabelsFontStyleBold->setCheckable(true);
     m_pLytGridSettings->addWidget(m_pBtnGridScaleLabelsFontStyleBold, iRow, iClm);
     QObject::connect(
         m_pBtnGridScaleLabelsFontStyleBold, &QPushButton::toggled,
@@ -702,6 +710,10 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
 
     iClm = iClmBtnFontStyleItalic;
     m_pBtnGridScaleLabelsFontStyleItalic = new QPushButton("I");
+    font = m_pBtnGridScaleLabelsFontStyleItalic->font();
+    font.setItalic(true);
+    m_pBtnGridScaleLabelsFontStyleItalic->setFont(font);
+    m_pBtnGridScaleLabelsFontStyleItalic->setCheckable(true);
     m_pLytGridSettings->addWidget(m_pBtnGridScaleLabelsFontStyleItalic, iRow, iClm);
     QObject::connect(
         m_pBtnGridScaleLabelsFontStyleItalic, &QPushButton::toggled,
@@ -709,6 +721,10 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
 
     iClm = iClmBtnFontEffectUnderline;
     m_pBtnGridScaleLabelsTextEffectUnderline = new QPushButton("U");
+    font = m_pBtnGridScaleLabelsTextEffectUnderline->font();
+    font.setUnderline(true);
+    m_pBtnGridScaleLabelsTextEffectUnderline->setFont(font);
+    m_pBtnGridScaleLabelsTextEffectUnderline->setCheckable(true);
     m_pLytGridSettings->addWidget(m_pBtnGridScaleLabelsTextEffectUnderline, iRow, iClm);
     QObject::connect(
         m_pBtnGridScaleLabelsTextEffectUnderline, &QPushButton::toggled,
@@ -716,6 +732,10 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
 
     iClm = iClmBtnFontEffectStrikeout;
     m_pBtnGridScaleLabelsTextEffectStrikeout = new QPushButton("ab");
+    font = m_pBtnGridScaleLabelsTextEffectStrikeout->font();
+    font.setStrikeOut(true);
+    m_pBtnGridScaleLabelsTextEffectStrikeout->setFont(font);
+    m_pBtnGridScaleLabelsTextEffectStrikeout->setCheckable(true);
     m_pLytGridSettings->addWidget(m_pBtnGridScaleLabelsTextEffectStrikeout, iRow, iClm);
     QObject::connect(
         m_pBtnGridScaleLabelsTextEffectStrikeout, &QPushButton::toggled,
@@ -1558,7 +1578,7 @@ void CWdgtDrawingViewProperties::onBtnGridScaleLabelsTextColorClicked(bool i_bCh
 }
 
 //------------------------------------------------------------------------------
-void CWdgtDrawingViewProperties::onBtnGridScaleLabelsFontStyleBoldToggled(int i_iState)
+void CWdgtDrawingViewProperties::onBtnGridScaleLabelsFontStyleBoldToggled(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
     if( m_iContentChangedSignalBlockedCounter > 0 ) {
@@ -1567,7 +1587,7 @@ void CWdgtDrawingViewProperties::onBtnGridScaleLabelsFontStyleBoldToggled(int i_
 
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qCheckState2Str(i_iState);
+        strMthInArgs = bool2Str(i_bChecked);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -1593,7 +1613,7 @@ void CWdgtDrawingViewProperties::onBtnGridScaleLabelsFontStyleBoldToggled(int i_
 }
 
 //------------------------------------------------------------------------------
-void CWdgtDrawingViewProperties::onBtnGridScaleLabelsFontStyleItalicToggled(int i_iState)
+void CWdgtDrawingViewProperties::onBtnGridScaleLabelsFontStyleItalicToggled(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
     if( m_iContentChangedSignalBlockedCounter > 0 ) {
@@ -1602,7 +1622,7 @@ void CWdgtDrawingViewProperties::onBtnGridScaleLabelsFontStyleItalicToggled(int 
 
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qCheckState2Str(i_iState);
+        strMthInArgs = bool2Str(i_bChecked);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -1628,7 +1648,7 @@ void CWdgtDrawingViewProperties::onBtnGridScaleLabelsFontStyleItalicToggled(int 
 }
 
 //------------------------------------------------------------------------------
-void CWdgtDrawingViewProperties::onBtnGridScaleLabelsTextEffectUnderlineToggled(int i_iState)
+void CWdgtDrawingViewProperties::onBtnGridScaleLabelsTextEffectUnderlineToggled(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
     if( m_iContentChangedSignalBlockedCounter > 0 ) {
@@ -1637,7 +1657,7 @@ void CWdgtDrawingViewProperties::onBtnGridScaleLabelsTextEffectUnderlineToggled(
 
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qCheckState2Str(i_iState);
+        strMthInArgs = bool2Str(i_bChecked);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -1663,7 +1683,7 @@ void CWdgtDrawingViewProperties::onBtnGridScaleLabelsTextEffectUnderlineToggled(
 }
 
 //------------------------------------------------------------------------------
-void CWdgtDrawingViewProperties::onBtnGridScaleLabelsTextEffectStrikeoutToggled(int i_iState)
+void CWdgtDrawingViewProperties::onBtnGridScaleLabelsTextEffectStrikeoutToggled(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
     if( m_iContentChangedSignalBlockedCounter > 0 ) {
@@ -1672,7 +1692,7 @@ void CWdgtDrawingViewProperties::onBtnGridScaleLabelsTextEffectStrikeoutToggled(
 
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qCheckState2Str(i_iState);
+        strMthInArgs = bool2Str(i_bChecked);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,

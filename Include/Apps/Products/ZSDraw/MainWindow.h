@@ -236,6 +236,7 @@ protected: // instance methods (for ctor)
 protected: // overridables of base class QWidget
     virtual bool eventFilter( QObject* i_pObjWatched, QEvent* i_pEv ) override;
 public: // instance methods
+    void showFilePageSetupDialog(bool i_bModal);
     void setCurrentUsedFile( const QString& i_strAbsFilePath );
 public: // instance methods
     void setCheckedActionModeEdit(bool i_bChecked);

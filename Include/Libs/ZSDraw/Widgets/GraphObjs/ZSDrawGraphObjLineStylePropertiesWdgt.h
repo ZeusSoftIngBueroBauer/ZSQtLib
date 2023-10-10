@@ -29,8 +29,6 @@ may result in using the software modules.
 
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPropertiesAbstractWdgt.h"
 
-class QTableView;
-
 namespace ZS
 {
 namespace Draw
@@ -72,9 +70,9 @@ protected slots: // overridables of base class CWdgtGraphObjPropertiesAbstract
 protected slots:
     void onBtnCollapseClicked(bool i_bChecked = false);
 protected slots:
-    void onBtnPenColorClicked(bool i_bChecked = false);
     void onCmbLineStyleCurrentIndexChanged(int i_idx);
     void onEdtLineWidthValueChanged(int i_iVal);
+    void onBtnPenColorClicked(bool i_bChecked = false);
     void onCmbP1LineEndStyleCurrentIndexChanged(int i_idx);
     void onCmbP1ArrowHeadWidthClicked(int i_idx);
     void onCmbP1ArrowHeadLengthClicked(int i_idx);
@@ -87,8 +85,8 @@ private: // auxiliary instance methods
     void fillArrowHeadWidthModel(const CEnumLinePoint& i_linePoint);
     void fillArrowHeadLengthModel(const CEnumLinePoint& i_linePoint);
 private: // auxiliary instance methods
-    void updateBtnPenColor(const QColor& i_clr);
     void updateCmbLineStyle(const CEnumLineStyle& i_lineStyle);
+    void updateBtnPenColor(const QColor& i_clr);
     void updateCmbLineEndStyle(
         const CEnumLinePoint& i_linePoint,
         const CEnumLineEndStyle& i_lineEndStyle,
@@ -118,11 +116,11 @@ private: // instance members
     QGridLayout* m_pLytWdgtLineStyleSettings;
     // Whole Line
     QLabel* m_pLblLineStyle;
-    QPixmap* m_pPxmBtnLineColor;
-    QPushButton* m_pBtnLineColor;
     QStandardItemModel* m_pModelLineStyles;
     QComboBox* m_pCmbLineStyle;
     QSpinBox* m_pEdtLineWidth;
+    QPixmap* m_pPxmBtnLineColor;
+    QPushButton* m_pBtnLineColor;
     // Arrow Heads
     QLabel* m_pLblLineEndStyles;
     // P1 (LineStart)

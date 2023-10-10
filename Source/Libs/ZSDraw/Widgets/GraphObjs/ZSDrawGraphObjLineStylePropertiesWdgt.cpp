@@ -103,11 +103,11 @@ CWdgtGraphObjLineStyleProperties::CWdgtGraphObjLineStyleProperties(
     m_pLytWdgtLineStyleSettings(nullptr),
     // Whole Line
     m_pLblLineStyle(nullptr),
-    m_pPxmBtnLineColor(nullptr),
-    m_pBtnLineColor(nullptr),
     m_pModelLineStyles(nullptr),
     m_pCmbLineStyle(nullptr),
     m_pEdtLineWidth(nullptr),
+    m_pPxmBtnLineColor(nullptr),
+    m_pBtnLineColor(nullptr),
     // Arrow Heads
     m_pLblLineEndStyles(nullptr),
     // P1 (LineStart)
@@ -187,7 +187,7 @@ CWdgtGraphObjLineStyleProperties::CWdgtGraphObjLineStyleProperties(
     m_pLyt->addWidget(m_pWdgtLineStyleSettings);
 
     /* Grid Layout (alternative 2)
-         |     0    |1| 2 |3|  4  |5| 6   |7| 8    | 9
+         |     0    |1| 2 |3|  4  |5| 6   |7| 8    | 
        --+----------+-+---+-+-----+-+-----+-+------+----
        0 |Line:     | |   | |Style| |Width| |Color |<-->
        1 |End Points| |P1:| |Style| |Width| |Length|<-->
@@ -341,12 +341,12 @@ CWdgtGraphObjLineStyleProperties::~CWdgtGraphObjLineStyleProperties()
         /* strAddInfo   */ "" );
 
     try {
-        delete m_pPxmBtnLineColor;
+        delete m_pModelLineStyles;
     }
     catch(...) {
     }
     try {
-        delete m_pModelLineStyles;
+        delete m_pPxmBtnLineColor;
     }
     catch(...) {
     }
@@ -394,11 +394,11 @@ CWdgtGraphObjLineStyleProperties::~CWdgtGraphObjLineStyleProperties()
     m_pLytWdgtLineStyleSettings = nullptr;
     // Whole Line
     m_pLblLineStyle = nullptr;
-    m_pPxmBtnLineColor = nullptr;
-    m_pBtnLineColor = nullptr;
     m_pModelLineStyles = nullptr;
     m_pCmbLineStyle = nullptr;
     m_pEdtLineWidth = nullptr;
+    m_pPxmBtnLineColor = nullptr;
+    m_pBtnLineColor = nullptr;
     // Arrow Heads
     m_pLblLineEndStyles = nullptr;
     // P1 (LineStart)
@@ -506,9 +506,9 @@ void CWdgtGraphObjLineStyleProperties::fillEditControls()
         traceValues(mthTracer, EMethodDir::Enter);
     }
 
-    updateBtnPenColor(m_drawSettings.getPenColor());
     updateCmbLineStyle(m_drawSettings.getLineStyle());
     m_pEdtLineWidth->setValue(m_drawSettings.getPenWidth());
+    updateBtnPenColor(m_drawSettings.getPenColor());
 
     ELinePoint linePoint = ELinePoint::Start;
     updateCmbLineEndStyle(
@@ -555,6 +555,7 @@ void CWdgtGraphObjLineStyleProperties::applySettings()
         traceValues(mthTracer, EMethodDir::Enter);
     }
 
+    #pragma message(__TODO__"Cache and set only text style settings")
     if (!hasErrors() && hasChanges()) {
         if (m_pGraphObj == nullptr) {
             m_pDrawingScene->setDrawSettings(m_drawSettings);
@@ -612,7 +613,6 @@ void CWdgtGraphObjLineStyleProperties::onDrawingSceneDrawSettingsChanged(const C
             if (m_iContentChangedSignalBlockedCounter == 0 && m_bContentChanged) {
                 // .. emit the contentChanged signal and update the enabled state
                 // of the Apply and Reset buttons.
-                updateButtonsEnabled();
                 emit_contentChanged();
                 m_bContentChanged = false;
             }
@@ -640,51 +640,11 @@ void CWdgtGraphObjLineStyleProperties::onBtnCollapseClicked(bool /*i_bChecked*/)
     else {
         expand(false);
     }
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
-        mthTracer.setMethodReturn("Expanded: " + bool2Str(s_bWdgtLineStyleVisible));
-    }
 }
 
 /*==============================================================================
 protected slots:
 ==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CWdgtGraphObjLineStyleProperties::onBtnPenColorClicked(bool /*i_bChecked*/)
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onBtnPenColorClicked",
-        /* strAddInfo   */ "" );
-
-    QColor clr = QColorDialog::getColor(
-        /* clrInitial  */ m_drawSettings.getPenColor(),
-        /* pWdgtParent */ m_pBtnLineColor,
-        /* strTitle    */ "Colors",
-        /* options     */ QColorDialog::ShowAlphaChannel );
-
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
-        traceValues(mthTracer, EMethodDir::Enter);
-    }
-    if (clr.isValid()) {
-        if (m_drawSettings.getPenColor() != clr) {
-            updateBtnPenColor(clr);
-            if (m_iContentChangedSignalBlockedCounter > 0) {
-                m_bContentChanged = (m_drawSettings.getPenColor() != clr);
-                m_drawSettings.setPenColor(clr);
-            }
-            else {
-                m_drawSettings.setPenColor(clr);
-                emit_contentChanged();
-            }
-        }
-    }
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
-        traceValues(mthTracer, EMethodDir::Leave);
-    }
-}
 
 //------------------------------------------------------------------------------
 void CWdgtGraphObjLineStyleProperties::onCmbLineStyleCurrentIndexChanged(int i_idx)
@@ -740,6 +700,43 @@ void CWdgtGraphObjLineStyleProperties::onEdtLineWidthValueChanged(int i_iVal)
     else {
         m_drawSettings.setPenWidth(i_iVal);
         emit_contentChanged();
+    }
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
+        traceValues(mthTracer, EMethodDir::Leave);
+    }
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjLineStyleProperties::onBtnPenColorClicked(bool /*i_bChecked*/)
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onBtnPenColorClicked",
+        /* strAddInfo   */ "" );
+
+    QColor clr = QColorDialog::getColor(
+        /* clrInitial  */ m_drawSettings.getPenColor(),
+        /* pWdgtParent */ m_pBtnLineColor,
+        /* strTitle    */ "Colors",
+        /* options     */ QColorDialog::ShowAlphaChannel );
+
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
+        traceValues(mthTracer, EMethodDir::Enter);
+    }
+    if (clr.isValid()) {
+        if (m_drawSettings.getPenColor() != clr) {
+            updateBtnPenColor(clr);
+            if (m_iContentChangedSignalBlockedCounter > 0) {
+                m_bContentChanged = (m_drawSettings.getPenColor() != clr);
+                m_drawSettings.setPenColor(clr);
+            }
+            else {
+                m_drawSettings.setPenColor(clr);
+                emit_contentChanged();
+            }
+        }
     }
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
         traceValues(mthTracer, EMethodDir::Leave);
@@ -1328,6 +1325,26 @@ private: // auxiliary instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+void CWdgtGraphObjLineStyleProperties::updateCmbLineStyle(const CEnumLineStyle& i_lineStyle)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_lineStyle.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "updateCmbLineStyle",
+        /* strAddInfo   */ strMthInArgs );
+
+    int idx = m_pCmbLineStyle->findData(i_lineStyle.enumeratorAsInt(), Qt::UserRole);
+    if (idx >= 0) {
+        m_pCmbLineStyle->setCurrentIndex(idx);
+    }
+}
+
+//------------------------------------------------------------------------------
 void CWdgtGraphObjLineStyleProperties::updateBtnPenColor(const QColor& i_clr)
 //------------------------------------------------------------------------------
 {
@@ -1356,26 +1373,6 @@ void CWdgtGraphObjLineStyleProperties::updateBtnPenColor(const QColor& i_clr)
     painter.setPen(Qt::blue);
     painter.drawRect(sizePxm.width()/2 + 3, 3, 2, 2);
     m_pBtnLineColor->setIcon(*m_pPxmBtnLineColor);
-}
-
-//------------------------------------------------------------------------------
-void CWdgtGraphObjLineStyleProperties::updateCmbLineStyle(const CEnumLineStyle& i_lineStyle)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_lineStyle.toString();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "updateCmbLineStyle",
-        /* strAddInfo   */ strMthInArgs );
-
-    int idx = m_pCmbLineStyle->findData(i_lineStyle.enumeratorAsInt(), Qt::UserRole);
-    if (idx >= 0) {
-        m_pCmbLineStyle->setCurrentIndex(idx);
-    }
 }
 
 //------------------------------------------------------------------------------

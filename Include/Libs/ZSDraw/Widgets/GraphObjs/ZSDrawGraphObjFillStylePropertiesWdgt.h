@@ -29,8 +29,6 @@ may result in using the software modules.
 
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPropertiesAbstractWdgt.h"
 
-class QTableView;
-
 namespace ZS
 {
 namespace Draw
@@ -45,13 +43,6 @@ public: // class methods
     static QString NameSpace() { return "ZS::Draw"; }
     /*! Returns the class name. */
     static QString ClassName() { return "CWdgtGraphObjFillStyleProperties"; }
-protected: // type definitions and constants
-    enum class EItemDataRoleModelLineEndStyle {
-        Id = Qt::UserRole+1,
-        LineEndStyle,
-        ArrowHeadFillStyle,
-        ArrowHeadBaseLineType
-    };
 public: // ctors and dtor
     CWdgtGraphObjFillStyleProperties(
         CDrawingScene* i_pDrawingScene,
@@ -67,8 +58,18 @@ public: // overridables of base class CWdgtGraphObjPropertiesAbstract
 protected: // overridables of base class CWdgtGraphObjPropertiesAbstract
     void fillEditControls() override;
     void applySettings() override;
+protected slots: // overridables of base class CWdgtGraphObjPropertiesAbstract
+    void onDrawingSceneDrawSettingsChanged(const CDrawSettings& i_drawingSettings) override;
 protected slots:
     void onBtnCollapseClicked(bool i_bChecked = false);
+protected slots:
+    void onCmbFillStyleCurrentIndexChanged(int i_idx);
+    void onBtnFillColorClicked(bool i_bChecked = false);
+private: // auxiliary instance methods
+    QSize fillFillStylesModel();
+private: // auxiliary instance methods
+    void updateCmbFillStyle(const CEnumFillStyle& i_fillStyle);
+    void updateBtnFillColor(const QColor& i_clr);
 protected: // instance methods (method tracing)
     void traceValues(ZS::System::CMethodTracer& i_mthTracer, ZS::System::EMethodDir i_methodDir);
 private: // instance members
@@ -83,8 +84,14 @@ private: // instance members
     QLabel* m_pLblHeadlineIcon;
     QLabel* m_pLblHeadline;
     ZS::System::GUI::CSepLine* m_pSepHeadline;
-    QWidget* m_pWdgtLineStyleSettings;
-    QGridLayout* m_pLytWdgtLineStyleSettings;
+    QWidget* m_pWdgtFillStyleSettings;
+    QGridLayout* m_pLytWdgtFillStyleSettings;
+    // Fill Style and Color
+    QLabel* m_pLblFillStyle;
+    QStandardItemModel* m_pModelFillStyles;
+    QComboBox* m_pCmbFillStyle;
+    QPixmap* m_pPxmBtnFillColor;
+    QPushButton* m_pBtnFillColor;
 
 }; // class CWdgtGraphObjFillStyleProperties
 

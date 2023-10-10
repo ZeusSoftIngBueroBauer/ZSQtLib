@@ -379,8 +379,27 @@ void CWdgtGridLabels::paintGridLabels(QPainter* i_pPainter)
     // Labels and unit string
     // ----------------------
 
+    QFont font = gridSettings.labelsFont();
+    CEnumTextStyle textStyle = gridSettings.labelsTextStyle();
+    CEnumTextEffect textEffect = gridSettings.labelsTextEffect();
+    ETextSize textSize = gridSettings.labelsTextSize();
+
+    if (isTextStyleBold(textStyle)) {
+        font.setBold(true);
+    }
+    if (isTextStyleItalic(textStyle)) {
+        font.setItalic(true);
+    }
+    if (isTextEffectUnderline(textEffect)) {
+        font.setUnderline(true);
+    }
+    if (isTextEffectStrikeout(textEffect)) {
+        font.setStrikeOut(true);
+    }
+    font.setPixelSize(textSize2SizeInPixels(textSize));
+
     i_pPainter->setPen(gridSettings.labelsTextColor());
-    i_pPainter->setFont(gridSettings.labelsFont());
+    i_pPainter->setFont(font);
 
     QFontMetrics fntmtr(gridSettings.labelsFont());
     QSize sizeUnitString;

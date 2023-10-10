@@ -2350,6 +2350,39 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+void CMainWindow::showFilePageSetupDialog( bool i_bModal )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Modal: " + bool2Str(i_bModal);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "showFilePageSetupDialog",
+        /* strAddInfo   */ strMthInArgs );
+
+    CDrawingView* pDrawingView = m_pWdgtCentral->drawingView();
+    QString strDlgTitle = ZS::System::GUI::getMainWindowTitle() + ": Page Setup";
+    CDlgDrawingViewProperties* pDlg = CDlgDrawingViewProperties::GetInstance(pDrawingView);
+    if( pDlg == nullptr ) {
+        pDlg = CDlgDrawingViewProperties::CreateInstance(strDlgTitle, pDrawingView);
+        pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
+        pDlg->adjustSize();
+        pDlg->setModal(i_bModal);
+        pDlg->show();
+    }
+    else {
+        if( pDlg->isHidden() ) {
+            pDlg->show();
+        }
+        pDlg->raise();
+        pDlg->activateWindow();
+    }
+}
+
+//------------------------------------------------------------------------------
 void CMainWindow::setCurrentUsedFile( const QString& i_strAbsFilePath )
 //------------------------------------------------------------------------------
 {
@@ -2974,22 +3007,7 @@ void CMainWindow::onActionFilePageSetupTriggered(bool i_bChecked)
         /* strMethod    */ "onActionFilePageSetupTriggered",
         /* strAddInfo   */ strMthInArgs );
 
-    CDrawingView* pDrawingView = m_pWdgtCentral->drawingView();
-    QString strDlgTitle = ZS::System::GUI::getMainWindowTitle() + ": Page Setup";
-    CDlgDrawingViewProperties* pDlg = CDlgDrawingViewProperties::GetInstance(pDrawingView);
-    if( pDlg == nullptr ) {
-        pDlg = CDlgDrawingViewProperties::CreateInstance(strDlgTitle, pDrawingView);
-        pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
-        pDlg->adjustSize();
-        pDlg->show();
-    }
-    else {
-        if( pDlg->isHidden() ) {
-            pDlg->show();
-        }
-        pDlg->raise();
-        pDlg->activateWindow();
-    }
+    showFilePageSetupDialog(false);
 }
 
 //------------------------------------------------------------------------------

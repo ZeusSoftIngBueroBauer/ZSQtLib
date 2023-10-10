@@ -302,7 +302,7 @@ void CApplication::createAndShowMainWindow(
 
     if (m_pTest == nullptr) {
         if (i_strFileName.isEmpty()) {
-            m_pMainWindow->onActionFilePageSetupTriggered(false);
+            m_pMainWindow->showFilePageSetupDialog(true);
         }
         else {
             m_pMainWindow->setCurrentUsedFile(i_strFileName);

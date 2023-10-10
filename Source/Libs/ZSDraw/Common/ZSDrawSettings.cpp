@@ -476,7 +476,7 @@ CDrawSettings::CDrawSettings( EGraphObjType i_graphObjType ) :
     m_idxGraphObjTypeDrawAttributesDefaultVals(-1),
     m_arAttributes(EDrawAttributeCount)
 {
-    if (m_graphObjType >= 0 && m_graphObjType < _ZSArrLen(s_ararDrawAttributesDefaultVals)) {
+    if (m_graphObjType >= EGraphObjTypeMin && m_graphObjType <= EGraphObjTypeMax) {
         m_idxGraphObjTypeDrawAttributesDefaultVals = m_graphObjType - EGraphObjTypeMin;
     }
 
@@ -542,15 +542,19 @@ void CDrawSettings::setGraphObjType(EGraphObjType i_graphObjType)
 {
     if (m_graphObjType != i_graphObjType) {
         m_graphObjType = i_graphObjType;
-        if (m_graphObjType >= 0 && m_graphObjType < _ZSArrLen(s_ararDrawAttributesDefaultVals)) {
+        if (m_graphObjType >= EGraphObjTypeMin && m_graphObjType <= EGraphObjTypeMax) {
             m_idxGraphObjTypeDrawAttributesDefaultVals = m_graphObjType - EGraphObjTypeMin;
+        }
+        else {
+            m_idxGraphObjTypeDrawAttributesDefaultVals = -1;
+        }
+        if (m_idxGraphObjTypeDrawAttributesDefaultVals >= 0 && m_idxGraphObjTypeDrawAttributesDefaultVals < _ZSArrLen(s_ararDrawAttributesDefaultVals)) {
             for (int idxAttr = 0; idxAttr < EDrawAttributeCount; idxAttr++) {
                 m_arAttributes[idxAttr].m_bIsUsed =
                     s_ararDrawAttributesDefaultVals[m_idxGraphObjTypeDrawAttributesDefaultVals][idxAttr].m_bIsUsed;
             }
         }
         else {
-            m_idxGraphObjTypeDrawAttributesDefaultVals = -1;
             for (int idxAttr = 0; idxAttr < EDrawAttributeCount; idxAttr++) {
                 m_arAttributes[idxAttr].m_bIsUsed = true;
             }

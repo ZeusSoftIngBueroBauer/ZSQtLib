@@ -136,6 +136,12 @@ protected: // class members
     /*!< Class variable to store the current state of the line style widget.
          Used to restore the widget state after changing node types. */
     static bool s_bWdgtLineStyleVisible;
+    /*!< Class variable to store the current state of the fill style widget.
+         Used to restore the widget state after changing node types. */
+    static bool s_bWdgtFillStyleVisible;
+    /*!< Class variable to store the current state of the text style widget.
+         Used to restore the widget state after changing node types. */
+    static bool s_bWdgtTextStyleVisible;
 protected: // instance members
     /*!< Pointer to drawing scene. */
     CDrawingScene* m_pDrawingScene;

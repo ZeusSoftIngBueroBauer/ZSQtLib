@@ -99,8 +99,14 @@ CWdgtGraphObjFillStyleProperties::CWdgtGraphObjFillStyleProperties(
     m_pLblHeadlineIcon(nullptr),
     m_pLblHeadline(nullptr),
     m_pSepHeadline(nullptr),
-    m_pWdgtLineStyleSettings(nullptr),
-    m_pLytWdgtLineStyleSettings(nullptr)
+    m_pWdgtFillStyleSettings(nullptr),
+    m_pLytWdgtFillStyleSettings(nullptr),
+    // Fill Style
+    m_pLblFillStyle(nullptr),
+    m_pModelFillStyles(nullptr),
+    m_pCmbFillStyle(nullptr),
+    m_pPxmBtnFillColor(nullptr),
+    m_pBtnFillColor(nullptr)
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -122,7 +128,7 @@ CWdgtGraphObjFillStyleProperties::CWdgtGraphObjFillStyleProperties(
     m_pLyt->addWidget(m_pWdgtHeadline);
 
     m_pBtnCollapse = new QPushButton();
-    if (s_bWdgtLineStyleVisible) {
+    if (s_bWdgtFillStyleVisible) {
         m_pBtnCollapse->setIcon(m_pxmBtnUp);
     }
     else {
@@ -155,18 +161,16 @@ CWdgtGraphObjFillStyleProperties::CWdgtGraphObjFillStyleProperties(
 
     QSize iconSize;
 
-    m_pWdgtLineStyleSettings = new QWidget();
-    m_pLytWdgtLineStyleSettings = new QGridLayout();
-    m_pLytWdgtLineStyleSettings->setContentsMargins(0, 0, 0, 0);
-    m_pWdgtLineStyleSettings->setLayout(m_pLytWdgtLineStyleSettings);
-    m_pLyt->addWidget(m_pWdgtLineStyleSettings);
+    m_pWdgtFillStyleSettings = new QWidget();
+    m_pLytWdgtFillStyleSettings = new QGridLayout();
+    m_pLytWdgtFillStyleSettings->setContentsMargins(0, 0, 0, 0);
+    m_pWdgtFillStyleSettings->setLayout(m_pLytWdgtFillStyleSettings);
+    m_pLyt->addWidget(m_pWdgtFillStyleSettings);
 
     /* Grid Layout (alternative 2)
-         |     0    |1| 2 |3|  4  |5| 6   |7| 8    | 9
-       --+----------+-+---+-+-----+-+-----+-+------+----
-       0 |Line:     | |   | |Style| |Width| |Color |<-->
-       1 |End Points| |P1:| |Style| |Width| |Length|<-->
-       2 |          | |P2:| |Style| |Width| |Length|<-->
+         |     0    |1| 2 |3| 4   |5|  6  | 
+       --+----------+-+---+-+-----+-+-----+----
+       0 |Brush:    | |   | |Style| |Color|<-->
     */
     const int cxSpacing = 5;
     const QVector<int> ariClmWidths = {
@@ -176,21 +180,48 @@ CWdgtGraphObjFillStyleProperties::CWdgtGraphObjFillStyleProperties(
          /*  3 */ cxSpacing,
          /*  4 */ 60,
          /*  5 */ cxSpacing,
-         /*  6 */ 60,
-         /*  7 */ cxSpacing,
-         /*  8 */ 60
+         /*  6 */ 60
     };
 
     for (int idxClm = 0; idxClm < ariClmWidths.size(); ++idxClm) {
-        m_pLytWdgtLineStyleSettings->setColumnMinimumWidth(idxClm, ariClmWidths[idxClm]);
+        m_pLytWdgtFillStyleSettings->setColumnMinimumWidth(idxClm, ariClmWidths[idxClm]);
     }
-    m_pLytWdgtLineStyleSettings->setColumnStretch(ariClmWidths.size(), 1);
+    m_pLytWdgtFillStyleSettings->setColumnStretch(ariClmWidths.size(), 1);
+
+    // <Row 0> Fill Style
+    //-------------------
+
+    int iRow = 0;
+
+    m_pLblFillStyle = new QLabel("Brush:");
+    m_pLytWdgtFillStyleSettings->addWidget(m_pLblFillStyle, iRow, 0);
+
+    QLabel* pLblDummy = new QLabel();
+    m_pLytWdgtFillStyleSettings->addWidget(pLblDummy, iRow, 2, Qt::AlignRight);
+
+    m_pModelFillStyles = new QStandardItemModel();
+    iconSize = fillFillStylesModel();
+    m_pCmbFillStyle = new QComboBox();
+    m_pCmbFillStyle->setModel(m_pModelFillStyles);
+    m_pCmbFillStyle->setIconSize(iconSize);
+    m_pLytWdgtFillStyleSettings->addWidget(m_pCmbFillStyle, iRow, 4);
+    QObject::connect(
+        m_pCmbFillStyle, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+        this, &CWdgtGraphObjFillStyleProperties::onCmbFillStyleCurrentIndexChanged);
+
+    m_pBtnFillColor = new QPushButton();
+    m_pPxmBtnFillColor = new QPixmap(":/ZS/Draw/DrawSettingsBrushStyle16x16.png");
+    m_pBtnFillColor->setIcon(*m_pPxmBtnFillColor);
+    m_pLytWdgtFillStyleSettings->addWidget(m_pBtnFillColor, iRow, 6);
+    QObject::connect(
+        m_pBtnFillColor, &QPushButton::clicked,
+        this, &CWdgtGraphObjFillStyleProperties::onBtnFillColorClicked);
 
     // Restore visibility
-    //===================
+    //-------------------
 
-    if (!s_bWdgtLineStyleVisible) {
-        m_pWdgtLineStyleSettings->hide();
+    if (!s_bWdgtFillStyleVisible) {
+        m_pWdgtFillStyleSettings->hide();
     }
 
 } // ctor
@@ -205,6 +236,17 @@ CWdgtGraphObjFillStyleProperties::~CWdgtGraphObjFillStyleProperties()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
+    try {
+        delete m_pModelFillStyles;
+    }
+    catch(...) {
+    }
+    try {
+        delete m_pPxmBtnFillColor;
+    }
+    catch(...) {
+    }
+
     //m_drawSettings;
     m_pWdgtHeadline = nullptr;
     m_pLytWdgtHeadline = nullptr;
@@ -214,8 +256,14 @@ CWdgtGraphObjFillStyleProperties::~CWdgtGraphObjFillStyleProperties()
     m_pLblHeadlineIcon = nullptr;
     m_pLblHeadline = nullptr;
     m_pSepHeadline = nullptr;
-    m_pWdgtLineStyleSettings = nullptr;
-    m_pLytWdgtLineStyleSettings = nullptr;
+    m_pWdgtFillStyleSettings = nullptr;
+    m_pLytWdgtFillStyleSettings = nullptr;
+    // Fill Style
+    m_pLblFillStyle = nullptr;
+    m_pModelFillStyles = nullptr;
+    m_pCmbFillStyle = nullptr;
+    m_pPxmBtnFillColor = nullptr;
+    m_pBtnFillColor = nullptr;
 }
 
 /*==============================================================================
@@ -236,18 +284,18 @@ void CWdgtGraphObjFillStyleProperties::expand(bool i_bExpand)
         /* strMethod    */ "expand",
         /* strAddInfo   */ strMthInArgs );
 
-    if (i_bExpand && m_pWdgtLineStyleSettings->isHidden()) {
+    if (i_bExpand && m_pWdgtFillStyleSettings->isHidden()) {
         m_pBtnCollapse->setIcon(m_pxmBtnUp);
-        m_pWdgtLineStyleSettings->show();
-        s_bWdgtLineStyleVisible = true;
+        m_pWdgtFillStyleSettings->show();
+        s_bWdgtFillStyleVisible = true;
     }
-    else if (!i_bExpand && !m_pWdgtLineStyleSettings->isHidden()) {
+    else if (!i_bExpand && !m_pWdgtFillStyleSettings->isHidden()) {
         m_pBtnCollapse->setIcon(m_pxmBtnDown);
-        m_pWdgtLineStyleSettings->hide();
-        s_bWdgtLineStyleVisible = false;
+        m_pWdgtFillStyleSettings->hide();
+        s_bWdgtFillStyleVisible = false;
     }
     if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
-        mthTracer.setMethodReturn("Expanded: " + bool2Str(s_bWdgtLineStyleVisible));
+        mthTracer.setMethodReturn("Expanded: " + bool2Str(s_bWdgtFillStyleVisible));
     }
 }
 
@@ -266,8 +314,11 @@ bool CWdgtGraphObjFillStyleProperties::hasChanges() const
         /* strAddInfo   */ "" );
 
     bool bHasChanges = false;
-
-    if (m_pGraphObj != nullptr) {
+    if (m_pGraphObj == nullptr) {
+        CDrawSettings drawSettings = m_pDrawingScene->drawSettings();
+        bHasChanges = (m_drawSettings != drawSettings);
+    }
+    else {
         CDrawSettings drawSettings = m_pGraphObj->getDrawSettings();
         bHasChanges = (m_drawSettings != drawSettings);
     }
@@ -292,7 +343,7 @@ void CWdgtGraphObjFillStyleProperties::fillEditControls()
         /* strAddInfo   */ "" );
 
     if (m_pGraphObj == nullptr) {
-        m_drawSettings = CDrawSettings();
+        m_drawSettings = m_pDrawingScene->drawSettings();
     }
     else {
         m_drawSettings = m_pGraphObj->getDrawSettings();
@@ -301,6 +352,9 @@ void CWdgtGraphObjFillStyleProperties::fillEditControls()
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
         traceValues(mthTracer, EMethodDir::Enter);
     }
+
+    updateCmbFillStyle(m_drawSettings.getFillStyle());
+    updateBtnFillColor(m_drawSettings.getFillColor());
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
         traceValues(mthTracer, EMethodDir::Leave);
@@ -321,12 +375,68 @@ void CWdgtGraphObjFillStyleProperties::applySettings()
         traceValues(mthTracer, EMethodDir::Enter);
     }
 
-    if (m_pGraphObj != nullptr && !hasErrors() && hasChanges()) {
-        m_pGraphObj->setDrawSettings(m_drawSettings);
+    #pragma message(__TODO__"Cache and set only text style settings")
+    if (!hasErrors() && hasChanges()) {
+        if (m_pGraphObj == nullptr) {
+            m_pDrawingScene->setDrawSettings(m_drawSettings);
+        }
+        else {
+            m_pGraphObj->setDrawSettings(m_drawSettings);
+        }
     }
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
         traceValues(mthTracer, EMethodDir::Leave);
+    }
+}
+
+/*==============================================================================
+protected slots: // overridables of base class CWdgtGraphObjPropertiesAbstract
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjFillStyleProperties::onDrawingSceneDrawSettingsChanged(const CDrawSettings& i_drawSettings)
+//------------------------------------------------------------------------------
+{
+    if( m_iContentChangedSignalBlockedCounter > 0 ) {
+        return;
+    }
+
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_drawSettings.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onDrawingSceneDrawSettingsChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (m_pGraphObj == nullptr) {
+        // When applying the changes from the edit controls by invoking "acceptChanges"
+        // the ContentChangedSignalBlockedCounter is incremented to avoid that
+        // "onDrawingSceneDrawSettingsChanged" overwrites settings in edit controls which
+        // haven't been applied yet.
+        if (m_drawSettings != i_drawSettings && m_iContentChangedSignalBlockedCounter == 0)
+        {
+            m_drawSettings = i_drawSettings;
+
+            {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
+
+                // Here the derived class should apply the properties from the graphical
+                // object to the edit controls.
+                fillEditControls();
+            }
+
+            // If the "contentChanged" signal is no longer blocked and the content of
+            // properties widget has been changed ...
+            if (m_iContentChangedSignalBlockedCounter == 0 && m_bContentChanged) {
+                // .. emit the contentChanged signal and update the enabled state
+                // of the Apply and Reset buttons.
+                emit_contentChanged();
+                m_bContentChanged = false;
+            }
+        }
     }
 }
 
@@ -344,12 +454,179 @@ void CWdgtGraphObjFillStyleProperties::onBtnCollapseClicked(bool /*i_bChecked*/)
         /* strMethod    */ "onBtnCollapseClicked",
         /* strAddInfo   */ "" );
 
-    if (m_pWdgtLineStyleSettings->isHidden()) {
+    if (m_pWdgtFillStyleSettings->isHidden()) {
         expand(true);
     }
     else {
         expand(false);
     }
+}
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjFillStyleProperties::onCmbFillStyleCurrentIndexChanged(int i_idx)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString::number(i_idx);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onCmbFillStyleCurrentIndexChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
+        traceValues(mthTracer, EMethodDir::Enter);
+    }
+    if (m_iContentChangedSignalBlockedCounter > 0) {
+        m_bContentChanged = true;
+    }
+    else {
+        QVariant varData = m_pCmbFillStyle->itemData(i_idx, Qt::UserRole);
+        EFillStyle fillStyle = static_cast<EFillStyle>(varData.toInt());
+        m_drawSettings.setFillStyle(fillStyle);
+        emit_contentChanged();
+    }
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
+        traceValues(mthTracer, EMethodDir::Leave);
+    }
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjFillStyleProperties::onBtnFillColorClicked(bool /*i_bChecked*/)
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onBtnFillColorClicked",
+        /* strAddInfo   */ "" );
+
+    QColor clr = QColorDialog::getColor(
+        /* clrInitial  */ m_drawSettings.getPenColor(),
+        /* pWdgtParent */ m_pBtnFillColor,
+        /* strTitle    */ "Colors",
+        /* options     */ QColorDialog::ShowAlphaChannel );
+
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
+        traceValues(mthTracer, EMethodDir::Enter);
+    }
+    if (clr.isValid()) {
+        if (m_drawSettings.getFillColor() != clr) {
+            updateBtnFillColor(clr);
+            if (m_iContentChangedSignalBlockedCounter > 0) {
+                m_bContentChanged = (m_drawSettings.getFillColor() != clr);
+                m_drawSettings.setFillColor(clr);
+            }
+            else {
+                m_drawSettings.setFillColor(clr);
+                emit_contentChanged();
+            }
+        }
+    }
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
+        traceValues(mthTracer, EMethodDir::Leave);
+    }
+}
+
+//------------------------------------------------------------------------------
+QSize CWdgtGraphObjFillStyleProperties::fillFillStylesModel()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "fillFillStylesModel",
+        /* strAddInfo   */ "" );
+
+    QSize iconSize(48, 16);
+    QPixmap pxmFillStyle(iconSize);
+    QPainter painter;
+    QBrush brsh;
+
+    for (CEnumFillStyle fillStyle = 0; fillStyle < CEnumFillStyle::count(); ++fillStyle) {
+        if (!isFillStyleGradientPattern(fillStyle.enumerator())) {
+            QStandardItem* pFillStyleItem = nullptr;
+            if (fillStyle == EFillStyle::NoFill) {
+                pFillStyleItem = new QStandardItem(" No Fill");
+            }
+            else {
+                pxmFillStyle.fill(Qt::white);
+                painter.begin(&pxmFillStyle);
+                if (fillStyle == EFillStyle::TexturePattern) {
+                    brsh.setTexture(pxmFillStyle);
+                }
+                brsh.setStyle(fillStyle2QtBrushStyle(fillStyle.enumerator()));
+                painter.setBrush(brsh);
+                painter.drawRect(2, 2, pxmFillStyle.width() - 4, pxmFillStyle.height() - 4);
+                painter.end();
+                pFillStyleItem = new QStandardItem();
+                pFillStyleItem->setData(pxmFillStyle, Qt::DecorationRole);
+            }
+            pFillStyleItem->setData(fillStyle.enumeratorAsInt(), Qt::UserRole);
+            m_pModelFillStyles->appendRow(pFillStyleItem);
+        }
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(qSize2Str(iconSize));
+    }
+    return iconSize;
+}
+
+/*==============================================================================
+private: // auxiliary instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjFillStyleProperties::updateCmbFillStyle(const CEnumFillStyle& i_fillStyle)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_fillStyle.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "updateCmbFillStyle",
+        /* strAddInfo   */ strMthInArgs );
+
+    int idx = m_pCmbFillStyle->findData(i_fillStyle.enumeratorAsInt(), Qt::UserRole);
+    if (idx >= 0) {
+        m_pCmbFillStyle->setCurrentIndex(idx);
+    }
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjFillStyleProperties::updateBtnFillColor(const QColor& i_clr)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = qColor2Str(i_clr);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "updateBtnFillColor",
+        /* strAddInfo   */ strMthInArgs );
+
+    QSize sizePxm = m_pPxmBtnFillColor->size();
+    QPainter painter(m_pPxmBtnFillColor);
+    painter.setPen(i_clr);
+    painter.setBrush(Qt::NoBrush);
+    painter.drawLine(QPoint(sizePxm.height() - 3, 5), QPoint(sizePxm.height() - 3, sizePxm.width() - 5));
+    painter.drawLine(QPoint(sizePxm.height() - 2, 6), QPoint(sizePxm.height() - 2, sizePxm.width() - 6));
+    painter.drawLine(QPoint(sizePxm.height() - 1, 7), QPoint(sizePxm.height() - 1, sizePxm.width() - 7));
+    painter.setPen(Qt::NoPen);
+    painter.setBrush(i_clr);
+    painter.drawRect(QRect(0, sizePxm.height() - 5, sizePxm.width(), 5));
+    m_pBtnFillColor->setIcon(*m_pPxmBtnFillColor);
 }
 
 /*==============================================================================

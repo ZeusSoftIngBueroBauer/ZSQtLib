@@ -85,10 +85,10 @@ protected slots:
     void onCmbGridScaleLabelsCurrentFontChanged(const QFont& i_fnt);
     void onCmbGridScaleLabelsFontSizeCurrentIndexChanged(int i_iCurrentIndex);
     void onBtnGridScaleLabelsTextColorClicked(bool i_bChecked);
-    void onBtnGridScaleLabelsFontStyleBoldToggled(int i_iState);
-    void onBtnGridScaleLabelsFontStyleItalicToggled(int i_iState);
-    void onBtnGridScaleLabelsTextEffectUnderlineToggled(int i_iState);
-    void onBtnGridScaleLabelsTextEffectStrikeoutToggled(int i_iState);
+    void onBtnGridScaleLabelsFontStyleBoldToggled(bool i_bChecked);
+    void onBtnGridScaleLabelsFontStyleItalicToggled(bool i_bChecked);
+    void onBtnGridScaleLabelsTextEffectUnderlineToggled(bool i_bChecked);
+    void onBtnGridScaleLabelsTextEffectStrikeoutToggled(bool i_bChecked);
 protected: // instance methods
     void setDimensionUnit( const ZS::System::CEnumScaleDimensionUnit& i_eDimensionUnit );
     void setScreenPixelResolutionInPxPerMM(double i_fRes_px_mm);
@@ -203,7 +203,6 @@ protected: // instance members
     // Grid Scale Labels
     QLabel* m_pLblGridScaleLabels;
     QCheckBox* m_pChkGridScaleLabelsVisible;
-    QLabel* m_pLblGridScaleLabelsFont;
     QFontComboBox* m_pCmbGridScaleLabelsFont;
     QComboBox* m_pCmbGridScaleLabelsFontSize;
     QPixmap* m_pPxmBtnGridScaleLabelsTextColor;
